@@ -35,6 +35,15 @@ impl PrintSize {
         }
     }
 
+    /// A user-defined size (FR-043); `id` is only a marker, settings hold the real one.
+    pub const fn custom(short_mm: u32, long_mm: u32) -> Self {
+        Self {
+            id: "custom",
+            short_mm,
+            long_mm,
+        }
+    }
+
     /// Looks up a size by its identifier.
     pub fn by_id(id: &str) -> Option<PrintSize> {
         Self::ALL.iter().copied().find(|size| size.id == id)

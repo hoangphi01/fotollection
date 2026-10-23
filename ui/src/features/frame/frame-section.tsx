@@ -5,6 +5,8 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { FrameColor, FrameDateFormat, FrameFields, FrameFit } from '@/ipc/bindings'
+import { FontSelect } from '@/features/fonts/font-select'
+import type { FontsApi } from '@/features/fonts/use-fonts'
 import type { FrameConfigApi } from './use-frame-config'
 
 const FIELDS: { key: keyof FrameFields; label: string; disabledHint?: string }[] = [
@@ -22,10 +24,11 @@ const FIELDS: { key: keyof FrameFields; label: string; disabledHint?: string }[]
 
 type FrameSectionProps = {
   frame: FrameConfigApi
+  fonts: FontsApi
 }
 
 /** "Shot on …" info frame settings, LUMIX Lab style (FR-040). */
-export function FrameSection({ frame }: FrameSectionProps) {
+export function FrameSection({ frame, fonts }: FrameSectionProps) {
   const settings = frame.config?.settings
   const enabled = settings?.enabled ?? false
 
@@ -100,6 +103,13 @@ export function FrameSection({ frame }: FrameSectionProps) {
             18.10.2026
           </ToggleGroupItem>
         </ToggleGroup>
+
+        <FontSelect
+          fonts={fonts}
+          label="Frame font"
+          value={settings?.font}
+          onChange={(font) => void frame.setSettings((s) => ({ ...s, font }))}
+        />
 
         <div className="space-y-1.5">
           <span className="text-xs font-medium text-muted-foreground uppercase">Show</span>

@@ -8,6 +8,7 @@ use std::sync::{Arc, Mutex, RwLock};
 
 use fotollection_core::cancel::CancellationToken;
 use fotollection_core::codec::{JpegCodec, default_codec};
+use fotollection_core::fonts::{self, LoadedFont, UserFont};
 use fotollection_core::frame::{self, CameraProfile, FrameSettings, LogoKind};
 use fotollection_core::history::History;
 use fotollection_core::library::{Library, PhotoRecord, flags};
@@ -27,9 +28,16 @@ pub struct FrameState {
     pub settings: FrameSettings,
     pub cameras: Vec<CameraProfile>,
     pub logos: HashMap<u32, Arc<LogoImage>>,
+    /// User fonts (FR-042): table rows plus parsed fonts, keyed by id.
+    pub fonts: Vec<UserFont>,
+    pub loaded_fonts: HashMap<u32, LoadedFont>,
 }
 
 impl FrameState {
+    pub fn font(&self, id: Option<u32>) -> Option<LoadedFont> {
+        id.and_then(|id| self.loaded_fonts.get(&id).cloned())
+    }
+
     pub fn profile_for(&self, make: Option<&str>, model: Option<&str>) -> Option<&CameraProfile> {
         self.cameras.iter().find(|c| c.matches(make, model))
     }
@@ -50,6 +58,7 @@ impl FrameState {
             settings: self.settings.clone(),
             text,
             logo,
+            font: self.font(self.settings.font),
         })
     }
 }
@@ -73,6 +82,7 @@ pub struct AppState {
     /// `settings.json` and the `logos/` folder in the app config dir (DATABASE.md §6).
     pub store_path: PathBuf,
     pub logo_dir: PathBuf,
+    pub font_dir: PathBuf,
     /// False when the file was written by a newer app: never overwrite it.
     pub store_writable: AtomicBool,
     store_lock: Mutex<()>,
@@ -92,6 +102,7 @@ impl AppState {
     ) -> Result<Self, rayon::ThreadPoolBuildError> {
         let store_path = config_dir.join("settings.json");
         let logo_dir = config_dir.join("logos");
+        let font_dir = config_dir.join("fonts");
         let (stored, writable) = match settings_store::load(&store_path) {
             Loaded::Ok(stored) => (stored, true),
             Loaded::Missing => (StoredSettings::default(), true),
@@ -115,6 +126,16 @@ impl AppState {
             })
             .collect();
 
+        let loaded_fonts = stored
+            .fonts
+            .iter()
+            .filter_map(|f| {
+                let path = font_dir.join(format!("{}.{}", f.id, f.format.extension()));
+                let (_, font) = fonts::load(std::fs::read(path).ok()?).ok()?;
+                Some((f.id, LoadedFont { id: f.id, font }))
+            })
+            .collect();
+
         Ok(Self {
             library: RwLock::new(Library::new()),
             settings: RwLock::new((stored.render, 1)),
@@ -122,6 +143,8 @@ impl AppState {
                 settings: stored.frame,
                 cameras: stored.cameras,
                 logos,
+                fonts: stored.fonts,
+                loaded_fonts,
             }),
             export_destination: Mutex::new(None),
             jobs: Mutex::new(HashMap::new()),
@@ -139,6 +162,7 @@ impl AppState {
                 .build()?,
             store_path,
             logo_dir,
+            font_dir,
             store_writable: AtomicBool::new(writable),
             store_lock: Mutex::new(()),
             project_path,
@@ -168,6 +192,7 @@ impl AppState {
             render: render.0.clone(),
             frame: frame.settings.clone(),
             cameras: frame.cameras.clone(),
+            fonts: frame.fonts.clone(),
         };
         drop((render, frame));
         let _guard = self.store_lock.lock();

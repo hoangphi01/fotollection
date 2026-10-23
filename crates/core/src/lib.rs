@@ -7,6 +7,7 @@ pub mod atomic;
 pub mod cancel;
 pub mod codec;
 pub mod export;
+pub mod fonts;
 pub mod frame;
 pub mod history;
 pub mod image;

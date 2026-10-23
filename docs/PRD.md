@@ -131,7 +131,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - The default crop is centred. The user can adjust it per photo in the **crop editor**:
   - The whole photo is shown, with everything outside the crop **dimmed**.
   - **Drag** to move the crop. **Zoom** with the wheel, a trackpad pinch or a slider (1–8×). Arrow keys nudge it, and a double-click resets it.
-  - A label on the crop shows the **printed size in cm** (the photo area when a frame is on), the crop's pixel size and the **live DPI** with its quality band ([FR-026](#fr-026--resolution-warning)).
+  - **Edge labels:** the top edge shows the printed width and the left edge the printed height (cm, or inches for sizes entered in inches), each with its pixel count. A centre pill shows the **aspect ratio** (`2:3`, `1:1`, or `1:1.44` for uneven sizes), the print size and the **live DPI** with its quality band ([FR-026](#fr-026--resolution-warning)). When a frame is on, the sizes are those of the photo area.
   - The crop is stored as a centre and zoom, so it survives changes of print size ([FR-025](#fr-025--mixed-print-sizes-per-order)).
   - It is undoable ([FR-023](#fr-023--projects-autosave-and-undo)).
 - Offers a "fit with border" (letterbox) alternative to cropping.
@@ -374,13 +374,21 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 
 **P1.** Import **OTF/TTF** fonts and choose them separately for the date stamp ([FR-004](#fr-004--date-stamp)) and for the info-frame text ([FR-040](#fr-040--exif-info-frame)).
 
-- Fonts are validated (magic bytes, size cap, parse before use) and copied into the app's config folder, like logos ([ADR-0014](adr/0014-user-supplied-brand-logos.md)).
-- Variable fonts expose a weight choice.
-- The bundled Inter remains the default.
+- Fonts are validated before use: TTF/OTF magic bytes (font collections and WOFF are rejected), a 20 MB cap, a full parse, and digits 0–9 must be present. They are then copied into the app's config folder, like logos ([ADR-0014](adr/0014-user-supplied-brand-logos.md)).
+- Variable fonts render at their default instance.
+- The bundled Inter remains the default. Removing a font switches anything using it back to Inter.
+- Font licensing is the user's responsibility: the app never redistributes imported fonts.
 
 ### FR-043 — Custom print sizes
 
-**P1.** Define and save custom print sizes, in **cm or inches** (for example 4 × 6 in or 13 × 13 cm). They appear next to the built-in sizes everywhere: crop, frame, DPI and export. A size has a name, short and long edges (stored in mm), and an optional safe margin. Custom sizes are stored in `settings.json` ([DATABASE.md §6](DATABASE.md#6-app-settings)).
+**P1.** Define and save custom print sizes, in **cm or inches** (for example 4 × 6 in or 13 × 13 cm). They appear next to the built-in sizes everywhere: crop, frame, DPI and export.
+
+- A size has a name and short/long edges, stored in whole millimetres. The entry unit is remembered for labels, so a size shows as `4 × 6 in`.
+- Edges must be between 2 and 100 cm. Up to 30 custom sizes are allowed. Custom sizes are stored in `settings.json` ([DATABASE.md §6](DATABASE.md#6-app-settings)).
+
+### FR-044 — Per-photo overrides
+
+**P2 (future).** Next to the batch settings, any setting can be overridden for one photo or a selection. For example, the date stamp can be turned off for photos that already have a timestamp burned in, while the rest of the batch keeps it. Overrides are stored sparsely per photo ([DATABASE.md §4](DATABASE.md#4-project-file-schema), `photos[].overrides`). The UI shows which photos deviate from the batch and offers *Reset to batch*. Until then, every setting applies to the whole batch.
 
 ## 7. Non-functional requirements
 

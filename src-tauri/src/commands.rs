@@ -382,11 +382,13 @@ pub fn start_export(app: AppHandle, state: State<'_, AppState>) -> Result<u32, I
     std::thread::spawn(move || {
         let state = app.state::<AppState>();
         let frame_for = |record: &fotollection_core::library::PhotoRecord| frames.request(record);
+        let stamp_font = frames.font(settings.stamp.font);
         let options = ExportOptions {
             destination: &destination,
             settings: &settings,
             quality: EXPORT_QUALITY,
             max_inflight: default_inflight(),
+            stamp_font,
             frame_for: &frame_for,
         };
         let throttle = Throttle::default();
@@ -452,14 +454,19 @@ pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
         .and_then(|l| l.record(id))
         .ok_or_else(|| "unknown photo".to_owned())?;
     let settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
-    let frame = state
-        .frame
-        .read()
-        .map_err(|e| e.to_string())?
-        .request(&record);
+    let (frame, stamp_font) = {
+        let f = state.frame.read().map_err(|e| e.to_string())?;
+        (f.request(&record), f.font(settings.stamp.font))
+    };
     state
         .previews
-        .render_jpeg(&record, &settings, frame.as_ref(), state.codec.as_ref())
+        .render_jpeg(
+            &record,
+            &settings,
+            frame.as_ref(),
+            stamp_font.as_ref(),
+            state.codec.as_ref(),
+        )
         .map_err(|e| e.to_string())
 }
 
@@ -793,6 +800,8 @@ pub struct CropGeometry {
     pub crop: Option<CropFrame>,
     /// The frame's Fit mode shows the whole photo, so cropping is off.
     pub crop_disabled: bool,
+    /// Display unit of the selected size (inches for custom sizes entered in inches).
+    pub unit: fotollection_core::settings::LengthUnit,
 }
 
 #[tauri::command]
@@ -838,6 +847,7 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
             max_long_edge: None,
             frame: frame.as_ref(),
             crop: None,
+            stamp_font: None,
         });
         #[allow(clippy::cast_precision_loss)]
         let (long_cm, short_cm) = (print.long_mm as f32 / 10.0, print.short_mm as f32 / 10.0);
@@ -864,6 +874,7 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
             print_height_cm,
             crop: record.edits.crop,
             crop_disabled,
+            unit: settings.unit(),
         })
     })
     .await
@@ -986,4 +997,119 @@ pub fn restore_session(app: &AppHandle) {
         .map_or(0, |l| u32::try_from(l.len()).unwrap_or(u32::MAX));
     let _ = LibraryChanged { count }.emit(app);
     changed(app, &state);
+}
+
+/// User fonts (FR-042).
+#[tauri::command]
+#[specta::specta]
+pub fn list_fonts(
+    state: State<'_, AppState>,
+) -> Result<Vec<fotollection_core::fonts::UserFont>, IpcError> {
+    Ok(state
+        .frame
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?
+        .fonts
+        .clone())
+}
+
+/// Picks an OTF/TTF with a Rust-side dialog, validates it and copies it into the config
+/// folder (SECURITY.md §3). Returns the new font, or `None` if cancelled.
+#[tauri::command]
+#[specta::specta]
+pub async fn import_font(
+    app: AppHandle,
+) -> Result<Option<fotollection_core::fonts::UserFont>, IpcError> {
+    use fotollection_core::fonts::{self, LoadedFont, UserFont};
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let picked = app
+            .dialog()
+            .file()
+            .set_title("Choose a font (OTF or TTF)")
+            .add_filter("Fonts", &["ttf", "otf"])
+            .blocking_pick_file();
+        let Some(path) = picked.and_then(|p| p.into_path().ok()) else {
+            return Ok(None);
+        };
+        let size = std::fs::metadata(&path)
+            .map_err(|e| IpcError::new("font.unreadable", e.to_string()))?
+            .len();
+        if size > fonts::MAX_FONT_BYTES as u64 {
+            return Err(IpcError::new(
+                "font.too_large",
+                "The font file is larger than 20 MB",
+            ));
+        }
+        let bytes =
+            std::fs::read(&path).map_err(|e| IpcError::new("font.unreadable", e.to_string()))?;
+        let copy = bytes.clone();
+        let (format, font) =
+            fonts::load(bytes).map_err(|e| IpcError::new(e.code(), e.to_string()))?;
+        let name: String = path.file_stem().map_or_else(
+            || "Font".to_owned(),
+            |s| {
+                s.to_string_lossy()
+                    .chars()
+                    .filter(|c| !c.is_control())
+                    .take(60)
+                    .collect()
+            },
+        );
+        let row = {
+            let mut frame = state
+                .frame
+                .write()
+                .map_err(|e| IpcError::internal(e.to_string()))?;
+            if frame.fonts.len() >= fonts::MAX_USER_FONTS {
+                return Err(IpcError::new("font.too_many", "Too many fonts imported"));
+            }
+            let id = frame.fonts.iter().map(|f| f.id).max().unwrap_or(0) + 1;
+            std::fs::create_dir_all(&state.font_dir)
+                .map_err(|e| IpcError::new("font.write_failed", e.to_string()))?;
+            fotollection_core::thumbs::write_atomic(
+                &state.font_dir.join(format!("{id}.{}", format.extension())),
+                &copy,
+            )
+            .map_err(|e| IpcError::new("font.write_failed", e.to_string()))?;
+            let row = UserFont { id, name, format };
+            frame.fonts.push(row.clone());
+            frame.loaded_fonts.insert(id, LoadedFont { id, font });
+            row
+        };
+        state.persist();
+        Ok(Some(row))
+    })
+    .await
+    .map_err(|e| IpcError::internal(e.to_string()))?
+}
+
+/// Removes a user font; the stamp or frame using it falls back to Inter.
+#[tauri::command]
+#[specta::specta]
+pub fn remove_font(app: AppHandle, state: State<'_, AppState>, id: u32) -> Result<(), IpcError> {
+    let format = {
+        let mut frame = state
+            .frame
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        let format = frame.fonts.iter().find(|f| f.id == id).map(|f| f.format);
+        frame.fonts.retain(|f| f.id != id);
+        frame.loaded_fonts.remove(&id);
+        if frame.settings.font == Some(id) {
+            frame.settings.font = None;
+        }
+        format
+    };
+    if let Ok(mut settings) = state.settings.write()
+        && settings.0.stamp.font == Some(id)
+    {
+        settings.0.stamp.font = None;
+    }
+    if let Some(format) = format {
+        let _ = std::fs::remove_file(state.font_dir.join(format!("{id}.{}", format.extension())));
+    }
+    state.persist();
+    changed(&app, &state);
+    Ok(())
 }

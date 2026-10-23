@@ -16,19 +16,13 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
+import { PrintSizePicker } from '@/features/settings/print-size-picker'
 import { useIpcQuery } from '@/features/settings/use-ipc-query'
 import {
   commands,
@@ -315,21 +309,7 @@ export function PreviewDialog({
             <Separator />
 
             <Section icon={<Printer className="size-4" />} title="Print">
-              <Select
-                value={settings?.printSize ?? ''}
-                onValueChange={(printSize) => onSettingsChange((s) => ({ ...s, printSize }))}
-              >
-                <SelectTrigger className="w-full" aria-label="Print size">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {printSizes?.map((size) => (
-                    <SelectItem key={size.id} value={size.id}>
-                      {size.shortMm / 10} × {size.longMm / 10} cm
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onSettingsChange} />
               {details && (
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-xs text-muted-foreground">Resolution</span>

@@ -62,6 +62,7 @@ fn main() {
             ),
             settings: frame,
             logo: None,
+            font: None,
         }
     });
     let p = plan(&PlanInput {
@@ -73,6 +74,7 @@ fn main() {
         max_long_edge: None,
         frame: request.as_ref(),
         crop: None,
+        stamp_font: None,
     });
     let image = render(&upright, &p).unwrap();
     std::fs::write(output, codec.encode(&image, 92, None).unwrap()).unwrap();

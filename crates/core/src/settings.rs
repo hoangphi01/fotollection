@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-//! Render settings shared by preview and export (in memory until projects land, FR-023).
+//! Render settings shared by preview and export, persisted in `settings.json` (DATABASE.md §6).
 
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -9,10 +9,39 @@ use crate::print_size::PrintSize;
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct RenderSettings {
-    /// `PrintSize.id`, e.g. `"10x15"` (FR-006).
+    /// A built-in `PrintSize.id` (e.g. `"10x15"`) or a `CustomPrintSize.id` (FR-006, FR-043).
     pub print_size: String,
     pub stamp: StampSettings,
+    /// User-defined sizes such as 4 × 6 in (FR-043).
+    #[serde(default)]
+    pub custom_sizes: Vec<CustomPrintSize>,
 }
+
+/// A saved custom print size (FR-043). Stored in millimetres, short edge first.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CustomPrintSize {
+    /// `custom-<n>`, unique.
+    pub id: String,
+    pub name: String,
+    pub short_mm: u32,
+    pub long_mm: u32,
+    /// How the user entered it, so labels show `4 × 6 in` rather than `10.2 × 15.2 cm`.
+    #[serde(default)]
+    pub unit: LengthUnit,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum LengthUnit {
+    #[default]
+    Cm,
+    In,
+}
+
+pub const MAX_CUSTOM_SIZES: usize = 30;
+/// Allowed edge range for custom sizes, in mm (2 cm – 1 m).
+pub const CUSTOM_EDGE_MM: std::ops::RangeInclusive<u32> = 20..=1000;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
@@ -21,6 +50,9 @@ pub struct StampSettings {
     pub format: DateFormat,
     pub corner: Corner,
     pub color: StampColor,
+    /// A user font id (FR-042); `None` uses the bundled Inter.
+    #[serde(default)]
+    pub font: Option<u32>,
 }
 
 /// Date stamp formats (FR-004).
@@ -69,7 +101,9 @@ impl Default for RenderSettings {
                 format: DateFormat::Iso,
                 corner: Corner::BottomRight,
                 color: StampColor::White,
+                font: None,
             },
+            custom_sizes: Vec::new(),
         }
     }
 }
@@ -78,12 +112,102 @@ impl Default for RenderSettings {
 pub enum SettingsError {
     #[error("unknown print size: {0}")]
     UnknownPrintSize(String),
+    #[error("invalid custom size: {0}")]
+    InvalidCustomSize(String),
 }
 
 impl RenderSettings {
     /// Validates input coming over IPC (SECURITY.md §2).
     pub fn validate(&self) -> Result<PrintSize, SettingsError> {
-        PrintSize::by_id(&self.print_size)
+        self.validate_custom_sizes()?;
+        if let Some(size) = PrintSize::by_id(&self.print_size) {
+            return Ok(size);
+        }
+        self.custom_sizes
+            .iter()
+            .find(|c| c.id == self.print_size)
+            .map(|c| PrintSize::custom(c.short_mm, c.long_mm))
             .ok_or_else(|| SettingsError::UnknownPrintSize(self.print_size.clone()))
+    }
+
+    /// Display unit of the selected size: inches for custom sizes entered in inches.
+    pub fn unit(&self) -> LengthUnit {
+        self.custom_sizes
+            .iter()
+            .find(|c| c.id == self.print_size)
+            .map_or(LengthUnit::Cm, |c| c.unit)
+    }
+
+    fn validate_custom_sizes(&self) -> Result<(), SettingsError> {
+        let bad = |why: &str| Err(SettingsError::InvalidCustomSize(why.to_owned()));
+        if self.custom_sizes.len() > MAX_CUSTOM_SIZES {
+            return bad("too many custom sizes");
+        }
+        let mut ids = std::collections::HashSet::new();
+        for c in &self.custom_sizes {
+            if !c.id.starts_with("custom-") || !ids.insert(c.id.as_str()) {
+                return bad("duplicate or malformed id");
+            }
+            if c.name.chars().count() > 40 || c.name.chars().any(char::is_control) {
+                return bad("name");
+            }
+            if !CUSTOM_EDGE_MM.contains(&c.short_mm)
+                || !CUSTOM_EDGE_MM.contains(&c.long_mm)
+                || c.short_mm > c.long_mm
+            {
+                return bad("edges must be 2–100 cm, short edge first");
+            }
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn with_custom(sizes: Vec<CustomPrintSize>, selected: &str) -> RenderSettings {
+        RenderSettings {
+            print_size: selected.to_owned(),
+            custom_sizes: sizes,
+            ..RenderSettings::default()
+        }
+    }
+
+    fn size(id: &str, short_mm: u32, long_mm: u32, unit: LengthUnit) -> CustomPrintSize {
+        CustomPrintSize {
+            id: id.to_owned(),
+            name: "Mine".to_owned(),
+            short_mm,
+            long_mm,
+            unit,
+        }
+    }
+
+    #[test]
+    fn fr_043_custom_size_resolves_and_validates() {
+        // 4 × 6 in, stored in mm.
+        let four_by_six = size("custom-1", 102, 152, LengthUnit::In);
+        let s = with_custom(vec![four_by_six.clone()], "custom-1");
+        let print = s.validate();
+        assert_eq!(print.map(|p| (p.short_mm, p.long_mm)), Ok((102, 152)));
+        assert_eq!(s.unit(), LengthUnit::In);
+        // Built-ins still resolve, and use cm.
+        let builtin = with_custom(vec![four_by_six.clone()], "10x15");
+        assert!(builtin.validate().is_ok());
+        assert_eq!(builtin.unit(), LengthUnit::Cm);
+
+        for bad in [
+            vec![size("custom-1", 10, 152, LengthUnit::Cm)], // edge below 2 cm
+            vec![size("custom-1", 152, 102, LengthUnit::Cm)], // long edge first
+            vec![size("x-1", 102, 152, LengthUnit::Cm)],     // malformed id
+            vec![four_by_six.clone(), four_by_six.clone()],  // duplicate id
+        ] {
+            assert!(with_custom(bad, "10x15").validate().is_err());
+        }
+        assert!(
+            with_custom(vec![], "custom-9").validate().is_err(),
+            "unknown id"
+        );
     }
 }

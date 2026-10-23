@@ -9,6 +9,7 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
+use crate::fonts::LoadedFont;
 use crate::frame::{self, FrameFit, FrameLayout, FrameSettings, FrameText};
 use crate::logo::LogoImage;
 use crate::print_size::PrintSize;
@@ -38,6 +39,8 @@ pub struct StampSpec {
     pub font_px: f32,
     /// Distance from each output edge to the stamp, in output pixels.
     pub margin_px: f32,
+    /// A user font (FR-042); `None` uses the bundled Inter.
+    pub font: Option<LoadedFont>,
 }
 
 /// Info frame to compose around the photo (FR-040).
@@ -45,6 +48,7 @@ pub struct StampSpec {
 pub struct FramePlan {
     pub layout: FrameLayout,
     pub logo: Option<Arc<LogoImage>>,
+    pub font: Option<LoadedFont>,
 }
 
 /// What the caller knows about the frame for one photo.
@@ -54,6 +58,8 @@ pub struct FrameRequest {
     pub text: FrameText,
     /// The camera's user logo, when the profile uses one.
     pub logo: Option<Arc<LogoImage>>,
+    /// A user font for the frame text (FR-042).
+    pub font: Option<LoadedFont>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -225,6 +231,8 @@ pub struct PlanInput<'a> {
     pub max_long_edge: Option<u32>,
     pub frame: Option<&'a FrameRequest>,
     pub crop: Option<CropFrame>,
+    /// A user font for the date stamp (FR-042).
+    pub stamp_font: Option<&'a LoadedFont>,
 }
 
 /// Builds the plan for one photo.
@@ -257,16 +265,13 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
         crop,
         out_width,
         out_height,
-        stamp: stamp_spec(input.settings, input.capture, px_per_mm),
+        stamp: stamp_spec(input, px_per_mm),
         frame: None,
     }
 }
 
-fn stamp_spec(
-    settings: &RenderSettings,
-    capture: Option<NaiveDateTime>,
-    px_per_mm: f32,
-) -> Option<StampSpec> {
+fn stamp_spec(input: &PlanInput<'_>, px_per_mm: f32) -> Option<StampSpec> {
+    let (settings, capture) = (input.settings, input.capture);
     match (settings.stamp.enabled, capture) {
         (true, Some(dt)) => Some(StampSpec {
             text: format_date(dt, settings.stamp.format),
@@ -274,6 +279,7 @@ fn stamp_spec(
             corner: settings.stamp.corner,
             font_px: STAMP_SIZE_MM * px_per_mm,
             margin_px: (SAFE_AREA_MM + STAMP_INSET_MM) * px_per_mm,
+            font: input.stamp_font.cloned(),
         }),
         _ => None,
     }
@@ -319,10 +325,11 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
         crop,
         out_width: photo.width,
         out_height: photo.height,
-        stamp: stamp_spec(input.settings, input.capture, px_per_mm),
+        stamp: stamp_spec(input, px_per_mm),
         frame: Some(FramePlan {
             layout,
             logo: request.logo.clone(),
+            font: request.font.clone(),
         }),
     }
 }
@@ -457,6 +464,7 @@ mod tests {
             max_long_edge: Some(1600),
             frame: None,
             crop: None,
+            stamp_font: None,
         });
         assert_eq!((p.out_width, p.out_height), (1600, 1067));
         assert!(p.stamp.is_none(), "no capture date, no stamp");

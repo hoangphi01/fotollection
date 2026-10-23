@@ -60,6 +60,7 @@ crates/
       plan.rs            † # RenderPlan: centred crop, stamp, optional frame plan (FR-004/006/040)
       frame.rs           † # info frame: settings, camera profiles, text, ratio-safe layout (FR-040)
       logo.rs            † # user PNG logos: validation + decode (ADR-0014)
+      fonts.rs           † # user OTF/TTF fonts: validation + FontArc (FR-042)
       settings_store.rs  † # settings.json v1: load/validate/atomic save (DATABASE.md §6)
       preview.rs         † # T2 LRU + preview rendering (FR-007)
       cancel.rs          † # CancellationToken
@@ -117,7 +118,7 @@ scripts/                 † # bootstrap, clean, check-docs
 | PNG | `png` | |
 | Resize | `fast_image_resize` | SIMD (NEON/AVX2) |
 | Colour management | `lcms2` | Preserve or convert the ICC profile |
-| Text rendering | `ab_glyph` with bundled Inter (OFL, variable `wght` 600) | `cosmic-text` if shaping is ever needed |
+| Text rendering | `ab_glyph` `FontArc`: bundled Inter (OFL, variable weights) or a user OTF/TTF (FR-042) | `cosmic-text` if complex shaping is ever needed |
 | EXIF read | `kamadak-exif` | Allowlisted fields only. Also extracts the IFD1 thumbnail for T0 |
 | EXIF write | `little_exif` (candidate) | Writes the privacy-filtered metadata |
 | Reverse geocoding | GeoNames `cities1000` + `kiddo` k-d tree | Offline, about 5 MB packed ([ADR-0003](adr/0003-offline-geocoding-geonames.md)) |
@@ -198,6 +199,7 @@ Commands marked † are implemented.
 | `get_crop_geometry(id) -> CropGeometry` † | Upright size, target ratio, printed cm of the crop area, current crop | FR-006 |
 | `set_photo_crop(id, crop?)` † | Set or reset a photo's crop (centre + zoom), undoable | FR-006, FR-023 |
 | `undo()` / `redo()` † | History (also Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z) | FR-023 |
+| `list_fonts()` / `import_font()` / `remove_font(id)` † | User fonts; import opens a **Rust-side** dialog and copies a validated file | FR-042 |
 | `photo_details(id) -> PhotoDetails` † | Inspector data: pixel size (header only), file size, GPS, effective DPI at the current print size | FR-002, FR-007, FR-026 |
 | `set_rating(ids, stars)` / `set_flag(ids, flag)` | Culling | FR-022 |
 | `query_library(filter) -> [PhotoSummary]` | Filtered view (rating, flag, date, camera, GPS, DPI) | FR-022, FR-026 |

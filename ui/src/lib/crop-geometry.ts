@@ -38,6 +38,20 @@ export function frameOf(rect: Rect, w: number, h: number, zoom: number): Frame {
   return { cx: (rect.x + rect.width / 2) / w, cy: (rect.y + rect.height / 2) / h, zoom }
 }
 
+const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b))
+
+/** `2:3`, `1:1`, or `1:1.44` when the reduced ratio isn't made of small numbers. */
+export function ratioLabel(width: number, height: number): string {
+  const w = Math.round(width)
+  const h = Math.round(height)
+  if (w <= 0 || h <= 0) return ''
+  const d = gcd(w, h)
+  const [a, b] = [w / d, h / d]
+  if (a <= 20 && b <= 20) return `${a}:${b}`
+  const r = Math.max(w, h) / Math.min(w, h)
+  return w <= h ? `1:${r.toFixed(2)}` : `${r.toFixed(2)}:1`
+}
+
 export type DpiBand = 'excellent' | 'good' | 'fair' | 'poor'
 
 /** Same thresholds as `effective_dpi` (FR-026, PRD §5). */

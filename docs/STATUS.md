@@ -37,7 +37,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-003 | Library grid | 1 | In Progress | Virtualized grid, T0/T1 thumbnails, skeleton + fade-in, task progress bar with %. Day grouping and multi-select pending |
 | FR-004 | Date stamp | 1 | In Progress | 3 formats, 4 corners, white/retro-orange, inside the safe area. More styles with FR-033 |
 | FR-005 | Location stamp (offline) | 1 | Not Started | GeoNames packer needed |
-| FR-006 | Crop to print ratio | 1 | In Progress | All 8 sizes; interactive crop editor (dimmed outside, drag, zoom, cm label, live DPI), stored as centre + zoom |
+| FR-006 | Crop to print ratio | 1 | In Progress | Crop editor with edge labels (cm/in + px), ratio pill and live DPI; centre + zoom storage |
 | FR-007 | Live preview | 1 | In Progress | Preview dialog with inspector (capture, camera, image, GPS, print DPI, stamp controls). Rust-rendered, p95 26 ms warm |
 | FR-008 | Original-quality export | 1 | In Progress | Full resolution, q95 4:4:4, ICC copied. Lossless crop-only path pending |
 | FR-009 | Export by date | 1 | Done | `YYYY-MM-DD/` folders, never overwrites (`_1`, `_2`…). `fr_009_*` passes |
@@ -71,8 +71,9 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-037 | Contact sheet | 3 | Not Started | |
 | FR-038 | Print presets | 2 | Not Started | Storage model: [DATABASE.md §7](DATABASE.md#7-presets) |
 | FR-040 | EXIF info frame | 1 | In Progress | Crop/Fit at print ratio, field switches, per-camera overrides (persisted), user PNG logo. Place needs FR-005 |
-| FR-042 | Custom fonts | 1 | Not Started | Next slice |
-| FR-043 | Custom print sizes | 1 | Not Started | Next slice |
+| FR-042 | Custom fonts | 1 | Done | OTF/TTF import (Rust dialog, validated, copied), per stamp and per frame, remove → Inter. `fr_042_*` pass |
+| FR-043 | Custom print sizes | 1 | Done | cm/in entry, stored in mm, used by crop/frame/DPI/export. `fr_043_*` pass |
+| FR-044 | Per-photo overrides | 2 | Not Started | Future: e.g. untick the stamp for photos that already have one; batch first |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
 
 ## Non-functional requirements

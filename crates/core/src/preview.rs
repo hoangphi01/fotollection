@@ -6,6 +6,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::codec::JpegCodec;
+use crate::fonts::LoadedFont;
 use crate::image::{RgbImage, apply_orientation};
 use crate::library::{PhotoId, PhotoRecord, flags};
 use crate::plan::{FrameRequest, PlanInput, plan};
@@ -73,6 +74,7 @@ impl PreviewCache {
         record: &PhotoRecord,
         settings: &RenderSettings,
         frame: Option<&FrameRequest>,
+        stamp_font: Option<&LoadedFont>,
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
         let source = self.source(record, codec)?;
@@ -87,6 +89,7 @@ impl PreviewCache {
             max_long_edge: Some(PREVIEW_LONG_EDGE),
             frame,
             crop: record.edits.crop,
+            stamp_font,
         });
         let image = render(&source, &p)?;
         Ok(codec.encode(&image, PREVIEW_QUALITY, None)?)

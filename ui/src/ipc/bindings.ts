@@ -64,6 +64,20 @@ export const commands = {
 } | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_crop", { id, crop })),
 	undo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("undo")),
 	redo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("redo")),
+	/**  User fonts (FR-042). */
+	listFonts: () => typedError<UserFont[], IpcError>(__TAURI_INVOKE("list_fonts")),
+	/**
+	 *  Picks an OTF/TTF with a Rust-side dialog, validates it and copies it into the config
+	 *  folder (SECURITY.md §3). Returns the new font, or `None` if cancelled.
+	 */
+	importFont: () => typedError<{
+	id: number,
+	/**  Display name (defaults to the file name). */
+	name: string,
+	format: FontFormat,
+} | null, IpcError>(__TAURI_INVOKE("import_font")),
+	/**  Removes a user font; the stamp or frame using it falls back to Inter. */
+	removeFont: (id: number) => typedError<null, IpcError>(__TAURI_INVOKE("remove_font", { id })),
 };
 
 /** Events */
@@ -139,6 +153,19 @@ export type CropGeometry = {
 	crop: CropFrame | null,
 	/**  The frame's Fit mode shows the whole photo, so cropping is off. */
 	cropDisabled: boolean,
+	/**  Display unit of the selected size (inches for custom sizes entered in inches). */
+	unit: LengthUnit,
+};
+
+/**  A saved custom print size (FR-043). Stored in millimetres, short edge first. */
+export type CustomPrintSize = {
+	/**  `custom-<n>`, unique. */
+	id: string,
+	name: string,
+	shortMm: number,
+	longMm: number,
+	/**  How the user entered it, so labels show `4 × 6 in` rather than `10.2 × 15.2 cm`. */
+	unit?: LengthUnit,
 };
 
 /**  Date stamp formats (FR-004). */
@@ -186,6 +213,8 @@ export type ExportSummary = {
 	destination: string,
 };
 
+export type FontFormat = "ttf" | "otf";
+
 export type FrameColor = "white" | "black";
 
 export type FrameConfig = {
@@ -229,6 +258,8 @@ export type FrameSettings = {
 	color: FrameColor,
 	dateFormat: FrameDateFormat,
 	fields: FrameFields,
+	/**  A user font id for the frame text (FR-042); `None` uses Inter. */
+	font?: number | null,
 };
 
 export type GpsPoint = {
@@ -255,6 +286,8 @@ export type IpcError = {
 	code: string,
 	message: string,
 };
+
+export type LengthUnit = "cm" | "in";
 
 /**  Photos were added; the UI refetches the list. */
 export type LibraryChanged = {
@@ -324,9 +357,11 @@ export type RejectedSummary = {
 };
 
 export type RenderSettings = {
-	/**  `PrintSize.id`, e.g. `"10x15"` (FR-006). */
+	/**  A built-in `PrintSize.id` (e.g. `"10x15"`) or a `CustomPrintSize.id` (FR-006, FR-043). */
 	printSize: string,
 	stamp: StampSettings,
+	/**  User-defined sizes such as 4 × 6 in (FR-043). */
+	customSizes?: CustomPrintSize[],
 };
 
 /**  Render-affecting state changed (settings, frame, crops, undo); previews refresh. */
@@ -349,6 +384,8 @@ export type StampSettings = {
 	format: DateFormat,
 	corner: Corner,
 	color: StampColor,
+	/**  A user font id (FR-042); `None` uses the bundled Inter. */
+	font?: number | null,
 };
 
 export type TaskKind = 
@@ -367,6 +404,17 @@ export type TaskProgress = {
 /**  A sharper thumbnail (T1) is now cached for this photo. */
 export type ThumbReady = {
 	id: PhotoId,
+};
+
+/**
+ *  A row of the `fonts` table in `settings.json` (DATABASE.md §6). The file lives at
+ *  `config/fonts/<id>.<ttf|otf>`.
+ */
+export type UserFont = {
+	id: number,
+	/**  Display name (defaults to the file name). */
+	name: string,
+	format: FontFormat,
 };
 
 /* Tauri Specta runtime */

@@ -14,6 +14,7 @@
 | Project backup `*.fotollection.bak` | Same as the project | Next to the project file | `project.rs` | Replaced on each successful save | Yes |
 | App settings `settings.json` † | JSON, versioned ([§6](#6-app-settings)) | App config dir | `settings_store.rs` | Until uninstall or reset | Camera names/lenses only |
 | Camera logos `logos/<id>.png` † | PNG, validated copy | App config dir | `logo.rs` | Until removed | No |
+| User fonts `fonts/<id>.ttf\|otf` † | TTF/OTF, validated copy | App config dir | `fonts.rs` | Until removed | No |
 | Recent projects `recent.json` | JSON array of up to 10 paths | App config dir | `settings.rs` | Until cleared | Yes: paths |
 | Preset library `presets/*.fotopreset` | JSON, one file per preset ([§7](#7-presets)) | App config dir | `presets.rs` | Until the user deletes them | No |
 | Thumbnail cache `thumbs/` | JPEG files + `index.bin` ([§8](#8-thumbnail-cache)) | App cache dir | `thumbs.rs` | LRU, 2 GB cap, can be cleared at any time | **Yes**: image content |
@@ -239,21 +240,28 @@ These are read-only and compiled into the binary or bundled as resources, so the
 ```json
 {
   "format": "fotollection-settings",
-  "schema_version": 1,
-  "render": { "printSize": "10x15", "stamp": { "enabled": true, "format": "iso", "corner": "bottomRight", "color": "white" } },
+  "schema_version": 2,
+  "render": {
+    "printSize": "custom-1",
+    "stamp": { "enabled": true, "format": "iso", "corner": "bottomRight", "color": "white", "font": 1 },
+    "customSizes": [ { "id": "custom-1", "name": "4×6 US", "shortMm": 102, "longMm": 152, "unit": "in" } ]
+  },
   "frame": {
-    "enabled": true, "fit": "crop", "color": "white", "dateFormat": "slash",
+    "enabled": true, "fit": "crop", "color": "white", "dateFormat": "slash", "font": null,
     "fields": { "logo": true, "camera": true, "lens": true, "focal": true, "aperture": true,
                 "shutter": true, "iso": true, "photoStyle": true, "date": true, "place": true }
   },
   "cameras": [
     { "id": 1, "make": "Panasonic", "model": "DC-GX9", "displayName": "LUMIX GX9", "brandText": "LUMIX",
       "lens": "Индустар-50-2", "focalMm": 50.0, "fNumber": 4.0, "photoStyle": "L. Monochrome D", "logo": "text" }
-  ]
+  ],
+  "fonts": [ { "id": 1, "name": "DSEG7 Classic", "format": "ttf" } ]
 }
 ```
 
 - **`cameras` is a table** (N1–N3): the key is `id`, `(make, model)` is unique, and every override is optional (sparse, N5). A missing value falls back to EXIF or to a derived default, which is computed and never stored (N4). A row is created the first time a camera is imported.
+- **`fonts` is a table** (FR-042): `id` is the key, and the file lives at `fonts/<id>.<ttf|otf>`. `render.stamp.font` and `frame.font` are foreign keys. A dangling key falls back to Inter on load (N7) rather than failing.
+- **`render.customSizes`** (FR-043): values are in mm, `unit` only affects labels, and `printSize` may reference a custom `id`.
 - **Logos** live next to the file as `logos/<camera-id>.png`, copied in after validation ([ADR-0014](adr/0014-user-supplied-brand-logos.md)). The JSON never references paths outside the config dir. `logo: "image"` means the file exists.
 - **Writes** use the same atomic protocol as projects ([§4.4](#44-write-protocol)): `.json.tmp`, then fsync, then the previous file copied to `.json.bak`, then rename. A write happens on every settings change; changes are rare and the file is tiny.
 - **Load rules:**
@@ -265,6 +273,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 | Version | App version | Change |
 |---------|-------------|--------|
 | 1 | 0.0.x (slice 2) | `render`, `frame`, `cameras` |
+| 2 | 0.0.x (slice 4) | `fonts` table; `render.customSizes`, `render.stamp.font`, `frame.font`. **Migration v1 → v2:** every new field has a default, so v1 files are read as is (tested by `migrates_v1_files`) |
 
 ## 7. Presets
 

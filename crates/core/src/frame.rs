@@ -62,6 +62,9 @@ pub struct FrameSettings {
     pub color: FrameColor,
     pub date_format: FrameDateFormat,
     pub fields: FrameFields,
+    /// A user font id for the frame text (FR-042); `None` uses Inter.
+    #[serde(default)]
+    pub font: Option<u32>,
 }
 
 impl Default for FrameSettings {
@@ -71,6 +74,7 @@ impl Default for FrameSettings {
             fit: FrameFit::Crop,
             color: FrameColor::White,
             date_format: FrameDateFormat::Slash,
+            font: None,
             fields: FrameFields {
                 logo: true,
                 camera: true,

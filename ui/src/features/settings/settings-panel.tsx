@@ -23,12 +23,16 @@ import {
   type RenderSettings,
   type StampColor,
 } from '@/ipc/bindings'
+import { FontSelect } from '@/features/fonts/font-select'
+import type { FontsApi } from '@/features/fonts/use-fonts'
+import { PrintSizePicker } from './print-size-picker'
 import { useIpcQuery } from './use-ipc-query'
 
 type SettingsPanelProps = {
   settings: RenderSettings | null
   onChange: (change: (current: RenderSettings) => RenderSettings) => void
   frame: FrameConfigApi
+  fonts: FontsApi
   photoCount: number
 }
 
@@ -50,11 +54,7 @@ const COLORS: { value: StampColor; label: string; swatch: string }[] = [
   { value: 'retroOrange', label: 'Retro orange', swatch: 'bg-[#ff8a1f]' },
 ]
 
-function formatCm(mm: number): string {
-  return String(mm / 10)
-}
-
-export function SettingsPanel({ settings, onChange, frame, photoCount }: SettingsPanelProps) {
+export function SettingsPanel({ settings, onChange, frame, fonts, photoCount }: SettingsPanelProps) {
   const printSizes = useIpcQuery(commands.listPrintSizes)
   const appInfo = useIpcQuery(commands.appInfo)
   const stamp = settings?.stamp
@@ -74,22 +74,10 @@ export function SettingsPanel({ settings, onChange, frame, photoCount }: Setting
             <Crop className="size-4 text-muted-foreground" />
             Print size
           </Label>
-          <Select
-            value={settings?.printSize ?? ''}
-            onValueChange={(printSize) => onChange((s) => ({ ...s, printSize }))}
-          >
-            <SelectTrigger id="print-size" className="w-full">
-              <SelectValue placeholder="Loading…" />
-            </SelectTrigger>
-            <SelectContent>
-              {printSizes?.map((size) => (
-                <SelectItem key={size.id} value={size.id}>
-                  {formatCm(size.shortMm)} × {formatCm(size.longMm)} cm
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">Centred crop. Per-photo framing comes next.</p>
+          <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onChange} />
+          <p className="text-xs text-muted-foreground">
+            Centred by default. Adjust per photo with Crop in the preview.
+          </p>
         </section>
 
         <section className="space-y-3">
@@ -106,6 +94,12 @@ export function SettingsPanel({ settings, onChange, frame, photoCount }: Setting
           </div>
 
           <div className={stamp?.enabled ? 'space-y-3' : 'pointer-events-none space-y-3 opacity-50'}>
+            <FontSelect
+              fonts={fonts}
+              label="Date stamp font"
+              value={stamp?.font}
+              onChange={(font) => setStamp({ font })}
+            />
             <ToggleGroup
               type="single"
               variant="outline"
@@ -169,7 +163,7 @@ export function SettingsPanel({ settings, onChange, frame, photoCount }: Setting
         </section>
 
         <Separator />
-        <FrameSection frame={frame} />
+        <FrameSection frame={frame} fonts={fonts} />
       </div>
 
       <Separator />

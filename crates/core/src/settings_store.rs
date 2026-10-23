@@ -6,11 +6,13 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
+use crate::fonts::UserFont;
 use crate::frame::{CameraProfile, FrameSettings};
 use crate::settings::RenderSettings;
 
 pub const FORMAT: &str = "fotollection-settings";
-pub const SCHEMA_VERSION: u32 = 1;
+/// v2 (FR-042, FR-043): `fonts` table, custom print sizes, stamp/frame font choice.
+pub const SCHEMA_VERSION: u32 = 2;
 const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -21,16 +23,22 @@ pub struct StoredSettings {
     pub render: RenderSettings,
     pub frame: FrameSettings,
     pub cameras: Vec<CameraProfile>,
+    /// User fonts; files live in `config/fonts/<id>.<ext>` (FR-042).
+    pub fonts: Vec<UserFont>,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct FileV1 {
+struct FileV2 {
     format: String,
     schema_version: u32,
     render: RenderSettings,
     frame: FrameSettings,
     cameras: Vec<CameraProfile>,
+    /// Absent in v1 files; every other v2 addition also has a serde default, so
+    /// migrating v1 → v2 is reading with defaults (DATABASE.md §6).
+    #[serde(default)]
+    fonts: Vec<UserFont>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -74,7 +82,7 @@ pub fn load(path: &Path) -> Loaded {
     if header.schema_version > SCHEMA_VERSION {
         return Loaded::NewerVersion(header.schema_version);
     }
-    match serde_json::from_slice::<FileV1>(&bytes) {
+    match serde_json::from_slice::<FileV2>(&bytes) {
         Ok(file) => match validate(file) {
             Ok(settings) => Loaded::Ok(settings),
             Err(e) => Loaded::Corrupt(e),
@@ -83,7 +91,7 @@ pub fn load(path: &Path) -> Loaded {
     }
 }
 
-fn validate(file: FileV1) -> Result<StoredSettings, String> {
+fn validate(file: FileV2) -> Result<StoredSettings, String> {
     file.render.validate().map_err(|e| e.to_string())?;
     let mut ids = std::collections::HashSet::new();
     let mut keys = std::collections::HashSet::new();
@@ -94,10 +102,26 @@ fn validate(file: FileV1) -> Result<StoredSettings, String> {
         }
         cameras.push(camera.sanitized());
     }
+    let mut font_ids = std::collections::HashSet::new();
+    if file.fonts.len() > crate::fonts::MAX_USER_FONTS
+        || !file.fonts.iter().all(|f| font_ids.insert(f.id))
+    {
+        return Err("invalid fonts table".into());
+    }
+    let mut render = file.render;
+    let mut frame = file.frame;
+    // References to fonts that no longer exist fall back to the built-in font (N7).
+    if render.stamp.font.is_some_and(|id| !font_ids.contains(&id)) {
+        render.stamp.font = None;
+    }
+    if frame.font.is_some_and(|id| !font_ids.contains(&id)) {
+        frame.font = None;
+    }
     Ok(StoredSettings {
-        render: file.render,
-        frame: file.frame,
+        render,
+        frame,
         cameras,
+        fonts: file.fonts,
     })
 }
 
@@ -110,12 +134,13 @@ pub fn quarantine(path: &Path) -> std::io::Result<PathBuf> {
 
 /// Writes atomically, keeping the previous file as `.bak` (DATABASE.md §4.4).
 pub fn save(path: &Path, settings: &StoredSettings) -> std::io::Result<()> {
-    let file = FileV1 {
+    let file = FileV2 {
         format: FORMAT.to_owned(),
         schema_version: SCHEMA_VERSION,
         render: settings.render.clone(),
         frame: settings.frame.clone(),
         cameras: settings.cameras.clone(),
+        fonts: settings.fonts.clone(),
     };
     let bytes = serde_json::to_vec_pretty(&file).map_err(std::io::Error::other)?;
     crate::atomic::write_with_backup(path, &bytes)
@@ -169,6 +194,41 @@ mod tests {
             matches!(load(&path), Loaded::Corrupt(_)),
             "unknown fields rejected"
         );
+        Ok(())
+    }
+
+    #[test]
+    fn migrates_v1_files() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        // A file written by schema 1 (before fonts and custom sizes existed).
+        std::fs::write(
+            &path,
+            br#"{"format":"fotollection-settings","schema_version":1,
+                "render":{"printSize":"10x15","stamp":{"enabled":true,"format":"iso","corner":"bottomRight","color":"white"}},
+                "frame":{"enabled":false,"fit":"crop","color":"white","dateFormat":"slash",
+                  "fields":{"logo":true,"camera":true,"lens":true,"focal":true,"aperture":true,"shutter":true,"iso":true,"photoStyle":true,"date":true,"place":true}},
+                "cameras":[]}"#,
+        )?;
+        let Loaded::Ok(s) = load(&path) else {
+            panic!("v1 should load");
+        };
+        assert!(s.fonts.is_empty() && s.render.custom_sizes.is_empty());
+        assert_eq!(s.render.stamp.font, None);
+        Ok(())
+    }
+
+    #[test]
+    fn dangling_font_reference_falls_back() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        let mut s = sample();
+        s.render.stamp.font = Some(7);
+        save(&path, &s)?;
+        let Loaded::Ok(loaded) = load(&path) else {
+            panic!("should load");
+        };
+        assert_eq!(loaded.render.stamp.font, None);
         Ok(())
     }
 

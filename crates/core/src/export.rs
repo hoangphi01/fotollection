@@ -70,6 +70,8 @@ pub struct ExportOptions<'a> {
     pub quality: u8,
     /// Photos processed at once; bounds peak memory (NFR-004).
     pub max_inflight: usize,
+    /// A user font for the date stamp (FR-042).
+    pub stamp_font: Option<crate::fonts::LoadedFont>,
     /// The info frame for one photo, if any (FR-040).
     pub frame_for: &'a (dyn Fn(&PhotoRecord) -> Option<FrameRequest> + Sync),
 }
@@ -141,6 +143,7 @@ fn export_one(
         max_long_edge: None,
         frame: frame.as_ref(),
         crop: record.edits.crop,
+        stamp_font: options.stamp_font.as_ref(),
     });
     let image = render(&upright, &p)?;
     drop(upright);

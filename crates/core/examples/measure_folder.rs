@@ -85,14 +85,14 @@ fn main() {
     let first = &records[0];
     let t = Instant::now();
     previews
-        .render_jpeg(first, &settings, None, codec.as_ref())
+        .render_jpeg(first, &settings, None, None, codec.as_ref())
         .unwrap();
     let cold = t.elapsed().as_secs_f64() * 1e3;
     let mut warm = Vec::new();
     for _ in 0..20 {
         let t = Instant::now();
         previews
-            .render_jpeg(first, &settings, None, codec.as_ref())
+            .render_jpeg(first, &settings, None, None, codec.as_ref())
             .unwrap();
         warm.push(t.elapsed().as_secs_f64() * 1e3);
     }
@@ -118,6 +118,7 @@ fn main() {
         settings: &settings,
         quality: EXPORT_QUALITY,
         max_inflight: default_inflight(),
+        stamp_font: None,
         frame_for: &|_| None,
     };
     let t = Instant::now();

@@ -4,10 +4,11 @@
 
 use std::sync::LazyLock;
 
-use ab_glyph::{Font, FontRef, PxScale, ScaleFont, VariableFont, point};
+use ab_glyph::{Font, FontArc, FontRef, PxScale, ScaleFont, VariableFont, point};
 use fast_image_resize::images::{Image, ImageRef};
 use fast_image_resize::{FilterType, PixelType, ResizeAlg, ResizeOptions, Resizer};
 
+use crate::fonts::LoadedFont;
 use crate::frame::{FrameLayout, FrameLogo};
 use crate::image::RgbImage;
 use crate::logo::LogoImage;
@@ -16,15 +17,24 @@ use crate::settings::Corner;
 
 static INTER: &[u8] = include_bytes!("../assets/fonts/Inter.ttf");
 
-fn inter(weight: f32) -> Option<FontRef<'static>> {
+/// Bundled Inter at a given weight, as a `FontArc` so built-in and user fonts (FR-042)
+/// share one rendering path.
+fn inter(weight: f32) -> Option<FontArc> {
     let mut font = FontRef::try_from_slice(INTER).ok()?;
     font.set_variation(b"wght", weight);
-    Some(font)
+    Some(FontArc::new(font))
 }
 
-static SEMIBOLD: LazyLock<Option<FontRef<'static>>> = LazyLock::new(|| inter(600.0));
-static REGULAR: LazyLock<Option<FontRef<'static>>> = LazyLock::new(|| inter(400.0));
-static BLACK: LazyLock<Option<FontRef<'static>>> = LazyLock::new(|| inter(800.0));
+static SEMIBOLD: LazyLock<Option<FontArc>> = LazyLock::new(|| inter(600.0));
+static REGULAR: LazyLock<Option<FontArc>> = LazyLock::new(|| inter(400.0));
+static BLACK: LazyLock<Option<FontArc>> = LazyLock::new(|| inter(800.0));
+
+fn stamp_font(spec: &StampSpec) -> Option<FontArc> {
+    spec.font
+        .as_ref()
+        .map(|f| f.font.clone())
+        .or_else(|| SEMIBOLD.clone())
+}
 
 #[derive(Debug, thiserror::Error)]
 pub enum RenderError {
@@ -104,7 +114,7 @@ pub fn fit_long_edge(source: &RgbImage, long_edge: u32) -> Result<RgbImage, Rend
 }
 
 /// Text advance width in pixels, including `tracking` (extra space per glyph, in em).
-fn text_width(font: &FontRef<'static>, px: f32, text: &str, tracking: f32) -> f32 {
+fn text_width(font: &FontArc, px: f32, text: &str, tracking: f32) -> f32 {
     let scaled = font.as_scaled(PxScale::from(px));
     let mut width = 0.0;
     let mut prev = None;
@@ -131,9 +141,9 @@ pub struct StampBox {
 /// Where the stamp text goes for an image of `width × height` (FR-004, FR-028).
 #[allow(clippy::cast_precision_loss)]
 pub fn stamp_box(width: u32, height: u32, spec: &StampSpec) -> Option<StampBox> {
-    let font = SEMIBOLD.as_ref()?;
+    let font = stamp_font(spec)?;
     let scaled = font.as_scaled(PxScale::from(spec.font_px));
-    let text_width = text_width(font, spec.font_px, &spec.text, 0.0);
+    let text_width = text_width(&font, spec.font_px, &spec.text, 0.0);
     let text_height = scaled.ascent() - scaled.descent();
     let (w, h, m) = (width as f32, height as f32, spec.margin_px);
     let x = match spec.corner {
@@ -153,15 +163,13 @@ pub fn stamp_box(width: u32, height: u32, spec: &StampSpec) -> Option<StampBox> 
 }
 
 fn draw_stamp(image: &mut RgbImage, spec: &StampSpec) {
-    let (Some(font), Some(bounds)) = (
-        SEMIBOLD.as_ref(),
-        stamp_box(image.width, image.height, spec),
-    ) else {
+    let (Some(font), Some(bounds)) = (stamp_font(spec), stamp_box(image.width, image.height, spec))
+    else {
         return;
     };
     let shadow_offset = (spec.font_px * 0.06).max(1.0);
     let run = TextRun {
-        font,
+        font: &font,
         text: &spec.text,
         px: spec.font_px,
         tracking: 0.0,
@@ -178,7 +186,7 @@ fn draw_stamp(image: &mut RgbImage, spec: &StampSpec) {
 }
 
 struct TextRun<'a> {
-    font: &'a FontRef<'static>,
+    font: &'a FontArc,
     text: &'a str,
     px: f32,
     /// Extra space between glyphs, in em.
@@ -240,17 +248,17 @@ fn compose_frame(photo: &RgbImage, frame: &FramePlan) -> RgbImage {
         *px = l.background;
     }
     blit(&mut canvas, photo, l.photo.x, l.photo.y);
-    draw_frame_logo(&mut canvas, l, frame.logo.as_deref());
+    draw_frame_logo(&mut canvas, l, frame.logo.as_deref(), frame.font.as_ref());
     for line in &l.lines {
-        let font = if line.bold {
-            SEMIBOLD.as_ref()
-        } else {
-            REGULAR.as_ref()
+        let font = match &frame.font {
+            Some(user) => Some(user.font.clone()),
+            None if line.bold => SEMIBOLD.clone(),
+            None => REGULAR.clone(),
         };
         let Some(font) = font else { continue };
-        let width = text_width(font, line.font_px, &line.text, 0.0);
+        let width = text_width(&font, line.font_px, &line.text, 0.0);
         let run = TextRun {
-            font,
+            font: &font,
             text: &line.text,
             px: line.font_px,
             tracking: 0.0,
@@ -282,10 +290,18 @@ fn blit(canvas: &mut RgbImage, photo: &RgbImage, x: u32, y: u32) {
     clippy::cast_sign_loss,
     clippy::cast_precision_loss
 )]
-fn draw_frame_logo(canvas: &mut RgbImage, l: &FrameLayout, image: Option<&LogoImage>) {
+fn draw_frame_logo(
+    canvas: &mut RgbImage,
+    l: &FrameLayout,
+    image: Option<&LogoImage>,
+    user_font: Option<&LoadedFont>,
+) {
     match (&l.logo, image) {
         (FrameLogo::Text(brand), _) => {
-            let Some(font) = BLACK.as_ref() else { return };
+            let Some(font) = user_font.map(|f| f.font.clone()).or_else(|| BLACK.clone()) else {
+                return;
+            };
+            let font = &font;
             let px = l.logo_height * 1.4;
             let scaled = font.as_scaled(PxScale::from(px));
             let mut px_fit = px;
@@ -389,6 +405,7 @@ mod tests {
                 max_long_edge: None,
                 frame: None,
                 crop: None,
+                stamp_font: None,
             });
             let spec = p.stamp.as_ref();
             let b = spec.and_then(|s| stamp_box(p.out_width, p.out_height, s));
@@ -421,6 +438,7 @@ mod tests {
             max_long_edge: None,
             frame: None,
             crop: None,
+            stamp_font: None,
         });
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         let changed = out.data.iter().filter(|&&v| v != 0).count();
@@ -447,6 +465,7 @@ mod tests {
             max_long_edge: None,
             frame: None,
             crop: None,
+            stamp_font: None,
         }); // 15x15 square
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         assert_eq!((out.width, out.height), (20, 20));
@@ -455,6 +474,10 @@ mod tests {
     }
 
     fn framed(fit: FrameFit, w: u32, h: u32, print: PrintSize) -> (RgbImage, RenderPlan) {
+        framed_with(fit, w, h, print)
+    }
+
+    fn framed_with(fit: FrameFit, w: u32, h: u32, print: PrintSize) -> (RgbImage, RenderPlan) {
         let shot = ShotInfo {
             make: Some("Panasonic".into()),
             model: Some("DC-GX9".into()),
@@ -470,6 +493,7 @@ mod tests {
             text: build_text(&shot, None, &frame_settings, capture(), None),
             settings: frame_settings,
             logo: None,
+            font: None,
         };
         let mut settings = RenderSettings::default();
         settings.stamp.enabled = false;
@@ -483,6 +507,7 @@ mod tests {
             max_long_edge: None,
             frame: Some(&request),
             crop: None,
+            stamp_font: None,
         });
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         (out, p)
@@ -520,5 +545,56 @@ mod tests {
             .filter(|&(x, y)| px(x, y) < 80)
             .count();
         assert!(dark > 50, "frame text drawn: {dark}");
+    }
+
+    #[test]
+    fn fr_042_stamp_uses_user_font() {
+        let print = PrintSize::ALL[1];
+        let settings = RenderSettings::default();
+        let source = RgbImage::new(1500, 1000);
+        let render_with = |font: Option<&crate::fonts::LoadedFont>| {
+            let p = plan(&PlanInput {
+                width: 1500,
+                height: 1000,
+                capture: capture(),
+                settings: &settings,
+                print,
+                max_long_edge: None,
+                frame: None,
+                crop: None,
+                stamp_font: font,
+            });
+            render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0))
+        };
+        // The user font here is Inter's default instance (weight 400) vs the built-in 600.
+        let Ok((_, font)) = crate::fonts::load(INTER.to_vec()) else {
+            panic!("font");
+        };
+        let user = crate::fonts::LoadedFont { id: 1, font };
+        let builtin = render_with(None);
+        let custom = render_with(Some(&user));
+        assert_ne!(
+            builtin.data, custom.data,
+            "a different font draws different pixels"
+        );
+    }
+
+    #[test]
+    fn fr_043_custom_ratio_drives_crop_and_frame() {
+        let mut settings = RenderSettings::default();
+        settings.stamp.enabled = false;
+        // 4 × 6 in (102 × 152 mm) and a 13 × 13 cm square.
+        for (print, target) in [
+            (PrintSize::custom(102, 152), 152.0 / 102.0),
+            (PrintSize::custom(130, 130), 1.0),
+        ] {
+            let (out, p) = framed_with(FrameFit::Crop, 1200, 900, print);
+            let ratio = f64::from(out.width.max(out.height)) / f64::from(out.width.min(out.height));
+            assert!(
+                (ratio - target).abs() / target < 0.005,
+                "{ratio} vs {target}"
+            );
+            assert_eq!((out.width, out.height), p.output_size());
+        }
     }
 }

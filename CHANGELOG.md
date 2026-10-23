@@ -10,7 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Crop editor:** dims everything outside the crop, drag to move, wheel/pinch/slider zoom, arrow-key nudge, and a live label with the printed size in cm, pixel size and DPI band. Crops are stored as centre + zoom, so they survive print-size changes.
 - **Session project (FR-023):** edits autosave atomically to an implicit project. The last session's folders are re-scanned and edits restored at launch. Undo/redo with Cmd/Ctrl+Z.
-- Planned next: custom OTF/TTF fonts (FR-042) and custom print sizes such as 4 × 6 in (FR-043).
+- **Custom fonts (FR-042):** import OTF/TTF, then choose them for the date stamp and the info frame. Files are validated and copied; removing a font falls back to Inter.
+- **Custom print sizes (FR-043):** enter in cm or inches (e.g. 4 × 6 in), saved and usable everywhere.
+- Crop editor edge labels (width on top, height on the left, in cm or in) and an aspect-ratio pill.
+- `settings.json` schema v2 with automatic migration from v1.
 - **Info frame ("Shot on …", FR-040):**
   - A white or black bar with the brand, camera, lens, focal length, aperture, shutter, ISO, photo style and date.
   - The whole print keeps the selected size, with the photo cropped to fill or fitted whole.

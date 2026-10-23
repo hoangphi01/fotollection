@@ -67,6 +67,7 @@
 | FR-036 | Custom captions |
 | FR-038 | Print presets |
 | FR-039 | Photo Style looks |
+| FR-044 | Per-photo overrides |
 
 ## Phase 3 — Pro & growth
 

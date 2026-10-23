@@ -3,7 +3,15 @@ import { Check, RotateCcw, X, ZoomIn, ZoomOut } from 'lucide-react'
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import type { CropFrame, CropGeometry } from '@/ipc/bindings'
-import { DPI_STYLE, MAX_ZOOM, cropRect, dpiBand, frameOf, type Frame } from '@/lib/crop-geometry'
+import {
+  DPI_STYLE,
+  MAX_ZOOM,
+  cropRect,
+  dpiBand,
+  frameOf,
+  ratioLabel,
+  type Frame,
+} from '@/lib/crop-geometry'
 import { cn } from '@/lib/utils'
 
 type CropEditorProps = {
@@ -115,7 +123,14 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
   const longCm = Math.max(cmW, cmH)
   const dpi = longCm > 0 ? Math.round(Math.max(rect.width, rect.height) / (longCm / 2.54)) : 0
   const band = dpiBand(dpi)
-  const fmtCm = (v: number) => (Math.round(v * 10) / 10).toString()
+  const unit = g.unit ?? 'cm'
+  const lenW = unit === 'in' ? cmW / 2.54 : cmW
+  const lenH = unit === 'in' ? cmH / 2.54 : cmH
+  const fmtLen = (v: number, withUnit = true) =>
+    `${Math.round(v * 10) / 10}${withUnit ? ` ${unit}` : ''}`
+  const ratio = ratioLabel(g.targetWidth, g.targetHeight)
+  const atTop = rect.y / g.height < 0.06
+  const atLeft = rect.x / g.width < 0.06
 
   return (
     // oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- keyboard handled, focusable
@@ -174,17 +189,31 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
             {['-top-1 -left-1', '-top-1 -right-1', '-bottom-1 -left-1', '-bottom-1 -right-1'].map((c) => (
               <span key={c} className={cn('absolute size-3 border-white', c, c.includes('top') ? 'border-t-2' : 'border-b-2', c.includes('left') ? 'border-l-2' : 'border-r-2')} />
             ))}
+            {/* Width along the top edge, height along the left edge (inside when at the photo's edge). */}
             <div
               className={cn(
-                'absolute left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/75 px-3 py-1 text-xs whitespace-nowrap text-white tabular-nums',
-                rect.y / g.height > 0.08 ? '-top-8' : 'top-2',
+                'absolute left-1/2 -translate-x-1/2 rounded bg-black/75 px-2 py-0.5 text-[11px] whitespace-nowrap text-white tabular-nums',
+                atTop ? 'top-1.5' : '-top-6',
               )}
             >
-              <span className="font-medium">
-                {fmtCm(cmW)} × {fmtCm(cmH)} cm
-              </span>
+              <span className="font-medium">{fmtLen(lenW)}</span>
+              <span className="text-white/60"> · {rect.width} px</span>
+            </div>
+            <div
+              className={cn(
+                'absolute top-1/2 origin-center -translate-y-1/2 -rotate-90 rounded bg-black/75 px-2 py-0.5 text-[11px] whitespace-nowrap text-white tabular-nums',
+                atLeft ? 'left-0 translate-x-[-30%]' : '-left-2 -translate-x-full',
+              )}
+              style={{ transformOrigin: 'center' }}
+            >
+              <span className="font-medium">{fmtLen(lenH)}</span>
+              <span className="text-white/60"> · {rect.height} px</span>
+            </div>
+            {/* Ratio and print quality in the middle of the crop. */}
+            <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-black/70 px-3 py-1 text-xs whitespace-nowrap text-white tabular-nums">
+              <span className="font-semibold">{ratio}</span>
               <span className="text-white/60">
-                {rect.width} × {rect.height} px
+                {fmtLen(lenW, false)} × {fmtLen(lenH)}
               </span>
               <span className={cn('rounded px-1.5 py-0.5 font-medium', DPI_STYLE[band].className)}>
                 {dpi} DPI

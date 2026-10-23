@@ -10,6 +10,7 @@ import { useLibrary } from '@/features/library/use-library'
 import { SettingsPanel } from '@/features/settings/settings-panel'
 import { useRenderSettings } from '@/features/settings/use-render-settings'
 import { useFrameConfig } from '@/features/frame/use-frame-config'
+import { useFonts } from '@/features/fonts/use-fonts'
 import { useHistory } from '@/features/history/use-history'
 import { PreviewDialog } from '@/features/viewer/preview-dialog'
 
@@ -20,6 +21,7 @@ export function App() {
   const [frameRevision, setFrameRevision] = useState(0)
   const frame = useFrameConfig(setFrameRevision)
   const history = useHistory()
+  const fonts = useFonts()
   const revision = Math.max(renderRevision, frameRevision, history.revision)
   const [selected, setSelected] = useState(0)
   const [viewing, setViewing] = useState(false)
@@ -78,6 +80,7 @@ export function App() {
         settings={settings}
         onChange={(c) => void update(c)}
         frame={frame}
+        fonts={fonts}
         photoCount={photos.length}
       />
     </div>

@@ -36,6 +36,9 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::set_photo_crop,
             commands::undo,
             commands::redo,
+            commands::list_fonts,
+            commands::import_font,
+            commands::remove_font,
         ])
         .events(collect_events![
             events::LibraryChanged,
