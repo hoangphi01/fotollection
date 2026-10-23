@@ -5,6 +5,7 @@
 > This document is the single source of truth for **everything Fotollection stores**: where it lives, the **normalized data model**, the schemas, versioning and migration, safe writes, the in-memory layout, and retention.
 > Fotollection has **no database server and no embedded SQL database** ([ADR-0010](adr/0010-project-file-format.md)). Persistent state is a small set of versioned files, modelled **as if they were relational tables** and normalized to 3NF ([§2](#2-normalization-rules)).
 > Any change to a persisted format updates this document, the schema version and a migration **in the same commit** ([§9](#9-change-procedure)).
+> File types as a whole (extensions, MIME types, UTIs, how each file is recognized, compatibility rules) are registered in [EXTENSION.md](EXTENSION.md).
 
 ## 1. Storage map
 
@@ -322,6 +323,7 @@ When a change touches any persisted format (project, settings, presets, cache la
 3. Bump the relevant `schema_version` (or the cache layout version, which simply invalidates the cache).
 4. Add the migration `v(N) → v(N+1)` and a fixture `v{N+1}`, and keep every older fixture loading in tests.
 5. Add a CHANGELOG entry if users can notice the change.
+6. If the file type itself changes (extension, container, MIME/UTI, limits), update [EXTENSION.md](EXTENSION.md).
 
 This is part of the Definition of Done ([CONTRIBUTING.md](../CONTRIBUTING.md#definition-of-done)).
 

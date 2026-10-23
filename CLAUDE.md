@@ -8,6 +8,7 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
    - Behaviour or scope → [docs/PRD.md](docs/PRD.md), and also [docs/ROADMAP.md](docs/ROADMAP.md) if the phase changes
    - Structure, stack or IPC → [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
    - Anything saved to disk (project file, settings, presets, cache) → [docs/DATABASE.md](docs/DATABASE.md), plus a `schema_version` bump, a migration and a fixture
+   - A new or changed file type (extension, MIME/UTI, container, limits) → [docs/EXTENSION.md](docs/EXTENSION.md)
    - Performance → a new row in [docs/OPTIMIZATION.md §5](docs/OPTIMIZATION.md#5-benchmark-log)
    - Progress → [docs/STATUS.md](docs/STATUS.md)
    - Significant decision → a new ADR in [docs/adr/](docs/adr/README.md)
