@@ -46,7 +46,7 @@ Cargo.toml               † # Cargo workspace, shared lints, build-size profile
 rust-toolchain.toml      † # pinned Rust version
 deny.toml                † # cargo-deny license/advisory policy (ADR-0008)
 package.json             † # npm workspace root: Tauri CLI + scripts (npm run dev)
-assets/                 † # logo-source.png (master), logo-square.png (app icons), logo-mark.png (small-size mark, no wordmark)
+assets/                 † # logo-source.png (master), logo-square.png (app icons ≥ 128 px), logo-small.png (simplified tile, no wordmark: every size ≤ 64 px), logo-mark.png (older crop)
 crates/
   core/                  † # fotollection-core: all domain logic, no Tauri
     src/
@@ -87,7 +87,7 @@ src-tauri/               † # app shell: commands, protocol, capabilities
   src/lib.rs             † # tauri-specta builder + bindings export
   src/commands.rs        † # IPC commands (§6)
   capabilities/          † # Tauri 2 permission sets (see SECURITY.md)
-  icons/                 † # generated: npx tauri icon assets/logo-square.png
+  icons/                 † # generated: npx tauri icon assets/logo-square.png, then python3 scripts/small-icons.py for the ≤ 64 px layers
   tauri.conf.json        † # window, CSP, bundle config
 ui/                      † # Vite + React + TS frontend (npm workspace member)
   components.json        † # shadcn/ui config (style radix-nova, Lucide)
@@ -98,7 +98,7 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
     ipc/bindings.ts      † # GENERATED from Rust types — do not edit
     lib/                 † # small UI utilities (theme sync, shadcn's cn re-export)
     index.css            † # Tailwind layers + shadcn theme tokens (CSS variables)
-scripts/                 † # bootstrap, clean, check-docs
+scripts/                 † # bootstrap, clean, check-docs, small-icons.py (≤ 64 px icons from assets/logo-small.png)
 bench/                   † # Rust vs browser benchmark: run.sh, web/ (Chromium via Playwright), chart.mjs, results/ (OPTIMIZATION.md §2.1)
 ```
 
