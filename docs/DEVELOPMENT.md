@@ -63,6 +63,8 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo deny check             # license / advisory policy
 scripts/check-docs.sh        # docs consistency
 scripts/clean.sh             # reclaim disk space (see §4)
+# Measure the pipeline on a real folder (read-only; photos are never copied into the repo):
+cargo run --release -p fotollection-core --example measure_folder -- ~/Pictures/some-folder
 ```
 
 The IPC bindings (`ui/src/ipc/bindings.ts`) are generated from Rust by `tauri-specta` on every debug run and every `cargo test`. Commit them. CI fails if they are stale.

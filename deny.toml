@@ -3,6 +3,9 @@
 
 [graph]
 all-features = true
+# Only what ships to users is checked. Dev-dependencies (e.g. little_exif, which builds
+# synthetic test fixtures) never process user data and are not distributed.
+exclude-dev = true
 
 [advisories]
 version = 2
@@ -30,6 +33,11 @@ allow = [
   "BSL-1.0",
   "MPL-2.0",
   "CDLA-Permissive-2.0",
+  # jpeg-encoder is "(MIT OR Apache-2.0) AND IJG"; IJG is permissive but requires
+  # attribution, which README and the About section provide.
+  "IJG",
+  # walkdir and friends are dual "Unlicense OR MIT".
+  "Unlicense",
 ]
 # Our own crates are GPL-3.0-only; that's fine for them, not for dependencies.
 [[licenses.exceptions]]

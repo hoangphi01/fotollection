@@ -31,7 +31,7 @@ Stamp the date and place on your photos, crop them to real print sizes, and get 
 ---
 
 > [!NOTE]
-> **Fotollection is in early development (Phase 0).** The app shell runs, but photo processing is not implemented yet. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Fotollection is in early development.** The first working slice handles **JPEG** end to end: import → preview with crop and date stamp → export. HEIC, place names, culling and more are on the way. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
 
 <p align="center">
   <img src="docs/images/screenshot-light.png" alt="Fotollection main window (light theme)" width="49%" />
@@ -134,4 +134,8 @@ Report security issues through a private [GitHub security advisory](https://gith
 
 [GPL-3.0-only](LICENSE) © hoangphi01.
 
-Geographic data from [GeoNames](https://www.geonames.org/) (CC BY 4.0) will be bundled for offline geocoding.
+### Third-party notices
+
+- JPEG encoding uses [`jpeg-encoder`](https://github.com/vstroebel/jpeg-encoder), which is based in part on the work of the Independent JPEG Group.
+- The date stamp uses the [Inter](https://rsms.me/inter/) typeface, under the SIL Open Font License 1.1 (`crates/core/assets/fonts/Inter-OFL.txt`).
+- Geographic data from [GeoNames](https://www.geonames.org/) (CC BY 4.0) will be bundled for offline geocoding.

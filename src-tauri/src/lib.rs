@@ -1,22 +1,41 @@
 // SPDX-License-Identifier: GPL-3.0-only
-//! Thin Tauri shell: adapts IPC commands to `fotollection-core` (ADR-0002).
+//! Thin Tauri shell: adapts IPC commands, events and the image protocol to
+//! `fotollection-core` (ADR-0002).
 
 mod commands;
+mod events;
+mod protocol;
+mod state;
 
-use tauri_specta::{Builder, collect_commands};
+use tauri::{DragDropEvent, Manager, WindowEvent};
+use tauri_specta::{Builder, collect_commands, collect_events};
 
 /// Path of the generated TypeScript bindings, relative to this crate.
 pub const BINDINGS_PATH: &str = "../ui/src/ipc/bindings.ts";
 
 /// Builds the IPC surface. Shared by the app and the bindings export test.
 pub fn specta_builder() -> Builder<tauri::Wry> {
-    Builder::<tauri::Wry>::new().commands(collect_commands![
-        commands::app_info,
-        commands::list_print_sizes,
-    ])
+    Builder::<tauri::Wry>::new()
+        .commands(collect_commands![
+            commands::app_info,
+            commands::list_print_sizes,
+            commands::pick_and_import_folder,
+            commands::list_photos,
+            commands::get_settings,
+            commands::set_settings,
+            commands::pick_export_folder,
+            commands::start_export,
+            commands::cancel_job,
+        ])
+        .events(collect_events![
+            events::LibraryChanged,
+            events::ThumbReady,
+            events::ExportProgress,
+            events::ExportFinished,
+        ])
 }
 
-/// Exports TypeScript bindings for all commands and types.
+/// Exports TypeScript bindings for all commands, events and types.
 pub fn export_bindings() -> Result<(), String> {
     specta_builder()
         .export(
@@ -38,6 +57,21 @@ pub fn run() {
     let result = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(builder.invoke_handler())
+        .register_asynchronous_uri_scheme_protocol(protocol::SCHEME, protocol::handle)
+        .setup(move |app| {
+            builder.mount_events(app);
+            let thumb_dir = app.path().app_cache_dir()?.join("thumbs");
+            app.manage(state::AppState::new(thumb_dir)?);
+            Ok(())
+        })
+        .on_window_event(|window, event| {
+            // Dropped paths come from the OS, not from the webview (SECURITY.md §2).
+            if let WindowEvent::DragDrop(DragDropEvent::Drop { paths, .. }) = event {
+                let app = window.app_handle().clone();
+                let paths = paths.clone();
+                std::thread::spawn(move || commands::import_paths(&app, paths));
+            }
+        })
         .run(tauri::generate_context!());
 
     if let Err(e) = result {

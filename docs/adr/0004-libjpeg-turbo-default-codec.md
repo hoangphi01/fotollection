@@ -29,3 +29,7 @@ Use **libjpeg-turbo (`turbojpeg` crate)** for JPEG decoding and encoding. Offer 
 - Meets the needs for thumbnails (DCT scaling) and lossless crops.
 - Adds a C dependency to the attack surface. Mitigated by fuzzing ([TESTING.md §4](../TESTING.md#4-fuzzing)) and version pinning ([SECURITY.md §6](../SECURITY.md#6-supply-chain)).
 - The result is recorded in [OPTIMIZATION.md §5](../OPTIMIZATION.md#5-benchmark-log), and this ADR is updated if the benchmark overturns the choice.
+
+## Implementation note (2026-10-23)
+
+The first slice ships pure-Rust codecs behind a `JpegCodec` trait to avoid a C toolchain in CI ([ADR-0012](0012-pure-rust-codecs-first.md)). turbojpeg remains the candidate for DCT scaling and lossless crop, and can be added behind the same trait.

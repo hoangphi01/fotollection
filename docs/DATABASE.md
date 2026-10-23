@@ -280,6 +280,7 @@ Presets work like Lightroom presets, applied to *print* settings ([FR-038](PRD.m
 - **Eviction:** least-recently-used, triggered when the total exceeds the limit (default 2 GB, configurable). It runs in the background at low priority.
 - **Invalidation:** the key includes size and mtime, so a changed source automatically misses the cache. Old entries age out through LRU.
 - **Clearing:** Settings → *Clear cache* deletes the whole `thumbs/` directory. This is safe at any time.
+- **Implementation status (2026-10-23):** T0 (served directly from EXIF, never cached) and T1 (cached as `thumbs/<aa>/<key>.t1.jpg`, written atomically through `.part` + rename) are live. T2 previews live in a RAM-only LRU of 8 images. `index.bin`, LRU eviction and *Clear cache* are not implemented yet.
 
 ## 9. Change procedure
 

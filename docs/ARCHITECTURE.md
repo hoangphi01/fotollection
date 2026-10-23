@@ -52,24 +52,29 @@ crates/
     src/
       lib.rs             †
       print_size.rs      † # CEWE/EU print sizes (FR-006)
-      import.rs            # discovery, magic-byte validation
-      decode/              # jpeg.rs (turbojpeg), heic.rs (libheif), png.rs
-      metadata.rs          # EXIF allowlist + validation
+      import.rs          † # discovery, magic bytes, size + polyglot checks (FR-001)
+      codec.rs           † # JpegCodec trait + pure-Rust implementation (ADR-0012); HEIC/PNG later
+      image.rs           † # RgbImage + EXIF orientation transforms
+      metadata.rs        † # EXIF allowlist + validation, embedded thumbnail (FR-002)
+      settings.rs        † # RenderSettings (in memory until projects land)
+      plan.rs            † # RenderPlan: centred crop, stamp text/size/margins (FR-004/006)
+      preview.rs         † # T2 LRU + preview rendering (FR-007)
+      cancel.rs          † # CancellationToken
       timeline.rs          # clock offsets, manual date/place, GPS borrowing + GPX (FR-030/031/032)
       geocode.rs           # offline reverse geocoder + offline place search (GeoNames + k-d tree)
       cluster.rs           # trip DBSCAN (Phase 2)
-      library.rs           # ratings, flags, filters, copies, per-photo overrides (FR-022/024/025)
+      library.rs         † # columnar in-memory library (DATABASE.md §3.3); later: ratings, flags, overrides
       project.rs           # .fotollection file: versioned schema, autosave, migrations (ADR-0010)
       history.rs           # undo/redo command stack (FR-023)
       presets.rs           # preset library: partial/stackable, linked, .fotopreset I/O (FR-033/034/038)
       quality.rs           # effective-DPI checks (FR-026)
-      render/              # crop.rs, style.rs (Photo Style → 3D LUT + tone curve + grain, FR-039),
+      render/              # (target) crop.rs, style.rs (Photo Style → 3D LUT + tone curve + grain, FR-039),
                            # border.rs, stamp.rs (incl. retro LED), caption.rs,
                            # color.rs (ICC → sRGB), sharpen.rs (Phase 3)
       layout/              # multi-photo sheets + contact sheet (Phase 3, FR-035/037)
-      encode.rs
-      export.rs            # pipeline orchestration, back-pressure, cancel
-      thumbs.rs            # multi-tier thumbnail generation + disk cache
+      render.rs          † # crop/resize + stamp drawing today; splits into render/* as features land
+      export.rs          † # bounded parallel export, cancel, per-photo errors, no overwrite (FR-008/009/011)
+      thumbs.rs          † # T0 (embedded) + T1 disk cache (DATABASE.md §8)
     benches/               # criterion benchmarks (see OPTIMIZATION.md)
     fuzz/                  # cargo-fuzz targets (see TESTING.md)
   geodata/                 # build-time packer for the GeoNames dataset
@@ -102,14 +107,14 @@ scripts/                 † # bootstrap, clean, check-docs
 | Virtualized grid | `@tanstack/react-virtual` | Required for 1,000+ thumbnails ([NFR-001](PRD.md#nfr-001--library-load-time)) |
 | UI state | React state + a small store (`zustand`) | Server state lives in Rust. The UI only caches it |
 | IPC type bindings | `specta` + `tauri-specta` | TS types generated from Rust and checked in CI |
-| JPEG decode/encode | `turbojpeg` (libjpeg-turbo) | SIMD, DCT-domain scaling, lossless transforms ([ADR-0004](adr/0004-libjpeg-turbo-default-codec.md)) |
+| JPEG decode/encode | **Today:** `zune-jpeg` + `jpeg-encoder` (pure Rust) behind the `JpegCodec` trait ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). **Candidate:** `turbojpeg` for DCT scaling and lossless crop ([ADR-0004](adr/0004-libjpeg-turbo-default-codec.md)) | 4:4:4, quality 95, ICC copied |
 | JPEG max-quality encode | `mozjpeg` (optional) | Opt-in "smallest file" mode |
 | HEIC/HEIF | `libheif-rs` | libheif + libde265, statically linked ([ADR-0005](adr/0005-input-formats-jpeg-heic-png.md)) |
 | PNG | `png` | |
 | Resize | `fast_image_resize` | SIMD (NEON/AVX2) |
 | Colour management | `lcms2` | Preserve or convert the ICC profile |
-| Text rendering | `ab_glyph` (or `cosmic-text` if shaping is needed) | Bundled fonts only |
-| EXIF read | `nom-exif` (candidate; benchmark against `kamadak-exif`) | Allowlisted fields only |
+| Text rendering | `ab_glyph` with bundled Inter (OFL, variable `wght` 600) | `cosmic-text` if shaping is ever needed |
+| EXIF read | `kamadak-exif` | Allowlisted fields only. Also extracts the IFD1 thumbnail for T0 |
 | EXIF write | `little_exif` (candidate) | Writes the privacy-filtered metadata |
 | Reverse geocoding | GeoNames `cities1000` + `kiddo` k-d tree | Offline, about 5 MB packed ([ADR-0003](adr/0003-offline-geocoding-geonames.md)) |
 | Trip clustering | DBSCAN over (lat, lon, time) | Phase 2 |
@@ -169,13 +174,13 @@ Commands marked † are implemented.
 |---------|---------|-------------|
 | `app_info() -> AppInfo` † | App and core versions for the About section | — |
 | `list_print_sizes() -> [PrintSize]` † | Print sizes for the settings panel | FR-006 |
-| `import_paths(paths) -> ImportSummary` | Add files and folders to the library | FR-001 |
-| `list_photos(filter) -> [PhotoSummary]` | Data for the grid | FR-003 |
-| `set_settings(settings)` | Stamp, crop and export settings | FR-004, FR-006 |
+| `pick_and_import_folder() -> ImportSummary?` † | Opens the folder dialog **in Rust** and imports it. Drag-and-drop on the window uses the same import path | FR-001, FR-002 |
+| `list_photos() -> [PhotoSummary]` † | Data for the grid, sorted by capture time (filters come with FR-022) | FR-003 |
+| `get_settings()` / `set_settings(settings) -> SettingsState` † | Validated render settings plus a `revision` used to refresh previews | FR-004, FR-006 |
 | `set_photo_override(id, override)` | Per-photo crop frame or place name | FR-005, FR-006 |
-| `render_preview(id, max_edge) -> PreviewHandle` | Render a preview on demand | FR-007 |
-| `start_export(dest, options) -> JobId` | Begin an export | FR-008, FR-009, FR-010 |
-| `cancel_job(job_id)` | Cancel a running job | FR-011 |
+| `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
+| `start_export() -> JobId` † | Exports all photos to the chosen destination | FR-008, FR-009, FR-010 |
+| `cancel_job(job_id)` † | Cancel a running job | FR-011 |
 | `set_rating(ids, stars)` / `set_flag(ids, flag)` | Culling | FR-022 |
 | `query_library(filter) -> [PhotoSummary]` | Filtered view (rating, flag, date, camera, GPS, DPI) | FR-022, FR-026 |
 | `new_project` / `open_project(path)` / `save_project_as(path)` | Project lifecycle (autosave runs internally) | FR-023 |
@@ -193,19 +198,25 @@ Commands marked † are implemented.
 
 ### Events (core → UI)
 
+Events are typed through `tauri-specta` and named in kebab-case. Events marked † are implemented.
+
 | Event | Payload |
 |-------|---------|
-| `import://progress` | `{ scanned, accepted, rejected }` |
-| `thumb://ready` | `{ id, tier }` |
-| `job://progress` | `{ job_id, done, total, eta_ms }` |
-| `job://photo-error` | `{ job_id, photo_id, code, message }` |
-| `job://finished` | `{ job_id, summary }` |
+| `library-changed` † | `{ count }`. The UI refetches `list_photos` |
+| `thumb-ready` † | `{ id }`. The T1 thumbnail is cached, so the UI bumps the image URL |
+| `export-progress` † | `{ jobId, done, total }`, coalesced to ≤ 30 per second |
+| `export-finished` † | `{ jobId, summary: { exported, failed[], cancelled, destination } }`. Per-photo failures are reported here |
 | `project://saved` | `{ path, at }`, for the autosave indicator |
 | `history://changed` | `{ can_undo, can_redo }` |
 
 ### Binary data
 
-Pixels **never** cross IPC as JSON or base64. Thumbnails and previews are served through a custom URI scheme, `fotothumb://{id}/{tier}`, that streams the cached JPEG bytes. The UI just sets `<img src>`.
+Pixels **never** cross IPC as JSON or base64. Thumbnails and previews are served by the asynchronous custom URI scheme `fotothumb` on a low-priority worker pool. On Windows it is addressed as `http://fotothumb.localhost/…`:
+
+- `fotothumb://localhost/thumb/{id}?v={n}`: the cached T1, else the embedded T0, else a T1 generated on the spot. `v` bumps on `thumb-ready`.
+- `fotothumb://localhost/preview/{id}?rev={n}`: about 1600 px, rendered from the T2 cache with the **same** `RenderPlan` code as the export. `rev` is the settings revision.
+
+The UI just sets `<img src>`. Routes are parsed strictly: anything other than `/thumb/<u32>` or `/preview/<u32>` returns 404.
 
 ## 7. Persistence
 

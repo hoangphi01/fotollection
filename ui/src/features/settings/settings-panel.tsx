@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, Crop, Download, MapPin } from 'lucide-react'
-import { useState } from 'react'
+import { CalendarDays, Crop, MapPin } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -13,22 +11,52 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { commands } from '@/ipc/bindings'
+import { ExportSection } from '@/features/export/export-section'
+import {
+  commands,
+  type Corner,
+  type DateFormat,
+  type RenderSettings,
+  type StampColor,
+} from '@/ipc/bindings'
 import { useIpcQuery } from './use-ipc-query'
 
-const DEFAULT_PRINT_SIZE = '10x15'
+type SettingsPanelProps = {
+  settings: RenderSettings | null
+  onChange: (change: (current: RenderSettings) => RenderSettings) => void
+  photoCount: number
+}
+
+const FORMATS: { value: DateFormat; label: string }[] = [
+  { value: 'iso', label: '2026-07-14' },
+  { value: 'dmy', label: '14.07.2026' },
+  { value: 'retro', label: "'26 07 14" },
+]
+
+const CORNERS: { value: Corner; label: string }[] = [
+  { value: 'bottomRight', label: 'Bottom right' },
+  { value: 'bottomLeft', label: 'Bottom left' },
+  { value: 'topRight', label: 'Top right' },
+  { value: 'topLeft', label: 'Top left' },
+]
+
+const COLORS: { value: StampColor; label: string; swatch: string }[] = [
+  { value: 'white', label: 'White', swatch: 'bg-white' },
+  { value: 'retroOrange', label: 'Retro orange', swatch: 'bg-[#ff8a1f]' },
+]
 
 function formatCm(mm: number): string {
   return String(mm / 10)
 }
 
-export function SettingsPanel() {
+export function SettingsPanel({ settings, onChange, photoCount }: SettingsPanelProps) {
   const printSizes = useIpcQuery(commands.listPrintSizes)
   const appInfo = useIpcQuery(commands.appInfo)
-  const [printSize, setPrintSize] = useState(DEFAULT_PRINT_SIZE)
-  const [dateStamp, setDateStamp] = useState(true)
-  const [locationStamp, setLocationStamp] = useState(true)
+  const stamp = settings?.stamp
+  const setStamp = (patch: Partial<RenderSettings['stamp']>) =>
+    onChange((s) => ({ ...s, stamp: { ...s.stamp, ...patch } }))
 
   return (
     <aside className="flex w-72 shrink-0 flex-col border-l">
@@ -43,7 +71,10 @@ export function SettingsPanel() {
             <Crop className="size-4 text-muted-foreground" />
             Print size
           </Label>
-          <Select value={printSize} onValueChange={setPrintSize}>
+          <Select
+            value={settings?.printSize ?? ''}
+            onValueChange={(printSize) => onChange((s) => ({ ...s, printSize }))}
+          >
             <SelectTrigger id="print-size" className="w-full">
               <SelectValue placeholder="Loading…" />
             </SelectTrigger>
@@ -55,47 +86,91 @@ export function SettingsPanel() {
               ))}
             </SelectContent>
           </Select>
+          <p className="text-xs text-muted-foreground">Centred crop. Per-photo framing comes next.</p>
         </section>
 
         <section className="space-y-3">
-          <span className="text-xs font-medium text-muted-foreground uppercase">Stamps</span>
           <div className="flex items-center justify-between">
             <Label htmlFor="date-stamp" className="flex items-center gap-2">
               <CalendarDays className="size-4 text-muted-foreground" />
-              Date
-            </Label>
-            <Switch id="date-stamp" checked={dateStamp} onCheckedChange={setDateStamp} />
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="location-stamp" className="flex items-center gap-2">
-              <MapPin className="size-4 text-muted-foreground" />
-              Location
+              Date stamp
             </Label>
             <Switch
-              id="location-stamp"
-              checked={locationStamp}
-              onCheckedChange={setLocationStamp}
+              id="date-stamp"
+              checked={stamp?.enabled ?? false}
+              onCheckedChange={(enabled) => setStamp({ enabled })}
             />
           </div>
+
+          <div className={stamp?.enabled ? 'space-y-3' : 'pointer-events-none space-y-3 opacity-50'}>
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              size="sm"
+              className="w-full"
+              value={stamp?.format ?? ''}
+              onValueChange={(format) => format && setStamp({ format: format as DateFormat })}
+            >
+              {FORMATS.map((f) => (
+                <ToggleGroupItem key={f.value} value={f.value} className="flex-1 font-mono text-xs">
+                  {f.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+
+            <Select
+              value={stamp?.corner ?? ''}
+              onValueChange={(corner) => setStamp({ corner: corner as Corner })}
+            >
+              <SelectTrigger className="w-full" aria-label="Stamp position">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CORNERS.map((c) => (
+                  <SelectItem key={c.value} value={c.value}>
+                    {c.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              size="sm"
+              className="w-full"
+              value={stamp?.color ?? ''}
+              onValueChange={(color) => color && setStamp({ color: color as StampColor })}
+            >
+              {COLORS.map((c) => (
+                <ToggleGroupItem key={c.value} value={c.value} className="flex-1 gap-1.5 text-xs">
+                  <span className={`size-3 rounded-full border ${c.swatch}`} />
+                  {c.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center justify-between opacity-50">
+                <Label className="flex items-center gap-2">
+                  <MapPin className="size-4 text-muted-foreground" />
+                  Location
+                </Label>
+                <Badge variant="outline">Soon</Badge>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>Offline place names arrive in the next slice (FR-005)</TooltipContent>
+          </Tooltip>
         </section>
       </div>
 
       <Separator />
       <div className="space-y-3 p-4">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {/* span wrapper: disabled buttons don't emit pointer events for the tooltip */}
-            <span className="block">
-              <Button className="w-full" disabled>
-                <Download data-icon="inline-start" />
-                Export
-              </Button>
-            </span>
-          </TooltipTrigger>
-          <TooltipContent>Export arrives in Phase 1</TooltipContent>
-        </Tooltip>
+        <ExportSection photoCount={photoCount} />
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Offline · no telemetry</span>
+          <span>Offline · GPS stripped</span>
           {appInfo && <Badge variant="outline">v{appInfo.appVersion}</Badge>}
         </div>
       </div>

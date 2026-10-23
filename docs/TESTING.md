@@ -28,6 +28,7 @@ The corpus is stored **outside** git, because the photos are personal and large.
 
 | Subset | Contents | Purpose |
 |--------|----------|---------|
+| Synthetic (generated) | `crates/core/tests/common/mod.rs` builds JPEGs with chosen EXIF (date, GPS, orientation) through `jpeg-encoder` + `little_exif`, plus broken and spoofed files, at test time. **Nothing personal is committed** | Unit, pipeline and security tests (implemented) |
 | `fixtures` (in git) | ~20 small files: each orientation (1–8), no-EXIF, GPS/no-GPS, (0,0) GPS, HEIC, PNG, wide-gamut ICC, CMYK JPEG, corrupt/truncated files, polyglot | Unit, golden and security tests |
 | `bench` | 200 × 24 MP JPEG (Lumix GX9), 100 × 12 MP HEIC (iPhone), 20 × PNG | Benchmarks |
 | `stress` | 2,000+ mixed files | Memory ceiling, long-run stability |

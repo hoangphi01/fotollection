@@ -9,9 +9,24 @@ rust-version.workspace = true
 publish = false
 
 [dependencies]
+ab_glyph.workspace = true
+blake3.workspace = true
+chrono.workspace = true
+fast_image_resize.workspace = true
+jpeg-encoder.workspace = true
+kamadak-exif.workspace = true
+rayon.workspace = true
 serde.workspace = true
 specta.workspace = true
 thiserror.workspace = true
+walkdir.workspace = true
+zune-core.workspace = true
+zune-jpeg.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+little_exif.workspace = true
+tempfile.workspace = true
 
 [lints]
 workspace = true

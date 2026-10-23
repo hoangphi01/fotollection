@@ -104,7 +104,13 @@ Append one row per measurement that matters. Never edit past rows.
 
 | Date | Commit | Machine | Benchmark | Result | Note |
 |------|--------|---------|-----------|--------|------|
-| — | — | — | — | — | No code yet. The baseline is recorded in Phase 0 |
+| 2026-10-23 | slice 1 | REF-MAC (M3) | `measure_folder`: import + EXIF, 95 × 16 MP JPEG | 28 ms total | NFR-001 on track (~0.3 s per 1,000) |
+| 2026-10-23 | slice 1 | REF-MAC (M3) | T0 embedded thumbnails, 95 photos | 7 ms total | Instant grid on first paint |
+| 2026-10-23 | slice 1 | REF-MAC (M3) | T1 thumbnails (full decode → 400 px), parallel | 49 photos/s | Background, low-priority pool |
+| 2026-10-23 | slice 1 | REF-MAC (M3) | Full decode 4608×3456, `zune-jpeg` | 45 ms | ADR-0012 |
+| 2026-10-23 | slice 1 | REF-MAC (M3) | Preview re-render (T2 cached) | cold 121 ms, warm p50 26.0 / p95 26.4 ms | NFR-002 ✓ |
+| 2026-10-23 | slice 1 | REF-MAC (M3) | Export 95 × 16 MP, q95 4:4:4, 6 in flight | 19.7 photos/s | NFR-003 ✓ (~13/s projected for 24 MP) |
+| 2026-10-23 | slice 1 | REF-MAC (M3) | Peak RSS of the whole `measure_folder` run | 1.41 GB | NFR-004 ✓ |
 
 ## 6. Benchmark corpus
 

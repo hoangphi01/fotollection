@@ -34,8 +34,8 @@ The app processes **untrusted image files** and displays **untrusted metadata** 
   ```text
   default-src 'self';
   script-src 'self';
-  style-src 'self';
-  img-src 'self' fotothumb: data:;
+  style-src 'self' 'sha256-441zG27…' 'sha256-vGQdhYJ…';
+  img-src 'self' fotothumb: http://fotothumb.localhost data:;
   connect-src ipc: http://ipc.localhost;
   font-src 'self';
   object-src 'none';
@@ -45,6 +45,8 @@ The app processes **untrusted image files** and displays **untrusted metadata** 
   ```
 
   There are no inline scripts, no `unsafe-eval` and no remote origins. Tailwind is compiled to a static CSS file at build time. React and Radix set styles through the CSSOM, which CSP allows. If a UI dependency injects `<style>` tags, prefer Tauri's automatic CSP nonces. Adding `'unsafe-inline'` to `style-src` requires an ADR.
+- **The webview never supplies file system paths.** Import and export folders are chosen through dialogs opened **from Rust** (`pick_and_import_folder`, `pick_export_folder`), or dropped onto the window (an OS event handled in Rust). The export destination is kept in Rust state. The main window's capability is only `core:default`: no dialog, filesystem or shell permissions.
+- **Inline styles:** the only inline `<style>` tags allowed are the two static ones Radix injects (Select and ScrollArea), each allowed **by its SHA-256 hash**. Run `scripts/csp-style-hashes.sh` after upgrading `radix-ui` and update `tauri.conf.json`. UI libraries that inject styles at runtime (for example `sonner`) are not used.
 - **Commands validate every argument in Rust.** Never trust the UI: IDs must exist, settings are range-checked, and paths are canonicalized ([§4](#4-file-system-safety)).
 - **No remote content** is ever loaded into the webview. Navigation to any non-app URL is blocked.
 - Devtools are disabled in release builds.
@@ -116,6 +118,7 @@ Layer 4: SAFE RENDERING (UI)
 - `cargo audit` and `npm audit --omit=dev` run in CI, and a weekly scheduled job catches new advisories.
 - Native libraries (libjpeg-turbo, libheif, libde265, lcms2) are **pinned** to specific versions and tracked in [STATUS.md](STATUS.md#dependencies-to-watch). Security releases are applied within 7 days.
 - Dependencies are kept minimal. Adding a new dependency requires a short justification in the PR.
+- `cargo deny` checks what ships (`exclude-dev = true`). Dev-only crates, such as `little_exif` for synthetic test fixtures, never touch user data. They are still updated when advisories appear.
 
 ### Licensing note
 
