@@ -44,14 +44,15 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 
 ### Next, in order
 
-1. **Stage 3, best-shot suggestions (FR-041, NFR-014).** First the licence check of the face and eye models, recorded in an ADR. Then the `culling/` core module (grouping, metrics, scoring) and the "Best of N" UI.
-2. **Stage 3, HEIC input (FR-001).** First re-check [ADR-0005](adr/0005-input-formats-jpeg-heic-png.md): libheif and libde265 are LGPL. The alternative is the OS codecs (ImageIO, WIC).
-3. **Loose ends:**
+1. **Normal mode (FR-048, NFR-015), asked for next.** It is the "instant" counterpart to the current Professional mode: open → keep/drop → export at 300 DPI for the print size and q90, measured against Professional. Start with the export benchmark (print-sized resize + q90, reduced-scale decode), then the simplified UI and the mode switch.
+2. **Stage 3, best-shot suggestions (FR-041, NFR-014).** First the licence check of the face and eye models, recorded in an ADR. Then the `culling/` core module (grouping, metrics, scoring) and the "Best of N" UI.
+3. **Stage 3, HEIC input (FR-001).** First re-check [ADR-0005](adr/0005-input-formats-jpeg-heic-png.md): libheif and libde265 are LGPL. The alternative is the OS codecs (ImageIO, WIC).
+4. **Loose ends:**
    - FR-022 filters by date, camera, GPS and DPI, and multi-select;
    - the whole-app memory run with 5,035 photos, using a separate app-data folder (NFR-004);
    - cold-start time (NFR-010);
    - German UI later (FR-020).
-4. **Phase 2 queue:**
+5. **Phase 2 queue:**
    - swipe culling (FR-046);
    - Photo Style looks (FR-039);
    - film looks like Fujifilm's film simulations (FR-047);
@@ -127,6 +128,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | FR-045 | Original aspect ratio | 1 | Done | `print_size: "original"`: photo's own ratio, 10 cm short edge, exact pixel crop, framed canvas at photo ratio (`fr_045_*`) |
 | FR-046 | Swipe culling | 2 | Not Started | Future: full-screen ↑ add to print list / ↓ leave out, Lightroom-loupe style; changes the main workflow, so it is planned separately |
 | FR-047 | Film looks | 2 | Not Started | Future: Fujifilm-style film simulations (slide, chrome, negative, cinema, mono) on the FR-039 engine; own names and LUTs, no trademarks or copied LUT files |
+| FR-048 | Normal and Professional modes | 1 | Not Started | **Next.** Normal = instant mode: open → keep/drop → export at 300 DPI for the print size, q90; Professional = everything so far. Shared library and project |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
 
 ## Non-functional requirements
@@ -147,6 +149,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | NFR-012 | Culling navigation | < 100 ms p95 | — | Not Started |
 | NFR-013 | Project safety | ≤ 5 s, atomic | autosave ≤ ~1 s, atomic + .bak | In Progress |
 | NFR-014 | Best-shot analysis speed | ≤ 20 ms/photo (≤ 40 ms with faces) | — | Not Started |
+| NFR-015 | Normal mode speed | ≥ 3× Professional export (≥ 50 photos/s), first screen < 0.5 s for 1,000 photos | — | Not Started |
 
 ## Security tasks
 

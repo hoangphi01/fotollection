@@ -86,6 +86,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [NFR-012](PRD.md#nfr-012--culling-navigation) | Loupe next/previous to a sharp preview, p95 | < 100 ms | `bench_loupe_navigation` + E2E probe |
 | [NFR-013](PRD.md#nfr-013--project-safety) | Edit-to-disk latency; project save time for 10,000 photos | ≤ 5 s; < 50 ms | `bench_project_save`, kill-during-write test |
 | [NFR-014](PRD.md#nfr-014--best-shot-analysis-speed) | Best-shot analysis per photo, 8 cores in parallel | ≤ 20 ms; ≤ 40 ms with faces | `bench_culling` on the `bench` corpus |
+| [NFR-015](PRD.md#nfr-015--normal-mode-speed) | Normal-mode export to 10×15 @ 300 DPI, q90; first screen of 1,000 photos | ≥ 3× Professional (≥ 50 photos/s); < 0.5 s | `measure_folder` with a Normal-mode flag, same folders as `bench/run.sh` |
 
 ### Reference machines
 

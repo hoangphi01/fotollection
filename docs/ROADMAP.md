@@ -50,6 +50,7 @@
 | FR-042 | Custom fonts |
 | FR-043 | Custom print sizes |
 | FR-045 | Original aspect ratio |
+| FR-048 | Normal and Professional modes |
 | FR-020 | Localization (English and Vietnamese; German later) |
 
 **Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v0.1.0 is released.

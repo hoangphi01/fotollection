@@ -19,6 +19,8 @@ People shoot thousands of photos but print almost none. Preparing a print order 
 
 **Fotollection is a fast, private, offline desktop app (macOS and Windows) that turns a folder of photos into a print-ready set.** It stamps date and location from EXIF, crops to standard EU print sizes, groups photos by trip, and keeps the original quality. Photos never leave the user's machine.
 
+It has two modes ([FR-048](#fr-048--normal-and-professional-modes)): **Normal**, for "pick, stamp, print" in a few clicks, and **Professional**, with every control described in this document.
+
 ### Market gap
 
 Nobody combines EXIF date/location stamping, trip auto-organization, and batch cropping to EU print sizes in one app.
@@ -472,6 +474,19 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 - **Recipes:** a look plus Photo Style parameters saves as a preset ([FR-038](#fr-038--print-presets)), so recipes like the owner's *C200 Natural* can be shared. Looks are stored by id in the project, so a bundle opens with the same look on another machine ([ADR-0016](adr/0016-self-contained-project-bundle.md)).
 - **Order and speed:** the look is applied before the date stamp and the info frame, so they are never tinted. Applying a LUT to the 1600 px preview must keep the preview within budget ([NFR-002](#nfr-002--preview-latency)), and this is benchmarked before release.
 
+### FR-048 — Normal and Professional modes
+
+**P1 (next).** Two modes, switchable at any time and remembered per machine. They share one library, one project file and one rendering engine.
+
+- **Professional** is everything built so far: the inspector, the crop editor, the info frame and camera profiles, fonts, custom sizes, filters, the `.fotollection` document, and full-quality export (q95, 4:4:4, full resolution).
+- **Normal** is the "instant" mode: the shortest path from a folder to prints.
+  - **One screen, three steps:** open a folder → keep or drop photos with one key or one click (the same pick/reject as [FR-022](#fr-022--culling-rate-flag-filter), later the swipe mode of [FR-046](#fr-046--swipe-culling)) → **Export**.
+  - **Few choices, good defaults:** print size (10×15 by default), date stamp on or off, and the destination. Crop is centred automatically, and everything else uses the Professional defaults. No inspector, frame editor or fonts on screen.
+  - **"Good enough for print, very fast":** the export is sized for the print, at 300 DPI on the chosen print size (about 1800 × 1200 px for 10×15) instead of full resolution, and encoded at q90. That is visually the same on a 10×15 print, the files are much smaller, and export is several times faster ([NFR-015](#nfr-015--normal-mode-speed)). Decoding at reduced scale when the source is much larger than needed is evaluated as part of this.
+  - The grid opens on embedded EXIF thumbnails only, so a folder is browsable at once.
+- **Switching** keeps all work: photos flagged or cropped in one mode are the same in the other. A Normal export of a project that has Professional settings (frame, fonts) uses them, but at Normal export quality.
+- **Not in Normal:** RAW, per-photo overrides, presets editing, culling suggestions UI. They stay in Professional.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
@@ -531,6 +546,10 @@ Edits reach the project file within **5 s**, and writes are atomic, so a crash o
 ### NFR-014 — Best-shot analysis speed
 
 Best-shot analysis ([FR-041](#fr-041--best-shot-suggestions)) takes **≤ 20 ms per photo without faces and ≤ 40 ms with faces** on REF-MAC, running in parallel on the background pool. It never blocks the grid or the preview. The budget is benchmarked before the feature ships.
+
+### NFR-015 — Normal mode speed
+
+In Normal mode ([FR-048](#fr-048--normal-and-professional-modes)), export of 16–24 MP JPEGs to 10×15 at 300 DPI reaches **at least 3× the Professional throughput** on REF-MAC (target ≥ 50 photos/s), with peak memory still within [NFR-004](#nfr-004--memory-ceiling). The first screen of a 1,000-photo folder appears in **under 0.5 s**. Budgets are confirmed by benchmark before the mode ships.
 
 ## 8. Out of scope
 
