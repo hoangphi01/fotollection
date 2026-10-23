@@ -46,13 +46,20 @@ fn main() {
             ..FrameSettings::default()
         };
         // Demo profile: a manual lens and a photo style that EXIF can't know.
-        let mut profile = CameraProfile::new(1, record.shot.make.clone(), record.shot.model.clone());
+        let mut profile =
+            CameraProfile::new(1, record.shot.make.clone(), record.shot.model.clone());
         profile.lens = Some("Индустар-50-2".into());
         profile.focal_mm = Some(50.0);
         profile.f_number = Some(4.0);
         profile.photo_style = Some("L. Monochrome D".into());
         FrameRequest {
-            text: build_text(&record.shot, Some(&profile), &frame, Some(record.capture), None),
+            text: build_text(
+                &record.shot,
+                Some(&profile),
+                &frame,
+                Some(record.capture),
+                None,
+            ),
             settings: frame,
             logo: None,
         }
