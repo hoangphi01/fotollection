@@ -35,6 +35,13 @@ Start at [docs/README.md](docs/README.md). Contributors should read [CONTRIBUTIN
 
 ## License
 
-To be decided. See [docs/STATUS.md](docs/STATUS.md#open-decisions).
+[GPL-3.0-only](LICENSE) © hoangphi01. Outside contributions require a CLA ([ADR-0008](docs/adr/0008-license-gpl3-with-relicensing-option.md)).
+
+Builds are currently **unsigned** ([ADR-0009](docs/adr/0009-unsigned-distribution.md)). On first launch:
+
+- **macOS:** System Settings → Privacy & Security → *Open Anyway*.
+- **Windows:** SmartScreen → *More info* → *Run anyway*.
+
+Verify downloads with the `SHA256SUMS.txt` file on each release page.
 
 Geographic data from [GeoNames](https://www.geonames.org/) (CC BY 4.0) will be bundled for offline geocoding.

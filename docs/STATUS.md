@@ -87,9 +87,22 @@ Defined in [SECURITY.md](SECURITY.md).
 
 | Decision | Options | Owner | Notes |
 |----------|---------|-------|-------|
-| Project license | MIT / Apache-2.0 / GPL-3.0 | @hoangphi01 | Affects libheif linking ([SECURITY.md §6](SECURITY.md#licensing-note)) |
-| Code-signing certificates | Apple Developer (99 USD/yr), Azure Trusted Signing | @hoangphi01 | Early builds may ship unsigned |
 | `REF-WIN` reference machine | — | @hoangphi01 | Needed for NFR measurement |
+
+Decided:
+
+- Project license: **GPL-3.0-only**, with an option to relicense later ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)).
+- Code signing: **unsigned** for now ([ADR-0009](adr/0009-unsigned-distribution.md)).
+
+## Licensing tasks
+
+| Task | Status | Notes |
+|------|--------|-------|
+| `LICENSE` (GPL-3.0) | Done | |
+| CLA set up (e.g. CLA Assistant) | Not Started | **Required before merging the first outside PR** ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)) |
+| `cargo deny` license allowlist (permissive only, GPL banned) | Not Started | At scaffold time |
+| SPDX headers in source files | Not Started | At scaffold time |
+| Apply to SignPath Foundation (Windows signing) | Not Started | After the first public releases |
 
 ## Dependencies to watch
 

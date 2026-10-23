@@ -21,13 +21,17 @@ The WebView2 runtime is bootstrapped by the Windows installer when it is missing
 
 ## 3. Code signing
 
-| Platform | Requirement | Cost | Without it |
-|----------|-------------|------|------------|
-| macOS | Apple Developer ID certificate + notarization (`notarytool`) | 99 USD/year | Gatekeeper blocks first launch. The user must right-click → Open, or allow the app in System Settings |
-| Windows | Authenticode certificate (OV/EV) or Azure Trusted Signing | ~10 USD/month (Azure) and up | SmartScreen shows "Unknown publisher" until the app builds reputation |
-| Updater | Tauri updater key pair (minisign) | Free | **Mandatory**: updates are rejected without a valid signature |
+**Current policy: ship unsigned, without paid certificates** ([ADR-0009](adr/0009-unsigned-distribution.md)).
 
-Signing secrets are stored only in GitHub Actions encrypted secrets, never in the repository. Whether to buy certificates is an open decision ([STATUS.md](STATUS.md#open-decisions)). Early `0.x` builds may ship unsigned, with instructions.
+| Platform | What we do now | Paid option (not used) | User experience |
+|----------|----------------|------------------------|-----------------|
+| macOS | Ad-hoc signature (required on Apple Silicon) | Developer ID + notarization, 99 USD/year | Gatekeeper blocks the first launch. The user goes to **System Settings → Privacy & Security → Open Anyway** (right-click → Open no longer works on macOS 15+) |
+| Windows | Unsigned. Apply to SignPath Foundation (free for OSS) later | Authenticode / Azure Trusted Signing | SmartScreen warning: **More info → Run anyway** |
+| Updater | Tauri updater key pair (minisign), **always** | — | Transparent. Updates without a valid signature are rejected |
+
+- Every release publishes `SHA256SUMS.txt` for all artifacts.
+- The release notes and README include the first-launch steps for each OS.
+- The updater private key and any future signing secrets are stored only in GitHub Actions encrypted secrets, never in the repository. **Back up the updater key offline**: if it is lost, existing installs can't receive updates.
 
 ## 4. Build pipeline
 
@@ -35,8 +39,8 @@ Signing secrets are stored only in GitHub Actions encrypted secrets, never in th
 
 1. Run the full CI (fmt, clippy, tests, docs checks, `cargo deny`).
 2. Build on `macos-latest` (universal) and `windows-latest`, using `tauri-action`.
-3. Sign and notarize (macOS) and sign (Windows) when secrets are present.
-4. Generate the updater manifest `latest.json`, signed with the updater key.
+3. Ad-hoc sign the macOS build. (Notarization and Windows signing steps stay disabled until [ADR-0009](adr/0009-unsigned-distribution.md) is superseded.)
+4. Generate the updater manifest `latest.json`, signed with the updater key, and `SHA256SUMS.txt`.
 5. Create a **draft** GitHub Release with the artifacts and the CHANGELOG section.
 6. A human smoke-tests the draft ([TESTING.md §7](TESTING.md#7-manual-release-checklist)), then publishes it.
 

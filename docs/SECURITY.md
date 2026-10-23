@@ -18,7 +18,7 @@ The app processes **untrusted image files** and displays **untrusted metadata** 
 | Supply chain (crates, npm, native libs) | **YES** | Compromised dependency could exfiltrate photos |
 | GPS / metadata leakage in exported files | **YES** | Mitigated by [FR-010](PRD.md#fr-010--metadata-privacy-on-export) |
 | Resource exhaustion (decompression bombs, huge dimensions) | **YES** | Must fail one photo, not the app ([NFR-011](PRD.md#nfr-011--robustness)) |
-| Tampered update / installer | **YES** | Signed installers and signed updater manifest ([RELEASE.md](RELEASE.md)) |
+| Tampered update / installer | **YES** | Signed updater manifest + published SHA-256 checksums. Installers are unsigned for now ([ADR-0009](adr/0009-unsigned-distribution.md)) |
 | Network attacks (MITM, SSRF, CSRF) | **Minimal** | The app makes no network requests by default ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)) |
 | SQL injection, server compromise | **NO** | No database, no server |
 
@@ -110,7 +110,7 @@ Layer 4: SAFE RENDERING (UI)
 
 ### Licensing note
 
-libheif and libde265 are **LGPL**. Static linking is compatible with an open-source release of Fotollection. If the project ever becomes closed-source, they must be dynamically linked or replaced. The project license is still pending ([STATUS.md](STATUS.md#open-decisions)).
+Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)). libheif and libde265 are **LGPL**, which is compatible with the GPL. To keep the option of relicensing later, `cargo deny` allows **only permissive licenses** for dependencies and bans GPL and AGPL. A future proprietary edition would have to link the LGPL libraries dynamically.
 
 ## 7. CI security gates
 

@@ -15,7 +15,8 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
 3. **Performance first, measured.** No optimization without a benchmark. Respect the budgets in [docs/OPTIMIZATION.md §3](docs/OPTIMIZATION.md#3-budgets).
 4. **Privacy.** No network calls in the core, no telemetry, GPS stripped on export by default.
 5. **Security.** Never render metadata as HTML (`dangerouslySetInnerHTML` and `innerHTML` are banned). Validate all IPC input in Rust. Follow [docs/SECURITY.md](docs/SECURITY.md).
-6. **Style.** Follow [docs/STYLE_RULE.md](docs/STYLE_RULE.md): no `unwrap` in non-test code, `thiserror` in the core, shadcn/ui components, Lucide icons only.
+6. **License (GPL-3.0-only, relicensable).** Add only permissive-licensed dependencies (MIT, Apache-2.0, BSD…). **Never add GPL or AGPL dependencies.** New source files start with `// SPDX-License-Identifier: GPL-3.0-only` ([ADR-0008](docs/adr/0008-license-gpl3-with-relicensing-option.md)).
+7. **Style.** Follow [docs/STYLE_RULE.md](docs/STYLE_RULE.md): no `unwrap` in non-test code, `thiserror` in the core, shadcn/ui components, Lucide icons only.
 
 ## Before finishing a task
 

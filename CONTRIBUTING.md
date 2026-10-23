@@ -32,6 +32,12 @@ scripts/check-docs.sh
 npx markdownlint-cli2 "**/*.md"
 ```
 
+## Contributor License Agreement
+
+Fotollection is licensed under [GPL-3.0-only](LICENSE). To keep the project able to change its license in future versions ([ADR-0008](docs/adr/0008-license-gpl3-with-relicensing-option.md)), **outside contributions can be merged only after you sign a CLA**. The CLA lets the project owner relicense your contribution, and you keep your own copyright. A bot will ask you to sign on your first pull request.
+
+**Dependencies:** new Rust or npm dependencies must use a permissive license (MIT, Apache-2.0, BSD, ISC, Zlib…). GPL and AGPL dependencies are not accepted.
+
 ## Reporting security issues
 
 Please use a private GitHub security advisory rather than a public issue. See [docs/SECURITY.md](docs/SECURITY.md).
