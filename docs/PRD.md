@@ -463,6 +463,15 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 - The next photos are prefetched so every decision shows a sharp image in under 100 ms ([NFR-012](#nfr-012--culling-navigation)).
 - **Workflow change:** the main flow becomes *import → swipe → refine (crop, stamp, frame) on the print list only → export*. The grid filter, the preview and the export default to the print list once it is not empty. The vision (§2) and the UI flow are updated when this lands.
 
+### FR-047 — Film looks
+
+**P2 (future).** A set of **film-simulation looks** comparable to Fujifilm's in-camera film simulations, applied with one click to a photo or the whole batch. They use the same engine as Photo Style ([FR-039](#fr-039--photo-style-looks), [ADR-0011](adr/0011-photo-style-looks.md)): a 3D LUT, a tone curve, a white-balance shift and grain.
+
+- **The looks, by intent:** a neutral slide (like Provia), a vivid landscape slide (like Velvia), a soft portrait slide (like Astia), a muted documentary chrome (like Classic Chrome), a hard-shadow negative with shifted colours (like Classic Negative), a warm amber negative (like Nostalgic Neg), a flat cinema look (like Eterna), a natural modern negative (like Reala Ace), a soft studio negative (like Pro Neg Std), and fine-grain black-and-white with filter options (like Acros). Each has *strength* 0–100 % and the usual Photo Style parameters on top.
+- **Names and data are ours.** Fujifilm's film-simulation names are trademarks, so the UI uses descriptive names of its own (for example *Chrome Muted*, *Negative Classic*). Fujifilm appears in the docs only to describe the inspiration. The LUTs and curves are built from the project's own reference shots and published recipes, and never copied from Fujifilm software or from third-party LUT packs without a compatible licence.
+- **Recipes:** a look plus Photo Style parameters saves as a preset ([FR-038](#fr-038--print-presets)), so recipes like the owner's *C200 Natural* can be shared. Looks are stored by id in the project, so a bundle opens with the same look on another machine ([ADR-0016](adr/0016-self-contained-project-bundle.md)).
+- **Order and speed:** the look is applied before the date stamp and the info frame, so they are never tinted. Applying a LUT to the 1600 px preview must keep the preview within budget ([NFR-002](#nfr-002--preview-latency)), and this is benchmarked before release.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

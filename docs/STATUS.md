@@ -1,17 +1,62 @@
 # Status — Fotollection
 
-> **Last updated:** 2026-10-23
+> **Last updated:** 2026-10-24
 >
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 1 — MVP, first vertical slice done
+## Current phase: Phase 1 — MVP, Stages 1 and 2 done
 
-The app works end to end for **JPEG**: open or drop a folder → thumbnail grid → preview with crop and date stamp → export to `YYYY-MM-DD/` folders with progress and cancel. Since then: crop editor, session project with undo, info frame, custom fonts and print sizes, and the Rust vs browser benchmark. The remaining work runs in three stages, from easiest to hardest ([ROADMAP.md — Phase 1 work order](ROADMAP.md#phase-1-work-order-2026-10-23)):
+**Where we are (2026-10-24).** The app works end to end for **JPEG and PNG**:
 
-1. **Stage 1:** EXTENSION.md ✓, PNG input ✓, basic culling (FR-022) ✓, preview profiling ✓, Original print size (FR-045) ✓, 5,000-photo memory check (core) ✓.
-2. **Stage 2:** ✓ faster previews (17 ms), ✓ English + Vietnamese UI (FR-020), ✓ the `.fotollection` document with Save / Open / Relink (FR-023).
-3. **Stage 3:** best-shot suggestions (FR-041), HEIC input.
+1. Open or drop a folder.
+2. Cull with stars, flags and filters.
+3. Preview with crop, date stamp and the "Shot on" info frame. The frame can be edited in the preview, and the print size can be Original or a custom one.
+4. Export exactly the filtered set.
+5. Save the work as a self-contained `.fotollection` document that opens the same on another machine.
+
+The interface is in English and Vietnamese. Measured performance meets every budget ([RESULT.md](RESULT.md)): preview 17 ms (faster than Chromium), export 18 photos/s, memory flat at 1.45 GB for 5,035 photos.
+
+### Done, by stage ([ROADMAP.md — Phase 1 work order](ROADMAP.md#phase-1-work-order-2026-10-23))
+
+1. **Stage 1:**
+   - `docs/EXTENSION.md`;
+   - PNG input (FR-001);
+   - culling with stars, flags, filter and export of the filtered set (FR-022);
+   - Original print size (FR-045);
+   - preview profiling, the 6 vs 8 in-flight decision, and the 5,035-photo memory check.
+2. **Stage 2:**
+   - faster previews, 26 → 17 ms (NFR-002);
+   - frame controls inside the preview (FR-040);
+   - English + Vietnamese UI (FR-020, [ADR-0015](adr/0015-ui-localization-i18next.md));
+   - the `.fotollection` document with Save / Save As / Open / New / Relink, the native menu and the file association (FR-023, [ADR-0016](adr/0016-self-contained-project-bundle.md)).
+3. **Docs and tooling:**
+   - README with four measured charts and a Vietnamese version (`README.vi.md`);
+   - `bench/run.sh` and `bench/batch.sh`;
+   - `docs/RESULT.md`;
+   - the `check-i18n` and README-parity gates.
+
+### To check by hand first (not covered by automated tests)
+
+- Save As → Open → rename the photo folder → Relink, in the running app, in English and in Vietnamese.
+- The unsaved-changes question on New and Open, and the window title showing *Edited*.
+- Double-clicking a `.fotollection` file. This needs a release build (`npm run build`), because file associations are not active in `npm run dev`.
+
+### Next, in order
+
+1. **Stage 3, best-shot suggestions (FR-041, NFR-014).** First the licence check of the face and eye models, recorded in an ADR. Then the `culling/` core module (grouping, metrics, scoring) and the "Best of N" UI.
+2. **Stage 3, HEIC input (FR-001).** First re-check [ADR-0005](adr/0005-input-formats-jpeg-heic-png.md): libheif and libde265 are LGPL. The alternative is the OS codecs (ImageIO, WIC).
+3. **Loose ends:**
+   - FR-022 filters by date, camera, GPS and DPI, and multi-select;
+   - the whole-app memory run with 5,035 photos, using a separate app-data folder (NFR-004);
+   - cold-start time (NFR-010);
+   - German UI later (FR-020).
+4. **Phase 2 queue:**
+   - swipe culling (FR-046);
+   - Photo Style looks (FR-039);
+   - film looks like Fujifilm's film simulations (FR-047);
+   - print presets (FR-038);
+   - per-photo overrides (FR-044).
 
 ## Phase 0 — Foundation
 
@@ -81,6 +126,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-044 | Per-photo overrides | 2 | Not Started | Future: e.g. untick the stamp for photos that already have one; batch first |
 | FR-045 | Original aspect ratio | 1 | Done | `print_size: "original"`: photo's own ratio, 10 cm short edge, exact pixel crop, framed canvas at photo ratio (`fr_045_*`) |
 | FR-046 | Swipe culling | 2 | Not Started | Future: full-screen ↑ add to print list / ↓ leave out, Lightroom-loupe style; changes the main workflow, so it is planned separately |
+| FR-047 | Film looks | 2 | Not Started | Future: Fujifilm-style film simulations (slide, chrome, negative, cinema, mono) on the FR-039 engine; own names and LUTs, no trademarks or copied LUT files |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
 
 ## Non-functional requirements
