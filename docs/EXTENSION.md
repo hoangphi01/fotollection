@@ -9,8 +9,8 @@
 
 | Type | Extension | MIME type | UTI | Recognized by | Container | Current version | Status |
 |------|-----------|-----------|-----|---------------|-----------|-----------------|--------|
-| Project | `.fotollection` | `application/vnd.fotollection.project+json` | `com.hoangphi01.fotollection.project` | `"format": "fotollection-project"` | JSON, UTF-8 | `schema_version` 1 | Implemented (session project) |
-| Project bundle | `.fotollection` | `application/vnd.fotollection.project+zip` | `com.hoangphi01.fotollection.project` | ZIP magic `PK\x03\x04` + `manifest.json` | ZIP | — | Planned, [ROADMAP Stage 2](ROADMAP.md#phase-1-work-order-2026-10-23) |
+| Project (legacy, and the session autosave) | `.fotollection` | `application/vnd.fotollection.project+json` | `com.hoangphi01.fotollection.project` | `"format": "fotollection-project"` | JSON, UTF-8 | `schema_version` 2 | Implemented: read always, written only for the session autosave |
+| Project bundle | `.fotollection` | `application/vnd.fotollection.project+zip` | `com.hoangphi01.fotollection.project` | ZIP magic `PK\x03\x04` + `manifest.json` with `"format": "fotollection-bundle"` | ZIP (deflate) | manifest `schema_version` 1 | Implemented ([ADR-0016](adr/0016-self-contained-project-bundle.md)): what Save / Save As write |
 | Preset | `.fotopreset` | `application/vnd.fotollection.preset+json` | `com.hoangphi01.fotollection.preset` | `"format": "fotollection-preset"` | JSON, UTF-8 | `schema_version` 1 (draft) | Planned ([FR-038](PRD.md#fr-038--print-presets)) |
 | App settings | `settings.json` | `application/json` | — (internal) | `"format": "fotollection-settings"` | JSON, UTF-8 | `schema_version` 2 | Implemented |
 | User font | `fonts/<id>.ttf`, `fonts/<id>.otf` | `font/ttf`, `font/otf` | — (internal copy) | Magic `00 01 00 00` / `true` (TTF), `OTTO` (OTF) | sfnt | — | Implemented ([FR-042](PRD.md#fr-042--custom-fonts)) |
@@ -25,21 +25,23 @@ These files leave the app. Users copy, email and open them on other machines, so
 
 ### 2.1 Project `.fotollection`
 
-- **Today (v1, JSON):** folders and sparse per-photo edits (crop, rating, flag). It is written atomically, with a `.bak` copy. Schema: [DATABASE.md §4](DATABASE.md#4-project-file-schema).
-- **Planned bundle (ZIP, like `.docx`):** one self-contained file carries everything needed to reproduce the prints on another machine. Photos themselves are referenced, not embedded.
+- **Bundle (ZIP, like `.docx`, [ADR-0016](adr/0016-self-contained-project-bundle.md)):** one self-contained file carries everything needed to reproduce the prints on another machine. Photos themselves are referenced, not embedded. Any unzip tool can list it.
 
-  | Part | Content |
-  |------|---------|
-  | `manifest.json` | Format, version, and a list of parts with SHA-256 checksums |
-  | `project.json` | The project tables |
-  | `settings.json` | Render, frame, custom print sizes and camera profiles |
-  | `fonts/`, `logos/` | Copies of the fonts and logos the project uses |
-  | `presets/` | Copies of the user presets the project uses |
+  | Part | Content | Cap |
+  |------|---------|----:|
+  | `manifest.json` | `format`, `schema_version`, `app_version`, and every other part with its byte count and BLAKE3 sum | 1 MB |
+  | `project.json` | The project tables, schema v2 ([DATABASE.md §4](DATABASE.md#4-project-file-schema)). Folders are stored relative to the bundle when possible, with the absolute path as a fallback | 64 MB |
+  | `settings.json` | Render (print size, custom sizes, stamp), frame, camera profiles and the fonts table, in the `settings.json` format without the per-machine `ui` block ([DATABASE.md §6](DATABASE.md#6-app-settings)) | 4 MB |
+  | `fonts/<id>.ttf\|otf` | The fonts the project uses (date stamp and frame), stored uncompressed | 20 MB each |
+  | `logos/<id>.png` | Logos of camera profiles set to an image logo, by profile id | 2 MB each |
 
-  When the bundle is opened, embedded fonts and logos are validated like any import, then installed. Moved photo folders are relinked through a dialog. The bundle lands in Stage 2, together with an ADR that supersedes [ADR-0010](adr/0010-project-file-format.md).
+  Presets are not part of version 1; adding them means a new allowlisted part and a manifest version bump.
+- **Writing:** parts in a fixed order with the ZIP epoch (1980-01-01) as their time, so the same project gives the same bytes. The file is written atomically with a `.bak` copy.
+- **Opening:** the whole bundle is validated before anything is applied. Then fonts and logos are installed (a font already present with the same content is reused), the print settings are applied, and folders are found relative to the bundle first, then by absolute path. A folder that is still missing is relinked by the user. Test fixture: `crates/core/tests/fixtures/bundle/v1.fotollection`.
+- **JSON (legacy, schema v1–v2):** folders and sparse per-photo edits (crop, rating, flag), atomic with a `.bak`. It is still opened, but only the tables are read. The session autosave uses this format in the app data folder. Fixture: `crates/core/tests/fixtures/project/v1.fotollection`.
 - **Limits:**
-  - JSON v1: 64 MB per file.
-  - Planned bundle: caps on the entry count, the total uncompressed size and the size of each part; entry names may not contain `..`, absolute paths or drive letters ([SECURITY.md §3](SECURITY.md#other-untrusted-inputs)).
+  - Bundle: at most 160 MB, 128 entries and a 100:1 compression ratio, checked before decompression; part names from a strict allowlist, so `..`, absolute paths, drive letters and unknown files are rejected ([SECURITY.md §3](SECURITY.md#other-untrusted-inputs)).
+  - JSON: 64 MB per file.
 - **Personal data:** the file contains folder paths, and later places and coordinates. Treat it like the photos.
 
 ### 2.2 Preset `.fotopreset`

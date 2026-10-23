@@ -26,6 +26,9 @@ kamadak-exif = "0.6.1"
 png = "0.18.1"
 rayon = "1.12.0"
 walkdir = "2.5.0"
+# Project bundles (ADR-0016): deflate only, through flate2 on pure-Rust miniz_oxide.
+zip = { version = "9.0.5", default-features = false, features = ["deflate-flate2"] }
+flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
 zune-core = "0.5.3"
 zune-jpeg = "0.5.15"
 # dev / bench

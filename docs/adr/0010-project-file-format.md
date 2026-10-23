@@ -1,6 +1,6 @@
 # ADR-0010: Project file format for culling and edits
 
-- **Status:** Accepted
+- **Status:** Superseded by [ADR-0016](0016-self-contained-project-bundle.md) (container only; the table schema and its rules still apply)
 - **Date:** 2026-10-23
 - **Related:** FR-022, FR-023, FR-024, FR-025, FR-030, FR-032, NFR-013, ADR-0006. The full schema is in [DATABASE.md](../DATABASE.md)
 

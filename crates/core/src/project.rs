@@ -11,8 +11,9 @@ use crate::library::{Flag, Library, PhotoEdits};
 use crate::plan::CropFrame;
 
 pub const FORMAT: &str = "fotollection-project";
-pub const SCHEMA_VERSION: u32 = 1;
-const MAX_BYTES: u64 = 64 * 1024 * 1024;
+/// v2: `folders[].absolute`, the fallback for folders stored relative to a bundle (ADR-0016).
+pub const SCHEMA_VERSION: u32 = 2;
+pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -25,8 +26,13 @@ pub enum PathKind {
 #[serde(deny_unknown_fields)]
 pub struct FolderRow {
     pub id: u32,
+    /// Absolute, or relative to the project file's directory with `/` separators.
     pub path: String,
     pub path_kind: PathKind,
+    /// For a relative row, the absolute path when it was saved: used when the project file
+    /// moved without its photos. Absent in v1 files (read with this default).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub absolute: Option<String>,
 }
 
 /// A photo with user state. Only edited photos have rows (N5).
@@ -77,6 +83,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
             id: u32::try_from(i + 1).unwrap_or(u32::MAX),
             path: p.display().to_string(),
             path_kind: PathKind::Absolute,
+            absolute: None,
         })
         .collect();
     let mut photos: Vec<PhotoRow> = library
@@ -111,9 +118,12 @@ pub fn snapshot(library: &Library) -> ProjectFile {
     }
 }
 
+pub fn to_bytes(file: &ProjectFile) -> std::io::Result<Vec<u8>> {
+    serde_json::to_vec_pretty(file).map_err(std::io::Error::other)
+}
+
 pub fn save(path: &Path, file: &ProjectFile) -> std::io::Result<()> {
-    let bytes = serde_json::to_vec_pretty(file).map_err(std::io::Error::other)?;
-    crate::atomic::write_with_backup(path, &bytes)
+    crate::atomic::write_with_backup(path, &to_bytes(file)?)
 }
 
 #[derive(Deserialize)]
@@ -129,11 +139,18 @@ pub fn load(path: &Path) -> Loaded {
     if meta.len() > MAX_BYTES {
         return Loaded::Corrupt("project file is too large".into());
     }
-    let bytes = match std::fs::read(path) {
-        Ok(b) => b,
-        Err(e) => return Loaded::Corrupt(e.to_string()),
-    };
-    let header: Header = match serde_json::from_slice(&bytes) {
+    match std::fs::read(path) {
+        Ok(bytes) => from_bytes(&bytes),
+        Err(e) => Loaded::Corrupt(e.to_string()),
+    }
+}
+
+/// Parses and validates a project file already in memory (also a bundle part, ADR-0016).
+pub fn from_bytes(bytes: &[u8]) -> Loaded {
+    if bytes.len() as u64 > MAX_BYTES {
+        return Loaded::Corrupt("project file is too large".into());
+    }
+    let header: Header = match serde_json::from_slice(bytes) {
         Ok(h) => h,
         Err(e) => return Loaded::Corrupt(e.to_string()),
     };
@@ -143,7 +160,7 @@ pub fn load(path: &Path) -> Loaded {
     if header.schema_version > SCHEMA_VERSION {
         return Loaded::NewerVersion(header.schema_version);
     }
-    match serde_json::from_slice::<ProjectFile>(&bytes) {
+    match serde_json::from_slice::<ProjectFile>(bytes) {
         Ok(file) => validate(file).map_or_else(Loaded::Corrupt, Loaded::Ok),
         Err(e) => Loaded::Corrupt(e.to_string()),
     }
@@ -178,6 +195,80 @@ fn validate(mut file: ProjectFile) -> Result<ProjectFile, String> {
     Ok(file)
 }
 
+/// `target` relative to the directory `base`, with `/` separators (`../Photos/Trip`).
+/// `None` when they share no root, for example two Windows drives.
+pub fn relative_path(base: &Path, target: &Path) -> Option<String> {
+    use std::path::Component;
+    let b: Vec<Component> = base.components().collect();
+    let t: Vec<Component> = target.components().collect();
+    if b.first() != t.first()
+        || !matches!(b.first(), Some(Component::Prefix(_) | Component::RootDir))
+    {
+        return None;
+    }
+    let common = b.iter().zip(&t).take_while(|(x, y)| x == y).count();
+    let mut parts: Vec<String> = std::iter::repeat_n("..".to_owned(), b.len() - common).collect();
+    parts.extend(
+        t[common..]
+            .iter()
+            .map(|c| c.as_os_str().to_string_lossy().into_owned()),
+    );
+    Some(if parts.is_empty() {
+        ".".to_owned()
+    } else {
+        parts.join("/")
+    })
+}
+
+/// Stores every folder relative to `base` (the directory of the project file) when
+/// possible, keeping the absolute path as a fallback, so a project copied together with
+/// its photos opens anywhere (FR-023).
+pub fn relocate(file: &mut ProjectFile, base: &Path) {
+    for folder in &mut file.folders {
+        if folder.path_kind != PathKind::Absolute {
+            continue;
+        }
+        if let Some(rel) = relative_path(base, Path::new(&folder.path)) {
+            folder.absolute = Some(std::mem::replace(&mut folder.path, rel));
+            folder.path_kind = PathKind::Relative;
+        }
+    }
+}
+
+/// Where a folder of the project is on this machine.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ResolvedFolder {
+    pub id: u32,
+    /// The folder as it was saved, for messages and the Relink dialog.
+    pub saved: String,
+    /// `None` when neither the relative nor the absolute path exists here.
+    pub path: Option<PathBuf>,
+}
+
+/// Finds every folder: relative to `base` first, then the absolute path (FR-023).
+pub fn resolve_folders(file: &ProjectFile, base: Option<&Path>) -> Vec<ResolvedFolder> {
+    file.folders
+        .iter()
+        .map(|f| {
+            let mut candidates = Vec::new();
+            match f.path_kind {
+                PathKind::Relative => {
+                    if let Some(base) = base {
+                        candidates.push(base.join(&f.path));
+                    }
+                    candidates.extend(f.absolute.as_ref().map(PathBuf::from));
+                }
+                PathKind::Absolute => candidates.push(PathBuf::from(&f.path)),
+            }
+            ResolvedFolder {
+                id: f.id,
+                saved: f.absolute.clone().unwrap_or_else(|| f.path.clone()),
+                path: candidates.into_iter().find(|p| p.is_dir()),
+            }
+        })
+        .collect()
+}
+
 /// Folder paths to re-scan when the project opens.
 pub fn folder_paths(file: &ProjectFile) -> Vec<PathBuf> {
     file.folders
@@ -197,12 +288,27 @@ pub struct RestoreSummary {
 
 /// Re-applies saved edits to a freshly scanned library, matching by folder + path.
 pub fn restore(library: &mut Library, file: &ProjectFile) -> RestoreSummary {
+    let folders: Vec<(u32, PathBuf)> = file
+        .folders
+        .iter()
+        .map(|f| (f.id, PathBuf::from(&f.path)))
+        .collect();
+    restore_into(library, file, &folders)
+}
+
+/// Like [`restore`], with each folder id mapped to where it is on this machine (after
+/// [`resolve_folders`] or a relink). Rows of folders not in `folders` are skipped.
+pub fn restore_into(
+    library: &mut Library,
+    file: &ProjectFile,
+    folders: &[(u32, PathBuf)],
+) -> RestoreSummary {
     let mut summary = RestoreSummary::default();
     for row in &file.photos {
-        let Some(folder) = file.folders.iter().find(|f| f.id == row.folder) else {
+        let Some((_, folder)) = folders.iter().find(|(id, _)| *id == row.folder) else {
             continue;
         };
-        let full = Path::new(&folder.path).join(&row.path);
+        let full = folder.join(&row.path);
         let Some(id) = library.find_path(&full) else {
             summary.missing += 1;
             continue;
@@ -352,6 +458,72 @@ mod tests {
         file.photos[0].path = "../../etc/passwd".into();
         save(&path, &file)?;
         assert!(matches!(load(&path), Loaded::Corrupt(_)), "path traversal");
+        Ok(())
+    }
+
+    #[test]
+    fn fr_023_v1_fixture_still_opens() {
+        let Loaded::Ok(file) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v1.fotollection"))
+        else {
+            panic!("v1 project should load");
+        };
+        assert_eq!(
+            file.folders[0].absolute, None,
+            "v1 rows have no absolute hint"
+        );
+        assert_eq!(file.photos.len(), 2);
+        assert_eq!(file.photos[0].rating, Some(4));
+        assert_eq!(file.photos[1].flag, Some(Flag::Reject));
+    }
+
+    #[test]
+    fn fr_023_relative_paths() {
+        let rel = |b: &str, t: &str| relative_path(Path::new(b), Path::new(t));
+        assert_eq!(rel("/a/b", "/a/b/c/d").as_deref(), Some("c/d"));
+        assert_eq!(
+            rel("/a/b/projects", "/a/photos/trip").as_deref(),
+            Some("../../photos/trip")
+        );
+        assert_eq!(rel("/a/b", "/a/b").as_deref(), Some("."));
+        assert_eq!(rel("relative/base", "/a").as_deref(), None);
+        #[cfg(windows)]
+        assert_eq!(rel(r"C:\Users\me", r"D:\Photos").as_deref(), None);
+    }
+
+    #[test]
+    fn fr_023_relocated_folders_resolve_relative_first_then_absolute() -> std::io::Result<()> {
+        let root = tempfile::tempdir()?;
+        let photos = root.path().join("photos/trip");
+        std::fs::create_dir_all(&photos)?;
+        let mut lib = Library::new();
+        lib.add_folder(&photos);
+        let mut file = snapshot(&lib);
+        relocate(&mut file, root.path());
+        assert_eq!(file.folders[0].path_kind, PathKind::Relative);
+        assert_eq!(file.folders[0].path, "photos/trip");
+        assert_eq!(file.folders[0].absolute.as_deref(), photos.to_str());
+
+        // Same machine: found relative to the project.
+        let found = resolve_folders(&file, Some(root.path()));
+        assert_eq!(found[0].path.as_deref(), Some(photos.as_path()));
+
+        // The project and its photos copied elsewhere together: still relative.
+        let other = tempfile::tempdir()?;
+        std::fs::create_dir_all(other.path().join("photos/trip"))?;
+        let found = resolve_folders(&file, Some(other.path()));
+        assert_eq!(found[0].path, Some(other.path().join("photos/trip")));
+
+        // Only the project moved: falls back to the absolute path.
+        let lonely = tempfile::tempdir()?;
+        let found = resolve_folders(&file, Some(lonely.path()));
+        assert_eq!(found[0].path.as_deref(), Some(photos.as_path()));
+
+        // Neither exists: reported for the Relink dialog.
+        std::fs::remove_dir_all(&photos)?;
+        let found = resolve_folders(&file, Some(lonely.path()));
+        assert_eq!(found[0].path, None);
+        assert_eq!(Some(found[0].saved.as_str()), photos.to_str());
         Ok(())
     }
 }

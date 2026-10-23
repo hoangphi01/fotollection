@@ -68,7 +68,8 @@ crates/
       geocode.rs           # offline reverse geocoder + offline place search (GeoNames + k-d tree)
       cluster.rs           # trip DBSCAN (Phase 2)
       library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag)
-      project.rs         † # .fotollection v1: snapshot/restore by folder+path, FK validation (ADR-0010)
+      project.rs         † # project tables v2: snapshot/restore by folder+path, FK validation, relocate/resolve folders
+      bundle.rs          † # .fotollection ZIP bundle: manifest + BLAKE3, allowlisted parts, zip-bomb limits (ADR-0016)
       history.rs         † # undo/redo stack of inverse edits (FR-023)
       atomic.rs          † # tmp + fsync + .bak + rename
       presets.rs           # preset library: partial/stackable, linked, .fotopreset I/O (FR-033/034/038)
@@ -112,6 +113,7 @@ bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batc
 | UI framework | Vite + React 19 + TypeScript | Required by shadcn/ui ([ADR-0007](adr/0007-ui-react-shadcn-lucide.md)) |
 | UI components | shadcn/ui (Radix primitives) + Tailwind CSS v4 | Components are copied into the repo, so we own and audit them |
 | UI localization | `i18next` + `react-i18next` (MIT), bundled JSON locales | Typed keys, CLDR plurals, no runtime fetch ([ADR-0015](adr/0015-ui-localization-i18next.md)) |
+| Project bundle | `zip` (MIT), deflate only via `flate2` + pure-Rust `miniz_oxide` | One-file `.fotollection` like `.docx`, readable by any unzip tool ([ADR-0016](adr/0016-self-contained-project-bundle.md)) |
 | Icons | Lucide (`lucide-react`) | Tree-shaken: import individual icons only |
 | Virtualized grid | `@tanstack/react-virtual` | Required for 1,000+ thumbnails ([NFR-001](PRD.md#nfr-001--library-load-time)) |
 | UI state | React state + a small store (`zustand`) | Server state lives in Rust. The UI only caches it |

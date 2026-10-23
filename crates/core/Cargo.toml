@@ -22,6 +22,8 @@ serde_json.workspace = true
 specta.workspace = true
 thiserror.workspace = true
 walkdir.workspace = true
+zip.workspace = true
+flate2.workspace = true
 zune-core.workspace = true
 zune-jpeg.workspace = true
 

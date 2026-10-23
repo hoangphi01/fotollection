@@ -58,7 +58,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-020 | Localization | 1 | In Progress | English (default) + Vietnamese UI via i18next ([ADR-0015](adr/0015-ui-localization-i18next.md)): all strings and Rust error codes translated, language selector in settings, stored in `settings.json` v3, `check-i18n` gate in lint. Pending: native menu strings (with the File menu), German |
 | FR-021 | Auto-update | 3 | Not Started | |
 | FR-022 | Culling (rate, flag, filter) | 1 | In Progress | Stars `0`–`5`, `P`/`X`/`U` in grid and preview, undoable; filter by flag + min rating, export = filtered set (`fr_022_*`). Pending: date/camera/GPS/DPI filters, multi-select, loupe prefetch (NFR-012) |
-| FR-023 | Projects, autosave and undo | 1 | In Progress | Session project autosaves atomically and is restored at launch (re-scan + re-apply); undo/redo for crops. Save as/Open pending |
+| FR-023 | Projects, autosave and undo | 1 | In Progress | Session project autosaves atomically and is restored at launch (re-scan + re-apply); undo/redo for edits. Self-contained ZIP bundle in the core with allowlist, zip-bomb and checksum checks, folders relative to the bundle (project v2) ([ADR-0016](adr/0016-self-contained-project-bundle.md), `fr_023_bundle_*`). Save / Save As / Open / Relink UI pending |
 | FR-024 | Copies and order summary | 2 | Not Started | |
 | FR-025 | Mixed print sizes per order | 1 | Not Started | Builds on `PrintSize` |
 | FR-026 | Resolution warning | 1 | In Progress | Effective DPI + band shown in the inspector. Grid badge and pre-export summary pending |

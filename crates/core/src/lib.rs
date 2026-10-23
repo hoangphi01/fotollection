@@ -4,6 +4,7 @@
 //! See `docs/ARCHITECTURE.md` and ADR-0002 for the crate boundary.
 
 pub mod atomic;
+pub mod bundle;
 pub mod cancel;
 pub mod codec;
 pub mod export;

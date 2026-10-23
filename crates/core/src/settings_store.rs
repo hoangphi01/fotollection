@@ -14,7 +14,7 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v2 (FR-042, FR-043): `fonts` table, custom print sizes, stamp/frame font choice.
 /// v3 (FR-020): `ui.language`.
 pub const SCHEMA_VERSION: u32 = 3;
-const MAX_BYTES: u64 = 4 * 1024 * 1024;
+pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
 /// `(make, model)` unique (normalization rules N1–N3).
@@ -73,12 +73,19 @@ pub fn load(path: &Path) -> Loaded {
     if meta.len() > MAX_BYTES {
         return Loaded::Corrupt("settings file is too large".into());
     }
-    let bytes = match std::fs::read(path) {
-        Ok(b) => b,
-        Err(e) => return Loaded::Corrupt(e.to_string()),
-    };
+    match std::fs::read(path) {
+        Ok(bytes) => from_bytes(&bytes),
+        Err(e) => Loaded::Corrupt(e.to_string()),
+    }
+}
+
+/// Parses and validates settings already in memory (also a bundle part, ADR-0016).
+pub fn from_bytes(bytes: &[u8]) -> Loaded {
+    if bytes.len() as u64 > MAX_BYTES {
+        return Loaded::Corrupt("settings file is too large".into());
+    }
     // Check the version before the strict parse, so newer files are recognised.
-    let header: Header = match serde_json::from_slice(&bytes) {
+    let header: Header = match serde_json::from_slice(bytes) {
         Ok(h) => h,
         Err(e) => return Loaded::Corrupt(e.to_string()),
     };
@@ -88,7 +95,7 @@ pub fn load(path: &Path) -> Loaded {
     if header.schema_version > SCHEMA_VERSION {
         return Loaded::NewerVersion(header.schema_version);
     }
-    match serde_json::from_slice::<FileV3>(&bytes) {
+    match serde_json::from_slice::<FileV3>(bytes) {
         Ok(file) => match validate(file) {
             Ok(settings) => Loaded::Ok(settings),
             Err(e) => Loaded::Corrupt(e),
@@ -141,6 +148,10 @@ pub fn quarantine(path: &Path) -> std::io::Result<PathBuf> {
 
 /// Writes atomically, keeping the previous file as `.bak` (DATABASE.md §4.4).
 pub fn save(path: &Path, settings: &StoredSettings) -> std::io::Result<()> {
+    crate::atomic::write_with_backup(path, &to_bytes(settings)?)
+}
+
+pub fn to_bytes(settings: &StoredSettings) -> std::io::Result<Vec<u8>> {
     let file = FileV3 {
         format: FORMAT.to_owned(),
         schema_version: SCHEMA_VERSION,
@@ -150,8 +161,7 @@ pub fn save(path: &Path, settings: &StoredSettings) -> std::io::Result<()> {
         fonts: settings.fonts.clone(),
         ui: settings.ui,
     };
-    let bytes = serde_json::to_vec_pretty(&file).map_err(std::io::Error::other)?;
-    crate::atomic::write_with_backup(path, &bytes)
+    serde_json::to_vec_pretty(&file).map_err(std::io::Error::other)
 }
 
 #[cfg(test)]

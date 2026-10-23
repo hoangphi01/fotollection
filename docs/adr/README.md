@@ -13,12 +13,13 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0007](0007-ui-react-shadcn-lucide.md) | UI stack: React + shadcn/ui + Lucide | Accepted | 2026-10-23 |
 | [0008](0008-license-gpl3-with-relicensing-option.md) | License: GPL-3.0, keeping the option to relicense | Accepted | 2026-10-23 |
 | [0009](0009-unsigned-distribution.md) | Ship unsigned builds (no paid certificates) | Accepted | 2026-10-23 |
-| [0010](0010-project-file-format.md) | Project file format for culling and edits | Accepted | 2026-10-23 |
+| [0010](0010-project-file-format.md) | Project file format for culling and edits | Superseded by 0016 | 2026-10-23 |
 | [0011](0011-photo-style-looks.md) | Photo Style looks via baked 3D LUTs, global adjustments only | Accepted | 2026-10-23 |
 | [0012](0012-pure-rust-codecs-first.md) | Start with pure-Rust JPEG codecs behind a trait | Accepted | 2026-10-23 |
 | [0013](0013-csp-inline-styles.md) | Allow inline styles in the CSP, keep scripts strict | Accepted | 2026-10-23 |
 | [0014](0014-user-supplied-brand-logos.md) | Camera brand logos are user-supplied | Accepted | 2026-10-23 |
 | [0015](0015-ui-localization-i18next.md) | Interface localization with bundled i18next resources | Accepted | 2026-10-23 |
+| [0016](0016-self-contained-project-bundle.md) | Self-contained project bundle (ZIP) | Accepted | 2026-10-24 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

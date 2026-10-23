@@ -1,0 +1,14 @@
+{
+  "format": "fotollection-project",
+  "schema_version": 1,
+  "app_version": "0.0.1",
+  "modified_at": "2026-10-23T10:00:00+00:00",
+  "folders": [
+    { "id": 1, "path": "/Users/someone/Pictures/Lisbon", "path_kind": "absolute" }
+  ],
+  "photos": [
+    { "id": 1, "folder": 1, "path": "day1/IMG_0416.JPG", "fp_size": 3012345, "fp_mtime": 1726000000,
+      "crop": { "cx": 0.4, "cy": 0.5, "zoom": 1.25 }, "rating": 4, "flag": "pick" },
+    { "id": 2, "folder": 1, "path": "IMG_0420.JPG", "fp_size": 2890000, "fp_mtime": 1726000100, "flag": "reject" }
+  ]
+}
