@@ -9,7 +9,7 @@
 
 The app works end to end for **JPEG**: open or drop a folder → thumbnail grid → preview with crop and date stamp → export to `YYYY-MM-DD/` folders with progress and cancel. Since then: crop editor, session project with undo, info frame, custom fonts and print sizes, and the Rust vs browser benchmark. The remaining work runs in three stages, from easiest to hardest ([ROADMAP.md — Phase 1 work order](ROADMAP.md#phase-1-work-order-2026-10-23)):
 
-1. **Stage 1:** EXTENSION.md ✓, PNG input ✓, basic culling (FR-022) ✓, preview profiling.
+1. **Stage 1:** EXTENSION.md ✓, PNG input ✓, basic culling (FR-022) ✓, preview profiling ✓, Original print size (FR-045) ✓, 5,000-photo memory check (core) ✓.
 2. **Stage 2:** the `.fotollection` bundle with Save as / Open / Relink (FR-023), faster previews.
 3. **Stage 3:** best-shot suggestions (FR-041), HEIC input.
 
@@ -86,10 +86,10 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 
 | ID | Requirement | Budget | Last measured | Status |
 |----|-------------|--------|---------------|--------|
-| NFR-001 | Library load time | < 1 s first screen | 95 photos: import+EXIF 28 ms, T0 7 ms | In Progress |
+| NFR-001 | Library load time | < 1 s first screen | 5,035 photos: import+EXIF 358 ms, T0 237 ms ([RESULT.md](RESULT.md)) | In Progress |
 | NFR-002 | Preview latency | < 50 ms p95 | 26 ms p95 (warm) | In Progress |
 | NFR-003 | Export throughput | ≥ 8 photos/s | 19.7/s (16 MP) | In Progress |
-| NFR-004 | Memory ceiling | ≤ 2 GB | 1.41 GB | In Progress |
+| NFR-004 | Memory ceiling | ≤ 2 GB | Core: 1.33 GB (95 photos), 1.47 GB (5,035 photos), flat. Whole-app run with 5,035 photos pending | In Progress |
 | NFR-005 | UI responsiveness | < 100 ms | — | Not Started |
 | NFR-006 | Offline and zero telemetry | 0 requests | — | Not Started |
 | NFR-007 | Platforms | macOS 11+, Win 10/11 | — | Not Started |

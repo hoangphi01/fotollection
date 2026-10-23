@@ -8,7 +8,7 @@
 |-------------|------|
 | New to the project | [PRD](PRD.md) → [ARCHITECTURE](ARCHITECTURE.md) → [ROADMAP](ROADMAP.md) → [STATUS](STATUS.md) |
 | About to write code | [DEVELOPMENT](DEVELOPMENT.md) → [STYLE_RULE](STYLE_RULE.md) → [TESTING](TESTING.md) → [CONTRIBUTING](../CONTRIBUTING.md) |
-| Working on performance | [OPTIMIZATION](OPTIMIZATION.md) |
+| Working on performance | [RESULT](RESULT.md) → [OPTIMIZATION](OPTIMIZATION.md) |
 | Touching file input, IPC or the webview | [SECURITY](SECURITY.md) |
 | Changing anything that is saved to disk | [DATABASE](DATABASE.md) → [EXTENSION](EXTENSION.md) |
 | Shipping a build | [RELEASE](RELEASE.md) |
@@ -26,6 +26,7 @@
 | File types: extensions, MIME/UTI, recognition, versions, limits, compatibility rules | [EXTENSION.md](EXTENSION.md) |
 | Why a significant decision was made | [adr/](adr/README.md) |
 | Performance methodology, design techniques, benchmark history | [OPTIMIZATION.md](OPTIMIZATION.md) |
+| Latest measured speed and memory, in one readable page | [RESULT.md](RESULT.md) |
 | Code, UI, git and docs conventions | [STYLE_RULE.md](STYLE_RULE.md) |
 | Toolchain setup, build commands, build disk cleanup | [DEVELOPMENT.md](DEVELOPMENT.md) |
 | Threat model, defenses, error codes | [SECURITY.md](SECURITY.md) |

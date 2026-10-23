@@ -72,7 +72,7 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 |------|-------------|-----------|
 | `.fotollection` as a self-contained ZIP bundle, like `.docx`: `manifest.json` with checksums, `project.json`, `settings.json`, embedded `fonts/`, `logos/` and `presets/`. Photos are not embedded | FR-023 | New schema version, migration from v1 and a fixture; an ADR superseding [ADR-0010](adr/0010-project-file-format.md) |
 | Save as / Open, installing embedded fonts and logos after validation, plus a **Relink folder** dialog when photos moved | FR-023 | Untrusted input: zip-bomb limits, path-traversal checks, typed parsing of every part ([SECURITY.md](SECURITY.md)) |
-| Faster previews: a `turbojpeg` codec behind `JpegCodec` if Stage 1 profiling points at decode or encode; target ≤ 17 ms warm | NFR-002 | Native dependency on both platforms ([ADR-0012](adr/0012-pure-rust-codecs-first.md)) |
+| Faster previews: Stage 1 profiling shows JPEG encode is 62 % of the warm preview ([OPTIMIZATION.md §2.1](OPTIMIZATION.md#21-measured-the-same-job-in-chromium)). First plain Huffman tables and 4:2:0 for previews, then a `turbojpeg` codec behind `JpegCodec` if still needed; target ≤ 17 ms warm | NFR-002 | Native dependency on both platforms if `turbojpeg` is needed ([ADR-0012](adr/0012-pure-rust-codecs-first.md)) |
 
 **Stage 3 — Hard, research and native code**
 

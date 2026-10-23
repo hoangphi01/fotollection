@@ -64,7 +64,15 @@ Full specification: [docs/PRD.md](docs/PRD.md).
 
 ## Performance
 
-Fotollection is built for enthusiast and professional photographers, so speed is a requirement, not a nice-to-have.
+Fotollection is built for enthusiast and professional photographers, so speed is a requirement, not a nice-to-have. Every number below is measured, not estimated. Measurements: an Apple M3 (8 cores, 16 GB), real 16 MP JPEGs, 2026-10-23. Full results are in [docs/RESULT.md](docs/RESULT.md).
+
+| What | Budget | Measured | |
+|------|--------|----------|---|
+| Open a folder (import + EXIF + first thumbnails) | < 1 s for 1,000 photos | **0.6 s for 5,035 photos** | ✓ |
+| Preview update when changing settings | < 50 ms | **26 ms** (p50) | ✓ |
+| Export throughput | ≥ 8 photos/s (24 MP) | **17–19 photos/s** (16 MP) | ✓ |
+| Peak memory, 95 photos | ≤ 2 GB | **1.33 GB** | ✓ |
+| Peak memory, 5,035 photos | ≤ 2 GB, any batch size | **1.47 GB**: memory stays flat as batches grow | ✓ |
 
 We measured it against the obvious alternative, a web app doing the same work in the browser (`createImageBitmap` + `OffscreenCanvas` in Web Workers, one per core). Both ran on the same 95 photos on the same machine:
 
@@ -73,20 +81,11 @@ We measured it against the obvious alternative, a web app doing the same work in
 On raw speed, the browser is just as fast. Chromium uses libjpeg-turbo with SIMD, and it wins on small previews. That does not mean Fotollection could be a web page:
 
 - The browser can only encode JPEG with 4:2:0 chroma, which halves colour resolution. Fotollection exports 4:4:4, with twice the chroma data, in the same time.
-- Fotollection uses 20% less memory, and its export is bounded, so 5,000 photos fit in the same RAM. A browser tab has a hard ceiling.
-- Fotollection writes the files: atomic renames, EXIF kept and GPS stripped. The browser only produced blobs and never wrote them.
+- Fotollection uses 20% less memory, and its export is bounded: a measured batch of 5,035 photos peaks at 1.47 GB. A browser tab has a hard ceiling.
+- Fotollection writes the files with atomic renames, and writes no EXIF, so GPS never leaves your machine. The browser only produced blobs and never wrote them.
 - Colour profiles (ICC), 16-bit RAW in Phase 3, and HEIC are out of reach in the browser.
 
-Faster previews are now a tracked optimization. Reproduce the chart with `bench/run.sh <photo-folder>`; the method is in [docs/OPTIMIZATION.md §2](docs/OPTIMIZATION.md#2-why-native-rust-instead-of-a-web-app).
-
-The budgets every change must respect ([docs/OPTIMIZATION.md §3](docs/OPTIMIZATION.md#3-budgets)):
-
-| Metric | Budget |
-|--------|--------|
-| First thumbnails for a folder of 1,000 photos | **< 1 s** |
-| Preview update when changing settings | **< 50 ms** |
-| Export throughput (24 MP JPEG, 8 cores) | **≥ 8 photos/s** |
-| Peak memory, any batch size | **≤ 2 GB** |
+Faster previews are the next optimization: profiling shows that JPEG encoding takes 62 % of the preview time. Reproduce the chart with `bench/run.sh <photo-folder>`. The method is in [docs/OPTIMIZATION.md §2](docs/OPTIMIZATION.md#2-why-native-rust-instead-of-a-web-app), and the budgets every change must respect are in [§3](docs/OPTIMIZATION.md#3-budgets).
 
 ## Download
 

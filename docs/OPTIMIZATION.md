@@ -45,10 +45,16 @@ The work is not identical, and the differences favour the browser:
 
 **What this changes.** The earlier hypothesis, that `canvas.toBlob` is slow, is **wrong**. Chromium's libjpeg-turbo with SIMD matches our pure-Rust codecs on throughput, and it beats our preview path. Native still wins on what the table below lists: encoder control, bounded memory, colour, bit depth, formats and file output. Raw speed is not the argument for native.
 
-Follow-ups:
+Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders, 3 runs):
 
-- **Preview latency.** Profile the resize and encode steps of `preview::render_jpeg`, and try a `turbojpeg` codec behind `JpegCodec` ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). Target: ≤ 17 ms warm.
-- **Export.** Try 8 in flight instead of 6.
+| Warm preview step (1600 px, from the cached 2048 px T2) | Time | Share |
+|----------------------------------------------------------|-----:|------:|
+| Crop + Lanczos resize (`fast_image_resize`) | 9.7 ms | 37 % |
+| Date stamp (`ab_glyph`) | ≈ 0.1 ms | ≈ 0 % |
+| JPEG encode q85, 4:4:4, optimized Huffman (`jpeg-encoder`) | 16.2 ms | 62 % |
+
+- **Preview latency.** The encoder is the bottleneck, not image processing. In order of cost: skip optimized Huffman tables for previews (one extra pass that only saves bytes on a local transfer); encode previews 4:2:0, since they are never printed; then a `turbojpeg` codec behind `JpegCodec` ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). Each step is benchmarked before it is kept. Target: ≤ 17 ms warm (Stage 2).
+- **Export concurrency: keep 6 in flight.** 8 in flight was about 12 % faster (median 19.4 vs 17.3 photos/s, noisy), but peak RSS rose from 1.32–1.45 GB to 1.76–1.91 GB on 16 MP photos. Scaled to 24 MP buffers, that would break the 2 GB budget ([NFR-004](PRD.md#nfr-004--memory-ceiling)), so `default_inflight()` stays at 6.
 
 ### 2.2 Qualitative comparison
 
@@ -155,6 +161,9 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-10-23 | cda7a5f | REF-MAC (M3) | `bench/run.sh`: warm preview p50, Rust vs Chromium | 26.0 vs 17.4 ms | Browser faster; follow-up in §2.1 |
 | 2026-10-23 | cda7a5f | REF-MAC (M3) | `bench/run.sh`: peak RSS, Rust vs Chromium | 1.40 vs 1.76 GB | Rust 20% lower |
 | 2026-10-23 | Stage 1 | REF-MAC (M3) | Full PNG decode 4608×3456 RGB8 (`png` crate, `render_one`) | 122 ms | 2.7× JPEG (45 ms); PNG photos are rare, thumbnails come from T1 |
+| 2026-10-23 | Stage 1 | REF-MAC (M3) | Warm preview breakdown, 1600 px from T2 (`measure_folder`) | resize 9.7 ms, stamp ≈ 0.1 ms, encode q85 16.2 ms | Encode is 62 % (§2.1) |
+| 2026-10-23 | Stage 1 | REF-MAC (M3) | Export 95 × 16 MP, 6 vs 8 in flight, median of 3 | 17.3 vs 19.4 photos/s; peak RSS 1.32–1.45 vs 1.76–1.91 GB | Keep 6: 8 would exceed 2 GB at 24 MP |
+| 2026-10-23 | Stage 1 | REF-MAC (M3) | 5,035 photos (95 hard-linked × 53): import, T0, T1, export with `--discard-output` | import 358 ms, T1 32.6/s, export 13.5/s, peak RSS 1.47 GB | NFR-004 ✓, memory flat vs 1.33 GB for 95 photos; machine throttled ([RESULT.md](RESULT.md)) |
 
 ## 6. Benchmark corpus
 
