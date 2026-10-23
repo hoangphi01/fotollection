@@ -46,7 +46,7 @@ Cargo.toml               † # Cargo workspace, shared lints, build-size profile
 rust-toolchain.toml      † # pinned Rust version
 deny.toml                † # cargo-deny license/advisory policy (ADR-0008)
 package.json             † # npm workspace root: Tauri CLI + scripts (npm run dev)
-assets/logo-source.png   † # master logo; app icons are generated from it
+assets/                 † # logo-source.png (master), logo-square.png (app icons), logo-mark.png (small-size mark, no wordmark)
 crates/
   core/                  † # fotollection-core: all domain logic, no Tauri
     src/

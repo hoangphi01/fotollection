@@ -17,7 +17,15 @@ export function LibrarySidebar({ folders, onOpenFolder }: LibrarySidebarProps) {
   return (
     <aside className="flex w-60 shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground">
       <div className="flex h-12 items-center gap-2 px-4">
-        <img src="/logo.png" alt="" className="size-7 rounded-md" />
+        {/* Simplified mark (no wordmark) pre-rendered per density, so WebKit never downscales */}
+        <img
+          src="/brand/mark-28.png"
+          srcSet="/brand/mark-28.png 1x, /brand/mark-56.png 2x, /brand/mark-84.png 3x"
+          width={28}
+          height={28}
+          alt=""
+          className="rounded-md"
+        />
         <span className="font-heading text-sm font-semibold tracking-tight">Fotollection</span>
       </div>
       <Separator />

@@ -74,6 +74,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
 - **Icons:** Lucide only (`lucide-react`). Import icons individually (`import { Crop } from "lucide-react"`). Default size is 16 px in dense UI and 20 px in toolbars, at the default stroke width. Icon-only buttons must have an `aria-label` and a tooltip.
 - **Styling:** use Tailwind utility classes and the shadcn theme tokens (`bg-background`, `text-muted-foreground`…). Never hard-code colours. Merge classes with `cn()` from `lib/utils.ts`. Use a 4 px spacing scale (Tailwind default).
 - Light and dark themes follow the OS setting, using shadcn's CSS-variable theming.
+- **Logo:** below 64 px, use the **mark** (frame + flower, no wordmark) from `ui/public/brand/mark-{28,56,84}.png`, with `srcSet` for 1x/2x/3x. Never let the webview downscale the full logo: WebKit's resampling turns its fine line art and text into noise. Regenerate these files from `assets/logo-mark.png` with high-quality resampling.
 - Every action longer than 200 ms shows progress. Every destructive action can be undone or needs confirmation.
 - Keyboard-first: every primary action has a shortcut, and focus is always visible.
 - Error messages say what happened and what to do next. Never show raw error strings or stack traces.
