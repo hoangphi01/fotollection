@@ -15,8 +15,10 @@ use std::time::{Duration, Instant};
 use fotollection_core::PrintSize;
 use fotollection_core::cancel::CancellationToken;
 use fotollection_core::export::{EXPORT_QUALITY, ExportOptions, default_inflight, run_export};
+use fotollection_core::frame::{CameraProfile, FrameSettings, LogoKind};
 use fotollection_core::import::{self, ImportedFile};
 use fotollection_core::library::{PhotoId, PhotoSummary, flags};
+use fotollection_core::logo;
 use fotollection_core::metadata;
 use fotollection_core::plan::{DpiBand, effective_dpi};
 use fotollection_core::settings::RenderSettings;
@@ -182,6 +184,9 @@ pub fn import_paths(app: &AppHandle, paths: Vec<PathBuf>) -> ImportSummary {
         .library
         .read()
         .map_or(0, |l| u32::try_from(l.len()).unwrap_or(u32::MAX));
+    if state.ensure_camera_profiles() {
+        state.persist();
+    }
     let _ = LibraryChanged { count }.emit(app);
     warm_thumbnails(app, new_ids);
     summary
@@ -285,10 +290,13 @@ pub fn set_settings(
         .map_err(|e| IpcError::internal(e.to_string()))?;
     guard.0 = settings;
     guard.1 = guard.1.wrapping_add(1);
-    Ok(SettingsState {
+    let result = SettingsState {
         settings: guard.0.clone(),
         revision: guard.1,
-    })
+    };
+    drop(guard);
+    state.persist();
+    Ok(result)
 }
 
 /// Chooses the export destination with a Rust-side dialog. Returns its display path.
@@ -360,13 +368,22 @@ pub fn start_export(app: AppHandle, state: State<'_, AppState>) -> Result<u32, I
         .map_err(|e| IpcError::internal(e.to_string()))?
         .insert(job_id, cancel.clone());
 
+    // Snapshot the frame state so export never holds locks the UI needs.
+    let frames = state
+        .frame
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?
+        .clone();
+
     std::thread::spawn(move || {
         let state = app.state::<AppState>();
+        let frame_for = |record: &fotollection_core::library::PhotoRecord| frames.request(record);
         let options = ExportOptions {
             destination: &destination,
             settings: &settings,
             quality: EXPORT_QUALITY,
             max_inflight: default_inflight(),
+            frame_for: &frame_for,
         };
         let throttle = Throttle::default();
         let on_progress = |done: u32, total: u32| {
@@ -431,9 +448,14 @@ pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
         .and_then(|l| l.record(id))
         .ok_or_else(|| "unknown photo".to_owned())?;
     let settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
+    let frame = state
+        .frame
+        .read()
+        .map_err(|e| e.to_string())?
+        .request(&record);
     state
         .previews
-        .render_jpeg(&record, &settings, state.codec.as_ref())
+        .render_jpeg(&record, &settings, frame.as_ref(), state.codec.as_ref())
         .map_err(|e| e.to_string())
 }
 
@@ -458,6 +480,13 @@ pub struct PhotoDetails {
     /// Effective DPI of the crop at the current print size (FR-026).
     pub print_dpi: u32,
     pub print_quality: DpiBand,
+    /// Camera profile row for this photo's camera (FR-040), if it has EXIF make/model.
+    pub camera_id: Option<u32>,
+    pub lens: Option<String>,
+    pub focal_mm: Option<f32>,
+    pub f_number: Option<f32>,
+    pub exposure_s: Option<f32>,
+    pub iso: Option<u32>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Type)]
@@ -497,6 +526,11 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             .validate()
             .unwrap_or(PrintSize::ALL[1]);
         let (print_dpi, print_quality) = effective_dpi(width, height, print);
+        let shot = record.shot.clone();
+        let camera_id = state.frame.read().ok().and_then(|f| {
+            f.profile_for(shot.make.as_deref(), shot.model.as_deref())
+                .map(|p| p.id)
+        });
         Ok(PhotoDetails {
             id,
             file_name: record.file_name.clone(),
@@ -515,8 +549,197 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             gps: record.gps.map(|(lat, lon)| GpsPoint { lat, lon }),
             print_dpi,
             print_quality,
+            camera_id,
+            lens: shot.lens,
+            focal_mm: shot.focal_mm,
+            f_number: shot.f_number,
+            exposure_s: shot.exposure_s,
+            iso: shot.iso,
         })
     })
     .await
     .map_err(|e| IpcError::internal(e.to_string()))?
+}
+
+/// A camera profile plus the defaults the UI shows as placeholders.
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct CameraProfileView {
+    pub profile: CameraProfile,
+    pub default_display_name: Option<String>,
+    pub default_brand: Option<String>,
+    pub has_logo_image: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct FrameConfig {
+    pub settings: FrameSettings,
+    pub cameras: Vec<CameraProfileView>,
+    pub revision: u32,
+}
+
+fn frame_config(state: &AppState) -> Result<FrameConfig, IpcError> {
+    let frame = state
+        .frame
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?;
+    let revision = state.settings.read().map_or(0, |s| s.1);
+    Ok(FrameConfig {
+        settings: frame.settings.clone(),
+        cameras: frame
+            .cameras
+            .iter()
+            .map(|p| CameraProfileView {
+                default_display_name: p.default_display_name(),
+                default_brand: p.default_brand(),
+                has_logo_image: frame.logos.contains_key(&p.id),
+                profile: p.clone(),
+            })
+            .collect(),
+        revision,
+    })
+}
+
+/// Info-frame settings and camera profiles (FR-040).
+#[tauri::command]
+#[specta::specta]
+pub fn get_frame_config(state: State<'_, AppState>) -> Result<FrameConfig, IpcError> {
+    frame_config(&state)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn set_frame_settings(
+    state: State<'_, AppState>,
+    settings: FrameSettings,
+) -> Result<FrameConfig, IpcError> {
+    state
+        .frame
+        .write()
+        .map_err(|e| IpcError::internal(e.to_string()))?
+        .settings = settings;
+    state.bump_revision();
+    state.persist();
+    frame_config(&state)
+}
+
+/// Updates the editable fields of one camera profile. Make/model (its identity) and the
+/// logo kind are kept from the stored row; logos change only through the logo commands.
+#[tauri::command]
+#[specta::specta]
+pub fn set_camera_profile(
+    state: State<'_, AppState>,
+    profile: CameraProfile,
+) -> Result<FrameConfig, IpcError> {
+    {
+        let mut frame = state
+            .frame
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        let has_logo = frame.logos.contains_key(&profile.id);
+        let row = frame
+            .cameras
+            .iter_mut()
+            .find(|c| c.id == profile.id)
+            .ok_or_else(|| IpcError::new("camera.unknown", "Unknown camera"))?;
+        let logo = match profile.logo {
+            LogoKind::Image if !has_logo => row.logo,
+            other => other,
+        };
+        *row = CameraProfile {
+            id: row.id,
+            make: row.make.clone(),
+            model: row.model.clone(),
+            logo,
+            ..profile
+        }
+        .sanitized();
+    }
+    state.bump_revision();
+    state.persist();
+    frame_config(&state)
+}
+
+/// Picks a PNG logo with a Rust-side dialog, validates it, and copies it into the app's
+/// config folder (ADR-0014, SECURITY.md §3). `None` if the user cancelled.
+#[tauri::command]
+#[specta::specta]
+pub async fn pick_camera_logo(
+    app: AppHandle,
+    camera_id: u32,
+) -> Result<Option<FrameConfig>, IpcError> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let picked = app
+            .dialog()
+            .file()
+            .set_title("Choose a logo (PNG)")
+            .add_filter("PNG image", &["png"])
+            .blocking_pick_file();
+        let Some(path) = picked.and_then(|p| p.into_path().ok()) else {
+            return Ok(None);
+        };
+        let size = std::fs::metadata(&path)
+            .map_err(|e| IpcError::new("logo.unreadable", e.to_string()))?
+            .len();
+        if size > logo::MAX_LOGO_BYTES as u64 {
+            return Err(IpcError::new(
+                "logo.too_large",
+                "The logo file is larger than 2 MB",
+            ));
+        }
+        let bytes =
+            std::fs::read(&path).map_err(|e| IpcError::new("logo.unreadable", e.to_string()))?;
+        let image = logo::decode_png(&bytes).map_err(|e| IpcError::new(e.code(), e.to_string()))?;
+        std::fs::create_dir_all(&state.logo_dir)
+            .map_err(|e| IpcError::new("logo.write_failed", e.to_string()))?;
+        fotollection_core::thumbs::write_atomic(
+            &state.logo_dir.join(format!("{camera_id}.png")),
+            &bytes,
+        )
+        .map_err(|e| IpcError::new("logo.write_failed", e.to_string()))?;
+        {
+            let mut frame = state
+                .frame
+                .write()
+                .map_err(|e| IpcError::internal(e.to_string()))?;
+            let row = frame
+                .cameras
+                .iter_mut()
+                .find(|c| c.id == camera_id)
+                .ok_or_else(|| IpcError::new("camera.unknown", "Unknown camera"))?;
+            row.logo = LogoKind::Image;
+            frame.logos.insert(camera_id, std::sync::Arc::new(image));
+        }
+        state.bump_revision();
+        state.persist();
+        frame_config(&state).map(Some)
+    })
+    .await
+    .map_err(|e| IpcError::internal(e.to_string()))?
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn clear_camera_logo(
+    state: State<'_, AppState>,
+    camera_id: u32,
+) -> Result<FrameConfig, IpcError> {
+    {
+        let mut frame = state
+            .frame
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        frame.logos.remove(&camera_id);
+        if let Some(row) = frame.cameras.iter_mut().find(|c| c.id == camera_id)
+            && row.logo == LogoKind::Image
+        {
+            row.logo = LogoKind::Text;
+        }
+    }
+    let _ = std::fs::remove_file(state.logo_dir.join(format!("{camera_id}.png")));
+    state.bump_revision();
+    state.persist();
+    frame_config(&state)
 }

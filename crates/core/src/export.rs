@@ -15,7 +15,7 @@ use crate::cancel::CancellationToken;
 use crate::codec::{CodecError, JpegCodec};
 use crate::image::apply_orientation;
 use crate::library::{PhotoId, PhotoRecord, flags};
-use crate::plan::plan;
+use crate::plan::{FrameRequest, plan};
 use crate::render::{RenderError, render};
 use crate::settings::RenderSettings;
 
@@ -70,6 +70,8 @@ pub struct ExportOptions<'a> {
     pub quality: u8,
     /// Photos processed at once; bounds peak memory (NFR-004).
     pub max_inflight: usize,
+    /// The info frame for one photo, if any (FR-040).
+    pub frame_for: &'a (dyn Fn(&PhotoRecord) -> Option<FrameRequest> + Sync),
 }
 
 /// A sensible default for `max_inflight`: one per core, capped so decoded 24 MP buffers
@@ -129,6 +131,7 @@ fn export_one(
         .validate()
         .unwrap_or(crate::PrintSize::ALL[1]);
     let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
+    let frame = (options.frame_for)(record);
     let p = plan(
         upright.width,
         upright.height,
@@ -136,6 +139,7 @@ fn export_one(
         options.settings,
         print,
         None,
+        frame.as_ref(),
     );
     let image = render(&upright, &p)?;
     drop(upright);

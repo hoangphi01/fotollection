@@ -14,6 +14,8 @@ import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ExportSection } from '@/features/export/export-section'
+import { FrameSection } from '@/features/frame/frame-section'
+import type { FrameConfigApi } from '@/features/frame/use-frame-config'
 import {
   commands,
   type Corner,
@@ -26,6 +28,7 @@ import { useIpcQuery } from './use-ipc-query'
 type SettingsPanelProps = {
   settings: RenderSettings | null
   onChange: (change: (current: RenderSettings) => RenderSettings) => void
+  frame: FrameConfigApi
   photoCount: number
 }
 
@@ -51,7 +54,7 @@ function formatCm(mm: number): string {
   return String(mm / 10)
 }
 
-export function SettingsPanel({ settings, onChange, photoCount }: SettingsPanelProps) {
+export function SettingsPanel({ settings, onChange, frame, photoCount }: SettingsPanelProps) {
   const printSizes = useIpcQuery(commands.listPrintSizes)
   const appInfo = useIpcQuery(commands.appInfo)
   const stamp = settings?.stamp
@@ -164,6 +167,9 @@ export function SettingsPanel({ settings, onChange, photoCount }: SettingsPanelP
             <TooltipContent>Offline place names arrive in the next slice (FR-005)</TooltipContent>
           </Tooltip>
         </section>
+
+        <Separator />
+        <FrameSection frame={frame} />
       </div>
 
       <Separator />

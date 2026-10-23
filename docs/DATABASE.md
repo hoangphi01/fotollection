@@ -12,7 +12,8 @@
 |-------|--------|----------|---------------------|----------|----------------|
 | **Project file** `*.fotollection` | JSON, versioned ([§4](#4-project-file-schema)) | Chosen by the user (default: next to the photos) | `project.rs` | Until the user deletes it | **Yes**: folder paths, places, coordinates |
 | Project backup `*.fotollection.bak` | Same as the project | Next to the project file | `project.rs` | Replaced on each successful save | Yes |
-| App settings `settings.json` | JSON, versioned ([§6](#6-app-settings)) | App config dir | `settings.rs` | Until uninstall or reset | Minimal (last export folder) |
+| App settings `settings.json` † | JSON, versioned ([§6](#6-app-settings)) | App config dir | `settings_store.rs` | Until uninstall or reset | Camera names/lenses only |
+| Camera logos `logos/<id>.png` † | PNG, validated copy | App config dir | `logo.rs` | Until removed | No |
 | Recent projects `recent.json` | JSON array of up to 10 paths | App config dir | `settings.rs` | Until cleared | Yes: paths |
 | Preset library `presets/*.fotopreset` | JSON, one file per preset ([§7](#7-presets)) | App config dir | `presets.rs` | Until the user deletes them | No |
 | Thumbnail cache `thumbs/` | JPEG files + `index.bin` ([§8](#8-thumbnail-cache)) | App cache dir | `thumbs.rs` | LRU, 2 GB cap, can be cleared at any time | **Yes**: image content |
@@ -233,16 +234,37 @@ These are read-only and compiled into the binary or bundled as resources, so the
 
 ## 6. App settings
 
-`settings.json` (with its own `schema_version`, migrated like projects) holds **app-wide** preferences:
+`settings.json` in the app config dir is the **first persisted file** (implemented). It holds app-wide state that must survive restarts:
 
-- UI language and theme override.
-- Thumbnail cache size limit.
-- Last export folder.
-- Updater opt-in ([FR-021](PRD.md#fr-021--auto-update)).
-- Whether the previous project is reopened on launch.
-- Presets to apply automatically on import ([FR-038](PRD.md#fr-038--print-presets)).
+```json
+{
+  "format": "fotollection-settings",
+  "schema_version": 1,
+  "render": { "printSize": "10x15", "stamp": { "enabled": true, "format": "iso", "corner": "bottomRight", "color": "white" } },
+  "frame": {
+    "enabled": true, "fit": "crop", "color": "white", "dateFormat": "slash",
+    "fields": { "logo": true, "camera": true, "lens": true, "focal": true, "aperture": true,
+                "shutter": true, "iso": true, "photoStyle": true, "date": true, "place": true }
+  },
+  "cameras": [
+    { "id": 1, "make": "Panasonic", "model": "DC-GX9", "displayName": "LUMIX GX9", "brandText": "LUMIX",
+      "lens": "Индустар-50-2", "focalMm": 50.0, "fNumber": 4.0, "photoStyle": "L. Monochrome D", "logo": "text" }
+  ]
+}
+```
 
-Per-project choices belong in the project file, **not** here (N3). Settings are written with the same atomic protocol as projects ([§4.4](#44-write-protocol)).
+- **`cameras` is a table** (N1–N3): the key is `id`, `(make, model)` is unique, and every override is optional (sparse, N5). A missing value falls back to EXIF or to a derived default, which is computed and never stored (N4). A row is created the first time a camera is imported.
+- **Logos** live next to the file as `logos/<camera-id>.png`, copied in after validation ([ADR-0014](adr/0014-user-supplied-brand-logos.md)). The JSON never references paths outside the config dir. `logo: "image"` means the file exists.
+- **Writes** use the same atomic protocol as projects ([§4.4](#44-write-protocol)): `.json.tmp`, then fsync, then the previous file copied to `.json.bak`, then rename. A write happens on every settings change; changes are rare and the file is tiny.
+- **Load rules:**
+  - A missing file means defaults.
+  - A `schema_version` newer than the app understands means defaults, and the file is **never overwritten**.
+  - An invalid file (bad JSON, unknown fields, duplicate camera rows, unknown print size) is moved to `.json.corrupt`, and defaults are used.
+- **Not here:** per-project choices (ratings, per-photo sizes and crops) belong in the project file ([§4](#4-project-file-schema)) once FR-023 lands.
+
+| Version | App version | Change |
+|---------|-------------|--------|
+| 1 | 0.0.x (slice 2) | `render`, `frame`, `cameras` |
 
 ## 7. Presets
 

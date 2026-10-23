@@ -57,7 +57,10 @@ crates/
       image.rs           † # RgbImage + EXIF orientation transforms
       metadata.rs        † # EXIF allowlist + validation, embedded thumbnail (FR-002)
       settings.rs        † # RenderSettings (in memory until projects land)
-      plan.rs            † # RenderPlan: centred crop, stamp text/size/margins (FR-004/006)
+      plan.rs            † # RenderPlan: centred crop, stamp, optional frame plan (FR-004/006/040)
+      frame.rs           † # info frame: settings, camera profiles, text, ratio-safe layout (FR-040)
+      logo.rs            † # user PNG logos: validation + decode (ADR-0014)
+      settings_store.rs  † # settings.json v1: load/validate/atomic save (DATABASE.md §6)
       preview.rs         † # T2 LRU + preview rendering (FR-007)
       cancel.rs          † # CancellationToken
       timeline.rs          # clock offsets, manual date/place, GPS borrowing + GPX (FR-030/031/032)
@@ -128,6 +131,7 @@ scripts/                 † # bootstrap, clean, check-docs
 | Stamp fonts | Bundled OFL/MIT fonts, including a seven-segment LED face | [FR-033](PRD.md#fr-033--retro-film-date-stamp-and-stamp-presets) |
 | Photo Style engine | Own code: parameters baked into a 33³ 3D LUT (trilinear, SIMD) + 1D tone curve + seeded grain | [ADR-0011](adr/0011-photo-style-looks.md) |
 | Persisted data model | Normalized tables in JSON (3NF, integer keys, sparse rows) | [DATABASE.md](DATABASE.md) |
+| PNG decoding (logos) | `png` (pure Rust) | [ADR-0014](adr/0014-user-supplied-brand-logos.md) |
 
 Crates marked *candidate* are confirmed by Phase 0 benchmarks. The result is logged in [OPTIMIZATION.md](OPTIMIZATION.md#5-benchmark-log).
 
@@ -146,6 +150,7 @@ import → metadata → adjust → geocode → (cluster) → cull/select → pla
 | **cluster** | `[PhotoMeta]` → `[Trip]` | Phase 2 |
 | **cull/select** | library + filter → export set | Ratings, flags and copies come from the project ([FR-022](PRD.md#fr-022--culling-rate-flag-filter)) |
 | **plan** | meta + settings → `RenderPlan` | Pure function: print size per photo, crop rect, border, safe area, stamp/caption text and position, colour intent, output path. Also yields the effective-DPI check ([FR-026](PRD.md#fr-026--resolution-warning)) |
+| **frame** | photo + `FramePlan` → canvas | When enabled: a canvas at the print ratio; the photo is cropped to fill or fitted above the info bar; brand + lines drawn (FR-040) |
 | **render** | `RenderPlan` + pixels → pixels | Crop, then the **Photo Style look** (one 3D-LUT pass + tone curve + grain, [FR-039](PRD.md#fr-039--photo-style-looks)), then fit into the border, then stamp/caption inside the safe area. Overlays come after the look, so they are never tinted |
 | **color** | pixels + source ICC → sRGB pixels | `lcms2` transform, with a configurable rendering intent ([FR-027](PRD.md#fr-027--srgb-conversion-for-labs)) |
 | **sharpen** | pixels → pixels | Output sharpening for size and paper (Phase 3, [FR-029](PRD.md#fr-029--output-sharpening)) |
@@ -186,6 +191,9 @@ Commands marked † are implemented.
 | `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
 | `start_export() -> JobId` † | Exports all photos to the chosen destination | FR-008, FR-009, FR-010 |
 | `cancel_job(job_id)` † | Cancel a running job | FR-011 |
+| `get_frame_config()` / `set_frame_settings(settings)` † | Info frame settings plus camera profiles (with EXIF-derived defaults) | FR-040 |
+| `set_camera_profile(profile)` † | Per-camera overrides: name, brand, lens, focal, aperture, photo style, logo kind | FR-040 |
+| `pick_camera_logo(camera_id)` / `clear_camera_logo(camera_id)` † | Choose a PNG with a **Rust-side** dialog, validate it, copy it into `config/logos/` | FR-040 |
 | `photo_details(id) -> PhotoDetails` † | Inspector data: pixel size (header only), file size, GPS, effective DPI at the current print size | FR-002, FR-007, FR-026 |
 | `set_rating(ids, stars)` / `set_flag(ids, flag)` | Culling | FR-022 |
 | `query_library(filter) -> [PhotoSummary]` | Filtered view (rating, flag, date, camera, GPS, DPI) | FR-022, FR-026 |

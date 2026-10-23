@@ -45,6 +45,7 @@
 | FR-030 | Camera clock offset |
 | FR-032 | Manual date and place |
 | FR-033 | Retro film date stamp and stamp presets |
+| FR-040 | EXIF info frame |
 
 **Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v0.1.0 is released.
 

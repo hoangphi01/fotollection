@@ -8,6 +8,7 @@ import {
   ImageIcon,
   LoaderCircle,
   MapPin,
+  PanelBottom,
   Printer,
 } from 'lucide-react'
 import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react'
@@ -25,6 +26,8 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
+import type { FrameConfigApi } from '@/features/frame/use-frame-config'
 import { useIpcQuery } from '@/features/settings/use-ipc-query'
 import {
   commands,
@@ -43,6 +46,7 @@ type PreviewDialogProps = {
   revision: number
   settings: RenderSettings | null
   onSettingsChange: (change: (current: RenderSettings) => RenderSettings) => void
+  frame: FrameConfigApi
   onIndexChange: (index: number) => void
   onClose: () => void
 }
@@ -116,6 +120,7 @@ export function PreviewDialog({
   revision,
   settings,
   onSettingsChange,
+  frame,
   onIndexChange,
   onClose,
 }: PreviewDialogProps) {
@@ -187,7 +192,7 @@ export function PreviewDialog({
         </div>
 
         {/* Inspector */}
-        <aside className="flex w-80 shrink-0 flex-col border-l bg-background">
+        <aside className="flex w-96 shrink-0 flex-col border-l bg-background">
           <div className="space-y-0.5 px-5 pt-5 pb-4 pr-12">
             <DialogTitle className="truncate text-base">{photo?.fileName}</DialogTitle>
             <DialogDescription className="truncate text-xs" title={details?.folderPath}>
@@ -210,6 +215,16 @@ export function PreviewDialog({
 
             <Section icon={<Camera className="size-4" />} title="Camera">
               <p>{photo?.camera ?? 'Unknown camera'}</p>
+            </Section>
+
+            <Section icon={<PanelBottom className="size-4" />} title="Frame & camera profile">
+              {!frame.config?.settings.enabled && (
+                <p className="text-xs text-muted-foreground">
+                  Turn on <span className="font-medium">Info frame</span> in Print settings to see
+                  it on the print.
+                </p>
+              )}
+              <CameraProfileEditor frame={frame} details={details} />
             </Section>
 
             <Section icon={<ImageIcon className="size-4" />} title="Image">

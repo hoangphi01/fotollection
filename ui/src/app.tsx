@@ -9,11 +9,16 @@ import { LibrarySidebar } from '@/features/library/library-sidebar'
 import { useLibrary } from '@/features/library/use-library'
 import { SettingsPanel } from '@/features/settings/settings-panel'
 import { useRenderSettings } from '@/features/settings/use-render-settings'
+import { useFrameConfig } from '@/features/frame/use-frame-config'
 import { PreviewDialog } from '@/features/viewer/preview-dialog'
 
 export function App() {
   const { photos, thumbVersions, lastImport, error, importFolder } = useLibrary()
-  const { settings, revision, update } = useRenderSettings()
+  const { settings, revision: renderRevision, update } = useRenderSettings()
+  // Render and frame changes bump the same Rust counter; the newest one wins.
+  const [frameRevision, setFrameRevision] = useState(0)
+  const frame = useFrameConfig(setFrameRevision)
+  const revision = Math.max(renderRevision, frameRevision)
   const [selected, setSelected] = useState(0)
   const [viewing, setViewing] = useState(false)
 
@@ -63,10 +68,16 @@ export function App() {
         revision={revision}
         settings={settings}
         onSettingsChange={(c) => void update(c)}
+        frame={frame}
         onIndexChange={setSelected}
         onClose={() => setViewing(false)}
       />
-      <SettingsPanel settings={settings} onChange={(c) => void update(c)} photoCount={photos.length} />
+      <SettingsPanel
+        settings={settings}
+        onChange={(c) => void update(c)}
+        frame={frame}
+        photoCount={photos.length}
+      />
     </div>
   )
 }

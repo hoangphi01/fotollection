@@ -66,7 +66,8 @@ Layer 2: CONTAINED PARSING
   - EXIF parsed with an explicit field ALLOWLIST:
       ALLOWED: DateTimeOriginal, OffsetTimeOriginal, CreateDate, GPSLatitude(+Ref),
                GPSLongitude(+Ref), GPSAltitude, Make, Model, Orientation,
-               PixelXDimension, PixelYDimension, ExposureTime, FNumber, ISO
+               PixelXDimension, PixelYDimension, ExposureTime, FNumber, ISO,
+               LensMake, LensModel, FocalLength (range-checked; strings ≤ 100 chars)
       IGNORED: everything else (UserComment, ImageDescription, Artist, MakerNote,
                XP* fields, …) — never read, never displayed
   - Each decode runs inside catch_unwind on a worker thread with a time limit (5 s for metadata, 30 s for full decode)
@@ -92,6 +93,8 @@ Layer 4: SAFE RENDERING (UI)
 | Input | Defenses |
 |-------|----------|
 | Project file `.fotollection` ([ADR-0010](adr/0010-project-file-format.md)) | Size cap of 64 MB. Typed `serde` schema with unknown fields rejected. `schema_version` checked before parsing the body. Folder paths in the file are treated as data: they are shown to the user, opened read-only, and never executed or used as export destinations without the save dialog |
+| Camera logo PNG ([FR-040](PRD.md#fr-040--exif-info-frame), [ADR-0014](adr/0014-user-supplied-brand-logos.md)) | Chosen through a Rust-side dialog only. PNG magic bytes, ≤ 2 MB, ≤ 4096 px per edge and a decoder memory limit, checked **before** decoding with the pure-Rust `png` crate. Copied into the config dir, so the original path is never stored |
+| `settings.json` ([DATABASE.md §6](DATABASE.md#6-app-settings)) | Size cap of 4 MB, format and version checked first, strict typed parse (`deny_unknown_fields`), duplicate keys rejected, user text sanitized (control characters stripped, ≤ 60 chars). An invalid file is quarantined, never executed or partly trusted |
 | GPX track ([FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track)) | Size cap of 50 MB. XML parsed without external entities or DTDs (no XXE). Coordinates and timestamps validated like EXIF ([Layer 3](#3-input-and-metadata-defense)) |
 | Captions and stamp text ([FR-036](PRD.md#fr-036--custom-captions)) | Rasterized in Rust. Only a fixed set of `{variables}` is expanded, so there is no format-string or template execution. Shown in the UI as plain text only |
 | Presets ([FR-033](PRD.md#fr-033--retro-film-date-stamp-and-stamp-presets), [FR-034](PRD.md#fr-034--lab-presets), [FR-038](PRD.md#fr-038--print-presets)) | Built-in presets are static data compiled into the binary and are never fetched from the network. Imported `.fotopreset` files are capped at 1 MB and parsed with a typed schema (`deny_unknown_fields`). Every parameter is range-checked (for example Photo Style −5…+5, WB −9…+9). Presets contain **values only**, never paths, scripts or LUT files from outside the app |

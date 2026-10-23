@@ -35,6 +35,24 @@ export const commands = {
 	cancelJob: (jobId: number) => typedError<null, IpcError>(__TAURI_INVOKE("cancel_job", { jobId })),
 	/**  Details for the preview inspector (FR-002, FR-007, FR-026). Reads only the JPEG header. */
 	photoDetails: (id: PhotoId) => typedError<PhotoDetails, IpcError>(__TAURI_INVOKE("photo_details", { id })),
+	/**  Info-frame settings and camera profiles (FR-040). */
+	getFrameConfig: () => typedError<FrameConfig, IpcError>(__TAURI_INVOKE("get_frame_config")),
+	setFrameSettings: (settings: FrameSettings) => typedError<FrameConfig, IpcError>(__TAURI_INVOKE("set_frame_settings", { settings })),
+	/**
+	 *  Updates the editable fields of one camera profile. Make/model (its identity) and the
+	 *  logo kind are kept from the stored row; logos change only through the logo commands.
+	 */
+	setCameraProfile: (profile: CameraProfile) => typedError<FrameConfig, IpcError>(__TAURI_INVOKE("set_camera_profile", { profile })),
+	/**
+	 *  Picks a PNG logo with a Rust-side dialog, validates it, and copies it into the app's
+	 *  config folder (ADR-0014, SECURITY.md §3). `None` if the user cancelled.
+	 */
+	pickCameraLogo: (cameraId: number) => typedError<{
+	settings: FrameSettings,
+	cameras: CameraProfileView[],
+	revision: number,
+} | null, IpcError>(__TAURI_INVOKE("pick_camera_logo", { cameraId })),
+	clearCameraLogo: (cameraId: number) => typedError<FrameConfig, IpcError>(__TAURI_INVOKE("clear_camera_logo", { cameraId })),
 };
 
 /** Events */
@@ -50,6 +68,32 @@ export const events = {
 export type AppInfo = {
 	appVersion: string,
 	coreVersion: string,
+};
+
+/**
+ *  User edits for one camera, remembered across sessions (DATABASE.md §6). Every field is
+ *  optional: unset fields fall back to EXIF or to derived defaults.
+ */
+export type CameraProfile = {
+	id: number,
+	make: string | null,
+	model: string | null,
+	displayName: string | null,
+	brandText: string | null,
+	/**  For manual lenses that report nothing in EXIF (e.g. "Industar-50-2"). */
+	lens: string | null,
+	focalMm: number | null,
+	fNumber: number | null,
+	photoStyle: string | null,
+	logo: LogoKind,
+};
+
+/**  A camera profile plus the defaults the UI shows as placeholders. */
+export type CameraProfileView = {
+	profile: CameraProfile,
+	defaultDisplayName: string | null,
+	defaultBrand: string | null,
+	hasLogoImage: boolean,
 };
 
 export type Corner = "bottomRight" | "bottomLeft" | "topRight" | "topLeft";
@@ -99,6 +143,51 @@ export type ExportSummary = {
 	destination: string,
 };
 
+export type FrameColor = "white" | "black";
+
+export type FrameConfig = {
+	settings: FrameSettings,
+	cameras: CameraProfileView[],
+	revision: number,
+};
+
+export type FrameDateFormat = 
+/**  `2026/10/18` */
+"slash" | 
+/**  `2026-10-18` */
+"iso" | 
+/**  `18.10.2026` */
+"dmy";
+
+/**  Which items the frame shows, LUMIX Lab style. */
+export type FrameFields = {
+	logo: boolean,
+	camera: boolean,
+	lens: boolean,
+	focal: boolean,
+	aperture: boolean,
+	shutter: boolean,
+	iso: boolean,
+	photoStyle: boolean,
+	date: boolean,
+	place: boolean,
+};
+
+/**  How the photo sits in the space left above the info bar. */
+export type FrameFit = 
+/**  Crop the photo to fill the photo area (no margins). */
+"crop" | 
+/**  Keep the whole photo, with a thin margin around it. */
+"fit";
+
+export type FrameSettings = {
+	enabled: boolean,
+	fit: FrameFit,
+	color: FrameColor,
+	dateFormat: FrameDateFormat,
+	fields: FrameFields,
+};
+
 export type GpsPoint = {
 	lat: number | null,
 	lon: number | null,
@@ -123,6 +212,12 @@ export type LibraryChanged = {
 	count: number,
 };
 
+export type LogoKind = 
+/**  The brand name, typeset (default). */
+"text" | 
+/**  A PNG the user added for this camera (ADR-0014). */
+"image" | "none";
+
 /**  Everything the preview inspector shows about one photo. */
 export type PhotoDetails = {
 	id: PhotoId,
@@ -142,6 +237,13 @@ export type PhotoDetails = {
 	/**  Effective DPI of the crop at the current print size (FR-026). */
 	printDpi: number,
 	printQuality: DpiBand,
+	/**  Camera profile row for this photo's camera (FR-040), if it has EXIF make/model. */
+	cameraId: number | null,
+	lens: string | null,
+	focalMm: number | null,
+	fNumber: number | null,
+	exposureS: number | null,
+	iso: number | null,
 };
 
 /**  Dense index of a photo within this session's library. */

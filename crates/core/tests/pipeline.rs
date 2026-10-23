@@ -41,6 +41,7 @@ fn fr_002_reads_date_gps_orientation() {
         date: Some("2026:07:14 10:22:31"),
         gps: Some((38.8029, -9.3817)),
         orientation: Some(6),
+        ..Fixture::default()
     });
     let meta = metadata::read_bytes(&bytes);
     assert_eq!(
@@ -50,6 +51,26 @@ fn fr_002_reads_date_gps_orientation() {
     let (lat, lon) = meta.gps.expect("gps");
     assert!((lat - 38.8029).abs() < 1e-3 && (lon + 9.3817).abs() < 1e-3);
     assert_eq!(meta.orientation, 6);
+}
+
+#[test]
+fn fr_002_reads_lens_and_exposure() {
+    let bytes = jpeg(&Fixture {
+        width: 32,
+        height: 24,
+        lens: Some("LUMIX G 20/F1.7 II"),
+        exposure: Some((20, 2.8, (1, 400), 200)),
+        ..Fixture::default()
+    });
+    let meta = metadata::read_bytes(&bytes);
+    assert_eq!(meta.lens.as_deref(), Some("LUMIX G 20/F1.7 II"));
+    assert_eq!(meta.focal_mm, Some(20.0));
+    assert!(meta.f_number.is_some_and(|f| (f - 2.8).abs() < 1e-3));
+    assert!(
+        meta.exposure_s
+            .is_some_and(|s| (s - 1.0 / 400.0).abs() < 1e-6)
+    );
+    assert_eq!(meta.iso, Some(200));
 }
 
 #[test]
@@ -98,6 +119,7 @@ fn fr_009_export_by_date_never_overwrites() {
         settings: &settings,
         quality: 90,
         max_inflight: 2,
+        frame_for: &|_| None,
     };
     let summary = run_export(
         &records(&lib),
@@ -147,6 +169,7 @@ fn fr_011_bad_file_does_not_fail_batch() {
         settings: &settings,
         quality: 90,
         max_inflight: 2,
+        frame_for: &|_| None,
     };
     let summary = run_export(
         &records(&lib),
@@ -181,6 +204,7 @@ fn fr_011_cancel_stops_and_removes_partials() {
         settings: &settings,
         quality: 90,
         max_inflight: 1,
+        frame_for: &|_| None,
     };
     let cancel = CancellationToken::new();
     let summary = run_export(

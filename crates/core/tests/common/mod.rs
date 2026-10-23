@@ -22,6 +22,9 @@ pub struct Fixture {
     /// `(lat, lon)`, degrees
     pub gps: Option<(f64, f64)>,
     pub orientation: Option<u16>,
+    pub lens: Option<&'static str>,
+    /// (focal mm, f-number, exposure seconds as (num, den), ISO)
+    pub exposure: Option<(u32, f64, (u32, u32), u16)>,
 }
 
 fn dms(value: f64) -> Vec<uR64> {
@@ -68,7 +71,32 @@ pub fn jpeg(f: &Fixture) -> Vec<u8> {
     if let Some(o) = f.orientation {
         meta.set_tag(ExifTag::Orientation(vec![o]));
     }
-    if f.date.is_some() || f.gps.is_some() || f.orientation.is_some() {
+    if let Some(lens) = f.lens {
+        meta.set_tag(ExifTag::LensModel(lens.to_owned()));
+    }
+    if let Some((focal, fnum, (num, den), iso)) = f.exposure {
+        meta.set_tag(ExifTag::FocalLength(vec![uR64 {
+            nominator: focal,
+            denominator: 1,
+        }]));
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+        let fnum = uR64 {
+            nominator: (fnum * 10.0).round() as u32,
+            denominator: 10,
+        };
+        meta.set_tag(ExifTag::FNumber(vec![fnum]));
+        meta.set_tag(ExifTag::ExposureTime(vec![uR64 {
+            nominator: num,
+            denominator: den,
+        }]));
+        meta.set_tag(ExifTag::ISO(vec![iso]));
+    }
+    if f.date.is_some()
+        || f.gps.is_some()
+        || f.orientation.is_some()
+        || f.lens.is_some()
+        || f.exposure.is_some()
+    {
         meta.write_to_vec(&mut bytes, FileExtension::JPEG).unwrap();
     }
     bytes

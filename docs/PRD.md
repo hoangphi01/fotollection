@@ -351,6 +351,19 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 - **Scope boundary:** these are **global** adjustments on the already-rendered JPEG/HEIC (or a RAW preview). There are no local masks, HSL panel, curve editor, retouching or RAW development ([ADR-0011](adr/0011-photo-style-looks.md)).
 - **Non-destructive:** the look is applied in preview and at export. Stamps, captions and borders are drawn **after** the look, so they are never tinted. A before/after toggle (`\`) compares with the original.
 
+### FR-040 — EXIF info frame
+
+**P1.** Add a "Shot on …" information frame to prints, like camera makers' companion apps (for example LUMIX Lab).
+
+- **The whole print keeps the selected size.** The canvas has the print ratio, and the info bar is subtracted from it. The photo then either **crops to fill** the remaining area or **fits whole** with a thin margin.
+- **Bar content:**
+  - Left: the brand (typeset name, a user PNG, or nothing; [ADR-0014](adr/0014-user-supplied-brand-logos.md)).
+  - Right-aligned lines: `Shot on <camera>`, then `<lens> <focal> <aperture> <shutter> <ISO>`, then `<photo style>`, then `<date> <place>`.
+  - The bar is white or black. Text and logo stay inside the safe area ([FR-028](#fr-028--safe-area-and-borders)).
+- **Choose what shows:** every item can be switched on or off. Lines with no data are dropped.
+- **Edit per camera:** the camera name, brand text, lens, focal length, aperture and photo style can be overridden. This covers **manual lenses** that report nothing in EXIF. Overrides are remembered per camera across sessions ([DATABASE.md §6](DATABASE.md#6-app-settings)). Empty fields fall back to EXIF.
+- The date stamp on the photo ([FR-004](#fr-004--date-stamp)) stays independent.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

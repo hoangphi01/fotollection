@@ -61,6 +61,19 @@ pub struct PhotoRecord {
     pub orientation: u8,
     pub flags: u16,
     pub gps: Option<(f32, f32)>,
+    pub shot: ShotInfo,
+}
+
+/// Camera and exposure facts from EXIF, used by the info frame (FR-040).
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct ShotInfo {
+    pub make: Option<String>,
+    pub model: Option<String>,
+    pub lens: Option<String>,
+    pub focal_mm: Option<f32>,
+    pub f_number: Option<f32>,
+    pub exposure_s: Option<f32>,
+    pub iso: Option<u32>,
 }
 
 /// Grid data sent to the UI (FR-003).
@@ -81,7 +94,10 @@ pub struct PhotoSummary {
 pub struct Library {
     folders: Vec<PathBuf>,
     strings: StrArena,
-    cameras: Vec<String>,
+    /// Distinct `(make, model)` pairs; photos reference them by index (N2/N3).
+    cameras: Vec<(Option<String>, Option<String>)>,
+    /// Distinct lens names, referenced by index.
+    lenses: Vec<String>,
     seen: HashSet<blake3::Hash>,
     // Columns, all indexed by PhotoId.
     folder: Vec<u16>,
@@ -95,7 +111,14 @@ pub struct Library {
     lat: Vec<f32>,
     lon: Vec<f32>,
     camera: Vec<u16>,
+    lens: Vec<u16>,
+    focal_mm: Vec<f32>,
+    f_number: Vec<f32>,
+    exposure_s: Vec<f32>,
+    iso: Vec<u32>,
 }
+
+const NONE_U16: u16 = u16::MAX;
 
 impl Library {
     pub fn new() -> Self {
@@ -124,18 +147,48 @@ impl Library {
     }
 
     fn camera_index(&mut self, meta: &PhotoMeta) -> u16 {
-        let name = match (&meta.make, &meta.model) {
-            (_, None) => return u16::MAX,
-            (Some(make), Some(model)) if !model.starts_with(make.as_str()) => {
-                format!("{make} {model}")
-            }
-            (_, Some(model)) => model.clone(),
-        };
-        if let Some(i) = self.cameras.iter().position(|c| *c == name) {
-            return u16::try_from(i).unwrap_or(u16::MAX);
+        if meta.make.is_none() && meta.model.is_none() {
+            return NONE_U16;
         }
-        self.cameras.push(name);
-        u16::try_from(self.cameras.len() - 1).unwrap_or(u16::MAX)
+        let key = (meta.make.clone(), meta.model.clone());
+        let i = self
+            .cameras
+            .iter()
+            .position(|c| *c == key)
+            .unwrap_or_else(|| {
+                self.cameras.push(key);
+                self.cameras.len() - 1
+            });
+        u16::try_from(i).unwrap_or(NONE_U16)
+    }
+
+    fn lens_index(&mut self, lens: Option<&String>) -> u16 {
+        let Some(lens) = lens else { return NONE_U16 };
+        let i = self
+            .lenses
+            .iter()
+            .position(|l| l == lens)
+            .unwrap_or_else(|| {
+                self.lenses.push(lens.clone());
+                self.lenses.len() - 1
+            });
+        u16::try_from(i).unwrap_or(NONE_U16)
+    }
+
+    /// Distinct cameras seen so far, as `(make, model)`.
+    pub fn cameras(&self) -> &[(Option<String>, Option<String>)] {
+        &self.cameras
+    }
+
+    /// Human-readable camera name: `make model`, without repeating the make.
+    pub fn camera_label(make: Option<&str>, model: Option<&str>) -> Option<String> {
+        match (make, model) {
+            (_, None) => make.map(str::to_owned),
+            (Some(make), Some(model)) if !model.starts_with(make) => {
+                Some(format!("{make} {model}"))
+            }
+            (_, Some(model)) => Some(model.to_owned()),
+        }
     }
 
     /// Adds a photo. Returns `None` if the same path was already imported.
@@ -151,6 +204,7 @@ impl Library {
         let rel = rel.to_string_lossy();
         let span = self.strings.intern(&rel);
         let camera = self.camera_index(meta);
+        let lens = self.lens_index(meta.lens.as_ref());
 
         let mut f = 0;
         let (capture, offset) = if let Some(dt) = meta.capture {
@@ -186,6 +240,11 @@ impl Library {
         self.lat.push(lat);
         self.lon.push(lon);
         self.camera.push(camera);
+        self.lens.push(lens);
+        self.focal_mm.push(meta.focal_mm.unwrap_or(f32::NAN));
+        self.f_number.push(meta.f_number.unwrap_or(f32::NAN));
+        self.exposure_s.push(meta.exposure_s.unwrap_or(f32::NAN));
+        self.iso.push(meta.iso.unwrap_or(0));
         Some(id)
     }
 
@@ -204,6 +263,21 @@ impl Library {
             .map(|n| n.to_string_lossy().into_owned())
             .unwrap_or_default();
         let gps = (self.flags[i] & flags::HAS_GPS != 0).then(|| (self.lat[i], self.lon[i]));
+        let finite = |v: f32| v.is_finite().then_some(v);
+        let (make, model) = self
+            .cameras
+            .get(self.camera[i] as usize)
+            .cloned()
+            .unwrap_or_default();
+        let shot = ShotInfo {
+            make,
+            model,
+            lens: self.lenses.get(self.lens[i] as usize).cloned(),
+            focal_mm: finite(self.focal_mm[i]),
+            f_number: finite(self.f_number[i]),
+            exposure_s: finite(self.exposure_s[i]),
+            iso: (self.iso[i] > 0).then_some(self.iso[i]),
+        };
         Some(PhotoRecord {
             id,
             path,
@@ -214,6 +288,7 @@ impl Library {
             orientation: self.orientation[i],
             flags: self.flags[i],
             gps,
+            shot,
         })
     }
 
@@ -245,7 +320,10 @@ impl Library {
             capture: record.capture.format("%Y-%m-%dT%H:%M:%S").to_string(),
             has_gps: record.flags & flags::HAS_GPS != 0,
             date_from_file: record.flags & flags::DATE_FROM_FILE != 0,
-            camera: self.cameras.get(self.camera[i] as usize).cloned(),
+            camera: self
+                .cameras
+                .get(self.camera[i] as usize)
+                .and_then(|(make, model)| Self::camera_label(make.as_deref(), model.as_deref())),
         })
     }
 

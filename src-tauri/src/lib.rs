@@ -27,6 +27,11 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::start_export,
             commands::cancel_job,
             commands::photo_details,
+            commands::get_frame_config,
+            commands::set_frame_settings,
+            commands::set_camera_profile,
+            commands::pick_camera_logo,
+            commands::clear_camera_logo,
         ])
         .events(collect_events![
             events::LibraryChanged,
@@ -63,7 +68,8 @@ pub fn run() {
         .setup(move |app| {
             builder.mount_events(app);
             let thumb_dir = app.path().app_cache_dir()?.join("thumbs");
-            app.manage(state::AppState::new(thumb_dir)?);
+            let config_dir = app.path().app_config_dir()?;
+            app.manage(state::AppState::new(thumb_dir, &config_dir)?);
             // Dev-only: FOTOLLECTION_IMPORT=<folder> imports at startup, for quick iteration.
             #[cfg(debug_assertions)]
             if let Some(folder) = std::env::var_os("FOTOLLECTION_IMPORT") {

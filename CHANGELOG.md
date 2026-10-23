@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Info frame ("Shot on …", FR-040):**
+  - A white or black bar with the brand, camera, lens, focal length, aperture, shutter, ISO, photo style and date.
+  - The whole print keeps the selected size, with the photo cropped to fill or fitted whole.
+  - Every item can be switched on or off, LUMIX Lab style.
+  - Per-camera overrides for manual lenses, names and styles, remembered across sessions.
+  - Optional user PNG logo per camera ([ADR-0014](docs/adr/0014-user-supplied-brand-logos.md)).
+- `settings.json`, the first persisted file: render, frame and camera profiles, versioned and written atomically (DATABASE.md §6).
+- EXIF now reads the lens, focal length, aperture, shutter and ISO.
 - **First working slice (JPEG):**
   - Open a folder (or drop it on the window) to get a virtualized thumbnail grid with instant EXIF thumbnails.
   - Preview the exact print: centred crop for 8 print sizes, and a date stamp (3 formats, 4 corners, white or retro orange) inside the safe area.

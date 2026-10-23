@@ -65,6 +65,8 @@ scripts/check-docs.sh        # docs consistency
 scripts/clean.sh             # reclaim disk space (see §4)
 # Dev only: auto-import a folder at startup (no dialog), handy for UI iteration:
 FOTOLLECTION_IMPORT=~/Pictures/some-folder npm run dev
+# Render one photo exactly as export does, with an info frame (crop|fit):
+cargo run --release -p fotollection-core --example render_one -- in.jpg out.jpg crop 10x15
 # Measure the pipeline on a real folder (read-only; photos are never copied into the repo):
 cargo run --release -p fotollection-core --example measure_folder -- ~/Pictures/some-folder
 ```

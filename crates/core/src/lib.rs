@@ -6,15 +6,18 @@
 pub mod cancel;
 pub mod codec;
 pub mod export;
+pub mod frame;
 pub mod image;
 pub mod import;
 pub mod library;
+pub mod logo;
 pub mod metadata;
 pub mod plan;
 pub mod preview;
 pub mod print_size;
 pub mod render;
 pub mod settings;
+pub mod settings_store;
 pub mod thumbs;
 
 pub use print_size::PrintSize;

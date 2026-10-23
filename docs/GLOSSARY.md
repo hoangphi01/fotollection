@@ -23,6 +23,7 @@
 | **GPX** | GPS Exchange Format: an XML track recorded by phones, watches and GPS loggers. Used to infer locations for cameras without GPS. |
 | **HEIC / HEIF** | High Efficiency Image format, the iPhone default, compressed with HEVC. |
 | **ICC profile** | Colour-space description embedded in an image (sRGB, Display P3, Adobe RGB). Dropping it shifts colours in print. |
+| **Info frame** | A band under (or around) the photo showing the camera, lens, exposure, style and date, "Shot on …" style. The whole print keeps the selected size ([FR-040](PRD.md#fr-040--exif-info-frame)). |
 | **IPC** | Inter-process communication between the web UI and the Rust core, done through Tauri commands and events. |
 | **k-d tree** | Spatial index used for fast nearest-city lookup. |
 | **Lossless crop** | Cropping a JPEG in the DCT domain along MCU boundaries without re-encoding, so there is zero quality loss. |

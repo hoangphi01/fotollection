@@ -23,6 +23,13 @@ pub struct PhotoMeta {
     pub make: Option<String>,
     pub model: Option<String>,
     pub has_embedded_thumbnail: bool,
+    /// Exposure details for the info frame (FR-040). Absent for manual lenses that
+    /// report nothing.
+    pub lens: Option<String>,
+    pub focal_mm: Option<f32>,
+    pub f_number: Option<f32>,
+    pub exposure_s: Option<f32>,
+    pub iso: Option<u32>,
 }
 
 const MAX_STRING_CHARS: usize = 100;
@@ -77,6 +84,13 @@ fn from_exif(exif: &Exif) -> PhotoMeta {
         .filter(|v| (1..=8).contains(v))
         .unwrap_or(1);
 
+    let lens = field(Tag::LensModel).and_then(clean_string).map(|model| {
+        match field(Tag::LensMake).and_then(clean_string) {
+            Some(make) if !model.starts_with(&make) => format!("{make} {model}"),
+            _ => model,
+        }
+    });
+
     PhotoMeta {
         capture,
         offset_minutes,
@@ -85,7 +99,24 @@ fn from_exif(exif: &Exif) -> PhotoMeta {
         make: field(Tag::Make).and_then(clean_string),
         model: field(Tag::Model).and_then(clean_string),
         has_embedded_thumbnail: thumbnail_bytes(exif).is_some(),
+        lens,
+        focal_mm: field(Tag::FocalLength).and_then(|f| rational(f, 0.5..=5000.0)),
+        f_number: field(Tag::FNumber).and_then(|f| rational(f, 0.5..=128.0)),
+        exposure_s: field(Tag::ExposureTime).and_then(|f| rational(f, 1.0 / 64_000.0..=3600.0)),
+        iso: field(Tag::PhotographicSensitivity)
+            .and_then(|f| f.value.get_uint(0))
+            .filter(|iso| (25..=1_638_400).contains(iso)),
     }
+}
+
+/// The first rational of a field, validated against `range` (SECURITY.md §3, Layer 3).
+#[allow(clippy::cast_possible_truncation)] // camera values fit f32 comfortably
+fn rational(field: &Field, range: std::ops::RangeInclusive<f64>) -> Option<f32> {
+    let Value::Rational(values) = &field.value else {
+        return None;
+    };
+    let v = values.first()?.to_f64();
+    (v.is_finite() && range.contains(&v)).then_some(v as f32)
 }
 
 fn ascii(field: &Field) -> Option<&[u8]> {

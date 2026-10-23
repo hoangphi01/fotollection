@@ -3,10 +3,14 @@
 //! export consume the same plan, so what the user sees is what gets printed
 //! (ARCHITECTURE.md §4).
 
+use std::sync::Arc;
+
 use chrono::NaiveDateTime;
 use serde::Serialize;
 use specta::Type;
 
+use crate::frame::{self, FrameFit, FrameLayout, FrameSettings, FrameText};
+use crate::logo::LogoImage;
 use crate::print_size::PrintSize;
 use crate::settings::{Corner, DateFormat, RenderSettings};
 
@@ -36,13 +40,44 @@ pub struct StampSpec {
     pub margin_px: f32,
 }
 
+/// Info frame to compose around the photo (FR-040).
+#[derive(Debug, Clone, PartialEq)]
+pub struct FramePlan {
+    pub layout: FrameLayout,
+    pub logo: Option<Arc<LogoImage>>,
+}
+
+/// What the caller knows about the frame for one photo.
+#[derive(Debug, Clone)]
+pub struct FrameRequest {
+    pub settings: FrameSettings,
+    pub text: FrameText,
+    /// The camera's user logo, when the profile uses one.
+    pub logo: Option<Arc<LogoImage>>,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct RenderPlan {
     pub print: PrintSize,
+    /// Source pixels to use (after orientation).
     pub crop: CropRect,
+    /// Size of the rendered photo. Without a frame this is the whole output.
     pub out_width: u32,
     pub out_height: u32,
     pub stamp: Option<StampSpec>,
+    /// When set, the photo is placed on a canvas at the print ratio with an info bar.
+    pub frame: Option<FramePlan>,
+}
+
+impl RenderPlan {
+    /// Final output size, including the frame canvas.
+    pub fn output_size(&self) -> (u32, u32) {
+        self.frame
+            .as_ref()
+            .map_or((self.out_width, self.out_height), |f| {
+                (f.layout.canvas_width, f.layout.canvas_height)
+            })
+    }
 }
 
 /// Largest centred crop of `width × height` with the print's aspect ratio, matching the
@@ -55,6 +90,12 @@ pub fn center_crop(width: u32, height: u32, print: PrintSize) -> CropRect {
     } else {
         (short, long)
     };
+    center_crop_to(width, height, rw, rh)
+}
+
+/// Largest centred crop of `width × height` with the ratio `rw : rh`.
+pub fn center_crop_to(width: u32, height: u32, rw: u64, rh: u64) -> CropRect {
+    let (rw, rh) = (rw.max(1), rh.max(1));
     let (w, h) = (u64::from(width), u64::from(height));
     let (cw, ch) = if w * rh >= h * rw {
         ((h * rw + rh / 2) / rh, h) // too wide: trim the sides
@@ -117,7 +158,19 @@ pub fn plan(
     settings: &RenderSettings,
     print: PrintSize,
     max_long_edge: Option<u32>,
+    frame: Option<&FrameRequest>,
 ) -> RenderPlan {
+    if let Some(request) = frame.filter(|f| f.settings.enabled) {
+        return plan_framed(
+            width,
+            height,
+            capture,
+            settings,
+            print,
+            max_long_edge,
+            request,
+        );
+    }
     let crop = center_crop(width, height, print);
     let (mut out_width, mut out_height) = (crop.width, crop.height);
     if let Some(limit) = max_long_edge {
@@ -131,7 +184,22 @@ pub fn plan(
 
     #[allow(clippy::cast_precision_loss)] // print sizes and pixel counts are far below 2^24
     let px_per_mm = out_width.max(out_height) as f32 / print.long_mm as f32;
-    let stamp = match (settings.stamp.enabled, capture) {
+    RenderPlan {
+        print,
+        crop,
+        out_width,
+        out_height,
+        stamp: stamp_spec(settings, capture, px_per_mm),
+        frame: None,
+    }
+}
+
+fn stamp_spec(
+    settings: &RenderSettings,
+    capture: Option<NaiveDateTime>,
+    px_per_mm: f32,
+) -> Option<StampSpec> {
+    match (settings.stamp.enabled, capture) {
         (true, Some(dt)) => Some(StampSpec {
             text: format_date(dt, settings.stamp.format),
             color: settings.stamp.color.rgb(),
@@ -140,14 +208,58 @@ pub fn plan(
             margin_px: (SAFE_AREA_MM + STAMP_INSET_MM) * px_per_mm,
         }),
         _ => None,
-    };
+    }
+}
 
+/// The whole canvas keeps the print ratio; the photo fills (Crop) or fits (Fit) the space
+/// above the info bar (FR-040).
+fn plan_framed(
+    width: u32,
+    height: u32,
+    capture: Option<NaiveDateTime>,
+    settings: &RenderSettings,
+    print: PrintSize,
+    max_long_edge: Option<u32>,
+    request: &FrameRequest,
+) -> RenderPlan {
+    let long = max_long_edge.map_or(width.max(height), |m| m.min(width.max(height)));
+    let (cw, ch) = frame::canvas_size(width, height, print, long);
+    let layout = frame::layout(
+        cw,
+        ch,
+        width,
+        height,
+        &request.settings,
+        &request.text,
+        print,
+    );
+    let photo = layout.photo;
+    let crop = match request.settings.fit {
+        FrameFit::Crop => center_crop_to(
+            width,
+            height,
+            u64::from(photo.width),
+            u64::from(photo.height),
+        ),
+        FrameFit::Fit => CropRect {
+            x: 0,
+            y: 0,
+            width,
+            height,
+        },
+    };
+    #[allow(clippy::cast_precision_loss)]
+    let px_per_mm = cw.max(ch) as f32 / print.long_mm as f32;
     RenderPlan {
         print,
         crop,
-        out_width,
-        out_height,
-        stamp,
+        out_width: photo.width,
+        out_height: photo.height,
+        stamp: stamp_spec(settings, capture, px_per_mm),
+        frame: Some(FramePlan {
+            layout,
+            logo: request.logo.clone(),
+        }),
     }
 }
 
@@ -220,7 +332,7 @@ mod tests {
     #[test]
     fn fr_007_preview_plan_scales_down_and_keeps_ratio() {
         let settings = RenderSettings::default();
-        let p = plan(6000, 4500, None, &settings, size("10x15"), Some(1600));
+        let p = plan(6000, 4500, None, &settings, size("10x15"), Some(1600), None);
         assert_eq!((p.out_width, p.out_height), (1600, 1067));
         assert!(p.stamp.is_none(), "no capture date, no stamp");
     }

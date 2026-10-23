@@ -70,6 +70,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-036 | Custom captions | 2 | Not Started | `{trip}` needs FR-012 |
 | FR-037 | Contact sheet | 3 | Not Started | |
 | FR-038 | Print presets | 2 | Not Started | Storage model: [DATABASE.md §7](DATABASE.md#7-presets) |
+| FR-040 | EXIF info frame | 1 | In Progress | Crop/Fit at print ratio, field switches, per-camera overrides (persisted), user PNG logo. Place needs FR-005 |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
 
 ## Non-functional requirements

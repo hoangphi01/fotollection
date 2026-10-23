@@ -8,7 +8,7 @@ use std::sync::{Arc, Mutex};
 use crate::codec::JpegCodec;
 use crate::image::{RgbImage, apply_orientation};
 use crate::library::{PhotoId, PhotoRecord, flags};
-use crate::plan::plan;
+use crate::plan::{FrameRequest, plan};
 use crate::render::{fit_long_edge, render};
 use crate::settings::RenderSettings;
 use crate::thumbs::ThumbError;
@@ -62,6 +62,7 @@ impl PreviewCache {
         &self,
         record: &PhotoRecord,
         settings: &RenderSettings,
+        frame: Option<&FrameRequest>,
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
         let source = self.source(record, codec)?;
@@ -74,6 +75,7 @@ impl PreviewCache {
             settings,
             print,
             Some(PREVIEW_LONG_EDGE),
+            frame,
         );
         let image = render(&source, &p)?;
         Ok(codec.encode(&image, PREVIEW_QUALITY, None)?)
