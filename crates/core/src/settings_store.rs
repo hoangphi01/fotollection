@@ -8,11 +8,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::fonts::UserFont;
 use crate::frame::{CameraProfile, FrameSettings};
-use crate::settings::RenderSettings;
+use crate::settings::{RenderSettings, UiSettings};
 
 pub const FORMAT: &str = "fotollection-settings";
 /// v2 (FR-042, FR-043): `fonts` table, custom print sizes, stamp/frame font choice.
-pub const SCHEMA_VERSION: u32 = 2;
+/// v3 (FR-020): `ui.language`.
+pub const SCHEMA_VERSION: u32 = 3;
 const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -25,11 +26,13 @@ pub struct StoredSettings {
     pub cameras: Vec<CameraProfile>,
     /// User fonts; files live in `config/fonts/<id>.<ext>` (FR-042).
     pub fonts: Vec<UserFont>,
+    /// Interface preferences of this machine (FR-020).
+    pub ui: UiSettings,
 }
 
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct FileV2 {
+struct FileV3 {
     format: String,
     schema_version: u32,
     render: RenderSettings,
@@ -39,6 +42,9 @@ struct FileV2 {
     /// migrating v1 → v2 is reading with defaults (DATABASE.md §6).
     #[serde(default)]
     fonts: Vec<UserFont>,
+    /// Absent before v3: English (FR-020).
+    #[serde(default)]
+    ui: UiSettings,
 }
 
 #[derive(Debug, PartialEq)]
@@ -82,7 +88,7 @@ pub fn load(path: &Path) -> Loaded {
     if header.schema_version > SCHEMA_VERSION {
         return Loaded::NewerVersion(header.schema_version);
     }
-    match serde_json::from_slice::<FileV2>(&bytes) {
+    match serde_json::from_slice::<FileV3>(&bytes) {
         Ok(file) => match validate(file) {
             Ok(settings) => Loaded::Ok(settings),
             Err(e) => Loaded::Corrupt(e),
@@ -91,7 +97,7 @@ pub fn load(path: &Path) -> Loaded {
     }
 }
 
-fn validate(file: FileV2) -> Result<StoredSettings, String> {
+fn validate(file: FileV3) -> Result<StoredSettings, String> {
     file.render.validate().map_err(|e| e.to_string())?;
     let mut ids = std::collections::HashSet::new();
     let mut keys = std::collections::HashSet::new();
@@ -122,6 +128,7 @@ fn validate(file: FileV2) -> Result<StoredSettings, String> {
         frame,
         cameras,
         fonts: file.fonts,
+        ui: file.ui,
     })
 }
 
@@ -134,13 +141,14 @@ pub fn quarantine(path: &Path) -> std::io::Result<PathBuf> {
 
 /// Writes atomically, keeping the previous file as `.bak` (DATABASE.md §4.4).
 pub fn save(path: &Path, settings: &StoredSettings) -> std::io::Result<()> {
-    let file = FileV2 {
+    let file = FileV3 {
         format: FORMAT.to_owned(),
         schema_version: SCHEMA_VERSION,
         render: settings.render.clone(),
         frame: settings.frame.clone(),
         cameras: settings.cameras.clone(),
         fonts: settings.fonts.clone(),
+        ui: settings.ui,
     };
     let bytes = serde_json::to_vec_pretty(&file).map_err(std::io::Error::other)?;
     crate::atomic::write_with_backup(path, &bytes)
@@ -202,19 +210,44 @@ mod tests {
         let dir = tempfile::tempdir()?;
         let path = dir.path().join("settings.json");
         // A file written by schema 1 (before fonts and custom sizes existed).
-        std::fs::write(
-            &path,
-            br#"{"format":"fotollection-settings","schema_version":1,
-                "render":{"printSize":"10x15","stamp":{"enabled":true,"format":"iso","corner":"bottomRight","color":"white"}},
-                "frame":{"enabled":false,"fit":"crop","color":"white","dateFormat":"slash",
-                  "fields":{"logo":true,"camera":true,"lens":true,"focal":true,"aperture":true,"shutter":true,"iso":true,"photoStyle":true,"date":true,"place":true}},
-                "cameras":[]}"#,
-        )?;
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v1.json"))?;
         let Loaded::Ok(s) = load(&path) else {
             panic!("v1 should load");
         };
         assert!(s.fonts.is_empty() && s.render.custom_sizes.is_empty());
         assert_eq!(s.render.stamp.font, None);
+        assert_eq!(s.ui, UiSettings::default());
+        Ok(())
+    }
+
+    #[test]
+    fn fr_020_migrates_v2_files_to_english() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v2.json"))?;
+        let Loaded::Ok(s) = load(&path) else {
+            panic!("v2 should load");
+        };
+        assert_eq!(s.ui.language, crate::settings::Language::En);
+        assert_eq!(s.render.custom_sizes.len(), 1);
+        assert_eq!(s.fonts.len(), 1);
+        assert_eq!(s.render.stamp.font, Some(1));
+        Ok(())
+    }
+
+    #[test]
+    fn fr_020_language_survives_a_round_trip() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        let s = StoredSettings {
+            ui: UiSettings {
+                language: crate::settings::Language::Vi,
+            },
+            ..StoredSettings::default()
+        };
+        save(&path, &s)?;
+        assert!(std::fs::read_to_string(&path)?.contains(r#""language": "vi""#));
+        assert_eq!(load(&path), Loaded::Ok(s));
         Ok(())
     }
 

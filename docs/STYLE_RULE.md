@@ -66,6 +66,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
   - Never keep image bytes in React state. Use `fotothumb://` URLs.
 - Linting: **oxlint** (`ui/.oxlintrc.json`), run with `--deny-warnings`. It includes `rules-of-hooks`, and bans `dangerouslySetInnerHTML` and `eval`. We chose oxlint over ESLint for speed, and it is the Vite template default. Vendored shadcn components are exempt from the fast-refresh rule only.
 - Formatting: `prettier` with `prettier-plugin-tailwindcss`, planned. Until it is added, follow the existing style: 2 spaces, single quotes, no semicolons. Generated files (`ui/src/ipc/bindings.ts`, `ui/src/components/ui/*`) keep their generator's formatting.
+- **Every user-visible string goes through `t()`** from `react-i18next`, with its key in every `ui/src/locales/*.json` ([ADR-0015](adr/0015-ui-localization-i18next.md)). `npm run lint` fails on a missing key or hard-coded text. Show IPC errors with `errorText(err)`, which translates by `code`. Format numbers with `formatNumber` (`lib/format.ts`), never `toFixed` in visible text.
 - File names: `kebab-case.tsx`. Components: `UpperCamelCase`. Hooks: `useCamelCase`. Functions and variables: `camelCase`.
 
 ## 4. UI/UX

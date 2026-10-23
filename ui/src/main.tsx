@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { followSystemTheme } from '@/lib/theme'
 import { App } from './app'
+import './i18n'
 import './index.css'
 
 followSystemTheme()

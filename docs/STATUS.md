@@ -55,7 +55,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-017 | Photo book layout preview | 3 | Not Started | |
 | FR-018 | QR code on photo back | 3 | Not Started | |
 | FR-019 | Print service upload | 3 | Not Started | |
-| FR-020 | Localization | 1 | Not Started | Moved to Phase 1, Stage 2: English (default) + Vietnamese via i18next; German later. README already has a Vietnamese version (`README.vi.md`) |
+| FR-020 | Localization | 1 | In Progress | English (default) + Vietnamese UI via i18next ([ADR-0015](adr/0015-ui-localization-i18next.md)): all strings and Rust error codes translated, language selector in settings, stored in `settings.json` v3, `check-i18n` gate in lint. Pending: native menu strings (with the File menu), German |
 | FR-021 | Auto-update | 3 | Not Started | |
 | FR-022 | Culling (rate, flag, filter) | 1 | In Progress | Stars `0`–`5`, `P`/`X`/`U` in grid and preview, undoable; filter by flag + min rating, export = filtered set (`fr_022_*`). Pending: date/camera/GPS/DPI filters, multi-select, loupe prefetch (NFR-012) |
 | FR-023 | Projects, autosave and undo | 1 | In Progress | Session project autosaves atomically and is restored at launch (re-scan + re-apply); undo/redo for crops. Save as/Open pending |

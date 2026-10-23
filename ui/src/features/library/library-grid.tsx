@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { PhotoSummary } from '@/ipc/bindings'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { ThumbTile } from './thumb-tile'
@@ -18,6 +19,7 @@ type LibraryGridProps = {
 
 /** Virtualized thumbnail grid (FR-003, NFR-001): only visible rows are in the DOM. */
 export function LibraryGrid({ photos, thumbVersions, selected, onSelect, onOpen }: LibraryGridProps) {
+  const { t } = useTranslation()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(0)
 
@@ -70,7 +72,7 @@ export function LibraryGrid({ photos, thumbVersions, selected, onSelect, onOpen 
       tabIndex={0}
       onKeyDown={onKeyDown}
       className="flex-1 overflow-y-auto p-2 outline-none"
-      aria-label="Photo library"
+      aria-label={t('library.gridLabel')}
     >
       <div className="relative w-full" style={{ height: virtualizer.getTotalSize() }}>
         {virtualizer.getVirtualItems().map((row) => (

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useCallback, useEffect, useState } from 'react'
 import { commands, events, type UserFont } from '@/ipc/bindings'
+import { errorText } from '@/lib/errors'
 
 /** Imported OTF/TTF fonts (FR-042). Refreshes after removals (which bump the revision). */
 export function useFonts() {
@@ -26,7 +27,7 @@ export function useFonts() {
   const importFont = useCallback(async (): Promise<UserFont | null> => {
     const result = await commands.importFont()
     if (result.status === 'error') {
-      setError(result.error.message)
+      setError(errorText(result.error))
       return null
     }
     setError(null)

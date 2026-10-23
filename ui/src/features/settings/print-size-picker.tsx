@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -30,6 +31,7 @@ type PrintSizePickerProps = {
 
 /** Built-in and saved custom print sizes, with an inline "add custom size" form (FR-043). */
 export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePickerProps) {
+  const { t } = useTranslation()
   const custom = settings?.customSizes ?? []
   const [adding, setAdding] = useState(false)
   const [name, setName] = useState('')
@@ -43,9 +45,9 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
     const parse = (s: string) => Number.parseFloat(s.replace(',', '.'))
     const [a, b] = [parse(width), parse(height)]
     const toMm = (v: number) => Math.round(unit === 'in' ? v * MM_PER_IN : v * 10)
-    if (!(a > 0) || !(b > 0)) return setFormError('Enter both edges')
+    if (!(a > 0) || !(b > 0)) return setFormError(t('print.errorBothEdges'))
     const [shortMm, longMm] = [toMm(Math.min(a, b)), toMm(Math.max(a, b))]
-    if (shortMm < 20 || longMm > 1000) return setFormError('Edges must be between 2 and 100 cm')
+    if (shortMm < 20 || longMm > 1000) return setFormError(t('print.errorRange'))
     const next = Math.max(0, ...custom.map((c) => Number(c.id.replace('custom-', '')) || 0)) + 1
     const size: CustomPrintSize = {
       id: `custom-${next}`,
@@ -80,18 +82,18 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
           }}
         >
           <SelectTrigger id="print-size" className="w-full">
-            <SelectValue placeholder="Loading…" />
+            <SelectValue placeholder={t('common.loading')} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectItem value={ORIGINAL}>
-                Original
-                <span className="text-muted-foreground"> · photo's own ratio, no crop</span>
+                {t('print.original')}
+                <span className="text-muted-foreground"> · {t('print.originalHint')}</span>
               </SelectItem>
             </SelectGroup>
             <SelectSeparator />
             <SelectGroup>
-              <SelectLabel>Standard (CEWE / EU)</SelectLabel>
+              <SelectLabel>{t('print.standard')}</SelectLabel>
               {builtIn?.map((size) => (
                 <SelectItem key={size.id} value={size.id}>
                   {sizeLabel(size.shortMm, size.longMm)}
@@ -104,7 +106,7 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
             </SelectGroup>
             {custom.length > 0 && (
               <SelectGroup>
-                <SelectLabel>Custom</SelectLabel>
+                <SelectLabel>{t('print.custom')}</SelectLabel>
                 {custom.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}
@@ -119,7 +121,7 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
             )}
             <SelectSeparator />
             <SelectItem value={ADD}>
-              <Plus className="size-3.5" /> Custom size…
+              <Plus className="size-3.5" /> {t('print.addCustom')}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -127,8 +129,8 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
           <Button
             variant="ghost"
             size="icon-sm"
-            aria-label={`Delete ${selectedCustom.name}`}
-            title="Delete this custom size"
+            aria-label={t('print.deleteNamed', { name: selectedCustom.name })}
+            title={t('print.deleteTitle')}
             onClick={() => remove(selectedCustom.id)}
           >
             <Trash2 />
@@ -139,7 +141,7 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
       {adding && (
         <div className="space-y-2 rounded-lg border bg-muted/30 p-3">
           <Input
-            placeholder="Name (e.g. Instax wide)"
+            placeholder={t('print.namePlaceholder')}
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="h-8 text-sm"
@@ -151,7 +153,7 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
               value={width}
               onChange={(e) => setWidth(e.target.value)}
               className="h-8 text-sm"
-              aria-label="Width"
+              aria-label={t('print.width')}
             />
             <span className="text-muted-foreground">×</span>
             <Input
@@ -160,7 +162,7 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
               value={height}
               onChange={(e) => setHeight(e.target.value)}
               className="h-8 text-sm"
-              aria-label="Height"
+              aria-label={t('print.height')}
             />
             <ToggleGroup
               type="single"
@@ -180,10 +182,10 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
           {formError && <p className="text-xs text-destructive">{formError}</p>}
           <div className="flex justify-end gap-2">
             <Button variant="ghost" size="sm" onClick={() => setAdding(false)}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button size="sm" onClick={save}>
-              Save size
+              {t('print.save')}
             </Button>
           </div>
         </div>

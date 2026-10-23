@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { PanelBottom } from 'lucide-react'
 import { useId } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -10,17 +11,18 @@ import { FontSelect } from '@/features/fonts/font-select'
 import type { FontsApi } from '@/features/fonts/use-fonts'
 import type { FrameConfigApi } from './use-frame-config'
 
-const FIELDS: { key: keyof FrameFields; label: string; disabledHint?: string }[] = [
-  { key: 'logo', label: 'Logo' },
-  { key: 'camera', label: 'Camera' },
-  { key: 'lens', label: 'Lens' },
-  { key: 'focal', label: 'Focal length' },
-  { key: 'aperture', label: 'Aperture' },
-  { key: 'shutter', label: 'Shutter' },
-  { key: 'iso', label: 'ISO' },
-  { key: 'photoStyle', label: 'Photo style' },
-  { key: 'date', label: 'Date' },
-  { key: 'place', label: 'Place', disabledHint: 'Needs offline place names (FR-005)' },
+const FIELDS: { key: keyof FrameFields; disabled?: boolean }[] = [
+  { key: 'logo' },
+  { key: 'camera' },
+  { key: 'lens' },
+  { key: 'focal' },
+  { key: 'aperture' },
+  { key: 'shutter' },
+  { key: 'iso' },
+  { key: 'photoStyle' },
+  { key: 'date' },
+  // Needs offline place names (FR-005).
+  { key: 'place', disabled: true },
 ]
 
 type FrameSectionProps = {
@@ -35,6 +37,7 @@ type FrameSectionProps = {
  * settings panel and in the preview inspector; both edit the same Rust state.
  */
 export function FrameSection({ frame, fonts, compact = false }: FrameSectionProps) {
+  const { t } = useTranslation()
   const settings = frame.config?.settings
   const enabled = settings?.enabled ?? false
   // Two instances can be on screen at once, so DOM ids must be unique.
@@ -45,7 +48,7 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
       <div className="flex items-center justify-between">
         <Label htmlFor={switchId} className="flex items-center gap-2">
           {!compact && <PanelBottom className="size-4 text-muted-foreground" />}
-          Info frame
+          {t('frame.title')}
         </Label>
         <Switch
           id={switchId}
@@ -64,10 +67,10 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
           onValueChange={(fit) => fit && void frame.setSettings((s) => ({ ...s, fit: fit as FrameFit }))}
         >
           <ToggleGroupItem value="crop" className="flex-1 text-xs">
-            Crop to fill
+            {t('frame.cropToFill')}
           </ToggleGroupItem>
           <ToggleGroupItem value="fit" className="flex-1 text-xs">
-            Fit whole photo
+            {t('frame.fitWhole')}
           </ToggleGroupItem>
         </ToggleGroup>
 
@@ -83,10 +86,10 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
             }
           >
             <ToggleGroupItem value="white" className="flex-1 gap-1.5 text-xs">
-              <span className="size-3 rounded-full border bg-white" /> White
+              <span className="size-3 rounded-full border bg-white" /> {t('frame.white')}
             </ToggleGroupItem>
             <ToggleGroupItem value="black" className="flex-1 gap-1.5 text-xs">
-              <span className="size-3 rounded-full border bg-neutral-900" /> Black
+              <span className="size-3 rounded-full border bg-neutral-900" /> {t('frame.black')}
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
@@ -114,24 +117,26 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
 
         <FontSelect
           fonts={fonts}
-          label="Frame font"
+          label={t('frame.font')}
           value={settings?.font}
           onChange={(font) => void frame.setSettings((s) => ({ ...s, font }))}
         />
 
         <div className="space-y-1.5">
-          <span className="text-xs font-medium text-muted-foreground uppercase">Show</span>
+          <span className="text-xs font-medium text-muted-foreground uppercase">
+            {t('frame.show')}
+          </span>
           <div className="grid grid-cols-2 gap-x-3 gap-y-2">
-            {FIELDS.map(({ key, label, disabledHint }) => (
+            {FIELDS.map(({ key, disabled = false }) => (
               <label
                 key={key}
-                title={disabledHint}
+                title={disabled ? t('frame.placeHint') : undefined}
                 className="flex items-center gap-2 text-sm"
-                aria-disabled={Boolean(disabledHint)}
+                aria-disabled={disabled}
               >
                 <Checkbox
                   checked={settings?.fields[key] ?? false}
-                  disabled={Boolean(disabledHint)}
+                  disabled={disabled}
                   onCheckedChange={(checked) =>
                     void frame.setSettings((s) => ({
                       ...s,
@@ -139,14 +144,14 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
                     }))
                   }
                 />
-                <span className={disabledHint ? 'text-muted-foreground' : ''}>{label}</span>
+                <span className={disabled ? 'text-muted-foreground' : ''}>{t(`frame.field.${key}`)}</span>
               </label>
             ))}
           </div>
         </div>
         <p className="text-xs text-muted-foreground">
-          The whole print, frame included, keeps the selected size.
-          {!compact && ' Edit camera, lens and style in the preview.'}
+          {t('frame.keepsSize')}
+          {!compact && ` ${t('frame.editInPreview')}`}
         </p>
       </div>
     </section>

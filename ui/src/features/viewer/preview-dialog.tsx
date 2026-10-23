@@ -13,6 +13,7 @@ import {
   Star,
 } from 'lucide-react'
 import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
@@ -33,11 +34,13 @@ import {
   commands,
   type DateFormat,
   type CropGeometry,
-  type DpiBand,
   type PhotoDetails,
   type PhotoSummary,
   type RenderSettings,
 } from '@/ipc/bindings'
+import i18n from '@/i18n'
+import { DPI_STYLE } from '@/lib/crop-geometry'
+import { formatNumber } from '@/lib/format'
 import { previewUrl, sourceUrl } from '@/lib/photo-url'
 import { CropEditor } from './crop-editor'
 import { cn } from '@/lib/utils'
@@ -54,13 +57,6 @@ type PreviewDialogProps = {
   onClose: () => void
 }
 
-const DPI_STYLE: Record<DpiBand, { label: string; className: string }> = {
-  excellent: { label: 'Excellent', className: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' },
-  good: { label: 'Good', className: 'bg-sky-500/15 text-sky-600 dark:text-sky-400' },
-  fair: { label: 'Fair', className: 'bg-amber-500/15 text-amber-600 dark:text-amber-400' },
-  poor: { label: 'Too low', className: 'bg-red-500/15 text-red-600 dark:text-red-400' },
-}
-
 const FORMATS: { value: DateFormat; label: string }[] = [
   { value: 'iso', label: '2026-07-14' },
   { value: 'dmy', label: '14.07.2026' },
@@ -70,7 +66,7 @@ const FORMATS: { value: DateFormat; label: string }[] = [
 function formatCaptureLong(capture: string): string {
   const date = new Date(capture)
   if (Number.isNaN(date.getTime())) return capture
-  return date.toLocaleString(undefined, {
+  return date.toLocaleString(i18n.language, {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -82,7 +78,7 @@ function formatCaptureLong(capture: string): string {
 }
 
 function formatBytes(bytes: number): string {
-  return bytes >= 1e6 ? `${(bytes / 1e6).toFixed(1)} MB` : `${Math.round(bytes / 1e3)} KB`
+  return bytes >= 1e6 ? `${formatNumber(bytes / 1e6, 1, 1)} MB` : `${Math.round(bytes / 1e3)} KB`
 }
 
 function usePhotoDetails(id: number | undefined, revision: number): PhotoDetails | null {
@@ -143,6 +139,7 @@ export function PreviewDialog({
   onIndexChange,
   onClose,
 }: PreviewDialogProps) {
+  const { t } = useTranslation()
   const photo = index === null ? undefined : photos[index]
   const details = usePhotoDetails(photo?.id, revision)
   const printSizes = useIpcQuery(commands.listPrintSizes)
@@ -208,7 +205,7 @@ export function PreviewDialog({
               {loadedSrc !== src && (
                 <div className="absolute flex flex-col items-center gap-2 text-white/60">
                   <LoaderCircle className="size-7 animate-spin" />
-                  <span className="text-xs">Rendering print preview…</span>
+                  <span className="text-xs">{t('viewer.rendering')}</span>
                 </div>
               )}
               <Tooltip>
@@ -220,18 +217,18 @@ export function PreviewDialog({
                       disabled={!geometry || geometry.cropDisabled}
                       onClick={() => setCropping(true)}
                     >
-                      <Crop data-icon="inline-start" /> Crop
+                      <Crop data-icon="inline-start" /> {t('viewer.crop')}
                     </Button>
                   </span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {geometry?.cropDisabled ? 'The frame is in Fit mode: the whole photo is shown' : 'Adjust the crop (C)'}
+                  {geometry?.cropDisabled ? t('viewer.cropFitMode') : t('viewer.adjustCrop')}
                 </TooltipContent>
               </Tooltip>
               <Button
                 variant="secondary"
                 size="icon"
-                aria-label="Previous photo"
+                aria-label={t('viewer.previous')}
                 className="absolute left-3 opacity-80 hover:opacity-100"
                 disabled={index === 0}
                 onClick={() => go(-1)}
@@ -241,7 +238,7 @@ export function PreviewDialog({
               <Button
                 variant="secondary"
                 size="icon"
-                aria-label="Next photo"
+                aria-label={t('viewer.next')}
                 className="absolute right-3 opacity-80 hover:opacity-100"
                 disabled={index === null || index >= photos.length - 1}
                 onClick={() => go(1)}
@@ -267,96 +264,98 @@ export function PreviewDialog({
 
           <div className="flex-1 space-y-5 overflow-y-auto p-5">
             {photo && (
-              <Section icon={<Star className="size-4" />} title="Rating & flag">
+              <Section icon={<Star className="size-4" />} title={t('viewer.ratingFlag')}>
                 <CullControls photo={photo} />
               </Section>
             )}
 
-            <Section icon={<CalendarDays className="size-4" />} title="Captured">
+            <Section icon={<CalendarDays className="size-4" />} title={t('viewer.captured')}>
               <p>{photo ? formatCaptureLong(photo.capture) : '—'}</p>
               {photo?.dateFromFile ? (
                 <Badge variant="outline" className="text-amber-600 dark:text-amber-400">
-                  No EXIF date · using file time
+                  {t('viewer.noExifDate')}
                 </Badge>
               ) : (
-                <Badge variant="outline">From EXIF</Badge>
+                <Badge variant="outline">{t('viewer.fromExif')}</Badge>
               )}
             </Section>
 
-            <Section icon={<Camera className="size-4" />} title="Camera">
-              <p>{photo?.camera ?? 'Unknown camera'}</p>
+            <Section icon={<Camera className="size-4" />} title={t('viewer.camera')}>
+              <p>{photo?.camera ?? t('viewer.unknownCamera')}</p>
             </Section>
 
-            <Section icon={<PanelBottom className="size-4" />} title="Frame & camera profile">
+            <Section icon={<PanelBottom className="size-4" />} title={t('viewer.frameProfile')}>
               {/* Same controls as the print settings panel, so the frame can be tuned here (FR-040). */}
               <FrameSection frame={frame} fonts={fonts} compact />
               <CameraProfileEditor frame={frame} details={details} />
             </Section>
 
-            <Section icon={<ImageIcon className="size-4" />} title="Image">
+            <Section icon={<ImageIcon className="size-4" />} title={t('viewer.image')}>
               {details ? (
                 <p className="tabular-nums">
                   {details.width} × {details.height} px ·{' '}
-                  {((details.width * details.height) / 1e6).toFixed(1)} MP ·{' '}
+                  {formatNumber((details.width * details.height) / 1e6, 1, 1)} MP ·{' '}
                   {formatBytes(details.fileBytes ?? 0)}
                 </p>
               ) : (
-                <p className="text-muted-foreground">Loading…</p>
+                <p className="text-muted-foreground">{t('common.loading')}</p>
               )}
             </Section>
 
-            <Section icon={<MapPin className="size-4" />} title="Location">
+            <Section icon={<MapPin className="size-4" />} title={t('viewer.location')}>
               {details?.gps && details.gps.lat !== null && details.gps.lon !== null ? (
                 <p className="font-mono text-xs">
                   {details.gps.lat.toFixed(5)}, {details.gps.lon.toFixed(5)}
                 </p>
               ) : (
-                <p className="text-muted-foreground">No GPS in this photo</p>
+                <p className="text-muted-foreground">{t('viewer.noGps')}</p>
               )}
-              <p className="text-xs text-muted-foreground">Place names arrive with FR-005</p>
+              <p className="text-xs text-muted-foreground">{t('viewer.placesSoon')}</p>
             </Section>
 
             <Separator />
 
-            <Section icon={<Printer className="size-4" />} title="Print">
+            <Section icon={<Printer className="size-4" />} title={t('viewer.print')}>
               <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onSettingsChange} />
               {details && (
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-xs text-muted-foreground">Resolution</span>
+                  <span className="text-xs text-muted-foreground">{t('viewer.resolution')}</span>
                   <span
                     className={cn(
                       'rounded-md px-2 py-0.5 text-xs font-medium tabular-nums',
                       DPI_STYLE[details.printQuality].className,
                     )}
                   >
-                    {details.printDpi} DPI · {DPI_STYLE[details.printQuality].label}
+                    {details.printDpi} DPI · {t(`dpi.${details.printQuality}`)}
                   </span>
                 </div>
               )}
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Crop className="size-3.5" /> Crop
+                  <Crop className="size-3.5" /> {t('viewer.crop')}
                 </span>
                 <span className="flex items-center gap-1.5 text-xs">
-                  {geometry?.crop ? `Custom · zoom ${(geometry.crop.zoom ?? 1).toFixed(1)}×` : 'Centred'}
+                  {geometry?.crop
+                    ? t('viewer.cropCustom', { zoom: formatNumber(geometry.crop.zoom ?? 1, 1, 1) })
+                    : t('viewer.cropCentred')}
                   {geometry?.crop && photo && (
                     <Button variant="ghost" size="xs" onClick={() => void commands.setPhotoCrop(photo.id, null)}>
-                      Reset
+                      {t('common.reset')}
                     </Button>
                   )}
                   {!geometry?.crop && (
                     <Button variant="ghost" size="xs" disabled={!geometry || geometry.cropDisabled} onClick={() => setCropping(true)}>
-                      Adjust
+                      {t('viewer.adjust')}
                     </Button>
                   )}
                 </span>
               </div>
             </Section>
 
-            <Section icon={<CalendarDays className="size-4" />} title="Date stamp">
+            <Section icon={<CalendarDays className="size-4" />} title={t('viewer.dateStamp')}>
               <div className="flex items-center justify-between">
                 <Label htmlFor="dialog-stamp" className="text-sm font-normal">
-                  Show on print
+                  {t('viewer.showOnPrint')}
                 </Label>
                 <Switch
                   id="dialog-stamp"
@@ -387,14 +386,14 @@ export function PreviewDialog({
                   </ToggleGroupItem>
                 ))}
               </ToggleGroup>
-              <p className="text-xs text-muted-foreground">Print settings apply to all photos for now.</p>
+              <p className="text-xs text-muted-foreground">{t('viewer.allPhotos')}</p>
             </Section>
           </div>
 
           <Separator />
           <p className="px-5 py-3 text-[11px] text-muted-foreground">
-            <kbd className="font-mono">←</kbd> <kbd className="font-mono">→</kbd> browse ·{' '}
-            <kbd className="font-mono">Esc</kbd> close
+            <kbd className="font-mono">←</kbd> <kbd className="font-mono">→</kbd> {t('viewer.browse')} ·{' '}
+            <kbd className="font-mono">Esc</kbd> {t('viewer.close')}
           </p>
         </aside>
       </DialogContent>

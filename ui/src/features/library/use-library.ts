@@ -7,6 +7,7 @@ import {
   type ImportSummary,
   type PhotoSummary,
 } from '@/ipc/bindings'
+import { errorText } from '@/lib/errors'
 
 /** Library state from Rust (FR-001, FR-003), filtered in Rust (FR-022). The UI only caches it. */
 export function useLibrary(filter: CullFilter) {
@@ -22,7 +23,7 @@ export function useLibrary(filter: CullFilter) {
         if (result.status === 'ok') {
           setPhotos(result.data.photos)
           setTotal(result.data.total)
-        } else setError(result.error.message)
+        } else setError(errorText(result.error))
       })
     void load()
     const unlisteners = [
@@ -39,7 +40,7 @@ export function useLibrary(filter: CullFilter) {
   const importFolder = useCallback(async () => {
     setError(null)
     const result = await commands.pickAndImportFolder()
-    if (result.status === 'error') setError(result.error.message)
+    if (result.status === 'error') setError(errorText(result.error))
     else if (result.data) setLastImport(result.data)
   }, [])
 

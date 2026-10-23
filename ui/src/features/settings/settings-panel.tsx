@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, Crop, MapPin } from 'lucide-react'
+import { CalendarDays, Crop, Languages, MapPin } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import {
@@ -21,12 +22,15 @@ import {
   type Corner,
   type CullFilter,
   type DateFormat,
+  type Language,
   type RenderSettings,
   type StampColor,
 } from '@/ipc/bindings'
 import { FontSelect } from '@/features/fonts/font-select'
 import type { FontsApi } from '@/features/fonts/use-fonts'
+import { LANGUAGES } from '@/i18n'
 import { PrintSizePicker } from './print-size-picker'
+import { useLanguage } from './use-language'
 import { useIpcQuery } from './use-ipc-query'
 
 type SettingsPanelProps = {
@@ -44,16 +48,11 @@ const FORMATS: { value: DateFormat; label: string }[] = [
   { value: 'retro', label: "'26 07 14" },
 ]
 
-const CORNERS: { value: Corner; label: string }[] = [
-  { value: 'bottomRight', label: 'Bottom right' },
-  { value: 'bottomLeft', label: 'Bottom left' },
-  { value: 'topRight', label: 'Top right' },
-  { value: 'topLeft', label: 'Top left' },
-]
+const CORNERS: Corner[] = ['bottomRight', 'bottomLeft', 'topRight', 'topLeft']
 
-const COLORS: { value: StampColor; label: string; swatch: string }[] = [
-  { value: 'white', label: 'White', swatch: 'bg-white' },
-  { value: 'retroOrange', label: 'Retro orange', swatch: 'bg-[#ff8a1f]' },
+const COLORS: { value: StampColor; swatch: string }[] = [
+  { value: 'white', swatch: 'bg-white' },
+  { value: 'retroOrange', swatch: 'bg-[#ff8a1f]' },
 ]
 
 export function SettingsPanel({
@@ -64,6 +63,8 @@ export function SettingsPanel({
   photoCount,
   filter,
 }: SettingsPanelProps) {
+  const { t } = useTranslation()
+  const { language, change: changeLanguage } = useLanguage()
   const printSizes = useIpcQuery(commands.listPrintSizes)
   const appInfo = useIpcQuery(commands.appInfo)
   const stamp = settings?.stamp
@@ -73,27 +74,44 @@ export function SettingsPanel({
   return (
     <aside className="flex w-72 shrink-0 flex-col border-l">
       <div className="flex h-12 items-center px-4">
-        <span className="text-sm font-semibold">Print settings</span>
+        <span className="text-sm font-semibold">{t('settings.title')}</span>
       </div>
       <Separator />
 
       <div className="flex-1 space-y-6 overflow-y-auto p-4">
+        <section className="flex items-center justify-between gap-3">
+          <Label htmlFor="ui-language" className="flex items-center gap-2">
+            <Languages className="size-4 text-muted-foreground" />
+            {t('settings.language')}
+          </Label>
+          <Select value={language} onValueChange={(v) => void changeLanguage(v as Language)}>
+            <SelectTrigger id="ui-language" size="sm" className="w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {LANGUAGES.map((l) => (
+                <SelectItem key={l.value} value={l.value}>
+                  {l.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </section>
+
         <section className="space-y-2">
           <Label htmlFor="print-size" className="flex items-center gap-2">
             <Crop className="size-4 text-muted-foreground" />
-            Print size
+            {t('settings.printSize')}
           </Label>
           <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onChange} />
-          <p className="text-xs text-muted-foreground">
-            Centred by default. Adjust per photo with Crop in the preview.
-          </p>
+          <p className="text-xs text-muted-foreground">{t('settings.printSizeHint')}</p>
         </section>
 
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <Label htmlFor="date-stamp" className="flex items-center gap-2">
               <CalendarDays className="size-4 text-muted-foreground" />
-              Date stamp
+              {t('settings.dateStamp')}
             </Label>
             <Switch
               id="date-stamp"
@@ -105,7 +123,7 @@ export function SettingsPanel({
           <div className={stamp?.enabled ? 'space-y-3' : 'pointer-events-none space-y-3 opacity-50'}>
             <FontSelect
               fonts={fonts}
-              label="Date stamp font"
+              label={t('settings.dateStampFont')}
               value={stamp?.font}
               onChange={(font) => setStamp({ font })}
             />
@@ -128,13 +146,13 @@ export function SettingsPanel({
               value={stamp?.corner ?? ''}
               onValueChange={(corner) => setStamp({ corner: corner as Corner })}
             >
-              <SelectTrigger className="w-full" aria-label="Stamp position">
+              <SelectTrigger className="w-full" aria-label={t('settings.stampPosition')}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {CORNERS.map((c) => (
-                  <SelectItem key={c.value} value={c.value}>
-                    {c.label}
+                  <SelectItem key={c} value={c}>
+                    {t(`settings.corner.${c}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -151,7 +169,7 @@ export function SettingsPanel({
               {COLORS.map((c) => (
                 <ToggleGroupItem key={c.value} value={c.value} className="flex-1 gap-1.5 text-xs">
                   <span className={`size-3 rounded-full border ${c.swatch}`} />
-                  {c.label}
+                  {t(`settings.color.${c.value}`)}
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>
@@ -162,12 +180,12 @@ export function SettingsPanel({
               <div className="flex items-center justify-between opacity-50">
                 <Label className="flex items-center gap-2">
                   <MapPin className="size-4 text-muted-foreground" />
-                  Location
+                  {t('settings.location')}
                 </Label>
-                <Badge variant="outline">Soon</Badge>
+                <Badge variant="outline">{t('settings.soon')}</Badge>
               </div>
             </TooltipTrigger>
-            <TooltipContent>Offline place names arrive in the next slice (FR-005)</TooltipContent>
+            <TooltipContent>{t('settings.locationTip')}</TooltipContent>
           </Tooltip>
         </section>
 
@@ -179,7 +197,7 @@ export function SettingsPanel({
       <div className="space-y-3 p-4">
         <ExportSection photoCount={photoCount} filter={filter} />
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Offline · GPS stripped</span>
+          <span>{t('settings.footer')}</span>
           {appInfo && <Badge variant="outline">v{appInfo.appVersion}</Badge>}
         </div>
       </div>

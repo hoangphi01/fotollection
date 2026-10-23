@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { FilterX, OctagonX } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { CullFilterBar } from '@/features/culling/cull-filter-bar'
 import { ALL_PHOTOS } from '@/features/culling/filter'
-import { CULL_KEYS_HINT } from '@/features/culling/cull-keys'
 import type { CullFilter } from '@/ipc/bindings'
 import { LibraryEmptyState } from '@/features/library/library-empty-state'
 import { LibraryGrid } from '@/features/library/library-grid'
@@ -20,6 +20,7 @@ import { useHistory } from '@/features/history/use-history'
 import { PreviewDialog } from '@/features/viewer/preview-dialog'
 
 export function App() {
+  const { t } = useTranslation()
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
   const { photos, total, thumbVersions, lastImport, error, importFolder } = useLibrary(filter)
   const { settings, revision: renderRevision, update } = useRenderSettings()
@@ -64,10 +65,12 @@ export function App() {
           <>
             <div className="flex h-12 items-center gap-3 border-b px-4 text-sm">
               <span className="font-medium tabular-nums">
-                {photos.length === total ? `${total} photos` : `${photos.length} / ${total} photos`}
+                {photos.length === total
+                  ? t('app.photos', { count: total })
+                  : t('app.filtered', { shown: photos.length, count: total })}
               </span>
               <span className="truncate text-xs text-muted-foreground">
-                Enter to preview · {CULL_KEYS_HINT}
+                {t('app.enterToPreview')} · {t('culling.keysHint')}
               </span>
               <div className="ml-auto">
                 <CullFilterBar filter={filter} onChange={setFilter} />
@@ -75,9 +78,9 @@ export function App() {
             </div>
             {photos.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
-                <p>No photos match this filter.</p>
+                <p>{t('app.noMatch')}</p>
                 <Button variant="outline" size="sm" onClick={() => setFilter(ALL_PHOTOS)}>
-                  <FilterX data-icon="inline-start" /> Show all photos
+                  <FilterX data-icon="inline-start" /> {t('app.showAll')}
                 </Button>
               </div>
             ) : (

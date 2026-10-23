@@ -2,9 +2,6 @@
 import { commands, type PhotoId } from '@/ipc/bindings'
 import { isTyping } from '@/lib/keyboard'
 
-/** Lightroom-style culling keys (FR-022): 0–5 stars, P pick, X reject, U unflag. */
-export const CULL_KEYS_HINT = '0–5 stars · P pick · X reject · U unflag'
-
 /**
  * Applies the culling shortcut in `event` to `id`, if it is one.
  * Returns true when the key was handled, so callers can stop other handlers.

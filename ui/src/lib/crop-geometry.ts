@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+import { formatNumber } from './format'
 // Mirrors `crop_rect` in crates/core/src/plan.rs so the crop editor can drag at 60 fps
 // without IPC. Rust re-sanitizes and stays authoritative when the crop is saved.
 
@@ -55,8 +56,8 @@ export function ratioLabel(width: number, height: number): string {
       if (gcd(p, q) === 1 && Math.abs((p / q) * h - w) <= 0.01 * w) return `${p}:${q}`
     }
   }
-  const r = Math.max(w, h) / Math.min(w, h)
-  return w <= h ? `1:${r.toFixed(2)}` : `${r.toFixed(2)}:1`
+  const r = formatNumber(Math.max(w, h) / Math.min(w, h), 2, 2)
+  return w <= h ? `1:${r}` : `${r}:1`
 }
 
 export type DpiBand = 'excellent' | 'good' | 'fair' | 'poor'
@@ -69,9 +70,10 @@ export function dpiBand(dpi: number): DpiBand {
   return 'poor'
 }
 
-export const DPI_STYLE: Record<DpiBand, { label: string; className: string }> = {
-  excellent: { label: 'Excellent', className: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' },
-  good: { label: 'Good', className: 'bg-sky-500/15 text-sky-600 dark:text-sky-400' },
-  fair: { label: 'Fair', className: 'bg-amber-500/15 text-amber-600 dark:text-amber-400' },
-  poor: { label: 'Too low', className: 'bg-red-500/15 text-red-600 dark:text-red-400' },
+/** Badge colours per band; the words come from the `dpi.*` translations (FR-020). */
+export const DPI_STYLE: Record<DpiBand, { className: string }> = {
+  excellent: { className: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' },
+  good: { className: 'bg-sky-500/15 text-sky-600 dark:text-sky-400' },
+  fair: { className: 'bg-amber-500/15 text-amber-600 dark:text-amber-400' },
+  poor: { className: 'bg-red-500/15 text-red-600 dark:text-red-400' },
 }

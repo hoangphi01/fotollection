@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Check, RotateCcw, X, ZoomIn, ZoomOut } from 'lucide-react'
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import type { CropFrame, CropGeometry } from '@/ipc/bindings'
 import {
@@ -12,6 +13,7 @@ import {
   ratioLabel,
   type Frame,
 } from '@/lib/crop-geometry'
+import { formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 type CropEditorProps = {
@@ -33,6 +35,7 @@ function toFrame(crop: CropFrame | null): Frame {
  * cm, the crop's pixel size and its print DPI (FR-026).
  */
 export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEditorProps) {
+  const { t } = useTranslation()
   const g = geometry
   const stageRef = useRef<HTMLDivElement>(null)
   const boxRef = useRef<HTMLDivElement>(null)
@@ -127,7 +130,7 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
   const lenW = unit === 'in' ? cmW / 2.54 : cmW
   const lenH = unit === 'in' ? cmH / 2.54 : cmH
   const fmtLen = (v: number, withUnit = true) =>
-    `${Math.round(v * 10) / 10}${withUnit ? ` ${unit}` : ''}`
+    `${formatNumber(v, 1)}${withUnit ? ` ${unit}` : ''}`
   const ratio = ratioLabel(g.targetWidth, g.targetHeight)
   const atTop = rect.y / g.height < 0.06
   const atLeft = rect.x / g.width < 0.06
@@ -231,20 +234,20 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
           max={MAX_ZOOM}
           step={0.01}
           value={frame.zoom}
-          aria-label="Zoom"
+          aria-label={t('crop.zoom')}
           onChange={(e) => setClamped({ ...frame, zoom: Number(e.target.value) })}
           className="w-56 accent-white"
         />
         <ZoomIn className="size-4 text-white/60" />
-        <span className="w-12 text-xs text-white/70 tabular-nums">{frame.zoom.toFixed(2)}×</span>
+        <span className="w-12 text-xs text-white/70 tabular-nums">{formatNumber(frame.zoom, 2, 2)}×</span>
         <Button variant="ghost" size="sm" className="text-white/80" onClick={() => onCommit(null)}>
-          <RotateCcw data-icon="inline-start" /> Reset
+          <RotateCcw data-icon="inline-start" /> {t('common.reset')}
         </Button>
         <Button variant="secondary" size="sm" onClick={onCancel}>
-          <X data-icon="inline-start" /> Cancel
+          <X data-icon="inline-start" /> {t('common.cancel')}
         </Button>
         <Button size="sm" onClick={() => onCommit(frame)}>
-          <Check data-icon="inline-start" /> Done
+          <Check data-icon="inline-start" /> {t('common.done')}
         </Button>
       </div>
     </div>

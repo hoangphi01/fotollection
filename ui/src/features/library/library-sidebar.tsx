@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Folder, FolderOpen } from 'lucide-react'
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
@@ -13,6 +14,7 @@ type LibrarySidebarProps = {
 }
 
 export function LibrarySidebar({ photos, lastImport, onOpenFolder }: LibrarySidebarProps) {
+  const { t } = useTranslation()
   const folders = useMemo(() => {
     const counts = new Map<string, number>()
     for (const p of photos) counts.set(p.folderName, (counts.get(p.folderName) ?? 0) + 1)
@@ -35,14 +37,16 @@ export function LibrarySidebar({ photos, lastImport, onOpenFolder }: LibrarySide
       </div>
       <Separator />
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
-        <span className="text-xs font-medium text-muted-foreground uppercase">Library</span>
-        <Button variant="ghost" size="icon-xs" aria-label="Open folder" onClick={onOpenFolder}>
+        <span className="text-xs font-medium text-muted-foreground uppercase">
+          {t('library.title')}
+        </span>
+        <Button variant="ghost" size="icon-xs" aria-label={t('library.openFolder')} onClick={onOpenFolder}>
           <FolderOpen />
         </Button>
       </div>
       <ScrollArea className="flex-1 px-2">
         {folders.length === 0 ? (
-          <p className="px-2 py-1 text-xs text-muted-foreground">No folders yet</p>
+          <p className="px-2 py-1 text-xs text-muted-foreground">{t('library.noFolders')}</p>
         ) : (
           <ul className="space-y-0.5">
             {folders.map(([name, count]) => (
@@ -63,11 +67,10 @@ export function LibrarySidebar({ photos, lastImport, onOpenFolder }: LibrarySide
           className="border-t px-4 py-2 text-xs text-muted-foreground"
           title={lastImport.rejected.map((r) => `${r.fileName} (${r.code})`).join('\n')}
         >
-          {lastImport.rejectedTotal} file{lastImport.rejectedTotal > 1 ? 's' : ''} skipped
-          (HEIC/RAW coming soon)
+          {t('library.skipped', { count: lastImport.rejectedTotal })}
         </p>
       )}
-      <p className="px-4 pb-3 text-[11px] text-muted-foreground">Tip: drop a folder anywhere</p>
+      <p className="px-4 pb-3 text-[11px] text-muted-foreground">{t('library.dropTip')}</p>
     </aside>
   )
 }

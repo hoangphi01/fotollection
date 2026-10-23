@@ -1,0 +1,5 @@
+{"format":"fotollection-settings","schema_version":1,
+ "render":{"printSize":"10x15","stamp":{"enabled":true,"format":"iso","corner":"bottomRight","color":"white"}},
+ "frame":{"enabled":false,"fit":"crop","color":"white","dateFormat":"slash",
+   "fields":{"logo":true,"camera":true,"lens":true,"focal":true,"aperture":true,"shutter":true,"iso":true,"photoStyle":true,"date":true,"place":true}},
+ "cameras":[]}

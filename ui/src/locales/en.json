@@ -1,0 +1,240 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "loading": "Loading…",
+    "reset": "Reset",
+    "done": "Done",
+    "dismiss": "Dismiss"
+  },
+  "app": {
+    "photos_one": "{{count}} photo",
+    "photos_other": "{{count}} photos",
+    "filtered_one": "{{shown}} / {{count}} photo",
+    "filtered_other": "{{shown}} / {{count}} photos",
+    "enterToPreview": "Enter to preview",
+    "noMatch": "No photos match this filter.",
+    "showAll": "Show all photos"
+  },
+  "library": {
+    "title": "Library",
+    "openFolder": "Open folder",
+    "noFolders": "No folders yet",
+    "skipped_one": "{{count}} file skipped (HEIC/RAW coming soon)",
+    "skipped_other": "{{count}} files skipped (HEIC/RAW coming soon)",
+    "dropTip": "Tip: drop a folder anywhere",
+    "emptyTitle": "Start with a folder of photos",
+    "emptyBody": "JPEG and PNG. Everything stays on this computer.",
+    "noCaptureDate": "No capture date",
+    "noLocation": "No location",
+    "gridLabel": "Photo library"
+  },
+  "task": {
+    "import": "Reading photos",
+    "thumbnails": "Preparing thumbnails"
+  },
+  "culling": {
+    "keysHint": "0–5 stars · P pick · X reject · U unflag",
+    "flag": {
+      "all": "All",
+      "picks": "Picks",
+      "unflagged": "Unflagged",
+      "rejects": "Rejects"
+    },
+    "filterByFlag": "Filter by flag",
+    "minRating": "Minimum rating",
+    "anyRating": "Any rating",
+    "atLeast": "≥ {{count}}",
+    "rating": "Rating",
+    "pick": "Pick",
+    "rejected": "Rejected",
+    "stars_one": "{{count}} star",
+    "stars_other": "{{count}} stars",
+    "starClear": "{{count}} (click again to clear)",
+    "starKey": "{{count}} (key {{count}})",
+    "pickKey": "Pick (P)",
+    "rejectKey": "Reject (X)"
+  },
+  "settings": {
+    "title": "Print settings",
+    "language": "Language",
+    "printSize": "Print size",
+    "printSizeHint": "Centred by default. Adjust per photo with Crop in the preview.",
+    "dateStamp": "Date stamp",
+    "dateStampFont": "Date stamp font",
+    "stampPosition": "Stamp position",
+    "corner": {
+      "bottomRight": "Bottom right",
+      "bottomLeft": "Bottom left",
+      "topRight": "Top right",
+      "topLeft": "Top left"
+    },
+    "color": {
+      "white": "White",
+      "retroOrange": "Retro orange"
+    },
+    "location": "Location",
+    "soon": "Soon",
+    "locationTip": "Offline place names arrive in a later slice (FR-005)",
+    "footer": "Offline · GPS stripped"
+  },
+  "print": {
+    "original": "Original",
+    "originalHint": "photo's own ratio, no crop",
+    "standard": "Standard (CEWE / EU)",
+    "custom": "Custom",
+    "addCustom": "Custom size…",
+    "deleteNamed": "Delete {{name}}",
+    "deleteTitle": "Delete this custom size",
+    "namePlaceholder": "Name (e.g. Instax wide)",
+    "width": "Width",
+    "height": "Height",
+    "errorBothEdges": "Enter both edges",
+    "errorRange": "Edges must be between 2 and 100 cm",
+    "save": "Save size"
+  },
+  "fonts": {
+    "builtIn": "Inter (built-in)",
+    "yours": "Your fonts",
+    "import": "Import OTF/TTF…",
+    "removeNamed": "Remove font {{name}}",
+    "removeTitle": "Remove this font (photos fall back to Inter)"
+  },
+  "frame": {
+    "title": "Info frame",
+    "cropToFill": "Crop to fill",
+    "fitWhole": "Fit whole photo",
+    "white": "White",
+    "black": "Black",
+    "font": "Frame font",
+    "show": "Show",
+    "field": {
+      "logo": "Logo",
+      "camera": "Camera",
+      "lens": "Lens",
+      "focal": "Focal length",
+      "aperture": "Aperture",
+      "shutter": "Shutter",
+      "iso": "ISO",
+      "photoStyle": "Photo style",
+      "date": "Date",
+      "place": "Place"
+    },
+    "placeHint": "Needs offline place names (FR-005)",
+    "keepsSize": "The whole print, frame included, keeps the selected size.",
+    "editInPreview": "Edit camera, lens and style in the preview."
+  },
+  "camera": {
+    "manualLens": "Manual lens (not in EXIF)",
+    "noInfo": "No camera information in this photo.",
+    "name": "Camera name",
+    "namePlaceholder": "Camera",
+    "lens": "Lens",
+    "focal": "Focal (mm)",
+    "aperture": "Aperture F",
+    "photoStyle": "Photo style",
+    "stylePlaceholder": "e.g. L. Monochrome D",
+    "logo": "Logo",
+    "logoText": "Text",
+    "logoImage": "Image",
+    "logoNone": "None",
+    "removeLogo": "Remove logo image",
+    "chooseLogo": "Choose logo PNG",
+    "brandText": "Brand text",
+    "brandPlaceholder": "BRAND",
+    "fromExif": "From EXIF: {{shutter}} · {{iso}}. Leave a field empty to use EXIF. Saved for every photo from this camera."
+  },
+  "export": {
+    "running": "Exporting…",
+    "cancelled": "Export cancelled",
+    "finished": "Export finished",
+    "exported_one": "{{count}} exported",
+    "exported_other": "{{count}} exported",
+    "failed_one": "{{count}} failed",
+    "failed_other": "{{count}} failed",
+    "error": "Couldn't export",
+    "chooseDestination": "Choose destination…",
+    "button": "Export",
+    "buttonCount_one": "Export {{count}} photo",
+    "buttonCount_other": "Export {{count}} photos",
+    "filteredHint": "Only the photos the library filter shows are exported."
+  },
+  "crop": {
+    "zoom": "Zoom"
+  },
+  "dpi": {
+    "excellent": "Excellent",
+    "good": "Good",
+    "fair": "Fair",
+    "poor": "Too low"
+  },
+  "viewer": {
+    "rendering": "Rendering print preview…",
+    "crop": "Crop",
+    "cropFitMode": "The frame is in Fit mode: the whole photo is shown",
+    "adjustCrop": "Adjust the crop (C)",
+    "previous": "Previous photo",
+    "next": "Next photo",
+    "ratingFlag": "Rating & flag",
+    "captured": "Captured",
+    "noExifDate": "No EXIF date · using file time",
+    "fromExif": "From EXIF",
+    "camera": "Camera",
+    "unknownCamera": "Unknown camera",
+    "frameProfile": "Frame & camera profile",
+    "image": "Image",
+    "location": "Location",
+    "noGps": "No GPS in this photo",
+    "placesSoon": "Place names arrive with FR-005",
+    "print": "Print",
+    "resolution": "Resolution",
+    "cropCustom": "Custom · zoom {{zoom}}×",
+    "cropCentred": "Centred",
+    "adjust": "Adjust",
+    "dateStamp": "Date stamp",
+    "showOnPrint": "Show on print",
+    "allPhotos": "Print settings apply to all photos for now.",
+    "browse": "browse",
+    "close": "close"
+  },
+  "errors": {
+    "internal": "Something went wrong",
+    "camera": { "unknown": "Unknown camera" },
+    "decode": { "failed": "The photo could not be decoded" },
+    "encode": { "failed": "The image could not be encoded" },
+    "render": { "failed": "The preview could not be rendered" },
+    "export": {
+      "cancelled": "Export cancelled",
+      "empty": "There are no photos to export",
+      "no_destination": "Choose a destination first",
+      "write_failed": "The file could not be written"
+    },
+    "font": {
+      "invalid": "This is not a valid font",
+      "missing_digits": "The font has no digits 0–9",
+      "too_large": "The font file is larger than 20 MB",
+      "too_many": "You can import up to 50 fonts",
+      "unreadable": "The font file could not be read",
+      "unsupported": "Only OTF and TTF fonts are supported",
+      "write_failed": "The font could not be saved"
+    },
+    "import": {
+      "suspicious": "The file looks suspicious and was skipped",
+      "too_large": "The file is too large",
+      "unreadable": "The file could not be read",
+      "unsupported": "This format is not supported yet"
+    },
+    "logo": {
+      "decode_failed": "The logo could not be decoded",
+      "not_png": "The logo must be a PNG file",
+      "too_large": "The logo is larger than 2 MB or 4096 px",
+      "unreadable": "The logo file could not be read",
+      "write_failed": "The logo could not be saved"
+    },
+    "photo": {
+      "invalid_rating": "Ratings are 0 to 5 stars",
+      "invalid_selection": "Select between 1 and 10,000 photos",
+      "unknown": "Unknown photo"
+    },
+    "settings": { "invalid": "These settings are not valid" }
+  }
+}

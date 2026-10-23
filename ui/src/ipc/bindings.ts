@@ -25,7 +25,6 @@ export const commands = {
 	getSettings: () => typedError<SettingsState, IpcError>(__TAURI_INVOKE("get_settings")),
 	/**  Validates and applies render settings (SECURITY.md §2: validate all IPC input). */
 	setSettings: (settings: RenderSettings) => typedError<SettingsState, IpcError>(__TAURI_INVOKE("set_settings", { settings })),
-	/**  Chooses the export destination with a Rust-side dialog. Returns its display path. */
 	pickExportFolder: () => typedError<string | null, IpcError>(__TAURI_INVOKE("pick_export_folder")),
 	/**
 	 *  Starts exporting the photos kept by `filter` to the chosen destination
@@ -63,6 +62,13 @@ export const commands = {
 	/**  1 = the largest crop at the target ratio; up to `MAX_ZOOM`. */
 	zoom: number | null,
 } | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_crop", { id, crop })),
+	/**
+	 *  Chooses the export destination with a Rust-side dialog. Returns its display path.
+	 *  Interface preferences of this machine (FR-020).
+	 */
+	getUiSettings: () => typedError<UiSettings, IpcError>(__TAURI_INVOKE("get_ui_settings")),
+	/**  Changes the interface language; the typed enum is the validation (FR-020). */
+	setUiSettings: (ui: UiSettings) => typedError<UiSettings, IpcError>(__TAURI_INVOKE("set_ui_settings", { ui })),
 	/**  Sets 0–5 stars on photos (FR-022). Larger values are rejected. */
 	setPhotoRating: (ids: PhotoId[], rating: number) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_rating", { ids, rating })),
 	/**  Flags photos as pick or reject, or clears the flag (FR-022). */
@@ -305,6 +311,9 @@ export type IpcError = {
 	message: string,
 };
 
+/**  Interface language (FR-020). English is the default; text printed on photos never follows it. */
+export type Language = "en" | "vi";
+
 export type LengthUnit = "cm" | "in";
 
 /**  Photos were added, or their ratings/flags changed; the UI refetches the list. */
@@ -432,6 +441,11 @@ export type TaskProgress = {
 /**  A sharper thumbnail (T1) is now cached for this photo. */
 export type ThumbReady = {
 	id: PhotoId,
+};
+
+/**  Per-machine interface preferences (FR-020). Never part of a project file. */
+export type UiSettings = {
+	language: Language,
 };
 
 /**

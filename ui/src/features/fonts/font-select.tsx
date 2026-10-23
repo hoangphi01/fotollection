@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Plus, Trash2, Type } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -25,6 +26,7 @@ type FontSelectProps = {
 
 /** Font picker shared by the date stamp and the info frame (FR-042). */
 export function FontSelect({ fonts, value, onChange, label }: FontSelectProps) {
+  const { t } = useTranslation()
   const selected = value ? String(value) : BUILT_IN
   const current = fonts.fonts.find((f) => f.id === value)
 
@@ -46,10 +48,10 @@ export function FontSelect({ fonts, value, onChange, label }: FontSelectProps) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={BUILT_IN}>Inter (built-in)</SelectItem>
+            <SelectItem value={BUILT_IN}>{t('fonts.builtIn')}</SelectItem>
             {fonts.fonts.length > 0 && (
               <SelectGroup>
-                <SelectLabel>Your fonts</SelectLabel>
+                <SelectLabel>{t('fonts.yours')}</SelectLabel>
                 {fonts.fonts.map((f) => (
                   <SelectItem key={f.id} value={String(f.id)}>
                     {f.name} <span className="text-muted-foreground uppercase">· {f.format}</span>
@@ -59,7 +61,7 @@ export function FontSelect({ fonts, value, onChange, label }: FontSelectProps) {
             )}
             <SelectSeparator />
             <SelectItem value={IMPORT}>
-              <Plus className="size-3.5" /> Import OTF/TTF…
+              <Plus className="size-3.5" /> {t('fonts.import')}
             </SelectItem>
           </SelectContent>
         </Select>
@@ -67,8 +69,8 @@ export function FontSelect({ fonts, value, onChange, label }: FontSelectProps) {
           <Button
             variant="ghost"
             size="icon-sm"
-            aria-label={`Remove font ${current.name}`}
-            title="Remove this font (photos fall back to Inter)"
+            aria-label={t('fonts.removeNamed', { name: current.name })}
+            title={t('fonts.removeTitle')}
             onClick={() => void fonts.removeFont(current.id)}
           >
             <Trash2 />

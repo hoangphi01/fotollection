@@ -1,0 +1,233 @@
+{
+  "common": {
+    "cancel": "Hủy",
+    "loading": "Đang tải…",
+    "reset": "Đặt lại",
+    "done": "Xong",
+    "dismiss": "Đóng"
+  },
+  "app": {
+    "photos_other": "{{count}} ảnh",
+    "filtered_other": "{{shown}} / {{count}} ảnh",
+    "enterToPreview": "Enter để xem trước",
+    "noMatch": "Không có ảnh nào khớp bộ lọc.",
+    "showAll": "Hiện tất cả ảnh"
+  },
+  "library": {
+    "title": "Thư viện",
+    "openFolder": "Mở thư mục",
+    "noFolders": "Chưa có thư mục nào",
+    "skipped_other": "Đã bỏ qua {{count}} file (HEIC/RAW sắp có)",
+    "dropTip": "Mẹo: thả một thư mục vào bất kỳ đâu",
+    "emptyTitle": "Bắt đầu với một thư mục ảnh",
+    "emptyBody": "JPEG và PNG. Mọi thứ đều ở lại trên máy này.",
+    "noCaptureDate": "Không có ngày chụp",
+    "noLocation": "Không có vị trí",
+    "gridLabel": "Thư viện ảnh"
+  },
+  "task": {
+    "import": "Đang đọc ảnh",
+    "thumbnails": "Đang tạo thumbnail"
+  },
+  "culling": {
+    "keysHint": "0–5 sao · P chọn · X loại · U bỏ cờ",
+    "flag": {
+      "all": "Tất cả",
+      "picks": "Đã chọn",
+      "unflagged": "Chưa gắn cờ",
+      "rejects": "Đã loại"
+    },
+    "filterByFlag": "Lọc theo cờ",
+    "minRating": "Số sao tối thiểu",
+    "anyRating": "Mọi số sao",
+    "atLeast": "≥ {{count}}",
+    "rating": "Đánh giá",
+    "pick": "Đã chọn",
+    "rejected": "Đã loại",
+    "stars_other": "{{count}} sao",
+    "starClear": "{{count}} (bấm lần nữa để xóa)",
+    "starKey": "{{count}} (phím {{count}})",
+    "pickKey": "Chọn (P)",
+    "rejectKey": "Loại (X)"
+  },
+  "settings": {
+    "title": "Thiết lập in",
+    "language": "Ngôn ngữ",
+    "printSize": "Khổ in",
+    "printSizeHint": "Mặc định crop ở giữa. Chỉnh từng ảnh bằng Crop trong preview.",
+    "dateStamp": "Dấu ngày",
+    "dateStampFont": "Font dấu ngày",
+    "stampPosition": "Vị trí dấu ngày",
+    "corner": {
+      "bottomRight": "Góc dưới phải",
+      "bottomLeft": "Góc dưới trái",
+      "topRight": "Góc trên phải",
+      "topLeft": "Góc trên trái"
+    },
+    "color": {
+      "white": "Trắng",
+      "retroOrange": "Cam retro"
+    },
+    "location": "Địa điểm",
+    "soon": "Sắp có",
+    "locationTip": "Tên địa điểm offline sẽ có ở bản sau (FR-005)",
+    "footer": "Offline · đã xóa GPS"
+  },
+  "print": {
+    "original": "Gốc",
+    "originalHint": "tỉ lệ gốc của ảnh, không crop",
+    "standard": "Tiêu chuẩn (CEWE / EU)",
+    "custom": "Tùy chỉnh",
+    "addCustom": "Khổ tùy chỉnh…",
+    "deleteNamed": "Xóa {{name}}",
+    "deleteTitle": "Xóa khổ tùy chỉnh này",
+    "namePlaceholder": "Tên (ví dụ Instax wide)",
+    "width": "Chiều rộng",
+    "height": "Chiều cao",
+    "errorBothEdges": "Hãy nhập cả hai cạnh",
+    "errorRange": "Mỗi cạnh phải từ 2 đến 100 cm",
+    "save": "Lưu khổ"
+  },
+  "fonts": {
+    "builtIn": "Inter (có sẵn)",
+    "yours": "Font của bạn",
+    "import": "Nhập OTF/TTF…",
+    "removeNamed": "Gỡ font {{name}}",
+    "removeTitle": "Gỡ font này (ảnh sẽ dùng lại Inter)"
+  },
+  "frame": {
+    "title": "Khung thông tin",
+    "cropToFill": "Crop cho đầy",
+    "fitWhole": "Giữ trọn ảnh",
+    "white": "Trắng",
+    "black": "Đen",
+    "font": "Font khung",
+    "show": "Hiển thị",
+    "field": {
+      "logo": "Logo",
+      "camera": "Máy ảnh",
+      "lens": "Ống kính",
+      "focal": "Tiêu cự",
+      "aperture": "Khẩu độ",
+      "shutter": "Tốc độ màn trập",
+      "iso": "ISO",
+      "photoStyle": "Photo Style",
+      "date": "Ngày",
+      "place": "Địa điểm"
+    },
+    "placeHint": "Cần tên địa điểm offline (FR-005)",
+    "keepsSize": "Toàn bộ ảnh in, kể cả khung, giữ đúng khổ đã chọn.",
+    "editInPreview": "Sửa máy ảnh, ống kính và Photo Style trong preview."
+  },
+  "camera": {
+    "manualLens": "Ống kính manual (không có trong EXIF)",
+    "noInfo": "Ảnh này không có thông tin máy ảnh.",
+    "name": "Tên máy ảnh",
+    "namePlaceholder": "Máy ảnh",
+    "lens": "Ống kính",
+    "focal": "Tiêu cự (mm)",
+    "aperture": "Khẩu độ F",
+    "photoStyle": "Photo Style",
+    "stylePlaceholder": "ví dụ L. Monochrome D",
+    "logo": "Logo",
+    "logoText": "Chữ",
+    "logoImage": "Ảnh",
+    "logoNone": "Không",
+    "removeLogo": "Gỡ ảnh logo",
+    "chooseLogo": "Chọn logo PNG",
+    "brandText": "Chữ thương hiệu",
+    "brandPlaceholder": "BRAND",
+    "fromExif": "Từ EXIF: {{shutter}} · {{iso}}. Để trống một ô để dùng giá trị EXIF. Được lưu cho mọi ảnh của máy này."
+  },
+  "export": {
+    "running": "Đang export…",
+    "cancelled": "Đã hủy export",
+    "finished": "Export xong",
+    "exported_other": "Đã export {{count}} ảnh",
+    "failed_other": "{{count}} ảnh lỗi",
+    "error": "Không export được",
+    "chooseDestination": "Chọn nơi lưu…",
+    "button": "Export",
+    "buttonCount_other": "Export {{count}} ảnh",
+    "filteredHint": "Chỉ export những ảnh đang hiện theo bộ lọc thư viện."
+  },
+  "crop": {
+    "zoom": "Thu phóng"
+  },
+  "dpi": {
+    "excellent": "Rất tốt",
+    "good": "Tốt",
+    "fair": "Tạm được",
+    "poor": "Quá thấp"
+  },
+  "viewer": {
+    "rendering": "Đang dựng bản xem trước…",
+    "crop": "Crop",
+    "cropFitMode": "Khung đang ở chế độ Giữ trọn ảnh: cả tấm ảnh được hiển thị",
+    "adjustCrop": "Chỉnh crop (C)",
+    "previous": "Ảnh trước",
+    "next": "Ảnh sau",
+    "ratingFlag": "Sao & cờ",
+    "captured": "Ngày chụp",
+    "noExifDate": "Không có ngày EXIF · dùng thời gian của file",
+    "fromExif": "Từ EXIF",
+    "camera": "Máy ảnh",
+    "unknownCamera": "Không rõ máy ảnh",
+    "frameProfile": "Khung & hồ sơ máy ảnh",
+    "image": "Ảnh",
+    "location": "Vị trí",
+    "noGps": "Ảnh này không có GPS",
+    "placesSoon": "Tên địa điểm sẽ có cùng FR-005",
+    "print": "In",
+    "resolution": "Độ phân giải",
+    "cropCustom": "Tùy chỉnh · zoom {{zoom}}×",
+    "cropCentred": "Ở giữa",
+    "adjust": "Chỉnh",
+    "dateStamp": "Dấu ngày",
+    "showOnPrint": "Hiện trên ảnh in",
+    "allPhotos": "Hiện tại thiết lập in áp dụng cho mọi ảnh.",
+    "browse": "chuyển ảnh",
+    "close": "đóng"
+  },
+  "errors": {
+    "internal": "Đã có lỗi xảy ra",
+    "camera": { "unknown": "Không rõ máy ảnh" },
+    "decode": { "failed": "Không giải mã được ảnh" },
+    "encode": { "failed": "Không mã hóa được ảnh" },
+    "render": { "failed": "Không dựng được bản xem trước" },
+    "export": {
+      "cancelled": "Đã hủy export",
+      "empty": "Không có ảnh nào để export",
+      "no_destination": "Hãy chọn nơi lưu trước",
+      "write_failed": "Không ghi được file"
+    },
+    "font": {
+      "invalid": "Đây không phải font hợp lệ",
+      "missing_digits": "Font không có chữ số 0–9",
+      "too_large": "File font lớn hơn 20 MB",
+      "too_many": "Chỉ nhập được tối đa 50 font",
+      "unreadable": "Không đọc được file font",
+      "unsupported": "Chỉ hỗ trợ font OTF và TTF",
+      "write_failed": "Không lưu được font"
+    },
+    "import": {
+      "suspicious": "File có dấu hiệu bất thường nên đã bị bỏ qua",
+      "too_large": "File quá lớn",
+      "unreadable": "Không đọc được file",
+      "unsupported": "Định dạng này chưa được hỗ trợ"
+    },
+    "logo": {
+      "decode_failed": "Không giải mã được logo",
+      "not_png": "Logo phải là file PNG",
+      "too_large": "Logo lớn hơn 2 MB hoặc 4096 px",
+      "unreadable": "Không đọc được file logo",
+      "write_failed": "Không lưu được logo"
+    },
+    "photo": {
+      "invalid_rating": "Đánh giá từ 0 đến 5 sao",
+      "invalid_selection": "Hãy chọn từ 1 đến 10.000 ảnh",
+      "unknown": "Không tìm thấy ảnh"
+    },
+    "settings": { "invalid": "Thiết lập không hợp lệ" }
+  }
+}

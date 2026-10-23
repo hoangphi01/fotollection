@@ -16,7 +16,7 @@ use fotollection_core::logo::{self, LogoImage};
 use fotollection_core::plan::FrameRequest;
 use fotollection_core::preview::PreviewCache;
 use fotollection_core::project;
-use fotollection_core::settings::RenderSettings;
+use fotollection_core::settings::{RenderSettings, UiSettings};
 use fotollection_core::settings_store::{self, Loaded, StoredSettings};
 use fotollection_core::thumbs::ThumbCache;
 use serde::Serialize;
@@ -68,6 +68,8 @@ pub struct AppState {
     /// Current settings and a revision that bumps on every change (for preview URLs).
     pub settings: RwLock<(RenderSettings, u32)>,
     pub frame: RwLock<FrameState>,
+    /// Interface language and other per-machine UI preferences (FR-020).
+    pub ui: RwLock<UiSettings>,
     /// Chosen through the Rust-side dialog only, never sent by the webview (SECURITY.md §2).
     pub export_destination: Mutex<Option<PathBuf>>,
     pub jobs: Mutex<HashMap<u32, CancellationToken>>,
@@ -146,6 +148,7 @@ impl AppState {
                 fonts: stored.fonts,
                 loaded_fonts,
             }),
+            ui: RwLock::new(stored.ui),
             export_destination: Mutex::new(None),
             jobs: Mutex::new(HashMap::new()),
             next_job: AtomicU32::new(1),
@@ -185,7 +188,9 @@ impl AppState {
         if !self.store_writable.load(Ordering::Relaxed) {
             return;
         }
-        let (Ok(render), Ok(frame)) = (self.settings.read(), self.frame.read()) else {
+        let (Ok(render), Ok(frame), Ok(ui)) =
+            (self.settings.read(), self.frame.read(), self.ui.read())
+        else {
             return;
         };
         let stored = StoredSettings {
@@ -193,8 +198,9 @@ impl AppState {
             frame: frame.settings.clone(),
             cameras: frame.cameras.clone(),
             fonts: frame.fonts.clone(),
+            ui: *ui,
         };
-        drop((render, frame));
+        drop((render, frame, ui));
         let _guard = self.store_lock.lock();
         if let Err(e) = settings_store::save(&self.store_path, &stored) {
             eprintln!("could not save settings: {e}");

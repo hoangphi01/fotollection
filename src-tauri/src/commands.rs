@@ -22,7 +22,7 @@ use fotollection_core::library::{CullFilter, Flag, PhotoEdits, PhotoId, PhotoSum
 use fotollection_core::logo;
 use fotollection_core::metadata;
 use fotollection_core::plan::{CropFrame, DpiBand, PlanInput, effective_dpi, plan};
-use fotollection_core::settings::RenderSettings;
+use fotollection_core::settings::{RenderSettings, UiSettings};
 use fotollection_core::thumbs;
 use rayon::prelude::*;
 use serde::Serialize;
@@ -317,6 +317,29 @@ pub fn set_settings(
 }
 
 /// Chooses the export destination with a Rust-side dialog. Returns its display path.
+/// Interface preferences of this machine (FR-020).
+#[tauri::command]
+#[specta::specta]
+pub fn get_ui_settings(state: State<'_, AppState>) -> Result<UiSettings, IpcError> {
+    state
+        .ui
+        .read()
+        .map(|ui| *ui)
+        .map_err(|e| IpcError::internal(e.to_string()))
+}
+
+/// Changes the interface language; the typed enum is the validation (FR-020).
+#[tauri::command]
+#[specta::specta]
+pub fn set_ui_settings(state: State<'_, AppState>, ui: UiSettings) -> Result<UiSettings, IpcError> {
+    *state
+        .ui
+        .write()
+        .map_err(|e| IpcError::internal(e.to_string()))? = ui;
+    state.persist();
+    Ok(ui)
+}
+
 #[tauri::command]
 #[specta::specta]
 pub async fn pick_export_folder(app: AppHandle) -> Result<Option<String>, IpcError> {

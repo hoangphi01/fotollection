@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { ImageUp, X } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
@@ -12,11 +13,11 @@ type CameraProfileEditorProps = {
   details: PhotoDetails | null
 }
 
-function formatExif(details: PhotoDetails | null) {
+function formatExif(details: PhotoDetails | null, manualLens: string) {
   const f = details?.fNumber
   const e = details?.exposureS
   return {
-    lens: details?.lens ?? 'Manual lens (not in EXIF)',
+    lens: details?.lens ?? manualLens,
     focal: details?.focalMm ? `${Math.round(details.focalMm)}` : 'mm',
     aperture: f ? `${Math.round(f * 10) / 10}` : 'F',
     shutter: e ? (e >= 1 ? `${e}s` : `1/${Math.round(1 / e)}s`) : '—',
@@ -70,26 +71,27 @@ const number = (s: string) => {
 
 /** Per-camera overrides for the info frame, remembered across sessions (FR-040). */
 export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps) {
+  const { t } = useTranslation()
   const view = frame.config?.cameras.find((c) => c.profile.id === details?.cameraId)
   if (!details || !view) {
-    return <p className="text-xs text-muted-foreground">No camera information in this photo.</p>
+    return <p className="text-xs text-muted-foreground">{t('camera.noInfo')}</p>
   }
   const p = view.profile
-  const exif = formatExif(details)
+  const exif = formatExif(details, t('camera.manualLens'))
   const save = (patch: Partial<CameraProfile>) => void frame.setProfile({ ...p, ...patch })
   const k = (v: unknown) => `${p.id}:${String(v)}`
 
   return (
     <div className="space-y-2.5">
-      <Row label="Camera name">
+      <Row label={t('camera.name')}>
         <CommitInput
           key={k(p.displayName)}
           value={p.displayName ?? ''}
-          placeholder={view.defaultDisplayName ?? 'Camera'}
+          placeholder={view.defaultDisplayName ?? t('camera.namePlaceholder')}
           onCommit={(v) => save({ displayName: text(v) })}
         />
       </Row>
-      <Row label="Lens">
+      <Row label={t('camera.lens')}>
         <CommitInput
           key={k(p.lens)}
           value={p.lens ?? ''}
@@ -98,7 +100,7 @@ export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps
         />
       </Row>
       <div className="grid grid-cols-2 gap-2">
-        <Row label="Focal (mm)">
+        <Row label={t('camera.focal')}>
           <CommitInput
             key={k(p.focalMm)}
             numeric
@@ -107,7 +109,7 @@ export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps
             onCommit={(v) => save({ focalMm: number(v) })}
           />
         </Row>
-        <Row label="Aperture F">
+        <Row label={t('camera.aperture')}>
           <CommitInput
             key={k(p.fNumber)}
             numeric
@@ -117,15 +119,15 @@ export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps
           />
         </Row>
       </div>
-      <Row label="Photo style">
+      <Row label={t('camera.photoStyle')}>
         <CommitInput
           key={k(p.photoStyle)}
           value={p.photoStyle ?? ''}
-          placeholder="e.g. L. Monochrome D"
+          placeholder={t('camera.stylePlaceholder')}
           onCommit={(v) => save({ photoStyle: text(v) })}
         />
       </Row>
-      <Row label="Logo">
+      <Row label={t('camera.logo')}>
         <div className="flex items-center gap-1.5">
           <ToggleGroup
             type="single"
@@ -139,20 +141,20 @@ export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps
             }}
           >
             <ToggleGroupItem value="text" className="text-xs">
-              Text
+              {t('camera.logoText')}
             </ToggleGroupItem>
             <ToggleGroupItem value="image" className="text-xs">
-              Image
+              {t('camera.logoImage')}
             </ToggleGroupItem>
             <ToggleGroupItem value="none" className="text-xs">
-              None
+              {t('camera.logoNone')}
             </ToggleGroupItem>
           </ToggleGroup>
           {view.hasLogoImage ? (
             <Button
               variant="ghost"
               size="icon-xs"
-              aria-label="Remove logo image"
+              aria-label={t('camera.removeLogo')}
               onClick={() => void frame.clearLogo(p.id)}
             >
               <X />
@@ -161,7 +163,7 @@ export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps
             <Button
               variant="ghost"
               size="icon-xs"
-              aria-label="Choose logo PNG"
+              aria-label={t('camera.chooseLogo')}
               onClick={() => void frame.pickLogo(p.id)}
             >
               <ImageUp />
@@ -170,18 +172,17 @@ export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps
         </div>
       </Row>
       {p.logo === 'text' && (
-        <Row label="Brand text">
+        <Row label={t('camera.brandText')}>
           <CommitInput
             key={k(p.brandText)}
             value={p.brandText ?? ''}
-            placeholder={view.defaultBrand ?? 'BRAND'}
+            placeholder={view.defaultBrand ?? t('camera.brandPlaceholder')}
             onCommit={(v) => save({ brandText: text(v) })}
           />
         </Row>
       )}
       <p className="text-xs text-muted-foreground">
-        From EXIF: {exif.shutter} · {exif.iso}. Leave a field empty to use EXIF. Saved for every
-        photo from this camera.
+        {t('camera.fromExif', { shutter: exif.shutter, iso: exif.iso })}
       </p>
       {frame.error && <p className="text-xs text-destructive">{frame.error}</p>}
     </div>

@@ -34,6 +34,8 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::clear_camera_logo,
             commands::get_crop_geometry,
             commands::set_photo_crop,
+            commands::get_ui_settings,
+            commands::set_ui_settings,
             commands::set_photo_rating,
             commands::set_photo_flag,
             commands::undo,

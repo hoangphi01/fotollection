@@ -6,6 +6,22 @@ use specta::Type;
 
 use crate::print_size::PrintSize;
 
+/// Interface language (FR-020). English is the default; text printed on photos never follows it.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum Language {
+    #[default]
+    En,
+    Vi,
+}
+
+/// Per-machine interface preferences (FR-020). Never part of a project file.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct UiSettings {
+    pub language: Language,
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct RenderSettings {

@@ -241,7 +241,8 @@ These are read-only and compiled into the binary or bundled as resources, so the
 ```json
 {
   "format": "fotollection-settings",
-  "schema_version": 2,
+  "schema_version": 3,
+  "ui": { "language": "vi" },
   "render": {
     "printSize": "custom-1",
     "stamp": { "enabled": true, "format": "iso", "corner": "bottomRight", "color": "white", "font": 1 },
@@ -260,11 +261,12 @@ These are read-only and compiled into the binary or bundled as resources, so the
 }
 ```
 
-`render.printSize` is a built-in `PrintSize.id`, a `customSizes[].id`, or `"original"`, which keeps each photo's own ratio ([FR-045](PRD.md#fr-045--original-aspect-ratio)). `"original"` needs no new field, so the schema stays at v2. Builds from before FR-045 reject the value and fall back to defaults; none of them was released.
+`render.printSize` is a built-in `PrintSize.id`, a `customSizes[].id`, or `"original"`, which keeps each photo's own ratio ([FR-045](PRD.md#fr-045--original-aspect-ratio)). `"original"` needs no new field, so it did not change the schema version. Builds from before FR-045 reject the value and fall back to defaults; none of them was released.
 
 - **`cameras` is a table** (N1–N3): the key is `id`, `(make, model)` is unique, and every override is optional (sparse, N5). A missing value falls back to EXIF or to a derived default, which is computed and never stored (N4). A row is created the first time a camera is imported.
 - **`fonts` is a table** (FR-042): `id` is the key, and the file lives at `fonts/<id>.<ttf|otf>`. `render.stamp.font` and `frame.font` are foreign keys. A dangling key falls back to Inter on load (N7) rather than failing.
 - **`render.customSizes`** (FR-043): values are in mm, `unit` only affects labels, and `printSize` may reference a custom `id`.
+- **`ui`** (FR-020): per-machine interface preferences, today only `language` (`"en"` or `"vi"`, default `"en"`). They are never copied into a project file, so opening a project on another machine keeps that machine's language.
 - **Logos** live next to the file as `logos/<camera-id>.png`, copied in after validation ([ADR-0014](adr/0014-user-supplied-brand-logos.md)). The JSON never references paths outside the config dir. `logo: "image"` means the file exists.
 - **Writes** use the same atomic protocol as projects ([§4.4](#44-write-protocol)): `.json.tmp`, then fsync, then the previous file copied to `.json.bak`, then rename. A write happens on every settings change; changes are rare and the file is tiny.
 - **Load rules:**
@@ -277,6 +279,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 |---------|-------------|--------|
 | 1 | 0.0.x (slice 2) | `render`, `frame`, `cameras` |
 | 2 | 0.0.x (slice 4) | `fonts` table; `render.customSizes`, `render.stamp.font`, `frame.font`. **Migration v1 → v2:** every new field has a default, so v1 files are read as is (tested by `migrates_v1_files`) |
+| 3 | 0.0.x (Stage 2) | `ui.language` (FR-020). **Migration v2 → v3:** `ui` defaults to English, so v2 files are read as is. Fixtures `crates/core/tests/fixtures/settings/v1.json` and `v2.json` are loaded by `migrates_v1_files` and `fr_020_migrates_v2_files_to_english` |
 
 ## 7. Presets
 

@@ -94,7 +94,9 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
   .oxlintrc.json         † # lint rules (bans dangerouslySetInnerHTML / eval)
   src/
     components/ui/       † # shadcn/ui components (copied in via the shadcn CLI, owned by us)
-    features/            † # library/, settings/, export/ — feature components + hooks
+    features/            † # library/, settings/, export/, culling/, frame/, viewer/ — feature components + hooks
+    i18n/                † # i18next setup + typed keys (FR-020, ADR-0015)
+    locales/             † # en.json (default), vi.json — bundled, never fetched
     ipc/bindings.ts      † # GENERATED from Rust types — do not edit
     lib/                 † # small UI utilities (theme sync, shadcn's cn re-export)
     index.css            † # Tailwind layers + shadcn theme tokens (CSS variables)
@@ -109,6 +111,7 @@ bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batc
 | App shell | Tauri 2 | OS webview, small binary, capability-based permissions |
 | UI framework | Vite + React 19 + TypeScript | Required by shadcn/ui ([ADR-0007](adr/0007-ui-react-shadcn-lucide.md)) |
 | UI components | shadcn/ui (Radix primitives) + Tailwind CSS v4 | Components are copied into the repo, so we own and audit them |
+| UI localization | `i18next` + `react-i18next` (MIT), bundled JSON locales | Typed keys, CLDR plurals, no runtime fetch ([ADR-0015](adr/0015-ui-localization-i18next.md)) |
 | Icons | Lucide (`lucide-react`) | Tree-shaken: import individual icons only |
 | Virtualized grid | `@tanstack/react-virtual` | Required for 1,000+ thumbnails ([NFR-001](PRD.md#nfr-001--library-load-time)) |
 | UI state | React state + a small store (`zustand`) | Server state lives in Rust. The UI only caches it |
@@ -190,6 +193,7 @@ Commands marked † are implemented.
 | `pick_and_import_folder() -> ImportSummary?` † | Opens the folder dialog **in Rust** and imports it. Drag-and-drop on the window uses the same import path | FR-001, FR-002 |
 | `list_photos(filter) -> { photos: [PhotoSummary], total }` † | Data for the grid, sorted by capture time and filtered in Rust by flag and minimum rating. Summaries carry `rating` and `flag` | FR-003, FR-022 |
 | `get_settings()` / `set_settings(settings) -> SettingsState` † | Validated render settings plus a `revision` used to refresh previews | FR-004, FR-006 |
+| `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`), stored per machine in `settings.json` v3 | FR-020 |
 | `set_photo_override(id, override)` | Per-photo crop frame or place name | FR-005, FR-006 |
 | `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
 | `start_export(filter) -> JobId` † | Exports exactly the photos `filter` keeps (the set the grid shows) to the chosen destination | FR-008, FR-009, FR-010, FR-022 |

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { CalendarX2, LoaderCircle, MapPinOff } from 'lucide-react'
 import { memo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { PhotoSummary } from '@/ipc/bindings'
 import { CullBadges } from '@/features/culling/cull-badges'
 import { thumbUrl } from '@/lib/photo-url'
@@ -28,6 +29,7 @@ export const ThumbTile = memo(function ThumbTile({
   onSelect,
   onOpen,
 }: ThumbTileProps) {
+  const { t } = useTranslation()
   // Stays true across T0 → T1 upgrades, so the sharper image swaps in without flashing.
   const [loaded, setLoaded] = useState(false)
 
@@ -66,12 +68,12 @@ export const ThumbTile = memo(function ThumbTile({
       </div>
       <div className="absolute top-1 right-1 flex gap-0.5">
         {photo.dateFromFile && (
-          <span className="rounded bg-black/60 p-0.5 text-amber-300" aria-label="No capture date">
+          <span className="rounded bg-black/60 p-0.5 text-amber-300" aria-label={t('library.noCaptureDate')}>
             <CalendarX2 className="size-3" />
           </span>
         )}
         {!photo.hasGps && (
-          <span className="rounded bg-black/60 p-0.5 text-white/80" aria-label="No location">
+          <span className="rounded bg-black/60 p-0.5 text-white/80" aria-label={t('library.noLocation')}>
             <MapPinOff className="size-3" />
           </span>
         )}

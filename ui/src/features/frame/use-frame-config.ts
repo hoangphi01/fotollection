@@ -7,8 +7,11 @@ import {
   type FrameConfig,
   type FrameSettings,
 } from '@/ipc/bindings'
+import { errorText } from '@/lib/errors'
 
-type Result<T> = { status: 'ok'; data: T } | { status: 'error'; error: { message: string } }
+type Result<T> =
+  | { status: 'ok'; data: T }
+  | { status: 'error'; error: { code: string; message: string } }
 
 /**
  * Info-frame settings and camera profiles (FR-040). Every change returns the new config
@@ -27,7 +30,7 @@ export function useFrameConfig(onRevision: (revision: number) => void) {
         }
         setError(null)
       } else {
-        setError(result.error.message)
+        setError(errorText(result.error))
       }
     },
     [onRevision],
