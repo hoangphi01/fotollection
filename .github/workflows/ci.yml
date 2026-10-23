@@ -1,0 +1,89 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      # Reads the pinned toolchain from rust-toolchain.toml.
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: UI typecheck, lint, build
+        run: |
+          npm run ui:typecheck
+          npm run ui:lint
+          npm run ui:build
+
+      - name: Rust fmt
+        run: cargo fmt --all --check
+
+      - name: Rust clippy
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Rust tests (also regenerates IPC bindings)
+        run: cargo test --workspace --locked
+
+      - name: IPC bindings are up to date
+        shell: bash
+        run: git diff --exit-code -- ui/src/ipc/bindings.ts
+
+      - name: Core has no Tauri or networking dependency (ADR-0002, NFR-006)
+        shell: bash
+        run: |
+          if cargo tree -p fotollection-core -e normal --prefix none | grep -E '^(tauri|reqwest|hyper|ureq) '; then
+            echo "forbidden dependency in fotollection-core"; exit 1
+          fi
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: cargo deny (licenses, advisories, sources)
+        uses: EmbarkStudios/cargo-deny-action@v2
+
+      - name: Dangerous DOM APIs are not used (SECURITY.md §7)
+        run: |
+          if grep -rnE "dangerouslySetInnerHTML|innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\(|new Function" ui/src --include='*.ts' --include='*.tsx' --exclude-dir=ipc; then
+            echo "dangerous DOM API found"; exit 1
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: npm audit (production deps)
+        run: |
+          npm ci
+          npm audit --omit=dev --audit-level=high

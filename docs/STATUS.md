@@ -5,9 +5,9 @@
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 0 — Foundation (not started)
+## Current phase: Phase 0 — Foundation (in progress)
 
-The documentation framework is complete. No code has been written yet.
+The app scaffold runs on macOS: a Tauri 2 window, the React/shadcn UI shell, and typed IPC. Image processing has not started yet.
 
 ## Phase 0 — Foundation
 
@@ -15,11 +15,12 @@ The documentation framework is complete. No code has been written yet.
 |------|--------|-------|
 | Git repository | Done | `hoangphi01/fotollection` (public), branch `main` |
 | Documentation framework + docs CI | Done | This commit set |
-| Cargo workspace + Tauri 2 scaffold | Not Started | |
-| UI scaffold: React + Tailwind + shadcn/ui + Lucide | Not Started | [ADR-0007](adr/0007-ui-react-shadcn-lucide.md) |
-| Build-size profiles in `Cargo.toml` + `scripts/clean.sh` | In Progress | Script done; profiles set at scaffold ([DEVELOPMENT.md §4](DEVELOPMENT.md#4-build-disk-hygiene)) |
-| CI build/test matrix (macOS, Windows) | Not Started | |
-| `tauri-specta` bindings + staleness check | Not Started | |
+| Cargo workspace + Tauri 2 scaffold | Done | Tauri 2.12, Rust 1.99.1 pinned |
+| UI scaffold: React + Tailwind + shadcn/ui + Lucide | Done | [ADR-0007](adr/0007-ui-react-shadcn-lucide.md) |
+| Build-size profiles in `Cargo.toml` + `scripts/clean.sh` | Done | First dev build: `target/` ≈ 1.0 GB ([DEVELOPMENT.md §4](DEVELOPMENT.md#4-build-disk-hygiene)) |
+| CI build/test matrix (macOS, Windows) | Done | `.github/workflows/ci.yml` |
+| Reproducible setup (`scripts/bootstrap.sh` / `.ps1`, lockfiles) | Done | [DEVELOPMENT.md §1](DEVELOPMENT.md#1-setting-up-a-machine) |
+| `tauri-specta` bindings + staleness check | Done | `cargo test` regenerates; CI runs `git diff --exit-code` |
 | Benchmark harness + `bench` corpus | Not Started | |
 | Codec / EXIF crate spikes | Not Started | Log results in OPTIMIZATION.md §5 |
 | libheif static build on Windows | Not Started | Highest build risk |
@@ -76,11 +77,11 @@ Defined in [SECURITY.md](SECURITY.md).
 | # | Task | Priority | Status |
 |---|------|----------|--------|
 | S1 | 4-layer input/metadata pipeline (`crates/core/src/import.rs`, `metadata.rs`) | P0 | Not Started |
-| S2 | Tauri capabilities + CSP (`src-tauri/capabilities/`, `tauri.conf.json`) | P0 | Not Started |
+| S2 | Tauri capabilities + CSP (`src-tauri/capabilities/`, `tauri.conf.json`) | P0 | In Progress |
 | S3 | Export path sanitizer + root check (`crates/core/src/export.rs`) | P0 | Not Started |
-| S4 | `cargo deny` / `cargo audit` / `npm audit` in CI | P1 | Not Started |
+| S4 | `cargo deny` / `cargo audit` / `npm audit` in CI | P1 | Done |
 | S5 | Fuzz targets (`crates/core/fuzz/`) | P1 | Not Started |
-| S6 | DOM-API grep gate + network-free core check | P1 | Not Started |
+| S6 | DOM-API grep gate + network-free core check | P1 | Done |
 | S7 | Panic hook + user-facing error mapping | P2 | Not Started |
 
 ## Open decisions
@@ -100,8 +101,8 @@ Decided:
 |------|--------|-------|
 | `LICENSE` (GPL-3.0) | Done | |
 | CLA set up (e.g. CLA Assistant) | Not Started | **Required before merging the first outside PR** ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)) |
-| `cargo deny` license allowlist (permissive only, GPL banned) | Not Started | At scaffold time |
-| SPDX headers in source files | Not Started | At scaffold time |
+| `cargo deny` license allowlist (permissive only, GPL banned) | Done | `deny.toml` |
+| SPDX headers in source files | Done | All hand-written `.rs` / `.ts(x)` files |
 | Apply to SignPath Foundation (Windows signing) | Not Started | After the first public releases |
 
 ## Dependencies to watch

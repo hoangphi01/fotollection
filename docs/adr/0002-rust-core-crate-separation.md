@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-23
-- **Related:** ADR-0001, [ARCHITECTURE.md §2](../ARCHITECTURE.md#2-repository-layout-target)
+- **Related:** ADR-0001, [ARCHITECTURE.md §2](../ARCHITECTURE.md#2-repository-layout)
 
 ## Context
 

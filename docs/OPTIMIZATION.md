@@ -47,7 +47,7 @@
 
 | ID | Machine | Notes |
 |----|---------|-------|
-| `REF-MAC` | MacBook Air M2, 8 cores, 16 GB | Primary development machine |
+| `REF-MAC` | MacBook, Apple M3, 8 cores, 16 GB | Primary development machine |
 | `REF-WIN` | Mid-range Windows laptop, 8 cores, 16 GB, NVMe | To be defined in Phase 0 |
 | `CI` | GitHub-hosted runners | Used for regression trends only, never for absolute budgets |
 

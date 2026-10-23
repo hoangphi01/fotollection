@@ -1,47 +1,137 @@
+<div align="center">
+
+<img src="docs/images/logo.png" alt="Fotollection logo" width="140" />
+
 # Fotollection
 
 **Fast, private, offline photo-print preparation for macOS and Windows.**
 
-Fotollection turns a folder of photos into a print-ready set. It stamps the capture date and place from EXIF, crops to standard EU print sizes (CEWE, dm, Rossmann…), groups photos by trip, and keeps the original quality. Built with Rust and Tauri. Your photos never leave your computer.
+Stamp the date and place on your photos, crop them to real print sizes, and get them ready for the lab, all without a single photo leaving your computer.
 
-> **Status:** pre-alpha. The documentation framework is complete; Phase 0 (scaffold and benchmarks) is next. See [docs/STATUS.md](docs/STATUS.md).
+[![CI](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hoangphi01/fotollection/actions/workflows/ci.yml)
+[![Docs](https://github.com/hoangphi01/fotollection/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/hoangphi01/fotollection/actions/workflows/docs.yml)
+[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
+[![Status: pre-alpha](https://img.shields.io/badge/status-pre--alpha-orange.svg)](docs/STATUS.md)
+[![Latest release](https://img.shields.io/github/v/release/hoangphi01/fotollection?include_prereleases&sort=semver&label=release)](https://github.com/hoangphi01/fotollection/releases)
 
-## Features (planned)
+[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows-lightgrey.svg)](docs/RELEASE.md)
+[![Rust 1.99](https://img.shields.io/badge/rust-1.99-b7410e.svg?logo=rust)](rust-toolchain.toml)
+[![Tauri 2](https://img.shields.io/badge/Tauri-2-24c8db.svg?logo=tauri&logoColor=white)](https://v2.tauri.app/)
+[![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=black)](https://react.dev/)
+[![shadcn/ui](https://img.shields.io/badge/ui-shadcn%2Fui-000000.svg?logo=shadcnui&logoColor=white)](https://ui.shadcn.com/)
+[![Offline · zero telemetry](https://img.shields.io/badge/privacy-offline%20%C2%B7%20zero%20telemetry-2ea44f.svg)](docs/SECURITY.md#5-privacy)
 
-- **Date and location stamps** read from EXIF, with location resolved offline
-- **Batch crop** to 8 standard print sizes (9×13 to 20×30, square, strip), with an adjustable crop frame per photo
-- **Original quality:** full resolution, ICC profile preserved, lossless crop when possible
-- **JPEG, HEIC (iPhone) and PNG** input
-- **Trip grouping, face-aware crop and duplicate detection** (Phase 2)
-- **Zero network by default:** no account, no cloud, no telemetry
+[![Stars](https://img.shields.io/github/stars/hoangphi01/fotollection?style=social)](https://github.com/hoangphi01/fotollection/stargazers)
+[![Last commit](https://img.shields.io/github/last-commit/hoangphi01/fotollection.svg)](https://github.com/hoangphi01/fotollection/commits/main)
+[![Issues](https://img.shields.io/github/issues/hoangphi01/fotollection.svg)](https://github.com/hoangphi01/fotollection/issues)
+[![Repo size](https://img.shields.io/github/repo-size/hoangphi01/fotollection.svg)](https://github.com/hoangphi01/fotollection)
 
-The full requirements are in [docs/PRD.md](docs/PRD.md), and the phases in [docs/ROADMAP.md](docs/ROADMAP.md).
+</div>
 
-## Tech
+---
 
-| Rust core | Shell | UI |
-|-----------|-------|----|
-| libjpeg-turbo, libheif, lcms2, fast_image_resize, rayon | Tauri 2 | React, TypeScript, Tailwind, shadcn/ui, Lucide |
+> [!NOTE]
+> **Fotollection is in early development (Phase 0).** The app shell runs, but photo processing is not implemented yet. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design, and [docs/OPTIMIZATION.md](docs/OPTIMIZATION.md) for the performance budgets and why we chose native Rust over a web app.
+<p align="center">
+  <img src="docs/images/screenshot-light.png" alt="Fotollection main window (light theme)" width="49%" />
+  <img src="docs/images/screenshot-dark.png" alt="Fotollection main window (dark theme)" width="49%" />
+</p>
 
-## Building
+## Why Fotollection?
 
-Not available yet. Build instructions will be added in Phase 0.
+You shot 800 photos on a trip and want twenty of them on paper. Getting there today is tedious:
+
+- **Prints don't say when or where.** In a few years, nobody remembers.
+- **Labs auto-crop your photos** to 2:3, 3:4 or 1:1, and that can cut off heads.
+- **Online tools upload your photos.** GPS data reveals where you live.
+
+Fotollection does all of this **locally**, at the speed of native Rust.
+
+## Features
+
+| | Feature | Phase |
+|---|---------|-------|
+| 📅 | **Date and location stamps** from EXIF. Places are resolved offline, with no API calls | MVP |
+| ✂️ | **Batch crop** to 8 EU print sizes (9×13 … 20×30, square, strip), with an adjustable frame per photo | MVP |
+| 🖼️ | **Original quality**: full resolution, ICC profile preserved, lossless crop when possible | MVP |
+| 📱 | **JPEG, HEIC (iPhone) and PNG** input | MVP |
+| 🔒 | **GPS stripped on export** by default. No account, no cloud, no telemetry | MVP |
+| 🧳 | **Trip grouping**, face-aware smart crop, duplicate detection | 2 |
+| 🎞️ | RAW input, photo-book preview, QR codes on the back of prints | 3 |
+
+Full specification: [docs/PRD.md](docs/PRD.md).
+
+## Performance targets
+
+Fotollection is built for enthusiast and professional photographers, so speed is a requirement, not a nice-to-have ([docs/OPTIMIZATION.md](docs/OPTIMIZATION.md)):
+
+| Metric | Budget |
+|--------|--------|
+| First thumbnails for a folder of 1,000 photos | **< 1 s** |
+| Preview update when changing settings | **< 50 ms** |
+| Export throughput (24 MP JPEG, 8 cores) | **≥ 8 photos/s** |
+| Peak memory, any batch size | **≤ 2 GB** |
+
+## Download
+
+There are no releases yet. When they arrive, they will be on the [Releases](https://github.com/hoangphi01/fotollection/releases) page.
+
+> [!IMPORTANT]
+> Builds are **unsigned** for now ([ADR-0009](docs/adr/0009-unsigned-distribution.md)). On first launch:
+>
+> - **macOS:** System Settings → Privacy & Security → **Open Anyway**
+> - **Windows:** SmartScreen → **More info** → **Run anyway**
+>
+> Verify each download against `SHA256SUMS.txt` on the release page.
+
+## Build from source
+
+```sh
+git clone https://github.com/hoangphi01/fotollection.git
+cd fotollection
+scripts/bootstrap.sh --install     # macOS / Linux (Windows: scripts\bootstrap.ps1 -Install)
+npm run dev                        # start the app
+```
+
+Every tool version is pinned: `rust-toolchain.toml`, `.node-version`, `Cargo.lock` and `package-lock.json`. A fresh clone therefore builds the same on any machine. See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for prerequisites, commands and build-disk cleanup (`scripts/clean.sh`).
+
+## Tech stack
+
+| Layer | Technology |
+|-------|------------|
+| Core (Rust) | libjpeg-turbo, libheif, lcms2, fast_image_resize, rayon. Offline geocoding with GeoNames |
+| Shell | [Tauri 2](https://v2.tauri.app/): the system webview, no bundled Chromium |
+| UI | React 19, TypeScript, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/), [Lucide](https://lucide.dev/) |
+| Typed IPC | [tauri-specta](https://github.com/specta-rs/tauri-specta): TypeScript bindings generated from Rust |
+
+Design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Decisions: [docs/adr/](docs/adr/README.md).
 
 ## Documentation
 
-Start at [docs/README.md](docs/README.md). Contributors should read [CONTRIBUTING.md](CONTRIBUTING.md).
+All docs live in [`docs/`](docs/README.md) and change together with the code ([ADR-0006](docs/adr/0006-docs-as-code.md)).
+
+| Doc | What's inside |
+|-----|---------------|
+| [PRD](docs/PRD.md) | Requirements (`FR-xxx`, `NFR-xxx`) |
+| [Architecture](docs/ARCHITECTURE.md) | Crates, pipeline, IPC contract |
+| [Optimization](docs/OPTIMIZATION.md) | Budgets, methodology, benchmark log |
+| [Style rules](docs/STYLE_RULE.md) | Rust, TypeScript, UI, git and docs conventions |
+| [Security](docs/SECURITY.md) | Threat model, privacy, supply chain |
+| [Roadmap](docs/ROADMAP.md) / [Status](docs/STATUS.md) | Phases and progress |
+
+## Contributing
+
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first:
+
+- Every change traces to a requirement ID.
+- Docs are updated in the same PR.
+- **Outside contributions require signing a CLA** ([ADR-0008](docs/adr/0008-license-gpl3-with-relicensing-option.md)).
+
+Report security issues through a private [GitHub security advisory](https://github.com/hoangphi01/fotollection/security/advisories/new), not a public issue.
 
 ## License
 
-[GPL-3.0-only](LICENSE) © hoangphi01. Outside contributions require a CLA ([ADR-0008](docs/adr/0008-license-gpl3-with-relicensing-option.md)).
-
-Builds are currently **unsigned** ([ADR-0009](docs/adr/0009-unsigned-distribution.md)). On first launch:
-
-- **macOS:** System Settings → Privacy & Security → *Open Anyway*.
-- **Windows:** SmartScreen → *More info* → *Run anyway*.
-
-Verify downloads with the `SHA256SUMS.txt` file on each release page.
+[GPL-3.0-only](LICENSE) © hoangphi01.
 
 Geographic data from [GeoNames](https://www.geonames.org/) (CC BY 4.0) will be bundled for offline geocoding.

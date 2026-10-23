@@ -55,10 +55,10 @@ case "$level" in
     remove target/release target/*/release
     ;;
   full)
-    remove target ui/dist ui/node_modules/.vite
+    remove target ui/dist node_modules/.vite ui/node_modules/.vite
     ;;
   deep)
-    remove target ui/dist ui/node_modules
+    remove target ui/dist node_modules ui/node_modules
     if command -v cargo-cache >/dev/null 2>&1; then
       if [ "$dry_run" -eq 1 ]; then
         echo "  would run: cargo cache --autoclean"

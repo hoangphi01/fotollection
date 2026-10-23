@@ -37,13 +37,21 @@ flowchart LR
   Core -- progress --> Ev -- events --> Progress
 ```
 
-## 2. Repository layout (target)
+## 2. Repository layout
+
+Files marked † exist today (Phase 0 scaffold). Everything else is the target layout.
 
 ```text
-Cargo.toml                 # workspace
+Cargo.toml               † # Cargo workspace, shared lints, build-size profiles
+rust-toolchain.toml      † # pinned Rust version
+deny.toml                † # cargo-deny license/advisory policy (ADR-0008)
+package.json             † # npm workspace root: Tauri CLI + scripts (npm run dev)
+assets/logo-source.png   † # master logo; app icons are generated from it
 crates/
-  core/                    # fotollection-core: all domain logic, no Tauri
+  core/                  † # fotollection-core: all domain logic, no Tauri
     src/
+      lib.rs             †
+      print_size.rs      † # CEWE/EU print sizes (FR-006)
       import.rs            # discovery, magic-byte validation
       decode/              # jpeg.rs (turbojpeg), heic.rs (libheif), png.rs
       metadata.rs          # EXIF allowlist + validation
@@ -56,16 +64,22 @@ crates/
     benches/               # criterion benchmarks (see OPTIMIZATION.md)
     fuzz/                  # cargo-fuzz targets (see TESTING.md)
   geodata/                 # build-time packer for the GeoNames dataset
-src-tauri/                 # app shell: commands, protocol, capabilities
-  capabilities/            # Tauri 2 permission sets (see SECURITY.md)
-ui/                        # Vite + React + TS frontend
-  components.json          # shadcn/ui config
+src-tauri/               † # app shell: commands, protocol, capabilities
+  src/lib.rs             † # tauri-specta builder + bindings export
+  src/commands.rs        † # IPC commands (§6)
+  capabilities/          † # Tauri 2 permission sets (see SECURITY.md)
+  icons/                 † # generated: npx tauri icon assets/logo-square.png
+  tauri.conf.json        † # window, CSP, bundle config
+ui/                      † # Vite + React + TS frontend (npm workspace member)
+  components.json        † # shadcn/ui config (style radix-nova, Lucide)
+  .oxlintrc.json         † # lint rules (bans dangerouslySetInnerHTML / eval)
   src/
-    components/ui/         # shadcn/ui components (copied in via the shadcn CLI, owned by us)
-    features/              # library/, settings/, export/ — feature components + hooks
-    ipc/bindings.ts        # GENERATED from Rust types — do not edit
-    lib/utils.ts           # cn() helper and small UI utilities
-    styles/globals.css     # Tailwind layers + theme tokens (CSS variables)
+    components/ui/       † # shadcn/ui components (copied in via the shadcn CLI, owned by us)
+    features/            † # library/, settings/, export/ — feature components + hooks
+    ipc/bindings.ts      † # GENERATED from Rust types — do not edit
+    lib/                 † # small UI utilities (theme sync, shadcn's cn re-export)
+    index.css            † # Tailwind layers + shadcn theme tokens (CSS variables)
+scripts/                 † # bootstrap, clean, check-docs
 ```
 
 ## 3. Tech stack
@@ -130,8 +144,12 @@ All types are defined in Rust and exported to `ui/src/ipc/bindings.ts` through `
 
 ### Commands (UI → core)
 
+Commands marked † are implemented.
+
 | Command | Purpose | Requirement |
 |---------|---------|-------------|
+| `app_info() -> AppInfo` † | App and core versions for the About section | — |
+| `list_print_sizes() -> [PrintSize]` † | Print sizes for the settings panel | FR-006 |
 | `import_paths(paths) -> ImportSummary` | Add files and folders to the library | FR-001 |
 | `list_photos(filter) -> [PhotoSummary]` | Data for the grid | FR-003 |
 | `set_settings(settings)` | Stamp, crop and export settings | FR-004, FR-006 |

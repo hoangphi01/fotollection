@@ -5,28 +5,67 @@
 > Toolchain setup, everyday build commands, and **build disk hygiene**. Rust build artifacts grow quickly, so this file defines how we keep them small.
 > Code conventions live in [STYLE_RULE.md](STYLE_RULE.md). Release builds are covered in [RELEASE.md](RELEASE.md).
 
-## 1. Prerequisites
+## 1. Setting up a machine
+
+### 1.1 Quick start (any OS)
+
+```sh
+git clone https://github.com/hoangphi01/fotollection.git
+cd fotollection
+scripts/bootstrap.sh --install            # macOS / Linux
+# Windows (PowerShell):
+#   powershell -ExecutionPolicy Bypass -File scripts\bootstrap.ps1 -Install
+npm run dev                               # launches the app
+```
+
+The bootstrap script checks every prerequisite and, with `--install` / `-Install`, installs any that are missing:
+
+- macOS: it asks you to install the Xcode CLT yourself.
+- Linux: it installs the system packages with `apt`.
+- Windows: it installs the tools with `winget`.
+
+It then installs the exact dependency versions from the lockfiles. Add `--tools` / `-Tools` to also install `cargo-sweep` and `cargo-deny`.
+
+### 1.2 What pins each version
+
+This project's equivalent of Python's `requirements.txt` + lockfile is the set of files below. **All of them are committed.** Never install dependencies without the lockfile.
+
+| Layer | Pinned by | Install command |
+|-------|-----------|-----------------|
+| Rust compiler + rustfmt/clippy | `rust-toolchain.toml` (exact version) | Automatic: rustup reads the file |
+| Rust crates | `Cargo.lock` | `cargo fetch --locked` / `cargo build --locked` |
+| Node.js | `.node-version` (recommended LTS) + `engines` in `package.json` (minimum) | fnm / nvm / volta read `.node-version` |
+| JS packages (including the Tauri CLI) | `package-lock.json` (npm workspaces: root + `ui/`) | `npm ci` (never `npm install` on a fresh clone) |
+| System libraries | `scripts/bootstrap.sh` / `bootstrap.ps1` | The bootstrap script |
+
+### 1.3 Prerequisites
 
 | Tool | Version | Notes |
 |------|---------|-------|
-| Rust | stable, pinned in `rust-toolchain.toml` | Installed via `rustup` |
-| Node.js | LTS | Used only for UI tooling (Vite, shadcn CLI). It is not shipped |
-| Tauri prerequisites | — | macOS: Xcode Command Line Tools. Windows: MSVC Build Tools + WebView2 |
-| vcpkg (Windows) | latest | Static libheif ([ADR-0005](adr/0005-input-formats-jpeg-heic-png.md)) |
-| `cargo-sweep` | latest | `cargo install cargo-sweep`, used by [§4](#4-build-disk-hygiene) |
-| `cargo-cache` (optional) | latest | `cargo install cargo-cache`, trims `~/.cargo` |
-
-Commands will be finalized when the project is scaffolded in Phase 0.
+| Rust | pinned in `rust-toolchain.toml` | Install `rustup`. It fetches the pinned toolchain |
+| Node.js | ≥ 22 (24 LTS recommended) | Build tooling only (Vite, Tauri CLI, shadcn CLI). Not shipped |
+| Tauri CLI | pinned in `package-lock.json` | A root dev dependency, run through `npm run tauri …`. No `cargo install` is needed |
+| Platform toolchain | — | macOS: Xcode CLT. Windows: MSVC Build Tools + WebView2. Linux: webkit2gtk-4.1 and friends (see bootstrap) |
+| vcpkg (Windows) | latest | Static libheif, from Phase 1 ([ADR-0005](adr/0005-input-formats-jpeg-heic-png.md)) |
+| `cargo-sweep` | latest | Used by [§4](#4-build-disk-hygiene) |
+| `cargo-deny` | latest | License and advisory policy (`deny.toml`) |
+| `cargo-cache` (optional) | latest | Trims `~/.cargo` |
 
 ## 2. Everyday commands
 
 ```sh
-cargo tauri dev              # run the app with hot-reloading UI
-cargo test --workspace       # all Rust tests
-cargo bench -p fotollection-core
+npm run dev                  # run the app (Vite + Tauri, hot-reloading UI)
+npm run build                # release bundle for the host OS
+npm run ui:dev               # UI only, in a browser (IPC calls fail gracefully)
+npm run ui:typecheck && npm run ui:lint
+cargo test --workspace       # Rust tests; also regenerates ui/src/ipc/bindings.ts
+cargo clippy --workspace --all-targets -- -D warnings
+cargo deny check             # license / advisory policy
 scripts/check-docs.sh        # docs consistency
 scripts/clean.sh             # reclaim disk space (see §4)
 ```
+
+The IPC bindings (`ui/src/ipc/bindings.ts`) are generated from Rust by `tauri-specta` on every debug run and every `cargo test`. Commit them. CI fails if they are stale.
 
 ## 3. Why Rust builds get heavy
 
@@ -75,7 +114,7 @@ codegen-units = 1
 | `scripts/clean.sh` (`sweep`) | Artifacts unused for 7 days or from old toolchains | Unaffected |
 | `scripts/clean.sh release` | `target/release`, `target/*/release`, bundles | Next release build is a full build |
 | `scripts/clean.sh full` | Entire `target/`, `ui/dist`, Vite cache | Full rebuild (minutes) |
-| `scripts/clean.sh deep` | `full` + `ui/node_modules` + trim `~/.cargo` cache | Full rebuild + reinstall |
+| `scripts/clean.sh deep` | `full` + `node_modules` + trim `~/.cargo` cache | Full rebuild + reinstall |
 
 `scripts/clean.sh --dry-run <level>` shows what would be removed and how much space it would free.
 
