@@ -46,6 +46,7 @@
 | FR-032 | Manual date and place |
 | FR-033 | Retro film date stamp and stamp presets |
 | FR-040 | EXIF info frame |
+| FR-041 | Best-shot suggestions |
 | FR-042 | Custom fonts |
 | FR-043 | Custom print sizes |
 

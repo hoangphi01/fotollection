@@ -195,7 +195,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 ### FR-015 — Duplicate detection
 
-**P1.** Flag near-duplicate photos, such as bursts or re-saves, using perceptual hashing, and let the user exclude them from the print set.
+**P1.** Flag near-duplicate photos, such as bursts or re-saves, using perceptual hashing, and let the user exclude them from the print set. Choosing the best photo of a burst is [FR-041](#fr-041--best-shot-suggestions).
 
 ### FR-016 — RAW input
 
@@ -370,6 +370,43 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 - **Edit per camera:** the camera name, brand text, lens, focal length, aperture and photo style can be overridden. This covers **manual lenses** that report nothing in EXIF. Overrides are remembered per camera across sessions ([DATABASE.md §6](DATABASE.md#6-app-settings)). Empty fields fall back to EXIF.
 - The date stamp on the photo ([FR-004](#fr-004--date-stamp)) stays independent.
 
+### FR-041 — Best-shot suggestions
+
+**P1.** When several photos are taken of the same scene, the app suggests the best one and explains why. Nothing is rejected or deleted automatically: the user confirms. The method follows Lightroom Assisted Culling, Google Top Shot, Narrative and Aftershoot.
+
+- **Grouping.** Photos are ordered by capture time, including `SubSecTimeOriginal`. A new group starts when:
+  - the gap exceeds max(2 s, 4 × the median gap);
+  - the camera or lens changes;
+  - the focal length changes by more than 20 %;
+  - GPS moves by more than 30 m.
+- **Group confirmation.** A 64-bit dHash/pHash on T1 confirms each group: Hamming distance ≤ 10–12, compared with the group's representative photo so that groups do not chain. A group holds at most 30 photos.
+- **Metrics.** Each metric is computed in one pass over the greyscale T2 preview:
+  - Sharpness: variance of Laplacian and Tenengrad on a 16 × 12 tile grid. The median scores the whole photo; the 90–95th percentile, or the face tiles, score the subject.
+  - Camera shake: structure-tensor coherence, relative to the group median. EXIF adds a hint when the shutter is slower than 1/(focal × crop factor).
+  - Exposure: the clipped-highlight share (≥ 250), the crushed-shadow share, the median luminance against 118 (in EV), and RMS contrast.
+  - Noise: the Immerkær estimate, skipping strong-gradient areas.
+- **Faces and eyes.** Faces are detected with a permissively licensed model, and eye landmarks give the eye aspect ratio. An eye counts as closed when its ratio is below 0.2, or below 0.75 × the same person's maximum in the group. Face and eye regions also get their own sharpness score.
+- **Score.** Each metric is normalized with a robust z-score (median/MAD) **within the group**; groups smaller than 4 use rank instead. The weights are:
+
+  | Metric | Weight |
+  |--------|-------:|
+  | Subject sharpness | 0.35 |
+  | Eyes open | 0.20 |
+  | Shake | 0.15 |
+  | Exposure | 0.15 |
+  | Clipped highlights | 0.10 |
+  | Noise | 0.05 |
+
+  Hard faults, such as closed eyes or heavy blur, are shown as reasons. They are never applied silently.
+- **Explanation.** The suggestion names the metrics that differ most from the runner-up, for example "Sharpest (+1.8σ)", "Eyes open" or "Fewer clipped highlights: 0.3 % vs 4 %". When the top two are within 0.5, it says **"Too close to call"**.
+- **UI.**
+  - A **Groups** view shows one strip per group, with a **"Best of N"** badge and its reasons.
+  - A compare view shows the group's photos side by side, with a bar for each metric and faces and eyes marked.
+  - **"Keep best"** picks the best photo and rejects the rest of the group, using [FR-022](#fr-022--culling-rate-flag-filter) flags. It can be undone.
+- **Models.** Models ship inside the app, are checksum-verified, and are never downloaded. Only permissive weights are allowed. YuNet (MIT) and MediaPipe Face Landmarker (Apache-2.0) are to be verified; InsightFace/SCRFD and pyiqa models are excluded because of their non-commercial licenses. The runtime is pure-Rust `tract-onnx`. Both choices are recorded in an ADR before any code.
+- **Cache.** Analysis results are derived data, so they live in the cache keyed by fingerprint, never in the project file ([DATABASE.md](DATABASE.md), rule N4).
+- **Speed:** [NFR-014](#nfr-014--best-shot-analysis-speed).
+
 ### FR-042 — Custom fonts
 
 **P1.** Import **OTF/TTF** fonts and choose them separately for the date stamp ([FR-004](#fr-004--date-stamp)) and for the info-frame text ([FR-040](#fr-040--exif-info-frame)).
@@ -446,6 +483,10 @@ In the loupe view, moving to the next or previous photo shows a sharp preview in
 ### NFR-013 — Project safety
 
 Edits reach the project file within **5 s**, and writes are atomic, so a crash or power loss never corrupts the project. The file has a `schema_version` and is migrated forward automatically. Older app versions refuse to open newer files rather than damage them.
+
+### NFR-014 — Best-shot analysis speed
+
+Best-shot analysis ([FR-041](#fr-041--best-shot-suggestions)) takes **≤ 20 ms per photo without faces and ≤ 40 ms with faces** on REF-MAC, running in parallel on the background pool. It never blocks the grid or the preview. The budget is benchmarked before the feature ships.
 
 ## 8. Out of scope
 
