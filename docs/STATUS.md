@@ -7,7 +7,11 @@
 
 ## Current phase: Phase 1 — MVP, first vertical slice done
 
-The app works end to end for **JPEG**: open or drop a folder → thumbnail grid → preview with crop and date stamp → export to `YYYY-MM-DD/` folders with progress and cancel. Next slices: HEIC/PNG, offline place names (FR-005), per-photo crop, culling and projects (FR-022/023), sRGB (FR-027).
+The app works end to end for **JPEG**: open or drop a folder → thumbnail grid → preview with crop and date stamp → export to `YYYY-MM-DD/` folders with progress and cancel. Since then: crop editor, session project with undo, info frame, custom fonts and print sizes, and the Rust vs browser benchmark. The remaining work runs in three stages, from easiest to hardest ([ROADMAP.md — Phase 1 work order](ROADMAP.md#phase-1-work-order-2026-10-23)):
+
+1. **Stage 1:** EXTENSION.md, PNG input, basic culling (FR-022), preview profiling.
+2. **Stage 2:** the `.fotollection` bundle with Save as / Open / Relink (FR-023), faster previews.
+3. **Stage 3:** best-shot suggestions (FR-041), HEIC input.
 
 ## Phase 0 — Foundation
 

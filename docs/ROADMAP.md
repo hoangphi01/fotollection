@@ -52,6 +52,34 @@
 
 **Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v0.1.0 is released.
 
+### Phase 1 work order (2026-10-23)
+
+The open Phase 1 work is split into three stages, from easiest to hardest. Each stage ships on its own: tests and docs in the same commits, and CI green on macOS and Windows. The stages order work *inside* Phase 1; they are not new phases.
+
+**Stage 1 — Small, low-risk**
+
+| Work | Requirement | Why it is easy |
+|------|-------------|----------------|
+| `docs/EXTENSION.md`: registry of every Fotollection file format (`.fotollection`, `.fotopreset`, `settings.json`, fonts, logos, cache), with MIME/UTI, versioning rules and limits | FR-023, FR-038 | Documents formats that already exist |
+| PNG input: decode with the `png` crate (already a dependency for logos), 8- and 16-bit to RGB8, alpha flattened on white | FR-001 | Pure Rust, no new dependency |
+| Basic culling: stars `0`–`5`, flags `P`/`X`/`U`, filter Picks / Rejects / Unflagged; stored in the existing `PhotoEdits` | FR-022 | Data model and project file already hold rating and flag |
+| Profile the preview path (resize and encode), and try 8 exports in flight instead of 6 | NFR-002, NFR-003 | Measurement only ([OPTIMIZATION.md §2.1](OPTIMIZATION.md#21-measured-the-same-job-in-chromium)) |
+
+**Stage 2 — Medium, a new file format**
+
+| Work | Requirement | Main risk |
+|------|-------------|-----------|
+| `.fotollection` as a self-contained ZIP bundle, like `.docx`: `manifest.json` with checksums, `project.json`, `settings.json`, embedded `fonts/`, `logos/` and `presets/`. Photos are not embedded | FR-023 | New schema version, migration from v1 and a fixture; an ADR superseding [ADR-0010](adr/0010-project-file-format.md) |
+| Save as / Open, installing embedded fonts and logos after validation, plus a **Relink folder** dialog when photos moved | FR-023 | Untrusted input: zip-bomb limits, path-traversal checks, typed parsing of every part ([SECURITY.md](SECURITY.md)) |
+| Faster previews: a `turbojpeg` codec behind `JpegCodec` if Stage 1 profiling points at decode or encode; target ≤ 17 ms warm | NFR-002 | Native dependency on both platforms ([ADR-0012](adr/0012-pure-rust-codecs-first.md)) |
+
+**Stage 3 — Hard, research and native code**
+
+| Work | Requirement | Main risk |
+|------|-------------|-----------|
+| Best-shot suggestions: grouping, sharpness/shake/exposure/noise metrics, face and eye models, explained "Best of N", Keep best | FR-041, NFR-014 | Model licences must be permissive (checked first, recorded in an ADR); ML runtime (`tract-onnx`); within-group scoring needs tuning on real bursts |
+| HEIC/HEIF input (iPhone) | FR-001 | Codec licence: libheif and libde265 are LGPL, so [ADR-0005](adr/0005-input-formats-jpeg-heic-png.md) must be re-checked against the permissive-only rule ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)). Alternatives are the OS codecs (ImageIO on macOS, WIC on Windows). Static Windows build |
+
 ## Phase 2 — Smart features
 
 **Goal:** the app organizes photos and avoids bad crops automatically.
