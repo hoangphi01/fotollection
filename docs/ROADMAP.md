@@ -100,6 +100,7 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 | FR-038 | Print presets |
 | FR-039 | Photo Style looks |
 | FR-044 | Per-photo overrides |
+| FR-046 | Swipe culling (full-screen ↑ / ↓ print list) |
 
 ## Phase 3 — Pro & growth
 

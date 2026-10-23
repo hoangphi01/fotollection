@@ -44,7 +44,7 @@ Nobody combines EXIF date/location stamping, trip auto-organization, and batch c
 ## 4. Core user journey
 
 1. **Import:** open a folder, or drag and drop photos or folders into the app. The library grid appears instantly, grouped by date (by trip in Phase 2).
-2. **Cull:** step through the photos with the keyboard, rate and flag them, and filter down to the set to print ([FR-022](#fr-022--culling-rate-flag-filter)). Work is saved automatically to a project file ([FR-023](#fr-023--projects-autosave-and-undo)).
+2. **Cull:** step through the photos with the keyboard, rate and flag them, and filter down to the set to print ([FR-022](#fr-022--culling-rate-flag-filter)). Later, a full-screen swipe mode builds the print list with ↑ / ↓ ([FR-046](#fr-046--swipe-culling)). Work is saved automatically to a project file ([FR-023](#fr-023--projects-autosave-and-undo)).
 3. **Fix time and place:** correct a camera's clock offset ([FR-030](#fr-030--camera-clock-offset)), and fill in a missing date or place by hand ([FR-032](#fr-032--manual-date-and-place)) or from a phone or GPX track (Phase 2).
 4. **Choose sizes and style:** pick a print size per photo or per group ([FR-025](#fr-025--mixed-print-sizes-per-order)) and a stamp style ([FR-033](#fr-033--retro-film-date-stamp-and-stamp-presets)). Adjust crop frames. A live preview updates as settings change.
 5. **Check:** resolution warnings ([FR-026](#fr-026--resolution-warning)) and the safe-area overlay ([FR-028](#fr-028--safe-area-and-borders)) flag problems before printing.
@@ -446,6 +446,17 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 - The print is 10 cm on the short edge, and the long edge follows the photo: a 4:3 photo prints at 10 × 13.3 cm, like a lab's "digital" format, and a 3:2 photo at 10 × 15 cm. The long edge is capped at 100 cm. This physical size drives the date stamp size and the DPI check ([FR-026](#fr-026--resolution-warning)).
 - The crop is the whole photo, computed from the exact pixel ratio, so millimetre rounding never cuts a pixel. The crop editor can still zoom and move the crop, at the same ratio.
 - With the info frame ([FR-040](#fr-040--exif-info-frame)), the whole print keeps the photo's ratio, and *Crop to fill* or *Fit whole photo* applies to the area above the bar.
+
+### FR-046 — Swipe culling
+
+**P2 (future).** A full-screen, keyboard-first culling mode, inspired by swipe apps (right = like, left = pass) and Lightroom's loupe. It builds the **print list** at the speed of a key press.
+
+- One photo fills the screen. **↑ adds it to the print list, ↓ leaves it out**, and both move on to the next photo at once. **← / →** step back and forward without deciding. **Space** shows the photo without overlays, and **Cmd/Ctrl+Z** undoes the last decision.
+- Leaving a photo out only removes it from the list. The file is never deleted or moved.
+- The print list is the set that gets exported. It builds on pick/reject ([FR-022](#fr-022--culling-rate-flag-filter)): ↑ is *pick*, ↓ is *reject*, and an undecided photo stays *unflagged*. Stars keep working inside the mode (`0`–`5`).
+- A progress bar shows decided / total and the size of the print list. The mode can resume where it stopped, and best-shot suggestions ([FR-041](#fr-041--best-shot-suggestions)) can pre-sort a burst so the best frame comes first.
+- The next photos are prefetched so every decision shows a sharp image in under 100 ms ([NFR-012](#nfr-012--culling-navigation)).
+- **Workflow change:** the main flow becomes *import → swipe → refine (crop, stamp, frame) on the print list only → export*. The grid filter, the preview and the export default to the print list once it is not empty. The vision (§2) and the UI flow are updated when this lands.
 
 ## 7. Non-functional requirements
 
