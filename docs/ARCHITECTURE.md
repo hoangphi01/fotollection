@@ -55,9 +55,17 @@ crates/
       import.rs            # discovery, magic-byte validation
       decode/              # jpeg.rs (turbojpeg), heic.rs (libheif), png.rs
       metadata.rs          # EXIF allowlist + validation
-      geocode.rs           # offline reverse geocoder (GeoNames + k-d tree)
+      timeline.rs          # clock offsets, manual date/place, GPS borrowing + GPX (FR-030/031/032)
+      geocode.rs           # offline reverse geocoder + offline place search (GeoNames + k-d tree)
       cluster.rs           # trip DBSCAN (Phase 2)
-      render/              # crop.rs, stamp.rs, color.rs (ICC)
+      library.rs           # ratings, flags, filters, copies, per-photo overrides (FR-022/024/025)
+      project.rs           # .fotollection file: versioned schema, autosave, migrations (ADR-0010)
+      history.rs           # undo/redo command stack (FR-023)
+      presets.rs           # built-in lab + stamp presets, static data (FR-033/034)
+      quality.rs           # effective-DPI checks (FR-026)
+      render/              # crop.rs, border.rs, stamp.rs (incl. retro LED), caption.rs,
+                           # color.rs (ICC → sRGB), sharpen.rs (Phase 3)
+      layout/              # multi-photo sheets + contact sheet (Phase 3, FR-035/037)
       encode.rs
       export.rs            # pipeline orchestration, back-pressure, cancel
       thumbs.rs            # multi-tier thumbnail generation + disk cache
@@ -108,23 +116,31 @@ scripts/                 † # bootstrap, clean, check-docs
 | Face detection | ONNX model via `ort` | Phase 2, on-device |
 | Parallelism | `rayon` + bounded `crossbeam-channel` | See [§5](#5-concurrency-and-memory-model) |
 | Errors | `thiserror` (core), `anyhow` (shell only) | See [STYLE_RULE.md](STYLE_RULE.md) |
+| Project file | `serde_json` + versioned schema | [ADR-0010](adr/0010-project-file-format.md) |
+| GPX tracks | `gpx` (candidate; license checked by `cargo deny`) | Phase 2, [FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track) |
+| PDF contact sheet | `pdf-writer` or `printpdf` (candidate, permissive license) | Phase 3, [FR-037](PRD.md#fr-037--contact-sheet) |
+| Stamp fonts | Bundled OFL/MIT fonts, including a seven-segment LED face | [FR-033](PRD.md#fr-033--retro-film-date-stamp-and-stamp-presets) |
 
 Crates marked *candidate* are confirmed by Phase 0 benchmarks. The result is logged in [OPTIMIZATION.md](OPTIMIZATION.md#5-benchmark-log).
 
 ## 4. Processing pipeline
 
 ```text
-import → metadata → geocode → (cluster) → plan → render → encode → write
+import → metadata → adjust → geocode → (cluster) → cull/select → plan → render → color → (sharpen) → encode → write
 ```
 
 | Stage | Input → Output | Notes |
 |-------|----------------|-------|
 | **import** | paths → `PhotoRef { id, path, kind, size, mtime }` | Magic-byte check only, no decoding |
 | **metadata** | `PhotoRef` → `PhotoMeta` | Allowlisted EXIF, validated values ([SECURITY.md §3](SECURITY.md#3-input-and-metadata-defense)) |
+| **adjust** | `PhotoMeta` + project → `EffectiveMeta` | Clock offset per camera, manual date/place, borrowed GPS. Originals are kept for reference ([FR-030](PRD.md#fr-030--camera-clock-offset)–[FR-032](PRD.md#fr-032--manual-date-and-place)) |
 | **geocode** | `(lat, lon)` → `Place` | Nearest-city lookup, memoized per ~1 km cell |
 | **cluster** | `[PhotoMeta]` → `[Trip]` | Phase 2 |
-| **plan** | meta + settings → `RenderPlan` | Pure function: crop rect, stamp text and position, output path |
-| **render** | `RenderPlan` + pixels → pixels | Crop, then stamp, at output resolution |
+| **cull/select** | library + filter → export set | Ratings, flags and copies come from the project ([FR-022](PRD.md#fr-022--culling-rate-flag-filter)) |
+| **plan** | meta + settings → `RenderPlan` | Pure function: print size per photo, crop rect, border, safe area, stamp/caption text and position, colour intent, output path. Also yields the effective-DPI check ([FR-026](PRD.md#fr-026--resolution-warning)) |
+| **render** | `RenderPlan` + pixels → pixels | Crop, then fit into the border, then stamp/caption inside the safe area, at output resolution |
+| **color** | pixels + source ICC → sRGB pixels | `lcms2` transform, with a configurable rendering intent ([FR-027](PRD.md#fr-027--srgb-conversion-for-labs)) |
+| **sharpen** | pixels → pixels | Output sharpening for size and paper (Phase 3, [FR-029](PRD.md#fr-029--output-sharpening)) |
 | **encode** | pixels → bytes | turbojpeg, ICC re-embedded, metadata filtered ([FR-010](PRD.md#fr-010--metadata-privacy-on-export)) |
 | **write** | bytes → file | Written to a temp file, then atomically renamed. Removed if the user cancels |
 
@@ -157,6 +173,16 @@ Commands marked † are implemented.
 | `render_preview(id, max_edge) -> PreviewHandle` | Render a preview on demand | FR-007 |
 | `start_export(dest, options) -> JobId` | Begin an export | FR-008, FR-009, FR-010 |
 | `cancel_job(job_id)` | Cancel a running job | FR-011 |
+| `set_rating(ids, stars)` / `set_flag(ids, flag)` | Culling | FR-022 |
+| `query_library(filter) -> [PhotoSummary]` | Filtered view (rating, flag, date, camera, GPS, DPI) | FR-022, FR-026 |
+| `new_project` / `open_project(path)` / `save_project_as(path)` | Project lifecycle (autosave runs internally) | FR-023 |
+| `undo()` / `redo()` | History | FR-023 |
+| `set_copies(ids, n)` / `order_summary() -> OrderSummary` | Copies and cost estimate | FR-024 |
+| `set_print_size(ids, size_id)` | Per-photo print size | FR-025 |
+| `set_clock_offset(camera, offset)` / `match_clock(photo_id, reference_id)` | Clock correction | FR-030 |
+| `borrow_gps(source, window)` | Infer GPS from another device or a GPX file | FR-031 |
+| `set_manual_meta(ids, date?, place?)` / `search_places(query) -> [Place]` | Manual date and place, offline place search | FR-032 |
+| `list_presets()` / `save_stamp_preset(preset)` / `apply_lab_preset(id)` | Stamp and lab presets | FR-033, FR-034 |
 
 ### Events (core → UI)
 
@@ -167,6 +193,8 @@ Commands marked † are implemented.
 | `job://progress` | `{ job_id, done, total, eta_ms }` |
 | `job://photo-error` | `{ job_id, photo_id, code, message }` |
 | `job://finished` | `{ job_id, summary }` |
+| `project://saved` | `{ path, at }`, for the autosave indicator |
+| `history://changed` | `{ can_undo, can_redo }` |
 
 ### Binary data
 
@@ -176,8 +204,11 @@ Pixels **never** cross IPC as JSON or base64. Thumbnails and previews are served
 
 - **Settings:** JSON in the OS config directory.
 - **Thumbnail cache:** in the OS cache directory, keyed by `blake3(path ‖ size ‖ mtime) + tier`, with LRU eviction at a configurable size (default 2 GB).
-- **No database** in the MVP. The library is rebuilt by scanning the folder (which the cache makes fast).
-- Source files are never modified.
+- **Project file** (`.fotollection`, [ADR-0010](adr/0010-project-file-format.md)): versioned JSON that holds source folders (relative to the project when possible), ratings, flags, copies, per-photo overrides, clock offsets and settings. Autosave is debounced and atomic (temp file + rename, [NFR-013](PRD.md#nfr-013--project-safety)). The last open project is restored on launch.
+- **Undo/redo:** an in-memory command stack of at least 200 steps. It is not persisted across sessions.
+- **Presets:** built-in lab and stamp presets are compiled into the binary. User presets are JSON in the OS config directory.
+- **No database.** The photo list is rebuilt by scanning the project's folders, which the thumbnail cache makes fast.
+- Source files are never modified. Ratings never go into EXIF or XMP.
 
 ## 8. Platform notes
 

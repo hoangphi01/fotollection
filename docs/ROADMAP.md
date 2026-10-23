@@ -21,7 +21,7 @@
 
 ## Phase 1 — MVP
 
-**Goal:** go from a folder to a print-ready export, fast and private.
+**Goal:** go from a folder to a culled, correctly dated, colour-correct, print-ready export, fast and private.
 
 | ID | Requirement |
 |----|-------------|
@@ -36,8 +36,17 @@
 | FR-009 | Export by date |
 | FR-010 | Metadata privacy on export |
 | FR-011 | Batch progress, cancel and recovery |
+| FR-022 | Culling (rate, flag, filter) |
+| FR-023 | Projects, autosave and undo |
+| FR-025 | Mixed print sizes per order |
+| FR-026 | Resolution warning |
+| FR-027 | sRGB conversion for labs |
+| FR-028 | Safe area and borders |
+| FR-030 | Camera clock offset |
+| FR-032 | Manual date and place |
+| FR-033 | Retro film date stamp and stamp presets |
 
-**Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-011 are within budget on `REF-MAC` and `REF-WIN`; v0.1.0 is released.
+**Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v0.1.0 is released.
 
 ## Phase 2 — Smart features
 
@@ -49,6 +58,10 @@
 | FR-013 | Face-aware smart crop |
 | FR-014 | Export by trip |
 | FR-015 | Duplicate detection |
+| FR-024 | Copies and order summary |
+| FR-031 | Borrow GPS from a phone or GPX track |
+| FR-034 | Lab presets |
+| FR-036 | Custom captions |
 
 ## Phase 3 — Pro & growth
 
@@ -60,12 +73,14 @@
 | FR-019 | Print service upload |
 | FR-020 | Localization |
 | FR-021 | Auto-update |
+| FR-029 | Output sharpening |
+| FR-035 | Multi-photo layouts |
+| FR-037 | Contact sheet |
 
 ## Ideas backlog (not yet requirements)
 
 These ideas have no ID yet. Promote one to a PRD requirement before scheduling it.
 
-- Print cost estimator for CEWE and dm prices
-- Photo strip mode (5×15) layouts for events
+- XMP sidecar export of ratings and flags (sources stay read-only)
 - Lossless rotation fix-up tool
 - Linux build

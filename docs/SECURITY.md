@@ -85,6 +85,15 @@ Layer 4: SAFE RENDERING (UI)
 
 **Why an allowlist:** a new EXIF injection vector in a field we never read cannot affect us.
 
+### Other untrusted inputs
+
+| Input | Defenses |
+|-------|----------|
+| Project file `.fotollection` ([ADR-0010](adr/0010-project-file-format.md)) | Size cap of 64 MB. Typed `serde` schema with unknown fields rejected. `schema_version` checked before parsing the body. Folder paths in the file are treated as data: they are shown to the user, opened read-only, and never executed or used as export destinations without the save dialog |
+| GPX track ([FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track)) | Size cap of 50 MB. XML parsed without external entities or DTDs (no XXE). Coordinates and timestamps validated like EXIF ([Layer 3](#3-input-and-metadata-defense)) |
+| Captions and stamp text ([FR-036](PRD.md#fr-036--custom-captions)) | Rasterized in Rust. Only a fixed set of `{variables}` is expanded, so there is no format-string or template execution. Shown in the UI as plain text only |
+| Presets ([FR-033](PRD.md#fr-033--retro-film-date-stamp-and-stamp-presets), [FR-034](PRD.md#fr-034--lab-presets)) | Built-in presets are static data compiled into the binary and are never fetched from the network. User presets go through the same typed parsing as project files |
+
 ## 4. File system safety
 
 - Source files are opened **read-only** and never modified.

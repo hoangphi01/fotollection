@@ -43,12 +43,13 @@ Nobody combines EXIF date/location stamping, trip auto-organization, and batch c
 
 ## 4. Core user journey
 
-1. Open a folder, or drag and drop photos or folders into the app.
-2. The library grid appears instantly. Photos are grouped by date (by trip in Phase 2).
-3. Choose a print size (for example 10×15) and stamp style. A live preview updates as settings change.
-4. Optionally adjust the crop frame for individual photos.
-5. Export to a destination folder. A progress view shows the batch, and the user can cancel at any time.
-6. Upload the exported folder to the print lab.
+1. **Import:** open a folder, or drag and drop photos or folders into the app. The library grid appears instantly, grouped by date (by trip in Phase 2).
+2. **Cull:** step through the photos with the keyboard, rate and flag them, and filter down to the set to print ([FR-022](#fr-022--culling-rate-flag-filter)). Work is saved automatically to a project file ([FR-023](#fr-023--projects-autosave-and-undo)).
+3. **Fix time and place:** correct a camera's clock offset ([FR-030](#fr-030--camera-clock-offset)), and fill in a missing date or place by hand ([FR-032](#fr-032--manual-date-and-place)) or from a phone or GPX track (Phase 2).
+4. **Choose sizes and style:** pick a print size per photo or per group ([FR-025](#fr-025--mixed-print-sizes-per-order)) and a stamp style ([FR-033](#fr-033--retro-film-date-stamp-and-stamp-presets)). Adjust crop frames. A live preview updates as settings change.
+5. **Check:** resolution warnings ([FR-026](#fr-026--resolution-warning)) and the safe-area overlay ([FR-028](#fr-028--safe-area-and-borders)) flag problems before printing.
+6. **Export:** export to a folder, or later with a lab preset ([FR-034](#fr-034--lab-presets)), with sRGB conversion ([FR-027](#fr-027--srgb-conversion-for-labs)). A progress view shows the batch, and the user can cancel at any time.
+7. **Order:** upload the exported folders to the print lab.
 
 ## 5. Print sizes (CEWE / EU standard)
 
@@ -64,6 +65,21 @@ Nobody combines EXIF date/location stamping, trip auto-organization, and batch c
 | `5x15` | 5×15 | 2×6 | 1:3 | Photo strip |
 
 Target labs: CEWE, Rossmann, dm, Boots Photo, Snapfish, FreePrints, Photobox.
+
+### Minimum resolution per size
+
+The table below gives the pixels needed after cropping, used by [FR-026](#fr-026--resolution-warning). 300 DPI is "excellent", 200 DPI is "good", and below 150 DPI is "poor".
+
+| ID | 300 DPI (px) | 200 DPI (px) | 150 DPI (px) |
+|----|--------------|--------------|--------------|
+| `9x13` | 1063×1535 | 709×1024 | 531×768 |
+| `10x15` | 1181×1772 | 787×1181 | 591×886 |
+| `11x17` | 1299×2008 | 866×1339 | 650×1004 |
+| `13x18` | 1535×2126 | 1024×1417 | 768×1063 |
+| `15x20` | 1772×2362 | 1181×1575 | 886×1181 |
+| `20x30` | 2362×3543 | 1575×2362 | 1181×1772 |
+| `15x15` | 1772×1772 | 1181×1181 | 886×886 |
+| `5x15` | 591×1772 | 394×1181 | 295×886 |
 
 ## 6. Functional requirements
 
@@ -189,6 +205,117 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P2.** Signed in-app updates from GitHub Releases. Checking for updates is opt-in, consistent with [NFR-006](#nfr-006--offline-and-zero-telemetry).
 
+### FR-022 — Culling (rate, flag, filter)
+
+**P0.** Narrow a large import down to the photos worth printing.
+
+- Rate 0–5 stars and flag photos as *pick* or *reject*, using single-key shortcuts (`0`–`5`, `P`, `X`, `U` to unflag).
+- A loupe view shows one photo large, with arrow keys moving to the next and previous photo ([NFR-012](#nfr-012--culling-navigation)).
+- Filter by rating, flag, date, camera, "has GPS", and "resolution warning". Only the filtered set is exported.
+- Ratings and flags live in the project file ([FR-023](#fr-023--projects-autosave-and-undo)). They are never written into source files.
+
+### FR-023 — Projects, autosave and undo
+
+**P0.** All work is kept in a project file (`.fotollection`): source folders, ratings, flags, crop frames, per-photo overrides and settings.
+
+- Autosave is continuous ([NFR-013](#nfr-013--project-safety)). Reopening the app restores the last project.
+- Undo and redo cover every user edit (ratings, flags, crop, overrides, settings), with at least 200 steps.
+- If source files have moved, the user can relink the folder. Missing photos are marked, not dropped.
+
+### FR-024 — Copies and order summary
+
+**P1.** Set the number of copies per photo (default 1).
+
+- An order summary shows the count of prints per size, plus an **estimated cost** from an editable price table per lab.
+- The summary can be copied as text and is written as `order-summary.txt` next to the export.
+
+### FR-025 — Mixed print sizes per order
+
+**P0.** Each photo, or selection of photos, can override the default print size ([FR-006](#fr-006--crop-to-print-ratio)).
+
+- The export writes one subfolder per size (for example `10x15/`, `20x30/`), the way labs expect.
+- The crop frame keeps its relative position when the size changes, and is clamped to the new ratio.
+
+### FR-026 — Resolution warning
+
+**P0.** For each photo, the app computes the effective DPI of the **cropped** area at the chosen print size, using the thresholds in [§5](#minimum-resolution-per-size).
+
+- A badge in the grid and loupe shows *excellent*, *good* or *poor*.
+- Before export, a summary lists photos below 150 DPI.
+
+### FR-027 — sRGB conversion for labs
+
+**P0.** On export, colours are converted from the embedded ICC profile (Display P3, Adobe RGB…) to **sRGB**, which is what most labs expect. The conversion is on by default and can be turned off per preset.
+
+- The rendering intent is configurable: perceptual (default) or relative colorimetric with black-point compensation.
+- The output embeds the sRGB profile.
+- Photos without a profile are assumed to be sRGB.
+
+### FR-028 — Safe area and borders
+
+**P0.** Show a **safe-area overlay**: the trim margin a lab may cut, about 2 mm per edge by default and configurable per preset. Stamps are always placed inside the safe area.
+
+- **Borders:** none, a uniform white border (mm), or a retro instant-photo style with a thicker bottom edge that can hold the stamp or caption.
+- The border colour is configurable. The image is fitted inside the border, never stretched.
+
+### FR-029 — Output sharpening
+
+**P2.** Optional sharpening for print, tuned to the print size and paper type (glossy or matte), at three strengths (low, standard, high). It is applied after resizing and before encoding.
+
+### FR-030 — Camera clock offset
+
+**P0.** Correct capture times per camera (make, model and serial number when available).
+
+- Shift by an offset (±days/hours/minutes/seconds) or set a time zone.
+- A helper sets the offset by matching one camera photo to a reference photo, such as a phone photo of the same moment.
+- Corrected times drive sorting, date stamps, grouping and GPS matching. The original EXIF time is kept for reference.
+
+### FR-031 — Borrow GPS from a phone or GPX track
+
+**P1.** Photos without GPS (for example from a Lumix GX9) get a location from:
+
+- **another imported device's photos** taken within a configurable time window (default ±10 min), or
+- **a GPX track**, by interpolating along the track.
+
+Borrowed locations are marked as *inferred*, and the user can review them before stamping. This depends on correct clocks ([FR-030](#fr-030--camera-clock-offset)).
+
+### FR-032 — Manual date and place
+
+**P0.** Set the date and/or place by hand for one photo or a selection, for example scanned film prints or photos with no EXIF.
+
+- Places are picked through an **offline** search of the bundled place dataset ([ADR-0003](adr/0003-offline-geocoding-geonames.md)).
+- Manual values override EXIF and are marked as *manual*.
+
+### FR-033 — Retro film date stamp and stamp presets
+
+**P1.** Offer a **retro film-camera date stamp**: an orange seven-segment LED style in the classic `'98 10 23` format, with a soft glow, as on 1990s compact film cameras.
+
+- This is shipped with the regular stamp styles from [FR-004](#fr-004--date-stamp).
+- Stamp settings (style, font, size, colour, position, format) can be saved as named **presets**.
+- A few presets are built in: *Retro LED*, *Minimal white* and *Classic serif*.
+- Bundled fonts must use the OFL or MIT license.
+
+### FR-034 — Lab presets
+
+**P1.** Built-in presets per lab (CEWE, dm, Rossmann, Boots Photo…) bundle:
+
+- the available sizes, colour space, JPEG quality, maximum file size and safe-area margin;
+- the file-naming scheme.
+
+One click applies a preset. Users can duplicate and edit presets. The presets are static data shipped with the app and are never fetched from the network.
+
+### FR-035 — Multi-photo layouts
+
+**P2.** Put several photos on one print to save cost: 2-up (two prints of 10×7.5 on a 10×15 sheet), 4-up, and a photo-booth strip (5×15, 3–4 frames). Each cell has its own crop. Cut guides are optional.
+
+### FR-036 — Custom captions
+
+**P1.** Add a free-text caption next to, or instead of, the date stamp. The caption can use the variables `{date}`, `{time}`, `{place}`, `{country}`, `{trip}`, `{camera}` and `{filename}`. Captions use the same layout rules as stamps (inside the safe area or on the border).
+
+### FR-037 — Contact sheet
+
+**P2.** Export a contact sheet (PDF or JPEG) of the print set: thumbnails with file name, date, place, size and copies. It is useful for archiving and for checking the order before sending it.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
@@ -227,7 +354,7 @@ The installer is **at most 25 MB** per platform.
 
 ### NFR-009 — Colour fidelity
 
-The output keeps the source ICC profile. A pixel outside the stamp area differs from a reference decode by at most 1 per channel, apart from JPEG re-encoding error at the configured quality.
+The output either keeps the source ICC profile or, when sRGB conversion is on ([FR-027](#fr-027--srgb-conversion-for-labs)), converts it exactly. The result is within ΔE₂₀₀₀ < 1 of a reference `lcms2` transform. Without conversion, a pixel outside the stamp area differs from a reference decode by at most 1 per channel, apart from JPEG re-encoding error at the configured quality.
 
 ### NFR-010 — Cold start
 
@@ -237,12 +364,21 @@ The app goes from launch to an interactive window in **under 1.5 s**.
 
 No input file, however malformed, can crash the app or hang the batch. A bad file only fails that one photo.
 
+### NFR-012 — Culling navigation
+
+In the loupe view, moving to the next or previous photo shows a sharp preview in **under 100 ms** (p95). Neighbouring photos are prefetched.
+
+### NFR-013 — Project safety
+
+Edits reach the project file within **5 s**, and writes are atomic, so a crash or power loss never corrupts the project. The file has a `schema_version` and is migrated forward automatically. Older app versions refuse to open newer files rather than damage them.
+
 ## 8. Out of scope
 
 The following are out of scope (for now):
 
 - Cloud sync, accounts, and any kind of server backend.
 - General photo editing: exposure, colour grading, retouching.
+- Writing ratings, flags or edits back into source files or XMP sidecars. Sources stay read-only. Exporting XMP sidecars may be considered later.
 - Mobile apps.
 - Video.
 

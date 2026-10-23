@@ -13,6 +13,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0007](0007-ui-react-shadcn-lucide.md) | UI stack: React + shadcn/ui + Lucide | Accepted | 2026-10-23 |
 | [0008](0008-license-gpl3-with-relicensing-option.md) | License: GPL-3.0, keeping the option to relicense | Accepted | 2026-10-23 |
 | [0009](0009-unsigned-distribution.md) | Ship unsigned builds (no paid certificates) | Accepted | 2026-10-23 |
+| [0010](0010-project-file-format.md) | Project file format for culling and edits | Accepted | 2026-10-23 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

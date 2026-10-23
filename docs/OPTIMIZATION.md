@@ -42,6 +42,8 @@
 | [NFR-005](PRD.md#nfr-005--ui-responsiveness) | Input latency during export | < 100 ms | Manual + E2E probe |
 | [NFR-008](PRD.md#nfr-008--install-size) | Installer size | ≤ 25 MB | CI artifact size check |
 | [NFR-010](PRD.md#nfr-010--cold-start) | Launch to interactive | < 1.5 s | E2E timing |
+| [NFR-012](PRD.md#nfr-012--culling-navigation) | Loupe next/previous to a sharp preview, p95 | < 100 ms | `bench_loupe_navigation` + E2E probe |
+| [NFR-013](PRD.md#nfr-013--project-safety) | Edit-to-disk latency; project save time for 10,000 photos | ≤ 5 s; < 50 ms | `bench_project_save`, kill-during-write test |
 
 ### Reference machines
 
@@ -63,6 +65,8 @@
 | T3 | Full decode | Original | Export only |
 
 The preview renders the same `RenderPlan` as the export ([ARCHITECTURE.md §4](ARCHITECTURE.md#4-processing-pipeline)), only at T2 scale.
+
+**Culling prefetch ([NFR-012](PRD.md#nfr-012--culling-navigation)):** the loupe keeps T2 previews of the current photo and of the **next two and previous one** in an LRU cache (about 8 MB each). Moving to the next photo shows the cached T2 immediately and requests the next prefetch. Rating and flagging only change project state, never pixels, so they are instant. The safe-area overlay and the DPI badge are computed from `RenderPlan` geometry, not from pixels.
 
 ### 4.2 Avoid redundant work
 

@@ -53,6 +53,22 @@ The app scaffold runs on macOS: a Tauri 2 window, the React/shadcn UI shell, and
 | FR-019 | Print service upload | 3 | Not Started | |
 | FR-020 | Localization | 3 | Not Started | |
 | FR-021 | Auto-update | 3 | Not Started | |
+| FR-022 | Culling (rate, flag, filter) | 1 | Not Started | |
+| FR-023 | Projects, autosave and undo | 1 | Not Started | Format: [ADR-0010](adr/0010-project-file-format.md) |
+| FR-024 | Copies and order summary | 2 | Not Started | |
+| FR-025 | Mixed print sizes per order | 1 | Not Started | Builds on `PrintSize` |
+| FR-026 | Resolution warning | 1 | Not Started | |
+| FR-027 | sRGB conversion for labs | 1 | Not Started | `lcms2` |
+| FR-028 | Safe area and borders | 1 | Not Started | |
+| FR-029 | Output sharpening | 3 | Not Started | Needs real print tests |
+| FR-030 | Camera clock offset | 1 | Not Started | |
+| FR-031 | Borrow GPS from a phone or GPX track | 2 | Not Started | Depends on FR-030 |
+| FR-032 | Manual date and place | 1 | Not Started | |
+| FR-033 | Retro film date stamp and stamp presets | 1 | Not Started | Font must be OFL/MIT |
+| FR-034 | Lab presets | 2 | Not Started | |
+| FR-035 | Multi-photo layouts | 3 | Not Started | Shares layout engine with FR-017 |
+| FR-036 | Custom captions | 2 | Not Started | `{trip}` needs FR-012 |
+| FR-037 | Contact sheet | 3 | Not Started | |
 
 ## Non-functional requirements
 
@@ -69,6 +85,8 @@ The app scaffold runs on macOS: a Tauri 2 window, the React/shadcn UI shell, and
 | NFR-009 | Colour fidelity | ICC kept, Δ ≤ 1 | — | Not Started |
 | NFR-010 | Cold start | < 1.5 s | — | Not Started |
 | NFR-011 | Robustness | 0 crashes | — | Not Started |
+| NFR-012 | Culling navigation | < 100 ms p95 | — | Not Started |
+| NFR-013 | Project safety | ≤ 5 s, atomic | — | Not Started |
 
 ## Security tasks
 
