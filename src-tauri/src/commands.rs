@@ -18,7 +18,7 @@ use fotollection_core::codec::image_dimensions;
 use fotollection_core::export::{EXPORT_QUALITY, ExportOptions, default_inflight, run_export};
 use fotollection_core::frame::{CameraProfile, FrameSettings, LogoKind};
 use fotollection_core::import::{self, ImportedFile};
-use fotollection_core::library::{PhotoId, PhotoSummary, flags};
+use fotollection_core::library::{CullFilter, Flag, PhotoEdits, PhotoId, PhotoSummary, flags};
 use fotollection_core::logo;
 use fotollection_core::metadata;
 use fotollection_core::plan::{CropFrame, DpiBand, PlanInput, effective_dpi, plan};
@@ -247,15 +247,27 @@ pub async fn pick_and_import_folder(app: AppHandle) -> Result<Option<ImportSumma
     .map_err(|e| IpcError::internal(e.to_string()))?
 }
 
-/// All photos, ordered by capture time (FR-003).
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PhotoList {
+    /// The photos kept by the filter, in capture order.
+    pub photos: Vec<PhotoSummary>,
+    /// All photos in the library, filtered or not.
+    pub total: u32,
+}
+
+/// The photos kept by `filter`, ordered by capture time (FR-003, FR-022).
 #[tauri::command]
 #[specta::specta]
-pub fn list_photos(state: State<'_, AppState>) -> Result<Vec<PhotoSummary>, IpcError> {
+pub fn list_photos(state: State<'_, AppState>, filter: CullFilter) -> Result<PhotoList, IpcError> {
     let library = state
         .library
         .read()
         .map_err(|e| IpcError::internal(e.to_string()))?;
-    Ok(library.summaries())
+    Ok(PhotoList {
+        photos: library.summaries(&filter),
+        total: u32::try_from(library.len()).unwrap_or(u32::MAX),
+    })
 }
 
 #[derive(Debug, Clone, Serialize, Type)]
@@ -330,11 +342,16 @@ pub async fn pick_export_folder(app: AppHandle) -> Result<Option<String>, IpcErr
     .map_err(|e| IpcError::internal(e.to_string()))?
 }
 
-/// Starts exporting every photo to the chosen destination (FR-008, FR-009, FR-011).
+/// Starts exporting the photos kept by `filter` to the chosen destination
+/// (FR-008, FR-009, FR-011, FR-022).
 /// Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
 #[tauri::command]
 #[specta::specta]
-pub fn start_export(app: AppHandle, state: State<'_, AppState>) -> Result<u32, IpcError> {
+pub fn start_export(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    filter: CullFilter,
+) -> Result<u32, IpcError> {
     let destination = state
         .export_destination
         .lock()
@@ -346,8 +363,9 @@ pub fn start_export(app: AppHandle, state: State<'_, AppState>) -> Result<u32, I
             .library
             .read()
             .map_err(|e| IpcError::internal(e.to_string()))?;
+        // Exactly the photos the grid shows (FR-022).
         library
-            .sorted_ids()
+            .filtered_ids(&filter)
             .into_iter()
             .filter_map(|id| library.record(id))
             .collect()
@@ -768,6 +786,12 @@ fn changed(app: &AppHandle, state: &AppState) -> HistoryState {
         can_redo,
     }
     .emit(app);
+    // Ratings and flags are part of the photo list, so undo/redo must refresh it too.
+    let count = state
+        .library
+        .read()
+        .map_or(0, |l| u32::try_from(l.len()).unwrap_or(u32::MAX));
+    let _ = LibraryChanged { count }.emit(app);
     HistoryState {
         revision,
         can_undo,
@@ -901,6 +925,75 @@ pub fn set_photo_crop(
             .apply(&mut library, &[(id, edits)]);
     }
     Ok(changed(&app, &state))
+}
+
+/// Most photos one culling command may change (IPC input bound, SECURITY.md §2).
+const MAX_EDIT_IDS: usize = 10_000;
+
+/// Applies `edit` to each photo as one undoable step (FR-022, FR-023).
+fn edit_photos(
+    app: &AppHandle,
+    state: &AppState,
+    ids: &[PhotoId],
+    edit: impl Fn(&mut PhotoEdits),
+) -> Result<HistoryState, IpcError> {
+    if ids.is_empty() || ids.len() > MAX_EDIT_IDS {
+        return Err(IpcError::new(
+            "photo.invalid_selection",
+            "Select between 1 and 10,000 photos",
+        ));
+    }
+    {
+        let mut library = state
+            .library
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        let mut changes = Vec::with_capacity(ids.len());
+        for &id in ids {
+            if library.record(id).is_none() {
+                return Err(IpcError::new("photo.unknown", "Unknown photo"));
+            }
+            let mut edits = library.edits(id);
+            edit(&mut edits);
+            changes.push((id, edits));
+        }
+        state
+            .history
+            .lock()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .apply(&mut library, &changes);
+    }
+    Ok(changed(app, state))
+}
+
+/// Sets 0–5 stars on photos (FR-022). Larger values are rejected.
+#[tauri::command]
+#[specta::specta]
+pub fn set_photo_rating(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    ids: Vec<PhotoId>,
+    rating: u8,
+) -> Result<HistoryState, IpcError> {
+    if rating > 5 {
+        return Err(IpcError::new(
+            "photo.invalid_rating",
+            "Ratings are 0 to 5 stars",
+        ));
+    }
+    edit_photos(&app, &state, &ids, |e| e.rating = rating)
+}
+
+/// Flags photos as pick or reject, or clears the flag (FR-022).
+#[tauri::command]
+#[specta::specta]
+pub fn set_photo_flag(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    ids: Vec<PhotoId>,
+    flag: Option<Flag>,
+) -> Result<HistoryState, IpcError> {
+    edit_photos(&app, &state, &ids, |e| e.flag = flag)
 }
 
 #[tauri::command]

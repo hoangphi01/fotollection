@@ -12,7 +12,7 @@ use fotollection_core::cancel::CancellationToken;
 use fotollection_core::codec::{JpegCodec, PureRustCodec};
 use fotollection_core::export::{ExportOptions, run_export};
 use fotollection_core::import::scan;
-use fotollection_core::library::{Library, PhotoRecord};
+use fotollection_core::library::{CullFilter, Flag, FlagFilter, Library, PhotoEdits, PhotoRecord};
 use fotollection_core::metadata;
 use fotollection_core::settings::RenderSettings;
 
@@ -202,6 +202,69 @@ fn fr_001_png_and_jpeg_export_together() {
     // Cropped from 2:1 to the 10x15 ratio, transparency flattened onto white.
     assert_eq!((decoded.width, decoded.height), (300, 200));
     assert!(decoded.data[..3].iter().all(|&c| c > 245));
+}
+
+#[test]
+fn fr_022_export_uses_only_the_filtered_set() {
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    for (name, date) in [
+        ("a.jpg", "2026:07:14 10:00:00"),
+        ("b.jpg", "2026:07:14 10:00:01"),
+        ("c.jpg", "2026:07:14 10:00:02"),
+    ] {
+        let fixture = Fixture {
+            width: 60,
+            height: 40,
+            date: Some(date),
+            ..Fixture::default()
+        };
+        write(src.path(), name, &jpeg(&fixture));
+    }
+    let mut lib = import(src.path());
+    let ids = lib.sorted_ids();
+    let flag = |flag, rating| PhotoEdits {
+        flag: Some(flag),
+        rating,
+        ..PhotoEdits::default()
+    };
+    lib.set_edits(ids[0], flag(Flag::Pick, 5));
+    lib.set_edits(ids[2], flag(Flag::Reject, 0));
+
+    let picks = CullFilter {
+        flag: FlagFilter::Picks,
+        min_rating: 0,
+    };
+    let kept: Vec<_> = lib
+        .filtered_ids(&picks)
+        .into_iter()
+        .filter_map(|id| lib.record(id))
+        .collect();
+    let settings = RenderSettings::default();
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 2,
+        stamp_font: None,
+        frame_for: &|_| None,
+    };
+    let summary = run_export(
+        &kept,
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert_eq!(summary.exported, 1);
+    let names: Vec<_> = walk(dest.path())
+        .iter()
+        .filter_map(|p| p.file_name()?.to_str().map(str::to_owned))
+        .collect();
+    assert_eq!(names, ["a.jpg"]);
+
+    // "All" keeps rejects too: the grid and the export always show the same set.
+    assert_eq!(lib.filtered_ids(&CullFilter::default()).len(), 3);
 }
 
 #[test]

@@ -188,17 +188,18 @@ Commands marked † are implemented.
 | `app_info() -> AppInfo` † | App and core versions for the About section | — |
 | `list_print_sizes() -> [PrintSize]` † | Print sizes for the settings panel | FR-006 |
 | `pick_and_import_folder() -> ImportSummary?` † | Opens the folder dialog **in Rust** and imports it. Drag-and-drop on the window uses the same import path | FR-001, FR-002 |
-| `list_photos() -> [PhotoSummary]` † | Data for the grid, sorted by capture time (filters come with FR-022) | FR-003 |
+| `list_photos(filter) -> { photos: [PhotoSummary], total }` † | Data for the grid, sorted by capture time and filtered in Rust by flag and minimum rating. Summaries carry `rating` and `flag` | FR-003, FR-022 |
 | `get_settings()` / `set_settings(settings) -> SettingsState` † | Validated render settings plus a `revision` used to refresh previews | FR-004, FR-006 |
 | `set_photo_override(id, override)` | Per-photo crop frame or place name | FR-005, FR-006 |
 | `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
-| `start_export() -> JobId` † | Exports all photos to the chosen destination | FR-008, FR-009, FR-010 |
+| `start_export(filter) -> JobId` † | Exports exactly the photos `filter` keeps (the set the grid shows) to the chosen destination | FR-008, FR-009, FR-010, FR-022 |
 | `cancel_job(job_id)` † | Cancel a running job | FR-011 |
 | `get_frame_config()` / `set_frame_settings(settings)` † | Info frame settings plus camera profiles (with EXIF-derived defaults) | FR-040 |
 | `set_camera_profile(profile)` † | Per-camera overrides: name, brand, lens, focal, aperture, photo style, logo kind | FR-040 |
 | `pick_camera_logo(camera_id)` / `clear_camera_logo(camera_id)` † | Choose a PNG with a **Rust-side** dialog, validate it, copy it into `config/logos/` | FR-040 |
 | `get_crop_geometry(id) -> CropGeometry` † | Upright size, target ratio, printed cm of the crop area, current crop | FR-006 |
 | `set_photo_crop(id, crop?)` † | Set or reset a photo's crop (centre + zoom), undoable | FR-006, FR-023 |
+| `set_photo_rating(ids, 0–5)` † / `set_photo_flag(ids, pick\|reject\|null)` † | Culling: one undoable step for 1–10,000 photos; ratings above 5 and unknown IDs are rejected | FR-022, FR-023 |
 | `undo()` / `redo()` † | History (also Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z) | FR-023 |
 | `list_fonts()` / `import_font()` / `remove_font(id)` † | User fonts; import opens a **Rust-side** dialog and copies a validated file | FR-042 |
 | `photo_details(id) -> PhotoDetails` † | Inspector data: pixel size (header only), file size, GPS, effective DPI at the current print size | FR-002, FR-007, FR-026 |
@@ -223,7 +224,7 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 
 | Event | Payload |
 |-------|---------|
-| `library-changed` † | `{ count }`. The UI refetches `list_photos` |
+| `library-changed` † | `{ count }`. Sent after imports and after every edit, undo and redo (ratings and flags are part of the list). The UI refetches `list_photos` |
 | `thumb-ready` † | `{ id }`. The T1 thumbnail is cached, so the UI bumps the image URL |
 | `export-progress` † | `{ jobId, done, total }`, coalesced to ≤ 30 per second |
 | `export-finished` † | `{ jobId, summary: { exported, failed[], cancelled, destination } }`. Per-photo failures are reported here |

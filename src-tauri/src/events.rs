@@ -16,7 +16,7 @@ pub struct RevisionChanged {
     pub can_redo: bool,
 }
 
-/// Photos were added; the UI refetches the list.
+/// Photos were added, or their ratings/flags changed; the UI refetches the list.
 #[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
 #[serde(rename_all = "camelCase")]
 pub struct LibraryChanged {

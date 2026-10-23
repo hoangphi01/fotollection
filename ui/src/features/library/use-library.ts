@@ -1,19 +1,28 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useCallback, useEffect, useState } from 'react'
-import { commands, events, type ImportSummary, type PhotoSummary } from '@/ipc/bindings'
+import {
+  commands,
+  events,
+  type CullFilter,
+  type ImportSummary,
+  type PhotoSummary,
+} from '@/ipc/bindings'
 
-/** Library state from Rust (FR-001, FR-003). The UI only caches it. */
-export function useLibrary() {
+/** Library state from Rust (FR-001, FR-003), filtered in Rust (FR-022). The UI only caches it. */
+export function useLibrary(filter: CullFilter) {
   const [photos, setPhotos] = useState<PhotoSummary[]>([])
+  const [total, setTotal] = useState(0)
   const [thumbVersions, setThumbVersions] = useState<Record<number, number>>({})
   const [lastImport, setLastImport] = useState<ImportSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const load = () =>
-      commands.listPhotos().then((result) => {
-        if (result.status === 'ok') setPhotos(result.data)
-        else setError(result.error.message)
+      commands.listPhotos(filter).then((result) => {
+        if (result.status === 'ok') {
+          setPhotos(result.data.photos)
+          setTotal(result.data.total)
+        } else setError(result.error.message)
       })
     void load()
     const unlisteners = [
@@ -25,7 +34,7 @@ export function useLibrary() {
     return () => {
       for (const unlisten of unlisteners) void unlisten.then((fn) => fn())
     }
-  }, [])
+  }, [filter])
 
   const importFolder = useCallback(async () => {
     setError(null)
@@ -34,5 +43,5 @@ export function useLibrary() {
     else if (result.data) setLastImport(result.data)
   }, [])
 
-  return { photos, thumbVersions, lastImport, error, importFolder }
+  return { photos, total, thumbVersions, lastImport, error, importFolder }
 }

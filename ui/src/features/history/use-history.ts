@@ -1,13 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useEffect, useState } from 'react'
 import { commands, events, type RevisionChanged } from '@/ipc/bindings'
-
-function isTyping(target: EventTarget | null): boolean {
-  return (
-    target instanceof HTMLElement &&
-    (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
-  )
-}
+import { isTyping } from '@/lib/keyboard'
 
 /**
  * Render revision + undo/redo state from Rust (FR-023), and the global shortcuts

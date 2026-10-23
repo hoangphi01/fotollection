@@ -19,6 +19,7 @@ import type { FrameConfigApi } from '@/features/frame/use-frame-config'
 import {
   commands,
   type Corner,
+  type CullFilter,
   type DateFormat,
   type RenderSettings,
   type StampColor,
@@ -34,6 +35,7 @@ type SettingsPanelProps = {
   frame: FrameConfigApi
   fonts: FontsApi
   photoCount: number
+  filter: CullFilter
 }
 
 const FORMATS: { value: DateFormat; label: string }[] = [
@@ -54,7 +56,14 @@ const COLORS: { value: StampColor; label: string; swatch: string }[] = [
   { value: 'retroOrange', label: 'Retro orange', swatch: 'bg-[#ff8a1f]' },
 ]
 
-export function SettingsPanel({ settings, onChange, frame, fonts, photoCount }: SettingsPanelProps) {
+export function SettingsPanel({
+  settings,
+  onChange,
+  frame,
+  fonts,
+  photoCount,
+  filter,
+}: SettingsPanelProps) {
   const printSizes = useIpcQuery(commands.listPrintSizes)
   const appInfo = useIpcQuery(commands.appInfo)
   const stamp = settings?.stamp
@@ -168,7 +177,7 @@ export function SettingsPanel({ settings, onChange, frame, fonts, photoCount }: 
 
       <Separator />
       <div className="space-y-3 p-4">
-        <ExportSection photoCount={photoCount} />
+        <ExportSection photoCount={photoCount} filter={filter} />
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>Offline · GPS stripped</span>
           {appInfo && <Badge variant="outline">v{appInfo.appVersion}</Badge>}

@@ -3,17 +3,20 @@ import { CircleCheck, Download, FolderOutput, OctagonX, TriangleAlert, X } from 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import type { CullFilter } from '@/ipc/bindings'
 import { useExport } from './use-export'
 
 type ExportSectionProps = {
+  /** Photos kept by `filter`: exactly what will be exported (FR-022). */
   photoCount: number
+  filter: CullFilter
 }
 
 function folderName(path: string): string {
   return path.split(/[\\/]/).filter(Boolean).pop() ?? path
 }
 
-export function ExportSection({ photoCount }: ExportSectionProps) {
+export function ExportSection({ photoCount, filter }: ExportSectionProps) {
   const { state, destination, chooseDestination, exportAll, cancel, dismiss } = useExport()
   const running = state.kind === 'running'
 
@@ -97,11 +100,16 @@ export function ExportSection({ photoCount }: ExportSectionProps) {
         <Button
           className="w-full"
           disabled={photoCount === 0}
-          onClick={() => void exportAll(photoCount)}
+          onClick={() => void exportAll(filter, photoCount)}
         >
           <Download data-icon="inline-start" />
-          Export {photoCount > 0 ? `${photoCount} photos` : ''}
+          Export {photoCount > 0 ? `${photoCount} photo${photoCount > 1 ? 's' : ''}` : ''}
         </Button>
+      )}
+      {(filter.flag !== 'all' || filter.minRating > 0) && !running && (
+        <p className="text-xs text-muted-foreground">
+          Only the photos the library filter shows are exported.
+        </p>
       )}
     </div>
   )

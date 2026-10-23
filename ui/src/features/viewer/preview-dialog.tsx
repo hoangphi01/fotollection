@@ -10,6 +10,7 @@ import {
   MapPin,
   PanelBottom,
   Printer,
+  Star,
 } from 'lucide-react'
 import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { Badge } from '@/components/ui/badge'
@@ -20,6 +21,8 @@ import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { CullControls } from '@/features/culling/cull-controls'
+import { handleCullKey } from '@/features/culling/cull-keys'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
 import { PrintSizePicker } from '@/features/settings/print-size-picker'
@@ -152,7 +155,8 @@ export function PreviewDialog({
   }
   const onKeyDown = (event: KeyboardEvent) => {
     if (cropping || event.target instanceof HTMLInputElement) return
-    if (event.key === 'ArrowRight') go(1)
+    if (handleCullKey(event, photo?.id)) event.preventDefault()
+    else if (event.key === 'ArrowRight') go(1)
     else if (event.key === 'ArrowLeft') go(-1)
     else if (event.key.toLowerCase() === 'c' && geometry && !geometry.cropDisabled) setCropping(true)
   }
@@ -258,6 +262,12 @@ export function PreviewDialog({
           <Separator />
 
           <div className="flex-1 space-y-5 overflow-y-auto p-5">
+            {photo && (
+              <Section icon={<Star className="size-4" />} title="Rating & flag">
+                <CullControls photo={photo} />
+              </Section>
+            )}
+
             <Section icon={<CalendarDays className="size-4" />} title="Captured">
               <p>{photo ? formatCaptureLong(photo.capture) : '—'}</p>
               {photo?.dateFromFile ? (

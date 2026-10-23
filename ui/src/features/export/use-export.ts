@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useCallback, useEffect, useState } from 'react'
-import { commands, events, type ExportSummary } from '@/ipc/bindings'
+import { commands, events, type CullFilter, type ExportSummary } from '@/ipc/bindings'
 
 export type ExportState =
   | { kind: 'idle' }
@@ -41,17 +41,17 @@ export function useExport() {
     return null
   }, [])
 
-  const start = useCallback(async (total: number) => {
-    const result = await commands.startExport()
+  const start = useCallback(async (filter: CullFilter, total: number) => {
+    const result = await commands.startExport(filter)
     if (result.status === 'ok') setState({ kind: 'running', jobId: result.data, done: 0, total })
     else setState({ kind: 'error', message: result.error.message })
   }, [])
 
   /** Picks a destination if none yet, then exports. */
   const exportAll = useCallback(
-    async (total: number) => {
+    async (filter: CullFilter, total: number) => {
       const dest = destination ?? (await chooseDestination())
-      if (dest) await start(total)
+      if (dest) await start(filter, total)
     },
     [destination, chooseDestination, start],
   )

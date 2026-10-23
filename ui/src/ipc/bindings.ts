@@ -20,18 +20,19 @@ export const commands = {
 	rejected: RejectedSummary[],
 	rejectedTotal: number,
 } | null, IpcError>(__TAURI_INVOKE("pick_and_import_folder")),
-	/**  All photos, ordered by capture time (FR-003). */
-	listPhotos: () => typedError<PhotoSummary[], IpcError>(__TAURI_INVOKE("list_photos")),
+	/**  The photos kept by `filter`, ordered by capture time (FR-003, FR-022). */
+	listPhotos: (filter: CullFilter) => typedError<PhotoList, IpcError>(__TAURI_INVOKE("list_photos", { filter })),
 	getSettings: () => typedError<SettingsState, IpcError>(__TAURI_INVOKE("get_settings")),
 	/**  Validates and applies render settings (SECURITY.md §2: validate all IPC input). */
 	setSettings: (settings: RenderSettings) => typedError<SettingsState, IpcError>(__TAURI_INVOKE("set_settings", { settings })),
 	/**  Chooses the export destination with a Rust-side dialog. Returns its display path. */
 	pickExportFolder: () => typedError<string | null, IpcError>(__TAURI_INVOKE("pick_export_folder")),
 	/**
-	 *  Starts exporting every photo to the chosen destination (FR-008, FR-009, FR-011).
+	 *  Starts exporting the photos kept by `filter` to the chosen destination
+	 *  (FR-008, FR-009, FR-011, FR-022).
 	 *  Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
 	 */
-	startExport: () => typedError<number, IpcError>(__TAURI_INVOKE("start_export")),
+	startExport: (filter: CullFilter) => typedError<number, IpcError>(__TAURI_INVOKE("start_export", { filter })),
 	cancelJob: (jobId: number) => typedError<null, IpcError>(__TAURI_INVOKE("cancel_job", { jobId })),
 	/**  Details for the preview inspector (FR-002, FR-007, FR-026). Reads only the JPEG header. */
 	photoDetails: (id: PhotoId) => typedError<PhotoDetails, IpcError>(__TAURI_INVOKE("photo_details", { id })),
@@ -62,6 +63,10 @@ export const commands = {
 	/**  1 = the largest crop at the target ratio; up to `MAX_ZOOM`. */
 	zoom: number | null,
 } | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_crop", { id, crop })),
+	/**  Sets 0–5 stars on photos (FR-022). Larger values are rejected. */
+	setPhotoRating: (ids: PhotoId[], rating: number) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_rating", { ids, rating })),
+	/**  Flags photos as pick or reject, or clears the flag (FR-022). */
+	setPhotoFlag: (ids: PhotoId[], flag: "pick" | "reject" | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_flag", { ids, flag })),
 	undo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("undo")),
 	redo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("redo")),
 	/**  User fonts (FR-042). */
@@ -157,6 +162,13 @@ export type CropGeometry = {
 	unit: LengthUnit,
 };
 
+/**  The library filter (FR-022). The grid shows, and export writes, exactly the photos it keeps. */
+export type CullFilter = {
+	flag: FlagFilter,
+	/**  Minimum stars, 0–5. Values above 5 are treated as 5. */
+	minRating: number,
+};
+
 /**  A saved custom print size (FR-043). Stored in millimetres, short edge first. */
 export type CustomPrintSize = {
 	/**  `custom-<n>`, unique. */
@@ -212,6 +224,12 @@ export type ExportSummary = {
 	cancelled: boolean,
 	destination: string,
 };
+
+/**  Pick/reject flag for culling (FR-022). */
+export type Flag = "pick" | "reject";
+
+/**  Which flags a culling filter keeps (FR-022). */
+export type FlagFilter = "all" | "picks" | "unflagged" | "rejects";
 
 export type FontFormat = "ttf" | "otf";
 
@@ -289,7 +307,7 @@ export type IpcError = {
 
 export type LengthUnit = "cm" | "in";
 
-/**  Photos were added; the UI refetches the list. */
+/**  Photos were added, or their ratings/flags changed; the UI refetches the list. */
 export type LibraryChanged = {
 	count: number,
 };
@@ -331,6 +349,13 @@ export type PhotoDetails = {
 /**  Dense index of a photo within this session's library. */
 export type PhotoId = number;
 
+export type PhotoList = {
+	/**  The photos kept by the filter, in capture order. */
+	photos: PhotoSummary[],
+	/**  All photos in the library, filtered or not. */
+	total: number,
+};
+
 /**  Grid data sent to the UI (FR-003). */
 export type PhotoSummary = {
 	id: PhotoId,
@@ -341,6 +366,9 @@ export type PhotoSummary = {
 	hasGps: boolean,
 	dateFromFile: boolean,
 	camera: string | null,
+	/**  0–5 stars (FR-022). */
+	rating: number,
+	flag: Flag | null,
 };
 
 /**  A physical print size. Dimensions are stored short edge first, in millimetres. */

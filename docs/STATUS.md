@@ -9,7 +9,7 @@
 
 The app works end to end for **JPEG**: open or drop a folder → thumbnail grid → preview with crop and date stamp → export to `YYYY-MM-DD/` folders with progress and cancel. Since then: crop editor, session project with undo, info frame, custom fonts and print sizes, and the Rust vs browser benchmark. The remaining work runs in three stages, from easiest to hardest ([ROADMAP.md — Phase 1 work order](ROADMAP.md#phase-1-work-order-2026-10-23)):
 
-1. **Stage 1:** EXTENSION.md ✓, PNG input ✓, basic culling (FR-022), preview profiling.
+1. **Stage 1:** EXTENSION.md ✓, PNG input ✓, basic culling (FR-022) ✓, preview profiling.
 2. **Stage 2:** the `.fotollection` bundle with Save as / Open / Relink (FR-023), faster previews.
 3. **Stage 3:** best-shot suggestions (FR-041), HEIC input.
 
@@ -57,7 +57,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-019 | Print service upload | 3 | Not Started | |
 | FR-020 | Localization | 3 | Not Started | |
 | FR-021 | Auto-update | 3 | Not Started | |
-| FR-022 | Culling (rate, flag, filter) | 1 | Not Started | |
+| FR-022 | Culling (rate, flag, filter) | 1 | In Progress | Stars `0`–`5`, `P`/`X`/`U` in grid and preview, undoable; filter by flag + min rating, export = filtered set (`fr_022_*`). Pending: date/camera/GPS/DPI filters, multi-select, loupe prefetch (NFR-012) |
 | FR-023 | Projects, autosave and undo | 1 | In Progress | Session project autosaves atomically and is restored at launch (re-scan + re-apply); undo/redo for crops. Save as/Open pending |
 | FR-024 | Copies and order summary | 2 | Not Started | |
 | FR-025 | Mixed print sizes per order | 1 | Not Started | Builds on `PrintSize` |

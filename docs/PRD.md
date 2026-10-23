@@ -229,6 +229,9 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - Rate 0–5 stars and flag photos as *pick* or *reject*, using single-key shortcuts (`0`–`5`, `P`, `X`, `U` to unflag).
 - A loupe view shows one photo large, with arrow keys moving to the next and previous photo ([NFR-012](#nfr-012--culling-navigation)).
 - Filter by rating, flag, date, camera, "has GPS", and "resolution warning". Only the filtered set is exported.
+  - The flag filter is *All*, *Picks*, *Unflagged* or *Rejects*, combined with a minimum star rating. *All* includes rejected photos, because the grid and the export always show the same set.
+  - The shortcuts work in the grid (on the selected photo) and in the preview. The preview also has clickable stars and pick/reject buttons. Every change can be undone with Cmd/Ctrl+Z.
+  - Rejected photos stay visible but dimmed in the grid. Nothing is ever deleted.
 - Ratings and flags live in the project file ([FR-023](#fr-023--projects-autosave-and-undo)). They are never written into source files.
 
 ### FR-023 — Projects, autosave and undo

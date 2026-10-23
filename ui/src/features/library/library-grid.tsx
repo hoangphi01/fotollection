@@ -2,6 +2,7 @@
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import type { PhotoSummary } from '@/ipc/bindings'
+import { handleCullKey } from '@/features/culling/cull-keys'
 import { ThumbTile } from './thumb-tile'
 
 const TILE = 168
@@ -58,6 +59,8 @@ export function LibraryGrid({ photos, thumbVersions, selected, onSelect, onOpen 
     } else if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       onOpen(selected)
+    } else if (handleCullKey(event, photos[selected]?.id)) {
+      event.preventDefault()
     }
   }
 

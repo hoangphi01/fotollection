@@ -28,6 +28,38 @@ pub enum Flag {
     Reject,
 }
 
+/// Which flags a culling filter keeps (FR-022).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum FlagFilter {
+    #[default]
+    All,
+    Picks,
+    Unflagged,
+    Rejects,
+}
+
+/// The library filter (FR-022). The grid shows, and export writes, exactly the photos it keeps.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct CullFilter {
+    pub flag: FlagFilter,
+    /// Minimum stars, 0–5. Values above 5 are treated as 5.
+    pub min_rating: u8,
+}
+
+impl CullFilter {
+    pub fn matches(&self, edits: &PhotoEdits) -> bool {
+        let flag_ok = match self.flag {
+            FlagFilter::All => true,
+            FlagFilter::Picks => edits.flag == Some(Flag::Pick),
+            FlagFilter::Unflagged => edits.flag.is_none(),
+            FlagFilter::Rejects => edits.flag == Some(Flag::Reject),
+        };
+        flag_ok && edits.rating >= self.min_rating.min(5)
+    }
+}
+
 /// User edits of one photo. Stored sparsely: photos without edits cost nothing (N5).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
@@ -127,6 +159,9 @@ pub struct PhotoSummary {
     pub has_gps: bool,
     pub date_from_file: bool,
     pub camera: Option<String>,
+    /// 0–5 stars (FR-022).
+    pub rating: u8,
+    pub flag: Option<Flag>,
 }
 
 #[derive(Default)]
@@ -396,11 +431,20 @@ impl Library {
                 .cameras
                 .get(self.camera[i] as usize)
                 .and_then(|(make, model)| Self::camera_label(make.as_deref(), model.as_deref())),
+            rating: record.edits.rating,
+            flag: record.edits.flag,
         })
     }
 
-    pub fn summaries(&self) -> Vec<PhotoSummary> {
-        self.sorted_ids()
+    /// Photos kept by `filter`, in capture order (FR-003, FR-022).
+    pub fn filtered_ids(&self, filter: &CullFilter) -> Vec<PhotoId> {
+        let mut ids = self.sorted_ids();
+        ids.retain(|&id| filter.matches(&self.edits(id)));
+        ids
+    }
+
+    pub fn summaries(&self, filter: &CullFilter) -> Vec<PhotoSummary> {
+        self.filtered_ids(filter)
             .into_iter()
             .filter_map(|id| self.summary(id))
             .collect()
@@ -438,7 +482,11 @@ mod tests {
             lib.push(f, &file("/trip/a.jpg", 0), &meta_at(14)).is_none(),
             "duplicate"
         );
-        let names: Vec<_> = lib.summaries().into_iter().map(|s| s.file_name).collect();
+        let names: Vec<_> = lib
+            .summaries(&CullFilter::default())
+            .into_iter()
+            .map(|s| s.file_name)
+            .collect();
         assert_eq!(names, ["a.jpg", "b.jpg"]);
     }
 
@@ -465,5 +513,66 @@ mod tests {
         );
         let summary = id.and_then(|id| lib.summary(id));
         assert!(summary.is_some_and(|s| s.date_from_file && s.capture.starts_with("2023-11-14")));
+    }
+
+    #[test]
+    fn fr_022_filter_matches_flags_and_rating() {
+        let edits = |rating, flag| PhotoEdits {
+            rating,
+            flag,
+            ..PhotoEdits::default()
+        };
+        let pick3 = edits(3, Some(Flag::Pick));
+        let reject = edits(0, Some(Flag::Reject));
+        let plain = edits(1, None);
+        let only = |flag, min_rating| CullFilter { flag, min_rating };
+
+        assert!(
+            [pick3, reject, plain]
+                .iter()
+                .all(|e| CullFilter::default().matches(e))
+        );
+        assert!(only(FlagFilter::Picks, 0).matches(&pick3));
+        assert!(!only(FlagFilter::Picks, 0).matches(&plain));
+        assert!(only(FlagFilter::Rejects, 0).matches(&reject));
+        assert!(only(FlagFilter::Unflagged, 0).matches(&plain));
+        assert!(!only(FlagFilter::Unflagged, 0).matches(&pick3));
+        assert!(only(FlagFilter::All, 3).matches(&pick3));
+        assert!(!only(FlagFilter::All, 2).matches(&plain));
+        // Out-of-range minimums clamp to 5 stars instead of hiding everything.
+        assert!(only(FlagFilter::All, 9).matches(&edits(5, None)));
+    }
+
+    #[test]
+    fn fr_022_rating_and_flag_are_undoable() {
+        let mut lib = Library::new();
+        let folder = lib.add_folder(Path::new("/trip"));
+        let a = lib.push(folder, &file("/trip/a.jpg", 1), &meta_at(1));
+        let b = lib.push(folder, &file("/trip/b.jpg", 2), &meta_at(2));
+        let (Some(a), Some(b)) = (a, b) else {
+            panic!("both photos are new");
+        };
+        let mut history = crate::history::History::default();
+        let picked = PhotoEdits {
+            rating: 4,
+            flag: Some(Flag::Pick),
+            ..lib.edits(a)
+        };
+        history.apply(&mut lib, &[(a, picked)]);
+        let picks = CullFilter {
+            flag: FlagFilter::Picks,
+            min_rating: 0,
+        };
+        assert_eq!(lib.filtered_ids(&picks), [a]);
+        assert_eq!(
+            lib.summary(a).map(|s| (s.rating, s.flag)),
+            Some((4, Some(Flag::Pick)))
+        );
+
+        history.undo(&mut lib);
+        assert_eq!(lib.filtered_ids(&picks), []);
+        assert_eq!(lib.filtered_ids(&CullFilter::default()), [a, b]);
+        history.redo(&mut lib);
+        assert_eq!(lib.filtered_ids(&picks), [a]);
     }
 }

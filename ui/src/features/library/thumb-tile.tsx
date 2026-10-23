@@ -2,6 +2,7 @@
 import { CalendarX2, LoaderCircle, MapPinOff } from 'lucide-react'
 import { memo, useState } from 'react'
 import type { PhotoSummary } from '@/ipc/bindings'
+import { CullBadges } from '@/features/culling/cull-badges'
 import { thumbUrl } from '@/lib/photo-url'
 import { cn } from '@/lib/utils'
 
@@ -56,9 +57,10 @@ export const ThumbTile = memo(function ThumbTile({
         onLoad={() => setLoaded(true)}
         className={cn(
           'size-full object-cover transition-opacity duration-300',
-          loaded ? 'opacity-100' : 'opacity-0',
+          !loaded ? 'opacity-0' : photo.flag === 'reject' ? 'opacity-35' : 'opacity-100',
         )}
       />
+      <CullBadges rating={photo.rating} flag={photo.flag} className="absolute top-1 left-1" />
       <div className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-gradient-to-t from-black/60 to-transparent px-1.5 pt-4 pb-1 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
         <span className="truncate">{formatCapture(photo.capture)}</span>
       </div>
