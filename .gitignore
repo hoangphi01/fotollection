@@ -1,0 +1,13 @@
+# OS
+.DS_Store
+
+# Local Claude settings
+.claude/settings.local.json
+
+# Personal reference material (not part of the app)
+*.pdf
+GX9-C200-RECIPE.md
+
+# Build / deps
+node_modules/
+dist/
