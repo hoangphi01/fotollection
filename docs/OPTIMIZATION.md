@@ -154,6 +154,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-10-23 | cda7a5f | REF-MAC (M3) | `bench/run.sh`: Rust export vs Chromium 156, 95 × 16 MP, median of 3 | 18.6 vs 18.7 photos/s | Tie; Chromium encodes 4:2:0, Rust 4:4:4 (§2.1) |
 | 2026-10-23 | cda7a5f | REF-MAC (M3) | `bench/run.sh`: warm preview p50, Rust vs Chromium | 26.0 vs 17.4 ms | Browser faster; follow-up in §2.1 |
 | 2026-10-23 | cda7a5f | REF-MAC (M3) | `bench/run.sh`: peak RSS, Rust vs Chromium | 1.40 vs 1.76 GB | Rust 20% lower |
+| 2026-10-23 | Stage 1 | REF-MAC (M3) | Full PNG decode 4608×3456 RGB8 (`png` crate, `render_one`) | 122 ms | 2.7× JPEG (45 ms); PNG photos are rare, thumbnails come from T1 |
 
 ## 6. Benchmark corpus
 

@@ -145,6 +145,66 @@ fn fr_009_export_by_date_never_overwrites() {
 }
 
 #[test]
+fn fr_001_png_and_jpeg_export_together() {
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    write(
+        src.path(),
+        "IMG_1.jpg",
+        &jpeg(&Fixture {
+            width: 300,
+            height: 200,
+            date: Some("2026:07:14 10:00:00"),
+            ..Fixture::default()
+        }),
+    );
+    // A 400 × 200 semi-transparent PNG screenshot, with no EXIF date.
+    let mut png_file = Vec::new();
+    {
+        let mut encoder = png::Encoder::new(&mut png_file, 400, 200);
+        encoder.set_color(png::ColorType::Rgba);
+        let mut writer = encoder.write_header().unwrap();
+        writer
+            .write_image_data(&[0, 0, 0, 0].repeat(400 * 200))
+            .unwrap();
+    }
+    write(src.path(), "screen.png", &png_file);
+
+    let lib = import(src.path());
+    let all = records(&lib);
+    assert_eq!(all.len(), 2);
+    let settings = RenderSettings::default();
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 2,
+        stamp_font: None,
+        frame_for: &|_| None,
+    };
+    let summary = run_export(
+        &all,
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert_eq!((summary.exported, summary.failed.len()), (2, 0));
+
+    let png_out = walk(dest.path())
+        .into_iter()
+        .find(|p| p.file_name().is_some_and(|n| n == "screen.jpg"))
+        .expect("screen.png is exported as screen.jpg");
+    let decoded = PureRustCodec
+        .decode(&std::fs::read(png_out).unwrap())
+        .unwrap()
+        .image;
+    // Cropped from 2:1 to the 10x15 ratio, transparency flattened onto white.
+    assert_eq!((decoded.width, decoded.height), (300, 200));
+    assert!(decoded.data[..3].iter().all(|&c| c > 245));
+}
+
+#[test]
 fn fr_011_bad_file_does_not_fail_batch() {
     let src = tempfile::tempdir().unwrap();
     let dest = tempfile::tempdir().unwrap();

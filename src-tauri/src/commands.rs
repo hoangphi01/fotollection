@@ -14,6 +14,7 @@ use std::time::{Duration, Instant};
 
 use fotollection_core::PrintSize;
 use fotollection_core::cancel::CancellationToken;
+use fotollection_core::codec::image_dimensions;
 use fotollection_core::export::{EXPORT_QUALITY, ExportOptions, default_inflight, run_export};
 use fotollection_core::frame::{CameraProfile, FrameSettings, LogoKind};
 use fotollection_core::import::{self, ImportedFile};
@@ -520,9 +521,7 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
         let bytes = std::fs::read(&record.path)
             .map_err(|e| IpcError::new("import.unreadable", e.to_string()))?;
-        let (w, h) = state
-            .codec
-            .dimensions(&bytes)
+        let (w, h) = image_dimensions(state.codec.as_ref(), &bytes)
             .map_err(|e| IpcError::new(e.code(), e.to_string()))?;
         let (width, height) = if record.orientation >= 5 {
             (h, w)
@@ -817,9 +816,7 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
             .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
         let bytes = std::fs::read(&record.path)
             .map_err(|e| IpcError::new("import.unreadable", e.to_string()))?;
-        let (w, h) = state
-            .codec
-            .dimensions(&bytes)
+        let (w, h) = image_dimensions(state.codec.as_ref(), &bytes)
             .map_err(|e| IpcError::new(e.code(), e.to_string()))?;
         let (width, height) = if record.orientation >= 5 {
             (h, w)

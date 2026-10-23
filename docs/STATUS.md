@@ -9,7 +9,7 @@
 
 The app works end to end for **JPEG**: open or drop a folder → thumbnail grid → preview with crop and date stamp → export to `YYYY-MM-DD/` folders with progress and cancel. Since then: crop editor, session project with undo, info frame, custom fonts and print sizes, and the Rust vs browser benchmark. The remaining work runs in three stages, from easiest to hardest ([ROADMAP.md — Phase 1 work order](ROADMAP.md#phase-1-work-order-2026-10-23)):
 
-1. **Stage 1:** EXTENSION.md, PNG input, basic culling (FR-022), preview profiling.
+1. **Stage 1:** EXTENSION.md ✓, PNG input ✓, basic culling (FR-022), preview profiling.
 2. **Stage 2:** the `.fotollection` bundle with Save as / Open / Relink (FR-023), faster previews.
 3. **Stage 3:** best-shot suggestions (FR-041), HEIC input.
 
@@ -36,7 +36,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 
 | ID | Requirement | Phase | Status | Notes |
 |----|-------------|-------|--------|-------|
-| FR-001 | Import photos | 1 | In Progress | JPEG import (folder dialog + drag-and-drop), magic bytes, size + polyglot checks. HEIC/PNG pending |
+| FR-001 | Import photos | 1 | In Progress | JPEG and PNG import (folder dialog + drag-and-drop), magic bytes, size + polyglot checks; PNG 8/16-bit, grey, palette, alpha on white, ICC kept (`fr_001_png_*`). HEIC pending (Stage 3) |
 | FR-002 | Read photo metadata | 1 | In Progress | Allowlisted EXIF (date, offset, GPS, orientation, camera) + validation. `fr_002_*` tests pass |
 | FR-003 | Library grid | 1 | In Progress | Virtualized grid, T0/T1 thumbnails, skeleton + fade-in, task progress bar with %. Day grouping and multi-select pending |
 | FR-004 | Date stamp | 1 | In Progress | 3 formats, 4 corners, white/retro-orange, inside the safe area. More styles with FR-033 |

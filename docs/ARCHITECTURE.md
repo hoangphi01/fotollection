@@ -53,7 +53,7 @@ crates/
       lib.rs             †
       print_size.rs      † # CEWE/EU print sizes (FR-006)
       import.rs          † # discovery, magic bytes, size + polyglot checks (FR-001)
-      codec.rs           † # JpegCodec trait + pure-Rust implementation (ADR-0012); HEIC/PNG later
+      codec.rs           † # JpegCodec trait + pure-Rust implementation (ADR-0012); decode_image/image_dimensions dispatch by magic bytes (PNG via `png`); HEIC later
       image.rs           † # RgbImage + EXIF orientation transforms
       metadata.rs        † # EXIF allowlist + validation, embedded thumbnail (FR-002)
       settings.rs        † # RenderSettings (in memory until projects land)

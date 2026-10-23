@@ -34,7 +34,15 @@ fn main() {
     let record = lib.record(id).expect("record");
 
     let codec = default_codec();
-    let decoded = codec.decode(&std::fs::read(input).unwrap()).unwrap();
+    let bytes = std::fs::read(input).unwrap();
+    let t = std::time::Instant::now();
+    let decoded = fotollection_core::codec::decode_image(codec.as_ref(), &bytes).unwrap();
+    eprintln!(
+        "decode {}x{}: {:.0} ms",
+        decoded.image.width,
+        decoded.image.height,
+        t.elapsed().as_secs_f64() * 1e3
+    );
     let upright = apply_orientation(decoded.image, record.orientation);
 
     let mut settings = RenderSettings::default();

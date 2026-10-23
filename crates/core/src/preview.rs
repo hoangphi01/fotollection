@@ -5,7 +5,7 @@
 
 use std::sync::{Arc, Mutex};
 
-use crate::codec::JpegCodec;
+use crate::codec::{JpegCodec, decode_image};
 use crate::fonts::LoadedFont;
 use crate::image::{RgbImage, apply_orientation};
 use crate::library::{PhotoId, PhotoRecord, flags};
@@ -46,7 +46,7 @@ impl PreviewCache {
             return Ok(image);
         }
         let bytes = std::fs::read(&record.path)?;
-        let decoded = codec.decode(&bytes)?;
+        let decoded = decode_image(codec, &bytes)?;
         let upright = apply_orientation(decoded.image, record.orientation);
         let image = Arc::new(fit_long_edge(&upright, T2_LONG_EDGE)?);
         if let Ok(mut entries) = self.entries.lock() {

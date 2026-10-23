@@ -91,6 +91,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 **P0.** Import photos from a folder picker (recursive), drag and drop of files and folders, or a file picker.
 
 - Accepts JPEG, HEIC/HEIF and PNG, detected by magic bytes rather than file extension.
+- PNG photos and screenshots are converted to 8-bit RGB. 16-bit, greyscale and palette images are supported, and transparency is flattened onto white, as it would print. An embedded ICC profile is kept for export. A PNG without EXIF takes its date from the file's modification time and is marked as such.
 - Unsupported or invalid files are listed with a reason. They never abort the import.
 - Importing does not modify source files. The app opens sources read-only.
 

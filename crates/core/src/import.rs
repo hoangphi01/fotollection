@@ -61,7 +61,7 @@ pub struct ImportedFile {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum RejectReason {
-    /// Not a format this build can read yet (HEIC, PNG, RAW…).
+    /// Not a format this build can read yet (HEIC, RAW…).
     Unsupported,
     TooLarge,
     Unreadable,
@@ -117,8 +117,8 @@ pub fn check_file(path: &Path) -> Result<ImportedFile, RejectReason> {
         return Err(RejectReason::Suspicious);
     }
     match sniff(head) {
-        Sniffed::Jpeg => {}
-        Sniffed::Png | Sniffed::Heif => return Err(RejectReason::Unsupported),
+        Sniffed::Jpeg | Sniffed::Png => {}
+        Sniffed::Heif => return Err(RejectReason::Unsupported),
         Sniffed::Unknown => {
             // An image extension whose bytes are not an image we know: RAW, or spoofed.
             return Err(if is_raw_extension(path) {
@@ -192,21 +192,23 @@ mod tests {
     }
 
     #[test]
-    fn fr_001_rejects_non_jpeg_by_magic_bytes() -> Result<(), std::io::Error> {
+    fn fr_001_accepts_jpeg_and_png_by_magic_bytes() -> Result<(), std::io::Error> {
         let dir = tempfile::tempdir()?;
         write(dir.path(), "real.jpg", &[0xFF, 0xD8, 0xFF, 0xE0, 0, 0]);
+        write(dir.path(), "screen.png", b"\x89PNG\r\n\x1a\n\0\0\0\rIHDR");
         write(dir.path(), "fake.jpg", b"<html><script>alert(1)</script>");
         write(dir.path(), "phone.heic", b"\0\0\0\x18ftypheic\0\0\0\0");
         write(dir.path(), "notes.txt", b"ignored entirely");
         write(dir.path(), ".hidden.jpg", &[0xFF, 0xD8, 0xFF]);
 
         let result = scan(dir.path());
-        let names: Vec<_> = result
+        let mut names: Vec<_> = result
             .accepted
             .iter()
             .filter_map(|f| f.path.file_name()?.to_str())
             .collect();
-        assert_eq!(names, ["real.jpg"]);
+        names.sort_unstable();
+        assert_eq!(names, ["real.jpg", "screen.png"]);
 
         let mut rejected: Vec<_> = result
             .rejected

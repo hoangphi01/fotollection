@@ -64,7 +64,7 @@ export function LibrarySidebar({ photos, lastImport, onOpenFolder }: LibrarySide
           title={lastImport.rejected.map((r) => `${r.fileName} (${r.code})`).join('\n')}
         >
           {lastImport.rejectedTotal} file{lastImport.rejectedTotal > 1 ? 's' : ''} skipped
-          (HEIC/PNG/RAW coming soon)
+          (HEIC/RAW coming soon)
         </p>
       )}
       <p className="px-4 pb-3 text-[11px] text-muted-foreground">Tip: drop a folder anywhere</p>

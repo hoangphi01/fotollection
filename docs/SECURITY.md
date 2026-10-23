@@ -61,6 +61,9 @@ Layer 1: FILE VALIDATION (before parsing)
   - Reject files > 200 MB; reject declared dimensions > 200 MP (decompression-bomb guard)
   - Polyglot scan of the first 4 KB: <html, <script, %PDF, PK, MZ → reject
   - JPEG: warn if significant data follows the EOI marker (FF D9)
+  - PNG: the IHDR size is checked against 30,000 px per edge and 200 MP before the
+    pixel buffer is allocated; decoded by the pure-Rust `png` crate with its default
+    chunk-allocation limits
 
 Layer 2: CONTAINED PARSING
   - EXIF parsed with an explicit field ALLOWLIST:

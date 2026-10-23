@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 
 use crate::cancel::CancellationToken;
-use crate::codec::{CodecError, JpegCodec};
+use crate::codec::{CodecError, JpegCodec, decode_image};
 use crate::image::apply_orientation;
 use crate::library::{PhotoId, PhotoRecord, flags};
 use crate::plan::{FrameRequest, PlanInput, plan};
@@ -122,7 +122,7 @@ fn export_one(
         return Err(ExportError::Cancelled);
     }
     let bytes = std::fs::read(&record.path)?;
-    let decoded = codec.decode(&bytes)?;
+    let decoded = decode_image(codec, &bytes)?;
     let upright = apply_orientation(decoded.image, record.orientation);
     if cancel.is_cancelled() {
         return Err(ExportError::Cancelled);
