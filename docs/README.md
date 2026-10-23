@@ -10,6 +10,7 @@
 | About to write code | [DEVELOPMENT](DEVELOPMENT.md) → [STYLE_RULE](STYLE_RULE.md) → [TESTING](TESTING.md) → [CONTRIBUTING](../CONTRIBUTING.md) |
 | Working on performance | [OPTIMIZATION](OPTIMIZATION.md) |
 | Touching file input, IPC or the webview | [SECURITY](SECURITY.md) |
+| Changing anything that is saved to disk | [DATABASE](DATABASE.md) |
 | Shipping a build | [RELEASE](RELEASE.md) |
 | Confused by a term | [GLOSSARY](GLOSSARY.md) |
 
@@ -21,6 +22,7 @@
 | Which phase a requirement belongs to | [ROADMAP.md](ROADMAP.md) |
 | Whether a requirement or task is done | [STATUS.md](STATUS.md) |
 | System structure, tech stack, IPC contract | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| Persisted data: storage locations, schemas, migrations, cache | [DATABASE.md](DATABASE.md) |
 | Why a significant decision was made | [adr/](adr/README.md) |
 | Performance methodology, design techniques, benchmark history | [OPTIMIZATION.md](OPTIMIZATION.md) |
 | Code, UI, git and docs conventions | [STYLE_RULE.md](STYLE_RULE.md) |

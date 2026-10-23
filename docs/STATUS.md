@@ -69,6 +69,8 @@ The app scaffold runs on macOS: a Tauri 2 window, the React/shadcn UI shell, and
 | FR-035 | Multi-photo layouts | 3 | Not Started | Shares layout engine with FR-017 |
 | FR-036 | Custom captions | 2 | Not Started | `{trip}` needs FR-012 |
 | FR-037 | Contact sheet | 3 | Not Started | |
+| FR-038 | Print presets | 2 | Not Started | Storage model: [DATABASE.md §7](DATABASE.md#7-presets) |
+| FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
 
 ## Non-functional requirements
 

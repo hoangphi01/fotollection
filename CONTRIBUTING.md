@@ -18,6 +18,7 @@ A change is done when **all** of the following hold:
 - [ ] **Docs are updated in the same PR:**
   - Behaviour or scope → [PRD.md](docs/PRD.md) / [ROADMAP.md](docs/ROADMAP.md)
   - Architecture, stack or IPC → [ARCHITECTURE.md](docs/ARCHITECTURE.md)
+  - Persisted format (project, settings, presets, cache) → [DATABASE.md](docs/DATABASE.md) + schema version bump + migration + fixture
   - Performance-relevant change → a benchmark row in [OPTIMIZATION.md §5](docs/OPTIMIZATION.md#5-benchmark-log)
   - Security-relevant change → [SECURITY.md](docs/SECURITY.md)
   - Significant decision → a new ADR ([template](docs/adr/0000-template.md))

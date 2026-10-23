@@ -4,6 +4,7 @@
 
 | Term | Meaning |
 |------|---------|
+| **3D LUT** | A lookup table that maps every input RGB colour to an output colour, sampled on a grid (33×33×33) and interpolated. Fotollection bakes Photo Style parameters into one, so a look costs one lookup per pixel. |
 | **ADR** | Architecture Decision Record: a short document capturing one significant decision, its context and its consequences. See [adr/](adr/README.md). |
 | **Back-pressure** | When a slower downstream stage blocks upstream stages from producing more work, so that memory stays bounded. |
 | **Bleed / safe area** | Labs trim a little (about 1–2 mm) from each edge when cutting prints. The *safe area* is the region guaranteed to survive trimming, so stamps and captions go inside it. |
@@ -26,10 +27,13 @@
 | **k-d tree** | Spatial index used for fast nearest-city lookup. |
 | **Lossless crop** | Cropping a JPEG in the DCT domain along MCU boundaries without re-encoding, so there is zero quality loss. |
 | **MCU** | Minimum Coded Unit: an 8×8 or 16×16 pixel block in a JPEG. Lossless crops align to it. |
+| **Normalization (3NF)** | Structuring data so that each fact is stored once and referenced by key, which avoids duplication and update anomalies. See [DATABASE.md §2](DATABASE.md#2-normalization-rules). |
 | **Orientation** | EXIF tag (values 1–8) that tells viewers how to rotate or flip the stored pixels. |
 | **Output sharpening** | Sharpening applied for the final print size and paper, to compensate for ink spread and viewing distance. |
 | **Perceptual hash** | Compact image fingerprint that stays similar for visually similar images. Used for duplicate detection. |
+| **Photo Style** | Panasonic Lumix's in-camera look system: a base style plus contrast, sharpness, saturation, hue and highlight/shadow controls. Fotollection's looks are modelled on it ([FR-039](PRD.md#fr-039--photo-style-looks)). |
 | **Polyglot file** | A file that is valid in two formats at once (for example JPEG and HTML), used to smuggle content past validation. |
+| **Preset (partial)** | A saved bundle of settings that owns only some setting groups, so presets can be stacked ([FR-038](PRD.md#fr-038--print-presets)). |
 | **Rendering intent** | How a colour conversion handles colours outside the target space: *perceptual* compresses the whole gamut smoothly, *relative colorimetric* clips only out-of-gamut colours. |
 | **RenderPlan** | Fotollection's pure, serializable description of how one output photo is produced: crop rectangle, stamp, output path. It is shared by preview and export. |
 | **sRGB** | The standard colour space most print labs expect. Wider spaces (Display P3, Adobe RGB) look dull if a lab treats them as sRGB. |

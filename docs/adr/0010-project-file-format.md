@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-23
-- **Related:** FR-022, FR-023, FR-024, FR-025, FR-030, FR-032, NFR-013, ADR-0006
+- **Related:** FR-022, FR-023, FR-024, FR-025, FR-030, FR-032, NFR-013, ADR-0006. The full schema is in [DATABASE.md](../DATABASE.md)
 
 ## Context
 

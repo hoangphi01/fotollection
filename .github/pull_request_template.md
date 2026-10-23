@@ -10,6 +10,7 @@
 - [ ] Tests added or updated (`fr_NNN_*` for requirement-linked behaviour)
 - [ ] PRD / ROADMAP updated (if behaviour or scope changed)
 - [ ] ARCHITECTURE updated (if structure, stack or IPC changed)
+- [ ] DATABASE updated + `schema_version` bumped + migration + fixture (if a persisted format changed)
 - [ ] OPTIMIZATION benchmark log updated (if performance-relevant)
 - [ ] SECURITY updated (if input handling, IPC, filesystem or dependencies changed)
 - [ ] ADR added (if a significant decision was made)

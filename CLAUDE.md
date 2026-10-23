@@ -7,6 +7,7 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
 1. **Docs move with code.** Any change to behaviour, architecture, performance or security updates the matching doc **in the same commit** ([ADR-0006](docs/adr/0006-docs-as-code.md)):
    - Behaviour or scope → [docs/PRD.md](docs/PRD.md), and also [docs/ROADMAP.md](docs/ROADMAP.md) if the phase changes
    - Structure, stack or IPC → [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+   - Anything saved to disk (project file, settings, presets, cache) → [docs/DATABASE.md](docs/DATABASE.md), plus a `schema_version` bump, a migration and a fixture
    - Performance → a new row in [docs/OPTIMIZATION.md §5](docs/OPTIMIZATION.md#5-benchmark-log)
    - Progress → [docs/STATUS.md](docs/STATUS.md)
    - Significant decision → a new ADR in [docs/adr/](docs/adr/README.md)

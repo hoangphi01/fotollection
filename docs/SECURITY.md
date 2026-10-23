@@ -92,7 +92,7 @@ Layer 4: SAFE RENDERING (UI)
 | Project file `.fotollection` ([ADR-0010](adr/0010-project-file-format.md)) | Size cap of 64 MB. Typed `serde` schema with unknown fields rejected. `schema_version` checked before parsing the body. Folder paths in the file are treated as data: they are shown to the user, opened read-only, and never executed or used as export destinations without the save dialog |
 | GPX track ([FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track)) | Size cap of 50 MB. XML parsed without external entities or DTDs (no XXE). Coordinates and timestamps validated like EXIF ([Layer 3](#3-input-and-metadata-defense)) |
 | Captions and stamp text ([FR-036](PRD.md#fr-036--custom-captions)) | Rasterized in Rust. Only a fixed set of `{variables}` is expanded, so there is no format-string or template execution. Shown in the UI as plain text only |
-| Presets ([FR-033](PRD.md#fr-033--retro-film-date-stamp-and-stamp-presets), [FR-034](PRD.md#fr-034--lab-presets)) | Built-in presets are static data compiled into the binary and are never fetched from the network. User presets go through the same typed parsing as project files |
+| Presets ([FR-033](PRD.md#fr-033--retro-film-date-stamp-and-stamp-presets), [FR-034](PRD.md#fr-034--lab-presets), [FR-038](PRD.md#fr-038--print-presets)) | Built-in presets are static data compiled into the binary and are never fetched from the network. Imported `.fotopreset` files are capped at 1 MB and parsed with a typed schema (`deny_unknown_fields`). Every parameter is range-checked (for example Photo Style −5…+5, WB −9…+9). Presets contain **values only**, never paths, scripts or LUT files from outside the app |
 
 ## 4. File system safety
 

@@ -316,6 +316,30 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 
 **P2.** Export a contact sheet (PDF or JPEG) of the print set: thumbnails with file name, date, place, size and copies. It is useful for archiving and for checking the order before sending it.
 
+### FR-038 — Print presets
+
+**P1.** Save, apply and share bundles of settings, in the spirit of Lightroom presets but for **print** settings.
+
+- **Partial and stackable:** a preset owns only the setting groups it includes: size, crop, border, safe area, stamp, caption, style, colour, sharpening, export. Applying it leaves every other group untouched, so presets can be combined (for example *Film look* + *dm 10×15*).
+- **Apply** to a selection, a whole project, or **automatically on import**.
+- **Hover preview:** hovering a preset in the list previews it on the selected photo without applying it ([NFR-002](#nfr-002--preview-latency)).
+- **Groups** organize presets in the sidebar (*Film looks*, *Labs*, *Stamps*, *My presets*). The stamp presets ([FR-033](#fr-033--retro-film-date-stamp-and-stamp-presets)) and lab presets ([FR-034](#fr-034--lab-presets)) are built-in groups of this system.
+- **Linked, not copied:** photos reference a preset. Editing a preset updates every photo that uses it, after a confirmation showing the count. *Detach* turns a preset into per-photo overrides. A "modified" marker shows photos whose overrides differ from their preset, with *Reset to preset*.
+- **Share:** import and export a `.fotopreset` file. A project embeds the user presets it uses, so it renders the same on another machine. The storage model is in [DATABASE.md §7](DATABASE.md#7-presets).
+
+### FR-039 — Photo Style looks
+
+**P1.** Apply a global colour look modelled on **Panasonic Lumix Photo Style** (as on the GX9). It is saved and shared through presets ([FR-038](#fr-038--print-presets)).
+
+- **Base styles:** Standard, Vivid, Natural, Flat, Scenery, Portrait, Monochrome, L.Monochrome.
+- **Parameters**, each in −5…+5 as on the camera: Contrast, Sharpness, Saturation and Hue (colour tone). Monochrome styles replace Saturation and Hue with a filter effect (yellow, orange, red, green) and a toning option.
+- **Highlight / Shadow:** a tone curve with −5…+5 for highlights and for shadows. Note that the signs are reversed compared with Fujifilm recipes.
+- **White-balance shift:** an A–B (amber–blue) and G–M (green–magenta) grid in −9…+9, like the Lumix WB fine-adjust.
+- **Grain:** off, low, standard or high, applied to colour and monochrome alike.
+- **Built-in recipes:** *C200 Natural*, taken from the owner's GX9 recipe (Natural base; Contrast −1, Sharpness −3, Saturation +1; highlights slightly darker, shadows slightly brighter; WB A+3 / M+1), plus a few classic film-inspired looks.
+- **Scope boundary:** these are **global** adjustments on the already-rendered JPEG/HEIC (or a RAW preview). There are no local masks, HSL panel, curve editor, retouching or RAW development ([ADR-0011](adr/0011-photo-style-looks.md)).
+- **Non-destructive:** the look is applied in preview and at export. Stamps, captions and borders are drawn **after** the look, so they are never tinted. A before/after toggle (`\`) compares with the original.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
@@ -377,7 +401,7 @@ Edits reach the project file within **5 s**, and writes are atomic, so a crash o
 The following are out of scope (for now):
 
 - Cloud sync, accounts, and any kind of server backend.
-- General photo editing: exposure, colour grading, retouching.
+- General photo editing beyond the global Photo Style looks of [FR-039](#fr-039--photo-style-looks): local adjustments, masks, HSL/curve editors, retouching and RAW development controls ([ADR-0011](adr/0011-photo-style-looks.md)).
 - Writing ratings, flags or edits back into source files or XMP sidecars. Sources stay read-only. Exporting XMP sidecars may be considered later.
 - Mobile apps.
 - Video.

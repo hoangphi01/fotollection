@@ -61,9 +61,10 @@ crates/
       library.rs           # ratings, flags, filters, copies, per-photo overrides (FR-022/024/025)
       project.rs           # .fotollection file: versioned schema, autosave, migrations (ADR-0010)
       history.rs           # undo/redo command stack (FR-023)
-      presets.rs           # built-in lab + stamp presets, static data (FR-033/034)
+      presets.rs           # preset library: partial/stackable, linked, .fotopreset I/O (FR-033/034/038)
       quality.rs           # effective-DPI checks (FR-026)
-      render/              # crop.rs, border.rs, stamp.rs (incl. retro LED), caption.rs,
+      render/              # crop.rs, style.rs (Photo Style → 3D LUT + tone curve + grain, FR-039),
+                           # border.rs, stamp.rs (incl. retro LED), caption.rs,
                            # color.rs (ICC → sRGB), sharpen.rs (Phase 3)
       layout/              # multi-photo sheets + contact sheet (Phase 3, FR-035/037)
       encode.rs
@@ -120,13 +121,15 @@ scripts/                 † # bootstrap, clean, check-docs
 | GPX tracks | `gpx` (candidate; license checked by `cargo deny`) | Phase 2, [FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track) |
 | PDF contact sheet | `pdf-writer` or `printpdf` (candidate, permissive license) | Phase 3, [FR-037](PRD.md#fr-037--contact-sheet) |
 | Stamp fonts | Bundled OFL/MIT fonts, including a seven-segment LED face | [FR-033](PRD.md#fr-033--retro-film-date-stamp-and-stamp-presets) |
+| Photo Style engine | Own code: parameters baked into a 33³ 3D LUT (trilinear, SIMD) + 1D tone curve + seeded grain | [ADR-0011](adr/0011-photo-style-looks.md) |
+| Persisted data model | Normalized tables in JSON (3NF, integer keys, sparse rows) | [DATABASE.md](DATABASE.md) |
 
 Crates marked *candidate* are confirmed by Phase 0 benchmarks. The result is logged in [OPTIMIZATION.md](OPTIMIZATION.md#5-benchmark-log).
 
 ## 4. Processing pipeline
 
 ```text
-import → metadata → adjust → geocode → (cluster) → cull/select → plan → render → color → (sharpen) → encode → write
+import → metadata → adjust → geocode → (cluster) → cull/select → plan → render (crop → style → border/stamp) → color → (sharpen) → encode → write
 ```
 
 | Stage | Input → Output | Notes |
@@ -138,7 +141,7 @@ import → metadata → adjust → geocode → (cluster) → cull/select → pla
 | **cluster** | `[PhotoMeta]` → `[Trip]` | Phase 2 |
 | **cull/select** | library + filter → export set | Ratings, flags and copies come from the project ([FR-022](PRD.md#fr-022--culling-rate-flag-filter)) |
 | **plan** | meta + settings → `RenderPlan` | Pure function: print size per photo, crop rect, border, safe area, stamp/caption text and position, colour intent, output path. Also yields the effective-DPI check ([FR-026](PRD.md#fr-026--resolution-warning)) |
-| **render** | `RenderPlan` + pixels → pixels | Crop, then fit into the border, then stamp/caption inside the safe area, at output resolution |
+| **render** | `RenderPlan` + pixels → pixels | Crop, then the **Photo Style look** (one 3D-LUT pass + tone curve + grain, [FR-039](PRD.md#fr-039--photo-style-looks)), then fit into the border, then stamp/caption inside the safe area. Overlays come after the look, so they are never tinted |
 | **color** | pixels + source ICC → sRGB pixels | `lcms2` transform, with a configurable rendering intent ([FR-027](PRD.md#fr-027--srgb-conversion-for-labs)) |
 | **sharpen** | pixels → pixels | Output sharpening for size and paper (Phase 3, [FR-029](PRD.md#fr-029--output-sharpening)) |
 | **encode** | pixels → bytes | turbojpeg, ICC re-embedded, metadata filtered ([FR-010](PRD.md#fr-010--metadata-privacy-on-export)) |
@@ -182,7 +185,11 @@ Commands marked † are implemented.
 | `set_clock_offset(camera, offset)` / `match_clock(photo_id, reference_id)` | Clock correction | FR-030 |
 | `borrow_gps(source, window)` | Infer GPS from another device or a GPX file | FR-031 |
 | `set_manual_meta(ids, date?, place?)` / `search_places(query) -> [Place]` | Manual date and place, offline place search | FR-032 |
-| `list_presets()` / `save_stamp_preset(preset)` / `apply_lab_preset(id)` | Stamp and lab presets | FR-033, FR-034 |
+| `list_presets()` / `save_preset(preset)` / `delete_preset(id)` | Preset library (stamp, lab, style and print groups) | FR-033, FR-034, FR-038 |
+| `apply_preset(ids, preset_id)` / `detach_preset(ids)` / `reset_to_preset(ids)` | Link, detach or reset photos | FR-038 |
+| `preview_preset(id, preset_id) -> PreviewHandle` | Hover preview without applying | FR-038 |
+| `import_preset(path)` / `export_preset(id, path)` | Share `.fotopreset` files | FR-038 |
+| `set_style(ids, style)` | Per-photo Photo Style override | FR-039 |
 
 ### Events (core → UI)
 
@@ -202,13 +209,7 @@ Pixels **never** cross IPC as JSON or base64. Thumbnails and previews are served
 
 ## 7. Persistence
 
-- **Settings:** JSON in the OS config directory.
-- **Thumbnail cache:** in the OS cache directory, keyed by `blake3(path ‖ size ‖ mtime) + tier`, with LRU eviction at a configurable size (default 2 GB).
-- **Project file** (`.fotollection`, [ADR-0010](adr/0010-project-file-format.md)): versioned JSON that holds source folders (relative to the project when possible), ratings, flags, copies, per-photo overrides, clock offsets and settings. Autosave is debounced and atomic (temp file + rename, [NFR-013](PRD.md#nfr-013--project-safety)). The last open project is restored on launch.
-- **Undo/redo:** an in-memory command stack of at least 200 steps. It is not persisted across sessions.
-- **Presets:** built-in lab and stamp presets are compiled into the binary. User presets are JSON in the OS config directory.
-- **No database.** The photo list is rebuilt by scanning the project's folders, which the thumbnail cache makes fast.
-- Source files are never modified. Ratings never go into EXIF or XMP.
+All persisted data (project files, settings, presets, the thumbnail cache, built-in datasets), with schemas, versioning and write protocol, is specified in **[DATABASE.md](DATABASE.md)**. In short: there is no database server or SQL database. Work lives in a versioned JSON project file ([ADR-0010](adr/0010-project-file-format.md)), writes are atomic, and source files are never modified.
 
 ## 8. Platform notes
 

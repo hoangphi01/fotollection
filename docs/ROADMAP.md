@@ -62,6 +62,8 @@
 | FR-031 | Borrow GPS from a phone or GPX track |
 | FR-034 | Lab presets |
 | FR-036 | Custom captions |
+| FR-038 | Print presets |
+| FR-039 | Photo Style looks |
 
 ## Phase 3 — Pro & growth
 
