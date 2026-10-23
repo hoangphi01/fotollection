@@ -83,6 +83,10 @@ The preview renders the same `RenderPlan` as the export ([ARCHITECTURE.md §4](A
 - Writing to disk is I/O-bound and runs on a small dedicated pool, so it never blocks the CPU stages.
 - Thumbnail work runs at low priority and pauses while an export is running.
 
+### 4.3.1 Lesson: keep interactive work off background queues
+
+In the first slice, protocol requests shared one pool with background T1 generation. In unoptimized dev builds, grid tiles stayed blank until all 215 thumbnails were done. The fix splits the work into interactive and background pools (ARCHITECTURE.md §5), and `fotollection-core` is built at `opt-level = 3` even in dev (DEVELOPMENT.md §4.1).
+
 ### 4.4 SIMD and codecs
 
 - libjpeg-turbo and `fast_image_resize` use NEON on Apple Silicon and AVX2 on x86-64.

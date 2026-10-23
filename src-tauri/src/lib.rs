@@ -26,12 +26,14 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::pick_export_folder,
             commands::start_export,
             commands::cancel_job,
+            commands::photo_details,
         ])
         .events(collect_events![
             events::LibraryChanged,
             events::ThumbReady,
             events::ExportProgress,
             events::ExportFinished,
+            events::TaskProgress,
         ])
 }
 
@@ -62,6 +64,14 @@ pub fn run() {
             builder.mount_events(app);
             let thumb_dir = app.path().app_cache_dir()?.join("thumbs");
             app.manage(state::AppState::new(thumb_dir)?);
+            // Dev-only: FOTOLLECTION_IMPORT=<folder> imports at startup, for quick iteration.
+            #[cfg(debug_assertions)]
+            if let Some(folder) = std::env::var_os("FOTOLLECTION_IMPORT") {
+                let handle = app.handle().clone();
+                std::thread::spawn(move || {
+                    commands::import_paths(&handle, vec![std::path::PathBuf::from(folder)])
+                });
+            }
             Ok(())
         })
         .on_window_event(|window, event| {

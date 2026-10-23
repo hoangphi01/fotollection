@@ -33,6 +33,8 @@ export const commands = {
 	 */
 	startExport: () => typedError<number, IpcError>(__TAURI_INVOKE("start_export")),
 	cancelJob: (jobId: number) => typedError<null, IpcError>(__TAURI_INVOKE("cancel_job", { jobId })),
+	/**  Details for the preview inspector (FR-002, FR-007, FR-026). Reads only the JPEG header. */
+	photoDetails: (id: PhotoId) => typedError<PhotoDetails, IpcError>(__TAURI_INVOKE("photo_details", { id })),
 };
 
 /** Events */
@@ -40,6 +42,7 @@ export const events = {
 	exportFinished: makeEvent<ExportFinished>("export-finished"),
 	exportProgress: makeEvent<ExportProgress>("export-progress"),
 	libraryChanged: makeEvent<LibraryChanged>("library-changed"),
+	taskProgress: makeEvent<TaskProgress>("task-progress"),
 	thumbReady: makeEvent<ThumbReady>("thumb-ready"),
 };
 
@@ -59,6 +62,17 @@ export type DateFormat =
 "dmy" | 
 /**  `'26 10 23`, as on 1990s film cameras */
 "retro";
+
+/**  Print resolution quality bands (FR-026, PRD §5 "Minimum resolution per size"). */
+export type DpiBand = 
+/**  ≥ 300 DPI */
+"excellent" | 
+/**  ≥ 200 DPI */
+"good" | 
+/**  ≥ 150 DPI */
+"fair" | 
+/**  < 150 DPI */
+"poor";
 
 export type ExportFailure = {
 	id: PhotoId,
@@ -85,6 +99,11 @@ export type ExportSummary = {
 	destination: string,
 };
 
+export type GpsPoint = {
+	lat: number | null,
+	lon: number | null,
+};
+
 export type ImportSummary = {
 	added: number,
 	duplicates: number,
@@ -102,6 +121,27 @@ export type IpcError = {
 /**  Photos were added; the UI refetches the list. */
 export type LibraryChanged = {
 	count: number,
+};
+
+/**  Everything the preview inspector shows about one photo. */
+export type PhotoDetails = {
+	id: PhotoId,
+	fileName: string,
+	folderPath: string,
+	/**  File size in bytes (as f64: TypeScript has no u64). */
+	fileBytes: number | null,
+	/**  Upright pixel size (after EXIF orientation). */
+	width: number,
+	height: number,
+	/**  Camera-local capture time, `YYYY-MM-DDTHH:MM:SS`. */
+	capture: string,
+	/**  `true` when no EXIF date exists and the file time is used. */
+	dateFromFile: boolean,
+	orientation: number,
+	gps: GpsPoint | null,
+	/**  Effective DPI of the crop at the current print size (FR-026). */
+	printDpi: number,
+	printQuality: DpiBand,
 };
 
 /**  Dense index of a photo within this session's library. */
@@ -151,6 +191,19 @@ export type StampSettings = {
 	format: DateFormat,
 	corner: Corner,
 	color: StampColor,
+};
+
+export type TaskKind = 
+/**  Reading files and EXIF during import. */
+"import" | 
+/**  Generating sharp (T1) thumbnails in the background. */
+"thumbnails";
+
+/**  Progress of a background task, for the progress bar (coalesced to ≤ 30 per second). */
+export type TaskProgress = {
+	task: TaskKind,
+	done: number,
+	total: number,
 };
 
 /**  A sharper thumbnail (T1) is now cached for this photo. */

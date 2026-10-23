@@ -63,6 +63,8 @@ cargo clippy --workspace --all-targets -- -D warnings
 cargo deny check             # license / advisory policy
 scripts/check-docs.sh        # docs consistency
 scripts/clean.sh             # reclaim disk space (see §4)
+# Dev only: auto-import a folder at startup (no dialog), handy for UI iteration:
+FOTOLLECTION_IMPORT=~/Pictures/some-folder npm run dev
 # Measure the pipeline on a real folder (read-only; photos are never copied into the repo):
 cargo run --release -p fotollection-core --example measure_folder -- ~/Pictures/some-folder
 ```
@@ -94,6 +96,9 @@ debug = "line-tables-only"   # usable backtraces at a fraction of full debug inf
 [profile.dev.package."*"]
 debug = false                # no debug info for dependencies (the biggest win)
 opt-level = 2                # dependencies optimized: image codecs are usable in dev
+
+[profile.dev.package.fotollection-core]
+opt-level = 3                # our pixel loops too: unoptimized they made dev ~10× slower
 
 [profile.release]
 debug = false

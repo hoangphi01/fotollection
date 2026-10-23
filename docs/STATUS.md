@@ -34,11 +34,11 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 |----|-------------|-------|--------|-------|
 | FR-001 | Import photos | 1 | In Progress | JPEG import (folder dialog + drag-and-drop), magic bytes, size + polyglot checks. HEIC/PNG pending |
 | FR-002 | Read photo metadata | 1 | In Progress | Allowlisted EXIF (date, offset, GPS, orientation, camera) + validation. `fr_002_*` tests pass |
-| FR-003 | Library grid | 1 | In Progress | Virtualized grid with T0/T1 thumbnails and badges. Day grouping and multi-select pending |
+| FR-003 | Library grid | 1 | In Progress | Virtualized grid, T0/T1 thumbnails, skeleton + fade-in, task progress bar with %. Day grouping and multi-select pending |
 | FR-004 | Date stamp | 1 | In Progress | 3 formats, 4 corners, white/retro-orange, inside the safe area. More styles with FR-033 |
 | FR-005 | Location stamp (offline) | 1 | Not Started | GeoNames packer needed |
 | FR-006 | Crop to print ratio | 1 | In Progress | Centred crop for all 8 sizes. Per-photo frame dragging pending |
-| FR-007 | Live preview | 1 | In Progress | Rust-rendered preview, p95 26 ms warm |
+| FR-007 | Live preview | 1 | In Progress | Preview dialog with inspector (capture, camera, image, GPS, print DPI, stamp controls). Rust-rendered, p95 26 ms warm |
 | FR-008 | Original-quality export | 1 | In Progress | Full resolution, q95 4:4:4, ICC copied. Lossless crop-only path pending |
 | FR-009 | Export by date | 1 | Done | `YYYY-MM-DD/` folders, never overwrites (`_1`, `_2`…). `fr_009_*` passes |
 | FR-010 | Metadata privacy on export | 1 | In Progress | No EXIF written, so GPS is always stripped. Keep-metadata options pending |
@@ -57,7 +57,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-023 | Projects, autosave and undo | 1 | Not Started | Format: [ADR-0010](adr/0010-project-file-format.md) |
 | FR-024 | Copies and order summary | 2 | Not Started | |
 | FR-025 | Mixed print sizes per order | 1 | Not Started | Builds on `PrintSize` |
-| FR-026 | Resolution warning | 1 | Not Started | |
+| FR-026 | Resolution warning | 1 | In Progress | Effective DPI + band shown in the inspector. Grid badge and pre-export summary pending |
 | FR-027 | sRGB conversion for labs | 1 | Not Started | `lcms2` |
 | FR-028 | Safe area and borders | 1 | Not Started | |
 | FR-029 | Output sharpening | 3 | Not Started | Needs real print tests |

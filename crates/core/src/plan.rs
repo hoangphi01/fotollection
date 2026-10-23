@@ -4,6 +4,8 @@
 //! (ARCHITECTURE.md §4).
 
 use chrono::NaiveDateTime;
+use serde::Serialize;
+use specta::Type;
 
 use crate::print_size::PrintSize;
 use crate::settings::{Corner, DateFormat, RenderSettings};
@@ -66,6 +68,36 @@ pub fn center_crop(width: u32, height: u32, print: PrintSize) -> CropRect {
         width: u32::try_from(cw).unwrap_or(width),
         height: u32::try_from(ch).unwrap_or(height),
     }
+}
+
+/// Print resolution quality bands (FR-026, PRD §5 "Minimum resolution per size").
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum DpiBand {
+    /// ≥ 300 DPI
+    Excellent,
+    /// ≥ 200 DPI
+    Good,
+    /// ≥ 150 DPI
+    Fair,
+    /// < 150 DPI
+    Poor,
+}
+
+/// Effective DPI of the centred crop of a `width × height` photo printed at `print`.
+pub fn effective_dpi(width: u32, height: u32, print: PrintSize) -> (u32, DpiBand) {
+    let crop = center_crop(width, height, print);
+    let long_px = f64::from(crop.width.max(crop.height));
+    let long_in = f64::from(print.long_mm) / 25.4;
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    let dpi = (long_px / long_in).round() as u32;
+    let band = match dpi {
+        300.. => DpiBand::Excellent,
+        200..300 => DpiBand::Good,
+        150..200 => DpiBand::Fair,
+        _ => DpiBand::Poor,
+    };
+    (dpi, band)
 }
 
 pub fn format_date(dt: NaiveDateTime, format: DateFormat) -> String {
@@ -156,6 +188,23 @@ mod tests {
             assert!((ratio(c) - target).abs() < 0.002, "{id}: {}", ratio(c));
             assert!(c.x + c.width <= 6000 && c.y + c.height <= 4000);
         }
+    }
+
+    #[test]
+    fn fr_026_effective_dpi_bands() {
+        // 16 MP 4:3 onto 10x15: crop 4608x3072, long edge 150 mm = 5.906 in → 780 DPI.
+        assert_eq!(
+            effective_dpi(4608, 3456, size("10x15")),
+            (780, DpiBand::Excellent)
+        );
+        // 20x30 from 12 MP (4000x3000): crop 4000x2667 over 11.81 in → 339 DPI.
+        assert_eq!(
+            effective_dpi(4000, 3000, size("20x30")).1,
+            DpiBand::Excellent
+        );
+        // A 1600 px web image on 20x30 → 135 DPI.
+        assert_eq!(effective_dpi(1600, 1067, size("20x30")).1, DpiBand::Poor);
+        assert_eq!(effective_dpi(2600, 1733, size("20x30")).1, DpiBand::Good);
     }
 
     #[test]

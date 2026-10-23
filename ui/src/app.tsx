@@ -4,11 +4,12 @@ import { useState } from 'react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { LibraryEmptyState } from '@/features/library/library-empty-state'
 import { LibraryGrid } from '@/features/library/library-grid'
+import { TaskProgressBar } from '@/features/library/task-progress-bar'
 import { LibrarySidebar } from '@/features/library/library-sidebar'
 import { useLibrary } from '@/features/library/use-library'
 import { SettingsPanel } from '@/features/settings/settings-panel'
 import { useRenderSettings } from '@/features/settings/use-render-settings'
-import { PhotoViewer } from '@/features/viewer/photo-viewer'
+import { PreviewDialog } from '@/features/viewer/preview-dialog'
 
 export function App() {
   const { photos, thumbVersions, lastImport, error, importFolder } = useLibrary()
@@ -35,22 +36,15 @@ export function App() {
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
+        <TaskProgressBar />
         {photos.length === 0 ? (
           <LibraryEmptyState onOpenFolder={() => void importFolder()} />
-        ) : viewing ? (
-          <PhotoViewer
-            photos={photos}
-            index={selected}
-            revision={revision}
-            onIndexChange={setSelected}
-            onClose={() => setViewing(false)}
-          />
         ) : (
           <>
             <div className="flex h-12 items-center border-b px-4 text-sm">
               <span className="font-medium">{photos.length} photos</span>
               <span className="ml-2 text-xs text-muted-foreground">
-                Double-click or press Space to preview the print
+                Double-click, Enter or Space to open the print preview
               </span>
             </div>
             <LibraryGrid
@@ -63,6 +57,15 @@ export function App() {
           </>
         )}
       </main>
+      <PreviewDialog
+        photos={photos}
+        index={viewing ? selected : null}
+        revision={revision}
+        settings={settings}
+        onSettingsChange={(c) => void update(c)}
+        onIndexChange={setSelected}
+        onClose={() => setViewing(false)}
+      />
       <SettingsPanel settings={settings} onChange={(c) => void update(c)} photoCount={photos.length} />
     </div>
   )

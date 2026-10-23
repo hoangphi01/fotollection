@@ -160,7 +160,12 @@ import → metadata → adjust → geocode → (cluster) → cull/select → pla
 - **Export** is a staged pipeline connected by **bounded channels** (back-pressure). The number of decoded full-resolution buffers in flight is capped (`max_inflight`, default `num_cpus`, then clamped by the memory budget in [NFR-004](PRD.md#nfr-004--memory-ceiling)).
 - Each job carries a `CancellationToken`. Every stage checks it between photos and between expensive steps.
 - Progress events are coalesced to at most 30 per second.
-- Thumbnails come from a separate low-priority pool, so they never starve export or preview.
+- Three pools never compete:
+  - the **interactive** pool (2 threads) serves `fotothumb://` requests for what is on screen;
+  - the **background** pool (2 threads) reads EXIF during import and pre-generates T1 thumbnails;
+  - **export** has its own bounded pool.
+
+  Visible thumbnails therefore never wait behind background work. A request for a photo whose T1 isn't ready gets the embedded T0 at once.
 
 ## 6. IPC contract
 
@@ -181,6 +186,7 @@ Commands marked † are implemented.
 | `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
 | `start_export() -> JobId` † | Exports all photos to the chosen destination | FR-008, FR-009, FR-010 |
 | `cancel_job(job_id)` † | Cancel a running job | FR-011 |
+| `photo_details(id) -> PhotoDetails` † | Inspector data: pixel size (header only), file size, GPS, effective DPI at the current print size | FR-002, FR-007, FR-026 |
 | `set_rating(ids, stars)` / `set_flag(ids, flag)` | Culling | FR-022 |
 | `query_library(filter) -> [PhotoSummary]` | Filtered view (rating, flag, date, camera, GPS, DPI) | FR-022, FR-026 |
 | `new_project` / `open_project(path)` / `save_project_as(path)` | Project lifecycle (autosave runs internally) | FR-023 |
@@ -206,6 +212,7 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 | `thumb-ready` † | `{ id }`. The T1 thumbnail is cached, so the UI bumps the image URL |
 | `export-progress` † | `{ jobId, done, total }`, coalesced to ≤ 30 per second |
 | `export-finished` † | `{ jobId, summary: { exported, failed[], cancelled, destination } }`. Per-photo failures are reported here |
+| `task-progress` † | `{ task: "import" \| "thumbnails", done, total }`, coalesced to ≤ 30 per second. Drives the progress bar |
 | `project://saved` | `{ path, at }`, for the autosave indicator |
 | `history://changed` | `{ can_undo, can_redo }` |
 

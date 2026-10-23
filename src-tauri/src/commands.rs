@@ -8,7 +8,8 @@
 #![allow(clippy::needless_pass_by_value)]
 
 use std::path::PathBuf;
-use std::sync::atomic::Ordering;
+use std::sync::Mutex;
+use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::{Duration, Instant};
 
 use fotollection_core::PrintSize;
@@ -17,6 +18,7 @@ use fotollection_core::export::{EXPORT_QUALITY, ExportOptions, default_inflight,
 use fotollection_core::import::{self, ImportedFile};
 use fotollection_core::library::{PhotoId, PhotoSummary, flags};
 use fotollection_core::metadata;
+use fotollection_core::plan::{DpiBand, effective_dpi};
 use fotollection_core::settings::RenderSettings;
 use fotollection_core::thumbs;
 use rayon::prelude::*;
@@ -26,7 +28,9 @@ use tauri::{AppHandle, Manager, State};
 use tauri_plugin_dialog::DialogExt;
 use tauri_specta::Event;
 
-use crate::events::{ExportFinished, ExportProgress, LibraryChanged, ThumbReady};
+use crate::events::{
+    ExportFinished, ExportProgress, LibraryChanged, TaskKind, TaskProgress, ThumbReady,
+};
 use crate::state::{AppState, IpcError};
 
 #[derive(Debug, Serialize, Type)]
@@ -72,6 +76,47 @@ pub struct ImportSummary {
 
 const MAX_REPORTED_REJECTIONS: usize = 50;
 
+/// Lets progress events through at most ~30 times per second, plus the final one
+/// (ARCHITECTURE.md §5).
+#[derive(Default)]
+struct Throttle(Mutex<Option<Instant>>);
+
+impl Throttle {
+    fn due(&self, done: u32, total: u32) -> bool {
+        self.0.lock().is_ok_and(|mut last| {
+            let due =
+                done >= total || last.is_none_or(|t| t.elapsed() >= Duration::from_millis(33));
+            if due {
+                *last = Some(Instant::now());
+            }
+            due
+        })
+    }
+}
+
+/// Counts finished items and emits throttled `TaskProgress` events.
+fn progress_reporter(app: &AppHandle, task: TaskKind, total: u32) -> impl Fn() + Sync + '_ {
+    let done = AtomicU32::new(0);
+    let throttle = Throttle::default();
+    let _ = TaskProgress {
+        task,
+        done: 0,
+        total,
+    }
+    .emit(app);
+    move || {
+        let n = done.fetch_add(1, Ordering::Relaxed) + 1;
+        if throttle.due(n, total) {
+            let _ = TaskProgress {
+                task,
+                done: n,
+                total,
+            }
+            .emit(app);
+        }
+    }
+}
+
 /// Imports folders and/or files (FR-001, FR-002). Used by the dialog and by drag-and-drop.
 pub fn import_paths(app: &AppHandle, paths: Vec<PathBuf>) -> ImportSummary {
     let state = app.state::<AppState>();
@@ -95,15 +140,19 @@ pub fn import_paths(app: &AppHandle, paths: Vec<PathBuf>) -> ImportSummary {
         };
 
         // EXIF reads are independent and I/O-bound: do them in parallel.
-        let with_meta: Vec<(ImportedFile, metadata::PhotoMeta)> = state.io_pool.install(|| {
-            scan.accepted
-                .into_par_iter()
-                .map(|file| {
-                    let meta = metadata::read_path(&file.path);
-                    (file, meta)
-                })
-                .collect()
-        });
+        let total = u32::try_from(scan.accepted.len()).unwrap_or(u32::MAX);
+        let tick = progress_reporter(app, TaskKind::Import, total);
+        let with_meta: Vec<(ImportedFile, metadata::PhotoMeta)> =
+            state.background_pool.install(|| {
+                scan.accepted
+                    .into_par_iter()
+                    .map(|file| {
+                        let meta = metadata::read_path(&file.path);
+                        tick();
+                        (file, meta)
+                    })
+                    .collect()
+            });
 
         if let Ok(mut library) = state.library.write() {
             let folder = library.add_folder(&folder_root);
@@ -152,16 +201,18 @@ fn warm_thumbnails(app: &AppHandle, ids: Vec<PhotoId>) {
     let app = app.clone();
     std::thread::spawn(move || {
         let state = app.state::<AppState>();
-        state.io_pool.install(|| {
+        let total = u32::try_from(ids.len()).unwrap_or(u32::MAX);
+        let tick = progress_reporter(&app, TaskKind::Thumbnails, total);
+        state.background_pool.install(|| {
             ids.par_iter().for_each(|&id| {
                 let record = state.library.read().ok().and_then(|l| l.record(id));
-                let Some(record) = record else { return };
-                if state.thumbs.cached_t1(&record).is_some() {
-                    return;
-                }
-                if state.thumbs.make_t1(&record, state.codec.as_ref()).is_ok() {
+                if let Some(record) = record
+                    && state.thumbs.cached_t1(&record).is_none()
+                    && state.thumbs.make_t1(&record, state.codec.as_ref()).is_ok()
+                {
                     let _ = ThumbReady { id }.emit(&app);
                 }
+                tick();
             });
         });
     });
@@ -317,18 +368,9 @@ pub fn start_export(app: AppHandle, state: State<'_, AppState>) -> Result<u32, I
             quality: EXPORT_QUALITY,
             max_inflight: default_inflight(),
         };
-        // Coalesce progress events to at most ~30 per second (ARCHITECTURE.md §5).
-        let last = std::sync::Mutex::new(None::<Instant>);
+        let throttle = Throttle::default();
         let on_progress = |done: u32, total: u32| {
-            let due = last.lock().is_ok_and(|mut t| {
-                let due =
-                    done == total || t.is_none_or(|t| t.elapsed() >= Duration::from_millis(33));
-                if due {
-                    *t = Some(Instant::now());
-                }
-                due
-            });
-            if due {
+            if throttle.due(done, total) {
                 let _ = ExportProgress {
                     job_id,
                     done,
@@ -393,4 +435,88 @@ pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
         .previews
         .render_jpeg(&record, &settings, state.codec.as_ref())
         .map_err(|e| e.to_string())
+}
+
+/// Everything the preview inspector shows about one photo.
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PhotoDetails {
+    pub id: PhotoId,
+    pub file_name: String,
+    pub folder_path: String,
+    /// File size in bytes (as f64: TypeScript has no u64).
+    pub file_bytes: f64,
+    /// Upright pixel size (after EXIF orientation).
+    pub width: u32,
+    pub height: u32,
+    /// Camera-local capture time, `YYYY-MM-DDTHH:MM:SS`.
+    pub capture: String,
+    /// `true` when no EXIF date exists and the file time is used.
+    pub date_from_file: bool,
+    pub orientation: u8,
+    pub gps: Option<GpsPoint>,
+    /// Effective DPI of the crop at the current print size (FR-026).
+    pub print_dpi: u32,
+    pub print_quality: DpiBand,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Type)]
+pub struct GpsPoint {
+    pub lat: f32,
+    pub lon: f32,
+}
+
+/// Details for the preview inspector (FR-002, FR-007, FR-026). Reads only the JPEG header.
+#[tauri::command]
+#[specta::specta]
+pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, IpcError> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let record = state
+            .library
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .record(id)
+            .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
+        let bytes = std::fs::read(&record.path)
+            .map_err(|e| IpcError::new("import.unreadable", e.to_string()))?;
+        let (w, h) = state
+            .codec
+            .dimensions(&bytes)
+            .map_err(|e| IpcError::new(e.code(), e.to_string()))?;
+        let (width, height) = if record.orientation >= 5 {
+            (h, w)
+        } else {
+            (w, h)
+        };
+        let print = state
+            .settings
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .0
+            .validate()
+            .unwrap_or(PrintSize::ALL[1]);
+        let (print_dpi, print_quality) = effective_dpi(width, height, print);
+        Ok(PhotoDetails {
+            id,
+            file_name: record.file_name.clone(),
+            folder_path: record
+                .path
+                .parent()
+                .map(|p| p.display().to_string())
+                .unwrap_or_default(),
+            #[allow(clippy::cast_precision_loss)] // exact below 2^53 bytes
+            file_bytes: record.size as f64,
+            width,
+            height,
+            capture: record.capture.format("%Y-%m-%dT%H:%M:%S").to_string(),
+            date_from_file: record.flags & flags::DATE_FROM_FILE != 0,
+            orientation: record.orientation,
+            gps: record.gps.map(|(lat, lon)| GpsPoint { lat, lon }),
+            print_dpi,
+            print_quality,
+        })
+    })
+    .await
+    .map_err(|e| IpcError::internal(e.to_string()))?
 }

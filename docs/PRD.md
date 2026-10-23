@@ -107,6 +107,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 - Shows a badge for missing date, missing GPS and processing errors.
 - Supports multi-select (shift-click and cmd/ctrl-click) for per-photo overrides.
+- Tiles show a skeleton and spinner until their thumbnail arrives, then fade in. Long tasks (reading photos, preparing thumbnails) show a progress bar with a count and percentage.
 
 ### FR-004 — Date stamp
 
@@ -133,6 +134,16 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 ### FR-007 — Live preview
 
 **P0.** Every change to the stamp or crop settings updates the preview immediately (see [NFR-002](#nfr-002--preview-latency)).
+
+- Opening a photo (double-click, Enter or Space) shows a **preview dialog**. The left side is the Rust-rendered print, with the exact crop and stamp of the export. The right side is an **inspector** with:
+  - capture date and time, and whether it came from EXIF or the file;
+  - camera;
+  - pixel size, megapixels and file size;
+  - GPS;
+  - print size and effective DPI ([FR-026](#fr-026--resolution-warning));
+  - crop mode;
+  - quick date-stamp controls.
+- `←`/`→` browse within the dialog, and `Esc` closes it. A spinner shows while the preview renders.
 
 ### FR-008 — Original-quality export
 

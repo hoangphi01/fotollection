@@ -26,8 +26,10 @@ pub struct AppState {
     pub codec: Arc<dyn JpegCodec>,
     pub thumbs: ThumbCache,
     pub previews: PreviewCache,
-    /// Low-priority pool for thumbnails and protocol requests, separate from export.
-    pub io_pool: rayon::ThreadPool,
+    /// Serves what the user is looking at right now (protocol requests).
+    pub interactive_pool: rayon::ThreadPool,
+    /// Import metadata reads and background T1 generation.
+    pub background_pool: rayon::ThreadPool,
 }
 
 impl AppState {
@@ -41,9 +43,13 @@ impl AppState {
             codec: default_codec(),
             thumbs: ThumbCache::new(thumb_dir),
             previews: PreviewCache::new(),
-            io_pool: rayon::ThreadPoolBuilder::new()
-                .num_threads(3)
-                .thread_name(|i| format!("fotollection-io-{i}"))
+            interactive_pool: rayon::ThreadPoolBuilder::new()
+                .num_threads(2)
+                .thread_name(|i| format!("fotollection-ui-{i}"))
+                .build()?,
+            background_pool: rayon::ThreadPoolBuilder::new()
+                .num_threads(2)
+                .thread_name(|i| format!("fotollection-bg-{i}"))
                 .build()?,
         })
     }

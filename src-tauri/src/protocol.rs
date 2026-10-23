@@ -60,9 +60,10 @@ pub fn handle<R: Runtime>(
         respond(responder, StatusCode::NOT_FOUND, Vec::new(), false);
         return;
     };
-    // Decode work happens off the webview thread, on the low-priority pool.
+    // Decode work happens off the webview thread, on the interactive pool, so visible
+    // thumbnails and previews never wait behind background thumbnail generation.
     let worker = app.clone();
-    app.state::<AppState>().io_pool.spawn(move || {
+    app.state::<AppState>().interactive_pool.spawn(move || {
         let app = worker;
         let state = app.state::<AppState>();
         match route {

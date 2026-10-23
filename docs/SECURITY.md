@@ -34,7 +34,7 @@ The app processes **untrusted image files** and displays **untrusted metadata** 
   ```text
   default-src 'self';
   script-src 'self';
-  style-src 'self' 'sha256-441zG27…' 'sha256-vGQdhYJ…';
+  style-src 'self' 'unsafe-inline';
   img-src 'self' fotothumb: http://fotothumb.localhost data:;
   connect-src ipc: http://ipc.localhost;
   font-src 'self';
@@ -44,9 +44,9 @@ The app processes **untrusted image files** and displays **untrusted metadata** 
   frame-ancestors 'none'
   ```
 
-  There are no inline scripts, no `unsafe-eval` and no remote origins. Tailwind is compiled to a static CSS file at build time. React and Radix set styles through the CSSOM, which CSP allows. If a UI dependency injects `<style>` tags, prefer Tauri's automatic CSP nonces. Adding `'unsafe-inline'` to `style-src` requires an ADR.
+  There are no inline scripts, no `unsafe-eval` and no remote origins. Tailwind is compiled to a static CSS file at build time. `'unsafe-inline'` applies to **styles only** ([ADR-0013](adr/0013-csp-inline-styles.md)).
 - **The webview never supplies file system paths.** Import and export folders are chosen through dialogs opened **from Rust** (`pick_and_import_folder`, `pick_export_folder`), or dropped onto the window (an OS event handled in Rust). The export destination is kept in Rust state. The main window's capability is only `core:default`: no dialog, filesystem or shell permissions.
-- **Inline styles:** the only inline `<style>` tags allowed are the two static ones Radix injects (Select and ScrollArea), each allowed **by its SHA-256 hash**. Run `scripts/csp-style-hashes.sh` after upgrading `radix-ui` and update `tauri.conf.json`. UI libraries that inject styles at runtime (for example `sonner`) are not used.
+- **Inline styles are allowed, scripts are not** ([ADR-0013](adr/0013-csp-inline-styles.md)). Radix primitives (Select, Dialog, Popover) inject runtime `<style>` tags for scroll locking whose content is computed, so hashes cannot work. `script-src` stays `'self'` with no `unsafe-inline` or `unsafe-eval`, which is what stops XSS. With `img-src`, `connect-src` and `font-src` locked to the app, injected CSS has no channel to exfiltrate data.
 - **Commands validate every argument in Rust.** Never trust the UI: IDs must exist, settings are range-checked, and paths are canonicalized ([§4](#4-file-system-safety)).
 - **No remote content** is ever loaded into the webview. Navigation to any non-app URL is blocked.
 - Devtools are disabled in release builds.

@@ -44,6 +44,8 @@ pub struct Decoded {
 }
 
 pub trait JpegCodec: Send + Sync {
+    /// Pixel dimensions from the header only (no pixel decoding).
+    fn dimensions(&self, bytes: &[u8]) -> Result<(u32, u32), CodecError>;
     fn decode(&self, bytes: &[u8]) -> Result<Decoded, CodecError>;
     fn encode(
         &self,
@@ -62,6 +64,17 @@ pub fn default_codec() -> Arc<dyn JpegCodec> {
 pub struct PureRustCodec;
 
 impl JpegCodec for PureRustCodec {
+    fn dimensions(&self, bytes: &[u8]) -> Result<(u32, u32), CodecError> {
+        let mut decoder = JpegDecoder::new(ZCursor::new(bytes));
+        decoder
+            .decode_headers()
+            .map_err(|e| CodecError::Decode(e.to_string()))?;
+        let info = decoder
+            .info()
+            .ok_or_else(|| CodecError::Decode("missing image header".into()))?;
+        Ok((u32::from(info.width), u32::from(info.height)))
+    }
+
     fn decode(&self, bytes: &[u8]) -> Result<Decoded, CodecError> {
         let options = DecoderOptions::default()
             .jpeg_set_out_colorspace(ColorSpace::RGB)

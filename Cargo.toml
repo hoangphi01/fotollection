@@ -53,6 +53,10 @@ debug = "line-tables-only"
 debug = false
 opt-level = 2
 
+# Our own image code is hot too: unoptimized it made dev thumbnails ~10× slower.
+[profile.dev.package.fotollection-core]
+opt-level = 3
+
 [profile.release]
 debug = false
 strip = "symbols"

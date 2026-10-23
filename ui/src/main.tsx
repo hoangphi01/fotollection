@@ -8,6 +8,20 @@ import './index.css'
 
 followSystemTheme()
 
+if (import.meta.env.DEV) {
+  // Surface CSP violations and failed images in the terminal (Vite forwards console output).
+  document.addEventListener('securitypolicyviolation', (e) =>
+    console.warn('CSP violation', e.violatedDirective, e.blockedURI),
+  )
+  document.addEventListener(
+    'error',
+    (e) => {
+      if (e.target instanceof HTMLImageElement) console.warn('image failed', e.target.src)
+    },
+    true,
+  )
+}
+
 const root = document.getElementById('root')
 if (!root) throw new Error('missing #root element')
 
