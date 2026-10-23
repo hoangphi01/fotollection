@@ -10,6 +10,7 @@ import { useLibrary } from '@/features/library/use-library'
 import { SettingsPanel } from '@/features/settings/settings-panel'
 import { useRenderSettings } from '@/features/settings/use-render-settings'
 import { useFrameConfig } from '@/features/frame/use-frame-config'
+import { useHistory } from '@/features/history/use-history'
 import { PreviewDialog } from '@/features/viewer/preview-dialog'
 
 export function App() {
@@ -18,7 +19,8 @@ export function App() {
   // Render and frame changes bump the same Rust counter; the newest one wins.
   const [frameRevision, setFrameRevision] = useState(0)
   const frame = useFrameConfig(setFrameRevision)
-  const revision = Math.max(renderRevision, frameRevision)
+  const history = useHistory()
+  const revision = Math.max(renderRevision, frameRevision, history.revision)
   const [selected, setSelected] = useState(0)
   const [viewing, setViewing] = useState(false)
 

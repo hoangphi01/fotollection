@@ -15,7 +15,7 @@ use crate::cancel::CancellationToken;
 use crate::codec::{CodecError, JpegCodec};
 use crate::image::apply_orientation;
 use crate::library::{PhotoId, PhotoRecord, flags};
-use crate::plan::{FrameRequest, plan};
+use crate::plan::{FrameRequest, PlanInput, plan};
 use crate::render::{RenderError, render};
 use crate::settings::RenderSettings;
 
@@ -132,15 +132,16 @@ fn export_one(
         .unwrap_or(crate::PrintSize::ALL[1]);
     let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
     let frame = (options.frame_for)(record);
-    let p = plan(
-        upright.width,
-        upright.height,
+    let p = plan(&PlanInput {
+        width: upright.width,
+        height: upright.height,
         capture,
-        options.settings,
+        settings: options.settings,
         print,
-        None,
-        frame.as_ref(),
-    );
+        max_long_edge: None,
+        frame: frame.as_ref(),
+        crop: record.edits.crop,
+    });
     let image = render(&upright, &p)?;
     drop(upright);
     // No EXIF is written, so GPS never leaves the machine by default (FR-010).

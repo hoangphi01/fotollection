@@ -37,7 +37,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-003 | Library grid | 1 | In Progress | Virtualized grid, T0/T1 thumbnails, skeleton + fade-in, task progress bar with %. Day grouping and multi-select pending |
 | FR-004 | Date stamp | 1 | In Progress | 3 formats, 4 corners, white/retro-orange, inside the safe area. More styles with FR-033 |
 | FR-005 | Location stamp (offline) | 1 | Not Started | GeoNames packer needed |
-| FR-006 | Crop to print ratio | 1 | In Progress | Centred crop for all 8 sizes. Per-photo frame dragging pending |
+| FR-006 | Crop to print ratio | 1 | In Progress | All 8 sizes; interactive crop editor (dimmed outside, drag, zoom, cm label, live DPI), stored as centre + zoom |
 | FR-007 | Live preview | 1 | In Progress | Preview dialog with inspector (capture, camera, image, GPS, print DPI, stamp controls). Rust-rendered, p95 26 ms warm |
 | FR-008 | Original-quality export | 1 | In Progress | Full resolution, q95 4:4:4, ICC copied. Lossless crop-only path pending |
 | FR-009 | Export by date | 1 | Done | `YYYY-MM-DD/` folders, never overwrites (`_1`, `_2`…). `fr_009_*` passes |
@@ -54,7 +54,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-020 | Localization | 3 | Not Started | |
 | FR-021 | Auto-update | 3 | Not Started | |
 | FR-022 | Culling (rate, flag, filter) | 1 | Not Started | |
-| FR-023 | Projects, autosave and undo | 1 | Not Started | Format: [ADR-0010](adr/0010-project-file-format.md) |
+| FR-023 | Projects, autosave and undo | 1 | In Progress | Session project autosaves atomically and is restored at launch (re-scan + re-apply); undo/redo for crops. Save as/Open pending |
 | FR-024 | Copies and order summary | 2 | Not Started | |
 | FR-025 | Mixed print sizes per order | 1 | Not Started | Builds on `PrintSize` |
 | FR-026 | Resolution warning | 1 | In Progress | Effective DPI + band shown in the inspector. Grid badge and pre-export summary pending |
@@ -71,6 +71,8 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-037 | Contact sheet | 3 | Not Started | |
 | FR-038 | Print presets | 2 | Not Started | Storage model: [DATABASE.md §7](DATABASE.md#7-presets) |
 | FR-040 | EXIF info frame | 1 | In Progress | Crop/Fit at print ratio, field switches, per-camera overrides (persisted), user PNG logo. Place needs FR-005 |
+| FR-042 | Custom fonts | 1 | Not Started | Next slice |
+| FR-043 | Custom print sizes | 1 | Not Started | Next slice |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
 
 ## Non-functional requirements
@@ -89,7 +91,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | NFR-010 | Cold start | < 1.5 s | — | Not Started |
 | NFR-011 | Robustness | 0 crashes | — | Not Started |
 | NFR-012 | Culling navigation | < 100 ms p95 | — | Not Started |
-| NFR-013 | Project safety | ≤ 5 s, atomic | — | Not Started |
+| NFR-013 | Project safety | ≤ 5 s, atomic | autosave ≤ ~1 s, atomic + .bak | In Progress |
 
 ## Security tasks
 

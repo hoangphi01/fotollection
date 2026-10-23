@@ -26,18 +26,21 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
 import { useIpcQuery } from '@/features/settings/use-ipc-query'
 import {
   commands,
   type DateFormat,
+  type CropGeometry,
   type DpiBand,
   type PhotoDetails,
   type PhotoSummary,
   type RenderSettings,
 } from '@/ipc/bindings'
-import { previewUrl } from '@/lib/photo-url'
+import { previewUrl, sourceUrl } from '@/lib/photo-url'
+import { CropEditor } from './crop-editor'
 import { cn } from '@/lib/utils'
 
 type PreviewDialogProps = {
@@ -97,6 +100,21 @@ function usePhotoDetails(id: number | undefined, revision: number): PhotoDetails
   return details && details.id === id ? details : null
 }
 
+function useCropGeometry(id: number | undefined, revision: number): CropGeometry | null {
+  const [geometry, setGeometry] = useState<{ id: number; value: CropGeometry } | null>(null)
+  useEffect(() => {
+    if (id === undefined) return
+    let live = true
+    void commands.getCropGeometry(id).then((result) => {
+      if (live && result.status === 'ok') setGeometry({ id, value: result.data })
+    })
+    return () => {
+      live = false
+    }
+  }, [id, revision])
+  return geometry && geometry.id === id ? geometry.value : null
+}
+
 function Section({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (
     <section className="space-y-1.5">
@@ -130,65 +148,109 @@ export function PreviewDialog({
   const src = photo ? previewUrl(photo.id, revision) : ''
   const [loadedSrc, setLoadedSrc] = useState('')
   const stamp = settings?.stamp
+  const geometry = useCropGeometry(photo?.id, revision)
+  const [cropping, setCropping] = useState(false)
 
   const go = (delta: number) => {
+    setCropping(false)
     if (index === null) return
     onIndexChange(Math.min(photos.length - 1, Math.max(0, index + delta)))
   }
   const onKeyDown = (event: KeyboardEvent) => {
+    if (cropping || event.target instanceof HTMLInputElement) return
     if (event.key === 'ArrowRight') go(1)
     else if (event.key === 'ArrowLeft') go(-1)
+    else if (event.key.toLowerCase() === 'c' && geometry && !geometry.cropDisabled) setCropping(true)
   }
 
   return (
     <Dialog open={photo !== undefined} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         onKeyDown={onKeyDown}
+        onEscapeKeyDown={(e) => {
+          // Esc leaves crop mode first, then closes the dialog.
+          if (cropping) {
+            e.preventDefault()
+            setCropping(false)
+          }
+        }}
         className="flex h-[90vh] w-[95vw] max-w-none gap-0 overflow-hidden p-0 sm:max-w-[min(1400px,95vw)]"
       >
         {/* Stage */}
         <div className="relative flex min-w-0 flex-1 items-center justify-center bg-neutral-950 p-8">
-          {photo && (
-            <img
-              key={src}
-              src={src}
-              alt={photo.fileName}
-              onLoad={() => setLoadedSrc(src)}
-              className={cn(
-                'max-h-full max-w-full rounded-sm object-contain shadow-2xl transition-opacity duration-200',
-                loadedSrc === src ? 'opacity-100' : 'opacity-0',
-              )}
+          {cropping && geometry && photo ? (
+            <CropEditor
+              key={`${photo.id}:${revision}`}
+              geometry={geometry}
+              sourceSrc={sourceUrl(photo.id, revision)}
+              onCancel={() => setCropping(false)}
+              onCommit={(crop) => {
+                setCropping(false)
+                void commands.setPhotoCrop(photo.id, crop)
+              }}
             />
+          ) : (
+            <>
+              {photo && (
+                <img
+                  key={src}
+                  src={src}
+                  alt={photo.fileName}
+                  onLoad={() => setLoadedSrc(src)}
+                  className={cn(
+                    'max-h-full max-w-full rounded-sm object-contain shadow-2xl transition-opacity duration-200',
+                    loadedSrc === src ? 'opacity-100' : 'opacity-0',
+                  )}
+                />
+              )}
+              {loadedSrc !== src && (
+                <div className="absolute flex flex-col items-center gap-2 text-white/60">
+                  <LoaderCircle className="size-7 animate-spin" />
+                  <span className="text-xs">Rendering print preview…</span>
+                </div>
+              )}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="absolute top-3 left-3">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      disabled={!geometry || geometry.cropDisabled}
+                      onClick={() => setCropping(true)}
+                    >
+                      <Crop data-icon="inline-start" /> Crop
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {geometry?.cropDisabled ? 'The frame is in Fit mode: the whole photo is shown' : 'Adjust the crop (C)'}
+                </TooltipContent>
+              </Tooltip>
+              <Button
+                variant="secondary"
+                size="icon"
+                aria-label="Previous photo"
+                className="absolute left-3 opacity-80 hover:opacity-100"
+                disabled={index === 0}
+                onClick={() => go(-1)}
+              >
+                <ChevronLeft />
+              </Button>
+              <Button
+                variant="secondary"
+                size="icon"
+                aria-label="Next photo"
+                className="absolute right-3 opacity-80 hover:opacity-100"
+                disabled={index === null || index >= photos.length - 1}
+                onClick={() => go(1)}
+              >
+                <ChevronRight />
+              </Button>
+              <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-xs text-white/80 tabular-nums">
+                {(index ?? 0) + 1} / {photos.length}
+              </span>
+            </>
           )}
-          {loadedSrc !== src && (
-            <div className="absolute flex flex-col items-center gap-2 text-white/60">
-              <LoaderCircle className="size-7 animate-spin" />
-              <span className="text-xs">Rendering print preview…</span>
-            </div>
-          )}
-          <Button
-            variant="secondary"
-            size="icon"
-            aria-label="Previous photo"
-            className="absolute left-3 opacity-80 hover:opacity-100"
-            disabled={index === 0}
-            onClick={() => go(-1)}
-          >
-            <ChevronLeft />
-          </Button>
-          <Button
-            variant="secondary"
-            size="icon"
-            aria-label="Next photo"
-            className="absolute right-3 opacity-80 hover:opacity-100"
-            disabled={index === null || index >= photos.length - 1}
-            onClick={() => go(1)}
-          >
-            <ChevronRight />
-          </Button>
-          <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-xs text-white/80 tabular-nums">
-            {(index ?? 0) + 1} / {photos.length}
-          </span>
         </div>
 
         {/* Inspector */}
@@ -285,8 +347,18 @@ export function PreviewDialog({
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <Crop className="size-3.5" /> Crop
                 </span>
-                <span className="text-xs">
-                  Centred <Badge variant="outline">Adjust soon</Badge>
+                <span className="flex items-center gap-1.5 text-xs">
+                  {geometry?.crop ? `Custom · zoom ${(geometry.crop.zoom ?? 1).toFixed(1)}×` : 'Centred'}
+                  {geometry?.crop && photo && (
+                    <Button variant="ghost" size="xs" onClick={() => void commands.setPhotoCrop(photo.id, null)}>
+                      Reset
+                    </Button>
+                  )}
+                  {!geometry?.crop && (
+                    <Button variant="ghost" size="xs" disabled={!geometry || geometry.cropDisabled} onClick={() => setCropping(true)}>
+                      Adjust
+                    </Button>
+                  )}
                 </span>
               </div>
             </Section>

@@ -10,7 +10,7 @@
 
 | Store | Format | Location | Owner (core module) | Lifetime | Personal data? |
 |-------|--------|----------|---------------------|----------|----------------|
-| **Project file** `*.fotollection` | JSON, versioned ([§4](#4-project-file-schema)) | Chosen by the user (default: next to the photos) | `project.rs` | Until the user deletes it | **Yes**: folder paths, places, coordinates |
+| **Project file** `*.fotollection` † (session: `<app data>/projects/session.fotollection`) | JSON, versioned ([§4](#4-project-file-schema)) | Chosen by the user (default: next to the photos) | `project.rs` | Until the user deletes it | **Yes**: folder paths, places, coordinates |
 | Project backup `*.fotollection.bak` | Same as the project | Next to the project file | `project.rs` | Replaced on each successful save | Yes |
 | App settings `settings.json` † | JSON, versioned ([§6](#6-app-settings)) | App config dir | `settings_store.rs` | Until uninstall or reset | Camera names/lenses only |
 | Camera logos `logos/<id>.png` † | PNG, validated copy | App config dir | `logo.rs` | Until removed | No |
@@ -152,7 +152,7 @@ That is **about 42 bytes per photo, plus the path**: roughly 1 MB for 10,000 pho
     { "id": 17, "folder": 1, "path": "P1010042.JPG",
       "fp_size": 8123456, "fp_mtime": "2026-07-14T10:22:31Z", "fp_head": "9f2c…",
       "rating": 4, "flag": "pick", "copies": 2, "print_size": "20x30",
-      "crop_x": 0.08, "crop_y": 0.0, "crop_w": 0.84, "crop_h": 1.0,
+      "crop": { "cx": 0.46, "cy": 0.5, "zoom": 1.25 },
       "place": 1, "place_source": "manual" },
     { "id": 18, "folder": 1, "path": "P1010043.JPG",
       "fp_size": 7990211, "fp_mtime": "2026-07-14T10:24:02Z", "fp_head": "41aa…",
@@ -179,7 +179,7 @@ Photo 18 stores only its flag. Every other value comes from `settings` (rule N5)
 | `flag` | `pick` / `reject` | Omitted when unflagged |
 | `copies` | 1–99 | Omitted when 1 ([FR-024](PRD.md#fr-024--copies-and-order-summary)) |
 | `print_size` | `PrintSize.id` | Omitted when equal to the default ([FR-025](PRD.md#fr-025--mixed-print-sizes-per-order)) |
-| `crop_x/y/w/h` | normalized 0–1, relative to the oriented image | All four or none. Clamped to the print-size ratio on load |
+| `crop` | `{ cx, cy, zoom }`: centre 0–1 of the upright photo, zoom 1–8 | **Ratio-independent** (N4): the rectangle is derived at render time for the current print size or framed photo area, so changing size never invalidates it. Sanitized on load |
 | `manual_date` | RFC 3339 | Overrides EXIF ([FR-032](PRD.md#fr-032--manual-date-and-place)) |
 | `place` + `place_source` | FK → `places` + `manual` / `device` / `gpx` | Only for **manual or inferred** places ([FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track), [FR-032](PRD.md#fr-032--manual-date-and-place)). GPS read from EXIF is never copied here (N4) |
 | `preset` | FK → `presets` | Omitted when it equals `settings.default_preset` ([FR-038](PRD.md#fr-038--print-presets)) |
@@ -198,7 +198,7 @@ Parsing is strict: `serde` with `deny_unknown_fields`, typed enums, and range ch
 
 | Version | App version | Change |
 |---------|-------------|--------|
-| 1 | 0.1.0 (planned) | Initial normalized schema: settings, folders, cameras, places, presets, photos (sparse), trips |
+| 1 | 0.0.x (slice 3) | **Implemented subset:** `folders` (absolute paths for the session project) and sparse `photos` rows with `fp_size`, `fp_mtime`, `crop`, `rating`, `flag`. The other tables (`settings`, `cameras`, `places`, `presets`, `trips`) are added by later schema versions with migrations; app-wide settings and camera profiles live in `settings.json` for now (§6) |
 
 ### 4.4 Write protocol
 

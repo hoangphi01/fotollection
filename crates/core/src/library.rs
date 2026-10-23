@@ -3,7 +3,7 @@
 //! indices, interned paths, and small fixed-width columns, so thousands of photos cost
 //! about a megabyte and leave RAM for pixels (NFR-004).
 
-use std::collections::HashSet;
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 use chrono::{DateTime, NaiveDateTime};
@@ -12,12 +12,37 @@ use specta::Type;
 
 use crate::import::ImportedFile;
 use crate::metadata::PhotoMeta;
+use crate::plan::CropFrame;
 
 /// Dense index of a photo within this session's library.
 #[derive(
     Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize, Type,
 )]
 pub struct PhotoId(pub u32);
+
+/// Pick/reject flag for culling (FR-022).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum Flag {
+    Pick,
+    Reject,
+}
+
+/// User edits of one photo. Stored sparsely: photos without edits cost nothing (N5).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PhotoEdits {
+    pub crop: Option<CropFrame>,
+    /// 0–5 stars.
+    pub rating: u8,
+    pub flag: Option<Flag>,
+}
+
+impl PhotoEdits {
+    pub fn is_default(&self) -> bool {
+        *self == Self::default()
+    }
+}
 
 /// Bit flags stored per photo.
 pub mod flags {
@@ -62,6 +87,7 @@ pub struct PhotoRecord {
     pub flags: u16,
     pub gps: Option<(f32, f32)>,
     pub shot: ShotInfo,
+    pub edits: PhotoEdits,
 }
 
 /// Camera and exposure facts from EXIF, used by the info frame (FR-040).
@@ -98,7 +124,9 @@ pub struct Library {
     cameras: Vec<(Option<String>, Option<String>)>,
     /// Distinct lens names, referenced by index.
     lenses: Vec<String>,
-    seen: HashSet<blake3::Hash>,
+    /// Full-path hash → photo, for de-duplication and restoring project rows.
+    seen: HashMap<blake3::Hash, PhotoId>,
+    edits: HashMap<PhotoId, PhotoEdits>,
     // Columns, all indexed by PhotoId.
     folder: Vec<u16>,
     rel_path: Vec<(u32, u32)>,
@@ -193,10 +221,8 @@ impl Library {
 
     /// Adds a photo. Returns `None` if the same path was already imported.
     pub fn push(&mut self, folder: u16, file: &ImportedFile, meta: &PhotoMeta) -> Option<PhotoId> {
-        if !self
-            .seen
-            .insert(blake3::hash(file.path.as_os_str().as_encoded_bytes()))
-        {
+        let key = blake3::hash(file.path.as_os_str().as_encoded_bytes());
+        if self.seen.contains_key(&key) {
             return None;
         }
         let root = self.folders.get(folder as usize)?;
@@ -229,6 +255,7 @@ impl Library {
         }
 
         let id = PhotoId(u32::try_from(self.len()).ok()?);
+        self.seen.insert(key, id);
         self.folder.push(folder);
         self.rel_path.push(span);
         self.size.push(file.size);
@@ -289,7 +316,41 @@ impl Library {
             flags: self.flags[i],
             gps,
             shot,
+            edits: self.edits(id),
         })
+    }
+
+    /// The photo at `path`, if imported.
+    pub fn find_path(&self, path: &Path) -> Option<PhotoId> {
+        self.seen
+            .get(&blake3::hash(path.as_os_str().as_encoded_bytes()))
+            .copied()
+    }
+
+    pub fn edits(&self, id: PhotoId) -> PhotoEdits {
+        self.edits.get(&id).copied().unwrap_or_default()
+    }
+
+    /// Replaces a photo's edits, returning the previous ones (for undo).
+    pub fn set_edits(&mut self, id: PhotoId, edits: PhotoEdits) -> PhotoEdits {
+        let old = self.edits(id);
+        if edits.is_default() {
+            self.edits.remove(&id);
+        } else if self.index(id).is_some() {
+            self.edits.insert(id, edits);
+        }
+        old
+    }
+
+    /// Photos that have edits, for saving the project.
+    pub fn edited(&self) -> impl Iterator<Item = (PhotoId, PhotoEdits)> + '_ {
+        self.edits.iter().map(|(id, e)| (*id, *e))
+    }
+
+    /// Folder index and relative path of a photo (project rows, DATABASE.md §4).
+    pub fn location(&self, id: PhotoId) -> Option<(u16, &str)> {
+        let i = self.index(id)?;
+        Some((self.folder[i], self.strings.get(self.rel_path[i])))
     }
 
     /// All photo IDs ordered by capture time, then path.

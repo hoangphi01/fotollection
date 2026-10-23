@@ -20,7 +20,7 @@ use fotollection_core::import::{self, ImportedFile};
 use fotollection_core::library::{PhotoId, PhotoSummary, flags};
 use fotollection_core::logo;
 use fotollection_core::metadata;
-use fotollection_core::plan::{DpiBand, effective_dpi};
+use fotollection_core::plan::{CropFrame, DpiBand, PlanInput, effective_dpi, plan};
 use fotollection_core::settings::RenderSettings;
 use fotollection_core::thumbs;
 use rayon::prelude::*;
@@ -31,7 +31,8 @@ use tauri_plugin_dialog::DialogExt;
 use tauri_specta::Event;
 
 use crate::events::{
-    ExportFinished, ExportProgress, LibraryChanged, TaskKind, TaskProgress, ThumbReady,
+    ExportFinished, ExportProgress, LibraryChanged, RevisionChanged, TaskKind, TaskProgress,
+    ThumbReady,
 };
 use crate::state::{AppState, IpcError};
 
@@ -187,6 +188,9 @@ pub fn import_paths(app: &AppHandle, paths: Vec<PathBuf>) -> ImportSummary {
     if state.ensure_camera_profiles() {
         state.persist();
     }
+    state
+        .project_dirty
+        .store(true, std::sync::atomic::Ordering::Relaxed);
     let _ = LibraryChanged { count }.emit(app);
     warm_thumbnails(app, new_ids);
     summary
@@ -742,4 +746,244 @@ pub fn clear_camera_logo(
     state.bump_revision();
     state.persist();
     frame_config(&state)
+}
+
+/// Bumps the revision, marks the project dirty, and tells the UI (one place for all edits).
+fn changed(app: &AppHandle, state: &AppState) -> HistoryState {
+    let revision = state.bump_revision();
+    state.project_dirty.store(true, Ordering::Relaxed);
+    let (can_undo, can_redo) = state
+        .history
+        .lock()
+        .map_or((false, false), |h| (h.can_undo(), h.can_redo()));
+    let _ = RevisionChanged {
+        revision,
+        can_undo,
+        can_redo,
+    }
+    .emit(app);
+    HistoryState {
+        revision,
+        can_undo,
+        can_redo,
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct HistoryState {
+    pub revision: u32,
+    pub can_undo: bool,
+    pub can_redo: bool,
+}
+
+/// What the crop editor needs (FR-006): the upright photo size, the target box the crop
+/// must fill, its printed size in cm, and the current crop.
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct CropGeometry {
+    pub width: u32,
+    pub height: u32,
+    /// The crop must have the ratio `target_width : target_height`.
+    pub target_width: u32,
+    pub target_height: u32,
+    /// Printed size of the cropped area, as displayed (width × height).
+    pub print_width_cm: f32,
+    pub print_height_cm: f32,
+    pub crop: Option<CropFrame>,
+    /// The frame's Fit mode shows the whole photo, so cropping is off.
+    pub crop_disabled: bool,
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeometry, IpcError> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let record = state
+            .library
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .record(id)
+            .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
+        let bytes = std::fs::read(&record.path)
+            .map_err(|e| IpcError::new("import.unreadable", e.to_string()))?;
+        let (w, h) = state
+            .codec
+            .dimensions(&bytes)
+            .map_err(|e| IpcError::new(e.code(), e.to_string()))?;
+        let (width, height) = if record.orientation >= 5 {
+            (h, w)
+        } else {
+            (w, h)
+        };
+        let settings = state
+            .settings
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .0
+            .clone();
+        let print = settings.validate().unwrap_or(PrintSize::ALL[1]);
+        let frame = state
+            .frame
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .request(&record);
+        let p = plan(&PlanInput {
+            width,
+            height,
+            capture: None,
+            settings: &settings,
+            print,
+            max_long_edge: None,
+            frame: frame.as_ref(),
+            crop: None,
+        });
+        #[allow(clippy::cast_precision_loss)]
+        let (long_cm, short_cm) = (print.long_mm as f32 / 10.0, print.short_mm as f32 / 10.0);
+        let (canvas_width_cm, canvas_height_cm) = if width >= height {
+            (long_cm, short_cm)
+        } else {
+            (short_cm, long_cm)
+        };
+        let (canvas_w, canvas_h) = p.output_size();
+        #[allow(clippy::cast_precision_loss)]
+        let (print_width_cm, print_height_cm) = (
+            canvas_width_cm * p.out_width as f32 / canvas_w.max(1) as f32,
+            canvas_height_cm * p.out_height as f32 / canvas_h.max(1) as f32,
+        );
+        let crop_disabled = frame
+            .as_ref()
+            .is_some_and(|f| f.settings.fit == fotollection_core::frame::FrameFit::Fit);
+        Ok(CropGeometry {
+            width,
+            height,
+            target_width: p.out_width,
+            target_height: p.out_height,
+            print_width_cm,
+            print_height_cm,
+            crop: record.edits.crop,
+            crop_disabled,
+        })
+    })
+    .await
+    .map_err(|e| IpcError::internal(e.to_string()))?
+}
+
+/// Sets (or, with `None`, resets) a photo's crop. Undoable (FR-023).
+#[tauri::command]
+#[specta::specta]
+pub fn set_photo_crop(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: PhotoId,
+    crop: Option<CropFrame>,
+) -> Result<HistoryState, IpcError> {
+    {
+        let mut library = state
+            .library
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        let mut edits = library.edits(id);
+        edits.crop = crop.map(CropFrame::sanitized);
+        state
+            .history
+            .lock()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .apply(&mut library, &[(id, edits)]);
+    }
+    Ok(changed(&app, &state))
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn undo(app: AppHandle, state: State<'_, AppState>) -> Result<HistoryState, IpcError> {
+    {
+        let mut library = state
+            .library
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        state
+            .history
+            .lock()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .undo(&mut library);
+    }
+    Ok(changed(&app, &state))
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn redo(app: AppHandle, state: State<'_, AppState>) -> Result<HistoryState, IpcError> {
+    {
+        let mut library = state
+            .library
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        state
+            .history
+            .lock()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .redo(&mut library);
+    }
+    Ok(changed(&app, &state))
+}
+
+/// Bytes for `fotothumb://localhost/source/{id}`: the upright, uncropped T2 image.
+pub fn source_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
+    let record = state
+        .library
+        .read()
+        .ok()
+        .and_then(|l| l.record(id))
+        .ok_or_else(|| "unknown photo".to_owned())?;
+    state
+        .previews
+        .source_jpeg(&record, state.codec.as_ref())
+        .map_err(|e| e.to_string())
+}
+
+/// Reopens the session project: re-scans its folders and re-applies the saved edits.
+pub fn restore_session(app: &AppHandle) {
+    use fotollection_core::project::{self, Loaded};
+    let state = app.state::<AppState>();
+    let file = match project::load(&state.project_path) {
+        Loaded::Ok(file) => file,
+        Loaded::Missing => return,
+        Loaded::NewerVersion(v) => {
+            eprintln!("session project has schema {v}; not opening or overwriting it");
+            state.project_writable.store(false, Ordering::Relaxed);
+            return;
+        }
+        Loaded::Corrupt(reason) => {
+            eprintln!("session project is invalid ({reason}); starting empty");
+            let mut aside = state.project_path.as_os_str().to_owned();
+            aside.push(".corrupt");
+            let _ = std::fs::rename(&state.project_path, aside);
+            return;
+        }
+    };
+    let folders: Vec<_> = project::folder_paths(&file)
+        .into_iter()
+        .filter(|p| p.is_dir())
+        .collect();
+    if folders.is_empty() {
+        return;
+    }
+    import_paths(app, folders);
+    if let Ok(mut library) = state.library.write() {
+        let summary = project::restore(&mut library, &file);
+        if summary.missing + summary.changed > 0 {
+            eprintln!(
+                "project restore: {} restored, {} missing, {} changed",
+                summary.restored, summary.missing, summary.changed
+            );
+        }
+    }
+    let count = state
+        .library
+        .read()
+        .map_or(0, |l| u32::try_from(l.len()).unwrap_or(u32::MAX));
+    let _ = LibraryChanged { count }.emit(app);
+    changed(app, &state);
 }

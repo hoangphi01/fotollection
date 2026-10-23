@@ -9,10 +9,12 @@ use std::sync::{Arc, Mutex, RwLock};
 use fotollection_core::cancel::CancellationToken;
 use fotollection_core::codec::{JpegCodec, default_codec};
 use fotollection_core::frame::{self, CameraProfile, FrameSettings, LogoKind};
+use fotollection_core::history::History;
 use fotollection_core::library::{Library, PhotoRecord, flags};
 use fotollection_core::logo::{self, LogoImage};
 use fotollection_core::plan::FrameRequest;
 use fotollection_core::preview::PreviewCache;
+use fotollection_core::project;
 use fotollection_core::settings::RenderSettings;
 use fotollection_core::settings_store::{self, Loaded, StoredSettings};
 use fotollection_core::thumbs::ThumbCache;
@@ -74,12 +76,19 @@ pub struct AppState {
     /// False when the file was written by a newer app: never overwrite it.
     pub store_writable: AtomicBool,
     store_lock: Mutex<()>,
+    /// Session project (FR-023): autosaved by a background thread when dirty.
+    pub project_path: PathBuf,
+    pub project_dirty: AtomicBool,
+    /// False when the project was written by a newer app: never overwrite it.
+    pub project_writable: AtomicBool,
+    pub history: Mutex<History>,
 }
 
 impl AppState {
     pub fn new(
         thumb_dir: PathBuf,
         config_dir: &std::path::Path,
+        project_path: PathBuf,
     ) -> Result<Self, rayon::ThreadPoolBuildError> {
         let store_path = config_dir.join("settings.json");
         let logo_dir = config_dir.join("logos");
@@ -132,6 +141,10 @@ impl AppState {
             logo_dir,
             store_writable: AtomicBool::new(writable),
             store_lock: Mutex::new(()),
+            project_path,
+            project_dirty: AtomicBool::new(false),
+            project_writable: AtomicBool::new(true),
+            history: Mutex::new(History::default()),
         })
     }
 
@@ -160,6 +173,20 @@ impl AppState {
         let _guard = self.store_lock.lock();
         if let Err(e) = settings_store::save(&self.store_path, &stored) {
             eprintln!("could not save settings: {e}");
+        }
+    }
+
+    /// Writes the session project now (atomic, DATABASE.md §4.4).
+    pub fn save_project(&self) {
+        if !self.project_writable.load(Ordering::Relaxed) {
+            return;
+        }
+        let Some(file) = self.library.read().ok().map(|l| project::snapshot(&l)) else {
+            return;
+        };
+        if let Err(e) = project::save(&self.project_path, &file) {
+            eprintln!("could not save the project: {e}");
+            self.project_dirty.store(true, Ordering::Relaxed);
         }
     }
 

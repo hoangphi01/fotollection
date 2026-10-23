@@ -128,7 +128,12 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 **P0.** Crop every photo to the selected print size ([§5](#5-print-sizes-cewe--eu-standard)).
 
 - Portrait and landscape orientation is matched automatically.
-- The default crop is centred. The user can drag or resize the crop frame per photo (with the ratio locked).
+- The default crop is centred. The user can adjust it per photo in the **crop editor**:
+  - The whole photo is shown, with everything outside the crop **dimmed**.
+  - **Drag** to move the crop. **Zoom** with the wheel, a trackpad pinch or a slider (1–8×). Arrow keys nudge it, and a double-click resets it.
+  - A label on the crop shows the **printed size in cm** (the photo area when a frame is on), the crop's pixel size and the **live DPI** with its quality band ([FR-026](#fr-026--resolution-warning)).
+  - The crop is stored as a centre and zoom, so it survives changes of print size ([FR-025](#fr-025--mixed-print-sizes-per-order)).
+  - It is undoable ([FR-023](#fr-023--projects-autosave-and-undo)).
 - Offers a "fit with border" (letterbox) alternative to cropping.
 
 ### FR-007 — Live preview
@@ -232,6 +237,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - Autosave is continuous ([NFR-013](#nfr-013--project-safety)). Reopening the app restores the last project.
 - Undo and redo cover every user edit (ratings, flags, crop, overrides, settings), with at least 200 steps.
 - If source files have moved, the user can relink the folder. Missing photos are marked, not dropped.
+- **Session project:** until "Save as/Open" arrive, work goes to an implicit session project in the app data folder. On launch it is reopened, its folders are **re-scanned automatically** and the edits are re-applied by folder and path.
 
 ### FR-024 — Copies and order summary
 
@@ -363,6 +369,18 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 - **Choose what shows:** every item can be switched on or off. Lines with no data are dropped.
 - **Edit per camera:** the camera name, brand text, lens, focal length, aperture and photo style can be overridden. This covers **manual lenses** that report nothing in EXIF. Overrides are remembered per camera across sessions ([DATABASE.md §6](DATABASE.md#6-app-settings)). Empty fields fall back to EXIF.
 - The date stamp on the photo ([FR-004](#fr-004--date-stamp)) stays independent.
+
+### FR-042 — Custom fonts
+
+**P1.** Import **OTF/TTF** fonts and choose them separately for the date stamp ([FR-004](#fr-004--date-stamp)) and for the info-frame text ([FR-040](#fr-040--exif-info-frame)).
+
+- Fonts are validated (magic bytes, size cap, parse before use) and copied into the app's config folder, like logos ([ADR-0014](adr/0014-user-supplied-brand-logos.md)).
+- Variable fonts expose a weight choice.
+- The bundled Inter remains the default.
+
+### FR-043 — Custom print sizes
+
+**P1.** Define and save custom print sizes, in **cm or inches** (for example 4 × 6 in or 13 × 13 cm). They appear next to the built-in sizes everywhere: crop, frame, DPI and export. A size has a name, short and long edges (stored in mm), and an optional safe margin. Custom sizes are stored in `settings.json` ([DATABASE.md §6](DATABASE.md#6-app-settings)).
 
 ## 7. Non-functional requirements
 

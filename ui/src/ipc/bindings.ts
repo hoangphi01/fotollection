@@ -53,6 +53,17 @@ export const commands = {
 	revision: number,
 } | null, IpcError>(__TAURI_INVOKE("pick_camera_logo", { cameraId })),
 	clearCameraLogo: (cameraId: number) => typedError<FrameConfig, IpcError>(__TAURI_INVOKE("clear_camera_logo", { cameraId })),
+	getCropGeometry: (id: PhotoId) => typedError<CropGeometry, IpcError>(__TAURI_INVOKE("get_crop_geometry", { id })),
+	/**  Sets (or, with `None`, resets) a photo's crop. Undoable (FR-023). */
+	setPhotoCrop: (id: PhotoId, crop: {
+	/**  Centre, 0–1 of the upright photo's width and height. */
+	cx: number | null,
+	cy: number | null,
+	/**  1 = the largest crop at the target ratio; up to `MAX_ZOOM`. */
+	zoom: number | null,
+} | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_crop", { id, crop })),
+	undo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("undo")),
+	redo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("redo")),
 };
 
 /** Events */
@@ -60,6 +71,7 @@ export const events = {
 	exportFinished: makeEvent<ExportFinished>("export-finished"),
 	exportProgress: makeEvent<ExportProgress>("export-progress"),
 	libraryChanged: makeEvent<LibraryChanged>("library-changed"),
+	revisionChanged: makeEvent<RevisionChanged>("revision-changed"),
 	taskProgress: makeEvent<TaskProgress>("task-progress"),
 	thumbReady: makeEvent<ThumbReady>("thumb-ready"),
 };
@@ -97,6 +109,37 @@ export type CameraProfileView = {
 };
 
 export type Corner = "bottomRight" | "bottomLeft" | "topRight" | "topLeft";
+
+/**
+ *  User crop as a centre and zoom on the upright photo (FR-006). The crop rectangle is
+ *  derived at render time for whatever target ratio applies (print size, or the photo area
+ *  of a framed print), so a crop survives size changes (FR-025, DATABASE.md N4).
+ */
+export type CropFrame = {
+	/**  Centre, 0–1 of the upright photo's width and height. */
+	cx: number | null,
+	cy: number | null,
+	/**  1 = the largest crop at the target ratio; up to `MAX_ZOOM`. */
+	zoom: number | null,
+};
+
+/**
+ *  What the crop editor needs (FR-006): the upright photo size, the target box the crop
+ *  must fill, its printed size in cm, and the current crop.
+ */
+export type CropGeometry = {
+	width: number,
+	height: number,
+	/**  The crop must have the ratio `target_width : target_height`. */
+	targetWidth: number,
+	targetHeight: number,
+	/**  Printed size of the cropped area, as displayed (width × height). */
+	printWidthCm: number | null,
+	printHeightCm: number | null,
+	crop: CropFrame | null,
+	/**  The frame's Fit mode shows the whole photo, so cropping is off. */
+	cropDisabled: boolean,
+};
 
 /**  Date stamp formats (FR-004). */
 export type DateFormat = 
@@ -193,6 +236,12 @@ export type GpsPoint = {
 	lon: number | null,
 };
 
+export type HistoryState = {
+	revision: number,
+	canUndo: boolean,
+	canRedo: boolean,
+};
+
 export type ImportSummary = {
 	added: number,
 	duplicates: number,
@@ -278,6 +327,13 @@ export type RenderSettings = {
 	/**  `PrintSize.id`, e.g. `"10x15"` (FR-006). */
 	printSize: string,
 	stamp: StampSettings,
+};
+
+/**  Render-affecting state changed (settings, frame, crops, undo); previews refresh. */
+export type RevisionChanged = {
+	revision: number,
+	canUndo: boolean,
+	canRedo: boolean,
 };
 
 export type SettingsState = {

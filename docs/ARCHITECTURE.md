@@ -66,9 +66,10 @@ crates/
       timeline.rs          # clock offsets, manual date/place, GPS borrowing + GPX (FR-030/031/032)
       geocode.rs           # offline reverse geocoder + offline place search (GeoNames + k-d tree)
       cluster.rs           # trip DBSCAN (Phase 2)
-      library.rs         † # columnar in-memory library (DATABASE.md §3.3); later: ratings, flags, overrides
-      project.rs           # .fotollection file: versioned schema, autosave, migrations (ADR-0010)
-      history.rs           # undo/redo command stack (FR-023)
+      library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag)
+      project.rs         † # .fotollection v1: snapshot/restore by folder+path, FK validation (ADR-0010)
+      history.rs         † # undo/redo stack of inverse edits (FR-023)
+      atomic.rs          † # tmp + fsync + .bak + rename
       presets.rs           # preset library: partial/stackable, linked, .fotopreset I/O (FR-033/034/038)
       quality.rs           # effective-DPI checks (FR-026)
       render/              # (target) crop.rs, style.rs (Photo Style → 3D LUT + tone curve + grain, FR-039),
@@ -194,6 +195,9 @@ Commands marked † are implemented.
 | `get_frame_config()` / `set_frame_settings(settings)` † | Info frame settings plus camera profiles (with EXIF-derived defaults) | FR-040 |
 | `set_camera_profile(profile)` † | Per-camera overrides: name, brand, lens, focal, aperture, photo style, logo kind | FR-040 |
 | `pick_camera_logo(camera_id)` / `clear_camera_logo(camera_id)` † | Choose a PNG with a **Rust-side** dialog, validate it, copy it into `config/logos/` | FR-040 |
+| `get_crop_geometry(id) -> CropGeometry` † | Upright size, target ratio, printed cm of the crop area, current crop | FR-006 |
+| `set_photo_crop(id, crop?)` † | Set or reset a photo's crop (centre + zoom), undoable | FR-006, FR-023 |
+| `undo()` / `redo()` † | History (also Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z) | FR-023 |
 | `photo_details(id) -> PhotoDetails` † | Inspector data: pixel size (header only), file size, GPS, effective DPI at the current print size | FR-002, FR-007, FR-026 |
 | `set_rating(ids, stars)` / `set_flag(ids, flag)` | Culling | FR-022 |
 | `query_library(filter) -> [PhotoSummary]` | Filtered view (rating, flag, date, camera, GPS, DPI) | FR-022, FR-026 |
@@ -220,6 +224,7 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 | `thumb-ready` † | `{ id }`. The T1 thumbnail is cached, so the UI bumps the image URL |
 | `export-progress` † | `{ jobId, done, total }`, coalesced to ≤ 30 per second |
 | `export-finished` † | `{ jobId, summary: { exported, failed[], cancelled, destination } }`. Per-photo failures are reported here |
+| `revision-changed` † | `{ revision, canUndo, canRedo }` after any render-affecting edit; previews refresh |
 | `task-progress` † | `{ task: "import" \| "thumbnails", done, total }`, coalesced to ≤ 30 per second. Drives the progress bar |
 | `project://saved` | `{ path, at }`, for the autosave indicator |
 | `history://changed` | `{ can_undo, can_redo }` |
@@ -229,6 +234,7 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 Pixels **never** cross IPC as JSON or base64. Thumbnails and previews are served by the asynchronous custom URI scheme `fotothumb` on a low-priority worker pool. On Windows it is addressed as `http://fotothumb.localhost/…`:
 
 - `fotothumb://localhost/thumb/{id}?v={n}`: the cached T1, else the embedded T0, else a T1 generated on the spot. `v` bumps on `thumb-ready`.
+- `fotothumb://localhost/source/{id}?rev={n}`: the upright, **uncropped**, unstamped T2 image, the crop editor's background.
 - `fotothumb://localhost/preview/{id}?rev={n}`: about 1600 px, rendered from the T2 cache with the **same** `RenderPlan` code as the export. `rev` is the settings revision.
 
 The UI just sets `<img src>`. Routes are parsed strictly: anything other than `/thumb/<u32>` or `/preview/<u32>` returns 404.

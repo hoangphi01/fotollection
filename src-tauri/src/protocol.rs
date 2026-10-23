@@ -14,7 +14,7 @@ use fotollection_core::library::PhotoId;
 use tauri::http::{Request, Response, StatusCode, header};
 use tauri::{Manager, Runtime, UriSchemeContext, UriSchemeResponder};
 
-use crate::commands::{preview_bytes, thumbnail_bytes};
+use crate::commands::{preview_bytes, source_bytes, thumbnail_bytes};
 use crate::state::AppState;
 
 pub const SCHEME: &str = "fotothumb";
@@ -22,6 +22,8 @@ pub const SCHEME: &str = "fotothumb";
 enum Route {
     Thumb(PhotoId),
     Preview(PhotoId),
+    /// Upright, uncropped T2 image for the crop editor.
+    Source(PhotoId),
 }
 
 fn route(path: &str) -> Option<Route> {
@@ -34,6 +36,7 @@ fn route(path: &str) -> Option<Route> {
     match kind {
         "thumb" => Some(Route::Thumb(id)),
         "preview" => Some(Route::Preview(id)),
+        "source" => Some(Route::Source(id)),
         _ => None,
     }
 }
@@ -70,6 +73,15 @@ pub fn handle<R: Runtime>(
             Route::Thumb(id) => match thumbnail_bytes(&state, id) {
                 Some(bytes) => respond(responder, StatusCode::OK, bytes, true),
                 None => respond(responder, StatusCode::NOT_FOUND, Vec::new(), false),
+            },
+            Route::Source(id) => match source_bytes(&state, id) {
+                Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
+                Err(message) => respond(
+                    responder,
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    message.into_bytes(),
+                    false,
+                ),
             },
             Route::Preview(id) => match preview_bytes(&state, id) {
                 Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),

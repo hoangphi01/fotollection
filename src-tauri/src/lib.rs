@@ -32,6 +32,10 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::set_camera_profile,
             commands::pick_camera_logo,
             commands::clear_camera_logo,
+            commands::get_crop_geometry,
+            commands::set_photo_crop,
+            commands::undo,
+            commands::redo,
         ])
         .events(collect_events![
             events::LibraryChanged,
@@ -39,6 +43,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             events::ExportProgress,
             events::ExportFinished,
             events::TaskProgress,
+            events::RevisionChanged,
         ])
 }
 
@@ -69,7 +74,30 @@ pub fn run() {
             builder.mount_events(app);
             let thumb_dir = app.path().app_cache_dir()?.join("thumbs");
             let config_dir = app.path().app_config_dir()?;
-            app.manage(state::AppState::new(thumb_dir, &config_dir)?);
+            let project_path = app
+                .path()
+                .app_data_dir()?
+                .join("projects")
+                .join("session.fotollection");
+            app.manage(state::AppState::new(thumb_dir, &config_dir, project_path)?);
+
+            // Autosave (NFR-013): at most ~1 s after the last edit, atomically.
+            let handle = app.handle().clone();
+            std::thread::spawn(move || {
+                loop {
+                    std::thread::sleep(std::time::Duration::from_secs(1));
+                    let state = handle.state::<state::AppState>();
+                    if state
+                        .project_dirty
+                        .swap(false, std::sync::atomic::Ordering::Relaxed)
+                    {
+                        state.save_project();
+                    }
+                }
+            });
+            // Reopen the last session: re-scan folders and restore edits (FR-023).
+            let handle = app.handle().clone();
+            std::thread::spawn(move || commands::restore_session(&handle));
             // Dev-only: FOTOLLECTION_IMPORT=<folder> imports at startup, for quick iteration.
             #[cfg(debug_assertions)]
             if let Some(folder) = std::env::var_os("FOTOLLECTION_IMPORT") {

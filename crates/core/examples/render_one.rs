@@ -12,7 +12,7 @@ use fotollection_core::image::apply_orientation;
 use fotollection_core::import::check_file;
 use fotollection_core::library::Library;
 use fotollection_core::metadata;
-use fotollection_core::plan::{FrameRequest, plan};
+use fotollection_core::plan::{FrameRequest, PlanInput, plan};
 use fotollection_core::render::render;
 use fotollection_core::settings::RenderSettings;
 
@@ -64,15 +64,16 @@ fn main() {
             logo: None,
         }
     });
-    let p = plan(
-        upright.width,
-        upright.height,
-        Some(record.capture),
-        &settings,
+    let p = plan(&PlanInput {
+        width: upright.width,
+        height: upright.height,
+        capture: Some(record.capture),
+        settings: &settings,
         print,
-        None,
-        request.as_ref(),
-    );
+        max_long_edge: None,
+        frame: request.as_ref(),
+        crop: None,
+    });
     let image = render(&upright, &p).unwrap();
     std::fs::write(output, codec.encode(&image, 92, None).unwrap()).unwrap();
     println!(

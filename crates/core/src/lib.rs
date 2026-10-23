@@ -3,10 +3,12 @@
 //!
 //! See `docs/ARCHITECTURE.md` and ADR-0002 for the crate boundary.
 
+pub mod atomic;
 pub mod cancel;
 pub mod codec;
 pub mod export;
 pub mod frame;
+pub mod history;
 pub mod image;
 pub mod import;
 pub mod library;
@@ -15,6 +17,7 @@ pub mod metadata;
 pub mod plan;
 pub mod preview;
 pub mod print_size;
+pub mod project;
 pub mod render;
 pub mod settings;
 pub mod settings_store;

@@ -7,6 +7,15 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 use tauri_specta::Event;
 
+/// Render-affecting state changed (settings, frame, crops, undo); previews refresh.
+#[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
+#[serde(rename_all = "camelCase")]
+pub struct RevisionChanged {
+    pub revision: u32,
+    pub can_undo: bool,
+    pub can_redo: bool,
+}
+
 /// Photos were added; the UI refetches the list.
 #[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
 #[serde(rename_all = "camelCase")]

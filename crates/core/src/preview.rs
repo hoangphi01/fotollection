@@ -8,7 +8,7 @@ use std::sync::{Arc, Mutex};
 use crate::codec::JpegCodec;
 use crate::image::{RgbImage, apply_orientation};
 use crate::library::{PhotoId, PhotoRecord, flags};
-use crate::plan::{FrameRequest, plan};
+use crate::plan::{FrameRequest, PlanInput, plan};
 use crate::render::{fit_long_edge, render};
 use crate::settings::RenderSettings;
 use crate::thumbs::ThumbError;
@@ -57,6 +57,16 @@ impl PreviewCache {
         Ok(image)
     }
 
+    /// The upright, uncropped T2 image as JPEG: the background of the crop editor.
+    pub fn source_jpeg(
+        &self,
+        record: &PhotoRecord,
+        codec: &dyn JpegCodec,
+    ) -> Result<Vec<u8>, ThumbError> {
+        let source = self.source(record, codec)?;
+        Ok(codec.encode(&source, PREVIEW_QUALITY, None)?)
+    }
+
     /// Renders the preview JPEG for `record` with the current settings.
     pub fn render_jpeg(
         &self,
@@ -68,15 +78,16 @@ impl PreviewCache {
         let source = self.source(record, codec)?;
         let print = settings.validate().unwrap_or(crate::PrintSize::ALL[1]);
         let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
-        let p = plan(
-            source.width,
-            source.height,
+        let p = plan(&PlanInput {
+            width: source.width,
+            height: source.height,
             capture,
             settings,
             print,
-            Some(PREVIEW_LONG_EDGE),
+            max_long_edge: Some(PREVIEW_LONG_EDGE),
             frame,
-        );
+            crop: record.edits.crop,
+        });
         let image = render(&source, &p)?;
         Ok(codec.encode(&image, PREVIEW_QUALITY, None)?)
     }

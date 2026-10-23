@@ -10,6 +10,11 @@ export function thumbUrl(id: number, version = 0): string {
   return `${base}/thumb/${id}?v=${version}`
 }
 
+/** The upright, uncropped photo, for the crop editor. */
+export function sourceUrl(id: number, revision: number): string {
+  return `${base}/source/${id}?rev=${revision}`
+}
+
 /** `revision` is the settings revision, so the preview refreshes when settings change. */
 export function previewUrl(id: number, revision: number): string {
   return `${base}/preview/${id}?rev=${revision}`

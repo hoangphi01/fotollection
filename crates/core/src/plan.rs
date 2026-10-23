@@ -6,7 +6,7 @@
 use std::sync::Arc;
 
 use chrono::NaiveDateTime;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use specta::Type;
 
 use crate::frame::{self, FrameFit, FrameLayout, FrameSettings, FrameText};
@@ -149,31 +149,99 @@ pub fn format_date(dt: NaiveDateTime, format: DateFormat) -> String {
     }
 }
 
-/// Builds the plan for a source of `width × height` (already oriented).
-/// `max_long_edge` downsizes the output for previews; `None` keeps full resolution.
-pub fn plan(
-    width: u32,
-    height: u32,
-    capture: Option<NaiveDateTime>,
-    settings: &RenderSettings,
-    print: PrintSize,
-    max_long_edge: Option<u32>,
-    frame: Option<&FrameRequest>,
-) -> RenderPlan {
-    if let Some(request) = frame.filter(|f| f.settings.enabled) {
-        return plan_framed(
-            width,
-            height,
-            capture,
-            settings,
-            print,
-            max_long_edge,
-            request,
-        );
+/// User crop as a centre and zoom on the upright photo (FR-006). The crop rectangle is
+/// derived at render time for whatever target ratio applies (print size, or the photo area
+/// of a framed print), so a crop survives size changes (FR-025, DATABASE.md N4).
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Type)]
+pub struct CropFrame {
+    /// Centre, 0–1 of the upright photo's width and height.
+    pub cx: f32,
+    pub cy: f32,
+    /// 1 = the largest crop at the target ratio; up to `MAX_ZOOM`.
+    pub zoom: f32,
+}
+
+pub const MAX_ZOOM: f32 = 8.0;
+
+impl CropFrame {
+    /// Clamps values coming over IPC or from a project file (SECURITY.md §2).
+    #[must_use]
+    pub fn sanitized(self) -> Self {
+        let unit = |v: f32| {
+            if v.is_finite() {
+                v.clamp(0.0, 1.0)
+            } else {
+                0.5
+            }
+        };
+        Self {
+            cx: unit(self.cx),
+            cy: unit(self.cy),
+            zoom: if self.zoom.is_finite() {
+                self.zoom.clamp(1.0, MAX_ZOOM)
+            } else {
+                1.0
+            },
+        }
     }
-    let crop = center_crop(width, height, print);
+}
+
+/// The crop rectangle for ratio `rw : rh`: centred and as large as possible, or as set by
+/// the user's `CropFrame`, always kept inside the photo.
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::cast_precision_loss
+)]
+pub fn crop_rect(width: u32, height: u32, rw: u64, rh: u64, frame: Option<CropFrame>) -> CropRect {
+    let base = center_crop_to(width, height, rw, rh);
+    let Some(f) = frame.map(CropFrame::sanitized) else {
+        return base;
+    };
+    let w = (f64::from(base.width) / f64::from(f.zoom)).round().max(1.0);
+    let h = (f64::from(base.height) / f64::from(f.zoom))
+        .round()
+        .max(1.0);
+    let x = (f64::from(f.cx) * f64::from(width) - w / 2.0).clamp(0.0, f64::from(width) - w);
+    let y = (f64::from(f.cy) * f64::from(height) - h / 2.0).clamp(0.0, f64::from(height) - h);
+    CropRect {
+        x: x.round() as u32,
+        y: y.round() as u32,
+        width: w as u32,
+        height: h as u32,
+    }
+}
+
+/// Everything needed to plan one output photo.
+#[derive(Debug, Clone, Copy)]
+pub struct PlanInput<'a> {
+    /// Upright source size.
+    pub width: u32,
+    pub height: u32,
+    pub capture: Option<NaiveDateTime>,
+    pub settings: &'a RenderSettings,
+    pub print: PrintSize,
+    /// Downsizes the output for previews; `None` keeps full resolution.
+    pub max_long_edge: Option<u32>,
+    pub frame: Option<&'a FrameRequest>,
+    pub crop: Option<CropFrame>,
+}
+
+/// Builds the plan for one photo.
+pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
+    if let Some(request) = input.frame.filter(|f| f.settings.enabled) {
+        return plan_framed(input, request);
+    }
+    let (width, height, print) = (input.width, input.height, input.print);
+    let (long, short) = (u64::from(print.long_mm), u64::from(print.short_mm));
+    let (rw, rh) = if width >= height {
+        (long, short)
+    } else {
+        (short, long)
+    };
+    let crop = crop_rect(width, height, rw, rh, input.crop);
     let (mut out_width, mut out_height) = (crop.width, crop.height);
-    if let Some(limit) = max_long_edge {
+    if let Some(limit) = input.max_long_edge {
         let long = out_width.max(out_height);
         if long > limit && long > 0 {
             let scale = f64::from(limit) / f64::from(long);
@@ -189,7 +257,7 @@ pub fn plan(
         crop,
         out_width,
         out_height,
-        stamp: stamp_spec(settings, capture, px_per_mm),
+        stamp: stamp_spec(input.settings, input.capture, px_per_mm),
         frame: None,
     }
 }
@@ -213,16 +281,11 @@ fn stamp_spec(
 
 /// The whole canvas keeps the print ratio; the photo fills (Crop) or fits (Fit) the space
 /// above the info bar (FR-040).
-fn plan_framed(
-    width: u32,
-    height: u32,
-    capture: Option<NaiveDateTime>,
-    settings: &RenderSettings,
-    print: PrintSize,
-    max_long_edge: Option<u32>,
-    request: &FrameRequest,
-) -> RenderPlan {
-    let long = max_long_edge.map_or(width.max(height), |m| m.min(width.max(height)));
+fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
+    let (width, height, print) = (input.width, input.height, input.print);
+    let long = input
+        .max_long_edge
+        .map_or(width.max(height), |m| m.min(width.max(height)));
     let (cw, ch) = frame::canvas_size(width, height, print, long);
     let layout = frame::layout(
         cw,
@@ -235,11 +298,12 @@ fn plan_framed(
     );
     let photo = layout.photo;
     let crop = match request.settings.fit {
-        FrameFit::Crop => center_crop_to(
+        FrameFit::Crop => crop_rect(
             width,
             height,
             u64::from(photo.width),
             u64::from(photo.height),
+            input.crop,
         ),
         FrameFit::Fit => CropRect {
             x: 0,
@@ -255,7 +319,7 @@ fn plan_framed(
         crop,
         out_width: photo.width,
         out_height: photo.height,
-        stamp: stamp_spec(settings, capture, px_per_mm),
+        stamp: stamp_spec(input.settings, input.capture, px_per_mm),
         frame: Some(FramePlan {
             layout,
             logo: request.logo.clone(),
@@ -303,6 +367,58 @@ mod tests {
     }
 
     #[test]
+    fn fr_006_crop_frame_clamped_inside_photo() {
+        // Centre pushed to a corner: the rectangle slides back inside.
+        let corner = CropFrame {
+            cx: 0.0,
+            cy: 1.0,
+            zoom: 2.0,
+        };
+        let r = crop_rect(6000, 4000, 3, 2, Some(corner));
+        assert_eq!((r.x, r.width, r.height), (0, 3000, 2000));
+        assert_eq!(r.y + r.height, 4000);
+        // Garbage is sanitized rather than trusted.
+        let bad = CropFrame {
+            cx: f32::NAN,
+            cy: 7.0,
+            zoom: 1000.0,
+        }
+        .sanitized();
+        assert_eq!((bad.cx, bad.cy, bad.zoom), (0.5, 1.0, MAX_ZOOM));
+    }
+
+    #[test]
+    fn fr_006_zoom_and_pan_keep_ratio() {
+        for zoom in [1.0, 1.5, 2.7, 8.0] {
+            for (cx, cy) in [(0.5, 0.5), (0.2, 0.8), (0.9, 0.1)] {
+                let r = crop_rect(4608, 3456, 3, 2, Some(CropFrame { cx, cy, zoom }));
+                let ratio = f64::from(r.width) / f64::from(r.height);
+                assert!((ratio - 1.5).abs() < 0.01, "zoom {zoom}: {ratio}");
+                assert!(r.x + r.width <= 4608 && r.y + r.height <= 3456);
+            }
+        }
+    }
+
+    #[test]
+    fn fr_025_crop_survives_size_change() {
+        // The same centre/zoom gives the same centre on another print ratio.
+        let f = CropFrame {
+            cx: 0.4,
+            cy: 0.45,
+            zoom: 1.5,
+        };
+        for (rw, rh) in [(3, 2), (4, 3), (1, 1)] {
+            let r = crop_rect(6000, 4000, rw, rh, Some(f));
+            let cx = (f64::from(r.x) + f64::from(r.width) / 2.0) / 6000.0;
+            let cy = (f64::from(r.y) + f64::from(r.height) / 2.0) / 4000.0;
+            assert!(
+                (cx - 0.4).abs() < 0.01 && (cy - 0.45).abs() < 0.01,
+                "{rw}:{rh}"
+            );
+        }
+    }
+
+    #[test]
     fn fr_026_effective_dpi_bands() {
         // 16 MP 4:3 onto 10x15: crop 4608x3072, long edge 150 mm = 5.906 in → 780 DPI.
         assert_eq!(
@@ -332,7 +448,16 @@ mod tests {
     #[test]
     fn fr_007_preview_plan_scales_down_and_keeps_ratio() {
         let settings = RenderSettings::default();
-        let p = plan(6000, 4500, None, &settings, size("10x15"), Some(1600), None);
+        let p = plan(&PlanInput {
+            width: 6000,
+            height: 4500,
+            capture: None,
+            settings: &settings,
+            print: size("10x15"),
+            max_long_edge: Some(1600),
+            frame: None,
+            crop: None,
+        });
         assert_eq!((p.out_width, p.out_height), (1600, 1067));
         assert!(p.stamp.is_none(), "no capture date, no stamp");
     }

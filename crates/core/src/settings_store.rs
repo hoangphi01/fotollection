@@ -2,8 +2,6 @@
 //! `settings.json`: app-wide settings and camera profiles (DATABASE.md §6). Versioned,
 //! validated on load, written atomically, and never overwritten by an older app.
 
-use std::fs::File;
-use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
@@ -110,11 +108,8 @@ pub fn quarantine(path: &Path) -> std::io::Result<PathBuf> {
     Ok(target)
 }
 
-/// Writes atomically: temp file + fsync + rename, keeping the previous file as `.bak`.
+/// Writes atomically, keeping the previous file as `.bak` (DATABASE.md §4.4).
 pub fn save(path: &Path, settings: &StoredSettings) -> std::io::Result<()> {
-    if let Some(dir) = path.parent() {
-        std::fs::create_dir_all(dir)?;
-    }
     let file = FileV1 {
         format: FORMAT.to_owned(),
         schema_version: SCHEMA_VERSION,
@@ -123,16 +118,7 @@ pub fn save(path: &Path, settings: &StoredSettings) -> std::io::Result<()> {
         cameras: settings.cameras.clone(),
     };
     let bytes = serde_json::to_vec_pretty(&file).map_err(std::io::Error::other)?;
-    let tmp = path.with_extension("json.tmp");
-    {
-        let mut f = File::create(&tmp)?;
-        f.write_all(&bytes)?;
-        f.sync_all()?;
-    }
-    if path.exists() {
-        std::fs::copy(path, path.with_extension("json.bak"))?;
-    }
-    std::fs::rename(&tmp, path)
+    crate::atomic::write_with_backup(path, &bytes)
 }
 
 #[cfg(test)]

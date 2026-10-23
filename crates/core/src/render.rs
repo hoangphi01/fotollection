@@ -361,7 +361,7 @@ mod tests {
     use super::*;
     use crate::frame::{FrameFit, FrameSettings, build_text};
     use crate::library::ShotInfo;
-    use crate::plan::{FrameRequest, SAFE_AREA_MM, plan};
+    use crate::plan::{FrameRequest, PlanInput, SAFE_AREA_MM, plan};
     use crate::print_size::PrintSize;
     use crate::settings::RenderSettings;
 
@@ -380,7 +380,16 @@ mod tests {
         ] {
             let mut settings = RenderSettings::default();
             settings.stamp.corner = corner;
-            let p = plan(6000, 4000, capture(), &settings, print, None, None);
+            let p = plan(&PlanInput {
+                width: 6000,
+                height: 4000,
+                capture: capture(),
+                settings: &settings,
+                print,
+                max_long_edge: None,
+                frame: None,
+                crop: None,
+            });
             let spec = p.stamp.as_ref();
             let b = spec.and_then(|s| stamp_box(p.out_width, p.out_height, s));
             let Some(b) = b else {
@@ -403,7 +412,16 @@ mod tests {
         let print = PrintSize::ALL[1];
         let settings = RenderSettings::default();
         let source = RgbImage::new(1500, 1000);
-        let p = plan(1500, 1000, capture(), &settings, print, None, None);
+        let p = plan(&PlanInput {
+            width: 1500,
+            height: 1000,
+            capture: capture(),
+            settings: &settings,
+            print,
+            max_long_edge: None,
+            frame: None,
+            crop: None,
+        });
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         let changed = out.data.iter().filter(|&&v| v != 0).count();
         assert!(changed > 0, "stamp drew nothing");
@@ -420,7 +438,16 @@ mod tests {
         }
         let mut settings = RenderSettings::default();
         settings.stamp.enabled = false;
-        let p = plan(30, 20, None, &settings, PrintSize::ALL[6], None, None); // 15x15 square
+        let p = plan(&PlanInput {
+            width: 30,
+            height: 20,
+            capture: None,
+            settings: &settings,
+            print: PrintSize::ALL[6],
+            max_long_edge: None,
+            frame: None,
+            crop: None,
+        }); // 15x15 square
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         assert_eq!((out.width, out.height), (20, 20));
         // First output pixel is source pixel (5, 0).
@@ -447,7 +474,16 @@ mod tests {
         let mut settings = RenderSettings::default();
         settings.stamp.enabled = false;
         let source = RgbImage::new(w, h);
-        let p = plan(w, h, capture(), &settings, print, None, Some(&request));
+        let p = plan(&PlanInput {
+            width: w,
+            height: h,
+            capture: capture(),
+            settings: &settings,
+            print,
+            max_long_edge: None,
+            frame: Some(&request),
+            crop: None,
+        });
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         (out, p)
     }
