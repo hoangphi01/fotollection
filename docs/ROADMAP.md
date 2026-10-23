@@ -50,6 +50,7 @@
 | FR-042 | Custom fonts |
 | FR-043 | Custom print sizes |
 | FR-045 | Original aspect ratio |
+| FR-020 | Localization (English and Vietnamese; German later) |
 
 **Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v0.1.0 is released.
 
@@ -72,6 +73,7 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 |------|-------------|-----------|
 | `.fotollection` as a self-contained ZIP bundle, like `.docx`: `manifest.json` with checksums, `project.json`, `settings.json`, embedded `fonts/`, `logos/` and `presets/`. Photos are not embedded | FR-023 | New schema version, migration from v1 and a fixture; an ADR superseding [ADR-0010](adr/0010-project-file-format.md) |
 | Save as / Open, installing embedded fonts and logos after validation, plus a **Relink folder** dialog when photos moved | FR-023 | Untrusted input: zip-bomb limits, path-traversal checks, typed parsing of every part ([SECURITY.md](SECURITY.md)) |
+| App localization: English (default) and Vietnamese through `i18next` + `react-i18next` (MIT), bundled locale files and typed keys; language stored in `settings.json` v3; Rust errors translated by `code`. An ADR records the choice | FR-020 | About 110 strings in 18 components; `settings.json` v3 needs a migration and a fixture |
 | Faster previews: Stage 1 profiling shows JPEG encode is 62 % of the warm preview ([OPTIMIZATION.md §2.1](OPTIMIZATION.md#21-measured-the-same-job-in-chromium)). First plain Huffman tables and 4:2:0 for previews, then a `turbojpeg` codec behind `JpegCodec` if still needed; target ≤ 17 ms warm | NFR-002 | Native dependency on both platforms if `turbojpeg` is needed ([ADR-0012](adr/0012-pure-rust-codecs-first.md)) |
 
 **Stage 3 — Hard, research and native code**
@@ -107,7 +109,6 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 | FR-017 | Photo book layout preview |
 | FR-018 | QR code on photo back |
 | FR-019 | Print service upload |
-| FR-020 | Localization |
 | FR-021 | Auto-update |
 | FR-029 | Output sharpening |
 | FR-035 | Multi-photo layouts |

@@ -1,13 +1,21 @@
 {
   "engine": "Fotollection core (Rust, release)",
-  "exportPerSecond": 18.95989082495707,
-  "exportSeconds": 5.010577375,
-  "importMs": 23.582958,
+  "exportPerSecond": 18.369492284748077,
+  "exportSeconds": 5.171618166,
+  "importMs": 25.699083,
   "inputBytes": 286477087,
   "photos": 95,
-  "previewColdMs": 121.143875,
-  "previewWarmP50Ms": 25.985375,
-  "previewWarmP95Ms": 27.124916,
+  "previewColdMs": 118.419,
+  "previewDrawMs": 9.703332999999999,
+  "previewEncodeMs": 16.233125,
+  "previewStampMs": 0.32029200000000024,
+  "previewWarmP50Ms": 26.276291,
+  "previewWarmP95Ms": 26.636958,
+  "rssAfterExportMb": 1241.796875,
+  "rssAfterImportMb": 7.03125,
+  "rssAfterT1Mb": 680.734375,
+  "t0Ms": 6.824083,
+  "t1PerSecond": 44.36838596734099,
   "threads": 6,
-  "peakRssBytes": 1362722816
+  "peakRssBytes": 1412792320
 }

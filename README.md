@@ -4,6 +4,8 @@
 
 # Fotollection
 
+**English** · [VI](README.vi.md)
+
 **Fast, private, offline photo-print preparation for macOS and Windows.**
 
 Stamp the date and place on your photos, crop them to real print sizes, and get them ready for the lab, all without a single photo leaving your computer.
@@ -31,7 +33,7 @@ Stamp the date and place on your photos, crop them to real print sizes, and get 
 ---
 
 > [!NOTE]
-> **Fotollection is in early development.** The first working slice handles **JPEG** end to end: import → preview with crop and date stamp → export. HEIC, place names, culling and more are on the way. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Fotollection is in early development.** It already works end to end for **JPEG and PNG**: import → cull with stars and flags → preview with crop, date stamp and info frame → export. HEIC, offline place names and self-contained project files are on the way. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
 
 <p align="center">
   <img src="docs/images/screenshot-light.png" alt="Fotollection main window (light theme)" width="49%" />
@@ -52,11 +54,14 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 
 | | Feature | Phase |
 |---|---------|-------|
-| 📅 | **Date and location stamps** from EXIF. Places are resolved offline, with no API calls | MVP |
-| ✂️ | **Batch crop** to 8 EU print sizes (9×13 … 20×30, square, strip), with an adjustable frame per photo | MVP |
+| 📅 | **Date and location stamps** from EXIF, in your own OTF/TTF font. Places are resolved offline, with no API calls | MVP |
+| ✂️ | **Batch crop** to 8 EU print sizes (9×13 … 20×30, square, strip), your own sizes (e.g. 4 × 6 in) or the photo's **original** ratio, with an adjustable crop per photo | MVP |
+| ⭐ | **Culling**: stars, pick/reject flags and filters; export writes exactly the filtered set | MVP |
+| 🏷️ | **"Shot on …" info frame** with camera, lens and exposure, LUMIX Lab style, at the exact print ratio | MVP |
 | 🖼️ | **Original quality**: full resolution, ICC profile preserved, lossless crop when possible | MVP |
-| 📱 | **JPEG, HEIC (iPhone) and PNG** input | MVP |
+| 📱 | **JPEG and PNG** input today, **HEIC** (iPhone) next | MVP |
 | 🔒 | **GPS stripped on export** by default. No account, no cloud, no telemetry | MVP |
+| 🌐 | **English and Vietnamese** interface | MVP |
 | 🧳 | **Trip grouping**, face-aware smart crop, duplicate detection | 2 |
 | 🎞️ | RAW input, photo-book preview, QR codes on the back of prints | 3 |
 
@@ -64,28 +69,65 @@ Full specification: [docs/PRD.md](docs/PRD.md).
 
 ## Performance
 
-Fotollection is built for enthusiast and professional photographers, so speed is a requirement, not a nice-to-have. Every number below is measured, not estimated. Measurements: an Apple M3 (8 cores, 16 GB), real 16 MP JPEGs, 2026-10-23. Full results are in [docs/RESULT.md](docs/RESULT.md).
+Fotollection is built for enthusiast and professional photographers, so speed is a requirement, not a nice-to-have. **Every number below is measured, not estimated**, on an Apple M3 (8 cores, 16 GB) with real 16 MP JPEGs, 2026-10-23. Each chart has a reference to read it against: the budget, the memory ceiling, or the browser. Full results: [docs/RESULT.md](docs/RESULT.md).
+
+### Against the budgets
+
+![Open a folder: 0.12 s per 1,000 photos, budget under 1 s. Preview: 27 ms, budget under 50 ms. Export: 18.4 photos/s, budget at least 8. Peak memory: 1.45 GB, budget at most 2 GB.](docs/images/bench-budgets.svg)
 
 | What | Budget | Measured | |
 |------|--------|----------|---|
-| Open a folder (import + EXIF + first thumbnails) | < 1 s for 1,000 photos | **0.6 s for 5,035 photos** | ✓ |
-| Preview update when changing settings | < 50 ms | **26 ms** (p50) | ✓ |
-| Export throughput | ≥ 8 photos/s (24 MP) | **17–19 photos/s** (16 MP) | ✓ |
-| Peak memory, 95 photos | ≤ 2 GB | **1.33 GB** | ✓ |
-| Peak memory, 5,035 photos | ≤ 2 GB, any batch size | **1.47 GB**: memory stays flat as batches grow | ✓ |
+| Open a folder (import + EXIF + first thumbnails) | < 1 s per 1,000 photos | **0.12 s** per 1,000 (5,035 photos in 0.62 s) | ✓ |
+| Preview update after a settings change | < 50 ms (p95) | **27 ms** p95, 26 ms p50 | ✓ |
+| Export throughput | ≥ 8 photos/s at 24 MP | **18.4 photos/s** at 16 MP | ✓ |
+| Peak memory | ≤ 2 GB at any batch size | **1.45 GB** with 5,035 photos | ✓ |
 
-We measured it against the obvious alternative, a web app doing the same work in the browser (`createImageBitmap` + `OffscreenCanvas` in Web Workers, one per core). Both ran on the same 95 photos on the same machine:
+### Large batches
 
-![Batch export: Fotollection 18.6 photos/s, browser 18.7. Warm preview: Fotollection 26.0 ms, browser 17.4 ms. Peak memory: Fotollection 1.40 GB, browser 1.76 GB.](docs/images/bench.svg)
+Memory must not grow with the number of photos. A batch 53 times larger costs 0.04 GB more at peak:
 
-On raw speed, the browser is just as fast. Chromium uses libjpeg-turbo with SIMD, and it wins on small previews. That does not mean Fotollection could be a web page:
+![Peak memory: 1.41 GB for 95 photos and 1.45 GB for 5,035 photos, against a 2 GB ceiling.](docs/images/bench-memory.svg)
+
+| Photos | Peak memory | Export | Library in memory |
+|-------:|------------:|-------:|------------------:|
+| 95 | 1.41 GB | 18.4 photos/s | — |
+| 5,035 | 1.45 GB | 15.4 photos/s | 13 MB |
+
+The 5,035-photo export runs for more than 5 minutes, and the M3 throttles under that load, which explains the lower throughput.
+
+### Against the browser
+
+The obvious alternative is a web app that does the same work in the browser (`createImageBitmap` + `OffscreenCanvas`, one Web Worker per core). Both ran on the same 95 photos on the same machine:
+
+![Batch export: Fotollection 18.4 photos/s, browser 19.0. Warm preview: Fotollection 25.9 ms, browser 17.4 ms. Peak memory: Fotollection 1.41 GB, browser 1.77 GB.](docs/images/bench.svg)
+
+| | Fotollection (Rust) | Browser (Chromium 156) | |
+|---|---:|---:|---|
+| Batch export | 18.4 photos/s | 19.0 photos/s | About the same |
+| Warm preview, 1600 px (p50) | 25.9 ms | 17.4 ms | Browser faster |
+| Peak memory | 1.41 GB | 1.77 GB | Fotollection 20 % lower |
+
+On raw speed, the browser is just as fast: Chromium uses libjpeg-turbo with SIMD, and it wins on small previews. That does not mean Fotollection could be a web page:
 
 - The browser can only encode JPEG with 4:2:0 chroma, which halves colour resolution. Fotollection exports 4:4:4, with twice the chroma data, in the same time.
-- Fotollection uses 20% less memory, and its export is bounded: a measured batch of 5,035 photos peaks at 1.47 GB. A browser tab has a hard ceiling.
-- Fotollection writes the files with atomic renames, and writes no EXIF, so GPS never leaves your machine. The browser only produced blobs and never wrote them.
+- Fotollection uses 20 % less memory, and its export is bounded, as the large-batch test shows. A browser tab has a hard ceiling.
+- Fotollection writes the files with atomic renames and writes no EXIF, so GPS never leaves your machine. The browser only produced blobs and never wrote them.
 - Colour profiles (ICC), 16-bit RAW in Phase 3, and HEIC are out of reach in the browser.
 
-Faster previews are the next optimization: profiling shows that JPEG encoding takes 62 % of the preview time. Reproduce the chart with `bench/run.sh <photo-folder>`. The method is in [docs/OPTIMIZATION.md §2](docs/OPTIMIZATION.md#2-why-native-rust-instead-of-a-web-app), and the budgets every change must respect are in [§3](docs/OPTIMIZATION.md#3-budgets).
+### Where the preview time goes
+
+![Preview breakdown: crop and resize 9.7 ms, date stamp 0.1 ms, JPEG encode 16.2 ms, 26.0 ms in total, against Chromium at 17.4 ms and the 50 ms budget.](docs/images/bench-preview.svg)
+
+| Step | Time | Share |
+|------|-----:|------:|
+| Crop + resize | 9.7 ms | 37 % |
+| Date stamp | 0.1 ms | ≈ 0 % |
+| JPEG encode | 16.2 ms | 62 % |
+| **Total** | **26.0 ms** | budget 50 ms · Chromium 17.4 ms |
+
+The JPEG encoder is the bottleneck, so it is the next optimization ([ROADMAP Stage 2](docs/ROADMAP.md#phase-1-work-order-2026-10-23)).
+
+Reproduce everything with `bench/run.sh <photo-folder>` and `bench/batch.sh <photo-folder>`. The method is in [docs/OPTIMIZATION.md §2](docs/OPTIMIZATION.md#2-why-native-rust-instead-of-a-web-app), and the budgets every change must respect are in [§3](docs/OPTIMIZATION.md#3-budgets).
 
 ## Download
 
@@ -114,7 +156,7 @@ Every tool version is pinned: `rust-toolchain.toml`, `.node-version`, `Cargo.loc
 
 | Layer | Technology |
 |-------|------------|
-| Core (Rust) | libjpeg-turbo, libheif, lcms2, fast_image_resize, rayon. Offline geocoding with GeoNames |
+| Core (Rust) | Pure-Rust codecs: zune-jpeg, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md)); fast_image_resize, ab_glyph, rayon. Planned: libheif for HEIC, lcms2 for colour, GeoNames for offline places |
 | Shell | [Tauri 2](https://v2.tauri.app/): the system webview, no bundled Chromium |
 | UI | React 19, TypeScript, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/), [Lucide](https://lucide.dev/) |
 | Typed IPC | [tauri-specta](https://github.com/specta-rs/tauri-specta): TypeScript bindings generated from Rust |
@@ -129,7 +171,9 @@ All docs live in [`docs/`](docs/README.md) and change together with the code ([A
 |-----|---------------|
 | [PRD](docs/PRD.md) | Requirements (`FR-xxx`, `NFR-xxx`) |
 | [Architecture](docs/ARCHITECTURE.md) | Crates, pipeline, IPC contract |
+| [Results](docs/RESULT.md) | Latest measured speed and memory |
 | [Optimization](docs/OPTIMIZATION.md) | Budgets, methodology, benchmark log |
+| [File formats](docs/EXTENSION.md) | `.fotollection`, `.fotopreset` and every other file type |
 | [Style rules](docs/STYLE_RULE.md) | Rust, TypeScript, UI, git and docs conventions |
 | [Security](docs/SECURITY.md) | Threat model, privacy, supply chain |
 | [Roadmap](docs/ROADMAP.md) / [Status](docs/STATUS.md) | Phases and progress |

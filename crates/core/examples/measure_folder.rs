@@ -101,16 +101,15 @@ fn main() {
         found.rejected.len(),
         rss_mb()
     );
+    let rss_import = rss_mb();
 
     let t = Instant::now();
     let t0_count = records
         .par_iter()
         .filter(|r| thumbs::t0(r, codec.as_ref()).is_some())
         .count();
-    report!(
-        "T0 (embedded) thumbnails: {t0_count} in {:.0} ms",
-        t.elapsed().as_secs_f64() * 1e3
-    );
+    let t0_ms = t.elapsed().as_secs_f64() * 1e3;
+    report!("T0 (embedded) thumbnails: {t0_count} in {t0_ms:.0} ms");
 
     let cache_dir = tempfile::tempdir().unwrap();
     let cache = ThumbCache::new(cache_dir.path().to_path_buf());
@@ -126,6 +125,7 @@ fn main() {
         records.len() as f64 / t1,
         rss_mb()
     );
+    let rss_t1 = rss_mb();
 
     let previews = PreviewCache::new();
     let settings = RenderSettings::default();
@@ -236,6 +236,7 @@ fn main() {
         summary.failed.len(),
         rss_mb()
     );
+    let rss_export = rss_mb();
 
     if json {
         let input_bytes: u64 = records.iter().map(|r| r.size).sum();
@@ -249,6 +250,11 @@ fn main() {
             "previewWarmP50Ms": warm[10],
             "previewWarmP95Ms": warm[18],
             "importMs": import_ms,
+            "t0Ms": t0_ms,
+            "t1PerSecond": records.len() as f64 / t1,
+            "rssAfterImportMb": rss_import,
+            "rssAfterT1Mb": rss_t1,
+            "rssAfterExportMb": rss_export,
             "previewDrawMs": draw_plain_ms,
             "previewStampMs": draw_ms - draw_plain_ms,
             "previewEncodeMs": encode_ms,

@@ -89,7 +89,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
 
 ## 6. Documentation
 
-- **Language:** English for all repository docs, code and commits. Vietnamese translations of user-facing docs can be added later under `docs/vi/`.
+- **Language:** English for all repository docs, code and commits. The one exception is `README.vi.md`, the Vietnamese README that GitHub readers reach through the **VI** link at the top of `README.md`. Every change to `README.md` updates `README.vi.md` in the same commit, and `scripts/check-docs.sh` checks that both have the same sections and charts. Any other translation goes under `docs/vi/`.
 - **Single source of truth:** every fact has exactly one home (see [docs/README.md](README.md#where-does-each-fact-live)). Other files link to it rather than copying it.
 - **Stable IDs:** `FR-NNN`, `NFR-NNN` and `ADR-NNNN` are never renumbered or reused. Retired items are marked *Withdrawn* or *Superseded*.
 - **Write an ADR** when a decision is hard to reverse, affects more than one module, or chooses between real alternatives. Use [adr/0000-template.md](adr/0000-template.md).

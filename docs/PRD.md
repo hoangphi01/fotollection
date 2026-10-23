@@ -217,7 +217,13 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 ### FR-020 — Localization
 
-**P2.** UI available in English, German and Vietnamese.
+**P1.** The UI is available in **English (the default) and Vietnamese**. German follows later.
+
+- Every user-visible string in the UI goes through the i18n layer. CI fails on a hard-coded string in a component and on a key that one language lacks.
+- The language is chosen in the app settings, takes effect immediately without a restart, and is remembered ([DATABASE.md §6](DATABASE.md#6-app-settings)).
+- Numbers, dates and sizes are formatted for the language, for example `18.6` and `18,6`.
+- Errors from the Rust core are shown in the UI language, translated from their stable `code` ([SECURITY.md §8](SECURITY.md#8-resilience-and-error-handling)). The English `message` is the fallback.
+- **Out of scope:** text printed on photos (the info frame's "Shot on …" line and the date stamp) does not follow the UI language. It is print content and stays as configured.
 
 ### FR-021 — Auto-update
 

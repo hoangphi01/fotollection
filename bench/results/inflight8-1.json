@@ -1,0 +1,21 @@
+{
+  "engine": "Fotollection core (Rust, release)",
+  "exportPerSecond": 20.75871273978526,
+  "exportSeconds": 4.576391667,
+  "importMs": 5.496416,
+  "inputBytes": 286477087,
+  "photos": 95,
+  "previewColdMs": 126.353833,
+  "previewDrawMs": 9.682208,
+  "previewEncodeMs": 16.11425,
+  "previewStampMs": 0.06395900000000054,
+  "previewWarmP50Ms": 25.961125000000003,
+  "previewWarmP95Ms": 26.770542000000003,
+  "rssAfterExportMb": 1384.1875,
+  "rssAfterImportMb": 7.109375,
+  "rssAfterT1Mb": 639.984375,
+  "t0Ms": 5.395291,
+  "t1PerSecond": 49.21133546001795,
+  "threads": 8,
+  "peakRssBytes": 1734770688
+}

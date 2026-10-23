@@ -72,6 +72,11 @@ cargo run --release -p fotollection-core --example measure_folder -- ~/Pictures/
 # Rust vs browser benchmark (macOS; downloads Playwright Chromium once, ~1.5 GB in
 # ~/Library/Caches/ms-playwright). Writes bench/results/*.json and docs/images/bench.svg:
 bench/run.sh ~/Pictures/some-folder 3
+# Large-batch memory check: hard-links the folder 53 times (no extra disk, same volume as
+# $TMPDIR), exports with --discard-output, writes bench/results/batch-<n>.json:
+bench/batch.sh ~/Pictures/some-folder 53
+# Redraw every chart (docs/images/bench*.svg, English and -vi) from bench/results/*.json:
+node bench/chart.mjs
 ```
 
 The IPC bindings (`ui/src/ipc/bindings.ts`) are generated from Rust by `tauri-specta` on every debug run and every `cargo test`. Commit them. CI fails if they are stale.

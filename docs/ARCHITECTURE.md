@@ -99,7 +99,7 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
     lib/                 † # small UI utilities (theme sync, shadcn's cn re-export)
     index.css            † # Tailwind layers + shadcn theme tokens (CSS variables)
 scripts/                 † # bootstrap, clean, check-docs, small-icons.py (≤ 64 px icons from assets/logo-small.png)
-bench/                   † # Rust vs browser benchmark: run.sh, web/ (Chromium via Playwright), chart.mjs, results/ (OPTIMIZATION.md §2.1)
+bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batch.sh (5,000-photo memory check), lib.sh, web/ (Chromium via Playwright), chart.mjs (EN + VI SVG charts), results/ (numbers only, incl. budgets.json mirrored from OPTIMIZATION §3)
 ```
 
 ## 3. Tech stack

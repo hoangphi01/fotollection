@@ -13,6 +13,7 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
    - Progress → [docs/STATUS.md](docs/STATUS.md)
    - Significant decision → a new ADR in [docs/adr/](docs/adr/README.md)
    - User-visible change → [CHANGELOG.md](CHANGELOG.md) under `Unreleased`
+   - `README.md` → also [README.vi.md](README.vi.md), the Vietnamese version, in the same commit
 2. **Requirement IDs are permanent.** Never renumber or reuse `FR-`, `NFR-` or `ADR-` IDs. Add new ones at the end.
 3. **Performance first, measured.** No optimization without a benchmark. Respect the budgets in [docs/OPTIMIZATION.md §3](docs/OPTIMIZATION.md#3-budgets).
 4. **Privacy.** No network calls in the core, no telemetry, GPS stripped on export by default.
@@ -29,4 +30,4 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
 ## Repository facts
 
 - Remote: `github.com/hoangphi01/fotollection` (public), default branch `main`.
-- Docs are written in English. The project owner often discusses in Vietnamese.
+- Docs are written in English, except `README.vi.md`. The project owner often discusses in Vietnamese.
