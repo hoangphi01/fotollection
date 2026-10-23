@@ -551,7 +551,7 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             .read()
             .map_err(|e| IpcError::internal(e.to_string()))?
             .0
-            .validate()
+            .print_for(width, height)
             .unwrap_or(PrintSize::ALL[1]);
         let (print_dpi, print_quality) = effective_dpi(width, height, print);
         let shot = record.shot.clone();
@@ -853,7 +853,9 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
             .map_err(|e| IpcError::internal(e.to_string()))?
             .0
             .clone();
-        let print = settings.validate().unwrap_or(PrintSize::ALL[1]);
+        let print = settings
+            .print_for(width, height)
+            .unwrap_or(PrintSize::ALL[1]);
         let frame = state
             .frame
             .read()

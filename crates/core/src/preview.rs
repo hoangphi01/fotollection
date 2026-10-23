@@ -78,7 +78,9 @@ impl PreviewCache {
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
         let source = self.source(record, codec)?;
-        let print = settings.validate().unwrap_or(crate::PrintSize::ALL[1]);
+        let print = settings
+            .print_for(source.width, source.height)
+            .unwrap_or(crate::PrintSize::ALL[1]);
         let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
         let p = plan(&PlanInput {
             width: source.width,

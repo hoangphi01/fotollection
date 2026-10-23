@@ -370,7 +370,12 @@ pub fn canvas_size(
     print: PrintSize,
     long_edge: u32,
 ) -> (u32, u32) {
-    let ratio = f64::from(print.short_mm) / f64::from(print.long_mm);
+    let ratio = if print.is_original() {
+        // The photo's exact ratio (FR-045), not the mm-rounded one.
+        f64::from(src_width.min(src_height).max(1)) / f64::from(src_width.max(src_height).max(1))
+    } else {
+        f64::from(print.short_mm) / f64::from(print.long_mm)
+    };
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let short = (f64::from(long_edge) * ratio).round() as u32;
     if src_width >= src_height {
@@ -589,6 +594,15 @@ mod tests {
                     }
                 }
             }
+        }
+    }
+
+    #[test]
+    fn fr_045_original_frame_canvas_keeps_the_photo_ratio() {
+        for (sw, sh) in [(4608, 3456), (3456, 4608), (8000, 2000)] {
+            let print = PrintSize::original(sw, sh);
+            let (cw, ch) = canvas_size(sw, sh, print, sw.max(sh));
+            assert_eq!((cw, ch), (sw, sh), "the canvas is the photo's own ratio");
         }
     }
 

@@ -63,6 +63,7 @@ Nobody combines EXIF date/location stamping, trip auto-organization, and batch c
 | `20x30` | 20×30 | 8×12 | 2:3 | Extra large |
 | `15x15` | 15×15 | 6×6 | 1:1 | Square |
 | `5x15` | 5×15 | 2×6 | 1:3 | Photo strip |
+| `original` | 10 × (photo ratio), e.g. 10×13.3 for 4:3 | 4 × (photo ratio) | The photo's own | No crop ([FR-045](#fr-045--original-aspect-ratio)) |
 
 Target labs: CEWE, Rossmann, dm, Boots Photo, Snapfish, FreePrints, Photobox.
 
@@ -431,6 +432,14 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 ### FR-044 — Per-photo overrides
 
 **P2 (future).** Next to the batch settings, any setting can be overridden for one photo or a selection. For example, the date stamp can be turned off for photos that already have a timestamp burned in, while the rest of the batch keeps it. Overrides are stored sparsely per photo ([DATABASE.md §4](DATABASE.md#4-project-file-schema), `photos[].overrides`). The UI shows which photos deviate from the batch and offers *Reset to batch*. Until then, every setting applies to the whole batch.
+
+### FR-045 — Original aspect ratio
+
+**P1.** An **Original** print size keeps each photo's own aspect ratio, so nothing is cropped. It sits first in the print-size picker.
+
+- The print is 10 cm on the short edge, and the long edge follows the photo: a 4:3 photo prints at 10 × 13.3 cm, like a lab's "digital" format, and a 3:2 photo at 10 × 15 cm. The long edge is capped at 100 cm. This physical size drives the date stamp size and the DPI check ([FR-026](#fr-026--resolution-warning)).
+- The crop is the whole photo, computed from the exact pixel ratio, so millimetre rounding never cuts a pixel. The crop editor can still zoom and move the crop, at the same ratio.
+- With the info frame ([FR-040](#fr-040--exif-info-frame)), the whole print keeps the photo's ratio, and *Crop to fill* or *Fit whole photo* applies to the area above the bar.
 
 ## 7. Non-functional requirements
 

@@ -130,7 +130,7 @@ fn export_one(
 
     let print = options
         .settings
-        .validate()
+        .print_for(upright.width, upright.height)
         .unwrap_or(crate::PrintSize::ALL[1]);
     let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
     let frame = (options.frame_for)(record);

@@ -79,6 +79,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-042 | Custom fonts | 1 | Done | OTF/TTF import (Rust dialog, validated, copied), per stamp and per frame, remove → Inter. `fr_042_*` pass |
 | FR-043 | Custom print sizes | 1 | Done | cm/in entry, stored in mm, used by crop/frame/DPI/export. `fr_043_*` pass |
 | FR-044 | Per-photo overrides | 2 | Not Started | Future: e.g. untick the stamp for photos that already have one; batch first |
+| FR-045 | Original aspect ratio | 1 | Done | `print_size: "original"`: photo's own ratio, 10 cm short edge, exact pixel crop, framed canvas at photo ratio (`fr_045_*`) |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
 
 ## Non-functional requirements

@@ -242,7 +242,10 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
     }
     let (width, height, print) = (input.width, input.height, input.print);
     let (long, short) = (u64::from(print.long_mm), u64::from(print.short_mm));
-    let (rw, rh) = if width >= height {
+    let (rw, rh) = if print.is_original() {
+        // The exact pixel ratio: Original never loses a pixel to mm rounding (FR-045).
+        (u64::from(width), u64::from(height))
+    } else if width >= height {
         (long, short)
     } else {
         (short, long)
@@ -468,5 +471,59 @@ mod tests {
         });
         assert_eq!((p.out_width, p.out_height), (1600, 1067));
         assert!(p.stamp.is_none(), "no capture date, no stamp");
+    }
+
+    #[test]
+    fn fr_045_original_keeps_every_pixel() {
+        let mut settings = RenderSettings {
+            print_size: PrintSize::ORIGINAL_ID.into(),
+            ..RenderSettings::default()
+        };
+        settings.stamp.enabled = false;
+        for (w, h) in [
+            (4608, 3456),
+            (3000, 4000),
+            (6000, 4000),
+            (8000, 2000),
+            (4001, 2999),
+        ] {
+            let print = settings.print_for(w, h).unwrap_or(size("10x15"));
+            assert!(print.is_original());
+            let p = plan(&PlanInput {
+                width: w,
+                height: h,
+                capture: None,
+                settings: &settings,
+                print,
+                max_long_edge: None,
+                frame: None,
+                crop: None,
+                stamp_font: None,
+            });
+            assert_eq!(
+                (p.crop.x, p.crop.y, p.crop.width, p.crop.height),
+                (0, 0, w, h),
+                "{w}x{h} must not be cropped"
+            );
+        }
+    }
+
+    #[test]
+    fn fr_045_original_print_is_10cm_on_the_short_edge() {
+        let mm = |w, h| {
+            let p = PrintSize::original(w, h);
+            (p.short_mm, p.long_mm)
+        };
+        assert_eq!(mm(4608, 3456), (100, 133)); // 4:3 → 10 × 13.3 cm
+        assert_eq!(mm(3456, 4608), (100, 133)); // portrait, same print
+        assert_eq!(mm(6000, 4000), (100, 150)); // 3:2 → 10 × 15 cm
+        assert_eq!(mm(3000, 3000), (100, 100));
+        assert_eq!(mm(20_000, 1000), (100, 1000)); // panoramas capped at 1 m
+        // The placeholder from validate() is only used before a photo is known.
+        let settings = RenderSettings {
+            print_size: PrintSize::ORIGINAL_ID.into(),
+            ..RenderSettings::default()
+        };
+        assert!(settings.validate().is_ok_and(PrintSize::is_original));
     }
 }

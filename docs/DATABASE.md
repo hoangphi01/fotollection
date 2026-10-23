@@ -260,6 +260,8 @@ These are read-only and compiled into the binary or bundled as resources, so the
 }
 ```
 
+`render.printSize` is a built-in `PrintSize.id`, a `customSizes[].id`, or `"original"`, which keeps each photo's own ratio ([FR-045](PRD.md#fr-045--original-aspect-ratio)). `"original"` needs no new field, so the schema stays at v2. Builds from before FR-045 reject the value and fall back to defaults; none of them was released.
+
 - **`cameras` is a table** (N1–N3): the key is `id`, `(make, model)` is unique, and every override is optional (sparse, N5). A missing value falls back to EXIF or to a derived default, which is computed and never stored (N4). A row is created the first time a camera is imported.
 - **`fonts` is a table** (FR-042): `id` is the key, and the file lives at `fonts/<id>.<ttf|otf>`. `render.stamp.font` and `frame.font` are foreign keys. A dangling key falls back to Inter on load (N7) rather than failing.
 - **`render.customSizes`** (FR-043): values are in mm, `unit` only affects labels, and `printSize` may reference a custom `id`.

@@ -19,6 +19,8 @@ import { ratioLabel } from '@/lib/crop-geometry'
 import { MM_PER_IN, sizeLabel } from '@/lib/print-size'
 
 const ADD = '__add__'
+/** Keeps each photo's own ratio, no crop (FR-045). Matches `PrintSize::ORIGINAL_ID`. */
+const ORIGINAL = 'original'
 
 type PrintSizePickerProps = {
   settings: RenderSettings | null
@@ -81,6 +83,13 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
             <SelectValue placeholder="Loading…" />
           </SelectTrigger>
           <SelectContent>
+            <SelectGroup>
+              <SelectItem value={ORIGINAL}>
+                Original
+                <span className="text-muted-foreground"> · photo's own ratio, no crop</span>
+              </SelectItem>
+            </SelectGroup>
+            <SelectSeparator />
             <SelectGroup>
               <SelectLabel>Standard (CEWE / EU)</SelectLabel>
               {builtIn?.map((size) => (

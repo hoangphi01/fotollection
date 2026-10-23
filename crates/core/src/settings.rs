@@ -118,8 +118,13 @@ pub enum SettingsError {
 
 impl RenderSettings {
     /// Validates input coming over IPC (SECURITY.md §2).
+    /// Checks the settings and resolves the selected size. For Original (FR-045) this is a
+    /// placeholder: use [`Self::print_for`] wherever the photo is known.
     pub fn validate(&self) -> Result<PrintSize, SettingsError> {
         self.validate_custom_sizes()?;
+        if self.print_size == PrintSize::ORIGINAL_ID {
+            return Ok(PrintSize::original(3, 2));
+        }
         if let Some(size) = PrintSize::by_id(&self.print_size) {
             return Ok(size);
         }
@@ -128,6 +133,17 @@ impl RenderSettings {
             .find(|c| c.id == self.print_size)
             .map(|c| PrintSize::custom(c.short_mm, c.long_mm))
             .ok_or_else(|| SettingsError::UnknownPrintSize(self.print_size.clone()))
+    }
+
+    /// The print size for an upright `width` × `height` photo: the selected size, or the
+    /// photo's own ratio when Original is selected (FR-045).
+    pub fn print_for(&self, width: u32, height: u32) -> Result<PrintSize, SettingsError> {
+        let size = self.validate()?;
+        Ok(if size.is_original() {
+            PrintSize::original(width, height)
+        } else {
+            size
+        })
     }
 
     /// Display unit of the selected size: inches for custom sizes entered in inches.

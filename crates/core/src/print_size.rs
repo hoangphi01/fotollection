@@ -44,6 +44,33 @@ impl PrintSize {
         }
     }
 
+    /// `print_size` value that keeps each photo's own aspect ratio (FR-045).
+    pub const ORIGINAL_ID: &'static str = "original";
+    /// Short edge of an Original print. A 4:3 photo prints at 10 × 13.3 cm, like a lab's
+    /// "digital" format.
+    pub const ORIGINAL_SHORT_MM: u32 = 100;
+
+    /// The Original print of a `width` × `height` photo (FR-045): no crop, the photo's own
+    /// ratio, 10 cm on the short edge. The long edge is rounded to whole millimetres; the
+    /// render plan uses the exact pixel ratio, so the rounding never crops a pixel.
+    pub fn original(width: u32, height: u32) -> Self {
+        let (short, long) = (width.min(height).max(1), width.max(height).max(1));
+        let long_mm = (u64::from(Self::ORIGINAL_SHORT_MM) * u64::from(long) + u64::from(short) / 2)
+            / u64::from(short);
+        Self {
+            id: Self::ORIGINAL_ID,
+            short_mm: Self::ORIGINAL_SHORT_MM,
+            // Clamped to the custom-size ceiling, so a panorama stays a sane print.
+            long_mm: u32::try_from(long_mm)
+                .unwrap_or(u32::MAX)
+                .clamp(Self::ORIGINAL_SHORT_MM, 1000),
+        }
+    }
+
+    pub fn is_original(self) -> bool {
+        self.id == Self::ORIGINAL_ID
+    }
+
     /// Looks up a size by its identifier.
     pub fn by_id(id: &str) -> Option<PrintSize> {
         Self::ALL.iter().copied().find(|size| size.id == id)
