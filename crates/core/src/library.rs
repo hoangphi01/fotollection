@@ -54,6 +54,19 @@ pub mod flags {
 
 const NO_OFFSET: i16 = i16::MIN;
 
+/// Identity of a path that ignores separator style (`C:\a\b.jpg` == `C:/a/b.jpg`), so
+/// paths rebuilt from project rows (`/`-separated) match scanned paths on every OS.
+fn path_key(path: &Path) -> blake3::Hash {
+    let mut hasher = blake3::Hasher::new();
+    for (i, component) in path.components().enumerate() {
+        if i > 0 {
+            hasher.update(b"/");
+        }
+        hasher.update(component.as_os_str().as_encoded_bytes());
+    }
+    hasher.finalize()
+}
+
 /// All strings (relative paths) live in one buffer; columns hold `(start, len)` spans.
 #[derive(Default)]
 struct StrArena {
@@ -221,7 +234,7 @@ impl Library {
 
     /// Adds a photo. Returns `None` if the same path was already imported.
     pub fn push(&mut self, folder: u16, file: &ImportedFile, meta: &PhotoMeta) -> Option<PhotoId> {
-        let key = blake3::hash(file.path.as_os_str().as_encoded_bytes());
+        let key = path_key(&file.path);
         if self.seen.contains_key(&key) {
             return None;
         }
@@ -322,9 +335,7 @@ impl Library {
 
     /// The photo at `path`, if imported.
     pub fn find_path(&self, path: &Path) -> Option<PhotoId> {
-        self.seen
-            .get(&blake3::hash(path.as_os_str().as_encoded_bytes()))
-            .copied()
+        self.seen.get(&path_key(path)).copied()
     }
 
     pub fn edits(&self, id: PhotoId) -> PhotoEdits {
@@ -429,6 +440,18 @@ mod tests {
         );
         let names: Vec<_> = lib.summaries().into_iter().map(|s| s.file_name).collect();
         assert_eq!(names, ["a.jpg", "b.jpg"]);
+    }
+
+    #[test]
+    fn fr_023_path_key_ignores_separator_style() {
+        let mut lib = Library::new();
+        let f = lib.add_folder(Path::new("/trip"));
+        let id = lib.push(f, &file("/trip/sub/a.jpg", 0), &meta_at(14));
+        // Rebuilt the way project restore does: folder joined with a `/` relative path.
+        assert_eq!(lib.find_path(&Path::new("/trip").join("sub/a.jpg")), id);
+        assert_eq!(lib.find_path(Path::new("/trip//sub/./a.jpg")), id);
+        #[cfg(windows)]
+        assert_eq!(lib.find_path(Path::new(r"\trip\sub\a.jpg")), id);
     }
 
     #[test]
