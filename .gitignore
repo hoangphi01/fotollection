@@ -9,5 +9,7 @@
 GX9-C200-RECIPE.md
 
 # Build / deps
+target/
 node_modules/
 dist/
+ui/node_modules/.vite/

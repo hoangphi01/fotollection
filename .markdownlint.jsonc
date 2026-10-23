@@ -1,0 +1,16 @@
+{
+  // Docs style is defined in docs/STYLE_RULE.md §6.
+  "default": true,
+  // Long lines are fine; prose is wrapped by the editor, tables can't wrap.
+  "MD013": false,
+  // Repeated headings are allowed in different sections (e.g. "Context" in ADRs).
+  "MD024": { "siblings_only": true },
+  // Inline HTML is occasionally needed (e.g. <br> in tables).
+  "MD033": false,
+  // Bold lines used as labels are not headings.
+  "MD036": false,
+  // GitHub templates start with front matter or H2 by convention.
+  "MD041": false,
+  // Table column alignment is not enforced.
+  "MD060": false
+}

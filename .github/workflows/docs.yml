@@ -1,0 +1,30 @@
+name: docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Requirement & index consistency
+        run: bash scripts/check-docs.sh
+
+      - name: Markdown lint
+        uses: DavidAnson/markdownlint-cli2-action@v19
+        with:
+          globs: "**/*.md"
+
+      - name: Internal links and anchors
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Offline: check only repository-internal links (deterministic, no flaky network).
+          args: --offline --include-fragments --no-progress "**/*.md"
+          fail: true
