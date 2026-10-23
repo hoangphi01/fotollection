@@ -48,6 +48,13 @@ export function ratioLabel(width: number, height: number): string {
   const d = gcd(w, h)
   const [a, b] = [w / d, h / d]
   if (a <= 20 && b <= 20) return `${a}:${b}`
+  // Sizes entered in inches are stored in whole mm (4 × 6 in → 102 × 152), so snap to
+  // the nearest small ratio within 1 %.
+  for (let q = 1; q <= 20; q++) {
+    for (let p = 1; p <= 20; p++) {
+      if (gcd(p, q) === 1 && Math.abs((p / q) * h - w) <= 0.01 * w) return `${p}:${q}`
+    }
+  }
   const r = Math.max(w, h) / Math.min(w, h)
   return w <= h ? `1:${r.toFixed(2)}` : `${r.toFixed(2)}:1`
 }

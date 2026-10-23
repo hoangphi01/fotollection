@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { CustomPrintSize, LengthUnit, PrintSize, RenderSettings } from '@/ipc/bindings'
+import { ratioLabel } from '@/lib/crop-geometry'
 import { MM_PER_IN, sizeLabel } from '@/lib/print-size'
 
 const ADD = '__add__'
@@ -85,6 +86,10 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
               {builtIn?.map((size) => (
                 <SelectItem key={size.id} value={size.id}>
                   {sizeLabel(size.shortMm, size.longMm)}
+                  <span className="text-muted-foreground">
+                    {' '}
+                    · {ratioLabel(size.shortMm, size.longMm)}
+                  </span>
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -96,7 +101,8 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
                     {c.name}
                     <span className="text-muted-foreground">
                       {' '}
-                      · {sizeLabel(c.shortMm, c.longMm, c.unit ?? 'cm')}
+                      · {sizeLabel(c.shortMm, c.longMm, c.unit ?? 'cm')} ·{' '}
+                      {ratioLabel(c.shortMm, c.longMm)}
                     </span>
                   </SelectItem>
                 ))}

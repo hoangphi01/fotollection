@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Custom fonts (FR-042):** import OTF/TTF, then choose them for the date stamp and the info frame. Files are validated and copied; removing a font falls back to Inter.
 - **Custom print sizes (FR-043):** enter in cm or inches (e.g. 4 × 6 in), saved and usable everywhere.
 - Crop editor edge labels (width on top, height on the left, in cm or in) and an aspect-ratio pill.
+- The print-size picker shows each size's aspect ratio (`10 × 15 cm · 2:3`, `4 × 6 in · 2:3`).
 - `settings.json` schema v2 with automatic migration from v1.
 - **Info frame ("Shot on …", FR-040):**
   - A white or black bar with the brand, camera, lens, focal length, aperture, shutter, ISO, photo style and date.

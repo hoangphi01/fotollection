@@ -384,6 +384,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 **P1.** Define and save custom print sizes, in **cm or inches** (for example 4 × 6 in or 13 × 13 cm). They appear next to the built-in sizes everywhere: crop, frame, DPI and export.
 
 - A size has a name and short/long edges, stored in whole millimetres. The entry unit is remembered for labels, so a size shows as `4 × 6 in`.
+- Every size in the picker, built-in or custom, shows its reduced aspect ratio, for example `10 × 15 cm · 2:3`. Sizes entered in inches snap to the simple ratio despite mm rounding, so 4 × 6 in shows `2:3`.
 - Edges must be between 2 and 100 cm. Up to 30 custom sizes are allowed. Custom sizes are stored in `settings.json` ([DATABASE.md §6](DATABASE.md#6-app-settings)).
 
 ### FR-044 — Per-photo overrides
