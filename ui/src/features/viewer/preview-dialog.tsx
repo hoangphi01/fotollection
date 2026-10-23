@@ -24,6 +24,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { CullControls } from '@/features/culling/cull-controls'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
+import { FrameSection } from '@/features/frame/frame-section'
+import type { FontsApi } from '@/features/fonts/use-fonts'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
 import { PrintSizePicker } from '@/features/settings/print-size-picker'
 import { useIpcQuery } from '@/features/settings/use-ipc-query'
@@ -47,6 +49,7 @@ type PreviewDialogProps = {
   settings: RenderSettings | null
   onSettingsChange: (change: (current: RenderSettings) => RenderSettings) => void
   frame: FrameConfigApi
+  fonts: FontsApi
   onIndexChange: (index: number) => void
   onClose: () => void
 }
@@ -136,6 +139,7 @@ export function PreviewDialog({
   settings,
   onSettingsChange,
   frame,
+  fonts,
   onIndexChange,
   onClose,
 }: PreviewDialogProps) {
@@ -284,12 +288,8 @@ export function PreviewDialog({
             </Section>
 
             <Section icon={<PanelBottom className="size-4" />} title="Frame & camera profile">
-              {!frame.config?.settings.enabled && (
-                <p className="text-xs text-muted-foreground">
-                  Turn on <span className="font-medium">Info frame</span> in Print settings to see
-                  it on the print.
-                </p>
-              )}
+              {/* Same controls as the print settings panel, so the frame can be tuned here (FR-040). */}
+              <FrameSection frame={frame} fonts={fonts} compact />
               <CameraProfileEditor frame={frame} details={details} />
             </Section>
 

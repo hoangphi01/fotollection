@@ -379,6 +379,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
   - The bar is white or black. Text and logo stay inside the safe area ([FR-028](#fr-028--safe-area-and-borders)).
 - **Choose what shows:** every item can be switched on or off. Lines with no data are dropped.
 - **Edit per camera:** the camera name, brand text, lens, focal length, aperture and photo style can be overridden. This covers **manual lenses** that report nothing in EXIF. Overrides are remembered per camera across sessions ([DATABASE.md §6](DATABASE.md#6-app-settings)). Empty fields fall back to EXIF.
+- **Edit where you look:** every frame setting (on/off, crop or fit, colour, date format, font, the shown items) can be changed both in the print settings panel and inside the preview, next to the photo, without closing the preview. Both places edit the same settings.
 - The date stamp on the photo ([FR-004](#fr-004--date-stamp)) stays independent.
 
 ### FR-041 — Best-shot suggestions

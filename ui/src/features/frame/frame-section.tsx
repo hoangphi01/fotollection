@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { PanelBottom } from 'lucide-react'
+import { useId } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -25,22 +26,29 @@ const FIELDS: { key: keyof FrameFields; label: string; disabledHint?: string }[]
 type FrameSectionProps = {
   frame: FrameConfigApi
   fonts: FontsApi
+  /** The preview inspector hides the heading: its section title already says "Frame". */
+  compact?: boolean
 }
 
-/** "Shot on …" info frame settings, LUMIX Lab style (FR-040). */
-export function FrameSection({ frame, fonts }: FrameSectionProps) {
+/**
+ * "Shot on …" info frame settings, LUMIX Lab style (FR-040). Rendered both in the print
+ * settings panel and in the preview inspector; both edit the same Rust state.
+ */
+export function FrameSection({ frame, fonts, compact = false }: FrameSectionProps) {
   const settings = frame.config?.settings
   const enabled = settings?.enabled ?? false
+  // Two instances can be on screen at once, so DOM ids must be unique.
+  const switchId = useId()
 
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between">
-        <Label htmlFor="info-frame" className="flex items-center gap-2">
-          <PanelBottom className="size-4 text-muted-foreground" />
+        <Label htmlFor={switchId} className="flex items-center gap-2">
+          {!compact && <PanelBottom className="size-4 text-muted-foreground" />}
           Info frame
         </Label>
         <Switch
-          id="info-frame"
+          id={switchId}
           checked={enabled}
           onCheckedChange={(on) => void frame.setSettings((s) => ({ ...s, enabled: on }))}
         />
@@ -137,8 +145,8 @@ export function FrameSection({ frame, fonts }: FrameSectionProps) {
           </div>
         </div>
         <p className="text-xs text-muted-foreground">
-          The whole print, frame included, keeps the selected size. Edit camera, lens and style in
-          the preview.
+          The whole print, frame included, keeps the selected size.
+          {!compact && ' Edit camera, lens and style in the preview.'}
         </p>
       </div>
     </section>

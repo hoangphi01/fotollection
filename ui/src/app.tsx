@@ -99,6 +99,7 @@ export function App() {
         settings={settings}
         onSettingsChange={(c) => void update(c)}
         frame={frame}
+        fonts={fonts}
         onIndexChange={setSelected}
         onClose={() => setViewing(false)}
       />
