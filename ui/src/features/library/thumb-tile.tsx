@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils'
 type ThumbTileProps = {
   photo: PhotoSummary
   version: number
+  /** Bumps when another project replaces the library (photo ids are reused). */
+  generation: number
   size: number
   selected: boolean
   onSelect: () => void
@@ -24,6 +26,7 @@ function formatCapture(capture: string): string {
 export const ThumbTile = memo(function ThumbTile({
   photo,
   version,
+  generation,
   size,
   selected,
   onSelect,
@@ -51,7 +54,7 @@ export const ThumbTile = memo(function ThumbTile({
         </div>
       )}
       <img
-        src={thumbUrl(photo.id, version)}
+        src={thumbUrl(photo.id, version, generation)}
         alt=""
         loading="lazy"
         decoding="async"

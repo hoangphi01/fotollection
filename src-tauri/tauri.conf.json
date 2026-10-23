@@ -39,6 +39,20 @@
     ],
     "category": "Photography",
     "copyright": "© hoangphi01 — GPL-3.0-only",
-    "shortDescription": "Fast, private, offline photo-print preparation"
+    "shortDescription": "Fast, private, offline photo-print preparation",
+    "fileAssociations": [
+      {
+        "ext": ["fotollection"],
+        "name": "Fotollection project",
+        "description": "Fotollection project",
+        "role": "Editor",
+        "rank": "Owner",
+        "mimeType": "application/vnd.fotollection.project+zip",
+        "exportedType": {
+          "identifier": "com.hoangphi01.fotollection.project",
+          "conformsTo": ["public.zip-archive", "public.data"]
+        }
+      }
+    ]
   }
 }

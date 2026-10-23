@@ -1,19 +1,28 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Folder, FolderOpen } from 'lucide-react'
+import { FileImage, FilePen, FilePlus, FileUp, Folder, FolderOpen, Save, TriangleAlert } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import type { ImportSummary, PhotoSummary } from '@/ipc/bindings'
+import type { ProjectApi } from '@/features/project/use-project'
 
 type LibrarySidebarProps = {
   photos: PhotoSummary[]
   lastImport: ImportSummary | null
   onOpenFolder: () => void
+  project: ProjectApi
+  onShowRelink: () => void
 }
 
-export function LibrarySidebar({ photos, lastImport, onOpenFolder }: LibrarySidebarProps) {
+export function LibrarySidebar({
+  photos,
+  lastImport,
+  onOpenFolder,
+  project,
+  onShowRelink,
+}: LibrarySidebarProps) {
   const { t } = useTranslation()
   const folders = useMemo(() => {
     const counts = new Map<string, number>()
@@ -34,6 +43,59 @@ export function LibrarySidebar({ photos, lastImport, onOpenFolder }: LibrarySide
           className="rounded-md"
         />
         <span className="font-heading text-sm font-semibold tracking-tight">Fotollection</span>
+      </div>
+      <Separator />
+      {/* The .fotollection document (FR-023). */}
+      <div className="space-y-1.5 px-4 pt-4 pb-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-medium text-muted-foreground uppercase">
+            {t('project.title')}
+          </span>
+          <div className="flex">
+            {(
+              [
+                ['new', FilePlus, project.newProject],
+                ['open', FileUp, project.open],
+                ['save', Save, project.save],
+                ['saveAs', FilePen, project.saveAs],
+              ] as const
+            ).map(([key, Icon, action]) => (
+              <Button
+                key={key}
+                variant="ghost"
+                size="icon-xs"
+                aria-label={t(`project.${key}`)}
+                title={t(`project.${key}`)}
+                onClick={() => void action()}
+              >
+                <Icon />
+              </Button>
+            ))}
+          </div>
+        </div>
+        <p className="flex min-w-0 items-center gap-2 text-sm">
+          <FileImage className="size-4 shrink-0 text-muted-foreground" />
+          <span className="truncate">{project.document.name ?? t('project.untitled')}</span>
+          {project.document.edited && (
+            <span
+              className="size-1.5 shrink-0 rounded-full bg-amber-500"
+              title={t('project.edited')}
+              role="img"
+              aria-label={t('project.edited')}
+            />
+          )}
+        </p>
+        {project.document.missing.length > 0 && (
+          <button
+            type="button"
+            onClick={onShowRelink}
+            className="flex items-center gap-1.5 text-xs text-amber-600 hover:underline dark:text-amber-400"
+          >
+            <TriangleAlert className="size-3.5" />
+            {t('project.missing', { count: project.document.missing.length })}
+          </button>
+        )}
+        {project.error && <p className="text-xs text-destructive">{project.error}</p>}
       </div>
       <Separator />
       <div className="flex items-center justify-between px-4 pt-4 pb-2">

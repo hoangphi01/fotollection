@@ -71,9 +71,9 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 
 | Work | Requirement | Main risk |
 |------|-------------|-----------|
-| `.fotollection` as a self-contained ZIP bundle, like `.docx`: `manifest.json` with checksums, `project.json`, `settings.json`, embedded `fonts/`, `logos/` and `presets/`. Photos are not embedded | FR-023 | New schema version, migration from v1 and a fixture; an ADR superseding [ADR-0010](adr/0010-project-file-format.md) |
-| Save as / Open, installing embedded fonts and logos after validation, plus a **Relink folder** dialog when photos moved | FR-023 | Untrusted input: zip-bomb limits, path-traversal checks, typed parsing of every part ([SECURITY.md](SECURITY.md)) |
-| App localization: English (default) and Vietnamese through `i18next` + `react-i18next` (MIT), bundled locale files and typed keys; language stored in `settings.json` v3; Rust errors translated by `code`. An ADR records the choice | FR-020 | About 110 strings in 18 components; `settings.json` v3 needs a migration and a fixture |
+| ✓ `.fotollection` as a self-contained ZIP bundle, like `.docx`: `manifest.json` with BLAKE3 sums, `project.json` (v2), `settings.json`, the fonts and logos in use. Photos are not embedded; presets join when FR-038 lands ([ADR-0016](adr/0016-self-contained-project-bundle.md)) | FR-023 | Done |
+| ✓ Save / Save As / Open / New, installing embedded fonts and logos after validation, the **Relink folder** dialog, native File menu and file association | FR-023 | Done; file association checked by hand in a release build |
+| ✓ App localization: English (default) and Vietnamese through `i18next` + `react-i18next` (MIT), bundled locale files and typed keys; language stored in `settings.json` v3; Rust errors translated by `code` ([ADR-0015](adr/0015-ui-localization-i18next.md)) | FR-020 | Done |
 | ✓ Faster previews: plain Huffman tables and 4:2:0 for screen-only JPEGs took the warm preview from 26 to 17 ms, below Chromium; `turbojpeg` was not needed ([OPTIMIZATION.md §2.1](OPTIMIZATION.md#21-measured-the-same-job-in-chromium)) | NFR-002 | Done |
 
 **Stage 3 — Hard, research and native code**

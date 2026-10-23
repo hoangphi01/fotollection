@@ -5,9 +5,12 @@
 const isWindows = navigator.userAgent.includes('Windows')
 const base = isWindows ? 'http://fotothumb.localhost' : 'fotothumb://localhost'
 
-/** `version` changes when a sharper thumbnail becomes available, forcing a reload. */
-export function thumbUrl(id: number, version = 0): string {
-  return `${base}/thumb/${id}?v=${version}`
+/**
+ * `version` changes when a sharper thumbnail becomes available, forcing a reload.
+ * `generation` changes when another project replaces the library and ids are reused.
+ */
+export function thumbUrl(id: number, version = 0, generation = 0): string {
+  return `${base}/thumb/${id}?v=${version}&g=${generation}`
 }
 
 /** The upright, uncropped photo, for the crop editor. */

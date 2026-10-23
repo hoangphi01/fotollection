@@ -53,6 +53,16 @@ pub struct PhotoRow {
     pub flag: Option<Flag>,
 }
 
+/// The document a session belongs to (FR-023). Only written into the session autosave, so
+/// a restart reopens "Trip.fotollection — Edited" instead of an untitled session.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct DocumentRef {
+    pub path: String,
+    /// True when the session holds changes that were not saved into the document.
+    pub edited: bool,
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ProjectFile {
@@ -62,6 +72,9 @@ pub struct ProjectFile {
     pub modified_at: String,
     pub folders: Vec<FolderRow>,
     pub photos: Vec<PhotoRow>,
+    /// Session autosave only (schema v2); never inside a bundle.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub document: Option<DocumentRef>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -115,6 +128,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
         modified_at: chrono::Utc::now().to_rfc3339(),
         folders,
         photos,
+        document: None,
     }
 }
 

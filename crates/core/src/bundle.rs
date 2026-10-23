@@ -80,6 +80,11 @@ pub enum BundleError {
     TooLarge,
     #[error("the project could not be written: {0}")]
     Write(String),
+    #[error(
+        "the project's fonts would exceed the limit of {} fonts",
+        fonts::MAX_USER_FONTS
+    )]
+    TooManyFonts,
 }
 
 impl BundleError {
@@ -91,6 +96,7 @@ impl BundleError {
             Self::Corrupt(_) => "project.corrupt",
             Self::TooLarge => "project.too_large",
             Self::Write(_) => "project.write_failed",
+            Self::TooManyFonts => "font.too_many",
         }
     }
 }
@@ -158,6 +164,11 @@ fn hash(bytes: &[u8]) -> String {
     blake3::hash(bytes).to_hex().to_string()
 }
 
+/// Content fingerprint used to recognise a font the user already has (same BLAKE3).
+pub fn fingerprint(bytes: &[u8]) -> String {
+    hash(bytes)
+}
+
 /// True when the bytes look like a bundle (as opposed to a v1 JSON project file).
 pub fn is_bundle(bytes: &[u8]) -> bool {
     bytes.starts_with(ZIP_MAGIC)
@@ -171,10 +182,14 @@ pub fn to_bytes(bundle: &Bundle) -> Result<Vec<u8>, BundleError> {
         ui: UiSettings::default(),
         ..bundle.settings.clone()
     };
+    let project = ProjectFile {
+        document: None,
+        ..bundle.project.clone()
+    };
     let mut parts: Vec<(String, Vec<u8>)> = vec![
         (
             PROJECT.into(),
-            project::to_bytes(&bundle.project).map_err(|e| write_err(&e))?,
+            project::to_bytes(&project).map_err(|e| write_err(&e))?,
         ),
         (
             SETTINGS.into(),
@@ -427,6 +442,90 @@ pub fn open(path: &Path) -> Result<Opened, BundleError> {
     }
 }
 
+/// What opening a bundle adds to this machine, after [`merge_settings`].
+#[derive(Debug, Default, PartialEq)]
+pub struct Installed {
+    /// Fonts that were not here yet, with their new local ids: write and load them.
+    pub new_fonts: Vec<(UserFont, Vec<u8>)>,
+    /// Logo PNGs by local camera profile id: write them.
+    pub logos: Vec<(u32, Vec<u8>)>,
+}
+
+/// Merges a bundle's settings into this machine's (FR-023, ADR-0016):
+///
+/// - fonts with the same content as one already here are reused, the others get new ids;
+/// - camera profiles are matched by make and model, and the project's values win;
+/// - the print and frame settings become the project's, with font ids remapped;
+/// - `local.ui` (the interface language) is left alone.
+///
+/// `local_font` returns the bytes of a local font, to compare contents.
+pub fn merge_settings(
+    local: &mut StoredSettings,
+    bundle: &Bundle,
+    local_font: &dyn Fn(&UserFont) -> Option<Vec<u8>>,
+) -> Result<Installed, BundleError> {
+    let mut installed = Installed::default();
+    let fingerprints: Vec<(u32, String)> = local
+        .fonts
+        .iter()
+        .filter_map(|f| local_font(f).map(|b| (f.id, hash(&b))))
+        .collect();
+    let mut font_ids = BTreeMap::new();
+    for font in &bundle.settings.fonts {
+        let Some(bytes) = bundle.fonts.get(&font.id) else {
+            continue;
+        };
+        let sum = hash(bytes);
+        let id = if let Some((id, _)) = fingerprints.iter().find(|(_, s)| *s == sum) {
+            *id
+        } else {
+            if local.fonts.len() >= fonts::MAX_USER_FONTS {
+                return Err(BundleError::TooManyFonts);
+            }
+            let id = local.fonts.iter().map(|f| f.id).max().unwrap_or(0) + 1;
+            let row = UserFont { id, ..font.clone() };
+            local.fonts.push(row.clone());
+            installed.new_fonts.push((row, bytes.clone()));
+            id
+        };
+        font_ids.insert(font.id, id);
+    }
+    let remap = |id: Option<u32>| id.and_then(|id| font_ids.get(&id).copied());
+
+    let mut camera_ids = BTreeMap::new();
+    for incoming in &bundle.settings.cameras {
+        let found = local
+            .cameras
+            .iter()
+            .position(|c| c.make == incoming.make && c.model == incoming.model);
+        let id = if let Some(i) = found {
+            local.cameras[i].id
+        } else {
+            local.cameras.iter().map(|c| c.id).max().unwrap_or(0) + 1
+        };
+        let profile = crate::frame::CameraProfile {
+            id,
+            ..incoming.clone()
+        };
+        match found {
+            Some(i) => local.cameras[i] = profile,
+            None => local.cameras.push(profile),
+        }
+        camera_ids.insert(incoming.id, id);
+    }
+    for (incoming, bytes) in &bundle.logos {
+        if let Some(&id) = camera_ids.get(incoming) {
+            installed.logos.push((id, bytes.clone()));
+        }
+    }
+
+    local.render = bundle.settings.render.clone();
+    local.render.stamp.font = remap(bundle.settings.render.stamp.font);
+    local.frame = bundle.settings.frame.clone();
+    local.frame.font = remap(bundle.settings.frame.font);
+    Ok(installed)
+}
+
 /// The fonts a project actually uses: the date stamp's and the frame's (FR-042).
 pub fn used_fonts(settings: &StoredSettings) -> Vec<UserFont> {
     let used = [settings.render.stamp.font, settings.frame.font];
@@ -486,6 +585,7 @@ mod tests {
                 rating: Some(4),
                 flag: Some(Flag::Pick),
             }],
+            document: None,
         }
     }
 
@@ -714,5 +814,72 @@ mod tests {
             ),
             bytes,
         )
+    }
+
+    #[test]
+    fn fr_023_open_on_another_machine_installs_fonts_once_and_remaps_ids() {
+        let incoming = from_bytes(&to_bytes(&sample(true)).unwrap_or_default());
+        let Ok(incoming) = incoming else {
+            panic!("sample bundle must read back");
+        };
+
+        // Machine B already has two fonts (ids 1 and 2) and a GX9 profile with id 9.
+        let mut local = StoredSettings {
+            fonts: vec![
+                UserFont {
+                    id: 1,
+                    name: "Other".into(),
+                    format: FontFormat::Otf,
+                },
+                UserFont {
+                    id: 2,
+                    name: "Other 2".into(),
+                    format: FontFormat::Ttf,
+                },
+            ],
+            cameras: vec![CameraProfile::new(
+                9,
+                Some("Panasonic".into()),
+                Some("DC-GX9".into()),
+            )],
+            ui: UiSettings {
+                language: crate::settings::Language::Vi,
+            },
+            ..StoredSettings::default()
+        };
+        let no_match = |_: &UserFont| Some(b"different bytes".to_vec());
+        let installed = merge_settings(&mut local, &incoming, &no_match);
+        let Ok(installed) = installed else {
+            panic!("merge must succeed");
+        };
+        // The font is new here: id 3, and the stamp now points at it.
+        assert_eq!(installed.new_fonts.len(), 1);
+        assert_eq!(installed.new_fonts[0].0.id, 3);
+        assert_eq!(local.render.stamp.font, Some(3));
+        // The camera matched by make + model keeps its local id, takes the project's values.
+        assert_eq!(local.cameras.len(), 1);
+        assert_eq!(local.cameras[0].id, 9);
+        assert_eq!(local.cameras[0].lens.as_deref(), Some("Industar-50-2"));
+        assert_eq!(
+            installed
+                .logos
+                .iter()
+                .map(|(id, _)| *id)
+                .collect::<Vec<_>>(),
+            [9]
+        );
+        assert_eq!(local.render.print_size, "original");
+        assert_eq!(
+            local.ui.language,
+            crate::settings::Language::Vi,
+            "language stays"
+        );
+
+        // Opening the same project again installs nothing new: the font is recognised.
+        let font_three = |f: &UserFont| (f.id == 3).then(|| INTER.to_vec());
+        let again = merge_settings(&mut local, &incoming, &font_three);
+        assert!(again.is_ok_and(|i| i.new_fonts.is_empty()));
+        assert_eq!(local.fonts.len(), 3);
+        assert_eq!(local.render.stamp.font, Some(3));
     }
 }

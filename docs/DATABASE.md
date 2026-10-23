@@ -178,6 +178,7 @@ Photo 18 stores only its flag. Every other value comes from `settings` (rule N5)
 | `schema_version` | integer | See [§4.3](#43-versioning-and-migration) |
 | `*.id` | `u32` ≥ 1 (presets: UUID) | Unique within the table, and never reused within a file |
 | `folders[].path` + `path_kind` | string + `relative`/`absolute` | Relative to the project file's directory when on the same volume. Absolute paths are kept as data and never trusted as a write target ([SECURITY.md §3](SECURITY.md#other-untrusted-inputs)) |
+| `document` | `{ path, edited }`, optional (v2) | **Session autosave only**, never in a bundle: the `.fotollection` document the session belongs to and whether it had unsaved changes, so a restart shows `Trip — Edited` again (FR-023) |
 | `folders[].absolute` | string, optional (v2) | Only on `relative` rows: where the folder was when the project was saved. On open, the relative path is tried first, then this one, then the user relinks the folder |
 | `photos[].path` | string | Relative to its folder, with `/` separators on every OS |
 | `fp_size`, `fp_mtime`, `fp_head` | fingerprint: size, mtime, BLAKE3 of the first 64 KB | Used to **relink** moved files and to detect replaced files ([FR-023](PRD.md#fr-023--projects-autosave-and-undo)) |
@@ -205,7 +206,7 @@ Parsing is strict: `serde` with `deny_unknown_fields`, typed enums, and range ch
 | Version | App version | Change |
 |---------|-------------|--------|
 | 1 | 0.0.x (slice 3) | **Implemented subset:** `folders` (absolute paths for the session project) and sparse `photos` rows with `fp_size`, `fp_mtime`, `crop`, `rating`, `flag`. The other tables (`settings`, `cameras`, `places`, `presets`, `trips`) are added by later schema versions with migrations; app-wide settings and camera profiles live in `settings.json` for now (§6) |
-| 2 | 0.0.x (Stage 2) | `folders[].absolute`: the absolute path kept next to a `relative` row, used when a project moved without its photos. Written inside bundles, where folders are stored relative to the bundle. **Migration v1 → v2:** the field is optional, so v1 files are read as is (`fr_023_v1_fixture_still_opens`, fixture `crates/core/tests/fixtures/project/v1.fotollection`) |
+| 2 | 0.0.x (Stage 2) | `document` (session autosave only) and `folders[].absolute`: the absolute path kept next to a `relative` row, used when a project moved without its photos. Written inside bundles, where folders are stored relative to the bundle. **Migration v1 → v2:** the field is optional, so v1 files are read as is (`fr_023_v1_fixture_still_opens`, fixture `crates/core/tests/fixtures/project/v1.fotollection`) |
 
 ### 4.4 Write protocol
 

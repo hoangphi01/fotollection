@@ -32,6 +32,14 @@ impl PreviewCache {
         Self::default()
     }
 
+    /// Forgets every cached image, e.g. when another project replaces the library and
+    /// photo ids start again from 0.
+    pub fn clear(&self) {
+        if let Ok(mut entries) = self.entries.lock() {
+            entries.clear();
+        }
+    }
+
     fn source(
         &self,
         record: &PhotoRecord,

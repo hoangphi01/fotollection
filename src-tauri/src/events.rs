@@ -62,3 +62,18 @@ pub struct TaskProgress {
     pub done: u32,
     pub total: u32,
 }
+
+/// The project document changed: name, unsaved changes, or a new library (FR-023).
+#[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
+#[serde(rename_all = "camelCase")]
+pub struct DocumentChanged {
+    pub document: crate::document::DocumentState,
+}
+
+/// A native menu item was chosen. The UI runs the same flow as its own buttons, including
+/// the unsaved-changes question (FR-023).
+#[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
+#[serde(rename_all = "camelCase")]
+pub struct MenuAction {
+    pub action: crate::menu::Action,
+}

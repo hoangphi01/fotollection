@@ -94,6 +94,32 @@ pub struct AppState {
     /// False when the project was written by a newer app: never overwrite it.
     pub project_writable: AtomicBool,
     pub history: Mutex<History>,
+    /// The `.fotollection` document this session belongs to (FR-023).
+    pub document: Mutex<Document>,
+    /// The opened project and its folders that were not found yet (Relink dialog).
+    pub pending: Mutex<Option<PendingRelink>>,
+    /// Serializes opening, restoring and starting projects.
+    pub document_lock: Mutex<()>,
+    /// A `.fotollection` the OS asked us to open, waiting for the UI's go-ahead.
+    pub requested_open: Mutex<Option<PathBuf>>,
+}
+
+/// The current document: none until the first Save As or Open.
+#[derive(Debug, Clone, Default)]
+pub struct Document {
+    pub path: Option<PathBuf>,
+    /// Changes not saved into the document yet.
+    pub edited: bool,
+    /// Bumps whenever another project replaces the library, so the UI drops cached
+    /// thumbnails of reused photo ids.
+    pub generation: u32,
+}
+
+/// Folders of an opened project that could not be found on this machine.
+#[derive(Debug, Clone)]
+pub struct PendingRelink {
+    pub file: project::ProjectFile,
+    pub missing: Vec<project::ResolvedFolder>,
 }
 
 impl AppState {
@@ -172,6 +198,10 @@ impl AppState {
             project_dirty: AtomicBool::new(false),
             project_writable: AtomicBool::new(true),
             history: Mutex::new(History::default()),
+            document: Mutex::new(Document::default()),
+            pending: Mutex::new(None),
+            document_lock: Mutex::new(()),
+            requested_open: Mutex::new(None),
         })
     }
 
@@ -183,8 +213,21 @@ impl AppState {
         })
     }
 
-    /// Writes `settings.json` atomically (DATABASE.md §6). Errors are logged, not fatal.
+    /// A print setting changed: save `settings.json` and mark the document edited.
     pub fn persist(&self) {
+        self.mark_edited();
+        self.save_settings();
+    }
+
+    /// Marks the document as having unsaved changes (FR-023).
+    pub fn mark_edited(&self) {
+        if let Ok(mut doc) = self.document.lock() {
+            doc.edited = true;
+        }
+    }
+
+    /// Writes `settings.json` atomically (DATABASE.md §6). Errors are logged, not fatal.
+    pub fn save_settings(&self) {
         if !self.store_writable.load(Ordering::Relaxed) {
             return;
         }
@@ -212,9 +255,15 @@ impl AppState {
         if !self.project_writable.load(Ordering::Relaxed) {
             return;
         }
-        let Some(file) = self.library.read().ok().map(|l| project::snapshot(&l)) else {
+        let Some(mut file) = self.library.read().ok().map(|l| project::snapshot(&l)) else {
             return;
         };
+        file.document = self.document.lock().ok().and_then(|d| {
+            d.path.as_ref().map(|p| project::DocumentRef {
+                path: p.display().to_string(),
+                edited: d.edited,
+            })
+        });
         if let Err(e) = project::save(&self.project_path, &file) {
             eprintln!("could not save the project: {e}");
             self.project_dirty.store(true, Ordering::Relaxed);

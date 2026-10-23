@@ -198,10 +198,18 @@
   },
   "errors": {
     "internal": "Something went wrong",
-    "camera": { "unknown": "Unknown camera" },
-    "decode": { "failed": "The photo could not be decoded" },
-    "encode": { "failed": "The image could not be encoded" },
-    "render": { "failed": "The preview could not be rendered" },
+    "camera": {
+      "unknown": "Unknown camera"
+    },
+    "decode": {
+      "failed": "The photo could not be decoded"
+    },
+    "encode": {
+      "failed": "The image could not be encoded"
+    },
+    "render": {
+      "failed": "The preview could not be rendered"
+    },
     "export": {
       "cancelled": "Export cancelled",
       "empty": "There are no photos to export",
@@ -235,6 +243,35 @@
       "invalid_selection": "Select between 1 and 10,000 photos",
       "unknown": "Unknown photo"
     },
-    "settings": { "invalid": "These settings are not valid" }
+    "settings": {
+      "invalid": "These settings are not valid"
+    },
+    "project": {
+      "not_a_project": "This is not a Fotollection project",
+      "newer_version": "This project was saved by a newer version of Fotollection",
+      "corrupt": "The project file is damaged",
+      "too_large": "The project file is too large",
+      "write_failed": "The project could not be saved",
+      "unknown_folder": "This folder is not missing"
+    }
+  },
+  "project": {
+    "untitled": "Untitled",
+    "edited": "Edited",
+    "new": "New project",
+    "open": "Open project…",
+    "save": "Save",
+    "saveAs": "Save as…",
+    "unsavedTitle": "Save changes to “{{name}}”?",
+    "unsavedBody": "Your changes will be lost if you don't save them.",
+    "dontSave": "Don't save",
+    "relinkTitle_one": "{{count}} folder could not be found",
+    "relinkTitle_other": "{{count}} folders could not be found",
+    "relinkBody": "The photos were moved or renamed after the project was saved. Locate each folder to bring back its edits.",
+    "locate": "Locate…",
+    "later": "Later",
+    "missing_one": "{{count}} folder missing",
+    "missing_other": "{{count}} folders missing",
+    "title": "Project"
   }
 }

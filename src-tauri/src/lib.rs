@@ -3,7 +3,10 @@
 //! `fotollection-core` (ADR-0002).
 
 mod commands;
+mod document;
 mod events;
+mod i18n;
+mod menu;
 mod protocol;
 mod state;
 
@@ -35,6 +38,13 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::get_crop_geometry,
             commands::set_photo_crop,
             commands::get_ui_settings,
+            document::get_document,
+            document::new_document,
+            document::open_document,
+            document::open_requested_document,
+            document::save_document,
+            document::save_document_as,
+            document::relink_folder,
             commands::set_ui_settings,
             commands::set_photo_rating,
             commands::set_photo_flag,
@@ -51,6 +61,8 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             events::ExportFinished,
             events::TaskProgress,
             events::RevisionChanged,
+            events::DocumentChanged,
+            events::MenuAction,
         ])
 }
 
@@ -87,6 +99,13 @@ pub fn run() {
                 .join("projects")
                 .join("session.fotollection");
             app.manage(state::AppState::new(thumb_dir, &config_dir, project_path)?);
+            let language = app
+                .state::<state::AppState>()
+                .ui
+                .read()
+                .map(|u| u.language)
+                .unwrap_or_default();
+            menu::refresh(app.handle(), language);
 
             // Autosave (NFR-013): at most ~1 s after the last edit, atomically.
             let handle = app.handle().clone();
@@ -102,9 +121,20 @@ pub fn run() {
                     }
                 }
             });
-            // Reopen the last session: re-scan folders and restore edits (FR-023).
+            // Reopen the last session: re-scan folders and restore edits (FR-023). A
+            // project passed on the command line (Windows/Linux file association) is
+            // opened afterwards, through the UI's unsaved-changes flow.
             let handle = app.handle().clone();
-            std::thread::spawn(move || commands::restore_session(&handle));
+            let requested = std::env::args_os()
+                .skip(1)
+                .map(std::path::PathBuf::from)
+                .find(|p| p.extension().is_some_and(|e| e == document::EXTENSION) && p.is_file());
+            std::thread::spawn(move || {
+                commands::restore_session(&handle);
+                if let Some(path) = requested {
+                    document::request_open(&handle, path);
+                }
+            });
             // Dev-only: FOTOLLECTION_IMPORT=<folder> imports at startup, for quick iteration.
             #[cfg(debug_assertions)]
             if let Some(folder) = std::env::var_os("FOTOLLECTION_IMPORT") {
@@ -115,6 +145,7 @@ pub fn run() {
             }
             Ok(())
         })
+        .on_menu_event(|app, event| menu::on_event(app, &event))
         .on_window_event(|window, event| {
             // Dropped paths come from the OS, not from the webview (SECURITY.md §2).
             if let WindowEvent::DragDrop(DragDropEvent::Drop { paths, .. }) = event {
@@ -123,11 +154,25 @@ pub fn run() {
                 std::thread::spawn(move || commands::import_paths(&app, paths));
             }
         })
-        .run(tauri::generate_context!());
+        .build(tauri::generate_context!());
 
-    if let Err(e) = result {
-        eprintln!("fotollection failed to start: {e}");
-        std::process::exit(1);
+    match result {
+        Ok(app) => app.run(|handle, event| {
+            // macOS delivers double-clicked documents as an event (file association).
+            #[cfg(target_os = "macos")]
+            if let tauri::RunEvent::Opened { urls } = &event {
+                for url in urls {
+                    if let Ok(path) = url.to_file_path() {
+                        document::request_open(handle, path);
+                    }
+                }
+            }
+            let _ = (handle, event);
+        }),
+        Err(e) => {
+            eprintln!("fotollection failed to start: {e}");
+            std::process::exit(1);
+        }
     }
 }
 

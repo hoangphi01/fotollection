@@ -67,6 +67,62 @@ export const commands = {
 	 *  Interface preferences of this machine (FR-020).
 	 */
 	getUiSettings: () => typedError<UiSettings, IpcError>(__TAURI_INVOKE("get_ui_settings")),
+	getDocument: () => __TAURI_INVOKE<DocumentState>("get_document"),
+	newDocument: () => typedError<DocumentState, IpcError>(__TAURI_INVOKE("new_document")),
+	openDocument: () => typedError<{
+	/**  The file name without its extension; `None` for an untitled session. */
+	name: string | null,
+	edited: boolean,
+	/**  Bumps when another project replaces the library (thumbnail URLs depend on it). */
+	generation: number,
+	/**  Folders of the opened project that still need relinking. */
+	missing: MissingFolder[],
+} | null, IpcError>(__TAURI_INVOKE("open_document")),
+	/**
+	 *  Opens the file the OS asked us to open (double-click, `open -a`), after the UI has
+	 *  dealt with unsaved changes. The path never comes from the webview.
+	 */
+	openRequestedDocument: () => typedError<{
+	/**  The file name without its extension; `None` for an untitled session. */
+	name: string | null,
+	edited: boolean,
+	/**  Bumps when another project replaces the library (thumbnail URLs depend on it). */
+	generation: number,
+	/**  Folders of the opened project that still need relinking. */
+	missing: MissingFolder[],
+} | null, IpcError>(__TAURI_INVOKE("open_requested_document")),
+	/**  Save: to the current document, or Save As when there is none yet. */
+	saveDocument: () => typedError<{
+	/**  The file name without its extension; `None` for an untitled session. */
+	name: string | null,
+	edited: boolean,
+	/**  Bumps when another project replaces the library (thumbnail URLs depend on it). */
+	generation: number,
+	/**  Folders of the opened project that still need relinking. */
+	missing: MissingFolder[],
+} | null, IpcError>(__TAURI_INVOKE("save_document")),
+	saveDocumentAs: () => typedError<{
+	/**  The file name without its extension; `None` for an untitled session. */
+	name: string | null,
+	edited: boolean,
+	/**  Bumps when another project replaces the library (thumbnail URLs depend on it). */
+	generation: number,
+	/**  Folders of the opened project that still need relinking. */
+	missing: MissingFolder[],
+} | null, IpcError>(__TAURI_INVOKE("save_document_as")),
+	/**
+	 *  Points a missing folder of the opened project at its new location and restores its
+	 *  edits (FR-023).
+	 */
+	relinkFolder: (folderId: number) => typedError<{
+	/**  The file name without its extension; `None` for an untitled session. */
+	name: string | null,
+	edited: boolean,
+	/**  Bumps when another project replaces the library (thumbnail URLs depend on it). */
+	generation: number,
+	/**  Folders of the opened project that still need relinking. */
+	missing: MissingFolder[],
+} | null, IpcError>(__TAURI_INVOKE("relink_folder", { folderId })),
 	/**  Changes the interface language; the typed enum is the validation (FR-020). */
 	setUiSettings: (ui: UiSettings) => typedError<UiSettings, IpcError>(__TAURI_INVOKE("set_ui_settings", { ui })),
 	/**  Sets 0–5 stars on photos (FR-022). Larger values are rejected. */
@@ -93,15 +149,22 @@ export const commands = {
 
 /** Events */
 export const events = {
+	documentChanged: makeEvent<DocumentChanged>("document-changed"),
 	exportFinished: makeEvent<ExportFinished>("export-finished"),
 	exportProgress: makeEvent<ExportProgress>("export-progress"),
 	libraryChanged: makeEvent<LibraryChanged>("library-changed"),
+	menuAction: makeEvent<MenuAction>("menu-action"),
 	revisionChanged: makeEvent<RevisionChanged>("revision-changed"),
 	taskProgress: makeEvent<TaskProgress>("task-progress"),
 	thumbReady: makeEvent<ThumbReady>("thumb-ready"),
 };
 
 /* Types */
+/**  File commands the UI runs when their menu item is chosen. */
+export type Action = "new" | "open" | "save" | "saveAs" | 
+/**  The OS handed over a `.fotollection` file (not a menu item). */
+"openRequested";
+
 export type AppInfo = {
 	appVersion: string,
 	coreVersion: string,
@@ -194,6 +257,22 @@ export type DateFormat =
 "dmy" | 
 /**  `'26 10 23`, as on 1990s film cameras */
 "retro";
+
+/**  The project document changed: name, unsaved changes, or a new library (FR-023). */
+export type DocumentChanged = {
+	document: DocumentState,
+};
+
+/**  What the UI shows about the current document. */
+export type DocumentState = {
+	/**  The file name without its extension; `None` for an untitled session. */
+	name: string | null,
+	edited: boolean,
+	/**  Bumps when another project replaces the library (thumbnail URLs depend on it). */
+	generation: number,
+	/**  Folders of the opened project that still need relinking. */
+	missing: MissingFolder[],
+};
 
 /**  Print resolution quality bands (FR-026, PRD §5 "Minimum resolution per size"). */
 export type DpiBand = 
@@ -326,6 +405,21 @@ export type LogoKind =
 "text" | 
 /**  A PNG the user added for this camera (ADR-0014). */
 "image" | "none";
+
+/**
+ *  A native menu item was chosen. The UI runs the same flow as its own buttons, including
+ *  the unsaved-changes question (FR-023).
+ */
+export type MenuAction = {
+	action: Action,
+};
+
+export type MissingFolder = {
+	id: number,
+	/**  Where the folder was when the project was saved. */
+	path: string,
+	name: string,
+};
 
 /**  Everything the preview inspector shows about one photo. */
 export type PhotoDetails = {

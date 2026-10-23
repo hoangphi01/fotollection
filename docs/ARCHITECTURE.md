@@ -87,6 +87,9 @@ crates/
 src-tauri/               † # app shell: commands, protocol, capabilities
   src/lib.rs             † # tauri-specta builder + bindings export
   src/commands.rs        † # IPC commands (§6)
+  src/document.rs        † # New / Open / Save / Save As / Relink of .fotollection documents (FR-023)
+  src/menu.rs            † # native File/Edit/Window menu (macOS), rebuilt on language change
+  src/i18n.rs            † # the shell's own strings: menu, window title, dialogs (FR-020)
   capabilities/          † # Tauri 2 permission sets (see SECURITY.md)
   icons/                 † # generated: npx tauri icon assets/logo-square.png, then python3 scripts/small-icons.py for the ≤ 64 px layers
   tauri.conf.json        † # window, CSP, bundle config
@@ -209,10 +212,11 @@ Commands marked † are implemented.
 | `undo()` / `redo()` † | History (also Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z) | FR-023 |
 | `list_fonts()` / `import_font()` / `remove_font(id)` † | User fonts; import opens a **Rust-side** dialog and copies a validated file | FR-042 |
 | `photo_details(id) -> PhotoDetails` † | Inspector data: pixel size (header only), file size, GPS, effective DPI at the current print size | FR-002, FR-007, FR-026 |
-| `set_rating(ids, stars)` / `set_flag(ids, flag)` | Culling | FR-022 |
-| `query_library(filter) -> [PhotoSummary]` | Filtered view (rating, flag, date, camera, GPS, DPI) | FR-022, FR-026 |
-| `new_project` / `open_project(path)` / `save_project_as(path)` | Project lifecycle (autosave runs internally) | FR-023 |
-| `undo()` / `redo()` | History | FR-023 |
+| `get_document() -> DocumentState` † | Current document: name, unsaved flag, library generation, folders still to relink | FR-023 |
+| `new_document()` / `open_document()` / `save_document()` / `save_document_as()` † | Project lifecycle. Open and Save As use **Rust-side** dialogs; Save writes the current document or falls back to Save As. Open validates the whole bundle before changing anything | FR-023 |
+| `open_requested_document()` † | Opens the file the OS handed over (file association), after the UI settled unsaved changes. The path is stored in Rust, never sent by the webview | FR-023 |
+| `relink_folder(folder_id)` † | Picks the new location of a missing folder (Rust-side dialog), re-scans it and restores its edits | FR-023 |
+| Filters by date, camera, GPS, DPI in `list_photos` | Planned culling filters | FR-022, FR-026 |
 | `set_copies(ids, n)` / `order_summary() -> OrderSummary` | Copies and cost estimate | FR-024 |
 | `set_print_size(ids, size_id)` | Per-photo print size | FR-025 |
 | `set_clock_offset(camera, offset)` / `match_clock(photo_id, reference_id)` | Clock correction | FR-030 |
@@ -235,6 +239,8 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 | `export-progress` † | `{ jobId, done, total }`, coalesced to ≤ 30 per second |
 | `export-finished` † | `{ jobId, summary: { exported, failed[], cancelled, destination } }`. Per-photo failures are reported here |
 | `revision-changed` † | `{ revision, canUndo, canRedo }` after any render-affecting edit; previews refresh |
+| `document-changed` † | `{ document }` after any edit, save, open, new or relink; the window title follows (`Trip — Edited — Fotollection`) |
+| `menu-action` † | `{ action: new \| open \| save \| saveAs \| openRequested }` from the native File menu (macOS) or a file handed over by the OS; the UI runs its own flow, unsaved-changes question included |
 | `task-progress` † | `{ task: "import" \| "thumbnails", done, total }`, coalesced to ≤ 30 per second. Drives the progress bar |
 | `project://saved` | `{ path, at }`, for the autosave indicator |
 | `history://changed` | `{ can_undo, can_redo }` |

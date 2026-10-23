@@ -10,7 +10,7 @@
 The app works end to end for **JPEG**: open or drop a folder → thumbnail grid → preview with crop and date stamp → export to `YYYY-MM-DD/` folders with progress and cancel. Since then: crop editor, session project with undo, info frame, custom fonts and print sizes, and the Rust vs browser benchmark. The remaining work runs in three stages, from easiest to hardest ([ROADMAP.md — Phase 1 work order](ROADMAP.md#phase-1-work-order-2026-10-23)):
 
 1. **Stage 1:** EXTENSION.md ✓, PNG input ✓, basic culling (FR-022) ✓, preview profiling ✓, Original print size (FR-045) ✓, 5,000-photo memory check (core) ✓.
-2. **Stage 2:** the `.fotollection` bundle with Save as / Open / Relink (FR-023), English + Vietnamese UI (FR-020), faster previews.
+2. **Stage 2:** ✓ faster previews (17 ms), ✓ English + Vietnamese UI (FR-020), ✓ the `.fotollection` document with Save / Open / Relink (FR-023).
 3. **Stage 3:** best-shot suggestions (FR-041), HEIC input.
 
 ## Phase 0 — Foundation
@@ -55,10 +55,10 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | FR-017 | Photo book layout preview | 3 | Not Started | |
 | FR-018 | QR code on photo back | 3 | Not Started | |
 | FR-019 | Print service upload | 3 | Not Started | |
-| FR-020 | Localization | 1 | In Progress | English (default) + Vietnamese UI via i18next ([ADR-0015](adr/0015-ui-localization-i18next.md)): all strings and Rust error codes translated, language selector in settings, stored in `settings.json` v3, `check-i18n` gate in lint. Pending: native menu strings (with the File menu), German |
+| FR-020 | Localization | 1 | Done | English (default) + Vietnamese via i18next ([ADR-0015](adr/0015-ui-localization-i18next.md)): every UI string, Rust error codes, native menu, window title and file dialogs; selector in settings, stored in `settings.json` v3; `check-i18n` gate in lint. German later |
 | FR-021 | Auto-update | 3 | Not Started | |
 | FR-022 | Culling (rate, flag, filter) | 1 | In Progress | Stars `0`–`5`, `P`/`X`/`U` in grid and preview, undoable; filter by flag + min rating, export = filtered set (`fr_022_*`). Pending: date/camera/GPS/DPI filters, multi-select, loupe prefetch (NFR-012) |
-| FR-023 | Projects, autosave and undo | 1 | In Progress | Session project autosaves atomically and is restored at launch (re-scan + re-apply); undo/redo for edits. Self-contained ZIP bundle in the core with allowlist, zip-bomb and checksum checks, folders relative to the bundle (project v2) ([ADR-0016](adr/0016-self-contained-project-bundle.md), `fr_023_bundle_*`). Save / Save As / Open / Relink UI pending |
+| FR-023 | Projects, autosave and undo | 1 | Done | `.fotollection` document like `.docx`: Save / Save As / Open / New with Rust-side dialogs, unsaved-changes question, title `Trip — Edited`, native File menu (macOS) and Ctrl shortcuts (Windows), Relink dialog for moved folders, file association. Self-contained ZIP bundle ([ADR-0016](adr/0016-self-contained-project-bundle.md)); fonts installed once, ids remapped; session autosave underneath. `fr_023_*` pass (incl. open on another machine, relink). File association to be checked by hand in a release build |
 | FR-024 | Copies and order summary | 2 | Not Started | |
 | FR-025 | Mixed print sizes per order | 1 | Not Started | Builds on `PrintSize` |
 | FR-026 | Resolution warning | 1 | In Progress | Effective DPI + band shown in the inspector. Grid badge and pre-export summary pending |

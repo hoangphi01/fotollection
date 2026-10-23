@@ -192,6 +192,8 @@ pub fn import_paths(app: &AppHandle, paths: Vec<PathBuf>) -> ImportSummary {
     state
         .project_dirty
         .store(true, std::sync::atomic::Ordering::Relaxed);
+    state.mark_edited();
+    crate::document::emit(app);
     let _ = LibraryChanged { count }.emit(app);
     warm_thumbnails(app, new_ids);
     summary
@@ -331,12 +333,19 @@ pub fn get_ui_settings(state: State<'_, AppState>) -> Result<UiSettings, IpcErro
 /// Changes the interface language; the typed enum is the validation (FR-020).
 #[tauri::command]
 #[specta::specta]
-pub fn set_ui_settings(state: State<'_, AppState>, ui: UiSettings) -> Result<UiSettings, IpcError> {
+pub fn set_ui_settings(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    ui: UiSettings,
+) -> Result<UiSettings, IpcError> {
     *state
         .ui
         .write()
         .map_err(|e| IpcError::internal(e.to_string()))? = ui;
-    state.persist();
+    // A per-machine preference: not an edit of the document.
+    state.save_settings();
+    crate::menu::refresh(&app, ui.language);
+    crate::document::emit(&app);
     Ok(ui)
 }
 
@@ -796,9 +805,11 @@ pub fn clear_camera_logo(
 }
 
 /// Bumps the revision, marks the project dirty, and tells the UI (one place for all edits).
-fn changed(app: &AppHandle, state: &AppState) -> HistoryState {
+pub fn changed(app: &AppHandle, state: &AppState) -> HistoryState {
     let revision = state.bump_revision();
     state.project_dirty.store(true, Ordering::Relaxed);
+    state.mark_edited();
+    crate::document::emit(app);
     let (can_undo, can_redo) = state
         .history
         .lock()
@@ -1096,6 +1107,7 @@ pub fn restore_session(app: &AppHandle) {
     if folders.is_empty() {
         return;
     }
+    crate::document::restore_reference(&state, &file);
     import_paths(app, folders);
     if let Ok(mut library) = state.library.write() {
         let summary = project::restore(&mut library, &file);
@@ -1111,7 +1123,13 @@ pub fn restore_session(app: &AppHandle) {
         .read()
         .map_or(0, |l| u32::try_from(l.len()).unwrap_or(u32::MAX));
     let _ = LibraryChanged { count }.emit(app);
+    // Restoring is not an edit: keep the unsaved flag the session had.
+    let edited = file.document.as_ref().is_some_and(|d| d.edited);
     changed(app, &state);
+    if let Ok(mut doc) = state.document.lock() {
+        doc.edited = edited;
+    }
+    crate::document::emit(app);
 }
 
 /// User fonts (FR-042).

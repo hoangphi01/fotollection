@@ -34,7 +34,7 @@ In ngày và nơi chụp lên ảnh, crop đúng khổ in thật, rồi gửi đ
 ---
 
 > [!NOTE]
-> **Fotollection đang trong giai đoạn phát triển sớm.** App đã chạy trọn vẹn với **JPEG và PNG**: nhập ảnh → lọc ảnh bằng sao và cờ → xem trước với crop, dấu ngày và khung thông tin → export. HEIC, tên địa điểm offline và file dự án trọn gói đang được làm. Theo dõi tiến độ ở [docs/STATUS.md](docs/STATUS.md) và [docs/ROADMAP.md](docs/ROADMAP.md) (tiếng Anh).
+> **Fotollection đang trong giai đoạn phát triển sớm.** App đã chạy trọn vẹn với **JPEG và PNG**: nhập ảnh → lọc ảnh bằng sao và cờ → xem trước với crop, dấu ngày và khung thông tin → export. Dự án được lưu thành một file `.fotollection`, mở trên máy khác vẫn y như cũ. HEIC và tên địa điểm offline đang được làm. Theo dõi tiến độ ở [docs/STATUS.md](docs/STATUS.md) và [docs/ROADMAP.md](docs/ROADMAP.md) (tiếng Anh).
 
 <p align="center">
   <img src="docs/images/screenshot-light.png" alt="Cửa sổ chính của Fotollection (giao diện sáng)" width="49%" />
@@ -63,6 +63,7 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | 📱 | Đầu vào **JPEG và PNG** ngay bây giờ, **HEIC** (iPhone) tiếp theo | MVP |
 | 🔒 | **Xóa GPS khi export** theo mặc định. Không tài khoản, không cloud, không telemetry | MVP |
 | 🌐 | Giao diện **tiếng Anh và tiếng Việt** | MVP |
+| 📦 | **File dự án như `.docx`**: lưu lại, mở trên máy khác với đúng font, logo và thiết lập, chỉ lại thư mục ảnh đã bị chuyển | MVP |
 | 🧳 | **Gom ảnh theo chuyến đi**, crop thông minh theo khuôn mặt, phát hiện ảnh trùng | 2 |
 | 🎞️ | Đầu vào RAW, xem trước photobook, mã QR ở mặt sau ảnh in | 3 |
 

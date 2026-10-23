@@ -248,7 +248,11 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - Autosave is continuous ([NFR-013](#nfr-013--project-safety)). Reopening the app restores the last project.
 - Undo and redo cover every user edit (ratings, flags, crop, overrides, settings), with at least 200 steps.
 - If source files have moved, the user can relink the folder. Missing photos are marked, not dropped.
-- **Session project:** until "Save as/Open" arrive, work goes to an implicit session project in the app data folder. On launch it is reopened, its folders are **re-scanned automatically** and the edits are re-applied by folder and path.
+- **A document, like `.docx`:** the `.fotollection` file is saved with **Save** (Cmd/Ctrl+S) and **Save As** (Shift+Cmd/Ctrl+S) and opened with **Open** (Cmd/Ctrl+O). It is self-contained ([ADR-0016](adr/0016-self-contained-project-bundle.md)): the edits, the print settings, the info frame, the camera profiles and copies of the fonts and logos in use. Opening it on another machine installs those fonts and logos and gives the same prints. Photos are referenced, not embedded.
+- **Unsaved changes:** the window title and the sidebar show them (`Trip — Edited`). New and Open ask *Save changes?* first (Save / Don't save / Cancel).
+- **Folders move with the project:** folders are stored relative to the project file when possible, so a project copied together with its photos opens anywhere. A folder that cannot be found is listed in a **Relink** dialog; locating it restores its edits. Unrelinked folders are kept in the file on the next save.
+- **Double-click to open:** `.fotollection` files are associated with the app. Opening one runs the same unsaved-changes flow.
+- **Session autosave:** underneath, every change also goes to a session project in the app data folder (crash safety). On launch it is reopened: folders are re-scanned, edits re-applied, and the document name and unsaved state come back.
 
 ### FR-024 — Copies and order summary
 

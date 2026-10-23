@@ -12,13 +12,21 @@ const GAP = 8
 type LibraryGridProps = {
   photos: PhotoSummary[]
   thumbVersions: Record<number, number>
+  generation: number
   selected: number
   onSelect: (index: number) => void
   onOpen: (index: number) => void
 }
 
 /** Virtualized thumbnail grid (FR-003, NFR-001): only visible rows are in the DOM. */
-export function LibraryGrid({ photos, thumbVersions, selected, onSelect, onOpen }: LibraryGridProps) {
+export function LibraryGrid({
+  photos,
+  thumbVersions,
+  generation,
+  selected,
+  onSelect,
+  onOpen,
+}: LibraryGridProps) {
   const { t } = useTranslation()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [width, setWidth] = useState(0)
@@ -88,6 +96,7 @@ export function LibraryGrid({ photos, thumbVersions, selected, onSelect, onOpen 
                   key={photo.id}
                   photo={photo}
                   version={thumbVersions[photo.id] ?? 0}
+                  generation={generation}
                   size={TILE}
                   selected={index === selected}
                   onSelect={() => onSelect(index)}

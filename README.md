@@ -33,7 +33,7 @@ Stamp the date and place on your photos, crop them to real print sizes, and get 
 ---
 
 > [!NOTE]
-> **Fotollection is in early development.** It already works end to end for **JPEG and PNG**: import → cull with stars and flags → preview with crop, date stamp and info frame → export. HEIC, offline place names and self-contained project files are on the way. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Fotollection is in early development.** It already works end to end for **JPEG and PNG**: import → cull with stars and flags → preview with crop, date stamp and info frame → export. Projects save as one `.fotollection` file that opens the same on another machine. HEIC and offline place names are on the way. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
 
 <p align="center">
   <img src="docs/images/screenshot-light.png" alt="Fotollection main window (light theme)" width="49%" />
@@ -62,6 +62,7 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | 📱 | **JPEG and PNG** input today, **HEIC** (iPhone) next | MVP |
 | 🔒 | **GPS stripped on export** by default. No account, no cloud, no telemetry | MVP |
 | 🌐 | **English and Vietnamese** interface | MVP |
+| 📦 | **Project files like `.docx`**: save, open on another machine with the same fonts, logos and settings, relink moved folders | MVP |
 | 🧳 | **Trip grouping**, face-aware smart crop, duplicate detection | 2 |
 | 🎞️ | RAW input, photo-book preview, QR codes on the back of prints | 3 |
 

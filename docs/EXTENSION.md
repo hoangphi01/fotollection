@@ -102,4 +102,4 @@ These limits apply to every input format:
 
 - Any change to a format listed here updates this file, [DATABASE.md](DATABASE.md), the `schema_version`, a migration and a fixture, all in the same commit ([CLAUDE.md](../CLAUDE.md)).
 - A new user-facing format gets an ADR and a row in §1 with its MIME type and UTI.
-- **File associations** (double-click to open `.fotollection` and `.fotopreset`) are registered in `tauri.conf.json` once Open exists (Stage 2). Until then, these MIME types and UTIs are reserved but not registered with the OS.
+- **File associations:** `.fotollection` is registered in `tauri.conf.json` (`bundle.fileAssociations`): role Editor, rank Owner, MIME `application/vnd.fotollection.project+zip`, and the UTI `com.hoangphi01.fotollection.project` exported as conforming to `public.zip-archive`. macOS delivers double-clicked files as an `Opened` event, and Windows passes them on the command line. `.fotopreset` is registered once presets exist (FR-038).

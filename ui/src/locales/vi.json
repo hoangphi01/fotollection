@@ -191,10 +191,18 @@
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",
-    "camera": { "unknown": "Không rõ máy ảnh" },
-    "decode": { "failed": "Không giải mã được ảnh" },
-    "encode": { "failed": "Không mã hóa được ảnh" },
-    "render": { "failed": "Không dựng được bản xem trước" },
+    "camera": {
+      "unknown": "Không rõ máy ảnh"
+    },
+    "decode": {
+      "failed": "Không giải mã được ảnh"
+    },
+    "encode": {
+      "failed": "Không mã hóa được ảnh"
+    },
+    "render": {
+      "failed": "Không dựng được bản xem trước"
+    },
     "export": {
       "cancelled": "Đã hủy export",
       "empty": "Không có ảnh nào để export",
@@ -228,6 +236,33 @@
       "invalid_selection": "Hãy chọn từ 1 đến 10.000 ảnh",
       "unknown": "Không tìm thấy ảnh"
     },
-    "settings": { "invalid": "Thiết lập không hợp lệ" }
+    "settings": {
+      "invalid": "Thiết lập không hợp lệ"
+    },
+    "project": {
+      "not_a_project": "Đây không phải dự án Fotollection",
+      "newer_version": "Dự án này được lưu bằng phiên bản Fotollection mới hơn",
+      "corrupt": "File dự án bị hỏng",
+      "too_large": "File dự án quá lớn",
+      "write_failed": "Không lưu được dự án",
+      "unknown_folder": "Thư mục này không bị thiếu"
+    }
+  },
+  "project": {
+    "untitled": "Chưa đặt tên",
+    "edited": "Đã sửa",
+    "new": "Dự án mới",
+    "open": "Mở dự án…",
+    "save": "Lưu",
+    "saveAs": "Lưu thành…",
+    "unsavedTitle": "Lưu thay đổi của “{{name}}”?",
+    "unsavedBody": "Các thay đổi sẽ mất nếu bạn không lưu.",
+    "dontSave": "Không lưu",
+    "relinkTitle_other": "Không tìm thấy {{count}} thư mục",
+    "relinkBody": "Ảnh đã bị chuyển hoặc đổi tên sau khi lưu dự án. Hãy chỉ lại từng thư mục để khôi phục các chỉnh sửa.",
+    "locate": "Tìm…",
+    "later": "Để sau",
+    "missing_other": "Thiếu {{count}} thư mục",
+    "title": "Dự án"
   }
 }

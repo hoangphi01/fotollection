@@ -18,6 +18,8 @@ import { useFrameConfig } from '@/features/frame/use-frame-config'
 import { useFonts } from '@/features/fonts/use-fonts'
 import { useHistory } from '@/features/history/use-history'
 import { PreviewDialog } from '@/features/viewer/preview-dialog'
+import { RelinkDialog, UnsavedDialog } from '@/features/project/project-dialogs'
+import { useProject } from '@/features/project/use-project'
 
 export function App() {
   const { t } = useTranslation()
@@ -29,6 +31,9 @@ export function App() {
   const frame = useFrameConfig(setFrameRevision)
   const history = useHistory()
   const fonts = useFonts()
+  const project = useProject()
+  // The Relink dialog opens by itself after Open; "Later" hides it until the next project.
+  const [relinkHiddenFor, setRelinkHiddenFor] = useState<number | null>(null)
   const revision = Math.max(renderRevision, frameRevision, history.revision)
   const [selected, setSelected] = useState(0)
   const [viewing, setViewing] = useState(false)
@@ -50,6 +55,8 @@ export function App() {
         photos={photos}
         lastImport={lastImport}
         onOpenFolder={() => void importFolder()}
+        project={project}
+        onShowRelink={() => setRelinkHiddenFor(null)}
       />
       <main className="flex min-w-0 flex-1 flex-col">
         {error && (
@@ -87,6 +94,7 @@ export function App() {
               <LibraryGrid
                 photos={photos}
                 thumbVersions={thumbVersions}
+                generation={project.document.generation}
                 selected={current}
                 onSelect={setSelected}
                 onOpen={open}
@@ -105,6 +113,16 @@ export function App() {
         fonts={fonts}
         onIndexChange={setSelected}
         onClose={() => setViewing(false)}
+      />
+      <UnsavedDialog
+        name={project.document.name ?? t('project.untitled')}
+        onChoose={project.question}
+      />
+      <RelinkDialog
+        missing={project.document.missing}
+        open={relinkHiddenFor !== project.document.generation}
+        onLocate={(id) => void project.relink(id)}
+        onClose={() => setRelinkHiddenFor(project.document.generation)}
       />
       <SettingsPanel
         settings={settings}

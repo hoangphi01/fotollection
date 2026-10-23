@@ -365,3 +365,108 @@ fn walk(dir: &Path) -> Vec<std::path::PathBuf> {
     }
     out
 }
+
+/// Copies a directory tree (test helper).
+fn copy_dir(from: &Path, to: &Path) {
+    std::fs::create_dir_all(to).unwrap();
+    for entry in std::fs::read_dir(from).unwrap().flatten() {
+        let target = to.join(entry.file_name());
+        if entry.path().is_dir() {
+            copy_dir(&entry.path(), &target);
+        } else {
+            std::fs::copy(entry.path(), target).unwrap();
+        }
+    }
+}
+
+fn trip_with_edits(root: &Path) -> (Library, std::path::PathBuf) {
+    let photos = root.join("Lisbon");
+    for (name, date) in [
+        ("a.jpg", "2026:07:14 10:00:00"),
+        ("b.jpg", "2026:07:14 11:00:00"),
+    ] {
+        let fixture = Fixture {
+            width: 60,
+            height: 40,
+            date: Some(date),
+            ..Fixture::default()
+        };
+        write(&photos, name, &jpeg(&fixture));
+    }
+    let mut lib = import(&photos);
+    let a = lib.find_path(&photos.join("a.jpg")).unwrap();
+    lib.set_edits(
+        a,
+        PhotoEdits {
+            rating: 5,
+            flag: Some(Flag::Pick),
+            ..PhotoEdits::default()
+        },
+    );
+    (lib, photos)
+}
+
+#[test]
+fn fr_023_save_open_roundtrip_on_another_machine() {
+    use fotollection_core::bundle::{self, Bundle, Opened};
+    use fotollection_core::project;
+
+    // Machine A: photos in Trip/Lisbon, the project saved next to them as Trip/Trip.fotollection.
+    let a = tempfile::tempdir().unwrap();
+    let trip = a.path().join("Trip");
+    let (lib, _) = trip_with_edits(&trip);
+    let mut file = project::snapshot(&lib);
+    project::relocate(&mut file, &trip);
+    let saved = Bundle {
+        project: file,
+        settings: fotollection_core::settings_store::StoredSettings::default(),
+        fonts: std::collections::BTreeMap::default(),
+        logos: std::collections::BTreeMap::default(),
+    };
+    bundle::save(&trip.join("Trip.fotollection"), &saved).unwrap();
+
+    // Machine B: the whole Trip folder copied somewhere else (USB stick, other user...).
+    let b = tempfile::tempdir().unwrap();
+    let copied = b.path().join("Copied Trip");
+    copy_dir(&trip, &copied);
+    std::fs::remove_dir_all(&trip).unwrap(); // and machine A's copy is gone
+    let Ok(Opened::Bundle(opened)) = bundle::open(&copied.join("Trip.fotollection")) else {
+        panic!("the bundle must open on machine B");
+    };
+    let found = project::resolve_folders(&opened.project, Some(&copied));
+    let folder = found[0].path.clone().expect("found relative to the bundle");
+    assert_eq!(folder, copied.join("Lisbon"));
+
+    let mut fresh = import(&folder);
+    let summary = project::restore_into(
+        &mut fresh,
+        &opened.project,
+        &[(found[0].id, folder.clone())],
+    );
+    assert_eq!((summary.restored, summary.missing), (1, 0));
+    let a_id = fresh.find_path(&folder.join("a.jpg")).unwrap();
+    assert_eq!(fresh.edits(a_id).rating, 5);
+    assert_eq!(fresh.edits(a_id).flag, Some(Flag::Pick));
+}
+
+#[test]
+fn fr_023_relink_missing_folder() {
+    use fotollection_core::project;
+
+    let root = tempfile::tempdir().unwrap();
+    let (lib, photos) = trip_with_edits(root.path());
+    let file = project::snapshot(&lib); // absolute paths, like an old project
+    // The photos were moved; the saved path no longer exists.
+    let moved = root.path().join("Archive/Lisbon 2026");
+    std::fs::create_dir_all(moved.parent().unwrap()).unwrap();
+    std::fs::rename(&photos, &moved).unwrap();
+    let found = project::resolve_folders(&file, None);
+    assert_eq!(found[0].path, None, "reported as missing");
+
+    // The user points the folder at its new place.
+    let mut fresh = import(&moved);
+    let summary = project::restore_into(&mut fresh, &file, &[(found[0].id, moved.clone())]);
+    assert_eq!(summary.restored, 1);
+    let a_id = fresh.find_path(&moved.join("a.jpg")).unwrap();
+    assert_eq!(fresh.edits(a_id).rating, 5);
+}
