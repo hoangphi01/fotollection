@@ -69,6 +69,9 @@ FOTOLLECTION_IMPORT=~/Pictures/some-folder npm run dev
 cargo run --release -p fotollection-core --example render_one -- in.jpg out.jpg crop 10x15
 # Measure the pipeline on a real folder (read-only; photos are never copied into the repo):
 cargo run --release -p fotollection-core --example measure_folder -- ~/Pictures/some-folder
+# Rust vs browser benchmark (macOS; downloads Playwright Chromium once, ~1.5 GB in
+# ~/Library/Caches/ms-playwright). Writes bench/results/*.json and docs/images/bench.svg:
+bench/run.sh ~/Pictures/some-folder 3
 ```
 
 The IPC bindings (`ui/src/ipc/bindings.ts`) are generated from Rust by `tauri-specta` on every debug run and every `cargo test`. Commit them. CI fails if they are stale.

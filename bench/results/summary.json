@@ -1,0 +1,25 @@
+{
+  "machine": "Apple M3, 16 GB, macOS 26.3.1",
+  "megapixels": 16,
+  "date": "2026-10-23",
+  "rust": {
+    "engine": "Fotollection core (Rust, release)",
+    "threads": 6,
+    "photos": 95,
+    "runs": 3,
+    "exportPerSecond": 18.58158512838396,
+    "previewWarmP50Ms": 25.985375,
+    "previewColdMs": 121.850334,
+    "peakRssBytes": 1404174336
+  },
+  "web": {
+    "engine": "Chromium 156.0.8078.4 (headless)",
+    "threads": 8,
+    "photos": 95,
+    "runs": 3,
+    "exportPerSecond": 18.719949553958667,
+    "previewWarmP50Ms": 17.40000009536743,
+    "previewColdMs": 105.30000019073486,
+    "peakRssBytes": 1755889664
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "engine": "Fotollection core (Rust, release)",
+  "exportPerSecond": 17.361845362969365,
+  "exportSeconds": 5.471768583,
+  "importMs": 5.058833000000001,
+  "inputBytes": 286477087,
+  "photos": 95,
+  "previewColdMs": 122.64504199999999,
+  "previewWarmP50Ms": 25.877833,
+  "previewWarmP95Ms": 26.479583,
+  "threads": 6,
+  "peakRssBytes": 1404174336
+}

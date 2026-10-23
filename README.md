@@ -62,9 +62,24 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 
 Full specification: [docs/PRD.md](docs/PRD.md).
 
-## Performance targets
+## Performance
 
-Fotollection is built for enthusiast and professional photographers, so speed is a requirement, not a nice-to-have ([docs/OPTIMIZATION.md](docs/OPTIMIZATION.md)):
+Fotollection is built for enthusiast and professional photographers, so speed is a requirement, not a nice-to-have.
+
+We measured it against the obvious alternative, a web app doing the same work in the browser (`createImageBitmap` + `OffscreenCanvas` in Web Workers, one per core). Both ran on the same 95 photos on the same machine:
+
+![Batch export: Fotollection 18.6 photos/s, browser 18.7. Warm preview: Fotollection 26.0 ms, browser 17.4 ms. Peak memory: Fotollection 1.40 GB, browser 1.76 GB.](docs/images/bench.svg)
+
+On raw speed, the browser is just as fast. Chromium uses libjpeg-turbo with SIMD, and it wins on small previews. That does not mean Fotollection could be a web page:
+
+- The browser can only encode JPEG with 4:2:0 chroma, which halves colour resolution. Fotollection exports 4:4:4, with twice the chroma data, in the same time.
+- Fotollection uses 20% less memory, and its export is bounded, so 5,000 photos fit in the same RAM. A browser tab has a hard ceiling.
+- Fotollection writes the files: atomic renames, EXIF kept and GPS stripped. The browser only produced blobs and never wrote them.
+- Colour profiles (ICC), 16-bit RAW in Phase 3, and HEIC are out of reach in the browser.
+
+Faster previews are now a tracked optimization. Reproduce the chart with `bench/run.sh <photo-folder>`; the method is in [docs/OPTIMIZATION.md §2](docs/OPTIMIZATION.md#2-why-native-rust-instead-of-a-web-app).
+
+The budgets every change must respect ([docs/OPTIMIZATION.md §3](docs/OPTIMIZATION.md#3-budgets)):
 
 | Metric | Budget |
 |--------|--------|

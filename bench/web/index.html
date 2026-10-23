@@ -1,0 +1,46 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<meta charset="utf-8" />
+<title>Fotollection web baseline</title>
+<script type="module">
+  // Driven by bench/web/run.mjs through window.runBench(); see docs/OPTIMIZATION.md §2.
+  window.runBench = async ({ urls, repeats }) => {
+    const threads = navigator.hardwareConcurrency || 4
+    const workers = Array.from({ length: threads }, () => new Worker('./worker.js'))
+
+    // Export: one queue split across workers, like the Rust bounded pool.
+    const t0 = performance.now()
+    let done = 0
+    await Promise.all(
+      workers.map(
+        (w, i) =>
+          new Promise((resolve) => {
+            w.onmessage = ({ data }) => {
+              if (data.kind === 'done') done++
+              if (data.kind === 'finished') resolve()
+            }
+            w.postMessage({ kind: 'export', urls: urls.filter((_, j) => j % threads === i) })
+          }),
+      ),
+    )
+    const exportSeconds = (performance.now() - t0) / 1000
+
+    // Preview on one worker.
+    const preview = await new Promise((resolve) => {
+      workers[0].onmessage = ({ data }) => data.kind === 'preview' && resolve(data)
+      workers[0].postMessage({ kind: 'preview', url: urls[0], repeats })
+    })
+    workers.forEach((w) => w.terminate())
+    const warm = [...preview.warm].sort((a, b) => a - b)
+    const q = (p) => warm[Math.min(warm.length - 1, Math.floor(p * warm.length))]
+    return {
+      threads,
+      photos: done,
+      exportSeconds,
+      exportPerSecond: done / exportSeconds,
+      previewColdMs: preview.cold,
+      previewWarmP50Ms: q(0.5),
+      previewWarmP95Ms: q(0.95),
+    }
+  }
+</script>

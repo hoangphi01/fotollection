@@ -21,7 +21,7 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | CI build/test matrix (macOS, Windows) | Done | `.github/workflows/ci.yml` |
 | Reproducible setup (`scripts/bootstrap.sh` / `.ps1`, lockfiles) | Done | [DEVELOPMENT.md §1](DEVELOPMENT.md#1-setting-up-a-machine) |
 | `tauri-specta` bindings + staleness check | Done | `cargo test` regenerates; CI runs `git diff --exit-code` |
-| Benchmark harness + `bench` corpus | In Progress | `examples/measure_folder.rs` on a real folder (first numbers in OPTIMIZATION §5). `criterion` benches pending |
+| Benchmark harness + `bench` corpus | In Progress | `examples/measure_folder.rs` on a real folder, plus `bench/run.sh`, the Rust vs Chromium comparison (OPTIMIZATION §2.1). `criterion` benches pending |
 | Codec / EXIF crate spikes | In Progress | Pure-Rust codecs adopted for now ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). turbojpeg comparison pending |
 | libheif static build on Windows | Not Started | Highest build risk |
 | Release workflow (unsigned) | Not Started | |

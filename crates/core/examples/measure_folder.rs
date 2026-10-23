@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //! Measures the pipeline on a real folder, for OPTIMIZATION.md §5. Photos are only read.
 //!
-//! `cargo run --release -p fotollection-core --example measure_folder -- <photo-folder>`
+//! `cargo run --release -p fotollection-core --example measure_folder -- <photo-folder> [--json]`
+//!
+//! With `--json`, the human-readable lines go to stderr and one JSON object to stdout
+//! (read by `bench/chart.mjs`).
 
 #![allow(
     clippy::unwrap_used,
@@ -25,11 +28,18 @@ use fotollection_core::thumbs::{self, ThumbCache};
 use rayon::prelude::*;
 
 fn main() {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    let json = args.iter().any(|a| a == "--json");
     let root = PathBuf::from(
-        std::env::args()
-            .nth(1)
-            .expect("usage: measure_folder <folder>"),
+        args.iter()
+            .find(|a| !a.starts_with("--"))
+            .expect("usage: measure_folder <folder> [--json]"),
     );
+    macro_rules! report {
+        ($($t:tt)*) => {
+            if json { eprintln!($($t)*) } else { println!($($t)*) }
+        };
+    }
     let codec = default_codec();
 
     let t = Instant::now();
@@ -50,7 +60,7 @@ fn main() {
         .into_iter()
         .filter_map(|id| lib.record(id))
         .collect();
-    println!(
+    report!(
         "import+exif: {} photos in {import_ms:.0} ms ({} rejected)",
         records.len(),
         found.rejected.len()
@@ -61,7 +71,7 @@ fn main() {
         .par_iter()
         .filter(|r| thumbs::t0(r, codec.as_ref()).is_some())
         .count();
-    println!(
+    report!(
         "T0 (embedded) thumbnails: {t0_count} in {:.0} ms",
         t.elapsed().as_secs_f64() * 1e3
     );
@@ -73,7 +83,7 @@ fn main() {
         cache.make_t1(r, codec.as_ref()).unwrap();
     });
     let t1 = t.elapsed().as_secs_f64();
-    println!(
+    report!(
         "T1 thumbnails: {} in {:.2} s ({:.1}/s)",
         records.len(),
         t1,
@@ -97,15 +107,16 @@ fn main() {
         warm.push(t.elapsed().as_secs_f64() * 1e3);
     }
     warm.sort_by(f64::total_cmp);
-    println!(
+    report!(
         "preview: cold {cold:.0} ms, warm p50 {:.1} ms, p95 {:.1} ms",
-        warm[10], warm[18]
+        warm[10],
+        warm[18]
     );
 
     let bytes = std::fs::read(&first.path).unwrap();
     let t = Instant::now();
     let decoded = codec.decode(&bytes).unwrap();
-    println!(
+    report!(
         "single full decode {}x{}: {:.0} ms",
         decoded.image.width,
         decoded.image.height,
@@ -130,11 +141,28 @@ fn main() {
         &|_, _| {},
     );
     let secs = t.elapsed().as_secs_f64();
-    println!(
+    report!(
         "export: {} photos in {secs:.2} s ({:.2}/s, inflight {}), {} failed",
         summary.exported,
         f64::from(summary.exported) / secs,
         default_inflight(),
         summary.failed.len()
     );
+
+    if json {
+        let input_bytes: u64 = records.iter().map(|r| r.size).sum();
+        let out = serde_json::json!({
+            "engine": "Fotollection core (Rust, release)",
+            "threads": default_inflight(),
+            "photos": summary.exported,
+            "exportSeconds": secs,
+            "exportPerSecond": f64::from(summary.exported) / secs,
+            "previewColdMs": cold,
+            "previewWarmP50Ms": warm[10],
+            "previewWarmP95Ms": warm[18],
+            "importMs": import_ms,
+            "inputBytes": input_bytes,
+        });
+        println!("{out:#}");
+    }
 }

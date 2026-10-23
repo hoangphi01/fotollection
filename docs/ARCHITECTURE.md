@@ -99,6 +99,7 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
     lib/                 † # small UI utilities (theme sync, shadcn's cn re-export)
     index.css            † # Tailwind layers + shadcn theme tokens (CSS variables)
 scripts/                 † # bootstrap, clean, check-docs
+bench/                   † # Rust vs browser benchmark: run.sh, web/ (Chromium via Playwright), chart.mjs, results/ (OPTIMIZATION.md §2.1)
 ```
 
 ## 3. Tech stack

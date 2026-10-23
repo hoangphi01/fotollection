@@ -15,21 +15,56 @@
 
 ## 2. Why native Rust instead of a web app
 
-*Vite is only a build tool. The real comparison is between the browser runtime (JS + Canvas/WASM) and native Rust code.* The estimates below are hypotheses that Phase 0 will validate.
+*Vite is only a build tool. The real comparison is between the browser runtime (JS + Canvas/WASM) and native Rust code.*
+
+### 2.1 Measured: the same job in Chromium
+
+`bench/run.sh <photo-folder>` runs both sides on the same folder. The browser side (`bench/web/`) does the export job in headless Chromium:
+
+1. `fetch`, then `createImageBitmap` with EXIF orientation.
+2. Centre crop to 2:3.
+3. Date stamp with `fillText`.
+4. `OffscreenCanvas.convertToBlob` as JPEG q0.95.
+
+The browser runs one Web Worker per logical core. For previews, it decodes once, caches a 2048 px bitmap (like T2), then re-renders 1600 px 20 times. The Rust side is `measure_folder --json`. Peak RSS comes from `/usr/bin/time -l` for Rust, and from the sampled RSS of the browser's process tree for Chromium. Each metric is the median of 3 runs. Raw numbers are in `bench/results/`, and the chart is `docs/images/bench.svg`.
+
+Result on REF-MAC (M3, 8 cores), 95 × 16 MP JPEG, 2026-10-23:
+
+| Metric | Fotollection (Rust) | Chromium 156 | |
+|--------|--------------------:|-------------:|---|
+| Batch export | 18.6 photos/s (6 in flight) | 18.7 photos/s (8 workers) | Tie |
+| Warm preview, 1600 px, p50 | 26.0 ms | 17.4 ms | Browser 33% faster |
+| Cold preview (first open) | 122 ms | 105 ms | Browser faster |
+| Peak memory | 1.40 GB | 1.76 GB | Rust 20% lower |
+
+The work is not identical, and the differences favour the browser:
+
+- Chromium always encodes 4:2:0 (verified from the SOF0 marker). The API cannot request 4:4:4. Fotollection encodes 4:4:4, so it writes twice the chroma data.
+- The browser discards its blobs. Fotollection writes every file to disk atomically, with EXIF rewritten and GPS stripped.
+- Fotollection's RSS covers the whole `measure_folder` run, including T1 thumbnails for all 95 photos, not only export and preview.
+
+**What this changes.** The earlier hypothesis, that `canvas.toBlob` is slow, is **wrong**. Chromium's libjpeg-turbo with SIMD matches our pure-Rust codecs on throughput, and it beats our preview path. Native still wins on what the table below lists: encoder control, bounded memory, colour, bit depth, formats and file output. Raw speed is not the argument for native.
+
+Follow-ups:
+
+- **Preview latency.** Profile the resize and encode steps of `preview::render_jpeg`, and try a `turbojpeg` codec behind `JpegCodec` ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). Target: ≤ 17 ms warm.
+- **Export.** Try 8 in flight instead of 6.
+
+### 2.2 Qualitative comparison
 
 | Concern | Web (browser) | Native Rust (Tauri) |
 |---------|---------------|---------------------|
 | JPEG decode | Fast: browsers use libjpeg-turbo internally | Same or faster, plus **DCT-domain downscaling** (1/2, 1/4, 1/8) for thumbnails |
 | Parallelism | Web Workers. Buffers are copied or transferred | `rayon` on all cores, shared memory with zero copies |
-| JPEG encode | `canvas.toBlob`: slow, few controls, fixed chroma subsampling | turbojpeg/mozjpeg with full control (quality, 4:4:4, progressive) |
+| JPEG encode | `convertToBlob`: fast (§2.1), but quality is the only control; always 4:2:0 | turbojpeg/mozjpeg with full control (quality, 4:4:4, progressive) |
 | Memory ceiling | About 2–4 GB per tab, so large batches crash | System RAM, explicitly bounded by back-pressure |
 | Colour management | Canvas usually converts to sRGB and drops the ICC profile | ICC preserved or converted exactly (`lcms2`) |
 | Bit depth | 8-bit | 16-bit capable, needed for RAW in Phase 3 |
 | HEIC | Not supported in Chrome or Firefox | libheif |
 | File output | ZIP download, or the File System Access API (Chromium only) | Direct folder writes with atomic renames |
-| **Estimate: 500 × 24 MP export** | Several minutes, with a risk of crashing the tab | **About 1–2 minutes on 8 cores** |
+| **Measured: 95 × 16 MP export (§2.1)** | 18.7 photos/s at 4:2:0, blobs not written | 18.6 photos/s at 4:4:4, files written |
 
-**Conclusion:** the advantage is not raw decode speed. It is throughput under parallelism, control over memory, encoder quality and colour correctness. For a professional photo tool, these matter most. See [ADR-0001](adr/0001-desktop-tauri-over-web.md).
+**Conclusion:** measurement confirms that the advantage is not raw speed. It is control over memory, encoder quality, colour correctness and file handling. For a professional photo tool, these matter most. See [ADR-0001](adr/0001-desktop-tauri-over-web.md).
 
 ## 3. Budgets
 
@@ -115,6 +150,9 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-10-23 | slice 1 | REF-MAC (M3) | Preview re-render (T2 cached) | cold 121 ms, warm p50 26.0 / p95 26.4 ms | NFR-002 ✓ |
 | 2026-10-23 | slice 1 | REF-MAC (M3) | Export 95 × 16 MP, q95 4:4:4, 6 in flight | 19.7 photos/s | NFR-003 ✓ (~13/s projected for 24 MP) |
 | 2026-10-23 | slice 1 | REF-MAC (M3) | Peak RSS of the whole `measure_folder` run | 1.41 GB | NFR-004 ✓ |
+| 2026-10-23 | cda7a5f | REF-MAC (M3) | `bench/run.sh`: Rust export vs Chromium 156, 95 × 16 MP, median of 3 | 18.6 vs 18.7 photos/s | Tie; Chromium encodes 4:2:0, Rust 4:4:4 (§2.1) |
+| 2026-10-23 | cda7a5f | REF-MAC (M3) | `bench/run.sh`: warm preview p50, Rust vs Chromium | 26.0 vs 17.4 ms | Browser faster; follow-up in §2.1 |
+| 2026-10-23 | cda7a5f | REF-MAC (M3) | `bench/run.sh`: peak RSS, Rust vs Chromium | 1.40 vs 1.76 GB | Rust 20% lower |
 
 ## 6. Benchmark corpus
 

@@ -1,0 +1,12 @@
+{
+  "engine": "Chromium 156.0.8078.4 (headless)",
+  "threads": 8,
+  "photos": 95,
+  "exportSeconds": 5.074800000190735,
+  "exportPerSecond": 18.719949553958667,
+  "previewColdMs": 122.60000038146973,
+  "previewWarmP50Ms": 17.40000009536743,
+  "previewWarmP95Ms": 19.09999990463257,
+  "peakRssBytes": 1711210496,
+  "inputBytes": 286477087
+}
