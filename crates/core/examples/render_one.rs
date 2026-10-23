@@ -85,7 +85,17 @@ fn main() {
         stamp_font: None,
     });
     let image = render(&upright, &p).unwrap();
-    std::fs::write(output, codec.encode(&image, 92, None).unwrap()).unwrap();
+    std::fs::write(
+        output,
+        codec
+            .encode(
+                &image,
+                fotollection_core::codec::EncodeOptions::print(92),
+                None,
+            )
+            .unwrap(),
+    )
+    .unwrap();
     println!(
         "{}x{} → {}x{} (ratio {:.4}, print {}:{})",
         upright.width,

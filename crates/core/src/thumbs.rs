@@ -6,7 +6,7 @@
 
 use std::path::{Path, PathBuf};
 
-use crate::codec::{CodecError, JpegCodec, decode_image};
+use crate::codec::{CodecError, EncodeOptions, JpegCodec, decode_image};
 use crate::image::apply_orientation;
 use crate::library::PhotoRecord;
 use crate::metadata;
@@ -60,7 +60,7 @@ impl ThumbCache {
         let decoded = decode_image(codec, &bytes)?;
         let upright = apply_orientation(decoded.image, record.orientation);
         let small = fit_long_edge(&upright, T1_LONG_EDGE)?;
-        let jpeg = codec.encode(&small, THUMB_QUALITY, None)?;
+        let jpeg = codec.encode(&small, EncodeOptions::screen(THUMB_QUALITY), None)?;
         let path = self.t1_path(record);
         write_atomic(&path, &jpeg)?;
         Ok(jpeg)
@@ -75,7 +75,9 @@ pub fn t0(record: &PhotoRecord, codec: &dyn JpegCodec) -> Option<Vec<u8>> {
     }
     let decoded = codec.decode(&raw).ok()?;
     let upright = apply_orientation(decoded.image, record.orientation);
-    codec.encode(&upright, THUMB_QUALITY, None).ok()
+    codec
+        .encode(&upright, EncodeOptions::screen(THUMB_QUALITY), None)
+        .ok()
 }
 
 /// Writes `bytes` to a temporary sibling, then renames it into place.

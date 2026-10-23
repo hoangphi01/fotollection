@@ -88,9 +88,9 @@ The app works end to end for **JPEG**: open or drop a folder → thumbnail grid 
 | ID | Requirement | Budget | Last measured | Status |
 |----|-------------|--------|---------------|--------|
 | NFR-001 | Library load time | < 1 s first screen | 5,035 photos: import+EXIF 383 ms, T0 236 ms = 0.12 s per 1,000 ([RESULT.md](RESULT.md)) | In Progress |
-| NFR-002 | Preview latency | < 50 ms p95 | 27 ms p95, 26 ms p50 (warm) | In Progress |
-| NFR-003 | Export throughput | ≥ 8 photos/s | 18.4/s (16 MP, median of 3) | In Progress |
-| NFR-004 | Memory ceiling | ≤ 2 GB | Core: 1.41 GB (95 photos), 1.45 GB (5,035 photos), flat. Whole-app run with 5,035 photos pending | In Progress |
+| NFR-002 | Preview latency | < 50 ms p95 | 18 ms p95, 17 ms p50 (warm), faster than Chromium (18.5 ms) after the screen encoder | In Progress |
+| NFR-003 | Export throughput | ≥ 8 photos/s | 18.0/s (16 MP, median of 3) | In Progress |
+| NFR-004 | Memory ceiling | ≤ 2 GB | Core: 1.35 GB (95 photos), 1.45 GB (5,035 photos), flat. Whole-app run with 5,035 photos pending | In Progress |
 | NFR-005 | UI responsiveness | < 100 ms | — | Not Started |
 | NFR-006 | Offline and zero telemetry | 0 requests | — | Not Started |
 | NFR-007 | Platforms | macOS 11+, Win 10/11 | — | Not Started |

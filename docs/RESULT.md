@@ -23,9 +23,9 @@
 | What | Budget ([NFR](PRD.md#7-non-functional-requirements)) | Measured | |
 |------|--------|----------|---|
 | Open a folder: import + EXIF + embedded thumbnails | NFR-001: < 1 s per 1,000 photos | 0.12 s per 1,000 (5,035 photos: import 383 ms + thumbnails 236 ms) | ✓ |
-| Preview update (warm) | NFR-002: < 50 ms p95 | p95 27 ms, p50 26 ms; cold (first open) 120 ms | ✓ |
-| Export throughput | NFR-003: ≥ 8 photos/s at 24 MP | 18.4 photos/s at 16 MP (runs: 18.1–19.7) | ✓ |
-| Peak memory | NFR-004: ≤ 2 GB at any batch size | 1.41 GB (95 photos), 1.45 GB (5,035 photos) | ✓ |
+| Preview update (warm) | NFR-002: < 50 ms p95 | p95 18 ms, p50 17 ms (was 26 ms before the screen encoder, §5); cold (first open) 120 ms | ✓ |
+| Export throughput | NFR-003: ≥ 8 photos/s at 24 MP | 18.0 photos/s at 16 MP (runs: 17.8–18.4) | ✓ |
+| Peak memory | NFR-004: ≤ 2 GB at any batch size | 1.35 GB (95 photos), 1.45 GB (5,035 photos) | ✓ |
 | PNG decode, 16 MP | — | 122 ms (JPEG: 45 ms) | — |
 
 ## 3. Large batches: 5,035 photos
@@ -38,10 +38,10 @@ Memory must not grow with the number of photos ([NFR-004](PRD.md#nfr-004--memory
 |-------|-----------|--------------|
 | Import + EXIF | 5 ms, RSS 7 MB | 383 ms, RSS 13 MB |
 | T1 thumbnails (400 px, disk cache) | 47.8 photos/s, RSS 681 MB | 46.4 photos/s, RSS 803 MB |
-| Export at 6 in flight | 18.4 photos/s, RSS 1.29 GB | 15.4 photos/s (327 s), 0 failed, RSS 1.33 GB |
-| Peak RSS of the whole run | 1.41 GB | **1.45 GB** |
+| Export at 6 in flight | 18.0 photos/s | 15.4 photos/s (327 s), 0 failed, RSS 1.33 GB |
+| Peak RSS of the whole run | 1.35 GB | **1.45 GB** |
 
-**Result: memory does not grow with the batch.** 53 times more photos cost 0.04 GB more at peak, and the library itself stays at 13 MB for 5,035 photos. The large export is slower per photo because it runs for more than 5 minutes and the M3 throttles under sustained load.
+**Result: memory does not grow with the batch.** 53 times more photos cost 0.1 GB more at peak, and the library itself stays at 13 MB for 5,035 photos. The large export is slower per photo because it runs for more than 5 minutes and the M3 throttles under sustained load.
 
 Not yet measured: the whole app with 5,035 photos (shell + WebKit). The grid is virtualized, and each photo summary is roughly 200 bytes of JSON, so the webview is expected to add little. That run needs a separate app-data directory so it does not overwrite the user's session project, and it is tracked in [STATUS.md](STATUS.md).
 
@@ -53,10 +53,10 @@ The same job (decode → crop 2:3 → date stamp → JPEG q95) on the same 95 ph
 
 | | Fotollection (Rust) | Chromium 156 | |
 |---|---:|---:|---|
-| Batch export | 18.4 photos/s (6 in flight, 4:4:4, files written) | 19.0 photos/s (8 workers, 4:2:0, blobs only) | About the same |
-| Warm preview, 1600 px (p50) | 25.9 ms | 17.4 ms | Browser faster |
-| Cold preview (first open) | 120 ms | 104 ms | Browser faster |
-| Peak memory | 1.41 GB | 1.77 GB | Fotollection 20 % lower |
+| Batch export | 18.0 photos/s (6 in flight, 4:4:4, files written) | 17.9 photos/s (8 workers, 4:2:0, blobs only) | About the same |
+| Warm preview, 1600 px (p50) | 17.4 ms | 18.5 ms | Fotollection faster |
+| Cold preview (first open) | 120 ms | 119 ms | About the same |
+| Peak memory | 1.35 GB | 1.78 GB | Fotollection 24 % lower |
 
 ## 5. Where the preview time goes
 
@@ -64,19 +64,28 @@ The same job (decode → crop 2:3 → date stamp → JPEG q95) on the same 95 ph
 
 | Step (1600 px preview from the cached 2048 px image) | Time | Share |
 |------------------------------------------------------|-----:|------:|
-| Crop + Lanczos resize | 9.7 ms | 37 % |
-| Date stamp | 0.1 ms | ≈ 0 % |
-| JPEG encode q85 | 16.2 ms | 62 % |
-| **Total** | **26.0 ms** | Budget 50 ms; Chromium 17.4 ms |
+| Crop + Lanczos resize | 9.7 ms | 58 % |
+| Date stamp | < 0.1 ms | ≈ 0 % |
+| JPEG encode q85, 4:2:0, plain Huffman | 7.0 ms | 42 % |
+| **Total** | **16.7 ms** | Budget 50 ms; Chromium 18.5 ms |
 
-The encoder is the bottleneck, so Stage 2 starts there ([ROADMAP.md](ROADMAP.md#phase-1-work-order-2026-10-23)).
+How the preview went from 26 ms to 17 ms (Stage 2, each step measured on the same 1600 px image):
+
+| Encoder setting for previews | Encode time |
+|------------------------------|------------:|
+| Before: 4:4:4 + optimized Huffman (the export settings) | 16.2 ms |
+| Plain Huffman tables | 11.7 ms |
+| Plain Huffman + 4:2:0 chroma (**kept**) | 7.0 ms |
+
+- Previews are only shown on screen, so 4:2:0 is safe there. A 3× crop of the date stamp looks the same in both. Exports keep 4:4:4 and optimized tables (`EncodeOptions::print`).
+- A cheaper resize filter was tried as well: CatmullRom took **12.5 ms** against 9.7 ms for Lanczos3 in `fast_image_resize` on M3, so Lanczos3 stays.
 
 ## 6. Export concurrency
 
 | Photos in flight | Throughput (median of 3; runs) | Peak RSS (16 MP) | Decision |
 |-----------------:|-------------------------:|-----------------:|----------|
-| 6 | 18.4 photos/s (18.1–19.7) | 1.41 GB (1.38–1.49) | **Kept** |
-| 8 | 20.8 photos/s (19.3–21.0) | 1.71 GB (1.71–1.73) | Rejected: +13 % speed for +0.3 GB, which would pass 2 GB with 24 MP photos |
+| 6 | 18.0 photos/s (17.8–18.4) | 1.35 GB (1.30–1.41) | **Kept** |
+| 8 | 19.5 photos/s (19.1–19.6) | 1.72 GB (1.70–1.77) | Rejected: +8 % speed for +0.4 GB, which would pass 2 GB with 24 MP photos |
 
 ## 7. Reproduce
 

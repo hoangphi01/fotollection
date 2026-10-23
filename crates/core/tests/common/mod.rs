@@ -6,7 +6,7 @@
 
 use std::path::{Path, PathBuf};
 
-use fotollection_core::codec::{JpegCodec, PureRustCodec};
+use fotollection_core::codec::{EncodeOptions, JpegCodec, PureRustCodec};
 use fotollection_core::image::RgbImage;
 use little_exif::exif_tag::ExifTag;
 use little_exif::filetype::FileExtension;
@@ -52,7 +52,9 @@ pub fn jpeg(f: &Fixture) -> Vec<u8> {
             image.data[i + 2] = 128;
         }
     }
-    let mut bytes = PureRustCodec.encode(&image, 90, None).unwrap();
+    let mut bytes = PureRustCodec
+        .encode(&image, EncodeOptions::print(90), None)
+        .unwrap();
 
     let mut meta = Metadata::new();
     if let Some(date) = f.date {

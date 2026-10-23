@@ -32,10 +32,10 @@ Latest result on REF-MAC (M3, 8 cores), 95 × 16 MP JPEG, 2026-10-23, after a co
 
 | Metric | Fotollection (Rust) | Chromium 156 | |
 |--------|--------------------:|-------------:|---|
-| Batch export | 18.4 photos/s (6 in flight) | 19.0 photos/s (8 workers) | Tie |
-| Warm preview, 1600 px, p50 | 25.9 ms | 17.4 ms | Browser 33% faster |
-| Cold preview (first open) | 120 ms | 104 ms | Browser faster |
-| Peak memory | 1.41 GB | 1.77 GB | Rust 20% lower |
+| Batch export | 18.0 photos/s (6 in flight) | 17.9 photos/s (8 workers) | Tie |
+| Warm preview, 1600 px, p50 | 17.4 ms (26.0 ms before the screen encoder) | 18.5 ms | Rust faster |
+| Cold preview (first open) | 120 ms | 119 ms | Tie |
+| Peak memory | 1.35 GB | 1.78 GB | Rust 24% lower |
 
 The work is not identical, and the differences favour the browser:
 
@@ -53,8 +53,8 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | Date stamp (`ab_glyph`) | ≈ 0.1 ms | ≈ 0 % |
 | JPEG encode q85, 4:4:4, optimized Huffman (`jpeg-encoder`) | 16.2 ms | 62 % |
 
-- **Preview latency.** The encoder is the bottleneck, not image processing. In order of cost: skip optimized Huffman tables for previews (one extra pass that only saves bytes on a local transfer); encode previews 4:2:0, since they are never printed; then a `turbojpeg` codec behind `JpegCodec` ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). Each step is benchmarked before it is kept. Target: ≤ 17 ms warm (Stage 2).
-- **Export concurrency: keep 6 in flight.** 8 in flight is about 13 % faster (median 20.8 vs 18.4 photos/s after a cool-down), but peak RSS rises from 1.38–1.49 GB to 1.71–1.73 GB on 16 MP photos. Scaled to 24 MP buffers, that would break the 2 GB budget ([NFR-004](PRD.md#nfr-004--memory-ceiling)), so `default_inflight()` stays at 6.
+- **Preview latency (done in Stage 2).** The encoder was the bottleneck. Previews and thumbnails now use `EncodeOptions::screen` (plain Huffman tables, 4:2:0), exports keep `EncodeOptions::print` (4:4:4, optimized tables). Encode went from 16.2 to 11.7 ms without the Huffman pass and to 7.0 ms with 4:2:0; the warm preview from 26.0 to 17.4 ms, below Chromium (18.5 ms). A CatmullRom resize filter was slower than Lanczos3 (12.5 vs 9.7 ms) and was not kept. `turbojpeg` is no longer needed for previews.
+- **Export concurrency: keep 6 in flight.** 8 in flight is 8–13 % faster (latest medians 19.5 vs 18.0 photos/s), but peak RSS rises from 1.30–1.41 GB to 1.70–1.77 GB on 16 MP photos. Scaled to 24 MP buffers, that would break the 2 GB budget ([NFR-004](PRD.md#nfr-004--memory-ceiling)), so `default_inflight()` stays at 6.
 
 ### 2.2 Qualitative comparison
 
@@ -165,6 +165,9 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-10-23 | Stage 1 | REF-MAC (M3) | Export 95 × 16 MP, 6 vs 8 in flight, median of 3 | 17.3 vs 19.4 photos/s; peak RSS 1.32–1.45 vs 1.76–1.91 GB | Keep 6: 8 would exceed 2 GB at 24 MP |
 | 2026-10-23 | Stage 1 | REF-MAC (M3) | 5,035 photos (95 hard-linked × 53): import, T0, T1, export with `--discard-output` | import 358 ms, T1 32.6/s, export 13.5/s, peak RSS 1.47 GB | NFR-004 ✓, memory flat vs 1.33 GB for 95 photos; machine throttled ([RESULT.md](RESULT.md)) |
 | 2026-10-23 | 9b038c1 | REF-MAC (M3) | Re-run after cool-down, one session: `bench/run.sh` (3 runs) + `bench/batch.sh` (5,035 photos) | Rust/Chromium export 18.4/19.0 photos/s, preview p50 25.9/17.4 ms, RSS 1.41/1.77 GB; 8 in flight 20.8 photos/s at 1.71 GB; 5,035 photos peak 1.45 GB | Numbers behind the README and RESULT charts |
+| 2026-10-23 | Stage 2 | REF-MAC (M3) | Preview encoder: 4:4:4 + optimized Huffman → plain Huffman → + 4:2:0 (`measure_folder`) | encode 16.2 → 11.7 → 7.0 ms; warm preview p50 26.0 → 16.5 ms (isolated) / 17.4 ms (`bench/run.sh`) | NFR-002; screen encoding only, exports unchanged |
+| 2026-10-23 | Stage 2 | REF-MAC (M3) | Preview resize filter: CatmullRom vs Lanczos3 (`fast_image_resize`) | 12.5 vs 9.7 ms | Lanczos3 kept |
+| 2026-10-23 | Stage 2 | REF-MAC (M3) | `bench/run.sh` after the encoder change, 3 runs | Rust/Chromium preview p50 17.4/18.5 ms, export 18.0/17.9 photos/s, RSS 1.35/1.78 GB; 8 in flight 19.5 photos/s at 1.72 GB | Fotollection now previews faster than the browser |
 
 ## 6. Benchmark corpus
 

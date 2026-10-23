@@ -5,7 +5,7 @@
 
 use std::sync::{Arc, Mutex};
 
-use crate::codec::{JpegCodec, decode_image};
+use crate::codec::{EncodeOptions, JpegCodec, decode_image};
 use crate::fonts::LoadedFont;
 use crate::image::{RgbImage, apply_orientation};
 use crate::library::{PhotoId, PhotoRecord, flags};
@@ -65,7 +65,7 @@ impl PreviewCache {
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
         let source = self.source(record, codec)?;
-        Ok(codec.encode(&source, PREVIEW_QUALITY, None)?)
+        Ok(codec.encode(&source, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
     }
 
     /// Renders the preview JPEG for `record` with the current settings.
@@ -94,6 +94,6 @@ impl PreviewCache {
             stamp_font,
         });
         let image = render(&source, &p)?;
-        Ok(codec.encode(&image, PREVIEW_QUALITY, None)?)
+        Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
     }
 }

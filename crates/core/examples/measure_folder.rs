@@ -20,7 +20,7 @@ use std::path::{Path, PathBuf};
 use std::time::Instant;
 
 use fotollection_core::cancel::CancellationToken;
-use fotollection_core::codec::{decode_image, default_codec};
+use fotollection_core::codec::{EncodeOptions, decode_image, default_codec};
 use fotollection_core::export::{EXPORT_QUALITY, ExportOptions, default_inflight, run_export};
 use fotollection_core::image::apply_orientation;
 use fotollection_core::import::scan;
@@ -167,7 +167,7 @@ fn main() {
         s
     };
     let stage = |settings: &RenderSettings| {
-        let (mut draw, mut encode) = (Vec::new(), Vec::new());
+        let (mut draw, mut encode, mut encode_print) = (Vec::new(), Vec::new(), Vec::new());
         for _ in 0..20 {
             let t = Instant::now();
             let p = plan(&PlanInput {
@@ -183,18 +183,27 @@ fn main() {
             });
             let image = render(&t2, &p).unwrap();
             draw.push(t.elapsed().as_secs_f64() * 1e3);
+            // The preview's own encoder settings (screen), and print settings for comparison.
             let t = Instant::now();
-            codec.encode(&image, 85, None).unwrap();
+            codec
+                .encode(&image, EncodeOptions::screen(85), None)
+                .unwrap();
             encode.push(t.elapsed().as_secs_f64() * 1e3);
+            let t = Instant::now();
+            codec
+                .encode(&image, EncodeOptions::print(85), None)
+                .unwrap();
+            encode_print.push(t.elapsed().as_secs_f64() * 1e3);
         }
-        draw.sort_by(f64::total_cmp);
-        encode.sort_by(f64::total_cmp);
-        (draw[10], encode[10])
+        for v in [&mut draw, &mut encode, &mut encode_print] {
+            v.sort_by(f64::total_cmp);
+        }
+        (draw[10], encode[10], encode_print[10])
     };
-    let (draw_ms, encode_ms) = stage(&settings);
-    let (draw_plain_ms, _) = stage(&no_stamp);
+    let (draw_ms, encode_ms, encode_print_ms) = stage(&settings);
+    let (draw_plain_ms, _, _) = stage(&no_stamp);
     report!(
-        "preview breakdown (p50): crop+resize {draw_plain_ms:.1} ms, stamp {:.1} ms, encode q85 {encode_ms:.1} ms",
+        "preview breakdown (p50): crop+resize {draw_plain_ms:.1} ms, stamp {:.1} ms, encode q85 {encode_ms:.1} ms (4:4:4 + optimized Huffman: {encode_print_ms:.1} ms)",
         draw_ms - draw_plain_ms
     );
 
@@ -258,6 +267,7 @@ fn main() {
             "previewDrawMs": draw_plain_ms,
             "previewStampMs": draw_ms - draw_plain_ms,
             "previewEncodeMs": encode_ms,
+            "previewEncodePrintMs": encode_print_ms,
             "inputBytes": input_bytes,
         });
         println!("{out:#}");

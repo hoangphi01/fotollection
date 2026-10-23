@@ -74,24 +74,24 @@ Fotollection dành cho người chụp ảnh nghiêm túc và nhiếp ảnh gia,
 
 ### So với ngân sách
 
-![Mở thư mục: 0,12 giây cho 1.000 ảnh, ngân sách dưới 1 giây. Preview: 27 ms, ngân sách dưới 50 ms. Export: 18,4 ảnh/s, ngân sách tối thiểu 8. RAM đỉnh: 1,45 GB, ngân sách tối đa 2 GB.](docs/images/bench-budgets-vi.svg)
+![Mở thư mục: 0,12 giây cho 1.000 ảnh, ngân sách dưới 1 giây. Preview: 18 ms, ngân sách dưới 50 ms. Export: 18,0 ảnh/s, ngân sách tối thiểu 8. RAM đỉnh: 1,45 GB, ngân sách tối đa 2 GB.](docs/images/bench-budgets-vi.svg)
 
 | Việc | Ngân sách | Đo được | |
 |------|--------|----------|---|
 | Mở thư mục (import + EXIF + thumbnail đầu tiên) | < 1 giây cho 1.000 ảnh | **0,12 giây** cho 1.000 ảnh (5.035 ảnh trong 0,62 giây) | ✓ |
-| Cập nhật preview khi đổi thiết lập | < 50 ms (p95) | **27 ms** p95, 26 ms p50 | ✓ |
-| Tốc độ export | ≥ 8 ảnh/s với ảnh 24 MP | **18,4 ảnh/s** với ảnh 16 MP | ✓ |
+| Cập nhật preview khi đổi thiết lập | < 50 ms (p95) | **18 ms** p95, 17 ms p50 | ✓ |
+| Tốc độ export | ≥ 8 ảnh/s với ảnh 24 MP | **18,0 ảnh/s** với ảnh 16 MP | ✓ |
 | RAM đỉnh | ≤ 2 GB với batch bất kỳ | **1,45 GB** với 5.035 ảnh | ✓ |
 
 ### Batch lớn
 
-Bộ nhớ không được tăng theo số ảnh. Batch lớn gấp 53 lần chỉ tốn thêm 0,04 GB ở mức đỉnh:
+Bộ nhớ không được tăng theo số ảnh. Batch lớn gấp 53 lần chỉ tốn thêm 0,1 GB ở mức đỉnh:
 
-![RAM đỉnh: 1,41 GB với 95 ảnh và 1,45 GB với 5.035 ảnh, so với trần 2 GB.](docs/images/bench-memory-vi.svg)
+![RAM đỉnh: 1,35 GB với 95 ảnh và 1,45 GB với 5.035 ảnh, so với trần 2 GB.](docs/images/bench-memory-vi.svg)
 
 | Số ảnh | RAM đỉnh | Export | Thư viện trong RAM |
 |-------:|------------:|-------:|------------------:|
-| 95 | 1,41 GB | 18,4 ảnh/s | — |
+| 95 | 1,35 GB | 18,0 ảnh/s | — |
 | 5.035 | 1,45 GB | 15,4 ảnh/s | 13 MB |
 
 Lần export 5.035 ảnh chạy hơn 5 phút, và M3 tự giảm xung khi tải nặng kéo dài, nên tốc độ thấp hơn.
@@ -100,33 +100,33 @@ Lần export 5.035 ảnh chạy hơn 5 phút, và M3 tự giảm xung khi tải 
 
 Phương án thay thế dễ thấy nhất là một web app làm đúng việc đó trong trình duyệt (`createImageBitmap` + `OffscreenCanvas`, mỗi nhân CPU một Web Worker). Cả hai chạy trên cùng 95 ảnh, cùng một máy:
 
-![Export cả lô: Fotollection 18,4 ảnh/s, trình duyệt 19,0. Preview đã cache: Fotollection 25,9 ms, trình duyệt 17,4 ms. RAM đỉnh: Fotollection 1,41 GB, trình duyệt 1,77 GB.](docs/images/bench-vi.svg)
+![Export cả lô: Fotollection 18,0 ảnh/s, trình duyệt 17,9. Preview đã cache: Fotollection 17,4 ms, trình duyệt 18,5 ms. RAM đỉnh: Fotollection 1,35 GB, trình duyệt 1,78 GB.](docs/images/bench-vi.svg)
 
 | | Fotollection (Rust) | Trình duyệt (Chromium 156) | |
 |---|---:|---:|---|
-| Export cả lô | 18,4 ảnh/s | 19,0 ảnh/s | Gần như bằng nhau |
-| Preview đã cache, 1600 px (p50) | 25,9 ms | 17,4 ms | Trình duyệt nhanh hơn |
-| RAM đỉnh | 1,41 GB | 1,77 GB | Fotollection thấp hơn 20 % |
+| Export cả lô | 18,0 ảnh/s | 17,9 ảnh/s | Gần như bằng nhau |
+| Preview đã cache, 1600 px (p50) | 17,4 ms | 18,5 ms | Fotollection nhanh hơn |
+| RAM đỉnh | 1,35 GB | 1,78 GB | Fotollection thấp hơn 24 % |
 
-Về tốc độ thô, trình duyệt nhanh ngang ngửa: Chromium dùng libjpeg-turbo có SIMD, và thắng ở preview nhỏ. Nhưng điều đó không có nghĩa Fotollection có thể chỉ là một trang web:
+Về tốc độ export thô, trình duyệt nhanh ngang ngửa vì Chromium dùng libjpeg-turbo có SIMD. Giờ Fotollection đã preview nhanh hơn. Tuy vậy, tốc độ không phải lý do chính để làm app native:
 
 - Trình duyệt chỉ mã hóa JPEG được ở chế độ màu 4:2:0, tức một nửa độ phân giải màu. Fotollection export 4:4:4, gấp đôi dữ liệu màu, trong cùng thời gian.
-- Fotollection dùng ít hơn 20 % bộ nhớ, và việc export có giới hạn bộ nhớ, như bài thử batch lớn cho thấy. Một tab trình duyệt thì có trần cứng.
+- Fotollection dùng ít hơn 24 % bộ nhớ, và việc export có giới hạn bộ nhớ, như bài thử batch lớn cho thấy. Một tab trình duyệt thì có trần cứng.
 - Fotollection ghi file ra đĩa với rename nguyên tử và không ghi EXIF, nên GPS không bao giờ rời khỏi máy bạn. Trình duyệt chỉ tạo blob trong bộ nhớ và không ghi file nào.
 - ICC profile, RAW 16-bit ở Phase 3, và HEIC nằm ngoài khả năng của trình duyệt.
 
 ### Thời gian preview đi đâu
 
-![Phân tích preview: crop và resize 9,7 ms, dấu ngày 0,1 ms, mã hóa JPEG 16,2 ms, tổng 26,0 ms, so với Chromium 17,4 ms và ngân sách 50 ms.](docs/images/bench-preview-vi.svg)
+![Phân tích preview: crop và resize 9,7 ms, dấu ngày dưới 0,1 ms, mã hóa JPEG 7,0 ms, tổng 16,7 ms, so với Chromium 18,5 ms và ngân sách 50 ms.](docs/images/bench-preview-vi.svg)
 
 | Bước | Thời gian | Tỉ lệ |
 |------|-----:|------:|
-| Crop + resize | 9,7 ms | 37 % |
-| Dấu ngày | 0,1 ms | ≈ 0 % |
-| Mã hóa JPEG | 16,2 ms | 62 % |
-| **Tổng** | **26,0 ms** | ngân sách 50 ms · Chromium 17,4 ms |
+| Crop + resize | 9,7 ms | 58 % |
+| Dấu ngày | < 0,1 ms | ≈ 0 % |
+| Mã hóa JPEG | 7,0 ms | 42 % |
+| **Tổng** | **16,7 ms** | ngân sách 50 ms · Chromium 18,5 ms |
 
-Bộ mã hóa JPEG là nút thắt, nên đó là chỗ tối ưu tiếp theo ([ROADMAP Stage 2](docs/ROADMAP.md#phase-1-work-order-2026-10-23), tiếng Anh).
+Trước đây bộ mã hóa là nút thắt: 16,2 ms, chiếm 62 % của 26 ms. Preview chỉ để xem trên màn hình, nên giờ được mã hóa ở chế độ màu 4:2:0 với bảng Huffman thường. Phóng to 3× vẫn nhìn giống hệt. Ảnh export vẫn giữ 4:4:4 và bảng Huffman tối ưu. Chỉ một thay đổi đó đã đưa preview từ 26 ms xuống 17 ms.
 
 Đo lại tất cả bằng `bench/run.sh <thư-mục-ảnh>` và `bench/batch.sh <thư-mục-ảnh>`. Phương pháp đo ở [docs/OPTIMIZATION.md §2](docs/OPTIMIZATION.md#2-why-native-rust-instead-of-a-web-app), và các ngân sách mà mọi thay đổi phải tuân theo ở [§3](docs/OPTIMIZATION.md#3-budgets) (tiếng Anh).
 

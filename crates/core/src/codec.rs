@@ -46,6 +46,44 @@ pub struct Decoded {
     pub icc: Option<Vec<u8>>,
 }
 
+/// Chroma resolution of an encoded JPEG.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Chroma {
+    /// 4:4:4: full colour resolution, keeps coloured stamp text crisp (GLOSSARY).
+    Full,
+    /// 4:2:0: half colour resolution in both directions, for images that are only viewed.
+    Half,
+}
+
+/// How to encode one JPEG.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct EncodeOptions {
+    pub quality: u8,
+    pub chroma: Chroma,
+    /// A second pass that builds per-image Huffman tables: a few % smaller, noticeably slower.
+    pub optimize_huffman: bool,
+}
+
+impl EncodeOptions {
+    /// Files that leave the app: full chroma, smallest file (FR-008).
+    pub const fn print(quality: u8) -> Self {
+        Self {
+            quality,
+            chroma: Chroma::Full,
+            optimize_huffman: true,
+        }
+    }
+
+    /// Previews and thumbnails, which are only shown on screen and never printed (NFR-002).
+    pub const fn screen(quality: u8) -> Self {
+        Self {
+            quality,
+            chroma: Chroma::Half,
+            optimize_huffman: false,
+        }
+    }
+}
+
 pub trait JpegCodec: Send + Sync {
     /// Pixel dimensions from the header only (no pixel decoding).
     fn dimensions(&self, bytes: &[u8]) -> Result<(u32, u32), CodecError>;
@@ -53,7 +91,7 @@ pub trait JpegCodec: Send + Sync {
     fn encode(
         &self,
         image: &RgbImage,
-        quality: u8,
+        options: EncodeOptions,
         icc: Option<&[u8]>,
     ) -> Result<Vec<u8>, CodecError>;
 }
@@ -196,7 +234,7 @@ impl JpegCodec for PureRustCodec {
     fn encode(
         &self,
         image: &RgbImage,
-        quality: u8,
+        options: EncodeOptions,
         icc: Option<&[u8]>,
     ) -> Result<Vec<u8>, CodecError> {
         let (Ok(width), Ok(height)) = (u16::try_from(image.width), u16::try_from(image.height))
@@ -204,10 +242,12 @@ impl JpegCodec for PureRustCodec {
             return Err(CodecError::TooLarge(image.width, image.height));
         };
         let mut out = Vec::with_capacity(image.data.len() / 8);
-        let mut encoder = Encoder::new(&mut out, quality.clamp(1, 100));
-        // 4:4:4 keeps coloured stamp text crisp (GLOSSARY: chroma subsampling).
-        encoder.set_sampling_factor(SamplingFactor::R_4_4_4);
-        encoder.set_optimized_huffman_tables(true);
+        let mut encoder = Encoder::new(&mut out, options.quality.clamp(1, 100));
+        encoder.set_sampling_factor(match options.chroma {
+            Chroma::Full => SamplingFactor::R_4_4_4,
+            Chroma::Half => SamplingFactor::R_4_2_0,
+        });
+        encoder.set_optimized_huffman_tables(options.optimize_huffman);
         if let Some(icc) = icc {
             encoder
                 .add_icc_profile(icc)
@@ -231,7 +271,9 @@ mod tests {
         for px in image.data.as_chunks_mut::<3>().0 {
             *px = [200, 100, 50];
         }
-        let jpeg = codec.encode(&image, 95, None).unwrap_or_default();
+        let jpeg = codec
+            .encode(&image, EncodeOptions::print(95), None)
+            .unwrap_or_default();
         let decoded = codec.decode(&jpeg).map(|d| d.image);
         let decoded = decoded.unwrap_or_else(|_| RgbImage::new(0, 0));
         assert_eq!((decoded.width, decoded.height), (64, 48));
@@ -374,6 +416,32 @@ mod tests {
             }
         }
         !crc
+    }
+
+    /// Luma sampling factors from the first SOF marker: (2, 2) means 4:2:0, (1, 1) 4:4:4.
+    fn luma_sampling(jpeg: &[u8]) -> Option<(u8, u8)> {
+        let mut i = 2;
+        while i + 4 <= jpeg.len() {
+            let (marker, len) = (
+                jpeg[i + 1],
+                usize::from(u16::from_be_bytes([jpeg[i + 2], jpeg[i + 3]])),
+            );
+            if matches!(marker, 0xC0..=0xC2) {
+                let f = *jpeg.get(i + 11)?;
+                return Some((f >> 4, f & 0x0F));
+            }
+            i += 2 + len;
+        }
+        None
+    }
+
+    #[test]
+    fn fr_008_prints_keep_full_chroma_and_previews_halve_it() {
+        let image = RgbImage::new(64, 48);
+        let print = PureRustCodec.encode(&image, EncodeOptions::print(95), None);
+        let screen = PureRustCodec.encode(&image, EncodeOptions::screen(85), None);
+        assert_eq!(print.ok().as_deref().and_then(luma_sampling), Some((1, 1)));
+        assert_eq!(screen.ok().as_deref().and_then(luma_sampling), Some((2, 2)));
     }
 
     #[test]

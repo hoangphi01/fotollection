@@ -304,6 +304,7 @@ function charts(lang) {
       { name: t.encode, cls: 's5', v: rust.previewEncodeMs },
     ]
     const total = segs.reduce((s, x) => s + x.v, 0)
+    const ms = (v) => (v < 0.05 ? `< ${f(0.1, 1)} ms` : `${f(v, 1)} ms`)
     const budget = budgets['NFR-002'].value
     const max = budget * 1.1
     const x = (v) => LEFT + (PLOT * v) / max
@@ -311,7 +312,7 @@ function charts(lang) {
     // Legend: swatch + name in text ink, so identity never relies on colour alone.
     let lx = 0
     for (const s of segs) {
-      body += `<rect class="${s.cls}" x="${lx}" y="44" width="10" height="10" rx="2"/><text class="t2" x="${lx + 16}" y="53">${esc(`${s.name} ${f(s.v, 1)} ms`)}</text>`
+      body += `<rect class="${s.cls}" x="${lx}" y="44" width="10" height="10" rx="2"/><text class="t2" x="${lx + 16}" y="53">${esc(`${s.name} ${ms(s.v)}`)}</text>`
       lx += 40 + (s.name.length + 7) * 7
     }
     const y = 100
@@ -325,9 +326,13 @@ function charts(lang) {
       cx += w
       body += `<line class="gap" x1="${cx}" x2="${cx}" y1="${y}" y2="${y + 26}"/>`
     }
-    body += `<text class="t1 num" x="${cx + 8}" y="${y + 18}">${f(total, 1)} ms</text>`
+    // The total sits after the bar, or after the Chromium line when that is just past the bar.
+    const xWeb = x(web.previewWarmP50Ms)
+    const webInsideBar = xWeb < cx
+    const totalX = !webInsideBar && xWeb - cx < 80 ? xWeb + 8 : cx + 8
+    body += `<text class="t1 num" x="${totalX}" y="${y + 18}">${f(total, 1)} ms</text>`
     body += `<line class="axis" x1="${LEFT}" x2="${LEFT}" y1="${y - 6}" y2="${y + 32}"/>`
-    body += refLine('refw', x(web.previewWarmP50Ms), y - 10, y + 36, `${t.webShort} ${f(web.previewWarmP50Ms, 1)}`, 'end', [y - 2, y + 28])
+    body += refLine('refw', xWeb, y - 10, y + 36, `${t.webShort} ${f(web.previewWarmP50Ms, 1)}`, 'end', webInsideBar ? [y - 2, y + 28] : null)
     body += refLine('ref', x(budget), y - 10, y + 34, `${t.budget} ${budgetText(budgets['NFR-002'])}`, 'end')
     const h = y + 66
     body += `<text class="t3" x="0" y="${h - 4}">${esc(t.footer(f, false))}</text>`

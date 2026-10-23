@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -16 752 182" width="752" height="182" role="img" aria-labelledby="t d">
 <title id="t">Peak memory stays flat as the batch grows</title>
-<desc id="d">95 photos: 1.41 GB. 5035 photos: 1.45 GB. ceiling 2 GB.</desc>
+<desc id="d">95 photos: 1.35 GB. 5035 photos: 1.45 GB. ceiling 2 GB.</desc>
 <style>
   .bg{fill:#fcfcfb} .t1{fill:#1f1f1e;font:600 13px system-ui,-apple-system,Segoe UI,sans-serif}
   .t2{fill:#52514c;font:13px system-ui,-apple-system,Segoe UI,sans-serif}
@@ -17,5 +17,5 @@
 </style>
 <rect class="bg" x="-16" y="-16" width="752" height="182" rx="8"/>
 <text class="t1 h" x="0" y="8">Peak memory stays flat as the batch grows</text>
-<text class="t3" x="0" y="30">GB peak RSS: import + thumbnails + export · lower is better</text><text class="t2" x="180" y="77" text-anchor="end">95 photos</text><path class="s1" d="M190 62h243.238656a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-243.238656z"><title>95 photos: 1.41 GB</title></path><text class="t1 num" x="445.238656" y="78">1.41 GB</text><text class="t2" x="180" y="109" text-anchor="end">5,035 photos</text><path class="s1" d="M190 94h250.2546944a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-250.2546944z"><title>5,035 photos: 1.45 GB</title></path><text class="t1 num" x="452.2546944" y="110">1.45 GB</text><line class="axis" x1="190" x2="190" y1="58" y2="120"/><line class="ref" x1="540" x2="540" y1="56" y2="120"/><text class="t3" x="540" y="52" text-anchor="middle">ceiling 2 GB (NFR-004)</text><text class="t3" x="0" y="146">16 MP JPEGs · Apple M3, 16 GB, macOS 26.3.1 · 2026-10-23 · 95 photos: median of 3 runs · 5,035 photos: 1 run</text>
+<text class="t3" x="0" y="30">GB peak RSS: import + thumbnails + export · lower is better</text><text class="t2" x="180" y="77" text-anchor="end">95 photos</text><path class="s1" d="M190 62h231.62649599999997a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-231.62649599999997z"><title>95 photos: 1.35 GB</title></path><text class="t1 num" x="433.626496" y="78">1.35 GB</text><text class="t2" x="180" y="109" text-anchor="end">5,035 photos</text><path class="s1" d="M190 94h250.2546944a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-250.2546944z"><title>5,035 photos: 1.45 GB</title></path><text class="t1 num" x="452.2546944" y="110">1.45 GB</text><line class="axis" x1="190" x2="190" y1="58" y2="120"/><line class="ref" x1="540" x2="540" y1="56" y2="120"/><text class="t3" x="540" y="52" text-anchor="middle">ceiling 2 GB (NFR-004)</text><text class="t3" x="0" y="146">16 MP JPEGs · Apple M3, 16 GB, macOS 26.3.1 · 2026-10-23 · 95 photos: median of 3 runs · 5,035 photos: 1 run</text>
 </svg>

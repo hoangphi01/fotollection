@@ -73,24 +73,24 @@ Fotollection is built for enthusiast and professional photographers, so speed is
 
 ### Against the budgets
 
-![Open a folder: 0.12 s per 1,000 photos, budget under 1 s. Preview: 27 ms, budget under 50 ms. Export: 18.4 photos/s, budget at least 8. Peak memory: 1.45 GB, budget at most 2 GB.](docs/images/bench-budgets.svg)
+![Open a folder: 0.12 s per 1,000 photos, budget under 1 s. Preview: 18 ms, budget under 50 ms. Export: 18.0 photos/s, budget at least 8. Peak memory: 1.45 GB, budget at most 2 GB.](docs/images/bench-budgets.svg)
 
 | What | Budget | Measured | |
 |------|--------|----------|---|
 | Open a folder (import + EXIF + first thumbnails) | < 1 s per 1,000 photos | **0.12 s** per 1,000 (5,035 photos in 0.62 s) | ✓ |
-| Preview update after a settings change | < 50 ms (p95) | **27 ms** p95, 26 ms p50 | ✓ |
-| Export throughput | ≥ 8 photos/s at 24 MP | **18.4 photos/s** at 16 MP | ✓ |
+| Preview update after a settings change | < 50 ms (p95) | **18 ms** p95, 17 ms p50 | ✓ |
+| Export throughput | ≥ 8 photos/s at 24 MP | **18.0 photos/s** at 16 MP | ✓ |
 | Peak memory | ≤ 2 GB at any batch size | **1.45 GB** with 5,035 photos | ✓ |
 
 ### Large batches
 
-Memory must not grow with the number of photos. A batch 53 times larger costs 0.04 GB more at peak:
+Memory must not grow with the number of photos. A batch 53 times larger costs 0.1 GB more at peak:
 
-![Peak memory: 1.41 GB for 95 photos and 1.45 GB for 5,035 photos, against a 2 GB ceiling.](docs/images/bench-memory.svg)
+![Peak memory: 1.35 GB for 95 photos and 1.45 GB for 5,035 photos, against a 2 GB ceiling.](docs/images/bench-memory.svg)
 
 | Photos | Peak memory | Export | Library in memory |
 |-------:|------------:|-------:|------------------:|
-| 95 | 1.41 GB | 18.4 photos/s | — |
+| 95 | 1.35 GB | 18.0 photos/s | — |
 | 5,035 | 1.45 GB | 15.4 photos/s | 13 MB |
 
 The 5,035-photo export runs for more than 5 minutes, and the M3 throttles under that load, which explains the lower throughput.
@@ -99,33 +99,33 @@ The 5,035-photo export runs for more than 5 minutes, and the M3 throttles under 
 
 The obvious alternative is a web app that does the same work in the browser (`createImageBitmap` + `OffscreenCanvas`, one Web Worker per core). Both ran on the same 95 photos on the same machine:
 
-![Batch export: Fotollection 18.4 photos/s, browser 19.0. Warm preview: Fotollection 25.9 ms, browser 17.4 ms. Peak memory: Fotollection 1.41 GB, browser 1.77 GB.](docs/images/bench.svg)
+![Batch export: Fotollection 18.0 photos/s, browser 17.9. Warm preview: Fotollection 17.4 ms, browser 18.5 ms. Peak memory: Fotollection 1.35 GB, browser 1.78 GB.](docs/images/bench.svg)
 
 | | Fotollection (Rust) | Browser (Chromium 156) | |
 |---|---:|---:|---|
-| Batch export | 18.4 photos/s | 19.0 photos/s | About the same |
-| Warm preview, 1600 px (p50) | 25.9 ms | 17.4 ms | Browser faster |
-| Peak memory | 1.41 GB | 1.77 GB | Fotollection 20 % lower |
+| Batch export | 18.0 photos/s | 17.9 photos/s | About the same |
+| Warm preview, 1600 px (p50) | 17.4 ms | 18.5 ms | Fotollection faster |
+| Peak memory | 1.35 GB | 1.78 GB | Fotollection 24 % lower |
 
-On raw speed, the browser is just as fast: Chromium uses libjpeg-turbo with SIMD, and it wins on small previews. That does not mean Fotollection could be a web page:
+On raw export speed the browser is just as fast, because Chromium uses libjpeg-turbo with SIMD. Fotollection is now faster on previews. Speed alone is not the argument for a native app, though:
 
 - The browser can only encode JPEG with 4:2:0 chroma, which halves colour resolution. Fotollection exports 4:4:4, with twice the chroma data, in the same time.
-- Fotollection uses 20 % less memory, and its export is bounded, as the large-batch test shows. A browser tab has a hard ceiling.
+- Fotollection uses 24 % less memory, and its export is bounded, as the large-batch test shows. A browser tab has a hard ceiling.
 - Fotollection writes the files with atomic renames and writes no EXIF, so GPS never leaves your machine. The browser only produced blobs and never wrote them.
 - Colour profiles (ICC), 16-bit RAW in Phase 3, and HEIC are out of reach in the browser.
 
 ### Where the preview time goes
 
-![Preview breakdown: crop and resize 9.7 ms, date stamp 0.1 ms, JPEG encode 16.2 ms, 26.0 ms in total, against Chromium at 17.4 ms and the 50 ms budget.](docs/images/bench-preview.svg)
+![Preview breakdown: crop and resize 9.7 ms, date stamp under 0.1 ms, JPEG encode 7.0 ms, 16.7 ms in total, against Chromium at 18.5 ms and the 50 ms budget.](docs/images/bench-preview.svg)
 
 | Step | Time | Share |
 |------|-----:|------:|
-| Crop + resize | 9.7 ms | 37 % |
-| Date stamp | 0.1 ms | ≈ 0 % |
-| JPEG encode | 16.2 ms | 62 % |
-| **Total** | **26.0 ms** | budget 50 ms · Chromium 17.4 ms |
+| Crop + resize | 9.7 ms | 58 % |
+| Date stamp | < 0.1 ms | ≈ 0 % |
+| JPEG encode | 7.0 ms | 42 % |
+| **Total** | **16.7 ms** | budget 50 ms · Chromium 18.5 ms |
 
-The JPEG encoder is the bottleneck, so it is the next optimization ([ROADMAP Stage 2](docs/ROADMAP.md#phase-1-work-order-2026-10-23)).
+The encoder used to be the bottleneck: 16.2 ms, 62 % of a 26 ms preview. Previews are only ever shown on screen, so they now encode with 4:2:0 chroma and plain Huffman tables, which looks the same at 3× zoom. Exports keep 4:4:4 and optimized tables. That one change took the preview from 26 ms to 17 ms.
 
 Reproduce everything with `bench/run.sh <photo-folder>` and `bench/batch.sh <photo-folder>`. The method is in [docs/OPTIMIZATION.md §2](docs/OPTIMIZATION.md#2-why-native-rust-instead-of-a-web-app), and the budgets every change must respect are in [§3](docs/OPTIMIZATION.md#3-budgets).
 

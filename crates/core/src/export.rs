@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 
 use crate::cancel::CancellationToken;
-use crate::codec::{CodecError, JpegCodec, decode_image};
+use crate::codec::{CodecError, EncodeOptions, JpegCodec, decode_image};
 use crate::image::apply_orientation;
 use crate::library::{PhotoId, PhotoRecord, flags};
 use crate::plan::{FrameRequest, PlanInput, plan};
@@ -148,7 +148,11 @@ fn export_one(
     let image = render(&upright, &p)?;
     drop(upright);
     // No EXIF is written, so GPS never leaves the machine by default (FR-010).
-    let jpeg = codec.encode(&image, options.quality, decoded.icc.as_deref())?;
+    let jpeg = codec.encode(
+        &image,
+        EncodeOptions::print(options.quality),
+        decoded.icc.as_deref(),
+    )?;
     drop(image);
 
     let dir = options.destination.join(day_folder(record));
