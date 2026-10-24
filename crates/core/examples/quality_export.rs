@@ -19,17 +19,29 @@ use fotollection_core::settings::RenderSettings;
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
-    let (out, photos) = args.split_first().expect("usage: quality_export <out-dir> <photo>…");
+    let (out, photos) = args
+        .split_first()
+        .expect("usage: quality_export <out-dir> <photo>…");
     let mut lib = Library::new();
     for p in photos {
         let file = check_file(p.as_ref()).expect("readable photo");
         let folder = lib.add_folder(file.path.parent().expect("parent"));
         lib.push(folder, &file, &metadata::read_path(&file.path));
     }
-    let records: Vec<_> = lib.sorted_ids().into_iter().filter_map(|id| lib.record(id)).collect();
-    let mut settings = RenderSettings::default();
-    settings.print_size = "original".into();
-    settings.stamp.enabled = false;
+    let records: Vec<_> = lib
+        .sorted_ids()
+        .into_iter()
+        .filter_map(|id| lib.record(id))
+        .collect();
+    let defaults = RenderSettings::default();
+    let settings = RenderSettings {
+        print_size: "original".into(),
+        stamp: fotollection_core::settings::StampSettings {
+            enabled: false,
+            ..defaults.stamp.clone()
+        },
+        ..defaults
+    };
     let destination = PathBuf::from(out);
     let summary = run_export(
         &records,
@@ -45,5 +57,9 @@ fn main() {
         &CancellationToken::new(),
         &|_, _| {},
     );
-    eprintln!("exported {} (failed {}) at q{EXPORT_QUALITY}", summary.exported, summary.failed.len());
+    eprintln!(
+        "exported {} (failed {}) at q{EXPORT_QUALITY}",
+        summary.exported,
+        summary.failed.len()
+    );
 }
