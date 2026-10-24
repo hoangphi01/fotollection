@@ -5,7 +5,7 @@
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 1 — MVP, Stages 1–3 done, v0.1.0 released
+## Current phase: Phase 1 — MVP, Stages 1–3 done, v0.1.0 released, v0.2.0 building
 
 **Where we are (2026-10-24).** The app works end to end for **JPEG, PNG and HEIC**:
 
@@ -17,7 +17,7 @@
 
 The interface is in English and Vietnamese, themed from the logo (teal and wood, photos on near-neutral ground). Measured performance meets every budget ([RESULT.md](RESULT.md)): preview 17 ms (faster than Chromium), export 18 photos/s, memory flat at 1.45 GB for 5,035 photos, and the export keeps the original's colour and detail (mean ΔE2000 0.19).
 
-**Shipping.** Versioning and automatic releases are in place ([ADR-0021](adr/0021-versioning-and-automated-releases.md), [RELEASE.md](RELEASE.md)): a version change on `main` builds, tags and publishes the macOS and Windows installers. **[v0.1.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.1.0), the first public preview, was published on 2026-10-24** (universal `.dmg`, `.msi`, `-setup.exe`, `SHA256SUMS.txt`), after the `v0.1.0-beta.1` pipeline trial. The website is live at <https://hoangphi01.github.io/fotollection/> (English and Vietnamese, [site/README.md](../site/README.md)): download buttons for the latest release, privacy section, print-shop sizes for dm and Rossmann, screenshots of the real app in alternating rows, benchmark charts, a VietQR "buy me a coffee" section, and a link to the author's blog.
+**Shipping.** Versioning and automatic releases are in place ([ADR-0021](adr/0021-versioning-and-automated-releases.md), [RELEASE.md](RELEASE.md)): a version change on `main` builds, tags and publishes the macOS and Windows installers. **[v0.1.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.1.0), the first public preview, was published on 2026-10-24** (universal `.dmg`, `.msi`, `-setup.exe`, `SHA256SUMS.txt`), after the `v0.1.0-beta.1` pipeline trial. **`v0.2.0`** (theme switch, Windows title bar, folder removal, preview print badges, one accent per mode) was cut at the end of 2026-10-24; its release run (from commit `550577b`) was still building then. The website is live at <https://hoangphi01.github.io/fotollection/> (English and Vietnamese, [site/README.md](../site/README.md)): download buttons for the latest release, privacy section, print-shop sizes for dm and Rossmann, screenshots of the real app in alternating rows, benchmark charts, a VietQR "buy me a coffee" section, a link to the author's blog, and a scrollable "What's new" box built from the CHANGELOG. [DOCS_GUIDE.md](DOCS_GUIDE.md) is the checklist of what to update for each kind of change.
 
 ### Done, by stage ([ROADMAP.md — Phase 1 work order](ROADMAP.md#phase-1-work-order-2026-10-23))
 
@@ -61,7 +61,12 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 
 ### Next, in order
 
-1. **Smoke-test `v0.1.0`** on macOS (Open Anyway) and Windows; apply to SignPath Foundation for Windows signing; add a Ko-fi or GitHub Sponsors link once the account exists. Decide on the trip-by-trip Photos-library flow ([ROADMAP ideas](ROADMAP.md#ideas-backlog-not-yet-requirements)).
+1. **Pick up here (2026-10-25):**
+   - check that the `v0.2.0` release run finished and published (`gh release view v0.2.0`); if it failed, fix and push again (the workflow retries while the tag is missing);
+   - smoke-test the installers on macOS (Open Anyway) and **Windows, where the app-drawn title bar (FR-052) has not yet been tried on a real machine**: drag, double-click to maximize, minimize / maximize / close, snapping;
+   - in the app: the theme switch (System / Light / Dark), removing a folder, the preview's date stamp fields and print badges;
+   - apply to SignPath Foundation for Windows signing; add a Ko-fi or GitHub Sponsors link next to the VietQR code once the account exists;
+   - decide on the trip-by-trip Photos-library flow ([ROADMAP ideas](ROADMAP.md#ideas-backlog-not-yet-requirements)).
 2. **Stage C, manual places and renaming (FR-032, FR-005):** search a place, set it for one or many photos, rename a place everywhere; project schema v6. Ships as `v0.3.0` (`v0.2.0` carries the theme, Windows title bar, folder removal and preview fixes).
 3. **Stage D, place suggestions from phone photos (FR-031):** borrow GPS from photos taken at the same time and place, with confidence levels, measured on a mixed camera + phone folder, with a new ADR.
 4. **Normal mode (FR-048, NFR-015):** open → keep/drop → export at 300 DPI and q90, measured against Professional.
@@ -149,7 +154,7 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 | FR-047 | Film looks | 2 | Not Started | Future: Fujifilm-style film simulations (slide, chrome, negative, cinema, mono) on the FR-039 engine; own names and LUTs, no trademarks or copied LUT files |
 | FR-048 | Normal and Professional modes | 1 | Not Started | **Next.** Normal = instant mode: open → keep/drop → export at 300 DPI for the print size, q90; Professional = everything so far. Shared library and project |
 | FR-050 | Print basket | 1 | Not Started | Planned: add to basket after detailed editing; normal export plus an optional extra folder with the basket |
-| FR-052 | Appearance: theme, title bar, hints | 1 | In Progress | ✓ System/Light/Dark switch (settings v6, `fr_052_*`), ✓ Windows title bar drawn by the app (decorations off, window permissions), ✓ `HintLayer` replaces native tooltips. Left: check the title bar on a real Windows machine |
+| FR-052 | Appearance: theme, title bar, hints | 1 | In Progress | ✓ System/Light/Dark switch (settings v6, `fr_052_*`), ✓ Windows title bar drawn by the app (decorations off, window permissions), ✓ `HintLayer` replaces native tooltips, ✓ one accent per mode (teal light, wood dark). Left: check the title bar on a real Windows machine |
 | FR-051 | Landmark recognition | 2 | Not Started | Future: offline landmark model as an optional pack; licence research done (Google on-device classifiers, Apache-2.0); needs an ADR and a size/speed spike |
 | FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print; every editing session adds a journal entry (instax-style) |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
