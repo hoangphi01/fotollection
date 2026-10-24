@@ -11,10 +11,10 @@ en:
   nav_download: Download
   star: Star on GitHub
   badge: Free · Open source · No account
-  hero_title_1: Overwhelmed by
-  hero_accent: thousands of photos
-  hero_title_2: " after a trip?"
-  hero_lead: Not sure which to keep and which to delete to save space? Try Fotollection. Fully automatic and free.
+  hero_title_1: Thousands of photos, only looked at
+  hero_accent: on the plane
+  hero_title_2: " home?"
+  hero_lead: No internet up there, and still no idea which ones to keep. Take one real look back with Fotollection — it finds the best shots, stamps the date and gets them ready to print. Automatic, free and fully offline.
   download_mac: Download for macOS
   download_win: Download for Windows
   download_note: macOS 11+ (Apple Silicon and Intel) · Windows 10/11
@@ -112,10 +112,10 @@ vi:
   nav_download: Tải về
   star: Star trên GitHub
   badge: Miễn phí · Mã nguồn mở · Không cần tài khoản
-  hero_title_1: Bối rối với
-  hero_accent: hàng nghìn ảnh
-  hero_title_2: " sau chuyến đi?"
-  hero_lead: Không biết nên giữ tấm nào, bỏ tấm nào để tiết kiệm bộ nhớ? Hãy thử Fotollection. Hoàn toàn tự động và miễn phí.
+  hero_title_1: Chụp hàng nghìn ảnh, chỉ xem lại khi
+  hero_accent: ngồi trên máy bay
+  hero_title_2: "?"
+  hero_lead: Không có internet, và vẫn chưa biết giữ tấm nào. Hãy thử một lần nhìn lại cùng Fotollection — tự tìm ảnh đẹp nhất, in ngày chụp và chuẩn bị sẵn để in. Tự động, miễn phí và hoàn toàn offline.
   download_mac: Tải cho macOS
   download_win: Tải cho Windows
   download_note: macOS 11+ (Apple Silicon và Intel) · Windows 10/11

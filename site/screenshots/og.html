@@ -21,7 +21,7 @@
       .text { padding: 0 0 0 60px; }
       .brand { display: flex; align-items: center; gap: 12px; font: 700 26px 'Bitter', serif; }
       .brand img { width: 44px; height: 44px; border-radius: 10px; }
-      h1 { margin-top: 30px; font: 800 48px/1.12 'Bitter', serif; letter-spacing: -0.01em; }
+      h1 { margin-top: 30px; font: 800 44px/1.12 'Bitter', serif; letter-spacing: -0.01em; }
       h1 em { font-style: normal; color: #f6c98b; }
       p { margin-top: 22px; font-size: 21px; line-height: 1.45; color: #e3f1ea; }
       .shield { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; padding: 7px 14px; border-radius: 10px; background: #fffaee; color: #3f7d1a; font-weight: 600; font-size: 18px; }
@@ -47,8 +47,8 @@
     <script>
       const lang = new URLSearchParams(location.search).get('lang') === 'vi' ? 'vi' : 'en'
       const text = {
-        en: [['Overwhelmed by ', 'thousands of photos', ' after a trip?'], 'Fotollection picks the best shots, stamps the date and crops them for print. Free and automatic.', 'Private: your photos never leave your computer'],
-        vi: [['Bối rối với ', 'hàng nghìn ảnh', ' sau chuyến đi?'], 'Fotollection chọn ảnh đẹp, in ngày và crop đúng khổ in. Tự động và miễn phí.', 'Riêng tư: ảnh không bao giờ rời khỏi máy'],
+        en: [['Thousands of photos, only looked at ', 'on the plane', ' home?'], 'Take one real look back with Fotollection: best shots, date stamp, ready to print. Free and offline.', 'Private: your photos never leave your computer'],
+        vi: [['Chụp hàng nghìn ảnh, chỉ xem lại khi ', 'ngồi trên máy bay', '?'], 'Hãy thử một lần nhìn lại cùng Fotollection: ảnh đẹp nhất, dấu ngày, sẵn sàng để in. Miễn phí, offline.', 'Riêng tư: ảnh không bao giờ rời khỏi máy'],
       }[lang]
       const [before, accent, after] = text[0]
       const em = document.createElement('em')

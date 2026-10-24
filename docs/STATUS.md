@@ -5,17 +5,19 @@
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 1 — MVP, Stages 1–3 done
+## Current phase: Phase 1 — MVP, Stages 1–3 done, first preview release under way
 
 **Where we are (2026-10-24).** The app works end to end for **JPEG, PNG and HEIC**:
 
-1. Open or drop a folder.
+1. Open or drop a folder; refresh it to pick up new photos.
 2. Cull with stars, flags and filters, helped by best-shot suggestions: groups of similar shots, the best of each with reasons, and Keep best.
-3. Preview with crop, date stamp and the "Shot on" info frame. The frame can be edited in the preview, and the print size can be Original or a custom one.
-4. Export exactly the filtered set.
+3. Preview with crop, quarter turns and straightening (±15°), a film-style date stamp with the place and a caption line, per photo or for all, and the "Shot on" info frame with bundled brand logos. Each print size shows whether the photo prints sharp, acceptably or pixelated, including the square CEWE kiosk sizes of dm and Rossmann.
+4. Export exactly the filtered set, at original quality.
 5. Save the work as a self-contained `.fotollection` document that opens the same on another machine.
 
-The interface is in English and Vietnamese. Measured performance meets every budget ([RESULT.md](RESULT.md)): preview 17 ms (faster than Chromium), export 18 photos/s, memory flat at 1.45 GB for 5,035 photos.
+The interface is in English and Vietnamese, themed from the logo (teal and wood, photos on near-neutral ground). Measured performance meets every budget ([RESULT.md](RESULT.md)): preview 17 ms (faster than Chromium), export 18 photos/s, memory flat at 1.45 GB for 5,035 photos, and the export keeps the original's colour and detail (mean ΔE2000 0.19).
+
+**Shipping.** Versioning and automatic releases are in place ([ADR-0021](adr/0021-versioning-and-automated-releases.md), [RELEASE.md](RELEASE.md)): a version change on `main` builds, tags and publishes the macOS and Windows installers. `v0.1.0-beta.1` is the trial run; `v0.1.0`, the first public preview, follows once it is checked. The website is live at <https://hoangphi01.github.io/fotollection/> (English and Vietnamese, [site/README.md](../site/README.md)).
 
 ### Done, by stage ([ROADMAP.md — Phase 1 work order](ROADMAP.md#phase-1-work-order-2026-10-23))
 
@@ -34,7 +36,16 @@ The interface is in English and Vietnamese. Measured performance meets every bud
    - HEIC input through the OS codecs (FR-001, [ADR-0017](adr/0017-heic-through-os-codecs.md));
    - best-shot suggestions with face and eye models, the Groups and compare views, and Keep best (FR-041, NFR-014, [ADR-0018](adr/0018-face-models-and-runtime.md));
    - accuracy scored on 95 hand-labelled photos, with grouping rebuilt on a layout and colour signature ([ADR-0019](adr/0019-grouping-by-visual-signature.md)).
-4. **Docs and tooling:**
+4. **Stage 3, continued (2026-10-24):**
+   - offline place names from GeoNames on the date line (FR-005, [ADR-0003](adr/0003-offline-geocoding-geonames.md));
+   - film-style DSEG14 date stamp with a caption line and LED glow, per photo or for all (FR-004, FR-033, FR-036, FR-044);
+   - bundled brand logos for the info frame ([ADR-0020](adr/0020-bundled-brand-logos.md));
+   - rotate and straighten in the crop editor, arrow keys included (FR-006, project schema v4–v5);
+   - print-size advice with sharp / acceptable / pixelated badges (FR-026) and the square kiosk sizes (FR-006);
+   - print-quality audit against a web editor (NFR-009, [RESULT.md §9](RESULT.md#9-print-quality));
+   - theme from the logo (STYLE_RULE §4);
+   - versioning, release automation and the website (FR-021, ADR-0021).
+5. **Docs and tooling:**
    - README with four measured charts and a Vietnamese version (`README.vi.md`);
    - `bench/run.sh`, `bench/batch.sh`, `measure_folder --analyze` and `eval_bestshot`;
    - `docs/RESULT.md`;
@@ -50,21 +61,22 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 
 ### Next, in order
 
-1. **Normal mode (FR-048, NFR-015), asked for next.** It is the "instant" counterpart to the current Professional mode: open → keep/drop → export at 300 DPI for the print size and q90, measured against Professional. Start with the export benchmark (print-sized resize + q90, reduced-scale decode), then the simplified UI and the mode switch.
-2. **Stage 3, best-shot suggestions (FR-041, NFR-014).** ✓ Models and licences ([ADR-0018](adr/0018-face-models-and-runtime.md)). ✓ `culling/` core module: grouping, metrics, faces and eyes, scoring with reasons, within NFR-014. ✓ Background analysis job with its cache ([DATABASE §8.1](DATABASE.md#81-analysis-cache)) and the IPC commands `analyze_library`, `list_groups`, `keep_best`. ✓ Groups view ("Best of N" with reasons), compare view with a bar per measure and closed-eye marks, Keep best (per group / all clear groups) and Keep this one, in English and Vietnamese. ✓ Accuracy scored on 95 hand-labelled photos: grouping 3 → 15 of 22 groups with no wrong group, picks 6/6 ([ADR-0019](adr/0019-grouping-by-visual-signature.md), [RESULT.md §8](RESULT.md#8-best-shot-accuracy)). Left: check the flow by hand in the app; read `SubSecTimeOriginal` for bursts within one second; an embedding model for the 7 groups still missed (big pose or framing changes); more labelled folders from other cameras.
-3. ✓ **Stage 3, HEIC input (FR-001)** via the OS codecs ([ADR-0017](adr/0017-heic-through-os-codecs.md)). Follow-up: HEIC thumbnails through ImageIO's thumbnail API (faster than a full decode).
-4. **Loose ends:**
+1. **Release `v0.1.0`:** finish the `v0.1.0-beta.1` trial run, smoke-test the installers, then `scripts/release.sh 0.1.0`.
+2. **Stage C, manual places and renaming (FR-032, FR-005):** search a place, set it for one or many photos, rename a place everywhere; project schema v6. Ships as `v0.2.0`.
+3. **Stage D, place suggestions from phone photos (FR-031):** borrow GPS from photos taken at the same time and place, with confidence levels, measured on a mixed camera + phone folder, with a new ADR.
+4. **Normal mode (FR-048, NFR-015):** open → keep/drop → export at 300 DPI and q90, measured against Professional.
+5. **Loose ends:**
    - FR-022 filters by date, camera, GPS and DPI, and multi-select;
-   - the whole-app memory run with 5,035 photos, using a separate app-data folder (NFR-004);
-   - cold-start time (NFR-010);
+   - `SubSecTimeOriginal` for bursts within one second; HEIC thumbnails through ImageIO;
+   - the whole-app memory run with 5,035 photos (NFR-004) and cold-start time (NFR-010);
+   - Windows code signing through SignPath Foundation ([ADR-0009](adr/0009-unsigned-distribution.md));
    - German UI later (FR-020).
-5. **Phase 2 queue:**
+6. **Phase 2 queue:**
    - swipe culling (FR-046);
-   - Photo Style looks (FR-039);
-   - film looks like Fujifilm's film simulations (FR-047);
+   - Photo Style looks (FR-039) and film looks (FR-047);
    - print presets (FR-038);
-   - per-photo overrides (FR-044);
-   - trip journal, an offline report drafted from the album (FR-049).
+   - trip journal with instax-style entries from each editing session (FR-049);
+   - print basket (FR-050) and landmark recognition (FR-051).
 
 ## Phase 0 — Foundation
 
