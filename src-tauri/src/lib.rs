@@ -3,6 +3,7 @@
 //! `fotollection-core` (ADR-0002).
 
 mod commands;
+mod culling;
 mod document;
 mod events;
 mod i18n;
@@ -53,6 +54,9 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::list_fonts,
             commands::import_font,
             commands::remove_font,
+            culling::analyze_library,
+            culling::list_groups,
+            culling::keep_best,
         ])
         .events(collect_events![
             events::LibraryChanged,
@@ -63,6 +67,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             events::RevisionChanged,
             events::DocumentChanged,
             events::MenuAction,
+            events::AnalysisFinished,
         ])
 }
 

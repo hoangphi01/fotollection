@@ -16,6 +16,7 @@
 | User font | `fonts/<id>.ttf`, `fonts/<id>.otf` | `font/ttf`, `font/otf` | — (internal copy) | Magic `00 01 00 00` / `true` (TTF), `OTTO` (OTF) | sfnt | — | Implemented ([FR-042](PRD.md#fr-042--custom-fonts)) |
 | Camera logo | `logos/<id>.png` | `image/png` | — (internal copy) | PNG magic | PNG | — | Implemented ([FR-040](PRD.md#fr-040--exif-info-frame)) |
 | Thumbnail cache | `thumbs/…` | `image/jpeg` | — (internal) | Path only | JPEG files | — | Implemented; disposable |
+| Analysis cache | `analysis/<aa>/<key>.json` | `application/json` | — (internal) | Path only | JSON, UTF-8 | `version` = `ANALYSIS_VERSION` 1 | Implemented; disposable ([FR-041](PRD.md#fr-041--best-shot-suggestions)) |
 
 The `.fotollection` extension is shared by both project containers. **A reader always identifies a file by its content, never by its extension:** JSON with the `format` field, or ZIP with a `manifest.json`.
 
@@ -71,6 +72,7 @@ These files live in the app's config and cache directories ([DATABASE.md §1](DA
 | `fonts/<id>.ttf\|otf` | At most 20 MB each and 50 fonts. TrueType collections (`ttcf`) and WOFF are rejected. The font must contain the digits 0–9 | [DATABASE.md §6](DATABASE.md#6-app-settings) |
 | `logos/<id>.png` | At most 2 MB and 4096 px per edge. Decoded with a pure-Rust PNG decoder before it is copied | [DATABASE.md §6](DATABASE.md#6-app-settings) |
 | `thumbs/` | Derived data, rebuilt on demand. Safe to delete at any time | [DATABASE.md §8](DATABASE.md#8-thumbnail-cache) |
+| `analysis/` | At most 64 KB per file; another version, invalid JSON or out-of-range values are recomputed. Safe to delete at any time | [DATABASE.md §8.1](DATABASE.md#81-analysis-cache) |
 
 ## 4. Input photos
 

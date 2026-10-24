@@ -52,6 +52,19 @@ pub enum TaskKind {
     Import,
     /// Generating sharp (T1) thumbnails in the background.
     Thumbnails,
+    /// Best-shot analysis of the library (FR-041).
+    Analyze,
+}
+
+/// A best-shot analysis finished (or was cancelled); the UI refetches the groups.
+#[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
+#[serde(rename_all = "camelCase")]
+pub struct AnalysisFinished {
+    pub job_id: u32,
+    pub analyzed: u32,
+    pub failed: u32,
+    pub groups: u32,
+    pub cancelled: bool,
 }
 
 /// Progress of a background task, for the progress bar (coalesced to ≤ 30 per second).

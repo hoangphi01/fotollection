@@ -30,7 +30,8 @@
   },
   "task": {
     "import": "Reading photos",
-    "thumbnails": "Preparing thumbnails"
+    "thumbnails": "Preparing thumbnails",
+    "analyze": "Finding the best shots"
   },
   "culling": {
     "keysHint": "0–5 stars · P pick · X reject · U unflag",

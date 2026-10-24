@@ -325,6 +325,14 @@ Presets work like Lightroom presets, applied to *print* settings ([FR-038](PRD.m
 - **Clearing:** Settings → *Clear cache* deletes the whole `thumbs/` directory. This is safe at any time.
 - **Implementation status (2026-10-23):** T0 (served directly from EXIF, never cached) and T1 (cached as `thumbs/<aa>/<key>.t1.jpg`, written atomically through `.part` + rename) are live. T2 previews live in a RAM-only LRU of 8 images. `index.bin`, LRU eviction and *Clear cache* are not implemented yet.
 
+### 8.1 Analysis cache
+
+- **Layout:** `analysis/<first 2 hex chars>/<blake3(path ‖ size ‖ mtime)>.json`, next to `thumbs/` in the cache directory, with the same content key. One small JSON object per photo (under 2 KB): `version`, `metrics`, `hash` (the dHash) and `faces` (boxes as fractions of the image, eye aspect ratio, eye sharpness) of best-shot suggestions ([FR-041](PRD.md#fr-041--best-shot-suggestions)). No landmarks or face images are stored.
+- **Versioning:** `version` is the core's `ANALYSIS_VERSION`. A different version, a file over 64 KB, unparsable JSON or out-of-range values are treated as a miss and recomputed, never trusted. No migration: it is derived data.
+- **Writes:** atomic (`.part` + rename). A failed write only means the photo is analysed again next time.
+- **Not in the project file:** groups and suggestions are recomputed from the cache; only the flags the user accepts with **Keep best** are stored, as ordinary FR-022 flags (rule N4).
+- **Clearing:** safe at any time, like `thumbs/`. *Clear cache* will remove both.
+
 ## 9. Change procedure
 
 When a change touches any persisted format (project, settings, presets, cache layout), the **same commit** must:

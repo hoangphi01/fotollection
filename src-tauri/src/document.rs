@@ -301,6 +301,11 @@ fn reset_library(state: &AppState) -> Result<(), IpcError> {
     state.history.lock().map_err(poisoned)?.clear();
     state.previews.clear();
     *state.pending.lock().map_err(poisoned)? = None;
+    let mut analyses = state.analyses.lock().map_err(poisoned)?;
+    *analyses = crate::state::Analyses {
+        generation: analyses.generation.wrapping_add(1),
+        ..Default::default()
+    };
     Ok(())
 }
 

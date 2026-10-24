@@ -27,7 +27,8 @@
   },
   "task": {
     "import": "Đang đọc ảnh",
-    "thumbnails": "Đang tạo thumbnail"
+    "thumbnails": "Đang tạo thumbnail",
+    "analyze": "Đang tìm ảnh đẹp nhất"
   },
   "culling": {
     "keysHint": "0–5 sao · P chọn · X loại · U bỏ cờ",

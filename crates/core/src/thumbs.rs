@@ -36,14 +36,8 @@ impl ThumbCache {
 
     /// `thumbs/<aa>/<blake3(path ‖ size ‖ mtime)>.t1.jpg`
     fn t1_path(&self, record: &PhotoRecord) -> PathBuf {
-        let mut hasher = blake3::Hasher::new();
-        hasher.update(record.path.as_os_str().as_encoded_bytes());
-        hasher.update(&record.size.to_le_bytes());
-        hasher.update(&record.mtime.to_le_bytes());
-        let key = hasher.finalize().to_hex();
-        self.dir
-            .join(&key[..2])
-            .join(format!("{}.t1.jpg", key.as_str()))
+        let key = content_key(record);
+        self.dir.join(&key[..2]).join(format!("{key}.t1.jpg"))
     }
 
     pub fn cached_t1(&self, record: &PhotoRecord) -> Option<Vec<u8>> {
@@ -65,6 +59,16 @@ impl ThumbCache {
         write_atomic(&path, &jpeg)?;
         Ok(jpeg)
     }
+}
+
+/// Cache key of a source file: `blake3(path ‖ size ‖ mtime)` in hex, so an edited or replaced
+/// file misses the cache (DATABASE.md §8).
+pub fn content_key(record: &PhotoRecord) -> String {
+    let mut hasher = blake3::Hasher::new();
+    hasher.update(record.path.as_os_str().as_encoded_bytes());
+    hasher.update(&record.size.to_le_bytes());
+    hasher.update(&record.mtime.to_le_bytes());
+    hasher.finalize().to_hex().to_string()
 }
 
 /// T0 from the EXIF thumbnail, rotated upright (embedded thumbnails carry no orientation).

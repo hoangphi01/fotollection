@@ -145,10 +145,24 @@ export const commands = {
 } | null, IpcError>(__TAURI_INVOKE("import_font")),
 	/**  Removes a user font; the stamp or frame using it falls back to Inter. */
 	removeFont: (id: number) => typedError<null, IpcError>(__TAURI_INVOKE("remove_font", { id })),
+	/**
+	 *  Analyses every photo of the library on the background pool, reusing cached results
+	 *  (DATABASE.md §8), then groups and ranks them. Returns the job id for `cancel_job`; a
+	 *  second call while one runs returns the running job.
+	 */
+	analyzeLibrary: () => typedError<number, IpcError>(__TAURI_INVOKE("analyze_library")),
+	/**  Groups of similar shots from the last analysis, in capture order, best photo first. */
+	listGroups: () => typedError<Group[], IpcError>(__TAURI_INVOKE("list_groups")),
+	/**
+	 *  Picks the best photo of each chosen group and rejects the others, as one undoable step
+	 *  (FR-041, FR-022). Nothing is deleted.
+	 */
+	keepBest: (groups: PhotoId[]) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("keep_best", { groups })),
 };
 
 /** Events */
 export const events = {
+	analysisFinished: makeEvent<AnalysisFinished>("analysis-finished"),
 	documentChanged: makeEvent<DocumentChanged>("document-changed"),
 	exportFinished: makeEvent<ExportFinished>("export-finished"),
 	exportProgress: makeEvent<ExportProgress>("export-progress"),
@@ -164,6 +178,15 @@ export const events = {
 export type Action = "new" | "open" | "save" | "saveAs" | 
 /**  The OS handed over a `.fotollection` file (not a menu item). */
 "openRequested";
+
+/**  A best-shot analysis finished (or was cancelled); the UI refetches the groups. */
+export type AnalysisFinished = {
+	jobId: number,
+	analyzed: number,
+	failed: number,
+	groups: number,
+	cancelled: boolean,
+};
 
 export type AppInfo = {
 	appVersion: string,
@@ -370,6 +393,21 @@ export type GpsPoint = {
 	lon: number | null,
 };
 
+/**  One group of similar shots with its ranking, for the Groups view (FR-041). */
+export type Group = {
+	/**  The group's first photo in capture order; identifies the group in commands. */
+	id: PhotoId,
+	result: GroupResult,
+};
+
+export type GroupResult = {
+	/**  Best first. */
+	photos: PhotoScore[],
+	reasons: Reason[],
+	/**  The top two are within half a sigma of sharpness: the user should look. */
+	tooClose: boolean,
+};
+
 export type HistoryState = {
 	revision: number,
 	canUndo: boolean,
@@ -459,6 +497,22 @@ export type PhotoList = {
 	total: number,
 };
 
+/**  One photo's result inside its group. */
+export type PhotoScore = {
+	id: PhotoId,
+	score: number | null,
+	/**  The weighted parts of the score, for the compare view's bars. */
+	sharpness: number | null,
+	steadiness: number | null,
+	exposure: number | null,
+	highlights: number | null,
+	noise: number | null,
+	eyes: number | null,
+	/**  Faces whose eyes were found closed. */
+	closedEyes: number,
+	faces: number,
+};
+
 /**  Grid data sent to the UI (FR-003). */
 export type PhotoSummary = {
 	id: PhotoId,
@@ -481,6 +535,23 @@ export type PrintSize = {
 	shortMm: number,
 	longMm: number,
 };
+
+/**  Why the best photo won, compared with the runner-up. The UI words these (FR-020). */
+export type Reason = 
+/**
+ *  Sharper: edges this many percent stronger than the runner-up's (gradient magnitude,
+ *  the square root of the Tenengrad energy). A percentage reads better than a sigma, and
+ *  small groups have no meaningful sigma.
+ */
+{ kind: "sharper"; percent: number | null } | 
+/**  Less camera shake. */
+{ kind: "steadierShot" } | 
+/**  Everyone's eyes are open (and not in the runner-up). */
+{ kind: "eyesOpen" } | 
+/**  Closer to a good exposure. */
+{ kind: "betterExposure" } | 
+/**  Fewer blown highlights, as shares of the image. */
+{ kind: "fewerHighlights"; best: number | null; runner_up: number | null } | { kind: "lessNoise" };
 
 export type RejectedSummary = {
 	fileName: string,
@@ -523,7 +594,9 @@ export type TaskKind =
 /**  Reading files and EXIF during import. */
 "import" | 
 /**  Generating sharp (T1) thumbnails in the background. */
-"thumbnails";
+"thumbnails" | 
+/**  Best-shot analysis of the library (FR-041). */
+"analyze";
 
 /**  Progress of a background task, for the progress bar (coalesced to ≤ 30 per second). */
 export type TaskProgress = {

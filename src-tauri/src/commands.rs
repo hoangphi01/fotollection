@@ -99,7 +99,11 @@ impl Throttle {
 }
 
 /// Counts finished items and emits throttled `TaskProgress` events.
-fn progress_reporter(app: &AppHandle, task: TaskKind, total: u32) -> impl Fn() + Sync + '_ {
+pub(crate) fn progress_reporter(
+    app: &AppHandle,
+    task: TaskKind,
+    total: u32,
+) -> impl Fn() + Sync + '_ {
     let done = AtomicU32::new(0);
     let throttle = Throttle::default();
     let _ = TaskProgress {
@@ -967,11 +971,11 @@ pub fn set_photo_crop(
 const MAX_EDIT_IDS: usize = 10_000;
 
 /// Applies `edit` to each photo as one undoable step (FR-022, FR-023).
-fn edit_photos(
+pub(crate) fn edit_photos(
     app: &AppHandle,
     state: &AppState,
     ids: &[PhotoId],
-    edit: impl Fn(&mut PhotoEdits),
+    edit: impl Fn(PhotoId, &mut PhotoEdits),
 ) -> Result<HistoryState, IpcError> {
     if ids.is_empty() || ids.len() > MAX_EDIT_IDS {
         return Err(IpcError::new(
@@ -990,7 +994,7 @@ fn edit_photos(
                 return Err(IpcError::new("photo.unknown", "Unknown photo"));
             }
             let mut edits = library.edits(id);
-            edit(&mut edits);
+            edit(id, &mut edits);
             changes.push((id, edits));
         }
         state
@@ -1017,7 +1021,7 @@ pub fn set_photo_rating(
             "Ratings are 0 to 5 stars",
         ));
     }
-    edit_photos(&app, &state, &ids, |e| e.rating = rating)
+    edit_photos(&app, &state, &ids, |_, e| e.rating = rating)
 }
 
 /// Flags photos as pick or reject, or clears the flag (FR-022).
@@ -1029,7 +1033,7 @@ pub fn set_photo_flag(
     ids: Vec<PhotoId>,
     flag: Option<Flag>,
 ) -> Result<HistoryState, IpcError> {
-    edit_photos(&app, &state, &ids, |e| e.flag = flag)
+    edit_photos(&app, &state, &ids, |_, e| e.flag = flag)
 }
 
 #[tauri::command]

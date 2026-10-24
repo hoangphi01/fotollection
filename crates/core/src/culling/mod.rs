@@ -2,20 +2,26 @@
 //! Best-shot suggestions (FR-041): measure each photo once, group near-identical shots, and
 //! rank each group with reasons. Everything runs offline on the bundled models (ADR-0018).
 
+pub mod cache;
 pub mod faces;
 pub mod group;
 pub mod metrics;
 pub mod models;
 pub mod score;
 
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
+use specta::Type;
 use thiserror::Error;
 
 use fast_image_resize::images::{Image, ImageRef};
 use fast_image_resize::{FilterType, PixelType, ResizeAlg, ResizeOptions, Resizer};
 
 use crate::image::RgbImage;
+use crate::library::{PhotoId, PhotoRecord};
 use metrics::{ANALYSIS_EDGE, Gray, Metrics, dhash, measure};
+use score::GroupResult;
 
 /// Bumped whenever a measure changes, so cached analyses are recomputed.
 pub const ANALYSIS_VERSION: u32 = 1;
@@ -77,6 +83,69 @@ pub struct PhotoAnalysis {
     pub metrics: Metrics,
     pub hash: u64,
     pub faces: Vec<FaceSummary>,
+}
+
+impl PhotoAnalysis {
+    /// Values an analysis can actually produce; anything else (a damaged or tampered cache
+    /// file) is recomputed instead of trusted.
+    pub fn is_plausible(&self) -> bool {
+        let m = &self.metrics;
+        let finite = [
+            m.sharpness,
+            m.subject_sharpness,
+            m.laplacian_variance,
+            m.coherence,
+            m.highlights,
+            m.shadows,
+            m.exposure_ev,
+            m.contrast,
+            m.noise,
+        ]
+        .iter()
+        .all(|v| v.is_finite());
+        let faces_ok = self.faces.len() <= faces::MAX_FACES
+            && self.faces.iter().all(|f| {
+                [f.x, f.y].iter().all(|v| (-1.0..=2.0).contains(v))
+                    && [f.w, f.h].iter().all(|v| *v > 0.0 && *v <= 2.0)
+                    && f.sharpness.is_finite()
+                    && f.ear.is_none_or(|e| (0.0..=2.0).contains(&e))
+            });
+        finite && faces_ok
+    }
+}
+
+/// One group of similar shots with its ranking, for the Groups view (FR-041).
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct Group {
+    /// The group's first photo in capture order; identifies the group in commands.
+    pub id: PhotoId,
+    pub result: GroupResult,
+}
+
+/// Groups and ranks every analysed photo of the library. Photos without an analysis are
+/// left out.
+pub fn suggest<S: std::hash::BuildHasher>(
+    records: &[PhotoRecord],
+    analyses: &HashMap<PhotoId, PhotoAnalysis, S>,
+) -> Vec<Group> {
+    let shots = records
+        .iter()
+        .filter_map(|r| Some(group::Shot::from_record(r, analyses.get(&r.id)?.hash)))
+        .collect();
+    group::group(shots)
+        .into_iter()
+        .filter_map(|ids| {
+            let members: Vec<_> = ids
+                .iter()
+                .filter_map(|id| Some((*id, analyses.get(id)?)))
+                .collect();
+            Some(Group {
+                id: *ids.first()?,
+                result: score::rank(&members),
+            })
+        })
+        .collect()
 }
 
 /// Resizes to exactly `width` × `height` with a box filter: plain area averaging, faster

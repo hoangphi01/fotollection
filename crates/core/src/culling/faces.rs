@@ -16,7 +16,7 @@ const NMS_IOU: f32 = 0.3;
 /// Faces smaller than this (analysis pixels) skip the eye check.
 const MIN_FACE_PX: f32 = 64.0;
 /// At most this many faces get landmarks, largest first, to bound the time per photo.
-const MAX_FACES: usize = 8;
+pub const MAX_FACES: usize = 8;
 /// FaceMesh crop side relative to the face box.
 const CROP_SCALE: f32 = 1.5;
 const MIN_FACE_FLAG: f32 = 0.5;

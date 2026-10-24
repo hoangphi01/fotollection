@@ -8,10 +8,12 @@ use std::sync::{Arc, Mutex, RwLock};
 
 use fotollection_core::cancel::CancellationToken;
 use fotollection_core::codec::{JpegCodec, default_codec};
+use fotollection_core::culling::cache::AnalysisCache;
+use fotollection_core::culling::{Group, PhotoAnalysis};
 use fotollection_core::fonts::{self, LoadedFont, UserFont};
 use fotollection_core::frame::{self, CameraProfile, FrameSettings, LogoKind};
 use fotollection_core::history::History;
-use fotollection_core::library::{Library, PhotoRecord, flags};
+use fotollection_core::library::{Library, PhotoId, PhotoRecord, flags};
 use fotollection_core::logo::{self, LogoImage};
 use fotollection_core::plan::FrameRequest;
 use fotollection_core::preview::PreviewCache;
@@ -63,6 +65,18 @@ impl FrameState {
     }
 }
 
+/// Best-shot analyses of the current library and the groups built from them (FR-041).
+#[derive(Default)]
+pub struct Analyses {
+    /// Bumps when the library is replaced: photo ids are reused, so a job started before
+    /// must not store its results.
+    pub generation: u32,
+    pub by_photo: HashMap<PhotoId, PhotoAnalysis>,
+    pub groups: Vec<Group>,
+    /// Job id of the analysis in progress, if any.
+    pub running: Option<u32>,
+}
+
 pub struct AppState {
     pub library: RwLock<Library>,
     /// Current settings and a revision that bumps on every change (for preview URLs).
@@ -76,6 +90,9 @@ pub struct AppState {
     pub next_job: AtomicU32,
     pub codec: Arc<dyn JpegCodec>,
     pub thumbs: ThumbCache,
+    /// `analysis/` next to `thumbs/` in the cache dir (DATABASE.md §8).
+    pub analysis_cache: AnalysisCache,
+    pub analyses: Mutex<Analyses>,
     pub previews: PreviewCache,
     /// Serves what the user is looking at right now (protocol requests).
     pub interactive_pool: rayon::ThreadPool,
@@ -179,6 +196,12 @@ impl AppState {
             jobs: Mutex::new(HashMap::new()),
             next_job: AtomicU32::new(1),
             codec: default_codec(),
+            analysis_cache: AnalysisCache::new(
+                thumb_dir
+                    .parent()
+                    .map_or_else(|| thumb_dir.join("analysis"), |p| p.join("analysis")),
+            ),
+            analyses: Mutex::new(Analyses::default()),
             thumbs: ThumbCache::new(thumb_dir),
             previews: PreviewCache::new(),
             interactive_pool: rayon::ThreadPoolBuilder::new()
