@@ -205,6 +205,7 @@ Commands marked † are implemented.
 | `app_info() -> AppInfo` † | App and core versions for the About section | — |
 | `list_print_sizes() -> [PrintSize]` † | Print sizes for the settings panel | FR-006 |
 | `pick_and_import_folder() -> ImportSummary?` † | Opens the folder dialog **in Rust** and imports it. Drag-and-drop on the window uses the same import path | FR-001, FR-002 |
+| `refresh_library() -> ImportSummary` † | Scans the library's folders again and adds photos that appeared since; photos already known keep every edit, and a refresh that finds nothing marks nothing as edited | FR-001, FR-023 |
 | `list_photos(filter) -> { photos: [PhotoSummary], total }` † | Data for the grid, sorted by capture time and filtered in Rust by flag and minimum rating. Summaries carry `rating` and `flag` | FR-003, FR-022 |
 | `get_settings()` / `set_settings(settings) -> SettingsState` † | Validated render settings plus a `revision` used to refresh previews | FR-004, FR-006 |
 | `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`), stored per machine in `settings.json` v3 | FR-020 |

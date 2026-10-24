@@ -20,6 +20,11 @@ export const commands = {
 	rejected: RejectedSummary[],
 	rejectedTotal: number,
 } | null, IpcError>(__TAURI_INVOKE("pick_and_import_folder")),
+	/**
+	 *  Scans the library's folders again and adds photos that appeared since (FR-001). Photos
+	 *  already in the library are recognised and keep every edit; nothing is re-imported.
+	 */
+	refreshLibrary: () => typedError<ImportSummary, IpcError>(__TAURI_INVOKE("refresh_library")),
 	/**  The photos kept by `filter`, ordered by capture time (FR-003, FR-022). */
 	listPhotos: (filter: CullFilter) => typedError<PhotoList, IpcError>(__TAURI_INVOKE("list_photos", { filter })),
 	getSettings: () => typedError<SettingsState, IpcError>(__TAURI_INVOKE("get_settings")),

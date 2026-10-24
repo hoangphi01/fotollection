@@ -99,6 +99,8 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - Unsupported or invalid files are listed with a reason. They never abort the import.
 - Importing does not modify source files. The app opens sources read-only.
 
+- **Refresh:** a button next to the library's folders scans them again and adds photos copied in since, without importing anything twice; every edit on the photos already there is kept.
+
 ### FR-002 — Read photo metadata
 
 **P0.** Read the allowlisted EXIF fields: capture date and time (with offset), GPS position, camera make and model, orientation, dimensions and exposure fields.

@@ -28,7 +28,7 @@ import { useProject } from '@/features/project/use-project'
 export function App() {
   const { t } = useTranslation()
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
-  const { photos, total, customStamps, thumbVersions, lastImport, error, importFolder } =
+  const { photos, total, customStamps, thumbVersions, lastImport, error, importFolder, refresh } =
     useLibrary(filter)
   const { settings, revision: renderRevision, update, reload } = useRenderSettings()
   // Render and frame changes bump the same Rust counter; the newest one wins.
@@ -62,6 +62,7 @@ export function App() {
         photos={photos}
         lastImport={lastImport}
         onOpenFolder={() => void importFolder()}
+        onRefresh={() => void refresh()}
         project={project}
         onShowRelink={() => setRelinkHiddenFor(null)}
       />

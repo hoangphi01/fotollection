@@ -24,6 +24,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::app_info,
             commands::list_print_sizes,
             commands::pick_and_import_folder,
+            commands::refresh_library,
             commands::list_photos,
             commands::get_settings,
             commands::set_settings,

@@ -193,10 +193,13 @@ pub fn import_paths(app: &AppHandle, paths: Vec<PathBuf>) -> ImportSummary {
     if state.ensure_camera_profiles() {
         state.persist();
     }
-    state
-        .project_dirty
-        .store(true, std::sync::atomic::Ordering::Relaxed);
-    state.mark_edited();
+    // A refresh that finds nothing new changes nothing.
+    if summary.added > 0 {
+        state
+            .project_dirty
+            .store(true, std::sync::atomic::Ordering::Relaxed);
+        state.mark_edited();
+    }
     crate::document::emit(app);
     let _ = LibraryChanged { count }.emit(app);
     warm_thumbnails(app, new_ids);
@@ -232,6 +235,28 @@ fn warm_thumbnails(app: &AppHandle, ids: Vec<PhotoId>) {
             });
         });
     });
+}
+
+/// Scans the library's folders again and adds photos that appeared since (FR-001). Photos
+/// already in the library are recognised and keep every edit; nothing is re-imported.
+#[tauri::command]
+#[specta::specta]
+pub async fn refresh_library(app: AppHandle) -> Result<ImportSummary, IpcError> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let folders = app
+            .state::<AppState>()
+            .library
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .folders()
+            .iter()
+            .filter(|f| f.is_dir())
+            .cloned()
+            .collect();
+        Ok(import_paths(&app, folders))
+    })
+    .await
+    .map_err(|e| IpcError::internal(e.to_string()))?
 }
 
 /// Opens a folder dialog and imports the chosen folder. `None` if the user cancelled.

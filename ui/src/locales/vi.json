@@ -24,7 +24,9 @@
     "emptyBody": "JPEG, PNG và HEIC. Mọi thứ đều ở lại trên máy này.",
     "noCaptureDate": "Không có ngày chụp",
     "noLocation": "Không có vị trí",
-    "gridLabel": "Thư viện ảnh"
+    "gridLabel": "Thư viện ảnh",
+    "refresh": "Làm mới thư mục",
+    "refreshHint": "Tìm ảnh mới được thêm vào các thư mục này; các chỉnh sửa được giữ nguyên"
   },
   "task": {
     "import": "Đang đọc ảnh",

@@ -46,5 +46,12 @@ export function useLibrary(filter: CullFilter) {
     else if (result.data) setLastImport(result.data)
   }, [])
 
-  return { photos, total, customStamps, thumbVersions, lastImport, error, importFolder }
+  const refresh = useCallback(async () => {
+    setError(null)
+    const result = await commands.refreshLibrary()
+    if (result.status === 'error') setError(errorText(result.error))
+    else setLastImport(result.data)
+  }, [])
+
+  return { photos, total, customStamps, thumbVersions, lastImport, error, importFolder, refresh }
 }

@@ -27,7 +27,9 @@
     "emptyBody": "JPEG, PNG and HEIC. Everything stays on this computer.",
     "noCaptureDate": "No capture date",
     "noLocation": "No location",
-    "gridLabel": "Photo library"
+    "gridLabel": "Photo library",
+    "refresh": "Refresh folders",
+    "refreshHint": "Look for photos added to these folders since; your edits are kept"
   },
   "task": {
     "import": "Reading photos",

@@ -475,6 +475,32 @@ mod tests {
     }
 
     #[test]
+    fn fr_001_rescanning_a_folder_adds_new_photos_and_keeps_edits() {
+        let mut lib = Library::new();
+        let folder = lib.add_folder(Path::new("/trip"));
+        let Some(a) = lib.push(folder, &file("/trip/a.jpg", 1), &meta_at(1)) else {
+            panic!("first import");
+        };
+        lib.set_edits(
+            a,
+            PhotoEdits {
+                rating: 5,
+                ..PhotoEdits::default()
+            },
+        );
+        // Refresh: the same folder again, now with a new photo.
+        let again = lib.add_folder(Path::new("/trip"));
+        assert_eq!(again, folder, "the folder is not added twice");
+        assert_eq!(lib.push(again, &file("/trip/a.jpg", 1), &meta_at(1)), None);
+        assert!(
+            lib.push(again, &file("/trip/b.jpg", 2), &meta_at(2))
+                .is_some()
+        );
+        assert_eq!(lib.len(), 2);
+        assert_eq!(lib.edits(a).rating, 5, "edits survive a refresh");
+    }
+
+    #[test]
     fn fr_003_sorts_by_capture_time_and_dedupes() {
         let mut lib = Library::new();
         let f = lib.add_folder(Path::new("/trip"));

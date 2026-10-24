@@ -1,5 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { FileImage, FilePen, FilePlus, FileUp, Folder, FolderOpen, Save, TriangleAlert } from 'lucide-react'
+import {
+  FileImage,
+  FilePen,
+  FilePlus,
+  FileUp,
+  Folder,
+  FolderOpen,
+  RefreshCw,
+  Save,
+  TriangleAlert,
+} from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -14,6 +24,8 @@ type LibrarySidebarProps = {
   photos: PhotoSummary[]
   lastImport: ImportSummary | null
   onOpenFolder: () => void
+  /** Scan the folders again for new photos, keeping every edit. */
+  onRefresh: () => void
   project: ProjectApi
   onShowRelink: () => void
 }
@@ -22,6 +34,7 @@ export function LibrarySidebar({
   photos,
   lastImport,
   onOpenFolder,
+  onRefresh,
   project,
   onShowRelink,
 }: LibrarySidebarProps) {
@@ -107,9 +120,22 @@ export function LibrarySidebar({
         <span className="text-xs font-medium text-muted-foreground uppercase">
           {t('library.title')}
         </span>
-        <Button variant="ghost" size="icon-xs" aria-label={t('library.openFolder')} onClick={onOpenFolder}>
-          <FolderOpen />
-        </Button>
+        <div className="flex">
+          {folders.length > 0 && (
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              aria-label={t('library.refresh')}
+              title={t('library.refreshHint')}
+              onClick={onRefresh}
+            >
+              <RefreshCw />
+            </Button>
+          )}
+          <Button variant="ghost" size="icon-xs" aria-label={t('library.openFolder')} onClick={onOpenFolder}>
+            <FolderOpen />
+          </Button>
+        </div>
       </div>
       <ScrollArea className="flex-1 px-2">
         {folders.length === 0 ? (
