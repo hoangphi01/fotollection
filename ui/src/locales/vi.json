@@ -51,6 +51,47 @@
     "pickKey": "Chọn (P)",
     "rejectKey": "Loại (X)"
   },
+  "bestShot": {
+    "find": "Tìm ảnh đẹp nhất",
+    "findHint": "Gom các ảnh chụp liên tiếp và gần giống nhau, rồi gợi ý ảnh đẹp nhất mỗi nhóm: nét nhất, mắt mở, không rung, đủ sáng. Không có gì thay đổi cho đến khi bạn chọn Giữ ảnh tốt nhất.",
+    "stop": "Dừng",
+    "view": "Chế độ xem",
+    "viewPhotos": "Ảnh",
+    "viewGroups": "Nhóm ({{count}})",
+    "running": "Đang tìm các ảnh giống nhau…",
+    "emptyBody": "Tìm ảnh đẹp nhất sẽ tìm các loạt ảnh chụp liên tiếp và ảnh gần giống nhau, rồi gợi ý ảnh đẹp nhất mỗi nhóm. Không ảnh nào bị loại cho đến khi bạn xác nhận.",
+    "noneFound": "Không tìm thấy ảnh giống nhau trong {{count}} ảnh.",
+    "summary_other": "{{count}} nhóm · {{photos}} ảnh",
+    "failed_other": "{{count}} ảnh không phân tích được",
+    "bestOf": "Đẹp nhất trong {{count}}",
+    "best": "Đẹp nhất",
+    "tooClose": "Khó phân định",
+    "tooCloseHint": "Các ảnh này gần như ngang điểm. Hãy chọn ảnh bạn thích.",
+    "compare": "So sánh",
+    "compareTitle": "So sánh {{count}} ảnh",
+    "keepBest": "Giữ ảnh tốt nhất",
+    "keepBestHint": "Chọn ảnh tốt nhất và bỏ các ảnh còn lại. Không ảnh nào bị xóa; hoàn tác bằng Cmd/Ctrl+Z.",
+    "chooseHint": "Khó phân định: hãy so sánh và chọn một ảnh.",
+    "keepAll_other": "Giữ ảnh tốt nhất ở {{count}} nhóm rõ ràng",
+    "keepThis": "Giữ ảnh này",
+    "closedEyes_other": "{{count}} khuôn mặt nhắm mắt",
+    "reason": {
+      "sharper": "Nét hơn {{percent}} %",
+      "steadierShot": "Ít rung tay hơn",
+      "eyesOpen": "Mắt mở",
+      "betterExposure": "Phơi sáng tốt hơn",
+      "fewerHighlights": "Ít vùng cháy sáng hơn: {{best}} so với {{runnerUp}}",
+      "lessNoise": "Ít nhiễu hơn"
+    },
+    "metric": {
+      "sharpness": "Độ nét",
+      "eyes": "Mắt",
+      "steadiness": "Độ vững",
+      "exposure": "Phơi sáng",
+      "highlights": "Cháy sáng",
+      "noise": "Nhiễu"
+    }
+  },
   "settings": {
     "title": "Thiết lập in",
     "language": "Ngôn ngữ",
@@ -248,6 +289,13 @@
       "too_large": "File dự án quá lớn",
       "write_failed": "Không lưu được dự án",
       "unknown_folder": "Thư mục này không bị thiếu"
+    },
+    "culling": {
+      "empty": "Không có ảnh nào để phân tích",
+      "invalid_groups": "Hãy chọn từ 1 đến 5.000 nhóm",
+      "unknown_group": "Nhóm này đã cũ. Hãy chạy lại Tìm ảnh đẹp nhất.",
+      "model_failed": "Không chạy được model khuôn mặt",
+      "analysis_failed": "Không phân tích được một ảnh"
     }
   },
   "project": {

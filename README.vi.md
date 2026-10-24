@@ -58,6 +58,7 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | 📅 | **Dấu ngày và nơi chụp** lấy từ EXIF, dùng được font OTF/TTF của riêng bạn. Địa điểm tra offline, không gọi API nào | MVP |
 | ✂️ | **Crop hàng loạt** theo 8 khổ in châu Âu (9×13 … 20×30, vuông, dải), khổ của riêng bạn (ví dụ 4 × 6 in) hoặc giữ **tỉ lệ gốc** của ảnh, chỉnh được khung crop từng ảnh | MVP |
 | ⭐ | **Lọc ảnh**: chấm sao, cờ chọn/loại và bộ lọc; export đúng tập ảnh đang lọc | MVP |
+| ✨ | **Gợi ý ảnh đẹp nhất**: gom các ảnh chụp liên tiếp và gần giống nhau, gợi ý ảnh đẹp nhất mỗi nhóm (nét nhất, mắt mở, không rung) kèm lý do. Chạy hoàn toàn offline | MVP |
 | 🏷️ | **Khung thông tin "Shot on …"** với máy ảnh, ống kính và thông số phơi sáng, kiểu LUMIX Lab, đúng tỉ lệ khổ in | MVP |
 | 🖼️ | **Giữ nguyên chất lượng**: độ phân giải đầy đủ, giữ ICC profile, crop không mất chất lượng khi có thể | MVP |
 | 📱 | Đầu vào **JPEG, PNG và HEIC** (iPhone) | MVP |
@@ -83,6 +84,7 @@ Fotollection dành cho người chụp ảnh nghiêm túc và nhiếp ảnh gia,
 | Cập nhật preview khi đổi thiết lập | < 50 ms (p95) | **18 ms** p95, 17 ms p50 | ✓ |
 | Tốc độ export | ≥ 8 ảnh/s với ảnh 24 MP | **18,0 ảnh/s** với ảnh 16 MP | ✓ |
 | RAM đỉnh | ≤ 2 GB với batch bất kỳ | **1,45 GB** với 5.035 ảnh | ✓ |
+| Phân tích ảnh đẹp nhất, mỗi ảnh (24/10/2026) | ≤ 20 ms, ≤ 40 ms khi có mặt người | **17 ms**, 28 ms khi có mặt người | ✓ |
 
 ### Batch lớn
 

@@ -55,6 +55,51 @@
     "pickKey": "Pick (P)",
     "rejectKey": "Reject (X)"
   },
+  "bestShot": {
+    "find": "Find best shots",
+    "findHint": "Groups bursts and similar shots, then suggests the best of each: sharpest, eyes open, no shake, good exposure. Nothing changes until you choose Keep best.",
+    "stop": "Stop",
+    "view": "View",
+    "viewPhotos": "Photos",
+    "viewGroups": "Groups ({{count}})",
+    "running": "Looking for similar shots…",
+    "emptyBody": "Find best shots looks for bursts and near-identical photos and suggests the best one of each group. Nothing is rejected until you confirm.",
+    "noneFound": "No similar shots found among {{count}} photos.",
+    "summary_one": "{{count}} group · {{photos}} photos",
+    "summary_other": "{{count}} groups · {{photos}} photos",
+    "failed_one": "{{count}} photo could not be analysed",
+    "failed_other": "{{count}} photos could not be analysed",
+    "bestOf": "Best of {{count}}",
+    "best": "Best",
+    "tooClose": "Too close to call",
+    "tooCloseHint": "These shots score almost the same. Choose the one you like.",
+    "compare": "Compare",
+    "compareTitle": "Compare {{count}} shots",
+    "keepBest": "Keep best",
+    "keepBestHint": "Pick the best photo and reject the others. Nothing is deleted; undo with Cmd/Ctrl+Z.",
+    "chooseHint": "Too close to call: compare and choose one.",
+    "keepAll_one": "Keep best in {{count}} clear group",
+    "keepAll_other": "Keep best in {{count}} clear groups",
+    "keepThis": "Keep this one",
+    "closedEyes_one": "{{count}} face with closed eyes",
+    "closedEyes_other": "{{count}} faces with closed eyes",
+    "reason": {
+      "sharper": "{{percent}} % sharper",
+      "steadierShot": "Less camera shake",
+      "eyesOpen": "Eyes open",
+      "betterExposure": "Better exposure",
+      "fewerHighlights": "Fewer clipped highlights: {{best}} vs {{runnerUp}}",
+      "lessNoise": "Less noise"
+    },
+    "metric": {
+      "sharpness": "Sharpness",
+      "eyes": "Eyes",
+      "steadiness": "Steadiness",
+      "exposure": "Exposure",
+      "highlights": "Highlights",
+      "noise": "Noise"
+    }
+  },
   "settings": {
     "title": "Print settings",
     "language": "Language",
@@ -255,6 +300,13 @@
       "too_large": "The project file is too large",
       "write_failed": "The project could not be saved",
       "unknown_folder": "This folder is not missing"
+    },
+    "culling": {
+      "empty": "There are no photos to analyse",
+      "invalid_groups": "Choose between 1 and 5,000 groups",
+      "unknown_group": "This group is out of date. Run Find best shots again.",
+      "model_failed": "The face model could not run",
+      "analysis_failed": "A photo could not be analysed"
     }
   },
   "project": {

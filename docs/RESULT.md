@@ -26,6 +26,7 @@
 | Preview update (warm) | NFR-002: < 50 ms p95 | p95 18 ms, p50 17 ms (was 26 ms before the screen encoder, §5); cold (first open) 120 ms | ✓ |
 | Export throughput | NFR-003: ≥ 8 photos/s at 24 MP | 18.0 photos/s at 16 MP (runs: 17.8–18.4) | ✓ |
 | Peak memory | NFR-004: ≤ 2 GB at any batch size | 1.35 GB (95 photos), 1.45 GB (5,035 photos) | ✓ |
+| Best-shot analysis per photo, one thread (2026-10-24) | NFR-014: ≤ 20 ms, ≤ 40 ms with faces | p50 17.4 ms / p95 18.0 ms (56 photos without faces); p50 27.8 ms / p95 36 ms (39 with faces); whole pool ≈ 110–125 photos/s | ✓ |
 | PNG decode, 16 MP | — | 122 ms (JPEG: 45 ms) | — |
 
 ## 3. Large batches: 5,035 photos
@@ -98,6 +99,8 @@ bench/batch.sh ~/Pictures/some-folder 53
 node bench/chart.mjs
 # One-off run of the core pipeline on any folder (read-only)
 /usr/bin/time -l target/release/examples/measure_folder ~/Pictures/some-folder
+# Best-shot analysis time and the groups it finds (FR-041, NFR-014)
+target/release/examples/measure_folder ~/Pictures/some-folder --analyze
 ```
 
 The scripts build `measure_folder` themselves. Photos are only read, and never copied into the repository; `bench/results/` holds numbers only. Let the machine cool down before a run: the M3 throttles under sustained load.

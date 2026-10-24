@@ -57,6 +57,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             culling::analyze_library,
             culling::list_groups,
             culling::keep_best,
+            culling::keep_one,
         ])
         .events(collect_events![
             events::LibraryChanged,

@@ -224,6 +224,7 @@ Commands marked † are implemented.
 | `analyze_library() -> JobId` † | Best-shot analysis of every photo on the background pool, reusing the analysis cache; cancel with `cancel_job`. A second call while one runs returns the running job | FR-041, NFR-014 |
 | `list_groups() -> [Group]` † | Groups of similar shots from the last analysis: `{ id, result: { photos (best first, with score parts, closed eyes, faces), reasons, tooClose } }`. `id` is the group's first photo | FR-041 |
 | `keep_best(group_ids) -> HistoryState` † | Picks each group's best photo and rejects the rest as one undoable step; 1–5,000 groups, unknown groups are rejected | FR-041, FR-022 |
+| `keep_one(group_id, photo_id) -> HistoryState` † | Keeps the chosen photo of one group and rejects the others, one undoable step (for "Too close to call" or a different preference) | FR-041, FR-022 |
 | Filters by date, camera, GPS, DPI in `list_photos` | Planned culling filters | FR-022, FR-026 |
 | `set_copies(ids, n)` / `order_summary() -> OrderSummary` | Copies and cost estimate | FR-024 |
 | `set_print_size(ids, size_id)` | Per-photo print size | FR-025 |

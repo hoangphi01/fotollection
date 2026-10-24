@@ -152,3 +152,34 @@ pub fn keep_best(
     let ids: Vec<PhotoId> = flags.keys().copied().collect();
     edit_photos(&app, &state, &ids, |id, e| e.flag = flags.get(&id).copied())
 }
+
+/// Keeps the chosen photo of one group and rejects the others, as one undoable step: for
+/// groups where the suggestion is too close to call, or the user prefers another shot.
+#[tauri::command]
+#[specta::specta]
+pub fn keep_one(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    group: PhotoId,
+    photo: PhotoId,
+) -> Result<HistoryState, IpcError> {
+    let ids: Vec<PhotoId> = {
+        let analyses = state.analyses.lock().map_err(poisoned)?;
+        let group = analyses
+            .groups
+            .iter()
+            .find(|g| g.id == group)
+            .ok_or_else(|| IpcError::new("culling.unknown_group", "Unknown group"))?;
+        group.result.photos.iter().map(|p| p.id).collect()
+    };
+    if !ids.contains(&photo) {
+        return Err(IpcError::new("photo.unknown", "Unknown photo"));
+    }
+    edit_photos(&app, &state, &ids, |id, e| {
+        e.flag = Some(if id == photo {
+            Flag::Pick
+        } else {
+            Flag::Reject
+        });
+    })
+}

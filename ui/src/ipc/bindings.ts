@@ -158,6 +158,11 @@ export const commands = {
 	 *  (FR-041, FR-022). Nothing is deleted.
 	 */
 	keepBest: (groups: PhotoId[]) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("keep_best", { groups })),
+	/**
+	 *  Keeps the chosen photo of one group and rejects the others, as one undoable step: for
+	 *  groups where the suggestion is too close to call, or the user prefers another shot.
+	 */
+	keepOne: (group: PhotoId, photo: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("keep_one", { group, photo })),
 };
 
 /** Events */
@@ -551,7 +556,7 @@ export type Reason =
 /**  Closer to a good exposure. */
 { kind: "betterExposure" } | 
 /**  Fewer blown highlights, as shares of the image. */
-{ kind: "fewerHighlights"; best: number | null; runner_up: number | null } | { kind: "lessNoise" };
+{ kind: "fewerHighlights"; best: number | null; runnerUp: number | null } | { kind: "lessNoise" };
 
 export type RejectedSummary = {
 	fileName: string,

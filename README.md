@@ -57,6 +57,7 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | 📅 | **Date and location stamps** from EXIF, in your own OTF/TTF font. Places are resolved offline, with no API calls | MVP |
 | ✂️ | **Batch crop** to 8 EU print sizes (9×13 … 20×30, square, strip), your own sizes (e.g. 4 × 6 in) or the photo's **original** ratio, with an adjustable crop per photo | MVP |
 | ⭐ | **Culling**: stars, pick/reject flags and filters; export writes exactly the filtered set | MVP |
+| ✨ | **Best-shot suggestions**: groups bursts and similar shots and suggests the best of each (sharpest, eyes open, no shake), with reasons. Fully offline | MVP |
 | 🏷️ | **"Shot on …" info frame** with camera, lens and exposure, LUMIX Lab style, at the exact print ratio | MVP |
 | 🖼️ | **Original quality**: full resolution, ICC profile preserved, lossless crop when possible | MVP |
 | 📱 | **JPEG, PNG and HEIC** (iPhone) input | MVP |
@@ -82,6 +83,7 @@ Fotollection is built for enthusiast and professional photographers, so speed is
 | Preview update after a settings change | < 50 ms (p95) | **18 ms** p95, 17 ms p50 | ✓ |
 | Export throughput | ≥ 8 photos/s at 24 MP | **18.0 photos/s** at 16 MP | ✓ |
 | Peak memory | ≤ 2 GB at any batch size | **1.45 GB** with 5,035 photos | ✓ |
+| Best-shot analysis, per photo (2026-10-24) | ≤ 20 ms, ≤ 40 ms with faces | **17 ms**, 28 ms with faces | ✓ |
 
 ### Large batches
 

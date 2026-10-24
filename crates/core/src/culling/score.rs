@@ -25,7 +25,11 @@ const EAR_RELATIVE: f32 = 0.75;
 
 /// Why the best photo won, compared with the runner-up. The UI words these (FR-020).
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Type)]
-#[serde(rename_all = "camelCase", tag = "kind")]
+#[serde(
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase",
+    tag = "kind"
+)]
 pub enum Reason {
     /// Sharper: edges this many percent stronger than the runner-up's (gradient magnitude,
     /// the square root of the Tenengrad energy). A percentage reads better than a sigma, and

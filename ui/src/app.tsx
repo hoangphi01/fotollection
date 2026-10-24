@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { FilterX, OctagonX } from 'lucide-react'
+import { FilterX, OctagonX, Sparkles, Square } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { GroupsView } from '@/features/best-shot/groups-view'
+import { useBestShots } from '@/features/best-shot/use-best-shots'
 import { CullFilterBar } from '@/features/culling/cull-filter-bar'
 import { ALL_PHOTOS } from '@/features/culling/filter'
 import type { CullFilter } from '@/ipc/bindings'
@@ -32,6 +36,8 @@ export function App() {
   const history = useHistory()
   const fonts = useFonts()
   const project = useProject()
+  const bestShots = useBestShots()
+  const [view, setView] = useState<'photos' | 'groups'>('photos')
   // The Relink dialog opens by itself after Open; "Later" hides it until the next project.
   const [relinkHiddenFor, setRelinkHiddenFor] = useState<number | null>(null)
   const revision = Math.max(renderRevision, frameRevision, history.revision)
@@ -59,10 +65,10 @@ export function App() {
         onShowRelink={() => setRelinkHiddenFor(null)}
       />
       <main className="flex min-w-0 flex-1 flex-col">
-        {error && (
+        {(error ?? bestShots.error) && (
           <Alert variant="destructive" className="m-3 w-auto">
             <OctagonX />
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription>{error ?? bestShots.error}</AlertDescription>
           </Alert>
         )}
         <TaskProgressBar />
@@ -71,19 +77,68 @@ export function App() {
         ) : (
           <>
             <div className="flex h-12 items-center gap-3 border-b px-4 text-sm">
-              <span className="font-medium tabular-nums">
-                {photos.length === total
-                  ? t('app.photos', { count: total })
-                  : t('app.filtered', { shown: photos.length, count: total })}
-              </span>
-              <span className="truncate text-xs text-muted-foreground">
-                {t('app.enterToPreview')} · {t('culling.keysHint')}
-              </span>
-              <div className="ml-auto">
-                <CullFilterBar filter={filter} onChange={setFilter} />
-              </div>
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                size="sm"
+                value={view}
+                onValueChange={(v) => v && setView(v as 'photos' | 'groups')}
+                aria-label={t('bestShot.view')}
+              >
+                <ToggleGroupItem value="photos" className="px-2.5 text-xs">
+                  {t('bestShot.viewPhotos')}
+                </ToggleGroupItem>
+                <ToggleGroupItem value="groups" className="px-2.5 text-xs">
+                  {t('bestShot.viewGroups', { count: bestShots.groups.length })}
+                </ToggleGroupItem>
+              </ToggleGroup>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {bestShots.running ? (
+                    <Button variant="outline" size="sm" onClick={bestShots.cancel}>
+                      <Square data-icon="inline-start" /> {t('bestShot.stop')}
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setView('groups')
+                        void bestShots.analyze()
+                      }}
+                    >
+                      <Sparkles data-icon="inline-start" /> {t('bestShot.find')}
+                    </Button>
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">{t('bestShot.findHint')}</TooltipContent>
+              </Tooltip>
+              {view === 'photos' && (
+                <span className="font-medium tabular-nums">
+                  {photos.length === total
+                    ? t('app.photos', { count: total })
+                    : t('app.filtered', { shown: photos.length, count: total })}
+                </span>
+              )}
+              {view === 'photos' && (
+                <span className="truncate text-xs text-muted-foreground">
+                  {t('app.enterToPreview')} · {t('culling.keysHint')}
+                </span>
+              )}
+              {view === 'photos' && (
+                <div className="ml-auto">
+                  <CullFilterBar filter={filter} onChange={setFilter} />
+                </div>
+              )}
             </div>
-            {photos.length === 0 ? (
+            {view === 'groups' ? (
+              <GroupsView
+                bestShots={bestShots}
+                thumbVersions={thumbVersions}
+                generation={project.document.generation}
+                revision={revision}
+              />
+            ) : photos.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
                 <p>{t('app.noMatch')}</p>
                 <Button variant="outline" size="sm" onClick={() => setFilter(ALL_PHOTOS)}>
