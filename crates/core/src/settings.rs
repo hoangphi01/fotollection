@@ -15,11 +15,24 @@ pub enum Language {
     Vi,
 }
 
-/// Per-machine interface preferences (FR-020). Never part of a project file.
+/// Light or dark interface (FR-052). `System` follows the operating system.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum ThemePreference {
+    #[default]
+    System,
+    Light,
+    Dark,
+}
+
+/// Per-machine interface preferences (FR-020, FR-052). Never part of a project file.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct UiSettings {
     pub language: Language,
+    /// Absent before settings v6: follow the system.
+    #[serde(default)]
+    pub theme: ThemePreference,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Type)]

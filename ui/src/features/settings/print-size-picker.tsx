@@ -139,7 +139,7 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice }: PrintSi
             variant="ghost"
             size="icon-sm"
             aria-label={t('print.deleteNamed', { name: selectedCustom.name })}
-            title={t('print.deleteTitle')}
+            data-hint={t('print.deleteTitle')}
             onClick={() => remove(selectedCustom.id)}
           >
             <Trash2 />

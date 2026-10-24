@@ -1,7 +1,14 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Least-privilege permissions for the main window (docs/SECURITY.md §2). Dialogs are opened from Rust, so the webview gets no dialog or filesystem permissions.",
+  "description": "Least-privilege permissions for the main window (docs/SECURITY.md §2). Dialogs are opened from Rust, so the webview gets no dialog or filesystem permissions. Window controls (minimize, maximize, close, drag) serve the Windows title bar drawn by the UI (FR-052).",
   "windows": ["main"],
-  "permissions": ["core:default"]
+  "permissions": [
+    "core:default",
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-internal-toggle-maximize",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging"
+  ]
 }

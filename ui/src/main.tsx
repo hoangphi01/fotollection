@@ -2,6 +2,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { HintLayer } from '@/components/layout/hint-layer'
 import { followSystemTheme } from '@/lib/theme'
 import { App } from './app'
 import './i18n'
@@ -30,6 +31,7 @@ createRoot(root).render(
   <StrictMode>
     <TooltipProvider>
       <App />
+      <HintLayer />
     </TooltipProvider>
   </StrictMode>,
 )

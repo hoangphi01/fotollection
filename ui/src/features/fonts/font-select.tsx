@@ -70,7 +70,7 @@ export function FontSelect({ fonts, value, onChange, label }: FontSelectProps) {
             variant="ghost"
             size="icon-sm"
             aria-label={t('fonts.removeNamed', { name: current.name })}
-            title={t('fonts.removeTitle')}
+            data-hint={t('fonts.removeTitle')}
             onClick={() => void fonts.removeFont(current.id)}
           >
             <Trash2 />

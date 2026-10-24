@@ -282,7 +282,7 @@ export function PreviewDialog({
         <aside className="flex w-96 shrink-0 flex-col border-l bg-background">
           <div className="space-y-0.5 px-5 pt-5 pb-4 pr-12">
             <DialogTitle className="truncate text-base">{photo?.fileName}</DialogTitle>
-            <DialogDescription className="truncate text-xs" title={details?.folderPath}>
+            <DialogDescription className="truncate text-xs" data-hint={details?.folderPath}>
               {details?.folderPath ?? photo?.folderName}
             </DialogDescription>
           </div>
@@ -308,6 +308,16 @@ export function PreviewDialog({
 
             <Section icon={<Camera className="size-4" />} title={t('viewer.camera')}>
               <p>{photo?.camera ?? t('viewer.unknownCamera')}</p>
+            </Section>
+
+            <Section icon={<CalendarDays className="size-4" />} title={t('viewer.dateStamp')}>
+              {photo && (
+                <PhotoStampControls
+                  photoId={photo.id}
+                  revision={revision}
+                  onAppliedToAll={onSettingsReload}
+                />
+              )}
             </Section>
 
             <Section icon={<PanelBottom className="size-4" />} title={t('viewer.frameProfile')}>
@@ -378,15 +388,6 @@ export function PreviewDialog({
               </div>
             </Section>
 
-            <Section icon={<CalendarDays className="size-4" />} title={t('viewer.dateStamp')}>
-              {photo && (
-                <PhotoStampControls
-                  photoId={photo.id}
-                  revision={revision}
-                  onAppliedToAll={onSettingsReload}
-                />
-              )}
-            </Section>
           </div>
 
           <Separator />

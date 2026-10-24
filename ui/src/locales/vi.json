@@ -26,7 +26,9 @@
     "noLocation": "Không có vị trí",
     "gridLabel": "Thư viện ảnh",
     "refresh": "Làm mới thư mục",
-    "refreshHint": "Tìm ảnh mới được thêm vào các thư mục này; các chỉnh sửa được giữ nguyên"
+    "refreshHint": "Tìm ảnh mới được thêm vào các thư mục này; các chỉnh sửa được giữ nguyên",
+    "removeFolder": "Gỡ {{name}} khỏi thư viện",
+    "removeFolderHint": "Gỡ khỏi thư viện (file vẫn còn nguyên trên máy)"
   },
   "task": {
     "import": "Đang đọc ảnh",
@@ -356,5 +358,17 @@
       "acceptable": "Tạm được",
       "pixelated": "Sẽ vỡ"
     }
+  },
+  "theme": {
+    "label": "Giao diện",
+    "system": "Theo hệ thống",
+    "light": "Sáng",
+    "dark": "Tối"
+  },
+  "window": {
+    "minimize": "Thu nhỏ",
+    "maximize": "Phóng to",
+    "restore": "Khôi phục",
+    "close": "Đóng"
   }
 }

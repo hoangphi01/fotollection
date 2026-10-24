@@ -9,6 +9,7 @@ import {
   RefreshCw,
   Save,
   TriangleAlert,
+  X,
 } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,6 +17,7 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import type { ImportSummary, PhotoSummary } from '@/ipc/bindings'
+import { ThemeSwitch } from '@/features/appearance/theme-switch'
 import { ProjectName } from '@/features/project/project-name'
 import type { ProjectApi } from '@/features/project/use-project'
 import { errorText } from '@/lib/errors'
@@ -26,6 +28,8 @@ type LibrarySidebarProps = {
   onOpenFolder: () => void
   /** Scan the folders again for new photos, keeping every edit. */
   onRefresh: () => void
+  /** Take a folder out of the library, like closing a tab; files stay on disk. */
+  onRemoveFolder: (folder: number) => void
   project: ProjectApi
   onShowRelink: () => void
 }
@@ -35,14 +39,19 @@ export function LibrarySidebar({
   lastImport,
   onOpenFolder,
   onRefresh,
+  onRemoveFolder,
   project,
   onShowRelink,
 }: LibrarySidebarProps) {
   const { t } = useTranslation()
   const folders = useMemo(() => {
-    const counts = new Map<string, number>()
-    for (const p of photos) counts.set(p.folderName, (counts.get(p.folderName) ?? 0) + 1)
-    return [...counts.entries()]
+    const byId = new Map<number, { name: string; count: number }>()
+    for (const p of photos) {
+      const f = byId.get(p.folderId) ?? { name: p.folderName, count: 0 }
+      f.count += 1
+      byId.set(p.folderId, f)
+    }
+    return [...byId.entries()]
   }, [photos])
 
   return (
@@ -83,7 +92,7 @@ export function LibrarySidebar({
                 variant="ghost"
                 size="icon-xs"
                 aria-label={t(`project.${key}`)}
-                title={t(`project.${key}`)}
+                data-hint={t(`project.${key}`)}
                 onClick={() => void action()}
               >
                 <Icon />
@@ -97,7 +106,7 @@ export function LibrarySidebar({
           {project.document.edited && (
             <span
               className="size-1.5 shrink-0 rounded-full bg-amber-500"
-              title={t('project.edited')}
+              data-hint={t('project.edited')}
               role="img"
               aria-label={t('project.edited')}
             />
@@ -126,7 +135,7 @@ export function LibrarySidebar({
               variant="ghost"
               size="icon-xs"
               aria-label={t('library.refresh')}
-              title={t('library.refreshHint')}
+              data-hint={t('library.refreshHint')}
               onClick={onRefresh}
             >
               <RefreshCw />
@@ -142,14 +151,27 @@ export function LibrarySidebar({
           <p className="px-2 py-1 text-xs text-muted-foreground">{t('library.noFolders')}</p>
         ) : (
           <ul className="space-y-0.5">
-            {folders.map(([name, count]) => (
+            {folders.map(([id, { name, count }]) => (
               <li
-                key={name}
-                className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-sidebar-accent"
+                key={id}
+                className="group flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-sidebar-accent"
               >
                 <Folder className="size-4 text-muted-foreground" />
                 <span className="truncate">{name}</span>
-                <span className="ml-auto text-xs text-muted-foreground tabular-nums">{count}</span>
+                <span className="ml-auto text-xs text-muted-foreground tabular-nums group-focus-within:hidden group-hover:hidden">
+                  {count}
+                </span>
+                {/* Like closing a browser tab: shown on hover, the files stay on disk. */}
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  aria-label={t('library.removeFolder', { name })}
+                  data-hint={t('library.removeFolderHint')}
+                  onClick={() => onRemoveFolder(id)}
+                  className="ml-auto hidden size-5 rounded-full group-focus-within:inline-flex group-hover:inline-flex"
+                >
+                  <X className="size-3.5" />
+                </Button>
               </li>
             ))}
           </ul>
@@ -158,14 +180,17 @@ export function LibrarySidebar({
       {lastImport && lastImport.rejectedTotal > 0 && (
         <p
           className="border-t px-4 py-2 text-xs text-muted-foreground"
-          title={lastImport.rejected
+          data-hint={lastImport.rejected
             .map((r) => `${r.fileName}: ${errorText({ code: r.code, message: r.code })}`)
             .join('\n')}
         >
           {t('library.skipped', { count: lastImport.rejectedTotal })}
         </p>
       )}
-      <p className="px-4 pb-3 text-[11px] text-muted-foreground">{t('library.dropTip')}</p>
+      <div className="flex items-center justify-between gap-2 px-4 pb-3">
+        <p className="text-[11px] text-muted-foreground">{t('library.dropTip')}</p>
+        <ThemeSwitch />
+      </div>
     </aside>
   )
 }

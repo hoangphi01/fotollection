@@ -105,6 +105,7 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 | FR-046 | Swipe culling (full-screen ↑ / ↓ print list) |
 | FR-047 | Film looks (Fujifilm-style film simulations, own names and LUTs) |
 | FR-051 | Landmark recognition: suggest a place from what the photo shows (offline, optional model pack) |
+| FR-052 | Appearance: System / Light / Dark theme, Windows title bar in the app's colours, app-drawn hover hints |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 
 ## Phase 3 — Pro & growth

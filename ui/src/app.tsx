@@ -22,13 +22,14 @@ import { useFrameConfig } from '@/features/frame/use-frame-config'
 import { useFonts } from '@/features/fonts/use-fonts'
 import { useHistory } from '@/features/history/use-history'
 import { PreviewDialog } from '@/features/viewer/preview-dialog'
+import { TitleBar } from '@/features/window/title-bar'
 import { RelinkDialog, UnsavedDialog } from '@/features/project/project-dialogs'
 import { useProject } from '@/features/project/use-project'
 
 export function App() {
   const { t } = useTranslation()
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
-  const { photos, total, customStamps, thumbVersions, lastImport, error, importFolder, refresh } =
+  const { photos, total, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
     useLibrary(filter)
   const { settings, revision: renderRevision, update, reload } = useRenderSettings()
   // Render and frame changes bump the same Rust counter; the newest one wins.
@@ -57,12 +58,15 @@ export function App() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background text-foreground select-none">
+    <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground select-none">
+      <TitleBar name={project.document.name ?? t('project.untitled')} />
+      <div className="flex min-h-0 flex-1">
       <LibrarySidebar
         photos={photos}
         lastImport={lastImport}
         onOpenFolder={() => void importFolder()}
         onRefresh={() => void refresh()}
+        onRemoveFolder={(id) => void removeFolder(id)}
         project={project}
         onShowRelink={() => setRelinkHiddenFor(null)}
       />
@@ -202,6 +206,7 @@ export function App() {
         filter={filter}
         photo={photos[current]}
       />
+      </div>
     </div>
   )
 }

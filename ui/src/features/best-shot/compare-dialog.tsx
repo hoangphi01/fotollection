@@ -64,7 +64,7 @@ export function CompareDialog({
             : group?.result.reasons.map(reasonText).join(' · ')}
         </DialogDescription>
         <div
-          className="grid min-h-0 flex-1 gap-3 overflow-y-auto"
+          className="grid min-h-0 flex-1 gap-3 overflow-y-auto p-1.5"
           // As many columns as fit at 240 px, at most one per photo.
           style={{
             gridTemplateColumns: `repeat(auto-fit, minmax(min(240px, 100%), 1fr))`,
@@ -78,7 +78,8 @@ export function CompareDialog({
                 <div
                   className={cn(
                     'relative overflow-hidden rounded-md bg-muted',
-                    rank === 0 && 'ring-2 ring-primary',
+                    // Padding on the scroll area above keeps this ring from being clipped.
+                    rank === 0 && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
                   )}
                 >
                   <img

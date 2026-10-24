@@ -169,6 +169,8 @@ pub struct ShotInfo {
 pub struct PhotoSummary {
     pub id: PhotoId,
     pub file_name: String,
+    /// Index of the source folder, for taking a folder out of the library (FR-001).
+    pub folder_id: u16,
     pub folder_name: String,
     /// Camera-local capture time, `YYYY-MM-DDTHH:MM:SS`.
     pub capture: String,
@@ -441,6 +443,7 @@ impl Library {
         Some(PhotoSummary {
             id,
             file_name: record.file_name,
+            folder_id: self.folder[i],
             folder_name,
             capture: record.capture.format("%Y-%m-%dT%H:%M:%S").to_string(),
             has_gps: record.flags & flags::HAS_GPS != 0,

@@ -29,7 +29,9 @@
     "noLocation": "No location",
     "gridLabel": "Photo library",
     "refresh": "Refresh folders",
-    "refreshHint": "Look for photos added to these folders since; your edits are kept"
+    "refreshHint": "Look for photos added to these folders since; your edits are kept",
+    "removeFolder": "Remove {{name}} from the library",
+    "removeFolderHint": "Remove from the library (the files stay on disk)"
   },
   "task": {
     "import": "Reading photos",
@@ -370,5 +372,17 @@
       "acceptable": "Acceptable",
       "pixelated": "Pixelated"
     }
+  },
+  "theme": {
+    "label": "Theme",
+    "system": "Follow the system",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "window": {
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "restore": "Restore",
+    "close": "Close"
   }
 }

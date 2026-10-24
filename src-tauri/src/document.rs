@@ -421,6 +421,51 @@ pub fn open_path(app: &AppHandle, path: &Path) -> Result<DocumentState, IpcError
     Ok(current(&state))
 }
 
+/// Takes a source folder out of the library, like closing a tab (FR-001): its photos leave
+/// the grid, the files stay untouched on disk, and the other folders keep every edit. The
+/// library is rebuilt from the remaining folders, so photo ids and the undo history reset.
+#[tauri::command]
+#[specta::specta]
+pub async fn remove_folder(app: AppHandle, folder: u16) -> Result<DocumentState, IpcError> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let _guard = state.document_lock.lock().map_err(poisoned)?;
+        let (snapshot, keep) = {
+            let library = state.library.read().map_err(poisoned)?;
+            let folders = library.folders();
+            if usize::from(folder) >= folders.len() {
+                return Err(IpcError::new("folder.unknown", "Unknown folder"));
+            }
+            let keep: Vec<_> = folders
+                .iter()
+                .enumerate()
+                .filter(|(i, _)| *i != usize::from(folder))
+                .map(|(_, p)| p.clone())
+                .collect();
+            (project::snapshot(&library), keep)
+        };
+        reset_library(&state)?;
+        if !keep.is_empty() {
+            crate::commands::import_paths(&app, keep);
+        }
+        if let Ok(mut library) = state.library.write() {
+            project::restore(&mut library, &snapshot);
+        }
+        // Ids are reused for other photos: the generation tells the UI to drop cached images.
+        {
+            let mut doc = state.document.lock().map_err(poisoned)?;
+            doc.generation = doc.generation.wrapping_add(1);
+        }
+        state.project_dirty.store(true, Ordering::Relaxed);
+        state.mark_edited();
+        changed(&app, &state);
+        emit(&app);
+        Ok(current(&state))
+    })
+    .await
+    .map_err(poisoned)?
+}
+
 /// Refreshes the UI after a library swap, which itself is not an unsaved change.
 fn finish_without_edit(app: &AppHandle, state: &AppState) {
     changed(app, state);

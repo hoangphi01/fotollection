@@ -43,6 +43,8 @@ use crate::state::{AppState, IpcError};
 pub struct AppInfo {
     pub app_version: String,
     pub core_version: String,
+    /// `macos`, `windows` or `linux`: Windows draws its own title bar (FR-052).
+    pub os: String,
 }
 
 /// Versions shown in the About section.
@@ -52,6 +54,7 @@ pub fn app_info() -> AppInfo {
     AppInfo {
         app_version: env!("CARGO_PKG_VERSION").to_owned(),
         core_version: fotollection_core::VERSION.to_owned(),
+        os: std::env::consts::OS.to_owned(),
     }
 }
 
@@ -470,9 +473,25 @@ pub fn set_ui_settings(
         .map_err(|e| IpcError::internal(e.to_string()))? = ui;
     // A per-machine preference: not an edit of the document.
     state.save_settings();
+    apply_window_theme(&app, ui.theme);
     crate::menu::refresh(&app, ui.language);
     crate::document::emit(&app);
     Ok(ui)
+}
+
+/// Gives the native window (title bar, scroll bars, the webview's colour scheme) the chosen
+/// theme; `System` follows the operating system (FR-052).
+pub fn apply_window_theme(app: &AppHandle, theme: fotollection_core::settings::ThemePreference) {
+    use fotollection_core::settings::ThemePreference;
+    let native = match theme {
+        ThemePreference::System => None,
+        ThemePreference::Light => Some(tauri::Theme::Light),
+        ThemePreference::Dark => Some(tauri::Theme::Dark),
+    };
+    if let Some(window) = app.get_webview_window("main") {
+        // Best effort: a theme that can't be applied leaves the OS default.
+        let _ = window.set_theme(native);
+    }
 }
 
 #[tauri::command]

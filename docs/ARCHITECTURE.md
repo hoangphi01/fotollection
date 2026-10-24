@@ -207,9 +207,10 @@ Commands marked † are implemented.
 
 | Command | Purpose | Requirement |
 |---------|---------|-------------|
-| `app_info() -> AppInfo` † | App and core versions for the About section | — |
+| `app_info() -> AppInfo` † | App and core versions for the About section, and the OS (Windows draws its own title bar) | FR-021, FR-052 |
 | `list_print_sizes() -> [PrintSize]` † | Print sizes for the settings panel | FR-006 |
 | `pick_and_import_folder() -> ImportSummary?` † | Opens the folder dialog **in Rust** and imports it. Drag-and-drop on the window uses the same import path | FR-001, FR-002 |
+| `remove_folder(folder) -> DocumentState` † | Takes a folder out of the library like closing a tab: rebuilds the library from the other folders and re-applies their edits; files are untouched; ids and undo history reset | FR-001 |
 | `refresh_library() -> ImportSummary` † | Scans the library's folders again and adds photos that appeared since; photos already known keep every edit, and a refresh that finds nothing marks nothing as edited | FR-001, FR-023 |
 | `list_photos(filter) -> { photos: [PhotoSummary], total }` † | Data for the grid, sorted by capture time and filtered in Rust by flag and minimum rating. Summaries carry `rating` and `flag` | FR-003, FR-022 |
 | `get_settings()` / `set_settings(settings) -> SettingsState` † | Validated render settings plus a `revision` used to refresh previews | FR-004, FR-006 |

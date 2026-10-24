@@ -39,7 +39,7 @@ export const ThumbTile = memo(function ThumbTile({
   return (
     <button
       type="button"
-      title={`${photo.fileName} · ${formatCapture(photo.capture)}`}
+      data-hint={`${photo.fileName} · ${formatCapture(photo.capture)}`}
       onClick={onSelect}
       onDoubleClick={onOpen}
       className={cn(

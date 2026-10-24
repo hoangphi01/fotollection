@@ -66,7 +66,7 @@ export const GroupStrip = memo(function GroupStrip({
           </Tooltip>
         </div>
       </div>
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      <div className="flex gap-2 overflow-x-auto p-1.5">
         {photos.map((score, rank) => {
           const photo = photosById.get(score.id)
           return (
@@ -74,7 +74,7 @@ export const GroupStrip = memo(function GroupStrip({
               key={score.id}
               type="button"
               onClick={onCompare}
-              title={photo?.fileName}
+              data-hint={photo?.fileName}
               className={cn(
                 'relative shrink-0 overflow-hidden rounded-md bg-muted outline-none focus-visible:ring-2 focus-visible:ring-ring',
                 rank === 0 && 'ring-2 ring-primary ring-offset-2 ring-offset-background',

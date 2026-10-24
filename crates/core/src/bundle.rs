@@ -848,6 +848,7 @@ mod tests {
             )],
             ui: UiSettings {
                 language: crate::settings::Language::Vi,
+                ..UiSettings::default()
             },
             ..StoredSettings::default()
         };

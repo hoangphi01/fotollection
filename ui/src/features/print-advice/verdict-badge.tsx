@@ -14,7 +14,7 @@ export function VerdictBadge({ verdict, dpi, className }: { verdict: PrintVerdic
   const { t } = useTranslation()
   return (
     <span
-      title={t('advice.dpi', { dpi })}
+      data-hint={t('advice.dpi', { dpi })}
       className={cn('rounded px-1.5 py-px text-[10px] font-medium whitespace-nowrap', STYLE[verdict], className)}
     >
       {t(`advice.verdict.${verdict}`)}

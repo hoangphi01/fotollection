@@ -58,7 +58,7 @@ export function ExportSection({ photoCount, filter }: ExportSectionProps) {
               {folderName(state.summary.destination)}
             </p>
             {state.summary.failed.slice(0, 3).map((f) => (
-              <p key={f.id} className="truncate text-xs" title={f.message}>
+              <p key={f.id} className="truncate text-xs" data-hint={f.message}>
                 {f.fileName}: {errorText(f)}
               </p>
             ))}
@@ -88,7 +88,7 @@ export function ExportSection({ photoCount, filter }: ExportSectionProps) {
         onClick={() => void chooseDestination()}
         disabled={running}
         className="flex w-full items-center gap-2 rounded-md text-left text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
-        title={destination ?? undefined}
+        data-hint={destination ?? undefined}
       >
         <FolderOutput className="size-3.5 shrink-0" />
         <span className="truncate">

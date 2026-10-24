@@ -31,12 +31,12 @@ const fixtures = JSON.parse(text)
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.json': 'application/json' }
 
 /** Runs in the page before the app: a stand-in for Tauri's IPC bridge. */
-function bridge({ fixtures, scenario, language }) {
+function bridge({ fixtures, scenario, language, os }) {
   const { common, scenarios } = fixtures
   const look = scenarios[scenario]
   const byId = (table, args) => table[String(args?.id)]
   const answers = {
-    app_info: () => common.app_info,
+    app_info: () => ({ ...common.app_info, ...(os ? { os } : {}) }),
     list_print_sizes: () => common.list_print_sizes,
     list_fonts: () => common.list_fonts,
     get_ui_settings: () => ({ ...common.get_ui_settings, language }),
@@ -94,7 +94,8 @@ async function open({ scenario, language, theme, width = 1440, height = 900 }) {
     }
     return route.abort()
   })
-  await context.addInitScript(bridge, { fixtures, scenario, language })
+  // DEMO_OS=windows shows the Windows title bar, for checking it on a Mac.
+  await context.addInitScript(bridge, { fixtures, scenario, language, os: process.env.DEMO_OS })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
   await page.goto('http://app.localhost/')

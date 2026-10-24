@@ -106,6 +106,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - Importing does not modify source files. The app opens sources read-only.
 
 - **Refresh:** a button next to the library's folders scans them again and adds photos copied in since, without importing anything twice; every edit on the photos already there is kept.
+- **Remove a folder:** opening another folder adds it to the library. Each folder row has a close button on hover, like a browser tab, that takes the folder and its photos out of the library. The files on disk are never touched, and the other folders keep every edit (the undo history restarts).
 
 ### FR-002 — Read photo metadata
 
@@ -466,7 +467,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 
 ### FR-044 — Per-photo overrides
 
-**P1 for the date stamp (done), P2 for the rest.** The **date stamp** can already be set per photo: in the preview, every stamp control (on/off, format, place, caption) applies to the open photo only, with a *This photo* badge and an **Apply to all** button that makes it the setting for every photo. The settings panel shows **Reset N photos with their own stamp** whenever some photos deviate. Each change is undoable. Stored per photo in the project (`photos[].stamp`, project schema v3).
+**P1 for the date stamp (done), P2 for the rest.** The **date stamp** can already be set per photo: in the preview, every stamp control (on/off, format, corner, colour, place, caption, the same fields in the same order as the settings panel) applies to the open photo only, with a *This photo* badge and an **Apply to all** button that makes it the setting for every photo. The settings panel shows **Reset N photos with their own stamp** whenever some photos deviate. Each change is undoable. Stored per photo in the project (`photos[].stamp`, project schema v3).
 
 Next to the batch settings, any other setting will later be overridable for one photo or a selection the same way. For example, the date stamp can be turned off for photos that already have a timestamp burned in, while the rest of the batch keeps it. Overrides are stored sparsely per photo ([DATABASE.md §4](DATABASE.md#4-project-file-schema), `photos[].overrides`). The UI shows which photos deviate from the batch and offers *Reset to batch*. Until then, every setting applies to the whole batch.
 
@@ -543,6 +544,14 @@ Next to the batch settings, any other setting will later be overridable for one 
   - **Rejected:** general geolocation models, because of non-commercial licences (StreetCLIP), GPL (PlaNet), missing weights (PIGEON) or more than 1 GB (GeoCLIP). Even the best of them places only about a third of photos within 25 km.
 - **Size and speed:** the model probably does not fit the 25 MB installer ([NFR-008](#nfr-008--install-size)). It ships as an **optional model pack** that the user installs on purpose; analysis stays within [NFR-014](#nfr-014--best-shot-analysis-speed)-like budgets, measured first.
 - **Shown as a suggestion only,** with its confidence, and never applied silently. It is scored on labelled photos like the best-shot suggestions before it ships.
+
+### FR-052 — Appearance: theme, title bar and hints
+
+**P1.** The app looks like one piece on both platforms.
+
+- **Theme:** System, Light or Dark, chosen with a three-way switch at the foot of the library column and stored per machine (`settings.json` `ui.theme`, schema v6). The native window (title bar, scroll bars) follows the choice. The colours come from the logo (STYLE_RULE §4).
+- **Windows title bar:** on Windows the system's white title strip is replaced by one drawn in the app's colours, like VS Code's: the app mark and the project name, a drag area (double-click maximizes) and minimize, maximize/restore and close buttons. It stays usable above open dialogs. macOS keeps its native title bar.
+- **Hover hints:** every hint is drawn by the app in its own style (rounded, theme colours), never the operating system's square tooltip.
 
 ## 7. Non-functional requirements
 

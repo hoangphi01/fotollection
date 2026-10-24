@@ -21,17 +21,15 @@ import { FrameSection } from '@/features/frame/frame-section'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
 import {
   commands,
-  type Corner,
   type CullFilter,
-  type DateFormat,
   type Language,
   type PhotoSummary,
   type PlaceFormat,
   type RenderSettings,
-  type StampColor,
 } from '@/ipc/bindings'
 import type { FontsApi } from '@/features/fonts/use-fonts'
 import { PrintAdviceNote } from '@/features/print-advice/print-advice-note'
+import { StampStyleFields } from '@/features/stamp/stamp-style-fields'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { LANGUAGES } from '@/i18n'
 import { PrintSizePicker } from './print-size-picker'
@@ -53,18 +51,8 @@ type SettingsPanelProps = {
 
 const PLACE_FORMATS: PlaceFormat[] = ['city', 'cityCountryCode', 'cityCountry']
 
-const FORMATS: { value: DateFormat; label: string }[] = [
-  { value: 'iso', label: '2026-07-14' },
-  { value: 'dmy', label: '14.07.2026' },
-  { value: 'retro', label: "'26 07 14" },
-]
 
-const CORNERS: Corner[] = ['bottomRight', 'bottomLeft', 'topRight', 'topLeft']
 
-const COLORS: { value: StampColor; swatch: string }[] = [
-  { value: 'white', swatch: 'bg-white' },
-  { value: 'retroOrange', swatch: 'bg-[#ff8a1f]' },
-]
 
 export function SettingsPanel({
   settings,
@@ -149,52 +137,7 @@ export function SettingsPanel({
           )}
 
           <Collapse open={stamp?.enabled ?? false} className="space-y-3">
-            <ToggleGroup
-              type="single"
-              variant="outline"
-              size="sm"
-              className="w-full"
-              value={stamp?.format ?? ''}
-              onValueChange={(format) => format && setStamp({ format: format as DateFormat })}
-            >
-              {FORMATS.map((f) => (
-                <ToggleGroupItem key={f.value} value={f.value} className="flex-1 font-mono text-xs">
-                  {f.label}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-
-            <Select
-              value={stamp?.corner ?? ''}
-              onValueChange={(corner) => setStamp({ corner: corner as Corner })}
-            >
-              <SelectTrigger className="w-full" aria-label={t('settings.stampPosition')}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CORNERS.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {t(`settings.corner.${c}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <ToggleGroup
-              type="single"
-              variant="outline"
-              size="sm"
-              className="w-full"
-              value={stamp?.color ?? ''}
-              onValueChange={(color) => color && setStamp({ color: color as StampColor })}
-            >
-              {COLORS.map((c) => (
-                <ToggleGroupItem key={c.value} value={c.value} className="flex-1 gap-1.5 text-xs">
-                  <span className={`size-3 rounded-full border ${c.swatch}`} />
-                  {t(`settings.color.${c.value}`)}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
+            <StampStyleFields stamp={stamp} onChange={setStamp} />
 
             {/* The place on the date line (FR-005), from the photo's GPS. */}
             <div className="flex items-center justify-between">

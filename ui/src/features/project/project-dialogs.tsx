@@ -72,7 +72,7 @@ export function RelinkDialog({ missing, open, onLocate, onClose }: RelinkDialogP
             <li key={m.id} className="flex items-center gap-3 rounded-md border px-3 py-2">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{m.name}</p>
-                <p className="truncate text-xs text-muted-foreground" title={m.path}>
+                <p className="truncate text-xs text-muted-foreground" data-hint={m.path}>
                   {m.path}
                 </p>
               </div>

@@ -294,7 +294,7 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
           step={0.1}
           value={angle}
           aria-label={t('crop.straighten')}
-          title={t('crop.straightenHint')}
+          data-hint={t('crop.straightenHint')}
           onChange={(e) => setStraighten(Number(e.target.value))}
           onPointerDown={() => setLeveling(true)}
           onPointerUp={() => setLeveling(false)}

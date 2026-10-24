@@ -16,7 +16,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v4 (FR-040, ADR-0020): bundled brand logos (`logo: "brand"`) and `frame.logoStyle`.
 /// v5 (FR-005, FR-036, FR-033): `render.stamp.place`, `render.stamp.caption`,
 /// `render.placeFormat`; `render.stamp.font` is dropped (the stamp has its own font).
-pub const SCHEMA_VERSION: u32 = 5;
+/// v6 (FR-052): `ui.theme`, absent before (follow the system).
+pub const SCHEMA_VERSION: u32 = 6;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -287,12 +288,40 @@ mod tests {
     }
 
     #[test]
+    fn fr_052_v5_files_follow_the_system_theme() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v5.json"))?;
+        let Loaded::Ok(s) = load(&path) else {
+            panic!("v5 should load");
+        };
+        assert_eq!(s.ui.theme, crate::settings::ThemePreference::System);
+        assert_eq!(s.ui.language, crate::settings::Language::Vi);
+        // A chosen theme is written and read back.
+        let dark = StoredSettings {
+            ui: UiSettings {
+                theme: crate::settings::ThemePreference::Dark,
+                ..s.ui
+            },
+            ..StoredSettings::default()
+        };
+        save(&path, &dark)?;
+        assert!(std::fs::read_to_string(&path)?.contains(r#""theme": "dark""#));
+        let Loaded::Ok(back) = load(&path) else {
+            panic!("v6 should load");
+        };
+        assert_eq!(back.ui.theme, crate::settings::ThemePreference::Dark);
+        Ok(())
+    }
+
+    #[test]
     fn fr_020_language_survives_a_round_trip() -> std::io::Result<()> {
         let dir = tempfile::tempdir()?;
         let path = dir.path().join("settings.json");
         let s = StoredSettings {
             ui: UiSettings {
                 language: crate::settings::Language::Vi,
+                ..UiSettings::default()
             },
             ..StoredSettings::default()
         };

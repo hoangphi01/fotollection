@@ -141,7 +141,7 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
             {FIELDS.map(({ key, disabled = false }) => (
               <label
                 key={key}
-                title={disabled ? t('frame.placeHint') : undefined}
+                data-hint={disabled ? t('frame.placeHint') : undefined}
                 className="flex items-center gap-2 text-sm"
                 aria-disabled={disabled}
               >

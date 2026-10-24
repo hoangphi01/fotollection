@@ -25,7 +25,7 @@ export function ProjectName({ name, onRename }: ProjectNameProps) {
     return (
       <span
         className="truncate"
-        title={t('project.renameHint')}
+        data-hint={t('project.renameHint')}
         onDoubleClick={() => setDraft(shown)}
       >
         {shown}

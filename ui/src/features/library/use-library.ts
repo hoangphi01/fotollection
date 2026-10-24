@@ -53,5 +53,12 @@ export function useLibrary(filter: CullFilter) {
     else setLastImport(result.data)
   }, [])
 
-  return { photos, total, customStamps, thumbVersions, lastImport, error, importFolder, refresh }
+  /** Takes a folder out of the library; its files stay on disk (FR-001). */
+  const removeFolder = useCallback(async (folder: number) => {
+    setError(null)
+    const result = await commands.removeFolder(folder)
+    if (result.status === 'error') setError(errorText(result.error))
+  }, [])
+
+  return { photos, total, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder }
 }

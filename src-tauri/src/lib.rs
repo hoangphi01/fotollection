@@ -45,6 +45,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::get_ui_settings,
             document::get_document,
             document::new_document,
+            document::remove_folder,
             document::open_document,
             document::open_requested_document,
             document::save_document,
@@ -93,6 +94,24 @@ pub fn export_bindings() -> Result<(), String> {
         .map_err(|e| e.to_string())
 }
 
+/// Menu language, theme and, on Windows, the app-drawn title bar (FR-020, FR-052).
+fn prepare_window(app: &tauri::AppHandle) {
+    let ui = app
+        .state::<state::AppState>()
+        .ui
+        .read()
+        .map(|u| *u)
+        .unwrap_or_default();
+    menu::refresh(app, ui.language);
+    commands::apply_window_theme(app, ui.theme);
+    // Windows: the app draws its own title bar in its colours, like VS Code.
+    #[cfg(windows)]
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.set_decorations(false);
+        let _ = window.set_shadow(true);
+    }
+}
+
 pub fn run() {
     let builder = specta_builder();
 
@@ -123,13 +142,7 @@ pub fn run() {
                 None => (thumb_dir, config_dir, project_path),
             };
             app.manage(state::AppState::new(thumb_dir, &config_dir, project_path)?);
-            let language = app
-                .state::<state::AppState>()
-                .ui
-                .read()
-                .map(|u| u.language)
-                .unwrap_or_default();
-            menu::refresh(app.handle(), language);
+            prepare_window(app.handle());
 
             // Autosave (NFR-013): at most ~1 s after the last edit, atomically.
             let handle = app.handle().clone();

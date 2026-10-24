@@ -20,7 +20,7 @@ export function CullControls({ photo }: { photo: PhotoSummary }) {
               role="radio"
               aria-checked={photo.rating === n}
               aria-label={t('culling.stars', { count: n })}
-              title={t(n === photo.rating ? 'culling.starClear' : 'culling.starKey', { count: n })}
+              data-hint={t(n === photo.rating ? 'culling.starClear' : 'culling.starKey', { count: n })}
               onClick={() => rate(n)}
               className="rounded p-0.5 text-muted-foreground hover:text-amber-500"
             >
@@ -33,7 +33,7 @@ export function CullControls({ photo }: { photo: PhotoSummary }) {
             variant={photo.flag === 'pick' ? 'default' : 'outline'}
             size="icon-sm"
             aria-label={t('culling.pickKey')}
-            title={t('culling.pickKey')}
+            data-hint={t('culling.pickKey')}
             onClick={() => void commands.setPhotoFlag([photo.id], photo.flag === 'pick' ? null : 'pick')}
           >
             <FlagIcon />
@@ -42,7 +42,7 @@ export function CullControls({ photo }: { photo: PhotoSummary }) {
             variant={photo.flag === 'reject' ? 'destructive' : 'outline'}
             size="icon-sm"
             aria-label={t('culling.rejectKey')}
-            title={t('culling.rejectKey')}
+            data-hint={t('culling.rejectKey')}
             onClick={() =>
               void commands.setPhotoFlag([photo.id], photo.flag === 'reject' ? null : 'reject')
             }

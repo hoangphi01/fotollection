@@ -79,6 +79,12 @@ export const commands = {
 	getUiSettings: () => typedError<UiSettings, IpcError>(__TAURI_INVOKE("get_ui_settings")),
 	getDocument: () => __TAURI_INVOKE<DocumentState>("get_document"),
 	newDocument: () => typedError<DocumentState, IpcError>(__TAURI_INVOKE("new_document")),
+	/**
+	 *  Takes a source folder out of the library, like closing a tab (FR-001): its photos leave
+	 *  the grid, the files stay untouched on disk, and the other folders keep every edit. The
+	 *  library is rebuilt from the remaining folders, so photo ids and the undo history reset.
+	 */
+	removeFolder: (folder: number) => typedError<DocumentState, IpcError>(__TAURI_INVOKE("remove_folder", { folder })),
 	openDocument: () => typedError<{
 	/**  The file name without its extension; `None` for an untitled session. */
 	name: string | null,
@@ -239,6 +245,8 @@ export type AnalysisFinished = {
 export type AppInfo = {
 	appVersion: string,
 	coreVersion: string,
+	/**  `macos`, `windows` or `linux`: Windows draws its own title bar (FR-052). */
+	os: string,
 };
 
 /**
@@ -599,6 +607,8 @@ export type PhotoStamp = {
 export type PhotoSummary = {
 	id: PhotoId,
 	fileName: string,
+	/**  Index of the source folder, for taking a folder out of the library (FR-001). */
+	folderId: number,
 	folderName: string,
 	/**  Camera-local capture time, `YYYY-MM-DDTHH:MM:SS`. */
 	capture: string,
@@ -745,14 +755,19 @@ export type TaskProgress = {
 	total: number,
 };
 
+/**  Light or dark interface (FR-052). `System` follows the operating system. */
+export type ThemePreference = "system" | "light" | "dark";
+
 /**  A sharper thumbnail (T1) is now cached for this photo. */
 export type ThumbReady = {
 	id: PhotoId,
 };
 
-/**  Per-machine interface preferences (FR-020). Never part of a project file. */
+/**  Per-machine interface preferences (FR-020, FR-052). Never part of a project file. */
 export type UiSettings = {
 	language: Language,
+	/**  Absent before settings v6: follow the system. */
+	theme?: ThemePreference,
 };
 
 /**
