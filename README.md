@@ -166,6 +166,20 @@ There are no releases yet. When they arrive, they will be on the [Releases](http
 >
 > Verify each download against `SHA256SUMS.txt` on the release page.
 
+### System requirements
+
+| | Minimum | Recommended | Notes |
+|---|---|---|---|
+| **Operating system** | macOS 11 Big Sur, or Windows 10 64-bit | macOS 13 or later, or Windows 11 | Apple Silicon and Intel Macs. Windows uses the WebView2 runtime, built into Windows 11 and installed automatically on Windows 10 |
+| **Processor** | Any 64-bit CPU from the last ~8 years | Apple Silicon, or a recent 4+ core x64 | Work is spread over all cores. Every number in [Performance](#performance) is from an Apple M3 |
+| **Memory (RAM)** | 4 GB | 8 GB or more | Fotollection stays under 2 GB even for 5,000+ photos (measured peak 1.45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)) |
+| **Disk** | 100 MB free plus the cache | 1 GB free | The app is meant to stay under 25 MB ([NFR-008](docs/PRD.md#nfr-008--install-size)). The cache takes about 25 MB per 1,000 photos (thumbnails about 22 KB and best-shot analysis about 4 KB each) and is safe to delete. Exports need space for the full-resolution files |
+| **Display** | 1280 × 800 | 1920 × 1080 or a Retina display | The toolbar adapts to narrow windows |
+| **Internet** | Not needed | — | Everything runs offline: faces, places and previews included. Nothing is uploaded |
+| **HEIC (iPhone photos)** | macOS: built in | — | Windows: install **HEIF Image Extensions** and **HEVC Video Extensions** from the Microsoft Store ([ADR-0017](docs/adr/0017-heic-through-os-codecs.md)) |
+
+To build from source you also need about 10 GB free for Rust build files (a debug and a release build; `scripts/clean.sh` reclaims them), Rust (installed by `rustup`, version pinned in `rust-toolchain.toml`), Node.js 22 or later, and Xcode Command Line Tools (macOS) or the MSVC Build Tools (Windows). The full list is in [docs/DEVELOPMENT.md §1.3](docs/DEVELOPMENT.md#13-prerequisites).
+
 ## Build from source
 
 ```sh
