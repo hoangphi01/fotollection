@@ -148,6 +148,7 @@ fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, 
     );
     let mut details = serde_json::Map::new();
     let mut geometry = serde_json::Map::new();
+    let mut advice = serde_json::Map::new();
     for &id in ids {
         let key = id.0.to_string();
         details.insert(
@@ -164,6 +165,13 @@ fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, 
                 id,
             )))?,
         );
+        advice.insert(
+            key.clone(),
+            ok(tauri::async_runtime::block_on(commands::print_advice(
+                app.clone(),
+                id,
+            )))?,
+        );
         let thumb = thumbnail_bytes(&state, id).ok_or("no thumbnail")?;
         write(&out.join(format!("img/thumb/{key}.jpg")), &thumb)?;
         write(
@@ -173,6 +181,7 @@ fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, 
     }
     common.insert("photo_details", Value::Object(details));
     common.insert("get_crop_geometry", Value::Object(geometry));
+    common.insert("print_advice", Value::Object(advice));
     to_json(common)
 }
 

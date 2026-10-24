@@ -21,6 +21,7 @@ pub mod logo;
 pub mod metadata;
 pub mod plan;
 pub mod preview;
+pub mod print_advice;
 pub mod print_size;
 pub mod project;
 pub mod render;

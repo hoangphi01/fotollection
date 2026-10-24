@@ -347,5 +347,14 @@
     "title": "Dự án",
     "rename": "Tên dự án",
     "renameHint": "Nhấp đúp để đổi tên"
+  },
+  "advice": {
+    "summary": "ảnh gốc {{width}} × {{height}} px ({{mp}} MP). In nét tới khoảng {{sharp}}, vẫn chấp nhận được tới {{acceptable}}.",
+    "dpi": "{{dpi}} DPI ở khổ này",
+    "verdict": {
+      "sharp": "Nét",
+      "acceptable": "Tạm được",
+      "pixelated": "Sẽ vỡ"
+    }
   }
 }

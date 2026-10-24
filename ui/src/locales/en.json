@@ -361,5 +361,14 @@
     "title": "Project",
     "rename": "Project name",
     "renameHint": "Double-click to rename"
+  },
+  "advice": {
+    "summary": "the original is {{width}} × {{height}} px ({{mp}} MP). It prints sharp up to about {{sharp}} and is still acceptable up to {{acceptable}}.",
+    "dpi": "{{dpi}} DPI at this size",
+    "verdict": {
+      "sharp": "Sharp",
+      "acceptable": "Acceptable",
+      "pixelated": "Pixelated"
+    }
   }
 }

@@ -25,6 +25,7 @@ node site/screenshots/shoot.mjs "$work/dump" "$work/png"
 for png in "$work"/png/*.png; do
   name=$(basename "$png" .png)
   case "$name" in
+    advice-*) ;; # for checking the print-size picker by eye; not on the page
     og-*) python3 -c 'import sys; from PIL import Image; Image.open(sys.argv[1]).convert("RGB").save(sys.argv[2], quality=86, optimize=True)' "$png" "$out/$name.jpg" ;;
     *) cwebp -quiet -q 82 -resize 1600 0 "$png" -o "$out/$name.webp" ;;
   esac

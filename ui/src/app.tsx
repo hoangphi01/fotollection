@@ -200,6 +200,7 @@ export function App() {
         photoCount={photos.length}
         customStamps={customStamps}
         filter={filter}
+        photo={photos[current]}
       />
     </div>
   )

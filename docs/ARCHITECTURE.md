@@ -66,6 +66,7 @@ crates/
       cancel.rs          † # CancellationToken
       stamp.rs           † # text inside the photo: DSEG14 Italic, date · place line + caption, LED glow (FR-004/005/033/036)
       text.rs            † # text measuring/drawing shared by stamp and frame, ASCII folding
+      print_advice.rs    † # how large a photo prints well; sharp / acceptable / pixelated per print size (FR-026)
       straighten.rs      † # ±15° levelling: largest inscribed crop, bicubic resampling of the crop only (FR-006)
       brands.rs          † # bundled brand logos, EXIF make → brand, Classic/Original/Mono recolouring (ADR-0020)
       culling/           † # best-shot suggestions (FR-041): metrics.rs (sharpness, shake, exposure, noise, dHash),
@@ -229,6 +230,7 @@ Commands marked † are implemented.
 | `undo()` / `redo()` † | History (also Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z) | FR-023 |
 | `list_fonts()` / `import_font()` / `remove_font(id)` † | User fonts; import opens a **Rust-side** dialog and copies a validated file | FR-042 |
 | `photo_details(id) -> PhotoDetails` † | Inspector data: pixel size (header only), file size, GPS, effective DPI at the current print size | FR-002, FR-007, FR-026 |
+| `print_advice(id) -> PrintAdvice` † | Largest sharp (300 DPI) and acceptable (150 DPI) print of a photo, and a sharp / acceptable / pixelated verdict per built-in and custom size | FR-026 |
 | `get_document() -> DocumentState` † | Current document: name, unsaved flag, library generation, folders still to relink | FR-023 |
 | `new_document()` / `open_document()` / `save_document()` / `save_document_as()` † | Project lifecycle. Open and Save As use **Rust-side** dialogs; Save writes the current document or falls back to Save As. Open validates the whole bundle before changing anything | FR-023 |
 | `open_requested_document()` † | Opens the file the OS handed over (file association), after the UI settled unsaved changes. The path is stored in Rust, never sent by the webview | FR-023 |

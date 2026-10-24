@@ -40,6 +40,11 @@ export const commands = {
 	cancelJob: (jobId: number) => typedError<null, IpcError>(__TAURI_INVOKE("cancel_job", { jobId })),
 	/**  Details for the preview inspector (FR-002, FR-007, FR-026). Reads only the JPEG header. */
 	photoDetails: (id: PhotoId) => typedError<PhotoDetails, IpcError>(__TAURI_INVOKE("photo_details", { id })),
+	/**
+	 *  How large a photo prints well, with a sharp / acceptable / pixelated verdict for every
+	 *  built-in and custom print size (FR-026).
+	 */
+	printAdvice: (id: PhotoId) => typedError<PrintAdvice, IpcError>(__TAURI_INVOKE("print_advice", { id })),
 	/**  Info-frame settings and camera profiles (FR-040). */
 	getFrameConfig: () => typedError<FrameConfig, IpcError>(__TAURI_INVOKE("get_frame_config")),
 	setFrameSettings: (settings: FrameSettings) => typedError<FrameConfig, IpcError>(__TAURI_INVOKE("set_frame_settings", { settings })),
@@ -616,6 +621,25 @@ export type PlaceFormat =
 /**  `Debrecen, Hungary` */
 "cityCountry";
 
+/**  How large one photo prints well, and the verdict for each size. */
+export type PrintAdvice = {
+	/**  Upright pixel size of the whole photo. */
+	width: number,
+	height: number,
+	megapixels: number | null,
+	/**  The whole photo at 300 DPI: the largest sharp print. */
+	sharpUpTo: PrintMm,
+	/**  The whole photo at 150 DPI: the largest acceptable print. */
+	acceptableUpTo: PrintMm,
+	sizes: SizeAdvice[],
+};
+
+/**  A print in millimetres, short edge first. */
+export type PrintMm = {
+	shortMm: number,
+	longMm: number,
+};
+
 /**  A physical print size. Dimensions are stored short edge first, in millimetres. */
 export type PrintSize = {
 	/**  Stable identifier used in settings and IPC, e.g. `"10x15"`. */
@@ -623,6 +647,15 @@ export type PrintSize = {
 	shortMm: number,
 	longMm: number,
 };
+
+/**  What a size will look like, for the green / yellow / red badge. */
+export type PrintVerdict = 
+/**  300 DPI or more. */
+"sharp" | 
+/**  150–299 DPI: fine at arm's length. */
+"acceptable" | 
+/**  Under 150 DPI: pixels show. */
+"pixelated";
 
 /**  Why the best photo won, compared with the runner-up. The UI words these (FR-020). */
 export type Reason = 
@@ -667,6 +700,14 @@ export type SettingsState = {
 	settings: RenderSettings,
 	/**  Bumps on every change; previews use it to refresh. */
 	revision: number,
+};
+
+/**  The verdict for one print size. */
+export type SizeAdvice = {
+	/**  The print size's id, built-in (`"20x30"`) or custom (`"custom-1"`). */
+	id: string,
+	dpi: number,
+	verdict: PrintVerdict,
 };
 
 export type StampColor = "white" | "retroOrange";

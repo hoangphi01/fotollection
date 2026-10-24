@@ -289,7 +289,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 - A badge in the grid and loupe shows *excellent*, *good* or *poor*.
 - Before export, a summary lists photos below 150 DPI.
-- **Size advice when choosing a print size (planned).** Next to the print-size picker, a short sentence reads the photo: *"The original is 6240 × 4160 px (26 MP). It prints sharp up to 30 × 45 cm; 40 × 60 cm is still acceptable."* In the picker's list, every size carries a coloured badge for that photo or selection: **green** prints sharp (≥ 300 DPI), **yellow** is still acceptable (150–299 DPI), **red** will look pixelated (< 150 DPI). With several photos selected, the badge follows the weakest one.
+- **Size advice when choosing a print size.** Under the print-size picker, one sentence reads the photo selected in the grid: *"photo.jpg: the original is 6240 × 4160 px (26 MP). It prints sharp up to about 35 × 53 cm and is still acceptable up to 70 × 106 cm"* (the whole photo at 300 and 150 DPI, in whole centimetres). In the picker's list, and on the picker itself, every built-in and custom size carries a badge for that photo: **green** "Sharp" (≥ 300 DPI), **yellow** "Acceptable" (150–299 DPI), **red** "Pixelated" (< 150 DPI), from the DPI of the size's centred crop; hovering shows the DPI. Later: with several photos selected, the badge follows the weakest one.
 
 ### FR-027 — sRGB conversion for labs
 

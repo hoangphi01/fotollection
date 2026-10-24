@@ -114,7 +114,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | FR-023 | Projects, autosave and undo | 1 | Done | `.fotollection` document like `.docx`: Save / Save As / Open / New with Rust-side dialogs, unsaved-changes question, title `Trip — Edited`, native File menu (macOS) and Ctrl shortcuts (Windows), Relink dialog for moved folders, file association. Self-contained ZIP bundle ([ADR-0016](adr/0016-self-contained-project-bundle.md)); fonts installed once, ids remapped; session autosave underneath. `fr_023_*` pass (incl. open on another machine, relink). File association to be checked by hand in a release build |
 | FR-024 | Copies and order summary | 2 | Not Started | |
 | FR-025 | Mixed print sizes per order | 1 | Not Started | Builds on `PrintSize` |
-| FR-026 | Resolution warning | 1 | In Progress | Effective DPI + band shown in the inspector. Grid badge and pre-export summary pending. Next: size advice under the print-size picker and green/yellow/red badges per size in its list |
+| FR-026 | Resolution warning | 1 | In Progress | Effective DPI + band shown in the inspector. Grid badge and pre-export summary pending. ✓ Size advice under the print-size picker and green/yellow/red badges per size (`print_advice.rs`, `fr_026_*`) |
 | FR-027 | sRGB conversion for labs | 1 | Not Started | `lcms2` |
 | FR-028 | Safe area and borders | 1 | Not Started | |
 | FR-029 | Output sharpening | 3 | Not Started | Needs real print tests |

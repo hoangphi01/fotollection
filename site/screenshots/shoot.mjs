@@ -45,6 +45,7 @@ function bridge({ fixtures, scenario, language }) {
     list_photos: () => common.list_photos,
     photo_details: (a) => byId(common.photo_details, a),
     get_crop_geometry: (a) => byId(common.get_crop_geometry, a),
+    print_advice: (a) => byId(common.print_advice ?? {}, a),
     get_settings: () => look.get_settings,
     get_frame_config: () => look.get_frame_config,
     get_photo_stamp: (a) => byId(look.get_photo_stamp, a),
@@ -144,6 +145,13 @@ for (const language of ['en', 'vi']) {
     await tile(page, SHOW.grid).click()
     await settle(page)
     await save(page, `grid-${suffix}`)
+
+    // 1b. Print-size advice: the picker open, a badge per size (FR-026).
+    await page.locator('#print-size').click()
+    await page.waitForSelector('[role="option"]')
+    await page.waitForTimeout(300)
+    await save(page, `advice-${suffix}`)
+    await page.keyboard.press('Escape')
 
     // 2. Preview with the retro date stamp and the place (GPS photo).
     await tile(page, SHOW.stamp).dblclick()

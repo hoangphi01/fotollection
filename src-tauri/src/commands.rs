@@ -22,6 +22,7 @@ use fotollection_core::library::{CullFilter, Flag, PhotoEdits, PhotoId, PhotoSum
 use fotollection_core::logo;
 use fotollection_core::metadata;
 use fotollection_core::plan::{CropFrame, DpiBand, PlanInput, effective_dpi, plan};
+use fotollection_core::print_advice::{self, PrintAdvice};
 use fotollection_core::settings::{RenderSettings, UiSettings};
 use fotollection_core::thumbs;
 use rayon::prelude::*;
@@ -688,6 +689,53 @@ pub struct GpsPoint {
     pub lon: f32,
 }
 
+/// The photo's pixel size as shown, after EXIF orientation and the user's quarter turns.
+fn upright_size(
+    state: &AppState,
+    record: &fotollection_core::library::PhotoRecord,
+) -> Result<(u32, u32), IpcError> {
+    let bytes = std::fs::read(&record.path)
+        .map_err(|e| IpcError::new("import.unreadable", e.to_string()))?;
+    let (w, h) = image_dimensions(state.codec.as_ref(), &bytes)
+        .map_err(|e| IpcError::new(e.code(), e.to_string()))?;
+    Ok(if record.display_orientation() >= 5 {
+        (h, w)
+    } else {
+        (w, h)
+    })
+}
+
+/// How large a photo prints well, with a sharp / acceptable / pixelated verdict for every
+/// built-in and custom print size (FR-026).
+#[tauri::command]
+#[specta::specta]
+pub async fn print_advice(app: AppHandle, id: PhotoId) -> Result<PrintAdvice, IpcError> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let record = state
+            .library
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .record(id)
+            .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
+        let (width, height) = upright_size(&state, &record)?;
+        let custom = state
+            .settings
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .0
+            .custom_sizes
+            .clone();
+        let sizes = PrintSize::ALL.iter().map(|s| (s.id, *s)).chain(
+            custom
+                .iter()
+                .map(|c| (c.id.as_str(), PrintSize::custom(c.short_mm, c.long_mm))),
+        );
+        Ok(print_advice::advise(width, height, sizes))
+    })
+    .await
+    .map_err(|e| IpcError::internal(e.to_string()))?
+}
 /// Details for the preview inspector (FR-002, FR-007, FR-026). Reads only the JPEG header.
 #[tauri::command]
 #[specta::specta]
@@ -700,15 +748,7 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             .map_err(|e| IpcError::internal(e.to_string()))?
             .record(id)
             .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
-        let bytes = std::fs::read(&record.path)
-            .map_err(|e| IpcError::new("import.unreadable", e.to_string()))?;
-        let (w, h) = image_dimensions(state.codec.as_ref(), &bytes)
-            .map_err(|e| IpcError::new(e.code(), e.to_string()))?;
-        let (width, height) = if record.display_orientation() >= 5 {
-            (h, w)
-        } else {
-            (w, h)
-        };
+        let (width, height) = upright_size(&state, &record)?;
         let print = state
             .settings
             .read()

@@ -25,11 +25,14 @@ import {
   type CullFilter,
   type DateFormat,
   type Language,
+  type PhotoSummary,
   type PlaceFormat,
   type RenderSettings,
   type StampColor,
 } from '@/ipc/bindings'
 import type { FontsApi } from '@/features/fonts/use-fonts'
+import { PrintAdviceNote } from '@/features/print-advice/print-advice-note'
+import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { LANGUAGES } from '@/i18n'
 import { PrintSizePicker } from './print-size-picker'
 import { useLanguage } from './use-language'
@@ -44,6 +47,8 @@ type SettingsPanelProps = {
   /** Photos with their own stamp from the preview (FR-044). */
   customStamps: number
   filter: CullFilter
+  /** The photo selected in the grid, for the print-size advice (FR-026). */
+  photo?: PhotoSummary
 }
 
 const PLACE_FORMATS: PlaceFormat[] = ['city', 'cityCountryCode', 'cityCountry']
@@ -69,11 +74,14 @@ export function SettingsPanel({
   photoCount,
   customStamps,
   filter,
+  photo,
 }: SettingsPanelProps) {
   const { t } = useTranslation()
   const { language, change: changeLanguage } = useLanguage()
   const printSizes = useIpcQuery(commands.listPrintSizes)
   const appInfo = useIpcQuery(commands.appInfo)
+  const sizesKey = (settings?.customSizes ?? []).map((c) => `${c.id}:${c.shortMm}x${c.longMm}`).join()
+  const advice = usePrintAdvice(photo?.id, sizesKey)
   const stamp = settings?.stamp
   const setStamp = (patch: Partial<RenderSettings['stamp']>) =>
     onChange((s) => ({ ...s, stamp: { ...s.stamp, ...patch } }))
@@ -110,7 +118,8 @@ export function SettingsPanel({
             <Crop className="size-4 text-muted-foreground" />
             {t('settings.printSize')}
           </Label>
-          <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onChange} />
+          <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onChange} advice={advice} />
+          {advice && photo && <PrintAdviceNote advice={advice} fileName={photo.fileName} />}
           <p className="text-xs text-muted-foreground">{t('settings.printSizeHint')}</p>
         </section>
 

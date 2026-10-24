@@ -15,7 +15,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import type { CustomPrintSize, LengthUnit, PrintSize, RenderSettings } from '@/ipc/bindings'
+import type { CustomPrintSize, LengthUnit, PrintAdvice, PrintSize, RenderSettings } from '@/ipc/bindings'
+import { VerdictBadge } from '@/features/print-advice/verdict-badge'
 import { ratioLabel } from '@/lib/crop-geometry'
 import { MM_PER_IN, sizeLabel } from '@/lib/print-size'
 
@@ -27,10 +28,12 @@ type PrintSizePickerProps = {
   settings: RenderSettings | null
   builtIn: PrintSize[] | undefined
   onChange: (change: (current: RenderSettings) => RenderSettings) => void
+  /** Sharp / acceptable / pixelated per size for the selected photo (FR-026). */
+  advice?: PrintAdvice | null
 }
 
 /** Built-in and saved custom print sizes, with an inline "add custom size" form (FR-043). */
-export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePickerProps) {
+export function PrintSizePicker({ settings, builtIn, onChange, advice }: PrintSizePickerProps) {
   const { t } = useTranslation()
   const custom = settings?.customSizes ?? []
   const [adding, setAdding] = useState(false)
@@ -40,6 +43,10 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
   const [unit, setUnit] = useState<LengthUnit>('in')
   const [formError, setFormError] = useState<string | null>(null)
   const selectedCustom = custom.find((c) => c.id === settings?.printSize)
+  const badge = (id: string) => {
+    const size = advice?.sizes.find((s) => s.id === id)
+    return size && <VerdictBadge verdict={size.verdict} dpi={size.dpi} className="ml-auto" />
+  }
 
   const save = () => {
     const parse = (s: string) => Number.parseFloat(s.replace(',', '.'))
@@ -101,6 +108,7 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
                     {' '}
                     · {ratioLabel(size.shortMm, size.longMm)}
                   </span>
+                  {badge(size.id)}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -115,6 +123,7 @@ export function PrintSizePicker({ settings, builtIn, onChange }: PrintSizePicker
                       · {sizeLabel(c.shortMm, c.longMm, c.unit ?? 'cm')} ·{' '}
                       {ratioLabel(c.shortMm, c.longMm)}
                     </span>
+                    {badge(c.id)}
                   </SelectItem>
                 ))}
               </SelectGroup>
