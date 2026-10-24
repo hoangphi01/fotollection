@@ -146,7 +146,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - Offers a "fit with border" (letterbox) alternative to cropping.
 
 - **Rotate:** turn a photo a quarter turn left or right (buttons next to Crop in the preview, or `[` and `]`), losslessly, on top of its EXIF orientation. This fixes photos taken upside down or sideways. The crop turns with the photo. It is undoable and saved in the project (`photos[].rotation`, project schema v4).
-- **Straighten:** a slider in the crop editor levels a tilted horizon by up to ±15° (0.1° steps; double-click or `0` resets). The photo turns under the crop box live, with a fine levelling grid. The crop is then as large as it can be without showing an empty corner, at the print ratio, and the export resamples only the cropped pixels (bicubic, supersampled when reducing). A level photo keeps the plain lossless path, so 0° gives exactly the same file as before. Undoable and saved in the project (`photos[].straighten`, project schema v5).
+- **Straighten:** a slider in the crop editor levels a tilted horizon by up to ±15° (0.1° steps; double-click or `0` resets). In crop mode, ← and → turn it by 1° (with ⌥ by 0.1°) and ↑ ↓ still nudge the crop; once the crop is applied or cancelled, ← and → move between photos again. The photo turns under the crop box live, with a fine levelling grid. The crop is then as large as it can be without showing an empty corner, at the print ratio, and the export resamples only the cropped pixels (bicubic, supersampled when reducing). A level photo keeps the plain lossless path, so 0° gives exactly the same file as before. Undoable and saved in the project (`photos[].straighten`, project schema v5).
 
 ### FR-007 — Live preview
 

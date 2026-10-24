@@ -216,7 +216,7 @@
   "crop": {
     "zoom": "Thu phóng",
     "straighten": "Cân ngang",
-    "straightenHint": "Cân lại đường chân trời, ±15°. Nhấp đúp để đặt lại."
+    "straightenHint": "Cân lại đường chân trời, ±15°: ← → mỗi lần 1°, ⌥ ← → mỗi lần 0,1°. Nhấp đúp để đặt lại."
   },
   "dpi": {
     "excellent": "Rất tốt",
@@ -255,7 +255,9 @@
     "thisPhoto": "Riêng ảnh này",
     "applyToAll": "Áp dụng cho tất cả",
     "rotateLeft": "Xoay trái ( [ )",
-    "rotateRight": "Xoay phải ( ] )"
+    "rotateRight": "Xoay phải ( ] )",
+    "level": "cân ngang 1° (⌥ 0,1°)",
+    "leaveCrop": "hủy crop"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",

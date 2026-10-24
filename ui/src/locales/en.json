@@ -228,7 +228,7 @@
   "crop": {
     "zoom": "Zoom",
     "straighten": "Straighten",
-    "straightenHint": "Level the horizon, ±15°. Double-click to reset."
+    "straightenHint": "Level the horizon, ±15°: ← → by 1°, ⌥ ← → by 0.1°. Double-click to reset."
   },
   "dpi": {
     "excellent": "Excellent",
@@ -267,7 +267,9 @@
     "thisPhoto": "This photo",
     "applyToAll": "Apply to all photos",
     "rotateLeft": "Rotate left ( [ )",
-    "rotateRight": "Rotate right ( ] )"
+    "rotateRight": "Rotate right ( ] )",
+    "level": "level 1° (⌥ 0.1°)",
+    "leaveCrop": "cancel crop"
   },
   "errors": {
     "internal": "Something went wrong",
