@@ -266,7 +266,10 @@ mod tests {
         let with_ratio = structure_zoomed(&wide, &close, 2.0);
         // The scene's 24 px checks alias in the wide shot's 20 px cells, so the match is not
         // perfect; it must still clear the grouping bound.
-        assert!(with_ratio >= crate::culling::group::MIN_STRUCTURE, "{with_ratio}");
+        assert!(
+            with_ratio >= crate::culling::group::MIN_STRUCTURE,
+            "{with_ratio}"
+        );
         assert!(with_ratio > structure(&wide, &close) + 0.1);
         assert!((structure_zoomed(&close, &wide, 0.5) - with_ratio).abs() < 1e-6);
     }
