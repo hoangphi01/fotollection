@@ -1,0 +1,64 @@
+{
+  "about": "Export quality audit (NFR-009) with bench/quality/audit.py: every exported pixel compared with the source, against a typical web-editor export (ICC dropped, 4:2:0, q80, long edge 2000 px upscaled back for print). Medians.",
+  "date": "2026-10-24",
+  "sets": {
+    "srgb": {
+      "label": "20 camera JPEGs (sRGB, 16 MP)",
+      "fotollection": {
+        "psnr": 52.60844053139417,
+        "de_mean": 0.18784602731466293,
+        "de_p95": 1.0609904527664185,
+        "chroma_kept": 0.9998215138912201,
+        "contrast_kept": 1.0000157952308655,
+        "detail_kept": 0.998487070381662,
+        "levels_kept": 1.0
+      },
+      "web_editor": {
+        "psnr": 37.90848618953301,
+        "de_mean": 1.3858363032341003,
+        "de_p95": 3.500295877456665,
+        "chroma_kept": 0.9994463324546814,
+        "contrast_kept": 0.9985886216163635,
+        "detail_kept": 0.13390720758551178,
+        "levels_kept": 1.0
+      },
+      "photos": 20,
+      "icc_kept": 20,
+      "sampling": [
+        "4:4:4"
+      ],
+      "quality": [
+        95
+      ]
+    },
+    "displayP3": {
+      "label": "5 of them in Display P3, like iPhone photos",
+      "fotollection": {
+        "psnr": 50.81568464310906,
+        "de_mean": 0.3066767752170563,
+        "de_p95": 1.497543454170227,
+        "chroma_kept": 0.9992759227752686,
+        "contrast_kept": 0.999944269657135,
+        "detail_kept": 1.0178951307820767,
+        "levels_kept": 1.0
+      },
+      "web_editor": {
+        "psnr": 37.01868465481311,
+        "de_mean": 2.149310350418091,
+        "de_p95": 4.807937145233154,
+        "chroma_kept": 0.867821991443634,
+        "contrast_kept": 0.9992687702178955,
+        "detail_kept": 0.17561259130713647,
+        "levels_kept": 1.0
+      },
+      "photos": 5,
+      "icc_kept": 5,
+      "sampling": [
+        "4:4:4"
+      ],
+      "quality": [
+        95
+      ]
+    }
+  }
+}

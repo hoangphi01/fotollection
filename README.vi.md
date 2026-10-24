@@ -133,6 +133,30 @@ Về tốc độ export thô, trình duyệt nhanh ngang ngửa vì Chromium dù
 
 Trước đây bộ mã hóa là nút thắt: 16,2 ms, chiếm 62 % của 26 ms. Preview chỉ để xem trên màn hình, nên giờ được mã hóa ở chế độ màu 4:2:0 với bảng Huffman thường. Phóng to 3× vẫn nhìn giống hệt. Ảnh export vẫn giữ 4:4:4 và bảng Huffman tối ưu. Chỉ một thay đổi đó đã đưa preview từ 26 ms xuống 17 ms.
 
+### Chất lượng in: bản xuất có giữ nguyên ảnh không?
+
+Nhanh mà bản in bị nông màu thì cũng vô nghĩa. Ảnh in qua web editor thường trông nông, màu bị bệt và mất chiều sâu so với ảnh gốc. Vì vậy bản xuất của Fotollection được so từng điểm ảnh với ảnh gốc (`bench/quality/audit.py`), đặt cạnh bản xuất của một web editor thông thường.
+
+![Chi tiết giữ lại: Fotollection 100 %, web editor 13 %. Độ bão hoà màu giữ lại với ảnh Display P3: 99,9 % so với 86,8 %. Sai lệch màu ΔE2000: 0,19 so với 1,39, mắt thấy được từ 1.](docs/images/bench-quality-vi.svg)
+
+| Đo so với ảnh gốc (trung vị) | Fotollection | Web editor thông thường |
+|------|-----:|-----:|
+| Sai lệch màu, ΔE2000 trung bình (ảnh JPEG máy ảnh; từ 1 trở lên là mắt thấy được) | **0,19** | 1,39 |
+| Sai lệch màu, phân vị 95 | **1,06** | 3,50 |
+| Chi tiết nhỏ giữ lại (ảnh JPEG máy ảnh) | **100 %** | 13 % |
+| Độ bão hoà màu giữ lại (ảnh Display P3, như ảnh iPhone) | **99,9 %** | 86,8 % |
+| Độ tương phản và số mức sáng tối giữ lại | 100 % | 100 % |
+| Độ trung thực điểm ảnh (PSNR) | **52,6 dB** | 37,9 dB |
+| Giữ colour profile (ICC) | 20 / 20 | bị bỏ |
+
+Vì sao in qua web editor trông nông màu, và Fotollection làm khác thế nào:
+
+- **Colour profile bị bỏ.** Ảnh điện thoại dùng Display P3, dải màu rộng hơn sRGB. Mất profile, tiệm in đọc màu như sRGB, nên ảnh in ra nhạt hơn khoảng 13 %. Fotollection giữ nguyên ICC profile của ảnh trong mọi bản xuất.
+- **Ảnh bị thu nhỏ rồi phóng to lại.** Ảnh 2000 px in khổ 10 × 15 cm mất 87 % chi tiết nhỏ, nên bề mặt bị mịn đi và màu trông bệt. Fotollection xuất ở độ phân giải đầy đủ, và chỉ resize, bằng bộ lọc Lanczos3, khi khổ in cần.
+- **Màu bị giảm một nửa và nén mạnh hơn.** Các web editor phổ biến dùng lấy mẫu màu 4:2:0, tức giảm một nửa độ phân giải màu, ở chất lượng 80. Fotollection xuất 4:4:4 ở chất lượng 95.
+
+Bài kiểm tra dùng 20 ảnh từ máy Canon compact, cộng thêm 5 ảnh trong số đó được chuyển sang Display P3 bằng profile có sẵn của macOS. Web editor được mô phỏng theo cài đặt phổ biến (coi là sRGB, bỏ profile, 4:2:0, q80, 2000 px, phóng to lại khi in). Đo lại bằng `cargo run --release -p fotollection-core --example quality_export -- <thư-mục-xuất> <ảnh…>`, rồi `python3 bench/quality/audit.py <thư-mục-ảnh> <thư-mục-xuất>`.
+
 ### Gợi ý ảnh đẹp nhất chính xác đến đâu?
 
 Với tính năng gợi ý nên giữ ảnh nào, nhanh thôi chưa đủ, nên gợi ý ảnh đẹp nhất còn được chấm điểm độ chính xác. 95 ảnh thật (người, đồ ăn, phố, cảnh đêm, hoàng hôn) được gán nhãn bằng tay: 22 nhóm ảnh chụp cùng một khoảnh khắc, và ở 6 nhóm có ghi rõ ảnh nên giữ. `eval_bestshot` so các nhóm và lựa chọn của app với các nhãn đó.

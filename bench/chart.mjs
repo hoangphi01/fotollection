@@ -51,6 +51,7 @@ const batches = readdirSync(results)
 const batch = batches[0]
 const budgets = read('budgets.json')
 const bestshot = read('bestshot.json')
+const quality = read('quality.json')
 const meta = read('machine.json')
 if (!rust || !web) throw new Error('run bench/run.sh first')
 
@@ -107,6 +108,16 @@ const T = {
     stamp: 'date stamp',
     encode: 'JPEG encode',
     ms: 'ms, p50',
+    qTitle: 'Print quality: what an export keeps of the photo',
+    qWeb: 'Typical web editor',
+    qDetail: 'Detail kept (camera JPEGs)',
+    qChroma: 'Colour saturation kept (Display P3, like iPhone photos)',
+    qDe: 'Colour error, ΔE2000 mean (camera JPEGs)',
+    qPercent: '% of the original · higher is better',
+    qDeUnit: 'lower is better',
+    qVisible: 'visible at 1',
+    qFooter: (n, m) =>
+      `${n} camera JPEGs and ${m} Display P3 versions, every pixel compared with the original · web editor: profile dropped, 4:2:0, q80, 2000 px`,
     bsTitle: 'Best-shot suggestions, step by step',
     bsGroups: (n) => `Groups found, of ${n} labelled by hand`,
     bsPicks: 'Suggested photo acceptable, in labelled groups with a clear best',
@@ -150,6 +161,16 @@ const T = {
     stamp: 'dấu ngày',
     encode: 'mã hóa JPEG',
     ms: 'ms, p50',
+    qTitle: 'Chất lượng in: bản xuất giữ lại được bao nhiêu',
+    qWeb: 'Web editor thông thường',
+    qDetail: 'Chi tiết giữ lại (ảnh JPEG máy ảnh)',
+    qChroma: 'Độ bão hoà màu giữ lại (Display P3, như ảnh iPhone)',
+    qDe: 'Sai lệch màu, ΔE2000 trung bình (ảnh JPEG máy ảnh)',
+    qPercent: '% so với ảnh gốc · càng cao càng tốt',
+    qDeUnit: 'càng thấp càng tốt',
+    qVisible: 'thấy được từ 1',
+    qFooter: (n, m) =>
+      `${n} ảnh JPEG máy ảnh và ${m} bản Display P3, so từng điểm ảnh với ảnh gốc · web editor: bỏ profile, 4:2:0, q80, 2000 px`,
     bsTitle: 'Gợi ý ảnh đẹp nhất, từng bước cải tiến',
     bsGroups: (n) => `Số nhóm tìm được, trên ${n} nhóm gán nhãn tay`,
     bsPicks: 'Ảnh được gợi ý chấp nhận được, ở các nhóm có ảnh tốt nhất rõ ràng',
@@ -354,6 +375,47 @@ function charts(lang) {
     const desc = `${segs.map((s) => `${s.name} ${f(s.v, 1)} ms`).join(', ')}; ${f(total, 1)} ms. ${t.web} ${f(web.previewWarmP50Ms, 1)} ms. ${t.budget} ${budget} ms.`
     out['bench-preview'] = doc(t.previewTitle, desc, h, body)
   }
+  // 6. Print quality: Fotollection's export against a typical web-editor export.
+  {
+    const S = quality.sets.srgb
+    const P = quality.sets.displayP3
+    const rows = [
+      { name: t.rust, cls: 's1', who: 'fotollection' },
+      { name: t.qWeb, cls: 's2', who: 'web_editor' },
+    ]
+    const panels = [
+      { title: t.qDetail, unit: t.qPercent, v: (w) => S[w].detail_kept * 100, max: 100, fmt: (v) => `${f(v, 0)} %` },
+      { title: t.qChroma, unit: t.qPercent, v: (w) => P[w].chroma_kept * 100, max: 100, fmt: (v) => `${f(v, 1)} %` },
+      { title: t.qDe, unit: t.qDeUnit, v: (w) => S[w].de_mean, max: 2, fmt: (v) => f(v, 2), ref: 1 },
+    ]
+    const ph = 30 + rows.length * 30 + 18
+    let body = ''
+    panels.forEach((p, i) => {
+      const y0 = 34 + i * ph
+      body += `<text class="t1" x="0" y="${y0 + 14}">${esc(p.title)}</text>`
+      body += `<text class="t3" x="${W}" y="${y0 + 14}" text-anchor="end">${esc(p.unit)}</text>`
+      rows.forEach((r, j) => {
+        const y = y0 + 26 + j * 30
+        const v = p.v(r.who)
+        const w = Math.max(4, (PLOT * Math.min(v, p.max)) / p.max)
+        body += `<text class="t2" x="${LEFT - 10}" y="${y + 15}" text-anchor="end">${esc(r.name)}</text>`
+        body += bar(r.cls, LEFT, y, w, 22, `${r.name}: ${p.fmt(v)}`)
+        body += `<text class="t1 num" x="${LEFT + w + 8}" y="${y + 16}">${esc(p.fmt(v))}</text>`
+      })
+      const yEnd = y0 + 26 + rows.length * 30 - 4
+      body += `<line class="axis" x1="${LEFT}" x2="${LEFT}" y1="${y0 + 22}" y2="${yEnd}"/>`
+      if (p.ref !== undefined) {
+        body += refLine('ref', LEFT + (PLOT * p.ref) / p.max, y0 + 30, yEnd, t.qVisible, 'middle')
+      }
+    })
+    const h = 34 + panels.length * ph + 14
+    body += `<text class="t3" x="0" y="${h - 4}">${esc(t.qFooter(f(S.photos, 0), f(P.photos, 0)))}</text>`
+    const desc = rows
+      .map((r) => `${r.name}: ${panels.map((p) => `${p.title} ${p.fmt(p.v(r.who))}`).join(', ')}`)
+      .join('. ')
+    out['bench-quality'] = doc(t.qTitle, desc, h, body)
+  }
+
   // 5. Best-shot accuracy per improvement step (higher is better), against the labels.
   {
     const steps = bestshot.steps

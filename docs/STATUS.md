@@ -152,7 +152,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | NFR-006 | Offline and zero telemetry | 0 requests | — | Not Started |
 | NFR-007 | Platforms | macOS 11+, Win 10/11 | — | Not Started |
 | NFR-008 | Install size | ≤ 25 MB | — | Not Started |
-| NFR-009 | Colour fidelity | ICC kept, Δ ≤ 1 | — | Not Started |
+| NFR-009 | Colour fidelity | ICC kept, Δ ≤ 1 | ICC kept 25/25, ΔE2000 mean 0.19 (sRGB) / 0.31 (Display P3), detail and saturation kept; web-editor export for reference 1.39 / 2.15 ([RESULT.md §9](RESULT.md#9-print-quality)) | In Progress |
 | NFR-010 | Cold start | < 1.5 s | — | Not Started |
 | NFR-011 | Robustness | 0 crashes | — | Not Started |
 | NFR-012 | Culling navigation | < 100 ms p95 | — | Not Started |

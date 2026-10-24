@@ -127,3 +127,34 @@ Best-shot suggestions ([FR-041](PRD.md#fr-041--best-shot-suggestions)) are score
 cargo run --release -p fotollection-core --example eval_bestshot -- ~/Pictures/some-folder labels.json
 # --explain: score parts per photo; --pairs: time gap, layout and colour similarity of neighbours
 ```
+
+## 9. Print quality
+
+[NFR-009](PRD.md#nfr-009--colour-fidelity) asks for the ICC profile to be kept and a colour error of at most 1. `bench/quality/audit.py` checks this pixel by pixel:
+
+- **What is exported:** each photo goes through the real export path at its own size, with no stamp or frame (`examples/quality_export.rs`).
+- **How it is read:** both images are decoded with libjpeg and converted to CIELAB in floating point through their profiles.
+- **What it is compared with:** a typical web-editor export (profile dropped, 4:2:0, q80, 2000 px, upscaled back for print).
+- **Where the numbers are:** `bench/results/quality.json`.
+
+![Print quality](images/bench-quality.svg)
+
+| Median | Fotollection, 20 sRGB JPEGs | Web editor | Fotollection, 5 Display P3 | Web editor |
+|------|-----:|-----:|-----:|-----:|
+| PSNR | 52.6 dB | 37.9 dB | 50.8 dB | 37.0 dB |
+| ΔE2000 mean | **0.19** | 1.39 | **0.31** | 2.15 |
+| ΔE2000 95th percentile | 1.06 | 3.50 | 1.50 | 4.81 |
+| Chroma kept | 100 % | 99.9 % | 99.9 % | **86.8 %** |
+| Contrast kept | 100 % | 99.9 % | 100 % | 99.9 % |
+| Detail kept (Laplacian variance) | 99.8 % | **13 %** | 100 % | 18 % |
+| Tonal levels kept | 100 % | 100 % | 100 % | 100 % |
+
+- **Result:** NFR-009 is met. The ICC profile is kept 25 / 25, sampling is 4:4:4, quality is 95, and the mean ΔE2000 is 0.19–0.31, well under 1.
+- **Where the 95th percentile comes from:** the larger errors sit on sharp edges, where JPEG re-encoding works hardest, not in flat colour.
+- **What it explains:** the web-editor export loses 87 % of the fine detail through the down- and upscale, and 13 % of the saturation of P3 photos when it drops the profile. These are the two usual causes of flat, blotchy prints.
+- **Limits:** the source photos are from one camera. Real HEIC files from an iPhone, and prints measured with a spectrophotometer, are still to come.
+
+```bash
+cargo run --release -p fotollection-core --example quality_export -- /tmp/out ~/Pictures/some-folder/*.JPG
+python3 bench/quality/audit.py ~/Pictures/some-folder /tmp/out --json bench/results/quality-run.json
+```

@@ -32,6 +32,7 @@ The corpus is stored **outside** git, because the photos are personal and large.
 | `fixtures` (in git) | ~20 small files: each orientation (1–8), no-EXIF, GPS/no-GPS, (0,0) GPS, HEIC, PNG, wide-gamut ICC, CMYK JPEG, corrupt/truncated files, polyglot | Unit, golden and security tests |
 | `bench` | 200 × 24 MP JPEG (Lumix GX9), 100 × 12 MP HEIC (iPhone), 20 × PNG | Benchmarks |
 | `stress` | 2,000+ mixed files | Memory ceiling, long-run stability |
+| Print-quality set | 20 photos of the same folder, plus Display P3 versions made with macOS's profile at test time | `bench/quality/audit.py` against the source, pixel by pixel ([RESULT.md §9](RESULT.md#9-print-quality)) |
 | Labelled best-shot set | 95 photos of the owner's (`103___09`), stored outside git; hand labels in `bench/bestshot/truth-103_09.json` (file names only) | Accuracy of best-shot grouping and picks with `eval_bestshot` ([RESULT.md §8](RESULT.md#8-best-shot-accuracy), [ADR-0019](adr/0019-grouping-by-visual-signature.md)) |
 
 ## 4. Fuzzing

@@ -132,6 +132,30 @@ On raw export speed the browser is just as fast, because Chromium uses libjpeg-t
 
 The encoder used to be the bottleneck: 16.2 ms, 62 % of a 26 ms preview. Previews are only ever shown on screen, so they now encode with 4:2:0 chroma and plain Huffman tables, which looks the same at 3× zoom. Exports keep 4:4:4 and optimized tables. That one change took the preview from 26 ms to 17 ms.
 
+### Print quality: does the export keep the photo?
+
+Speed means nothing if the print comes out flat. Prints made through a web editor often look shallow, with flat, blotchy colour and less depth than the original. So Fotollection's export is checked pixel by pixel against the original (`bench/quality/audit.py`), next to a typical web-editor export.
+
+![Detail kept: Fotollection 100 %, web editor 13 %. Colour saturation kept on Display P3 photos: 99.9 % against 86.8 %. Colour error ΔE2000: 0.19 against 1.39, where 1 is visible.](docs/images/bench-quality.svg)
+
+| Measured against the original (median) | Fotollection | Typical web editor |
+|------|-----:|-----:|
+| Colour error, ΔE2000 mean (camera JPEGs; 1 is the threshold of a visible difference) | **0.19** | 1.39 |
+| Colour error, 95th percentile | **1.06** | 3.50 |
+| Fine detail kept (camera JPEGs) | **100 %** | 13 % |
+| Colour saturation kept (Display P3 photos, like an iPhone's) | **99.9 %** | 86.8 % |
+| Contrast and tonal levels kept | 100 % | 100 % |
+| Pixel fidelity (PSNR) | **52.6 dB** | 37.9 dB |
+| Colour profile (ICC) kept | 20 / 20 | dropped |
+
+Why a web-editor print looks flat, and what Fotollection does instead:
+
+- **The colour profile is dropped.** Phone photos are in Display P3, a wider colour space than sRGB. Without the profile, the lab reads the colours as sRGB and they print about 13 % less saturated. Fotollection keeps the photo's own ICC profile in every export.
+- **The photo is shrunk, then blown up again.** A 2000 px image printed at 10 × 15 cm loses 87 % of the fine detail, so surfaces turn smooth and colours look blotchy. Fotollection exports at full resolution, and only resizes, with a Lanczos3 filter, when a print size needs it.
+- **The colour is halved, and the JPEG is squeezed harder.** Common editors use 4:2:0 chroma, which halves colour resolution, at quality 80. Fotollection exports at 4:4:4 and quality 95.
+
+The test used 20 photos from a Canon compact, plus 5 of them converted to Display P3 with macOS's own profile. The web editor is simulated with standard settings (sRGB assumed, profile dropped, 4:2:0, q80, 2000 px, upscaled back for print). Reproduce it with `cargo run --release -p fotollection-core --example quality_export -- <out> <photos…>`, then `python3 bench/quality/audit.py <photos> <out>`.
+
 ### How good are the best-shot suggestions?
 
 Speed is not enough for a feature that suggests which photo to keep, so best-shot suggestions are also scored for accuracy. 95 real photos (people, food, streets, night shots, sunsets) were labelled by hand: 22 groups of shots of one moment, and for 6 of them the photo that should be kept. `eval_bestshot` compares the app's groups and picks with those labels.
