@@ -56,7 +56,7 @@ en:
   p1_title: No upload, no cloud
   p1_text: Photos are read and written on your own disk. There is no server to send them to.
   p2_title: No account, no tracking
-  p2_text: No sign-up, no analytics, no telemetry. The app never goes online by itself, not even to check for updates.
+  p2_text: No sign-up, and the app has no analytics or telemetry. It never goes online by itself, not even to check for updates.
   p3_title: Places without a map service
   p3_text: Town names come from a map database bundled inside the app, so your GPS never reaches a third party.
   p4_title: GPS removed on export
@@ -85,6 +85,7 @@ en:
   footer_changelog: What's new
   footer_source: Source code
   footer_photos: Demo photos are CC0, from Wikimedia Commons.
+  footer_analytics: This website counts visits with Google Analytics; the app does not.
   by: by
 
 vi:
@@ -144,7 +145,7 @@ vi:
   p1_title: Không tải lên, không cloud
   p1_text: Ảnh được đọc và ghi ngay trên ổ đĩa của bạn. Không có máy chủ nào để gửi ảnh tới.
   p2_title: Không tài khoản, không theo dõi
-  p2_text: Không đăng ký, không analytics, không telemetry. App không bao giờ tự lên mạng, kể cả để kiểm tra cập nhật.
+  p2_text: Không cần đăng ký, và app không có analytics hay telemetry. App không bao giờ tự lên mạng, kể cả để kiểm tra cập nhật.
   p3_title: Địa điểm không cần dịch vụ bản đồ
   p3_text: Tên nơi chụp lấy từ cơ sở dữ liệu bản đồ có sẵn trong app, nên GPS của bạn không đến tay bên thứ ba nào.
   p4_title: Xóa GPS khi xuất ảnh
@@ -173,4 +174,5 @@ vi:
   footer_changelog: Có gì mới
   footer_source: Mã nguồn
   footer_photos: Ảnh demo là CC0, từ Wikimedia Commons.
+  footer_analytics: Trang web này đếm lượt xem bằng Google Analytics; app thì không.
   by: bởi

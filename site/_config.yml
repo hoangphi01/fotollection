@@ -7,6 +7,8 @@ baseurl: /fotollection
 repository: hoangphi01/fotollection
 repo_url: https://github.com/hoangphi01/fotollection
 author: hoangphi01
+# Google Analytics for the website only (the app has none). Loaded in production builds.
+google_analytics: G-6S9X5DN7GL
 
 plugins:
   - jekyll-github-metadata
