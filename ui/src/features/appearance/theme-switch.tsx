@@ -3,7 +3,6 @@ import { Monitor, Moon, Sun } from 'lucide-react'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import type { ThemePreference } from '@/ipc/bindings'
 import { setThemePreference } from '@/lib/theme'
@@ -31,18 +30,16 @@ export function ThemeSwitch() {
       aria-label={t('theme.label')}
     >
       {OPTIONS.map(({ value, Icon }) => (
-        <Tooltip key={value}>
-          <TooltipTrigger asChild>
-            <ToggleGroupItem
-              value={value}
-              aria-label={t(`theme.${value}`)}
-              className="px-2"
-            >
-              <Icon className="size-3.5" />
-            </ToggleGroupItem>
-          </TooltipTrigger>
-          <TooltipContent>{t(`theme.${value}`)}</TooltipContent>
-        </Tooltip>
+        // A Radix tooltip trigger would overwrite the item's data-state, hiding which one is on.
+        <ToggleGroupItem
+          key={value}
+          value={value}
+          aria-label={t(`theme.${value}`)}
+          data-hint={t(`theme.${value}`)}
+          className="px-2"
+        >
+          <Icon className="size-3.5" />
+        </ToggleGroupItem>
       ))}
     </ToggleGroup>
   )

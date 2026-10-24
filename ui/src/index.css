@@ -51,8 +51,8 @@
 }
 
 :root {
-    /* Colours from the logo (STYLE_RULE §4): the teal tile for primary actions, the wooden
-       frame as the second brand colour, a faint cream around the chrome. Surfaces next to
+    /* Colours from the logo (STYLE_RULE §4): primary is the teal tile in light mode and the
+       wooden frame in dark mode, never both at once; a faint cream around the chrome. Surfaces next to
        photos stay close to neutral (chroma ≤ 0.01) so they don't shift how colours read. */
     --background: oklch(0.988 0.006 88);
     --foreground: oklch(0.2 0.015 65);
@@ -97,18 +97,18 @@
     --card-foreground: oklch(0.95 0.015 85);
     --popover: oklch(0.225 0.012 70);
     --popover-foreground: oklch(0.95 0.015 85);
-    --primary: oklch(0.744 0.096 185);
-    --primary-foreground: oklch(0.2 0.03 180);
+    --primary: oklch(0.685 0.106 61.2);
+    --primary-foreground: oklch(0.2 0.03 60);
     --secondary: oklch(0.28 0.016 70);
     --secondary-foreground: oklch(0.95 0.015 85);
     --muted: oklch(0.27 0.012 70);
     --muted-foreground: oklch(0.72 0.025 80);
-    --accent: oklch(0.3 0.035 180);
+    --accent: oklch(0.3 0.035 60);
     --accent-foreground: oklch(0.95 0.015 85);
     --destructive: oklch(0.704 0.191 22.216);
     --border: oklch(0.95 0.03 85 / 11%);
     --input: oklch(0.95 0.03 85 / 16%);
-    --ring: oklch(0.687 0.093 187.1);
+    --ring: oklch(0.685 0.106 61.2);
     --wood: oklch(0.685 0.106 61.2);
     --wood-foreground: oklch(0.2 0.03 60);
     --chart-1: oklch(0.744 0.096 185);
@@ -118,12 +118,12 @@
     --chart-5: oklch(0.6 0.104 54);
     --sidebar: oklch(0.21 0.012 70);
     --sidebar-foreground: oklch(0.95 0.015 85);
-    --sidebar-primary: oklch(0.744 0.096 185);
-    --sidebar-primary-foreground: oklch(0.2 0.03 180);
+    --sidebar-primary: oklch(0.685 0.106 61.2);
+    --sidebar-primary-foreground: oklch(0.2 0.03 60);
     --sidebar-accent: oklch(0.27 0.016 70);
     --sidebar-accent-foreground: oklch(0.95 0.015 85);
     --sidebar-border: oklch(0.95 0.03 85 / 10%);
-    --sidebar-ring: oklch(0.687 0.093 187.1);
+    --sidebar-ring: oklch(0.685 0.106 61.2);
 }
 
 @layer base {

@@ -92,8 +92,8 @@
     --ink-2: #d8cab0;
     --muted: #a8977c;
     --line: #3b3127;
-    --brand: #5cc0b4;
-    --brand-ink: #11211d;
+    --brand: #c98a52;
+    --brand-ink: #1c1712;
     --teal: #5cc0b4;
     --wood: #c98a52;
     --accent: #e3a067;
@@ -253,7 +253,7 @@ p { margin: 0; }
 .footer-base { display: flex; flex-direction: column; gap: 6px; margin-top: 28px; font-size: 0.85rem; }
 .footer-base a { color: inherit; }
 
-a:focus-visible, .button:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+a:focus-visible, .button:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
 
 @media (min-width: 640px) {
   :root { --gutter: 24px; }

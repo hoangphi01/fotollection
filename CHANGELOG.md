@@ -21,10 +21,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - **Docs:** `docs/DOCS_GUIDE.md`, one checklist of what to update for each kind of change, including the website; `CLAUDE.md` and the docs index point to it.
+- **One accent per mode:** light mode uses the logo's teal and dark mode its wood for every button, switch, checkbox and selection, never both at once (the website too).
 - Hover hints are drawn in the app's own style instead of the system's square tooltips.
 
 ### Fixed
 
+- The theme switch now shows which theme is selected.
 - The highlight around the suggested best shot was clipped in the compare view and the groups strip.
 
 ## [0.1.0] - 2026-10-24
