@@ -5,7 +5,7 @@
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 1 — MVP, Stages 1–3 done, v0.1.0 released, v0.2.0 building
+## Current phase: Phase 1 — MVP, Stages 1–3 done, v0.2.0 released
 
 **Where we are (2026-10-24).** The app works end to end for **JPEG, PNG and HEIC**:
 
@@ -17,7 +17,7 @@
 
 The interface is in English and Vietnamese, themed from the logo (teal and wood, photos on near-neutral ground). Measured performance meets every budget ([RESULT.md](RESULT.md)): preview 17 ms (faster than Chromium), export 18 photos/s, memory flat at 1.45 GB for 5,035 photos, and the export keeps the original's colour and detail (mean ΔE2000 0.19).
 
-**Shipping.** Versioning and automatic releases are in place ([ADR-0021](adr/0021-versioning-and-automated-releases.md), [RELEASE.md](RELEASE.md)): a version change on `main` builds, tags and publishes the macOS and Windows installers. **[v0.1.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.1.0), the first public preview, was published on 2026-10-24** (universal `.dmg`, `.msi`, `-setup.exe`, `SHA256SUMS.txt`), after the `v0.1.0-beta.1` pipeline trial. **`v0.2.0`** (theme switch, Windows title bar, folder removal, preview print badges, one accent per mode) was cut at the end of 2026-10-24; its release run (from commit `550577b`) was still building then. The website is live at <https://hoangphi01.github.io/fotollection/> (English and Vietnamese, [site/README.md](../site/README.md)): download buttons for the latest release, privacy section, print-shop sizes for dm and Rossmann, screenshots of the real app in alternating rows, benchmark charts, a VietQR "buy me a coffee" section, a link to the author's blog, and a scrollable "What's new" box built from the CHANGELOG. [DOCS_GUIDE.md](DOCS_GUIDE.md) is the checklist of what to update for each kind of change.
+**Shipping.** Versioning and automatic releases are in place ([ADR-0021](adr/0021-versioning-and-automated-releases.md), [RELEASE.md](RELEASE.md)): a version change on `main` builds, tags and publishes the macOS and Windows installers. **[v0.1.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.1.0), the first public preview, was published on 2026-10-24** (universal `.dmg`, `.msi`, `-setup.exe`, `SHA256SUMS.txt`), after the `v0.1.0-beta.1` pipeline trial. **`v0.2.0`** (theme switch, Windows title bar, folder removal, preview print badges, one accent per mode) **was published on 2026-10-24** ([v0.2.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.2.0): universal `.dmg`, `.msi`, `-setup.exe`, `SHA256SUMS.txt`); the website's download buttons point to it. The website is live at <https://hoangphi01.github.io/fotollection/> (English and Vietnamese, [site/README.md](../site/README.md)): download buttons for the latest release, privacy section, print-shop sizes for dm and Rossmann, screenshots of the real app in alternating rows, benchmark charts, a VietQR "buy me a coffee" section, a link to the author's blog, and a scrollable "What's new" box built from the CHANGELOG. [DOCS_GUIDE.md](DOCS_GUIDE.md) is the checklist of what to update for each kind of change.
 
 ### Done, by stage ([ROADMAP.md — Phase 1 work order](ROADMAP.md#phase-1-work-order-2026-10-23))
 
@@ -62,7 +62,6 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 ### Next, in order
 
 1. **Pick up here (2026-10-25):**
-   - check that the `v0.2.0` release run finished and published (`gh release view v0.2.0`); if it failed, fix and push again (the workflow retries while the tag is missing);
    - smoke-test the installers on macOS (Open Anyway) and **Windows, where the app-drawn title bar (FR-052) has not yet been tried on a real machine**: drag, double-click to maximize, minimize / maximize / close, snapping;
    - in the app: the theme switch (System / Light / Dark), removing a folder, the preview's date stamp fields and print badges;
    - apply to SignPath Foundation for Windows signing; add a Ko-fi or GitHub Sponsors link next to the VietQR code once the account exists;
