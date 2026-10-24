@@ -27,7 +27,8 @@ jobs:
       - name: Repository facts
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api "repos/$GITHUB_REPOSITORY" --jq '{stars: .stargazers_count}' > site/_data/repo.json
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY" --jq '{stars: .stargazers_count}' > site/_data/repo.json
 
       - uses: actions/jekyll-build-pages@v1
         with:

@@ -89,6 +89,7 @@ jobs:
           args="${{ matrix.args }}"
           # MSI versions cannot carry a pre-release tag such as -beta.1: pre-releases ship NSIS only.
           if [ "$PRERELEASE" = "true" ]; then args="${args/msi,/}"; fi
+          # shellcheck disable=SC2086 # the arguments are meant to split
           npm run build -- $args
 
       - uses: actions/upload-artifact@v4
