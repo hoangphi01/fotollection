@@ -1237,7 +1237,7 @@ dependencies = [
 
 [[package]]
 name = "fotollection"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "fotollection-core",
  "rayon",
@@ -1253,7 +1253,7 @@ dependencies = [
 
 [[package]]
 name = "fotollection-core"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "ab_glyph",
  "blake3",
@@ -1281,14 +1281,14 @@ dependencies = [
 
 [[package]]
 name = "fotollection-geodata"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "blake3",
 ]
 
 [[package]]
 name = "fotollection-oscodec"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "objc2-core-foundation",
  "objc2-core-graphics",
