@@ -5,12 +5,12 @@
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 1 — MVP, Stages 1 and 2 done
+## Current phase: Phase 1 — MVP, Stages 1–3 done
 
-**Where we are (2026-10-24).** The app works end to end for **JPEG and PNG**:
+**Where we are (2026-10-24).** The app works end to end for **JPEG, PNG and HEIC**:
 
 1. Open or drop a folder.
-2. Cull with stars, flags and filters.
+2. Cull with stars, flags and filters, helped by best-shot suggestions: groups of similar shots, the best of each with reasons, and Keep best.
 3. Preview with crop, date stamp and the "Shot on" info frame. The frame can be edited in the preview, and the print size can be Original or a custom one.
 4. Export exactly the filtered set.
 5. Save the work as a self-contained `.fotollection` document that opens the same on another machine.
@@ -30,9 +30,13 @@ The interface is in English and Vietnamese. Measured performance meets every bud
    - frame controls inside the preview (FR-040);
    - English + Vietnamese UI (FR-020, [ADR-0015](adr/0015-ui-localization-i18next.md));
    - the `.fotollection` document with Save / Save As / Open / New / Relink, the native menu and the file association (FR-023, [ADR-0016](adr/0016-self-contained-project-bundle.md)).
-3. **Docs and tooling:**
+3. **Stage 3:**
+   - HEIC input through the OS codecs (FR-001, [ADR-0017](adr/0017-heic-through-os-codecs.md));
+   - best-shot suggestions with face and eye models, the Groups and compare views, and Keep best (FR-041, NFR-014, [ADR-0018](adr/0018-face-models-and-runtime.md));
+   - accuracy scored on 95 hand-labelled photos, with grouping rebuilt on a layout and colour signature ([ADR-0019](adr/0019-grouping-by-visual-signature.md)).
+4. **Docs and tooling:**
    - README with four measured charts and a Vietnamese version (`README.vi.md`);
-   - `bench/run.sh` and `bench/batch.sh`;
+   - `bench/run.sh`, `bench/batch.sh`, `measure_folder --analyze` and `eval_bestshot`;
    - `docs/RESULT.md`;
    - the `check-i18n` and README-parity gates.
 
@@ -40,6 +44,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 
 - Save As → Open → rename the photo folder → Relink, in the running app, in English and in Vietnamese.
 - The unsaved-changes question on New and Open, and the window title showing *Edited*.
+- Best-shot flow: Find best shots → Groups → Compare → Keep best / Keep this one → undo, in English and Vietnamese, and a narrow window.
 - Double-clicking a `.fotollection` file. This needs a release build (`npm run build`), because file associations are not active in `npm run dev`.
 
 ### Next, in order
@@ -88,7 +93,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | FR-004 | Date stamp | 1 | In Progress | 3 formats, 4 corners, white/retro-orange, inside the safe area. More styles with FR-033 |
 | FR-005 | Location stamp (offline) | 1 | Not Started | GeoNames packer needed |
 | FR-006 | Crop to print ratio | 1 | In Progress | Crop editor with edge labels (cm/in + px), ratio pill and live DPI; centre + zoom storage |
-| FR-007 | Live preview | 1 | In Progress | Preview dialog with inspector (capture, camera, image, GPS, print DPI, stamp controls). Rust-rendered, p95 26 ms warm |
+| FR-007 | Live preview | 1 | In Progress | Preview dialog with inspector (capture, camera, image, GPS, print DPI, stamp controls). Rust-rendered, warm p95 18 ms (p50 17 ms) |
 | FR-008 | Original-quality export | 1 | In Progress | Full resolution, q95 4:4:4, ICC copied. Lossless crop-only path pending |
 | FR-009 | Export by date | 1 | Done | `YYYY-MM-DD/` folders, never overwrites (`_1`, `_2`…). `fr_009_*` passes |
 | FR-010 | Metadata privacy on export | 1 | In Progress | No EXIF written, so GPS is always stripped. Keep-metadata options pending |

@@ -81,8 +81,8 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 
 | Work | Requirement | Main risk |
 |------|-------------|-----------|
-| Best-shot suggestions: grouping, sharpness/shake/exposure/noise metrics, face and eye models, explained "Best of N", Keep best | FR-041, NFR-014 | Model licences must be permissive (checked first, recorded in an ADR); ML runtime (`tract-onnx`); within-group scoring needs tuning on real bursts |
-| HEIC/HEIF input (iPhone) | FR-001 | Codec licence: libheif and libde265 are LGPL, so [ADR-0005](adr/0005-input-formats-jpeg-heic-png.md) must be re-checked against the permissive-only rule ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)). Alternatives are the OS codecs (ImageIO on macOS, WIC on Windows). Static Windows build |
+| ✓ Best-shot suggestions: grouping, sharpness/shake/exposure/noise metrics, face and eye models, explained "Best of N", Keep best | FR-041, NFR-014 | Done: YuNet + FaceMesh on `tract-onnx` ([ADR-0018](adr/0018-face-models-and-runtime.md)); grouping on a layout and colour signature, scored on hand-labelled photos ([ADR-0019](adr/0019-grouping-by-visual-signature.md)) |
+| ✓ HEIC/HEIF input (iPhone) | FR-001 | Done through the OS codecs, no LGPL library ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
 
 ## Phase 2 — Smart features
 
