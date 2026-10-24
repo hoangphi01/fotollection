@@ -6,7 +6,7 @@
 
 by [@hoangphi01](https://github.com/hoangphi01)
 
-**English** · [VI](README.vi.md)
+**English** · [VI](README.vi.md) · [Website](https://hoangphi01.github.io/fotollection/)
 
 **Fast, private, offline photo-print preparation for macOS and Windows.**
 
@@ -180,7 +180,7 @@ Reproduce everything with `bench/run.sh <photo-folder>` and `bench/batch.sh <pho
 
 ## Download
 
-There are no releases yet. When they arrive, they will be on the [Releases](https://github.com/hoangphi01/fotollection/releases) page.
+Get the latest version from the [website](https://hoangphi01.github.io/fotollection/) or the [Releases](https://github.com/hoangphi01/fotollection/releases/latest) page: a `.dmg` for macOS 11+ (Apple Silicon and Intel), and a `-setup.exe` or `.msi` for Windows 10/11. Versions follow [Semantic Versioning](docs/RELEASE.md#1-versioning); 0.x releases are previews until the MVP is complete. The app never checks for updates on its own, so look here for new versions; installing over an older one keeps your settings and projects.
 
 > [!IMPORTANT]
 > Builds are **unsigned** for now ([ADR-0009](docs/adr/0009-unsigned-distribution.md)). On first launch:

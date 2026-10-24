@@ -1,0 +1,51 @@
+name: pages
+
+# The website in site/ (site/README.md), built with GitHub Pages' own Jekyll. Rebuilt when the
+# site changes, and by release.yml after a release so the download buttons show it.
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
+
+      # The star count for the header button, read at build time (no script in the page).
+      - name: Repository facts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api "repos/$GITHUB_REPOSITORY" --jq '{stars: .stargazers_count}' > site/_data/repo.json
+
+      - uses: actions/jekyll-build-pages@v1
+        with:
+          source: site
+          destination: _site
+          token: ${{ github.token }}
+
+      - uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -17,3 +17,8 @@ ui/node_modules/.vite/
 # Third-party fonts downloaded by the owner for local use (not redistributable).
 ds_digital/
 ds_digital.zip
+
+# Website build output and data written in CI
+site/_site/
+site/.jekyll-cache/
+site/_data/repo.json

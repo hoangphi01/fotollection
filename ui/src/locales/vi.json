@@ -12,8 +12,7 @@
     "filtered_other": "{{shown}} / {{count}} ảnh",
     "enterToPreview": "Enter để xem trước",
     "noMatch": "Không có ảnh nào khớp bộ lọc.",
-    "showAll": "Hiện tất cả ảnh",
-    "versionByline": "v{{version}} · by @hoangphi01"
+    "showAll": "Hiện tất cả ảnh"
   },
   "library": {
     "title": "Thư viện",
@@ -121,8 +120,8 @@
     "locationHint": "Lấy từ GPS của ảnh, ở mức thành phố, không cần mạng.",
     "placeFormat": {
       "city": "Thành phố",
-      "cityCountryCode": "Thành phố, HU",
-      "cityCountry": "Thành phố, nước"
+      "cityCountryCode": "+ mã nước",
+      "cityCountry": "+ tên nước"
     },
     "caption": "Dòng chữ dưới ngày",
     "captionPlaceholder": "VD: KY NIEM BUDAPEST",

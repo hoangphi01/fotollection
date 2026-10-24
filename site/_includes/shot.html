@@ -1,0 +1,6 @@
+{%- comment -%} A screenshot of the app in the page's language, dark or light to follow the reader's theme. {%- endcomment -%}
+{%- assign base = '/assets/img/' | append: include.name | append: '-' | append: page.lang -%}
+<picture>
+  <source srcset="{{ base | append: '-dark.webp' | relative_url }}" media="(prefers-color-scheme: dark)" />
+  <img src="{{ base | append: '-light.webp' | relative_url }}" width="1600" height="1000" alt="{{ include.alt }}" {% if include.eager %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async" />
+</picture>

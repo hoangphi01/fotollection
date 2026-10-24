@@ -14,8 +14,7 @@
     "filtered_other": "{{shown}} / {{count}} photos",
     "enterToPreview": "Enter to preview",
     "noMatch": "No photos match this filter.",
-    "showAll": "Show all photos",
-    "versionByline": "v{{version}} · by @hoangphi01"
+    "showAll": "Show all photos"
   },
   "library": {
     "title": "Library",

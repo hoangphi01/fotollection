@@ -31,7 +31,7 @@ Releases should happen without hand work in the GitHub UI, but never by accident
 - **Commits suggest, a person decides.** With no argument, `release.sh` proposes the next version from the Conventional Commits since the last tag: any `feat` gives MINOR, otherwise PATCH. The owner confirms or overrides it.
 - **File formats version independently.** The project, settings and bundle schemas keep their own `schema_version` ([DATABASE.md](../DATABASE.md)). Release notes name any schema that changed.
 - **Published at once.** The release is published as soon as the build succeeds, with the CHANGELOG section, the first-launch steps and `SHA256SUMS.txt`. The workflow then rebuilds the website so its download buttons show the new version.
-- **No updater.** FR-021 becomes manual updates: new versions are announced on GitHub Releases and the website, and the app shows its version but never checks for updates.
+- **No updater.** FR-021 becomes manual updates: new versions are announced on GitHub Releases and the website, and the app shows its version (at the foot of the settings panel) but never checks for updates.
 
 ## Consequences
 

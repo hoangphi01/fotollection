@@ -31,7 +31,8 @@
 | Toolchain setup, build commands, build disk cleanup | [DEVELOPMENT.md](DEVELOPMENT.md) |
 | Threat model, defenses, error codes | [SECURITY.md](SECURITY.md) |
 | Test strategy, corpus, CI matrix | [TESTING.md](TESTING.md) |
-| Build, signing, distribution | [RELEASE.md](RELEASE.md) |
+| Versioning, build, signing, distribution | [RELEASE.md](RELEASE.md) |
+| The public website and how its screenshots are made | [site/README.md](../site/README.md) |
 | User-visible changes per version | [CHANGELOG.md](../CHANGELOG.md) |
 | Rules for AI assistants | [CLAUDE.md](../CLAUDE.md) |
 

@@ -1,0 +1,103 @@
+{%- assign t = site.data.i18n[page.lang] -%}
+{%- assign other = site.data.i18n[t.other] -%}
+{%- capture home_en %}{{ '/' | relative_url }}{% endcapture -%}
+{%- capture home_vi %}{{ '/vi/' | relative_url }}{% endcapture -%}
+{%- if page.lang == 'vi' %}{% assign other_home = home_en %}{% else %}{% assign other_home = home_vi %}{% endif -%}
+{%- assign canonical = page.url | absolute_url -%}
+{%- capture og_image %}{{ '/assets/img/og-' | append: page.lang | append: '.jpg' | absolute_url }}{% endcapture -%}
+<!doctype html>
+<html lang="{{ t.html_lang }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ t.title }}</title>
+    <meta name="description" content="{{ t.description }}" />
+    <link rel="canonical" href="{{ canonical }}" />
+    <link rel="alternate" hreflang="en" href="{{ '/' | absolute_url }}" />
+    <link rel="alternate" hreflang="vi" href="{{ '/vi/' | absolute_url }}" />
+    <link rel="alternate" hreflang="x-default" href="{{ '/' | absolute_url }}" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#1e4d43" />
+    <link rel="icon" type="image/png" href="{{ '/assets/favicon.png' | relative_url }}" />
+    <link rel="apple-touch-icon" href="{{ '/assets/mark-84.png' | relative_url }}" />
+
+    <!-- Link previews: Open Graph and Twitter / X -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Fotollection" />
+    <meta property="og:title" content="{{ t.title }}" />
+    <meta property="og:description" content="{{ t.description }}" />
+    <meta property="og:url" content="{{ canonical }}" />
+    <meta property="og:locale" content="{{ t.locale }}" />
+    <meta property="og:locale:alternate" content="{{ other.locale }}" />
+    <meta property="og:image" content="{{ og_image }}" />
+    <meta property="og:image:secure_url" content="{{ og_image }}" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="{{ t.title }}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ t.title }}" />
+    <meta name="twitter:description" content="{{ t.description }}" />
+    <meta name="twitter:image" content="{{ og_image }}" />
+    <meta name="twitter:image:alt" content="{{ t.title }}" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Fotollection",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "macOS 11+, Windows 10/11",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+        "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+        "url": "{{ '/' | absolute_url }}",
+        "image": "{{ og_image }}",
+        "description": {{ t.description | jsonify }}
+      }
+    </script>
+
+    <link rel="preload" href="{{ '/assets/fonts/bricolage-grotesque-latin-wght-normal.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}" />
+  </head>
+  <body>
+    <header class="nav">
+      <div class="wrap nav-row">
+        <a class="brand" href="{% if page.lang == 'vi' %}{{ home_vi }}{% else %}{{ home_en }}{% endif %}">
+          <img src="{{ '/assets/mark-56.png' | relative_url }}" width="28" height="28" alt="" />
+          <span>Fotollection</span>
+        </a>
+        <nav class="nav-links" aria-label="Main">
+          <a href="#features">{{ t.nav_features }}</a>
+          <a href="#quality">{{ t.nav_quality }}</a>
+          <a href="#download">{{ t.nav_download }}</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="lang" href="{{ other_home }}" hreflang="{{ other.html_lang }}" lang="{{ other.html_lang }}">{% include icons/languages.svg %}<span>{{ t.other_label }}</span></a>
+          {% include star.html %}
+        </div>
+      </div>
+    </header>
+
+    <main>{{ content }}</main>
+
+    <footer class="footer">
+      <div class="wrap footer-row">
+        <div>
+          <a class="brand" href="{{ home_en }}">
+            <img src="{{ '/assets/mark-56.png' | relative_url }}" width="24" height="24" alt="" />
+            <span>Fotollection</span>
+          </a>
+          <p class="muted">{{ t.footer_tagline }}</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="{{ site.repo_url }}">{{ t.footer_source }}</a></li>
+          <li><a href="{{ site.repo_url }}/blob/main/CHANGELOG.md">{{ t.footer_changelog }}</a></li>
+          <li><a href="{{ site.repo_url }}/blob/main/LICENSE">{{ t.footer_license }}</a></li>
+        </ul>
+      </div>
+      <div class="wrap footer-base muted">
+        <span>© {{ site.time | date: '%Y' }} Fotollection · {{ t.by }} <a href="https://github.com/{{ site.author }}">@{{ site.author }}</a></span>
+        <span>{{ t.footer_photos }}</span>
+      </div>
+    </footer>
+  </body>
+</html>

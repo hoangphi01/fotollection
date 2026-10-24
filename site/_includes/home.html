@@ -1,0 +1,90 @@
+{%- assign t = site.data.i18n[page.lang] -%}
+{%- assign release = site.github.latest_release -%}
+{%- assign mac = nil -%}{%- assign win = nil -%}
+{%- for asset in release.assets -%}
+  {%- if asset.name contains '.dmg' -%}{%- assign mac = asset.browser_download_url -%}{%- endif -%}
+  {%- if asset.name contains '-setup.exe' -%}{%- assign win = asset.browser_download_url -%}{%- endif -%}
+{%- endfor -%}
+{%- capture releases %}{{ site.repo_url }}/releases/latest{% endcapture -%}
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <p class="badge">{{ t.badge }}</p>
+      <h1>{{ t.hero_title_1 }} <em>{{ t.hero_accent }}</em>{{ t.hero_title_2 }}</h1>
+      <p class="lead">{{ t.hero_lead }}</p>
+      <div class="cta" id="download">
+        <a class="button primary" href="{{ mac | default: releases }}">{% include icons/download.svg %}{{ t.download_mac }}</a>
+        <a class="button" href="{{ win | default: releases }}">{% include icons/download.svg %}{{ t.download_win }}</a>
+      </div>
+      <p class="small muted">
+        {% if release.tag_name %}{{ t.latest }}: <a href="{{ release.html_url }}">{{ release.tag_name }}</a> · {% else %}<a href="{{ site.repo_url }}/releases">{{ t.no_release }}</a> · {% endif %}{{ t.download_note }}
+      </p>
+    </div>
+  </div>
+  <div class="wrap">
+    <figure class="shot hero-shot">
+      {% include shot.html name="grid" alt=t.shot_grid eager=true %}
+    </figure>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="wrap">
+    <h2>{{ t.features_title }}</h2>
+    <p class="lead narrow">{{ t.features_lead }}</p>
+    <div class="cards">
+      <article class="card">{% include icons/calendar-days.svg %}<h3>{{ t.f_stamp_title }}</h3><p>{{ t.f_stamp_text }}</p></article>
+      <article class="card">{% include icons/frame.svg %}<h3>{{ t.f_frame_title }}</h3><p>{{ t.f_frame_text }}</p></article>
+      <article class="card">{% include icons/sparkles.svg %}<h3>{{ t.f_best_title }}</h3><p>{{ t.f_best_text }}</p></article>
+      <article class="card">{% include icons/crop.svg %}<h3>{{ t.f_crop_title }}</h3><p>{{ t.f_crop_text }}</p></article>
+      <article class="card">{% include icons/gem.svg %}<h3>{{ t.f_quality_title }}</h3><p>{{ t.f_quality_text }}</p></article>
+      <article class="card">{% include icons/shield-check.svg %}<h3>{{ t.f_private_title }}</h3><p>{{ t.f_private_text }}</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section tint">
+  <div class="wrap showcase">
+    <figure class="shot">{% include shot.html name="stamp" alt=t.show_stamp %}<figcaption>{{ t.show_stamp }}</figcaption></figure>
+    <figure class="shot">{% include shot.html name="frame" alt=t.show_frame %}<figcaption>{{ t.show_frame }}</figcaption></figure>
+    <figure class="shot">{% include shot.html name="crop" alt=t.show_crop %}<figcaption>{{ t.show_crop }}</figcaption></figure>
+    <figure class="shot">{% include shot.html name="groups" alt=t.show_groups %}<figcaption>{{ t.show_groups }}</figcaption></figure>
+  </div>
+</section>
+
+<section class="section" id="quality">
+  <div class="wrap">
+    <h2>{{ t.quality_title }}</h2>
+    <p class="lead narrow">{{ t.quality_lead }}</p>
+    <div class="stats">
+      <div class="stat"><strong>{{ t.q1_value }}</strong><span>{{ t.q1_label }}</span></div>
+      <div class="stat"><strong>{{ t.q2_value }}</strong><span>{{ t.q2_label }}</span></div>
+      <div class="stat"><strong>{{ t.q3_value }}</strong><span>{{ t.q3_label }}</span></div>
+    </div>
+    <p><a class="more" href="{{ site.repo_url }}/blob/main/docs/RESULT.md#9-print-quality">{{ t.quality_more }} {% include icons/arrow-right.svg %}</a></p>
+  </div>
+</section>
+
+<section class="section tint" id="install">
+  <div class="wrap">
+    <h2>{{ t.install_title }}</h2>
+    <p class="lead narrow">{{ t.install_lead }}</p>
+    <div class="install">
+      <div class="card">
+        <h3>{{ t.mac_title }}</h3>
+        <ol><li>{{ t.mac_1 }}</li><li>{{ t.mac_2 }}</li><li>{{ t.mac_3 }}</li></ol>
+      </div>
+      <div class="card">
+        <h3>{{ t.win_title }}</h3>
+        <ol><li>{{ t.win_1 }}</li><li>{{ t.win_2 }}</li><li>{{ t.win_3 }}</li></ol>
+      </div>
+    </div>
+    <p class="small muted">{{ t.checksums }} {{ t.updates }}</p>
+    <div class="cta">
+      <a class="button primary" href="{{ mac | default: releases }}">{% include icons/download.svg %}{{ t.download_mac }}</a>
+      <a class="button" href="{{ win | default: releases }}">{% include icons/download.svg %}{{ t.download_win }}</a>
+      {% include star.html %}
+    </div>
+  </div>
+</section>

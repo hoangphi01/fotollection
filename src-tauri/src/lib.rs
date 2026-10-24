@@ -4,6 +4,8 @@
 
 mod commands;
 mod culling;
+#[cfg(debug_assertions)]
+mod demo;
 mod document;
 mod events;
 mod i18n;
@@ -111,6 +113,14 @@ pub fn run() {
                 .app_data_dir()?
                 .join("projects")
                 .join("session.fotollection");
+            // Dev-only demo dump for the website: its own state, never the user's (demo.rs).
+            #[cfg(debug_assertions)]
+            let demo = demo::requested();
+            #[cfg(debug_assertions)]
+            let (thumb_dir, config_dir, project_path) = match &demo {
+                Some((_, out)) => demo::state_dirs(out),
+                None => (thumb_dir, config_dir, project_path),
+            };
             app.manage(state::AppState::new(thumb_dir, &config_dir, project_path)?);
             let language = app
                 .state::<state::AppState>()
@@ -137,6 +147,12 @@ pub fn run() {
             // Reopen the last session: re-scan folders and restore edits (FR-023). A
             // project passed on the command line (Windows/Linux file association) is
             // opened afterwards, through the UI's unsaved-changes flow.
+            #[cfg(debug_assertions)]
+            if let Some((folder, out)) = demo {
+                let handle = app.handle().clone();
+                std::thread::spawn(move || demo::run(&handle, folder, &out));
+                return Ok(());
+            }
             let handle = app.handle().clone();
             let requested = std::env::args_os()
                 .skip(1)

@@ -1,0 +1,136 @@
+# Every string on the website, in English and Vietnamese. Keys match between the two.
+en:
+  locale: en_GB
+  html_lang: en
+  other: vi
+  other_label: Tiếng Việt
+  title: Fotollection — photos ready to print, fully offline
+  description: Free, open-source desktop app that prepares photos for printing on your own computer. Retro date stamp, camera info frame, best-shot suggestions, print-size crops and original-quality export, with no account and no upload.
+  nav_features: Features
+  nav_quality: Quality
+  nav_download: Download
+  star: Star on GitHub
+  badge: Free · Open source · No account
+  hero_title_1: Photos ready to
+  hero_accent: print
+  hero_title_2: . Fully offline.
+  hero_lead: Pick the best shots, add a film-style date stamp or a camera info frame, crop to the print size and export at full quality. Everything runs on your computer; your photos never leave it.
+  download_mac: Download for macOS
+  download_win: Download for Windows
+  download_note: macOS 11+ (Apple Silicon and Intel) · Windows 10/11
+  latest: Latest version
+  no_release: Releases are on GitHub
+  shot_grid: The library, culled with stars and picks
+  features_title: Everything a print order needs
+  features_lead: Made for the evening after a trip, when hundreds of photos need to become a short stack of prints.
+  f_stamp_title: Film-style date stamp
+  f_stamp_text: The orange LED date of an old film camera, with the town on the same line and your own words below. Set per photo or for all.
+  f_frame_title: Camera info frame
+  f_frame_text: A clean "Shot on" border with the camera's logo, lens, focal length, aperture, shutter and ISO, straight from EXIF.
+  f_best_title: Best-shot suggestions
+  f_best_text: Bursts and re-framings are grouped, and the sharpest, steadiest shot with open eyes is suggested, with the reasons.
+  f_crop_title: Crops that fit the print
+  f_crop_text: Every photo is cropped to the print size with live DPI. Rotate a quarter turn or straighten a horizon by up to 15°.
+  f_quality_title: Original quality
+  f_quality_text: Full resolution, the colour profile kept, 4:4:4 JPEG. What comes out looks like what went in.
+  f_private_title: Private and offline
+  f_private_text: No account, no upload, no telemetry. Place names come from a map bundled in the app, and GPS is removed on export.
+  show_stamp: Date stamp with the town from the photo's GPS
+  show_frame: The "Shot on" info frame with the camera's logo
+  show_crop: Straightening a horizon in the crop editor
+  show_groups: Similar shots grouped, the best one suggested
+  quality_title: The print looks like the photo
+  quality_lead: Measured pixel by pixel on real photos, against the export of a typical web editor.
+  q1_value: "0.19"
+  q1_label: mean colour difference (ΔE2000). Below 1 nobody can see it.
+  q2_value: 100 %
+  q2_label: of the fine detail kept. A typical web editor keeps 13 %.
+  q3_value: 0 bytes
+  q3_label: sent anywhere. The app works without a network.
+  quality_more: How it was measured
+  install_title: Install in a minute
+  install_lead: The installers are not signed with a paid certificate yet, so the first launch needs one extra click.
+  mac_title: macOS
+  mac_1: Open the .dmg and drag Fotollection to Applications.
+  mac_2: Open it. macOS blocks the first launch.
+  mac_3: In System Settings → Privacy & Security, click Open Anyway.
+  win_title: Windows
+  win_1: Run the -setup.exe (or the .msi).
+  win_2: If SmartScreen says "Windows protected your PC", click More info.
+  win_3: Click Run anyway.
+  checksums: Every release lists SHA-256 checksums next to the downloads.
+  updates: There is no auto-update, so the app never goes online. New versions are announced here and on GitHub.
+  footer_tagline: Photos ready to print, fully offline.
+  footer_license: GPL-3.0 licence
+  footer_changelog: What's new
+  footer_source: Source code
+  footer_photos: Demo photos are CC0, from Wikimedia Commons.
+  by: by
+
+vi:
+  locale: vi_VN
+  html_lang: vi
+  other: en
+  other_label: English
+  title: Fotollection — ảnh sẵn sàng để in, hoàn toàn offline
+  description: Ứng dụng máy tính miễn phí, mã nguồn mở, chuẩn bị ảnh để in ngay trên máy của bạn. Dấu ngày kiểu máy film, khung thông tin máy ảnh, gợi ý ảnh đẹp nhất, crop đúng khổ in và xuất giữ nguyên chất lượng gốc, không cần tài khoản, không tải ảnh lên đâu cả.
+  nav_features: Tính năng
+  nav_quality: Chất lượng
+  nav_download: Tải về
+  star: Star trên GitHub
+  badge: Miễn phí · Mã nguồn mở · Không cần tài khoản
+  hero_title_1: Ảnh sẵn sàng để
+  hero_accent: in
+  hero_title_2: . Hoàn toàn offline.
+  hero_lead: Chọn ảnh đẹp nhất, thêm dấu ngày kiểu máy film hoặc khung thông tin máy ảnh, crop đúng khổ in rồi xuất giữ nguyên chất lượng. Mọi thứ chạy trên máy của bạn; ảnh không bao giờ rời khỏi máy.
+  download_mac: Tải cho macOS
+  download_win: Tải cho Windows
+  download_note: macOS 11+ (Apple Silicon và Intel) · Windows 10/11
+  latest: Phiên bản mới nhất
+  no_release: Các bản phát hành ở trên GitHub
+  shot_grid: Thư viện ảnh, đã chấm sao và chọn ảnh
+  features_title: Đủ mọi thứ cho một lần in ảnh
+  features_lead: Làm cho buổi tối sau chuyến đi, khi vài trăm tấm ảnh cần trở thành một xấp ảnh in nhỏ.
+  f_stamp_title: Dấu ngày kiểu máy film
+  f_stamp_text: Dòng ngày LED màu cam của máy film ngày xưa, tên nơi chụp cùng dòng và một dòng chữ của bạn bên dưới. Đặt riêng từng ảnh hoặc cho tất cả.
+  f_frame_title: Khung thông tin máy ảnh
+  f_frame_text: Viền "Shot on" gọn gàng với logo hãng, ống kính, tiêu cự, khẩu độ, tốc độ và ISO, lấy thẳng từ EXIF.
+  f_best_title: Gợi ý ảnh đẹp nhất
+  f_best_text: Ảnh chụp liên tiếp và các khung hình gần giống nhau được gom nhóm; app gợi ý tấm nét nhất, ít rung, không nhắm mắt, kèm lý do.
+  f_crop_title: Crop vừa khổ in
+  f_crop_text: Mỗi ảnh được crop đúng khổ in, hiện DPI ngay khi kéo. Xoay ¼ vòng hoặc cân lại đường chân trời tới 15°.
+  f_quality_title: Giữ nguyên chất lượng gốc
+  f_quality_text: Đủ độ phân giải, giữ hồ sơ màu, JPEG 4:4:4. Ảnh in ra giống ảnh bạn đã chụp.
+  f_private_title: Riêng tư và offline
+  f_private_text: Không tài khoản, không tải lên, không theo dõi. Tên địa điểm lấy từ bản đồ có sẵn trong app, GPS được xóa khi xuất.
+  show_stamp: Dấu ngày kèm tên nơi chụp từ GPS của ảnh
+  show_frame: Khung "Shot on" với logo của hãng máy ảnh
+  show_crop: Cân lại đường chân trời trong màn crop
+  show_groups: Ảnh giống nhau được gom nhóm, gợi ý tấm đẹp nhất
+  quality_title: Ảnh in giống hệt ảnh gốc
+  quality_lead: Đo từng điểm ảnh trên ảnh thật, so với bản xuất của một trình sửa ảnh trên web thông thường.
+  q1_value: "0,19"
+  q1_label: sai lệch màu trung bình (ΔE2000). Dưới 1 thì mắt không phân biệt được.
+  q2_value: 100 %
+  q2_label: chi tiết nhỏ được giữ lại. Trình sửa ảnh web thông thường chỉ giữ 13 %.
+  q3_value: 0 byte
+  q3_label: gửi đi bất kỳ đâu. App chạy không cần mạng.
+  quality_more: Cách đo
+  install_title: Cài đặt trong một phút
+  install_lead: Bộ cài chưa được ký bằng chứng chỉ trả phí, nên lần mở đầu tiên cần thêm một cú nhấp.
+  mac_title: macOS
+  mac_1: Mở file .dmg và kéo Fotollection vào Applications.
+  mac_2: Mở app. macOS sẽ chặn lần mở đầu tiên.
+  mac_3: Vào System Settings → Privacy & Security, bấm Open Anyway.
+  win_title: Windows
+  win_1: Chạy file -setup.exe (hoặc .msi).
+  win_2: Nếu SmartScreen báo "Windows protected your PC", bấm More info.
+  win_3: Bấm Run anyway.
+  checksums: Mỗi bản phát hành có mã SHA-256 bên cạnh file tải về.
+  updates: App không tự cập nhật, nên không bao giờ tự lên mạng. Phiên bản mới được thông báo ở đây và trên GitHub.
+  footer_tagline: Ảnh sẵn sàng để in, hoàn toàn offline.
+  footer_license: Giấy phép GPL-3.0
+  footer_changelog: Có gì mới
+  footer_source: Mã nguồn
+  footer_photos: Ảnh demo là CC0, từ Wikimedia Commons.
+  by: bởi

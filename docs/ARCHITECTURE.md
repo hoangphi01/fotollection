@@ -99,6 +99,7 @@ src-tauri/               † # app shell: commands, protocol, capabilities
   src/document.rs        † # New / Open / Save / Save As / Relink of .fotollection documents (FR-023)
   src/menu.rs            † # native File/Edit/Window menu (macOS), rebuilt on language change
   src/i18n.rs            † # the shell's own strings: menu, window title, dialogs (FR-020)
+  src/demo.rs            † # debug builds only: records IPC answers for demo photos, for the website screenshots
   capabilities/          † # Tauri 2 permission sets (see SECURITY.md)
   icons/                 † # generated: npx tauri icon assets/logo-square.png, then python3 scripts/small-icons.py for the ≤ 64 px layers
   tauri.conf.json        † # window, CSP, bundle config
@@ -113,7 +114,9 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
     ipc/bindings.ts      † # GENERATED from Rust types — do not edit
     lib/                 † # small UI utilities (theme sync, shadcn's cn re-export)
     index.css            † # Tailwind layers + shadcn theme tokens (CSS variables)
-scripts/                 † # bootstrap, clean, check-docs, small-icons.py (≤ 64 px icons from assets/logo-small.png)
+scripts/                 † # bootstrap, clean, check-docs, release.sh (RELEASE.md §4), small-icons.py (≤ 64 px icons from assets/logo-small.png)
+site/                    † # the website (Jekyll, GitHub Pages, EN + VI); screenshots/ makes its images from the real app on CC0 demo photos (site/README.md)
+.github/workflows/       † # ci.yml, docs.yml, release.yml (release on a version change, ADR-0021), pages.yml (website)
 bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batch.sh (5,000-photo memory check), lib.sh, web/ (Chromium via Playwright), chart.mjs (EN + VI SVG charts), results/ (numbers only, incl. budgets.json mirrored from OPTIMIZATION §3)
 ```
 

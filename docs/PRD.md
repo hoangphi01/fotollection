@@ -239,7 +239,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P2.** New versions are published on GitHub Releases and the website; people download and install them when they choose. There is **no in-app updater and no update check**, so the app never calls the network on its own ([NFR-006](#nfr-006--offline-and-zero-telemetry), [ADR-0021](adr/0021-versioning-and-automated-releases.md)).
 
-- The app shows its version (for example `v0.1.0`) in the sidebar, next to the byline.
+- The app shows its version (for example `v0.1.0`) at the foot of the settings panel.
 - Installing over an older version keeps settings, camera profiles and projects; their files are migrated on first open ([DATABASE.md](DATABASE.md)).
 - Release notes list user-visible changes and any file format that changed ([RELEASE.md](RELEASE.md)).
 
@@ -289,6 +289,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 - A badge in the grid and loupe shows *excellent*, *good* or *poor*.
 - Before export, a summary lists photos below 150 DPI.
+- **Size advice when choosing a print size (planned).** Next to the print-size picker, a short sentence reads the photo: *"The original is 6240 × 4160 px (26 MP). It prints sharp up to 30 × 45 cm; 40 × 60 cm is still acceptable."* In the picker's list, every size carries a coloured badge for that photo or selection: **green** prints sharp (≥ 300 DPI), **yellow** is still acceptable (150–299 DPI), **red** will look pixelated (< 150 DPI). With several photos selected, the badge follows the weakest one.
 
 ### FR-027 — sRGB conversion for labs
 

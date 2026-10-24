@@ -1,0 +1,5 @@
+{%- comment -%} The GitHub star button: a plain link, no third-party script. pages.yml writes the count to _data/repo.json at build time. {%- endcomment -%}
+{%- assign stars = site.data.repo.stars -%}
+<a class="star" href="{{ site.repo_url }}" aria-label="{{ t.star }}">
+  {% include icons/star.svg %}<span class="star-label">{{ t.star }}</span>{% if stars and stars > 0 %}<span class="star-count">{{ stars }}</span>{% endif %}
+</a>

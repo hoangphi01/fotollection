@@ -109,12 +109,12 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | FR-018 | QR code on photo back | 3 | Not Started | |
 | FR-019 | Print service upload | 3 | Not Started | |
 | FR-020 | Localization | 1 | Done | English (default) + Vietnamese via i18next ([ADR-0015](adr/0015-ui-localization-i18next.md)): every UI string, Rust error codes, native menu, window title and file dialogs; selector in settings, stored in `settings.json` v3; `check-i18n` gate in lint. German later |
-| FR-021 | Manual updates | 3 | In Progress | No updater by design (ADR-0021). ✓ Version in the sidebar byline. ✓ `scripts/release.sh` + `release.yml` (build, tag, publish on a version change). Next: the website |
+| FR-021 | Manual updates | 3 | In Progress | No updater by design (ADR-0021). ✓ Version shown at the foot of the settings panel. ✓ `scripts/release.sh` + `release.yml` (build, tag, publish on a version change). ✓ Website `site/` (EN + VI, Jekyll on Pages, OG cards, star link, screenshots of the real app on CC0 demo photos) |
 | FR-022 | Culling (rate, flag, filter) | 1 | In Progress | Stars `0`–`5`, `P`/`X`/`U` in grid and preview, undoable; filter by flag + min rating, export = filtered set (`fr_022_*`). Pending: date/camera/GPS/DPI filters, multi-select, loupe prefetch (NFR-012) |
 | FR-023 | Projects, autosave and undo | 1 | Done | `.fotollection` document like `.docx`: Save / Save As / Open / New with Rust-side dialogs, unsaved-changes question, title `Trip — Edited`, native File menu (macOS) and Ctrl shortcuts (Windows), Relink dialog for moved folders, file association. Self-contained ZIP bundle ([ADR-0016](adr/0016-self-contained-project-bundle.md)); fonts installed once, ids remapped; session autosave underneath. `fr_023_*` pass (incl. open on another machine, relink). File association to be checked by hand in a release build |
 | FR-024 | Copies and order summary | 2 | Not Started | |
 | FR-025 | Mixed print sizes per order | 1 | Not Started | Builds on `PrintSize` |
-| FR-026 | Resolution warning | 1 | In Progress | Effective DPI + band shown in the inspector. Grid badge and pre-export summary pending |
+| FR-026 | Resolution warning | 1 | In Progress | Effective DPI + band shown in the inspector. Grid badge and pre-export summary pending. Next: size advice under the print-size picker and green/yellow/red badges per size in its list |
 | FR-027 | sRGB conversion for labs | 1 | Not Started | `lcms2` |
 | FR-028 | Safe area and borders | 1 | Not Started | |
 | FR-029 | Output sharpening | 3 | Not Started | Needs real print tests |
