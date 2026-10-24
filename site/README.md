@@ -10,7 +10,7 @@ The project's website, <https://hoangphi01.github.io/fotollection/>, in English 
 | `_includes/home.html` | The page itself; `shot.html` (a screenshot, dark or light), `star.html` (the GitHub star link), `icons/` (Lucide, ISC) |
 | `index.html`, `vi/index.html` | The two languages |
 | `assets/css/site.css` | One hand-written stylesheet, mobile first, light and dark |
-| `assets/fonts/` | Be Vietnam Pro and Bricolage Grotesque, self-hosted under the [OFL](assets/fonts/OFL.txt), so the page loads nothing from third parties |
+| `assets/fonts/` | Be Vietnam Pro (text) and Bitter (headings, a slab serif like the logo’s wordmark), self-hosted under the [OFL](assets/fonts/OFL.txt), so the page loads nothing from third parties |
 | `assets/img/` | Screenshots and link previews, made by [`screenshots/`](screenshots/README.md) |
 
 **Rules.** No third-party scripts, fonts or trackers. Text is plain Liquid output, never raw HTML from data. A new string is added to both languages.
