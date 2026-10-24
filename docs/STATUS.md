@@ -127,7 +127,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | FR-036 | Custom captions | 2 | Not Started | `{trip}` needs FR-012 |
 | FR-037 | Contact sheet | 3 | Not Started | |
 | FR-038 | Print presets | 2 | Not Started | Storage model: [DATABASE.md §7](DATABASE.md#7-presets) |
-| FR-040 | EXIF info frame | 1 | In Progress | Crop/Fit at print ratio, field switches, per-camera overrides (persisted), user PNG logo. Place needs FR-005 |
+| FR-040 | EXIF info frame | 1 | In Progress | Crop/Fit at print ratio, field switches, per-camera overrides (persisted), user PNG logo, bundled logos of 11 brands with Classic / Brand colours / One colour styles ([ADR-0020](adr/0020-bundled-brand-logos.md), `fr_040_*`). Place needs FR-005 |
 | FR-041 | Best-shot suggestions | 1 | In Progress | Models: YuNet (MIT) + FaceMesh V2 (Apache-2.0, ONNX) on `tract-onnx` ([ADR-0018](adr/0018-face-models-and-runtime.md)). Core `culling/` done (`fr_041_*`): bursts grouped by time, camera, GPS and a layout + colour signature that allows for zoom ([ADR-0019](adr/0019-grouping-by-visual-signature.md)); sharpness, shake, exposure, noise; eye aspect ratio; robust z-score with reasons. Scored on 95 hand-labelled photos: 15/22 groups, pair precision 100 %, picks 6/6 (`eval_bestshot`). Analysis job, cache, IPC and the Groups / compare UI done. Left: manual check in the app, `SubSecTimeOriginal` |
 | FR-042 | Custom fonts | 1 | Done | OTF/TTF import (Rust dialog, validated, copied), per stamp and per frame, remove → Inter. `fr_042_*` pass |
 | FR-043 | Custom print sizes | 1 | Done | cm/in entry, stored in mm, used by crop/frame/DPI/export. `fr_043_*` pass |

@@ -7,10 +7,18 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Collapse } from '@/components/layout/collapse'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import type { FrameColor, FrameDateFormat, FrameFields, FrameFit } from '@/ipc/bindings'
+import type {
+  FrameColor,
+  FrameDateFormat,
+  FrameFields,
+  FrameFit,
+  LogoStyle,
+} from '@/ipc/bindings'
 import { FontSelect } from '@/features/fonts/font-select'
 import type { FontsApi } from '@/features/fonts/use-fonts'
 import type { FrameConfigApi } from './use-frame-config'
+
+const LOGO_STYLES: LogoStyle[] = ['classic', 'original', 'mono']
 
 const FIELDS: { key: keyof FrameFields; disabled?: boolean }[] = [
   { key: 'logo' },
@@ -154,6 +162,28 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
             ))}
           </div>
         </div>
+        {/* Colours of the bundled brand logos (ADR-0020), while the logo is shown. */}
+        <Collapse open={settings?.fields.logo ?? false} className="space-y-1.5">
+          <span className="text-xs font-medium text-muted-foreground uppercase">
+            {t('frame.logoStyle')}
+          </span>
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            size="sm"
+            className="w-full"
+            value={settings?.logoStyle ?? ''}
+            onValueChange={(v) =>
+              v && void frame.setSettings((s) => ({ ...s, logoStyle: v as LogoStyle }))
+            }
+          >
+            {LOGO_STYLES.map((style) => (
+              <ToggleGroupItem key={style} value={style} className="flex-1 text-xs">
+                {t(`frame.logoStyles.${style}`)}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </Collapse>
         <p className="text-xs text-muted-foreground">
           {t('frame.keepsSize')}
           {!compact && ` ${t('frame.editInPreview')}`}

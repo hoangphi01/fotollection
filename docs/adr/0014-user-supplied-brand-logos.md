@@ -1,6 +1,6 @@
 # ADR-0014: Camera brand logos are user-supplied
 
-- **Status:** Accepted
+- **Status:** Superseded in part by [ADR-0020](0020-bundled-brand-logos.md) (bundled public-domain logos); user PNGs remain
 - **Date:** 2026-10-23
 - **Related:** FR-040, ADR-0008, [SECURITY.md §3](../SECURITY.md#other-untrusted-inputs)
 

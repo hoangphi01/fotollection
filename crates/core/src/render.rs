@@ -319,7 +319,12 @@ fn draw_frame_logo(
             draw_text(canvas, &run, l.logo_x, top, l.logo_color, 1.0);
         }
         (FrameLogo::Image(_), Some(logo)) => {
-            let target_h = (l.logo_height * 1.5).round().max(1.0);
+            // Wordmarks sit at about the cap height of the frame text; square marks and
+            // badges get more height to read at the same weight.
+            let wide = logo.width as f32 > 2.5 * logo.height as f32;
+            let target_h = (l.logo_height * if wide { 0.85 } else { 1.5 })
+                .round()
+                .max(1.0);
             let mut target_w = (logo.width as f32 * target_h / logo.height as f32).round();
             let mut target_h = target_h;
             if target_w > l.logo_max_width {

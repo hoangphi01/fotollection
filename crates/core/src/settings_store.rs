@@ -7,13 +7,14 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 
 use crate::fonts::UserFont;
-use crate::frame::{CameraProfile, FrameSettings};
+use crate::frame::{CameraProfile, FrameSettings, LogoKind};
 use crate::settings::{RenderSettings, UiSettings};
 
 pub const FORMAT: &str = "fotollection-settings";
 /// v2 (FR-042, FR-043): `fonts` table, custom print sizes, stamp/frame font choice.
 /// v3 (FR-020): `ui.language`.
-pub const SCHEMA_VERSION: u32 = 3;
+/// v4 (FR-040, ADR-0020): bundled brand logos (`logo: "brand"`) and `frame.logoStyle`.
+pub const SCHEMA_VERSION: u32 = 4;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -32,7 +33,7 @@ pub struct StoredSettings {
 
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct FileV3 {
+struct FileV4 {
     format: String,
     schema_version: u32,
     render: RenderSettings,
@@ -95,8 +96,8 @@ pub fn from_bytes(bytes: &[u8]) -> Loaded {
     if header.schema_version > SCHEMA_VERSION {
         return Loaded::NewerVersion(header.schema_version);
     }
-    match serde_json::from_slice::<FileV3>(bytes) {
-        Ok(file) => match validate(file) {
+    match serde_json::from_slice::<FileV4>(bytes) {
+        Ok(file) => match validate(file, header.schema_version) {
             Ok(settings) => Loaded::Ok(settings),
             Err(e) => Loaded::Corrupt(e),
         },
@@ -104,7 +105,7 @@ pub fn from_bytes(bytes: &[u8]) -> Loaded {
     }
 }
 
-fn validate(file: FileV3) -> Result<StoredSettings, String> {
+fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
     file.render.validate().map_err(|e| e.to_string())?;
     let mut ids = std::collections::HashSet::new();
     let mut keys = std::collections::HashSet::new();
@@ -113,7 +114,17 @@ fn validate(file: FileV3) -> Result<StoredSettings, String> {
         if !ids.insert(camera.id) || !keys.insert((camera.make.clone(), camera.model.clone())) {
             return Err(format!("duplicate camera {}", camera.id));
         }
-        cameras.push(camera.sanitized());
+        let mut camera = camera.sanitized();
+        // v3 → v4: cameras still on the default typeset name get their bundled brand logo;
+        // a name the user typed is kept.
+        if version < 4
+            && camera.logo == LogoKind::Text
+            && camera.brand_text.is_none()
+            && camera.brand().is_some()
+        {
+            camera.logo = LogoKind::Brand;
+        }
+        cameras.push(camera);
     }
     let mut font_ids = std::collections::HashSet::new();
     if file.fonts.len() > crate::fonts::MAX_USER_FONTS
@@ -152,7 +163,7 @@ pub fn save(path: &Path, settings: &StoredSettings) -> std::io::Result<()> {
 }
 
 pub fn to_bytes(settings: &StoredSettings) -> std::io::Result<Vec<u8>> {
-    let file = FileV3 {
+    let file = FileV4 {
         format: FORMAT.to_owned(),
         schema_version: SCHEMA_VERSION,
         render: settings.render.clone(),
@@ -242,6 +253,22 @@ mod tests {
         assert_eq!(s.render.custom_sizes.len(), 1);
         assert_eq!(s.fonts.len(), 1);
         assert_eq!(s.render.stamp.font, Some(1));
+        Ok(())
+    }
+
+    #[test]
+    fn fr_040_migrates_v3_cameras_to_bundled_logos() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v3.json"))?;
+        let Loaded::Ok(s) = load(&path) else {
+            panic!("v3 should load");
+        };
+        let logos: Vec<LogoKind> = s.cameras.iter().map(|c| c.logo).collect();
+        // Canon gets its logo; a typed "LUMIX" and an unknown brand keep the typeset name.
+        assert_eq!(logos, [LogoKind::Brand, LogoKind::Text, LogoKind::Text]);
+        assert_eq!(s.frame.logo_style, crate::brands::LogoStyle::Classic);
+        assert_eq!(s.ui.language, crate::settings::Language::Vi);
         Ok(())
     }
 

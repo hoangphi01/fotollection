@@ -247,7 +247,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 ```json
 {
   "format": "fotollection-settings",
-  "schema_version": 3,
+  "schema_version": 4,
   "ui": { "language": "vi" },
   "render": {
     "printSize": "custom-1",
@@ -255,7 +255,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
     "customSizes": [ { "id": "custom-1", "name": "4×6 US", "shortMm": 102, "longMm": 152, "unit": "in" } ]
   },
   "frame": {
-    "enabled": true, "fit": "crop", "color": "white", "dateFormat": "slash", "font": null,
+    "enabled": true, "fit": "crop", "color": "white", "dateFormat": "slash", "font": null, "logoStyle": "classic",
     "fields": { "logo": true, "camera": true, "lens": true, "focal": true, "aperture": true,
                 "shutter": true, "iso": true, "photoStyle": true, "date": true, "place": true }
   },
@@ -286,6 +286,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 | 1 | 0.0.x (slice 2) | `render`, `frame`, `cameras` |
 | 2 | 0.0.x (slice 4) | `fonts` table; `render.customSizes`, `render.stamp.font`, `frame.font`. **Migration v1 → v2:** every new field has a default, so v1 files are read as is (tested by `migrates_v1_files`) |
 | 3 | 0.0.x (Stage 2) | `ui.language` (FR-020). **Migration v2 → v3:** `ui` defaults to English, so v2 files are read as is. Fixtures `crates/core/tests/fixtures/settings/v1.json` and `v2.json` are loaded by `migrates_v1_files` and `fr_020_migrates_v2_files_to_english` |
+| 4 | 0.0.x (Stage 3) | Bundled brand logos ([ADR-0020](adr/0020-bundled-brand-logos.md)): `cameras[].logo` may be `"brand"`; `frame.logoStyle` (`classic` \| `original` \| `mono`, default `classic`). **Migration v3 → v4:** cameras still on the default typeset name (`logo: "text"`, no `brandText`) whose make has a bundled logo become `"brand"`; typed names are kept. Fixture `v3.json`, test `fr_040_migrates_v3_cameras_to_bundled_logos` |
 
 ## 7. Presets
 

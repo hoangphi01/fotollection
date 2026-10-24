@@ -382,7 +382,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 
 - **The whole print keeps the selected size.** The canvas has the print ratio, and the info bar is subtracted from it. The photo then either **crops to fill** the remaining area or **fits whole** with a thin margin.
 - **Bar content:**
-  - Left: the brand (typeset name, a user PNG, or nothing; [ADR-0014](adr/0014-user-supplied-brand-logos.md)).
+  - Left: the brand: its bundled logo for 11 brands (default, [ADR-0020](adr/0020-bundled-brand-logos.md)), the typeset name, a user PNG ([ADR-0014](adr/0014-user-supplied-brand-logos.md)), or nothing. Logo colours: *Classic* (black wordmarks with colour accents kept, colour badges as they are), *Brand colours* or *One colour*; on a black bar, dark parts turn white.
   - Right-aligned lines: `Shot on <camera>`, then `<lens> <focal> <aperture> <shutter> <ISO>`, then `<photo style>`, then `<date> <place>`.
   - The bar is white or black. Text and logo stay inside the safe area ([FR-028](#fr-028--safe-area-and-borders)).
 - **Choose what shows:** every item can be switched on or off. Lines with no data are dropped.

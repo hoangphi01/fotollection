@@ -168,7 +168,13 @@
     },
     "placeHint": "Needs offline place names (FR-005)",
     "keepsSize": "The whole print, frame included, keeps the selected size.",
-    "editInPreview": "Edit camera, lens and style in the preview."
+    "editInPreview": "Edit camera, lens and style in the preview.",
+    "logoStyle": "Logo colours",
+    "logoStyles": {
+      "classic": "Classic",
+      "original": "Brand colours",
+      "mono": "One colour"
+    }
   },
   "camera": {
     "manualLens": "Manual lens (not in EXIF)",
@@ -188,7 +194,8 @@
     "chooseLogo": "Choose logo PNG",
     "brandText": "Brand text",
     "brandPlaceholder": "BRAND",
-    "fromExif": "From EXIF: {{shutter}} · {{iso}}. Leave a field empty to use EXIF. Saved for every photo from this camera."
+    "fromExif": "From EXIF: {{shutter}} · {{iso}}. Leave a field empty to use EXIF. Saved for every photo from this camera.",
+    "logoBrand": "Brand"
   },
   "export": {
     "running": "Exporting…",

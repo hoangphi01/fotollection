@@ -633,6 +633,8 @@ pub struct CameraProfileView {
     pub default_display_name: Option<String>,
     pub default_brand: Option<String>,
     pub has_logo_image: bool,
+    /// A logo is bundled for this camera's brand (ADR-0020).
+    pub has_brand_logo: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Type)]
@@ -658,6 +660,7 @@ fn frame_config(state: &AppState) -> Result<FrameConfig, IpcError> {
                 default_display_name: p.default_display_name(),
                 default_brand: p.default_brand(),
                 has_logo_image: frame.logos.contains_key(&p.id),
+                has_brand_logo: p.brand().is_some(),
                 profile: p.clone(),
             })
             .collect(),
@@ -799,7 +802,12 @@ pub fn clear_camera_logo(
         if let Some(row) = frame.cameras.iter_mut().find(|c| c.id == camera_id)
             && row.logo == LogoKind::Image
         {
-            row.logo = LogoKind::Text;
+            // Back to the bundled brand logo when there is one, else the typeset name.
+            row.logo = if row.brand().is_some() {
+                LogoKind::Brand
+            } else {
+                LogoKind::Text
+            };
         }
     }
     let _ = std::fs::remove_file(state.logo_dir.join(format!("{camera_id}.png")));

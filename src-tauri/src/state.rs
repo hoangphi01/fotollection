@@ -6,6 +6,7 @@ use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::{Arc, Mutex, RwLock};
 
+use fotollection_core::brands;
 use fotollection_core::cancel::CancellationToken;
 use fotollection_core::codec::{JpegCodec, default_codec};
 use fotollection_core::culling::cache::AnalysisCache;
@@ -53,9 +54,15 @@ impl FrameState {
         let profile = self.profile_for(shot.make.as_deref(), shot.model.as_deref());
         let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
         let text = frame::build_text(shot, profile, &self.settings, capture, None);
-        let logo = profile
-            .filter(|p| p.logo == LogoKind::Image)
-            .and_then(|p| self.logos.get(&p.id).cloned());
+        let dark = self.settings.color == frame::FrameColor::Black;
+        let logo = profile.and_then(|p| match p.logo {
+            LogoKind::Image => self.logos.get(&p.id).cloned(),
+            // A bundled logo that fails to decode falls back to the typeset name.
+            LogoKind::Brand => p
+                .brand()
+                .and_then(|b| brands::logo(b, dark, self.settings.logo_style).ok()),
+            LogoKind::Text | LogoKind::None => None,
+        });
         Some(FrameRequest {
             settings: self.settings.clone(),
             text,

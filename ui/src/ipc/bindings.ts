@@ -227,6 +227,8 @@ export type CameraProfileView = {
 	defaultDisplayName: string | null,
 	defaultBrand: string | null,
 	hasLogoImage: boolean,
+	/**  A logo is bundled for this camera's brand (ADR-0020). */
+	hasBrandLogo: boolean,
 };
 
 export type Corner = "bottomRight" | "bottomLeft" | "topRight" | "topLeft";
@@ -396,6 +398,11 @@ export type FrameSettings = {
 	fields: FrameFields,
 	/**  A user font id for the frame text (FR-042); `None` uses Inter. */
 	font?: number | null,
+	/**
+	 *  Bundled brand logos in their own colours or in one colour (ADR-0020). Absent before
+	 *  settings v4.
+	 */
+	logoStyle?: LogoStyle,
 };
 
 export type GpsPoint = {
@@ -449,10 +456,25 @@ export type LibraryChanged = {
 };
 
 export type LogoKind = 
-/**  The brand name, typeset (default). */
+/**  The brand name, typeset (the default when no logo is bundled for the brand). */
 "text" | 
 /**  A PNG the user added for this camera (ADR-0014). */
-"image" | "none";
+"image" | "none" | 
+/**  The bundled logo of the camera's brand (ADR-0020); the default when there is one. */
+"brand";
+
+/**  How a brand logo is coloured (FR-040). */
+export type LogoStyle = 
+/**
+ *  Black wordmarks with the brands' small colour accents kept (Fujifilm's red "I"),
+ *  and the colour badges and logos as they are (Leica, Nikon, Ricoh, Phase One), like
+ *  a classic "Shot on" frame. Black parts turn white on a black frame.
+ */
+"classic" | 
+/**  The brand's own colours; dark parts turn white on a black frame. */
+"original" | 
+/**  One colour like the frame text: black on white, white on black (badges kept). */
+"mono";
 
 /**
  *  A native menu item was chosen. The UI runs the same flow as its own buttons, including

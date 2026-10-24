@@ -140,6 +140,11 @@ export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps
               else save({ logo: logo as LogoKind })
             }}
           >
+            {view.hasBrandLogo && (
+              <ToggleGroupItem value="brand" className="text-xs">
+                {t('camera.logoBrand')}
+              </ToggleGroupItem>
+            )}
             <ToggleGroupItem value="text" className="text-xs">
               {t('camera.logoText')}
             </ToggleGroupItem>

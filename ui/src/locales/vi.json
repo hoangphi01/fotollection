@@ -160,7 +160,13 @@
     },
     "placeHint": "Cần tên địa điểm offline (FR-005)",
     "keepsSize": "Toàn bộ ảnh in, kể cả khung, giữ đúng khổ đã chọn.",
-    "editInPreview": "Sửa máy ảnh, ống kính và Photo Style trong preview."
+    "editInPreview": "Sửa máy ảnh, ống kính và Photo Style trong preview.",
+    "logoStyle": "Màu logo",
+    "logoStyles": {
+      "classic": "Cổ điển",
+      "original": "Màu gốc",
+      "mono": "Đơn sắc"
+    }
   },
   "camera": {
     "manualLens": "Ống kính manual (không có trong EXIF)",
@@ -180,7 +186,8 @@
     "chooseLogo": "Chọn logo PNG",
     "brandText": "Chữ thương hiệu",
     "brandPlaceholder": "BRAND",
-    "fromExif": "Từ EXIF: {{shutter}} · {{iso}}. Để trống một ô để dùng giá trị EXIF. Được lưu cho mọi ảnh của máy này."
+    "fromExif": "Từ EXIF: {{shutter}} · {{iso}}. Để trống một ô để dùng giá trị EXIF. Được lưu cho mọi ảnh của máy này.",
+    "logoBrand": "Logo hãng"
   },
   "export": {
     "running": "Đang export…",

@@ -65,6 +65,10 @@ pub struct FrameSettings {
     /// A user font id for the frame text (FR-042); `None` uses Inter.
     #[serde(default)]
     pub font: Option<u32>,
+    /// Bundled brand logos in their own colours or in one colour (ADR-0020). Absent before
+    /// settings v4.
+    #[serde(default)]
+    pub logo_style: crate::brands::LogoStyle,
 }
 
 impl Default for FrameSettings {
@@ -75,6 +79,7 @@ impl Default for FrameSettings {
             color: FrameColor::White,
             date_format: FrameDateFormat::Slash,
             font: None,
+            logo_style: crate::brands::LogoStyle::default(),
             fields: FrameFields {
                 logo: true,
                 camera: true,
@@ -94,11 +99,13 @@ impl Default for FrameSettings {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum LogoKind {
-    /// The brand name, typeset (default).
+    /// The brand name, typeset (the default when no logo is bundled for the brand).
     Text,
     /// A PNG the user added for this camera (ADR-0014).
     Image,
     None,
+    /// The bundled logo of the camera's brand (ADR-0020); the default when there is one.
+    Brand,
 }
 
 /// User edits for one camera, remembered across sessions (DATABASE.md §6). Every field is
@@ -121,6 +128,15 @@ pub struct CameraProfile {
 
 impl CameraProfile {
     pub fn new(id: u32, make: Option<String>, model: Option<String>) -> Self {
+        let logo = if make
+            .as_deref()
+            .and_then(crate::brands::Brand::from_make)
+            .is_some()
+        {
+            LogoKind::Brand
+        } else {
+            LogoKind::Text
+        };
         Self {
             id,
             make,
@@ -131,8 +147,15 @@ impl CameraProfile {
             focal_mm: None,
             f_number: None,
             photo_style: None,
-            logo: LogoKind::Text,
+            logo,
         }
+    }
+
+    /// The bundled brand of this camera, if any (ADR-0020).
+    pub fn brand(&self) -> Option<crate::brands::Brand> {
+        self.make
+            .as_deref()
+            .and_then(crate::brands::Brand::from_make)
     }
 
     pub fn matches(&self, make: Option<&str>, model: Option<&str>) -> bool {
@@ -304,8 +327,9 @@ pub fn build_text(
     let logo = if f.logo {
         match p.logo {
             LogoKind::Image => FrameLogo::Image(p.id),
+            LogoKind::Brand if p.brand().is_some() => FrameLogo::Image(p.id),
             LogoKind::None => FrameLogo::None,
-            LogoKind::Text => p
+            LogoKind::Text | LogoKind::Brand => p
                 .brand_text
                 .clone()
                 .or_else(|| p.default_brand())
@@ -522,6 +546,9 @@ mod tests {
     #[test]
     fn fr_040_profile_overrides_exif_lens() {
         let mut profile = CameraProfile::new(1, Some("Panasonic".into()), Some("DC-GX9".into()));
+        // A known brand starts on its bundled logo (ADR-0020); this test types the name.
+        assert_eq!(profile.logo, LogoKind::Brand);
+        profile.logo = LogoKind::Text;
         profile.display_name = Some("LUMIX GX9".into());
         profile.brand_text = Some("LUMIX".into());
         profile.lens = Some("Индустар-50-2".into());

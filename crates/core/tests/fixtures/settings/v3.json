@@ -1,0 +1,24 @@
+{
+  "format": "fotollection-settings",
+  "schema_version": 3,
+  "render": {
+    "printSize": "10x15",
+    "stamp": { "enabled": true, "format": "dmy", "corner": "bottomRight", "color": "retroOrange", "font": null },
+    "customSizes": []
+  },
+  "frame": {
+    "enabled": true, "fit": "fit", "color": "black", "dateFormat": "slash", "font": null,
+    "fields": { "logo": true, "camera": true, "lens": true, "focal": true, "aperture": true,
+                "shutter": true, "iso": true, "photoStyle": true, "date": true, "place": true }
+  },
+  "cameras": [
+    { "id": 1, "make": "Canon", "model": "Canon PowerShot SX620 HS", "displayName": null, "brandText": null,
+      "lens": null, "focalMm": null, "fNumber": null, "photoStyle": null, "logo": "text" },
+    { "id": 2, "make": "Panasonic", "model": "DC-GX9", "displayName": null, "brandText": "LUMIX",
+      "lens": null, "focalMm": null, "fNumber": null, "photoStyle": null, "logo": "text" },
+    { "id": 3, "make": "OLYMPUS IMAGING CORP.", "model": "E-M5", "displayName": null, "brandText": null,
+      "lens": null, "focalMm": null, "fNumber": null, "photoStyle": null, "logo": "text" }
+  ],
+  "fonts": [],
+  "ui": { "language": "vi" }
+}

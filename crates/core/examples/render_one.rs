@@ -68,8 +68,11 @@ fn main() {
                 Some(record.capture),
                 None,
             ),
+            // The bundled brand logo, as the app uses by default (ADR-0020).
+            logo: profile
+                .brand()
+                .and_then(|b| fotollection_core::brands::logo(b, false, frame.logo_style).ok()),
             settings: frame,
-            logo: None,
             font: None,
         }
     });
