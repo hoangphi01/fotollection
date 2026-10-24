@@ -37,12 +37,15 @@ import {
   type RenderSettings,
 } from '@/ipc/bindings'
 import i18n from '@/i18n'
-import { DPI_STYLE } from '@/lib/crop-geometry'
 import { formatNumber } from '@/lib/format'
 import { previewUrl, sourceUrl } from '@/lib/photo-url'
 import { CropEditor } from './crop-editor'
 import { PhotoStampControls } from './photo-stamp-controls'
 import { cn } from '@/lib/utils'
+import { PrintAdviceNote } from '@/features/print-advice/print-advice-note'
+import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
+import { verdictOf } from '@/features/print-advice/verdict'
+import { VerdictBadge } from '@/features/print-advice/verdict-badge'
 
 type PreviewDialogProps = {
   photos: PhotoSummary[]
@@ -140,6 +143,9 @@ export function PreviewDialog({
   const photo = index === null ? undefined : photos[index]
   const details = usePhotoDetails(photo?.id, revision)
   const printSizes = useIpcQuery(commands.listPrintSizes)
+  // The same sharp / acceptable / pixelated advice as the settings panel (FR-026).
+  const sizesKey = (settings?.customSizes ?? []).map((c) => `${c.id}:${c.shortMm}x${c.longMm}`).join()
+  const advice = usePrintAdvice(photo?.id, sizesKey)
   const src = photo ? previewUrl(photo.id, revision) : ''
   const [loadedSrc, setLoadedSrc] = useState('')
   const geometry = useCropGeometry(photo?.id, revision)
@@ -352,17 +358,14 @@ export function PreviewDialog({
             <Separator />
 
             <Section icon={<Printer className="size-4" />} title={t('viewer.print')}>
-              <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onSettingsChange} />
+              <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onSettingsChange} advice={advice} />
+              {advice && photo && <PrintAdviceNote advice={advice} fileName={photo.fileName} />}
               {details && (
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-xs text-muted-foreground">{t('viewer.resolution')}</span>
-                  <span
-                    className={cn(
-                      'rounded-md px-2 py-0.5 text-xs font-medium tabular-nums',
-                      DPI_STYLE[details.printQuality].className,
-                    )}
-                  >
-                    {details.printDpi} DPI · {t(`dpi.${details.printQuality}`)}
+                  <span className="flex items-center gap-1.5 text-xs tabular-nums">
+                    {details.printDpi} DPI
+                    <VerdictBadge verdict={verdictOf(details.printQuality)} dpi={details.printDpi} />
                   </span>
                 </div>
               )}

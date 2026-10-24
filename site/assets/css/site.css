@@ -226,6 +226,17 @@ p { margin: 0; }
 .support { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: center; padding: 28px; }
 .support img { width: 220px; max-width: 100%; border-radius: 14px; background: #fff; justify-self: center; }
 .support .small { margin-top: 14px; }
+/* What's new: the CHANGELOG in a scrollable card, newest first. */
+.latest-release { margin-top: 10px; }
+.changelog { margin: 24px 0 18px; max-height: 460px; overflow-y: auto; padding: 8px 28px 24px; font-size: 0.95rem; }
+.changelog h2 { font-size: 1.3rem; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line); }
+.changelog h2:first-child { border-top: 0; }
+.changelog h3 { font-size: 0.82rem; margin-top: 16px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+.changelog ul { margin: 8px 0 0; padding-left: 1.2em; color: var(--ink-2); }
+.changelog li + li { margin-top: 6px; }
+.changelog p { margin-top: 8px; color: var(--ink-2); }
+.changelog a { color: var(--brand); }
+.changelog code { font-size: 0.88em; background: var(--tint); padding: 1px 5px; border-radius: 5px; }
 .install { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 32px 0 18px; }
 .install ol { margin: 12px 0 0; padding-left: 1.2em; color: var(--ink-2); }
 .install li + li { margin-top: 6px; }

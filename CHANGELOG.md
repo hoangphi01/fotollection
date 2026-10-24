@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Windows title bar (FR-052):** drawn in the app's colours like VS Code's, instead of the white system strip.
 - **Remove a folder (FR-001):** a close button on each folder, like a browser tab; the files stay on disk.
 - **Website:** a "buy me a coffee" section with a VietQR code (Vietnamese banking apps only), a note on who makes Fotollection, a footer button to the author's blog, and larger screenshots in alternating rows, each beside its explanation (the best-shot one now shows the compare view).
+- The preview shows the same Sharp / Acceptable / Pixelated badges and size advice as the settings panel (FR-026), and dialogs close with a small red button.
+- **Website, "What's new":** the changelog in a scrollable box, with the latest release.
 - The date stamp in the preview now has the same fields as the settings panel, including corner and colour, and comes before the info frame.
 
 ### Changed

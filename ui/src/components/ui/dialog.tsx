@@ -67,9 +67,10 @@ function DialogContent({
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close data-slot="dialog-close" asChild>
+            {/* A small red square with even corners, so closing is easy to find (FR-052). */}
             <Button
-              variant="ghost"
-              className="absolute top-2 right-2"
+              variant="destructive"
+              className="absolute top-2.5 right-2.5 size-7 rounded-md bg-destructive text-white shadow-sm hover:bg-destructive/90 dark:bg-destructive"
               size="icon-sm"
             >
               <XIcon

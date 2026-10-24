@@ -22,3 +22,4 @@ ds_digital.zip
 site/_site/
 site/.jekyll-cache/
 site/_data/repo.json
+site/_includes/changelog.md

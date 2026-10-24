@@ -5,7 +5,7 @@ name: pages
 on:
   push:
     branches: [main]
-    paths: ["site/**", ".github/workflows/pages.yml"]
+    paths: ["site/**", "CHANGELOG.md", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -29,6 +29,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api "repos/$GITHUB_REPOSITORY" --jq '{stars: .stargazers_count}' > site/_data/repo.json
+
+      # The CHANGELOG, from the first version heading on, for the "What's new" box.
+      - name: Changelog for the page
+        run: awk '/^## \[/{p=1} p' CHANGELOG.md > site/_includes/changelog.md
 
       - uses: actions/jekyll-build-pages@v1
         with:

@@ -12,6 +12,7 @@ The project's website, <https://hoangphi01.github.io/fotollection/>, in English 
 | `assets/css/site.css` | One hand-written stylesheet, mobile first, light and dark |
 | `assets/fonts/` | Be Vietnam Pro (text) and Bitter (headings, a slab serif like the logo’s wordmark), self-hosted under the [OFL](assets/fonts/OFL.txt), so the page loads nothing from third parties |
 | `assets/img/` | Screenshots and link previews, made by [`screenshots/`](screenshots/README.md) |
+| `_includes/changelog.md` | Written by `pages.yml` from `CHANGELOG.md` at build time (not committed), for the "What's new" box |
 | `assets/img/charts/` | Three benchmark charts in the site's colours, written by `node bench/chart.mjs` next to the README's own |
 
 **Rules.** The only third-party script is Google Analytics (`google_analytics` in `_config.yml`, production builds only), the owner's choice for counting visits; the footer says so, and the app itself has no analytics. No other third-party scripts, fonts or trackers. Text is plain Liquid output, never raw HTML from data. A new string is added to both languages.

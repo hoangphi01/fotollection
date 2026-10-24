@@ -159,6 +159,22 @@
   </div>
 </section>
 
+<section class="section" id="changelog">
+  <div class="wrap">
+    <h2>{{ t.changelog_title }}</h2>
+    <p class="lead narrow">{{ t.changelog_lead }}</p>
+    {%- if site.github.latest_release.tag_name %}
+    <p class="small muted latest-release">{{ t.changelog_latest }}: <a href="{{ site.github.latest_release.html_url }}">{{ site.github.latest_release.tag_name }}</a> · {{ site.github.latest_release.published_at | date: "%Y-%m-%d" }}</p>
+    {%- endif %}
+    {%- capture changelog %}{% include changelog.md %}{% endcapture %}
+    {%- capture docs_href %}href="{{ site.repo_url }}/blob/main/docs/{% endcapture %}
+    <div class="card changelog" tabindex="0" aria-label="{{ t.changelog_title }}">
+      {{ changelog | markdownify | replace: 'href="docs/', docs_href }}
+    </div>
+    <p><a class="more" href="{{ site.repo_url }}/blob/main/CHANGELOG.md">{{ t.changelog_full }} {% include icons/arrow-right.svg %}</a></p>
+  </div>
+</section>
+
 <section class="section" id="install">
   <div class="wrap">
     <h2>{{ t.install_title }}</h2>
