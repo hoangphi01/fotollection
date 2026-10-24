@@ -73,6 +73,33 @@
   </div>
 </section>
 
+<section class="section" id="kiosk">
+  <div class="wrap kiosk-grid">
+    <div>
+      <h2>{{ t.kiosk_title }}</h2>
+      <p class="lead">{{ t.kiosk_lead }}</p>
+      <div class="sizes">
+        <p class="sizes-label">{{ t.kiosk_standard }}</p>
+        <ul class="chips"><li>9 × 13</li><li>10 × 15</li><li>13 × 18</li><li>15 × 20</li><li>20 × 30</li></ul>
+        <p class="sizes-label">{{ t.kiosk_square }}</p>
+        <ul class="chips"><li>10 × 10</li><li>13 × 13</li><li>15 × 15</li><li>20 × 20</li></ul>
+        <p class="sizes-label">{{ t.kiosk_strip }}</p>
+        <ul class="chips"><li>5 × 15</li></ul>
+        <p class="small muted">{% include icons/check.svg %} {{ t.kiosk_more }}</p>
+      </div>
+    </div>
+    <div class="card kiosk-steps">
+      <h3>{{ t.kiosk_steps_title }}</h3>
+      <ol>
+        <li>{{ t.kiosk_s1 }}</li>
+        <li>{{ t.kiosk_s2 }}</li>
+        <li>{{ t.kiosk_s3 }}</li>
+      </ol>
+      <p class="small muted">{{ t.kiosk_note }}</p>
+    </div>
+  </div>
+</section>
+
 <section class="section" id="quality">
   <div class="wrap">
     <h2>{{ t.quality_title }}</h2>

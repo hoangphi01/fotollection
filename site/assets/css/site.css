@@ -205,6 +205,18 @@ p { margin: 0; }
 .privacy-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .privacy-list li { padding: 18px 20px; border-radius: 14px; background: color-mix(in srgb, var(--brand-ink) 10%, transparent); border: 1px solid color-mix(in srgb, var(--brand-ink) 18%, transparent); }
 .privacy-list p { margin-top: 6px; opacity: 0.9; font-size: 0.97rem; }
+/* Print shops: the built-in sizes as chips, cm. */
+.kiosk-grid { display: grid; grid-template-columns: 1fr; gap: 28px; }
+.sizes { margin-top: 26px; }
+.sizes-label { margin: 16px 0 8px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.chips li { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-variant-numeric: tabular-nums; }
+.chips li::after { content: ' cm'; font-weight: 400; color: var(--muted); }
+.sizes .small { display: flex; gap: 6px; align-items: center; margin-top: 16px; }
+.sizes .small .icon { color: var(--leaf); }
+.kiosk-steps ol { margin: 14px 0 18px; padding-left: 1.3em; color: var(--ink-2); }
+.kiosk-steps li + li { margin-top: 8px; }
+.kiosk-steps li::marker { color: var(--accent); font-weight: 700; }
 .install { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 32px 0 18px; }
 .install ol { margin: 12px 0 0; padding-left: 1.2em; color: var(--ink-2); }
 .install li + li { margin-top: 6px; }
@@ -239,6 +251,7 @@ a:focus-visible, .button:focus-visible { outline: 2px solid var(--teal); outline
   .section { padding: 96px 0; }
   .cards { grid-template-columns: repeat(3, 1fr); }
   .privacy-grid { grid-template-columns: 5fr 7fr; gap: 56px; align-items: start; }
+  .kiosk-grid { grid-template-columns: 7fr 5fr; gap: 56px; align-items: start; }
   .showcase { grid-template-columns: repeat(2, 1fr); gap: 48px 36px; }
   .footer-row { flex-direction: row; justify-content: space-between; align-items: flex-start; }
 }

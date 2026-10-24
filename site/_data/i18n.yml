@@ -50,6 +50,18 @@ en:
   quality_more: How it was measured
   nav_numbers: Numbers
   nav_privacy: Privacy
+  nav_kiosk: Print shops
+  kiosk_title: Ready for the photo kiosk at dm and Rossmann
+  kiosk_lead: The photo services at dm and Rossmann are made by CEWE. Fotollection has every size of their price list built in, so the crop you see is exactly what comes out of the printer, with no surprise trimming at the edges.
+  kiosk_standard: Standard
+  kiosk_square: Square
+  kiosk_strip: Strip
+  kiosk_more: Your own ratio (no crop) and any custom size, in cm or inches
+  kiosk_steps_title: From trip to prints
+  kiosk_s1: Pick the best shots and choose the print size.
+  kiosk_s2: Export to a folder, a USB stick or an SD card.
+  kiosk_s3: Print at the kiosk in store, or upload to the shop's online service.
+  kiosk_note: Fotollection is independent and not affiliated with CEWE, dm or Rossmann; their names are trademarks of their owners. Sizes checked against dm's price list in October 2026.
   shield: Private — your photos never leave your computer
   privacy_title: Your photos stay yours
   privacy_lead: Fotollection is built to work with no internet at all. Nothing is uploaded, nothing is tracked, and you can check every line of it.
@@ -139,6 +151,18 @@ vi:
   quality_more: Cách đo
   nav_numbers: Số đo
   nav_privacy: Riêng tư
+  nav_kiosk: Tiệm in
+  kiosk_title: Sẵn sàng cho máy in ảnh ở dm và Rossmann
+  kiosk_lead: Dịch vụ in ảnh của dm và Rossmann đều do CEWE thực hiện. Fotollection có sẵn mọi khổ trong bảng giá của họ, nên khung crop bạn thấy chính là ảnh máy in trả ra, không bị xén mép bất ngờ.
+  kiosk_standard: Tiêu chuẩn
+  kiosk_square: Vuông
+  kiosk_strip: Dải dài
+  kiosk_more: Giữ tỉ lệ gốc (không crop) và mọi khổ tùy chỉnh, theo cm hoặc inch
+  kiosk_steps_title: Từ chuyến đi đến xấp ảnh in
+  kiosk_s1: Chọn ảnh đẹp nhất và chọn khổ in.
+  kiosk_s2: Xuất ra một thư mục, USB hoặc thẻ SD.
+  kiosk_s3: In ngay tại máy trong cửa hàng, hoặc tải lên dịch vụ in online của cửa hàng.
+  kiosk_note: Fotollection là dự án độc lập, không liên kết với CEWE, dm hay Rossmann; các tên này là thương hiệu của chủ sở hữu. Khổ in được đối chiếu với bảng giá của dm vào tháng 10/2026.
   shield: Riêng tư — ảnh không bao giờ rời khỏi máy của bạn
   privacy_title: Ảnh của bạn là của bạn
   privacy_lead: Fotollection được làm để chạy hoàn toàn không cần internet. Không tải lên, không theo dõi, và bạn có thể tự kiểm tra từng dòng code.
