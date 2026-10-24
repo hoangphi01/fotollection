@@ -10,7 +10,10 @@
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-text">
-      <p class="badge">{{ t.badge }}</p>
+      <p class="badges">
+        <span class="badge">{{ t.badge }}</span>
+        <a class="badge shield" href="#privacy">{% include icons/shield-check.svg %}{{ t.shield }}</a>
+      </p>
       <h1>{{ t.hero_title_1 }} <em>{{ t.hero_accent }}</em>{{ t.hero_title_2 }}</h1>
       <p class="lead">{{ t.hero_lead }}</p>
       <div class="cta" id="download">
@@ -41,6 +44,23 @@
       <article class="card">{% include icons/gem.svg %}<h3>{{ t.f_quality_title }}</h3><p>{{ t.f_quality_text }}</p></article>
       <article class="card">{% include icons/shield-check.svg %}<h3>{{ t.f_private_title }}</h3><p>{{ t.f_private_text }}</p></article>
     </div>
+  </div>
+</section>
+
+<section class="section privacy" id="privacy">
+  <div class="wrap privacy-grid">
+    <div>
+      <div class="privacy-mark">{% include icons/shield-check.svg %}</div>
+      <h2>{{ t.privacy_title }}</h2>
+      <p class="lead">{{ t.privacy_lead }}</p>
+    </div>
+    <ul class="privacy-list">
+      <li><h3>{{ t.p1_title }}</h3><p>{{ t.p1_text }}</p></li>
+      <li><h3>{{ t.p2_title }}</h3><p>{{ t.p2_text }}</p></li>
+      <li><h3>{{ t.p3_title }}</h3><p>{{ t.p3_text }}</p></li>
+      <li><h3>{{ t.p4_title }}</h3><p>{{ t.p4_text }}</p></li>
+      <li><h3>{{ t.p5_title }}</h3><p>{{ t.p5_text }}</p></li>
+    </ul>
   </div>
 </section>
 

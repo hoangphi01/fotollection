@@ -203,8 +203,10 @@ for (const language of ['en', 'vi']) {
         ? path.join(root, 'site/screenshots/og.html')
         : name === 'mark.png'
           ? path.join(root, 'ui/public/brand/mark-84.png')
-          : path.join(outDir, name)
-    return route.fulfill({ body: await readFile(file), contentType: file.endsWith('.html') ? 'text/html' : 'image/png' })
+          : url.pathname.startsWith('/fonts/')
+            ? path.join(root, 'site/assets/fonts', name)
+            : path.join(outDir, name)
+    return route.fulfill({ body: await readFile(file), contentType: file.endsWith('.html') ? 'text/html' : file.endsWith('.woff2') ? 'font/woff2' : 'image/png' })
   })
   await page.goto(`http://og.localhost/?lang=${language}`)
   await page.waitForFunction(() => document.fonts.ready.then(() => [...document.images].every((i) => i.complete)))

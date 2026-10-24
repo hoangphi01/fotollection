@@ -49,6 +49,20 @@ en:
   q3_label: sent anywhere. The app works without a network.
   quality_more: How it was measured
   nav_numbers: Numbers
+  nav_privacy: Privacy
+  shield: Private — your photos never leave your computer
+  privacy_title: Your photos stay yours
+  privacy_lead: Fotollection is built to work with no internet at all. Nothing is uploaded, nothing is tracked, and you can check every line of it.
+  p1_title: No upload, no cloud
+  p1_text: Photos are read and written on your own disk. There is no server to send them to.
+  p2_title: No account, no tracking
+  p2_text: No sign-up, no analytics, no telemetry. The app never goes online by itself, not even to check for updates.
+  p3_title: Places without a map service
+  p3_text: Town names come from a map database bundled inside the app, so your GPS never reaches a third party.
+  p4_title: GPS removed on export
+  p4_text: Exported prints have their location stripped by default, so a photo handed to a print lab does not reveal where you live.
+  p5_title: Open source
+  p5_text: The code is public under GPL-3.0. Anyone can read it, build it and confirm that it does what this page says.
   charts_title: Measured, not promised
   charts_lead: Every number comes from real photos on an ordinary laptop (Apple M3, 16 GB), and the scripts are in the repository.
   chart_budgets: Speed and memory, against the budgets set before the code was written
@@ -123,6 +137,20 @@ vi:
   q3_label: gửi đi bất kỳ đâu. App chạy không cần mạng.
   quality_more: Cách đo
   nav_numbers: Số đo
+  nav_privacy: Riêng tư
+  shield: Riêng tư — ảnh không bao giờ rời khỏi máy của bạn
+  privacy_title: Ảnh của bạn là của bạn
+  privacy_lead: Fotollection được làm để chạy hoàn toàn không cần internet. Không tải lên, không theo dõi, và bạn có thể tự kiểm tra từng dòng code.
+  p1_title: Không tải lên, không cloud
+  p1_text: Ảnh được đọc và ghi ngay trên ổ đĩa của bạn. Không có máy chủ nào để gửi ảnh tới.
+  p2_title: Không tài khoản, không theo dõi
+  p2_text: Không đăng ký, không analytics, không telemetry. App không bao giờ tự lên mạng, kể cả để kiểm tra cập nhật.
+  p3_title: Địa điểm không cần dịch vụ bản đồ
+  p3_text: Tên nơi chụp lấy từ cơ sở dữ liệu bản đồ có sẵn trong app, nên GPS của bạn không đến tay bên thứ ba nào.
+  p4_title: Xóa GPS khi xuất ảnh
+  p4_text: Ảnh xuất ra mặc định được xóa vị trí, nên ảnh gửi tiệm in không để lộ nơi bạn sống.
+  p5_title: Mã nguồn mở
+  p5_text: Code công khai theo giấy phép GPL-3.0. Ai cũng có thể đọc, tự build và kiểm chứng app làm đúng như trang này nói.
   charts_title: Đo thật, không hứa suông
   charts_lead: Mọi con số đều đo trên ảnh thật, bằng một chiếc laptop bình thường (Apple M3, 16 GB); script đo nằm ngay trong repo.
   chart_budgets: Tốc độ và bộ nhớ, so với ngân sách đặt ra trước khi viết code
