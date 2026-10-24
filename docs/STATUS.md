@@ -46,7 +46,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 
 1. **Normal mode (FR-048, NFR-015), asked for next.** It is the "instant" counterpart to the current Professional mode: open → keep/drop → export at 300 DPI for the print size and q90, measured against Professional. Start with the export benchmark (print-sized resize + q90, reduced-scale decode), then the simplified UI and the mode switch.
 2. **Stage 3, best-shot suggestions (FR-041, NFR-014).** First the licence check of the face and eye models, recorded in an ADR. Then the `culling/` core module (grouping, metrics, scoring) and the "Best of N" UI.
-3. **Stage 3, HEIC input (FR-001).** First re-check [ADR-0005](adr/0005-input-formats-jpeg-heic-png.md): libheif and libde265 are LGPL. The alternative is the OS codecs (ImageIO, WIC).
+3. ✓ **Stage 3, HEIC input (FR-001)** via the OS codecs ([ADR-0017](adr/0017-heic-through-os-codecs.md)). Follow-up: HEIC thumbnails through ImageIO's thumbnail API (faster than a full decode).
 4. **Loose ends:**
    - FR-022 filters by date, camera, GPS and DPI, and multi-select;
    - the whole-app memory run with 5,035 photos, using a separate app-data folder (NFR-004);
@@ -73,7 +73,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | `tauri-specta` bindings + staleness check | Done | `cargo test` regenerates; CI runs `git diff --exit-code` |
 | Benchmark harness + `bench` corpus | In Progress | `examples/measure_folder.rs` on a real folder, plus `bench/run.sh`, the Rust vs Chromium comparison (OPTIMIZATION §2.1). `criterion` benches pending |
 | Codec / EXIF crate spikes | In Progress | Pure-Rust codecs adopted for now ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). turbojpeg comparison pending |
-| libheif static build on Windows | Not Started | Highest build risk |
+| libheif static build on Windows | Withdrawn | HEIC uses the OS codecs instead ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
 | Release workflow (unsigned) | Not Started | |
 | Benchmark budget gate (`bench/budgets.toml`) | Not Started | Needs harness |
 | Enforce "Done FR has test" in `check-docs.sh` | Not Started | Needs code |
@@ -82,7 +82,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 
 | ID | Requirement | Phase | Status | Notes |
 |----|-------------|-------|--------|-------|
-| FR-001 | Import photos | 1 | In Progress | JPEG and PNG import (folder dialog + drag-and-drop), magic bytes, size + polyglot checks; PNG 8/16-bit, grey, palette, alpha on white, ICC kept (`fr_001_png_*`). HEIC pending (Stage 3) |
+| FR-001 | Import photos | 1 | Done | JPEG, PNG and HEIC (folder dialog + drag-and-drop), magic bytes, size + polyglot checks. PNG 8/16-bit, grey, palette, alpha on white, ICC kept (`fr_001_png_*`). HEIC via ImageIO (macOS) / WIC (Windows, needs the HEIF+HEVC Store extensions, otherwise `import.heic_codec_missing`) ([ADR-0017](adr/0017-heic-through-os-codecs.md), `fr_001_heic_*`) |
 | FR-002 | Read photo metadata | 1 | In Progress | Allowlisted EXIF (date, offset, GPS, orientation, camera) + validation. `fr_002_*` tests pass |
 | FR-003 | Library grid | 1 | In Progress | Virtualized grid, T0/T1 thumbnails, skeleton + fade-in, task progress bar with %. Day grouping and multi-select pending |
 | FR-004 | Date stamp | 1 | In Progress | 3 formats, 4 corners, white/retro-orange, inside the safe area. More styles with FR-033 |
@@ -193,8 +193,7 @@ Native libraries pinned for security tracking (versions to be filled in at scaff
 | Library | Pinned version | Notes |
 |---------|----------------|-------|
 | libjpeg-turbo | — | via `turbojpeg` crate |
-| libheif | — | via `libheif-rs` |
-| libde265 | — | HEVC decoder used by libheif |
+| objc2-image-io / windows | 0.3.2 / 0.62.2 | HEIC through ImageIO / WIC in `fotollection-oscodec` ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
 | lcms2 | — | |
 
 ## Blockers

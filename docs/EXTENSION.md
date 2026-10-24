@@ -80,7 +80,7 @@ Photos are always identified by magic bytes, never by extension. Every input is 
 |--------|------------|-------|--------|-------|
 | JPEG | `.jpg`, `.jpeg`, `.jpe` | `FF D8 FF` | Supported | EXIF orientation, ICC profile, embedded thumbnail |
 | PNG | `.png` | `89 50 4E 47 0D 0A 1A 0A` | Supported | 8/16-bit, grey and palette → RGB8; alpha flattened onto white; iCCP profile kept; EXIF from `eXIf` if present |
-| HEIC/HEIF | `.heic`, `.heif`, `.hif` | `ftyp` box at offset 4 | Planned, Stage 3 | Codec licence under review ([ADR-0005](adr/0005-input-formats-jpeg-heic-png.md)) |
+| HEIC/HEIF | `.heic`, `.heif`, `.hif` | `ftyp` box at offset 4 | Supported on macOS and Windows | Decoded by the OS (ImageIO / WIC; Windows needs the HEIF + HEVC Store extensions), primary image, alpha on white, ICC kept on macOS; EXIF read from the container ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
 | RAW | `.dng`, `.rw2`, `.cr2`, … | — | Phase 3 ([FR-016](PRD.md#fr-016--raw-input)) | Rejected as unsupported today |
 
 These limits apply to every input format:

@@ -170,6 +170,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-10-23 | Stage 2 | REF-MAC (M3) | Preview resize filter: CatmullRom vs Lanczos3 (`fast_image_resize`) | 12.5 vs 9.7 ms | Lanczos3 kept |
 | 2026-10-23 | Stage 2 | REF-MAC (M3) | `bench/run.sh` after the encoder change, 3 runs | Rust/Chromium preview p50 17.4/18.5 ms, export 18.0/17.9 photos/s, RSS 1.35/1.78 GB; 8 in flight 19.5 photos/s at 1.72 GB | Fotollection now previews faster than the browser |
 | 2026-10-23 | Stage 2 | REF-MAC (M3) | UI bundle (`vite build`), before/after i18next + both locales | 488.7 → 552.3 kB (gzip 152.6 → 173.6 kB) | ADR-0015; read from disk, NFR-010 to be measured |
+| 2026-10-24 | Stage 3 | REF-MAC (M3) | HEIC decode 4608×3456 via ImageIO (`render_one`, photo converted with `sips`) | ≈ 170 ms (165–207) | 3.8× the same photo as JPEG (45 ms); follow-up: ImageIO thumbnails for T1 |
 
 ## 6. Benchmark corpus
 

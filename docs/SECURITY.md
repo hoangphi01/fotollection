@@ -12,7 +12,7 @@ The app processes **untrusted image files** and displays **untrusted metadata** 
 
 | Threat | Applies? | Notes |
 |--------|----------|-------|
-| Malicious image exploiting a decoder | **YES** | Highest risk is in the C libraries (libjpeg-turbo, libheif, libde265) |
+| Malicious image exploiting a decoder | **YES** | JPEG and PNG are decoded in pure Rust. HEIC goes to the OS codec (ImageIO, WIC), which gets the OS vendor's security updates; size limits are checked before decoding ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
 | XSS via EXIF text in the webview | **YES** | XSS in a Tauri webview can call IPC commands, so the impact is higher than in a browser tab |
 | Path traversal / arbitrary file write via IPC | **YES** | Export destination and file names are derived from metadata |
 | Supply chain (crates, npm, native libs) | **YES** | Compromised dependency could exfiltrate photos |
@@ -61,6 +61,9 @@ Layer 1: FILE VALIDATION (before parsing)
   - Reject files > 200 MB; reject declared dimensions > 200 MP (decompression-bomb guard)
   - Polyglot scan of the first 4 KB: <html, <script, %PDF, PK, MZ → reject
   - JPEG: warn if significant data follows the EOI marker (FF D9)
+  - HEIC: decoded by the OS (ImageIO / WIC) in `fotollection-oscodec`, the only crate
+    with `unsafe` FFI; the size from the header is checked against the same limits
+    before the bitmap is allocated
   - PNG: the IHDR size is checked against 30,000 px per edge and 200 MP before the
     pixel buffer is allocated; decoded by the pure-Rust `png` crate with its default
     chunk-allocation limits
@@ -123,13 +126,13 @@ Layer 4: SAFE RENDERING (UI)
 - `Cargo.lock` and `package-lock.json` are committed. CI builds with `--locked`.
 - `cargo deny check` covers advisories, licenses (allowlist), banned crates and duplicate versions.
 - `cargo audit` and `npm audit --omit=dev` run in CI, and a weekly scheduled job catches new advisories.
-- Native libraries (libjpeg-turbo, libheif, libde265, lcms2) are **pinned** to specific versions and tracked in [STATUS.md](STATUS.md#dependencies-to-watch). Security releases are applied within 7 days.
+- No native image library is linked today: JPEG/PNG are pure Rust, HEIC uses the OS codecs. A future native library (for example lcms2) is **pinned** and tracked in [STATUS.md](STATUS.md#dependencies-to-watch), with security releases applied within 7 days.
 - Dependencies are kept minimal. Adding a new dependency requires a short justification in the PR.
 - `cargo deny` checks what ships (`exclude-dev = true`). Dev-only crates, such as `little_exif` for synthetic test fixtures, never touch user data. They are still updated when advisories appear.
 
 ### Licensing note
 
-Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)). libheif and libde265 are **LGPL**, which is compatible with the GPL. To keep the option of relicensing later, `cargo deny` allows **only permissive licenses** for dependencies and bans GPL and AGPL. A future proprietary edition would have to link the LGPL libraries dynamically.
+Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)). To keep the option of relicensing later, `cargo deny` allows **only permissive licenses** for dependencies and bans GPL and AGPL. That is why HEIC uses the OS codecs instead of the LGPL libheif and libde265 ([ADR-0017](adr/0017-heic-through-os-codecs.md)).
 
 ## 7. CI security gates
 

@@ -1,6 +1,6 @@
 # ADR-0005: MVP input formats — JPEG, HEIC, PNG
 
-- **Status:** Accepted
+- **Status:** Accepted. The HEIC decoder choice is superseded by [ADR-0017](0017-heic-through-os-codecs.md) (OS codecs instead of libheif); the format list stands
 - **Date:** 2026-10-23
 - **Related:** FR-001, FR-016
 

@@ -20,6 +20,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0014](0014-user-supplied-brand-logos.md) | Camera brand logos are user-supplied | Accepted | 2026-10-23 |
 | [0015](0015-ui-localization-i18next.md) | Interface localization with bundled i18next resources | Accepted | 2026-10-23 |
 | [0016](0016-self-contained-project-bundle.md) | Self-contained project bundle (ZIP) | Accepted | 2026-10-24 |
+| [0017](0017-heic-through-os-codecs.md) | Decode HEIC with the operating system's codecs | Accepted | 2026-10-24 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

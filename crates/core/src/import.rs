@@ -61,8 +61,10 @@ pub struct ImportedFile {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum RejectReason {
-    /// Not a format this build can read yet (HEIC, RAW…).
+    /// Not a format this build can read yet (RAW…), or HEIC on Linux.
     Unsupported,
+    /// HEIC on Windows without the HEIF/HEVC extensions from the Microsoft Store (ADR-0017).
+    CodecMissing,
     TooLarge,
     Unreadable,
     /// Magic bytes don't match, or the head contains script/markup (possible polyglot).
@@ -73,6 +75,7 @@ impl RejectReason {
     pub fn code(self) -> &'static str {
         match self {
             Self::Unsupported => "import.unsupported",
+            Self::CodecMissing => "import.heic_codec_missing",
             Self::TooLarge => "import.too_large",
             Self::Unreadable => "import.unreadable",
             Self::Suspicious => "import.suspicious",
@@ -90,6 +93,12 @@ pub struct RejectedFile {
 pub struct ScanResult {
     pub accepted: Vec<ImportedFile>,
     pub rejected: Vec<RejectedFile>,
+}
+
+/// Whether this machine can decode HEIC, asked once per run (ADR-0017).
+fn heif_available() -> bool {
+    static AVAILABLE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+    *AVAILABLE.get_or_init(fotollection_oscodec::heif_available)
 }
 
 fn has_image_extension(path: &Path) -> bool {
@@ -118,7 +127,14 @@ pub fn check_file(path: &Path) -> Result<ImportedFile, RejectReason> {
     }
     match sniff(head) {
         Sniffed::Jpeg | Sniffed::Png => {}
-        Sniffed::Heif => return Err(RejectReason::Unsupported),
+        Sniffed::Heif if heif_available() => {}
+        Sniffed::Heif => {
+            return Err(if cfg!(target_os = "windows") {
+                RejectReason::CodecMissing
+            } else {
+                RejectReason::Unsupported
+            });
+        }
         Sniffed::Unknown => {
             // An image extension whose bytes are not an image we know: RAW, or spoofed.
             return Err(if is_raw_extension(path) {
@@ -192,7 +208,7 @@ mod tests {
     }
 
     #[test]
-    fn fr_001_accepts_jpeg_and_png_by_magic_bytes() -> Result<(), std::io::Error> {
+    fn fr_001_accepts_jpeg_png_and_heic_by_magic_bytes() -> Result<(), std::io::Error> {
         let dir = tempfile::tempdir()?;
         write(dir.path(), "real.jpg", &[0xFF, 0xD8, 0xFF, 0xE0, 0, 0]);
         write(dir.path(), "screen.png", b"\x89PNG\r\n\x1a\n\0\0\0\rIHDR");
@@ -208,21 +224,30 @@ mod tests {
             .filter_map(|f| f.path.file_name()?.to_str())
             .collect();
         names.sort_unstable();
-        assert_eq!(names, ["real.jpg", "screen.png"]);
-
         let mut rejected: Vec<_> = result
             .rejected
             .iter()
             .filter_map(|r| Some((r.path.file_name()?.to_str()?, r.reason)))
             .collect();
         rejected.sort_unstable();
-        assert_eq!(
-            rejected,
-            [
-                ("fake.jpg", RejectReason::Suspicious),
-                ("phone.heic", RejectReason::Unsupported)
-            ]
-        );
+
+        // HEIC depends on the machine (ADR-0017): accepted where the OS can decode it,
+        // otherwise rejected with the reason the user can act on.
+        if heif_available() {
+            assert_eq!(names, ["phone.heic", "real.jpg", "screen.png"]);
+            assert_eq!(rejected, [("fake.jpg", RejectReason::Suspicious)]);
+        } else {
+            let heic = if cfg!(target_os = "windows") {
+                RejectReason::CodecMissing
+            } else {
+                RejectReason::Unsupported
+            };
+            assert_eq!(names, ["real.jpg", "screen.png"]);
+            assert_eq!(
+                rejected,
+                [("fake.jpg", RejectReason::Suspicious), ("phone.heic", heic)]
+            );
+        }
         Ok(())
     }
 

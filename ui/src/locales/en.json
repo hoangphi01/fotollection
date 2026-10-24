@@ -19,11 +19,11 @@
     "title": "Library",
     "openFolder": "Open folder",
     "noFolders": "No folders yet",
-    "skipped_one": "{{count}} file skipped (HEIC/RAW coming soon)",
-    "skipped_other": "{{count}} files skipped (HEIC/RAW coming soon)",
+    "skipped_one": "{{count}} file skipped (RAW coming soon)",
+    "skipped_other": "{{count}} files skipped (RAW coming soon)",
     "dropTip": "Tip: drop a folder anywhere",
     "emptyTitle": "Start with a folder of photos",
-    "emptyBody": "JPEG and PNG. Everything stays on this computer.",
+    "emptyBody": "JPEG, PNG and HEIC. Everything stays on this computer.",
     "noCaptureDate": "No capture date",
     "noLocation": "No location",
     "gridLabel": "Photo library"
@@ -229,7 +229,8 @@
       "suspicious": "The file looks suspicious and was skipped",
       "too_large": "The file is too large",
       "unreadable": "The file could not be read",
-      "unsupported": "This format is not supported yet"
+      "unsupported": "This format is not supported yet",
+      "heic_codec_missing": "HEIC needs the free \"HEIF Image Extensions\" and the \"HEVC Video Extensions\" from the Microsoft Store"
     },
     "logo": {
       "decode_failed": "The logo could not be decoded",

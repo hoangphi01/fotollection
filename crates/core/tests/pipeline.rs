@@ -470,3 +470,65 @@ fn fr_023_relink_missing_folder() {
     let a_id = fresh.find_path(&moved.join("a.jpg")).unwrap();
     assert_eq!(fresh.edits(a_id).rating, 5);
 }
+
+/// HEIC through the OS codec (ADR-0017), on macOS where `sips` can write it: import with
+/// EXIF date, then export to JPEG. The HEIC is made from a synthetic JPEG; no photo is
+/// committed.
+#[cfg(target_os = "macos")]
+#[test]
+fn fr_001_heic_imports_and_exports() {
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    let jpg = write(
+        src.path(),
+        "tmp/source.jpg",
+        &jpeg(&Fixture {
+            width: 300,
+            height: 200,
+            date: Some("2026:05:01 09:30:00"),
+            ..Fixture::default()
+        }),
+    );
+    let heic = src.path().join("IMG_0001.HEIC");
+    let out = std::process::Command::new("sips")
+        .args(["-s", "format", "heic"])
+        .arg(&jpg)
+        .arg("--out")
+        .arg(&heic)
+        .output()
+        .unwrap();
+    assert!(out.status.success(), "sips failed: {out:?}");
+    std::fs::remove_dir_all(src.path().join("tmp")).unwrap();
+
+    let lib = import(src.path());
+    let all = records(&lib);
+    assert_eq!(all.len(), 1, "the HEIC is accepted");
+    assert_eq!(
+        all[0].capture.to_string(),
+        "2026-05-01 09:30:00",
+        "EXIF is read from the HEIC"
+    );
+    let settings = RenderSettings::default();
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 1,
+        stamp_font: None,
+        frame_for: &|_| None,
+    };
+    let summary = run_export(
+        &all,
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert_eq!((summary.exported, summary.failed.len()), (1, 0));
+    let exported = dest.path().join("2026-05-01/IMG_0001.jpg");
+    let decoded = PureRustCodec
+        .decode(&std::fs::read(exported).unwrap())
+        .unwrap()
+        .image;
+    assert_eq!((decoded.width, decoded.height), (300, 200));
+}

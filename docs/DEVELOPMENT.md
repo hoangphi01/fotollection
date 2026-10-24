@@ -46,7 +46,7 @@ This project's equivalent of Python's `requirements.txt` + lockfile is the set o
 | Node.js | ≥ 22 (24 LTS recommended) | Build tooling only (Vite, Tauri CLI, shadcn CLI). Not shipped |
 | Tauri CLI | pinned in `package-lock.json` | A root dev dependency, run through `npm run tauri …`. No `cargo install` is needed |
 | Platform toolchain | — | macOS: Xcode CLT. Windows: MSVC Build Tools + WebView2. Linux: webkit2gtk-4.1 and friends (see bootstrap) |
-| vcpkg (Windows) | latest | Static libheif, from Phase 1 ([ADR-0005](adr/0005-input-formats-jpeg-heic-png.md)) |
+| HEIF + HEVC extensions (Windows) | Microsoft Store | Only to test HEIC on Windows; without them HEIC is rejected as `import.heic_codec_missing` ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
 | `cargo-sweep` | latest | Used by [§4](#4-build-disk-hygiene) |
 | `cargo-deny` | latest | License and advisory policy (`deny.toml`) |
 | `cargo-cache` (optional) | latest | Trims `~/.cargo` |

@@ -48,6 +48,10 @@ allow = ["GPL-3.0-only"]
 crate = "fotollection-core"
 allow = ["GPL-3.0-only"]
 
+[[licenses.exceptions]]
+crate = "fotollection-oscodec"
+allow = ["GPL-3.0-only"]
+
 [bans]
 multiple-versions = "allow"
 wildcards = "deny"

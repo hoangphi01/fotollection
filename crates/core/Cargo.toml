@@ -26,6 +26,7 @@ zip.workspace = true
 flate2.workspace = true
 zune-core.workspace = true
 zune-jpeg.workspace = true
+fotollection-oscodec.workspace = true
 
 [dev-dependencies]
 criterion.workspace = true

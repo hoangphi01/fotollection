@@ -17,10 +17,10 @@
     "title": "Thư viện",
     "openFolder": "Mở thư mục",
     "noFolders": "Chưa có thư mục nào",
-    "skipped_other": "Đã bỏ qua {{count}} file (HEIC/RAW sắp có)",
+    "skipped_other": "Đã bỏ qua {{count}} file (RAW sắp có)",
     "dropTip": "Mẹo: thả một thư mục vào bất kỳ đâu",
     "emptyTitle": "Bắt đầu với một thư mục ảnh",
-    "emptyBody": "JPEG và PNG. Mọi thứ đều ở lại trên máy này.",
+    "emptyBody": "JPEG, PNG và HEIC. Mọi thứ đều ở lại trên máy này.",
     "noCaptureDate": "Không có ngày chụp",
     "noLocation": "Không có vị trí",
     "gridLabel": "Thư viện ảnh"
@@ -222,7 +222,8 @@
       "suspicious": "File có dấu hiệu bất thường nên đã bị bỏ qua",
       "too_large": "File quá lớn",
       "unreadable": "Không đọc được file",
-      "unsupported": "Định dạng này chưa được hỗ trợ"
+      "unsupported": "Định dạng này chưa được hỗ trợ",
+      "heic_codec_missing": "HEIC cần cài \"HEIF Image Extensions\" và \"HEVC Video Extensions\" từ Microsoft Store"
     },
     "logo": {
       "decode_failed": "Không giải mã được logo",

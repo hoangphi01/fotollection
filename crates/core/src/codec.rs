@@ -27,6 +27,12 @@ pub enum CodecError {
     TooLarge(u32, u32),
     #[error("JPEG encoding failed: {0}")]
     Encode(String),
+    /// HEIC on Windows without the HEIF/HEVC extensions (ADR-0017).
+    #[error("the HEIC codec is not installed")]
+    CodecMissing,
+    /// A format this platform cannot decode.
+    #[error("this format is not supported here")]
+    Unsupported,
 }
 
 impl CodecError {
@@ -36,6 +42,8 @@ impl CodecError {
             Self::Decode(_) => "decode.failed",
             Self::TooLarge(..) => "import.too_large",
             Self::Encode(_) => "encode.failed",
+            Self::CodecMissing => "import.heic_codec_missing",
+            Self::Unsupported => "import.unsupported",
         }
     }
 }
@@ -98,10 +106,47 @@ pub trait JpegCodec: Send + Sync {
 
 const PNG_MAGIC: &[u8] = &[0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
 
-/// Decodes any supported input photo: PNG here, everything else through `codec` (JPEG).
+/// HEIF/HEIC: an ISO-BMFF `ftyp` box at offset 4 (EXTENSION.md §4).
+fn is_heif(bytes: &[u8]) -> bool {
+    bytes.len() >= 12 && &bytes[4..8] == b"ftyp"
+}
+
+fn os_error(e: fotollection_oscodec::OsCodecError) -> CodecError {
+    use fotollection_oscodec::OsCodecError as E;
+    match e {
+        E::Unsupported => CodecError::Unsupported,
+        E::CodecMissing => CodecError::CodecMissing,
+        E::TooLarge(w, h) => CodecError::TooLarge(w, h),
+        E::Decode(why) => CodecError::Decode(why),
+    }
+}
+
+/// HEIC through the operating system's codec (ADR-0017), checked against the same limits.
+fn decode_heif(bytes: &[u8]) -> Result<Decoded, CodecError> {
+    let image = fotollection_oscodec::decode_heif(
+        bytes,
+        fotollection_oscodec::Limits {
+            max_edge: MAX_EDGE,
+            max_pixels: MAX_PIXELS,
+        },
+    )
+    .map_err(os_error)?;
+    let Some(rgb) = RgbImage::from_raw(image.width, image.height, image.rgb) else {
+        return Err(CodecError::Decode("unexpected pixel layout".into()));
+    };
+    Ok(Decoded {
+        image: rgb,
+        icc: image.icc,
+    })
+}
+
+/// Decodes any supported input photo: PNG and HEIC here, everything else through `codec`
+/// (JPEG).
 pub fn decode_image(codec: &dyn JpegCodec, bytes: &[u8]) -> Result<Decoded, CodecError> {
     if bytes.starts_with(PNG_MAGIC) {
         decode_png(bytes)
+    } else if is_heif(bytes) {
+        decode_heif(bytes)
     } else {
         codec.decode(bytes)
     }
@@ -115,6 +160,8 @@ pub fn image_dimensions(codec: &dyn JpegCodec, bytes: &[u8]) -> Result<(u32, u32
             .map_err(|e| CodecError::Decode(e.to_string()))?;
         let info = reader.info();
         Ok((info.width, info.height))
+    } else if is_heif(bytes) {
+        fotollection_oscodec::heif_dimensions(bytes).map_err(os_error)
     } else {
         codec.dimensions(bytes)
     }

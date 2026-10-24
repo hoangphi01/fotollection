@@ -94,6 +94,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 **P0.** Import photos from a folder picker (recursive), drag and drop of files and folders, or a file picker.
 
 - Accepts JPEG, HEIC/HEIF and PNG, detected by magic bytes rather than file extension.
+- HEIC/HEIF (iPhone) is decoded by the operating system ([ADR-0017](adr/0017-heic-through-os-codecs.md)): ImageIO on macOS, and WIC on Windows when the free *HEIF Image Extensions* and the *HEVC Video Extensions* from the Microsoft Store are installed. Without them, HEIC files are listed as skipped with a message that says what to install. EXIF (date, GPS, orientation) is read from the HEIC itself.
 - PNG photos and screenshots are converted to 8-bit RGB. 16-bit, greyscale and palette images are supported, and transparency is flattened onto white, as it would print. An embedded ICC profile is kept for export. A PNG without EXIF takes its date from the file's modification time and is marked as such.
 - Unsupported or invalid files are listed with a reason. They never abort the import.
 - Importing does not modify source files. The app opens sources read-only.

@@ -34,7 +34,7 @@ In ngày và nơi chụp lên ảnh, crop đúng khổ in thật, rồi gửi đ
 ---
 
 > [!NOTE]
-> **Fotollection đang trong giai đoạn phát triển sớm.** App đã chạy trọn vẹn với **JPEG và PNG**: nhập ảnh → lọc ảnh bằng sao và cờ → xem trước với crop, dấu ngày và khung thông tin → export. Dự án được lưu thành một file `.fotollection`, mở trên máy khác vẫn y như cũ. HEIC và tên địa điểm offline đang được làm. Theo dõi tiến độ ở [docs/STATUS.md](docs/STATUS.md) và [docs/ROADMAP.md](docs/ROADMAP.md) (tiếng Anh).
+> **Fotollection đang trong giai đoạn phát triển sớm.** App đã chạy trọn vẹn với **JPEG, PNG và HEIC**: nhập ảnh → lọc ảnh bằng sao và cờ → xem trước với crop, dấu ngày và khung thông tin → export. Dự án được lưu thành một file `.fotollection`, mở trên máy khác vẫn y như cũ. Tên địa điểm offline và gợi ý ảnh tốt nhất đang được làm. Theo dõi tiến độ ở [docs/STATUS.md](docs/STATUS.md) và [docs/ROADMAP.md](docs/ROADMAP.md) (tiếng Anh).
 
 <p align="center">
   <img src="docs/images/screenshot-light.png" alt="Cửa sổ chính của Fotollection (giao diện sáng)" width="49%" />
@@ -60,7 +60,7 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | ⭐ | **Lọc ảnh**: chấm sao, cờ chọn/loại và bộ lọc; export đúng tập ảnh đang lọc | MVP |
 | 🏷️ | **Khung thông tin "Shot on …"** với máy ảnh, ống kính và thông số phơi sáng, kiểu LUMIX Lab, đúng tỉ lệ khổ in | MVP |
 | 🖼️ | **Giữ nguyên chất lượng**: độ phân giải đầy đủ, giữ ICC profile, crop không mất chất lượng khi có thể | MVP |
-| 📱 | Đầu vào **JPEG và PNG** ngay bây giờ, **HEIC** (iPhone) tiếp theo | MVP |
+| 📱 | Đầu vào **JPEG, PNG và HEIC** (iPhone) | MVP |
 | 🔒 | **Xóa GPS khi export** theo mặc định. Không tài khoản, không cloud, không telemetry | MVP |
 | 🌐 | Giao diện **tiếng Anh và tiếng Việt** | MVP |
 | 📦 | **File dự án như `.docx`**: lưu lại, mở trên máy khác với đúng font, logo và thiết lập, chỉ lại thư mục ảnh đã bị chuyển | MVP |
@@ -158,7 +158,7 @@ Mọi phiên bản công cụ đều được ghim: `rust-toolchain.toml`, `.nod
 
 | Lớp | Công nghệ |
 |-------|------------|
-| Lõi (Rust) | Codec thuần Rust: zune-jpeg, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md)); fast_image_resize, ab_glyph, rayon. Dự kiến: libheif cho HEIC, lcms2 cho màu, GeoNames cho địa điểm offline |
+| Lõi (Rust) | Codec thuần Rust: zune-jpeg, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md)); HEIC qua hệ điều hành (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md)); fast_image_resize, ab_glyph, rayon. Dự kiến: lcms2 cho màu, GeoNames cho địa điểm offline |
 | Vỏ app | [Tauri 2](https://v2.tauri.app/): dùng webview của hệ điều hành, không kèm Chromium |
 | Giao diện | React 19, TypeScript, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/), [Lucide](https://lucide.dev/) |
 | IPC có kiểu | [tauri-specta](https://github.com/specta-rs/tauri-specta): binding TypeScript sinh ra từ Rust |

@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import type { ImportSummary, PhotoSummary } from '@/ipc/bindings'
 import type { ProjectApi } from '@/features/project/use-project'
+import { errorText } from '@/lib/errors'
 
 type LibrarySidebarProps = {
   photos: PhotoSummary[]
@@ -127,7 +128,9 @@ export function LibrarySidebar({
       {lastImport && lastImport.rejectedTotal > 0 && (
         <p
           className="border-t px-4 py-2 text-xs text-muted-foreground"
-          title={lastImport.rejected.map((r) => `${r.fileName} (${r.code})`).join('\n')}
+          title={lastImport.rejected
+            .map((r) => `${r.fileName}: ${errorText({ code: r.code, message: r.code })}`)
+            .join('\n')}
         >
           {t('library.skipped', { count: lastImport.rejectedTotal })}
         </p>

@@ -83,6 +83,7 @@ crates/
       thumbs.rs          † # T0 (embedded) + T1 disk cache (DATABASE.md §8)
     benches/               # criterion benchmarks (see OPTIMIZATION.md)
     fuzz/                  # cargo-fuzz targets (see TESTING.md)
+  oscodec/               † # HEIC via ImageIO (macOS) / WIC (Windows): the only crate allowed `unsafe` (ADR-0017)
   geodata/                 # build-time packer for the GeoNames dataset
 src-tauri/               † # app shell: commands, protocol, capabilities
   src/lib.rs             † # tauri-specta builder + bindings export
@@ -123,7 +124,7 @@ bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batc
 | IPC type bindings | `specta` + `tauri-specta` | TS types generated from Rust and checked in CI |
 | JPEG decode/encode | **Today:** `zune-jpeg` + `jpeg-encoder` (pure Rust) behind the `JpegCodec` trait ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). **Candidate:** `turbojpeg` for DCT scaling and lossless crop ([ADR-0004](adr/0004-libjpeg-turbo-default-codec.md)) | 4:4:4, quality 95, ICC copied |
 | JPEG max-quality encode | `mozjpeg` (optional) | Opt-in "smallest file" mode |
-| HEIC/HEIF | `libheif-rs` | libheif + libde265, statically linked ([ADR-0005](adr/0005-input-formats-jpeg-heic-png.md)) |
+| HEIC/HEIF | OS codecs via `fotollection-oscodec`: ImageIO (`objc2-image-io`) on macOS, WIC (`windows`) on Windows | Nothing linked, no LGPL; Windows needs the HEIF/HEVC Store extensions ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
 | PNG | `png` | |
 | Resize | `fast_image_resize` | SIMD (NEON/AVX2) |
 | Colour management | `lcms2` | Preserve or convert the ICC profile |
@@ -264,7 +265,7 @@ All persisted data (project files, settings, presets, the thumbnail cache, built
 | | macOS | Windows |
 |---|---|---|
 | Webview | WKWebView (system) | WebView2 (evergreen, bootstrapped by installer) |
-| Native deps | libheif/libde265 static, via vendored build | libheif via vcpkg static triplet |
+| Native deps | None (ImageIO and Core Graphics are system frameworks) | None (WIC is part of Windows; HEIC needs the Store extensions) |
 | Target | `universal-apple-darwin` | `x86_64-pc-windows-msvc` |
 
 Release packaging and signing are described in [RELEASE.md](RELEASE.md).
