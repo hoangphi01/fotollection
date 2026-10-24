@@ -76,7 +76,9 @@ export function App() {
           <LibraryEmptyState onOpenFolder={() => void importFolder()} />
         ) : (
           <>
-            <div className="flex h-12 items-center gap-3 border-b px-4 text-sm">
+            {/* Sized by the space between the sidebars, not the window: labels collapse to
+                icons first, then the filters wrap to a second row. */}
+            <div className="@container flex min-h-12 flex-wrap items-center gap-x-3 gap-y-2 border-b px-4 py-2 text-sm">
               <ToggleGroup
                 type="single"
                 variant="outline"
@@ -95,8 +97,14 @@ export function App() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   {bestShots.running ? (
-                    <Button variant="outline" size="sm" onClick={bestShots.cancel}>
-                      <Square data-icon="inline-start" /> {t('bestShot.stop')}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={bestShots.cancel}
+                      aria-label={t('bestShot.stop')}
+                    >
+                      <Square data-icon="inline-start" />
+                      <span className="hidden @3xl:inline">{t('bestShot.stop')}</span>
                     </Button>
                   ) : (
                     <Button
@@ -106,22 +114,24 @@ export function App() {
                         setView('groups')
                         void bestShots.analyze()
                       }}
+                      aria-label={t('bestShot.find')}
                     >
-                      <Sparkles data-icon="inline-start" /> {t('bestShot.find')}
+                      <Sparkles data-icon="inline-start" />
+                      <span className="hidden @3xl:inline">{t('bestShot.find')}</span>
                     </Button>
                   )}
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs">{t('bestShot.findHint')}</TooltipContent>
               </Tooltip>
               {view === 'photos' && (
-                <span className="font-medium tabular-nums">
+                <span className="shrink-0 font-medium whitespace-nowrap tabular-nums">
                   {photos.length === total
                     ? t('app.photos', { count: total })
                     : t('app.filtered', { shown: photos.length, count: total })}
                 </span>
               )}
               {view === 'photos' && (
-                <span className="truncate text-xs text-muted-foreground">
+                <span className="hidden min-w-0 flex-1 truncate text-xs text-muted-foreground @6xl:inline">
                   {t('app.enterToPreview')} · {t('culling.keysHint')}
                 </span>
               )}

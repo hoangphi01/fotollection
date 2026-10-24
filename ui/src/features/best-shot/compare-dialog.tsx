@@ -65,7 +65,11 @@ export function CompareDialog({
         </DialogDescription>
         <div
           className="grid min-h-0 flex-1 gap-3 overflow-y-auto"
-          style={{ gridTemplateColumns: `repeat(${Math.min(photos.length, 4)}, minmax(0, 1fr))` }}
+          // As many columns as fit at 240 px, at most one per photo.
+          style={{
+            gridTemplateColumns: `repeat(auto-fit, minmax(min(240px, 100%), 1fr))`,
+            maxWidth: `${photos.length * 420}px`,
+          }}
         >
           {photos.map((score: PhotoScore, rank) => {
             const photo = photosById.get(score.id)
