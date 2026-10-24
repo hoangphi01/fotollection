@@ -256,17 +256,13 @@ pub fn reverse(lat: f64, lon: f64) -> Result<Option<Place>, GeoError> {
 /// Lower-case ASCII with diacritics removed and spaces dropped, so "Hà Nội", "ha noi" and
 /// "Hanoi" all become "hanoi".
 pub fn fold(text: &str) -> String {
-    const FROM: &str = "àáạảãâầấậẩẫăằắặẳẵäåāąèéẹẻẽêềếệểễëēęěìíịỉĩîïīòóọỏõôồốộổỗơờớợởỡöøōőùúụủũưừứựửữüūůűỳýỵỷỹÿçćčđďğłńñňřśšşţťžźżß";
-    const TO: &str = "aaaaaaaaaaaaaaaaaaaaaeeeeeeeeeeeeeeeeiiiiiiiiooooooooooooooooooooouuuuuuuuuuuuuuuuuyyyyyyccdddglnnnrsssttzzzs";
     text.chars()
         .flat_map(char::to_lowercase)
         .filter_map(|c| {
             if c.is_ascii_alphanumeric() {
                 Some(c)
             } else {
-                FROM.chars()
-                    .position(|f| f == c)
-                    .and_then(|i| TO.chars().nth(i))
+                crate::text::fold_char(c)
             }
         })
         .collect()

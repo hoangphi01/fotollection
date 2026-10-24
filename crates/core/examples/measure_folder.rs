@@ -187,7 +187,7 @@ fn main() {
                 max_long_edge: Some(PREVIEW_LONG_EDGE),
                 frame: None,
                 crop: None,
-                stamp_font: None,
+                place: None,
             });
             let image = render(&t2, &p).unwrap();
             draw.push(t.elapsed().as_secs_f64() * 1e3);
@@ -230,7 +230,7 @@ fn main() {
         settings: &settings,
         quality: EXPORT_QUALITY,
         max_inflight: inflight,
-        stamp_font: None,
+        place_for: &|_| None,
         frame_for: &|_| None,
     };
     let t = Instant::now();

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { ImageUp, X } from 'lucide-react'
-import { useState, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { CommitInput } from '@/components/forms/commit-input'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { CameraProfile, LogoKind, PhotoDetails } from '@/ipc/bindings'
 import type { FrameConfigApi } from './use-frame-config'
@@ -23,35 +23,6 @@ function formatExif(details: PhotoDetails | null, manualLens: string) {
     shutter: e ? (e >= 1 ? `${e}s` : `1/${Math.round(1 / e)}s`) : '—',
     iso: details?.iso ? `ISO${details.iso}` : '—',
   }
-}
-
-/**
- * A text field that commits on blur or Enter, so typing doesn't send IPC per keystroke.
- * Remounted (via `key`) when the stored value changes.
- */
-function CommitInput({
-  value,
-  placeholder,
-  numeric,
-  onCommit,
-}: {
-  value: string
-  placeholder: string
-  numeric?: boolean
-  onCommit: (value: string) => void
-}) {
-  const [draft, setDraft] = useState(value)
-  return (
-    <Input
-      value={draft}
-      placeholder={placeholder}
-      inputMode={numeric ? 'decimal' : undefined}
-      className="h-8 w-full min-w-0 text-sm"
-      onChange={(e) => setDraft(e.target.value)}
-      onBlur={() => draft !== value && onCommit(draft)}
-      onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
-    />
-  )
 }
 
 function Row({ label, children }: { label: string; children: ReactNode }) {

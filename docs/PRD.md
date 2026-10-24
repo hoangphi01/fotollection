@@ -118,7 +118,9 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P0.** Render the capture date onto the photo.
 
-- Configurable format (presets plus a custom pattern), font (bundled fonts), size relative to the short edge, colour, opacity, optional shadow or outline, and position (each of the 4 corners, with a margin).
+- Configurable format (presets plus a custom pattern), size relative to the short edge, colour, and position (each of the 4 corners, with a margin).
+- **One font, like a film camera's imprint:** the text inside the photo is always set in the bundled **DSEG14 Classic Italic** (OFL 1.1), a slanted 14-segment LCD face, in plain capitals without accents ("Budaörs" → "BUDAORS"). It has the soft glow the imprint's LEDs left on film and a faint shadow for bright skies ([FR-033](#fr-033--retro-film-date-stamp-and-stamp-presets)). User fonts ([FR-042](#fr-042--custom-fonts)) apply to the info frame only.
+- **Two lines:** the date, with the place on the same line when switched on (`'25 09 21  DEBRECEN`, [FR-005](#fr-005--location-stamp-offline)), and a caption line of the user's own text below it ([FR-036](#fr-036--custom-captions)). At the bottom, the caption row is always kept free, so the date sits a little higher and does not move when a caption is added; a caption longer than the photo is set smaller to fit.
 - Rendered with anti-aliasing at output resolution and placed inside the final crop area, so the stamp is never cropped away.
 
 ### FR-005 — Location stamp (offline)
@@ -346,7 +348,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 
 ### FR-036 — Custom captions
 
-**P1.** Add a free-text caption next to, or instead of, the date stamp. The caption can use the variables `{date}`, `{time}`, `{place}`, `{country}`, `{trip}`, `{camera}` and `{filename}`. Captions use the same layout rules as stamps (inside the safe area or on the border).
+**P1.** Add a free-text caption under the date stamp: a line of up to 80 characters, in the stamp's colour and LCD face, set in capitals without accents and running across the photo (done, settings v5; variables below are still to come). The caption can use the variables `{date}`, `{time}`, `{place}`, `{country}`, `{trip}`, `{camera}` and `{filename}`. Captions use the same layout rules as stamps (inside the safe area or on the border).
 
 ### FR-037 — Contact sheet
 
@@ -431,7 +433,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 
 ### FR-042 — Custom fonts
 
-**P1.** Import **OTF/TTF** fonts and choose them separately for the date stamp ([FR-004](#fr-004--date-stamp)) and for the info-frame text ([FR-040](#fr-040--exif-info-frame)).
+**P1.** Import **OTF/TTF** fonts and choose them for the info-frame text ([FR-040](#fr-040--exif-info-frame)). The text inside the photo always uses the bundled LCD face ([FR-004](#fr-004--date-stamp)); its font choice was removed to keep the stamp simple (settings v5).
 
 - Fonts are validated before use: TTF/OTF magic bytes (font collections and WOFF are rejected), a 20 MB cap, a full parse, and digits 0–9 must be present. They are then copied into the app's config folder, like logos ([ADR-0014](adr/0014-user-supplied-brand-logos.md)).
 - Variable fonts render at their default instance.

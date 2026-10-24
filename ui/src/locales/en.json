@@ -119,10 +119,19 @@
       "white": "White",
       "retroOrange": "Retro orange"
     },
-    "location": "Location",
+    "location": "Place on the date line",
     "soon": "Soon",
     "locationTip": "Offline place names arrive in a later slice (FR-005)",
-    "footer": "Offline · GPS stripped"
+    "footer": "Offline · GPS stripped",
+    "locationHint": "From the photo's GPS, at town level, offline.",
+    "placeFormat": {
+      "city": "City",
+      "cityCountryCode": "City, HU",
+      "cityCountry": "City, country"
+    },
+    "caption": "Line under the date",
+    "captionPlaceholder": "e.g. SUMMER IN DEBRECEN",
+    "captionHint": "Printed in capitals without accents, across the photo."
   },
   "print": {
     "original": "Original",

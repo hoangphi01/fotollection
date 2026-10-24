@@ -119,7 +119,7 @@ fn fr_009_export_by_date_never_overwrites() {
         settings: &settings,
         quality: 90,
         max_inflight: 2,
-        stamp_font: None,
+        place_for: &|_| None,
         frame_for: &|_| None,
     };
     let summary = run_export(
@@ -179,7 +179,7 @@ fn fr_001_png_and_jpeg_export_together() {
         settings: &settings,
         quality: 90,
         max_inflight: 2,
-        stamp_font: None,
+        place_for: &|_| None,
         frame_for: &|_| None,
     };
     let summary = run_export(
@@ -246,7 +246,7 @@ fn fr_022_export_uses_only_the_filtered_set() {
         settings: &settings,
         quality: 90,
         max_inflight: 2,
-        stamp_font: None,
+        place_for: &|_| None,
         frame_for: &|_| None,
     };
     let summary = run_export(
@@ -293,7 +293,7 @@ fn fr_011_bad_file_does_not_fail_batch() {
         settings: &settings,
         quality: 90,
         max_inflight: 2,
-        stamp_font: None,
+        place_for: &|_| None,
         frame_for: &|_| None,
     };
     let summary = run_export(
@@ -329,7 +329,7 @@ fn fr_011_cancel_stops_and_removes_partials() {
         settings: &settings,
         quality: 90,
         max_inflight: 1,
-        stamp_font: None,
+        place_for: &|_| None,
         frame_for: &|_| None,
     };
     let cancel = CancellationToken::new();
@@ -514,7 +514,7 @@ fn fr_001_heic_imports_and_exports() {
         settings: &settings,
         quality: 90,
         max_inflight: 1,
-        stamp_font: None,
+        place_for: &|_| None,
         frame_for: &|_| None,
     };
     let summary = run_export(

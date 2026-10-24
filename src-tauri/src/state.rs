@@ -13,6 +13,7 @@ use fotollection_core::culling::cache::AnalysisCache;
 use fotollection_core::culling::{Group, PhotoAnalysis};
 use fotollection_core::fonts::{self, LoadedFont, UserFont};
 use fotollection_core::frame::{self, CameraProfile, FrameSettings, LogoKind};
+use fotollection_core::geocode::{self, PlaceFormat};
 use fotollection_core::history::History;
 use fotollection_core::library::{Library, PhotoId, PhotoRecord, flags};
 use fotollection_core::logo::{self, LogoImage};
@@ -24,6 +25,19 @@ use fotollection_core::settings_store::{self, Loaded, StoredSettings};
 use fotollection_core::thumbs::ThumbCache;
 use serde::Serialize;
 use specta::Type;
+
+/// The place of one photo, written in `format` (FR-005): today from its own GPS through
+/// the bundled places; manual and borrowed places (FR-032, FR-031) will come first.
+pub fn place_for(record: &PhotoRecord, format: PlaceFormat) -> Option<String> {
+    let (lat, lon) = record.gps?;
+    let place = geocode::reverse(f64::from(lat), f64::from(lon)).ok()??;
+    Some(geocode::label(
+        &place.name,
+        &place.country_code,
+        &place.country,
+        format,
+    ))
+}
 
 /// Info-frame settings, camera profiles and decoded user logos (FR-040).
 #[derive(Clone, Default)]
@@ -46,14 +60,14 @@ impl FrameState {
     }
 
     /// The frame for one photo, or `None` when frames are off.
-    pub fn request(&self, record: &PhotoRecord) -> Option<FrameRequest> {
+    pub fn request(&self, record: &PhotoRecord, place: Option<&str>) -> Option<FrameRequest> {
         if !self.settings.enabled {
             return None;
         }
         let shot = &record.shot;
         let profile = self.profile_for(shot.make.as_deref(), shot.model.as_deref());
         let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
-        let text = frame::build_text(shot, profile, &self.settings, capture, None);
+        let text = frame::build_text(shot, profile, &self.settings, capture, place);
         let dark = self.settings.color == frame::FrameColor::Black;
         let logo = profile.and_then(|p| match p.logo {
             LogoKind::Image => self.logos.get(&p.id).cloned(),

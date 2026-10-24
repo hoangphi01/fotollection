@@ -85,7 +85,7 @@ fn main() {
         max_long_edge: None,
         frame: request.as_ref(),
         crop: None,
-        stamp_font: None,
+        place: None,
     });
     let image = render(&upright, &p).unwrap();
     std::fs::write(

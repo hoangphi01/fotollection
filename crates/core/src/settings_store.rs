@@ -14,7 +14,9 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v2 (FR-042, FR-043): `fonts` table, custom print sizes, stamp/frame font choice.
 /// v3 (FR-020): `ui.language`.
 /// v4 (FR-040, ADR-0020): bundled brand logos (`logo: "brand"`) and `frame.logoStyle`.
-pub const SCHEMA_VERSION: u32 = 4;
+/// v5 (FR-005, FR-036, FR-033): `render.stamp.place`, `render.stamp.caption`,
+/// `render.placeFormat`; `render.stamp.font` is dropped (the stamp has its own font).
+pub const SCHEMA_VERSION: u32 = 5;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -132,12 +134,9 @@ fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
     {
         return Err("invalid fonts table".into());
     }
-    let mut render = file.render;
+    let render = file.render;
     let mut frame = file.frame;
     // References to fonts that no longer exist fall back to the built-in font (N7).
-    if render.stamp.font.is_some_and(|id| !font_ids.contains(&id)) {
-        render.stamp.font = None;
-    }
     if frame.font.is_some_and(|id| !font_ids.contains(&id)) {
         frame.font = None;
     }
@@ -236,7 +235,6 @@ mod tests {
             panic!("v1 should load");
         };
         assert!(s.fonts.is_empty() && s.render.custom_sizes.is_empty());
-        assert_eq!(s.render.stamp.font, None);
         assert_eq!(s.ui, UiSettings::default());
         Ok(())
     }
@@ -252,7 +250,8 @@ mod tests {
         assert_eq!(s.ui.language, crate::settings::Language::En);
         assert_eq!(s.render.custom_sizes.len(), 1);
         assert_eq!(s.fonts.len(), 1);
-        assert_eq!(s.render.stamp.font, Some(1));
+        // v2 had a stamp font; the stamp now always uses its LCD face, so it is ignored.
+        assert!(!s.render.stamp.place && s.render.stamp.caption.is_empty());
         Ok(())
     }
 
@@ -269,6 +268,21 @@ mod tests {
         assert_eq!(logos, [LogoKind::Brand, LogoKind::Text, LogoKind::Text]);
         assert_eq!(s.frame.logo_style, crate::brands::LogoStyle::Classic);
         assert_eq!(s.ui.language, crate::settings::Language::Vi);
+        Ok(())
+    }
+
+    #[test]
+    fn fr_036_migrates_v4_files_without_the_stamp_font() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v4.json"))?;
+        let Loaded::Ok(s) = load(&path) else {
+            panic!("v4 should load");
+        };
+        // The stamp font is gone (the stamp has its own LCD face); place and caption start off.
+        assert!(!s.render.stamp.place && s.render.stamp.caption.is_empty());
+        assert_eq!(s.frame.logo_style, crate::brands::LogoStyle::Mono);
+        assert_eq!(s.fonts.len(), 1, "the font stays installed for the frame");
         Ok(())
     }
 
@@ -293,12 +307,12 @@ mod tests {
         let dir = tempfile::tempdir()?;
         let path = dir.path().join("settings.json");
         let mut s = sample();
-        s.render.stamp.font = Some(7);
+        s.frame.font = Some(7);
         save(&path, &s)?;
         let Loaded::Ok(loaded) = load(&path) else {
             panic!("should load");
         };
-        assert_eq!(loaded.render.stamp.font, None);
+        assert_eq!(loaded.frame.font, None);
         Ok(())
     }
 

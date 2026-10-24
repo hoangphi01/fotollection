@@ -31,6 +31,9 @@ pub struct RenderSettings {
     /// User-defined sizes such as 4 × 6 in (FR-043).
     #[serde(default)]
     pub custom_sizes: Vec<CustomPrintSize>,
+    /// How place names are written, in the stamp and in the info frame (FR-005).
+    #[serde(default)]
+    pub place_format: crate::geocode::PlaceFormat,
 }
 
 /// A saved custom print size (FR-043). Stored in millimetres, short edge first.
@@ -66,10 +69,19 @@ pub struct StampSettings {
     pub format: DateFormat,
     pub corner: Corner,
     pub color: StampColor,
-    /// A user font id (FR-042); `None` uses the bundled Inter.
+    /// The place on the same line as the date (FR-005). The stamp is always set in the
+    /// bundled LCD font; user fonts are for the info frame only (FR-042). Settings v4 and
+    /// older had a `font` here, which is ignored.
     #[serde(default)]
-    pub font: Option<u32>,
+    pub place: bool,
+    /// A line of the user's own text under the date (FR-036), shown in plain upper-case
+    /// letters; empty for none.
+    #[serde(default)]
+    pub caption: String,
 }
+
+/// Longest stamp caption, in characters.
+pub const MAX_CAPTION_CHARS: usize = 80;
 
 /// Date stamp formats (FR-004).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -117,9 +129,11 @@ impl Default for RenderSettings {
                 format: DateFormat::Iso,
                 corner: Corner::BottomRight,
                 color: StampColor::White,
-                font: None,
+                place: false,
+                caption: String::new(),
             },
             custom_sizes: Vec::new(),
+            place_format: crate::geocode::PlaceFormat::default(),
         }
     }
 }
@@ -130,6 +144,8 @@ pub enum SettingsError {
     UnknownPrintSize(String),
     #[error("invalid custom size: {0}")]
     InvalidCustomSize(String),
+    #[error("the caption has control characters or more than {MAX_CAPTION_CHARS} characters")]
+    InvalidCaption,
 }
 
 impl RenderSettings {
@@ -138,6 +154,10 @@ impl RenderSettings {
     /// placeholder: use [`Self::print_for`] wherever the photo is known.
     pub fn validate(&self) -> Result<PrintSize, SettingsError> {
         self.validate_custom_sizes()?;
+        let caption = &self.stamp.caption;
+        if caption.chars().count() > MAX_CAPTION_CHARS || caption.chars().any(char::is_control) {
+            return Err(SettingsError::InvalidCaption);
+        }
         if self.print_size == PrintSize::ORIGINAL_ID {
             return Ok(PrintSize::original(3, 2));
         }

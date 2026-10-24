@@ -111,10 +111,19 @@
       "white": "Trắng",
       "retroOrange": "Cam retro"
     },
-    "location": "Địa điểm",
+    "location": "Địa điểm cùng dòng ngày",
     "soon": "Sắp có",
     "locationTip": "Tên địa điểm offline sẽ có ở bản sau (FR-005)",
-    "footer": "Offline · đã xóa GPS"
+    "footer": "Offline · đã xóa GPS",
+    "locationHint": "Lấy từ GPS của ảnh, ở mức thành phố, không cần mạng.",
+    "placeFormat": {
+      "city": "Thành phố",
+      "cityCountryCode": "Thành phố, HU",
+      "cityCountry": "Thành phố, nước"
+    },
+    "caption": "Dòng chữ dưới ngày",
+    "captionPlaceholder": "VD: MUA HE O DEBRECEN",
+    "captionHint": "In bằng chữ hoa không dấu, chạy ngang ảnh."
   },
   "print": {
     "original": "Gốc",

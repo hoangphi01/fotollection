@@ -26,6 +26,8 @@ pub mod project;
 pub mod render;
 pub mod settings;
 pub mod settings_store;
+pub mod stamp;
+pub mod text;
 pub mod thumbs;
 
 pub use print_size::PrintSize;

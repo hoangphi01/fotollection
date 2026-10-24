@@ -436,14 +436,19 @@ pub fn start_export(
 
     std::thread::spawn(move || {
         let state = app.state::<AppState>();
-        let frame_for = |record: &fotollection_core::library::PhotoRecord| frames.request(record);
-        let stamp_font = frames.font(settings.stamp.font);
+        let format = settings.place_format;
+        let place_for = |record: &fotollection_core::library::PhotoRecord| {
+            crate::state::place_for(record, format)
+        };
+        let frame_for = |record: &fotollection_core::library::PhotoRecord| {
+            frames.request(record, place_for(record).as_deref())
+        };
         let options = ExportOptions {
             destination: &destination,
             settings: &settings,
             quality: EXPORT_QUALITY,
             max_inflight: default_inflight(),
-            stamp_font,
+            place_for: &place_for,
             frame_for: &frame_for,
         };
         let throttle = Throttle::default();
@@ -509,9 +514,10 @@ pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
         .and_then(|l| l.record(id))
         .ok_or_else(|| "unknown photo".to_owned())?;
     let settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
-    let (frame, stamp_font) = {
+    let place = crate::state::place_for(&record, settings.place_format);
+    let frame = {
         let f = state.frame.read().map_err(|e| e.to_string())?;
-        (f.request(&record), f.font(settings.stamp.font))
+        f.request(&record, place.as_deref())
     };
     state
         .previews
@@ -519,7 +525,7 @@ pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
             &record,
             &settings,
             frame.as_ref(),
-            stamp_font.as_ref(),
+            place.as_deref(),
             state.codec.as_ref(),
         )
         .map_err(|e| e.to_string())
@@ -902,11 +908,12 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
         let print = settings
             .print_for(width, height)
             .unwrap_or(PrintSize::ALL[1]);
+        let place = crate::state::place_for(&record, settings.place_format);
         let frame = state
             .frame
             .read()
             .map_err(|e| IpcError::internal(e.to_string()))?
-            .request(&record);
+            .request(&record, place.as_deref());
         let p = plan(&PlanInput {
             width,
             height,
@@ -916,7 +923,7 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
             max_long_edge: None,
             frame: frame.as_ref(),
             crop: None,
-            stamp_font: None,
+            place: None,
         });
         #[allow(clippy::cast_precision_loss)]
         let (long_cm, short_cm) = (print.long_mm as f32 / 10.0, print.short_mm as f32 / 10.0);
@@ -1246,11 +1253,6 @@ pub fn remove_font(app: AppHandle, state: State<'_, AppState>, id: u32) -> Resul
         }
         format
     };
-    if let Ok(mut settings) = state.settings.write()
-        && settings.0.stamp.font == Some(id)
-    {
-        settings.0.stamp.font = None;
-    }
     if let Some(format) = format {
         let _ = std::fs::remove_file(state.font_dir.join(format!("{id}.{}", format.extension())));
     }

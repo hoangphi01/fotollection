@@ -70,8 +70,8 @@ pub struct ExportOptions<'a> {
     pub quality: u8,
     /// Photos processed at once; bounds peak memory (NFR-004).
     pub max_inflight: usize,
-    /// A user font for the date stamp (FR-042).
-    pub stamp_font: Option<crate::fonts::LoadedFont>,
+    /// The place written in the stamp and the frame for one photo, if any (FR-005).
+    pub place_for: &'a (dyn Fn(&PhotoRecord) -> Option<String> + Sync),
     /// The info frame for one photo, if any (FR-040).
     pub frame_for: &'a (dyn Fn(&PhotoRecord) -> Option<FrameRequest> + Sync),
 }
@@ -134,6 +134,7 @@ fn export_one(
         .unwrap_or(crate::PrintSize::ALL[1]);
     let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
     let frame = (options.frame_for)(record);
+    let place = (options.place_for)(record);
     let p = plan(&PlanInput {
         width: upright.width,
         height: upright.height,
@@ -143,7 +144,7 @@ fn export_one(
         max_long_edge: None,
         frame: frame.as_ref(),
         crop: record.edits.crop,
-        stamp_font: options.stamp_font.as_ref(),
+        place: place.as_deref(),
     });
     let image = render(&upright, &p)?;
     drop(upright);

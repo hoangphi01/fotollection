@@ -416,6 +416,8 @@ fn parse_manifest(bytes: &[u8]) -> Result<Manifest, BundleError> {
 }
 
 /// What a `.fotollection` file turned out to be.
+// Returned once per Open and consumed at once, so boxing the bundle would buy nothing.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, PartialEq)]
 pub enum Opened {
     Bundle(Bundle),
@@ -520,15 +522,14 @@ pub fn merge_settings(
     }
 
     local.render = bundle.settings.render.clone();
-    local.render.stamp.font = remap(bundle.settings.render.stamp.font);
     local.frame = bundle.settings.frame.clone();
     local.frame.font = remap(bundle.settings.frame.font);
     Ok(installed)
 }
 
-/// The fonts a project actually uses: the date stamp's and the frame's (FR-042).
+/// The fonts a project actually uses: the frame's (FR-042; the stamp has its own font).
 pub fn used_fonts(settings: &StoredSettings) -> Vec<UserFont> {
-    let used = [settings.render.stamp.font, settings.frame.font];
+    let used = [settings.frame.font];
     settings
         .fonts
         .iter()
@@ -604,7 +605,7 @@ mod tests {
                 name: "Inter copy".into(),
                 format: FontFormat::Ttf,
             }];
-            settings.render.stamp.font = Some(7);
+            settings.frame.font = Some(7);
             fonts.insert(7, INTER.to_vec());
         }
         Bundle {
@@ -852,10 +853,10 @@ mod tests {
         let Ok(installed) = installed else {
             panic!("merge must succeed");
         };
-        // The font is new here: id 3, and the stamp now points at it.
+        // The font is new here: id 3, and the frame now points at it.
         assert_eq!(installed.new_fonts.len(), 1);
         assert_eq!(installed.new_fonts[0].0.id, 3);
-        assert_eq!(local.render.stamp.font, Some(3));
+        assert_eq!(local.frame.font, Some(3));
         // The camera matched by make + model keeps its local id, takes the project's values.
         assert_eq!(local.cameras.len(), 1);
         assert_eq!(local.cameras[0].id, 9);
@@ -880,6 +881,6 @@ mod tests {
         let again = merge_settings(&mut local, &incoming, &font_three);
         assert!(again.is_ok_and(|i| i.new_fonts.is_empty()));
         assert_eq!(local.fonts.len(), 3);
-        assert_eq!(local.render.stamp.font, Some(3));
+        assert_eq!(local.frame.font, Some(3));
     }
 }

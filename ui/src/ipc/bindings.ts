@@ -560,6 +560,15 @@ export type PhotoSummary = {
 	flag: Flag | null,
 };
 
+/**  How a place is written on a print (FR-005). */
+export type PlaceFormat = 
+/**  `Debrecen` */
+"city" | 
+/**  `Debrecen, HU` */
+"cityCountryCode" | 
+/**  `Debrecen, Hungary` */
+"cityCountry";
+
 /**  A physical print size. Dimensions are stored short edge first, in millimetres. */
 export type PrintSize = {
 	/**  Stable identifier used in settings and IPC, e.g. `"10x15"`. */
@@ -596,6 +605,8 @@ export type RenderSettings = {
 	stamp: StampSettings,
 	/**  User-defined sizes such as 4 × 6 in (FR-043). */
 	customSizes?: CustomPrintSize[],
+	/**  How place names are written, in the stamp and in the info frame (FR-005). */
+	placeFormat?: PlaceFormat,
 };
 
 /**  Render-affecting state changed (settings, frame, crops, undo); previews refresh. */
@@ -618,8 +629,17 @@ export type StampSettings = {
 	format: DateFormat,
 	corner: Corner,
 	color: StampColor,
-	/**  A user font id (FR-042); `None` uses the bundled Inter. */
-	font?: number | null,
+	/**
+	 *  The place on the same line as the date (FR-005). The stamp is always set in the
+	 *  bundled LCD font; user fonts are for the info frame only (FR-042). Settings v4 and
+	 *  older had a `font` here, which is ignored.
+	 */
+	place?: boolean,
+	/**
+	 *  A line of the user's own text under the date (FR-036), shown in plain upper-case
+	 *  letters; empty for none.
+	 */
+	caption?: string,
 };
 
 export type TaskKind = 

@@ -93,7 +93,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | FR-002 | Read photo metadata | 1 | In Progress | Allowlisted EXIF (date, offset, GPS, orientation, camera) + validation. `fr_002_*` tests pass |
 | FR-003 | Library grid | 1 | In Progress | Virtualized grid, T0/T1 thumbnails, skeleton + fade-in, task progress bar with %. Day grouping and multi-select pending |
 | FR-004 | Date stamp | 1 | In Progress | 3 formats, 4 corners, white/retro-orange, inside the safe area. More styles with FR-033 |
-| FR-005 | Location stamp (offline) | 1 | In Progress | ✓ Bundled GeoNames places (162k towns, 5.4 MB, BLAKE3-checked) and `geocode::reverse` / `search`, about 5 µs per lookup (`fr_005_*`, `fr_032_search_*`). Next: the stamp and frame text, settings v4 |
+| FR-005 | Location stamp (offline) | 1 | In Progress | ✓ Bundled GeoNames places (162k towns, 5.4 MB, BLAKE3-checked) and `geocode::reverse` / `search`, about 5 µs per lookup (`fr_005_*`, `fr_032_search_*`). ✓ Place on the date line and in the info frame, from GPS, three formats (settings v5). Next: renaming places, manual and borrowed places (FR-032, FR-031) |
 | FR-006 | Crop to print ratio | 1 | In Progress | Crop editor with edge labels (cm/in + px), ratio pill and live DPI; centre + zoom storage |
 | FR-007 | Live preview | 1 | In Progress | Preview dialog with inspector (capture, camera, image, GPS, print DPI, stamp controls). Rust-rendered, warm p95 18 ms (p50 17 ms) |
 | FR-008 | Original-quality export | 1 | In Progress | Full resolution, q95 4:4:4, ICC copied. Lossless crop-only path pending |
@@ -121,10 +121,10 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | FR-030 | Camera clock offset | 1 | Not Started | |
 | FR-031 | Borrow GPS from a phone or GPX track | 2 | Not Started | Depends on FR-030 |
 | FR-032 | Manual date and place | 1 | Not Started | |
-| FR-033 | Retro film date stamp and stamp presets | 1 | Not Started | Font must be OFL/MIT |
+| FR-033 | Retro film date stamp and stamp presets | 1 | In Progress | ✓ DSEG14 Italic (OFL) LCD face with LED glow and faint shadow (`fr_033_*`). Presets to come |
 | FR-034 | Lab presets | 2 | Not Started | |
 | FR-035 | Multi-photo layouts | 3 | Not Started | Shares layout engine with FR-017 |
-| FR-036 | Custom captions | 2 | Not Started | `{trip}` needs FR-012 |
+| FR-036 | Custom captions | 2 | In Progress | ✓ A caption line under the date, in the stamp's LCD face (`fr_036_*`). Variables (`{trip}` needs FR-012) and per-photo captions to come |
 | FR-037 | Contact sheet | 3 | Not Started | |
 | FR-038 | Print presets | 2 | Not Started | Storage model: [DATABASE.md §7](DATABASE.md#7-presets) |
 | FR-040 | EXIF info frame | 1 | In Progress | Crop/Fit at print ratio, field switches, per-camera overrides (persisted), user PNG logo, bundled logos of 11 brands with Classic / Brand colours / One colour styles ([ADR-0020](adr/0020-bundled-brand-logos.md), `fr_040_*`). Place needs FR-005 |

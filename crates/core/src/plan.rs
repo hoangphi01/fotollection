@@ -39,8 +39,8 @@ pub struct StampSpec {
     pub font_px: f32,
     /// Distance from each output edge to the stamp, in output pixels.
     pub margin_px: f32,
-    /// A user font (FR-042); `None` uses the bundled Inter.
-    pub font: Option<LoadedFont>,
+    /// The user's line under the date (FR-036).
+    pub caption: Option<String>,
 }
 
 /// Info frame to compose around the photo (FR-040).
@@ -231,8 +231,8 @@ pub struct PlanInput<'a> {
     pub max_long_edge: Option<u32>,
     pub frame: Option<&'a FrameRequest>,
     pub crop: Option<CropFrame>,
-    /// A user font for the date stamp (FR-042).
-    pub stamp_font: Option<&'a LoadedFont>,
+    /// The photo's place, already written in the chosen format (FR-005).
+    pub place: Option<&'a str>,
 }
 
 /// Builds the plan for one photo.
@@ -276,14 +276,22 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
 fn stamp_spec(input: &PlanInput<'_>, px_per_mm: f32) -> Option<StampSpec> {
     let (settings, capture) = (input.settings, input.capture);
     match (settings.stamp.enabled, capture) {
-        (true, Some(dt)) => Some(StampSpec {
-            text: format_date(dt, settings.stamp.format),
-            color: settings.stamp.color.rgb(),
-            corner: settings.stamp.corner,
-            font_px: STAMP_SIZE_MM * px_per_mm,
-            margin_px: (SAFE_AREA_MM + STAMP_INSET_MM) * px_per_mm,
-            font: input.stamp_font.cloned(),
-        }),
+        (true, Some(dt)) => {
+            let date = format_date(dt, settings.stamp.format);
+            let text = match input.place.filter(|_| settings.stamp.place) {
+                Some(place) => format!("{date}  {place}"),
+                None => date,
+            };
+            let caption = settings.stamp.caption.trim();
+            Some(StampSpec {
+                text,
+                color: settings.stamp.color.rgb(),
+                corner: settings.stamp.corner,
+                font_px: STAMP_SIZE_MM * px_per_mm,
+                margin_px: (SAFE_AREA_MM + STAMP_INSET_MM) * px_per_mm,
+                caption: (!caption.is_empty()).then(|| caption.to_owned()),
+            })
+        }
         _ => None,
     }
 }
@@ -467,7 +475,7 @@ mod tests {
             max_long_edge: Some(1600),
             frame: None,
             crop: None,
-            stamp_font: None,
+            place: None,
         });
         assert_eq!((p.out_width, p.out_height), (1600, 1067));
         assert!(p.stamp.is_none(), "no capture date, no stamp");
@@ -498,7 +506,7 @@ mod tests {
                 max_long_edge: None,
                 frame: None,
                 crop: None,
-                stamp_font: None,
+                place: None,
             });
             assert_eq!(
                 (p.crop.x, p.crop.y, p.crop.width, p.crop.height),

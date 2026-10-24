@@ -247,15 +247,17 @@ These are read-only and compiled into the binary or bundled as resources, so the
 ```json
 {
   "format": "fotollection-settings",
-  "schema_version": 4,
+  "schema_version": 5,
   "ui": { "language": "vi" },
   "render": {
     "printSize": "custom-1",
-    "stamp": { "enabled": true, "format": "iso", "corner": "bottomRight", "color": "white", "font": 1 },
-    "customSizes": [ { "id": "custom-1", "name": "4×6 US", "shortMm": 102, "longMm": 152, "unit": "in" } ]
+    "stamp": { "enabled": true, "format": "retro", "corner": "bottomRight", "color": "retroOrange",
+               "place": true, "caption": "Summer in Debrecen" },
+    "customSizes": [ { "id": "custom-1", "name": "4×6 US", "shortMm": 102, "longMm": 152, "unit": "in" } ],
+    "placeFormat": "city"
   },
   "frame": {
-    "enabled": true, "fit": "crop", "color": "white", "dateFormat": "slash", "font": null, "logoStyle": "classic",
+    "enabled": true, "fit": "crop", "color": "white", "dateFormat": "slash", "font": 1, "logoStyle": "classic",
     "fields": { "logo": true, "camera": true, "lens": true, "focal": true, "aperture": true,
                 "shutter": true, "iso": true, "photoStyle": true, "date": true, "place": true }
   },
@@ -287,6 +289,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 | 2 | 0.0.x (slice 4) | `fonts` table; `render.customSizes`, `render.stamp.font`, `frame.font`. **Migration v1 → v2:** every new field has a default, so v1 files are read as is (tested by `migrates_v1_files`) |
 | 3 | 0.0.x (Stage 2) | `ui.language` (FR-020). **Migration v2 → v3:** `ui` defaults to English, so v2 files are read as is. Fixtures `crates/core/tests/fixtures/settings/v1.json` and `v2.json` are loaded by `migrates_v1_files` and `fr_020_migrates_v2_files_to_english` |
 | 4 | 0.0.x (Stage 3) | Bundled brand logos ([ADR-0020](adr/0020-bundled-brand-logos.md)): `cameras[].logo` may be `"brand"`; `frame.logoStyle` (`classic` \| `original` \| `mono`, default `classic`). **Migration v3 → v4:** cameras still on the default typeset name (`logo: "text"`, no `brandText`) whose make has a bundled logo become `"brand"`; typed names are kept. Fixture `v3.json`, test `fr_040_migrates_v3_cameras_to_bundled_logos` |
+| 5 | 0.0.x (Stage 3) | `render.stamp.place` and `render.stamp.caption` (FR-005, FR-036), `render.placeFormat` (`city` \| `cityCountryCode` \| `cityCountry`). `render.stamp.font` is dropped: the stamp always uses the bundled DSEG14 Italic, and user fonts are for the frame. **Migration v4 → v5:** new fields default to off/empty; a v4 `stamp.font` is ignored, and the font stays installed. Fixture `v4.json`, test `fr_036_migrates_v4_files_without_the_stamp_font` |
 
 ## 7. Presets
 

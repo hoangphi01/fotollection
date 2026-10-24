@@ -13,8 +13,8 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Collapse } from '@/components/layout/collapse'
+import { CommitInput } from '@/components/forms/commit-input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ExportSection } from '@/features/export/export-section'
 import { FrameSection } from '@/features/frame/frame-section'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
@@ -24,10 +24,10 @@ import {
   type CullFilter,
   type DateFormat,
   type Language,
+  type PlaceFormat,
   type RenderSettings,
   type StampColor,
 } from '@/ipc/bindings'
-import { FontSelect } from '@/features/fonts/font-select'
 import type { FontsApi } from '@/features/fonts/use-fonts'
 import { LANGUAGES } from '@/i18n'
 import { PrintSizePicker } from './print-size-picker'
@@ -42,6 +42,8 @@ type SettingsPanelProps = {
   photoCount: number
   filter: CullFilter
 }
+
+const PLACE_FORMATS: PlaceFormat[] = ['city', 'cityCountryCode', 'cityCountry']
 
 const FORMATS: { value: DateFormat; label: string }[] = [
   { value: 'iso', label: '2026-07-14' },
@@ -122,12 +124,6 @@ export function SettingsPanel({
           </div>
 
           <Collapse open={stamp?.enabled ?? false} className="space-y-3">
-            <FontSelect
-              fonts={fonts}
-              label={t('settings.dateStampFont')}
-              value={stamp?.font}
-              onChange={(font) => setStamp({ font })}
-            />
             <ToggleGroup
               type="single"
               variant="outline"
@@ -174,20 +170,53 @@ export function SettingsPanel({
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>
-          </Collapse>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center justify-between opacity-50">
-                <Label className="flex items-center gap-2">
-                  <MapPin className="size-4 text-muted-foreground" />
-                  {t('settings.location')}
-                </Label>
-                <Badge variant="outline">{t('settings.soon')}</Badge>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>{t('settings.locationTip')}</TooltipContent>
-          </Tooltip>
+            {/* The place on the date line (FR-005), from the photo's GPS. */}
+            <div className="flex items-center justify-between">
+              <Label htmlFor="stamp-place" className="flex items-center gap-2 text-sm font-normal">
+                <MapPin className="size-4 text-muted-foreground" />
+                {t('settings.location')}
+              </Label>
+              <Switch
+                id="stamp-place"
+                checked={stamp?.place ?? false}
+                onCheckedChange={(place) => setStamp({ place })}
+              />
+            </div>
+            <Collapse open={stamp?.place ?? false} className="space-y-1.5">
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                size="sm"
+                className="w-full"
+                value={settings?.placeFormat ?? ''}
+                onValueChange={(v) => v && onChange((s) => ({ ...s, placeFormat: v as PlaceFormat }))}
+              >
+                {PLACE_FORMATS.map((f) => (
+                  <ToggleGroupItem key={f} value={f} className="flex-1 text-xs">
+                    {t(`settings.placeFormat.${f}`)}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+              <p className="text-xs text-muted-foreground">{t('settings.locationHint')}</p>
+            </Collapse>
+
+            {/* A line of the user's own text under the date (FR-036). */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-normal text-muted-foreground">
+                {t('settings.caption')}
+              </Label>
+              <CommitInput
+                key={stamp?.caption ?? ''}
+                value={stamp?.caption ?? ''}
+                placeholder={t('settings.captionPlaceholder')}
+                maxLength={80}
+                ariaLabel={t('settings.caption')}
+                onCommit={(caption) => setStamp({ caption: caption.trim() })}
+              />
+              <p className="text-xs text-muted-foreground">{t('settings.captionHint')}</p>
+            </div>
+          </Collapse>
         </section>
 
         <Separator />

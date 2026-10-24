@@ -64,6 +64,9 @@ crates/
       settings_store.rs  † # settings.json v1: load/validate/atomic save (DATABASE.md §6)
       preview.rs         † # T2 LRU + preview rendering (FR-007)
       cancel.rs          † # CancellationToken
+      stamp.rs           † # text inside the photo: DSEG14 Italic, date · place line + caption, LED glow (FR-004/005/033/036)
+      text.rs            † # text measuring/drawing shared by stamp and frame, ASCII folding
+      brands.rs          † # bundled brand logos, EXIF make → brand, Classic/Original/Mono recolouring (ADR-0020)
       culling/           † # best-shot suggestions (FR-041): metrics.rs (sharpness, shake, exposure, noise, dHash),
                            # faces.rs (YuNet + FaceMesh eye aspect ratio), models.rs (bundled ONNX, BLAKE3, tract),
                            # similar.rs (layout + colour signature, ADR-0019), group.rs (bursts),
