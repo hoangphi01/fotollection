@@ -100,6 +100,7 @@ en:
   footer_license: GPL-3.0 licence
   footer_changelog: What's new
   footer_source: Source code
+  footer_blog: The author's blog
   footer_photos: Demo photos are CC0, from Wikimedia Commons.
   footer_analytics: This website counts visits with Google Analytics; the app does not.
   by: by
@@ -205,6 +206,7 @@ vi:
   footer_license: Giấy phép GPL-3.0
   footer_changelog: Có gì mới
   footer_source: Mã nguồn
+  footer_blog: Blog của mình
   footer_photos: Ảnh demo là CC0, từ Wikimedia Commons.
   footer_analytics: Trang web này đếm lượt xem bằng Google Analytics; app thì không.
   by: bởi
