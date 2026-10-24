@@ -117,7 +117,12 @@ jobs:
 
       - name: Checksums
         working-directory: dist
-        run: sha256sum -- * > SHA256SUMS.txt && cat SHA256SUMS.txt
+        run: |
+          # Artifacts keep their folders (msi/, nsis/); release assets are flat.
+          find . -mindepth 2 -type f -exec mv {} . \;
+          find . -mindepth 1 -type d -empty -delete
+          sha256sum -- * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
 
       - name: Release notes from the CHANGELOG
         run: |
