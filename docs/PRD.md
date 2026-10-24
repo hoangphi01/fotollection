@@ -450,7 +450,9 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 
 ### FR-044 — Per-photo overrides
 
-**P2 (future).** Next to the batch settings, any setting can be overridden for one photo or a selection. For example, the date stamp can be turned off for photos that already have a timestamp burned in, while the rest of the batch keeps it. Overrides are stored sparsely per photo ([DATABASE.md §4](DATABASE.md#4-project-file-schema), `photos[].overrides`). The UI shows which photos deviate from the batch and offers *Reset to batch*. Until then, every setting applies to the whole batch.
+**P1 for the date stamp (done), P2 for the rest.** The **date stamp** can already be set per photo: in the preview, every stamp control (on/off, format, place, caption) applies to the open photo only, with a *This photo* badge and an **Apply to all** button that makes it the setting for every photo. The settings panel shows **Reset N photos with their own stamp** whenever some photos deviate. Each change is undoable. Stored per photo in the project (`photos[].stamp`, project schema v3).
+
+Next to the batch settings, any other setting will later be overridable for one photo or a selection the same way. For example, the date stamp can be turned off for photos that already have a timestamp burned in, while the rest of the batch keeps it. Overrides are stored sparsely per photo ([DATABASE.md §4](DATABASE.md#4-project-file-schema), `photos[].overrides`). The UI shows which photos deviate from the batch and offers *Reset to batch*. Until then, every setting applies to the whole batch.
 
 ### FR-045 — Original aspect ratio
 

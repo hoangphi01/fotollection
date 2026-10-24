@@ -12,7 +12,8 @@ use crate::plan::CropFrame;
 
 pub const FORMAT: &str = "fotollection-project";
 /// v2: `folders[].absolute`, the fallback for folders stored relative to a bundle (ADR-0016).
-pub const SCHEMA_VERSION: u32 = 2;
+/// v3: `photos[].stamp`, a photo's own date stamp set in the preview (FR-044).
+pub const SCHEMA_VERSION: u32 = 3;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -51,6 +52,9 @@ pub struct PhotoRow {
     pub rating: Option<u8>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub flag: Option<Flag>,
+    /// The photo's own stamp (v3); absent when it follows the settings.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub stamp: Option<crate::settings::StampSettings>,
 }
 
 /// The document a session belongs to (FR-023). Only written into the session autosave, so
@@ -113,6 +117,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 crop: edits.crop,
                 rating: (edits.rating > 0).then_some(edits.rating),
                 flag: edits.flag,
+                stamp: edits.stamp,
             })
         })
         .collect();
@@ -205,6 +210,9 @@ fn validate(mut file: ProjectFile) -> Result<ProjectFile, String> {
         }
         row.crop = row.crop.map(CropFrame::sanitized);
         row.rating = row.rating.map(|r| r.min(5));
+        if let Some(stamp) = &mut row.stamp {
+            stamp.sanitize();
+        }
     }
     Ok(file)
 }
@@ -338,6 +346,7 @@ pub fn restore_into(
                 crop: row.crop,
                 rating: row.rating.unwrap_or(0),
                 flag: row.flag,
+                stamp: row.stamp.clone(),
             },
         );
         summary.restored += 1;
@@ -384,6 +393,10 @@ mod tests {
                     crop: Some(crop()),
                     rating: 4,
                     flag: Some(Flag::Pick),
+                    stamp: Some(crate::settings::StampSettings {
+                        caption: "Lisbon".into(),
+                        ..crate::settings::RenderSettings::default().stamp
+                    }),
                 },
             );
         }
@@ -407,8 +420,13 @@ mod tests {
         let restored = fresh
             .find_path(Path::new("/trip/b.jpg"))
             .map(|id| fresh.edits(id));
-        assert_eq!(restored.and_then(|e| e.crop), Some(crop()));
-        assert_eq!(restored.map(|e| e.rating), Some(4));
+        assert_eq!(restored.as_ref().and_then(|e| e.crop), Some(crop()));
+        assert_eq!(restored.as_ref().map(|e| e.rating), Some(4));
+        assert_eq!(
+            restored.and_then(|e| e.stamp).map(|s| s.caption),
+            Some("Lisbon".into()),
+            "a photo's own stamp is kept (FR-044)"
+        );
         Ok(())
     }
 
@@ -461,6 +479,7 @@ mod tests {
             crop: None,
             rating: None,
             flag: None,
+            stamp: None,
         });
         save(&path, &file)?;
         assert!(
@@ -473,6 +492,22 @@ mod tests {
         save(&path, &file)?;
         assert!(matches!(load(&path), Loaded::Corrupt(_)), "path traversal");
         Ok(())
+    }
+
+    #[test]
+    fn fr_044_v3_fixture_keeps_a_photos_own_stamp() {
+        let Loaded::Ok(file) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v3.fotollection"))
+        else {
+            panic!("v3 project should load");
+        };
+        let Some(stamp) = &file.photos[0].stamp else {
+            panic!("photo 1 has its own stamp");
+        };
+        assert!(stamp.place);
+        // Control characters from a file are dropped on load.
+        assert_eq!(stamp.caption, "Summer by the lake");
+        assert_eq!(file.photos[1].stamp, None);
     }
 
     #[test]

@@ -7,7 +7,7 @@ export function useRenderSettings() {
   const [settings, setLocal] = useState<RenderSettings | null>(null)
   const [revision, setRevision] = useState(0)
 
-  useEffect(() => {
+  const reload = useCallback(() => {
     void commands.getSettings().then((result) => {
       if (result.status === 'ok') {
         setLocal(result.data.settings)
@@ -15,6 +15,8 @@ export function useRenderSettings() {
       }
     })
   }, [])
+
+  useEffect(() => reload(), [reload])
 
   const update = useCallback(
     async (change: (current: RenderSettings) => RenderSettings) => {
@@ -30,5 +32,5 @@ export function useRenderSettings() {
     [settings],
   )
 
-  return { settings, revision, update }
+  return { settings, revision, update, reload }
 }

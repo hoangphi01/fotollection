@@ -61,13 +61,15 @@ impl CullFilter {
 }
 
 /// User edits of one photo. Stored sparsely: photos without edits cost nothing (N5).
-#[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize, Type)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct PhotoEdits {
     pub crop: Option<CropFrame>,
     /// 0–5 stars.
     pub rating: u8,
     pub flag: Option<Flag>,
+    /// This photo's own stamp, set in the preview (FR-044); `None` follows the settings.
+    pub stamp: Option<crate::settings::StampSettings>,
 }
 
 impl PhotoEdits {
@@ -374,7 +376,7 @@ impl Library {
     }
 
     pub fn edits(&self, id: PhotoId) -> PhotoEdits {
-        self.edits.get(&id).copied().unwrap_or_default()
+        self.edits.get(&id).cloned().unwrap_or_default()
     }
 
     /// Replaces a photo's edits, returning the previous ones (for undo).
@@ -390,7 +392,7 @@ impl Library {
 
     /// Photos that have edits, for saving the project.
     pub fn edited(&self) -> impl Iterator<Item = (PhotoId, PhotoEdits)> + '_ {
-        self.edits.iter().map(|(id, e)| (*id, *e))
+        self.edits.iter().map(|(id, e)| (*id, e.clone()))
     }
 
     /// Folder index and relative path of a photo (project rows, DATABASE.md §4).
@@ -528,8 +530,8 @@ mod tests {
         let only = |flag, min_rating| CullFilter { flag, min_rating };
 
         assert!(
-            [pick3, reject, plain]
-                .iter()
+            [&pick3, &reject, &plain]
+                .into_iter()
                 .all(|e| CullFilter::default().matches(e))
         );
         assert!(only(FlagFilter::Picks, 0).matches(&pick3));

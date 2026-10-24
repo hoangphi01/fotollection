@@ -135,11 +135,13 @@ fn export_one(
     let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
     let frame = (options.frame_for)(record);
     let place = (options.place_for)(record);
+    // The photo's own stamp, when it has one (FR-044).
+    let settings = options.settings.for_photo(record.edits.stamp.as_ref());
     let p = plan(&PlanInput {
         width: upright.width,
         height: upright.height,
         capture,
-        settings: options.settings,
+        settings: &settings,
         print,
         max_long_edge: None,
         frame: frame.as_ref(),

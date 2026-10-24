@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, Crop, Languages, MapPin } from 'lucide-react'
+import { CalendarDays, Crop, Languages, MapPin, RotateCcw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -40,6 +41,8 @@ type SettingsPanelProps = {
   frame: FrameConfigApi
   fonts: FontsApi
   photoCount: number
+  /** Photos with their own stamp from the preview (FR-044). */
+  customStamps: number
   filter: CullFilter
 }
 
@@ -64,6 +67,7 @@ export function SettingsPanel({
   frame,
   fonts,
   photoCount,
+  customStamps,
   filter,
 }: SettingsPanelProps) {
   const { t } = useTranslation()
@@ -122,6 +126,18 @@ export function SettingsPanel({
               onCheckedChange={(enabled) => setStamp({ enabled })}
             />
           </div>
+
+          {customStamps > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={() => void commands.resetPhotoStamps()}
+            >
+              <RotateCcw data-icon="inline-start" />
+              {t('settings.resetCustomStamps', { count: customStamps })}
+            </Button>
+          )}
 
           <Collapse open={stamp?.enabled ?? false} className="space-y-3">
             <ToggleGroup

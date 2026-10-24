@@ -6,7 +6,7 @@ use crate::library::{Library, PhotoEdits, PhotoId};
 
 pub const MAX_STEPS: usize = 200;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Change {
     pub id: PhotoId,
     pub before: PhotoEdits,
@@ -28,10 +28,10 @@ impl History {
     ) -> Vec<PhotoId> {
         let step: Vec<Change> = edits
             .iter()
-            .map(|&(id, after)| Change {
-                id,
-                before: library.set_edits(id, after),
-                after,
+            .map(|(id, after)| Change {
+                id: *id,
+                before: library.set_edits(*id, after.clone()),
+                after: after.clone(),
             })
             .filter(|c| c.before != c.after)
             .collect();
@@ -49,7 +49,7 @@ impl History {
     pub fn undo(&mut self, library: &mut Library) -> Option<Vec<PhotoId>> {
         let step = self.undo.pop()?;
         for c in step.iter().rev() {
-            library.set_edits(c.id, c.before);
+            library.set_edits(c.id, c.before.clone());
         }
         let ids = step.iter().map(|c| c.id).collect();
         self.redo.push(step);
@@ -59,7 +59,7 @@ impl History {
     pub fn redo(&mut self, library: &mut Library) -> Option<Vec<PhotoId>> {
         let step = self.redo.pop()?;
         for c in &step {
-            library.set_edits(c.id, c.after);
+            library.set_edits(c.id, c.after.clone());
         }
         let ids = step.iter().map(|c| c.id).collect();
         self.undo.push(step);
@@ -105,7 +105,7 @@ mod tests {
             rating: 3,
             ..PhotoEdits::default()
         };
-        history.apply(&mut lib, &[(id, rated)]);
+        history.apply(&mut lib, &[(id, rated.clone())]);
         assert_eq!(lib.edits(id).rating, 3);
         assert!(history.undo(&mut lib).is_some());
         assert_eq!(lib.edits(id), PhotoEdits::default());

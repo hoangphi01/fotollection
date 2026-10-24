@@ -83,6 +83,40 @@ pub struct StampSettings {
 /// Longest stamp caption, in characters.
 pub const MAX_CAPTION_CHARS: usize = 80;
 
+impl StampSettings {
+    /// Brings a caption from a file within limits: no control characters, 80 characters.
+    pub fn sanitize(&mut self) {
+        self.caption = self
+            .caption
+            .chars()
+            .filter(|c| !c.is_control())
+            .take(MAX_CAPTION_CHARS)
+            .collect();
+    }
+
+    /// Checks a stamp coming over IPC (SECURITY.md §2).
+    pub fn validate(&self) -> Result<(), SettingsError> {
+        let caption = &self.caption;
+        if caption.chars().count() > MAX_CAPTION_CHARS || caption.chars().any(char::is_control) {
+            return Err(SettingsError::InvalidCaption);
+        }
+        Ok(())
+    }
+}
+
+impl RenderSettings {
+    /// The settings one photo is rendered with: its own stamp when it has one (FR-044).
+    pub fn for_photo(&self, stamp: Option<&StampSettings>) -> std::borrow::Cow<'_, Self> {
+        match stamp {
+            Some(own) => std::borrow::Cow::Owned(Self {
+                stamp: own.clone(),
+                ..self.clone()
+            }),
+            None => std::borrow::Cow::Borrowed(self),
+        }
+    }
+}
+
 /// Date stamp formats (FR-004).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
@@ -154,10 +188,7 @@ impl RenderSettings {
     /// placeholder: use [`Self::print_for`] wherever the photo is known.
     pub fn validate(&self) -> Result<PrintSize, SettingsError> {
         self.validate_custom_sizes()?;
-        let caption = &self.stamp.caption;
-        if caption.chars().count() > MAX_CAPTION_CHARS || caption.chars().any(char::is_control) {
-            return Err(SettingsError::InvalidCaption);
-        }
+        self.stamp.validate()?;
         if self.print_size == PrintSize::ORIGINAL_ID {
             return Ok(PrintSize::original(3, 2));
         }

@@ -260,6 +260,8 @@ pub struct PhotoList {
     pub photos: Vec<PhotoSummary>,
     /// All photos in the library, filtered or not.
     pub total: u32,
+    /// Photos with their own stamp set in the preview (FR-044), for the Reset button.
+    pub custom_stamps: u32,
 }
 
 /// The photos kept by `filter`, ordered by capture time (FR-003, FR-022).
@@ -270,10 +272,104 @@ pub fn list_photos(state: State<'_, AppState>, filter: CullFilter) -> Result<Pho
         .library
         .read()
         .map_err(|e| IpcError::internal(e.to_string()))?;
+    let custom_stamps = library.edited().filter(|(_, e)| e.stamp.is_some()).count();
     Ok(PhotoList {
         photos: library.summaries(&filter),
         total: u32::try_from(library.len()).unwrap_or(u32::MAX),
+        custom_stamps: u32::try_from(custom_stamps).unwrap_or(u32::MAX),
     })
+}
+
+/// One photo's stamp as the preview edits it (FR-044).
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PhotoStamp {
+    /// The stamp this photo prints with: its own, or the settings'.
+    pub stamp: fotollection_core::settings::StampSettings,
+    /// True when the photo has its own stamp.
+    pub custom: bool,
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn get_photo_stamp(state: State<'_, AppState>, id: PhotoId) -> Result<PhotoStamp, IpcError> {
+    let library = state
+        .library
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?;
+    if library.record(id).is_none() {
+        return Err(IpcError::new("photo.unknown", "Unknown photo"));
+    }
+    let own = library.edits(id).stamp;
+    let custom = own.is_some();
+    let stamp = match own {
+        Some(stamp) => stamp,
+        None => state
+            .settings
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .0
+            .stamp
+            .clone(),
+    };
+    Ok(PhotoStamp { stamp, custom })
+}
+
+/// Gives one photo its own stamp, or (`None`) makes it follow the settings again; undoable.
+#[tauri::command]
+#[specta::specta]
+pub fn set_photo_stamp(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: PhotoId,
+    stamp: Option<fotollection_core::settings::StampSettings>,
+) -> Result<HistoryState, IpcError> {
+    if let Some(s) = &stamp {
+        s.validate()
+            .map_err(|e| IpcError::new("settings.invalid", e.to_string()))?;
+    }
+    edit_photos(&app, &state, &[id], |_, e| e.stamp.clone_from(&stamp))
+}
+
+/// "Apply to all" in the preview: this photo's stamp becomes the setting for every photo,
+/// and no photo keeps its own any more (the photo edits are one undoable step).
+#[tauri::command]
+#[specta::specta]
+pub fn apply_stamp_to_all(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: PhotoId,
+) -> Result<HistoryState, IpcError> {
+    let stamp = get_photo_stamp(state.clone(), id)?.stamp;
+    state
+        .settings
+        .write()
+        .map_err(|e| IpcError::internal(e.to_string()))?
+        .0
+        .stamp = stamp;
+    state.persist();
+    reset_photo_stamps(app, state)
+}
+
+/// "Reset" in the gallery: every photo follows the settings' stamp again; undoable.
+#[tauri::command]
+#[specta::specta]
+pub fn reset_photo_stamps(
+    app: AppHandle,
+    state: State<'_, AppState>,
+) -> Result<HistoryState, IpcError> {
+    let ids: Vec<PhotoId> = state
+        .library
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?
+        .edited()
+        .filter(|(_, e)| e.stamp.is_some())
+        .map(|(id, _)| id)
+        .collect();
+    if ids.is_empty() {
+        return Ok(changed(&app, &state));
+    }
+    edit_photos(&app, &state, &ids, |_, e| e.stamp = None)
 }
 
 #[derive(Debug, Clone, Serialize, Type)]

@@ -131,7 +131,9 @@
     },
     "caption": "Line under the date",
     "captionPlaceholder": "e.g. SUMMER IN DEBRECEN",
-    "captionHint": "Printed in capitals without accents, across the photo."
+    "captionHint": "Printed in capitals without accents, across the photo.",
+    "resetCustomStamps_one": "Reset {{count}} photo with its own stamp",
+    "resetCustomStamps_other": "Reset {{count}} photos with their own stamp"
   },
   "print": {
     "original": "Original",
@@ -257,7 +259,9 @@
     "showOnPrint": "Show on print",
     "allPhotos": "Print settings apply to all photos for now.",
     "browse": "browse",
-    "close": "close"
+    "close": "close",
+    "thisPhoto": "This photo",
+    "applyToAll": "Apply to all photos"
   },
   "errors": {
     "internal": "Something went wrong",

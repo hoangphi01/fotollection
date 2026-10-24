@@ -28,8 +28,9 @@ import { useProject } from '@/features/project/use-project'
 export function App() {
   const { t } = useTranslation()
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
-  const { photos, total, thumbVersions, lastImport, error, importFolder } = useLibrary(filter)
-  const { settings, revision: renderRevision, update } = useRenderSettings()
+  const { photos, total, customStamps, thumbVersions, lastImport, error, importFolder } =
+    useLibrary(filter)
+  const { settings, revision: renderRevision, update, reload } = useRenderSettings()
   // Render and frame changes bump the same Rust counter; the newest one wins.
   const [frameRevision, setFrameRevision] = useState(0)
   const frame = useFrameConfig(setFrameRevision)
@@ -174,6 +175,7 @@ export function App() {
         revision={revision}
         settings={settings}
         onSettingsChange={(c) => void update(c)}
+        onSettingsReload={reload}
         frame={frame}
         fonts={fonts}
         onIndexChange={setSelected}
@@ -195,6 +197,7 @@ export function App() {
         frame={frame}
         fonts={fonts}
         photoCount={photos.length}
+        customStamps={customStamps}
         filter={filter}
       />
     </div>

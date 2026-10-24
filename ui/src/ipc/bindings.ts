@@ -134,6 +134,32 @@ export const commands = {
 	setPhotoRating: (ids: PhotoId[], rating: number) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_rating", { ids, rating })),
 	/**  Flags photos as pick or reject, or clears the flag (FR-022). */
 	setPhotoFlag: (ids: PhotoId[], flag: "pick" | "reject" | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_flag", { ids, flag })),
+	getPhotoStamp: (id: PhotoId) => typedError<PhotoStamp, IpcError>(__TAURI_INVOKE("get_photo_stamp", { id })),
+	/**  Gives one photo its own stamp, or (`None`) makes it follow the settings again; undoable. */
+	setPhotoStamp: (id: PhotoId, stamp: {
+	enabled: boolean,
+	format: DateFormat,
+	corner: Corner,
+	color: StampColor,
+	/**
+	 *  The place on the same line as the date (FR-005). The stamp is always set in the
+	 *  bundled LCD font; user fonts are for the info frame only (FR-042). Settings v4 and
+	 *  older had a `font` here, which is ignored.
+	 */
+	place?: boolean,
+	/**
+	 *  A line of the user's own text under the date (FR-036), shown in plain upper-case
+	 *  letters; empty for none.
+	 */
+	caption?: string,
+} | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_stamp", { id, stamp })),
+	/**
+	 *  "Apply to all" in the preview: this photo's stamp becomes the setting for every photo,
+	 *  and no photo keeps its own any more (the photo edits are one undoable step).
+	 */
+	applyStampToAll: (id: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("apply_stamp_to_all", { id })),
+	/**  "Reset" in the gallery: every photo follows the settings' stamp again; undoable. */
+	resetPhotoStamps: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("reset_photo_stamps")),
 	undo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("undo")),
 	redo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("redo")),
 	/**  User fonts (FR-042). */
@@ -527,6 +553,8 @@ export type PhotoList = {
 	photos: PhotoSummary[],
 	/**  All photos in the library, filtered or not. */
 	total: number,
+	/**  Photos with their own stamp set in the preview (FR-044), for the Reset button. */
+	customStamps: number,
 };
 
 /**  One photo's result inside its group. */
@@ -543,6 +571,14 @@ export type PhotoScore = {
 	/**  Faces whose eyes were found closed. */
 	closedEyes: number,
 	faces: number,
+};
+
+/**  One photo's stamp as the preview edits it (FR-044). */
+export type PhotoStamp = {
+	/**  The stamp this photo prints with: its own, or the settings'. */
+	stamp: StampSettings,
+	/**  True when the photo has its own stamp. */
+	custom: boolean,
 };
 
 /**  Grid data sent to the UI (FR-003). */

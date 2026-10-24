@@ -13,6 +13,7 @@ import { errorText } from '@/lib/errors'
 export function useLibrary(filter: CullFilter) {
   const [photos, setPhotos] = useState<PhotoSummary[]>([])
   const [total, setTotal] = useState(0)
+  const [customStamps, setCustomStamps] = useState(0)
   const [thumbVersions, setThumbVersions] = useState<Record<number, number>>({})
   const [lastImport, setLastImport] = useState<ImportSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -23,6 +24,7 @@ export function useLibrary(filter: CullFilter) {
         if (result.status === 'ok') {
           setPhotos(result.data.photos)
           setTotal(result.data.total)
+          setCustomStamps(result.data.customStamps)
         } else setError(errorText(result.error))
       })
     void load()
@@ -44,5 +46,5 @@ export function useLibrary(filter: CullFilter) {
     else if (result.data) setLastImport(result.data)
   }, [])
 
-  return { photos, total, thumbVersions, lastImport, error, importFolder }
+  return { photos, total, customStamps, thumbVersions, lastImport, error, importFolder }
 }

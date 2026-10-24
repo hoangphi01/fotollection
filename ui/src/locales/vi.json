@@ -123,7 +123,8 @@
     },
     "caption": "Dòng chữ dưới ngày",
     "captionPlaceholder": "VD: MUA HE O DEBRECEN",
-    "captionHint": "In bằng chữ hoa không dấu, chạy ngang ảnh."
+    "captionHint": "In bằng chữ hoa không dấu, chạy ngang ảnh.",
+    "resetCustomStamps_other": "Đặt lại {{count}} ảnh có dấu riêng"
   },
   "print": {
     "original": "Gốc",
@@ -246,7 +247,9 @@
     "showOnPrint": "Hiện trên ảnh in",
     "allPhotos": "Hiện tại thiết lập in áp dụng cho mọi ảnh.",
     "browse": "chuyển ảnh",
-    "close": "đóng"
+    "close": "đóng",
+    "thisPhoto": "Riêng ảnh này",
+    "applyToAll": "Áp dụng cho tất cả"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",

@@ -17,11 +17,7 @@ import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { Switch } from '@/components/ui/switch'
-import { Collapse } from '@/components/layout/collapse'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { CullControls } from '@/features/culling/cull-controls'
 import { handleCullKey } from '@/features/culling/cull-keys'
@@ -33,7 +29,6 @@ import { PrintSizePicker } from '@/features/settings/print-size-picker'
 import { useIpcQuery } from '@/features/settings/use-ipc-query'
 import {
   commands,
-  type DateFormat,
   type CropGeometry,
   type PhotoDetails,
   type PhotoSummary,
@@ -44,6 +39,7 @@ import { DPI_STYLE } from '@/lib/crop-geometry'
 import { formatNumber } from '@/lib/format'
 import { previewUrl, sourceUrl } from '@/lib/photo-url'
 import { CropEditor } from './crop-editor'
+import { PhotoStampControls } from './photo-stamp-controls'
 import { cn } from '@/lib/utils'
 
 type PreviewDialogProps = {
@@ -52,17 +48,14 @@ type PreviewDialogProps = {
   revision: number
   settings: RenderSettings | null
   onSettingsChange: (change: (current: RenderSettings) => RenderSettings) => void
+  /** The shared settings changed in Rust ("Apply to all"); fetch them again. */
+  onSettingsReload: () => void
   frame: FrameConfigApi
   fonts: FontsApi
   onIndexChange: (index: number) => void
   onClose: () => void
 }
 
-const FORMATS: { value: DateFormat; label: string }[] = [
-  { value: 'iso', label: '2026-07-14' },
-  { value: 'dmy', label: '14.07.2026' },
-  { value: 'retro', label: "'26 07 14" },
-]
 
 function formatCaptureLong(capture: string): string {
   const date = new Date(capture)
@@ -135,6 +128,7 @@ export function PreviewDialog({
   revision,
   settings,
   onSettingsChange,
+  onSettingsReload,
   frame,
   fonts,
   onIndexChange,
@@ -146,7 +140,6 @@ export function PreviewDialog({
   const printSizes = useIpcQuery(commands.listPrintSizes)
   const src = photo ? previewUrl(photo.id, revision) : ''
   const [loadedSrc, setLoadedSrc] = useState('')
-  const stamp = settings?.stamp
   const geometry = useCropGeometry(photo?.id, revision)
   const [cropping, setCropping] = useState(false)
 
@@ -354,41 +347,13 @@ export function PreviewDialog({
             </Section>
 
             <Section icon={<CalendarDays className="size-4" />} title={t('viewer.dateStamp')}>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="dialog-stamp" className="text-sm font-normal">
-                  {t('viewer.showOnPrint')}
-                </Label>
-                <Switch
-                  id="dialog-stamp"
-                  checked={stamp?.enabled ?? false}
-                  onCheckedChange={(enabled) =>
-                    onSettingsChange((s) => ({ ...s, stamp: { ...s.stamp, enabled } }))
-                  }
+              {photo && (
+                <PhotoStampControls
+                  photoId={photo.id}
+                  revision={revision}
+                  onAppliedToAll={onSettingsReload}
                 />
-              </div>
-              <Collapse open={stamp?.enabled ?? false}>
-              <ToggleGroup
-                type="single"
-                variant="outline"
-                size="sm"
-                className="w-full"
-                value={stamp?.format ?? ''}
-                onValueChange={(format) =>
-                  format &&
-                  onSettingsChange((s) => ({
-                    ...s,
-                    stamp: { ...s.stamp, format: format as DateFormat },
-                  }))
-                }
-              >
-                {FORMATS.map((f) => (
-                  <ToggleGroupItem key={f.value} value={f.value} className="flex-1 font-mono text-[11px]">
-                    {f.label}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
-              </Collapse>
-              <p className="text-xs text-muted-foreground">{t('viewer.allPhotos')}</p>
+              )}
             </Section>
           </div>
 
