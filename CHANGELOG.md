@@ -71,6 +71,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Releases (ADR-0021):** one version for the whole app, following Semantic Versioning (0.x until the MVP is complete). `scripts/release.sh` prepares a release commit; when it reaches `main`, CI builds the macOS (universal) and Windows installers and publishes them on GitHub Releases with checksums and first-launch steps. There is no in-app updater: the app stays fully offline and shows its version in the sidebar (FR-021).
 - **Previews are faster: 26 → 17 ms**, now faster than the same work in Chromium. On-screen JPEGs (previews, thumbnails) use 4:2:0 and plain Huffman tables; exported prints keep 4:4:4 and optimized tables.
 - Thumbnails no longer wait behind background work: there are separate interactive and background pools, and the core is optimized in dev builds.
 - CSP now allows inline styles (scripts stay strict) so Radix overlays work in release builds ([ADR-0013](docs/adr/0013-csp-inline-styles.md)).

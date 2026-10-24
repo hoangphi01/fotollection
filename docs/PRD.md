@@ -235,9 +235,13 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - Errors from the Rust core are shown in the UI language, translated from their stable `code` ([SECURITY.md §8](SECURITY.md#8-resilience-and-error-handling)). The English `message` is the fallback.
 - **Out of scope:** text printed on photos (the info frame's "Shot on …" line and the date stamp) does not follow the UI language. It is print content and stays as configured.
 
-### FR-021 — Auto-update
+### FR-021 — Manual updates
 
-**P2.** Signed in-app updates from GitHub Releases. Checking for updates is opt-in, consistent with [NFR-006](#nfr-006--offline-and-zero-telemetry).
+**P2.** New versions are published on GitHub Releases and the website; people download and install them when they choose. There is **no in-app updater and no update check**, so the app never calls the network on its own ([NFR-006](#nfr-006--offline-and-zero-telemetry), [ADR-0021](adr/0021-versioning-and-automated-releases.md)).
+
+- The app shows its version (for example `v0.1.0`) in the sidebar, next to the byline.
+- Installing over an older version keeps settings, camera profiles and projects; their files are migrated on first open ([DATABASE.md](DATABASE.md)).
+- Release notes list user-visible changes and any file format that changed ([RELEASE.md](RELEASE.md)).
 
 ### FR-022 — Culling (rate, flag, filter)
 
@@ -509,6 +513,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Structure:** a summary block, then one section per day: date, places in visiting order, photo count, a strip of that day's best shots, and notable facts (the longest burst, the widest and longest focal length used). It builds on trip grouping ([FR-012](#fr-012--trip-auto-grouping)) when that exists; until then a trip is the whole album or a date range.
 - **Output:** shown in the app, and exportable as a self-contained HTML or PDF page, and optionally as one extra print (a journal card) in the chosen print size. Every sentence can be edited before export.
 - **Statistics shown are measured, never guessed.** Where the app is unsure (for example a place inferred only from time), it says so ("probably Debrecen").
+- **Journal entries from editing (idea from the instax app).** Every editing session is also a journal entry: when the user works on a photo (crop, straighten, date stamp, the caption line, stars, pick), the app records a short entry with the time, the photo and what was done, and the caption the user typed becomes that entry's text. The trip journal gathers these entries per day next to the facts derived from the album, so the diary is written while editing, not afterwards. This needs an edit history saved in the project (a later project schema).
 
 ### FR-050 — Print basket
 

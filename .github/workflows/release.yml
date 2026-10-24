@@ -1,0 +1,135 @@
+name: release
+
+# Releases when the version in Cargo.toml has no tag yet (RELEASE.md §4, ADR-0021).
+# `scripts/release.sh` makes that commit; every other push stops after `detect`.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      release: ${{ steps.version.outputs.release }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: version
+        run: |
+          version=$(sed -nE 's/^version = "([^"]+)"$/\1/p' Cargo.toml | head -n 1)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if [ "$version" = "0.0.1" ] || git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            echo "v$version is already released (or the placeholder); nothing to do."
+          else
+            echo "release=true" >> "$GITHUB_OUTPUT"
+            echo "Releasing v$version."
+          fi
+          case "$version" in *-*) echo "prerelease=true" >> "$GITHUB_OUTPUT" ;; *) echo "prerelease=false" >> "$GITHUB_OUTPUT" ;; esac
+
+  check:
+    needs: detect
+    if: needs.detect.outputs.release == 'true'
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    needs: [detect, check]
+    name: build (${{ matrix.os }})
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - os: macos-latest
+            targets: aarch64-apple-darwin,x86_64-apple-darwin
+            args: --target universal-apple-darwin --bundles dmg
+            bundle: target/universal-apple-darwin/release/bundle/dmg/*.dmg
+          - os: windows-latest
+            targets: x86_64-pc-windows-msvc
+            args: --bundles msi,nsis
+            bundle: |
+              target/release/bundle/msi/*.msi
+              target/release/bundle/nsis/*-setup.exe
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      # Reads the pinned toolchain from rust-toolchain.toml and adds the targets.
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: ${{ matrix.targets }}
+          cache: false
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Build installers (macOS ad-hoc signed, ADR-0009)
+        run: npm run build -- ${{ matrix.args }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          path: ${{ matrix.bundle }}
+          if-no-files-found: error
+
+  publish:
+    needs: [detect, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the tag and the release
+      actions: write # start the website build
+    env:
+      GH_TOKEN: ${{ github.token }}
+      VERSION: ${{ needs.detect.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Checksums
+        working-directory: dist
+        run: sha256sum -- * > SHA256SUMS.txt && cat SHA256SUMS.txt
+
+      - name: Release notes from the CHANGELOG
+        run: |
+          awk -v v="$VERSION" '
+            $0 ~ "^## \\[" v "\\]" { on=1; next }
+            on && /^## \[/ { exit }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          test -s notes.md || { echo "CHANGELOG.md has no section for $VERSION"; exit 1; }
+          { echo; cat .github/release-notes.md; } >> notes.md
+
+      - name: Tag and publish
+        run: |
+          flags=""
+          [ "${{ needs.detect.outputs.prerelease }}" = "true" ] && flags="--prerelease"
+          gh release create "v$VERSION" dist/* \
+            --target "$GITHUB_SHA" \
+            --title "Fotollection v$VERSION" \
+            --notes-file notes.md $flags
+
+      - name: Rebuild the website for the new version
+        run: |
+          if [ -f .github/workflows/pages.yml ]; then gh workflow run pages.yml --ref main; fi

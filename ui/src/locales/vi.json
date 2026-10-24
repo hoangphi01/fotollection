@@ -12,7 +12,8 @@
     "filtered_other": "{{shown}} / {{count}} ảnh",
     "enterToPreview": "Enter để xem trước",
     "noMatch": "Không có ảnh nào khớp bộ lọc.",
-    "showAll": "Hiện tất cả ảnh"
+    "showAll": "Hiện tất cả ảnh",
+    "versionByline": "v{{version}} · by @hoangphi01"
   },
   "library": {
     "title": "Thư viện",

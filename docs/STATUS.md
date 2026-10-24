@@ -109,7 +109,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | FR-018 | QR code on photo back | 3 | Not Started | |
 | FR-019 | Print service upload | 3 | Not Started | |
 | FR-020 | Localization | 1 | Done | English (default) + Vietnamese via i18next ([ADR-0015](adr/0015-ui-localization-i18next.md)): every UI string, Rust error codes, native menu, window title and file dialogs; selector in settings, stored in `settings.json` v3; `check-i18n` gate in lint. German later |
-| FR-021 | Auto-update | 3 | Not Started | |
+| FR-021 | Manual updates | 3 | In Progress | No updater by design (ADR-0021). ✓ Version in the sidebar byline. ✓ `scripts/release.sh` + `release.yml` (build, tag, publish on a version change). Next: the website |
 | FR-022 | Culling (rate, flag, filter) | 1 | In Progress | Stars `0`–`5`, `P`/`X`/`U` in grid and preview, undoable; filter by flag + min rating, export = filtered set (`fr_022_*`). Pending: date/camera/GPS/DPI filters, multi-select, loupe prefetch (NFR-012) |
 | FR-023 | Projects, autosave and undo | 1 | Done | `.fotollection` document like `.docx`: Save / Save As / Open / New with Rust-side dialogs, unsaved-changes question, title `Trip — Edited`, native File menu (macOS) and Ctrl shortcuts (Windows), Relink dialog for moved folders, file association. Self-contained ZIP bundle ([ADR-0016](adr/0016-self-contained-project-bundle.md)); fonts installed once, ids remapped; session autosave underneath. `fr_023_*` pass (incl. open on another machine, relink). File association to be checked by hand in a release build |
 | FR-024 | Copies and order summary | 2 | Not Started | |
@@ -138,7 +138,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | FR-048 | Normal and Professional modes | 1 | Not Started | **Next.** Normal = instant mode: open → keep/drop → export at 300 DPI for the print size, q90; Professional = everything so far. Shared library and project |
 | FR-050 | Print basket | 1 | Not Started | Planned: add to basket after detailed editing; normal export plus an optional extra folder with the basket |
 | FR-051 | Landmark recognition | 2 | Not Started | Future: offline landmark model as an optional pack; licence research done (Google on-device classifiers, Apache-2.0); needs an ADR and a size/speed spike |
-| FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print |
+| FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print; every editing session adds a journal entry (instax-style) |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
 
 ## Non-functional requirements

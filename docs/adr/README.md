@@ -12,7 +12,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0006](0006-docs-as-code.md) | Docs-as-code with requirement traceability | Accepted | 2026-10-23 |
 | [0007](0007-ui-react-shadcn-lucide.md) | UI stack: React + shadcn/ui + Lucide | Accepted | 2026-10-23 |
 | [0008](0008-license-gpl3-with-relicensing-option.md) | License: GPL-3.0, keeping the option to relicense | Accepted | 2026-10-23 |
-| [0009](0009-unsigned-distribution.md) | Ship unsigned builds (no paid certificates) | Accepted | 2026-10-23 |
+| [0009](0009-unsigned-distribution.md) | Ship unsigned builds (no paid certificates) | Accepted, updater part superseded by 0021 | 2026-10-23 |
 | [0010](0010-project-file-format.md) | Project file format for culling and edits | Superseded by 0016 | 2026-10-23 |
 | [0011](0011-photo-style-looks.md) | Photo Style looks via baked 3D LUTs, global adjustments only | Accepted | 2026-10-23 |
 | [0012](0012-pure-rust-codecs-first.md) | Start with pure-Rust JPEG codecs behind a trait | Accepted | 2026-10-23 |
@@ -24,6 +24,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0018](0018-face-models-and-runtime.md) | Face and eye models for best-shot suggestions, run with tract | Accepted | 2026-10-24 |
 | [0019](0019-grouping-by-visual-signature.md) | Group similar shots by a layout and colour signature, scored on labelled photos | Accepted | 2026-10-24 |
 | [0020](0020-bundled-brand-logos.md) | Bundle public-domain camera-brand logos for the info frame | Accepted | 2026-10-24 |
+| [0021](0021-versioning-and-automated-releases.md) | One SemVer version, released automatically when it changes on `main`; no in-app updater | Accepted | 2026-10-24 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

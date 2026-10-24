@@ -54,7 +54,7 @@
 | FR-050 | Print basket: the photos that will really be printed, exported to an extra folder |
 | FR-020 | Localization (English and Vietnamese; German later) |
 
-**Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v0.1.0 is released.
+**Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v1.0.0 is released. Until then, each work stage ships as a 0.y.0 preview release, starting with v0.1.0 ([RELEASE.md](RELEASE.md#1-versioning)).
 
 ### Phase 1 work order (2026-10-23)
 
@@ -105,7 +105,7 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 | FR-046 | Swipe culling (full-screen ↑ / ↓ print list) |
 | FR-047 | Film looks (Fujifilm-style film simulations, own names and LUTs) |
 | FR-051 | Landmark recognition: suggest a place from what the photo shows (offline, optional model pack) |
-| FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range) |
+| FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 
 ## Phase 3 — Pro & growth
 
@@ -115,7 +115,7 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 | FR-017 | Photo book layout preview |
 | FR-018 | QR code on photo back |
 | FR-019 | Print service upload |
-| FR-021 | Auto-update |
+| FR-021 | Manual updates (no in-app updater, ADR-0021) |
 | FR-029 | Output sharpening |
 | FR-035 | Multi-photo layouts |
 | FR-037 | Contact sheet |

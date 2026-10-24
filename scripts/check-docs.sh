@@ -85,6 +85,15 @@ for id in NFR-001 NFR-002 NFR-003 NFR-004; do
   grep -E "^\| \[$id\]" docs/OPTIMIZATION.md | grep -qF "$text" || fail "$id budget '$text' in bench/results/budgets.json does not match docs/OPTIMIZATION.md §3"
 done
 
+echo "• One app version everywhere (RELEASE.md §1)"
+version=$(sed -nE 's/^version = "([^"]+)"$/\1/p' Cargo.toml | head -n 1)
+grep -q "\"version\": \"$version\"" ui/package.json || fail "ui/package.json version differs from Cargo.toml ($version)"
+grep -A1 '"name": "fotollection-ui"' package-lock.json | grep -q "\"version\": \"$version\"" \
+  || fail "package-lock.json version of fotollection-ui differs from Cargo.toml ($version)"
+grep -q '"version"' src-tauri/tauri.conf.json && fail "tauri.conf.json must not carry its own version"
+# 0.0.1 is the pre-release placeholder; every real version has its CHANGELOG section.
+[ "$version" = "0.0.1" ] || grep -q "^## \[$version\]" CHANGELOG.md || fail "CHANGELOG.md has no section for $version"
+
 if [ "$failures" -gt 0 ]; then
   echo "check-docs: $failures problem(s) found"
   exit 1

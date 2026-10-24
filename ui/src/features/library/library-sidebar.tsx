@@ -10,12 +10,12 @@ import {
   Save,
   TriangleAlert,
 } from 'lucide-react'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import type { ImportSummary, PhotoSummary } from '@/ipc/bindings'
+import { commands, type ImportSummary, type PhotoSummary } from '@/ipc/bindings'
 import { ProjectName } from '@/features/project/project-name'
 import type { ProjectApi } from '@/features/project/use-project'
 import { errorText } from '@/lib/errors'
@@ -39,6 +39,11 @@ export function LibrarySidebar({
   onShowRelink,
 }: LibrarySidebarProps) {
   const { t } = useTranslation()
+  // The app's own version, so people know which release they run (FR-021, no update check).
+  const [version, setVersion] = useState<string | null>(null)
+  useEffect(() => {
+    void commands.appInfo().then((info) => setVersion(info.appVersion))
+  }, [])
   const folders = useMemo(() => {
     const counts = new Map<string, number>()
     for (const p of photos) counts.set(p.folderName, (counts.get(p.folderName) ?? 0) + 1)
@@ -59,7 +64,9 @@ export function LibrarySidebar({
         />
         <div className="flex min-w-0 items-baseline gap-1.5">
           <span className="font-heading text-sm font-semibold tracking-tight">Fotollection</span>
-          <span className="truncate text-xs text-muted-foreground">{t('app.byline')}</span>
+          <span className="truncate text-xs text-muted-foreground">
+            {version ? t('app.versionByline', { version }) : t('app.byline')}
+          </span>
         </div>
       </div>
       <Separator />

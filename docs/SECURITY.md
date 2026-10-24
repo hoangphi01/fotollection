@@ -18,7 +18,7 @@ The app processes **untrusted image files** and displays **untrusted metadata** 
 | Supply chain (crates, npm, native libs) | **YES** | Compromised dependency could exfiltrate photos |
 | GPS / metadata leakage in exported files | **YES** | Mitigated by [FR-010](PRD.md#fr-010--metadata-privacy-on-export) |
 | Resource exhaustion (decompression bombs, huge dimensions) | **YES** | Must fail one photo, not the app ([NFR-011](PRD.md#nfr-011--robustness)) |
-| Tampered update / installer | **YES** | Signed updater manifest + published SHA-256 checksums. Installers are unsigned for now ([ADR-0009](adr/0009-unsigned-distribution.md)) |
+| Tampered update / installer | **YES** | No updater (ADR-0021); published SHA-256 checksums over HTTPS. Installers are unsigned for now ([ADR-0009](adr/0009-unsigned-distribution.md)) |
 | Network attacks (MITM, SSRF, CSRF) | **Minimal** | The app makes no network requests by default ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)) |
 | SQL injection, server compromise | **NO** | No database, no server |
 
