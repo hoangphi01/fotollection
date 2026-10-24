@@ -5,7 +5,7 @@
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 1 — MVP, Stages 1–3 done, first preview release under way
+## Current phase: Phase 1 — MVP, Stages 1–3 done, v0.1.0 released
 
 **Where we are (2026-10-24).** The app works end to end for **JPEG, PNG and HEIC**:
 
@@ -17,7 +17,7 @@
 
 The interface is in English and Vietnamese, themed from the logo (teal and wood, photos on near-neutral ground). Measured performance meets every budget ([RESULT.md](RESULT.md)): preview 17 ms (faster than Chromium), export 18 photos/s, memory flat at 1.45 GB for 5,035 photos, and the export keeps the original's colour and detail (mean ΔE2000 0.19).
 
-**Shipping.** Versioning and automatic releases are in place ([ADR-0021](adr/0021-versioning-and-automated-releases.md), [RELEASE.md](RELEASE.md)): a version change on `main` builds, tags and publishes the macOS and Windows installers. `v0.1.0-beta.1` is the trial run; `v0.1.0`, the first public preview, follows once it is checked. The website is live at <https://hoangphi01.github.io/fotollection/> (English and Vietnamese, [site/README.md](../site/README.md)).
+**Shipping.** Versioning and automatic releases are in place ([ADR-0021](adr/0021-versioning-and-automated-releases.md), [RELEASE.md](RELEASE.md)): a version change on `main` builds, tags and publishes the macOS and Windows installers. **[v0.1.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.1.0), the first public preview, was published on 2026-10-24** (universal `.dmg`, `.msi`, `-setup.exe`, `SHA256SUMS.txt`), after the `v0.1.0-beta.1` pipeline trial. The website is live at <https://hoangphi01.github.io/fotollection/> (English and Vietnamese, [site/README.md](../site/README.md)): download buttons for the latest release, privacy section, print-shop sizes for dm and Rossmann, screenshots of the real app in alternating rows, benchmark charts, a VietQR "buy me a coffee" section, and a link to the author's blog.
 
 ### Done, by stage ([ROADMAP.md — Phase 1 work order](ROADMAP.md#phase-1-work-order-2026-10-23))
 
@@ -61,7 +61,7 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 
 ### Next, in order
 
-1. **Release `v0.1.0`:** finish the `v0.1.0-beta.1` trial run, smoke-test the installers, then `scripts/release.sh 0.1.0`.
+1. **Smoke-test `v0.1.0`** on macOS (Open Anyway) and Windows; apply to SignPath Foundation for Windows signing; add a Ko-fi or GitHub Sponsors link once the account exists. Decide on the trip-by-trip Photos-library flow ([ROADMAP ideas](ROADMAP.md#ideas-backlog-not-yet-requirements)).
 2. **Stage C, manual places and renaming (FR-032, FR-005):** search a place, set it for one or many photos, rename a place everywhere; project schema v6. Ships as `v0.2.0`.
 3. **Stage D, place suggestions from phone photos (FR-031):** borrow GPS from photos taken at the same time and place, with confidence levels, measured on a mixed camera + phone folder, with a new ADR.
 4. **Normal mode (FR-048, NFR-015):** open → keep/drop → export at 300 DPI and q90, measured against Professional.
