@@ -11,10 +11,10 @@ en:
   nav_download: Download
   star: Star on GitHub
   badge: Free · Open source · No account
-  hero_title_1: Photos ready to
-  hero_accent: print
-  hero_title_2: . Fully offline.
-  hero_lead: Pick the best shots, add a film-style date stamp or a camera info frame, crop to the print size and export at full quality. Everything runs on your computer; your photos never leave it.
+  hero_title_1: Overwhelmed by
+  hero_accent: thousands of photos
+  hero_title_2: " after a trip?"
+  hero_lead: Not sure which to keep and which to delete to save space? Try Fotollection. Fully automatic and free.
   download_mac: Download for macOS
   download_win: Download for Windows
   download_note: macOS 11+ (Apple Silicon and Intel) · Windows 10/11
@@ -48,6 +48,12 @@ en:
   q3_value: 0 bytes
   q3_label: sent anywhere. The app works without a network.
   quality_more: How it was measured
+  nav_numbers: Numbers
+  charts_title: Measured, not promised
+  charts_lead: Every number comes from real photos on an ordinary laptop (Apple M3, 16 GB), and the scripts are in the repository.
+  chart_budgets: Speed and memory, against the budgets set before the code was written
+  chart_quality: What the export keeps of the original, against a typical web editor
+  chart_bestshot: Best-shot suggestions, scored against photos sorted by hand
   install_title: Install in a minute
   install_lead: The installers are not signed with a paid certificate yet, so the first launch needs one extra click.
   mac_title: macOS
@@ -79,10 +85,10 @@ vi:
   nav_download: Tải về
   star: Star trên GitHub
   badge: Miễn phí · Mã nguồn mở · Không cần tài khoản
-  hero_title_1: Ảnh sẵn sàng để
-  hero_accent: in
-  hero_title_2: . Hoàn toàn offline.
-  hero_lead: Chọn ảnh đẹp nhất, thêm dấu ngày kiểu máy film hoặc khung thông tin máy ảnh, crop đúng khổ in rồi xuất giữ nguyên chất lượng. Mọi thứ chạy trên máy của bạn; ảnh không bao giờ rời khỏi máy.
+  hero_title_1: Bối rối với
+  hero_accent: hàng nghìn ảnh
+  hero_title_2: " sau chuyến đi?"
+  hero_lead: Không biết nên giữ tấm nào, bỏ tấm nào để tiết kiệm bộ nhớ? Hãy thử Fotollection. Hoàn toàn tự động và miễn phí.
   download_mac: Tải cho macOS
   download_win: Tải cho Windows
   download_note: macOS 11+ (Apple Silicon và Intel) · Windows 10/11
@@ -116,6 +122,12 @@ vi:
   q3_value: 0 byte
   q3_label: gửi đi bất kỳ đâu. App chạy không cần mạng.
   quality_more: Cách đo
+  nav_numbers: Số đo
+  charts_title: Đo thật, không hứa suông
+  charts_lead: Mọi con số đều đo trên ảnh thật, bằng một chiếc laptop bình thường (Apple M3, 16 GB); script đo nằm ngay trong repo.
+  chart_budgets: Tốc độ và bộ nhớ, so với ngân sách đặt ra trước khi viết code
+  chart_quality: Bản xuất giữ lại được bao nhiêu so với ảnh gốc, so với một trình sửa ảnh web thông thường
+  chart_bestshot: Gợi ý ảnh đẹp nhất, chấm điểm so với ảnh do người chọn tay
   install_title: Cài đặt trong một phút
   install_lead: Bộ cài chưa được ký bằng chứng chỉ trả phí, nên lần mở đầu tiên cần thêm một cú nhấp.
   mac_title: macOS

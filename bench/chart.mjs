@@ -10,7 +10,7 @@
 //   bench.svg          Fotollection vs Chromium (reference: the browser)
 //   bench-preview.svg  where the warm preview time goes (reference: budget and Chromium)
 
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 const root = new URL('..', import.meta.url).pathname
@@ -190,20 +190,33 @@ const LEFT = 190
 const RIGHT = 110
 const PLOT = W - LEFT - RIGHT
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
-const STYLE = `<style>
-  .bg{fill:#fcfcfb} .t1{fill:#1f1f1e;font:600 13px system-ui,-apple-system,Segoe UI,sans-serif}
-  .t2{fill:#52514c;font:13px system-ui,-apple-system,Segoe UI,sans-serif}
-  .t3{fill:#6f6e68;font:12px system-ui,-apple-system,Segoe UI,sans-serif}
-  .h{font-size:15px} .num{font-variant-numeric:tabular-nums} .axis{stroke:#c9c8c1;stroke-width:1}
-  .ref{stroke:#52514c;stroke-width:1.5;stroke-dasharray:4 3} .refw{stroke:#eb6834;stroke-width:1.5;stroke-dasharray:4 3}
-  .s1{fill:#2a78d6} .old{fill-opacity:.45} .s2{fill:#eb6834} .s3{fill:#1baf7a} .s4{fill:#eda100} .s5{fill:#e87ba4} .gap{stroke:#fcfcfb;stroke-width:2}
+// Two themes: the docs' neutral one (README, RESULT), and the website's, taken from the logo
+// (site/assets/css/site.css). Both pairs pass the dataviz palette validator on their surface.
+const THEMES = {
+  docs: {
+    light: { bg: '#fcfcfb', t1: '#1f1f1e', t2: '#52514c', t3: '#6f6e68', axis: '#c9c8c1', s1: '#2a78d6', s2: '#eb6834', s3: '#1baf7a', s4: '#eda100', s5: '#e87ba4' },
+    dark: { bg: '#1a1a19', t1: '#f0efec', t2: '#c3c2b7', t3: '#9d9c93', axis: '#45443f', s1: '#3987e5', s2: '#d95926', s3: '#199e70', s4: '#c98500', s5: '#d55181' },
+  },
+  site: {
+    light: { bg: '#fffaee', t1: '#2b2219', t2: '#514435', t3: '#7a6a55', axis: '#e2d4b3', s1: '#008a74', s2: '#b5652a', s3: '#1baf7a', s4: '#eda100', s5: '#e87ba4' },
+    dark: { bg: '#262019', t1: '#f3ead6', t2: '#d8cab0', t3: '#a8977c', axis: '#3b3127', s1: '#21a593', s2: '#cc7f3e', s3: '#199e70', s4: '#c98500', s5: '#d55181' },
+  },
+}
+const styleFor = ({ light: l, dark: d }) => `<style>
+  .bg{fill:${l.bg}} .t1{fill:${l.t1};font:600 13px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t2{fill:${l.t2};font:13px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t3{fill:${l.t3};font:12px system-ui,-apple-system,Segoe UI,sans-serif}
+  .h{font-size:15px} .num{font-variant-numeric:tabular-nums} .axis{stroke:${l.axis};stroke-width:1}
+  .ref{stroke:${l.t2};stroke-width:1.5;stroke-dasharray:4 3} .refw{stroke:${l.s2};stroke-width:1.5;stroke-dasharray:4 3}
+  .s1{fill:${l.s1}} .old{fill-opacity:.45} .s2{fill:${l.s2}} .s3{fill:${l.s3}} .s4{fill:${l.s4}} .s5{fill:${l.s5}} .gap{stroke:${l.bg};stroke-width:2}
   .in{fill:#fff}
   @media (prefers-color-scheme: dark){
-    .bg{fill:#1a1a19} .t1{fill:#f0efec} .t2{fill:#c3c2b7} .t3{fill:#9d9c93} .axis{stroke:#45443f}
-    .ref{stroke:#c3c2b7} .refw{stroke:#d95926}
-    .s1{fill:#3987e5} .s2{fill:#d95926} .s3{fill:#199e70} .s4{fill:#c98500} .s5{fill:#d55181} .gap{stroke:#1a1a19}
+    .bg{fill:${d.bg}} .t1{fill:${d.t1}} .t2{fill:${d.t2}} .t3{fill:${d.t3}} .axis{stroke:${d.axis}}
+    .ref{stroke:${d.t2}} .refw{stroke:${d.s2}}
+    .s1{fill:${d.s1}} .s2{fill:${d.s2}} .s3{fill:${d.s3}} .s4{fill:${d.s4}} .s5{fill:${d.s5}} .gap{stroke:${d.bg}}
   }
 </style>`
+let STYLE = styleFor(THEMES.docs)
 
 function doc(title, desc, height, body) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -16 ${W + 32} ${height + 32}" width="${W + 32}" height="${height + 32}" role="img" aria-labelledby="t d">
@@ -465,5 +478,13 @@ for (const lang of ['en', 'vi']) {
   for (const [name, svg] of Object.entries(charts(lang))) {
     writeFileSync(join(images, `${name}${lang === 'en' ? '' : '-vi'}.svg`), svg)
   }
+}
+// The website shows three of them in its own colours (site/README.md).
+STYLE = styleFor(THEMES.site)
+const SITE_CHARTS = ['bench-budgets', 'bench-quality', 'bench-bestshot']
+mkdirSync(join(root, 'site/assets/img/charts'), { recursive: true })
+for (const lang of ['en', 'vi']) {
+  const all = charts(lang)
+  for (const name of SITE_CHARTS) writeFileSync(join(root, 'site/assets/img/charts', `${name}-${lang}.svg`), all[name])
 }
 console.log(JSON.stringify({ measured, rust, web, inflight8, batch }, null, 2))

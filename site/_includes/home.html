@@ -66,7 +66,25 @@
   </div>
 </section>
 
-<section class="section tint" id="install">
+<section class="section tint" id="numbers">
+  <div class="wrap">
+    <h2>{{ t.charts_title }}</h2>
+    <p class="lead narrow">{{ t.charts_lead }}</p>
+    <div class="charts">
+      {%- assign charts = "budgets,quality,bestshot" | split: "," -%}
+      {%- for c in charts -%}
+      {%- capture key %}chart_{{ c }}{% endcapture -%}
+      <figure class="card chart">
+        <img src="{{ '/assets/img/charts/bench-' | append: c | append: '-' | append: page.lang | append: '.svg' | relative_url }}" width="752" alt="{{ t[key] }}" loading="lazy" decoding="async" />
+        <figcaption>{{ t[key] }}</figcaption>
+      </figure>
+      {%- endfor -%}
+    </div>
+    <p><a class="more" href="{{ site.repo_url }}/blob/main/docs/RESULT.md">{{ t.quality_more }} {% include icons/arrow-right.svg %}</a></p>
+  </div>
+</section>
+
+<section class="section" id="install">
   <div class="wrap">
     <h2>{{ t.install_title }}</h2>
     <p class="lead narrow">{{ t.install_lead }}</p>

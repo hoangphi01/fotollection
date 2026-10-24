@@ -153,14 +153,14 @@ p { margin: 0; }
 /* Hero */
 .hero { padding: 48px 0 24px; }
 .hero-text { max-width: 760px; }
-.badge { display: inline-block; padding: 6px 12px; border-radius: 999px; background: var(--leaf-soft); color: var(--leaf); font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--leaf) 25%, transparent); background: var(--leaf-soft); color: var(--leaf); font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; }
 .cta { display: flex; flex-wrap: wrap; gap: 10px; margin: 28px 0 12px; }
-/* Retro buttons: a solid outline and an offset "printed" shadow in the frame's wood. */
-.button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 48px; padding: 0 20px; border-radius: 12px; border: 2px solid var(--ink); background: var(--surface); text-decoration: none; font-weight: 600; flex: 1 1 100%; box-shadow: 3px 3px 0 var(--wood); transition: transform 0.12s, box-shadow 0.12s; }
-.button:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--wood); }
-.button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--wood); }
-.button.primary { background: var(--brand); color: var(--brand-ink); }
-.hero-shot { margin-top: 36px; }
+/* shadcn/ui-style buttons (default and outline variants), in the logo's colours. */
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-decoration: none; font-weight: 600; font-size: 0.95rem; flex: 1 1 100%; box-shadow: 0 1px 2px rgb(74 52 30 / 6%); transition: background-color 0.15s, border-color 0.15s, filter 0.15s; }
+.button:hover { background: var(--tint); }
+.button.primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+.button.primary:hover { filter: brightness(1.08); background: var(--brand); }
+.shot.hero-shot { margin-top: 40px; }
 
 /* Screenshots */
 .shot { margin: 0; }
@@ -173,7 +173,7 @@ p { margin: 0; }
 .section { padding: 64px 0; }
 .tint { background: var(--tint); }
 .cards { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 36px; }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: 0 1px 2px rgb(74 52 30 / 5%); }
 .card > .icon { width: 26px; height: 26px; color: var(--brand); margin-bottom: 14px; }
 .card:nth-child(3n + 2) > .icon { color: var(--accent); }
 .card:nth-child(3n) > .icon { color: var(--flower); }
@@ -181,12 +181,16 @@ p { margin: 0; }
 .showcase { display: grid; grid-template-columns: 1fr; gap: 36px; }
 
 .stats { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 36px 0 22px; }
-.stat { display: flex; flex-direction: column; gap: 6px; padding: 24px; border-radius: var(--radius); background: var(--brand); color: var(--brand-ink); }
+.stat { display: flex; flex-direction: column; gap: 6px; padding: 24px; border-radius: 14px; background: var(--brand); color: var(--brand-ink); }
 .stat strong { font-family: 'Bitter', Georgia, serif; font-size: clamp(2.2rem, 6vw, 3rem); line-height: 1; letter-spacing: -0.01em; }
 .stat span { opacity: 0.88; font-size: 0.97rem; }
 .more { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--brand); text-decoration: none; }
 .more:hover { text-decoration: underline; }
 
+.charts { display: grid; grid-template-columns: 1fr; gap: 16px; margin: 32px 0 20px; max-width: 820px; }
+.chart { margin: 0; padding: 14px; }
+.chart img { width: 100%; border-radius: 8px; }
+.chart figcaption { margin-top: 10px; font-size: 0.92rem; color: var(--ink-2); }
 .install { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 32px 0 18px; }
 .install ol { margin: 12px 0 0; padding-left: 1.2em; color: var(--ink-2); }
 .install li + li { margin-top: 6px; }
