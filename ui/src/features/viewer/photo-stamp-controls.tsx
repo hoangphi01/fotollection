@@ -92,12 +92,13 @@ export function PhotoStampControls({ photoId, revision, onAppliedToAll }: PhotoS
           />
         </div>
         <CommitInput
-          key={`${photoId}:${stamp.caption ?? ''}`}
+          key={photoId}
           value={stamp.caption ?? ''}
           placeholder={t('settings.captionPlaceholder')}
           maxLength={80}
+          liveMs={300}
           ariaLabel={t('settings.caption')}
-          onCommit={(caption) => set({ caption: caption.trim() })}
+          onCommit={(caption) => set({ caption })}
         />
       </Collapse>
       <Button

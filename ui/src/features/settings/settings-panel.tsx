@@ -223,12 +223,12 @@ export function SettingsPanel({
                 {t('settings.caption')}
               </Label>
               <CommitInput
-                key={stamp?.caption ?? ''}
                 value={stamp?.caption ?? ''}
                 placeholder={t('settings.captionPlaceholder')}
                 maxLength={80}
+                liveMs={300}
                 ariaLabel={t('settings.caption')}
-                onCommit={(caption) => setStamp({ caption: caption.trim() })}
+                onCommit={(caption) => setStamp({ caption })}
               />
               <p className="text-xs text-muted-foreground">{t('settings.captionHint')}</p>
             </div>

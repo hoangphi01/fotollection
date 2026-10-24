@@ -132,7 +132,7 @@
       "cityCountry": "City, country"
     },
     "caption": "Line under the date",
-    "captionPlaceholder": "e.g. SUMMER IN DEBRECEN",
+    "captionPlaceholder": "e.g. KY NIEM BUDAPEST",
     "captionHint": "Printed in capitals without accents, across the photo.",
     "resetCustomStamps_one": "Reset {{count}} photo with its own stamp",
     "resetCustomStamps_other": "Reset {{count}} photos with their own stamp"
