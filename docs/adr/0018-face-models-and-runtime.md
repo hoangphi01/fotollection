@@ -44,6 +44,8 @@ The spike on REF-MAC (M3), single thread:
 | YuNet, 640×640 | 72 ms | ≈ 19 ms | — |
 | FaceMesh, one 256×256 face | 113 ms | ≈ 9.6 ms | Largest difference from the TFLite interpreter: 0.00045 px, on coordinates up to 180 px |
 
+Integration (B1) changed how YuNet runs: tract is told to ignore the shapes stored in the file, so YuNet takes the photo's own shape at a 512 px long edge (padded to multiples of 32; portrait photos padded to a square, which tract runs faster than a tall input). That cut it from ≈ 19 to ≈ 8 ms and kept analysis within NFR-014 ([OPTIMIZATION.md §5](../OPTIMIZATION.md#5-benchmark-log)).
+
 ## Consequences
 
 - The installer grows by about 5 MB of model data, plus tract.

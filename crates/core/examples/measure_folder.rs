@@ -8,12 +8,15 @@
 //! - `--inflight N`: photos exported in parallel (default: `default_inflight()`).
 //! - `--discard-output`: delete exported files as soon as they are written, so batches of
 //!   thousands of photos can be measured without the disk space (NFR-004).
+//! - `--analyze`: measure best-shot analysis instead (FR-041, NFR-014) and print the groups.
 
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,
     clippy::cast_precision_loss,
-    clippy::too_many_lines
+    clippy::too_many_lines,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
 )]
 
 use std::path::{Path, PathBuf};
@@ -21,6 +24,7 @@ use std::time::Instant;
 
 use fotollection_core::cancel::CancellationToken;
 use fotollection_core::codec::{EncodeOptions, decode_image, default_codec};
+use fotollection_core::culling::{self, group, score};
 use fotollection_core::export::{EXPORT_QUALITY, ExportOptions, default_inflight, run_export};
 use fotollection_core::image::apply_orientation;
 use fotollection_core::import::scan;
@@ -102,6 +106,10 @@ fn main() {
         rss_mb()
     );
     let rss_import = rss_mb();
+    if args.iter().any(|a| a == "--analyze") {
+        analyze(&records, codec.as_ref(), json);
+        return;
+    }
 
     let t = Instant::now();
     let t0_count = records
@@ -269,6 +277,127 @@ fn main() {
             "previewEncodeMs": encode_ms,
             "previewEncodePrintMs": encode_print_ms,
             "inputBytes": input_bytes,
+        });
+        println!("{out:#}");
+    }
+}
+
+/// Best-shot analysis on every photo (FR-041): time per photo on the analysis itself (the
+/// decode is the T2 preview's job in the app), throughput on the whole pool, then the groups.
+fn analyze(
+    records: &[fotollection_core::library::PhotoRecord],
+    codec: &dyn fotollection_core::codec::JpegCodec,
+    json: bool,
+) {
+    let upright = |r: &fotollection_core::library::PhotoRecord| {
+        let bytes = std::fs::read(&r.path).unwrap();
+        let image = apply_orientation(decode_image(codec, &bytes).unwrap().image, r.orientation);
+        fit_long_edge(&image, T2_LONG_EDGE).unwrap()
+    };
+    let t = Instant::now();
+    culling::models::yunet(512, 384).unwrap();
+    culling::models::facemesh().unwrap();
+    let load_ms = t.elapsed().as_secs_f64() * 1e3;
+
+    // One thread, so the per-photo time is not inflated by sharing cores.
+    let mut timed = Vec::new();
+    for r in records {
+        let t2 = upright(r);
+        let t = Instant::now();
+        let analysis = culling::analyze(&t2).unwrap();
+        timed.push((t.elapsed().as_secs_f64() * 1e3, analysis));
+    }
+    let pct = |mut v: Vec<f64>, p: f64| {
+        if v.is_empty() {
+            return 0.0;
+        }
+        v.sort_by(f64::total_cmp);
+        v[((v.len() - 1) as f64 * p).round() as usize]
+    };
+    let without: Vec<f64> = timed
+        .iter()
+        .filter(|(_, a)| a.faces.is_empty())
+        .map(|(ms, _)| *ms)
+        .collect();
+    let with: Vec<f64> = timed
+        .iter()
+        .filter(|(_, a)| !a.faces.is_empty())
+        .map(|(ms, _)| *ms)
+        .collect();
+    let (n_without, n_with) = (without.len(), with.len());
+    let (p50_without, p95_without) = (pct(without.clone(), 0.5), pct(without, 0.95));
+    let (p50_with, p95_with) = (pct(with.clone(), 0.5), pct(with, 0.95));
+
+    let t2s: Vec<_> = records.par_iter().map(upright).collect();
+    let t = Instant::now();
+    t2s.par_iter().for_each(|i| {
+        culling::analyze(i).unwrap();
+    });
+    let pool_secs = t.elapsed().as_secs_f64();
+
+    let shots = records
+        .iter()
+        .zip(&timed)
+        .map(|(r, (_, a))| group::Shot::from_record(r, a.hash))
+        .collect();
+    let groups = group::group(shots);
+    let report = |line: String| {
+        if json {
+            eprintln!("{line}");
+        } else {
+            println!("{line}");
+        }
+    };
+    report(format!(
+        "analysis: models load {load_ms:.0} ms; no faces {n_without} photos p50 {p50_without:.1} ms p95 {p95_without:.1} ms; with faces {n_with} photos p50 {p50_with:.1} ms p95 {p95_with:.1} ms (one thread); pool {:.1} photos/s",
+        records.len() as f64 / pool_secs
+    ));
+    report(format!("groups: {}", groups.len()));
+    for g in &groups {
+        let members: Vec<_> = g
+            .iter()
+            .map(|id| {
+                (
+                    *id,
+                    &timed[records.iter().position(|r| r.id == *id).unwrap()].1,
+                )
+            })
+            .collect();
+        let result = score::rank(&members);
+        let name = |id| &records.iter().find(|r| r.id == id).unwrap().file_name;
+        let photos: Vec<String> = result
+            .photos
+            .iter()
+            .map(|p| {
+                format!(
+                    "{} {:+.2} eyes {}/{}",
+                    name(p.id),
+                    p.score,
+                    p.faces - p.closed_eyes,
+                    p.faces
+                )
+            })
+            .collect();
+        report(format!(
+            "  best of {}: {}{} {:?}",
+            g.len(),
+            photos.join(", "),
+            if result.too_close { " (too close)" } else { "" },
+            result.reasons
+        ));
+    }
+    if json {
+        let out = serde_json::json!({
+            "photos": records.len(),
+            "modelLoadMs": load_ms,
+            "noFacesPhotos": n_without,
+            "noFacesP50Ms": p50_without,
+            "noFacesP95Ms": p95_without,
+            "facesPhotos": n_with,
+            "facesP50Ms": p50_with,
+            "facesP95Ms": p95_with,
+            "poolPerSecond": records.len() as f64 / pool_secs,
+            "groups": groups.len(),
         });
         println!("{out:#}");
     }

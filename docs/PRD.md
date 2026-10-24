@@ -398,14 +398,14 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
   - the camera or lens changes;
   - the focal length changes by more than 20 %;
   - GPS moves by more than 30 m.
-- **Group confirmation.** A 64-bit dHash/pHash on T1 confirms each group: Hamming distance ≤ 10–12, compared with the group's representative photo so that groups do not chain. A group holds at most 30 photos.
-- **Metrics.** Each metric is computed in one pass over the greyscale T2 preview:
+- **Group confirmation.** A 64-bit dHash of the analysis image confirms each group: Hamming distance ≤ 16, compared with the group's first photo so that groups do not chain. On the reference set, hand-held re-framings of one moment measured 11–16 and different scenes 18 or more. A group holds at most 30 photos.
+- **Metrics.** Each metric is computed in one pass over a greyscale copy of the T2 preview, reduced to 1,024 px:
   - Sharpness: variance of Laplacian and Tenengrad on a 16 × 12 tile grid. The median scores the whole photo; the 90–95th percentile, or the face tiles, score the subject.
   - Camera shake: structure-tensor coherence, relative to the group median. EXIF adds a hint when the shutter is slower than 1/(focal × crop factor).
   - Exposure: the clipped-highlight share (≥ 250), the crushed-shadow share, the median luminance against 118 (in EV), and RMS contrast.
-  - Noise: the Immerkær estimate, skipping strong-gradient areas.
+  - Noise: the Immerkær estimate over the flatter half of the image (gradient below the median), so that the sharper frame of a burst does not look noisier.
 - **Faces and eyes.** Faces are detected with YuNet, and the eyelid landmarks of FaceMesh V2 give the eye aspect ratio ([ADR-0018](adr/0018-face-models-and-runtime.md)). An eye counts as closed when its ratio is below 0.2, or below 0.75 × the same person's maximum in the group. Face and eye regions also get their own sharpness score.
-- **Score.** Each metric is normalized with a robust z-score (median/MAD) **within the group**; groups smaller than 4 use rank instead. The weights are:
+- **Score.** Each metric is normalized with a robust z-score (median/MAD) **within the group**; groups smaller than 4 use rank instead. Each metric has a smallest spread (for example 0.15 EV or 2 % of clipped highlights), so differences too small to see in a print never count as several sigmas. The weights are:
 
   | Metric | Weight |
   |--------|-------:|
@@ -417,7 +417,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
   | Noise | 0.05 |
 
   Hard faults, such as closed eyes or heavy blur, are shown as reasons. They are never applied silently.
-- **Explanation.** The suggestion names the metrics that differ most from the runner-up, for example "Sharpest (+1.8σ)", "Eyes open" or "Fewer clipped highlights: 0.3 % vs 4 %". When the top two are within 0.5, it says **"Too close to call"**.
+- **Explanation.** The suggestion names up to three metrics that differ most from the runner-up, for example "34 % sharper", "Eyes open" or "Fewer clipped highlights: 0.3 % vs 4 %". Sharpness is given as the difference in edge strength, because small groups have no meaningful sigma. When the top two scores are within half a sigma of subject sharpness (0.175), it says **"Too close to call"**.
 - **UI.**
   - A **Groups** view shows one strip per group, with a **"Best of N"** badge and its reasons.
   - A compare view shows the group's photos side by side, with a bar for each metric and faces and eyes marked.

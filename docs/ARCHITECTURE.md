@@ -64,6 +64,9 @@ crates/
       settings_store.rs  † # settings.json v1: load/validate/atomic save (DATABASE.md §6)
       preview.rs         † # T2 LRU + preview rendering (FR-007)
       cancel.rs          † # CancellationToken
+      culling/           † # best-shot suggestions (FR-041): metrics.rs (sharpness, shake, exposure, noise, dHash),
+                           # faces.rs (YuNet + FaceMesh eye aspect ratio), models.rs (bundled ONNX, BLAKE3, tract),
+                           # group.rs (bursts), score.rs (robust z within the group + reasons)
       timeline.rs          # clock offsets, manual date/place, GPS borrowing + GPX (FR-030/031/032)
       geocode.rs           # offline reverse geocoder + offline place search (GeoNames + k-d tree)
       cluster.rs           # trip DBSCAN (Phase 2)
@@ -126,6 +129,7 @@ bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batc
 | JPEG max-quality encode | `mozjpeg` (optional) | Opt-in "smallest file" mode |
 | HEIC/HEIF | OS codecs via `fotollection-oscodec`: ImageIO (`objc2-image-io`) on macOS, WIC (`windows`) on Windows | Nothing linked, no LGPL; Windows needs the HEIF/HEVC Store extensions ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
 | PNG | `png` | |
+| Face models (FR-041) | `tract-onnx` (MIT/Apache), pure Rust; YuNet + FaceMesh V2 ONNX compiled in | One code path on macOS and Windows, no native runtime; BLAKE3-checked at load ([ADR-0018](adr/0018-face-models-and-runtime.md)) |
 | Resize | `fast_image_resize` | SIMD (NEON/AVX2) |
 | Colour management | `lcms2` | Preserve or convert the ICC profile |
 | Text rendering | `ab_glyph` `FontArc`: bundled Inter (OFL, variable weights) or a user OTF/TTF (FR-042) | `cosmic-text` if complex shaping is ever needed |
