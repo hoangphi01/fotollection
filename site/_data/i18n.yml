@@ -51,6 +51,10 @@ en:
   nav_numbers: Numbers
   nav_privacy: Privacy
   nav_kiosk: Print shops
+  support_title: Buy me a coffee
+  support_text: Fotollection is free and open source, made by one person in their spare time. If it saved you an evening of sorting photos, a coffee helps it keep going.
+  support_note: This VietQR code works only with banking apps in Vietnam (Napas 247). A way to support from abroad is coming soon.
+  support_alt: VietQR code for a coffee, Techcombank, Pham Hoang Phi
   kiosk_title: Ready for the photo kiosk at dm and Rossmann
   kiosk_lead: The photo services at dm and Rossmann are made by CEWE. Fotollection has every size of their price list built in, so the crop you see is exactly what comes out of the printer, with no surprise trimming at the edges.
   kiosk_standard: Standard
@@ -152,6 +156,10 @@ vi:
   nav_numbers: Số đo
   nav_privacy: Riêng tư
   nav_kiosk: Tiệm in
+  support_title: Ủng hộ một cốc cà phê
+  support_text: Fotollection miễn phí và mã nguồn mở, do một người làm trong thời gian rảnh. Nếu app giúp bạn đỡ được một buổi tối ngồi lọc ảnh, một cốc cà phê sẽ giúp dự án tiếp tục.
+  support_note: Mã VietQR này chỉ dùng được với app ngân hàng tại Việt Nam (Napas 247). Cách ủng hộ từ nước ngoài sẽ có sau.
+  support_alt: Mã VietQR ủng hộ cà phê, Techcombank, Phạm Hoàng Phi
   kiosk_title: Sẵn sàng cho máy in ảnh ở dm và Rossmann
   kiosk_lead: Dịch vụ in ảnh của dm và Rossmann đều do CEWE thực hiện. Fotollection có sẵn mọi khổ trong bảng giá của họ, nên khung crop bạn thấy chính là ảnh máy in trả ra, không bị xén mép bất ngờ.
   kiosk_standard: Tiêu chuẩn

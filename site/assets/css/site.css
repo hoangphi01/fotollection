@@ -217,6 +217,10 @@ p { margin: 0; }
 .kiosk-steps ol { margin: 14px 0 18px; padding-left: 1.3em; color: var(--ink-2); }
 .kiosk-steps li + li { margin-top: 8px; }
 .kiosk-steps li::marker { color: var(--accent); font-weight: 700; }
+/* Support: the owner's VietQR code next to a short thank-you. The QR card keeps its own white. */
+.support { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: center; padding: 28px; }
+.support img { width: 220px; max-width: 100%; border-radius: 14px; background: #fff; justify-self: center; }
+.support .small { margin-top: 14px; }
 .install { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 32px 0 18px; }
 .install ol { margin: 12px 0 0; padding-left: 1.2em; color: var(--ink-2); }
 .install li + li { margin-top: 6px; }
@@ -252,6 +256,7 @@ a:focus-visible, .button:focus-visible { outline: 2px solid var(--teal); outline
   .cards { grid-template-columns: repeat(3, 1fr); }
   .privacy-grid { grid-template-columns: 5fr 7fr; gap: 56px; align-items: start; }
   .kiosk-grid { grid-template-columns: 7fr 5fr; gap: 56px; align-items: start; }
+  .support { grid-template-columns: auto 1fr; gap: 40px; padding: 36px; }
   .showcase { grid-template-columns: repeat(2, 1fr); gap: 48px 36px; }
   .footer-row { flex-direction: row; justify-content: space-between; align-items: flex-start; }
 }
