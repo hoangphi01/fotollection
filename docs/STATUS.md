@@ -44,6 +44,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 
 - Save As → Open → rename the photo folder → Relink, in the running app, in English and in Vietnamese.
 - The unsaved-changes question on New and Open, and the window title showing *Edited*.
+- Double-click the project name to rename it: a saved project (file renamed in Finder / Explorer) and an untitled one (the name is offered by Save).
 - Best-shot flow: Find best shots → Groups → Compare → Keep best / Keep this one → undo, in English and Vietnamese, and a narrow window.
 - Double-clicking a `.fotollection` file. This needs a release build (`npm run build`), because file associations are not active in `npm run dev`.
 

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import type { ImportSummary, PhotoSummary } from '@/ipc/bindings'
+import { ProjectName } from '@/features/project/project-name'
 import type { ProjectApi } from '@/features/project/use-project'
 import { errorText } from '@/lib/errors'
 
@@ -79,7 +80,7 @@ export function LibrarySidebar({
         </div>
         <p className="flex min-w-0 items-center gap-2 text-sm">
           <FileImage className="size-4 shrink-0 text-muted-foreground" />
-          <span className="truncate">{project.document.name ?? t('project.untitled')}</span>
+          <ProjectName name={project.document.name} onRename={project.rename} />
           {project.document.edited && (
             <span
               className="size-1.5 shrink-0 rounded-full bg-amber-500"

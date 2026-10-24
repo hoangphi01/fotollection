@@ -300,7 +300,10 @@
       "corrupt": "The project file is damaged",
       "too_large": "The project file is too large",
       "write_failed": "The project could not be saved",
-      "unknown_folder": "This folder is not missing"
+      "unknown_folder": "This folder is not missing",
+      "invalid_name": "Use a name without / \\\\ : * ? \" < > | (up to 120 characters)",
+      "name_taken": "A file with this name already exists in the folder",
+      "rename_failed": "The project could not be renamed"
     },
     "culling": {
       "empty": "There are no photos to analyse",
@@ -327,6 +330,8 @@
     "later": "Later",
     "missing_one": "{{count}} folder missing",
     "missing_other": "{{count}} folders missing",
-    "title": "Project"
+    "title": "Project",
+    "rename": "Project name",
+    "renameHint": "Double-click to rename"
   }
 }

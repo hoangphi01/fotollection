@@ -289,7 +289,10 @@
       "corrupt": "File dự án bị hỏng",
       "too_large": "File dự án quá lớn",
       "write_failed": "Không lưu được dự án",
-      "unknown_folder": "Thư mục này không bị thiếu"
+      "unknown_folder": "Thư mục này không bị thiếu",
+      "invalid_name": "Hãy dùng tên không chứa / \\\\ : * ? \" < > | (tối đa 120 ký tự)",
+      "name_taken": "Trong thư mục đã có file trùng tên này",
+      "rename_failed": "Không đổi tên được dự án"
     },
     "culling": {
       "empty": "Không có ảnh nào để phân tích",
@@ -314,6 +317,8 @@
     "locate": "Tìm…",
     "later": "Để sau",
     "missing_other": "Thiếu {{count}} thư mục",
-    "title": "Dự án"
+    "title": "Dự án",
+    "rename": "Tên dự án",
+    "renameHint": "Nhấp đúp để đổi tên"
   }
 }

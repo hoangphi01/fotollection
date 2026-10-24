@@ -70,7 +70,8 @@ fn current(state: &AppState) -> DocumentState {
             .path
             .as_ref()
             .and_then(|p| p.file_stem())
-            .map(|s| s.to_string_lossy().into_owned());
+            .map(|s| s.to_string_lossy().into_owned())
+            .or_else(|| d.pending_name.clone());
         (name, d.edited, d.generation)
     });
     let missing = state
@@ -209,6 +210,7 @@ fn save_to(app: &AppHandle, path: &Path) -> Result<DocumentState, IpcError> {
     {
         let mut doc = state.document.lock().map_err(poisoned)?;
         doc.path = Some(path.to_path_buf());
+        doc.pending_name = None;
         doc.edited = false;
     }
     // The session now belongs to this document.
@@ -222,7 +224,11 @@ fn pick_save_path(app: &AppHandle) -> Option<PathBuf> {
     let language = state.ui.read().map(|u| u.language).unwrap_or_default();
     let t = strings(language);
     let (name, dir) = {
-        let doc_path = state.document.lock().ok().and_then(|d| d.path.clone());
+        let (doc_path, pending) = state
+            .document
+            .lock()
+            .map(|d| (d.path.clone(), d.pending_name.clone()))
+            .unwrap_or_default();
         let first_folder = state
             .library
             .read()
@@ -235,12 +241,17 @@ fn pick_save_path(app: &AppHandle) -> Option<PathBuf> {
             ),
             // Next to the photos by default, so the folder can be stored relative to it.
             (None, Some(folder)) => (
-                folder
-                    .file_name()
-                    .map(|n| format!("{}.{EXTENSION}", n.to_string_lossy())),
+                pending
+                    .clone()
+                    .map(|n| format!("{n}.{EXTENSION}"))
+                    .or_else(|| {
+                        folder
+                            .file_name()
+                            .map(|n| format!("{}.{EXTENSION}", n.to_string_lossy()))
+                    }),
                 folder.parent().map(Path::to_path_buf),
             ),
-            (None, None) => (None, None),
+            (None, None) => (pending.map(|n| format!("{n}.{EXTENSION}")), None),
         }
     };
     let mut dialog = app
@@ -403,6 +414,7 @@ pub fn open_path(app: &AppHandle, path: &Path) -> Result<DocumentState, IpcError
     {
         let mut doc = state.document.lock().map_err(poisoned)?;
         doc.path = Some(path.to_path_buf());
+        doc.pending_name = None;
         doc.generation = doc.generation.wrapping_add(1);
     }
     finish_without_edit(app, &state);
@@ -485,9 +497,84 @@ pub fn new_document(app: AppHandle, state: State<'_, AppState>) -> Result<Docume
     {
         let mut doc = state.document.lock().map_err(poisoned)?;
         doc.path = None;
+        doc.pending_name = None;
         doc.generation = doc.generation.wrapping_add(1);
     }
     finish_without_edit(&app, &state);
+    Ok(current(&state))
+}
+
+// ---------------------------------------------------------------------------------------
+// Rename
+
+/// Most characters in a project name.
+const MAX_NAME_CHARS: usize = 120;
+
+/// A file name both macOS and Windows accept, without the extension; `None` if `raw` is not
+/// one. The name comes from the webview, so it is checked here (SECURITY.md §2).
+fn valid_name(raw: &str) -> Option<String> {
+    // Windows drops trailing dots and spaces, which would silently rename the file.
+    let name = raw.trim().trim_end_matches(['.', ' ']);
+    let reserved = |n: &str| {
+        let stem = n.split('.').next().unwrap_or(n).to_ascii_uppercase();
+        matches!(stem.as_str(), "CON" | "PRN" | "AUX" | "NUL")
+            || (stem.len() == 4
+                && (stem.starts_with("COM") || stem.starts_with("LPT"))
+                && stem.as_bytes()[3].is_ascii_digit())
+    };
+    let ok = !name.is_empty()
+        && name.chars().count() <= MAX_NAME_CHARS
+        && !name.starts_with('.')
+        && !name
+            .chars()
+            .any(|c| c.is_control() || r#"<>:"/\|?*"#.contains(c))
+        && !reserved(name);
+    ok.then(|| name.to_owned())
+}
+
+/// Renames the project (double-click on its name). A saved document's file is renamed in
+/// its folder, never over another file; an untitled one keeps the name for its first Save.
+#[tauri::command]
+#[specta::specta]
+pub fn rename_document(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    name: String,
+) -> Result<DocumentState, IpcError> {
+    let Some(name) = valid_name(&name) else {
+        return Err(IpcError::new(
+            "project.invalid_name",
+            "Use a name without / \\ : * ? \" < > |",
+        ));
+    };
+    {
+        let _guard = state.document_lock.lock().map_err(poisoned)?;
+        let mut doc = state.document.lock().map_err(poisoned)?;
+        match doc.path.clone() {
+            None => doc.pending_name = Some(name),
+            Some(path) => {
+                let target = path.with_file_name(format!("{name}.{EXTENSION}"));
+                if target != path {
+                    // A case-only change is the same file on case-insensitive disks.
+                    let same_file = target
+                        .canonicalize()
+                        .ok()
+                        .zip(path.canonicalize().ok())
+                        .is_some_and(|(a, b)| a == b && target.file_name() != path.file_name());
+                    if target.exists() && !same_file {
+                        return Err(IpcError::new(
+                            "project.name_taken",
+                            "A file with this name already exists in the folder",
+                        ));
+                    }
+                    std::fs::rename(&path, &target)
+                        .map_err(|e| IpcError::new("project.rename_failed", e.to_string()))?;
+                    doc.path = Some(target);
+                }
+            }
+        }
+    }
+    emit(&app);
     Ok(current(&state))
 }
 
@@ -554,5 +641,36 @@ pub fn restore_reference(state: &AppState, file: &ProjectFile) {
     if let (Some(doc), Ok(mut current)) = (&file.document, state.document.lock()) {
         current.path = Some(PathBuf::from(&doc.path));
         current.edited = doc.edited;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::valid_name;
+
+    #[test]
+    fn fr_023_project_names_are_safe_file_names() {
+        assert_eq!(
+            valid_name("  Debrecen 2025  ").as_deref(),
+            Some("Debrecen 2025")
+        );
+        assert_eq!(valid_name("Hà Nội · Tết").as_deref(), Some("Hà Nội · Tết"));
+        assert_eq!(valid_name("trip...").as_deref(), Some("trip"));
+        for bad in [
+            "",
+            "   ",
+            "../escape",
+            "a/b",
+            "a\\b",
+            "what?",
+            "CON",
+            "com1",
+            "lpt9.txt",
+            ".hidden",
+            "tab\tname",
+        ] {
+            assert_eq!(valid_name(bad), None, "{bad:?}");
+        }
+        assert_eq!(valid_name(&"x".repeat(121)), None);
     }
 }

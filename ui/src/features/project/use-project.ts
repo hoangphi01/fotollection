@@ -80,6 +80,7 @@ export function useProject() {
     if (await settleUnsaved()) await run(commands.openRequestedDocument())
   }, [run, settleUnsaved])
   const relink = useCallback((folderId: number) => run(commands.relinkFolder(folderId)), [run])
+  const rename = useCallback((name: string) => run(commands.renameDocument(name)), [run])
 
   // Native menu (macOS) and files handed over by the OS.
   useEffect(() => {
@@ -121,6 +122,7 @@ export function useProject() {
     save,
     saveAs,
     relink,
+    rename,
   }
 }
 

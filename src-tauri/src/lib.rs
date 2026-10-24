@@ -46,6 +46,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             document::save_document,
             document::save_document_as,
             document::relink_folder,
+            document::rename_document,
             commands::set_ui_settings,
             commands::set_photo_rating,
             commands::set_photo_flag,

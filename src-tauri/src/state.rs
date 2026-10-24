@@ -125,6 +125,8 @@ pub struct AppState {
 #[derive(Debug, Clone, Default)]
 pub struct Document {
     pub path: Option<PathBuf>,
+    /// A name given before the first save (double-click on "Untitled"); Save As offers it.
+    pub pending_name: Option<String>,
     /// Changes not saved into the document yet.
     pub edited: bool,
     /// Bumps whenever another project replaces the library, so the UI drops cached

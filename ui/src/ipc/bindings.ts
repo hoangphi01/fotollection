@@ -123,6 +123,11 @@ export const commands = {
 	/**  Folders of the opened project that still need relinking. */
 	missing: MissingFolder[],
 } | null, IpcError>(__TAURI_INVOKE("relink_folder", { folderId })),
+	/**
+	 *  Renames the project (double-click on its name). A saved document's file is renamed in
+	 *  its folder, never over another file; an untitled one keeps the name for its first Save.
+	 */
+	renameDocument: (name: string) => typedError<DocumentState, IpcError>(__TAURI_INVOKE("rename_document", { name })),
 	/**  Changes the interface language; the typed enum is the validation (FR-020). */
 	setUiSettings: (ui: UiSettings) => typedError<UiSettings, IpcError>(__TAURI_INVOKE("set_ui_settings", { ui })),
 	/**  Sets 0–5 stars on photos (FR-022). Larger values are rejected. */
