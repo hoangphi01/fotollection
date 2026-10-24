@@ -517,6 +517,18 @@ Next to the batch settings, any other setting will later be overridable for one 
 - The basket is saved in the project file (a per-photo flag, with a project schema bump) and is undoable.
 - With copies and the order summary ([FR-024](#fr-024--copies-and-order-summary)) it becomes the order: copies per photo, sizes and an estimated cost.
 
+### FR-051 — Landmark recognition
+
+**P2 (future, not started).** Suggest a place for photos **without GPS** from what they show. For example, a photo of the Eiffel Tower is suggested as *Paris*. It complements time and visual matching with phone photos ([FR-031](#fr-031--borrow-gps-from-a-phone-or-gpx-track)).
+
+- **Offline only.** A bundled model recognises famous landmarks, and its labels are joined to coordinates from Wikidata (CC0) and the bundled GeoNames places ([ADR-0003](adr/0003-offline-geocoding-geonames.md)). Nothing is sent anywhere.
+- **Licences checked first** (research of 2026-10-24):
+  - **Best candidate:** Google's on-device landmark classifiers (weights under Apache-2.0, trained on GLDv2 with CC BY / CC0 data), about 45,000 landmarks for Europe. The model card lists "inferring the user's location" as an unsuitable use, so this needs an ADR.
+  - **Fallback:** TinyCLIP (MIT) matched against a bundled list of Wikidata landmarks.
+  - **Rejected:** general geolocation models, because of non-commercial licences (StreetCLIP), GPL (PlaNet), missing weights (PIGEON) or more than 1 GB (GeoCLIP). Even the best of them places only about a third of photos within 25 km.
+- **Size and speed:** the model probably does not fit the 25 MB installer ([NFR-008](#nfr-008--install-size)). It ships as an **optional model pack** that the user installs on purpose; analysis stays within [NFR-014](#nfr-014--best-shot-analysis-speed)-like budgets, measured first.
+- **Shown as a suggestion only,** with its confidence, and never applied silently. It is scored on labelled photos like the best-shot suggestions before it ships.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

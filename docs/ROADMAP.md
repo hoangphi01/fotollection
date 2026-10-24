@@ -104,6 +104,7 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 | FR-044 | Per-photo overrides |
 | FR-046 | Swipe culling (full-screen ↑ / ↓ print list) |
 | FR-047 | Film looks (Fujifilm-style film simulations, own names and LUTs) |
+| FR-051 | Landmark recognition: suggest a place from what the photo shows (offline, optional model pack) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range) |
 
 ## Phase 3 — Pro & growth
