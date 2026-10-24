@@ -20,6 +20,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import { Collapse } from '@/components/layout/collapse'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { CullControls } from '@/features/culling/cull-controls'
@@ -365,13 +366,13 @@ export function PreviewDialog({
                   }
                 />
               </div>
+              <Collapse open={stamp?.enabled ?? false}>
               <ToggleGroup
                 type="single"
                 variant="outline"
                 size="sm"
                 className="w-full"
                 value={stamp?.format ?? ''}
-                disabled={!stamp?.enabled}
                 onValueChange={(format) =>
                   format &&
                   onSettingsChange((s) => ({
@@ -386,6 +387,7 @@ export function PreviewDialog({
                   </ToggleGroupItem>
                 ))}
               </ToggleGroup>
+              </Collapse>
               <p className="text-xs text-muted-foreground">{t('viewer.allPhotos')}</p>
             </Section>
           </div>

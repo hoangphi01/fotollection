@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { Collapse } from '@/components/layout/collapse'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { FrameColor, FrameDateFormat, FrameFields, FrameFit } from '@/ipc/bindings'
 import { FontSelect } from '@/features/fonts/font-select'
@@ -57,14 +58,16 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
         />
       </div>
 
-      <div className={enabled ? 'space-y-3' : 'pointer-events-none space-y-3 opacity-50'}>
+      <Collapse open={enabled} className="space-y-3">
         <ToggleGroup
           type="single"
           variant="outline"
           size="sm"
           className="w-full"
           value={settings?.fit ?? ''}
-          onValueChange={(fit) => fit && void frame.setSettings((s) => ({ ...s, fit: fit as FrameFit }))}
+          onValueChange={(fit) =>
+            fit && void frame.setSettings((s) => ({ ...s, fit: fit as FrameFit }))
+          }
         >
           <ToggleGroupItem value="crop" className="flex-1 text-xs">
             {t('frame.cropToFill')}
@@ -144,7 +147,9 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
                     }))
                   }
                 />
-                <span className={disabled ? 'text-muted-foreground' : ''}>{t(`frame.field.${key}`)}</span>
+                <span className={disabled ? 'text-muted-foreground' : ''}>
+                  {t(`frame.field.${key}`)}
+                </span>
               </label>
             ))}
           </div>
@@ -153,7 +158,7 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
           {t('frame.keepsSize')}
           {!compact && ` ${t('frame.editInPreview')}`}
         </p>
-      </div>
+      </Collapse>
     </section>
   )
 }

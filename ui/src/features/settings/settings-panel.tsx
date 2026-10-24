@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
+import { Collapse } from '@/components/layout/collapse'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ExportSection } from '@/features/export/export-section'
@@ -120,7 +121,7 @@ export function SettingsPanel({
             />
           </div>
 
-          <div className={stamp?.enabled ? 'space-y-3' : 'pointer-events-none space-y-3 opacity-50'}>
+          <Collapse open={stamp?.enabled ?? false} className="space-y-3">
             <FontSelect
               fonts={fonts}
               label={t('settings.dateStampFont')}
@@ -173,7 +174,7 @@ export function SettingsPanel({
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>
-          </div>
+          </Collapse>
 
           <Tooltip>
             <TooltipTrigger asChild>

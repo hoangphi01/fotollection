@@ -38,6 +38,7 @@
 - Keep core functions **pure** where possible. In particular, `RenderPlan` construction does no I/O.
 - Prefer newtypes for units and IDs (`PhotoId`, `Px`, `Millimetres`) over bare integers.
 - Long-running functions take a `&CancellationToken`.
+- **One feature, one module.** Each processing step lives in its own module with a narrow input and output, for example `geocode` (GPS → place), `culling::similar` (photo → signature), and the render stages crop, stamp and frame. A new feature is a new module plus a field in the plan that feeds it (`RenderPlan`, `PlanInput`), never edits scattered through other modules. Modules talk through these plain data types, not each other's internals, so each can be tested, measured and replaced alone.
 - Public items in `crates/core` have rustdoc comments. Doc examples must compile.
 
 ### Naming
@@ -77,6 +78,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
 - **Styling:** use Tailwind utility classes and the shadcn theme tokens (`bg-background`, `text-muted-foreground`…). Never hard-code colours. Merge classes with `cn()` from `lib/utils.ts`. Use a 4 px spacing scale (Tailwind default).
 - Light and dark themes follow the OS setting, using shadcn's CSS-variable theming.
 - **Logo:** at 64 px and below, use the **simplified tile** (`assets/logo-small.png`: frame + flower, no wordmark) through `ui/public/brand/mark-{28,56,84}.png`, with `srcSet` for 1x/2x/3x. The same tile supplies the favicon and every app-icon layer up to 64 px (`.ico`, `.icns`, `32x32`, `64x64`, `Square30x30`, `Square44x44`). Never let the webview downscale the full logo: WebKit's resampling turns its fine line art and text into noise. Regenerate all of these with `python3 scripts/small-icons.py` (Lanczos resampling).
+- **Switched-off features fold away.** When a section has an on/off switch (date stamp, info frame, place…), its options sit inside `Collapse` (`ui/src/components/layout/collapse.tsx`) so they disappear while it is off, instead of staying on screen dimmed. Folded options are `inert`, so the keyboard skips them.
 - Every action longer than 200 ms shows progress. Every destructive action can be undone or needs confirmation.
 - Keyboard-first: every primary action has a shortcut, and focus is always visible.
 - Error messages say what happened and what to do next. Never show raw error strings or stack traces.
