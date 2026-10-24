@@ -236,7 +236,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 | Dataset | Source | Format | Size | Notes |
 |---------|--------|--------|------|-------|
 | Print sizes | `print_size.rs` | Rust constants | — | [PRD §5](PRD.md#5-print-sizes-cewe--eu-standard) |
-| Places | GeoNames `cities1000` + admin1/country names | Packed binary built by `crates/geodata` (`rkyv` or a custom layout) + k-d tree, with a version header. Country and admin names are stored **once** and referenced by index | ~5 MB | CC BY 4.0, attribution in About ([ADR-0003](adr/0003-offline-geocoding-geonames.md)). Also serves offline place search ([FR-032](PRD.md#fr-032--manual-date-and-place)) |
+| Places | GeoNames `cities1000` + admin1/country names | Packed binary built by `crates/geodata` (custom layout, version header, BLAKE3-checked at load; [GEODATA.md](../crates/core/assets/geo/GEODATA.md)), indexed in a 1° grid when first used. Country names are stored **once** and referenced by index | 5.4 MB | CC BY 4.0, attribution in About ([ADR-0003](adr/0003-offline-geocoding-geonames.md)). Also serves offline place search ([FR-032](PRD.md#fr-032--manual-date-and-place)) |
 | Built-in presets | `presets/builtin/*.fotopreset`, embedded with `include_str!` | Same schema as user presets ([§7](#7-presets)) | < 100 KB | Lab, stamp and Photo Style presets, including "C200 Natural" ([FR-039](PRD.md#fr-039--photo-style-looks)). Never fetched from the network |
 | Fonts | `fonts/` | TTF/OTF | < 2 MB | OFL/MIT only |
 

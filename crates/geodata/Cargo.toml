@@ -1,0 +1,15 @@
+[package]
+name = "fotollection-geodata"
+description = "Build-time packer for the bundled GeoNames places (ADR-0003); never shipped in the app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+blake3.workspace = true
+
+[lints]
+workspace = true

@@ -128,6 +128,7 @@ Layer 4: SAFE RENDERING (UI)
 - `cargo audit` and `npm audit --omit=dev` run in CI, and a weekly scheduled job catches new advisories.
 - No native image library is linked today: JPEG/PNG are pure Rust, HEIC uses the OS codecs. A future native library (for example lcms2) is **pinned** and tracked in [STATUS.md](STATUS.md#dependencies-to-watch), with security releases applied within 7 days.
 - **Bundled ML models** (FR-041, [ADR-0018](adr/0018-face-models-and-runtime.md)) are static assets compiled into the binary: YuNet (MIT) and FaceMesh V2 (Apache-2.0). They are checked against pinned BLAKE3 sums when loaded, are never downloaded at runtime, and their origin, licences and checksums are in `crates/core/assets/models/MODELS.md`. The licences are re-checked whenever a model is replaced.
+- **Bundled place data** (FR-005, [ADR-0003](adr/0003-offline-geocoding-geonames.md)) is a static asset too: `places.bin`, packed from GeoNames (CC BY 4.0), checked against a pinned BLAKE3 sum and parsed with bounds checks on every length. Place names are third-party text, so they are shown as plain text only, never as HTML.
 - Dependencies are kept minimal. Adding a new dependency requires a short justification in the PR.
 - `cargo deny` checks what ships (`exclude-dev = true`). Dev-only crates, such as `little_exif` for synthetic test fixtures, never touch user data. They are still updated when advisories appear.
 

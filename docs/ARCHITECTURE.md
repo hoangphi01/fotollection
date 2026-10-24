@@ -69,7 +69,7 @@ crates/
                            # similar.rs (layout + colour signature, ADR-0019), group.rs (bursts),
                            # score.rs (robust z within the group + reasons), cache.rs (analysis/)
       timeline.rs          # clock offsets, manual date/place, GPS borrowing + GPX (FR-030/031/032)
-      geocode.rs           # offline reverse geocoder + offline place search (GeoNames + k-d tree)
+      geocode.rs         † # offline reverse geocoder + place search: bundled GeoNames, BLAKE3-checked, 1° grid index (FR-005/032)
       cluster.rs           # trip DBSCAN (Phase 2)
       library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag)
       project.rs         † # project tables v2: snapshot/restore by folder+path, FK validation, relocate/resolve folders
@@ -88,7 +88,7 @@ crates/
     benches/               # criterion benchmarks (see OPTIMIZATION.md)
     fuzz/                  # cargo-fuzz targets (see TESTING.md)
   oscodec/               † # HEIC via ImageIO (macOS) / WIC (Windows): the only crate allowed `unsafe` (ADR-0017)
-  geodata/                 # build-time packer for the GeoNames dataset
+  geodata/               † # build-time packer for the GeoNames dataset (scripts/geodata/fetch-and-pack.sh); never shipped
 src-tauri/               † # app shell: commands, protocol, capabilities
   src/lib.rs             † # tauri-specta builder + bindings export
   src/commands.rs        † # IPC commands (§6)
@@ -136,7 +136,7 @@ bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batc
 | Text rendering | `ab_glyph` `FontArc`: bundled Inter (OFL, variable weights) or a user OTF/TTF (FR-042) | `cosmic-text` if complex shaping is ever needed |
 | EXIF read | `kamadak-exif` | Allowlisted fields only. Also extracts the IFD1 thumbnail for T0 |
 | EXIF write | `little_exif` (candidate) | Writes the privacy-filtered metadata |
-| Reverse geocoding | GeoNames `cities1000` + `kiddo` k-d tree | Offline, about 5 MB packed ([ADR-0003](adr/0003-offline-geocoding-geonames.md)) |
+| Reverse geocoding | GeoNames `cities1000`, packed by `crates/geodata`, indexed in a 1° grid at first use | Offline, 5.4 MB packed, no extra dependency ([ADR-0003](adr/0003-offline-geocoding-geonames.md)) |
 | Trip clustering | DBSCAN over (lat, lon, time) | Phase 2 |
 | Perceptual hash | `image_hasher` | Phase 2 |
 | Face detection | ONNX model via `ort` | Phase 2, on-device |
@@ -163,7 +163,7 @@ import → metadata → adjust → geocode → (cluster) → cull/select → pla
 | **import** | paths → `PhotoRef { id, path, kind, size, mtime }` | Magic-byte check only, no decoding |
 | **metadata** | `PhotoRef` → `PhotoMeta` | Allowlisted EXIF, validated values ([SECURITY.md §3](SECURITY.md#3-input-and-metadata-defense)) |
 | **adjust** | `PhotoMeta` + project → `EffectiveMeta` | Clock offset per camera, manual date/place, borrowed GPS. Originals are kept for reference ([FR-030](PRD.md#fr-030--camera-clock-offset)–[FR-032](PRD.md#fr-032--manual-date-and-place)) |
-| **geocode** | `(lat, lon)` → `Place` | Nearest-city lookup, memoized per ~1 km cell |
+| **geocode** | `(lat, lon)` → `Place` | The town whose reach the photo is deepest in (reach grows with √population), about 5 µs per lookup |
 | **cluster** | `[PhotoMeta]` → `[Trip]` | Phase 2 |
 | **cull/select** | library + filter → export set | Ratings, flags and copies come from the project ([FR-022](PRD.md#fr-022--culling-rate-flag-filter)) |
 | **plan** | meta + settings → `RenderPlan` | Pure function: print size per photo, crop rect, border, safe area, stamp/caption text and position, colour intent, output path. Also yields the effective-DPI check ([FR-026](PRD.md#fr-026--resolution-warning)) |

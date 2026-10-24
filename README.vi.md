@@ -182,7 +182,7 @@ Mọi phiên bản công cụ đều được ghim: `rust-toolchain.toml`, `.nod
 
 | Lớp | Công nghệ |
 |-------|------------|
-| Lõi (Rust) | Codec thuần Rust: zune-jpeg, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md)); HEIC qua hệ điều hành (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md)); fast_image_resize, ab_glyph, rayon. Dự kiến: lcms2 cho màu, GeoNames cho địa điểm offline |
+| Lõi (Rust) | Codec thuần Rust: zune-jpeg, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md)); HEIC qua hệ điều hành (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md)); fast_image_resize, ab_glyph, rayon; GeoNames cho địa điểm offline ([ADR-0003](docs/adr/0003-offline-geocoding-geonames.md)). Dự kiến: lcms2 cho màu |
 | Vỏ app | [Tauri 2](https://v2.tauri.app/): dùng webview của hệ điều hành, không kèm Chromium |
 | Giao diện | React 19, TypeScript, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/), [Lucide](https://lucide.dev/) |
 | IPC có kiểu | [tauri-specta](https://github.com/specta-rs/tauri-specta): binding TypeScript sinh ra từ Rust |
@@ -222,5 +222,5 @@ Báo lỗi bảo mật qua [GitHub security advisory](https://github.com/hoangph
 
 - Mã hóa JPEG dùng [`jpeg-encoder`](https://github.com/vstroebel/jpeg-encoder), một phần dựa trên công trình của Independent JPEG Group.
 - Dấu ngày dùng font [Inter](https://rsms.me/inter/), theo giấy phép SIL Open Font License 1.1 (`crates/core/assets/fonts/Inter-OFL.txt`).
-- Dữ liệu địa lý từ [GeoNames](https://www.geonames.org/) (CC BY 4.0) sẽ được đóng gói để tra địa điểm offline.
+- Tên địa điểm lấy từ [GeoNames](https://www.geonames.org/) (CC BY 4.0), đóng gói sẵn để tra offline: các thị trấn và thành phố từ 1.000 dân, bản chụp ngày 24/10/2026 (`crates/core/assets/geo/`).
 - Gợi ý ảnh tốt nhất đóng gói model phát hiện khuôn mặt [YuNet](https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet) (MIT, © 2020 Shiqi Yu) và model điểm mốc MediaPipe FaceMesh V2 của Google (Apache License 2.0), đã chuyển sang ONNX. License và checksum: `crates/core/assets/models/`.

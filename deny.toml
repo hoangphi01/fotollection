@@ -52,6 +52,10 @@ allow = ["GPL-3.0-only"]
 crate = "fotollection-oscodec"
 allow = ["GPL-3.0-only"]
 
+[[licenses.exceptions]]
+crate = "fotollection-geodata"
+allow = ["GPL-3.0-only"]
+
 [bans]
 multiple-versions = "allow"
 wildcards = "deny"

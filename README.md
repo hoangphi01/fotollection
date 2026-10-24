@@ -181,7 +181,7 @@ Every tool version is pinned: `rust-toolchain.toml`, `.node-version`, `Cargo.loc
 
 | Layer | Technology |
 |-------|------------|
-| Core (Rust) | Pure-Rust codecs: zune-jpeg, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md)); HEIC through the OS (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md)); fast_image_resize, ab_glyph, rayon. Planned: lcms2 for colour, GeoNames for offline places |
+| Core (Rust) | Pure-Rust codecs: zune-jpeg, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md)); HEIC through the OS (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md)); fast_image_resize, ab_glyph, rayon; GeoNames for offline places ([ADR-0003](docs/adr/0003-offline-geocoding-geonames.md)). Planned: lcms2 for colour |
 | Shell | [Tauri 2](https://v2.tauri.app/): the system webview, no bundled Chromium |
 | UI | React 19, TypeScript, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/), [Lucide](https://lucide.dev/) |
 | Typed IPC | [tauri-specta](https://github.com/specta-rs/tauri-specta): TypeScript bindings generated from Rust |
@@ -221,5 +221,5 @@ Report security issues through a private [GitHub security advisory](https://gith
 
 - JPEG encoding uses [`jpeg-encoder`](https://github.com/vstroebel/jpeg-encoder), which is based in part on the work of the Independent JPEG Group.
 - The date stamp uses the [Inter](https://rsms.me/inter/) typeface, under the SIL Open Font License 1.1 (`crates/core/assets/fonts/Inter-OFL.txt`).
-- Geographic data from [GeoNames](https://www.geonames.org/) (CC BY 4.0) will be bundled for offline geocoding.
+- Place names come from [GeoNames](https://www.geonames.org/) (CC BY 4.0), bundled for offline geocoding: towns and cities with at least 1,000 people, snapshot 2026-10-24 (`crates/core/assets/geo/`).
 - Best-shot suggestions bundle the [YuNet](https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet) face detector (MIT, © 2020 Shiqi Yu) and Google's MediaPipe FaceMesh V2 landmark model (Apache License 2.0), converted to ONNX. Licences and checksums: `crates/core/assets/models/`.

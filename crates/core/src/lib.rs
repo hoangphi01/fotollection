@@ -11,6 +11,7 @@ pub mod culling;
 pub mod export;
 pub mod fonts;
 pub mod frame;
+pub mod geocode;
 pub mod history;
 pub mod image;
 pub mod import;

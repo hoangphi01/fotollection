@@ -92,7 +92,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | FR-002 | Read photo metadata | 1 | In Progress | Allowlisted EXIF (date, offset, GPS, orientation, camera) + validation. `fr_002_*` tests pass |
 | FR-003 | Library grid | 1 | In Progress | Virtualized grid, T0/T1 thumbnails, skeleton + fade-in, task progress bar with %. Day grouping and multi-select pending |
 | FR-004 | Date stamp | 1 | In Progress | 3 formats, 4 corners, white/retro-orange, inside the safe area. More styles with FR-033 |
-| FR-005 | Location stamp (offline) | 1 | Not Started | GeoNames packer needed |
+| FR-005 | Location stamp (offline) | 1 | In Progress | ✓ Bundled GeoNames places (162k towns, 5.4 MB, BLAKE3-checked) and `geocode::reverse` / `search`, about 5 µs per lookup (`fr_005_*`, `fr_032_search_*`). Next: the stamp and frame text, settings v4 |
 | FR-006 | Crop to print ratio | 1 | In Progress | Crop editor with edge labels (cm/in + px), ratio pill and live DPI; centre + zoom storage |
 | FR-007 | Live preview | 1 | In Progress | Preview dialog with inspector (capture, camera, image, GPS, print DPI, stamp controls). Rust-rendered, warm p95 18 ms (p50 17 ms) |
 | FR-008 | Original-quality export | 1 | In Progress | Full resolution, q95 4:4:4, ICC copied. Lossless crop-only path pending |

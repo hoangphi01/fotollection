@@ -16,6 +16,7 @@
 | User font | `fonts/<id>.ttf`, `fonts/<id>.otf` | `font/ttf`, `font/otf` | — (internal copy) | Magic `00 01 00 00` / `true` (TTF), `OTTO` (OTF) | sfnt | — | Implemented ([FR-042](PRD.md#fr-042--custom-fonts)) |
 | Camera logo | `logos/<id>.png` | `image/png` | — (internal copy) | PNG magic | PNG | — | Implemented ([FR-040](PRD.md#fr-040--exif-info-frame)) |
 | Thumbnail cache | `thumbs/…` | `image/jpeg` | — (internal) | Path only | JPEG files | — | Implemented; disposable |
+| Bundled places | `places.bin` (compiled in) | — | — (internal) | `FGEO` magic + version | Custom binary ([GEODATA.md](../crates/core/assets/geo/GEODATA.md)) | 1 | Implemented ([FR-005](PRD.md#fr-005--location-stamp-offline)) |
 | Analysis cache | `analysis/<aa>/<key>.json` | `application/json` | — (internal) | Path only | JSON, UTF-8 | `version` = `ANALYSIS_VERSION` 2 | Implemented; disposable ([FR-041](PRD.md#fr-041--best-shot-suggestions)) |
 
 The `.fotollection` extension is shared by both project containers. **A reader always identifies a file by its content, never by its extension:** JSON with the `format` field, or ZIP with a `manifest.json`.

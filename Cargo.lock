@@ -1280,6 +1280,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "fotollection-geodata"
+version = "0.0.1"
+dependencies = [
+ "blake3",
+]
+
+[[package]]
 name = "fotollection-oscodec"
 version = "0.0.1"
 dependencies = [
