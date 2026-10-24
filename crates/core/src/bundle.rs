@@ -587,6 +587,7 @@ mod tests {
                 flag: Some(Flag::Pick),
                 stamp: None,
                 rotation: None,
+                straighten: None,
             }],
             document: None,
         }

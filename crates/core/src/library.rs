@@ -73,6 +73,9 @@ pub struct PhotoEdits {
     /// The user's quarter turns clockwise on top of the EXIF orientation, 0–3 (FR-006).
     #[serde(default)]
     pub rotation: u8,
+    /// Straightening in degrees, ±15 (FR-006).
+    #[serde(default)]
+    pub straighten: f32,
 }
 
 impl PhotoEdits {

@@ -147,6 +147,7 @@ fn export_one(
         frame: frame.as_ref(),
         crop: record.edits.crop,
         place: place.as_deref(),
+        straighten: record.edits.straighten,
     });
     let image = render(&upright, &p)?;
     drop(upright);

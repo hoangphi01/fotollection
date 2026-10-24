@@ -66,7 +66,7 @@ export const commands = {
 	cy: number | null,
 	/**  1 = the largest crop at the target ratio; up to `MAX_ZOOM`. */
 	zoom: number | null,
-} | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_crop", { id, crop })),
+} | null, straighten: number | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_crop", { id, crop, straighten })),
 	/**
 	 *  Chooses the export destination with a Rust-side dialog. Returns its display path.
 	 *  Interface preferences of this machine (FR-020).
@@ -293,6 +293,8 @@ export type CropGeometry = {
 	printWidthCm: number | null,
 	printHeightCm: number | null,
 	crop: CropFrame | null,
+	/**  Straightening in degrees, ±15 (FR-006); the crop is in the straightened frame. */
+	straighten: number | null,
 	/**  The frame's Fit mode shows the whole photo, so cropping is off. */
 	cropDisabled: boolean,
 	/**  Display unit of the selected size (inches for custom sizes entered in inches). */

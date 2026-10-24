@@ -73,6 +73,9 @@ pub struct RenderPlan {
     pub stamp: Option<StampSpec>,
     /// When set, the photo is placed on a canvas at the print ratio with an info bar.
     pub frame: Option<FramePlan>,
+    /// Degrees the photo is straightened by (FR-006); `crop` is then in the straightened
+    /// frame.
+    pub straighten: f32,
 }
 
 impl RenderPlan {
@@ -234,6 +237,22 @@ pub fn crop_rect(width: u32, height: u32, rw: u64, rh: u64, frame: Option<CropFr
     }
 }
 
+/// The crop at ratio `rw` : `rh` for `input`, straightened when it is (FR-006).
+fn crop_at(input: &PlanInput<'_>, rw: u64, rh: u64) -> CropRect {
+    if crate::straighten::is_straightened(input.straighten) {
+        crate::straighten::crop_rect(
+            input.width,
+            input.height,
+            rw,
+            rh,
+            input.crop,
+            input.straighten,
+        )
+    } else {
+        crop_rect(input.width, input.height, rw, rh, input.crop)
+    }
+}
+
 /// Everything needed to plan one output photo.
 #[derive(Debug, Clone, Copy)]
 pub struct PlanInput<'a> {
@@ -249,6 +268,8 @@ pub struct PlanInput<'a> {
     pub crop: Option<CropFrame>,
     /// The photo's place, already written in the chosen format (FR-005).
     pub place: Option<&'a str>,
+    /// Straightening in degrees, ±15 (FR-006); 0 is the lossless path.
+    pub straighten: f32,
 }
 
 /// Builds the plan for one photo.
@@ -266,7 +287,7 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
     } else {
         (short, long)
     };
-    let crop = crop_rect(width, height, rw, rh, input.crop);
+    let crop = crop_at(input, rw, rh);
     let (mut out_width, mut out_height) = (crop.width, crop.height);
     if let Some(limit) = input.max_long_edge {
         let long = out_width.max(out_height);
@@ -286,6 +307,7 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
         out_height,
         stamp: stamp_spec(input, px_per_mm),
         frame: None,
+        straighten: crate::straighten::sanitize(input.straighten),
     }
 }
 
@@ -331,13 +353,18 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
     );
     let photo = layout.photo;
     let crop = match request.settings.fit {
-        FrameFit::Crop => crop_rect(
-            width,
-            height,
-            u64::from(photo.width),
-            u64::from(photo.height),
-            input.crop,
-        ),
+        FrameFit::Crop => crop_at(input, u64::from(photo.width), u64::from(photo.height)),
+        // Fit shows the whole photo; a straightened one shows all it can without corners.
+        FrameFit::Fit if crate::straighten::is_straightened(input.straighten) => {
+            crate::straighten::crop_rect(
+                width,
+                height,
+                u64::from(width),
+                u64::from(height),
+                None,
+                input.straighten,
+            )
+        }
         FrameFit::Fit => CropRect {
             x: 0,
             y: 0,
@@ -358,6 +385,7 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
             logo: request.logo.clone(),
             font: request.font.clone(),
         }),
+        straighten: crate::straighten::sanitize(input.straighten),
     }
 }
 
@@ -513,6 +541,7 @@ mod tests {
             frame: None,
             crop: None,
             place: None,
+            straighten: 0.0,
         });
         assert_eq!((p.out_width, p.out_height), (1600, 1067));
         assert!(p.stamp.is_none(), "no capture date, no stamp");
@@ -544,6 +573,7 @@ mod tests {
                 frame: None,
                 crop: None,
                 place: None,
+                straighten: 0.0,
             });
             assert_eq!(
                 (p.crop.x, p.crop.y, p.crop.width, p.crop.height),

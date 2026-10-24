@@ -108,6 +108,7 @@ impl PreviewCache {
             frame,
             crop: record.edits.crop,
             place,
+            straighten: record.edits.straighten,
         });
         let image = render(&source, &p)?;
         Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)

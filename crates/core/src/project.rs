@@ -14,7 +14,8 @@ pub const FORMAT: &str = "fotollection-project";
 /// v2: `folders[].absolute`, the fallback for folders stored relative to a bundle (ADR-0016).
 /// v3: `photos[].stamp`, a photo's own date stamp set in the preview (FR-044).
 /// v4: `photos[].rotation`, the user's quarter turns clockwise (FR-006).
-pub const SCHEMA_VERSION: u32 = 4;
+/// v5: `photos[].straighten`, degrees within ±15 (FR-006).
+pub const SCHEMA_VERSION: u32 = 5;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -59,6 +60,9 @@ pub struct PhotoRow {
     /// Quarter turns clockwise, 1–3 (v4); absent when the photo is not turned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rotation: Option<u8>,
+    /// Straightening in degrees, ±15 (v5); absent when level.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub straighten: Option<f32>,
 }
 
 /// The document a session belongs to (FR-023). Only written into the session autosave, so
@@ -123,6 +127,8 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 flag: edits.flag,
                 stamp: edits.stamp,
                 rotation: (edits.rotation % 4 != 0).then_some(edits.rotation % 4),
+                straighten: crate::straighten::is_straightened(edits.straighten)
+                    .then(|| crate::straighten::sanitize(edits.straighten)),
             })
         })
         .collect();
@@ -219,6 +225,10 @@ fn validate(mut file: ProjectFile) -> Result<ProjectFile, String> {
             stamp.sanitize();
         }
         row.rotation = row.rotation.map(|r| r % 4).filter(|&r| r != 0);
+        row.straighten = row
+            .straighten
+            .map(crate::straighten::sanitize)
+            .filter(|&d| crate::straighten::is_straightened(d));
     }
     Ok(file)
 }
@@ -354,6 +364,7 @@ pub fn restore_into(
                 flag: row.flag,
                 stamp: row.stamp.clone(),
                 rotation: row.rotation.unwrap_or(0),
+                straighten: row.straighten.unwrap_or(0.0),
             },
         );
         summary.restored += 1;
@@ -405,6 +416,7 @@ mod tests {
                         ..crate::settings::RenderSettings::default().stamp
                     }),
                     rotation: 1,
+                    straighten: -3.5,
                 },
             );
         }
@@ -439,6 +451,10 @@ mod tests {
             .find_path(Path::new("/trip/b.jpg"))
             .map(|id| fresh.edits(id).rotation);
         assert_eq!(turned, Some(1), "the quarter turn is kept (FR-006)");
+        let level = fresh
+            .find_path(Path::new("/trip/b.jpg"))
+            .map(|id| fresh.edits(id).straighten);
+        assert_eq!(level, Some(-3.5), "the straightening is kept (FR-006)");
         Ok(())
     }
 
@@ -493,6 +509,7 @@ mod tests {
             flag: None,
             stamp: None,
             rotation: None,
+            straighten: None,
         });
         save(&path, &file)?;
         assert!(
@@ -521,6 +538,18 @@ mod tests {
         // Control characters from a file are dropped on load.
         assert_eq!(stamp.caption, "Summer by the lake");
         assert_eq!(file.photos[1].stamp, None);
+    }
+
+    #[test]
+    fn fr_006_v5_fixture_keeps_straightening_within_limits() {
+        let Loaded::Ok(file) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v5.fotollection"))
+        else {
+            panic!("v5 project should load");
+        };
+        let degrees: Vec<Option<f32>> = file.photos.iter().map(|p| p.straighten).collect();
+        // 40° from a file is clamped to 15°.
+        assert_eq!(degrees, [Some(2.5), None, Some(15.0)]);
     }
 
     #[test]

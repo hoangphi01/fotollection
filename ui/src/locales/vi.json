@@ -214,7 +214,9 @@
     "filteredHint": "Chỉ export những ảnh đang hiện theo bộ lọc thư viện."
   },
   "crop": {
-    "zoom": "Thu phóng"
+    "zoom": "Thu phóng",
+    "straighten": "Cân ngang",
+    "straightenHint": "Cân lại đường chân trời, ±15°. Nhấp đúp để đặt lại."
   },
   "dpi": {
     "excellent": "Rất tốt",

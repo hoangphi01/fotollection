@@ -175,6 +175,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-10-24 | Stage 3 | REF-MAC (M3) | Same, after: histogram percentiles instead of sorts and slice windows in `measure` (26 → 3.8 ms); YuNet at the photo's shape, 512 px, instead of a padded 640² (19 → 8.3 ms; portrait padded to 512², 11.0 ms, because tract runs a tall input slower, 12.8 ms); 2×2 halving instead of a box resize (5.3 → ≈ 1 ms) | no faces p50 17.4 / p95 18.0 ms, with faces p50 27.8 / p95 36 ms; whole pool ≈ 110–125 photos/s | NFR-014 ✓ |
 | 2026-10-24 | Stage 3 | REF-MAC (M3) | Best-shot grouping signature (32 × 24 luma + colour histogram, ADR-0019) computed on the 1,024 px image, then on a 256 px halving | no faces p50 19.9 / p95 20.5 ms → 17.4 / 18.1 ms; with faces p50 27.6 ms | NFR-014 ✓ kept; accuracy unchanged (15/22 groups, 6/6 picks) |
 | 2026-10-24 | FR-005 | REF-MAC (M3) | Offline places (`measure_geocode`): 161,937 GeoNames towns, 5.4 MB | first load 25 ms (checksum + grid), reverse 4.6 µs per lookup, search 25 ms per query | Lookup is negligible next to import (NFR-001); search is fast enough to run on every keystroke (NFR-005) |
+| 2026-10-24 | FR-006 | REF-MAC (M3) | Straighten: `render_one` render step, 16 MP photo to a full-size 3:2 crop, 0° vs 4.5°, 5 runs each | 0°: median 8 ms; 4.5°: median 61 ms (bicubic over the crop only, rayon rows) | +53 ms only for straightened photos; decode stays 46 ms. A level photo takes the unchanged lossless path |
 
 ## 6. Benchmark corpus
 

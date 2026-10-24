@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //! Renders one photo exactly as export would, optionally with the info frame (FR-040).
 //!
-//! `cargo run --release -p fotollection-core --example render_one -- <in.jpg> <out.jpg> [crop|fit] [10x15]`
+//! `cargo run --release -p fotollection-core --example render_one -- <in.jpg> <out.jpg> [crop|fit|none] [10x15] [degrees]`
+//!
+//! `degrees` straightens the photo (FR-006); the render time is printed for the benchmark log.
 
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 
@@ -25,6 +27,7 @@ fn main() {
         _ => None,
     };
     let print = PrintSize::by_id(args.get(4).map_or("10x15", String::as_str)).expect("print size");
+    let straighten: f32 = args.get(5).map_or(0.0, |d| d.parse().expect("degrees"));
 
     let file = check_file(input.as_ref()).expect("valid JPEG");
     let meta = metadata::read_path(&file.path);
@@ -86,8 +89,14 @@ fn main() {
         frame: request.as_ref(),
         crop: None,
         place: None,
+        straighten,
     });
+    let t = std::time::Instant::now();
     let image = render(&upright, &p).unwrap();
+    eprintln!(
+        "render {straighten}°: {:.0} ms",
+        t.elapsed().as_secs_f64() * 1e3
+    );
     std::fs::write(
         output,
         codec

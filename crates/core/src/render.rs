@@ -52,6 +52,16 @@ pub fn render(source: &RgbImage, plan: &RenderPlan) -> Result<RgbImage, RenderEr
 
 fn crop_and_resize(source: &RgbImage, plan: &RenderPlan) -> Result<RgbImage, RenderError> {
     let c = plan.crop;
+    if crate::straighten::is_straightened(plan.straighten) {
+        return crate::straighten::render(
+            source,
+            c,
+            plan.straighten,
+            plan.out_width,
+            plan.out_height,
+        )
+        .ok_or(RenderError::BadCrop);
+    }
     if c.x + c.width > source.width || c.y + c.height > source.height {
         return Err(RenderError::BadCrop);
     }
@@ -102,6 +112,7 @@ pub fn fit_long_edge(source: &RgbImage, long_edge: u32) -> Result<RgbImage, Rend
         out_height: dim(source.height),
         stamp: None,
         frame: None,
+        straighten: 0.0,
     };
     crop_and_resize(source, &plan)
 }
@@ -278,6 +289,7 @@ mod tests {
                 frame: None,
                 crop: None,
                 place: None,
+                straighten: 0.0,
             });
             let spec = p.stamp.as_ref();
             let lines = spec.map(|s| crate::stamp::layout(p.out_width, p.out_height, s));
@@ -311,6 +323,7 @@ mod tests {
             frame: None,
             crop: None,
             place: None,
+            straighten: 0.0,
         });
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         let changed = out.data.iter().filter(|&&v| v != 0).count();
@@ -338,6 +351,7 @@ mod tests {
             frame: None,
             crop: None,
             place: None,
+            straighten: 0.0,
         }); // 15x15 square
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         assert_eq!((out.width, out.height), (20, 20));
@@ -380,6 +394,7 @@ mod tests {
             frame: Some(&request),
             crop: None,
             place: None,
+            straighten: 0.0,
         });
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         (out, p)

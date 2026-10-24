@@ -226,7 +226,9 @@
     "filteredHint": "Only the photos the library filter shows are exported."
   },
   "crop": {
-    "zoom": "Zoom"
+    "zoom": "Zoom",
+    "straighten": "Straighten",
+    "straightenHint": "Level the horizon, ±15°. Double-click to reset."
   },
   "dpi": {
     "excellent": "Excellent",

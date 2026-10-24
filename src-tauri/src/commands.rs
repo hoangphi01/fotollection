@@ -994,6 +994,8 @@ pub struct CropGeometry {
     pub print_width_cm: f32,
     pub print_height_cm: f32,
     pub crop: Option<CropFrame>,
+    /// Straightening in degrees, ±15 (FR-006); the crop is in the straightened frame.
+    pub straighten: f32,
     /// The frame's Fit mode shows the whole photo, so cropping is off.
     pub crop_disabled: bool,
     /// Display unit of the selected size (inches for custom sizes entered in inches).
@@ -1045,6 +1047,7 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
             frame: frame.as_ref(),
             crop: None,
             place: None,
+            straighten: 0.0,
         });
         #[allow(clippy::cast_precision_loss)]
         let (long_cm, short_cm) = (print.long_mm as f32 / 10.0, print.short_mm as f32 / 10.0);
@@ -1070,6 +1073,7 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
             print_width_cm,
             print_height_cm,
             crop: record.edits.crop,
+            straighten: record.edits.straighten,
             crop_disabled,
             unit: settings.unit(),
         })
@@ -1086,14 +1090,20 @@ pub fn set_photo_crop(
     state: State<'_, AppState>,
     id: PhotoId,
     crop: Option<CropFrame>,
+    straighten: f32,
 ) -> Result<HistoryState, IpcError> {
     {
         let mut library = state
             .library
             .write()
             .map_err(|e| IpcError::internal(e.to_string()))?;
+        if library.record(id).is_none() {
+            return Err(IpcError::new("photo.unknown", "Unknown photo"));
+        }
         let mut edits = library.edits(id);
         edits.crop = crop.map(CropFrame::sanitized);
+        // Crop and straightening are one undoable step (FR-006).
+        edits.straighten = fotollection_core::straighten::sanitize(straighten);
         state
             .history
             .lock()

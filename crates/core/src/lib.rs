@@ -27,6 +27,7 @@ pub mod render;
 pub mod settings;
 pub mod settings_store;
 pub mod stamp;
+pub mod straighten;
 pub mod text;
 pub mod thumbs;
 
