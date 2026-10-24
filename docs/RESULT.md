@@ -104,3 +104,26 @@ target/release/examples/measure_folder ~/Pictures/some-folder --analyze
 ```
 
 The scripts build `measure_folder` themselves. Photos are only read, and never copied into the repository; `bench/results/` holds numbers only. Let the machine cool down before a run: the M3 throttles under sustained load.
+
+## 8. Best-shot accuracy
+
+Best-shot suggestions ([FR-041](PRD.md#fr-041--best-shot-suggestions)) are scored against 95 photos labelled by hand: 22 groups of one moment, and for 6 of them the photo to keep (`bench/bestshot/truth-103_09.json`; file names only, the photos are private). Pairs labelled as ambiguous are ignored. Results are in `bench/results/bestshot.json`, and the decision is in [ADR-0019](adr/0019-grouping-by-visual-signature.md).
+
+![Best-shot suggestions, step by step](images/bench-bestshot.svg)
+
+| Step | Groups found (of 22) | Pair recall | Pair precision | Extra groups | Acceptable picks |
+|------|-----:|-----:|-----:|-----:|-----:|
+| dHash, focal split (before) | 3 | 9 % | 100 % | 0 | 2/2 |
+| + layout and colour signature | 13 | 67 % | 100 % | 2 | 3/4 |
+| + zoom from focal length | 15 | 73 % | 100 % | 2 | 5/6 |
+| + fair sharpness, hidden faces | **15** | **73 %** | **100 %** | 2 | **6/6** |
+
+- **Extra groups:** both are pairs labelled as ambiguous (0485/0486, 0504/0505), not mistakes.
+- **Still missed:** 0430/0431, 0447/0448, 0452/0453, 0465/0466, 0472/0473, 0502/0503 and 0516/0517. In each, the pose or the framing changes a lot (food shot again from the other side, a selfie upside down, a cat approached on foot).
+- **Picks** in the labelled groups: 0426 over a squint, 0440 over a profile with a hand at the mouth, 0463 over closed eyes, 0524 over a defocused night shot, 0525 over a soft zoomed shot, and 0533 among four sunsets.
+- **Speed after the change:** 17.4 ms per photo, 27.6 ms with faces (NFR-014: 20 / 40 ms).
+
+```bash
+cargo run --release -p fotollection-core --example eval_bestshot -- ~/Pictures/some-folder labels.json
+# --explain: score parts per photo; --pairs: time gap, layout and colour similarity of neighbours
+```

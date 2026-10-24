@@ -396,15 +396,17 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 - **Grouping.** Photos are ordered by capture time, including `SubSecTimeOriginal`. A new group starts when:
   - the gap exceeds max(2 s, 4 × the median gap);
   - the camera or lens changes;
-  - the focal length changes by more than 20 %;
   - GPS moves by more than 30 m.
-- **Group confirmation.** A 64-bit dHash of the analysis image confirms each group: Hamming distance ≤ 16, compared with the group's first photo so that groups do not chain. On the reference set, hand-held re-framings of one moment measured 11–16 and different scenes 18 or more. A group holds at most 30 photos.
+
+  A focal-length change alone does not split a group: re-shooting closer is common, and the zoom is allowed for when the shots are compared.
+- **Group confirmation.** Each photo has a visual signature: a 32 × 24 luma layout and a hue × saturation histogram ([ADR-0019](adr/0019-grouping-by-visual-signature.md)). A shot joins the group when its layout correlates ≥ 0.6 with the previous shot and its colours overlap ≥ 0.72. The comparison allows shifts of about ±10 % and zooms of ×0.85–1.18, or the EXIF focal-length ratio when the shots were zoomed. Against the group's first shot it must still correlate ≥ 0.4, so that groups do not chain. A group holds at most 30 photos.
+- **Accuracy.** Grouping and picks are scored against hand-labelled photos with `eval_bestshot` (README, [RESULT.md §8](RESULT.md#8-best-shot-accuracy)). A change must not lower the scores.
 - **Metrics.** Each metric is computed in one pass over a greyscale copy of the T2 preview, reduced to 1,024 px:
   - Sharpness: variance of Laplacian and Tenengrad on a 16 × 12 tile grid. The median scores the whole photo; the 90–95th percentile, or the face tiles, score the subject.
   - Camera shake: structure-tensor coherence, relative to the group median. EXIF adds a hint when the shutter is slower than 1/(focal × crop factor).
   - Exposure: the clipped-highlight share (≥ 250), the crushed-shadow share, the median luminance against 118 (in EV), and RMS contrast.
   - Noise: the Immerkær estimate over the flatter half of the image (gradient below the median), so that the sharper frame of a burst does not look noisier.
-- **Faces and eyes.** Faces are detected with YuNet, and the eyelid landmarks of FaceMesh V2 give the eye aspect ratio ([ADR-0018](adr/0018-face-models-and-runtime.md)). An eye counts as closed when its ratio is below 0.2, or below 0.75 × the same person's maximum in the group. Face and eye regions also get their own sharpness score.
+- **Faces and eyes.** Faces are detected with YuNet, and the eyelid landmarks of FaceMesh V2 give the eye aspect ratio ([ADR-0018](adr/0018-face-models-and-runtime.md)). An eye counts as closed when its ratio is below 0.2, or below 0.75 × the same person's maximum in the group. Face and eye regions also get their own sharpness score, used when every shot of the group has a face; otherwise all shots are compared on whole-image sharpness. In the eyes term, each open pair of eyes counts +1, each closed pair −2, and each face turned away or hidden (fewer faces than the most in any shot of the group) −0.5.
 - **Score.** Each metric is normalized with a robust z-score (median/MAD) **within the group**; groups smaller than 4 use rank instead. Each metric has a smallest spread (for example 0.15 EV or 2 % of clipped highlights), so differences too small to see in a print never count as several sigmas. The weights are:
 
   | Metric | Weight |

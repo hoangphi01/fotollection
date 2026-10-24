@@ -338,7 +338,7 @@ fn analyze(
     let shots = records
         .iter()
         .zip(&timed)
-        .map(|(r, (_, a))| group::Shot::from_record(r, a.hash))
+        .map(|(r, (_, a))| group::Shot::from_record(r, a.signature.clone()))
         .collect();
     let groups = group::group(shots);
     let report = |line: String| {

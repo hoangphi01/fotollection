@@ -22,6 +22,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0016](0016-self-contained-project-bundle.md) | Self-contained project bundle (ZIP) | Accepted | 2026-10-24 |
 | [0017](0017-heic-through-os-codecs.md) | Decode HEIC with the operating system's codecs | Accepted | 2026-10-24 |
 | [0018](0018-face-models-and-runtime.md) | Face and eye models for best-shot suggestions, run with tract | Accepted | 2026-10-24 |
+| [0019](0019-grouping-by-visual-signature.md) | Group similar shots by a layout and colour signature, scored on labelled photos | Accepted | 2026-10-24 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

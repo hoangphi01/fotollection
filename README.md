@@ -130,7 +130,27 @@ On raw export speed the browser is just as fast, because Chromium uses libjpeg-t
 
 The encoder used to be the bottleneck: 16.2 ms, 62 % of a 26 ms preview. Previews are only ever shown on screen, so they now encode with 4:2:0 chroma and plain Huffman tables, which looks the same at 3× zoom. Exports keep 4:4:4 and optimized tables. That one change took the preview from 26 ms to 17 ms.
 
-Reproduce everything with `bench/run.sh <photo-folder>` and `bench/batch.sh <photo-folder>`. The method is in [docs/OPTIMIZATION.md §2](docs/OPTIMIZATION.md#2-why-native-rust-instead-of-a-web-app), and the budgets every change must respect are in [§3](docs/OPTIMIZATION.md#3-budgets).
+### How good are the best-shot suggestions?
+
+Speed is not enough for a feature that suggests which photo to keep, so best-shot suggestions are also scored for accuracy. 95 real photos (people, food, streets, night shots, sunsets) were labelled by hand: 22 groups of shots of one moment, and for 6 of them the photo that should be kept. `eval_bestshot` compares the app's groups and picks with those labels.
+
+![Groups found, of 22 labelled: dHash 3, plus layout and colour signature 13, plus zoom from focal length 15, plus fair sharpness and hidden faces 15. Acceptable picks: 2 of 2, 3 of 4, 5 of 6, 6 of 6. No group was ever wrong.](docs/images/bench-bestshot.svg)
+
+| Step | Groups found (of 22) | Pairs found | Wrong groups | Acceptable picks |
+|------|-----:|-----:|-----:|-----:|
+| dHash (before) | 3 | 9 % | 0 | 2/2 |
+| + layout and colour signature | 13 | 67 % | 0 | 3/4 |
+| + zoom from focal length | 15 | 73 % | 0 | 5/6 |
+| + fair sharpness, hidden faces | **15** | **73 %** | **0** | **6/6** |
+
+- **dHash** (a 64-bit hash of brightness steps) flips its bits in flat areas such as sky. Two near-identical shots of a hotel scored as far apart as two unrelated scenes. It is replaced by a 32 × 24 layout signature compared by correlation over small shifts and zooms, plus a colour histogram that separates different scenes with a similar layout.
+- **Re-shooting closer is common**, for example 5 → 9.9 mm on the church at night. Zooming no longer splits a group: the focal lengths in EXIF tell the comparison how much closer the second shot is.
+- **Fair comparisons.** A shot with the face turned away used to be compared on whole-image sharpness against eye sharpness in the other shot. Now every shot in a group is measured the same way, and a face turned away or hidden counts against a shot.
+- **Still missed:** 7 groups where the pose or the framing changed a lot, such as a second pizza shot from the other side or a selfie taken upside down. Those need an image-understanding model, which is a next step. The 2 extra groups the app made are pairs labelled as ambiguous, not mistakes.
+
+The analysis stays within its budget: 17.4 ms per photo, 27.6 ms with faces ([NFR-014](docs/PRD.md#nfr-014--best-shot-analysis-speed)). The labels hold file names only, since the photos are private: label your own folder in the same format (`bench/bestshot/truth-103_09.json`) to score it.
+
+Reproduce everything with `bench/run.sh <photo-folder>` and `bench/batch.sh <photo-folder>`; score best-shot suggestions with `cargo run --release -p fotollection-core --example eval_bestshot -- <photo-folder> <labels.json>`. The method is in [docs/OPTIMIZATION.md §2](docs/OPTIMIZATION.md#2-why-native-rust-instead-of-a-web-app), and the budgets every change must respect are in [§3](docs/OPTIMIZATION.md#3-budgets).
 
 ## Download
 

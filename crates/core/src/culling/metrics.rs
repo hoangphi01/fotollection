@@ -272,34 +272,6 @@ pub fn region_sharpness(g: &Gray, x0: usize, y0: usize, x1: usize, y1: usize) ->
     mean
 }
 
-/// 64-bit difference hash of a 9×8 greyscale reduction, for grouping near-identical shots.
-pub fn dhash(g: &Gray) -> u64 {
-    let (w, h) = (g.width.max(1), g.height.max(1));
-    // Box-average into 9×8 cells.
-    let mut cells = [0f32; 72];
-    for (i, cell) in cells.iter_mut().enumerate() {
-        let (cx, cy) = (i % 9, i / 9);
-        let (x0, x1) = (cx * w / 9, ((cx + 1) * w / 9).max(cx * w / 9 + 1).min(w));
-        let (y0, y1) = (cy * h / 8, ((cy + 1) * h / 8).max(cy * h / 8 + 1).min(h));
-        let mut sum = 0.0;
-        let mut n = 0.0;
-        for y in y0..y1 {
-            for x in x0..x1 {
-                sum += g.at(x, y);
-                n += 1.0;
-            }
-        }
-        *cell = if n > 0.0 { sum / n } else { 0.0 };
-    }
-    let mut hash = 0u64;
-    for y in 0..8 {
-        for x in 0..8 {
-            hash = (hash << 1) | u64::from(cells[y * 9 + x] > cells[y * 9 + x + 1]);
-        }
-    }
-    hash
-}
-
 #[cfg(test)]
 pub(crate) mod tests {
     use super::*;
@@ -406,23 +378,5 @@ pub(crate) mod tests {
         }
         let noisy = measure(&noisy);
         assert!(noisy.noise > clean.noise + 3.0, "{clean:?} vs {noisy:?}");
-    }
-
-    #[test]
-    fn fr_041_dhash_matches_similar_and_separates_different() {
-        let a = dhash(&scene(320, 240, 0));
-        let a_soft = dhash(&blur(&scene(320, 240, 0), 2, true, true));
-        // The same scene seen from the other side: a different picture.
-        let mut mirrored = scene(320, 240, 0);
-        mirrored
-            .data
-            .as_chunks_mut::<320>()
-            .0
-            .iter_mut()
-            .for_each(|row| row.reverse());
-        let b = dhash(&mirrored);
-        let limit = crate::culling::group::MAX_HASH_DISTANCE;
-        assert!((a ^ a_soft).count_ones() <= limit);
-        assert!((a ^ b).count_ones() > limit, "{}", (a ^ b).count_ones());
     }
 }

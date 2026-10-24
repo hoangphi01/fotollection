@@ -11,7 +11,7 @@ use crate::image::apply_orientation;
 use crate::library::PhotoRecord;
 use crate::thumbs::{content_key, write_atomic};
 
-/// Cached files above this size are treated as corrupt (a real one is under 2 KB).
+/// Cached files above this size are treated as corrupt (a real one is about 3 KB).
 const MAX_ENTRY_BYTES: u64 = 64 * 1024;
 
 #[derive(Debug, thiserror::Error)]
@@ -130,7 +130,7 @@ mod tests {
         let stale = PhotoAnalysis {
             version: ANALYSIS_VERSION + 1,
             metrics: Metrics::default(),
-            hash: 0,
+            signature: crate::culling::similar::Signature::default(),
             faces: Vec::new(),
         };
         let path = cache.path(&photo);

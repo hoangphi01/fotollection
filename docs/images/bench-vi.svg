@@ -7,7 +7,7 @@
   .t3{fill:#6f6e68;font:12px system-ui,-apple-system,Segoe UI,sans-serif}
   .h{font-size:15px} .num{font-variant-numeric:tabular-nums} .axis{stroke:#c9c8c1;stroke-width:1}
   .ref{stroke:#52514c;stroke-width:1.5;stroke-dasharray:4 3} .refw{stroke:#eb6834;stroke-width:1.5;stroke-dasharray:4 3}
-  .s1{fill:#2a78d6} .s2{fill:#eb6834} .s3{fill:#1baf7a} .s4{fill:#eda100} .s5{fill:#e87ba4} .gap{stroke:#fcfcfb;stroke-width:2}
+  .s1{fill:#2a78d6} .old{fill-opacity:.45} .s2{fill:#eb6834} .s3{fill:#1baf7a} .s4{fill:#eda100} .s5{fill:#e87ba4} .gap{stroke:#fcfcfb;stroke-width:2}
   .in{fill:#fff}
   @media (prefers-color-scheme: dark){
     .bg{fill:#1a1a19} .t1{fill:#f0efec} .t2{fill:#c3c2b7} .t3{fill:#9d9c93} .axis{stroke:#45443f}

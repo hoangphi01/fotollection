@@ -173,6 +173,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-10-24 | Stage 3 | REF-MAC (M3) | HEIC decode 4608×3456 via ImageIO (`render_one`, photo converted with `sips`) | ≈ 170 ms (165–207) | 3.8× the same photo as JPEG (45 ms); follow-up: ImageIO thumbnails for T1 |
 | 2026-10-24 | Stage 3 | REF-MAC (M3) | Best-shot analysis from the 2048 px T2, one thread (`measure_folder --analyze`, 95 photos): first version | no faces p50 52 ms, with faces p50 64 ms | Over NFR-014 (20 / 40 ms) |
 | 2026-10-24 | Stage 3 | REF-MAC (M3) | Same, after: histogram percentiles instead of sorts and slice windows in `measure` (26 → 3.8 ms); YuNet at the photo's shape, 512 px, instead of a padded 640² (19 → 8.3 ms; portrait padded to 512², 11.0 ms, because tract runs a tall input slower, 12.8 ms); 2×2 halving instead of a box resize (5.3 → ≈ 1 ms) | no faces p50 17.4 / p95 18.0 ms, with faces p50 27.8 / p95 36 ms; whole pool ≈ 110–125 photos/s | NFR-014 ✓ |
+| 2026-10-24 | Stage 3 | REF-MAC (M3) | Best-shot grouping signature (32 × 24 luma + colour histogram, ADR-0019) computed on the 1,024 px image, then on a 256 px halving | no faces p50 19.9 / p95 20.5 ms → 17.4 / 18.1 ms; with faces p50 27.6 ms | NFR-014 ✓ kept; accuracy unchanged (15/22 groups, 6/6 picks) |
 
 ## 6. Benchmark corpus
 

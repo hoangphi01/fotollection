@@ -8,6 +8,7 @@ pub mod group;
 pub mod metrics;
 pub mod models;
 pub mod score;
+pub mod similar;
 
 use std::collections::HashMap;
 
@@ -20,11 +21,14 @@ use fast_image_resize::{FilterType, PixelType, ResizeAlg, ResizeOptions, Resizer
 
 use crate::image::RgbImage;
 use crate::library::{PhotoId, PhotoRecord};
-use metrics::{ANALYSIS_EDGE, Gray, Metrics, dhash, measure};
+use metrics::{ANALYSIS_EDGE, Gray, Metrics, measure};
 use score::GroupResult;
 
+/// Long edge the visual signature is computed from.
+const SIGNATURE_SOURCE_EDGE: u32 = 256;
+
 /// Bumped whenever a measure changes, so cached analyses are recomputed.
-pub const ANALYSIS_VERSION: u32 = 1;
+pub const ANALYSIS_VERSION: u32 = 2;
 
 #[derive(Debug, Clone, Error)]
 pub enum CullingError {
@@ -81,7 +85,8 @@ impl FaceSummary {
 pub struct PhotoAnalysis {
     pub version: u32,
     pub metrics: Metrics,
-    pub hash: u64,
+    /// Layout and colour signature for grouping (FR-041).
+    pub signature: similar::Signature,
     pub faces: Vec<FaceSummary>,
 }
 
@@ -110,7 +115,7 @@ impl PhotoAnalysis {
                     && f.sharpness.is_finite()
                     && f.ear.is_none_or(|e| (0.0..=2.0).contains(&e))
             });
-        finite && faces_ok
+        finite && faces_ok && self.signature.is_plausible()
     }
 }
 
@@ -131,7 +136,12 @@ pub fn suggest<S: std::hash::BuildHasher>(
 ) -> Vec<Group> {
     let shots = records
         .iter()
-        .filter_map(|r| Some(group::Shot::from_record(r, analyses.get(&r.id)?.hash)))
+        .filter_map(|r| {
+            Some(group::Shot::from_record(
+                r,
+                analyses.get(&r.id)?.signature.clone(),
+            ))
+        })
         .collect();
     group::group(shots)
         .into_iter()
@@ -226,7 +236,8 @@ pub fn analyze(image: &RgbImage) -> Result<PhotoAnalysis, CullingError> {
     Ok(PhotoAnalysis {
         version: ANALYSIS_VERSION,
         metrics: measure(&gray),
-        hash: dhash(&gray),
+        // 32 × 24 cells and a colour histogram need no more than 256 px (NFR-014).
+        signature: similar::signature(&reduce(&small, SIGNATURE_SOURCE_EDGE)?),
         faces: faces::faces(&small, &gray)?,
     })
 }

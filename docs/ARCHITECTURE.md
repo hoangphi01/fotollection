@@ -66,7 +66,8 @@ crates/
       cancel.rs          † # CancellationToken
       culling/           † # best-shot suggestions (FR-041): metrics.rs (sharpness, shake, exposure, noise, dHash),
                            # faces.rs (YuNet + FaceMesh eye aspect ratio), models.rs (bundled ONNX, BLAKE3, tract),
-                           # group.rs (bursts), score.rs (robust z within the group + reasons)
+                           # similar.rs (layout + colour signature, ADR-0019), group.rs (bursts),
+                           # score.rs (robust z within the group + reasons), cache.rs (analysis/)
       timeline.rs          # clock offsets, manual date/place, GPS borrowing + GPX (FR-030/031/032)
       geocode.rs           # offline reverse geocoder + offline place search (GeoNames + k-d tree)
       cluster.rs           # trip DBSCAN (Phase 2)

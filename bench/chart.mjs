@@ -50,6 +50,7 @@ const batches = readdirSync(results)
   .sort((a, b) => b.photos - a.photos)
 const batch = batches[0]
 const budgets = read('budgets.json')
+const bestshot = read('bestshot.json')
 const meta = read('machine.json')
 if (!rust || !web) throw new Error('run bench/run.sh first')
 
@@ -106,6 +107,13 @@ const T = {
     stamp: 'date stamp',
     encode: 'JPEG encode',
     ms: 'ms, p50',
+    bsTitle: 'Best-shot suggestions, step by step',
+    bsGroups: (n) => `Groups found, of ${n} labelled by hand`,
+    bsPicks: 'Suggested photo acceptable, in labelled groups with a clear best',
+    bsFooter: (n, g) => [
+      `${n} real photos (people, food, streets, night, sunsets) · ${g} groups labelled by hand`,
+      `No group was ever wrong: pair precision 100 % at every step`,
+    ],
   },
   vi: {
     lower: 'càng thấp càng tốt',
@@ -142,6 +150,13 @@ const T = {
     stamp: 'dấu ngày',
     encode: 'mã hóa JPEG',
     ms: 'ms, p50',
+    bsTitle: 'Gợi ý ảnh đẹp nhất, từng bước cải tiến',
+    bsGroups: (n) => `Số nhóm tìm được, trên ${n} nhóm gán nhãn tay`,
+    bsPicks: 'Ảnh được gợi ý chấp nhận được, ở các nhóm có ảnh tốt nhất rõ ràng',
+    bsFooter: (n, g) => [
+      `${n} ảnh thật (người, đồ ăn, phố, cảnh đêm, hoàng hôn) · ${g} nhóm gán nhãn tay`,
+      `Không lần nào gom sai: độ chính xác theo cặp 100 % ở mọi bước`,
+    ],
   },
 }
 
@@ -160,7 +175,7 @@ const STYLE = `<style>
   .t3{fill:#6f6e68;font:12px system-ui,-apple-system,Segoe UI,sans-serif}
   .h{font-size:15px} .num{font-variant-numeric:tabular-nums} .axis{stroke:#c9c8c1;stroke-width:1}
   .ref{stroke:#52514c;stroke-width:1.5;stroke-dasharray:4 3} .refw{stroke:#eb6834;stroke-width:1.5;stroke-dasharray:4 3}
-  .s1{fill:#2a78d6} .s2{fill:#eb6834} .s3{fill:#1baf7a} .s4{fill:#eda100} .s5{fill:#e87ba4} .gap{stroke:#fcfcfb;stroke-width:2}
+  .s1{fill:#2a78d6} .old{fill-opacity:.45} .s2{fill:#eb6834} .s3{fill:#1baf7a} .s4{fill:#eda100} .s5{fill:#e87ba4} .gap{stroke:#fcfcfb;stroke-width:2}
   .in{fill:#fff}
   @media (prefers-color-scheme: dark){
     .bg{fill:#1a1a19} .t1{fill:#f0efec} .t2{fill:#c3c2b7} .t3{fill:#9d9c93} .axis{stroke:#45443f}
@@ -338,6 +353,48 @@ function charts(lang) {
     body += `<text class="t3" x="0" y="${h - 4}">${esc(t.footer(f, false))}</text>`
     const desc = `${segs.map((s) => `${s.name} ${f(s.v, 1)} ms`).join(', ')}; ${f(total, 1)} ms. ${t.web} ${f(web.previewWarmP50Ms, 1)} ms. ${t.budget} ${budget} ms.`
     out['bench-preview'] = doc(t.previewTitle, desc, h, body)
+  }
+  // 5. Best-shot accuracy per improvement step (higher is better), against the labels.
+  {
+    const steps = bestshot.steps
+    const panels = [
+      {
+        title: t.bsGroups(bestshot.labelledGroups),
+        max: bestshot.labelledGroups,
+        v: (s) => s.foundGroups,
+        text: (s) => `${f(s.foundGroups, 0)}/${f(bestshot.labelledGroups, 0)}`,
+      },
+      {
+        title: t.bsPicks,
+        max: 1,
+        v: (s) => s.picksRight / s.picksScored,
+        text: (s) => `${f(s.picksRight, 0)}/${f(s.picksScored, 0)}`,
+      },
+    ]
+    const ph = 40 + steps.length * 30
+    let body = ''
+    panels.forEach((p, i) => {
+      const y0 = 30 + i * ph
+      body += `<text class="t1" x="0" y="${y0 + 14}">${esc(p.title)}</text>`
+      body += `<text class="t3" x="${W}" y="${y0 + 14}" text-anchor="end">${esc(t.higher)}</text>`
+      steps.forEach((s, j) => {
+        const y = y0 + 26 + j * 30
+        const w = Math.max(4, (PLOT * p.v(s)) / p.max)
+        const last = j === steps.length - 1
+        body += `<text class="t2" x="${LEFT - 10}" y="${y + 15}" text-anchor="end">${esc(s[lang])}</text>`
+        body += bar(last ? 's1' : 's1 old', LEFT, y, w, 22, `${s[lang]}: ${p.text(s)}`)
+        body += `<text class="t1 num" x="${LEFT + w + 8}" y="${y + 16}">${esc(p.text(s))}</text>`
+      })
+      body += `<line class="axis" x1="${LEFT}" x2="${LEFT}" y1="${y0 + 22}" y2="${y0 + 26 + steps.length * 30 - 4}"/>`
+    })
+    const h = 30 + panels.length * ph + 30
+    const [line1, line2] = t.bsFooter(f(bestshot.photos, 0), f(bestshot.labelledGroups, 0))
+    body += `<text class="t3" x="0" y="${h - 20}">${esc(line1)}</text>`
+    body += `<text class="t3" x="0" y="${h - 4}">${esc(line2)}</text>`
+    const desc = steps
+      .map((s) => `${s[lang]}: ${panels.map((p) => p.text(s)).join(', ')}`)
+      .join('. ')
+    out['bench-bestshot'] = doc(t.bsTitle, desc, h, body)
   }
   return out
 }

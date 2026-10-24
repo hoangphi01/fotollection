@@ -150,13 +150,16 @@ fn closed_eyes(photos: &[(PhotoId, &PhotoAnalysis)]) -> Vec<(u32, u32)> {
 
 /// Scores one group and explains the winner.
 pub fn rank(photos: &[(PhotoId, &PhotoAnalysis)]) -> GroupResult {
-    // Where faces were found, their sharpness matters more than the background's.
+    // Faces are the subject when every shot has one; otherwise all shots are compared on the
+    // same whole-image measure (eye-area and whole-image sharpness are not comparable).
+    let face_sharpness =
+        |a: &PhotoAnalysis| a.faces.iter().map(|f| f.sharpness).fold(0.0, f32::max);
+    let all_faces = photos.iter().all(|(_, a)| face_sharpness(a) > 0.0);
     let sharp: Vec<f32> = photos
         .iter()
         .map(|(_, a)| {
-            let faces = a.faces.iter().map(|f| f.sharpness).fold(0.0, f32::max);
-            if faces > 0.0 {
-                faces.ln_1p()
+            if all_faces {
+                face_sharpness(a).ln_1p()
             } else {
                 a.metrics.subject_sharpness.ln_1p()
             }
@@ -170,6 +173,9 @@ pub fn rank(photos: &[(PhotoId, &PhotoAnalysis)]) -> GroupResult {
     let highlights: Vec<f32> = photos.iter().map(|(_, a)| -a.metrics.highlights).collect();
     let noise: Vec<f32> = photos.iter().map(|(_, a)| -a.metrics.noise).collect();
     let eyes = closed_eyes(photos);
+    // Most faces whose eyes could be checked in any one shot: a shot where nobody faces the
+    // camera scores 0, below one where everyone's eyes are open.
+    let most_faces = eyes.iter().map(|(_, seen)| *seen).max().unwrap_or(0);
 
     let (zs, zt, ze, zh, zn) = (
         standardize(&sharp, MIN_SPREAD_SHARP),
@@ -183,12 +189,15 @@ pub fn rank(photos: &[(PhotoId, &PhotoAnalysis)]) -> GroupResult {
         .enumerate()
         .map(|(i, (id, _))| {
             let (closed, faces) = eyes[i];
-            // Open eyes add up to +1, every closed pair costs 2: closed eyes rarely win.
+            // Each open pair of eyes adds 1, each closed pair costs 2, and each face turned
+            // away or hidden (fewer than the most in any shot) costs 0.5, relative to the most
+            // faces in the group: closed eyes rarely win, and neither does a lost face.
             #[allow(clippy::cast_precision_loss)]
-            let eyes_part = if faces == 0 {
+            let eyes_part = if most_faces == 0 {
                 0.0
             } else {
-                1.0 - 3.0 * closed as f32 / faces as f32
+                let missing = most_faces - faces;
+                (faces as f32 - 3.0 * closed as f32 - 0.5 * missing as f32) / most_faces as f32
             };
             let parts = [
                 W_SHARP * zs[i],
@@ -255,15 +264,15 @@ pub fn rank(photos: &[(PhotoId, &PhotoAnalysis)]) -> GroupResult {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::culling::metrics::measure;
     use crate::culling::metrics::tests::{blur, scene};
-    use crate::culling::metrics::{dhash, measure};
     use crate::culling::{ANALYSIS_VERSION, FaceSummary};
 
     fn analysis_of(g: &crate::culling::metrics::Gray) -> PhotoAnalysis {
         PhotoAnalysis {
             version: ANALYSIS_VERSION,
             metrics: measure(g),
-            hash: dhash(g),
+            signature: crate::culling::similar::Signature::default(),
             faces: Vec::new(),
         }
     }

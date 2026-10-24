@@ -327,8 +327,8 @@ Presets work like Lightroom presets, applied to *print* settings ([FR-038](PRD.m
 
 ### 8.1 Analysis cache
 
-- **Layout:** `analysis/<first 2 hex chars>/<blake3(path ‖ size ‖ mtime)>.json`, next to `thumbs/` in the cache directory, with the same content key. One small JSON object per photo (under 2 KB): `version`, `metrics`, `hash` (the dHash) and `faces` (boxes as fractions of the image, eye aspect ratio, eye sharpness) of best-shot suggestions ([FR-041](PRD.md#fr-041--best-shot-suggestions)). No landmarks or face images are stored.
-- **Versioning:** `version` is the core's `ANALYSIS_VERSION`. A different version, a file over 64 KB, unparsable JSON or out-of-range values are treated as a miss and recomputed, never trusted. No migration: it is derived data.
+- **Layout:** `analysis/<first 2 hex chars>/<blake3(path ‖ size ‖ mtime)>.json`, next to `thumbs/` in the cache directory, with the same content key. One small JSON object per photo (about 3 KB): `version`, `metrics`, `signature` (32 × 24 luma layout and a 37-bin colour histogram, [ADR-0019](adr/0019-grouping-by-visual-signature.md)) and `faces` (boxes as fractions of the image, eye aspect ratio, eye sharpness) of best-shot suggestions ([FR-041](PRD.md#fr-041--best-shot-suggestions)). No landmarks or face images are stored.
+- **Versioning:** `version` is the core's `ANALYSIS_VERSION`, now 2 (version 1 stored a dHash instead of the signature). A different version, a file over 64 KB, unparsable JSON or out-of-range values are treated as a miss and recomputed, never trusted. No migration: it is derived data.
 - **Writes:** atomic (`.part` + rename). A failed write only means the photo is analysed again next time.
 - **Not in the project file:** groups and suggestions are recomputed from the cache; only the flags the user accepts with **Keep best** are stored, as ordinary FR-022 flags (rule N4).
 - **Clearing:** safe at any time, like `thumbs/`. *Clear cache* will remove both.
