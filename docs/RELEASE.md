@@ -41,6 +41,7 @@ The WebView2 runtime is bootstrapped by the Windows installer when it is missing
 - Every release publishes `SHA256SUMS.txt` for all artifacts.
 - The release notes, the website and the README include the first-launch steps for each OS.
 - No signing secret exists yet. Any future one is stored only in GitHub Actions encrypted secrets, never in the repository.
+- **Plan:** apply to SignPath Foundation for free Windows signing now that public releases exist. Pay for the Apple Developer Program only when the project earns money or an iPhone app is built; there is no free way to notarize for macOS (a free Apple ID signs only for the developer's own devices, for 7 days).
 
 ## 4. Release pipeline
 

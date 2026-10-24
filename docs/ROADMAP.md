@@ -124,6 +124,9 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 
 These ideas have no ID yet. Promote one to a PRD requirement before scheduling it.
 
+- **Look back one trip at a time from the Photos library (macOS, PhotoKit, read-only).** Pick a trip by date or place; the app groups it, suggests the best shots, and puts the rejects in a "To delete" album the user empties in Photos. With iCloud Photos this frees space on the iPhone too, without the app ever deleting anything. Prompted by the owner's own library: about 70,000 photos on a 512 GB iPhone. Measure a 70,000-photo library first (NFR-001, NFR-014).
+- **iPhone companion app**, only if the Mac flow proves itself: swipe culling on the way home and real deletion behind iOS's own confirmation. Needs the Apple Developer Program (99 USD/year, which would also notarize the Mac app), a native SwiftUI interface over the Rust core (UniFFI), and Core ML for the face models.
+- **Support from abroad:** a Ko-fi or GitHub Sponsors link next to the VietQR code on the website.
 - XMP sidecar export of ratings and flags (sources stay read-only)
 - Lossless rotation fix-up tool
 - Linux build

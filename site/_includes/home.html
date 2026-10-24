@@ -66,10 +66,38 @@
 
 <section class="section tint">
   <div class="wrap showcase">
-    <figure class="shot">{% include shot.html name="stamp" alt=t.show_stamp %}<figcaption>{{ t.show_stamp }}</figcaption></figure>
-    <figure class="shot">{% include shot.html name="frame" alt=t.show_frame %}<figcaption>{{ t.show_frame }}</figcaption></figure>
-    <figure class="shot">{% include shot.html name="crop" alt=t.show_crop %}<figcaption>{{ t.show_crop }}</figcaption></figure>
-    <figure class="shot">{% include shot.html name="groups" alt=t.show_groups %}<figcaption>{{ t.show_groups }}</figcaption></figure>
+    <div class="showcase-row">
+      <figure class="shot">{% include shot.html name="stamp" alt=t.show_stamp %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.f_stamp_title }}</h3>
+        <p>{{ t.f_stamp_text }}</p>
+        <p class="small muted">{{ t.show_stamp }}</p>
+      </div>
+    </div>
+    <div class="showcase-row flip">
+      <figure class="shot">{% include shot.html name="frame" alt=t.show_frame %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.f_frame_title }}</h3>
+        <p>{{ t.f_frame_text }}</p>
+        <p class="small muted">{{ t.show_frame }}</p>
+      </div>
+    </div>
+    <div class="showcase-row">
+      <figure class="shot">{% include shot.html name="crop" alt=t.show_crop %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.f_crop_title }}</h3>
+        <p>{{ t.f_crop_text }}</p>
+        <p class="small muted">{{ t.show_crop }}</p>
+      </div>
+    </div>
+    <div class="showcase-row flip">
+      <figure class="shot">{% include shot.html name="groups" alt=t.show_groups %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.f_best_title }}</h3>
+        <p>{{ t.f_best_text }}</p>
+        <p class="small muted">{{ t.show_groups }}</p>
+      </div>
+    </div>
   </div>
 </section>
 

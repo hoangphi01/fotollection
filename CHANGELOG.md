@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **Website:** a "buy me a coffee" section with a VietQR code (Vietnamese banking apps only), a note on who makes Fotollection, a footer button to the author's blog, and larger screenshots in alternating rows, each beside its explanation (the best-shot one now shows the compare view).
+
 ## [0.1.0] - 2026-10-24
 
 ### Added
