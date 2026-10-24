@@ -13,3 +13,7 @@ target/
 node_modules/
 dist/
 ui/node_modules/.vite/
+
+# Third-party fonts downloaded by the owner for local use (not redistributable).
+ds_digital/
+ds_digital.zip

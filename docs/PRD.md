@@ -501,6 +501,16 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 - **Output:** shown in the app, and exportable as a self-contained HTML or PDF page, and optionally as one extra print (a journal card) in the chosen print size. Every sentence can be edited before export.
 - **Statistics shown are measured, never guessed.** Where the app is unsure (for example a place inferred only from time), it says so ("probably Debrecen").
 
+### FR-050 — Print basket
+
+**P1 (planned, not started).** A basket of the photos that will really be printed, separate from culling. A typical batch: 100 photos are edited together, filters keep 60, but only 5–10 go to the lab.
+
+- **Add to basket** like a shopping cart: after editing a photo in detail (crop, stamp, frame), the user adds it to the basket with one click or key, from the grid or the preview. The basket shows its count and can be opened as a filter.
+- The basket is independent of pick/reject ([FR-022](#fr-022--culling-rate-flag-filter)): a photo can be a pick without being printed.
+- **Export** works as configured (organised by place, by date, or all together, [FR-009](#fr-009--export-by-date), [FR-014](#fr-014--export-by-trip)). One extra option, **"Also export the print basket"**, writes the basket's photos into an additional folder (for example `Print/`), ready to hand to the lab.
+- The basket is saved in the project file (a per-photo flag, with a project schema bump) and is undoable.
+- With copies and the order summary ([FR-024](#fr-024--copies-and-order-summary)) it becomes the order: copies per photo, sizes and an estimated cost.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
