@@ -16,14 +16,17 @@ pub struct PrintSize {
 
 impl PrintSize {
     /// All supported sizes, in the order shown to the user.
-    pub const ALL: [PrintSize; 8] = [
+    pub const ALL: [PrintSize; 11] = [
         PrintSize::new("9x13", 90, 130),
         PrintSize::new("10x15", 100, 150),
         PrintSize::new("11x17", 110, 170),
         PrintSize::new("13x18", 130, 180),
         PrintSize::new("15x20", 150, 200),
         PrintSize::new("20x30", 200, 300),
+        PrintSize::new("10x10", 100, 100),
+        PrintSize::new("13x13", 130, 130),
         PrintSize::new("15x15", 150, 150),
+        PrintSize::new("20x20", 200, 200),
         PrintSize::new("5x15", 50, 150),
     ];
 
@@ -92,6 +95,10 @@ mod tests {
         assert_eq!(ratio("10x15"), Some(1.5));
         assert_eq!(ratio("20x30"), Some(1.5));
         assert_eq!(ratio("15x15"), Some(1.0));
+        // Square sizes of the CEWE kiosks at dm and Rossmann (PRD §5).
+        for id in ["10x10", "13x13", "20x20"] {
+            assert_eq!(ratio(id), Some(1.0), "{id}");
+        }
         assert_eq!(ratio("5x15"), Some(3.0));
         assert!((ratio("15x20").unwrap_or_default() - 4.0 / 3.0).abs() < 1e-9);
     }

@@ -264,6 +264,10 @@ mod tests {
     use crate::settings::Corner;
     use crate::settings::RenderSettings;
 
+    fn square_15() -> PrintSize {
+        PrintSize::by_id("15x15").unwrap_or(PrintSize::ALL[1])
+    }
+
     fn capture() -> Option<chrono::NaiveDateTime> {
         chrono::NaiveDate::from_ymd_opt(2026, 7, 14).and_then(|d| d.and_hms_opt(10, 0, 0))
     }
@@ -346,7 +350,7 @@ mod tests {
             height: 20,
             capture: None,
             settings: &settings,
-            print: PrintSize::ALL[6],
+            print: square_15(),
             max_long_edge: None,
             frame: None,
             crop: None,
@@ -402,7 +406,7 @@ mod tests {
 
     #[test]
     fn fr_040_rendered_output_has_print_ratio() {
-        for print in [PrintSize::ALL[1], PrintSize::ALL[4], PrintSize::ALL[6]] {
+        for print in [PrintSize::ALL[1], PrintSize::ALL[4], square_15()] {
             for fit in [FrameFit::Crop, FrameFit::Fit] {
                 for (w, h) in [(1200, 900), (900, 1200)] {
                     let (out, p) = framed(fit, w, h, print);

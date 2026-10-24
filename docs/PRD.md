@@ -63,11 +63,14 @@ Nobody combines EXIF date/location stamping, trip auto-organization, and batch c
 | `13x18` | 13×18 | 5×7 | ~1:1.38 | Medium |
 | `15x20` | 15×20 | 6×8 | 3:4 | Large |
 | `20x30` | 20×30 | 8×12 | 2:3 | Extra large |
+| `10x10` | 10×10 | 4×4 | 1:1 | Small square |
+| `13x13` | 13×13 | 5×5 | 1:1 | Medium square |
 | `15x15` | 15×15 | 6×6 | 1:1 | Square |
+| `20x20` | 20×20 | 8×8 | 1:1 | Large square |
 | `5x15` | 5×15 | 2×6 | 1:3 | Photo strip |
 | `original` | 10 × (photo ratio), e.g. 10×13.3 for 4:3 | 4 × (photo ratio) | The photo's own | No crop ([FR-045](#fr-045--original-aspect-ratio)) |
 
-Target labs: CEWE, Rossmann, dm, Boots Photo, Snapfish, FreePrints, Photobox.
+Target labs: CEWE, Rossmann, dm, Boots Photo, Snapfish, FreePrints, Photobox. The photo services of dm (Fotoparadies) and Rossmann (Fotowelt) are run by CEWE; every size on dm's in-store price list (9×13, 5×15, 10×15, 10×10, 13×13, 13×18, 15×20, 15×15, 20×20, 20×30; checked 2026-10-24) is built in. Other sizes are added as custom sizes ([FR-043](#fr-043--custom-print-sizes)).
 
 ### Minimum resolution per size
 
@@ -81,7 +84,10 @@ The table below gives the pixels needed after cropping, used by [FR-026](#fr-026
 | `13x18` | 1535×2126 | 1024×1417 | 768×1063 |
 | `15x20` | 1772×2362 | 1181×1575 | 886×1181 |
 | `20x30` | 2362×3543 | 1575×2362 | 1181×1772 |
+| `10x10` | 1181×1181 | 787×787 | 591×591 |
+| `13x13` | 1535×1535 | 1024×1024 | 768×768 |
 | `15x15` | 1772×1772 | 1181×1181 | 886×886 |
+| `20x20` | 2362×2362 | 1575×1575 | 1181×1181 |
 | `5x15` | 591×1772 | 394×1181 | 295×886 |
 
 ## 6. Functional requirements
