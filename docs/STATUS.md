@@ -62,7 +62,8 @@ The interface is in English and Vietnamese. Measured performance meets every bud
    - Photo Style looks (FR-039);
    - film looks like Fujifilm's film simulations (FR-047);
    - print presets (FR-038);
-   - per-photo overrides (FR-044).
+   - per-photo overrides (FR-044);
+   - trip journal, an offline report drafted from the album (FR-049).
 
 ## Phase 0 — Foundation
 
@@ -134,6 +135,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | FR-046 | Swipe culling | 2 | Not Started | Future: full-screen ↑ add to print list / ↓ leave out, Lightroom-loupe style; changes the main workflow, so it is planned separately |
 | FR-047 | Film looks | 2 | Not Started | Future: Fujifilm-style film simulations (slide, chrome, negative, cinema, mono) on the FR-039 engine; own names and LUTs, no trademarks or copied LUT files |
 | FR-048 | Normal and Professional modes | 1 | Not Started | **Next.** Normal = instant mode: open → keep/drop → export at 300 DPI for the print size, q90; Professional = everything so far. Shared library and project |
+| FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
 
 ## Non-functional requirements

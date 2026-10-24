@@ -490,6 +490,16 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 - **Switching** keeps all work: photos flagged or cropped in one mode are the same in the other. A Normal export of a project that has Professional settings (frame, fonts) uses them, but at Normal export quality.
 - **Not in Normal:** RAW, per-photo overrides, presets editing, culling suggestions UI. They stay in Professional.
 
+### FR-049 — Trip journal
+
+**P2 (future, not started).** An offline **journal of a trip**, written from the album itself: a one-page snapshot and report of what the photos say, like a travel diary the app drafts for you. For example: *"6 days, 14–19 September 2025 · Debrecen, then Budapest · 412 photos, 87 kept · Canon PowerShot and iPhone 15 · focal lengths 5–25 mm (28–140 mm equivalent), mostly wide · busiest day: 17 Sep, 128 photos · golden-hour sunsets on 3 evenings".*
+
+- **Everything is derived from data the app already has:** capture times (days, first and last photo, busiest day and hour), places from GPS, borrowed or manual places ([FR-005](#fr-005--location-stamp-offline), [FR-031](#fr-031--borrow-gps-from-a-phone-or-gpx-track), [FR-032](#fr-032--manual-date-and-place)), cameras and lenses, focal-length, aperture, shutter and ISO ranges from EXIF, counts of picks, rejects and stars ([FR-022](#fr-022--culling-rate-flag-filter)), and best-shot groups ([FR-041](#fr-041--best-shot-suggestions)).
+- **Offline and private:** the text is generated from templates in the interface language (English, Vietnamese), with no language model in the cloud and no network. The places come from the bundled GeoNames data.
+- **Structure:** a summary block, then one section per day: date, places in visiting order, photo count, a strip of that day's best shots, and notable facts (the longest burst, the widest and longest focal length used). It builds on trip grouping ([FR-012](#fr-012--trip-auto-grouping)) when that exists; until then a trip is the whole album or a date range.
+- **Output:** shown in the app, and exportable as a self-contained HTML or PDF page, and optionally as one extra print (a journal card) in the chosen print size. Every sentence can be edited before export.
+- **Statistics shown are measured, never guessed.** Where the app is unsure (for example a place inferred only from time), it says so ("probably Debrecen").
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
