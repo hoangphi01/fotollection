@@ -62,7 +62,7 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 ### Next, in order
 
 1. **Smoke-test `v0.1.0`** on macOS (Open Anyway) and Windows; apply to SignPath Foundation for Windows signing; add a Ko-fi or GitHub Sponsors link once the account exists. Decide on the trip-by-trip Photos-library flow ([ROADMAP ideas](ROADMAP.md#ideas-backlog-not-yet-requirements)).
-2. **Stage C, manual places and renaming (FR-032, FR-005):** search a place, set it for one or many photos, rename a place everywhere; project schema v6. Ships as `v0.2.0`.
+2. **Stage C, manual places and renaming (FR-032, FR-005):** search a place, set it for one or many photos, rename a place everywhere; project schema v6. Ships as `v0.3.0` (`v0.2.0` carries the theme, Windows title bar, folder removal and preview fixes).
 3. **Stage D, place suggestions from phone photos (FR-031):** borrow GPS from photos taken at the same time and place, with confidence levels, measured on a mixed camera + phone folder, with a new ADR.
 4. **Normal mode (FR-048, NFR-015):** open → keep/drop → export at 300 DPI and q90, measured against Professional.
 5. **Loose ends:**
