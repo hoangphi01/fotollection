@@ -44,7 +44,8 @@ export const ThumbTile = memo(function ThumbTile({
       onDoubleClick={onOpen}
       className={cn(
         'group relative shrink-0 overflow-hidden rounded-md bg-muted outline-none',
-        selected && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
+        // The selected photo sits in a wooden frame, like the logo's.
+        selected && 'ring-[3px] ring-wood ring-offset-2 ring-offset-background',
       )}
       style={{ width: size, height: size }}
     >

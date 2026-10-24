@@ -87,7 +87,7 @@ export function SettingsPanel({
     onChange((s) => ({ ...s, stamp: { ...s.stamp, ...patch } }))
 
   return (
-    <aside className="flex w-72 shrink-0 flex-col border-l">
+    <aside className="flex w-72 shrink-0 flex-col border-l bg-sidebar text-sidebar-foreground">
       <div className="flex h-12 items-center px-4">
         <span className="text-sm font-semibold">{t('settings.title')}</span>
       </div>
