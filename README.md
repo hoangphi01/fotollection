@@ -4,6 +4,8 @@
 
 # Fotollection
 
+by [@hoangphi01](https://github.com/hoangphi01)
+
 **English** · [VI](README.vi.md)
 
 **Fast, private, offline photo-print preparation for macOS and Windows.**

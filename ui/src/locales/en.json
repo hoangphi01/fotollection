@@ -7,6 +7,7 @@
     "dismiss": "Dismiss"
   },
   "app": {
+    "byline": "by @hoangphi01",
     "photos_one": "{{count}} photo",
     "photos_other": "{{count}} photos",
     "filtered_one": "{{shown}} / {{count}} photo",

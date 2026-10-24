@@ -5,6 +5,8 @@
 
 # Fotollection
 
+by [@hoangphi01](https://github.com/hoangphi01)
+
 [EN](README.md) · **Tiếng Việt**
 
 **Chuẩn bị ảnh để in: nhanh, riêng tư, chạy offline trên macOS và Windows.**

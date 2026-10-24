@@ -43,7 +43,10 @@ export function LibrarySidebar({
           alt=""
           className="rounded-md"
         />
-        <span className="font-heading text-sm font-semibold tracking-tight">Fotollection</span>
+        <div className="flex min-w-0 items-baseline gap-1.5">
+          <span className="font-heading text-sm font-semibold tracking-tight">Fotollection</span>
+          <span className="truncate text-xs text-muted-foreground">{t('app.byline')}</span>
+        </div>
       </div>
       <Separator />
       {/* The .fotollection document (FR-023). */}

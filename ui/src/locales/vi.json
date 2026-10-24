@@ -7,6 +7,7 @@
     "dismiss": "Đóng"
   },
   "app": {
+    "byline": "by @hoangphi01",
     "photos_other": "{{count}} ảnh",
     "filtered_other": "{{shown}} / {{count}} ảnh",
     "enterToPreview": "Enter để xem trước",
