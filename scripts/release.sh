@@ -59,7 +59,8 @@ awk '/^## \[Unreleased\]/{on=1; next} /^## \[/{on=0} on && /^- /{found=1} END{ex
 
 if [ "$dry_run" = false ]; then
   [ "$(git rev-parse --abbrev-ref HEAD)" = "main" ] || { echo "not on main" >&2; exit 1; }
-  [ -z "$(git status --porcelain)" ] || { echo "working tree is not clean" >&2; exit 1; }
+  # Untracked files never reach the commit, so only tracked changes block a release.
+  [ -z "$(git status --porcelain --untracked-files=no)" ] || { echo "working tree is not clean" >&2; exit 1; }
 fi
 
 today=$(date +%Y-%m-%d)
