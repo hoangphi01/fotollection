@@ -186,6 +186,10 @@ for (const language of ['en', 'vi']) {
     ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
     await page.getByRole('radio', { name: /Groups|Nhóm/ }).click()
     await settle(page)
+    // The compare view shows the shots large, side by side, with a bar per measure.
+    await page.getByRole('button', { name: /^(Compare|So sánh)$/ }).first().click()
+    await page.waitForSelector('[role="dialog"]')
+    await settle(page)
     await save(page, `groups-${suffix}`)
     await context.close()
   }
