@@ -82,7 +82,14 @@ jobs:
         run: npm ci
 
       - name: Build installers (macOS ad-hoc signed, ADR-0009)
-        run: npm run build -- ${{ matrix.args }}
+        shell: bash
+        env:
+          PRERELEASE: ${{ needs.detect.outputs.prerelease }}
+        run: |
+          args="${{ matrix.args }}"
+          # MSI versions cannot carry a pre-release tag such as -beta.1: pre-releases ship NSIS only.
+          if [ "$PRERELEASE" = "true" ]; then args="${args/msi,/}"; fi
+          npm run build -- $args
 
       - uses: actions/upload-artifact@v4
         with:

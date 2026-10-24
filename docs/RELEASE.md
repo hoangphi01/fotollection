@@ -14,7 +14,7 @@
   - **MAJOR:** a change that breaks users, such as a project file that can no longer be migrated, a dropped operating system, or a workflow that changes meaning.
   - **MINOR:** new features, backwards compatible.
   - **PATCH:** fixes only.
-- **Pre-releases** are `X.Y.Z-beta.N` and are marked as pre-releases on GitHub.
+- **Pre-releases** are `X.Y.Z-beta.N` and are marked as pre-releases on GitHub. They ship the Windows `-setup.exe` only, because an MSI version cannot carry a pre-release tag.
 - **Commits suggest the bump.** With no argument, `scripts/release.sh` proposes the next version from the [Conventional Commits](https://www.conventionalcommits.org/) since the last tag: a `feat` gives MINOR, otherwise PATCH. The owner decides.
 - **File formats are versioned separately.** Each persisted format has its own `schema_version` ([DATABASE.md](DATABASE.md), [EXTENSION.md](EXTENSION.md)). Release notes name the schemas that changed.
 - Every release has a section in [CHANGELOG.md](../CHANGELOG.md).
@@ -67,7 +67,7 @@ A failed build publishes nothing. Re-running the workflow retries it.
 
 ## 5. Updates
 
-There is **no in-app updater** ([FR-021](PRD.md#fr-021--manual-updates), [ADR-0021](adr/0021-versioning-and-automated-releases.md)). The app never checks for new versions, so it makes no network call of its own ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)). New versions are announced on the Releases page and the website, and the app shows its version in the sidebar. Installing a new version over an old one keeps settings, profiles and projects, which are migrated on first open ([DATABASE.md](DATABASE.md)).
+There is **no in-app updater** ([FR-021](PRD.md#fr-021--manual-updates), [ADR-0021](adr/0021-versioning-and-automated-releases.md)). The app never checks for new versions, so it makes no network call of its own ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)). New versions are announced on the Releases page and the website, and the app shows its version at the foot of the settings panel. Installing a new version over an old one keeps settings, profiles and projects, which are migrated on first open ([DATABASE.md](DATABASE.md)).
 
 ## 6. Release checklist
 
