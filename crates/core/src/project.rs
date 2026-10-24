@@ -13,7 +13,8 @@ use crate::plan::CropFrame;
 pub const FORMAT: &str = "fotollection-project";
 /// v2: `folders[].absolute`, the fallback for folders stored relative to a bundle (ADR-0016).
 /// v3: `photos[].stamp`, a photo's own date stamp set in the preview (FR-044).
-pub const SCHEMA_VERSION: u32 = 3;
+/// v4: `photos[].rotation`, the user's quarter turns clockwise (FR-006).
+pub const SCHEMA_VERSION: u32 = 4;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -55,6 +56,9 @@ pub struct PhotoRow {
     /// The photo's own stamp (v3); absent when it follows the settings.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub stamp: Option<crate::settings::StampSettings>,
+    /// Quarter turns clockwise, 1–3 (v4); absent when the photo is not turned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rotation: Option<u8>,
 }
 
 /// The document a session belongs to (FR-023). Only written into the session autosave, so
@@ -118,6 +122,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 rating: (edits.rating > 0).then_some(edits.rating),
                 flag: edits.flag,
                 stamp: edits.stamp,
+                rotation: (edits.rotation % 4 != 0).then_some(edits.rotation % 4),
             })
         })
         .collect();
@@ -213,6 +218,7 @@ fn validate(mut file: ProjectFile) -> Result<ProjectFile, String> {
         if let Some(stamp) = &mut row.stamp {
             stamp.sanitize();
         }
+        row.rotation = row.rotation.map(|r| r % 4).filter(|&r| r != 0);
     }
     Ok(file)
 }
@@ -347,6 +353,7 @@ pub fn restore_into(
                 rating: row.rating.unwrap_or(0),
                 flag: row.flag,
                 stamp: row.stamp.clone(),
+                rotation: row.rotation.unwrap_or(0),
             },
         );
         summary.restored += 1;
@@ -397,6 +404,7 @@ mod tests {
                         caption: "Lisbon".into(),
                         ..crate::settings::RenderSettings::default().stamp
                     }),
+                    rotation: 1,
                 },
             );
         }
@@ -427,6 +435,10 @@ mod tests {
             Some("Lisbon".into()),
             "a photo's own stamp is kept (FR-044)"
         );
+        let turned = fresh
+            .find_path(Path::new("/trip/b.jpg"))
+            .map(|id| fresh.edits(id).rotation);
+        assert_eq!(turned, Some(1), "the quarter turn is kept (FR-006)");
         Ok(())
     }
 
@@ -480,6 +492,7 @@ mod tests {
             rating: None,
             flag: None,
             stamp: None,
+            rotation: None,
         });
         save(&path, &file)?;
         assert!(
@@ -508,6 +521,18 @@ mod tests {
         // Control characters from a file are dropped on load.
         assert_eq!(stamp.caption, "Summer by the lake");
         assert_eq!(file.photos[1].stamp, None);
+    }
+
+    #[test]
+    fn fr_006_v4_fixture_keeps_quarter_turns() {
+        let Loaded::Ok(file) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v4.fotollection"))
+        else {
+            panic!("v4 project should load");
+        };
+        let turns: Vec<Option<u8>> = file.photos.iter().map(|p| p.rotation).collect();
+        // 7 quarter turns from a file are the same as 3.
+        assert_eq!(turns, [None, Some(2), Some(3)]);
     }
 
     #[test]

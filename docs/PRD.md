@@ -145,6 +145,8 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
   - It is undoable ([FR-023](#fr-023--projects-autosave-and-undo)).
 - Offers a "fit with border" (letterbox) alternative to cropping.
 
+- **Rotate:** turn a photo a quarter turn left or right (buttons next to Crop in the preview, or `[` and `]`), losslessly, on top of its EXIF orientation. This fixes photos taken upside down or sideways. The crop turns with the photo. It is undoable and saved in the project (`photos[].rotation`, project schema v4). Straightening by up to ±15° follows.
+
 ### FR-007 — Live preview
 
 **P0.** Every change to the stamp or crop settings updates the preview immediately (see [NFR-002](#nfr-002--preview-latency)).

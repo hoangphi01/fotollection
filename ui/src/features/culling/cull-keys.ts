@@ -3,7 +3,7 @@ import { commands, type PhotoId } from '@/ipc/bindings'
 import { isTyping } from '@/lib/keyboard'
 
 /**
- * Applies the culling shortcut in `event` to `id`, if it is one.
+ * Applies the culling or rotation shortcut in `event` to `id`, if it is one.
  * Returns true when the key was handled, so callers can stop other handlers.
  */
 export function handleCullKey(
@@ -22,6 +22,9 @@ export function handleCullKey(
     void commands.setPhotoFlag([id], 'reject')
   } else if (key === 'u') {
     void commands.setPhotoFlag([id], null)
+  } else if (key === '[' || key === ']') {
+    // Quarter turns (FR-006): [ to the left, ] to the right.
+    void commands.rotatePhotos([id], key === ']')
   } else {
     return false
   }

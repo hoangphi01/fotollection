@@ -34,7 +34,7 @@
     "analyze": "Đang tìm ảnh đẹp nhất"
   },
   "culling": {
-    "keysHint": "0–5 sao · P chọn · X loại · U bỏ cờ",
+    "keysHint": "0–5 sao · P chọn · X loại · U bỏ cờ · [ ] xoay",
     "flag": {
       "all": "Tất cả",
       "picks": "Đã chọn",
@@ -251,7 +251,9 @@
     "browse": "chuyển ảnh",
     "close": "đóng",
     "thisPhoto": "Riêng ảnh này",
-    "applyToAll": "Áp dụng cho tất cả"
+    "applyToAll": "Áp dụng cho tất cả",
+    "rotateLeft": "Xoay trái ( [ )",
+    "rotateRight": "Xoay phải ( ] )"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",

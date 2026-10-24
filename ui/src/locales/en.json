@@ -37,7 +37,7 @@
     "analyze": "Finding the best shots"
   },
   "culling": {
-    "keysHint": "0–5 stars · P pick · X reject · U unflag",
+    "keysHint": "0–5 stars · P pick · X reject · U unflag · [ ] rotate",
     "flag": {
       "all": "All",
       "picks": "Picks",
@@ -263,7 +263,9 @@
     "browse": "browse",
     "close": "close",
     "thisPhoto": "This photo",
-    "applyToAll": "Apply to all photos"
+    "applyToAll": "Apply to all photos",
+    "rotateLeft": "Rotate left ( [ )",
+    "rotateRight": "Rotate right ( ] )"
   },
   "errors": {
     "internal": "Something went wrong",

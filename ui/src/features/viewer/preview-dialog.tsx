@@ -10,6 +10,8 @@ import {
   MapPin,
   PanelBottom,
   Printer,
+  RotateCcw,
+  RotateCw,
   Star,
 } from 'lucide-react'
 import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react'
@@ -202,23 +204,47 @@ export function PreviewDialog({
                   <span className="text-xs">{t('viewer.rendering')}</span>
                 </div>
               )}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="absolute top-3 left-3">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      disabled={!geometry || geometry.cropDisabled}
-                      onClick={() => setCropping(true)}
-                    >
-                      <Crop data-icon="inline-start" /> {t('viewer.crop')}
-                    </Button>
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {geometry?.cropDisabled ? t('viewer.cropFitMode') : t('viewer.adjustCrop')}
-                </TooltipContent>
-              </Tooltip>
+              <div className="absolute top-3 left-3 flex gap-1.5">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        disabled={!geometry || geometry.cropDisabled}
+                        onClick={() => setCropping(true)}
+                      >
+                        <Crop data-icon="inline-start" /> {t('viewer.crop')}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {geometry?.cropDisabled ? t('viewer.cropFitMode') : t('viewer.adjustCrop')}
+                  </TooltipContent>
+                </Tooltip>
+                {/* Lossless quarter turns (FR-006); the crop turns with the photo. */}
+                {(
+                  [
+                    [false, RotateCcw, 'viewer.rotateLeft'],
+                    [true, RotateCw, 'viewer.rotateRight'],
+                  ] as const
+                ).map(([clockwise, Icon, label]) => (
+                  <Tooltip key={label}>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="secondary"
+                        size="icon-sm"
+                        aria-label={t(label)}
+                        disabled={!photo}
+                        onClick={() => photo && void commands.rotatePhotos([photo.id], clockwise)}
+                      >
+                        <Icon />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t(label)}</TooltipContent>
+                  </Tooltip>
+                ))}
+              </div>
               <Button
                 variant="secondary"
                 size="icon"

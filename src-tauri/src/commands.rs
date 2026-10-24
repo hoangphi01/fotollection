@@ -704,7 +704,7 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             .map_err(|e| IpcError::new("import.unreadable", e.to_string()))?;
         let (w, h) = image_dimensions(state.codec.as_ref(), &bytes)
             .map_err(|e| IpcError::new(e.code(), e.to_string()))?;
-        let (width, height) = if record.orientation >= 5 {
+        let (width, height) = if record.display_orientation() >= 5 {
             (h, w)
         } else {
             (w, h)
@@ -1015,7 +1015,7 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
             .map_err(|e| IpcError::new("import.unreadable", e.to_string()))?;
         let (w, h) = image_dimensions(state.codec.as_ref(), &bytes)
             .map_err(|e| IpcError::new(e.code(), e.to_string()))?;
-        let (width, height) = if record.orientation >= 5 {
+        let (width, height) = if record.display_orientation() >= 5 {
             (h, w)
         } else {
             (w, h)
@@ -1158,6 +1158,21 @@ pub fn set_photo_rating(
         ));
     }
     edit_photos(&app, &state, &ids, |_, e| e.rating = rating)
+}
+
+/// Turns photos a quarter turn (FR-006), lossless; their crops turn with them. Undoable.
+#[tauri::command]
+#[specta::specta]
+pub fn rotate_photos(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    ids: Vec<PhotoId>,
+    clockwise: bool,
+) -> Result<HistoryState, IpcError> {
+    edit_photos(&app, &state, &ids, |_, e| {
+        e.rotation = (e.rotation + if clockwise { 1 } else { 3 }) % 4;
+        e.crop = e.crop.map(|c| c.turned(clockwise));
+    })
 }
 
 /// Flags photos as pick or reject, or clears the flag (FR-022).

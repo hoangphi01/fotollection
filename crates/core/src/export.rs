@@ -123,7 +123,7 @@ fn export_one(
     }
     let bytes = std::fs::read(&record.path)?;
     let decoded = decode_image(codec, &bytes)?;
-    let upright = apply_orientation(decoded.image, record.orientation);
+    let upright = apply_orientation(decoded.image, record.display_orientation());
     if cancel.is_cancelled() {
         return Err(ExportError::Cancelled);
     }

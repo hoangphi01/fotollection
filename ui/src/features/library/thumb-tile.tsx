@@ -60,6 +60,7 @@ export const ThumbTile = memo(function ThumbTile({
         decoding="async"
         draggable={false}
         onLoad={() => setLoaded(true)}
+        style={photo.rotation ? { transform: `rotate(${photo.rotation * 90}deg)` } : undefined}
         className={cn(
           'size-full object-cover transition-opacity duration-300',
           !loaded ? 'opacity-0' : photo.flag === 'reject' ? 'opacity-35' : 'opacity-100',

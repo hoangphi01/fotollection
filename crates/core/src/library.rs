@@ -70,6 +70,9 @@ pub struct PhotoEdits {
     pub flag: Option<Flag>,
     /// This photo's own stamp, set in the preview (FR-044); `None` follows the settings.
     pub stamp: Option<crate::settings::StampSettings>,
+    /// The user's quarter turns clockwise on top of the EXIF orientation, 0–3 (FR-006).
+    #[serde(default)]
+    pub rotation: u8,
 }
 
 impl PhotoEdits {
@@ -137,6 +140,14 @@ pub struct PhotoRecord {
     pub edits: PhotoEdits,
 }
 
+impl PhotoRecord {
+    /// The orientation the photo is shown and printed in: its EXIF orientation plus the
+    /// user's quarter turns (FR-006).
+    pub fn display_orientation(&self) -> u8 {
+        crate::image::compose_orientation(self.orientation, self.edits.rotation)
+    }
+}
+
 /// Camera and exposure facts from EXIF, used by the info frame (FR-040).
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct ShotInfo {
@@ -164,6 +175,8 @@ pub struct PhotoSummary {
     /// 0–5 stars (FR-022).
     pub rating: u8,
     pub flag: Option<Flag>,
+    /// The user's quarter turns clockwise (FR-006); the grid turns the thumbnail to match.
+    pub rotation: u8,
 }
 
 #[derive(Default)]
@@ -435,6 +448,7 @@ impl Library {
                 .and_then(|(make, model)| Self::camera_label(make.as_deref(), model.as_deref())),
             rating: record.edits.rating,
             flag: record.edits.flag,
+            rotation: record.edits.rotation % 4,
         })
     }
 

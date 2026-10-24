@@ -586,6 +586,7 @@ mod tests {
                 rating: Some(4),
                 flag: Some(Flag::Pick),
                 stamp: None,
+                rotation: None,
             }],
             document: None,
         }

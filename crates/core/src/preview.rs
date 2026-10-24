@@ -21,9 +21,12 @@ const PREVIEW_QUALITY: u8 = 85;
 /// About 12.5 MB each at 2048×1365, so the cache stays near 100 MB.
 const CAPACITY: usize = 8;
 
+/// A photo and the orientation it was decoded in, so a rotated photo is decoded again.
+type SourceKey = (PhotoId, u8);
+
 #[derive(Default)]
 pub struct PreviewCache {
-    entries: Mutex<Vec<(PhotoId, Arc<RgbImage>)>>,
+    entries: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
 }
 
 impl PreviewCache {
@@ -45,7 +48,9 @@ impl PreviewCache {
         codec: &dyn JpegCodec,
     ) -> Result<Arc<RgbImage>, ThumbError> {
         if let Ok(mut entries) = self.entries.lock()
-            && let Some(pos) = entries.iter().position(|(id, _)| *id == record.id)
+            && let Some(pos) = entries
+                .iter()
+                .position(|(key, _)| *key == (record.id, record.display_orientation()))
         {
             let entry = entries.remove(pos);
             let image = Arc::clone(&entry.1);
@@ -54,13 +59,16 @@ impl PreviewCache {
         }
         let bytes = std::fs::read(&record.path)?;
         let decoded = decode_image(codec, &bytes)?;
-        let upright = apply_orientation(decoded.image, record.orientation);
+        let upright = apply_orientation(decoded.image, record.display_orientation());
         let image = Arc::new(fit_long_edge(&upright, T2_LONG_EDGE)?);
         if let Ok(mut entries) = self.entries.lock() {
             if entries.len() >= CAPACITY {
                 entries.remove(0);
             }
-            entries.push((record.id, Arc::clone(&image)));
+            entries.push((
+                (record.id, record.display_orientation()),
+                Arc::clone(&image),
+            ));
         }
         Ok(image)
     }

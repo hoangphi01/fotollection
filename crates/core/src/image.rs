@@ -37,6 +37,28 @@ fn pixel_bytes(width: u32, height: u32) -> usize {
     width as usize * height as usize * 3
 }
 
+/// The single EXIF orientation that equals applying `orientation` and then turning the
+/// result `quarter_turns` × 90° clockwise (FR-006): one pass over the pixels instead of two.
+pub fn compose_orientation(orientation: u8, quarter_turns: u8) -> u8 {
+    // Rows: EXIF orientation 1–8. Columns: 0–3 clockwise quarter turns.
+    const TABLE: [[u8; 4]; 8] = [
+        [1, 6, 3, 8],
+        [2, 7, 4, 5],
+        [3, 8, 1, 6],
+        [4, 5, 2, 7],
+        [5, 2, 7, 4],
+        [6, 3, 8, 1],
+        [7, 4, 5, 2],
+        [8, 1, 6, 3],
+    ];
+    let row = if (1..=8).contains(&orientation) {
+        orientation - 1
+    } else {
+        0
+    };
+    TABLE[usize::from(row)][usize::from(quarter_turns % 4)]
+}
+
 /// Applies an EXIF orientation (1–8) so the result is upright. Unknown values are treated as 1.
 pub fn apply_orientation(image: RgbImage, orientation: u8) -> RgbImage {
     if !(2..=8).contains(&orientation) {
@@ -76,6 +98,26 @@ pub fn apply_orientation(image: RgbImage, orientation: u8) -> RgbImage {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fr_006_quarter_turns_compose_with_every_exif_orientation() {
+        // A 3 × 2 image with distinct pixels.
+        let image =
+            RgbImage::from_raw(3, 2, (0..18).collect()).unwrap_or_else(|| RgbImage::new(1, 1));
+        for orientation in 1..=8 {
+            for turns in 0..4 {
+                let mut stepwise = apply_orientation(image.clone(), orientation);
+                for _ in 0..turns {
+                    stepwise = apply_orientation(stepwise, 6);
+                }
+                let once =
+                    apply_orientation(image.clone(), compose_orientation(orientation, turns));
+                assert_eq!(once, stepwise, "orientation {orientation}, {turns} turns");
+            }
+            // Four quarter turns are no turn at all.
+            assert_eq!(compose_orientation(orientation, 4), orientation);
+        }
+    }
 
     const A: [u8; 3] = [1, 1, 1];
     const B: [u8; 3] = [2, 2, 2];

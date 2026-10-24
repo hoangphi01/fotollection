@@ -170,6 +170,22 @@ pub struct CropFrame {
 pub const MAX_ZOOM: f32 = 8.0;
 
 impl CropFrame {
+    /// The same crop after the photo turns a quarter turn (FR-006): the centre moves with
+    /// the picture, the zoom stays.
+    #[must_use]
+    pub fn turned(self, clockwise: bool) -> Self {
+        let (cx, cy) = if clockwise {
+            (1.0 - self.cy, self.cx)
+        } else {
+            (self.cy, 1.0 - self.cx)
+        };
+        Self {
+            cx,
+            cy,
+            zoom: self.zoom,
+        }
+    }
+
     /// Clamps values coming over IPC or from a project file (SECURITY.md §2).
     #[must_use]
     pub fn sanitized(self) -> Self {
@@ -354,6 +370,27 @@ fn scale_dim(value: u32, scale: f64) -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fr_006_crop_centre_follows_a_quarter_turn() {
+        let crop = CropFrame {
+            cx: 0.2,
+            cy: 0.3,
+            zoom: 1.5,
+        };
+        // Top-left area moves to the top-right after a clockwise turn.
+        assert_eq!(
+            crop.turned(true),
+            CropFrame {
+                cx: 0.7,
+                cy: 0.2,
+                zoom: 1.5
+            }
+        );
+        assert_eq!(crop.turned(true).turned(false), crop);
+        let four = (0..4).fold(crop, |c, _| c.turned(true));
+        assert!((four.cx - crop.cx).abs() < 1e-6 && (four.cy - crop.cy).abs() < 1e-6);
+    }
     use crate::settings::RenderSettings;
 
     fn size(id: &str) -> PrintSize {

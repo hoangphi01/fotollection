@@ -139,6 +139,8 @@ export const commands = {
 	setPhotoRating: (ids: PhotoId[], rating: number) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_rating", { ids, rating })),
 	/**  Flags photos as pick or reject, or clears the flag (FR-022). */
 	setPhotoFlag: (ids: PhotoId[], flag: "pick" | "reject" | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_flag", { ids, flag })),
+	/**  Turns photos a quarter turn (FR-006), lossless; their crops turn with them. Undoable. */
+	rotatePhotos: (ids: PhotoId[], clockwise: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("rotate_photos", { ids, clockwise })),
 	getPhotoStamp: (id: PhotoId) => typedError<PhotoStamp, IpcError>(__TAURI_INVOKE("get_photo_stamp", { id })),
 	/**  Gives one photo its own stamp, or (`None`) makes it follow the settings again; undoable. */
 	setPhotoStamp: (id: PhotoId, stamp: {
@@ -599,6 +601,8 @@ export type PhotoSummary = {
 	/**  0–5 stars (FR-022). */
 	rating: number,
 	flag: Flag | null,
+	/**  The user's quarter turns clockwise (FR-006); the grid turns the thumbnail to match. */
+	rotation: number,
 };
 
 /**  How a place is written on a print (FR-005). */
