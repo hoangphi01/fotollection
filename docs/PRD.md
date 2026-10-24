@@ -404,7 +404,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
   - Camera shake: structure-tensor coherence, relative to the group median. EXIF adds a hint when the shutter is slower than 1/(focal × crop factor).
   - Exposure: the clipped-highlight share (≥ 250), the crushed-shadow share, the median luminance against 118 (in EV), and RMS contrast.
   - Noise: the Immerkær estimate, skipping strong-gradient areas.
-- **Faces and eyes.** Faces are detected with a permissively licensed model, and eye landmarks give the eye aspect ratio. An eye counts as closed when its ratio is below 0.2, or below 0.75 × the same person's maximum in the group. Face and eye regions also get their own sharpness score.
+- **Faces and eyes.** Faces are detected with YuNet, and the eyelid landmarks of FaceMesh V2 give the eye aspect ratio ([ADR-0018](adr/0018-face-models-and-runtime.md)). An eye counts as closed when its ratio is below 0.2, or below 0.75 × the same person's maximum in the group. Face and eye regions also get their own sharpness score.
 - **Score.** Each metric is normalized with a robust z-score (median/MAD) **within the group**; groups smaller than 4 use rank instead. The weights are:
 
   | Metric | Weight |
@@ -422,7 +422,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
   - A **Groups** view shows one strip per group, with a **"Best of N"** badge and its reasons.
   - A compare view shows the group's photos side by side, with a bar for each metric and faces and eyes marked.
   - **"Keep best"** picks the best photo and rejects the rest of the group, using [FR-022](#fr-022--culling-rate-flag-filter) flags. It can be undone.
-- **Models.** Models ship inside the app, are checksum-verified, and are never downloaded. Only permissive weights are allowed. YuNet (MIT) and MediaPipe Face Landmarker (Apache-2.0) are to be verified; InsightFace/SCRFD and pyiqa models are excluded because of their non-commercial licenses. The runtime is pure-Rust `tract-onnx`. Both choices are recorded in an ADR before any code.
+- **Models.** Models ship inside the app, are checksum-verified, and are never downloaded. Only permissive weights are allowed: YuNet (MIT) and MediaPipe FaceMesh V2 (Apache-2.0), both verified from their sources. InsightFace/SCRFD and pyiqa models are excluded because of their non-commercial licences. The runtime is pure-Rust `tract-onnx` ([ADR-0018](adr/0018-face-models-and-runtime.md)).
 - **Cache.** Analysis results are derived data, so they live in the cache keyed by fingerprint, never in the project file ([DATABASE.md](DATABASE.md), rule N4).
 - **Speed:** [NFR-014](#nfr-014--best-shot-analysis-speed).
 

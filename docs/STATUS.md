@@ -121,7 +121,7 @@ The interface is in English and Vietnamese. Measured performance meets every bud
 | FR-037 | Contact sheet | 3 | Not Started | |
 | FR-038 | Print presets | 2 | Not Started | Storage model: [DATABASE.md §7](DATABASE.md#7-presets) |
 | FR-040 | EXIF info frame | 1 | In Progress | Crop/Fit at print ratio, field switches, per-camera overrides (persisted), user PNG logo. Place needs FR-005 |
-| FR-041 | Best-shot suggestions | 1 | Not Started | Specified. Next slice: license check of face/eye models (ADR) first, then `culling/` module |
+| FR-041 | Best-shot suggestions | 1 | In Progress | Models chosen and licence-checked: YuNet (MIT) + FaceMesh V2 (Apache-2.0, converted to ONNX), run with `tract-onnx` ([ADR-0018](adr/0018-face-models-and-runtime.md)); spike: YuNet ≈ 19 ms, FaceMesh ≈ 9.6 ms per face, matches TFLite to 0.0005 px. Next: `culling/` core module, analysis job, Groups UI |
 | FR-042 | Custom fonts | 1 | Done | OTF/TTF import (Rust dialog, validated, copied), per stamp and per frame, remove → Inter. `fr_042_*` pass |
 | FR-043 | Custom print sizes | 1 | Done | cm/in entry, stored in mm, used by crop/frame/DPI/export. `fr_043_*` pass |
 | FR-044 | Per-photo overrides | 2 | Not Started | Future: e.g. untick the stamp for photos that already have one; batch first |

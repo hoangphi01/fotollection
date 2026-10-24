@@ -198,3 +198,4 @@ Report security issues through a private [GitHub security advisory](https://gith
 - JPEG encoding uses [`jpeg-encoder`](https://github.com/vstroebel/jpeg-encoder), which is based in part on the work of the Independent JPEG Group.
 - The date stamp uses the [Inter](https://rsms.me/inter/) typeface, under the SIL Open Font License 1.1 (`crates/core/assets/fonts/Inter-OFL.txt`).
 - Geographic data from [GeoNames](https://www.geonames.org/) (CC BY 4.0) will be bundled for offline geocoding.
+- Best-shot suggestions bundle the [YuNet](https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet) face detector (MIT, © 2020 Shiqi Yu) and Google's MediaPipe FaceMesh V2 landmark model (Apache License 2.0), converted to ONNX. Licences and checksums: `crates/core/assets/models/`.
