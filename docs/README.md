@@ -11,6 +11,7 @@
 | Working on performance | [RESULT](RESULT.md) → [OPTIMIZATION](OPTIMIZATION.md) |
 | Touching file input, IPC or the webview | [SECURITY](SECURITY.md) |
 | Changing anything that is saved to disk | [DATABASE](DATABASE.md) → [EXTENSION](EXTENSION.md) |
+| Changing anything (what else to update) | [DOCS_GUIDE](DOCS_GUIDE.md) |
 | Shipping a build | [RELEASE](RELEASE.md) |
 | Confused by a term | [GLOSSARY](GLOSSARY.md) |
 
@@ -34,8 +35,9 @@
 | Versioning, build, signing, distribution | [RELEASE.md](RELEASE.md) |
 | The public website and how its screenshots are made | [site/README.md](../site/README.md) |
 | User-visible changes per version | [CHANGELOG.md](../CHANGELOG.md) |
+| What to update when something changes (the checklist) | [DOCS_GUIDE.md](DOCS_GUIDE.md) |
 | Rules for AI assistants | [CLAUDE.md](../CLAUDE.md) |
 
 ## Keeping docs in sync with code
 
-See [ADR-0006](adr/0006-docs-as-code.md). In short: docs change in the same commit as the code they describe, requirement IDs connect every artifact, and `scripts/check-docs.sh` plus the docs CI workflow catch drift.
+See [ADR-0006](adr/0006-docs-as-code.md). In short: docs change in the same commit as the code they describe, requirement IDs connect every artifact, and `scripts/check-docs.sh` plus the docs CI workflow catch drift. **[DOCS_GUIDE.md](DOCS_GUIDE.md) lists, for each kind of change, every file to update**, including the website.

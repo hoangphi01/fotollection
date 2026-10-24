@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Docs:** `docs/DOCS_GUIDE.md`, one checklist of what to update for each kind of change, including the website; `CLAUDE.md` and the docs index point to it.
 - Hover hints are drawn in the app's own style instead of the system's square tooltips.
 
 ### Fixed
