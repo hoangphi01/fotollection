@@ -13,6 +13,13 @@
 
 ## 2026-10-25
 
+### A red check hid for three pushes (CI)
+
+- **Seen:** the owner noticed red crosses on the last commits on GitHub; the `docs` workflow had failed since the v0.6.0 plan change, while only `pages` and `release` were being watched.
+- **Why:** moving the releases added an item to the "Next, in order" list in STATUS.md without renumbering the last one (`7.` twice); markdownlint's MD029 rule fails on that. `check-docs.sh` does not run markdownlint, and the markdownlint line of DOCS_GUIDE §3 was skipped.
+- **Fix:** renumbered; each workflow now runs only when its own files change (RELEASE.md §4), so every red cross means something.
+- **Rule:** run every line of DOCS_GUIDE §3, markdownlint included, before pushing docs. After pushing, look at every run that started (`gh run list --limit 5`), not only the one expected.
+
 ### A CSS `scale()` throws image pixels away (FR-057)
 
 - **Seen:** zoomed to 800 %, the full-resolution layer arrived (Rust log: 1,222 px wide, 45–137 ms) and sat in the right place, yet looked as soft as the 1600 px preview under it.

@@ -1,10 +1,13 @@
 name: release
 
 # Releases when the version in Cargo.toml has no tag yet (RELEASE.md §4, ADR-0021).
-# `scripts/release.sh` makes that commit; every other push stops after `detect`.
+# `scripts/release.sh` makes that commit; only pushes that touch Cargo.toml start this workflow,
+# and those without a new version stop after `detect`.
 on:
   push:
     branches: [main]
+    # A release commit always changes the version in Cargo.toml; other pushes never start.
+    paths: ["Cargo.toml"]
   workflow_dispatch:
 
 permissions:

@@ -56,15 +56,26 @@ git push
 
 `release.sh` checks that the tree is clean and on `main`, sets the version in `Cargo.toml`, `Cargo.lock` and `ui/package.json`, turns `## [Unreleased]` in the CHANGELOG into `## [X.Y.Z] - date` under a fresh empty `Unreleased`, and commits `chore(release): vX.Y.Z`. It never pushes.
 
-`.github/workflows/release.yml` runs on every push to `main`:
+`.github/workflows/release.yml` runs on every push to `main` that changes `Cargo.toml`, which every release commit does (it can also be started by hand from the Actions tab):
 
-1. **detect:** reads the version from `Cargo.toml`. If the tag `vX.Y.Z` exists, it stops. Ordinary pushes release nothing.
+1. **detect:** reads the version from `Cargo.toml`. If the tag `vX.Y.Z` exists, it stops. A dependency change in `Cargo.toml` therefore starts it but releases nothing.
 2. **check:** the full CI (`ci.yml`, called as a reusable workflow): fmt, clippy, tests, bindings, `cargo deny`.
 3. **build:** `tauri-action` on `macos-latest` (universal, ad-hoc signed) and `windows-latest`.
 4. **publish:** tags the commit, creates the GitHub Release **published** (pre-release when the version has a `-`), with the version's **Highlights** from the CHANGELOG (a few one-line points such as "New: …", "UI update: …", "Fixes: …"), a link to the full changelog, the first-launch steps and `SHA256SUMS.txt`. The CHANGELOG itself keeps every detail.
 5. **website:** triggers the Pages workflow, so the download buttons show the new version.
 
 A failed build publishes nothing. Re-running the workflow retries it.
+
+**Which workflows run on a push.** Each one runs only when its own files change, so a docs-only or website-only push builds nothing:
+
+| Workflow | Runs when the push changes |
+|----------|----------------------------|
+| `ci` (fmt, clippy, tests, bindings, `cargo deny` on macOS and Windows) | `crates/`, `src-tauri/`, `ui/`, `Cargo.toml`, `Cargo.lock`, the npm manifests, `rust-toolchain.toml`, `deny.toml` |
+| `docs` (`check-docs.sh`, markdownlint, internal links) | any `.md` file, `docs/`, `bench/results/`, and the files `check-docs.sh` compares with the docs (versions, `tauri.conf.json`) |
+| `pages` (the website) | `site/`, `CHANGELOG.md`; and after every release |
+| `release` | `Cargo.toml` |
+
+Pull requests use the same filters. After pushing, check that every workflow that started is green (`gh run list --limit 5`), not only the one you expected.
 
 ## 5. Updates
 

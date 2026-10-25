@@ -1,9 +1,33 @@
 name: ci
 
+# Only when code or the toolchain changes: a docs- or website-only push skips the builds
+# (RELEASE.md §4). The release workflow always runs it in full before building.
 on:
   push:
     branches: [main]
+    paths:
+      - "crates/**"
+      - "src-tauri/**"
+      - "ui/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "package.json"
+      - "package-lock.json"
+      - "rust-toolchain.toml"
+      - "deny.toml"
+      - ".github/workflows/ci.yml"
   pull_request:
+    paths:
+      - "crates/**"
+      - "src-tauri/**"
+      - "ui/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "package.json"
+      - "package-lock.json"
+      - "rust-toolchain.toml"
+      - "deny.toml"
+      - ".github/workflows/ci.yml"
   # The release workflow runs the full CI before building (RELEASE.md §4).
   workflow_call:
 

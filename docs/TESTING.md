@@ -8,10 +8,10 @@
 
 | Level | Scope | Tooling | Runs |
 |-------|-------|---------|------|
-| Unit | Pure functions in `crates/core` (crop math, stamp layout, date formatting, path sanitizing, geocode lookup) | `cargo test`, `proptest` | Every push |
-| UI component | React components and hooks, with IPC mocked | `vitest` + Testing Library | Every push |
-| Golden image | Full `RenderPlan` → pixels for fixed inputs, compared to reference outputs | `cargo test` + image diff | Every push |
-| Integration | Pipeline end-to-end on the sample corpus (import → export to a temp dir) | `cargo test --test pipeline` | Every push (small set), nightly (full set) |
+| Unit | Pure functions in `crates/core` (crop math, stamp layout, date formatting, path sanitizing, geocode lookup) | `cargo test`, `proptest` | Every push that changes code (RELEASE.md §4) |
+| UI component | React components and hooks, with IPC mocked | `vitest` + Testing Library | Every push that changes code |
+| Golden image | Full `RenderPlan` → pixels for fixed inputs, compared to reference outputs | `cargo test` + image diff | Every push that changes code |
+| Integration | Pipeline end-to-end on the sample corpus (import → export to a temp dir) | `cargo test --test pipeline` | Every push that changes code (small set), nightly (full set) |
 | Fuzz | Decoders, EXIF parser, path sanitizer | `cargo-fuzz` | Nightly |
 | E2E | Real app window: import, adjust, export, cancel | Tauri WebDriver (`tauri-driver`) | Before each release, on macOS and Windows |
 | Benchmark | Budgets from [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets) | `criterion` | Nightly + before each release |

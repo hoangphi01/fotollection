@@ -1,9 +1,32 @@
 name: docs
 
+# Only when a document or a file that check-docs.sh compares with the docs changes.
 on:
   push:
     branches: [main]
+    paths:
+      - "**/*.md"
+      - "docs/**"
+      - "bench/results/**"
+      - "Cargo.toml"
+      - "package-lock.json"
+      - "ui/package.json"
+      - "src-tauri/tauri.conf.json"
+      - "scripts/check-docs.sh"
+      - ".markdownlint*"
+      - ".github/workflows/docs.yml"
   pull_request:
+    paths:
+      - "**/*.md"
+      - "docs/**"
+      - "bench/results/**"
+      - "Cargo.toml"
+      - "package-lock.json"
+      - "ui/package.json"
+      - "src-tauri/tauri.conf.json"
+      - "scripts/check-docs.sh"
+      - ".markdownlint*"
+      - ".github/workflows/docs.yml"
 
 permissions:
   contents: read
