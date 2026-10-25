@@ -230,6 +230,7 @@ export function App() {
         customStamps={customStamps}
         filter={filter}
         photo={photos[current]}
+        revision={revision}
       />
       </div>
     </div>

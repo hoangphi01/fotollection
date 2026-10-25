@@ -27,6 +27,7 @@ import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
 import { ExportSection } from '@/features/export/export-section'
 import { ExportTargetPicker } from '@/features/export/export-target-picker'
 import type { ExportApi } from '@/features/export/use-export'
+import { FitSizeNote } from '@/features/frame/fit-size-note'
 import { FrameSection } from '@/features/frame/frame-section'
 import type { FontsApi } from '@/features/fonts/use-fonts'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
@@ -426,6 +427,7 @@ export function PreviewDialog({
               {settings?.exportTarget?.kind !== 'share' && advice && photo && (
                 <PrintAdviceNote advice={advice} fileName={photo.fileName} />
               )}
+              {settings?.exportTarget?.kind !== 'share' && <FitSizeNote photoId={photo?.id} revision={revision} />}
               {settings?.exportTarget?.kind !== 'share' && details && (
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-xs text-muted-foreground">{t('viewer.resolution')}</span>

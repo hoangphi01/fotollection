@@ -405,7 +405,8 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 
 - **Two ways to make room for the bar:**
   - **Crop to fill:** the print keeps the selected size exactly (10 × 15). The bar is subtracted from it and the photo is cropped to the space above; drag the photo in the preview to choose what stays.
-  - **Fit whole photo:** nothing is cut. The print keeps its width, the whole photo spans it, and the bar is added below, so the print comes out longer than the chosen size (10 × 15 → about 10 × 17.4 for a 2:3 photo). The bar is the same height in both modes.
+  - **Fit whole photo:** nothing is cut or shrunk, like an instax print. The whole photo keeps the print's width (10 cm on a 10 × 15), and a **5 mm border** is added on the top, left and right, with the bar below. The print is therefore larger than the chosen size (a 2:3 photo at 10 × 15 becomes about 11 × 17.9 cm), and the print-size card shows that size for the photo at hand, so the right paper can be asked for at the shop.
+  - The bar is the same height in both modes.
 - **Bar content:**
   - Left: the brand: its bundled logo for 12 brands, including Noritsu for film scans (default, [ADR-0020](adr/0020-bundled-brand-logos.md)), the typeset name, a user PNG ([ADR-0014](adr/0014-user-supplied-brand-logos.md)), or nothing. Logo colours: *Classic* (black wordmarks with colour accents kept, colour badges as they are), *Brand colours* or *One colour*; on a black bar, dark parts turn white. A **Logo size** slider (50–200 %, default 100 %, double-click to reset) scales the logo for every photo in the project; Rust clamps the value, and a larger logo may use up to half the bar's width but never reaches the text.
   - Right-aligned lines: `Shot on <camera>`, then `<lens> <focal> <aperture> <shutter> <ISO>`, then `<photo style>`, then `<date> <place>`.

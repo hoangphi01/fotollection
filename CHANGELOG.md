@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - New: the Noritsu logo in the info frame for film scans from Noritsu scanners
 - Fix: a long lens name no longer runs into the logo; it moves to its own line
-- New: drag the photo in the preview to reframe it; *Fit whole photo* adds the info bar below instead of shrinking the photo
+- New: drag the photo in the preview to reframe it; *Fit whole photo* frames the full-size photo like an instax print
 - Fix: photos without EXIF get the file's date in the stamp
 - New: export for social media (original size, Facebook, Instagram or your own size), in sRGB, with the camera details and never GPS
 - New: export the photo you are looking at, straight from the preview
@@ -33,7 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Website:** the print-shop heading shows the dm and Rossmann logos inline, in the theme colour (public-domain files from Wikimedia Commons; trademarks of their owners).
 - **Development:** the Python tools (quality audits, icon and screenshot helpers) are managed with uv: `pyproject.toml` and `uv.lock` pin their packages, and `uv run` runs them.
 - **Drag to reframe (FR-006):** in the preview, drag the photo to choose what the print keeps, without opening the crop editor; the print re-renders as you drag, and one drag is one undo step.
-- **Fit whole photo (FR-040):** keeps the print's width and adds the info bar below the whole photo, so the print grows longer (10 × 15 → about 10 × 17) instead of the photo shrinking inside the box with margins. *Crop to fill* still keeps the exact size.
+- **Fit whole photo (FR-040):** like an instax print, the whole photo keeps the print size and gets a 5 mm border on three sides plus the info bar below, so the print is larger than the chosen size (10 × 15 → about 11 × 17.9 cm); the print-size card says how large. Before, the photo shrank inside the box. *Crop to fill* still keeps the exact size.
 
 ### Fixed
 

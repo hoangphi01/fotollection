@@ -1105,6 +1105,10 @@ pub struct CropGeometry {
     pub straighten: f32,
     /// The frame's Fit mode shows the whole photo, so cropping is off.
     pub crop_disabled: bool,
+    /// Size of the whole print, as displayed: the print size, or larger in the frame's Fit
+    /// mode, which adds a border and the bar around the full-size photo (FR-040).
+    pub output_width_cm: f32,
+    pub output_height_cm: f32,
     /// Display unit of the selected size (inches for custom sizes entered in inches).
     pub unit: fotollection_core::settings::LengthUnit,
 }
@@ -1172,6 +1176,16 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
         let crop_disabled = frame
             .as_ref()
             .is_some_and(|f| f.settings.fit == fotollection_core::frame::FrameFit::Fit);
+        // The print box spans the canvas (Crop) or, in Fit, the photo inside its border.
+        let box_px = match p.frame.as_ref() {
+            Some(f) if crop_disabled => f.layout.photo.width,
+            _ => canvas_w,
+        };
+        #[allow(clippy::cast_precision_loss)]
+        let cm_per_px = canvas_width_cm / box_px.max(1) as f32;
+        #[allow(clippy::cast_precision_loss)]
+        let (output_width_cm, output_height_cm) =
+            (canvas_w as f32 * cm_per_px, canvas_h as f32 * cm_per_px);
         Ok(CropGeometry {
             width,
             height,
@@ -1182,6 +1196,8 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
             crop: record.edits.crop,
             straighten: record.edits.straighten,
             crop_disabled,
+            output_width_cm,
+            output_height_cm,
             unit: settings.unit(),
         })
     })

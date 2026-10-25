@@ -315,6 +315,12 @@ export type CropGeometry = {
 	straighten: number | null,
 	/**  The frame's Fit mode shows the whole photo, so cropping is off. */
 	cropDisabled: boolean,
+	/**
+	 *  Size of the whole print, as displayed: the print size, or larger in the frame's Fit
+	 *  mode, which adds a border and the bar around the full-size photo (FR-040).
+	 */
+	outputWidthCm: number | null,
+	outputHeightCm: number | null,
 	/**  Display unit of the selected size (inches for custom sizes entered in inches). */
 	unit: LengthUnit,
 };
