@@ -4,23 +4,31 @@ import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import type { CullFilter } from '@/ipc/bindings'
+import type { CullFilter, RenderSettings } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
-import { useExport } from './use-export'
+import { ExportTargetPicker } from './export-target-picker'
+import type { ExportApi } from './use-export'
 
 type ExportSectionProps = {
+  exporter: ExportApi
   /** Photos kept by `filter`: exactly what will be exported (FR-022). */
   photoCount: number
   filter: CullFilter
+  /** Export only this photo (the preview, FR-055) instead of the whole filtered set. */
+  only?: number
+  settings: RenderSettings | null
+  onChange: (change: (current: RenderSettings) => RenderSettings) => void
 }
 
 function folderName(path: string): string {
   return path.split(/[\\/]/).filter(Boolean).pop() ?? path
 }
 
-export function ExportSection({ photoCount, filter }: ExportSectionProps) {
+/** The export controls, the same in the settings panel and in the preview (FR-055). */
+export function ExportSection({ exporter, photoCount, filter, only, settings, onChange }: ExportSectionProps) {
   const { t } = useTranslation()
-  const { state, destination, chooseDestination, exportAll, cancel, dismiss } = useExport()
+  const { state, destination, chooseDestination, exportPhotos, cancel, dismiss } = exporter
+  const single = only !== undefined
   const running = state.kind === 'running'
 
   return (
@@ -83,6 +91,8 @@ export function ExportSection({ photoCount, filter }: ExportSectionProps) {
         </Alert>
       )}
 
+      <ExportTargetPicker settings={settings} onChange={onChange} disabled={running} />
+
       <button
         type="button"
         onClick={() => void chooseDestination()}
@@ -104,14 +114,18 @@ export function ExportSection({ photoCount, filter }: ExportSectionProps) {
       ) : (
         <Button
           className="w-full"
-          disabled={photoCount === 0}
-          onClick={() => void exportAll(filter, photoCount)}
+          disabled={!single && photoCount === 0}
+          onClick={() => void exportPhotos(filter, photoCount, only ?? null)}
         >
           <Download data-icon="inline-start" />
-          {photoCount > 0 ? t('export.buttonCount', { count: photoCount }) : t('export.button')}
+          {single
+            ? t('export.buttonThis')
+            : photoCount > 0
+              ? t('export.buttonCount', { count: photoCount })
+              : t('export.button')}
         </Button>
       )}
-      {(filter.flag !== 'all' || filter.minRating > 0) && !running && (
+      {!single && (filter.flag !== 'all' || filter.minRating > 0) && !running && (
         <p className="text-xs text-muted-foreground">{t('export.filteredHint')}</p>
       )}
     </div>

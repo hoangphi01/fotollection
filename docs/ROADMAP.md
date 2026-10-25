@@ -106,6 +106,9 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 | FR-047 | Film looks (Fujifilm-style film simulations, own names and LUTs) |
 | FR-051 | Landmark recognition: suggest a place from what the photo shows (offline, optional model pack) |
 | FR-052 | Appearance: System / Light / Dark theme, Windows title bar in the app's colours, app-drawn hover hints |
+| FR-053 | Export for social media: Original / Facebook / Instagram / custom sizes, sRGB, EXIF with the app's name and never GPS |
+| FR-054 | Open photos with Fotollection from the system's "Open with" menu, as a photo viewer |
+| FR-055 | Export the photo open in the preview, with the same export controls as the panel |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 
 ## Phase 3 — Pro & growth

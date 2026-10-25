@@ -63,6 +63,7 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | ✨ | **Gợi ý ảnh đẹp nhất**: gom các ảnh chụp liên tiếp và gần giống nhau, gợi ý ảnh đẹp nhất mỗi nhóm (nét nhất, mắt mở, không rung) kèm lý do. Chạy hoàn toàn offline | MVP |
 | 🏷️ | **Khung thông tin "Shot on …"** với máy ảnh, ống kính và thông số phơi sáng, kiểu LUMIX Lab, đúng tỉ lệ khổ in | MVP |
 | 🖼️ | **Giữ nguyên chất lượng**: độ phân giải đầy đủ, giữ ICC profile, crop không mất chất lượng khi có thể | MVP |
+| 💬 | **Đăng mạng xã hội**: JPEG sRGB nhẹ ở kích thước gốc, 2048 px cho Facebook, 1080 px cho Instagram hoặc cỡ tuỳ chọn, giữ thông số máy và ghi "Fotollection" là app chỉnh ảnh, không bao giờ có GPS. Export một ảnh ngay trong preview | MVP |
 | 📱 | Đầu vào **JPEG, PNG và HEIC** (iPhone) | MVP |
 | 🔒 | **Xóa GPS khi export** theo mặc định. Không tài khoản, không cloud, không telemetry | MVP |
 | 🌐 | Giao diện **tiếng Anh và tiếng Việt** | MVP |

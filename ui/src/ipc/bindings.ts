@@ -33,10 +33,11 @@ export const commands = {
 	pickExportFolder: () => typedError<string | null, IpcError>(__TAURI_INVOKE("pick_export_folder")),
 	/**
 	 *  Starts exporting the photos kept by `filter` to the chosen destination
-	 *  (FR-008, FR-009, FR-011, FR-022).
+	 *  (FR-008, FR-009, FR-011, FR-022), or only the photo `only` when it is set: the one open
+	 *  in the preview (FR-055).
 	 *  Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
 	 */
-	startExport: (filter: CullFilter) => typedError<number, IpcError>(__TAURI_INVOKE("start_export", { filter })),
+	startExport: (filter: CullFilter, only: number | null) => typedError<number, IpcError>(__TAURI_INVOKE("start_export", { filter, only })),
 	cancelJob: (jobId: number) => typedError<null, IpcError>(__TAURI_INVOKE("cancel_job", { jobId })),
 	/**  Details for the preview inspector (FR-002, FR-007, FR-026). Reads only the JPEG header. */
 	photoDetails: (id: PhotoId) => typedError<PhotoDetails, IpcError>(__TAURI_INVOKE("photo_details", { id })),
@@ -393,6 +394,11 @@ export type ExportSummary = {
 	destination: string,
 };
 
+/**  What an export makes. */
+export type ExportTarget = 
+/**  Full-quality prints (FR-008): the print size, the original's profile, no metadata. */
+{ kind: "print" } | { kind: "share"; preset: SharePreset };
+
 /**  Pick/reject flag for culling (FR-022). */
 export type Flag = "pick" | "reject";
 
@@ -702,6 +708,8 @@ export type RenderSettings = {
 	customSizes?: CustomPrintSize[],
 	/**  How place names are written, in the stamp and in the info frame (FR-005). */
 	placeFormat?: PlaceFormat,
+	/**  Prints or a lighter file for sharing (FR-053). Absent before settings v8: prints. */
+	exportTarget?: ExportTarget,
 };
 
 /**  Render-affecting state changed (settings, frame, crops, undo); previews refresh. */
@@ -716,6 +724,13 @@ export type SettingsState = {
 	/**  Bumps on every change; previews use it to refresh. */
 	revision: number,
 };
+
+/**  Where the exported photos are going. */
+export type SharePreset = 
+/**  Same width and height, only a lighter file (a 10 MB camera JPEG becomes about 3 MB). */
+{ kind: "original" } | { kind: "facebook" } | { kind: "instagram" } | 
+/**  A long edge chosen by the user, clamped to [`CUSTOM_EDGE_RANGE`]. */
+{ kind: "custom"; longEdge: number };
 
 /**  The verdict for one print size. */
 export type SizeAdvice = {

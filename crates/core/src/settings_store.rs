@@ -18,7 +18,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// `render.placeFormat`; `render.stamp.font` is dropped (the stamp has its own font).
 /// v6 (FR-052): `ui.theme`, absent before (follow the system).
 /// v7 (FR-040): `frame.logoScale`, absent before (1.0).
-pub const SCHEMA_VERSION: u32 = 7;
+/// v8 (FR-053): `render.exportTarget` (prints or a share preset), absent before (prints).
+pub const SCHEMA_VERSION: u32 = 8;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -325,6 +326,30 @@ mod tests {
         };
         assert!((s.frame.logo_scale - 1.0).abs() < f32::EPSILON);
         assert_eq!(s.ui.theme, crate::settings::ThemePreference::Dark);
+        Ok(())
+    }
+
+    #[test]
+    fn fr_053_v7_files_default_to_print_and_a_share_target_round_trips() -> std::io::Result<()> {
+        use crate::share::{ExportTarget, SharePreset};
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v7.json"))?;
+        let Loaded::Ok(s) = load(&path) else {
+            panic!("v7 should load");
+        };
+        assert_eq!(s.render.export_target, ExportTarget::Print);
+        assert!((s.frame.logo_scale - 1.5).abs() < f32::EPSILON);
+        let mut shared = s;
+        shared.render.export_target = ExportTarget::Share(SharePreset::Custom(1600));
+        save(&path, &shared)?;
+        let Loaded::Ok(back) = load(&path) else {
+            panic!("v8 should load");
+        };
+        assert_eq!(
+            back.render.export_target,
+            ExportTarget::Share(SharePreset::Custom(1600))
+        );
         Ok(())
     }
 

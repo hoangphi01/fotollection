@@ -190,6 +190,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - GPS is stripped by default.
 - Options: keep everything (minus GPS), keep the date only, or strip everything.
 - Before export, a banner warns when photos with GPS are about to be exported with GPS kept.
+- **Share exports ([FR-053](#fr-053--export-for-social-media)) write a small EXIF block from a fixed allowlist** (camera, lens, exposure, capture time and `Software = Fotollection <version>`), and **never GPS**. Print exports still carry no metadata.
 
 ### FR-011 — Batch progress, cancel and recovery
 
@@ -305,6 +306,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - The rendering intent is configurable: perceptual (default) or relative colorimetric with black-point compensation.
 - The output embeds the sRGB profile.
 - Photos without a profile are assumed to be sRGB.
+- **Done for share exports ([FR-053](#fr-053--export-for-social-media))**, with `qcms` and the perceptual intent ([ADR-0022](adr/0022-srgb-and-exif-for-share-exports.md)). Prints keep the original's profile until the print option lands.
 
 ### FR-028 — Safe area and borders
 
@@ -554,6 +556,37 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Windows title bar:** on Windows the system's white title strip is replaced by one drawn in the app's colours, like VS Code's: the app mark and the project name, a drag area (double-click maximizes) and minimize, maximize/restore and close buttons. It stays usable above open dialogs. macOS keeps its native title bar.
 - **Hover hints:** every hint is drawn by the app in its own style (rounded, theme colours), never the operating system's square tooltip.
 - **One-line toolbar and a minimum window size:** the toolbar above the photos never wraps (the photo filters are two dropdowns), and the window cannot be made narrower than 1,180 px, the width at which the library, the toolbar and the settings column all fit.
+
+### FR-053 — Export for social media
+
+**P1.** Camera photos are heavy (16–26 MP, 10–20 MB). Uploaded as they are, Facebook shrinks and recompresses them, and photos in Display P3 or Adobe RGB look washed out. A **Share** export makes light files at the size each platform shows best, keeping about 90 % of the original's colour and detail on screen.
+
+- **Export target:** *Print* (the full-quality print export, [FR-008](#fr-008--original-quality-export)) or *Share online*. The choice is remembered (`settings.json` `render.exportTarget`, schema v8).
+- **Sizes:** never enlarged, the photo's own aspect ratio kept (no print crop):
+  - **Original size:** same width and height, only a lighter file (a 10 MB camera JPEG becomes about 3 MB);
+  - **Facebook:** 2048 px on the long edge, the size Facebook shows without resizing;
+  - **Instagram:** 1080 px wide; portraits stop at 3:4 (1080 × 1440), as Instagram crops anything taller;
+  - **Custom:** a long edge of 640–6000 px, clamped in Rust.
+- **Pipeline:** the photo's edits (crop, straightening, date stamp, info frame) as for prints, then conversion to **sRGB** ([FR-027](#fr-027--srgb-conversion-for-labs)), a light unsharp mask after a downscale, JPEG at quality 88 with 4:2:0 chroma and optimized Huffman tables.
+- **Metadata:** camera, lens, exposure and capture time, and `Software = "Fotollection <version>"`, which phone galleries show as the editing app (as they do for Snapseed). **GPS is never written** ([FR-010](#fr-010--metadata-privacy-on-export)).
+- **Where:** `<destination>/Share/<YYYY-MM-DD>/`, apart from prints.
+- **Measured, not guessed:** the "90 %" target is checked with `bench/quality/share_audit.py` against the original resized with Lanczos (mean ΔE2000 ≤ 1.0, chroma ≥ 97 %, detail ≥ 90 %), and again after a simulated Facebook recompression ([RESULT.md](RESULT.md)).
+
+### FR-054 — Open photos with Fotollection
+
+**P2.** Fotollection can replace a classic photo viewer (IrfanView, Photos): choosing it in the system's "Open with" menu for a JPEG, PNG or HEIC shows that photo straight away in the preview, and ← → browse the other photos of its folder.
+
+- macOS declares the image types in `CFBundleDocumentTypes`; Windows registers a ProgID and "Open with" entries. Fotollection never makes itself the default viewer; the user chooses.
+- Opening is fast: only the photo's folder is listed, nothing is analysed up front. The time from opening to the first photo on screen gets its own budget (a new NFR) and a benchmark.
+- Paths come from the operating system, not the webview; they are validated like imported files ([SECURITY.md](SECURITY.md)).
+- An ADR records the viewer role and the start-up path.
+
+### FR-055 — Export from the preview
+
+**P1.** Liking a photo in the preview is enough to export it: the preview's inspector has an **Export** card, with the same controls as the export card of the settings panel (Print or Share online and its size, the destination), that exports **only this photo**. An **Export** button on the photo jumps to it.
+
+- One export job and one destination are shared by the settings panel and the preview: a destination chosen in one is used by the other, and the progress shows in both.
+- `start_export` takes the photo's id; Rust exports only that photo, and an unknown id exports nothing.
 
 ## 7. Non-functional requirements
 

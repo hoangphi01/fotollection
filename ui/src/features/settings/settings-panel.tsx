@@ -17,6 +17,7 @@ import { SectionCard } from '@/components/layout/section-card'
 import { CommitInput } from '@/components/forms/commit-input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ExportSection } from '@/features/export/export-section'
+import type { ExportApi } from '@/features/export/use-export'
 import { FrameSection } from '@/features/frame/frame-section'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
 import {
@@ -42,6 +43,7 @@ type SettingsPanelProps = {
   onChange: (change: (current: RenderSettings) => RenderSettings) => void
   frame: FrameConfigApi
   fonts: FontsApi
+  exporter: ExportApi
   photoCount: number
   /** Photos with their own stamp from the preview (FR-044). */
   customStamps: number
@@ -60,6 +62,7 @@ export function SettingsPanel({
   onChange,
   frame,
   fonts,
+  exporter,
   photoCount,
   customStamps,
   filter,
@@ -199,7 +202,7 @@ export function SettingsPanel({
 
       <Separator />
       <div className="space-y-3 p-4">
-        <ExportSection photoCount={photoCount} filter={filter} />
+        <ExportSection exporter={exporter} photoCount={photoCount} filter={filter} settings={settings} onChange={onChange} />
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{t('settings.footer')}</span>
           {appInfo && <VersionHistory version={appInfo.appVersion} />}

@@ -12,7 +12,7 @@
 | Project (legacy, and the session autosave) | `.fotollection` | `application/vnd.fotollection.project+json` | `com.hoangphi01.fotollection.project` | `"format": "fotollection-project"` | JSON, UTF-8 | `schema_version` 5 | Implemented: read always, written only for the session autosave |
 | Project bundle | `.fotollection` | `application/vnd.fotollection.project+zip` | `com.hoangphi01.fotollection.project` | ZIP magic `PK\x03\x04` + `manifest.json` with `"format": "fotollection-bundle"` | ZIP (deflate) | manifest `schema_version` 1 | Implemented ([ADR-0016](adr/0016-self-contained-project-bundle.md)): what Save / Save As write |
 | Preset | `.fotopreset` | `application/vnd.fotollection.preset+json` | `com.hoangphi01.fotollection.preset` | `"format": "fotollection-preset"` | JSON, UTF-8 | `schema_version` 1 (draft) | Planned ([FR-038](PRD.md#fr-038--print-presets)) |
-| App settings | `settings.json` | `application/json` | — (internal) | `"format": "fotollection-settings"` | JSON, UTF-8 | `schema_version` 7 | Implemented |
+| App settings | `settings.json` | `application/json` | — (internal) | `"format": "fotollection-settings"` | JSON, UTF-8 | `schema_version` 8 | Implemented |
 | User font | `fonts/<id>.ttf`, `fonts/<id>.otf` | `font/ttf`, `font/otf` | — (internal copy) | Magic `00 01 00 00` / `true` (TTF), `OTTO` (OTF) | sfnt | — | Implemented ([FR-042](PRD.md#fr-042--custom-fonts)) |
 | Camera logo | `logos/<id>.png` | `image/png` | — (internal copy) | PNG magic | PNG | — | Implemented ([FR-040](PRD.md#fr-040--exif-info-frame)) |
 | Thumbnail cache | `thumbs/…` | `image/jpeg` | — (internal) | Path only | JPEG files | — | Implemented; disposable |

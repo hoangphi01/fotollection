@@ -62,6 +62,7 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | ✨ | **Best-shot suggestions**: groups bursts and similar shots and suggests the best of each (sharpest, eyes open, no shake), with reasons. Fully offline | MVP |
 | 🏷️ | **"Shot on …" info frame** with camera, lens and exposure, LUMIX Lab style, at the exact print ratio | MVP |
 | 🖼️ | **Original quality**: full resolution, ICC profile preserved, lossless crop when possible | MVP |
+| 💬 | **Share online**: light sRGB JPEGs at the original size, 2048 px for Facebook, 1080 px for Instagram or your own size, with the camera details and "Fotollection" as the editing app, never GPS. Export one photo straight from the preview | MVP |
 | 📱 | **JPEG, PNG and HEIC** (iPhone) input | MVP |
 | 🔒 | **GPS stripped on export** by default. No account, no cloud, no telemetry | MVP |
 | 🌐 | **English and Vietnamese** interface | MVP |

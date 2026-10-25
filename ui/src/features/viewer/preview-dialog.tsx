@@ -3,6 +3,7 @@ import {
   Camera,
   CalendarDays,
   ChevronLeft,
+  Download,
   ChevronRight,
   Crop,
   ImageIcon,
@@ -23,6 +24,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { CullControls } from '@/features/culling/cull-controls'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
+import { ExportSection } from '@/features/export/export-section'
+import type { ExportApi } from '@/features/export/use-export'
 import { FrameSection } from '@/features/frame/frame-section'
 import type { FontsApi } from '@/features/fonts/use-fonts'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
@@ -31,6 +34,7 @@ import { useIpcQuery } from '@/features/settings/use-ipc-query'
 import {
   commands,
   type CropGeometry,
+  type CullFilter,
   type PhotoDetails,
   type PhotoSummary,
   type RenderSettings,
@@ -58,6 +62,9 @@ type PreviewDialogProps = {
   onSettingsReload: () => void
   frame: FrameConfigApi
   fonts: FontsApi
+  /** The same export job and destination as the settings panel (FR-055). */
+  exporter: ExportApi
+  filter: CullFilter
   onIndexChange: (index: number) => void
   onClose: () => void
 }
@@ -133,6 +140,8 @@ export function PreviewDialog({
   onSettingsReload,
   frame,
   fonts,
+  exporter,
+  filter,
   onIndexChange,
   onClose,
 }: PreviewDialogProps) {
@@ -155,6 +164,7 @@ export function PreviewDialog({
   }
   // Leaving the crop editor hands the keyboard back, so ← → move between photos again.
   const contentRef = useRef<HTMLDivElement>(null)
+  const exportRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (!cropping) contentRef.current?.focus()
   }, [cropping])
@@ -260,6 +270,15 @@ export function PreviewDialog({
                     <TooltipContent>{t(label)}</TooltipContent>
                   </Tooltip>
                 ))}
+                {/* Like what you see? Jump to the export card for this photo (FR-055). */}
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  disabled={!photo}
+                  onClick={() => exportRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })}
+                >
+                  <Download data-icon="inline-start" /> {t('export.title')}
+                </Button>
               </div>
               <Button
                 variant="secondary"
@@ -388,6 +407,21 @@ export function PreviewDialog({
               </div>
             </Section>
 
+            {/* Like it? Export just this one, with the same controls as the panel (FR-055). */}
+            {photo && (
+              <div ref={exportRef}>
+              <Section icon={<Download className="size-4" />} title={t('export.title')}>
+                <ExportSection
+                  exporter={exporter}
+                  photoCount={1}
+                  filter={filter}
+                  only={photo.id}
+                  settings={settings}
+                  onChange={onSettingsChange}
+                />
+              </Section>
+              </div>
+            )}
           </div>
 
           <Separator />

@@ -16,6 +16,7 @@ fast_image_resize.workspace = true
 jpeg-encoder.workspace = true
 kamadak-exif.workspace = true
 png.workspace = true
+qcms.workspace = true
 rayon.workspace = true
 serde.workspace = true
 serde_json.workspace = true

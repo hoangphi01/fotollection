@@ -69,6 +69,10 @@ crates/
       print_advice.rs    † # how large a photo prints well; sharp / acceptable / pixelated per print size (FR-026)
       straighten.rs      † # ±15° levelling: largest inscribed crop, bicubic resampling of the crop only (FR-006)
       brands.rs          † # bundled brand logos, EXIF make → brand, Classic/Original/Mono recolouring (ADR-0020)
+      share.rs           † # share export targets: Original / Facebook / Instagram / custom sizes, JPEG settings (FR-053)
+      colour.rs          † # ICC → sRGB with qcms, parallel over rows (FR-027, ADR-0022)
+      sharpen.rs         † # light unsharp mask after a downscale (FR-053)
+      exif_out.rs        † # minimal EXIF writer from an allowlist, never GPS; APP1 insertion (FR-010, FR-053)
       culling/           † # best-shot suggestions (FR-041): metrics.rs (sharpness, shake, exposure, noise, dHash),
                            # faces.rs (YuNet + FaceMesh eye aspect ratio), models.rs (bundled ONNX, BLAKE3, tract),
                            # similar.rs (layout + colour signature, ADR-0019), group.rs (bursts),
@@ -217,7 +221,7 @@ Commands marked † are implemented.
 | `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`), stored per machine in `settings.json` v3 | FR-020 |
 | `set_photo_override(id, override)` | Per-photo crop frame or place name | FR-005, FR-006 |
 | `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
-| `start_export(filter) -> JobId` † | Exports exactly the photos `filter` keeps (the set the grid shows) to the chosen destination | FR-008, FR-009, FR-010, FR-022 |
+| `start_export(filter, only) -> JobId` † | Exports exactly the photos `filter` keeps (the set the grid shows), or only the photo `only` (the preview), to the chosen destination, as prints or share files (`render.exportTarget`) | FR-008, FR-009, FR-010, FR-022, FR-053, FR-055 |
 | `cancel_job(job_id)` † | Cancel a running job | FR-011 |
 | `get_frame_config()` / `set_frame_settings(settings)` † | Info frame settings plus camera profiles (with EXIF-derived defaults) | FR-040 |
 | `set_camera_profile(profile)` † | Per-camera overrides: name, brand, lens, focal, aperture, photo style, logo kind | FR-040 |

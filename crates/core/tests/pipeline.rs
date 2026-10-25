@@ -532,3 +532,70 @@ fn fr_001_heic_imports_and_exports() {
         .image;
     assert_eq!((decoded.width, decoded.height), (300, 200));
 }
+
+#[test]
+fn fr_053_share_export_resizes_keeps_ratio_and_writes_safe_exif() {
+    use fotollection_core::share::{ExportTarget, SharePreset};
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    write(
+        src.path(),
+        "IMG_1.jpg",
+        &jpeg(&Fixture {
+            width: 3000,
+            height: 2000,
+            date: Some("2026:07:14 10:00:00"),
+            gps: Some((47.5, 19.04)),
+            lens: Some("XF56mmF1.2 R"),
+            exposure: Some((56, 1.2, (1, 250), 160)),
+            ..Fixture::default()
+        }),
+    );
+    let lib = import(src.path());
+    let export = |preset| {
+        let settings = RenderSettings {
+            export_target: ExportTarget::Share(preset),
+            ..RenderSettings::default()
+        };
+        let options = ExportOptions {
+            destination: dest.path(),
+            settings: &settings,
+            quality: 90,
+            max_inflight: 1,
+            place_for: &|_| None,
+            frame_for: &|_| None,
+        };
+        let summary = run_export(
+            &records(&lib),
+            &options,
+            &PureRustCodec,
+            &CancellationToken::new(),
+            &|_, _| {},
+        );
+        assert_eq!(summary.exported, 1);
+    };
+
+    export(SharePreset::Custom(1000));
+    let out = std::fs::read(dest.path().join("Share/2026-07-14/IMG_1.jpg")).unwrap();
+    let image = PureRustCodec.decode(&out).unwrap().image;
+    // The photo's own 3:2 ratio, not the 10 × 15 print crop.
+    assert_eq!((image.width, image.height), (1000, 667));
+    let meta = metadata::read_bytes(&out);
+    assert_eq!(meta.gps, None, "never a location");
+    assert_eq!(meta.lens.as_deref(), Some("XF56mmF1.2 R"));
+    let exif = exif::Reader::new()
+        .read_from_container(&mut std::io::Cursor::new(&out))
+        .unwrap();
+    let software = exif
+        .get_field(exif::Tag::Software, exif::In::PRIMARY)
+        .unwrap()
+        .display_value()
+        .to_string();
+    assert!(software.contains("Fotollection"), "{software}");
+
+    // Original keeps every pixel, only the file is lighter.
+    export(SharePreset::Original);
+    let out = std::fs::read(dest.path().join("Share/2026-07-14/IMG_1_1.jpg")).unwrap();
+    let image = PureRustCodec.decode(&out).unwrap().image;
+    assert_eq!((image.width, image.height), (3000, 2000));
+}

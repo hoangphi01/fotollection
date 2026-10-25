@@ -47,6 +47,9 @@ pub struct RenderSettings {
     /// How place names are written, in the stamp and in the info frame (FR-005).
     #[serde(default)]
     pub place_format: crate::geocode::PlaceFormat,
+    /// Prints or a lighter file for sharing (FR-053). Absent before settings v8: prints.
+    #[serde(default)]
+    pub export_target: crate::share::ExportTarget,
 }
 
 /// A saved custom print size (FR-043). Stored in millimetres, short edge first.
@@ -181,6 +184,7 @@ impl Default for RenderSettings {
             },
             custom_sizes: Vec::new(),
             place_format: crate::geocode::PlaceFormat::default(),
+            export_target: crate::share::ExportTarget::default(),
         }
     }
 }

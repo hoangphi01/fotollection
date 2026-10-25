@@ -18,6 +18,14 @@ use crate::library::{PhotoId, PhotoRecord, flags};
 use crate::plan::{FrameRequest, PlanInput, plan};
 use crate::render::{RenderError, render};
 use crate::settings::RenderSettings;
+use crate::share::{ExportTarget, SharePreset, target_size};
+use crate::{colour, exif_out, sharpen};
+
+/// Unsharp amount after a share downscale (FR-053), to be tuned on the detail that
+/// `bench/quality/share_audit.py` measures.
+const SHARE_SHARPEN: f32 = 0.35;
+/// Shared photos go here, beside the dated print folders.
+const SHARE_FOLDER: &str = "Share";
 
 pub const EXPORT_QUALITY: u8 = 95;
 /// Folder for photos without any capture date.
@@ -128,38 +136,75 @@ fn export_one(
         return Err(ExportError::Cancelled);
     }
 
-    let print = options
-        .settings
+    let share = match options.settings.export_target.sanitized() {
+        ExportTarget::Share(preset) => Some(preset),
+        ExportTarget::Print => None,
+    };
+    // Shared photos keep their own ratio: no print crop (FR-053).
+    let share_settings;
+    let base = if share.is_some() {
+        share_settings = RenderSettings {
+            print_size: crate::PrintSize::ORIGINAL_ID.to_owned(),
+            ..options.settings.clone()
+        };
+        &share_settings
+    } else {
+        options.settings
+    };
+    let max_long_edge = share.and_then(|preset| {
+        let (w, h) = target_size(upright.width, upright.height, preset);
+        let long = w.max(h);
+        (long < upright.width.max(upright.height)).then_some(long)
+    });
+    let print = base
         .print_for(upright.width, upright.height)
         .unwrap_or(crate::PrintSize::ALL[1]);
     let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
     let frame = (options.frame_for)(record);
     let place = (options.place_for)(record);
     // The photo's own stamp, when it has one (FR-044).
-    let settings = options.settings.for_photo(record.edits.stamp.as_ref());
+    let settings = base.for_photo(record.edits.stamp.as_ref());
     let p = plan(&PlanInput {
         width: upright.width,
         height: upright.height,
         capture,
         settings: &settings,
         print,
-        max_long_edge: None,
+        max_long_edge,
         frame: frame.as_ref(),
         crop: record.edits.crop,
         place: place.as_deref(),
         straighten: record.edits.straighten,
     });
-    let image = render(&upright, &p)?;
+    let mut image = render(&upright, &p)?;
     drop(upright);
-    // No EXIF is written, so GPS never leaves the machine by default (FR-010).
-    let jpeg = codec.encode(
-        &image,
-        EncodeOptions::print(options.quality),
-        decoded.icc.as_deref(),
-    )?;
+    let jpeg = match share {
+        Some(preset) => share_jpeg(
+            &mut image,
+            preset,
+            max_long_edge.is_some(),
+            decoded.icc.as_deref(),
+            record,
+            capture,
+            codec,
+        )?,
+        // Prints carry no EXIF, so GPS never leaves the machine (FR-010).
+        None => codec.encode(
+            &image,
+            EncodeOptions::print(options.quality),
+            decoded.icc.as_deref(),
+        )?,
+    };
     drop(image);
 
-    let dir = options.destination.join(day_folder(record));
+    let dir = if share.is_some() {
+        options
+            .destination
+            .join(SHARE_FOLDER)
+            .join(day_folder(record))
+    } else {
+        options.destination.join(day_folder(record))
+    };
     std::fs::create_dir_all(&dir)?;
     let stem = Path::new(&record.file_name)
         .file_stem()
@@ -175,6 +220,31 @@ fn export_one(
         let _ = std::fs::remove_file(&tmp);
     })?;
     Ok(())
+}
+
+/// A shared photo's JPEG (FR-053): sRGB, lightly sharpened after a downscale, the share
+/// quality, and EXIF with the camera and Fotollection's name but never GPS.
+fn share_jpeg(
+    image: &mut crate::image::RgbImage,
+    preset: SharePreset,
+    downscaled: bool,
+    icc: Option<&[u8]>,
+    record: &PhotoRecord,
+    capture: Option<chrono::NaiveDateTime>,
+    codec: &dyn JpegCodec,
+) -> Result<Vec<u8>, ExportError> {
+    let conversion = colour::to_srgb(image, icc);
+    if downscaled {
+        sharpen::unsharp(image, SHARE_SHARPEN);
+    }
+    // sRGB needs no profile; one qcms could not read is kept so the colours stay right.
+    let keep = (conversion == colour::Conversion::Unreadable)
+        .then_some(icc)
+        .flatten();
+    let jpeg = codec.encode(image, preset.encode_options(), keep)?;
+    let software = format!("Fotollection {}", crate::VERSION);
+    let app1 = exif_out::exif_app1(&record.shot, capture, &software);
+    Ok(exif_out::insert_app1(&jpeg, &app1).unwrap_or(jpeg))
 }
 
 /// Exports `records`. `on_progress(done, total)` is called after each photo.

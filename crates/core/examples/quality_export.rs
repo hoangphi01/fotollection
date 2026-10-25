@@ -4,6 +4,9 @@
 //! pixel with the source (NFR-009). Photos are only read.
 //!
 //! `cargo run --release -p fotollection-core --example quality_export -- <out-dir> <photo>…`
+//!
+//! With `--share original|facebook|instagram|<long edge>` first, it makes the share export
+//! instead (FR-053), for `bench/quality/share_audit.py`.
 
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 
@@ -16,9 +19,23 @@ use fotollection_core::import::check_file;
 use fotollection_core::library::Library;
 use fotollection_core::metadata;
 use fotollection_core::settings::RenderSettings;
+use fotollection_core::share::{ExportTarget, SharePreset};
 
 fn main() {
-    let args: Vec<String> = std::env::args().skip(1).collect();
+    let mut args: Vec<String> = std::env::args().skip(1).collect();
+    let target = if args.first().is_some_and(|a| a == "--share") {
+        let preset = match args.get(1).map(String::as_str) {
+            Some("original") => SharePreset::Original,
+            Some("facebook") => SharePreset::Facebook,
+            Some("instagram") => SharePreset::Instagram,
+            Some(edge) => SharePreset::Custom(edge.parse().expect("a long edge in pixels")),
+            None => panic!("--share needs a preset"),
+        };
+        args.drain(..2);
+        ExportTarget::Share(preset)
+    } else {
+        ExportTarget::Print
+    };
     let (out, photos) = args
         .split_first()
         .expect("usage: quality_export <out-dir> <photo>…");
@@ -40,6 +57,7 @@ fn main() {
             enabled: false,
             ..defaults.stamp.clone()
         },
+        export_target: target,
         ..defaults
     };
     let destination = PathBuf::from(out);

@@ -427,8 +427,10 @@ pub fn get_settings(state: State<'_, AppState>) -> Result<SettingsState, IpcErro
 #[specta::specta]
 pub fn set_settings(
     state: State<'_, AppState>,
-    settings: RenderSettings,
+    mut settings: RenderSettings,
 ) -> Result<SettingsState, IpcError> {
+    // A custom share size from the webview is clamped here (FR-053).
+    settings.export_target = settings.export_target.sanitized();
     settings
         .validate()
         .map_err(|e| IpcError::new("settings.invalid", e.to_string()))?;
@@ -520,7 +522,8 @@ pub async fn pick_export_folder(app: AppHandle) -> Result<Option<String>, IpcErr
 }
 
 /// Starts exporting the photos kept by `filter` to the chosen destination
-/// (FR-008, FR-009, FR-011, FR-022).
+/// (FR-008, FR-009, FR-011, FR-022), or only the photo `only` when it is set: the one open
+/// in the preview (FR-055).
 /// Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
 #[tauri::command]
 #[specta::specta]
@@ -528,6 +531,7 @@ pub fn start_export(
     app: AppHandle,
     state: State<'_, AppState>,
     filter: CullFilter,
+    only: Option<PhotoId>,
 ) -> Result<u32, IpcError> {
     let destination = state
         .export_destination
@@ -540,12 +544,16 @@ pub fn start_export(
             .library
             .read()
             .map_err(|e| IpcError::internal(e.to_string()))?;
-        // Exactly the photos the grid shows (FR-022).
-        library
-            .filtered_ids(&filter)
-            .into_iter()
-            .filter_map(|id| library.record(id))
-            .collect()
+        match only {
+            // One photo from the preview; an unknown id exports nothing.
+            Some(id) => library.record(id).into_iter().collect(),
+            // Exactly the photos the grid shows (FR-022).
+            None => library
+                .filtered_ids(&filter)
+                .into_iter()
+                .filter_map(|id| library.record(id))
+                .collect(),
+        }
     };
     if records.is_empty() {
         return Err(IpcError::new(

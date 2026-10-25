@@ -20,6 +20,7 @@ import { SettingsPanel } from '@/features/settings/settings-panel'
 import { useRenderSettings } from '@/features/settings/use-render-settings'
 import { useFrameConfig } from '@/features/frame/use-frame-config'
 import { useFonts } from '@/features/fonts/use-fonts'
+import { useExport } from '@/features/export/use-export'
 import { useHistory } from '@/features/history/use-history'
 import { PreviewDialog } from '@/features/viewer/preview-dialog'
 import { TitleBar } from '@/features/window/title-bar'
@@ -37,6 +38,8 @@ export function App() {
   const frame = useFrameConfig(setFrameRevision)
   const history = useHistory()
   const fonts = useFonts()
+  // One export job and destination for the settings panel and the preview (FR-055).
+  const exporter = useExport()
   const project = useProject()
   const bestShots = useBestShots()
   const [view, setView] = useState<'photos' | 'groups'>('photos')
@@ -184,6 +187,8 @@ export function App() {
         onSettingsReload={reload}
         frame={frame}
         fonts={fonts}
+        exporter={exporter}
+        filter={filter}
         onIndexChange={setSelected}
         onClose={() => setViewing(false)}
       />
@@ -202,6 +207,7 @@ export function App() {
         onChange={(c) => void update(c)}
         frame={frame}
         fonts={fonts}
+        exporter={exporter}
         photoCount={photos.length}
         customStamps={customStamps}
         filter={filter}

@@ -12,10 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - New: the Noritsu logo in the info frame for film scans from Noritsu scanners
 - Fix: a long lens name no longer runs into the logo; it moves to its own line
+- New: export for social media (original size, Facebook, Instagram or your own size), in sRGB, with the camera details and never GPS
+- New: export the photo you are looking at, straight from the preview
 
 ### Added
 
 - **Noritsu logo (FR-040):** the info frame shows the Noritsu logo for film scans whose EXIF make is "NORITSU KOKI" (EZ Controller), from a public-domain file on Wikimedia Commons like the other bundled logos (ADR-0020).
+
+- **Share online (FR-053):** the export card has *Print* and *Share online*. Share makes light JPEGs in sRGB at the original size (a 10 MB camera file becomes about 3 MB), 2048 px for Facebook, 1080 px wide for Instagram (portraits stop at 3:4) or a long edge of your choice (640–6000 px). Photos in Display P3 or Adobe RGB are converted so they do not look washed out, and they are lightly sharpened after resizing. The files keep the camera, lens and exposure details and name Fotollection as the editing app, like Snapseed; **the location is never written**. They go into a `Share` folder, apart from prints. The choice is remembered (settings v8).
+- **Export from the preview (FR-055):** the preview has an Export card, with the same controls as the settings panel, that exports only the photo you are looking at; the Export button on the photo jumps to it. Both places share the destination and the progress.
 
 ### Fixed
 
