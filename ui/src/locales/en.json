@@ -453,6 +453,8 @@
     "hint": "Tick photos for the print basket or to set aside; hold Space over a photo to look at it",
     "count_one": "{{count}} photo selected",
     "count_other": "{{count}} photos selected",
+    "elsewhere_one": "{{count}} of them in another folder",
+    "elsewhere_other": "{{count}} of them in other folders",
     "toBasket": "Print basket",
     "toAside": "Set aside",
     "toGallery": "Back to the gallery",

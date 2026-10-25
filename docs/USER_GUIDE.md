@@ -44,6 +44,8 @@ When you open the preview from the *Print basket* or *Set aside* view, ↑ and �
    - **Clear**: untick everything.
 4. Click **Done**, or press **Esc**, to leave select mode. Ticks are temporary: what counts is the area each photo is in.
 
+**Several folders:** ticks follow you from one folder tab to another ([FR-056](PRD.md#fr-056--folders-as-tabs)). Tick a few photos in one folder, click another folder in the sidebar and keep ticking; the bar shows the total and how many are in other folders, and *Print basket* moves them all at once.
+
 In select mode, a double-click does not open the preview, and **Space works differently** (§1.3).
 
 ### 1.3 Quick-preview: look without opening (select mode only)

@@ -608,6 +608,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Clicking a folder shows only that folder**: the grid, the best-shot groups and the export all work on it, like switching tabs. The folder counts never depend on the star or flag filter.
 - **Several folders:** the select button above the list (or Ctrl/⌘-click) turns the folders into tick boxes; the grid and the export then cover the ticked folders.
 - **Together or separately:** when the export covers two folders or more, the export card asks whether they go **together** (the usual date folders) or **separately** (one subfolder per source folder, named after it; two folders with the same name get " (2)").
+- **Ticks follow the tabs:** in select mode ([FR-050](#fr-050--print-basket)), photos ticked in one folder stay ticked when another folder or *All photos* is shown, so the best of several folders goes to the basket in one move. The selection bar counts every ticked photo and says how many are in other folders. Opening the basket or the set-aside view, or leaving select mode, clears the ticks.
 - The choice of folders is view state, not saved in the project. Removing a folder shows all photos again, since folder ids are renumbered.
 
 ### FR-057 — Zoom in the preview

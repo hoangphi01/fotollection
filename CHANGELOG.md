@@ -8,12 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **Ticks follow the folder tabs (FR-056):** in select mode, photos ticked in one folder stay ticked when you switch to another folder; the selection bar counts them all and says how many are in other folders, and one click sends them all to the print basket.
+
 ### Changed
 
 - **Vietnamese:** the app and the website speak plain Vietnamese: *tệp* for file, *ứng dụng* for app, *mã nguồn* for code, *hồ sơ màu* for colour profile, *không cần mạng* for offline, *phông chữ* for font.
 
 ### Website
 
+- A new section, **Work like browsing the web**, shows folders as tabs with photos ticked in two folders.
+- The footnotes credit the demo photos (CC0, Wikimedia Commons) by author, with a link to every file.
 - **No ads** is now one of the privacy promises on the home page. The print-basket section no longer compares choosing photos to a dating app. The coffee note in the footnotes reads as a choice that helps the app grow.
 
 ## [0.6.0] - 2026-10-25

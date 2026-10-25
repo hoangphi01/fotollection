@@ -436,6 +436,7 @@
     "done": "Xong",
     "hint": "Tích ảnh để cho vào giỏ in hoặc để riêng; giữ Space trên một ảnh để xem nhanh",
     "count_other": "Đã chọn {{count}} ảnh",
+    "elsewhere_other": "trong đó {{count}} ảnh ở thư mục khác",
     "toBasket": "Giỏ in",
     "toAside": "Để riêng",
     "toGallery": "Trả về gallery",

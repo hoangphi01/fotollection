@@ -131,6 +131,25 @@
   </div>
 </section>
 
+<section class="section tint" id="tabs">
+  <div class="wrap">
+    <h2>{{ t.tabs_title }}</h2>
+    <p class="lead narrow">{{ t.tabs_lead }}</p>
+  </div>
+  <div class="wrap showcase">
+    <div class="showcase-row">
+      <figure class="shot">
+        {% include shot.html name="tabs" alt=t.show_tabs %}
+      </figure>
+      <div class="showcase-text">
+        <h3>{{ t.tabs_row_title }}</h3>
+        <p>{{ t.tabs_text }}</p>
+        <p class="small muted">{{ t.show_tabs }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="section" id="kiosk">
   <div class="wrap kiosk-grid">
     <div>

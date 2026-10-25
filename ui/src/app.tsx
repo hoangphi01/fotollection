@@ -60,12 +60,15 @@ export function App() {
   const [checked, setChecked] = useState<ReadonlySet<number>>(new Set())
   const [anchor, setAnchor] = useState<number | null>(null)
   const [hovered, setHovered] = useState<number | null>(null)
-  const setFilter = (next: CullFilter) => {
+  // Ticks follow the user across folder tabs (FR-056), so photos from several folders can be
+  // gathered in one go; any other change of view starts again with none.
+  const setFilter = (next: CullFilter, keepTicks = false) => {
     setFilterState(next)
     setSelected(0)
-    setChecked(new Set())
+    if (!keepTicks) setChecked(new Set())
     setAnchor(null)
   }
+  const tickAll = () => setChecked((prev) => new Set([...prev, ...photos.map((p) => p.id)]))
   const toggle = useCallback(
     (index: number, range = false) => {
       const id = photos[index]?.id
@@ -88,9 +91,10 @@ export function App() {
     setChecked(new Set())
     setAnchor(null)
   }
-  // Moves the ticked photos to the basket, aside, or back (FR-050); one undoable step.
+  // Moves the ticked photos, in every folder tab, to the basket, aside, or back (FR-050); one
+  // undoable step.
   const moveChecked = (queue: Queue | null) => {
-    const ids = photos.filter((p) => checked.has(p.id)).map((p) => p.id)
+    const ids = [...checked]
     if (ids.length > 0) void commands.setPhotoQueue(ids, queue)
     setChecked(new Set())
   }
@@ -132,7 +136,7 @@ export function App() {
       <LibrarySidebar
         folders={folders}
         selected={filter.folders ?? []}
-        onSelect={(next) => setFilter({ ...filter, folders: next, queue: 'gallery' })}
+        onSelect={(next) => setFilter({ ...filter, folders: next, queue: 'gallery' }, (filter.queue ?? 'gallery') === 'gallery')}
         queue={filter.queue ?? 'gallery'}
         onQueue={(queue) => setFilter({ ...filter, folders: [], queue })}
         queueCounts={queueCounts}
@@ -239,9 +243,10 @@ export function App() {
             {view === 'photos' && selectMode && (
               <SelectionBar
                 count={checked.size}
+                elsewhere={checked.size - photos.filter((p) => checked.has(p.id)).length}
                 view={filter.queue ?? 'gallery'}
                 onMove={moveChecked}
-                onSelectAll={() => setChecked(new Set(photos.map((p) => p.id)))}
+                onSelectAll={tickAll}
                 onClear={() => setChecked(new Set())}
               />
             )}
@@ -270,7 +275,7 @@ export function App() {
                 selectMode={selectMode}
                 checked={checked}
                 onToggle={toggle}
-                onToggleAll={() => setChecked(new Set(photos.map((p) => p.id)))}
+                onToggleAll={tickAll}
                 onHover={setHovered}
               />
             )}

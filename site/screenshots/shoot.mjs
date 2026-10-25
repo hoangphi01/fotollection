@@ -31,13 +31,18 @@ const fixtures = JSON.parse(text)
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.json': 'application/json' }
 
 /** Runs in the page before the app: a stand-in for Tauri's IPC bridge. */
-function bridge({ fixtures, scenario, language, os }) {
+function bridge({ fixtures, scenario, language, os, tabs }) {
   const { common, scenarios } = fixtures
   const look = scenarios[scenario]
   const byId = (table, args) => table[String(args?.id)]
   let current = look.get_settings
   // Demo culling state for the print basket (FR-050), by position in the trip.
   const withQueues = (photos) => photos.map((p, i) => ({ ...p, queue: [1, 4, 6].includes(i) ? 'print' : [9, 13].includes(i) ? 'aside' : null }))
+  // The folder-tabs shot (FR-056): the demo photos as three folders, by file name.
+  const tabOf = (name) =>
+    /wilhelma/.test(name) ? [0, 'Wilhelma Zoo'] : /tuebingen|ammerschlag|anlagensee|neckar/.test(name) ? [1, 'Tübingen'] : [2, 'Travels']
+  const inTabs = (photos) =>
+    tabs ? photos.map((p) => { const [folderId, folderName] = tabOf(p.fileName); return { ...p, folderId, folderName } }) : photos
   const inView = (photos, filter) => {
     const view = filter?.queue ?? 'gallery'
     const scope = filter?.folders ?? []
@@ -55,8 +60,8 @@ function bridge({ fixtures, scenario, language, os }) {
     // Dumps recorded before FR-056 have no folder list: count it from the photos. A few
     // photos sit in the print basket and set aside (FR-050), as after a culling session.
     list_photos: (a) => {
-      const list = common.list_photos
-      const folders = list.folders ?? Object.values(
+      const list = { ...common.list_photos, photos: inTabs(common.list_photos.photos) }
+      const folders = (!tabs && list.folders) || Object.values(
         list.photos.reduce((acc, p) => {
           acc[p.folderId] ??= { id: p.folderId, name: p.folderName, count: 0 }
           acc[p.folderId].count += 1
@@ -110,7 +115,7 @@ function bridge({ fixtures, scenario, language, os }) {
 const browser = await chromium.launch()
 const shots = []
 
-async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2 }) {
+async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false }) {
   // DEMO_WIDTH=1000 checks narrow windows (the screenshots for the site stay at 1440).
   const context = await browser.newContext({
     viewport: { width, height },
@@ -136,7 +141,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
     return route.abort()
   })
   // DEMO_OS=windows shows the Windows title bar, for checking it on a Mac.
-  await context.addInitScript(bridge, { fixtures, scenario, language, os: process.env.DEMO_OS })
+  await context.addInitScript(bridge, { fixtures, scenario, language, os: process.env.DEMO_OS, tabs })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
   await page.goto('http://app.localhost/')
@@ -288,6 +293,21 @@ for (const language of ['en', 'vi']) {
       const x = Math.min(1440 - width, note.x + note.width / 2 - width / 2)
       await zoomed(page, `estimate-${suffix}`, { x, y: top, width, height })
     }
+    await context.close()
+    // 7. Folders as tabs (FR-056): tick photos in one folder, switch tabs, tick more; the bar
+    // counts them all, and hovering a tab shows its close button.
+    ;({ context, page } = await open({ scenario: 'frame', language, theme, scale: 3, tabs: true }))
+    const tab = (name) => page.getByRole('button', { name: new RegExp(`^${name}`) })
+    await tab('Wilhelma Zoo').click()
+    await page.getByRole('button', { name: /^(Select|Chọn)$/ }).click()
+    await page.locator('img[src*="/thumb/"]').nth(1).click()
+    await page.locator('img[src*="/thumb/"]').nth(4).click()
+    await tab('Tübingen').click()
+    await page.waitForTimeout(300)
+    await page.locator('img[src*="/thumb/"]').nth(2).click()
+    await tab('Travels').hover()
+    await settle(page)
+    await zoomed(page, `tabs-${suffix}`, { x: 0, y: 0, width: 1040, height: 650 })
     await context.close()
   }
 }
