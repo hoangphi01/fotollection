@@ -295,7 +295,8 @@ p { margin: 0; }
 .footnotes a { color: inherit; }
 .footnotes .fn-back { text-decoration: none; margin-left: 2px; }
 .footnotes li:target { color: var(--ink); }
-.fn-ref { font-size: 0.4em; vertical-align: super; line-height: 0; margin-left: 2px; font-weight: 600; }
+.fn-ref { font-size: 0.65em; vertical-align: super; line-height: 0; margin-left: 2px; font-weight: 600; }
+h2 .fn-ref { font-size: 0.4em; }
 .fn-ref a { color: var(--muted); text-decoration: none; }
 .badge .fn-ref { font-size: 0.7em; }
 .fn-ref a:hover { color: var(--ink); }

@@ -91,6 +91,15 @@ en:
   fn_label: Note
   fn_back: Back to the text
   fn_open: Free means no price, no ads and no in-app purchases; buying the author a coffee is optional. Open source means the full source code is public on GitHub under the GPL-3.0 licence, so anyone can read, build and check what the app does. No account means the app never asks who you are and has nothing to sign in to.
+  perf_speed_fn: [4, 5]
+  fn_rust: "Rust and the Rust logo are trademarks of the Rust Foundation. Fotollection's core is written in Rust and runs directly on your computer."
+  fn_webview: "The app's window is built with Tauri and drawn by the system's own web view: WebKit (WKWebView) on macOS and Microsoft Edge WebView2 on Windows. Tauri is a project of the Tauri Programme within the Commons Conservancy; WebKit is a trademark of Apple Inc.; Microsoft Edge and WebView2 are trademarks of Microsoft Corporation. The browser comparison ran the same job in headless Chromium 156, the open-source project behind Google Chrome, with one Web Worker per processor core."
+  fn_de: "ΔE2000 (CIEDE2000) is the colour-difference formula of the International Commission on Illumination (CIE), standardised as ISO/CIE 11664-6; the CIELAB colour space it works in is ISO/CIE 11664-4."
+  fn_ssim: "SSIM was introduced by Zhou Wang, Alan C. Bovik, Hamid R. Sheikh and Eero P. Simoncelli in Image quality assessment: from error visibility to structural similarity, IEEE Transactions on Image Processing, 13(4), 2004."
+  fn_jpeg: "JPEG is the image format of the Joint Photographic Experts Group, standardised as ISO/IEC 10918-1 and ITU-T T.81."
+  fn_srgb: "sRGB was created by HP and Microsoft in 1996 and standardised as IEC 61966-2-1."
+  fn_p3: "Display P3 is a colour space defined by Apple Inc., based on the DCI-P3 colour space of the cinema industry (SMPTE)."
+  fn_adobe: "Adobe RGB (1998) is a colour space specified by Adobe Inc.; Adobe is a registered trademark of Adobe Inc."
   fn_dm: dm and the dm logo are trademarks of dm-drogerie markt GmbH + Co. KG.
   fn_rossmann: ROSSMANN and the ROSSMANN logo are trademarks of Dirk Rossmann GmbH.
   fn_cewe: The photo services at dm and Rossmann are made by CEWE, a trademark of CEWE Stiftung & Co. KGaA. Print sizes were checked against dm's price list in October 2026; the shops may change them.
@@ -140,17 +149,21 @@ en:
   perf_explain_lead: "Photo and print jargon, explained the way we would explain it to a friend."
   perf_faq:
     - q: "What is ΔE (Delta E)?"
+      fn: [6]
       a: "ΔE measures how far apart two colours look to a human eye, computed in a colour space built to match how we see (CIELAB, with the 2000 formula). 0 means identical. Around 1 is the smallest difference a trained eye can spot side by side; 2 to 3 is visible to most people; above 5 the colours look different. Fotollection's print export averages 0.19."
     - q: "What is SSIM?"
+      fn: [7]
       a: "SSIM, the structural similarity index, compares the shapes and textures of two images rather than single pixels, which is closer to how we notice blur or blocky compression. 1 means identical. Above about 0.98, most people cannot tell the two apart without zooming in."
     - q: "How many colours can a JPEG hold?"
+      fn: [8]
       a: "A JPEG stores 8 bits for each of red, green and blue: 256 levels each, about 16.7 million colours. That is also what photo labs print from. Camera RAW files hold 12 to 14 bits and recent iPhones can save 10-bit HEIC, which helps when editing; for a finished print, a well-made 8-bit JPEG shows no steps between tones."
     - q: "JPG or JPEG? And should I use PNG?"
       a: "JPG and JPEG are the same format: old Windows only allowed three-letter extensions. PNG is lossless, so nothing is ever thrown away, but a photo saved as PNG is often three to five times larger, and most kiosks and labs expect JPEG. A JPEG at quality 95 with full colour resolution (4:4:4), as Fotollection exports for print, is indistinguishable from the original on paper."
     - q: "What do 4:4:4 and 4:2:0 mean?"
       a: "Our eyes see detail mostly in brightness, less in colour, so JPEG can store colour at lower resolution. 4:4:4 keeps full colour resolution; 4:2:0 keeps a quarter of it, which makes files smaller but softens coloured edges, such as red text or a blue sky behind leaves. Prints deserve 4:4:4; social media recompresses everything to 4:2:0 anyway."
-    - q: "sRGB, Display P3 and colour profiles"
-      a: "A colour profile tells software what the numbers in a file mean. sRGB is the classic range of colours used on the web. Display P3, used by iPhones and recent cameras, reaches about 25 % more colours, especially reds and greens. If a P3 photo loses its profile, its numbers are read as sRGB and it looks washed out: that is the 13 % saturation loss we measured. Fotollection keeps the profile for prints and converts properly to sRGB for social media."
+    - q: "sRGB, Display P3, Adobe RGB and colour profiles"
+      fn: [9, 10, 11]
+      a: "A colour profile tells software what the numbers in a file mean. sRGB is the classic range of colours used on the web. Display P3, used by iPhones and recent cameras, reaches about 25 % more colours, especially reds and greens. If a P3 photo loses its profile, its numbers are read as sRGB and it looks washed out: that is the 13 % saturation loss we measured. Adobe RGB, which some cameras offer for print work, is wider than sRGB too, mostly in greens and cyans. Fotollection keeps whichever profile a photo has for prints and converts properly to sRGB for social media."
     - q: "What DPI does a print need?"
       a: "DPI is how many pixels land on each inch of paper. At 300 DPI a print looks sharp even up close; 150 to 200 DPI is fine at arm's length. A 10 × 15 cm print at 300 DPI needs 1,800 × 1,200 pixels, so any phone or camera photo is enough; the size advice in the app tells you how large each photo can go."
     - q: "Why do photos look worse on Facebook?"
@@ -273,6 +286,15 @@ vi:
   fn_label: Chú thích
   fn_back: Quay lại đoạn văn
   fn_open: Miễn phí là không thu tiền, không quảng cáo, không mua thêm trong app; mời tác giả ly cà phê là tuỳ bạn. Mã nguồn mở là toàn bộ mã nguồn được công khai trên GitHub theo giấy phép GPL-3.0, ai cũng có thể đọc, tự build và kiểm tra app làm gì. Không cần tài khoản là app không bao giờ hỏi bạn là ai và không có gì để đăng nhập.
+  perf_speed_fn: [4, 5]
+  fn_rust: "Rust và logo Rust là nhãn hiệu của Rust Foundation. Phần lõi của Fotollection viết bằng Rust và chạy trực tiếp trên máy của bạn."
+  fn_webview: "Cửa sổ app được làm bằng Tauri và hiển thị bằng web view có sẵn của hệ điều hành: WebKit (WKWebView) trên macOS và Microsoft Edge WebView2 trên Windows. Tauri là dự án của Tauri Programme thuộc Commons Conservancy; WebKit là nhãn hiệu của Apple Inc.; Microsoft Edge và WebView2 là nhãn hiệu của Microsoft Corporation. Phép so sánh với trình duyệt chạy cùng một việc trong Chromium 156 không giao diện, dự án mã nguồn mở phía sau Google Chrome, mỗi nhân xử lý một Web Worker."
+  fn_de: "ΔE2000 (CIEDE2000) là công thức tính sai lệch màu của Uỷ ban Quốc tế về Chiếu sáng (CIE), được chuẩn hoá thành ISO/CIE 11664-6; không gian màu CIELAB mà công thức dùng là ISO/CIE 11664-4."
+  fn_ssim: "SSIM do Zhou Wang, Alan C. Bovik, Hamid R. Sheikh và Eero P. Simoncelli giới thiệu trong bài Image quality assessment: from error visibility to structural similarity, IEEE Transactions on Image Processing, 13(4), 2004."
+  fn_jpeg: "JPEG là định dạng ảnh của nhóm Joint Photographic Experts Group, được chuẩn hoá thành ISO/IEC 10918-1 và ITU-T T.81."
+  fn_srgb: "sRGB do HP và Microsoft tạo ra năm 1996, được chuẩn hoá thành IEC 61966-2-1."
+  fn_p3: "Display P3 là không gian màu do Apple Inc. định nghĩa, dựa trên không gian màu DCI-P3 của ngành điện ảnh (SMPTE)."
+  fn_adobe: "Adobe RGB (1998) là không gian màu do Adobe Inc. đặc tả; Adobe là nhãn hiệu đã đăng ký của Adobe Inc."
   fn_dm: dm và logo dm là thương hiệu của dm-drogerie markt GmbH + Co. KG.
   fn_rossmann: ROSSMANN và logo ROSSMANN là thương hiệu của Dirk Rossmann GmbH.
   fn_cewe: Dịch vụ in ảnh của dm và Rossmann do CEWE thực hiện; CEWE là thương hiệu của CEWE Stiftung & Co. KGaA. Khổ in được đối chiếu với bảng giá của dm vào tháng 10/2026; cửa hàng có thể thay đổi.
@@ -322,17 +344,21 @@ vi:
   perf_explain_lead: "Những từ chuyên môn về ảnh và in ảnh, giải thích như kể cho một người bạn."
   perf_faq:
     - q: "ΔE (Delta E) là gì?"
+      fn: [6]
       a: "ΔE đo hai màu trông khác nhau bao nhiêu với mắt người, tính trong một không gian màu được dựng theo cách mắt người cảm nhận (CIELAB, theo công thức năm 2000). 0 là giống hệt. Khoảng 1 là mức khác biệt nhỏ nhất mà một người có mắt tinh nhận ra khi đặt hai màu cạnh nhau; 2 đến 3 thì phần lớn mọi người đều thấy; trên 5 là hai màu khác hẳn. Bản xuất để in của Fotollection có ΔE trung bình 0,19."
     - q: "SSIM là gì?"
+      fn: [7]
       a: "SSIM (chỉ số tương đồng cấu trúc) so hình dạng và kết cấu của hai ảnh thay vì từng điểm ảnh riêng lẻ, gần với cách mắt ta nhận ra ảnh bị mờ hay bị nén vỡ khối. 1 là giống hệt. Từ khoảng 0,98 trở lên, đa số người không phân biệt được hai ảnh nếu không phóng to."
     - q: "Một file JPEG chứa được bao nhiêu màu?"
+      fn: [8]
       a: "JPEG lưu 8 bit cho mỗi kênh đỏ, xanh lá và xanh dương: mỗi kênh 256 mức, tổng cộng khoảng 16,7 triệu màu. Đó cũng là thứ máy in ảnh dùng để in. File RAW của máy ảnh có 12 đến 14 bit, iPhone đời mới có thể lưu HEIC 10 bit, rất có ích khi chỉnh sửa; còn với ảnh in hoàn chỉnh, một file JPEG 8 bit làm tốt không lộ vệt chuyển màu."
     - q: "JPG hay JPEG? Có nên dùng PNG không?"
       a: "JPG và JPEG là cùng một định dạng: Windows ngày xưa chỉ cho phép đuôi file ba chữ. PNG nén không mất dữ liệu nên không bỏ đi chút nào, nhưng ảnh chụp lưu dạng PNG thường nặng gấp ba đến năm lần, và đa số máy in ảnh, tiệm in đều yêu cầu JPEG. Một file JPEG chất lượng 95, đủ độ phân giải màu (4:4:4) như Fotollection xuất để in, in ra không phân biệt được với ảnh gốc."
     - q: "4:4:4 và 4:2:0 nghĩa là gì?"
       a: "Mắt ta nhìn chi tiết chủ yếu qua độ sáng, ít qua màu, nên JPEG có thể lưu màu ở độ phân giải thấp hơn. 4:4:4 giữ đủ độ phân giải màu; 4:2:0 chỉ giữ một phần tư, file nhẹ hơn nhưng các viền có màu bị mềm đi, như chữ đỏ hay bầu trời xanh sau tán lá. Ảnh in nên dùng 4:4:4; còn mạng xã hội thì đằng nào cũng nén mọi ảnh về 4:2:0."
-    - q: "sRGB, Display P3 và colour profile"
-      a: "Colour profile cho phần mềm biết các con số trong file nghĩa là màu nào. sRGB là dải màu cổ điển dùng trên web. Display P3, dùng trên iPhone và các máy ảnh mới, rộng hơn khoảng 25 %, nhất là màu đỏ và xanh lá. Nếu ảnh P3 bị mất profile, các con số bị đọc như sRGB và ảnh trông nhạt: đó chính là 13 % độ bão hoà bị mất mà chúng tôi đo được. Fotollection giữ nguyên profile khi xuất để in, và chuyển đúng sang sRGB khi xuất cho mạng xã hội."
+    - q: "sRGB, Display P3, Adobe RGB và colour profile"
+      fn: [9, 10, 11]
+      a: "Colour profile cho phần mềm biết các con số trong file nghĩa là màu nào. sRGB là dải màu cổ điển dùng trên web. Display P3, dùng trên iPhone và các máy ảnh mới, rộng hơn khoảng 25 %, nhất là màu đỏ và xanh lá. Nếu ảnh P3 bị mất profile, các con số bị đọc như sRGB và ảnh trông nhạt: đó chính là 13 % độ bão hoà bị mất mà chúng tôi đo được. Adobe RGB, có trên một số máy ảnh dành cho in ấn, cũng rộng hơn sRGB, chủ yếu ở màu xanh lá và xanh lơ. Fotollection giữ nguyên profile của ảnh khi xuất để in, và chuyển đúng sang sRGB khi xuất cho mạng xã hội."
     - q: "Ảnh in cần bao nhiêu DPI?"
       a: "DPI là số điểm ảnh trên mỗi inch giấy. Ở 300 DPI, ảnh in trông nét kể cả khi nhìn sát; 150 đến 200 DPI vẫn ổn khi cầm xem. Một ảnh 10 × 15 cm ở 300 DPI cần 1.800 × 1.200 điểm ảnh, nên ảnh từ điện thoại hay máy ảnh nào cũng đủ; phần gợi ý khổ in trong app cho biết mỗi ảnh in được to tới đâu."
     - q: "Vì sao ảnh đăng Facebook trông xấu đi?"

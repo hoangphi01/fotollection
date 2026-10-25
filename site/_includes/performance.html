@@ -20,7 +20,8 @@
   <div class="wrap perf-part">
     <div>
       <h2>{{ t[title_key] }}</h2>
-      <p class="lead">{{ t[text_key] }}</p>
+      {%- capture fn_key %}perf_{{ key }}_fn{% endcapture %}
+      <p class="lead">{{ t[text_key] }}{% if t[fn_key] %}<sup class="fn-ref">{% for n in t[fn_key] %}{% unless forloop.first %},{% endunless %}<a href="#fn-{{ n }}" id="fnref-{{ n }}" aria-label="{{ t.fn_label }} {{ n }}">{{ n }}</a>{% endfor %}</sup>{% endif %}</p>
     </div>
     <div class="charts">
       {%- for c in charts -%}
@@ -42,7 +43,7 @@
     <div class="faq">
       {%- for item in t.perf_faq %}
       <details class="card">
-        <summary>{{ item.q }}</summary>
+        <summary><span>{{ item.q }}{% if item.fn %}<sup class="fn-ref">{% for n in item.fn %}{% unless forloop.first %},{% endunless %}<a href="#fn-{{ n }}" id="fnref-{{ n }}" aria-label="{{ t.fn_label }} {{ n }}">{{ n }}</a>{% endfor %}</sup>{% endif %}</span></summary>
         <p>{{ item.a }}</p>
       </details>
       {%- endfor %}
