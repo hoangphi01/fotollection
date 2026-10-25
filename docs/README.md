@@ -13,6 +13,7 @@
 | Changing anything that is saved to disk | [DATABASE](DATABASE.md) → [EXTENSION](EXTENSION.md) |
 | Changing anything (what else to update) | [DOCS_GUIDE](DOCS_GUIDE.md) |
 | Shipping a build | [RELEASE](RELEASE.md) |
+| Writing the manual or the website's help | [USER_GUIDE](USER_GUIDE.md) |
 | Confused by a term | [GLOSSARY](GLOSSARY.md) |
 
 ## Where does each fact live?
@@ -34,6 +35,7 @@
 | Test strategy, corpus, CI matrix | [TESTING.md](TESTING.md) |
 | Versioning, build, signing, distribution | [RELEASE.md](RELEASE.md) |
 | The public website and how its screenshots are made | [site/README.md](../site/README.md) |
+| How to use the app, step by step, with every shortcut | [USER_GUIDE.md](USER_GUIDE.md) |
 | User-visible changes per version | [CHANGELOG.md](../CHANGELOG.md) |
 | What to update when something changes (the checklist) | [DOCS_GUIDE.md](DOCS_GUIDE.md) |
 | Rules for AI assistants | [CLAUDE.md](../CLAUDE.md) |

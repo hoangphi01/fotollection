@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::library::{Flag, Library, PhotoEdits};
+use crate::library::{Flag, Library, PhotoEdits, Queue};
 use crate::plan::CropFrame;
 
 pub const FORMAT: &str = "fotollection-project";
@@ -15,7 +15,8 @@ pub const FORMAT: &str = "fotollection-project";
 /// v3: `photos[].stamp`, a photo's own date stamp set in the preview (FR-044).
 /// v4: `photos[].rotation`, the user's quarter turns clockwise (FR-006).
 /// v5: `photos[].straighten`, degrees within ±15 (FR-006).
-pub const SCHEMA_VERSION: u32 = 5;
+/// v6: `photos[].queue`, the print basket or set aside (FR-050).
+pub const SCHEMA_VERSION: u32 = 6;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -63,6 +64,9 @@ pub struct PhotoRow {
     /// Straightening in degrees, ±15 (v5); absent when level.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub straighten: Option<f32>,
+    /// In the print basket or set aside (v6); absent in the gallery.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub queue: Option<Queue>,
 }
 
 /// The document a session belongs to (FR-023). Only written into the session autosave, so
@@ -129,6 +133,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 rotation: (edits.rotation % 4 != 0).then_some(edits.rotation % 4),
                 straighten: crate::straighten::is_straightened(edits.straighten)
                     .then(|| crate::straighten::sanitize(edits.straighten)),
+                queue: edits.queue,
             })
         })
         .collect();
@@ -365,6 +370,7 @@ pub fn restore_into(
                 stamp: row.stamp.clone(),
                 rotation: row.rotation.unwrap_or(0),
                 straighten: row.straighten.unwrap_or(0.0),
+                queue: row.queue,
             },
         );
         summary.restored += 1;
@@ -417,6 +423,7 @@ mod tests {
                     }),
                     rotation: 1,
                     straighten: -3.5,
+                    queue: Some(Queue::Print),
                 },
             );
         }
@@ -510,6 +517,7 @@ mod tests {
             stamp: None,
             rotation: None,
             straighten: None,
+            queue: None,
         });
         save(&path, &file)?;
         assert!(
@@ -550,6 +558,23 @@ mod tests {
         let degrees: Vec<Option<f32>> = file.photos.iter().map(|p| p.straighten).collect();
         // 40° from a file is clamped to 15°.
         assert_eq!(degrees, [Some(2.5), None, Some(15.0)]);
+    }
+
+    #[test]
+    fn fr_050_v6_keeps_the_basket_and_v5_files_have_none() {
+        let Loaded::Ok(v6) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v6.fotollection"))
+        else {
+            panic!("v6 project should load");
+        };
+        let queues: Vec<Option<Queue>> = v6.photos.iter().map(|p| p.queue).collect();
+        assert_eq!(queues, [Some(Queue::Print), Some(Queue::Aside), None]);
+        let Loaded::Ok(v5) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v5.fotollection"))
+        else {
+            panic!("v5 project should load");
+        };
+        assert!(v5.photos.iter().all(|p| p.queue.is_none()));
     }
 
     #[test]

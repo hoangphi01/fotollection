@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { FilterX, OctagonX, Sparkles, Square } from 'lucide-react'
-import { useState } from 'react'
+import { FilterX, ListChecks, OctagonX, Sparkles, Square } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -10,11 +10,12 @@ import { GroupsView } from '@/features/best-shot/groups-view'
 import { useBestShots } from '@/features/best-shot/use-best-shots'
 import { CullFilterBar } from '@/features/culling/cull-filter-bar'
 import { ALL_PHOTOS } from '@/features/culling/filter'
-import type { CullFilter } from '@/ipc/bindings'
+import { commands, type CullFilter, type Queue } from '@/ipc/bindings'
 import { LibraryEmptyState } from '@/features/library/library-empty-state'
 import { LibraryGrid } from '@/features/library/library-grid'
 import { TaskProgressBar } from '@/features/library/task-progress-bar'
 import { LibrarySidebar } from '@/features/library/library-sidebar'
+import { SelectionBar } from '@/features/library/selection-bar'
 import { useLibrary } from '@/features/library/use-library'
 import { SettingsPanel } from '@/features/settings/settings-panel'
 import { useRenderSettings } from '@/features/settings/use-render-settings'
@@ -23,6 +24,8 @@ import { useFonts } from '@/features/fonts/use-fonts'
 import { useExport } from '@/features/export/use-export'
 import { useHistory } from '@/features/history/use-history'
 import { PreviewDialog } from '@/features/viewer/preview-dialog'
+import { QuickPreview } from '@/features/viewer/quick-preview'
+import { useQuickPreview } from '@/features/viewer/use-quick-preview'
 import { TitleBar } from '@/features/window/title-bar'
 import { RelinkDialog, UnsavedDialog } from '@/features/project/project-dialogs'
 import { useProject } from '@/features/project/use-project'
@@ -30,7 +33,7 @@ import { useProject } from '@/features/project/use-project'
 export function App() {
   const { t } = useTranslation()
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
-  const { photos, total, folders, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
+  const { photos, total, folders, queueCounts, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
     useLibrary(filter)
   const { settings, revision: renderRevision, update, reload } = useRenderSettings()
   // Render and frame changes bump the same Rust counter; the newest one wins.
@@ -50,10 +53,59 @@ export function App() {
   const [viewing, setViewing] = useState(false)
   // A rating or flag change can drop the current photo out of the filter; stay in range.
   const current = Math.max(0, Math.min(selected, photos.length - 1))
+  // Select mode (FR-050), like the Select button on an iPhone: photos are ticked by id.
+  const [selectMode, setSelectMode] = useState(false)
+  const [checked, setChecked] = useState<ReadonlySet<number>>(new Set())
+  const [anchor, setAnchor] = useState<number | null>(null)
+  const [hovered, setHovered] = useState<number | null>(null)
   const setFilter = (next: CullFilter) => {
     setFilterState(next)
     setSelected(0)
+    setChecked(new Set())
+    setAnchor(null)
   }
+  const toggle = useCallback(
+    (index: number, range = false) => {
+      const id = photos[index]?.id
+      if (id === undefined) return
+      setChecked((prev) => {
+        const next = new Set(prev)
+        if (range && anchor !== null) {
+          const [a, b] = [Math.min(anchor, index), Math.max(anchor, index)]
+          for (const p of photos.slice(a, b + 1)) next.add(p.id)
+        } else if (next.has(id)) next.delete(id)
+        else next.add(id)
+        return next
+      })
+      setAnchor(index)
+    },
+    [photos, anchor],
+  )
+  const leaveSelect = () => {
+    setSelectMode(false)
+    setChecked(new Set())
+    setAnchor(null)
+  }
+  // Moves the ticked photos to the basket, aside, or back (FR-050); one undoable step.
+  const moveChecked = (queue: Queue | null) => {
+    const ids = photos.filter((p) => checked.has(p.id)).map((p) => p.id)
+    if (ids.length > 0) void commands.setPhotoQueue(ids, queue)
+    setChecked(new Set())
+  }
+  const quick = useQuickPreview(selectMode, photos.length, hovered, anchor ?? current, toggle)
+  const quickPhoto = quick.index === null ? undefined : photos[quick.index]
+  // Esc leaves select mode, unless a dialog or Quick-preview has it first.
+  useEffect(() => {
+    if (!selectMode) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || quick.index !== null || document.querySelector('[role="dialog"]')) return
+      setSelectMode(false)
+      setChecked(new Set())
+      setAnchor(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [selectMode, quick.index])
 
   // Best-shot groups of the folders shown (FR-056): a group belongs to its first photo's folder.
   const scopedShots = filter.folders?.length
@@ -78,13 +130,16 @@ export function App() {
       <LibrarySidebar
         folders={folders}
         selected={filter.folders ?? []}
-        onSelect={(next) => setFilter({ ...filter, folders: next })}
+        onSelect={(next) => setFilter({ ...filter, folders: next, queue: 'gallery' })}
+        queue={filter.queue ?? 'gallery'}
+        onQueue={(queue) => setFilter({ ...filter, folders: [], queue })}
+        queueCounts={queueCounts}
         lastImport={lastImport}
         onOpenFolder={() => void importFolder()}
         onRefresh={() => void refresh()}
         onRemoveFolder={(id) => {
           // Folder ids are renumbered after a removal: show every photo again.
-          setFilter({ ...filter, folders: [] })
+          setFilter({ ...filter, folders: [], queue: 'gallery' })
           void removeFolder(id)
         }}
         project={project}
@@ -163,11 +218,31 @@ export function App() {
                 </span>
               )}
               {view === 'photos' && (
-                <div className="ml-auto">
+                <div className="ml-auto flex items-center gap-2">
+                  {/* Select mode (FR-050): tick photos for the basket or to set aside. */}
+                  <Button
+                    variant={selectMode ? 'default' : 'outline'}
+                    size="sm"
+                    aria-pressed={selectMode}
+                    data-hint={t('select.hint')}
+                    onClick={() => (selectMode ? leaveSelect() : setSelectMode(true))}
+                  >
+                    <ListChecks data-icon="inline-start" />
+                    <span className="hidden @3xl:inline">{t(selectMode ? 'select.done' : 'select.start')}</span>
+                  </Button>
                   <CullFilterBar filter={filter} onChange={setFilter} />
                 </div>
               )}
             </div>
+            {view === 'photos' && selectMode && (
+              <SelectionBar
+                count={checked.size}
+                view={filter.queue ?? 'gallery'}
+                onMove={moveChecked}
+                onSelectAll={() => setChecked(new Set(photos.map((p) => p.id)))}
+                onClear={() => setChecked(new Set())}
+              />
+            )}
             {view === 'groups' ? (
               <GroupsView
                 bestShots={scopedShots}
@@ -190,11 +265,26 @@ export function App() {
                 selected={current}
                 onSelect={setSelected}
                 onOpen={open}
+                selectMode={selectMode}
+                checked={checked}
+                onToggle={toggle}
+                onToggleAll={() => setChecked(new Set(photos.map((p) => p.id)))}
+                onHover={setHovered}
               />
             )}
           </>
         )}
       </main>
+      {quickPhoto && (
+        <QuickPreview
+          photo={quickPhoto}
+          revision={revision}
+          thumbVersion={thumbVersions[quickPhoto.id] ?? 0}
+          generation={project.document.generation}
+          checked={checked.has(quickPhoto.id)}
+          onClose={quick.close}
+        />
+      )}
       <PreviewDialog
         photos={photos}
         index={viewing && photos.length > 0 ? current : null}

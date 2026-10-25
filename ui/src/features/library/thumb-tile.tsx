@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarX2, LoaderCircle, MapPinOff } from 'lucide-react'
-import { memo, useState } from 'react'
+import { CalendarX2, Check, LoaderCircle, MapPinOff, ShoppingBasket } from 'lucide-react'
+import { memo, useState, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { PhotoSummary } from '@/ipc/bindings'
 import { CullBadges } from '@/features/culling/cull-badges'
@@ -14,8 +14,13 @@ type ThumbTileProps = {
   generation: number
   size: number
   selected: boolean
-  onSelect: () => void
+  /** Select mode (FR-050): a tick circle on every photo; `checked` when ticked. */
+  selectMode?: boolean
+  checked?: boolean
+  onSelect: (event: MouseEvent) => void
   onOpen: () => void
+  /** The pointer is over this photo (for Quick-preview, FR-059). */
+  onHover?: (over: boolean) => void
 }
 
 function formatCapture(capture: string): string {
@@ -29,8 +34,11 @@ export const ThumbTile = memo(function ThumbTile({
   generation,
   size,
   selected,
+  selectMode = false,
+  checked = false,
   onSelect,
   onOpen,
+  onHover,
 }: ThumbTileProps) {
   const { t } = useTranslation()
   // Stays true across T0 → T1 upgrades, so the sharper image swaps in without flashing.
@@ -41,11 +49,15 @@ export const ThumbTile = memo(function ThumbTile({
       type="button"
       data-hint={`${photo.fileName} · ${formatCapture(photo.capture)}`}
       onClick={onSelect}
-      onDoubleClick={onOpen}
+      onDoubleClick={selectMode ? undefined : onOpen}
+      onMouseEnter={() => onHover?.(true)}
+      onMouseLeave={() => onHover?.(false)}
+      aria-pressed={selectMode ? checked : undefined}
       className={cn(
         'group relative shrink-0 overflow-hidden rounded-md bg-muted outline-none',
-        // The selected photo is framed in the theme colour (teal in light, wood in dark).
-        selected && 'ring-[3px] ring-primary ring-offset-2 ring-offset-background',
+        // The selected photo is framed in the theme colour (teal in light, wood in dark);
+        // in select mode, the ticked ones are.
+        (selectMode ? checked : selected) && 'ring-[3px] ring-primary ring-offset-2 ring-offset-background',
       )}
       style={{ width: size, height: size }}
     >
@@ -71,7 +83,23 @@ export const ThumbTile = memo(function ThumbTile({
       <div className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-gradient-to-t from-black/60 to-transparent px-1.5 pt-4 pb-1 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
         <span className="truncate">{formatCapture(photo.capture)}</span>
       </div>
+      {selectMode && (
+        <span
+          className={cn(
+            'absolute right-1.5 bottom-1.5 flex size-5 items-center justify-center rounded-full border-2 shadow',
+            checked ? 'border-primary bg-primary text-primary-foreground' : 'border-white bg-black/30',
+          )}
+          aria-hidden
+        >
+          {checked && <Check className="size-3" strokeWidth={3} />}
+        </span>
+      )}
       <div className="absolute top-1 right-1 flex gap-0.5">
+        {photo.queue === 'print' && (
+          <span className="rounded bg-primary p-0.5 text-primary-foreground" aria-label={t('library.inBasket')}>
+            <ShoppingBasket className="size-3" />
+          </span>
+        )}
         {photo.dateFromFile && (
           <span className="rounded bg-black/60 p-0.5 text-amber-300" aria-label={t('library.noCaptureDate')}>
             <CalendarX2 className="size-3" />

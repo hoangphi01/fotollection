@@ -216,7 +216,7 @@ Commands marked † are implemented.
 | `pick_and_import_folder() -> ImportSummary?` † | Opens the folder dialog **in Rust** and imports it. Drag-and-drop on the window uses the same import path | FR-001, FR-002 |
 | `remove_folder(folder) -> DocumentState` † | Takes a folder out of the library like closing a tab: rebuilds the library from the other folders and re-applies their edits; files are untouched; ids and undo history reset | FR-001 |
 | `refresh_library() -> ImportSummary` † | Scans the library's folders again and adds photos that appeared since; photos already known keep every edit, and a refresh that finds nothing marks nothing as edited | FR-001, FR-023 |
-| `list_photos(filter) -> { photos: [PhotoSummary], total, customStamps, folders: [FolderSummary] }` † | Data for the grid, sorted by capture time and filtered in Rust by flag, minimum rating and folders (empty = all). Summaries carry `rating` and `flag`; `folders` lists every source folder with its unfiltered count | FR-003, FR-022, FR-056 |
+| `list_photos(filter) -> { photos: [PhotoSummary], total, customStamps, folders: [FolderSummary], printCount, asideCount }` † | Data for the grid, sorted by capture time and filtered in Rust by flag, minimum rating, folders (empty = all) and view (`gallery` hides photos set aside; `print` and `aside` show one holding area). Summaries carry `rating`, `flag` and `queue`; `folders` lists every source folder with its unfiltered count | FR-003, FR-022, FR-050, FR-056 |
 | `get_settings()` / `set_settings(settings) -> SettingsState` † | Validated render settings plus a `revision` used to refresh previews | FR-004, FR-006 |
 | `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`), stored per machine in `settings.json` v3 | FR-020 |
 | `set_photo_override(id, override)` | Per-photo crop frame or place name | FR-005, FR-006 |
@@ -231,6 +231,7 @@ Commands marked † are implemented.
 | `set_photo_crop(id, crop?, straighten)` † | Set or reset a photo's crop (centre + zoom) and straightening angle (±15°, clamped in Rust), undoable | FR-006, FR-023 |
 | `rotate_photos(ids, clockwise)` † | Lossless quarter turns on top of the EXIF orientation, composed into one pass (`image::compose_orientation`); crops turn with the photo; undoable | FR-006 |
 | `set_photo_rating(ids, 0–5)` † / `set_photo_flag(ids, pick\|reject\|null)` † | Culling: one undoable step for 1–10,000 photos; ratings above 5 and unknown IDs are rejected | FR-022, FR-023 |
+| `set_photo_queue(ids, print\|aside\|null)` † | The print basket and set aside (`null` back to the gallery): one undoable step for 1–10,000 photos; nothing is deleted | FR-050, FR-023 |
 | `get_photo_stamp(id)` / `set_photo_stamp(id, stamp?)` † | One photo's own date stamp from the preview (FR-044); `null` follows the settings again. Undoable; the caption is validated in Rust | FR-044 |
 | `apply_stamp_to_all(id)` / `reset_photo_stamps()` † | "Apply to all" in the preview (the photo's stamp becomes the setting and no photo keeps its own) and "Reset" in the settings panel (every photo follows the settings again) | FR-044 |
 | `undo()` / `redo()` † | History (also Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z) | FR-023 |

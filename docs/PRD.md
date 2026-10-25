@@ -495,7 +495,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P2 (future).** A full-screen, keyboard-first culling mode, inspired by swipe apps (right = like, left = pass) and Lightroom's loupe. It builds the **print list** at the speed of a key press.
 
-- One photo fills the screen. **↑ adds it to the print list, ↓ leaves it out**, and both move on to the next photo at once. **← / →** step back and forward without deciding. **Space** shows the photo without overlays, and **Cmd/Ctrl+Z** undoes the last decision.
+- One photo fills the screen. **↑ adds it to the print list, ↓ leaves it out** (already in the preview since v0.5.0, as the print basket and set aside of [FR-050](#fr-050--print-basket)), and both move on to the next photo at once. **← / →** step back and forward without deciding. **Space** shows the photo without overlays, and **Cmd/Ctrl+Z** undoes the last decision.
 - Leaving a photo out only removes it from the list. The file is never deleted or moved.
 - The print list is the set that gets exported. It builds on pick/reject ([FR-022](#fr-022--culling-rate-flag-filter)): ↑ is *pick*, ↓ is *reject*, and an undecided photo stays *unflagged*. Stars keep working inside the mode (`0`–`5`).
 - A progress bar shows decided / total and the size of the print list. The mode can resume where it stopped, and best-shot suggestions ([FR-041](#fr-041--best-shot-suggestions)) can pre-sort a burst so the best frame comes first.
@@ -537,13 +537,15 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-050 — Print basket
 
-**P1 (planned, not started).** A basket of the photos that will really be printed, separate from culling. A typical batch: 100 photos are edited together, filters keep 60, but only 5–10 go to the lab.
+**P1 (in progress, v0.5.0).** Two **holding areas** for the photos of a trip, separate from culling: the **print basket**, the photos that will really be printed, and **set aside**, the photos taken out of the gallery for now. A typical batch: 100 photos are edited together, filters keep 60, only 5–10 go to the lab. Step-by-step use: [USER_GUIDE.md §1](USER_GUIDE.md#1-choosing-the-photos-to-print).
 
-- **Add to basket** like a shopping cart: after editing a photo in detail (crop, stamp, frame), the user adds it to the basket with one click or key, from the grid or the preview. The basket shows its count and can be opened as a filter.
-- The basket is independent of pick/reject ([FR-022](#fr-022--culling-rate-flag-filter)): a photo can be a pick without being printed.
-- **Export** works as configured (organised by place, by date, or all together, [FR-009](#fr-009--export-by-date), [FR-014](#fr-014--export-by-trip)). One extra option, **"Also export the print basket"**, writes the basket's photos into an additional folder (for example `Print/`), ready to hand to the lab.
-- The basket is saved in the project file (a per-photo flag, with a project schema bump) and is undoable.
-- With copies and the order summary ([FR-024](#fr-024--copies-and-order-summary)) it becomes the order: copies per photo, sizes and an estimated cost.
+- **One place per photo:** the gallery, the print basket or set aside, never two. Independent of stars and pick/reject ([FR-022](#fr-022--culling-rate-flag-filter)): a pick does not have to be printed.
+- **Set aside is never deletion:** the photo leaves *All photos* and the folders, its file is never touched, and it can be brought back at any time.
+- **The sidebar lists both areas** under *All photos*, with their counts. Opening one shows only its photos; *Export* then follows the view, so the basket exports exactly the basket and photos set aside are never exported from the gallery.
+- **In the preview:** **↑** puts the photo in the basket and moves to the next photo; **↓** sets it aside and the next photo takes its place. A *Print basket* button on the photo does the same as ↑, and a photo set aside offers *Back to the gallery*.
+- **In the gallery, select mode** (like the Select button on an iPhone): *Select* turns clicks into ticks (Shift+click for a range, Cmd/Ctrl+A for all), and a bar moves the ticked photos to the basket, aside, or back to the gallery. Ticks are temporary; the areas are saved.
+- **Saved and undoable:** stored per photo in the project (schema v6, [DATABASE.md](DATABASE.md)); every move is one undo step.
+- **Later:** "Also export the print basket" into an extra folder (for example `Print/`), and, with copies and the order summary ([FR-024](#fr-024--copies-and-order-summary)), the order itself.
 
 ### FR-051 — Landmark recognition
 
@@ -625,6 +627,14 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Write (a setting, off by default):** the same standard fields, plus Fotollection's own work (stamp, frame, print size, pick flag) in a `fotollection:` namespace that other apps ignore. Only `.xmp` files are created or updated, atomically, never a photo; an existing sidecar keeps every field Fotollection does not own (edited at the XML event level with `quick-xml`, MIT).
 - **Known limit, to confirm with Lightroom itself:** Lightroom Classic reads sidecars only for RAW files; for JPEG and PNG it reads XMP embedded in the file, which Fotollection does not modify. Lightroom's pick flag lives only in its catalog.
 - Writing next to photos changes the "nothing is written into source folders" rule, so it needs an ADR and updates to [SECURITY.md](SECURITY.md) and §9.
+
+### FR-059 — Quick-preview
+
+**P1 (in progress, v0.5.0).** In the gallery's select mode ([FR-050](#fr-050--print-basket)), **holding Space** over a photo shows it large, as it will be exported, and releasing Space closes it, like Quick Look on macOS. Step-by-step use: [USER_GUIDE.md §1.3](USER_GUIDE.md#13-quick-preview-look-without-opening-select-mode-only).
+
+- It shows the photo under the pointer, or the last one ticked; the thumbnail appears at once and the Rust render with the gallery's print size, stamp and frame replaces it (about 17 ms warm, 120 ms the first time).
+- **Nothing can be edited**: it is a look, not the preview with its inspector ([FR-007](#fr-007--live-preview)). While Space is held, ← → show the neighbours and Enter ticks or unticks the photo shown.
+- Outside select mode, Space keeps opening the normal preview.
 
 ## 7. Non-functional requirements
 

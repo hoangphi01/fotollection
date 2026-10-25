@@ -28,6 +28,26 @@ pub enum Flag {
     Reject,
 }
 
+/// The two holding areas of the print workflow (FR-050): the print basket, and photos set
+/// aside, out of the gallery but never deleted. A photo is in one of them or in neither.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum Queue {
+    Print,
+    Aside,
+}
+
+/// Which part of the library a view shows (FR-050).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum QueueView {
+    /// Every photo except those set aside; the basket's photos stay, marked.
+    #[default]
+    Gallery,
+    Print,
+    Aside,
+}
+
 /// Which flags a culling filter keeps (FR-022).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
@@ -50,6 +70,9 @@ pub struct CullFilter {
     /// ids match nothing.
     #[serde(default)]
     pub folders: Vec<u16>,
+    /// The gallery, the print basket or the photos set aside (FR-050).
+    #[serde(default)]
+    pub queue: QueueView,
 }
 
 /// One source folder in the library list (FR-056).
@@ -70,7 +93,12 @@ impl CullFilter {
             FlagFilter::Unflagged => edits.flag.is_none(),
             FlagFilter::Rejects => edits.flag == Some(Flag::Reject),
         };
-        flag_ok && edits.rating >= self.min_rating.min(5)
+        let queue_ok = match self.queue {
+            QueueView::Gallery => edits.queue != Some(Queue::Aside),
+            QueueView::Print => edits.queue == Some(Queue::Print),
+            QueueView::Aside => edits.queue == Some(Queue::Aside),
+        };
+        flag_ok && queue_ok && edits.rating >= self.min_rating.min(5)
     }
 }
 
@@ -90,6 +118,9 @@ pub struct PhotoEdits {
     /// Straightening in degrees, ±15 (FR-006).
     #[serde(default)]
     pub straighten: f32,
+    /// In the print basket or set aside (FR-050).
+    #[serde(default)]
+    pub queue: Option<Queue>,
 }
 
 impl PhotoEdits {
@@ -203,6 +234,8 @@ pub struct PhotoSummary {
     pub flag: Option<Flag>,
     /// The user's quarter turns clockwise (FR-006); the grid turns the thumbnail to match.
     pub rotation: u8,
+    /// In the print basket or set aside (FR-050).
+    pub queue: Option<Queue>,
 }
 
 #[derive(Default)]
@@ -476,6 +509,7 @@ impl Library {
             rating: record.edits.rating,
             flag: record.edits.flag,
             rotation: record.edits.rotation % 4,
+            queue: record.edits.queue,
         })
     }
 
@@ -490,6 +524,15 @@ impl Library {
                 && filter.matches(&self.edits(id))
         });
         ids
+    }
+
+    /// Photos in the print basket and set aside (FR-050), for the sidebar.
+    pub fn queue_counts(&self) -> (u32, u32) {
+        self.edits.values().fold((0, 0), |(p, a), e| match e.queue {
+            Some(Queue::Print) => (p + 1, a),
+            Some(Queue::Aside) => (p, a + 1),
+            None => (p, a),
+        })
     }
 
     /// The source folder of a photo (FR-056).
@@ -657,7 +700,7 @@ mod tests {
         let only = |flag, min_rating| CullFilter {
             flag,
             min_rating,
-            folders: Vec::new(),
+            ..CullFilter::default()
         };
 
         assert!(
@@ -740,5 +783,46 @@ mod tests {
         let old: CullFilter = serde_json::from_str(r#"{"flag":"all","minRating":0}"#)
             .unwrap_or_else(|e| panic!("{e}"));
         assert_eq!(old.folders, Vec::<u16>::new());
+    }
+
+    #[test]
+    fn fr_050_the_basket_and_set_aside_photos_have_their_own_views() {
+        let mut lib = Library::new();
+        let f = lib.add_folder(Path::new("/trip"));
+        let ids: Vec<PhotoId> = (1..=4)
+            .filter_map(|i| {
+                lib.push(
+                    f,
+                    &file(&format!("/trip/{i}.jpg"), i),
+                    &meta_at(u32::try_from(i).unwrap_or(1)),
+                )
+            })
+            .collect();
+        let queued = |q| PhotoEdits {
+            queue: Some(q),
+            ..PhotoEdits::default()
+        };
+        lib.set_edits(ids[0], queued(Queue::Print));
+        lib.set_edits(ids[1], queued(Queue::Aside));
+        let view = |queue| CullFilter {
+            queue,
+            ..CullFilter::default()
+        };
+        // The gallery hides set-aside photos but keeps the basket's.
+        assert_eq!(
+            lib.filtered_ids(&view(QueueView::Gallery)),
+            [ids[0], ids[2], ids[3]]
+        );
+        assert_eq!(lib.filtered_ids(&view(QueueView::Print)), [ids[0]]);
+        assert_eq!(lib.filtered_ids(&view(QueueView::Aside)), [ids[1]]);
+        assert_eq!(lib.queue_counts(), (1, 1));
+        assert_eq!(
+            lib.summary(ids[0]).and_then(|s| s.queue),
+            Some(Queue::Print)
+        );
+        // Older callers without `queue` see the gallery.
+        let old: CullFilter = serde_json::from_str(r#"{"flag":"all","minRating":0}"#)
+            .unwrap_or_else(|e| panic!("{e}"));
+        assert_eq!(old.queue, QueueView::Gallery);
     }
 }

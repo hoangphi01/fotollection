@@ -6,6 +6,9 @@ import type { PhotoSummary } from '@/ipc/bindings'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { ThumbTile } from './thumb-tile'
 
+/** Ids of the photos ticked in select mode (FR-050). */
+type Checked = ReadonlySet<number>
+
 const TILE = 168
 const GAP = 8
 
@@ -16,6 +19,14 @@ type LibraryGridProps = {
   selected: number
   onSelect: (index: number) => void
   onOpen: (index: number) => void
+  /** Select mode (FR-050): clicks tick photos instead of selecting one. */
+  selectMode: boolean
+  checked: Checked
+  /** Ticks or unticks a photo; with `range`, every photo from the last one ticked. */
+  onToggle: (index: number, range: boolean) => void
+  onToggleAll: () => void
+  /** The photo under the pointer, for Quick-preview (FR-059). */
+  onHover: (index: number | null) => void
 }
 
 /** Virtualized thumbnail grid (FR-003, NFR-001): only visible rows are in the DOM. */
@@ -26,6 +37,11 @@ export function LibraryGrid({
   selected,
   onSelect,
   onOpen,
+  selectMode,
+  checked,
+  onToggle,
+  onToggleAll,
+  onHover,
 }: LibraryGridProps) {
   const { t } = useTranslation()
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -66,6 +82,15 @@ export function LibraryGrid({
     if (delta !== undefined) {
       event.preventDefault()
       onSelect(Math.min(photos.length - 1, Math.max(0, selected + delta)))
+    } else if (selectMode && event.key === 'Enter') {
+      event.preventDefault()
+      onToggle(selected, false)
+    } else if (selectMode && event.key.toLowerCase() === 'a' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      onToggleAll()
+    } else if (selectMode && event.key === ' ') {
+      // Held Space is Quick-preview in select mode (FR-059), handled app-wide.
+      event.preventDefault()
     } else if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       onOpen(selected)
@@ -99,8 +124,14 @@ export function LibraryGrid({
                   generation={generation}
                   size={TILE}
                   selected={index === selected}
-                  onSelect={() => onSelect(index)}
+                  selectMode={selectMode}
+                  checked={checked.has(photo.id)}
+                  onSelect={(e) => {
+                    onSelect(index)
+                    if (selectMode) onToggle(index, e.shiftKey)
+                  }}
                   onOpen={() => onOpen(index)}
+                  onHover={(over) => onHover(over ? index : null)}
                 />
               )
             })}

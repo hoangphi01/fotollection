@@ -160,6 +160,11 @@ export const commands = {
 	setPhotoRating: (ids: PhotoId[], rating: number) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_rating", { ids, rating })),
 	/**  Flags photos as pick or reject, or clears the flag (FR-022). */
 	setPhotoFlag: (ids: PhotoId[], flag: "pick" | "reject" | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_flag", { ids, flag })),
+	/**
+	 *  Puts photos in the print basket, sets them aside, or (`None`) back into the gallery
+	 *  (FR-050). One undoable step; set-aside photos are never deleted.
+	 */
+	setPhotoQueue: (ids: PhotoId[], queue: "print" | "aside" | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_queue", { ids, queue })),
 	/**  Turns photos a quarter turn (FR-006), lossless; their crops turn with them. Undoable. */
 	rotatePhotos: (ids: PhotoId[], clockwise: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("rotate_photos", { ids, clockwise })),
 	getPhotoStamp: (id: PhotoId) => typedError<PhotoStamp, IpcError>(__TAURI_INVOKE("get_photo_stamp", { id })),
@@ -340,6 +345,8 @@ export type CullFilter = {
 	 *  ids match nothing.
 	 */
 	folders?: number[],
+	/**  The gallery, the print basket or the photos set aside (FR-050). */
+	queue?: QueueView,
 };
 
 /**  A saved custom print size (FR-043). Stored in millimetres, short edge first. */
@@ -637,6 +644,9 @@ export type PhotoList = {
 	customStamps: number,
 	/**  Every source folder with its own count, whatever the filter (FR-056). */
 	folders: FolderSummary[],
+	/**  Photos in the print basket and set aside (FR-050). */
+	printCount: number,
+	asideCount: number,
 };
 
 /**  One photo's result inside its group. */
@@ -680,6 +690,8 @@ export type PhotoSummary = {
 	flag: Flag | null,
 	/**  The user's quarter turns clockwise (FR-006); the grid turns the thumbnail to match. */
 	rotation: number,
+	/**  In the print basket or set aside (FR-050). */
+	queue: Queue | null,
 };
 
 /**  How a place is written on a print (FR-005). */
@@ -726,6 +738,17 @@ export type PrintVerdict =
 "acceptable" | 
 /**  Under 150 DPI: pixels show. */
 "pixelated";
+
+/**
+ *  The two holding areas of the print workflow (FR-050): the print basket, and photos set
+ *  aside, out of the gallery but never deleted. A photo is in one of them or in neither.
+ */
+export type Queue = "print" | "aside";
+
+/**  Which part of the library a view shows (FR-050). */
+export type QueueView = 
+/**  Every photo except those set aside; the basket's photos stay, marked. */
+"gallery" | "print" | "aside";
 
 /**  Why the best photo won, compared with the runner-up. The UI words these (FR-020). */
 export type Reason = 

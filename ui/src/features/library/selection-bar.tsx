@@ -1,0 +1,52 @@
+// SPDX-License-Identifier: GPL-3.0-only
+import { Archive, CheckCheck, ShoppingBasket, Undo2, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { Button } from '@/components/ui/button'
+import type { Queue, QueueView } from '@/ipc/bindings'
+
+type SelectionBarProps = {
+  count: number
+  /** The view the photos are ticked in: the actions move them out of it. */
+  view: QueueView
+  onMove: (queue: Queue | null) => void
+  onSelectAll: () => void
+  onClear: () => void
+}
+
+/**
+ * Select mode's actions (FR-050), like the Select button on an iPhone: put the ticked photos
+ * in the print basket, set them aside, or bring them back to the gallery. Each action is one
+ * undoable step; nothing is ever deleted.
+ */
+export function SelectionBar({ count, view, onMove, onSelectAll, onClear }: SelectionBarProps) {
+  const { t } = useTranslation()
+  const none = count === 0
+  return (
+    <div className="flex min-h-[45px] flex-wrap items-center gap-2 border-b bg-primary/5 px-4 py-1.5 text-sm">
+      <span className="font-medium tabular-nums">{t('select.count', { count })}</span>
+      <div className="ml-auto flex flex-wrap gap-1.5">
+        {view !== 'print' && (
+          <Button size="sm" disabled={none} onClick={() => onMove('print')}>
+            <ShoppingBasket data-icon="inline-start" /> {t('select.toBasket')}
+          </Button>
+        )}
+        {view !== 'aside' && (
+          <Button size="sm" variant="outline" disabled={none} onClick={() => onMove('aside')}>
+            <Archive data-icon="inline-start" /> {t('select.toAside')}
+          </Button>
+        )}
+        {view !== 'gallery' && (
+          <Button size="sm" variant="outline" disabled={none} onClick={() => onMove(null)}>
+            <Undo2 data-icon="inline-start" /> {t('select.toGallery')}
+          </Button>
+        )}
+        <Button size="sm" variant="ghost" onClick={onSelectAll}>
+          <CheckCheck data-icon="inline-start" /> {t('select.all')}
+        </Button>
+        <Button size="sm" variant="ghost" disabled={none} onClick={onClear}>
+          <X data-icon="inline-start" /> {t('select.clear')}
+        </Button>
+      </div>
+    </div>
+  )
+}

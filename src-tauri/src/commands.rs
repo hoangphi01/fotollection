@@ -295,6 +295,9 @@ pub struct PhotoList {
     pub custom_stamps: u32,
     /// Every source folder with its own count, whatever the filter (FR-056).
     pub folders: Vec<fotollection_core::library::FolderSummary>,
+    /// Photos in the print basket and set aside (FR-050).
+    pub print_count: u32,
+    pub aside_count: u32,
 }
 
 /// The photos kept by `filter`, ordered by capture time (FR-003, FR-022).
@@ -311,6 +314,8 @@ pub fn list_photos(state: State<'_, AppState>, filter: CullFilter) -> Result<Pho
         total: u32::try_from(library.len()).unwrap_or(u32::MAX),
         custom_stamps: u32::try_from(custom_stamps).unwrap_or(u32::MAX),
         folders: library.folder_summaries(),
+        print_count: library.queue_counts().0,
+        aside_count: library.queue_counts().1,
     })
 }
 
@@ -1389,6 +1394,19 @@ pub fn set_photo_flag(
     flag: Option<Flag>,
 ) -> Result<HistoryState, IpcError> {
     edit_photos(&app, &state, &ids, |_, e| e.flag = flag)
+}
+
+/// Puts photos in the print basket, sets them aside, or (`None`) back into the gallery
+/// (FR-050). One undoable step; set-aside photos are never deleted.
+#[tauri::command]
+#[specta::specta]
+pub fn set_photo_queue(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    ids: Vec<PhotoId>,
+    queue: Option<fotollection_core::library::Queue>,
+) -> Result<HistoryState, IpcError> {
+    edit_photos(&app, &state, &ids, |_, e| e.queue = queue)
 }
 
 #[tauri::command]

@@ -6,8 +6,10 @@ import {
   FileUp,
   Folder,
   FolderOpen,
+  Archive,
   Images,
   ListChecks,
+  ShoppingBasket,
   RefreshCw,
   Save,
   TriangleAlert,
@@ -19,7 +21,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import type { FolderSummary, ImportSummary } from '@/ipc/bindings'
+import type { FolderSummary, ImportSummary, QueueView } from '@/ipc/bindings'
 import { ThemeSwitch } from '@/features/appearance/theme-switch'
 import { ProjectName } from '@/features/project/project-name'
 import type { ProjectApi } from '@/features/project/use-project'
@@ -32,6 +34,10 @@ type LibrarySidebarProps = {
   /** Folders shown, like browser tabs; empty means all photos. */
   selected: number[]
   onSelect: (folders: number[]) => void
+  /** The gallery, the print basket or the photos set aside (FR-050). */
+  queue: QueueView
+  onQueue: (queue: QueueView) => void
+  queueCounts: { print: number; aside: number }
   lastImport: ImportSummary | null
   onOpenFolder: () => void
   /** Scan the folders again for new photos, keeping every edit. */
@@ -46,6 +52,9 @@ export function LibrarySidebar({
   folders,
   selected,
   onSelect,
+  queue,
+  onQueue,
+  queueCounts,
   lastImport,
   onOpenFolder,
   onRefresh,
@@ -64,6 +73,7 @@ export function LibrarySidebar({
     const next = selected.includes(id) ? selected.filter((f) => f !== id) : [...selected, id]
     onSelect(next)
   }
+  const inGallery = queue === 'gallery'
   const rowClass = (active: boolean) =>
     cn(
       'flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-sidebar-accent',
@@ -189,18 +199,40 @@ export function LibrarySidebar({
             <li>
               <button
                 type="button"
-                className={rowClass(selected.length === 0)}
-                aria-pressed={selected.length === 0}
+                className={rowClass(inGallery && selected.length === 0)}
+                aria-pressed={inGallery && selected.length === 0}
                 data-hint={t('library.allHint')}
                 onClick={() => onSelect([])}
               >
-                <Images className={cn('size-4 shrink-0', selected.length === 0 ? 'text-primary' : 'text-muted-foreground')} />
+                <Images className={cn('size-4 shrink-0', inGallery && selected.length === 0 ? 'text-primary' : 'text-muted-foreground')} />
                 <span className="truncate">{t('library.allPhotos')}</span>
-                <span className="ml-auto text-xs text-muted-foreground tabular-nums">{total}</span>
+                <span className="ml-auto text-xs text-muted-foreground tabular-nums">{total - queueCounts.aside}</span>
               </button>
             </li>
+            {/* The two holding areas of the print workflow (FR-050): what will be printed, and
+                what was set aside, out of the gallery but never deleted. */}
+            {(
+              [
+                ['print', ShoppingBasket, 'library.basket', 'library.basketHint', queueCounts.print],
+                ['aside', Archive, 'library.aside', 'library.asideHint', queueCounts.aside],
+              ] as const
+            ).map(([view, Icon, label, hint, count]) => (
+              <li key={view}>
+                <button
+                  type="button"
+                  className={rowClass(queue === view)}
+                  aria-pressed={queue === view}
+                  data-hint={t(hint)}
+                  onClick={() => onQueue(view)}
+                >
+                  <Icon className={cn('size-4 shrink-0', queue === view ? 'text-primary' : 'text-muted-foreground')} />
+                  <span className="truncate">{t(label)}</span>
+                  <span className="ml-auto text-xs text-muted-foreground tabular-nums">{count}</span>
+                </button>
+              </li>
+            ))}
             {folders.map(({ id, name, count }) => {
-              const active = selected.includes(id)
+              const active = inGallery && selected.includes(id)
               return (
                 <li key={id} className="group relative flex items-center">
                   <button

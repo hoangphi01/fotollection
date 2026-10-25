@@ -8,7 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: a print basket and a "set aside" area: ↑ and ↓ in the preview, or Select in the gallery
+- New: Quick-preview: hold Space over a photo in select mode
+- New: the export card estimates the size before you export
+- Prints keep the camera details (never GPS); the website moves to fotollection.org
+
 ### Added
+
+- **Print basket and set aside (FR-050):** two holding areas in the sidebar, under *All photos*. In the preview, **↑** puts a photo in the print basket and **↓** sets it aside (out of the gallery, never deleted), both moving on to the next photo; a *Print basket* button does the same. In the gallery, **Select** ticks photos (Shift+click for a range, Cmd/Ctrl+A for all) and a bar sends them to the basket, aside, or back. Open either area to look again; export follows the view. Saved in the project (schema v6) and undoable. See the [user guide](docs/USER_GUIDE.md).
+- **Quick-preview (FR-059):** in select mode, hold **Space** over a photo to see it as it will print; release to close. ← → show the neighbours and Enter ticks the photo shown.
 
 - **Export (FR-053):** the export card estimates how much lighter the files will be before you export, for example "Estimated: 17.0 MB → ≈ 1.4 MB (92 % lighter)", updated as the settings change, and reports the real figure when the export finishes.
 

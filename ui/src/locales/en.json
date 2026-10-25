@@ -36,7 +36,12 @@
     "folderHint": "Show only this folder",
     "allHint": "Every photo from every folder",
     "select": "Select folders",
-    "selectHint": "Select several folders to show or export together (or Ctrl/⌘-click)"
+    "selectHint": "Select several folders to show or export together (or Ctrl/⌘-click)",
+    "basket": "Print basket",
+    "basketHint": "The photos you will print: ↑ in the preview, or Select in the gallery",
+    "aside": "Set aside",
+    "asideHint": "Photos you put aside with ↓: out of the gallery, never deleted; open them to decide again",
+    "inBasket": "In the print basket"
   },
   "task": {
     "import": "Reading photos",
@@ -314,7 +319,9 @@
     "leaveCrop": "cancel crop",
     "zoom": "zoom",
     "zoomReset": "Back to fit (⌘0)",
-    "dragToFrame": "drag to reframe"
+    "dragToFrame": "drag to reframe",
+    "upBasket": "print basket",
+    "downAside": "set aside"
   },
   "errors": {
     "internal": "Something went wrong",
@@ -435,5 +442,25 @@
   "estimate": {
     "smaller": "Estimated: {{from}} → {{to}} ({{percent}} % lighter)",
     "larger": "Estimated: {{from}} → {{to}}; print files keep every detail, so they can be larger"
+  },
+  "select": {
+    "start": "Select",
+    "done": "Done",
+    "hint": "Tick photos for the print basket or to set aside; hold Space over a photo to look at it",
+    "count_one": "{{count}} photo selected",
+    "count_other": "{{count}} photos selected",
+    "toBasket": "Print basket",
+    "toAside": "Set aside",
+    "toGallery": "Back to the gallery",
+    "all": "Select all",
+    "clear": "Clear",
+    "checked": "Selected",
+    "notChecked": "Not selected",
+    "quickHint": "Enter to select · ← → next · release Space to close"
+  },
+  "preview": {
+    "toBasket": "Print basket",
+    "inBasket": "In the basket",
+    "basketHint": "Add to or remove from the print basket (↑)"
   }
 }

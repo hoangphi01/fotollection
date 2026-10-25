@@ -5,6 +5,8 @@ import {
   ChevronLeft,
   Download,
   ChevronRight,
+  ShoppingBasket,
+  Undo2,
   Crop,
   ImageIcon,
   LoaderCircle,
@@ -36,6 +38,7 @@ import {
   commands,
   type CropGeometry,
   type CullFilter,
+  type Queue,
   type PhotoDetails,
   type PhotoSummary,
   type RenderSettings,
@@ -197,7 +200,20 @@ export function PreviewDialog({
     if (handleCullKey(event, photo?.id)) event.preventDefault()
     else if (event.key === 'ArrowRight') go(1)
     else if (event.key === 'ArrowLeft') go(-1)
-    else if (event.key.toLowerCase() === 'c' && geometry && !geometry.cropDisabled) setCropping(true)
+    else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      event.preventDefault()
+      sendTo(event.key === 'ArrowUp' ? 'print' : 'aside')
+    } else if (event.key.toLowerCase() === 'c' && geometry && !geometry.cropDisabled) setCropping(true)
+  }
+
+  // ↑ to the print basket, ↓ set aside (FR-050). A photo that stays in this view (the basket
+  // in the gallery) moves on to the next one; one that leaves it is replaced by the next.
+  const view = filter.queue ?? 'gallery'
+  const sendTo = (queue: Queue | null) => {
+    if (!photo) return
+    void commands.setPhotoQueue([photo.id], queue)
+    const stays = queue === null ? view === 'gallery' : view === 'gallery' ? queue === 'print' : view === queue
+    if (stays) go(1)
   }
 
   return (
@@ -301,6 +317,23 @@ export function PreviewDialog({
                     <TooltipContent>{t(label)}</TooltipContent>
                   </Tooltip>
                 ))}
+                {/* The print basket (FR-050): the same as ↑; a photo set aside can come back. */}
+                {photo && (
+                  <Button
+                    variant={photo.queue === 'print' ? 'default' : 'secondary'}
+                    size="sm"
+                    aria-pressed={photo.queue === 'print'}
+                    data-hint={t('preview.basketHint')}
+                    onClick={() => photo && void commands.setPhotoQueue([photo.id], photo.queue === 'print' ? null : 'print')}
+                  >
+                    <ShoppingBasket data-icon="inline-start" /> {t(photo.queue === 'print' ? 'preview.inBasket' : 'preview.toBasket')}
+                  </Button>
+                )}
+                {photo?.queue === 'aside' && (
+                  <Button variant="secondary" size="sm" onClick={() => photo && void commands.setPhotoQueue([photo.id], null)}>
+                    <Undo2 data-icon="inline-start" /> {t('select.toGallery')}
+                  </Button>
+                )}
                 {/* Like what you see? Jump to the export card for this photo (FR-055). */}
                 <Button
                   variant="secondary"
@@ -479,6 +512,7 @@ export function PreviewDialog({
               <>
                 <kbd className="font-mono">{MOD} + −</kbd> {t('viewer.zoom')} ·{' '}
                 {canDrag && <>{t('viewer.dragToFrame')} · </>}
+                <kbd className="font-mono">↑</kbd> {t('viewer.upBasket')} · <kbd className="font-mono">↓</kbd> {t('viewer.downAside')} ·{' '}
               </>
             )}
             <kbd className="font-mono">Esc</kbd> {t(cropping ? 'viewer.leaveCrop' : 'viewer.close')}

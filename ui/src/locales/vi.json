@@ -33,7 +33,12 @@
     "folderHint": "Chỉ hiện thư mục này",
     "allHint": "Toàn bộ ảnh của mọi thư mục",
     "select": "Chọn thư mục",
-    "selectHint": "Chọn nhiều thư mục để xem hoặc xuất ảnh cùng lúc (hoặc Ctrl/⌘-click)"
+    "selectHint": "Chọn nhiều thư mục để xem hoặc xuất ảnh cùng lúc (hoặc Ctrl/⌘-click)",
+    "basket": "Giỏ in",
+    "basketHint": "Những ảnh bạn sẽ in: bấm ↑ trong màn xem trước, hoặc dùng Chọn trong gallery",
+    "aside": "Để riêng",
+    "asideHint": "Ảnh bạn gạt ra bằng ↓: không hiện trong gallery, không bao giờ bị xoá; mở ra để quyết định lại",
+    "inBasket": "Trong giỏ in"
   },
   "task": {
     "import": "Đang đọc ảnh",
@@ -300,7 +305,9 @@
     "leaveCrop": "thoát cắt ảnh",
     "zoom": "phóng to",
     "zoomReset": "Về vừa khung (⌘0)",
-    "dragToFrame": "kéo để căn ảnh"
+    "dragToFrame": "kéo để căn ảnh",
+    "upBasket": "giỏ in",
+    "downAside": "để riêng"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",
@@ -419,5 +426,24 @@
   "estimate": {
     "smaller": "Ước tính: {{from}} → {{to}} (nhẹ hơn {{percent}} %)",
     "larger": "Ước tính: {{from}} → {{to}}; ảnh in giữ trọn chi tiết nên có thể nặng hơn ảnh gốc"
+  },
+  "select": {
+    "start": "Chọn",
+    "done": "Xong",
+    "hint": "Tích ảnh để cho vào giỏ in hoặc để riêng; giữ Space trên một ảnh để xem nhanh",
+    "count_other": "Đã chọn {{count}} ảnh",
+    "toBasket": "Giỏ in",
+    "toAside": "Để riêng",
+    "toGallery": "Trả về gallery",
+    "all": "Chọn tất cả",
+    "clear": "Bỏ chọn",
+    "checked": "Đã chọn",
+    "notChecked": "Chưa chọn",
+    "quickHint": "Enter để chọn · ← → ảnh khác · thả Space để đóng"
+  },
+  "preview": {
+    "toBasket": "Giỏ in",
+    "inBasket": "Đã trong giỏ",
+    "basketHint": "Cho vào hoặc bỏ khỏi giỏ in (↑)"
   }
 }

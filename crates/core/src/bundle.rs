@@ -588,6 +588,7 @@ mod tests {
                 stamp: None,
                 rotation: None,
                 straighten: None,
+                queue: None,
             }],
             document: None,
         }

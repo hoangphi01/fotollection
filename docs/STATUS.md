@@ -64,11 +64,12 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 
 1. **v0.4.0 "Sharing and folders": published 2026-10-25.** Still to check by hand in the installed app: export one photo from the preview, export two folders together and separately, trackpad zoom, drag to reframe, Fit on a landscape and a portrait photo.
-2. **v0.5.0 "Photo viewer and RAW" (FR-054, FR-057, FR-016):** measure cold start (NFR-010) and a new "open to first photo" budget first; full-resolution zoom past 1,600 px, measured before it ships; "Open with" on macOS and Windows; RAW through the OS codecs, so the viewer opens every photo. ADRs for both.
-3. **v0.6.0 "Places and Lightroom" (FR-032, FR-005, FR-030, FR-031, FR-058):** XMP sidecars read on import and written as an opt-in; search and set a place for one or many photos, rename a place everywhere, camera clock offset, borrow GPS from phone photos with confidence levels.
-4. **v0.7.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
-5. **Later (Phase 2):** Photo Style and film looks (FR-039, FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
-6. **Alongside, never blocking a release:** the append-only edit journal (NFR-013; not urgent, as a full save stays at 70 ms for 70,000 edited photos); the Windows title bar on a real machine (FR-052); SignPath signing for Windows; a Ko-fi link once the account exists; NFR-008 by publishing one `.dmg` per architecture; FR-022 filters by date, camera, GPS and DPI.
+2. **v0.5.0 "Print basket" (FR-050, FR-059):** the print basket and set aside, select mode and Quick-preview are on `main`, with the size estimate and EXIF for prints; check by hand ([USER_GUIDE.md §1](USER_GUIDE.md#1-choosing-the-photos-to-print)), then release.
+3. **v0.6.0 "Photo viewer and RAW" (FR-054, FR-057, FR-016):** measure cold start (NFR-010) and a new "open to first photo" budget first; full-resolution zoom past 1,600 px, measured before it ships; "Open with" on macOS and Windows; RAW through the OS codecs, so the viewer opens every photo. ADRs for both.
+4. **v0.7.0 "Places and Lightroom" (FR-032, FR-005, FR-030, FR-031, FR-058):** XMP sidecars read on import and written as an opt-in; search and set a place for one or many photos, rename a place everywhere, camera clock offset, borrow GPS from phone photos with confidence levels.
+5. **v0.8.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
+6. **Later (Phase 2):** Photo Style and film looks (FR-039, FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
+7. **Alongside, never blocking a release:** the append-only edit journal (NFR-013; not urgent, as a full save stays at 70 ms for 70,000 edited photos); the Windows title bar on a real machine (FR-052); SignPath signing for Windows; a Ko-fi link once the account exists; NFR-008 by publishing one `.dmg` per architecture; FR-022 filters by date, camera, GPS and DPI.
 
 ## Phase 0 — Foundation
 
@@ -140,7 +141,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-046 | Swipe culling | 2 | Not Started | Future: full-screen ↑ add to print list / ↓ leave out, Lightroom-loupe style; changes the main workflow, so it is planned separately |
 | FR-047 | Film looks | 2 | Not Started | Future: Fujifilm-style film simulations (slide, chrome, negative, cinema, mono) on the FR-039 engine; own names and LUTs, no trademarks or copied LUT files |
 | FR-048 | Normal and Professional modes | 1 | Not Started | **Next.** Normal = instant mode: open → keep/drop → export at 300 DPI for the print size, q90; Professional = everything so far. Shared library and project |
-| FR-050 | Print basket | 1 | Not Started | Planned: add to basket after detailed editing; normal export plus an optional extra folder with the basket |
+| FR-050 | Print basket | 1 | In Progress | ✓ Print basket and set aside (`Queue`, project v6, `set_photo_queue`, `fr_050_*`), sidebar rows with counts, ↑ ↓ and the basket button in the preview, select mode with Shift-range and the action bar; export follows the view. Later: "also export the basket" folder, copies |
 | FR-052 | Appearance: theme, title bar, hints | 1 | In Progress | ✓ System/Light/Dark switch (settings v6, `fr_052_*`), ✓ Windows title bar drawn by the app (decorations off, window permissions), ✓ `HintLayer` replaces native tooltips, ✓ one accent per mode (teal light, wood dark). Left: check the title bar on a real Windows machine |
 | FR-051 | Landmark recognition | 2 | Not Started | Future: offline landmark model as an optional pack; licence research done (Google on-device classifiers, Apache-2.0); needs an ADR and a size/speed spike |
 | FR-053 | Export for social media | 1 | Done | Print / Share target (settings v8), Original, Facebook 2048, Instagram 1080 (3:4 cap), custom 640–6000 px (`fr_053_*`), sRGB via `qcms`, unsharp 0.2 after downscale, q88 (Original q80), EXIF allowlist with `Software = Fotollection`, no GPS, `Share/` folder. Measured 2026-10-25 (RESULT §10): SSIM ≈ 0.98, Original ΔE 0.96 at 46 % of the file, after Facebook P3 colour 99.6 % vs 86 % |
@@ -149,6 +150,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-056 | Folders as tabs | 1 | Done | All photos row, click = one folder, select mode / Ctrl-⌘-click = several (`CullFilter.folders`), counts from `list_photos.folders`, groups scoped, export together or separately (`start_export(…, separate)`, `fr_056_*`) |
 | FR-057 | Zoom in the preview | 1 | In Progress | ✓ Pinch / Ctrl-⌘ + − 0 about the pointer, 100–800 %, drag and two-finger pan, double-click 200 %, level badge resets (`use-zoom.ts`). Left: full-resolution render past 1,600 px, with a benchmark |
 | FR-058 | Lightroom compatibility through XMP | 2 | Not Started | Planned: read XMP sidecars on import (stars, reject, crop); opt-in writing of `.xmp` next to photos, never touching them; Lightroom reads sidecars only for RAW |
+| FR-059 | Quick-preview | 1 | In Progress | ✓ Hold Space in select mode over a photo: thumbnail at once, then the render with the gallery's settings; ← → and Enter while held (`use-quick-preview.ts`). Left: check by hand in the app |
 | FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print; every editing session adds a journal entry (instax-style) |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
 

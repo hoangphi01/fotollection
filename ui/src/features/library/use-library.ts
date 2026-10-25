@@ -16,6 +16,7 @@ export function useLibrary(filter: CullFilter) {
   const [total, setTotal] = useState(0)
   const [customStamps, setCustomStamps] = useState(0)
   const [folders, setFolders] = useState<FolderSummary[]>([])
+  const [queueCounts, setQueueCounts] = useState({ print: 0, aside: 0 })
   const [thumbVersions, setThumbVersions] = useState<Record<number, number>>({})
   const [lastImport, setLastImport] = useState<ImportSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -28,6 +29,7 @@ export function useLibrary(filter: CullFilter) {
           setTotal(result.data.total)
           setCustomStamps(result.data.customStamps)
           setFolders(result.data.folders)
+          setQueueCounts({ print: result.data.printCount ?? 0, aside: result.data.asideCount ?? 0 })
         } else setError(errorText(result.error))
       })
     void load()
@@ -63,5 +65,5 @@ export function useLibrary(filter: CullFilter) {
     if (result.status === 'error') setError(errorText(result.error))
   }, [])
 
-  return { photos, total, folders, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder }
+  return { photos, total, folders, queueCounts, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder }
 }
