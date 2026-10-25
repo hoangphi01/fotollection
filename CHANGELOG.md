@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Lines in the theme colour:** borders are a pale teal in light mode and a pale wood in dark mode; section cards have a slightly stronger 1.5 px outline.
 - **Sections as cards:** every settings section, in the settings panel and the preview, is a card with a tinted header holding its icon, title and master switch, so sections read apart at a glance.
 
 ### Fixed

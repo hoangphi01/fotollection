@@ -25,7 +25,7 @@ type SectionCardProps = {
 export function SectionCard({ icon, title, action, open = true, footer, children, className }: SectionCardProps) {
   const hasBody = children !== undefined && children !== null && children !== false
   return (
-    <section className={cn('overflow-hidden rounded-xl border bg-card text-card-foreground shadow-xs', className)}>
+    <section className={cn('overflow-hidden rounded-xl border-[1.5px] bg-card text-card-foreground shadow-xs', className)}>
       <header
         className={cn(
           'flex min-h-11 items-center gap-2 bg-muted/70 px-3 py-2 text-sm font-semibold',
