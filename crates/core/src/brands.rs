@@ -21,6 +21,8 @@ pub enum Brand {
     Leica,
     Lumix,
     Nikon,
+    /// Noritsu Koki film scanners (EZ Controller): film scans carry this make.
+    Noritsu,
     PhaseOne,
     Ricoh,
     Samsung,
@@ -85,6 +87,8 @@ impl Brand {
             Self::Ricoh
         } else if has("phase one") {
             Self::PhaseOne
+        } else if has("noritsu") {
+            Self::Noritsu
         } else {
             return None;
         })
@@ -99,6 +103,7 @@ impl Brand {
             Self::Leica => include_bytes!("../assets/brands/leica.png"),
             Self::Lumix => include_bytes!("../assets/brands/lumix.png"),
             Self::Nikon => include_bytes!("../assets/brands/nikon.png"),
+            Self::Noritsu => include_bytes!("../assets/brands/noritsu.png"),
             Self::PhaseOne => include_bytes!("../assets/brands/phaseone.png"),
             Self::Ricoh => include_bytes!("../assets/brands/ricoh.png"),
             Self::Samsung => include_bytes!("../assets/brands/samsung.png"),
@@ -108,7 +113,7 @@ impl Brand {
 
     fn classic(self) -> Classic {
         match self {
-            Self::Canon | Self::Samsung | Self::Hasselblad => Classic::WholeMark,
+            Self::Canon | Self::Samsung | Self::Hasselblad | Self::Noritsu => Classic::WholeMark,
             Self::Apple | Self::Fujifilm | Self::Lumix | Self::Sony => Classic::NeutralOnly,
             Self::Leica | Self::Nikon | Self::PhaseOne | Self::Ricoh => Classic::Keep,
         }
@@ -178,7 +183,7 @@ pub fn logo(brand: Brand, dark_frame: bool, style: LogoStyle) -> Result<Arc<Logo
 mod tests {
     use super::*;
 
-    const ALL: [Brand; 11] = [
+    const ALL: [Brand; 12] = [
         Brand::Apple,
         Brand::Canon,
         Brand::Fujifilm,
@@ -186,6 +191,7 @@ mod tests {
         Brand::Leica,
         Brand::Lumix,
         Brand::Nikon,
+        Brand::Noritsu,
         Brand::PhaseOne,
         Brand::Ricoh,
         Brand::Samsung,
@@ -206,6 +212,7 @@ mod tests {
             ("samsung", Brand::Samsung),
             ("RICOH IMAGING COMPANY, LTD.", Brand::Ricoh),
             ("Phase One", Brand::PhaseOne),
+            ("NORITSU KOKI", Brand::Noritsu),
         ] {
             assert_eq!(Brand::from_make(make), Some(brand), "{make}");
         }

@@ -19,6 +19,7 @@ logos=(
   "leica https://upload.wikimedia.org/wikipedia/commons/e/ec/Leica_Camera_logo.svg 5fcb8f72ae1640fa4475765ea16383dc8a2b0e4b4973057f88b5cdd8063e18bb 512"
   "lumix https://upload.wikimedia.org/wikipedia/commons/3/3e/Lumix_logo.svg affd3d5e35050c3a48c8060656a6f0e299349a90b25e8e8d19fd34ef1b936446 320"
   "nikon https://upload.wikimedia.org/wikipedia/commons/f/f3/Nikon_Logo.svg 449bab29e259c46b7264ed19886e5a0e2ef567250d01163c8e2cd1bbce486c53 512"
+  "noritsu https://upload.wikimedia.org/wikipedia/commons/f/fb/Noritsu_logo.svg 19a90f835d85c9b3e441eee9c34b384c0280165509e045f6ce6573279fdba13d 320"
   "phaseone https://upload.wikimedia.org/wikipedia/commons/0/0a/Phase_one_logo.svg 133d0b1459fa967a5c1c1e0212cb09f2b3826242273041da3288e14c970cbb75 320"
   "ricoh https://upload.wikimedia.org/wikipedia/commons/8/8f/Ricoh_logo_2012.svg be0ae0727d7d94dd19c583f7fef7900ea3035f18d20f85f16526b3e0d566a56a 320"
   "samsung https://upload.wikimedia.org/wikipedia/commons/b/b4/Samsung_wordmark.svg 7c1a09ef9076d86b6a0ce37b60dac50f666db4abf016f5dea7ae790b082f2575 320"

@@ -17,12 +17,13 @@ These logos are **trademarks of their owners**, listed below. Public domain stat
 | `leica` | [Leica Camera logo.svg](https://commons.wikimedia.org/wiki/File:Leica_Camera_logo.svg) | Leica Camera AG | `5fcb8f72ae1640fa…` |
 | `lumix` | [Lumix logo.svg](https://commons.wikimedia.org/wiki/File:Lumix_logo.svg) | Panasonic Holdings Corporation | `affd3d5e35050c3a…` |
 | `nikon` | [Nikon Logo.svg](https://commons.wikimedia.org/wiki/File:Nikon_Logo.svg) | Nikon Corporation | `449bab29e259c46b…` |
+| `noritsu` | [Noritsu logo.svg](https://commons.wikimedia.org/wiki/File:Noritsu_logo.svg) | Noritsu Koki Co., Ltd. | `19a90f835d85c9b3…` |
 | `phaseone` | [Phase one logo.svg](https://commons.wikimedia.org/wiki/File:Phase_one_logo.svg) | Phase One A/S | `133d0b1459fa967a…` |
 | `ricoh` | [Ricoh logo 2012.svg](https://commons.wikimedia.org/wiki/File:Ricoh_logo_2012.svg) | Ricoh Company, Ltd. | `be0ae0727d7d94dd…` |
 | `samsung` | [Samsung wordmark.svg](https://commons.wikimedia.org/wiki/File:Samsung_wordmark.svg) | Samsung Electronics Co., Ltd. | `7c1a09ef9076d86b…` |
 | `sony` | [Sony logo.svg](https://commons.wikimedia.org/wiki/File:Sony_logo.svg) | Sony Group Corporation | `f6191bc69f8df259…` |
 
-All files were checked on 2026-10-24: licence *Public domain*, restriction *trademarked* (Commons API `extmetadata`). The SVGs were scanned for scripts and external references before rendering.
+All files were checked on 2026-10-24 (Noritsu on 2026-10-25): licence *Public domain*, restriction *trademarked* (Commons API `extmetadata`). The SVGs were scanned for scripts and external references before rendering.
 
 ## Rendering
 

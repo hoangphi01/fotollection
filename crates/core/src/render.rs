@@ -9,7 +9,7 @@ use fast_image_resize::images::{Image, ImageRef};
 use fast_image_resize::{FilterType, PixelType, ResizeAlg, ResizeOptions, Resizer};
 
 use crate::fonts::LoadedFont;
-use crate::frame::{FrameLayout, FrameLogo};
+use crate::frame::{FrameLayout, FrameLogo, PlacedLine};
 use crate::image::RgbImage;
 use crate::logo::LogoImage;
 use crate::plan::{FramePlan, RenderPlan};
@@ -127,12 +127,9 @@ fn compose_frame(photo: &RgbImage, frame: &FramePlan) -> RgbImage {
     blit(&mut canvas, photo, l.photo.x, l.photo.y);
     draw_frame_logo(&mut canvas, l, frame.logo.as_deref(), frame.font.as_ref());
     for line in &l.lines {
-        let font = match &frame.font {
-            Some(user) => Some(user.font.clone()),
-            None if line.bold => SEMIBOLD.clone(),
-            None => REGULAR.clone(),
+        let Some(font) = line_font(line, frame.font.as_ref()) else {
+            continue;
         };
-        let Some(font) = font else { continue };
         let width = text_width(&font, line.font_px, &line.text, 0.0);
         let run = TextRun {
             font: &font,
@@ -159,6 +156,82 @@ fn blit(canvas: &mut RgbImage, photo: &RgbImage, x: u32, y: u32) {
         let src = row as usize * photo.width as usize * 3;
         let dst = ((y + row) as usize * canvas.width as usize + x as usize) * 3;
         canvas.data[dst..dst + width * 3].copy_from_slice(&photo.data[src..src + width * 3]);
+    }
+}
+
+fn line_font(line: &PlacedLine, user_font: Option<&LoadedFont>) -> Option<FontArc> {
+    match user_font {
+        Some(user) => Some(user.font.clone()),
+        None if line.bold => SEMIBOLD.clone(),
+        None => REGULAR.clone(),
+    }
+}
+
+/// Size of an image logo in the bar. Wordmarks sit at about the cap height of the frame
+/// text; square marks and badges get more height to read at the same weight.
+#[allow(clippy::cast_precision_loss)]
+fn image_logo_size(l: &FrameLayout, logo: &LogoImage) -> (f32, f32) {
+    let wide = logo.width as f32 > 2.5 * logo.height as f32;
+    let mut height = (l.logo_height * if wide { 0.85 } else { 1.5 })
+        .round()
+        .max(1.0);
+    let mut width = (logo.width as f32 * height / logo.height.max(1) as f32).round();
+    if width > l.logo_max_width {
+        height = (height * l.logo_max_width / width).round().max(1.0);
+        width = l.logo_max_width.round();
+    }
+    (width, height)
+}
+
+/// How far right the logo reaches, in canvas pixels (the left padding without a logo).
+fn logo_right(l: &FrameLayout, image: Option<&LogoImage>, user_font: Option<&LoadedFont>) -> f32 {
+    let width = match (&l.logo, image) {
+        (FrameLogo::Text(brand), _) => user_font
+            .map(|f| f.font.clone())
+            .or_else(|| BLACK.clone())
+            .map_or(0.0, |font| {
+                text_width(&font, l.logo_height * 1.4, brand, 0.06).min(l.logo_max_width)
+            }),
+        (FrameLogo::Image(_), Some(logo)) => image_logo_size(l, logo).0,
+        _ => 0.0,
+    };
+    l.logo_x + width
+}
+
+/// Space kept between the logo and the text, as a fraction of the bar's side padding.
+const LOGO_GAP: f32 = 0.5;
+
+/// Whether every text line ends clear of the logo (FR-040).
+pub fn frame_text_clears_logo(
+    l: &FrameLayout,
+    image: Option<&LogoImage>,
+    user_font: Option<&LoadedFont>,
+) -> bool {
+    let limit = logo_right(l, image, user_font) + l.logo_x * LOGO_GAP;
+    l.lines.iter().all(|line| {
+        line_font(line, user_font).is_none_or(|font| {
+            line.right_x - text_width(&font, line.font_px, &line.text, 0.0) >= limit
+        })
+    })
+}
+
+/// Shrinks any line that would still run into the logo (a very long lens or place name),
+/// so the text never covers it.
+pub fn shrink_frame_text_beside_logo(
+    l: &mut FrameLayout,
+    image: Option<&LogoImage>,
+    user_font: Option<&LoadedFont>,
+) {
+    let limit = logo_right(l, image, user_font) + l.logo_x * LOGO_GAP;
+    for line in &mut l.lines {
+        let Some(font) = line_font(line, user_font) else {
+            continue;
+        };
+        let room = (line.right_x - limit).max(1.0);
+        let width = text_width(&font, line.font_px, &line.text, 0.0);
+        if width > room {
+            line.font_px *= room / width;
+        }
     }
 }
 
@@ -196,18 +269,7 @@ fn draw_frame_logo(
             draw_text(canvas, &run, l.logo_x, top, l.logo_color, 1.0);
         }
         (FrameLogo::Image(_), Some(logo)) => {
-            // Wordmarks sit at about the cap height of the frame text; square marks and
-            // badges get more height to read at the same weight.
-            let wide = logo.width as f32 > 2.5 * logo.height as f32;
-            let target_h = (l.logo_height * if wide { 0.85 } else { 1.5 })
-                .round()
-                .max(1.0);
-            let mut target_w = (logo.width as f32 * target_h / logo.height as f32).round();
-            let mut target_h = target_h;
-            if target_w > l.logo_max_width {
-                target_h = (target_h * l.logo_max_width / target_w).round().max(1.0);
-                target_w = l.logo_max_width.round();
-            }
+            let (target_w, target_h) = image_logo_size(l, logo);
             let Some(scaled) = resize_rgba(logo, target_w as u32, target_h as u32) else {
                 return;
             };
@@ -418,6 +480,80 @@ mod tests {
                 }
             }
         }
+    }
+
+    fn sony_frame(lens: &str) -> FramePlan {
+        let shot = ShotInfo {
+            make: Some("SONY".into()),
+            model: Some("ILCE-6400".into()),
+            lens: Some(lens.into()),
+            focal_mm: Some(30.0),
+            f_number: Some(1.4),
+            exposure_s: Some(1.0 / 2500.0),
+            iso: Some(100),
+        };
+        let settings = FrameSettings {
+            enabled: true,
+            ..FrameSettings::default()
+        };
+        let logo = crate::brands::logo(
+            crate::brands::Brand::Sony,
+            false,
+            crate::brands::LogoStyle::Classic,
+        )
+        .ok();
+        let request = FrameRequest {
+            text: build_text(&shot, None, &settings, capture(), None),
+            settings,
+            logo,
+            font: None,
+        };
+        let render_settings = RenderSettings::default();
+        let p = plan(&PlanInput {
+            width: 4000,
+            height: 6000,
+            capture: capture(),
+            settings: &render_settings,
+            print: PrintSize::ALL[1],
+            max_long_edge: Some(1800),
+            frame: Some(&request),
+            crop: None,
+            place: None,
+            straighten: 0.0,
+        });
+        let Some(frame) = p.frame else {
+            panic!("frame expected");
+        };
+        assert!(frame_text_clears_logo(
+            &frame.layout,
+            frame.logo.as_deref(),
+            None
+        ));
+        frame
+    }
+
+    #[test]
+    fn fr_040_a_long_lens_wraps_instead_of_covering_the_logo() {
+        // A short lens stays on the exposure line.
+        let short = sony_frame("E 35mm F1.8");
+        assert!(
+            short
+                .layout
+                .lines
+                .iter()
+                .any(|l| l.text == "E 35mm F1.8  30mm  F1.4  1/2500s  ISO100")
+        );
+
+        let long = sony_frame("30mm F1.4 DC DN | Contemporary 016");
+        let texts: Vec<&str> = long.layout.lines.iter().map(|l| l.text.as_str()).collect();
+        assert!(
+            texts.contains(&"30mm F1.4 DC DN | Contemporary 016"),
+            "{texts:?}"
+        );
+        assert!(texts.contains(&"30mm  F1.4  1/2500s  ISO100"), "{texts:?}");
+
+        // Too long even on its own line: the text shrinks rather than cover the logo.
+        sony_frame(&"Contemporary ".repeat(6));
     }
 
     #[test]

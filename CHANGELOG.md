@@ -8,6 +8,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: the Noritsu logo in the info frame for film scans from Noritsu scanners
+- Fix: a long lens name no longer runs into the logo; it moves to its own line
+
+### Added
+
+- **Noritsu logo (FR-040):** the info frame shows the Noritsu logo for film scans whose EXIF make is "NORITSU KOKI" (EZ Controller), from a public-domain file on Wikimedia Commons like the other bundled logos (ADR-0020).
+
+### Fixed
+
+- **Info frame (FR-040):** a long lens name (for example `30mm F1.4 DC DN | Contemporary 016`) no longer runs into the camera logo. The lens moves to its own line above the exposure settings, and a line that is still too long is set smaller.
+
 ## [0.3.1] - 2026-10-25
 
 ### Highlights

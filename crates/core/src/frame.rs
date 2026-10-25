@@ -273,6 +273,28 @@ pub struct FrameText {
     pub logo: FrameLogo,
     /// Right-aligned lines; the first one is the headline.
     pub lines: Vec<String>,
+    /// Where a line may wrap when it would run into the logo: the line, and the byte
+    /// offset that ends the lens (a long lens name then sits on a line of its own).
+    pub wrap: Option<(usize, usize)>,
+}
+
+impl FrameText {
+    /// The text with the lens on its own line, when there is a place to wrap.
+    pub fn wrapped(&self) -> Option<Self> {
+        let (index, at) = self.wrap?;
+        let line = self.lines.get(index)?;
+        let (lens, rest) = (line.get(..at)?, line.get(at..)?.trim_start());
+        if rest.is_empty() {
+            return None;
+        }
+        let mut lines = self.lines.clone();
+        lines.splice(index..=index, [lens.to_owned(), rest.to_owned()]);
+        Some(Self {
+            logo: self.logo.clone(),
+            lines,
+            wrap: None,
+        })
+    }
 }
 
 /// Builds the frame text from EXIF, the camera profile overrides and the field switches.
@@ -295,9 +317,11 @@ pub fn build_text(
     }
 
     let mut exposure = Vec::new();
+    let mut lens_len = 0;
     if f.lens
         && let Some(lens) = p.lens.clone().or_else(|| shot.lens.clone())
     {
+        lens_len = lens.len();
         exposure.push(lens);
     }
     if f.focal
@@ -320,7 +344,11 @@ pub fn build_text(
     {
         exposure.push(format!("ISO{iso}"));
     }
+    let mut wrap = None;
     if !exposure.is_empty() {
+        if lens_len > 0 && exposure.len() > 1 {
+            wrap = Some((lines.len(), lens_len));
+        }
         lines.push(exposure.join("  "));
     }
 
@@ -359,7 +387,7 @@ pub fn build_text(
     } else {
         FrameLogo::None
     };
-    FrameText { logo, lines }
+    FrameText { logo, lines, wrap }
 }
 
 /// An axis-aligned rectangle in canvas pixels.

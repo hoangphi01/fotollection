@@ -342,15 +342,18 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
         .max_long_edge
         .map_or(width.max(height), |m| m.min(width.max(height)));
     let (cw, ch) = frame::canvas_size(width, height, print, long);
-    let layout = frame::layout(
-        cw,
-        ch,
-        width,
-        height,
-        &request.settings,
-        &request.text,
-        print,
-    );
+    let lay = |text: &frame::FrameText| {
+        frame::layout(cw, ch, width, height, &request.settings, text, print)
+    };
+    let (logo, font) = (request.logo.as_deref(), request.font.as_ref());
+    let mut layout = lay(&request.text);
+    // A long lens name that would run into the logo goes on a line of its own.
+    if !crate::render::frame_text_clears_logo(&layout, logo, font)
+        && let Some(wrapped) = request.text.wrapped()
+    {
+        layout = lay(&wrapped);
+    }
+    crate::render::shrink_frame_text_beside_logo(&mut layout, logo, font);
     let photo = layout.photo;
     let crop = match request.settings.fit {
         FrameFit::Crop => crop_at(input, u64::from(photo.width), u64::from(photo.height)),
