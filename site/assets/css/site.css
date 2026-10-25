@@ -226,6 +226,14 @@ p { margin: 0; }
 /* Print shops: the built-in sizes as chips, cm. */
 .kiosk-grid { display: grid; grid-template-columns: 1fr; gap: 28px; }
 .sizes { margin-top: 26px; }
+/* The print shops' logos, on light tiles so they read in both themes (trademarks: site/README.md). */
+.shop-logos { list-style: none; margin: 18px 0 4px; padding: 0; display: flex; gap: 8px; max-width: 520px; }
+.shop-logos li { flex: 1 1 0; min-width: 0; display: flex; align-items: center; justify-content: center; height: 56px; padding: 0 12px; border-radius: 12px; background: #fff; border: 1px solid var(--line); }
+/* Heights balance the marks' weight: dm is nearly square, Rossmann very wide. */
+.shop-logos img { width: auto; height: auto; max-width: 100%; max-height: var(--logo-h, 28px); }
+.shop-logos .dm { --logo-h: 36px; }
+.shop-logos .rossmann { --logo-h: 20px; }
+.shop-logos .cewe { --logo-h: 32px; }
 .sizes-label { margin: 16px 0 8px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .chips li { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-variant-numeric: tabular-nums; }

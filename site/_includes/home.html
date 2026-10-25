@@ -105,6 +105,11 @@
   <div class="wrap kiosk-grid">
     <div>
       <h2>{{ t.kiosk_title }}</h2>
+      <ul class="shop-logos" aria-label="dm, Rossmann, CEWE">
+        <li><img class="dm" src="{{ '/assets/logos/dm.svg' | relative_url }}" alt="dm-drogerie markt" width="52" height="36" /></li>
+        <li><img class="rossmann" src="{{ '/assets/logos/rossmann.svg' | relative_url }}" alt="Rossmann" width="143" height="20" /></li>
+        <li><img class="cewe" src="{{ '/assets/logos/cewe.svg' | relative_url }}" alt="CEWE" width="133" height="32" /></li>
+      </ul>
       <p class="lead">{{ t.kiosk_lead }}</p>
       <div class="sizes">
         <p class="sizes-label">{{ t.kiosk_standard }}</p>
