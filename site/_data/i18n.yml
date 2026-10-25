@@ -160,6 +160,7 @@ en:
   checksums: Every release lists SHA-256 checksums next to the downloads.
   updates: There is no auto-update, so the app never goes online. New versions are announced here and on GitHub.
   footer_tagline: Photos ready to print, fully offline.
+  footer_made: Made by a user, for users. Only someone who looks through their own photos every day knows what an ordinary person needs from a photo viewer.
   footer_license: GPL-3.0 licence
   footer_changelog: What's new
   footer_source: Source code
@@ -329,6 +330,7 @@ vi:
   checksums: Mỗi bản phát hành có mã SHA-256 bên cạnh file tải về.
   updates: App không tự cập nhật, nên không bao giờ tự lên mạng. Phiên bản mới được thông báo ở đây và trên GitHub.
   footer_tagline: Ảnh sẵn sàng để in, hoàn toàn offline.
+  footer_made: Làm bởi người dùng, cho người dùng. Chỉ người ngày nào cũng xem ảnh của chính mình mới biết người dùng bình thường cần gì từ một trình xem ảnh.
   footer_license: Giấy phép GPL-3.0
   footer_changelog: Có gì mới
   footer_source: Mã nguồn
