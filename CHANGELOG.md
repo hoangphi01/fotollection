@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Website:** a coffee button next to the GitHub star, a round Download button in the menu; "What's new" moved out of the menu (it stays in the footer).
 - **Logo size (FR-040):** a slider under the logo colours in the info frame settings scales the camera logo, from 50 % to 200 %, for every photo in the project.
 
 ## [0.2.0] - 2026-10-24

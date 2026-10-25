@@ -144,10 +144,13 @@ p { margin: 0; }
 .lang span { display: none; }
 .lang:hover { background: var(--tint); color: var(--ink); }
 
-.star { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); text-decoration: none; font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
-.star .icon { color: var(--accent); }
-.star:hover { border-color: var(--ink-2); }
-.star-label { display: none; }
+/* Round header buttons: Star, Coffee and Download share one shape. */
+.pill { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); text-decoration: none; font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+.pill:hover { border-color: var(--ink-2); }
+.pill-label { display: none; }
+.pill-primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
+.pill-primary:hover { border-color: var(--brand); filter: brightness(1.08); }
+.star .icon, .coffee .icon { color: var(--accent); }
 .star-count { padding-left: 8px; border-left: 1px solid var(--line); color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
 /* Hero */
@@ -268,7 +271,7 @@ a:focus-visible, .button:focus-visible { outline: 2px solid var(--brand); outlin
 @media (min-width: 960px) {
   :root { --gutter: 32px; }
   .nav-links { display: flex; }
-  .star-label { display: inline; }
+  .pill-label { display: inline; }
   .hero { padding: 80px 0 32px; }
   .section { padding: 96px 0; }
   .cards { grid-template-columns: repeat(3, 1fr); }
