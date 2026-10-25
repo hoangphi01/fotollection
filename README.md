@@ -35,7 +35,7 @@ Stamp the date and place on your photos, crop them to real print sizes, and get 
 ---
 
 > [!NOTE]
-> **Fotollection is in early development.** It already works end to end for **JPEG, PNG and HEIC**: import → cull with stars and flags → preview with crop, date stamp and info frame → export. Projects save as one `.fotollection` file that opens the same on another machine. Offline place names and best-shot suggestions are on the way. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Fotollection is in early development.** It already works end to end for **JPEG, PNG, HEIC and camera RAW**: import → cull with stars and flags → preview with crop, date stamp and info frame → export. Projects save as one `.fotollection` file that opens the same on another machine. Offline place names and best-shot suggestions are on the way. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
 
 <p align="center">
   <img src="docs/images/screenshot-light.png" alt="Fotollection main window (light theme)" width="49%" />
@@ -64,11 +64,13 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | 🖼️ | **Original quality**: full resolution, ICC profile preserved, lossless crop when possible | MVP |
 | 💬 | **Share online**: light sRGB JPEGs at the original size, 2048 px for Facebook, 1080 px for Instagram or your own size, with the camera details and "Fotollection" as the editing app, never GPS. Export one photo straight from the preview | MVP |
 | 📱 | **JPEG, PNG and HEIC** (iPhone) input | MVP |
+| 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, through the system's own codecs; thumbnails from the preview inside each file | 3 |
+| 🖱️ | **Open with Fotollection** from Finder or Explorer: the photo opens at once and its folder becomes a tab; never made the default viewer for you | 2 |
 | 🔒 | **GPS stripped on export** by default. No account, no cloud, no telemetry | MVP |
 | 🌐 | **English and Vietnamese** interface | MVP |
 | 📦 | **Project files like `.docx`**: save, open on another machine with the same fonts, logos and settings, relink moved folders | MVP |
 | 🧳 | **Trip grouping**, face-aware smart crop, duplicate detection | 2 |
-| 🎞️ | RAW input, photo-book preview, QR codes on the back of prints | 3 |
+| 🎞️ | Photo-book preview, QR codes on the back of prints | 3 |
 
 Full specification: [docs/PRD.md](docs/PRD.md).
 
@@ -215,6 +217,7 @@ Get the latest version from the [website](https://fotollection.org/) or the [Rel
 | **Display** | 1280 × 800 | 1920 × 1080 or a Retina display | The toolbar adapts to narrow windows |
 | **Internet** | Not needed | — | Everything runs offline: faces, places and previews included. Nothing is uploaded |
 | **HEIC (iPhone photos)** | macOS: built in | — | Windows: install **HEIF Image Extensions** and **HEVC Video Extensions** from the Microsoft Store ([ADR-0017](docs/adr/0017-heic-through-os-codecs.md)) |
+| **Camera RAW** | macOS: built in | — | Windows: install the free **Raw Image Extension** from the Microsoft Store ([ADR-0023](docs/adr/0023-raw-through-os-codecs.md)) |
 
 To build from source you also need about 10 GB free for Rust build files (a debug and a release build; `scripts/clean.sh` reclaims them), Rust (installed by `rustup`, version pinned in `rust-toolchain.toml`), Node.js 22 or later, and Xcode Command Line Tools (macOS) or the MSVC Build Tools (Windows). The full list is in [docs/DEVELOPMENT.md §1.3](docs/DEVELOPMENT.md#13-prerequisites).
 
@@ -233,7 +236,7 @@ Every tool version is pinned: `rust-toolchain.toml`, `.node-version`, `Cargo.loc
 
 | Layer | Technology |
 |-------|------------|
-| Core (Rust) | Pure-Rust codecs: zune-jpeg, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md)); HEIC through the OS (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md)); fast_image_resize, ab_glyph, rayon; GeoNames for offline places ([ADR-0003](docs/adr/0003-offline-geocoding-geonames.md)). Planned: lcms2 for colour |
+| Core (Rust) | Pure-Rust codecs: zune-jpeg, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md)); HEIC and camera RAW through the OS (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md), [ADR-0023](docs/adr/0023-raw-through-os-codecs.md)); fast_image_resize, ab_glyph, rayon; GeoNames for offline places ([ADR-0003](docs/adr/0003-offline-geocoding-geonames.md)). Planned: lcms2 for colour |
 | Shell | [Tauri 2](https://v2.tauri.app/): the system webview, no bundled Chromium |
 | UI | React 19, TypeScript, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/), [Lucide](https://lucide.dev/) |
 | Typed IPC | [tauri-specta](https://github.com/specta-rs/tauri-specta): TypeScript bindings generated from Rust |

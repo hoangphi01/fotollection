@@ -35,6 +35,10 @@ en:
   f_crop_text: Every photo is cropped to the print size with live DPI. Rotate a quarter turn or straighten a horizon by up to 15°.
   f_quality_title: Original quality
   f_quality_text: Full resolution, the colour profile kept, 4:4:4 JPEG. What comes out looks like what went in.
+  f_raw_title: Camera RAW, no conversion
+  f_raw_text: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG open as they are, with their date and exposure. Thumbnails come from the preview inside each file, so RAW browses as fast as JPEG.
+  f_open_title: Open photos from anywhere
+  f_open_text: Right-click a photo in Finder or Explorer and choose Fotollection. It opens at once, its folder becomes a tab, and it never makes itself your default viewer.
   f_private_title: Private and offline
   f_private_text: No account, no upload, no telemetry. Place names come from a map bundled in the app, and GPS is removed on export.
   show_stamp: Date stamp with the town from the photo's GPS
@@ -49,7 +53,7 @@ en:
         - q: "Why not just use Lightroom?"
           a: "Lightroom is a full photo editor with a catalogue, sold by subscription, and it is very good at editing. Fotollection does one job: getting a trip ready for the print shop. It picks the best shot of each moment, crops to the exact paper size so nothing surprising is cut off, adds the date stamp or a camera frame, and exports files the kiosk accepts. It is free, needs no account, and still works when you also use Lightroom: your originals are never changed."
         - q: "My computer already has Photos, or I use IrfanView. Why another app?"
-          a: "The built-in Photos apps and IrfanView are great viewers, each on its own system. None of them knows the size of a 10 × 15 print at dm or Rossmann, warns you when a photo is too small for it, stamps the date like a film camera, or sends the best shots of five folders to one print basket. Fotollection does, and it looks and works the same on a Mac and on Windows."
+          a: "The built-in Photos apps and IrfanView are great viewers, each on its own system. None of them knows the size of a 10 × 15 print at dm or Rossmann, warns you when a photo is too small for it, stamps the date like a film camera, or sends the best shots of five folders to one print basket. Fotollection does, it looks and works the same on a Mac and on Windows, and it can be the viewer you open photos with: right-click a photo, Open with, Fotollection, camera RAW included."
     - label: "Speed and weight"
       items:
         - q: "Is it heavy? Will it run on my older laptop?"
@@ -129,6 +133,7 @@ en:
   fn_cewe: The photo services at dm and Rossmann are made by CEWE, a trademark of CEWE Stiftung & Co. KGaA. Print sizes were checked against dm's price list in October 2026; the shops may change them.
   fn_photos: "The demo photos in the screenshots are in the public domain (CC0) on Wikimedia Commons, by Dktue (18 photos), Pierre Blaché from Paris, France (3) and Kate Branch (1)."
   fn_photos_link: "Every file, its page and its checksum."
+  fn_rawsamples: "The RAW measurements use nine samples in the public domain (CC0) from raw.pixls.us, one per format; scripts/fetch-raw-samples.py downloads and checks them."
   fn_cameras: "Camera names and logos in the screenshots and in the app's info frame are trademarks of their owners, used only to show which camera took a photo: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) and Sony (Sony Group Corporation)."
   fn_others: Apple and macOS are trademarks of Apple Inc.; Windows of Microsoft Corporation; Facebook and Instagram of Meta Platforms, Inc.; GitHub of GitHub, Inc.; Google Analytics of Google LLC; Lightroom of Adobe Inc.; IrfanView of Irfan Škiljan; VietQR of NAPAS; Wikimedia Commons of the Wikimedia Foundation.
   fn_brand: "The Fotollection name and logo identify the official app, made by @hoangphi01. Official downloads come only from fotollection.org and the project's GitHub releases. The GPL-3.0 licence lets anyone share or sell copies, changed or not, as long as they keep this licence and offer the source code; a changed or resold copy must not use the Fotollection name or logo in a way that suggests it is the official app."
@@ -164,7 +169,7 @@ en:
   perf_kicker: "Measured, not promised"
   perf_lead: "Every number on this page comes from real photos on an ordinary laptop (Apple M3, 16 GB), and the scripts that produced them are in the repository, so anyone can run them again. Below each chart is what it means for your prints, and at the end, the words behind the numbers."
   perf_speed_title: "Speed: a thousand photos in a blink"
-  perf_speed_text: "Opening a folder reads each photo's EXIF and its small embedded thumbnail, not the whole image: 1,000 photos take 0.12 seconds, eight times under the budget we set before writing the code. Changing a setting re-renders the preview in 17 ms, faster than a screen refreshes twice. Export runs at 18 photos per second at full 16 MP quality. Native Rust also beats a web browser doing the same job: the same speed for export, a faster preview, and a quarter less memory."
+  perf_speed_text: "Opening a folder reads each photo's EXIF and its small embedded thumbnail, not the whole image: 1,000 photos take 0.12 seconds, eight times under the budget we set before writing the code. Changing a setting re-renders the preview in 17 ms, faster than a screen refreshes twice. Export runs at 18 photos per second at full 16 MP quality. Native Rust also beats a web browser doing the same job: the same speed for export, a faster preview, and a quarter less memory. Camera RAW works the same way: thumbnails come from the preview stored in each RAW file in 9 to 80 ms, and only the print preview develops the full photo, in about a second."
   perf_memory_title: "Memory: 5,035 photos, and it stays flat"
   perf_memory_text: "A trip can mean thousands of photos. Fotollection keeps only a few bytes per photo in memory, writes thumbnails to a disk cache and works on at most six full-size images at a time. With 53 times more photos, peak memory grows by 0.1 GB: 1.35 GB for 95 photos, 1.45 GB for 5,035, well under the 2 GB ceiling."
   perf_print_title: "Print quality: the print looks like the photo"
@@ -258,6 +263,10 @@ vi:
   f_crop_text: Mỗi ảnh được cắt đúng khổ in, hiện DPI ngay khi kéo. Xoay ¼ vòng hoặc cân lại đường chân trời tới 15°.
   f_quality_title: Giữ nguyên chất lượng gốc
   f_quality_text: Đủ độ phân giải, giữ hồ sơ màu, JPEG 4:4:4. Ảnh in ra giống ảnh bạn đã chụp.
+  f_raw_title: Ảnh RAW, không cần chuyển đổi
+  f_raw_text: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG mở được nguyên dạng, đủ ngày chụp và thông số. Ảnh thu nhỏ lấy từ bản xem trước có sẵn trong mỗi tệp, nên duyệt RAW nhanh như JPEG.
+  f_open_title: Mở ảnh từ bất cứ đâu
+  f_open_text: Bấm chuột phải vào một ảnh trong Finder hoặc Explorer và chọn Fotollection. Ảnh mở ngay, thư mục của ảnh thành một tab, và ứng dụng không bao giờ tự làm trình xem ảnh mặc định.
   f_private_title: Riêng tư, không cần internet
   f_private_text: Không tài khoản, không tải lên, không theo dõi. Tên địa điểm lấy từ bản đồ có sẵn trong ứng dụng, GPS được xóa khi xuất.
   show_stamp: Dấu ngày kèm tên nơi chụp từ GPS của ảnh
@@ -272,7 +281,7 @@ vi:
         - q: "Sao không dùng luôn Lightroom?"
           a: "Lightroom là phần mềm chỉnh ảnh đầy đủ, có thư viện riêng, bán theo gói thuê bao, và chỉnh ảnh rất giỏi. Fotollection chỉ làm một việc: chuẩn bị ảnh của một chuyến đi để mang đi in. Ứng dụng chọn ra tấm đẹp nhất của mỗi khoảnh khắc, cắt đúng khổ giấy để không bị xén mép bất ngờ, in ngày chụp hoặc khung thông tin máy ảnh, rồi xuất tệp mà máy in ở cửa hàng nhận được. Ứng dụng miễn phí, không cần tài khoản, và dùng song song với Lightroom vẫn được: ảnh gốc không bao giờ bị thay đổi."
         - q: "Máy tôi đã có sẵn Ảnh (Photos), hoặc tôi dùng IrfanView. Sao phải thêm ứng dụng?"
-          a: "Ứng dụng Ảnh có sẵn và IrfanView đều là trình xem ảnh tốt, mỗi cái trên một hệ điều hành. Không cái nào biết khổ ảnh 10 × 15 ở dm hay Rossmann, báo khi ảnh quá nhỏ để in khổ đó, in ngày chụp như máy phim, hay gom ảnh đẹp nhất của năm thư mục vào một giỏ in. Fotollection làm được, và dùng giống hệt nhau trên Mac lẫn Windows."
+          a: "Ứng dụng Ảnh có sẵn và IrfanView đều là trình xem ảnh tốt, mỗi cái trên một hệ điều hành. Không cái nào biết khổ ảnh 10 × 15 ở dm hay Rossmann, báo khi ảnh quá nhỏ để in khổ đó, in ngày chụp như máy phim, hay gom ảnh đẹp nhất của năm thư mục vào một giỏ in. Fotollection làm được, dùng giống hệt nhau trên Mac lẫn Windows, và còn có thể là trình xem ảnh của bạn: bấm chuột phải vào ảnh, chọn Mở bằng, Fotollection, kể cả ảnh RAW."
     - label: "Tốc độ và độ nhẹ"
       items:
         - q: "Ứng dụng có nặng không? Máy cũ có chạy được không?"
@@ -352,6 +361,7 @@ vi:
   fn_cewe: Dịch vụ in ảnh của dm và Rossmann do CEWE thực hiện; CEWE là thương hiệu của CEWE Stiftung & Co. KGaA. Khổ in được đối chiếu với bảng giá của dm vào tháng 10/2026; cửa hàng có thể thay đổi.
   fn_photos: "Ảnh demo trong các ảnh chụp màn hình thuộc phạm vi công cộng (CC0) trên Wikimedia Commons, của Dktue (18 ảnh), Pierre Blaché from Paris, France (3 ảnh) và Kate Branch (1 ảnh)."
   fn_photos_link: "Danh sách từng tệp, trang gốc và mã kiểm tra."
+  fn_rawsamples: "Các số đo RAW dùng chín tệp mẫu thuộc phạm vi công cộng (CC0) từ raw.pixls.us, mỗi định dạng một tệp; scripts/fetch-raw-samples.py tải về và kiểm tra chúng."
   fn_cameras: "Tên và logo máy ảnh trong ảnh chụp màn hình và trong khung thông tin của ứng dụng là thương hiệu của chủ sở hữu, chỉ dùng để cho biết ảnh được chụp bằng máy nào: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) và Sony (Sony Group Corporation)."
   fn_others: Apple và macOS là thương hiệu của Apple Inc.; Windows của Microsoft Corporation; Facebook và Instagram của Meta Platforms, Inc.; GitHub của GitHub, Inc.; Google Analytics của Google LLC; Lightroom của Adobe Inc.; IrfanView của Irfan Škiljan; VietQR của NAPAS; Wikimedia Commons của Wikimedia Foundation.
   fn_brand: "Tên và logo Fotollection dùng để nhận biết ứng dụng chính thức do @hoangphi01 làm. Bản tải chính thức chỉ có ở fotollection.org và trang phát hành GitHub của dự án. Giấy phép GPL-3.0 cho phép bất kỳ ai chia sẻ hay bán bản sao, có sửa hay không, miễn là giữ nguyên giấy phép này và cung cấp mã nguồn; bản đã sửa hoặc bán lại không được dùng tên hay logo Fotollection theo cách khiến người khác nghĩ đó là ứng dụng chính thức."
@@ -387,7 +397,7 @@ vi:
   perf_kicker: "Đo thật, không hứa suông"
   perf_lead: "Mọi con số trên trang này đều đo trên ảnh thật, bằng một chiếc máy tính xách tay bình thường (Apple M3, 16 GB). Chương trình đo nằm ngay trong kho mã nguồn, ai cũng có thể chạy lại. Dưới mỗi biểu đồ là ý nghĩa của nó với ảnh in của bạn, và cuối trang là giải thích cho các thuật ngữ đứng sau con số."
   perf_speed_title: "Tốc độ: một nghìn ảnh trong chớp mắt"
-  perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong tệp, chứ không đọc cả ảnh: 1.000 ảnh mất 0,12 giây, nhanh gấp tám lần mức ngân sách đặt ra trước khi viết mã nguồn. Đổi một thiết lập thì bản xem trước vẽ lại trong 17 ms, chưa bằng hai lần màn hình làm tươi. Xuất ảnh đạt 18 ảnh mỗi giây ở chất lượng đầy đủ 16 MP. Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư RAM."
+  perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong tệp, chứ không đọc cả ảnh: 1.000 ảnh mất 0,12 giây, nhanh gấp tám lần mức ngân sách đặt ra trước khi viết mã nguồn. Đổi một thiết lập thì bản xem trước vẽ lại trong 17 ms, chưa bằng hai lần màn hình làm tươi. Xuất ảnh đạt 18 ảnh mỗi giây ở chất lượng đầy đủ 16 MP. Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư RAM. Ảnh RAW cũng vậy: ảnh thu nhỏ lấy từ bản xem trước lưu sẵn trong mỗi tệp RAW, mất 9 đến 80 ms, và chỉ bản xem trước để in mới giải mã đầy đủ ảnh, mất khoảng một giây."
   perf_memory_title: "RAM: 5.035 ảnh vẫn không tăng"
   perf_memory_text: "Một chuyến đi có thể có hàng nghìn ảnh. Fotollection chỉ giữ vài byte cho mỗi ảnh trong RAM, ghi ảnh thu nhỏ ra ổ đĩa và xử lý tối đa sáu ảnh cỡ lớn cùng lúc. Với số ảnh gấp 53 lần, RAM dùng nhiều nhất chỉ tăng 0,1 GB: 1,35 GB với 95 ảnh, 1,45 GB với 5.035 ảnh, dưới xa mức trần 2 GB."
   perf_print_title: "Chất lượng in: ảnh in giống ảnh gốc"
