@@ -711,7 +711,7 @@ In Normal mode ([FR-048](#fr-048--normal-and-professional-modes)), export of 16�
 
 ### NFR-016 — Open to first photo
 
-Opening a photo from Finder or Explorer ("Open with", [FR-054](#fr-054--open-photos-with-fotollection)) shows it in the preview in **under 1 s** on REF-MAC, after the first launch. Estimated from its parts before FR-054 exists: the page loads in 0.31–0.40 s ([NFR-010](#nfr-010--cold-start)) and a first preview takes 105–154 ms for 16–32 MP ([RESULT.md §11](RESULT.md#11-preview-and-zoom-cost-v060)), about 0.5 s; measured end to end when FR-054 ships.
+Opening a photo from Finder or Explorer ("Open with", [FR-054](#fr-054--open-photos-with-fotollection)) shows it in the preview in **under 1 s** on REF-MAC, after the first launch. Measured end to end on 2026-10-25 (`open -a` on the release bundle): 0.70 s for a JPEG whose folder is already a tab; 1.25 s when the folder is new, because it is imported before the photo shows (to improve); a RAW takes 1.4–2.5 s, its develop included ([NFR-017](#nfr-017--camera-raw-speed)).
 
 ### NFR-017 — Camera RAW speed
 

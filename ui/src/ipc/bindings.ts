@@ -17,6 +17,11 @@ export const commands = {
 	id: PhotoId,
 	folder: number,
 } | null>("take_photo_request"),
+	/**
+	 *  Whether the OS handed over a project the UI has not opened yet: a cold launch can deliver it
+	 *  before the page listens for `MenuAction`, so the UI asks once start-up is over.
+	 */
+	documentRequested: () => __TAURI_INVOKE<boolean>("document_requested"),
 	/**  Supported print sizes for the settings panel (FR-006). */
 	listPrintSizes: () => __TAURI_INVOKE<PrintSize[]>("list_print_sizes"),
 	/**  Opens a folder dialog and imports the chosen folder. `None` if the user cancelled. */

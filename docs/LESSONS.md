@@ -13,6 +13,14 @@
 
 ## 2026-10-25
 
+### macOS hands over a file before the app exists (FR-054)
+
+- **Seen:** opening a photo with Fotollection while it was closed started nothing: no window, no crash report. Run from the terminal, the bundle worked.
+- **Why:** on a cold launch from Finder, macOS sends `RunEvent::Opened` before `setup` has called `manage(AppState)`. Routing the file called `app.state()`, which panics before `manage`, and the release build (`panic = "abort"`) died silently. Double-clicking a closed project hit the same path ever since FR-023. A second gap: the project request was announced only by `MenuAction`, which can fire before the page listens.
+- **Found by:** `open --stdout … --stderr … -a Fotollection.app photo`, which shows the panic that the GUI launch hides.
+- **Fix:** `open_with::route` queues paths while `try_state::<AppState>()` is `None` and setup routes them once start-up is over; the UI asks `document_requested` / `take_photo_request` after `StartupFinished` instead of relying only on events.
+- **Rule:** an OS event handler never assumes the app state exists (`try_state`), and every OS hand-over is kept in Rust until the UI takes it. Test cold launches through `open -a`, not only with the app running.
+
 ### EXIF's Make is a company, not a brand (FR-040)
 
 - **Seen:** the info frame said "Shot on NIKON CORPORATION NIKON D750" for the Nikon RAW sample.

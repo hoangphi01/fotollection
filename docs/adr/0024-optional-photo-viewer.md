@@ -18,7 +18,7 @@ People open photos from Finder and Explorer. [FR-054](../PRD.md#fr-054--open-pho
 - **The photo's folder becomes a tab.** The opened photo's folder is imported **without its subfolders** (a photo in Downloads or on the Desktop must not walk everything below it), unless the photo is already in the library, and the preview opens on it; ← → browse its folder. Its edits, basket and export work as for any folder, and × closes the tab.
 - **One instance.** `tauri-plugin-single-instance` (MIT/Apache-2.0) hands a second launch's paths to the running app, which comes to the front.
 - **One entry point.** macOS `Opened` events, command-line paths at start-up and second launches all go through `open_with::route`: a project to the document flow, anything else to `open_photo`, which checks the file like an import (magic bytes, size, polyglot) before touching the library and waits for the last session to be restored first.
-- **No lost request.** The request is kept in Rust until the UI takes it (`take_photo_request`), on the `OpenPhoto` event and after `StartupFinished`; the UI opens the preview once that folder's photos are listed.
+- **No lost request.** On a cold launch macOS sends `Opened` before the app state exists, so `route` queues such paths and setup routes them once start-up is over. Requests are kept in Rust until the UI takes them (`take_photo_request` for a photo, `document_requested` then `open_requested_document` for a project), on their event and again after `StartupFinished`; the UI opens the preview once that folder's photos are listed.
 
 ## Consequences
 

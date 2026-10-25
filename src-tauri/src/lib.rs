@@ -28,6 +28,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::app_info,
             commands::startup_finished,
             open_with::take_photo_request,
+            document::document_requested,
             commands::list_print_sizes,
             commands::pick_and_import_folder,
             commands::refresh_library,
@@ -192,7 +193,8 @@ pub fn run() {
             std::thread::spawn(move || {
                 commands::restore_session(&handle);
                 commands::finish_startup(&handle);
-                for path in requested {
+                // Command-line paths, then those macOS handed over before setup ran.
+                for path in requested.into_iter().chain(open_with::take_early()) {
                     open_with::route(&handle, path);
                 }
             });

@@ -501,6 +501,14 @@ pub async fn open_document(app: AppHandle) -> Result<Option<DocumentState>, IpcE
     .map_err(poisoned)?
 }
 
+/// Whether the OS handed over a project the UI has not opened yet: a cold launch can deliver it
+/// before the page listens for `MenuAction`, so the UI asks once start-up is over.
+#[tauri::command]
+#[specta::specta]
+pub fn document_requested(state: State<'_, AppState>) -> bool {
+    state.requested_open.lock().is_ok_and(|slot| slot.is_some())
+}
+
 /// Opens the file the OS asked us to open (double-click, `open -a`), after the UI has
 /// dealt with unsaved changes. The path never comes from the webview.
 #[tauri::command]

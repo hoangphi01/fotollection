@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Double-clicking a Fotollection project while the app was closed could quit without opening it on macOS; the project now opens once the app is ready.
 - The info frame no longer repeats the maker: "Shot on NIKON D750", not "NIKON CORPORATION NIKON D750" (also Ricoh, Olympus and other makers that write the company name in EXIF).
 
 ## [0.6.0] - 2026-10-25

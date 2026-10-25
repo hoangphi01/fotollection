@@ -42,9 +42,27 @@ where
         .collect()
 }
 
+/// Paths handed over before the app state exists: on a cold launch from Finder, macOS sends
+/// `Opened` before `setup` has run. They are routed once start-up is over ([`take_early`]).
+static EARLY: std::sync::Mutex<Vec<PathBuf>> = std::sync::Mutex::new(Vec::new());
+
+/// The paths that arrived before the app state existed, once.
+pub fn take_early() -> Vec<PathBuf> {
+    EARLY
+        .lock()
+        .map(|mut early| std::mem::take(&mut *early))
+        .unwrap_or_default()
+}
+
 /// Sends a path the OS handed over to the right place: a project to the document flow, any
 /// other file to [`open_photo`] (which rejects what is not a photo).
 pub fn route(app: &AppHandle, path: PathBuf) {
+    if app.try_state::<AppState>().is_none() {
+        if let Ok(mut early) = EARLY.lock() {
+            early.push(path);
+        }
+        return;
+    }
     let project = path
         .extension()
         .is_some_and(|e| e.eq_ignore_ascii_case(crate::document::EXTENSION));

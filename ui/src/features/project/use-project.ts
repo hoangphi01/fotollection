@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { commands, events, type Action, type DocumentState } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { isTyping } from '@/lib/keyboard'
@@ -94,6 +94,16 @@ export function useProject() {
     const unlisten = events.menuAction.listen(({ payload }) => void actions[payload.action]())
     return () => void unlisten.then((fn) => fn())
   }, [newProject, open, save, saveAs, openRequested])
+
+  // A project handed over on a cold launch can arrive before the listener above: ask once
+  // start-up is over (FR-054, ADR-0024).
+  const openPending = useEffectEvent(() => void openRequested())
+  useEffect(() => {
+    const check = () => void commands.documentRequested().then((pending) => pending && openPending())
+    const started = events.startupFinished.listen(check)
+    check()
+    return () => void started.then((fn) => fn())
+  }, [])
 
   // Ctrl+N / Ctrl+O / Ctrl+S / Ctrl+Shift+S where there is no native menu.
   useEffect(() => {
