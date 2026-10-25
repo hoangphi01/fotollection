@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Website:** the back-to-top button works on iPhone (Safari jumped only a little).
 - **Website:** the changelog box shows its "click to scroll" hint again, and its thin scroll bar now applies in Firefox too.
 - **Hover hints** near the window's edge are no longer cut off.
 - **Info frame (FR-040):** a long lens name (for example `30mm F1.4 DC DN | Contemporary 016`) no longer runs into the camera logo. The lens moves to its own line above the exposure settings, and a line that is still too long is set smaller.

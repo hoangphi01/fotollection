@@ -104,6 +104,12 @@
       new IntersectionObserver(([entry]) => toTop.classList.toggle('shown', !entry.isIntersecting), {
         rootMargin: '600px 0px 0px 0px',
       }).observe(document.querySelector('.hero'))
+      // Safari on iPhone jumps only a little towards the empty #top anchor: scroll there directly.
+      toTop.addEventListener('click', (e) => {
+        e.preventDefault()
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        history.replaceState(null, '', location.pathname + location.search)
+      })
 
       // The changelog box lets the page scroll past it until it is clicked; then it scrolls
       // inside, outlined, until a click outside or Escape.
