@@ -71,7 +71,8 @@
     {%- endif %}
   </head>
   <body>
-    <header class="nav" id="top">
+    <span id="top"></span>
+    <header class="nav">
       <div class="wrap nav-row">
         <a class="brand" href="{% if page.lang == 'vi' %}{{ home_vi }}{% else %}{{ home_en }}{% endif %}">
           <img src="{{ '/assets/mark-56.png' | relative_url }}" width="28" height="28" alt="" />
