@@ -10,7 +10,7 @@ use std::path::Path;
 use common::{Fixture, jpeg, write};
 use fotollection_core::cancel::CancellationToken;
 use fotollection_core::codec::{JpegCodec, PureRustCodec};
-use fotollection_core::export::{ExportOptions, run_export};
+use fotollection_core::export::{ExportOptions, estimate_export, run_export};
 use fotollection_core::import::scan;
 use fotollection_core::library::{CullFilter, Flag, FlagFilter, Library, PhotoEdits, PhotoRecord};
 use fotollection_core::metadata;
@@ -162,7 +162,7 @@ fn fr_009_export_by_date_never_overwrites() {
     assert!(day1.join("IMG_1_1.jpg").exists() && day1.join("IMG_1_2.jpg").exists());
     assert!(dest.path().join("2026-07-15/IMG_2.jpg").exists());
 
-    // Output is cropped to 2:3 (10x15) and carries no EXIF/GPS (FR-010).
+    // Output is cropped to 2:3 (10x15) and carries no GPS (FR-010).
     let out = std::fs::read(day1.join("IMG_1_1.jpg")).unwrap();
     let decoded = PureRustCodec.decode(&out).unwrap().image;
     assert_eq!((decoded.width, decoded.height), (300, 200));
@@ -212,6 +212,102 @@ fn fr_056_folders_exported_separately_get_their_own_subfolder() {
     assert_eq!(summary.exported, 2);
     assert!(dest.path().join("Trip/2026-07-14/IMG_1.jpg").exists());
     assert!(dest.path().join("Home/2026-07-14/IMG_2.jpg").exists());
+}
+
+#[test]
+fn fr_053_the_estimate_is_exact_when_every_photo_is_sampled() {
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    for (i, w) in [(1, 640), (2, 480), (3, 800)] {
+        let f = Fixture {
+            width: w,
+            height: 400,
+            date: Some("2026:07:14 10:00:00"),
+            ..Fixture::default()
+        };
+        write(src.path(), &format!("IMG_{i}.jpg"), &jpeg(&f));
+    }
+    let lib = import(src.path());
+    let settings = RenderSettings {
+        export_target: fotollection_core::share::ExportTarget::Share(
+            fotollection_core::share::SharePreset::Original,
+        ),
+        ..RenderSettings::default()
+    };
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 2,
+        place_for: &|_| None,
+        frame_for: &|_| None,
+        group_for: &|_| None,
+    };
+    let all = records(&lib);
+    let estimate = estimate_export(&all, &options, &PureRustCodec, 10);
+    assert_eq!((estimate.photos, estimate.sampled), (3, 3));
+    // Nothing was written by the estimate.
+    assert_eq!(walk(dest.path()).len(), 0);
+    let summary = run_export(
+        &all,
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert!((estimate.estimated_bytes - summary.output_bytes).abs() < 1.0);
+    assert!((estimate.source_bytes - summary.source_bytes).abs() < 1.0);
+    // One photo sampled still gives a figure of the right size.
+    let rough = estimate_export(&all, &options, &PureRustCodec, 1);
+    assert_eq!(rough.sampled, 1);
+    assert!(rough.estimated_bytes > 0.0);
+}
+
+#[test]
+fn fr_010_prints_keep_the_camera_details_but_never_gps() {
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    let f = Fixture {
+        width: 300,
+        height: 200,
+        date: Some("2026:07:14 10:22:31"),
+        gps: Some((47.4979, 19.0402)),
+        lens: Some("LUMIX G 20/F1.7 II"),
+        exposure: Some((20, 1.7, (1, 250), 200)),
+        ..Fixture::default()
+    };
+    write(src.path(), "IMG_1.jpg", &jpeg(&f));
+    let lib = import(src.path());
+    let settings = RenderSettings::default();
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 1,
+        place_for: &|_| None,
+        frame_for: &|_| None,
+        group_for: &|_| None,
+    };
+    let summary = run_export(
+        &records(&lib),
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert_eq!(summary.exported, 1);
+    let out = std::fs::read(dest.path().join("2026-07-14/IMG_1.jpg")).unwrap();
+    let meta = metadata::read_bytes(&out);
+    assert_eq!(meta.gps, None, "GPS never leaves the machine");
+    assert_eq!(
+        meta.capture.map(|d| d.to_string()).as_deref(),
+        Some("2026-07-14 10:22:31")
+    );
+    assert_eq!(meta.lens.as_deref(), Some("LUMIX G 20/F1.7 II"));
+    assert_eq!(meta.iso, Some(200));
+    // Pixels are upright, and the image still decodes.
+    assert_eq!(meta.orientation, 1);
+    assert!(PureRustCodec.decode(&out).is_ok());
 }
 
 #[test]

@@ -217,7 +217,7 @@ export function SettingsPanel({
 
       <Separator />
       <div className="space-y-3 p-4">
-        <ExportSection exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} />
+        <ExportSection exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} revision={revision} />
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{t('settings.footer')}</span>
           {appInfo && <VersionHistory version={appInfo.appVersion} />}

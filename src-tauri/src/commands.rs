@@ -556,17 +556,7 @@ pub fn start_export(
         } else {
             HashMap::new()
         };
-        let records: Vec<_> = match only {
-            // One photo from the preview; an unknown id exports nothing.
-            Some(id) => library.record(id).into_iter().collect(),
-            // Exactly the photos the grid shows (FR-022).
-            None => library
-                .filtered_ids(&filter)
-                .into_iter()
-                .filter_map(|id| library.record(id))
-                .collect(),
-        };
-        (records, groups)
+        (export_records(&library, &filter, only), groups)
     };
     if records.is_empty() {
         return Err(IpcError::new(
@@ -640,6 +630,80 @@ pub fn start_export(
         let _ = ExportFinished { job_id, summary }.emit(&app);
     });
     Ok(job_id)
+}
+
+/// The photos an export covers: only the photo `only` (the preview; an unknown id exports
+/// nothing), or exactly the photos the grid shows (FR-022).
+fn export_records(
+    library: &fotollection_core::library::Library,
+    filter: &CullFilter,
+    only: Option<PhotoId>,
+) -> Vec<fotollection_core::library::PhotoRecord> {
+    match only {
+        Some(id) => library.record(id).into_iter().collect(),
+        None => library
+            .filtered_ids(filter)
+            .into_iter()
+            .filter_map(|id| library.record(id))
+            .collect(),
+    }
+}
+
+/// What the export will weigh, before it runs (FR-053): the originals' total and an estimate
+/// from a few photos encoded in memory with the current settings. Nothing is written.
+#[tauri::command]
+#[specta::specta]
+pub async fn estimate_export(
+    app: AppHandle,
+    filter: CullFilter,
+    only: Option<PhotoId>,
+) -> Result<fotollection_core::export::ExportEstimate, IpcError> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let records = {
+            let library = state
+                .library
+                .read()
+                .map_err(|e| IpcError::internal(e.to_string()))?;
+            export_records(&library, &filter, only)
+        };
+        let settings = state
+            .settings
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .0
+            .clone();
+        let frames = state
+            .frame
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .clone();
+        let format = settings.place_format;
+        let place_for = |record: &fotollection_core::library::PhotoRecord| {
+            crate::state::place_for(record, format)
+        };
+        let frame_for = |record: &fotollection_core::library::PhotoRecord| {
+            frames.request(record, place_for(record).as_deref())
+        };
+        let options = ExportOptions {
+            // Nothing is written; the folder only completes the options.
+            destination: std::path::Path::new(""),
+            settings: &settings,
+            quality: EXPORT_QUALITY,
+            max_inflight: default_inflight(),
+            place_for: &place_for,
+            frame_for: &frame_for,
+            group_for: &|_| None,
+        };
+        Ok(fotollection_core::export::estimate_export(
+            &records,
+            &options,
+            state.codec.as_ref(),
+            fotollection_core::export::ESTIMATE_SAMPLES,
+        ))
+    })
+    .await
+    .map_err(|e| IpcError::internal(e.to_string()))?
 }
 
 /// The subfolder of each photo when folders are exported separately (FR-056): the source

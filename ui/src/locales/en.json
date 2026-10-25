@@ -431,5 +431,9 @@
   "about": {
     "versions": "Versions",
     "current": "This version"
+  },
+  "estimate": {
+    "smaller": "Estimated: {{from}} → {{to}} ({{percent}} % lighter)",
+    "larger": "Estimated: {{from}} → {{to}}; print files keep every detail, so they can be larger"
   }
 }

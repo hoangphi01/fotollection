@@ -10,10 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- **Export (FR-053):** when an export finishes, its card says how much lighter the files are than the originals, for example "Reduced from 17.0 MB to 1.4 MB (92 % lighter)".
+- **Export (FR-053):** the export card estimates how much lighter the files will be before you export, for example "Estimated: 17.0 MB → ≈ 1.4 MB (92 % lighter)", updated as the settings change, and reports the real figure when the export finishes.
 
 ### Changed
 
+- **Prints keep the camera details (FR-010):** print exports now carry the camera, lens, exposure and capture date, like share exports; GPS is still always removed.
 - **Preview:** the inspector starts with the same cards, in the same order, as the settings panel: *Print / export size*, *Date stamp*, *Info frame*, then *Export*; the photo's details follow.
 - **Website:** the site moves to its own address, <https://fotollection.org/>; the old `hoangphi01.github.io/fotollection/` links redirect to it.
 

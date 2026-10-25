@@ -39,6 +39,11 @@ export const commands = {
 	 *  Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
 	 */
 	startExport: (filter: CullFilter, only: number | null, separate: boolean) => typedError<number, IpcError>(__TAURI_INVOKE("start_export", { filter, only, separate })),
+	/**
+	 *  What the export will weigh, before it runs (FR-053): the originals' total and an estimate
+	 *  from a few photos encoded in memory with the current settings. Nothing is written.
+	 */
+	estimateExport: (filter: CullFilter, only: number | null) => typedError<ExportEstimate, IpcError>(__TAURI_INVOKE("estimate_export", { filter, only })),
 	cancelJob: (jobId: number) => typedError<null, IpcError>(__TAURI_INVOKE("cancel_job", { jobId })),
 	/**  Details for the preview inspector (FR-002, FR-007, FR-026). Reads only the JPEG header. */
 	photoDetails: (id: PhotoId) => typedError<PhotoDetails, IpcError>(__TAURI_INVOKE("photo_details", { id })),
@@ -383,6 +388,19 @@ export type DpiBand =
 "fair" | 
 /**  < 150 DPI */
 "poor";
+
+/**
+ *  What an export will weigh, before it runs (FR-053): the originals' total and an estimate
+ *  of the files, from a few photos encoded in memory with the same settings.
+ */
+export type ExportEstimate = {
+	photos: number,
+	/**  Bytes as f64: TypeScript has no u64. */
+	sourceBytes: number | null,
+	estimatedBytes: number | null,
+	/**  Photos actually encoded for the estimate; when it equals `photos`, it is exact. */
+	sampled: number,
+};
 
 export type ExportFailure = {
 	id: PhotoId,

@@ -94,7 +94,7 @@ Layer 4: SAFE RENDERING (UI)
 
 **Why an allowlist:** a new EXIF injection vector in a field we never read cannot affect us.
 
-**Written metadata is an allowlist too.** Share exports ([FR-053](PRD.md#fr-053--export-for-social-media)) write EXIF with `exif_out.rs`: only make, model, lens, exposure, aperture, ISO, focal length, capture time and `Software`. Text is printable ASCII, at most 64 characters, taken from values already validated on import. There is no GPS IFD, ever; a test reads every export back to check. Print exports write no metadata.
+**Written metadata is an allowlist too.** Every export (prints and share exports, [FR-010](PRD.md#fr-010--metadata-privacy-on-export), [FR-053](PRD.md#fr-053--export-for-social-media)) writes EXIF with `exif_out.rs`: only make, model, lens, exposure, aperture, ISO, focal length, capture time and `Software`. Text is printable ASCII, at most 64 characters, taken from values already validated on import. There is no GPS IFD, ever; tests read print and share exports back to check (`fr_010_prints_keep_the_camera_details_but_never_gps`, `fr_053_*`).
 
 ### Other untrusted inputs
 

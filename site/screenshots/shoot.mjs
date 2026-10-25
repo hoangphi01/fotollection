@@ -65,6 +65,11 @@ function bridge({ fixtures, scenario, language, os }) {
     get_frame_config: () => look.get_frame_config,
     get_photo_stamp: (a) => byId(look.get_photo_stamp, a),
     history_state: () => ({ canUndo: true, canRedo: false }),
+    // The export card's size estimate (FR-053), from the demo photos' real sizes.
+    estimate_export: (a) => {
+      const photos = a?.only != null ? 1 : common.list_photos.photos.length
+      return { photos, sourceBytes: photos * 17.0e6, estimatedBytes: photos * 6.1e6, sampled: Math.min(4, photos) }
+    },
   }
   let next = 1
   window.__TAURI_EVENT_PLUGIN_INTERNALS__ = { unregisterListener() {} }

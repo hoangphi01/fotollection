@@ -11,6 +11,7 @@ import { errorText } from '@/lib/errors'
 import { formatBytes } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { ExportApi } from './use-export'
+import { useExportEstimate } from './use-export-estimate'
 
 type ExportSectionProps = {
   exporter: ExportApi
@@ -21,6 +22,8 @@ type ExportSectionProps = {
   only?: number
   /** Source folders in the export (FR-056); from two on, they can go out together or apart. */
   folderCount?: number
+  /** Settings revision, so the size estimate follows every change. */
+  revision: number
 }
 
 function folderName(path: string): string {
@@ -34,6 +37,7 @@ export function ExportSection({
   filter,
   only,
   folderCount = 1,
+  revision,
 }: ExportSectionProps) {
   const { t } = useTranslation()
   const { state, destination, chooseDestination, exportPhotos, cancel, dismiss } = exporter
@@ -41,6 +45,7 @@ export function ExportSection({
   const [separate, setSeparate] = useState(false)
   const canSplit = !single && folderCount > 1
   const running = state.kind === 'running'
+  const { estimate, stale } = useExportEstimate(filter, only ?? null, revision, !running && (single || photoCount > 0))
 
   return (
     <div className="space-y-3">
@@ -143,6 +148,16 @@ export function ExportSection({
         </span>
       </button>
 
+      {!running && estimate && estimate.photos > 0 && estimate.sourceBytes && estimate.estimatedBytes ? (
+        <SizeChange
+          from={estimate.sourceBytes}
+          to={estimate.estimatedBytes}
+          estimate={estimate.sampled !== estimate.photos}
+          before
+          stale={stale}
+        />
+      ) : null}
+
       {running ? (
         <Button variant="outline" className="w-full" onClick={() => void cancel()}>
           <X data-icon="inline-start" />
@@ -169,24 +184,47 @@ export function ExportSection({
   )
 }
 
-/** How much lighter the export is than the originals (FR-053); print files can be larger. */
-function SizeChange({ from, to }: { from: number; to: number }) {
+/**
+ * How much lighter the export is than the originals (FR-053), before it runs (`before`,
+ * an estimate unless every photo was sampled) or after; print files can be larger.
+ */
+function SizeChange({
+  from,
+  to,
+  before = false,
+  estimate = false,
+  stale = false,
+}: {
+  from: number
+  to: number
+  before?: boolean
+  estimate?: boolean
+  stale?: boolean
+}) {
   const { t } = useTranslation()
   const lighter = to < from
+  const values = {
+    from: formatBytes(from),
+    to: `${estimate ? '≈ ' : ''}${formatBytes(to)}`,
+    percent: Math.round((1 - to / from) * 100),
+  }
+  const key = before
+    ? lighter
+      ? 'estimate.smaller'
+      : 'estimate.larger'
+    : lighter
+      ? 'export.smaller'
+      : 'export.larger'
   return (
     <p
       className={cn(
-        'mt-1.5 rounded-md px-2 py-1 text-xs tabular-nums',
+        'rounded-md px-2 py-1 text-xs tabular-nums transition-opacity',
+        before ? '' : 'mt-1.5',
         lighter ? 'bg-primary/10 font-medium text-primary' : 'bg-muted text-muted-foreground',
+        stale && 'opacity-50',
       )}
     >
-      {lighter
-        ? t('export.smaller', {
-            from: formatBytes(from),
-            to: formatBytes(to),
-            percent: Math.round((1 - to / from) * 100),
-          })
-        : t('export.larger', { from: formatBytes(from), to: formatBytes(to) })}
+      {t(key, values)}
     </p>
   )
 }

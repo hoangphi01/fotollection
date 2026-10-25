@@ -102,7 +102,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-007 | Live preview | 1 | In Progress | Preview dialog with inspector (capture, camera, image, GPS, print DPI, stamp controls). Rust-rendered, warm p95 18 ms (p50 17 ms) |
 | FR-008 | Original-quality export | 1 | In Progress | Full resolution, q95 4:4:4, ICC copied. Lossless crop-only path pending |
 | FR-009 | Export by date | 1 | Done | `YYYY-MM-DD/` folders, never overwrites (`_1`, `_2`…). `fr_009_*` passes |
-| FR-010 | Metadata privacy on export | 1 | In Progress | Print exports write no EXIF; share exports write an allowlisted EXIF block (camera, lens, exposure, date, `Software`), never GPS, read back in tests (`fr_053_*`). Keep-metadata options for prints pending |
+| FR-010 | Metadata privacy on export | 1 | In Progress | Every export writes an allowlisted EXIF block (camera, lens, exposure, date, `Software`), never GPS, read back in tests (`fr_010_prints_keep_the_camera_details_but_never_gps`, `fr_053_*`). Options to keep more or less for prints pending |
 | FR-011 | Batch progress, cancel and recovery | 1 | Done | Progress events, cancel removes partials, per-photo failures. `fr_011_*` pass |
 | FR-012 | Trip auto-grouping | 2 | Not Started | |
 | FR-013 | Face-aware smart crop | 2 | Not Started | |

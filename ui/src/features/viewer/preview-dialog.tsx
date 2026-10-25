@@ -419,6 +419,7 @@ export function PreviewDialog({
                   photoCount={1}
                   filter={filter}
                   only={photo.id}
+                  revision={revision}
                 />
               </Section>
               </div>

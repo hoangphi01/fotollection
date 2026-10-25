@@ -415,5 +415,9 @@
   "about": {
     "versions": "Các phiên bản",
     "current": "Bản đang dùng"
+  },
+  "estimate": {
+    "smaller": "Ước tính: {{from}} → {{to}} (nhẹ hơn {{percent}} %)",
+    "larger": "Ước tính: {{from}} → {{to}}; ảnh in giữ trọn chi tiết nên có thể nặng hơn ảnh gốc"
   }
 }

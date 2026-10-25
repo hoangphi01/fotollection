@@ -133,6 +133,17 @@ fn export_one(
     cancel: &CancellationToken,
     reserved: &Mutex<HashSet<PathBuf>>,
 ) -> Result<u64, ExportError> {
+    let (jpeg, share) = encode_photo(record, options, codec, cancel)?;
+    write_photo(record, options, &jpeg, share, cancel, reserved)
+}
+
+/// The exported JPEG of one photo, in memory, and whether it is a share export.
+fn encode_photo(
+    record: &PhotoRecord,
+    options: &ExportOptions<'_>,
+    codec: &dyn JpegCodec,
+    cancel: &CancellationToken,
+) -> Result<(Vec<u8>, bool), ExportError> {
     if cancel.is_cancelled() {
         return Err(ExportError::Cancelled);
     }
@@ -185,8 +196,8 @@ fn export_one(
     });
     let mut image = render(&upright, &p)?;
     drop(upright);
-    let jpeg = match share {
-        Some(preset) => share_jpeg(
+    let jpeg = if let Some(preset) = share {
+        share_jpeg(
             &mut image,
             preset,
             max_long_edge.is_some(),
@@ -194,21 +205,34 @@ fn export_one(
             record,
             capture,
             codec,
-        )?,
-        // Prints carry no EXIF, so GPS never leaves the machine (FR-010).
-        None => codec.encode(
+        )?
+    } else {
+        // Prints keep the camera details from an allowlist, never GPS (FR-010).
+        let jpeg = codec.encode(
             &image,
             EncodeOptions::print(options.quality),
             decoded.icc.as_deref(),
-        )?,
+        )?;
+        with_exif(jpeg, record, capture)
     };
     drop(image);
+    Ok((jpeg, share.is_some()))
+}
 
+/// Writes one exported JPEG under the destination's dated folder; returns its size.
+fn write_photo(
+    record: &PhotoRecord,
+    options: &ExportOptions<'_>,
+    jpeg: &[u8],
+    share: bool,
+    cancel: &CancellationToken,
+    reserved: &Mutex<HashSet<PathBuf>>,
+) -> Result<u64, ExportError> {
     let base = match (options.group_for)(record) {
         Some(group) => options.destination.join(group),
         None => options.destination.to_path_buf(),
     };
-    let dir = if share.is_some() {
+    let dir = if share {
         base.join(SHARE_FOLDER).join(day_folder(record))
     } else {
         base.join(day_folder(record))
@@ -219,7 +243,7 @@ fn export_one(
         .map_or_else(|| "photo".to_owned(), |s| s.to_string_lossy().into_owned());
     let target = reserve_name(&dir, &stem, reserved);
     let tmp = dir.join(format!(".{stem}.{}.part", record.id.0));
-    std::fs::write(&tmp, &jpeg)?;
+    std::fs::write(&tmp, jpeg)?;
     if cancel.is_cancelled() {
         let _ = std::fs::remove_file(&tmp);
         return Err(ExportError::Cancelled);
@@ -250,9 +274,74 @@ fn share_jpeg(
         .then_some(icc)
         .flatten();
     let jpeg = codec.encode(image, preset.encode_options(), keep)?;
+    Ok(with_exif(jpeg, record, capture))
+}
+
+/// `jpeg` with the photo's camera details and Fotollection's name: the EXIF allowlist of
+/// `exif_out`, which has no GPS (FR-010, FR-053). Pixels are written upright, so no
+/// orientation tag is needed.
+fn with_exif(
+    jpeg: Vec<u8>,
+    record: &PhotoRecord,
+    capture: Option<chrono::NaiveDateTime>,
+) -> Vec<u8> {
     let software = format!("Fotollection {}", crate::VERSION);
     let app1 = exif_out::exif_app1(&record.shot, capture, &software);
-    Ok(exif_out::insert_app1(&jpeg, &app1).unwrap_or(jpeg))
+    exif_out::insert_app1(&jpeg, &app1).unwrap_or(jpeg)
+}
+
+/// What an export will weigh, before it runs (FR-053): the originals' total and an estimate
+/// of the files, from a few photos encoded in memory with the same settings.
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ExportEstimate {
+    pub photos: u32,
+    /// Bytes as f64: TypeScript has no u64.
+    pub source_bytes: f64,
+    pub estimated_bytes: f64,
+    /// Photos actually encoded for the estimate; when it equals `photos`, it is exact.
+    pub sampled: u32,
+}
+
+/// Photos encoded to estimate an export; a few spread over the set is close enough.
+pub const ESTIMATE_SAMPLES: usize = 4;
+
+/// Estimates [`run_export`] for `records` by encoding up to `samples` of them, spread
+/// evenly, and scaling their output-to-source ratio to the whole set. Nothing is written.
+#[allow(clippy::cast_precision_loss)]
+pub fn estimate_export(
+    records: &[PhotoRecord],
+    options: &ExportOptions<'_>,
+    codec: &dyn JpegCodec,
+    samples: usize,
+) -> ExportEstimate {
+    let total: u64 = records.iter().map(|r| r.size).sum();
+    let n = records.len();
+    let k = samples.clamp(1, n.max(1)).min(n);
+    let picks: Vec<&PhotoRecord> = (0..k).map(|i| &records[i * n / k.max(1)]).collect();
+    let cancel = CancellationToken::new();
+    let sizes: Vec<(u64, u64)> = picks
+        .par_iter()
+        .filter_map(|r| {
+            encode_photo(r, options, codec, &cancel)
+                .ok()
+                .map(|(jpeg, _)| (r.size, jpeg.len() as u64))
+        })
+        .collect();
+    let (src, out) = sizes
+        .iter()
+        .fold((0u64, 0u64), |(s, o), (a, b)| (s + a, o + b));
+    let ratio = if src == 0 {
+        0.0
+    } else {
+        out as f64 / src as f64
+    };
+    ExportEstimate {
+        photos: u32::try_from(n).unwrap_or(u32::MAX),
+        source_bytes: total as f64,
+        estimated_bytes: (total as f64 * ratio).round(),
+        sampled: u32::try_from(sizes.len()).unwrap_or(u32::MAX),
+    }
 }
 
 /// Exports `records`. `on_progress(done, total)` is called after each photo.

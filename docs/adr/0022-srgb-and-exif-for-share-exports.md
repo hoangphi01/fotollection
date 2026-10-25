@@ -26,6 +26,8 @@ Share exports ([FR-053](../PRD.md#fr-053--export-for-social-media)) go to sites 
 
 ## Consequences
 
+- **Update 2026-10-25:** print exports write the same allowlisted EXIF block (the owner wants prints to keep the camera details, GPS still removed); share exports keep theirs, which weighs 262 bytes, 0.05 % of a Facebook-size file.
+
 - One new dependency (`qcms`, MIT, no transitive C code); `cargo deny` passes.
 - The writer is about 200 lines we maintain, but it cannot leak a field we never chose to write.
 - The FR-027 option for prints can reuse `colour.rs` later.

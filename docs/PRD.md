@@ -192,7 +192,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - GPS is stripped by default.
 - Options: keep everything (minus GPS), keep the date only, or strip everything.
 - Before export, a banner warns when photos with GPS are about to be exported with GPS kept.
-- **Share exports ([FR-053](#fr-053--export-for-social-media)) write a small EXIF block from a fixed allowlist** (camera, lens, exposure, capture time and `Software = Fotollection <version>`), and **never GPS**. Print exports still carry no metadata.
+- **Every export writes a small EXIF block from a fixed allowlist** (camera, lens, exposure, capture time and `Software = Fotollection <version>`), and **never GPS**: prints and share exports alike (since 2026-10-25; prints carried no metadata before). It weighs about 0.3 KB; the camera's own maker notes and embedded thumbnail (about 18 KB) are never copied.
 
 ### FR-011 — Batch progress, cancel and recovery
 
@@ -579,7 +579,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Pipeline:** the photo's edits (crop, straightening, date stamp, info frame) as for prints, then conversion to **sRGB** ([FR-027](#fr-027--srgb-conversion-for-labs)), a light unsharp mask (0.2) after a downscale, JPEG with 4:2:0 chroma and optimized Huffman tables, at quality 88, or 80 for *Original*.
 - **Metadata:** camera, lens, exposure and capture time, and `Software = "Fotollection <version>"`, which phone galleries show as the editing app (as they do for Snapseed). **GPS is never written** ([FR-010](#fr-010--metadata-privacy-on-export)).
 - **Where:** `<destination>/Share/<YYYY-MM-DD>/`, apart from prints.
-- **How much lighter:** when an export finishes, its card says how much smaller the files are than the originals ("Reduced from 17.0 MB to 1.4 MB, 92 % lighter"); print files, which keep every detail, can be larger, and the card says so.
+- **How much lighter, before and after:** the export card estimates the size before exporting ("Estimated: 17.0 MB → ≈ 1.4 MB, 92 % lighter"), from up to four photos encoded in memory with the current settings and updated as they change, exact when every photo was sampled; when the export finishes, it reports the real figure. Print files, which keep every detail, can be larger, and the card says so.
 - **Measured, not guessed** ([RESULT.md §10](RESULT.md#10-photos-for-social-media)): against the original resized with Lanczos, SSIM ≈ 0.98 for every preset and mean ΔE2000 0.96 for *Original* (at about half the file); after a simulated Facebook recompression, closer to the photo than the usual way and 99.6 % of the colour of Display P3 photos kept (86 % the usual way). Resized photos stay at ΔE2000 1.3–1.6 because of the 4:2:0 chroma every platform recompresses to.
 
 ### FR-054 — Open photos with Fotollection

@@ -221,6 +221,7 @@ Commands marked † are implemented.
 | `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`), stored per machine in `settings.json` v3 | FR-020 |
 | `set_photo_override(id, override)` | Per-photo crop frame or place name | FR-005, FR-006 |
 | `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
+| `estimate_export(filter, only) -> ExportEstimate` † | The originals' total and the export's estimated size, from up to four photos encoded in memory with the current settings; nothing is written | FR-053 |
 | `start_export(filter, only, separate) -> JobId` † | Exports exactly the photos `filter` keeps (the set the grid shows, including its folders), or only the photo `only` (the preview), to the chosen destination, as prints or share files (`render.exportTarget`); `separate` gives each source folder its own subfolder | FR-008, FR-009, FR-010, FR-022, FR-053, FR-055, FR-056 |
 | `cancel_job(job_id)` † | Cancel a running job | FR-011 |
 | `get_frame_config()` / `set_frame_settings(settings)` † | Info frame settings plus camera profiles (with EXIF-derived defaults) | FR-040 |

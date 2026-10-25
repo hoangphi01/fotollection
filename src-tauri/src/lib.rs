@@ -32,6 +32,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::set_settings,
             commands::pick_export_folder,
             commands::start_export,
+            commands::estimate_export,
             commands::cancel_job,
             commands::photo_details,
             commands::print_advice,
