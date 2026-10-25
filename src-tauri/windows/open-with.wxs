@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<!--
+  "Open with" for photos in the MSI (FR-054, ADR-0024), the same keys as open-with.nsh.
+  Tauri's own file associations would set each extension's default value and make
+  Fotollection the default viewer; these entries only add it to each type's OpenWithProgids
+  (Windows ignores the value's data), and Windows Installer removes them on uninstall.
+  The MSI installs per machine, hence HKLM; [#Path] is the main executable in Tauri's template.
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <ComponentGroup Id="FotollectionOpenWith">
+      <Component Id="FotollectionOpenWithRegistry" Directory="INSTALLDIR" Guid="{610A18F4-E294-4DA2-AA12-10B7B89EBE5C}">
+        <RegistryKey Root="HKLM" Key="Software\Classes\Fotollection.Photo">
+          <RegistryValue Type="string" Value="Photo" KeyPath="yes" />
+          <RegistryValue Name="FriendlyTypeName" Type="string" Value="Photo" />
+          <RegistryValue Key="DefaultIcon" Type="string" Value="[#Path],0" />
+          <RegistryValue Key="shell\open\command" Type="string" Value="&quot;[#Path]&quot; &quot;%1&quot;" />
+        </RegistryKey>
+        <RegistryValue Root="HKLM" Key="Software\Classes\.jpg\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.jpeg\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.jpe\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.png\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.heic\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.heif\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.hif\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.rw2\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.cr2\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.cr3\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.nef\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.arw\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.raf\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.orf\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+        <RegistryValue Root="HKLM" Key="Software\Classes\.dng\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

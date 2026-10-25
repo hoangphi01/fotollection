@@ -151,13 +151,19 @@ pub(crate) fn progress_reporter(
 
 /// Imports folders and/or files (FR-001, FR-002). Used by the dialog and by drag-and-drop.
 pub fn import_paths(app: &AppHandle, paths: Vec<PathBuf>) -> ImportSummary {
+    import_paths_with(app, paths, true)
+}
+
+/// `import_paths`, listing a folder's subfolders only when `recursive` (FR-054 opens one
+/// photo's folder without walking everything below it).
+pub fn import_paths_with(app: &AppHandle, paths: Vec<PathBuf>, recursive: bool) -> ImportSummary {
     let state = app.state::<AppState>();
     let mut summary = ImportSummary::default();
     let mut new_ids = Vec::new();
 
     for root in paths {
         let (folder_root, scan) = if root.is_dir() {
-            (root.clone(), import::scan(&root))
+            (root.clone(), import::scan_with(&root, recursive))
         } else {
             let parent = root.parent().map(PathBuf::from).unwrap_or_default();
             let mut scan = import::ScanResult::default();

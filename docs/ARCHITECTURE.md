@@ -103,6 +103,8 @@ src-tauri/               † # app shell: commands, protocol, capabilities
   src/commands.rs        † # IPC commands (§6)
   src/document.rs        † # New / Open / Save / Save As / Relink of .fotollection documents (FR-023)
   src/menu.rs            † # native File/Edit/Window menu (macOS), rebuilt on language change
+  src/open_with.rs       † # "Open with" (FR-054, ADR-0024): one route for macOS Opened events, command-line paths and second launches; the photo's folder as a tab
+  src/timing.rs          † # start-up milestones printed only with FOTOLLECTION_TIMING (NFR-010, scripts/measure-startup.sh)
   src/i18n.rs            † # the shell's own strings: menu, window title, dialogs (FR-020)
   src/demo.rs            † # debug builds only: records IPC answers for demo photos, for the website screenshots
   capabilities/          † # Tauri 2 permission sets (see SECURITY.md)
@@ -242,6 +244,8 @@ Commands marked † are implemented.
 | `get_document() -> DocumentState` † | Current document: name, unsaved flag, library generation, folders still to relink | FR-023 |
 | `new_document()` / `open_document()` / `save_document()` / `save_document_as()` † | Project lifecycle. Open and Save As use **Rust-side** dialogs; Save writes the current document or falls back to Save As. Open validates the whole bundle before changing anything | FR-023 |
 | `open_requested_document()` † | Opens the file the OS handed over (file association), after the UI settled unsaved changes. The path is stored in Rust, never sent by the webview | FR-023 |
+| `take_photo_request() -> OpenPhoto?` † | The photo the OS asked to show ("Open with"), once: `{ id, folder }`, kept in Rust until taken, so a request made during start-up is not lost | FR-054 |
+| `startup_finished() -> bool` † | Whether the last session is back, for a page that loaded after `startup-finished`; the start-up screen waits for it | FR-060 |
 | `rename_document(name) -> DocumentState` † | Renames the project: the saved file in its folder (never over another file), or the name an untitled project will be saved under. The name is validated in Rust as a portable file name | FR-023 |
 | `relink_folder(folder_id)` † | Picks the new location of a missing folder (Rust-side dialog), re-scans it and restores its edits | FR-023 |
 | `analyze_library() -> JobId` † | Best-shot analysis of every photo on the background pool, reusing the analysis cache; cancel with `cancel_job`. A second call while one runs returns the running job | FR-041, NFR-014 |
@@ -273,6 +277,8 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 | `revision-changed` † | `{ revision, canUndo, canRedo }` after any render-affecting edit; previews refresh |
 | `document-changed` † | `{ document }` after any edit, save, open, new or relink; the window title follows (`Trip — Edited — Fotollection`) |
 | `menu-action` † | `{ action: new \| open \| save \| saveAs \| openRequested }` from the native File menu (macOS) or a file handed over by the OS; the UI runs its own flow, unsaved-changes question included |
+| `open-photo` † | `{ id, folder }`: a photo handed over by the OS is in the library; the UI takes it with `take_photo_request`, shows its folder's tab and opens the preview once that folder is listed |
+| `startup-finished` † | The last session is back (or there was none): the start-up screen fades out (FR-060) |
 | `task-progress` † | `{ task: "import" \| "thumbnails" \| "analyze", done, total }`, coalesced to ≤ 30 per second. Drives the progress bar |
 | `analysis-finished` † | `{ jobId, analyzed, failed, groups, cancelled }`. The UI refetches `list_groups` |
 | `project://saved` | `{ path, at }`, for the autosave indicator |

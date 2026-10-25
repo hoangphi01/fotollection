@@ -12,6 +12,11 @@ export const commands = {
 	appInfo: () => __TAURI_INVOKE<AppInfo>("app_info"),
 	/**  Whether start-up is over, for a UI that loaded after the `StartupFinished` event (FR-060). */
 	startupFinished: () => __TAURI_INVOKE<boolean>("startup_finished"),
+	/**  The photo the OS asked to show, once: the UI calls it on `OpenPhoto` and after start-up. */
+	takePhotoRequest: () => __TAURI_INVOKE<{
+	id: PhotoId,
+	folder: number,
+} | null>("take_photo_request"),
 	/**  Supported print sizes for the settings panel (FR-006). */
 	listPrintSizes: () => __TAURI_INVOKE<PrintSize[]>("list_print_sizes"),
 	/**  Opens a folder dialog and imports the chosen folder. `None` if the user cancelled. */
@@ -239,6 +244,7 @@ export const events = {
 	exportProgress: makeEvent<ExportProgress>("export-progress"),
 	libraryChanged: makeEvent<LibraryChanged>("library-changed"),
 	menuAction: makeEvent<MenuAction>("menu-action"),
+	openPhoto: makeEvent<OpenPhoto>("open-photo"),
 	revisionChanged: makeEvent<RevisionChanged>("revision-changed"),
 	startupFinished: makeEvent<StartupFinished>("startup-finished"),
 	taskProgress: makeEvent<TaskProgress>("task-progress"),
@@ -605,6 +611,15 @@ export type MissingFolder = {
 	/**  Where the folder was when the project was saved. */
 	path: string,
 	name: string,
+};
+
+/**
+ *  A photo to show: its id and the folder tab it belongs to. Kept until the UI takes it, so a
+ *  request that arrives before the page listens is not lost.
+ */
+export type OpenPhoto = {
+	id: PhotoId,
+	folder: number,
 };
 
 /**  Everything the preview inspector shows about one photo. */

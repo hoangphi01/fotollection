@@ -10,7 +10,7 @@ import { GroupsView } from '@/features/best-shot/groups-view'
 import { useBestShots } from '@/features/best-shot/use-best-shots'
 import { CullFilterBar } from '@/features/culling/cull-filter-bar'
 import { ALL_PHOTOS } from '@/features/culling/filter'
-import { commands, type CullFilter, type Queue } from '@/ipc/bindings'
+import { commands, type CullFilter, type OpenPhoto, type Queue } from '@/ipc/bindings'
 import { LibraryEmptyState } from '@/features/library/library-empty-state'
 import { LibraryGrid } from '@/features/library/library-grid'
 import { TaskProgressBar } from '@/features/library/task-progress-bar'
@@ -30,6 +30,7 @@ import { TitleBar } from '@/features/window/title-bar'
 import { RelinkDialog, UnsavedDialog } from '@/features/project/project-dialogs'
 import { useProject } from '@/features/project/use-project'
 import { useStartupScreen } from '@/features/startup/use-startup-screen'
+import { useOpenWith } from '@/features/open-with/use-open-with'
 
 export function App() {
   const { t } = useTranslation()
@@ -127,6 +128,20 @@ export function App() {
   const open = (index: number) => {
     setSelected(index)
     setViewing(true)
+  }
+
+  // "Open with" (FR-054): the photo's folder tab, then its preview once that folder's photos
+  // are listed (an older list would give the wrong index).
+  const [photoRequest, setPhotoRequest] = useState<OpenPhoto | null>(null)
+  useOpenWith((request) => {
+    setSelectMode(false)
+    setFilter({ ...ALL_PHOTOS, folders: [request.folder] })
+    setPhotoRequest(request)
+  })
+  if (photoRequest && photos.length > 0 && photos.every((p) => p.folderId === photoRequest.folder)) {
+    const index = photos.findIndex((p) => p.id === photoRequest.id)
+    setPhotoRequest(null)
+    if (index >= 0) open(index)
   }
 
   return (

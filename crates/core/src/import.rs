@@ -186,8 +186,15 @@ fn is_raw_extension(path: &Path) -> bool {
 
 /// Recursively scans `root`, skipping hidden files and folders and not following symlinks.
 pub fn scan(root: &Path) -> ScanResult {
+    scan_with(root, true)
+}
+
+/// Scans `root`, into its subfolders only when `recursive`: a photo opened from Downloads or
+/// the Desktop (FR-054) lists its own folder, not everything below it.
+pub fn scan_with(root: &Path, recursive: bool) -> ScanResult {
     let mut result = ScanResult::default();
     let walker = WalkDir::new(root)
+        .max_depth(if recursive { usize::MAX } else { 1 })
         .follow_links(false)
         .into_iter()
         .filter_entry(|e| e.depth() == 0 || !is_hidden(e.file_name()));
@@ -232,6 +239,17 @@ mod tests {
             sniff(b"IIU\0\x18\0\0\0"),
             Sniffed::Raw(crate::raw::RawKind::Rw2)
         );
+    }
+
+    #[test]
+    fn fr_054_a_shallow_scan_stays_in_its_folder() -> Result<(), std::io::Error> {
+        let dir = tempfile::tempdir()?;
+        std::fs::create_dir(dir.path().join("sub"))?;
+        write(dir.path(), "opened.jpg", &[0xFF, 0xD8, 0xFF, 0xE0, 0, 0]);
+        write(dir.path(), "sub/below.jpg", &[0xFF, 0xD8, 0xFF, 0xE0, 0, 0]);
+        assert_eq!(scan_with(dir.path(), false).accepted.len(), 1);
+        assert_eq!(scan(dir.path()).accepted.len(), 2);
+        Ok(())
     }
 
     #[test]

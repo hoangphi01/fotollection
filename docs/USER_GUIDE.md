@@ -76,7 +76,16 @@ In the preview, the **zoom buttons** at the bottom right of the photo show the z
 
 The preview is first shown at a light size that any computer draws quickly. When you zoom past what it holds, a small spinner appears beside the zoom level, and a moment after you stop moving the part on screen is replaced by the **full-resolution** pixels, exactly as the exported file will have them. Only the visible part is loaded, so even a 32 MP photo stays light.
 
-## 3. Camera RAW
+## 3. Opening a photo from Finder or Explorer
+
+Fotollection can be the app that opens a photo you double-click ([FR-054](PRD.md#fr-054--open-photos-with-fotollection)). It never makes itself the default: you choose it.
+
+- **Once:** right-click a photo → **Open With** → **Fotollection** (macOS), or **Open with** → **Fotollection** (Windows).
+- **Always:** on a Mac, select a photo, press Cmd+I, choose Fotollection under *Open with* and click *Change All*. On Windows, choose **Open with** → **Choose another app**, pick Fotollection and tick *Always use this app*.
+
+The photo opens in the preview straight away. Its folder becomes a tab in the sidebar, with only that folder's photos (not its subfolders), so **← →** go through the folder. Everything works as in any tab: stars, the print basket, crops, export. Click **×** on the tab when you are done; the photos stay on your disk. Opening another photo while Fotollection is running brings the window forward with that photo.
+
+## 4. Camera RAW
 
 Fotollection opens the RAW files of most cameras as they are, with no conversion to DNG: RW2 (Panasonic), CR2 and CR3 (Canon), NEF (Nikon), ARW (Sony), RAF (Fujifilm), ORF (Olympus, OM System) and DNG ([FR-016](PRD.md#fr-016--raw-input)).
 
@@ -85,7 +94,7 @@ Fotollection opens the RAW files of most cameras as they are, with no conversion
 - Colours and sharpness are the operating system's neutral development, not a RAW editor's: Fotollection prepares prints, it does not replace Lightroom.
 - **On Windows**, install Microsoft's free *Raw Image Extension* from the Microsoft Store first. Without it, RAW files are skipped and the hint says so.
 
-## 4. Keyboard shortcuts
+## 5. Keyboard shortcuts
 
 | Where | Key | Action |
 |-------|-----|--------|

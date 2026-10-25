@@ -142,6 +142,8 @@ pub struct AppState {
     pub document_lock: Mutex<()>,
     /// A `.fotollection` the OS asked us to open, waiting for the UI's go-ahead.
     pub requested_open: Mutex<Option<PathBuf>>,
+    /// A photo the OS asked to show ("Open with", FR-054), until the UI takes it.
+    pub requested_photo: Mutex<Option<crate::open_with::OpenPhoto>>,
 }
 
 /// The current document: none until the first Save As or Open.
@@ -251,6 +253,7 @@ impl AppState {
             pending: Mutex::new(None),
             document_lock: Mutex::new(()),
             requested_open: Mutex::new(None),
+            requested_photo: Mutex::new(None),
         })
     }
 

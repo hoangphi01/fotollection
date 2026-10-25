@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Open with Fotollection (FR-054):** right-click a photo in Finder or Explorer and choose Fotollection: it opens in the preview, its folder becomes a tab, and ← → go through the folder. Fotollection never makes itself your default viewer; opening another photo while it runs brings it forward with that photo.
 - **Camera RAW (FR-016):** RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG open like any photo, with their date, camera and exposure for the stamp and the info frame. Thumbnails and best-shot suggestions use the preview inside each RAW, so a folder of RAW files browses as fast as JPEG; the print preview and the export develop the full photo. On Windows, install Microsoft's free *Raw Image Extension*.
 - **Ticks follow the folder tabs (FR-056):** in select mode, photos ticked in one folder stay ticked when you switch to another folder; the selection bar counts them all and says how many are in other folders, and one click sends them all to the print basket.
 

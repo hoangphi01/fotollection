@@ -24,6 +24,8 @@ specta.workspace = true
 specta-typescript.workspace = true
 tauri = { version = "2.12", features = [] }
 tauri-plugin-dialog = "2.8"
+# FR-054: a second launch ("Open with" while running) hands its paths to this one.
+tauri-plugin-single-instance = "2"
 tauri-specta.workspace = true
 
 [lints]

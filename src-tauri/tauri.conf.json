@@ -57,6 +57,15 @@
           "conformsTo": ["public.zip-archive", "public.data"]
         }
       }
-    ]
+    ],
+    "windows": {
+      "nsis": {
+        "installerHooks": "windows/open-with.nsh"
+      },
+      "wix": {
+        "fragmentPaths": ["windows/open-with.wxs"],
+        "componentGroupRefs": ["FotollectionOpenWith"]
+      }
+    }
   }
 }

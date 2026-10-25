@@ -10,6 +10,7 @@ mod document;
 mod events;
 mod i18n;
 mod menu;
+mod open_with;
 mod protocol;
 mod state;
 mod timing;
@@ -26,6 +27,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
         .commands(collect_commands![
             commands::app_info,
             commands::startup_finished,
+            open_with::take_photo_request,
             commands::list_print_sizes,
             commands::pick_and_import_folder,
             commands::refresh_library,
@@ -85,6 +87,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             events::MenuAction,
             events::AnalysisFinished,
             events::StartupFinished,
+            open_with::OpenPhoto,
         ])
 }
 
@@ -143,6 +146,13 @@ pub fn run() {
     }
 
     let result = tauri::Builder::default()
+        // First, as the plugin asks: a second launch hands its paths to this instance (FR-054).
+        .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            open_with::focus(app);
+            for path in open_with::from_args(argv) {
+                open_with::route(app, path);
+            }
+        }))
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(builder.invoke_handler())
         .register_asynchronous_uri_scheme_protocol(protocol::SCHEME, protocol::handle)
@@ -167,9 +177,9 @@ pub fn run() {
             prepare_window(app.handle());
 
             spawn_autosave(app.handle().clone());
-            // Reopen the last session: re-scan folders and restore edits (FR-023). A
-            // project passed on the command line (Windows/Linux file association) is
-            // opened afterwards, through the UI's unsaved-changes flow.
+            // Reopen the last session: re-scan folders and restore edits (FR-023). Files
+            // passed on the command line (Windows/Linux "Open with") come afterwards: a
+            // project through the UI's unsaved-changes flow, a photo as its folder's tab.
             #[cfg(debug_assertions)]
             if let Some((folder, out)) = demo {
                 commands::finish_startup(app.handle());
@@ -178,15 +188,12 @@ pub fn run() {
                 return Ok(());
             }
             let handle = app.handle().clone();
-            let requested = std::env::args_os()
-                .skip(1)
-                .map(std::path::PathBuf::from)
-                .find(|p| p.extension().is_some_and(|e| e == document::EXTENSION) && p.is_file());
+            let requested = open_with::from_args(std::env::args_os());
             std::thread::spawn(move || {
                 commands::restore_session(&handle);
                 commands::finish_startup(&handle);
-                if let Some(path) = requested {
-                    document::request_open(&handle, path);
+                for path in requested {
+                    open_with::route(&handle, path);
                 }
             });
             // Dev-only: FOTOLLECTION_IMPORT=<folder> imports at startup, for quick iteration.
@@ -223,7 +230,7 @@ pub fn run() {
             if let tauri::RunEvent::Opened { urls } = &event {
                 for url in urls {
                     if let Ok(path) = url.to_file_path() {
-                        document::request_open(handle, path);
+                        open_with::route(handle, path);
                     }
                 }
             }

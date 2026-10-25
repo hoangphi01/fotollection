@@ -588,12 +588,13 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-054 — Open photos with Fotollection
 
-**P2.** Fotollection can replace a classic photo viewer (IrfanView, Photos): choosing it in the system's "Open with" menu for a JPEG, PNG or HEIC shows that photo straight away in the preview, and ← → browse the other photos of its folder.
+**P2 (v0.7.0, in progress).** Fotollection can replace a classic photo viewer (IrfanView, Photos): choosing it in the system's "Open with" menu for a JPEG, PNG, HEIC or camera RAW shows that photo straight away in the preview, and ← → browse the other photos of its folder ([ADR-0024](adr/0024-optional-photo-viewer.md)).
 
-- macOS declares the image types in `CFBundleDocumentTypes`; Windows registers a ProgID and "Open with" entries. Fotollection never makes itself the default viewer; the user chooses.
-- Opening is fast: only the photo's folder is listed, nothing is analysed up front. The time from opening to the first photo on screen gets its own budget (a new NFR) and a benchmark.
-- Paths come from the operating system, not the webview; they are validated like imported files ([SECURITY.md](SECURITY.md)).
-- An ADR records the viewer role and the start-up path.
+- **Never the default viewer.** macOS lists Fotollection under "Open With" (rank `Alternate`); Windows lists it under each type's `OpenWithProgids`, written by the installer and removed on uninstall. Making it the default is the user's choice in the system's settings.
+- **The photo's folder becomes a tab** in the current session, listed without its subfolders so a photo in Downloads opens fast; a photo already in the library opens in its existing tab. Basket, edits and export work as for any folder.
+- **One instance:** opening another photo while the app runs brings the running app forward with that photo.
+- Paths come from the operating system, not the webview, and are checked like imported files ([SECURITY.md](SECURITY.md)). A request that arrives during start-up waits for the last session to be restored and is never lost.
+- The time from opening to the first photo on screen has its budget, [NFR-016](#nfr-016--open-to-first-photo).
 
 ### FR-055 — Export from the preview
 
