@@ -304,7 +304,11 @@
     "level": "cân ngang 1° (⌥ 0,1°)",
     "leaveCrop": "thoát cắt ảnh",
     "zoom": "phóng to",
-    "zoomReset": "Về vừa khung (⌘0)",
+    "zoomIn": "Phóng to ({{mod}} +)",
+    "zoomOut": "Thu nhỏ ({{mod}} −)",
+    "zoomFit": "Vừa khung ({{mod}} 0)",
+    "zoomPinch": "hoặc chụm hai ngón trên trackpad, hoặc nhấp đúp vào ảnh",
+    "zoomSharpening": "Đang tải chi tiết gốc…",
     "dragToFrame": "kéo để căn ảnh",
     "upBasket": "giỏ in",
     "downAside": "để riêng"

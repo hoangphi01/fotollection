@@ -56,6 +56,10 @@ pub enum TaskKind {
     Analyze,
 }
 
+/// Start-up is over: the last session is back, or there was none (FR-060).
+#[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
+pub struct StartupFinished;
+
 /// A best-shot analysis finished (or was cancelled); the UI refetches the groups.
 #[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
 #[serde(rename_all = "camelCase")]

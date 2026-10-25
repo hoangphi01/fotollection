@@ -284,6 +284,7 @@ Pixels **never** cross IPC as JSON or base64. Thumbnails and previews are served
 - `fotothumb://localhost/thumb/{id}?v={n}`: the cached T1, else the embedded T0, else a T1 generated on the spot. `v` bumps on `thumb-ready`.
 - `fotothumb://localhost/source/{id}?rev={n}`: the upright, **uncropped**, unstamped T2 image, the crop editor's background.
 - `fotothumb://localhost/preview/{id}?rev={n}`: about 1600 px, rendered from the T2 cache with the **same** `RenderPlan` code as the export. `rev` is the settings revision.
+- `fotothumb://localhost/preview/{id}?rev={n}&region={x},{y},{w},{h}&px={n}`: one part of the **full-resolution** render, for zoom past the preview's pixels (FR-057). The region is in fractions of the photo and `px` the widest it should come back (at most 4,096); both are checked in Rust before any work. The original is decoded on the first such request into a second cache bounded at about 200 MB (`PreviewCache::full`; the photo on screen always stays), rendered with the export's plan, and only the region is encoded.
 
 The UI just sets `<img src>`. Routes are parsed strictly: anything other than `/thumb/<u32>` or `/preview/<u32>` returns 404.
 

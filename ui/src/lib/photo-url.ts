@@ -22,3 +22,16 @@ export function sourceUrl(id: number, revision: number): string {
 export function previewUrl(id: number, revision: number): string {
   return `${base}/preview/${id}?rev=${revision}`
 }
+
+/**
+ * One part of the full-resolution preview, for zoom (FR-057): `rect` in fractions of the
+ * photo, `px` the widest it should come back.
+ */
+export function regionUrl(
+  id: number,
+  revision: number,
+  rect: { x: number; y: number; w: number; h: number },
+  px: number,
+): string {
+  return `${previewUrl(id, revision)}&region=${rect.x},${rect.y},${rect.w},${rect.h}&px=${px}`
+}

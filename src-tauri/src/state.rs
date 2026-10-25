@@ -129,6 +129,8 @@ pub struct AppState {
     /// Session project (FR-023): autosaved by a background thread when dirty.
     pub project_path: PathBuf,
     pub project_dirty: AtomicBool,
+    /// The last session is back (or there was none): the start-up screen may go (FR-060).
+    pub startup_done: AtomicBool,
     /// False when the project was written by a newer app: never overwrite it.
     pub project_writable: AtomicBool,
     pub history: Mutex<History>,
@@ -242,6 +244,7 @@ impl AppState {
             store_lock: Mutex::new(()),
             project_path,
             project_dirty: AtomicBool::new(false),
+            startup_done: AtomicBool::new(false),
             project_writable: AtomicBool::new(true),
             history: Mutex::new(History::default()),
             document: Mutex::new(Document::default()),

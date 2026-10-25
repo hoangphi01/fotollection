@@ -4,6 +4,9 @@
 //!
 //! - `fotothumb://localhost/thumb/{id}`
 //! - `fotothumb://localhost/preview/{id}?rev={settings revision}`
+//! - `fotothumb://localhost/preview/{id}?rev=…&region={x},{y},{w},{h}&px={width}`: one part
+//!   of the full-resolution render, for zoom (FR-057); fractions of the photo, checked here
+//! - `fotothumb://localhost/source/{id}?rev=…`
 //!
 //! On Windows the webview addresses it as `http://fotothumb.localhost/…`.
 
@@ -11,10 +14,11 @@
 #![allow(clippy::needless_pass_by_value)]
 
 use fotollection_core::library::PhotoId;
+use fotollection_core::preview::Region;
 use tauri::http::{Request, Response, StatusCode, header};
 use tauri::{Manager, Runtime, UriSchemeContext, UriSchemeResponder};
 
-use crate::commands::{preview_bytes, source_bytes, thumbnail_bytes};
+use crate::commands::{preview_bytes, region_bytes, source_bytes, thumbnail_bytes};
 use crate::state::AppState;
 
 pub const SCHEME: &str = "fotothumb";
@@ -22,11 +26,40 @@ pub const SCHEME: &str = "fotothumb";
 enum Route {
     Thumb(PhotoId),
     Preview(PhotoId),
+    /// A full-resolution region of the preview, for zoom.
+    Region(PhotoId, Region),
     /// Upright, uncropped T2 image for the crop editor.
     Source(PhotoId),
 }
 
-fn route(path: &str) -> Option<Route> {
+/// `region=x,y,w,h&px=n` from the query: `Ok(None)` without one, `Err` when it is malformed
+/// or outside the photo (SECURITY.md §2).
+fn region(query: Option<&str>) -> Result<Option<Region>, ()> {
+    let params = || {
+        query
+            .unwrap_or_default()
+            .split('&')
+            .filter_map(|p| p.split_once('='))
+    };
+    let Some(rect) = params().find(|(k, _)| *k == "region").map(|(_, v)| v) else {
+        return Ok(None);
+    };
+    let v: Vec<f64> = rect
+        .split(',')
+        .map(str::parse)
+        .collect::<Result<_, _>>()
+        .map_err(|_| ())?;
+    let px = params()
+        .find(|(k, _)| *k == "px")
+        .and_then(|(_, v)| v.parse().ok())
+        .ok_or(())?;
+    match v.as_slice() {
+        &[x, y, w, h] => Region::new(x, y, w, h, px).map(Some).ok_or(()),
+        _ => Err(()),
+    }
+}
+
+fn route(path: &str, query: Option<&str>) -> Option<Route> {
     let mut parts = path.trim_matches('/').split('/');
     let kind = parts.next()?;
     let id = PhotoId(parts.next()?.parse().ok()?);
@@ -35,7 +68,10 @@ fn route(path: &str) -> Option<Route> {
     }
     match kind {
         "thumb" => Some(Route::Thumb(id)),
-        "preview" => Some(Route::Preview(id)),
+        "preview" => Some(match region(query).ok()? {
+            Some(region) => Route::Region(id, region),
+            None => Route::Preview(id),
+        }),
         "source" => Some(Route::Source(id)),
         _ => None,
     }
@@ -59,7 +95,7 @@ pub fn handle<R: Runtime>(
     responder: UriSchemeResponder,
 ) {
     let app = ctx.app_handle().clone();
-    let Some(route) = route(request.uri().path()) else {
+    let Some(route) = route(request.uri().path(), request.uri().query()) else {
         respond(responder, StatusCode::NOT_FOUND, Vec::new(), false);
         return;
     };
@@ -71,7 +107,10 @@ pub fn handle<R: Runtime>(
         let state = app.state::<AppState>();
         match route {
             Route::Thumb(id) => match thumbnail_bytes(&state, id) {
-                Some(bytes) => respond(responder, StatusCode::OK, bytes, true),
+                Some(bytes) => {
+                    crate::timing::mark(&crate::timing::FIRST_THUMB, "first thumbnail");
+                    respond(responder, StatusCode::OK, bytes, true);
+                }
                 None => respond(responder, StatusCode::NOT_FOUND, Vec::new(), false),
             },
             Route::Source(id) => match source_bytes(&state, id) {
@@ -83,8 +122,20 @@ pub fn handle<R: Runtime>(
                     false,
                 ),
             },
-            Route::Preview(id) => match preview_bytes(&state, id) {
+            Route::Region(id, region) => match region_bytes(&state, id, region) {
                 Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
+                Err(message) => respond(
+                    responder,
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    message.into_bytes(),
+                    false,
+                ),
+            },
+            Route::Preview(id) => match preview_bytes(&state, id) {
+                Ok(bytes) => {
+                    crate::timing::mark(&crate::timing::FIRST_PREVIEW, "first preview");
+                    respond(responder, StatusCode::OK, bytes, true);
+                }
                 Err(message) => respond(
                     responder,
                     StatusCode::INTERNAL_SERVER_ERROR,
@@ -102,14 +153,38 @@ mod tests {
 
     #[test]
     fn routes_are_strict() {
-        assert!(matches!(route("/thumb/7"), Some(Route::Thumb(PhotoId(7)))));
         assert!(matches!(
-            route("/preview/0"),
+            route("/thumb/7", None),
+            Some(Route::Thumb(PhotoId(7)))
+        ));
+        assert!(matches!(
+            route("/preview/0", Some("rev=3")),
             Some(Route::Preview(PhotoId(0)))
         ));
-        assert!(route("/thumb/../etc").is_none());
-        assert!(route("/thumb/7/extra").is_none());
-        assert!(route("/other/1").is_none());
-        assert!(route("/thumb/-1").is_none());
+        assert!(route("/thumb/../etc", None).is_none());
+        assert!(route("/thumb/7/extra", None).is_none());
+        assert!(route("/other/1", None).is_none());
+        assert!(route("/thumb/-1", None).is_none());
+    }
+
+    #[test]
+    fn regions_are_checked() {
+        assert!(matches!(
+            route(
+                "/preview/2",
+                Some("rev=1&region=0.25,0.5,0.25,0.25&px=1600")
+            ),
+            Some(Route::Region(PhotoId(2), _))
+        ));
+        for bad in [
+            "region=0.25,0.5,0.25&px=1600",
+            "region=0.25,0.5,0.25,0.25",
+            "region=0.25,0.5,0.25,0.25&px=-1",
+            "region=0.9,0,0.5,0.5&px=100",
+            "region=NaN,0,0.5,0.5&px=100",
+            "region=a,b,c,d&px=100",
+        ] {
+            assert!(route("/preview/2", Some(bad)).is_none(), "{bad}");
+        }
     }
 }

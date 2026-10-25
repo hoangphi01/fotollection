@@ -10,6 +10,8 @@ import * as __TAURI_EVENT from "@tauri-apps/api/event";
 export const commands = {
 	/**  Versions shown in the About section. */
 	appInfo: () => __TAURI_INVOKE<AppInfo>("app_info"),
+	/**  Whether start-up is over, for a UI that loaded after the `StartupFinished` event (FR-060). */
+	startupFinished: () => __TAURI_INVOKE<boolean>("startup_finished"),
 	/**  Supported print sizes for the settings panel (FR-006). */
 	listPrintSizes: () => __TAURI_INVOKE<PrintSize[]>("list_print_sizes"),
 	/**  Opens a folder dialog and imports the chosen folder. `None` if the user cancelled. */
@@ -238,6 +240,7 @@ export const events = {
 	libraryChanged: makeEvent<LibraryChanged>("library-changed"),
 	menuAction: makeEvent<MenuAction>("menu-action"),
 	revisionChanged: makeEvent<RevisionChanged>("revision-changed"),
+	startupFinished: makeEvent<StartupFinished>("startup-finished"),
 	taskProgress: makeEvent<TaskProgress>("task-progress"),
 	thumbReady: makeEvent<ThumbReady>("thumb-ready"),
 };
@@ -831,6 +834,9 @@ export type StampSettings = {
 	 */
 	caption?: string,
 };
+
+/**  Start-up is over: the last session is back, or there was none (FR-060). */
+export type StartupFinished = null;
 
 export type TaskKind = 
 /**  Reading files and EXIF during import. */

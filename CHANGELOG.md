@@ -8,6 +8,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: zoom buttons on the preview, and full detail when you zoom in
+- New: a start-up screen with the logo and a loading bar
+- Measured: the app opens in about 0.4 s; a 32 MP photo zooms in about 0.1 s
+
+### Added
+
+- **Zoom buttons (FR-057):** − · zoom level · + · fit, at the bottom right of the preview; each tooltip shows its shortcut and the trackpad pinch.
+- **Full detail on zoom (FR-057):** the preview stays light (1600 px) on any computer. When you zoom past it, the part on screen is replaced a moment later by the full-resolution pixels, exactly as the export will have them, with a small spinner while they load. Only the visible part is loaded, so a 32 MP photo stays light.
+- **Start-up screen (FR-060):** the app opens on its logo and a loading bar, which follows the import while your last session reopens, then fades onto the finished workspace.
+
+### Changed
+
+- The zoom level moved from the photo counter into the zoom buttons.
+
 ## [0.5.0] - 2026-10-25
 
 ### Highlights

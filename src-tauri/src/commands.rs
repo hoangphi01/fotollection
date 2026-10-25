@@ -20,10 +20,12 @@ use fotollection_core::frame::{CameraProfile, FrameSettings, LogoKind};
 use fotollection_core::import::{self, ImportedFile};
 use std::collections::HashMap;
 
-use fotollection_core::library::{CullFilter, Flag, PhotoEdits, PhotoId, PhotoSummary, flags};
+use fotollection_core::library::{
+    CullFilter, Flag, PhotoEdits, PhotoId, PhotoRecord, PhotoSummary, flags,
+};
 use fotollection_core::logo;
 use fotollection_core::metadata;
-use fotollection_core::plan::{CropFrame, DpiBand, PlanInput, effective_dpi, plan};
+use fotollection_core::plan::{CropFrame, DpiBand, FrameRequest, PlanInput, effective_dpi, plan};
 use fotollection_core::print_advice::{self, PrintAdvice};
 use fotollection_core::settings::{RenderSettings, UiSettings};
 use fotollection_core::thumbs;
@@ -35,8 +37,8 @@ use tauri_plugin_dialog::DialogExt;
 use tauri_specta::Event;
 
 use crate::events::{
-    ExportFinished, ExportProgress, LibraryChanged, RevisionChanged, TaskKind, TaskProgress,
-    ThumbReady,
+    ExportFinished, ExportProgress, LibraryChanged, RevisionChanged, StartupFinished, TaskKind,
+    TaskProgress, ThumbReady,
 };
 use crate::state::{AppState, IpcError};
 
@@ -47,6 +49,22 @@ pub struct AppInfo {
     pub core_version: String,
     /// `macos`, `windows` or `linux`: Windows draws its own title bar (FR-052).
     pub os: String,
+}
+
+/// Whether start-up is over, for a UI that loaded after the `StartupFinished` event (FR-060).
+#[tauri::command]
+#[specta::specta]
+pub fn startup_finished(state: State<'_, AppState>) -> bool {
+    state.startup_done.load(Ordering::Relaxed)
+}
+
+/// Marks start-up as over and tells the UI, so the start-up screen fades out (FR-060).
+pub fn finish_startup(app: &AppHandle) {
+    app.state::<AppState>()
+        .startup_done
+        .store(true, Ordering::Relaxed);
+    crate::timing::mark(&crate::timing::STARTUP_DONE, "session restored");
+    let _ = StartupFinished.emit(app);
 }
 
 /// Versions shown in the About section.
@@ -761,8 +779,19 @@ pub fn thumbnail_bytes(state: &AppState, id: PhotoId) -> Option<Vec<u8>> {
     state.thumbs.make_t1(&record, state.codec.as_ref()).ok()
 }
 
-/// Bytes for `fotothumb://localhost/preview/{id}`, rendered with the current settings.
-pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
+/// What a preview of `id` is rendered from: the photo, the settings, its place and frame.
+fn preview_inputs(
+    state: &AppState,
+    id: PhotoId,
+) -> Result<
+    (
+        PhotoRecord,
+        RenderSettings,
+        Option<String>,
+        Option<FrameRequest>,
+    ),
+    String,
+> {
     let record = state
         .library
         .read()
@@ -775,6 +804,12 @@ pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
         let f = state.frame.read().map_err(|e| e.to_string())?;
         f.request(&record, place.as_deref())
     };
+    Ok((record, settings, place, frame))
+}
+
+/// Bytes for `fotothumb://localhost/preview/{id}`, rendered with the current settings.
+pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
+    let (record, settings, place, frame) = preview_inputs(state, id)?;
     state
         .previews
         .render_jpeg(
@@ -782,6 +817,26 @@ pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
             &settings,
             frame.as_ref(),
             place.as_deref(),
+            state.codec.as_ref(),
+        )
+        .map_err(|e| e.to_string())
+}
+
+/// One full-resolution region of the preview, for zoom (FR-057).
+pub fn region_bytes(
+    state: &AppState,
+    id: PhotoId,
+    region: fotollection_core::preview::Region,
+) -> Result<Vec<u8>, String> {
+    let (record, settings, place, frame) = preview_inputs(state, id)?;
+    state
+        .previews
+        .render_region_jpeg(
+            &record,
+            &settings,
+            frame.as_ref(),
+            place.as_deref(),
+            region,
             state.codec.as_ref(),
         )
         .map_err(|e| e.to_string())

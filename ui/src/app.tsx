@@ -29,9 +29,11 @@ import { useQuickPreview } from '@/features/viewer/use-quick-preview'
 import { TitleBar } from '@/features/window/title-bar'
 import { RelinkDialog, UnsavedDialog } from '@/features/project/project-dialogs'
 import { useProject } from '@/features/project/use-project'
+import { useStartupScreen } from '@/features/startup/use-startup-screen'
 
 export function App() {
   const { t } = useTranslation()
+  useStartupScreen()
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
   const { photos, total, folders, queueCounts, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
     useLibrary(filter)

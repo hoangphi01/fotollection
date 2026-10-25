@@ -7,7 +7,7 @@
 
 ## Current phase: Phase 1 — MVP, v0.4.0 released
 
-**Where we are (2026-10-25).** The app works end to end for **JPEG, PNG and HEIC**: open folders as tabs (FR-056), cull with stars, flags, filters and best-shot suggestions, preview with crop, drag-to-reframe, zoom (FR-057), straightening, the film-style date stamp and the "Shot on" frame (Crop to fill, or Fit whole photo framed like an instax print), then export for print at original quality or **for social media** in sRGB with safe EXIF (FR-053), the whole set or one photo from the preview (FR-055). **[v0.4.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.4.0) was published on 2026-10-25** (universal `.dmg` 38.1 MB, `-setup.exe` 13.6 MB, `.msi` 18.6 MB, `SHA256SUMS.txt`); the website's download buttons point to it.
+**Where we are (2026-10-25).** The app works end to end for **JPEG, PNG and HEIC**: open folders as tabs (FR-056), cull with stars, flags, filters and best-shot suggestions, preview with crop, drag-to-reframe, zoom (FR-057), straightening, the film-style date stamp and the "Shot on" frame (Crop to fill, or Fit whole photo framed like an instax print), then export for print at original quality or **for social media** in sRGB with safe EXIF (FR-053), the whole set or one photo from the preview (FR-055). **[v0.5.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.5.0) "Print basket" was published on 2026-10-25** (universal `.dmg` 38.1 MB, `-setup.exe` 13.6 MB, `.msi` 18.6 MB, `SHA256SUMS.txt`); the website's download buttons point to it. On `main` for v0.6.0: zoom buttons and full-resolution zoom (FR-057), the start-up screen (FR-060), and the cold-start and preview measurements (RESULT §11).
 
 1. Open or drop a folder; refresh it to pick up new photos.
 2. Cull with stars, flags and filters, helped by best-shot suggestions: groups of similar shots, the best of each with reasons, and Keep best.
@@ -64,8 +64,8 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 
 1. **v0.4.0 "Sharing and folders": published 2026-10-25.** Still to check by hand in the installed app: export one photo from the preview, export two folders together and separately, trackpad zoom, drag to reframe, Fit on a landscape and a portrait photo.
-2. **v0.5.0 "Print basket" (FR-050, FR-059):** the print basket and set aside, select mode and Quick-preview are on `main`, with the size estimate and EXIF for prints; check by hand ([USER_GUIDE.md §1](USER_GUIDE.md#1-choosing-the-photos-to-print)), then release.
-3. **v0.6.0 "Photo viewer and RAW" (FR-054, FR-057, FR-016):** measure cold start (NFR-010) and a new "open to first photo" budget first; full-resolution zoom past 1,600 px, measured before it ships; "Open with" on macOS and Windows; RAW through the OS codecs, so the viewer opens every photo. ADRs for both.
+2. **v0.5.0 "Print basket" (FR-050, FR-059): published 2026-10-25.** Check by hand ([USER_GUIDE.md §1](USER_GUIDE.md#1-choosing-the-photos-to-print)).
+3. **v0.6.0 "Photo viewer and RAW" (FR-054, FR-057, FR-060, FR-016):** ✓ measured first (NFR-010, NFR-016, RESULT §11); ✓ zoom buttons and full-resolution zoom; ✓ start-up screen. Next: "Open with" on macOS and Windows; RAW through the OS codecs (GX9 RW2 samples needed), so the viewer opens every photo. ADRs for both.
 4. **v0.7.0 "Places and Lightroom" (FR-032, FR-005, FR-030, FR-031, FR-058):** XMP sidecars read on import and written as an opt-in; search and set a place for one or many photos, rename a place everywhere, camera clock offset, borrow GPS from phone photos with confidence levels.
 5. **v0.8.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
 6. **Later (Phase 2):** Photo Style and film looks (FR-039, FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
@@ -148,8 +148,9 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-054 | Open photos with Fotollection | 2 | Not Started | Planned: "Open with" on macOS and Windows opens the photo straight in the preview; needs an ADR, a start-up budget (NFR) and a benchmark |
 | FR-055 | Export from the preview | 1 | Done | Export card in the preview inspector (same `ExportSection` as the panel, one shared job and destination), Export button on the photo; `start_export(filter, only)` |
 | FR-056 | Folders as tabs | 1 | Done | All photos row, click = one folder, select mode / Ctrl-⌘-click = several (`CullFilter.folders`), counts from `list_photos.folders`, groups scoped, export together or separately (`start_export(…, separate)`, `fr_056_*`) |
-| FR-057 | Zoom in the preview | 1 | In Progress | ✓ Pinch / Ctrl-⌘ + − 0 about the pointer, 100–800 %, drag and two-finger pan, double-click 200 %, level badge resets (`use-zoom.ts`). Left: full-resolution render past 1,600 px, with a benchmark |
+| FR-057 | Zoom in the preview | 1 | In Progress | ✓ Pinch / Ctrl-⌘ + − 0 about the pointer, 100–800 %, drag and two-finger pan, double-click 200 % (`use-zoom.ts`). ✓ Zoom buttons − · level · + · fit (`zoom-controls.tsx`). ✓ Past the preview's pixels, the visible part at full resolution, 150 ms after the view settles (`use-sharp-region.ts`, `PreviewCache::render_region`, originals cached ≤ 200 MB); measured first, RESULT §11. Left: check by hand in the app |
 | FR-058 | Lightroom compatibility through XMP | 2 | Not Started | Planned: read XMP sidecars on import (stars, reject, crop); opt-in writing of `.xmp` next to photos, never touching them; Lightroom reads sidecars only for RAW |
+| FR-060 | Start-up screen | 1 | In Progress | ✓ Logo and loading bar painted by `index.html` before any script; the bar follows the import while the session reopens; fades out on `StartupFinished` (`use-startup-screen.ts`), never later than 15 s. Left: check by hand; the Normal / Professional choice (FR-048) later |
 | FR-059 | Quick-preview | 1 | In Progress | ✓ Hold Space in select mode over a photo: thumbnail at once, then the render with the gallery's settings; ← → and Enter while held (`use-quick-preview.ts`). Left: check by hand in the app |
 | FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print; every editing session adds a journal entry (instax-style) |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
@@ -167,12 +168,13 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | NFR-007 | Platforms | macOS 11+, Win 10/11 | — | Not Started |
 | NFR-008 | Install size | ≤ 25 MB | v0.3.0: `-setup.exe` 13.5 MB, `.msi` 18.5 MB ✓; universal `.dmg` 37.7 MB ✗ (two architectures in one file) | In Progress |
 | NFR-009 | Colour fidelity | ICC kept, Δ ≤ 1 | ICC kept 25/25, ΔE2000 mean 0.19 (sRGB) / 0.31 (Display P3), detail and saturation kept; web-editor export for reference 1.39 / 2.15 ([RESULT.md §9](RESULT.md#9-print-quality)) | In Progress |
-| NFR-010 | Cold start | < 1.5 s | — | Not Started |
+| NFR-010 | Cold start | < 1.5 s | page loaded 0.31–0.40 s, first thumbnail 0.50–0.58 s (release build, 4 runs); the very first launch after install 2.7 s, 2.1 s of it WebKit starting (`scripts/measure-startup.sh`) | In Progress |
 | NFR-011 | Robustness | 0 crashes | — | Not Started |
 | NFR-012 | Culling navigation | < 100 ms p95 | — | Not Started |
 | NFR-013 | Project safety | ≤ 5 s, atomic | autosave ≤ ~1 s, atomic + .bak; full save 10 ms at 5,035 edited photos, 70 ms at 70,000 (`measure_project`) | In Progress |
 | NFR-014 | Best-shot analysis speed | ≤ 20 ms/photo (≤ 40 ms with faces) | 17.4 ms p50 / 18.0 ms p95 without faces, 27.8 ms p50 / 36 ms p95 with faces, one thread (`measure_folder --analyze`) | In Progress |
 | NFR-015 | Normal mode speed | ≥ 3× Professional export (≥ 50 photos/s), first screen < 0.5 s for 1,000 photos | — | Not Started |
+| NFR-016 | Open to first photo | < 1 s after the first launch | about 0.5 s estimated: page loaded 0.31–0.40 s + first preview 105–154 ms (16–32 MP); measured end to end once "Open with" (FR-054) exists | In Progress |
 
 ## Security tasks
 

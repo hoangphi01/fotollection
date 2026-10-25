@@ -318,7 +318,11 @@
     "level": "level 1° (⌥ 0.1°)",
     "leaveCrop": "cancel crop",
     "zoom": "zoom",
-    "zoomReset": "Back to fit (⌘0)",
+    "zoomIn": "Zoom in ({{mod}} +)",
+    "zoomOut": "Zoom out ({{mod}} −)",
+    "zoomFit": "Fit to window ({{mod}} 0)",
+    "zoomPinch": "or pinch the trackpad, or double-click the photo",
+    "zoomSharpening": "Loading full detail…",
     "dragToFrame": "drag to reframe",
     "upBasket": "print basket",
     "downAside": "set aside"

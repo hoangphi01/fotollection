@@ -49,7 +49,9 @@ import { previewUrl, sourceUrl } from '@/lib/photo-url'
 import { CropEditor } from './crop-editor'
 import { PhotoStampControls } from './photo-stamp-controls'
 import { useCropDrag } from './use-crop-drag'
+import { useSharpRegion } from './use-sharp-region'
 import { useZoom } from './use-zoom'
+import { ZoomControls } from './zoom-controls'
 import { ownsArrowKeys } from '@/lib/keyboard'
 import { cn } from '@/lib/utils'
 import { SectionCard } from '@/components/layout/section-card'
@@ -178,6 +180,9 @@ export function PreviewDialog({
   // The stage mounts only when the preview opens, so it is kept in state, not a ref.
   const [stage, setStage] = useState<HTMLDivElement | null>(null)
   const zoom = useZoom(stage, `${photo?.id}:${cropping}`)
+  // Zoomed past the preview's pixels, the visible part comes again at full resolution.
+  const [previewImg, setPreviewImg] = useState<HTMLImageElement | null>(null)
+  const sharp = useSharpRegion(previewImg, stage, zoom.view, photo?.id, revision, shownSrc === src ? shownSrc : null)
   // Without zoom, dragging the photo moves the crop (Crop to fill, or no frame).
   const cropDrag = useCropDrag(photo?.id, geometry, !cropping && !zoom.zoomed && !!geometry && !geometry.cropDisabled)
   const canDrag = !zoom.zoomed && !!geometry && !geometry.cropDisabled
@@ -257,6 +262,7 @@ export function PreviewDialog({
             <>
               {photo && shownSrc && (
                 <img
+                  ref={setPreviewImg}
                   src={shownSrc}
                   alt={photo.fileName}
                   draggable={false}
@@ -269,6 +275,16 @@ export function PreviewDialog({
                     'max-h-full max-w-full animate-in rounded-sm object-contain shadow-2xl fade-in-0',
                     zoom.zoomed || canDrag ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in',
                   )}
+                />
+              )}
+              {sharp.layer && (
+                <img
+                  src={sharp.layer.src}
+                  alt=""
+                  aria-hidden
+                  draggable={false}
+                  style={sharp.layer.style}
+                  className="pointer-events-none absolute top-1/2 left-1/2 max-w-none"
                 />
               )}
               {!shownSrc && (
@@ -364,19 +380,19 @@ export function PreviewDialog({
               >
                 <ChevronRight />
               </Button>
-              <span className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-3 py-1 text-xs text-white/80 tabular-nums">
+              <span className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-3 py-1 text-xs text-white/80 tabular-nums">
                 {(index ?? 0) + 1} / {photos.length}
-                {zoom.zoomed && (
-                  <button
-                    type="button"
-                    className="rounded-full bg-white/15 px-2 hover:bg-white/25"
-                    data-hint={t('viewer.zoomReset')}
-                    onClick={zoom.reset}
-                  >
-                    {zoom.percent} %
-                  </button>
-                )}
               </span>
+              <ZoomControls
+                percent={zoom.percent}
+                zoomed={zoom.zoomed}
+                canZoomIn={zoom.canZoomIn}
+                loading={sharp.loading}
+                mod={MOD}
+                onZoomIn={zoom.zoomIn}
+                onZoomOut={zoom.zoomOut}
+                onFit={zoom.reset}
+              />
             </>
           )}
         </div>

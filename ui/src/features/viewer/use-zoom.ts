@@ -8,13 +8,15 @@ const STEP = 1.25
 /** Double-click zoom. */
 const CLOSE_UP = 2
 
-type View = { scale: number; x: number; y: number }
+/** The photo's scale and its offset from the stage centre, in CSS pixels. */
+export type View = { scale: number; x: number; y: number }
 const FIT: View = { scale: 1, x: 0, y: 0 }
 
 /**
  * Zoom and pan for the preview stage (FR-057): a trackpad pinch (sent by WebKit and
  * WebView2 as a wheel event with Ctrl held) or Ctrl/⌘ + − 0 zoom about the pointer; a
- * drag or a two-finger scroll moves the zoomed photo; a double-click toggles fit and 2×.
+ * drag or a two-finger scroll moves the zoomed photo; a double-click toggles fit and 2×; the
+ * zoom buttons step about the centre.
  * `stage` is the element that takes the wheel events; another `resetKey` (another photo, the
  * crop editor) starts again at fit.
  */
@@ -101,7 +103,11 @@ export function useZoom(stage: HTMLElement | null, resetKey: string) {
 
   return {
     zoomed,
+    view,
     percent: Math.round(view.scale * 100),
+    canZoomIn: view.scale < MAX,
+    zoomIn: () => zoomAt(STEP),
+    zoomOut: () => zoomAt(1 / STEP),
     transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})`,
     reset: () => setView(() => FIT),
     onKey,

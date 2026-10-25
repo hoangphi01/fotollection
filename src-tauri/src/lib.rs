@@ -12,6 +12,7 @@ mod i18n;
 mod menu;
 mod protocol;
 mod state;
+mod timing;
 
 use tauri::{DragDropEvent, Manager, WindowEvent};
 use tauri_specta::{Builder, collect_commands, collect_events};
@@ -24,6 +25,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
     Builder::<tauri::Wry>::new()
         .commands(collect_commands![
             commands::app_info,
+            commands::startup_finished,
             commands::list_print_sizes,
             commands::pick_and_import_folder,
             commands::refresh_library,
@@ -82,6 +84,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             events::DocumentChanged,
             events::MenuAction,
             events::AnalysisFinished,
+            events::StartupFinished,
         ])
 }
 
@@ -114,7 +117,24 @@ fn prepare_window(app: &tauri::AppHandle) {
     }
 }
 
+/// Autosave (NFR-013): at most ~1 s after the last edit, atomically.
+fn spawn_autosave(handle: tauri::AppHandle) {
+    std::thread::spawn(move || {
+        loop {
+            std::thread::sleep(std::time::Duration::from_secs(1));
+            let state = handle.state::<state::AppState>();
+            if state
+                .project_dirty
+                .swap(false, std::sync::atomic::Ordering::Relaxed)
+            {
+                state.save_project();
+            }
+        }
+    });
+}
+
 pub fn run() {
+    timing::start();
     let builder = specta_builder();
 
     #[cfg(debug_assertions)]
@@ -146,25 +166,13 @@ pub fn run() {
             app.manage(state::AppState::new(thumb_dir, &config_dir, project_path)?);
             prepare_window(app.handle());
 
-            // Autosave (NFR-013): at most ~1 s after the last edit, atomically.
-            let handle = app.handle().clone();
-            std::thread::spawn(move || {
-                loop {
-                    std::thread::sleep(std::time::Duration::from_secs(1));
-                    let state = handle.state::<state::AppState>();
-                    if state
-                        .project_dirty
-                        .swap(false, std::sync::atomic::Ordering::Relaxed)
-                    {
-                        state.save_project();
-                    }
-                }
-            });
+            spawn_autosave(app.handle().clone());
             // Reopen the last session: re-scan folders and restore edits (FR-023). A
             // project passed on the command line (Windows/Linux file association) is
             // opened afterwards, through the UI's unsaved-changes flow.
             #[cfg(debug_assertions)]
             if let Some((folder, out)) = demo {
+                commands::finish_startup(app.handle());
                 let handle = app.handle().clone();
                 std::thread::spawn(move || demo::run(&handle, folder, &out));
                 return Ok(());
@@ -176,6 +184,7 @@ pub fn run() {
                 .find(|p| p.extension().is_some_and(|e| e == document::EXTENSION) && p.is_file());
             std::thread::spawn(move || {
                 commands::restore_session(&handle);
+                commands::finish_startup(&handle);
                 if let Some(path) = requested {
                     document::request_open(&handle, path);
                 }
@@ -188,7 +197,13 @@ pub fn run() {
                     commands::import_paths(&handle, vec![std::path::PathBuf::from(folder)])
                 });
             }
+            timing::mark(&timing::SETUP_DONE, "setup done");
             Ok(())
+        })
+        .on_page_load(|_, payload| {
+            if matches!(payload.event(), tauri::webview::PageLoadEvent::Finished) {
+                timing::mark(&timing::PAGE_LOADED, "page loaded");
+            }
         })
         .on_menu_event(|app, event| menu::on_event(app, &event))
         .on_window_event(|window, event| {

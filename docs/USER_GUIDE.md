@@ -63,7 +63,18 @@ Outside select mode, Space keeps opening the normal preview.
 - Click **All photos**, or a folder, to return to the gallery.
 - **Export follows the view.** From *Print basket*, *Export* writes exactly the basket, with the size estimate above the button ([FR-053](PRD.md#fr-053--export-for-social-media)). From *All photos* or a folder, photos set aside are never exported.
 
-## 2. Keyboard shortcuts
+## 2. Looking closely: zoom
+
+In the preview, the **zoom buttons** at the bottom right of the photo show the zoom level between **−** and **+**; the last button goes back to fit ([FR-057](PRD.md#fr-057--zoom-in-the-preview)). The same with the keyboard and the trackpad:
+
+- **Pinch** on the trackpad, or **Cmd/Ctrl +** and **Cmd/Ctrl −**, zoom about the pointer, up to 800 %.
+- **Double-click** the photo to go between fit and 200 %.
+- Zoomed in, **drag** the photo, or scroll with two fingers, to move around it.
+- **Cmd/Ctrl 0** or the fit button goes back to the whole photo.
+
+The preview is first shown at a light size that any computer draws quickly. When you zoom past what it holds, a small spinner appears beside the zoom level, and a moment after you stop moving the part on screen is replaced by the **full-resolution** pixels, exactly as the exported file will have them. Only the visible part is loaded, so even a 32 MP photo stays light.
+
+## 3. Keyboard shortcuts
 
 | Where | Key | Action |
 |-------|-----|--------|
@@ -76,8 +87,8 @@ Outside select mode, Space keeps opening the normal preview.
 | Preview | **↑** | Put in the print basket, next photo |
 | Preview | **↓** | Set aside, next photo |
 | Preview | **C** | Open the crop editor |
-| Preview | **Cmd/Ctrl + / −**, trackpad pinch | Zoom in / out about the pointer |
-| Preview | **Cmd/Ctrl 0**, click the zoom level | Back to fit |
+| Preview | **Cmd/Ctrl + / −**, trackpad pinch, the zoom buttons | Zoom in / out (§2) |
+| Preview | **Cmd/Ctrl 0**, the fit button | Back to fit |
 | Preview | double-click the photo | Toggle fit and 200 % |
 | Preview | drag the photo (not zoomed) | Choose what the print keeps (*Crop to fill*) |
 | Preview | **Esc** | Leave the crop editor, then close |

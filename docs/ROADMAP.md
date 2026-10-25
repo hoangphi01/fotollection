@@ -93,7 +93,7 @@ After v0.3.1, each release has one theme. The order puts the biggest everyday wi
 |---------|-------|--------------|----------------|
 | v0.4.0 | Sharing and folders | FR-053, FR-055, FR-056, FR-057 (zoom on the preview), FR-040 (instax-style Fit, drag to reframe) | Done: RESULT §10 |
 | v0.5.0 | Print basket | FR-050 (basket and set aside, select mode), FR-059 (Quick-preview) | — |
-| v0.6.0 | Photo viewer and RAW | FR-054 ("Open with"), FR-057 (full-resolution zoom), FR-016 (RAW through the OS codecs) | Cold start (NFR-010), a new "open to first photo" budget, a 26 MP render, RAW preview and full decode on GX9 RW2 files |
+| v0.6.0 | Photo viewer and RAW | FR-054 ("Open with"), FR-057 (full-resolution zoom, zoom buttons), FR-060 (start-up screen), FR-016 (RAW through the OS codecs) | Measured first: cold start (NFR-010) and open to first photo (NFR-016), preview and zoom at 16/26/32 MP (RESULT §11); still to do: RAW preview and full decode on GX9 RW2 files |
 | v0.7.0 | Places and Lightroom | FR-032, FR-005, FR-030, FR-031, FR-058 (XMP) | Lookup speed with manual places, a mixed camera + phone folder; XMP read on a Lightroom-culled folder |
 | v0.8.0 | Normal mode | FR-048, NFR-015, FR-046, FR-050 | Normal against Professional export |
 | Later | Looks, presets, trips, journal | FR-039, FR-047, FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
@@ -126,6 +126,7 @@ After v0.3.1, each release has one theme. The order puts the biggest everyday wi
 | FR-057 | Zoom in the preview: pinch, Ctrl/⌘ + − 0, drag to move, double-click for 200 % |
 | FR-058 | Lightroom compatibility: read XMP sidecars on import, write `.xmp` as an opt-in, photos never touched |
 | FR-059 | Quick-preview: hold Space in select mode to look at a photo as it will print |
+| FR-060 | Start-up screen: the logo and a loading bar until the last session is back |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 
 ## Phase 3 — Pro & growth

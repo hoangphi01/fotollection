@@ -192,3 +192,21 @@ The share export ([FR-053](PRD.md#fr-053--export-for-social-media)) has to make 
 cargo run --release -p fotollection-core --example quality_export -- --share facebook /tmp/share ~/Pictures/some-folder/*.JPG
 uv run bench/quality/share_audit.py ~/Pictures/some-folder /tmp/share --json bench/results/share-run.json
 ```
+
+## 11. Preview and zoom cost (v0.6.0)
+
+Measured before building the zoom path ([FR-057](PRD.md#fr-057--zoom-in-the-preview)) and the start-up screen ([FR-060](PRD.md#fr-060--start-up-screen)), to answer one question: what does looking at a big photo cost a weak machine? `examples/measure_preview.rs`, median of 5, REF-MAC (M3), one camera JPEG at 16 MP and the same photo resized to 26 MP and 32 MP (q92). Peak RSS is the whole benchmark process under `/usr/bin/time -l`.
+
+| Photo | Full decode | Decoded RAM | Preview, first time | Preview, cached | Full-size render | Visible part, 2560 × 1600 | Peak RSS |
+|------|-----:|-----:|-----:|-----:|-----:|-----:|-----:|
+| 16 MP (4608 × 3456) | 46 ms | 48 MB | 105 ms | 17 ms | 4 ms | 17 ms | 222 MB |
+| 26 MP (6240 × 4160) | 68 ms | 78 MB | 139 ms | 18 ms | 8 ms | 18 ms | 314 MB |
+| 32 MP (6960 × 4640) | 84 ms | 97 MB | 154 ms | 18 ms | 9 ms | 17 ms | 371 MB |
+
+- **The preview is already safe.** It never holds more than a 2048 px copy (about 12 MB) and sends 1600 px, so a 32 MP photo costs the same 18 ms as a 16 MP one once cached; only the first open grows with the photo (decode). A preview "at 32 MP" is never built.
+- **Full detail only on zoom.** The original costs 3 bytes per pixel decoded, 97 MB at 32 MP, so it is decoded only when the user zooms past the preview, and at most about 200 MB of originals stay cached. Rendering it at full size is cheap (4–9 ms, unstraightened; straightening adds about 53 ms at 16 MP, OPTIMIZATION §5), and the part a screen shows encodes in 17 ms whatever the photo's size: the first zoom on a 32 MP photo is about 100 ms, the next pans about 20 ms.
+- **A weak machine:** the threads do not change these numbers (`RAYON_NUM_THREADS=2` and `=1` give the same times): one photo is one core's work. A machine with a core 3–4× slower than an M3 would take about 0.3–0.4 s for the first zoom on 32 MP. The zoomed preview stays on screen during that time, so nothing blanks or blocks.
+
+```bash
+cargo run --release -p fotollection-core --example measure_preview -- photo-16mp.jpg photo-32mp.jpg
+```

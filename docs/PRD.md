@@ -615,9 +615,10 @@ Next to the batch settings, any other setting will later be overridable for one 
 **P1.** The preview zooms like a photo viewer, to check focus and detail.
 
 - **Trackpad pinch** (sent as Ctrl + wheel by WebKit and WebView2) and **Ctrl/⌘ + / − / 0** zoom about the pointer, from fit up to 800 %; a **double-click** toggles fit and 200 %.
-- Zoomed in, a **drag** or a two-finger scroll moves the photo. The zoom level shows beside the photo counter; clicking it goes back to fit.
+- Zoomed in, a **drag** or a two-finger scroll moves the photo.
+- **Zoom buttons** at the bottom right of the photo (− · level · + · fit), so zoom can be found without knowing the shortcuts; each tooltip names its shortcut and the pinch.
 - Another photo, or the crop editor, starts again at fit; ← → still browse.
-- **Next:** past the preview's own pixels (1,600 px), load a full-resolution render of the photo, measured against a new budget before it ships.
+- **A safe preview, full detail on demand.** The preview is never larger than 1,600 px, rendered from a 2,048 px copy, whatever the camera: a weak machine never decodes a 32 MP photo just to show it. Zoomed past the preview's own pixels, once the view has been still for 150 ms, the UI asks Rust for **only the visible part** (plus a 10 % margin) at the screen's pixel count, at most 4,096 px wide. Rust decodes the original then, keeps at most about 200 MB of originals (two 32 MP photos; the one on screen always stays), renders it exactly as export does and sends that part. The zoomed preview stays on screen meanwhile, with a spinner beside the zoom level. Measured cost, REF-MAC: decode 46 ms (16 MP) to 84 ms (32 MP) the first time, then 17 ms per region ([RESULT.md §11](RESULT.md#11-preview-and-zoom-cost-v060)).
 
 ### FR-058 — Lightroom compatibility through XMP
 
@@ -635,6 +636,10 @@ Next to the batch settings, any other setting will later be overridable for one 
 - It shows the photo under the pointer, or the last one ticked; the thumbnail appears at once and the Rust render with the gallery's print size, stamp and frame replaces it (about 17 ms warm, 120 ms the first time).
 - **Nothing can be edited**: it is a look, not the preview with its inspector ([FR-007](#fr-007--live-preview)). While Space is held, ← → show the neighbours and Enter ticks or unticks the photo shown.
 - Outside select mode, Space keeps opening the normal preview.
+
+### FR-060 — Start-up screen
+
+**P1 (v0.6.0).** Opening the app shows the **logo and a loading bar** on the theme's background, never a half-built window: the screen is painted by the page itself before any script runs, and it fades out onto the finished workspace once the last session is back ([FR-023](#fr-023--projects-autosave-and-undo)). When the session reopens folders, the bar shows the import's progress, like the import bar; otherwise it slides. It never stays more than 15 s. It is the place where the choice between Normal and Professional mode ([FR-048](#fr-048--normal-and-professional-modes)) will be asked the first time.
 
 ## 7. Non-functional requirements
 
@@ -678,7 +683,7 @@ The output either keeps the source ICC profile or, when sRGB conversion is on ([
 
 ### NFR-010 — Cold start
 
-The app goes from launch to an interactive window in **under 1.5 s**.
+The app goes from launch to an interactive window in **under 1.5 s**. Measured 2026-10-25 on REF-MAC with the release build (`scripts/measure-startup.sh`, milestones printed only when `FOTOLLECTION_TIMING` is set): Rust ready in 0.21–0.28 s, page loaded in 0.31–0.40 s and the first thumbnail in 0.50–0.58 s on later launches. The very first launch after install or a new build took 2.7 s, 2.1 s of it the system web view starting for the first time, with the machine deep in swap; the start-up screen ([FR-060](#fr-060--start-up-screen)) covers that time. To re-measure on a cleaner machine and on Windows.
 
 ### NFR-011 — Robustness
 
@@ -699,6 +704,10 @@ Best-shot analysis ([FR-041](#fr-041--best-shot-suggestions)) takes **≤ 20 ms 
 ### NFR-015 — Normal mode speed
 
 In Normal mode ([FR-048](#fr-048--normal-and-professional-modes)), export of 16–24 MP JPEGs to 10×15 at 300 DPI reaches **at least 3× the Professional throughput** on REF-MAC (target ≥ 50 photos/s), with peak memory still within [NFR-004](#nfr-004--memory-ceiling). The first screen of a 1,000-photo folder appears in **under 0.5 s**. Budgets are confirmed by benchmark before the mode ships.
+
+### NFR-016 — Open to first photo
+
+Opening a photo from Finder or Explorer ("Open with", [FR-054](#fr-054--open-photos-with-fotollection)) shows it in the preview in **under 1 s** on REF-MAC, after the first launch. Estimated from its parts before FR-054 exists: the page loads in 0.31–0.40 s ([NFR-010](#nfr-010--cold-start)) and a first preview takes 105–154 ms for 16–32 MP ([RESULT.md §11](RESULT.md#11-preview-and-zoom-cost-v060)), about 0.5 s; measured end to end when FR-054 ships.
 
 ## 8. Out of scope
 
