@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Quality of the share export (FR-053), next to the usual way of posting a photo.
 
-    python3 bench/quality/share_audit.py <source-folder> <share-folder> [--json out.json]
+    uv run bench/quality/share_audit.py <source-folder> <share-folder> [--json out.json]
 
 The share folder is what `quality_export --share <preset>` wrote. For each photo:
 

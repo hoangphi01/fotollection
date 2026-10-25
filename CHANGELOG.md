@@ -25,9 +25,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Export from the preview (FR-055):** the preview has an Export card, with the same controls as the settings panel, that exports only the photo you are looking at; the Export button on the photo jumps to it. Both places share the destination and the progress.
 - **Folders as tabs (FR-056):** the library list starts with *All photos*; clicking a folder shows only that folder (grid, best-shot groups and export), like switching browser tabs. The select button above the list, or Ctrl/⌘-click, ticks several folders. When an export covers two folders or more, choose *Together* (the usual date folders) or *Separately* (one subfolder per folder). Folder counts no longer change with the star and flag filter.
 - **Zoom in the preview (FR-057):** pinch on the trackpad or press Ctrl/⌘ + and − to zoom about the pointer (up to 800 %), Ctrl/⌘ 0 to fit; drag or scroll with two fingers to move around, double-click for 200 %. The zoom level shows next to the photo counter; click it to go back to fit.
+- **Website:** the page's scroll bar is thin and in the theme colour, like the changelog box's.
+- **Development:** the Python tools (quality audits, icon and screenshot helpers) are managed with uv: `pyproject.toml` and `uv.lock` pin their packages, and `uv run` runs them.
 
 ### Fixed
 
+- **Website:** the changelog box shows its "click to scroll" hint again, and its thin scroll bar now applies in Firefox too.
 - **Hover hints** near the window's edge are no longer cut off.
 - **Info frame (FR-040):** a long lens name (for example `30mm F1.4 DC DN | Contemporary 016`) no longer runs into the camera logo. The lens moves to its own line above the exposure settings, and a line that is still too long is set smaller.
 

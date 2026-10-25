@@ -155,7 +155,7 @@ Why a web-editor print looks flat, and what Fotollection does instead:
 - **The photo is shrunk, then blown up again.** A 2000 px image printed at 10 × 15 cm loses 87 % of the fine detail, so surfaces turn smooth and colours look blotchy. Fotollection exports at full resolution, and only resizes, with a Lanczos3 filter, when a print size needs it.
 - **The colour is halved, and the JPEG is squeezed harder.** Common editors use 4:2:0 chroma, which halves colour resolution, at quality 80. Fotollection exports at 4:4:4 and quality 95.
 
-The test used 20 photos from a Canon compact, plus 5 of them converted to Display P3 with macOS's own profile. The web editor is simulated with standard settings (sRGB assumed, profile dropped, 4:2:0, q80, 2000 px, upscaled back for print). Reproduce it with `cargo run --release -p fotollection-core --example quality_export -- <out> <photos…>`, then `python3 bench/quality/audit.py <photos> <out>`.
+The test used 20 photos from a Canon compact, plus 5 of them converted to Display P3 with macOS's own profile. The web editor is simulated with standard settings (sRGB assumed, profile dropped, 4:2:0, q80, 2000 px, upscaled back for print). Reproduce it with `cargo run --release -p fotollection-core --example quality_export -- <out> <photos…>`, then `uv run bench/quality/audit.py <photos> <out>`.
 
 ### How good are the best-shot suggestions?
 
@@ -214,7 +214,7 @@ scripts/bootstrap.sh --install     # macOS / Linux (Windows: scripts\bootstrap.p
 npm run dev                        # start the app
 ```
 
-Every tool version is pinned: `rust-toolchain.toml`, `.node-version`, `Cargo.lock` and `package-lock.json`. A fresh clone therefore builds the same on any machine. See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for prerequisites, commands and build-disk cleanup (`scripts/clean.sh`).
+Every tool version is pinned: `rust-toolchain.toml`, `.node-version`, `Cargo.lock`, `package-lock.json` and, for the Python tooling managed with uv, `uv.lock`. A fresh clone therefore builds the same on any machine. See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for prerequisites, commands and build-disk cleanup (`scripts/clean.sh`).
 
 ## Tech stack
 

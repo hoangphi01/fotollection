@@ -5,7 +5,7 @@ The detailed artwork (assets/logo-square.png) is unreadable below ~64 px, so the
 the favicon and every icon layer up to 64 px use the simplified tile instead. Run this after
 `npx tauri icon assets/logo-square.png`, which regenerates all sizes from the detailed logo.
 
-    python3 scripts/small-icons.py      # needs Pillow (dev tool only, never shipped); macOS for .icns
+    uv run scripts/small-icons.py       # Pillow from pyproject.toml (dev tool only, never shipped); macOS for .icns
 """
 
 import pathlib

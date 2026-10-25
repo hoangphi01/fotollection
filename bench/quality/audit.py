@@ -4,7 +4,7 @@
 source, pixel for pixel, and does the same for a "typical web editor" export so the two
 can be read side by side.
 
-    python3 bench/quality/audit.py <source-folder> <export-folder> [--json out.json]
+    uv run bench/quality/audit.py <source-folder> <export-folder> [--json out.json]
 
 The export must be made at the photo's own size with no stamp or frame
 (`cargo run --release -p fotollection-core --example quality_export`). Both images are

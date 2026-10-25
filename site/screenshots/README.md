@@ -9,7 +9,7 @@ The screenshots on the website show the **real app on demo photos**, never anyon
    - renders the link previews from [`og.html`](og.html) (1200 × 630);
    - writes 1600 px WebP screenshots and JPEG link previews to `site/assets/img/` (shots named `check-*` are only for checking controls by eye and stay out of the site).
 
-Photos are chosen by file name in `shoot.mjs`. Needs cargo, npm, `cwebp` and Python with Pillow.
+Photos are chosen by file name in `shoot.mjs`. Needs cargo, npm, `cwebp` and uv (for Python with Pillow).
 
 ## Demo photos
 

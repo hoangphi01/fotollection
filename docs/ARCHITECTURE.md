@@ -106,7 +106,7 @@ src-tauri/               † # app shell: commands, protocol, capabilities
   src/i18n.rs            † # the shell's own strings: menu, window title, dialogs (FR-020)
   src/demo.rs            † # debug builds only: records IPC answers for demo photos, for the website screenshots
   capabilities/          † # Tauri 2 permission sets (see SECURITY.md)
-  icons/                 † # generated: npx tauri icon assets/logo-square.png, then python3 scripts/small-icons.py for the ≤ 64 px layers
+  icons/                 † # generated: npx tauri icon assets/logo-square.png, then uv run scripts/small-icons.py for the ≤ 64 px layers
   tauri.conf.json        † # window, CSP, bundle config
 ui/                      † # Vite + React + TS frontend (npm workspace member)
   components.json        † # shadcn/ui config (style radix-nova, Lucide)

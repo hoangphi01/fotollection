@@ -108,6 +108,11 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 72px; -webkit-text-size-adjust: 100%; }
+/* The page's own scroll bar matches the changelog box: thin, in the theme colour. */
+html { scrollbar-width: thin; scrollbar-color: var(--brand) var(--bg); }
+html::-webkit-scrollbar { width: 10px; }
+html::-webkit-scrollbar-track { background: var(--bg); }
+html::-webkit-scrollbar-thumb { background: var(--brand); border-radius: 999px; border: 2px solid var(--bg); }
 body {
   margin: 0;
   background: var(--bg);
@@ -247,12 +252,12 @@ p { margin: 0; }
 .js .changelog { position: relative; overflow: hidden; cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s; }
 .js .changelog::after { content: ''; position: sticky; display: block; bottom: 0; height: 56px; margin: -56px -28px -24px; background: linear-gradient(transparent, var(--surface)); pointer-events: none; }
 .js .changelog.active { overflow-y: auto; cursor: auto; border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand); }
-.js .changelog.active::after, .js .changelog.active /* A thin scroll bar in the theme colour that stays inside the rounded outline. */
+.js .changelog.active::after, .js .changelog.active .changelog-hint { display: none; }
+/* A thin scroll bar in the theme colour that stays inside the rounded outline. */
 .changelog { scrollbar-width: thin; scrollbar-color: var(--brand) transparent; }
 .changelog::-webkit-scrollbar { width: 8px; }
 .changelog::-webkit-scrollbar-track { background: transparent; margin: 14px 0; }
 .changelog::-webkit-scrollbar-thumb { background: var(--brand); border-radius: 999px; border: 2px solid var(--surface); }
-.changelog-hint { display: none; }
 .changelog-hint { position: absolute; right: 16px; bottom: 12px; z-index: 1; padding: 4px 10px; border-radius: 999px; background: var(--brand); color: var(--brand-ink); font-size: 0.8rem; font-weight: 600; }
 .changelog code { font-size: 0.88em; background: var(--tint); padding: 1px 5px; border-radius: 5px; }
 .install { display: grid; grid-template-columns: 1fr; gap: 14px; margin: 32px 0 18px; }

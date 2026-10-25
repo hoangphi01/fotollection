@@ -156,5 +156,5 @@ cargo run --release -p fotollection-core --example eval_bestshot -- ~/Pictures/s
 
 ```bash
 cargo run --release -p fotollection-core --example quality_export -- /tmp/out ~/Pictures/some-folder/*.JPG
-python3 bench/quality/audit.py ~/Pictures/some-folder /tmp/out --json bench/results/quality-run.json
+uv run bench/quality/audit.py ~/Pictures/some-folder /tmp/out --json bench/results/quality-run.json
 ```

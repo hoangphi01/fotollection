@@ -31,13 +31,14 @@ unzip -q -o "$work/face_landmarker.task" face_landmarks_detector.tflite -d "$wor
 check "$work/face_landmarks_detector.tflite" "$TFLITE_SHA256"
 
 echo "converting FaceMesh to ONNX" >&2
-python3 -m venv "$work/venv"
-"$work/venv/bin/pip" install -q "tensorflow==2.15.1" "tf2onnx==1.16.1"
+# A throwaway Python 3.11 env (TensorFlow 2.15 needs it), made by uv like every Python tool.
+uv venv -q --python 3.11 "$work/venv"
+uv pip install -q --python "$work/venv/bin/python" "tensorflow==2.15.1" "tf2onnx==1.16.1"
 "$work/venv/bin/python" -m tf2onnx.convert --tflite "$work/face_landmarks_detector.tflite" \
   --output "$work/facemesh.onnx" --opset 13 >/dev/null 2>&1
 
 echo "checking the conversion against the TFLite interpreter" >&2
-"$work/venv/bin/pip" install -q "onnxruntime==1.19.2"
+uv pip install -q --python "$work/venv/bin/python" "onnxruntime==1.19.2"
 "$work/venv/bin/python" -I - "$work" <<'PY'
 import sys, numpy as np, tensorflow as tf, onnxruntime as ort
 d = sys.argv[1]

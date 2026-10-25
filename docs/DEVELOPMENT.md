@@ -44,6 +44,7 @@ This project's equivalent of Python's `requirements.txt` + lockfile is the set o
 |------|---------|-------|
 | Rust | pinned in `rust-toolchain.toml` | Install `rustup`. It fetches the pinned toolchain |
 | Node.js | ≥ 22 (24 LTS recommended) | Build tooling only (Vite, Tauri CLI, shadcn CLI). Not shipped |
+| uv | ≥ 0.5 | Python tooling only (quality audits, icon and screenshot helpers): `uv sync` installs the versions locked in `pyproject.toml` / `uv.lock` into `.venv`, then `uv run <script>`. Not shipped |
 | Tauri CLI | pinned in `package-lock.json` | A root dev dependency, run through `npm run tauri …`. No `cargo install` is needed |
 | Platform toolchain | — | macOS: Xcode CLT. Windows: MSVC Build Tools + WebView2. Linux: webkit2gtk-4.1 and friends (see bootstrap) |
 | HEIF + HEVC extensions (Windows) | Microsoft Store | Only to test HEIC on Windows; without them HEIC is rejected as `import.heic_codec_missing` ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
