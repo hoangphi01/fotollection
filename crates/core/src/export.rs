@@ -82,6 +82,9 @@ pub struct ExportOptions<'a> {
     pub place_for: &'a (dyn Fn(&PhotoRecord) -> Option<String> + Sync),
     /// The info frame for one photo, if any (FR-040).
     pub frame_for: &'a (dyn Fn(&PhotoRecord) -> Option<FrameRequest> + Sync),
+    /// A subfolder of the destination for one photo, when folders are exported separately
+    /// (FR-056); `None` puts every photo straight into the destination.
+    pub group_for: &'a (dyn Fn(&PhotoRecord) -> Option<String> + Sync),
 }
 
 /// A sensible default for `max_inflight`: one per core, capped so decoded 24 MP buffers
@@ -197,13 +200,14 @@ fn export_one(
     };
     drop(image);
 
+    let base = match (options.group_for)(record) {
+        Some(group) => options.destination.join(group),
+        None => options.destination.to_path_buf(),
+    };
     let dir = if share.is_some() {
-        options
-            .destination
-            .join(SHARE_FOLDER)
-            .join(day_folder(record))
+        base.join(SHARE_FOLDER).join(day_folder(record))
     } else {
-        options.destination.join(day_folder(record))
+        base.join(day_folder(record))
     };
     std::fs::create_dir_all(&dir)?;
     let stem = Path::new(&record.file_name)

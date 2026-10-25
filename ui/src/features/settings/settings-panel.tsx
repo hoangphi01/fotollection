@@ -45,6 +45,8 @@ type SettingsPanelProps = {
   fonts: FontsApi
   exporter: ExportApi
   photoCount: number
+  /** Source folders in the export (FR-056). */
+  folderCount: number
   /** Photos with their own stamp from the preview (FR-044). */
   customStamps: number
   filter: CullFilter
@@ -64,6 +66,7 @@ export function SettingsPanel({
   fonts,
   exporter,
   photoCount,
+  folderCount,
   customStamps,
   filter,
   photo,
@@ -202,7 +205,7 @@ export function SettingsPanel({
 
       <Separator />
       <div className="space-y-3 p-4">
-        <ExportSection exporter={exporter} photoCount={photoCount} filter={filter} settings={settings} onChange={onChange} />
+        <ExportSection exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} settings={settings} onChange={onChange} />
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{t('settings.footer')}</span>
           {appInfo && <VersionHistory version={appInfo.appVersion} />}

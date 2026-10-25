@@ -31,7 +31,12 @@
     "refresh": "Refresh folders",
     "refreshHint": "Look for photos added to these folders since; your edits are kept",
     "removeFolder": "Remove {{name}} from the library",
-    "removeFolderHint": "Remove from the library (the files stay on disk)"
+    "removeFolderHint": "Remove from the library (the files stay on disk)",
+    "allPhotos": "All photos",
+    "folderHint": "Show only this folder",
+    "allHint": "Every photo from every folder",
+    "select": "Select folders",
+    "selectHint": "Select several folders to show or export together (or Ctrl/⌘-click)"
   },
   "task": {
     "import": "Reading photos",
@@ -247,6 +252,15 @@
       "facebook": "Facebook's best size, so it is not resized again · sRGB · camera details kept, GPS removed",
       "instagram": "1080 px wide, portraits up to 3:4 · sRGB · camera details kept, GPS removed",
       "custom": "640–6000 px on the long edge · sRGB · camera details kept, GPS removed"
+    },
+    "folders": {
+      "label": "How the folders are exported",
+      "together": "Together",
+      "separate": "Separately",
+      "togetherHint_one": "{{count}} folder into the same date folders",
+      "togetherHint_other": "{{count}} folders into the same date folders",
+      "separateHint_one": "{{count}} folder, each in a subfolder with its name",
+      "separateHint_other": "{{count}} folders, each in a subfolder with its name"
     }
   },
   "crop": {

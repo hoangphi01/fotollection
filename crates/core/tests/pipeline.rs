@@ -121,6 +121,7 @@ fn fr_009_export_by_date_never_overwrites() {
         max_inflight: 2,
         place_for: &|_| None,
         frame_for: &|_| None,
+        group_for: &|_| None,
     };
     let summary = run_export(
         &records(&lib),
@@ -142,6 +143,51 @@ fn fr_009_export_by_date_never_overwrites() {
     let decoded = PureRustCodec.decode(&out).unwrap().image;
     assert_eq!((decoded.width, decoded.height), (300, 200));
     assert_eq!(metadata::read_bytes(&out).gps, None);
+}
+
+#[test]
+fn fr_056_folders_exported_separately_get_their_own_subfolder() {
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    let a = Fixture {
+        width: 300,
+        height: 200,
+        date: Some("2026:07:14 10:00:00"),
+        ..Fixture::default()
+    };
+    write(src.path(), "IMG_1.jpg", &jpeg(&a));
+    write(src.path(), "IMG_2.jpg", &jpeg(&a));
+    let lib = import(src.path());
+    let settings = RenderSettings::default();
+    let group = |r: &fotollection_core::library::PhotoRecord| {
+        Some(
+            if r.file_name == "IMG_1.jpg" {
+                "Trip"
+            } else {
+                "Home"
+            }
+            .to_owned(),
+        )
+    };
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 2,
+        place_for: &|_| None,
+        frame_for: &|_| None,
+        group_for: &group,
+    };
+    let summary = run_export(
+        &records(&lib),
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert_eq!(summary.exported, 2);
+    assert!(dest.path().join("Trip/2026-07-14/IMG_1.jpg").exists());
+    assert!(dest.path().join("Home/2026-07-14/IMG_2.jpg").exists());
 }
 
 #[test]
@@ -181,6 +227,7 @@ fn fr_001_png_and_jpeg_export_together() {
         max_inflight: 2,
         place_for: &|_| None,
         frame_for: &|_| None,
+        group_for: &|_| None,
     };
     let summary = run_export(
         &all,
@@ -233,7 +280,7 @@ fn fr_022_export_uses_only_the_filtered_set() {
 
     let picks = CullFilter {
         flag: FlagFilter::Picks,
-        min_rating: 0,
+        ..CullFilter::default()
     };
     let kept: Vec<_> = lib
         .filtered_ids(&picks)
@@ -248,6 +295,7 @@ fn fr_022_export_uses_only_the_filtered_set() {
         max_inflight: 2,
         place_for: &|_| None,
         frame_for: &|_| None,
+        group_for: &|_| None,
     };
     let summary = run_export(
         &kept,
@@ -295,6 +343,7 @@ fn fr_011_bad_file_does_not_fail_batch() {
         max_inflight: 2,
         place_for: &|_| None,
         frame_for: &|_| None,
+        group_for: &|_| None,
     };
     let summary = run_export(
         &records(&lib),
@@ -331,6 +380,7 @@ fn fr_011_cancel_stops_and_removes_partials() {
         max_inflight: 1,
         place_for: &|_| None,
         frame_for: &|_| None,
+        group_for: &|_| None,
     };
     let cancel = CancellationToken::new();
     let summary = run_export(
@@ -516,6 +566,7 @@ fn fr_001_heic_imports_and_exports() {
         max_inflight: 1,
         place_for: &|_| None,
         frame_for: &|_| None,
+        group_for: &|_| None,
     };
     let summary = run_export(
         &all,
@@ -564,6 +615,7 @@ fn fr_053_share_export_resizes_keeps_ratio_and_writes_safe_exif() {
             max_inflight: 1,
             place_for: &|_| None,
             frame_for: &|_| None,
+            group_for: &|_| None,
         };
         let summary = run_export(
             &records(&lib),

@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 const DELAY_MS = 450
 const GAP = 6
+/** Space kept between a hint and the window's edges. */
+const EDGE = 8
 
 type Shown = { text: string; x: number; y: number; above: boolean }
 
@@ -13,6 +15,15 @@ type Shown = { text: string; x: number; y: number; above: boolean }
  */
 export function HintLayer() {
   const [shown, setShown] = useState<Shown | null>(null)
+  const ref = useRef<HTMLDivElement>(null)
+  // Centred under its element, but moved back inside the window near an edge.
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el || !shown) return
+    const width = el.offsetWidth
+    const left = Math.min(Math.max(EDGE, shown.x - width / 2), window.innerWidth - width - EDGE)
+    el.style.left = `${Math.max(EDGE, left)}px`
+  }, [shown])
 
   useEffect(() => {
     let timer: number | undefined
@@ -53,12 +64,13 @@ export function HintLayer() {
   if (!shown) return null
   return (
     <div
+      ref={ref}
       role="tooltip"
       className="pointer-events-none fixed z-[100] w-max max-w-xs animate-in rounded-md bg-foreground px-3 py-1.5 text-xs break-words text-background fade-in-0 zoom-in-95"
       style={{
-        left: Math.min(Math.max(8, shown.x), window.innerWidth - 8),
+        left: EDGE,
         top: shown.y,
-        transform: `translate(-50%, ${shown.above ? '-100%' : '0'})`,
+        transform: shown.above ? 'translateY(-100%)' : undefined,
       }}
     >
       {shown.text}

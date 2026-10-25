@@ -30,7 +30,7 @@ import { useProject } from '@/features/project/use-project'
 export function App() {
   const { t } = useTranslation()
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
-  const { photos, total, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
+  const { photos, total, folders, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
     useLibrary(filter)
   const { settings, revision: renderRevision, update, reload } = useRenderSettings()
   // Render and frame changes bump the same Rust counter; the newest one wins.
@@ -55,6 +55,17 @@ export function App() {
     setSelected(0)
   }
 
+  // Best-shot groups of the folders shown (FR-056): a group belongs to its first photo's folder.
+  const scopedShots = filter.folders?.length
+    ? {
+        ...bestShots,
+        groups: bestShots.groups.filter((g) => {
+          const folder = bestShots.photosById.get(g.id)?.folderId
+          return folder !== undefined && (filter.folders ?? []).includes(folder)
+        }),
+      }
+    : bestShots
+
   const open = (index: number) => {
     setSelected(index)
     setViewing(true)
@@ -65,11 +76,17 @@ export function App() {
       <TitleBar name={project.document.name ?? t('project.untitled')} />
       <div className="flex min-h-0 flex-1">
       <LibrarySidebar
-        photos={photos}
+        folders={folders}
+        selected={filter.folders ?? []}
+        onSelect={(next) => setFilter({ ...filter, folders: next })}
         lastImport={lastImport}
         onOpenFolder={() => void importFolder()}
         onRefresh={() => void refresh()}
-        onRemoveFolder={(id) => void removeFolder(id)}
+        onRemoveFolder={(id) => {
+          // Folder ids are renumbered after a removal: show every photo again.
+          setFilter({ ...filter, folders: [] })
+          void removeFolder(id)
+        }}
         project={project}
         onShowRelink={() => setRelinkHiddenFor(null)}
       />
@@ -101,7 +118,7 @@ export function App() {
                   {t('bestShot.viewPhotos')}
                 </ToggleGroupItem>
                 <ToggleGroupItem value="groups" className="px-2.5 text-xs">
-                  {t('bestShot.viewGroups', { count: bestShots.groups.length })}
+                  {t('bestShot.viewGroups', { count: scopedShots.groups.length })}
                 </ToggleGroupItem>
               </ToggleGroup>
               <Tooltip>
@@ -153,7 +170,7 @@ export function App() {
             </div>
             {view === 'groups' ? (
               <GroupsView
-                bestShots={bestShots}
+                bestShots={scopedShots}
                 thumbVersions={thumbVersions}
                 generation={project.document.generation}
                 revision={revision}
@@ -161,7 +178,7 @@ export function App() {
             ) : photos.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
                 <p>{t('app.noMatch')}</p>
-                <Button variant="outline" size="sm" onClick={() => setFilter(ALL_PHOTOS)}>
+                <Button variant="outline" size="sm" onClick={() => setFilter({ ...ALL_PHOTOS, folders: filter.folders })}>
                   <FilterX data-icon="inline-start" /> {t('app.showAll')}
                 </Button>
               </div>
@@ -209,6 +226,7 @@ export function App() {
         fonts={fonts}
         exporter={exporter}
         photoCount={photos.length}
+        folderCount={filter.folders?.length || folders.length}
         customStamps={customStamps}
         filter={filter}
         photo={photos[current]}

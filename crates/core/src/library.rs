@@ -40,12 +40,26 @@ pub enum FlagFilter {
 }
 
 /// The library filter (FR-022). The grid shows, and export writes, exactly the photos it keeps.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct CullFilter {
     pub flag: FlagFilter,
     /// Minimum stars, 0–5. Values above 5 are treated as 5.
     pub min_rating: u8,
+    /// Source folders shown, like browser tabs (FR-056); empty means every folder. Unknown
+    /// ids match nothing.
+    #[serde(default)]
+    pub folders: Vec<u16>,
+}
+
+/// One source folder in the library list (FR-056).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderSummary {
+    pub id: u16,
+    pub name: String,
+    /// Every photo of the folder, whatever the filter.
+    pub count: u32,
 }
 
 impl CullFilter {
@@ -461,8 +475,48 @@ impl Library {
     /// Photos kept by `filter`, in capture order (FR-003, FR-022).
     pub fn filtered_ids(&self, filter: &CullFilter) -> Vec<PhotoId> {
         let mut ids = self.sorted_ids();
-        ids.retain(|&id| filter.matches(&self.edits(id)));
+        ids.retain(|&id| {
+            (filter.folders.is_empty()
+                || self
+                    .folder_of(id)
+                    .is_some_and(|f| filter.folders.contains(&f)))
+                && filter.matches(&self.edits(id))
+        });
         ids
+    }
+
+    /// The source folder of a photo (FR-056).
+    pub fn folder_of(&self, id: PhotoId) -> Option<u16> {
+        self.index(id).map(|i| self.folder[i])
+    }
+
+    /// The folder's own name, as shown in the library list.
+    pub fn folder_name(&self, folder: u16) -> Option<String> {
+        let path = self.folders.get(usize::from(folder))?;
+        Some(path.file_name().map_or_else(
+            || path.to_string_lossy().into_owned(),
+            |n| n.to_string_lossy().into_owned(),
+        ))
+    }
+
+    /// Every source folder with its photo count, in import order (FR-056).
+    pub fn folder_summaries(&self) -> Vec<FolderSummary> {
+        let mut counts = vec![0u32; self.folders.len()];
+        for &f in &self.folder {
+            if let Some(c) = counts.get_mut(usize::from(f)) {
+                *c += 1;
+            }
+        }
+        (0..self.folders.len())
+            .filter_map(|i| {
+                let id = u16::try_from(i).ok()?;
+                Some(FolderSummary {
+                    id,
+                    name: self.folder_name(id)?,
+                    count: counts[i],
+                })
+            })
+            .collect()
     }
 
     pub fn summaries(&self, filter: &CullFilter) -> Vec<PhotoSummary> {
@@ -573,7 +627,11 @@ mod tests {
         let pick3 = edits(3, Some(Flag::Pick));
         let reject = edits(0, Some(Flag::Reject));
         let plain = edits(1, None);
-        let only = |flag, min_rating| CullFilter { flag, min_rating };
+        let only = |flag, min_rating| CullFilter {
+            flag,
+            min_rating,
+            folders: Vec::new(),
+        };
 
         assert!(
             [&pick3, &reject, &plain]
@@ -609,7 +667,7 @@ mod tests {
         history.apply(&mut lib, &[(a, picked)]);
         let picks = CullFilter {
             flag: FlagFilter::Picks,
-            min_rating: 0,
+            ..CullFilter::default()
         };
         assert_eq!(lib.filtered_ids(&picks), [a]);
         assert_eq!(
@@ -622,5 +680,38 @@ mod tests {
         assert_eq!(lib.filtered_ids(&CullFilter::default()), [a, b]);
         history.redo(&mut lib);
         assert_eq!(lib.filtered_ids(&picks), [a]);
+    }
+
+    #[test]
+    fn fr_056_folders_scope_the_library_like_tabs() {
+        let mut lib = Library::new();
+        let trip = lib.add_folder(Path::new("/photos/Trip"));
+        let home = lib.add_folder(Path::new("/photos/Home"));
+        let a = lib.push(trip, &file("/photos/Trip/a.jpg", 1), &meta_at(1));
+        let b = lib.push(home, &file("/photos/Home/b.jpg", 2), &meta_at(2));
+        let c = lib.push(trip, &file("/photos/Trip/c.jpg", 3), &meta_at(3));
+        let (Some(a), Some(b), Some(c)) = (a, b, c) else {
+            panic!("three new photos");
+        };
+        let scope = |folders: Vec<u16>| CullFilter {
+            folders,
+            ..CullFilter::default()
+        };
+        assert_eq!(lib.filtered_ids(&scope(vec![])), [a, b, c]);
+        assert_eq!(lib.filtered_ids(&scope(vec![trip])), [a, c]);
+        assert_eq!(lib.filtered_ids(&scope(vec![home, trip])), [a, b, c]);
+        assert_eq!(lib.filtered_ids(&scope(vec![99])), []);
+        // Counts ignore the filter, so a folder never disappears from the list.
+        let names: Vec<_> = lib
+            .folder_summaries()
+            .into_iter()
+            .map(|f| (f.name, f.count))
+            .collect();
+        assert_eq!(names, [("Trip".to_owned(), 2), ("Home".to_owned(), 1)]);
+        assert_eq!(lib.folder_of(b), Some(home));
+        // Older callers without `folders` still mean "every folder".
+        let old: CullFilter = serde_json::from_str(r#"{"flag":"all","minRating":0}"#)
+            .unwrap_or_else(|e| panic!("{e}"));
+        assert_eq!(old.folders, Vec::<u16>::new());
     }
 }

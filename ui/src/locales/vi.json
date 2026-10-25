@@ -28,7 +28,12 @@
     "refresh": "Làm mới thư mục",
     "refreshHint": "Tìm ảnh mới được thêm vào các thư mục này; các chỉnh sửa được giữ nguyên",
     "removeFolder": "Gỡ {{name}} khỏi thư viện",
-    "removeFolderHint": "Gỡ khỏi thư viện (file vẫn còn nguyên trên máy)"
+    "removeFolderHint": "Gỡ khỏi thư viện (file vẫn còn nguyên trên máy)",
+    "allPhotos": "Tất cả ảnh",
+    "folderHint": "Chỉ hiện thư mục này",
+    "allHint": "Toàn bộ ảnh của mọi thư mục",
+    "select": "Chọn thư mục",
+    "selectHint": "Chọn nhiều thư mục để xem hoặc export cùng lúc (hoặc Ctrl/⌘-click)"
   },
   "task": {
     "import": "Đang đọc ảnh",
@@ -235,6 +240,13 @@
       "facebook": "Đúng cỡ Facebook ưa thích nên không bị thu nhỏ lại · sRGB · giữ thông số máy, xóa GPS",
       "instagram": "Ngang 1080 px, ảnh dọc tối đa 3:4 · sRGB · giữ thông số máy, xóa GPS",
       "custom": "Cạnh dài 640–6000 px · sRGB · giữ thông số máy, xóa GPS"
+    },
+    "folders": {
+      "label": "Cách export các thư mục",
+      "together": "Chung",
+      "separate": "Riêng",
+      "togetherHint_other": "{{count}} thư mục, gộp chung vào các thư mục theo ngày",
+      "separateHint_other": "{{count}} thư mục, mỗi thư mục một thư mục con mang tên nó"
     }
   },
   "crop": {

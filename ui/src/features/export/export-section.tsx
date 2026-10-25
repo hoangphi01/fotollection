@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { CircleCheck, Download, FolderOutput, OctagonX, TriangleAlert, X } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { CullFilter, RenderSettings } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { ExportTargetPicker } from './export-target-picker'
@@ -16,6 +18,8 @@ type ExportSectionProps = {
   filter: CullFilter
   /** Export only this photo (the preview, FR-055) instead of the whole filtered set. */
   only?: number
+  /** Source folders in the export (FR-056); from two on, they can go out together or apart. */
+  folderCount?: number
   settings: RenderSettings | null
   onChange: (change: (current: RenderSettings) => RenderSettings) => void
 }
@@ -25,10 +29,20 @@ function folderName(path: string): string {
 }
 
 /** The export controls, the same in the settings panel and in the preview (FR-055). */
-export function ExportSection({ exporter, photoCount, filter, only, settings, onChange }: ExportSectionProps) {
+export function ExportSection({
+  exporter,
+  photoCount,
+  filter,
+  only,
+  folderCount = 1,
+  settings,
+  onChange,
+}: ExportSectionProps) {
   const { t } = useTranslation()
   const { state, destination, chooseDestination, exportPhotos, cancel, dismiss } = exporter
   const single = only !== undefined
+  const [separate, setSeparate] = useState(false)
+  const canSplit = !single && folderCount > 1
   const running = state.kind === 'running'
 
   return (
@@ -93,6 +107,31 @@ export function ExportSection({ exporter, photoCount, filter, only, settings, on
 
       <ExportTargetPicker settings={settings} onChange={onChange} disabled={running} />
 
+      {canSplit && (
+        <div className="space-y-1">
+          <ToggleGroup
+            type="single"
+            variant="outline"
+            size="sm"
+            className="w-full"
+            disabled={running}
+            value={separate ? 'separate' : 'together'}
+            onValueChange={(v) => v && setSeparate(v === 'separate')}
+            aria-label={t('export.folders.label')}
+          >
+            <ToggleGroupItem value="together" className="flex-1 text-xs">
+              {t('export.folders.together')}
+            </ToggleGroupItem>
+            <ToggleGroupItem value="separate" className="flex-1 text-xs">
+              {t('export.folders.separate')}
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <p className="text-xs text-muted-foreground">
+            {t(separate ? 'export.folders.separateHint' : 'export.folders.togetherHint', { count: folderCount })}
+          </p>
+        </div>
+      )}
+
       <button
         type="button"
         onClick={() => void chooseDestination()}
@@ -115,7 +154,7 @@ export function ExportSection({ exporter, photoCount, filter, only, settings, on
         <Button
           className="w-full"
           disabled={!single && photoCount === 0}
-          onClick={() => void exportPhotos(filter, photoCount, only ?? null)}
+          onClick={() => void exportPhotos(filter, photoCount, only ?? null, canSplit && separate)}
         >
           <Download data-icon="inline-start" />
           {single

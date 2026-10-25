@@ -588,6 +588,16 @@ Next to the batch settings, any other setting will later be overridable for one 
 - One export job and one destination are shared by the settings panel and the preview: a destination chosen in one is used by the other, and the progress shows in both.
 - `start_export` takes the photo's id; Rust exports only that photo, and an unknown id exports nothing.
 
+### FR-056 — Folders as tabs
+
+**P1.** With several folders imported, the library list works like browser tabs.
+
+- **All photos** sits above the folders, with the total count: the grid shows every photo of every folder.
+- **Clicking a folder shows only that folder**: the grid, the best-shot groups and the export all work on it, like switching tabs. The folder counts never depend on the star or flag filter.
+- **Several folders:** the select button above the list (or Ctrl/⌘-click) turns the folders into tick boxes; the grid and the export then cover the ticked folders.
+- **Together or separately:** when the export covers two folders or more, the export card asks whether they go **together** (the usual date folders) or **separately** (one subfolder per source folder, named after it; two folders with the same name get " (2)").
+- The choice of folders is view state, not saved in the project. Removing a folder shows all photos again, since folder ids are renumbered.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

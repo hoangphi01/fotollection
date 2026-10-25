@@ -4,6 +4,7 @@ import {
   commands,
   events,
   type CullFilter,
+  type FolderSummary,
   type ImportSummary,
   type PhotoSummary,
 } from '@/ipc/bindings'
@@ -14,6 +15,7 @@ export function useLibrary(filter: CullFilter) {
   const [photos, setPhotos] = useState<PhotoSummary[]>([])
   const [total, setTotal] = useState(0)
   const [customStamps, setCustomStamps] = useState(0)
+  const [folders, setFolders] = useState<FolderSummary[]>([])
   const [thumbVersions, setThumbVersions] = useState<Record<number, number>>({})
   const [lastImport, setLastImport] = useState<ImportSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -25,6 +27,7 @@ export function useLibrary(filter: CullFilter) {
           setPhotos(result.data.photos)
           setTotal(result.data.total)
           setCustomStamps(result.data.customStamps)
+          setFolders(result.data.folders)
         } else setError(errorText(result.error))
       })
     void load()
@@ -60,5 +63,5 @@ export function useLibrary(filter: CullFilter) {
     if (result.status === 'error') setError(errorText(result.error))
   }, [])
 
-  return { photos, total, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder }
+  return { photos, total, folders, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder }
 }

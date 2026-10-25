@@ -6,24 +6,32 @@ import {
   FileUp,
   Folder,
   FolderOpen,
+  Images,
+  ListChecks,
   RefreshCw,
   Save,
   TriangleAlert,
   X,
 } from 'lucide-react'
-import { useMemo } from 'react'
+import { useState, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import type { ImportSummary, PhotoSummary } from '@/ipc/bindings'
+import type { FolderSummary, ImportSummary } from '@/ipc/bindings'
 import { ThemeSwitch } from '@/features/appearance/theme-switch'
 import { ProjectName } from '@/features/project/project-name'
 import type { ProjectApi } from '@/features/project/use-project'
 import { errorText } from '@/lib/errors'
+import { cn } from '@/lib/utils'
 
 type LibrarySidebarProps = {
-  photos: PhotoSummary[]
+  /** Every source folder with its own count (FR-056). */
+  folders: FolderSummary[]
+  /** Folders shown, like browser tabs; empty means all photos. */
+  selected: number[]
+  onSelect: (folders: number[]) => void
   lastImport: ImportSummary | null
   onOpenFolder: () => void
   /** Scan the folders again for new photos, keeping every edit. */
@@ -35,7 +43,9 @@ type LibrarySidebarProps = {
 }
 
 export function LibrarySidebar({
-  photos,
+  folders,
+  selected,
+  onSelect,
   lastImport,
   onOpenFolder,
   onRefresh,
@@ -44,15 +54,21 @@ export function LibrarySidebar({
   onShowRelink,
 }: LibrarySidebarProps) {
   const { t } = useTranslation()
-  const folders = useMemo(() => {
-    const byId = new Map<number, { name: string; count: number }>()
-    for (const p of photos) {
-      const f = byId.get(p.folderId) ?? { name: p.folderName, count: 0 }
-      f.count += 1
-      byId.set(p.folderId, f)
-    }
-    return [...byId.entries()]
-  }, [photos])
+  const total = folders.reduce((sum, f) => sum + f.count, 0)
+  // Select mode: a tick box per folder, for showing or exporting several at once.
+  const [selecting, setSelecting] = useState(false)
+  // A click shows one folder, like switching tabs; in select mode, or with Ctrl/⌘-click,
+  // it adds or removes one.
+  const pick = (event: MouseEvent, id: number) => {
+    if (!(selecting || event.metaKey || event.ctrlKey)) return onSelect([id])
+    const next = selected.includes(id) ? selected.filter((f) => f !== id) : [...selected, id]
+    onSelect(next)
+  }
+  const rowClass = (active: boolean) =>
+    cn(
+      'flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-sidebar-accent',
+      active && 'bg-sidebar-accent font-medium text-sidebar-accent-foreground',
+    )
 
   return (
     <aside className="flex w-72 shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground">
@@ -130,6 +146,19 @@ export function LibrarySidebar({
           {t('library.title')}
         </span>
         <div className="flex">
+          {folders.length > 1 && (
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label={t('library.select')}
+              aria-pressed={selecting}
+              data-hint={t('library.selectHint')}
+              className={cn(selecting && 'bg-sidebar-accent text-primary')}
+              onClick={() => setSelecting((on) => !on)}
+            >
+              <ListChecks />
+            </Button>
+          )}
           {folders.length > 0 && (
             <Button
               variant="ghost"
@@ -157,29 +186,54 @@ export function LibrarySidebar({
           <p className="px-2 py-1 text-xs text-muted-foreground">{t('library.noFolders')}</p>
         ) : (
           <ul className="space-y-0.5">
-            {folders.map(([id, { name, count }]) => (
-              <li
-                key={id}
-                className="group flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-sidebar-accent"
+            <li>
+              <button
+                type="button"
+                className={rowClass(selected.length === 0)}
+                aria-pressed={selected.length === 0}
+                data-hint={t('library.allHint')}
+                onClick={() => onSelect([])}
               >
-                <Folder className="size-4 text-muted-foreground" />
-                <span className="truncate">{name}</span>
-                <span className="ml-auto text-xs text-muted-foreground tabular-nums group-focus-within:hidden group-hover:hidden">
-                  {count}
-                </span>
-                {/* Like closing a browser tab: shown on hover, the files stay on disk. */}
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label={t('library.removeFolder', { name })}
-                  data-hint={t('library.removeFolderHint')}
-                  onClick={() => onRemoveFolder(id)}
-                  className="ml-auto hidden size-5 rounded-full group-focus-within:inline-flex group-hover:inline-flex"
-                >
-                  <X className="size-3.5" />
-                </Button>
-              </li>
-            ))}
+                <Images className={cn('size-4 shrink-0', selected.length === 0 ? 'text-primary' : 'text-muted-foreground')} />
+                <span className="truncate">{t('library.allPhotos')}</span>
+                <span className="ml-auto text-xs text-muted-foreground tabular-nums">{total}</span>
+              </button>
+            </li>
+            {folders.map(({ id, name, count }) => {
+              const active = selected.includes(id)
+              return (
+                <li key={id} className="group relative flex items-center">
+                  <button
+                    type="button"
+                    className={rowClass(active)}
+                    aria-pressed={active}
+                    data-hint={selecting ? undefined : t('library.folderHint')}
+                    onClick={(e) => pick(e, id)}
+                  >
+                    {selecting ? (
+                      <Checkbox checked={active} tabIndex={-1} className="pointer-events-none" aria-hidden />
+                    ) : (
+                      <Folder className={cn('size-4 shrink-0', active ? 'text-primary' : 'text-muted-foreground')} />
+                    )}
+                    <span className="truncate">{name}</span>
+                    <span className="ml-auto text-xs text-muted-foreground tabular-nums group-focus-within:invisible group-hover:invisible">
+                      {count}
+                    </span>
+                  </button>
+                  {/* Like closing a browser tab: shown on hover, the files stay on disk. */}
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
+                    aria-label={t('library.removeFolder', { name })}
+                    data-hint={t('library.removeFolderHint')}
+                    onClick={() => onRemoveFolder(id)}
+                    className="absolute right-1.5 hidden size-5 rounded-full group-focus-within:inline-flex group-hover:inline-flex"
+                  >
+                    <X className="size-3.5" />
+                  </Button>
+                </li>
+              )
+            })}
           </ul>
         )}
       </ScrollArea>

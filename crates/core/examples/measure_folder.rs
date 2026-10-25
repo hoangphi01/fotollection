@@ -233,6 +233,7 @@ fn main() {
         max_inflight: inflight,
         place_for: &|_| None,
         frame_for: &|_| None,
+        group_for: &|_| None,
     };
     let t = Instant::now();
     let summary = run_export(

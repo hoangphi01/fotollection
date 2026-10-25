@@ -18,6 +18,8 @@ use fotollection_core::codec::image_dimensions;
 use fotollection_core::export::{EXPORT_QUALITY, ExportOptions, default_inflight, run_export};
 use fotollection_core::frame::{CameraProfile, FrameSettings, LogoKind};
 use fotollection_core::import::{self, ImportedFile};
+use std::collections::HashMap;
+
 use fotollection_core::library::{CullFilter, Flag, PhotoEdits, PhotoId, PhotoSummary, flags};
 use fotollection_core::logo;
 use fotollection_core::metadata;
@@ -291,6 +293,8 @@ pub struct PhotoList {
     pub total: u32,
     /// Photos with their own stamp set in the preview (FR-044), for the Reset button.
     pub custom_stamps: u32,
+    /// Every source folder with its own count, whatever the filter (FR-056).
+    pub folders: Vec<fotollection_core::library::FolderSummary>,
 }
 
 /// The photos kept by `filter`, ordered by capture time (FR-003, FR-022).
@@ -306,6 +310,7 @@ pub fn list_photos(state: State<'_, AppState>, filter: CullFilter) -> Result<Pho
         photos: library.summaries(&filter),
         total: u32::try_from(library.len()).unwrap_or(u32::MAX),
         custom_stamps: u32::try_from(custom_stamps).unwrap_or(u32::MAX),
+        folders: library.folder_summaries(),
     })
 }
 
@@ -523,7 +528,8 @@ pub async fn pick_export_folder(app: AppHandle) -> Result<Option<String>, IpcErr
 
 /// Starts exporting the photos kept by `filter` to the chosen destination
 /// (FR-008, FR-009, FR-011, FR-022), or only the photo `only` when it is set: the one open
-/// in the preview (FR-055).
+/// in the preview (FR-055). With `separate`, each source folder goes into its own subfolder
+/// of the destination (FR-056).
 /// Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
 #[tauri::command]
 #[specta::specta]
@@ -532,6 +538,7 @@ pub fn start_export(
     state: State<'_, AppState>,
     filter: CullFilter,
     only: Option<PhotoId>,
+    separate: bool,
 ) -> Result<u32, IpcError> {
     let destination = state
         .export_destination
@@ -539,12 +546,17 @@ pub fn start_export(
         .map_err(|e| IpcError::internal(e.to_string()))?
         .clone()
         .ok_or_else(|| IpcError::new("export.no_destination", "Choose a destination first"))?;
-    let records: Vec<_> = {
+    let (records, groups) = {
         let library = state
             .library
             .read()
             .map_err(|e| IpcError::internal(e.to_string()))?;
-        match only {
+        let groups = if separate {
+            folder_groups(&library)
+        } else {
+            HashMap::new()
+        };
+        let records: Vec<_> = match only {
             // One photo from the preview; an unknown id exports nothing.
             Some(id) => library.record(id).into_iter().collect(),
             // Exactly the photos the grid shows (FR-022).
@@ -553,7 +565,8 @@ pub fn start_export(
                 .into_iter()
                 .filter_map(|id| library.record(id))
                 .collect(),
-        }
+        };
+        (records, groups)
     };
     if records.is_empty() {
         return Err(IpcError::new(
@@ -592,6 +605,8 @@ pub fn start_export(
         let frame_for = |record: &fotollection_core::library::PhotoRecord| {
             frames.request(record, place_for(record).as_deref())
         };
+        let group_for =
+            |record: &fotollection_core::library::PhotoRecord| groups.get(&record.id).cloned();
         let options = ExportOptions {
             destination: &destination,
             settings: &settings,
@@ -599,6 +614,7 @@ pub fn start_export(
             max_inflight: default_inflight(),
             place_for: &place_for,
             frame_for: &frame_for,
+            group_for: &group_for,
         };
         let throttle = Throttle::default();
         let on_progress = |done: u32, total: u32| {
@@ -624,6 +640,28 @@ pub fn start_export(
         let _ = ExportFinished { job_id, summary }.emit(&app);
     });
     Ok(job_id)
+}
+
+/// The subfolder of each photo when folders are exported separately (FR-056): the source
+/// folder's name, with " (2)", " (3)"… when two folders share a name.
+fn folder_groups(library: &fotollection_core::library::Library) -> HashMap<PhotoId, String> {
+    let mut names: Vec<String> = Vec::new();
+    let mut by_folder = HashMap::new();
+    for folder in library.folder_summaries() {
+        let mut name = folder.name.clone();
+        let mut n = 1;
+        while names.contains(&name) {
+            n += 1;
+            name = format!("{} ({n})", folder.name);
+        }
+        names.push(name.clone());
+        by_folder.insert(folder.id, name);
+    }
+    library
+        .sorted_ids()
+        .into_iter()
+        .filter_map(|id| Some((id, by_folder.get(&library.folder_of(id)?)?.clone())))
+        .collect()
 }
 
 #[tauri::command]

@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Fix: a long lens name no longer runs into the logo; it moves to its own line
 - New: export for social media (original size, Facebook, Instagram or your own size), in sRGB, with the camera details and never GPS
 - New: export the photo you are looking at, straight from the preview
+- New: folders work like tabs: All photos, one folder, or several ticked, exported together or separately
 
 ### Added
 
@@ -21,9 +22,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Share online (FR-053):** the export card has *Print* and *Share online*. Share makes light JPEGs in sRGB at the original size (a 10 MB camera file becomes about 3 MB), 2048 px for Facebook, 1080 px wide for Instagram (portraits stop at 3:4) or a long edge of your choice (640–6000 px). Photos in Display P3 or Adobe RGB are converted so they do not look washed out, and they are lightly sharpened after resizing. The files keep the camera, lens and exposure details and name Fotollection as the editing app, like Snapseed; **the location is never written**. They go into a `Share` folder, apart from prints. The choice is remembered (settings v8).
 - **Export from the preview (FR-055):** the preview has an Export card, with the same controls as the settings panel, that exports only the photo you are looking at; the Export button on the photo jumps to it. Both places share the destination and the progress.
+- **Folders as tabs (FR-056):** the library list starts with *All photos*; clicking a folder shows only that folder (grid, best-shot groups and export), like switching browser tabs. The select button above the list, or Ctrl/⌘-click, ticks several folders. When an export covers two folders or more, choose *Together* (the usual date folders) or *Separately* (one subfolder per folder). Folder counts no longer change with the star and flag filter.
 
 ### Fixed
 
+- **Hover hints** near the window's edge are no longer cut off.
 - **Info frame (FR-040):** a long lens name (for example `30mm F1.4 DC DN | Contemporary 016`) no longer runs into the camera logo. The lens moves to its own line above the exposure settings, and a line that is still too long is set smaller.
 
 ## [0.3.1] - 2026-10-25

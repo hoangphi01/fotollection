@@ -216,12 +216,12 @@ Commands marked † are implemented.
 | `pick_and_import_folder() -> ImportSummary?` † | Opens the folder dialog **in Rust** and imports it. Drag-and-drop on the window uses the same import path | FR-001, FR-002 |
 | `remove_folder(folder) -> DocumentState` † | Takes a folder out of the library like closing a tab: rebuilds the library from the other folders and re-applies their edits; files are untouched; ids and undo history reset | FR-001 |
 | `refresh_library() -> ImportSummary` † | Scans the library's folders again and adds photos that appeared since; photos already known keep every edit, and a refresh that finds nothing marks nothing as edited | FR-001, FR-023 |
-| `list_photos(filter) -> { photos: [PhotoSummary], total }` † | Data for the grid, sorted by capture time and filtered in Rust by flag and minimum rating. Summaries carry `rating` and `flag` | FR-003, FR-022 |
+| `list_photos(filter) -> { photos: [PhotoSummary], total, customStamps, folders: [FolderSummary] }` † | Data for the grid, sorted by capture time and filtered in Rust by flag, minimum rating and folders (empty = all). Summaries carry `rating` and `flag`; `folders` lists every source folder with its unfiltered count | FR-003, FR-022, FR-056 |
 | `get_settings()` / `set_settings(settings) -> SettingsState` † | Validated render settings plus a `revision` used to refresh previews | FR-004, FR-006 |
 | `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`), stored per machine in `settings.json` v3 | FR-020 |
 | `set_photo_override(id, override)` | Per-photo crop frame or place name | FR-005, FR-006 |
 | `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
-| `start_export(filter, only) -> JobId` † | Exports exactly the photos `filter` keeps (the set the grid shows), or only the photo `only` (the preview), to the chosen destination, as prints or share files (`render.exportTarget`) | FR-008, FR-009, FR-010, FR-022, FR-053, FR-055 |
+| `start_export(filter, only, separate) -> JobId` † | Exports exactly the photos `filter` keeps (the set the grid shows, including its folders), or only the photo `only` (the preview), to the chosen destination, as prints or share files (`render.exportTarget`); `separate` gives each source folder its own subfolder | FR-008, FR-009, FR-010, FR-022, FR-053, FR-055, FR-056 |
 | `cancel_job(job_id)` † | Cancel a running job | FR-011 |
 | `get_frame_config()` / `set_frame_settings(settings)` † | Info frame settings plus camera profiles (with EXIF-derived defaults) | FR-040 |
 | `set_camera_profile(profile)` † | Per-camera overrides: name, brand, lens, focal, aperture, photo style, logo kind | FR-040 |

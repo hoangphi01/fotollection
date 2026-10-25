@@ -42,7 +42,20 @@ function bridge({ fixtures, scenario, language, os }) {
     get_ui_settings: () => ({ ...common.get_ui_settings, language }),
     get_document: () => ({ ...common.get_document, edited: false, name: 'Trip 2018' }),
     list_groups: () => common.list_groups,
-    list_photos: () => common.list_photos,
+    // Dumps recorded before FR-056 have no folder list: count it from the photos.
+    list_photos: (a) => {
+      const list = common.list_photos
+      const folders = list.folders ?? Object.values(
+        list.photos.reduce((acc, p) => {
+          acc[p.folderId] ??= { id: p.folderId, name: p.folderName, count: 0 }
+          acc[p.folderId].count += 1
+          return acc
+        }, {}),
+      )
+      const scope = a?.filter?.folders ?? []
+      const photos = scope.length ? list.photos.filter((p) => scope.includes(p.folderId)) : list.photos
+      return { ...list, photos, folders }
+    },
     photo_details: (a) => byId(common.photo_details, a),
     get_crop_geometry: (a) => byId(common.get_crop_geometry, a),
     print_advice: (a) => byId(common.print_advice ?? {}, a),

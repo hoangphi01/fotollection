@@ -70,6 +70,7 @@ fn main() {
             max_inflight: default_inflight(),
             place_for: &|_| None,
             frame_for: &|_| None,
+            group_for: &|_| None,
         },
         default_codec().as_ref(),
         &CancellationToken::new(),

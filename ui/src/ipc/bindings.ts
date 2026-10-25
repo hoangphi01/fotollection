@@ -34,10 +34,11 @@ export const commands = {
 	/**
 	 *  Starts exporting the photos kept by `filter` to the chosen destination
 	 *  (FR-008, FR-009, FR-011, FR-022), or only the photo `only` when it is set: the one open
-	 *  in the preview (FR-055).
+	 *  in the preview (FR-055). With `separate`, each source folder goes into its own subfolder
+	 *  of the destination (FR-056).
 	 *  Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
 	 */
-	startExport: (filter: CullFilter, only: number | null) => typedError<number, IpcError>(__TAURI_INVOKE("start_export", { filter, only })),
+	startExport: (filter: CullFilter, only: number | null, separate: boolean) => typedError<number, IpcError>(__TAURI_INVOKE("start_export", { filter, only, separate })),
 	cancelJob: (jobId: number) => typedError<null, IpcError>(__TAURI_INVOKE("cancel_job", { jobId })),
 	/**  Details for the preview inspector (FR-002, FR-007, FR-026). Reads only the JPEG header. */
 	photoDetails: (id: PhotoId) => typedError<PhotoDetails, IpcError>(__TAURI_INVOKE("photo_details", { id })),
@@ -320,6 +321,11 @@ export type CullFilter = {
 	flag: FlagFilter,
 	/**  Minimum stars, 0–5. Values above 5 are treated as 5. */
 	minRating: number,
+	/**
+	 *  Source folders shown, like browser tabs (FR-056); empty means every folder. Unknown
+	 *  ids match nothing.
+	 */
+	folders?: number[],
 };
 
 /**  A saved custom print size (FR-043). Stored in millimetres, short edge first. */
@@ -404,6 +410,14 @@ export type Flag = "pick" | "reject";
 
 /**  Which flags a culling filter keeps (FR-022). */
 export type FlagFilter = "all" | "picks" | "unflagged" | "rejects";
+
+/**  One source folder in the library list (FR-056). */
+export type FolderSummary = {
+	id: number,
+	name: string,
+	/**  Every photo of the folder, whatever the filter. */
+	count: number,
+};
 
 export type FontFormat = "ttf" | "otf";
 
@@ -588,6 +602,8 @@ export type PhotoList = {
 	total: number,
 	/**  Photos with their own stamp set in the preview (FR-044), for the Reset button. */
 	customStamps: number,
+	/**  Every source folder with its own count, whatever the filter (FR-056). */
+	folders: FolderSummary[],
 };
 
 /**  One photo's result inside its group. */
