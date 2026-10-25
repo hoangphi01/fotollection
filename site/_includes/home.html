@@ -258,3 +258,21 @@
     </div>
   </div>
 </section>
+
+<section class="section" id="faq">
+  <div class="wrap">
+    <h2>{{ t.faq_title }}</h2>
+    <p class="lead narrow">{{ t.faq_lead }}</p>
+    <div class="qa">
+      {%- for group in t.faq_groups %}
+      <p class="qa-label">{{ group.label }}</p>
+      {%- for item in group.items %}
+      <details>
+        <summary>{{ item.q }}</summary>
+        <p>{{ item.a }}</p>
+      </details>
+      {%- endfor %}
+      {%- endfor %}
+    </div>
+  </div>
+</section>

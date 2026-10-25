@@ -41,6 +41,25 @@ en:
   show_frame: The "Shot on" info frame with the camera's logo
   show_crop: Straightening a horizon in the crop editor
   show_groups: Similar shots grouped, the best one suggested
+  faq_title: "Questions before you download"
+  faq_lead: "Why another photo app, and what makes this one different."
+  faq_groups:
+    - label: "Why Fotollection"
+      items:
+        - q: "Why not just use Lightroom?"
+          a: "Lightroom is a full photo editor with a catalogue, sold by subscription, and it is very good at editing. Fotollection does one job: getting a trip ready for the print shop. It picks the best shot of each moment, crops to the exact paper size so nothing surprising is cut off, adds the date stamp or a camera frame, and exports files the kiosk accepts. It is free, needs no account, and still works when you also use Lightroom: your originals are never changed."
+        - q: "My computer already has Photos, or I use IrfanView. Why another app?"
+          a: "The built-in Photos apps and IrfanView are great viewers, each on its own system. None of them knows the size of a 10 × 15 print at dm or Rossmann, warns you when a photo is too small for it, stamps the date like a film camera, or sends the best shots of five folders to one print basket. Fotollection does, and it looks and works the same on a Mac and on Windows."
+    - label: "Speed and weight"
+      items:
+        - q: "Is it heavy? Will it run on my older laptop?"
+          a: "It is small: the Windows installer is 13.7 MB, because the window uses the web view the system already has instead of shipping a whole browser. The core is written in Rust and runs directly on your computer. A preview is never larger than 1600 px, so even a 32 MP photo opens as fast as a small one, and the full-size image is loaded only when you zoom in. Even exporting 5,035 photos, memory peaks at about 1.45 GB."
+        - q: "How fast is it with thousands of photos?"
+          a: "Opening 1,000 photos takes about 0.12 s, because Fotollection reads each file's small built-in thumbnail first. Changing a setting redraws the preview in 17 ms, export runs at 18 full-size photos per second, and after the first launch the app opens in about 0.4 s. Every number was measured on an ordinary laptop, and the Performance page explains how to measure them yourself."
+    - label: "Platforms and cost"
+      items:
+        - q: "Does it work on Mac and Windows, and is it really free?"
+          a: "Yes. One download for macOS 11 or later, on Apple silicon and Intel alike, and one for Windows 10 and 11. It is free with no ads, no account and no in-app purchases, and the source code is public under GPL-3.0, so anyone can check what it does."
   tabs_title: "Work like browsing the web"
   tabs_lead: "Every folder you open becomes a tab in the same workspace, so a trip spread over several memory cards and phones stays in one place."
   tabs_row_title: "Folders as tabs, ticks that follow you"
@@ -111,7 +130,7 @@ en:
   fn_photos: "The demo photos in the screenshots are in the public domain (CC0) on Wikimedia Commons, by Dktue (18 photos), Pierre Blaché from Paris, France (3) and Kate Branch (1)."
   fn_photos_link: "Every file, its page and its checksum."
   fn_cameras: "Camera names and logos in the screenshots and in the app's info frame are trademarks of their owners, used only to show which camera took a photo: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) and Sony (Sony Group Corporation)."
-  fn_others: Apple and macOS are trademarks of Apple Inc.; Windows of Microsoft Corporation; Facebook and Instagram of Meta Platforms, Inc.; GitHub of GitHub, Inc.; Google Analytics of Google LLC; VietQR of NAPAS; Wikimedia Commons of the Wikimedia Foundation.
+  fn_others: Apple and macOS are trademarks of Apple Inc.; Windows of Microsoft Corporation; Facebook and Instagram of Meta Platforms, Inc.; GitHub of GitHub, Inc.; Google Analytics of Google LLC; Lightroom of Adobe Inc.; IrfanView of Irfan Škiljan; VietQR of NAPAS; Wikimedia Commons of the Wikimedia Foundation.
   fn_brand: "The Fotollection name and logo identify the official app, made by @hoangphi01. Official downloads come only from fotollection.org and the project's GitHub releases. The GPL-3.0 licence lets anyone share or sell copies, changed or not, as long as they keep this licence and offer the source code; a changed or resold copy must not use the Fotollection name or logo in a way that suggests it is the official app."
   fn_notify: "Sharing or selling Fotollection, or building on it? Please tell the author first by opening an issue on GitHub (github.com/hoangphi01/fotollection/issues). The app is free and made in spare time; a short note is the fair way to say thanks."
   fn_cite: Quoting, reviewing or showing the app, or using these screenshots? Please credit Fotollection and link to fotollection.org.
@@ -245,6 +264,25 @@ vi:
   show_frame: Khung "Shot on" với logo của hãng máy ảnh
   show_crop: Cân lại đường chân trời trong màn cắt ảnh
   show_groups: Ảnh giống nhau được gom nhóm, gợi ý tấm đẹp nhất
+  faq_title: "Câu hỏi trước khi tải về"
+  faq_lead: "Vì sao lại thêm một ứng dụng ảnh, và ứng dụng này khác ở đâu."
+  faq_groups:
+    - label: "Vì sao chọn Fotollection"
+      items:
+        - q: "Sao không dùng luôn Lightroom?"
+          a: "Lightroom là phần mềm chỉnh ảnh đầy đủ, có thư viện riêng, bán theo gói thuê bao, và chỉnh ảnh rất giỏi. Fotollection chỉ làm một việc: chuẩn bị ảnh của một chuyến đi để mang đi in. Ứng dụng chọn ra tấm đẹp nhất của mỗi khoảnh khắc, cắt đúng khổ giấy để không bị xén mép bất ngờ, in ngày chụp hoặc khung thông tin máy ảnh, rồi xuất tệp mà máy in ở cửa hàng nhận được. Ứng dụng miễn phí, không cần tài khoản, và dùng song song với Lightroom vẫn được: ảnh gốc không bao giờ bị thay đổi."
+        - q: "Máy tôi đã có sẵn Ảnh (Photos), hoặc tôi dùng IrfanView. Sao phải thêm ứng dụng?"
+          a: "Ứng dụng Ảnh có sẵn và IrfanView đều là trình xem ảnh tốt, mỗi cái trên một hệ điều hành. Không cái nào biết khổ ảnh 10 × 15 ở dm hay Rossmann, báo khi ảnh quá nhỏ để in khổ đó, in ngày chụp như máy phim, hay gom ảnh đẹp nhất của năm thư mục vào một giỏ in. Fotollection làm được, và dùng giống hệt nhau trên Mac lẫn Windows."
+    - label: "Tốc độ và độ nhẹ"
+      items:
+        - q: "Ứng dụng có nặng không? Máy cũ có chạy được không?"
+          a: "Rất nhẹ: bộ cài cho Windows chỉ 13,7 MB, vì cửa sổ dùng trình hiển thị web có sẵn của hệ điều hành thay vì mang theo cả một trình duyệt. Phần lõi viết bằng Rust và chạy trực tiếp trên máy. Ảnh xem trước không bao giờ lớn hơn 1600 px, nên ảnh 32 MP mở nhanh như ảnh nhỏ, và ảnh gốc chỉ được tải khi bạn phóng to. Ngay cả khi xuất 5.035 ảnh, bộ nhớ cao nhất chỉ khoảng 1,45 GB."
+        - q: "Với hàng nghìn ảnh thì nhanh đến đâu?"
+          a: "Mở 1.000 ảnh mất khoảng 0,12 giây, vì Fotollection đọc ảnh thu nhỏ có sẵn trong mỗi tệp trước. Đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, xuất ảnh đạt 18 ảnh cỡ đầy đủ mỗi giây, và từ lần thứ hai trở đi ứng dụng mở trong khoảng 0,4 giây. Mọi con số đều đo trên một chiếc máy tính xách tay bình thường, và trang Hiệu năng hướng dẫn bạn tự đo lại."
+    - label: "Nền tảng và chi phí"
+      items:
+        - q: "Có chạy trên Mac và Windows không, có thật sự miễn phí không?"
+          a: "Có. Một bản tải cho macOS 11 trở lên, chạy được cả trên chip Apple lẫn Intel, và một bản cho Windows 10 và 11. Ứng dụng miễn phí, không quảng cáo, không cần tài khoản, không mua thêm trong ứng dụng, và mã nguồn công khai theo giấy phép GPL-3.0, ai cũng có thể kiểm tra ứng dụng làm gì."
   tabs_title: "Chỉnh ảnh như lướt web"
   tabs_lead: "Mỗi thư mục bạn mở trở thành một tab trong cùng một không gian làm việc, nên một chuyến đi nằm rải trên nhiều thẻ nhớ và điện thoại vẫn gọn ở một chỗ."
   tabs_row_title: "Thư mục là tab, ô tích đi theo bạn"
@@ -315,7 +353,7 @@ vi:
   fn_photos: "Ảnh demo trong các ảnh chụp màn hình thuộc phạm vi công cộng (CC0) trên Wikimedia Commons, của Dktue (18 ảnh), Pierre Blaché from Paris, France (3 ảnh) và Kate Branch (1 ảnh)."
   fn_photos_link: "Danh sách từng tệp, trang gốc và mã kiểm tra."
   fn_cameras: "Tên và logo máy ảnh trong ảnh chụp màn hình và trong khung thông tin của ứng dụng là thương hiệu của chủ sở hữu, chỉ dùng để cho biết ảnh được chụp bằng máy nào: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) và Sony (Sony Group Corporation)."
-  fn_others: Apple và macOS là thương hiệu của Apple Inc.; Windows của Microsoft Corporation; Facebook và Instagram của Meta Platforms, Inc.; GitHub của GitHub, Inc.; Google Analytics của Google LLC; VietQR của NAPAS; Wikimedia Commons của Wikimedia Foundation.
+  fn_others: Apple và macOS là thương hiệu của Apple Inc.; Windows của Microsoft Corporation; Facebook và Instagram của Meta Platforms, Inc.; GitHub của GitHub, Inc.; Google Analytics của Google LLC; Lightroom của Adobe Inc.; IrfanView của Irfan Škiljan; VietQR của NAPAS; Wikimedia Commons của Wikimedia Foundation.
   fn_brand: "Tên và logo Fotollection dùng để nhận biết ứng dụng chính thức do @hoangphi01 làm. Bản tải chính thức chỉ có ở fotollection.org và trang phát hành GitHub của dự án. Giấy phép GPL-3.0 cho phép bất kỳ ai chia sẻ hay bán bản sao, có sửa hay không, miễn là giữ nguyên giấy phép này và cung cấp mã nguồn; bản đã sửa hoặc bán lại không được dùng tên hay logo Fotollection theo cách khiến người khác nghĩ đó là ứng dụng chính thức."
   fn_notify: "Bạn muốn phân phối, bán lại hay phát triển tiếp từ Fotollection? Xin hãy báo cho tác giả trước bằng một mục góp ý (issue) trên GitHub (github.com/hoangphi01/fotollection/issues). Ứng dụng miễn phí và được làm trong thời gian rảnh; một lời báo ngắn là cách công bằng để cảm ơn."
   fn_cite: Khi trích dẫn, viết bài, giới thiệu ứng dụng hay dùng ảnh chụp màn hình này, xin ghi nguồn Fotollection và dẫn link về fotollection.org.

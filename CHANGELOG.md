@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Website
 
+- A **questions** section near the end of the home page: why Fotollection instead of Lightroom, the built-in Photos apps or IrfanView, how light and fast it is, and which systems it runs on, with the measured numbers.
 - A new section, **Work like browsing the web**, shows folders as tabs with photos ticked in two folders.
 - The footnotes credit the demo photos (CC0, Wikimedia Commons) by author, with a link to every file.
 - **No ads** is now one of the privacy promises on the home page. The print-basket section no longer compares choosing photos to a dating app. The coffee note in the footnotes reads as a choice that helps the app grow.
