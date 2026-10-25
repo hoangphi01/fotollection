@@ -332,10 +332,11 @@ impl Library {
 
     /// Human-readable camera name: `make model`, without repeating the make.
     pub fn camera_label(make: Option<&str>, model: Option<&str>) -> Option<String> {
-        match (make, model) {
-            (_, None) => make.map(str::to_owned),
-            (Some(make), Some(model)) if !model.starts_with(make) => {
-                Some(format!("{make} {model}"))
+        let brand = make.map(brand_name);
+        match (brand.as_deref(), model) {
+            (_, None) => brand,
+            (Some(brand), Some(model)) if !starts_with_word(model, brand) => {
+                Some(format!("{brand} {model}"))
             }
             (_, Some(model)) => Some(model.to_owned()),
         }
@@ -577,9 +578,80 @@ impl Library {
     }
 }
 
+/// The maker as people say it: EXIF writes the company ("NIKON CORPORATION", "RICOH IMAGING
+/// COMPANY, LTD."), so trailing company words are dropped; a real two-word brand ("Phase
+/// One", "OM Digital Solutions") is kept.
+fn brand_name(make: &str) -> String {
+    const COMPANY: &[&str] = &[
+        "CORPORATION",
+        "CORP",
+        "COMPANY",
+        "CO",
+        "LTD",
+        "INC",
+        "IMAGING",
+        "OPTICAL",
+    ];
+    let mut words: Vec<&str> = make.split_whitespace().collect();
+    while words.len() > 1
+        && words.last().is_some_and(|w| {
+            let w = w.trim_matches(|c| c == ',' || c == '.');
+            COMPANY.iter().any(|c| w.eq_ignore_ascii_case(c))
+        })
+    {
+        words.pop();
+    }
+    words.join(" ").trim_end_matches(',').to_owned()
+}
+
+/// `text` begins with `word` as a whole word, ignoring case ("NIKON D750" / "Nikon").
+fn starts_with_word(text: &str, word: &str) -> bool {
+    text.get(..word.len())
+        .is_some_and(|head| head.eq_ignore_ascii_case(word))
+        && text[word.len()..]
+            .chars()
+            .next()
+            .is_none_or(|c| !c.is_alphanumeric())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fr_040_camera_label_drops_company_words_and_repeats() {
+        let label = |make: &str, model: &str| Library::camera_label(Some(make), Some(model));
+        assert_eq!(
+            label("NIKON CORPORATION", "NIKON D750").as_deref(),
+            Some("NIKON D750")
+        );
+        assert_eq!(
+            label("RICOH IMAGING COMPANY, LTD.", "RICOH GR III").as_deref(),
+            Some("RICOH GR III")
+        );
+        assert_eq!(
+            label("OLYMPUS CORPORATION", "E-M10 Mark III").as_deref(),
+            Some("OLYMPUS E-M10 Mark III")
+        );
+        assert_eq!(
+            label("Canon", "Canon EOS R10").as_deref(),
+            Some("Canon EOS R10")
+        );
+        assert_eq!(
+            label("Panasonic", "DC-GX9").as_deref(),
+            Some("Panasonic DC-GX9")
+        );
+        assert_eq!(label("Phase One", "IQ4").as_deref(), Some("Phase One IQ4"));
+        // "Nikon" is not a prefix word of "Nikonos V".
+        assert_eq!(
+            label("Nikon", "Nikonos V").as_deref(),
+            Some("Nikon Nikonos V")
+        );
+        assert_eq!(
+            Library::camera_label(Some("NIKON CORPORATION"), None).as_deref(),
+            Some("NIKON")
+        );
+    }
     use chrono::NaiveDate;
 
     fn file(path: &str, mtime: i64) -> ImportedFile {

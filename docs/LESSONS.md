@@ -13,6 +13,13 @@
 
 ## 2026-10-25
 
+### EXIF's Make is a company, not a brand (FR-040)
+
+- **Seen:** the info frame said "Shot on NIKON CORPORATION NIKON D750" for the Nikon RAW sample.
+- **Why:** the camera label dropped the make only when the model started with the whole make; Nikon, Ricoh and Olympus write the company ("NIKON CORPORATION", "RICOH IMAGING COMPANY, LTD.") in Make and the brand in Model.
+- **Fix:** trailing company words are dropped from the make, and the model is compared word by word, ignoring case (`Library::camera_label`).
+- **Rule:** text built from EXIF is checked on files from several makers, not only the owner's own camera; the CC0 RAW samples cover nine.
+
 ### A RAW can look like a plain TIFF (FR-016)
 
 - **Seen:** measured before writing the feature, ImageIO returned a NEF as 160 × 120 and could not open an ARW at all, while `sips` handled both.

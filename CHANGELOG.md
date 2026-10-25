@@ -27,6 +27,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The footnotes credit the demo photos (CC0, Wikimedia Commons) by author, with a link to every file.
 - **No ads** is now one of the privacy promises on the home page. The print-basket section no longer compares choosing photos to a dating app. The coffee note in the footnotes reads as a choice that helps the app grow.
 
+### Fixed
+
+- The info frame no longer repeats the maker: "Shot on NIKON D750", not "NIKON CORPORATION NIKON D750" (also Ricoh, Olympus and other makers that write the company name in EXIF).
+
 ## [0.6.0] - 2026-10-25
 
 ### Highlights
