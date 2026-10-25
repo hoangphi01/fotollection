@@ -5,7 +5,8 @@
   Tauri's own file associations would set each extension's default value and make
   Fotollection the default viewer; these entries only add it to each type's OpenWithProgids
   (Windows ignores the value's data), and Windows Installer removes them on uninstall.
-  The MSI installs per machine, hence HKLM; [#Path] is the main executable in Tauri's template.
+  The MSI installs per machine, hence HKLM. The executable is named by path ([INSTALLDIR]),
+  not by [#Path]: that file belongs to another feature of Tauri's template, which ICE69 rejects.
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
@@ -14,8 +15,8 @@
         <RegistryKey Root="HKLM" Key="Software\Classes\Fotollection.Photo">
           <RegistryValue Type="string" Value="Photo" KeyPath="yes" />
           <RegistryValue Name="FriendlyTypeName" Type="string" Value="Photo" />
-          <RegistryValue Key="DefaultIcon" Type="string" Value="[#Path],0" />
-          <RegistryValue Key="shell\open\command" Type="string" Value="&quot;[#Path]&quot; &quot;%1&quot;" />
+          <RegistryValue Key="DefaultIcon" Type="string" Value="[INSTALLDIR]fotollection.exe,0" />
+          <RegistryValue Key="shell\open\command" Type="string" Value="&quot;[INSTALLDIR]fotollection.exe&quot; &quot;%1&quot;" />
         </RegistryKey>
         <RegistryValue Root="HKLM" Key="Software\Classes\.jpg\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />
         <RegistryValue Root="HKLM" Key="Software\Classes\.jpeg\OpenWithProgids" Name="Fotollection.Photo" Type="string" Value="Fotollection" />

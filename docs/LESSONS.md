@@ -13,6 +13,13 @@
 
 ## 2026-10-25
 
+### Installer settings fail only when installers are built (FR-054)
+
+- **Seen:** the v0.7.0 release failed on Windows; v0.7.0-beta.1 had passed, because a pre-release builds no MSI.
+- **Why:** the WiX fragment for "Open with" referenced the executable as `[#Path]`, a file in another feature of Tauri's template, which the MSI validator rejects (ICE69). `ci` compiles and tests but never bundles, so nothing ran this file before the release.
+- **Fix:** the registry values name the executable by path (`[INSTALLDIR]fotollection.exe`); a new `installers` workflow builds the MSI and the NSIS installer whenever their settings change, and the release was started again by hand.
+- **Rule:** anything that only the bundler reads (`src-tauri/windows/`, `tauri.conf.json`) is proved by the `installers` workflow before a release, not by the release.
+
 ### macOS hands over a file before the app exists (FR-054)
 
 - **Seen:** opening a photo with Fotollection while it was closed started nothing: no window, no crash report. Run from the terminal, the bundle worked.

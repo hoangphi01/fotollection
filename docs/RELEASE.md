@@ -73,7 +73,8 @@ A failed build publishes nothing. Re-running the workflow retries it.
 | `ci` (fmt, clippy, tests, bindings, `cargo deny` on macOS and Windows) | `crates/`, `src-tauri/`, `ui/`, `Cargo.toml`, `Cargo.lock`, the npm manifests, `rust-toolchain.toml`, `deny.toml` |
 | `docs` (`check-docs.sh`, markdownlint, internal links) | any `.md` file, `docs/`, `bench/results/`, and the files `check-docs.sh` compares with the docs (versions, `tauri.conf.json`) |
 | `pages` (the website) | `site/`, `CHANGELOG.md`; and after every release |
-| `release` | `Cargo.toml` |
+| `release` | `Cargo.toml` (or started by hand from the Actions tab, for example to retry a failed release) |
+| `installers` (MSI and NSIS on Windows, nothing published) | `src-tauri/windows/`, `tauri.conf.json`: installer settings are checked before a release, which `ci` cannot do |
 
 Pull requests use the same filters. After pushing, check that every workflow that started is green (`gh run list --limit 5`), not only the one you expected.
 

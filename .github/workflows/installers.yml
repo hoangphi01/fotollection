@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Builds the Windows installers (MSI and NSIS) without publishing anything, whenever their
+# configuration changes, so an installer error shows up before a release does (LESSONS.md:
+# the WiX fragment of "Open with" failed only at the v0.7.0 release). The MSI also uploads,
+# for checking by hand.
+name: installers
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src-tauri/windows/**"
+      - "src-tauri/tauri.conf.json"
+      - "src-tauri/tauri.windows.conf.json"
+      - ".github/workflows/installers.yml"
+  pull_request:
+    paths:
+      - "src-tauri/windows/**"
+      - "src-tauri/tauri.conf.json"
+      - "src-tauri/tauri.windows.conf.json"
+      - ".github/workflows/installers.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: installers-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      # Reads the pinned toolchain from rust-toolchain.toml.
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: x86_64-pc-windows-msvc
+          cache: false
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Build the MSI and the NSIS installer
+        shell: bash
+        run: npm run build -- --bundles msi,nsis
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-windows
+          path: |
+            target/release/bundle/msi/*.msi
+            target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error
+          retention-days: 7
