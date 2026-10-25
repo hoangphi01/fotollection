@@ -189,7 +189,9 @@
       "classic": "Classic",
       "original": "Brand colours",
       "mono": "One colour"
-    }
+    },
+    "logoSize": "Logo size",
+    "logoSizeHint": "The same for every photo. Double-click for 100 %."
   },
   "camera": {
     "manualLens": "Manual lens (not in EXIF)",

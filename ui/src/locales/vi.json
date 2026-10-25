@@ -180,7 +180,9 @@
       "classic": "Cổ điển",
       "original": "Màu gốc",
       "mono": "Đơn sắc"
-    }
+    },
+    "logoSize": "Cỡ logo",
+    "logoSizeHint": "Áp dụng cho mọi ảnh. Nhấp đúp để về 100 %."
   },
   "camera": {
     "manualLens": "Ống kính manual (không có trong EXIF)",

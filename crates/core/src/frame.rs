@@ -69,6 +69,26 @@ pub struct FrameSettings {
     /// settings v4.
     #[serde(default)]
     pub logo_style: crate::brands::LogoStyle,
+    /// Size of the camera logo relative to the default, 0.5–2.0, the same for every photo
+    /// (FR-040). Absent before settings v7: 1.0.
+    #[serde(default = "default_logo_scale")]
+    pub logo_scale: f32,
+}
+
+/// Smallest and largest logo scale (FR-040).
+pub const LOGO_SCALE_RANGE: (f32, f32) = (0.5, 2.0);
+
+fn default_logo_scale() -> f32 {
+    1.0
+}
+
+/// A logo scale from the UI or a file, kept finite and in range.
+pub fn sanitize_logo_scale(scale: f32) -> f32 {
+    if scale.is_finite() {
+        scale.clamp(LOGO_SCALE_RANGE.0, LOGO_SCALE_RANGE.1)
+    } else {
+        1.0
+    }
 }
 
 impl Default for FrameSettings {
@@ -80,6 +100,7 @@ impl Default for FrameSettings {
             date_format: FrameDateFormat::Slash,
             font: None,
             logo_style: crate::brands::LogoStyle::default(),
+            logo_scale: 1.0,
             fields: FrameFields {
                 logo: true,
                 camera: true,
@@ -506,8 +527,9 @@ pub fn layout(
         logo: text.logo.clone(),
         logo_x: pad,
         logo_center_y: bar_top + bar_h / 2.0,
-        logo_height: bar_h * 0.22,
-        logo_max_width: cw * 0.35,
+        logo_height: bar_h * 0.22 * sanitize_logo_scale(settings.logo_scale),
+        // A larger logo may take more of the bar, but never reaches the text.
+        logo_max_width: cw * (0.35 * sanitize_logo_scale(settings.logo_scale)).min(0.5),
         logo_color: primary,
         lines,
     }
@@ -658,5 +680,27 @@ mod tests {
                 "{line:?}"
             );
         }
+    }
+
+    #[test]
+    fn fr_040_logo_scale_resizes_the_logo_for_every_photo() {
+        let print = PrintSize::ALL[1];
+        let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None);
+        let (cw, ch) = canvas_size(4608, 3456, print, 4608);
+        let at_scale = |logo_scale| {
+            let settings = FrameSettings {
+                logo_scale,
+                ..FrameSettings::default()
+            };
+            layout(cw, ch, 4608, 3456, &settings, &text, print)
+        };
+        let normal = at_scale(1.0);
+        let big = at_scale(2.0);
+        assert!((big.logo_height - 2.0 * normal.logo_height).abs() < 0.01);
+        assert!(big.logo_max_width > normal.logo_max_width);
+        // Out-of-range and broken values are clamped, never trusted.
+        assert!((at_scale(9.0).logo_height - big.logo_height).abs() < 0.01);
+        assert!((at_scale(f32::NAN).logo_height - normal.logo_height).abs() < 0.01);
+        assert!((at_scale(0.1).logo_height - 0.5 * normal.logo_height).abs() < 0.01);
     }
 }

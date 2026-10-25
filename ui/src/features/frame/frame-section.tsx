@@ -16,6 +16,7 @@ import type {
 } from '@/ipc/bindings'
 import { FontSelect } from '@/features/fonts/font-select'
 import type { FontsApi } from '@/features/fonts/use-fonts'
+import { LogoScaleSlider } from './logo-scale-slider'
 import type { FrameConfigApi } from './use-frame-config'
 
 const LOGO_STYLES: LogoStyle[] = ['classic', 'original', 'mono']
@@ -183,6 +184,10 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
               </ToggleGroupItem>
             ))}
           </ToggleGroup>
+          <LogoScaleSlider
+            value={settings?.logoScale ?? 1}
+            onCommit={(logoScale) => void frame.setSettings((s) => ({ ...s, logoScale }))}
+          />
         </Collapse>
         <p className="text-xs text-muted-foreground">
           {t('frame.keepsSize')}

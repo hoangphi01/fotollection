@@ -17,7 +17,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v5 (FR-005, FR-036, FR-033): `render.stamp.place`, `render.stamp.caption`,
 /// `render.placeFormat`; `render.stamp.font` is dropped (the stamp has its own font).
 /// v6 (FR-052): `ui.theme`, absent before (follow the system).
-pub const SCHEMA_VERSION: u32 = 6;
+/// v7 (FR-040): `frame.logoScale`, absent before (1.0).
+pub const SCHEMA_VERSION: u32 = 7;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -311,6 +312,19 @@ mod tests {
             panic!("v6 should load");
         };
         assert_eq!(back.ui.theme, crate::settings::ThemePreference::Dark);
+        Ok(())
+    }
+
+    #[test]
+    fn fr_040_v6_files_get_the_default_logo_scale() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v6.json"))?;
+        let Loaded::Ok(s) = load(&path) else {
+            panic!("v6 should load");
+        };
+        assert!((s.frame.logo_scale - 1.0).abs() < f32::EPSILON);
+        assert_eq!(s.ui.theme, crate::settings::ThemePreference::Dark);
         Ok(())
     }
 

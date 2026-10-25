@@ -151,7 +151,7 @@ for (const language of ['en', 'vi']) {
     await page.locator('#print-size').click()
     await page.waitForSelector('[role="option"]')
     await page.waitForTimeout(300)
-    await save(page, `advice-${suffix}`)
+    await save(page, `check-advice-${suffix}`)
     await page.keyboard.press('Escape')
 
     // 2. Preview with the retro date stamp and the place (GPS photo).
@@ -161,8 +161,12 @@ for (const language of ['en', 'vi']) {
     await save(page, `stamp-${suffix}`)
     await context.close()
 
-    // 3. Preview with the "Shot on" info frame.
+    // 3. Preview with the "Shot on" info frame (and, for checking only, the panel's frame controls).
     ;({ context, page } = await open({ scenario: 'frame', language, theme }))
+    await page.locator('aside').last().hover()
+    await page.mouse.wheel(0, 2000)
+    await page.waitForTimeout(300)
+    await save(page, `check-frame-${suffix}`)
     await tile(page, SHOW.frame).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.frame}"]`)
     await settle(page)

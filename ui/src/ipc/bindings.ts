@@ -451,6 +451,11 @@ export type FrameSettings = {
 	 *  settings v4.
 	 */
 	logoStyle?: LogoStyle,
+	/**
+	 *  Size of the camera logo relative to the default, 0.5–2.0, the same for every photo
+	 *  (FR-040). Absent before settings v7: 1.0.
+	 */
+	logoScale?: number | null,
 };
 
 export type GpsPoint = {

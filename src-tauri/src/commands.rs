@@ -865,8 +865,10 @@ pub fn get_frame_config(state: State<'_, AppState>) -> Result<FrameConfig, IpcEr
 #[specta::specta]
 pub fn set_frame_settings(
     state: State<'_, AppState>,
-    settings: FrameSettings,
+    mut settings: FrameSettings,
 ) -> Result<FrameConfig, IpcError> {
+    // The webview's number is clamped here, so the stored value is always usable (FR-040).
+    settings.logo_scale = fotollection_core::frame::sanitize_logo_scale(settings.logo_scale);
     state
         .frame
         .write()

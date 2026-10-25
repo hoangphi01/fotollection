@@ -1,0 +1,80 @@
+{
+  "format": "fotollection-settings",
+  "schema_version": 6,
+  "render": {
+    "printSize": "10x15",
+    "stamp": {
+      "enabled": false,
+      "format": "iso",
+      "corner": "bottomRight",
+      "color": "white",
+      "place": true,
+      "caption": ""
+    },
+    "customSizes": [],
+    "placeFormat": "city"
+  },
+  "frame": {
+    "enabled": true,
+    "fit": "crop",
+    "color": "white",
+    "dateFormat": "slash",
+    "fields": {
+      "logo": true,
+      "camera": true,
+      "lens": true,
+      "focal": true,
+      "aperture": true,
+      "shutter": true,
+      "iso": true,
+      "photoStyle": true,
+      "date": true,
+      "place": true
+    },
+    "font": null,
+    "logoStyle": "classic"
+  },
+  "cameras": [
+    {
+      "id": 1,
+      "make": "FUJIFILM",
+      "model": "X-T3",
+      "displayName": null,
+      "brandText": null,
+      "lens": null,
+      "focalMm": null,
+      "fNumber": null,
+      "photoStyle": null,
+      "logo": "brand"
+    },
+    {
+      "id": 2,
+      "make": "SONY",
+      "model": "ILCE-7M3",
+      "displayName": null,
+      "brandText": null,
+      "lens": null,
+      "focalMm": null,
+      "fNumber": null,
+      "photoStyle": null,
+      "logo": "brand"
+    },
+    {
+      "id": 3,
+      "make": "FUJIFILM",
+      "model": "X100V",
+      "displayName": null,
+      "brandText": null,
+      "lens": null,
+      "focalMm": null,
+      "fNumber": null,
+      "photoStyle": null,
+      "logo": "brand"
+    }
+  ],
+  "fonts": [],
+  "ui": {
+    "language": "vi",
+    "theme": "dark"
+  }
+}
