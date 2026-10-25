@@ -5,9 +5,9 @@
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 1 — MVP, v0.3.1 released, v0.4.0 ready
+## Current phase: Phase 1 — MVP, v0.4.0 released
 
-**Where we are (2026-10-25).** The app works end to end for **JPEG, PNG and HEIC**: open folders as tabs (FR-056), cull with stars, flags, filters and best-shot suggestions, preview with crop, drag-to-reframe, zoom (FR-057), straightening, the film-style date stamp and the "Shot on" frame (Crop to fill, or Fit whole photo framed like an instax print), then export for print at original quality or **for social media** in sRGB with safe EXIF (FR-053), the whole set or one photo from the preview (FR-055). Releases v0.1.0 to v0.3.1 are published; everything since is on `main` for **v0.4.0**.
+**Where we are (2026-10-25).** The app works end to end for **JPEG, PNG and HEIC**: open folders as tabs (FR-056), cull with stars, flags, filters and best-shot suggestions, preview with crop, drag-to-reframe, zoom (FR-057), straightening, the film-style date stamp and the "Shot on" frame (Crop to fill, or Fit whole photo framed like an instax print), then export for print at original quality or **for social media** in sRGB with safe EXIF (FR-053), the whole set or one photo from the preview (FR-055). **[v0.4.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.4.0) was published on 2026-10-25** (universal `.dmg` 38.1 MB, `-setup.exe` 13.6 MB, `.msi` 18.6 MB, `SHA256SUMS.txt`); the website's download buttons point to it.
 
 1. Open or drop a folder; refresh it to pick up new photos.
 2. Cull with stars, flags and filters, helped by best-shot suggestions: groups of similar shots, the best of each with reasons, and Keep best.
@@ -63,7 +63,7 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 
 One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 
-1. **v0.4.0 "Sharing and folders":** done on `main` (FR-053 measured, FR-055, FR-056, FR-057 first part, Fit framed like instax, drag to reframe, Noritsu logo). Left: check by hand (export one photo from the preview, export two folders together and separately, trackpad zoom), refresh the website screenshots, then `scripts/release.sh 0.4.0`.
+1. **v0.4.0 "Sharing and folders": published 2026-10-25.** Still to check by hand in the installed app: export one photo from the preview, export two folders together and separately, trackpad zoom, drag to reframe, Fit on a landscape and a portrait photo.
 2. **v0.5.0 "Photo viewer" (FR-054, FR-057):** measure cold start (NFR-010) and a new "open to first photo" budget first; full-resolution zoom past 1,600 px, measured before it ships; then "Open with" on macOS and Windows, with an ADR.
 3. **v0.6.0 "Places" (FR-032, FR-005, FR-030, FR-031):** search and set a place for one or many photos, rename a place everywhere, camera clock offset, borrow GPS from phone photos with confidence levels.
 4. **v0.7.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
