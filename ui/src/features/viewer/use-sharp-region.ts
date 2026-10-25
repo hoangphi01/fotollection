@@ -91,12 +91,17 @@ function visibleRect(view: View, size: { w: number; h: number }, sw: number, sh:
   return { x: rx, y: ry, w: floor(Math.min(x[1], 1 - rx)), h: floor(Math.min(y[1], 1 - ry)) }
 }
 
-/** Places the sharp part over the preview with the preview's own transform. */
+/**
+ * Places the sharp part over the preview at its final on-screen size. Only a translation:
+ * WebKit rasterises an element at its layout size before a CSS scale, so a scaled layer
+ * would throw its extra pixels away and look as soft as the preview under it.
+ */
 function layerStyle(rect: Rect, view: View, size: { w: number; h: number }): CSSProperties {
+  const left = view.x + view.scale * (rect.x - 0.5) * size.w
+  const top = view.y + view.scale * (rect.y - 0.5) * size.h
   return {
-    width: rect.w * size.w,
-    height: rect.h * size.h,
-    transformOrigin: '0 0',
-    transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale}) translate(${(rect.x - 0.5) * size.w}px, ${(rect.y - 0.5) * size.h}px)`,
+    width: rect.w * size.w * view.scale,
+    height: rect.h * size.h * view.scale,
+    transform: `translate(${left}px, ${top}px)`,
   }
 }
