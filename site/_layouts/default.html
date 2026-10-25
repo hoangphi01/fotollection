@@ -104,6 +104,21 @@
       new IntersectionObserver(([entry]) => toTop.classList.toggle('shown', !entry.isIntersecting), {
         rootMargin: '600px 0px 0px 0px',
       }).observe(document.querySelector('.hero'))
+
+      // The changelog box lets the page scroll past it until it is clicked; then it scrolls
+      // inside, outlined, until a click outside or Escape.
+      const log = document.querySelector('.changelog')
+      if (log) {
+        const hint = document.createElement('span')
+        hint.className = 'changelog-hint'
+        hint.textContent = log.dataset.hintText
+        log.append(hint)
+        const set = (on) => log.classList.toggle('active', on)
+        log.addEventListener('click', () => set(true))
+        log.addEventListener('focus', () => set(true))
+        document.addEventListener('click', (e) => !log.contains(e.target) && set(false))
+        document.addEventListener('keydown', (e) => e.key === 'Escape' && set(false))
+      }
     </script>
 
     <footer class="footer">

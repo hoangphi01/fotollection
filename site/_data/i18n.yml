@@ -58,6 +58,7 @@ en:
   changelog_lead: Every change, newest first. "Unreleased" is what the next version will bring.
   changelog_latest: Latest release
   changelog_full: Full changelog on GitHub
+  changelog_hint: Click to scroll
   support_title: Buy me a coffee
   support_text: Fotollection is made by a Vietnamese student in the EU, between classes and a part-time job. It's free and open source; if it saved you an evening of sorting photos, a coffee (or a student lunch 😄) keeps it going.
   support_note: This VietQR code works only with banking apps in Vietnam (Napas 247). A way to support from abroad is coming soon.
@@ -171,6 +172,7 @@ vi:
   changelog_lead: Mọi thay đổi, mới nhất ở trên cùng (viết bằng tiếng Anh). "Unreleased" là những gì bản tiếp theo sẽ có.
   changelog_latest: Bản phát hành mới nhất
   changelog_full: Changelog đầy đủ trên GitHub
+  changelog_hint: Bấm để cuộn
   support_title: Ủng hộ một cốc cà phê
   support_text: Fotollection do một du học sinh Việt ở châu Âu làm trong thời gian rảnh, giữa giờ học và giờ làm thêm. App miễn phí và mã nguồn mở; nếu nó giúp bạn đỡ được một buổi tối ngồi lọc ảnh, một cốc cà phê (hay một bữa cơm sinh viên 😄) sẽ giúp mình tiếp tục làm.
   support_note: Mã VietQR này chỉ dùng được với app ngân hàng tại Việt Nam (Napas 247). Cách ủng hộ từ nước ngoài sẽ có sau.

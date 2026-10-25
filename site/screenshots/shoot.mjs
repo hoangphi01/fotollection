@@ -154,6 +154,11 @@ for (const language of ['en', 'vi']) {
     await page.waitForTimeout(300)
     await save(page, `check-advice-${suffix}`)
     await page.keyboard.press('Escape')
+    await page.waitForTimeout(200)
+    await page.getByRole('button', { name: /Versions|Các phiên bản/ }).click()
+    await page.waitForTimeout(300)
+    await save(page, `check-versions-${suffix}`)
+    await page.keyboard.press('Escape')
 
     // 2. Preview with the retro date stamp and the place (GPS photo).
     await tile(page, SHOW.stamp).dblclick()
