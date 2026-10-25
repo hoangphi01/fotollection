@@ -14,7 +14,7 @@
 
 | When you change… | Update | Also check |
 |------------------|--------|------------|
-| **Anything a user can see** | [CHANGELOG.md](../CHANGELOG.md) under `Unreleased` (English, user terms) | The website's "What's new" box is built from it, nothing more to do |
+| **Anything a user can see** | [CHANGELOG.md](../CHANGELOG.md) under `Unreleased` (English, user terms), in full; and keep its `### Highlights` up to date: 3–6 one-line points ("New: …", "UI update: …", "Security: …", "Fixes: …") that become the release page | The website's "What's new" box is built from it, nothing more to do |
 | **Behaviour or scope** (a feature, a fix that changes what happens) | [PRD.md](PRD.md) (the FR's text), [STATUS.md](STATUS.md) (its row and "Current phase") | [ROADMAP.md](ROADMAP.md) if the phase changes; [README.md](../README.md) + [README.vi.md](../README.vi.md) feature list; the website (row below) |
 | **A new requirement** | A new `FR-`/`NFR-` at the **end** of [PRD.md](PRD.md) (never renumber or reuse), a row in [ROADMAP.md](ROADMAP.md) and in [STATUS.md](STATUS.md) | `scripts/check-docs.sh` fails if one of the three is missing |
 | **UI text** | Both `ui/src/locales/en.json` and `vi.json` (same keys) | `npm run lint` runs `check-i18n` |

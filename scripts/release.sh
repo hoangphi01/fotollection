@@ -56,6 +56,9 @@ grep -q '^## \[Unreleased\]' CHANGELOG.md || { echo "CHANGELOG.md has no [Unrele
 # The Unreleased section must say something.
 awk '/^## \[Unreleased\]/{on=1; next} /^## \[/{on=0} on && /^- /{found=1} END{exit !found}' CHANGELOG.md \
   || { echo "CHANGELOG.md [Unreleased] is empty" >&2; exit 1; }
+# The release page shows only the Highlights (RELEASE.md §4), so they must be there.
+awk '/^## \[Unreleased\]/{on=1; next} /^## \[/{on=0} on && /^### Highlights/{found=1} END{exit !found}' CHANGELOG.md \
+  || { echo "CHANGELOG.md [Unreleased] has no ### Highlights" >&2; exit 1; }
 
 if [ "$dry_run" = false ]; then
   [ "$(git rev-parse --abbrev-ref HEAD)" = "main" ] || { echo "not on main" >&2; exit 1; }

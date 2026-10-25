@@ -2,9 +2,18 @@
 
 All notable changes to this project are documented in this file.
 
+Each version opens with **Highlights**, a few one-line points shown on its GitHub release page; the full list follows.
+
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Highlights
+
+- New: a logo size slider for the info frame, the same for every photo
+- UI update: settings sections as cards, lines in the theme colour, aligned headers
+- Fixes: arrow keys with the logo slider, date buttons overflowing, the same fonts on Windows as on macOS
+- Website: coffee and download buttons beside the GitHub star
 
 ### Added
 
@@ -24,6 +33,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The toolbar above the photos is now exactly as tall as the library and settings headers, so the three header lines line up.
 
 ## [0.2.0] - 2026-10-24
+
+### Highlights
+
+- New: System / Light / Dark theme switch
+- New: Windows title bar in the app's colours, like VS Code
+- New: remove a folder from the library, like closing a tab
+- UI update: one accent per mode (teal light, wood dark), app-drawn hints, print badges in the preview
+- Fixes: the best-shot highlight was clipped
 
 ### Added
 
@@ -47,6 +64,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The highlight around the suggested best shot was clipped in the compare view and the groups strip.
 
 ## [0.1.0] - 2026-10-24
+
+### Highlights
+
+- First public preview for macOS and Windows
+- Best-shot suggestions, film-style date stamp with offline place names, camera info frame
+- Crop to print sizes with rotate and straighten, original-quality export
+- English and Vietnamese
 
 ### Added
 

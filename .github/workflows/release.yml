@@ -130,9 +130,17 @@ jobs:
             $0 ~ "^## \\[" v "\\]" { on=1; next }
             on && /^## \[/ { exit }
             on { print }
-          ' CHANGELOG.md > notes.md
-          test -s notes.md || { echo "CHANGELOG.md has no section for $VERSION"; exit 1; }
-          { echo; cat .github/release-notes.md; } >> notes.md
+          ' CHANGELOG.md > section.md
+          test -s section.md || { echo "CHANGELOG.md has no section for $VERSION"; exit 1; }
+          # The release page shows only the short Highlights; the full list stays in the CHANGELOG.
+          awk '/^### Highlights/ { on=1; next } on && /^### / { exit } on { print }' section.md > notes.md
+          test -s notes.md || cp section.md notes.md
+          {
+            echo
+            echo "Full changelog: https://github.com/$GITHUB_REPOSITORY/blob/v$VERSION/CHANGELOG.md"
+            echo
+            cat .github/release-notes.md
+          } >> notes.md
 
       - name: Tag and publish
         run: |
