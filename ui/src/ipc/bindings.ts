@@ -407,6 +407,12 @@ export type ExportSummary = {
 	failed: ExportFailure[],
 	cancelled: boolean,
 	destination: string,
+	/**
+	 *  Bytes of the originals that were exported, and of the files written (f64: TypeScript
+	 *  has no u64), so the UI can say how much lighter the export is (FR-053).
+	 */
+	sourceBytes: number | null,
+	outputBytes: number | null,
 };
 
 /**  What an export makes. */

@@ -150,6 +150,12 @@ fn fr_009_export_by_date_never_overwrites() {
     );
     assert_eq!(summary.exported, 3);
     assert!(summary.failed.is_empty());
+    // The sizes the UI compares (FR-053): every original read, every file written.
+    let originals: u64 = records(&lib).iter().map(|r| r.size).sum();
+    #[allow(clippy::cast_precision_loss)]
+    let originals = originals as f64;
+    assert!((summary.source_bytes - originals).abs() < 1.0);
+    assert!(summary.output_bytes > 0.0);
 
     let day1 = dest.path().join("2026-07-14");
     assert_eq!(std::fs::read(day1.join("IMG_1.jpg")).unwrap(), b"keep me");

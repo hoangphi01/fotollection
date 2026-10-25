@@ -8,6 +8,8 @@ import { Progress } from '@/components/ui/progress'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { CullFilter } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
+import { formatBytes } from '@/lib/format'
+import { cn } from '@/lib/utils'
 import type { ExportApi } from './use-export'
 
 type ExportSectionProps = {
@@ -74,6 +76,9 @@ export function ExportSection({
               →{' '}
               {folderName(state.summary.destination)}
             </p>
+            {state.summary.sourceBytes && state.summary.outputBytes ? (
+              <SizeChange from={state.summary.sourceBytes} to={state.summary.outputBytes} />
+            ) : null}
             {state.summary.failed.slice(0, 3).map((f) => (
               <p key={f.id} className="truncate text-xs" data-hint={f.message}>
                 {f.fileName}: {errorText(f)}
@@ -161,5 +166,27 @@ export function ExportSection({
         <p className="text-xs text-muted-foreground">{t('export.filteredHint')}</p>
       )}
     </div>
+  )
+}
+
+/** How much lighter the export is than the originals (FR-053); print files can be larger. */
+function SizeChange({ from, to }: { from: number; to: number }) {
+  const { t } = useTranslation()
+  const lighter = to < from
+  return (
+    <p
+      className={cn(
+        'mt-1.5 rounded-md px-2 py-1 text-xs tabular-nums',
+        lighter ? 'bg-primary/10 font-medium text-primary' : 'bg-muted text-muted-foreground',
+      )}
+    >
+      {lighter
+        ? t('export.smaller', {
+            from: formatBytes(from),
+            to: formatBytes(to),
+            percent: Math.round((1 - to / from) * 100),
+          })
+        : t('export.larger', { from: formatBytes(from), to: formatBytes(to) })}
+    </p>
   )
 }

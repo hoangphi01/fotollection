@@ -220,6 +220,8 @@
     "exported_other": "Đã xuất {{count}} ảnh",
     "failed_other": "{{count}} ảnh lỗi",
     "error": "Không xuất được ảnh",
+    "smaller": "Đã giảm từ {{from}} xuống {{to}} (nhẹ hơn {{percent}} %)",
+    "larger": "{{from}} → {{to}}: ảnh in giữ trọn chi tiết nên có thể nặng hơn ảnh gốc",
     "chooseDestination": "Chọn nơi lưu…",
     "title": "Xuất ảnh",
     "button": "Xuất ảnh",

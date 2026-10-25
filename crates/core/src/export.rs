@@ -5,7 +5,7 @@
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
-use std::sync::atomic::{AtomicU32, Ordering};
+use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -70,6 +70,10 @@ pub struct ExportSummary {
     pub failed: Vec<ExportFailure>,
     pub cancelled: bool,
     pub destination: String,
+    /// Bytes of the originals that were exported, and of the files written (f64: TypeScript
+    /// has no u64), so the UI can say how much lighter the export is (FR-053).
+    pub source_bytes: f64,
+    pub output_bytes: f64,
 }
 
 pub struct ExportOptions<'a> {
@@ -128,7 +132,7 @@ fn export_one(
     codec: &dyn JpegCodec,
     cancel: &CancellationToken,
     reserved: &Mutex<HashSet<PathBuf>>,
-) -> Result<(), ExportError> {
+) -> Result<u64, ExportError> {
     if cancel.is_cancelled() {
         return Err(ExportError::Cancelled);
     }
@@ -223,7 +227,7 @@ fn export_one(
     std::fs::rename(&tmp, &target).inspect_err(|_| {
         let _ = std::fs::remove_file(&tmp);
     })?;
-    Ok(())
+    Ok(jpeg.len() as u64)
 }
 
 /// A shared photo's JPEG (FR-053): sRGB, lightly sharpened after a downscale, the share
@@ -262,14 +266,17 @@ pub fn run_export(
     let total = u32::try_from(records.len()).unwrap_or(u32::MAX);
     let done = AtomicU32::new(0);
     let exported = AtomicU32::new(0);
+    let (source_bytes, output_bytes) = (AtomicU64::new(0), AtomicU64::new(0));
     let failed = Mutex::new(Vec::new());
     let reserved = Mutex::new(HashSet::new());
 
     let work = || {
         records.par_iter().for_each(|record| {
             match export_one(record, options, codec, cancel, &reserved) {
-                Ok(()) => {
+                Ok(written) => {
                     exported.fetch_add(1, Ordering::Relaxed);
+                    source_bytes.fetch_add(record.size, Ordering::Relaxed);
+                    output_bytes.fetch_add(written, Ordering::Relaxed);
                 }
                 Err(ExportError::Cancelled) => {}
                 Err(e) => {
@@ -299,5 +306,9 @@ pub fn run_export(
         failed: failed.into_inner().unwrap_or_default(),
         cancelled: cancel.is_cancelled(),
         destination: options.destination.display().to_string(),
+        #[allow(clippy::cast_precision_loss)] // exact far beyond any real export
+        source_bytes: source_bytes.into_inner() as f64,
+        #[allow(clippy::cast_precision_loss)]
+        output_bytes: output_bytes.into_inner() as f64,
     }
 }

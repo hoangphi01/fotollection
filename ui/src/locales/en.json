@@ -231,6 +231,8 @@
     "failed_one": "{{count}} failed",
     "failed_other": "{{count}} failed",
     "error": "Couldn't export",
+    "smaller": "Reduced from {{from}} to {{to}} ({{percent}} % lighter)",
+    "larger": "{{from}} → {{to}}: print files keep every detail, so they can be larger than the originals",
     "chooseDestination": "Choose destination…",
     "title": "Export",
     "button": "Export",

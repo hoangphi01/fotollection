@@ -8,3 +8,8 @@ export function formatNumber(value: number, maxDigits = 1, minDigits = 0): strin
     maximumFractionDigits: maxDigits,
   }).format(value)
 }
+
+/** A file size: `1.4 MB` from one megabyte up, `850 KB` below. */
+export function formatBytes(bytes: number): string {
+  return bytes >= 1e6 ? `${formatNumber(bytes / 1e6, 1, 1)} MB` : `${Math.round(bytes / 1e3)} KB`
+}

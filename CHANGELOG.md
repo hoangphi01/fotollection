@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **Export (FR-053):** when an export finishes, its card says how much lighter the files are than the originals, for example "Reduced from 17.0 MB to 1.4 MB (92 % lighter)".
+
 ### Changed
 
 - **Preview:** the inspector starts with the same cards, in the same order, as the settings panel: *Print / export size*, *Date stamp*, *Info frame*, then *Export*; the photo's details follow.

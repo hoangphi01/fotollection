@@ -41,7 +41,7 @@ import {
   type RenderSettings,
 } from '@/ipc/bindings'
 import i18n from '@/i18n'
-import { formatNumber } from '@/lib/format'
+import { formatBytes, formatNumber } from '@/lib/format'
 import { previewUrl, sourceUrl } from '@/lib/photo-url'
 import { CropEditor } from './crop-editor'
 import { PhotoStampControls } from './photo-stamp-controls'
@@ -88,10 +88,6 @@ function formatCaptureLong(capture: string): string {
     minute: '2-digit',
     second: '2-digit',
   })
-}
-
-function formatBytes(bytes: number): string {
-  return bytes >= 1e6 ? `${formatNumber(bytes / 1e6, 1, 1)} MB` : `${Math.round(bytes / 1e3)} KB`
 }
 
 function usePhotoDetails(id: number | undefined, revision: number): PhotoDetails | null {
