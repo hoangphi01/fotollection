@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-25
+
 ### Highlights
 
 - New: export for social media (original size, Facebook, Instagram or your own size), in sRGB, with the camera details and never GPS
