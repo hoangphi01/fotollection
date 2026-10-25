@@ -246,7 +246,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P2.** New versions are published on GitHub Releases and the website; people download and install them when they choose. There is **no in-app updater and no update check**, so the app never calls the network on its own ([NFR-006](#nfr-006--offline-and-zero-telemetry), [ADR-0021](adr/0021-versioning-and-automated-releases.md)).
 
-- The app shows its version (for example `v0.1.0`) at the foot of the settings panel.
+- The app shows its version (for example `v0.1.0`) at the foot of the settings panel. Clicking it lists every release with two lines from its Highlights, read from the CHANGELOG bundled at build time (no network).
 - Installing over an older version keeps settings, camera profiles and projects; their files are migrated on first open ([DATABASE.md](DATABASE.md)).
 - Release notes list user-visible changes and any file format that changed ([RELEASE.md](RELEASE.md)).
 

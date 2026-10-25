@@ -90,7 +90,7 @@ export function LibrarySidebar({
               <Button
                 key={key}
                 variant="ghost"
-                size="icon-xs"
+                size="icon-sm"
                 aria-label={t(`project.${key}`)}
                 data-hint={t(`project.${key}`)}
                 onClick={() => void action()}
@@ -133,7 +133,7 @@ export function LibrarySidebar({
           {folders.length > 0 && (
             <Button
               variant="ghost"
-              size="icon-xs"
+              size="icon-sm"
               aria-label={t('library.refresh')}
               data-hint={t('library.refreshHint')}
               onClick={onRefresh}
@@ -141,7 +141,13 @@ export function LibrarySidebar({
               <RefreshCw />
             </Button>
           )}
-          <Button variant="ghost" size="icon-xs" aria-label={t('library.openFolder')} onClick={onOpenFolder}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label={t('library.openFolder')}
+            data-hint={t('library.openFolder')}
+            onClick={onOpenFolder}
+          >
             <FolderOpen />
           </Button>
         </div>

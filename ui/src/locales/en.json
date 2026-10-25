@@ -386,5 +386,9 @@
     "maximize": "Maximize",
     "restore": "Restore",
     "close": "Close"
+  },
+  "about": {
+    "versions": "Versions",
+    "current": "This version"
   }
 }

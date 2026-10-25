@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { CalendarDays, Crop, Languages, MapPin, RotateCcw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
@@ -31,6 +30,7 @@ import {
 import type { FontsApi } from '@/features/fonts/use-fonts'
 import { PrintAdviceNote } from '@/features/print-advice/print-advice-note'
 import { StampStyleFields } from '@/features/stamp/stamp-style-fields'
+import { VersionHistory } from '@/features/about/version-history'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { LANGUAGES } from '@/i18n'
 import { PrintSizePicker } from './print-size-picker'
@@ -202,7 +202,7 @@ export function SettingsPanel({
         <ExportSection photoCount={photoCount} filter={filter} />
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{t('settings.footer')}</span>
-          {appInfo && <Badge variant="outline">v{appInfo.appVersion}</Badge>}
+          {appInfo && <VersionHistory version={appInfo.appVersion} />}
         </div>
       </div>
     </aside>

@@ -8,6 +8,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: click the version to see what each release brought
+- UI update: the toolbar stays on one line, photo filters as dropdowns, larger sidebar icons
+- Fixes: a minimum window width so the layout never breaks
+
+### Added
+
+- **Version history:** clicking the version at the foot of the settings panel opens a short list of every release with two lines on what it brought, read from the bundled CHANGELOG (no network).
+
+### Fixed
+
+- The toolbar above the photos stays on one line: the photo filters are two dropdowns, and the window can no longer be made narrower than 1,180 px.
+- The project and library buttons in the sidebar are larger (16 px icons, as STYLE_RULE asks).
+
 ## [0.3.0] - 2026-10-25
 
 ### Highlights
@@ -32,7 +47,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Dates and numbers in the interface use the bundled Geist Mono, so Windows shows them exactly like macOS (the rest of the interface already used the bundled Geist).
 - With the logo size slider focused, ← → changed the photo as well as the size; now the slider keeps the keys, and clicking the photo hands them back to browsing.
 - The date formats no longer overflow their buttons.
-- The toolbar above the photos stays on one line: the photo filters are two dropdowns, and the window can no longer be made narrower than 1,180 px.
 - The toolbar above the photos is now exactly as tall as the library and settings headers, so the three header lines line up.
 
 ## [0.2.0] - 2026-10-24

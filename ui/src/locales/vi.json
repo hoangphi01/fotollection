@@ -372,5 +372,9 @@
     "maximize": "Phóng to",
     "restore": "Khôi phục",
     "close": "Đóng"
+  },
+  "about": {
+    "versions": "Các phiên bản",
+    "current": "Bản đang dùng"
   }
 }
