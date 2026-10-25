@@ -552,6 +552,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Theme:** System, Light or Dark, chosen with a three-way switch at the foot of the library column and stored per machine (`settings.json` `ui.theme`, schema v6). The native window (title bar, scroll bars) follows the choice. The colours come from the logo (STYLE_RULE §4).
 - **Windows title bar:** on Windows the system's white title strip is replaced by one drawn in the app's colours, like VS Code's: the app mark and the project name, a drag area (double-click maximizes) and minimize, maximize/restore and close buttons. It stays usable above open dialogs. macOS keeps its native title bar.
 - **Hover hints:** every hint is drawn by the app in its own style (rounded, theme colours), never the operating system's square tooltip.
+- **One-line toolbar and a minimum window size:** the toolbar above the photos never wraps (the photo filters are two dropdowns), and the window cannot be made narrower than 1,180 px, the width at which the library, the toolbar and the settings column all fit.
 
 ## 7. Non-functional requirements
 

@@ -8,8 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { CullFilter, FlagFilter } from '@/ipc/bindings'
+import { cn } from '@/lib/utils'
 
 const FLAGS: FlagFilter[] = ['all', 'picks', 'unflagged', 'rejects']
 
@@ -18,30 +18,42 @@ type CullFilterBarProps = {
   onChange: (filter: CullFilter) => void
 }
 
-/** Library filter (FR-022). Export writes exactly the photos it keeps. */
+/** A filter that narrows the set is outlined in the accent colour, so it is never forgotten. */
+const ACTIVE = 'border-primary text-primary'
+
+/**
+ * Library filter (FR-022) as two dropdowns, so the toolbar stays on one line. Export writes
+ * exactly the photos it keeps.
+ */
 export function CullFilterBar({ filter, onChange }: CullFilterBarProps) {
   const { t } = useTranslation()
   return (
     <div className="flex items-center gap-2">
-      <ToggleGroup
-        type="single"
-        variant="outline"
-        size="sm"
-        value={filter.flag}
-        onValueChange={(flag) => flag && onChange({ ...filter, flag: flag as FlagFilter })}
-        aria-label={t('culling.filterByFlag')}
-      >
-        {FLAGS.map((value) => (
-          <ToggleGroupItem key={value} value={value} className="px-2.5 text-xs">
-            {t(`culling.flag.${value}`)}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+      <Select value={filter.flag} onValueChange={(flag) => onChange({ ...filter, flag: flag as FlagFilter })}>
+        <SelectTrigger
+          size="sm"
+          className={cn('w-32 text-xs', filter.flag !== 'all' && ACTIVE)}
+          aria-label={t('culling.filterByFlag')}
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {FLAGS.map((value) => (
+            <SelectItem key={value} value={value}>
+              {t(`culling.flag.${value}`)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       <Select
         value={String(filter.minRating)}
         onValueChange={(v) => onChange({ ...filter, minRating: Number(v) })}
       >
-        <SelectTrigger size="sm" className="w-28 text-xs" aria-label={t('culling.minRating')}>
+        <SelectTrigger
+          size="sm"
+          className={cn('w-28 text-xs', filter.minRating > 0 && ACTIVE)}
+          aria-label={t('culling.minRating')}
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

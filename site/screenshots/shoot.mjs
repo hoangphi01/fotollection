@@ -70,7 +70,8 @@ function bridge({ fixtures, scenario, language, os }) {
 const browser = await chromium.launch()
 const shots = []
 
-async function open({ scenario, language, theme, width = 1440, height = 900 }) {
+async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900 }) {
+  // DEMO_WIDTH=1000 checks narrow windows (the screenshots for the site stay at 1440).
   const context = await browser.newContext({
     viewport: { width, height },
     deviceScaleFactor: 2,
