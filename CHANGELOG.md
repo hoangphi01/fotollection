@@ -8,6 +8,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: camera RAW opens as it is: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG
+- New: open photos from Finder or Explorer with Fotollection; its folder becomes a tab
+- New: ticks follow you across folder tabs in select mode
+- Fixes: the info frame no longer repeats the maker; projects open when double-clicked with the app closed
+- Tested on Windows with the Raw Image Extension; never set as your default viewer
+
+### Changed
+
+- Everything in 0.7.0-beta.1 below, checked on Windows: "Open with", one window for a second photo, RAW with the Raw Image Extension, and nothing left in "Open with" after uninstalling.
+
+### Website
+
+- Camera RAW and "Open with" on the home page; the questions mention opening photos from Finder or Explorer; the Performance page gives the RAW speed and credits the CC0 samples from raw.pixls.us.
+
 ## [0.7.0-beta.1] - 2026-10-25
 
 ### Highlights
