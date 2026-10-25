@@ -258,6 +258,11 @@ p { margin: 0; }
 
 a:focus-visible, .button:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
 
+/* Narrow phones: the logo alone, so the round buttons fit beside it. */
+@media (max-width: 479px) {
+  .nav .brand span { display: none; }
+}
+
 @media (min-width: 640px) {
   :root { --gutter: 24px; }
   .button { flex: 0 0 auto; }
