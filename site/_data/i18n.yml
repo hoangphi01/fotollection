@@ -4,7 +4,7 @@ en:
   html_lang: en
   other: vi
   other_label: Tiếng Việt
-  title: Fotollection — photos ready to print, fully offline
+  title: Fotollection - photos ready to print, fully offline
   description: Free, open-source desktop app that prepares photos for printing on your own computer. Retro date stamp, camera info frame, best-shot suggestions, print-size crops and original-quality export, with no account and no upload.
   nav_features: Features
   nav_quality: Quality
@@ -16,7 +16,7 @@ en:
   hero_title_1: Thousands of photos, only looked at
   hero_accent: on the plane
   hero_title_2: " home?"
-  hero_lead: No internet up there, and still no idea which ones to keep. Take one real look back with Fotollection — it finds the best shots, stamps the date and gets them ready to print. Automatic, free and fully offline.
+  hero_lead: No internet up there, and still no idea which ones to keep. Take one real look back with Fotollection - it finds the best shots, stamps the date and gets them ready to print. Automatic, free and fully offline.
   download_mac: Download for macOS
   download_win: Download for Windows
   download_note: macOS 11+ (Apple Silicon and Intel) · Windows 10/11
@@ -87,8 +87,17 @@ en:
   kiosk_s1: Pick the best shots and choose the print size.
   kiosk_s2: Export to a folder, a USB stick or an SD card.
   kiosk_s3: Print at the kiosk in store, or upload to the shop's online service.
-  kiosk_note: Fotollection is independent and not affiliated with CEWE, dm or Rossmann; their names and logos are trademarks of their owners, shown only to say where the prints can be made. Sizes checked against dm's price list in October 2026.
-  shield: Private — your photos never leave your computer
+  fn_title: Notes
+  fn_label: Note
+  fn_back: Back to the text
+  fn_open: Free means no price, no ads and no in-app purchases; buying the author a coffee is optional. Open source means the full source code is public on GitHub under the GPL-3.0 licence, so anyone can read, build and check what the app does. No account means the app never asks who you are and has nothing to sign in to.
+  fn_dm: dm and the dm logo are trademarks of dm-drogerie markt GmbH + Co. KG.
+  fn_rossmann: ROSSMANN and the ROSSMANN logo are trademarks of Dirk Rossmann GmbH.
+  fn_cewe: The photo services at dm and Rossmann are made by CEWE, a trademark of CEWE Stiftung & Co. KGaA. Print sizes were checked against dm's price list in October 2026; the shops may change them.
+  fn_cameras: "Camera names and logos in the screenshots and in the app's info frame are trademarks of their owners, used only to show which camera took a photo: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) and Sony (Sony Group Corporation)."
+  fn_others: Apple and macOS are trademarks of Apple Inc.; Windows of Microsoft Corporation; Facebook and Instagram of Meta Platforms, Inc.; GitHub of GitHub, Inc.; Google Analytics of Google LLC; VietQR of NAPAS; Wikimedia Commons of the Wikimedia Foundation.
+  fn_independent: Fotollection is an independent open-source project. It is not affiliated with, sponsored or endorsed by any of these companies, and every other trademark belongs to its owner.
+  shield: Private - your photos never leave your computer
   privacy_title: Your photos stay yours
   privacy_lead: Fotollection is built to work with no internet at all. Nothing is uploaded, nothing is tracked, and you can check every line of it.
   p1_title: No upload, no cloud
@@ -174,7 +183,7 @@ vi:
   html_lang: vi
   other: en
   other_label: English
-  title: Fotollection — ảnh sẵn sàng để in, hoàn toàn offline
+  title: Fotollection - ảnh sẵn sàng để in, hoàn toàn offline
   description: Ứng dụng máy tính miễn phí, mã nguồn mở, chuẩn bị ảnh để in ngay trên máy của bạn. Dấu ngày kiểu máy film, khung thông tin máy ảnh, gợi ý ảnh đẹp nhất, cắt đúng khổ in và xuất giữ nguyên chất lượng gốc, không cần tài khoản, không tải ảnh lên đâu cả.
   nav_features: Tính năng
   nav_quality: Chất lượng
@@ -186,7 +195,7 @@ vi:
   hero_title_1: Chụp hàng nghìn ảnh, chỉ xem lại khi
   hero_accent: ngồi trên máy bay
   hero_title_2: "?"
-  hero_lead: Không có internet, và vẫn chưa biết giữ tấm nào. Hãy thử một lần nhìn lại cùng Fotollection — tự tìm ảnh đẹp nhất, in ngày chụp và chuẩn bị sẵn để in. Tự động, miễn phí và hoàn toàn offline.
+  hero_lead: Không có internet, và vẫn chưa biết giữ tấm nào. Hãy thử một lần nhìn lại cùng Fotollection - tự tìm ảnh đẹp nhất, in ngày chụp và chuẩn bị sẵn để in. Tự động, miễn phí và hoàn toàn offline.
   download_mac: Tải cho macOS
   download_win: Tải cho Windows
   download_note: macOS 11+ (Apple Silicon và Intel) · Windows 10/11
@@ -257,8 +266,17 @@ vi:
   kiosk_s1: Chọn ảnh đẹp nhất và chọn khổ in.
   kiosk_s2: Xuất ra một thư mục, USB hoặc thẻ SD.
   kiosk_s3: In ngay tại máy trong cửa hàng, hoặc tải lên dịch vụ in online của cửa hàng.
-  kiosk_note: Fotollection là dự án độc lập, không liên kết với CEWE, dm hay Rossmann; tên và logo là thương hiệu của chủ sở hữu, chỉ dùng để cho biết có thể in ảnh ở đâu. Khổ in được đối chiếu với bảng giá của dm vào tháng 10/2026.
-  shield: Riêng tư — ảnh không bao giờ rời khỏi máy của bạn
+  fn_title: Chú thích
+  fn_label: Chú thích
+  fn_back: Quay lại đoạn văn
+  fn_open: Miễn phí là không thu tiền, không quảng cáo, không mua thêm trong app; mời tác giả ly cà phê là tuỳ bạn. Mã nguồn mở là toàn bộ mã nguồn được công khai trên GitHub theo giấy phép GPL-3.0, ai cũng có thể đọc, tự build và kiểm tra app làm gì. Không cần tài khoản là app không bao giờ hỏi bạn là ai và không có gì để đăng nhập.
+  fn_dm: dm và logo dm là thương hiệu của dm-drogerie markt GmbH + Co. KG.
+  fn_rossmann: ROSSMANN và logo ROSSMANN là thương hiệu của Dirk Rossmann GmbH.
+  fn_cewe: Dịch vụ in ảnh của dm và Rossmann do CEWE thực hiện; CEWE là thương hiệu của CEWE Stiftung & Co. KGaA. Khổ in được đối chiếu với bảng giá của dm vào tháng 10/2026; cửa hàng có thể thay đổi.
+  fn_cameras: "Tên và logo máy ảnh trong ảnh chụp màn hình và trong khung thông tin của app là thương hiệu của chủ sở hữu, chỉ dùng để cho biết ảnh được chụp bằng máy nào: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) và Sony (Sony Group Corporation)."
+  fn_others: Apple và macOS là thương hiệu của Apple Inc.; Windows của Microsoft Corporation; Facebook và Instagram của Meta Platforms, Inc.; GitHub của GitHub, Inc.; Google Analytics của Google LLC; VietQR của NAPAS; Wikimedia Commons của Wikimedia Foundation.
+  fn_independent: Fotollection là dự án mã nguồn mở độc lập, không liên kết, không được tài trợ hay bảo trợ bởi bất kỳ công ty nào kể trên; mọi thương hiệu khác thuộc về chủ sở hữu của chúng.
+  shield: Riêng tư - ảnh không bao giờ rời khỏi máy của bạn
   privacy_title: Ảnh của bạn là của bạn
   privacy_lead: Fotollection được làm để chạy hoàn toàn không cần internet. Không tải lên, không theo dõi, và bạn có thể tự kiểm tra từng dòng code.
   p1_title: Không tải lên, không cloud

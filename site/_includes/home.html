@@ -11,7 +11,7 @@
   <div class="wrap hero-grid">
     <div class="hero-text">
       <p class="badges">
-        <span class="badge">{{ t.badge }}</span>
+        <span class="badge">{{ t.badge }}<sup class="fn-ref"><a href="#fn-1" id="fnref-1" aria-label="{{ t.fn_label }} 1">1</a></sup></span>
         <a class="badge shield" href="#privacy">{% include icons/shield-check.svg %}{{ t.shield }}</a>
       </p>
       <h1>{{ t.hero_title_1 }} <em>{{ t.hero_accent }}</em>{{ t.hero_title_2 }}</h1>
@@ -111,10 +111,11 @@
     {%- for r in rows -%}
     {%- capture title_key %}{{ r }}_title{% endcapture -%}
     {%- capture text_key %}{{ r }}_text{% endcapture -%}
-    {%- capture show_key %}show_{{ r }}{% endcapture %}
+    {%- capture show_key %}show_{{ r }}{% endcapture -%}
+    {%- assign show_alt = t[show_key] %}
     <div class="showcase-row{% cycle '', ' flip' %}">
       <figure class="shot{% if r == 'swipe' %} keys{% endif %}">
-        {% include shot.html name=r alt=t[show_key] %}
+        {% include shot.html name=r alt=show_alt %}
         {%- if r == 'swipe' %}
         <p class="key-chips" aria-hidden="true"><span><kbd>↑</kbd> {{ t.key_up }}</span><span><kbd>↓</kbd> {{ t.key_down }}</span></p>
         {%- endif %}
@@ -132,7 +133,7 @@
 <section class="section" id="kiosk">
   <div class="wrap kiosk-grid">
     <div>
-      <h2>{{ t.kiosk_title }} {% include logos/dm.svg %} {{ t.kiosk_and }}&nbsp;{% include logos/rossmann.svg %}</h2>
+      <h2>{{ t.kiosk_title }} {% include logos/dm.svg %}<sup class="fn-ref"><a href="#fn-2" id="fnref-2" aria-label="{{ t.fn_label }} 2">2</a></sup> {{ t.kiosk_and }}&nbsp;{% include logos/rossmann.svg %}<sup class="fn-ref"><a href="#fn-3" id="fnref-3" aria-label="{{ t.fn_label }} 3">3</a></sup></h2>
       <p class="lead">{{ t.kiosk_lead }}</p>
       <div class="sizes">
         <p class="sizes-label">{{ t.kiosk_standard }}</p>
@@ -151,7 +152,6 @@
         <li>{{ t.kiosk_s2 }}</li>
         <li>{{ t.kiosk_s3 }}</li>
       </ol>
-      <p class="small muted">{{ t.kiosk_note }}</p>
     </div>
   </div>
 </section>

@@ -133,6 +133,25 @@
       }
     </script>
 
+    {%- comment -%} Footnotes, like Apple's: the numbered marks on the home page, then who owns
+         every trademark the site shows (names, logos, the cameras in the screenshots). {%- endcomment %}
+    <section class="footnotes" aria-label="{{ t.fn_title }}">
+      <div class="wrap">
+        {%- unless page.title_key %}
+        <ol>
+          {%- assign notes = "fn_open,fn_dm,fn_rossmann" | split: "," %}
+          {%- for key in notes %}
+          <li id="fn-{{ forloop.index }}"><span class="fn-num">{{ forloop.index }}.</span> {{ t[key] }} <a class="fn-back" href="#fnref-{{ forloop.index }}" aria-label="{{ t.fn_back }}">↩</a></li>
+          {%- endfor %}
+        </ol>
+        <p>{{ t.fn_cewe }}</p>
+        {%- endunless %}
+        <p>{{ t.fn_cameras }}</p>
+        <p>{{ t.fn_others }}</p>
+        <p>{{ t.fn_independent }}</p>
+      </div>
+    </section>
+
     <footer class="footer">
       <div class="wrap footer-row">
         <div>

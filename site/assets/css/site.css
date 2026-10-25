@@ -288,7 +288,18 @@ p { margin: 0; }
 .install li + li { margin-top: 6px; }
 
 /* Footer */
-.footer { border-top: 1px solid var(--line); padding: 40px 0 28px; }
+.footnotes { border-top: 1px solid var(--line); padding: 28px 0 12px; font-size: 0.75rem; line-height: 1.6; color: var(--muted); }
+.footnotes ol { list-style: none; margin: 0; padding: 0; }
+.footnotes li, .footnotes p { margin: 0 0 12px; }
+.footnotes .fn-num { font-variant-numeric: tabular-nums; }
+.footnotes a { color: inherit; }
+.footnotes .fn-back { text-decoration: none; margin-left: 2px; }
+.footnotes li:target { color: var(--ink); }
+.fn-ref { font-size: 0.4em; vertical-align: super; line-height: 0; margin-left: 2px; font-weight: 600; }
+.fn-ref a { color: var(--muted); text-decoration: none; }
+.badge .fn-ref { font-size: 0.7em; }
+.fn-ref a:hover { color: var(--ink); }
+.footer { border-top: 1px solid var(--line); padding: 32px 0 28px; }
 .footer-row { display: flex; flex-direction: column; gap: 22px; }
 .footer-row p { margin-top: 8px; }
 .footer-made { max-width: 46ch; font-size: 0.9rem; }
