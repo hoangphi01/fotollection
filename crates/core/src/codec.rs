@@ -123,8 +123,9 @@ fn os_error(e: fotollection_oscodec::OsCodecError) -> CodecError {
 
 /// HEIC through the operating system's codec (ADR-0017), checked against the same limits.
 fn decode_heif(bytes: &[u8]) -> Result<Decoded, CodecError> {
-    let image = fotollection_oscodec::decode_heif(
+    let image = fotollection_oscodec::decode(
         bytes,
+        fotollection_oscodec::Format::Heif,
         fotollection_oscodec::Limits {
             max_edge: MAX_EDGE,
             max_pixels: MAX_PIXELS,
@@ -161,7 +162,8 @@ pub fn image_dimensions(codec: &dyn JpegCodec, bytes: &[u8]) -> Result<(u32, u32
         let info = reader.info();
         Ok((info.width, info.height))
     } else if is_heif(bytes) {
-        fotollection_oscodec::heif_dimensions(bytes).map_err(os_error)
+        fotollection_oscodec::dimensions(bytes, fotollection_oscodec::Format::Heif)
+            .map_err(os_error)
     } else {
         codec.dimensions(bytes)
     }

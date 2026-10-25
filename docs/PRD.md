@@ -710,6 +710,10 @@ In Normal mode ([FR-048](#fr-048--normal-and-professional-modes)), export of 16�
 
 Opening a photo from Finder or Explorer ("Open with", [FR-054](#fr-054--open-photos-with-fotollection)) shows it in the preview in **under 1 s** on REF-MAC, after the first launch. Estimated from its parts before FR-054 exists: the page loads in 0.31–0.40 s ([NFR-010](#nfr-010--cold-start)) and a first preview takes 105–154 ms for 16–32 MP ([RESULT.md §11](RESULT.md#11-preview-and-zoom-cost-v060)), about 0.5 s; measured end to end when FR-054 ships.
 
+### NFR-017 — Camera RAW speed
+
+For camera RAW ([FR-016](#fr-016--raw-input)), on REF-MAC: a thumbnail or the input of best-shot analysis comes from the file's embedded preview in **under 100 ms**; the first print preview of a 16–31 MP RAW, which develops it, appears in **under 2.5 s**, and later changes re-render from the cached copy within [NFR-002](#nfr-002--preview-latency); exporting RAW keeps peak memory within [NFR-004](#nfr-004--memory-ceiling) by developing only a few at a time. Measured on nine CC0 samples before implementation ([RESULT.md §12](RESULT.md#12-camera-raw-v070)): preview 9–80 ms, develop 0.39–2.17 s, up to 1.29 GB for one 31 MP develop.
+
 ## 8. Out of scope
 
 The following are out of scope (for now):

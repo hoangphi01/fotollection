@@ -26,6 +26,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0020](0020-bundled-brand-logos.md) | Bundle public-domain camera-brand logos for the info frame | Accepted | 2026-10-24 |
 | [0021](0021-versioning-and-automated-releases.md) | One SemVer version, released automatically when it changes on `main`; no in-app updater | Accepted | 2026-10-24 |
 | [0022](0022-srgb-and-exif-for-share-exports.md) | Share exports: sRGB through `qcms`, an allowlisted EXIF block with the app's name, never GPS | Accepted | 2026-10-25 |
+| [0023](0023-raw-through-os-codecs.md) | Camera RAW through the OS codecs (ImageIO, WIC + Raw Image Extension); embedded preview for thumbnails and analysis, full develop for preview and export | Accepted | 2026-10-25 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

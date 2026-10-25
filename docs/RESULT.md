@@ -210,3 +210,31 @@ Measured before building the zoom path ([FR-057](PRD.md#fr-057--zoom-in-the-prev
 ```bash
 cargo run --release -p fotollection-core --example measure_preview -- photo-16mp.jpg photo-32mp.jpg
 ```
+
+## 12. Camera RAW (v0.7.0)
+
+Measured before building RAW input ([FR-016](PRD.md#fr-016--raw-input), [ADR-0023](adr/0023-raw-through-os-codecs.md)), on nine CC0 samples from [raw.pixls.us](https://raw.pixls.us/), one per format (`bench/raw-samples.json`, fetched and checked by `scripts/fetch-raw-samples.py`). `examples/measure_raw.rs` calls the macOS codec through `fotollection-oscodec`; median of 5, REF-MAC (M3), macOS 26.
+
+| Sample | Developed size | Full develop | Embedded preview ≤ 400 px | Preview ≤ 2048 px | EXIF read today |
+|------|-----:|-----:|-----:|-----:|:-----:|
+| Panasonic GX9 (RW2, 20 MP) | 5184 × 3888 | 867 ms | 14 ms | 28 ms (1920 px) | ✗ |
+| Panasonic S5 (RW2, 24 MP) | 6000 × 4000 | 906 ms | 9 ms | 19 ms (1920 px) | ✗ |
+| Canon 5D Mark IV (CR2, 31 MP) | 6720 × 4480 | 668 ms | 32 ms | 79 ms | ✓ |
+| Canon R10 (CR3, 24 MP) | 6000 × 4000 | 2172 ms | 25 ms | 62 ms | ✗ |
+| Nikon D750 (NEF, 24 MP) | 6016 × 4016 | 462 ms | 20 ms | 64 ms | ✓ |
+| Sony A7 III (ARW, 24 MP) | 6000 × 4000 | 469 ms | 12 ms | 20 ms (1616 px) | ✓ |
+| Fujifilm X-T3 (RAF, 26 MP) | 6240 × 4160 | 1148 ms | 16 ms | 42 ms | ✗ |
+| Olympus E-M10 III (ORF, 16 MP) | 4608 × 3456 | 385 ms | 30 ms | 80 ms | ✗ |
+| Ricoh GR III (DNG, 24 MP) | 6000 × 4000 | 1150 ms | 24 ms | 62 ms | ✓ |
+
+Peak RSS of one process developing one file five times: 1.29 GB (CR2, 31 MP), 810 MB (CR3), 579 MB (RW2, GX9).
+
+- **Two paths.** The preview every RAW carries comes back 30 to 100 times faster than a full develop, and it is what thumbnails and best-shot analysis need. The develop (0.4–2.2 s) is kept for the print preview, zoom and export, which work on one photo at a time; a preview already on screen re-renders from its cached copy in 17 ms, like a JPEG.
+- **Memory.** One develop can hold more than 1 GB, so RAW photos are developed a few at a time, not six at once like JPEG, to stay under the 2 GB ceiling (NFR-004).
+- **The type hint matters.** Without the file's type identifier, ImageIO read a NEF as a plain TIFF (its 160 × 120 thumbnail) and could not open an ARW; with it, all nine develop at full size.
+- **EXIF.** The current reader understands the TIFF-based RAW files only; RW2, CR3, RAF and ORF need their containers handled before the date stamp and the info frame can use their EXIF.
+
+```bash
+python3 -I scripts/fetch-raw-samples.py /tmp/raw
+cargo run --release -p fotollection-core --example measure_raw -- /tmp/raw/*
+```

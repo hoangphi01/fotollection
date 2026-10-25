@@ -98,7 +98,7 @@ pub struct ScanResult {
 /// Whether this machine can decode HEIC, asked once per run (ADR-0017).
 fn heif_available() -> bool {
     static AVAILABLE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
-    *AVAILABLE.get_or_init(fotollection_oscodec::heif_available)
+    *AVAILABLE.get_or_init(|| fotollection_oscodec::available(fotollection_oscodec::Format::Heif))
 }
 
 fn has_image_extension(path: &Path) -> bool {
