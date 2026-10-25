@@ -41,10 +41,10 @@ en:
   show_frame: The "Shot on" info frame with the camera's logo
   show_crop: Straightening a horizon in the crop editor
   show_groups: Similar shots grouped, the best one suggested
-  basket_title: "Choose your prints like swiping"
+  basket_title: "Choose your prints with one key"
   basket_lead: "A trip leaves hundreds of photos, and only a handful should be printed. Fotollection turns that choice into a game of thumbs up and thumbs down."
   swipe_title: "↑ to print, ↓ to set aside"
-  swipe_text: "Open the first photo and decide with one key, like swiping on a dating app: ↑ puts it in the print basket, ↓ puts it aside, and the next photo is already on screen. Nothing is ever deleted: the basket and the set-aside pile wait in the sidebar, so you can change your mind."
+  swipe_text: "Open the first photo and decide with one key: ↑ puts it in the print basket, ↓ puts it aside, and the next photo is already on screen. Nothing is ever deleted: the basket and the set-aside pile wait in the sidebar, so you can change your mind."
   show_swipe: "A photo in the print basket, with the keys to keep going"
   select_title: "Or tick them in the gallery"
   select_text: "Select turns the grid into tick boxes, like on an iPhone, with Shift-click for a whole run. Hold Space over a photo to see it large, exactly as it will print, then let go and carry on."
@@ -238,10 +238,10 @@ vi:
   show_frame: Khung "Shot on" với logo của hãng máy ảnh
   show_crop: Cân lại đường chân trời trong màn cắt ảnh
   show_groups: Ảnh giống nhau được gom nhóm, gợi ý tấm đẹp nhất
-  basket_title: "Chọn ảnh để in nhanh như quẹt Tinder"
+  basket_title: "Chọn ảnh để in chỉ với một phím"
   basket_lead: "Một chuyến đi để lại hàng trăm tấm ảnh, nhưng chỉ vài tấm đáng đem in. Fotollection biến việc chọn ấy thành trò chơi thích hay bỏ qua."
   swipe_title: "↑ để in, ↓ để riêng"
-  swipe_text: "Mở tấm đầu tiên rồi quyết bằng một phím, như quẹt Tinder: ↑ cho ảnh vào giỏ in, ↓ để riêng sang một bên, và tấm kế tiếp đã hiện sẵn. Không ảnh nào bị xoá: giỏ in và chồng ảnh để riêng nằm chờ ở sidebar, đổi ý lúc nào cũng được."
+  swipe_text: "Mở tấm đầu tiên rồi quyết bằng một phím: ↑ cho ảnh vào giỏ in, ↓ để riêng sang một bên, và tấm kế tiếp đã hiện sẵn. Không ảnh nào bị xoá: giỏ in và chồng ảnh để riêng nằm chờ ở thanh bên, đổi ý lúc nào cũng được."
   show_swipe: "Một tấm ảnh đã vào giỏ in, cùng các phím để lướt tiếp"
   select_title: "Hoặc tích chọn ngay trong gallery"
   select_text: "Nút Chọn biến cả lưới ảnh thành ô tích như trên iPhone, Shift+click để chọn cả một dải. Giữ Space trên một ảnh để xem to, đúng như khi in ra, rồi thả tay là chọn tiếp."
