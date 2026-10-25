@@ -223,6 +223,10 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P2.** Import camera RAW files (starting with Panasonic RW2), developing them with neutral defaults or using the embedded JPEG preview.
 
+- **Planned approach (2026-10-25, not started):** read RAW **natively, without asking for DNG**, through the operating system's codecs, as HEIC is read ([ADR-0017](adr/0017-heic-through-os-codecs.md)): ImageIO on macOS (CR2/CR3, NEF, ARW, RW2, RAF, ORF, DNG…, with the camera list updated by macOS) and WIC with Microsoft's free *Raw Image Extension* on Windows. The Rust RAW decoders (`rawloader`, `rawler`, LibRaw) are LGPL, which [ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md) rules out.
+- Thumbnails, culling and best-shot analysis use the **JPEG preview embedded in every RAW file**, as fast as a JPEG; only the preview and the export develop the RAW.
+- Files are recognised by magic bytes; Windows without the extension gets `import.raw_codec_missing` with install steps. Measure the preview and full decode at 16 and 24 MP (on the owner's GX9 RW2 files) and add an NFR before shipping. A new ADR records it.
+
 ### FR-017 — Photo book layout preview
 
 **P2.** Preview how the selection lays out on album pages.
@@ -612,6 +616,15 @@ Next to the batch settings, any other setting will later be overridable for one 
 - Another photo, or the crop editor, starts again at fit; ← → still browse.
 - **Next:** past the preview's own pixels (1,600 px), load a full-resolution render of the photo, measured against a new budget before it ships.
 
+### FR-058 — Lightroom compatibility through XMP
+
+**P2 (planned, not started).** Work culled in Lightroom, Bridge, Capture One or darktable comes into Fotollection, and Fotollection's work can go back out, through **XMP** sidecar files: XMP is XML with standard fields those apps share, so it is used instead of a format of our own.
+
+- **Read on import (always, read-only):** an `IMG_0416.xmp` or `IMG_0416.RW2.xmp` next to a photo gives its stars, the reject flag (`xmp:Rating = -1`), the crop and the straightening (`crs:Crop*`, `crs:CropAngle`), for photos not yet edited in Fotollection.
+- **Write (a setting, off by default):** the same standard fields, plus Fotollection's own work (stamp, frame, print size, pick flag) in a `fotollection:` namespace that other apps ignore. Only `.xmp` files are created or updated, atomically, never a photo; an existing sidecar keeps every field Fotollection does not own (edited at the XML event level with `quick-xml`, MIT).
+- **Known limit, to confirm with Lightroom itself:** Lightroom Classic reads sidecars only for RAW files; for JPEG and PNG it reads XMP embedded in the file, which Fotollection does not modify. Lightroom's pick flag lives only in its catalog.
+- Writing next to photos changes the "nothing is written into source folders" rule, so it needs an ADR and updates to [SECURITY.md](SECURITY.md) and §9.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
@@ -666,7 +679,7 @@ In the loupe view, moving to the next or previous photo shows a sharp preview in
 
 ### NFR-013 — Project safety
 
-Edits reach the project file within **5 s**, and writes are atomic, so a crash or power loss never corrupts the project. The file has a `schema_version` and is migrated forward automatically. Older app versions refuse to open newer files rather than damage them.
+Edits reach the project file within **5 s**, and writes are atomic, so a crash or power loss never corrupts the project. Measured 2026-10-25 (`examples/measure_project.rs`): a full save takes 10 ms for 5,035 edited photos and 70 ms for 70,000, the library being locked 21 ms of it; the autosave runs at most once a second. **Planned:** an append-only edit journal (each undoable step written at once, the full snapshot every 30 s), so a crash loses at most one step and the save cost no longer grows with the library; a new ADR replaces that part of [ADR-0010](adr/0010-project-file-format.md). The file has a `schema_version` and is migrated forward automatically. Older app versions refuse to open newer files rather than damage them.
 
 ### NFR-014 — Best-shot analysis speed
 
@@ -682,7 +695,7 @@ The following are out of scope (for now):
 
 - Cloud sync, accounts, and any kind of server backend.
 - General photo editing beyond the global Photo Style looks of [FR-039](#fr-039--photo-style-looks): local adjustments, masks, HSL/curve editors, retouching and RAW development controls ([ADR-0011](adr/0011-photo-style-looks.md)).
-- Writing ratings, flags or edits back into source files or XMP sidecars. Sources stay read-only. Exporting XMP sidecars may be considered later.
+- Writing ratings, flags or edits back into source files. Sources stay read-only. XMP sidecar files next to photos are planned as an opt-in ([FR-058](#fr-058--lightroom-compatibility-through-xmp)).
 - Mobile apps.
 - Video.
 

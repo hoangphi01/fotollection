@@ -177,6 +177,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-10-24 | FR-005 | REF-MAC (M3) | Offline places (`measure_geocode`): 161,937 GeoNames towns, 5.4 MB | first load 25 ms (checksum + grid), reverse 4.6 µs per lookup, search 25 ms per query | Lookup is negligible next to import (NFR-001); search is fast enough to run on every keystroke (NFR-005) |
 | 2026-10-24 | FR-006 | REF-MAC (M3) | Straighten: `render_one` render step, 16 MP photo to a full-size 3:2 crop, 0° vs 4.5°, 5 runs each | 0°: median 8 ms; 4.5°: median 61 ms (bicubic over the crop only, rayon rows) | +53 ms only for straightened photos; decode stays 46 ms. A level photo takes the unchanged lossless path |
 | 2026-10-25 | FR-053 | REF-MAC (M3) | Share export, 20 × 16 MP JPEG + 5 Display P3 (`quality_export --share`, `share_audit.py`) | Original q80: 1.42 MB (46 %), ΔE 0.96, SSIM 0.981, 14 photos/s · Facebook q88 + sharpen 0.2: 0.51 MB, SSIM 0.979, ΔE 1.27, 23 photos/s · after Facebook: SSIM 0.965 vs 0.961, P3 colour 99.6 % vs 86 % for the usual way | Sweep: q80/84/88 × sharpen 0/0.2/0.35; RESULT §10 |
+| 2026-10-25 | NFR-013 | REF-MAC (M3) | Session save vs library size, every photo edited (`measure_project`, median of 5) | 5,035: 10.5 ms (snapshot 1.5, JSON 1.9, write 7.1), 1.0 MB · 20,000: 20.8 ms, 4.1 MB · 70,000: 70.5 ms (snapshot 20.8 with the library locked, JSON 14.6, write 35.1), 14.4 MB | Linear; fine at the 1 s autosave. An append-only journal is planned, not urgent |
 
 ## 6. Benchmark corpus
 

@@ -92,8 +92,8 @@ After v0.3.1, each release has one theme. The order puts the biggest everyday wi
 | Release | Theme | Requirements | First, measure |
 |---------|-------|--------------|----------------|
 | v0.4.0 | Sharing and folders | FR-053, FR-055, FR-056, FR-057 (zoom on the preview), FR-040 (instax-style Fit, drag to reframe) | Done: RESULT §10 |
-| v0.5.0 | Photo viewer | FR-054 ("Open with"), FR-057 (full-resolution zoom) | Cold start (NFR-010), a new "open to first photo" budget, the memory and time of a 26 MP render |
-| v0.6.0 | Places | FR-032, FR-005, FR-030, FR-031 | Lookup speed with manual places, a mixed camera + phone folder |
+| v0.5.0 | Photo viewer and RAW | FR-054 ("Open with"), FR-057 (full-resolution zoom), FR-016 (RAW through the OS codecs) | Cold start (NFR-010), a new "open to first photo" budget, a 26 MP render, RAW preview and full decode on GX9 RW2 files |
+| v0.6.0 | Places and Lightroom | FR-032, FR-005, FR-030, FR-031, FR-058 (XMP) | Lookup speed with manual places, a mixed camera + phone folder; XMP read on a Lightroom-culled folder |
 | v0.7.0 | Normal mode | FR-048, NFR-015, FR-046, FR-050 | Normal against Professional export |
 | Later | Looks, presets, trips, journal | FR-039, FR-047, FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
 
@@ -123,6 +123,7 @@ After v0.3.1, each release has one theme. The order puts the biggest everyday wi
 | FR-055 | Export the photo open in the preview, with the same export controls as the panel |
 | FR-056 | Folders as tabs: All photos, one folder or several ticked, exported together or separately |
 | FR-057 | Zoom in the preview: pinch, Ctrl/⌘ + − 0, drag to move, double-click for 200 % |
+| FR-058 | Lightroom compatibility: read XMP sidecars on import, write `.xmp` as an opt-in, photos never touched |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 
 ## Phase 3 — Pro & growth
@@ -145,6 +146,6 @@ These ideas have no ID yet. Promote one to a PRD requirement before scheduling i
 - **Look back one trip at a time from the Photos library (macOS, PhotoKit, read-only).** Pick a trip by date or place; the app groups it, suggests the best shots, and puts the rejects in a "To delete" album the user empties in Photos. With iCloud Photos this frees space on the iPhone too, without the app ever deleting anything. Prompted by the owner's own library: about 70,000 photos on a 512 GB iPhone. Measure a 70,000-photo library first (NFR-001, NFR-014).
 - **iPhone companion app**, only if the Mac flow proves itself: swipe culling on the way home and real deletion behind iOS's own confirmation. Needs the Apple Developer Program (99 USD/year, which would also notarize the Mac app), a native SwiftUI interface over the Rust core (UniFFI), and Core ML for the face models.
 - **Support from abroad:** a Ko-fi or GitHub Sponsors link next to the VietQR code on the website.
-- XMP sidecar export of ratings and flags (sources stay read-only)
+- Append-only edit journal for the session (NFR-013): not urgent, a full save is 70 ms at 70,000 edited photos (2026-10-25)
 - Lossless rotation fix-up tool
 - Linux build
