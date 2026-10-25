@@ -50,7 +50,7 @@ en:
   q3_value: 0 bytes
   q3_label: sent anywhere. The app works without a network.
   quality_more: How it was measured
-  nav_numbers: Numbers
+  nav_numbers: "Performance"
   nav_privacy: Privacy
   nav_kiosk: Print shops
   nav_changelog: What's new
@@ -93,6 +93,47 @@ en:
   chart_budgets: Speed and memory, against the budgets set before the code was written
   chart_quality: What the export keeps of the original, against a typical web editor
   chart_bestshot: Best-shot suggestions, scored against photos sorted by hand
+  charts_more: "All measurements, explained"
+  chart_share: "Photos for Facebook: what viewers see after Facebook recompresses them"
+  chart_memory: "Peak memory as the batch grows to 5,035 photos"
+  chart_browser: "The same job in Fotollection and in a web browser"
+  perf_title: "Performance"
+  perf_description: "Every measurement behind Fotollection, explained in plain words: speed, memory, print quality, photos for social media and best-shot suggestions, with what ΔE, SSIM, JPEG and colour profiles mean."
+  perf_kicker: "Measured, not promised"
+  perf_lead: "Every number on this page comes from real photos on an ordinary laptop (Apple M3, 16 GB), and the scripts that produced them are in the repository, so anyone can run them again. Below each chart is what it means for your prints, and at the end, the words behind the numbers."
+  perf_speed_title: "Speed: a thousand photos in a blink"
+  perf_speed_text: "Opening a folder reads each photo's EXIF and its small embedded thumbnail, not the whole image: 1,000 photos take 0.12 seconds, eight times under the budget we set before writing the code. Changing a setting re-renders the preview in 17 ms, faster than a screen refreshes twice. Export runs at 18 photos per second at full 16 MP quality. Native Rust also beats a web browser doing the same job: the same speed for export, a faster preview, and a quarter less memory."
+  perf_memory_title: "Memory: 5,035 photos, and it stays flat"
+  perf_memory_text: "A trip can mean thousands of photos. Fotollection keeps only a few bytes per photo in memory, writes thumbnails to a disk cache and works on at most six full-size images at a time. With 53 times more photos, peak memory grows by 0.1 GB: 1.35 GB for 95 photos, 1.45 GB for 5,035, well under the 2 GB ceiling."
+  perf_print_title: "Print quality: the print looks like the photo"
+  perf_print_text: "Prints made through a web editor often look flat. We measured why: the editor drops the colour profile (13 % of the saturation of iPhone photos lost), shrinks the photo to 2,000 px and lets the lab blow it up again (87 % of the fine detail lost), and saves at quality 80 with halved colour resolution. Fotollection keeps the profile, exports at full resolution in 4:4:4 at quality 95, and its colour error stays at 0.19, far below the 1 where an eye starts to notice."
+  perf_share_title: "Photos for Facebook and Instagram: light, and still the photo"
+  perf_share_text: "Facebook shrinks every photo to 2,048 px and recompresses it, and it ignores colour profiles. The Share export does that work properly first: the photo is converted to sRGB, resized with a high-quality filter, lightly sharpened and saved at a size Facebook does not touch again. After Facebook's own recompression, the result stays closer to the photo than the usual way, and iPhone-style Display P3 photos keep 99.6 % of their colour instead of 86 %. The Original size option keeps every pixel at half the file, with a colour error under 1."
+  perf_best_title: "Best-shot suggestions: checked against a person's choice"
+  perf_best_text: "We sorted 95 real photos by hand into 22 moments, and picked the best photo where there was a clear one. Fotollection finds 15 of those moments without ever grouping two different ones, and its suggestion is acceptable in all six moments with a clear best. Each photo takes 17 ms to analyse, 28 ms when it has faces."
+  perf_explain_title: "The words behind the numbers"
+  perf_explain_lead: "Photo and print jargon, explained the way we would explain it to a friend."
+  perf_faq:
+    - q: "What is ΔE (Delta E)?"
+      a: "ΔE measures how far apart two colours look to a human eye, computed in a colour space built to match how we see (CIELAB, with the 2000 formula). 0 means identical. Around 1 is the smallest difference a trained eye can spot side by side; 2 to 3 is visible to most people; above 5 the colours look different. Fotollection's print export averages 0.19."
+    - q: "What is SSIM?"
+      a: "SSIM, the structural similarity index, compares the shapes and textures of two images rather than single pixels, which is closer to how we notice blur or blocky compression. 1 means identical. Above about 0.98, most people cannot tell the two apart without zooming in."
+    - q: "How many colours can a JPEG hold?"
+      a: "A JPEG stores 8 bits for each of red, green and blue: 256 levels each, about 16.7 million colours. That is also what photo labs print from. Camera RAW files hold 12 to 14 bits and recent iPhones can save 10-bit HEIC, which helps when editing; for a finished print, a well-made 8-bit JPEG shows no steps between tones."
+    - q: "JPG or JPEG? And should I use PNG?"
+      a: "JPG and JPEG are the same format: old Windows only allowed three-letter extensions. PNG is lossless, so nothing is ever thrown away, but a photo saved as PNG is often three to five times larger, and most kiosks and labs expect JPEG. A JPEG at quality 95 with full colour resolution (4:4:4), as Fotollection exports for print, is indistinguishable from the original on paper."
+    - q: "What do 4:4:4 and 4:2:0 mean?"
+      a: "Our eyes see detail mostly in brightness, less in colour, so JPEG can store colour at lower resolution. 4:4:4 keeps full colour resolution; 4:2:0 keeps a quarter of it, which makes files smaller but softens coloured edges, such as red text or a blue sky behind leaves. Prints deserve 4:4:4; social media recompresses everything to 4:2:0 anyway."
+    - q: "sRGB, Display P3 and colour profiles"
+      a: "A colour profile tells software what the numbers in a file mean. sRGB is the classic range of colours used on the web. Display P3, used by iPhones and recent cameras, reaches about 25 % more colours, especially reds and greens. If a P3 photo loses its profile, its numbers are read as sRGB and it looks washed out: that is the 13 % saturation loss we measured. Fotollection keeps the profile for prints and converts properly to sRGB for social media."
+    - q: "What DPI does a print need?"
+      a: "DPI is how many pixels land on each inch of paper. At 300 DPI a print looks sharp even up close; 150 to 200 DPI is fine at arm's length. A 10 × 15 cm print at 300 DPI needs 1,800 × 1,200 pixels, so any phone or camera photo is enough; the size advice in the app tells you how large each photo can go."
+    - q: "Why do photos look worse on Facebook?"
+      a: "Facebook resizes every photo to at most 2,048 px, recompresses it at a lower quality with halved colour resolution, and drops colour profiles. A photo that arrives too large is resized twice, once by you and once by Facebook. Sending it already at 2,048 px, in sRGB and lightly sharpened, means Facebook only recompresses it once, and the colours are already right."
+  perf_repro_title: "Run the measurements yourself"
+  perf_repro_text: "Everything is reproducible on your own photos. The scripts never upload or copy a photo; only numbers are kept. The full tables, with every run, are in RESULT.md."
+  perf_repro_link: "Read RESULT.md on GitHub"
+  perf_back: "Back to the home page"
   install_title: Install in a minute
   install_lead: The installers are not signed with a paid certificate yet, so the first launch needs one extra click.
   mac_title: macOS
@@ -165,7 +206,7 @@ vi:
   q3_value: 0 byte
   q3_label: gửi đi bất kỳ đâu. App chạy không cần mạng.
   quality_more: Cách đo
-  nav_numbers: Số đo
+  nav_numbers: "Hiệu năng"
   nav_privacy: Riêng tư
   nav_kiosk: Tiệm in
   nav_changelog: Có gì mới
@@ -208,6 +249,47 @@ vi:
   chart_budgets: Tốc độ và bộ nhớ, so với ngân sách đặt ra trước khi viết code
   chart_quality: Bản xuất giữ lại được bao nhiêu so với ảnh gốc, so với một trình sửa ảnh web thông thường
   chart_bestshot: Gợi ý ảnh đẹp nhất, chấm điểm so với ảnh do người chọn tay
+  charts_more: "Xem toàn bộ số đo và giải thích"
+  chart_share: "Ảnh đăng Facebook: người xem thấy gì sau khi Facebook nén lại"
+  chart_memory: "Bộ nhớ cao nhất khi số ảnh tăng lên 5.035 tấm"
+  chart_browser: "Cùng một việc, trên Fotollection và trên trình duyệt web"
+  perf_title: "Hiệu năng"
+  perf_description: "Mọi số đo phía sau Fotollection, giải thích bằng lời dễ hiểu: tốc độ, bộ nhớ, chất lượng in, ảnh đăng mạng xã hội, gợi ý ảnh đẹp nhất, kèm ý nghĩa của ΔE, SSIM, JPEG và colour profile."
+  perf_kicker: "Đo thật, không hứa suông"
+  perf_lead: "Mọi con số trên trang này đều đo trên ảnh thật, bằng một chiếc laptop bình thường (Apple M3, 16 GB). Script đo nằm ngay trong repo, ai cũng có thể chạy lại. Dưới mỗi biểu đồ là ý nghĩa của nó với ảnh in của bạn, và cuối trang là giải thích cho các thuật ngữ đứng sau con số."
+  perf_speed_title: "Tốc độ: một nghìn ảnh trong chớp mắt"
+  perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong file, chứ không đọc cả ảnh: 1.000 ảnh mất 0,12 giây, nhanh gấp tám lần mức ngân sách đặt ra trước khi viết code. Đổi một thiết lập thì bản xem trước vẽ lại trong 17 ms, chưa bằng hai lần màn hình làm tươi. Xuất ảnh đạt 18 ảnh mỗi giây ở chất lượng đầy đủ 16 MP. Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư bộ nhớ."
+  perf_memory_title: "Bộ nhớ: 5.035 ảnh vẫn không tăng"
+  perf_memory_text: "Một chuyến đi có thể có hàng nghìn ảnh. Fotollection chỉ giữ vài byte cho mỗi ảnh trong bộ nhớ, ghi ảnh thu nhỏ ra ổ đĩa và xử lý tối đa sáu ảnh cỡ lớn cùng lúc. Với số ảnh gấp 53 lần, bộ nhớ cao nhất chỉ tăng 0,1 GB: 1,35 GB với 95 ảnh, 1,45 GB với 5.035 ảnh, dưới xa mức trần 2 GB."
+  perf_print_title: "Chất lượng in: ảnh in giống ảnh gốc"
+  perf_print_text: "Ảnh in qua web editor thường trông nông màu. Chúng tôi đã đo xem vì sao: web editor bỏ mất colour profile (ảnh iPhone mất 13 % độ bão hoà màu), thu ảnh xuống 2.000 px rồi để tiệm in phóng to lại (mất 87 % chi tiết nhỏ), và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên profile, xuất ở độ phân giải đầy đủ, 4:4:4, chất lượng 95, và sai lệch màu chỉ 0,19, thấp hơn rất xa mức 1 mà mắt người bắt đầu nhận ra."
+  perf_share_title: "Ảnh cho Facebook và Instagram: nhẹ mà vẫn đúng là ảnh của bạn"
+  perf_share_text: "Facebook thu mọi ảnh về 2.048 px, nén lại và bỏ qua colour profile. Kiểu xuất Mạng xã hội làm trước những việc đó cho đúng: chuyển ảnh sang sRGB, thu nhỏ bằng bộ lọc chất lượng cao, làm nét nhẹ và lưu đúng cỡ để Facebook không phải thu nhỏ thêm. Sau khi Facebook nén lại, ảnh vẫn giống ảnh gốc hơn cách làm thông thường, và ảnh Display P3 kiểu iPhone giữ được 99,6 % màu thay vì 86 %. Lựa chọn Giữ cỡ gốc giữ nguyên từng điểm ảnh mà file chỉ còn khoảng một nửa, sai lệch màu dưới 1."
+  perf_best_title: "Gợi ý ảnh đẹp nhất: đối chiếu với lựa chọn của người thật"
+  perf_best_text: "Chúng tôi tự tay chia 95 ảnh thật thành 22 khoảnh khắc, và chọn ảnh đẹp nhất ở những khoảnh khắc có ảnh đẹp rõ ràng. Fotollection tìm ra 15 khoảnh khắc mà không bao giờ gộp nhầm hai khoảnh khắc khác nhau, và ảnh được gợi ý đều chấp nhận được ở cả sáu khoảnh khắc có ảnh đẹp nhất rõ ràng. Mỗi ảnh được phân tích trong 17 ms, 28 ms nếu có khuôn mặt."
+  perf_explain_title: "Giải thích các thuật ngữ"
+  perf_explain_lead: "Những từ chuyên môn về ảnh và in ảnh, giải thích như kể cho một người bạn."
+  perf_faq:
+    - q: "ΔE (Delta E) là gì?"
+      a: "ΔE đo hai màu trông khác nhau bao nhiêu với mắt người, tính trong một không gian màu được dựng theo cách mắt người cảm nhận (CIELAB, theo công thức năm 2000). 0 là giống hệt. Khoảng 1 là mức khác biệt nhỏ nhất mà một người có mắt tinh nhận ra khi đặt hai màu cạnh nhau; 2 đến 3 thì phần lớn mọi người đều thấy; trên 5 là hai màu khác hẳn. Bản xuất để in của Fotollection có ΔE trung bình 0,19."
+    - q: "SSIM là gì?"
+      a: "SSIM (chỉ số tương đồng cấu trúc) so hình dạng và kết cấu của hai ảnh thay vì từng điểm ảnh riêng lẻ, gần với cách mắt ta nhận ra ảnh bị mờ hay bị nén vỡ khối. 1 là giống hệt. Từ khoảng 0,98 trở lên, đa số người không phân biệt được hai ảnh nếu không phóng to."
+    - q: "Một file JPEG chứa được bao nhiêu màu?"
+      a: "JPEG lưu 8 bit cho mỗi kênh đỏ, xanh lá và xanh dương: mỗi kênh 256 mức, tổng cộng khoảng 16,7 triệu màu. Đó cũng là thứ máy in ảnh dùng để in. File RAW của máy ảnh có 12 đến 14 bit, iPhone đời mới có thể lưu HEIC 10 bit, rất có ích khi chỉnh sửa; còn với ảnh in hoàn chỉnh, một file JPEG 8 bit làm tốt không lộ vệt chuyển màu."
+    - q: "JPG hay JPEG? Có nên dùng PNG không?"
+      a: "JPG và JPEG là cùng một định dạng: Windows ngày xưa chỉ cho phép đuôi file ba chữ. PNG nén không mất dữ liệu nên không bỏ đi chút nào, nhưng ảnh chụp lưu dạng PNG thường nặng gấp ba đến năm lần, và đa số máy in ảnh, tiệm in đều yêu cầu JPEG. Một file JPEG chất lượng 95, đủ độ phân giải màu (4:4:4) như Fotollection xuất để in, in ra không phân biệt được với ảnh gốc."
+    - q: "4:4:4 và 4:2:0 nghĩa là gì?"
+      a: "Mắt ta nhìn chi tiết chủ yếu qua độ sáng, ít qua màu, nên JPEG có thể lưu màu ở độ phân giải thấp hơn. 4:4:4 giữ đủ độ phân giải màu; 4:2:0 chỉ giữ một phần tư, file nhẹ hơn nhưng các viền có màu bị mềm đi, như chữ đỏ hay bầu trời xanh sau tán lá. Ảnh in nên dùng 4:4:4; còn mạng xã hội thì đằng nào cũng nén mọi ảnh về 4:2:0."
+    - q: "sRGB, Display P3 và colour profile"
+      a: "Colour profile cho phần mềm biết các con số trong file nghĩa là màu nào. sRGB là dải màu cổ điển dùng trên web. Display P3, dùng trên iPhone và các máy ảnh mới, rộng hơn khoảng 25 %, nhất là màu đỏ và xanh lá. Nếu ảnh P3 bị mất profile, các con số bị đọc như sRGB và ảnh trông nhạt: đó chính là 13 % độ bão hoà bị mất mà chúng tôi đo được. Fotollection giữ nguyên profile khi xuất để in, và chuyển đúng sang sRGB khi xuất cho mạng xã hội."
+    - q: "Ảnh in cần bao nhiêu DPI?"
+      a: "DPI là số điểm ảnh trên mỗi inch giấy. Ở 300 DPI, ảnh in trông nét kể cả khi nhìn sát; 150 đến 200 DPI vẫn ổn khi cầm xem. Một ảnh 10 × 15 cm ở 300 DPI cần 1.800 × 1.200 điểm ảnh, nên ảnh từ điện thoại hay máy ảnh nào cũng đủ; phần gợi ý khổ in trong app cho biết mỗi ảnh in được to tới đâu."
+    - q: "Vì sao ảnh đăng Facebook trông xấu đi?"
+      a: "Facebook thu mọi ảnh về tối đa 2.048 px, nén lại ở chất lượng thấp hơn với độ phân giải màu giảm một nửa, và bỏ colour profile. Ảnh gửi lên quá to sẽ bị thu nhỏ hai lần, một lần bởi bạn và một lần bởi Facebook. Gửi sẵn ảnh 2.048 px, sRGB và đã làm nét nhẹ thì Facebook chỉ nén lại một lần, và màu đã đúng từ trước."
+  perf_repro_title: "Tự chạy lại các phép đo"
+  perf_repro_text: "Mọi phép đo đều chạy lại được trên ảnh của chính bạn. Script không bao giờ tải ảnh lên hay sao chép ảnh; chỉ giữ lại các con số. Bảng đầy đủ, kèm từng lần chạy, nằm trong RESULT.md."
+  perf_repro_link: "Đọc RESULT.md trên GitHub"
+  perf_back: "Về trang chủ"
   install_title: Cài đặt trong một phút
   install_lead: Bộ cài chưa được ký bằng chứng chỉ trả phí, nên lần mở đầu tiên cần thêm một cú nhấp.
   mac_title: macOS

@@ -2,7 +2,14 @@
 {%- assign other = site.data.i18n[t.other] -%}
 {%- capture home_en %}{{ '/' | relative_url }}{% endcapture -%}
 {%- capture home_vi %}{{ '/vi/' | relative_url }}{% endcapture -%}
-{%- if page.lang == 'vi' %}{% assign other_home = home_en %}{% else %}{% assign other_home = home_vi %}{% endif -%}
+{%- if page.lang == 'vi' %}{% assign other_home = home_en %}{% assign home = home_vi %}{% else %}{% assign other_home = home_vi %}{% assign home = home_en %}{% endif -%}
+{%- comment %} Pages other than the home page name their two language versions and their title keys. {% endcomment -%}
+{%- assign path_en = page.path_en | default: '/' -%}
+{%- assign path_vi = page.path_vi | default: '/vi/' -%}
+{%- if page.lang == 'vi' %}{% assign other_page = path_en | relative_url %}{% else %}{% assign other_page = path_vi | relative_url %}{% endif -%}
+{%- if page.lang == 'vi' %}{% assign path_perf = '/vi/performance/' | relative_url %}{% else %}{% assign path_perf = '/performance/' | relative_url %}{% endif -%}
+{%- if page.title_key %}{% assign page_title = t[page.title_key] | append: ' · Fotollection' %}{% else %}{% assign page_title = t.title %}{% endif -%}
+{%- if page.description_key %}{% assign page_description = t[page.description_key] %}{% else %}{% assign page_description = t.description %}{% endif -%}
 {%- assign canonical = page.url | absolute_url -%}
 {%- capture og_image %}{{ '/assets/img/og-' | append: page.lang | append: '.jpg' | absolute_url }}{% endcapture -%}
 <!doctype html>
@@ -10,12 +17,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ t.title }}</title>
-    <meta name="description" content="{{ t.description }}" />
+    <title>{{ page_title }}</title>
+    <meta name="description" content="{{ page_description }}" />
     <link rel="canonical" href="{{ canonical }}" />
-    <link rel="alternate" hreflang="en" href="{{ '/' | absolute_url }}" />
-    <link rel="alternate" hreflang="vi" href="{{ '/vi/' | absolute_url }}" />
-    <link rel="alternate" hreflang="x-default" href="{{ '/' | absolute_url }}" />
+    <link rel="alternate" hreflang="en" href="{{ path_en | absolute_url }}" />
+    <link rel="alternate" hreflang="vi" href="{{ path_vi | absolute_url }}" />
+    <link rel="alternate" hreflang="x-default" href="{{ path_en | absolute_url }}" />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#f7f0de" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1c1712" media="(prefers-color-scheme: dark)" />
@@ -25,8 +32,8 @@
     <!-- Link previews: Open Graph and Twitter / X -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Fotollection" />
-    <meta property="og:title" content="{{ t.title }}" />
-    <meta property="og:description" content="{{ t.description }}" />
+    <meta property="og:title" content="{{ page_title }}" />
+    <meta property="og:description" content="{{ page_description }}" />
     <meta property="og:url" content="{{ canonical }}" />
     <meta property="og:locale" content="{{ t.locale }}" />
     <meta property="og:locale:alternate" content="{{ other.locale }}" />
@@ -37,8 +44,8 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="{{ t.title }}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="{{ t.title }}" />
-    <meta name="twitter:description" content="{{ t.description }}" />
+    <meta name="twitter:title" content="{{ page_title }}" />
+    <meta name="twitter:description" content="{{ page_description }}" />
     <meta name="twitter:image" content="{{ og_image }}" />
     <meta name="twitter:image:alt" content="{{ t.title }}" />
     <script type="application/ld+json">
@@ -79,17 +86,17 @@
           <span>Fotollection</span>
         </a>
         <nav class="nav-links" aria-label="Main">
-          <a href="#features">{{ t.nav_features }}</a>
-          <a href="#privacy">{{ t.nav_privacy }}</a>
-          <a href="#kiosk">{{ t.nav_kiosk }}</a>
-          <a href="#quality">{{ t.nav_quality }}</a>
-          <a href="#numbers">{{ t.nav_numbers }}</a>
+          <a href="{{ home }}#features">{{ t.nav_features }}</a>
+          <a href="{{ home }}#privacy">{{ t.nav_privacy }}</a>
+          <a href="{{ home }}#kiosk">{{ t.nav_kiosk }}</a>
+          <a href="{{ home }}#quality">{{ t.nav_quality }}</a>
+          <a href="{{ path_perf }}"{% if page.title_key == 'perf_title' %} aria-current="page"{% endif %}>{{ t.nav_numbers }}</a>
         </nav>
         <div class="nav-actions">
-          <a class="lang" href="{{ other_home }}" hreflang="{{ other.html_lang }}" lang="{{ other.html_lang }}">{% include icons/languages.svg %}<span>{{ t.other_label }}</span></a>
+          <a class="lang" href="{{ other_page }}" hreflang="{{ other.html_lang }}" lang="{{ other.html_lang }}">{% include icons/languages.svg %}<span>{{ t.other_label }}</span></a>
           {% include star.html %}
-          <a class="pill coffee" href="#support" aria-label="{{ t.support_title }}">{% include icons/coffee.svg %}<span class="pill-label">{{ t.nav_coffee }}</span></a>
-          <a class="pill pill-primary" href="#download" aria-label="{{ t.nav_download }}">{% include icons/download.svg %}<span class="pill-label">{{ t.nav_download }}</span></a>
+          <a class="pill coffee" href="{{ home }}#support" aria-label="{{ t.support_title }}">{% include icons/coffee.svg %}<span class="pill-label">{{ t.nav_coffee }}</span></a>
+          <a class="pill pill-primary" href="{{ home }}#download" aria-label="{{ t.nav_download }}">{% include icons/download.svg %}<span class="pill-label">{{ t.nav_download }}</span></a>
         </div>
       </div>
     </header>
@@ -103,7 +110,7 @@
       const toTop = document.querySelector('.to-top')
       new IntersectionObserver(([entry]) => toTop.classList.toggle('shown', !entry.isIntersecting), {
         rootMargin: '600px 0px 0px 0px',
-      }).observe(document.querySelector('.hero'))
+      }).observe(document.querySelector('.hero') ?? document.querySelector('main > section'))
       // Safari on iPhone jumps only a little towards the empty #top anchor: scroll there directly.
       toTop.addEventListener('click', (e) => {
         e.preventDefault()
@@ -138,7 +145,7 @@
         </div>
         <ul class="footer-links">
           <li><a href="{{ site.repo_url }}">{{ t.footer_source }}</a></li>
-          <li><a href="#changelog">{{ t.footer_changelog }}</a></li>
+          <li><a href="{{ home }}#changelog">{{ t.footer_changelog }}</a></li>
           <li><a href="{{ site.repo_url }}/blob/main/LICENSE">{{ t.footer_license }}</a></li>
           <li><a class="blog" href="https://hoangphi01.github.io/blog/">{{ t.footer_blog }} {% include icons/arrow-right.svg %}</a></li>
         </ul>

@@ -214,6 +214,20 @@ p { margin: 0; }
 .chart { margin: 0; padding: 14px; }
 .chart img { width: 100%; border-radius: 8px; }
 .chart figcaption { margin-top: 10px; font-size: 0.92rem; color: var(--ink-2); }
+/* Performance page: a heading, then one section per measurement and the explanations. */
+.kicker { margin: 0 0 10px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.perf-head { padding-bottom: 24px; }
+.perf-part { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.perf-part .charts { margin: 12px 0 0; }
+.faq { display: grid; gap: 10px; margin-top: 28px; max-width: 820px; }
+.faq details { padding: 0; }
+.faq summary { cursor: pointer; list-style: none; padding: 16px 20px; font-weight: 650; display: flex; justify-content: space-between; gap: 12px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: '+'; color: var(--brand); font-weight: 700; }
+.faq details[open] summary::after { content: '−'; }
+.faq details p { margin: 0; padding: 0 20px 18px; color: var(--ink-2); }
+.code { overflow-x: auto; margin: 24px 0; padding: 16px 20px; font: 0.86rem/1.6 ui-monospace, 'SF Mono', Menlo, monospace; white-space: pre; max-width: 820px; }
+.actions { display: flex; flex-wrap: wrap; gap: 20px; }
 /* Privacy: the brand-coloured band with a big shield. */
 .privacy { background: var(--brand); color: var(--brand-ink); }
 .privacy .lead { color: color-mix(in srgb, var(--brand-ink) 86%, transparent); }
@@ -301,6 +315,8 @@ a:focus-visible, .button:focus-visible { outline: 2px solid var(--brand); outlin
   .cards { grid-template-columns: repeat(3, 1fr); }
   .privacy-grid { grid-template-columns: 5fr 7fr; gap: 56px; align-items: start; }
   .kiosk-grid { grid-template-columns: 7fr 5fr; gap: 56px; align-items: start; }
+  .perf-part { grid-template-columns: 5fr 7fr; gap: 48px; align-items: start; }
+  .perf-part .charts { margin: 0; }
   .support { grid-template-columns: auto 1fr; gap: 40px; padding: 36px; }
   .showcase { gap: 88px; }
   .showcase-row { grid-template-columns: 2fr 1fr; gap: 48px; }

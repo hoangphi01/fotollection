@@ -9,12 +9,13 @@ The project's website, <https://hoangphi01.github.io/fotollection/>, in English 
 | `_layouts/default.html` | Page shell: meta tags, Open Graph and Twitter cards, `hreflang`, navigation, footer |
 | `_includes/home.html` | The page itself; `shot.html` (a screenshot, dark or light), `star.html` (the GitHub star link), `icons/` (Lucide, ISC) |
 | `index.html`, `vi/index.html` | The two languages |
+| `performance.html`, `vi/performance.html`, `_includes/performance.html` | The Performance page: every measurement with its chart, what it means, and plain-language explanations (ΔE, SSIM, JPEG bit depth, 4:4:4, colour profiles, DPI). Its strings are the `perf_*` keys; pages other than home set `path_en`, `path_vi`, `title_key` and `description_key` in their front matter |
 | `assets/css/site.css` | One hand-written stylesheet, mobile first, light and dark |
 | `assets/fonts/` | Be Vietnam Pro (text) and Bitter (headings, a slab serif like the logo’s wordmark), self-hosted under the [OFL](assets/fonts/OFL.txt), so the page loads nothing from third parties |
 | `assets/img/` | Screenshots and link previews, made by [`screenshots/`](screenshots/README.md) |
 | `_includes/logos/` | The dm and Rossmann logos, inline in the print-shop heading. Made from files on Wikimedia Commons marked public domain (`PD-shape` / `PD-textlogo`) and trademarked, checked 2026-10-25 like the app's brand logos ([ADR-0020](../docs/adr/0020-bundled-brand-logos.md)): [Dm-drogerie markt logo.svg](https://commons.wikimedia.org/wiki/File:Dm-drogerie_markt_logo.svg) (SHA-256 `b081849d…`) and [Logo rossmann 2024.svg](https://commons.wikimedia.org/wiki/File:Logo_rossmann_2024.svg) (`6448378a…`). The shapes are unchanged; editor metadata is removed, the colours become the theme colour (`currentColor`) and the white parts the page background, so they sit in the text in both themes. The marks belong to dm-drogerie markt and Dirk Rossmann GmbH; the page says it is not affiliated with them, and a logo is removed on request |
 | `_includes/changelog.md` | Written by `pages.yml` from `CHANGELOG.md` at build time (not committed), for the "What's new" box |
-| `assets/img/charts/` | Three benchmark charts in the site's colours, written by `node bench/chart.mjs` next to the README's own |
+| `assets/img/charts/` | The benchmark charts in the site's colours (budgets, quality, share, best shot, memory, browser), written by `node bench/chart.mjs` next to the README's own |
 
 **Rules.** The only third-party script is Google Analytics (`google_analytics` in `_config.yml`, production builds only), the owner's choice for counting visits; the footer says so, and the app itself has no analytics. No other third-party scripts, fonts or trackers. Text is plain Liquid output, never raw HTML from data. A new string is added to both languages.
 

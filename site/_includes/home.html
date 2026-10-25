@@ -146,7 +146,7 @@
     <h2>{{ t.charts_title }}</h2>
     <p class="lead narrow">{{ t.charts_lead }}</p>
     <div class="charts">
-      {%- assign charts = "budgets,quality,bestshot" | split: "," -%}
+      {%- assign charts = "budgets,quality,share,bestshot" | split: "," -%}
       {%- for c in charts -%}
       {%- capture key %}chart_{{ c }}{% endcapture -%}
       <figure class="card chart">
@@ -155,7 +155,7 @@
       </figure>
       {%- endfor -%}
     </div>
-    <p><a class="more" href="{{ site.repo_url }}/blob/main/docs/RESULT.md">{{ t.quality_more }} {% include icons/arrow-right.svg %}</a></p>
+    <p><a class="pill pill-primary" href="{% if page.lang == 'vi' %}{{ '/vi/performance/' | relative_url }}{% else %}{{ '/performance/' | relative_url }}{% endif %}">{{ t.charts_more }} {% include icons/arrow-right.svg %}</a></p>
   </div>
 </section>
 
