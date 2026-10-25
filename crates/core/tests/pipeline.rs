@@ -74,6 +74,24 @@ fn fr_002_reads_lens_and_exposure() {
 }
 
 #[test]
+fn fr_040_shutter_speed_falls_back_to_the_apex_value() {
+    // 1/2500 s is Tv = log2(2500) ≈ 11.29; no ExposureTime in the file.
+    let bytes = jpeg(&Fixture {
+        width: 32,
+        height: 24,
+        shutter_apex: Some(2500f64.log2()),
+        ..Fixture::default()
+    });
+    let meta = metadata::read_bytes(&bytes);
+    assert!(
+        meta.exposure_s
+            .is_some_and(|s| (s - 1.0 / 2500.0).abs() < 1e-7),
+        "{:?}",
+        meta.exposure_s
+    );
+}
+
+#[test]
 fn fr_002_null_island_is_no_gps_and_bad_year_is_no_date() {
     let bytes = jpeg(&Fixture {
         width: 16,

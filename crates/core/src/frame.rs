@@ -431,24 +431,65 @@ pub struct FrameLayout {
 
 /// Bar height as a fraction of the canvas short edge.
 const BAR_FRACTION: f32 = 0.24;
-/// Margin around the photo in `Fit` mode, as a fraction of the short edge.
-const FIT_MARGIN_FRACTION: f32 = 0.035;
 /// Horizontal padding inside the bar, as a fraction of the canvas width.
 const PAD_FRACTION: f32 = 0.055;
 
-/// Canvas at the print ratio, in the photo's orientation, with the given long edge.
+/// The print's short-to-long ratio; for the Original size, the photo's exact one (FR-045).
+fn print_ratio(src_width: u32, src_height: u32, print: PrintSize) -> f64 {
+    if print.is_original() {
+        f64::from(src_width.min(src_height).max(1)) / f64::from(src_width.max(src_height).max(1))
+    } else {
+        f64::from(print.short_mm) / f64::from(print.long_mm)
+    }
+}
+
+/// The print box of a canvas `width` pixels wide, in the photo's orientation. In Fit mode
+/// the canvas is this box made longer by the bar.
+#[allow(clippy::cast_possible_truncation)]
+fn print_box(width: f32, src_width: u32, src_height: u32, print: PrintSize) -> (f32, f32) {
+    let ratio = print_ratio(src_width, src_height, print) as f32;
+    if src_width >= src_height {
+        (width, width * ratio)
+    } else {
+        (width, width / ratio)
+    }
+}
+
+/// Height of the info bar for a print box.
+fn bar_height(box_width: f32, box_height: f32) -> f32 {
+    (box_width.min(box_height) * BAR_FRACTION).round().max(1.0)
+}
+
+/// The canvas, in the photo's orientation, for a print box with the given long edge.
+/// **Crop** is the print box itself: the photo fills the space above the bar. **Fit** keeps
+/// the print's width and shows the whole photo at that width with the bar added below, so
+/// the print comes out longer than the chosen size (10 × 15 → about 10 × 17).
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::cast_precision_loss
+)]
 pub fn canvas_size(
     src_width: u32,
     src_height: u32,
     print: PrintSize,
     long_edge: u32,
+    fit: FrameFit,
 ) -> (u32, u32) {
-    let ratio = if print.is_original() {
-        // The photo's exact ratio (FR-045), not the mm-rounded one.
-        f64::from(src_width.min(src_height).max(1)) / f64::from(src_width.max(src_height).max(1))
-    } else {
-        f64::from(print.short_mm) / f64::from(print.long_mm)
-    };
+    let (bw, bh) = print_canvas(src_width, src_height, print, long_edge);
+    match fit {
+        FrameFit::Crop => (bw, bh),
+        FrameFit::Fit => {
+            let photo_h = (bw as f32 * src_height.max(1) as f32 / src_width.max(1) as f32).round();
+            let (box_w, box_h) = print_box(bw as f32, src_width, src_height, print);
+            (bw, (photo_h + bar_height(box_w, box_h)) as u32)
+        }
+    }
+}
+
+/// The print box in pixels, with the given long edge.
+fn print_canvas(src_width: u32, src_height: u32, print: PrintSize, long_edge: u32) -> (u32, u32) {
+    let ratio = print_ratio(src_width, src_height, print);
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let short = (f64::from(long_edge) * ratio).round() as u32;
     if src_width >= src_height {
@@ -474,31 +515,23 @@ pub fn layout(
     print: PrintSize,
 ) -> FrameLayout {
     let (cw, ch) = (canvas_width as f32, canvas_height as f32);
-    let short = cw.min(ch);
-    let bar_h = (short * BAR_FRACTION).round().max(1.0);
+    // Sizes follow the print box, so the bar and its text look the same in both modes.
+    let (box_w, box_h) = match settings.fit {
+        FrameFit::Crop => (cw, ch),
+        FrameFit::Fit => print_box(cw, src_width, src_height, print),
+    };
+    let bar_h = bar_height(box_w, box_h);
     let bar_top = (ch - bar_h).max(0.0);
-    let px_per_mm = cw.max(ch) / print.long_mm as f32;
+    let px_per_mm = box_w.max(box_h) / print.long_mm as f32;
     let safe = crate::plan::SAFE_AREA_MM * px_per_mm;
 
-    let photo = match settings.fit {
-        FrameFit::Crop => Rect {
-            x: 0,
-            y: 0,
-            width: canvas_width,
-            height: bar_top as u32,
-        },
-        FrameFit::Fit => {
-            let m = (short * FIT_MARGIN_FRACTION).max(safe);
-            let (aw, ah) = ((cw - 2.0 * m).max(1.0), (bar_top - m).max(1.0));
-            let scale = (aw / src_width as f32).min(ah / src_height as f32);
-            let (pw, ph) = (src_width as f32 * scale, src_height as f32 * scale);
-            Rect {
-                x: (m + (aw - pw) / 2.0).round() as u32,
-                y: (m + (ah - ph) / 2.0).round() as u32,
-                width: pw.round().max(1.0) as u32,
-                height: ph.round().max(1.0) as u32,
-            }
-        }
+    // The photo spans the width above the bar: cropped to that box (Crop), or whole, the
+    // canvas having been made long enough for it (Fit).
+    let photo = Rect {
+        x: 0,
+        y: 0,
+        width: canvas_width,
+        height: bar_top as u32,
     };
 
     let (background, primary, secondary) = match settings.color {
@@ -637,7 +670,7 @@ mod tests {
     }
 
     #[test]
-    fn fr_040_canvas_matches_print_ratio_crop_and_fit() {
+    fn fr_040_crop_keeps_the_print_and_fit_adds_the_bar_below() {
         let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None);
         for print in PrintSize::ALL {
             for (sw, sh) in [(4608, 3456), (3456, 4608), (6000, 4000)] {
@@ -646,39 +679,55 @@ mod tests {
                         fit,
                         ..FrameSettings::default()
                     };
-                    let (cw, ch) = canvas_size(sw, sh, print, sw.max(sh));
+                    let (cw, ch) = canvas_size(sw, sh, print, sw.max(sh), fit);
+                    let (pw, ph) = canvas_size(sw, sh, print, sw.max(sh), FrameFit::Crop);
                     let l = layout(cw, ch, sw, sh, &settings, &text, print);
-                    let ratio = f64::from(cw.max(ch)) / f64::from(cw.min(ch));
-                    let target = f64::from(print.long_mm) / f64::from(print.short_mm);
-                    assert!(
-                        (ratio - target).abs() / target < 0.002,
-                        "{}: {ratio}",
-                        print.id
-                    );
-                    if print.short_mm != print.long_mm {
-                        assert_eq!(sw >= sh, cw >= ch, "orientation kept");
-                    }
-                    // Photo area never overlaps the bar and stays inside the canvas.
+                    // Photo area never overlaps the bar and spans the canvas width.
+                    assert_eq!(l.photo.width, cw);
                     assert!(l.photo.y + l.photo.height <= l.bar.y + 1);
-                    assert!(l.photo.x + l.photo.width <= cw);
-                    if fit == FrameFit::Fit {
-                        let src = f64::from(sw) / f64::from(sh);
-                        let placed = f64::from(l.photo.width) / f64::from(l.photo.height);
-                        assert!(
-                            (src - placed).abs() / src < 0.01,
-                            "fit keeps the photo ratio"
-                        );
+                    match fit {
+                        FrameFit::Crop => {
+                            let ratio = f64::from(cw.max(ch)) / f64::from(cw.min(ch));
+                            let target = f64::from(print.long_mm) / f64::from(print.short_mm);
+                            assert!(
+                                (ratio - target).abs() / target < 0.002,
+                                "{}: {ratio}",
+                                print.id
+                            );
+                            if print.short_mm != print.long_mm {
+                                assert_eq!(sw >= sh, cw >= ch, "orientation kept");
+                            }
+                        }
+                        FrameFit::Fit => {
+                            // Same width as the print, longer by the bar, whole photo.
+                            assert_eq!(cw, pw, "{}", print.id);
+                            let src = f64::from(sw) / f64::from(sh);
+                            let placed = f64::from(l.photo.width) / f64::from(l.photo.height);
+                            assert!(
+                                (src - placed).abs() / src < 0.01,
+                                "fit keeps the photo ratio"
+                            );
+                            // The bar is as tall as in Crop mode, so the text reads the same.
+                            let crop =
+                                layout(pw, ph, sw, sh, &FrameSettings::default(), &text, print);
+                            assert_eq!(l.bar.height, crop.bar.height, "{}", print.id);
+                        }
                     }
                 }
             }
         }
+        // A 2:3 portrait at 10 × 15 becomes about 10 × 17.4.
+        let print = PrintSize::ALL[1];
+        let (cw, ch) = canvas_size(4000, 6000, print, 6000, FrameFit::Fit);
+        let cm = 10.0 * f64::from(ch) / f64::from(cw);
+        assert!((cm - 17.4).abs() < 0.1, "{cm} cm");
     }
 
     #[test]
     fn fr_045_original_frame_canvas_keeps_the_photo_ratio() {
         for (sw, sh) in [(4608, 3456), (3456, 4608), (8000, 2000)] {
             let print = PrintSize::original(sw, sh);
-            let (cw, ch) = canvas_size(sw, sh, print, sw.max(sh));
+            let (cw, ch) = canvas_size(sw, sh, print, sw.max(sh), FrameFit::Crop);
             assert_eq!((cw, ch), (sw, sh), "the canvas is the photo's own ratio");
         }
     }
@@ -696,7 +745,7 @@ mod tests {
             at(18),
             Some("Budapest"),
         );
-        let (cw, ch) = canvas_size(4608, 3456, print, 4608);
+        let (cw, ch) = canvas_size(4608, 3456, print, 4608, FrameFit::Crop);
         let l = layout(cw, ch, 4608, 3456, &FrameSettings::default(), &text, print);
         let safe = crate::plan::SAFE_AREA_MM * cw as f32 / print.long_mm as f32;
         assert!(l.logo_x >= safe);
@@ -714,7 +763,7 @@ mod tests {
     fn fr_040_logo_scale_resizes_the_logo_for_every_photo() {
         let print = PrintSize::ALL[1];
         let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None);
-        let (cw, ch) = canvas_size(4608, 3456, print, 4608);
+        let (cw, ch) = canvas_size(4608, 3456, print, 4608, FrameFit::Crop);
         let at_scale = |logo_scale| {
             let settings = FrameSettings {
                 logo_scale,

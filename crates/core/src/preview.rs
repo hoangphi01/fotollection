@@ -7,7 +7,7 @@ use std::sync::{Arc, Mutex};
 
 use crate::codec::{EncodeOptions, JpegCodec, decode_image};
 use crate::image::{RgbImage, apply_orientation};
-use crate::library::{PhotoId, PhotoRecord, flags};
+use crate::library::{PhotoId, PhotoRecord};
 use crate::plan::{FrameRequest, PlanInput, plan};
 use crate::render::{fit_long_edge, render};
 use crate::settings::RenderSettings;
@@ -96,7 +96,7 @@ impl PreviewCache {
         let print = settings
             .print_for(source.width, source.height)
             .unwrap_or(crate::PrintSize::ALL[1]);
-        let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
+        let capture = record.stamp_date();
         let settings = settings.for_photo(record.edits.stamp.as_ref());
         let p = plan(&PlanInput {
             width: source.width,

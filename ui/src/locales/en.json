@@ -170,6 +170,8 @@
     "title": "Info frame",
     "cropToFill": "Crop to fill",
     "fitWhole": "Fit whole photo",
+    "cropHint": "The print keeps its size; drag the photo in the preview to choose what stays.",
+    "fitHint": "The whole photo, with the bar added below: the print comes out longer than the chosen size (10 × 15 → about 10 × 17).",
     "white": "White",
     "black": "Black",
     "font": "Frame font",
@@ -309,7 +311,8 @@
     "level": "level 1° (⌥ 0.1°)",
     "leaveCrop": "cancel crop",
     "zoom": "zoom",
-    "zoomReset": "Back to fit (⌘0)"
+    "zoomReset": "Back to fit (⌘0)",
+    "dragToFrame": "drag to reframe"
   },
   "errors": {
     "internal": "Something went wrong",

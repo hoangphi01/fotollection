@@ -163,6 +163,13 @@ impl PhotoRecord {
     pub fn display_orientation(&self) -> u8 {
         crate::image::compose_orientation(self.orientation, self.edits.rotation)
     }
+
+    /// The date stamped on the photo and written in its frame (FR-004, FR-040): the EXIF
+    /// capture time, or the file's time when the photo has none. `None` only when even the
+    /// file time is unknown.
+    pub fn stamp_date(&self) -> Option<NaiveDateTime> {
+        (self.flags & flags::DATE_FROM_FILE == 0 || self.mtime != 0).then_some(self.capture)
+    }
 }
 
 /// Camera and exposure facts from EXIF, used by the info frame (FR-040).
@@ -615,6 +622,26 @@ mod tests {
         );
         let summary = id.and_then(|id| lib.summary(id));
         assert!(summary.is_some_and(|s| s.date_from_file && s.capture.starts_with("2023-11-14")));
+    }
+
+    #[test]
+    fn fr_004_photos_without_exif_are_stamped_with_the_file_date() {
+        let mut lib = Library::new();
+        let f = lib.add_folder(Path::new("/scans"));
+        let dated = lib.push(
+            f,
+            &file("/scans/a.jpg", 1_700_000_000),
+            &PhotoMeta::default(),
+        );
+        let undated = lib.push(f, &file("/scans/b.jpg", 0), &PhotoMeta::default());
+        let exif = lib.push(f, &file("/scans/c.jpg", 0), &meta_at(14));
+        let date = |id: Option<PhotoId>| {
+            id.and_then(|id| lib.record(id))
+                .and_then(|r| r.stamp_date())
+        };
+        assert!(date(dated).is_some_and(|d| d.format("%Y-%m-%d").to_string() == "2023-11-14"));
+        assert_eq!(date(undated), None);
+        assert!(date(exif).is_some_and(|d| d.format("%d").to_string() == "14"));
     }
 
     #[test]

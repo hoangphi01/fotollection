@@ -467,7 +467,7 @@ mod tests {
     }
 
     #[test]
-    fn fr_040_rendered_output_has_print_ratio() {
+    fn fr_040_rendered_output_matches_the_planned_canvas() {
         for print in [PrintSize::ALL[1], PrintSize::ALL[4], square_15()] {
             for fit in [FrameFit::Crop, FrameFit::Fit] {
                 for (w, h) in [(1200, 900), (900, 1200)] {
@@ -476,7 +476,12 @@ mod tests {
                     let ratio =
                         f64::from(out.width.max(out.height)) / f64::from(out.width.min(out.height));
                     let target = f64::from(print.long_mm) / f64::from(print.short_mm);
-                    assert!((ratio - target).abs() / target < 0.002, "{}", print.id);
+                    if fit == FrameFit::Crop {
+                        assert!((ratio - target).abs() / target < 0.002, "{}", print.id);
+                    } else {
+                        // Fit: the print's width, made longer by the bar.
+                        assert!(out.height > out.width * 3 / 4, "{}", print.id);
+                    }
                 }
             }
         }

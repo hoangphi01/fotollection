@@ -90,6 +90,9 @@ export function FrameSection({ frame, fonts, compact = false, children }: FrameS
             {t('frame.fitWhole')}
           </ToggleGroupItem>
         </ToggleGroup>
+        <p className="text-xs text-muted-foreground">
+          {t(settings?.fit === 'fit' ? 'frame.fitHint' : 'frame.cropHint')}
+        </p>
 
         <div className="flex gap-2">
           <ToggleGroup

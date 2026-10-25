@@ -1189,7 +1189,8 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
     .map_err(|e| IpcError::internal(e.to_string()))?
 }
 
-/// Sets (or, with `None`, resets) a photo's crop. Undoable (FR-023).
+/// Sets (or, with `None`, resets) a photo's crop. Undoable (FR-023); with `amend`, folded
+/// into the previous step of the same photo, as a drag in the preview does (FR-006).
 #[tauri::command]
 #[specta::specta]
 pub fn set_photo_crop(
@@ -1198,6 +1199,7 @@ pub fn set_photo_crop(
     id: PhotoId,
     crop: Option<CropFrame>,
     straighten: f32,
+    amend: bool,
 ) -> Result<HistoryState, IpcError> {
     {
         let mut library = state
@@ -1211,11 +1213,16 @@ pub fn set_photo_crop(
         edits.crop = crop.map(CropFrame::sanitized);
         // Crop and straightening are one undoable step (FR-006).
         edits.straighten = fotollection_core::straighten::sanitize(straighten);
-        state
+        let mut history = state
             .history
             .lock()
-            .map_err(|e| IpcError::internal(e.to_string()))?
-            .apply(&mut library, &[(id, edits)]);
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        // A drag in the preview amends its first position: one undo step per drag.
+        if amend {
+            history.amend(&mut library, &[(id, edits)]);
+        } else {
+            history.apply(&mut library, &[(id, edits)]);
+        }
     }
     Ok(changed(&app, &state))
 }

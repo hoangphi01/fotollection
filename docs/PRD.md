@@ -131,6 +131,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - **One font, like a film camera's imprint:** the text inside the photo is always set in the bundled **DSEG14 Classic Italic** (OFL 1.1), a slanted 14-segment LCD face, in plain capitals without accents ("Budaörs" → "BUDAORS"). It has the soft glow the imprint's LEDs left on film and a faint shadow for bright skies ([FR-033](#fr-033--retro-film-date-stamp-and-stamp-presets)). User fonts ([FR-042](#fr-042--custom-fonts)) apply to the info frame only.
 - **Two lines:** the date, with the place on the same line when switched on (`'25 09 21  DEBRECEN`, [FR-005](#fr-005--location-stamp-offline)), and a caption line of the user's own text below it ([FR-036](#fr-036--custom-captions)). At the bottom, the caption row is always kept free, so the date sits a little higher and does not move when a caption is added; a caption longer than the photo is set smaller to fit.
 - Rendered with anti-aliasing at output resolution and placed inside the final crop area, so the stamp is never cropped away.
+- **Photos without an EXIF date** (scans, screenshots, files from messaging apps) are stamped with the file's date, as the preview already shows ("No EXIF date · file time used"). Only a photo with no date at all gets no date, and it still prints its place and caption.
 
 ### FR-005 — Location stamp (offline)
 
@@ -147,6 +148,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 - The default crop is centred. The user can adjust it per photo in the **crop editor**:
   - The whole photo is shown, with everything outside the crop **dimmed**.
   - **Drag** to move the crop. **Zoom** with the wheel, a trackpad pinch or a slider (1–8×). Arrow keys nudge it, and a double-click resets it.
+  - **Or drag the photo in the preview itself**, without opening the crop editor: the print re-renders as it moves, and one drag is one undo step.
   - **Edge labels:** the top edge shows the printed width and the left edge the printed height (cm, or inches for sizes entered in inches), each with its pixel count. A centre pill shows the **aspect ratio** (`2:3`, `1:1`, or `1:1.44` for uneven sizes), the print size and the **live DPI** with its quality band ([FR-026](#fr-026--resolution-warning)). When a frame is on, the sizes are those of the photo area.
   - The crop is stored as a centre and zoom, so it survives changes of print size ([FR-025](#fr-025--mixed-print-sizes-per-order)).
   - It is undoable ([FR-023](#fr-023--projects-autosave-and-undo)).
@@ -401,7 +403,9 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 
 **P1.** Add a "Shot on …" information frame to prints, like camera makers' companion apps (for example LUMIX Lab).
 
-- **The whole print keeps the selected size.** The canvas has the print ratio, and the info bar is subtracted from it. The photo then either **crops to fill** the remaining area or **fits whole** with a thin margin.
+- **Two ways to make room for the bar:**
+  - **Crop to fill:** the print keeps the selected size exactly (10 × 15). The bar is subtracted from it and the photo is cropped to the space above; drag the photo in the preview to choose what stays.
+  - **Fit whole photo:** nothing is cut. The print keeps its width, the whole photo spans it, and the bar is added below, so the print comes out longer than the chosen size (10 × 15 → about 10 × 17.4 for a 2:3 photo). The bar is the same height in both modes.
 - **Bar content:**
   - Left: the brand: its bundled logo for 12 brands, including Noritsu for film scans (default, [ADR-0020](adr/0020-bundled-brand-logos.md)), the typeset name, a user PNG ([ADR-0014](adr/0014-user-supplied-brand-logos.md)), or nothing. Logo colours: *Classic* (black wordmarks with colour accents kept, colour badges as they are), *Brand colours* or *One colour*; on a black bar, dark parts turn white. A **Logo size** slider (50–200 %, default 100 %, double-click to reset) scales the logo for every photo in the project; Rust clamps the value, and a larger logo may use up to half the bar's width but never reaches the text.
   - Right-aligned lines: `Shot on <camera>`, then `<lens> <focal> <aperture> <shutter> <ISO>`, then `<photo style>`, then `<date> <place>`.

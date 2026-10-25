@@ -161,6 +161,8 @@
     "title": "Khung thông tin",
     "cropToFill": "Cắt cho đầy",
     "fitWhole": "Giữ trọn ảnh",
+    "cropHint": "Ảnh in giữ đúng khổ; kéo ảnh trong màn xem trước để chọn phần được giữ lại.",
+    "fitHint": "Giữ trọn ảnh, dải thông tin thêm vào phía dưới: ảnh in sẽ dài hơn khổ đã chọn (10 × 15 → khoảng 10 × 17).",
     "white": "Trắng",
     "black": "Đen",
     "font": "Font khung",
@@ -295,7 +297,8 @@
     "level": "cân ngang 1° (⌥ 0,1°)",
     "leaveCrop": "thoát cắt ảnh",
     "zoom": "phóng to",
-    "zoomReset": "Về vừa khung (⌘0)"
+    "zoomReset": "Về vừa khung (⌘0)",
+    "dragToFrame": "kéo để căn ảnh"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",

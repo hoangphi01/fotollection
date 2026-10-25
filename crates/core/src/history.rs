@@ -46,6 +46,27 @@ impl History {
         ids
     }
 
+    /// Like [`apply`](Self::apply), but folded into the last step when that step changed
+    /// exactly the same photos: a drag sends many positions and is undone in one go (FR-006).
+    pub fn amend(
+        &mut self,
+        library: &mut Library,
+        edits: &[(PhotoId, PhotoEdits)],
+    ) -> Vec<PhotoId> {
+        let same = self.undo.last().is_some_and(|step| {
+            step.len() == edits.len() && step.iter().zip(edits).all(|(c, (id, _))| c.id == *id)
+        });
+        let Some(step) = self.undo.last_mut().filter(|_| same) else {
+            return self.apply(library, edits);
+        };
+        for (change, (id, after)) in step.iter_mut().zip(edits) {
+            library.set_edits(*id, after.clone());
+            change.after = after.clone();
+        }
+        self.redo.clear();
+        edits.iter().map(|(id, _)| *id).collect()
+    }
+
     pub fn undo(&mut self, library: &mut Library) -> Option<Vec<PhotoId>> {
         let step = self.undo.pop()?;
         for c in step.iter().rev() {
@@ -115,6 +136,44 @@ mod tests {
         // A no-op change does not create a step.
         history.apply(&mut lib, &[(id, rated)]);
         assert!(history.undo(&mut lib).is_some());
+        assert!(!history.can_undo());
+    }
+
+    #[test]
+    fn fr_006_a_drag_is_one_undo_step() {
+        let mut lib = Library::new();
+        let folder = lib.add_folder(Path::new("/x"));
+        let file = |name: &str| ImportedFile {
+            path: PathBuf::from(format!("/x/{name}")),
+            size: 1,
+            mtime: 1,
+        };
+        let (Some(a), Some(b)) = (
+            lib.push(folder, &file("a.jpg"), &PhotoMeta::default()),
+            lib.push(folder, &file("b.jpg"), &PhotoMeta::default()),
+        ) else {
+            panic!("photos");
+        };
+        let at = |cy: f32| PhotoEdits {
+            crop: Some(crate::plan::CropFrame {
+                cx: 0.5,
+                cy,
+                zoom: 1.0,
+            }),
+            ..PhotoEdits::default()
+        };
+        let mut history = History::default();
+        history.apply(&mut lib, &[(a, at(0.4))]);
+        history.amend(&mut lib, &[(a, at(0.3))]);
+        history.amend(&mut lib, &[(a, at(0.2))]);
+        assert_eq!(lib.edits(a), at(0.2));
+        // Another photo starts its own step.
+        history.amend(&mut lib, &[(b, at(0.6))]);
+        assert!(history.undo(&mut lib).is_some());
+        assert_eq!(lib.edits(b), PhotoEdits::default());
+        // One undo takes the whole drag back.
+        assert!(history.undo(&mut lib).is_some());
+        assert_eq!(lib.edits(a), PhotoEdits::default());
         assert!(!history.can_undo());
     }
 }

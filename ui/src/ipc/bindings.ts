@@ -66,14 +66,17 @@ export const commands = {
 } | null, IpcError>(__TAURI_INVOKE("pick_camera_logo", { cameraId })),
 	clearCameraLogo: (cameraId: number) => typedError<FrameConfig, IpcError>(__TAURI_INVOKE("clear_camera_logo", { cameraId })),
 	getCropGeometry: (id: PhotoId) => typedError<CropGeometry, IpcError>(__TAURI_INVOKE("get_crop_geometry", { id })),
-	/**  Sets (or, with `None`, resets) a photo's crop. Undoable (FR-023). */
+	/**
+	 *  Sets (or, with `None`, resets) a photo's crop. Undoable (FR-023); with `amend`, folded
+	 *  into the previous step of the same photo, as a drag in the preview does (FR-006).
+	 */
 	setPhotoCrop: (id: PhotoId, crop: {
 	/**  Centre, 0–1 of the upright photo's width and height. */
 	cx: number | null,
 	cy: number | null,
 	/**  1 = the largest crop at the target ratio; up to `MAX_ZOOM`. */
 	zoom: number | null,
-} | null, straighten: number | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_crop", { id, crop, straighten })),
+} | null, straighten: number | null, amend: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_crop", { id, crop, straighten, amend })),
 	/**
 	 *  Chooses the export destination with a Rust-side dialog. Returns its display path.
 	 *  Interface preferences of this machine (FR-020).

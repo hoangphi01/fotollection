@@ -102,11 +102,59 @@ fn from_exif(exif: &Exif) -> PhotoMeta {
         lens,
         focal_mm: field(Tag::FocalLength).and_then(|f| rational(f, 0.5..=5000.0)),
         f_number: field(Tag::FNumber).and_then(|f| rational(f, 0.5..=128.0)),
-        exposure_s: field(Tag::ExposureTime).and_then(|f| rational(f, 1.0 / 64_000.0..=3600.0)),
+        // Some files keep only the APEX shutter value (after editing, or from some lenses).
+        exposure_s: field(Tag::ExposureTime)
+            .and_then(|f| rational(f, EXPOSURE_RANGE))
+            .or_else(|| field(Tag::ShutterSpeedValue).and_then(apex_shutter)),
         iso: field(Tag::PhotographicSensitivity)
             .and_then(|f| f.value.get_uint(0))
             .filter(|iso| (25..=1_638_400).contains(iso)),
     }
+}
+
+/// Exposure times a camera can record, in seconds.
+const EXPOSURE_RANGE: std::ops::RangeInclusive<f64> = 1.0 / 64_000.0..=3600.0;
+
+/// Exposure time from `ShutterSpeedValue`, an APEX value Tv where t = 2^−Tv seconds.
+/// Rounded to the camera's usual steps, as `ExposureTime` would read (1/2500, not 1/2521).
+#[allow(clippy::cast_possible_truncation)]
+fn apex_shutter(field: &Field) -> Option<f32> {
+    let tv = match &field.value {
+        Value::SRational(v) => v.first()?.to_f64(),
+        Value::Rational(v) => v.first()?.to_f64(),
+        _ => return None,
+    };
+    let t = (-tv).exp2();
+    if !(t.is_finite() && EXPOSURE_RANGE.contains(&t)) {
+        return None;
+    }
+    let t = if t < 1.0 {
+        1.0 / nice_denominator(1.0 / t)
+    } else {
+        (t * 10.0).round() / 10.0
+    };
+    Some(t as f32)
+}
+
+/// The nearest shutter denominator a camera displays (…, 2000, 2500, 3200, 4000, …).
+fn nice_denominator(d: f64) -> f64 {
+    const STEPS: [f64; 31] = [
+        1.3, 1.6, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 15.0, 20.0, 25.0, 30.0, 40.0,
+        50.0, 60.0, 80.0, 100.0, 125.0, 160.0, 200.0, 250.0, 320.0, 400.0, 500.0, 640.0, 800.0,
+        1000.0, 1250.0,
+    ];
+    // Above 1250 the steps repeat ×10 (1600, 2000, 2500, 3200…).
+    let (scale, d) = if d > 1250.0 {
+        (10.0, d / 10.0)
+    } else {
+        (1.0, d)
+    };
+    let nearest = STEPS
+        .iter()
+        .copied()
+        .min_by(|a, b| ((a / d).ln().abs()).total_cmp(&(b / d).ln().abs()))
+        .unwrap_or(d);
+    nearest * scale
 }
 
 /// The first rational of a field, validated against `range` (SECURITY.md §3, Layer 3).

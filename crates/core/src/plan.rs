@@ -312,36 +312,42 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
 }
 
 fn stamp_spec(input: &PlanInput<'_>, px_per_mm: f32) -> Option<StampSpec> {
-    let (settings, capture) = (input.settings, input.capture);
-    match (settings.stamp.enabled, capture) {
-        (true, Some(dt)) => {
-            let date = format_date(dt, settings.stamp.format);
-            let text = match input.place.filter(|_| settings.stamp.place) {
-                Some(place) => format!("{date}  {place}"),
-                None => date,
-            };
-            let caption = settings.stamp.caption.trim();
-            Some(StampSpec {
-                text,
-                color: settings.stamp.color.rgb(),
-                corner: settings.stamp.corner,
-                font_px: STAMP_SIZE_MM * px_per_mm,
-                margin_px: (SAFE_AREA_MM + STAMP_INSET_MM) * px_per_mm,
-                caption: (!caption.is_empty()).then(|| caption.to_owned()),
-            })
-        }
-        _ => None,
+    let settings = input.settings;
+    if !settings.stamp.enabled {
+        return None;
     }
+    // A photo with no date at all still gets its place and the caption the user typed.
+    let date = input
+        .capture
+        .map(|dt| format_date(dt, settings.stamp.format));
+    let place = input.place.filter(|_| settings.stamp.place);
+    let text = [date.as_deref(), place]
+        .into_iter()
+        .flatten()
+        .collect::<Vec<_>>()
+        .join("  ");
+    let caption = settings.stamp.caption.trim();
+    if text.is_empty() && caption.is_empty() {
+        return None;
+    }
+    Some(StampSpec {
+        text,
+        color: settings.stamp.color.rgb(),
+        corner: settings.stamp.corner,
+        font_px: STAMP_SIZE_MM * px_per_mm,
+        margin_px: (SAFE_AREA_MM + STAMP_INSET_MM) * px_per_mm,
+        caption: (!caption.is_empty()).then(|| caption.to_owned()),
+    })
 }
 
-/// The whole canvas keeps the print ratio; the photo fills (Crop) or fits (Fit) the space
-/// above the info bar (FR-040).
+/// Crop keeps the print ratio and fills the space above the info bar; Fit shows the whole
+/// photo and adds the bar below it, so the print grows longer (FR-040).
 fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
     let (width, height, print) = (input.width, input.height, input.print);
     let long = input
         .max_long_edge
         .map_or(width.max(height), |m| m.min(width.max(height)));
-    let (cw, ch) = frame::canvas_size(width, height, print, long);
+    let (cw, ch) = frame::canvas_size(width, height, print, long, request.settings.fit);
     let lay = |text: &frame::FrameText| {
         frame::layout(cw, ch, width, height, &request.settings, text, print)
     };
@@ -548,6 +554,30 @@ mod tests {
         });
         assert_eq!((p.out_width, p.out_height), (1600, 1067));
         assert!(p.stamp.is_none(), "no capture date, no stamp");
+    }
+
+    #[test]
+    fn fr_036_a_photo_without_a_date_still_prints_its_caption() {
+        let mut settings = RenderSettings::default();
+        settings.stamp.caption = "KY NIEM BUDAPEST".into();
+        settings.stamp.place = true;
+        let p = plan(&PlanInput {
+            width: 6000,
+            height: 4000,
+            capture: None,
+            settings: &settings,
+            print: size("10x15"),
+            max_long_edge: Some(1600),
+            frame: None,
+            crop: None,
+            place: Some("Budapest"),
+            straighten: 0.0,
+        });
+        let Some(stamp) = p.stamp else {
+            panic!("the caption is printed without a date");
+        };
+        assert_eq!(stamp.text, "Budapest");
+        assert_eq!(stamp.caption.as_deref(), Some("KY NIEM BUDAPEST"));
     }
 
     #[test]

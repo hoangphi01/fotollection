@@ -45,6 +45,7 @@ import { formatNumber } from '@/lib/format'
 import { previewUrl, sourceUrl } from '@/lib/photo-url'
 import { CropEditor } from './crop-editor'
 import { PhotoStampControls } from './photo-stamp-controls'
+import { useCropDrag } from './use-crop-drag'
 import { useZoom } from './use-zoom'
 import { ownsArrowKeys } from '@/lib/keyboard'
 import { cn } from '@/lib/utils'
@@ -158,12 +159,29 @@ export function PreviewDialog({
   const sizesKey = (settings?.customSizes ?? []).map((c) => `${c.id}:${c.shortMm}x${c.longMm}`).join()
   const advice = usePrintAdvice(photo?.id, sizesKey)
   const src = photo ? previewUrl(photo.id, revision) : ''
-  const [loadedSrc, setLoadedSrc] = useState('')
+  // The last finished render stays on screen until the next one has loaded, so a new
+  // setting or a drag never blanks the photo; another photo starts empty, with a spinner.
+  const [shown, setShown] = useState<{ id: number; src: string } | null>(null)
+  const photoId = photo?.id
+  useEffect(() => {
+    if (photoId === undefined || !src) return
+    let live = true
+    const img = new Image()
+    img.onload = () => live && setShown({ id: photoId, src })
+    img.src = src
+    return () => {
+      live = false
+    }
+  }, [photoId, src])
+  const shownSrc = shown && shown.id === photoId ? shown.src : null
   const geometry = useCropGeometry(photo?.id, revision)
   const [cropping, setCropping] = useState(false)
   // The stage mounts only when the preview opens, so it is kept in state, not a ref.
   const [stage, setStage] = useState<HTMLDivElement | null>(null)
   const zoom = useZoom(stage, `${photo?.id}:${cropping}`)
+  // Without zoom, dragging the photo moves the crop (Crop to fill, or no frame).
+  const cropDrag = useCropDrag(photo?.id, geometry, !cropping && !zoom.zoomed && !!geometry && !geometry.cropDisabled)
+  const canDrag = !zoom.zoomed && !!geometry && !geometry.cropDisabled
 
   const go = (delta: number) => {
     setCropping(false)
@@ -205,9 +223,12 @@ export function PreviewDialog({
           ref={setStage}
           className="relative flex min-w-0 flex-1 items-center justify-center overflow-hidden bg-neutral-950 p-8"
           // Clicking the photo hands the keyboard back to browsing, away from a focused control.
-          onPointerDown={() => {
+          onPointerDown={(e) => {
             if (!cropping && ownsArrowKeys(document.activeElement)) contentRef.current?.focus()
+            cropDrag.onPointerDown(e)
           }}
+          onPointerMove={cropDrag.onPointerMove}
+          onPointerUp={cropDrag.onPointerUp}
         >
           {cropping && geometry && photo ? (
             <CropEditor
@@ -217,31 +238,28 @@ export function PreviewDialog({
               onCancel={() => setCropping(false)}
               onCommit={(crop, straighten) => {
                 setCropping(false)
-                void commands.setPhotoCrop(photo.id, crop, straighten)
+                void commands.setPhotoCrop(photo.id, crop, straighten, false)
               }}
             />
           ) : (
             <>
-              {photo && (
+              {photo && shownSrc && (
                 <img
-                  key={src}
-                  src={src}
+                  src={shownSrc}
                   alt={photo.fileName}
                   draggable={false}
-                  onLoad={() => setLoadedSrc(src)}
                   onPointerDown={zoom.pointer.onPointerDown}
                   onPointerMove={zoom.pointer.onPointerMove}
                   onPointerUp={zoom.pointer.onPointerUp}
                   onDoubleClick={zoom.pointer.onDoubleClick}
                   style={{ transform: zoom.transform }}
                   className={cn(
-                    'max-h-full max-w-full rounded-sm object-contain shadow-2xl transition-opacity duration-200',
-                    loadedSrc === src ? 'opacity-100' : 'opacity-0',
-                    zoom.zoomed ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in',
+                    'max-h-full max-w-full animate-in rounded-sm object-contain shadow-2xl fade-in-0',
+                    zoom.zoomed || canDrag ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in',
                   )}
                 />
               )}
-              {loadedSrc !== src && (
+              {!shownSrc && (
                 <div className="absolute flex flex-col items-center gap-2 text-white/60">
                   <LoaderCircle className="size-7 animate-spin" />
                   <span className="text-xs">{t('viewer.rendering')}</span>
@@ -426,7 +444,7 @@ export function PreviewDialog({
                     ? t('viewer.cropCustom', { zoom: formatNumber(geometry.crop.zoom ?? 1, 1, 1) })
                     : t('viewer.cropCentred')}
                   {geometry?.crop && photo && (
-                    <Button variant="ghost" size="xs" onClick={() => void commands.setPhotoCrop(photo.id, null, 0)}>
+                    <Button variant="ghost" size="xs" onClick={() => void commands.setPhotoCrop(photo.id, null, 0, false)}>
                       {t('common.reset')}
                     </Button>
                   )}
@@ -460,6 +478,7 @@ export function PreviewDialog({
             {!cropping && (
               <>
                 <kbd className="font-mono">{MOD} + −</kbd> {t('viewer.zoom')} ·{' '}
+                {canDrag && <>{t('viewer.dragToFrame')} · </>}
               </>
             )}
             <kbd className="font-mono">Esc</kbd> {t(cropping ? 'viewer.leaveCrop' : 'viewer.close')}

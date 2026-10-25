@@ -11,7 +11,7 @@ use fotollection_core::image::RgbImage;
 use little_exif::exif_tag::ExifTag;
 use little_exif::filetype::FileExtension;
 use little_exif::metadata::Metadata;
-use little_exif::rational::uR64;
+use little_exif::rational::{iR64, uR64};
 
 #[derive(Default, Clone)]
 pub struct Fixture {
@@ -25,6 +25,8 @@ pub struct Fixture {
     pub lens: Option<&'static str>,
     /// (focal mm, f-number, exposure seconds as (num, den), ISO)
     pub exposure: Option<(u32, f64, (u32, u32), u16)>,
+    /// Only `ShutterSpeedValue` (APEX Tv), as some edited files have, without `ExposureTime`.
+    pub shutter_apex: Option<f64>,
 }
 
 fn dms(value: f64) -> Vec<uR64> {
@@ -93,7 +95,15 @@ pub fn jpeg(f: &Fixture) -> Vec<u8> {
         }]));
         meta.set_tag(ExifTag::ISO(vec![iso]));
     }
+    if let Some(tv) = f.shutter_apex {
+        #[allow(clippy::cast_possible_truncation)]
+        meta.set_tag(ExifTag::ShutterSpeedValue(vec![iR64 {
+            nominator: (tv * 10_000.0).round() as i32,
+            denominator: 10_000,
+        }]));
+    }
     if f.date.is_some()
+        || f.shutter_apex.is_some()
         || f.gps.is_some()
         || f.orientation.is_some()
         || f.lens.is_some()

@@ -162,7 +162,7 @@ fn export_one(
     let print = base
         .print_for(upright.width, upright.height)
         .unwrap_or(crate::PrintSize::ALL[1]);
-    let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
+    let capture = record.stamp_date();
     let frame = (options.frame_for)(record);
     let place = (options.place_for)(record);
     // The photo's own stamp, when it has one (FR-044).

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - New: the Noritsu logo in the info frame for film scans from Noritsu scanners
 - Fix: a long lens name no longer runs into the logo; it moves to its own line
+- New: drag the photo in the preview to reframe it; *Fit whole photo* adds the info bar below instead of shrinking the photo
+- Fix: photos without EXIF get the file's date in the stamp
 - New: export for social media (original size, Facebook, Instagram or your own size), in sRGB, with the camera details and never GPS
 - New: export the photo you are looking at, straight from the preview
 - New: folders work like tabs: All photos, one folder, or several ticked, exported together or separately
@@ -30,9 +32,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **App:** scroll bars are thin and in the theme colour, like the website's; the language picker is narrower, so its label is never cut.
 - **Website:** the print-shop heading shows the dm and Rossmann logos inline, in the theme colour (public-domain files from Wikimedia Commons; trademarks of their owners).
 - **Development:** the Python tools (quality audits, icon and screenshot helpers) are managed with uv: `pyproject.toml` and `uv.lock` pin their packages, and `uv run` runs them.
+- **Drag to reframe (FR-006):** in the preview, drag the photo to choose what the print keeps, without opening the crop editor; the print re-renders as you drag, and one drag is one undo step.
+- **Fit whole photo (FR-040):** keeps the print's width and adds the info bar below the whole photo, so the print grows longer (10 × 15 → about 10 × 17) instead of the photo shrinking inside the box with margins. *Crop to fill* still keeps the exact size.
 
 ### Fixed
 
+- **Photos without EXIF (FR-004):** the date stamp uses the file's date, as the preview said it would; a photo with no date at all still prints its place and caption.
+- **Info frame (FR-040):** the shutter speed shows for files that store it only as an APEX value (`ShutterSpeedValue`), as some edited photos do.
+- **Preview:** a new setting or a drag no longer blanks the photo while the next render loads.
 - **Website:** the back-to-top button works on iPhone (Safari jumped only a little).
 - **Website:** the changelog box shows its "click to scroll" hint again, and its thin scroll bar now applies in Firefox too.
 - **Hover hints** near the window's edge are no longer cut off.

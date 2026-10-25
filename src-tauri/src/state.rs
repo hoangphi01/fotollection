@@ -15,7 +15,7 @@ use fotollection_core::fonts::{self, LoadedFont, UserFont};
 use fotollection_core::frame::{self, CameraProfile, FrameSettings, LogoKind};
 use fotollection_core::geocode::{self, PlaceFormat};
 use fotollection_core::history::History;
-use fotollection_core::library::{Library, PhotoId, PhotoRecord, flags};
+use fotollection_core::library::{Library, PhotoId, PhotoRecord};
 use fotollection_core::logo::{self, LogoImage};
 use fotollection_core::plan::FrameRequest;
 use fotollection_core::preview::PreviewCache;
@@ -66,7 +66,7 @@ impl FrameState {
         }
         let shot = &record.shot;
         let profile = self.profile_for(shot.make.as_deref(), shot.model.as_deref());
-        let capture = (record.flags & flags::DATE_FROM_FILE == 0).then_some(record.capture);
+        let capture = record.stamp_date();
         let text = frame::build_text(shot, profile, &self.settings, capture, place);
         let dark = self.settings.color == frame::FrameColor::Black;
         let logo = profile.and_then(|p| match p.logo {
