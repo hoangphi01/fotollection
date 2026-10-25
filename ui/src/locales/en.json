@@ -396,6 +396,11 @@
       "unknown_group": "This group is out of date. Run Find best shots again.",
       "model_failed": "The face model could not run",
       "analysis_failed": "A photo could not be analysed"
+    },
+    "update": {
+      "offline": "Could not reach GitHub. Check your internet connection and try again.",
+      "unreadable": "GitHub's answer could not be read. Try again later.",
+      "none": "No newer version was found."
     }
   },
   "project": {
@@ -443,6 +448,15 @@
   "about": {
     "versions": "Versions",
     "current": "This version"
+  },
+  "update": {
+    "check": "Check for updates",
+    "checking": "Checking…",
+    "latest": "You have the latest version",
+    "available": "Fotollection {{version}} is available",
+    "download": "Download the installer",
+    "replaces": "Install it over this version: it replaces the app and keeps your settings and projects.",
+    "privacy": "The app goes online only when you click this button."
   },
   "estimate": {
     "smaller": "Estimated: {{from}} → {{to}} ({{percent}} % lighter)",

@@ -253,7 +253,9 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 ### FR-021 — Manual updates
 
-**P2.** New versions are published on GitHub Releases and the website; people download and install them when they choose. There is **no in-app updater and no update check**, so the app never calls the network on its own ([NFR-006](#nfr-006--offline-and-zero-telemetry), [ADR-0021](adr/0021-versioning-and-automated-releases.md)).
+**P2.** New versions are published on GitHub Releases and the website; people download and install them when they choose. There is **no in-app updater**, and the app never checks on its own: a newer version is looked for only when the user clicks *Check for updates* ([FR-061](#fr-061--check-for-updates), [NFR-006](#nfr-006--offline-and-zero-telemetry), [ADR-0025](adr/0025-update-check-on-click.md)).
+
+- **Installing over the old version replaces it** and keeps settings, profiles and projects: on macOS by dragging into Applications and choosing *Replace*; on Windows the `-setup.exe` uninstalls the old version first by default, and the MSI removes it through its pinned `UpgradeCode`. Use one Windows installer, preferably `-setup.exe`: mixing it with the MSI installs two copies.
 
 - The app shows its version (for example `v0.1.0`) at the foot of the settings panel. Clicking it lists every release with two lines from its Highlights, read from the CHANGELOG bundled at build time (no network).
 - Installing over an older version keeps settings, camera profiles and projects; their files are migrated on first open ([DATABASE.md](DATABASE.md)).
@@ -645,6 +647,14 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P1 (v0.6.0).** Opening the app shows the **logo and a loading bar** on the theme's background, never a half-built window: the screen is painted by the page itself before any script runs, and it fades out onto the finished workspace once the last session is back ([FR-023](#fr-023--projects-autosave-and-undo)). When the session reopens folders, the bar shows the import's progress, like the import bar; otherwise it slides. It never stays more than 15 s. It is the place where the choice between Normal and Professional mode ([FR-048](#fr-048--normal-and-professional-modes)) will be asked the first time.
 
+### FR-061 — Check for updates
+
+**P2 (v0.8.0).** The version footer's popover has a **Check for updates** button ([ADR-0025](adr/0025-update-check-on-click.md)).
+
+- **Only on click:** one HTTPS request to GitHub's latest-release API; the app never checks by itself, and a note under the button says so.
+- **Up to date:** "You have the latest version". **Newer:** "Fotollection 0.8.0 is available" and *Download the installer*, which opens the installer for this system in the browser; installing it replaces the app and keeps settings and projects ([FR-021](#fr-021--manual-updates)).
+- **Offline or an odd answer:** a plain message, never a crash. Pre-releases are never offered. Links outside the project's releases are refused, and the link is kept in Rust, so the webview never opens a URL itself.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
@@ -671,7 +681,7 @@ Heavy work never runs on the UI thread. Input-to-feedback latency is **under 100
 
 ### NFR-006 — Offline and zero telemetry
 
-The app works with no network connection. By default it makes **zero** network requests: no telemetry, no crash reporting and no update checks unless the user opts in.
+The app works with no network connection. By default it makes **zero** network requests: no telemetry, no crash reporting and no update checks unless the user opts in. The only request the app can make is the update check, and only when the user clicks *Check for updates* ([FR-061](#fr-061--check-for-updates)).
 
 ### NFR-007 — Platforms
 

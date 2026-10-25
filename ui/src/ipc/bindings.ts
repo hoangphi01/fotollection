@@ -22,6 +22,10 @@ export const commands = {
 	 *  before the page listens for `MenuAction`, so the UI asks once start-up is over.
 	 */
 	documentRequested: () => __TAURI_INVOKE<boolean>("document_requested"),
+	/**  Asks GitHub for the latest version, once, because the user clicked "Check for updates". */
+	checkForUpdate: () => typedError<UpdateCheck, IpcError>(__TAURI_INVOKE("check_for_update")),
+	/**  Opens the installer found by the last check in the browser. */
+	openUpdateDownload: () => typedError<null, IpcError>(__TAURI_INVOKE("open_update_download")),
 	/**  Supported print sizes for the settings panel (FR-006). */
 	listPrintSizes: () => __TAURI_INVOKE<PrintSize[]>("list_print_sizes"),
 	/**  Opens a folder dialog and imports the chosen folder. `None` if the user cancelled. */
@@ -886,6 +890,18 @@ export type UiSettings = {
 	language: Language,
 	/**  Absent before settings v6: follow the system. */
 	theme?: ThemePreference,
+};
+
+/**  The result shown under the button. */
+export type UpdateCheck = {
+	/**  This app's version, `0.7.0`. */
+	current: string,
+	/**  The latest published version, `0.8.0`. */
+	latest: string,
+	/**  True when `latest` is newer than `current`. */
+	newer: boolean,
+	/**  The release page, for "What's new". */
+	pageUrl: string,
 };
 
 /**

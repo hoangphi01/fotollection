@@ -14,6 +14,7 @@ mod open_with;
 mod protocol;
 mod state;
 mod timing;
+mod updates;
 
 use tauri::{DragDropEvent, Manager, WindowEvent};
 use tauri_specta::{Builder, collect_commands, collect_events};
@@ -29,6 +30,8 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::startup_finished,
             open_with::take_photo_request,
             document::document_requested,
+            updates::check_for_update,
+            updates::open_update_download,
             commands::list_print_sizes,
             commands::pick_and_import_folder,
             commands::refresh_library,
@@ -155,6 +158,9 @@ pub fn run() {
             }
         }))
         .plugin(tauri_plugin_dialog::init())
+        // Opens the update installer in the browser, from Rust only (FR-061); the webview gets
+        // no opener permission.
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(builder.invoke_handler())
         .register_asynchronous_uri_scheme_protocol(protocol::SCHEME, protocol::handle)
         .setup(move |app| {

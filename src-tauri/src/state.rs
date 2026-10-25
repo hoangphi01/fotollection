@@ -144,6 +144,8 @@ pub struct AppState {
     pub requested_open: Mutex<Option<PathBuf>>,
     /// A photo the OS asked to show ("Open with", FR-054), until the UI takes it.
     pub requested_photo: Mutex<Option<crate::open_with::OpenPhoto>>,
+    /// The installer link found by the last "Check for updates" (FR-061).
+    pub update_download: crate::updates::PendingDownload,
 }
 
 /// The current document: none until the first Save As or Open.
@@ -254,6 +256,7 @@ impl AppState {
             document_lock: Mutex::new(()),
             requested_open: Mutex::new(None),
             requested_photo: Mutex::new(None),
+            update_download: crate::updates::PendingDownload::default(),
         })
     }
 

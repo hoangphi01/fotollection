@@ -28,6 +28,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0022](0022-srgb-and-exif-for-share-exports.md) | Share exports: sRGB through `qcms`, an allowlisted EXIF block with the app's name, never GPS | Accepted | 2026-10-25 |
 | [0023](0023-raw-through-os-codecs.md) | Camera RAW through the OS codecs (ImageIO, WIC + Raw Image Extension); embedded preview for thumbnails and analysis, full develop for preview and export | Accepted | 2026-10-25 |
 | [0024](0024-optional-photo-viewer.md) | Fotollection as an optional viewer: "Open with" without becoming the default, the photo's folder as a tab, one instance | Accepted | 2026-10-25 |
+| [0025](0025-update-check-on-click.md) | Check for updates only when the user clicks; the installer opens in the browser, never installed by the app | Accepted, supersedes 0021 in part | 2026-10-25 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

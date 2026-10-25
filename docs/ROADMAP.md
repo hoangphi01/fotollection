@@ -95,7 +95,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.5.0 | Print basket | FR-050 (basket and set aside, select mode), FR-059 (Quick-preview) | — |
 | v0.6.0 | Photo viewer | FR-057 (full-resolution zoom, zoom buttons), FR-060 (start-up screen) | Done: cold start (NFR-010), open to first photo (NFR-016), preview and zoom at 16/26/32 MP (RESULT §11) |
 | v0.7.0 | Open with and RAW | FR-054 ("Open with"), FR-016 (RAW through the OS codecs) | RAW preview and full decode on GX9 RW2 files; open to first photo end to end (NFR-016) |
-| v0.8.0 | Places and Lightroom | FR-032, FR-005, FR-030, FR-031, FR-058 (XMP) | Lookup speed with manual places, a mixed camera + phone folder; XMP read on a Lightroom-culled folder |
+| v0.8.0 | Places and Lightroom | FR-032, FR-005, FR-030, FR-031, FR-058 (XMP), FR-061 (check for updates) | Lookup speed with manual places, a mixed camera + phone folder; XMP read on a Lightroom-culled folder |
 | v0.9.0 | Normal mode | FR-048, NFR-015, FR-046, FR-050 | Normal against Professional export |
 | Later | Looks, presets, trips, journal | FR-039, FR-047, FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
 
@@ -128,6 +128,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-058 | Lightroom compatibility: read XMP sidecars on import, write `.xmp` as an opt-in, photos never touched |
 | FR-059 | Quick-preview: hold Space in select mode to look at a photo as it will print |
 | FR-060 | Start-up screen: the logo and a loading bar until the last session is back |
+| FR-061 | Check for updates: a button that asks GitHub once, then opens the installer in the browser |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 
 ## Phase 3 — Pro & growth

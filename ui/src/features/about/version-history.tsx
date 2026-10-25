@@ -6,10 +6,12 @@ import { Badge } from '@/components/ui/badge'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { releaseSummaries } from '@/lib/changelog'
 import { cn } from '@/lib/utils'
+import { UpdateCheck } from './update-check'
 
 /**
  * The app's version; clicking it lists every release with two lines on what it brought.
- * The CHANGELOG is bundled at build time, so this works offline (FR-021).
+ * The CHANGELOG is bundled at build time, so this works offline (FR-021); checking for a newer
+ * version is a button, the only time the app goes online (FR-061).
  */
 export function VersionHistory({ version }: { version: string }) {
   const { t } = useTranslation()
@@ -46,6 +48,7 @@ export function VersionHistory({ version }: { version: string }) {
             </li>
           ))}
         </ol>
+        <UpdateCheck />
       </PopoverContent>
     </Popover>
   )

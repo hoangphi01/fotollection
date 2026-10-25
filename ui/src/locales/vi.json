@@ -382,6 +382,11 @@
       "unknown_group": "Nhóm này đã cũ. Hãy chạy lại Tìm ảnh đẹp nhất.",
       "model_failed": "Không chạy được model khuôn mặt",
       "analysis_failed": "Không phân tích được một ảnh"
+    },
+    "update": {
+      "offline": "Không kết nối được GitHub. Hãy kiểm tra internet rồi thử lại.",
+      "unreadable": "Không đọc được câu trả lời của GitHub. Hãy thử lại sau.",
+      "none": "Chưa tìm thấy bản mới hơn."
     }
   },
   "project": {
@@ -427,6 +432,15 @@
   "about": {
     "versions": "Các phiên bản",
     "current": "Bản đang dùng"
+  },
+  "update": {
+    "check": "Kiểm tra cập nhật",
+    "checking": "Đang kiểm tra…",
+    "latest": "Bạn đang dùng bản mới nhất",
+    "available": "Đã có Fotollection {{version}}",
+    "download": "Tải bộ cài",
+    "replaces": "Cài đè lên bản này: bộ cài thay ứng dụng và giữ nguyên cài đặt, dự án của bạn.",
+    "privacy": "Ứng dụng chỉ lên mạng khi bạn bấm nút này."
   },
   "estimate": {
     "smaller": "Ước tính: {{from}} → {{to}} (nhẹ hơn {{percent}} %)",

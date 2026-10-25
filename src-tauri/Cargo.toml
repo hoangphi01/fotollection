@@ -26,6 +26,11 @@ tauri = { version = "2.12", features = [] }
 tauri-plugin-dialog = "2.8"
 # FR-054: a second launch ("Open with" while running) hands its paths to this one.
 tauri-plugin-single-instance = "2"
+# FR-061: "Check for updates", only when the user clicks: one HTTPS request to GitHub, and the
+# download page opened in the browser from Rust (never a URL from the webview).
+semver = "1"
+tauri-plugin-opener = "2"
+ureq = { version = "3", default-features = false, features = ["rustls"] }
 tauri-specta.workspace = true
 
 [lints]

@@ -63,6 +63,7 @@
         "installerHooks": "windows/open-with.nsh"
       },
       "wix": {
+        "upgradeCode": "23BDAF5D-B726-5019-ACD2-1C1D290F63AF",
         "fragmentPaths": ["windows/open-with.wxs"],
         "componentGroupRefs": ["FotollectionOpenWith"]
       }

@@ -80,7 +80,14 @@ Pull requests use the same filters. After pushing, check that every workflow tha
 
 ## 5. Updates
 
-There is **no in-app updater** ([FR-021](PRD.md#fr-021--manual-updates), [ADR-0021](adr/0021-versioning-and-automated-releases.md)). The app never checks for new versions, so it makes no network call of its own ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)). New versions are announced on the Releases page and the website, and the app shows its version at the foot of the settings panel. Installing a new version over an old one keeps settings, profiles and projects, which are migrated on first open ([DATABASE.md](DATABASE.md)).
+There is **no in-app updater** ([FR-021](PRD.md#fr-021--manual-updates), [ADR-0021](adr/0021-versioning-and-automated-releases.md)). The app never checks for new versions by itself ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)): the version popover at the foot of the settings panel has a **Check for updates** button that asks GitHub once and opens the newer installer in the browser ([FR-061](PRD.md#fr-061--check-for-updates), [ADR-0025](adr/0025-update-check-on-click.md)). New versions are also announced on the Releases page and the website.
+
+Installing a new version over an old one **replaces it** and keeps settings, profiles and projects, which are migrated on first open ([DATABASE.md](DATABASE.md)):
+
+- **macOS:** drag the new app into Applications and choose *Replace*. Running it from the disk image or Downloads replaces nothing.
+- **Windows `-setup.exe` (recommended):** the reinstall page defaults to uninstalling the old version first; app data is kept unless its box is ticked.
+- **Windows `.msi`:** `MajorUpgrade` removes the old version and refuses downgrades. This needs the same `UpgradeCode` in every release, so it is pinned in `tauri.conf.json` (`bundle.windows.wix.upgradeCode`); never change it.
+- Do not mix the two Windows installers: one installs per user, the other per machine, so both copies would stay.
 
 ## 6. Release checklist
 

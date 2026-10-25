@@ -94,7 +94,17 @@ Fotollection opens the RAW files of most cameras as they are, with no conversion
 - Colours and sharpness are the operating system's neutral development, not a RAW editor's: Fotollection prepares prints, it does not replace Lightroom.
 - **On Windows**, install Microsoft's free *Raw Image Extension* from the Microsoft Store first. Without it, RAW files are skipped and the hint says so.
 
-## 5. Keyboard shortcuts
+## 5. Updating to a new version
+
+Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates), [FR-061](PRD.md#fr-061--check-for-updates)).
+
+1. Click the version number at the foot of the settings panel, then **Check for updates**. This is the only time the app goes online.
+2. If a newer version exists, click **Download the installer**: your browser downloads the right one for your computer.
+3. Install it over the current version. Your settings, camera profiles and projects stay.
+   - **Mac:** open the disk image and drag Fotollection into Applications, then choose **Replace**.
+   - **Windows:** run the `-setup.exe`; keep the first choice, *Uninstall before installing*. If you installed with the `.msi`, update with the `.msi`: mixing the two leaves two copies.
+
+## 6. Keyboard shortcuts
 
 | Where | Key | Action |
 |-------|-----|--------|
