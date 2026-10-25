@@ -113,7 +113,7 @@
     "printSize": "Khổ in / xuất ảnh",
     "printSizeHint": "Mặc định cắt ở giữa. Chỉnh từng ảnh bằng nút Cắt ảnh trong màn xem trước.",
     "dateStamp": "Dấu ngày",
-    "dateStampFont": "Font dấu ngày",
+    "dateStampFont": "Phông chữ dấu ngày",
     "stampPosition": "Vị trí dấu ngày",
     "corner": {
       "bottomRight": "Góc dưới phải",
@@ -157,10 +157,10 @@
   },
   "fonts": {
     "builtIn": "Inter (có sẵn)",
-    "yours": "Font của bạn",
+    "yours": "Phông chữ của bạn",
     "import": "Nhập OTF/TTF…",
-    "removeNamed": "Gỡ font {{name}}",
-    "removeTitle": "Gỡ font này (ảnh sẽ dùng lại Inter)"
+    "removeNamed": "Gỡ phông chữ {{name}}",
+    "removeTitle": "Gỡ phông chữ này (ảnh sẽ dùng lại Inter)"
   },
   "frame": {
     "title": "Khung thông tin",
@@ -171,7 +171,7 @@
     "fitSize": "Giữ trọn ảnh: ảnh in ra khoảng {{size}}, gồm ảnh đúng khổ đã chọn, thêm viền 5 mm ở ba cạnh và dải thông tin. Nhớ chọn khổ giấy đủ lớn ở tiệm in.",
     "white": "Trắng",
     "black": "Đen",
-    "font": "Font khung",
+    "font": "Phông chữ khung",
     "show": "Hiển thị",
     "field": {
       "logo": "Logo",
@@ -334,20 +334,21 @@
       "write_failed": "Không ghi được tệp"
     },
     "font": {
-      "invalid": "Đây không phải font hợp lệ",
-      "missing_digits": "Font không có chữ số 0–9",
+      "invalid": "Đây không phải phông chữ hợp lệ",
+      "missing_digits": "Phông chữ không có chữ số 0–9",
       "too_large": "Tệp phông chữ lớn hơn 20 MB",
-      "too_many": "Chỉ nhập được tối đa 50 font",
+      "too_many": "Chỉ nhập được tối đa 50 phông chữ",
       "unreadable": "Không đọc được tệp phông chữ",
-      "unsupported": "Chỉ hỗ trợ font OTF và TTF",
-      "write_failed": "Không lưu được font"
+      "unsupported": "Chỉ hỗ trợ phông chữ OTF và TTF",
+      "write_failed": "Không lưu được phông chữ"
     },
     "import": {
       "suspicious": "Tệp có dấu hiệu bất thường nên đã bị bỏ qua",
       "too_large": "Tệp quá lớn",
       "unreadable": "Không đọc được tệp",
       "unsupported": "Định dạng này chưa được hỗ trợ",
-      "heic_codec_missing": "HEIC cần cài \"HEIF Image Extensions\" và \"HEVC Video Extensions\" từ Microsoft Store"
+      "heic_codec_missing": "HEIC cần cài \"HEIF Image Extensions\" và \"HEVC Video Extensions\" từ Microsoft Store",
+      "raw_codec_missing": "Ảnh RAW cần cài \"Raw Image Extension\" miễn phí từ Microsoft Store"
     },
     "logo": {
       "decode_failed": "Không giải mã được logo",

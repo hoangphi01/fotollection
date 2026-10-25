@@ -27,6 +27,8 @@ pub enum Sniffed {
     Jpeg,
     Png,
     Heif,
+    /// A camera RAW (FR-016), told apart by its own bytes (`raw::kind`).
+    Raw(crate::raw::RawKind),
     Unknown,
 }
 
@@ -36,6 +38,9 @@ pub fn sniff(head: &[u8]) -> Sniffed {
         Sniffed::Jpeg
     } else if head.starts_with(&[0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A]) {
         Sniffed::Png
+    } else if let Some(kind) = crate::raw::kind(head) {
+        // Before HEIF: Canon's CR3 is an ISO-BMFF file too.
+        Sniffed::Raw(kind)
     } else if head.len() >= 12 && &head[4..8] == b"ftyp" {
         Sniffed::Heif
     } else {
@@ -61,10 +66,14 @@ pub struct ImportedFile {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum RejectReason {
-    /// Not a format this build can read yet (RAW…), or HEIC on Linux.
+    /// Not a format this build can read (a RAW we do not know, a plain TIFF), or HEIC and
+    /// RAW on Linux.
     Unsupported,
     /// HEIC on Windows without the HEIF/HEVC extensions from the Microsoft Store (ADR-0017).
     CodecMissing,
+    /// Camera RAW on Windows without the Raw Image Extension from the Microsoft Store
+    /// (ADR-0023).
+    RawCodecMissing,
     TooLarge,
     Unreadable,
     /// Magic bytes don't match, or the head contains script/markup (possible polyglot).
@@ -76,6 +85,7 @@ impl RejectReason {
         match self {
             Self::Unsupported => "import.unsupported",
             Self::CodecMissing => "import.heic_codec_missing",
+            Self::RawCodecMissing => "import.raw_codec_missing",
             Self::TooLarge => "import.too_large",
             Self::Unreadable => "import.unreadable",
             Self::Suspicious => "import.suspicious",
@@ -117,16 +127,24 @@ pub fn check_file(path: &Path) -> Result<ImportedFile, RejectReason> {
     if metadata.len() > MAX_FILE_BYTES {
         return Err(RejectReason::TooLarge);
     }
-    let mut head = [0u8; 4096];
-    let n = File::open(path)
-        .and_then(|mut f| f.read(&mut head))
+    // Enough for a RAW's IFD0 and maker name; markup is looked for in the first 4 KB only.
+    let mut head = Vec::with_capacity(crate::raw::HEAD_BYTES);
+    File::open(path)
+        .and_then(|f| f.take(crate::raw::HEAD_BYTES as u64).read_to_end(&mut head))
         .map_err(|_| RejectReason::Unreadable)?;
-    let head = &head[..n];
-    if looks_like_polyglot(head) {
+    if looks_like_polyglot(&head[..head.len().min(4096)]) {
         return Err(RejectReason::Suspicious);
     }
-    match sniff(head) {
+    match sniff(&head) {
         Sniffed::Jpeg | Sniffed::Png => {}
+        Sniffed::Raw(_) if crate::raw::available() => {}
+        Sniffed::Raw(_) => {
+            return Err(if cfg!(target_os = "windows") {
+                RejectReason::RawCodecMissing
+            } else {
+                RejectReason::Unsupported
+            });
+        }
         Sniffed::Heif if heif_available() => {}
         Sniffed::Heif => {
             return Err(if cfg!(target_os = "windows") {
@@ -205,6 +223,15 @@ mod tests {
         assert_eq!(sniff(b"\x89PNG\r\n\x1a\n...."), Sniffed::Png);
         assert_eq!(sniff(b"\0\0\0\x18ftypheic"), Sniffed::Heif);
         assert_eq!(sniff(b"<html>"), Sniffed::Unknown);
+        // Canon's CR3 is ISO-BMFF too, but it is a RAW, not a HEIC (FR-016).
+        assert_eq!(
+            sniff(b"\0\0\0\x18ftypcrx \0\0\0\x01"),
+            Sniffed::Raw(crate::raw::RawKind::Cr3)
+        );
+        assert_eq!(
+            sniff(b"IIU\0\x18\0\0\0"),
+            Sniffed::Raw(crate::raw::RawKind::Rw2)
+        );
     }
 
     #[test]

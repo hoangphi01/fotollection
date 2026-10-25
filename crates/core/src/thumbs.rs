@@ -6,7 +6,7 @@
 
 use std::path::{Path, PathBuf};
 
-use crate::codec::{CodecError, EncodeOptions, JpegCodec, decode_image};
+use crate::codec::{CodecError, EncodeOptions, JpegCodec, decode_for_screen};
 use crate::image::apply_orientation;
 use crate::library::PhotoRecord;
 use crate::metadata;
@@ -51,7 +51,8 @@ impl ThumbCache {
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
         let bytes = std::fs::read(&record.path)?;
-        let decoded = decode_image(codec, &bytes)?;
+        // A RAW's embedded preview, not a one-second develop (ADR-0023).
+        let decoded = decode_for_screen(codec, &bytes, T1_LONG_EDGE)?;
         let upright = apply_orientation(decoded.image, record.orientation);
         let small = fit_long_edge(&upright, T1_LONG_EDGE)?;
         let jpeg = codec.encode(&small, EncodeOptions::screen(THUMB_QUALITY), None)?;

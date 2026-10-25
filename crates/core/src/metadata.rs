@@ -35,8 +35,11 @@ pub struct PhotoMeta {
 const MAX_STRING_CHARS: usize = 100;
 
 /// Reads metadata from a file. Missing or unreadable EXIF yields defaults rather than an error,
-/// so a photo without metadata is still usable (FR-002).
+/// so a photo without metadata is still usable (FR-002). A camera RAW goes to [`read_raw`].
 pub fn read_path(path: &Path) -> PhotoMeta {
+    if let Some(kind) = raw_kind_of(path) {
+        return read_raw(path, kind);
+    }
     let Ok(file) = File::open(path) else {
         return PhotoMeta::with_defaults();
     };
@@ -50,6 +53,115 @@ pub fn read_bytes(bytes: &[u8]) -> PhotoMeta {
     Reader::new()
         .read_from_container(&mut std::io::Cursor::new(bytes))
         .map_or_else(|_| PhotoMeta::with_defaults(), |exif| from_exif(&exif))
+}
+
+/// The RAW kind of a file, reading 16 bytes for a JPEG or PNG and the RAW head otherwise.
+fn raw_kind_of(path: &Path) -> Option<crate::raw::RawKind> {
+    use std::io::Read;
+    let mut file = File::open(path).ok()?;
+    let mut magic = [0u8; 16];
+    let n = file.read(&mut magic).ok()?;
+    if magic[..n].starts_with(&[0xFF, 0xD8]) || magic[..n].starts_with(b"\x89PNG") {
+        return None;
+    }
+    let mut head = magic[..n].to_vec();
+    file.take(crate::raw::HEAD_BYTES as u64)
+        .read_to_end(&mut head)
+        .ok()?;
+    crate::raw::kind(&head)
+}
+
+/// How much of a RAW file is read for its metadata: enough for the IFDs of every tested
+/// camera, far less than the 20–60 MB of the file (FR-016, RESULT.md §12).
+const RAW_HEAD_BYTES: u64 = 1024 * 1024;
+
+/// Metadata of a camera RAW (FR-016) from the head of the file. RW2 and ORF are TIFF files
+/// with their own magic number, RAF carries a JPEG with full EXIF, and CR3 keeps its EXIF in
+/// `CMT1` (camera) and `CMT2` (exposure) boxes; the others are plain TIFF. The RAW's own
+/// preview is used instead of an EXIF thumbnail, so `has_embedded_thumbnail` is false.
+pub fn read_raw(path: &Path, kind: crate::raw::RawKind) -> PhotoMeta {
+    use std::io::Read;
+    let mut head = Vec::new();
+    if File::open(path)
+        .and_then(|f| f.take(RAW_HEAD_BYTES).read_to_end(&mut head))
+        .is_err()
+    {
+        return PhotoMeta::with_defaults();
+    }
+    // A field stored past the head (an ORF maker note) fails the whole read: read it all then.
+    let mut meta = raw_meta(path, &head, kind)
+        .or_else(|| raw_meta(path, &std::fs::read(path).ok()?, kind))
+        .unwrap_or_else(PhotoMeta::with_defaults);
+    meta.has_embedded_thumbnail = false;
+    meta
+}
+
+fn raw_meta(path: &Path, head: &[u8], kind: crate::raw::RawKind) -> Option<PhotoMeta> {
+    use crate::raw::RawKind;
+    match kind {
+        RawKind::Rw2 | RawKind::Orf => {
+            // `IIU\0`, `IIRO`, `MMOR`: give the TIFF magic number back, offsets are unchanged.
+            let mut tiff = head.to_vec();
+            let magic: &[u8] = if tiff.starts_with(b"MM") {
+                &[0, 0x2A]
+            } else {
+                &[0x2A, 0]
+            };
+            tiff.get_mut(2..4)?.copy_from_slice(magic);
+            let exif = Reader::new().read_raw(tiff).ok()?;
+            let mut meta = from_exif(&exif);
+            // Panasonic keeps the ISO in its own IFD0 tag 0x0017, not in EXIF.
+            meta.iso = meta.iso.or_else(|| {
+                exif.fields()
+                    .find(|f| f.tag.number() == 0x0017 && f.ifd_num == In::PRIMARY)
+                    .and_then(|f| f.value.get_uint(0))
+                    .filter(|iso| (25..=1_638_400).contains(iso))
+            });
+            Some(meta)
+        }
+        RawKind::Cr2 | RawKind::Nef | RawKind::Arw | RawKind::Dng => Reader::new()
+            .read_raw(head.to_vec())
+            .ok()
+            .map(|e| from_exif(&e)),
+        RawKind::Raf => {
+            // Big-endian offset and length of the embedded JPEG at bytes 84 and 88.
+            let be = |at: usize| Some(u32::from_be_bytes(head.get(at..at + 4)?.try_into().ok()?));
+            let (offset, length) = (u64::from(be(84)?), u64::from(be(88)?));
+            let jpeg = read_range(path, offset, length.min(RAW_HEAD_BYTES))?;
+            Some(read_bytes(&jpeg))
+        }
+        RawKind::Cr3 => {
+            let camera = Reader::new()
+                .read_raw(cr3_box(head, *b"CMT1")?.to_vec())
+                .ok()?;
+            let shot =
+                cr3_box(head, *b"CMT2").and_then(|b| Reader::new().read_raw(b.to_vec()).ok());
+            // Both boxes are a TIFF whose IFD0 holds the tags, so they are matched by number.
+            let field = |tag: Tag| {
+                camera
+                    .fields()
+                    .chain(shot.iter().flat_map(Exif::fields))
+                    .find(|f| f.tag.number() == tag.number() && f.ifd_num == In::PRIMARY)
+            };
+            Some(from_fields(field, None, false))
+        }
+    }
+}
+
+/// The payload of the first ISO-BMFF box named `name` found in `head` (CR3's `CMT1`…).
+fn cr3_box(head: &[u8], name: [u8; 4]) -> Option<&[u8]> {
+    let at = head.windows(4).position(|w| w == name)?.checked_sub(4)?;
+    let size = usize::try_from(u32::from_be_bytes(head.get(at..at + 4)?.try_into().ok()?)).ok()?;
+    head.get(at + 8..at.checked_add(size)?)
+}
+
+fn read_range(path: &Path, offset: u64, length: u64) -> Option<Vec<u8>> {
+    use std::io::{Read, Seek, SeekFrom};
+    let mut file = File::open(path).ok()?;
+    file.seek(SeekFrom::Start(offset)).ok()?;
+    let mut out = Vec::new();
+    file.take(length).read_to_end(&mut out).ok()?;
+    Some(out)
 }
 
 /// The JPEG thumbnail embedded in EXIF (IFD1), if present and well-formed.
@@ -71,8 +183,20 @@ impl PhotoMeta {
 }
 
 fn from_exif(exif: &Exif) -> PhotoMeta {
-    let field = |tag| exif.get_field(tag, In::PRIMARY);
+    from_fields(
+        |tag| exif.get_field(tag, In::PRIMARY),
+        parse_gps(exif),
+        thumbnail_bytes(exif).is_some(),
+    )
+}
 
+/// Builds the allowlisted metadata from a tag lookup, so containers that split EXIF in
+/// pieces (CR3) share the same validation.
+fn from_fields<'a>(
+    field: impl Fn(Tag) -> Option<&'a Field>,
+    gps: Option<(f64, f64)>,
+    has_embedded_thumbnail: bool,
+) -> PhotoMeta {
     let (capture, offset_minutes) = field(Tag::DateTimeOriginal)
         .or_else(|| field(Tag::DateTimeDigitized))
         .and_then(|f| parse_datetime(f, field(Tag::OffsetTimeOriginal)))
@@ -94,11 +218,11 @@ fn from_exif(exif: &Exif) -> PhotoMeta {
     PhotoMeta {
         capture,
         offset_minutes,
-        gps: parse_gps(exif),
+        gps,
         orientation,
         make: field(Tag::Make).and_then(clean_string),
         model: field(Tag::Model).and_then(clean_string),
-        has_embedded_thumbnail: thumbnail_bytes(exif).is_some(),
+        has_embedded_thumbnail,
         lens,
         focal_mm: field(Tag::FocalLength).and_then(|f| rational(f, 0.5..=5000.0)),
         f_number: field(Tag::FNumber).and_then(|f| rational(f, 0.5..=128.0)),
@@ -243,4 +367,53 @@ fn thumbnail_bytes(exif: &Exif) -> Option<&[u8]> {
         .get_uint(0)? as usize;
     let bytes = exif.buf().get(offset..offset.checked_add(length)?)?;
     bytes.starts_with(&[0xFF, 0xD8]).then_some(bytes)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The CC0 samples from `scripts/fetch-raw-samples.py`, when `FOTOLLECTION_RAW_SAMPLES`
+    /// names their folder: every one gives its camera and capture time (FR-016).
+    #[test]
+    fn fr_016_raw_samples_have_their_exif() -> Result<(), Box<dyn std::error::Error>> {
+        let Some(dir) = std::env::var_os("FOTOLLECTION_RAW_SAMPLES") else {
+            return Ok(());
+        };
+        for entry in std::fs::read_dir(dir)? {
+            let path = entry?.path();
+            let ext = path
+                .extension()
+                .and_then(|e| e.to_str())
+                .unwrap_or_default()
+                .to_ascii_lowercase();
+            let Some(kind) = crate::raw::RawKind::from_extension(&ext) else {
+                continue;
+            };
+            let meta = read_raw(&path, kind);
+            eprintln!(
+                "{}: {:?} {:?} {:?} f/{:?} {:?}s ISO {:?} {}mm orient {}",
+                path.file_name()
+                    .and_then(|n| n.to_str())
+                    .unwrap_or_default(),
+                meta.make,
+                meta.model,
+                meta.capture,
+                meta.f_number,
+                meta.exposure_s,
+                meta.iso,
+                meta.focal_mm.unwrap_or_default(),
+                meta.orientation,
+            );
+            assert!(meta.make.is_some(), "{}: no make", path.display());
+            assert!(
+                meta.capture.is_some(),
+                "{}: no capture time",
+                path.display()
+            );
+            assert!(meta.iso.is_some(), "{}: no ISO", path.display());
+            assert!(!meta.has_embedded_thumbnail);
+        }
+        Ok(())
+    }
 }

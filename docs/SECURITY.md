@@ -160,7 +160,8 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 
 | Code | Message | Recovery |
 |------|---------|----------|
-| `import.unsupported` | "This file isn't a supported photo (JPEG, HEIC, PNG)." | Skipped |
+| `import.unsupported` | "This file isn't a supported photo (JPEG, HEIC, PNG, camera RAW)." | Skipped |
+| `import.raw_codec_missing` | "RAW photos need the free Raw Image Extension from the Microsoft Store." | Skipped (Windows only) |
 | `import.too_large` | "This photo is too large to process safely." | Skipped |
 | `meta.missing_date` | "No capture date found — using file date." | Continue with fallback |
 | `meta.unreadable` | "Couldn't read photo information." | Process without stamp |

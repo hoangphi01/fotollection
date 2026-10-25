@@ -53,7 +53,7 @@ crates/
       lib.rs             †
       print_size.rs      † # CEWE/EU print sizes (FR-006)
       import.rs          † # discovery, magic bytes, size + polyglot checks (FR-001)
-      codec.rs           † # JpegCodec trait + pure-Rust implementation (ADR-0012); decode_image/image_dimensions dispatch by magic bytes (PNG via `png`); EncodeOptions::print (4:4:4, optimized Huffman) for exports vs ::screen (4:2:0, plain) for previews/thumbnails; HEIC later
+      codec.rs           † # JpegCodec trait + pure-Rust implementation (ADR-0012); decode_image/image_dimensions dispatch by magic bytes (PNG via `png`, RAW and HEIC via `oscodec`); decode_for_screen gives a RAW's embedded preview for thumbnails and analysis; EncodeOptions::print (4:4:4, optimized Huffman) for exports vs ::screen (4:2:0, plain) for previews/thumbnails
       image.rs           † # RgbImage + EXIF orientation transforms
       metadata.rs        † # EXIF allowlist + validation, embedded thumbnail (FR-002)
       settings.rs        † # RenderSettings (in memory until projects land)
@@ -96,7 +96,7 @@ crates/
       thumbs.rs          † # T0 (embedded) + T1 disk cache (DATABASE.md §8)
     benches/               # criterion benchmarks (see OPTIMIZATION.md)
     fuzz/                  # cargo-fuzz targets (see TESTING.md)
-  oscodec/               † # HEIC via ImageIO (macOS) / WIC (Windows): the only crate allowed `unsafe` (ADR-0017)
+  oscodec/               † # HEIC and camera RAW via ImageIO (macOS) / WIC (Windows): decode, dimensions, embedded preview; the only crate allowed `unsafe` (ADR-0017, ADR-0023)
   geodata/               † # build-time packer for the GeoNames dataset (scripts/geodata/fetch-and-pack.sh); never shipped
 src-tauri/               † # app shell: commands, protocol, capabilities
   src/lib.rs             † # tauri-specta builder + bindings export
@@ -141,6 +141,7 @@ bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batc
 | JPEG decode/encode | **Today:** `zune-jpeg` + `jpeg-encoder` (pure Rust) behind the `JpegCodec` trait ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). **Candidate:** `turbojpeg` for DCT scaling and lossless crop ([ADR-0004](adr/0004-libjpeg-turbo-default-codec.md)) | 4:4:4, quality 95, ICC copied |
 | JPEG max-quality encode | `mozjpeg` (optional) | Opt-in "smallest file" mode |
 | HEIC/HEIF | OS codecs via `fotollection-oscodec`: ImageIO (`objc2-image-io`) on macOS, WIC (`windows`) on Windows | Nothing linked, no LGPL; Windows needs the HEIF/HEVC Store extensions ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
+| Camera RAW | The same OS codecs; `crates/core/src/raw.rs` recognises the format by its bytes; one full develop at a time | Nothing linked, no LGPL; Windows needs the Raw Image Extension ([ADR-0023](adr/0023-raw-through-os-codecs.md)) |
 | PNG | `png` | |
 | Face models (FR-041) | `tract-onnx` (MIT/Apache), pure Rust; YuNet + FaceMesh V2 ONNX compiled in | One code path on macOS and Windows, no native runtime; BLAKE3-checked at load ([ADR-0018](adr/0018-face-models-and-runtime.md)) |
 | Resize | `fast_image_resize` | SIMD (NEON/AVX2) |

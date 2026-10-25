@@ -10,10 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Camera RAW (FR-016):** RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG open like any photo, with their date, camera and exposure for the stamp and the info frame. Thumbnails and best-shot suggestions use the preview inside each RAW, so a folder of RAW files browses as fast as JPEG; the print preview and the export develop the full photo. On Windows, install Microsoft's free *Raw Image Extension*.
 - **Ticks follow the folder tabs (FR-056):** in select mode, photos ticked in one folder stay ticked when you switch to another folder; the selection bar counts them all and says how many are in other folders, and one click sends them all to the print basket.
 
 ### Changed
 
+- Canon CR3 files are no longer read as HEIC (they had no date or camera details).
 - **Vietnamese:** the app and the website speak plain Vietnamese: *tệp* for file, *ứng dụng* for app, *mã nguồn* for code, *hồ sơ màu* for colour profile, *không cần mạng* for offline, *phông chữ* for font.
 
 ### Website

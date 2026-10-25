@@ -84,13 +84,13 @@ Photos are always identified by magic bytes, never by extension. Every input is 
 | JPEG | `.jpg`, `.jpeg`, `.jpe` | `FF D8 FF` | Supported | EXIF orientation, ICC profile, embedded thumbnail |
 | PNG | `.png` | `89 50 4E 47 0D 0A 1A 0A` | Supported | 8/16-bit, grey and palette → RGB8; alpha flattened onto white; iCCP profile kept; EXIF from `eXIf` if present |
 | HEIC/HEIF | `.heic`, `.heif`, `.hif` | `ftyp` box at offset 4 | Supported on macOS and Windows | Decoded by the OS (ImageIO / WIC; Windows needs the HEIF + HEVC Store extensions), primary image, alpha on white, ICC kept on macOS; EXIF read from the container ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
-| RAW | `.dng`, `.rw2`, `.cr2`, … | — | Phase 3 ([FR-016](PRD.md#fr-016--raw-input)) | Rejected as unsupported today |
+| RAW | `.rw2`, `.cr2`, `.cr3`, `.nef`, `.arw`, `.raf`, `.orf`, `.dng` | RW2 `IIU\0`; ORF `IIRO` / `IIRS` / `MMOR`; RAF `FUJIFILMCCD-RAW`; CR3 an `ftyp` box with the brand `crx` (checked before HEIF); CR2 a TIFF header with `CR` at byte 8; DNG a TIFF whose IFD0 has `DNGVersion`; NEF and ARW a TIFF whose IFD0 `Make` starts with `NIKON` / `SONY` | Supported on macOS and Windows ([FR-016](PRD.md#fr-016--raw-input)) | Developed by the OS (ImageIO with the type hint; WIC with the Raw Image Extension on Windows, else `import.raw_codec_missing`); the embedded preview gives thumbnails and best-shot analysis, the full develop gives the preview and export; EXIF read from the first 1 MB (RW2/ORF as TIFF, RAF from its JPEG, CR3 from its `CMT1`/`CMT2` boxes; the whole file only when a field lies further, as in ORF); CR3 GPS is not read yet ([ADR-0023](adr/0023-raw-through-os-codecs.md)). A plain TIFF and other RAW (PEF, SRW…) are still rejected as unsupported |
 
 These limits apply to every input format:
 
 - at most 200 MB per file;
 - at most 30,000 px per edge and 200 megapixels, checked before any pixels are decoded;
-- a file whose first 4 KB contain script or markup (`<script`, `<html`, `<svg`, `<?php`) is rejected as a possible polyglot.
+- the first 64 KB are read to recognise a file (enough for a RAW's IFD0); a file whose first 4 KB contain script or markup (`<script`, `<html`, `<svg`, `<?php`) is rejected as a possible polyglot.
 
 ## 5. Compatibility rules
 

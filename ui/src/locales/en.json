@@ -361,7 +361,8 @@
       "too_large": "The file is too large",
       "unreadable": "The file could not be read",
       "unsupported": "This format is not supported yet",
-      "heic_codec_missing": "HEIC needs the free \"HEIF Image Extensions\" and the \"HEVC Video Extensions\" from the Microsoft Store"
+      "heic_codec_missing": "HEIC needs the free \"HEIF Image Extensions\" and the \"HEVC Video Extensions\" from the Microsoft Store",
+      "raw_codec_missing": "RAW photos need the free \"Raw Image Extension\" from the Microsoft Store"
     },
     "logo": {
       "decode_failed": "The logo could not be decoded",

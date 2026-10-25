@@ -6,7 +6,7 @@ use std::io::Read;
 use std::path::PathBuf;
 
 use super::{ANALYSIS_VERSION, CullingError, PhotoAnalysis, analyze};
-use crate::codec::{CodecError, JpegCodec, decode_image};
+use crate::codec::{CodecError, JpegCodec, decode_for_screen};
 use crate::image::apply_orientation;
 use crate::library::PhotoRecord;
 use crate::thumbs::{content_key, write_atomic};
@@ -74,7 +74,9 @@ impl AnalysisCache {
             return Ok(cached);
         }
         let bytes = std::fs::read(&record.path)?;
-        let upright = apply_orientation(decode_image(codec, &bytes)?.image, record.orientation);
+        // A RAW is analysed on its embedded preview, twice the analysis size (ADR-0023).
+        let decoded = decode_for_screen(codec, &bytes, 2 * super::metrics::ANALYSIS_EDGE)?;
+        let upright = apply_orientation(decoded.image, record.orientation);
         let analysis = analyze(&upright)?;
         if let Ok(json) = serde_json::to_vec(&analysis) {
             let _ = write_atomic(&self.path(record), &json);

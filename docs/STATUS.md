@@ -110,7 +110,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-013 | Face-aware smart crop | 2 | Not Started | |
 | FR-014 | Export by trip | 2 | Not Started | |
 | FR-015 | Duplicate detection | 2 | Not Started | |
-| FR-016 | RAW input | 3 | Not Started | Planned: native RAW through the OS codecs (no DNG needed), embedded previews for thumbnails and culling; needs the owner's RW2 files, a benchmark and an ADR (PRD FR-016) |
+| FR-016 | RAW input | 3 | In Progress | ✓ OS codecs with type hints and embedded previews (`oscodec`), recognition by content (`raw.rs`), EXIF for all eight formats (`metadata::read_raw`), thumbnails and analysis on the preview, one develop at a time; RW2 imports and exports end to end (`fr_016_rw2_imports_and_exports`). Left: check on Windows with the Raw Image Extension; screenshots and website |
 | FR-017 | Photo book layout preview | 3 | Not Started | |
 | FR-018 | QR code on photo back | 3 | Not Started | |
 | FR-019 | Print service upload | 3 | Not Started | |

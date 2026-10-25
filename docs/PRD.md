@@ -221,11 +221,13 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 ### FR-016 — RAW input
 
-**P2.** Import camera RAW files (starting with Panasonic RW2), developing them with neutral defaults or using the embedded JPEG preview.
+**P2 (v0.7.0, in progress).** Import camera RAW files natively, **without asking for DNG**: RW2 (Panasonic), CR2 and CR3 (Canon), NEF (Nikon), ARW (Sony), RAF (Fujifilm), ORF (Olympus / OM System) and DNG, each tested on a CC0 sample ([ADR-0023](adr/0023-raw-through-os-codecs.md)).
 
-- **Planned approach (2026-10-25, not started):** read RAW **natively, without asking for DNG**, through the operating system's codecs, as HEIC is read ([ADR-0017](adr/0017-heic-through-os-codecs.md)): ImageIO on macOS (CR2/CR3, NEF, ARW, RW2, RAF, ORF, DNG…, with the camera list updated by macOS) and WIC with Microsoft's free *Raw Image Extension* on Windows. The Rust RAW decoders (`rawloader`, `rawler`, LibRaw) are LGPL, which [ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md) rules out.
-- Thumbnails, culling and best-shot analysis use the **JPEG preview embedded in every RAW file**, as fast as a JPEG; only the preview and the export develop the RAW.
-- Files are recognised by magic bytes; Windows without the extension gets `import.raw_codec_missing` with install steps. Measure the preview and full decode at 16 and 24 MP (on the owner's GX9 RW2 files) and add an NFR before shipping. A new ADR records it.
+- **Through the operating system's codecs**, as HEIC is ([ADR-0017](adr/0017-heic-through-os-codecs.md)): ImageIO on macOS, with the file's type identifier as a hint so TIFF-based RAW is developed rather than read as a TIFF; WIC with Microsoft's free *Raw Image Extension* on Windows. The Rust RAW decoders and LibRaw are LGPL, which [ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md) rules out.
+- **Recognised by content**, never by extension: each format's own magic bytes, or for TIFF-based RAW the header plus IFD0 (`DNGVersion`, the maker in `Make`). CR3 is no longer mistaken for HEIC.
+- **Two paths** ([NFR-017](#nfr-017--camera-raw-speed)): thumbnails and best-shot analysis use the **preview embedded in every RAW** (9–80 ms); the print preview, zoom and export use the **full develop** (0.4–2.2 s), one at a time, and its size is the only one used for crops.
+- **EXIF** comes from the first 1 MB: RW2 and ORF are read as TIFF, RAF from its embedded JPEG, CR3 from its `CMT1`/`CMT2` boxes, Panasonic's ISO from its own tag. CR3's GPS is not read yet.
+- **Windows without the extension:** import skips RAW with `import.raw_codec_missing` and says what to install.
 
 ### FR-017 — Photo book layout preview
 

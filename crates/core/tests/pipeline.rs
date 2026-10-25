@@ -704,6 +704,67 @@ fn fr_001_heic_imports_and_exports() {
     assert_eq!((decoded.width, decoded.height), (300, 200));
 }
 
+/// The owner's camera, end to end (FR-016): the CC0 GX9 RW2 from
+/// `scripts/fetch-raw-samples.py`, when `FOTOLLECTION_RAW_SAMPLES` names its folder, is
+/// imported with its EXIF, gets a thumbnail from its embedded preview, and exports at the
+/// developed size.
+#[cfg(target_os = "macos")]
+#[test]
+fn fr_016_rw2_imports_and_exports() {
+    let Some(samples) = std::env::var_os("FOTOLLECTION_RAW_SAMPLES") else {
+        return;
+    };
+    let sample = Path::new(&samples).join("panasonic-dc-gx9.rw2");
+    if !sample.exists() {
+        return;
+    }
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    std::fs::copy(&sample, src.path().join("P1000001.RW2")).unwrap();
+
+    let lib = import(src.path());
+    let all = records(&lib);
+    assert_eq!(all.len(), 1, "the RW2 is accepted");
+    assert_eq!(all[0].capture.to_string(), "2018-03-26 20:15:02");
+    assert_eq!(all[0].shot.model.as_deref(), Some("DC-GX9"));
+
+    let bytes = std::fs::read(&all[0].path).unwrap();
+    let thumb = fotollection_core::codec::decode_for_screen(&PureRustCodec, &bytes, 400).unwrap();
+    assert!(thumb.image.width <= 400 && thumb.image.height <= 400);
+    assert_eq!(
+        fotollection_core::codec::image_dimensions(&PureRustCodec, &bytes).unwrap(),
+        (5184, 3888)
+    );
+
+    let settings = RenderSettings {
+        print_size: fotollection_core::PrintSize::ORIGINAL_ID.to_owned(),
+        ..RenderSettings::default()
+    };
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 2,
+        place_for: &|_| None,
+        frame_for: &|_| None,
+        group_for: &|_| None,
+    };
+    let summary = run_export(
+        &all,
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert_eq!((summary.exported, summary.failed.len()), (1, 0));
+    let exported = dest.path().join("2018-03-26/P1000001.jpg");
+    let decoded = PureRustCodec
+        .decode(&std::fs::read(exported).unwrap())
+        .unwrap()
+        .image;
+    assert_eq!((decoded.width, decoded.height), (5184, 3888));
+}
+
 #[test]
 fn fr_053_share_export_resizes_keeps_ratio_and_writes_safe_exif() {
     use fotollection_core::share::{ExportTarget, SharePreset};

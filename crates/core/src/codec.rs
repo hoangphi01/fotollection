@@ -30,6 +30,9 @@ pub enum CodecError {
     /// HEIC on Windows without the HEIF/HEVC extensions (ADR-0017).
     #[error("the HEIC codec is not installed")]
     CodecMissing,
+    /// Camera RAW on Windows without the Raw Image Extension (ADR-0023).
+    #[error("the RAW codec is not installed")]
+    RawCodecMissing,
     /// A format this platform cannot decode.
     #[error("this format is not supported here")]
     Unsupported,
@@ -43,6 +46,7 @@ impl CodecError {
             Self::TooLarge(..) => "import.too_large",
             Self::Encode(_) => "encode.failed",
             Self::CodecMissing => "import.heic_codec_missing",
+            Self::RawCodecMissing => "import.raw_codec_missing",
             Self::Unsupported => "import.unsupported",
         }
     }
@@ -106,7 +110,8 @@ pub trait JpegCodec: Send + Sync {
 
 const PNG_MAGIC: &[u8] = &[0x89, b'P', b'N', b'G', 0x0D, 0x0A, 0x1A, 0x0A];
 
-/// HEIF/HEIC: an ISO-BMFF `ftyp` box at offset 4 (EXTENSION.md §4).
+/// HEIF/HEIC: an ISO-BMFF `ftyp` box at offset 4 (EXTENSION.md §4). Canon's CR3 uses the
+/// same container and is told apart by `raw::kind` first.
 fn is_heif(bytes: &[u8]) -> bool {
     bytes.len() >= 12 && &bytes[4..8] == b"ftyp"
 }
@@ -141,15 +146,32 @@ fn decode_heif(bytes: &[u8]) -> Result<Decoded, CodecError> {
     })
 }
 
-/// Decodes any supported input photo: PNG and HEIC here, everything else through `codec`
-/// (JPEG).
+/// Decodes any supported input photo: PNG, camera RAW (developed) and HEIC here, everything
+/// else through `codec` (JPEG).
 pub fn decode_image(codec: &dyn JpegCodec, bytes: &[u8]) -> Result<Decoded, CodecError> {
     if bytes.starts_with(PNG_MAGIC) {
         decode_png(bytes)
+    } else if let Some(kind) = crate::raw::kind(bytes) {
+        crate::raw::decode(bytes, kind)
     } else if is_heif(bytes) {
         decode_heif(bytes)
     } else {
         codec.decode(bytes)
+    }
+}
+
+/// Decodes for the screen, where at most `max_px` on the long edge is needed: a camera RAW
+/// gives its embedded preview instead of a full develop (ADR-0023), every other format
+/// decodes as usual. Never use the result for geometry: a RAW's preview can have another
+/// size than the photo.
+pub fn decode_for_screen(
+    codec: &dyn JpegCodec,
+    bytes: &[u8],
+    max_px: u32,
+) -> Result<Decoded, CodecError> {
+    match crate::raw::kind(bytes) {
+        Some(kind) => crate::raw::preview(bytes, kind, max_px),
+        None => decode_image(codec, bytes),
     }
 }
 
@@ -161,6 +183,8 @@ pub fn image_dimensions(codec: &dyn JpegCodec, bytes: &[u8]) -> Result<(u32, u32
             .map_err(|e| CodecError::Decode(e.to_string()))?;
         let info = reader.info();
         Ok((info.width, info.height))
+    } else if let Some(kind) = crate::raw::kind(bytes) {
+        crate::raw::dimensions(bytes, kind)
     } else if is_heif(bytes) {
         fotollection_oscodec::dimensions(bytes, fotollection_oscodec::Format::Heif)
             .map_err(os_error)

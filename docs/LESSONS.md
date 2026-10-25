@@ -13,6 +13,20 @@
 
 ## 2026-10-25
 
+### A RAW can look like a plain TIFF (FR-016)
+
+- **Seen:** measured before writing the feature, ImageIO returned a NEF as 160 × 120 and could not open an ARW at all, while `sips` handled both.
+- **Why:** NEF, ARW, CR2 and DNG start with an ordinary TIFF header. From bytes alone ImageIO read the NEF as a TIFF (its first image is a thumbnail); `sips` passes the file name, so it knew.
+- **Fix:** pass the format's type identifier as a hint, take the largest image in the file; on Windows ask WIC for the RAW decoder directly.
+- **Rule:** measure every format on a real sample before building on it; a format family can hide a case that breaks the design.
+
+### Some characters turn into emoji on iOS (website)
+
+- **Seen:** the footnotes' back link `↩` and the `☕` in the support heading showed as colour emoji on an iPhone.
+- **Why:** characters with an emoji presentation are drawn as emoji by iOS unless a text selector follows them.
+- **Fix:** Lucide icons (`corner-left-up`, `coffee`) as inline SVG, like every other icon on the site.
+- **Rule:** no pictographic characters in the UI or on the site; use Lucide (STYLE_RULE: Lucide icons only).
+
 ### A red check hid for three pushes (CI)
 
 - **Seen:** the owner noticed red crosses on the last commits on GitHub; the `docs` workflow had failed since the v0.6.0 plan change, while only `pages` and `release` were being watched.
