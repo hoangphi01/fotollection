@@ -75,7 +75,7 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 
 ## Hiệu năng
 
-Fotollection dành cho người chụp ảnh nghiêm túc và nhiếp ảnh gia, nên tốc độ là yêu cầu bắt buộc, không phải thứ có thì tốt. **Mọi con số dưới đây đều đo thật, không phải ước tính**, trên Apple M3 (8 nhân, 16 GB) với ảnh JPEG 16 MP thật, ngày 23/10/2026. Mỗi biểu đồ có một mốc tham chiếu để so: ngân sách hiệu năng, trần bộ nhớ, hoặc trình duyệt. Kết quả đầy đủ: [docs/RESULT.md](docs/RESULT.md) (tiếng Anh).
+Fotollection dành cho người chụp ảnh nghiêm túc và nhiếp ảnh gia, nên tốc độ là yêu cầu bắt buộc, không phải thứ có thì tốt. **Mọi con số dưới đây đều đo thật, không phải ước tính**, trên Apple M3 (8 nhân, 16 GB) với ảnh JPEG 16 MP thật, ngày 23/10/2026. Mỗi biểu đồ có một mốc tham chiếu để so: ngân sách hiệu năng, trần RAM, hoặc trình duyệt. Kết quả đầy đủ: [docs/RESULT.md](docs/RESULT.md) (tiếng Anh).
 
 ### So với ngân sách
 
@@ -91,7 +91,7 @@ Fotollection dành cho người chụp ảnh nghiêm túc và nhiếp ảnh gia,
 
 ### Batch lớn
 
-Bộ nhớ không được tăng theo số ảnh. Batch lớn gấp 53 lần chỉ tốn thêm 0,1 GB ở mức đỉnh:
+RAM không được tăng theo số ảnh. Batch lớn gấp 53 lần chỉ tốn thêm 0,1 GB ở mức đỉnh:
 
 ![RAM đỉnh: 1,35 GB với 95 ảnh và 1,45 GB với 5.035 ảnh, so với trần 2 GB.](docs/images/bench-memory-vi.svg)
 
@@ -117,8 +117,8 @@ Phương án thay thế dễ thấy nhất là một web app làm đúng việc 
 Về tốc độ export thô, trình duyệt nhanh ngang ngửa vì Chromium dùng libjpeg-turbo có SIMD. Giờ Fotollection đã preview nhanh hơn. Tuy vậy, tốc độ không phải lý do chính để làm app native:
 
 - Trình duyệt chỉ mã hóa JPEG được ở chế độ màu 4:2:0, tức một nửa độ phân giải màu. Fotollection export 4:4:4, gấp đôi dữ liệu màu, trong cùng thời gian.
-- Fotollection dùng ít hơn 24 % bộ nhớ, và việc export có giới hạn bộ nhớ, như bài thử batch lớn cho thấy. Một tab trình duyệt thì có trần cứng.
-- Fotollection ghi file ra đĩa với rename nguyên tử và không ghi EXIF, nên GPS không bao giờ rời khỏi máy bạn. Trình duyệt chỉ tạo blob trong bộ nhớ và không ghi file nào.
+- Fotollection dùng ít hơn 24 % RAM, và việc export có giới hạn RAM, như bài thử batch lớn cho thấy. Một tab trình duyệt thì có trần cứng.
+- Fotollection ghi file ra đĩa với rename nguyên tử và không ghi EXIF, nên GPS không bao giờ rời khỏi máy bạn. Trình duyệt chỉ tạo blob trong RAM và không ghi file nào.
 - ICC profile, RAW 16-bit ở Phase 3, và HEIC nằm ngoài khả năng của trình duyệt.
 
 ### Thời gian preview đi đâu
@@ -211,7 +211,7 @@ Tải phiên bản mới nhất ở [trang giới thiệu](https://fotollection.
 |---|---|---|---|
 | **Hệ điều hành** | macOS 11 Big Sur, hoặc Windows 10 64-bit | macOS 13 trở lên, hoặc Windows 11 | Máy Mac Apple Silicon và Intel. Windows dùng WebView2, có sẵn trên Windows 11 và tự cài trên Windows 10 |
 | **Bộ xử lý** | CPU 64-bit bất kỳ trong khoảng 8 năm gần đây | Apple Silicon, hoặc x64 đời mới từ 4 nhân | Công việc được chia cho mọi nhân. Mọi số liệu trong [Hiệu năng](#hiệu-năng) đo trên Apple M3 |
-| **Bộ nhớ (RAM)** | 4 GB | Từ 8 GB | Fotollection luôn dưới 2 GB kể cả với hơn 5.000 ảnh (đo được đỉnh 1,45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)) |
+| **RAM** | 4 GB | Từ 8 GB | Fotollection luôn dưới 2 GB kể cả với hơn 5.000 ảnh (đo được đỉnh 1,45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)) |
 | **Ổ đĩa** | Trống 100 MB, cộng phần cache | Trống 1 GB | App được giữ dưới 25 MB ([NFR-008](docs/PRD.md#nfr-008--install-size)). Cache tốn khoảng 25 MB cho 1.000 ảnh (thumbnail khoảng 22 KB, phân tích ảnh đẹp nhất khoảng 4 KB mỗi ảnh) và xoá lúc nào cũng được. File export cần chỗ cho ảnh độ phân giải đầy đủ |
 | **Màn hình** | 1280 × 800 | 1920 × 1080 hoặc màn Retina | Thanh công cụ tự co khi cửa sổ hẹp |
 | **Internet** | Không cần | — | Mọi thứ chạy offline, kể cả nhận diện khuôn mặt, địa điểm và preview. Không có gì được tải lên |
@@ -249,7 +249,7 @@ Toàn bộ tài liệu nằm trong [`docs/`](docs/README.md), viết bằng ti�
 |-----|---------------|
 | [PRD](docs/PRD.md) | Yêu cầu (`FR-xxx`, `NFR-xxx`) |
 | [Architecture](docs/ARCHITECTURE.md) | Crate, pipeline, hợp đồng IPC |
-| [Results](docs/RESULT.md) | Số đo tốc độ và bộ nhớ mới nhất |
+| [Results](docs/RESULT.md) | Số đo tốc độ và RAM mới nhất |
 | [Optimization](docs/OPTIMIZATION.md) | Ngân sách, phương pháp đo, nhật ký benchmark |
 | [File formats](docs/EXTENSION.md) | `.fotollection`, `.fotopreset` và mọi loại file khác |
 | [Style rules](docs/STYLE_RULE.md) | Quy ước Rust, TypeScript, UI, git và tài liệu |

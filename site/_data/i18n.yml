@@ -276,7 +276,7 @@ vi:
     - label: "Tốc độ và độ nhẹ"
       items:
         - q: "Ứng dụng có nặng không? Máy cũ có chạy được không?"
-          a: "Rất nhẹ: bộ cài cho Windows chỉ 13,7 MB, vì cửa sổ dùng trình hiển thị web có sẵn của hệ điều hành thay vì mang theo cả một trình duyệt. Phần lõi viết bằng Rust và chạy trực tiếp trên máy. Ảnh xem trước không bao giờ lớn hơn 1600 px, nên ảnh 32 MP mở nhanh như ảnh nhỏ, và ảnh gốc chỉ được tải khi bạn phóng to. Ngay cả khi xuất 5.035 ảnh, bộ nhớ cao nhất chỉ khoảng 1,45 GB."
+          a: "Rất nhẹ: bộ cài cho Windows chỉ 13,7 MB, vì cửa sổ dùng trình hiển thị web có sẵn của hệ điều hành thay vì mang theo cả một trình duyệt. Phần lõi viết bằng Rust và chạy trực tiếp trên máy. Ảnh xem trước không bao giờ lớn hơn 1600 px, nên ảnh 32 MP mở nhanh như ảnh nhỏ, và ảnh gốc chỉ được tải khi bạn phóng to. Ngay cả khi xuất 5.035 ảnh, RAM dùng nhiều nhất chỉ khoảng 1,45 GB."
         - q: "Với hàng nghìn ảnh thì nhanh đến đâu?"
           a: "Mở 1.000 ảnh mất khoảng 0,12 giây, vì Fotollection đọc ảnh thu nhỏ có sẵn trong mỗi tệp trước. Đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, xuất ảnh đạt 18 ảnh cỡ đầy đủ mỗi giây, và từ lần thứ hai trở đi ứng dụng mở trong khoảng 0,4 giây. Mọi con số đều đo trên một chiếc máy tính xách tay bình thường, và trang Hiệu năng hướng dẫn bạn tự đo lại."
     - label: "Nền tảng và chi phí"
@@ -375,21 +375,21 @@ vi:
   p5_text: Mã nguồn công khai theo giấy phép GPL-3.0. Ai cũng có thể đọc, tự xây dựng và kiểm chứng ứng dụng làm đúng như trang này nói.
   charts_title: Đo thật, không hứa suông
   charts_lead: Mọi con số đều đo trên ảnh thật, bằng một chiếc máy tính xách tay bình thường (Apple M3, 16 GB); chương trình đo nằm ngay trong kho mã nguồn.
-  chart_budgets: Tốc độ và bộ nhớ, so với ngân sách đặt ra trước khi viết mã nguồn
+  chart_budgets: Tốc độ và RAM, so với ngân sách đặt ra trước khi viết mã nguồn
   chart_quality: Bản xuất giữ lại được bao nhiêu so với ảnh gốc, so với một trình sửa ảnh web thông thường
   chart_bestshot: Gợi ý ảnh đẹp nhất, chấm điểm so với ảnh do người chọn tay
   charts_more: "Xem toàn bộ số đo và giải thích"
   chart_share: "Ảnh đăng Facebook: người xem thấy gì sau khi Facebook nén lại"
-  chart_memory: "Bộ nhớ cao nhất khi số ảnh tăng lên 5.035 tấm"
+  chart_memory: "RAM dùng nhiều nhất khi số ảnh tăng lên 5.035 tấm"
   chart_browser: "Cùng một việc, trên Fotollection và trên trình duyệt web"
   perf_title: "Hiệu năng"
-  perf_description: "Mọi số đo phía sau Fotollection, giải thích bằng lời dễ hiểu: tốc độ, bộ nhớ, chất lượng in, ảnh đăng mạng xã hội, gợi ý ảnh đẹp nhất, kèm ý nghĩa của ΔE, SSIM, JPEG và hồ sơ màu."
+  perf_description: "Mọi số đo phía sau Fotollection, giải thích bằng lời dễ hiểu: tốc độ, RAM, chất lượng in, ảnh đăng mạng xã hội, gợi ý ảnh đẹp nhất, kèm ý nghĩa của ΔE, SSIM, JPEG và hồ sơ màu."
   perf_kicker: "Đo thật, không hứa suông"
   perf_lead: "Mọi con số trên trang này đều đo trên ảnh thật, bằng một chiếc máy tính xách tay bình thường (Apple M3, 16 GB). Chương trình đo nằm ngay trong kho mã nguồn, ai cũng có thể chạy lại. Dưới mỗi biểu đồ là ý nghĩa của nó với ảnh in của bạn, và cuối trang là giải thích cho các thuật ngữ đứng sau con số."
   perf_speed_title: "Tốc độ: một nghìn ảnh trong chớp mắt"
-  perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong tệp, chứ không đọc cả ảnh: 1.000 ảnh mất 0,12 giây, nhanh gấp tám lần mức ngân sách đặt ra trước khi viết mã nguồn. Đổi một thiết lập thì bản xem trước vẽ lại trong 17 ms, chưa bằng hai lần màn hình làm tươi. Xuất ảnh đạt 18 ảnh mỗi giây ở chất lượng đầy đủ 16 MP. Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư bộ nhớ."
-  perf_memory_title: "Bộ nhớ: 5.035 ảnh vẫn không tăng"
-  perf_memory_text: "Một chuyến đi có thể có hàng nghìn ảnh. Fotollection chỉ giữ vài byte cho mỗi ảnh trong bộ nhớ, ghi ảnh thu nhỏ ra ổ đĩa và xử lý tối đa sáu ảnh cỡ lớn cùng lúc. Với số ảnh gấp 53 lần, bộ nhớ cao nhất chỉ tăng 0,1 GB: 1,35 GB với 95 ảnh, 1,45 GB với 5.035 ảnh, dưới xa mức trần 2 GB."
+  perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong tệp, chứ không đọc cả ảnh: 1.000 ảnh mất 0,12 giây, nhanh gấp tám lần mức ngân sách đặt ra trước khi viết mã nguồn. Đổi một thiết lập thì bản xem trước vẽ lại trong 17 ms, chưa bằng hai lần màn hình làm tươi. Xuất ảnh đạt 18 ảnh mỗi giây ở chất lượng đầy đủ 16 MP. Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư RAM."
+  perf_memory_title: "RAM: 5.035 ảnh vẫn không tăng"
+  perf_memory_text: "Một chuyến đi có thể có hàng nghìn ảnh. Fotollection chỉ giữ vài byte cho mỗi ảnh trong RAM, ghi ảnh thu nhỏ ra ổ đĩa và xử lý tối đa sáu ảnh cỡ lớn cùng lúc. Với số ảnh gấp 53 lần, RAM dùng nhiều nhất chỉ tăng 0,1 GB: 1,35 GB với 95 ảnh, 1,45 GB với 5.035 ảnh, dưới xa mức trần 2 GB."
   perf_print_title: "Chất lượng in: ảnh in giống ảnh gốc"
   perf_print_text: "Ảnh in qua trình chỉnh sửa ảnh trên web thường trông nông màu. Chúng tôi đã đo xem vì sao: trình chỉnh sửa đó bỏ mất hồ sơ màu (ảnh iPhone mất 13 % độ bão hoà màu), thu ảnh xuống 2.000 px rồi để tiệm in phóng to lại (mất 87 % chi tiết nhỏ), và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên hồ sơ màu, xuất ở độ phân giải đầy đủ, 4:4:4, chất lượng 95, và sai lệch màu chỉ 0,19, thấp hơn rất xa mức 1 mà mắt người bắt đầu nhận ra."
   perf_share_title: "Ảnh cho Facebook và Instagram: nhẹ mà vẫn đúng là ảnh của bạn"
