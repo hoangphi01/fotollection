@@ -94,6 +94,17 @@ grep -q '"version"' src-tauri/tauri.conf.json && fail "tauri.conf.json must not 
 # 0.0.1 is the pre-release placeholder; every real version has its CHANGELOG section.
 [ "$version" = "0.0.1" ] || grep -q "^## \[$version\]" CHANGELOG.md || fail "CHANGELOG.md has no section for $version"
 
+# Markdown style, the same rules and version as CI (docs.yml), so a passing check-docs.sh
+# means a green docs workflow. Skipped only where npx is missing.
+echo "• Markdown lint (markdownlint-cli2)"
+if command -v npx >/dev/null 2>&1; then
+  npx -y markdownlint-cli2@0.17.2 "**/*.md" "#node_modules" "#target" >/tmp/check-docs-mdlint.$$ 2>&1 \
+    || { grep -E "^[^ ]+\.md:" /tmp/check-docs-mdlint.$$ | sed 's/^/  ✗ /'; fail "markdownlint found problems"; }
+  rm -f /tmp/check-docs-mdlint.$$
+else
+  echo "  (npx not found: markdownlint skipped)"
+fi
+
 if [ "$failures" -gt 0 ]; then
   echo "check-docs: $failures problem(s) found"
   exit 1

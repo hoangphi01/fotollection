@@ -45,7 +45,7 @@
 scripts/resources.sh &&
 cargo fmt --all --check && cargo clippy --workspace --all-targets -- -D warnings && cargo test --workspace
 (cd ui && npm run typecheck && npm run lint)
-scripts/check-docs.sh && npx markdownlint-cli2 "**/*.md"
+scripts/check-docs.sh   # includes markdownlint, with the same version and rules as CI
 ```
 
 - Chain them with `&&`: commit only when all pass.

@@ -21,7 +21,7 @@ Read RAW through **`fotollection-oscodec`**, as HEIC is:
 - **macOS:** ImageIO develops the RAW. NEF, ARW, CR2 and DNG start like any TIFF, so the file's type identifier (for example `com.sony.arw-raw-image`) is passed as a hint, and the largest image in the file is taken; without the hint ImageIO showed a NEF's 160 × 120 thumbnail and could not open an ARW.
 - **Windows:** WIC with Microsoft's free **Raw Image Extension**. The RAW decoder is asked for directly (`GUID_ContainerFormatRaw`), so the TIFF decoder never takes a TIFF-based RAW. Without the extension, import rejects RAW with `import.raw_codec_missing` and the UI says what to install.
 - **Linux:** no codec; RAW is unsupported.
-- **Recognition:** by magic bytes where the format has its own (RW2 `IIU\0`, ORF `IIRO`, RAF `FUJIFILMCCD-RAW`, CR3 `ftyp` + `crx `, which used to pass as HEIC), and by a TIFF header plus the extension for CR2, NEF, ARW and DNG.
+- **Recognition:** by magic bytes where the format has its own (RW2 `IIU\0`, ORF `IIRO`, RAF `FUJIFILMCCD-RAW`, CR3 an `ftyp` box with the brand `crx`, which used to pass as HEIC), and by a TIFF header plus the extension for CR2, NEF, ARW and DNG.
 
 **Two paths, by cost.** A full develop takes 0.4–2.2 s and up to 1.3 GB of RAM; the preview every RAW carries takes 9–80 ms. So:
 
