@@ -44,6 +44,7 @@ import { formatNumber } from '@/lib/format'
 import { previewUrl, sourceUrl } from '@/lib/photo-url'
 import { CropEditor } from './crop-editor'
 import { PhotoStampControls } from './photo-stamp-controls'
+import { useZoom } from './use-zoom'
 import { ownsArrowKeys } from '@/lib/keyboard'
 import { cn } from '@/lib/utils'
 import { SectionCard } from '@/components/layout/section-card'
@@ -51,6 +52,9 @@ import { PrintAdviceNote } from '@/features/print-advice/print-advice-note'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { verdictOf } from '@/features/print-advice/verdict'
 import { VerdictBadge } from '@/features/print-advice/verdict-badge'
+
+/** The zoom shortcut's modifier as each platform names it. */
+const MOD = navigator.userAgent.includes('Mac') ? '⌘' : 'Ctrl'
 
 type PreviewDialogProps = {
   photos: PhotoSummary[]
@@ -156,6 +160,9 @@ export function PreviewDialog({
   const [loadedSrc, setLoadedSrc] = useState('')
   const geometry = useCropGeometry(photo?.id, revision)
   const [cropping, setCropping] = useState(false)
+  // The stage mounts only when the preview opens, so it is kept in state, not a ref.
+  const [stage, setStage] = useState<HTMLDivElement | null>(null)
+  const zoom = useZoom(stage, `${photo?.id}:${cropping}`)
 
   const go = (delta: number) => {
     setCropping(false)
@@ -171,6 +178,7 @@ export function PreviewDialog({
   const onKeyDown = (event: KeyboardEvent) => {
     // A focused slider or field keeps its own arrow keys (the logo size, the caption…).
     if (cropping || ownsArrowKeys(event.target)) return
+    if (zoom.onKey(event)) return
     if (handleCullKey(event, photo?.id)) event.preventDefault()
     else if (event.key === 'ArrowRight') go(1)
     else if (event.key === 'ArrowLeft') go(-1)
@@ -193,7 +201,8 @@ export function PreviewDialog({
       >
         {/* Stage */}
         <div
-          className="relative flex min-w-0 flex-1 items-center justify-center bg-neutral-950 p-8"
+          ref={setStage}
+          className="relative flex min-w-0 flex-1 items-center justify-center overflow-hidden bg-neutral-950 p-8"
           // Clicking the photo hands the keyboard back to browsing, away from a focused control.
           onPointerDown={() => {
             if (!cropping && ownsArrowKeys(document.activeElement)) contentRef.current?.focus()
@@ -217,10 +226,17 @@ export function PreviewDialog({
                   key={src}
                   src={src}
                   alt={photo.fileName}
+                  draggable={false}
                   onLoad={() => setLoadedSrc(src)}
+                  onPointerDown={zoom.pointer.onPointerDown}
+                  onPointerMove={zoom.pointer.onPointerMove}
+                  onPointerUp={zoom.pointer.onPointerUp}
+                  onDoubleClick={zoom.pointer.onDoubleClick}
+                  style={{ transform: zoom.transform }}
                   className={cn(
                     'max-h-full max-w-full rounded-sm object-contain shadow-2xl transition-opacity duration-200',
                     loadedSrc === src ? 'opacity-100' : 'opacity-0',
+                    zoom.zoomed ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in',
                   )}
                 />
               )}
@@ -300,8 +316,18 @@ export function PreviewDialog({
               >
                 <ChevronRight />
               </Button>
-              <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-xs text-white/80 tabular-nums">
+              <span className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-3 py-1 text-xs text-white/80 tabular-nums">
                 {(index ?? 0) + 1} / {photos.length}
+                {zoom.zoomed && (
+                  <button
+                    type="button"
+                    className="rounded-full bg-white/15 px-2 hover:bg-white/25"
+                    data-hint={t('viewer.zoomReset')}
+                    onClick={zoom.reset}
+                  >
+                    {zoom.percent} %
+                  </button>
+                )}
               </span>
             </>
           )}
@@ -427,6 +453,11 @@ export function PreviewDialog({
           <Separator />
           <p className="px-5 py-3 text-[11px] text-muted-foreground">
             <kbd className="font-mono">←</kbd> <kbd className="font-mono">→</kbd> {t(cropping ? 'viewer.level' : 'viewer.browse')} ·{' '}
+            {!cropping && (
+              <>
+                <kbd className="font-mono">{MOD} + −</kbd> {t('viewer.zoom')} ·{' '}
+              </>
+            )}
             <kbd className="font-mono">Esc</kbd> {t(cropping ? 'viewer.leaveCrop' : 'viewer.close')}
           </p>
         </aside>

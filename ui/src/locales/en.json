@@ -307,7 +307,9 @@
     "rotateLeft": "Rotate left ( [ )",
     "rotateRight": "Rotate right ( ] )",
     "level": "level 1° (⌥ 0.1°)",
-    "leaveCrop": "cancel crop"
+    "leaveCrop": "cancel crop",
+    "zoom": "zoom",
+    "zoomReset": "Back to fit (⌘0)"
   },
   "errors": {
     "internal": "Something went wrong",

@@ -598,6 +598,15 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Together or separately:** when the export covers two folders or more, the export card asks whether they go **together** (the usual date folders) or **separately** (one subfolder per source folder, named after it; two folders with the same name get " (2)").
 - The choice of folders is view state, not saved in the project. Removing a folder shows all photos again, since folder ids are renumbered.
 
+### FR-057 — Zoom in the preview
+
+**P1.** The preview zooms like a photo viewer, to check focus and detail.
+
+- **Trackpad pinch** (sent as Ctrl + wheel by WebKit and WebView2) and **Ctrl/⌘ + / − / 0** zoom about the pointer, from fit up to 800 %; a **double-click** toggles fit and 200 %.
+- Zoomed in, a **drag** or a two-finger scroll moves the photo. The zoom level shows beside the photo counter; clicking it goes back to fit.
+- Another photo, or the crop editor, starts again at fit; ← → still browse.
+- **Next:** past the preview's own pixels (1,600 px), load a full-resolution render of the photo, measured against a new budget before it ships.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

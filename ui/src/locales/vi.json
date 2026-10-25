@@ -293,7 +293,9 @@
     "rotateLeft": "Xoay trái ( [ )",
     "rotateRight": "Xoay phải ( ] )",
     "level": "cân ngang 1° (⌥ 0,1°)",
-    "leaveCrop": "hủy crop"
+    "leaveCrop": "hủy crop",
+    "zoom": "phóng to",
+    "zoomReset": "Về vừa khung (⌘0)"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",

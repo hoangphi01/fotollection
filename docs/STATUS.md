@@ -159,6 +159,7 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 | FR-054 | Open photos with Fotollection | 2 | Not Started | Planned: "Open with" on macOS and Windows opens the photo straight in the preview; needs an ADR, a start-up budget (NFR) and a benchmark |
 | FR-055 | Export from the preview | 1 | Done | Export card in the preview inspector (same `ExportSection` as the panel, one shared job and destination), Export button on the photo; `start_export(filter, only)` |
 | FR-056 | Folders as tabs | 1 | Done | All photos row, click = one folder, select mode / Ctrl-⌘-click = several (`CullFilter.folders`), counts from `list_photos.folders`, groups scoped, export together or separately (`start_export(…, separate)`, `fr_056_*`) |
+| FR-057 | Zoom in the preview | 1 | In Progress | ✓ Pinch / Ctrl-⌘ + − 0 about the pointer, 100–800 %, drag and two-finger pan, double-click 200 %, level badge resets (`use-zoom.ts`). Left: full-resolution render past 1,600 px, with a benchmark |
 | FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print; every editing session adds a journal entry (instax-style) |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
 
