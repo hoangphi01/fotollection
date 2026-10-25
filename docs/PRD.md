@@ -561,7 +561,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P1.** Camera photos are heavy (16–26 MP, 10–20 MB). Uploaded as they are, Facebook shrinks and recompresses them, and photos in Display P3 or Adobe RGB look washed out. A **Share** export makes light files at the size each platform shows best, keeping about 90 % of the original's colour and detail on screen.
 
-- **Export target:** *Print* (the full-quality print export, [FR-008](#fr-008--original-quality-export)) or *Share online*. The choice is remembered (`settings.json` `render.exportTarget`, schema v8).
+- **Export target:** *Print* (the full-quality print export, [FR-008](#fr-008--original-quality-export)) or *Share online*, chosen in the **Print / export size** card together with the size (the print size for prints, the platform for sharing), in the settings panel and in the preview; the export card then only exports. The choice is remembered (`settings.json` `render.exportTarget`, schema v8).
 - **Sizes:** never enlarged, the photo's own aspect ratio kept (no print crop):
   - **Original size:** same width and height, only a lighter file (a 10 MB camera JPEG becomes about 3 MB);
   - **Facebook:** 2048 px on the long edge, the size Facebook shows without resizing;
@@ -583,7 +583,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-055 — Export from the preview
 
-**P1.** Liking a photo in the preview is enough to export it: the preview's inspector has an **Export** card, with the same controls as the export card of the settings panel (Print or Share online and its size, the destination), that exports **only this photo**. An **Export** button on the photo jumps to it.
+**P1.** Liking a photo in the preview is enough to export it: the preview's inspector has an **Export** card, the same as the settings panel's (the destination and the button; Print or Share online is chosen in the Print / export size card above it), that exports **only this photo**. An **Export** button on the photo jumps to it.
 
 - One export job and one destination are shared by the settings panel and the preview: a destination chosen in one is used by the other, and the progress shows in both.
 - `start_export` takes the photo's id; Rust exports only that photo, and an unknown id exports nothing.

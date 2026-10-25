@@ -25,6 +25,7 @@ import { CullControls } from '@/features/culling/cull-controls'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
 import { ExportSection } from '@/features/export/export-section'
+import { ExportTargetPicker } from '@/features/export/export-target-picker'
 import type { ExportApi } from '@/features/export/use-export'
 import { FrameSection } from '@/features/frame/frame-section'
 import type { FontsApi } from '@/features/fonts/use-fonts'
@@ -400,9 +401,14 @@ export function PreviewDialog({
             <Separator />
 
             <Section icon={<Printer className="size-4" />} title={t('viewer.print')}>
-              <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onSettingsChange} advice={advice} />
-              {advice && photo && <PrintAdviceNote advice={advice} fileName={photo.fileName} />}
-              {details && (
+              <ExportTargetPicker settings={settings} onChange={onSettingsChange} />
+              {settings?.exportTarget?.kind !== 'share' && (
+                <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onSettingsChange} advice={advice} />
+              )}
+              {settings?.exportTarget?.kind !== 'share' && advice && photo && (
+                <PrintAdviceNote advice={advice} fileName={photo.fileName} />
+              )}
+              {settings?.exportTarget?.kind !== 'share' && details && (
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-xs text-muted-foreground">{t('viewer.resolution')}</span>
                   <span className="flex items-center gap-1.5 text-xs tabular-nums">
@@ -442,8 +448,6 @@ export function PreviewDialog({
                   photoCount={1}
                   filter={filter}
                   only={photo.id}
-                  settings={settings}
-                  onChange={onSettingsChange}
                 />
               </Section>
               </div>

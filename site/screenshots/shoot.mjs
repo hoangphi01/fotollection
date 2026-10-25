@@ -60,6 +60,8 @@ function bridge({ fixtures, scenario, language, os }) {
     get_crop_geometry: (a) => byId(common.get_crop_geometry, a),
     print_advice: (a) => byId(common.print_advice ?? {}, a),
     get_settings: () => look.get_settings,
+    // Echo a change, as Rust does, so a click in a check screenshot shows its result.
+    set_settings: (a) => ({ settings: a.settings, revision: (look.get_settings.revision ?? 0) + 1 }),
     get_frame_config: () => look.get_frame_config,
     get_photo_stamp: (a) => byId(look.get_photo_stamp, a),
     history_state: () => ({ canUndo: true, canRedo: false }),

@@ -17,6 +17,7 @@ import { SectionCard } from '@/components/layout/section-card'
 import { CommitInput } from '@/components/forms/commit-input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ExportSection } from '@/features/export/export-section'
+import { ExportTargetPicker } from '@/features/export/export-target-picker'
 import type { ExportApi } from '@/features/export/use-export'
 import { FrameSection } from '@/features/frame/frame-section'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
@@ -120,9 +121,15 @@ export function SettingsPanel({
             </Label>
           }
         >
-          <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onChange} advice={advice} />
-          {advice && photo && <PrintAdviceNote advice={advice} fileName={photo.fileName} />}
-          <p className="text-xs text-muted-foreground">{t('settings.printSizeHint')}</p>
+          {/* Print or share is chosen with the size, so the export card only exports (FR-053). */}
+          <ExportTargetPicker settings={settings} onChange={onChange} />
+          {settings?.exportTarget?.kind !== 'share' && (
+            <>
+              <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onChange} advice={advice} />
+              {advice && photo && <PrintAdviceNote advice={advice} fileName={photo.fileName} />}
+              <p className="text-xs text-muted-foreground">{t('settings.printSizeHint')}</p>
+            </>
+          )}
         </SectionCard>
 
         <SectionCard
@@ -205,7 +212,7 @@ export function SettingsPanel({
 
       <Separator />
       <div className="space-y-3 p-4">
-        <ExportSection exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} settings={settings} onChange={onChange} />
+        <ExportSection exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} />
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{t('settings.footer')}</span>
           {appInfo && <VersionHistory version={appInfo.appVersion} />}

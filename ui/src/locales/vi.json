@@ -105,7 +105,7 @@
   "settings": {
     "title": "Thiết lập in",
     "language": "Ngôn ngữ",
-    "printSize": "Khổ in",
+    "printSize": "Khổ in / xuất ảnh",
     "printSizeHint": "Mặc định crop ở giữa. Chỉnh từng ảnh bằng Crop trong preview.",
     "dateStamp": "Dấu ngày",
     "dateStampFont": "Font dấu ngày",
@@ -278,7 +278,7 @@
     "location": "Vị trí",
     "noGps": "Ảnh này không có GPS",
     "placesSoon": "Tên địa điểm sẽ có cùng FR-005",
-    "print": "In",
+    "print": "In / xuất ảnh",
     "resolution": "Độ phân giải",
     "cropCustom": "Tùy chỉnh · zoom {{zoom}}×",
     "cropCentred": "Ở giữa",

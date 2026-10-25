@@ -6,9 +6,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import type { CullFilter, RenderSettings } from '@/ipc/bindings'
+import type { CullFilter } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
-import { ExportTargetPicker } from './export-target-picker'
 import type { ExportApi } from './use-export'
 
 type ExportSectionProps = {
@@ -20,8 +19,6 @@ type ExportSectionProps = {
   only?: number
   /** Source folders in the export (FR-056); from two on, they can go out together or apart. */
   folderCount?: number
-  settings: RenderSettings | null
-  onChange: (change: (current: RenderSettings) => RenderSettings) => void
 }
 
 function folderName(path: string): string {
@@ -35,8 +32,6 @@ export function ExportSection({
   filter,
   only,
   folderCount = 1,
-  settings,
-  onChange,
 }: ExportSectionProps) {
   const { t } = useTranslation()
   const { state, destination, chooseDestination, exportPhotos, cancel, dismiss } = exporter
@@ -104,8 +99,6 @@ export function ExportSection({
           <AlertDescription>{state.message}</AlertDescription>
         </Alert>
       )}
-
-      <ExportTargetPicker settings={settings} onChange={onChange} disabled={running} />
 
       {canSplit && (
         <div className="space-y-1">

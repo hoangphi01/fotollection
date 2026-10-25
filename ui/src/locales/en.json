@@ -113,7 +113,7 @@
   "settings": {
     "title": "Print settings",
     "language": "Language",
-    "printSize": "Print size",
+    "printSize": "Print / export size",
     "printSizeHint": "Centred by default. Adjust per photo with Crop in the preview.",
     "dateStamp": "Date stamp",
     "dateStampFont": "Date stamp font",
@@ -292,7 +292,7 @@
     "location": "Location",
     "noGps": "No GPS in this photo",
     "placesSoon": "Place names arrive with FR-005",
-    "print": "Print",
+    "print": "Print / export",
     "resolution": "Resolution",
     "cropCustom": "Custom · zoom {{zoom}}×",
     "cropCentred": "Centred",
