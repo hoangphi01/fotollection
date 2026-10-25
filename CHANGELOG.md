@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-25
+
 ### Highlights
 
 - New: a print basket and a "set aside" area: ↑ and ↓ in the preview, or Select in the gallery
