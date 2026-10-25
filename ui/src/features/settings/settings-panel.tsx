@@ -93,13 +93,13 @@ export function SettingsPanel({
         <SectionCard
           icon={<Languages />}
           title={
-            <Label htmlFor="ui-language" className="text-sm font-semibold">
+            <Label htmlFor="ui-language" className="text-sm font-semibold whitespace-nowrap">
               {t('settings.language')}
             </Label>
           }
           action={
           <Select value={language} onValueChange={(v) => void changeLanguage(v as Language)}>
-            <SelectTrigger id="ui-language" size="sm" className="w-32">
+            <SelectTrigger id="ui-language" size="sm" className="w-auto gap-1 px-2 text-xs">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

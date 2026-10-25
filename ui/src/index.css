@@ -140,4 +140,23 @@
   html {
     @apply font-sans;
     }
+  /* Thin scroll bars in the theme colour, like the website's (STYLE_RULE §4). WKWebView
+     and WebView2 both read these; the track stays clear so card outlines are not cut. */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    }
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+    }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklch, var(--primary) 70%, transparent);
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+    }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary);
+    }
 }
