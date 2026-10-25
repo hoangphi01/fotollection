@@ -10,6 +10,7 @@ en:
   nav_quality: Quality
   nav_download: Download
   nav_coffee: Coffee
+  to_top: Back to top
   star: Star on GitHub
   badge: Free · Open source · No account
   hero_title_1: Thousands of photos, only looked at
@@ -122,6 +123,7 @@ vi:
   nav_quality: Chất lượng
   nav_download: Tải về
   nav_coffee: Cà phê
+  to_top: Lên đầu trang
   star: Star trên GitHub
   badge: Miễn phí · Mã nguồn mở · Không cần tài khoản
   hero_title_1: Chụp hàng nghìn ảnh, chỉ xem lại khi

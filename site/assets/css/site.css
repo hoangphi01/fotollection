@@ -151,6 +151,9 @@ p { margin: 0; }
 .pill-primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
 .pill-primary:hover { border-color: var(--brand); filter: brightness(1.08); }
 .star .icon, .coffee .icon { color: var(--accent); }
+/* Back to top: the same round button, fixed in the corner. */
+.to-top { position: fixed; right: 16px; bottom: 16px; z-index: 20; width: 44px; height: 44px; padding: 0; justify-content: center; box-shadow: var(--shadow); }
+.to-top .icon { color: var(--brand); }
 .star-count { padding-left: 8px; border-left: 1px solid var(--line); color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
 /* Hero */
