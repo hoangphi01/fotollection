@@ -85,6 +85,18 @@ The open Phase 1 work is split into three stages, from easiest to hardest. Each 
 | ✓ Best-shot suggestions: grouping, sharpness/shake/exposure/noise metrics, face and eye models, explained "Best of N", Keep best | FR-041, NFR-014 | Done: YuNet + FaceMesh on `tract-onnx` ([ADR-0018](adr/0018-face-models-and-runtime.md)); grouping on a layout and colour signature, scored on hand-labelled photos ([ADR-0019](adr/0019-grouping-by-visual-signature.md)) |
 | ✓ HEIC/HEIF input (iPhone) | FR-001 | Done through the OS codecs, no LGPL library ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
 
+### Release plan (2026-10-25)
+
+After v0.3.1, each release has one theme. The order puts the biggest everyday win first: opening photos in Fotollection makes it a daily tool, not only a print tool.
+
+| Release | Theme | Requirements | First, measure |
+|---------|-------|--------------|----------------|
+| v0.4.0 | Sharing and folders | FR-053, FR-055, FR-056, FR-057 (zoom on the preview), FR-040 (instax-style Fit, drag to reframe) | Done: RESULT §10 |
+| v0.5.0 | Photo viewer | FR-054 ("Open with"), FR-057 (full-resolution zoom) | Cold start (NFR-010), a new "open to first photo" budget, the memory and time of a 26 MP render |
+| v0.6.0 | Places | FR-032, FR-005, FR-030, FR-031 | Lookup speed with manual places, a mixed camera + phone folder |
+| v0.7.0 | Normal mode | FR-048, NFR-015, FR-046, FR-050 | Normal against Professional export |
+| Later | Looks, presets, trips, journal | FR-039, FR-047, FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
+
 ## Phase 2 — Smart features
 
 **Goal:** the app organizes photos and avoids bad crops automatically.

@@ -1,13 +1,13 @@
 # Status — Fotollection
 
-> **Last updated:** 2026-10-24
+> **Last updated:** 2026-10-25
 >
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 1 — MVP, Stages 1–3 done, v0.2.0 released
+## Current phase: Phase 1 — MVP, v0.3.1 released, v0.4.0 ready
 
-**Where we are (2026-10-24).** The app works end to end for **JPEG, PNG and HEIC**:
+**Where we are (2026-10-25).** The app works end to end for **JPEG, PNG and HEIC**: open folders as tabs (FR-056), cull with stars, flags, filters and best-shot suggestions, preview with crop, drag-to-reframe, zoom (FR-057), straightening, the film-style date stamp and the "Shot on" frame (Crop to fill, or Fit whole photo framed like an instax print), then export for print at original quality or **for social media** in sRGB with safe EXIF (FR-053), the whole set or one photo from the preview (FR-055). Releases v0.1.0 to v0.3.1 are published; everything since is on `main` for **v0.4.0**.
 
 1. Open or drop a folder; refresh it to pick up new photos.
 2. Cull with stars, flags and filters, helped by best-shot suggestions: groups of similar shots, the best of each with reasons, and Keep best.
@@ -59,28 +59,16 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 - Best-shot flow: Find best shots → Groups → Compare → Keep best / Keep this one → undo, in English and Vietnamese, and a narrow window.
 - Double-clicking a `.fotollection` file. This needs a release build (`npm run build`), because file associations are not active in `npm run dev`.
 
-### Next, in order
+### Next, in order (release plan, 2026-10-25)
 
-1. **Pick up here (2026-10-25):**
-   - smoke-test the installers on macOS (Open Anyway) and **Windows, where the app-drawn title bar (FR-052) has not yet been tried on a real machine**: drag, double-click to maximize, minimize / maximize / close, snapping;
-   - in the app: the theme switch (System / Light / Dark), removing a folder, the preview's date stamp fields and print badges;
-   - apply to SignPath Foundation for Windows signing; add a Ko-fi or GitHub Sponsors link next to the VietQR code once the account exists;
-   - decide on the trip-by-trip Photos-library flow ([ROADMAP ideas](ROADMAP.md#ideas-backlog-not-yet-requirements)).
-2. **Stage C, manual places and renaming (FR-032, FR-005):** search a place, set it for one or many photos, rename a place everywhere; project schema v6. Ships as `v0.4.0` (`v0.3.0` carries the logo size slider and the card-style sections).
-3. **Stage D, place suggestions from phone photos (FR-031):** borrow GPS from photos taken at the same time and place, with confidence levels, measured on a mixed camera + phone folder, with a new ADR.
-4. **Normal mode (FR-048, NFR-015):** open → keep/drop → export at 300 DPI and q90, measured against Professional.
-5. **Loose ends:**
-   - FR-022 filters by date, camera, GPS and DPI, and multi-select;
-   - `SubSecTimeOriginal` for bursts within one second; HEIC thumbnails through ImageIO;
-   - the whole-app memory run with 5,035 photos (NFR-004) and cold-start time (NFR-010);
-   - Windows code signing through SignPath Foundation ([ADR-0009](adr/0009-unsigned-distribution.md));
-   - German UI later (FR-020).
-6. **Phase 2 queue:**
-   - swipe culling (FR-046);
-   - Photo Style looks (FR-039) and film looks (FR-047);
-   - print presets (FR-038);
-   - trip journal with instax-style entries from each editing session (FR-049);
-   - print basket (FR-050) and landmark recognition (FR-051).
+One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
+
+1. **v0.4.0 "Sharing and folders":** done on `main` (FR-053 measured, FR-055, FR-056, FR-057 first part, Fit framed like instax, drag to reframe, Noritsu logo). Left: check by hand (export one photo from the preview, export two folders together and separately, trackpad zoom), refresh the website screenshots, then `scripts/release.sh 0.4.0`.
+2. **v0.5.0 "Photo viewer" (FR-054, FR-057):** measure cold start (NFR-010) and a new "open to first photo" budget first; full-resolution zoom past 1,600 px, measured before it ships; then "Open with" on macOS and Windows, with an ADR.
+3. **v0.6.0 "Places" (FR-032, FR-005, FR-030, FR-031):** search and set a place for one or many photos, rename a place everywhere, camera clock offset, borrow GPS from phone photos with confidence levels.
+4. **v0.7.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
+5. **Later (Phase 2):** Photo Style and film looks (FR-039, FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
+6. **Alongside, never blocking a release:** the Windows title bar on a real machine (FR-052); SignPath signing for Windows; a Ko-fi link once the account exists; NFR-008 by publishing one `.dmg` per architecture; FR-022 filters by date, camera, GPS and DPI.
 
 ## Phase 0 — Foundation
 
@@ -97,7 +85,7 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 | Benchmark harness + `bench` corpus | In Progress | `examples/measure_folder.rs` on a real folder, plus `bench/run.sh`, the Rust vs Chromium comparison (OPTIMIZATION §2.1). `criterion` benches pending |
 | Codec / EXIF crate spikes | In Progress | Pure-Rust codecs adopted for now ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). turbojpeg comparison pending |
 | libheif static build on Windows | Withdrawn | HEIC uses the OS codecs instead ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
-| Release workflow (unsigned) | Not Started | |
+| Release workflow (unsigned) | Done | `scripts/release.sh` + `release.yml` ([ADR-0021](adr/0021-versioning-and-automated-releases.md)) |
 | Benchmark budget gate (`bench/budgets.toml`) | Not Started | Needs harness |
 | Enforce "Done FR has test" in `check-docs.sh` | Not Started | Needs code |
 
@@ -114,7 +102,7 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 | FR-007 | Live preview | 1 | In Progress | Preview dialog with inspector (capture, camera, image, GPS, print DPI, stamp controls). Rust-rendered, warm p95 18 ms (p50 17 ms) |
 | FR-008 | Original-quality export | 1 | In Progress | Full resolution, q95 4:4:4, ICC copied. Lossless crop-only path pending |
 | FR-009 | Export by date | 1 | Done | `YYYY-MM-DD/` folders, never overwrites (`_1`, `_2`…). `fr_009_*` passes |
-| FR-010 | Metadata privacy on export | 1 | In Progress | No EXIF written, so GPS is always stripped. Keep-metadata options pending |
+| FR-010 | Metadata privacy on export | 1 | In Progress | Print exports write no EXIF; share exports write an allowlisted EXIF block (camera, lens, exposure, date, `Software`), never GPS, read back in tests (`fr_053_*`). Keep-metadata options for prints pending |
 | FR-011 | Batch progress, cancel and recovery | 1 | Done | Progress events, cancel removes partials, per-photo failures. `fr_011_*` pass |
 | FR-012 | Trip auto-grouping | 2 | Not Started | |
 | FR-013 | Face-aware smart crop | 2 | Not Started | |
@@ -131,7 +119,7 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 | FR-024 | Copies and order summary | 2 | Not Started | |
 | FR-025 | Mixed print sizes per order | 1 | Not Started | Builds on `PrintSize` |
 | FR-026 | Resolution warning | 1 | In Progress | Effective DPI + band shown in the inspector. Grid badge and pre-export summary pending. ✓ Size advice under the print-size picker and green/yellow/red badges per size (`print_advice.rs`, `fr_026_*`) |
-| FR-027 | sRGB conversion for labs | 1 | Not Started | `lcms2` |
+| FR-027 | sRGB conversion for labs | 1 | In Progress | ✓ Share exports convert to sRGB with `qcms` (perceptual, [ADR-0022](adr/0022-srgb-and-exif-for-share-exports.md)). Pending: the optional conversion for prints |
 | FR-028 | Safe area and borders | 1 | Not Started | |
 | FR-029 | Output sharpening | 3 | Not Started | Needs real print tests |
 | FR-030 | Camera clock offset | 1 | Not Started | |
@@ -174,7 +162,7 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 | NFR-005 | UI responsiveness | < 100 ms | — | Not Started |
 | NFR-006 | Offline and zero telemetry | 0 requests | — | Not Started |
 | NFR-007 | Platforms | macOS 11+, Win 10/11 | — | Not Started |
-| NFR-008 | Install size | ≤ 25 MB | — | Not Started |
+| NFR-008 | Install size | ≤ 25 MB | v0.3.0: `-setup.exe` 13.5 MB, `.msi` 18.5 MB ✓; universal `.dmg` 37.7 MB ✗ (two architectures in one file) | In Progress |
 | NFR-009 | Colour fidelity | ICC kept, Δ ≤ 1 | ICC kept 25/25, ΔE2000 mean 0.19 (sRGB) / 0.31 (Display P3), detail and saturation kept; web-editor export for reference 1.39 / 2.15 ([RESULT.md §9](RESULT.md#9-print-quality)) | In Progress |
 | NFR-010 | Cold start | < 1.5 s | — | Not Started |
 | NFR-011 | Robustness | 0 crashes | — | Not Started |
