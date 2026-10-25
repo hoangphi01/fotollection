@@ -1,6 +1,6 @@
 # Website
 
-The project's website, <https://hoangphi01.github.io/fotollection/>, in English (`/`) and Vietnamese (`/vi/`). It is built by GitHub Pages' own Jekyll ([`.github/workflows/pages.yml`](../.github/workflows/pages.yml)) whenever `site/` changes on `main`, and after every release, so the download buttons always point at the latest installers ([docs/RELEASE.md](../docs/RELEASE.md)).
+The project's website, <https://fotollection.org/>, in English (`/`) and Vietnamese (`/vi/`). It is built by GitHub Pages' own Jekyll ([`.github/workflows/pages.yml`](../.github/workflows/pages.yml)) whenever `site/` changes on `main`, and after every release, so the download buttons always point at the latest installers ([docs/RELEASE.md](../docs/RELEASE.md)).
 
 | Path | What it holds |
 |------|---------------|
@@ -19,7 +19,7 @@ The project's website, <https://hoangphi01.github.io/fotollection/>, in English 
 
 **Rules.** The only third-party script is Google Analytics (`google_analytics` in `_config.yml`, production builds only), the owner's choice for counting visits; the footer says so, and the app itself has no analytics. No other third-party scripts, fonts or trackers. Text is plain Liquid output, never raw HTML from data. A new string is added to both languages.
 
-**Moving the address** (for example to `fotollection.github.io`, which needs a GitHub organisation named `fotollection`): change `url` and `baseurl` in `_config.yml`.
+**Address.** The domain `fotollection.org` is registered at Cloudflare (2026-10-25). Its DNS points the apex at GitHub Pages (A `185.199.108–111.153`, AAAA `2606:50c0:8000–8003::153`) and `www` at `hoangphi01.github.io`, all *DNS only* so GitHub can issue the HTTPS certificate. The custom domain is set in the repository's Pages settings (the site deploys through Actions, so no `CNAME` file is used), and the old `hoangphi01.github.io/fotollection/` address redirects to it. Moving it again means changing `url` and `baseurl` in `_config.yml` and the Pages setting.
 
 ## Preview locally
 
@@ -30,4 +30,4 @@ docker run --rm --platform linux/amd64 -v "$PWD/site":/work/site:ro -v /tmp/site
   -e GITHUB_API_URL=https://api.github.com ghcr.io/actions/jekyll-build-pages:v1.0.13
 ```
 
-The output in `/tmp/site-out` expects to be served under `/fotollection/`.
+The output in `/tmp/site-out` is served at the root of the domain.

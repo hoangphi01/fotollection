@@ -7,7 +7,7 @@
 
 by [@hoangphi01](https://github.com/hoangphi01)
 
-[EN](README.md) · **Tiếng Việt** · [Trang giới thiệu](https://hoangphi01.github.io/fotollection/vi/)
+[EN](README.md) · **Tiếng Việt** · [Trang giới thiệu](https://fotollection.org/vi/)
 
 **Chuẩn bị ảnh để in: nhanh, riêng tư, chạy offline trên macOS và Windows.**
 
@@ -195,7 +195,7 @@ Phân tích vẫn nằm trong ngân sách: 17,4 ms mỗi ảnh, 27,6 ms khi có 
 
 ## Tải về
 
-Tải phiên bản mới nhất ở [trang giới thiệu](https://hoangphi01.github.io/fotollection/vi/) hoặc trang [Releases](https://github.com/hoangphi01/fotollection/releases/latest): file `.dmg` cho macOS 11+ (Apple Silicon và Intel), file `-setup.exe` hoặc `.msi` cho Windows 10/11. Số phiên bản theo [Semantic Versioning](docs/RELEASE.md#1-versioning); các bản 0.x là bản xem trước cho tới khi xong MVP. App không tự kiểm tra cập nhật, nên hãy xem ở đây khi muốn bản mới; cài đè lên bản cũ vẫn giữ nguyên thiết lập và dự án của bạn.
+Tải phiên bản mới nhất ở [trang giới thiệu](https://fotollection.org/vi/) hoặc trang [Releases](https://github.com/hoangphi01/fotollection/releases/latest): file `.dmg` cho macOS 11+ (Apple Silicon và Intel), file `-setup.exe` hoặc `.msi` cho Windows 10/11. Số phiên bản theo [Semantic Versioning](docs/RELEASE.md#1-versioning); các bản 0.x là bản xem trước cho tới khi xong MVP. App không tự kiểm tra cập nhật, nên hãy xem ở đây khi muốn bản mới; cài đè lên bản cũ vẫn giữ nguyên thiết lập và dự án của bạn.
 
 > [!IMPORTANT]
 > Các bản build hiện **chưa được ký số** ([ADR-0009](docs/adr/0009-unsigned-distribution.md)). Lần mở đầu tiên:

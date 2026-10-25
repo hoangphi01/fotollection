@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # The website (site/README.md), built by .github/workflows/pages.yml with GitHub Pages' Jekyll.
-# Moving to another address (for example fotollection.github.io) means changing url and baseurl.
+# Served at the custom domain fotollection.org (Cloudflare DNS, set in the repository's
+# Pages settings; site/README.md). Moving it means changing url and baseurl.
 title: Fotollection
-url: https://hoangphi01.github.io
-baseurl: /fotollection
+url: https://fotollection.org
+baseurl: ""
 repository: hoangphi01/fotollection
 repo_url: https://github.com/hoangphi01/fotollection
 author: hoangphi01

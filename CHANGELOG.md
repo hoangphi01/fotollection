@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- **Website:** the site moves to its own address, <https://fotollection.org/>; the old `hoangphi01.github.io/fotollection/` links redirect to it.
+
 ## [0.4.0] - 2026-10-25
 
 ### Highlights
