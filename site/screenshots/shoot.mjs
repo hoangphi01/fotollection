@@ -35,6 +35,16 @@ function bridge({ fixtures, scenario, language, os }) {
   const { common, scenarios } = fixtures
   const look = scenarios[scenario]
   const byId = (table, args) => table[String(args?.id)]
+  let current = look.get_settings
+  // Demo culling state for the print basket (FR-050), by position in the trip.
+  const withQueues = (photos) => photos.map((p, i) => ({ ...p, queue: [1, 4, 6].includes(i) ? 'print' : [9, 13].includes(i) ? 'aside' : null }))
+  const inView = (photos, filter) => {
+    const view = filter?.queue ?? 'gallery'
+    const scope = filter?.folders ?? []
+    return photos
+      .filter((p) => (view === 'gallery' ? p.queue !== 'aside' : p.queue === view))
+      .filter((p) => !scope.length || scope.includes(p.folderId))
+  }
   const answers = {
     app_info: () => ({ ...common.app_info, ...(os ? { os } : {}) }),
     list_print_sizes: () => common.list_print_sizes,
@@ -42,7 +52,8 @@ function bridge({ fixtures, scenario, language, os }) {
     get_ui_settings: () => ({ ...common.get_ui_settings, language }),
     get_document: () => ({ ...common.get_document, edited: false, name: 'Trip 2018' }),
     list_groups: () => common.list_groups,
-    // Dumps recorded before FR-056 have no folder list: count it from the photos.
+    // Dumps recorded before FR-056 have no folder list: count it from the photos. A few
+    // photos sit in the print basket and set aside (FR-050), as after a culling session.
     list_photos: (a) => {
       const list = common.list_photos
       const folders = list.folders ?? Object.values(
@@ -52,23 +63,32 @@ function bridge({ fixtures, scenario, language, os }) {
           return acc
         }, {}),
       )
-      const scope = a?.filter?.folders ?? []
-      const photos = scope.length ? list.photos.filter((p) => scope.includes(p.folderId)) : list.photos
-      return { ...list, photos, folders }
+      const all = withQueues(list.photos)
+      return {
+        ...list,
+        photos: inView(all, a?.filter),
+        folders,
+        printCount: all.filter((p) => p.queue === 'print').length,
+        asideCount: all.filter((p) => p.queue === 'aside').length,
+      }
     },
     photo_details: (a) => byId(common.photo_details, a),
     get_crop_geometry: (a) => byId(common.get_crop_geometry, a),
     print_advice: (a) => byId(common.print_advice ?? {}, a),
-    get_settings: () => look.get_settings,
-    // Echo a change, as Rust does, so a click in a check screenshot shows its result.
-    set_settings: (a) => ({ settings: a.settings, revision: (look.get_settings.revision ?? 0) + 1 }),
+    get_settings: () => current,
+    // Keep a change, as Rust does, so a click in a screenshot shows its result.
+    set_settings: (a) => (current = { settings: a.settings, revision: (current.revision ?? 0) + 1 }),
     get_frame_config: () => look.get_frame_config,
     get_photo_stamp: (a) => byId(look.get_photo_stamp, a),
     history_state: () => ({ canUndo: true, canRedo: false }),
-    // The export card's size estimate (FR-053), from the demo photos' real sizes.
+    // The export card's size estimate (FR-053): the demo photos' real sizes and the ratios
+    // measured in docs/RESULT.md §10 for the selected target.
     estimate_export: (a) => {
-      const photos = a?.only != null ? 1 : common.list_photos.photos.length
-      return { photos, sourceBytes: photos * 17.0e6, estimatedBytes: photos * 6.1e6, sampled: Math.min(4, photos) }
+      const scope = a?.only != null ? withQueues(common.list_photos.photos).filter((p) => p.id === a.only) : inView(withQueues(common.list_photos.photos), a?.filter)
+      const source = scope.reduce((n, p) => n + (common.photo_details[String(p.id)]?.fileBytes ?? 3e6), 0)
+      const target = current.settings?.exportTarget
+      const ratio = target?.kind === 'share' ? { original: 0.46, facebook: 0.17, instagram: 0.08, custom: 0.2 }[target.preset?.kind] ?? 0.17 : 1
+      return { photos: scope.length, sourceBytes: source, estimatedBytes: Math.round(source * ratio), sampled: Math.min(4, scope.length) }
     },
   }
   let next = 1
@@ -90,11 +110,11 @@ function bridge({ fixtures, scenario, language, os }) {
 const browser = await chromium.launch()
 const shots = []
 
-async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900 }) {
+async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2 }) {
   // DEMO_WIDTH=1000 checks narrow windows (the screenshots for the site stay at 1440).
   const context = await browser.newContext({
     viewport: { width, height },
-    deviceScaleFactor: 2,
+    deviceScaleFactor: scale,
     colorScheme: theme,
     // WebView2-style image URLs (http://fotothumb.localhost), which a test browser can serve.
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36',
@@ -136,6 +156,13 @@ async function settle(page) {
   await page.waitForTimeout(400)
   await page.waitForFunction(() => [...document.images].every((i) => i.complete && i.naturalWidth > 0))
   await page.waitForTimeout(300)
+}
+
+/** A zoomed-in part of the window, 16:10 like the full screenshots. */
+async function zoomed(page, name, clip) {
+  const file = path.join(outDir, `${name}.png`)
+  await page.screenshot({ path: file, clip })
+  shots.push(file)
 }
 
 async function save(page, name) {
@@ -226,6 +253,41 @@ for (const language of ['en', 'vi']) {
     await page.waitForSelector('[role="dialog"]')
     await settle(page)
     await save(page, `groups-${suffix}`)
+    await context.close()
+
+    // 6. The print basket (FR-050, FR-059), shown zoomed in at three times the resolution.
+    ;({ context, page } = await open({ scenario: 'frame', language, theme, scale: 3 }))
+    const tiles = page.locator('img[src*="/thumb/"]')
+    // 6a. Select mode: ticks, the action bar, the basket and set-aside rows.
+    await page.getByRole('button', { name: /^(Select|Chọn)$/ }).click()
+    await tiles.nth(2).click()
+    await tiles.nth(3).click()
+    await tiles.nth(5).click()
+    await page.mouse.move(5, 890)
+    await settle(page)
+    await zoomed(page, `select-${suffix}`, { x: 0, y: 0, width: 1040, height: 650 })
+    // 6b. The preview of a photo in the basket: ↑ keeps it, ↓ sets it aside.
+    await page.getByRole('button', { name: /^(Done|Xong)$/ }).click()
+    await tiles.nth(1).dblclick()
+    await page.waitForSelector('[role="dialog"]')
+    await settle(page)
+    await zoomed(page, `swipe-${suffix}`, { x: 40, y: 45, width: 960, height: 600 })
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(300)
+    await context.close()
+    // 6c. The size estimate, sharing for Facebook: framed on the estimate and the button.
+    ;({ context, page } = await open({ scenario: 'frame', language, theme, scale: 5 }))
+    await page.getByRole('radio', { name: /^(Share online|Mạng xã hội)$/ }).first().click()
+    await page.waitForTimeout(900)
+    const note = await page.getByText(/^(Estimated|Ước tính):/).boundingBox()
+    const button = await page.getByRole('button', { name: /^(Export|Xuất) \d+/ }).boundingBox()
+    if (note && button) {
+      const top = note.y - 56
+      const height = button.y + button.height + 40 - top
+      const width = height * 1.6
+      const x = Math.min(1440 - width, note.x + note.width / 2 - width / 2)
+      await zoomed(page, `estimate-${suffix}`, { x, y: top, width, height })
+    }
     await context.close()
   }
 }

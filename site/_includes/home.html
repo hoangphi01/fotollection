@@ -101,6 +101,34 @@
   </div>
 </section>
 
+<section class="section" id="basket">
+  <div class="wrap">
+    <h2>{{ t.basket_title }}</h2>
+    <p class="lead narrow">{{ t.basket_lead }}</p>
+  </div>
+  <div class="wrap showcase">
+    {%- assign rows = "swipe,select,estimate" | split: "," -%}
+    {%- for r in rows -%}
+    {%- capture title_key %}{{ r }}_title{% endcapture -%}
+    {%- capture text_key %}{{ r }}_text{% endcapture -%}
+    {%- capture show_key %}show_{{ r }}{% endcapture %}
+    <div class="showcase-row{% cycle '', ' flip' %}">
+      <figure class="shot{% if r == 'swipe' %} keys{% endif %}">
+        {% include shot.html name=r alt=t[show_key] %}
+        {%- if r == 'swipe' %}
+        <p class="key-chips" aria-hidden="true"><span><kbd>↑</kbd> {{ t.key_up }}</span><span><kbd>↓</kbd> {{ t.key_down }}</span></p>
+        {%- endif %}
+      </figure>
+      <div class="showcase-text">
+        <h3>{{ t[title_key] }}</h3>
+        <p>{{ t[text_key] }}</p>
+        <p class="small muted">{{ t[show_key] }}</p>
+      </div>
+    </div>
+    {%- endfor %}
+  </div>
+</section>
+
 <section class="section" id="kiosk">
   <div class="wrap kiosk-grid">
     <div>

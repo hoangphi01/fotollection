@@ -214,6 +214,11 @@ p { margin: 0; }
 .chart { margin: 0; padding: 14px; }
 .chart img { width: 100%; border-radius: 8px; }
 .chart figcaption { margin-top: 10px; font-size: 0.92rem; color: var(--ink-2); }
+/* Print basket: the two keys on the preview screenshot, like swipe gestures. */
+.shot.keys { position: relative; }
+.key-chips { position: absolute; right: 14px; bottom: 14px; margin: 0; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.key-chips span { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 92%, transparent); box-shadow: var(--shadow); font-weight: 650; font-size: 0.92rem; }
+.key-chips kbd { font: 700 1rem/1 ui-monospace, monospace; color: var(--brand); }
 /* Performance page: a heading, then one section per measurement and the explanations. */
 .kicker { margin: 0 0 10px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
 .perf-head { padding-bottom: 24px; }
