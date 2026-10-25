@@ -9,7 +9,6 @@ import {
   ImageIcon,
   LoaderCircle,
   MapPin,
-  Printer,
   RotateCcw,
   RotateCw,
   Star,
@@ -364,62 +363,9 @@ export function PreviewDialog({
           <Separator />
 
           <div className="flex-1 space-y-5 overflow-y-auto p-5">
-            {photo && (
-              <Section icon={<Star className="size-4" />} title={t('viewer.ratingFlag')}>
-                <CullControls photo={photo} />
-              </Section>
-            )}
-
-            <Section icon={<CalendarDays className="size-4" />} title={t('viewer.captured')}>
-              <p>{photo ? formatCaptureLong(photo.capture) : '—'}</p>
-              {photo?.dateFromFile ? (
-                <Badge variant="outline" className="text-amber-600 dark:text-amber-400">
-                  {t('viewer.noExifDate')}
-                </Badge>
-              ) : (
-                <Badge variant="outline">{t('viewer.fromExif')}</Badge>
-              )}
-            </Section>
-
-            <Section icon={<Camera className="size-4" />} title={t('viewer.camera')}>
-              <p>{photo?.camera ?? t('viewer.unknownCamera')}</p>
-            </Section>
-
-            {photo && (
-              <PhotoStampControls photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
-            )}
-
-            {/* Same card as the print settings panel, plus this camera's profile (FR-040). */}
-            <FrameSection frame={frame} fonts={fonts} compact>
-              <CameraProfileEditor frame={frame} details={details} />
-            </FrameSection>
-
-            <Section icon={<ImageIcon className="size-4" />} title={t('viewer.image')}>
-              {details ? (
-                <p className="tabular-nums">
-                  {details.width} × {details.height} px ·{' '}
-                  {formatNumber((details.width * details.height) / 1e6, 1, 1)} MP ·{' '}
-                  {formatBytes(details.fileBytes ?? 0)}
-                </p>
-              ) : (
-                <p className="text-muted-foreground">{t('common.loading')}</p>
-              )}
-            </Section>
-
-            <Section icon={<MapPin className="size-4" />} title={t('viewer.location')}>
-              {details?.gps && details.gps.lat !== null && details.gps.lon !== null ? (
-                <p className="font-mono text-xs">
-                  {details.gps.lat.toFixed(5)}, {details.gps.lon.toFixed(5)}
-                </p>
-              ) : (
-                <p className="text-muted-foreground">{t('viewer.noGps')}</p>
-              )}
-              <p className="text-xs text-muted-foreground">{t('viewer.placesSoon')}</p>
-            </Section>
-
-            <Separator />
-
-            <Section icon={<Printer className="size-4" />} title={t('viewer.print')}>
+            {/* The same tools in the same order as the settings panel: print size, date stamp,
+                info frame, export (STYLE_RULE §4). The photo's own facts follow. */}
+            <Section icon={<Crop className="size-4" />} title={t('settings.printSize')}>
               <ExportTargetPicker settings={settings} onChange={onSettingsChange} />
               {settings?.exportTarget?.kind !== 'share' && (
                 <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onSettingsChange} advice={advice} />
@@ -459,6 +405,15 @@ export function PreviewDialog({
               </div>
             </Section>
 
+            {photo && (
+              <PhotoStampControls photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
+            )}
+
+            {/* Same card as the print settings panel, plus this camera's profile (FR-040). */}
+            <FrameSection frame={frame} fonts={fonts} compact>
+              <CameraProfileEditor frame={frame} details={details} />
+            </FrameSection>
+
             {/* Like it? Export just this one, with the same controls as the panel (FR-055). */}
             {photo && (
               <div ref={exportRef}>
@@ -472,6 +427,52 @@ export function PreviewDialog({
               </Section>
               </div>
             )}
+
+            <Separator />
+
+            {photo && (
+              <Section icon={<Star className="size-4" />} title={t('viewer.ratingFlag')}>
+                <CullControls photo={photo} />
+              </Section>
+            )}
+
+            <Section icon={<CalendarDays className="size-4" />} title={t('viewer.captured')}>
+              <p>{photo ? formatCaptureLong(photo.capture) : '—'}</p>
+              {photo?.dateFromFile ? (
+                <Badge variant="outline" className="text-amber-600 dark:text-amber-400">
+                  {t('viewer.noExifDate')}
+                </Badge>
+              ) : (
+                <Badge variant="outline">{t('viewer.fromExif')}</Badge>
+              )}
+            </Section>
+
+            <Section icon={<Camera className="size-4" />} title={t('viewer.camera')}>
+              <p>{photo?.camera ?? t('viewer.unknownCamera')}</p>
+            </Section>
+
+            <Section icon={<ImageIcon className="size-4" />} title={t('viewer.image')}>
+              {details ? (
+                <p className="tabular-nums">
+                  {details.width} × {details.height} px ·{' '}
+                  {formatNumber((details.width * details.height) / 1e6, 1, 1)} MP ·{' '}
+                  {formatBytes(details.fileBytes ?? 0)}
+                </p>
+              ) : (
+                <p className="text-muted-foreground">{t('common.loading')}</p>
+              )}
+            </Section>
+
+            <Section icon={<MapPin className="size-4" />} title={t('viewer.location')}>
+              {details?.gps && details.gps.lat !== null && details.gps.lon !== null ? (
+                <p className="font-mono text-xs">
+                  {details.gps.lat.toFixed(5)}, {details.gps.lon.toFixed(5)}
+                </p>
+              ) : (
+                <p className="text-muted-foreground">{t('viewer.noGps')}</p>
+              )}
+              <p className="text-xs text-muted-foreground">{t('viewer.placesSoon')}</p>
+            </Section>
           </div>
 
           <Separator />

@@ -295,7 +295,6 @@
     "location": "Location",
     "noGps": "No GPS in this photo",
     "placesSoon": "Place names arrive with FR-005",
-    "print": "Print / export",
     "resolution": "Resolution",
     "cropCustom": "Custom · zoom {{zoom}}×",
     "cropCentred": "Centred",

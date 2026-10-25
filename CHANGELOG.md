@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Preview:** the inspector starts with the same cards, in the same order, as the settings panel: *Print / export size*, *Date stamp*, *Info frame*, then *Export*; the photo's details follow.
 - **Website:** the site moves to its own address, <https://fotollection.org/>; the old `hoangphi01.github.io/fotollection/` links redirect to it.
 
 ## [0.4.0] - 2026-10-25
