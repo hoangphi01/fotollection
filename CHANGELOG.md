@@ -10,14 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Highlights
 
-- New: the Noritsu logo in the info frame for film scans from Noritsu scanners
-- Fix: a long lens name no longer runs into the logo; it moves to its own line
-- New: drag the photo in the preview to reframe it; *Fit whole photo* frames the full-size photo like an instax print
-- Fix: photos without EXIF get the file's date in the stamp
 - New: export for social media (original size, Facebook, Instagram or your own size), in sRGB, with the camera details and never GPS
-- New: export the photo you are looking at, straight from the preview
-- New: folders work like tabs: All photos, one folder, or several ticked, exported together or separately
-- New: zoom in the preview with a trackpad pinch or Ctrl/⌘ + and −
+- New: folders work like tabs, and several folders export together or separately
+- New: export the photo you are looking at, straight from the preview, and zoom with a trackpad pinch or Ctrl/⌘ + −
+- New: drag the photo to reframe it; *Fit whole photo* frames it like an instax print
+- New: the Noritsu logo for film scans, and a Performance page on the website
+- Fixes: long lens names no longer cover the logo, photos without EXIF get the file's date, Vietnamese wording
 
 ### Added
 

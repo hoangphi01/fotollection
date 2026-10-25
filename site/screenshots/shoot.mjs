@@ -193,7 +193,7 @@ for (const language of ['en', 'vi']) {
     await settle(page)
     await save(page, `frame-${suffix}`)
     // The export card at the bottom of the inspector: this photo only (FR-055).
-    await page.locator('[role="dialog"]').getByRole('button', { name: /^Export$/ }).click()
+    await page.locator('[role="dialog"]').getByRole('button', { name: /^(Export|Xuất ảnh)$/ }).click()
     await page.waitForTimeout(600)
     await save(page, `check-export-${suffix}`)
     await page.keyboard.press('Escape')
