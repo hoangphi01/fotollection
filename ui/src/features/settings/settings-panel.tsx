@@ -14,6 +14,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Collapse } from '@/components/layout/collapse'
+import { SectionCard } from '@/components/layout/section-card'
 import { CommitInput } from '@/components/forms/commit-input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ExportSection } from '@/features/export/export-section'
@@ -81,14 +82,17 @@ export function SettingsPanel({
       </div>
       <Separator />
 
-      <div className="flex-1 space-y-6 overflow-y-auto p-4">
-        <section className="flex items-center justify-between gap-3">
-          <Label htmlFor="ui-language" className="flex items-center gap-2">
-            <Languages className="size-4 text-muted-foreground" />
-            {t('settings.language')}
-          </Label>
+      <div className="flex-1 space-y-3 overflow-y-auto p-3">
+        <SectionCard
+          icon={<Languages />}
+          title={
+            <Label htmlFor="ui-language" className="text-sm font-semibold">
+              {t('settings.language')}
+            </Label>
+          }
+          action={
           <Select value={language} onValueChange={(v) => void changeLanguage(v as Language)}>
-            <SelectTrigger id="ui-language" size="sm" className="w-36">
+            <SelectTrigger id="ui-language" size="sm" className="w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -99,44 +103,48 @@ export function SettingsPanel({
               ))}
             </SelectContent>
           </Select>
-        </section>
+          }
+        />
 
-        <section className="space-y-2">
-          <Label htmlFor="print-size" className="flex items-center gap-2">
-            <Crop className="size-4 text-muted-foreground" />
-            {t('settings.printSize')}
-          </Label>
+        <SectionCard
+          icon={<Crop />}
+          title={
+            <Label htmlFor="print-size" className="text-sm font-semibold">
+              {t('settings.printSize')}
+            </Label>
+          }
+        >
           <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onChange} advice={advice} />
           {advice && photo && <PrintAdviceNote advice={advice} fileName={photo.fileName} />}
           <p className="text-xs text-muted-foreground">{t('settings.printSizeHint')}</p>
-        </section>
+        </SectionCard>
 
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="date-stamp" className="flex items-center gap-2">
-              <CalendarDays className="size-4 text-muted-foreground" />
+        <SectionCard
+          icon={<CalendarDays />}
+          title={
+            <Label htmlFor="date-stamp" className="text-sm font-semibold">
               {t('settings.dateStamp')}
             </Label>
+          }
+          action={
             <Switch
               id="date-stamp"
               checked={stamp?.enabled ?? false}
               onCheckedChange={(enabled) => setStamp({ enabled })}
             />
-          </div>
+          }
+          open={stamp?.enabled ?? false}
+          footer={
+            customStamps > 0 && (
+              <Button variant="outline" size="sm" className="w-full" onClick={() => void commands.resetPhotoStamps()}>
+                <RotateCcw data-icon="inline-start" />
+                {t('settings.resetCustomStamps', { count: customStamps })}
+              </Button>
+            )
+          }
+        >
 
-          {customStamps > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={() => void commands.resetPhotoStamps()}
-            >
-              <RotateCcw data-icon="inline-start" />
-              {t('settings.resetCustomStamps', { count: customStamps })}
-            </Button>
-          )}
 
-          <Collapse open={stamp?.enabled ?? false} className="space-y-3">
             <StampStyleFields stamp={stamp} onChange={setStamp} />
 
             {/* The place on the date line (FR-005), from the photo's GPS. */}
@@ -184,10 +192,8 @@ export function SettingsPanel({
               />
               <p className="text-xs text-muted-foreground">{t('settings.captionHint')}</p>
             </div>
-          </Collapse>
-        </section>
+        </SectionCard>
 
-        <Separator />
         <FrameSection frame={frame} fonts={fonts} />
       </div>
 

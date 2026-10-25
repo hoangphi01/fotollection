@@ -39,7 +39,7 @@ export function StampStyleFields({ stamp, onChange }: StampStyleFieldsProps) {
         onValueChange={(format) => format && onChange({ format: format as DateFormat })}
       >
         {FORMATS.map((f) => (
-          <ToggleGroupItem key={f.value} value={f.value} className="flex-1 font-mono text-xs">
+          <ToggleGroupItem key={f.value} value={f.value} className="min-w-0 flex-1 px-1 font-mono text-[11px] tracking-tight">
             {f.label}
           </ToggleGroupItem>
         ))}

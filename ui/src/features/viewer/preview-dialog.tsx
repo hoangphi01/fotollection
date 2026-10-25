@@ -8,7 +8,6 @@ import {
   ImageIcon,
   LoaderCircle,
   MapPin,
-  PanelBottom,
   Printer,
   RotateCcw,
   RotateCw,
@@ -41,7 +40,9 @@ import { formatNumber } from '@/lib/format'
 import { previewUrl, sourceUrl } from '@/lib/photo-url'
 import { CropEditor } from './crop-editor'
 import { PhotoStampControls } from './photo-stamp-controls'
+import { ownsArrowKeys } from '@/lib/keyboard'
 import { cn } from '@/lib/utils'
+import { SectionCard } from '@/components/layout/section-card'
 import { PrintAdviceNote } from '@/features/print-advice/print-advice-note'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { verdictOf } from '@/features/print-advice/verdict'
@@ -112,13 +113,9 @@ function useCropGeometry(id: number | undefined, revision: number): CropGeometry
 
 function Section({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (
-    <section className="space-y-1.5">
-      <h3 className="flex items-center gap-2 text-xs font-medium text-muted-foreground uppercase">
-        {icon}
-        {title}
-      </h3>
-      <div className="space-y-1 pl-6 text-sm">{children}</div>
-    </section>
+    <SectionCard icon={icon} title={title}>
+      <div className="space-y-1">{children}</div>
+    </SectionCard>
   )
 }
 
@@ -162,7 +159,8 @@ export function PreviewDialog({
     if (!cropping) contentRef.current?.focus()
   }, [cropping])
   const onKeyDown = (event: KeyboardEvent) => {
-    if (cropping || event.target instanceof HTMLInputElement) return
+    // A focused slider or field keeps its own arrow keys (the logo size, the caption…).
+    if (cropping || ownsArrowKeys(event.target)) return
     if (handleCullKey(event, photo?.id)) event.preventDefault()
     else if (event.key === 'ArrowRight') go(1)
     else if (event.key === 'ArrowLeft') go(-1)
@@ -184,7 +182,13 @@ export function PreviewDialog({
         className="flex h-[90vh] w-[95vw] max-w-none gap-0 overflow-hidden p-0 sm:max-w-[min(1400px,95vw)]"
       >
         {/* Stage */}
-        <div className="relative flex min-w-0 flex-1 items-center justify-center bg-neutral-950 p-8">
+        <div
+          className="relative flex min-w-0 flex-1 items-center justify-center bg-neutral-950 p-8"
+          // Clicking the photo hands the keyboard back to browsing, away from a focused control.
+          onPointerDown={() => {
+            if (!cropping && ownsArrowKeys(document.activeElement)) contentRef.current?.focus()
+          }}
+        >
           {cropping && geometry && photo ? (
             <CropEditor
               key={`${photo.id}:${revision}`}
@@ -316,21 +320,14 @@ export function PreviewDialog({
               <p>{photo?.camera ?? t('viewer.unknownCamera')}</p>
             </Section>
 
-            <Section icon={<CalendarDays className="size-4" />} title={t('viewer.dateStamp')}>
-              {photo && (
-                <PhotoStampControls
-                  photoId={photo.id}
-                  revision={revision}
-                  onAppliedToAll={onSettingsReload}
-                />
-              )}
-            </Section>
+            {photo && (
+              <PhotoStampControls photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
+            )}
 
-            <Section icon={<PanelBottom className="size-4" />} title={t('viewer.frameProfile')}>
-              {/* Same controls as the print settings panel, so the frame can be tuned here (FR-040). */}
-              <FrameSection frame={frame} fonts={fonts} compact />
+            {/* Same card as the print settings panel, plus this camera's profile (FR-040). */}
+            <FrameSection frame={frame} fonts={fonts} compact>
               <CameraProfileEditor frame={frame} details={details} />
-            </Section>
+            </FrameSection>
 
             <Section icon={<ImageIcon className="size-4" />} title={t('viewer.image')}>
               {details ? (

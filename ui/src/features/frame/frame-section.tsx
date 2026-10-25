@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { PanelBottom } from 'lucide-react'
-import { useId } from 'react'
+import { useId, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Collapse } from '@/components/layout/collapse'
+import { SectionCard } from '@/components/layout/section-card'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type {
   FrameColor,
@@ -38,15 +39,17 @@ const FIELDS: { key: keyof FrameFields; disabled?: boolean }[] = [
 type FrameSectionProps = {
   frame: FrameConfigApi
   fonts: FontsApi
-  /** The preview inspector hides the heading: its section title already says "Frame". */
+  /** In the preview: no "edit in the preview" hint. */
   compact?: boolean
+  /** Extra controls at the end of the card, such as the preview's camera profile. */
+  children?: ReactNode
 }
 
 /**
  * "Shot on …" info frame settings, LUMIX Lab style (FR-040). Rendered both in the print
  * settings panel and in the preview inspector; both edit the same Rust state.
  */
-export function FrameSection({ frame, fonts, compact = false }: FrameSectionProps) {
+export function FrameSection({ frame, fonts, compact = false, children }: FrameSectionProps) {
   const { t } = useTranslation()
   const settings = frame.config?.settings
   const enabled = settings?.enabled ?? false
@@ -54,20 +57,22 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
   const switchId = useId()
 
   return (
-    <section className="space-y-3">
-      <div className="flex items-center justify-between">
-        <Label htmlFor={switchId} className="flex items-center gap-2">
-          {!compact && <PanelBottom className="size-4 text-muted-foreground" />}
+    <SectionCard
+      icon={<PanelBottom />}
+      title={
+        <Label htmlFor={switchId} className="text-sm font-semibold">
           {t('frame.title')}
         </Label>
+      }
+      action={
         <Switch
           id={switchId}
           checked={enabled}
           onCheckedChange={(on) => void frame.setSettings((s) => ({ ...s, enabled: on }))}
         />
-      </div>
-
-      <Collapse open={enabled} className="space-y-3">
+      }
+      open={enabled}
+    >
         <ToggleGroup
           type="single"
           variant="outline"
@@ -193,7 +198,7 @@ export function FrameSection({ frame, fonts, compact = false }: FrameSectionProp
           {t('frame.keepsSize')}
           {!compact && ` ${t('frame.editInPreview')}`}
         </p>
-      </Collapse>
-    </section>
+        {children}
+    </SectionCard>
   )
 }

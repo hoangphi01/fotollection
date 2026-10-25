@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CopyCheck } from 'lucide-react'
+import { CalendarDays, CopyCheck } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
-import { Collapse } from '@/components/layout/collapse'
+import { SectionCard } from '@/components/layout/section-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -47,52 +47,49 @@ export function PhotoStampControls({ photoId, revision, onAppliedToAll }: PhotoS
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between gap-2">
-        <Label htmlFor="photo-stamp" className="text-sm font-normal">
-          {t('viewer.showOnPrint')}
+    <SectionCard
+      icon={<CalendarDays />}
+      title={
+        <Label htmlFor="photo-stamp" className="text-sm font-semibold">
+          {t('viewer.dateStamp')}
         </Label>
-        <div className="flex items-center gap-2">
+      }
+      action={
+        <>
           {current.custom && <Badge variant="outline">{t('viewer.thisPhoto')}</Badge>}
-          <Switch
-            id="photo-stamp"
-            checked={stamp.enabled}
-            onCheckedChange={(enabled) => set({ enabled })}
-          />
-        </div>
+          <Switch id="photo-stamp" checked={stamp.enabled} onCheckedChange={(enabled) => set({ enabled })} />
+        </>
+      }
+      open={stamp.enabled}
+      footer={
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full"
+          onClick={() =>
+            void commands.applyStampToAll(photoId).then((r) => r.status === 'ok' && onAppliedToAll())
+          }
+        >
+          <CopyCheck data-icon="inline-start" /> {t('viewer.applyToAll')}
+        </Button>
+      }
+    >
+      <StampStyleFields stamp={stamp} onChange={set} />
+      <div className="flex items-center justify-between">
+        <Label htmlFor="photo-stamp-place" className="text-sm font-normal">
+          {t('settings.location')}
+        </Label>
+        <Switch id="photo-stamp-place" checked={stamp.place ?? false} onCheckedChange={(place) => set({ place })} />
       </div>
-      <Collapse open={stamp.enabled} className="space-y-3">
-        <StampStyleFields stamp={stamp} onChange={set} />
-        <div className="flex items-center justify-between">
-          <Label htmlFor="photo-stamp-place" className="text-sm font-normal">
-            {t('settings.location')}
-          </Label>
-          <Switch
-            id="photo-stamp-place"
-            checked={stamp.place ?? false}
-            onCheckedChange={(place) => set({ place })}
-          />
-        </div>
-        <CommitInput
-          key={photoId}
-          value={stamp.caption ?? ''}
-          placeholder={t('settings.captionPlaceholder')}
-          maxLength={80}
-          liveMs={300}
-          ariaLabel={t('settings.caption')}
-          onCommit={(caption) => set({ caption })}
-        />
-      </Collapse>
-      <Button
-        variant="outline"
-        size="sm"
-        className="w-full"
-        onClick={() =>
-          void commands.applyStampToAll(photoId).then((r) => r.status === 'ok' && onAppliedToAll())
-        }
-      >
-        <CopyCheck data-icon="inline-start" /> {t('viewer.applyToAll')}
-      </Button>
-    </div>
+      <CommitInput
+        key={photoId}
+        value={stamp.caption ?? ''}
+        placeholder={t('settings.captionPlaceholder')}
+        maxLength={80}
+        liveMs={300}
+        ariaLabel={t('settings.caption')}
+        onCommit={(caption) => set({ caption })}
+      />
+    </SectionCard>
   )
 }

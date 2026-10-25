@@ -15,6 +15,7 @@ import {
   type Frame,
 } from '@/lib/crop-geometry'
 import { formatNumber } from '@/lib/format'
+import { ownsArrowKeys } from '@/lib/keyboard'
 import { cn } from '@/lib/utils'
 
 type CropEditorProps = {
@@ -112,7 +113,7 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     // Sliders keep their own arrow keys (the straighten slider steps 0.1°).
-    if (e.key.startsWith('Arrow') && e.target instanceof HTMLInputElement) return
+    if (e.key.startsWith('Arrow') && ownsArrowKeys(e.target)) return
     const step = e.shiftKey ? 0.05 : 0.01
     const moves: Record<string, [number, number]> = {
       ArrowUp: [0, -step],

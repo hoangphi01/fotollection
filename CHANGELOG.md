@@ -11,6 +11,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Website:** a coffee button next to the GitHub star, a round Download button in the menu; "What's new" moved out of the menu (it stays in the footer).
 - **Logo size (FR-040):** a slider under the logo colours in the info frame settings scales the camera logo, from 50 % to 200 %, for every photo in the project.
 
+### Changed
+
+- **Sections as cards:** every settings section, in the settings panel and the preview, is a card with a tinted header holding its icon, title and master switch, so sections read apart at a glance.
+
+### Fixed
+
+- With the logo size slider focused, ← → changed the photo as well as the size; now the slider keeps the keys, and clicking the photo hands them back to browsing.
+- The date formats no longer overflow their buttons.
+
 ## [0.2.0] - 2026-10-24
 
 ### Added
