@@ -84,7 +84,7 @@ export function App() {
           <>
             {/* Sized by the space between the sidebars, not the window: labels collapse to
                 icons first, then the filters wrap to a second row. */}
-            <div className="@container flex min-h-12 flex-wrap items-center gap-x-3 gap-y-2 border-b px-4 py-2 text-sm">
+            <div className="@container flex min-h-[49px] flex-wrap items-center gap-x-3 gap-y-2 border-b px-4 py-1.5 text-sm">
               <ToggleGroup
                 type="single"
                 variant="outline"
