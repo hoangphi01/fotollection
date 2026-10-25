@@ -33,7 +33,7 @@
     "folderHint": "Chỉ hiện thư mục này",
     "allHint": "Toàn bộ ảnh của mọi thư mục",
     "select": "Chọn thư mục",
-    "selectHint": "Chọn nhiều thư mục để xem hoặc export cùng lúc (hoặc Ctrl/⌘-click)"
+    "selectHint": "Chọn nhiều thư mục để xem hoặc xuất ảnh cùng lúc (hoặc Ctrl/⌘-click)"
   },
   "task": {
     "import": "Đang đọc ảnh",
@@ -106,7 +106,7 @@
     "title": "Thiết lập in",
     "language": "Ngôn ngữ",
     "printSize": "Khổ in / xuất ảnh",
-    "printSizeHint": "Mặc định crop ở giữa. Chỉnh từng ảnh bằng Crop trong preview.",
+    "printSizeHint": "Mặc định cắt ở giữa. Chỉnh từng ảnh bằng nút Cắt ảnh trong màn xem trước.",
     "dateStamp": "Dấu ngày",
     "dateStampFont": "Font dấu ngày",
     "stampPosition": "Vị trí dấu ngày",
@@ -137,7 +137,7 @@
   },
   "print": {
     "original": "Gốc",
-    "originalHint": "tỉ lệ gốc của ảnh, không crop",
+    "originalHint": "tỉ lệ gốc của ảnh, không cắt",
     "standard": "Tiêu chuẩn (CEWE / EU)",
     "custom": "Tùy chỉnh",
     "addCustom": "Khổ tùy chỉnh…",
@@ -159,7 +159,7 @@
   },
   "frame": {
     "title": "Khung thông tin",
-    "cropToFill": "Crop cho đầy",
+    "cropToFill": "Cắt cho đầy",
     "fitWhole": "Giữ trọn ảnh",
     "white": "Trắng",
     "black": "Đen",
@@ -179,7 +179,7 @@
     },
     "placeHint": "Cần tên địa điểm offline (FR-005)",
     "keepsSize": "Toàn bộ ảnh in, kể cả khung, giữ đúng khổ đã chọn.",
-    "editInPreview": "Sửa máy ảnh, ống kính và Photo Style trong preview.",
+    "editInPreview": "Sửa máy ảnh, ống kính và Photo Style trong màn xem trước.",
     "logoStyle": "Màu logo",
     "logoStyles": {
       "classic": "Cổ điển",
@@ -211,18 +211,18 @@
     "logoBrand": "Logo hãng"
   },
   "export": {
-    "running": "Đang export…",
-    "cancelled": "Đã hủy export",
-    "finished": "Export xong",
-    "exported_other": "Đã export {{count}} ảnh",
+    "running": "Đang xuất ảnh…",
+    "cancelled": "Đã hủy xuất ảnh",
+    "finished": "Xuất ảnh xong",
+    "exported_other": "Đã xuất {{count}} ảnh",
     "failed_other": "{{count}} ảnh lỗi",
-    "error": "Không export được",
+    "error": "Không xuất được ảnh",
     "chooseDestination": "Chọn nơi lưu…",
-    "title": "Export",
-    "button": "Export",
-    "buttonThis": "Export ảnh này",
-    "buttonCount_other": "Export {{count}} ảnh",
-    "filteredHint": "Chỉ export những ảnh đang hiện theo bộ lọc thư viện.",
+    "title": "Xuất ảnh",
+    "button": "Xuất ảnh",
+    "buttonThis": "Xuất ảnh này",
+    "buttonCount_other": "Xuất {{count}} ảnh",
+    "filteredHint": "Chỉ xuất những ảnh đang hiện theo bộ lọc thư viện.",
     "target": {
       "print": "In ảnh",
       "share": "Mạng xã hội",
@@ -242,7 +242,7 @@
       "custom": "Cạnh dài 640–6000 px · sRGB · giữ thông số máy, xóa GPS"
     },
     "folders": {
-      "label": "Cách export các thư mục",
+      "label": "Cách xuất các thư mục",
       "together": "Chung",
       "separate": "Riêng",
       "togetherHint_other": "{{count}} thư mục, gộp chung vào các thư mục theo ngày",
@@ -262,9 +262,9 @@
   },
   "viewer": {
     "rendering": "Đang dựng bản xem trước…",
-    "crop": "Crop",
+    "crop": "Cắt ảnh",
     "cropFitMode": "Khung đang ở chế độ Giữ trọn ảnh: cả tấm ảnh được hiển thị",
-    "adjustCrop": "Chỉnh crop (C)",
+    "adjustCrop": "Chỉnh vùng cắt (C)",
     "previous": "Ảnh trước",
     "next": "Ảnh sau",
     "ratingFlag": "Sao & cờ",
@@ -280,7 +280,7 @@
     "placesSoon": "Tên địa điểm sẽ có cùng FR-005",
     "print": "In / xuất ảnh",
     "resolution": "Độ phân giải",
-    "cropCustom": "Tùy chỉnh · zoom {{zoom}}×",
+    "cropCustom": "Tùy chỉnh · phóng {{zoom}}×",
     "cropCentred": "Ở giữa",
     "adjust": "Chỉnh",
     "dateStamp": "Dấu ngày",
@@ -293,7 +293,7 @@
     "rotateLeft": "Xoay trái ( [ )",
     "rotateRight": "Xoay phải ( ] )",
     "level": "cân ngang 1° (⌥ 0,1°)",
-    "leaveCrop": "hủy crop",
+    "leaveCrop": "thoát cắt ảnh",
     "zoom": "phóng to",
     "zoomReset": "Về vừa khung (⌘0)"
   },
@@ -312,8 +312,8 @@
       "failed": "Không dựng được bản xem trước"
     },
     "export": {
-      "cancelled": "Đã hủy export",
-      "empty": "Không có ảnh nào để export",
+      "cancelled": "Đã hủy xuất ảnh",
+      "empty": "Không có ảnh nào để xuất",
       "no_destination": "Hãy chọn nơi lưu trước",
       "write_failed": "Không ghi được file"
     },

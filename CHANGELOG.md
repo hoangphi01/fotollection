@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Folders as tabs (FR-056):** the library list starts with *All photos*; clicking a folder shows only that folder (grid, best-shot groups and export), like switching browser tabs. The select button above the list, or Ctrl/⌘-click, ticks several folders. When an export covers two folders or more, choose *Together* (the usual date folders) or *Separately* (one subfolder per folder). Folder counts no longer change with the star and flag filter.
 - **Zoom in the preview (FR-057):** pinch on the trackpad or press Ctrl/⌘ + and − to zoom about the pointer (up to 800 %), Ctrl/⌘ 0 to fit; drag or scroll with two fingers to move around, double-click for 200 %. The zoom level shows next to the photo counter; click it to go back to fit.
 - **Website:** the page's scroll bar is thin and in the theme colour, like the changelog box's.
+- **Vietnamese:** the interface and the website say *cắt ảnh*, *xuất ảnh* and *xem trước* instead of the English crop, export and preview.
 - **App:** scroll bars are thin and in the theme colour, like the website's; the language picker is narrower, so its label is never cut.
 - **Website:** the print-shop heading shows the dm and Rossmann logos inline, in the theme colour (public-domain files from Wikimedia Commons; trademarks of their owners).
 - **Development:** the Python tools (quality audits, icon and screenshot helpers) are managed with uv: `pyproject.toml` and `uv.lock` pin their packages, and `uv run` runs them.

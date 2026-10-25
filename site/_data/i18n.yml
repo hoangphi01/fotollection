@@ -120,7 +120,7 @@ vi:
   other: en
   other_label: English
   title: Fotollection — ảnh sẵn sàng để in, hoàn toàn offline
-  description: Ứng dụng máy tính miễn phí, mã nguồn mở, chuẩn bị ảnh để in ngay trên máy của bạn. Dấu ngày kiểu máy film, khung thông tin máy ảnh, gợi ý ảnh đẹp nhất, crop đúng khổ in và xuất giữ nguyên chất lượng gốc, không cần tài khoản, không tải ảnh lên đâu cả.
+  description: Ứng dụng máy tính miễn phí, mã nguồn mở, chuẩn bị ảnh để in ngay trên máy của bạn. Dấu ngày kiểu máy film, khung thông tin máy ảnh, gợi ý ảnh đẹp nhất, cắt đúng khổ in và xuất giữ nguyên chất lượng gốc, không cần tài khoản, không tải ảnh lên đâu cả.
   nav_features: Tính năng
   nav_quality: Chất lượng
   nav_download: Tải về
@@ -146,15 +146,15 @@ vi:
   f_frame_text: Viền "Shot on" gọn gàng với logo hãng, ống kính, tiêu cự, khẩu độ, tốc độ và ISO, lấy thẳng từ EXIF.
   f_best_title: Gợi ý ảnh đẹp nhất
   f_best_text: Ảnh chụp liên tiếp và các khung hình gần giống nhau được gom nhóm; app gợi ý tấm nét nhất, ít rung, không nhắm mắt, kèm lý do.
-  f_crop_title: Crop vừa khổ in
-  f_crop_text: Mỗi ảnh được crop đúng khổ in, hiện DPI ngay khi kéo. Xoay ¼ vòng hoặc cân lại đường chân trời tới 15°.
+  f_crop_title: Cắt vừa khổ in
+  f_crop_text: Mỗi ảnh được cắt đúng khổ in, hiện DPI ngay khi kéo. Xoay ¼ vòng hoặc cân lại đường chân trời tới 15°.
   f_quality_title: Giữ nguyên chất lượng gốc
   f_quality_text: Đủ độ phân giải, giữ hồ sơ màu, JPEG 4:4:4. Ảnh in ra giống ảnh bạn đã chụp.
   f_private_title: Riêng tư và offline
   f_private_text: Không tài khoản, không tải lên, không theo dõi. Tên địa điểm lấy từ bản đồ có sẵn trong app, GPS được xóa khi xuất.
   show_stamp: Dấu ngày kèm tên nơi chụp từ GPS của ảnh
   show_frame: Khung "Shot on" với logo của hãng máy ảnh
-  show_crop: Cân lại đường chân trời trong màn crop
+  show_crop: Cân lại đường chân trời trong màn cắt ảnh
   show_groups: Ảnh giống nhau được gom nhóm, gợi ý tấm đẹp nhất
   quality_title: Ảnh in giống hệt ảnh gốc
   quality_lead: Đo từng điểm ảnh trên ảnh thật, so với bản xuất của một trình sửa ảnh trên web thông thường.
@@ -180,11 +180,11 @@ vi:
   support_alt: Mã VietQR ủng hộ cà phê, Techcombank, Phạm Hoàng Phi
   kiosk_title: Sẵn sàng cho máy in ảnh ở
   kiosk_and: và
-  kiosk_lead: Dịch vụ in ảnh của dm và Rossmann đều do CEWE thực hiện. Fotollection có sẵn mọi khổ trong bảng giá của họ, nên khung crop bạn thấy chính là ảnh máy in trả ra, không bị xén mép bất ngờ.
+  kiosk_lead: Dịch vụ in ảnh của dm và Rossmann đều do CEWE thực hiện. Fotollection có sẵn mọi khổ trong bảng giá của họ, nên khung cắt bạn thấy chính là ảnh máy in trả ra, không bị xén mép bất ngờ.
   kiosk_standard: Tiêu chuẩn
   kiosk_square: Vuông
   kiosk_strip: Dải dài
-  kiosk_more: Giữ tỉ lệ gốc (không crop) và mọi khổ tùy chỉnh, theo cm hoặc inch
+  kiosk_more: Giữ tỉ lệ gốc (không cắt) và mọi khổ tùy chỉnh, theo cm hoặc inch
   kiosk_steps_title: Từ chuyến đi đến xấp ảnh in
   kiosk_s1: Chọn ảnh đẹp nhất và chọn khổ in.
   kiosk_s2: Xuất ra một thư mục, USB hoặc thẻ SD.
