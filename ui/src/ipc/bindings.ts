@@ -752,7 +752,7 @@ export type SettingsState = {
 
 /**  Where the exported photos are going. */
 export type SharePreset = 
-/**  Same width and height, only a lighter file (a 10 MB camera JPEG becomes about 3 MB). */
+/**  Same width and height, only a lighter file (about half a compact-camera JPEG, RESULT §10). */
 { kind: "original" } | { kind: "facebook" } | { kind: "instagram" } | 
 /**  A long edge chosen by the user, clamped to [`CUSTOM_EDGE_RANGE`]. */
 { kind: "custom"; longEdge: number };
