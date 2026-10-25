@@ -67,10 +67,11 @@ function DialogContent({
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close data-slot="dialog-close" asChild>
-            {/* A small red square with even corners, so closing is easy to find (FR-052). */}
+            {/* A small red square with even corners, so closing is easy to find (FR-052); it
+                deepens to burgundy under the pointer, in both themes. */}
             <Button
               variant="destructive"
-              className="absolute top-2.5 right-2.5 size-7 rounded-md bg-destructive text-white shadow-sm hover:bg-destructive/90 dark:bg-destructive"
+              className="absolute top-2.5 right-2.5 size-7 rounded-md bg-destructive text-white shadow-sm transition-colors hover:bg-[color-mix(in_oklch,var(--destructive),black_30%)] dark:bg-destructive dark:hover:bg-[color-mix(in_oklch,var(--destructive),black_30%)]"
               size="icon-sm"
             >
               <XIcon

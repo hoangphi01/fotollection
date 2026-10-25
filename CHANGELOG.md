@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- The red close button of the preview deepens to burgundy under the pointer, so you can see it is the one you are about to click.
 - Canon CR3 files are no longer read as HEIC (they had no date or camera details).
 - **Vietnamese:** the app and the website speak plain Vietnamese: *tệp* for file, *ứng dụng* for app, *mã nguồn* for code, *hồ sơ màu* for colour profile, *không cần mạng* for offline, *phông chữ* for font.
 
