@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Dates and numbers in the interface use the bundled Geist Mono, so Windows shows them exactly like macOS (the rest of the interface already used the bundled Geist).
 - With the logo size slider focused, ← → changed the photo as well as the size; now the slider keeps the keys, and clicking the photo hands them back to browsing.
 - The date formats no longer overflow their buttons.
 
