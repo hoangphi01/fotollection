@@ -302,7 +302,9 @@ p { margin: 0; }
 .footnotes li, .footnotes p { margin: 0 0 12px; }
 .footnotes .fn-num { font-variant-numeric: tabular-nums; }
 .footnotes a { color: inherit; }
-.footnotes .fn-back { text-decoration: none; margin-left: 2px; }
+.footnotes .fn-back { display: inline-flex; vertical-align: -0.15em; margin-left: 4px; text-decoration: none; }
+.footnotes .fn-back .icon { width: 1.1em; height: 1.1em; }
+.footnotes .fn-back:hover { color: var(--ink); }
 .footnotes li:target { color: var(--ink); }
 .fn-ref { font-size: 0.65em; vertical-align: super; line-height: 0; margin-left: 2px; font-weight: 600; }
 h2 .fn-ref { font-size: 0.4em; }
@@ -355,3 +357,5 @@ a:focus-visible, .button:focus-visible { outline: 2px solid var(--brand); outlin
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+h2.with-icon { display: flex; align-items: center; gap: 0.35em; }
+h2.with-icon .icon { width: 0.85em; height: 0.85em; flex: none; color: var(--brand); }

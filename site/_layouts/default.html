@@ -137,13 +137,13 @@
          every trademark the site shows (names, logos, the cameras in the screenshots). {%- endcomment %}
     <section class="footnotes" aria-label="{{ t.fn_title }}">
       <div class="wrap">
-        {%- comment -%} One list on every page; ↩ only where this page carries the mark. {%- endcomment %}
+        {%- comment -%} One list on every page; the back link only where this page carries the mark. {%- endcomment %}
         {%- if page.title_key == 'perf_title' %}{% assign first = 4 %}{% assign last = 11 %}{% else %}{% assign first = 1 %}{% assign last = 3 %}{% endif %}
         <ol>
           {%- assign notes = "fn_open,fn_dm,fn_rossmann,fn_rust,fn_webview,fn_de,fn_ssim,fn_jpeg,fn_srgb,fn_p3,fn_adobe" | split: "," %}
           {%- for key in notes %}
           {%- assign n = forloop.index %}
-          <li id="fn-{{ n }}"><span class="fn-num">{{ n }}.</span> {{ t[key] }}{% if n >= first and n <= last %} <a class="fn-back" href="#fnref-{{ n }}" aria-label="{{ t.fn_back }}">↩</a>{% endif %}</li>
+          <li id="fn-{{ n }}"><span class="fn-num">{{ n }}.</span> {{ t[key] }}{% if n >= first and n <= last %} <a class="fn-back" href="#fnref-{{ n }}" aria-label="{{ t.fn_back }}">{% include icons/corner-left-up.svg %}</a>{% endif %}</li>
           {%- endfor %}
         </ol>
         <p>{{ t.fn_cewe }}</p>
