@@ -65,10 +65,11 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 
 1. **v0.4.0 "Sharing and folders": published 2026-10-25.** Still to check by hand in the installed app: export one photo from the preview, export two folders together and separately, trackpad zoom, drag to reframe, Fit on a landscape and a portrait photo.
 2. **v0.5.0 "Print basket" (FR-050, FR-059): published 2026-10-25.** Check by hand ([USER_GUIDE.md §1](USER_GUIDE.md#1-choosing-the-photos-to-print)).
-3. **v0.6.0 "Photo viewer and RAW" (FR-054, FR-057, FR-060, FR-016):** ✓ measured first (NFR-010, NFR-016, RESULT §11); ✓ zoom buttons and full-resolution zoom; ✓ start-up screen. Next: "Open with" on macOS and Windows; RAW through the OS codecs (GX9 RW2 samples needed), so the viewer opens every photo. ADRs for both.
-4. **v0.7.0 "Places and Lightroom" (FR-032, FR-005, FR-030, FR-031, FR-058):** XMP sidecars read on import and written as an opt-in; search and set a place for one or many photos, rename a place everywhere, camera clock offset, borrow GPS from phone photos with confidence levels.
-5. **v0.8.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
-6. **Later (Phase 2):** Photo Style and film looks (FR-039, FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
+3. **v0.6.0 "Photo viewer" (FR-057, FR-060):** measured first (NFR-010, NFR-016, RESULT §11); zoom buttons and full-resolution zoom of the visible part; start-up screen. Checked by hand by the owner on a GX9 photo before release.
+4. **v0.7.0 "Open with and RAW" (FR-054, FR-016):** "Open with" on macOS and Windows; RAW through the OS codecs (GX9 RW2 samples needed), so the viewer opens every photo. ADRs for both.
+5. **v0.8.0 "Places and Lightroom" (FR-032, FR-005, FR-030, FR-031, FR-058):** XMP sidecars read on import and written as an opt-in; search and set a place for one or many photos, rename a place everywhere, camera clock offset, borrow GPS from phone photos with confidence levels.
+6. **v0.9.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
+7. **Later (Phase 2):** Photo Style and film looks (FR-039, FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
 7. **Alongside, never blocking a release:** the append-only edit journal (NFR-013; not urgent, as a full save stays at 70 ms for 70,000 edited photos); the Windows title bar on a real machine (FR-052); SignPath signing for Windows; a Ko-fi link once the account exists; NFR-008 by publishing one `.dmg` per architecture; FR-022 filters by date, camera, GPS and DPI.
 
 ## Phase 0 — Foundation

@@ -29,6 +29,7 @@
 | **Dependencies or bundled assets** (crates, npm packages, Python packages through uv in `pyproject.toml` / `uv.lock`, fonts, logos, models, map data) | Permissive licences only (`cargo deny`, [ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)); the asset's licence file and checksum note (`crates/core/assets/**/*.md`, `site/assets/fonts/OFL.txt`) | README "Third-party notices" (both languages) |
 | **README.md** | [README.vi.md](../README.vi.md) in the same commit: same sections, same charts | `scripts/check-docs.sh` compares them |
 | **The website** (`site/`) | Both languages in `site/_data/i18n.yml`; [site/README.md](../site/README.md) if its structure changes | **Screenshots** with `site/screenshots/build.sh` when the app's look changes; the **link-preview card** (`site/screenshots/og.html`) when the opening line changes; the landing page sections when a feature worth showing ships |
+| **A bug that took more than one look to find** | An entry at the top of [LESSONS.md](LESSONS.md): what was seen, why, the fix, the rule from now on | Remove every temporary `DEBUG-` log before the commit |
 | **A release** | `scripts/release.sh X.Y.Z` (version everywhere + CHANGELOG), then push ([RELEASE.md](RELEASE.md) §4, §6) | [STATUS.md](STATUS.md) "Shipping" line once it is published; the website updates its download buttons and changelog by itself |
 | **Progress** (a stage done, a next step decided) | [STATUS.md](STATUS.md) "Current phase" and "Next, in order" | [ROADMAP.md](ROADMAP.md) ideas backlog for things decided but not yet requirements |
 

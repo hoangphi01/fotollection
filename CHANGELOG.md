@@ -12,7 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - New: zoom buttons on the preview, and full detail when you zoom in
 - New: a start-up screen with the logo and a loading bar
-- Measured: the app opens in about 0.4 s; a 32 MP photo zooms in about 0.1 s
+- Measured: after the first launch the app opens in about 0.4 s; a 32 MP photo zooms in about 0.1 s
+- Website: footnotes for every trademark and the sources behind each measurement
 
 ### Added
 
@@ -23,6 +24,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - The zoom level moved from the photo counter into the zoom buttons.
+
+### Fixed
+
+- **Website:** the print-basket section was missing from fotollection.org because the site's build had been failing since it was added; it is back.
+
+### Website
+
+- Footnotes like Apple's on every page: what *free*, *open source* and *no account* mean, who owns each brand and camera logo shown, and the sources of ΔE2000, SSIM, JPEG, sRGB, Display P3, Adobe RGB, Rust and the web view. The navbar is lighter (print shops moved to the footer) and the footer says the app is made by a user, for users.
 
 ## [0.5.0] - 2026-10-25
 

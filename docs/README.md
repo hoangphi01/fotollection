@@ -7,7 +7,8 @@
 | If you are… | Read |
 |-------------|------|
 | New to the project | [PRD](PRD.md) → [ARCHITECTURE](ARCHITECTURE.md) → [ROADMAP](ROADMAP.md) → [STATUS](STATUS.md) |
-| About to write code | [DEVELOPMENT](DEVELOPMENT.md) → [STYLE_RULE](STYLE_RULE.md) → [TESTING](TESTING.md) → [CONTRIBUTING](../CONTRIBUTING.md) |
+| About to write code | [DEVELOPMENT](DEVELOPMENT.md) → [STYLE_RULE](STYLE_RULE.md) → [TESTING](TESTING.md) → [LESSONS](LESSONS.md) → [CONTRIBUTING](../CONTRIBUTING.md) |
+| Debugging something | [LESSONS](LESSONS.md) first: it may have happened before |
 | Working on performance | [RESULT](RESULT.md) → [OPTIMIZATION](OPTIMIZATION.md) |
 | Touching file input, IPC or the webview | [SECURITY](SECURITY.md) |
 | Changing anything that is saved to disk | [DATABASE](DATABASE.md) → [EXTENSION](EXTENSION.md) |
@@ -38,6 +39,7 @@
 | How to use the app, step by step, with every shortcut | [USER_GUIDE.md](USER_GUIDE.md) |
 | User-visible changes per version | [CHANGELOG.md](../CHANGELOG.md) |
 | What to update when something changes (the checklist) | [DOCS_GUIDE.md](DOCS_GUIDE.md) |
+| What each debugging session taught us, and how we debug | [LESSONS.md](LESSONS.md) |
 | Rules for AI assistants | [CLAUDE.md](../CLAUDE.md) |
 
 ## Keeping docs in sync with code
