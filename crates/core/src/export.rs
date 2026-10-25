@@ -21,9 +21,9 @@ use crate::settings::RenderSettings;
 use crate::share::{ExportTarget, SharePreset, target_size};
 use crate::{colour, exif_out, sharpen};
 
-/// Unsharp amount after a share downscale (FR-053), to be tuned on the detail that
-/// `bench/quality/share_audit.py` measures.
-const SHARE_SHARPEN: f32 = 0.35;
+/// Unsharp amount after a share downscale (FR-053): 0.2 scored the best SSIM against the
+/// resized original (0.35 over-sharpens, none looks soft), RESULT §10.
+const SHARE_SHARPEN: f32 = 0.2;
 /// Shared photos go here, beside the dated print folders.
 const SHARE_FOLDER: &str = "Share";
 

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -16 752 182" width="752" height="182" role="img" aria-labelledby="t d">
+<title id="t">RAM đỉnh giữ nguyên khi batch tăng</title>
+<desc id="d">95 ảnh: 1,35 GB. 5035 ảnh: 1,45 GB. trần 2 GB.</desc>
+<style>
+  .bg{fill:#fffaee} .t1{fill:#2b2219;font:600 13px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t2{fill:#514435;font:13px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t3{fill:#7a6a55;font:12px system-ui,-apple-system,Segoe UI,sans-serif}
+  .h{font-size:15px} .num{font-variant-numeric:tabular-nums} .axis{stroke:#e2d4b3;stroke-width:1}
+  .ref{stroke:#514435;stroke-width:1.5;stroke-dasharray:4 3} .refw{stroke:#b5652a;stroke-width:1.5;stroke-dasharray:4 3}
+  .s1{fill:#008a74} .old{fill-opacity:.45} .s2{fill:#b5652a} .s3{fill:#1baf7a} .s4{fill:#eda100} .s5{fill:#e87ba4} .gap{stroke:#fffaee;stroke-width:2}
+  .in{fill:#fff}
+  @media (prefers-color-scheme: dark){
+    .bg{fill:#262019} .t1{fill:#f3ead6} .t2{fill:#d8cab0} .t3{fill:#a8977c} .axis{stroke:#3b3127}
+    .ref{stroke:#d8cab0} .refw{stroke:#cc7f3e}
+    .s1{fill:#21a593} .s2{fill:#cc7f3e} .s3{fill:#199e70} .s4{fill:#c98500} .s5{fill:#d55181} .gap{stroke:#262019}
+  }
+</style>
+<rect class="bg" x="-16" y="-16" width="752" height="182" rx="8"/>
+<text class="t1 h" x="0" y="8">RAM đỉnh giữ nguyên khi batch tăng</text>
+<text class="t3" x="0" y="30">GB RSS đỉnh: import + thumbnail + export · càng thấp càng tốt</text><text class="t2" x="180" y="77" text-anchor="end">95 ảnh</text><path class="s1" d="M190 62h231.62649599999997a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-231.62649599999997z"><title>95 ảnh: 1,35 GB</title></path><text class="t1 num" x="433.626496" y="78">1,35 GB</text><text class="t2" x="180" y="109" text-anchor="end">5.035 ảnh</text><path class="s1" d="M190 94h250.2546944a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-250.2546944z"><title>5.035 ảnh: 1,45 GB</title></path><text class="t1 num" x="452.2546944" y="110">1,45 GB</text><line class="axis" x1="190" x2="190" y1="58" y2="120"/><line class="ref" x1="540" x2="540" y1="56" y2="120"/><text class="t3" x="540" y="52" text-anchor="middle">trần 2 GB (NFR-004)</text><text class="t3" x="0" y="146">JPEG 16 MP · Apple M3, 16 GB, macOS 26.3.1 · 2026-10-23 · 95 ảnh: trung vị của 3 lần chạy · 5.035 ảnh: 1 lần</text>
+</svg>

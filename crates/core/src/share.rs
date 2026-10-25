@@ -19,7 +19,7 @@ const INSTAGRAM_MAX_HEIGHT: u32 = 1440;
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase", tag = "kind", content = "longEdge")]
 pub enum SharePreset {
-    /// Same width and height, only a lighter file (a 10 MB camera JPEG becomes about 3 MB).
+    /// Same width and height, only a lighter file (about half a compact-camera JPEG, RESULT §10).
     #[default]
     Original,
     Facebook,
@@ -61,12 +61,16 @@ impl SharePreset {
         }
     }
 
-    /// JPEG settings: quality 88 to keep colour and detail on screen (checked with
-    /// `bench/quality/share_audit.py`) while the file stays light; 4:2:0 is what the
-    /// platforms recompress to anyway.
+    /// JPEG settings, chosen by `bench/quality/share_audit.py` (RESULT §10): 4:2:0, which
+    /// the platforms recompress to anyway, at quality 88 for resized photos (SSIM 0.979,
+    /// below that it drops faster than the file shrinks) and 80 for Original, which keeps
+    /// ΔE2000 under 1 at half the file size.
     pub const fn encode_options(self) -> EncodeOptions {
         EncodeOptions {
-            quality: 88,
+            quality: match self {
+                Self::Original => 80,
+                Self::Facebook | Self::Instagram | Self::Custom(_) => 88,
+            },
             chroma: Chroma::Half,
             optimize_huffman: true,
         }
@@ -136,5 +140,18 @@ mod tests {
             SharePreset::Custom(99_999).sanitized(),
             SharePreset::Custom(6000)
         );
+    }
+
+    #[test]
+    fn fr_053_original_is_lighter_and_resized_photos_keep_q88() {
+        assert_eq!(SharePreset::Original.encode_options().quality, 80);
+        for p in [
+            SharePreset::Facebook,
+            SharePreset::Instagram,
+            SharePreset::Custom(1600),
+        ] {
+            let o = p.encode_options();
+            assert_eq!((o.quality, o.chroma), (88, Chroma::Half), "{p:?}");
+        }
     }
 }

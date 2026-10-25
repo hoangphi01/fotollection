@@ -1,0 +1,236 @@
+{
+  "about": "FR-053 share export, measured by bench/quality/share_audit.py against the original resized with Lanczos in sRGB (no compression). 'after_facebook' recompresses as Facebook does (q71, 4:2:0, <= 2048 px); 'usual' is a web editor at 2000 px, q80, profile dropped. Medians. Photos are private; only numbers are kept.",
+  "date": "2026-10-25",
+  "machine": "REF-MAC: Apple M3, 16 GB",
+  "settings": {
+    "original": {
+      "quality": 80,
+      "chroma": "4:2:0",
+      "sharpen": 0
+    },
+    "facebook": {
+      "quality": 88,
+      "chroma": "4:2:0",
+      "sharpen": 0.2,
+      "long_edge": 2048
+    },
+    "instagram": {
+      "quality": 88,
+      "chroma": "4:2:0",
+      "sharpen": 0.2,
+      "width": 1080
+    }
+  },
+  "presets": {
+    "original": {
+      "srgb": {
+        "fotollection": {
+          "ssim": 0.9813911352287807,
+          "de_mean": 0.9627954661846161,
+          "de_p95": 2.5125510692596436,
+          "chroma_kept": 1.0004193186759949,
+          "contrast_kept": 1.0001640915870667,
+          "detail_kept": 1.0582902010110131,
+          "levels_kept": 1.0
+        },
+        "fotollection_after_facebook": {
+          "ssim": 0.9430592577734278,
+          "de_mean": 1.6702154874801636,
+          "de_p95": 4.230721473693848,
+          "chroma_kept": 0.9968236088752747,
+          "contrast_kept": 0.998992532491684,
+          "detail_kept": 0.14499885626150072,
+          "levels_kept": 1.0
+        },
+        "usual_after_facebook": {
+          "ssim": 0.9383359114703509,
+          "de_mean": 1.7983344793319702,
+          "de_p95": 4.575450420379639,
+          "chroma_kept": 1.002747118473053,
+          "contrast_kept": 0.9987756013870239,
+          "detail_kept": 0.19437631323870744,
+          "levels_kept": 1.0
+        },
+        "photos": 20,
+        "source_mb": 3.084607,
+        "export_mb": 1.4212085,
+        "size_ratio": 0.46032897293349917
+      },
+      "displayP3": {
+        "fotollection": {
+          "ssim": 0.9775926647416601,
+          "de_mean": 1.0323925018310547,
+          "de_p95": 2.504361391067505,
+          "chroma_kept": 1.0009596347808838,
+          "contrast_kept": 1.0003103017807007,
+          "detail_kept": 1.3229602375129503,
+          "levels_kept": 1.0
+        },
+        "fotollection_after_facebook": {
+          "ssim": 0.9369714901087705,
+          "de_mean": 1.6300978660583496,
+          "de_p95": 4.069483280181885,
+          "chroma_kept": 0.9957872033119202,
+          "contrast_kept": 0.9993185997009277,
+          "detail_kept": 0.1258204733022913,
+          "levels_kept": 1.0
+        },
+        "usual_after_facebook": {
+          "ssim": 0.9320778733961824,
+          "de_mean": 2.252497911453247,
+          "de_p95": 4.850881576538086,
+          "chroma_kept": 0.8600249290466309,
+          "contrast_kept": 0.9997594356536865,
+          "detail_kept": 0.17677100536000853,
+          "levels_kept": 1.0
+        },
+        "photos": 5,
+        "source_mb": 2.515422,
+        "export_mb": 1.614583,
+        "size_ratio": 0.6385463249018911
+      },
+      "export_seconds_20_photos": 1.391,
+      "photos_per_second": 14.4
+    },
+    "facebook": {
+      "srgb": {
+        "fotollection": {
+          "ssim": 0.9789981858306385,
+          "de_mean": 1.2708678245544434,
+          "de_p95": 3.339565873146057,
+          "chroma_kept": 0.9988393187522888,
+          "contrast_kept": 0.9998275339603424,
+          "detail_kept": 1.0330052455746168,
+          "levels_kept": 1.0
+        },
+        "fotollection_after_facebook": {
+          "ssim": 0.9648985067397873,
+          "de_mean": 1.665782868862152,
+          "de_p95": 4.265454053878784,
+          "chroma_kept": 0.996037632226944,
+          "contrast_kept": 0.9992177784442902,
+          "detail_kept": 0.7596051027744627,
+          "levels_kept": 1.0
+        },
+        "usual_after_facebook": {
+          "ssim": 0.9612232410525005,
+          "de_mean": 1.7377734184265137,
+          "de_p95": 4.418089866638184,
+          "chroma_kept": 1.003032624721527,
+          "contrast_kept": 0.9991417825222015,
+          "detail_kept": 0.7850114731606668,
+          "levels_kept": 1.0
+        },
+        "photos": 20,
+        "source_mb": 3.084607,
+        "export_mb": 0.5057845,
+        "size_ratio": 0.16286639833510103
+      },
+      "displayP3": {
+        "fotollection": {
+          "ssim": 0.9777347466284051,
+          "de_mean": 1.2869316339492798,
+          "de_p95": 3.2698545455932617,
+          "chroma_kept": 0.9981253147125244,
+          "contrast_kept": 1.0002045631408691,
+          "detail_kept": 0.9686785355730684,
+          "levels_kept": 1.0
+        },
+        "fotollection_after_facebook": {
+          "ssim": 0.964693312120425,
+          "de_mean": 1.6238207817077637,
+          "de_p95": 4.081267833709717,
+          "chroma_kept": 0.995617151260376,
+          "contrast_kept": 0.9997686743736267,
+          "detail_kept": 0.6779174036667627,
+          "levels_kept": 1.0
+        },
+        "usual_after_facebook": {
+          "ssim": 0.9606999918903484,
+          "de_mean": 2.199859857559204,
+          "de_p95": 4.7493720054626465,
+          "chroma_kept": 0.8602426052093506,
+          "contrast_kept": 0.9999774098396301,
+          "detail_kept": 0.7575681382455869,
+          "levels_kept": 1.0
+        },
+        "photos": 5,
+        "source_mb": 2.515422,
+        "export_mb": 0.489942,
+        "size_ratio": 0.19477527031249628
+      },
+      "export_seconds_20_photos": 0.874,
+      "photos_per_second": 22.9
+    },
+    "instagram": {
+      "srgb": {
+        "fotollection": {
+          "ssim": 0.9818716879745439,
+          "de_mean": 1.5798161625862122,
+          "de_p95": 4.340588331222534,
+          "chroma_kept": 0.9985574781894684,
+          "contrast_kept": 0.9998816847801208,
+          "detail_kept": 1.1456713130883909,
+          "levels_kept": 1.0
+        },
+        "fotollection_after_facebook": {
+          "ssim": 0.9682853209205626,
+          "de_mean": 2.021255612373352,
+          "de_p95": 5.407003879547119,
+          "chroma_kept": 0.9947786033153534,
+          "contrast_kept": 0.9990040361881256,
+          "detail_kept": 0.8878809571551208,
+          "levels_kept": 1.0
+        },
+        "usual_after_facebook": {
+          "ssim": 0.9795099563411793,
+          "de_mean": 1.6495032906532288,
+          "de_p95": 4.259422302246094,
+          "chroma_kept": 1.0031273365020752,
+          "contrast_kept": 0.9992997646331787,
+          "detail_kept": 1.026396298098657,
+          "levels_kept": 1.0
+        },
+        "photos": 20,
+        "source_mb": 3.084607,
+        "export_mb": 0.244097,
+        "size_ratio": 0.08333206729463963
+      },
+      "displayP3": {
+        "fotollection": {
+          "ssim": 0.9812272987823352,
+          "de_mean": 1.4866809844970703,
+          "de_p95": 3.86348819732666,
+          "chroma_kept": 0.9983071684837341,
+          "contrast_kept": 1.0002690553665161,
+          "detail_kept": 1.1003440615033957,
+          "levels_kept": 1.003921568627451
+        },
+        "fotollection_after_facebook": {
+          "ssim": 0.9680179729553969,
+          "de_mean": 1.851664423942566,
+          "de_p95": 4.828434467315674,
+          "chroma_kept": 0.9948830008506775,
+          "contrast_kept": 0.9996362328529358,
+          "detail_kept": 0.8767409196759037,
+          "levels_kept": 1.0
+        },
+        "usual_after_facebook": {
+          "ssim": 0.9773226653067236,
+          "de_mean": 2.130420446395874,
+          "de_p95": 4.649115562438965,
+          "chroma_kept": 0.8602505326271057,
+          "contrast_kept": 1.000064492225647,
+          "detail_kept": 1.0413389576079235,
+          "levels_kept": 1.003921568627451
+        },
+        "photos": 5,
+        "source_mb": 2.515422,
+        "export_mb": 0.267638,
+        "size_ratio": 0.1063988467938978
+      },
+      "export_seconds_20_photos": 0.633,
+      "photos_per_second": 31.6
+    }
+  }
+}

@@ -568,14 +568,14 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 - **Export target:** *Print* (the full-quality print export, [FR-008](#fr-008--original-quality-export)) or *Share online*, chosen in the **Print / export size** card together with the size (the print size for prints, the platform for sharing), in the settings panel and in the preview; the export card then only exports. The choice is remembered (`settings.json` `render.exportTarget`, schema v8).
 - **Sizes:** never enlarged, the photo's own aspect ratio kept (no print crop):
-  - **Original size:** same width and height, only a lighter file (a 10 MB camera JPEG becomes about 3 MB);
+  - **Original size:** same width and height, only a lighter file (measured: a 3 MB compact-camera JPEG becomes 1.4 MB; large, lightly compressed camera files shrink more);
   - **Facebook:** 2048 px on the long edge, the size Facebook shows without resizing;
   - **Instagram:** 1080 px wide; portraits stop at 3:4 (1080 × 1440), as Instagram crops anything taller;
   - **Custom:** a long edge of 640–6000 px, clamped in Rust.
-- **Pipeline:** the photo's edits (crop, straightening, date stamp, info frame) as for prints, then conversion to **sRGB** ([FR-027](#fr-027--srgb-conversion-for-labs)), a light unsharp mask after a downscale, JPEG at quality 88 with 4:2:0 chroma and optimized Huffman tables.
+- **Pipeline:** the photo's edits (crop, straightening, date stamp, info frame) as for prints, then conversion to **sRGB** ([FR-027](#fr-027--srgb-conversion-for-labs)), a light unsharp mask (0.2) after a downscale, JPEG with 4:2:0 chroma and optimized Huffman tables, at quality 88, or 80 for *Original*.
 - **Metadata:** camera, lens, exposure and capture time, and `Software = "Fotollection <version>"`, which phone galleries show as the editing app (as they do for Snapseed). **GPS is never written** ([FR-010](#fr-010--metadata-privacy-on-export)).
 - **Where:** `<destination>/Share/<YYYY-MM-DD>/`, apart from prints.
-- **Measured, not guessed:** the "90 %" target is checked with `bench/quality/share_audit.py` against the original resized with Lanczos (mean ΔE2000 ≤ 1.0, chroma ≥ 97 %, detail ≥ 90 %), and again after a simulated Facebook recompression ([RESULT.md](RESULT.md)).
+- **Measured, not guessed** ([RESULT.md §10](RESULT.md#10-photos-for-social-media)): against the original resized with Lanczos, SSIM ≈ 0.98 for every preset and mean ΔE2000 0.96 for *Original* (at about half the file); after a simulated Facebook recompression, closer to the photo than the usual way and 99.6 % of the colour of Display P3 photos kept (86 % the usual way). Resized photos stay at ΔE2000 1.3–1.6 because of the 4:2:0 chroma every platform recompresses to.
 
 ### FR-054 — Open photos with Fotollection
 

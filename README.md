@@ -157,6 +157,19 @@ Why a web-editor print looks flat, and what Fotollection does instead:
 
 The test used 20 photos from a Canon compact, plus 5 of them converted to Display P3 with macOS's own profile. The web editor is simulated with standard settings (sRGB assumed, profile dropped, 4:2:0, q80, 2000 px, upscaled back for print). Reproduce it with `cargo run --release -p fotollection-core --example quality_export -- <out> <photos…>`, then `uv run bench/quality/audit.py <photos> <out>`.
 
+### Photos for social media
+
+The *Share online* export makes light sRGB files with the camera details, sized for each platform. Measured on the same photos, then recompressed the way Facebook does ([RESULT.md §10](docs/RESULT.md#10-photos-for-social-media)):
+
+![After Facebook recompresses: colour saturation kept on Display P3 photos 99.6 % against 86 %; difference from the original 3.5 % against 3.9 %; file size 3.08 MB camera file, 1.42 MB original size, 0.51 MB for Facebook.](docs/images/bench-share.svg)
+
+| Median | Original size | Facebook, 2048 px |
+|------|-----:|-----:|
+| File size (camera JPEGs, 3.08 MB) | 1.42 MB | 0.51 MB |
+| Similarity to the original (SSIM, 1 = identical) | 0.981 | 0.979 |
+| Colour error, ΔE2000 mean | 0.96 | 1.27 |
+| After Facebook: colour of Display P3 photos kept, against the usual way | — | **99.6 %** against 86 % |
+
 ### How good are the best-shot suggestions?
 
 Speed is not enough for a feature that suggests which photo to keep, so best-shot suggestions are also scored for accuracy. 95 real photos (people, food, streets, night shots, sunsets) were labelled by hand: 22 groups of shots of one moment, and for 6 of them the photo that should be kept. `eval_bestshot` compares the app's groups and picks with those labels.

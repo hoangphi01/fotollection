@@ -122,6 +122,25 @@ def quality_estimate(img: Image.Image) -> int | None:
     return best
 
 
+def box_mean(x: np.ndarray, r: int = 3) -> np.ndarray:
+    """Mean over a (2r+1)² window, through a summed-area table (edges use what fits)."""
+    k = 2 * r + 1
+    c = np.pad(x, ((1, 0), (1, 0))).cumsum(0).cumsum(1)
+    s = c[k:, k:] - c[:-k, k:] - c[k:, :-k] + c[:-k, :-k]
+    return s / (k * k)
+
+
+def ssim(a: np.ndarray, b: np.ndarray) -> float:
+    """Structural similarity of two luma planes (7×7 windows, the usual constants). 1 is
+    identical; blur, blocking and ringing all lower it, which a sharpness count cannot tell."""
+    c1, c2 = (0.01 * 255) ** 2, (0.03 * 255) ** 2
+    a, b = a.astype(np.float64), b.astype(np.float64)
+    ma, mb = box_mean(a), box_mean(b)
+    va, vb, cov = box_mean(a * a) - ma**2, box_mean(b * b) - mb**2, box_mean(a * b) - ma * mb
+    m = ((2 * ma * mb + c1) * (2 * cov + c2)) / ((ma**2 + mb**2 + c1) * (va + vb + c2))
+    return float(m.mean())
+
+
 def compare(src: Image.Image, out: Image.Image, icc_src: bytes | None, icc_out: bytes | None) -> dict:
     a = np.asarray(src.convert("RGB"), dtype=np.float32)
     b = np.asarray(out.convert("RGB"), dtype=np.float32)
@@ -131,6 +150,7 @@ def compare(src: Image.Image, out: Image.Image, icc_src: bytes | None, icc_out: 
     luma = lambda x: np.round(0.299 * x[..., 0] + 0.587 * x[..., 1] + 0.114 * x[..., 2])
     return {
         "psnr": 99.0 if mse == 0 else 10 * np.log10(255**2 / mse),
+        "ssim": ssim(luma(a), luma(b)),
         "de_mean": float(de.mean()),
         "de_p95": float(np.percentile(de, 95)),
         "chroma_kept": float(np.hypot(lb[..., 1], lb[..., 2]).mean() / max(np.hypot(la[..., 1], la[..., 2]).mean(), 1e-9)),
@@ -179,7 +199,7 @@ def main() -> None:
                 "quality": quality_estimate(out),
             }
         )
-    keys = ["psnr", "de_mean", "de_p95", "chroma_kept", "contrast_kept", "detail_kept", "levels_kept"]
+    keys = ["psnr", "ssim", "de_mean", "de_p95", "chroma_kept", "contrast_kept", "detail_kept", "levels_kept"]
     summary = {
         who: {k: float(np.median([r[who][k] for r in rows])) for k in keys} for who in ["fotollection", "web_editor"]
     }

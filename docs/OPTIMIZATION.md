@@ -176,6 +176,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-10-24 | Stage 3 | REF-MAC (M3) | Best-shot grouping signature (32 × 24 luma + colour histogram, ADR-0019) computed on the 1,024 px image, then on a 256 px halving | no faces p50 19.9 / p95 20.5 ms → 17.4 / 18.1 ms; with faces p50 27.6 ms | NFR-014 ✓ kept; accuracy unchanged (15/22 groups, 6/6 picks) |
 | 2026-10-24 | FR-005 | REF-MAC (M3) | Offline places (`measure_geocode`): 161,937 GeoNames towns, 5.4 MB | first load 25 ms (checksum + grid), reverse 4.6 µs per lookup, search 25 ms per query | Lookup is negligible next to import (NFR-001); search is fast enough to run on every keystroke (NFR-005) |
 | 2026-10-24 | FR-006 | REF-MAC (M3) | Straighten: `render_one` render step, 16 MP photo to a full-size 3:2 crop, 0° vs 4.5°, 5 runs each | 0°: median 8 ms; 4.5°: median 61 ms (bicubic over the crop only, rayon rows) | +53 ms only for straightened photos; decode stays 46 ms. A level photo takes the unchanged lossless path |
+| 2026-10-25 | FR-053 | REF-MAC (M3) | Share export, 20 × 16 MP JPEG + 5 Display P3 (`quality_export --share`, `share_audit.py`) | Original q80: 1.42 MB (46 %), ΔE 0.96, SSIM 0.981, 14 photos/s · Facebook q88 + sharpen 0.2: 0.51 MB, SSIM 0.979, ΔE 1.27, 23 photos/s · after Facebook: SSIM 0.965 vs 0.961, P3 colour 99.6 % vs 86 % for the usual way | Sweep: q80/84/88 × sharpen 0/0.2/0.35; RESULT §10 |
 
 ## 6. Benchmark corpus
 

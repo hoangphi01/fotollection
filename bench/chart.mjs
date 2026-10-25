@@ -9,6 +9,7 @@
 //   bench-memory.svg   peak memory vs batch size (reference: 2 GB ceiling)
 //   bench.svg          Fotollection vs Chromium (reference: the browser)
 //   bench-preview.svg  where the warm preview time goes (reference: budget and Chromium)
+//   bench-share.svg    share export after Facebook's recompression, vs the usual way (FR-053)
 
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -52,6 +53,7 @@ const batch = batches[0]
 const budgets = read('budgets.json')
 const bestshot = read('bestshot.json')
 const quality = read('quality.json')
+const share = read('share.json')
 const meta = read('machine.json')
 if (!rust || !web) throw new Error('run bench/run.sh first')
 
@@ -118,6 +120,17 @@ const T = {
     qVisible: 'visible at 1',
     qFooter: (n, m) =>
       `${n} camera JPEGs and ${m} Display P3 versions, every pixel compared with the original · web editor: profile dropped, 4:2:0, q80, 2000 px`,
+    shTitle: 'Photos for Facebook: what viewers see after Facebook recompresses them',
+    shUsual: 'Usual way',
+    shChroma: 'Colour saturation kept (Display P3, like iPhone photos)',
+    shDiff: 'Difference from the original, 1 − SSIM (camera JPEGs)',
+    shSize: 'File size per photo (camera JPEGs)',
+    shSource: 'Camera file',
+    shOriginal: 'Original size',
+    shFacebook: 'Facebook, 2048 px',
+    shMb: 'MB · lower is lighter',
+    shFooter: (n, m) =>
+      `${n} camera JPEGs and ${m} Display P3 versions · usual way: 2000 px, q80, profile dropped · Facebook: q71, 4:2:0, ≤ 2048 px`,
     bsTitle: 'Best-shot suggestions, step by step',
     bsGroups: (n) => `Groups found, of ${n} labelled by hand`,
     bsPicks: 'Suggested photo acceptable, in labelled groups with a clear best',
@@ -171,6 +184,17 @@ const T = {
     qVisible: 'thấy được từ 1',
     qFooter: (n, m) =>
       `${n} ảnh JPEG máy ảnh và ${m} bản Display P3, so từng điểm ảnh với ảnh gốc · web editor: bỏ profile, 4:2:0, q80, 2000 px`,
+    shTitle: 'Ảnh đăng Facebook: người xem thấy gì sau khi Facebook nén lại',
+    shUsual: 'Cách thông thường',
+    shChroma: 'Độ bão hoà màu giữ lại (Display P3, như ảnh iPhone)',
+    shDiff: 'Khác biệt so với ảnh gốc, 1 − SSIM (ảnh JPEG máy ảnh)',
+    shSize: 'Dung lượng mỗi ảnh (ảnh JPEG máy ảnh)',
+    shSource: 'File máy ảnh',
+    shOriginal: 'Giữ cỡ gốc',
+    shFacebook: 'Facebook, 2048 px',
+    shMb: 'MB · càng thấp càng nhẹ',
+    shFooter: (n, m) =>
+      `${n} ảnh JPEG máy ảnh và ${m} bản Display P3 · cách thông thường: 2000 px, q80, bỏ profile · Facebook: q71, 4:2:0, ≤ 2048 px`,
     bsTitle: 'Gợi ý ảnh đẹp nhất, từng bước cải tiến',
     bsGroups: (n) => `Số nhóm tìm được, trên ${n} nhóm gán nhãn tay`,
     bsPicks: 'Ảnh được gợi ý chấp nhận được, ở các nhóm có ảnh tốt nhất rõ ràng',
@@ -429,6 +453,62 @@ function charts(lang) {
     out['bench-quality'] = doc(t.qTitle, desc, h, body)
   }
 
+  // 7. Share export (FR-053): after Facebook's recompression, Fotollection vs the usual way.
+  {
+    const fb = share.presets.facebook
+    const S = fb.srgb
+    const P = fb.displayP3
+    const rows = [
+      { name: t.rust, cls: 's1', who: 'fotollection_after_facebook' },
+      { name: t.shUsual, cls: 's2', who: 'usual_after_facebook' },
+    ]
+    const panels = [
+      { title: t.shChroma, unit: t.qPercent, v: (w) => P[w].chroma_kept * 100, max: 100, fmt: (v) => `${f(v, 1)} %` },
+      { title: t.shDiff, unit: t.qDeUnit, v: (w) => (1 - S[w].ssim) * 100, max: 5, fmt: (v) => `${f(v, 1)} %` },
+    ]
+    const ph = 30 + rows.length * 30 + 18
+    let body = ''
+    panels.forEach((p, i) => {
+      const y0 = 34 + i * ph
+      body += `<text class="t1" x="0" y="${y0 + 14}">${esc(p.title)}</text>`
+      body += `<text class="t3" x="${W}" y="${y0 + 14}" text-anchor="end">${esc(p.unit)}</text>`
+      rows.forEach((r, j) => {
+        const y = y0 + 26 + j * 30
+        const v = p.v(r.who)
+        const w = Math.max(4, (PLOT * Math.min(v, p.max)) / p.max)
+        body += `<text class="t2" x="${LEFT - 10}" y="${y + 15}" text-anchor="end">${esc(r.name)}</text>`
+        body += bar(r.cls, LEFT, y, w, 22, `${r.name}: ${p.fmt(v)}`)
+        body += `<text class="t1 num" x="${LEFT + w + 8}" y="${y + 16}">${esc(p.fmt(v))}</text>`
+      })
+      body += `<line class="axis" x1="${LEFT}" x2="${LEFT}" y1="${y0 + 22}" y2="${y0 + 26 + rows.length * 30 - 4}"/>`
+    })
+    // File size: the camera file, then what each preset writes.
+    const sizes = [
+      { name: t.shSource, cls: 's3', v: share.presets.original.srgb.source_mb },
+      { name: t.shOriginal, cls: 's1', v: share.presets.original.srgb.export_mb },
+      { name: t.shFacebook, cls: 's1', v: S.export_mb },
+    ]
+    const y0 = 34 + panels.length * ph
+    const maxMb = Math.max(...sizes.map((s) => s.v))
+    body += `<text class="t1" x="0" y="${y0 + 14}">${esc(t.shSize)}</text>`
+    body += `<text class="t3" x="${W}" y="${y0 + 14}" text-anchor="end">${esc(t.shMb)}</text>`
+    sizes.forEach((s, j) => {
+      const y = y0 + 26 + j * 30
+      const w = Math.max(4, (PLOT * s.v) / maxMb)
+      body += `<text class="t2" x="${LEFT - 10}" y="${y + 15}" text-anchor="end">${esc(s.name)}</text>`
+      body += bar(s.cls, LEFT, y, w, 22, `${s.name}: ${f(s.v, 2)} MB`)
+      body += `<text class="t1 num" x="${LEFT + w + 8}" y="${y + 16}">${esc(`${f(s.v, 2)} MB`)}</text>`
+    })
+    body += `<line class="axis" x1="${LEFT}" x2="${LEFT}" y1="${y0 + 22}" y2="${y0 + 26 + sizes.length * 30 - 4}"/>`
+    const h = y0 + 26 + sizes.length * 30 + 22
+    body += `<text class="t3" x="0" y="${h - 4}">${esc(t.shFooter(f(S.photos, 0), f(P.photos, 0)))}</text>`
+    const desc = rows
+      .map((r) => `${r.name}: ${panels.map((p) => `${p.title} ${p.fmt(p.v(r.who))}`).join(', ')}`)
+      .concat(sizes.map((s) => `${s.name} ${f(s.v, 2)} MB`))
+      .join('. ')
+    out['bench-share'] = doc(t.shTitle, desc, h, body)
+  }
+
   // 5. Best-shot accuracy per improvement step (higher is better), against the labels.
   {
     const steps = bestshot.steps
@@ -479,9 +559,9 @@ for (const lang of ['en', 'vi']) {
     writeFileSync(join(images, `${name}${lang === 'en' ? '' : '-vi'}.svg`), svg)
   }
 }
-// The website shows three of them in its own colours (site/README.md).
+// The website shows these in its own colours: the home page and the performance page (site/README.md).
 STYLE = styleFor(THEMES.site)
-const SITE_CHARTS = ['bench-budgets', 'bench-quality', 'bench-bestshot']
+const SITE_CHARTS = ['bench-budgets', 'bench-quality', 'bench-share', 'bench-bestshot', 'bench-memory', 'bench']
 mkdirSync(join(root, 'site/assets/img/charts'), { recursive: true })
 for (const lang of ['en', 'vi']) {
   const all = charts(lang)

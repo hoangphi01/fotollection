@@ -1,6 +1,6 @@
 # Measured Results — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-10-23
+> **Status:** Living · **Last reviewed:** 2026-10-25
 >
 > The **latest measured numbers** for speed and memory, in one readable page. Each number links to the run that produced it.
 > This page is a summary. The append-only history of every measurement is the benchmark log in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log), and the budgets are defined in [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets). When a new run changes a number, update this page and add the row to §5 in the same commit.
@@ -157,4 +157,38 @@ cargo run --release -p fotollection-core --example eval_bestshot -- ~/Pictures/s
 ```bash
 cargo run --release -p fotollection-core --example quality_export -- /tmp/out ~/Pictures/some-folder/*.JPG
 uv run bench/quality/audit.py ~/Pictures/some-folder /tmp/out --json bench/results/quality-run.json
+```
+
+## 10. Photos for social media
+
+The share export ([FR-053](PRD.md#fr-053--export-for-social-media)) has to make light files that still look like the photo once Facebook has recompressed them. `bench/quality/share_audit.py` checks this on the same 20 camera JPEGs (16 MP, about 3 MB each) and 5 Display P3 versions:
+
+- **Reference:** the original in sRGB, resized to the export's size with Lanczos, never compressed: the best that size can look.
+- **After Facebook:** the export recompressed as Facebook does (q71, 4:2:0, at most 2048 px), next to the usual way (a web editor saving 2000 px at q80 without the profile, then the same recompression).
+- **Measures:** SSIM (structural similarity; 1 is identical, and blur, blocking and ringing all lower it), ΔE2000 and colour saturation kept. The sharpness count of §9 is not used here: on recompressed files it counts JPEG artefacts as detail.
+- **Data:** `bench/results/share.json`.
+
+![Share export after Facebook's recompression](images/bench-share.svg)
+
+| Median | Original size | Facebook, 2048 px | Instagram, 1080 px |
+|------|-----:|-----:|-----:|
+| File size (camera JPEGs, 3.08 MB) | 1.42 MB (46 %) | 0.51 MB (16 %) | 0.24 MB (8 %) |
+| SSIM against the reference | 0.981 | 0.979 | 0.982 |
+| ΔE2000 mean / 95th percentile | **0.96** / 2.51 | 1.27 / 3.34 | 1.58 / 4.34 |
+| Colour saturation kept (Display P3) | 100 % | 99.8 % | 99.8 % |
+| Export speed, 16 MP | 14 photos/s | 23 photos/s | 32 photos/s |
+
+| After Facebook recompresses (median) | Fotollection | Usual way |
+|------|-----:|-----:|
+| SSIM, camera JPEGs | **0.965** | 0.961 |
+| ΔE2000 mean, camera JPEGs / Display P3 | **1.67 / 1.62** | 1.74 / 2.20 |
+| Colour saturation kept, Display P3 | **99.6 %** | 86.0 % |
+
+- **Settings, chosen by measurement:** quality 88 with 4:2:0 for resized photos, sharpening 0.2 after the downscale (0.35 scored lower SSIM, q84 and q80 lost more than they saved), and quality 80 for *Original*, which keeps ΔE2000 under 1 at half the file size.
+- **Result:** the *Original* preset meets its targets (ΔE2000 < 1, about half the size of an already compressed compact-camera JPEG; larger, less compressed camera files shrink more). Resized photos keep SSIM ≈ 0.98, but their ΔE2000 of 1.27–1.58 is above 1: 4:2:0 chroma, which Facebook applies to every upload anyway, softens colour edges.
+- **What viewers see:** after Facebook's own recompression, Fotollection's file stays closer to the photo than the usual way (SSIM 0.965 against 0.961), and keeps the colour of Display P3 photos (99.6 % against 86 %), which the usual way loses by dropping the profile.
+
+```bash
+cargo run --release -p fotollection-core --example quality_export -- --share facebook /tmp/share ~/Pictures/some-folder/*.JPG
+uv run bench/quality/share_audit.py ~/Pictures/some-folder /tmp/share --json bench/results/share-run.json
 ```

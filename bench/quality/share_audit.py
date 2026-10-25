@@ -77,7 +77,7 @@ def main() -> None:
                 "usual_after_facebook": web_fb,
             }
         )
-    keys = ["de_mean", "de_p95", "chroma_kept", "contrast_kept", "detail_kept", "levels_kept"]
+    keys = ["ssim", "de_mean", "de_p95", "chroma_kept", "contrast_kept", "detail_kept", "levels_kept"]
     med = lambda who, k: float(np.median([r[who][k] for r in rows]))
     summary = {who: {k: med(who, k) for k in keys} for who in ["fotollection", "fotollection_after_facebook", "usual_after_facebook"]}
     summary["photos"] = len(rows)

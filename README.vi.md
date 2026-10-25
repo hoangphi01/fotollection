@@ -158,6 +158,19 @@ Vì sao in qua web editor trông nông màu, và Fotollection làm khác thế n
 
 Bài kiểm tra dùng 20 ảnh từ máy Canon compact, cộng thêm 5 ảnh trong số đó được chuyển sang Display P3 bằng profile có sẵn của macOS. Web editor được mô phỏng theo cài đặt phổ biến (coi là sRGB, bỏ profile, 4:2:0, q80, 2000 px, phóng to lại khi in). Đo lại bằng `cargo run --release -p fotollection-core --example quality_export -- <thư-mục-xuất> <ảnh…>`, rồi `uv run bench/quality/audit.py <thư-mục-ảnh> <thư-mục-xuất>`.
 
+### Ảnh đăng mạng xã hội
+
+Kiểu xuất *Mạng xã hội* tạo file sRGB nhẹ, giữ thông số máy, đúng cỡ từng nền tảng. Đo trên cùng bộ ảnh, rồi nén lại như Facebook làm ([RESULT.md §10](docs/RESULT.md#10-photos-for-social-media), tiếng Anh):
+
+![Sau khi Facebook nén lại: độ bão hoà màu giữ lại với ảnh Display P3 99,6 % so với 86 %; khác biệt so với ảnh gốc 3,5 % so với 3,9 %; dung lượng: file máy ảnh 3,08 MB, giữ cỡ gốc 1,42 MB, Facebook 0,51 MB.](docs/images/bench-share-vi.svg)
+
+| Trung vị | Giữ cỡ gốc | Facebook, 2048 px |
+|------|-----:|-----:|
+| Dung lượng (ảnh JPEG máy ảnh, 3,08 MB) | 1,42 MB | 0,51 MB |
+| Độ giống ảnh gốc (SSIM, 1 = giống hệt) | 0,981 | 0,979 |
+| Sai lệch màu, ΔE2000 trung bình | 0,96 | 1,27 |
+| Sau khi Facebook nén: màu ảnh Display P3 giữ lại, so với cách thông thường | — | **99,6 %** so với 86 % |
+
 ### Gợi ý ảnh đẹp nhất chính xác đến đâu?
 
 Với tính năng gợi ý nên giữ ảnh nào, nhanh thôi chưa đủ, nên gợi ý ảnh đẹp nhất còn được chấm điểm độ chính xác. 95 ảnh thật (người, đồ ăn, phố, cảnh đêm, hoàng hôn) được gán nhãn bằng tay: 22 nhóm ảnh chụp cùng một khoảnh khắc, và ở 6 nhóm có ghi rõ ảnh nên giữ. `eval_bestshot` so các nhóm và lựa chọn của app với các nhãn đó.
