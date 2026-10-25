@@ -18,7 +18,7 @@
     "title": "Thư viện",
     "openFolder": "Mở thư mục",
     "noFolders": "Chưa có thư mục nào",
-    "skipped_other": "Đã bỏ qua {{count}} file (RAW sắp có)",
+    "skipped_other": "Đã bỏ qua {{count}} tệp (RAW sắp có)",
     "dropTip": "Mẹo: thả một thư mục vào bất kỳ đâu",
     "emptyTitle": "Bắt đầu với một thư mục ảnh",
     "emptyBody": "JPEG, PNG và HEIC. Mọi thứ đều ở lại trên máy này.",
@@ -28,7 +28,7 @@
     "refresh": "Làm mới thư mục",
     "refreshHint": "Tìm ảnh mới được thêm vào các thư mục này; các chỉnh sửa được giữ nguyên",
     "removeFolder": "Gỡ {{name}} khỏi thư viện",
-    "removeFolderHint": "Gỡ khỏi thư viện (file vẫn còn nguyên trên máy)",
+    "removeFolderHint": "Gỡ khỏi thư viện (tệp vẫn còn nguyên trên máy)",
     "allPhotos": "Tất cả ảnh",
     "folderHint": "Chỉ hiện thư mục này",
     "allHint": "Toàn bộ ảnh của mọi thư mục",
@@ -127,8 +127,8 @@
     },
     "location": "Địa điểm cùng dòng ngày",
     "soon": "Sắp có",
-    "locationTip": "Tên địa điểm offline sẽ có ở bản sau (FR-005)",
-    "footer": "Offline · đã xóa GPS",
+    "locationTip": "Tra tên địa điểm ngay trên máy, không cần mạng, sẽ có ở bản sau (FR-005)",
+    "footer": "Không cần mạng · đã xóa GPS",
     "locationHint": "Lấy từ GPS của ảnh, ở mức thành phố, không cần mạng.",
     "placeFormat": {
       "city": "Thành phố",
@@ -185,7 +185,7 @@
       "date": "Ngày",
       "place": "Địa điểm"
     },
-    "placeHint": "Cần tên địa điểm offline (FR-005)",
+    "placeHint": "Cần tra tên địa điểm không cần mạng (FR-005)",
     "keepsSize": "Toàn bộ ảnh in, kể cả khung, giữ đúng khổ đã chọn.",
     "editInPreview": "Sửa máy ảnh, ống kính và Photo Style trong màn xem trước.",
     "logoStyle": "Màu logo",
@@ -240,13 +240,13 @@
       "longEdge": "Cạnh dài (px)"
     },
     "preset": {
-      "original": "Giữ cỡ gốc, file nhẹ hơn",
+      "original": "Giữ cỡ gốc, tệp nhẹ hơn",
       "facebook": "Facebook · 2048 px",
       "instagram": "Instagram · 1080 px",
       "custom": "Cỡ tùy chỉnh"
     },
     "presetHint": {
-      "original": "Giữ nguyên điểm ảnh, file còn khoảng một nửa hoặc ít hơn · sRGB · giữ thông số máy, xóa GPS",
+      "original": "Giữ nguyên điểm ảnh, tệp còn khoảng một nửa hoặc ít hơn · sRGB · giữ thông số máy, xóa GPS",
       "facebook": "Đúng cỡ Facebook ưa thích nên không bị thu nhỏ lại · sRGB · giữ thông số máy, xóa GPS",
       "instagram": "Ngang 1080 px, ảnh dọc tối đa 3:4 · sRGB · giữ thông số máy, xóa GPS",
       "custom": "Cạnh dài 640–6000 px · sRGB · giữ thông số máy, xóa GPS"
@@ -279,7 +279,7 @@
     "next": "Ảnh sau",
     "ratingFlag": "Sao & cờ",
     "captured": "Ngày chụp",
-    "noExifDate": "Không có ngày EXIF · dùng thời gian của file",
+    "noExifDate": "Không có ngày EXIF · dùng thời gian của tệp",
     "fromExif": "Từ EXIF",
     "camera": "Máy ảnh",
     "unknownCamera": "Không rõ máy ảnh",
@@ -331,29 +331,29 @@
       "cancelled": "Đã hủy xuất ảnh",
       "empty": "Không có ảnh nào để xuất",
       "no_destination": "Hãy chọn nơi lưu trước",
-      "write_failed": "Không ghi được file"
+      "write_failed": "Không ghi được tệp"
     },
     "font": {
       "invalid": "Đây không phải font hợp lệ",
       "missing_digits": "Font không có chữ số 0–9",
-      "too_large": "File font lớn hơn 20 MB",
+      "too_large": "Tệp phông chữ lớn hơn 20 MB",
       "too_many": "Chỉ nhập được tối đa 50 font",
-      "unreadable": "Không đọc được file font",
+      "unreadable": "Không đọc được tệp phông chữ",
       "unsupported": "Chỉ hỗ trợ font OTF và TTF",
       "write_failed": "Không lưu được font"
     },
     "import": {
-      "suspicious": "File có dấu hiệu bất thường nên đã bị bỏ qua",
-      "too_large": "File quá lớn",
-      "unreadable": "Không đọc được file",
+      "suspicious": "Tệp có dấu hiệu bất thường nên đã bị bỏ qua",
+      "too_large": "Tệp quá lớn",
+      "unreadable": "Không đọc được tệp",
       "unsupported": "Định dạng này chưa được hỗ trợ",
       "heic_codec_missing": "HEIC cần cài \"HEIF Image Extensions\" và \"HEVC Video Extensions\" từ Microsoft Store"
     },
     "logo": {
       "decode_failed": "Không giải mã được logo",
-      "not_png": "Logo phải là file PNG",
+      "not_png": "Logo phải là tệp PNG",
       "too_large": "Logo lớn hơn 2 MB hoặc 4096 px",
-      "unreadable": "Không đọc được file logo",
+      "unreadable": "Không đọc được tệp logo",
       "write_failed": "Không lưu được logo"
     },
     "photo": {
@@ -367,12 +367,12 @@
     "project": {
       "not_a_project": "Đây không phải dự án Fotollection",
       "newer_version": "Dự án này được lưu bằng phiên bản Fotollection mới hơn",
-      "corrupt": "File dự án bị hỏng",
-      "too_large": "File dự án quá lớn",
+      "corrupt": "Tệp dự án bị hỏng",
+      "too_large": "Tệp dự án quá lớn",
       "write_failed": "Không lưu được dự án",
       "unknown_folder": "Thư mục này không bị thiếu",
       "invalid_name": "Hãy dùng tên không chứa / \\\\ : * ? \" < > | (tối đa 120 ký tự)",
-      "name_taken": "Trong thư mục đã có file trùng tên này",
+      "name_taken": "Trong thư mục đã có tệp trùng tên này",
       "rename_failed": "Không đổi tên được dự án"
     },
     "culling": {

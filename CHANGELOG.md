@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- **Vietnamese:** the app and the website speak plain Vietnamese: *tệp* for file, *ứng dụng* for app, *mã nguồn* for code, *hồ sơ màu* for colour profile, *không cần mạng* for offline, *phông chữ* for font.
+
+### Website
+
+- **No ads** is now one of the privacy promises on the home page. The coffee note in the footnotes reads as a choice that helps the app grow.
+
 ## [0.6.0] - 2026-10-25
 
 ### Highlights

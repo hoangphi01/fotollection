@@ -90,7 +90,7 @@ en:
   fn_title: Notes
   fn_label: Note
   fn_back: Back to the text
-  fn_open: Free means no price, no ads and no in-app purchases; buying the author a coffee is optional. Open source means the full source code is public on GitHub under the GPL-3.0 licence, so anyone can read, build and check what the app does. No account means the app never asks who you are and has nothing to sign in to.
+  fn_open: Free means no price, no ads and no in-app purchases; buying the author a coffee is your choice, and it helps the author keep improving Fotollection. Open source means the full source code is public on GitHub under the GPL-3.0 licence, so anyone can read, build and check what the app does. No account means the app never asks who you are and has nothing to sign in to.
   perf_speed_fn: [4, 5]
   fn_rust: "Rust and the Rust logo are trademarks of the Rust Foundation. Fotollection's core is written in Rust and runs directly on your computer."
   fn_webview: "The app's window is built with Tauri and drawn by the system's own web view: WebKit (WKWebView) on macOS and Microsoft Edge WebView2 on Windows. Tauri is a project of the Tauri Programme within the Commons Conservancy; WebKit is a trademark of Apple Inc.; Microsoft Edge and WebView2 are trademarks of Microsoft Corporation. The browser comparison ran the same job in headless Chromium 156, the open-source project behind Google Chrome, with one Web Worker per processor core."
@@ -116,6 +116,8 @@ en:
   p1_text: Photos are read and written on your own disk. There is no server to send them to.
   p2_title: No account, no tracking
   p2_text: No sign-up, and the app has no analytics or telemetry. It never goes online by itself, not even to check for updates.
+  p6_title: No ads
+  p6_text: Nothing to sell you and no one paying to reach you. No adverts, no sponsored suggestions, no in-app purchases, not now and not later.
   p3_title: Places without a map service
   p3_text: Town names come from a map database bundled inside the app, so your GPS never reaches a third party.
   p4_title: GPS removed on export
@@ -199,19 +201,19 @@ vi:
   html_lang: vi
   other: en
   other_label: English
-  title: Fotollection - ảnh sẵn sàng để in, hoàn toàn offline
+  title: Fotollection - ảnh sẵn sàng để in, không cần internet
   description: Ứng dụng máy tính miễn phí, mã nguồn mở, chuẩn bị ảnh để in ngay trên máy của bạn. Dấu ngày kiểu máy film, khung thông tin máy ảnh, gợi ý ảnh đẹp nhất, cắt đúng khổ in và xuất giữ nguyên chất lượng gốc, không cần tài khoản, không tải ảnh lên đâu cả.
   nav_features: Tính năng
   nav_quality: Chất lượng
   nav_download: Tải về
   nav_coffee: Cà phê
   to_top: Lên đầu trang
-  star: Star trên GitHub
+  star: Gắn sao trên GitHub
   badge: Miễn phí · Mã nguồn mở · Không cần tài khoản
   hero_title_1: Chụp hàng nghìn ảnh, chỉ xem lại khi
   hero_accent: ngồi trên máy bay
   hero_title_2: "?"
-  hero_lead: Không có internet, và vẫn chưa biết giữ tấm nào. Hãy thử một lần nhìn lại cùng Fotollection - tự tìm ảnh đẹp nhất, in ngày chụp và chuẩn bị sẵn để in. Tự động, miễn phí và hoàn toàn offline.
+  hero_lead: Không có internet, và vẫn chưa biết giữ tấm nào. Hãy thử một lần nhìn lại cùng Fotollection - tự tìm ảnh đẹp nhất, in ngày chụp và chuẩn bị sẵn để in. Tự động, miễn phí và không cần internet.
   download_mac: Tải cho macOS
   download_win: Tải cho Windows
   download_note: macOS 11+ (Apple Silicon và Intel) · Windows 10/11
@@ -225,13 +227,13 @@ vi:
   f_frame_title: Khung thông tin máy ảnh
   f_frame_text: Viền "Shot on" gọn gàng với logo hãng, ống kính, tiêu cự, khẩu độ, tốc độ và ISO, lấy thẳng từ EXIF.
   f_best_title: Gợi ý ảnh đẹp nhất
-  f_best_text: Ảnh chụp liên tiếp và các khung hình gần giống nhau được gom nhóm; app gợi ý tấm nét nhất, ít rung, không nhắm mắt, kèm lý do.
+  f_best_text: Ảnh chụp liên tiếp và các khung hình gần giống nhau được gom nhóm; ứng dụng gợi ý tấm nét nhất, ít rung, không nhắm mắt, kèm lý do.
   f_crop_title: Cắt vừa khổ in
   f_crop_text: Mỗi ảnh được cắt đúng khổ in, hiện DPI ngay khi kéo. Xoay ¼ vòng hoặc cân lại đường chân trời tới 15°.
   f_quality_title: Giữ nguyên chất lượng gốc
   f_quality_text: Đủ độ phân giải, giữ hồ sơ màu, JPEG 4:4:4. Ảnh in ra giống ảnh bạn đã chụp.
-  f_private_title: Riêng tư và offline
-  f_private_text: Không tài khoản, không tải lên, không theo dõi. Tên địa điểm lấy từ bản đồ có sẵn trong app, GPS được xóa khi xuất.
+  f_private_title: Riêng tư, không cần internet
+  f_private_text: Không tài khoản, không tải lên, không theo dõi. Tên địa điểm lấy từ bản đồ có sẵn trong ứng dụng, GPS được xóa khi xuất.
   show_stamp: Dấu ngày kèm tên nơi chụp từ GPS của ảnh
   show_frame: Khung "Shot on" với logo của hãng máy ảnh
   show_crop: Cân lại đường chân trời trong màn cắt ảnh
@@ -245,7 +247,7 @@ vi:
   select_text: "Nút Chọn biến cả lưới ảnh thành ô tích như trên iPhone, Shift+click để chọn cả một dải. Giữ Space trên một ảnh để xem to, đúng như khi in ra, rồi thả tay là chọn tiếp."
   show_select: "Chế độ Chọn: ảnh đã tích, giỏ in và chồng ảnh để riêng"
   estimate_title: "Biết trước dung lượng trước khi xuất"
-  estimate_text: "Thẻ Xuất ảnh cho biết file sẽ nặng bao nhiêu trước khi ghi ra ổ đĩa, tính từ vài ảnh mã hoá thử với đúng thiết lập của bạn. Ảnh máy ảnh xuất cho Facebook nhẹ đi khoảng sáu lần, và bạn thấy trước khi bấm."
+  estimate_text: "Thẻ Xuất ảnh cho biết tệp sẽ nặng bao nhiêu trước khi ghi ra ổ đĩa, tính từ vài ảnh mã hoá thử với đúng thiết lập của bạn. Ảnh máy ảnh xuất cho Facebook nhẹ đi khoảng sáu lần, và bạn thấy trước khi bấm."
   show_estimate: "Ô ước tính dung lượng ngay trên nút xuất ảnh, khi xuất cho Facebook"
   key_up: "giỏ in"
   key_down: "để riêng"
@@ -256,7 +258,7 @@ vi:
   q2_value: 100 %
   q2_label: chi tiết nhỏ được giữ lại. Trình sửa ảnh web thông thường chỉ giữ 13 %.
   q3_value: 0 byte
-  q3_label: gửi đi bất kỳ đâu. App chạy không cần mạng.
+  q3_label: gửi đi bất kỳ đâu. Ứng dụng chạy không cần mạng.
   quality_more: Cách đo
   nav_numbers: "Hiệu năng"
   nav_privacy: Riêng tư
@@ -268,8 +270,8 @@ vi:
   changelog_full: Changelog đầy đủ trên GitHub
   changelog_hint: Bấm để cuộn
   support_title: Ủng hộ một cốc cà phê
-  support_text: Fotollection do một du học sinh Việt ở châu Âu làm trong thời gian rảnh, giữa giờ học và giờ làm thêm. App miễn phí và mã nguồn mở; nếu nó giúp bạn đỡ được một buổi tối ngồi lọc ảnh, một cốc cà phê (hay một bữa cơm sinh viên 😄) sẽ giúp mình tiếp tục làm.
-  support_note: Mã VietQR này chỉ dùng được với app ngân hàng tại Việt Nam (Napas 247). Cách ủng hộ từ nước ngoài sẽ có sau.
+  support_text: Fotollection do một du học sinh Việt ở châu Âu làm trong thời gian rảnh, giữa giờ học và giờ làm thêm. Ứng dụng miễn phí và mã nguồn mở; nếu nó giúp bạn đỡ được một buổi tối ngồi lọc ảnh, một cốc cà phê (hay một bữa cơm sinh viên 😄) sẽ giúp mình tiếp tục làm.
+  support_note: Mã VietQR này chỉ dùng được với ứng dụng ngân hàng tại Việt Nam (Napas 247). Cách ủng hộ từ nước ngoài sẽ có sau.
   support_alt: Mã VietQR ủng hộ cà phê, Techcombank, Phạm Hoàng Phi
   kiosk_title: Sẵn sàng cho máy in ảnh ở
   kiosk_and: và
@@ -281,14 +283,14 @@ vi:
   kiosk_steps_title: Từ chuyến đi đến xấp ảnh in
   kiosk_s1: Chọn ảnh đẹp nhất và chọn khổ in.
   kiosk_s2: Xuất ra một thư mục, USB hoặc thẻ SD.
-  kiosk_s3: In ngay tại máy trong cửa hàng, hoặc tải lên dịch vụ in online của cửa hàng.
+  kiosk_s3: In ngay tại máy trong cửa hàng, hoặc tải lên dịch vụ in trực tuyến của cửa hàng.
   fn_title: Chú thích
   fn_label: Chú thích
   fn_back: Quay lại đoạn văn
-  fn_open: Miễn phí là không thu tiền, không quảng cáo, không mua thêm trong app; mời tác giả ly cà phê là tuỳ bạn. Mã nguồn mở là toàn bộ mã nguồn được công khai trên GitHub theo giấy phép GPL-3.0, ai cũng có thể đọc, tự build và kiểm tra app làm gì. Không cần tài khoản là app không bao giờ hỏi bạn là ai và không có gì để đăng nhập.
+  fn_open: Miễn phí là không thu tiền, không quảng cáo, không mua thêm trong ứng dụng; mời tác giả một ly cà phê là lựa chọn của bạn, để tác giả có thêm động lực phát triển và hoàn thiện Fotollection. Mã nguồn mở là toàn bộ mã nguồn được công khai trên GitHub theo giấy phép GPL-3.0, ai cũng có thể đọc, tự xây dựng và kiểm tra ứng dụng làm gì. Không cần tài khoản là ứng dụng không bao giờ hỏi bạn là ai và không có gì để đăng nhập.
   perf_speed_fn: [4, 5]
   fn_rust: "Rust và logo Rust là nhãn hiệu của Rust Foundation. Phần lõi của Fotollection viết bằng Rust và chạy trực tiếp trên máy của bạn."
-  fn_webview: "Cửa sổ app được làm bằng Tauri và hiển thị bằng web view có sẵn của hệ điều hành: WebKit (WKWebView) trên macOS và Microsoft Edge WebView2 trên Windows. Tauri là dự án của Tauri Programme thuộc Commons Conservancy; WebKit là nhãn hiệu của Apple Inc.; Microsoft Edge và WebView2 là nhãn hiệu của Microsoft Corporation. Phép so sánh với trình duyệt chạy cùng một việc trong Chromium 156 không giao diện, dự án mã nguồn mở phía sau Google Chrome, mỗi nhân xử lý một Web Worker."
+  fn_webview: "Cửa sổ ứng dụng được làm bằng Tauri và hiển thị bằng trình hiển thị web (web view) có sẵn của hệ điều hành: WebKit (WKWebView) trên macOS và Microsoft Edge WebView2 trên Windows. Tauri là dự án của Tauri Programme thuộc Commons Conservancy; WebKit là nhãn hiệu của Apple Inc.; Microsoft Edge và WebView2 là nhãn hiệu của Microsoft Corporation. Phép so sánh với trình duyệt chạy cùng một việc trong Chromium 156 không giao diện, dự án mã nguồn mở phía sau Google Chrome, mỗi nhân xử lý một Web Worker."
   fn_de: "ΔE2000 (CIEDE2000) là công thức tính sai lệch màu của Uỷ ban Quốc tế về Chiếu sáng (CIE), được chuẩn hoá thành ISO/CIE 11664-6; không gian màu CIELAB mà công thức dùng là ISO/CIE 11664-4."
   fn_ssim: "SSIM do Zhou Wang, Alan C. Bovik, Hamid R. Sheikh và Eero P. Simoncelli giới thiệu trong bài Image quality assessment: from error visibility to structural similarity, IEEE Transactions on Image Processing, 13(4), 2004."
   fn_jpeg: "JPEG là định dạng ảnh của nhóm Joint Photographic Experts Group, được chuẩn hoá thành ISO/IEC 10918-1 và ITU-T T.81."
@@ -298,28 +300,30 @@ vi:
   fn_dm: dm và logo dm là thương hiệu của dm-drogerie markt GmbH + Co. KG.
   fn_rossmann: ROSSMANN và logo ROSSMANN là thương hiệu của Dirk Rossmann GmbH.
   fn_cewe: Dịch vụ in ảnh của dm và Rossmann do CEWE thực hiện; CEWE là thương hiệu của CEWE Stiftung & Co. KGaA. Khổ in được đối chiếu với bảng giá của dm vào tháng 10/2026; cửa hàng có thể thay đổi.
-  fn_cameras: "Tên và logo máy ảnh trong ảnh chụp màn hình và trong khung thông tin của app là thương hiệu của chủ sở hữu, chỉ dùng để cho biết ảnh được chụp bằng máy nào: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) và Sony (Sony Group Corporation)."
+  fn_cameras: "Tên và logo máy ảnh trong ảnh chụp màn hình và trong khung thông tin của ứng dụng là thương hiệu của chủ sở hữu, chỉ dùng để cho biết ảnh được chụp bằng máy nào: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) và Sony (Sony Group Corporation)."
   fn_others: Apple và macOS là thương hiệu của Apple Inc.; Windows của Microsoft Corporation; Facebook và Instagram của Meta Platforms, Inc.; GitHub của GitHub, Inc.; Google Analytics của Google LLC; VietQR của NAPAS; Wikimedia Commons của Wikimedia Foundation.
-  fn_brand: "Tên và logo Fotollection dùng để nhận biết app chính thức do @hoangphi01 làm. Bản tải chính thức chỉ có ở fotollection.org và trang phát hành GitHub của dự án. Giấy phép GPL-3.0 cho phép bất kỳ ai chia sẻ hay bán bản sao, có sửa hay không, miễn là giữ nguyên giấy phép này và cung cấp mã nguồn; bản đã sửa hoặc bán lại không được dùng tên hay logo Fotollection theo cách khiến người khác nghĩ đó là app chính thức."
-  fn_notify: "Bạn muốn phân phối, bán lại hay phát triển tiếp từ Fotollection? Xin hãy báo cho tác giả trước bằng một issue trên GitHub (github.com/hoangphi01/fotollection/issues). App miễn phí và được làm trong thời gian rảnh; một lời báo ngắn là cách công bằng để cảm ơn."
-  fn_cite: Khi trích dẫn, viết bài, giới thiệu app hay dùng ảnh chụp màn hình này, xin ghi nguồn Fotollection và dẫn link về fotollection.org.
+  fn_brand: "Tên và logo Fotollection dùng để nhận biết ứng dụng chính thức do @hoangphi01 làm. Bản tải chính thức chỉ có ở fotollection.org và trang phát hành GitHub của dự án. Giấy phép GPL-3.0 cho phép bất kỳ ai chia sẻ hay bán bản sao, có sửa hay không, miễn là giữ nguyên giấy phép này và cung cấp mã nguồn; bản đã sửa hoặc bán lại không được dùng tên hay logo Fotollection theo cách khiến người khác nghĩ đó là ứng dụng chính thức."
+  fn_notify: "Bạn muốn phân phối, bán lại hay phát triển tiếp từ Fotollection? Xin hãy báo cho tác giả trước bằng một mục góp ý (issue) trên GitHub (github.com/hoangphi01/fotollection/issues). Ứng dụng miễn phí và được làm trong thời gian rảnh; một lời báo ngắn là cách công bằng để cảm ơn."
+  fn_cite: Khi trích dẫn, viết bài, giới thiệu ứng dụng hay dùng ảnh chụp màn hình này, xin ghi nguồn Fotollection và dẫn link về fotollection.org.
   fn_independent: Fotollection là dự án mã nguồn mở độc lập, không liên kết, không được tài trợ hay bảo trợ bởi bất kỳ công ty nào kể trên; mọi thương hiệu khác thuộc về chủ sở hữu của chúng.
   shield: Riêng tư - ảnh không bao giờ rời khỏi máy của bạn
   privacy_title: Ảnh của bạn là của bạn
-  privacy_lead: Fotollection được làm để chạy hoàn toàn không cần internet. Không tải lên, không theo dõi, và bạn có thể tự kiểm tra từng dòng code.
-  p1_title: Không tải lên, không cloud
+  privacy_lead: Fotollection được làm để chạy hoàn toàn không cần internet. Không tải lên, không theo dõi, và bạn có thể tự kiểm tra từng dòng mã nguồn.
+  p1_title: Không tải lên, không lưu trữ đám mây
   p1_text: Ảnh được đọc và ghi ngay trên ổ đĩa của bạn. Không có máy chủ nào để gửi ảnh tới.
   p2_title: Không tài khoản, không theo dõi
-  p2_text: Không cần đăng ký, và app không có analytics hay telemetry. App không bao giờ tự lên mạng, kể cả để kiểm tra cập nhật.
+  p2_text: Không cần đăng ký, và ứng dụng không đo lường hay gửi đi bất kỳ dữ liệu sử dụng nào. Ứng dụng không bao giờ tự lên mạng, kể cả để kiểm tra cập nhật.
+  p6_title: Không quảng cáo
+  p6_text: Không bán gì cho bạn và không ai trả tiền để tiếp cận bạn. Không quảng cáo, không gợi ý được tài trợ, không mua thêm trong ứng dụng, bây giờ và cả sau này.
   p3_title: Địa điểm không cần dịch vụ bản đồ
-  p3_text: Tên nơi chụp lấy từ cơ sở dữ liệu bản đồ có sẵn trong app, nên GPS của bạn không đến tay bên thứ ba nào.
+  p3_text: Tên nơi chụp lấy từ cơ sở dữ liệu bản đồ có sẵn trong ứng dụng, nên GPS của bạn không đến tay bên thứ ba nào.
   p4_title: Xóa GPS khi xuất ảnh
   p4_text: Ảnh xuất ra mặc định được xóa vị trí, nên ảnh gửi tiệm in không để lộ nơi bạn sống.
   p5_title: Mã nguồn mở
-  p5_text: Code công khai theo giấy phép GPL-3.0. Ai cũng có thể đọc, tự build và kiểm chứng app làm đúng như trang này nói.
+  p5_text: Mã nguồn công khai theo giấy phép GPL-3.0. Ai cũng có thể đọc, tự xây dựng và kiểm chứng ứng dụng làm đúng như trang này nói.
   charts_title: Đo thật, không hứa suông
-  charts_lead: Mọi con số đều đo trên ảnh thật, bằng một chiếc laptop bình thường (Apple M3, 16 GB); script đo nằm ngay trong repo.
-  chart_budgets: Tốc độ và bộ nhớ, so với ngân sách đặt ra trước khi viết code
+  charts_lead: Mọi con số đều đo trên ảnh thật, bằng một chiếc máy tính xách tay bình thường (Apple M3, 16 GB); chương trình đo nằm ngay trong kho mã nguồn.
+  chart_budgets: Tốc độ và bộ nhớ, so với ngân sách đặt ra trước khi viết mã nguồn
   chart_quality: Bản xuất giữ lại được bao nhiêu so với ảnh gốc, so với một trình sửa ảnh web thông thường
   chart_bestshot: Gợi ý ảnh đẹp nhất, chấm điểm so với ảnh do người chọn tay
   charts_more: "Xem toàn bộ số đo và giải thích"
@@ -327,17 +331,17 @@ vi:
   chart_memory: "Bộ nhớ cao nhất khi số ảnh tăng lên 5.035 tấm"
   chart_browser: "Cùng một việc, trên Fotollection và trên trình duyệt web"
   perf_title: "Hiệu năng"
-  perf_description: "Mọi số đo phía sau Fotollection, giải thích bằng lời dễ hiểu: tốc độ, bộ nhớ, chất lượng in, ảnh đăng mạng xã hội, gợi ý ảnh đẹp nhất, kèm ý nghĩa của ΔE, SSIM, JPEG và colour profile."
+  perf_description: "Mọi số đo phía sau Fotollection, giải thích bằng lời dễ hiểu: tốc độ, bộ nhớ, chất lượng in, ảnh đăng mạng xã hội, gợi ý ảnh đẹp nhất, kèm ý nghĩa của ΔE, SSIM, JPEG và hồ sơ màu."
   perf_kicker: "Đo thật, không hứa suông"
-  perf_lead: "Mọi con số trên trang này đều đo trên ảnh thật, bằng một chiếc laptop bình thường (Apple M3, 16 GB). Script đo nằm ngay trong repo, ai cũng có thể chạy lại. Dưới mỗi biểu đồ là ý nghĩa của nó với ảnh in của bạn, và cuối trang là giải thích cho các thuật ngữ đứng sau con số."
+  perf_lead: "Mọi con số trên trang này đều đo trên ảnh thật, bằng một chiếc máy tính xách tay bình thường (Apple M3, 16 GB). Chương trình đo nằm ngay trong kho mã nguồn, ai cũng có thể chạy lại. Dưới mỗi biểu đồ là ý nghĩa của nó với ảnh in của bạn, và cuối trang là giải thích cho các thuật ngữ đứng sau con số."
   perf_speed_title: "Tốc độ: một nghìn ảnh trong chớp mắt"
-  perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong file, chứ không đọc cả ảnh: 1.000 ảnh mất 0,12 giây, nhanh gấp tám lần mức ngân sách đặt ra trước khi viết code. Đổi một thiết lập thì bản xem trước vẽ lại trong 17 ms, chưa bằng hai lần màn hình làm tươi. Xuất ảnh đạt 18 ảnh mỗi giây ở chất lượng đầy đủ 16 MP. Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư bộ nhớ."
+  perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong tệp, chứ không đọc cả ảnh: 1.000 ảnh mất 0,12 giây, nhanh gấp tám lần mức ngân sách đặt ra trước khi viết mã nguồn. Đổi một thiết lập thì bản xem trước vẽ lại trong 17 ms, chưa bằng hai lần màn hình làm tươi. Xuất ảnh đạt 18 ảnh mỗi giây ở chất lượng đầy đủ 16 MP. Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư bộ nhớ."
   perf_memory_title: "Bộ nhớ: 5.035 ảnh vẫn không tăng"
   perf_memory_text: "Một chuyến đi có thể có hàng nghìn ảnh. Fotollection chỉ giữ vài byte cho mỗi ảnh trong bộ nhớ, ghi ảnh thu nhỏ ra ổ đĩa và xử lý tối đa sáu ảnh cỡ lớn cùng lúc. Với số ảnh gấp 53 lần, bộ nhớ cao nhất chỉ tăng 0,1 GB: 1,35 GB với 95 ảnh, 1,45 GB với 5.035 ảnh, dưới xa mức trần 2 GB."
   perf_print_title: "Chất lượng in: ảnh in giống ảnh gốc"
-  perf_print_text: "Ảnh in qua web editor thường trông nông màu. Chúng tôi đã đo xem vì sao: web editor bỏ mất colour profile (ảnh iPhone mất 13 % độ bão hoà màu), thu ảnh xuống 2.000 px rồi để tiệm in phóng to lại (mất 87 % chi tiết nhỏ), và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên profile, xuất ở độ phân giải đầy đủ, 4:4:4, chất lượng 95, và sai lệch màu chỉ 0,19, thấp hơn rất xa mức 1 mà mắt người bắt đầu nhận ra."
+  perf_print_text: "Ảnh in qua trình chỉnh sửa ảnh trên web thường trông nông màu. Chúng tôi đã đo xem vì sao: trình chỉnh sửa đó bỏ mất hồ sơ màu (ảnh iPhone mất 13 % độ bão hoà màu), thu ảnh xuống 2.000 px rồi để tiệm in phóng to lại (mất 87 % chi tiết nhỏ), và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên hồ sơ màu, xuất ở độ phân giải đầy đủ, 4:4:4, chất lượng 95, và sai lệch màu chỉ 0,19, thấp hơn rất xa mức 1 mà mắt người bắt đầu nhận ra."
   perf_share_title: "Ảnh cho Facebook và Instagram: nhẹ mà vẫn đúng là ảnh của bạn"
-  perf_share_text: "Facebook thu mọi ảnh về 2.048 px, nén lại và bỏ qua colour profile. Kiểu xuất Mạng xã hội làm trước những việc đó cho đúng: chuyển ảnh sang sRGB, thu nhỏ bằng bộ lọc chất lượng cao, làm nét nhẹ và lưu đúng cỡ để Facebook không phải thu nhỏ thêm. Sau khi Facebook nén lại, ảnh vẫn giống ảnh gốc hơn cách làm thông thường, và ảnh Display P3 kiểu iPhone giữ được 99,6 % màu thay vì 86 %. Lựa chọn Giữ cỡ gốc giữ nguyên từng điểm ảnh mà file chỉ còn khoảng một nửa, sai lệch màu dưới 1."
+  perf_share_text: "Facebook thu mọi ảnh về 2.048 px, nén lại và bỏ qua hồ sơ màu. Kiểu xuất Mạng xã hội làm trước những việc đó cho đúng: chuyển ảnh sang sRGB, thu nhỏ bằng bộ lọc chất lượng cao, làm nét nhẹ và lưu đúng cỡ để Facebook không phải thu nhỏ thêm. Sau khi Facebook nén lại, ảnh vẫn giống ảnh gốc hơn cách làm thông thường, và ảnh Display P3 kiểu iPhone giữ được 99,6 % màu thay vì 86 %. Lựa chọn Giữ cỡ gốc giữ nguyên từng điểm ảnh mà tệp chỉ còn khoảng một nửa, sai lệch màu dưới 1."
   perf_best_title: "Gợi ý ảnh đẹp nhất: đối chiếu với lựa chọn của người thật"
   perf_best_text: "Chúng tôi tự tay chia 95 ảnh thật thành 22 khoảnh khắc, và chọn ảnh đẹp nhất ở những khoảnh khắc có ảnh đẹp rõ ràng. Fotollection tìm ra 15 khoảnh khắc mà không bao giờ gộp nhầm hai khoảnh khắc khác nhau, và ảnh được gợi ý đều chấp nhận được ở cả sáu khoảnh khắc có ảnh đẹp nhất rõ ràng. Mỗi ảnh được phân tích trong 17 ms, 28 ms nếu có khuôn mặt."
   perf_explain_title: "Giải thích các thuật ngữ"
@@ -349,42 +353,42 @@ vi:
     - q: "SSIM là gì?"
       fn: [7]
       a: "SSIM (chỉ số tương đồng cấu trúc) so hình dạng và kết cấu của hai ảnh thay vì từng điểm ảnh riêng lẻ, gần với cách mắt ta nhận ra ảnh bị mờ hay bị nén vỡ khối. 1 là giống hệt. Từ khoảng 0,98 trở lên, đa số người không phân biệt được hai ảnh nếu không phóng to."
-    - q: "Một file JPEG chứa được bao nhiêu màu?"
+    - q: "Một tệp JPEG chứa được bao nhiêu màu?"
       fn: [8]
-      a: "JPEG lưu 8 bit cho mỗi kênh đỏ, xanh lá và xanh dương: mỗi kênh 256 mức, tổng cộng khoảng 16,7 triệu màu. Đó cũng là thứ máy in ảnh dùng để in. File RAW của máy ảnh có 12 đến 14 bit, iPhone đời mới có thể lưu HEIC 10 bit, rất có ích khi chỉnh sửa; còn với ảnh in hoàn chỉnh, một file JPEG 8 bit làm tốt không lộ vệt chuyển màu."
+      a: "JPEG lưu 8 bit cho mỗi kênh đỏ, xanh lá và xanh dương: mỗi kênh 256 mức, tổng cộng khoảng 16,7 triệu màu. Đó cũng là thứ máy in ảnh dùng để in. Tệp RAW của máy ảnh có 12 đến 14 bit, iPhone đời mới có thể lưu HEIC 10 bit, rất có ích khi chỉnh sửa; còn với ảnh in hoàn chỉnh, một tệp JPEG 8 bit làm tốt không lộ vệt chuyển màu."
     - q: "JPG hay JPEG? Có nên dùng PNG không?"
-      a: "JPG và JPEG là cùng một định dạng: Windows ngày xưa chỉ cho phép đuôi file ba chữ. PNG nén không mất dữ liệu nên không bỏ đi chút nào, nhưng ảnh chụp lưu dạng PNG thường nặng gấp ba đến năm lần, và đa số máy in ảnh, tiệm in đều yêu cầu JPEG. Một file JPEG chất lượng 95, đủ độ phân giải màu (4:4:4) như Fotollection xuất để in, in ra không phân biệt được với ảnh gốc."
+      a: "JPG và JPEG là cùng một định dạng: Windows ngày xưa chỉ cho phép đuôi tệp ba chữ. PNG nén không mất dữ liệu nên không bỏ đi chút nào, nhưng ảnh chụp lưu dạng PNG thường nặng gấp ba đến năm lần, và đa số máy in ảnh, tiệm in đều yêu cầu JPEG. Một tệp JPEG chất lượng 95, đủ độ phân giải màu (4:4:4) như Fotollection xuất để in, in ra không phân biệt được với ảnh gốc."
     - q: "4:4:4 và 4:2:0 nghĩa là gì?"
-      a: "Mắt ta nhìn chi tiết chủ yếu qua độ sáng, ít qua màu, nên JPEG có thể lưu màu ở độ phân giải thấp hơn. 4:4:4 giữ đủ độ phân giải màu; 4:2:0 chỉ giữ một phần tư, file nhẹ hơn nhưng các viền có màu bị mềm đi, như chữ đỏ hay bầu trời xanh sau tán lá. Ảnh in nên dùng 4:4:4; còn mạng xã hội thì đằng nào cũng nén mọi ảnh về 4:2:0."
-    - q: "sRGB, Display P3, Adobe RGB và colour profile"
+      a: "Mắt ta nhìn chi tiết chủ yếu qua độ sáng, ít qua màu, nên JPEG có thể lưu màu ở độ phân giải thấp hơn. 4:4:4 giữ đủ độ phân giải màu; 4:2:0 chỉ giữ một phần tư, tệp nhẹ hơn nhưng các viền có màu bị mềm đi, như chữ đỏ hay bầu trời xanh sau tán lá. Ảnh in nên dùng 4:4:4; còn mạng xã hội thì đằng nào cũng nén mọi ảnh về 4:2:0."
+    - q: "sRGB, Display P3, Adobe RGB và hồ sơ màu (colour profile)"
       fn: [9, 10, 11]
-      a: "Colour profile cho phần mềm biết các con số trong file nghĩa là màu nào. sRGB là dải màu cổ điển dùng trên web. Display P3, dùng trên iPhone và các máy ảnh mới, rộng hơn khoảng 25 %, nhất là màu đỏ và xanh lá. Nếu ảnh P3 bị mất profile, các con số bị đọc như sRGB và ảnh trông nhạt: đó chính là 13 % độ bão hoà bị mất mà chúng tôi đo được. Adobe RGB, có trên một số máy ảnh dành cho in ấn, cũng rộng hơn sRGB, chủ yếu ở màu xanh lá và xanh lơ. Fotollection giữ nguyên profile của ảnh khi xuất để in, và chuyển đúng sang sRGB khi xuất cho mạng xã hội."
+      a: "Hồ sơ màu (colour profile) cho phần mềm biết các con số trong tệp nghĩa là màu nào. sRGB là dải màu cổ điển dùng trên web. Display P3, dùng trên iPhone và các máy ảnh mới, rộng hơn khoảng 25 %, nhất là màu đỏ và xanh lá. Nếu ảnh P3 bị mất hồ sơ màu, các con số bị đọc như sRGB và ảnh trông nhạt: đó chính là 13 % độ bão hoà bị mất mà chúng tôi đo được. Adobe RGB, có trên một số máy ảnh dành cho in ấn, cũng rộng hơn sRGB, chủ yếu ở màu xanh lá và xanh lơ. Fotollection giữ nguyên hồ sơ màu của ảnh khi xuất để in, và chuyển đúng sang sRGB khi xuất cho mạng xã hội."
     - q: "Ảnh in cần bao nhiêu DPI?"
-      a: "DPI là số điểm ảnh trên mỗi inch giấy. Ở 300 DPI, ảnh in trông nét kể cả khi nhìn sát; 150 đến 200 DPI vẫn ổn khi cầm xem. Một ảnh 10 × 15 cm ở 300 DPI cần 1.800 × 1.200 điểm ảnh, nên ảnh từ điện thoại hay máy ảnh nào cũng đủ; phần gợi ý khổ in trong app cho biết mỗi ảnh in được to tới đâu."
+      a: "DPI là số điểm ảnh trên mỗi inch giấy. Ở 300 DPI, ảnh in trông nét kể cả khi nhìn sát; 150 đến 200 DPI vẫn ổn khi cầm xem. Một ảnh 10 × 15 cm ở 300 DPI cần 1.800 × 1.200 điểm ảnh, nên ảnh từ điện thoại hay máy ảnh nào cũng đủ; phần gợi ý khổ in trong ứng dụng cho biết mỗi ảnh in được to tới đâu."
     - q: "Vì sao ảnh đăng Facebook trông xấu đi?"
-      a: "Facebook thu mọi ảnh về tối đa 2.048 px, nén lại ở chất lượng thấp hơn với độ phân giải màu giảm một nửa, và bỏ colour profile. Ảnh gửi lên quá to sẽ bị thu nhỏ hai lần, một lần bởi bạn và một lần bởi Facebook. Gửi sẵn ảnh 2.048 px, sRGB và đã làm nét nhẹ thì Facebook chỉ nén lại một lần, và màu đã đúng từ trước."
+      a: "Facebook thu mọi ảnh về tối đa 2.048 px, nén lại ở chất lượng thấp hơn với độ phân giải màu giảm một nửa, và bỏ hồ sơ màu. Ảnh gửi lên quá to sẽ bị thu nhỏ hai lần, một lần bởi bạn và một lần bởi Facebook. Gửi sẵn ảnh 2.048 px, sRGB và đã làm nét nhẹ thì Facebook chỉ nén lại một lần, và màu đã đúng từ trước."
   perf_repro_title: "Tự chạy lại các phép đo"
-  perf_repro_text: "Mọi phép đo đều chạy lại được trên ảnh của chính bạn. Script không bao giờ tải ảnh lên hay sao chép ảnh; chỉ giữ lại các con số. Bảng đầy đủ, kèm từng lần chạy, nằm trong RESULT.md."
+  perf_repro_text: "Mọi phép đo đều chạy lại được trên ảnh của chính bạn. Các chương trình đo không bao giờ tải ảnh lên hay sao chép ảnh; chỉ giữ lại các con số. Bảng đầy đủ, kèm từng lần chạy, nằm trong RESULT.md."
   perf_repro_link: "Đọc RESULT.md trên GitHub"
   perf_back: "Về trang chủ"
   install_title: Cài đặt trong một phút
   install_lead: Bộ cài chưa được ký bằng chứng chỉ trả phí, nên lần mở đầu tiên cần thêm một cú nhấp.
   mac_title: macOS
-  mac_1: Mở file .dmg và kéo Fotollection vào Applications.
-  mac_2: Mở app. macOS sẽ chặn lần mở đầu tiên.
+  mac_1: Mở tệp .dmg và kéo Fotollection vào Applications.
+  mac_2: Mở ứng dụng. macOS sẽ chặn lần mở đầu tiên.
   mac_3: Vào System Settings → Privacy & Security, bấm Open Anyway.
   win_title: Windows
-  win_1: Chạy file -setup.exe (hoặc .msi).
+  win_1: Chạy tệp -setup.exe (hoặc .msi).
   win_2: Nếu SmartScreen báo "Windows protected your PC", bấm More info.
   win_3: Bấm Run anyway.
-  checksums: Mỗi bản phát hành có mã SHA-256 bên cạnh file tải về.
-  updates: App không tự cập nhật, nên không bao giờ tự lên mạng. Phiên bản mới được thông báo ở đây và trên GitHub.
-  footer_tagline: Ảnh sẵn sàng để in, hoàn toàn offline.
+  checksums: Mỗi bản phát hành có mã SHA-256 bên cạnh tệp tải về.
+  updates: Ứng dụng không tự cập nhật, nên không bao giờ tự lên mạng. Phiên bản mới được thông báo ở đây và trên GitHub.
+  footer_tagline: Ảnh sẵn sàng để in, không cần internet.
   footer_made: Làm bởi người dùng, cho người dùng. Chỉ người ngày nào cũng xem ảnh của chính mình mới biết người dùng bình thường cần gì từ một trình xem ảnh.
   footer_license: Giấy phép GPL-3.0
   footer_changelog: Có gì mới
   footer_source: Mã nguồn
   footer_blog: Blog của mình
   footer_photos: Ảnh demo là CC0, từ Wikimedia Commons.
-  footer_analytics: Trang web này đếm lượt xem bằng Google Analytics; app thì không.
+  footer_analytics: Trang web này đếm lượt xem bằng Google Analytics; ứng dụng thì không.
   by: bởi
