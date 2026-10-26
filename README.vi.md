@@ -65,7 +65,7 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | 🖼️ | **Giữ nguyên chất lượng**: độ phân giải đầy đủ, giữ ICC profile, crop không mất chất lượng khi có thể | MVP |
 | 💬 | **Đăng mạng xã hội**: JPEG sRGB nhẹ ở kích thước gốc, 2048 px cho Facebook, 1080 px cho Instagram hoặc cỡ tuỳ chọn, giữ thông số máy và ghi "Fotollection" là app chỉnh ảnh, không bao giờ có GPS. Export một ảnh ngay trong preview | MVP |
 | 📱 | Đầu vào **JPEG, PNG và HEIC** (iPhone) | MVP |
-| 📷 | **Ảnh RAW** nguyên dạng, không cần DNG: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG, qua codec có sẵn của hệ điều hành; ảnh thu nhỏ lấy từ bản xem trước trong mỗi tệp | 3 |
+| 📷 | **Ảnh RAW** nguyên dạng, không cần DNG: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG, qua codec có sẵn của hệ điều hành; ảnh thu nhỏ lấy từ bản xem trước trong mỗi tệp. **Windows: hiện vẫn cần cài Raw Image Extension miễn phí** (bộ đọc tích hợp sẵn đang được làm) | 3 |
 | 🖱️ | **Mở ảnh bằng Fotollection** từ Finder hoặc Explorer: ảnh mở ngay, thư mục của ảnh thành một tab | 2 |
 | ⏱️ | **Đồng hồ máy ảnh**: máy để sai giờ được chỉnh theo một ảnh điện thoại chụp cùng lúc; mọi ảnh của máy đó dịch theo, tệp ảnh không bị sửa | 2 |
 | 🎥 | **Chụp từ máy ảnh cắm dây**: xem trực tiếp với khung cỡ in, bấm Chụp, ảnh vào một tab để lưu hoặc xóa; không cần cài driver (Windows, Sony a6400 trước) | MVP |

@@ -64,7 +64,7 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | 🖼️ | **Original quality**: full resolution, ICC profile preserved, lossless crop when possible | MVP |
 | 💬 | **Share online**: light sRGB JPEGs at the original size, 2048 px for Facebook, 1080 px for Instagram or your own size, with the camera details and "Fotollection" as the editing app, never GPS. Export one photo straight from the preview | MVP |
 | 📱 | **JPEG, PNG and HEIC** (iPhone) input | MVP |
-| 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, through the system's own codecs; thumbnails from the preview inside each file | 3 |
+| 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, through the system's own codecs; thumbnails from the preview inside each file. **Windows: needs the free Raw Image Extension for now** (a built-in reader is in progress) | 3 |
 | 🖱️ | **Open with Fotollection** from Finder or Explorer: the photo opens at once and its folder becomes a tab | 2 |
 | ⏱️ | **Camera clocks**: a camera set to the wrong time is corrected from one phone photo of the same moment; every photo from it moves, the files stay untouched | 2 |
 | 🎥 | **Shoot from a camera on a cable**: live view with the print's shape, Capture, and the shots in a tab to save or delete; no driver to install (Windows, Sony a6400 first) | MVP |

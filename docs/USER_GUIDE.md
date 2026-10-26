@@ -92,7 +92,7 @@ Fotollection opens the RAW files of most cameras as they are, with no conversion
 - Open the folder as usual. Thumbnails and best-shot suggestions appear as fast as for JPEG, because they use the small preview every camera stores inside its RAW files.
 - The print preview develops the full photo the first time you open it, which takes about a second; changing a setting afterwards is instant. The export develops each RAW the same way.
 - Colours and sharpness are the operating system's neutral development, not a RAW editor's: Fotollection prepares prints, it does not replace Lightroom.
-- **On Windows**, install Microsoft's free *Raw Image Extension* from the Microsoft Store first. Without it, RAW files are skipped and the hint says so.
+- **On Windows**, install Microsoft's free *Raw Image Extension* from the Microsoft Store first. Without it, RAW files are skipped and the hint says so. A RAW reader built into Fotollection, which needs no extension, is being built ([STATUS.md](STATUS.md)).
 
 ## 5. Updating to a new version
 

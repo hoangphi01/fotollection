@@ -11,6 +11,16 @@
 
 **Picking up on another machine (2026-10-26).** `git pull`, then read this file, [ROADMAP.md](ROADMAP.md#release-plan-2026-10-25) and [LESSONS.md](LESSONS.md). Open work, in order:
 
+- **First, in this order (decided 2026-10-26 after the owner's review):**
+  1. ✓ The RAW claims corrected: on Windows RAW needs the Raw Image Extension (site, READMEs, guide, v0.7.0 release notes).
+  2. A save-or-discard question when the app is closed during a camera session.
+  3. The fixes found in review of the branch `camera/sony-usb-protocol` (a held Space key queues shots, Disconnect does not stop queued shots, sessions without ids, Save all or Delete while a shot is still being written, macOS clippy), then merge it into `main`.
+  4. Capture on macOS through ImageCaptureCore.
+  5. All camera controls: tap to focus, exposure, focus mode, white balance, JPEG/RAW, self-timer (USB captures on Windows first).
+  6. A STYLE_RULE audit of the capture screen, with real screenshots.
+  7. RAW built in: rawler (LGPL-2.1, allowed while the project is open source; it must be removed before any relicensing, ADR-0008) behind a `RawDecoder` trait, then our own decoder replacing it format by format (ARW and RW2 first).
+- **Then:**
+
 - **v0.8.0 "Places and Lightroom"**, measured first ([RESULT.md §14](RESULT.md#14-places-and-time-v080-measured-first)), following [ADR-0027](adr/0027-effective-time-and-place.md):
   1. FR-030 ✓ and FR-065 ✓ (check both by hand in the app);
   2. next: FR-032 manual date and place plus FR-005 place renaming;
