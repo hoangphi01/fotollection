@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Website
 
+- **Correction:** the RAW feature card and the Performance page now say that on Windows RAW still needs Microsoft's free Raw Image Extension. They read as if RAW worked everywhere with nothing to install, which was true only on macOS. A RAW reader built into the app is in progress.
+
 - A **speed** card among the features (1,000 photos in 0.12 s, 17 ms preview updates, a 0.4 s start from the second launch), and plainer wording for "Open with".
 - The Performance page has a **Camera RAW** section: thumbnails in 9–32 ms and the full picture in 0.4–2.2 s for nine cameras, against Adobe DNG Converter's 1.2–1.8 s per file only to convert (a third-party estimate, cited).
 - Every chart carries a footnote: figures are for reference and depend on your computer.

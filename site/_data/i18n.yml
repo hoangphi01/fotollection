@@ -36,7 +36,7 @@ en:
   f_quality_title: Original quality
   f_quality_text: Full resolution, the colour profile kept, 4:4:4 JPEG. What comes out looks like what went in.
   f_raw_title: Camera RAW, no conversion
-  f_raw_text: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG open as they are, with their date and exposure. Thumbnails come from the preview inside each file, so RAW browses as fast as JPEG.
+  f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG open as they are, with their date and exposure. Thumbnails come from the preview inside each file, so RAW browses as fast as JPEG. On Windows, RAW needs Microsoft's free Raw Image Extension for now; a built-in RAW reader is on its way."
   f_open_title: Open photos from anywhere
   f_speed_title: Fast on any computer
   f_speed_text: A thousand photos open in 0.12 s, a new setting redraws the preview in 17 ms, and from the second launch the app starts in about 0.4 s. A 32 MP photo previews as fast as a small one.
@@ -219,7 +219,7 @@ en:
   perf_share_text: "Facebook shrinks every photo to 2,048 px and recompresses it, and it ignores colour profiles. The Share export does that work properly first: the photo is converted to sRGB, resized with a high-quality filter, lightly sharpened and saved at a size Facebook does not touch again. After Facebook's own recompression, the result stays closer to the photo than the usual way, and iPhone-style Display P3 photos keep 99.6 % of their colour instead of 86 %. The Original size option keeps every pixel at half the file, with a colour error under 1."
   chart_raw: "Camera RAW: from the file to the screen, per camera and against Adobe DNG Converter"
   perf_raw_title: "Camera RAW: open it as it is"
-  perf_raw_text: "Fotollection opens RAW files from nine common cameras without converting them first. The thumbnail comes from the preview the camera stores in the file, in 9 to 32 ms. The full picture for the print preview and the export takes 0.4 to 2.2 s, 0.9 s for the median camera. Adobe DNG Converter, by comparison, takes about 1.2 to 1.8 s per file only to turn one RAW file into another, before anything can be seen or printed."
+  perf_raw_text: "Fotollection opens RAW files from nine common cameras without converting them first. The thumbnail comes from the preview the camera stores in the file, in 9 to 32 ms. The full picture for the print preview and the export takes 0.4 to 2.2 s, 0.9 s for the median camera. Adobe DNG Converter, by comparison, takes about 1.2 to 1.8 s per file only to turn one RAW file into another, before anything can be seen or printed. Measured on macOS. On Windows, RAW needs Microsoft's free Raw Image Extension for now; a built-in RAW reader is on its way."
   perf_raw_fn: [13]
   perf_best_title: "Best-shot suggestions: checked against a person's choice"
   perf_best_text: "We sorted 95 real photos by hand into 22 moments, and picked the best photo where there was a clear one. Fotollection finds 15 of those moments without ever grouping two different ones, and its suggestion is acceptable in all six moments with a clear best. Each photo takes 17 ms to analyse, 28 ms when it has faces."
@@ -310,7 +310,7 @@ vi:
   f_quality_title: Giữ nguyên chất lượng gốc
   f_quality_text: Đủ độ phân giải, giữ hồ sơ màu, JPEG 4:4:4. Ảnh in ra giống ảnh bạn đã chụp.
   f_raw_title: Ảnh RAW, không cần chuyển đổi
-  f_raw_text: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG mở được nguyên dạng, đủ ngày chụp và thông số. Ảnh thu nhỏ lấy từ bản xem trước có sẵn trong mỗi tệp, nên duyệt RAW nhanh như JPEG.
+  f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG mở được nguyên dạng, đủ ngày chụp và thông số. Ảnh thu nhỏ lấy từ bản xem trước có sẵn trong mỗi tệp, nên duyệt RAW nhanh như JPEG. Trên Windows, hiện vẫn cần cài Raw Image Extension miễn phí của Microsoft; bộ đọc RAW tích hợp sẵn đang được làm."
   f_open_title: Mở ảnh từ bất cứ đâu
   f_speed_title: Nhanh trên mọi máy
   f_speed_text: Một nghìn ảnh mở trong 0,12 giây, đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, và từ lần mở thứ hai ứng dụng khởi động trong khoảng 0,4 giây. Ảnh 32 MP xem trước nhanh như ảnh nhỏ.
@@ -493,7 +493,7 @@ vi:
   perf_share_text: "Facebook thu mọi ảnh về 2.048 px, nén lại và bỏ qua hồ sơ màu. Kiểu xuất Mạng xã hội làm trước những việc đó cho đúng: chuyển ảnh sang sRGB, thu nhỏ bằng bộ lọc chất lượng cao, làm nét nhẹ và lưu đúng cỡ để Facebook không phải thu nhỏ thêm. Sau khi Facebook nén lại, ảnh vẫn giống ảnh gốc hơn cách làm thông thường, và ảnh Display P3 kiểu iPhone giữ được 99,6 % màu thay vì 86 %. Lựa chọn Giữ cỡ gốc giữ nguyên từng điểm ảnh mà tệp chỉ còn khoảng một nửa, sai lệch màu dưới 1."
   chart_raw: "Ảnh RAW: từ tệp đến màn hình, theo từng máy và so với Adobe DNG Converter"
   perf_raw_title: "Ảnh RAW: mở thẳng, không cần chuyển đổi"
-  perf_raw_text: "Fotollection mở tệp RAW của chín dòng máy ảnh phổ biến mà không cần chuyển đổi trước. Ảnh thu nhỏ lấy từ bản xem trước máy ảnh lưu sẵn trong tệp, mất 9 đến 32 ms. Ảnh đầy đủ cho bản xem trước để in và cho bản xuất mất 0,4 đến 2,2 giây, trung vị 0,9 giây. Để so sánh, Adobe DNG Converter mất khoảng 1,2 đến 1,8 giây mỗi tệp chỉ để đổi từ RAW này sang RAW khác, trước khi xem hay in được gì."
+  perf_raw_text: "Fotollection mở tệp RAW của chín dòng máy ảnh phổ biến mà không cần chuyển đổi trước. Ảnh thu nhỏ lấy từ bản xem trước máy ảnh lưu sẵn trong tệp, mất 9 đến 32 ms. Ảnh đầy đủ cho bản xem trước để in và cho bản xuất mất 0,4 đến 2,2 giây, trung vị 0,9 giây. Để so sánh, Adobe DNG Converter mất khoảng 1,2 đến 1,8 giây mỗi tệp chỉ để đổi từ RAW này sang RAW khác, trước khi xem hay in được gì. Đo trên macOS. Trên Windows, hiện vẫn cần cài Raw Image Extension miễn phí của Microsoft; bộ đọc RAW tích hợp sẵn đang được làm."
   perf_raw_fn: [13]
   perf_best_title: "Gợi ý ảnh đẹp nhất: đối chiếu với lựa chọn của người thật"
   perf_best_text: "Chúng tôi tự tay chia 95 ảnh thật thành 22 khoảnh khắc, và chọn ảnh đẹp nhất ở những khoảnh khắc có ảnh đẹp rõ ràng. Fotollection tìm ra 15 khoảnh khắc mà không bao giờ gộp nhầm hai khoảnh khắc khác nhau, và ảnh được gợi ý đều chấp nhận được ở cả sáu khoảnh khắc có ảnh đẹp nhất rõ ràng. Mỗi ảnh được phân tích trong 17 ms, 28 ms nếu có khuôn mặt."

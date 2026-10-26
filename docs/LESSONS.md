@@ -13,6 +13,13 @@
 
 ## 2026-10-26
 
+### "Supported" was written after testing on one system only (FR-016)
+
+- **Seen:** the website, the README's feature list and the v0.7.0 notes said camera RAW opens as it is, with nothing to install. On Windows it needs Microsoft's Raw Image Extension, and without it RAW files are skipped. The owner found it, not a test.
+- **Why:** RAW was measured and checked on macOS, where ImageIO decodes it; the Windows path (WIC) was only described in one row of the README's requirements, while the claims were written as if they held everywhere. And the decision to decode RAW only through the OS (ADR-0023) was taken to keep the relicensing option, without asking the owner whether that was worth an extra install for every Windows user.
+- **Fix:** the claims now say what Windows needs; a built-in RAW reader is planned (rawler now, our own decoder next).
+- **Rules:** never write "supports" or "works" for a feature before it has been tried on every system the app ships for; and a constraint that costs users a feature (a licence rule, a platform limit) is the owner's decision, so ask before choosing it.
+
 ### A camera says nothing while its card is being listed (FR-063)
 
 - **Seen:** the GX9 opened a session, then did not answer `GetDeviceInfo` within 10 s; the a6400, with few photos, answered at once.
