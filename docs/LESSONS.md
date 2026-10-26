@@ -13,6 +13,13 @@
 
 ## 2026-10-26
 
+### `URL.pathname` is not a file path on Windows
+
+- **Seen:** `npm run lint` failed on Windows because `check-i18n.mjs` opened `C:\C:\Users\…\en.json`.
+- **Why:** `new URL('../src', import.meta.url).pathname` gives `/C:/Users/…` on Windows, and `path.join` then repeats the drive letter. CI runs on macOS and Linux, so it never showed there.
+- **Fix:** `fileURLToPath(new URL(…))`.
+- **Rule:** in Node scripts, turn a `file:` URL into a path with `fileURLToPath`, never `.pathname`.
+
 ### WPD hands over a maker's event code in the high half of the GUID (FR-063)
 
 - **Seen:** the a6400 driven through WPD sent no events we recognised. A temporary log of each event's GUID showed `C2030000-5738-4FF2-8445-BE3126691059`, where the code was expected in the low 16 bits.

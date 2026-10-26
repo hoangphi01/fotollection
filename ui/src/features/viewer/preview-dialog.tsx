@@ -20,7 +20,6 @@ import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ClockMatchDialog } from '@/features/cameras/clock-match-dialog'
@@ -57,6 +56,7 @@ import { ZoomControls } from './zoom-controls'
 import { ownsArrowKeys } from '@/lib/keyboard'
 import { cn } from '@/lib/utils'
 import { SectionCard } from '@/components/layout/section-card'
+import { ViewerFrame } from '@/components/layout/viewer-frame'
 import { PrintAdviceNote } from '@/features/print-advice/print-advice-note'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { verdictOf } from '@/features/print-advice/verdict'
@@ -225,31 +225,44 @@ export function PreviewDialog({
   }
 
   return (
-    <Dialog open={photo !== undefined} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent
-        ref={contentRef}
-        onKeyDown={onKeyDown}
-        onEscapeKeyDown={(e) => {
-          // Esc leaves crop mode first, then closes the dialog.
-          if (cropping) {
-            e.preventDefault()
-            setCropping(false)
-          }
-        }}
-        className="flex h-[90vh] w-[95vw] max-w-none gap-0 overflow-hidden p-0 sm:max-w-[min(1400px,95vw)]"
-      >
-        {/* Stage */}
-        <div
-          ref={setStage}
-          className="relative flex min-w-0 flex-1 items-center justify-center overflow-hidden bg-neutral-950 p-8"
-          // Clicking the photo hands the keyboard back to browsing, away from a focused control.
-          onPointerDown={(e) => {
-            if (!cropping && ownsArrowKeys(document.activeElement)) contentRef.current?.focus()
-            cropDrag.onPointerDown(e)
-          }}
-          onPointerMove={cropDrag.onPointerMove}
-          onPointerUp={cropDrag.onPointerUp}
-        >
+    <ViewerFrame
+      open={photo !== undefined}
+      onClose={onClose}
+      contentRef={contentRef}
+      onKeyDown={onKeyDown}
+      onEscapeKeyDown={(e) => {
+        // Esc leaves crop mode first, then closes the dialog.
+        if (cropping) {
+          e.preventDefault()
+          setCropping(false)
+        }
+      }}
+      stageRef={setStage}
+      // Clicking the photo hands the keyboard back to browsing, away from a focused control.
+      onStagePointerDown={(e) => {
+        if (!cropping && ownsArrowKeys(document.activeElement)) contentRef.current?.focus()
+        cropDrag.onPointerDown(e)
+      }}
+      onStagePointerMove={cropDrag.onPointerMove}
+      onStagePointerUp={cropDrag.onPointerUp}
+      title={photo?.fileName}
+      description={details?.folderPath ?? photo?.folderName}
+      descriptionHint={details?.folderPath}
+      footer={
+        <>
+          <kbd className="font-mono">←</kbd> <kbd className="font-mono">→</kbd> {t(cropping ? 'viewer.level' : 'viewer.browse')} ·{' '}
+          {!cropping && (
+            <>
+              <kbd className="font-mono">{MOD} + −</kbd> {t('viewer.zoom')} ·{' '}
+              {canDrag && <>{t('viewer.dragToFrame')} · </>}
+              <kbd className="font-mono">↑</kbd> {t('viewer.upBasket')} · <kbd className="font-mono">↓</kbd> {t('viewer.downAside')} ·{' '}
+            </>
+          )}
+          <kbd className="font-mono">Esc</kbd> {t(cropping ? 'viewer.leaveCrop' : 'viewer.close')}
+        </>
+      }
+      stage={
+        <>
           {cropping && geometry && photo ? (
             <CropEditor
               key={`${photo.id}:${revision}`}
@@ -398,19 +411,9 @@ export function PreviewDialog({
               />
             </>
           )}
-        </div>
-
-        {/* Inspector */}
-        <aside className="flex w-96 shrink-0 flex-col border-l bg-background">
-          <div className="space-y-0.5 px-5 pt-5 pb-4 pr-12">
-            <DialogTitle className="truncate text-base">{photo?.fileName}</DialogTitle>
-            <DialogDescription className="truncate text-xs" data-hint={details?.folderPath}>
-              {details?.folderPath ?? photo?.folderName}
-            </DialogDescription>
-          </div>
-          <Separator />
-
-          <div className="flex-1 space-y-5 overflow-y-auto p-5">
+        </>
+      }
+    >
             {/* The same tools in the same order as the settings panel: print size, date stamp,
                 info frame, export (STYLE_RULE §4). The photo's own facts follow. */}
             <Section icon={<Crop className="size-4" />} title={t('settings.printSize')}>
@@ -544,22 +547,6 @@ export function PreviewDialog({
               )}
               <p className="text-xs text-muted-foreground">{t('viewer.placesSoon')}</p>
             </Section>
-          </div>
-
-          <Separator />
-          <p className="px-5 py-3 text-[11px] text-muted-foreground">
-            <kbd className="font-mono">←</kbd> <kbd className="font-mono">→</kbd> {t(cropping ? 'viewer.level' : 'viewer.browse')} ·{' '}
-            {!cropping && (
-              <>
-                <kbd className="font-mono">{MOD} + −</kbd> {t('viewer.zoom')} ·{' '}
-                {canDrag && <>{t('viewer.dragToFrame')} · </>}
-                <kbd className="font-mono">↑</kbd> {t('viewer.upBasket')} · <kbd className="font-mono">↓</kbd> {t('viewer.downAside')} ·{' '}
-              </>
-            )}
-            <kbd className="font-mono">Esc</kbd> {t(cropping ? 'viewer.leaveCrop' : 'viewer.close')}
-          </p>
-        </aside>
-      </DialogContent>
-    </Dialog>
+    </ViewerFrame>
   )
 }

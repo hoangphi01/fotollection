@@ -5,8 +5,10 @@
 //     placeholder / label / alt attributes), outside the shadcn primitives in components/ui.
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const root = new URL('../src', import.meta.url).pathname
+// fileURLToPath, not `.pathname`: on Windows the latter gives `/C:/…` (LESSONS.md).
+const root = fileURLToPath(new URL('../src', import.meta.url))
 const locales = join(root, 'locales')
 const PLURAL = /_(zero|one|two|few|many|other)$/
 
