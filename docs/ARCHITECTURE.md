@@ -98,6 +98,7 @@ crates/
     benches/               # criterion benchmarks (see OPTIMIZATION.md)
     fuzz/                  # cargo-fuzz targets (see TESTING.md)
   oscodec/               † # HEIC and camera RAW via ImageIO (macOS) / WIC (Windows): decode, dimensions, embedded preview; one of the two crates allowed `unsafe` (ADR-0017, ADR-0023)
+  rawlgpl/               † # camera RAW through rawler (LGPL-2.1, ADR-0029): develop, embedded preview, size; panics caught; the only crate with an LGPL dependency, removed before any relicensing
   oscamera/              † # cameras over USB (ADR-0026, proposed): `ptp` (pure, tested on hand-made answers), `macos` (ImageCaptureCore: browse, session, any PTP operation, events); `examples/probe_camera.rs` (Step 0). Not used by the app yet; WPD and the maker drivers come next. The other crate allowed `unsafe`
   geodata/               † # build-time packer for the GeoNames dataset (scripts/geodata/fetch-and-pack.sh); never shipped
 src-tauri/               † # app shell: commands, protocol, capabilities

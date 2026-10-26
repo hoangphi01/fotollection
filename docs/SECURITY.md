@@ -160,7 +160,8 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 - **Per-photo isolation:** every stage returns a per-photo `Result`. A failure is reported through the `job://photo-error` event and the batch continues.
 - **Cancellation:** jobs check a token between stages, and temporary files are removed on cancel.
 - **Memory:** the bounded pipeline keeps peak memory under [NFR-004](PRD.md#nfr-004--memory-ceiling) for any batch size ([OPTIMIZATION.md §4.3](OPTIMIZATION.md#43-parallelism-and-back-pressure)).
-- **Panics:** the app shell installs a panic hook that logs locally and shows a friendly dialog. Worker panics are caught and turned into per-photo errors.
+- **Panics:** the app shell installs a panic hook that logs locally and shows a friendly dialog. Worker panics are caught and turned into per-photo errors. The release profile unwinds (`panic = "unwind"`, ADR-0029) so that a panic inside a third-party decoder can be caught: rawler, which reads untrusted RAW files, runs inside `catch_unwind` in `crates/rawlgpl`, and its failure becomes a per-photo error, never a crash.
+- **Camera RAW through rawler** ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)): the pixel count is checked against the import limits before any develop; rawler's network feature (`rawdb`) is off, and `cargo tree -p fotollection-core` still contains no networking crate.
 
 ### User-facing error messages
 

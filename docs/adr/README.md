@@ -31,6 +31,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0025](0025-update-check-on-click.md) | Check for updates only when the user clicks; the installer opens in the browser, never installed by the app | Accepted, supersedes 0021 in part | 2026-10-25 |
 | [0026](0026-cameras-through-the-os-usb-stack.md) | Cameras over USB through the OS imaging stack (ImageCaptureCore, WPD), with our own clean-room vendor drivers; UVC/HDMI and a watched folder as fallbacks; no libgphoto2, SDKs, WinUSB or Wi-Fi | Proposed | 2026-10-26 |
 | [0027](0027-effective-time-and-place.md) | Effective time and place: per-body clock offsets in the project, manual and borrowed places in a fixed order, the camera's own values kept | Accepted | 2026-10-26 |
+| [0029](0029-raw-through-rawler-then-our-own-decoder.md) | Camera RAW through rawler (LGPL-2.1, the only LGPL dependency) behind a `RawDecoder` trait, finished to the camera's embedded JPEG; Windows first rawler, macOS first ImageIO; our own decoder replaces it format by format; `panic = "unwind"` | Accepted, supersedes 0023 in part | 2026-10-26 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

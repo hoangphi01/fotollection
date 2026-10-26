@@ -1,6 +1,6 @@
 # ADR-0023: Read camera RAW with the operating system's codecs
 
-- **Status:** Accepted. Extends [ADR-0017](0017-heic-through-os-codecs.md) from HEIC to camera RAW
+- **Status:** Accepted, superseded in part by [ADR-0029](0029-raw-through-rawler-then-our-own-decoder.md) (rawler first on Windows, so no Raw Image Extension is needed). Extends [ADR-0017](0017-heic-through-os-codecs.md) from HEIC to camera RAW
 - **Date:** 2026-10-25
 - **Related:** FR-016, NFR-004, NFR-017, ADR-0008, ADR-0017
 

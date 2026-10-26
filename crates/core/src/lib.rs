@@ -28,6 +28,7 @@ pub mod print_advice;
 pub mod print_size;
 pub mod project;
 pub mod raw;
+pub mod raw_finish;
 pub mod render;
 pub mod settings;
 pub mod settings_store;

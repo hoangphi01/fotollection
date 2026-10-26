@@ -57,6 +57,17 @@ crate = "fotollection-oscamera"
 allow = ["GPL-3.0-only"]
 
 [[licenses.exceptions]]
+crate = "fotollection-rawlgpl"
+allow = ["GPL-3.0-only"]
+
+# ADR-0029: rawler (LGPL-2.1) reads camera RAW with nothing to install. The only LGPL
+# dependency, used only by fotollection-rawlgpl; it must be removed before any relicensing
+# (ADR-0008). Its own dependencies all pass the permissive allowlist above.
+[[licenses.exceptions]]
+crate = "rawler"
+allow = ["LGPL-2.1"]
+
+[[licenses.exceptions]]
 crate = "fotollection-geodata"
 allow = ["GPL-3.0-only"]
 
