@@ -685,7 +685,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 - Each full-resolution file (JPEG or RAW) goes to a temporary session folder that shows as a new tab ([ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)).
 - Closing the capture screen shows that tab's photos. A notice offers **Save all**, which asks for the destination only then, moves the files without overwriting any, and keeps every edit.
-- Closing a session tab that still has unsaved shots asks first: *Save all*, *Delete photos* or *Cancel*.
+- Closing a session tab that still has unsaved shots asks first: *Save all*, *Delete photos* or *Cancel*. **Quitting the app** with unsaved shots asks the same. A session left over from a previous run (a crash, a forced quit) comes back on the next start.
 
 **Requirements.**
 

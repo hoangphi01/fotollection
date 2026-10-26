@@ -20,8 +20,8 @@ type ViewerFrameProps = {
   onStagePointerUp?: StagePointer
   /** What the stage shows, on neutral black (STYLE_RULE §4). */
   stage: ReactNode
-  /** A narrow column between the stage and the inspector (the capture screen's shots). */
-  beside?: ReactNode
+  /** A strip under the stage (the capture screen's shots). */
+  below?: ReactNode
   title: ReactNode
   description: ReactNode
   descriptionHint?: string
@@ -47,7 +47,7 @@ export function ViewerFrame({
   onStagePointerMove,
   onStagePointerUp,
   stage,
-  beside,
+  below,
   title,
   description,
   descriptionHint,
@@ -62,18 +62,19 @@ export function ViewerFrame({
         onEscapeKeyDown={onEscapeKeyDown}
         className="flex h-[90vh] w-[95vw] max-w-none gap-0 overflow-hidden p-0 sm:max-w-[min(1400px,95vw)]"
       >
-        {/* Stage */}
-        <div
-          ref={stageRef}
-          className="relative flex min-w-0 flex-1 items-center justify-center overflow-hidden bg-neutral-950 p-8"
-          onPointerDown={onStagePointerDown}
-          onPointerMove={onStagePointerMove}
-          onPointerUp={onStagePointerUp}
-        >
-          {stage}
+        <div className="flex min-w-0 flex-1 flex-col">
+          {/* Stage */}
+          <div
+            ref={stageRef}
+            className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-neutral-950 p-8"
+            onPointerDown={onStagePointerDown}
+            onPointerMove={onStagePointerMove}
+            onPointerUp={onStagePointerUp}
+          >
+            {stage}
+          </div>
+          {below}
         </div>
-
-        {beside}
 
         {/* Inspector */}
         <aside className="flex w-96 shrink-0 flex-col border-l bg-background">

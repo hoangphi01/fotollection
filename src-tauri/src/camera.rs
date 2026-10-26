@@ -947,7 +947,18 @@ fn keep_shot(app: &AppHandle, dir: &Path, shot: &Shot, pressed: Option<Instant>)
             u32::try_from(t.elapsed().as_millis()).unwrap_or(u32::MAX)
         });
         let _ = CameraShot { id, folder, ms }.emit(app);
+        return;
     }
+    // Saved in the session folder, but the library would not take it (a RAW without the
+    // Windows codec, for one): say why, so the press is never left hanging.
+    let issue = match fotollection_core::import::check_file(&path) {
+        Err(reason) => CameraIssue::new(reason.code(), "The shot was saved but cannot be shown"),
+        Ok(_) => CameraIssue::new(
+            "camera.not_imported",
+            "The shot was saved but cannot be shown",
+        ),
+    };
+    let _ = CameraShotFailed { issue }.emit(app);
 }
 
 /// The session loop: jobs first, then a pass, until the UI disconnects or the camera goes.

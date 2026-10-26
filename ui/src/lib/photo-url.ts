@@ -18,6 +18,11 @@ export function sourceUrl(id: number, revision: number): string {
   return `${base}/source/${id}?rev=${revision}`
 }
 
+/** The connected camera's latest live-view frame (FR-062); `seq` comes with `camera-frame`. */
+export function liveViewUrl(seq: number): string {
+  return `${base}/camera/live?seq=${seq}`
+}
+
 /** `revision` is the settings revision, so the preview refreshes when settings change. */
 export function previewUrl(id: number, revision: number): string {
   return `${base}/preview/${id}?rev=${revision}`

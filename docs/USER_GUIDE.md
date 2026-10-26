@@ -115,7 +115,29 @@ A camera set to the wrong time, or still on the time zone of home, puts its phot
 
 Every photo from that camera moves at once, including photos added later: the grid order, best-shot groups, day folders, the date stamp and the exported copy's date. The preview still shows what the camera's clock said, and the photo file is never changed. Two bodies of the same model keep their own clocks when the camera records its serial number. The correction is saved in the project.
 
-## 7. Keyboard shortcuts
+## 7. Shooting with a camera connected
+
+With a camera plugged in by cable, Fotollection shows what it sees and takes the photo ([FR-062](PRD.md#fr-062--live-view-from-a-camera), [FR-063](PRD.md#fr-063--tethered-capture-over-usb)). For now this works on Windows, with the Sony a6400. Other Sony bodies of the same years may work, but they are not checked yet.
+
+1. **On the camera:** *MENU → Setup → USB Connection → PC Remote*. Plug in a data cable and turn the camera on. Close Imaging Edge Remote, since only one app can drive the camera at a time.
+2. **Click the camera button** next to *Open folder* in the sidebar. The capture screen opens.
+3. **The capture screen:**
+   - **The live view.** If a print size is chosen, its shape is drawn over the live view, so you see what stays after *Crop to fill*.
+   - **The settings bar** under the live view shows ISO, shutter speed, aperture and file format.
+   - **The panel** steps ISO and shutter speed with − / +, and switches between JPEG and RAW (the camera may keep the old format for one more shot). Set the aperture on the camera or the lens.
+   - **Capture**, or **Space**, takes the photo. The camera focuses first, so a shot takes about a second. If it cannot focus, the screen says so.
+   - **The shots** line up under the live view, newest first. Click one to open it in the preview.
+4. **Close the screen** (Esc). You are in the session's tab, with all its shots. A notice above the grid offers:
+   - **Save all…**: choose a folder. The photos move there, nothing is overwritten, and your crops, stamps and ratings stay.
+   - **Delete photos**.
+
+   Until you choose, the photos stay in Fotollection's own data. Closing the tab asks first.
+
+   > **Not yet in this build:** quitting the app does not ask yet, and an unsaved session may not come back after a restart. Save or delete your shots before you quit. They are still on disk in `%APPDATA%\com.hoangphi01.fotollection\camera\`.
+
+**RAW on Windows** needs Microsoft's free *Raw Image Extension*, as in §4. Without it, a RAW shot is saved in the session folder, but the tab cannot show it, and the screen says so.
+
+## 8. Keyboard shortcuts
 
 | Where | Key | Action |
 |-------|-----|--------|
@@ -134,6 +156,8 @@ Every photo from that camera moves at once, including photos added later: the gr
 | Preview | drag the photo (not zoomed) | Choose what the print keeps (*Crop to fill*) |
 | Preview | **Esc** | Leave the crop editor, then close |
 | Crop editor | **← →** | Straighten by one degree |
+| Capture screen | **Space** | Take a photo |
+| Capture screen | **Esc** | Close and show the session's tab |
 | Select mode | click, **Shift**+click | Tick one photo, tick a range |
 | Select mode | **Cmd/Ctrl+A** | Tick every photo shown |
 | Select mode | **Enter** | Tick the selected photo |

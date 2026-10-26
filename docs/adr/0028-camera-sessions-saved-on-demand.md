@@ -58,6 +58,11 @@ Two constraints also apply:
 ## Consequences
 
 - PRD FR-062 and FR-063 describe this flow. `src-tauri/src/camera.rs` holds the session, `ui/src/features/capture/` the screen, and the capture screen shares its frame with the preview, so the two cannot drift apart.
-- A session folder outlives the app until the user saves or deletes it. If the app is reopened, the tab comes back like any other folder, through the autosaved session.
+- A session folder outlives the app until the user saves or deletes it.
+- **Not done yet (found 2026-10-26):**
+  - **Quitting with unsaved shots** must ask first, like closing the tab: *Save all*, *Delete photos*, *Cancel*. Today the app closes without a word.
+  - **Reopening the app** must bring the session back: as a tab, or a notice that offers Save all. Today the tab did not come back. The files were still in `camera/` under the app's data directory, but nothing in the app led to them, so to the user they were lost.
+
+  Both are part of FR-063 and must be done before v0.8.0 ships.
 - Moving files is a destructive operation: SECURITY.md covers it (no overwrite, size check before delete), and tests cover it (`fr_063_*`).
 - Later: macOS support, other Sony bodies ([cameras/sony.md](../cameras/sony.md), read-only probe), webcam (UVC) live view, and watching a folder for shots from a maker's own app (FR-064).
