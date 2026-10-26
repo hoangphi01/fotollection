@@ -330,11 +330,11 @@ Presets work like Lightroom presets, applied to *print* settings ([FR-038](PRD.m
 ## 8. Thumbnail cache
 
 - **Layout:** `thumbs/<first 2 hex chars>/<blake3(path ‖ size ‖ mtime)>.<tier>.jpg`. Tiers T1 and T2 are defined in [OPTIMIZATION.md §4.1](OPTIMIZATION.md#41-multi-tier-preview). Thumbnails are of the **unstyled** source. Photo Style and stamps are applied live in the preview, so changing a preset never invalidates the cache.
-- **Index:** `thumbs/index.bin` stores the key, size and last access time. It is rebuilt by scanning if it is missing or corrupt, because the cache must always be safe to delete.
-- **Eviction:** least-recently-used, triggered when the total exceeds the limit (default 2 GB, configurable). It runs in the background at low priority.
+- **Recency:** no index file: each cache file's modification time is its last use. A hit refreshes it at most once a day (`cache_limit::touch`), so browsing does not write to disk.
+- **Eviction:** least-recently-used over `thumbs/` and `analysis/` together, when the total passes **2 GB** (`cache_limit::LIMIT_BYTES`), down to 90 % of it. It runs on the background pool after start-up and after each batch of thumbnails; it also removes `.part` files older than an hour (writes that never finished). Measured: 0.22 s to walk 70,000 files; deleting 38,500 takes 7 s, in the background (OPTIMIZATION.md §5).
 - **Invalidation:** the key includes size and mtime, so a changed source automatically misses the cache. Old entries age out through LRU.
-- **Clearing:** Settings → *Clear cache* deletes the whole `thumbs/` directory. This is safe at any time.
-- **Implementation status (2026-10-23):** T0 (served directly from EXIF, never cached) and T1 (cached as `thumbs/<aa>/<key>.t1.jpg`, written atomically through `.part` + rename) are live. T2 previews live in a RAM-only LRU of 8 images. `index.bin`, LRU eviction and *Clear cache* are not implemented yet.
+- **Clearing:** *Clear cache*, in the popover of the version number at the foot of the settings panel, empties `thumbs/` and `analysis/` and shows the size against the limit. This is safe at any time.
+- **Implementation status (2026-10-23):** T0 (served directly from EXIF, never cached) and T1 (cached as `thumbs/<aa>/<key>.t1.jpg`, written atomically through `.part` + rename) are live. T2 previews live in a RAM-only LRU of 8 images. Since 2026-10-26 the 2 GB limit, the LRU eviction and *Clear cache* are live (`crates/core/src/cache_limit.rs`, `src-tauri/src/cache.rs`).
 
 ### 8.1 Analysis cache
 

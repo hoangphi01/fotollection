@@ -26,6 +26,10 @@ export const commands = {
 	checkForUpdate: () => typedError<UpdateCheck, IpcError>(__TAURI_INVOKE("check_for_update")),
 	/**  Opens the installer found by the last check in the browser. */
 	openUpdateDownload: () => typedError<null, IpcError>(__TAURI_INVOKE("open_update_download")),
+	/**  How much the cache holds; about 0.2 s for 70,000 files (OPTIMIZATION.md §5). */
+	cacheUsage: () => __TAURI_INVOKE<CacheUsage>("cache_usage"),
+	/**  *Clear cache*: deletes every thumbnail and analysis; returns what is left (nothing). */
+	clearCache: () => __TAURI_INVOKE<CacheUsage>("clear_cache"),
 	/**  Supported print sizes for the settings panel (FR-006). */
 	listPrintSizes: () => __TAURI_INVOKE<PrintSize[]>("list_print_sizes"),
 	/**  Opens a folder dialog and imports the chosen folder. `None` if the user cancelled. */
@@ -280,6 +284,15 @@ export type AppInfo = {
 	coreVersion: string,
 	/**  `macos`, `windows` or `linux`: Windows draws its own title bar (FR-052). */
 	os: string,
+};
+
+/**  The cache's size, shown under *Clear cache*. */
+export type CacheUsage = {
+	/**  Bytes (as f64: TypeScript has no u64). */
+	bytes: number | null,
+	files: number,
+	/**  The limit the cache is kept under, in bytes. */
+	limitBytes: number | null,
 };
 
 /**

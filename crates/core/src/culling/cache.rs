@@ -44,6 +44,11 @@ impl AnalysisCache {
         Self { dir }
     }
 
+    /// The cache folder, for its size limit (`cache_limit`).
+    pub fn dir(&self) -> &std::path::Path {
+        &self.dir
+    }
+
     /// `analysis/<aa>/<key>.json`
     fn path(&self, record: &PhotoRecord) -> PathBuf {
         let key = content_key(record);
@@ -52,7 +57,9 @@ impl AnalysisCache {
 
     /// The cached analysis, if present, readable and made by this analysis version.
     pub fn get(&self, record: &PhotoRecord) -> Option<PhotoAnalysis> {
-        let file = std::fs::File::open(self.path(record)).ok()?;
+        let path = self.path(record);
+        let file = std::fs::File::open(&path).ok()?;
+        crate::cache_limit::touch(&path);
         let mut bytes = Vec::new();
         file.take(MAX_ENTRY_BYTES + 1)
             .read_to_end(&mut bytes)

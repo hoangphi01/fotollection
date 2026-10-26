@@ -2,6 +2,7 @@
 //! Thin Tauri shell: adapts IPC commands, events and the image protocol to
 //! `fotollection-core` (ADR-0002).
 
+mod cache;
 mod commands;
 mod culling;
 #[cfg(debug_assertions)]
@@ -32,6 +33,8 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             document::document_requested,
             updates::check_for_update,
             updates::open_update_download,
+            cache::cache_usage,
+            cache::clear_cache,
             commands::list_print_sizes,
             commands::pick_and_import_folder,
             commands::refresh_library,
@@ -199,6 +202,7 @@ pub fn run() {
             std::thread::spawn(move || {
                 commands::restore_session(&handle);
                 commands::finish_startup(&handle);
+                cache::prune_in_background(&handle);
                 // Command-line paths, then those macOS handed over before setup ran.
                 for path in requested.into_iter().chain(open_with::take_early()) {
                     open_with::route(&handle, path);

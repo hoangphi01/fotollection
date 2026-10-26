@@ -34,6 +34,11 @@ impl ThumbCache {
         Self { dir }
     }
 
+    /// The cache folder, for its size limit (`cache_limit`).
+    pub fn dir(&self) -> &Path {
+        &self.dir
+    }
+
     /// `thumbs/<aa>/<blake3(path ‖ size ‖ mtime)>.t1.jpg`
     fn t1_path(&self, record: &PhotoRecord) -> PathBuf {
         let key = content_key(record);
@@ -41,7 +46,11 @@ impl ThumbCache {
     }
 
     pub fn cached_t1(&self, record: &PhotoRecord) -> Option<Vec<u8>> {
-        std::fs::read(self.t1_path(record)).ok()
+        let path = self.t1_path(record);
+        let bytes = std::fs::read(&path).ok()?;
+        // Browsed thumbnails stay when the cache is pruned (DATABASE.md §8).
+        crate::cache_limit::touch(&path);
+        Some(bytes)
     }
 
     /// Generates T1 and stores it atomically in the cache.

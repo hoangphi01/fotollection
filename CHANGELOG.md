@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **The disk cache stays under 2 GB.** Thumbnails and best-shot analyses no longer pile up: past the limit the ones you have not looked at for longest are removed in the background, and unfinished files from a crash are cleaned. The version popover shows the cache's size and has **Clear cache**.
 - The Windows MSI keeps the same upgrade code in every release, so a newer MSI always replaces the older one.
 
 ## [0.7.0] - 2026-10-25

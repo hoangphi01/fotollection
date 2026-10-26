@@ -458,6 +458,13 @@
     "replaces": "Install it over this version: it replaces the app and keeps your settings and projects.",
     "privacy": "The app goes online only when you click this button."
   },
+  "cache": {
+    "usage": "Cache: {{size}} of {{limit}}",
+    "measuring": "Measuring the cache…",
+    "clear": "Clear cache",
+    "clearHint": "Deletes thumbnails and best-shot analyses; they are made again when needed",
+    "note": "Thumbnails and analyses only. The oldest go by themselves past the limit; your photos and projects are never touched."
+  },
   "estimate": {
     "smaller": "Estimated: {{from}} → {{to}} ({{percent}} % lighter)",
     "larger": "Estimated: {{from}} → {{to}}; print files keep every detail, so they can be larger"

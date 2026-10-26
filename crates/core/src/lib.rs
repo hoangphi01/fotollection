@@ -6,6 +6,7 @@
 pub mod atomic;
 pub mod brands;
 pub mod bundle;
+pub mod cache_limit;
 pub mod cancel;
 pub mod codec;
 pub mod colour;

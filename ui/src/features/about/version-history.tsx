@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { releaseSummaries } from '@/lib/changelog'
 import { cn } from '@/lib/utils'
+import { CacheUsage } from './cache-usage'
 import { UpdateCheck } from './update-check'
 
 /**
@@ -49,6 +50,7 @@ export function VersionHistory({ version }: { version: string }) {
           ))}
         </ol>
         <UpdateCheck />
+        <CacheUsage />
       </PopoverContent>
     </Popover>
   )

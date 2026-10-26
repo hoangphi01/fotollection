@@ -442,6 +442,13 @@
     "replaces": "Cài đè lên bản này: bộ cài thay ứng dụng và giữ nguyên cài đặt, dự án của bạn.",
     "privacy": "Ứng dụng chỉ lên mạng khi bạn bấm nút này."
   },
+  "cache": {
+    "usage": "Cache: {{size}} / {{limit}}",
+    "measuring": "Đang đo cache…",
+    "clear": "Xoá cache",
+    "clearHint": "Xoá ảnh thu nhỏ và kết quả phân tích ảnh đẹp nhất; chúng sẽ được tạo lại khi cần",
+    "note": "Chỉ gồm ảnh thu nhỏ và kết quả phân tích. Vượt giới hạn thì phần cũ nhất tự được xoá; ảnh và dự án của bạn không bao giờ bị đụng tới."
+  },
   "estimate": {
     "smaller": "Ước tính: {{from}} → {{to}} (nhẹ hơn {{percent}} %)",
     "larger": "Ước tính: {{from}} → {{to}}; ảnh in giữ trọn chi tiết nên có thể nặng hơn ảnh gốc"

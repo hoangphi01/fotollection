@@ -104,6 +104,8 @@ Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates
    - **Mac:** open the disk image and drag Fotollection into Applications, then choose **Replace**.
    - **Windows:** run the `-setup.exe`; keep the first choice, *Uninstall before installing*. If you installed with the `.msi`, update with the `.msi`: mixing the two leaves two copies.
 
+The same popover shows the **cache**: the thumbnails and best-shot analyses Fotollection keeps so folders open fast, with its size against its 2 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
+
 ## 6. Keyboard shortcuts
 
 | Where | Key | Action |

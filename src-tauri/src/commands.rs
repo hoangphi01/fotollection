@@ -264,6 +264,8 @@ fn warm_thumbnails(app: &AppHandle, ids: Vec<PhotoId>) {
                 tick();
             });
         });
+        // New thumbnails may push the cache past its limit (DATABASE.md §8).
+        crate::cache::prune_in_background(&app);
     });
 }
 
