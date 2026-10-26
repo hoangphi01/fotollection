@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { PanelBottom } from 'lucide-react'
+import { Frame, PanelBottom } from 'lucide-react'
 import { useId, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -55,6 +55,7 @@ export function FrameSection({ frame, fonts, compact = false, children }: FrameS
   const enabled = settings?.enabled ?? false
   // Two instances can be on screen at once, so DOM ids must be unique.
   const switchId = useId()
+  const borderId = useId()
 
   return (
     <SectionCard
@@ -93,6 +94,21 @@ export function FrameSection({ frame, fonts, compact = false, children }: FrameS
         <p className="text-xs text-muted-foreground">
           {t(settings?.fit === 'fit' ? 'frame.fitHint' : 'frame.cropHint')}
         </p>
+        {/* Crop to fill can leave a 3 mm border inside the print size (FR-065). */}
+        <Collapse open={settings?.fit === 'crop'} className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <Label htmlFor={borderId} className="flex items-center gap-2 text-sm font-normal">
+              <Frame className="size-4 text-muted-foreground" />
+              {t('frame.border')}
+            </Label>
+            <Switch
+              id={borderId}
+              checked={settings?.border ?? false}
+              onCheckedChange={(border) => void frame.setSettings((s) => ({ ...s, border }))}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">{t('frame.borderHint')}</p>
+        </Collapse>
 
         <div className="flex gap-2">
           <ToggleGroup

@@ -583,6 +583,11 @@ export type FrameSettings = {
 	 *  (FR-040). Absent before settings v7: 1.0.
 	 */
 	logoScale?: number | null,
+	/**
+	 *  Crop to fill only: a border in the frame colour on the top, left and right, inside
+	 *  the print size, like an instant print (FR-065). Absent before settings v9: off.
+	 */
+	border?: boolean,
 };
 
 export type GpsPoint = {

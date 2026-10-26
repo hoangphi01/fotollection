@@ -204,7 +204,9 @@
       "mono": "One colour"
     },
     "logoSize": "Logo size",
-    "logoSizeHint": "The same for every photo. Double-click for 100 %."
+    "logoSizeHint": "The same for every photo. Double-click for 100 %.",
+    "border": "Add a border",
+    "borderHint": "A 3 mm border in the frame colour on the top and sides, inside the print size: the print stays the exact kiosk size, framed like an instant photo."
   },
   "camera": {
     "manualLens": "Manual lens (not in EXIF)",

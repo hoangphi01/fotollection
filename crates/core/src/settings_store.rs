@@ -19,7 +19,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v6 (FR-052): `ui.theme`, absent before (follow the system).
 /// v7 (FR-040): `frame.logoScale`, absent before (1.0).
 /// v8 (FR-053): `render.exportTarget` (prints or a share preset), absent before (prints).
-pub const SCHEMA_VERSION: u32 = 8;
+/// v9 (FR-065): `frame.border`, the Crop-to-fill border, absent before (off).
+pub const SCHEMA_VERSION: u32 = 9;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -350,6 +351,24 @@ mod tests {
             back.render.export_target,
             ExportTarget::Share(SharePreset::Custom(1600))
         );
+        Ok(())
+    }
+
+    #[test]
+    fn fr_065_v8_files_have_no_border_and_the_border_round_trips() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v8.json"))?;
+        let Loaded::Ok(mut s) = load(&path) else {
+            panic!("v8 should load");
+        };
+        assert!(!s.frame.border);
+        s.frame.border = true;
+        save(&path, &s)?;
+        let Loaded::Ok(back) = load(&path) else {
+            panic!("v9 should load");
+        };
+        assert!(back.frame.border);
         Ok(())
     }
 

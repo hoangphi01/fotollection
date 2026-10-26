@@ -195,7 +195,9 @@
       "mono": "Đơn sắc"
     },
     "logoSize": "Cỡ logo",
-    "logoSizeHint": "Áp dụng cho mọi ảnh. Nhấp đúp để về 100 %."
+    "logoSizeHint": "Áp dụng cho mọi ảnh. Nhấp đúp để về 100 %.",
+    "border": "Tạo viền",
+    "borderHint": "Viền 3 mm theo màu khung ở cạnh trên và hai bên, nằm trong khổ in: bản in vẫn đúng khổ của máy in tại tiệm, có viền như ảnh lấy liền."
   },
   "camera": {
     "manualLens": "Ống kính manual (không có trong EXIF)",

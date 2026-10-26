@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //! Renders one photo exactly as export would, optionally with the info frame (FR-040).
 //!
-//! `cargo run --release -p fotollection-core --example render_one -- <in.jpg> <out.jpg> [crop|fit|none] [10x15] [degrees]`
+//! `cargo run --release -p fotollection-core --example render_one -- <in.jpg> <out.jpg> [crop|crop-border|fit|none] [10x15] [degrees]`
 //!
 //! `degrees` straightens the photo (FR-006); the render time is printed for the benchmark log.
 
@@ -23,9 +23,11 @@ fn main() {
     let (input, output) = (&args[1], &args[2]);
     let fit = match args.get(3).map(String::as_str) {
         Some("fit") => Some(FrameFit::Fit),
-        Some("crop") => Some(FrameFit::Crop),
+        Some("crop" | "crop-border") => Some(FrameFit::Crop),
         _ => None,
     };
+    // Crop to fill with the 3 mm border inside the print (FR-065).
+    let border = args.get(3).is_some_and(|a| a == "crop-border");
     let print = PrintSize::by_id(args.get(4).map_or("10x15", String::as_str)).expect("print size");
     let straighten: f32 = args.get(5).map_or(0.0, |d| d.parse().expect("degrees"));
 
@@ -54,6 +56,7 @@ fn main() {
         let frame = FrameSettings {
             enabled: true,
             fit,
+            border,
             ..FrameSettings::default()
         };
         // Demo profile: a manual lens and a photo style that EXIF can't know.

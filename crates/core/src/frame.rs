@@ -73,6 +73,10 @@ pub struct FrameSettings {
     /// (FR-040). Absent before settings v7: 1.0.
     #[serde(default = "default_logo_scale")]
     pub logo_scale: f32,
+    /// Crop to fill only: a border in the frame colour on the top, left and right, inside
+    /// the print size, like an instant print (FR-065). Absent before settings v9: off.
+    #[serde(default)]
+    pub border: bool,
 }
 
 /// Smallest and largest logo scale (FR-040).
@@ -101,6 +105,7 @@ impl Default for FrameSettings {
             font: None,
             logo_style: crate::brands::LogoStyle::default(),
             logo_scale: 1.0,
+            border: false,
             fields: FrameFields {
                 logo: true,
                 camera: true,
@@ -459,6 +464,10 @@ fn print_box(width: f32, src_width: u32, src_height: u32, print: PrintSize) -> (
 /// fourth side), in millimetres of the print.
 pub const FIT_BORDER_MM: f32 = 5.0;
 
+/// The border Crop to fill leaves inside the print when `border` is on (FR-065): enough to
+/// read as a frame after a kiosk's trim, small enough to keep the photo large.
+pub const CROP_BORDER_MM: f32 = 3.0;
+
 /// The print box inside a Fit canvas `width` pixels wide (the canvas adds a border on both
 /// sides of it).
 #[allow(clippy::cast_precision_loss)]
@@ -551,9 +560,11 @@ pub fn layout(
     let px_per_mm = box_w.max(box_h) / print.long_mm as f32;
     let safe = crate::plan::SAFE_AREA_MM * px_per_mm;
 
-    // Crop: the photo spans the width above the bar, cropped to that box. Fit: the whole
-    // photo at the print's width, with a 5 mm border added on three sides.
+    // Crop: the photo spans the width above the bar, cropped to that box, or 3 mm inside it
+    // when the border is on (FR-065). Fit: the whole photo at the print's width, with a 5 mm
+    // border added on three sides.
     let m = match settings.fit {
+        FrameFit::Crop if settings.border => (CROP_BORDER_MM * px_per_mm).round(),
         FrameFit::Crop => 0.0,
         FrameFit::Fit => fit_border(box_w, box_h, print),
     };
@@ -764,6 +775,51 @@ mod tests {
         let (cw, ch) = canvas_size(4000, 6000, print, 6000, FrameFit::Fit);
         let cm = 11.0 * f64::from(ch) / f64::from(cw);
         assert!((cm - 17.9).abs() < 0.1, "{cm} cm");
+    }
+
+    #[test]
+    fn fr_065_crop_border_sits_inside_the_print_size() {
+        let print = PrintSize::ALL[1];
+        let (cw, ch) = canvas_size(6000, 4000, print, 6000, FrameFit::Crop);
+        let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None);
+        let plain = layout(cw, ch, 6000, 4000, &FrameSettings::default(), &text, print);
+        let bordered = FrameSettings {
+            border: true,
+            ..FrameSettings::default()
+        };
+        let l = layout(cw, ch, 6000, 4000, &bordered, &text, print);
+        // Same canvas: the print keeps its size; the photo moves 3 mm in on three sides.
+        assert_eq!((l.canvas_width, l.canvas_height), (cw, ch));
+        assert_eq!((plain.photo.x, plain.photo.y), (0, 0));
+        let mm = f64::from(cw.max(ch)) / f64::from(print.long_mm);
+        let border = f64::from(l.photo.x) / mm;
+        assert!((border - 3.0).abs() < 0.2, "{border} mm");
+        assert_eq!(l.photo.y, l.photo.x);
+        assert!(cw - (l.photo.x + l.photo.width) <= l.photo.x + 1);
+        assert_eq!(
+            l.photo.y + l.photo.height,
+            plain.photo.y + plain.photo.height
+        );
+        // Fit already has its own border; the switch changes nothing there.
+        let fit = FrameSettings {
+            fit: FrameFit::Fit,
+            ..bordered
+        };
+        let (fw, fh) = canvas_size(6000, 4000, print, 6000, FrameFit::Fit);
+        let a = layout(fw, fh, 6000, 4000, &fit, &text, print);
+        let b = layout(
+            fw,
+            fh,
+            6000,
+            4000,
+            &FrameSettings {
+                border: false,
+                ..fit
+            },
+            &text,
+            print,
+        );
+        assert_eq!(a.photo, b.photo);
     }
 
     #[test]

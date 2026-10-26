@@ -675,6 +675,13 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P2 (planned).** *Watch this folder* on a folder tab: a photo written into it (by a maker's wired tether app, for a body without a Fotollection driver yet) appears and opens at once, once the file is completely written. Also used by FR-063 for its own session folder.
 
+### FR-065 — Border in Crop to fill
+
+**P1 (v0.8.0).** In the info frame's **Crop to fill** mode, an **Add border** switch leaves a 3 mm border in the frame colour (white or black) on the top and both sides, inside the print size; the info bar stays below. The print keeps the exact size of the shop's kiosk (for example CEWE at dm and Rossmann) and still looks like an instant photo, unlike Fit whole photo, which makes the print larger.
+
+- The photo is cropped to the smaller area, so the crop editor, the print-quality advice and the export follow it.
+- Off by default; stored in `settings.json` (v9). Fit whole photo already has its own border, so the switch shows only in Crop to fill.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
