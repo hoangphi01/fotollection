@@ -89,8 +89,12 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
      - an HDMI capture card was dropped, as it is what any streaming tool does.
    - **Done since:**
      - USB captures of Imaging Edge Remote on Windows (2026-10-26) showed Sony's handshake, shutter, settings and live view ([cameras/sony.md](cameras/sony.md));
-     - `vendor/sony.rs` encodes them; its parser is tested and was checked against a recorded settings block.
-   - **Next:** the WPD transport on Windows, then a first shot from our own code.
+     - `vendor/sony.rs` encodes them;
+     - the WPD transport (`windows.rs`) drove the a6400 from our own code (`examples/sony_remote.rs`): JPEG and RAW shots in memory 1.1–1.7 s after the press, live view at 30 fps ([RESULT §13.1](RESULT.md#131-sony-a6400-from-fotollections-own-code-windows)).
+   - **Next:**
+     - wire it into the app (Camera window, FR-062 and FR-063);
+     - the macOS run of `sony_remote`;
+     - fuzz targets for `ptp` and `sony`.
    - **Open decision:** a Wi-Fi exception to NFR-006 for bodies like the GX9 (a direct link to the camera's own network, never the internet).
    - **Then** its release is placed in the ROADMAP.
 
@@ -176,7 +180,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-060 | Start-up screen | 1 | In Progress | ✓ Logo and loading bar painted by `index.html` before any script; the bar follows the import while the session reopens; fades out on `StartupFinished` (`use-startup-screen.ts`), never later than 15 s. Left: check by hand; the Normal / Professional choice (FR-048) later |
 | FR-061 | Check for updates | 2 | In Progress | ✓ `updates.rs`: one GitHub request on click (`ureq`, 10 s, 1 MB), `semver`, installer per system, links kept in Rust and limited to the project's releases, opened with `tauri-plugin-opener`; button in the version popover (`update-check.tsx`); tests on fixture JSON. ✓ MSI `UpgradeCode` pinned. Left: try in the app (`FOTOLLECTION_FAKE_VERSION`) |
 | FR-062 | Live view from a camera | 2 | Not Started | Planned ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md), proposed): own PTP driver per maker over ImageCaptureCore/WPD, or UVC / HDMI capture card through `getUserMedia`. Step 0 first ([cameras/README.md](cameras/README.md)) |
-| FR-063 | Tethered capture over USB | 2 | In Progress | ✓ Step 0 on macOS (RESULT §13): `crates/oscamera` with `ptp` (tested) and the ImageCaptureCore transport, `probe_camera`. ✓ a6400 protocol from USB captures on Windows (sony.md), ✓ `vendor/sony.rs`: handshake, shutter, settings block, live-view frame (tested). GX9: no capture or live view over USB at all. Left: WPD transport, a first shot from our code, app wiring |
+| FR-063 | Tethered capture over USB | 2 | In Progress | ✓ Step 0 on macOS (RESULT §13): `crates/oscamera` with `ptp` (tested) and the ImageCaptureCore transport, `probe_camera`. ✓ a6400 protocol from USB captures on Windows (sony.md), ✓ `vendor/sony.rs`: handshake, shutter, settings block, live-view frame (tested). ✓ WPD transport, first shots and live view from our code on Windows (RESULT §13.1). GX9: no capture or live view over USB at all. Left: app wiring, fuzz targets for `ptp` and `sony`, `0xC201` through WPD |
 | FR-064 | Watch a folder for new photos | 2 | Not Started | Planned: fallback for a maker's wired tether app; also feeds FR-063's session folder |
 | FR-065 | Border in Crop to fill | 1 | In Progress | ✓ `frame.border` (settings v9), 3 mm inside the print in `frame::layout`, the crop and export follow the smaller photo area (`fr_065_*`); *Add border* switch under Crop to fill. Left: check a print at a CEWE kiosk size by hand |
 | FR-059 | Quick-preview | 1 | In Progress | ✓ Hold Space in select mode over a photo: thumbnail at once, then the render with the gallery's settings; ← → and Enter while held (`use-quick-preview.ts`). Left: check by hand in the app |

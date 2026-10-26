@@ -98,7 +98,7 @@ crates/
     benches/               # criterion benchmarks (see OPTIMIZATION.md)
     fuzz/                  # cargo-fuzz targets (see TESTING.md)
   oscodec/               † # HEIC and camera RAW via ImageIO (macOS) / WIC (Windows): decode, dimensions, embedded preview; one of the two crates allowed `unsafe` (ADR-0017, ADR-0023)
-  oscamera/              † # cameras over USB (ADR-0026, proposed): `ptp` (pure, tested on hand-made answers), `vendor/sony.rs` (Sony's handshake, shutter, settings block and live view from `docs/cameras/sony.md`; pure, tested), `macos` (ImageCaptureCore: browse, session, any PTP operation, events); `examples/probe_camera.rs` (Step 0). Not used by the app yet; WPD and the other maker drivers come next. The other crate allowed `unsafe`
+  oscamera/              † # cameras over USB (ADR-0026, proposed): `ptp` (pure, tested on hand-made answers), `vendor/sony.rs` (Sony's handshake, shutter, settings block and live view from `docs/cameras/sony.md`; pure, tested), `macos` (ImageCaptureCore: browse, session, any PTP operation, events), `windows` (WPD through its MTP extension commands, the same API, one thread per open camera); `examples/probe_camera.rs` (Step 0, macOS) and `examples/sony_remote.rs` (handshake, shot, live view). Not used by the app yet; the other maker drivers come next. The other crate allowed `unsafe`
   geodata/               † # build-time packer for the GeoNames dataset (scripts/geodata/fetch-and-pack.sh); never shipped
 src-tauri/               † # app shell: commands, protocol, capabilities
   src/lib.rs             † # tauri-specta builder + bindings export

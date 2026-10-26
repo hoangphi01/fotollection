@@ -56,6 +56,8 @@ pub mod prop {
     pub const SHUTTER_HALF: u16 = 0xD2C1;
     /// Shutter button, full press: 2 = down, 1 = up.
     pub const SHUTTER_FULL: u16 = 0xD2C2;
+    /// Shot state: 0 → 1 → `0x8001` → 0 on every shot; see [`super::photo_ready`].
+    pub const SHOT_STATE: u16 = 0xD215;
 }
 
 /// Values of [`prop::FILE_FORMAT`] seen on the a6400.
@@ -79,13 +81,24 @@ pub const HANDSHAKE: [(u16, &[u32]); 5] = [
     (op::PROPERTY_CODES, &[0xC8]),
 ];
 
-/// One shot from the computer: `CONTROL` with each (property, value), in order.
+/// One shot from the computer: `CONTROL` with each (property, value), in order, with
+/// [`SHUTTER_STEP_GAP`] between steps.
 pub const SHUTTER_PRESS: [(u16, i16); 4] = [
     (prop::SHUTTER_HALF, 2),
     (prop::SHUTTER_FULL, 2),
     (prop::SHUTTER_FULL, 1),
     (prop::SHUTTER_HALF, 1),
 ];
+
+/// The wait between [`SHUTTER_PRESS`] steps. Sent back to back (about 40 ms in all) the
+/// a6400 released before autofocus and did not shoot; 300 ms and 500 ms both shot.
+pub const SHUTTER_STEP_GAP: std::time::Duration = std::time::Duration::from_millis(300);
+
+/// Whether [`prop::SHOT_STATE`] says a new photo can be read from [`handle::PHOTO`]. Through
+/// WPD this is how a shot is noticed: the `NEW_PHOTO` event did not arrive there.
+pub fn photo_ready(shot_state: i128) -> bool {
+    shot_state & 0x8000 != 0
+}
 
 /// The data phase of a `CONTROL` operation. ISO takes a 4-byte field with the value in its
 /// low half; everything else seen takes 2 bytes.
@@ -350,5 +363,8 @@ mod tests {
         assert_eq!(HANDSHAKE.len(), 5);
         assert_eq!(SHUTTER_PRESS.first(), Some(&(prop::SHUTTER_HALF, 2)));
         assert_eq!(SHUTTER_PRESS.last(), Some(&(prop::SHUTTER_HALF, 1)));
+        assert!(photo_ready(0x8001));
+        assert!(!photo_ready(0));
+        assert!(!photo_ready(1));
     }
 }

@@ -75,6 +75,22 @@ pub fn command(code: u16, transaction: u32, params: &[u32]) -> Vec<u8> {
     out
 }
 
+/// An event container rebuilt from its code and parameters, for transports that hand events
+/// over already taken apart (WPD). Transaction `0xFFFFFFFF`, as the a6400 sends its own.
+pub fn event_container(code: u16, params: &[u32]) -> Vec<u8> {
+    let params = &params[..params.len().min(5)];
+    let len = HEADER + 4 * params.len();
+    let mut out = Vec::with_capacity(len);
+    out.extend_from_slice(&u32::try_from(len).unwrap_or(u32::MAX).to_le_bytes());
+    out.extend_from_slice(&EVENT.to_le_bytes());
+    out.extend_from_slice(&code.to_le_bytes());
+    out.extend_from_slice(&u32::MAX.to_le_bytes());
+    for p in params {
+        out.extend_from_slice(&p.to_le_bytes());
+    }
+    out
+}
+
 /// A response or event container: its code and parameters.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Container {
@@ -173,6 +189,41 @@ impl DeviceInfo {
     /// Whether the camera declares an operation.
     pub fn supports(&self, code: u16) -> bool {
         self.operations.contains(&code)
+    }
+}
+
+/// What a camera says about one file (`GetObjectInfo`, ISO 15740 §5.5.2); only the fields
+/// Fotollection uses.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ObjectInfo {
+    pub storage_id: u32,
+    pub format: u16,
+    pub size: u32,
+    pub width: u32,
+    pub height: u32,
+    pub filename: String,
+}
+
+impl ObjectInfo {
+    pub fn parse(bytes: &[u8]) -> Result<Self, PtpError> {
+        let mut r = Reader::new(payload(bytes));
+        let storage_id = r.u32()?;
+        let format = r.u16()?;
+        r.u16()?; // protection
+        let size = r.u32()?;
+        r.take(2 + 4 + 4 + 4)?; // thumbnail format, size, width, height
+        let width = r.u32()?;
+        let height = r.u32()?;
+        r.take(4 + 4 + 2 + 4 + 4)?; // bit depth, parent, association type and desc, sequence
+        let filename = r.string()?;
+        Ok(Self {
+            storage_id,
+            format,
+            size,
+            width,
+            height,
+            filename,
+        })
     }
 }
 
@@ -418,6 +469,37 @@ mod tests {
         assert!(response(&command(op::OPEN_SESSION, 1, &[1])).is_err());
     }
 
+    /// A hand-made `ObjectInfo` for a 6000 × 4000 RAW of 24 MB.
+    fn object_info() -> Vec<u8> {
+        let mut d = Vec::new();
+        d.extend_from_slice(&0x0001_0000u32.to_le_bytes());
+        d.extend_from_slice(&0xB101u16.to_le_bytes());
+        d.extend_from_slice(&0u16.to_le_bytes());
+        d.extend_from_slice(&24_000_000u32.to_le_bytes());
+        d.extend_from_slice(&[0; 14]);
+        d.extend_from_slice(&6000u32.to_le_bytes());
+        d.extend_from_slice(&4000u32.to_le_bytes());
+        d.extend_from_slice(&[0; 18]);
+        d.extend(string("DSC00001.ARW"));
+        d.extend(string(""));
+        d
+    }
+
+    #[test]
+    fn object_info_parses_and_bad_answers_are_errors() -> Result<(), PtpError> {
+        let raw = object_info();
+        let info = ObjectInfo::parse(&raw)?;
+        assert_eq!(info.format, 0xB101);
+        assert_eq!(info.size, 24_000_000);
+        assert_eq!((info.width, info.height), (6000, 4000));
+        assert_eq!(info.filename, "DSC00001.ARW");
+        let name_end = raw.len() - 1;
+        for cut in 0..name_end {
+            assert!(ObjectInfo::parse(&raw[..cut]).is_err(), "cut at {cut}");
+        }
+        Ok(())
+    }
+
     #[test]
     fn response_and_event_containers() -> Result<(), PtpError> {
         let mut r = 16u32.to_le_bytes().to_vec();
@@ -435,6 +517,11 @@ mod tests {
         e.extend_from_slice(&0u32.to_le_bytes());
         e.extend_from_slice(&42u32.to_le_bytes());
         assert_eq!(event(&e)?.params, vec![42]);
+
+        let rebuilt = event(&event_container(0xC201, &[0xFFFF_C001]))?;
+        assert_eq!(rebuilt.code, 0xC201);
+        assert_eq!(rebuilt.params, vec![0xFFFF_C001]);
+        assert_eq!(event(&event_container(0xC203, &[0; 9]))?.params.len(), 5);
         Ok(())
     }
 }

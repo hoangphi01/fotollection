@@ -20,6 +20,10 @@ objc2-foundation = { version = "0.3.2", features = ["NSArray", "NSData", "NSDate
 objc2-core-graphics = { version = "0.3.2", default-features = false, features = ["CGImage"] }
 objc2-image-capture-core = { version = "0.3.2", features = ["ICCameraDevice", "ICCameraItem", "ICDevice", "ICDeviceBrowser", "block2", "objc2-core-graphics"] }
 
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { version = "0.62.2", features = ["Win32_Devices_PortableDevices", "Win32_Devices_Properties", "Win32_Foundation", "Win32_System_Com", "Win32_System_Com_StructuredStorage", "Win32_System_Variant", "Win32_UI_Shell_PropertiesSystem"] }
+windows-core = "0.62.2"
+
 # The only crates allowed to use `unsafe` (FFI) are this one and oscodec.
 [lints.rust]
 unsafe_code = "deny"

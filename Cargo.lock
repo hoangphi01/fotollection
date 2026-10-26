@@ -1501,6 +1501,8 @@ dependencies = [
  "objc2-foundation",
  "objc2-image-capture-core",
  "thiserror 2.0.21",
+ "windows",
+ "windows-core",
 ]
 
 [[package]]

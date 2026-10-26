@@ -13,6 +13,20 @@
 
 ## 2026-10-26
 
+### WPD hands over a maker's event code in the high half of the GUID (FR-063)
+
+- **Seen:** the a6400 driven through WPD sent no events we recognised. A temporary log of each event's GUID showed `C2030000-5738-4FF2-8445-BE3126691059`, where the code was expected in the low 16 bits.
+- **Why:** WPD builds a maker's event GUID from `WPD_EVENT_MTP_VENDOR_EXTENDED_EVENTS` and puts the PTP event code in the high 16 bits of its first field.
+- **Fix:** `vendor_event_code` reads `data1 >> 16`; a test uses the GUID as seen.
+- **Rule:** when a platform API rewraps camera data, log what it really hands over before trusting the documented shape.
+
+### A Sony shot needs time between the shutter steps (FR-063)
+
+- **Seen:** the four shutter steps, sent back to back (about 40 ms), answered `OK` but the a6400 did not shoot. No event came, and the shot state stayed 0.
+- **Why:** the half press starts autofocus, and releasing within milliseconds cancels it. Remote's own fast presses also failed twice in the second recording.
+- **Fix:** `SHUTTER_STEP_GAP` = 300 ms between steps; it shot 4 of 4. A missing `0xD215 = 0x8001` within a few seconds means "did not shoot".
+- **Rule:** an `OK` to a control operation means "received", not "done". Check the camera's state afterwards.
+
 ### dumpcap does not see USBPcap (FR-063)
 
 - **Seen:** on Windows with Wireshark, USBPcap and Npcap installed and the USBPcap driver running, `dumpcap -D` listed only network cards, so `scripts/camera-capture.ps1` said "No USBPcap interface found"; `tshark -D` listed `\\.\USBPcap1` and `\\.\USBPcap2`.

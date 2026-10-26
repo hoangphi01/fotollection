@@ -114,10 +114,49 @@ Get/set is 1 for values set with `0x9205` and `0x81` for buttons used with `0x92
 - the `0x9207` and `0x9205` data phases;
 - the settings block parser (bounded; tested on a hand-made block, and checked once against a recorded a6400 block that is not committed);
 - the live-view frame's offset and length;
-- shutter-speed decoding.
+- shutter-speed decoding;
+- the gap between shutter steps and the shot state (from the first run below).
+
+`crates/oscamera/src/windows.rs` carries these operations through WPD. `examples/sony_remote.rs` drives the body with them.
+
+### First run from our own code (2026-10-26, Windows 10, WPD)
+
+`sony_remote` on the a6400 (firmware 2.0, PC Remote) through Windows's own driver, with Imaging Edge closed. Measured on a Lenovo 20U9002NUS: i7-10610U, 4 cores, 16 GB, Windows 10 IoT Enterprise LTSC.
+
+- **Session and handshake:** WPD opens the device in 1–2 ms. The handshake takes 20–60 ms, or 0.96 s the first time after plugging in, all steps answered `OK`. No `OpenSession` is sent; WPD's session is used.
+- **Settings:**
+  - The block read right after the first handshake had empty values (ISO 0, shutter `0xFFFF/0xFFFF`, f/0). On later runs it was filled at once. Read it again before trusting it.
+  - Setting the file format with `0x9205` shows in the block at once, but the **next shot still used the old format**. The shot after it used the new one. Remote sent the value twice and shot seconds later; our code must wait for the format to take effect (exact delay to confirm).
+- **Shutter:**
+  - The four `0x9207` steps sent back to back (about 40 ms) shot nothing.
+  - With 300 ms or 500 ms between steps, the body focused and shot every time (4 of 4).
+  - `SHUTTER_STEP_GAP` is 300 ms.
+- **Noticing the shot:**
+  - Through WPD, `0xC201` never arrived, in four tries.
+  - `0xD215` in the polled settings block went to `0x8001` 6–30 ms after the last shutter step, and the photo could then be read. That is the signal used.
+  - WPD does deliver `0xC203` (property changed), as GUID `C2030000-5738-4FF2-8445-BE3126691059`: the event code is in the high 16 bits of the GUID's first field. These events stopped arriving while the settings block was polled every 150 ms.
+- **Photos read:**
+
+  | Format | `GetObject` | Rate | From the first shutter step to the photo in memory |
+  |---|---:|---:|---:|
+  | JPEG, 4.3 MB | 145–148 ms | 29 MB/s | 1.12–1.72 s |
+  | RAW (ARW), 24.8 MB | 759–763 ms | 32.6 MB/s | 1.72–1.75 s |
+
+  The 0.9–1.5 s before the read is the press itself with its gaps.
+  - Sizes matched `GetObjectInfo`.
+  - The JPEG starts `FF D8 FF E1` and opens as 6000 × 4000.
+  - The ARW starts with a TIFF header.
+  - `GetObjectInfo` gives the file name (`DSC04099.JPG`) but a width and height of 0.
+- **Live view:**
+  - 100 frames in 3.3 s = **30.3 fps**, 1024 × 680 JPEG, 78 KB mean.
+  - The slowest successful request took 29 ms.
+  - A request made before the next frame is ready is answered `0x200F` (715 times in that run) and costs almost nothing. Polling is the way to pace it.
+  - The time from scene to screen was not measured; it needs a clock in the scene.
 
 ## Next
 
-- The WPD transport on Windows, then a first shot and live view from our own code with the a6400.
+- Find why `0xC201` does not come through WPD (another event GUID, or a property of the event registration), or keep the shot-state poll.
+- The delay before a new file format applies.
 - Record a disconnect: Remote closed before Ctrl+C.
-- Name `0xD215`, `0xC202` and the other `0x81` buttons when they are observed.
+- Name `0xC202` and the other `0x81` buttons when they are observed.
+- Note for other Sony bodies: Imaging Edge installs a libusbK driver (`srcameradriver.inf`) for 65 other models (not the a6400). On a PC where it has taken such a body, WPD does not see that body.

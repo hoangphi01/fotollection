@@ -255,6 +255,22 @@ Measured before building camera support ([ADR-0026](adr/0026-cameras-through-the
 - **No driver is needed** to reach either body; the OS stack carries any PTP operation, so path A is open for every maker whose protocol we learn.
 - **The GX9 cannot be tethered over USB** by anyone: it declares no capture or live-view operation. Live view needs an HDMI capture card; photos come by import after the shoot.
 
+### 13.1 Sony a6400 from Fotollection's own code (Windows)
+
+`examples/sony_remote.rs` through WPD (Windows's own driver) on a Lenovo 20U9002NUS: i7-10610U, 4 cores, 16 GB, Windows 10. The details are in [cameras/sony.md](cameras/sony.md).
+
+| Step | Result |
+|------|--------|
+| Session open, handshake | 1–2 ms; 20–60 ms (0.96 s the first time after plugging in) |
+| Settings block (`0x9209`, 62 properties) | 2–14 ms |
+| Shutter to photo announced (shot state `0x8001`) | 0.94–1.57 s, mostly the 3 × 300 ms gaps autofocus needs |
+| Photo read | JPEG 4.3 MB in 145 ms; RAW 24.8 MB in 760 ms (≈ 32 MB/s) |
+| Shutter to photo in memory | JPEG 1.1–1.7 s, RAW 1.7 s |
+| Live view | 30.3 fps, 1024 × 680 JPEG, 78 KB per frame |
+
+- **NFR-019's 15 fps is met** by the a6400 over USB (30 fps). The time from scene to screen is still to measure.
+- **NFR-018:** the photo is in memory 1.1–1.7 s after the press, before decoding and showing it; the "about 2 s for JPEG" target looks reachable.
+
 ## 14. Places and time (v0.8.0, measured first)
 
 Measured before building FR-030, FR-031 and FR-058 with `crates/core/examples/measure_places.rs`, REF-MAC (M3), release build. Parts B–D use 96 of the owner's GX9 JPEGs, read only and kept in memory.
