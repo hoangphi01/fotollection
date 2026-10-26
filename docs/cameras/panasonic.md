@@ -20,6 +20,10 @@ Observed with `probe_camera` on 2026-10-26 (macOS, ImageCaptureCore).
 - **Image formats:** `0x3001` (association), `0x3002` (script), `0x3006` (DPOF), `0x3801` (EXIF/JPEG), `0x380D` (TIFF).
 - **Behaviour:** the screen shows only the PictBridge logo and the shutter is locked. Right after the session opens, ImageCaptureCore lists the card's files and the body answers no command until that is done (10 s timeout hit with 70 files; 20 ms once the list was complete).
 
+### Powered on with the cable plugged in
+
+Turning the body off, plugging the cable in, then turning it on starts it in shooting mode. In that state it shows **no USB device at all**: neither ImageCaptureCore nor the system's USB registry (`ioreg -p IOUSB`) lists anything, so the cable carries power only (checked 2026-10-26).
+
 ### Conclusion
 
-Over USB the GX9 can only hand over files that are already on the card: no remote capture, no live view, no new-photo event. For Fotollection: live view through an HDMI capture card (path C), and photos by import after the shoot.
+Over USB the GX9 can only hand over files that are already on the card, and only in a mode where the shutter is locked: no remote capture, no live view, no new-photo event; while it can shoot, it is not on the USB bus. The only way to make it shoot from the computer and get the photo at once is its Wi-Fi remote protocol (the one Panasonic's Image App uses), which would need an exception to the wired-first rule and to NFR-006 (a direct link to the camera, never the internet). An HDMI capture card gives live view, but that is what any streaming tool already does, so it is not a Fotollection feature.
