@@ -98,13 +98,14 @@ crates/
     benches/               # criterion benchmarks (see OPTIMIZATION.md)
     fuzz/                  # cargo-fuzz targets (see TESTING.md)
   oscodec/               † # HEIC and camera RAW via ImageIO (macOS) / WIC (Windows): decode, dimensions, embedded preview; one of the two crates allowed `unsafe` (ADR-0017, ADR-0023)
-  oscamera/              † # cameras over USB (ADR-0026, proposed): `ptp` (pure, tested on hand-made answers), `vendor/sony.rs` (Sony's handshake, shutter, settings block and live view from `docs/cameras/sony.md`; pure, tested), `macos` (ImageCaptureCore: browse, session, any PTP operation, events), `windows` (WPD through its MTP extension commands, the same API, one thread per open camera); `examples/probe_camera.rs` (Step 0, macOS) and `examples/sony_remote.rs` (handshake, shot, live view). Not used by the app yet; the other maker drivers come next. The other crate allowed `unsafe`
+  oscamera/              † # cameras over USB (ADR-0026, proposed): `ptp` (pure, tested on hand-made answers), `vendor/sony.rs` (Sony's handshake, shutter, settings block and live view from `docs/cameras/sony.md`; pure, tested), `macos` (ImageCaptureCore: browse, session, any PTP operation, events), `windows` (WPD through its MTP extension commands, the same API, one thread per open camera); `examples/probe_camera.rs` (Step 0, macOS) and `examples/sony_remote.rs` (handshake, shot, live view). Used by the app through `src-tauri/src/camera.rs`; the other maker drivers come next. The other crate allowed `unsafe`
   geodata/               † # build-time packer for the GeoNames dataset (scripts/geodata/fetch-and-pack.sh); never shipped
 src-tauri/               † # app shell: commands, protocol, capabilities
   src/lib.rs             † # tauri-specta builder + bindings export
   src/commands.rs        † # IPC commands (§6)
   src/document.rs        † # New / Open / Save / Save As / Relink of .fotollection documents (FR-023)
   src/menu.rs            † # native File/Edit/Window menu (macOS), rebuilt on language change
+  src/camera.rs          † # tethered capture (FR-062, FR-063, ADR-0028): connect, a session thread that owns the camera (live view, settings every 300 ms, queued jobs), shots written atomically into a session folder that becomes a tab, Save all and Delete photos; the Sony logic is written against a `CameraLink` trait and tested with a scripted camera
   src/open_with.rs       † # "Open with" (FR-054, ADR-0024): one route for macOS Opened events, command-line paths and second launches; the photo's folder as a tab
   src/timing.rs          † # start-up milestones printed only with FOTOLLECTION_TIMING (NFR-010, scripts/measure-startup.sh)
   src/updates.rs         † # "Check for updates" (FR-061, ADR-0025): one GitHub request on click, the installer opened in the browser from Rust
@@ -251,6 +252,13 @@ Commands marked † are implemented.
 | `new_document()` / `open_document()` / `save_document()` / `save_document_as()` † | Project lifecycle. Open and Save As use **Rust-side** dialogs; Save writes the current document or falls back to Save As. Open validates the whole bundle before changing anything | FR-023 |
 | `document_requested() -> bool` † | Whether the OS handed over a project the UI has not opened yet; asked after `startup-finished`, since a cold launch can announce it before the page listens | FR-023, FR-054 |
 | `open_requested_document()` † | Opens the file the OS handed over (file association), after the UI settled unsaved changes. The path is stored in Rust, never sent by the webview | FR-023 |
+| `camera_connect() -> CameraInfo` † | Finds a camera (Windows, WPD), runs the maker's handshake and starts a session: `{ name, settings }`. Errors: `camera.not_found`, `camera.unsupported` (not a Sony body yet), `camera.busy` (another app such as Imaging Edge Remote holds it), `camera.already_connected`, `camera.timeout`; on macOS `camera.unavailable_platform` | FR-062, FR-063 |
+| `camera_disconnect()` † | Ends the session; the session folder and its tab stay | FR-063 |
+| `camera_capture()` † | Queues one shot and returns at once; the result is `camera-shot` or `camera-shot-failed` | FR-063 |
+| `camera_step(setting: "iso" \| "shutter", delta)` † / `camera_set_format("jpeg" \| "raw")` † | Moves ISO or shutter speed by steps (−10…10) / sets the file format; queued like a shot | FR-063 |
+| `camera_sessions() -> [u16]` † | The folders (tab ids) that are camera sessions, which offer Save all | FR-063 |
+| `save_camera_session(folder) -> DocumentState?` † | Save all: picks the destination with a Rust-side dialog, moves the session's files there without overwriting any (copy, size check, then delete across volumes) and rebuilds the library with every edit kept; `None` when cancelled. Errors: `camera.still_connected`, `camera.bad_destination`, `camera.destination_open`, `camera.save_failed` | FR-063, ADR-0028 |
+| `discard_camera_session(folder) -> DocumentState` † | Delete photos: removes the session folder (only one under the app's `camera/` directory) and closes its tab | FR-063, ADR-0028 |
 | `take_photo_request() -> OpenPhoto?` † | The photo the OS asked to show ("Open with"), once: `{ id, folder }`, kept in Rust until taken, so a request made during start-up is not lost | FR-054 |
 | `startup_finished() -> bool` † | Whether the last session is back, for a page that loaded after `startup-finished`; the start-up screen waits for it | FR-060 |
 | `check_for_update() -> UpdateCheck` † / `open_update_download()` † | On click only: asks GitHub for the latest release (`{ current, latest, newer, pageUrl }`) and keeps the installer link for this system in Rust; the second opens it in the browser. Errors: `update.offline`, `update.unreadable`, `update.none` | FR-061 |
@@ -286,6 +294,11 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 | `revision-changed` † | `{ revision, canUndo, canRedo }` after any render-affecting edit; previews refresh |
 | `document-changed` † | `{ document }` after any edit, save, open, new or relink; the window title follows (`Trip — Edited — Fotollection`) |
 | `menu-action` † | `{ action: new \| open \| save \| saveAs \| openRequested }` from the native File menu (macOS) or a file handed over by the OS; the UI runs its own flow, unsaved-changes question included |
+| `camera-status` † | `{ connected, name, issue? }`: a session started, or ended (`issue` says why: unplugged, failed calls) |
+| `camera-frame` † | `{ seq }`: a new live-view frame at `fotothumb://localhost/camera/live?seq={n}` |
+| `camera-settings-changed` † | `{ settings: { iso?, isoAuto, shutter?: { numerator, denominator }, aperture?, format? } }`, only when a value changed |
+| `camera-shot` † | `{ id, folder, ms }`: a shot is in the session tab; `ms` from the press (NFR-018), 0 when the camera's own shutter took it |
+| `camera-shot-failed` † | `{ issue }`: a press did not give a photo (`camera.no_shot`), or a step or format change was refused |
 | `open-photo` † | `{ id, folder }`: a photo handed over by the OS is in the library; the UI takes it with `take_photo_request`, shows its folder's tab and opens the preview once that folder is listed |
 | `startup-finished` † | The last session is back (or there was none): the start-up screen fades out (FR-060) |
 | `task-progress` † | `{ task: "import" \| "thumbnails" \| "analyze", done, total }`, coalesced to ≤ 30 per second. Drives the progress bar |
@@ -302,7 +315,9 @@ Pixels **never** cross IPC as JSON or base64. Thumbnails and previews are served
 - `fotothumb://localhost/preview/{id}?rev={n}`: about 1600 px, rendered from the T2 cache with the **same** `RenderPlan` code as the export. `rev` is the settings revision.
 - `fotothumb://localhost/preview/{id}?rev={n}&region={x},{y},{w},{h}&px={n}`: one part of the **full-resolution** render, for zoom past the preview's pixels (FR-057). The region is in fractions of the photo and `px` the widest it should come back (at most 4,096); both are checked in Rust before any work. The original is decoded on the first such request into a second cache bounded at about 200 MB (`PreviewCache::full`; the photo on screen always stays), rendered with the export's plan, and only the region is encoded. The UI lays that part over the zoomed preview at its final on-screen size and only translates it: a CSS `scale()` would make WebKit rasterise it at its small layout size first and lose the detail.
 
-The UI just sets `<img src>`. Routes are parsed strictly: anything other than `/thumb/<u32>` or `/preview/<u32>` returns 404.
+- `fotothumb://localhost/camera/live?seq={n}`: the connected camera's latest live-view frame, a JPEG already in memory (FR-062). It is never decoded, cached or written to disk; `seq` only defeats the webview's cache.
+
+The UI just sets `<img src>`. Routes are parsed strictly: anything other than these routes returns 404.
 
 ## 7. Persistence
 

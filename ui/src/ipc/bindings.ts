@@ -264,11 +264,46 @@ export const commands = {
 	 *  groups where the suggestion is too close to call, or the user prefers another shot.
 	 */
 	keepOne: (group: PhotoId, photo: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("keep_one", { group, photo })),
+	/**  Finds a camera, runs its handshake and starts the session. */
+	cameraConnect: () => typedError<CameraInfo, IpcError>(__TAURI_INVOKE("camera_connect")),
+	/**  Ends the session; the session folder and its tab stay. */
+	cameraDisconnect: () => typedError<null, IpcError>(__TAURI_INVOKE("camera_disconnect")),
+	/**
+	 *  Takes a photo. Presses are queued; the result comes as `camera-shot` or
+	 *  `camera-shot-failed`.
+	 */
+	cameraCapture: () => typedError<null, IpcError>(__TAURI_INVOKE("camera_capture")),
+	/**  Moves ISO or shutter speed by `delta` steps (−1 darker or slower… as the camera counts). */
+	cameraStep: (setting: ExposureSetting, delta: number) => typedError<null, IpcError>(__TAURI_INVOKE("camera_step", { setting, delta })),
+	cameraSetFormat: (format: CaptureFormat) => typedError<null, IpcError>(__TAURI_INVOKE("camera_set_format", { format })),
+	/**  The library folders that are camera sessions (tabs that offer Save all). */
+	cameraSessions: () => typedError<number[], IpcError>(__TAURI_INVOKE("camera_sessions")),
+	/**
+	 *  Save all (ADR-0028): asks where, moves the session's photos there without overwriting
+	 *  any, and points the tab at them with every edit kept. `None` when the dialog is
+	 *  cancelled.
+	 */
+	saveCameraSession: (folder: number) => typedError<{
+	/**  The file name without its extension; `None` for an untitled session. */
+	name: string | null,
+	edited: boolean,
+	/**  Bumps when another project replaces the library (thumbnail URLs depend on it). */
+	generation: number,
+	/**  Folders of the opened project that still need relinking. */
+	missing: MissingFolder[],
+} | null, IpcError>(__TAURI_INVOKE("save_camera_session", { folder })),
+	/**  Delete photos: removes the session folder and closes its tab (the UI asks first). */
+	discardCameraSession: (folder: number) => typedError<DocumentState, IpcError>(__TAURI_INVOKE("discard_camera_session", { folder })),
 };
 
 /** Events */
 export const events = {
 	analysisFinished: makeEvent<AnalysisFinished>("analysis-finished"),
+	cameraFrame: makeEvent<CameraFrame>("camera-frame"),
+	cameraSettingsChanged: makeEvent<CameraSettingsChanged>("camera-settings-changed"),
+	cameraShot: makeEvent<CameraShot>("camera-shot"),
+	cameraShotFailed: makeEvent<CameraShotFailed>("camera-shot-failed"),
+	cameraStatus: makeEvent<CameraStatus>("camera-status"),
 	documentChanged: makeEvent<DocumentChanged>("document-changed"),
 	exportFinished: makeEvent<ExportFinished>("export-finished"),
 	exportProgress: makeEvent<ExportProgress>("export-progress"),
@@ -331,6 +366,22 @@ export type CameraClock = {
 	photos: number,
 };
 
+/**  A new live-view frame is at `fotothumb://localhost/camera/live?seq={seq}`. */
+export type CameraFrame = {
+	seq: number,
+};
+
+export type CameraInfo = {
+	name: string,
+	settings: CameraSettings,
+};
+
+/**  A problem to show, with a stable code the UI translates (`errors.camera.*`). */
+export type CameraIssue = {
+	code: string,
+	message: string,
+};
+
 /**
  *  User edits for one camera, remembered across sessions (DATABASE.md §6). Every field is
  *  optional: unset fields fall back to EXIF or to derived defaults.
@@ -358,6 +409,47 @@ export type CameraProfileView = {
 	/**  A logo is bundled for this camera's brand (ADR-0020). */
 	hasBrandLogo: boolean,
 };
+
+/**  What the capture screen shows. `None` when the camera has not filled a value yet. */
+export type CameraSettings = {
+	iso: number | null,
+	isoAuto: boolean,
+	shutter: ShutterSpeed | null,
+	/**  f-number × 100 (200 is f/2.0). */
+	aperture: number | null,
+	format: CaptureFormat | null,
+};
+
+/**  The camera's settings changed. */
+export type CameraSettingsChanged = {
+	settings: CameraSettings,
+};
+
+/**
+ *  A shot is in the session tab. `ms` runs from the press to now (NFR-018); 0 when the
+ *  camera's own shutter took it.
+ */
+export type CameraShot = {
+	id: PhotoId,
+	folder: number,
+	ms: number,
+};
+
+/**  A press did not give a photo. */
+export type CameraShotFailed = {
+	issue: CameraIssue,
+};
+
+/**  The camera connected or went away; `issue` says why it stopped, when it did. */
+export type CameraStatus = {
+	connected: boolean,
+	name: string,
+	issue: CameraIssue | null,
+};
+
+export type CaptureFormat = "jpeg" | "raw" | 
+/**  A value we have not named (RAW+JPEG, another quality); shown as is. */
+"other";
 
 export type Corner = "bottomRight" | "bottomLeft" | "topRight" | "topLeft";
 
@@ -511,6 +603,8 @@ export type ExportSummary = {
 export type ExportTarget = 
 /**  Full-quality prints (FR-008): the print size, the original's profile, no metadata. */
 { kind: "print" } | { kind: "share"; preset: SharePreset };
+
+export type ExposureSetting = "iso" | "shutter";
 
 /**  Pick/reject flag for culling (FR-022). */
 export type Flag = "pick" | "reject";
@@ -893,6 +987,12 @@ export type SharePreset =
 { kind: "original" } | { kind: "facebook" } | { kind: "instagram" } | 
 /**  A long edge chosen by the user, clamped to [`CUSTOM_EDGE_RANGE`]. */
 { kind: "custom"; longEdge: number };
+
+/**  A shutter speed in seconds, as numerator / denominator (1/250 is `{ 1, 250 }`). */
+export type ShutterSpeed = {
+	numerator: number,
+	denominator: number,
+};
 
 /**  The verdict for one print size. */
 export type SizeAdvice = {

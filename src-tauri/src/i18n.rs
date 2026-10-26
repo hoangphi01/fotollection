@@ -31,6 +31,8 @@ pub struct Strings {
     pub open_title: &'static str,
     pub save_title: &'static str,
     pub relink_title: &'static str,
+    /// Save all of a camera session (FR-063).
+    pub camera_save_title: &'static str,
 }
 
 const EN: Strings = Strings {
@@ -60,6 +62,7 @@ const EN: Strings = Strings {
     open_title: "Open a project",
     save_title: "Save the project",
     relink_title: "Locate the folder",
+    camera_save_title: "Save the photos to",
 };
 
 const VI: Strings = Strings {
@@ -89,6 +92,7 @@ const VI: Strings = Strings {
     open_title: "Mở dự án",
     save_title: "Lưu dự án",
     relink_title: "Tìm thư mục",
+    camera_save_title: "Lưu ảnh vào",
 };
 
 pub fn strings(language: Language) -> &'static Strings {

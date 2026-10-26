@@ -3,6 +3,7 @@
 //! `fotollection-core` (ADR-0002).
 
 mod cache;
+mod camera;
 mod commands;
 mod culling;
 #[cfg(debug_assertions)]
@@ -86,6 +87,14 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             culling::list_groups,
             culling::keep_best,
             culling::keep_one,
+            camera::camera_connect,
+            camera::camera_disconnect,
+            camera::camera_capture,
+            camera::camera_step,
+            camera::camera_set_format,
+            camera::camera_sessions,
+            camera::save_camera_session,
+            camera::discard_camera_session,
         ])
         .events(collect_events![
             events::LibraryChanged,
@@ -99,6 +108,11 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             events::AnalysisFinished,
             events::StartupFinished,
             open_with::OpenPhoto,
+            camera::CameraStatus,
+            camera::CameraFrame,
+            camera::CameraSettingsChanged,
+            camera::CameraShot,
+            camera::CameraShotFailed,
         ])
 }
 
@@ -188,6 +202,10 @@ pub fn run() {
                 None => (thumb_dir, config_dir, project_path),
             };
             app.manage(state::AppState::new(thumb_dir, &config_dir, project_path)?);
+            // Camera sessions live next to the session project (ADR-0028).
+            app.manage(camera::CameraState::new(
+                app.path().app_data_dir()?.join("camera"),
+            ));
             prepare_window(app.handle());
 
             spawn_autosave(app.handle().clone());

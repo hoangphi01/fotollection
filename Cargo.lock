@@ -1439,7 +1439,9 @@ dependencies = [
 name = "fotollection"
 version = "0.7.0"
 dependencies = [
+ "chrono",
  "fotollection-core",
+ "fotollection-oscamera",
  "rayon",
  "semver",
  "serde",
@@ -1452,6 +1454,7 @@ dependencies = [
  "tauri-plugin-opener",
  "tauri-plugin-single-instance",
  "tauri-specta",
+ "tempfile",
  "ureq",
 ]
 

@@ -153,6 +153,13 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 
 **Cameras over USB** (`fotollection-oscamera`, [ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)): everything a camera sends is untrusted. `ptp` and the maker drivers (`vendor/sony.rs`: the settings block, the live-view frame's offset and length) check every length and count against the bytes received, cap lists at 4,096 entries, reject unknown data types and forms and returns an error on a bad answer, never a panic (tested by cutting a valid answer at every byte). Every call to the camera has a timeout: on Windows, where WPD calls block, each open camera has its own thread and the caller stops waiting after the timeout, after which that camera refuses further calls. An object read from a camera is capped at 256 MB.
 
+**Camera sessions** (`src-tauri/src/camera.rs`, [ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)):
+
+- **Writing shots:** a file name from the camera keeps only its last part, plain characters and at most 64 of them, with the extension its format calls for. A shot is written as `.part` and renamed. A name already taken gets a suffix; nothing is overwritten.
+- **Save all:** the destination comes from a Rust-side dialog, never from the webview, and cannot be inside the app's data. Files move without overwriting; across volumes each is copied, its size checked, and only then removed.
+- **Delete photos:** it only removes a folder directly under the app's `camera/` directory, and the UI asks first.
+- **Live view:** frames stay in memory and are never written or sent (NFR-006).
+
 **Website secrets.** The footer's visit count (`scripts/ga-visits.mjs`, run by `pages.yml`) reads Google Analytics with a service account that has the *Viewer* role on the one GA property and nothing else. Its JSON key and the property ID live only in the repository secrets `GA_SERVICE_ACCOUNT` and `GA_PROPERTY_ID`; the script never prints them, asks only for the `analytics.readonly` scope, accepts a numeric property ID and a whole number back, and writes nothing on any error. Workflows for pull requests from forks get no secrets. If the key leaks, delete it in Google Cloud and add a new one.
 
 ## 8. Resilience and error handling
