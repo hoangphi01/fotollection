@@ -234,6 +234,7 @@ en:
   footer_blog: The author's blog
   footer_photos: Demo photos are CC0, from Wikimedia Commons.
   footer_analytics: This website counts visits with Google Analytics; the app does not.
+  footer_visits: "%n visits since 24 October 2026 · updated daily"
   by: by
 
 vi:
@@ -471,4 +472,5 @@ vi:
   footer_blog: Blog của mình
   footer_photos: Ảnh demo là CC0, từ Wikimedia Commons.
   footer_analytics: Trang web này đếm lượt xem bằng Google Analytics; ứng dụng thì không.
+  footer_visits: "%n lượt truy cập từ 24/10/2026 · cập nhật mỗi ngày"
   by: bởi

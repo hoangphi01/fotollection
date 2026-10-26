@@ -1,11 +1,14 @@
 name: pages
 
 # The website in site/ (site/README.md), built with GitHub Pages' own Jekyll. Rebuilt when the
-# site changes, and by release.yml after a release so the download buttons show it.
+# site changes, by release.yml after a release so the download buttons show it, and once a
+# day so the visit count in the footer stays current.
 on:
+  schedule:
+    - cron: "17 3 * * *"
   push:
     branches: [main]
-    paths: ["site/**", "CHANGELOG.md", ".github/workflows/pages.yml"]
+    paths: ["site/**", "CHANGELOG.md", "scripts/ga-visits.mjs", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -29,6 +32,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api "repos/$GITHUB_REPOSITORY" --jq '{stars: .stargazers_count}' > site/_data/repo.json
+
+      # Total visits for the landing page footer, from Google Analytics (scripts/ga-visits.mjs).
+      # Without the secrets it writes nothing and the footer leaves the line out.
+      - name: Visit count
+        env:
+          GA_PROPERTY_ID: ${{ secrets.GA_PROPERTY_ID }}
+          GA_SERVICE_ACCOUNT: ${{ secrets.GA_SERVICE_ACCOUNT }}
+        run: node scripts/ga-visits.mjs
 
       # The CHANGELOG, from the first version heading on, for the "What's new" box.
       - name: Changelog for the page

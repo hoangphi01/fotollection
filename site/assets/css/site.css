@@ -315,6 +315,8 @@ h2 .fn-ref { font-size: 0.4em; }
 .footer-row { display: flex; flex-direction: column; gap: 22px; }
 .footer-row p { margin-top: 8px; }
 .footer-made { max-width: 46ch; font-size: 0.9rem; }
+.footer-visits { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.footer-visits .icon { width: 14px; height: 14px; flex: none; }
 .footer-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 24px; }
 .footer-links a { text-decoration: none; color: var(--ink-2); }
 .footer-links a:hover { color: var(--ink); text-decoration: underline; }
