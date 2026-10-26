@@ -36,12 +36,13 @@ The WebView2 runtime is bootstrapped by the Windows installer when it is missing
 | Platform | What we do now | Paid option (not used) | User experience |
 |----------|----------------|------------------------|-----------------|
 | macOS | Ad-hoc signature (required on Apple Silicon) | Developer ID + notarization, 99 USD/year | Gatekeeper blocks the first launch. The user goes to **System Settings → Privacy & Security → Open Anyway** (right-click → Open no longer works on macOS 15+) |
-| Windows | Unsigned. Apply to SignPath Foundation (free for OSS) later | Authenticode / Azure Trusted Signing | SmartScreen warning: **More info → Run anyway** |
+| Windows | Unsigned. Applied to SignPath Foundation (free for OSS) on 2026-10-26 | Authenticode / Azure Trusted Signing | SmartScreen warning: **More info → Run anyway** |
 
 - Every release publishes `SHA256SUMS.txt` for all artifacts.
 - The release notes, the website and the README include the first-launch steps for each OS.
 - No signing secret exists yet. Any future one is stored only in GitHub Actions encrypted secrets, never in the repository.
-- **Plan:** apply to SignPath Foundation for free Windows signing now that public releases exist. Pay for the Apple Developer Program only when the project earns money or an iPhone app is built; there is no free way to notarize for macOS (a free Apple ID signs only for the developer's own devices, for 7 days).
+- **SignPath Foundation (applied for 2026-10-26).** Its [terms](https://signpath.org/terms) require: an OSI licence with **no commercial dual-licensing** (a relicence under [ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md) ends the subscription), builds only from this repository by GitHub Actions, two-factor authentication on every account, a manual approval of each signing request, product name and version identical in every signed file, and a *Code signing policy* page linked from the home and download pages ([fotollection.org/code-signing](https://fotollection.org/code-signing/), `site/_includes/code-signing.html`), with the privacy policy on the same page. Once approved, `release.yml` submits the unsigned `-setup.exe` and `.msi` to SignPath, waits for the approval and publishes the signed files; a new ADR then supersedes this part of ADR-0009.
+- **Plan:** pay for the Apple Developer Program only when the project earns money or an iPhone app is built; there is no free way to notarize for macOS (a free Apple ID signs only for the developer's own devices, for 7 days).
 
 ## 4. Release pipeline
 

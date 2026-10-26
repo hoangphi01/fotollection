@@ -22,6 +22,7 @@
       </div>
       <p class="small muted">
         {% if release.tag_name %}{{ t.latest }}: <a href="{{ release.html_url }}">{{ release.tag_name }}</a> · {% else %}<a href="{{ site.repo_url }}/releases">{{ t.no_release }}</a> · {% endif %}{{ t.download_note }}
+        · {% if page.lang == 'vi' %}{% assign signing = '/vi/code-signing/' | relative_url %}{% else %}{% assign signing = '/code-signing/' | relative_url %}{% endif %}<a href="{{ signing }}">{{ t.download_signing }}</a>
       </p>
     </div>
   </div>

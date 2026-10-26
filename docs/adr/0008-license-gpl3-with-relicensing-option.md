@@ -36,3 +36,4 @@ The **copyright holder (@hoangphi01) may relicense future versions**. This is po
 - A CLA adds friction for contributors. It is set up (for example with CLA Assistant) before the first outside pull request is merged. Tracked in [STATUS.md](../STATUS.md).
 - Source files get an SPDX header: `// SPDX-License-Identifier: GPL-3.0-only`.
 - Third-party data attribution (GeoNames, CC BY 4.0) appears in the About dialog and README.
+- Free Windows signing from SignPath Foundation (applied for 2026-10-26, [RELEASE.md §3](../RELEASE.md#3-code-signing)) is only for projects without commercial dual-licensing. Relicensing or selling a commercial licence means leaving SignPath first.

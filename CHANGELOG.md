@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The footnotes name the maker behind each RAW format (RW2, CR2, CR3, NEF, ARW, RAF, ORF) and say DNG is Adobe's open specification.
 - The landing page footer shows the **total visits** in a badge like the GitHub star button, read from Google Analytics when the site is built and updated once a day; the page loads nothing extra for it.
 - A shorter footer: the demo-photo credit lives only in the footnotes, and the analytics note no longer mentions the app.
+- A **Code signing policy** page with the privacy policy (fotollection.org/code-signing), linked from the footer and the download line, for the SignPath Foundation application (free Windows code signing).
 - The FAQ's "why Fotollection" answer says what is missing elsewhere: no app is designed for the photo printer, so you crop by hand or leave it to the shop's machine.
 
 ### Changed

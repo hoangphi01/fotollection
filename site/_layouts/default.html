@@ -8,6 +8,7 @@
 {%- assign path_vi = page.path_vi | default: '/vi/' -%}
 {%- if page.lang == 'vi' %}{% assign other_page = path_en | relative_url %}{% else %}{% assign other_page = path_vi | relative_url %}{% endif -%}
 {%- if page.lang == 'vi' %}{% assign path_perf = '/vi/performance/' | relative_url %}{% else %}{% assign path_perf = '/performance/' | relative_url %}{% endif -%}
+{%- if page.lang == 'vi' %}{% assign path_signing = '/vi/code-signing/' | relative_url %}{% else %}{% assign path_signing = '/code-signing/' | relative_url %}{% endif -%}
 {%- if page.title_key %}{% assign page_title = t[page.title_key] | append: ' · Fotollection' %}{% else %}{% assign page_title = t.title %}{% endif -%}
 {%- if page.description_key %}{% assign page_description = t[page.description_key] %}{% else %}{% assign page_description = t.description %}{% endif -%}
 {%- assign canonical = page.url | absolute_url -%}
@@ -181,6 +182,7 @@
           <li><a href="{{ home }}#kiosk">{{ t.nav_kiosk }}</a></li>
           <li><a href="{{ home }}#changelog">{{ t.footer_changelog }}</a></li>
           <li><a href="{{ site.repo_url }}/blob/main/LICENSE">{{ t.footer_license }}</a></li>
+          <li><a href="{{ path_signing }}">{{ t.footer_signing }}</a></li>
           <li><a class="blog" href="https://hoangphi01.github.io/blog/">{{ t.footer_blog }} {% include icons/arrow-right.svg %}</a></li>
         </ul>
       </div>

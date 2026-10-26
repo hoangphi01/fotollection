@@ -27,4 +27,5 @@ Option 3. Ship **unsigned** macOS and Windows builds for now:
 
 - **macOS:** on first launch, Gatekeeper blocks the app. The user opens **System Settings → Privacy & Security → Open Anyway**. Since macOS 15 (Sequoia), right-click → Open no longer bypasses Gatekeeper. The install steps are shown on the release page and in the README.
 - **Windows:** SmartScreen shows "Windows protected your PC". The user clicks **More info → Run anyway**.
+- 2026-10-26: applied to SignPath Foundation for free Windows signing ([RELEASE.md §3](../RELEASE.md#3-code-signing)). Its terms forbid commercial dual-licensing, so using it and relicensing under [ADR-0008](0008-license-gpl3-with-relicensing-option.md) exclude each other.
 - Some users will not install an unsigned app. We accept this for the `0.x` releases and revisit it when the project gains users or revenue, by writing a new ADR that supersedes this one.
