@@ -289,3 +289,24 @@ Measured before building FR-030, FR-031 and FR-058 with `crates/core/examples/me
 - Effective time costs nothing measurable: it is computed as a column, and sorting already reads one.
 - Place inference fits in the background: about 1.2 s per 1,000 camera photos, so NFR-020 is set at 2 s.
 - XMP lookup on import is free (1 ms per 1,000 photos).
+
+## 15. Camera RAW built in: rawler (v0.8.0, measured first)
+
+Measured before rawler was wired in ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)) with `crates/core/examples/measure_rawler.rs` and `bench/quality/raw_compare.py`, on the nine CC0 samples of §12, REF-MAC (M3), release build, median of 3. rawler's develop is finished by `raw_finish` with the camera's embedded JPEG; colour and structure are scored on 1600 px copies against that JPEG, the camera's own rendering.
+
+| Sample | ImageIO develop | rawler + finish | rawler preview | ΔE2000 rawler / ImageIO vs the JPEG | SSIM rawler / ImageIO vs the JPEG |
+|------|-----:|-----:|-----:|-----:|-----:|
+| Canon 5D Mark IV (CR2) | 334 ms | 549 ms | 57 ms | **4.16** / 5.51 | 0.997 / 0.966 |
+| Canon R10 (CR3) | 503 ms | 349 ms | 43 ms | 5.64 / **2.67** | 0.982 / 0.987 |
+| Fujifilm X-T3 (RAF) | 541 ms | 474 ms | 40 ms | **7.56** / 10.10 | 0.889 / 0.779 |
+| Nikon D750 (NEF) | 337 ms | 390 ms | 33 ms | **1.18** / 2.41 | 0.997 / 0.987 |
+| Olympus E-M10 III (ORF) | 371 ms | 277 ms | none in the file | 16.03 / **5.43** | 0.521 / 0.927 |
+| Panasonic GX9 (RW2) | 606 ms | 215 ms | 10 ms | **3.00** / 4.56 | 0.955 / 0.967 |
+| Panasonic S5 (RW2) | 722 ms | 239 ms | 8 ms | 6.76 / **3.47** | 0.737 / 0.947 |
+| Ricoh GR III (DNG) | 572 ms | 624 ms | 63 ms | **4.08** / 5.22 | 0.987 / 0.968 |
+| Sony A7 III (ARW) | 429 ms | 221 ms | 11 ms | 4.35 / **3.42** | 0.985 / 0.967 |
+
+- **Unfinished, rawler is far off** (ΔE 10–16 from the JPEG): it applies no exposure, tone curve or lens shading. Matching each channel to the embedded JPEG fixes the look at no visible cost.
+- **Low SSIM on the Olympus and the S5 is geometry, not quality:** ImageIO corrects lens distortion, which those lenses rely on; rawler does not. The Olympus has no embedded image either, so it gets the default curve.
+- **Size:** the macOS app binary is 36.0 MB without rawler, 39.5 MB with it, and 44.7 MB with `panic = "unwind"` (needed to catch a panic inside rawler).
+- Decision (ADR-0029): rawler first on Windows (RAW with nothing to install), ImageIO first on macOS (distortion corrected), each the other's fallback.

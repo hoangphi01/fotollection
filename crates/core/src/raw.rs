@@ -123,35 +123,150 @@ fn decoded(image: fotollection_oscodec::OsImage) -> Result<Decoded, CodecError> 
 /// (RESULT.md §12), so a batch export of RAW stays within the 2 GB ceiling (NFR-004).
 static DEVELOP: std::sync::Mutex<()> = std::sync::Mutex::new(());
 
+/// One way to read camera RAW (ADR-0029). Fotollection tries them in [`decoders`] order,
+/// so our own decoder can take over format by format without changing any caller.
+pub trait RawDecoder: Sync {
+    /// The full develop, finished to the camera's look.
+    fn decode(&self, bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError>;
+    /// The developed size, the only one to use for geometry.
+    fn dimensions(&self, bytes: &[u8], kind: RawKind) -> Result<(u32, u32), CodecError>;
+    /// An image the camera stored in the file, at most `max_px` on its long edge.
+    fn preview(&self, bytes: &[u8], kind: RawKind, max_px: u32) -> Result<Decoded, CodecError>;
+}
+
+/// The operating system's codecs: `ImageIO` on macOS, WIC with the Raw Image Extension on
+/// Windows (ADR-0023). They correct lens distortion, which rawler does not.
+pub struct Os;
+
+impl RawDecoder for Os {
+    fn decode(&self, bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError> {
+        let format = fotollection_oscodec::Format::Raw(kind);
+        decoded(fotollection_oscodec::decode(bytes, format, LIMITS).map_err(error)?)
+    }
+
+    fn dimensions(&self, bytes: &[u8], kind: RawKind) -> Result<(u32, u32), CodecError> {
+        fotollection_oscodec::dimensions(bytes, fotollection_oscodec::Format::Raw(kind))
+            .map_err(error)
+    }
+
+    fn preview(&self, bytes: &[u8], kind: RawKind, max_px: u32) -> Result<Decoded, CodecError> {
+        let format = fotollection_oscodec::Format::Raw(kind);
+        decoded(fotollection_oscodec::preview(bytes, format, max_px, LIMITS).map_err(error)?)
+    }
+}
+
+/// rawler (LGPL-2.1), built in, so RAW opens with nothing to install; its develop is
+/// finished to the look of the camera's own embedded JPEG (`raw_finish`).
+pub struct Rawler;
+
+fn rawler_error(e: fotollection_rawlgpl::RawError) -> CodecError {
+    use fotollection_rawlgpl::RawError as E;
+    match e {
+        E::Unsupported(_) => CodecError::Unsupported,
+        E::TooLarge(_) => CodecError::TooLarge(LIMITS.max_edge, LIMITS.max_edge),
+        E::Decode(why) => CodecError::Decode(why),
+        E::Panicked => CodecError::Decode("the RAW decoder failed on this file".into()),
+    }
+}
+
+fn rgb8(image: fotollection_rawlgpl::Rgb8) -> Option<RgbImage> {
+    RgbImage::from_raw(image.width, image.height, image.rgb)
+}
+
+impl RawDecoder for Rawler {
+    fn decode(&self, bytes: &[u8], _kind: RawKind) -> Result<Decoded, CodecError> {
+        let developed =
+            fotollection_rawlgpl::develop(bytes, LIMITS.max_pixels).map_err(rawler_error)?;
+        let reference = fotollection_rawlgpl::preview(bytes)
+            .ok()
+            .flatten()
+            .and_then(rgb8);
+        let curves = reference
+            .as_ref()
+            .and_then(|r| crate::raw_finish::match_reference(&developed.rgb, r))
+            .unwrap_or_else(|| crate::raw_finish::default_curves(&developed.rgb));
+        Ok(Decoded {
+            image: crate::raw_finish::apply(
+                &developed.rgb,
+                developed.width,
+                developed.height,
+                &curves,
+            ),
+            icc: None,
+        })
+    }
+
+    fn dimensions(&self, bytes: &[u8], _kind: RawKind) -> Result<(u32, u32), CodecError> {
+        fotollection_rawlgpl::dimensions(bytes).map_err(rawler_error)
+    }
+
+    fn preview(&self, bytes: &[u8], kind: RawKind, max_px: u32) -> Result<Decoded, CodecError> {
+        let image = match fotollection_rawlgpl::preview(bytes).map_err(rawler_error)? {
+            Some(embedded) => rgb8(embedded)
+                .ok_or_else(|| CodecError::Decode("unexpected pixel layout".into()))?,
+            // No image in the file (some ORF): develop it, once, for the thumbnail.
+            None => self.decode(bytes, kind)?.image,
+        };
+        let small = crate::render::fit_long_edge(&image, max_px)
+            .map_err(|e| CodecError::Decode(e.to_string()))?;
+        Ok(Decoded {
+            image: small,
+            icc: None,
+        })
+    }
+}
+
+/// The order RAW decoders are tried in (ADR-0029). macOS keeps `ImageIO` first (it corrects
+/// lens distortion), with rawler for what it cannot read; Windows uses rawler, with WIC
+/// for what rawler cannot read.
+pub fn decoders() -> [&'static dyn RawDecoder; 2] {
+    if cfg!(target_os = "macos") {
+        [&Os, &Rawler]
+    } else {
+        [&Rawler, &Os]
+    }
+}
+
+/// The first decoder's answer that works; otherwise the most telling error (a missing
+/// codec only when nothing else said more).
+fn first<T>(
+    mut call: impl FnMut(&dyn RawDecoder) -> Result<T, CodecError>,
+) -> Result<T, CodecError> {
+    let mut worst = CodecError::Unsupported;
+    for decoder in decoders() {
+        match call(decoder) {
+            Ok(v) => return Ok(v),
+            Err(CodecError::RawCodecMissing | CodecError::Unsupported) => {}
+            Err(e) => worst = e,
+        }
+    }
+    Err(worst)
+}
+
 /// The full develop, for the print preview, zoom and export.
 pub fn decode(bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError> {
-    let format = fotollection_oscodec::Format::Raw(kind);
     // A poisoned lock only means another develop panicked; the lock itself guards nothing.
     let _one = DEVELOP
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner);
-    decoded(fotollection_oscodec::decode(bytes, format, LIMITS).map_err(error)?)
+    first(|d| d.decode(bytes, kind))
 }
 
 /// The developed size, the only one to use for geometry (crops are fractions of it).
 pub fn dimensions(bytes: &[u8], kind: RawKind) -> Result<(u32, u32), CodecError> {
-    fotollection_oscodec::dimensions(bytes, fotollection_oscodec::Format::Raw(kind)).map_err(error)
+    first(|d| d.dimensions(bytes, kind))
 }
 
 /// The preview the RAW carries, at most `max_px` on its long edge: 30 to 100 times faster
 /// than a develop (RESULT.md §12), for thumbnails and best-shot analysis. Its size can
 /// differ from `dimensions`.
 pub fn preview(bytes: &[u8], kind: RawKind, max_px: u32) -> Result<Decoded, CodecError> {
-    let format = fotollection_oscodec::Format::Raw(kind);
-    decoded(fotollection_oscodec::preview(bytes, format, max_px, LIMITS).map_err(error)?)
+    first(|d| d.preview(bytes, kind, max_px))
 }
 
-/// Whether this machine can develop RAW, asked once per run.
+/// Whether this machine can develop RAW: always, since rawler is built in (ADR-0029).
 pub fn available() -> bool {
-    static AVAILABLE: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
-    *AVAILABLE.get_or_init(|| {
-        fotollection_oscodec::available(fotollection_oscodec::Format::Raw(RawKind::Rw2))
-    })
+    true
 }
 
 #[cfg(test)]
@@ -235,6 +350,18 @@ mod tests {
                 assert!(preview.image.width.max(preview.image.height) <= 400);
                 assert!(w > 2000 && h > 1000, "{}: {w}×{h}", path.display());
             }
+            // rawler, on every system (ADR-0029): its size is the develop's, and every file
+            // gives a thumbnail.
+            let (w, h) = Rawler.dimensions(&bytes, expected)?;
+            let developed = Rawler.decode(&bytes, expected)?;
+            assert_eq!(
+                (developed.image.width, developed.image.height),
+                (w, h),
+                "{}",
+                path.display()
+            );
+            let thumb = Rawler.preview(&bytes, expected, 400)?;
+            assert!(thumb.image.width.max(thumb.image.height) <= 400);
         }
         Ok(())
     }

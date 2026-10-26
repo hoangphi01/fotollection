@@ -1,0 +1,19 @@
+[package]
+name = "fotollection-rawlgpl"
+description = "Camera RAW decoding through rawler (LGPL-2.1), behind Fotollection's own API (ADR-0029)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+publish = false
+
+# ADR-0029: the only crate with an LGPL dependency. rawler must be removed before any
+# relicensing (ADR-0008); `rawdb` (network access) stays off.
+[dependencies]
+image = { version = "0.25", default-features = false }
+rawler = { version = "0.8.0", default-features = false }
+thiserror.workspace = true
+
+[lints]
+workspace = true

@@ -135,7 +135,7 @@ With a camera plugged in by cable, Fotollection shows what it sees and takes the
 
    Unplugging the camera or turning it off also closes the screen and shows the session's tab.
 
-**RAW on Windows** needs Microsoft's free *Raw Image Extension*, as in §4. Without it, a RAW shot is saved in the session folder, but the tab cannot show it, and the screen says so.
+**RAW shots** are read by Fotollection's built-in RAW reader, so they show in the tab like JPEG ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)); on Windows this is being checked on a PC without Microsoft's Raw Image Extension.
 
 ## 8. Keyboard shortcuts
 
