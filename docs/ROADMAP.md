@@ -95,9 +95,9 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.5.0 | Print basket | FR-050 (basket and set aside, select mode), FR-059 (Quick-preview) | — |
 | v0.6.0 | Photo viewer | FR-057 (full-resolution zoom, zoom buttons), FR-060 (start-up screen) | Done: cold start (NFR-010), open to first photo (NFR-016), preview and zoom at 16/26/32 MP (RESULT §11) |
 | v0.7.0 | Open with and RAW | FR-054 ("Open with"), FR-016 (RAW through the OS codecs) | Done: RAW on nine CC0 samples (RESULT §12, NFR-017), open to first photo (NFR-016) |
-| v0.8.0 | Places and Lightroom | FR-032, FR-005, FR-030, FR-031, FR-058 (XMP), FR-061 (check for updates), FR-065 (border in Crop to fill) | Lookup speed with manual places, a mixed camera + phone folder; XMP read on a Lightroom-culled folder |
+| v0.8.0 | Places and Lightroom, and the camera (title to confirm at release) | FR-032, FR-005, FR-030, FR-031, FR-058 (XMP), FR-061 (check for updates), FR-065 (border in Crop to fill), FR-062 + FR-063 (capture screen with live view, Windows, Sony a6400; [ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)) | Lookup speed with manual places, a mixed camera + phone folder; XMP read on a Lightroom-culled folder; NFR-018 and NFR-019 measured in the app with the a6400 |
 | v0.9.0 | Normal mode | FR-048, NFR-015, FR-046, FR-050 | Normal against Professional export |
-| To place | Camera | FR-062 (live view), FR-063 (tethered capture over USB), FR-064 (watch a folder), NFR-018, NFR-019 | Step 0 on a GX9 and an a6400: declared operations, capture from the app, live view, shot to file ([cameras/README.md](cameras/README.md)) |
+| To place | Camera, continued | The camera on macOS, other Sony bodies (read-only probe first), FR-064 (watch a folder), webcam (UVC) live view | [cameras/README.md](cameras/README.md), [cameras/sony.md](cameras/sony.md) |
 | Later | Looks, presets, trips, journal | FR-039, FR-047, FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
 
 ## Phase 2 — Smart features

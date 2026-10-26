@@ -435,6 +435,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
   - GPS moves by more than 30 m.
 
   A focal-length change alone does not split a group: re-shooting closer is common, and the zoom is allowed for when the shots are compared.
+
 - **Group confirmation.** Each photo has a visual signature: a 32 × 24 luma layout and a hue × saturation histogram ([ADR-0019](adr/0019-grouping-by-visual-signature.md)). A shot joins the group when its layout correlates ≥ 0.6 with the previous shot and its colours overlap ≥ 0.72. The comparison allows shifts of about ±10 % and zooms of ×0.85–1.18, or the EXIF focal-length ratio when the shots were zoomed. Against the group's first shot it must still correlate ≥ 0.4, so that groups do not chain. A group holds at most 30 photos.
 - **Accuracy.** Grouping and picks are scored against hand-labelled photos with `eval_bestshot` (README, [RESULT.md §8](RESULT.md#8-best-shot-accuracy)). A change must not lower the scores.
 - **Metrics.** Each metric is computed in one pass over a greyscale copy of the T2 preview, reduced to 1,024 px:
@@ -455,6 +456,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
   | Noise | 0.05 |
 
   Hard faults, such as closed eyes or heavy blur, are shown as reasons. They are never applied silently.
+
 - **Explanation.** The suggestion names up to three metrics that differ most from the runner-up, for example "34 % sharper", "Eyes open" or "Fewer clipped highlights: 0.3 % vs 4 %". Sharpness is given as the difference in edge strength, because small groups have no meaningful sigma. When the top two scores are within half a sigma of subject sharpness (0.175), it says **"Too close to call"**.
 - **UI.**
   - A **Groups** view shows one strip per group, with a **"Best of N"** badge and its reasons.
@@ -657,19 +659,41 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-062 — Live view from a camera
 
-**P2 (planned, after Step 0).** A **Camera** window shows what a camera plugged in by cable sees, live, with the print ratio drawn over it (the crop's ratios), to frame the shot ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md), [cameras/README.md](cameras/README.md)).
+**v0.8.0, Windows first.** The capture screen of [FR-063](#fr-063--tethered-capture-over-usb) shows what a camera plugged in by cable sees, live, with the print ratio drawn over it (the crop's ratios), to frame the shot ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md), [ADR-0028](adr/0028-camera-sessions-saved-on-demand.md), [cameras/README.md](cameras/README.md)).
 
-- **Sources, all wired:** a camera through Fotollection's own PTP driver for its maker; a standard webcam (UVC) or an HDMI capture card through the webview. Wi-Fi is not a source.
+- **Sources:**
+  - Now: a camera through Fotollection's own PTP driver for its maker (Sony first).
+  - Later: a standard webcam (UVC) or an HDMI capture card through the webview.
+  - Wi-Fi is not a source.
 - Frames are only shown: never stored, never sent ([NFR-006](#nfr-006--offline-and-zero-telemetry)).
 - Unplugging stops the view with a plain message, never a hang.
 
 ### FR-063 — Tethered capture over USB
 
-**P2 (planned, after Step 0).** With a camera plugged in by cable, a **Capture** button (and Space) in the Camera window takes the photo; where the camera reports its own shutter, that works too. The full-resolution file (JPEG or RAW) is saved to `Pictures/Fotollection/Camera/<date>/`, that folder is a tab, and the new photo opens at once in the preview to crop and print, the same way "Open with" opens a photo ([FR-054](#fr-054--open-photos-with-fotollection)).
+**v0.8.0, Windows first.** **Connect camera**, next to *Open folder*, looks for a camera plugged in by cable. When it finds one, a **capture screen** opens.
+
+**The capture screen.**
+
+- It has the preview's frame:
+  - the live view on the stage, with the print ratio drawn over it ([FR-062](#fr-062--live-view-from-a-camera));
+  - a column of the shots just taken, newest first;
+  - a panel where the preview has its inspector.
+- The panel shows the camera, ISO and shutter speed (− / +), the aperture (read only), the file format (JPEG or RAW), and a **Capture** button.
+- Space captures and Esc closes. Clicking a shot in the column opens it in the preview.
+
+**Where shots go.**
+
+- Each full-resolution file (JPEG or RAW) goes to a temporary session folder that shows as a new tab ([ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)).
+- Closing the capture screen shows that tab's photos. A notice offers **Save all**, which asks for the destination only then, moves the files without overwriting any, and keeps every edit.
+- Closing a session tab that still has unsaved shots asks first: *Save all*, *Delete photos* or *Cancel*.
+
+**Requirements.**
 
 - No driver to install: Fotollection talks PTP through the system's own USB stack (ImageCaptureCore on macOS, WPD on Windows), with one module per camera maker written from our own protocol notes ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)).
 - First makers: Sony and Panasonic (bodies at hand), then Canon and Nikon. Standard PTP for the rest. Which body does what is in [cameras/README.md](cameras/README.md).
-- A burst of shots loses none and stays within [NFR-004](#nfr-004--memory-ceiling).
+- A burst of shots loses none and stays within [NFR-004](#nfr-004--memory-ceiling): presses are queued, and each shot is written to disk before the next one is taken.
+- A press that does not shoot (no focus, camera busy) says so plainly.
+- v0.8.0 supports the Sony a6400 on Windows. On macOS the button is shown disabled with a hint, until the camera has a thread of its own there.
 
 ### FR-064 — Watch a folder for new photos
 
