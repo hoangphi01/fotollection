@@ -28,3 +28,8 @@ site/_includes/changelog.md
 # Python tooling (uv)
 .venv/
 __pycache__/
+
+# Camera USB captures for docs/cameras/ (ADR-0026): local only, never committed
+captures/
+*.pcapng
+*.pcap

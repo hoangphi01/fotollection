@@ -41,7 +41,7 @@ Known from makers' documents (not yet tested here): UVC on Canon R50/R8/R6 II, N
 2. **Capture from the computer:** standard `InitiateCapture` first, then the maker's operations (Sony's half/full press; Panasonic's 0x94xx range if declared); time from the command to the full file on disk, JPEG and RAW.
 3. **The camera's own shutter:** is a "new object" event sent? If not, capture from the computer is the path.
 4. **Live view:** frame rate, size and latency through the maker's operation.
-5. **USB capture on Windows** (Wireshark + USBPcap): Imaging Edge Remote driving the a6400 (capture, live view, ISO and aperture changes), and any Panasonic app that drives the GX9. Captures stay local and are never committed; only our protocol notes and small hand-made response samples (test fixtures) are.
+5. **USB capture on Windows** (Wireshark + USBPcap, step by step in [capture-guide.md](capture-guide.md), `scripts/camera-capture.ps1`): Imaging Edge Remote driving the a6400 (capture, live view, ISO and aperture changes), and any Panasonic app that drives the GX9. Captures stay local and are never committed; only our protocol notes and small hand-made response samples (test fixtures) are.
 6. **HDMI capture card**, if one is at hand: is the output clean (no overlays), and what is the latency?
 
 Results go to [RESULT.md](../RESULT.md) §13, a row in [OPTIMIZATION.md §5](../OPTIMIZATION.md#5-benchmark-log), and the table above.

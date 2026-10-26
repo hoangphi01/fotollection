@@ -18,4 +18,4 @@ Observed with `probe_camera` on 2026-10-26 (macOS, ImageCaptureCore).
 
 ## Next
 
-USB capture on Windows (Wireshark + USBPcap) of Imaging Edge Remote connecting, showing live view, taking a JPEG and a RAW, and changing ISO once. From it: the handshake, the capture sequence, how live-view frames are fetched, and which events announce a new photo. Each finding goes here, then into `crates/oscamera/src/vendor/sony.rs`.
+USB capture on Windows ([capture-guide.md](capture-guide.md), `scripts/camera-capture.ps1`) of Imaging Edge Remote connecting, showing live view, taking a JPEG and a RAW, and changing ISO once. From it: the handshake, the capture sequence, how live-view frames are fetched, and which events announce a new photo. Each finding goes here, then into `crates/oscamera/src/vendor/sony.rs`.
