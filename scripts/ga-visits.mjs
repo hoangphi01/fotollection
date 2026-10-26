@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Writes the website's total visits (Google Analytics sessions since GA was added) to
-// site/_data/visits.json for the landing page footer, at build time in pages.yml, so the page
+// site/_data/visits.json for the footer badge on every page, at build time in pages.yml, so the page
 // loads nothing for it. No dependencies: a service-account JWT signed with node:crypto, then
 // one call to the GA Data API. Without the secrets, or on any error, it writes nothing and the
 // footer simply leaves the line out; the site still deploys.

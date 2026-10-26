@@ -171,8 +171,7 @@
           </a>
           <p class="muted">{{ t.footer_tagline }}</p>
           <p class="muted footer-made">{{ t.footer_made }}</p>
-          {%- assign landing = false %}{% if page.url == '/' or page.url == '/vi/' %}{% assign landing = true %}{% endif %}
-          {%- if landing and site.data.visits %}
+          {%- if site.data.visits %}
           {%- comment -%} Written at build time by scripts/ga-visits.mjs; absent without the GA secrets. {%- endcomment %}
           <p class="footer-visits"><span class="pill" title="{{ t.footer_visits_hint }}">{% include icons/eye.svg %}<span>{{ t.footer_visits }}</span><span class="star-count">{{ site.data.visits[page.lang] }}</span></span></p>
           {%- endif %}
