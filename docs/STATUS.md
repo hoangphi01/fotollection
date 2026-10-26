@@ -181,6 +181,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | NFR-014 | Best-shot analysis speed | ≤ 20 ms/photo (≤ 40 ms with faces) | 17.4 ms p50 / 18.0 ms p95 without faces, 27.8 ms p50 / 36 ms p95 with faces, one thread (`measure_folder --analyze`) | In Progress |
 | NFR-015 | Normal mode speed | ≥ 3× Professional export (≥ 50 photos/s), first screen < 0.5 s for 1,000 photos | — | Not Started |
 | NFR-016 | Open to first photo | < 1 s after the first launch | measured end to end (`open -a`, release bundle): JPEG 0.70 s when its folder is already a tab, 1.25 s for a new folder (its import first); RAW 1.4–2.5 s (develop, NFR-017) | In Progress |
+| NFR-020 | Place inference speed | ≤ 2 s per 1,000 camera photos | 1.24 ms per camera photo on all cores, 96 GX9 photos (`measure_places`, RESULT §14) | In Progress |
 | NFR-018 | Shot to screen | ≈ 2 s for JPEG (to be set by Step 0) | — | Not Started |
 | NFR-019 | Live view | ≥ 15 fps, < 200 ms (to be confirmed) | — | Not Started |
 | NFR-017 | Camera RAW speed | preview < 100 ms, first RAW print preview < 2.5 s, memory within NFR-004 | embedded preview 9–80 ms, develop 0.39–2.17 s, 1.29 GB peak for one 31 MP develop (`measure_raw`, RESULT §12) | In Progress |

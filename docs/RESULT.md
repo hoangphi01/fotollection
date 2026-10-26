@@ -254,3 +254,22 @@ Measured before building camera support ([ADR-0026](adr/0026-cameras-through-the
 
 - **No driver is needed** to reach either body; the OS stack carries any PTP operation, so path A is open for every maker whose protocol we learn.
 - **The GX9 cannot be tethered over USB** by anyone: it declares no capture or live-view operation. Live view needs an HDMI capture card; photos come by import after the shoot.
+
+## 14. Places and time (v0.8.0, measured first)
+
+Measured before building FR-030, FR-031 and FR-058 with `crates/core/examples/measure_places.rs`, REF-MAC (M3), release build. Parts B–D use 96 of the owner's GX9 JPEGs, read only and kept in memory.
+
+| What | Result |
+|------|--------|
+| Sort by capture time (`sorted_ids`) | 0.2 ms at 5,035 photos, 0.9 ms at 70,000 |
+| Recompute an effective-time column (EXIF time + camera offset) | 0.05 ms at 70,000 photos |
+| Visual signature from a T1 thumbnail (decode 400 px, reduce to 256 px, sign) | 1.06 ms per photo (max 1.31) |
+| One scene comparison (layout over 5 zooms + colour) | 1.33 ms; the colour check alone is a few µs |
+| Matching pass: each camera photo against its 8 nearest photos in time, colour first | 1.24 ms per camera photo on all cores (5.8 ms on one) |
+| Looking for `.xmp` sidecars on import (two checks per photo) | 1 µs per photo |
+
+**Same scene, proxy.** Each photo against a closer (1.3–2×), 3:2, off-centre and darker crop of itself: layout score median 0.97, colour median 0.84; with layout ≥ 0.6 and colour ≥ 0.65, 93 of 96 are found. Of 637 pairs five or more frames apart, 16 pass, but those include later shots of the same spot, which give the right place anyway. Real phone and camera pairs differ more (lens, perspective, processing), so the threshold is provisional until 20 real GX9 + phone pairs are scored.
+
+- Effective time costs nothing measurable: it is computed as a column, and sorting already reads one.
+- Place inference fits in the background: about 1.2 s per 1,000 camera photos, so NFR-020 is set at 2 s.
+- XMP lookup on import is free (1 ms per 1,000 photos).

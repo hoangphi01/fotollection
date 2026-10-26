@@ -755,6 +755,10 @@ For tethered capture ([FR-063](#fr-063--tethered-capture-over-usb)) over USB on 
 
 For [FR-062](#fr-062--live-view-from-a-camera) over USB: at least **15 frames per second** with **under 200 ms** from the scene to the screen, where the camera allows it. To be confirmed by the Step 0 measurements.
 
+### NFR-020 — Place inference speed
+
+Borrowing places for camera photos from another device's photos of the same scene ([FR-031](#fr-031--borrow-gps-from-a-phone-or-gpx-track)) runs in the background and takes **at most 2 s per 1,000 camera photos** on REF-MAC, without slowing browsing ([NFR-005](#nfr-005--ui-responsiveness)). Measured before building: 1.24 ms per camera photo on all cores ([RESULT.md §14](RESULT.md#14-places-and-time-v080-measured-first)).
+
 ## 8. Out of scope
 
 The following are out of scope (for now):
