@@ -65,7 +65,7 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | 💬 | **Share online**: light sRGB JPEGs at the original size, 2048 px for Facebook, 1080 px for Instagram or your own size, with the camera details and "Fotollection" as the editing app, never GPS. Export one photo straight from the preview | MVP |
 | 📱 | **JPEG, PNG and HEIC** (iPhone) input | MVP |
 | 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, through the system's own codecs; thumbnails from the preview inside each file | 3 |
-| 🖱️ | **Open with Fotollection** from Finder or Explorer: the photo opens at once and its folder becomes a tab; never made the default viewer for you | 2 |
+| 🖱️ | **Open with Fotollection** from Finder or Explorer: the photo opens at once and its folder becomes a tab | 2 |
 | 🔒 | **GPS stripped on export** by default. No account, no cloud, no telemetry | MVP |
 | 🌐 | **English and Vietnamese** interface | MVP |
 | 📦 | **Project files like `.docx`**: save, open on another machine with the same fonts, logos and settings, relink moved folders | MVP |

@@ -38,7 +38,9 @@ en:
   f_raw_title: Camera RAW, no conversion
   f_raw_text: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG open as they are, with their date and exposure. Thumbnails come from the preview inside each file, so RAW browses as fast as JPEG.
   f_open_title: Open photos from anywhere
-  f_open_text: Right-click a photo in Finder or Explorer and choose Fotollection. It opens at once, its folder becomes a tab, and it never makes itself your default viewer.
+  f_speed_title: Fast on any computer
+  f_speed_text: A thousand photos open in 0.12 s, a new setting redraws the preview in 17 ms, and from the second launch the app starts in about 0.4 s. A 32 MP photo previews as fast as a small one.
+  f_open_text: Right-click a photo in Finder or Explorer and choose Fotollection. It opens at once, and its folder becomes a tab.
   f_private_title: Private and offline
   f_private_text: No account, no upload, no telemetry. Place names come from a map bundled in the app, and GPS is removed on export.
   show_stamp: Date stamp with the town from the photo's GPS
@@ -266,7 +268,9 @@ vi:
   f_raw_title: Ảnh RAW, không cần chuyển đổi
   f_raw_text: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG mở được nguyên dạng, đủ ngày chụp và thông số. Ảnh thu nhỏ lấy từ bản xem trước có sẵn trong mỗi tệp, nên duyệt RAW nhanh như JPEG.
   f_open_title: Mở ảnh từ bất cứ đâu
-  f_open_text: Bấm chuột phải vào một ảnh trong Finder hoặc Explorer và chọn Fotollection. Ảnh mở ngay, thư mục của ảnh thành một tab, và ứng dụng không bao giờ tự làm trình xem ảnh mặc định.
+  f_speed_title: Nhanh trên mọi máy
+  f_speed_text: Một nghìn ảnh mở trong 0,12 giây, đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, và từ lần mở thứ hai ứng dụng khởi động trong khoảng 0,4 giây. Ảnh 32 MP xem trước nhanh như ảnh nhỏ.
+  f_open_text: Bấm chuột phải vào một ảnh trong Finder hoặc Explorer và chọn Fotollection. Ảnh mở ngay, và thư mục của ảnh thành một tab.
   f_private_title: Riêng tư, không cần internet
   f_private_text: Không tài khoản, không tải lên, không theo dõi. Tên địa điểm lấy từ bản đồ có sẵn trong ứng dụng, GPS được xóa khi xuất.
   show_stamp: Dấu ngày kèm tên nơi chụp từ GPS của ảnh
