@@ -47,8 +47,10 @@ export function CaptureDialog({ capture, settings, thumbVersions, generation, on
 
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key !== ' ' || ownsArrowKeys(event.target)) return
-    // Space is the shutter here, also over a focused button (no double press).
+    // Space is the shutter here, also over a focused button (no double press). Holding it
+    // takes one photo, not one per key repeat.
     event.preventDefault()
+    if (event.repeat) return
     void capture.capture()
   }
 

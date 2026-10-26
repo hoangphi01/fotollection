@@ -44,14 +44,23 @@ Two constraints also apply:
 
 **Save all.**
 
-1. The user picks a destination with a Rust-side dialog.
+1. The user picks a destination with a Rust-side dialog. If that folder already holds files, the shots go into a new folder named after the session inside it, so they never land loose among other files (for example straight in Pictures).
 2. Each file moves there: a rename on the same volume. Across volumes, the file is copied, its size is checked, and only then is the original removed.
 3. An existing file is never overwritten: a name already taken gets a suffix.
-4. The tab is then pointed at the destination through the same path as Relink (`project::restore_into`), so crops, stamps and ratings stay.
+4. The tab is then pointed at the destination: the project snapshot's folder row and renamed files are rewritten, and the library is rebuilt from it (`rebuild_library`, as opening a project does), so crops, stamps and ratings stay. The rebuild gives photos new ids and clears the edit history.
+5. If a move fails halfway, the files already moved go back to the session folder, so the tab is never left half moved.
 
-**Discard.** Closing a session tab that still has unsaved shots asks first, with **Save all**, **Delete photos** or **Cancel**. Delete removes only the files the session created.
+**Discard.** Closing a session tab that still has unsaved shots asks first, with **Save all**, **Delete photos** or **Cancel**. Delete removes the whole session folder, which only Fotollection writes into (it is refused for any folder outside the app's `camera/` directory).
 
 **Live view.** Frames stay in memory and reach the UI through the `fotothumb` protocol. They are never written to disk or sent anywhere (NFR-006).
+
+**One press, one session at a time.**
+
+- A press is refused (`camera.busy`, dropped silently by the UI) while another is on its way, and a held Space key takes one photo.
+- Every session has an id. A camera thread that ends late (after Disconnect, or while the next session runs) can only end its own session.
+- Disconnect drops the jobs still queued. The session folder stays *busy* until the camera thread has ended, and Save all or Delete wait for it (`camera.finishing`, retried by the UI for up to 10 s).
+
+**Closing the app.** With a camera connected or session tabs not saved, closing the window or quitting (Cmd+Q, the menu) is held back (`quit-blocked`). The user answers *Save all*, *Delete photos* or *Cancel*; then `quit_app` lets the camera go, waits up to 10 s for its last shot, and closes. Session folders left by a run that ended without an answer (a crash) come back as tabs at the next start.
 
 **Platforms in v0.8.0.** Windows only. On macOS the button is shown disabled with a hint, until the transport has a thread of its own.
 
@@ -59,10 +68,6 @@ Two constraints also apply:
 
 - PRD FR-062 and FR-063 describe this flow. `src-tauri/src/camera.rs` holds the session, `ui/src/features/capture/` the screen, and the capture screen shares its frame with the preview, so the two cannot drift apart.
 - A session folder outlives the app until the user saves or deletes it.
-- **Not done yet (found 2026-10-26):**
-  - **Quitting with unsaved shots** must ask first, like closing the tab: *Save all*, *Delete photos*, *Cancel*. Today the app closes without a word.
-  - **Reopening the app** must bring the session back: as a tab, or a notice that offers Save all. Today the tab did not come back. The files were still in `camera/` under the app's data directory, but nothing in the app led to them, so to the user they were lost.
-
-  Both are part of FR-063 and must be done before v0.8.0 ships.
+- Found by the owner on 2026-10-26 and fixed the same day: the app closed during a session without asking, and a session left by a crash had no tab, so its shots looked lost.
 - Moving files is a destructive operation: SECURITY.md covers it (no overwrite, size check before delete), and tests cover it (`fr_063_*`).
 - Later: macOS support, other Sony bodies ([cameras/sony.md](../cameras/sony.md), read-only probe), webcam (UVC) live view, and watching a folder for shots from a maker's own app (FR-064).

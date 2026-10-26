@@ -125,15 +125,15 @@ With a camera plugged in by cable, Fotollection shows what it sees and takes the
    - **The live view.** If a print size is chosen, its shape is drawn over the live view, so you see what stays after *Crop to fill*.
    - **The settings bar** under the live view shows ISO, shutter speed, aperture and file format.
    - **The panel** steps ISO and shutter speed with − / +, and switches between JPEG and RAW (the camera may keep the old format for one more shot). Set the aperture on the camera or the lens.
-   - **Capture**, or **Space**, takes the photo. The camera focuses first, so a shot takes about a second. If it cannot focus, the screen says so.
+   - **Capture**, or **Space**, takes the photo. The camera focuses first, so a shot takes about a second. If it cannot focus, the screen says so. One photo at a time: pressing again (or holding Space) while a shot is on its way does nothing.
    - **The shots** line up under the live view, newest first. Click one to open it in the preview.
 4. **Close the screen** (Esc). You are in the session's tab, with all its shots. A notice above the grid offers:
-   - **Save all…**: choose a folder. The photos move there, nothing is overwritten, and your crops, stamps and ratings stay.
+   - **Save all…**: choose a folder. The photos move there, nothing is overwritten, and your crops, stamps and ratings stay. If the folder already holds files (Pictures, for one), the photos go into a new folder named after the session inside it.
    - **Delete photos**.
 
-   Until you choose, the photos stay in Fotollection's own data. Closing the tab asks first.
+   Until you choose, the photos stay in Fotollection's own data. Closing the tab asks first, and so does **quitting the app**: *Save all…*, *Delete photos* or *Cancel*. If Fotollection ever closes without asking (a crash), the session comes back as a tab the next time it starts.
 
-   > **Not yet in this build:** quitting the app does not ask yet, and an unsaved session may not come back after a restart. Save or delete your shots before you quit. They are still on disk in `%APPDATA%\com.hoangphi01.fotollection\camera\`.
+   Unplugging the camera or turning it off also closes the screen and shows the session's tab.
 
 **RAW on Windows** needs Microsoft's free *Raw Image Extension*, as in §4. Without it, a RAW shot is saved in the session folder, but the tab cannot show it, and the screen says so.
 

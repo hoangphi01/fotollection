@@ -566,6 +566,9 @@
     "discard": "Delete photos",
     "discardTitle": "Keep the shots of this session?",
     "discardBody_one": "This shot is only in Fotollection's temporary folder. Save it to a folder of yours, or delete it.",
-    "discardBody_other": "These {{count}} shots are only in Fotollection's temporary folder. Save them to a folder of yours, or delete them."
+    "discardBody_other": "These {{count}} shots are only in Fotollection's temporary folder. Save them to a folder of yours, or delete them.",
+    "quitTitle": "Keep the camera shots before closing?",
+    "quitBody_one": "Fotollection is closing, and one shot is still only in its temporary folder. Save it to a folder of yours, or delete it.",
+    "quitBody_other": "Fotollection is closing, and {{count}} shots are still only in its temporary folder. Save them to a folder of yours, or delete them."
   }
 }

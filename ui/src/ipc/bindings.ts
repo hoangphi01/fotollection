@@ -266,11 +266,15 @@ export const commands = {
 	keepOne: (group: PhotoId, photo: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("keep_one", { group, photo })),
 	/**  Finds a camera, runs its handshake and starts the session. */
 	cameraConnect: () => typedError<CameraInfo, IpcError>(__TAURI_INVOKE("camera_connect")),
-	/**  Ends the session; the session folder and its tab stay. */
+	/**
+	 *  Ends the session; the session folder and its tab stay. Jobs still queued are dropped,
+	 *  and the folder stays busy until the camera thread has ended.
+	 */
 	cameraDisconnect: () => typedError<null, IpcError>(__TAURI_INVOKE("camera_disconnect")),
 	/**
-	 *  Takes a photo. Presses are queued; the result comes as `camera-shot` or
-	 *  `camera-shot-failed`.
+	 *  Takes a photo; the result comes as `camera-shot` or `camera-shot-failed`. One press at a
+	 *  time: another is refused (`camera.busy`) until the first is answered, so a held key or
+	 *  a double click never queues a burst.
 	 */
 	cameraCapture: () => typedError<null, IpcError>(__TAURI_INVOKE("camera_capture")),
 	/**  Moves ISO or shutter speed by `delta` steps (−1 darker or slower… as the camera counts). */
@@ -294,6 +298,11 @@ export const commands = {
 } | null, IpcError>(__TAURI_INVOKE("save_camera_session", { folder })),
 	/**  Delete photos: removes the session folder and closes its tab (the UI asks first). */
 	discardCameraSession: (folder: number) => typedError<DocumentState, IpcError>(__TAURI_INVOKE("discard_camera_session", { folder })),
+	/**
+	 *  Closes the app after the user answered the closing question: the camera is let go, and
+	 *  the app waits (at most 10 s) for its thread to write the last shot.
+	 */
+	quitApp: () => typedError<null, IpcError>(__TAURI_INVOKE("quit_app")),
 };
 
 /** Events */
@@ -310,6 +319,7 @@ export const events = {
 	libraryChanged: makeEvent<LibraryChanged>("library-changed"),
 	menuAction: makeEvent<MenuAction>("menu-action"),
 	openPhoto: makeEvent<OpenPhoto>("open-photo"),
+	quitBlocked: makeEvent<QuitBlocked>("quit-blocked"),
 	revisionChanged: makeEvent<RevisionChanged>("revision-changed"),
 	startupFinished: makeEvent<StartupFinished>("startup-finished"),
 	taskProgress: makeEvent<TaskProgress>("task-progress"),
@@ -933,6 +943,17 @@ export type Queue = "print" | "aside";
 export type QueueView = 
 /**  Every photo except those set aside; the basket's photos stay, marked. */
 "gallery" | "print" | "aside";
+
+/**
+ *  Closing the app was held back because shots exist only in Fotollection's data: a camera
+ *  is connected, or session tabs are not saved yet (ADR-0028). The UI asks Save all, Delete
+ *  photos or Cancel, then calls `quit_app`.
+ */
+export type QuitBlocked = {
+	/**  The session tabs not saved yet. */
+	sessions: number[],
+	connected: boolean,
+};
 
 /**  Why the best photo won, compared with the runner-up. The UI words these (FR-020). */
 export type Reason = 

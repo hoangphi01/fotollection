@@ -230,8 +230,9 @@ fn main() {
                         println!("Camera removed");
                         return;
                     }
-                    #[allow(unreachable_patterns)]
-                    _ => {}
+                    // Only macOS reports new items as their own event.
+                    #[cfg(target_os = "macos")]
+                    Event::ItemsAdded(_) => {}
                 }
             }
             pump(Duration::from_millis(150));

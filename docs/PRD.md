@@ -690,7 +690,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 **Requirements.**
 
 - No driver to install: Fotollection talks PTP through the system's own USB stack (ImageCaptureCore on macOS, WPD on Windows), with one module per camera maker written from our own protocol notes ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)).
-- First makers: Sony and Panasonic (bodies at hand), then Canon and Nikon. Standard PTP for the rest. Which body does what is in [cameras/README.md](cameras/README.md).
+- First maker: Sony (the a6400 at hand), then Canon and Nikon once a body can be borrowed. Standard PTP for the rest. The Panasonic GX9 cannot be tethered over USB at all (Step 0). Which body does what is in [cameras/README.md](cameras/README.md).
 - A burst of shots loses none and stays within [NFR-004](#nfr-004--memory-ceiling): presses are queued, and each shot is written to disk before the next one is taken.
 - A press that does not shoot (no focus, camera busy) says so plainly.
 - v0.8.0 supports the Sony a6400 on Windows. On macOS the button is shown disabled with a hint, until the camera has a thread of its own there.
@@ -780,7 +780,7 @@ For camera RAW ([FR-016](#fr-016--raw-input)), on REF-MAC: a thumbnail or the in
 
 ### NFR-018 — Shot to screen
 
-For tethered capture ([FR-063](#fr-063--tethered-capture-over-usb)) over USB on REF-MAC: from the shutter (the Capture button or the camera's own) to the photo shown in the preview. Target to be set from the Step 0 measurements on a GX9 and an a6400 ([cameras/README.md](cameras/README.md)); expected about **2 s for JPEG**, RAW within [NFR-017](#nfr-017--camera-raw-speed) after it arrives.
+For tethered capture ([FR-063](#fr-063--tethered-capture-over-usb)) over USB, measured in the app with the Sony a6400 on Windows (and on REF-MAC once capture runs on macOS): from the shutter (the Capture button or the camera's own) to the photo shown in the preview. Target to be set from the Step 0 measurements on a GX9 and an a6400 ([cameras/README.md](cameras/README.md)); expected about **2 s for JPEG**, RAW within [NFR-017](#nfr-017--camera-raw-speed) after it arrives.
 
 ### NFR-019 — Live view
 

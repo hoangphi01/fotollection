@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   commands,
   events,
@@ -15,11 +15,31 @@ export const CAMERA_AVAILABLE = navigator.userAgent.includes('Windows')
 
 type Phase = 'idle' | 'connecting' | 'connected'
 
+type IpcResult<T> = { status: 'ok'; data: T } | { status: 'error'; error: { code: string; message: string } }
+
+/**
+ * Runs `call` again while the camera thread finishes its last shot (`camera.finishing`,
+ * ADR-0028), for at most 10 s, so Save all and Delete right after a disconnect just work.
+ */
+async function whenCameraFree<T>(call: () => Promise<IpcResult<T>>): Promise<IpcResult<T>> {
+  for (let i = 0; i < 40; i++) {
+    const result = await call()
+    if (result.status === 'ok' || result.error.code !== 'camera.finishing') return result
+    await new Promise((resolve) => setTimeout(resolve, 250))
+  }
+  return call()
+}
+
 /**
  * Tethered capture (FR-062, FR-063): the camera session, its live-view frame number, the
  * shots taken, and the session tabs that offer Save all.
  */
-export function useCapture() {
+export function useCapture({ onGone }: { onGone?: () => void } = {}) {
+  // The latest callback, for the listener set up once below.
+  const gone = useRef(onGone)
+  useEffect(() => {
+    gone.current = onGone
+  })
   const [phase, setPhase] = useState<Phase>('idle')
   const [name, setName] = useState('')
   const [settings, setSettings] = useState<CameraSettings | null>(null)
@@ -53,7 +73,11 @@ export function useCapture() {
         setPhase('idle')
         setPending(0)
         setFrame(0)
-        if (e.payload.issue) setError(errorText(e.payload.issue))
+        // Rust reports a stop only when the camera went by itself (unplugged, turned off).
+        if (e.payload.issue) {
+          setError(errorText(e.payload.issue))
+          gone.current?.()
+        }
       }),
       // Session tabs come and go with the library (Save all, Delete photos, a new shot).
       events.libraryChanged.listen(() => void loadSessions()),
@@ -92,7 +116,8 @@ export function useCapture() {
     const result = await commands.cameraCapture()
     if (result.status === 'error') {
       setPending((n) => Math.max(0, n - 1))
-      setError(errorText(result.error))
+      // One press at a time: an extra press while one is on its way is simply dropped.
+      if (result.error.code !== 'camera.busy') setError(errorText(result.error))
     }
   }, [])
 
@@ -107,16 +132,17 @@ export function useCapture() {
   }, [])
 
   const saveSession = useCallback(async (folder: number) => {
-    const result = await commands.saveCameraSession(folder)
+    const result = await whenCameraFree(() => commands.saveCameraSession(folder))
     if (result.status === 'error') setError(errorText(result.error))
     else setError(null)
     return result.status === 'ok' && result.data !== null
   }, [])
 
   const discardSession = useCallback(async (folder: number) => {
-    const result = await commands.discardCameraSession(folder)
+    const result = await whenCameraFree(() => commands.discardCameraSession(folder))
     if (result.status === 'error') setError(errorText(result.error))
     else setError(null)
+    return result.status === 'ok'
   }, [])
 
   return {

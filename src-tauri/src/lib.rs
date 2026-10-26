@@ -19,7 +19,7 @@ mod timing;
 mod updates;
 
 use tauri::{DragDropEvent, Manager, WindowEvent};
-use tauri_specta::{Builder, collect_commands, collect_events};
+use tauri_specta::{Builder, Event as _, collect_commands, collect_events};
 
 /// Path of the generated TypeScript bindings, relative to this crate.
 pub const BINDINGS_PATH: &str = "../ui/src/ipc/bindings.ts";
@@ -95,6 +95,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             camera::camera_sessions,
             camera::save_camera_session,
             camera::discard_camera_session,
+            camera::quit_app,
         ])
         .events(collect_events![
             events::LibraryChanged,
@@ -109,6 +110,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             events::StartupFinished,
             open_with::OpenPhoto,
             camera::CameraStatus,
+            camera::QuitBlocked,
             camera::CameraFrame,
             camera::CameraSettingsChanged,
             camera::CameraShot,
@@ -247,34 +249,55 @@ pub fn run() {
             }
         })
         .on_menu_event(|app, event| menu::on_event(app, &event))
-        .on_window_event(|window, event| {
-            // Dropped paths come from the OS, not from the webview (SECURITY.md §2).
-            if let WindowEvent::DragDrop(DragDropEvent::Drop { paths, .. }) = event {
-                let app = window.app_handle().clone();
-                let paths = paths.clone();
-                std::thread::spawn(move || commands::import_paths(&app, paths));
-            }
-        })
+        .on_window_event(on_window_event)
         .build(tauri::generate_context!());
 
     match result {
-        Ok(app) => app.run(|handle, event| {
-            // macOS delivers double-clicked documents as an event (file association).
-            #[cfg(target_os = "macos")]
-            if let tauri::RunEvent::Opened { urls } = &event {
-                for url in urls {
-                    if let Ok(path) = url.to_file_path() {
-                        open_with::route(handle, path);
-                    }
-                }
-            }
-            let _ = (handle, event);
-        }),
+        Ok(app) => app.run(on_run_event),
         Err(e) => {
             eprintln!("fotollection failed to start: {e}");
             std::process::exit(1);
         }
     }
+}
+
+/// Window events: dropped folders, and the closing question (ADR-0028).
+fn on_window_event(window: &tauri::Window, event: &WindowEvent) {
+    // Dropped paths come from the OS, not from the webview (SECURITY.md §2).
+    if let WindowEvent::DragDrop(DragDropEvent::Drop { paths, .. }) = event {
+        let app = window.app_handle().clone();
+        let paths = paths.clone();
+        std::thread::spawn(move || commands::import_paths(&app, paths));
+    }
+    // Shots only Fotollection holds: ask before the window closes (ADR-0028).
+    if let WindowEvent::CloseRequested { api, .. } = event
+        && let Some(blocked) = camera::should_block_quit(window.app_handle())
+    {
+        api.prevent_close();
+        let _ = blocked.emit(window.app_handle());
+    }
+}
+
+/// App events: documents opened from Finder (macOS) and the closing question on Cmd+Q.
+fn on_run_event(handle: &tauri::AppHandle, event: tauri::RunEvent) {
+    // macOS delivers double-clicked documents as an event (file association).
+    #[cfg(target_os = "macos")]
+    if let tauri::RunEvent::Opened { urls } = &event {
+        for url in urls {
+            if let Ok(path) = url.to_file_path() {
+                open_with::route(handle, path);
+            }
+        }
+    }
+    // Cmd+Q and the Quit menu: the same question as closing the window.
+    if let tauri::RunEvent::ExitRequested { api, code, .. } = &event
+        && code.is_none()
+        && let Some(blocked) = camera::should_block_quit(handle)
+    {
+        api.prevent_exit();
+        let _ = blocked.emit(handle);
+    }
+    let _ = (handle, event);
 }
 
 #[cfg(test)]

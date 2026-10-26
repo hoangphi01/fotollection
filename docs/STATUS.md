@@ -13,8 +13,8 @@
 
 - **First, in this order (decided 2026-10-26 after the owner's review):**
   1. ✓ The RAW claims corrected: on Windows RAW needs the Raw Image Extension (site, READMEs, guide, v0.7.0 release notes).
-  2. A save-or-discard question when the app is closed during a camera session.
-  3. The fixes found in review of the branch `camera/sony-usb-protocol` (a held Space key queues shots, Disconnect does not stop queued shots, sessions without ids, Save all or Delete while a shot is still being written, macOS clippy), then merge it into `main`.
+  2. ✓ A save-or-discard question when the app is closed during a camera session; sessions left by a crash come back as tabs.
+  3. ✓ The fixes found in review of the branch `camera/sony-usb-protocol` (one press at a time, Disconnect drops queued shots, session ids, Save all and Delete wait for the last shot, Save all into a session folder and rolled back on error, one file imported per shot, an unplugged camera shows its tab, macOS clippy). Check on Windows by hand, then merge into `main`.
   4. Capture on macOS through ImageCaptureCore.
   5. All camera controls: tap to focus, exposure, focus mode, white balance, JPEG/RAW, self-timer (USB captures on Windows first).
   6. A STYLE_RULE audit of the capture screen, with real screenshots.
@@ -91,7 +91,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 6. **v0.9.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
 7. **Later (Phase 2):** Photo Style and film looks (FR-039, FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
 8. **Alongside, never blocking a release:** the append-only edit journal (NFR-013; not urgent, as a full save stays at 70 ms for 70,000 edited photos); the Windows title bar on a real machine (FR-052); SignPath signing for Windows (declined 2026-10-26 for too little public adoption yet; reapply once the project has independent mentions and stars, RELEASE.md §3); a Ko-fi link once the account exists; NFR-008 by publishing one `.dmg` per architecture; FR-022 filters by date, camera, GPS and DPI.
-9. **Camera over USB (FR-062, FR-063, FR-064; ADR-0026 proposed):**
+9. **Camera over USB (FR-062, FR-063, FR-064; ADR-0026 and ADR-0028 accepted):**
    - **Step 0, macOS (2026-10-26)** ([RESULT §13](RESULT.md#13-camera-over-usb-step-0-planned-fr-062-fr-063), [cameras/README.md](cameras/README.md)):
      - no driver is needed;
      - the a6400 needs Sony's handshake;

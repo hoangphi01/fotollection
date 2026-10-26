@@ -15,8 +15,12 @@
 //! **Delete photos** removes them. The camera logic is written against [`CameraLink`], so
 //! it is tested with a scripted camera.
 #![allow(clippy::needless_pass_by_value)]
+// The session loop and the Sony driver run on Windows (WPD) for now; on macOS they are
+// exercised by the tests until the ImageCaptureCore link lands (ADR-0028, STATUS).
+#![cfg_attr(not(windows), allow(dead_code))]
 
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::{self, Sender};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -117,6 +121,17 @@ pub struct CameraInfo {
 
 // ---------------------------------------------------------------------------------------
 // Events (core → UI)
+
+/// Closing the app was held back because shots exist only in Fotollection's data: a camera
+/// is connected, or session tabs are not saved yet (ADR-0028). The UI asks Save all, Delete
+/// photos or Cancel, then calls `quit_app`.
+#[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
+#[serde(rename_all = "camelCase")]
+pub struct QuitBlocked {
+    /// The session tabs not saved yet.
+    pub sessions: Vec<u16>,
+    pub connected: bool,
+}
 
 /// The camera connected or went away; `issue` says why it stopped, when it did.
 #[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
@@ -477,10 +492,43 @@ fn write_shot(dir: &Path, shot: &Shot) -> std::io::Result<PathBuf> {
     Ok(path)
 }
 
-/// Moves every file of `src` into `dest` without overwriting any. Across volumes a file is
-/// copied, its size checked, and only then removed. Returns the files that got a new name,
-/// as (old, new). `src` is removed when it ends up empty.
+/// Moves one file, across volumes by copying, checking the size, and only then removing.
+fn move_file(from: &Path, to: &Path) -> std::io::Result<()> {
+    if std::fs::rename(from, to).is_ok() {
+        return Ok(());
+    }
+    let copied = std::fs::copy(from, to)?;
+    if copied != std::fs::metadata(from)?.len() {
+        let _ = std::fs::remove_file(to);
+        return Err(std::io::Error::other(format!(
+            "{} was not copied whole",
+            from.display()
+        )));
+    }
+    std::fs::remove_file(from)
+}
+
+/// Moves every file of `src` into `dest` without overwriting any. Returns the files that
+/// got a new name, as (old, new). `src` is removed when it ends up empty. On an error the
+/// files already moved go back, so the session tab is never left half moved.
 fn move_all(src: &Path, dest: &Path) -> std::io::Result<Vec<(String, String)>> {
+    let mut moved: Vec<(PathBuf, PathBuf)> = Vec::new();
+    let result = move_each(src, dest, &mut moved);
+    if result.is_err() {
+        for (from, to) in moved.iter().rev() {
+            let _ = move_file(to, from);
+        }
+    } else {
+        let _ = std::fs::remove_dir(src);
+    }
+    result
+}
+
+fn move_each(
+    src: &Path,
+    dest: &Path,
+    moved: &mut Vec<(PathBuf, PathBuf)>,
+) -> std::io::Result<Vec<(String, String)>> {
     std::fs::create_dir_all(dest)?;
     let mut renamed = Vec::new();
     for entry in std::fs::read_dir(src)? {
@@ -496,16 +544,8 @@ fn move_all(src: &Path, dest: &Path) -> std::io::Result<Vec<(String, String)>> {
             continue;
         }
         let target = unique_path(dest, &name);
-        if std::fs::rename(entry.path(), &target).is_err() {
-            let copied = std::fs::copy(entry.path(), &target)?;
-            if copied != entry.metadata()?.len() {
-                let _ = std::fs::remove_file(&target);
-                return Err(std::io::Error::other(format!(
-                    "{name} was not copied whole"
-                )));
-            }
-            std::fs::remove_file(entry.path())?;
-        }
+        move_file(&entry.path(), &target)?;
+        moved.push((entry.path(), target.clone()));
         let new = target
             .file_name()
             .map(|n| n.to_string_lossy().into_owned())
@@ -514,8 +554,21 @@ fn move_all(src: &Path, dest: &Path) -> std::io::Result<Vec<(String, String)>> {
             renamed.push((name, new));
         }
     }
-    let _ = std::fs::remove_dir(src);
     Ok(renamed)
+}
+
+/// Where Save all puts the photos: the folder the user picked when it is empty, otherwise a
+/// folder named after the session inside it, so shots never land loose among other files
+/// (for example straight in Pictures).
+fn save_target(picked: &Path, session: &Path) -> PathBuf {
+    let empty = std::fs::read_dir(picked).map_or(true, |mut d| d.next().is_none());
+    if empty {
+        return picked.to_path_buf();
+    }
+    let name = session
+        .file_name()
+        .map_or_else(|| "Camera".to_owned(), |n| n.to_string_lossy().into_owned());
+    unique_path(picked, &name)
 }
 
 /// Points the session folder's rows of a project snapshot at `dest`, with the new names of
@@ -555,8 +608,22 @@ enum Job {
 }
 
 struct Running {
+    /// Tells this session from the next one, so a camera thread that ends late never
+    /// clears a newer session.
+    id: u64,
     jobs: Sender<Job>,
     dir: PathBuf,
+    /// Set by Disconnect: the camera thread stops before the jobs still queued.
+    stop: Arc<AtomicBool>,
+    /// A press is on its way; another one is refused until it is answered (a held key).
+    pending: Arc<AtomicBool>,
+}
+
+/// What the camera thread knows about its own session.
+pub(crate) struct Session {
+    id: u64,
+    stop: Arc<AtomicBool>,
+    pending: Arc<AtomicBool>,
 }
 
 /// The camera session, if any, and the latest live-view frame (managed by Tauri).
@@ -564,6 +631,13 @@ pub struct CameraState {
     root: PathBuf,
     live: Mutex<Option<Arc<Vec<u8>>>>,
     running: Mutex<Option<Running>>,
+    next_id: AtomicU64,
+    /// Held while a Connect is in progress, so two at once cannot both start a session.
+    connecting: Mutex<()>,
+    /// Session folders whose camera thread has not ended yet: Save all and Delete wait.
+    busy: Mutex<Vec<PathBuf>>,
+    /// The user answered the closing question: closing goes ahead.
+    allow_quit: AtomicBool,
 }
 
 impl CameraState {
@@ -572,7 +646,48 @@ impl CameraState {
             root,
             live: Mutex::new(None),
             running: Mutex::new(None),
+            next_id: AtomicU64::new(1),
+            connecting: Mutex::new(()),
+            busy: Mutex::new(Vec::new()),
+            allow_quit: AtomicBool::new(false),
         }
+    }
+
+    /// Ends session `id` if it is still the current one; a later session is left alone.
+    fn clear(&self, id: u64) {
+        if let Ok(mut running) = self.running.lock()
+            && running.as_ref().is_some_and(|r| r.id == id)
+        {
+            *running = None;
+            if let Ok(mut live) = self.live.lock() {
+                *live = None;
+            }
+        }
+    }
+
+    fn is_current(&self, id: u64) -> bool {
+        self.running
+            .lock()
+            .is_ok_and(|r| r.as_ref().is_some_and(|r| r.id == id))
+    }
+
+    fn is_busy(&self, dir: &Path) -> bool {
+        self.busy.lock().is_ok_and(|b| b.iter().any(|d| d == dir))
+    }
+
+    /// The camera thread of `dir` has ended: its folder may be saved or deleted now.
+    fn release(&self, id: u64, dir: &Path) {
+        self.clear(id);
+        if let Ok(mut busy) = self.busy.lock() {
+            busy.retain(|d| d != dir);
+        }
+    }
+
+    /// Whether the user still has shots only Fotollection holds: a camera connected, or a
+    /// session tab not yet saved (asked before the app closes, ADR-0028).
+    pub fn has_unsaved(&self, library_folders: &[PathBuf]) -> bool {
+        self.running.lock().is_ok_and(|r| r.is_some())
+            || library_folders.iter().any(|f| self.is_session(f))
     }
 
     /// The latest live-view frame, for the protocol.
@@ -631,25 +746,66 @@ fn connect(_app: &AppHandle) -> Result<CameraInfo, IpcError> {
 #[cfg(windows)]
 fn connect(app: &AppHandle) -> Result<CameraInfo, IpcError> {
     let camera = app.state::<CameraState>();
+    let already = || IpcError::new("camera.already_connected", "A camera is already connected");
+    let _connecting = camera.connecting.try_lock().map_err(|_| already())?;
     if camera.running.lock().map_err(poisoned)?.is_some() {
-        return Err(IpcError::new(
-            "camera.already_connected",
-            "A camera is already connected",
-        ));
+        return Err(already());
     }
+    if !camera.busy.lock().map_err(poisoned)?.is_empty() {
+        return Err(finishing());
+    }
+    let id = camera.next_id.fetch_add(1, Ordering::Relaxed);
     let dir = camera.root.join(session_name());
     let (jobs, inbox) = mpsc::channel();
     let (ready, started) = mpsc::channel();
+    let (stop, pending) = (
+        Arc::new(AtomicBool::new(false)),
+        Arc::new(AtomicBool::new(false)),
+    );
+    // Stored before the thread starts, so the thread can only ever end its own session.
+    *camera.running.lock().map_err(poisoned)? = Some(Running {
+        id,
+        jobs,
+        dir: dir.clone(),
+        stop: stop.clone(),
+        pending: pending.clone(),
+    });
+    camera.busy.lock().map_err(poisoned)?.push(dir.clone());
+    let session = Session {
+        id,
+        stop: stop.clone(),
+        pending,
+    };
     let handle = app.clone();
     let session_dir = dir.clone();
-    std::thread::Builder::new()
+    let spawned = std::thread::Builder::new()
         .name("camera".into())
-        .spawn(move || wpd::run(&handle, &session_dir, &inbox, &ready))
-        .map_err(|e| IpcError::internal(e.to_string()))?;
-    let info = started
-        .recv_timeout(Duration::from_secs(30))
-        .map_err(|_| IpcError::new("camera.timeout", "The camera did not answer"))??;
-    *camera.running.lock().map_err(poisoned)? = Some(Running { jobs, dir });
+        .spawn(move || {
+            wpd::run(&handle, &session_dir, &inbox, &ready, &session);
+            handle.state::<CameraState>().release(id, &session_dir);
+        });
+    if let Err(e) = spawned {
+        camera.release(id, &dir);
+        return Err(IpcError::internal(e.to_string()));
+    }
+    let info = match started.recv_timeout(Duration::from_secs(30)) {
+        Ok(Ok(info)) if camera.is_current(id) => info,
+        Ok(Ok(_)) => {
+            return Err(IpcError::new(
+                "camera.unplugged",
+                "The camera was unplugged or turned off",
+            ));
+        }
+        Ok(Err(e)) => {
+            camera.clear(id);
+            return Err(e);
+        }
+        Err(_) => {
+            stop.store(true, Ordering::Relaxed);
+            camera.clear(id);
+            return Err(IpcError::new("camera.timeout", "The camera did not answer"));
+        }
+    };
     let _ = CameraStatus {
         connected: true,
         name: info.name.clone(),
@@ -659,22 +815,44 @@ fn connect(app: &AppHandle) -> Result<CameraInfo, IpcError> {
     Ok(info)
 }
 
-/// Ends the session; the session folder and its tab stay.
+/// The camera thread of the last session is still ending (a shot being written).
+fn finishing() -> IpcError {
+    IpcError::new(
+        "camera.finishing",
+        "The camera is finishing its last photo: try again in a moment",
+    )
+}
+
+/// Ends the session; the session folder and its tab stay. Jobs still queued are dropped,
+/// and the folder stays busy until the camera thread has ended.
 #[tauri::command]
 #[specta::specta]
 pub fn camera_disconnect(camera: State<'_, CameraState>) -> Result<(), IpcError> {
-    // Dropping the job sender ends the camera thread's loop.
-    *camera.running.lock().map_err(poisoned)? = None;
+    if let Some(running) = camera.running.lock().map_err(poisoned)?.take() {
+        running.stop.store(true, Ordering::Relaxed);
+        // Dropping the job sender also ends the camera thread's loop.
+    }
     *camera.live.lock().map_err(poisoned)? = None;
     Ok(())
 }
 
-/// Takes a photo. Presses are queued; the result comes as `camera-shot` or
-/// `camera-shot-failed`.
+/// Takes a photo; the result comes as `camera-shot` or `camera-shot-failed`. One press at a
+/// time: another is refused (`camera.busy`) until the first is answered, so a held key or
+/// a double click never queues a burst.
 #[tauri::command]
 #[specta::specta]
 pub fn camera_capture(camera: State<'_, CameraState>) -> Result<(), IpcError> {
-    camera.send(Job::Capture)
+    let running = camera.running.lock().map_err(poisoned)?;
+    let running = running
+        .as_ref()
+        .ok_or_else(|| IpcError::new("camera.not_connected", "No camera is connected"))?;
+    if running.pending.swap(true, Ordering::AcqRel) {
+        return Err(IpcError::new("camera.busy", "A photo is still being taken"));
+    }
+    running.jobs.send(Job::Capture).map_err(|_| {
+        running.pending.store(false, Ordering::Release);
+        IpcError::new("camera.not_connected", "The camera stopped")
+    })
 }
 
 /// Moves ISO or shutter speed by `delta` steps (−1 darker or slower… as the camera counts).
@@ -747,6 +925,9 @@ fn session_folder(app: &AppHandle, folder: u16) -> Result<PathBuf, IpcError> {
             "Close the capture screen first",
         ));
     }
+    if camera.is_busy(&dir) {
+        return Err(finishing());
+    }
     Ok(dir)
 }
 
@@ -777,6 +958,7 @@ pub async fn save_camera_session(
             return Ok(None);
         };
         let camera = app.state::<CameraState>();
+        let dest = save_target(&dest, &session);
         if dest.starts_with(&camera.root) {
             return Err(IpcError::new(
                 "camera.bad_destination",
@@ -842,6 +1024,90 @@ pub async fn discard_camera_session(
     })
     .await
     .map_err(poisoned)?
+}
+
+/// Why closing the app should wait for the user, if it should (ADR-0028): `None` when no
+/// shot exists only in Fotollection's data, or the user already answered.
+pub fn should_block_quit(app: &AppHandle) -> Option<QuitBlocked> {
+    let camera = app.state::<CameraState>();
+    if camera.allow_quit.load(Ordering::Relaxed) {
+        return None;
+    }
+    let folders = app
+        .state::<AppState>()
+        .library
+        .read()
+        .ok()?
+        .folders()
+        .to_vec();
+    if !camera.has_unsaved(&folders) {
+        return None;
+    }
+    Some(QuitBlocked {
+        sessions: folders
+            .iter()
+            .enumerate()
+            .filter(|(_, p)| camera.is_session(p))
+            .filter_map(|(i, _)| u16::try_from(i).ok())
+            .collect(),
+        connected: camera.running.lock().is_ok_and(|r| r.is_some()),
+    })
+}
+
+/// Closes the app after the user answered the closing question: the camera is let go, and
+/// the app waits (at most 10 s) for its thread to write the last shot.
+#[tauri::command]
+#[specta::specta]
+pub async fn quit_app(app: AppHandle) -> Result<(), IpcError> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let camera = app.state::<CameraState>();
+        camera.allow_quit.store(true, Ordering::Relaxed);
+        if let Some(running) = camera.running.lock().map_err(poisoned)?.take() {
+            running.stop.store(true, Ordering::Relaxed);
+        }
+        let deadline = Instant::now() + Duration::from_secs(10);
+        while Instant::now() < deadline && camera.busy.lock().is_ok_and(|b| !b.is_empty()) {
+            std::thread::sleep(Duration::from_millis(50));
+        }
+        app.exit(0);
+        Ok(())
+    })
+    .await
+    .map_err(poisoned)?
+}
+
+/// Session folders left from a run that ended without an answer (a crash, a forced quit)
+/// come back as tabs, so their shots can still be saved or deleted (ADR-0028).
+pub fn reopen_sessions(app: &AppHandle) {
+    let camera = app.state::<CameraState>();
+    let Ok(entries) = std::fs::read_dir(&camera.root) else {
+        return;
+    };
+    let open: Vec<PathBuf> = app
+        .state::<AppState>()
+        .library
+        .read()
+        .map(|l| l.folders().to_vec())
+        .unwrap_or_default();
+    let left: Vec<PathBuf> = entries
+        .flatten()
+        .map(|e| e.path())
+        .filter(|p| p.is_dir() && !open.contains(p))
+        .filter(|p| {
+            std::fs::read_dir(p).is_ok_and(|mut d| {
+                d.any(|f| {
+                    f.is_ok_and(|f| {
+                        f.path()
+                            .extension()
+                            .is_some_and(|e| !e.eq_ignore_ascii_case("part"))
+                    })
+                })
+            })
+        })
+        .collect();
+    if !left.is_empty() {
+        crate::commands::import_paths_with(app, left, false);
+    }
 }
 
 // ---------------------------------------------------------------------------------------
@@ -936,7 +1202,8 @@ fn keep_shot(app: &AppHandle, dir: &Path, shot: &Shot, pressed: Option<Instant>)
             return;
         }
     };
-    crate::commands::import_paths_with(app, vec![dir.to_path_buf()], false);
+    // Only the new file: re-reading the whole session would grow with every shot.
+    crate::commands::import_paths_with(app, vec![path.clone()], false);
     let state = app.state::<AppState>();
     let found = state.library.read().ok().and_then(|library| {
         let id = library.find_path(&path)?;
@@ -968,12 +1235,17 @@ fn serve<L: CameraLink>(
     name: &str,
     sony: &mut Sony<L>,
     inbox: &mpsc::Receiver<Job>,
+    session: &Session,
 ) {
     let camera = app.state::<CameraState>();
     let mut memory = Pass::new();
     let mut seq = 0u32;
     let mut sleep = |d: Duration| std::thread::sleep(d);
     loop {
+        // Disconnect: the jobs still queued are dropped, not run.
+        if session.stop.load(Ordering::Relaxed) {
+            break;
+        }
         let job = match inbox.try_recv() {
             Ok(job) => Some(job),
             Err(mpsc::TryRecvError::Empty) => None,
@@ -991,6 +1263,7 @@ fn serve<L: CameraLink>(
                         let _ = CameraShotFailed { issue }.emit(app);
                     }
                 }
+                session.pending.store(false, Ordering::Release);
             }
             Some(Job::Step(setting, delta)) => {
                 if let Err(issue) = sony.step(setting, delta) {
@@ -1020,7 +1293,7 @@ fn serve<L: CameraLink>(
                 }
                 Outgoing::BodyShot(shot) => keep_shot(app, dir, &shot, None),
                 Outgoing::Gone(issue) => {
-                    finish(app, name, Some(issue));
+                    finish(app, session.id, name, Some(issue));
                     return;
                 }
             }
@@ -1030,18 +1303,18 @@ fn serve<L: CameraLink>(
             std::thread::sleep(Duration::from_millis(8));
         }
     }
-    finish(app, name, None);
+    finish(app, session.id, name, None);
 }
 
-/// Ends the session: no more frames, and the UI hears why.
-fn finish(app: &AppHandle, name: &str, issue: Option<CameraIssue>) {
+/// Ends session `id`: no more frames, and the UI hears why. A newer session is untouched.
+fn finish(app: &AppHandle, id: u64, name: &str, issue: Option<CameraIssue>) {
     let camera = app.state::<CameraState>();
-    if let Ok(mut running) = camera.running.lock() {
-        *running = None;
+    if !camera.is_current(id) {
+        // Disconnected by the user (the UI already knows), or a newer session runs that this
+        // late thread must not close.
+        return;
     }
-    if let Ok(mut live) = camera.live.lock() {
-        *live = None;
-    }
+    camera.clear(id);
     let _ = CameraStatus {
         connected: false,
         name: name.to_owned(),
@@ -1147,6 +1420,7 @@ mod wpd {
         dir: &Path,
         inbox: &mpsc::Receiver<Job>,
         ready: &mpsc::Sender<Result<CameraInfo, IpcError>>,
+        session: &super::Session,
     ) {
         let (mut sony, name) = match open() {
             Ok(v) => v,
@@ -1165,7 +1439,7 @@ mod wpd {
         if ready.send(Ok(info)).is_err() {
             return;
         }
-        serve(app, dir, &name, &mut sony, inbox);
+        serve(app, dir, &name, &mut sony, inbox, session);
     }
 }
 
@@ -1422,6 +1696,55 @@ mod tests {
         assert_eq!(safe_name("photo", CaptureFormat::Jpeg), "photo.JPG");
         assert_eq!(safe_name("a<b>:c|d?.JPG", CaptureFormat::Jpeg), "abcd.JPG");
         assert!(safe_name(&"x".repeat(500), CaptureFormat::Jpeg).len() <= MAX_NAME + 4);
+    }
+
+    #[test]
+    fn fr_063_save_all_uses_a_session_folder_inside_a_folder_that_has_files() -> std::io::Result<()>
+    {
+        let dir = tempfile::tempdir()?;
+        let session = dir.path().join("2026-10-26 103000");
+        let empty = dir.path().join("empty");
+        let pictures = dir.path().join("Pictures");
+        std::fs::create_dir_all(&empty)?;
+        std::fs::create_dir_all(&pictures)?;
+        std::fs::write(pictures.join("holiday.jpg"), b"x")?;
+        assert_eq!(save_target(&empty, &session), empty);
+        assert_eq!(
+            save_target(&pictures, &session),
+            pictures.join("2026-10-26 103000")
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn fr_063_a_late_camera_thread_never_ends_a_newer_session() -> Result<(), String> {
+        let dir = tempfile::tempdir().map_err(|e| e.to_string())?;
+        let camera = CameraState::new(dir.path().to_path_buf());
+        let session = |id: u64, name: &str| Running {
+            id,
+            jobs: mpsc::channel().0,
+            dir: dir.path().join(name),
+            stop: Arc::new(AtomicBool::new(false)),
+            pending: Arc::new(AtomicBool::new(false)),
+        };
+        // Session 1 was disconnected while a shot was pending, then session 2 started.
+        *camera.running.lock().map_err(|e| e.to_string())? = Some(session(2, "second"));
+        camera
+            .busy
+            .lock()
+            .map_err(|e| e.to_string())?
+            .push(dir.path().join("first"));
+        assert!(camera.is_busy(&dir.path().join("first")));
+        // The first thread ends late: it frees its own folder and leaves session 2 running.
+        camera.release(1, &dir.path().join("first"));
+        assert!(camera.is_current(2));
+        assert!(!camera.is_busy(&dir.path().join("first")));
+        assert!(camera.has_unsaved(&[]));
+        camera.release(2, &dir.path().join("second"));
+        assert!(!camera.is_current(2));
+        assert!(!camera.has_unsaved(&[PathBuf::from("/Users/someone/Pictures/Trip")]));
+        assert!(camera.has_unsaved(&[dir.path().join("a session")]));
+        Ok(())
     }
 
     #[test]

@@ -546,6 +546,8 @@
     "discard": "Xóa ảnh",
     "discardTitle": "Giữ lại ảnh của phiên chụp này?",
     "discardBody_one": "Ảnh này chỉ nằm trong thư mục tạm của Fotollection. Hãy lưu vào thư mục của bạn, hoặc xóa đi.",
-    "discardBody_other": "{{count}} ảnh này chỉ nằm trong thư mục tạm của Fotollection. Hãy lưu vào thư mục của bạn, hoặc xóa đi."
+    "discardBody_other": "{{count}} ảnh này chỉ nằm trong thư mục tạm của Fotollection. Hãy lưu vào thư mục của bạn, hoặc xóa đi.",
+    "quitTitle": "Giữ lại ảnh từ máy ảnh trước khi đóng?",
+    "quitBody_other": "Fotollection sắp đóng, và {{count}} ảnh vẫn chỉ nằm trong thư mục tạm của ứng dụng. Hãy lưu vào thư mục của bạn, hoặc xóa đi."
   }
 }
