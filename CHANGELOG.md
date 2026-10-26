@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Camera clocks (FR-030):** a camera set to the wrong time no longer puts its photos in the wrong order. Open one of its photos and pick your phone's photo of the same moment, or type the correction in **Camera clocks** in the settings. Every photo from that camera moves, the date stamp and day folders follow, and the photo files are never changed.
 - **Check for updates (FR-061):** click the version number at the foot of the settings panel, then *Check for updates*. If a newer version exists, *Download the installer* opens it in your browser; installing it replaces the app and keeps your settings and projects. This is the only time the app goes online, and only when you click.
 
 ### Website

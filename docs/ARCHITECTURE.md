@@ -233,6 +233,8 @@ Commands marked † are implemented.
 | `cancel_job(job_id)` † | Cancel a running job | FR-011 |
 | `get_frame_config()` / `set_frame_settings(settings)` † | Info frame settings plus camera profiles (with EXIF-derived defaults) | FR-040 |
 | `set_camera_profile(profile)` † | Per-camera overrides: name, brand, lens, focal, aperture, photo style, logo kind | FR-040 |
+| `list_cameras() -> CameraClock[]` † / `set_camera_clock(id, offset_s, tz_minutes?) -> CameraClock[]` † | Camera bodies (make, model, serial) and their clock corrections; offsets beyond a month and time zones beyond ±14 h are rejected in Rust; every photo of the body moves (effective time, [ADR-0027](adr/0027-effective-time-and-place.md)) | FR-030 |
+| `clock_offset_between(photo, reference) -> f64` † / `clock_match_candidates(photo, limit ≤ 24)` † | The helper: the offset that makes a photo match another device's photo of the same moment, and the other devices' photos closest in time (within a day) to pick from | FR-030 |
 | `pick_camera_logo(camera_id)` / `clear_camera_logo(camera_id)` † | Choose a PNG with a **Rust-side** dialog, validate it, copy it into `config/logos/` | FR-040 |
 | `get_crop_geometry(id) -> CropGeometry` † | Upright size, target ratio, printed cm of the crop area, current crop | FR-006 |
 | `set_photo_crop(id, crop?, straighten)` † | Set or reset a photo's crop (centre + zoom) and straightening angle (±15°, clamped in Rust), undoable | FR-006, FR-023 |

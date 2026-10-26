@@ -544,7 +544,7 @@ mod tests {
     use crate::frame::CameraProfile;
     use crate::library::Flag;
     use crate::plan::CropFrame;
-    use crate::project::{FolderRow, PathKind, PhotoRow};
+    use crate::project::{CameraRow, FolderRow, PathKind, PhotoRow};
 
     static INTER: &[u8] = include_bytes!("../assets/fonts/Inter.ttf");
 
@@ -589,6 +589,13 @@ mod tests {
                 rotation: None,
                 straighten: None,
                 queue: None,
+            }],
+            cameras: vec![CameraRow {
+                make: Some("Panasonic".into()),
+                model: Some("DC-GX9".into()),
+                serial: None,
+                offset_s: 3_720,
+                tz_minutes: Some(60),
             }],
             document: None,
         }

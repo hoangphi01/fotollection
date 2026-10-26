@@ -16,7 +16,8 @@ pub const FORMAT: &str = "fotollection-project";
 /// v4: `photos[].rotation`, the user's quarter turns clockwise (FR-006).
 /// v5: `photos[].straighten`, degrees within ±15 (FR-006).
 /// v6: `photos[].queue`, the print basket or set aside (FR-050).
-pub const SCHEMA_VERSION: u32 = 6;
+/// v7: `cameras[]`, each body's clock offset and time zone (FR-030).
+pub const SCHEMA_VERSION: u32 = 7;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -88,9 +89,28 @@ pub struct ProjectFile {
     pub modified_at: String,
     pub folders: Vec<FolderRow>,
     pub photos: Vec<PhotoRow>,
+    /// Camera clocks the user corrected (schema v7, FR-030); bodies without a correction
+    /// are not stored.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cameras: Vec<CameraRow>,
     /// Session autosave only (schema v2); never inside a bundle.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub document: Option<DocumentRef>,
+}
+
+/// One corrected camera clock (FR-030), matched to a body by make, model and serial.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CameraRow {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub make: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub model: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub serial: Option<String>,
+    pub offset_s: i64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tz_minutes: Option<i16>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -149,6 +169,18 @@ pub fn snapshot(library: &Library) -> ProjectFile {
         modified_at: chrono::Utc::now().to_rfc3339(),
         folders,
         photos,
+        cameras: library
+            .clocks()
+            .into_iter()
+            .filter(|c| c.offset_s != 0 || c.tz_minutes.is_some())
+            .map(|c| CameraRow {
+                make: c.make,
+                model: c.model,
+                serial: c.serial,
+                offset_s: c.offset_s,
+                tz_minutes: c.tz_minutes,
+            })
+            .collect(),
         document: None,
     }
 }
@@ -235,6 +267,12 @@ fn validate(mut file: ProjectFile) -> Result<ProjectFile, String> {
             .map(crate::straighten::sanitize)
             .filter(|&d| crate::straighten::is_straightened(d));
     }
+    // A corrected clock beyond a month or a time zone outside ±14 h is dropped (FR-030).
+    file.cameras.retain(|c| {
+        c.offset_s.abs() <= crate::library::MAX_CLOCK_OFFSET_S
+            && c.tz_minutes
+                .is_none_or(|tz| tz.abs() <= crate::library::MAX_TZ_MINUTES)
+    });
     Ok(file)
 }
 
@@ -375,6 +413,18 @@ pub fn restore_into(
         );
         summary.restored += 1;
     }
+    for row in &file.cameras {
+        library.restore_clock(&crate::library::CameraClock {
+            id: 0,
+            make: row.make.clone(),
+            model: row.model.clone(),
+            serial: row.serial.clone(),
+            label: None,
+            offset_s: row.offset_s,
+            tz_minutes: row.tz_minutes,
+            photos: 0,
+        });
+    }
     summary
 }
 
@@ -495,14 +545,66 @@ mod tests {
     }
 
     #[test]
+    fn fr_030_camera_clocks_round_trip_and_bad_ones_are_dropped() {
+        let mut lib = Library::new();
+        let folder = lib.add_folder(Path::new("/trip"));
+        let meta = PhotoMeta {
+            capture: chrono::NaiveDate::from_ymd_opt(2026, 7, 1)
+                .and_then(|d| d.and_hms_opt(9, 30, 0)),
+            make: Some("Panasonic".into()),
+            model: Some("DC-GX9".into()),
+            orientation: 1,
+            ..PhotoMeta::default()
+        };
+        let file = ImportedFile {
+            path: PathBuf::from("/trip/a.jpg"),
+            size: 100,
+            mtime: 1_700_000_000,
+        };
+        let Some(id) = lib.push(folder, &file, &meta) else {
+            panic!("import");
+        };
+        let body = lib.clock_of(id).unwrap_or(u16::MAX);
+        assert_eq!(lib.set_clock(body, 3_720, Some(60)), Ok(()));
+        let mut saved = snapshot(&lib);
+        assert_eq!(saved.cameras.len(), 1);
+        assert_eq!(saved.cameras[0].offset_s, 3_720);
+        // An edited file with an impossible offset is ignored, not applied.
+        saved.cameras.push(CameraRow {
+            make: Some("Panasonic".into()),
+            model: Some("DC-GX9".into()),
+            serial: None,
+            offset_s: 10 * 365 * 24 * 3600,
+            tz_minutes: None,
+        });
+
+        let mut fresh = Library::new();
+        let folder = fresh.add_folder(Path::new("/trip"));
+        let Some(id) = fresh.push(folder, &file, &meta) else {
+            panic!("import");
+        };
+        restore_into(&mut fresh, &saved, &[(1, PathBuf::from("/trip"))]);
+        let clock = fresh.clocks().into_iter().next();
+        assert_eq!(
+            clock.map(|c| (c.offset_s, c.tz_minutes)),
+            Some((3_720, Some(60)))
+        );
+        assert!(
+            fresh
+                .record(id)
+                .is_some_and(|r| r.capture.format("%H:%M").to_string() == "10:32")
+        );
+    }
+
+    #[test]
     fn fr_023_rejects_newer_and_invalid_files() -> std::io::Result<()> {
         let dir = tempfile::tempdir()?;
         let path = dir.path().join("p.fotollection");
         std::fs::write(
             &path,
-            br#"{"format":"fotollection-project","schema_version":7}"#,
+            br#"{"format":"fotollection-project","schema_version":8}"#,
         )?;
-        assert_eq!(load(&path), Loaded::NewerVersion(7));
+        assert_eq!(load(&path), Loaded::NewerVersion(8));
 
         let mut file = snapshot(&library_with(&["/trip/a.jpg"]));
         file.photos.push(PhotoRow {
@@ -558,6 +660,27 @@ mod tests {
         let degrees: Vec<Option<f32>> = file.photos.iter().map(|p| p.straighten).collect();
         // 40° from a file is clamped to 15°.
         assert_eq!(degrees, [Some(2.5), None, Some(15.0)]);
+    }
+
+    #[test]
+    fn fr_030_v7_fixture_keeps_camera_clocks_and_drops_impossible_ones() {
+        let Loaded::Ok(v7) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v7.fotollection"))
+        else {
+            panic!("v7 project should load");
+        };
+        let clocks: Vec<(Option<&str>, i64, Option<i16>)> = v7
+            .cameras
+            .iter()
+            .map(|c| (c.model.as_deref(), c.offset_s, c.tz_minutes))
+            .collect();
+        assert_eq!(clocks, [(Some("DC-GX9"), 3_720, Some(60))]);
+        let Loaded::Ok(v6) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v6.fotollection"))
+        else {
+            panic!("v6 project should load");
+        };
+        assert_eq!(v6.cameras, Vec::new());
     }
 
     #[test]

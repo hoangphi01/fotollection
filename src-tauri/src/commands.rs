@@ -21,7 +21,8 @@ use fotollection_core::import::{self, ImportedFile};
 use std::collections::HashMap;
 
 use fotollection_core::library::{
-    CullFilter, Flag, PhotoEdits, PhotoId, PhotoRecord, PhotoSummary, flags,
+    CameraClock, ClockError, CullFilter, Flag, PhotoEdits, PhotoId, PhotoRecord, PhotoSummary,
+    flags,
 };
 use fotollection_core::logo;
 use fotollection_core::metadata;
@@ -862,8 +863,12 @@ pub struct PhotoDetails {
     /// Upright pixel size (after EXIF orientation).
     pub width: u32,
     pub height: u32,
-    /// Camera-local capture time, `YYYY-MM-DDTHH:MM:SS`.
+    /// Capture time, `YYYY-MM-DDTHH:MM:SS`, corrected by the camera's clock offset (FR-030).
     pub capture: String,
+    /// The time the camera wrote, before its clock offset (FR-030).
+    pub camera_time: String,
+    /// The camera body, for its clock (FR-030); `None` when the photo names no camera.
+    pub clock_id: Option<u16>,
     /// `true` when no EXIF date exists and the file time is used.
     pub date_from_file: bool,
     pub orientation: u8,
@@ -959,6 +964,7 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             f.profile_for(shot.make.as_deref(), shot.model.as_deref())
                 .map(|p| p.id)
         });
+        let clock_id = state.library.read().ok().and_then(|l| l.clock_of(id));
         Ok(PhotoDetails {
             id,
             file_name: record.file_name.clone(),
@@ -972,6 +978,8 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             width,
             height,
             capture: record.capture.format("%Y-%m-%dT%H:%M:%S").to_string(),
+            camera_time: record.camera_time.format("%Y-%m-%dT%H:%M:%S").to_string(),
+            clock_id,
             date_from_file: record.flags & flags::DATE_FROM_FILE != 0,
             orientation: record.orientation,
             gps: record.gps.map(|(lat, lon)| GpsPoint { lat, lon }),
@@ -1180,6 +1188,128 @@ pub fn clear_camera_logo(
     state.bump_revision();
     state.persist();
     frame_config(&state)
+}
+
+/// The camera bodies in the library and their clocks (FR-030).
+#[tauri::command]
+#[specta::specta]
+pub fn list_cameras(state: State<'_, AppState>) -> Result<Vec<CameraClock>, IpcError> {
+    Ok(state
+        .library
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?
+        .clocks())
+}
+
+fn clock_error(e: ClockError) -> IpcError {
+    match e {
+        ClockError::UnknownCamera => IpcError::new("camera.unknown", "Unknown camera"),
+        ClockError::OffsetTooLarge => IpcError::new(
+            "camera.offset_too_large",
+            "A camera clock is corrected by at most a month",
+        ),
+        ClockError::BadTimeZone => IpcError::new(
+            "camera.bad_time_zone",
+            "The time zone is outside UTC−14…+14",
+        ),
+    }
+}
+
+/// Corrects one camera body's clock (FR-030): every photo it took moves by `offset_s`, and
+/// the grid, groups and stamps follow. The time zone is optional (for GPX tracks, FR-031).
+#[tauri::command]
+#[specta::specta]
+pub fn set_camera_clock(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: u16,
+    offset_s: f64,
+    tz_minutes: Option<i16>,
+) -> Result<Vec<CameraClock>, IpcError> {
+    if !offset_s.is_finite() || offset_s.fract() != 0.0 {
+        return Err(clock_error(ClockError::OffsetTooLarge));
+    }
+    #[allow(clippy::cast_possible_truncation)] // checked finite and whole; range below
+    let offset = offset_s.clamp(-1e12, 1e12) as i64;
+    let clocks = {
+        let mut library = state
+            .library
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        library
+            .set_clock(id, offset, tz_minutes)
+            .map_err(clock_error)?;
+        library.clocks()
+    };
+    changed(&app, &state);
+    Ok(clocks)
+}
+
+/// The clock offset that makes `photo` (from the camera to correct) show the same time as
+/// `reference` (a photo of the same moment from another device, usually a phone), FR-030.
+#[tauri::command]
+#[specta::specta]
+pub fn clock_offset_between(
+    state: State<'_, AppState>,
+    photo: PhotoId,
+    reference: PhotoId,
+) -> Result<f64, IpcError> {
+    let library = state
+        .library
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?;
+    let unknown = || IpcError::new("photo.unknown", "Unknown photo");
+    let (a, b) = (
+        library.record(photo).ok_or_else(unknown)?,
+        library.record(reference).ok_or_else(unknown)?,
+    );
+    if library.clock_of(photo).is_none() || library.clock_of(photo) == library.clock_of(reference) {
+        return Err(IpcError::new(
+            "camera.same_clock",
+            "Pick a photo from another camera or phone",
+        ));
+    }
+    let offset = (b.capture - a.camera_time).num_seconds();
+    if offset.abs() > fotollection_core::library::MAX_CLOCK_OFFSET_S {
+        return Err(clock_error(ClockError::OffsetTooLarge));
+    }
+    #[allow(clippy::cast_precision_loss)] // at most a month of seconds
+    Ok(offset as f64)
+}
+
+/// Photos from other devices closest in time to `photo`, to pick the same moment from
+/// (FR-030); at most `limit` (≤ 24), within a day either way.
+#[tauri::command]
+#[specta::specta]
+pub fn clock_match_candidates(
+    state: State<'_, AppState>,
+    photo: PhotoId,
+    limit: u32,
+) -> Result<Vec<PhotoSummary>, IpcError> {
+    let library = state
+        .library
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?;
+    let record = library
+        .record(photo)
+        .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
+    let clock = library.clock_of(photo);
+    let mut near: Vec<(i64, PhotoId)> = library
+        .sorted_ids()
+        .into_iter()
+        .filter(|&id| library.clock_of(id).is_some() && library.clock_of(id) != clock)
+        .filter_map(|id| {
+            let other = library.record(id)?;
+            let gap = (other.capture - record.capture).num_seconds().abs();
+            (gap <= 24 * 3600).then_some((gap, id))
+        })
+        .collect();
+    near.sort_unstable();
+    Ok(near
+        .into_iter()
+        .take(limit.min(24) as usize)
+        .filter_map(|(_, id)| library.summary(id))
+        .collect())
 }
 
 /// Bumps the revision, marks the project dirty, and tells the UI (one place for all edits).

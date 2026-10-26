@@ -325,12 +325,18 @@
     "zoomSharpening": "Loading full detail…",
     "dragToFrame": "drag to reframe",
     "upBasket": "print basket",
-    "downAside": "set aside"
+    "downAside": "set aside",
+    "cameraTime": "Camera clock said {{time}}",
+    "clockShifted": "Clock corrected",
+    "syncClock": "Set this camera's clock from a photo…"
   },
   "errors": {
     "internal": "Something went wrong",
     "camera": {
-      "unknown": "Unknown camera"
+      "unknown": "Unknown camera",
+      "offset_too_large": "A camera clock is corrected by at most a month",
+      "bad_time_zone": "The time zone is outside UTC−14…+14",
+      "same_clock": "Pick a photo from another camera or phone"
     },
     "decode": {
       "failed": "The photo could not be decoded"
@@ -490,5 +496,19 @@
     "toBasket": "Print basket",
     "inBasket": "In the basket",
     "basketHint": "Add to or remove from the print basket (↑)"
+  },
+  "cameras": {
+    "title": "Camera clocks",
+    "hint": "A camera set to the wrong time puts its photos in the wrong place. Type how much to add, like +1:02:00 or −0:45; every photo from that camera moves, and the time it wrote stays in the photo.",
+    "photos_one": "{{count}} photo",
+    "photos_other": "{{count}} photos",
+    "offsetLabel": "Clock correction",
+    "reset": "No correction",
+    "matchTitle": "Set the clock of {{camera}} from a photo",
+    "matchBody": "Pick the photo from your phone or another camera that was taken at the same moment as this one. Fotollection works out how far off this camera's clock is.",
+    "matchNone": "No photo from another camera or phone within a day of this one.",
+    "matchResult_one": "{{camera}} will be corrected by {{offset}}; its {{count}} photo moves.",
+    "matchResult_other": "{{camera}} will be corrected by {{offset}}; its {{count}} photos move.",
+    "matchApply": "Correct the clock"
   }
 }

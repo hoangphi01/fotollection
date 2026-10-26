@@ -22,6 +22,9 @@ pub struct PhotoMeta {
     pub orientation: u8,
     pub make: Option<String>,
     pub model: Option<String>,
+    /// The body's serial number (`BodySerialNumber`), so two bodies of one model keep
+    /// their own clock offset (FR-030).
+    pub serial: Option<String>,
     pub has_embedded_thumbnail: bool,
     /// Exposure details for the info frame (FR-040). Absent for manual lenses that
     /// report nothing.
@@ -222,6 +225,7 @@ fn from_fields<'a>(
         orientation,
         make: field(Tag::Make).and_then(clean_string),
         model: field(Tag::Model).and_then(clean_string),
+        serial: field(Tag::BodySerialNumber).and_then(clean_string),
         has_embedded_thumbnail,
         lens,
         focal_mm: field(Tag::FocalLength).and_then(|f| rational(f, 0.5..=5000.0)),

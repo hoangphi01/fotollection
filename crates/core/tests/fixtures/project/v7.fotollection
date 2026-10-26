@@ -1,0 +1,56 @@
+{
+  "format": "fotollection-project",
+  "schema_version": 7,
+  "app_version": "0.8.0",
+  "modified_at": "2026-10-26T20:00:00+00:00",
+  "folders": [
+    {
+      "id": 1,
+      "path": "/Users/someone/Pictures/Debrecen",
+      "path_kind": "absolute"
+    }
+  ],
+  "photos": [
+    {
+      "id": 1,
+      "folder": 1,
+      "path": "IMG_0499.JPG",
+      "fp_size": 3012345,
+      "fp_mtime": 1726000000,
+      "stamp": {
+        "enabled": true,
+        "format": "retro",
+        "corner": "bottomRight",
+        "color": "retroOrange",
+        "place": true,
+        "caption": "Summer by the lake\u0007"
+      },
+      "straighten": 2.5,
+      "queue": "print"
+    },
+    {
+      "id": 2,
+      "folder": 1,
+      "path": "IMG_0500.JPG",
+      "fp_size": 2890000,
+      "fp_mtime": 1726000100,
+      "rating": 3,
+      "rotation": 2,
+      "queue": "aside"
+    }
+  ],
+  "cameras": [
+    {
+      "make": "Panasonic",
+      "model": "DC-GX9",
+      "offset_s": 3720,
+      "tz_minutes": 60
+    },
+    {
+      "make": "Sony",
+      "model": "ILCE-6400",
+      "serial": "1234567",
+      "offset_s": 999999999
+    }
+  ]
+}

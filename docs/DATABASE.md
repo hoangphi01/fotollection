@@ -82,7 +82,7 @@ erDiagram
 | `trips` | `id` | — | `name`, `start`, `end` | — |
 | `settings` | — (singleton) | — | `default_print_size`, `default_preset`, `safe_area_mm`, `color_*`, `export_*` | `default_preset` → `presets` |
 
-**Not persisted** (N4): EXIF fields, the camera a photo came from (read from EXIF at scan time and matched to `cameras` in RAM), geocoded place names for photos with GPS, corrected timestamps, effective DPI and thumbnails.
+**Not persisted** (N4): EXIF fields, the camera a photo came from (read from EXIF at scan time and matched to `cameras` in RAM), geocoded place names for photos with GPS, effective (corrected) timestamps, which are recomputed from the camera's time and its body's offset ([ADR-0027](adr/0027-effective-time-and-place.md)), effective DPI and thumbnails.
 
 ### 3.2 Effective value resolution
 
@@ -206,11 +206,12 @@ Parsing is strict: `serde` with `deny_unknown_fields`, typed enums, and range ch
 | Version | App version | Change |
 |---------|-------------|--------|
 | 1 | 0.0.x (slice 3) | **Implemented subset:** `folders` (absolute paths for the session project) and sparse `photos` rows with `fp_size`, `fp_mtime`, `crop`, `rating`, `flag`. The other tables (`settings`, `cameras`, `places`, `presets`, `trips`) are added by later schema versions with migrations; app-wide settings and camera profiles live in `settings.json` for now (§6) |
+| 2 | 0.0.x (Stage 2) | `document` (session autosave only) and `folders[].absolute`: the absolute path kept next to a `relative` row, used when a project moved without its photos. Written inside bundles, where folders are stored relative to the bundle. **Migration v1 → v2:** the field is optional, so v1 files are read as is (`fr_023_v1_fixture_still_opens`, fixture `crates/core/tests/fixtures/project/v1.fotollection`) |
+| 3 | 0.0.x (Stage 3) | `photos[].stamp`: a photo's own date stamp set in the preview (FR-044), the same object as `settings.json` `render.stamp`; absent when the photo follows the settings. Captions are cleaned on load (control characters dropped, 80 characters). **Migration v2 → v3:** the field is optional, so v2 files are read as is. Fixture `crates/core/tests/fixtures/project/v3.fotollection`, test `fr_044_v3_fixture_keeps_a_photos_own_stamp` |
+| 4 | 0.0.x (Stage 3) | `photos[].rotation`: the user's quarter turns clockwise, 1–3, on top of the EXIF orientation (FR-006); absent when not turned. Values from a file are taken modulo 4. **Migration v3 → v4:** optional field, read as is. Fixture `v4.fotollection`, test `fr_006_v4_fixture_keeps_quarter_turns` |
 | 5 | 0.0.x (Stage 3) | `photos[].straighten`: the straightening angle in degrees, −15 to 15 (FR-006); absent when level. Values out of range are clamped and non-finite ones dropped on load. The crop's centre and zoom are then read in the straightened frame. **Migration v4 → v5:** optional field, read as is. Fixture `v5.fotollection`, test `fr_006_v5_fixture_keeps_straightening_within_limits` |
 | 6 | 0.5.x | `photos[].queue`: `print` (the print basket) or `aside` (set aside, out of the gallery, never deleted) (FR-050); absent when the photo is in the gallery. **Migration v5 → v6:** optional field, read as is, so older projects have nothing in either area. Fixtures `v5.fotollection` and `v6.fotollection`, test `fr_050_v6_keeps_the_basket_and_v5_files_have_none` |
-| 4 | 0.0.x (Stage 3) | `photos[].rotation`: the user's quarter turns clockwise, 1–3, on top of the EXIF orientation (FR-006); absent when not turned. Values from a file are taken modulo 4. **Migration v3 → v4:** optional field, read as is. Fixture `v4.fotollection`, test `fr_006_v4_fixture_keeps_quarter_turns` |
-| 3 | 0.0.x (Stage 3) | `photos[].stamp`: a photo's own date stamp set in the preview (FR-044), the same object as `settings.json` `render.stamp`; absent when the photo follows the settings. Captions are cleaned on load (control characters dropped, 80 characters). **Migration v2 → v3:** the field is optional, so v2 files are read as is. Fixture `crates/core/tests/fixtures/project/v3.fotollection`, test `fr_044_v3_fixture_keeps_a_photos_own_stamp` |
-| 2 | 0.0.x (Stage 2) | `document` (session autosave only) and `folders[].absolute`: the absolute path kept next to a `relative` row, used when a project moved without its photos. Written inside bundles, where folders are stored relative to the bundle. **Migration v1 → v2:** the field is optional, so v1 files are read as is (`fr_023_v1_fixture_still_opens`, fixture `crates/core/tests/fixtures/project/v1.fotollection`) |
+| 7 | 0.8.x | `cameras[]`: corrected camera clocks (FR-030, [ADR-0027](adr/0027-effective-time-and-place.md)), one row per body with `make`, `model`, `serial` (when the camera writes one), `offset_s` (seconds added to the camera's time, at most a month either way) and `tz_minutes` (optional, ±14 h); bodies without a correction are not written. Rows outside the limits are dropped on load. **Migration v6 → v7:** optional table, read as is, so older projects have no correction. Fixture `v7.fotollection`, test `fr_030_v7_fixture_keeps_camera_clocks_and_drops_impossible_ones` |
 
 ### 4.4 Write protocol
 
@@ -251,7 +252,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 ```json
 {
   "format": "fotollection-settings",
-  "schema_version": 5,
+  "schema_version": 8,
   "ui": { "language": "vi" },
   "render": {
     "printSize": "custom-1",

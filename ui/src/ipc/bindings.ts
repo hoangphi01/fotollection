@@ -80,6 +80,23 @@ export const commands = {
 	 *  logo kind are kept from the stored row; logos change only through the logo commands.
 	 */
 	setCameraProfile: (profile: CameraProfile) => typedError<FrameConfig, IpcError>(__TAURI_INVOKE("set_camera_profile", { profile })),
+	/**  The camera bodies in the library and their clocks (FR-030). */
+	listCameras: () => typedError<CameraClock[], IpcError>(__TAURI_INVOKE("list_cameras")),
+	/**
+	 *  Corrects one camera body's clock (FR-030): every photo it took moves by `offset_s`, and
+	 *  the grid, groups and stamps follow. The time zone is optional (for GPX tracks, FR-031).
+	 */
+	setCameraClock: (id: number, offsetS: number | null, tzMinutes: number | null) => typedError<CameraClock[], IpcError>(__TAURI_INVOKE("set_camera_clock", { id, offsetS, tzMinutes })),
+	/**
+	 *  The clock offset that makes `photo` (from the camera to correct) show the same time as
+	 *  `reference` (a photo of the same moment from another device, usually a phone), FR-030.
+	 */
+	clockOffsetBetween: (photo: PhotoId, reference: PhotoId) => typedError<number | null, IpcError>(__TAURI_INVOKE("clock_offset_between", { photo, reference })),
+	/**
+	 *  Photos from other devices closest in time to `photo`, to pick the same moment from
+	 *  (FR-030); at most `limit` (≤ 24), within a day either way.
+	 */
+	clockMatchCandidates: (photo: PhotoId, limit: number) => typedError<PhotoSummary[], IpcError>(__TAURI_INVOKE("clock_match_candidates", { photo, limit })),
 	/**
 	 *  Picks a PNG logo with a Rust-side dialog, validates it, and copies it into the app's
 	 *  config folder (ADR-0014, SECURITY.md §3). `None` if the user cancelled.
@@ -293,6 +310,25 @@ export type CacheUsage = {
 	files: number,
 	/**  The limit the cache is kept under, in bytes. */
 	limitBytes: number | null,
+};
+
+/**  A camera body and its clock, as listed in the settings (FR-030). */
+export type CameraClock = {
+	id: number,
+	make: string | null,
+	model: string | null,
+	serial: string | null,
+	/**  The name shown to the user ("Panasonic DC-GX9"). */
+	label: string | null,
+	/**  Seconds added to the camera's time. */
+	offsetS: number | null,
+	/**
+	 *  The time zone the corrected times are in, in minutes from UTC, when the user set one
+	 *  (used to match a GPX track, FR-031).
+	 */
+	tzMinutes: number | null,
+	/**  Photos taken with this body. */
+	photos: number,
 };
 
 /**
@@ -654,8 +690,12 @@ export type PhotoDetails = {
 	/**  Upright pixel size (after EXIF orientation). */
 	width: number,
 	height: number,
-	/**  Camera-local capture time, `YYYY-MM-DDTHH:MM:SS`. */
+	/**  Capture time, `YYYY-MM-DDTHH:MM:SS`, corrected by the camera's clock offset (FR-030). */
 	capture: string,
+	/**  The time the camera wrote, before its clock offset (FR-030). */
+	cameraTime: string,
+	/**  The camera body, for its clock (FR-030); `None` when the photo names no camera. */
+	clockId: number | null,
 	/**  `true` when no EXIF date exists and the file time is used. */
 	dateFromFile: boolean,
 	orientation: number,
@@ -720,8 +760,13 @@ export type PhotoSummary = {
 	/**  Index of the source folder, for taking a folder out of the library (FR-001). */
 	folderId: number,
 	folderName: string,
-	/**  Camera-local capture time, `YYYY-MM-DDTHH:MM:SS`. */
+	/**
+	 *  Camera-local capture time, `YYYY-MM-DDTHH:MM:SS`, corrected by the camera's clock
+	 *  offset (FR-030).
+	 */
 	capture: string,
+	/**  The camera's clock offset changed this photo's time (FR-030). */
+	timeShifted: boolean,
 	hasGps: boolean,
 	dateFromFile: boolean,
 	camera: string | null,

@@ -106,7 +106,16 @@ Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates
 
 The same popover shows the **cache**: the thumbnails and best-shot analyses Fotollection keeps so folders open fast, with its size against its 2 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
 
-## 6. Keyboard shortcuts
+## 6. Camera clocks
+
+A camera set to the wrong time, or still on the time zone of home, puts its photos in the wrong order next to your phone's, and stamps the wrong date ([FR-030](PRD.md#fr-030--camera-clock-offset)).
+
+1. **From a photo (easiest):** open a photo from that camera, and in **Captured** click **Set this camera's clock from a photo…**. Pick the photo from your phone (or another camera) taken at the same moment, then **Correct the clock**.
+2. **By hand:** in the settings panel, **Camera clocks** lists every camera in the library. Type how much to add, like `+1:02:00` or `−0:45`, and press Enter. The arrow button sets it back.
+
+Every photo from that camera moves at once, including photos added later: the grid order, best-shot groups, day folders, the date stamp and the exported copy's date. The preview still shows what the camera's clock said, and the photo file is never changed. Two bodies of the same model keep their own clocks when the camera records its serial number. The correction is saved in the project.
+
+## 7. Keyboard shortcuts
 
 | Where | Key | Action |
 |-------|-----|--------|

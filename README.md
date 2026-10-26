@@ -66,6 +66,7 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | 📱 | **JPEG, PNG and HEIC** (iPhone) input | MVP |
 | 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, through the system's own codecs; thumbnails from the preview inside each file | 3 |
 | 🖱️ | **Open with Fotollection** from Finder or Explorer: the photo opens at once and its folder becomes a tab | 2 |
+| ⏱️ | **Camera clocks**: a camera set to the wrong time is corrected from one phone photo of the same moment; every photo from it moves, the files stay untouched | 2 |
 | 🔒 | **GPS stripped on export** by default. No account, no cloud, no telemetry | MVP |
 | 🌐 | **English and Vietnamese** interface | MVP |
 | 📦 | **Project files like `.docx`**: save, open on another machine with the same fonts, logos and settings, relink moved folders | MVP |

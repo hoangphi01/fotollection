@@ -311,12 +311,18 @@
     "zoomSharpening": "Đang tải chi tiết gốc…",
     "dragToFrame": "kéo để căn ảnh",
     "upBasket": "giỏ in",
-    "downAside": "để riêng"
+    "downAside": "để riêng",
+    "cameraTime": "Đồng hồ máy ghi {{time}}",
+    "clockShifted": "Đã chỉnh giờ",
+    "syncClock": "Chỉnh giờ máy này theo một ảnh…"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",
     "camera": {
-      "unknown": "Không rõ máy ảnh"
+      "unknown": "Không rõ máy ảnh",
+      "offset_too_large": "Đồng hồ máy ảnh chỉ chỉnh được tối đa một tháng",
+      "bad_time_zone": "Múi giờ phải nằm trong khoảng UTC−14 đến +14",
+      "same_clock": "Hãy chọn ảnh của máy ảnh hoặc điện thoại khác"
     },
     "decode": {
       "failed": "Không giải mã được ảnh"
@@ -472,5 +478,17 @@
     "toBasket": "Giỏ in",
     "inBasket": "Đã trong giỏ",
     "basketHint": "Cho vào hoặc bỏ khỏi giỏ in (↑)"
+  },
+  "cameras": {
+    "title": "Đồng hồ máy ảnh",
+    "hint": "Máy ảnh để sai giờ thì ảnh bị xếp sai chỗ. Gõ số giờ cần cộng thêm, ví dụ +1:02:00 hoặc −0:45; mọi ảnh của máy đó sẽ dịch theo, còn giờ máy đã ghi vẫn được giữ trong ảnh.",
+    "photos_other": "{{count}} ảnh",
+    "offsetLabel": "Chỉnh giờ",
+    "reset": "Không chỉnh",
+    "matchTitle": "Chỉnh giờ {{camera}} theo một ảnh",
+    "matchBody": "Chọn ảnh chụp bằng điện thoại hoặc máy khác vào đúng lúc chụp ảnh này. Fotollection sẽ tính ra đồng hồ máy này lệch bao nhiêu.",
+    "matchNone": "Không có ảnh nào của máy hoặc điện thoại khác trong vòng một ngày quanh ảnh này.",
+    "matchResult_other": "{{camera}} sẽ được chỉnh {{offset}}; {{count}} ảnh của máy này sẽ dịch theo.",
+    "matchApply": "Chỉnh đồng hồ"
   }
 }

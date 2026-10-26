@@ -125,7 +125,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-027 | sRGB conversion for labs | 1 | In Progress | ✓ Share exports convert to sRGB with `qcms` (perceptual, [ADR-0022](adr/0022-srgb-and-exif-for-share-exports.md)). Pending: the optional conversion for prints |
 | FR-028 | Safe area and borders | 1 | Not Started | |
 | FR-029 | Output sharpening | 3 | Not Started | Needs real print tests |
-| FR-030 | Camera clock offset | 1 | Not Started | |
+| FR-030 | Camera clock offset | 1 | In Progress | ✓ Bodies by make, model and `BodySerialNumber`; effective time = camera time + offset in `Library::record` (sort, groups, stamp, day folders, export EXIF follow), camera time kept (`fr_030_*`, [ADR-0027](adr/0027-effective-time-and-place.md)). ✓ Project v7 `cameras[]`, checked on load. ✓ `list_cameras`, `set_camera_clock`, `clock_offset_between`, `clock_match_candidates`; Camera clocks card and the helper in the preview's Captured card. Left: time zone in the UI (with GPX, FR-031), automatic suggestion from same-scene pairs, check by hand |
 | FR-031 | Borrow GPS from a phone or GPX track | 2 | Not Started | Depends on FR-030 |
 | FR-032 | Manual date and place | 1 | Not Started | |
 | FR-033 | Retro film date stamp and stamp presets | 1 | In Progress | ✓ DSEG14 Italic (OFL) LCD face with LED glow and faint shadow (`fr_033_*`). Presets to come |

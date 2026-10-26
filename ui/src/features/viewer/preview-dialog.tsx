@@ -1,19 +1,20 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import {
-  Camera,
   CalendarDays,
+  Camera,
   ChevronLeft,
-  Download,
   ChevronRight,
-  ShoppingBasket,
-  Undo2,
+  Clock,
   Crop,
+  Download,
   ImageIcon,
   LoaderCircle,
   MapPin,
   RotateCcw,
   RotateCw,
+  ShoppingBasket,
   Star,
+  Undo2,
 } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -22,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { ClockMatchDialog } from '@/features/cameras/clock-match-dialog'
 import { CullControls } from '@/features/culling/cull-controls'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
@@ -155,6 +157,7 @@ export function PreviewDialog({
   const { t } = useTranslation()
   const photo = index === null ? undefined : photos[index]
   const details = usePhotoDetails(photo?.id, revision)
+  const [clockMatch, setClockMatch] = useState(false)
   const printSizes = useIpcQuery(commands.listPrintSizes)
   // The same sharp / acceptable / pixelated advice as the settings panel (FR-026).
   const sizesKey = (settings?.customSizes ?? []).map((c) => `${c.id}:${c.shortMm}x${c.longMm}`).join()
@@ -484,12 +487,34 @@ export function PreviewDialog({
 
             <Section icon={<CalendarDays className="size-4" />} title={t('viewer.captured')}>
               <p>{photo ? formatCaptureLong(photo.capture) : '—'}</p>
+              {photo?.timeShifted && details && (
+                <p className="text-xs text-muted-foreground">
+                  {t('viewer.cameraTime', { time: formatCaptureLong(details.cameraTime) })}
+                </p>
+              )}
               {photo?.dateFromFile ? (
                 <Badge variant="outline" className="text-amber-600 dark:text-amber-400">
                   {t('viewer.noExifDate')}
                 </Badge>
+              ) : photo?.timeShifted ? (
+                <Badge variant="outline">{t('viewer.clockShifted')}</Badge>
               ) : (
                 <Badge variant="outline">{t('viewer.fromExif')}</Badge>
+              )}
+              {photo && !photo.dateFromFile && details?.clockId != null && (
+                <>
+                  <Button size="sm" variant="outline" onClick={() => setClockMatch(true)}>
+                    <Clock data-icon="inline-start" /> {t('viewer.syncClock')}
+                  </Button>
+                  {clockMatch && (
+                    <ClockMatchDialog
+                      photoId={photo.id}
+                      clockId={details.clockId}
+                      open
+                      onClose={() => setClockMatch(false)}
+                    />
+                  )}
+                </>
               )}
             </Section>
 

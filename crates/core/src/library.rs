@@ -186,6 +186,9 @@ pub struct PhotoRecord {
     pub gps: Option<(f32, f32)>,
     pub shot: ShotInfo,
     pub edits: PhotoEdits,
+    /// The time the camera wrote, before its clock offset (FR-030). Equal to `capture` when
+    /// the body has no offset or the date comes from the file.
+    pub camera_time: NaiveDateTime,
 }
 
 impl PhotoRecord {
@@ -195,9 +198,9 @@ impl PhotoRecord {
         crate::image::compose_orientation(self.orientation, self.edits.rotation)
     }
 
-    /// The date stamped on the photo and written in its frame (FR-004, FR-040): the EXIF
-    /// capture time, or the file's time when the photo has none. `None` only when even the
-    /// file time is unknown.
+    /// The date stamped on the photo and written in its frame (FR-004, FR-040): the capture
+    /// time corrected by its camera's clock offset (FR-030), or the file's time when the
+    /// photo has none. `None` only when even the file time is unknown.
     pub fn stamp_date(&self) -> Option<NaiveDateTime> {
         (self.flags & flags::DATE_FROM_FILE == 0 || self.mtime != 0).then_some(self.capture)
     }
@@ -224,8 +227,11 @@ pub struct PhotoSummary {
     /// Index of the source folder, for taking a folder out of the library (FR-001).
     pub folder_id: u16,
     pub folder_name: String,
-    /// Camera-local capture time, `YYYY-MM-DDTHH:MM:SS`.
+    /// Camera-local capture time, `YYYY-MM-DDTHH:MM:SS`, corrected by the camera's clock
+    /// offset (FR-030).
     pub capture: String,
+    /// The camera's clock offset changed this photo's time (FR-030).
+    pub time_shifted: bool,
     pub has_gps: bool,
     pub date_from_file: bool,
     pub camera: Option<String>,
@@ -246,6 +252,8 @@ pub struct Library {
     cameras: Vec<(Option<String>, Option<String>)>,
     /// Distinct lens names, referenced by index.
     lenses: Vec<String>,
+    /// Distinct camera bodies, each with its own clock (FR-030).
+    bodies: Vec<Body>,
     /// Full-path hash → photo, for de-duplication and restoring project rows.
     seen: HashMap<blake3::Hash, PhotoId>,
     edits: HashMap<PhotoId, PhotoEdits>,
@@ -261,6 +269,7 @@ pub struct Library {
     lat: Vec<f32>,
     lon: Vec<f32>,
     camera: Vec<u16>,
+    body: Vec<u16>,
     lens: Vec<u16>,
     focal_mm: Vec<f32>,
     f_number: Vec<f32>,
@@ -269,6 +278,63 @@ pub struct Library {
 }
 
 const NONE_U16: u16 = u16::MAX;
+
+/// A camera clock is corrected by at most a month (FR-030); a date further off is set by
+/// hand (FR-032).
+pub const MAX_CLOCK_OFFSET_S: i64 = 31 * 24 * 3600;
+/// Time zones span UTC−12 to UTC+14.
+pub const MAX_TZ_MINUTES: i16 = 14 * 60;
+
+/// One camera body: its make and model (an index into `cameras`), its serial number when
+/// the camera writes one, and its clock correction (FR-030).
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct Body {
+    camera: u16,
+    serial: Option<String>,
+    offset_s: i64,
+    tz_minutes: Option<i16>,
+}
+
+/// A camera body and its clock, as listed in the settings (FR-030).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct CameraClock {
+    pub id: u16,
+    pub make: Option<String>,
+    pub model: Option<String>,
+    pub serial: Option<String>,
+    /// The name shown to the user ("Panasonic DC-GX9").
+    pub label: Option<String>,
+    /// Seconds added to the camera's time.
+    #[specta(type = f64)]
+    pub offset_s: i64,
+    /// The time zone the corrected times are in, in minutes from UTC, when the user set one
+    /// (used to match a GPX track, FR-031).
+    pub tz_minutes: Option<i16>,
+    /// Photos taken with this body.
+    pub photos: u32,
+}
+
+/// Why a clock correction was refused.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+pub enum ClockError {
+    #[error("unknown camera")]
+    UnknownCamera,
+    #[error("the offset is larger than a month")]
+    OffsetTooLarge,
+    #[error("the time zone is outside UTC−14…+14")]
+    BadTimeZone,
+}
+
+fn check_clock(offset_s: i64, tz_minutes: Option<i16>) -> Result<(), ClockError> {
+    if offset_s.abs() > MAX_CLOCK_OFFSET_S {
+        return Err(ClockError::OffsetTooLarge);
+    }
+    if tz_minutes.is_some_and(|tz| tz.abs() > MAX_TZ_MINUTES) {
+        return Err(ClockError::BadTimeZone);
+    }
+    Ok(())
+}
 
 impl Library {
     pub fn new() -> Self {
@@ -312,6 +378,115 @@ impl Library {
         u16::try_from(i).unwrap_or(NONE_U16)
     }
 
+    fn body_index(&mut self, camera: u16, serial: Option<&String>) -> u16 {
+        if camera == NONE_U16 {
+            return NONE_U16;
+        }
+        let i = self
+            .bodies
+            .iter()
+            .position(|b| b.camera == camera && b.serial.as_ref() == serial)
+            .unwrap_or_else(|| {
+                self.bodies.push(Body {
+                    camera,
+                    serial: serial.cloned(),
+                    offset_s: 0,
+                    tz_minutes: None,
+                });
+                self.bodies.len() - 1
+            });
+        u16::try_from(i).unwrap_or(NONE_U16)
+    }
+
+    /// Seconds the photo's camera clock is corrected by; 0 for a date taken from the file.
+    fn clock_offset(&self, i: usize) -> i64 {
+        if self.flags[i] & flags::DATE_FROM_FILE != 0 {
+            return 0;
+        }
+        self.bodies
+            .get(self.body[i] as usize)
+            .map_or(0, |b| b.offset_s)
+    }
+
+    /// The capture time used everywhere (FR-030): the camera's time plus its clock offset.
+    fn effective(&self, i: usize) -> i64 {
+        self.capture[i].saturating_add(self.clock_offset(i))
+    }
+
+    /// Every camera body in the library and its clock (FR-030).
+    pub fn clocks(&self) -> Vec<CameraClock> {
+        let mut photos = vec![0u32; self.bodies.len()];
+        for &b in &self.body {
+            if let Some(n) = photos.get_mut(b as usize) {
+                *n += 1;
+            }
+        }
+        self.bodies
+            .iter()
+            .enumerate()
+            .map(|(i, b)| {
+                let (make, model) = self
+                    .cameras
+                    .get(b.camera as usize)
+                    .cloned()
+                    .unwrap_or_default();
+                CameraClock {
+                    id: u16::try_from(i).unwrap_or(NONE_U16),
+                    label: Self::camera_label(make.as_deref(), model.as_deref()),
+                    make,
+                    model,
+                    serial: b.serial.clone(),
+                    offset_s: b.offset_s,
+                    tz_minutes: b.tz_minutes,
+                    photos: photos[i],
+                }
+            })
+            .collect()
+    }
+
+    /// Corrects one body's clock (FR-030).
+    pub fn set_clock(
+        &mut self,
+        id: u16,
+        offset_s: i64,
+        tz_minutes: Option<i16>,
+    ) -> Result<(), ClockError> {
+        check_clock(offset_s, tz_minutes)?;
+        let body = self
+            .bodies
+            .get_mut(id as usize)
+            .ok_or(ClockError::UnknownCamera)?;
+        body.offset_s = offset_s;
+        body.tz_minutes = tz_minutes;
+        Ok(())
+    }
+
+    /// The body a photo was taken with (FR-030).
+    pub fn clock_of(&self, id: PhotoId) -> Option<u16> {
+        let b = *self.body.get(self.index(id)?)?;
+        (b != NONE_U16).then_some(b)
+    }
+
+    /// Restores a saved clock onto the body with this make, model and serial, if the library
+    /// has it (project rows, FR-030). Invalid values are ignored.
+    pub fn restore_clock(&mut self, clock: &CameraClock) {
+        if check_clock(clock.offset_s, clock.tz_minutes).is_err() {
+            return;
+        }
+        let key = (clock.make.clone(), clock.model.clone());
+        let Some(camera) = self.cameras.iter().position(|c| *c == key) else {
+            return;
+        };
+        if let Some(body) = self
+            .bodies
+            .iter_mut()
+            .find(|b| b.camera as usize == camera && b.serial == clock.serial)
+        {
+            body.offset_s = clock.offset_s;
+            body.tz_minutes = clock.tz_minutes;
+        }
+    }
+
     fn lens_index(&mut self, lens: Option<&String>) -> u16 {
         let Some(lens) = lens else { return NONE_U16 };
         let i = self
@@ -353,6 +528,7 @@ impl Library {
         let rel = rel.to_string_lossy();
         let span = self.strings.intern(&rel);
         let camera = self.camera_index(meta);
+        let body = self.body_index(camera, meta.serial.as_ref());
         let lens = self.lens_index(meta.lens.as_ref());
 
         let mut f = 0;
@@ -390,6 +566,7 @@ impl Library {
         self.lat.push(lat);
         self.lon.push(lon);
         self.camera.push(camera);
+        self.body.push(body);
         self.lens.push(lens);
         self.focal_mm.push(meta.focal_mm.unwrap_or(f32::NAN));
         self.f_number.push(meta.f_number.unwrap_or(f32::NAN));
@@ -434,7 +611,8 @@ impl Library {
             file_name,
             size: self.size[i],
             mtime: self.mtime[i],
-            capture: DateTime::from_timestamp(self.capture[i], 0)?.naive_utc(),
+            capture: DateTime::from_timestamp(self.effective(i), 0)?.naive_utc(),
+            camera_time: DateTime::from_timestamp(self.capture[i], 0)?.naive_utc(),
             orientation: self.orientation[i],
             flags: self.flags[i],
             gps,
@@ -479,7 +657,7 @@ impl Library {
         let mut ids: Vec<u32> = (0..u32::try_from(self.len()).unwrap_or(u32::MAX)).collect();
         ids.sort_by(|&a, &b| {
             let (a, b) = (a as usize, b as usize);
-            self.capture[a].cmp(&self.capture[b]).then_with(|| {
+            self.effective(a).cmp(&self.effective(b)).then_with(|| {
                 self.strings
                     .get(self.rel_path[a])
                     .cmp(self.strings.get(self.rel_path[b]))
@@ -501,6 +679,7 @@ impl Library {
             folder_id: self.folder[i],
             folder_name,
             capture: record.capture.format("%Y-%m-%dT%H:%M:%S").to_string(),
+            time_shifted: record.capture != record.camera_time,
             has_gps: record.flags & flags::HAS_GPS != 0,
             date_from_file: record.flags & flags::DATE_FROM_FILE != 0,
             camera: self
@@ -668,6 +847,108 @@ mod tests {
             orientation: 1,
             ..PhotoMeta::default()
         }
+    }
+
+    fn camera(make: &str, model: &str, serial: Option<&str>, h: u32, m: u32) -> PhotoMeta {
+        PhotoMeta {
+            capture: NaiveDate::from_ymd_opt(2026, 7, 1).and_then(|d| d.and_hms_opt(h, m, 0)),
+            make: Some(make.into()),
+            model: Some(model.into()),
+            serial: serial.map(Into::into),
+            orientation: 1,
+            ..PhotoMeta::default()
+        }
+    }
+
+    #[test]
+    fn fr_030_a_clock_offset_moves_the_time_sort_and_stamp_but_keeps_the_camera_time() {
+        let mut lib = Library::new();
+        let f = lib.add_folder(Path::new("/trip"));
+        // The GX9 clock is an hour behind: its 9:30 shot was really taken after the 10:00 one.
+        let gx9 = lib.push(
+            f,
+            &file("/trip/gx9.jpg", 0),
+            &camera("Panasonic", "DC-GX9", None, 9, 30),
+        );
+        let phone = lib.push(
+            f,
+            &file("/trip/phone.jpg", 0),
+            &camera("Apple", "iPhone 15", None, 10, 0),
+        );
+        let (Some(gx9), Some(phone)) = (gx9, phone) else {
+            panic!("import");
+        };
+        assert_eq!(lib.sorted_ids(), vec![gx9, phone]);
+
+        let body = lib.clock_of(gx9).unwrap_or(u16::MAX);
+        assert_eq!(lib.set_clock(body, 3_600, Some(120)), Ok(()));
+        assert_eq!(lib.sorted_ids(), vec![phone, gx9]);
+        let Some(record) = lib.record(gx9) else {
+            panic!("record");
+        };
+        assert_eq!(record.capture.format("%H:%M").to_string(), "10:30");
+        assert_eq!(record.camera_time.format("%H:%M").to_string(), "09:30");
+        assert_eq!(record.stamp_date(), Some(record.capture));
+        assert!(lib.summary(gx9).is_some_and(|s| s.time_shifted));
+        assert!(lib.summary(phone).is_some_and(|s| !s.time_shifted));
+    }
+
+    #[test]
+    fn fr_030_bodies_of_one_model_keep_their_own_clock_and_bad_values_are_refused() {
+        let mut lib = Library::new();
+        let f = lib.add_folder(Path::new("/trip"));
+        let a = lib.push(
+            f,
+            &file("/trip/a.jpg", 0),
+            &camera("Sony", "ILCE-6400", Some("111"), 10, 0),
+        );
+        let b = lib.push(
+            f,
+            &file("/trip/b.jpg", 0),
+            &camera("Sony", "ILCE-6400", Some("222"), 10, 0),
+        );
+        let (Some(a), Some(b)) = (a, b) else {
+            panic!("import");
+        };
+        assert_ne!(lib.clock_of(a), lib.clock_of(b));
+        assert_eq!(lib.clocks().len(), 2);
+        assert_eq!(lib.cameras().len(), 1, "one frame profile for the model");
+
+        let body = lib.clock_of(a).unwrap_or(u16::MAX);
+        assert_eq!(
+            lib.set_clock(body, MAX_CLOCK_OFFSET_S + 1, None),
+            Err(ClockError::OffsetTooLarge)
+        );
+        assert_eq!(
+            lib.set_clock(body, 0, Some(15 * 60)),
+            Err(ClockError::BadTimeZone)
+        );
+        assert_eq!(lib.set_clock(999, 0, None), Err(ClockError::UnknownCamera));
+        assert_eq!(lib.set_clock(body, -90, None), Ok(()));
+        let times: Vec<String> = [a, b]
+            .iter()
+            .filter_map(|&id| lib.record(id))
+            .map(|r| r.capture.format("%H:%M:%S").to_string())
+            .collect();
+        assert_eq!(times, vec!["09:58:30", "10:00:00"]);
+    }
+
+    #[test]
+    fn fr_030_a_date_from_the_file_is_never_shifted() {
+        let mut lib = Library::new();
+        let f = lib.add_folder(Path::new("/trip"));
+        let meta = PhotoMeta {
+            make: Some("Panasonic".into()),
+            model: Some("DC-GX9".into()),
+            orientation: 1,
+            ..PhotoMeta::default()
+        };
+        let Some(id) = lib.push(f, &file("/trip/scan.jpg", 1_780_000_000), &meta) else {
+            panic!("import");
+        };
+        let body = lib.clock_of(id).unwrap_or(u16::MAX);
+        assert_eq!(lib.set_clock(body, 3_600, None), Ok(()));
+        assert!(lib.record(id).is_some_and(|r| r.capture == r.camera_time));
     }
 
     #[test]

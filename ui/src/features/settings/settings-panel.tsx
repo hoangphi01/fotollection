@@ -13,6 +13,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Collapse } from '@/components/layout/collapse'
+import { CameraClocksCard } from '@/features/cameras/camera-clocks-card'
 import { SectionCard } from '@/components/layout/section-card'
 import { CommitInput } from '@/components/forms/commit-input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
@@ -213,6 +214,7 @@ export function SettingsPanel({
         </SectionCard>
 
         <FrameSection frame={frame} fonts={fonts} />
+        <CameraClocksCard />
       </div>
 
       <Separator />

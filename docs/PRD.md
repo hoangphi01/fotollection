@@ -331,7 +331,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 ### FR-030 — Camera clock offset
 
-**P0.** Correct capture times per camera (make, model and serial number when available).
+**P0 (v0.8.0).** Correct capture times per camera (make, model and serial number when available), resolved as in [ADR-0027](adr/0027-effective-time-and-place.md). Step-by-step use: [USER_GUIDE.md §6](USER_GUIDE.md#6-camera-clocks).
 
 - Shift by an offset (±days/hours/minutes/seconds) or set a time zone.
 - A helper sets the offset by matching one camera photo to a reference photo, such as a phone photo of the same moment.

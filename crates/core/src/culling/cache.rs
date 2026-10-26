@@ -118,6 +118,7 @@ mod tests {
             gps: None,
             shot: crate::library::ShotInfo::default(),
             edits: crate::library::PhotoEdits::default(),
+            camera_time: chrono::NaiveDateTime::default(),
         }
     }
 

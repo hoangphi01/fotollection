@@ -4,6 +4,7 @@ import { memo, useState, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { PhotoSummary } from '@/ipc/bindings'
 import { CullBadges } from '@/features/culling/cull-badges'
+import { formatCapture } from '@/lib/format'
 import { thumbUrl } from '@/lib/photo-url'
 import { cn } from '@/lib/utils'
 
@@ -21,10 +22,6 @@ type ThumbTileProps = {
   onOpen: () => void
   /** The pointer is over this photo (for Quick-preview, FR-059). */
   onHover?: (over: boolean) => void
-}
-
-function formatCapture(capture: string): string {
-  return capture.replace('T', ' ').slice(0, 16)
 }
 
 /** One grid cell: skeleton + spinner until the thumbnail arrives, then a fade-in. */

@@ -13,3 +13,8 @@ export function formatNumber(value: number, maxDigits = 1, minDigits = 0): strin
 export function formatBytes(bytes: number): string {
   return bytes >= 1e6 ? `${formatNumber(bytes / 1e6, 1, 1)} MB` : `${Math.round(bytes / 1e3)} KB`
 }
+
+/** A capture time from Rust (`YYYY-MM-DDTHH:MM:SS`) as `YYYY-MM-DD HH:MM`, for the grid. */
+export function formatCapture(capture: string): string {
+  return capture.replace('T', ' ').slice(0, 16)
+}
