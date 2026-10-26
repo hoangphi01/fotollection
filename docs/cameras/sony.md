@@ -159,4 +159,18 @@ Get/set is 1 for values set with `0x9205` and `0x81` for buttons used with `0x92
 - The delay before a new file format applies.
 - Record a disconnect: Remote closed before Ctrl+C.
 - Name `0xC202` and the other `0x81` buttons when they are observed.
-- Note for other Sony bodies: Imaging Edge installs a libusbK driver (`srcameradriver.inf`) for 65 other models (not the a6400). On a PC where it has taken such a body, WPD does not see that body.
+- Note for other Sony bodies: Imaging Edge installs a libusbK driver (`srcameradriver.inf`, "Sony Remote Control Camera") for 65 other models, not the a6400. Most of their USB product IDs are above the a6400's `0x0CAA` (for example `0x0CCC`, `0x0D18`, `0x0E08`), which suggests newer bodies. On a PC where that driver has taken such a body, WPD does not see it. Newer bodies may need a different path in PC Remote mode. The a6400's path may still work for bodies of its generation (a6100, a6600, a7 III, RX100 VI/VII), but this is not checked yet.
+
+### Other Sony bodies: a read-only remote probe (planned)
+
+The question above can be answered without having the body here:
+
+1. **The probe.** A `--probe` mode for `sony_remote` that never shoots and never sets anything. It prints:
+   - the body's USB product ID and the driver Windows bound to it;
+   - whether WPD sees it;
+   - if WPD sees it, the handshake result and the settings block.
+2. **The download.** It ships as one prebuilt `.exe`, with three steps for whoever runs it.
+3. **The run.** That person puts the body in USB Connection: PC Remote, runs the file and sends back the text it prints. This is observation, within the clean-room rule.
+4. **If WPD does not see the body,** a USB recording of Imaging Edge Remote with that body follows ([capture-guide.md](capture-guide.md)).
+
+First candidate: a ZV-E10 (2021), lent by a friend of the owner.
