@@ -173,7 +173,7 @@
           {%- assign landing = false %}{% if page.url == '/' or page.url == '/vi/' %}{% assign landing = true %}{% endif %}
           {%- if landing and site.data.visits %}
           {%- comment -%} Written at build time by scripts/ga-visits.mjs; absent without the GA secrets. {%- endcomment %}
-          <p class="muted footer-visits">{% include icons/eye.svg %}<span>{{ t.footer_visits | replace: '%n', site.data.visits[page.lang] }}</span></p>
+          <p class="footer-visits"><span class="pill" title="{{ t.footer_visits_hint }}">{% include icons/eye.svg %}<span>{{ t.footer_visits }}</span><span class="star-count">{{ site.data.visits[page.lang] }}</span></span></p>
           {%- endif %}
         </div>
         <ul class="footer-links">

@@ -233,7 +233,8 @@ en:
   footer_source: Source code
   footer_blog: The author's blog
   footer_analytics: This website counts visits with Google Analytics.
-  footer_visits: "%n visits since 24 October 2026 · updated daily"
+  footer_visits: Visits
+  footer_visits_hint: Total visits, from Google Analytics, updated once a day
   by: by
 
 vi:
@@ -470,5 +471,6 @@ vi:
   footer_source: Mã nguồn
   footer_blog: Blog của mình
   footer_analytics: Trang web này đếm lượt truy cập bằng Google Analytics.
-  footer_visits: "%n lượt truy cập từ 24/10/2026 · cập nhật mỗi ngày"
+  footer_visits: Lượt truy cập
+  footer_visits_hint: Tổng lượt truy cập, theo Google Analytics, cập nhật mỗi ngày
   by: bởi
