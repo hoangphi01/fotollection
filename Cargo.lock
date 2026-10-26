@@ -1492,6 +1492,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "fotollection-oscamera"
+version = "0.7.0"
+dependencies = [
+ "block2",
+ "objc2",
+ "objc2-core-graphics",
+ "objc2-foundation",
+ "objc2-image-capture-core",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "fotollection-oscodec"
 version = "0.7.0"
 dependencies = [
@@ -2988,6 +3000,20 @@ dependencies = [
  "libc",
  "objc2",
  "objc2-core-foundation",
+]
+
+[[package]]
+name = "objc2-image-capture-core"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6b153f2757b48c47daa739a4c8f27ec2912ddbfe5cb6fd28738ec5d6e1a0e83a"
+dependencies = [
+ "block2",
+ "libc",
+ "objc2",
+ "objc2-core-foundation",
+ "objc2-core-graphics",
+ "objc2-foundation",
 ]
 
 [[package]]

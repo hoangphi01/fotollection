@@ -242,3 +242,15 @@ The chart (`bench/results/raw.json`) sets the medians against **Adobe DNG Conver
 python3 -I scripts/fetch-raw-samples.py /tmp/raw
 cargo run --release -p fotollection-core --example measure_raw -- /tmp/raw/*
 ```
+
+## 13. Camera over USB, Step 0 (planned FR-062, FR-063)
+
+Measured before building camera support ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)) with `crates/oscamera/examples/probe_camera.rs` on the owner's bodies, by USB cable, through ImageCaptureCore (no driver), REF-MAC (M3), macOS 26. Details per maker in [cameras/](cameras/README.md).
+
+| Body, USB mode | Session open | GetDeviceInfo | Maker operations | Capture from the computer | Shutter on the body | Live view over USB |
+|------|-----:|-----:|-----|-----|-----|-----|
+| Sony a6400, PC Remote | 44 ms | 23 ms | 5 (Sony extension) | After the maker's handshake (to learn) | Locked until the handshake | After the handshake (to learn) |
+| Panasonic GX9, PictBridge (PTP) | 21 ms | 20 ms once the card is listed (no answer in 10 s before) | None | Not possible | Locked (PictBridge screen) | Not possible |
+
+- **No driver is needed** to reach either body; the OS stack carries any PTP operation, so path A is open for every maker whose protocol we learn.
+- **The GX9 cannot be tethered over USB** by anyone: it declares no capture or live-view operation. Live view needs an HDMI capture card; photos come by import after the shoot.

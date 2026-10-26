@@ -31,7 +31,7 @@
 
 - Every `unsafe` block has a `// SAFETY:` comment that explains why the invariants hold.
 - FFI wrappers live in a dedicated module, expose a safe API, and have fuzz targets ([TESTING.md §4](TESTING.md#4-fuzzing)).
-- The workspace forbids `unsafe` (`unsafe_code = "forbid"`). The one exception is the `fotollection-oscodec` crate, the OS codec FFI for HEIC ([ADR-0017](adr/0017-heic-through-os-codecs.md)): it uses `deny` plus a crate-level allow, so any new `unsafe` elsewhere still fails to compile.
+- The workspace forbids `unsafe` (`unsafe_code = "forbid"`). The two exceptions are the OS FFI crates `fotollection-oscodec` (codecs, [ADR-0017](adr/0017-heic-through-os-codecs.md)) and `fotollection-oscamera` (cameras over USB, [ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)): each uses `deny` plus an allow on its FFI module only, so any new `unsafe` elsewhere still fails to compile.
 
 ### API and design
 

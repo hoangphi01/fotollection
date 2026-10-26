@@ -1,0 +1,33 @@
+[package]
+name = "fotollection-oscamera"
+description = "Cameras over USB through the operating system's imaging stack (ImageCaptureCore on macOS, WPD on Windows), with Fotollection's own PTP vendor drivers (ADR-0026)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+thiserror.workspace = true
+
+# ADR-0026: the system's own USB/PTP stack, so no driver is installed and no LGPL library or
+# maker SDK is linked.
+[target.'cfg(target_os = "macos")'.dependencies]
+block2 = "0.6"
+objc2 = "0.6"
+objc2-foundation = { version = "0.3.2", features = ["NSArray", "NSData", "NSDate", "NSDictionary", "NSError", "NSObject", "NSRunLoop", "NSString", "block2"] }
+objc2-core-graphics = { version = "0.3.2", default-features = false, features = ["CGImage"] }
+objc2-image-capture-core = { version = "0.3.2", features = ["ICCameraDevice", "ICCameraItem", "ICDevice", "ICDeviceBrowser", "block2", "objc2-core-graphics"] }
+
+# The only crates allowed to use `unsafe` (FFI) are this one and oscodec.
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+missing_errors_doc = "allow"
+unwrap_used = "warn"
+expect_used = "warn"

@@ -11,6 +11,15 @@
 3. **Reproduce with the user's photo when the user sees it.** A synthetic test passed while the real app was soft: unit tests prove the pixels, only the real webview proves what is shown.
 4. **Write the lesson here** before moving on.
 
+## 2026-10-26
+
+### A camera says nothing while its card is being listed (FR-063)
+
+- **Seen:** the GX9 opened a session, then did not answer `GetDeviceInfo` within 10 s; the a6400, with few photos, answered at once.
+- **Why:** right after a session opens, ImageCaptureCore lists every file on the card (70 here) over the same USB pipe, and the body handles one transaction at a time, so our command waited behind the listing.
+- **Fix:** `probe_camera --settle` waits before the first command; the real driver waits for `deviceDidBecomeReadyWithCompleteContentCatalog` before it sends anything, and keeps generous timeouts.
+- **Rule:** with ImageCaptureCore, send nothing to a camera until its catalog is complete; a timeout right after opening is not proof that the camera cannot do the operation.
+
 ## 2026-10-25
 
 ### Installer settings fail only when installers are built (FR-054)

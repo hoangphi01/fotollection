@@ -53,6 +53,10 @@ crate = "fotollection-oscodec"
 allow = ["GPL-3.0-only"]
 
 [[licenses.exceptions]]
+crate = "fotollection-oscamera"
+allow = ["GPL-3.0-only"]
+
+[[licenses.exceptions]]
 crate = "fotollection-geodata"
 allow = ["GPL-3.0-only"]
 

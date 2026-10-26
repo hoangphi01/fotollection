@@ -1,6 +1,6 @@
 # Cameras over USB — Fotollection
 
-> **Status:** Planned · **Last reviewed:** 2026-10-26
+> **Status:** Step 0 done on macOS · **Last reviewed:** 2026-10-26
 >
 > What each camera can do when plugged into Fotollection by cable, and how we know. The plan and its reasons are in [ADR-0026](../adr/0026-cameras-through-the-os-usb-stack.md); the requirements are [FR-062](../PRD.md#fr-062--live-view-from-a-camera), [FR-063](../PRD.md#fr-063--tethered-capture-over-usb) and [FR-064](../PRD.md#fr-064--watch-a-folder-for-new-photos). Each maker's protocol, once observed, gets its own page here (`sony.md`, `panasonic.md`, …), written in our own words.
 
@@ -21,10 +21,17 @@ Filled in by Step 0 and later tests. "—" = not checked yet.
 
 | Body | USB modes | Declared vendor ID / ops | Capture from the app | Camera's shutter reported | Live view (fps, size, latency) | Shot to file (JPEG / RAW) | Path |
 |---|---|---|---|---|---|---|---|
-| Sony a6400 (ILCE-6400) | PC Remote, MTP, Mass Storage | — | — | — | — | — | A expected; B via Imaging Edge Webcam (1024 × 576) |
-| Panasonic GX9 (DC-GX9) | PC, PictBridge | — | — | — | — | — | A if it declares capture and live-view ops; otherwise C for live view and D or plain import for photos |
+| Sony a6400 (ILCE-6400), firmware 2.0 | PC Remote (tested), MTP, Mass Storage | 0x11 "Sony PTP Extensions": 5 maker operations, 3 maker events, no standard properties ([sony.md](sony.md)) | No standard `InitiateCapture`; needs the maker's handshake first | No: while it waits for the handshake the body shows "Connecting… USB" and the shutter is locked | Needs the maker's operations | — | **A** once the handshake is known (USB capture on Windows next); B via Imaging Edge Webcam (1024 × 576) |
+| Panasonic GX9 (DC-GX9), firmware 1.5 | PC (Storage), PictBridge (PTP) (tested) | 0x06 (plain MTP), **no maker operations** ([panasonic.md](panasonic.md)) | **No**: no capture operation | No: in PictBridge mode the body shows the PictBridge logo and the shutter is locked | **No** over USB | Not possible over USB | **C** (HDMI capture card) for live view; photos by USB import (PC Storage) or the card after the shoot. Instant photos only over Wi-Fi (last resort) |
 
 Known from makers' documents (not yet tested here): UVC on Canon R50/R8/R6 II, Nikon Z50II/Z5II, Fujifilm X-T5/X-S20/X100VI, Panasonic S1 II, OM-5 ([list](https://diiorio.me/posts/uvc-cameras/)); LUMIX Webcam Software and LUMIX Tether do **not** list the GX9.
+
+### What Step 0 found (2026-10-26, macOS 26, REF-MAC)
+
+- ImageCaptureCore reaches both bodies with **no driver**: a session opens in 44 ms (a6400) and 21 ms (GX9), `GetDeviceInfo` answers in 20–23 ms. Both report only the capability `ICCameraDeviceCanAcceptPTPCommands`, not `CanTakePicture`, so ImageCaptureCore's own `requestTakePicture` does not apply.
+- **A body with many photos on the card answers nothing at first:** the GX9 did not answer `GetDeviceInfo` within 10 s right after the session opened, while ImageCaptureCore listed the card's files (70 items); after waiting until the catalog was complete, it answered in 20 ms ([LESSONS.md](../LESSONS.md)).
+- **Sony:** everything useful is behind the maker's extension, so path A needs the handshake, which a USB capture of Imaging Edge Remote on Windows will show.
+- **Panasonic GX9:** the hardware offers nothing beyond reading files over USB, which is why LUMIX Tether does not list it either.
 
 ## 3. Step 0: what to measure
 

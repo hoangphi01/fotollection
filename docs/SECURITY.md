@@ -62,8 +62,8 @@ Layer 1: FILE VALIDATION (before parsing)
   - Reject files > 200 MB; reject declared dimensions > 200 MP (decompression-bomb guard)
   - Polyglot scan of the first 4 KB: <html, <script, %PDF, PK, MZ → reject
   - JPEG: warn if significant data follows the EOI marker (FF D9)
-  - HEIC: decoded by the OS (ImageIO / WIC) in `fotollection-oscodec`, the only crate
-    with `unsafe` FFI; the size from the header is checked against the same limits
+  - HEIC: decoded by the OS (ImageIO / WIC) in `fotollection-oscodec`, one of the two crates
+    with `unsafe` FFI (the other is `fotollection-oscamera`); the size from the header is checked against the same limits
     before the bitmap is allocated
   - PNG: the IHDR size is checked against 30,000 px per edge and 200 MP before the
     pixel buffer is allocated; decoded by the pure-Rust `png` crate with its default
@@ -150,6 +150,8 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 | Dangerous DOM APIs | `grep -rE "dangerouslySetInnerHTML\|innerHTML\|outerHTML\|insertAdjacentHTML\|document\.write\|eval\(\|new Function" ui/src` must be empty |
 | Network-free core | `cargo tree -p fotollection-core` contains no `reqwest`/`hyper`/`ureq` |
 | Fuzzing | `cargo-fuzz` targets run nightly ([TESTING.md §4](TESTING.md#4-fuzzing)) |
+
+**Cameras over USB** (`fotollection-oscamera`, [ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)): everything a camera sends is untrusted. `ptp` checks every length and count against the bytes received, caps lists at 4,096 entries and returns an error on a bad answer, never a panic (tested by cutting a valid answer at every byte). Every call to the camera has a timeout.
 
 **Website secrets.** The footer's visit count (`scripts/ga-visits.mjs`, run by `pages.yml`) reads Google Analytics with a service account that has the *Viewer* role on the one GA property and nothing else. Its JSON key and the property ID live only in the repository secrets `GA_SERVICE_ACCOUNT` and `GA_PROPERTY_ID`; the script never prints them, asks only for the `analytics.readonly` scope, accepts a numeric property ID and a whole number back, and writes nothing on any error. Workflows for pull requests from forks get no secrets. If the key leaks, delete it in Google Cloud and add a new one.
 
