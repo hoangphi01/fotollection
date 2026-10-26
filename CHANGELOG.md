@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - A **speed** card among the features (1,000 photos in 0.12 s, 17 ms preview updates, a 0.4 s start from the second launch), and plainer wording for "Open with".
 - The Performance page has a **Camera RAW** section: thumbnails in 9–32 ms and the full picture in 0.4–2.2 s for nine cameras, against Adobe DNG Converter's 1.2–1.8 s per file only to convert (a third-party estimate, cited).
 - Every chart carries a footnote: figures are for reference and depend on your computer.
+- The footnotes name the maker behind each RAW format (RW2, CR2, CR3, NEF, ARW, RAF, ORF) and say DNG is Adobe's open specification.
 - The FAQ's "why Fotollection" answer says what is missing elsewhere: no app is designed for the photo printer, so you crop by hand or leave it to the shop's machine.
 
 ### Changed

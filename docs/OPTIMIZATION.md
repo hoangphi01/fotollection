@@ -185,6 +185,16 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-10-25 | NFR-008 | CI (windows-latest) | Installer size after FR-061 (`ureq` with rustls, `semver`, `tauri-plugin-opener`), `installers` workflow vs the v0.7.0 release | `-setup.exe` 13.7 → 14.4 MB · `.msi` 18.8 → 19.6 MB | +0.7 MB for the update check; still well under the 25 MB budget |
 | 2026-10-26 | DATABASE §8 | REF-MAC (M3) | `measure_cache`: cache housekeeping on N 1-byte files in 256 folders, median of 5 | 10,000 files: walk 28 ms, prune under the limit 27 ms, prune to half 0.31 s · 70,000 files: walk 223 ms, prune under the limit 211 ms, prune to half 7.1 s (38,500 deleted) | Cheap enough to run after every start-up and thumbnail batch, on the background pool; deletions dominate a real prune |
 
+### 5.1 Planned measurements
+
+Recorded so they are not forgotten; each one becomes a row above once it is run.
+
+- **RAW to JPEG batch export vs Lightroom Classic (NFR-017, FR-016).** The Performance page compares RAW against Adobe DNG Converter only, because the one Lightroom figure found is not comparable yet. Published figure: Lightroom Classic 13.1 exported 222 Nikon Z8 RAW files (45 MP) to full-size JPEG q100 in Adobe RGB in 56 s on an M3 Max (12 performance cores, 64 GB), about 0.25 s per file; 1 min 27 s on an M2 Max, 2 min 25 s on a Ryzen 9 7945HX ([Adobe Community, 2024-02-01](https://community.adobe.com/t5/lightroom-classic-discussions/performance-lightroom-classic-with-apple-silicon-m2-max-m3-max/td-p/14394975)). Our 0.9 s median is one photo's develop, not batch throughput, and RAW develops one at a time to stay under the 2 GB ceiling. To do:
+  1. A `measure_raw_export` example: the nine CC0 samples (`bench/raw-samples.json`), repeated to a batch of about 100, through the real export path (develop, crop, stamp, JPEG q95), wall time and peak RSS, on REF-MAC.
+  2. Compare per megapixel and say which machine each figure comes from; add Lightroom to `bench/results/raw.json` and the RAW chart only then, even if Lightroom is faster.
+  3. If the batch is far slower, measure two develops at once against the memory ceiling before changing the one-at-a-time rule.
+  4. Needs a release build: free disk first (`scripts/resources.sh`, at least 10 GB).
+
 ## 6. Benchmark corpus
 
 The corpus is defined in [TESTING.md §3](TESTING.md#3-sample-corpus). Benchmarks use the `bench` subset: 200 × 24 MP JPEG (Lumix GX9), 100 × 12 MP HEIC (iPhone) and 20 × PNG screenshots.
