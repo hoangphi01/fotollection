@@ -1,13 +1,13 @@
 # Status — Fotollection
 
-> **Last updated:** 2026-10-25
+> **Last updated:** 2026-10-26
 >
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 1 — MVP, v0.4.0 released
+## Current phase: Phase 1 — MVP, v0.7.0 released
 
-**Where we are (2026-10-25).** The app works end to end for **JPEG, PNG, HEIC and camera RAW** (RW2, CR2, CR3, NEF, ARW, RAF, ORF, DNG), opens photos from Finder and Explorer ("Open with"); open folders as tabs (FR-056), cull with stars, flags, filters and best-shot suggestions, preview with crop, drag-to-reframe, zoom (FR-057), straightening, the film-style date stamp and the "Shot on" frame (Crop to fill, or Fit whole photo framed like an instax print), then export for print at original quality or **for social media** in sRGB with safe EXIF (FR-053), the whole set or one photo from the preview (FR-055). **[v0.7.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.7.0) "Open with and RAW" was published on 2026-10-25** (universal `.dmg` 38.3 MB, `-setup.exe` 13.7 MB, `.msi` 18.8 MB, `SHA256SUMS.txt`), after v0.5.0 "Print basket" and v0.6.0 "Photo viewer" the same day; the website's download buttons point to it. On `main` since: *Check for updates* (FR-061) and the pinned MSI upgrade code. Debugging lessons are now kept in [LESSONS.md](LESSONS.md).
+**Where we are (2026-10-25).** The app works end to end for **JPEG, PNG, HEIC and camera RAW** (RW2, CR2, CR3, NEF, ARW, RAF, ORF, DNG), opens photos from Finder and Explorer ("Open with"); open folders as tabs (FR-056), cull with stars, flags, filters and best-shot suggestions, preview with crop, drag-to-reframe, zoom (FR-057), straightening, the film-style date stamp and the "Shot on" frame (Crop to fill, or Fit whole photo framed like an instax print), then export for print at original quality or **for social media** in sRGB with safe EXIF (FR-053), the whole set or one photo from the preview (FR-055). **[v0.7.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.7.0) "Open with and RAW" was published on 2026-10-25** (universal `.dmg` 38.3 MB, `-setup.exe` 13.7 MB, `.msi` 18.8 MB, `SHA256SUMS.txt`), after v0.5.0 "Print basket" and v0.6.0 "Photo viewer" the same day; the website's download buttons point to it. On `main` since: *Check for updates* (FR-061), the pinned MSI upgrade code, the disk cache kept under 2 GB with *Clear cache*, and the first camera-over-USB work (FR-063 Step 0). Debugging lessons are now kept in [LESSONS.md](LESSONS.md).
 
 1. Open or drop a folder; refresh it to pick up new photos.
 2. Cull with stars, flags and filters, helped by best-shot suggestions: groups of similar shots, the best of each with reasons, and Keep best.
@@ -71,7 +71,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 6. **v0.9.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
 7. **Later (Phase 2):** Photo Style and film looks (FR-039, FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
 8. **Alongside, never blocking a release:** the append-only edit journal (NFR-013; not urgent, as a full save stays at 70 ms for 70,000 edited photos); the Windows title bar on a real machine (FR-052); SignPath signing for Windows (declined 2026-10-26 for too little public adoption yet; reapply once the project has independent mentions and stars, RELEASE.md §3); a Ko-fi link once the account exists; NFR-008 by publishing one `.dmg` per architecture; FR-022 filters by date, camera, GPS and DPI.
-9. **Camera over USB (FR-062, FR-063, FR-064; ADR-0026 proposed):** Step 0 done on macOS 2026-10-26 ([RESULT §13](RESULT.md#13-camera-over-usb-step-0-planned-fr-062-fr-063), [cameras/README.md](cameras/README.md)): no driver needed; the a6400 needs Sony's handshake, the GX9 cannot be tethered over USB (HDMI capture for its live view). Next: a USB capture of Imaging Edge Remote on the owner's Windows PC, then the Sony driver; then its release is placed in the ROADMAP.
+9. **Camera over USB (FR-062, FR-063, FR-064; ADR-0026 proposed):** Step 0 done on macOS 2026-10-26 ([RESULT §13](RESULT.md#13-camera-over-usb-step-0-planned-fr-062-fr-063), [cameras/README.md](cameras/README.md)): no driver needed; the a6400 needs Sony's handshake, the GX9 cannot be tethered over USB at all (not on the bus while it can shoot); an HDMI capture card was dropped as it is what any streaming tool does. Next: a USB capture of Imaging Edge Remote on the owner's Windows PC ([capture-guide.md](cameras/capture-guide.md)), then the Sony driver. Open decision: a Wi-Fi exception to NFR-006 for bodies like the GX9 (direct link to the camera's own network, never the internet). Then its release is placed in the ROADMAP.
 
 ## Phase 0 — Foundation
 
