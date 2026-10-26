@@ -1,11 +1,10 @@
-{%- comment %} The code signing policy and privacy policy (site/README.md), required by SignPath Foundation (RELEASE.md §3). Laid out like the Performance page: the same header, then one part per topic, title on the left and cards on the right. {% endcomment -%}
+{%- comment %} The code signing policy and privacy policy (site/README.md), kept for a future signing application (RELEASE.md §3). Laid out like the Performance page: the same header, then one part per topic, title on the left and cards on the right. {% endcomment -%}
 {%- assign t = site.data.i18n[page.lang] -%}
 <section class="section perf-head">
   <div class="wrap">
     <p class="kicker">{{ t.cs_kicker }}</p>
     <h1>{{ t.cs_title }}</h1>
-    <p class="lead narrow">{{ t.cs_lead_a }} <a href="https://about.signpath.io/">SignPath.io</a>{{ t.cs_lead_b }} <a href="https://signpath.org/">SignPath Foundation</a>{{ t.cs_lead_c }}</p>
-    <p class="small muted narrow cs-status">{{ t.cs_status }}</p>
+    <p class="lead narrow">{{ t.cs_lead }}</p>
   </div>
 </section>
 

@@ -20,7 +20,6 @@ en:
   download_mac: Download for macOS
   download_win: Download for Windows
   download_note: macOS 11+ (Apple Silicon and Intel) · Windows 10/11
-  download_signing: "Windows code signing by SignPath Foundation (applied for)"
   latest: Latest version
   no_release: Releases are on GitHub
   shot_grid: The library, culled with stars and picks
@@ -172,22 +171,19 @@ en:
   chart_browser: "The same job in Fotollection and in a web browser"
   cs_title: Code signing policy
   cs_kicker: Trust
-  cs_description: "How Fotollection's installers are signed, who approves each release, and what the app does and does not send over the network."
-  cs_lead_a: Free code signing for the Windows installers is provided by
-  cs_lead_b: ", with a certificate by the"
-  cs_lead_c: "."
-  cs_status: "Status: applied for in October 2026. Until it is approved, the installers on GitHub are unsigned (Windows shows a SmartScreen warning) and macOS builds carry an ad-hoc signature only."
+  cs_description: "How Fotollection's installers are built and published, who approves each release, and what the app does and does not send over the network."
+  cs_lead: "The installers are not signed with a certificate yet: Windows shows a SmartScreen warning on the first launch, and macOS builds carry an ad-hoc signature only. Every release lists SHA-256 checksums, so you can check that a download is the one published here."
   cs_parts:
     - id: team
       title: Team roles
-      lead: "Only installers built by GitHub Actions from the public repository, from a tagged release, are signed; nothing built on a personal computer is. Two-factor authentication is required on every account involved. The build workflow is"
+      lead: "Every installer is built by GitHub Actions from the public repository, from a tagged release; nothing built on a personal computer is published. The build workflow is"
       items:
         - title: Committers and reviewers
           author: true
           text: Writes and reviews every change to the source code.
-        - title: Approvers
+        - title: Release approver
           author: true
-          text: Approves every signing request by hand, once per release.
+          text: Checks and publishes every release by hand.
     - id: privacy
       title: Privacy policy
       lead: "This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it."
@@ -298,7 +294,6 @@ vi:
   download_mac: Tải cho macOS
   download_win: Tải cho Windows
   download_note: macOS 11+ (Apple Silicon và Intel) · Windows 10/11
-  download_signing: "Ký mã Windows bởi SignPath Foundation (đã nộp đơn)"
   latest: Phiên bản mới nhất
   no_release: Các bản phát hành ở trên GitHub
   shot_grid: Thư viện ảnh, đã chấm sao và chọn ảnh
@@ -450,22 +445,19 @@ vi:
   chart_browser: "Cùng một việc, trên Fotollection và trên trình duyệt web"
   cs_title: Chính sách ký mã
   cs_kicker: Tin cậy
-  cs_description: "Bộ cài Fotollection được ký thế nào, ai duyệt mỗi bản phát hành, và ứng dụng gửi gì, không gửi gì qua mạng."
-  cs_lead_a: Ký mã miễn phí cho bộ cài Windows do
-  cs_lead_b: " cung cấp, chứng chỉ do"
-  cs_lead_c: " cấp."
-  cs_status: "Trạng thái: đã nộp đơn vào tháng 10/2026. Cho tới khi được duyệt, bộ cài trên GitHub chưa được ký (Windows hiện cảnh báo SmartScreen) và bản macOS chỉ có chữ ký ad-hoc."
+  cs_description: "Bộ cài Fotollection được xây dựng và phát hành thế nào, ai duyệt mỗi bản phát hành, và ứng dụng gửi gì, không gửi gì qua mạng."
+  cs_lead: "Bộ cài chưa được ký bằng chứng chỉ: Windows hiện cảnh báo SmartScreen ở lần mở đầu, và bản macOS chỉ có chữ ký ad-hoc. Mỗi bản phát hành kèm mã SHA-256, để bạn kiểm tra tệp tải về đúng là tệp được phát hành ở đây."
   cs_parts:
     - id: team
       title: Vai trò trong nhóm
-      lead: "Chỉ bộ cài do GitHub Actions xây dựng từ kho mã công khai, từ một bản phát hành có gắn tag, mới được ký; không ký bản nào xây dựng trên máy cá nhân. Mọi tài khoản liên quan bắt buộc bật xác thực hai bước. Workflow xây dựng là"
+      lead: "Mọi bộ cài đều do GitHub Actions xây dựng từ kho mã công khai, từ một bản phát hành có gắn tag; không phát hành bản nào xây dựng trên máy cá nhân. Workflow xây dựng là"
       items:
         - title: Người viết và duyệt mã
           author: true
           text: Viết và duyệt mọi thay đổi trong mã nguồn.
         - title: Người phê duyệt
           author: true
-          text: Tự tay duyệt từng yêu cầu ký, mỗi bản phát hành một lần.
+          text: Tự tay kiểm tra và phát hành từng bản.
     - id: privacy
       title: Chính sách riêng tư
       lead: "Ứng dụng này không gửi bất kỳ thông tin nào tới hệ thống mạng khác, trừ khi người dùng, hoặc người cài đặt hay vận hành nó, yêu cầu cụ thể."

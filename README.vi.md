@@ -205,7 +205,7 @@ Tải phiên bản mới nhất ở [trang giới thiệu](https://fotollection.
 > - **macOS:** System Settings → Privacy & Security → **Open Anyway**
 > - **Windows:** SmartScreen → **More info** → **Run anyway**
 >
-> Kiểm tra từng file tải về với `SHA256SUMS.txt` trên trang phát hành. Đã nộp đơn ký mã miễn phí cho bản Windows qua SignPath Foundation; xem [chính sách ký mã và quyền riêng tư](https://fotollection.org/vi/code-signing/).
+> Kiểm tra từng file tải về với `SHA256SUMS.txt` trên trang phát hành. Xem [chính sách ký mã và quyền riêng tư](https://fotollection.org/vi/code-signing/).
 
 ### Cấu hình yêu cầu
 

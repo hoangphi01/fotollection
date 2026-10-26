@@ -70,7 +70,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 5. **v0.8.0 "Places and Lightroom" (FR-032, FR-005, FR-030, FR-031, FR-058):** XMP sidecars read on import and written as an opt-in; search and set a place for one or many photos, rename a place everywhere, camera clock offset, borrow GPS from phone photos with confidence levels.
 6. **v0.9.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
 7. **Later (Phase 2):** Photo Style and film looks (FR-039, FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
-8. **Alongside, never blocking a release:** the append-only edit journal (NFR-013; not urgent, as a full save stays at 70 ms for 70,000 edited photos); the Windows title bar on a real machine (FR-052); SignPath signing for Windows (applied for 2026-10-26, policy page live; wiring `release.yml` waits for approval, RELEASE.md §3); a Ko-fi link once the account exists; NFR-008 by publishing one `.dmg` per architecture; FR-022 filters by date, camera, GPS and DPI.
+8. **Alongside, never blocking a release:** the append-only edit journal (NFR-013; not urgent, as a full save stays at 70 ms for 70,000 edited photos); the Windows title bar on a real machine (FR-052); SignPath signing for Windows (declined 2026-10-26 for too little public adoption yet; reapply once the project has independent mentions and stars, RELEASE.md §3); a Ko-fi link once the account exists; NFR-008 by publishing one `.dmg` per architecture; FR-022 filters by date, camera, GPS and DPI.
 
 ## Phase 0 — Foundation
 
@@ -212,7 +212,7 @@ Decided:
 | CLA set up (e.g. CLA Assistant) | Not Started | **Required before merging the first outside PR** ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)) |
 | `cargo deny` license allowlist (permissive only, GPL banned) | Done | `deny.toml` |
 | SPDX headers in source files | Done | All hand-written `.rs` / `.ts(x)` files |
-| Apply to SignPath Foundation (Windows signing) | Not Started | After the first public releases |
+| Apply to SignPath Foundation (Windows signing) | Blocked | Declined 2026-10-26: not enough public adoption yet (stars, forks, independent articles or discussions). Reapply later; the policy page is ready |
 
 ## Dependencies to watch
 
