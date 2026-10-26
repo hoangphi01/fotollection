@@ -14,6 +14,16 @@ import { writeFileSync } from 'node:fs'
 const SINCE = '2026-10-24'
 const OUT = new URL('../site/_data/visits.json', import.meta.url)
 
+// Google's error message says which step is missing (API off, no access); it holds no secret.
+async function reason(res) {
+  try {
+    const message = (await res.json())?.error?.message
+    return typeof message === 'string' ? `: ${message.slice(0, 300)}` : ''
+  } catch {
+    return ''
+  }
+}
+
 function skip(why) {
   console.log(`visits: skipped (${why})`)
   process.exit(0)
@@ -54,7 +64,7 @@ async function accessToken() {
     }),
     signal: AbortSignal.timeout(15_000),
   })
-  if (!res.ok) skip(`token request answered ${res.status}`)
+  if (!res.ok) skip(`token request answered ${res.status}${await reason(res)}`)
   return (await res.json()).access_token
 }
 
@@ -65,7 +75,7 @@ async function sessions(token) {
     body: JSON.stringify({ dateRanges: [{ startDate: SINCE, endDate: 'today' }], metrics: [{ name: 'sessions' }] }),
     signal: AbortSignal.timeout(15_000),
   })
-  if (!res.ok) skip(`report request answered ${res.status}`)
+  if (!res.ok) skip(`report request answered ${res.status}${await reason(res)}`)
   const value = (await res.json()).rows?.[0]?.metricValues?.[0]?.value ?? '0'
   const n = Number(value)
   if (!Number.isSafeInteger(n) || n < 0) skip('the report did not return a whole number')
