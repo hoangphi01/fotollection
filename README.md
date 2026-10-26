@@ -204,7 +204,7 @@ Get the latest version from the [website](https://fotollection.org/) or the [Rel
 > - **macOS:** System Settings → Privacy & Security → **Open Anyway**
 > - **Windows:** SmartScreen → **More info** → **Run anyway**
 >
-> Verify each download against `SHA256SUMS.txt` on the release page.
+> Verify each download against `SHA256SUMS.txt` on the release page. Free Windows signing through SignPath Foundation has been applied for; see the [code signing and privacy policy](https://fotollection.org/code-signing/).
 
 ### System requirements
 

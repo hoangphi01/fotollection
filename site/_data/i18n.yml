@@ -173,24 +173,41 @@ en:
   cs_title: Code signing policy
   cs_kicker: Trust
   cs_description: "How Fotollection's installers are signed, who approves each release, and what the app does and does not send over the network."
-  cs_lead: "Free code signing for the Windows installers is provided by SignPath.io, with a certificate by the SignPath Foundation."
+  cs_lead_a: Free code signing for the Windows installers is provided by
+  cs_lead_b: ", with a certificate by the"
+  cs_lead_c: "."
   cs_status: "Status: applied for in October 2026. Until it is approved, the installers on GitHub are unsigned (Windows shows a SmartScreen warning) and macOS builds carry an ad-hoc signature only."
-  cs_team_title: Team roles
-  cs_roles:
-    - name: Committers and reviewers
-      text: writes and reviews every change to the source code
-    - name: Approvers
-      text: approves every signing request by hand, one per release
-  cs_build: "Only installers built by GitHub Actions from the public repository, from a tagged release, are signed; nothing built on a personal computer is. Every account involved uses two-factor authentication. Build workflow:"
-  cs_privacy_title: Privacy policy
-  cs_privacy_statement: "This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it."
-  cs_privacy_items:
-    - "The app works fully offline. Photos, folders, projects and settings never leave your computer; there is no account, no telemetry and no crash upload."
-    - "The only network request is Check for updates, and only when you click it: it asks GitHub (api.github.com) for the latest release of this project. GitHub's privacy statement applies to that request."
-    - "GPS coordinates are removed from exported photos by default."
-    - "This website, not the app, counts visits with Google Analytics; Google's privacy policy applies to it."
-  cs_system_title: Changes to your system
-  cs_system_text: "The installer adds Fotollection to the Open with menu for photo files; it never makes itself the default app. Uninstalling, from Windows Settings or by deleting the app on macOS, removes it, and the Windows uninstaller also removes the Open with entries."
+  cs_parts:
+    - id: team
+      title: Team roles
+      lead: "Only installers built by GitHub Actions from the public repository, from a tagged release, are signed; nothing built on a personal computer is. Two-factor authentication is required on every account involved. The build workflow is"
+      items:
+        - title: Committers and reviewers
+          author: true
+          text: Writes and reviews every change to the source code.
+        - title: Approvers
+          author: true
+          text: Approves every signing request by hand, once per release.
+    - id: privacy
+      title: Privacy policy
+      lead: "This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it."
+      items:
+        - title: Works offline
+          text: "Photos, folders, projects and settings never leave your computer. There is no account, no telemetry and no crash upload."
+        - title: Check for updates, only on click
+          text: "The only network request: it asks GitHub (api.github.com) for this project's latest release. GitHub's privacy statement applies to it."
+        - title: No location in exports
+          text: GPS coordinates are removed from exported photos by default.
+        - title: This website
+          text: "The website, not the app, counts visits with Google Analytics; Google's privacy policy applies to it."
+    - id: system
+      title: Changes to your system
+      lead: Installing adds only what the app needs, and uninstalling removes it.
+      items:
+        - title: Open with
+          text: "The installer adds Fotollection to the Open with menu for photo files. It never makes itself the default app."
+        - title: Uninstall
+          text: "Remove it from Windows Settings, or delete the app on macOS. The Windows uninstaller also removes the Open with entries."
   footer_signing: Code signing policy
   perf_title: "Performance"
   perf_description: "Every measurement behind Fotollection, explained in plain words: speed, memory, print quality, photos for social media and best-shot suggestions, with what ΔE, SSIM, JPEG and colour profiles mean."
@@ -434,24 +451,41 @@ vi:
   cs_title: Chính sách ký mã
   cs_kicker: Tin cậy
   cs_description: "Bộ cài Fotollection được ký thế nào, ai duyệt mỗi bản phát hành, và ứng dụng gửi gì, không gửi gì qua mạng."
-  cs_lead: "Ký mã miễn phí cho bộ cài Windows do SignPath.io cung cấp, chứng chỉ do SignPath Foundation cấp."
+  cs_lead_a: Ký mã miễn phí cho bộ cài Windows do
+  cs_lead_b: " cung cấp, chứng chỉ do"
+  cs_lead_c: " cấp."
   cs_status: "Trạng thái: đã nộp đơn vào tháng 10/2026. Cho tới khi được duyệt, bộ cài trên GitHub chưa được ký (Windows hiện cảnh báo SmartScreen) và bản macOS chỉ có chữ ký ad-hoc."
-  cs_team_title: Vai trò trong nhóm
-  cs_roles:
-    - name: Người viết và duyệt mã
-      text: viết và duyệt mọi thay đổi trong mã nguồn
-    - name: Người phê duyệt
-      text: tự tay duyệt từng yêu cầu ký, mỗi bản phát hành một lần
-  cs_build: "Chỉ bộ cài do GitHub Actions xây dựng từ kho mã công khai, từ một bản phát hành có gắn tag, mới được ký; không ký bản nào xây dựng trên máy cá nhân. Mọi tài khoản liên quan đều bật xác thực hai bước. Workflow xây dựng:"
-  cs_privacy_title: Chính sách riêng tư
-  cs_privacy_statement: "Ứng dụng này không gửi bất kỳ thông tin nào tới hệ thống mạng khác, trừ khi người dùng, hoặc người cài đặt hay vận hành nó, yêu cầu cụ thể."
-  cs_privacy_items:
-    - "Ứng dụng chạy hoàn toàn offline. Ảnh, thư mục, dự án và cài đặt không bao giờ rời khỏi máy của bạn; không có tài khoản, không thu thập dữ liệu sử dụng, không gửi báo lỗi."
-    - "Lần lên mạng duy nhất là Kiểm tra cập nhật, và chỉ khi bạn bấm: ứng dụng hỏi GitHub (api.github.com) bản phát hành mới nhất của dự án. Chính sách riêng tư của GitHub áp dụng cho lần hỏi đó."
-    - "Toạ độ GPS được xoá khỏi ảnh xuất theo mặc định."
-    - "Trang web này, không phải ứng dụng, đếm lượt truy cập bằng Google Analytics; chính sách riêng tư của Google áp dụng cho việc đó."
-  cs_system_title: Thay đổi trên máy của bạn
-  cs_system_text: "Bộ cài thêm Fotollection vào menu Mở bằng cho các tệp ảnh; ứng dụng không bao giờ tự đặt mình làm ứng dụng mặc định. Gỡ cài đặt (trong Cài đặt Windows, hoặc xoá ứng dụng trên macOS) sẽ gỡ nó, và trình gỡ của Windows cũng xoá các mục Mở bằng."
+  cs_parts:
+    - id: team
+      title: Vai trò trong nhóm
+      lead: "Chỉ bộ cài do GitHub Actions xây dựng từ kho mã công khai, từ một bản phát hành có gắn tag, mới được ký; không ký bản nào xây dựng trên máy cá nhân. Mọi tài khoản liên quan bắt buộc bật xác thực hai bước. Workflow xây dựng là"
+      items:
+        - title: Người viết và duyệt mã
+          author: true
+          text: Viết và duyệt mọi thay đổi trong mã nguồn.
+        - title: Người phê duyệt
+          author: true
+          text: Tự tay duyệt từng yêu cầu ký, mỗi bản phát hành một lần.
+    - id: privacy
+      title: Chính sách riêng tư
+      lead: "Ứng dụng này không gửi bất kỳ thông tin nào tới hệ thống mạng khác, trừ khi người dùng, hoặc người cài đặt hay vận hành nó, yêu cầu cụ thể."
+      items:
+        - title: Chạy offline
+          text: "Ảnh, thư mục, dự án và cài đặt không bao giờ rời khỏi máy của bạn. Không tài khoản, không thu thập dữ liệu sử dụng, không gửi báo lỗi."
+        - title: Kiểm tra cập nhật, chỉ khi bạn bấm
+          text: "Lần lên mạng duy nhất: ứng dụng hỏi GitHub (api.github.com) bản phát hành mới nhất của dự án. Chính sách riêng tư của GitHub áp dụng cho lần hỏi đó."
+        - title: Ảnh xuất không có vị trí
+          text: Toạ độ GPS được xoá khỏi ảnh xuất theo mặc định.
+        - title: Trang web này
+          text: "Trang web, không phải ứng dụng, đếm lượt truy cập bằng Google Analytics; chính sách riêng tư của Google áp dụng cho việc đó."
+    - id: system
+      title: Thay đổi trên máy của bạn
+      lead: Cài đặt chỉ thêm những gì ứng dụng cần, và gỡ cài đặt sẽ xoá chúng.
+      items:
+        - title: Mở bằng
+          text: "Bộ cài thêm Fotollection vào menu Mở bằng cho các tệp ảnh. Ứng dụng không bao giờ tự đặt mình làm ứng dụng mặc định."
+        - title: Gỡ cài đặt
+          text: "Gỡ trong Cài đặt Windows, hoặc xoá ứng dụng trên macOS. Trình gỡ của Windows cũng xoá các mục Mở bằng."
   footer_signing: Chính sách ký mã
   perf_title: "Hiệu năng"
   perf_description: "Mọi số đo phía sau Fotollection, giải thích bằng lời dễ hiểu: tốc độ, RAM, chất lượng in, ảnh đăng mạng xã hội, gợi ý ảnh đẹp nhất, kèm ý nghĩa của ΔE, SSIM, JPEG và hồ sơ màu."

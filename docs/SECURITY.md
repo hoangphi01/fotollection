@@ -119,6 +119,7 @@ Layer 4: SAFE RENDERING (UI)
 ## 5. Privacy
 
 - **Zero network by default** ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)). No telemetry, no crash upload, no update checks unless the user opts in. CI asserts that no networking crate is linked into the core.
+- **The public privacy policy** is on the website's [code signing policy page](https://fotollection.org/code-signing/#privacy) (`site/_includes/code-signing.html`), as SignPath Foundation requires. It must match this section and [FR-061](PRD.md#fr-061--check-for-updates): change both together.
 - Reverse geocoding uses a bundled dataset, so coordinates never leave the device ([ADR-0003](adr/0003-offline-geocoding-geonames.md)).
 - GPS is stripped from exported files by default ([FR-010](PRD.md#fr-010--metadata-privacy-on-export)).
 - The thumbnail cache contains image data. It lives in the OS cache directory, and the user can clear it from Settings.

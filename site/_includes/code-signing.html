@@ -1,29 +1,29 @@
-{%- comment %} The code signing policy and privacy policy (site/README.md), required by SignPath Foundation (RELEASE.md §3). {% endcomment -%}
+{%- comment %} The code signing policy and privacy policy (site/README.md), required by SignPath Foundation (RELEASE.md §3). Laid out like the Performance page: the same header, then one part per topic, title on the left and cards on the right. {% endcomment -%}
 {%- assign t = site.data.i18n[page.lang] -%}
 <section class="section perf-head">
-  <div class="wrap narrow">
+  <div class="wrap">
     <p class="kicker">{{ t.cs_kicker }}</p>
     <h1>{{ t.cs_title }}</h1>
-    <p class="lead">{{ t.cs_lead }} <a href="https://about.signpath.io/">SignPath.io</a> · <a href="https://signpath.org/">SignPath Foundation</a></p>
-    <p class="muted">{{ t.cs_status }}</p>
-
-    <h2>{{ t.cs_team_title }}</h2>
-    <ul class="cs-list">
-      {%- for role in t.cs_roles %}
-      <li><strong>{{ role.name }}:</strong> <a href="https://github.com/{{ site.author }}">@{{ site.author }}</a> · {{ role.text }}</li>
-      {%- endfor %}
-    </ul>
-    <p>{{ t.cs_build }} <a href="{{ site.repo_url }}/actions/workflows/release.yml">release.yml</a></p>
-
-    <h2 id="privacy">{{ t.cs_privacy_title }}</h2>
-    <p>{{ t.cs_privacy_statement }}</p>
-    <ul class="cs-list">
-      {%- for item in t.cs_privacy_items %}
-      <li>{{ item }}</li>
-      {%- endfor %}
-    </ul>
-
-    <h2>{{ t.cs_system_title }}</h2>
-    <p>{{ t.cs_system_text }}</p>
+    <p class="lead narrow">{{ t.cs_lead_a }} <a href="https://about.signpath.io/">SignPath.io</a>{{ t.cs_lead_b }} <a href="https://signpath.org/">SignPath Foundation</a>{{ t.cs_lead_c }}</p>
+    <p class="small muted narrow cs-status">{{ t.cs_status }}</p>
   </div>
 </section>
+
+{%- for part in t.cs_parts %}
+<section class="section{% cycle '', ' tint' %}" id="{{ part.id }}">
+  <div class="wrap perf-part">
+    <div>
+      <h2>{{ part.title }}</h2>
+      <p class="lead">{{ part.lead }}{% if part.id == 'team' %} <a href="{{ site.repo_url }}/blob/main/.github/workflows/release.yml">release.yml</a>{% endif %}</p>
+    </div>
+    <div class="charts">
+      {%- for item in part.items %}
+      <article class="card">
+        <h3>{{ item.title }}</h3>
+        <p>{% if item.author %}<a href="https://github.com/{{ site.author }}">@{{ site.author }}</a> · {% endif %}{{ item.text }}</p>
+      </article>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+{%- endfor %}

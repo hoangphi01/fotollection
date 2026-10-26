@@ -222,9 +222,7 @@ p { margin: 0; }
 /* Performance page: a heading, then one section per measurement and the explanations. */
 .kicker { margin: 0 0 10px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
 .perf-head { padding-bottom: 24px; }
-.perf-head h2 { margin-top: 40px; }
-.cs-list { padding-left: 1.2em; line-height: 1.6; }
-.cs-list li + li { margin-top: 6px; }
+.cs-status { margin-top: 14px; }
 .perf-part { display: grid; grid-template-columns: 1fr; gap: 8px; }
 .perf-part .charts { margin: 12px 0 0; }
 .qa { max-width: 860px; margin-top: 24px; }
