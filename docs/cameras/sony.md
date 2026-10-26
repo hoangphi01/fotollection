@@ -16,6 +16,73 @@ Observed with `probe_camera` on 2026-10-26 (macOS, ImageCaptureCore).
 - **Image formats:** `0x3801` (EXIF/JPEG), `0xB301`, `0xB101` (maker-defined; expected to be RAW and its preview, to confirm).
 - **Behaviour:** after the session opens the body shows "Connecting… USB" and keeps the shutter locked; pressing it does nothing and no event arrives in 30 s. It waits for a handshake through the maker's operations.
 
+### Imaging Edge Remote over USB, first capture (2026-10-26, Windows 10, USBPcap)
+
+The first recording ran 94 s. In it Remote connected, showed live view, and one RAW photo was taken **with the body's own shutter button**. Nothing was shot from Remote and no setting was changed, so neither appears below. The device is `054c:0caa`. Bulk OUT `0x02` carries commands, bulk IN `0x81` carries data and responses, and interrupt IN `0x83` carries events.
+
+- **Session:** Windows opens the session (`OpenSession` 1, `GetDeviceInfo`, `GetStorageIDs`) as soon as the body is plugged in. Remote sends no `OpenSession` of its own. Its first transaction continues Windows's transaction IDs, which suggests it goes through the system's WPD stack rather than a driver of its own (to confirm).
+- **Handshake** (about 1 s, all answered `OK`):
+  1. `0x9201` (1, 0, 0) → 8 bytes of zeros
+  2. `0x9201` (2, 0, 0) → 8 bytes of zeros
+  3. `0x9202` (`0xC8`) → 136 bytes: a list of property codes, starting with the standard `0x5004`, `0x5005`, `0x5007`, `0x500A`, `0x500B`, `0x500C`, `0x500E`, `0x5010`, `0x5013`, then maker codes `0xD2xx`
+  4. `0x9201` (3, 0, 0) → 8 bytes of zeros
+  5. `0x9202` (`0xC8`) again → same list
+
+  The body starts sending events once this is done.
+- **Settings:** `0x9209` (no parameters) returns every property's current state in one block of about 1.7 KB. Remote polls it about every 0.2 s, alternating with live-view frames. Its layout is still to be written down.
+- **Live view:** `GetObjectInfo` and then `GetObject` on the fixed handle `0xFFFFC002`. The info gives format `0x3801`. Each data block starts with two 32-bit values: an offset (1012) and a length. Offset plus length equals the block size, so the frame is the last *length* bytes (expected to be a JPEG; to confirm with a frame dump). Frames were 30–45 KB, up to 125 KB once. Remote fetched about 4.8 frames/s while also polling `0x9209`.
+- **Events:** `0xC203` (property changed, parameter = property code, such as `0x5004` or `0xD21D`) arrives several times a second. On a shot from the body:
+  1. `0xC201` (`0xFFFFC001`) announces the new photo.
+  2. About 0.1 s later Remote calls `GetObjectInfo` and `GetObject` on handle `0xFFFFC001`. The info gives format `0xB101` and 24,959,744 bytes, so `0xB101` is the RAW (ARW) file. The name begins with "DSC0".
+  3. `0xC202` (`0xFFFFC001`) follows about 1 s after `0xC201`.
+
+  While the photo was being made, one live-view `GetObject` was answered `0x200F` (Access Denied).
+
+### Imaging Edge Remote over USB, second capture (2026-10-26)
+
+The second recording ran 48 s and started with Remote already connected, so it shows no handshake. Remote was still open when the recording stopped. Everything was done in Remote: four presses of its shutter button and four steps of shutter speed.
+
+- **Controls:** `0x9207` (control code) sends a 2-byte value in its data phase and returns `OK`. It is a separate operation from reading the settings.
+- **Shutter button** (`0xD2C1` and `0xD2C2`, each press about 0.25 s):
+  1. `0xD2C1` = 2
+  2. `0xD2C2` = 2
+  3. `0xD2C2` = 1
+  4. `0xD2C1` = 1
+
+  This reads as half press down, full press down, full press up, then half press up (to confirm).
+- **Results of the four presses:** the first two (10.8 s and 16.7 s) produced no `0xC201` and no photo. The last two produced one photo each:
+  - at 21.2 s: a smaller file, read in about 0.65 s, expected to be the JPEG;
+  - at 36.2 s: format `0xB101`, 24,824,576 bytes, the RAW.
+
+  For both, `0xC201` came about 0.8 s after the press and `0xC202` about 0.8 s after that. A press that does not shoot (no focus, still busy) has to be detected from the missing `0xC201`.
+- **Shutter speed:** `0xD20D` = `0xFFFF` (−1), sent once per step in Remote, four times. It is a relative step, not an absolute value; `+1` is expected to step the other way. Which property it changes is to be read from the `0x9209` block (to confirm).
+
+### Imaging Edge Remote over USB, third capture (2026-10-26)
+
+The third recording ran 55 s, again starting with Remote already connected. Everything was done in Remote, in this order:
+
+1. ISO down two steps.
+2. A shot in RAW.
+3. The format changed to JPEG, then a shot.
+4. The format changed back to RAW, then a shot.
+
+All three presses gave a photo.
+
+- **ISO:** `0x9207` with control code `0xD21E`, once per step. The data phase is 4 bytes; the first two are `0xFFFF` (−1) and the last two differed between the two sends (`0x0000`, `0x0011`). Read it as a 16-bit step plus padding (to confirm).
+- **Setting an absolute value:** `0x9205` (property code, here `0x5004`) sends a 2-byte value in its data phase. On this body, `0x5004` = `0x02` gave JPEG and `0x10` gave RAW. Remote sent each value twice, about 0.15 s apart. So `0x9205` sets a value and `0x9207` acts like a button or a dial step.
+- **What the files start with:** the RAW (`0xB101`, 24,734,464 bytes) starts with a little-endian TIFF header (`49 49 2A 00`), as ARW does. The JPEG (`0x3801`, 4,073,521 bytes) starts with `FF D8 FF E1` (JPEG with EXIF).
+- **Timings, measured from the first shutter command:**
+
+  | Format | Photo announced (`0xC201`) | `GetObject` | Photo fully read |
+  |---|---:|---:|---:|
+  | RAW | 0.82–0.84 s | 0.69 s (about 36 MB/s) | 1.7 s |
+  | JPEG | 1.07 s | 0.14 s (about 29 MB/s) | 1.36 s |
+
+- **Recording limit:** USBPcap kept only the start of each large transfer (about 6 MB of the 24.7 MB RAW). The timings come from the commands and responses and are complete. The file contents are not in the recording, and nothing here depends on them.
+
 ## Next
 
-USB capture on Windows ([capture-guide.md](capture-guide.md), `scripts/camera-capture.ps1`) of Imaging Edge Remote connecting, showing live view, taking a JPEG and a RAW, and changing ISO once. From it: the handshake, the capture sequence, how live-view frames are fetched, and which events announce a new photo. Each finding goes here, then into `crates/oscamera/src/vendor/sony.rs`.
+- Lay out the `0x9209` block: values, allowed ranges, and which entry `0xD20D` and `0xD21E` move.
+- Record a disconnect: Remote closed before Ctrl+C.
+
+Then write `crates/oscamera/src/vendor/sony.rs` together with the WPD transport.

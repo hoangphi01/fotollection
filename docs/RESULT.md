@@ -249,7 +249,7 @@ Measured before building camera support ([ADR-0026](adr/0026-cameras-through-the
 
 | Body, USB mode | Session open | GetDeviceInfo | Maker operations | Capture from the computer | Shutter on the body | Live view over USB |
 |------|-----:|-----:|-----|-----|-----|-----|
-| Sony a6400, PC Remote | 44 ms | 23 ms | 5 (Sony extension) | After the maker's handshake (to learn) | Locked until the handshake | After the handshake (to learn) |
+| Sony a6400, PC Remote | 44 ms | 23 ms | 5 (Sony extension) | After the maker's handshake; RAW read 1.7 s and JPEG 1.4 s after the shutter command (Imaging Edge Remote, Windows, [sony.md](cameras/sony.md)) | Reported (`0xC201`) once the handshake is done | Yes: about 4.8 fps, 30–45 KB frames (Remote) |
 | Panasonic GX9, PictBridge (PTP) | 21 ms | 20 ms once the card is listed (no answer in 10 s before) | None | Not possible | Locked (PictBridge screen) | Not possible |
 
 - **No driver is needed** to reach either body; the OS stack carries any PTP operation, so path A is open for every maker whose protocol we learn.

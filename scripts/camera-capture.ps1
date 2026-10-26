@@ -12,19 +12,20 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$dumpcap = @(
-    "$env:ProgramFiles\Wireshark\dumpcap.exe",
-    "${env:ProgramFiles(x86)}\Wireshark\dumpcap.exe"
+# tshark, not dumpcap: USBPcap is an extcap interface, which dumpcap neither lists nor opens.
+$tshark = @(
+    "$env:ProgramFiles\Wireshark\tshark.exe",
+    "${env:ProgramFiles(x86)}\Wireshark\tshark.exe"
 ) | Where-Object { Test-Path $_ } | Select-Object -First 1
 
-if (-not $dumpcap) {
+if (-not $tshark) {
     Write-Host "Wireshark is not installed. Install it from https://www.wireshark.org/download.html"
     Write-Host "and tick 'USBPcap' during the install, then restart Windows."
     exit 1
 }
 
-# Lines look like: 5. \\.\USBPcap1 (USBPcap1)
-$interfaces = & $dumpcap -D 2>$null |
+# Lines look like: 11. \\.\USBPcap1 (USBPcap1)
+$interfaces = & $tshark -D 2>$null |
     Where-Object { $_ -match "USBPcap" } |
     ForEach-Object { ($_ -split "\s+")[1] }
 
@@ -49,7 +50,7 @@ Write-Host "shoot one, change ISO once, disconnect. Then press Ctrl+C here."
 Write-Host ""
 
 try {
-    & $dumpcap @arguments
+    & $tshark @arguments
 }
 finally {
     if (Test-Path $out) {
