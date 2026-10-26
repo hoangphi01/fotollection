@@ -9,7 +9,7 @@
   </div>
 </section>
 
-{%- assign parts = "speed:budgets,bench|memory:memory|print:quality|share:share|best:bestshot" | split: "|" -%}
+{%- assign parts = "speed:budgets,bench|memory:memory|print:quality|share:share|raw:raw|best:bestshot" | split: "|" -%}
 {%- for part in parts -%}
 {%- assign kv = part | split: ":" -%}
 {%- assign key = kv[0] -%}
@@ -28,7 +28,7 @@
       {%- if c == 'bench' %}{% assign file = 'bench' %}{% assign cap = t.chart_browser %}{% else %}{% capture file %}bench-{{ c }}{% endcapture %}{% capture cap_key %}chart_{{ c }}{% endcapture %}{% assign cap = t[cap_key] %}{% endif %}
       <figure class="card chart">
         <img src="{{ chart_base }}{{ file }}-{{ page.lang }}.svg" width="752" alt="{{ cap }}" loading="lazy" decoding="async" />
-        <figcaption>{{ cap }}</figcaption>
+        <figcaption>{{ cap }}<sup class="fn-ref"><a href="#fn-12" aria-label="{{ t.fn_label }} 12">12</a></sup></figcaption>
       </figure>
       {%- endfor -%}
     </div>

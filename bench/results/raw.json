@@ -1,0 +1,21 @@
+{
+  "what": "Camera RAW through the OS codecs (FR-016, NFR-017): examples/measure_raw.rs on the nine CC0 samples of bench/raw-samples.json, median of 5, REF-MAC (M3), macOS 26",
+  "date": "2026-10-25",
+  "samples": [
+    { "label": "Panasonic GX9 · RW2", "megapixels": 20.2, "develop_ms": 867, "preview_400_ms": 14, "preview_2048_ms": 28 },
+    { "label": "Panasonic S5 · RW2", "megapixels": 24.1, "develop_ms": 906, "preview_400_ms": 9, "preview_2048_ms": 19 },
+    { "label": "Canon 5D Mark IV · CR2", "megapixels": 31.3, "develop_ms": 668, "preview_400_ms": 32, "preview_2048_ms": 79 },
+    { "label": "Canon R10 · CR3", "megapixels": 24.0, "develop_ms": 2172, "preview_400_ms": 25, "preview_2048_ms": 62 },
+    { "label": "Nikon D750 · NEF", "megapixels": 24.3, "develop_ms": 462, "preview_400_ms": 20, "preview_2048_ms": 64 },
+    { "label": "Sony A7 III · ARW", "megapixels": 24.3, "develop_ms": 469, "preview_400_ms": 12, "preview_2048_ms": 20 },
+    { "label": "Fujifilm X-T3 · RAF", "megapixels": 26.7, "develop_ms": 1148, "preview_400_ms": 16, "preview_2048_ms": 42 },
+    { "label": "Olympus E-M10 III · ORF", "megapixels": 16.1, "develop_ms": 385, "preview_400_ms": 30, "preview_2048_ms": 80 },
+    { "label": "Ricoh GR III · DNG", "megapixels": 24.8, "develop_ms": 1150, "preview_400_ms": 24, "preview_2048_ms": 62 }
+  ],
+  "dng_converter": {
+    "what": "Adobe DNG Converter, RAW to DNG only (still a RAW file, not yet a picture); not measured here",
+    "seconds_per_file_low": 1.2,
+    "seconds_per_file_high": 1.8,
+    "source": "convertintomp4.com/blog/raw-to-dng-converter-batch-workflow: 1,000 CR3 files in 20-30 minutes \"on modern hardware\"; machine and method not stated, an unverified third-party estimate"
+  }
+}

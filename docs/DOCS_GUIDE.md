@@ -24,7 +24,7 @@
 | **Anything saved to disk** (project file, settings, cache) | [DATABASE.md](DATABASE.md) (the version table), a `schema_version` bump, a migration, a fixture and a test | [EXTENSION.md](EXTENSION.md) version cell |
 | **A file type** (extension, MIME/UTI, container, limits) | [EXTENSION.md](EXTENSION.md) | `src-tauri/tauri.conf.json` file associations |
 | **Permissions or untrusted input** | [SECURITY.md](SECURITY.md), `src-tauri/capabilities/` | Validate IPC input in Rust |
-| **Performance** | A row in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log) | [RESULT.md](RESULT.md), `bench/results/`, then `node bench/chart.mjs` (README charts and the website's three charts) |
+| **Performance** | A row in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log) | [RESULT.md](RESULT.md), `bench/results/`, then `node bench/chart.mjs` (README charts and the website charts) |
 | **A significant decision** | A new ADR from [the template](adr/0000-template.md), a row in [adr/README.md](adr/README.md) | The status line of any ADR it supersedes |
 | **Dependencies or bundled assets** (crates, npm packages, Python packages through uv in `pyproject.toml` / `uv.lock`, fonts, logos, models, map data) | Permissive licences only (`cargo deny`, [ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)); the asset's licence file and checksum note (`crates/core/assets/**/*.md`, `site/assets/fonts/OFL.txt`) | README "Third-party notices" (both languages) |
 | **README.md** | [README.vi.md](../README.vi.md) in the same commit: same sections, same charts | `scripts/check-docs.sh` compares them |

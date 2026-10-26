@@ -10,6 +10,7 @@
 //   bench.svg          Fotollection vs Chromium (reference: the browser)
 //   bench-preview.svg  where the warm preview time goes (reference: budget and Chromium)
 //   bench-share.svg    share export after Facebook's recompression, vs the usual way (FR-053)
+//   bench-raw.svg      camera RAW per format, and against a RAW-to-DNG conversion (FR-016)
 
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -54,6 +55,7 @@ const budgets = read('budgets.json')
 const bestshot = read('bestshot.json')
 const quality = read('quality.json')
 const share = read('share.json')
+const raw = read('raw.json')
 const meta = read('machine.json')
 if (!rust || !web) throw new Error('run bench/run.sh first')
 
@@ -131,6 +133,18 @@ const T = {
     shMb: 'MB · lower is lighter',
     shFooter: (n, m) =>
       `${n} camera JPEGs and ${m} Display P3 versions · usual way: 2000 px, q80, profile dropped · Facebook: q71, 4:2:0, ≤ 2048 px`,
+    rwTitle: 'Camera RAW: from the file to the screen',
+    rwPerFormat: 'Print preview (full develop), per camera',
+    rwCompare: 'Median of the nine cameras',
+    rwThumb: 'Thumbnail (embedded preview)',
+    rwDevelop: 'Print preview (full develop)',
+    rwDng: 'DNG Converter: RAW → DNG only *',
+    rwSeconds: 'seconds · lower is faster',
+    rwThumbOf: (ms) => `thumbnail ${ms} ms`,
+    rwFooter: (n) => [
+      `${n} CC0 samples from raw.pixls.us · thumbnails come from the preview inside the file`,
+      `* Adobe DNG Converter not measured here: a third-party estimate (1,000 CR3 in 20–30 min); it only converts to another RAW`,
+    ],
     bsTitle: 'Best-shot suggestions, step by step',
     bsGroups: (n) => `Groups found, of ${n} labelled by hand`,
     bsPicks: 'Suggested photo acceptable, in labelled groups with a clear best',
@@ -195,6 +209,18 @@ const T = {
     shMb: 'MB · càng thấp càng nhẹ',
     shFooter: (n, m) =>
       `${n} ảnh JPEG máy ảnh và ${m} bản Display P3 · cách thông thường: 2000 px, q80, bỏ profile · Facebook: q71, 4:2:0, ≤ 2048 px`,
+    rwTitle: 'Ảnh RAW: từ tệp đến màn hình',
+    rwPerFormat: 'Xem trước để in (giải mã đầy đủ), theo từng máy',
+    rwCompare: 'Trung vị của chín máy',
+    rwThumb: 'Ảnh thu nhỏ (bản xem trước nhúng)',
+    rwDevelop: 'Xem trước để in (giải mã đầy đủ)',
+    rwDng: 'DNG Converter: chỉ RAW → DNG *',
+    rwSeconds: 'giây · càng thấp càng nhanh',
+    rwThumbOf: (ms) => `ảnh thu nhỏ ${ms} ms`,
+    rwFooter: (n) => [
+      `${n} tệp mẫu CC0 từ raw.pixls.us · ảnh thu nhỏ lấy từ bản xem trước có sẵn trong tệp`,
+      `* Adobe DNG Converter không đo ở đây: ước tính bên ngoài (1.000 tệp CR3 trong 20–30 phút), chỉ đổi sang RAW khác`,
+    ],
     bsTitle: 'Gợi ý ảnh đẹp nhất, từng bước cải tiến',
     bsGroups: (n) => `Số nhóm tìm được, trên ${n} nhóm gán nhãn tay`,
     bsPicks: 'Ảnh được gợi ý chấp nhận được, ở các nhóm có ảnh tốt nhất rõ ràng',
@@ -509,6 +535,65 @@ function charts(lang) {
     out['bench-share'] = doc(t.shTitle, desc, h, body)
   }
 
+  // 8. Camera RAW (FR-016): the develop per camera, then the medians against a RAW-to-DNG
+  // conversion, which is a third-party estimate (bench/results/raw.json).
+  {
+    const ms = (list, key) => {
+      const v = list.map((x) => x[key]).sort((a, b) => a - b)
+      return v[Math.floor(v.length / 2)]
+    }
+    const samples = [...raw.samples].sort((a, b) => a.develop_ms - b.develop_ms)
+    const maxS = Math.max(...samples.map((x) => x.develop_ms / 1000), raw.dng_converter.seconds_per_file_high)
+    // Wider names on the left, and room on the right for the value and the thumbnail time.
+    const L = 250
+    const P = W - L - 190
+    const sec = (v) => `${f(v, v < 0.1 ? 2 : 1)} s`
+    let body = ''
+    let y0 = 34
+    body += `<text class="t1" x="0" y="${y0 + 14}">${esc(t.rwPerFormat)}</text>`
+    body += `<text class="t3" x="${W}" y="${y0 + 14}" text-anchor="end">${esc(t.rwSeconds)}</text>`
+    samples.forEach((x, j) => {
+      const y = y0 + 26 + j * 30
+      const v = x.develop_ms / 1000
+      const w = Math.max(4, (P * v) / maxS)
+      body += `<text class="t2" x="${L - 10}" y="${y + 15}" text-anchor="end">${esc(x.label)}</text>`
+      body += bar('s1', L, y, w, 22, `${x.label}: ${sec(v)}, ${t.rwThumbOf(x.preview_400_ms)}`)
+      body += `<text class="t1 num" x="${L + w + 8}" y="${y + 16}">${esc(sec(v))}</text>`
+      body += `<text class="t3" x="${W}" y="${y + 16}" text-anchor="end">${esc(t.rwThumbOf(x.preview_400_ms))}</text>`
+    })
+    body += `<line class="axis" x1="${L}" x2="${L}" y1="${y0 + 22}" y2="${y0 + 26 + samples.length * 30 - 4}"/>`
+    y0 += 26 + samples.length * 30 + 18
+    const dng = raw.dng_converter
+    const rows = [
+      { name: t.rwThumb, cls: 's1', v: ms(raw.samples, 'preview_400_ms') / 1000, text: (v) => sec(v) },
+      { name: t.rwDevelop, cls: 's1', v: ms(raw.samples, 'develop_ms') / 1000, text: (v) => sec(v) },
+      {
+        name: t.rwDng,
+        cls: 's2',
+        v: (dng.seconds_per_file_low + dng.seconds_per_file_high) / 2,
+        text: () => `${f(dng.seconds_per_file_low, 1)}–${f(dng.seconds_per_file_high, 1)} s`,
+      },
+    ]
+    body += `<text class="t1" x="0" y="${y0 + 14}">${esc(t.rwCompare)}</text>`
+    rows.forEach((r, j) => {
+      const y = y0 + 26 + j * 30
+      const w = Math.max(4, (P * r.v) / maxS)
+      body += `<text class="t2" x="${L - 10}" y="${y + 15}" text-anchor="end">${esc(r.name)}</text>`
+      body += bar(r.cls, L, y, w, 22, `${r.name}: ${r.text(r.v)}`)
+      body += `<text class="t1 num" x="${L + w + 8}" y="${y + 16}">${esc(r.text(r.v))}</text>`
+    })
+    body += `<line class="axis" x1="${L}" x2="${L}" y1="${y0 + 22}" y2="${y0 + 26 + rows.length * 30 - 4}"/>`
+    const h = y0 + 26 + rows.length * 30 + 40
+    t.rwFooter(f(raw.samples.length, 0)).forEach((line, j) => {
+      body += `<text class="t3" x="0" y="${h - 22 + j * 18}">${esc(line)}</text>`
+    })
+    const desc = samples
+      .map((x) => `${x.label}: ${sec(x.develop_ms / 1000)}, ${t.rwThumbOf(x.preview_400_ms)}`)
+      .concat(rows.map((r) => `${r.name}: ${r.text(r.v)}`))
+      .join('. ')
+    out['bench-raw'] = doc(t.rwTitle, desc, h, body)
+  }
+
   // 5. Best-shot accuracy per improvement step (higher is better), against the labels.
   {
     const steps = bestshot.steps
@@ -561,7 +646,7 @@ for (const lang of ['en', 'vi']) {
 }
 // The website shows these in its own colours: the home page and the performance page (site/README.md).
 STYLE = styleFor(THEMES.site)
-const SITE_CHARTS = ['bench-budgets', 'bench-quality', 'bench-share', 'bench-bestshot', 'bench-memory', 'bench']
+const SITE_CHARTS = ['bench-budgets', 'bench-quality', 'bench-share', 'bench-raw', 'bench-bestshot', 'bench-memory', 'bench']
 mkdirSync(join(root, 'site/assets/img/charts'), { recursive: true })
 for (const lang of ['en', 'vi']) {
   const all = charts(lang)

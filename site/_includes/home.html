@@ -202,7 +202,7 @@
       {%- capture key %}chart_{{ c }}{% endcapture -%}
       <figure class="card chart">
         <img src="{{ '/assets/img/charts/bench-' | append: c | append: '-' | append: page.lang | append: '.svg' | relative_url }}" width="752" alt="{{ t[key] }}" loading="lazy" decoding="async" />
-        <figcaption>{{ t[key] }}</figcaption>
+        <figcaption>{{ t[key] }}<sup class="fn-ref"><a href="#fn-12" aria-label="{{ t.fn_label }} 12">12</a></sup></figcaption>
       </figure>
       {%- endfor -%}
     </div>

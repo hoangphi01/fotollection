@@ -229,6 +229,10 @@ Measured before building RAW input ([FR-016](PRD.md#fr-016--raw-input), [ADR-002
 
 Peak RSS of one process developing one file five times: 1.29 GB (CR2, 31 MP), 810 MB (CR3), 579 MB (RW2, GX9).
 
+![Camera RAW: from the file to the screen](images/bench-raw.svg)
+
+The chart (`bench/results/raw.json`) sets the medians against **Adobe DNG Converter**, which was not run here: its 1.2–1.8 s per file is a third-party estimate (1,000 CR3 files in 20–30 minutes "on modern hardware", machine not stated, from convertintomp4.com's blog post on batch RAW-to-DNG conversion), and it only turns one RAW file into another, before anything is seen or printed. Fotollection needs no conversion step.
+
 - **Two paths.** The preview every RAW carries comes back 30 to 100 times faster than a full develop, and it is what thumbnails and best-shot analysis need. The develop (0.4–2.2 s) is kept for the print preview, zoom and export, which work on one photo at a time; a preview already on screen re-renders from its cached copy in 17 ms, like a JPEG.
 - **Memory.** One develop can hold more than 1 GB, so RAW photos are developed a few at a time, not six at once like JPEG, to stay under the 2 GB ceiling (NFR-004).
 - **The type hint matters.** Without the file's type identifier, ImageIO read a NEF as a plain TIFF (its 160 × 120 thumbnail) and could not open an ARW; with it, all nine develop at full size.
