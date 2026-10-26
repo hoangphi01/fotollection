@@ -8,6 +8,7 @@
 //! (FFI); each block carries a `// SAFETY:` comment (`docs/STYLE_RULE.md` §2).
 
 pub mod ptp;
+pub mod vendor;
 
 #[cfg(target_os = "macos")]
 #[allow(unsafe_code)]

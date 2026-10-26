@@ -151,7 +151,7 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 | Network-free core | `cargo tree -p fotollection-core` contains no `reqwest`/`hyper`/`ureq` |
 | Fuzzing | `cargo-fuzz` targets run nightly ([TESTING.md §4](TESTING.md#4-fuzzing)) |
 
-**Cameras over USB** (`fotollection-oscamera`, [ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)): everything a camera sends is untrusted. `ptp` checks every length and count against the bytes received, caps lists at 4,096 entries and returns an error on a bad answer, never a panic (tested by cutting a valid answer at every byte). Every call to the camera has a timeout.
+**Cameras over USB** (`fotollection-oscamera`, [ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)): everything a camera sends is untrusted. `ptp` and the maker drivers (`vendor/sony.rs`: the settings block, the live-view frame's offset and length) check every length and count against the bytes received, cap lists at 4,096 entries, reject unknown data types and forms and returns an error on a bad answer, never a panic (tested by cutting a valid answer at every byte). Every call to the camera has a timeout.
 
 **Website secrets.** The footer's visit count (`scripts/ga-visits.mjs`, run by `pages.yml`) reads Google Analytics with a service account that has the *Viewer* role on the one GA property and nothing else. Its JSON key and the property ID live only in the repository secrets `GA_SERVICE_ACCOUNT` and `GA_PROPERTY_ID`; the script never prints them, asks only for the `analytics.readonly` scope, accepts a numeric property ID and a whole number back, and writes nothing on any error. Workflows for pull requests from forks get no secrets. If the key leaks, delete it in Google Cloud and add a new one.
 

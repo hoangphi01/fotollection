@@ -44,7 +44,7 @@ const EVENT: u16 = 4;
 const HEADER: usize = 12;
 
 /// No list in a dataset is longer than this; a real camera declares a few hundred codes.
-const MAX_LIST: usize = 4096;
+pub(crate) const MAX_LIST: usize = 4096;
 
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum PtpError {
@@ -54,6 +54,10 @@ pub enum PtpError {
     NotContainer { expected: &'static str },
     #[error("a list in the camera's answer is too long ({0} entries)")]
     ListTooLong(usize),
+    #[error("the camera's answer uses an unknown data type {0:#06x}")]
+    UnknownDataType(u16),
+    #[error("the camera's answer uses an unknown form {0}")]
+    UnknownForm(u8),
 }
 
 /// The 12-byte header plus up to five parameters of a command request.
@@ -242,18 +246,18 @@ pub fn event_name(code: u16) -> Option<&'static str> {
     })
 }
 
-/// Little-endian reader over untrusted bytes.
-struct Reader<'a> {
+/// Little-endian reader over untrusted bytes, shared with the maker drivers.
+pub(crate) struct Reader<'a> {
     bytes: &'a [u8],
-    at: usize,
+    pub(crate) at: usize,
 }
 
 impl<'a> Reader<'a> {
-    fn new(bytes: &'a [u8]) -> Self {
+    pub(crate) fn new(bytes: &'a [u8]) -> Self {
         Self { bytes, at: 0 }
     }
 
-    fn take(&mut self, n: usize) -> Result<&'a [u8], PtpError> {
+    pub(crate) fn take(&mut self, n: usize) -> Result<&'a [u8], PtpError> {
         let end = self.at.checked_add(n).filter(|&e| e <= self.bytes.len());
         let Some(end) = end else {
             return Err(PtpError::Truncated {
@@ -266,22 +270,29 @@ impl<'a> Reader<'a> {
         Ok(slice)
     }
 
-    fn u8(&mut self) -> Result<u8, PtpError> {
+    pub(crate) fn u8(&mut self) -> Result<u8, PtpError> {
         Ok(self.take(1)?[0])
     }
 
-    fn u16(&mut self) -> Result<u16, PtpError> {
+    pub(crate) fn u16(&mut self) -> Result<u16, PtpError> {
         let b = self.take(2)?;
         Ok(u16::from_le_bytes([b[0], b[1]]))
     }
 
-    fn u32(&mut self) -> Result<u32, PtpError> {
+    pub(crate) fn u32(&mut self) -> Result<u32, PtpError> {
         let b = self.take(4)?;
         Ok(u32::from_le_bytes([b[0], b[1], b[2], b[3]]))
     }
 
+    pub(crate) fn u64(&mut self) -> Result<u64, PtpError> {
+        let b = self.take(8)?;
+        Ok(u64::from_le_bytes([
+            b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7],
+        ]))
+    }
+
     /// A PTP string: a count of UTF-16 code units including the final NUL, then the units.
-    fn string(&mut self) -> Result<String, PtpError> {
+    pub(crate) fn string(&mut self) -> Result<String, PtpError> {
         let n = usize::from(self.u8()?);
         let raw = self.take(2 * n)?;
         let units: Vec<u16> = raw
@@ -294,7 +305,7 @@ impl<'a> Reader<'a> {
         Ok(String::from_utf16_lossy(&units))
     }
 
-    fn u16_list(&mut self) -> Result<Vec<u16>, PtpError> {
+    pub(crate) fn u16_list(&mut self) -> Result<Vec<u16>, PtpError> {
         let n = self.u32()? as usize;
         if n > MAX_LIST {
             return Err(PtpError::ListTooLong(n));

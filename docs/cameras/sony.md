@@ -80,9 +80,44 @@ All three presses gave a photo.
 
 - **Recording limit:** USBPcap kept only the start of each large transfer (about 6 MB of the 24.7 MB RAW). The timings come from the commands and responses and are complete. The file contents are not in the recording, and nothing here depends on them.
 
+### The settings block (`0x9209`), decoded from the recordings
+
+The block holds a 32-bit count (62 on the a6400) and 4 bytes we do not use. Then come the entries, one per count. Each entry is a standard PTP property description (ISO 15740 §5.5.3) with one extra byte after get/set:
+
+1. property code (2 bytes)
+2. data type (2 bytes)
+3. get/set (1 byte)
+4. Sony's extra byte (1 byte)
+5. default value
+6. current value
+7. form: 0 = none; 1 = range (min, max, step); 2 = list (a 16-bit count, then the values)
+
+Decoding the a6400's block this way uses exactly all of its 1,730 bytes. Comparing successive blocks while Remote changed things identifies:
+
+| Code | Type | Get/set | What | Values seen |
+|---|---|---|---|---|
+| `0x5004` | u8 | 1 | File format | List of 7; `0x02` JPEG, `0x10` RAW |
+| `0x5007` | u16 | 0 | Aperture, f-number × 100 (standard code) | 200 = f/2.0 |
+| `0xD20D` | u32 | 0 | Shutter speed: numerator in the high 16 bits, denominator in the low 16 | 1/250 → 1/160 → 1/100 over four steps of −1 |
+| `0xD21E` | u32 | 0 | ISO | 1600 → 1250 → 1000 over two steps of −1; a list of 89 values, `0xFFFFFF` among them (expected to mean Auto) |
+| `0xD215` | u16 | 0 | Changes on every shot: 0 → 1 → `0x8001` → 0, around `0xC201` | Meaning to confirm |
+| `0xD2C1`, `0xD2C2` | u16 | `0x81` | Shutter half and full press | 1 up, 2 down |
+
+Get/set is 1 for values set with `0x9205` and `0x81` for buttons used with `0x9207`. ISO and shutter speed show 0, yet they move by steps with `0x9207`. Several other codes also show `0x81` (`0xD2C3`, `0xD2C5`, `0xD2C7`–`0xD2D4`, `0xD2D9`) and are left unnamed until observed.
+
+### In code
+
+`crates/oscamera/src/vendor/sony.rs` encodes these notes:
+
+- the handshake sequence;
+- the shutter press;
+- the `0x9207` and `0x9205` data phases;
+- the settings block parser (bounded; tested on a hand-made block, and checked once against a recorded a6400 block that is not committed);
+- the live-view frame's offset and length;
+- shutter-speed decoding.
+
 ## Next
 
-- Lay out the `0x9209` block: values, allowed ranges, and which entry `0xD20D` and `0xD21E` move.
+- The WPD transport on Windows, then a first shot and live view from our own code with the a6400.
 - Record a disconnect: Remote closed before Ctrl+C.
-
-Then write `crates/oscamera/src/vendor/sony.rs` together with the WPD transport.
+- Name `0xD215`, `0xC202` and the other `0x81` buttons when they are observed.

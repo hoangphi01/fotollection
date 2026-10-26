@@ -81,7 +81,18 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 6. **v0.9.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
 7. **Later (Phase 2):** Photo Style and film looks (FR-039, FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
 8. **Alongside, never blocking a release:** the append-only edit journal (NFR-013; not urgent, as a full save stays at 70 ms for 70,000 edited photos); the Windows title bar on a real machine (FR-052); SignPath signing for Windows (declined 2026-10-26 for too little public adoption yet; reapply once the project has independent mentions and stars, RELEASE.md §3); a Ko-fi link once the account exists; NFR-008 by publishing one `.dmg` per architecture; FR-022 filters by date, camera, GPS and DPI.
-9. **Camera over USB (FR-062, FR-063, FR-064; ADR-0026 proposed):** Step 0 done on macOS 2026-10-26 ([RESULT §13](RESULT.md#13-camera-over-usb-step-0-planned-fr-062-fr-063), [cameras/README.md](cameras/README.md)): no driver needed; the a6400 needs Sony's handshake, the GX9 cannot be tethered over USB at all (not on the bus while it can shoot); an HDMI capture card was dropped as it is what any streaming tool does. Next: a USB capture of Imaging Edge Remote on the owner's Windows PC ([capture-guide.md](cameras/capture-guide.md)), then the Sony driver. Open decision: a Wi-Fi exception to NFR-006 for bodies like the GX9 (direct link to the camera's own network, never the internet). Then its release is placed in the ROADMAP.
+9. **Camera over USB (FR-062, FR-063, FR-064; ADR-0026 proposed):**
+   - **Step 0, macOS (2026-10-26)** ([RESULT §13](RESULT.md#13-camera-over-usb-step-0-planned-fr-062-fr-063), [cameras/README.md](cameras/README.md)):
+     - no driver is needed;
+     - the a6400 needs Sony's handshake;
+     - the GX9 cannot be tethered over USB at all: it is not on the bus while it can shoot;
+     - an HDMI capture card was dropped, as it is what any streaming tool does.
+   - **Done since:**
+     - USB captures of Imaging Edge Remote on Windows (2026-10-26) showed Sony's handshake, shutter, settings and live view ([cameras/sony.md](cameras/sony.md));
+     - `vendor/sony.rs` encodes them; its parser is tested and was checked against a recorded settings block.
+   - **Next:** the WPD transport on Windows, then a first shot from our own code.
+   - **Open decision:** a Wi-Fi exception to NFR-006 for bodies like the GX9 (a direct link to the camera's own network, never the internet).
+   - **Then** its release is placed in the ROADMAP.
 
 ## Phase 0 — Foundation
 
@@ -165,7 +176,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-060 | Start-up screen | 1 | In Progress | ✓ Logo and loading bar painted by `index.html` before any script; the bar follows the import while the session reopens; fades out on `StartupFinished` (`use-startup-screen.ts`), never later than 15 s. Left: check by hand; the Normal / Professional choice (FR-048) later |
 | FR-061 | Check for updates | 2 | In Progress | ✓ `updates.rs`: one GitHub request on click (`ureq`, 10 s, 1 MB), `semver`, installer per system, links kept in Rust and limited to the project's releases, opened with `tauri-plugin-opener`; button in the version popover (`update-check.tsx`); tests on fixture JSON. ✓ MSI `UpgradeCode` pinned. Left: try in the app (`FOTOLLECTION_FAKE_VERSION`) |
 | FR-062 | Live view from a camera | 2 | Not Started | Planned ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md), proposed): own PTP driver per maker over ImageCaptureCore/WPD, or UVC / HDMI capture card through `getUserMedia`. Step 0 first ([cameras/README.md](cameras/README.md)) |
-| FR-063 | Tethered capture over USB | 2 | In Progress | ✓ Step 0 on macOS (RESULT §13): `crates/oscamera` with `ptp` (tested) and the ImageCaptureCore transport, `probe_camera`. a6400: Sony extension, needs the handshake (USB capture of Imaging Edge Remote on Windows next). GX9: no capture or live view over USB at all. Left: Sony driver, WPD transport, app wiring |
+| FR-063 | Tethered capture over USB | 2 | In Progress | ✓ Step 0 on macOS (RESULT §13): `crates/oscamera` with `ptp` (tested) and the ImageCaptureCore transport, `probe_camera`. ✓ a6400 protocol from USB captures on Windows (sony.md), ✓ `vendor/sony.rs`: handshake, shutter, settings block, live-view frame (tested). GX9: no capture or live view over USB at all. Left: WPD transport, a first shot from our code, app wiring |
 | FR-064 | Watch a folder for new photos | 2 | Not Started | Planned: fallback for a maker's wired tether app; also feeds FR-063's session folder |
 | FR-065 | Border in Crop to fill | 1 | In Progress | ✓ `frame.border` (settings v9), 3 mm inside the print in `frame::layout`, the crop and export follow the smaller photo area (`fr_065_*`); *Add border* switch under Crop to fill. Left: check a print at a CEWE kiosk size by hand |
 | FR-059 | Quick-preview | 1 | In Progress | ✓ Hold Space in select mode over a photo: thumbnail at once, then the render with the gallery's settings; ← → and Enter while held (`use-quick-preview.ts`). Left: check by hand in the app |
