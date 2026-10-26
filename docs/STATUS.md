@@ -71,6 +71,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 6. **v0.9.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
 7. **Later (Phase 2):** Photo Style and film looks (FR-039, FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
 8. **Alongside, never blocking a release:** the append-only edit journal (NFR-013; not urgent, as a full save stays at 70 ms for 70,000 edited photos); the Windows title bar on a real machine (FR-052); SignPath signing for Windows (declined 2026-10-26 for too little public adoption yet; reapply once the project has independent mentions and stars, RELEASE.md §3); a Ko-fi link once the account exists; NFR-008 by publishing one `.dmg` per architecture; FR-022 filters by date, camera, GPS and DPI.
+9. **Camera over USB (FR-062, FR-063, FR-064; ADR-0026 proposed):** Step 0 on the owner's GX9 and a6400 first ([cameras/README.md](cameras/README.md)): what each body declares, capture from the app, live view, shot to file. Waits for ≥ 10 GB free disk (swap held 21 GB on 2026-10-26; a restart frees it). Then its release is placed in the ROADMAP.
 
 ## Phase 0 — Foundation
 
@@ -153,6 +154,9 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-058 | Lightroom compatibility through XMP | 2 | Not Started | Planned: read XMP sidecars on import (stars, reject, crop); opt-in writing of `.xmp` next to photos, never touching them; Lightroom reads sidecars only for RAW |
 | FR-060 | Start-up screen | 1 | In Progress | ✓ Logo and loading bar painted by `index.html` before any script; the bar follows the import while the session reopens; fades out on `StartupFinished` (`use-startup-screen.ts`), never later than 15 s. Left: check by hand; the Normal / Professional choice (FR-048) later |
 | FR-061 | Check for updates | 2 | In Progress | ✓ `updates.rs`: one GitHub request on click (`ureq`, 10 s, 1 MB), `semver`, installer per system, links kept in Rust and limited to the project's releases, opened with `tauri-plugin-opener`; button in the version popover (`update-check.tsx`); tests on fixture JSON. ✓ MSI `UpgradeCode` pinned. Left: try in the app (`FOTOLLECTION_FAKE_VERSION`) |
+| FR-062 | Live view from a camera | 2 | Not Started | Planned ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md), proposed): own PTP driver per maker over ImageCaptureCore/WPD, or UVC / HDMI capture card through `getUserMedia`. Step 0 first ([cameras/README.md](cameras/README.md)) |
+| FR-063 | Tethered capture over USB | 2 | Not Started | Planned: `crates/oscamera` (transport, `ptp`, `vendor`); Sony a6400 and Panasonic GX9 first. Step 0 waits for ≥ 10 GB free disk and the cameras |
+| FR-064 | Watch a folder for new photos | 2 | Not Started | Planned: fallback for a maker's wired tether app; also feeds FR-063's session folder |
 | FR-059 | Quick-preview | 1 | In Progress | ✓ Hold Space in select mode over a photo: thumbnail at once, then the render with the gallery's settings; ← → and Enter while held (`use-quick-preview.ts`). Left: check by hand in the app |
 | FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print; every editing session adds a journal entry (instax-style) |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
@@ -177,6 +181,8 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | NFR-014 | Best-shot analysis speed | ≤ 20 ms/photo (≤ 40 ms with faces) | 17.4 ms p50 / 18.0 ms p95 without faces, 27.8 ms p50 / 36 ms p95 with faces, one thread (`measure_folder --analyze`) | In Progress |
 | NFR-015 | Normal mode speed | ≥ 3× Professional export (≥ 50 photos/s), first screen < 0.5 s for 1,000 photos | — | Not Started |
 | NFR-016 | Open to first photo | < 1 s after the first launch | measured end to end (`open -a`, release bundle): JPEG 0.70 s when its folder is already a tab, 1.25 s for a new folder (its import first); RAW 1.4–2.5 s (develop, NFR-017) | In Progress |
+| NFR-018 | Shot to screen | ≈ 2 s for JPEG (to be set by Step 0) | — | Not Started |
+| NFR-019 | Live view | ≥ 15 fps, < 200 ms (to be confirmed) | — | Not Started |
 | NFR-017 | Camera RAW speed | preview < 100 ms, first RAW print preview < 2.5 s, memory within NFR-004 | embedded preview 9–80 ms, develop 0.39–2.17 s, 1.29 GB peak for one 31 MP develop (`measure_raw`, RESULT §12) | In Progress |
 
 ## Security tasks

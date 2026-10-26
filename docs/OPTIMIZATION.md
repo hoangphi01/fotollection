@@ -194,6 +194,7 @@ Recorded so they are not forgotten; each one becomes a row above once it is run.
   2. Compare per megapixel and say which machine each figure comes from; add Lightroom to `bench/results/raw.json` and the RAW chart only then, even if Lightroom is faster.
   3. If the batch is far slower, measure two develops at once against the memory ceiling before changing the one-at-a-time rule.
   4. Needs a release build: free disk first (`scripts/resources.sh`, at least 10 GB).
+- **Camera over USB, Step 0 (FR-062, FR-063, NFR-018, NFR-019, [ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)).** `probe_camera` on a Sony a6400 and a Panasonic GX9, by cable, macOS then Windows: declared PTP operations, capture from the computer (standard, then the maker's), whether the camera's own shutter is reported, live-view frames per second, size and latency, time from the shutter to the full file on disk for JPEG and RAW, and the cost of re-importing the session folder against importing one file. Checklist in [cameras/README.md §3](cameras/README.md#3-step-0-what-to-measure).
 
 ## 6. Benchmark corpus
 

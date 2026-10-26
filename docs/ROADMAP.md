@@ -97,6 +97,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.7.0 | Open with and RAW | FR-054 ("Open with"), FR-016 (RAW through the OS codecs) | Done: RAW on nine CC0 samples (RESULT §12, NFR-017), open to first photo (NFR-016) |
 | v0.8.0 | Places and Lightroom | FR-032, FR-005, FR-030, FR-031, FR-058 (XMP), FR-061 (check for updates) | Lookup speed with manual places, a mixed camera + phone folder; XMP read on a Lightroom-culled folder |
 | v0.9.0 | Normal mode | FR-048, NFR-015, FR-046, FR-050 | Normal against Professional export |
+| To place | Camera | FR-062 (live view), FR-063 (tethered capture over USB), FR-064 (watch a folder), NFR-018, NFR-019 | Step 0 on a GX9 and an a6400: declared operations, capture from the app, live view, shot to file ([cameras/README.md](cameras/README.md)) |
 | Later | Looks, presets, trips, journal | FR-039, FR-047, FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
 
 ## Phase 2 — Smart features
@@ -129,6 +130,9 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-059 | Quick-preview: hold Space in select mode to look at a photo as it will print |
 | FR-060 | Start-up screen: the logo and a loading bar until the last session is back |
 | FR-061 | Check for updates: a button that asks GitHub once, then opens the installer in the browser |
+| FR-062 | Live view from a camera plugged in by cable (own PTP driver, UVC webcam or HDMI capture card), with the print ratio drawn over it |
+| FR-063 | Tethered capture over USB: Capture in the app, the full-resolution photo opens at once; own PTP drivers per maker, no install ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)) |
+| FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 
 ## Phase 3 — Pro & growth

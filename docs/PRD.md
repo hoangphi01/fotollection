@@ -655,6 +655,26 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Up to date:** "You have the latest version". **Newer:** "Fotollection 0.8.0 is available" and *Download the installer*, which opens the installer for this system in the browser; installing it replaces the app and keeps settings and projects ([FR-021](#fr-021--manual-updates)).
 - **Offline or an odd answer:** a plain message, never a crash. Pre-releases are never offered. Links outside the project's releases are refused, and the link is kept in Rust, so the webview never opens a URL itself.
 
+### FR-062 — Live view from a camera
+
+**P2 (planned, after Step 0).** A **Camera** window shows what a camera plugged in by cable sees, live, with the print ratio drawn over it (the crop's ratios), to frame the shot ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md), [cameras/README.md](cameras/README.md)).
+
+- **Sources, all wired:** a camera through Fotollection's own PTP driver for its maker; a standard webcam (UVC) or an HDMI capture card through the webview. Wi-Fi is not a source.
+- Frames are only shown: never stored, never sent ([NFR-006](#nfr-006--offline-and-zero-telemetry)).
+- Unplugging stops the view with a plain message, never a hang.
+
+### FR-063 — Tethered capture over USB
+
+**P2 (planned, after Step 0).** With a camera plugged in by cable, a **Capture** button (and Space) in the Camera window takes the photo; where the camera reports its own shutter, that works too. The full-resolution file (JPEG or RAW) is saved to `Pictures/Fotollection/Camera/<date>/`, that folder is a tab, and the new photo opens at once in the preview to crop and print, the same way "Open with" opens a photo ([FR-054](#fr-054--open-photos-with-fotollection)).
+
+- No driver to install: Fotollection talks PTP through the system's own USB stack (ImageCaptureCore on macOS, WPD on Windows), with one module per camera maker written from our own protocol notes ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)).
+- First makers: Sony and Panasonic (bodies at hand), then Canon and Nikon. Standard PTP for the rest. Which body does what is in [cameras/README.md](cameras/README.md).
+- A burst of shots loses none and stays within [NFR-004](#nfr-004--memory-ceiling).
+
+### FR-064 — Watch a folder for new photos
+
+**P2 (planned).** *Watch this folder* on a folder tab: a photo written into it (by a maker's wired tether app, for a body without a Fotollection driver yet) appears and opens at once, once the file is completely written. Also used by FR-063 for its own session folder.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
@@ -726,6 +746,14 @@ Opening a photo from Finder or Explorer ("Open with", [FR-054](#fr-054--open-pho
 ### NFR-017 — Camera RAW speed
 
 For camera RAW ([FR-016](#fr-016--raw-input)), on REF-MAC: a thumbnail or the input of best-shot analysis comes from the file's embedded preview in **under 100 ms**; the first print preview of a 16–31 MP RAW, which develops it, appears in **under 2.5 s**, and later changes re-render from the cached copy within [NFR-002](#nfr-002--preview-latency); exporting RAW keeps peak memory within [NFR-004](#nfr-004--memory-ceiling) by developing only a few at a time. Measured on nine CC0 samples before implementation ([RESULT.md §12](RESULT.md#12-camera-raw-v070)): preview 9–80 ms, develop 0.39–2.17 s, up to 1.29 GB for one 31 MP develop.
+
+### NFR-018 — Shot to screen
+
+For tethered capture ([FR-063](#fr-063--tethered-capture-over-usb)) over USB on REF-MAC: from the shutter (the Capture button or the camera's own) to the photo shown in the preview. Target to be set from the Step 0 measurements on a GX9 and an a6400 ([cameras/README.md](cameras/README.md)); expected about **2 s for JPEG**, RAW within [NFR-017](#nfr-017--camera-raw-speed) after it arrives.
+
+### NFR-019 — Live view
+
+For [FR-062](#fr-062--live-view-from-a-camera) over USB: at least **15 frames per second** with **under 200 ms** from the scene to the screen, where the camera allows it. To be confirmed by the Step 0 measurements.
 
 ## 8. Out of scope
 
