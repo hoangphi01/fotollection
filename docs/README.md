@@ -36,6 +36,7 @@
 | Test strategy, corpus, CI matrix | [TESTING.md](TESTING.md) |
 | Versioning, build, signing, distribution | [RELEASE.md](RELEASE.md) |
 | What each camera can do over USB, and each maker's protocol notes | [cameras/README.md](cameras/README.md) |
+| Which RAW formats our own decoder reads, and each format's notes | [raw/README.md](raw/README.md) |
 | The public website and how its screenshots are made | [site/README.md](../site/README.md) |
 | How to use the app, step by step, with every shortcut | [USER_GUIDE.md](USER_GUIDE.md) |
 | User-visible changes per version | [CHANGELOG.md](../CHANGELOG.md) |

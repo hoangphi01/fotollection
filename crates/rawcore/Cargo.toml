@@ -1,0 +1,16 @@
+[package]
+name = "fotollection-rawcore"
+description = "Fotollection's own camera RAW decoder, pure Rust, written from public specifications and our own format notes (ADR-0030)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+rayon.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

@@ -12,7 +12,7 @@
 | UI component | React components and hooks, with IPC mocked | `vitest` + Testing Library | Every push that changes code |
 | Golden image | Full `RenderPlan` → pixels for fixed inputs, compared to reference outputs | `cargo test` + image diff | Every push that changes code |
 | Integration | Pipeline end-to-end on the sample corpus (import → export to a temp dir) | `cargo test --test pipeline` | Every push that changes code (small set), nightly (full set) |
-| Fuzz | Decoders, EXIF parser, path sanitizer | `cargo-fuzz` | Nightly |
+| Fuzz | RAW decoder today (mutation testing on stable); decoders, EXIF parser, path sanitizer planned with `cargo-fuzz` | `examples/mutate.rs`, `cargo-fuzz` | Before a RAW format moves; nightly once set up |
 | E2E | Real app window: import, adjust, export, cancel | Tauri WebDriver (`tauri-driver`) | Before each release, on macOS and Windows |
 | Benchmark | Budgets from [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets) | `criterion` | Nightly + before each release |
 
@@ -37,7 +37,15 @@ The corpus is stored **outside** git, because the photos are personal and large.
 
 ## 4. Fuzzing
 
-Fuzz targets under `crates/core/fuzz/`:
+**Today:** `crates/rawcore/examples/mutate.rs` runs on stable Rust: for a given time it cuts the CC0 RAW samples short, flips bytes, writes extreme values into their directories and damages their compressed data, decodes each result, and prints the seed of any panic so it can be replayed. A format moves to our own decoder only after 10 minutes without one ([ADR-0030](adr/0030-our-own-raw-decoder.md)):
+
+```sh
+cargo run --release -p fotollection-rawcore --example mutate -- 600 path/to/samples/*.dng
+```
+
+`cargo test -p fotollection-rawcore` with `FOTOLLECTION_RAW_SAMPLES` set also cuts every sample short at 256 places.
+
+**Planned** (`cargo-fuzz` needs a nightly toolchain, not installed yet; `crates/core/fuzz/` does not exist yet):
 
 | Target | Input |
 |--------|-------|

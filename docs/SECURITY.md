@@ -149,7 +149,7 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 | License / banned crates | `cargo deny` |
 | Dangerous DOM APIs | `grep -rE "dangerouslySetInnerHTML\|innerHTML\|outerHTML\|insertAdjacentHTML\|document\.write\|eval\(\|new Function" ui/src` must be empty |
 | Network-free core | `cargo tree -p fotollection-core` contains no `reqwest`/`hyper`/`ureq` |
-| Fuzzing | `cargo-fuzz` targets run nightly ([TESTING.md §4](TESTING.md#4-fuzzing)) |
+| Fuzzing | Mutation testing of the RAW decoder on stable Rust; `cargo-fuzz` targets planned ([TESTING.md §4](TESTING.md#4-fuzzing)) |
 
 **Cameras over USB** (`fotollection-oscamera`, [ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)): everything a camera sends is untrusted. `ptp` and the maker drivers (`vendor/sony.rs`: the settings block, the live-view frame's offset and length) check every length and count against the bytes received, cap lists at 4,096 entries, reject unknown data types and forms and returns an error on a bad answer, never a panic (tested by cutting a valid answer at every byte). Every call to the camera has a timeout: on Windows, where WPD calls block, each open camera has its own thread and the caller stops waiting after the timeout, after which that camera refuses further calls. An object read from a camera is capped at 256 MB.
 
@@ -168,6 +168,7 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 - **Cancellation:** jobs check a token between stages, and temporary files are removed on cancel.
 - **Memory:** the bounded pipeline keeps peak memory under [NFR-004](PRD.md#nfr-004--memory-ceiling) for any batch size ([OPTIMIZATION.md §4.3](OPTIMIZATION.md#43-parallelism-and-back-pressure)).
 - **Panics:** the app shell installs a panic hook that logs locally and shows a friendly dialog. Worker panics are caught and turned into per-photo errors. The release profile unwinds (`panic = "unwind"`, ADR-0029) so that a panic inside a third-party decoder can be caught: rawler, which reads untrusted RAW files, runs inside `catch_unwind` in `crates/rawlgpl`, and its failure becomes a per-photo error, never a crash.
+- **Our own RAW decoder** ([ADR-0030](adr/0030-our-own-raw-decoder.md)): `crates/rawcore` has no `unsafe`; the TIFF reader bounds every offset and count (1,024 entries per directory), the pixel count is capped before any buffer is allocated, lossless JPEG rejects difference sizes above 16, and a bad file is an error, never a panic. Tested on samples cut short at 256 places and by 10 minutes of mutation testing ([TESTING.md §4](TESTING.md#4-fuzzing)).
 - **Camera RAW through rawler** ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)): the pixel count is checked against the import limits before any develop; rawler's network feature (`rawdb`) is off, and `cargo tree -p fotollection-core` still contains no networking crate.
 
 ### User-facing error messages

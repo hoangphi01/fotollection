@@ -216,14 +216,101 @@ impl RawDecoder for Rawler {
     }
 }
 
-/// The order RAW decoders are tried in (ADR-0029). macOS keeps `ImageIO` first (it corrects
-/// lens distortion), with rawler for what it cannot read; Windows uses rawler, with WIC
-/// for what rawler cannot read.
-pub fn decoders() -> [&'static dyn RawDecoder; 2] {
+/// Fotollection's own decoder (ADR-0030), for the formats that passed its quality gate:
+/// DNG for now. Its develop is finished to the camera's embedded JPEG (tone, lens shading
+/// and colour look); anything else it answers `Unsupported`, so the next decoder takes it.
+pub struct Own;
+
+fn own_error(e: fotollection_rawcore::RawError) -> CodecError {
+    use fotollection_rawcore::RawError as E;
+    match e {
+        E::Unsupported(_) => CodecError::Unsupported,
+        E::TooLarge(_) => CodecError::TooLarge(LIMITS.max_edge, LIMITS.max_edge),
+        E::Truncated => CodecError::Decode("the RAW file is cut short".into()),
+        E::Corrupt(why) => CodecError::Decode(format!("the RAW file is damaged: {why}")),
+    }
+}
+
+impl Own {
+    fn supports(bytes: &[u8], kind: RawKind) -> Result<(), CodecError> {
+        if kind == RawKind::Dng && fotollection_rawcore::supports(bytes) {
+            Ok(())
+        } else {
+            Err(CodecError::Unsupported)
+        }
+    }
+
+    /// The camera's own JPEG inside the file, decoded.
+    fn embedded(bytes: &[u8]) -> Option<RgbImage> {
+        let jpeg = fotollection_rawcore::dng::embedded_jpeg(bytes)?;
+        crate::codec::default_codec()
+            .decode(jpeg)
+            .ok()
+            .map(|d| d.image)
+    }
+}
+
+impl RawDecoder for Own {
+    fn decode(&self, bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError> {
+        Self::supports(bytes, kind)?;
+        let linear = fotollection_rawcore::develop(bytes).map_err(own_error)?;
+        let look = Self::embedded(bytes).and_then(|jpeg| {
+            fotollection_rawcore::match_look(
+                &linear,
+                &fotollection_rawcore::Reference {
+                    width: jpeg.width as usize,
+                    height: jpeg.height as usize,
+                    rgb: &jpeg.data,
+                },
+            )
+        });
+        let picture = match look {
+            Some(look) => fotollection_rawcore::finish_look(&linear, &look),
+            None => {
+                fotollection_rawcore::finish(&linear, &fotollection_rawcore::default_curve(&linear))
+            }
+        };
+        let (Ok(width), Ok(height)) = (u32::try_from(picture.width), u32::try_from(picture.height))
+        else {
+            return Err(CodecError::TooLarge(LIMITS.max_edge, LIMITS.max_edge));
+        };
+        let image = RgbImage::from_raw(width, height, picture.rgb)
+            .ok_or_else(|| CodecError::Decode("unexpected pixel layout".into()))?;
+        Ok(Decoded { image, icc: None })
+    }
+
+    fn dimensions(&self, bytes: &[u8], kind: RawKind) -> Result<(u32, u32), CodecError> {
+        Self::supports(bytes, kind)?;
+        let (w, h) = fotollection_rawcore::dimensions(bytes).map_err(own_error)?;
+        match (u32::try_from(w), u32::try_from(h)) {
+            (Ok(w), Ok(h)) => Ok((w, h)),
+            _ => Err(CodecError::TooLarge(LIMITS.max_edge, LIMITS.max_edge)),
+        }
+    }
+
+    fn preview(&self, bytes: &[u8], kind: RawKind, max_px: u32) -> Result<Decoded, CodecError> {
+        Self::supports(bytes, kind)?;
+        let image = match Self::embedded(bytes) {
+            Some(image) => image,
+            None => self.decode(bytes, kind)?.image,
+        };
+        let small = crate::render::fit_long_edge(&image, max_px)
+            .map_err(|e| CodecError::Decode(e.to_string()))?;
+        Ok(Decoded {
+            image: small,
+            icc: None,
+        })
+    }
+}
+
+/// The order RAW decoders are tried in (ADR-0029, ADR-0030). Our own decoder goes first for
+/// the formats it reads. Then macOS keeps `ImageIO` (it corrects lens distortion), with
+/// rawler for what it cannot read; Windows uses rawler, with WIC for what rawler cannot read.
+pub fn decoders() -> [&'static dyn RawDecoder; 3] {
     if cfg!(target_os = "macos") {
-        [&Os, &Rawler]
+        [&Own, &Os, &Rawler]
     } else {
-        [&Rawler, &Os]
+        [&Own, &Rawler, &Os]
     }
 }
 
@@ -362,6 +449,13 @@ mod tests {
             );
             let thumb = Rawler.preview(&bytes, expected, 400)?;
             assert!(thumb.image.width.max(thumb.image.height) <= 400);
+            // Our own decoder, where it reads the format: same rule.
+            if let Ok((w, h)) = Own.dimensions(&bytes, expected) {
+                let developed = Own.decode(&bytes, expected)?;
+                assert_eq!((developed.image.width, developed.image.height), (w, h));
+                let thumb = Own.preview(&bytes, expected, 400)?;
+                assert!(thumb.image.width.max(thumb.image.height) <= 400);
+            }
         }
         Ok(())
     }

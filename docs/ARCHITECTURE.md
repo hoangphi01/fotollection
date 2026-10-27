@@ -96,8 +96,8 @@ crates/
       export.rs          † # bounded parallel export, cancel, per-photo errors, no overwrite (FR-008/009/011)
       thumbs.rs          † # T0 (embedded) + T1 disk cache (DATABASE.md §8)
     benches/               # criterion benchmarks (see OPTIMIZATION.md)
-    fuzz/                  # cargo-fuzz targets (see TESTING.md)
   oscodec/               † # HEIC and camera RAW via ImageIO (macOS) / WIC (Windows): decode, dimensions, embedded preview; one of the two crates allowed `unsafe` (ADR-0017, ADR-0023)
+  rawcore/               † # our own camera RAW decoder (ADR-0030), pure Rust, no `unsafe`: `tiff` (bounded IFD reader), `ljpeg` (lossless JPEG), `dng`, `cfa`, `demosaic` (Malvar–He–Cutler), `color` (the DNG colour model), `tone` (the camera's look from its embedded JPEG); `examples/mutate.rs` (mutation testing). First in `raw::decoders()` for the formats it has taken over (DNG); notes per format in `docs/raw/`
   rawlgpl/               † # camera RAW through rawler (LGPL-2.1, ADR-0029): develop, embedded preview, size; panics caught; the only crate with an LGPL dependency, removed before any relicensing
   oscamera/              † # cameras over USB (ADR-0026, ADR-0028): `ptp` (pure, tested on hand-made answers), `vendor/sony.rs` (Sony's handshake, shutter, settings block and live view from `docs/cameras/sony.md`; pure, tested), `macos` (ImageCaptureCore: browse, session, any PTP operation, events), `windows` (WPD through its MTP extension commands, the same API, one thread per open camera); `examples/probe_camera.rs` (Step 0, macOS) and `examples/sony_remote.rs` (handshake, shot, live view). Used by the app through `src-tauri/src/camera.rs`; the other maker drivers come next. The other crate allowed `unsafe`
   geodata/               † # build-time packer for the GeoNames dataset (scripts/geodata/fetch-and-pack.sh); never shipped

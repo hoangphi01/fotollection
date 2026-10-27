@@ -223,11 +223,11 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P2 (v0.7.0, in progress).** Import camera RAW files natively, **without asking for DNG**: RW2 (Panasonic), CR2 and CR3 (Canon), NEF (Nikon), ARW (Sony), RAF (Fujifilm), ORF (Olympus / OM System) and DNG, each tested on a CC0 sample ([ADR-0023](adr/0023-raw-through-os-codecs.md)).
 
-- **Through the operating system's codecs**, as HEIC is ([ADR-0017](adr/0017-heic-through-os-codecs.md)): ImageIO on macOS, with the file's type identifier as a hint so TIFF-based RAW is developed rather than read as a TIFF; WIC with Microsoft's free *Raw Image Extension* on Windows. The Rust RAW decoders and LibRaw are LGPL, which [ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md) rules out.
+- **Three decoders, tried in order** ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md), [ADR-0030](adr/0030-our-own-raw-decoder.md)): Fotollection's own reader for the formats it has taken over (DNG for now), finished to the camera's embedded JPEG; then on macOS ImageIO (with the file's type identifier as a hint, as for HEIC, [ADR-0017](adr/0017-heic-through-os-codecs.md)) and rawler (LGPL-2.1, built in) for what it cannot read; on Windows rawler, with WIC and Microsoft's *Raw Image Extension* as the fallback. rawler is removed once our own reader covers every format, before any relicensing ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)).
 - **Recognised by content**, never by extension: each format's own magic bytes, or for TIFF-based RAW the header plus IFD0 (`DNGVersion`, the maker in `Make`). CR3 is no longer mistaken for HEIC.
 - **Two paths** ([NFR-017](#nfr-017--camera-raw-speed)): thumbnails and best-shot analysis use the **preview embedded in every RAW** (9–80 ms); the print preview, zoom and export use the **full develop** (0.4–2.2 s), one at a time, and its size is the only one used for crops.
 - **EXIF** comes from the first 1 MB: RW2 and ORF are read as TIFF, RAF from its embedded JPEG, CR3 from its `CMT1`/`CMT2` boxes, Panasonic's ISO from its own tag. CR3's GPS is not read yet.
-- **Windows without the extension:** import skips RAW with `import.raw_codec_missing` and says what to install.
+- **Nothing to install:** with rawler built in, RAW opens on Windows without the extension (to be confirmed on a Windows PC before the release); a file no decoder reads is reported as unsupported.
 
 ### FR-017 — Photo book layout preview
 

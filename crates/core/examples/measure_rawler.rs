@@ -84,6 +84,31 @@ fn main() {
                 &curves,
             ))
         });
+        // Our own decoder, where it reads the format: develop, then the camera's tone.
+        let own = fotollection_rawcore::supports(&bytes).then(|| {
+            timed(|| {
+                let linear = fotollection_rawcore::develop(&bytes)?;
+                let jpeg = fotollection_rawcore::dng::embedded_jpeg(&bytes)
+                    .and_then(|j| fotollection_core::codec::default_codec().decode(j).ok());
+                let look = jpeg.as_ref().and_then(|d| {
+                    fotollection_rawcore::match_look(
+                        &linear,
+                        &fotollection_rawcore::Reference {
+                            width: d.image.width as usize,
+                            height: d.image.height as usize,
+                            rgb: &d.image.data,
+                        },
+                    )
+                });
+                Ok::<_, fotollection_rawcore::RawError>(match look {
+                    Some(look) => fotollection_rawcore::finish_look(&linear, &look),
+                    None => fotollection_rawcore::finish(
+                        &linear,
+                        &fotollection_rawcore::default_curve(&linear),
+                    ),
+                })
+            })
+        });
         let (os_prev, os_prev_ms) = timed(|| raw::preview(&bytes, kind, 2048));
         let (rl_prev, rl_prev_ms) = timed(|| fotollection_rawlgpl::preview(&bytes));
         let size = |w: u32, h: u32| format!("{w}×{h}");
@@ -101,6 +126,19 @@ fn main() {
         }
         if let Ok(d) = rl {
             write_png(&out.join(format!("{name}.rawler.png")), &d);
+        }
+        match own {
+            Some((Ok(pic), ms)) => {
+                println!("  rawcore: {ms:.0} ms, {}×{}", pic.width, pic.height);
+                let image = RgbImage {
+                    width: u32::try_from(pic.width).unwrap(),
+                    height: u32::try_from(pic.height).unwrap(),
+                    data: pic.rgb,
+                };
+                write_png(&out.join(format!("{name}.rawcore.png")), &image);
+            }
+            Some((Err(e), _)) => println!("  rawcore: {e}"),
+            None => {}
         }
         if let Ok(d) = os_prev {
             write_png(&out.join(format!("{name}.embedded.png")), &d.image);

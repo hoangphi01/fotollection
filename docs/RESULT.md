@@ -310,3 +310,22 @@ Measured before rawler was wired in ([ADR-0029](adr/0029-raw-through-rawler-then
 - **Low SSIM on the Olympus and the S5 is geometry, not quality:** ImageIO corrects lens distortion, which those lenses rely on; rawler does not. The Olympus has no embedded image either, so it gets the default curve.
 - **Size:** the macOS app binary is 36.0 MB without rawler, 39.5 MB with it, and 44.7 MB with `panic = "unwind"` (needed to catch a panic inside rawler).
 - Decision (ADR-0029): rawler first on Windows (RAW with nothing to install), ImageIO first on macOS (distortion corrected), each the other's fallback.
+
+## 16. Our own RAW decoder, DNG (v0.8.0, measured first)
+
+Measured before `Own` took DNG over ([ADR-0030](adr/0030-our-own-raw-decoder.md)) with `crates/core/examples/measure_rawler.rs`, `raw_memory.rs`, `raw_phases.rs` and `bench/quality/raw_compare.py`, on the Ricoh GR III sample of §12, REF-MAC (M3), release build, median of 3. Each develop is finished to the camera's embedded JPEG; colour and structure are scored on 1600 px copies.
+
+| Ricoh GR III (DNG) | rawcore | rawler + finish | ImageIO |
+|------|-----:|-----:|-----:|
+| Develop, with the look | **355 ms** | 640 ms | 554 ms |
+| Peak memory (`/usr/bin/time -l`) | **526 MB** | 1.33 GB | 668 MB |
+| ΔE2000 to the embedded JPEG | **2.67** | 4.08 | 5.22 |
+| ΔE2000, colour only (200 px, detail averaged out) | **1.76** | 2.84 | 4.66 |
+| SSIM to the embedded JPEG | 0.992 | 0.987 | 0.968 |
+| SSIM to ImageIO | 0.976 | | |
+
+- **Where the time goes** (`raw_phases`): lossless JPEG 109 ms (241 ms before a 12-bit Huffman lookup table), demosaic 34 ms (179 ms before reading from a padded buffer), finish 48 ms (123 ms before an sRGB encode table), the look fit and the embedded JPEG the rest.
+- **Lens shading was the biggest error:** with colour and tone matched but no shading, ΔE was 3.8, the centre 4 L\* too bright and the corners 1.5 too dark. Fitting `exp(a·r² + b·r⁴)` from the JPEG brings every region within ±0.5 L\*.
+- **Robustness:** the sample cut short at 256 places never panics, and 10 minutes of mutation testing (`examples/mutate.rs`: cuts, flipped bytes, extreme values in the directories, damaged compressed data) ran 1,597 inputs with no panic.
+- **Grey baseline for RW2** (Panasonic S5 sample, the six grey patches of its SpyderCheckr 24, mean C\*; 0 is a perfect grey): embedded JPEG 1.26, ImageIO 1.38, rawler + finish 2.43 (worst patch 4.48). rawcore must reach ≤ 1.5 when it takes RW2.
+- Decision (ADR-0030): DNG goes to our own decoder first on both systems; ImageIO and rawler stay the fallback for every other format and for DNG variants it refuses.

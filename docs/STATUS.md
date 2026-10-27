@@ -18,7 +18,7 @@
   4. Capture on macOS through ImageCaptureCore.
   5. All camera controls: tap to focus, exposure, focus mode, white balance, JPEG/RAW, self-timer (USB captures on Windows first).
   6. A STYLE_RULE audit of the capture screen, with real screenshots.
-  7. RAW built in ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)): ✓ 7a rawler behind the `RawDecoder` trait, finished to the camera's embedded JPEG (`raw_finish`), first on Windows, fallback on macOS; measured (RESULT §15). Left for 7a: try RAW on a Windows PC **without** the Raw Image Extension, then drop the extension from the site and the guide. 7b: our own decoder, ARW and RW2 first.
+  7. RAW built in ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)): ✓ 7a rawler behind the `RawDecoder` trait, finished to the camera's embedded JPEG (`raw_finish`), first on Windows, fallback on macOS; measured (RESULT §15). Left for 7a: try RAW on a Windows PC **without** the Raw Image Extension, then drop the extension from the site and the guide. 7b: our own decoder ([ADR-0030](adr/0030-our-own-raw-decoder.md), `crates/rawcore`): ✓ DNG, first on both systems, faster, lighter and closer to the camera's JPEG than rawler and ImageIO (RESULT §16). Next ARW (a6400), RW2 (GX9, S5 greys ≤ 1.5), lens distortion, then NEF, CR2, ORF, CR3, RAF; rawler goes when all have moved.
 - **Then:**
 
 - **v0.8.0 "Places and Lightroom"**, measured first ([RESULT.md §14](RESULT.md#14-places-and-time-v080-measured-first)), following [ADR-0027](adr/0027-effective-time-and-place.md):
