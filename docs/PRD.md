@@ -630,9 +630,9 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-058 — Lightroom compatibility through XMP
 
-**P2 (planned, not started).** Work culled in Lightroom, Bridge, Capture One or darktable comes into Fotollection, and Fotollection's work can go back out, through **XMP** sidecar files: XMP is XML with standard fields those apps share, so it is used instead of a format of our own.
+**P2 (v0.8.0: reading stars and rejects).** Work culled in Lightroom, Bridge, Capture One or darktable comes into Fotollection, and Fotollection's work can go back out, through **XMP** sidecar files: XMP is XML with standard fields those apps share, so it is used instead of a format of our own.
 
-- **Read on import (always, read-only):** an `IMG_0416.xmp` or `IMG_0416.RW2.xmp` next to a photo gives its stars, the reject flag (`xmp:Rating = -1`), the crop and the straightening (`crs:Crop*`, `crs:CropAngle`), for photos not yet edited in Fotollection.
+- **Read on import (always, read-only):** an `IMG_0416.xmp` or `IMG_0416.RW2.xmp` next to a photo gives its stars and the reject flag (`xmp:Rating`, −1 for a reject; v0.8.0), for photos not yet edited in Fotollection: a project restored afterwards wins. The crop and the straightening (`crs:Crop*`, `crs:CropAngle`) follow once their coordinates and the angle's sign are checked against a real Lightroom sidecar; the `crs:` fields have no public specification.
 - **Write (a setting, off by default):** the same standard fields, plus Fotollection's own work (stamp, frame, print size, pick flag) in a `fotollection:` namespace that other apps ignore. Only `.xmp` files are created or updated, atomically, never a photo; an existing sidecar keeps every field Fotollection does not own (edited at the XML event level with `quick-xml`, MIT).
 - **Known limit, to confirm with Lightroom itself:** Lightroom Classic reads sidecars only for RAW files; for JPEG and PNG it reads XMP embedded in the file, which Fotollection does not modify. Lightroom's pick flag lives only in its catalog.
 - Writing next to photos changes the "nothing is written into source folders" rule, so it needs an ADR and updates to [SECURITY.md](SECURITY.md) and §9.

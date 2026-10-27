@@ -129,6 +129,10 @@ The photos move in the grid, and the date stamp, the info frame, day folders and
 
 **Rename a place** ([FR-005](PRD.md#fr-005--location-stamp-offline)): the settings panel's **Places** card lists every place on your photos. Type the name you want printed, like `Prague` for `Praha 1` or `Grandma's`, and every stamp and frame with that place follows; the arrow button brings the original name back.
 
+### 7.1 Stars from Lightroom and other apps
+
+When a folder you open was culled in Lightroom, Bridge, Capture One or darktable, the stars and rejects they saved in XMP sidecar files (`IMG_0416.xmp` or `P1000123.RW2.xmp` next to the photo) come in with the photos ([FR-058](PRD.md#fr-058--lightroom-compatibility-through-xmp)). The sidebar says how many. Your own stars and flags in a Fotollection project win over the sidecar, and the sidecar is never changed. Lightroom Classic writes sidecars only for RAW files, and only when *Automatically write changes into XMP* is on (or after *Metadata → Save Metadata to File*).
+
 ## 8. Shooting with a camera connected
 
 With a camera plugged in by cable, Fotollection shows what it sees and takes the photo ([FR-062](PRD.md#fr-062--live-view-from-a-camera), [FR-063](PRD.md#fr-063--tethered-capture-over-usb)). For now this works on Windows, with the Sony a6400. Other Sony bodies of the same years may work, but they are not checked yet.

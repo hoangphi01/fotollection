@@ -273,6 +273,11 @@ export function LibrarySidebar({
           </ul>
         )}
       </ScrollArea>
+      {lastImport && lastImport.fromXmp > 0 && (
+        <p className="border-t px-4 py-2 text-xs text-muted-foreground">
+          {t('library.fromXmp', { count: lastImport.fromXmp })}
+        </p>
+      )}
       {lastImport && lastImport.rejectedTotal > 0 && (
         <p
           className="border-t px-4 py-2 text-xs text-muted-foreground"

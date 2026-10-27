@@ -79,6 +79,7 @@ crates/
                            # score.rs (robust z within the group + reasons), cache.rs (analysis/)
       timeline.rs          # clock offsets, manual date/place, GPS borrowing + GPX (FR-030/031/032)
       geocode.rs         † # offline reverse geocoder + place search: bundled GeoNames, BLAKE3-checked, 1° grid index (FR-005/032)
+      xmp.rs             † # XMP sidecars of other apps, read only on import: `xmp:Rating` → stars or reject; ≤ 1 MB, no DTD (FR-058)
       places.rs          † # a photo's effective place (ADR-0027): set by hand → borrowed → GPS → none, with the user's names for renamed places (FR-005/031/032)
       cluster.rs           # trip DBSCAN (Phase 2)
       library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag)

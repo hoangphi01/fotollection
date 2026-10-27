@@ -9,14 +9,15 @@
 
 | Type | Extension | MIME type | UTI | Recognized by | Container | Current version | Status |
 |------|-----------|-----------|-----|---------------|-----------|-----------------|--------|
-| Project (legacy, and the session autosave) | `.fotollection` | `application/vnd.fotollection.project+json` | `com.hoangphi01.fotollection.project` | `"format": "fotollection-project"` | JSON, UTF-8 | `schema_version` 6 | Implemented: read always, written only for the session autosave |
+| Project (legacy, and the session autosave) | `.fotollection` | `application/vnd.fotollection.project+json` | `com.hoangphi01.fotollection.project` | `"format": "fotollection-project"` | JSON, UTF-8 | `schema_version` 8 | Implemented: read always, written only for the session autosave |
 | Project bundle | `.fotollection` | `application/vnd.fotollection.project+zip` | `com.hoangphi01.fotollection.project` | ZIP magic `PK\x03\x04` + `manifest.json` with `"format": "fotollection-bundle"` | ZIP (deflate) | manifest `schema_version` 1 | Implemented ([ADR-0016](adr/0016-self-contained-project-bundle.md)): what Save / Save As write |
 | Preset | `.fotopreset` | `application/vnd.fotollection.preset+json` | `com.hoangphi01.fotollection.preset` | `"format": "fotollection-preset"` | JSON, UTF-8 | `schema_version` 1 (draft) | Planned ([FR-038](PRD.md#fr-038--print-presets)) |
-| App settings | `settings.json` | `application/json` | — (internal) | `"format": "fotollection-settings"` | JSON, UTF-8 | `schema_version` 8 | Implemented |
+| App settings | `settings.json` | `application/json` | — (internal) | `"format": "fotollection-settings"` | JSON, UTF-8 | `schema_version` 9 | Implemented |
 | User font | `fonts/<id>.ttf`, `fonts/<id>.otf` | `font/ttf`, `font/otf` | — (internal copy) | Magic `00 01 00 00` / `true` (TTF), `OTTO` (OTF) | sfnt | — | Implemented ([FR-042](PRD.md#fr-042--custom-fonts)) |
 | Camera logo | `logos/<id>.png` | `image/png` | — (internal copy) | PNG magic | PNG | — | Implemented ([FR-040](PRD.md#fr-040--exif-info-frame)) |
 | Thumbnail cache | `thumbs/…` | `image/jpeg` | — (internal) | Path only | JPEG files | — | Implemented; disposable |
 | Bundled places | `places.bin` (compiled in) | — | — (internal) | `FGEO` magic + version | Custom binary ([GEODATA.md](../crates/core/assets/geo/GEODATA.md)) | 1 | Implemented ([FR-005](PRD.md#fr-005--location-stamp-offline)) |
+| XMP sidecar (other apps') | `<name>.xmp`, `<name>.<ext>.xmp` next to a photo, either case | `application/rdf+xml` | `com.adobe.xmp` | Its name next to an imported photo; parsed as XML with namespaces | XML (XMP, RDF) | — | Read only, on import ([FR-058](PRD.md#fr-058--lightroom-compatibility-through-xmp)): `xmp:Rating` gives 1–5 stars or the reject flag (−1); ≤ 1 MB, no DTD. Never written |
 | Analysis cache | `analysis/<aa>/<key>.json` | `application/json` | — (internal) | Path only | JSON, UTF-8 | `version` = `ANALYSIS_VERSION` 2 | Implemented; disposable ([FR-041](PRD.md#fr-041--best-shot-suggestions)) |
 
 The `.fotollection` extension is shared by both project containers. **A reader always identifies a file by its content, never by its extension:** JSON with the `format` field, or ZIP with a `manifest.json`.

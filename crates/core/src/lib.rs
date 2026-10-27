@@ -39,6 +39,7 @@ pub mod stamp;
 pub mod straighten;
 pub mod text;
 pub mod thumbs;
+pub mod xmp;
 
 pub use print_size::PrintSize;
 

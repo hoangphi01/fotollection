@@ -39,6 +39,8 @@ export const commands = {
 	/**  Up to 50 rejected files, with their reason codes. */
 	rejected: RejectedSummary[],
 	rejectedTotal: number,
+	/**  New photos that took their stars or reject flag from an XMP sidecar (FR-058). */
+	fromXmp: number,
 } | null, IpcError>(__TAURI_INVOKE("pick_and_import_folder")),
 	/**
 	 *  Scans the library's folders again and adds photos that appeared since (FR-001). Photos
@@ -798,6 +800,8 @@ export type ImportSummary = {
 	/**  Up to 50 rejected files, with their reason codes. */
 	rejected: RejectedSummary[],
 	rejectedTotal: number,
+	/**  New photos that took their stars or reject flag from an XMP sidecar (FR-058). */
+	fromXmp: number,
 };
 
 /**  Error shape for every IPC command: a stable code plus a human-readable message. */

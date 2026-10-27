@@ -13,6 +13,7 @@ rust-version = "1.99"
 fotollection-core = { path = "crates/core" }
 fotollection-oscodec = { path = "crates/oscodec" }
 fotollection-oscamera = { path = "crates/oscamera" }
+quick-xml = "0.42"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"

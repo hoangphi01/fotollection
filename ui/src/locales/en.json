@@ -42,7 +42,9 @@
     "aside": "Set aside",
     "asideHint": "Photos you put aside with ↓: out of the gallery, never deleted; open them to decide again",
     "inBasket": "In the print basket",
-    "placeBorrowed": "Place borrowed from a phone photo"
+    "placeBorrowed": "Place borrowed from a phone photo",
+    "fromXmp_one": "Stars or reject from {{count}} XMP sidecar (Lightroom, Bridge…)",
+    "fromXmp_other": "Stars or rejects from {{count}} XMP sidecars (Lightroom, Bridge…)"
   },
   "task": {
     "import": "Reading photos",

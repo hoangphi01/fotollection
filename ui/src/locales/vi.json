@@ -39,7 +39,9 @@
     "aside": "Để riêng",
     "asideHint": "Ảnh bạn gạt ra bằng ↓: không hiện trong gallery, không bao giờ bị xoá; mở ra để quyết định lại",
     "inBasket": "Trong giỏ in",
-    "placeBorrowed": "Vị trí mượn từ ảnh điện thoại"
+    "placeBorrowed": "Vị trí mượn từ ảnh điện thoại",
+    "fromXmp_one": "Lấy sao hoặc cờ loại từ {{count}} tệp XMP (Lightroom, Bridge…)",
+    "fromXmp_other": "Lấy sao hoặc cờ loại từ {{count}} tệp XMP (Lightroom, Bridge…)"
   },
   "task": {
     "import": "Đang đọc ảnh",

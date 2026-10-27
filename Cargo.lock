@@ -1546,6 +1546,7 @@ dependencies = [
  "little_exif",
  "png",
  "qcms",
+ "quick-xml 0.42.0",
  "rayon",
  "serde",
  "serde_json",

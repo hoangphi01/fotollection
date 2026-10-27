@@ -67,6 +67,7 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, through the system's own codecs; thumbnails from the preview inside each file. **Windows: needs the free Raw Image Extension for now** (a built-in reader is in progress) | 3 |
 | 🖱️ | **Open with Fotollection** from Finder or Explorer: the photo opens at once and its folder becomes a tab | 2 |
 | ⏱️ | **Camera clocks**: a camera set to the wrong time is corrected from one phone photo of the same moment; every photo from it moves, the files stay untouched | 2 |
+| ⭐ | **Stars from Lightroom**: stars and rejects saved in XMP sidecars by Lightroom, Bridge, Capture One or darktable come in with the photos; the sidecars are never changed | 2 |
 | 🧭 | **Places from your phone**: a camera without GPS takes the place of a phone photo of the same scene shot minutes apart; sure matches are filled in, the rest are shown side by side to accept | 2 |
 | 📍 | **Dates and places by hand**: give scans and photos without EXIF or GPS a date and a place, one photo or many at once, with an offline place search; rename a place ("Praha 1" → "Prague") and every print follows | 2 |
 | 🎥 | **Shoot from a camera on a cable**: live view with the print's shape, Capture, and the shots in a tab to save or delete; no driver to install (Windows, Sony a6400 first) | MVP |

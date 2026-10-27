@@ -68,6 +68,7 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | 📷 | **Ảnh RAW** nguyên dạng, không cần DNG: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG, qua codec có sẵn của hệ điều hành; ảnh thu nhỏ lấy từ bản xem trước trong mỗi tệp. **Windows: hiện vẫn cần cài Raw Image Extension miễn phí** (bộ đọc tích hợp sẵn đang được làm) | 3 |
 | 🖱️ | **Mở ảnh bằng Fotollection** từ Finder hoặc Explorer: ảnh mở ngay, thư mục của ảnh thành một tab | 2 |
 | ⏱️ | **Đồng hồ máy ảnh**: máy để sai giờ được chỉnh theo một ảnh điện thoại chụp cùng lúc; mọi ảnh của máy đó dịch theo, tệp ảnh không bị sửa | 2 |
+| ⭐ | **Sao từ Lightroom**: số sao và cờ loại mà Lightroom, Bridge, Capture One hay darktable lưu trong tệp XMP đi kèm được nhập cùng ảnh; tệp XMP không bao giờ bị sửa | 2 |
 | 🧭 | **Vị trí từ điện thoại**: ảnh máy ảnh không có GPS lấy vị trí từ ảnh điện thoại chụp cùng cảnh cách vài phút; cặp chắc chắn được điền ngay, cặp còn lại hiện cạnh nhau để bạn duyệt | 2 |
 | 📍 | **Đặt ngày và nơi bằng tay**: gán ngày và nơi chụp cho ảnh scan, ảnh không có EXIF hay GPS, từng ảnh hoặc nhiều ảnh một lúc, tìm địa điểm offline; đổi tên một nơi ("Praha 1" → "Prague") thì mọi bản in đổi theo | 2 |
 | 🎥 | **Chụp từ máy ảnh cắm dây**: xem trực tiếp với khung cỡ in, bấm Chụp, ảnh vào một tab để lưu hoặc xóa; không cần cài driver (Windows, Sony a6400 trước) | MVP |

@@ -104,9 +104,18 @@ pub struct ImportSummary {
     /// Up to 50 rejected files, with their reason codes.
     pub rejected: Vec<RejectedSummary>,
     pub rejected_total: u32,
+    /// New photos that took their stars or reject flag from an XMP sidecar (FR-058).
+    pub from_xmp: u32,
 }
 
 const MAX_REPORTED_REJECTIONS: usize = 50;
+
+/// A file found on import, with its metadata and its XMP sidecar, if any (FR-058).
+type ReadFile = (
+    ImportedFile,
+    metadata::PhotoMeta,
+    Option<fotollection_core::xmp::Sidecar>,
+);
 
 /// Lets progress events through at most ~30 times per second, plus the final one
 /// (ARCHITECTURE.md §5).
@@ -184,25 +193,39 @@ pub fn import_paths_with(app: &AppHandle, paths: Vec<PathBuf>, recursive: bool) 
         // EXIF reads are independent and I/O-bound: do them in parallel.
         let total = u32::try_from(scan.accepted.len()).unwrap_or(u32::MAX);
         let tick = progress_reporter(app, TaskKind::Import, total);
-        let with_meta: Vec<(ImportedFile, metadata::PhotoMeta)> =
-            state.background_pool.install(|| {
-                scan.accepted
-                    .into_par_iter()
-                    .map(|file| {
-                        let meta = metadata::read_path(&file.path);
-                        tick();
-                        (file, meta)
-                    })
-                    .collect()
-            });
+        // A sidecar next to the photo (FR-058) is two file checks, about 1 µs (RESULT §14).
+        let with_meta: Vec<ReadFile> = state.background_pool.install(|| {
+            scan.accepted
+                .into_par_iter()
+                .map(|file| {
+                    let meta = metadata::read_path(&file.path);
+                    let sidecar = fotollection_core::xmp::read_for(&file.path);
+                    tick();
+                    (file, meta, sidecar)
+                })
+                .collect()
+        });
 
         if let Ok(mut library) = state.library.write() {
             let folder = library.add_folder(&folder_root);
-            for (file, meta) in &with_meta {
+            for (file, meta, sidecar) in &with_meta {
                 match library.push(folder, file, meta) {
                     Some(id) => {
                         summary.added += 1;
                         new_ids.push(id);
+                        // Stars and rejects from Lightroom and co. A project restored
+                        // afterwards still wins, so Fotollection's own work is never lost.
+                        if let Some(sidecar) = sidecar.filter(|s| s.stars.is_some() || s.rejected) {
+                            library.set_edits(
+                                id,
+                                PhotoEdits {
+                                    rating: sidecar.stars.unwrap_or(0),
+                                    flag: sidecar.rejected.then_some(Flag::Reject),
+                                    ..PhotoEdits::default()
+                                },
+                            );
+                            summary.from_xmp += 1;
+                        }
                     }
                     None => summary.duplicates += 1,
                 }
