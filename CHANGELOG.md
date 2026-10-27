@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: dates and places by hand, renamed places, and places borrowed from your phone's photos of the same scene
+- New: stars and rejects come in from Lightroom, Bridge, Capture One and darktable (XMP sidecars)
+- New: camera clocks, a 3 mm border in Crop to fill, and Check for updates
+- New: RAW built into the app, with our own reader for DNG; shoot with a Sony a6400 plugged in (Windows)
+- Not yet tried on Windows in this build: RAW without the Raw Image Extension, and the latest camera fixes
+
 ### Added
 
 - **Shoot with a camera plugged in (FR-062, FR-063), Windows, Sony a6400 first:**
@@ -15,8 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   2. Click the camera button next to *Open folder*.
   3. The capture screen shows the camera's live view with the print size's shape over it, and its ISO, shutter speed, aperture and file format. *Capture* (or Space) takes a photo, and the shots line up under the live view.
 
-  The photos go to a temporary tab. Close the screen, look them over, then *Save all* to the folder you choose, with your crops and stamps kept, or *Delete photos*. Quitting the app with shots not saved asks the same question, and a session left by a crash comes back as a tab. No driver to install. RAW shots open through the built-in RAW reader.
-- **Camera RAW built in on Windows (FR-016):** RAW photos open without Microsoft's Raw Image Extension, through a RAW reader inside Fotollection, with colours matched to the camera's own JPEG. On macOS the system's reader stays first, and the built-in one opens what it cannot. (To be confirmed on a Windows PC before the release.)
+  The photos go to a temporary tab. Close the screen, look them over, then *Save all* to the folder you choose, with your crops and stamps kept, or *Delete photos*. Quitting the app with shots not saved asks the same question, and a session left by a crash comes back as a tab. No driver to install. RAW shots open through the built-in RAW reader. Basic capture and live view were tried on Windows; the quit question, Save all and unplugging during a session are not yet tried there in this build.
+- **Camera RAW built in on Windows (FR-016):** RAW photos open without Microsoft's Raw Image Extension, through a RAW reader inside Fotollection, with colours matched to the camera's own JPEG. On macOS the system's reader stays first, and the built-in one opens what it cannot. Not yet tried on a Windows PC without the extension in this build: if a RAW photo does not open, install Microsoft's free Raw Image Extension, which still works as before.
 - **Our own RAW reader, DNG first (FR-016):** DNG photos straight from a camera's sensor (tried on a Ricoh GR III file) now open through a reader written for Fotollection, the same on macOS and Windows; other DNG, such as Apple ProRAW, still open through the reader they used before. A DNG develops in about a third of a second with less memory, and its colours, tone and corner brightness follow the camera's own JPEG more closely than before. Other RAW formats follow one by one.
 
 - **Camera clocks (FR-030):** a camera set to the wrong time no longer puts its photos in the wrong order. Open one of its photos and pick your phone's photo of the same moment, or type the correction in **Camera clocks** in the settings. Every photo from that camera moves, the date stamp and day folders follow, and the photo files are never changed.
