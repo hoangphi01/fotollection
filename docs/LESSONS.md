@@ -1,6 +1,6 @@
 # Lessons — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-10-25
+> **Status:** Living · **Last reviewed:** 2026-10-27
 >
 > What each debugging session taught us, so the same mistake is not made twice. Every bug that took more than one look to find gets an entry here in the same commit as its fix ([DOCS_GUIDE.md](DOCS_GUIDE.md) §2). Newest first. Each entry says what we saw, why it happened, the fix, and the rule to follow from now on. Performance-only lessons stay in [OPTIMIZATION.md](OPTIMIZATION.md) (for example §4.3.1, interactive work off background queues).
 
@@ -10,6 +10,22 @@
 2. **Split the path and log both ends.** A temporary log on the UI side (what was asked) and one on the Rust side (what was answered, how long) tells which layer fails in one try. Name them `DEBUG-…` and remove them before the commit (`grep -rn DEBUG ui/src src-tauri/src` must be empty).
 3. **Reproduce with the user's photo when the user sees it.** A synthetic test passed while the real app was soft: unit tests prove the pixels, only the real webview proves what is shown.
 4. **Write the lesson here** before moving on.
+
+## 2026-10-27
+
+### Our own DNG was 1 ΔE off the camera's JPEG because of the lens, not the colour (ADR-0030)
+
+- **Seen:** with the DNG colour model, one tone curve and a fitted 3×3 matrix, rawcore stayed at ΔE 3.8 from the embedded JPEG, and more matrix or curve freedom did not help.
+- **Why:** an error map by region showed it: the centre about 4 L\* too bright, the corners 1.5 too dark. The camera corrects its lens's vignetting in the JPEG; the raw data does not. A global curve cannot fix an error that depends on the position.
+- **Fix:** a radial gain `exp(a·r² + b·r⁴)` fitted from the JPEG, alternating with the curve fit; ΔE 2.67, every region within ±0.5 L\*.
+- **Rule:** when a global fit stops improving, map the error by region before adding parameters.
+
+### TESTING.md described fuzz targets that had never been made
+
+- **Seen:** the RAW quality gate asked for fuzzing, and TESTING.md listed four targets under `crates/core/fuzz/`. The folder does not exist, and the machine has no nightly toolchain or cargo-fuzz.
+- **Why:** the testing plan was written before the code, as if it were already done, and nothing checked it.
+- **Fix:** mutation testing on stable Rust (`crates/rawcore/examples/mutate.rs`); TESTING.md now says which fuzzing exists and which is planned.
+- **Rule:** docs say "planned" for what is not built yet; check that a path a doc names exists before relying on it.
 
 ## 2026-10-26
 
