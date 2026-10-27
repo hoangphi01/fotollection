@@ -77,7 +77,7 @@ erDiagram
 | `folders` | `id` | `path` | `path`, `path_kind`, `absolute` (v2) | — |
 | `photos` | `id` | (`folder`, `path`) | `folder`, `path`, `fp_size`, `fp_mtime`, `fp_head`, then sparse: `rating`, `flag`, `copies`, `print_size`, `crop_x/y/w/h`, `manual_date`, `place`, `place_source`, `preset`, `overrides`, `trip` | `folder` → `folders`, `place` → `places`, `preset` → `presets`, `trip` → `trips` |
 | `cameras` | `id` | (`make`, `model`, `serial`) | `make`, `model`, `serial`, `offset_s`, `time_zone` | — |
-| `places` | `id` | (`name`, `lat`, `lon`) | `name`, `country`, `lat`, `lon`, `geonames_id?` | — |
+| `places` | `geonames_id` | `geonames_id` | `name` (v8: only places the user renamed; everything else comes from the bundled GeoNames data, [ADR-0003](adr/0003-offline-geocoding-geonames.md)) | — |
 | `presets` | `id` (UUID string, shared with the library) | `id` + `revision` | `revision`, `name`, `group`, `kind`, `includes`, values ([§7](#7-presets)) | — |
 | `trips` | `id` | — | `name`, `start`, `end` | — |
 | `settings` | — (singleton) | — | `default_print_size`, `default_preset`, `safe_area_mm`, `color_*`, `export_*` | `default_preset` → `presets` |
@@ -187,8 +187,9 @@ Photo 18 stores only its flag. Every other value comes from `settings` (rule N5)
 | `copies` | 1–99 | Omitted when 1 ([FR-024](PRD.md#fr-024--copies-and-order-summary)) |
 | `print_size` | `PrintSize.id` | Omitted when equal to the default ([FR-025](PRD.md#fr-025--mixed-print-sizes-per-order)) |
 | `crop` | `{ cx, cy, zoom }`: centre 0–1 of the upright photo, zoom 1–8 | **Ratio-independent** (N4): the rectangle is derived at render time for the current print size or framed photo area, so changing size never invalidates it. Sanitized on load |
-| `manual_date` | RFC 3339 | Overrides EXIF ([FR-032](PRD.md#fr-032--manual-date-and-place)) |
-| `place` + `place_source` | FK → `places` + `manual` / `device` / `gpx` | Only for **manual or inferred** places ([FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track), [FR-032](PRD.md#fr-032--manual-date-and-place)). GPS read from EXIF is never copied here (N4) |
+| `date` (planned as `manual_date`) | camera-local `YYYY-MM-DDTHH:MM:SS`, 1826–2100 (v8) | A date set by hand; it wins over the camera's time and any clock offset ([FR-032](PRD.md#fr-032--manual-date-and-place)). Unreadable or out-of-range values are dropped on load |
+| `place` + `place_source` | GeoNames id + `manual` / `borrowed` (v8) | Only for **manual or borrowed** places ([FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track), [FR-032](PRD.md#fr-032--manual-date-and-place)). GPS read from EXIF is never copied here (N4). An id not in the bundled data, or any other source, drops both on load |
+| `places[].name` | string, 1–80 characters (v8) | The name printed for a place the user renamed ([FR-005](PRD.md#fr-005--location-stamp-offline)), trimmed on load; empty names are dropped. Not part of the undo history, like camera clocks |
 | `preset` | FK → `presets` | Omitted when it equals `settings.default_preset` ([FR-038](PRD.md#fr-038--print-presets)) |
 | `overrides` | object of setting paths → values | Only the values that differ from the effective preset (N5) |
 | `cameras[].offset_s` | integer seconds | [FR-030](PRD.md#fr-030--camera-clock-offset) |
@@ -212,6 +213,7 @@ Parsing is strict: `serde` with `deny_unknown_fields`, typed enums, and range ch
 | 5 | 0.0.x (Stage 3) | `photos[].straighten`: the straightening angle in degrees, −15 to 15 (FR-006); absent when level. Values out of range are clamped and non-finite ones dropped on load. The crop's centre and zoom are then read in the straightened frame. **Migration v4 → v5:** optional field, read as is. Fixture `v5.fotollection`, test `fr_006_v5_fixture_keeps_straightening_within_limits` |
 | 6 | 0.5.x | `photos[].queue`: `print` (the print basket) or `aside` (set aside, out of the gallery, never deleted) (FR-050); absent when the photo is in the gallery. **Migration v5 → v6:** optional field, read as is, so older projects have nothing in either area. Fixtures `v5.fotollection` and `v6.fotollection`, test `fr_050_v6_keeps_the_basket_and_v5_files_have_none` |
 | 7 | 0.8.x | `cameras[]`: corrected camera clocks (FR-030, [ADR-0027](adr/0027-effective-time-and-place.md)), one row per body with `make`, `model`, `serial` (when the camera writes one), `offset_s` (seconds added to the camera's time, at most a month either way) and `tz_minutes` (optional, ±14 h); bodies without a correction are not written. Rows outside the limits are dropped on load. **Migration v6 → v7:** optional table, read as is, so older projects have no correction. Fixture `v7.fotollection`, test `fr_030_v7_fixture_keeps_camera_clocks_and_drops_impossible_ones` |
+| 8 | 0.8.x | `photos[].date` (a date set by hand, FR-032), `photos[].place` + `place_source` (a GeoNames id set by hand or borrowed, FR-032, FR-031) and `places[]` (`geonames_id`, `name`: places the user renamed, FR-005), following [ADR-0027](adr/0027-effective-time-and-place.md). Dates outside 1826–2100, unknown place ids, sources other than `manual`/`borrowed` and empty names are dropped on load. **Migration v7 → v8:** optional fields, read as is. Fixture `v8.fotollection`, tests `fr_032_v8_fixture_keeps_dates_places_and_names_and_drops_impossible_ones` and `fr_032_dates_and_places_round_trip_through_the_project` |
 
 ### 4.4 Write protocol
 

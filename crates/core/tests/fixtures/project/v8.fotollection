@@ -1,0 +1,66 @@
+{
+  "format": "fotollection-project",
+  "schema_version": 8,
+  "app_version": "0.8.0",
+  "modified_at": "2026-10-27T20:00:00+00:00",
+  "folders": [
+    {
+      "id": 1,
+      "path": "/Users/someone/Pictures/Scans",
+      "path_kind": "absolute"
+    }
+  ],
+  "photos": [
+    {
+      "id": 1,
+      "folder": 1,
+      "path": "scan_001.jpg",
+      "fp_size": 1200000,
+      "fp_mtime": 1726000000,
+      "date": "1994-07-14T15:30:00",
+      "place": 3067696,
+      "place_source": "manual"
+    },
+    {
+      "id": 2,
+      "folder": 1,
+      "path": "P1000123.JPG",
+      "fp_size": 5000000,
+      "fp_mtime": 1726000100,
+      "place": 721472,
+      "place_source": "borrowed"
+    },
+    {
+      "id": 3,
+      "folder": 1,
+      "path": "scan_002.jpg",
+      "fp_size": 1100000,
+      "fp_mtime": 1726000200,
+      "rating": 2,
+      "date": "1700-01-01T00:00:00",
+      "place": 4294967295,
+      "place_source": "manual"
+    },
+    {
+      "id": 4,
+      "folder": 1,
+      "path": "scan_003.jpg",
+      "fp_size": 1100000,
+      "fp_mtime": 1726000300,
+      "rating": 1,
+      "date": "not a date",
+      "place": 721472,
+      "place_source": "gps"
+    }
+  ],
+  "places": [
+    {
+      "geonames_id": 721472,
+      "name": "  Home  "
+    },
+    {
+      "geonames_id": 3067696,
+      "name": "   "
+    }
+  ]
+}

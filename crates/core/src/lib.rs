@@ -22,6 +22,7 @@ pub mod import;
 pub mod library;
 pub mod logo;
 pub mod metadata;
+pub mod places;
 pub mod plan;
 pub mod preview;
 pub mod print_advice;

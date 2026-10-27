@@ -589,6 +589,9 @@ mod tests {
                 rotation: None,
                 straighten: None,
                 queue: None,
+                date: None,
+                place: None,
+                place_source: None,
             }],
             cameras: vec![CameraRow {
                 make: Some("Panasonic".into()),
@@ -597,6 +600,7 @@ mod tests {
                 offset_s: 3_720,
                 tz_minutes: Some(60),
             }],
+            places: Vec::new(),
             document: None,
         }
     }

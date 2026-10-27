@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ClockMatchDialog } from '@/features/cameras/clock-match-dialog'
+import { DatePlaceDialog } from '@/features/places/date-place-dialog'
 import { CullControls } from '@/features/culling/cull-controls'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
@@ -158,6 +159,7 @@ export function PreviewDialog({
   const photo = index === null ? undefined : photos[index]
   const details = usePhotoDetails(photo?.id, revision)
   const [clockMatch, setClockMatch] = useState(false)
+  const [datePlace, setDatePlace] = useState(false)
   const printSizes = useIpcQuery(commands.listPrintSizes)
   // The same sharp / acceptable / pixelated advice as the settings panel (FR-026).
   const sizesKey = (settings?.customSizes ?? []).map((c) => `${c.id}:${c.shortMm}x${c.longMm}`).join()
@@ -495,7 +497,9 @@ export function PreviewDialog({
                   {t('viewer.cameraTime', { time: formatCaptureLong(details.cameraTime) })}
                 </p>
               )}
-              {photo?.dateFromFile ? (
+              {details?.dateManual ? (
+                <Badge variant="outline">{t('viewer.dateManual')}</Badge>
+              ) : photo?.dateFromFile ? (
                 <Badge variant="outline" className="text-amber-600 dark:text-amber-400">
                   {t('viewer.noExifDate')}
                 </Badge>
@@ -504,7 +508,12 @@ export function PreviewDialog({
               ) : (
                 <Badge variant="outline">{t('viewer.fromExif')}</Badge>
               )}
-              {photo && !photo.dateFromFile && details?.clockId != null && (
+              {photo && details && (
+                <Button size="sm" variant="outline" onClick={() => setDatePlace(true)}>
+                  <CalendarDays data-icon="inline-start" /> {t('places.setDate')}
+                </Button>
+              )}
+              {photo && !photo.dateFromFile && !details?.dateManual && details?.clockId != null && (
                 <>
                   <Button size="sm" variant="outline" onClick={() => setClockMatch(true)}>
                     <Clock data-icon="inline-start" /> {t('viewer.syncClock')}
@@ -538,14 +547,27 @@ export function PreviewDialog({
             </Section>
 
             <Section icon={<MapPin className="size-4" />} title={t('viewer.location')}>
+              <p>{details?.place?.label ?? t('places.none')}</p>
+              {details?.place && <Badge variant="outline">{t(`places.${details.place.source}`)}</Badge>}
               {details?.gps && details.gps.lat !== null && details.gps.lon !== null ? (
-                <p className="font-mono text-xs">
-                  {details.gps.lat.toFixed(5)}, {details.gps.lon.toFixed(5)}
+                <p className="text-xs text-muted-foreground tabular-nums">
+                  {formatNumber(details.gps.lat, 5, 5)} · {formatNumber(details.gps.lon, 5, 5)}
                 </p>
               ) : (
-                <p className="text-muted-foreground">{t('viewer.noGps')}</p>
+                <p className="text-xs text-muted-foreground">{t('viewer.noGps')}</p>
               )}
-              <p className="text-xs text-muted-foreground">{t('viewer.placesSoon')}</p>
+              {photo && details && (
+                <Button size="sm" variant="outline" onClick={() => setDatePlace(true)}>
+                  <MapPin data-icon="inline-start" /> {t('places.setPlace')}
+                </Button>
+              )}
+              {datePlace && photo && details && (
+                <DatePlaceDialog
+                  ids={[photo.id]}
+                  current={{ capture: photo.capture, dateManual: details.dateManual, place: details.place }}
+                  onClose={() => setDatePlace(false)}
+                />
+              )}
             </Section>
     </ViewerFrame>
   )

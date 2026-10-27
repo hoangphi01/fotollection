@@ -624,8 +624,9 @@ pub fn start_export(
     std::thread::spawn(move || {
         let state = app.state::<AppState>();
         let format = settings.place_format;
+        let names = place_names(&state);
         let place_for = |record: &fotollection_core::library::PhotoRecord| {
-            crate::state::place_for(record, format)
+            crate::state::place_for(record, &names, format)
         };
         let frame_for = |record: &fotollection_core::library::PhotoRecord| {
             frames.request(record, place_for(record).as_deref())
@@ -714,8 +715,9 @@ pub async fn estimate_export(
             .map_err(|e| IpcError::internal(e.to_string()))?
             .clone();
         let format = settings.place_format;
+        let names = place_names(&state);
         let place_for = |record: &fotollection_core::library::PhotoRecord| {
-            crate::state::place_for(record, format)
+            crate::state::place_for(record, &names, format)
         };
         let frame_for = |record: &fotollection_core::library::PhotoRecord| {
             frames.request(record, place_for(record).as_deref())
@@ -811,7 +813,7 @@ fn preview_inputs(
         .and_then(|l| l.record(id))
         .ok_or_else(|| "unknown photo".to_owned())?;
     let settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
-    let place = crate::state::place_for(&record, settings.place_format);
+    let place = crate::state::place_for(&record, &place_names(state), settings.place_format);
     let frame = {
         let f = state.frame.read().map_err(|e| e.to_string())?;
         f.request(&record, place.as_deref())
@@ -874,8 +876,12 @@ pub struct PhotoDetails {
     pub clock_id: Option<u16>,
     /// `true` when no EXIF date exists and the file time is used.
     pub date_from_file: bool,
+    /// The date was set by hand (FR-032).
+    pub date_manual: bool,
     pub orientation: u8,
     pub gps: Option<GpsPoint>,
+    /// The place printed on the photo and where it comes from (FR-005, FR-031, FR-032).
+    pub place: Option<fotollection_core::places::EffectivePlace>,
     /// Effective DPI of the crop at the current print size (FR-026).
     pub print_dpi: u32,
     pub print_quality: DpiBand,
@@ -984,8 +990,19 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             camera_time: record.camera_time.format("%Y-%m-%dT%H:%M:%S").to_string(),
             clock_id,
             date_from_file: record.flags & flags::DATE_FROM_FILE != 0,
+            date_manual: record.edits.date.is_some(),
             orientation: record.orientation,
             gps: record.gps.map(|(lat, lon)| GpsPoint { lat, lon }),
+            place: fotollection_core::places::effective(
+                &record,
+                &place_names(&state),
+                state
+                    .settings
+                    .read()
+                    .map_err(|e| IpcError::internal(e.to_string()))?
+                    .0
+                    .place_format,
+            ),
             print_dpi,
             print_quality,
             camera_id,
@@ -1407,7 +1424,7 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
         let print = settings
             .print_for(width, height)
             .unwrap_or(PrintSize::ALL[1]);
-        let place = crate::state::place_for(&record, settings.place_format);
+        let place = crate::state::place_for(&record, &place_names(&state), settings.place_format);
         let frame = state
             .frame
             .read()
@@ -1506,6 +1523,15 @@ pub fn set_photo_crop(
         }
     }
     Ok(changed(&app, &state))
+}
+
+/// The places the user renamed (FR-005), copied out so the library lock is not held.
+pub(crate) fn place_names(state: &AppState) -> HashMap<u32, String> {
+    state
+        .library
+        .read()
+        .map(|l| l.place_names().clone())
+        .unwrap_or_default()
 }
 
 /// Most photos one culling command may change (IPC input bound, SECURITY.md §2).

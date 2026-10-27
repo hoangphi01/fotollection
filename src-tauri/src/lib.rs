@@ -13,6 +13,7 @@ mod events;
 mod i18n;
 mod menu;
 mod open_with;
+mod places;
 mod protocol;
 mod state;
 mod timing;
@@ -73,6 +74,11 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::set_photo_rating,
             commands::set_photo_flag,
             commands::set_photo_queue,
+            places::search_places,
+            places::set_photo_date,
+            places::set_photo_place,
+            places::list_places,
+            places::rename_place,
             commands::rotate_photos,
             commands::get_photo_stamp,
             commands::set_photo_stamp,

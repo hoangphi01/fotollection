@@ -13,7 +13,7 @@ use fotollection_core::culling::cache::AnalysisCache;
 use fotollection_core::culling::{Group, PhotoAnalysis};
 use fotollection_core::fonts::{self, LoadedFont, UserFont};
 use fotollection_core::frame::{self, CameraProfile, FrameSettings, LogoKind};
-use fotollection_core::geocode::{self, PlaceFormat};
+use fotollection_core::geocode::PlaceFormat;
 use fotollection_core::history::History;
 use fotollection_core::library::{Library, PhotoId, PhotoRecord};
 use fotollection_core::logo::{self, LogoImage};
@@ -26,17 +26,14 @@ use fotollection_core::thumbs::ThumbCache;
 use serde::Serialize;
 use specta::Type;
 
-/// The place of one photo, written in `format` (FR-005): today from its own GPS through
-/// the bundled places; manual and borrowed places (FR-032, FR-031) will come first.
-pub fn place_for(record: &PhotoRecord, format: PlaceFormat) -> Option<String> {
-    let (lat, lon) = record.gps?;
-    let place = geocode::reverse(f64::from(lat), f64::from(lon)).ok()??;
-    Some(geocode::label(
-        &place.name,
-        &place.country_code,
-        &place.country,
-        format,
-    ))
+/// The place printed on one photo, written in `format` (FR-005): set by hand, borrowed, or
+/// from its own GPS, with the user's names for renamed places (ADR-0027).
+pub fn place_for(
+    record: &PhotoRecord,
+    names: &HashMap<u32, String>,
+    format: PlaceFormat,
+) -> Option<String> {
+    fotollection_core::places::effective(record, names, format).map(|p| p.label)
 }
 
 /// Info-frame settings, camera profiles and decoded user logos (FR-040).

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Archive, CheckCheck, ShoppingBasket, Undo2, X } from 'lucide-react'
+import { Archive, CheckCheck, MapPin, ShoppingBasket, Undo2, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import type { Queue, QueueView } from '@/ipc/bindings'
@@ -11,16 +11,18 @@ type SelectionBarProps = {
   /** The view the photos are ticked in: the actions move them out of it. */
   view: QueueView
   onMove: (queue: Queue | null) => void
+  /** Set the date and place of the ticked photos by hand (FR-032). */
+  onDatePlace: () => void
   onSelectAll: () => void
   onClear: () => void
 }
 
 /**
  * Select mode's actions (FR-050), like the Select button on an iPhone: put the ticked photos
- * in the print basket, set them aside, or bring them back to the gallery. Each action is one
- * undoable step; nothing is ever deleted.
+ * in the print basket, set them aside, or bring them back to the gallery, and set their date
+ * and place by hand (FR-032). Each action is undoable; nothing is ever deleted.
  */
-export function SelectionBar({ count, elsewhere, view, onMove, onSelectAll, onClear }: SelectionBarProps) {
+export function SelectionBar({ count, elsewhere, view, onMove, onDatePlace, onSelectAll, onClear }: SelectionBarProps) {
   const { t } = useTranslation()
   const none = count === 0
   return (
@@ -45,6 +47,9 @@ export function SelectionBar({ count, elsewhere, view, onMove, onSelectAll, onCl
             <Undo2 data-icon="inline-start" /> {t('select.toGallery')}
           </Button>
         )}
+        <Button size="sm" variant="outline" disabled={none} onClick={onDatePlace}>
+          <MapPin data-icon="inline-start" /> {t('places.set')}
+        </Button>
         <Button size="sm" variant="ghost" onClick={onSelectAll}>
           <CheckCheck data-icon="inline-start" /> {t('select.all')}
         </Button>

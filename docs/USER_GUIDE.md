@@ -115,7 +115,19 @@ A camera set to the wrong time, or still on the time zone of home, puts its phot
 
 Every photo from that camera moves at once, including photos added later: the grid order, best-shot groups, day folders, the date stamp and the exported copy's date. The preview still shows what the camera's clock said, and the photo file is never changed. Two bodies of the same model keep their own clocks when the camera records its serial number. The correction is saved in the project.
 
-## 7. Shooting with a camera connected
+## 7. Dates and places
+
+**Set them by hand** ([FR-032](PRD.md#fr-032--manual-date-and-place)), for scanned prints, a camera without a clock, or a photo without GPS:
+
+1. **One photo:** in the preview, click **Set the date…** in *Captured* or **Set the place…** in *Location*.
+2. **Many photos:** in select mode, tick them and click **Date and place…** in the selection bar.
+3. Type a date and time, and type a town or city to pick it (accents and spaces do not matter: `ha noi` finds Hà Nội). Fill in only what you want to change, then **Apply**. The arrow buttons go back to the camera's time and to the photo's own GPS.
+
+The photos move in the grid, and the date stamp, the info frame, day folders and the exported copy's date follow. Everything is offline, every change is one step of Undo, and the photo file is never changed.
+
+**Rename a place** ([FR-005](PRD.md#fr-005--location-stamp-offline)): the settings panel's **Places** card lists every place on your photos. Type the name you want printed, like `Prague` for `Praha 1` or `Grandma's`, and every stamp and frame with that place follows; the arrow button brings the original name back.
+
+## 8. Shooting with a camera connected
 
 With a camera plugged in by cable, Fotollection shows what it sees and takes the photo ([FR-062](PRD.md#fr-062--live-view-from-a-camera), [FR-063](PRD.md#fr-063--tethered-capture-over-usb)). For now this works on Windows, with the Sony a6400. Other Sony bodies of the same years may work, but they are not checked yet.
 
@@ -137,7 +149,7 @@ With a camera plugged in by cable, Fotollection shows what it sees and takes the
 
 **RAW shots** are read by Fotollection's built-in RAW reader, so they show in the tab like JPEG ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)); on Windows this is being checked on a PC without Microsoft's Raw Image Extension.
 
-## 8. Keyboard shortcuts
+## 9. Keyboard shortcuts
 
 | Where | Key | Action |
 |-------|-----|--------|

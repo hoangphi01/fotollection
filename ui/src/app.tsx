@@ -16,6 +16,7 @@ import { LibraryGrid } from '@/features/library/library-grid'
 import { TaskProgressBar } from '@/features/library/task-progress-bar'
 import { LibrarySidebar } from '@/features/library/library-sidebar'
 import { SelectionBar } from '@/features/library/selection-bar'
+import { DatePlaceDialog } from '@/features/places/date-place-dialog'
 import { useLibrary } from '@/features/library/use-library'
 import { SettingsPanel } from '@/features/settings/settings-panel'
 import { useRenderSettings } from '@/features/settings/use-render-settings'
@@ -70,6 +71,8 @@ export function App() {
   // Select mode (FR-050), like the Select button on an iPhone: photos are ticked by id.
   const [selectMode, setSelectMode] = useState(false)
   const [checked, setChecked] = useState<ReadonlySet<number>>(new Set())
+  /** The ticked photos whose date and place are being set (FR-032). */
+  const [datePlaceIds, setDatePlaceIds] = useState<number[] | null>(null)
   const [anchor, setAnchor] = useState<number | null>(null)
   const [hovered, setHovered] = useState<number | null>(null)
   // Ticks follow the user across folder tabs (FR-056), so photos from several folders can be
@@ -336,10 +339,12 @@ export function App() {
                 elsewhere={checked.size - photos.filter((p) => checked.has(p.id)).length}
                 view={filter.queue ?? 'gallery'}
                 onMove={moveChecked}
+                onDatePlace={() => setDatePlaceIds([...checked])}
                 onSelectAll={tickAll}
                 onClear={() => setChecked(new Set())}
               />
             )}
+            {datePlaceIds && <DatePlaceDialog ids={datePlaceIds} onClose={() => setDatePlaceIds(null)} />}
             {view === 'groups' ? (
               <GroupsView
                 bestShots={scopedShots}

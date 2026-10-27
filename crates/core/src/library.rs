@@ -121,7 +121,42 @@ pub struct PhotoEdits {
     /// In the print basket or set aside (FR-050).
     #[serde(default)]
     pub queue: Option<Queue>,
+    /// A date and time set by hand (FR-032), camera-local, as seconds of the naive time
+    /// since 1970; it wins over the camera's time and any clock offset.
+    #[serde(default)]
+    pub date: Option<i64>,
+    /// A place set by hand (FR-032) or borrowed from another device's photo (FR-031); it wins
+    /// over the photo's own GPS.
+    #[serde(default)]
+    pub place: Option<PhotoPlace>,
 }
+
+/// A place given to a photo, by its GeoNames id in the bundled places (FR-032, FR-031).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PhotoPlace {
+    pub geonames_id: u32,
+    pub source: PlaceSource,
+}
+
+/// Where a photo's place comes from (ADR-0027).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum PlaceSource {
+    /// Set by hand (FR-032).
+    Manual,
+    /// Borrowed from another device's photo of the same scene (FR-031).
+    Borrowed,
+    /// The photo's own GPS.
+    Gps,
+}
+
+/// Earliest and latest dates that can be set by hand (FR-032): photography's first year to
+/// the end of 2100.
+pub const MIN_MANUAL_DATE: i64 = -4_544_208_000; // 1826-01-01 00:00:00
+pub const MAX_MANUAL_DATE: i64 = 4_133_980_799; // 2100-12-31 23:59:59
+/// The longest name a place can be renamed to (FR-005).
+pub const MAX_PLACE_NAME: usize = 80;
 
 impl PhotoEdits {
     pub fn is_default(&self) -> bool {
@@ -138,6 +173,7 @@ pub mod flags {
 }
 
 const NO_OFFSET: i16 = i16::MIN;
+const NO_DATE: i64 = i64::MIN;
 
 /// Identity of a path that ignores separator style (`C:\a\b.jpg` == `C:/a/b.jpg`), so
 /// paths rebuilt from project rows (`/`-separated) match scanned paths on every OS.
@@ -202,7 +238,8 @@ impl PhotoRecord {
     /// time corrected by its camera's clock offset (FR-030), or the file's time when the
     /// photo has none. `None` only when even the file time is unknown.
     pub fn stamp_date(&self) -> Option<NaiveDateTime> {
-        (self.flags & flags::DATE_FROM_FILE == 0 || self.mtime != 0).then_some(self.capture)
+        (self.edits.date.is_some() || self.flags & flags::DATE_FROM_FILE == 0 || self.mtime != 0)
+            .then_some(self.capture)
     }
 }
 
@@ -219,6 +256,7 @@ pub struct ShotInfo {
 }
 
 /// Grid data sent to the UI (FR-003).
+#[allow(clippy::struct_excessive_bools)] // independent facts, one per badge
 #[derive(Debug, Clone, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct PhotoSummary {
@@ -242,6 +280,10 @@ pub struct PhotoSummary {
     pub rotation: u8,
     /// In the print basket or set aside (FR-050).
     pub queue: Option<Queue>,
+    /// The date was set by hand (FR-032).
+    pub date_manual: bool,
+    /// Where the photo's place comes from, when it has one (FR-032, FR-031).
+    pub place_source: Option<PlaceSource>,
 }
 
 #[derive(Default)]
@@ -257,12 +299,16 @@ pub struct Library {
     /// Full-path hash → photo, for de-duplication and restoring project rows.
     seen: HashMap<blake3::Hash, PhotoId>,
     edits: HashMap<PhotoId, PhotoEdits>,
+    /// Places the user renamed (FR-005), by GeoNames id.
+    place_names: HashMap<u32, String>,
     // Columns, all indexed by PhotoId.
     folder: Vec<u16>,
     rel_path: Vec<(u32, u32)>,
     size: Vec<u64>,
     mtime: Vec<i64>,
     capture: Vec<i64>,
+    /// The date set by hand (FR-032), or `NO_DATE`; a column so sorting stays a plain read.
+    manual_date: Vec<i64>,
     offset: Vec<i16>,
     orientation: Vec<u8>,
     flags: Vec<u16>,
@@ -408,9 +454,13 @@ impl Library {
             .map_or(0, |b| b.offset_s)
     }
 
-    /// The capture time used everywhere (FR-030): the camera's time plus its clock offset.
+    /// The capture time used everywhere (ADR-0027): a date set by hand (FR-032), otherwise
+    /// the camera's time plus its clock offset (FR-030).
     fn effective(&self, i: usize) -> i64 {
-        self.capture[i].saturating_add(self.clock_offset(i))
+        match self.manual_date[i] {
+            NO_DATE => self.capture[i].saturating_add(self.clock_offset(i)),
+            date => date,
+        }
     }
 
     /// Every camera body in the library and its clock (FR-030).
@@ -560,6 +610,7 @@ impl Library {
         self.size.push(file.size);
         self.mtime.push(file.mtime);
         self.capture.push(capture);
+        self.manual_date.push(NO_DATE);
         self.offset.push(offset);
         self.orientation.push(meta.orientation);
         self.flags.push(f);
@@ -633,6 +684,12 @@ impl Library {
     /// Replaces a photo's edits, returning the previous ones (for undo).
     pub fn set_edits(&mut self, id: PhotoId, edits: PhotoEdits) -> PhotoEdits {
         let old = self.edits(id);
+        if let Some(i) = self.index(id) {
+            self.manual_date[i] = edits
+                .date
+                .filter(|d| (MIN_MANUAL_DATE..=MAX_MANUAL_DATE).contains(d))
+                .unwrap_or(NO_DATE);
+        }
         if edits.is_default() {
             self.edits.remove(&id);
         } else if self.index(id).is_some() {
@@ -679,7 +736,7 @@ impl Library {
             folder_id: self.folder[i],
             folder_name,
             capture: record.capture.format("%Y-%m-%dT%H:%M:%S").to_string(),
-            time_shifted: record.capture != record.camera_time,
+            time_shifted: record.edits.date.is_none() && record.capture != record.camera_time,
             has_gps: record.flags & flags::HAS_GPS != 0,
             date_from_file: record.flags & flags::DATE_FROM_FILE != 0,
             camera: self
@@ -690,7 +747,39 @@ impl Library {
             flag: record.edits.flag,
             rotation: record.edits.rotation % 4,
             queue: record.edits.queue,
+            date_manual: record.edits.date.is_some(),
+            place_source: record
+                .edits
+                .place
+                .map(|p| p.source)
+                .or((record.flags & flags::HAS_GPS != 0).then_some(PlaceSource::Gps)),
         })
+    }
+
+    /// The name the user gave a place (FR-005), if renamed.
+    pub fn place_name(&self, geonames_id: u32) -> Option<&str> {
+        self.place_names.get(&geonames_id).map(String::as_str)
+    }
+
+    /// Every renamed place, for saving the project and resolving names.
+    pub fn place_names(&self) -> &HashMap<u32, String> {
+        &self.place_names
+    }
+
+    /// Renames a place everywhere (FR-005); `None` or an empty name goes back to the
+    /// dataset's. The name is trimmed and cut to `MAX_PLACE_NAME` characters.
+    pub fn rename_place(&mut self, geonames_id: u32, name: Option<&str>) {
+        let name = name
+            .map(|n| n.trim().chars().take(MAX_PLACE_NAME).collect::<String>())
+            .filter(|n| !n.is_empty());
+        match name {
+            Some(n) => {
+                self.place_names.insert(geonames_id, n);
+            }
+            None => {
+                self.place_names.remove(&geonames_id);
+            }
+        }
     }
 
     /// Photos kept by `filter`, in capture order (FR-003, FR-022).

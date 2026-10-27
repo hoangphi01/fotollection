@@ -185,7 +185,6 @@
       "date": "Ngày",
       "place": "Địa điểm"
     },
-    "placeHint": "Cần tra tên địa điểm không cần mạng (FR-005)",
     "keepsSize": "Toàn bộ ảnh in, kể cả khung, giữ đúng khổ đã chọn.",
     "editInPreview": "Sửa máy ảnh, ống kính và Photo Style trong màn xem trước.",
     "logoStyle": "Màu logo",
@@ -289,7 +288,6 @@
     "image": "Ảnh",
     "location": "Vị trí",
     "noGps": "Ảnh này không có GPS",
-    "placesSoon": "Tên địa điểm sẽ có cùng FR-005",
     "resolution": "Độ phân giải",
     "cropCustom": "Tùy chỉnh · phóng {{zoom}}×",
     "cropCentred": "Ở giữa",
@@ -316,7 +314,8 @@
     "downAside": "để riêng",
     "cameraTime": "Đồng hồ máy ghi {{time}}",
     "clockShifted": "Đã chỉnh giờ",
-    "syncClock": "Chỉnh giờ máy này theo một ảnh…"
+    "syncClock": "Chỉnh giờ máy này theo một ảnh…",
+    "dateManual": "Đặt tay"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",
@@ -549,5 +548,31 @@
     "discardBody_other": "{{count}} ảnh này chỉ nằm trong thư mục tạm của Fotollection. Hãy lưu vào thư mục của bạn, hoặc xóa đi.",
     "quitTitle": "Giữ lại ảnh từ máy ảnh trước khi đóng?",
     "quitBody_other": "Fotollection sắp đóng, và {{count}} ảnh vẫn chỉ nằm trong thư mục tạm của ứng dụng. Hãy lưu vào thư mục của bạn, hoặc xóa đi."
+  },
+  "places": {
+    "title": "Địa điểm",
+    "hint": "Địa điểm in trên ảnh. Gõ tên khác, ví dụ “Prague” thay cho “Praha 1” hay “Nhà bà”, mọi dấu ngày và khung đều đổi theo.",
+    "renameLabel": "Tên in cho {{place}}",
+    "resetName": "Về tên gốc",
+    "pick": "Chọn địa điểm…",
+    "searchPlaceholder": "Thị trấn hoặc thành phố",
+    "noMatch": "Không có nơi nào tên như vậy",
+    "dialogTitle_one": "Ngày và nơi của ảnh này",
+    "dialogTitle_other": "Ngày và nơi của {{count}} ảnh",
+    "dialogBody": "Dành cho ảnh scan và ảnh không có ngày hay GPS. Chỉ điền phần muốn đổi; Hoàn tác sẽ trả lại như cũ.",
+    "date": "Ngày và giờ",
+    "place": "Nơi chụp",
+    "cameraDate": "Về giờ của máy ảnh",
+    "cameraDateNote": "Sẽ dùng lại giờ máy ảnh đã ghi.",
+    "ownPlace": "Về GPS của ảnh",
+    "ownPlaceNote": "Sẽ dùng lại nơi theo GPS của ảnh, nếu có.",
+    "apply": "Áp dụng",
+    "set": "Ngày và nơi…",
+    "setPlace": "Đặt nơi chụp…",
+    "setDate": "Đặt ngày…",
+    "manual": "Đặt tay",
+    "borrowed": "Mượn",
+    "gps": "Theo GPS",
+    "none": "Chưa có nơi"
   }
 }

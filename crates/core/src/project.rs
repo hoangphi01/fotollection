@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::library::{Flag, Library, PhotoEdits, Queue};
+use crate::library::{Flag, Library, PhotoEdits, PhotoPlace, PlaceSource, Queue};
 use crate::plan::CropFrame;
 
 pub const FORMAT: &str = "fotollection-project";
@@ -17,7 +17,9 @@ pub const FORMAT: &str = "fotollection-project";
 /// v5: `photos[].straighten`, degrees within ±15 (FR-006).
 /// v6: `photos[].queue`, the print basket or set aside (FR-050).
 /// v7: `cameras[]`, each body's clock offset and time zone (FR-030).
-pub const SCHEMA_VERSION: u32 = 7;
+/// v8: `photos[].date`, `photos[].place` and `place_source` (FR-032, FR-031), and `places[]`,
+/// the places the user renamed (FR-005).
+pub const SCHEMA_VERSION: u32 = 8;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -68,6 +70,40 @@ pub struct PhotoRow {
     /// In the print basket or set aside (v6); absent in the gallery.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub queue: Option<Queue>,
+    /// A date set by hand, camera-local `YYYY-MM-DDTHH:MM:SS` (v8).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub date: Option<String>,
+    /// The GeoNames id of a place set by hand or borrowed (v8).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub place: Option<u32>,
+    /// `manual` or `borrowed`, with `place` (v8).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub place_source: Option<PlaceSource>,
+}
+
+/// A place the user renamed (v8, FR-005).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PlaceRow {
+    pub geonames_id: u32,
+    pub name: String,
+}
+
+const DATE_FORMAT: &str = "%Y-%m-%dT%H:%M:%S";
+
+fn date_text(seconds: i64) -> Option<String> {
+    chrono::DateTime::from_timestamp(seconds, 0)
+        .map(|d| d.naive_utc().format(DATE_FORMAT).to_string())
+}
+
+fn date_seconds(text: &str) -> Option<i64> {
+    let seconds = chrono::NaiveDateTime::parse_from_str(text, DATE_FORMAT)
+        .ok()?
+        .and_utc()
+        .timestamp();
+    (crate::library::MIN_MANUAL_DATE..=crate::library::MAX_MANUAL_DATE)
+        .contains(&seconds)
+        .then_some(seconds)
 }
 
 /// The document a session belongs to (FR-023). Only written into the session autosave, so
@@ -93,6 +129,9 @@ pub struct ProjectFile {
     /// are not stored.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cameras: Vec<CameraRow>,
+    /// Places the user renamed (schema v8, FR-005).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub places: Vec<PlaceRow>,
     /// Session autosave only (schema v2); never inside a bundle.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub document: Option<DocumentRef>,
@@ -154,9 +193,21 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 straighten: crate::straighten::is_straightened(edits.straighten)
                     .then(|| crate::straighten::sanitize(edits.straighten)),
                 queue: edits.queue,
+                date: edits.date.and_then(date_text),
+                place: edits.place.map(|p| p.geonames_id),
+                place_source: edits.place.map(|p| p.source),
             })
         })
         .collect();
+    let mut places: Vec<PlaceRow> = library
+        .place_names()
+        .iter()
+        .map(|(&geonames_id, name)| PlaceRow {
+            geonames_id,
+            name: name.clone(),
+        })
+        .collect();
+    places.sort_by_key(|p| p.geonames_id);
     // Stable order keeps diffs small (DATABASE.md §4.4).
     photos.sort_by(|a, b| (a.folder, &a.path).cmp(&(b.folder, &b.path)));
     for (i, row) in photos.iter_mut().enumerate() {
@@ -181,6 +232,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 tz_minutes: c.tz_minutes,
             })
             .collect(),
+        places,
         document: None,
     }
 }
@@ -266,7 +318,30 @@ fn validate(mut file: ProjectFile) -> Result<ProjectFile, String> {
             .straighten
             .map(crate::straighten::sanitize)
             .filter(|&d| crate::straighten::is_straightened(d));
+        // A date outside 1826–2100 or unreadable, a place not in the bundled data, or a
+        // place without a valid source is dropped, never guessed (FR-032).
+        row.date = row.date.take().filter(|d| date_seconds(d).is_some());
+        let known = row
+            .place
+            .is_some_and(|id| crate::geocode::by_id(id).ok().flatten().is_some());
+        let sourced = matches!(
+            row.place_source,
+            Some(PlaceSource::Manual | PlaceSource::Borrowed)
+        );
+        if !(known && sourced) {
+            row.place = None;
+            row.place_source = None;
+        }
     }
+    file.places.retain_mut(|p| {
+        p.name = p
+            .name
+            .trim()
+            .chars()
+            .take(crate::library::MAX_PLACE_NAME)
+            .collect();
+        !p.name.is_empty()
+    });
     // A corrected clock beyond a month or a time zone outside ±14 h is dropped (FR-030).
     file.cameras.retain(|c| {
         c.offset_s.abs() <= crate::library::MAX_CLOCK_OFFSET_S
@@ -409,9 +484,20 @@ pub fn restore_into(
                 rotation: row.rotation.unwrap_or(0),
                 straighten: row.straighten.unwrap_or(0.0),
                 queue: row.queue,
+                date: row.date.as_deref().and_then(date_seconds),
+                place: row
+                    .place
+                    .zip(row.place_source)
+                    .map(|(geonames_id, source)| PhotoPlace {
+                        geonames_id,
+                        source,
+                    }),
             },
         );
         summary.restored += 1;
+    }
+    for row in &file.places {
+        library.rename_place(row.geonames_id, Some(&row.name));
     }
     for row in &file.cameras {
         library.restore_clock(&crate::library::CameraClock {
@@ -474,6 +560,7 @@ mod tests {
                     rotation: 1,
                     straighten: -3.5,
                     queue: Some(Queue::Print),
+                    ..PhotoEdits::default()
                 },
             );
         }
@@ -602,9 +689,9 @@ mod tests {
         let path = dir.path().join("p.fotollection");
         std::fs::write(
             &path,
-            br#"{"format":"fotollection-project","schema_version":8}"#,
+            br#"{"format":"fotollection-project","schema_version":9}"#,
         )?;
-        assert_eq!(load(&path), Loaded::NewerVersion(8));
+        assert_eq!(load(&path), Loaded::NewerVersion(9));
 
         let mut file = snapshot(&library_with(&["/trip/a.jpg"]));
         file.photos.push(PhotoRow {
@@ -620,6 +707,9 @@ mod tests {
             rotation: None,
             straighten: None,
             queue: None,
+            date: None,
+            place: None,
+            place_source: None,
         });
         save(&path, &file)?;
         assert!(
@@ -660,6 +750,99 @@ mod tests {
         let degrees: Vec<Option<f32>> = file.photos.iter().map(|p| p.straighten).collect();
         // 40° from a file is clamped to 15°.
         assert_eq!(degrees, [Some(2.5), None, Some(15.0)]);
+    }
+
+    #[test]
+    fn fr_032_v8_fixture_keeps_dates_places_and_names_and_drops_impossible_ones() {
+        let Loaded::Ok(v8) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v8.fotollection"))
+        else {
+            panic!("v8 project should load");
+        };
+        let rows: Vec<(Option<&str>, Option<u32>, Option<PlaceSource>)> = v8
+            .photos
+            .iter()
+            .map(|p| (p.date.as_deref(), p.place, p.place_source))
+            .collect();
+        assert_eq!(
+            rows,
+            [
+                (
+                    Some("1994-07-14T15:30:00"),
+                    Some(3_067_696),
+                    Some(PlaceSource::Manual)
+                ),
+                (None, Some(721_472), Some(PlaceSource::Borrowed)),
+                // Before photography, an unknown place, an unreadable date, a GPS "source".
+                (None, None, None),
+                (None, None, None),
+            ]
+        );
+        assert_eq!(
+            v8.places,
+            [PlaceRow {
+                geonames_id: 721_472,
+                name: "Home".into()
+            }]
+        );
+        let Loaded::Ok(v7) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v7.fotollection"))
+        else {
+            panic!("v7 project should load");
+        };
+        assert!(
+            v7.places.is_empty()
+                && v7
+                    .photos
+                    .iter()
+                    .all(|p| p.date.is_none() && p.place.is_none())
+        );
+    }
+
+    #[test]
+    fn fr_032_dates_and_places_round_trip_through_the_project() -> std::io::Result<()> {
+        let mut lib = library_with(&["/trip/a.jpg", "/trip/b.jpg"]);
+        let (Some(a), Some(b)) = (
+            lib.find_path(Path::new("/trip/a.jpg")),
+            lib.find_path(Path::new("/trip/b.jpg")),
+        ) else {
+            panic!("both photos imported");
+        };
+        let date = 774_199_800; // 1994-07-14 15:30:00
+        lib.set_edits(
+            a,
+            PhotoEdits {
+                date: Some(date),
+                place: Some(PhotoPlace {
+                    geonames_id: 3_067_696,
+                    source: PlaceSource::Manual,
+                }),
+                ..PhotoEdits::default()
+            },
+        );
+        lib.rename_place(721_472, Some("Home"));
+        let file = snapshot(&lib);
+        let Loaded::Ok(file) = from_bytes(&to_bytes(&file)?) else {
+            panic!("reload");
+        };
+        let mut fresh = library_with(&["/trip/a.jpg", "/trip/b.jpg"]);
+        restore(&mut fresh, &file);
+        assert_eq!(fresh.edits(a).date, Some(date));
+        assert_eq!(fresh.edits(a).place.map(|p| p.geonames_id), Some(3_067_696));
+        assert_eq!(fresh.place_name(721_472), Some("Home"));
+        // The manual date sorts the photo first: 1994 before the file time of b.
+        assert_eq!(fresh.sorted_ids().first(), Some(&a));
+        assert_eq!(
+            fresh.record(a).map(|r| r.capture.and_utc().timestamp()),
+            Some(date)
+        );
+        assert!(
+            fresh
+                .summary(a)
+                .is_some_and(|s| s.date_manual && !s.time_shifted)
+        );
+        assert!(fresh.summary(b).is_some_and(|s| !s.date_manual));
+        Ok(())
     }
 
     #[test]

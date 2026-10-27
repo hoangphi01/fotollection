@@ -202,6 +202,22 @@ export const commands = {
 	 *  (FR-050). One undoable step; set-aside photos are never deleted.
 	 */
 	setPhotoQueue: (ids: PhotoId[], queue: "print" | "aside" | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_queue", { ids, queue })),
+	/**  Places whose name starts with `query`, largest first, from the bundled data (FR-032). */
+	searchPlaces: (query: string, limit: number) => typedError<Place[], IpcError>(__TAURI_INVOKE("search_places", { query, limit })),
+	/**
+	 *  Sets a date by hand on photos (FR-032), or (`None`) goes back to the camera's. One
+	 *  undoable step; the photos move in the grid, and stamps and day folders follow.
+	 */
+	setPhotoDate: (ids: PhotoId[], date: string | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_date", { ids, date })),
+	/**
+	 *  Sets a place by hand on photos (FR-032), or (`None`) goes back to their own GPS. One
+	 *  undoable step.
+	 */
+	setPhotoPlace: (ids: PhotoId[], geonamesId: number | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_place", { ids, geonamesId })),
+	/**  Every place the library's photos have (set, borrowed or from GPS), most photos first. */
+	listPlaces: () => typedError<PlaceUse[], IpcError>(__TAURI_INVOKE("list_places")),
+	/**  Renames a place everywhere it is printed (FR-005), or (`None`) back to the dataset's name. */
+	renamePlace: (geonamesId: number, name: string | null) => typedError<null, IpcError>(__TAURI_INVOKE("rename_place", { geonamesId, name })),
 	/**  Turns photos a quarter turn (FR-006), lossless; their crops turn with them. Undoable. */
 	rotatePhotos: (ids: PhotoId[], clockwise: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("rotate_photos", { ids, clockwise })),
 	getPhotoStamp: (id: PhotoId) => typedError<PhotoStamp, IpcError>(__TAURI_INVOKE("get_photo_stamp", { id })),
@@ -565,6 +581,16 @@ export type DpiBand =
 /**  < 150 DPI */
 "poor";
 
+/**  The place a photo is stamped with, and where it comes from. */
+export type EffectivePlace = {
+	geonamesId: number,
+	/**  The text printed, in the chosen format and with the user's name for the place. */
+	label: string,
+	/**  The place's own name in the bundled data, before any rename. */
+	original: string,
+	source: PlaceSource,
+};
+
 /**
  *  What an export will weigh, before it runs (FR-053): the originals' total and an estimate
  *  of the files, from a few photos encoded in memory with the same settings.
@@ -807,8 +833,12 @@ export type PhotoDetails = {
 	clockId: number | null,
 	/**  `true` when no EXIF date exists and the file time is used. */
 	dateFromFile: boolean,
+	/**  The date was set by hand (FR-032). */
+	dateManual: boolean,
 	orientation: number,
 	gps: GpsPoint | null,
+	/**  The place printed on the photo and where it comes from (FR-005, FR-031, FR-032). */
+	place: EffectivePlace | null,
 	/**  Effective DPI of the crop at the current print size (FR-026). */
 	printDpi: number,
 	printQuality: DpiBand,
@@ -886,6 +916,23 @@ export type PhotoSummary = {
 	rotation: number,
 	/**  In the print basket or set aside (FR-050). */
 	queue: Queue | null,
+	/**  The date was set by hand (FR-032). */
+	dateManual: boolean,
+	/**  Where the photo's place comes from, when it has one (FR-032, FR-031). */
+	placeSource: PlaceSource | null,
+};
+
+/**  A town or city. */
+export type Place = {
+	geonamesId: number,
+	name: string,
+	/**  ISO 3166-1 alpha-2, e.g. `HU`. */
+	countryCode: string,
+	/**  English country name, e.g. `Hungary`. */
+	country: string,
+	lat: number | null,
+	lon: number | null,
+	population: number,
 };
 
 /**  How a place is written on a print (FR-005). */
@@ -896,6 +943,27 @@ export type PlaceFormat =
 "cityCountryCode" | 
 /**  `Debrecen, Hungary` */
 "cityCountry";
+
+/**  Where a photo's place comes from (ADR-0027). */
+export type PlaceSource = 
+/**  Set by hand (FR-032). */
+"manual" | 
+/**  Borrowed from another device's photo of the same scene (FR-031). */
+"borrowed" | 
+/**  The photo's own GPS. */
+"gps";
+
+/**  A place used in the library, for the Places card (FR-005). */
+export type PlaceUse = {
+	geonamesId: number,
+	/**  The user's name for it, or the dataset's. */
+	name: string,
+	/**  The dataset's name. */
+	original: string,
+	country: string,
+	renamed: boolean,
+	photos: number,
+};
 
 /**  How large one photo prints well, and the verdict for each size. */
 export type PrintAdvice = {

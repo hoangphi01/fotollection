@@ -23,7 +23,7 @@
 
 - **v0.8.0 "Places and Lightroom"**, measured first ([RESULT.md §14](RESULT.md#14-places-and-time-v080-measured-first)), following [ADR-0027](adr/0027-effective-time-and-place.md):
   1. FR-030 ✓ and FR-065 ✓ (check both by hand in the app);
-  2. next: FR-032 manual date and place plus FR-005 place renaming;
+  2. FR-032 manual date and place ✓ and FR-005 place renaming ✓ (check by hand);
   3. then FR-031 borrowed places (same scene and near time; high confidence applied, medium suggested), which needs about 20 real GX9 + phone photo pairs to score the provisional threshold (layout ≥ 0.6, colour ≥ 0.65);
   4. then FR-058 reading Lightroom XMP (read only; writing XMP is a later FR).
   Release with `scripts/release.sh 0.8.0` once all four are in; the CHANGELOG title is "Places and Lightroom".
@@ -165,7 +165,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-002 | Read photo metadata | 1 | In Progress | Allowlisted EXIF (date, offset, GPS, orientation, camera) + validation. `fr_002_*` tests pass |
 | FR-003 | Library grid | 1 | In Progress | Virtualized grid, T0/T1 thumbnails, skeleton + fade-in, task progress bar with %. Day grouping and multi-select pending |
 | FR-004 | Date stamp | 1 | In Progress | 3 formats, 4 corners, white/retro-orange, inside the safe area. More styles with FR-033 |
-| FR-005 | Location stamp (offline) | 1 | In Progress | ✓ Bundled GeoNames places (162k towns, 5.4 MB, BLAKE3-checked) and `geocode::reverse` / `search`, about 5 µs per lookup (`fr_005_*`, `fr_032_search_*`). ✓ Place on the date line and in the info frame, from GPS, three formats (settings v5). Next: renaming places, manual and borrowed places (FR-032, FR-031) |
+| FR-005 | Location stamp (offline) | 1 | In Progress | ✓ Bundled GeoNames places (162k towns, 5.4 MB, BLAKE3-checked) and `geocode::reverse` / `search`, about 5 µs per lookup (`fr_005_*`, `fr_032_search_*`). ✓ Place on the date line and in the info frame, from GPS, three formats (settings v5). ✓ Places on the info frame. ✓ Renaming a place everywhere: Places card, `list_places`, `rename_place`, project v8 `places[]` (`fr_005_a_renamed_place_keeps_its_country`). Left: borrowed places (FR-031), check by hand |
 | FR-006 | Crop to print ratio | 1 | In Progress | Crop editor with edge labels (cm/in + px), ratio pill and live DPI; centre + zoom storage. ✓ Lossless quarter turns with `[` `]`, crop follows (`fr_006_*`, project v4). ✓ Straighten ±15° in the crop editor, inscribed crop, crop-only bicubic resampling (project v5) |
 | FR-007 | Live preview | 1 | In Progress | Preview dialog with inspector (capture, camera, image, GPS, print DPI, stamp controls). Rust-rendered, warm p95 18 ms (p50 17 ms) |
 | FR-008 | Original-quality export | 1 | In Progress | Full resolution, q95 4:4:4, ICC copied. Lossless crop-only path pending |
@@ -192,7 +192,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-029 | Output sharpening | 3 | Not Started | Needs real print tests |
 | FR-030 | Camera clock offset | 1 | In Progress | ✓ Bodies by make, model and `BodySerialNumber`; effective time = camera time + offset in `Library::record` (sort, groups, stamp, day folders, export EXIF follow), camera time kept (`fr_030_*`, [ADR-0027](adr/0027-effective-time-and-place.md)). ✓ Project v7 `cameras[]`, checked on load. ✓ `list_cameras`, `set_camera_clock`, `clock_offset_between`, `clock_match_candidates`; Camera clocks card and the helper in the preview's Captured card. Left: time zone in the UI (with GPX, FR-031), automatic suggestion from same-scene pairs, check by hand |
 | FR-031 | Borrow GPS from a phone or GPX track | 2 | Not Started | Depends on FR-030 |
-| FR-032 | Manual date and place | 1 | Not Started | |
+| FR-032 | Manual date and place | 1 | In Progress | ✓ `PhotoEdits.date` and `.place` (undoable), effective date and place per ADR-0027 (`Library::effective`, `places::effective`), project v8 (`fr_032_*`). ✓ `search_places`, `set_photo_date`, `set_photo_place` checked in Rust; Set the date / Set the place in the preview, Date and place… in select mode, offline place picker (shadcn `command`). Left: check by hand |
 | FR-033 | Retro film date stamp and stamp presets | 1 | In Progress | ✓ DSEG14 Italic (OFL) LCD face with LED glow and faint shadow (`fr_033_*`). Presets to come |
 | FR-034 | Lab presets | 2 | Not Started | |
 | FR-035 | Multi-photo layouts | 3 | Not Started | Shares layout engine with FR-017 |

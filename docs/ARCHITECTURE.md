@@ -79,6 +79,7 @@ crates/
                            # score.rs (robust z within the group + reasons), cache.rs (analysis/)
       timeline.rs          # clock offsets, manual date/place, GPS borrowing + GPX (FR-030/031/032)
       geocode.rs         † # offline reverse geocoder + place search: bundled GeoNames, BLAKE3-checked, 1° grid index (FR-005/032)
+      places.rs          † # a photo's effective place (ADR-0027): set by hand → borrowed → GPS → none, with the user's names for renamed places (FR-005/031/032)
       cluster.rs           # trip DBSCAN (Phase 2)
       library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag)
       project.rs         † # project tables v2: snapshot/restore by folder+path, FK validation, relocate/resolve folders
@@ -104,6 +105,7 @@ crates/
 src-tauri/               † # app shell: commands, protocol, capabilities
   src/lib.rs             † # tauri-specta builder + bindings export
   src/commands.rs        † # IPC commands (§6)
+  src/places.rs          † # place search, dates and places set by hand, renamed places (FR-005, FR-032); every input checked here
   src/document.rs        † # New / Open / Save / Save As / Relink of .fotollection documents (FR-023)
   src/menu.rs            † # native File/Edit/Window menu (macOS), rebuilt on language change
   src/camera.rs          † # tethered capture (FR-062, FR-063, ADR-0028): connect, a session thread that owns the camera (live view, settings every 300 ms, queued jobs), shots written atomically into a session folder that becomes a tab, Save all and Delete photos; the Sony logic is written against a `CameraLink` trait and tested with a scripted camera
@@ -236,6 +238,9 @@ Commands marked † are implemented.
 | `get_frame_config()` / `set_frame_settings(settings)` † | Info frame settings plus camera profiles (with EXIF-derived defaults) | FR-040 |
 | `set_camera_profile(profile)` † | Per-camera overrides: name, brand, lens, focal, aperture, photo style, logo kind | FR-040 |
 | `list_cameras() -> CameraClock[]` † / `set_camera_clock(id, offset_s, tz_minutes?) -> CameraClock[]` † | Camera bodies (make, model, serial) and their clock corrections; offsets beyond a month and time zones beyond ±14 h are rejected in Rust; every photo of the body moves (effective time, [ADR-0027](adr/0027-effective-time-and-place.md)) | FR-030 |
+| `search_places(query ≤ 100 chars, limit ≤ 50) -> Place[]` † | Offline search of the bundled places, diacritics ignored, largest first | FR-032 |
+| `set_photo_date(ids, date?)` † / `set_photo_place(ids, geonames_id?)` † | A date (1826–2100) or a place (an id in the bundled data) set by hand on 1–10,000 photos, or cleared; one undoable step. The effective date and place follow ADR-0027 | FR-032 |
+| `list_places() -> PlaceUse[]` † / `rename_place(geonames_id, name?)` † | The places of the library's photos with their counts, and the name printed for one (≤ 80 characters; `None` back to the dataset's); not in the undo history | FR-005 |
 | `clock_offset_between(photo, reference) -> f64` † / `clock_match_candidates(photo, limit ≤ 24)` † | The helper: the offset that makes a photo match another device's photo of the same moment, and the other devices' photos closest in time (within a day) to pick from | FR-030 |
 | `pick_camera_logo(camera_id)` / `clear_camera_logo(camera_id)` † | Choose a PNG with a **Rust-side** dialog, validate it, copy it into `config/logos/` | FR-040 |
 | `get_crop_geometry(id) -> CropGeometry` † | Upright size, target ratio, printed cm of the crop area, current crop | FR-006 |

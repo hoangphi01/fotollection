@@ -253,6 +253,23 @@ pub fn reverse(lat: f64, lon: f64) -> Result<Option<Place>, GeoError> {
     Ok(best.map(|(_, r)| place(d, r)))
 }
 
+/// The place with this GeoNames id, for a place stored in a project (FR-032).
+pub fn by_id(geonames_id: u32) -> Result<Option<Place>, GeoError> {
+    static INDEX: OnceLock<HashMap<u32, u32>> = OnceLock::new();
+    let d = dataset()?;
+    let index = INDEX.get_or_init(|| {
+        d.records
+            .iter()
+            .enumerate()
+            .filter_map(|(i, r)| Some((r.id, u32::try_from(i).ok()?)))
+            .collect()
+    });
+    Ok(index
+        .get(&geonames_id)
+        .and_then(|&i| d.records.get(i as usize))
+        .map(|r| place(d, r)))
+}
+
 /// Lower-case ASCII with diacritics removed and spaces dropped, so "Hà Nội", "ha noi" and
 /// "Hanoi" all become "hanoi".
 pub fn fold(text: &str) -> String {

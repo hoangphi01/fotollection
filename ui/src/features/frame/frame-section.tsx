@@ -22,7 +22,7 @@ import type { FrameConfigApi } from './use-frame-config'
 
 const LOGO_STYLES: LogoStyle[] = ['classic', 'original', 'mono']
 
-const FIELDS: { key: keyof FrameFields; disabled?: boolean }[] = [
+const FIELDS: { key: keyof FrameFields }[] = [
   { key: 'logo' },
   { key: 'camera' },
   { key: 'lens' },
@@ -32,8 +32,7 @@ const FIELDS: { key: keyof FrameFields; disabled?: boolean }[] = [
   { key: 'iso' },
   { key: 'photoStyle' },
   { key: 'date' },
-  // Needs offline place names (FR-005).
-  { key: 'place', disabled: true },
+  { key: 'place' },
 ]
 
 type FrameSectionProps = {
@@ -163,16 +162,10 @@ export function FrameSection({ frame, fonts, compact = false, children }: FrameS
             {t('frame.show')}
           </span>
           <div className="grid grid-cols-2 gap-x-3 gap-y-2">
-            {FIELDS.map(({ key, disabled = false }) => (
-              <label
-                key={key}
-                data-hint={disabled ? t('frame.placeHint') : undefined}
-                className="flex items-center gap-2 text-sm"
-                aria-disabled={disabled}
-              >
+            {FIELDS.map(({ key }) => (
+              <label key={key} className="flex items-center gap-2 text-sm">
                 <Checkbox
                   checked={settings?.fields[key] ?? false}
-                  disabled={disabled}
                   onCheckedChange={(checked) =>
                     void frame.setSettings((s) => ({
                       ...s,
@@ -180,9 +173,7 @@ export function FrameSection({ frame, fonts, compact = false, children }: FrameS
                     }))
                   }
                 />
-                <span className={disabled ? 'text-muted-foreground' : ''}>
-                  {t(`frame.field.${key}`)}
-                </span>
+                <span>{t(`frame.field.${key}`)}</span>
               </label>
             ))}
           </div>

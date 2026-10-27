@@ -194,7 +194,6 @@
       "date": "Date",
       "place": "Place"
     },
-    "placeHint": "Needs offline place names (FR-005)",
     "keepsSize": "The whole print, frame included, keeps the selected size.",
     "editInPreview": "Edit camera, lens and style in the preview.",
     "logoStyle": "Logo colours",
@@ -303,7 +302,6 @@
     "image": "Image",
     "location": "Location",
     "noGps": "No GPS in this photo",
-    "placesSoon": "Place names arrive with FR-005",
     "resolution": "Resolution",
     "cropCustom": "Custom · zoom {{zoom}}×",
     "cropCentred": "Centred",
@@ -330,7 +328,8 @@
     "downAside": "set aside",
     "cameraTime": "Camera clock said {{time}}",
     "clockShifted": "Clock corrected",
-    "syncClock": "Set this camera's clock from a photo…"
+    "syncClock": "Set this camera's clock from a photo…",
+    "dateManual": "Set by hand"
   },
   "errors": {
     "internal": "Something went wrong",
@@ -570,5 +569,31 @@
     "quitTitle": "Keep the camera shots before closing?",
     "quitBody_one": "Fotollection is closing, and one shot is still only in its temporary folder. Save it to a folder of yours, or delete it.",
     "quitBody_other": "Fotollection is closing, and {{count}} shots are still only in its temporary folder. Save them to a folder of yours, or delete them."
+  },
+  "places": {
+    "title": "Places",
+    "hint": "The place printed on your photos. Type another name, like “Prague” for “Praha 1” or “Grandma’s”, and every stamp and frame follows.",
+    "renameLabel": "Name printed for {{place}}",
+    "resetName": "Back to the original name",
+    "pick": "Choose a place…",
+    "searchPlaceholder": "Town or city",
+    "noMatch": "No town or city by that name",
+    "dialogTitle_one": "Date and place of this photo",
+    "dialogTitle_other": "Date and place of {{count}} photos",
+    "dialogBody": "For scans and photos without a date or GPS. Fill in only what you want to change; Undo takes it back.",
+    "date": "Date and time",
+    "place": "Place",
+    "cameraDate": "Back to the camera’s time",
+    "cameraDateNote": "The time the camera wrote will be used again.",
+    "ownPlace": "Back to the photo’s own GPS",
+    "ownPlaceNote": "The place from the photo’s GPS will be used again, if it has one.",
+    "apply": "Apply",
+    "set": "Date and place…",
+    "setPlace": "Set the place…",
+    "setDate": "Set the date…",
+    "manual": "Set by hand",
+    "borrowed": "Borrowed",
+    "gps": "From GPS",
+    "none": "No place"
   }
 }
