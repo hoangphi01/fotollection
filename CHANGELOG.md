@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-27 — Places and Lightroom
+
 ### Highlights
 
 - New: dates and places by hand, renamed places, and places borrowed from your phone's photos of the same scene
