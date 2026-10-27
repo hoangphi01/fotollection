@@ -274,6 +274,10 @@ Rất hoan nghênh đóng góp. Vui lòng đọc [CONTRIBUTING.md](CONTRIBUTING.
 
 Báo lỗi bảo mật qua [GitHub security advisory](https://github.com/hoangphi01/fotollection/security/advisories/new) riêng tư, không mở issue công khai.
 
+## Ủng hộ
+
+Fotollection miễn phí, do một sinh viên làm giữa giờ học và giờ làm thêm. Nếu ứng dụng giúp bạn đỡ thời gian, bạn có thể [tài trợ qua GitHub](https://github.com/sponsors/hoangphi01), hằng tháng hoặc một lần, hoặc quét mã VietQR trên [trang web](https://fotollection.org/vi/#support).
+
 ## Giấy phép
 
 [GPL-3.0-only](LICENSE) © hoangphi01.

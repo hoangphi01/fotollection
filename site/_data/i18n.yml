@@ -104,7 +104,8 @@ en:
   changelog_hint: Click to scroll
   support_title: Buy me a coffee
   support_text: Fotollection is made by a Vietnamese student in the EU, between classes and a part-time job. It's free and open source; if it saved you an evening of sorting photos, a coffee (or a student lunch 😄) keeps it going.
-  support_note: This VietQR code works only with banking apps in Vietnam (Napas 247). A way to support from abroad is coming soon.
+  support_sponsor: Sponsor on GitHub
+  support_note: From anywhere, GitHub Sponsors takes a card, monthly or once. The VietQR code works only with banking apps in Vietnam (Napas 247).
   support_alt: VietQR code for a coffee, Techcombank, Pham Hoang Phi
   kiosk_title: Ready for the photo kiosk at
   kiosk_and: and
@@ -378,7 +379,8 @@ vi:
   changelog_hint: Bấm để cuộn
   support_title: Ủng hộ một cốc cà phê
   support_text: Fotollection do một du học sinh Việt ở châu Âu làm trong thời gian rảnh, giữa giờ học và giờ làm thêm. Ứng dụng miễn phí và mã nguồn mở; nếu nó giúp bạn đỡ được một buổi tối ngồi lọc ảnh, một cốc cà phê (hay một bữa cơm sinh viên 😄) sẽ giúp mình tiếp tục làm.
-  support_note: Mã VietQR này chỉ dùng được với ứng dụng ngân hàng tại Việt Nam (Napas 247). Cách ủng hộ từ nước ngoài sẽ có sau.
+  support_sponsor: Tài trợ qua GitHub
+  support_note: Ở bất kỳ nước nào, GitHub Sponsors nhận thẻ, hằng tháng hoặc một lần. Mã VietQR chỉ dùng được với ứng dụng ngân hàng tại Việt Nam (Napas 247).
   support_alt: Mã VietQR ủng hộ cà phê, Techcombank, Phạm Hoàng Phi
   kiosk_title: Sẵn sàng cho máy in ảnh ở
   kiosk_and: và

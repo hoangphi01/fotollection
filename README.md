@@ -273,6 +273,10 @@ Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first:
 
 Report security issues through a private [GitHub security advisory](https://github.com/hoangphi01/fotollection/security/advisories/new), not a public issue.
 
+## Support
+
+Fotollection is free, made by a student between classes and a part-time job. If it saves you time, you can [sponsor it on GitHub](https://github.com/sponsors/hoangphi01), monthly or once, or, from Vietnam, scan the VietQR code on the [website](https://fotollection.org/#support).
+
 ## License
 
 [GPL-3.0-only](LICENSE) © hoangphi01.
