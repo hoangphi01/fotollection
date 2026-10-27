@@ -249,11 +249,27 @@ Measured before building camera support ([ADR-0026](adr/0026-cameras-through-the
 
 | Body, USB mode | Session open | GetDeviceInfo | Maker operations | Capture from the computer | Shutter on the body | Live view over USB |
 |------|-----:|-----:|-----|-----|-----|-----|
-| Sony a6400, PC Remote | 44 ms | 23 ms | 5 (Sony extension) | After the maker's handshake (to learn) | Locked until the handshake | After the handshake (to learn) |
+| Sony a6400, PC Remote | 44 ms | 23 ms | 5 (Sony extension) | After the maker's handshake; RAW read 1.7 s and JPEG 1.4 s after the shutter command (Imaging Edge Remote, Windows, [sony.md](cameras/sony.md)) | Reported (`0xC201`) once the handshake is done | Yes: about 4.8 fps, 30–45 KB frames (Remote) |
 | Panasonic GX9, PictBridge (PTP) | 21 ms | 20 ms once the card is listed (no answer in 10 s before) | None | Not possible | Locked (PictBridge screen) | Not possible |
 
 - **No driver is needed** to reach either body; the OS stack carries any PTP operation, so path A is open for every maker whose protocol we learn.
 - **The GX9 cannot be tethered over USB** by anyone: it declares no capture or live-view operation. Live view needs an HDMI capture card; photos come by import after the shoot.
+
+### 13.1 Sony a6400 from Fotollection's own code (Windows)
+
+`examples/sony_remote.rs` through WPD (Windows's own driver) on a Lenovo 20U9002NUS: i7-10610U, 4 cores, 16 GB, Windows 10. The details are in [cameras/sony.md](cameras/sony.md).
+
+| Step | Result |
+|------|--------|
+| Session open, handshake | 1–2 ms; 20–60 ms (0.96 s the first time after plugging in) |
+| Settings block (`0x9209`, 62 properties) | 2–14 ms |
+| Shutter to photo announced (shot state `0x8001`) | 0.94–1.57 s, mostly the 3 × 300 ms gaps autofocus needs |
+| Photo read | JPEG 4.3 MB in 145 ms; RAW 24.8 MB in 760 ms (≈ 32 MB/s) |
+| Shutter to photo in memory | JPEG 1.1–1.7 s, RAW 1.7 s |
+| Live view | 30.3 fps, 1024 × 680 JPEG, 78 KB per frame |
+
+- **NFR-019's 15 fps is met** by the a6400 over USB (30 fps). The time from scene to screen is still to measure.
+- **NFR-018:** the photo is in memory 1.1–1.7 s after the press, before decoding and showing it; the "about 2 s for JPEG" target looks reachable.
 
 ## 14. Places and time (v0.8.0, measured first)
 
@@ -294,3 +310,22 @@ Measured before rawler was wired in ([ADR-0029](adr/0029-raw-through-rawler-then
 - **Low SSIM on the Olympus and the S5 is geometry, not quality:** ImageIO corrects lens distortion, which those lenses rely on; rawler does not. The Olympus has no embedded image either, so it gets the default curve.
 - **Size:** the macOS app binary is 36.0 MB without rawler, 39.5 MB with it, and 44.7 MB with `panic = "unwind"` (needed to catch a panic inside rawler).
 - Decision (ADR-0029): rawler first on Windows (RAW with nothing to install), ImageIO first on macOS (distortion corrected), each the other's fallback.
+
+## 16. Our own RAW decoder, DNG (v0.8.0, measured first)
+
+Measured before `Own` took DNG over ([ADR-0030](adr/0030-our-own-raw-decoder.md)) with `crates/core/examples/measure_rawler.rs`, `raw_memory.rs`, `raw_phases.rs` and `bench/quality/raw_compare.py`, on the Ricoh GR III sample of §12, REF-MAC (M3), release build, median of 3. Each develop is finished to the camera's embedded JPEG; colour and structure are scored on 1600 px copies.
+
+| Ricoh GR III (DNG) | rawcore | rawler + finish | ImageIO |
+|------|-----:|-----:|-----:|
+| Develop, with the look | **355 ms** | 640 ms | 554 ms |
+| Peak memory (`/usr/bin/time -l`) | **526 MB** | 1.33 GB | 668 MB |
+| ΔE2000 to the embedded JPEG | **2.67** | 4.08 | 5.22 |
+| ΔE2000, colour only (200 px, detail averaged out) | **1.76** | 2.84 | 4.66 |
+| SSIM to the embedded JPEG | 0.992 | 0.987 | 0.968 |
+| SSIM to ImageIO | 0.976 | | |
+
+- **Where the time goes** (`raw_phases`): lossless JPEG 109 ms (241 ms before a 12-bit Huffman lookup table), demosaic 34 ms (179 ms before reading from a padded buffer), finish 48 ms (123 ms before an sRGB encode table), the look fit and the embedded JPEG the rest.
+- **Lens shading was the biggest error:** with colour and tone matched but no shading, ΔE was 3.8, the centre 4 L\* too bright and the corners 1.5 too dark. Fitting `exp(a·r² + b·r⁴)` from the JPEG brings every region within ±0.5 L\*.
+- **Robustness:** the sample cut short at 256 places never panics, and 10 minutes of mutation testing (`examples/mutate.rs`: cuts, flipped bytes, extreme values in the directories, damaged compressed data) ran 1,597 inputs with no panic.
+- **Grey baseline for RW2** (Panasonic S5 sample, the six grey patches of its SpyderCheckr 24, mean C\*; 0 is a perfect grey): embedded JPEG 1.26, ImageIO 1.38, rawler + finish 2.43 (worst patch 4.48). rawcore must reach ≤ 1.5 when it takes RW2.
+- Decision (ADR-0030): DNG goes to our own decoder first on both systems; ImageIO and rawler stay the fallback for every other format and for DNG variants it refuses.

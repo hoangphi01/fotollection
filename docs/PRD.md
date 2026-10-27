@@ -223,11 +223,11 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P2 (v0.7.0, in progress).** Import camera RAW files natively, **without asking for DNG**: RW2 (Panasonic), CR2 and CR3 (Canon), NEF (Nikon), ARW (Sony), RAF (Fujifilm), ORF (Olympus / OM System) and DNG, each tested on a CC0 sample ([ADR-0023](adr/0023-raw-through-os-codecs.md)).
 
-- **Through the operating system's codecs**, as HEIC is ([ADR-0017](adr/0017-heic-through-os-codecs.md)): ImageIO on macOS, with the file's type identifier as a hint so TIFF-based RAW is developed rather than read as a TIFF; WIC with Microsoft's free *Raw Image Extension* on Windows. The Rust RAW decoders and LibRaw are LGPL, which [ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md) rules out.
+- **Three decoders, tried in order** ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md), [ADR-0030](adr/0030-our-own-raw-decoder.md)): Fotollection's own reader for the formats it has taken over (DNG for now), finished to the camera's embedded JPEG; then on macOS ImageIO (with the file's type identifier as a hint, as for HEIC, [ADR-0017](adr/0017-heic-through-os-codecs.md)) and rawler (LGPL-2.1, built in) for what it cannot read; on Windows rawler, with WIC and Microsoft's *Raw Image Extension* as the fallback. rawler is removed once our own reader covers every format, before any relicensing ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)).
 - **Recognised by content**, never by extension: each format's own magic bytes, or for TIFF-based RAW the header plus IFD0 (`DNGVersion`, the maker in `Make`). CR3 is no longer mistaken for HEIC.
 - **Two paths** ([NFR-017](#nfr-017--camera-raw-speed)): thumbnails and best-shot analysis use the **preview embedded in every RAW** (9–80 ms); the print preview, zoom and export use the **full develop** (0.4–2.2 s), one at a time, and its size is the only one used for crops.
 - **EXIF** comes from the first 1 MB: RW2 and ORF are read as TIFF, RAF from its embedded JPEG, CR3 from its `CMT1`/`CMT2` boxes, Panasonic's ISO from its own tag. CR3's GPS is not read yet.
-- **Windows without the extension:** import skips RAW with `import.raw_codec_missing` and says what to install.
+- **Nothing to install:** with rawler built in, RAW opens on Windows without the extension (to be confirmed on a Windows PC before the release); a file no decoder reads is reported as unsupported.
 
 ### FR-017 — Photo book layout preview
 
@@ -435,6 +435,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
   - GPS moves by more than 30 m.
 
   A focal-length change alone does not split a group: re-shooting closer is common, and the zoom is allowed for when the shots are compared.
+
 - **Group confirmation.** Each photo has a visual signature: a 32 × 24 luma layout and a hue × saturation histogram ([ADR-0019](adr/0019-grouping-by-visual-signature.md)). A shot joins the group when its layout correlates ≥ 0.6 with the previous shot and its colours overlap ≥ 0.72. The comparison allows shifts of about ±10 % and zooms of ×0.85–1.18, or the EXIF focal-length ratio when the shots were zoomed. Against the group's first shot it must still correlate ≥ 0.4, so that groups do not chain. A group holds at most 30 photos.
 - **Accuracy.** Grouping and picks are scored against hand-labelled photos with `eval_bestshot` (README, [RESULT.md §8](RESULT.md#8-best-shot-accuracy)). A change must not lower the scores.
 - **Metrics.** Each metric is computed in one pass over a greyscale copy of the T2 preview, reduced to 1,024 px:
@@ -455,6 +456,7 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
   | Noise | 0.05 |
 
   Hard faults, such as closed eyes or heavy blur, are shown as reasons. They are never applied silently.
+
 - **Explanation.** The suggestion names up to three metrics that differ most from the runner-up, for example "34 % sharper", "Eyes open" or "Fewer clipped highlights: 0.3 % vs 4 %". Sharpness is given as the difference in edge strength, because small groups have no meaningful sigma. When the top two scores are within half a sigma of subject sharpness (0.175), it says **"Too close to call"**.
 - **UI.**
   - A **Groups** view shows one strip per group, with a **"Best of N"** badge and its reasons.
@@ -657,19 +659,41 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-062 — Live view from a camera
 
-**P2 (planned, after Step 0).** A **Camera** window shows what a camera plugged in by cable sees, live, with the print ratio drawn over it (the crop's ratios), to frame the shot ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md), [cameras/README.md](cameras/README.md)).
+**v0.8.0, Windows first.** The capture screen of [FR-063](#fr-063--tethered-capture-over-usb) shows what a camera plugged in by cable sees, live, with the print ratio drawn over it (the crop's ratios), to frame the shot ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md), [ADR-0028](adr/0028-camera-sessions-saved-on-demand.md), [cameras/README.md](cameras/README.md)).
 
-- **Sources, all wired:** a camera through Fotollection's own PTP driver for its maker; a standard webcam (UVC) or an HDMI capture card through the webview. Wi-Fi is not a source.
+- **Sources:**
+  - Now: a camera through Fotollection's own PTP driver for its maker (Sony first).
+  - Later: a standard webcam (UVC) or an HDMI capture card through the webview.
+  - Wi-Fi is not a source.
 - Frames are only shown: never stored, never sent ([NFR-006](#nfr-006--offline-and-zero-telemetry)).
 - Unplugging stops the view with a plain message, never a hang.
 
 ### FR-063 — Tethered capture over USB
 
-**P2 (planned, after Step 0).** With a camera plugged in by cable, a **Capture** button (and Space) in the Camera window takes the photo; where the camera reports its own shutter, that works too. The full-resolution file (JPEG or RAW) is saved to `Pictures/Fotollection/Camera/<date>/`, that folder is a tab, and the new photo opens at once in the preview to crop and print, the same way "Open with" opens a photo ([FR-054](#fr-054--open-photos-with-fotollection)).
+**v0.8.0, Windows first.** **Connect camera**, next to *Open folder*, looks for a camera plugged in by cable. When it finds one, a **capture screen** opens.
+
+**The capture screen.**
+
+- It has the preview's frame:
+  - the live view on the stage, with the print ratio drawn over it ([FR-062](#fr-062--live-view-from-a-camera));
+  - a column of the shots just taken, newest first;
+  - a panel where the preview has its inspector.
+- The panel shows the camera, ISO and shutter speed (− / +), the aperture (read only), the file format (JPEG or RAW), and a **Capture** button.
+- Space captures and Esc closes. Clicking a shot in the column opens it in the preview.
+
+**Where shots go.**
+
+- Each full-resolution file (JPEG or RAW) goes to a temporary session folder that shows as a new tab ([ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)).
+- Closing the capture screen shows that tab's photos. A notice offers **Save all**, which asks for the destination only then, moves the files without overwriting any, and keeps every edit.
+- Closing a session tab that still has unsaved shots asks first: *Save all*, *Delete photos* or *Cancel*. **Quitting the app** with unsaved shots asks the same. A session left over from a previous run (a crash, a forced quit) comes back on the next start.
+
+**Requirements.**
 
 - No driver to install: Fotollection talks PTP through the system's own USB stack (ImageCaptureCore on macOS, WPD on Windows), with one module per camera maker written from our own protocol notes ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)).
-- First makers: Sony and Panasonic (bodies at hand), then Canon and Nikon. Standard PTP for the rest. Which body does what is in [cameras/README.md](cameras/README.md).
-- A burst of shots loses none and stays within [NFR-004](#nfr-004--memory-ceiling).
+- First maker: Sony (the a6400 at hand), then Canon and Nikon once a body can be borrowed. Standard PTP for the rest. The Panasonic GX9 cannot be tethered over USB at all (Step 0). Which body does what is in [cameras/README.md](cameras/README.md).
+- A burst of shots loses none and stays within [NFR-004](#nfr-004--memory-ceiling): presses are queued, and each shot is written to disk before the next one is taken.
+- A press that does not shoot (no focus, camera busy) says so plainly.
+- v0.8.0 supports the Sony a6400 on Windows. On macOS the button is shown disabled with a hint, until the camera has a thread of its own there.
 
 ### FR-064 — Watch a folder for new photos
 
@@ -756,7 +780,7 @@ For camera RAW ([FR-016](#fr-016--raw-input)), on REF-MAC: a thumbnail or the in
 
 ### NFR-018 — Shot to screen
 
-For tethered capture ([FR-063](#fr-063--tethered-capture-over-usb)) over USB on REF-MAC: from the shutter (the Capture button or the camera's own) to the photo shown in the preview. Target to be set from the Step 0 measurements on a GX9 and an a6400 ([cameras/README.md](cameras/README.md)); expected about **2 s for JPEG**, RAW within [NFR-017](#nfr-017--camera-raw-speed) after it arrives.
+For tethered capture ([FR-063](#fr-063--tethered-capture-over-usb)) over USB, measured in the app with the Sony a6400 on Windows (and on REF-MAC once capture runs on macOS): from the shutter (the Capture button or the camera's own) to the photo shown in the preview. Target to be set from the Step 0 measurements on a GX9 and an a6400 ([cameras/README.md](cameras/README.md)); expected about **2 s for JPEG**, RAW within [NFR-017](#nfr-017--camera-raw-speed) after it arrives.
 
 ### NFR-019 — Live view
 

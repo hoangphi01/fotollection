@@ -15,7 +15,7 @@ import {
   TriangleAlert,
   X,
 } from 'lucide-react'
-import { useState, type MouseEvent } from 'react'
+import { useState, type MouseEvent, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -46,6 +46,8 @@ type LibrarySidebarProps = {
   onRemoveFolder: (folder: number) => void
   project: ProjectApi
   onShowRelink: () => void
+  /** Connect camera (FR-063), shown before Open folder. */
+  cameraAction?: ReactNode
 }
 
 export function LibrarySidebar({
@@ -61,6 +63,7 @@ export function LibrarySidebar({
   onRemoveFolder,
   project,
   onShowRelink,
+  cameraAction,
 }: LibrarySidebarProps) {
   const { t } = useTranslation()
   const total = folders.reduce((sum, f) => sum + f.count, 0)
@@ -180,6 +183,7 @@ export function LibrarySidebar({
               <RefreshCw />
             </Button>
           )}
+          {cameraAction}
           <Button
             variant="ghost"
             size="icon-sm"

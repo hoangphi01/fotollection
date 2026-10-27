@@ -13,12 +13,12 @@
 
 - **First, in this order (decided 2026-10-26 after the owner's review):**
   1. ✓ The RAW claims corrected: on Windows RAW needs the Raw Image Extension (site, READMEs, guide, v0.7.0 release notes).
-  2. A save-or-discard question when the app is closed during a camera session.
-  3. The fixes found in review of the branch `camera/sony-usb-protocol` (a held Space key queues shots, Disconnect does not stop queued shots, sessions without ids, Save all or Delete while a shot is still being written, macOS clippy), then merge it into `main`.
+  2. ✓ A save-or-discard question when the app is closed during a camera session; sessions left by a crash come back as tabs.
+  3. ✓ The fixes found in review of the branch `camera/sony-usb-protocol` (one press at a time, Disconnect drops queued shots, session ids, Save all and Delete wait for the last shot, Save all into a session folder and rolled back on error, one file imported per shot, an unplugged camera shows its tab, macOS clippy). Check on Windows by hand, then merge into `main`.
   4. Capture on macOS through ImageCaptureCore.
   5. All camera controls: tap to focus, exposure, focus mode, white balance, JPEG/RAW, self-timer (USB captures on Windows first).
   6. A STYLE_RULE audit of the capture screen, with real screenshots.
-  7. RAW built in ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)): ✓ 7a rawler behind the `RawDecoder` trait, finished to the camera's embedded JPEG (`raw_finish`), first on Windows, fallback on macOS; measured (RESULT §15). Left for 7a: try RAW on a Windows PC **without** the Raw Image Extension, then drop the extension from the site and the guide. 7b: our own decoder, ARW and RW2 first.
+  7. RAW built in ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)): ✓ 7a rawler behind the `RawDecoder` trait, finished to the camera's embedded JPEG (`raw_finish`), first on Windows, fallback on macOS; measured (RESULT §15). Left for 7a: try RAW on a Windows PC **without** the Raw Image Extension, then drop the extension from the site and the guide. 7b: our own decoder ([ADR-0030](adr/0030-our-own-raw-decoder.md), `crates/rawcore`): ✓ DNG, first on both systems, faster, lighter and closer to the camera's JPEG than rawler and ImageIO (RESULT §16). Next ARW (a6400), RW2 (GX9, S5 greys ≤ 1.5), lens distortion, then NEF, CR2, ORF, CR3, RAF; rawler goes when all have moved.
 - **Then:**
 
 - **v0.8.0 "Places and Lightroom"**, measured first ([RESULT.md §14](RESULT.md#14-places-and-time-v080-measured-first)), following [ADR-0027](adr/0027-effective-time-and-place.md):
@@ -91,7 +91,52 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 6. **v0.9.0 "Normal mode" (FR-048, NFR-015, FR-046, FR-050):** open → keep/drop → export, three times faster than Professional; swipe culling; print basket.
 7. **Later (Phase 2):** Photo Style and film looks (FR-039, FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
 8. **Alongside, never blocking a release:** the append-only edit journal (NFR-013; not urgent, as a full save stays at 70 ms for 70,000 edited photos); the Windows title bar on a real machine (FR-052); SignPath signing for Windows (declined 2026-10-26 for too little public adoption yet; reapply once the project has independent mentions and stars, RELEASE.md §3); a Ko-fi link once the account exists; NFR-008 by publishing one `.dmg` per architecture; FR-022 filters by date, camera, GPS and DPI.
-9. **Camera over USB (FR-062, FR-063, FR-064; ADR-0026 proposed):** Step 0 done on macOS 2026-10-26 ([RESULT §13](RESULT.md#13-camera-over-usb-step-0-planned-fr-062-fr-063), [cameras/README.md](cameras/README.md)): no driver needed; the a6400 needs Sony's handshake, the GX9 cannot be tethered over USB at all (not on the bus while it can shoot); an HDMI capture card was dropped as it is what any streaming tool does. Next: a USB capture of Imaging Edge Remote on the owner's Windows PC ([capture-guide.md](cameras/capture-guide.md)), then the Sony driver. Open decision: a Wi-Fi exception to NFR-006 for bodies like the GX9 (direct link to the camera's own network, never the internet). Then its release is placed in the ROADMAP.
+9. **Camera over USB (FR-062, FR-063, FR-064; ADR-0026 and ADR-0028 accepted):**
+   - **Step 0, macOS (2026-10-26)** ([RESULT §13](RESULT.md#13-camera-over-usb-step-0-planned-fr-062-fr-063), [cameras/README.md](cameras/README.md)):
+     - no driver is needed;
+     - the a6400 needs Sony's handshake;
+     - the GX9 cannot be tethered over USB at all: it is not on the bus while it can shoot;
+     - an HDMI capture card was dropped, as it is what any streaming tool does.
+   - **Done since:**
+     - USB captures of Imaging Edge Remote on Windows (2026-10-26) showed Sony's handshake, shutter, settings and live view ([cameras/sony.md](cameras/sony.md));
+     - `vendor/sony.rs` encodes them;
+     - the WPD transport (`windows.rs`) drove the a6400 from our own code (`examples/sony_remote.rs`): JPEG and RAW shots in memory 1.1–1.7 s after the press, live view at 30 fps ([RESULT §13.1](RESULT.md#131-sony-a6400-from-fotollections-own-code-windows)).
+     - **In the app (2026-10-26, v0.8.0, Windows):** *Connect camera* next to *Open folder*. It opens a capture screen with the preview's frame:
+       - live view with the print ratio and the camera's settings;
+       - a strip of the shots under it;
+       - ISO and shutter steps, JPEG / RAW and Capture (Space).
+
+       Shots land in a temporary session tab with *Save all* and *Delete photos* ([ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)). Checked by hand on the a6400: connect, live view, settings, a shot written to the session folder.
+   - **Open concerns (2026-10-26):**
+     1. **RAW on Windows** needs Microsoft's *Raw Image Extension* (ADR-0023), which was not installed on the test PC (Windows 10 IoT LTSC): an ARW shot was saved, but the tab could not show it, and the screen now says why. Imaging Edge and Adobe ship their own closed decoders, which Fotollection cannot ship. **Decision pending by the owner:**
+        - keep the OS codec, with a button that opens the Store page;
+        - or a new ADR allowing `rawler` (LGPL) for RAW only, which costs part of ADR-0008's relicensing freedom;
+        - or our own clean-room ARW decoder.
+     2. **Touch to focus** on the live view is not built: it needs a USB recording of Remote setting the focus point (Focus Area: Flexible Spot) first, by the clean-room rule.
+     3. **The new-photo event `0xC201` does not come through WPD.** A shot is noticed by polling the shot state `0xD215`, which works, but costs a settings read every 100 ms while waiting.
+     4. **A new file format applies one shot late.** The UI says so; the exact delay is not measured yet.
+     5. **macOS:** the transport must run on the main thread, so *Connect camera* is disabled there until it has a thread of its own.
+     6. **Other Sony bodies are untested.** Imaging Edge's libusbK driver lists 65 other models, mostly newer, which may not go through WPD at all. A read-only remote probe is planned, with a friend's ZV-E10 first ([cameras/sony.md](cameras/sony.md)).
+     7. **Still to check by hand:**
+        - *Save all* to another drive;
+        - closing a session tab (the question);
+        - unplugging during live view;
+        - the Vietnamese UI;
+        - the print-ratio frame with a size that is not 3:2.
+     8. **Still to measure in the app:** NFR-018 (press to preview) and NFR-019 (frames shown per second).
+     9. **Missing:** fuzz targets for `ptp` and `sony`.
+     10. **To confirm at release:** v0.8.0's title ("Places and Lightroom", and the camera).
+     11. **Blocking v0.8.0: closing the app loses the session in practice.** Quitting with unsaved shots asks nothing. After a restart the session tab did not come back. The shots stay in `%APPDATA%\com.hoangphi01.fotollection\camera\<session>\`, but nothing in the app leads to them. To do (ADR-0028, Consequences):
+         - ask before quitting (*Save all* / *Delete photos* / *Cancel*);
+         - on start, bring back any session left in `camera/`.
+   - **Next:**
+     - concern 11: the question on quit, and sessions found again on start;
+     - the owner's decision on RAW (concern 1);
+     - the focus recording (concern 2);
+     - the manual checks above;
+     - the macOS run of `sony_remote`.
+   - **Open decision:** a Wi-Fi exception to NFR-006 for bodies like the GX9 (a direct link to the camera's own network, never the internet).
+   - **Then** its release is placed in the ROADMAP.
 
 ## Phase 0 — Foundation
 
@@ -174,8 +219,8 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-058 | Lightroom compatibility through XMP | 2 | Not Started | Planned: read XMP sidecars on import (stars, reject, crop); opt-in writing of `.xmp` next to photos, never touching them; Lightroom reads sidecars only for RAW |
 | FR-060 | Start-up screen | 1 | In Progress | ✓ Logo and loading bar painted by `index.html` before any script; the bar follows the import while the session reopens; fades out on `StartupFinished` (`use-startup-screen.ts`), never later than 15 s. Left: check by hand; the Normal / Professional choice (FR-048) later |
 | FR-061 | Check for updates | 2 | In Progress | ✓ `updates.rs`: one GitHub request on click (`ureq`, 10 s, 1 MB), `semver`, installer per system, links kept in Rust and limited to the project's releases, opened with `tauri-plugin-opener`; button in the version popover (`update-check.tsx`); tests on fixture JSON. ✓ MSI `UpgradeCode` pinned. Left: try in the app (`FOTOLLECTION_FAKE_VERSION`) |
-| FR-062 | Live view from a camera | 2 | Not Started | Planned ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md), proposed): own PTP driver per maker over ImageCaptureCore/WPD, or UVC / HDMI capture card through `getUserMedia`. Step 0 first ([cameras/README.md](cameras/README.md)) |
-| FR-063 | Tethered capture over USB | 2 | In Progress | ✓ Step 0 on macOS (RESULT §13): `crates/oscamera` with `ptp` (tested) and the ImageCaptureCore transport, `probe_camera`. a6400: Sony extension, needs the handshake (USB capture of Imaging Edge Remote on Windows next). GX9: no capture or live view over USB at all. Left: Sony driver, WPD transport, app wiring |
+| FR-062 | Live view from a camera | 1 | In Progress | ✓ Live view in the capture screen (Windows, Sony a6400; ADR-0028): frames from memory over `fotothumb`, the print ratio drawn over it, the settings under it, about 30 fps from the camera. Left: NFR-019 measured in the app, macOS, touch to focus, UVC |
+| FR-063 | Tethered capture over USB | 2 | In Progress | ✓ Step 0 on macOS (RESULT §13): `crates/oscamera` with `ptp` (tested) and the ImageCaptureCore transport, `probe_camera`. ✓ a6400 protocol from USB captures on Windows (sony.md), ✓ `vendor/sony.rs`: handshake, shutter, settings block, live-view frame (tested). ✓ WPD transport, first shots and live view from our code on Windows (RESULT §13.1). ✓ In the app (v0.8.0, Windows): Connect camera, the capture screen, shots into a session tab, Save all and Delete photos (`camera.rs`, `fr_063_*`; ADR-0028). GX9: no capture or live view over USB at all. Left: the open concerns in "Next" item 9 (RAW codec on Windows, touch to focus, macOS, other bodies, manual checks) |
 | FR-064 | Watch a folder for new photos | 2 | Not Started | Planned: fallback for a maker's wired tether app; also feeds FR-063's session folder |
 | FR-065 | Border in Crop to fill | 1 | In Progress | ✓ `frame.border` (settings v9), 3 mm inside the print in `frame::layout`, the crop and export follow the smaller photo area (`fr_065_*`); *Add border* switch under Crop to fill. Left: check a print at a CEWE kiosk size by hand |
 | FR-059 | Quick-preview | 1 | In Progress | ✓ Hold Space in select mode over a photo: thumbnail at once, then the render with the gallery's settings; ← → and Enter while held (`use-quick-preview.ts`). Left: check by hand in the app |

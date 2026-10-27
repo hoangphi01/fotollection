@@ -66,6 +66,9 @@ pub fn finish_startup(app: &AppHandle) {
         .store(true, Ordering::Relaxed);
     crate::timing::mark(&crate::timing::STARTUP_DONE, "session restored");
     let _ = StartupFinished.emit(app);
+    // Shots left by a run that ended without saving them come back as tabs (ADR-0028).
+    let app = app.clone();
+    std::thread::spawn(move || crate::camera::reopen_sessions(&app));
 }
 
 /// Versions shown in the About section.

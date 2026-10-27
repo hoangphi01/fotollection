@@ -5,8 +5,10 @@
 //     placeholder / label / alt attributes), outside the shadcn primitives in components/ui.
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const root = new URL('../src', import.meta.url).pathname
+// fileURLToPath, not `.pathname`: on Windows the latter gives `/C:/…` (LESSONS.md).
+const root = fileURLToPath(new URL('../src', import.meta.url))
 const locales = join(root, 'locales')
 const PLURAL = /_(zero|one|two|few|many|other)$/
 
@@ -33,7 +35,7 @@ for (const file of readdirSync(locales).filter((f) => f.endsWith('.json') && f !
 for (const [k, v] of en) if (typeof v !== 'string' || v.trim() === '') problems.push(`en.json: empty value for ${k}`)
 
 // Words that are the same in every language: names, units, formats.
-const ALLOWED = new Set(['Fotollection', 'DPI', 'MP', 'px', 'ISO', 'JPEG', 'PNG', 'EXIF', 'GPS', 'Esc', 'Enter', 'cm', 'in', 'KB', 'MB', 'GB'])
+const ALLOWED = new Set(['Fotollection', 'DPI', 'MP', 'px', 'ISO', 'JPEG', 'RAW', 'PNG', 'EXIF', 'GPS', 'Esc', 'Enter', 'Space', 'cm', 'in', 'KB', 'MB', 'GB'])
 const visible = (text) =>
   (text.match(/[\p{L}]{2,}/gu) ?? []).some((word) => !ALLOWED.has(word))
 

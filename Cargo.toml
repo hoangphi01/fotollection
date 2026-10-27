@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/core", "crates/geodata", "crates/oscamera", "crates/oscodec", "crates/rawlgpl", "src-tauri"]
+members = ["crates/core", "crates/geodata", "crates/oscamera", "crates/oscodec", "crates/rawcore", "crates/rawlgpl", "src-tauri"]
 
 [workspace.package]
 version = "0.7.0"
@@ -12,6 +12,7 @@ rust-version = "1.99"
 [workspace.dependencies]
 fotollection-core = { path = "crates/core" }
 fotollection-oscodec = { path = "crates/oscodec" }
+fotollection-oscamera = { path = "crates/oscamera" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"

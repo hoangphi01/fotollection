@@ -30,6 +30,8 @@ enum Route {
     Region(PhotoId, Region),
     /// Upright, uncropped T2 image for the crop editor.
     Source(PhotoId),
+    /// The latest live-view frame of the connected camera, from memory (FR-062).
+    CameraLive,
 }
 
 /// `region=x,y,w,h&px=n` from the query: `Ok(None)` without one, `Err` when it is malformed
@@ -60,6 +62,9 @@ fn region(query: Option<&str>) -> Result<Option<Region>, ()> {
 }
 
 fn route(path: &str, query: Option<&str>) -> Option<Route> {
+    if path.trim_matches('/') == "camera/live" {
+        return Some(Route::CameraLive);
+    }
     let mut parts = path.trim_matches('/').split('/');
     let kind = parts.next()?;
     let id = PhotoId(parts.next()?.parse().ok()?);
@@ -99,6 +104,15 @@ pub fn handle<R: Runtime>(
         respond(responder, StatusCode::NOT_FOUND, Vec::new(), false);
         return;
     };
+    // A live-view frame is already a JPEG in memory: no decode, no pool. Never cached by
+    // the webview, never written anywhere (FR-062).
+    if matches!(route, Route::CameraLive) {
+        match app.state::<crate::camera::CameraState>().live_frame() {
+            Some(frame) => respond(responder, StatusCode::OK, frame.as_ref().clone(), true),
+            None => respond(responder, StatusCode::NOT_FOUND, Vec::new(), false),
+        }
+        return;
+    }
     // Decode work happens off the webview thread, on the interactive pool, so visible
     // thumbnails and previews never wait behind background thumbnail generation.
     let worker = app.clone();
@@ -131,6 +145,7 @@ pub fn handle<R: Runtime>(
                     false,
                 ),
             },
+            Route::CameraLive => {}
             Route::Preview(id) => match preview_bytes(&state, id) {
                 Ok(bytes) => {
                     crate::timing::mark(&crate::timing::FIRST_PREVIEW, "first preview");

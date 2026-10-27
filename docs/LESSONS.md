@@ -1,6 +1,6 @@
 # Lessons — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-10-25
+> **Status:** Living · **Last reviewed:** 2026-10-27
 >
 > What each debugging session taught us, so the same mistake is not made twice. Every bug that took more than one look to find gets an entry here in the same commit as its fix ([DOCS_GUIDE.md](DOCS_GUIDE.md) §2). Newest first. Each entry says what we saw, why it happened, the fix, and the rule to follow from now on. Performance-only lessons stay in [OPTIMIZATION.md](OPTIMIZATION.md) (for example §4.3.1, interactive work off background queues).
 
@@ -11,6 +11,22 @@
 3. **Reproduce with the user's photo when the user sees it.** A synthetic test passed while the real app was soft: unit tests prove the pixels, only the real webview proves what is shown.
 4. **Write the lesson here** before moving on.
 
+## 2026-10-27
+
+### Our own DNG was 1 ΔE off the camera's JPEG because of the lens, not the colour (ADR-0030)
+
+- **Seen:** with the DNG colour model, one tone curve and a fitted 3×3 matrix, rawcore stayed at ΔE 3.8 from the embedded JPEG, and more matrix or curve freedom did not help.
+- **Why:** an error map by region showed it: the centre about 4 L\* too bright, the corners 1.5 too dark. The camera corrects its lens's vignetting in the JPEG; the raw data does not. A global curve cannot fix an error that depends on the position.
+- **Fix:** a radial gain `exp(a·r² + b·r⁴)` fitted from the JPEG, alternating with the curve fit; ΔE 2.67, every region within ±0.5 L\*.
+- **Rule:** when a global fit stops improving, map the error by region before adding parameters.
+
+### TESTING.md described fuzz targets that had never been made
+
+- **Seen:** the RAW quality gate asked for fuzzing, and TESTING.md listed four targets under `crates/core/fuzz/`. The folder does not exist, and the machine has no nightly toolchain or cargo-fuzz.
+- **Why:** the testing plan was written before the code, as if it were already done, and nothing checked it.
+- **Fix:** mutation testing on stable Rust (`crates/rawcore/examples/mutate.rs`); TESTING.md now says which fuzzing exists and which is planned.
+- **Rule:** docs say "planned" for what is not built yet; check that a path a doc names exists before relying on it.
+
 ## 2026-10-26
 
 ### "Supported" was written after testing on one system only (FR-016)
@@ -19,6 +35,34 @@
 - **Why:** RAW was measured and checked on macOS, where ImageIO decodes it; the Windows path (WIC) was only described in one row of the README's requirements, while the claims were written as if they held everywhere. And the decision to decode RAW only through the OS (ADR-0023) was taken to keep the relicensing option, without asking the owner whether that was worth an extra install for every Windows user.
 - **Fix:** the claims now say what Windows needs; a built-in RAW reader is planned (rawler now, our own decoder next).
 - **Rules:** never write "supports" or "works" for a feature before it has been tried on every system the app ships for; and a constraint that costs users a feature (a licence rule, a platform limit) is the owner's decision, so ask before choosing it.
+
+### `URL.pathname` is not a file path on Windows
+
+- **Seen:** `npm run lint` failed on Windows because `check-i18n.mjs` opened `C:\C:\Users\…\en.json`.
+- **Why:** `new URL('../src', import.meta.url).pathname` gives `/C:/Users/…` on Windows, and `path.join` then repeats the drive letter. CI runs on macOS and Linux, so it never showed there.
+- **Fix:** `fileURLToPath(new URL(…))`.
+- **Rule:** in Node scripts, turn a `file:` URL into a path with `fileURLToPath`, never `.pathname`.
+
+### WPD hands over a maker's event code in the high half of the GUID (FR-063)
+
+- **Seen:** the a6400 driven through WPD sent no events we recognised. A temporary log of each event's GUID showed `C2030000-5738-4FF2-8445-BE3126691059`, where the code was expected in the low 16 bits.
+- **Why:** WPD builds a maker's event GUID from `WPD_EVENT_MTP_VENDOR_EXTENDED_EVENTS` and puts the PTP event code in the high 16 bits of its first field.
+- **Fix:** `vendor_event_code` reads `data1 >> 16`; a test uses the GUID as seen.
+- **Rule:** when a platform API rewraps camera data, log what it really hands over before trusting the documented shape.
+
+### A Sony shot needs time between the shutter steps (FR-063)
+
+- **Seen:** the four shutter steps, sent back to back (about 40 ms), answered `OK` but the a6400 did not shoot. No event came, and the shot state stayed 0.
+- **Why:** the half press starts autofocus, and releasing within milliseconds cancels it. Remote's own fast presses also failed twice in the second recording.
+- **Fix:** `SHUTTER_STEP_GAP` = 300 ms between steps; it shot 4 of 4. A missing `0xD215 = 0x8001` within a few seconds means "did not shoot".
+- **Rule:** an `OK` to a control operation means "received", not "done". Check the camera's state afterwards.
+
+### dumpcap does not see USBPcap (FR-063)
+
+- **Seen:** on Windows with Wireshark, USBPcap and Npcap installed and the USBPcap driver running, `dumpcap -D` listed only network cards, so `scripts/camera-capture.ps1` said "No USBPcap interface found"; `tshark -D` listed `\\.\USBPcap1` and `\\.\USBPcap2`.
+- **Why:** USBPcap reaches Wireshark as an extcap interface, and only `tshark` and Wireshark start extcap programs; `dumpcap` alone never lists or opens them.
+- **Fix:** the script lists and records with `tshark`. When USBPcap is installed separately (winget), `USBPcapCMD.exe` must be copied into Wireshark's `extcap` folder, and a silent Wireshark install leaves out Npcap ([cameras/capture-guide.md §5](cameras/capture-guide.md#5-if-something-goes-wrong)).
+- **Rule:** record USB on Windows through `tshark`, never through `dumpcap` directly.
 
 ### A camera says nothing while its card is being listed (FR-063)
 

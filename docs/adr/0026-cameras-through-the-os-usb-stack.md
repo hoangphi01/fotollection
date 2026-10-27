@@ -1,6 +1,6 @@
 # ADR-0026: Cameras over USB through the OS imaging stack, with our own vendor drivers
 
-- **Status:** Proposed (Step 0 measurements on a Panasonic GX9 and a Sony a6400 decide the details)
+- **Status:** Accepted (Step 0 measured on a Panasonic GX9 and a Sony a6400; the Sony driver runs on Windows, ADR-0028)
 - **Date:** 2026-10-26
 - **Related:** FR-062, FR-063, FR-064, NFR-018, NFR-019, ADR-0008, ADR-0017, ADR-0023, [cameras/README.md](../cameras/README.md)
 

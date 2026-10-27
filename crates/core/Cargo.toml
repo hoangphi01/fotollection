@@ -31,6 +31,8 @@ zune-jpeg.workspace = true
 fotollection-oscodec.workspace = true
 # Camera RAW with nothing to install (ADR-0029); the only LGPL dependency, behind `raw`.
 fotollection-rawlgpl = { path = "../rawlgpl" }
+# Our own RAW decoder, first for the formats that passed its quality gate (ADR-0030).
+fotollection-rawcore = { path = "../rawcore" }
 
 [dev-dependencies]
 criterion.workspace = true

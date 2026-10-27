@@ -60,7 +60,7 @@ fn bundle_error(e: &BundleError) -> IpcError {
     IpcError::new(e.code(), e.to_string())
 }
 
-fn poisoned(e: impl std::fmt::Display) -> IpcError {
+pub(crate) fn poisoned(e: impl std::fmt::Display) -> IpcError {
     IpcError::internal(e.to_string())
 }
 
@@ -444,26 +444,38 @@ pub async fn remove_folder(app: AppHandle, folder: u16) -> Result<DocumentState,
                 .collect();
             (project::snapshot(&library), keep)
         };
-        reset_library(&state)?;
-        if !keep.is_empty() {
-            crate::commands::import_paths(&app, keep);
-        }
-        if let Ok(mut library) = state.library.write() {
-            project::restore(&mut library, &snapshot);
-        }
-        // Ids are reused for other photos: the generation tells the UI to drop cached images.
-        {
-            let mut doc = state.document.lock().map_err(poisoned)?;
-            doc.generation = doc.generation.wrapping_add(1);
-        }
-        state.project_dirty.store(true, Ordering::Relaxed);
-        state.mark_edited();
-        changed(&app, &state);
-        emit(&app);
-        Ok(current(&state))
+        rebuild_library(&app, &state, keep, &snapshot)
     })
     .await
     .map_err(poisoned)?
+}
+
+/// Rebuilds the library from `folders` and re-applies the edits in `snapshot`, matched by
+/// folder path and file name: closing a tab, and moving a camera session (ADR-0028). The
+/// caller holds `document_lock`. Photo ids and the undo history reset.
+pub(crate) fn rebuild_library(
+    app: &AppHandle,
+    state: &AppState,
+    folders: Vec<PathBuf>,
+    snapshot: &project::ProjectFile,
+) -> Result<DocumentState, IpcError> {
+    reset_library(state)?;
+    if !folders.is_empty() {
+        crate::commands::import_paths(app, folders);
+    }
+    if let Ok(mut library) = state.library.write() {
+        project::restore(&mut library, snapshot);
+    }
+    // Ids are reused for other photos: the generation tells the UI to drop cached images.
+    {
+        let mut doc = state.document.lock().map_err(poisoned)?;
+        doc.generation = doc.generation.wrapping_add(1);
+    }
+    state.project_dirty.store(true, Ordering::Relaxed);
+    state.mark_edited();
+    changed(app, state);
+    emit(app);
+    Ok(current(state))
 }
 
 /// Refreshes the UI after a library swap, which itself is not an unsaved change.

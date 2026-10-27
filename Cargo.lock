@@ -1509,7 +1509,9 @@ dependencies = [
 name = "fotollection"
 version = "0.7.0"
 dependencies = [
+ "chrono",
  "fotollection-core",
+ "fotollection-oscamera",
  "rayon",
  "semver",
  "serde",
@@ -1522,6 +1524,7 @@ dependencies = [
  "tauri-plugin-opener",
  "tauri-plugin-single-instance",
  "tauri-specta",
+ "tempfile",
  "ureq",
 ]
 
@@ -1536,6 +1539,7 @@ dependencies = [
  "fast_image_resize",
  "flate2",
  "fotollection-oscodec",
+ "fotollection-rawcore",
  "fotollection-rawlgpl",
  "jpeg-encoder",
  "kamadak-exif",
@@ -1572,6 +1576,8 @@ dependencies = [
  "objc2-foundation",
  "objc2-image-capture-core",
  "thiserror 2.0.21",
+ "windows",
+ "windows-core",
 ]
 
 [[package]]
@@ -1583,6 +1589,14 @@ dependencies = [
  "objc2-image-io",
  "thiserror 2.0.21",
  "windows",
+]
+
+[[package]]
+name = "fotollection-rawcore"
+version = "0.7.0"
+dependencies = [
+ "rayon",
+ "thiserror 2.0.21",
 ]
 
 [[package]]

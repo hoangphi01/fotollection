@@ -44,7 +44,7 @@ const EVENT: u16 = 4;
 const HEADER: usize = 12;
 
 /// No list in a dataset is longer than this; a real camera declares a few hundred codes.
-const MAX_LIST: usize = 4096;
+pub(crate) const MAX_LIST: usize = 4096;
 
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum PtpError {
@@ -54,6 +54,10 @@ pub enum PtpError {
     NotContainer { expected: &'static str },
     #[error("a list in the camera's answer is too long ({0} entries)")]
     ListTooLong(usize),
+    #[error("the camera's answer uses an unknown data type {0:#06x}")]
+    UnknownDataType(u16),
+    #[error("the camera's answer uses an unknown form {0}")]
+    UnknownForm(u8),
 }
 
 /// The 12-byte header plus up to five parameters of a command request.
@@ -65,6 +69,22 @@ pub fn command(code: u16, transaction: u32, params: &[u32]) -> Vec<u8> {
     out.extend_from_slice(&COMMAND.to_le_bytes());
     out.extend_from_slice(&code.to_le_bytes());
     out.extend_from_slice(&transaction.to_le_bytes());
+    for p in params {
+        out.extend_from_slice(&p.to_le_bytes());
+    }
+    out
+}
+
+/// An event container rebuilt from its code and parameters, for transports that hand events
+/// over already taken apart (WPD). Transaction `0xFFFFFFFF`, as the a6400 sends its own.
+pub fn event_container(code: u16, params: &[u32]) -> Vec<u8> {
+    let params = &params[..params.len().min(5)];
+    let len = HEADER + 4 * params.len();
+    let mut out = Vec::with_capacity(len);
+    out.extend_from_slice(&u32::try_from(len).unwrap_or(u32::MAX).to_le_bytes());
+    out.extend_from_slice(&EVENT.to_le_bytes());
+    out.extend_from_slice(&code.to_le_bytes());
+    out.extend_from_slice(&u32::MAX.to_le_bytes());
     for p in params {
         out.extend_from_slice(&p.to_le_bytes());
     }
@@ -172,6 +192,41 @@ impl DeviceInfo {
     }
 }
 
+/// What a camera says about one file (`GetObjectInfo`, ISO 15740 §5.5.2); only the fields
+/// Fotollection uses.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ObjectInfo {
+    pub storage_id: u32,
+    pub format: u16,
+    pub size: u32,
+    pub width: u32,
+    pub height: u32,
+    pub filename: String,
+}
+
+impl ObjectInfo {
+    pub fn parse(bytes: &[u8]) -> Result<Self, PtpError> {
+        let mut r = Reader::new(payload(bytes));
+        let storage_id = r.u32()?;
+        let format = r.u16()?;
+        r.u16()?; // protection
+        let size = r.u32()?;
+        r.take(2 + 4 + 4 + 4)?; // thumbnail format, size, width, height
+        let width = r.u32()?;
+        let height = r.u32()?;
+        r.take(4 + 4 + 2 + 4 + 4)?; // bit depth, parent, association type and desc, sequence
+        let filename = r.string()?;
+        Ok(Self {
+            storage_id,
+            format,
+            size,
+            width,
+            height,
+            filename,
+        })
+    }
+}
+
 /// The vendor extension IDs PTP assigns (ISO 15740 and PIMA's registry), for printing.
 pub fn vendor_name(id: u32) -> &'static str {
     match id {
@@ -242,18 +297,18 @@ pub fn event_name(code: u16) -> Option<&'static str> {
     })
 }
 
-/// Little-endian reader over untrusted bytes.
-struct Reader<'a> {
+/// Little-endian reader over untrusted bytes, shared with the maker drivers.
+pub(crate) struct Reader<'a> {
     bytes: &'a [u8],
-    at: usize,
+    pub(crate) at: usize,
 }
 
 impl<'a> Reader<'a> {
-    fn new(bytes: &'a [u8]) -> Self {
+    pub(crate) fn new(bytes: &'a [u8]) -> Self {
         Self { bytes, at: 0 }
     }
 
-    fn take(&mut self, n: usize) -> Result<&'a [u8], PtpError> {
+    pub(crate) fn take(&mut self, n: usize) -> Result<&'a [u8], PtpError> {
         let end = self.at.checked_add(n).filter(|&e| e <= self.bytes.len());
         let Some(end) = end else {
             return Err(PtpError::Truncated {
@@ -266,22 +321,29 @@ impl<'a> Reader<'a> {
         Ok(slice)
     }
 
-    fn u8(&mut self) -> Result<u8, PtpError> {
+    pub(crate) fn u8(&mut self) -> Result<u8, PtpError> {
         Ok(self.take(1)?[0])
     }
 
-    fn u16(&mut self) -> Result<u16, PtpError> {
+    pub(crate) fn u16(&mut self) -> Result<u16, PtpError> {
         let b = self.take(2)?;
         Ok(u16::from_le_bytes([b[0], b[1]]))
     }
 
-    fn u32(&mut self) -> Result<u32, PtpError> {
+    pub(crate) fn u32(&mut self) -> Result<u32, PtpError> {
         let b = self.take(4)?;
         Ok(u32::from_le_bytes([b[0], b[1], b[2], b[3]]))
     }
 
+    pub(crate) fn u64(&mut self) -> Result<u64, PtpError> {
+        let b = self.take(8)?;
+        Ok(u64::from_le_bytes([
+            b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7],
+        ]))
+    }
+
     /// A PTP string: a count of UTF-16 code units including the final NUL, then the units.
-    fn string(&mut self) -> Result<String, PtpError> {
+    pub(crate) fn string(&mut self) -> Result<String, PtpError> {
         let n = usize::from(self.u8()?);
         let raw = self.take(2 * n)?;
         let units: Vec<u16> = raw
@@ -294,7 +356,7 @@ impl<'a> Reader<'a> {
         Ok(String::from_utf16_lossy(&units))
     }
 
-    fn u16_list(&mut self) -> Result<Vec<u16>, PtpError> {
+    pub(crate) fn u16_list(&mut self) -> Result<Vec<u16>, PtpError> {
         let n = self.u32()? as usize;
         if n > MAX_LIST {
             return Err(PtpError::ListTooLong(n));
@@ -407,6 +469,37 @@ mod tests {
         assert!(response(&command(op::OPEN_SESSION, 1, &[1])).is_err());
     }
 
+    /// A hand-made `ObjectInfo` for a 6000 × 4000 RAW of 24 MB.
+    fn object_info() -> Vec<u8> {
+        let mut d = Vec::new();
+        d.extend_from_slice(&0x0001_0000u32.to_le_bytes());
+        d.extend_from_slice(&0xB101u16.to_le_bytes());
+        d.extend_from_slice(&0u16.to_le_bytes());
+        d.extend_from_slice(&24_000_000u32.to_le_bytes());
+        d.extend_from_slice(&[0; 14]);
+        d.extend_from_slice(&6000u32.to_le_bytes());
+        d.extend_from_slice(&4000u32.to_le_bytes());
+        d.extend_from_slice(&[0; 18]);
+        d.extend(string("DSC00001.ARW"));
+        d.extend(string(""));
+        d
+    }
+
+    #[test]
+    fn object_info_parses_and_bad_answers_are_errors() -> Result<(), PtpError> {
+        let raw = object_info();
+        let info = ObjectInfo::parse(&raw)?;
+        assert_eq!(info.format, 0xB101);
+        assert_eq!(info.size, 24_000_000);
+        assert_eq!((info.width, info.height), (6000, 4000));
+        assert_eq!(info.filename, "DSC00001.ARW");
+        let name_end = raw.len() - 1;
+        for cut in 0..name_end {
+            assert!(ObjectInfo::parse(&raw[..cut]).is_err(), "cut at {cut}");
+        }
+        Ok(())
+    }
+
     #[test]
     fn response_and_event_containers() -> Result<(), PtpError> {
         let mut r = 16u32.to_le_bytes().to_vec();
@@ -424,6 +517,11 @@ mod tests {
         e.extend_from_slice(&0u32.to_le_bytes());
         e.extend_from_slice(&42u32.to_le_bytes());
         assert_eq!(event(&e)?.params, vec![42]);
+
+        let rebuilt = event(&event_container(0xC201, &[0xFFFF_C001]))?;
+        assert_eq!(rebuilt.code, 0xC201);
+        assert_eq!(rebuilt.params, vec![0xFFFF_C001]);
+        assert_eq!(event(&event_container(0xC203, &[0; 9]))?.params.len(), 5);
         Ok(())
     }
 }

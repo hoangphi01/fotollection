@@ -48,6 +48,7 @@ Write down, roughly, the time of each step (for example "10:15:20 connect, 10:15
 | What you see | What to do |
 |---|---|
 | "Wireshark is not installed" | Install it (§1), tick USBPcap, restart |
-| "No USBPcap interface found" | Reinstall Wireshark with USBPcap ticked, restart Windows, run PowerShell as Administrator |
+| "No USBPcap interface found" | Reinstall Wireshark with USBPcap ticked, restart Windows, run PowerShell as Administrator. If USBPcap was installed on its own (for example with `winget install desowin.USBPcap`), copy `C:\Program Files\USBPcap\USBPcapCMD.exe` into `C:\Program Files\Wireshark\extcap\` |
+| "Unable to load Npcap" | Wireshark installed without Npcap (for example by `winget --silent`): install it from [npcap.com](https://npcap.com/#download) |
 | Remote does not find the camera | Check *USB Connection: PC Remote* and the cable; unplug, turn the camera off and on |
 | The file is very large (over 1 GB) | Fine; zip it before copying (right-click → Send to → Compressed folder) |

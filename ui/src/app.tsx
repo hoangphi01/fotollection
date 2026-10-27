@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { FilterX, ListChecks, OctagonX, Sparkles, Square } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,7 @@ import { GroupsView } from '@/features/best-shot/groups-view'
 import { useBestShots } from '@/features/best-shot/use-best-shots'
 import { CullFilterBar } from '@/features/culling/cull-filter-bar'
 import { ALL_PHOTOS } from '@/features/culling/filter'
-import { commands, type CullFilter, type OpenPhoto, type Queue } from '@/ipc/bindings'
+import { commands, events, type CullFilter, type OpenPhoto, type Queue } from '@/ipc/bindings'
 import { LibraryEmptyState } from '@/features/library/library-empty-state'
 import { LibraryGrid } from '@/features/library/library-grid'
 import { TaskProgressBar } from '@/features/library/task-progress-bar'
@@ -31,6 +31,11 @@ import { RelinkDialog, UnsavedDialog } from '@/features/project/project-dialogs'
 import { useProject } from '@/features/project/use-project'
 import { useStartupScreen } from '@/features/startup/use-startup-screen'
 import { useOpenWith } from '@/features/open-with/use-open-with'
+import { CameraSessionBanner } from '@/features/capture/camera-session-banner'
+import { CaptureDialog } from '@/features/capture/capture-dialog'
+import { ConnectCameraButton } from '@/features/capture/connect-camera-button'
+import { DiscardSessionDialog, type SessionChoice } from '@/features/capture/discard-session-dialog'
+import { useCapture } from '@/features/capture/use-capture'
 
 export function App() {
   const { t } = useTranslation()
@@ -48,6 +53,12 @@ export function App() {
   const exporter = useExport()
   const project = useProject()
   const bestShots = useBestShots()
+  // Tethered capture (FR-062, FR-063): the capture screen and the session tabs.
+  // The camera went away by itself (unplugged, turned off): show the session's tab, as
+  // closing the capture screen does (ADR-0028).
+  const onCameraGone = useRef<() => void>(() => {})
+  const capture = useCapture({ onGone: () => onCameraGone.current() })
+  const [discarding, setDiscarding] = useState<number | null>(null)
   const [view, setView] = useState<'photos' | 'groups'>('photos')
   // The Relink dialog opens by itself after Open; "Later" hides it until the next project.
   const [relinkHiddenFor, setRelinkHiddenFor] = useState<number | null>(null)
@@ -144,6 +155,57 @@ export function App() {
     if (index >= 0) open(index)
   }
 
+  // Closing the capture screen lets the camera go and shows this session's tab (ADR-0028);
+  // a shot clicked in its column opens in the preview, the same way as "Open with".
+  const closeCapture = (shot?: OpenPhoto) => {
+    const folder = shot?.folder ?? capture.sessionFolder
+    void capture.disconnect()
+    if (folder === null) return
+    setSelectMode(false)
+    setFilter({ ...ALL_PHOTOS, folders: [folder] })
+    if (shot) setPhotoRequest(shot)
+  }
+  // Closing the app with session tabs not saved asks first (ADR-0028): Rust holds the close
+  // and sends `quit-blocked`, and the answer ends with `quit_app`.
+  const [quitting, setQuitting] = useState<number[] | null>(null)
+  useEffect(() => {
+    const unlisten = events.quitBlocked.listen((e) => setQuitting(e.payload.sessions))
+    return () => void unlisten.then((off) => off())
+  }, [])
+  const chooseForQuit = async (choice: SessionChoice) => {
+    const sessions = quitting
+    setQuitting(null)
+    if (sessions === null || choice === 'cancel') return
+    await capture.disconnect()
+    // Highest id first: deleting a tab renumbers the ones after it.
+    for (const folder of [...sessions].sort((x, y) => y - x)) {
+      const done = choice === 'save' ? await capture.saveSession(folder) : await capture.discardSession(folder)
+      if (!done) return
+    }
+    await commands.quitApp()
+  }
+
+  useEffect(() => {
+    onCameraGone.current = () => closeCapture()
+  })
+  const onlyFolder = filter.folders?.length === 1 ? filter.folders[0] : undefined
+  const sessionTab =
+    onlyFolder !== undefined && (filter.queue ?? 'gallery') === 'gallery' && capture.sessions.includes(onlyFolder)
+      ? onlyFolder
+      : null
+  const discardSession = (folder: number) => {
+    // Folder ids are renumbered when a tab goes: show every photo again.
+    setFilter({ ...filter, folders: [], queue: 'gallery' })
+    void capture.discardSession(folder)
+  }
+  const chooseForSession = (choice: SessionChoice) => {
+    const folder = discarding
+    setDiscarding(null)
+    if (folder === null) return
+    if (choice === 'save') void capture.saveSession(folder)
+    else if (choice === 'discard') discardSession(folder)
+  }
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground select-none">
       <TitleBar name={project.document.name ?? t('project.untitled')} />
@@ -159,19 +221,32 @@ export function App() {
         onOpenFolder={() => void importFolder()}
         onRefresh={() => void refresh()}
         onRemoveFolder={(id) => {
+          // A camera session's shots are only in the app's data: closing its tab asks first.
+          if (capture.sessions.includes(id)) {
+            setDiscarding(id)
+            return
+          }
           // Folder ids are renumbered after a removal: show every photo again.
           setFilter({ ...filter, folders: [], queue: 'gallery' })
           void removeFolder(id)
         }}
         project={project}
         onShowRelink={() => setRelinkHiddenFor(null)}
+        cameraAction={<ConnectCameraButton capture={capture} />}
       />
       <main className="flex min-w-0 flex-1 flex-col">
-        {(error ?? bestShots.error) && (
+        {(error ?? bestShots.error ?? (capture.phase === 'connected' ? null : capture.error)) && (
           <Alert variant="destructive" className="m-3 w-auto">
             <OctagonX />
-            <AlertDescription>{error ?? bestShots.error}</AlertDescription>
+            <AlertDescription>{error ?? bestShots.error ?? capture.error}</AlertDescription>
           </Alert>
+        )}
+        {sessionTab !== null && (
+          <CameraSessionBanner
+            count={folders.find((f) => f.id === sessionTab)?.count ?? 0}
+            onSave={() => void capture.saveSession(sessionTab)}
+            onDiscard={() => setDiscarding(sessionTab)}
+          />
         )}
         <TaskProgressBar />
         {total === 0 ? (
@@ -320,6 +395,27 @@ export function App() {
         filter={filter}
         onIndexChange={setSelected}
         onClose={() => setViewing(false)}
+      />
+      <CaptureDialog
+        capture={capture}
+        settings={settings}
+        thumbVersions={thumbVersions}
+        generation={project.document.generation}
+        onClose={() => closeCapture()}
+        onOpenShot={(shot) => closeCapture({ id: shot.id, folder: shot.folder })}
+      />
+      <DiscardSessionDialog
+        count={discarding === null ? null : (folders.find((f) => f.id === discarding)?.count ?? 0)}
+        onChoose={chooseForSession}
+      />
+      <DiscardSessionDialog
+        reason="quit"
+        count={
+          quitting === null
+            ? null
+            : folders.filter((f) => quitting.includes(f.id)).reduce((n, f) => n + f.count, 0)
+        }
+        onChoose={(choice) => void chooseForQuit(choice)}
       />
       <UnsavedDialog
         name={project.document.name ?? t('project.untitled')}

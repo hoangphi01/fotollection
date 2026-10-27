@@ -1,6 +1,6 @@
 # ADR-0029: Camera RAW through rawler now, our own decoder next
 
-- **Status:** Accepted. Supersedes [ADR-0023](0023-raw-through-os-codecs.md) in part (Windows no longer needs the Raw Image Extension)
+- **Status:** Accepted. Supersedes [ADR-0023](0023-raw-through-os-codecs.md) in part (Windows no longer needs the Raw Image Extension). Its last step is carried out by [ADR-0030](0030-our-own-raw-decoder.md): DNG has moved to our own decoder
 - **Date:** 2026-10-26
 - **Related:** FR-016, NFR-008, NFR-017, ADR-0008, ADR-0023, [RESULT.md §15](../RESULT.md#15-camera-raw-built-in-rawler-v080-measured-first)
 

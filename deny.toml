@@ -57,6 +57,10 @@ crate = "fotollection-oscamera"
 allow = ["GPL-3.0-only"]
 
 [[licenses.exceptions]]
+crate = "fotollection-rawcore"
+allow = ["GPL-3.0-only"]
+
+[[licenses.exceptions]]
 crate = "fotollection-rawlgpl"
 allow = ["GPL-3.0-only"]
 
