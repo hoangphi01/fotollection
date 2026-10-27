@@ -62,7 +62,7 @@ git push
 1. **detect:** reads the version from `Cargo.toml`. If the tag `vX.Y.Z` exists, it stops. A dependency change in `Cargo.toml` therefore starts it but releases nothing.
 2. **check:** the full CI (`ci.yml`, called as a reusable workflow): fmt, clippy, tests, bindings, `cargo deny`.
 3. **build:** `tauri-action` on `macos-latest` (universal, ad-hoc signed) and `windows-latest`.
-4. **publish:** tags the commit, creates the GitHub Release **published** (pre-release when the version has a `-`), with the version's **Highlights** from the CHANGELOG (a few one-line points such as "New: …", "UI update: …", "Fixes: …"), a link to the full changelog, the first-launch steps and `SHA256SUMS.txt`. The CHANGELOG itself keeps every detail.
+4. **publish:** tags the commit, creates the GitHub Release **published** (pre-release when the version has a `-`), titled `Fotollection vX.Y.Z`, followed by the release's name when the CHANGELOG heading has one after the date (`## [0.8.0] - 2026-10-27 — Places and Lightroom`; add it to the heading `release.sh` writes, before pushing), with the version's **Highlights** from the CHANGELOG (a few one-line points such as "New: …", "UI update: …", "Fixes: …"), a link to the full changelog, the first-launch steps and `SHA256SUMS.txt`. The CHANGELOG itself keeps every detail.
 5. **website:** triggers the Pages workflow, so the download buttons show the new version.
 
 A failed build publishes nothing. Re-running the workflow retries it.

@@ -149,9 +149,12 @@ jobs:
         run: |
           flags=""
           [ "${{ needs.detect.outputs.prerelease }}" = "true" ] && flags="--prerelease"
+          # A name after the date in the CHANGELOG heading ("## [0.8.0] - 2026-10-27 — Places and
+          # Lightroom") joins the title.
+          name=$(grep -m1 "^## \[$VERSION\]" CHANGELOG.md | sed -nE 's/^## \[[^]]+\] - [0-9-]+ — (.+)$/\1/p')
           gh release create "v$VERSION" dist/* \
             --target "$GITHUB_SHA" \
-            --title "Fotollection v$VERSION" \
+            --title "Fotollection v$VERSION${name:+ — $name}" \
             --notes-file notes.md $flags
 
       - name: Rebuild the website for the new version
