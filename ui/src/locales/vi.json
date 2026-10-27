@@ -38,7 +38,8 @@
     "basketHint": "Những ảnh bạn sẽ in: bấm ↑ trong màn xem trước, hoặc dùng Chọn trong gallery",
     "aside": "Để riêng",
     "asideHint": "Ảnh bạn gạt ra bằng ↓: không hiện trong gallery, không bao giờ bị xoá; mở ra để quyết định lại",
-    "inBasket": "Trong giỏ in"
+    "inBasket": "Trong giỏ in",
+    "placeBorrowed": "Vị trí mượn từ ảnh điện thoại"
   },
   "task": {
     "import": "Đang đọc ảnh",
@@ -573,6 +574,21 @@
     "manual": "Đặt tay",
     "borrowed": "Mượn",
     "gps": "Theo GPS",
-    "none": "Chưa có nơi"
+    "none": "Chưa có nơi",
+    "borrowOpen": "Tìm vị trí",
+    "borrowTitle": "Vị trí từ điện thoại",
+    "borrowBody": "Ảnh máy ảnh không có GPS sẽ lấy vị trí từ ảnh điện thoại chụp cùng cảnh, gần cùng thời điểm. Cặp chắc chắn được điền ngay; Hoàn tác sẽ gỡ lại.",
+    "window": "Trong vòng",
+    "minutes_one": "{{count}} phút",
+    "minutes_other": "{{count}} phút",
+    "borrowSearch": "Tìm vị trí",
+    "borrowApplied_one": "{{count}} ảnh đã có vị trí.",
+    "borrowApplied_other": "{{count}} ảnh đã có vị trí.",
+    "borrowNone": "Không tìm thấy ảnh cùng cảnh nào có GPS.",
+    "borrowReview": "Những cặp này có vẻ cùng cảnh nhưng kém chắc hơn. Bỏ chọn cặp nào không đúng:",
+    "minutesApart_one": "cách {{count}} phút",
+    "minutesApart_other": "cách {{count}} phút",
+    "borrowAccept_one": "Điền vị trí cho {{count}} ảnh",
+    "borrowAccept_other": "Điền vị trí cho {{count}} ảnh"
   }
 }

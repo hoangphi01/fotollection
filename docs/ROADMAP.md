@@ -134,6 +134,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-063 | Tethered capture over USB: Capture in the app, the full-resolution photo opens at once; own PTP drivers per maker, no install ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)) |
 | FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |
 | FR-065 | Border in Crop to fill: 3 mm in the frame colour inside the print size, instant-photo look at the exact kiosk size |
+| FR-066 | Borrow places from a GPX track: interpolate each photo's time along the track (split out of FR-031) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 
 ## Phase 3 — Pro & growth

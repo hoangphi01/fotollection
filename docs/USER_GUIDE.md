@@ -125,6 +125,8 @@ Every photo from that camera moves at once, including photos added later: the gr
 
 The photos move in the grid, and the date stamp, the info frame, day folders and the exported copy's date follow. Everything is offline, every change is one step of Undo, and the photo file is never changed.
 
+**Places from your phone** ([FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track)): a camera without GPS (a Lumix GX9, for example) can take the place of a photo your phone took of the same scene a few minutes apart. Set the camera's clock first if it is off (section 6). In the settings panel's **Places** card, click **Find places**, choose how far apart in time (5, 10 or 30 minutes) and **Look for places**. Sure matches get their place at once; the others are shown next to the phone photo, ticked, so untick the wrong ones and confirm. Sure matches are also filled in after every best-shot analysis. A borrowed place shows a pin with a tick on the thumbnail and *Borrowed* in the preview; it never replaces a place you set or the photo's own GPS, and Undo takes it back.
+
 **Rename a place** ([FR-005](PRD.md#fr-005--location-stamp-offline)): the settings panel's **Places** card lists every place on your photos. Type the name you want printed, like `Prague` for `Praha 1` or `Grandma's`, and every stamp and frame with that place follows; the arrow button brings the original name back.
 
 ## 8. Shooting with a camera connected

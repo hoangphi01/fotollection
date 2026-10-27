@@ -463,6 +463,47 @@ impl Library {
         }
     }
 
+    /// For each photo with no place of its own (no GPS, none set or borrowed), the photos
+    /// from another camera body that have GPS and were taken within `window_s` of it, nearest
+    /// in effective time first, at most `per_photo` (FR-031). Each comes with its time gap.
+    pub fn borrow_candidates(
+        &self,
+        window_s: i64,
+        per_photo: usize,
+    ) -> Vec<(PhotoId, Vec<(PhotoId, i64)>)> {
+        let mut donors: Vec<(i64, usize)> = (0..self.len())
+            .filter(|&i| self.flags[i] & flags::HAS_GPS != 0)
+            .map(|i| (self.effective(i), i))
+            .collect();
+        donors.sort_unstable();
+        let mut out = Vec::new();
+        for i in 0..self.len() {
+            let Ok(id) = u32::try_from(i).map(PhotoId) else {
+                break;
+            };
+            if self.flags[i] & flags::HAS_GPS != 0
+                || self.edits.get(&id).is_some_and(|e| e.place.is_some())
+            {
+                continue;
+            }
+            let t = self.effective(i);
+            let start = donors.partition_point(|&(dt, _)| dt < t.saturating_sub(window_s));
+            let mut near: Vec<(PhotoId, i64)> = donors[start..]
+                .iter()
+                .take_while(|&&(dt, _)| dt <= t.saturating_add(window_s))
+                .filter(|&&(_, d)| self.body[d] != self.body[i])
+                .filter_map(|&(dt, d)| Some((PhotoId(u32::try_from(d).ok()?), (dt - t).abs())))
+                .collect();
+            if near.is_empty() {
+                continue;
+            }
+            near.sort_by_key(|&(_, gap)| gap);
+            near.truncate(per_photo);
+            out.push((id, near));
+        }
+        out
+    }
+
     /// Every camera body in the library and its clock (FR-030).
     pub fn clocks(&self) -> Vec<CameraClock> {
         let mut photos = vec![0u32; self.bodies.len()];

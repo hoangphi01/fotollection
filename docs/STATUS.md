@@ -24,7 +24,7 @@
 - **v0.8.0 "Places and Lightroom"**, measured first ([RESULT.md §14](RESULT.md#14-places-and-time-v080-measured-first)), following [ADR-0027](adr/0027-effective-time-and-place.md):
   1. FR-030 ✓ and FR-065 ✓ (check both by hand in the app);
   2. FR-032 manual date and place ✓ and FR-005 place renaming ✓ (check by hand);
-  3. then FR-031 borrowed places (same scene and near time; high confidence applied, medium suggested), which needs about 20 real GX9 + phone photo pairs to score the provisional threshold (layout ≥ 0.6, colour ≥ 0.65);
+  3. FR-031 borrowed places ✓ (same scene and near time; high confidence applied, medium suggested), with provisional thresholds until about 20 real GX9 + phone pairs are scored; GPX moved to FR-066;
   4. then FR-058 reading Lightroom XMP (read only; writing XMP is a later FR).
   Release with `scripts/release.sh 0.8.0` once all four are in; the CHANGELOG title is "Places and Lightroom".
 - **Camera over USB** (not blocking v0.8.0): on the Windows PC, record Imaging Edge Remote driving the a6400 by following [cameras/capture-guide.md](cameras/capture-guide.md) (`scripts/camera-capture.ps1`), then write [cameras/sony.md](cameras/sony.md) from it, clean-room ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)). Captures are never committed. The GX9 has no USB tether at all; Wi-Fi for it is an open decision. Debugging lessons are now kept in [LESSONS.md](LESSONS.md).
@@ -191,7 +191,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-028 | Safe area and borders | 1 | Not Started | |
 | FR-029 | Output sharpening | 3 | Not Started | Needs real print tests |
 | FR-030 | Camera clock offset | 1 | In Progress | ✓ Bodies by make, model and `BodySerialNumber`; effective time = camera time + offset in `Library::record` (sort, groups, stamp, day folders, export EXIF follow), camera time kept (`fr_030_*`, [ADR-0027](adr/0027-effective-time-and-place.md)). ✓ Project v7 `cameras[]`, checked on load. ✓ `list_cameras`, `set_camera_clock`, `clock_offset_between`, `clock_match_candidates`; Camera clocks card and the helper in the preview's Captured card. Left: time zone in the UI (with GPX, FR-031), automatic suggestion from same-scene pairs, check by hand |
-| FR-031 | Borrow GPS from a phone or GPX track | 2 | Not Started | Depends on FR-030 |
+| FR-031 | Borrow GPS from a phone or GPX track | 2 | In Progress | ✓ `Library::borrow_candidates` (other bodies with GPS, within the window, 4 nearest), `places::borrow` (colour then layout over 5 zooms, early stop), high applied as one undoable step after each analysis or search, medium suggested (`fr_031_*`). ✓ *Find places* in the Places card, review dialog, borrowed badge. 54 ms / 1.11 s worst case per 1,000 (RESULT §17). Left: score 20 real GX9 + phone pairs to set the thresholds; GPX is FR-066 |
 | FR-032 | Manual date and place | 1 | In Progress | ✓ `PhotoEdits.date` and `.place` (undoable), effective date and place per ADR-0027 (`Library::effective`, `places::effective`), project v8 (`fr_032_*`). ✓ `search_places`, `set_photo_date`, `set_photo_place` checked in Rust; Set the date / Set the place in the preview, Date and place… in select mode, offline place picker (shadcn `command`). Left: check by hand |
 | FR-033 | Retro film date stamp and stamp presets | 1 | In Progress | ✓ DSEG14 Italic (OFL) LCD face with LED glow and faint shadow (`fr_033_*`). Presets to come |
 | FR-034 | Lab presets | 2 | Not Started | |
@@ -223,6 +223,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-063 | Tethered capture over USB | 2 | In Progress | ✓ Step 0 on macOS (RESULT §13): `crates/oscamera` with `ptp` (tested) and the ImageCaptureCore transport, `probe_camera`. ✓ a6400 protocol from USB captures on Windows (sony.md), ✓ `vendor/sony.rs`: handshake, shutter, settings block, live-view frame (tested). ✓ WPD transport, first shots and live view from our code on Windows (RESULT §13.1). ✓ In the app (v0.8.0, Windows): Connect camera, the capture screen, shots into a session tab, Save all and Delete photos (`camera.rs`, `fr_063_*`; ADR-0028). GX9: no capture or live view over USB at all. Left: the open concerns in "Next" item 9 (RAW codec on Windows, touch to focus, macOS, other bodies, manual checks) |
 | FR-064 | Watch a folder for new photos | 2 | Not Started | Planned: fallback for a maker's wired tether app; also feeds FR-063's session folder |
 | FR-065 | Border in Crop to fill | 1 | In Progress | ✓ `frame.border` (settings v9), 3 mm inside the print in `frame::layout`, the crop and export follow the smaller photo area (`fr_065_*`); *Add border* switch under Crop to fill. Left: check a print at a CEWE kiosk size by hand |
+| FR-066 | Borrow places from a GPX track | 3 | Not Started | Split out of FR-031 for v0.8.0 |
 | FR-059 | Quick-preview | 1 | In Progress | ✓ Hold Space in select mode over a photo: thumbnail at once, then the render with the gallery's settings; ← → and Enter while held (`use-quick-preview.ts`). Left: check by hand in the app |
 | FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print; every editing session adds a journal entry (instax-style) |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in |
@@ -247,7 +248,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | NFR-014 | Best-shot analysis speed | ≤ 20 ms/photo (≤ 40 ms with faces) | 17.4 ms p50 / 18.0 ms p95 without faces, 27.8 ms p50 / 36 ms p95 with faces, one thread (`measure_folder --analyze`) | In Progress |
 | NFR-015 | Normal mode speed | ≥ 3× Professional export (≥ 50 photos/s), first screen < 0.5 s for 1,000 photos | — | Not Started |
 | NFR-016 | Open to first photo | < 1 s after the first launch | measured end to end (`open -a`, release bundle): JPEG 0.70 s when its folder is already a tab, 1.25 s for a new folder (its import first); RAW 1.4–2.5 s (develop, NFR-017) | In Progress |
-| NFR-020 | Place inference speed | ≤ 2 s per 1,000 camera photos | 1.24 ms per camera photo on all cores, 96 GX9 photos (`measure_places`, RESULT §14) | In Progress |
+| NFR-020 | Place inference speed | ≤ 2 s per 1,000 camera photos | 54 ms per 1,000 when the scenes match, 1.11 s in the worst case (`measure_borrow`, RESULT §17) | Met |
 | NFR-018 | Shot to screen | ≈ 2 s for JPEG (to be set by Step 0) | — | Not Started |
 | NFR-019 | Live view | ≥ 15 fps, < 200 ms (to be confirmed) | — | Not Started |
 | NFR-017 | Camera RAW speed | preview < 100 ms, first RAW print preview < 2.5 s, memory within NFR-004 | embedded preview 9–80 ms, develop 0.39–2.17 s, 1.29 GB peak for one 31 MP develop (`measure_raw`, RESULT §12) | In Progress |

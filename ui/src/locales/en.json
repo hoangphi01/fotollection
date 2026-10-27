@@ -41,7 +41,8 @@
     "basketHint": "The photos you will print: ↑ in the preview, or Select in the gallery",
     "aside": "Set aside",
     "asideHint": "Photos you put aside with ↓: out of the gallery, never deleted; open them to decide again",
-    "inBasket": "In the print basket"
+    "inBasket": "In the print basket",
+    "placeBorrowed": "Place borrowed from a phone photo"
   },
   "task": {
     "import": "Reading photos",
@@ -594,6 +595,21 @@
     "manual": "Set by hand",
     "borrowed": "Borrowed",
     "gps": "From GPS",
-    "none": "No place"
+    "none": "No place",
+    "borrowOpen": "Find places",
+    "borrowTitle": "Places from your phone",
+    "borrowBody": "A camera without GPS gets the place of a phone photo of the same scene, taken close in time. Sure matches are filled in at once; Undo takes them back.",
+    "window": "Within",
+    "minutes_one": "{{count}} minute",
+    "minutes_other": "{{count}} minutes",
+    "borrowSearch": "Look for places",
+    "borrowApplied_one": "{{count}} photo got its place.",
+    "borrowApplied_other": "{{count}} photos got their place.",
+    "borrowNone": "No photo of the same scene with GPS was found.",
+    "borrowReview": "These look like the same scene, but less surely. Untick the ones that are not:",
+    "minutesApart_one": "{{count}} minute apart",
+    "minutesApart_other": "{{count}} minutes apart",
+    "borrowAccept_one": "Give {{count}} photo its place",
+    "borrowAccept_other": "Give {{count}} photos their place"
   }
 }

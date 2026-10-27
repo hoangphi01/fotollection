@@ -339,12 +339,12 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 ### FR-031 — Borrow GPS from a phone or GPX track
 
-**P1.** Photos without GPS (for example from a Lumix GX9) get a location from:
+**P1 (v0.8.0).** Photos without GPS (for example from a Lumix GX9) get a place from **another imported device's photo of the same scene** taken within a time window (default ±10 min; 5, 10 or 30 min in the dialog), following [ADR-0027](adr/0027-effective-time-and-place.md):
 
-- **another imported device's photos** taken within a configurable time window (default ±10 min), or
-- **a GPX track**, by interpolating along the track.
-
-Borrowed locations are marked as *inferred*, and the user can review them before stamping. This depends on correct clocks ([FR-030](#fr-030--camera-clock-offset)).
+- **Same scene:** the visual signatures of the best-shot analysis, colour first, then layout over the zooms a phone and a camera lens differ by, against the 4 nearest photos in time from another camera body with GPS.
+- **High confidence** (layout ≥ 0.75, colour ≥ 0.8, at most 5 min apart) is applied by itself, as one undoable step, after each best-shot analysis or a search. **Medium** (layout ≥ 0.6, colour ≥ 0.65) is shown side by side to accept or skip. The thresholds are provisional until real camera and phone pairs are scored ([RESULT.md §14](RESULT.md#14-places-and-time-v080-measured-first)).
+- Borrowed places are marked *borrowed* in the preview and on the thumbnail, never replace a place set by hand or the photo's own GPS, and are never written as GPS into an exported file.
+- This depends on correct clocks ([FR-030](#fr-030--camera-clock-offset)). Borrowing from a **GPX track** moved to [FR-066](#fr-066--borrow-places-from-a-gpx-track).
 
 ### FR-032 — Manual date and place
 
@@ -706,6 +706,10 @@ Next to the batch settings, any other setting will later be overridable for one 
 - The photo is cropped to the smaller area, so the crop editor, the print-quality advice and the export follow it.
 - Off by default; stored in `settings.json` (v9). Fit whole photo already has its own border, so the switch shows only in Crop to fill.
 
+### FR-066 — Borrow places from a GPX track
+
+**P2 (planned).** Photos without GPS get a place by interpolating their effective time along a GPX track the user opens (from a phone app or a watch), in the time zone set for the camera ([FR-030](#fr-030--camera-clock-offset)). Marked *borrowed* like [FR-031](#fr-031--borrow-gps-from-a-phone-or-gpx-track), reviewable and undoable. Split out of FR-031 for v0.8.0.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
@@ -788,7 +792,7 @@ For [FR-062](#fr-062--live-view-from-a-camera) over USB: at least **15 frames pe
 
 ### NFR-020 — Place inference speed
 
-Borrowing places for camera photos from another device's photos of the same scene ([FR-031](#fr-031--borrow-gps-from-a-phone-or-gpx-track)) runs in the background and takes **at most 2 s per 1,000 camera photos** on REF-MAC, without slowing browsing ([NFR-005](#nfr-005--ui-responsiveness)). Measured before building: 1.24 ms per camera photo on all cores ([RESULT.md §14](RESULT.md#14-places-and-time-v080-measured-first)).
+Borrowing places for camera photos from another device's photos of the same scene ([FR-031](#fr-031--borrow-gps-from-a-phone-or-gpx-track)) runs in the background and takes **at most 2 s per 1,000 camera photos** on REF-MAC, without slowing browsing ([NFR-005](#nfr-005--ui-responsiveness)). Measured before building: 1.24 ms per camera photo on all cores ([RESULT.md §14](RESULT.md#14-places-and-time-v080-measured-first)); as built, 54 ms per 1,000 when the scenes match and 1.11 s in the worst case ([RESULT.md §17](RESULT.md#17-borrowed-places-v080)).
 
 ## 8. Out of scope
 

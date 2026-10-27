@@ -329,3 +329,19 @@ Measured before `Own` took DNG over ([ADR-0030](adr/0030-our-own-raw-decoder.md)
 - **Robustness:** the sample cut short at 256 places never panics, and 10 minutes of mutation testing (`examples/mutate.rs`: cuts, flipped bytes, extreme values in the directories, damaged compressed data) ran 1,597 inputs with no panic.
 - **Grey baseline for RW2** (Panasonic S5 sample, the six grey patches of its SpyderCheckr 24, mean C\*; 0 is a perfect grey): embedded JPEG 1.26, ImageIO 1.38, rawler + finish 2.43 (worst patch 4.48). rawcore must reach ≤ 1.5 when it takes RW2.
 - Decision (ADR-0030): DNG goes to our own decoder first on both systems; ImageIO and rawler stay the fallback for every other format and for DNG variants it refuses.
+
+## 17. Borrowed places (v0.8.0)
+
+Measured while building FR-031 with `crates/core/examples/measure_borrow.rs`, REF-MAC (M3), release build, median of 5. A synthetic trip: 1,000 camera photos without GPS and 1,000 phone photos with GPS, one of each per minute, visual signatures already computed (as after a best-shot analysis). The time is the whole pass: candidates, comparisons and the reverse geocode of each place found.
+
+| Case | Donors per photo | Pass for 1,000 camera photos |
+|------|-----:|-----:|
+| Same scenes (each camera photo has a matching phone photo) | 8 | 2,338 ms, before stopping early |
+| Same scenes | 8 | 56 ms, stopping at the first sure match and the first zoom that is sure enough |
+| Worst case: every donor has the same colours but another layout | 8 | 2,265 ms |
+| Worst case | **4** | **1,113 ms** |
+| Same scenes | **4** | **54 ms** |
+
+- **The cost is the layout comparison:** colour passes, so every donor is compared over 5 zooms, 3 scales and 49 shifts. Stopping at the first sure match makes the common case 40 times faster, but not the worst one.
+- **Four nearest donors** brings the worst case within NFR-020 (2 s). A phone photo of the same scene is usually seconds from the camera's, so the nearest four hold it.
+- The thresholds (applied at layout ≥ 0.75, colour ≥ 0.8, five minutes; suggested at 0.6 and 0.65) are still the provisional ones of §14 until real camera and phone pairs are scored.

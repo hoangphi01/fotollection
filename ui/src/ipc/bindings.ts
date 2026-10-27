@@ -218,6 +218,18 @@ export const commands = {
 	listPlaces: () => typedError<PlaceUse[], IpcError>(__TAURI_INVOKE("list_places")),
 	/**  Renames a place everywhere it is printed (FR-005), or (`None`) back to the dataset's name. */
 	renamePlace: (geonamesId: number, name: string | null) => typedError<null, IpcError>(__TAURI_INVOKE("rename_place", { geonamesId, name })),
+	/**
+	 *  Finds places for photos without one, from other devices' photos of the same scene
+	 *  (FR-031). Visual signatures come from the best-shot analysis, computed and cached for the
+	 *  photos that need one. High-confidence places are applied at once, as one undoable step;
+	 *  the others come back as suggestions.
+	 */
+	findBorrowedPlaces: (windowMin: number) => typedError<BorrowReport, IpcError>(__TAURI_INVOKE("find_borrowed_places", { windowMin })),
+	/**
+	 *  Gives photos the places the user accepted from the suggestions (FR-031), as one undoable
+	 *  step. A photo that has its own GPS or a place set by hand meanwhile keeps it.
+	 */
+	acceptBorrowedPlaces: (accepted: BorrowAccept[]) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("accept_borrowed_places", { accepted })),
 	/**  Turns photos a quarter turn (FR-006), lossless; their crops turn with them. Undoable. */
 	rotatePhotos: (ids: PhotoId[], clockwise: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("rotate_photos", { ids, clockwise })),
 	getPhotoStamp: (id: PhotoId) => typedError<PhotoStamp, IpcError>(__TAURI_INVOKE("get_photo_stamp", { id })),
@@ -364,6 +376,33 @@ export type AppInfo = {
 	os: string,
 };
 
+/**  A place one photo can borrow from another device's photo of the same scene. */
+export type Borrow = {
+	photo: PhotoId,
+	/**  The photo with GPS it borrows from. */
+	donor: PhotoId,
+	geonamesId: number,
+	/**  The place's name in the bundled data. */
+	name: string,
+	confidence: Confidence,
+	/**  Seconds between the two photos. */
+	gapS: number | null,
+};
+
+/**  One suggestion the user accepted. */
+export type BorrowAccept = {
+	photo: PhotoId,
+	geonamesId: number,
+};
+
+/**  What a search for borrowed places found (FR-031). */
+export type BorrowReport = {
+	/**  Photos that got a place by themselves (high confidence), as one undoable step. */
+	applied: number,
+	/**  Places to accept or skip (medium confidence). */
+	suggestions: Borrow[],
+};
+
 /**  The cache's size, shown under *Clear cache*. */
 export type CacheUsage = {
 	/**  Bytes (as f64: TypeScript has no u64). */
@@ -476,6 +515,13 @@ export type CameraStatus = {
 export type CaptureFormat = "jpeg" | "raw" | 
 /**  A value we have not named (RAW+JPEG, another quality); shown as is. */
 "other";
+
+/**  How sure a borrowed place is (FR-031). */
+export type Confidence = 
+/**  Shown as a suggestion to accept or skip. */
+"medium" | 
+/**  Applied by itself, as one undoable step. */
+"high";
 
 export type Corner = "bottomRight" | "bottomLeft" | "topRight" | "topLeft";
 

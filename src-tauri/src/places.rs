@@ -8,11 +8,13 @@
 
 use std::collections::HashMap;
 
+use fotollection_core::culling::similar::Signature;
 use fotollection_core::geocode::{self, Place};
 use fotollection_core::library::{
-    MAX_MANUAL_DATE, MIN_MANUAL_DATE, PhotoId, PhotoPlace, PlaceSource,
+    MAX_MANUAL_DATE, MIN_MANUAL_DATE, PhotoEdits, PhotoId, PhotoPlace, PlaceSource,
 };
-use fotollection_core::places;
+use fotollection_core::places::{self, Borrow, Confidence};
+use rayon::prelude::*;
 use serde::Serialize;
 use specta::Type;
 use tauri::{AppHandle, Manager, State};
@@ -163,6 +165,162 @@ pub fn rename_place(
         .rename_place(geonames_id, name.as_deref());
     changed(&app, &state);
     Ok(())
+}
+
+/// What a search for borrowed places found (FR-031).
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct BorrowReport {
+    /// Photos that got a place by themselves (high confidence), as one undoable step.
+    pub applied: u32,
+    /// Places to accept or skip (medium confidence).
+    pub suggestions: Vec<Borrow>,
+}
+
+/// Time windows a search may use, in minutes (FR-031; 10 is the default).
+const MAX_WINDOW_MIN: u32 = 60;
+
+/// Finds places for photos without one, from other devices' photos of the same scene
+/// (FR-031). Visual signatures come from the best-shot analysis, computed and cached for the
+/// photos that need one. High-confidence places are applied at once, as one undoable step;
+/// the others come back as suggestions.
+#[tauri::command]
+#[specta::specta]
+pub async fn find_borrowed_places(
+    app: AppHandle,
+    window_min: u32,
+) -> Result<BorrowReport, IpcError> {
+    if window_min == 0 || window_min > MAX_WINDOW_MIN {
+        return Err(IpcError::new(
+            "place.bad_window",
+            "Pick a window of 1 to 60 minutes",
+        ));
+    }
+    tauri::async_runtime::spawn_blocking(move || borrow_and_apply(&app, i64::from(window_min) * 60))
+        .await
+        .map_err(|e| IpcError::internal(e.to_string()))?
+}
+
+/// The search behind `find_borrowed_places`, also run after every best-shot analysis.
+pub fn borrow_and_apply(app: &AppHandle, window_s: i64) -> Result<BorrowReport, IpcError> {
+    let state = app.state::<AppState>();
+    let poisoned = |e: &dyn std::fmt::Display| IpcError::internal(e.to_string());
+    // Photos that could be compared: every one with a candidate, and its donors.
+    let (needed, known) = {
+        let library = state.library.read().map_err(|e| poisoned(&e))?;
+        let mut needed: Vec<PhotoId> = Vec::new();
+        for (photo, donors) in library.borrow_candidates(window_s, places::DONORS_PER_PHOTO) {
+            needed.push(photo);
+            needed.extend(donors.into_iter().map(|(d, _)| d));
+        }
+        needed.sort_unstable_by_key(|id| id.0);
+        needed.dedup();
+        let analyses = state.analyses.lock().map_err(|e| poisoned(&e))?;
+        let known: HashMap<PhotoId, Signature> = needed
+            .iter()
+            .filter_map(|id| Some((*id, analyses.by_photo.get(id)?.signature.clone())))
+            .collect();
+        let records: Vec<_> = needed
+            .iter()
+            .filter(|id| !known.contains_key(id))
+            .filter_map(|&id| library.record(id))
+            .collect();
+        (records, known)
+    };
+    // The rest are analysed once and cached on disk, as the best-shot analysis does.
+    let computed: Vec<(PhotoId, Signature)> = state.background_pool.install(|| {
+        needed
+            .par_iter()
+            .filter_map(|record| {
+                let analysis = state
+                    .analysis_cache
+                    .analyze(record, state.codec.as_ref())
+                    .ok()?;
+                Some((record.id, analysis.signature))
+            })
+            .collect()
+    });
+    let mut signatures = known;
+    signatures.extend(computed);
+    let mut library = state.library.write().map_err(|e| poisoned(&e))?;
+    let found = places::borrow(&library, window_s, |id| signatures.get(&id));
+    let (high, suggestions): (Vec<Borrow>, Vec<Borrow>) = found
+        .into_iter()
+        .partition(|b| b.confidence == Confidence::High);
+    let changes: Vec<(PhotoId, PhotoEdits)> = high
+        .iter()
+        .map(|b| {
+            let mut edits = library.edits(b.photo);
+            edits.place = Some(PhotoPlace {
+                geonames_id: b.geonames_id,
+                source: PlaceSource::Borrowed,
+            });
+            (b.photo, edits)
+        })
+        .collect();
+    let applied = u32::try_from(changes.len()).unwrap_or(u32::MAX);
+    if !changes.is_empty() {
+        state
+            .history
+            .lock()
+            .map_err(|e| poisoned(&e))?
+            .apply(&mut library, &changes);
+    }
+    drop(library);
+    if applied > 0 {
+        changed(app, &state);
+    }
+    Ok(BorrowReport {
+        applied,
+        suggestions,
+    })
+}
+
+/// One suggestion the user accepted.
+#[derive(Debug, Clone, serde::Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct BorrowAccept {
+    pub photo: PhotoId,
+    pub geonames_id: u32,
+}
+
+/// Gives photos the places the user accepted from the suggestions (FR-031), as one undoable
+/// step. A photo that has its own GPS or a place set by hand meanwhile keeps it.
+#[tauri::command]
+#[specta::specta]
+pub fn accept_borrowed_places(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    accepted: Vec<BorrowAccept>,
+) -> Result<HistoryState, IpcError> {
+    if accepted
+        .iter()
+        .any(|a| geocode::by_id(a.geonames_id).ok().flatten().is_none())
+    {
+        return Err(IpcError::new("place.unknown", "Unknown place"));
+    }
+    let places: HashMap<PhotoId, u32> = accepted.iter().map(|a| (a.photo, a.geonames_id)).collect();
+    let ids: Vec<PhotoId> = places.keys().copied().collect();
+    let has_gps: Vec<PhotoId> = {
+        let library = state
+            .library
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        ids.iter()
+            .copied()
+            .filter(|&id| library.record(id).is_some_and(|r| r.gps.is_some()))
+            .collect()
+    };
+    edit_photos(&app, &state, &ids, |id, e| {
+        let manual = e.place.is_some_and(|p| p.source == PlaceSource::Manual);
+        if let (Some(&geonames_id), false, false) = (places.get(&id), manual, has_gps.contains(&id))
+        {
+            e.place = Some(PhotoPlace {
+                geonames_id,
+                source: PlaceSource::Borrowed,
+            });
+        }
+    })
 }
 
 #[cfg(test)]

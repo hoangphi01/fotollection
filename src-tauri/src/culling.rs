@@ -100,6 +100,12 @@ pub fn analyze_library(app: AppHandle, state: State<'_, AppState>) -> Result<u32
         if let Ok(mut jobs) = state.jobs.lock() {
             jobs.remove(&job_id);
         }
+        // Every signature is known now: photos of the same scene lend each other a place,
+        // the sure ones at once (FR-031).
+        if !cancelled {
+            let _ =
+                crate::places::borrow_and_apply(&app, fotollection_core::places::BORROW_WINDOW_S);
+        }
         let _ = AnalysisFinished {
             job_id,
             analyzed,

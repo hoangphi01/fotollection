@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { MapPin, RotateCcw } from 'lucide-react'
+import { MapPin, MapPinCheck, RotateCcw } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
 import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
+import { BorrowDialog } from './borrow-dialog'
 import { usePlaces } from './use-places'
 
 /**
@@ -13,9 +15,19 @@ import { usePlaces } from './use-places'
 export function PlacesCard() {
   const { t } = useTranslation()
   const { places, error, rename } = usePlaces()
+  const [borrowing, setBorrowing] = useState(false)
   if (places.length === 0) return null
   return (
-    <SectionCard icon={<MapPin />} title={t('places.title')}>
+    <SectionCard
+      icon={<MapPin />}
+      title={t('places.title')}
+      action={
+        <Button size="sm" variant="outline" onClick={() => setBorrowing(true)}>
+          <MapPinCheck data-icon="inline-start" /> {t('places.borrowOpen')}
+        </Button>
+      }
+    >
+      {borrowing && <BorrowDialog onClose={() => setBorrowing(false)} />}
       <p className="text-xs text-muted-foreground">{t('places.hint')}</p>
       <ul className="space-y-2">
         {places.map((place) => (

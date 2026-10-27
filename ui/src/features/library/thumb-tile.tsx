@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarX2, Check, LoaderCircle, MapPinOff, ShoppingBasket } from 'lucide-react'
+import { CalendarX2, Check, LoaderCircle, MapPinCheck, MapPinOff, ShoppingBasket } from 'lucide-react'
 import { memo, useState, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { PhotoSummary } from '@/ipc/bindings'
@@ -102,10 +102,16 @@ export const ThumbTile = memo(function ThumbTile({
             <CalendarX2 className="size-3" />
           </span>
         )}
-        {!photo.hasGps && (
-          <span className="rounded bg-black/60 p-0.5 text-white/80" aria-label={t('library.noLocation')}>
-            <MapPinOff className="size-3" />
+        {photo.placeSource === 'borrowed' ? (
+          <span className="rounded bg-black/60 p-0.5 text-white/80" aria-label={t('library.placeBorrowed')}>
+            <MapPinCheck className="size-3" />
           </span>
+        ) : (
+          photo.placeSource === null && (
+            <span className="rounded bg-black/60 p-0.5 text-white/80" aria-label={t('library.noLocation')}>
+              <MapPinOff className="size-3" />
+            </span>
+          )
         )}
       </div>
     </button>
