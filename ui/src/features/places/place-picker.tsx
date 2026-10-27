@@ -47,8 +47,8 @@ export function PlacePicker({ label, onPick }: PlacePickerProps) {
                   setQuery('')
                 }}
               >
-                <span className="truncate">{place.name}</span>
-                <span className="ml-auto shrink-0 text-xs text-muted-foreground">{place.country}</span>
+                <span className="min-w-0 flex-1 truncate">{place.name}</span>
+                <span className="shrink-0 text-xs text-muted-foreground">{place.country}</span>
               </CommandItem>
             ))}
           </CommandList>

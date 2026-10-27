@@ -560,7 +560,6 @@
     "pick": "Chọn địa điểm…",
     "searchPlaceholder": "Thị trấn hoặc thành phố",
     "noMatch": "Không có nơi nào tên như vậy",
-    "dialogTitle_one": "Ngày và nơi của ảnh này",
     "dialogTitle_other": "Ngày và nơi của {{count}} ảnh",
     "dialogBody": "Dành cho ảnh scan và ảnh không có ngày hay GPS. Chỉ điền phần muốn đổi; Hoàn tác sẽ trả lại như cũ.",
     "date": "Ngày và giờ",
@@ -591,6 +590,7 @@
     "minutesApart_one": "cách {{count}} phút",
     "minutesApart_other": "cách {{count}} phút",
     "borrowAccept_one": "Điền vị trí cho {{count}} ảnh",
-    "borrowAccept_other": "Điền vị trí cho {{count}} ảnh"
+    "borrowAccept_other": "Điền vị trí cho {{count}} ảnh",
+    "dialogTitleOne": "Ngày và nơi của ảnh này"
   }
 }

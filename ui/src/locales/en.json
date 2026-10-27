@@ -581,7 +581,6 @@
     "pick": "Choose a place…",
     "searchPlaceholder": "Town or city",
     "noMatch": "No town or city by that name",
-    "dialogTitle_one": "Date and place of this photo",
     "dialogTitle_other": "Date and place of {{count}} photos",
     "dialogBody": "For scans and photos without a date or GPS. Fill in only what you want to change; Undo takes it back.",
     "date": "Date and time",
@@ -612,6 +611,7 @@
     "minutesApart_one": "{{count}} minute apart",
     "minutesApart_other": "{{count}} minutes apart",
     "borrowAccept_one": "Give {{count}} photo its place",
-    "borrowAccept_other": "Give {{count}} photos their place"
+    "borrowAccept_other": "Give {{count}} photos their place",
+    "dialogTitleOne": "Date and place of this photo"
   }
 }

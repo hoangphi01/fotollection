@@ -509,24 +509,19 @@ export function PreviewDialog({
                 <Badge variant="outline">{t('viewer.fromExif')}</Badge>
               )}
               {photo && details && (
-                <Button size="sm" variant="outline" onClick={() => setDatePlace(true)}>
-                  <CalendarDays data-icon="inline-start" /> {t('places.setDate')}
-                </Button>
-              )}
-              {photo && !photo.dateFromFile && !details?.dateManual && details?.clockId != null && (
-                <>
-                  <Button size="sm" variant="outline" onClick={() => setClockMatch(true)}>
-                    <Clock data-icon="inline-start" /> {t('viewer.syncClock')}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <Button size="sm" variant="outline" onClick={() => setDatePlace(true)}>
+                    <CalendarDays data-icon="inline-start" /> {t('places.setDate')}
                   </Button>
-                  {clockMatch && (
-                    <ClockMatchDialog
-                      photoId={photo.id}
-                      clockId={details.clockId}
-                      open
-                      onClose={() => setClockMatch(false)}
-                    />
+                  {!photo.dateFromFile && !details.dateManual && details.clockId != null && (
+                    <Button size="sm" variant="outline" onClick={() => setClockMatch(true)}>
+                      <Clock data-icon="inline-start" /> {t('viewer.syncClock')}
+                    </Button>
                   )}
-                </>
+                </div>
+              )}
+              {photo && details?.clockId != null && clockMatch && (
+                <ClockMatchDialog photoId={photo.id} clockId={details.clockId} open onClose={() => setClockMatch(false)} />
               )}
             </Section>
 
@@ -557,9 +552,11 @@ export function PreviewDialog({
                 <p className="text-xs text-muted-foreground">{t('viewer.noGps')}</p>
               )}
               {photo && details && (
-                <Button size="sm" variant="outline" onClick={() => setDatePlace(true)}>
-                  <MapPin data-icon="inline-start" /> {t('places.setPlace')}
-                </Button>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <Button size="sm" variant="outline" onClick={() => setDatePlace(true)}>
+                    <MapPin data-icon="inline-start" /> {t('places.setPlace')}
+                  </Button>
+                </div>
               )}
               {datePlace && photo && details && (
                 <DatePlaceDialog

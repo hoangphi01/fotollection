@@ -78,6 +78,12 @@ function bridge({ fixtures, scenario, language, os, tabs }) {
       }
     },
     photo_details: (a) => byId(common.photo_details, a),
+    // Recorded once, for "pra" (FR-032); older dumps have no places.
+    list_places: () => common.list_places ?? [],
+    // Lists the demo has none of: camera clocks (FR-030) and camera sessions (FR-063).
+    list_cameras: () => [],
+    camera_sessions: () => [],
+    search_places: () => common.search_places ?? [],
     get_crop_geometry: (a) => byId(common.get_crop_geometry, a),
     print_advice: (a) => byId(common.print_advice ?? {}, a),
     get_settings: () => current,
@@ -217,6 +223,17 @@ for (const language of ['en', 'vi']) {
     await page.waitForSelector(`img[src*="/preview/${SHOW.stamp}"]`)
     await settle(page)
     await save(page, `stamp-${suffix}`)
+    // 2b. For checking only: the place in the Location card, and the place picker (FR-032).
+    const inspector = page.locator('[role="dialog"]')
+    await inspector.getByRole('button', { name: /Set the place|Đặt nơi chụp/ }).scrollIntoViewIfNeeded()
+    await page.waitForTimeout(300)
+    await save(page, `check-place-${suffix}`)
+    await inspector.getByRole('button', { name: /Set the place|Đặt nơi chụp/ }).click()
+    await page.getByRole('combobox').last().click()
+    await page.keyboard.type('pra')
+    await page.waitForSelector('[cmdk-item]')
+    await page.waitForTimeout(300)
+    await save(page, `check-place-picker-${suffix}`)
     await context.close()
 
     // 3. Preview with the "Shot on" info frame (and, for checking only, the panel's frame controls).
@@ -225,6 +242,10 @@ for (const language of ['en', 'vi']) {
     await page.mouse.wheel(0, 2000)
     await page.waitForTimeout(300)
     await save(page, `check-frame-${suffix}`)
+    // The Places card at the foot of the settings (FR-005).
+    await page.mouse.wheel(0, 4000)
+    await page.waitForTimeout(300)
+    await save(page, `check-places-${suffix}`)
     await tile(page, SHOW.frame).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.frame}"]`)
     await settle(page)

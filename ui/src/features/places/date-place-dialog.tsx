@@ -66,7 +66,7 @@ export function DatePlaceDialog({ ids, current, onClose }: DatePlaceDialogProps)
     <Dialog open onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{t('places.dialogTitle', { count: ids.length })}</DialogTitle>
+          <DialogTitle>{ids.length === 1 ? t('places.dialogTitleOne') : t('places.dialogTitle', { count: ids.length })}</DialogTitle>
           <DialogDescription>{t('places.dialogBody')}</DialogDescription>
         </DialogHeader>
         <div className="space-y-2">

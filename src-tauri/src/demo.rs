@@ -142,6 +142,17 @@ fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, 
         to_json(document::get_document(app.state()))?,
     );
     common.insert("list_groups", ok(culling::list_groups(app.state()))?);
+    // The Places card and the place picker (FR-005, FR-032), with one search typed.
+    common.insert(
+        "list_places",
+        ok(tauri::async_runtime::block_on(crate::places::list_places(
+            app.clone(),
+        )))?,
+    );
+    common.insert(
+        "search_places",
+        ok(crate::places::search_places("pra".into(), 20))?,
+    );
     common.insert(
         "list_photos",
         ok(commands::list_photos(app.state(), CullFilter::default()))?,
