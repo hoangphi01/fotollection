@@ -1,11 +1,11 @@
 name: pages
 
 # The website in site/ (site/README.md), built with GitHub Pages' own Jekyll. Rebuilt when the
-# site changes, by release.yml after a release so the download buttons show it, and once a
-# day so the visit count in the footer stays current.
+# site changes, by release.yml after a release so the download buttons show it, and every six
+# hours so the star count and the visit count in the footer stay current.
 on:
   schedule:
-    - cron: "17 3 * * *"
+    - cron: "17 */6 * * *"
   push:
     branches: [main]
     paths: ["site/**", "CHANGELOG.md", "scripts/ga-visits.mjs", ".github/workflows/pages.yml"]
