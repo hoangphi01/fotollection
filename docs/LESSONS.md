@@ -149,6 +149,12 @@
 - **Why:** React Fast Refresh keeps the mounted component's hook list; a different number of hooks is a hook-order error, and with no error boundary the tree unmounts.
 - **Rule:** this is a dev-only artefact, not a bug: restart `npm run dev`. Prefer changes that keep the hook count when testing live.
 
+### A comment in a heading changes its anchor (manual, ADR-0031)
+
+- **Seen:** the docs workflow failed after the manual's chapter anchors went into the guide's titles (`## 1. Choosing the photos to print <!-- choose -->`): links from PRD and STATUS to `USER_GUIDE.md#1-choosing-the-photos-to-print` could no longer be found.
+- **Why:** lychee builds a heading's anchor from its raw text, comment included, although GitHub does not show the comment. `check-docs.sh` does not check anchors, so only CI saw it.
+- **Rule:** keep markers out of headings: put them on their own line above (`<!-- chapter: choose -->`). After renaming or marking a heading, `grep` the docs for links to its old anchor before pushing.
+
 ### GPL-3.0 cannot forbid sharing or selling (website)
 
 - **Seen:** the owner asked for "no redistribution or resale in any form" on the site.
