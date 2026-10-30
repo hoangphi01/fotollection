@@ -1,6 +1,6 @@
 # Style Rules — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-10-23
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-10-30
 >
 > These rules apply to all code and docs. Tooling enforces them where possible. Where tooling can't, reviewers do.
 > If a rule blocks you, propose changing it in a PR. Don't silently break it.
@@ -92,6 +92,16 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
 - Every action longer than 200 ms shows progress. Every destructive action can be undone or needs confirmation.
 - Keyboard-first: every primary action has a shortcut, and focus is always visible.
 - Error messages say what happened and what to do next. Never show raw error strings or stack traces.
+
+### Website (`site/`)
+
+- **A new page copies an existing one.** Start from the Performance page: the `perf-head` header (kicker, title, a `.narrow` lead), then `.section`s, alternating `tint`. Reuse its classes (`.card`, `.cards`, `.showcase-row`, `.pill`, `.button`, `shot.html`) before adding CSS ([site/README.md](../site/README.md)).
+- **Content spans the `.wrap`, like the landing page's sections.** Never give a block its own `max-width` while it stays left-aligned: the page looks lopsided. Only a lead paragraph is `.narrow`. Check by measuring: the content's left and right margins are equal, and match the header's (162 px at 1440 px, 16 px on a phone).
+- **Round floating buttons sit in the bottom corners**, 44 px, 16 px from the edges, `pill pill-primary` with a Lucide icon: "back to top" on the right, a page's own menu (the manual's chapters) on the left, mirrored.
+- **A list that opens over the page is a native `popover`**, opened by `popovertarget`, with no library. Picking an item closes it, and it marks where the reader is (`aria-current`).
+- **Tables never break their first column.** A table sits in a sideways scroller (`.table-scroll`) on a phone; its first column does not wrap.
+- **Icons are Lucide SVGs** in `site/_includes/icons/`, `currentColor`, one file each. Every string is in `site/_data/i18n.yml` in both languages.
+- **Check before pushing,** at 1280–1440 px and 390 px, light and dark, in both languages, with no sideways scroll on the page.
 
 ## 5. Git
 

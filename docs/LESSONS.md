@@ -149,6 +149,12 @@
 - **Why:** React Fast Refresh keeps the mounted component's hook list; a different number of hooks is a hook-order error, and with no error boundary the tree unmounts.
 - **Rule:** this is a dev-only artefact, not a bug: restart `npm run dev`. Prefer changes that keep the hook count when testing live.
 
+### A narrow column left on its own looks broken (manual)
+
+- **Seen:** the owner found the manual "pushed to one side": its text had `max-width: 880px` inside the 1180 px `.wrap`, left-aligned, so a wide empty band ran down the right.
+- **Why:** reading width was chosen for the text alone, without comparing the page with the landing page, whose sections fill the `.wrap`.
+- **Rule:** on the website, content spans the `.wrap` like the landing page's sections ([STYLE_RULE.md §4](STYLE_RULE.md#website-site)); measure that the left and right margins match before pushing.
+
 ### A comment in a heading changes its anchor (manual, ADR-0031)
 
 - **Seen:** the docs workflow failed after the manual's chapter anchors went into the guide's titles (`## 1. Choosing the photos to print <!-- choose -->`): links from PRD and STATUS to `USER_GUIDE.md#1-choosing-the-photos-to-print` could no longer be found.
