@@ -291,15 +291,19 @@ p { margin: 0; }
 .js .changelog.active::after, .js .changelog.active .changelog-hint { display: none; }
 /* A thin scroll bar in the theme colour that stays inside the rounded outline. */
 /* The manual (manual.html): the user guide's text beside its chapter list, like the changelog's. */
+.toc-button { position: fixed; left: 16px; bottom: 16px; z-index: 20; width: 44px; height: 44px; padding: 0; justify-content: center; box-shadow: var(--shadow); cursor: pointer; }
+.toc-button .icon { color: var(--brand-ink); }
+.manual-toc { position: fixed; inset: auto auto 72px 16px; margin: 0; width: min(340px, calc(100vw - 32px)); max-height: calc(100vh - 160px); overflow-y: auto; color: var(--ink); box-shadow: var(--shadow); }
+.manual-toc::backdrop { background: transparent; }
 .manual-toc h2 { font-size: 1.1rem; }
 .manual-toc ul { list-style: none; margin: 12px 0 0; padding: 0; }
 .manual-toc li + li { margin-top: 8px; }
 .manual-toc a { color: var(--ink); text-decoration: none; font-weight: 600; }
-.manual-toc a:hover { color: var(--brand); }
+.manual-toc a:hover, .manual-toc a[aria-current] { color: var(--accent); }
 .manual-toc .small { margin-top: 18px; }
 .manual-toc .small a { color: var(--brand); font-weight: 400; }
-.manual { min-width: 0; }
-.manual h2 { font-size: clamp(1.4rem, 3vw, 1.75rem); margin-top: 56px; scroll-margin-top: 88px; }
+.manual { max-width: 880px; }
+.manual h2 { font-size: clamp(1.4rem, 3vw, 1.75rem); margin-top: 56px; }
 .manual h2:first-child { margin-top: 0; }
 .manual h3 { font-size: 1.15rem; margin-top: 32px; }
 .manual p, .manual ul, .manual ol, .manual table { margin-top: 14px; color: var(--ink-2); }
@@ -377,8 +381,6 @@ a:focus-visible, .button:focus-visible { outline: 2px solid var(--brand); outlin
   .kiosk-grid { grid-template-columns: 7fr 5fr; gap: 56px; align-items: start; }
   .perf-part { grid-template-columns: 5fr 7fr; gap: 48px; align-items: start; }
   .perf-part .charts { margin: 0; }
-  .manual-part { grid-template-columns: 1fr 3fr; }
-  .manual-toc { position: sticky; top: 88px; }
   .support { grid-template-columns: auto 1fr; gap: 40px; padding: 36px; }
   .showcase { gap: 88px; }
   .showcase-row { grid-template-columns: 2fr 1fr; gap: 48px; }
