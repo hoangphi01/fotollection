@@ -2,9 +2,11 @@
 
 > **Status:** Living · **Last reviewed:** 2026-10-30
 >
-> Bản tiếng Việt của [USER_GUIDE.md](USER_GUIDE.md), cũng là trang hướng dẫn trên website ([fotollection.org/vi/manual](https://fotollection.org/vi/manual/), [ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)). Giữ đúng các chương, mốc (`<!-- id -->`) và ảnh chụp màn hình (`<!-- shot: tên | mô tả -->`) như bản tiếng Anh, dùng đúng nhãn của app trong `ui/src/locales/vi.json`; `scripts/check-docs.sh` kiểm tra hai bản khớp nhau.
+> Bản tiếng Việt của [USER_GUIDE.md](USER_GUIDE.md), cũng là trang hướng dẫn trên website ([fotollection.org/vi/manual](https://fotollection.org/vi/manual/), [ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)). Giữ đúng các chương, mốc chương (`<!-- chapter: id -->`, ở dòng trước tiêu đề chương) và ảnh chụp màn hình (`<!-- shot: tên | mô tả -->`) như bản tiếng Anh, dùng đúng nhãn của app trong `ui/src/locales/vi.json`; `scripts/check-docs.sh` kiểm tra hai bản khớp nhau.
 
-## 1. Chọn ảnh để in <!-- choose -->
+<!-- chapter: choose -->
+
+## 1. Chọn ảnh để in
 
 Một chuyến đi cho ra hàng trăm tấm ảnh, nhưng chỉ vài tấm được đem đi in. Fotollection giữ lựa chọn đó trong hai **khu vực**, bên cạnh gallery ([FR-050](PRD.md#fr-050--print-basket)):
 
@@ -75,7 +77,9 @@ Ngoài chế độ Chọn, Space vẫn mở bản xem trước thường.
 
 <!-- shot: estimate | Ô ước tính dung lượng ngay trên nút xuất ảnh, khi xuất cho Facebook -->
 
-## 2. Xem kỹ: phóng to <!-- zoom -->
+<!-- chapter: zoom -->
+
+## 2. Xem kỹ: phóng to
 
 Trong bản xem trước, **các nút phóng to** ở góc dưới bên phải ảnh hiện mức phóng giữa **−** và **+**; nút cuối cùng đưa ảnh về vừa khung ([FR-057](PRD.md#fr-057--zoom-in-the-preview)). Bàn phím và trackpad cũng làm được như vậy:
 
@@ -86,7 +90,9 @@ Trong bản xem trước, **các nút phóng to** ở góc dưới bên phải �
 
 Bản xem trước ban đầu được hiện ở cỡ nhẹ để máy nào cũng vẽ nhanh. Khi bạn phóng vượt quá cỡ đó, một vòng xoay nhỏ hiện cạnh mức phóng, và một lát sau khi bạn ngừng di chuyển, phần trên màn hình được thay bằng điểm ảnh **độ phân giải đầy đủ**, đúng như trong tệp sẽ xuất. Chỉ phần đang thấy được tải, nên kể cả ảnh 32 MP vẫn nhẹ.
 
-## 3. Mở ảnh từ Finder hoặc Explorer <!-- open-with -->
+<!-- chapter: open-with -->
+
+## 3. Mở ảnh từ Finder hoặc Explorer
 
 Fotollection có thể là app mở ảnh khi bạn nhấp đúp ([FR-054](PRD.md#fr-054--open-photos-with-fotollection)). Nó không bao giờ tự đặt mình làm mặc định: bạn chọn.
 
@@ -95,7 +101,9 @@ Fotollection có thể là app mở ảnh khi bạn nhấp đúp ([FR-054](PRD.m
 
 Ảnh mở ngay trong bản xem trước. Thư mục của nó thành một tab ở thanh bên, chỉ có ảnh của đúng thư mục đó (không gồm thư mục con), nên **← →** đi qua cả thư mục. Mọi thứ hoạt động như ở bất kỳ tab nào: sao, giỏ in, khung cắt, xuất ảnh. Xong thì nhấp **×** trên tab; ảnh vẫn nằm trên ổ đĩa của bạn. Mở một ảnh khác khi Fotollection đang chạy sẽ đưa cửa sổ lên trước với ảnh đó.
 
-## 4. Ảnh RAW <!-- raw -->
+<!-- chapter: raw -->
+
+## 4. Ảnh RAW
 
 Fotollection mở ảnh RAW của hầu hết máy ảnh như chúng vốn có, không cần đổi sang DNG: RW2 (Panasonic), CR2 và CR3 (Canon), NEF (Nikon), ARW (Sony), RAF (Fujifilm), ORF (Olympus, OM System) và DNG ([FR-016](PRD.md#fr-016--raw-input)).
 
@@ -104,7 +112,9 @@ Fotollection mở ảnh RAW của hầu hết máy ảnh như chúng vốn có, 
 - Màu sắc và độ nét là cách xử lý trung tính của hệ điều hành, không phải của một trình sửa RAW: Fotollection chuẩn bị ảnh để in, không thay thế Lightroom.
 - **Trên Windows**, hãy cài *Raw Image Extension* miễn phí của Microsoft từ Microsoft Store trước. Không có nó, tệp RAW bị bỏ qua và dòng gợi ý sẽ nói rõ. Một trình đọc RAW có sẵn trong Fotollection, không cần extension, đang được làm ([STATUS.md](STATUS.md)).
 
-## 5. Cập nhật lên phiên bản mới <!-- updates -->
+<!-- chapter: updates -->
+
+## 5. Cập nhật lên phiên bản mới
 
 Fotollection không bao giờ tự lên mạng ([FR-021](PRD.md#fr-021--manual-updates), [FR-061](PRD.md#fr-061--check-for-updates)).
 
@@ -116,7 +126,9 @@ Fotollection không bao giờ tự lên mạng ([FR-021](PRD.md#fr-021--manual-u
 
 Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đẹp nhất mà Fotollection giữ để mở thư mục nhanh, kèm dung lượng so với giới hạn 2 GB. Vượt giới hạn, các mục cũ nhất tự bị xoá. **Xoá cache** làm trống nó bất kỳ lúc nào; không mất gì của bạn, và ảnh nhỏ sẽ được tạo lại khi bạn duyệt.
 
-## 6. Đồng hồ máy ảnh <!-- clocks -->
+<!-- chapter: clocks -->
+
+## 6. Đồng hồ máy ảnh
 
 Máy ảnh đặt sai giờ, hoặc vẫn để múi giờ ở nhà, sẽ xếp ảnh sai thứ tự so với ảnh điện thoại, và đóng dấu sai ngày ([FR-030](PRD.md#fr-030--camera-clock-offset)).
 
@@ -125,7 +137,9 @@ Máy ảnh đặt sai giờ, hoặc vẫn để múi giờ ở nhà, sẽ xếp 
 
 Mọi ảnh của máy đó dịch chuyển cùng lúc, kể cả ảnh thêm vào sau: thứ tự trong lưới, nhóm ảnh đẹp nhất, thư mục theo ngày, dấu ngày và ngày của bản xuất. Bản xem trước vẫn hiện giờ mà đồng hồ máy ghi, và tệp ảnh không bao giờ bị sửa. Hai máy cùng đời giữ đồng hồ riêng nếu máy ảnh có ghi số seri. Phần chỉnh được lưu trong dự án.
 
-## 7. Ngày và nơi chụp <!-- dates-places -->
+<!-- chapter: dates-places -->
+
+## 7. Ngày và nơi chụp
 
 **Đặt bằng tay** ([FR-032](PRD.md#fr-032--manual-date-and-place)), cho ảnh in đã scan, máy ảnh không có đồng hồ, hay ảnh không có GPS:
 
@@ -147,7 +161,9 @@ Mọi ảnh của máy đó dịch chuyển cùng lúc, kể cả ảnh thêm v�
 
 Khi thư mục bạn mở đã được lọc trong Lightroom, Bridge, Capture One hay darktable, số sao và cờ loại chúng lưu trong tệp XMP đi kèm (`IMG_0416.xmp` hay `P1000123.RW2.xmp` cạnh ảnh) được đọc cùng ảnh ([FR-058](PRD.md#fr-058--lightroom-compatibility-through-xmp)). Thanh bên cho biết bao nhiêu tệp. Sao và cờ của bạn trong dự án Fotollection thắng tệp XMP, và tệp XMP không bao giờ bị sửa. Lightroom Classic chỉ ghi tệp XMP cho ảnh RAW, và chỉ khi bật *Automatically write changes into XMP* (hoặc sau *Metadata → Save Metadata to File*).
 
-## 8. Chụp với máy ảnh cắm vào máy tính <!-- camera -->
+<!-- chapter: camera -->
+
+## 8. Chụp với máy ảnh cắm vào máy tính
 
 Khi máy ảnh cắm cáp, Fotollection hiện những gì máy thấy và chụp ảnh ([FR-062](PRD.md#fr-062--live-view-from-a-camera), [FR-063](PRD.md#fr-063--tethered-capture-over-usb)). Hiện tính năng này chạy trên Windows, với Sony a6400. Các máy Sony cùng thời có thể chạy được, nhưng chưa được kiểm tra.
 
@@ -169,7 +185,9 @@ Khi máy ảnh cắm cáp, Fotollection hiện những gì máy thấy và chụ
 
 **Ảnh RAW** được trình đọc RAW có sẵn của Fotollection đọc, nên hiện trong tab như JPEG ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)); trên Windows, việc này đang được kiểm tra trên máy không có Raw Image Extension của Microsoft.
 
-## 9. Phím tắt <!-- shortcuts -->
+<!-- chapter: shortcuts -->
+
+## 9. Phím tắt
 
 | Ở đâu | Phím | Việc |
 |-------|------|------|

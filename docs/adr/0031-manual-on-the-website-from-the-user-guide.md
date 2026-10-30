@@ -22,7 +22,7 @@ Option 2. `docs/USER_GUIDE.md` (English) and `docs/USER_GUIDE.vi.md` (Vietnamese
 
 The guide carries two kinds of markers, HTML comments that GitHub does not show:
 
-- `## 4. Camera RAW <!-- raw -->`: the chapter's anchor, the same in both languages, so `/manual/#raw` and `/vi/manual/#raw` show the same chapter and a link survives a renumbering.
+- `<!-- chapter: raw -->` on its own line before `## 4. Camera RAW`: the chapter's anchor, the same in both languages, so `/manual/#raw` and `/vi/manual/#raw` show the same chapter and a link survives a renumbering. It sits above the title, not in it, so the title's own anchor on GitHub (`#4-camera-raw`) does not change.
 - `<!-- shot: grid | The library, culled with stars and picks -->` on a line of its own: a screenshot (`site/assets/img/grid-{en,vi}-{light,dark}.webp`, dark or light to follow the reader's theme) with its alt text in the file's language.
 
 ## Consequences

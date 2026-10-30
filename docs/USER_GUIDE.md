@@ -4,9 +4,11 @@
 >
 > How to use the app, step by step, for the person at the keyboard. It describes behaviour that has shipped or is on `main`; the reasons and the full rules are in [PRD.md](PRD.md), linked from each section. Update it in the same commit as any change a user would notice ([DOCS_GUIDE.md](DOCS_GUIDE.md)).
 >
-> **This is also the manual on the website** ([fotollection.org/manual](https://fotollection.org/manual/), [ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)). Keep [USER_GUIDE.vi.md](USER_GUIDE.vi.md) in step: the same chapters, anchors (`<!-- id -->` after a chapter title) and screenshots (`<!-- shot: name | alt text -->`), with the app's own labels. Shoot changed screenshots again with `site/screenshots/build.sh`.
+> **This is also the manual on the website** ([fotollection.org/manual](https://fotollection.org/manual/), [ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)). Keep [USER_GUIDE.vi.md](USER_GUIDE.vi.md) in step: the same chapters, anchors (`<!-- chapter: id -->` on the line before a chapter title, after a blank line) and screenshots (`<!-- shot: name | alt text -->`), with the app's own labels. Shoot changed screenshots again with `site/screenshots/build.sh`.
 
-## 1. Choosing the photos to print <!-- choose -->
+<!-- chapter: choose -->
+
+## 1. Choosing the photos to print
 
 A trip gives hundreds of photos; only a handful go to the lab. Fotollection keeps that choice in two **holding areas**, next to the gallery ([FR-050](PRD.md#fr-050--print-basket)):
 
@@ -77,7 +79,9 @@ Outside select mode, Space keeps opening the normal preview.
 
 <!-- shot: estimate | The size estimate above the export button, sharing for Facebook -->
 
-## 2. Looking closely: zoom <!-- zoom -->
+<!-- chapter: zoom -->
+
+## 2. Looking closely: zoom
 
 In the preview, the **zoom buttons** at the bottom right of the photo show the zoom level between **−** and **+**; the last button goes back to fit ([FR-057](PRD.md#fr-057--zoom-in-the-preview)). The same with the keyboard and the trackpad:
 
@@ -88,7 +92,9 @@ In the preview, the **zoom buttons** at the bottom right of the photo show the z
 
 The preview is first shown at a light size that any computer draws quickly. When you zoom past what it holds, a small spinner appears beside the zoom level, and a moment after you stop moving the part on screen is replaced by the **full-resolution** pixels, exactly as the exported file will have them. Only the visible part is loaded, so even a 32 MP photo stays light.
 
-## 3. Opening a photo from Finder or Explorer <!-- open-with -->
+<!-- chapter: open-with -->
+
+## 3. Opening a photo from Finder or Explorer
 
 Fotollection can be the app that opens a photo you double-click ([FR-054](PRD.md#fr-054--open-photos-with-fotollection)). It never makes itself the default: you choose it.
 
@@ -97,7 +103,9 @@ Fotollection can be the app that opens a photo you double-click ([FR-054](PRD.md
 
 The photo opens in the preview straight away. Its folder becomes a tab in the sidebar, with only that folder's photos (not its subfolders), so **← →** go through the folder. Everything works as in any tab: stars, the print basket, crops, export. Click **×** on the tab when you are done; the photos stay on your disk. Opening another photo while Fotollection is running brings the window forward with that photo.
 
-## 4. Camera RAW <!-- raw -->
+<!-- chapter: raw -->
+
+## 4. Camera RAW
 
 Fotollection opens the RAW files of most cameras as they are, with no conversion to DNG: RW2 (Panasonic), CR2 and CR3 (Canon), NEF (Nikon), ARW (Sony), RAF (Fujifilm), ORF (Olympus, OM System) and DNG ([FR-016](PRD.md#fr-016--raw-input)).
 
@@ -106,7 +114,9 @@ Fotollection opens the RAW files of most cameras as they are, with no conversion
 - Colours and sharpness are the operating system's neutral development, not a RAW editor's: Fotollection prepares prints, it does not replace Lightroom.
 - **On Windows**, install Microsoft's free *Raw Image Extension* from the Microsoft Store first. Without it, RAW files are skipped and the hint says so. A RAW reader built into Fotollection, which needs no extension, is being built ([STATUS.md](STATUS.md)).
 
-## 5. Updating to a new version <!-- updates -->
+<!-- chapter: updates -->
+
+## 5. Updating to a new version
 
 Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates), [FR-061](PRD.md#fr-061--check-for-updates)).
 
@@ -118,7 +128,9 @@ Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates
 
 The same popover shows the **cache**: the thumbnails and best-shot analyses Fotollection keeps so folders open fast, with its size against its 2 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
 
-## 6. Camera clocks <!-- clocks -->
+<!-- chapter: clocks -->
+
+## 6. Camera clocks
 
 A camera set to the wrong time, or still on the time zone of home, puts its photos in the wrong order next to your phone's, and stamps the wrong date ([FR-030](PRD.md#fr-030--camera-clock-offset)).
 
@@ -127,7 +139,9 @@ A camera set to the wrong time, or still on the time zone of home, puts its phot
 
 Every photo from that camera moves at once, including photos added later: the grid order, best-shot groups, day folders, the date stamp and the exported copy's date. The preview still shows what the camera's clock said, and the photo file is never changed. Two bodies of the same model keep their own clocks when the camera records its serial number. The correction is saved in the project.
 
-## 7. Dates and places <!-- dates-places -->
+<!-- chapter: dates-places -->
+
+## 7. Dates and places
 
 **Set them by hand** ([FR-032](PRD.md#fr-032--manual-date-and-place)), for scanned prints, a camera without a clock, or a photo without GPS:
 
@@ -149,7 +163,9 @@ The photos move in the grid, and the date stamp, the info frame, day folders and
 
 When a folder you open was culled in Lightroom, Bridge, Capture One or darktable, the stars and rejects they saved in XMP sidecar files (`IMG_0416.xmp` or `P1000123.RW2.xmp` next to the photo) come in with the photos ([FR-058](PRD.md#fr-058--lightroom-compatibility-through-xmp)). The sidebar says how many. Your own stars and flags in a Fotollection project win over the sidecar, and the sidecar is never changed. Lightroom Classic writes sidecars only for RAW files, and only when *Automatically write changes into XMP* is on (or after *Metadata → Save Metadata to File*).
 
-## 8. Shooting with a camera connected <!-- camera -->
+<!-- chapter: camera -->
+
+## 8. Shooting with a camera connected
 
 With a camera plugged in by cable, Fotollection shows what it sees and takes the photo ([FR-062](PRD.md#fr-062--live-view-from-a-camera), [FR-063](PRD.md#fr-063--tethered-capture-over-usb)). For now this works on Windows, with the Sony a6400. Other Sony bodies of the same years may work, but they are not checked yet.
 
@@ -171,7 +187,9 @@ With a camera plugged in by cable, Fotollection shows what it sees and takes the
 
 **RAW shots** are read by Fotollection's built-in RAW reader, so they show in the tab like JPEG ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)); on Windows this is being checked on a PC without Microsoft's Raw Image Extension.
 
-## 9. Keyboard shortcuts <!-- shortcuts -->
+<!-- chapter: shortcuts -->
+
+## 9. Keyboard shortcuts
 
 | Where | Key | Action |
 |-------|-----|--------|

@@ -80,13 +80,14 @@ fi
 
 echo "• USER_GUIDE.vi.md mirrors USER_GUIDE.md, and the manual's screenshots exist (ADR-0031)"
 if [ -f docs/USER_GUIDE.vi.md ]; then
-  # Chapter and section numbers, chapter anchors and screenshots, in order.
-  outline() { grep -E '^(##+ [0-9.]+|<!-- shot: )' "$1" | sed -E 's/^(##+ [0-9.]+).*<!-- ([a-z0-9-]+) -->$/\1 \2/; s/^(###+ [0-9.]+).*/\1/; s/^<!-- shot: ([a-z0-9-]+) .*/shot \1/'; }
+  # Chapter anchors, chapter and section numbers and screenshots, in order.
+  outline() { grep -E '^(##+ [0-9.]+|<!-- (chapter|shot): )' "$1" | sed -E 's/^(##+ [0-9.]+).*/\1/; s/^<!-- (chapter|shot): ([a-z0-9-]+).*/\1 \2/'; }
   diff <(outline docs/USER_GUIDE.md) <(outline docs/USER_GUIDE.vi.md) >/dev/null \
     || fail "USER_GUIDE.md and USER_GUIDE.vi.md differ in chapters, anchors or screenshots (diff the two outlines)"
   for f in docs/USER_GUIDE.md docs/USER_GUIDE.vi.md; do
-    bad=$(grep -E '^## ' "$f" | grep -vE '^## .*[^ ] <!-- [a-z0-9-]+ -->$' || true)
-    [ -z "$bad" ] || fail "$f: a chapter without an anchor (<!-- id -->): $bad"
+    # Every chapter title comes right after its <!-- chapter: id --> marker and a blank line.
+    bad=$(awk '/^## / && prev2 !~ /^<!-- chapter: [a-z0-9-]+ -->$/ { print } { prev2 = prev1; prev1 = $0 }' "$f")
+    [ -z "$bad" ] || fail "$f: a chapter without a <!-- chapter: id --> line above it: $bad"
     bad=$(grep -E '^<!-- shot:' "$f" | grep -vE '^<!-- shot: [a-z0-9-]+ \| [^"]+ -->$' || true)
     [ -z "$bad" ] || fail "$f: a screenshot marker is not '<!-- shot: name | alt text -->' (no double quotes): $bad"
   done
