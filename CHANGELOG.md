@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Website:** "Quality" moves from the top bar to the footer, to make room for "Manual".
 - **Website:** a "Sponsor on GitHub" button in "Buy me a coffee", so you can support from any country by card, monthly or once.
 
 ## [0.8.0] - 2026-10-27 — Places and Lightroom

@@ -90,7 +90,6 @@
         <nav class="nav-links" aria-label="Main">
           <a href="{{ home }}#features">{{ t.nav_features }}</a>
           <a href="{{ home }}#privacy">{{ t.nav_privacy }}</a>
-          <a href="{{ home }}#quality">{{ t.nav_quality }}</a>
           <a href="{{ path_perf }}"{% if page.title_key == 'perf_title' %} aria-current="page"{% endif %}>{{ t.nav_numbers }}</a>
           <a href="{{ path_manual }}"{% if page.title_key == 'man_title' %} aria-current="page"{% endif %}>{{ t.nav_manual }}</a>
         </nav>
@@ -181,6 +180,7 @@
         <ul class="footer-links">
           <li><a href="{{ site.repo_url }}">{{ t.footer_source }}</a></li>
           <li><a href="{{ home }}#kiosk">{{ t.nav_kiosk }}</a></li>
+          <li><a href="{{ home }}#quality">{{ t.nav_quality }}</a></li>
           <li><a href="{{ home }}#changelog">{{ t.footer_changelog }}</a></li>
           <li><a href="{{ site.repo_url }}/blob/main/LICENSE">{{ t.footer_license }}</a></li>
           <li><a href="{{ path_manual }}">{{ t.nav_manual }}</a></li>
