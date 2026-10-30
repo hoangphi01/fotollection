@@ -302,7 +302,7 @@ p { margin: 0; }
 .manual-toc a:hover, .manual-toc a[aria-current] { color: var(--accent); }
 .manual-toc .small { margin-top: 18px; }
 .manual-toc .small a { color: var(--brand); font-weight: 400; }
-.manual { max-width: 880px; }
+.manual { min-width: 0; }
 .manual h2 { font-size: clamp(1.4rem, 3vw, 1.75rem); margin-top: 56px; }
 .manual h2:first-child { margin-top: 0; }
 .manual h3 { font-size: 1.15rem; margin-top: 32px; }
