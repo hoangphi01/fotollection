@@ -309,7 +309,9 @@ p { margin: 0; }
 .manual a { color: var(--brand); }
 .manual code { font-size: 0.88em; background: var(--surface); padding: 1px 5px; border-radius: 5px; }
 .manual .shot { margin: 28px 0; }
-.manual table { display: block; overflow-x: auto; border-collapse: collapse; font-size: 0.95rem; }
+.manual .table-scroll { margin-top: 14px; overflow-x: auto; }
+.manual table { width: 100%; min-width: 560px; margin: 0; border-collapse: collapse; font-size: 0.95rem; }
+.manual th:first-child, .manual td:first-child { white-space: nowrap; }
 .manual th, .manual td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
 .manual th { color: var(--ink); }
 .changelog { scrollbar-width: thin; scrollbar-color: var(--brand) transparent; }
