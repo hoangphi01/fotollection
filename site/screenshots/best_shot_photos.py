@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
-"""The best-shot demo group for the website's screenshots (site/screenshots/README.md).
+"""The cat burst for the website's print-basket and best-shot screenshots (site/screenshots/README.md).
 
     uv run python -I site/screenshots/best_shot_photos.py <photo.jpg> <out-folder>
 

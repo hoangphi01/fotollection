@@ -44,9 +44,9 @@ function bridge({ fixtures, scenario, language, os, tabs, queues }) {
   const look = scenarios[scenario]
   const byId = (table, args) => table[String(args?.id)]
   let current = look.get_settings
-  // Demo culling state for the print basket (FR-050), by position in the trip.
+  // The print basket and set-aside photos (FR-050), by position (TRIP_QUEUES).
   const withQueues = (photos) =>
-    queues ? photos.map((p, i) => ({ ...p, queue: [1, 4, 6].includes(i) ? 'print' : [9, 13].includes(i) ? 'aside' : null })) : photos
+    photos.map((p, i) => ({ ...p, queue: queues.print.includes(i) ? 'print' : queues.aside.includes(i) ? 'aside' : null }))
   // The folder-tabs shot (FR-056): the demo photos as three folders, by file name.
   const tabOf = (name) =>
     /wilhelma/.test(name) ? [0, 'Wilhelma Zoo'] : /tuebingen|ammerschlag|anlagensee|neckar/.test(name) ? [1, 'Tübingen'] : [2, 'Travels']
@@ -132,7 +132,11 @@ function bridge({ fixtures, scenario, language, os, tabs, queues }) {
 const browser = await chromium.launch()
 const shots = []
 
-async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip }) {
+// Demo culling state for the print basket (FR-050), by position: the trip's, or none.
+const TRIP_QUEUES = { print: [1, 4, 6], aside: [9, 13] }
+const NO_QUEUES = { print: [], aside: [] }
+
+async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues }) {
   const { dump } = source
   // DEMO_WIDTH=1000 checks narrow windows (the screenshots for the site stay at 1440).
   const context = await browser.newContext({
@@ -159,7 +163,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
     return route.abort()
   })
   // DEMO_OS=windows shows the Windows title bar, for checking it on a Mac.
-  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: source === trip })
+  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES) })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
   await page.goto('http://app.localhost/')
@@ -323,9 +327,11 @@ for (const language of ['en', 'vi']) {
     await page.mouse.move(5, 890)
     await settle(page)
     await zoomed(page, `select-${suffix}`, { x: 0, y: 0, width: 1040, height: 650 })
-    // 6b. The preview of a photo in the basket: ↑ keeps it, ↓ sets it aside.
-    await page.getByRole('button', { name: /^(Done|Xong)$/ }).click()
-    await tiles.nth(1).dblclick()
+    await context.close()
+    // 6b. The preview of a photo in the basket: ↑ keeps it, ↓ sets it aside. The owner's cat,
+    // its sharp shot in the basket.
+    ;({ context, page } = await open({ scenario: 'frame', language, theme, scale: 3, source: cat, queues: { print: [0], aside: [] } }))
+    await page.locator('img[src*="/thumb/"]').first().dblclick()
     await page.waitForSelector('[role="dialog"]')
     await settle(page)
     await zoomed(page, `swipe-${suffix}`, { x: 40, y: 45, width: 960, height: 600 })
