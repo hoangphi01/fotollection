@@ -10,6 +10,7 @@ en:
   nav_quality: Quality
   nav_download: Download
   nav_coffee: Coffee
+  nav_manual: Manual
   to_top: Back to top
   star: Star on GitHub
   badge: Free · Open source · No account
@@ -170,6 +171,12 @@ en:
   chart_share: "Photos for Facebook: what viewers see after Facebook recompresses them"
   chart_memory: "Peak memory as the batch grows to 5,035 photos"
   chart_browser: "The same job in Fotollection and in a web browser"
+  man_title: Manual
+  man_kicker: Help
+  man_description: "How to use Fotollection, step by step, with a screenshot of each step: choosing the photos to print, zoom, RAW, camera clocks, dates and places, shooting with a camera connected, and every shortcut."
+  man_lead: "Every step, as the app shows it. The manual follows the app: when a version changes something you can see, this page changes with it."
+  man_toc: Chapters
+  man_source: This manual on GitHub
   cs_title: Code signing policy
   cs_kicker: Trust
   cs_description: "How Fotollection's installers are built and published, who approves each release, and what the app does and does not send over the network."
@@ -285,6 +292,7 @@ vi:
   nav_quality: Chất lượng
   nav_download: Tải về
   nav_coffee: Cà phê
+  nav_manual: Hướng dẫn
   to_top: Lên đầu trang
   star: Gắn sao trên GitHub
   badge: Miễn phí · Mã nguồn mở · Không cần tài khoản
@@ -445,6 +453,12 @@ vi:
   chart_share: "Ảnh đăng Facebook: người xem thấy gì sau khi Facebook nén lại"
   chart_memory: "RAM dùng nhiều nhất khi số ảnh tăng lên 5.035 tấm"
   chart_browser: "Cùng một việc, trên Fotollection và trên trình duyệt web"
+  man_title: Hướng dẫn
+  man_kicker: Trợ giúp
+  man_description: "Cách dùng Fotollection từng bước, mỗi bước kèm ảnh chụp màn hình: chọn ảnh để in, phóng to, ảnh RAW, đồng hồ máy ảnh, ngày và nơi chụp, chụp với máy ảnh cắm vào máy tính, và mọi phím tắt."
+  man_lead: "Từng bước, đúng như app hiển thị. Hướng dẫn đi theo app: khi một phiên bản đổi điều bạn nhìn thấy, trang này đổi theo."
+  man_toc: Các chương
+  man_source: Bản hướng dẫn này trên GitHub
   cs_title: Chính sách ký mã
   cs_kicker: Tin cậy
   cs_description: "Bộ cài Fotollection được xây dựng và phát hành thế nào, ai duyệt mỗi bản phát hành, và ứng dụng gửi gì, không gửi gì qua mạng."

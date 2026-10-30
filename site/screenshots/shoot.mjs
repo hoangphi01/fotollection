@@ -223,7 +223,8 @@ for (const language of ['en', 'vi']) {
     await page.waitForSelector(`img[src*="/preview/${SHOW.stamp}"]`)
     await settle(page)
     await save(page, `stamp-${suffix}`)
-    // 2b. For checking only: the place in the Location card, and the place picker (FR-032).
+    // 2b. The place in the Location card (for checking only), and the place picker for the
+    // manual (FR-032).
     const inspector = page.locator('[role="dialog"]')
     await inspector.getByRole('button', { name: /Set the place|Đặt nơi chụp/ }).scrollIntoViewIfNeeded()
     await page.waitForTimeout(300)
@@ -233,7 +234,7 @@ for (const language of ['en', 'vi']) {
     await page.keyboard.type('pra')
     await page.waitForSelector('[cmdk-item]')
     await page.waitForTimeout(300)
-    await save(page, `check-place-picker-${suffix}`)
+    await save(page, `manual-place-picker-${suffix}`)
     await context.close()
 
     // 3. Preview with the "Shot on" info frame (and, for checking only, the panel's frame controls).
@@ -242,10 +243,10 @@ for (const language of ['en', 'vi']) {
     await page.mouse.wheel(0, 2000)
     await page.waitForTimeout(300)
     await save(page, `check-frame-${suffix}`)
-    // The Places card at the foot of the settings (FR-005).
+    // The Places card at the foot of the settings, for the manual (FR-005).
     await page.mouse.wheel(0, 4000)
     await page.waitForTimeout(300)
-    await save(page, `check-places-${suffix}`)
+    await save(page, `manual-places-${suffix}`)
     await tile(page, SHOW.frame).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.frame}"]`)
     await settle(page)

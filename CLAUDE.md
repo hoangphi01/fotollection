@@ -24,4 +24,4 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
 ## Repository facts
 
 - Remote: `github.com/hoangphi01/fotollection` (public), default branch `main`.
-- Docs are written in English, except `README.vi.md`. The project owner often discusses in Vietnamese.
+- Docs are written in English, except `README.vi.md` and `docs/USER_GUIDE.vi.md` (the Vietnamese manual, [ADR-0031](docs/adr/0031-manual-on-the-website-from-the-user-guide.md)). The project owner often discusses in Vietnamese.

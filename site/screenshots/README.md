@@ -7,7 +7,7 @@ The screenshots on the website show the **real app on demo photos**, never anyon
    - runs the debug app with `FOTOLLECTION_DEMO_FOLDER` and `FOTOLLECTION_DEMO_DUMP` ([`src-tauri/src/demo.rs`](../../src-tauri/src/demo.rs)): it imports the folder with its own settings, cache and project (never the user's), runs the best-shot analysis, records what each IPC command answers and the image protocol's bytes, then quits;
    - shoots the real interface (`ui/dist`) with Playwright ([`shoot.mjs`](shoot.mjs)), answering IPC from that recording, in English and Vietnamese, dark and light: the library, the date stamp, the info frame, the crop editor and best-shot groups;
    - renders the link previews from [`og.html`](og.html) (1200 × 630);
-   - writes 1600 px WebP screenshots and JPEG link previews to `site/assets/img/` (shots named `check-*` are only for checking controls by eye and stay out of the site).
+   - writes 1600 px WebP screenshots and JPEG link previews to `site/assets/img/` (shots named `check-*` are only for checking controls by eye and stay out of the site; shots named `manual-*` are only for the manual, placed by the `<!-- shot: … -->` markers in `docs/USER_GUIDE.md` and `USER_GUIDE.vi.md`, [ADR-0031](../../docs/adr/0031-manual-on-the-website-from-the-user-guide.md)).
 
 Photos are chosen by file name in `shoot.mjs`. Needs cargo, npm, `cwebp` and uv (for Python with Pillow).
 

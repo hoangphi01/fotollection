@@ -1,10 +1,12 @@
 # User Guide — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-10-25
+> **Status:** Living · **Last reviewed:** 2026-10-30
 >
-> How to use the app, step by step, for the person at the keyboard: the source for the user manual and the website's help. It describes behaviour that has shipped or is on `main`; the reasons and the full rules are in [PRD.md](PRD.md), linked from each section. Update it in the same commit as any change a user would notice ([DOCS_GUIDE.md](DOCS_GUIDE.md)).
+> How to use the app, step by step, for the person at the keyboard. It describes behaviour that has shipped or is on `main`; the reasons and the full rules are in [PRD.md](PRD.md), linked from each section. Update it in the same commit as any change a user would notice ([DOCS_GUIDE.md](DOCS_GUIDE.md)).
+>
+> **This is also the manual on the website** ([fotollection.org/manual](https://fotollection.org/manual/), [ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)). Keep [USER_GUIDE.vi.md](USER_GUIDE.vi.md) in step: the same chapters, anchors (`<!-- id -->` after a chapter title) and screenshots (`<!-- shot: name | alt text -->`), with the app's own labels. Shoot changed screenshots again with `site/screenshots/build.sh`.
 
-## 1. Choosing the photos to print
+## 1. Choosing the photos to print <!-- choose -->
 
 A trip gives hundreds of photos; only a handful go to the lab. Fotollection keeps that choice in two **holding areas**, next to the gallery ([FR-050](PRD.md#fr-050--print-basket)):
 
@@ -14,6 +16,8 @@ A trip gives hundreds of photos; only a handful go to the lab. Fotollection keep
 | **Set aside** | Photos you put away for now. They leave the gallery but are **never deleted or moved on disk** | Sidebar, under *Print basket*, with its count |
 
 A photo is in the gallery, in the print basket, or set aside, never in two at once. Photos in the basket stay visible in the gallery, with a small basket badge in the top-right corner of their thumbnail; photos set aside do not appear in *All photos* or in the folders until you bring them back. Stars and pick/reject flags are separate: a pick does not have to be printed, and the basket is not a flag.
+
+<!-- shot: grid | The library, culled with stars and picks -->
 
 Both areas are saved in the project (`.fotollection`) and in the session, so they are still there after you quit and reopen the app. Every move can be undone with **Cmd/Ctrl+Z**.
 
@@ -25,6 +29,8 @@ Both areas are saved in the project (`.fotollection`) and in the session, so the
 4. Press **↓** to **set it aside**: it leaves the gallery, and the next photo takes its place.
 5. Press **→** to move on without deciding, **←** to go back.
 6. Repeat until the end of the trip. **Esc** closes the preview.
+
+<!-- shot: swipe | A photo in the print basket, with the keys to keep going -->
 
 The **Print basket** button on the photo (next to *Crop*, the turn buttons and *Export*) does the same as ↑, and shows *In the basket* when the photo is already in it; click it again to take the photo out. A photo that was set aside shows **Back to the gallery** instead.
 
@@ -44,7 +50,11 @@ When you open the preview from the *Print basket* or *Set aside* view, ↑ and �
    - **Clear**: untick everything.
 4. Click **Done**, or press **Esc**, to leave select mode. Ticks are temporary: what counts is the area each photo is in.
 
+<!-- shot: select | Select mode: ticked photos, the print basket and the set-aside pile -->
+
 **Several folders:** ticks follow you from one folder tab to another ([FR-056](PRD.md#fr-056--folders-as-tabs)). Tick a few photos in one folder, click another folder in the sidebar and keep ticking; the bar shows the total and how many are in other folders, and *Print basket* moves them all at once.
+
+<!-- shot: tabs | Three folders as tabs: photos ticked in two of them, and the close button on a tab -->
 
 In select mode, a double-click does not open the preview, and **Space works differently** (§1.3).
 
@@ -65,7 +75,9 @@ Outside select mode, Space keeps opening the normal preview.
 - Click **All photos**, or a folder, to return to the gallery.
 - **Export follows the view.** From *Print basket*, *Export* writes exactly the basket, with the size estimate above the button ([FR-053](PRD.md#fr-053--export-for-social-media)). From *All photos* or a folder, photos set aside are never exported.
 
-## 2. Looking closely: zoom
+<!-- shot: estimate | The size estimate above the export button, sharing for Facebook -->
+
+## 2. Looking closely: zoom <!-- zoom -->
 
 In the preview, the **zoom buttons** at the bottom right of the photo show the zoom level between **−** and **+**; the last button goes back to fit ([FR-057](PRD.md#fr-057--zoom-in-the-preview)). The same with the keyboard and the trackpad:
 
@@ -76,7 +88,7 @@ In the preview, the **zoom buttons** at the bottom right of the photo show the z
 
 The preview is first shown at a light size that any computer draws quickly. When you zoom past what it holds, a small spinner appears beside the zoom level, and a moment after you stop moving the part on screen is replaced by the **full-resolution** pixels, exactly as the exported file will have them. Only the visible part is loaded, so even a 32 MP photo stays light.
 
-## 3. Opening a photo from Finder or Explorer
+## 3. Opening a photo from Finder or Explorer <!-- open-with -->
 
 Fotollection can be the app that opens a photo you double-click ([FR-054](PRD.md#fr-054--open-photos-with-fotollection)). It never makes itself the default: you choose it.
 
@@ -85,7 +97,7 @@ Fotollection can be the app that opens a photo you double-click ([FR-054](PRD.md
 
 The photo opens in the preview straight away. Its folder becomes a tab in the sidebar, with only that folder's photos (not its subfolders), so **← →** go through the folder. Everything works as in any tab: stars, the print basket, crops, export. Click **×** on the tab when you are done; the photos stay on your disk. Opening another photo while Fotollection is running brings the window forward with that photo.
 
-## 4. Camera RAW
+## 4. Camera RAW <!-- raw -->
 
 Fotollection opens the RAW files of most cameras as they are, with no conversion to DNG: RW2 (Panasonic), CR2 and CR3 (Canon), NEF (Nikon), ARW (Sony), RAF (Fujifilm), ORF (Olympus, OM System) and DNG ([FR-016](PRD.md#fr-016--raw-input)).
 
@@ -94,7 +106,7 @@ Fotollection opens the RAW files of most cameras as they are, with no conversion
 - Colours and sharpness are the operating system's neutral development, not a RAW editor's: Fotollection prepares prints, it does not replace Lightroom.
 - **On Windows**, install Microsoft's free *Raw Image Extension* from the Microsoft Store first. Without it, RAW files are skipped and the hint says so. A RAW reader built into Fotollection, which needs no extension, is being built ([STATUS.md](STATUS.md)).
 
-## 5. Updating to a new version
+## 5. Updating to a new version <!-- updates -->
 
 Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates), [FR-061](PRD.md#fr-061--check-for-updates)).
 
@@ -106,7 +118,7 @@ Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates
 
 The same popover shows the **cache**: the thumbnails and best-shot analyses Fotollection keeps so folders open fast, with its size against its 2 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
 
-## 6. Camera clocks
+## 6. Camera clocks <!-- clocks -->
 
 A camera set to the wrong time, or still on the time zone of home, puts its photos in the wrong order next to your phone's, and stamps the wrong date ([FR-030](PRD.md#fr-030--camera-clock-offset)).
 
@@ -115,7 +127,7 @@ A camera set to the wrong time, or still on the time zone of home, puts its phot
 
 Every photo from that camera moves at once, including photos added later: the grid order, best-shot groups, day folders, the date stamp and the exported copy's date. The preview still shows what the camera's clock said, and the photo file is never changed. Two bodies of the same model keep their own clocks when the camera records its serial number. The correction is saved in the project.
 
-## 7. Dates and places
+## 7. Dates and places <!-- dates-places -->
 
 **Set them by hand** ([FR-032](PRD.md#fr-032--manual-date-and-place)), for scanned prints, a camera without a clock, or a photo without GPS:
 
@@ -123,17 +135,21 @@ Every photo from that camera moves at once, including photos added later: the gr
 2. **Many photos:** in select mode, tick them and click **Date and place…** in the selection bar.
 3. Type a date and time, and type a town or city to pick it (accents and spaces do not matter: `ha noi` finds Hà Nội). Fill in only what you want to change, then **Apply**. The arrow buttons go back to the camera's time and to the photo's own GPS.
 
+<!-- shot: manual-place-picker | Setting the place of a photo: typing three letters finds the town -->
+
 The photos move in the grid, and the date stamp, the info frame, day folders and the exported copy's date follow. Everything is offline, every change is one step of Undo, and the photo file is never changed.
 
 **Places from your phone** ([FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track)): a camera without GPS (a Lumix GX9, for example) can take the place of a photo your phone took of the same scene a few minutes apart. Set the camera's clock first if it is off (section 6). In the settings panel's **Places** card, click **Find places**, choose how far apart in time (5, 10 or 30 minutes) and **Look for places**. Sure matches get their place at once; the others are shown next to the phone photo, ticked, so untick the wrong ones and confirm. Sure matches are also filled in after every best-shot analysis. A borrowed place shows a pin with a tick on the thumbnail and *Borrowed* in the preview; it never replaces a place you set or the photo's own GPS, and Undo takes it back.
 
 **Rename a place** ([FR-005](PRD.md#fr-005--location-stamp-offline)): the settings panel's **Places** card lists every place on your photos. Type the name you want printed, like `Prague` for `Praha 1` or `Grandma's`, and every stamp and frame with that place follows; the arrow button brings the original name back.
 
+<!-- shot: manual-places | The Places card in the settings: every place on your photos, each with a name to print -->
+
 ### 7.1 Stars from Lightroom and other apps
 
 When a folder you open was culled in Lightroom, Bridge, Capture One or darktable, the stars and rejects they saved in XMP sidecar files (`IMG_0416.xmp` or `P1000123.RW2.xmp` next to the photo) come in with the photos ([FR-058](PRD.md#fr-058--lightroom-compatibility-through-xmp)). The sidebar says how many. Your own stars and flags in a Fotollection project win over the sidecar, and the sidecar is never changed. Lightroom Classic writes sidecars only for RAW files, and only when *Automatically write changes into XMP* is on (or after *Metadata → Save Metadata to File*).
 
-## 8. Shooting with a camera connected
+## 8. Shooting with a camera connected <!-- camera -->
 
 With a camera plugged in by cable, Fotollection shows what it sees and takes the photo ([FR-062](PRD.md#fr-062--live-view-from-a-camera), [FR-063](PRD.md#fr-063--tethered-capture-over-usb)). For now this works on Windows, with the Sony a6400. Other Sony bodies of the same years may work, but they are not checked yet.
 
@@ -155,7 +171,7 @@ With a camera plugged in by cable, Fotollection shows what it sees and takes the
 
 **RAW shots** are read by Fotollection's built-in RAW reader, so they show in the tab like JPEG ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)); on Windows this is being checked on a PC without Microsoft's Raw Image Extension.
 
-## 9. Keyboard shortcuts
+## 9. Keyboard shortcuts <!-- shortcuts -->
 
 | Where | Key | Action |
 |-------|-----|--------|

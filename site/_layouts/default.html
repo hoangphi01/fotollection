@@ -8,6 +8,7 @@
 {%- assign path_vi = page.path_vi | default: '/vi/' -%}
 {%- if page.lang == 'vi' %}{% assign other_page = path_en | relative_url %}{% else %}{% assign other_page = path_vi | relative_url %}{% endif -%}
 {%- if page.lang == 'vi' %}{% assign path_perf = '/vi/performance/' | relative_url %}{% else %}{% assign path_perf = '/performance/' | relative_url %}{% endif -%}
+{%- if page.lang == 'vi' %}{% assign path_manual = '/vi/manual/' | relative_url %}{% else %}{% assign path_manual = '/manual/' | relative_url %}{% endif -%}
 {%- if page.lang == 'vi' %}{% assign path_signing = '/vi/code-signing/' | relative_url %}{% else %}{% assign path_signing = '/code-signing/' | relative_url %}{% endif -%}
 {%- if page.title_key %}{% assign page_title = t[page.title_key] | append: ' · Fotollection' %}{% else %}{% assign page_title = t.title %}{% endif -%}
 {%- if page.description_key %}{% assign page_description = t[page.description_key] %}{% else %}{% assign page_description = t.description %}{% endif -%}
@@ -91,6 +92,7 @@
           <a href="{{ home }}#privacy">{{ t.nav_privacy }}</a>
           <a href="{{ home }}#quality">{{ t.nav_quality }}</a>
           <a href="{{ path_perf }}"{% if page.title_key == 'perf_title' %} aria-current="page"{% endif %}>{{ t.nav_numbers }}</a>
+          <a href="{{ path_manual }}"{% if page.title_key == 'man_title' %} aria-current="page"{% endif %}>{{ t.nav_manual }}</a>
         </nav>
         <div class="nav-actions">
           <a class="lang" href="{{ other_page }}" hreflang="{{ other.html_lang }}" lang="{{ other.html_lang }}">{% include icons/languages.svg %}<span>{{ t.other_label }}</span></a>
@@ -181,6 +183,7 @@
           <li><a href="{{ home }}#kiosk">{{ t.nav_kiosk }}</a></li>
           <li><a href="{{ home }}#changelog">{{ t.footer_changelog }}</a></li>
           <li><a href="{{ site.repo_url }}/blob/main/LICENSE">{{ t.footer_license }}</a></li>
+          <li><a href="{{ path_manual }}">{{ t.nav_manual }}</a></li>
           <li><a href="{{ path_signing }}">{{ t.footer_signing }}</a></li>
           <li><a class="blog" href="https://hoangphi01.github.io/blog/">{{ t.footer_blog }} {% include icons/arrow-right.svg %}</a></li>
         </ul>

@@ -13,6 +13,7 @@ on:
       - "ui/package.json"
       - "src-tauri/tauri.conf.json"
       - "scripts/check-docs.sh"
+      - "site/assets/img/**"
       - ".markdownlint*"
       - ".github/workflows/docs.yml"
   pull_request:
@@ -25,6 +26,7 @@ on:
       - "ui/package.json"
       - "src-tauri/tauri.conf.json"
       - "scripts/check-docs.sh"
+      - "site/assets/img/**"
       - ".markdownlint*"
       - ".github/workflows/docs.yml"
 

@@ -14,7 +14,7 @@
 | Changing anything that is saved to disk | [DATABASE](DATABASE.md) → [EXTENSION](EXTENSION.md) |
 | Changing anything (what else to update) | [DOCS_GUIDE](DOCS_GUIDE.md) |
 | Shipping a build | [RELEASE](RELEASE.md) |
-| Writing the manual or the website's help | [USER_GUIDE](USER_GUIDE.md) |
+| Writing the manual or the website's help | [USER_GUIDE](USER_GUIDE.md) and its Vietnamese mirror [USER_GUIDE.vi](USER_GUIDE.vi.md): together they are the manual on the website ([ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)) |
 | Confused by a term | [GLOSSARY](GLOSSARY.md) |
 
 ## Where does each fact live?
@@ -38,7 +38,7 @@
 | What each camera can do over USB, and each maker's protocol notes | [cameras/README.md](cameras/README.md) |
 | Which RAW formats our own decoder reads, and each format's notes | [raw/README.md](raw/README.md) |
 | The public website and how its screenshots are made | [site/README.md](../site/README.md) |
-| How to use the app, step by step, with every shortcut | [USER_GUIDE.md](USER_GUIDE.md) |
+| How to use the app, step by step, with every shortcut (also the website's manual, <https://fotollection.org/manual/>) | [USER_GUIDE.md](USER_GUIDE.md), mirrored in [USER_GUIDE.vi.md](USER_GUIDE.vi.md) |
 | User-visible changes per version | [CHANGELOG.md](../CHANGELOG.md) |
 | What to update when something changes (the checklist) | [DOCS_GUIDE.md](DOCS_GUIDE.md) |
 | What each debugging session taught us, and how we debug | [LESSONS.md](LESSONS.md) |

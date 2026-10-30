@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **Website:** a Manual page, in English and Vietnamese, with screenshots of the real app: choosing the photos to print, zoom, RAW, updates, camera clocks, dates and places, shooting with a camera, and every shortcut. More chapters follow.
+
 ### Changed
 
 - **Website:** a "Sponsor on GitHub" button in "Buy me a coffee", so you can support from any country by card, monthly or once.

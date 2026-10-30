@@ -1,0 +1,28 @@
+{%- comment %} The manual: docs/USER_GUIDE.md and USER_GUIDE.vi.md, turned into manual-<lang>.md by scripts/site-manual.sh at build time (ADR-0031). Laid out like the Performance page: the same header, then the chapters on the left and the text on the right. {% endcomment -%}
+{%- assign t = site.data.i18n[page.lang] -%}
+{%- capture toc_file %}manual-toc-{{ page.lang }}.md{% endcapture -%}
+{%- capture body_file %}manual-{{ page.lang }}.md{% endcapture -%}
+{%- capture toc %}{% include {{ toc_file }} %}{% endcapture -%}
+{%- capture body %}{% include {{ body_file }} %}{% endcapture -%}
+{%- capture docs_href %}href="{{ site.repo_url }}/blob/main/docs/{% endcapture -%}
+{%- if page.lang == 'vi' %}{% assign guide = 'USER_GUIDE.vi.md' %}{% else %}{% assign guide = 'USER_GUIDE.md' %}{% endif -%}
+<section class="section perf-head">
+  <div class="wrap">
+    <p class="kicker">{{ t.man_kicker }}</p>
+    <h1>{{ t.man_title }}</h1>
+    <p class="lead narrow">{{ t.man_lead }}</p>
+  </div>
+</section>
+
+<section class="section tint">
+  <div class="wrap perf-part manual-part">
+    <nav class="card manual-toc" aria-label="{{ t.man_toc }}">
+      <h2>{{ t.man_toc }}</h2>
+      {{ toc | markdownify }}
+      <p class="small muted"><a href="{{ site.repo_url }}/blob/main/docs/{{ guide }}">{{ t.man_source }}</a></p>
+    </nav>
+    <div class="manual">
+      {{ body | markdownify | replace: 'href="docs/', docs_href }}
+    </div>
+  </div>
+</section>

@@ -78,6 +78,27 @@ else
   fail "README.vi.md is missing"
 fi
 
+echo "• USER_GUIDE.vi.md mirrors USER_GUIDE.md, and the manual's screenshots exist (ADR-0031)"
+if [ -f docs/USER_GUIDE.vi.md ]; then
+  # Chapter and section numbers, chapter anchors and screenshots, in order.
+  outline() { grep -E '^(##+ [0-9.]+|<!-- shot: )' "$1" | sed -E 's/^(##+ [0-9.]+).*<!-- ([a-z0-9-]+) -->$/\1 \2/; s/^(###+ [0-9.]+).*/\1/; s/^<!-- shot: ([a-z0-9-]+) .*/shot \1/'; }
+  diff <(outline docs/USER_GUIDE.md) <(outline docs/USER_GUIDE.vi.md) >/dev/null \
+    || fail "USER_GUIDE.md and USER_GUIDE.vi.md differ in chapters, anchors or screenshots (diff the two outlines)"
+  for f in docs/USER_GUIDE.md docs/USER_GUIDE.vi.md; do
+    bad=$(grep -E '^## ' "$f" | grep -vE '^## .*[^ ] <!-- [a-z0-9-]+ -->$' || true)
+    [ -z "$bad" ] || fail "$f: a chapter without an anchor (<!-- id -->): $bad"
+    bad=$(grep -E '^<!-- shot:' "$f" | grep -vE '^<!-- shot: [a-z0-9-]+ \| [^"]+ -->$' || true)
+    [ -z "$bad" ] || fail "$f: a screenshot marker is not '<!-- shot: name | alt text -->' (no double quotes): $bad"
+  done
+  for name in $(grep -oE '^<!-- shot: [a-z0-9-]+' docs/USER_GUIDE.md | sed 's/.* //' | sort -u); do
+    for v in en-light en-dark vi-light vi-dark; do
+      [ -f "site/assets/img/$name-$v.webp" ] || fail "the manual shows $name, but site/assets/img/$name-$v.webp is missing"
+    done
+  done
+else
+  fail "docs/USER_GUIDE.vi.md is missing"
+fi
+
 echo "• Chart budgets match OPTIMIZATION.md §3"
 for id in NFR-001 NFR-002 NFR-003 NFR-004; do
   text=$(grep -oE "\"$id\": \{[^}]*\"text\": \"[^\"]*\"" bench/results/budgets.json | sed -E 's/.*"text": "([^"]*)"/\1/')

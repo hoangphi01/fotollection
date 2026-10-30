@@ -33,3 +33,4 @@ __pycache__/
 captures/
 *.pcapng
 *.pcap
+site/_includes/manual-*.md
