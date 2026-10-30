@@ -149,6 +149,12 @@
 - **Why:** React Fast Refresh keeps the mounted component's hook list; a different number of hooks is a hook-order error, and with no error boundary the tree unmounts.
 - **Rule:** this is a dev-only artefact, not a bug: restart `npm run dev`. Prefer changes that keep the hook count when testing live.
 
+### A screenshot of the start-up screen (website screenshots)
+
+- **Seen:** the manual's frame-card shot came out as the logo and a loading bar, and a full shoot took almost 8 minutes instead of under 2.
+- **Why:** the mock IPC bridge in `shoot.mjs` did not answer `startup_finished`, so the start-up screen (FR-060) stayed until its 15-second safety timer; shots taken right after loading caught it. `scrollIntoView` was not the cause, though it also scrolls the page, not only the panel.
+- **Rule:** when the app gains a command it calls at start-up, answer it in the mock bridge; `open()` now waits until `#splash` is gone, and a shot that needs a scrolled panel scrolls that panel's own box.
+
 ### A narrow column left on its own looks broken (manual)
 
 - **Seen:** the owner found the manual "pushed to one side": its text had `max-width: 880px` inside the 1180 px `.wrap`, left-aligned, so a wide empty band ran down the right.

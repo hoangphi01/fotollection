@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // Screenshots of the real interface for the website (site/screenshots/README.md).
 //
-//   node site/screenshots/shoot.mjs <demo-dump> [out-dir]
+//   node site/screenshots/shoot.mjs <demo-dump> [out-dir] [best-shot-dump]
 //
 // Serves ui/dist, answers IPC with the answers the real app recorded for the demo photos
 // (src-tauri/src/demo.rs), and serves the recorded thumbnails and previews. No Tauri, no
@@ -14,30 +14,39 @@ import { fileURLToPath } from 'node:url'
 import { chromium } from 'playwright'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
-const dump = path.resolve(process.argv[2] ?? '')
 const outDir = path.resolve(process.argv[3] ?? path.join(root, 'site/assets/img'))
 const dist = path.join(root, 'ui/dist')
-if (!existsSync(path.join(dump, 'fixtures.json')) || !existsSync(path.join(dist, 'index.html'))) {
-  console.error('usage: node site/screenshots/shoot.mjs <demo-dump> [out-dir]  (build ui/dist first)')
+const usage = 'usage: node site/screenshots/shoot.mjs <demo-dump> [out-dir] [best-shot-dump]  (build ui/dist first)'
+if (!existsSync(path.join(path.resolve(process.argv[2] ?? ''), 'fixtures.json')) || !existsSync(path.join(dist, 'index.html'))) {
+  console.error(usage)
   process.exit(2)
 }
 
-// The demo folder lived in a scratch directory; show a plain one instead.
-let text = await readFile(path.join(dump, 'fixtures.json'), 'utf8')
-const folder = JSON.parse(text).common.photo_details['0'].folderPath
-text = text.replaceAll(folder, '/Users/demo/Pictures/Trip 2018').replaceAll('"demo-src"', '"Trip 2018"')
-const fixtures = JSON.parse(text)
+/** A recording of the real app (demo.rs), its scratch folder shown as a plain one. */
+async function load(dir, name, folderName) {
+  const dump = path.resolve(dir)
+  let text = await readFile(path.join(dump, 'fixtures.json'), 'utf8')
+  const folder = JSON.parse(text).common.photo_details['0'].folderPath
+  text = text.replaceAll(folder, `/Users/demo/Pictures/${name}`).replaceAll(`"${folderName ?? path.basename(folder)}"`, `"${name}"`)
+  return { dump, fixtures: JSON.parse(text) }
+}
+// The CC0 demo photos for every shot but best shot, which shows the owner's cat: a burst
+// made by best_shot_photos.py, recorded on its own (site/screenshots/README.md).
+const trip = await load(process.argv[2], 'Trip 2018', 'demo-src')
+const cat = process.argv[4] ? await load(process.argv[4], 'Cat') : trip
+const fixtures = trip.fixtures
 
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.json': 'application/json' }
 
 /** Runs in the page before the app: a stand-in for Tauri's IPC bridge. */
-function bridge({ fixtures, scenario, language, os, tabs }) {
+function bridge({ fixtures, scenario, language, os, tabs, queues }) {
   const { common, scenarios } = fixtures
   const look = scenarios[scenario]
   const byId = (table, args) => table[String(args?.id)]
   let current = look.get_settings
   // Demo culling state for the print basket (FR-050), by position in the trip.
-  const withQueues = (photos) => photos.map((p, i) => ({ ...p, queue: [1, 4, 6].includes(i) ? 'print' : [9, 13].includes(i) ? 'aside' : null }))
+  const withQueues = (photos) =>
+    queues ? photos.map((p, i) => ({ ...p, queue: [1, 4, 6].includes(i) ? 'print' : [9, 13].includes(i) ? 'aside' : null })) : photos
   // The folder-tabs shot (FR-056): the demo photos as three folders, by file name.
   const tabOf = (name) =>
     /wilhelma/.test(name) ? [0, 'Wilhelma Zoo'] : /tuebingen|ammerschlag|anlagensee|neckar/.test(name) ? [1, 'Tübingen'] : [2, 'Travels']
@@ -52,6 +61,8 @@ function bridge({ fixtures, scenario, language, os, tabs }) {
   }
   const answers = {
     app_info: () => ({ ...common.app_info, ...(os ? { os } : {}) }),
+    // Start-up is over at once, so the start-up screen fades out as in the app (FR-060).
+    startup_finished: () => true,
     list_print_sizes: () => common.list_print_sizes,
     list_fonts: () => common.list_fonts,
     get_ui_settings: () => ({ ...common.get_ui_settings, language }),
@@ -121,7 +132,8 @@ function bridge({ fixtures, scenario, language, os, tabs }) {
 const browser = await chromium.launch()
 const shots = []
 
-async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false }) {
+async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip }) {
+  const { dump } = source
   // DEMO_WIDTH=1000 checks narrow windows (the screenshots for the site stay at 1440).
   const context = await browser.newContext({
     viewport: { width, height },
@@ -147,12 +159,14 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
     return route.abort()
   })
   // DEMO_OS=windows shows the Windows title bar, for checking it on a Mac.
-  await context.addInitScript(bridge, { fixtures, scenario, language, os: process.env.DEMO_OS, tabs })
+  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: source === trip })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
   await page.goto('http://app.localhost/')
   await page.waitForSelector('img[src*="/thumb/"]')
   await page.waitForFunction(() => [...document.images].every((i) => i.complete))
+  // The start-up screen (FR-060) fades out once start-up is over: never shoot it.
+  await page.waitForSelector('#splash', { state: 'detached' })
   return { context, page }
 }
 
@@ -206,11 +220,21 @@ for (const language of ['en', 'vi']) {
     await settle(page)
     await save(page, `grid-${suffix}`)
 
-    // 1b. Print-size advice: the picker open, a badge per size (FR-026).
+    // 1a. For the manual: the flag filter open (FR-022), and the Project block (FR-023),
+    // zoomed in like the print-basket shots.
+    await page.getByRole('combobox', { name: /Filter by flag|Lọc theo cờ/ }).click()
+    await page.waitForSelector('[role="option"]')
+    await page.waitForTimeout(300)
+    await save(page, `manual-filters-${suffix}`)
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(200)
+    await zoomed(page, `manual-project-${suffix}`, { x: 0, y: 0, width: 576, height: 360 })
+
+    // 1b. Print-size advice for the manual: the picker open, a badge per size (FR-026).
     await page.locator('#print-size').click()
     await page.waitForSelector('[role="option"]')
     await page.waitForTimeout(300)
-    await save(page, `check-advice-${suffix}`)
+    await save(page, `manual-size-${suffix}`)
     await page.keyboard.press('Escape')
     await page.waitForTimeout(200)
     await page.getByRole('button', { name: /Versions|Các phiên bản/ }).click()
@@ -218,7 +242,7 @@ for (const language of ['en', 'vi']) {
     await save(page, `check-versions-${suffix}`)
     await page.keyboard.press('Escape')
 
-    // 2. Preview with the retro date stamp and the place (GPS photo).
+    // 2. Preview with the date stamp (the default style) and the place (GPS photo).
     await tile(page, SHOW.stamp).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.stamp}"]`)
     await settle(page)
@@ -237,12 +261,17 @@ for (const language of ['en', 'vi']) {
     await save(page, `manual-place-picker-${suffix}`)
     await context.close()
 
-    // 3. Preview with the "Shot on" info frame (and, for checking only, the panel's frame controls).
+    // 3. Preview with the "Shot on" info frame, and the panel's frame card for the manual.
     ;({ context, page } = await open({ scenario: 'frame', language, theme }))
-    await page.locator('aside').last().hover()
-    await page.mouse.wheel(0, 2000)
+    // Scroll the panel alone (scrollIntoView would move the page too, and show the splash).
+    await page.locator('aside').last().getByText(/^(Info frame|Khung thông tin)$/).first().evaluate((e) => {
+      let box = e.parentElement
+      while (box && !(box.scrollHeight > box.clientHeight && /auto|scroll/.test(getComputedStyle(box).overflowY))) box = box.parentElement
+      if (box) box.scrollTop += e.getBoundingClientRect().top - box.getBoundingClientRect().top - 24
+    })
     await page.waitForTimeout(300)
-    await save(page, `check-frame-${suffix}`)
+    await save(page, `manual-frame-${suffix}`)
+    await page.locator('aside').last().hover()
     // The Places card at the foot of the settings, for the manual (FR-005).
     await page.mouse.wheel(0, 4000)
     await page.waitForTimeout(300)
@@ -271,10 +300,11 @@ for (const language of ['en', 'vi']) {
     await save(page, `crop-${suffix}`)
     await context.close()
 
-    // 5. Best-shot groups.
-    ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
+    // 5. Best-shot groups, on the cat burst.
+    ;({ context, page } = await open({ scenario: 'stamp', language, theme, source: cat }))
     await page.getByRole('radio', { name: /Groups|Nhóm/ }).click()
     await settle(page)
+    await save(page, `manual-groups-${suffix}`)
     // The compare view shows the shots large, side by side, with a bar per measure.
     await page.getByRole('button', { name: /^(Compare|So sánh)$/ }).first().click()
     await page.waitForSelector('[role="dialog"]')

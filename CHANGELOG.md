@@ -10,7 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- **Website:** a Manual page, in English and Vietnamese, with screenshots of the real app: choosing the photos to print, zoom, RAW, updates, camera clocks, dates and places, shooting with a camera, and every shortcut. More chapters follow.
+- **Website:** a Manual page, in English and Vietnamese, with screenshots of the real app, in 18 chapters that follow the way you work: getting started, stars and filters, best shot, the print basket, print size, crop and straighten, zoom, the date stamp, the info frame, dates and places, camera clocks, export, projects and undo, RAW, Open with, shooting with a camera, updates, and every shortcut. The chapter list opens from a round button bottom left.
+- **Website:** the best-shot screenshots show a cat photographed by the author on a Lumix GX9, with a softer, a shaken and a darker copy beside it.
 
 ### Changed
 

@@ -331,7 +331,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 ### FR-030 — Camera clock offset
 
-**P0 (v0.8.0).** Correct capture times per camera (make, model and serial number when available), resolved as in [ADR-0027](adr/0027-effective-time-and-place.md). Step-by-step use: [USER_GUIDE.md §6](USER_GUIDE.md#6-camera-clocks).
+**P0 (v0.8.0).** Correct capture times per camera (make, model and serial number when available), resolved as in [ADR-0027](adr/0027-effective-time-and-place.md). Step-by-step use: [USER_GUIDE.md §11](USER_GUIDE.md#11-camera-clocks).
 
 - Shift by an offset (±days/hours/minutes/seconds) or set a time zone.
 - A helper sets the offset by matching one camera photo to a reference photo, such as a phone photo of the same moment.
@@ -543,7 +543,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-050 — Print basket
 
-**P1 (in progress, v0.5.0).** Two **holding areas** for the photos of a trip, separate from culling: the **print basket**, the photos that will really be printed, and **set aside**, the photos taken out of the gallery for now. A typical batch: 100 photos are edited together, filters keep 60, only 5–10 go to the lab. Step-by-step use: [USER_GUIDE.md §1](USER_GUIDE.md#1-choosing-the-photos-to-print).
+**P1 (in progress, v0.5.0).** Two **holding areas** for the photos of a trip, separate from culling: the **print basket**, the photos that will really be printed, and **set aside**, the photos taken out of the gallery for now. A typical batch: 100 photos are edited together, filters keep 60, only 5–10 go to the lab. Step-by-step use: [USER_GUIDE.md §4](USER_GUIDE.md#4-choosing-the-photos-to-print).
 
 - **One place per photo:** the gallery, the print basket or set aside, never two. Independent of stars and pick/reject ([FR-022](#fr-022--culling-rate-flag-filter)): a pick does not have to be printed.
 - **Set aside is never deletion:** the photo leaves *All photos* and the folders, its file is never touched, and it can be brought back at any time.
@@ -639,7 +639,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-059 — Quick-preview
 
-**P1 (in progress, v0.5.0).** In the gallery's select mode ([FR-050](#fr-050--print-basket)), **holding Space** over a photo shows it large, as it will be exported, and releasing Space closes it, like Quick Look on macOS. Step-by-step use: [USER_GUIDE.md §1.3](USER_GUIDE.md#13-quick-preview-look-without-opening-select-mode-only).
+**P1 (in progress, v0.5.0).** In the gallery's select mode ([FR-050](#fr-050--print-basket)), **holding Space** over a photo shows it large, as it will be exported, and releasing Space closes it, like Quick Look on macOS. Step-by-step use: [USER_GUIDE.md §4.3](USER_GUIDE.md#43-quick-preview-look-without-opening-select-mode-only).
 
 - It shows the photo under the pointer, or the last one ticked; the thumbnail appears at once and the Rust render with the gallery's print size, stamp and frame replaces it (about 17 ms warm, 120 ms the first time).
 - **Nothing can be edited**: it is a look, not the preview with its inspector ([FR-007](#fr-007--live-preview)). While Space is held, ← → show the neighbours and Enter ticks or unticks the photo shown.
