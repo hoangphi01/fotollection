@@ -672,7 +672,7 @@
     },
     "cutLine": "Cut line",
     "cutLineHint": "A thin line between the photos, to cut the print in two.",
-    "togetherHint": "The two photos meet in the middle, like a half-frame print.",
+    "togetherHint": "No line between the photos; the white between them stays.",
     "advice": "Photo {{area}} · {{dpi}} DPI, {{quality}}",
     "adviceBorder": "Area {{area}}, photo {{photo}} inside the border · {{dpi}} DPI, {{quality}}",
     "empty": "No photos to put on sheets",
@@ -692,6 +692,7 @@
     "next": "Next sheet",
     "photosOnSheet": "Photos on this sheet",
     "emptyCell": "Empty half",
-    "originalNote": "A sheet needs a fixed size: Original is not used here, so sheets are 10 × 15. Choose a size above."
+    "originalNote": "A sheet needs a fixed size: Original is not used here, so sheets are 10 × 15. Choose a size above.",
+    "pickToCrop": "Click a photo on the sheet to crop it"
   }
 }

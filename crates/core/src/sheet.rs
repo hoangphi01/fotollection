@@ -237,9 +237,8 @@ pub fn photo_area(
     }
 }
 
-/// Lays out a sheet for one or two photos (upright pixel sizes). With the cut line, each
-/// photo is centred in its cell; without it, the two meet at the middle, like a half-frame
-/// strip.
+/// Lays out a sheet for one or two photos (upright pixel sizes): each photo centred in its
+/// half, so the white between them stays with or without the cut line.
 pub fn layout(
     print: PrintSize,
     photos: [Option<(u32, u32)>; 2],
@@ -249,8 +248,6 @@ pub fn layout(
     let first = photos[0].or(photos[1]).unwrap_or((3, 2));
     let side = side_by_side(first, turned);
     let (width, height, rects) = cells(print, side);
-    // Without the cut line, two photos meet in the middle; a lone photo stays centred.
-    let together = !settings.cut_line && photos.iter().all(Option::is_some);
     let place = |i: usize, photo: (u32, u32)| {
         let cell = rects[i];
         let area = photo_area((cell.width, cell.height), photo, print, settings);
@@ -260,14 +257,12 @@ pub fn layout(
             cell.x + (cell.width - aw) / 2.0,
             cell.y + (cell.height - ah) / 2.0,
         );
-        let (x, y) = match (together, side, i) {
-            (false, _, _) => centred,
-            (true, true, 0) => (cell.x + cell.width - aw, centred.1),
-            (true, true, _) => (cell.x, centred.1),
-            (true, false, 0) => (centred.0, cell.y + cell.height - ah),
-            (true, false, _) => (centred.0, cell.y),
-        };
-        CellLayout { cell, area, x, y }
+        CellLayout {
+            cell,
+            area,
+            x: centred.0,
+            y: centred.1,
+        }
     };
     SheetLayout {
         width,
@@ -449,7 +444,13 @@ pub fn render_sheet(
             continue;
         };
         let photo_long = (cell.area.0.max(cell.area.1) as f32 - inset).max(1.0);
-        let p = input(source, cell, own, Some(px(photo_long)));
+        let mut p = input(source, cell, own, Some(px(photo_long)));
+        // Two stamps share the sheet: each is half the size it would have on the sheet
+        // printed alone, whatever the photo's own area (FR-004).
+        if let Some(stamp) = p.stamp.as_mut() {
+            stamp.font_px *= stamp_scale(print, cell.area);
+            stamp.margin_px /= 2.0;
+        }
         let image = render(source.image, &p)?;
         // Centred on the area's centre, so pixel rounding never shifts it.
         let cx = (cell.x + cell.area.0 as f32 / 2.0) * density - image.width as f32 / 2.0;
@@ -466,6 +467,12 @@ pub fn render_sheet(
         draw_cut_line(&mut canvas, &sheet, density);
     }
     Ok(canvas)
+}
+
+/// What turns a stamp sized for a photo's own area into half the sheet's stamp (FR-004).
+#[allow(clippy::cast_precision_loss)]
+fn stamp_scale(print: PrintSize, area: (u32, u32)) -> f32 {
+    print.short_mm as f32 / 2.0 / area.0.min(area.1).max(1) as f32
 }
 
 /// A thin light line between the cells, with darker ticks at the sheet's edges.
@@ -637,22 +644,27 @@ mod tests {
     }
 
     #[test]
-    fn fr_035_without_the_cut_line_the_photos_meet_in_the_middle() {
+    fn fr_035_without_the_cut_line_the_photos_keep_their_white() {
         let mut s = CollageSettings::default();
         let photos = [Some((4000, 6000)), Some((4000, 6000))];
-        let centred = layout(print(), photos, false, &s);
-        let [Some(a), Some(b)] = centred.cells else {
+        let with_line = layout(print(), photos, false, &s);
+        s.cut_line = false;
+        let without = layout(print(), photos, false, &s);
+        // The same places: the line goes, the 15 mm of white between the photos stays.
+        assert_eq!(with_line, without);
+        let [Some(a), Some(b)] = without.cells else {
             panic!("two cells");
         };
         assert!((a.x - 7.5).abs() < 1e-3 && (b.x - 82.5).abs() < 1e-3);
-        s.cut_line = false;
-        let together = layout(print(), photos, false, &s);
-        let [Some(a), Some(b)] = together.cells else {
-            panic!("two cells");
-        };
-        assert!((a.x + 60.0 - 75.0).abs() < 1e-3, "{}", a.x);
-        assert!((b.x - 75.0).abs() < 1e-3);
-        assert!((a.y - 5.0).abs() < 1e-3);
+        assert!((b.x - (a.x + 60.0) - 15.0).abs() < 1e-3);
+    }
+
+    #[test]
+    fn fr_004_each_stamp_on_a_sheet_is_half_the_sheets_own() {
+        // 10 × 15 sheet, a 60 × 90 photo area: medium is 3.6 % of 100 mm alone, 1.8 mm here.
+        let scale = stamp_scale(print(), (60, 90));
+        let mm = crate::settings::StampSize::Medium.of_short_edge() * 60.0 * scale;
+        assert!((mm - 1.8).abs() < 1e-4, "{mm}");
     }
 
     #[test]

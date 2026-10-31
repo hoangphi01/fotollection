@@ -20,6 +20,7 @@ import { MOD } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 import { CollageCellsCard } from './collage-cells-card'
 import { useCellGeometry } from './use-cell-geometry'
+import { useSheetInfo } from './use-sheet-info'
 import type { CollageApi } from './use-collage'
 
 type SheetPreviewDialogProps = {
@@ -53,7 +54,7 @@ export function SheetPreviewDialog({
   onClose,
 }: SheetPreviewDialogProps) {
   const { t } = useTranslation()
-  const { sheets, index, sheet, cellIndex, cell } = collage
+  const { sheets, index, sheet } = collage
   const key = sheet ? `${sheet.first}:${sheet.second}` : undefined
   const shownSrc = useShownSrc(key, sheet ? sheetUrl(sheet.first, sheet.second, revision) : '')
   const [stage, setStage] = useState<HTMLDivElement | null>(null)
@@ -61,7 +62,13 @@ export function SheetPreviewDialog({
   const zoom = useZoom(stage, `${key}:${cropping}`)
   const [sideBySide, setSideBySide] = useState(true)
   const contentRef = useRef<HTMLDivElement>(null)
-  const photo = sheet ? (cellIndex === 0 ? sheet.first : sheet.second) : null
+  // No photo is chosen until the user picks one, so the sheet shows as it prints.
+  const [picked, setPicked] = useState<{ key: string | undefined; cell: 0 | 1 } | null>(null)
+  const chosen = picked && picked.key === key ? picked.cell : null
+  const choose = (cell: 0 | 1 | null) => setPicked(cell === null ? null : { key, cell })
+  const photo = sheet && chosen !== null ? (chosen === 0 ? sheet.first : sheet.second) : null
+  const info = useSheetInfo(open ? sheet : undefined, revision)
+  const cell = info?.cells.find((c) => c.id === photo) ?? info?.cells[0]
   const geometry = useCellGeometry(cropping ? photo : null, sheet, revision)
   const summary = (id: PhotoId | null) => (id === null ? undefined : photos.find((p) => p.id === id))
 
@@ -72,7 +79,7 @@ export function SheetPreviewDialog({
   // ↑ to the print basket, ↓ set aside, for the chosen photo (FR-050); the choice moves on
   // to the next photo of the sheets, as in the photo preview.
   const nextPhoto = () => {
-    if (cellIndex === 0 && sheet?.second != null) collage.select(index, 1)
+    if (chosen === 0 && sheet?.second != null) choose(1)
     else go(1)
   }
   const send = (queue: Queue) => {
@@ -80,6 +87,7 @@ export function SheetPreviewDialog({
   }
   const go = (delta: number) => {
     setCropping(false)
+    choose(null)
     collage.select(Math.min(sheets.length - 1, Math.max(0, index + delta)), 0)
   }
   const onKeyDown = (event: KeyboardEvent) => {
@@ -90,7 +98,7 @@ export function SheetPreviewDialog({
     else if (event.key === 'ArrowLeft') go(-1)
     else if (event.key === 'ArrowUp') send('print')
     else if (event.key === 'ArrowDown') send('aside')
-    else if (key === '1' || key === '2') collage.select(index, key === '1' ? 0 : 1)
+    else if (key === '1' || key === '2') choose(key === '1' ? 0 : 1)
     else if (key === 'c' && photo !== null) setCropping(true)
     else if (key === 'r' && sheet && !event.metaKey && !event.ctrlKey) collage.turn(sheet.first)
     else return
@@ -106,10 +114,13 @@ export function SheetPreviewDialog({
       contentRef={contentRef}
       onKeyDown={onKeyDown}
       onEscapeKeyDown={(e) => {
-        // Esc leaves the crop editor first, then closes the preview.
+        // Esc leaves the crop editor first, then lets go of the chosen photo, then closes.
         if (cropping) {
           e.preventDefault()
           setCropping(false)
+        } else if (chosen !== null) {
+          e.preventDefault()
+          choose(null)
         }
       }}
       stageRef={setStage}
@@ -164,9 +175,13 @@ export function SheetPreviewDialog({
                         type="button"
                         disabled={id === null}
                         aria-label={summary(id)?.fileName ?? t('collage.emptyCell')}
-                        className={cn('flex-1 rounded-sm', cellIndex === c && id !== null && 'ring-2 ring-primary ring-inset')}
-                        onClick={() => collage.select(index, c)}
-                        onDoubleClick={() => id !== null && setCropping(true)}
+                        className={cn('flex-1 rounded-sm', chosen === c && id !== null && 'ring-2 ring-primary ring-inset')}
+                        onClick={() => choose(chosen === c ? null : c)}
+                        onDoubleClick={() => {
+                          if (id === null) return
+                          choose(c)
+                          setCropping(true)
+                        }}
                       />
                     ))}
                   </div>
@@ -179,7 +194,13 @@ export function SheetPreviewDialog({
               </div>
             )}
             <div className="absolute top-3 left-3 flex gap-1.5">
-              <Button variant="secondary" size="sm" disabled={photo === null} onClick={() => setCropping(true)}>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={photo === null}
+                data-hint={photo === null ? t('collage.pickToCrop') : undefined}
+                onClick={() => setCropping(true)}
+              >
                 <Crop data-icon="inline-start" /> {t('viewer.crop')}
               </Button>
               <Button variant="secondary" size="sm" disabled={!sheet} onClick={() => sheet && collage.turn(sheet.first)}>
@@ -231,11 +252,11 @@ export function SheetPreviewDialog({
           return (
             <div
               key={c}
-              className={cn('flex items-center gap-2.5 rounded-md p-1.5', cellIndex === c && p && 'bg-primary/10')}
+              className={cn('flex items-center gap-2.5 rounded-md p-1.5', chosen === c && p && 'bg-primary/10')}
             >
               {p ? (
                 <>
-                  <button type="button" className="shrink-0" onClick={() => collage.select(index, c)} aria-label={p.fileName}>
+                  <button type="button" className="shrink-0" onClick={() => choose(chosen === c ? null : c)} aria-label={p.fileName}>
                     <img src={thumbUrl(p.id, 0, generation)} alt="" className="size-10 rounded object-cover" />
                   </button>
                   <div className="min-w-0 flex-1">
@@ -258,7 +279,7 @@ export function SheetPreviewDialog({
                     aria-label={t('viewer.crop')}
                     data-hint={t('viewer.crop')}
                     onClick={() => {
-                      collage.select(index, c)
+                      choose(c)
                       setCropping(true)
                     }}
                   >

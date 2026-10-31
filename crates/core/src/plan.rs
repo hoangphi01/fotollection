@@ -396,11 +396,14 @@ fn stamp_spec(input: &PlanInput<'_>, px_per_mm: f32) -> Option<StampSpec> {
     if text.is_empty() && caption.is_empty() {
         return None;
     }
+    // The size follows the print it is on (FR-004).
+    #[allow(clippy::cast_precision_loss)]
+    let short_mm = input.print.short_mm as f32;
     Some(StampSpec {
         text,
         color: settings.stamp.color.rgb(),
         corner: settings.stamp.corner,
-        font_px: settings.stamp.size.mm() * px_per_mm,
+        font_px: settings.stamp.size.of_short_edge() * short_mm * px_per_mm,
         margin_px: (SAFE_AREA_MM + STAMP_INSET_MM) * px_per_mm,
         caption: (!caption.is_empty()).then(|| caption.to_owned()),
     })
@@ -838,7 +841,7 @@ mod tests {
             font(crate::settings::StampSize::Medium),
             font(crate::settings::StampSize::Large),
         );
-        // 6000 px over 150 mm: 40 px a millimetre.
+        // 6000 px over 150 mm: 40 px a millimetre; medium is 3.6 % of the 100 mm short edge.
         assert!((medium - 3.6 * 40.0).abs() < 0.5, "{medium}");
         assert!(small < medium && medium < large);
         assert!((large / medium - 4.8 / 3.6).abs() < 1e-3);

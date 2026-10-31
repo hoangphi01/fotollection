@@ -196,7 +196,7 @@ Ngày ở góc ảnh in, như máy ảnh phim, lấy theo lúc chụp ([FR-004](
    - **định dạng**: `2026-07-14`, `14.07.2026` hoặc `'26 07 14`, kiểu máy ảnh phim;
    - **góc**: *Góc dưới phải*, *Góc dưới trái*, *Góc trên phải* hoặc *Góc trên trái*;
    - **màu**: **Trắng** hoặc **Cam retro**;
-   - **cỡ**: **Nhỏ**, **Vừa** hoặc **To** (ba cỡ như nhau ở mọi chế độ).
+   - **cỡ**: **Nhỏ**, **Vừa** hoặc **To**, như nhau ở mọi chế độ. Cỡ chữ theo khổ in: khổ lớn thì chữ lớn hơn, và trên tấm ghép mỗi dấu ngày bằng nửa dấu của cả tấm, vì hai ảnh dùng chung tấm.
 3. **Địa điểm cùng dòng ngày** thêm tên thị trấn nơi chụp, lấy từ GPS của ảnh, không cần mạng: dạng **Thành phố**, **+ mã nước** hoặc **+ tên nước**. Ảnh không có GPS có thể đặt nơi chụp bằng tay (chương 10).
 4. **Dòng chữ dưới ngày**: một dòng ngắn chạy ngang ảnh, tối đa 80 ký tự, in bằng chữ hoa không dấu (ví dụ *KY NIEM BUDAPEST*).
 
@@ -389,12 +389,13 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 4. **Hai ảnh mỗi tấm**:
    - **Tỷ lệ ảnh**: tỷ lệ gốc của từng ảnh (**Ảnh**), tỷ lệ của tấm (**Tấm**, 2:3 với 10 × 15), **4:3** hoặc **1:1**. Phần còn lại của nửa tấm để trắng.
    - **Cỡ ảnh**: app gợi ý cỡ lớn nhất còn chừa 5 mm trắng quanh ảnh, ví dụ 6 × 9 cm cho ảnh 2:3 trong nửa tấm 7,5 × 10. Bạn có thể gõ cỡ khác; khi **khoá** tỷ lệ, nhập một cạnh thì cạnh kia tự tính. **Dùng gợi ý** để quay lại.
-   - **Đường cắt**: một nét mảnh giữa hai ảnh, để cắt tấm in làm đôi. Tắt đi thì hai ảnh nằm liền nhau ở giữa, như ảnh half-frame.
+   - **Đường cắt**: một nét mảnh giữa hai ảnh, để cắt tấm in làm đôi. Tắt đi thì không có nét cắt, và hai ảnh vẫn giữ khoảng trắng giữa chúng.
    - Dòng ghi chú bên dưới cho biết cỡ ảnh, phần còn lại trong **viền 3 mm** (chương 5) và độ nét.
 5. **Đổi thứ tự:** kéo một ảnh thả lên ảnh khác để đổi chỗ, hoặc thả vào nửa tấm trống để đưa nó xuống cuối. **← →** chọn ảnh, **⌥/Alt ← →** dời ảnh đi một chỗ. Đổi thứ tự thì mỗi tấm quay về hướng hợp với ảnh đầu của nó, và ảnh thêm vào sau sẽ nằm ở cuối.
 6. **Chọn ảnh để in**, như trong gallery (chương 4): **Chọn** để tích ảnh bằng một cú nhấp (**Cmd/Ctrl+A** chọn tất cả, **Enter** tích ảnh đang chọn), rồi thanh công cụ đưa chúng vào **Giỏ in**, để riêng hoặc đưa về gallery. Ảnh trong giỏ có biểu tượng giỏ. Chọn **Giỏ in** ở thanh bên để chỉ ghép những ảnh đó.
 7. **Xem trước:** nhấp đúp vào một tấm, hoặc nhấn **Enter** hay **Space**, để mở tấm cỡ lớn trong cửa sổ xem trước, như mở ảnh từ gallery. Ở đó:
-   - **← →** sang các tấm khác, **1** và **2** chọn ảnh, **↑** cho ảnh vào giỏ in và **↓** để riêng (hoặc nút giỏ cạnh ảnh), các nút phóng to hoặc **Cmd/Ctrl + / −** để phóng;
+   - tấm mở ra không chọn ảnh nào, đúng như khi in. Nhấp vào một ảnh (hoặc **1**, **2**) để chọn, nhấp lần nữa (hoặc **Esc**) để bỏ chọn;
+   - **← →** sang các tấm khác; khi đã chọn ảnh, **↑** cho ảnh vào giỏ in và **↓** để riêng (hoặc nút giỏ cạnh ảnh), các nút phóng to hoặc **Cmd/Ctrl + / −** để phóng;
    - **Cắt ảnh** (hoặc **C**, hoặc nút cắt cạnh mỗi ảnh) cắt ảnh đang chọn cho vị trí của nó trên tấm;
    - **Xoay tấm** (**R**) xoay tấm sang hướng kia;
    - bảng bên phải liệt kê hai ảnh, có cùng thẻ *Hai ảnh mỗi tấm*, và **Xuất tấm này** lưu riêng tấm đó.

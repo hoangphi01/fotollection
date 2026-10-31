@@ -218,12 +218,13 @@ pub enum StampSize {
 }
 
 impl StampSize {
-    /// The text's em height on the print, in millimetres.
-    pub fn mm(self) -> f32 {
+    /// The text's em height as a share of the print's short edge: 2.8, 3.6 or 4.8 mm on a
+    /// 10 cm print, more on a larger one, half on each photo of a collage sheet (FR-004).
+    pub fn of_short_edge(self) -> f32 {
         match self {
-            Self::Small => 2.8,
-            Self::Medium => 3.6,
-            Self::Large => 4.8,
+            Self::Small => 0.028,
+            Self::Medium => 0.036,
+            Self::Large => 0.048,
         }
     }
 }

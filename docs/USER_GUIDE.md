@@ -198,7 +198,7 @@ A date in the corner of the print, like a film camera's, taken from when the pho
    - the **format**: `2026-07-14`, `14.07.2026` or `'26 07 14`, the film-camera style;
    - the **corner**: *Bottom right*, *Bottom left*, *Top right* or *Top left*;
    - the **colour**: **White** or **Retro orange**;
-   - the **size**: **Small**, **Medium** or **Large** (the same three in every mode).
+   - the **size**: **Small**, **Medium** or **Large**, the same three in every mode. The size follows the print: larger on a larger print, and on a collage sheet each photo's stamp is half the sheet's, as two share it.
 3. **Place on the date line** adds the town where the photo was taken, from its GPS, offline: as **City**, **City, HU** (with the country code) or **City, country**. A photo without GPS can get a place by hand (chapter 10).
 4. **Line under the date**: a short text across the photo, up to 80 characters, printed in capitals without accents (for example *KY NIEM BUDAPEST*).
 
@@ -391,12 +391,13 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
 4. **Two photos per sheet**:
    - **Photo ratio**: each photo's own (**Photo**), the sheet's (**Sheet**, 2:3 on a 10 × 15), **4:3** or **1:1**. The rest of the half stays white.
    - **Photo size**: the app suggests the largest size that leaves 5 mm of white round the photo, for example 6 × 9 cm for a 2:3 photo in a 7.5 × 10 half. Type another size if you like; with the **lock** on, one edge gives the other. **Use the suggestion** goes back.
-   - **Cut line**: a thin line between the photos, to cut the print in two. Off, the two photos meet in the middle, like a half-frame print.
+   - **Cut line**: a thin line between the photos, to cut the print in two. Off, there is no line, and the photos keep the white between them.
    - The note under them gives the photo's size, the part left inside the **3 mm border** (chapter 5) and its sharpness.
 5. **Reorder:** drag a photo onto another photo to swap them, or onto an empty half to send it to the end. **← →** choose a photo, **⌥/Alt ← →** move it one place. Reordering starts every sheet the way its first photo suits, and a photo added later joins at the end.
 6. **Choose the photos to print**, as in the gallery (chapter 4): **Select** ticks photos with a click (**Cmd/Ctrl+A** all, **Enter** the chosen one), and the bar puts them in the **Print basket**, sets them aside or brings them back. Photos in the basket carry its badge. Choose **Print basket** in the sidebar to make sheets of those photos only.
 7. **Preview:** double-click a sheet, or press **Enter** or **Space**, to open it large in the preview, as a photo opens from the gallery. There:
-   - **← →** go to the other sheets, **1** and **2** choose a photo, **↑** puts it in the print basket and **↓** sets it aside (or the basket button next to it), and the zoom buttons or **Cmd/Ctrl + / −** zoom in;
+   - the sheet opens with no photo chosen, exactly as it prints. Click a photo (or **1**, **2**) to choose it, and click it again (or **Esc**) to let go;
+   - **← →** go to the other sheets; with a photo chosen, **↑** puts it in the print basket and **↓** sets it aside (or the basket button next to it), and the zoom buttons or **Cmd/Ctrl + / −** zoom in;
    - **Crop** (or **C**, or the crop button next to a photo) crops the chosen photo for its place on the sheet;
    - **Turn the sheet** (**R**) turns it the other way;
    - the panel lists the two photos, holds the same *Two photos per sheet* card, and **Export this sheet** saves this one sheet.

@@ -648,7 +648,7 @@
     },
     "cutLine": "Đường cắt",
     "cutLineHint": "Một nét mảnh giữa hai ảnh, để cắt tấm in làm đôi.",
-    "togetherHint": "Hai ảnh nằm liền nhau ở giữa, như ảnh half-frame.",
+    "togetherHint": "Không có nét cắt giữa hai ảnh; khoảng trắng giữa chúng vẫn giữ nguyên.",
     "advice": "Ảnh {{area}} · {{dpi}} DPI, {{quality}}",
     "adviceBorder": "Vùng {{area}}, ảnh {{photo}} trong viền · {{dpi}} DPI, {{quality}}",
     "empty": "Chưa có ảnh để ghép",
@@ -667,6 +667,7 @@
     "next": "Tấm sau",
     "photosOnSheet": "Ảnh trên tấm này",
     "emptyCell": "Nửa tấm trống",
-    "originalNote": "Tấm ghép cần một khổ cố định: khổ Gốc không dùng ở đây, nên tấm đang là 10 × 15. Hãy chọn một khổ ở trên."
+    "originalNote": "Tấm ghép cần một khổ cố định: khổ Gốc không dùng ở đây, nên tấm đang là 10 × 15. Hãy chọn một khổ ở trên.",
+    "pickToCrop": "Nhấp vào một ảnh trên tấm để cắt"
   }
 }
