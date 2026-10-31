@@ -620,7 +620,7 @@ pub fn start_export(
         let (records, pairs) = export_scope(&library, &filter, only, sheets);
         (records, pairs, groups)
     };
-    if records.is_empty() {
+    if records.is_empty() || (sheets && pairs.is_empty()) {
         return Err(IpcError::new(
             "export.empty",
             "There are no photos to export",
@@ -733,19 +733,21 @@ fn export_scope(
     Vec<fotollection_core::export::SheetRecords>,
 ) {
     let pairs = if sheets {
-        sheet_records(library, filter)
+        sheet_records(library, filter, only)
     } else {
         Vec::new()
     };
     (export_records(library, filter, only), pairs)
 }
 
-/// The collage sheets of the photos `filter` keeps, in order (FR-035).
+/// The collage sheets of the photos `filter` keeps, in order, or only the sheet holding the
+/// photo `only` (a sheet exported from its preview, FR-035, FR-055).
 fn sheet_records(
     library: &fotollection_core::library::Library,
     filter: &CullFilter,
+    only: Option<PhotoId>,
 ) -> Vec<fotollection_core::export::SheetRecords> {
-    crate::collage::sheet_pairs(library, filter)
+    crate::collage::only_sheet(crate::collage::sheet_pairs(library, filter), only)
         .into_iter()
         .filter_map(|pair| {
             Some((

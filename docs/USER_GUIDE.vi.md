@@ -195,7 +195,8 @@ Ngày ở góc ảnh in, như máy ảnh phim, lấy theo lúc chụp ([FR-004](
 2. Chọn:
    - **định dạng**: `2026-07-14`, `14.07.2026` hoặc `'26 07 14`, kiểu máy ảnh phim;
    - **góc**: *Góc dưới phải*, *Góc dưới trái*, *Góc trên phải* hoặc *Góc trên trái*;
-   - **màu**: **Trắng** hoặc **Cam retro**.
+   - **màu**: **Trắng** hoặc **Cam retro**;
+   - **cỡ**: **Nhỏ**, **Vừa** hoặc **To** (ba cỡ như nhau ở mọi chế độ).
 3. **Địa điểm cùng dòng ngày** thêm tên thị trấn nơi chụp, lấy từ GPS của ảnh, không cần mạng: dạng **Thành phố**, **+ mã nước** hoặc **+ tên nước**. Ảnh không có GPS có thể đặt nơi chụp bằng tay (chương 10).
 4. **Dòng chữ dưới ngày**: một dòng ngắn chạy ngang ảnh, tối đa 80 ký tự, in bằng chữ hoa không dấu (ví dụ *KY NIEM BUDAPEST*).
 
@@ -370,7 +371,7 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 4. Nhấn **↓** hoặc nhấp **Bỏ**: ảnh được để riêng, không bao giờ bị xoá, và ảnh kế tiếp hiện ra.
 5. **← →** đi lùi, đi tới mà không quyết định. **Cmd/Ctrl+Z** hoàn tác lần giữ hoặc bỏ vừa rồi.
 6. Thanh phía trên ảnh cho biết bạn đang ở ảnh nào, đã giữ và đã bỏ bao nhiêu.
-7. Ở bảng bên phải, chọn **khổ in**, **viền 3 mm** và **dấu ngày**, rồi **Chọn nơi lưu…** và **Xuất**: app lưu những ảnh bạn đã giữ.
+7. Ở bảng bên phải, chọn **khổ in**, **viền 3 mm** và **dấu ngày** cùng cỡ chữ, rồi **Chọn nơi lưu…** và **Xuất**: app lưu những ảnh bạn đã giữ.
 
 <!-- shot: simple | Chế độ Đơn giản: ảnh đúng như khi in, nút Giữ và Bỏ, và Xuất những ảnh đã giữ -->
 
@@ -384,18 +385,23 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 
 1. Nhấp **Ghép ảnh** ở đầu thanh bên. Chọn ảnh để ghép ở thanh bên, thường là **Giỏ in**.
 2. Các ảnh được ghép theo thứ tự, 1 + 2, 3 + 4…, và mỗi tấm hiện đúng như khi in. Ảnh lẻ cuối cùng để nửa kia trắng.
-3. **Khổ tấm in**: khổ in, ví dụ 10 × 15. Tấm được chia đôi theo cạnh dài và xoay theo ảnh đầu tiên: hai ảnh ngang thì trên dưới, hai ảnh dọc thì cạnh nhau. Nút **xoay** trên mỗi tấm, hoặc phím **R**, xoay tấm sang hướng kia.
+3. **Khổ tấm in**: khổ in, ví dụ 10 × 15; khổ Gốc không có ở đây, vì tấm ghép cần một khổ cố định. Tấm được chia đôi theo cạnh dài và xoay theo ảnh đầu tiên: hai ảnh ngang thì trên dưới, hai ảnh dọc thì cạnh nhau. Nút **xoay** trên mỗi tấm, hoặc phím **R**, xoay tấm sang hướng kia.
 4. **Hai ảnh mỗi tấm**:
    - **Tỷ lệ ảnh**: tỷ lệ gốc của từng ảnh (**Ảnh**), tỷ lệ của tấm (**Tấm**, 2:3 với 10 × 15), **4:3** hoặc **1:1**. Phần còn lại của nửa tấm để trắng.
    - **Cỡ ảnh**: app gợi ý cỡ lớn nhất còn chừa 5 mm trắng quanh ảnh, ví dụ 6 × 9 cm cho ảnh 2:3 trong nửa tấm 7,5 × 10. Bạn có thể gõ cỡ khác; khi **khoá** tỷ lệ, nhập một cạnh thì cạnh kia tự tính. **Dùng gợi ý** để quay lại.
    - **Đường cắt**: một nét mảnh giữa hai ảnh, để cắt tấm in làm đôi. Tắt đi thì hai ảnh nằm liền nhau ở giữa, như ảnh half-frame.
    - Dòng ghi chú bên dưới cho biết cỡ ảnh, phần còn lại trong **viền 3 mm** (chương 5) và độ nét.
 5. **Đổi thứ tự:** kéo một ảnh thả lên ảnh khác để đổi chỗ, hoặc thả vào nửa tấm trống để đưa nó xuống cuối. **← →** chọn ảnh, **⌥/Alt ← →** dời ảnh đi một chỗ.
-6. **Cắt ảnh:** nhấp đúp vào ảnh, hoặc nhấn **Enter**, để cắt ảnh cho vị trí của nó trên tấm.
-7. Giữ **Space** để xem tấm đang chọn cỡ lớn; **← →** sang tấm khác.
-8. **Xuất** lưu mỗi tấm một tệp, đặt tên theo hai ảnh của nó (ví dụ `P1000123+P1000124.jpg`), trong thư mục ngày của ảnh đầu.
+6. **Xem trước:** nhấp đúp vào một tấm, hoặc nhấn **Enter** hay **Space**, để mở tấm cỡ lớn trong cửa sổ xem trước, như mở ảnh từ gallery. Ở đó:
+   - **← →** sang các tấm khác, **1** và **2** chọn ảnh, các nút phóng to hoặc **Cmd/Ctrl + / −** để phóng;
+   - **Cắt ảnh** (hoặc **C**, hoặc nút cắt cạnh mỗi ảnh) cắt ảnh đang chọn cho vị trí của nó trên tấm;
+   - **Xoay tấm** (**R**) xoay tấm sang hướng kia;
+   - bảng bên phải liệt kê hai ảnh, có cùng thẻ *Hai ảnh mỗi tấm*, và **Xuất tấm này** lưu riêng tấm đó.
+7. **Xuất** ở bảng bên phải lưu mỗi tấm một tệp, đặt tên theo hai ảnh của nó (ví dụ `P1000123+P1000124.jpg`), trong thư mục ngày của ảnh đầu.
 
 <!-- shot: collage | Chế độ Ghép ảnh: các tấm đúng như khi in, cùng tỷ lệ ảnh, cỡ gợi ý và đường cắt -->
+
+<!-- shot: manual-collage-preview | Bản xem trước một tấm: tấm cỡ lớn, hai ảnh của nó, thẻ Hai ảnh mỗi tấm và Xuất tấm này -->
 
 Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên từng ảnh; khung thông tin không dùng trên tấm ghép.
 
@@ -417,9 +423,10 @@ Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên t�
 | Chế độ Đơn giản | **← →** | Ảnh trước / sau, không quyết định |
 | Chế độ Ghép ảnh | **← →**, **↑ ↓** | Chọn ảnh, tấm ở trên hoặc dưới |
 | Chế độ Ghép ảnh | **⌥/Alt ← →** | Dời ảnh đang chọn đi một chỗ |
-| Chế độ Ghép ảnh | **Enter**, nhấp đúp | Cắt ảnh cho vị trí của nó trên tấm |
+| Chế độ Ghép ảnh | **Enter**, **Space**, nhấp đúp | Mở bản xem trước của tấm |
 | Chế độ Ghép ảnh | **R** | Xoay tấm |
-| Chế độ Ghép ảnh | giữ **Space** | Xem tấm; **← →** tấm khác, thả để đóng |
+| Xem trước tấm | **← →** / **1**, **2** | Tấm khác / chọn ảnh |
+| Xem trước tấm | **C** / **R** | Cắt ảnh đang chọn / xoay tấm |
 | Xem trước | **C** | Mở màn cắt ảnh (chương 6) |
 | Xem trước | **Cmd/Ctrl + / −**, chụm trên trackpad, các nút phóng | Phóng to / thu nhỏ (§7) |
 | Xem trước | **Cmd/Ctrl 0**, nút vừa khung | Về vừa khung |

@@ -18,8 +18,6 @@ use crate::settings::{Corner, DateFormat, RenderSettings};
 /// Default lab trim margin per edge (FR-028), plus breathing room for the stamp.
 pub const SAFE_AREA_MM: f32 = 2.0;
 const STAMP_INSET_MM: f32 = 2.0;
-/// Stamp text size (em height) on the print.
-const STAMP_SIZE_MM: f32 = 3.6;
 
 /// A rectangle in source pixels (after orientation).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -389,7 +387,7 @@ fn stamp_spec(input: &PlanInput<'_>, px_per_mm: f32) -> Option<StampSpec> {
         text,
         color: settings.stamp.color.rgb(),
         corner: settings.stamp.corner,
-        font_px: STAMP_SIZE_MM * px_per_mm,
+        font_px: settings.stamp.size.mm() * px_per_mm,
         margin_px: (SAFE_AREA_MM + STAMP_INSET_MM) * px_per_mm,
         caption: (!caption.is_empty()).then(|| caption.to_owned()),
     })
@@ -778,5 +776,36 @@ mod tests {
         });
         assert_eq!((p.crop.width, p.crop.height), (4608, 3456));
         assert!(p.mat.is_some_and(|m| m.photo.x > 0));
+    }
+
+    #[test]
+    fn fr_004_the_stamp_comes_small_medium_or_large() {
+        let font = |stamp_size| {
+            let mut settings = RenderSettings::default();
+            settings.stamp.size = stamp_size;
+            let p = plan(&PlanInput {
+                width: 6000,
+                height: 4000,
+                capture: chrono::NaiveDate::from_ymd_opt(2026, 7, 14)
+                    .and_then(|d| d.and_hms_opt(10, 0, 0)),
+                settings: &settings,
+                print: size("10x15"),
+                max_long_edge: None,
+                frame: None,
+                crop: None,
+                place: None,
+                straighten: 0.0,
+            });
+            p.stamp.map_or(0.0, |s| s.font_px)
+        };
+        let (small, medium, large) = (
+            font(crate::settings::StampSize::Small),
+            font(crate::settings::StampSize::Medium),
+            font(crate::settings::StampSize::Large),
+        );
+        // 6000 px over 150 mm: 40 px a millimetre.
+        assert!((medium - 3.6 * 40.0).abs() < 0.5, "{medium}");
+        assert!(small < medium && medium < large);
+        assert!((large / medium - 4.8 / 3.6).abs() < 1e-3);
     }
 }

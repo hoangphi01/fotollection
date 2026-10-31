@@ -197,7 +197,8 @@ A date in the corner of the print, like a film camera's, taken from when the pho
 2. Choose:
    - the **format**: `2026-07-14`, `14.07.2026` or `'26 07 14`, the film-camera style;
    - the **corner**: *Bottom right*, *Bottom left*, *Top right* or *Top left*;
-   - the **colour**: **White** or **Retro orange**.
+   - the **colour**: **White** or **Retro orange**;
+   - the **size**: **Small**, **Medium** or **Large** (the same three in every mode).
 3. **Place on the date line** adds the town where the photo was taken, from its GPS, offline: as **City**, **City, HU** (with the country code) or **City, country**. A photo without GPS can get a place by hand (chapter 10).
 4. **Line under the date**: a short text across the photo, up to 80 characters, printed in capitals without accents (for example *KY NIEM BUDAPEST*).
 
@@ -372,7 +373,7 @@ The same popover shows the **cache**: the thumbnails and best-shot analyses Foto
 4. Press **↓** or click **Drop**: the photo is set aside, never deleted, and the next one comes.
 5. **← →** step back and forward without deciding. **Cmd/Ctrl+Z** undoes the last keep or drop.
 6. The bar above the photo counts where you are, and how many you kept and dropped.
-7. In the panel on the right, choose the **print size**, the **3 mm border** and the **date stamp**, then **Choose destination…** and **Export**: it saves the photos you kept.
+7. In the panel on the right, choose the **print size**, the **3 mm border** and the **date stamp** with its size, then **Choose destination…** and **Export**: it saves the photos you kept.
 
 <!-- shot: simple | Simple mode: the photo as it will print, Keep and Drop, and Export of the kept photos -->
 
@@ -386,18 +387,23 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
 
 1. Click **Collage** at the top of the sidebar. Choose what to put on sheets in the sidebar, usually the **Print basket**.
 2. The photos are paired in order, 1 + 2, 3 + 4…, and each sheet shows as it will print. An odd last photo leaves the other half white.
-3. **Sheet size**: the print size, 10 × 15 for example. The sheet is split in half across its long edge and turns to suit its first photo: two landscape photos one above the other, or two portrait photos side by side. The **turn** button on a sheet, or **R**, turns it the other way.
+3. **Sheet size**: the print size, 10 × 15 for example; Original is not offered, as a sheet needs a fixed size. The sheet is split in half across its long edge and turns to suit its first photo: two landscape photos one above the other, or two portrait photos side by side. The **turn** button on a sheet, or **R**, turns it the other way.
 4. **Two photos per sheet**:
    - **Photo ratio**: each photo's own (**Photo**), the sheet's (**Sheet**, 2:3 on a 10 × 15), **4:3** or **1:1**. The rest of the half stays white.
    - **Photo size**: the app suggests the largest size that leaves 5 mm of white round the photo, for example 6 × 9 cm for a 2:3 photo in a 7.5 × 10 half. Type another size if you like; with the **lock** on, one edge gives the other. **Use the suggestion** goes back.
    - **Cut line**: a thin line between the photos, to cut the print in two. Off, the two photos meet in the middle, like a half-frame print.
    - The note under them gives the photo's size, the part left inside the **3 mm border** (chapter 5) and its sharpness.
 5. **Reorder:** drag a photo onto another photo to swap them, or onto an empty half to send it to the end. **← →** choose a photo, **⌥/Alt ← →** move it one place.
-6. **Crop:** double-click a photo, or press **Enter**, to crop it for its place on the sheet.
-7. Hold **Space** to see the chosen sheet large; **← →** go to the next one.
-8. **Export** writes one file per sheet, named after its two photos (for example `P1000123+P1000124.jpg`), in the first photo's date folder.
+6. **Preview:** double-click a sheet, or press **Enter** or **Space**, to open it large in the preview, as a photo opens from the gallery. There:
+   - **← →** go to the other sheets, **1** and **2** choose a photo, and the zoom buttons or **Cmd/Ctrl + / −** zoom in;
+   - **Crop** (or **C**, or the crop button next to a photo) crops the chosen photo for its place on the sheet;
+   - **Turn the sheet** (**R**) turns it the other way;
+   - the panel lists the two photos, holds the same *Two photos per sheet* card, and **Export this sheet** saves this one sheet.
+7. **Export** in the panel writes one file per sheet, named after its two photos (for example `P1000123+P1000124.jpg`), in the first photo's date folder.
 
 <!-- shot: collage | Collage mode: sheets as they will print, with the photo ratio, the suggested size and the cut line -->
+
+<!-- shot: manual-collage-preview | A sheet’s preview: the sheet large, its two photos, the Two photos per sheet card and Export this sheet -->
 
 Every change is one undo step. The date stamp prints on each photo; the info frame is not used on sheets.
 
@@ -419,9 +425,10 @@ Every change is one undo step. The date stamp prints on each photo; the info fra
 | Simple mode | **← →** | Previous / next photo, without deciding |
 | Collage mode | **← →**, **↑ ↓** | Choose a photo, a sheet above or below |
 | Collage mode | **⌥/Alt ← →** | Move the chosen photo one place |
-| Collage mode | **Enter**, double-click | Crop the photo for its place on the sheet |
+| Collage mode | **Enter**, **Space**, double-click | Open the sheet's preview |
 | Collage mode | **R** | Turn the sheet |
-| Collage mode | hold **Space** | Look at the sheet; **← →** next, release to close |
+| Sheet preview | **← →** / **1**, **2** | Other sheets / choose a photo |
+| Sheet preview | **C** / **R** | Crop the chosen photo / turn the sheet |
 | Preview | **C** | Open the crop editor (chapter 6) |
 | Preview | **Cmd/Ctrl + / −**, trackpad pinch, the zoom buttons | Zoom in / out (§7) |
 | Preview | **Cmd/Ctrl 0**, the fit button | Back to fit |

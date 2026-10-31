@@ -18,14 +18,15 @@ type SheetTileProps = {
   dragging: PhotoId | null
   over: PhotoId | null | undefined
   onSelect: (cell: 0 | 1) => void
-  onEdit: (photo: PhotoId) => void
+  onOpen: (cell: 0 | 1) => void
   onTurn: () => void
   onDragStart: (photo: PhotoId, event: PointerEvent) => void
 }
 
 /**
  * One collage sheet as it will print (FR-035), with its two cells on top: click picks a
- * cell, double-click crops its photo, and a cell dragged onto another swaps the photos.
+ * cell, double-click opens the sheet's preview, and a cell dragged onto another swaps the
+ * photos.
  */
 export function SheetTile({
   sheet,
@@ -36,7 +37,7 @@ export function SheetTile({
   dragging,
   over,
   onSelect,
-  onEdit,
+  onOpen,
   onTurn,
   onDragStart,
 }: SheetTileProps) {
@@ -88,7 +89,7 @@ export function SheetTile({
                 onSelect(cell)
                 if (photo !== null) onDragStart(photo, e)
               }}
-              onDoubleClick={() => photo !== null && onEdit(photo)}
+              onDoubleClick={() => photo !== null && onOpen(cell)}
             />
           ))}
         </div>

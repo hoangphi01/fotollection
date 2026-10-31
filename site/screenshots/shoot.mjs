@@ -116,7 +116,7 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode }) {
       const ratio = target?.kind === 'share' ? { original: 0.46, facebook: 0.17, instagram: 0.08, custom: 0.2 }[target.preset?.kind] ?? 0.17 : 1
       // Collage sheets (FR-035) export at 600 DPI: about 2.8 MB a 10 × 15 sheet (RESULT §18).
       if (a?.sheets) {
-        const count = collage.list_sheets.length
+        const count = a.only != null ? 1 : collage.list_sheets.length
         return { photos: count, sourceBytes: source, estimatedBytes: count * 2.8e6, sampled: Math.min(4, count) }
       }
       return { photos: scope.length, sourceBytes: source, estimatedBytes: Math.round(source * ratio), sampled: Math.min(4, scope.length) }
@@ -396,6 +396,11 @@ for (const language of ['en', 'vi']) {
     await page.locator('[data-cell]').nth(2).click()
     await settle(page)
     await save(page, `collage-${suffix}`)
+    // 10b. A sheet's preview (FR-035), opened like a photo's.
+    await page.locator('[data-cell]').nth(2).dblclick()
+    await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
+    await settle(page)
+    await save(page, `manual-collage-preview-${suffix}`)
     await context.close()
   }
 }

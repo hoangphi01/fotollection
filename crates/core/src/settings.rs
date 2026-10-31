@@ -201,6 +201,31 @@ pub struct StampSettings {
     /// letters; empty for none.
     #[serde(default)]
     pub caption: String,
+    /// Small, medium or large text (FR-004). Absent before settings v10 and project v9:
+    /// medium, the size every stamp had.
+    #[serde(default)]
+    pub size: StampSize,
+}
+
+/// The date stamp's text size on the print (FR-004).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum StampSize {
+    Small,
+    #[default]
+    Medium,
+    Large,
+}
+
+impl StampSize {
+    /// The text's em height on the print, in millimetres.
+    pub fn mm(self) -> f32 {
+        match self {
+            Self::Small => 2.8,
+            Self::Medium => 3.6,
+            Self::Large => 4.8,
+        }
+    }
 }
 
 /// Longest stamp caption, in characters.
@@ -288,6 +313,7 @@ impl Default for RenderSettings {
                 color: StampColor::White,
                 place: false,
                 caption: String::new(),
+                size: StampSize::Medium,
             },
             custom_sizes: Vec::new(),
             place_format: crate::geocode::PlaceFormat::default(),

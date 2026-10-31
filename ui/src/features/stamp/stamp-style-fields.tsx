@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { Corner, DateFormat, StampColor, StampSettings } from '@/ipc/bindings'
+import { StampSizeField } from './stamp-size-field'
 
 const FORMATS: { value: DateFormat; label: string }[] = [
   { value: 'iso', label: '2026-07-14' },
@@ -23,7 +24,7 @@ type StampStyleFieldsProps = {
 }
 
 /**
- * Date format, corner and colour of the date stamp (FR-004, FR-033): the same fields, in the
+ * Date format, corner, colour and size of the date stamp (FR-004, FR-033): the same fields, in the
  * same order, in the settings panel (every photo) and the preview (one photo, FR-044).
  */
 export function StampStyleFields({ stamp, onChange }: StampStyleFieldsProps) {
@@ -73,6 +74,8 @@ export function StampStyleFields({ stamp, onChange }: StampStyleFieldsProps) {
           </ToggleGroupItem>
         ))}
       </ToggleGroup>
+
+      <StampSizeField stamp={stamp} onChange={onChange} />
     </>
   )
 }

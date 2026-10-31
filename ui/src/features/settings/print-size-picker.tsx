@@ -30,10 +30,12 @@ type PrintSizePickerProps = {
   onChange: (change: (current: RenderSettings) => RenderSettings) => void
   /** Sharp / acceptable / pixelated per size for the selected photo (FR-026). */
   advice?: PrintAdvice | null
+  /** Offers Original (FR-045); collage sheets need a fixed size (FR-035). */
+  allowOriginal?: boolean
 }
 
 /** Built-in and saved custom print sizes, with an inline "add custom size" form (FR-043). */
-export function PrintSizePicker({ settings, builtIn, onChange, advice }: PrintSizePickerProps) {
+export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOriginal = true }: PrintSizePickerProps) {
   const { t } = useTranslation()
   const custom = settings?.customSizes ?? []
   const [adding, setAdding] = useState(false)
@@ -92,13 +94,17 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice }: PrintSi
             <SelectValue placeholder={t('common.loading')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectGroup>
-              <SelectItem value={ORIGINAL}>
-                {t('print.original')}
-                <span className="text-muted-foreground"> · {t('print.originalHint')}</span>
-              </SelectItem>
-            </SelectGroup>
-            <SelectSeparator />
+            {allowOriginal && (
+              <>
+                <SelectGroup>
+                  <SelectItem value={ORIGINAL}>
+                    {t('print.original')}
+                    <span className="text-muted-foreground"> · {t('print.originalHint')}</span>
+                  </SelectItem>
+                </SelectGroup>
+                <SelectSeparator />
+              </>
+            )}
             <SelectGroup>
               <SelectLabel>{t('print.standard')}</SelectLabel>
               {builtIn?.map((size) => (

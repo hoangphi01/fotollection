@@ -275,6 +275,10 @@ export function App() {
           <CollageView
             collage={collage}
             photos={photos}
+            settings={settings}
+            onSettingsChange={(c) => void update(c)}
+            exporter={exporter}
+            filter={filter}
             revision={revision}
             generation={project.document.generation}
           />

@@ -20,7 +20,8 @@ type SheetGridProps = {
   selected: number
   selectedCell: 0 | 1
   onSelect: (sheet: number, cell: 0 | 1) => void
-  onEdit: (photo: PhotoId, sheet: SheetPair) => void
+  /** Opens the sheet's preview, on one of its photos. */
+  onOpen: (sheet: number, cell: 0 | 1) => void
   onMove: (photo: PhotoId, target: PhotoId | null) => void
   onTurn: (first: PhotoId) => void
 }
@@ -37,7 +38,7 @@ export function SheetGrid({
   selected,
   selectedCell,
   onSelect,
-  onEdit,
+  onOpen,
   onMove,
   onTurn,
 }: SheetGridProps) {
@@ -129,11 +130,10 @@ export function SheetGrid({
     } else if (row !== 0) {
       event.preventDefault()
       onSelect(Math.min(sheets.length - 1, Math.max(0, selected + row)), 0)
-    } else if (event.key === 'Enter' && cells[at]) {
+    } else if ((event.key === 'Enter' || event.key === ' ') && cells[at]) {
+      // As in the gallery: Enter or Space opens the preview.
       event.preventDefault()
-      const cell = cells[at]
-      const pair = sheets[cell.sheet]
-      if (pair) onEdit(cell.photo, pair)
+      onOpen(cells[at].sheet, cells[at].cell)
     } else if (event.key.toLowerCase() === 'r' && sheet && !event.metaKey && !event.ctrlKey && !event.altKey) {
       event.preventDefault()
       onTurn(sheet.first)
@@ -168,7 +168,7 @@ export function SheetGrid({
                   dragging={drag?.moved ? drag.photo : null}
                   over={over}
                   onSelect={(cell) => onSelect(index, cell)}
-                  onEdit={(photo) => onEdit(photo, sheet)}
+                  onOpen={(cell) => onOpen(index, cell)}
                   onTurn={() => onTurn(sheet.first)}
                   onDragStart={startDrag}
                 />

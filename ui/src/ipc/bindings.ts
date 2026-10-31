@@ -270,6 +270,11 @@ export const commands = {
 	 *  letters; empty for none.
 	 */
 	caption?: string,
+	/**
+	 *  Small, medium or large text (FR-004). Absent before settings v10 and project v9:
+	 *  medium, the size every stamp had.
+	 */
+	size?: StampSize,
 } | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_stamp", { id, stamp })),
 	/**
 	 *  "Apply to all" in the preview: this photo's stamp becomes the setting for every photo,
@@ -1252,7 +1257,15 @@ export type StampSettings = {
 	 *  letters; empty for none.
 	 */
 	caption?: string,
+	/**
+	 *  Small, medium or large text (FR-004). Absent before settings v10 and project v9:
+	 *  medium, the size every stamp had.
+	 */
+	size?: StampSize,
 };
+
+/**  The date stamp's text size on the print (FR-004). */
+export type StampSize = "small" | "medium" | "large";
 
 /**  Start-up is over: the last session is back, or there was none (FR-060). */
 export type StartupFinished = null;

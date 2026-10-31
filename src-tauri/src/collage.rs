@@ -39,6 +39,18 @@ pub fn sheet_pairs(library: &Library, filter: &CullFilter) -> Vec<SheetPair> {
         .collect()
 }
 
+/// `pairs`, or only the sheet holding the photo `only` (none when no sheet holds it).
+pub fn only_sheet(pairs: Vec<SheetPair>, only: Option<PhotoId>) -> Vec<SheetPair> {
+    match only {
+        Some(id) => pairs
+            .into_iter()
+            .filter(|p| p.first == id || p.second == Some(id))
+            .take(1)
+            .collect(),
+        None => pairs,
+    }
+}
+
 /// The sheets of the photos shown, in order (FR-035).
 #[tauri::command]
 #[specta::specta]
@@ -238,4 +250,28 @@ pub fn sheet_bytes(state: &AppState, sheet: SheetPair, small: bool) -> Result<Ve
             state.codec.as_ref(),
         )
         .map_err(|e| e.to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn fr_035_a_sheet_exported_from_its_preview_is_the_one_holding_the_photo() {
+        let pair = |a: u32, b: Option<u32>| SheetPair {
+            first: PhotoId(a),
+            second: b.map(PhotoId),
+        };
+        let all = vec![pair(1, Some(2)), pair(3, Some(4)), pair(5, None)];
+        assert_eq!(only_sheet(all.clone(), None), all);
+        assert_eq!(
+            only_sheet(all.clone(), Some(PhotoId(4))),
+            vec![pair(3, Some(4))]
+        );
+        assert_eq!(
+            only_sheet(all.clone(), Some(PhotoId(5))),
+            vec![pair(5, None)]
+        );
+        assert_eq!(only_sheet(all, Some(PhotoId(9))), Vec::new());
+    }
 }

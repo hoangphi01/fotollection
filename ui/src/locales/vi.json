@@ -143,7 +143,13 @@
     "caption": "Dòng chữ dưới ngày",
     "captionPlaceholder": "VD: KY NIEM BUDAPEST",
     "captionHint": "In bằng chữ hoa không dấu, chạy ngang ảnh.",
-    "resetCustomStamps_other": "Đặt lại {{count}} ảnh có dấu riêng"
+    "resetCustomStamps_other": "Đặt lại {{count}} ảnh có dấu riêng",
+    "stampSize": {
+      "label": "Cỡ dấu ngày",
+      "small": "Nhỏ",
+      "medium": "Vừa",
+      "large": "To"
+    }
   },
   "print": {
     "original": "Gốc",
@@ -262,7 +268,8 @@
       "separate": "Riêng",
       "togetherHint_other": "{{count}} thư mục, gộp chung vào các thư mục theo ngày",
       "separateHint_other": "{{count}} thư mục, mỗi thư mục một thư mục con mang tên nó"
-    }
+    },
+    "buttonThisSheet": "Xuất tấm này"
   },
   "crop": {
     "zoom": "Thu phóng",
@@ -623,9 +630,6 @@
     "turn": "Xoay tấm",
     "turnHint": "Xoay tấm sang hướng kia (R)",
     "sheetOf": "Tấm {{index}} / {{count}}",
-    "quickHint": "← → tấm khác · thả Space để đóng",
-    "cropTitle": "Cắt ảnh cho vị trí của nó trên tấm",
-    "cropSize": "Ảnh in ra {{photo}} cm, trong vùng {{area}} cm.",
     "size": "Cỡ ảnh",
     "width": "Rộng",
     "height": "Cao",
@@ -650,12 +654,19 @@
     "empty": "Chưa có ảnh để ghép",
     "emptyHint": "Mở một thư mục, hoặc chọn Giỏ in ở thanh bên: các ảnh được ghép theo thứ tự, hai ảnh một tấm.",
     "count_other": "{{count}} tấm từ {{photos}} ảnh",
-    "keysHint": "Kéo một ảnh thả lên ảnh khác để đổi chỗ · ← → chọn · ⌥ ← → dời · Enter cắt ảnh · R xoay · giữ Space để xem",
+    "keysHint": "Kéo một ảnh thả lên ảnh khác để đổi chỗ · ← → chọn · ⌥ ← → dời · Enter hoặc nhấp đúp để xem · R xoay",
     "ratioHints": {
       "photo": "Mỗi ảnh giữ tỷ lệ gốc của nó",
       "sheet": "Tỷ lệ của tấm in, 2:3 với 10 × 15",
       "fourThree": "4:3, tỷ lệ của đa số điện thoại",
       "square": "Vuông"
-    }
+    },
+    "browse": "tấm khác",
+    "choose": "chọn ảnh",
+    "previous": "Tấm trước",
+    "next": "Tấm sau",
+    "photosOnSheet": "Ảnh trên tấm này",
+    "emptyCell": "Nửa tấm trống",
+    "originalNote": "Tấm ghép cần một khổ cố định: khổ Gốc không dùng ở đây, nên tấm đang là 10 × 15. Hãy chọn một khổ ở trên."
   }
 }

@@ -1,31 +1,40 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { PhotoId, PhotoSummary, SheetPair } from '@/ipc/bindings'
-import { useQuickPreview } from '@/features/viewer/use-quick-preview'
-import { CellCropDialog } from './cell-crop-dialog'
+import type { CullFilter, PhotoSummary, RenderSettings } from '@/ipc/bindings'
+import type { ExportApi } from '@/features/export/use-export'
 import { SheetGrid } from './sheet-grid'
-import { SheetPreview } from './sheet-preview'
+import { SheetPreviewDialog } from './sheet-preview-dialog'
 import type { CollageApi } from './use-collage'
 
 type CollageViewProps = {
   collage: CollageApi
   photos: PhotoSummary[]
+  settings: RenderSettings | null
+  onSettingsChange: (change: (current: RenderSettings) => RenderSettings) => void
+  exporter: ExportApi
+  filter: CullFilter
   revision: number
   generation: number
 }
 
 /**
- * Collage mode's main area (FR-035): the sheets as they will print, Space held to look at
- * one, and the crop editor for a photo of a sheet.
+ * Collage mode's main area (FR-035): the sheets as they will print, and a sheet's preview,
+ * opened like a photo's in the gallery.
  */
-export function CollageView({ collage, photos, revision, generation }: CollageViewProps) {
+export function CollageView({
+  collage,
+  photos,
+  settings,
+  onSettingsChange,
+  exporter,
+  filter,
+  revision,
+  generation,
+}: CollageViewProps) {
   const { t } = useTranslation()
-  const [editing, setEditing] = useState<{ photo: PhotoId; sheet: SheetPair } | null>(null)
+  const [viewing, setViewing] = useState(false)
   const { sheets, index } = collage
-  const quick = useQuickPreview(editing === null, sheets.length, null, index, () => {})
-  const quickSheet = quick.index === null ? undefined : sheets[quick.index]
-  const fileName = (id: PhotoId) => photos.find((p) => p.id === id)?.fileName ?? ''
 
   if (sheets.length === 0) {
     return (
@@ -51,28 +60,25 @@ export function CollageView({ collage, photos, revision, generation }: CollageVi
         selected={index}
         selectedCell={collage.cellIndex}
         onSelect={collage.select}
-        onEdit={(photo, sheet) => setEditing({ photo, sheet })}
+        onOpen={(sheet, cell) => {
+          collage.select(sheet, cell)
+          setViewing(true)
+        }}
         onMove={collage.move}
         onTurn={collage.turn}
       />
-      {quickSheet && quick.index !== null && (
-        <SheetPreview
-          sheet={quickSheet}
-          index={quick.index}
-          count={sheets.length}
-          revision={revision}
-          onClose={quick.close}
-        />
-      )}
-      {editing && (
-        <CellCropDialog
-          photo={editing.photo}
-          sheet={editing.sheet}
-          fileName={fileName(editing.photo)}
-          revision={revision}
-          onClose={() => setEditing(null)}
-        />
-      )}
+      <SheetPreviewDialog
+        collage={collage}
+        open={viewing}
+        photos={photos}
+        settings={settings}
+        onSettingsChange={onSettingsChange}
+        exporter={exporter}
+        filter={filter}
+        revision={revision}
+        generation={generation}
+        onClose={() => setViewing(false)}
+      />
     </div>
   )
 }

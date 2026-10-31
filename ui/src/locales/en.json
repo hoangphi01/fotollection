@@ -152,7 +152,13 @@
     "captionPlaceholder": "e.g. KY NIEM BUDAPEST",
     "captionHint": "Printed in capitals without accents, across the photo.",
     "resetCustomStamps_one": "Reset {{count}} photo with its own stamp",
-    "resetCustomStamps_other": "Reset {{count}} photos with their own stamp"
+    "resetCustomStamps_other": "Reset {{count}} photos with their own stamp",
+    "stampSize": {
+      "label": "Stamp size",
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large"
+    }
   },
   "print": {
     "original": "Original",
@@ -277,7 +283,8 @@
       "togetherHint_other": "{{count}} folders into the same date folders",
       "separateHint_one": "{{count}} folder, each in a subfolder with its name",
       "separateHint_other": "{{count}} folders, each in a subfolder with its name"
-    }
+    },
+    "buttonThisSheet": "Export this sheet"
   },
   "crop": {
     "zoom": "Zoom",
@@ -647,9 +654,6 @@
     "turn": "Turn the sheet",
     "turnHint": "Turn the sheet the other way (R)",
     "sheetOf": "Sheet {{index}} of {{count}}",
-    "quickHint": "← → next · release Space to close",
-    "cropTitle": "Crop for its place on the sheet",
-    "cropSize": "The photo prints at {{photo}} cm, in an area of {{area}} cm.",
     "size": "Photo size",
     "width": "Width",
     "height": "Height",
@@ -675,12 +679,19 @@
     "emptyHint": "Open a folder, or choose the print basket in the sidebar: its photos are paired in order, two to a sheet.",
     "count_one": "{{count}} sheet from {{photos}} photos",
     "count_other": "{{count}} sheets from {{photos}} photos",
-    "keysHint": "Drag a photo onto another to swap them · ← → choose · ⌥ ← → move · Enter crop · R turn · hold Space to look",
+    "keysHint": "Drag a photo onto another to swap them · ← → choose · ⌥ ← → move · Enter or double-click to preview · R turn",
     "ratioHints": {
       "photo": "Each photo keeps its own ratio",
       "sheet": "The sheet’s ratio, 2:3 on a 10 × 15",
       "fourThree": "4:3, the ratio of most phones",
       "square": "Square"
-    }
+    },
+    "browse": "other sheets",
+    "choose": "choose a photo",
+    "previous": "Previous sheet",
+    "next": "Next sheet",
+    "photosOnSheet": "Photos on this sheet",
+    "emptyCell": "Empty half",
+    "originalNote": "A sheet needs a fixed size: Original is not used here, so sheets are 10 × 15. Choose a size above."
   }
 }

@@ -12,6 +12,7 @@ import type { ExportApi } from '@/features/export/use-export'
 import { BorderSwitch } from '@/features/settings/border-switch'
 import { PrintSizePicker } from '@/features/settings/print-size-picker'
 import { useIpcQuery } from '@/features/settings/use-ipc-query'
+import { StampSizeField } from '@/features/stamp/stamp-size-field'
 
 type SimplePanelProps = {
   settings: RenderSettings | null
@@ -26,7 +27,7 @@ type SimplePanelProps = {
 const BASKET: CullFilter = { ...ALL_PHOTOS, queue: 'print' }
 
 /**
- * Simple mode's few choices (FR-048): print size, the date stamp on or off, the 3 mm border,
+ * Simple mode's few choices (FR-048): print size, the 3 mm border, the date stamp and its size,
  * and Export, with the same controls as Professional so both stay in step.
  */
 export function SimplePanel({ settings, onChange, exporter, basketCount, revision }: SimplePanelProps) {
@@ -64,8 +65,13 @@ export function SimplePanel({ settings, onChange, exporter, basketCount, revisio
               onCheckedChange={(enabled) => onChange((s) => ({ ...s, stamp: { ...s.stamp, enabled } }))}
             />
           }
-          open={false}
-        />
+          open={settings?.stamp.enabled ?? false}
+        >
+          <StampSizeField
+            stamp={settings?.stamp}
+            onChange={(patch) => onChange((s) => ({ ...s, stamp: { ...s.stamp, ...patch } }))}
+          />
+        </SectionCard>
         <p className="flex gap-1.5 px-1 text-xs text-muted-foreground">
           <ShoppingBasket className="mt-0.5 size-3.5 shrink-0 text-primary" />
           {t('simple.exportHint', { count: basketCount })}

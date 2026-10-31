@@ -183,7 +183,7 @@ export function ExportSection({
         >
           <Download data-icon="inline-start" />
           {single
-            ? t('export.buttonThis')
+            ? t(collage ? 'export.buttonThisSheet' : 'export.buttonThis')
             : sheets !== undefined && sheets > 0
               ? t('export.buttonSheets', { count: sheets })
               : photoCount > 0
