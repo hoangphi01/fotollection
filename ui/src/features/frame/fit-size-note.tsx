@@ -24,7 +24,7 @@ export function FitSizeNote({ photoId, revision }: { photoId: number | undefined
     }
   }, [photoId, revision])
   const g = geometry?.id === photoId ? geometry?.value : null
-  if (!g?.cropDisabled || g.outputWidthCm === null || g.outputHeightCm === null) return null
+  if (!g?.printGrows || g.outputWidthCm === null || g.outputHeightCm === null) return null
   const inches = g.unit === 'in'
   const size = (cm: number) => formatNumber(inches ? cm / 2.54 : cm, 1, 1)
   return (

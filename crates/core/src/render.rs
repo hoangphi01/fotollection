@@ -12,7 +12,7 @@ use crate::fonts::LoadedFont;
 use crate::frame::{FrameLayout, FrameLogo, PlacedLine};
 use crate::image::RgbImage;
 use crate::logo::LogoImage;
-use crate::plan::{FramePlan, RenderPlan};
+use crate::plan::{FramePlan, Mat, RenderPlan};
 use crate::text::{TextRun, draw_text, text_width};
 
 static INTER: &[u8] = include_bytes!("../assets/fonts/Inter.ttf");
@@ -44,9 +44,10 @@ pub fn render(source: &RgbImage, plan: &RenderPlan) -> Result<RgbImage, RenderEr
     if let Some(stamp) = &plan.stamp {
         crate::stamp::draw(&mut photo, stamp);
     }
-    Ok(match &plan.frame {
-        Some(frame) => compose_frame(&photo, frame),
-        None => photo,
+    Ok(match (&plan.frame, &plan.mat) {
+        (Some(frame), _) => compose_frame(&photo, frame),
+        (None, Some(mat)) => compose_mat(&photo, mat),
+        (None, None) => photo,
     })
 }
 
@@ -112,18 +113,32 @@ pub fn fit_long_edge(source: &RgbImage, long_edge: u32) -> Result<RgbImage, Rend
         out_height: dim(source.height),
         stamp: None,
         frame: None,
+        mat: None,
         straighten: 0.0,
     };
     crop_and_resize(source, &plan)
 }
 
+/// A canvas filled with one colour.
+pub fn filled(width: u32, height: u32, color: [u8; 3]) -> RgbImage {
+    let mut canvas = RgbImage::new(width, height);
+    for px in canvas.data.as_chunks_mut::<3>().0 {
+        *px = color;
+    }
+    canvas
+}
+
+/// Places the photo inside its 3 mm border, without an info frame (FR-067).
+fn compose_mat(photo: &RgbImage, mat: &Mat) -> RgbImage {
+    let mut canvas = filled(mat.canvas_width, mat.canvas_height, mat.background);
+    blit(&mut canvas, photo, mat.photo.x, mat.photo.y);
+    canvas
+}
+
 /// Places the photo on a canvas at the print ratio and draws the info bar (FR-040).
 fn compose_frame(photo: &RgbImage, frame: &FramePlan) -> RgbImage {
     let l = &frame.layout;
-    let mut canvas = RgbImage::new(l.canvas_width, l.canvas_height);
-    for px in canvas.data.as_chunks_mut::<3>().0 {
-        *px = l.background;
-    }
+    let mut canvas = filled(l.canvas_width, l.canvas_height, l.background);
     blit(&mut canvas, photo, l.photo.x, l.photo.y);
     draw_frame_logo(&mut canvas, l, frame.logo.as_deref(), frame.font.as_ref());
     for line in &l.lines {
@@ -149,7 +164,7 @@ fn compose_frame(photo: &RgbImage, frame: &FramePlan) -> RgbImage {
     canvas
 }
 
-fn blit(canvas: &mut RgbImage, photo: &RgbImage, x: u32, y: u32) {
+pub fn blit(canvas: &mut RgbImage, photo: &RgbImage, x: u32, y: u32) {
     let width = photo.width.min(canvas.width.saturating_sub(x)) as usize;
     let rows = photo.height.min(canvas.height.saturating_sub(y));
     for row in 0..rows {

@@ -51,6 +51,19 @@ pub struct FramePlan {
     pub font: Option<LoadedFont>,
 }
 
+/// A plain border round the photo when there is no info frame (FR-067): the photo sits at
+/// `photo` on a canvas of the print's size filled with `background`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Mat {
+    pub canvas_width: u32,
+    pub canvas_height: u32,
+    pub background: [u8; 3],
+    pub photo: frame::Rect,
+}
+
+/// The white of a border without an info frame, the same as the white frame's.
+pub const MAT_WHITE: [u8; 3] = [250, 250, 249];
+
 /// What the caller knows about the frame for one photo.
 #[derive(Debug, Clone)]
 pub struct FrameRequest {
@@ -73,6 +86,8 @@ pub struct RenderPlan {
     pub stamp: Option<StampSpec>,
     /// When set, the photo is placed on a canvas at the print ratio with an info bar.
     pub frame: Option<FramePlan>,
+    /// Without a frame, the 3 mm border's canvas (FR-067).
+    pub mat: Option<Mat>,
     /// Degrees the photo is straightened by (FR-006); `crop` is then in the straightened
     /// frame.
     pub straighten: f32,
@@ -81,11 +96,11 @@ pub struct RenderPlan {
 impl RenderPlan {
     /// Final output size, including the frame canvas.
     pub fn output_size(&self) -> (u32, u32) {
-        self.frame
-            .as_ref()
-            .map_or((self.out_width, self.out_height), |f| {
-                (f.layout.canvas_width, f.layout.canvas_height)
-            })
+        match (&self.frame, &self.mat) {
+            (Some(f), _) => (f.layout.canvas_width, f.layout.canvas_height),
+            (None, Some(m)) => (m.canvas_width, m.canvas_height),
+            (None, None) => (self.out_width, self.out_height),
+        }
     }
 }
 
@@ -278,9 +293,19 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
         return plan_framed(input, request);
     }
     let (width, height, print) = (input.width, input.height, input.print);
-    let (long, short) = (u64::from(print.long_mm), u64::from(print.short_mm));
+    // With the border, the photo is cropped to the print less 3 mm on every side (FR-067).
+    let inset = if input.settings.border {
+        2 * border_mm()
+    } else {
+        0
+    };
+    let (long, short) = (
+        u64::from(print.long_mm.saturating_sub(inset).max(1)),
+        u64::from(print.short_mm.saturating_sub(inset).max(1)),
+    );
     let (rw, rh) = if print.is_original() {
-        // The exact pixel ratio: Original never loses a pixel to mm rounding (FR-045).
+        // The exact pixel ratio: Original never loses a pixel to mm rounding (FR-045); with
+        // the border, the print grows by it instead of cropping the photo.
         (u64::from(width), u64::from(height))
     } else if width >= height {
         (long, short)
@@ -299,7 +324,26 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
     }
 
     #[allow(clippy::cast_precision_loss)] // print sizes and pixel counts are far below 2^24
-    let px_per_mm = out_width.max(out_height) as f32 / print.long_mm as f32;
+    let px_per_mm = if input.settings.border {
+        out_width.min(out_height) as f32 / short as f32
+    } else {
+        out_width.max(out_height) as f32 / print.long_mm as f32
+    };
+    let mat = input.settings.border.then(|| {
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+        let m = (frame::CROP_BORDER_MM * px_per_mm).round().max(1.0) as u32;
+        Mat {
+            canvas_width: out_width + 2 * m,
+            canvas_height: out_height + 2 * m,
+            background: MAT_WHITE,
+            photo: frame::Rect {
+                x: m,
+                y: m,
+                width: out_width,
+                height: out_height,
+            },
+        }
+    });
     RenderPlan {
         print,
         crop,
@@ -307,8 +351,15 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
         out_height,
         stamp: stamp_spec(input, px_per_mm),
         frame: None,
+        mat,
         straighten: crate::straighten::sanitize(input.straighten),
     }
+}
+
+/// The 3 mm border in whole millimetres (FR-067).
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+fn border_mm() -> u32 {
+    frame::CROP_BORDER_MM as u32
 }
 
 fn stamp_spec(input: &PlanInput<'_>, px_per_mm: f32) -> Option<StampSpec> {
@@ -347,9 +398,19 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
     let long = input
         .max_long_edge
         .map_or(width.max(height), |m| m.min(width.max(height)));
-    let (cw, ch) = frame::canvas_size(width, height, print, long, request.settings.fit);
+    let border = input.settings.border;
+    let (cw, ch) = frame::canvas_size(width, height, print, long, request.settings.fit, border);
     let lay = |text: &frame::FrameText| {
-        frame::layout(cw, ch, width, height, &request.settings, text, print)
+        frame::layout(
+            cw,
+            ch,
+            width,
+            height,
+            &request.settings,
+            text,
+            print,
+            border,
+        )
     };
     let (logo, font) = (request.logo.as_deref(), request.font.as_ref());
     let mut layout = lay(&request.text);
@@ -394,6 +455,7 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
             logo: request.logo.clone(),
             font: request.font.clone(),
         }),
+        mat: None,
         straighten: crate::straighten::sanitize(input.straighten),
     }
 }
@@ -633,5 +695,84 @@ mod tests {
             ..RenderSettings::default()
         };
         assert!(settings.validate().is_ok_and(PrintSize::is_original));
+    }
+
+    #[test]
+    fn fr_067_the_border_sits_inside_the_print_size_without_a_frame() {
+        let mut settings = RenderSettings {
+            border: true,
+            ..RenderSettings::default()
+        };
+        settings.stamp.enabled = false;
+        for (w, h) in [(6000, 4000), (4000, 6000), (4608, 3456)] {
+            let p = plan(&PlanInput {
+                width: w,
+                height: h,
+                capture: None,
+                settings: &settings,
+                print: size("10x15"),
+                max_long_edge: None,
+                frame: None,
+                crop: None,
+                place: None,
+                straighten: 0.0,
+            });
+            let Some(mat) = p.mat else {
+                panic!("the border needs a canvas");
+            };
+            // The canvas keeps the print's 2:3; the photo is 94 × 144 mm, 3 mm in.
+            let (cw, ch) = p.output_size();
+            let canvas = f64::from(cw.max(ch)) / f64::from(cw.min(ch));
+            assert!((canvas - 1.5).abs() < 0.005, "{w}×{h}: {canvas}");
+            let mm = f64::from(cw.min(ch)) / 100.0;
+            assert!((f64::from(mat.photo.x) / mm - 3.0).abs() < 0.1);
+            assert_eq!(mat.photo.x, mat.photo.y);
+            assert_eq!(mat.photo.x * 2 + p.out_width, cw);
+            assert_eq!(mat.photo.y * 2 + p.out_height, ch);
+            let photo =
+                f64::from(p.out_width.max(p.out_height)) / f64::from(p.out_width.min(p.out_height));
+            assert!((photo - 144.0 / 94.0).abs() < 0.005, "{w}×{h}: {photo}");
+        }
+        // Off, nothing changes.
+        settings.border = false;
+        let p = plan(&PlanInput {
+            width: 6000,
+            height: 4000,
+            capture: None,
+            settings: &settings,
+            print: size("10x15"),
+            max_long_edge: None,
+            frame: None,
+            crop: None,
+            place: None,
+            straighten: 0.0,
+        });
+        assert!(p.mat.is_none());
+        assert_eq!(p.output_size(), (6000, 4000));
+    }
+
+    #[test]
+    fn fr_067_original_with_the_border_still_keeps_every_pixel() {
+        let mut settings = RenderSettings {
+            print_size: PrintSize::ORIGINAL_ID.into(),
+            border: true,
+            ..RenderSettings::default()
+        };
+        settings.stamp.enabled = false;
+        let print = settings.print_for(4608, 3456).unwrap_or(size("10x15"));
+        let p = plan(&PlanInput {
+            width: 4608,
+            height: 3456,
+            capture: None,
+            settings: &settings,
+            print,
+            max_long_edge: None,
+            frame: None,
+            crop: None,
+            place: None,
+            straighten: 0.0,
+        });
+        assert_eq!((p.crop.width, p.crop.height), (4608, 3456));
+        assert!(p.mat.is_some_and(|m| m.photo.x > 0));
     }
 }

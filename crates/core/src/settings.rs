@@ -50,6 +50,10 @@ pub struct RenderSettings {
     /// Prints or a lighter file for sharing (FR-053). Absent before settings v8: prints.
     #[serde(default)]
     pub export_target: crate::share::ExportTarget,
+    /// A 3 mm border inside the print size, in every mode and frame style (FR-067). Absent
+    /// before settings v10, where FR-065's `frame.border` held it for Crop to fill only.
+    #[serde(default)]
+    pub border: bool,
 }
 
 /// A saved custom print size (FR-043). Stored in millimetres, short edge first.
@@ -185,6 +189,7 @@ impl Default for RenderSettings {
             custom_sizes: Vec::new(),
             place_format: crate::geocode::PlaceFormat::default(),
             export_target: crate::share::ExportTarget::default(),
+            border: false,
         }
     }
 }

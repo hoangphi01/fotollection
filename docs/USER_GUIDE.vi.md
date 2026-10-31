@@ -134,7 +134,7 @@ Ngoài chế độ Chọn, Space vẫn mở bản xem trước thường.
 
 ## 5. Khổ in và độ nét
 
-Chọn khổ bạn sẽ in, Fotollection cắt mọi ảnh theo khổ đó và cho biết từng tấm có đủ nét không ([FR-026](PRD.md#fr-026--resolution-warning), [FR-043](PRD.md#fr-043--custom-print-sizes), [FR-045](PRD.md#fr-045--original-aspect-ratio)).
+Chọn khổ bạn sẽ in, Fotollection cắt mọi ảnh theo khổ đó và cho biết từng tấm có đủ nét không ([FR-026](PRD.md#fr-026--resolution-warning), [FR-043](PRD.md#fr-043--custom-print-sizes), [FR-045](PRD.md#fr-045--original-aspect-ratio), [FR-067](PRD.md#fr-067--3-mm-border-on-every-print)).
 
 1. Trong thẻ **Khổ in / xuất ảnh**, giữ lựa chọn **In ảnh** (với **Mạng xã hội**, xem chương 12).
 2. Mở danh sách khổ:
@@ -145,6 +145,7 @@ Chọn khổ bạn sẽ in, Fotollection cắt mọi ảnh theo khổ đó và c
    Mỗi khổ có một huy hiệu cho ảnh đang chọn trong gallery: **Nét** (từ 300 DPI), **Tạm được** (150–299 DPI, ổn khi cầm xem) hoặc **Sẽ vỡ** (dưới 150 DPI). Rê chuột lên huy hiệu để xem số DPI.
 3. Dưới danh sách, một dòng cho biết ảnh đang chọn in nét tới cỡ nào, và vẫn chấp nhận được tới cỡ nào.
 4. Mọi ảnh được cắt theo tỉ lệ của khổ, **mặc định ở giữa**. Chọn phần được giữ cho từng ảnh trong bản xem trước (chương 6).
+5. **Viền 3 mm** để một viền trắng rộng 3 mm ở mọi cạnh, lấn vào ảnh: bản in vẫn đúng khổ của máy in tại tiệm. Khi bật khung thông tin, viền theo màu khung (chương 9).
 
 <!-- shot: manual-size | Danh sách khổ in, mỗi khổ một huy hiệu độ nét -->
 
@@ -206,19 +207,19 @@ Ngày in ra là ngày của máy ảnh, đã chỉnh theo đồng hồ máy ản
 
 ## 9. Khung thông tin "Shot on"
 
-Một dải trắng hoặc đen dưới ảnh, với logo và thông số máy ảnh, như ảnh chia sẻ từ điện thoại ([FR-040](PRD.md#fr-040--exif-info-frame), [FR-065](PRD.md#fr-065--border-in-crop-to-fill)). Mặc định đang tắt, và giống nhau cho mọi ảnh.
+Một dải trắng hoặc đen dưới ảnh, với logo và thông số máy ảnh, như ảnh chia sẻ từ điện thoại ([FR-040](PRD.md#fr-040--exif-info-frame), [FR-065](PRD.md#fr-065--border-in-crop-to-fill), [FR-067](PRD.md#fr-067--3-mm-border-on-every-print)). Mặc định đang tắt, và giống nhau cho mọi ảnh.
 
 1. Bật thẻ **Khung thông tin**.
 2. Chọn cách đặt khung vào ảnh in:
-   - **Cắt cho đầy**: ảnh in giữ đúng khổ, dải thông tin nằm bên trong; kéo ảnh trong bản xem trước để chọn phần được giữ. **Tạo viền** thêm viền 3 mm theo màu khung ở cạnh trên và hai bên, vẫn nằm trong khổ in, như ảnh lấy liền;
-   - **Giữ trọn ảnh**: cả tấm ảnh đúng khổ in, đặt trong khung như ảnh instax với viền 5 mm ở ba cạnh và dải thông tin ở dưới, nên ảnh in ra lớn hơn khổ đã chọn. Một dòng ghi chú cho biết lớn bao nhiêu, để bạn chọn giấy phù hợp ở tiệm.
+   - **Cắt cho đầy**: ảnh in giữ đúng khổ, dải thông tin nằm bên trong; kéo ảnh trong bản xem trước để chọn phần được giữ. Khi bật **Viền 3 mm** (trong thẻ khổ in, chương 5), viền 3 mm theo màu khung chạy ở cạnh trên và hai bên, vẫn nằm trong khổ in, như ảnh lấy liền;
+   - **Giữ trọn ảnh**: cả tấm ảnh đúng khổ in, đặt trong khung như ảnh instax với viền 5 mm ở ba cạnh và dải thông tin ở dưới, nên ảnh in ra lớn hơn khổ đã chọn. Một dòng ghi chú cho biết lớn bao nhiêu, để bạn chọn giấy phù hợp ở tiệm. Khi bật **Viền 3 mm**, cả tấm ảnh được thu vào trong khổ đã chọn, và ảnh in không to ra.
 3. Chọn **Trắng** hoặc **Đen**, định dạng ngày, và phông chữ: *Inter (có sẵn)*, hoặc **Nhập OTF/TTF…** để dùng phông của bạn ([FR-042](PRD.md#fr-042--custom-fonts)).
 4. Trong **Hiển thị**, tích những gì dải thông tin ghi: *Logo*, *Máy ảnh*, *Ống kính*, *Tiêu cự*, *Khẩu độ*, *Tốc độ màn trập*, *ISO*, *Photo Style*, *Ngày*, *Địa điểm*.
 5. Khi hiện logo, chọn **Màu logo** (*Cổ điển*, *Màu gốc* hoặc *Đơn sắc*) và **Cỡ logo** (nhấp đúp vào thanh trượt để về 100 %).
 
 <!-- shot: frame | Khung “Shot on” với logo của hãng máy ảnh -->
 
-<!-- shot: manual-frame | Thẻ Khung thông tin: cách đặt khung, viền, màu, phông và các thông tin hiển thị -->
+<!-- shot: manual-frame | Thẻ Khung thông tin: cách đặt khung, màu, phông và các thông tin hiển thị -->
 
 **Thông tin máy ảnh:** trong bản xem trước, dưới thẻ khung, sửa những gì dải thông tin ghi cho máy ảnh này: **Tên máy ảnh**, **Ống kính** (cho ống kính manual mà máy không nhận ra), **Tiêu cự (mm)**, **Khẩu độ F** và **Photo Style**, cùng **Logo**: logo hãng có sẵn, **Chữ**, **Ảnh** (một tệp PNG của bạn) hoặc **Không**. Ô để trống sẽ dùng EXIF của ảnh. Các thông tin này được lưu cho mọi ảnh của máy đó.
 

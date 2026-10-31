@@ -73,9 +73,10 @@ pub struct FrameSettings {
     /// (FR-040). Absent before settings v7: 1.0.
     #[serde(default = "default_logo_scale")]
     pub logo_scale: f32,
-    /// Crop to fill only: a border in the frame colour on the top, left and right, inside
-    /// the print size, like an instant print (FR-065). Absent before settings v9: off.
+    /// Settings v9 only (FR-065): read so that v10 can move it to `render.border`
+    /// (FR-067), then always off. The layout takes the border from the render settings.
     #[serde(default)]
+    #[specta(skip)]
     pub border: bool,
 }
 
@@ -493,7 +494,8 @@ fn bar_height(box_width: f32, box_height: f32) -> f32 {
 /// The canvas, in the photo's orientation, for a print box with the given long edge.
 /// **Crop** is the print box itself: the photo fills the space above the bar. **Fit** never
 /// shrinks or cuts the photo: it keeps the print's width and adds a 5 mm border on three
-/// sides and the bar below, so a 2:3 photo at 10 × 15 becomes about 11 × 17.9.
+/// sides and the bar below, so a 2:3 photo at 10 × 15 becomes about 11 × 17.9. With the
+/// 3 mm border on (FR-067), Fit keeps the print box too, and the photo shrinks to fit it.
 #[allow(
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss,
@@ -505,10 +507,12 @@ pub fn canvas_size(
     print: PrintSize,
     long_edge: u32,
     fit: FrameFit,
+    border: bool,
 ) -> (u32, u32) {
     let (bw, bh) = print_canvas(src_width, src_height, print, long_edge);
     match fit {
         FrameFit::Crop => (bw, bh),
+        FrameFit::Fit if border => (bw, bh),
         FrameFit::Fit => {
             // The photo keeps the print's width; the border and the bar are added around it.
             let (box_w, box_h) = print_box(bw as f32, src_width, src_height, print);
@@ -534,8 +538,33 @@ fn print_canvas(src_width: u32, src_height: u32, print: PrintSize, long_edge: u3
     }
 }
 
-/// Lays out the frame for a canvas, a source photo size and the text.
+/// The largest rectangle at the ratio `src_width : src_height` inside `area`, centred.
 #[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
+pub fn contain(area: Rect, src_width: u32, src_height: u32) -> Rect {
+    let ratio = src_width.max(1) as f32 / src_height.max(1) as f32;
+    let (aw, ah) = (area.width as f32, area.height as f32);
+    let (w, h) = if aw / ah > ratio {
+        ((ah * ratio).round(), ah)
+    } else {
+        (aw, (aw / ratio).round())
+    };
+    let (w, h) = (w.clamp(1.0, aw) as u32, h.clamp(1.0, ah) as u32);
+    Rect {
+        x: area.x + (area.width - w) / 2,
+        y: area.y + (area.height - h) / 2,
+        width: w,
+        height: h,
+    }
+}
+
+/// Lays out the frame for a canvas, a source photo size and the text. `border` is the
+/// 3 mm border of FR-067.
+#[allow(
+    clippy::too_many_arguments,
     clippy::cast_precision_loss,
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss
@@ -548,12 +577,13 @@ pub fn layout(
     settings: &FrameSettings,
     text: &FrameText,
     print: PrintSize,
+    border: bool,
 ) -> FrameLayout {
     let (cw, ch) = (canvas_width as f32, canvas_height as f32);
     // Sizes follow the print box, so the bar and its text look the same in both modes.
     let (box_w, box_h) = match settings.fit {
-        FrameFit::Crop => (cw, ch),
-        FrameFit::Fit => fit_box(cw, src_width, src_height, print),
+        FrameFit::Fit if !border => fit_box(cw, src_width, src_height, print),
+        _ => (cw, ch),
     };
     let bar_h = bar_height(box_w, box_h);
     let bar_top = (ch - bar_h).max(0.0);
@@ -561,18 +591,24 @@ pub fn layout(
     let safe = crate::plan::SAFE_AREA_MM * px_per_mm;
 
     // Crop: the photo spans the width above the bar, cropped to that box, or 3 mm inside it
-    // when the border is on (FR-065). Fit: the whole photo at the print's width, with a 5 mm
-    // border added on three sides.
+    // when the border is on (FR-065, FR-067). Fit: the whole photo at the print's width,
+    // with a 5 mm border added on three sides; with the 3 mm border, the whole photo is
+    // fitted inside the print box instead, centred in the space 3 mm inside it.
     let m = match settings.fit {
-        FrameFit::Crop if settings.border => (CROP_BORDER_MM * px_per_mm).round(),
+        _ if border => (CROP_BORDER_MM * px_per_mm).round(),
         FrameFit::Crop => 0.0,
         FrameFit::Fit => fit_border(box_w, box_h, print),
     };
-    let photo = Rect {
+    let area = Rect {
         x: m as u32,
         y: m as u32,
         width: (cw - 2.0 * m).max(1.0) as u32,
         height: (bar_top - m).max(1.0) as u32,
+    };
+    let photo = if settings.fit == FrameFit::Fit && border {
+        contain(area, src_width, src_height)
+    } else {
+        area
     };
 
     let (background, primary, secondary) = match settings.color {
@@ -720,9 +756,9 @@ mod tests {
                         fit,
                         ..FrameSettings::default()
                     };
-                    let (cw, ch) = canvas_size(sw, sh, print, sw.max(sh), fit);
-                    let (pw, ph) = canvas_size(sw, sh, print, sw.max(sh), FrameFit::Crop);
-                    let l = layout(cw, ch, sw, sh, &settings, &text, print);
+                    let (cw, ch) = canvas_size(sw, sh, print, sw.max(sh), fit, false);
+                    let (pw, ph) = canvas_size(sw, sh, print, sw.max(sh), FrameFit::Crop, false);
+                    let l = layout(cw, ch, sw, sh, &settings, &text, print, false);
                     // Photo area never overlaps the bar and stays inside the canvas.
                     assert!(l.photo.y + l.photo.height <= l.bar.y + 1);
                     assert!(l.photo.x + l.photo.width <= cw);
@@ -762,8 +798,16 @@ mod tests {
                                 "fit keeps the photo ratio"
                             );
                             // The bar is as tall as in Crop mode, so the text reads the same.
-                            let crop =
-                                layout(pw, ph, sw, sh, &FrameSettings::default(), &text, print);
+                            let crop = layout(
+                                pw,
+                                ph,
+                                sw,
+                                sh,
+                                &FrameSettings::default(),
+                                &text,
+                                print,
+                                false,
+                            );
                             assert_eq!(l.bar.height, crop.bar.height, "{}", print.id);
                         }
                     }
@@ -772,7 +816,7 @@ mod tests {
         }
         // A 2:3 portrait at 10 × 15: 0.5 + 10 + 0.5 wide, 0.5 + 15 + 2.4 tall ≈ 11 × 17.9.
         let print = PrintSize::ALL[1];
-        let (cw, ch) = canvas_size(4000, 6000, print, 6000, FrameFit::Fit);
+        let (cw, ch) = canvas_size(4000, 6000, print, 6000, FrameFit::Fit, false);
         let cm = 11.0 * f64::from(ch) / f64::from(cw);
         assert!((cm - 17.9).abs() < 0.1, "{cm} cm");
     }
@@ -780,14 +824,11 @@ mod tests {
     #[test]
     fn fr_065_crop_border_sits_inside_the_print_size() {
         let print = PrintSize::ALL[1];
-        let (cw, ch) = canvas_size(6000, 4000, print, 6000, FrameFit::Crop);
+        let (cw, ch) = canvas_size(6000, 4000, print, 6000, FrameFit::Crop, true);
         let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None);
-        let plain = layout(cw, ch, 6000, 4000, &FrameSettings::default(), &text, print);
-        let bordered = FrameSettings {
-            border: true,
-            ..FrameSettings::default()
-        };
-        let l = layout(cw, ch, 6000, 4000, &bordered, &text, print);
+        let settings = FrameSettings::default();
+        let plain = layout(cw, ch, 6000, 4000, &settings, &text, print, false);
+        let l = layout(cw, ch, 6000, 4000, &settings, &text, print, true);
         // Same canvas: the print keeps its size; the photo moves 3 mm in on three sides.
         assert_eq!((l.canvas_width, l.canvas_height), (cw, ch));
         assert_eq!((plain.photo.x, plain.photo.y), (0, 0));
@@ -800,33 +841,43 @@ mod tests {
             l.photo.y + l.photo.height,
             plain.photo.y + plain.photo.height
         );
-        // Fit already has its own border; the switch changes nothing there.
+    }
+
+    #[test]
+    fn fr_067_fit_with_the_border_keeps_the_print_size_and_the_whole_photo() {
+        let print = PrintSize::ALL[1];
+        let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None);
         let fit = FrameSettings {
             fit: FrameFit::Fit,
-            ..bordered
+            ..FrameSettings::default()
         };
-        let (fw, fh) = canvas_size(6000, 4000, print, 6000, FrameFit::Fit);
-        let a = layout(fw, fh, 6000, 4000, &fit, &text, print);
-        let b = layout(
-            fw,
-            fh,
-            6000,
-            4000,
-            &FrameSettings {
-                border: false,
-                ..fit
-            },
-            &text,
-            print,
-        );
-        assert_eq!(a.photo, b.photo);
+        for (sw, sh) in [(6000, 4000), (4000, 6000), (4608, 3456)] {
+            // Without the border the print grows; with it, it is the print box itself.
+            let grown = canvas_size(sw, sh, print, sw.max(sh), FrameFit::Fit, false);
+            let (cw, ch) = canvas_size(sw, sh, print, sw.max(sh), FrameFit::Fit, true);
+            assert_eq!(
+                (cw, ch),
+                canvas_size(sw, sh, print, sw.max(sh), FrameFit::Crop, false)
+            );
+            assert!(grown.0 > cw && grown.1 > ch);
+            let l = layout(cw, ch, sw, sh, &fit, &text, print, true);
+            let mm = f64::from(cw.max(ch)) / f64::from(print.long_mm);
+            // At least 3 mm on the top and sides, the whole photo at its own ratio.
+            assert!(f64::from(l.photo.x) / mm >= 2.9, "{sw}×{sh}");
+            assert!(f64::from(l.photo.y) / mm >= 2.9, "{sw}×{sh}");
+            assert!(l.photo.x + l.photo.width <= cw);
+            assert!(l.photo.y + l.photo.height <= l.bar.y);
+            let src = f64::from(sw) / f64::from(sh);
+            let placed = f64::from(l.photo.width) / f64::from(l.photo.height);
+            assert!((src - placed).abs() / src < 0.01, "{sw}×{sh}: {placed}");
+        }
     }
 
     #[test]
     fn fr_045_original_frame_canvas_keeps_the_photo_ratio() {
         for (sw, sh) in [(4608, 3456), (3456, 4608), (8000, 2000)] {
             let print = PrintSize::original(sw, sh);
-            let (cw, ch) = canvas_size(sw, sh, print, sw.max(sh), FrameFit::Crop);
+            let (cw, ch) = canvas_size(sw, sh, print, sw.max(sh), FrameFit::Crop, false);
             assert_eq!((cw, ch), (sw, sh), "the canvas is the photo's own ratio");
         }
     }
@@ -844,8 +895,17 @@ mod tests {
             at(18),
             Some("Budapest"),
         );
-        let (cw, ch) = canvas_size(4608, 3456, print, 4608, FrameFit::Crop);
-        let l = layout(cw, ch, 4608, 3456, &FrameSettings::default(), &text, print);
+        let (cw, ch) = canvas_size(4608, 3456, print, 4608, FrameFit::Crop, false);
+        let l = layout(
+            cw,
+            ch,
+            4608,
+            3456,
+            &FrameSettings::default(),
+            &text,
+            print,
+            false,
+        );
         let safe = crate::plan::SAFE_AREA_MM * cw as f32 / print.long_mm as f32;
         assert!(l.logo_x >= safe);
         for line in &l.lines {
@@ -862,13 +922,13 @@ mod tests {
     fn fr_040_logo_scale_resizes_the_logo_for_every_photo() {
         let print = PrintSize::ALL[1];
         let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None);
-        let (cw, ch) = canvas_size(4608, 3456, print, 4608, FrameFit::Crop);
+        let (cw, ch) = canvas_size(4608, 3456, print, 4608, FrameFit::Crop, false);
         let at_scale = |logo_scale| {
             let settings = FrameSettings {
                 logo_scale,
                 ..FrameSettings::default()
             };
-            layout(cw, ch, 4608, 3456, &settings, &text, print)
+            layout(cw, ch, 4608, 3456, &settings, &text, print, false)
         };
         let normal = at_scale(1.0);
         let big = at_scale(2.0);

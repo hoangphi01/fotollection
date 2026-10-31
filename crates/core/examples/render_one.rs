@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //! Renders one photo exactly as export would, optionally with the info frame (FR-040).
 //!
-//! `cargo run --release -p fotollection-core --example render_one -- <in.jpg> <out.jpg> [crop|crop-border|fit|none] [10x15] [degrees]`
+//! `cargo run --release -p fotollection-core --example render_one -- <in.jpg> <out.jpg> [crop|crop-border|fit|fit-border|none|border] [10x15] [degrees]`
 //!
 //! `degrees` straightens the photo (FR-006); the render time is printed for the benchmark log.
 
@@ -22,12 +22,12 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     let (input, output) = (&args[1], &args[2]);
     let fit = match args.get(3).map(String::as_str) {
-        Some("fit") => Some(FrameFit::Fit),
+        Some("fit" | "fit-border") => Some(FrameFit::Fit),
         Some("crop" | "crop-border") => Some(FrameFit::Crop),
         _ => None,
     };
-    // Crop to fill with the 3 mm border inside the print (FR-065).
-    let border = args.get(3).is_some_and(|a| a == "crop-border");
+    // The 3 mm border inside the print (FR-065, FR-067), with a frame or alone (`border`).
+    let border = args.get(3).is_some_and(|a| a.ends_with("border"));
     let print = PrintSize::by_id(args.get(4).map_or("10x15", String::as_str)).expect("print size");
     let straighten: f32 = args.get(5).map_or(0.0, |d| d.parse().expect("degrees"));
 
@@ -50,13 +50,15 @@ fn main() {
     );
     let upright = apply_orientation(decoded.image, record.orientation);
 
-    let mut settings = RenderSettings::default();
+    let mut settings = RenderSettings {
+        border,
+        ..RenderSettings::default()
+    };
     settings.stamp.enabled = fit.is_none();
     let request = fit.map(|fit| {
         let frame = FrameSettings {
             enabled: true,
             fit,
-            border,
             ..FrameSettings::default()
         };
         // Demo profile: a manual lens and a photo style that EXIF can't know.

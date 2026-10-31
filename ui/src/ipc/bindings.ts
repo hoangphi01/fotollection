@@ -564,6 +564,11 @@ export type CropGeometry = {
 	 */
 	outputWidthCm: number | null,
 	outputHeightCm: number | null,
+	/**
+	 *  The print is larger than the chosen size: Fit whole photo without the 3 mm border
+	 *  (FR-040, FR-067).
+	 */
+	printGrows: boolean,
 	/**  Display unit of the selected size (inches for custom sizes entered in inches). */
 	unit: LengthUnit,
 };
@@ -761,11 +766,6 @@ export type FrameSettings = {
 	 *  (FR-040). Absent before settings v7: 1.0.
 	 */
 	logoScale?: number | null,
-	/**
-	 *  Crop to fill only: a border in the frame colour on the top, left and right, inside
-	 *  the print size, like an instant print (FR-065). Absent before settings v9: off.
-	 */
-	border?: boolean,
 };
 
 export type GpsPoint = {
@@ -1105,6 +1105,11 @@ export type RenderSettings = {
 	placeFormat?: PlaceFormat,
 	/**  Prints or a lighter file for sharing (FR-053). Absent before settings v8: prints. */
 	exportTarget?: ExportTarget,
+	/**
+	 *  A 3 mm border inside the print size, in every mode and frame style (FR-067). Absent
+	 *  before settings v10, where FR-065's `frame.border` held it for Crop to fill only.
+	 */
+	border?: boolean,
 };
 
 /**  Render-affecting state changed (settings, frame, crops, undo); previews refresh. */

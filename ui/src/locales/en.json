@@ -123,6 +123,8 @@
     "language": "Language",
     "printSize": "Print / export size",
     "printSizeHint": "Centred by default. Adjust per photo with Crop in the preview.",
+    "border": "3 mm border",
+    "borderHint": "A white border 3 mm wide inside the print size, cut into the photo: the print stays the exact kiosk size. With the info frame, the border takes the frame’s colour, and Fit whole photo fits inside the size instead of growing.",
     "dateStamp": "Date stamp",
     "dateStampFont": "Date stamp font",
     "stampPosition": "Stamp position",
@@ -206,9 +208,7 @@
       "mono": "One colour"
     },
     "logoSize": "Logo size",
-    "logoSizeHint": "The same for every photo. Double-click for 100 %.",
-    "border": "Add a border",
-    "borderHint": "A 3 mm border in the frame colour on the top and sides, inside the print size: the print stays the exact kiosk size, framed like an instant photo."
+    "logoSizeHint": "The same for every photo. Double-click for 100 %."
   },
   "camera": {
     "manualLens": "Manual lens (not in EXIF)",

@@ -136,7 +136,7 @@ Outside select mode, Space keeps opening the normal preview.
 
 ## 5. Print size and sharpness
 
-Choose the size you will print at, and Fotollection crops every photo to it and tells you whether each one is sharp enough ([FR-026](PRD.md#fr-026--resolution-warning), [FR-043](PRD.md#fr-043--custom-print-sizes), [FR-045](PRD.md#fr-045--original-aspect-ratio)).
+Choose the size you will print at, and Fotollection crops every photo to it and tells you whether each one is sharp enough ([FR-026](PRD.md#fr-026--resolution-warning), [FR-043](PRD.md#fr-043--custom-print-sizes), [FR-045](PRD.md#fr-045--original-aspect-ratio), [FR-067](PRD.md#fr-067--3-mm-border-on-every-print)).
 
 1. In the **Print / export size** card, keep **Print** selected (for **Share online**, see chapter 12).
 2. Open the size list:
@@ -147,6 +147,7 @@ Choose the size you will print at, and Fotollection crops every photo to it and 
    Each size carries a badge for the photo selected in the gallery: **Sharp** (300 DPI or more), **Acceptable** (150–299 DPI, fine at arm's length) or **Pixelated** (under 150 DPI). Hover over it to see the DPI.
 3. Under the list, a line says how large the selected photo prints sharp, and how large it is still acceptable.
 4. Every photo is cropped to the size's ratio, **centred by default**. Choose what stays per photo in the preview (chapter 6).
+5. **3 mm border** leaves a white border 3 mm wide on every side, cut into the photo: the print keeps the exact size of the shop's kiosk. With the info frame on, the border takes the frame's colour (chapter 9).
 
 <!-- shot: manual-size | The print size list, a sharpness badge on each size -->
 
@@ -208,19 +209,19 @@ The date is the one from the camera, corrected by the camera clock (chapter 11) 
 
 ## 9. Info frame "Shot on"
 
-A white or black bar under the photo with the camera's logo and settings, like the photos shared from phones ([FR-040](PRD.md#fr-040--exif-info-frame), [FR-065](PRD.md#fr-065--border-in-crop-to-fill)). It is off by default, and it is the same for every photo.
+A white or black bar under the photo with the camera's logo and settings, like the photos shared from phones ([FR-040](PRD.md#fr-040--exif-info-frame), [FR-065](PRD.md#fr-065--border-in-crop-to-fill), [FR-067](PRD.md#fr-067--3-mm-border-on-every-print)). It is off by default, and it is the same for every photo.
 
 1. Turn on the **Info frame** card.
 2. Choose how it fits the print:
-   - **Crop to fill**: the print keeps its exact size, and the bar takes its place inside it; drag the photo in the preview to choose what stays. **Add a border** puts a 3 mm border in the frame colour on the top and sides, still inside the print size, like an instant photo;
-   - **Fit whole photo**: the whole photo at the print size, framed like an instax print with a 5 mm border on three sides and the bar below, so the print comes out larger than the size chosen. A note says how large, so you can pick a paper that fits at the shop.
+   - **Crop to fill**: the print keeps its exact size, and the bar takes its place inside it; drag the photo in the preview to choose what stays. With **3 mm border** on (in the print size card, chapter 5), a 3 mm border in the frame colour runs on the top and sides, still inside the print size, like an instant photo;
+   - **Fit whole photo**: the whole photo at the print size, framed like an instax print with a 5 mm border on three sides and the bar below, so the print comes out larger than the size chosen. A note says how large, so you can pick a paper that fits at the shop. With **3 mm border** on, the whole photo is fitted inside the size chosen instead, and the print does not grow.
 3. Choose **White** or **Black**, the date format, and the font: *Inter (built-in)*, or **Import OTF/TTF…** to use your own ([FR-042](PRD.md#fr-042--custom-fonts)).
 4. Under **Show**, tick what the bar holds: *Logo*, *Camera*, *Lens*, *Focal length*, *Aperture*, *Shutter*, *ISO*, *Photo style*, *Date*, *Place*.
 5. With the logo shown, choose its **Logo colours** (*Classic*, *Brand colours* or *One colour*) and its **Logo size** (double-click the slider for 100 %).
 
 <!-- shot: frame | The “Shot on” info frame with the camera's logo -->
 
-<!-- shot: manual-frame | The Info frame card: fit, border, colour, font and the fields to show -->
+<!-- shot: manual-frame | The Info frame card: fit, colour, font and the fields to show -->
 
 **The camera's details:** in the preview, under the frame card, change what the bar says for this camera: **Camera name**, **Lens** (for a manual lens the camera cannot see), **Focal (mm)**, **Aperture F** and **Photo style**, and the **Logo**: the bundled brand logo, **Text**, an **Image** (a PNG of your own) or **None**. A field left empty uses the photo's EXIF. These are saved for every photo from that camera.
 

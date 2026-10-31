@@ -1414,6 +1414,9 @@ pub struct CropGeometry {
     /// mode, which adds a border and the bar around the full-size photo (FR-040).
     pub output_width_cm: f32,
     pub output_height_cm: f32,
+    /// The print is larger than the chosen size: Fit whole photo without the 3 mm border
+    /// (FR-040, FR-067).
+    pub print_grows: bool,
     /// Display unit of the selected size (inches for custom sizes entered in inches).
     pub unit: fotollection_core::settings::LengthUnit,
 }
@@ -1481,9 +1484,11 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
         let crop_disabled = frame
             .as_ref()
             .is_some_and(|f| f.settings.fit == fotollection_core::frame::FrameFit::Fit);
-        // The print box spans the canvas (Crop) or, in Fit, the photo inside its border.
+        // The print box spans the canvas (Crop, or Fit with the 3 mm border) or, in Fit, the
+        // photo inside its own border.
+        let print_grows = crop_disabled && !settings.border;
         let box_px = match p.frame.as_ref() {
-            Some(f) if crop_disabled => f.layout.photo.width,
+            Some(f) if print_grows => f.layout.photo.width,
             _ => canvas_w,
         };
         #[allow(clippy::cast_precision_loss)]
@@ -1503,6 +1508,7 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
             crop_disabled,
             output_width_cm,
             output_height_cm,
+            print_grows,
             unit: settings.unit(),
         })
     })

@@ -20,7 +20,9 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v7 (FR-040): `frame.logoScale`, absent before (1.0).
 /// v8 (FR-053): `render.exportTarget` (prints or a share preset), absent before (prints).
 /// v9 (FR-065): `frame.border`, the Crop-to-fill border, absent before (off).
-pub const SCHEMA_VERSION: u32 = 9;
+/// v10 (FR-067): `render.border`, the 3 mm border on every print; a v9 `frame.border` moves
+/// there.
+pub const SCHEMA_VERSION: u32 = 10;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -138,8 +140,13 @@ fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
     {
         return Err("invalid fonts table".into());
     }
-    let render = file.render;
+    let mut render = file.render;
     let mut frame = file.frame;
+    // v9 → v10: FR-065's Crop-to-fill border becomes the border on every print (FR-067).
+    if version < 10 && frame.border {
+        render.border = true;
+    }
+    frame.border = false;
     // References to fonts that no longer exist fall back to the built-in font (N7).
     if frame.font.is_some_and(|id| !font_ids.contains(&id)) {
         frame.font = None;
@@ -362,13 +369,35 @@ mod tests {
         let Loaded::Ok(mut s) = load(&path) else {
             panic!("v8 should load");
         };
-        assert!(!s.frame.border);
-        s.frame.border = true;
+        assert!(!s.render.border);
+        s.render.border = true;
         save(&path, &s)?;
         let Loaded::Ok(back) = load(&path) else {
+            panic!("v10 should load");
+        };
+        assert!(back.render.border);
+        Ok(())
+    }
+
+    #[test]
+    fn fr_067_a_v9_border_moves_to_every_print_and_round_trips() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v9.json"))?;
+        let Loaded::Ok(s) = load(&path) else {
             panic!("v9 should load");
         };
-        assert!(back.frame.border);
+        assert!(s.render.border);
+        assert!(!s.frame.border);
+        save(&path, &s)?;
+        // The old key is never on again.
+        let written: serde_json::Value = serde_json::from_slice(&std::fs::read(&path)?)?;
+        assert_eq!(written["frame"]["border"], serde_json::Value::Bool(false));
+        assert_eq!(written["render"]["border"], serde_json::Value::Bool(true));
+        let Loaded::Ok(back) = load(&path) else {
+            panic!("v10 should load");
+        };
+        assert!(back.render.border);
         Ok(())
     }
 
