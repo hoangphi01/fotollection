@@ -594,6 +594,7 @@ mod tests {
                 place_source: None,
                 collage: None,
                 sheet_turned: false,
+                collage_crop: None,
             }],
             cameras: vec![CameraRow {
                 make: Some("Panasonic".into()),

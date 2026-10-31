@@ -157,6 +157,19 @@ pub fn effective_dpi(width: u32, height: u32, print: PrintSize) -> (u32, DpiBand
     (dpi, dpi_band(dpi))
 }
 
+/// The part of `print` the photo fills: the print less the 3 mm border on each side when it
+/// is on (FR-067). Original keeps its size, as its border is added round the photo.
+pub fn photo_area(print: PrintSize, border: bool) -> PrintSize {
+    if !border || print.is_original() {
+        return print;
+    }
+    let inset = 2 * border_mm();
+    PrintSize::custom(
+        print.short_mm.saturating_sub(inset).max(1),
+        print.long_mm.saturating_sub(inset).max(1),
+    )
+}
+
 /// The quality band of an effective DPI (FR-026).
 pub fn dpi_band(dpi: u32) -> DpiBand {
     match dpi {
@@ -792,6 +805,17 @@ mod tests {
         });
         assert_eq!((p.crop.width, p.crop.height), (4608, 3456));
         assert!(p.mat.is_some_and(|m| m.photo.x > 0));
+    }
+
+    #[test]
+    fn fr_067_print_quality_follows_the_photo_inside_the_border() {
+        let print = size("10x15");
+        assert_eq!(photo_area(print, false), print);
+        let area = photo_area(print, true);
+        assert_eq!((area.short_mm, area.long_mm), (94, 144));
+        let (plain, _) = effective_dpi(6000, 4000, print);
+        let (bordered, _) = effective_dpi(6000, 4000, area);
+        assert!(bordered > plain, "a smaller area, more pixels per inch");
     }
 
     #[test]

@@ -1014,18 +1014,24 @@ pub async fn print_advice(app: AppHandle, id: PhotoId) -> Result<PrintAdvice, Ip
             .record(id)
             .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
         let (width, height) = upright_size(&state, &record)?;
-        let custom = state
-            .settings
-            .read()
-            .map_err(|e| IpcError::internal(e.to_string()))?
-            .0
-            .custom_sizes
-            .clone();
-        let sizes = PrintSize::ALL.iter().map(|s| (s.id, *s)).chain(
-            custom
-                .iter()
-                .map(|c| (c.id.as_str(), PrintSize::custom(c.short_mm, c.long_mm))),
-        );
+        let (custom, border) = {
+            let guard = state
+                .settings
+                .read()
+                .map_err(|e| IpcError::internal(e.to_string()))?;
+            (guard.0.custom_sizes.clone(), guard.0.border)
+        };
+        // With the 3 mm border, each size's photo is the size less the border (FR-067).
+        let area = |size| fotollection_core::plan::photo_area(size, border);
+        let sizes = PrintSize::ALL
+            .iter()
+            .map(|s| (s.id, area(*s)))
+            .chain(custom.iter().map(|c| {
+                (
+                    c.id.as_str(),
+                    area(PrintSize::custom(c.short_mm, c.long_mm)),
+                )
+            }));
         Ok(print_advice::advise(width, height, sizes))
     })
     .await
@@ -1044,14 +1050,24 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             .record(id)
             .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
         let (width, height) = upright_size(&state, &record)?;
-        let print = state
-            .settings
-            .read()
-            .map_err(|e| IpcError::internal(e.to_string()))?
-            .0
-            .print_for(width, height)
-            .unwrap_or(PrintSize::ALL[1]);
-        let (print_dpi, print_quality) = effective_dpi(width, height, print);
+        let (print, border) = {
+            let guard = state
+                .settings
+                .read()
+                .map_err(|e| IpcError::internal(e.to_string()))?;
+            (
+                guard
+                    .0
+                    .print_for(width, height)
+                    .unwrap_or(PrintSize::ALL[1]),
+                guard.0.border,
+            )
+        };
+        let (print_dpi, print_quality) = effective_dpi(
+            width,
+            height,
+            fotollection_core::plan::photo_area(print, border),
+        );
         let shot = record.shot.clone();
         let camera_id = state.frame.read().ok().and_then(|f| {
             f.profile_for(shot.make.as_deref(), shot.model.as_deref())
@@ -1453,6 +1469,27 @@ pub struct HistoryState {
     pub can_redo: bool,
 }
 
+/// The whole print in centimetres, as displayed (width × height): the print size in the
+/// photo's orientation, or for Original with the 3 mm border, the canvas measured from its
+/// 10 cm short edge, as the border makes it longer (FR-045, FR-067).
+#[allow(clippy::cast_precision_loss)]
+fn canvas_cm(
+    print: PrintSize,
+    (width, height): (u32, u32),
+    p: &fotollection_core::plan::RenderPlan,
+) -> (f32, f32) {
+    let (long_cm, short_cm) = (print.long_mm as f32 / 10.0, print.short_mm as f32 / 10.0);
+    let (canvas_w, canvas_h) = p.output_size();
+    if print.is_original() && p.mat.is_some() {
+        let cm = short_cm / canvas_w.min(canvas_h).max(1) as f32;
+        (canvas_w as f32 * cm, canvas_h as f32 * cm)
+    } else if width >= height {
+        (long_cm, short_cm)
+    } else {
+        (short_cm, long_cm)
+    }
+}
+
 /// What the crop editor needs (FR-006): the upright photo size, the target box the crop
 /// must fill, its printed size in cm, and the current crop.
 #[derive(Debug, Clone, Serialize, Type)]
@@ -1543,14 +1580,8 @@ pub async fn get_crop_geometry(
             place: None,
             straighten: 0.0,
         });
-        #[allow(clippy::cast_precision_loss)]
-        let (long_cm, short_cm) = (print.long_mm as f32 / 10.0, print.short_mm as f32 / 10.0);
-        let (canvas_width_cm, canvas_height_cm) = if width >= height {
-            (long_cm, short_cm)
-        } else {
-            (short_cm, long_cm)
-        };
         let (canvas_w, canvas_h) = p.output_size();
+        let (canvas_width_cm, canvas_height_cm) = canvas_cm(print, (width, height), &p);
         #[allow(clippy::cast_precision_loss)]
         let (print_width_cm, print_height_cm) = (
             canvas_width_cm * p.out_width as f32 / canvas_w.max(1) as f32,

@@ -219,6 +219,17 @@ export const commands = {
 	/**  Turns the sheet that `first` starts against its photo, or back (FR-035). Undoable. */
 	turnSheet: (first: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("turn_sheet", { first })),
 	/**
+	 *  Sets (or, with `None`, resets to the print crop) a photo's crop on collage sheets, with
+	 *  its straightening, which the photo shares with its prints. One undoable step (FR-035).
+	 */
+	setCollageCrop: (id: PhotoId, crop: {
+	/**  Centre, 0–1 of the upright photo's width and height. */
+	cx: number | null,
+	cy: number | null,
+	/**  1 = the largest crop at the target ratio; up to `MAX_ZOOM`. */
+	zoom: number | null,
+} | null, straighten: number | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_collage_crop", { id, crop, straighten })),
+	/**
 	 *  What the panel says about a sheet: its size, each photo's area, the suggested size,
 	 *  the photo left inside the border and the print quality (FR-035, FR-026).
 	 */

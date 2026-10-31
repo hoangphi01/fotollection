@@ -244,7 +244,7 @@ impl PreviewCache {
                 *slot = Some(crate::sheet::CellSource {
                     image,
                     capture: record.stamp_date(),
-                    crop: record.edits.crop,
+                    crop: record.edits.sheet_crop(),
                     straighten: record.edits.straighten,
                     place: *place,
                     stamp: record.edits.stamp.as_ref(),

@@ -198,7 +198,7 @@ fn encode_sheet(
         *slot = Some(crate::sheet::CellSource {
             image,
             capture: record.stamp_date(),
-            crop: record.edits.crop,
+            crop: record.edits.sheet_crop(),
             straighten: record.edits.straighten,
             place: place.as_deref(),
             stamp: record.edits.stamp.as_ref(),
@@ -252,11 +252,12 @@ fn encode_photo(
         ExportTarget::Share(preset) => Some(preset),
         ExportTarget::Print => None,
     };
-    // Shared photos keep their own ratio: no print crop (FR-053).
     let share_settings;
     let base = if share.is_some() {
+        // Shared photos are not prints: no print crop and no print border (FR-053, FR-067).
         share_settings = RenderSettings {
             print_size: crate::PrintSize::ORIGINAL_ID.to_owned(),
+            border: false,
             ..options.settings.clone()
         };
         &share_settings

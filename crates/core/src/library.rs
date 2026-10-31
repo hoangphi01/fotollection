@@ -135,6 +135,17 @@ pub struct PhotoEdits {
     /// The sheet this photo starts is turned against its photo (FR-035).
     #[serde(default)]
     pub sheet_turned: bool,
+    /// The photo's crop on a collage sheet, apart from its print crop (FR-035); `None` uses
+    /// the print crop.
+    #[serde(default)]
+    pub collage_crop: Option<CropFrame>,
+}
+
+impl PhotoEdits {
+    /// The crop used on a collage sheet: its own, or the print crop (FR-035).
+    pub fn sheet_crop(&self) -> Option<CropFrame> {
+        self.collage_crop.or(self.crop)
+    }
 }
 
 /// A place given to a photo, by its GeoNames id in the bundled places (FR-032, FR-031).

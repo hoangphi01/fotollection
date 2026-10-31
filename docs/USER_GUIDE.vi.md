@@ -147,7 +147,7 @@ Chọn khổ bạn sẽ in, Fotollection cắt mọi ảnh theo khổ đó và c
    Mỗi khổ có một huy hiệu cho ảnh đang chọn trong gallery: **Nét** (từ 300 DPI), **Tạm được** (150–299 DPI, ổn khi cầm xem) hoặc **Sẽ vỡ** (dưới 150 DPI). Rê chuột lên huy hiệu để xem số DPI.
 3. Dưới danh sách, một dòng cho biết ảnh đang chọn in nét tới cỡ nào, và vẫn chấp nhận được tới cỡ nào.
 4. Mọi ảnh được cắt theo tỉ lệ của khổ, **mặc định ở giữa**. Chọn phần được giữ cho từng ảnh trong bản xem trước (chương 6).
-5. **Viền 3 mm** để một viền trắng rộng 3 mm ở mọi cạnh, lấn vào ảnh: bản in vẫn đúng khổ của máy in tại tiệm. Khi bật khung thông tin, viền theo màu khung (chương 9).
+5. **Viền 3 mm** để một viền trắng rộng 3 mm ở mọi cạnh, lấn vào ảnh: bản in vẫn đúng khổ của máy in tại tiệm. Với khổ **Gốc**, không mất pixel nào: viền bao quanh cả tấm ảnh, cạnh ngắn vẫn 10 cm và cạnh dài thêm 6 mm. Ảnh xuất cho mạng xã hội không bao giờ có viền. Khi bật khung thông tin, viền theo màu khung (chương 9).
 
 <!-- shot: manual-size | Danh sách khổ in, mỗi khổ một huy hiệu độ nét -->
 

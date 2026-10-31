@@ -19,8 +19,8 @@ pub const FORMAT: &str = "fotollection-project";
 /// v7: `cameras[]`, each body's clock offset and time zone (FR-030).
 /// v8: `photos[].date`, `photos[].place` and `place_source` (FR-032, FR-031), and `places[]`,
 /// the places the user renamed (FR-005).
-/// v9: `photos[].collage`, the position in the collage order, and `photos[].sheet_turned`
-/// (FR-035).
+/// v9: `photos[].collage`, the position in the collage order, `photos[].sheet_turned` and
+/// `photos[].collage_crop`, the photo's own crop on a sheet (FR-035).
 pub const SCHEMA_VERSION: u32 = 9;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
@@ -87,6 +87,9 @@ pub struct PhotoRow {
     /// The sheet this photo starts is turned (v9).
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub sheet_turned: bool,
+    /// The photo's own crop on a collage sheet (v9).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub collage_crop: Option<CropFrame>,
 }
 
 /// A place the user renamed (v8, FR-005).
@@ -206,6 +209,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 place_source: edits.place.map(|p| p.source),
                 collage: edits.collage,
                 sheet_turned: edits.sheet_turned,
+                collage_crop: edits.collage_crop,
             })
         })
         .collect();
@@ -504,6 +508,7 @@ pub fn restore_into(
                     }),
                 collage: row.collage,
                 sheet_turned: row.sheet_turned,
+                collage_crop: row.collage_crop.map(CropFrame::sanitized),
             },
         );
         summary.restored += 1;
@@ -574,6 +579,11 @@ mod tests {
                     queue: Some(Queue::Print),
                     collage: Some(3),
                     sheet_turned: true,
+                    collage_crop: Some(CropFrame {
+                        cx: 0.4,
+                        cy: 0.5,
+                        zoom: 2.0,
+                    }),
                     ..PhotoEdits::default()
                 },
             );
@@ -603,6 +613,13 @@ mod tests {
         // The collage order and a turned sheet (v9, FR-035).
         assert_eq!(restored.as_ref().and_then(|e| e.collage), Some(3));
         assert_eq!(restored.as_ref().map(|e| e.sheet_turned), Some(true));
+        assert_eq!(
+            restored
+                .as_ref()
+                .and_then(|e| e.collage_crop)
+                .map(|c| c.zoom),
+            Some(2.0)
+        );
         assert_eq!(
             restored.and_then(|e| e.stamp).map(|s| s.caption),
             Some("Lisbon".into()),
@@ -729,6 +746,7 @@ mod tests {
             place_source: None,
             collage: None,
             sheet_turned: false,
+            collage_crop: None,
         });
         save(&path, &file)?;
         assert!(
@@ -784,6 +802,7 @@ mod tests {
             .map(|p| (p.collage, p.sheet_turned))
             .collect();
         assert_eq!(rows, [(Some(1), false), (Some(0), true)]);
+        assert_eq!(v9.photos[1].collage_crop.map(|c| c.zoom), Some(1.5));
         let Loaded::Ok(v8) =
             from_bytes(include_bytes!("../tests/fixtures/project/v8.fotollection"))
         else {

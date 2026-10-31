@@ -820,6 +820,50 @@ fn fr_016_rw2_imports_and_exports() {
 }
 
 #[test]
+fn fr_067_share_exports_have_no_border() {
+    use fotollection_core::share::{ExportTarget, SharePreset};
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    write(
+        src.path(),
+        "IMG_1.jpg",
+        &jpeg(&Fixture {
+            width: 600,
+            height: 400,
+            date: Some("2026:07:14 10:00:00"),
+            ..Fixture::default()
+        }),
+    );
+    let lib = import(src.path());
+    let settings = RenderSettings {
+        border: true,
+        export_target: ExportTarget::Share(SharePreset::Original),
+        ..RenderSettings::default()
+    };
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 1,
+        place_for: &|_| None,
+        frame_for: &|_| None,
+        group_for: &|_| None,
+    };
+    let summary = run_export(
+        &records(&lib),
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert_eq!(summary.exported, 1);
+    let out = std::fs::read(dest.path().join("Share/2026-07-14/IMG_1.jpg")).unwrap();
+    let image = PureRustCodec.decode(&out).unwrap().image;
+    // The same pixels as the photo: the print border stays on prints.
+    assert_eq!((image.width, image.height), (600, 400));
+}
+
+#[test]
 fn fr_053_share_export_resizes_keeps_ratio_and_writes_safe_exif() {
     use fotollection_core::share::{ExportTarget, SharePreset};
     let src = tempfile::tempdir().unwrap();

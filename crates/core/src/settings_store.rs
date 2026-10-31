@@ -145,8 +145,9 @@ fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
     let mut render = file.render;
     render.collage = render.collage.sanitized();
     let mut frame = file.frame;
-    // v9 → v10: FR-065's Crop-to-fill border becomes the border on every print (FR-067).
-    if version < 10 && frame.border {
+    // v9 → v10: FR-065's Crop-to-fill border becomes the border on every print (FR-067),
+    // only where it showed: with the info frame on, in Crop to fill.
+    if version < 10 && frame.border && frame.enabled && frame.fit == crate::frame::FrameFit::Crop {
         render.border = true;
     }
     frame.border = false;
@@ -402,6 +403,24 @@ mod tests {
             panic!("v10 should load");
         };
         assert!(back.render.border);
+        Ok(())
+    }
+
+    #[test]
+    fn fr_067_a_v9_border_without_the_frame_stays_off() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        // The border switch was on, but the info frame was off: no print had a border.
+        let text = include_str!("../tests/fixtures/settings/v9.json").replacen(
+            "\"enabled\": true",
+            "\"enabled\": false",
+            1,
+        );
+        std::fs::write(&path, text)?;
+        let Loaded::Ok(s) = load(&path) else {
+            panic!("v9 should load");
+        };
+        assert!(!s.render.border);
         Ok(())
     }
 

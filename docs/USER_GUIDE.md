@@ -149,7 +149,7 @@ Choose the size you will print at, and Fotollection crops every photo to it and 
    Each size carries a badge for the photo selected in the gallery: **Sharp** (300 DPI or more), **Acceptable** (150–299 DPI, fine at arm's length) or **Pixelated** (under 150 DPI). Hover over it to see the DPI.
 3. Under the list, a line says how large the selected photo prints sharp, and how large it is still acceptable.
 4. Every photo is cropped to the size's ratio, **centred by default**. Choose what stays per photo in the preview (chapter 6).
-5. **3 mm border** leaves a white border 3 mm wide on every side, cut into the photo: the print keeps the exact size of the shop's kiosk. With the info frame on, the border takes the frame's colour (chapter 9).
+5. **3 mm border** leaves a white border 3 mm wide on every side, cut into the photo: the print keeps the exact size of the shop's kiosk. With **Original**, no pixel is lost: the border goes round the whole photo, the short edge stays 10 cm and the long edge grows by 6 mm. Photos for social media never get it. With the info frame on, the border takes the frame's colour (chapter 9).
 
 <!-- shot: manual-size | The print size list, a sharpness badge on each size -->
 

@@ -82,14 +82,26 @@ pub fn set_collage_order(
             "A photo is listed twice",
         ));
     }
+    // One order for the whole library, so reordering one folder keeps the others' order.
+    let placed: Vec<(PhotoId, u32)> = state
+        .library
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?
+        .edited()
+        .filter_map(|(id, e)| e.collage.map(|p| (id, p)))
+        .collect();
+    let order = sheet::reorder(&placed, &ids);
     let position = |id: PhotoId| {
-        ids.iter()
+        order
+            .iter()
             .position(|i| *i == id)
             .and_then(|p| u32::try_from(p).ok())
     };
-    edit_photos(&app, &state, &ids, |id, e| {
+    edit_photos(&app, &state, &order, |id, e| {
         e.collage = position(id);
-        e.sheet_turned = false;
+        if ids.contains(&id) {
+            e.sheet_turned = false;
+        }
     })
 }
 
@@ -103,6 +115,24 @@ pub fn turn_sheet(
 ) -> Result<HistoryState, IpcError> {
     edit_photos(&app, &state, &[first], |_, e| {
         e.sheet_turned = !e.sheet_turned;
+    })
+}
+
+/// Sets (or, with `None`, resets to the print crop) a photo's crop on collage sheets, with
+/// its straightening, which the photo shares with its prints. One undoable step (FR-035).
+#[tauri::command]
+#[specta::specta]
+pub fn set_collage_crop(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: PhotoId,
+    crop: Option<fotollection_core::plan::CropFrame>,
+    straighten: f32,
+) -> Result<HistoryState, IpcError> {
+    let degrees = fotollection_core::straighten::sanitize(straighten);
+    edit_photos(&app, &state, &[id], |_, e| {
+        e.collage_crop = crop.map(fotollection_core::plan::CropFrame::sanitized);
+        e.straighten = degrees;
     })
 }
 
@@ -131,11 +161,17 @@ pub async fn sheet_info(app: AppHandle, sheet: SheetPair) -> Result<SheetInfo, I
             .map_err(|e| IpcError::internal(e.to_string()))?
             .0
             .clone();
-        let a = (first.id, upright_size(&state, &first)?, first.edits.crop);
-        let b = match &second {
-            Some(r) => Some((r.id, upright_size(&state, r)?, r.edits.crop)),
-            None => None,
-        };
+        let fact =
+            |r: &fotollection_core::library::PhotoRecord| -> Result<sheet::SheetPhoto, IpcError> {
+                Ok((
+                    r.id,
+                    upright_size(&state, r)?,
+                    r.edits.sheet_crop(),
+                    r.edits.straighten,
+                ))
+            };
+        let a = fact(&first)?;
+        let b = second.as_ref().map(fact).transpose()?;
         Ok(sheet::info(
             sheet::sheet_print(&settings),
             [Some(a), b],
@@ -210,7 +246,7 @@ pub fn cell_geometry(
         target_height,
         print_width_cm: (area_w - inset).max(1.0) / 10.0,
         print_height_cm: (area_h - inset).max(1.0) / 10.0,
-        crop: record.edits.crop,
+        crop: record.edits.sheet_crop(),
         straighten: record.edits.straighten,
         crop_disabled: false,
         output_width_cm: area_w / 10.0,

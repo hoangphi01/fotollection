@@ -28,7 +28,8 @@
       "fp_mtime": 1726000001,
       "queue": "print",
       "collage": 0,
-      "sheet_turned": true
+      "sheet_turned": true,
+      "collage_crop": { "cx": 0.5, "cy": 0.4, "zoom": 1.5 }
     }
   ]
 }

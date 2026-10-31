@@ -304,8 +304,9 @@ pub struct SheetInfo {
     pub cells: Vec<CellInfo>,
 }
 
-/// A photo as `info` needs it: its id, upright pixel size and own crop.
-pub type SheetPhoto = (PhotoId, (u32, u32), Option<CropFrame>);
+/// A photo as `info` needs it: its id, upright pixel size, its crop on the sheet and its
+/// straightening in degrees.
+pub type SheetPhoto = (PhotoId, (u32, u32), Option<CropFrame>, f32);
 
 /// Facts about a laid-out sheet, from the photos' sizes only (no decode).
 pub fn info(
@@ -316,7 +317,7 @@ pub fn info(
 ) -> SheetInfo {
     let sheet = layout(
         print,
-        photos.map(|p| p.map(|(_, size, _)| size)),
+        photos.map(|p| p.map(|(_, size, _, _)| size)),
         turned,
         &settings.collage,
     );
@@ -326,7 +327,7 @@ pub fn info(
         .iter()
         .zip(photos)
         .filter_map(|(cell, photo)| {
-            let (cell, (id, size, frame)) = ((*cell)?, photo?);
+            let (cell, (id, size, frame, degrees)) = ((*cell)?, photo?);
             let suggested = suggested_area(
                 (cell.cell.width, cell.cell.height),
                 size,
@@ -338,15 +339,15 @@ pub fn info(
                 (cell.area.0 as f32 - inset).max(1.0),
                 (cell.area.1 as f32 - inset).max(1.0),
             );
-            // The photo's own crop, zoom included, at the ratio left inside the border.
+            // The photo's own crop, zoom and straightening included, at the ratio left inside
+            // the border: the pixels the sheet really prints.
             #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-            let crop = crate::plan::crop_rect(
-                size.0,
-                size.1,
-                (pw * 10.0).round() as u64,
-                (ph * 10.0).round() as u64,
-                frame,
-            );
+            let (rw, rh) = ((pw * 10.0).round() as u64, (ph * 10.0).round() as u64);
+            let crop = if crate::straighten::is_straightened(degrees) {
+                crate::straighten::crop_rect(size.0, size.1, rw, rh, frame, degrees)
+            } else {
+                crate::plan::crop_rect(size.0, size.1, rw, rh, frame)
+            };
             #[allow(
                 clippy::cast_precision_loss,
                 clippy::cast_possible_truncation,
@@ -517,6 +518,31 @@ fn fill_rect(canvas: &mut RgbImage, x: u32, y: u32, width: u32, height: u32, col
     blit(canvas, &block, x, y);
 }
 
+/// The collage order of every placed photo after a reorder in one view (FR-035). `placed`
+/// holds the photos that already have a position; `view` is the view's photos in their new
+/// order. The view's photos take back the slots they held in the whole order (new ones at
+/// the end), so a reorder in one folder never mixes with another folder's order.
+pub fn reorder(placed: &[(PhotoId, u32)], view: &[PhotoId]) -> Vec<PhotoId> {
+    let mut sorted: Vec<(u32, PhotoId)> = placed.iter().map(|(id, p)| (*p, *id)).collect();
+    sorted.sort_unstable();
+    let mut order: Vec<PhotoId> = sorted.into_iter().map(|(_, id)| id).collect();
+    for id in view {
+        if !order.contains(id) {
+            order.push(*id);
+        }
+    }
+    let slots: Vec<usize> = order
+        .iter()
+        .enumerate()
+        .filter(|(_, id)| view.contains(id))
+        .map(|(i, _)| i)
+        .collect();
+    for (slot, id) in slots.into_iter().zip(view) {
+        order[slot] = *id;
+    }
+    order
+}
+
 /// Photos in collage order (FR-035): first those the user placed, by their position, then
 /// the others in the view's order, so a photo added later joins at the end instead of
 /// pushing every sheet along. Paired 1 + 2, 3 + 4…, an odd last photo alone.
@@ -676,8 +702,8 @@ mod tests {
         let sheet = info(
             print(),
             [
-                Some((PhotoId(1), (4000, 6000), None)),
-                Some((PhotoId(2), (4000, 6000), None)),
+                Some((PhotoId(1), (4000, 6000), None, 0.0)),
+                Some((PhotoId(2), (4000, 6000), None, 0.0)),
             ],
             false,
             &settings,
@@ -714,6 +740,19 @@ mod tests {
         let after = pairs(&added);
         assert_eq!(after[0], (PhotoId(4), Some(PhotoId(0))));
         assert_eq!(after[2], (PhotoId(3), Some(PhotoId(9))));
+    }
+
+    #[test]
+    fn fr_035_a_reorder_in_one_folder_keeps_the_other_folders_order() {
+        let id = PhotoId;
+        // Folder A (1, 2, 3) was arranged first, then folder B (10, 11).
+        let placed = [(id(1), 0), (id(2), 1), (id(3), 2), (id(10), 3), (id(11), 4)];
+        // In folder B's tab the user swaps its two photos.
+        let order = reorder(&placed, &[id(11), id(10)]);
+        assert_eq!(order, [id(1), id(2), id(3), id(11), id(10)]);
+        // A view with a new photo: it joins at the end.
+        let order = reorder(&placed, &[id(2), id(1), id(12)]);
+        assert_eq!(order, [id(2), id(1), id(3), id(10), id(11), id(12)]);
     }
 
     #[test]
@@ -769,7 +808,7 @@ mod tests {
             };
             info(
                 print(),
-                [Some((PhotoId(1), (4000, 6000), Some(frame))), None],
+                [Some((PhotoId(1), (4000, 6000), Some(frame), 0.0)), None],
                 false,
                 &settings,
             )
