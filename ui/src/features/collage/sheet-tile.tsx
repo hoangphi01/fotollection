@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { LoaderCircle, RotateCw } from 'lucide-react'
+import { Check, LoaderCircle, RotateCw, ShoppingBasket } from 'lucide-react'
 import { useState, type PointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -17,7 +17,13 @@ type SheetTileProps = {
   /** The photo being dragged, and the cell under the pointer (`null` for an empty one). */
   dragging: PhotoId | null
   over: PhotoId | null | undefined
+  /** Select mode (FR-050): a click ticks a photo instead of choosing it; no dragging. */
+  selectMode: boolean
+  checked: ReadonlySet<number>
+  /** Photos in the print basket, badged like the gallery's. */
+  inBasket: (photo: PhotoId) => boolean
   onSelect: (cell: 0 | 1) => void
+  onToggle: (photo: PhotoId) => void
   onOpen: (cell: 0 | 1) => void
   onTurn: () => void
   onDragStart: (photo: PhotoId, event: PointerEvent) => void
@@ -36,7 +42,11 @@ export function SheetTile({
   selectedCell,
   dragging,
   over,
+  selectMode,
+  checked,
+  inBasket,
   onSelect,
+  onToggle,
   onOpen,
   onTurn,
   onDragStart,
@@ -80,17 +90,37 @@ export function SheetTile({
               data-cell
               data-photo={photo ?? undefined}
               className={cn(
-                'flex-1 cursor-grab rounded-sm transition-colors active:cursor-grabbing',
+                'relative flex-1 rounded-sm transition-colors',
+                selectMode ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing',
                 selected && selectedCell === cell && 'ring-2 ring-primary ring-inset',
                 dragging !== null && over !== undefined && over === photo && dragging !== photo && 'bg-primary/25',
                 dragging === photo && photo !== null && 'outline-2 -outline-offset-2 outline-primary outline-dashed',
               )}
               onPointerDown={(e) => {
                 onSelect(cell)
-                if (photo !== null) onDragStart(photo, e)
+                if (photo === null) return
+                if (selectMode) onToggle(photo)
+                else onDragStart(photo, e)
               }}
-              onDoubleClick={() => photo !== null && onOpen(cell)}
-            />
+              onDoubleClick={() => photo !== null && !selectMode && onOpen(cell)}
+            >
+              {photo !== null && inBasket(photo) && (
+                <span className="absolute top-1 right-1 rounded bg-primary p-0.5 text-primary-foreground" aria-label={t('library.inBasket')}>
+                  <ShoppingBasket className="size-3" />
+                </span>
+              )}
+              {selectMode && photo !== null && (
+                <span
+                  className={cn(
+                    'absolute right-1 bottom-1 flex size-5 items-center justify-center rounded-full border-2 shadow',
+                    checked.has(photo) ? 'border-primary bg-primary text-primary-foreground' : 'border-white bg-black/30',
+                  )}
+                  aria-hidden
+                >
+                  {checked.has(photo) && <Check className="size-3" strokeWidth={3} />}
+                </span>
+              )}
+            </div>
           ))}
         </div>
       </div>

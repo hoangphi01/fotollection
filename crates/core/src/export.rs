@@ -165,19 +165,29 @@ fn encode_sheet(
 ) -> Result<Vec<u8>, ExportError> {
     let (first, second) = (&sheet.0, sheet.1.as_ref());
     let mut decoded = Vec::with_capacity(2);
-    let mut icc = None;
+    let mut profiles = Vec::with_capacity(2);
     for record in std::iter::once(first).chain(second) {
         if cancel.is_cancelled() {
             return Err(ExportError::Cancelled);
         }
         let bytes = std::fs::read(&record.path)?;
         let d = decode_image(codec, &bytes)?;
-        icc = icc.or(d.icc);
+        profiles.push(d.icc);
         decoded.push((
             apply_orientation(d.image, record.display_orientation()),
             (options.place_for)(record),
         ));
     }
+    // One canvas carries one profile: two photos in the same colour space keep it; two in
+    // different spaces both become sRGB, so neither is read in the other's space.
+    let icc = if profiles.windows(2).all(|w| w[0] == w[1]) {
+        profiles.into_iter().next().flatten()
+    } else {
+        for ((image, _), profile) in decoded.iter_mut().zip(&profiles) {
+            colour::to_srgb(image, profile.as_deref());
+        }
+        None
+    };
     let print = crate::sheet::sheet_print(options.settings);
     let records = [Some(first), second];
     let mut sources = [None, None];
@@ -413,7 +423,8 @@ pub fn estimate_sheets(
     samples: usize,
 ) -> ExportEstimate {
     let cancel = CancellationToken::new();
-    estimate(sheets, samples, sheet_size, |s| {
+    // Two decoded photos per sample: half as many at once (NFR-004).
+    estimate(sheets, samples.div_ceil(2), sheet_size, |s| {
         encode_sheet(s, options, codec, &cancel)
     })
 }
@@ -487,6 +498,12 @@ pub fn run_export_sheets(
     on_progress: &(dyn Fn(u32, u32) + Sync),
 ) -> ExportSummary {
     let reserved = Mutex::new(HashSet::new());
+    // A sheet holds two decoded photos at once: half as many in flight keeps the peak memory
+    // of single photos (NFR-004).
+    let options = &ExportOptions {
+        max_inflight: options.max_inflight.div_ceil(2),
+        ..*options
+    };
     run(
         sheets,
         options,

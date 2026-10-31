@@ -211,8 +211,9 @@ export const commands = {
 	/**  The sheets of the photos shown, in order (FR-035). */
 	listSheets: (filter: CullFilter) => typedError<SheetPair[], IpcError>(__TAURI_INVOKE("list_sheets", { filter })),
 	/**
-	 *  The collage order after a drag: `ids` are the photos shown, in their new order. One
-	 *  undoable step (FR-035).
+	 *  The collage order after a drag: `ids` are the photos shown, in their new order. A turn
+	 *  belongs to a sheet, so a new order starts every sheet the way its first photo suits.
+	 *  One undoable step (FR-035).
 	 */
 	setCollageOrder: (ids: PhotoId[]) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_collage_order", { ids })),
 	/**  Turns the sheet that `first` starts against its photo, or back (FR-035). Undoable. */

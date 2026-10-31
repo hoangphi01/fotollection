@@ -19,6 +19,12 @@ type SheetGridProps = {
   generation: number
   selected: number
   selectedCell: 0 | 1
+  /** Select mode (FR-050), as in the gallery: clicks tick photos, Enter ticks the chosen one. */
+  selectMode: boolean
+  checked: ReadonlySet<number>
+  inBasket: (photo: PhotoId) => boolean
+  onToggle: (photo: PhotoId) => void
+  onToggleAll: () => void
   onSelect: (sheet: number, cell: 0 | 1) => void
   /** Opens the sheet's preview, on one of its photos. */
   onOpen: (sheet: number, cell: 0 | 1) => void
@@ -37,6 +43,11 @@ export function SheetGrid({
   generation,
   selected,
   selectedCell,
+  selectMode,
+  checked,
+  inBasket,
+  onToggle,
+  onToggleAll,
   onSelect,
   onOpen,
   onMove,
@@ -73,8 +84,11 @@ export function SheetGrid({
   }, [selected, columns, virtualizer])
 
   // The drag follows the pointer anywhere in the window, and ends wherever it is released.
+  // The listeners are attached once per drag; the latest position lives in a ref.
+  const dragRef = useRef<Drag | null>(null)
+  const dragging = drag !== null
   useEffect(() => {
-    if (!drag) return
+    if (!dragging) return
     const target = (x: number, y: number) => {
       const cell = document.elementFromPoint(x, y)?.closest<HTMLElement>('[data-cell]')
       if (!cell) return undefined
@@ -82,15 +96,20 @@ export function SheetGrid({
       return photo === undefined ? null : Number(photo)
     }
     const onMoveEvent = (e: globalThis.PointerEvent) => {
-      const moved = drag.moved || Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > DRAG_SLOP
-      setDrag({ ...drag, x: e.clientX, y: e.clientY, moved })
+      const current = dragRef.current
+      if (!current) return
+      const moved = current.moved || Math.hypot(e.clientX - current.startX, e.clientY - current.startY) > DRAG_SLOP
+      dragRef.current = { ...current, x: e.clientX, y: e.clientY, moved }
+      setDrag(dragRef.current)
       if (moved) setOver(target(e.clientX, e.clientY))
     }
     const onUp = (e: globalThis.PointerEvent) => {
-      if (drag.moved) {
+      const current = dragRef.current
+      if (current?.moved) {
         const to = target(e.clientX, e.clientY)
-        if (to !== undefined && to !== drag.photo) onMove(drag.photo, to)
+        if (to !== undefined && to !== current.photo) onMove(current.photo, to)
       }
+      dragRef.current = null
       setDrag(null)
       setOver(undefined)
     }
@@ -100,11 +119,12 @@ export function SheetGrid({
       window.removeEventListener('pointermove', onMoveEvent)
       window.removeEventListener('pointerup', onUp)
     }
-  }, [drag, onMove])
+  }, [dragging, onMove])
 
   const startDrag = (photo: PhotoId, e: PointerEvent) => {
     if (e.button !== 0) return
-    setDrag({ photo, startX: e.clientX, startY: e.clientY, x: e.clientX, y: e.clientY, moved: false })
+    dragRef.current = { photo, startX: e.clientX, startY: e.clientY, x: e.clientX, y: e.clientY, moved: false }
+    setDrag(dragRef.current)
   }
 
   // The photos in order, each with its sheet and cell, for ← → and ⌥/Alt ← →.
@@ -130,7 +150,13 @@ export function SheetGrid({
     } else if (row !== 0) {
       event.preventDefault()
       onSelect(Math.min(sheets.length - 1, Math.max(0, selected + row)), 0)
-    } else if ((event.key === 'Enter' || event.key === ' ') && cells[at]) {
+    } else if (selectMode && event.key === 'Enter' && cells[at]) {
+      event.preventDefault()
+      onToggle(cells[at].photo)
+    } else if (selectMode && event.key.toLowerCase() === 'a' && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      onToggleAll()
+    } else if (!selectMode && (event.key === 'Enter' || event.key === ' ') && cells[at]) {
       // As in the gallery: Enter or Space opens the preview.
       event.preventDefault()
       onOpen(cells[at].sheet, cells[at].cell)
@@ -165,6 +191,10 @@ export function SheetGrid({
                   size={TILE}
                   selected={index === selected}
                   selectedCell={selectedCell}
+                  selectMode={selectMode}
+                  checked={checked}
+                  inBasket={inBasket}
+                  onToggle={onToggle}
                   dragging={drag?.moved ? drag.photo : null}
                   over={over}
                   onSelect={(cell) => onSelect(index, cell)}

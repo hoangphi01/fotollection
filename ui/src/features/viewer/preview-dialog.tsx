@@ -365,6 +365,7 @@ export function PreviewDialog({
                 variant="secondary"
                 size="icon"
                 aria-label={t('viewer.previous')}
+                data-hint={t('viewer.previous')}
                 className="absolute left-3 opacity-80 hover:opacity-100"
                 disabled={index === 0}
                 onClick={() => go(-1)}
@@ -375,6 +376,7 @@ export function PreviewDialog({
                 variant="secondary"
                 size="icon"
                 aria-label={t('viewer.next')}
+                data-hint={t('viewer.next')}
                 className="absolute right-3 opacity-80 hover:opacity-100"
                 disabled={index === null || index >= photos.length - 1}
                 onClick={() => go(1)}

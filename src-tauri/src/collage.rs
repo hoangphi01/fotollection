@@ -65,8 +65,9 @@ pub fn list_sheets(
     Ok(sheet_pairs(&library, &filter))
 }
 
-/// The collage order after a drag: `ids` are the photos shown, in their new order. One
-/// undoable step (FR-035).
+/// The collage order after a drag: `ids` are the photos shown, in their new order. A turn
+/// belongs to a sheet, so a new order starts every sheet the way its first photo suits.
+/// One undoable step (FR-035).
 #[tauri::command]
 #[specta::specta]
 pub fn set_collage_order(
@@ -86,7 +87,10 @@ pub fn set_collage_order(
             .position(|i| *i == id)
             .and_then(|p| u32::try_from(p).ok())
     };
-    edit_photos(&app, &state, &ids, |id, e| e.collage = position(id))
+    edit_photos(&app, &state, &ids, |id, e| {
+        e.collage = position(id);
+        e.sheet_turned = false;
+    })
 }
 
 /// Turns the sheet that `first` starts against its photo, or back (FR-035). Undoable.
@@ -127,9 +131,9 @@ pub async fn sheet_info(app: AppHandle, sheet: SheetPair) -> Result<SheetInfo, I
             .map_err(|e| IpcError::internal(e.to_string()))?
             .0
             .clone();
-        let a = (first.id, upright_size(&state, &first)?);
+        let a = (first.id, upright_size(&state, &first)?, first.edits.crop);
         let b = match &second {
-            Some(r) => Some((r.id, upright_size(&state, r)?)),
+            Some(r) => Some((r.id, upright_size(&state, r)?, r.edits.crop)),
             None => None,
         };
         Ok(sheet::info(
@@ -190,11 +194,7 @@ pub fn cell_geometry(
     );
     let index = usize::from(sheet.first != record.id);
     let cell = layout.cells[index].ok_or_else(|| IpcError::internal("an empty cell"))?;
-    let inset = if settings.border {
-        2.0 * fotollection_core::frame::CROP_BORDER_MM
-    } else {
-        0.0
-    };
+    let inset = sheet::border_inset(settings);
     #[allow(clippy::cast_precision_loss)]
     let (area_w, area_h) = (cell.area.0 as f32, cell.area.1 as f32);
     // The crop has the ratio of the photo inside the border.

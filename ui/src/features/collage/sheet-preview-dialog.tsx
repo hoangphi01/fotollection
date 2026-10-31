@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ChevronLeft, ChevronRight, Crop, Images, LoaderCircle, RotateCw } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Crop, Images, LoaderCircle, RotateCw, ShoppingBasket } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { SectionCard } from '@/components/layout/section-card'
 import { ViewerFrame } from '@/components/layout/viewer-frame'
-import { commands, type CullFilter, type PhotoId, type PhotoSummary, type RenderSettings } from '@/ipc/bindings'
+import { commands, type CullFilter, type PhotoId, type PhotoSummary, type Queue, type RenderSettings } from '@/ipc/bindings'
 import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
 import { CropEditor } from '@/features/viewer/crop-editor'
+import { sendTo } from '@/features/viewer/send-to'
 import { useShownSrc } from '@/features/viewer/use-shown-src'
 import { useZoom } from '@/features/viewer/use-zoom'
 import { ZoomControls } from '@/features/viewer/zoom-controls'
@@ -68,6 +69,15 @@ export function SheetPreviewDialog({
     if (!cropping) contentRef.current?.focus()
   }, [cropping])
 
+  // ↑ to the print basket, ↓ set aside, for the chosen photo (FR-050); the choice moves on
+  // to the next photo of the sheets, as in the photo preview.
+  const nextPhoto = () => {
+    if (cellIndex === 0 && sheet?.second != null) collage.select(index, 1)
+    else go(1)
+  }
+  const send = (queue: Queue) => {
+    if (photo !== null) sendTo(photo, queue, filter.queue ?? 'gallery', nextPhoto)
+  }
   const go = (delta: number) => {
     setCropping(false)
     collage.select(Math.min(sheets.length - 1, Math.max(0, index + delta)), 0)
@@ -78,6 +88,8 @@ export function SheetPreviewDialog({
     const key = event.key.toLowerCase()
     if (event.key === 'ArrowRight') go(1)
     else if (event.key === 'ArrowLeft') go(-1)
+    else if (event.key === 'ArrowUp') send('print')
+    else if (event.key === 'ArrowDown') send('aside')
     else if (key === '1' || key === '2') collage.select(index, key === '1' ? 0 : 1)
     else if (key === 'c' && photo !== null) setCropping(true)
     else if (key === 'r' && sheet && !event.metaKey && !event.ctrlKey) collage.turn(sheet.first)
@@ -112,7 +124,8 @@ export function SheetPreviewDialog({
         ) : (
           <>
             <kbd className="font-mono">←</kbd> <kbd className="font-mono">→</kbd> {t('collage.browse')} · <kbd className="font-mono">1</kbd>{' '}
-            <kbd className="font-mono">2</kbd> {t('collage.choose')} · <kbd className="font-mono">C</kbd> {t('viewer.crop')} ·{' '}
+            <kbd className="font-mono">2</kbd> {t('collage.choose')} · <kbd className="font-mono">↑</kbd> {t('viewer.upBasket')} ·{' '}
+            <kbd className="font-mono">↓</kbd> {t('viewer.downAside')} · <kbd className="font-mono">C</kbd> {t('viewer.crop')} ·{' '}
             <kbd className="font-mono">R</kbd> {t('collage.turn')} · <kbd className="font-mono">Esc</kbd> {t('viewer.close')}
           </>
         )
@@ -229,6 +242,16 @@ export function SheetPreviewDialog({
                     <p className="truncate text-sm">{p.fileName}</p>
                     <p className="text-xs text-muted-foreground">{formatCapture(p.capture)}</p>
                   </div>
+                  <Button
+                    variant={p.queue === 'print' ? 'default' : 'outline'}
+                    size="icon-sm"
+                    aria-pressed={p.queue === 'print'}
+                    aria-label={t(p.queue === 'print' ? 'preview.inBasket' : 'preview.toBasket')}
+                    data-hint={t(p.queue === 'print' ? 'preview.inBasket' : 'preview.toBasket')}
+                    onClick={() => void commands.setPhotoQueue([p.id], p.queue === 'print' ? null : 'print')}
+                  >
+                    <ShoppingBasket />
+                  </Button>
                   <Button
                     variant="outline"
                     size="icon-sm"

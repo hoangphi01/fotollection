@@ -391,13 +391,14 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
    - **Cỡ ảnh**: app gợi ý cỡ lớn nhất còn chừa 5 mm trắng quanh ảnh, ví dụ 6 × 9 cm cho ảnh 2:3 trong nửa tấm 7,5 × 10. Bạn có thể gõ cỡ khác; khi **khoá** tỷ lệ, nhập một cạnh thì cạnh kia tự tính. **Dùng gợi ý** để quay lại.
    - **Đường cắt**: một nét mảnh giữa hai ảnh, để cắt tấm in làm đôi. Tắt đi thì hai ảnh nằm liền nhau ở giữa, như ảnh half-frame.
    - Dòng ghi chú bên dưới cho biết cỡ ảnh, phần còn lại trong **viền 3 mm** (chương 5) và độ nét.
-5. **Đổi thứ tự:** kéo một ảnh thả lên ảnh khác để đổi chỗ, hoặc thả vào nửa tấm trống để đưa nó xuống cuối. **← →** chọn ảnh, **⌥/Alt ← →** dời ảnh đi một chỗ.
-6. **Xem trước:** nhấp đúp vào một tấm, hoặc nhấn **Enter** hay **Space**, để mở tấm cỡ lớn trong cửa sổ xem trước, như mở ảnh từ gallery. Ở đó:
-   - **← →** sang các tấm khác, **1** và **2** chọn ảnh, các nút phóng to hoặc **Cmd/Ctrl + / −** để phóng;
+5. **Đổi thứ tự:** kéo một ảnh thả lên ảnh khác để đổi chỗ, hoặc thả vào nửa tấm trống để đưa nó xuống cuối. **← →** chọn ảnh, **⌥/Alt ← →** dời ảnh đi một chỗ. Đổi thứ tự thì mỗi tấm quay về hướng hợp với ảnh đầu của nó, và ảnh thêm vào sau sẽ nằm ở cuối.
+6. **Chọn ảnh để in**, như trong gallery (chương 4): **Chọn** để tích ảnh bằng một cú nhấp (**Cmd/Ctrl+A** chọn tất cả, **Enter** tích ảnh đang chọn), rồi thanh công cụ đưa chúng vào **Giỏ in**, để riêng hoặc đưa về gallery. Ảnh trong giỏ có biểu tượng giỏ. Chọn **Giỏ in** ở thanh bên để chỉ ghép những ảnh đó.
+7. **Xem trước:** nhấp đúp vào một tấm, hoặc nhấn **Enter** hay **Space**, để mở tấm cỡ lớn trong cửa sổ xem trước, như mở ảnh từ gallery. Ở đó:
+   - **← →** sang các tấm khác, **1** và **2** chọn ảnh, **↑** cho ảnh vào giỏ in và **↓** để riêng (hoặc nút giỏ cạnh ảnh), các nút phóng to hoặc **Cmd/Ctrl + / −** để phóng;
    - **Cắt ảnh** (hoặc **C**, hoặc nút cắt cạnh mỗi ảnh) cắt ảnh đang chọn cho vị trí của nó trên tấm;
    - **Xoay tấm** (**R**) xoay tấm sang hướng kia;
    - bảng bên phải liệt kê hai ảnh, có cùng thẻ *Hai ảnh mỗi tấm*, và **Xuất tấm này** lưu riêng tấm đó.
-7. **Xuất** ở bảng bên phải lưu mỗi tấm một tệp, đặt tên theo hai ảnh của nó (ví dụ `P1000123+P1000124.jpg`), trong thư mục ngày của ảnh đầu.
+8. **Xuất** ở bảng bên phải lưu mỗi tấm một tệp, đặt tên theo hai ảnh của nó (ví dụ `P1000123+P1000124.jpg`), trong thư mục ngày của ảnh đầu.
 
 <!-- shot: collage | Chế độ Ghép ảnh: các tấm đúng như khi in, cùng tỷ lệ ảnh, cỡ gợi ý và đường cắt -->
 
@@ -427,6 +428,7 @@ Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên t�
 | Chế độ Ghép ảnh | **R** | Xoay tấm |
 | Xem trước tấm | **← →** / **1**, **2** | Tấm khác / chọn ảnh |
 | Xem trước tấm | **C** / **R** | Cắt ảnh đang chọn / xoay tấm |
+| Xem trước tấm | **↑** / **↓** | Cho ảnh đang chọn vào giỏ in / để riêng |
 | Xem trước | **C** | Mở màn cắt ảnh (chương 6) |
 | Xem trước | **Cmd/Ctrl + / −**, chụm trên trackpad, các nút phóng | Phóng to / thu nhỏ (§7) |
 | Xem trước | **Cmd/Ctrl 0**, nút vừa khung | Về vừa khung |

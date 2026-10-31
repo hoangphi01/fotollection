@@ -393,13 +393,14 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
    - **Photo size**: the app suggests the largest size that leaves 5 mm of white round the photo, for example 6 × 9 cm for a 2:3 photo in a 7.5 × 10 half. Type another size if you like; with the **lock** on, one edge gives the other. **Use the suggestion** goes back.
    - **Cut line**: a thin line between the photos, to cut the print in two. Off, the two photos meet in the middle, like a half-frame print.
    - The note under them gives the photo's size, the part left inside the **3 mm border** (chapter 5) and its sharpness.
-5. **Reorder:** drag a photo onto another photo to swap them, or onto an empty half to send it to the end. **← →** choose a photo, **⌥/Alt ← →** move it one place.
-6. **Preview:** double-click a sheet, or press **Enter** or **Space**, to open it large in the preview, as a photo opens from the gallery. There:
-   - **← →** go to the other sheets, **1** and **2** choose a photo, and the zoom buttons or **Cmd/Ctrl + / −** zoom in;
+5. **Reorder:** drag a photo onto another photo to swap them, or onto an empty half to send it to the end. **← →** choose a photo, **⌥/Alt ← →** move it one place. Reordering starts every sheet the way its first photo suits, and a photo added later joins at the end.
+6. **Choose the photos to print**, as in the gallery (chapter 4): **Select** ticks photos with a click (**Cmd/Ctrl+A** all, **Enter** the chosen one), and the bar puts them in the **Print basket**, sets them aside or brings them back. Photos in the basket carry its badge. Choose **Print basket** in the sidebar to make sheets of those photos only.
+7. **Preview:** double-click a sheet, or press **Enter** or **Space**, to open it large in the preview, as a photo opens from the gallery. There:
+   - **← →** go to the other sheets, **1** and **2** choose a photo, **↑** puts it in the print basket and **↓** sets it aside (or the basket button next to it), and the zoom buttons or **Cmd/Ctrl + / −** zoom in;
    - **Crop** (or **C**, or the crop button next to a photo) crops the chosen photo for its place on the sheet;
    - **Turn the sheet** (**R**) turns it the other way;
    - the panel lists the two photos, holds the same *Two photos per sheet* card, and **Export this sheet** saves this one sheet.
-7. **Export** in the panel writes one file per sheet, named after its two photos (for example `P1000123+P1000124.jpg`), in the first photo's date folder.
+8. **Export** in the panel writes one file per sheet, named after its two photos (for example `P1000123+P1000124.jpg`), in the first photo's date folder.
 
 <!-- shot: collage | Collage mode: sheets as they will print, with the photo ratio, the suggested size and the cut line -->
 
@@ -429,6 +430,7 @@ Every change is one undo step. The date stamp prints on each photo; the info fra
 | Collage mode | **R** | Turn the sheet |
 | Sheet preview | **← →** / **1**, **2** | Other sheets / choose a photo |
 | Sheet preview | **C** / **R** | Crop the chosen photo / turn the sheet |
+| Sheet preview | **↑** / **↓** | Put the chosen photo in the print basket / set it aside |
 | Preview | **C** | Open the crop editor (chapter 6) |
 | Preview | **Cmd/Ctrl + / −**, trackpad pinch, the zoom buttons | Zoom in / out (§7) |
 | Preview | **Cmd/Ctrl 0**, the fit button | Back to fit |

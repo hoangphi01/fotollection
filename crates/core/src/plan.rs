@@ -316,7 +316,20 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
     };
     let crop = crop_at(input, rw, rh);
     let (mut out_width, mut out_height) = (crop.width, crop.height);
-    if let Some(limit) = input.max_long_edge {
+    // With the border, the canvas grows by 3 mm a side: the photo gets less of the limit,
+    // so the whole print still fits it, as in a framed print (FR-067).
+    let limit = input.max_long_edge.map(|limit| {
+        if input.settings.border {
+            let photo_mm = f64::from(print.long_mm.saturating_sub(inset).max(1));
+            #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+            let fitted =
+                (f64::from(limit) * photo_mm / f64::from(print.long_mm.max(1))).floor() as u32;
+            fitted.max(1)
+        } else {
+            limit
+        }
+    });
+    if let Some(limit) = limit {
         let long = out_width.max(out_height);
         if long > limit && long > 0 {
             let scale = f64::from(limit) / f64::from(long);
@@ -776,6 +789,28 @@ mod tests {
         });
         assert_eq!((p.crop.width, p.crop.height), (4608, 3456));
         assert!(p.mat.is_some_and(|m| m.photo.x > 0));
+    }
+
+    #[test]
+    fn fr_067_a_preview_with_the_border_stays_within_its_long_edge() {
+        let settings = RenderSettings {
+            border: true,
+            ..RenderSettings::default()
+        };
+        let p = plan(&PlanInput {
+            width: 6000,
+            height: 4000,
+            capture: None,
+            settings: &settings,
+            print: size("10x15"),
+            max_long_edge: Some(1600),
+            frame: None,
+            crop: None,
+            place: None,
+            straighten: 0.0,
+        });
+        let (w, h) = p.output_size();
+        assert!(w.max(h) <= 1600 && w.max(h) >= 1590, "{w}×{h}");
     }
 
     #[test]
