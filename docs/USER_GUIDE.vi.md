@@ -362,7 +362,7 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 
 ## 18. Chế độ Đơn giản
 
-Đường ngắn nhất từ một thư mục tới ảnh in: xem mỗi ảnh một lần, giữ hoặc bỏ, rồi xuất những ảnh đã giữ ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes), [FR-050](PRD.md#fr-050--print-basket)).
+*Mới trong v0.9.0, chưa phát hành.* Đường ngắn nhất từ một thư mục tới ảnh in: xem mỗi ảnh một lần, giữ hoặc bỏ, rồi xuất những ảnh đã giữ ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes), [FR-050](PRD.md#fr-050--print-basket)).
 
 1. Nhấp **Đơn giản** ở đầu thanh bên, và mở một thư mục nếu thư viện còn trống.
 2. Ảnh đầu tiên hiện ở giữa, **đúng như khi in**, với khổ in, dấu ngày và viền của bạn.
@@ -372,13 +372,15 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 6. Thanh phía trên ảnh cho biết bạn đang ở ảnh nào, đã giữ và đã bỏ bao nhiêu.
 7. Ở bảng bên phải, chọn **khổ in**, **viền 3 mm** và **dấu ngày**, rồi **Chọn nơi lưu…** và **Xuất**: app lưu những ảnh bạn đã giữ.
 
+<!-- shot: simple | Chế độ Đơn giản: ảnh đúng như khi in, nút Giữ và Bỏ, và Xuất những ảnh đã giữ -->
+
 Ảnh đã giữ ở chế độ Đơn giản cũng nằm trong giỏ in ở Pro, nên bạn có thể sang Pro bất kỳ lúc nào để cắt hay thêm khung cho một ảnh, rồi quay lại.
 
 <!-- chapter: collage -->
 
 ## 19. Chế độ Ghép ảnh
 
-Hai ảnh trên một tấm in, như máy ảnh film half-frame chụp hai khung trên một ô phim: một tấm 10 × 15 chứa hai ảnh 10 × 7,5, nên in cả bộ chỉ tốn một nửa ([FR-035](PRD.md#fr-035--multi-photo-layouts)).
+*Mới trong v0.9.0, chưa phát hành.* Hai ảnh trên một tấm in, như máy ảnh film half-frame chụp hai khung trên một ô phim: một tấm 10 × 15 chứa hai ảnh 10 × 7,5, nên in cả bộ chỉ tốn một nửa ([FR-035](PRD.md#fr-035--multi-photo-layouts)).
 
 1. Nhấp **Ghép ảnh** ở đầu thanh bên. Chọn ảnh để ghép ở thanh bên, thường là **Giỏ in**.
 2. Các ảnh được ghép theo thứ tự, 1 + 2, 3 + 4…, và mỗi tấm hiện đúng như khi in. Ảnh lẻ cuối cùng để nửa kia trắng.
@@ -392,6 +394,8 @@ Hai ảnh trên một tấm in, như máy ảnh film half-frame chụp hai khung
 6. **Cắt ảnh:** nhấp đúp vào ảnh, hoặc nhấn **Enter**, để cắt ảnh cho vị trí của nó trên tấm.
 7. Giữ **Space** để xem tấm đang chọn cỡ lớn; **← →** sang tấm khác.
 8. **Xuất** lưu mỗi tấm một tệp, đặt tên theo hai ảnh của nó (ví dụ `P1000123+P1000124.jpg`), trong thư mục ngày của ảnh đầu.
+
+<!-- shot: collage | Chế độ Ghép ảnh: các tấm đúng như khi in, cùng tỷ lệ ảnh, cỡ gợi ý và đường cắt -->
 
 Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên từng ảnh; khung thông tin không dùng trên tấm ghép.
 

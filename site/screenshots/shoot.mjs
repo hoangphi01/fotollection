@@ -32,18 +32,20 @@ async function load(dir, name, folderName) {
 }
 // The CC0 demo photos for every shot but best shot, which shows the owner's cat: a burst
 // made by best_shot_photos.py, recorded on its own (site/screenshots/README.md).
-const trip = await load(process.argv[2], 'Trip 2018', 'demo-src')
+const trip = await load(process.argv[2], 'Trip 2018')
 const cat = process.argv[4] ? await load(process.argv[4], 'Cat') : trip
 const fixtures = trip.fixtures
 
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.json': 'application/json' }
 
 /** Runs in the page before the app: a stand-in for Tauri's IPC bridge. */
-function bridge({ fixtures, scenario, language, os, tabs, queues }) {
+function bridge({ fixtures, scenario, language, os, tabs, queues, mode }) {
   const { common, scenarios } = fixtures
-  const look = scenarios[scenario]
+  // Collage mode (FR-035) has its own recording; older dumps have none.
+  const collage = fixtures.collage ?? { list_sheets: [], sheet_info: {}, get_crop_geometry: {} }
+  const look = scenarios[scenario] ?? scenarios.stamp
   const byId = (table, args) => table[String(args?.id)]
-  let current = look.get_settings
+  let current = scenario === 'collage' ? collage.get_settings : look.get_settings
   // The print basket and set-aside photos (FR-050), by position (TRIP_QUEUES).
   const withQueues = (photos) =>
     photos.map((p, i) => ({ ...p, queue: queues.print.includes(i) ? 'print' : queues.aside.includes(i) ? 'aside' : null }))
@@ -65,7 +67,9 @@ function bridge({ fixtures, scenario, language, os, tabs, queues }) {
     startup_finished: () => true,
     list_print_sizes: () => common.list_print_sizes,
     list_fonts: () => common.list_fonts,
-    get_ui_settings: () => ({ ...common.get_ui_settings, language }),
+    get_ui_settings: () => ({ ...common.get_ui_settings, language, mode }),
+    list_sheets: () => collage.list_sheets,
+    sheet_info: (a) => collage.sheet_info[a.sheet.second == null ? `${a.sheet.first}` : `${a.sheet.first}-${a.sheet.second}`],
     get_document: () => ({ ...common.get_document, edited: false, name: 'Trip 2018' }),
     list_groups: () => common.list_groups,
     // Dumps recorded before FR-056 have no folder list: count it from the photos. A few
@@ -95,7 +99,7 @@ function bridge({ fixtures, scenario, language, os, tabs, queues }) {
     list_cameras: () => [],
     camera_sessions: () => [],
     search_places: () => common.search_places ?? [],
-    get_crop_geometry: (a) => byId(common.get_crop_geometry, a),
+    get_crop_geometry: (a) => byId(a?.sheet ? collage.get_crop_geometry : common.get_crop_geometry, a),
     print_advice: (a) => byId(common.print_advice ?? {}, a),
     get_settings: () => current,
     // Keep a change, as Rust does, so a click in a screenshot shows its result.
@@ -110,6 +114,11 @@ function bridge({ fixtures, scenario, language, os, tabs, queues }) {
       const source = scope.reduce((n, p) => n + (common.photo_details[String(p.id)]?.fileBytes ?? 3e6), 0)
       const target = current.settings?.exportTarget
       const ratio = target?.kind === 'share' ? { original: 0.46, facebook: 0.17, instagram: 0.08, custom: 0.2 }[target.preset?.kind] ?? 0.17 : 1
+      // Collage sheets (FR-035) export at 600 DPI: about 2.8 MB a 10 × 15 sheet (RESULT §18).
+      if (a?.sheets) {
+        const count = collage.list_sheets.length
+        return { photos: count, sourceBytes: source, estimatedBytes: count * 2.8e6, sampled: Math.min(4, count) }
+      }
       return { photos: scope.length, sourceBytes: source, estimatedBytes: Math.round(source * ratio), sampled: Math.min(4, scope.length) }
     },
   }
@@ -136,7 +145,7 @@ const shots = []
 const TRIP_QUEUES = { print: [1, 4, 6], aside: [9, 13] }
 const NO_QUEUES = { print: [], aside: [] }
 
-async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues }) {
+async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional' }) {
   const { dump } = source
   // DEMO_WIDTH=1000 checks narrow windows (the screenshots for the site stay at 1440).
   const context = await browser.newContext({
@@ -155,7 +164,14 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
       return route.fulfill({ body: await readFile(file), contentType: TYPES[path.extname(file)] ?? 'application/octet-stream' })
     }
     if (url.host === 'fotothumb.localhost') {
-      const [, kind, id] = url.pathname.split('/')
+      const [, kind, id, second] = url.pathname.split('/')
+      if (kind === 'sheet') {
+        // A collage sheet (FR-035): `{first}-{second}`, `-small` for the sheet grid.
+        const name = `${id}${second ? `-${second}` : ''}${url.searchParams.get('small') ? '-small' : ''}`
+        const sheet = path.join(dump, 'img/sheet', `${name}.jpg`)
+        if (!existsSync(sheet)) return route.fulfill({ status: 404 })
+        return route.fulfill({ body: await readFile(sheet), contentType: 'image/jpeg' })
+      }
       const file = kind === 'preview' ? path.join(dump, 'img/preview', scenario, `${id}.jpg`) : path.join(dump, 'img', kind, `${id}.jpg`)
       if (!existsSync(file)) return route.fulfill({ status: 404 })
       return route.fulfill({ body: await readFile(file), contentType: 'image/jpeg' })
@@ -163,11 +179,12 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
     return route.abort()
   })
   // DEMO_OS=windows shows the Windows title bar, for checking it on a Mac.
-  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES) })
+  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
   await page.goto('http://app.localhost/')
-  await page.waitForSelector('img[src*="/thumb/"]')
+  // The gallery shows thumbnails; Simple mode a preview, Collage mode sheets (FR-048).
+  await page.waitForSelector('img[src*="/thumb/"], img[src*="/preview/"], img[src*="/sheet/"]')
   await page.waitForFunction(() => [...document.images].every((i) => i.complete))
   // The start-up screen (FR-060) fades out once start-up is over: never shoot it.
   await page.waitForSelector('#splash', { state: 'detached' })
@@ -366,6 +383,19 @@ for (const language of ['en', 'vi']) {
     await tab('Travels').hover()
     await settle(page)
     await zoomed(page, `tabs-${suffix}`, { x: 0, y: 0, width: 1040, height: 650 })
+    await context.close()
+
+    // 9. Simple mode (FR-048): one photo as it will print, ↑ keep, ↓ drop.
+    ;({ context, page } = await open({ scenario: 'stamp', language, theme, mode: 'simple' }))
+    await settle(page)
+    await save(page, `simple-${suffix}`)
+    await context.close()
+
+    // 10. Collage mode (FR-035): two photos on one print, the panel with its size and cut line.
+    ;({ context, page } = await open({ scenario: 'collage', language, theme, mode: 'collage', queues: NO_QUEUES }))
+    await page.locator('[data-cell]').nth(2).click()
+    await settle(page)
+    await save(page, `collage-${suffix}`)
     await context.close()
   }
 }

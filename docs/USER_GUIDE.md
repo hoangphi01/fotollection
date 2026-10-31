@@ -364,7 +364,7 @@ The same popover shows the **cache**: the thumbnails and best-shot analyses Foto
 
 ## 18. Simple mode
 
-The shortest way from a folder to prints: look at each photo once, keep it or drop it, then export what you kept ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes), [FR-050](PRD.md#fr-050--print-basket)).
+*New in v0.9.0, not released yet.* The shortest way from a folder to prints: look at each photo once, keep it or drop it, then export what you kept ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes), [FR-050](PRD.md#fr-050--print-basket)).
 
 1. Click **Simple** at the top of the sidebar, and open a folder if the library is empty.
 2. The first photo fills the middle, **as it will print**, with your print size, date stamp and border.
@@ -374,13 +374,15 @@ The shortest way from a folder to prints: look at each photo once, keep it or dr
 6. The bar above the photo counts where you are, and how many you kept and dropped.
 7. In the panel on the right, choose the **print size**, the **3 mm border** and the **date stamp**, then **Choose destination…** and **Export**: it saves the photos you kept.
 
+<!-- shot: simple | Simple mode: the photo as it will print, Keep and Drop, and Export of the kept photos -->
+
 A photo kept in Simple mode is in the print basket in Pro too, so you can switch to Pro at any time to crop or frame a photo, and come back.
 
 <!-- chapter: collage -->
 
 ## 19. Collage mode
 
-Two photos on one print, like a half-frame film camera put two frames on one negative: a 10 × 15 print holds two 10 × 7.5 photos, so a set costs half as much ([FR-035](PRD.md#fr-035--multi-photo-layouts)).
+*New in v0.9.0, not released yet.* Two photos on one print, like a half-frame film camera put two frames on one negative: a 10 × 15 print holds two 10 × 7.5 photos, so a set costs half as much ([FR-035](PRD.md#fr-035--multi-photo-layouts)).
 
 1. Click **Collage** at the top of the sidebar. Choose what to put on sheets in the sidebar, usually the **Print basket**.
 2. The photos are paired in order, 1 + 2, 3 + 4…, and each sheet shows as it will print. An odd last photo leaves the other half white.
@@ -394,6 +396,8 @@ Two photos on one print, like a half-frame film camera put two frames on one neg
 6. **Crop:** double-click a photo, or press **Enter**, to crop it for its place on the sheet.
 7. Hold **Space** to see the chosen sheet large; **← →** go to the next one.
 8. **Export** writes one file per sheet, named after its two photos (for example `P1000123+P1000124.jpg`), in the first photo's date folder.
+
+<!-- shot: collage | Collage mode: sheets as they will print, with the photo ratio, the suggested size and the cut line -->
 
 Every change is one undo step. The date stamp prints on each photo; the info frame is not used on sheets.
 

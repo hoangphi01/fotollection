@@ -153,6 +153,29 @@
   </div>
 </section>
 
+<section class="section" id="modes">
+  <div class="wrap">
+    <h2>{{ t.modes_title }}</h2>
+    <p class="lead narrow">{{ t.modes_lead }}</p>
+  </div>
+  <div class="wrap showcase">
+    {%- assign rows = "collage,simple" | split: "," -%}
+    {%- for r in rows -%}
+    {%- capture title_key %}{{ r }}_title{% endcapture -%}
+    {%- capture text_key %}{{ r }}_text{% endcapture -%}
+    {%- capture show_key %}show_{{ r }}{% endcapture -%}
+    <div class="showcase-row{% cycle '', ' flip' %}">
+      <figure class="shot">{% include shot.html name=r alt=t[show_key] %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t[title_key] }}</h3>
+        <p>{{ t[text_key] }}</p>
+        <p class="small muted">{{ t[show_key] }}</p>
+      </div>
+    </div>
+    {%- endfor %}
+  </div>
+</section>
+
 <section class="section" id="kiosk">
   <div class="wrap kiosk-grid">
     <div>
