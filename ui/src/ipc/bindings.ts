@@ -110,7 +110,10 @@ export const commands = {
 	revision: number,
 } | null, IpcError>(__TAURI_INVOKE("pick_camera_logo", { cameraId })),
 	clearCameraLogo: (cameraId: number) => typedError<FrameConfig, IpcError>(__TAURI_INVOKE("clear_camera_logo", { cameraId })),
-	getCropGeometry: (id: PhotoId) => typedError<CropGeometry, IpcError>(__TAURI_INVOKE("get_crop_geometry", { id })),
+	getCropGeometry: (id: PhotoId, sheet: {
+	first: PhotoId,
+	second: PhotoId | null,
+} | null) => typedError<CropGeometry, IpcError>(__TAURI_INVOKE("get_crop_geometry", { id, sheet })),
 	/**
 	 *  Sets (or, with `None`, resets) a photo's crop. Undoable (FR-023); with `amend`, folded
 	 *  into the previous step of the same photo, as a drag in the preview does (FR-006).

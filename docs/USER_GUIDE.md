@@ -23,7 +23,7 @@ Fotollection works on the folders of photos you already have. It reads them wher
 
 <!-- shot: grid | The library, culled with stars and picks -->
 
-**Three modes:** the buttons at the top of the sidebar switch between **Simple** (one photo at a time, ↑ keep, ↓ drop, then export: chapter 18), **Collage** (two photos on one print) and **Pro**, the app this guide describes. Your photos, basket and settings are the same in every mode, and the mode is remembered on this computer ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
+**Three modes:** the buttons at the top of the sidebar switch between **Simple** (one photo at a time, ↑ keep, ↓ drop, then export: chapter 18), **Collage** (two photos on one print: chapter 19) and **Pro**, the app this guide describes. Your photos, basket and settings are the same in every mode, and the mode is remembered on this computer. **Cmd/Ctrl+1**, **2** and **3** switch between them ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
 
 **Language and look:** choose *English* or *Tiếng Việt* in the **Language** card at the top of the panel. The three buttons at the foot of the sidebar set the look: **Follow the system**, **Light** or **Dark** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
 
@@ -376,9 +376,30 @@ The shortest way from a folder to prints: look at each photo once, keep it or dr
 
 A photo kept in Simple mode is in the print basket in Pro too, so you can switch to Pro at any time to crop or frame a photo, and come back.
 
+<!-- chapter: collage -->
+
+## 19. Collage mode
+
+Two photos on one print, like a half-frame film camera put two frames on one negative: a 10 × 15 print holds two 10 × 7.5 photos, so a set costs half as much ([FR-035](PRD.md#fr-035--multi-photo-layouts)).
+
+1. Click **Collage** at the top of the sidebar. Choose what to put on sheets in the sidebar, usually the **Print basket**.
+2. The photos are paired in order, 1 + 2, 3 + 4…, and each sheet shows as it will print. An odd last photo leaves the other half white.
+3. **Sheet size**: the print size, 10 × 15 for example. The sheet is split in half across its long edge and turns to suit its first photo: two landscape photos one above the other, or two portrait photos side by side. The **turn** button on a sheet, or **R**, turns it the other way.
+4. **Two photos per sheet**:
+   - **Photo ratio**: each photo's own (**Photo**), the sheet's (**Sheet**, 2:3 on a 10 × 15), **4:3** or **1:1**. The rest of the half stays white.
+   - **Photo size**: the app suggests the largest size that leaves 5 mm of white round the photo, for example 6 × 9 cm for a 2:3 photo in a 7.5 × 10 half. Type another size if you like; with the **lock** on, one edge gives the other. **Use the suggestion** goes back.
+   - **Cut line**: a thin line between the photos, to cut the print in two. Off, the two photos meet in the middle, like a half-frame print.
+   - The note under them gives the photo's size, the part left inside the **3 mm border** (chapter 5) and its sharpness.
+5. **Reorder:** drag a photo onto another photo to swap them, or onto an empty half to send it to the end. **← →** choose a photo, **⌥/Alt ← →** move it one place.
+6. **Crop:** double-click a photo, or press **Enter**, to crop it for its place on the sheet.
+7. Hold **Space** to see the chosen sheet large; **← →** go to the next one.
+8. **Export** writes one file per sheet, named after its two photos (for example `P1000123+P1000124.jpg`), in the first photo's date folder.
+
+Every change is one undo step. The date stamp prints on each photo; the info frame is not used on sheets.
+
 <!-- chapter: shortcuts -->
 
-## 19. Keyboard shortcuts
+## 20. Keyboard shortcuts
 
 | Where | Key | Action |
 |-------|-----|--------|
@@ -392,6 +413,11 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
 | Preview | **↓** | Set aside, next photo |
 | Simple mode | **↑** / **↓** | Keep (print basket) / drop (set aside), next photo |
 | Simple mode | **← →** | Previous / next photo, without deciding |
+| Collage mode | **← →**, **↑ ↓** | Choose a photo, a sheet above or below |
+| Collage mode | **⌥/Alt ← →** | Move the chosen photo one place |
+| Collage mode | **Enter**, double-click | Crop the photo for its place on the sheet |
+| Collage mode | **R** | Turn the sheet |
+| Collage mode | hold **Space** | Look at the sheet; **← →** next, release to close |
 | Preview | **C** | Open the crop editor (chapter 6) |
 | Preview | **Cmd/Ctrl + / −**, trackpad pinch, the zoom buttons | Zoom in / out (§7) |
 | Preview | **Cmd/Ctrl 0**, the fit button | Back to fit |
@@ -411,6 +437,7 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
 | Select mode | hold **Space** | Quick-preview; **← →** next, **Enter** tick, release to close |
 | Select mode | **Esc** | Leave select mode |
 | Everywhere | **Cmd/Ctrl+Z**, **Shift+Cmd/Ctrl+Z** or **Cmd/Ctrl+Y** | Undo, redo (chapter 13) |
+| Everywhere | **Cmd/Ctrl+1**, **2**, **3** | Simple, Collage, Pro (chapter 1) |
 | Everywhere | **Cmd/Ctrl+N**, **Cmd/Ctrl+O**, **Cmd/Ctrl+S**, **Shift+Cmd/Ctrl+S** | New project, open, save, save as (chapter 13) |
 
 A focused field or slider keeps its own arrow keys: click the photo to give them back to browsing.

@@ -40,6 +40,9 @@ import { DiscardSessionDialog, type SessionChoice } from '@/features/capture/dis
 import { useCapture } from '@/features/capture/use-capture'
 import { useAppMode } from '@/features/modes/use-app-mode'
 import { useModeShortcuts } from '@/features/modes/use-mode-shortcuts'
+import { CollagePanel } from '@/features/collage/collage-panel'
+import { CollageView } from '@/features/collage/collage-view'
+import { useCollage } from '@/features/collage/use-collage'
 import { SimplePanel } from '@/features/simple/simple-panel'
 import { SimpleView } from '@/features/simple/simple-view'
 
@@ -52,6 +55,7 @@ export function App() {
   const { mode, setMode } = useAppMode()
   useModeShortcuts(setMode)
   const simple = mode === 'simple'
+  const collageMode = mode === 'collage'
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
   const { photos, total, folders, queueCounts, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
     useLibrary(filter)
@@ -75,6 +79,8 @@ export function App() {
   // The Relink dialog opens by itself after Open; "Later" hides it until the next project.
   const [relinkHiddenFor, setRelinkHiddenFor] = useState<number | null>(null)
   const revision = Math.max(renderRevision, frameRevision, history.revision)
+  // Two photos on one print (FR-035): the sheets of the photos shown.
+  const collage = useCollage(filter, revision, collageMode)
   const [selected, setSelected] = useState(0)
   const [viewing, setViewing] = useState(false)
   // A rating or flag change can drop the current photo out of the filter; stay in range.
@@ -265,6 +271,13 @@ export function App() {
         <TaskProgressBar />
         {total === 0 ? (
           <LibraryEmptyState onOpenFolder={() => void importFolder()} />
+        ) : collageMode ? (
+          <CollageView
+            collage={collage}
+            photos={photos}
+            revision={revision}
+            generation={project.document.generation}
+          />
         ) : simple ? (
           <SimpleView
             photos={photos}
@@ -409,7 +422,7 @@ export function App() {
       )}
       <PreviewDialog
         photos={photos}
-        index={viewing && !simple && photos.length > 0 ? current : null}
+        index={viewing && mode === 'professional' && photos.length > 0 ? current : null}
         revision={revision}
         settings={settings}
         onSettingsChange={(c) => void update(c)}
@@ -452,7 +465,18 @@ export function App() {
         onLocate={(id) => void project.relink(id)}
         onClose={() => setRelinkHiddenFor(project.document.generation)}
       />
-      {simple ? (
+      {collageMode ? (
+        <CollagePanel
+          settings={settings}
+          onChange={(c) => void update(c)}
+          exporter={exporter}
+          filter={filter}
+          photoCount={photos.length}
+          sheetCount={collage.sheets.length}
+          cell={collage.cell}
+          revision={revision}
+        />
+      ) : simple ? (
         <SimplePanel
           settings={settings}
           onChange={(c) => void update(c)}

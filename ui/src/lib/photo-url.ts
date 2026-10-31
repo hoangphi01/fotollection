@@ -40,3 +40,12 @@ export function regionUrl(
 ): string {
   return `${previewUrl(id, revision)}&region=${rect.x},${rect.y},${rect.w},${rect.h}&px=${px}`
 }
+
+/**
+ * A collage sheet (FR-035), with the current settings: 640 px for the sheet grid with
+ * `small`, 1600 px otherwise.
+ */
+export function sheetUrl(first: number, second: number | null, revision: number, small = false): string {
+  const path = second === null ? `${first}` : `${first}/${second}`
+  return `${base}/sheet/${path}?rev=${revision}${small ? '&small=1' : ''}`
+}

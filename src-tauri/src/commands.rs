@@ -1482,7 +1482,11 @@ pub struct CropGeometry {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeometry, IpcError> {
+pub async fn get_crop_geometry(
+    app: AppHandle,
+    id: PhotoId,
+    sheet: Option<crate::collage::SheetPair>,
+) -> Result<CropGeometry, IpcError> {
     tauri::async_runtime::spawn_blocking(move || {
         let state = app.state::<AppState>();
         let record = state
@@ -1506,6 +1510,16 @@ pub async fn get_crop_geometry(app: AppHandle, id: PhotoId) -> Result<CropGeomet
             .map_err(|e| IpcError::internal(e.to_string()))?
             .0
             .clone();
+        // A photo of a collage sheet is cropped to its photo area (FR-035).
+        if let Some(sheet) = sheet {
+            return crate::collage::cell_geometry(
+                &state,
+                &record,
+                (width, height),
+                sheet,
+                &settings,
+            );
+        }
         let print = settings
             .print_for(width, height)
             .unwrap_or(PrintSize::ALL[1]);

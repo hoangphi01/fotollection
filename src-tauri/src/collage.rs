@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 use tauri::{AppHandle, Manager, State};
 
-use crate::commands::{HistoryState, edit_photos, place_names, upright_size};
+use crate::commands::{CropGeometry, HistoryState, edit_photos, place_names, upright_size};
 use crate::state::{AppState, IpcError};
 
 /// Long edge of a sheet in the grid, and in the preview.
@@ -129,6 +129,83 @@ pub async fn sheet_info(app: AppHandle, sheet: SheetPair) -> Result<SheetInfo, I
     })
     .await
     .map_err(|e| IpcError::internal(e.to_string()))?
+}
+
+/// What the crop editor needs for a photo of a collage sheet (FR-035, FR-006): the crop
+/// fills the photo's area, and the printed size is the photo left inside the border.
+pub fn cell_geometry(
+    state: &AppState,
+    record: &fotollection_core::library::PhotoRecord,
+    size: (u32, u32),
+    sheet: SheetPair,
+    settings: &fotollection_core::settings::RenderSettings,
+) -> Result<CropGeometry, IpcError> {
+    let partner = if sheet.first == record.id {
+        sheet.second
+    } else if sheet.second == Some(record.id) {
+        Some(sheet.first)
+    } else {
+        return Err(IpcError::new(
+            "photo.unknown",
+            "The photo is not on this sheet",
+        ));
+    };
+    let (first, turned) = {
+        let library = state
+            .library
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        let first = library
+            .record(sheet.first)
+            .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
+        let other = partner.and_then(|id| library.record(id));
+        (other, first.edits.sheet_turned)
+    };
+    let other = match &first {
+        Some(r) => Some(upright_size(state, r)?),
+        None => None,
+    };
+    let photos = if sheet.first == record.id {
+        [Some(size), other]
+    } else {
+        [other, Some(size)]
+    };
+    let layout = sheet::layout(
+        sheet::sheet_print(settings),
+        photos,
+        turned,
+        &settings.collage,
+    );
+    let index = usize::from(sheet.first != record.id);
+    let cell = layout.cells[index].ok_or_else(|| IpcError::internal("an empty cell"))?;
+    let inset = if settings.border {
+        2.0 * fotollection_core::frame::CROP_BORDER_MM
+    } else {
+        0.0
+    };
+    #[allow(clippy::cast_precision_loss)]
+    let (area_w, area_h) = (cell.area.0 as f32, cell.area.1 as f32);
+    // The crop has the ratio of the photo inside the border.
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    let (target_width, target_height) = (
+        ((area_w - inset).max(1.0) * 10.0).round() as u32,
+        ((area_h - inset).max(1.0) * 10.0).round() as u32,
+    );
+    Ok(CropGeometry {
+        width: size.0,
+        height: size.1,
+        target_width,
+        target_height,
+        print_width_cm: (area_w - inset).max(1.0) / 10.0,
+        print_height_cm: (area_h - inset).max(1.0) / 10.0,
+        crop: record.edits.crop,
+        straighten: record.edits.straighten,
+        crop_disabled: false,
+        output_width_cm: area_w / 10.0,
+        output_height_cm: area_h / 10.0,
+        print_grows: false,
+        unit: fotollection_core::settings::LengthUnit::Cm,
+    })
 }
 
 /// Bytes for `fotothumb://localhost/sheet/{first}/{second}`: the sheet with the current

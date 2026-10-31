@@ -67,6 +67,7 @@ fn record(app: &AppHandle, folder: PathBuf, out: &Path) -> Result<(), String> {
     let fixtures = json!({
         "common": record_common(app, &ids, out)?,
         "scenarios": record_scenarios(app, &ids, out)?,
+        "collage": record_collage(app, out)?,
     });
     let text = serde_json::to_string_pretty(&fixtures).map_err(|e| e.to_string())?;
     write(&out.join("fixtures.json"), text.as_bytes())?;
@@ -174,6 +175,7 @@ fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, 
             ok(tauri::async_runtime::block_on(commands::get_crop_geometry(
                 app.clone(),
                 id,
+                None,
             )))?,
         );
         advice.insert(
@@ -238,4 +240,53 @@ fn record_scenarios(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Valu
         );
     }
     to_json(scenarios)
+}
+
+/// Collage mode (FR-035): the gallery's sheets with the date stamp and the 3 mm border, each
+/// sheet's facts and its images, small for the grid and large for Space.
+fn record_collage(app: &AppHandle, out: &Path) -> Result<Value, String> {
+    let state = app.state::<AppState>();
+    let mut settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
+    settings.stamp.enabled = true;
+    settings.border = true;
+    ok(commands::set_settings(app.state(), settings))?;
+    let sheets = crate::collage::list_sheets(app.state(), CullFilter::default())
+        .map_err(|e| format!("{e:?}"))?;
+    let mut info = serde_json::Map::new();
+    let mut geometry = serde_json::Map::new();
+    for &sheet in &sheets {
+        let key = match sheet.second {
+            Some(second) => format!("{}-{}", sheet.first.0, second.0),
+            None => sheet.first.0.to_string(),
+        };
+        info.insert(
+            key.clone(),
+            ok(tauri::async_runtime::block_on(crate::collage::sheet_info(
+                app.clone(),
+                sheet,
+            )))?,
+        );
+        for id in std::iter::once(sheet.first).chain(sheet.second) {
+            geometry.insert(
+                id.0.to_string(),
+                ok(tauri::async_runtime::block_on(commands::get_crop_geometry(
+                    app.clone(),
+                    id,
+                    Some(sheet),
+                )))?,
+            );
+        }
+        for (small, suffix) in [(true, "-small"), (false, "")] {
+            write(
+                &out.join(format!("img/sheet/{key}{suffix}.jpg")),
+                &crate::collage::sheet_bytes(&state, sheet, small)?,
+            )?;
+        }
+    }
+    Ok(json!({
+        "get_settings": ok(commands::get_settings(app.state()))?,
+        "list_sheets": to_json(&sheets)?,
+        "sheet_info": info,
+        "get_crop_geometry": geometry,
+    }))
 }

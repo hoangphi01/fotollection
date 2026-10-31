@@ -16,7 +16,7 @@ export function FitSizeNote({ photoId, revision }: { photoId: number | undefined
   useEffect(() => {
     if (photoId === undefined) return
     let live = true
-    void commands.getCropGeometry(photoId).then((result) => {
+    void commands.getCropGeometry(photoId, null).then((result) => {
       if (live && result.status === 'ok') setGeometry({ id: photoId, value: result.data })
     })
     return () => {

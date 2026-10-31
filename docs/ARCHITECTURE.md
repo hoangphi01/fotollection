@@ -247,7 +247,7 @@ Commands marked † are implemented.
 | `list_places() -> PlaceUse[]` † / `rename_place(geonames_id, name?)` † | The places of the library's photos with their counts, and the name printed for one (≤ 80 characters; `None` back to the dataset's); not in the undo history | FR-005 |
 | `clock_offset_between(photo, reference) -> f64` † / `clock_match_candidates(photo, limit ≤ 24)` † | The helper: the offset that makes a photo match another device's photo of the same moment, and the other devices' photos closest in time (within a day) to pick from | FR-030 |
 | `pick_camera_logo(camera_id)` / `clear_camera_logo(camera_id)` † | Choose a PNG with a **Rust-side** dialog, validate it, copy it into `config/logos/` | FR-040 |
-| `get_crop_geometry(id) -> CropGeometry` † | Upright size, target ratio, printed cm of the crop area, current crop | FR-006 |
+| `get_crop_geometry(id, sheet?) -> CropGeometry` † | Upright size, target ratio, printed cm of the crop area, current crop; with a collage `sheet`, the photo's area in its cell | FR-006, FR-035 |
 | `set_photo_crop(id, crop?, straighten)` † | Set or reset a photo's crop (centre + zoom) and straightening angle (±15°, clamped in Rust), undoable | FR-006, FR-023 |
 | `rotate_photos(ids, clockwise)` † | Lossless quarter turns on top of the EXIF orientation, composed into one pass (`image::compose_orientation`); crops turn with the photo; undoable | FR-006 |
 | `set_photo_rating(ids, 0–5)` † / `set_photo_flag(ids, pick\|reject\|null)` † | Culling: one undoable step for 1–10,000 photos; ratings above 5 and unknown IDs are rejected | FR-022, FR-023 |

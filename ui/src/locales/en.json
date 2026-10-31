@@ -639,5 +639,48 @@
     "doneHint_other": "{{count}} photos are in the print basket. Export them from the panel on the right.",
     "exportHint_one": "Export sends the {{count}} photo you kept (the print basket).",
     "exportHint_other": "Export sends the {{count}} photos you kept (the print basket)."
+  },
+  "collage": {
+    "title": "Collage",
+    "sheetLabel": "A collage sheet",
+    "gridLabel": "Collage sheets",
+    "turn": "Turn the sheet",
+    "turnHint": "Turn the sheet the other way (R)",
+    "sheetOf": "Sheet {{index}} of {{count}}",
+    "quickHint": "← → next · release Space to close",
+    "cropTitle": "Crop for its place on the sheet",
+    "cropSize": "The photo prints at {{photo}} cm, in an area of {{area}} cm.",
+    "size": "Photo size",
+    "width": "Width",
+    "height": "Height",
+    "lockRatio": "Keep the ratio",
+    "suggested": "Suggested: {{size}}",
+    "useSuggested": "Use the suggestion",
+    "sheetSize": "Sheet size",
+    "sheetSizeHint": "Each sheet holds two photos, side by side or one above the other; it turns to suit its first photo.",
+    "cells": "Two photos per sheet",
+    "ratio": "Photo ratio",
+    "ratios": {
+      "photo": "Photo",
+      "sheet": "Sheet",
+      "fourThree": "4:3",
+      "square": "1:1"
+    },
+    "cutLine": "Cut line",
+    "cutLineHint": "A thin line between the photos, to cut the print in two.",
+    "togetherHint": "The two photos meet in the middle, like a half-frame print.",
+    "advice": "Photo {{area}} · {{dpi}} DPI, {{quality}}",
+    "adviceBorder": "Area {{area}}, photo {{photo}} inside the border · {{dpi}} DPI, {{quality}}",
+    "empty": "No photos to put on sheets",
+    "emptyHint": "Open a folder, or choose the print basket in the sidebar: its photos are paired in order, two to a sheet.",
+    "count_one": "{{count}} sheet from {{photos}} photos",
+    "count_other": "{{count}} sheets from {{photos}} photos",
+    "keysHint": "Drag a photo onto another to swap them · ← → choose · ⌥ ← → move · Enter crop · R turn · hold Space to look",
+    "ratioHints": {
+      "photo": "Each photo keeps its own ratio",
+      "sheet": "The sheet’s ratio, 2:3 on a 10 × 15",
+      "fourThree": "4:3, the ratio of most phones",
+      "square": "Square"
+    }
   }
 }

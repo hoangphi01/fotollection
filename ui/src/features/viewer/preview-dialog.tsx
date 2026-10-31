@@ -120,7 +120,7 @@ function useCropGeometry(id: number | undefined, revision: number): CropGeometry
   useEffect(() => {
     if (id === undefined) return
     let live = true
-    void commands.getCropGeometry(id).then((result) => {
+    void commands.getCropGeometry(id, null).then((result) => {
       if (live && result.status === 'ok') setGeometry({ id, value: result.data })
     })
     return () => {

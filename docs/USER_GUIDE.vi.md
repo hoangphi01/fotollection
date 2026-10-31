@@ -21,7 +21,7 @@ Fotollection làm việc trên các thư mục ảnh bạn đã có. Nó đọc 
 
 <!-- shot: grid | Thư viện ảnh, đã chấm sao và chọn ảnh -->
 
-**Ba chế độ:** các nút ở đầu thanh bên chuyển giữa **Đơn giản** (từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất: chương 18), **Ghép ảnh** (hai ảnh trên một tấm in) và **Pro**, phần app mà hướng dẫn này mô tả. Ảnh, giỏ in và thiết lập của bạn giống nhau ở mọi chế độ, và chế độ được nhớ trên máy này ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
+**Ba chế độ:** các nút ở đầu thanh bên chuyển giữa **Đơn giản** (từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất: chương 18), **Ghép ảnh** (hai ảnh trên một tấm in: chương 19) và **Pro**, phần app mà hướng dẫn này mô tả. Ảnh, giỏ in và thiết lập của bạn giống nhau ở mọi chế độ, và chế độ được nhớ trên máy này. **Cmd/Ctrl+1**, **2** và **3** chuyển giữa chúng ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
 
 **Ngôn ngữ và giao diện:** chọn *English* hoặc *Tiếng Việt* trong thẻ **Ngôn ngữ** ở đầu bảng. Ba nút ở cuối thanh bên đổi giao diện: **Theo hệ thống**, **Sáng** hoặc **Tối** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
 
@@ -374,9 +374,30 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 
 Ảnh đã giữ ở chế độ Đơn giản cũng nằm trong giỏ in ở Pro, nên bạn có thể sang Pro bất kỳ lúc nào để cắt hay thêm khung cho một ảnh, rồi quay lại.
 
+<!-- chapter: collage -->
+
+## 19. Chế độ Ghép ảnh
+
+Hai ảnh trên một tấm in, như máy ảnh film half-frame chụp hai khung trên một ô phim: một tấm 10 × 15 chứa hai ảnh 10 × 7,5, nên in cả bộ chỉ tốn một nửa ([FR-035](PRD.md#fr-035--multi-photo-layouts)).
+
+1. Nhấp **Ghép ảnh** ở đầu thanh bên. Chọn ảnh để ghép ở thanh bên, thường là **Giỏ in**.
+2. Các ảnh được ghép theo thứ tự, 1 + 2, 3 + 4…, và mỗi tấm hiện đúng như khi in. Ảnh lẻ cuối cùng để nửa kia trắng.
+3. **Khổ tấm in**: khổ in, ví dụ 10 × 15. Tấm được chia đôi theo cạnh dài và xoay theo ảnh đầu tiên: hai ảnh ngang thì trên dưới, hai ảnh dọc thì cạnh nhau. Nút **xoay** trên mỗi tấm, hoặc phím **R**, xoay tấm sang hướng kia.
+4. **Hai ảnh mỗi tấm**:
+   - **Tỷ lệ ảnh**: tỷ lệ gốc của từng ảnh (**Ảnh**), tỷ lệ của tấm (**Tấm**, 2:3 với 10 × 15), **4:3** hoặc **1:1**. Phần còn lại của nửa tấm để trắng.
+   - **Cỡ ảnh**: app gợi ý cỡ lớn nhất còn chừa 5 mm trắng quanh ảnh, ví dụ 6 × 9 cm cho ảnh 2:3 trong nửa tấm 7,5 × 10. Bạn có thể gõ cỡ khác; khi **khoá** tỷ lệ, nhập một cạnh thì cạnh kia tự tính. **Dùng gợi ý** để quay lại.
+   - **Đường cắt**: một nét mảnh giữa hai ảnh, để cắt tấm in làm đôi. Tắt đi thì hai ảnh nằm liền nhau ở giữa, như ảnh half-frame.
+   - Dòng ghi chú bên dưới cho biết cỡ ảnh, phần còn lại trong **viền 3 mm** (chương 5) và độ nét.
+5. **Đổi thứ tự:** kéo một ảnh thả lên ảnh khác để đổi chỗ, hoặc thả vào nửa tấm trống để đưa nó xuống cuối. **← →** chọn ảnh, **⌥/Alt ← →** dời ảnh đi một chỗ.
+6. **Cắt ảnh:** nhấp đúp vào ảnh, hoặc nhấn **Enter**, để cắt ảnh cho vị trí của nó trên tấm.
+7. Giữ **Space** để xem tấm đang chọn cỡ lớn; **← →** sang tấm khác.
+8. **Xuất** lưu mỗi tấm một tệp, đặt tên theo hai ảnh của nó (ví dụ `P1000123+P1000124.jpg`), trong thư mục ngày của ảnh đầu.
+
+Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên từng ảnh; khung thông tin không dùng trên tấm ghép.
+
 <!-- chapter: shortcuts -->
 
-## 19. Phím tắt
+## 20. Phím tắt
 
 | Ở đâu | Phím | Việc |
 |-------|------|------|
@@ -390,6 +411,11 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 | Xem trước | **↓** | Để riêng, sang tấm sau |
 | Chế độ Đơn giản | **↑** / **↓** | Giữ (giỏ in) / bỏ (để riêng), sang tấm sau |
 | Chế độ Đơn giản | **← →** | Ảnh trước / sau, không quyết định |
+| Chế độ Ghép ảnh | **← →**, **↑ ↓** | Chọn ảnh, tấm ở trên hoặc dưới |
+| Chế độ Ghép ảnh | **⌥/Alt ← →** | Dời ảnh đang chọn đi một chỗ |
+| Chế độ Ghép ảnh | **Enter**, nhấp đúp | Cắt ảnh cho vị trí của nó trên tấm |
+| Chế độ Ghép ảnh | **R** | Xoay tấm |
+| Chế độ Ghép ảnh | giữ **Space** | Xem tấm; **← →** tấm khác, thả để đóng |
 | Xem trước | **C** | Mở màn cắt ảnh (chương 6) |
 | Xem trước | **Cmd/Ctrl + / −**, chụm trên trackpad, các nút phóng | Phóng to / thu nhỏ (§7) |
 | Xem trước | **Cmd/Ctrl 0**, nút vừa khung | Về vừa khung |
@@ -409,6 +435,7 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 | Chế độ Chọn | giữ **Space** | Xem nhanh; **← →** tấm sau, **Enter** tích, thả ra để đóng |
 | Chế độ Chọn | **Esc** | Rời chế độ Chọn |
 | Mọi nơi | **Cmd/Ctrl+Z**, **Shift+Cmd/Ctrl+Z** hoặc **Cmd/Ctrl+Y** | Hoàn tác, làm lại (chương 13) |
+| Mọi nơi | **Cmd/Ctrl+1**, **2**, **3** | Đơn giản, Ghép ảnh, Pro (chương 1) |
 | Mọi nơi | **Cmd/Ctrl+N**, **Cmd/Ctrl+O**, **Cmd/Ctrl+S**, **Shift+Cmd/Ctrl+S** | Dự án mới, mở, lưu, lưu thành (chương 13) |
 
 Ô nhập hay thanh trượt đang được chọn giữ các phím mũi tên cho riêng nó: nhấp vào ảnh để trả chúng về việc duyệt ảnh.
