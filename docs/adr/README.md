@@ -35,6 +35,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0029](0029-raw-through-rawler-then-our-own-decoder.md) | Camera RAW through rawler (LGPL-2.1, the only LGPL dependency) behind a `RawDecoder` trait, finished to the camera's embedded JPEG; Windows first rawler, macOS first ImageIO; our own decoder replaces it format by format; `panic = "unwind"` | Accepted, supersedes 0023 in part | 2026-10-26 |
 | [0030](0030-our-own-raw-decoder.md) | Our own RAW decoder (`crates/rawcore`), clean room, one format at a time behind a quality gate; DNG colour model, then the camera's look learned from its embedded JPEG (lens shading, luminance curve, 3×3 matrix); DNG first | Accepted | 2026-10-27 |
 | [0031](0031-manual-on-the-website-from-the-user-guide.md) | The manual on the website is built from `USER_GUIDE.md` and its Vietnamese mirror `USER_GUIDE.vi.md` at build time (`scripts/site-manual.sh`); HTML-comment markers give chapter anchors and screenshots; `check-docs.sh` keeps the two in step | Accepted | 2026-10-30 |
+| [0032](0032-collage-sheets-from-two-cell-plans.md) | Collage sheets are composed from two ordinary cell plans in `sheet.rs`, at the lower of the two photos' densities (cap 600 DPI); a `sheet` preview route; one export file per sheet; drag and drop on pointer events | Accepted | 2026-10-31 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

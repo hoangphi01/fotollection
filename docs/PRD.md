@@ -1,6 +1,6 @@
 # Product Requirements Document — Fotollection
 
-> **Owner:** product · **Status:** Draft v0.1 · **Last reviewed:** 2026-10-23
+> **Owner:** product · **Status:** Draft v0.1 · **Last reviewed:** 2026-10-31
 >
 > This document is the single source of truth for **what** Fotollection does and **why**.
 > *How* it is built lives in [ARCHITECTURE.md](ARCHITECTURE.md); *when* lives in [ROADMAP.md](ROADMAP.md).
@@ -19,7 +19,7 @@ People shoot thousands of photos but print almost none. Preparing a print order 
 
 **Fotollection is a fast, private, offline desktop app (macOS and Windows) that turns a folder of photos into a print-ready set.** It stamps date and location from EXIF, crops to standard EU print sizes, groups photos by trip, and keeps the original quality. Photos never leave the user's machine.
 
-It has two modes ([FR-048](#fr-048--normal-and-professional-modes)): **Normal**, for "pick, stamp, print" in a few clicks, and **Professional**, with every control described in this document.
+It has three modes ([FR-048](#fr-048--simple-collage-and-professional-modes)): **Simple**, for "keep, stamp, print" in a few key presses, **Collage**, two photos on one print to save cost, and **Professional**, with every control described in this document.
 
 ### Market gap
 
@@ -373,7 +373,19 @@ One click applies a preset. Users can duplicate and edit presets. The presets ar
 
 ### FR-035 — Multi-photo layouts
 
-**P2.** Put several photos on one print to save cost: 2-up (two prints of 10×7.5 on a 10×15 sheet), 4-up, and a photo-booth strip (5×15, 3–4 frames). Each cell has its own crop. Cut guides are optional.
+Put several photos on one print to save cost. **P1 (v0.9.0) for 2-up**, the Collage mode of [FR-048](#fr-048--simple-collage-and-professional-modes); P2 for 4-up and a photo-booth strip (5×15, 3–4 frames).
+
+**2-up, inspired by half-frame film cameras** (one 36-exposure roll gave 72 frames):
+
+- **Sheet and cells.** The sheet is the chosen print size; it is split in half across its long edge into two cells. A 10×15 sheet standing up holds two 10×7.5 cells side by side on the short edge; turned, it holds two 7.5×10 cells, the half-frame look. The sheet turns to suit the first photo of the pair, and the user can turn it back.
+- **Photo area in a cell.** A fixed white margin stays round the photo, 5 mm a side by default. The app suggests the largest size at the chosen ratio that fits inside it, rounded down to the millimetre: a 2:3 photo in a 7.5×10 cell gets **6×9 cm**. The ratio is the photo's own by default, or the sheet's (2:3 on 10×15), 4:3 or 1:1. The user may type another size; with the ratio locked, typing one edge computes the other. Sizes are clamped to the cell, in Rust. The area is centred, and the rest of the cell is white.
+- **Crop.** Each photo is cropped to its area with its own crop ([FR-006](#fr-006--crop-to-print-ratio)), editable in the crop editor at the area's ratio.
+- **Border.** The 3 mm border ([FR-067](#fr-067--3-mm-border-on-every-print)) cuts into the photo area, 3 mm a side: 6×9 shows 5.4×8.4 cm of photo. The sheet and cells keep their size.
+- **Cut line.** On by default: a thin light-grey line between the cells, with short ticks at the sheet's edges, to cut the print in two after printing. Off, the two photos stay together as one half-frame print.
+- **Pairing.** Photos are paired in order (the print basket's, or the view's): 1 + 2, 3 + 4…; an odd last photo leaves its other cell white. The user reorders by dragging a photo onto another cell, and holds Space to see the sheet as it will print ([FR-059](#fr-059--quick-preview)). The order and the turned sheets are saved in the project (schema v9); each change is one undo step.
+- **Advice.** The panel shows the suggested size, the photo left inside the border and the print quality ([FR-026](#fr-026--resolution-warning)), for example "6 × 9 cm · 2:3 · with border 5.4 × 8.4 cm".
+- **Export.** One file per sheet, named `<first>+<second>.jpg` in the first photo's date folder, never overwriting ([FR-009](#fr-009--export-by-date)); EXIF from the first photo, without GPS ([FR-010](#fr-010--metadata-privacy-on-export)). The sheet's pixel density is the lower of the two cells' own, so no photo is enlarged ([ADR-0032](adr/0032-collage-sheets-from-two-cell-plans.md)).
+- **Not in 2-up yet:** the info frame (its bar does not fit a 7.5 cm cell). The date stamp works in each cell.
 
 ### FR-036 — Custom captions
 
@@ -499,7 +511,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-046 — Swipe culling
 
-**P2 (future).** A full-screen, keyboard-first culling mode, inspired by swipe apps (right = like, left = pass) and Lightroom's loupe. It builds the **print list** at the speed of a key press.
+**P2 (future); the full-screen ↑ / ↓ part is P1 in v0.9.0 as the Simple mode of [FR-048](#fr-048--simple-collage-and-professional-modes).** A full-screen, keyboard-first culling mode, inspired by swipe apps (right = like, left = pass) and Lightroom's loupe. It builds the **print list** at the speed of a key press.
 
 - One photo fills the screen. **↑ adds it to the print list, ↓ leaves it out** (already in the preview since v0.5.0, as the print basket and set aside of [FR-050](#fr-050--print-basket)), and both move on to the next photo at once. **← / →** step back and forward without deciding. **Space** shows the photo without overlays, and **Cmd/Ctrl+Z** undoes the last decision.
 - Leaving a photo out only removes it from the list. The file is never deleted or moved.
@@ -517,18 +529,17 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Recipes:** a look plus Photo Style parameters saves as a preset ([FR-038](#fr-038--print-presets)), so recipes like the owner's *C200 Natural* can be shared. Looks are stored by id in the project, so a bundle opens with the same look on another machine ([ADR-0016](adr/0016-self-contained-project-bundle.md)).
 - **Order and speed:** the look is applied before the date stamp and the info frame, so they are never tinted. Applying a LUT to the 1600 px preview must keep the preview within budget ([NFR-002](#nfr-002--preview-latency)), and this is benchmarked before release.
 
-### FR-048 — Normal and Professional modes
+### FR-048 — Simple, Collage and Professional modes
 
-**P1 (next).** Two modes, switchable at any time and remembered per machine. They share one library, one project file and one rendering engine.
+**P1 (v0.9.0).** Three modes, switchable at any time from the top of the sidebar and remembered per machine (`ui.mode`, settings v10). They share one library, one project file and one rendering engine, so switching never loses work: a photo kept, cropped or stamped in one mode is the same in the others. (Planned as "Normal and Professional" until 2026-10-31; the owner split Normal into Simple and added Collage.)
 
 - **Professional** is everything built so far: the inspector, the crop editor, the info frame and camera profiles, fonts, custom sizes, filters, the `.fotollection` document, and full-quality export (q95, 4:4:4, full resolution).
-- **Normal** is the "instant" mode: the shortest path from a folder to prints.
-  - **One screen, three steps:** open a folder → keep or drop photos with one key or one click (the same pick/reject as [FR-022](#fr-022--culling-rate-flag-filter), later the swipe mode of [FR-046](#fr-046--swipe-culling)) → **Export**.
-  - **Few choices, good defaults:** print size (10×15 by default), date stamp on or off, and the destination. Crop is centred automatically, and everything else uses the Professional defaults. No inspector, frame editor or fonts on screen.
-  - **"Good enough for print, very fast":** the export is sized for the print, at 300 DPI on the chosen print size (about 1800 × 1200 px for 10×15) instead of full resolution, and encoded at q90. That is visually the same on a 10×15 print, the files are much smaller, and export is several times faster ([NFR-015](#nfr-015--normal-mode-speed)). Decoding at reduced scale when the source is much larger than needed is evaluated as part of this.
-  - The grid opens on embedded EXIF thumbnails only, so a folder is browsable at once.
-- **Switching** keeps all work: photos flagged or cropped in one mode are the same in the other. A Normal export of a project that has Professional settings (frame, fonts) uses them, but at Normal export quality.
-- **Not in Normal:** RAW, per-photo overrides, presets editing, culling suggestions UI. They stay in Professional.
+- **Collage** puts two photos on one print, like a half-frame film camera put two frames on one negative ([FR-035](#fr-035--multi-photo-layouts)).
+- **Simple** is the "instant" mode: the shortest path from a folder to prints.
+  - **One screen, three steps:** open a folder → one photo at a time, **↑ keep** (print basket) or **↓ drop** (set aside), and the next photo comes at once; two large buttons do the same with the mouse ([FR-050](#fr-050--print-basket), the full-screen part of [FR-046](#fr-046--swipe-culling)) → **Export**.
+  - **Few choices, good defaults:** print size (10×15 by default), date stamp on or off, the 3 mm border ([FR-067](#fr-067--3-mm-border-on-every-print)) and the destination. Crop is centred automatically, and everything else uses the Professional settings. No inspector, frame editor, fonts or crop editor on screen.
+  - It exports the print basket at Professional quality.
+- **Later:** a faster Simple export sized for the print, at 300 DPI on the chosen size (about 1800 × 1200 px for 10×15) and q90, with decoding at reduced scale ([NFR-015](#nfr-015--normal-mode-speed)), measured before it is built; the grid on embedded EXIF thumbnails only.
 
 ### FR-049 — Trip journal
 
@@ -647,7 +658,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-060 — Start-up screen
 
-**P1 (v0.6.0).** Opening the app shows the **logo and a loading bar** on the theme's background, never a half-built window: the screen is painted by the page itself before any script runs, and it fades out onto the finished workspace once the last session is back ([FR-023](#fr-023--projects-autosave-and-undo)). When the session reopens folders, the bar shows the import's progress, like the import bar; otherwise it slides. It never stays more than 15 s. It is the place where the choice between Normal and Professional mode ([FR-048](#fr-048--normal-and-professional-modes)) will be asked the first time.
+**P1 (v0.6.0).** Opening the app shows the **logo and a loading bar** on the theme's background, never a half-built window: the screen is painted by the page itself before any script runs, and it fades out onto the finished workspace once the last session is back ([FR-023](#fr-023--projects-autosave-and-undo)). When the session reopens folders, the bar shows the import's progress, like the import bar; otherwise it slides. It never stays more than 15 s. It is the place where the choice between Simple, Collage and Professional mode ([FR-048](#fr-048--simple-collage-and-professional-modes)) will be asked the first time.
 
 ### FR-061 — Check for updates
 
@@ -701,7 +712,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-065 — Border in Crop to fill
 
-**P1 (v0.8.0).** In the info frame's **Crop to fill** mode, an **Add border** switch leaves a 3 mm border in the frame colour (white or black) on the top and both sides, inside the print size; the info bar stays below. The print keeps the exact size of the shop's kiosk (for example CEWE at dm and Rossmann) and still looks like an instant photo, unlike Fit whole photo, which makes the print larger.
+**P1 (v0.8.0).** In the info frame's **Crop to fill** mode, an **Add border** switch leaves a 3 mm border in the frame colour (white or black) on the top and both sides, inside the print size; the info bar stays below. The print keeps the exact size of the shop's kiosk (for example CEWE at dm and Rossmann) and still looks like an instant photo, unlike Fit whole photo, which makes the print larger. Extended to every print and every frame style by [FR-067](#fr-067--3-mm-border-on-every-print) (v0.9.0).
 
 - The photo is cropped to the smaller area, so the crop editor, the print-quality advice and the export follow it.
 - Off by default; stored in `settings.json` (v9). Fit whole photo already has its own border, so the switch shows only in Crop to fill.
@@ -709,6 +720,17 @@ Next to the batch settings, any other setting will later be overridable for one 
 ### FR-066 — Borrow places from a GPX track
 
 **P2 (planned).** Photos without GPS get a place by interpolating their effective time along a GPX track the user opens (from a phone app or a watch), in the time zone set for the camera ([FR-030](#fr-030--camera-clock-offset)). Marked *borrowed* like [FR-031](#fr-031--borrow-gps-from-a-phone-or-gpx-track), reviewable and undoable. Split out of FR-031 for v0.8.0.
+
+### FR-067 — 3 mm border on every print
+
+**P1 (v0.9.0).** A **3 mm border** switch in the print-size card, for every mode and every frame style. It extends [FR-065](#fr-065--border-in-crop-to-fill), which offered the border only in the info frame's Crop to fill. The border cuts into the photo, 3 mm a side; the print keeps the exact size of the shop's kiosk.
+
+- **No info frame:** a white border round the photo; the photo is cropped to the print size less 6 mm on each edge.
+- **Info frame, Crop to fill:** as FR-065, in the frame colour on the top and sides, with the bar below.
+- **Info frame, Fit whole photo:** the print no longer grows. The whole photo is fitted inside the print size, less the border and the bar, centred, and the rest is the frame colour. With the switch off, Fit whole photo keeps its own 5 mm border and the larger print.
+- **Collage:** 3 mm a side inside each photo area ([FR-035](#fr-035--multi-photo-layouts)).
+- The crop editor, the print-quality advice and the export follow the smaller photo area; the date stamp stays inside the photo.
+- Off by default; `render.border` in `settings.json` v10, which takes over FR-065's `frame.border` (a v9 file with the border on keeps it on).
 
 ## 7. Non-functional requirements
 
@@ -772,7 +794,7 @@ Best-shot analysis ([FR-041](#fr-041--best-shot-suggestions)) takes **≤ 20 ms 
 
 ### NFR-015 — Normal mode speed
 
-In Normal mode ([FR-048](#fr-048--normal-and-professional-modes)), export of 16–24 MP JPEGs to 10×15 at 300 DPI reaches **at least 3× the Professional throughput** on REF-MAC (target ≥ 50 photos/s), with peak memory still within [NFR-004](#nfr-004--memory-ceiling). The first screen of a 1,000-photo folder appears in **under 0.5 s**. Budgets are confirmed by benchmark before the mode ships.
+In Simple mode ([FR-048](#fr-048--simple-collage-and-professional-modes)), export of 16–24 MP JPEGs to 10×15 at 300 DPI reaches **at least 3× the Professional throughput** on REF-MAC (target ≥ 50 photos/s), with peak memory still within [NFR-004](#nfr-004--memory-ceiling). The first screen of a 1,000-photo folder appears in **under 0.5 s**. Budgets are confirmed by benchmark before the mode ships.
 
 ### NFR-016 — Open to first photo
 
@@ -793,6 +815,10 @@ For [FR-062](#fr-062--live-view-from-a-camera) over USB: at least **15 frames pe
 ### NFR-020 — Place inference speed
 
 Borrowing places for camera photos from another device's photos of the same scene ([FR-031](#fr-031--borrow-gps-from-a-phone-or-gpx-track)) runs in the background and takes **at most 2 s per 1,000 camera photos** on REF-MAC, without slowing browsing ([NFR-005](#nfr-005--ui-responsiveness)). Measured before building: 1.24 ms per camera photo on all cores ([RESULT.md §14](RESULT.md#14-places-and-time-v080-measured-first)); as built, 54 ms per 1,000 when the scenes match and 1.11 s in the worst case ([RESULT.md §17](RESULT.md#17-borrowed-places-v080)).
+
+### NFR-021 — Collage sheet speed
+
+A collage sheet ([FR-035](#fr-035--multi-photo-layouts)) previews in **at most twice** the single-photo budget of [NFR-002](#nfr-002--preview-latency), and exports in **no more time than its two photos exported alone** on REF-MAC, with peak memory within [NFR-004](#nfr-004--memory-ceiling). The single-photo times are measured first, and the budget is confirmed by benchmark before the mode ships.
 
 ## 8. Out of scope
 

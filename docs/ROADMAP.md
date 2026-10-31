@@ -50,7 +50,7 @@
 | FR-042 | Custom fonts |
 | FR-043 | Custom print sizes |
 | FR-045 | Original aspect ratio |
-| FR-048 | Normal and Professional modes |
+| FR-048 | Simple, Collage and Professional modes |
 | FR-050 | Print basket: the photos that will really be printed, exported to an extra folder |
 | FR-020 | Localization (English and Vietnamese; German later) |
 
@@ -96,7 +96,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.6.0 | Photo viewer | FR-057 (full-resolution zoom, zoom buttons), FR-060 (start-up screen) | Done: cold start (NFR-010), open to first photo (NFR-016), preview and zoom at 16/26/32 MP (RESULT §11) |
 | v0.7.0 | Open with and RAW | FR-054 ("Open with"), FR-016 (RAW through the OS codecs) | Done: RAW on nine CC0 samples (RESULT §12, NFR-017), open to first photo (NFR-016) |
 | v0.8.0 | Places and Lightroom, and the camera (title to confirm at release) | FR-032, FR-005, FR-030, FR-031, FR-058 (XMP), FR-061 (check for updates), FR-065 (border in Crop to fill), FR-062 + FR-063 (capture screen with live view, Windows, Sony a6400; [ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)) | Lookup speed with manual places, a mixed camera + phone folder; XMP read on a Lightroom-culled folder; NFR-018 and NFR-019 measured in the app with the a6400 |
-| v0.9.0 | Normal mode | FR-048, NFR-015, FR-046, FR-050 | Normal against Professional export |
+| v0.9.0 | Three modes: Simple, Collage, Professional (title to confirm at release) | FR-048 (the three modes), FR-035 (2-up collage, half-frame style), FR-067 (3 mm border on every print), FR-046 (full-screen ↑ / ↓ in Simple), NFR-021 | Single-photo preview and export, then a sheet against its two photos (NFR-021). The faster Simple export (NFR-015) comes later |
 | To place | Camera, continued | The camera on macOS, other Sony bodies (read-only probe first), FR-064 (watch a folder), webcam (UVC) live view | [cameras/README.md](cameras/README.md), [cameras/sony.md](cameras/sony.md) |
 | Later | Looks, presets, trips, journal | FR-039, FR-047, FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
 
@@ -135,6 +135,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |
 | FR-065 | Border in Crop to fill: 3 mm in the frame colour inside the print size, instant-photo look at the exact kiosk size |
 | FR-066 | Borrow places from a GPX track: interpolate each photo's time along the track (split out of FR-031) |
+| FR-067 | 3 mm border on every print: every mode and frame style, inside the print size (extends FR-065) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 
 ## Phase 3 — Pro & growth
@@ -147,7 +148,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-019 | Print service upload |
 | FR-021 | Manual updates (no in-app updater, ADR-0021) |
 | FR-029 | Output sharpening |
-| FR-035 | Multi-photo layouts |
+| FR-035 | Multi-photo layouts (2-up collage in v0.9.0; 4-up and strips later) |
 | FR-037 | Contact sheet |
 
 ## Ideas backlog (not yet requirements)
