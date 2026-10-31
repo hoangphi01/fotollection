@@ -4,7 +4,7 @@ import { commands, type UiSettings } from '@/ipc/bindings'
 
 // One shared copy of the per-machine interface preferences (FR-020, FR-052), so the
 // language picker and the theme switch never overwrite each other's choice.
-let current: Required<UiSettings> = { language: 'en', theme: 'system' }
+let current: Required<UiSettings> = { language: 'en', theme: 'system', mode: 'professional' }
 let requested = false
 const listeners = new Set<() => void>()
 const emit = () => listeners.forEach((listener) => listener())

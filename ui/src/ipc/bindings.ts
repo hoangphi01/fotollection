@@ -378,6 +378,12 @@ export type AppInfo = {
 	os: string,
 };
 
+/**
+ *  How much of the app is on screen (FR-048): every control, two photos per print, or the
+ *  keep-or-drop loop.
+ */
+export type AppMode = "simple" | "collage" | "professional";
+
 /**  A place one photo can borrow from another device's photo of the same scene. */
 export type Borrow = {
 	photo: PhotoId,
@@ -1197,6 +1203,8 @@ export type UiSettings = {
 	language: Language,
 	/**  Absent before settings v6: follow the system. */
 	theme?: ThemePreference,
+	/**  Absent before settings v10: Professional, the app as it was (FR-048). */
+	mode?: AppMode,
 };
 
 /**  The result shown under the button. */

@@ -20,6 +20,7 @@ import { DatePlaceDialog } from '@/features/places/date-place-dialog'
 import { useLibrary } from '@/features/library/use-library'
 import { SettingsPanel } from '@/features/settings/settings-panel'
 import { useRenderSettings } from '@/features/settings/use-render-settings'
+import { useLanguage } from '@/features/settings/use-language'
 import { useFrameConfig } from '@/features/frame/use-frame-config'
 import { useFonts } from '@/features/fonts/use-fonts'
 import { useExport } from '@/features/export/use-export'
@@ -37,10 +38,18 @@ import { CaptureDialog } from '@/features/capture/capture-dialog'
 import { ConnectCameraButton } from '@/features/capture/connect-camera-button'
 import { DiscardSessionDialog, type SessionChoice } from '@/features/capture/discard-session-dialog'
 import { useCapture } from '@/features/capture/use-capture'
+import { useAppMode } from '@/features/modes/use-app-mode'
+import { SimplePanel } from '@/features/simple/simple-panel'
+import { SimpleView } from '@/features/simple/simple-view'
 
 export function App() {
   const { t } = useTranslation()
   useStartupScreen()
+  // The language applies in every mode, not only where its picker is (FR-020).
+  useLanguage()
+  // Simple mode shows one photo at a time and few settings (FR-048).
+  const { mode } = useAppMode()
+  const simple = mode === 'simple'
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
   const { photos, total, folders, queueCounts, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
     useLibrary(filter)
@@ -254,6 +263,15 @@ export function App() {
         <TaskProgressBar />
         {total === 0 ? (
           <LibraryEmptyState onOpenFolder={() => void importFolder()} />
+        ) : simple ? (
+          <SimpleView
+            photos={photos}
+            index={current}
+            onIndexChange={setSelected}
+            view={filter.queue ?? 'gallery'}
+            revision={revision}
+            queueCounts={queueCounts}
+          />
         ) : (
           <>
             {/* Sized by the space between the sidebars, not the window: labels collapse to
@@ -389,7 +407,7 @@ export function App() {
       )}
       <PreviewDialog
         photos={photos}
-        index={viewing && photos.length > 0 ? current : null}
+        index={viewing && !simple && photos.length > 0 ? current : null}
         revision={revision}
         settings={settings}
         onSettingsChange={(c) => void update(c)}
@@ -432,6 +450,15 @@ export function App() {
         onLocate={(id) => void project.relink(id)}
         onClose={() => setRelinkHiddenFor(project.document.generation)}
       />
+      {simple ? (
+        <SimplePanel
+          settings={settings}
+          onChange={(c) => void update(c)}
+          exporter={exporter}
+          basketCount={queueCounts.print}
+          revision={revision}
+        />
+      ) : (
       <SettingsPanel
         settings={settings}
         onChange={(c) => void update(c)}
@@ -445,6 +472,7 @@ export function App() {
         photo={photos[current]}
         revision={revision}
       />
+      )}
       </div>
     </div>
   )

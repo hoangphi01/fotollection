@@ -27,6 +27,7 @@ import { ProjectName } from '@/features/project/project-name'
 import type { ProjectApi } from '@/features/project/use-project'
 import { errorText } from '@/lib/errors'
 import { cn } from '@/lib/utils'
+import { ModeSwitch } from '@/features/modes/mode-switch'
 
 type LibrarySidebarProps = {
   /** Every source folder with its own count (FR-056). */
@@ -101,6 +102,9 @@ export function LibrarySidebar({
         </div>
       </div>
       <Separator />
+      <div className="px-4 pt-3">
+        <ModeSwitch />
+      </div>
       {/* The .fotollection document (FR-023). */}
       <div className="space-y-1.5 px-4 pt-4 pb-3">
         <div className="flex items-center justify-between">

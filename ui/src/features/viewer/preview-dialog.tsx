@@ -31,6 +31,8 @@ import { ExportSection } from '@/features/export/export-section'
 import { ExportTargetPicker } from '@/features/export/export-target-picker'
 import type { ExportApi } from '@/features/export/use-export'
 import { FitSizeNote } from '@/features/frame/fit-size-note'
+import { sendTo } from './send-to'
+import { useShownSrc } from './use-shown-src'
 import { FrameSection } from '@/features/frame/frame-section'
 import type { FontsApi } from '@/features/fonts/use-fonts'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
@@ -165,21 +167,7 @@ export function PreviewDialog({
   const sizesKey = (settings?.customSizes ?? []).map((c) => `${c.id}:${c.shortMm}x${c.longMm}`).join()
   const advice = usePrintAdvice(photo?.id, sizesKey)
   const src = photo ? previewUrl(photo.id, revision) : ''
-  // The last finished render stays on screen until the next one has loaded, so a new
-  // setting or a drag never blanks the photo; another photo starts empty, with a spinner.
-  const [shown, setShown] = useState<{ id: number; src: string } | null>(null)
-  const photoId = photo?.id
-  useEffect(() => {
-    if (photoId === undefined || !src) return
-    let live = true
-    const img = new Image()
-    img.onload = () => live && setShown({ id: photoId, src })
-    img.src = src
-    return () => {
-      live = false
-    }
-  }, [photoId, src])
-  const shownSrc = shown && shown.id === photoId ? shown.src : null
+  const shownSrc = useShownSrc(photo?.id, src)
   const geometry = useCropGeometry(photo?.id, revision)
   const [cropping, setCropping] = useState(false)
   // The stage mounts only when the preview opens, so it is kept in state, not a ref.
@@ -212,18 +200,13 @@ export function PreviewDialog({
     else if (event.key === 'ArrowLeft') go(-1)
     else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
       event.preventDefault()
-      sendTo(event.key === 'ArrowUp' ? 'print' : 'aside')
+      send(event.key === 'ArrowUp' ? 'print' : 'aside')
     } else if (event.key.toLowerCase() === 'c' && geometry && !geometry.cropDisabled) setCropping(true)
   }
 
-  // ↑ to the print basket, ↓ set aside (FR-050). A photo that stays in this view (the basket
-  // in the gallery) moves on to the next one; one that leaves it is replaced by the next.
   const view = filter.queue ?? 'gallery'
-  const sendTo = (queue: Queue | null) => {
-    if (!photo) return
-    void commands.setPhotoQueue([photo.id], queue)
-    const stays = queue === null ? view === 'gallery' : view === 'gallery' ? queue === 'print' : view === queue
-    if (stays) go(1)
+  const send = (queue: Queue | null) => {
+    if (photo) sendTo(photo.id, queue, view, () => go(1))
   }
 
   return (

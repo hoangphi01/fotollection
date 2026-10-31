@@ -25,6 +25,17 @@ pub enum ThemePreference {
     Dark,
 }
 
+/// How much of the app is on screen (FR-048): every control, two photos per print, or the
+/// keep-or-drop loop.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum AppMode {
+    Simple,
+    Collage,
+    #[default]
+    Professional,
+}
+
 /// Per-machine interface preferences (FR-020, FR-052). Never part of a project file.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -33,6 +44,9 @@ pub struct UiSettings {
     /// Absent before settings v6: follow the system.
     #[serde(default)]
     pub theme: ThemePreference,
+    /// Absent before settings v10: Professional, the app as it was (FR-048).
+    #[serde(default)]
+    pub mode: AppMode,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Type)]

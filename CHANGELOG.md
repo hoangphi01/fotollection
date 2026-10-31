@@ -10,8 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Three modes**, switched at the top of the sidebar and remembered on this computer: **Simple**, **Collage** (coming in this release) and **Pro**, the app as you know it. Your photos, basket and settings are the same in every mode.
+- **Simple mode:** one photo at a time, as it will print. **↑ Keep** puts it in the print basket, **↓ Drop** sets it aside, and the next photo comes at once; two large buttons do the same with the mouse. The panel keeps only the print size, the 3 mm border, the date stamp and Export, which sends the basket.
 - **3 mm border on every print:** the *3 mm border* switch moves to the print-size card and works with or without the info frame. Without a frame, a white border 3 mm wide runs round the photo; with Fit whole photo, the whole photo now fits inside the size you chose instead of making the print larger. The print always keeps the exact kiosk size. A border you had in Crop to fill stays on.
-- **Website:** a Manual page, in English and Vietnamese, with screenshots of the real app, in 18 chapters that follow the way you work: getting started, stars and filters, best shot, the print basket, print size, crop and straighten, zoom, the date stamp, the info frame, dates and places, camera clocks, export, projects and undo, RAW, Open with, shooting with a camera, updates, and every shortcut. The chapter list opens from a round button bottom left.
+- **Website:** a Manual page, in English and Vietnamese, with screenshots of the real app, in 19 chapters that follow the way you work: getting started, stars and filters, best shot, the print basket, print size, crop and straighten, zoom, the date stamp, the info frame, dates and places, camera clocks, export, projects and undo, RAW, Open with, shooting with a camera, updates, Simple mode, and every shortcut. The chapter list opens from a round button bottom left.
 - **Website:** the print-basket and best-shot screenshots show a cat photographed by the author on a Lumix GX9, with a softer, a shaken and a darker copy beside it for best shot.
 
 ### Changed

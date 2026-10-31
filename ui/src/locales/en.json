@@ -613,5 +613,29 @@
     "borrowAccept_one": "Give {{count}} photo its place",
     "borrowAccept_other": "Give {{count}} photos their place",
     "dialogTitleOne": "Date and place of this photo"
+  },
+  "mode": {
+    "label": "Mode",
+    "simple": "Simple",
+    "collage": "Collage",
+    "professional": "Pro",
+    "simpleHint": "One photo at a time: ↑ keep, ↓ drop, then export",
+    "collageHint": "Two photos on one print, like a half-frame camera",
+    "professionalHint": "Every control: crop, frame, stamp styles, filters and best shot"
+  },
+  "simple": {
+    "title": "Simple",
+    "progress": "Photo {{index}} of {{count}}",
+    "counts": "{{kept}} kept · {{dropped}} dropped",
+    "keep": "Keep",
+    "drop": "Drop",
+    "previous": "Previous photo",
+    "next": "Next photo",
+    "inBasket": "Kept",
+    "done": "Every photo is sorted",
+    "doneHint_one": "{{count}} photo is in the print basket. Export it from the panel on the right.",
+    "doneHint_other": "{{count}} photos are in the print basket. Export them from the panel on the right.",
+    "exportHint_one": "Export sends the {{count}} photo you kept (the print basket).",
+    "exportHint_other": "Export sends the {{count}} photos you kept (the print basket)."
   }
 }

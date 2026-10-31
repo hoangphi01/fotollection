@@ -1,6 +1,6 @@
 # Lessons — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-10-27
+> **Status:** Living · **Last reviewed:** 2026-10-31
 >
 > What each debugging session taught us, so the same mistake is not made twice. Every bug that took more than one look to find gets an entry here in the same commit as its fix ([DOCS_GUIDE.md](DOCS_GUIDE.md) §2). Newest first. Each entry says what we saw, why it happened, the fix, and the rule to follow from now on. Performance-only lessons stay in [OPTIMIZATION.md](OPTIMIZATION.md) (for example §4.3.1, interactive work off background queues).
 
@@ -10,6 +10,15 @@
 2. **Split the path and log both ends.** A temporary log on the UI side (what was asked) and one on the Rust side (what was answered, how long) tells which layer fails in one try. Name them `DEBUG-…` and remove them before the commit (`grep -rn DEBUG ui/src src-tauri/src` must be empty).
 3. **Reproduce with the user's photo when the user sees it.** A synthetic test passed while the real app was soft: unit tests prove the pixels, only the real webview proves what is shown.
 4. **Write the lesson here** before moving on.
+
+## 2026-10-31
+
+### Simple mode came up in English (FR-048)
+
+- **Seen:** on a Vietnamese machine, the Simple mode screen and its panel were in English, while Professional was in Vietnamese.
+- **Why:** the saved language was applied by `useLanguage`'s effect, and the only component that called it was the language card in Professional's settings panel. Simple mode does not mount that panel, so the language was never applied.
+- **Fix:** `App` calls `useLanguage()`, so the language applies in every mode.
+- **Rule:** a per-machine preference is applied once, at the top of the app, never as a side effect of the control that changes it.
 
 ## 2026-10-27
 

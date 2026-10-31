@@ -592,5 +592,27 @@
     "borrowAccept_one": "Điền vị trí cho {{count}} ảnh",
     "borrowAccept_other": "Điền vị trí cho {{count}} ảnh",
     "dialogTitleOne": "Ngày và nơi của ảnh này"
+  },
+  "mode": {
+    "label": "Chế độ",
+    "simple": "Đơn giản",
+    "collage": "Ghép ảnh",
+    "professional": "Pro",
+    "simpleHint": "Từng ảnh một: ↑ giữ, ↓ bỏ, rồi xuất",
+    "collageHint": "Hai ảnh trên một tấm in, như máy ảnh half-frame",
+    "professionalHint": "Đủ mọi điều khiển: cắt ảnh, khung, kiểu dấu ngày, bộ lọc và ảnh đẹp nhất"
+  },
+  "simple": {
+    "title": "Đơn giản",
+    "progress": "Ảnh {{index}} / {{count}}",
+    "counts": "Giữ {{kept}} · Bỏ {{dropped}}",
+    "keep": "Giữ",
+    "drop": "Bỏ",
+    "previous": "Ảnh trước",
+    "next": "Ảnh sau",
+    "inBasket": "Đã giữ",
+    "done": "Đã xem hết ảnh",
+    "doneHint_other": "Có {{count}} ảnh trong giỏ in. Xuất ảnh ở bảng bên phải.",
+    "exportHint_other": "Xuất sẽ lưu {{count}} ảnh bạn đã giữ (giỏ in)."
   }
 }

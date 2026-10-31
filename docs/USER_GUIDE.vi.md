@@ -1,6 +1,6 @@
 # Hướng dẫn sử dụng — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-10-30
+> **Status:** Living · **Last reviewed:** 2026-10-31
 >
 > Bản tiếng Việt của [USER_GUIDE.md](USER_GUIDE.md), cũng là trang hướng dẫn trên website ([fotollection.org/vi/manual](https://fotollection.org/vi/manual/), [ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)). Giữ đúng các chương, mốc chương (`<!-- chapter: id -->`, ở dòng trước tiêu đề chương) và ảnh chụp màn hình (`<!-- shot: tên | mô tả -->`) như bản tiếng Anh, dùng đúng nhãn của app trong `ui/src/locales/vi.json`; `scripts/check-docs.sh` kiểm tra hai bản khớp nhau.
 
@@ -20,6 +20,8 @@ Fotollection làm việc trên các thư mục ảnh bạn đã có. Nó đọc 
 5. **Bảng Thiết lập in** bên phải có, từ trên xuống: *Ngôn ngữ*, *Khổ in / xuất ảnh* (chương 5), *Dấu ngày* (chương 8), *Khung thông tin* (chương 9), *Đồng hồ máy ảnh* (chương 11) và *Địa điểm* (chương 10) khi thư viện đã có, rồi phần xuất ảnh (chương 12) và số phiên bản (chương 17).
 
 <!-- shot: grid | Thư viện ảnh, đã chấm sao và chọn ảnh -->
+
+**Ba chế độ:** các nút ở đầu thanh bên chuyển giữa **Đơn giản** (từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất: chương 18), **Ghép ảnh** (hai ảnh trên một tấm in) và **Pro**, phần app mà hướng dẫn này mô tả. Ảnh, giỏ in và thiết lập của bạn giống nhau ở mọi chế độ, và chế độ được nhớ trên máy này ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
 
 **Ngôn ngữ và giao diện:** chọn *English* hoặc *Tiếng Việt* trong thẻ **Ngôn ngữ** ở đầu bảng. Ba nút ở cuối thanh bên đổi giao diện: **Theo hệ thống**, **Sáng** hoặc **Tối** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
 
@@ -356,9 +358,25 @@ Fotollection không bao giờ tự lên mạng ([FR-021](PRD.md#fr-021--manual-u
 
 Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đẹp nhất mà Fotollection giữ để mở thư mục nhanh, kèm dung lượng so với giới hạn 2 GB. Vượt giới hạn, các mục cũ nhất tự bị xoá. **Xoá cache** làm trống nó bất kỳ lúc nào; không mất gì của bạn, và ảnh nhỏ sẽ được tạo lại khi bạn duyệt.
 
+<!-- chapter: simple -->
+
+## 18. Chế độ Đơn giản
+
+Đường ngắn nhất từ một thư mục tới ảnh in: xem mỗi ảnh một lần, giữ hoặc bỏ, rồi xuất những ảnh đã giữ ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes), [FR-050](PRD.md#fr-050--print-basket)).
+
+1. Nhấp **Đơn giản** ở đầu thanh bên, và mở một thư mục nếu thư viện còn trống.
+2. Ảnh đầu tiên hiện ở giữa, **đúng như khi in**, với khổ in, dấu ngày và viền của bạn.
+3. Nhấn **↑** hoặc nhấp **Giữ**: ảnh vào giỏ in, và ảnh kế tiếp hiện ra.
+4. Nhấn **↓** hoặc nhấp **Bỏ**: ảnh được để riêng, không bao giờ bị xoá, và ảnh kế tiếp hiện ra.
+5. **← →** đi lùi, đi tới mà không quyết định. **Cmd/Ctrl+Z** hoàn tác lần giữ hoặc bỏ vừa rồi.
+6. Thanh phía trên ảnh cho biết bạn đang ở ảnh nào, đã giữ và đã bỏ bao nhiêu.
+7. Ở bảng bên phải, chọn **khổ in**, **viền 3 mm** và **dấu ngày**, rồi **Chọn nơi lưu…** và **Xuất**: app lưu những ảnh bạn đã giữ.
+
+Ảnh đã giữ ở chế độ Đơn giản cũng nằm trong giỏ in ở Pro, nên bạn có thể sang Pro bất kỳ lúc nào để cắt hay thêm khung cho một ảnh, rồi quay lại.
+
 <!-- chapter: shortcuts -->
 
-## 18. Phím tắt
+## 19. Phím tắt
 
 | Ở đâu | Phím | Việc |
 |-------|------|------|
@@ -370,6 +388,8 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 | Xem trước | **← →** | Tấm trước / tấm sau |
 | Xem trước | **↑** | Cho vào giỏ in, sang tấm sau |
 | Xem trước | **↓** | Để riêng, sang tấm sau |
+| Chế độ Đơn giản | **↑** / **↓** | Giữ (giỏ in) / bỏ (để riêng), sang tấm sau |
+| Chế độ Đơn giản | **← →** | Ảnh trước / sau, không quyết định |
 | Xem trước | **C** | Mở màn cắt ảnh (chương 6) |
 | Xem trước | **Cmd/Ctrl + / −**, chụm trên trackpad, các nút phóng | Phóng to / thu nhỏ (§7) |
 | Xem trước | **Cmd/Ctrl 0**, nút vừa khung | Về vừa khung |

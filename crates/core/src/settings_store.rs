@@ -20,8 +20,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v7 (FR-040): `frame.logoScale`, absent before (1.0).
 /// v8 (FR-053): `render.exportTarget` (prints or a share preset), absent before (prints).
 /// v9 (FR-065): `frame.border`, the Crop-to-fill border, absent before (off).
-/// v10 (FR-067): `render.border`, the 3 mm border on every print; a v9 `frame.border` moves
-/// there.
+/// v10 (FR-067, FR-048): `render.border`, the 3 mm border on every print, where a v9
+/// `frame.border` moves; `ui.mode`, absent before (Professional).
 pub const SCHEMA_VERSION: u32 = 10;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
@@ -389,6 +389,7 @@ mod tests {
         };
         assert!(s.render.border);
         assert!(!s.frame.border);
+        assert_eq!(s.ui.mode, crate::settings::AppMode::Professional);
         save(&path, &s)?;
         // The old key is never on again.
         let written: serde_json::Value = serde_json::from_slice(&std::fs::read(&path)?)?;

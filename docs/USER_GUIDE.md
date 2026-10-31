@@ -1,6 +1,6 @@
 # User Guide — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-10-30
+> **Status:** Living · **Last reviewed:** 2026-10-31
 >
 > How to use the app, step by step, for the person at the keyboard. It describes behaviour that has shipped or is on `main`; the reasons and the full rules are in [PRD.md](PRD.md), linked from each section. Update it in the same commit as any change a user would notice ([DOCS_GUIDE.md](DOCS_GUIDE.md)).
 >
@@ -22,6 +22,8 @@ Fotollection works on the folders of photos you already have. It reads them wher
 5. **The Print settings panel** on the right holds, top to bottom: *Language*, *Print / export size* (chapter 5), *Date stamp* (chapter 8), *Info frame* (chapter 9), *Camera clocks* (chapter 11) and *Places* (chapter 10) once the library has them, then the export controls (chapter 12) and the version number (chapter 17).
 
 <!-- shot: grid | The library, culled with stars and picks -->
+
+**Three modes:** the buttons at the top of the sidebar switch between **Simple** (one photo at a time, ↑ keep, ↓ drop, then export: chapter 18), **Collage** (two photos on one print) and **Pro**, the app this guide describes. Your photos, basket and settings are the same in every mode, and the mode is remembered on this computer ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
 
 **Language and look:** choose *English* or *Tiếng Việt* in the **Language** card at the top of the panel. The three buttons at the foot of the sidebar set the look: **Follow the system**, **Light** or **Dark** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
 
@@ -358,9 +360,25 @@ Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates
 
 The same popover shows the **cache**: the thumbnails and best-shot analyses Fotollection keeps so folders open fast, with its size against its 2 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
 
+<!-- chapter: simple -->
+
+## 18. Simple mode
+
+The shortest way from a folder to prints: look at each photo once, keep it or drop it, then export what you kept ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes), [FR-050](PRD.md#fr-050--print-basket)).
+
+1. Click **Simple** at the top of the sidebar, and open a folder if the library is empty.
+2. The first photo fills the middle, **as it will print**, with your print size, date stamp and border.
+3. Press **↑** or click **Keep**: the photo goes into the print basket, and the next one comes.
+4. Press **↓** or click **Drop**: the photo is set aside, never deleted, and the next one comes.
+5. **← →** step back and forward without deciding. **Cmd/Ctrl+Z** undoes the last keep or drop.
+6. The bar above the photo counts where you are, and how many you kept and dropped.
+7. In the panel on the right, choose the **print size**, the **3 mm border** and the **date stamp**, then **Choose destination…** and **Export**: it saves the photos you kept.
+
+A photo kept in Simple mode is in the print basket in Pro too, so you can switch to Pro at any time to crop or frame a photo, and come back.
+
 <!-- chapter: shortcuts -->
 
-## 18. Keyboard shortcuts
+## 19. Keyboard shortcuts
 
 | Where | Key | Action |
 |-------|-----|--------|
@@ -372,6 +390,8 @@ The same popover shows the **cache**: the thumbnails and best-shot analyses Foto
 | Preview | **← →** | Previous / next photo |
 | Preview | **↑** | Put in the print basket, next photo |
 | Preview | **↓** | Set aside, next photo |
+| Simple mode | **↑** / **↓** | Keep (print basket) / drop (set aside), next photo |
+| Simple mode | **← →** | Previous / next photo, without deciding |
 | Preview | **C** | Open the crop editor (chapter 6) |
 | Preview | **Cmd/Ctrl + / −**, trackpad pinch, the zoom buttons | Zoom in / out (§7) |
 | Preview | **Cmd/Ctrl 0**, the fit button | Back to fit |

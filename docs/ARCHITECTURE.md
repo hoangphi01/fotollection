@@ -124,7 +124,7 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
   .oxlintrc.json         † # lint rules (bans dangerouslySetInnerHTML / eval)
   src/
     components/ui/       † # shadcn/ui components (copied in via the shadcn CLI, owned by us)
-    features/            † # library/, settings/, export/, culling/, frame/, viewer/ — feature components + hooks
+    features/            † # library/, settings/, export/, culling/, frame/, viewer/, modes/, simple/ — feature components + hooks
     i18n/                † # i18next setup + typed keys (FR-020, ADR-0015)
     locales/             † # en.json (default), vi.json — bundled, never fetched
     ipc/bindings.ts      † # GENERATED from Rust types — do not edit
