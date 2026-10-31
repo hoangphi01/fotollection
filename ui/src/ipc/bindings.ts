@@ -57,15 +57,16 @@ export const commands = {
 	 *  Starts exporting the photos kept by `filter` to the chosen destination
 	 *  (FR-008, FR-009, FR-011, FR-022), or only the photo `only` when it is set: the one open
 	 *  in the preview (FR-055). With `separate`, each source folder goes into its own subfolder
-	 *  of the destination (FR-056).
+	 *  of the destination (FR-056). With `sheets`, the photos go out two to a print, as the
+	 *  Collage mode shows them (FR-035).
 	 *  Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
 	 */
-	startExport: (filter: CullFilter, only: number | null, separate: boolean) => typedError<number, IpcError>(__TAURI_INVOKE("start_export", { filter, only, separate })),
+	startExport: (filter: CullFilter, only: number | null, separate: boolean, sheets: boolean) => typedError<number, IpcError>(__TAURI_INVOKE("start_export", { filter, only, separate, sheets })),
 	/**
 	 *  What the export will weigh, before it runs (FR-053): the originals' total and an estimate
 	 *  from a few photos encoded in memory with the current settings. Nothing is written.
 	 */
-	estimateExport: (filter: CullFilter, only: number | null) => typedError<ExportEstimate, IpcError>(__TAURI_INVOKE("estimate_export", { filter, only })),
+	estimateExport: (filter: CullFilter, only: number | null, sheets: boolean) => typedError<ExportEstimate, IpcError>(__TAURI_INVOKE("estimate_export", { filter, only, sheets })),
 	cancelJob: (jobId: number) => typedError<null, IpcError>(__TAURI_INVOKE("cancel_job", { jobId })),
 	/**  Details for the preview inspector (FR-002, FR-007, FR-026). Reads only the JPEG header. */
 	photoDetails: (id: PhotoId) => typedError<PhotoDetails, IpcError>(__TAURI_INVOKE("photo_details", { id })),
@@ -204,6 +205,20 @@ export const commands = {
 	 *  (FR-050). One undoable step; set-aside photos are never deleted.
 	 */
 	setPhotoQueue: (ids: PhotoId[], queue: "print" | "aside" | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_queue", { ids, queue })),
+	/**  The sheets of the photos shown, in order (FR-035). */
+	listSheets: (filter: CullFilter) => typedError<SheetPair[], IpcError>(__TAURI_INVOKE("list_sheets", { filter })),
+	/**
+	 *  The collage order after a drag: `ids` are the photos shown, in their new order. One
+	 *  undoable step (FR-035).
+	 */
+	setCollageOrder: (ids: PhotoId[]) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_collage_order", { ids })),
+	/**  Turns the sheet that `first` starts against its photo, or back (FR-035). Undoable. */
+	turnSheet: (first: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("turn_sheet", { first })),
+	/**
+	 *  What the panel says about a sheet: its size, each photo's area, the suggested size,
+	 *  the photo left inside the border and the print quality (FR-035, FR-026).
+	 */
+	sheetInfo: (sheet: SheetPair) => typedError<SheetInfo, IpcError>(__TAURI_INVOKE("sheet_info", { sheet })),
 	/**  Places whose name starts with `query`, largest first, from the bundled data (FR-032). */
 	searchPlaces: (query: string, limit: number) => typedError<Place[], IpcError>(__TAURI_INVOKE("search_places", { query, limit })),
 	/**
@@ -357,8 +372,10 @@ export const events = {
 };
 
 /* Types */
-/**  File commands the UI runs when their menu item is chosen. */
+/**  Commands the UI runs when their menu item is chosen. */
 export type Action = "new" | "open" | "save" | "saveAs" | 
+/**  Simple, Collage or Pro (FR-048). */
+"modeSimple" | "modeCollage" | "modeProfessional" | 
 /**  The OS handed over a `.fotollection` file (not a menu item). */
 "openRequested";
 
@@ -523,6 +540,49 @@ export type CameraStatus = {
 export type CaptureFormat = "jpeg" | "raw" | 
 /**  A value we have not named (RAW+JPEG, another quality); shown as is. */
 "other";
+
+/**  What the panel says about one photo of a sheet (FR-035, FR-026). */
+export type CellInfo = {
+	id: PhotoId,
+	/**  The photo area, as printed (width × height), in millimetres. */
+	areaWidthMm: number,
+	areaHeightMm: number,
+	/**  The suggested area for this photo, the same way round. */
+	suggestedWidthMm: number,
+	suggestedHeightMm: number,
+	/**  The photo left inside the 3 mm border (FR-067), or the whole area without it. */
+	photoWidthMm: number | null,
+	photoHeightMm: number | null,
+	/**  Effective DPI of the photo at that size, and its band. */
+	dpi: number,
+	quality: DpiBand,
+};
+
+/**  The ratio of the photo area in a collage cell (FR-035). */
+export type CellRatio = 
+/**  Each photo's own ratio. */
+"photo" | 
+/**  The sheet's ratio: 2:3 on a 10 × 15. */
+"sheet" | "fourThree" | "square";
+
+/**  A photo size typed by the user for collage cells, in whole millimetres. */
+export type CellSize = {
+	shortMm: number,
+	longMm: number,
+};
+
+/**  How two photos share one print (FR-035). */
+export type CollageSettings = {
+	ratio?: CellRatio,
+	/**  White kept round the photo in its cell, on every side. */
+	marginMm?: number,
+	/**  The size typed by the user; `None` uses the suggested size. */
+	size?: CellSize | null,
+	/**  With the ratio locked, a typed size keeps the chosen ratio: only its short edge counts. */
+	lockRatio?: boolean,
+	/**  A thin line between the cells, to cut the print in two. */
+	cutLine?: boolean,
+};
 
 /**  How sure a borrowed place is (FR-031). */
 export type Confidence = 
@@ -1116,6 +1176,11 @@ export type RenderSettings = {
 	 *  before settings v10, where FR-065's `frame.border` held it for Crop to fill only.
 	 */
 	border?: boolean,
+	/**
+	 *  Two photos on one print, the Collage mode (FR-035, FR-048). Absent before settings
+	 *  v10: the defaults.
+	 */
+	collage?: CollageSettings,
 };
 
 /**  Render-affecting state changed (settings, frame, crops, undo); previews refresh. */
@@ -1137,6 +1202,20 @@ export type SharePreset =
 { kind: "original" } | { kind: "facebook" } | { kind: "instagram" } | 
 /**  A long edge chosen by the user, clamped to [`CUSTOM_EDGE_RANGE`]. */
 { kind: "custom"; longEdge: number };
+
+/**  A sheet as the panel and the grid see it. */
+export type SheetInfo = {
+	widthMm: number | null,
+	heightMm: number | null,
+	sideBySide: boolean,
+	cells: CellInfo[],
+};
+
+/**  Two photos on one print: the first and, unless the last photo was odd, the second. */
+export type SheetPair = {
+	first: PhotoId,
+	second: PhotoId | null,
+};
 
 /**  A shutter speed in seconds, as numerator / denominator (1/250 is `{ 1, 250 }`). */
 export type ShutterSpeed = {

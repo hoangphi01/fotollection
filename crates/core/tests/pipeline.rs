@@ -170,6 +170,60 @@ fn fr_009_export_by_date_never_overwrites() {
 }
 
 #[test]
+fn fr_035_sheets_export_one_file_per_pair_in_the_first_photos_day() {
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    let portrait = Fixture {
+        width: 400,
+        height: 600,
+        date: Some("2026:07:14 10:00:00"),
+        ..Fixture::default()
+    };
+    write(src.path(), "P1.jpg", &jpeg(&portrait));
+    write(src.path(), "P2.jpg", &jpeg(&portrait));
+    write(src.path(), "P3.jpg", &jpeg(&portrait));
+    let lib = import(src.path());
+    let mut all = records(&lib);
+    all.sort_by(|a, b| a.file_name.cmp(&b.file_name));
+    let sheets: Vec<fotollection_core::export::SheetRecords> = vec![
+        (all[0].clone(), Some(all[1].clone())),
+        (all[2].clone(), None),
+    ];
+    let settings = RenderSettings::default();
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 2,
+        place_for: &|_| None,
+        frame_for: &|_| None,
+        group_for: &|_| None,
+    };
+    let summary = fotollection_core::export::run_export_sheets(
+        &sheets,
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert_eq!(summary.exported, 2);
+    assert!(summary.failed.is_empty());
+    let day = dest.path().join("2026-07-14");
+    let pair = std::fs::read(day.join("P1+P2.jpg")).unwrap();
+    assert!(day.join("P3.jpg").exists(), "an odd last photo alone");
+    // Two portrait photos: a landscape 15 × 10 sheet, no GPS (FR-010).
+    let decoded = PureRustCodec.decode(&pair).unwrap().image;
+    let ratio = f64::from(decoded.width) / f64::from(decoded.height);
+    assert!(
+        (ratio - 1.5).abs() < 0.01,
+        "{}×{}",
+        decoded.width,
+        decoded.height
+    );
+    assert_eq!(metadata::read_bytes(&pair).gps, None);
+}
+
+#[test]
 fn fr_056_folders_exported_separately_get_their_own_subfolder() {
     let src = tempfile::tempdir().unwrap();
     let dest = tempfile::tempdir().unwrap();

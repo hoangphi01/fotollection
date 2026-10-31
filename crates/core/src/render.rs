@@ -164,6 +164,7 @@ fn compose_frame(photo: &RgbImage, frame: &FramePlan) -> RgbImage {
     canvas
 }
 
+/// Copies `photo` onto `canvas` with its top-left corner at `x`, `y`, clipped to the canvas.
 pub fn blit(canvas: &mut RgbImage, photo: &RgbImage, x: u32, y: u32) {
     let width = photo.width.min(canvas.width.saturating_sub(x)) as usize;
     let rows = photo.height.min(canvas.height.saturating_sub(y));

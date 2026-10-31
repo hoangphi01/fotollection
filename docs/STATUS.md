@@ -196,7 +196,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-032 | Manual date and place | 1 | In Progress | ✓ `PhotoEdits.date` and `.place` (undoable), effective date and place per ADR-0027 (`Library::effective`, `places::effective`), project v8 (`fr_032_*`). ✓ `search_places`, `set_photo_date`, `set_photo_place` checked in Rust; Set the date / Set the place in the preview, Date and place… in select mode, offline place picker (shadcn `command`). Left: check by hand |
 | FR-033 | Retro film date stamp and stamp presets | 1 | In Progress | ✓ DSEG14 Italic (OFL) LCD face with LED glow and faint shadow (`fr_033_*`). Presets to come |
 | FR-034 | Lab presets | 2 | Not Started | |
-| FR-035 | Multi-photo layouts | 3 | Not Started | **v0.9.0: 2-up collage** (half-frame style; cells, margin, suggested size, cut line, pairing by drag, `sheet` preview, one file per sheet; [ADR-0032](adr/0032-collage-sheets-from-two-cell-plans.md)). 4-up and strips later |
+| FR-035 | Multi-photo layouts | 3 | In Progress | **v0.9.0: 2-up collage** ([ADR-0032](adr/0032-collage-sheets-from-two-cell-plans.md)). ✓ Core: `sheet.rs` (cells, margin, suggested and typed size, cut line, pairing), `render.collage` (settings v10), `photos[].collage` and `sheet_turned` (project v9), `fotothumb://…/sheet/{a}/{b}`, `list_sheets`, `set_collage_order`, `turn_sheet`, `sheet_info`, export one file per sheet (`fr_035_*`). Left: the Collage screen (sheet grid, drag, Space, turn, crop per cell, size with a ratio lock). 4-up and strips later |
 | FR-036 | Custom captions | 2 | In Progress | ✓ A caption line under the date, in the stamp's LCD face (`fr_036_*`). Variables (`{trip}` needs FR-012) and per-photo captions to come |
 | FR-037 | Contact sheet | 3 | Not Started | |
 | FR-038 | Print presets | 2 | Not Started | Storage model: [DATABASE.md §7](DATABASE.md#7-presets) |
@@ -251,7 +251,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | NFR-015 | Normal mode speed | ≥ 3× Professional export (≥ 50 photos/s), first screen < 0.5 s for 1,000 photos | — | Not Started |
 | NFR-016 | Open to first photo | < 1 s after the first launch | measured end to end (`open -a`, release bundle): JPEG 0.70 s when its folder is already a tab, 1.25 s for a new folder (its import first); RAW 1.4–2.5 s (develop, NFR-017) | In Progress |
 | NFR-020 | Place inference speed | ≤ 2 s per 1,000 camera photos | 54 ms per 1,000 when the scenes match, 1.11 s in the worst case (`measure_borrow`, RESULT §17) | Met |
-| NFR-021 | Collage sheet speed | Preview ≤ 2× NFR-002; export ≤ its two photos alone | — | Not Started |
+| NFR-021 | Collage sheet speed | Preview ≤ 2× NFR-002; export ≤ its two photos alone | Preview 24 ms (17 + 19 alone), export render + encode 214 ms (633 alone), `measure_sheet`, RESULT §18 | Met |
 | NFR-018 | Shot to screen | ≈ 2 s for JPEG (to be set by Step 0) | — | Not Started |
 | NFR-019 | Live view | ≥ 15 fps, < 200 ms (to be confirmed) | — | Not Started |
 | NFR-017 | Camera RAW speed | preview < 100 ms, first RAW print preview < 2.5 s, memory within NFR-004 | embedded preview 9–80 ms, develop 0.39–2.17 s, 1.29 GB peak for one 31 MP develop (`measure_raw`, RESULT §12) | In Progress |

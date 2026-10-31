@@ -494,6 +494,7 @@ pub fn set_settings(
 ) -> Result<SettingsState, IpcError> {
     // A custom share size from the webview is clamped here (FR-053).
     settings.export_target = settings.export_target.sanitized();
+    settings.collage = settings.collage.sanitized();
     settings
         .validate()
         .map_err(|e| IpcError::new("settings.invalid", e.to_string()))?;
@@ -587,7 +588,8 @@ pub async fn pick_export_folder(app: AppHandle) -> Result<Option<String>, IpcErr
 /// Starts exporting the photos kept by `filter` to the chosen destination
 /// (FR-008, FR-009, FR-011, FR-022), or only the photo `only` when it is set: the one open
 /// in the preview (FR-055). With `separate`, each source folder goes into its own subfolder
-/// of the destination (FR-056).
+/// of the destination (FR-056). With `sheets`, the photos go out two to a print, as the
+/// Collage mode shows them (FR-035).
 /// Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
 #[tauri::command]
 #[specta::specta]
@@ -597,6 +599,7 @@ pub fn start_export(
     filter: CullFilter,
     only: Option<PhotoId>,
     separate: bool,
+    sheets: bool,
 ) -> Result<u32, IpcError> {
     let destination = state
         .export_destination
@@ -604,7 +607,7 @@ pub fn start_export(
         .map_err(|e| IpcError::internal(e.to_string()))?
         .clone()
         .ok_or_else(|| IpcError::new("export.no_destination", "Choose a destination first"))?;
-    let (records, groups) = {
+    let (records, pairs, groups) = {
         let library = state
             .library
             .read()
@@ -614,7 +617,8 @@ pub fn start_export(
         } else {
             HashMap::new()
         };
-        (export_records(&library, &filter, only), groups)
+        let (records, pairs) = export_scope(&library, &filter, only, sheets);
+        (records, pairs, groups)
     };
     if records.is_empty() {
         return Err(IpcError::new(
@@ -676,13 +680,23 @@ pub fn start_export(
                 .emit(&app);
             }
         };
-        let summary = run_export(
-            &records,
-            &options,
-            state.codec.as_ref(),
-            &cancel,
-            &on_progress,
-        );
+        let summary = if sheets {
+            fotollection_core::export::run_export_sheets(
+                &pairs,
+                &options,
+                state.codec.as_ref(),
+                &cancel,
+                &on_progress,
+            )
+        } else {
+            run_export(
+                &records,
+                &options,
+                state.codec.as_ref(),
+                &cancel,
+                &on_progress,
+            )
+        };
         if let Ok(mut jobs) = state.jobs.lock() {
             jobs.remove(&job_id);
         }
@@ -708,6 +722,40 @@ fn export_records(
     }
 }
 
+/// What an export covers: its photos and, with `sheets`, their collage sheets (FR-035).
+fn export_scope(
+    library: &fotollection_core::library::Library,
+    filter: &CullFilter,
+    only: Option<PhotoId>,
+    sheets: bool,
+) -> (
+    Vec<fotollection_core::library::PhotoRecord>,
+    Vec<fotollection_core::export::SheetRecords>,
+) {
+    let pairs = if sheets {
+        sheet_records(library, filter)
+    } else {
+        Vec::new()
+    };
+    (export_records(library, filter, only), pairs)
+}
+
+/// The collage sheets of the photos `filter` keeps, in order (FR-035).
+fn sheet_records(
+    library: &fotollection_core::library::Library,
+    filter: &CullFilter,
+) -> Vec<fotollection_core::export::SheetRecords> {
+    crate::collage::sheet_pairs(library, filter)
+        .into_iter()
+        .filter_map(|pair| {
+            Some((
+                library.record(pair.first)?,
+                pair.second.and_then(|id| library.record(id)),
+            ))
+        })
+        .collect()
+}
+
 /// What the export will weigh, before it runs (FR-053): the originals' total and an estimate
 /// from a few photos encoded in memory with the current settings. Nothing is written.
 #[tauri::command]
@@ -716,15 +764,16 @@ pub async fn estimate_export(
     app: AppHandle,
     filter: CullFilter,
     only: Option<PhotoId>,
+    sheets: bool,
 ) -> Result<fotollection_core::export::ExportEstimate, IpcError> {
     tauri::async_runtime::spawn_blocking(move || {
         let state = app.state::<AppState>();
-        let records = {
+        let (records, pairs) = {
             let library = state
                 .library
                 .read()
                 .map_err(|e| IpcError::internal(e.to_string()))?;
-            export_records(&library, &filter, only)
+            export_scope(&library, &filter, only, sheets)
         };
         let settings = state
             .settings
@@ -755,12 +804,22 @@ pub async fn estimate_export(
             frame_for: &frame_for,
             group_for: &|_| None,
         };
-        Ok(fotollection_core::export::estimate_export(
-            &records,
-            &options,
-            state.codec.as_ref(),
-            fotollection_core::export::ESTIMATE_SAMPLES,
-        ))
+        let samples = fotollection_core::export::ESTIMATE_SAMPLES;
+        Ok(if sheets {
+            fotollection_core::export::estimate_sheets(
+                &pairs,
+                &options,
+                state.codec.as_ref(),
+                samples,
+            )
+        } else {
+            fotollection_core::export::estimate_export(
+                &records,
+                &options,
+                state.codec.as_ref(),
+                samples,
+            )
+        })
     })
     .await
     .map_err(|e| IpcError::internal(e.to_string()))?
@@ -924,7 +983,7 @@ pub struct GpsPoint {
 }
 
 /// The photo's pixel size as shown, after EXIF orientation and the user's quarter turns.
-fn upright_size(
+pub(crate) fn upright_size(
     state: &AppState,
     record: &fotollection_core::library::PhotoRecord,
 ) -> Result<(u32, u32), IpcError> {

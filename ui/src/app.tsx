@@ -39,6 +39,7 @@ import { ConnectCameraButton } from '@/features/capture/connect-camera-button'
 import { DiscardSessionDialog, type SessionChoice } from '@/features/capture/discard-session-dialog'
 import { useCapture } from '@/features/capture/use-capture'
 import { useAppMode } from '@/features/modes/use-app-mode'
+import { useModeShortcuts } from '@/features/modes/use-mode-shortcuts'
 import { SimplePanel } from '@/features/simple/simple-panel'
 import { SimpleView } from '@/features/simple/simple-view'
 
@@ -48,7 +49,8 @@ export function App() {
   // The language applies in every mode, not only where its picker is (FR-020).
   useLanguage()
   // Simple mode shows one photo at a time and few settings (FR-048).
-  const { mode } = useAppMode()
+  const { mode, setMode } = useAppMode()
+  useModeShortcuts(setMode)
   const simple = mode === 'simple'
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
   const { photos, total, folders, queueCounts, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =

@@ -129,6 +129,12 @@ pub struct PhotoEdits {
     /// over the photo's own GPS.
     #[serde(default)]
     pub place: Option<PhotoPlace>,
+    /// The photo's position in the collage order, once the user reordered it (FR-035).
+    #[serde(default)]
+    pub collage: Option<u32>,
+    /// The sheet this photo starts is turned against its photo (FR-035).
+    #[serde(default)]
+    pub sheet_turned: bool,
 }
 
 /// A place given to a photo, by its GeoNames id in the bundled places (FR-032, FR-031).

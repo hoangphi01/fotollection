@@ -35,6 +35,7 @@ pub mod settings;
 pub mod settings_store;
 pub mod share;
 pub mod sharpen;
+pub mod sheet;
 pub mod stamp;
 pub mod straighten;
 pub mod text;

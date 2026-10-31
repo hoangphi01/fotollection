@@ -7,17 +7,23 @@ const DELAY_MS = 400
 
 /**
  * What the export will weigh, before it runs (FR-053): Rust encodes a few photos in memory
- * with the current settings. Refreshed when the photos or the settings (`revision`) change;
+ * with the current settings, or a few collage sheets with `sheets` (FR-035). Refreshed when the photos or the settings (`revision`) change;
  * an answer that arrives after a newer request is dropped.
  */
-export function useExportEstimate(filter: CullFilter, only: number | null, revision: number, enabled: boolean) {
+export function useExportEstimate(
+  filter: CullFilter,
+  only: number | null,
+  revision: number,
+  enabled: boolean,
+  sheets = false,
+) {
   const [estimate, setEstimate] = useState<{ key: string; value: ExportEstimate } | null>(null)
-  const key = `${JSON.stringify(filter)}:${only}:${revision}`
+  const key = `${JSON.stringify(filter)}:${only}:${revision}:${sheets}`
   useEffect(() => {
     if (!enabled) return
     let live = true
     const timer = window.setTimeout(() => {
-      void commands.estimateExport(filter, only).then((result) => {
+      void commands.estimateExport(filter, only, sheets).then((result) => {
         if (live && result.status === 'ok') setEstimate({ key, value: result.data })
       })
     }, DELAY_MS)
@@ -25,7 +31,7 @@ export function useExportEstimate(filter: CullFilter, only: number | null, revis
       live = false
       window.clearTimeout(timer)
     }
-  }, [key, filter, only, enabled])
+  }, [key, filter, only, enabled, sheets])
   return {
     estimate: estimate?.value ?? null,
     /** The shown figure belongs to older settings while a new one is computed. */

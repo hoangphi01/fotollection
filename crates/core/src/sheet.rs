@@ -1,0 +1,722 @@
+// SPDX-License-Identifier: GPL-3.0-only
+//! Collage sheets (FR-035, ADR-0032): two photos on one print, like a half-frame camera put
+//! two frames on one negative. The geometry is in millimetres; each photo is then planned
+//! and rendered as an ordinary print the size of its photo area, and the two are placed on
+//! a sheet canvas.
+
+use chrono::NaiveDateTime;
+use serde::Serialize;
+use specta::Type;
+
+use crate::image::RgbImage;
+use crate::library::PhotoId;
+use crate::plan::{CropFrame, DpiBand, MAT_WHITE, PlanInput, center_crop_to, plan};
+use crate::print_size::PrintSize;
+use crate::render::{RenderError, blit, filled, render};
+use crate::settings::{CellRatio, CollageSettings, RenderSettings, StampSettings};
+
+/// The sheet's pixel density never goes past this, however sharp the photos (ADR-0032).
+pub const MAX_SHEET_DPI: f32 = 600.0;
+/// The cut line's width and colour, and its darker ticks at the sheet's edges.
+const CUT_LINE_MM: f32 = 0.2;
+const CUT_LINE: [u8; 3] = [200, 200, 200];
+const CUT_TICK_MM: f32 = 4.0;
+const CUT_TICK: [u8; 3] = [120, 120, 120];
+const MM_PER_IN: f32 = 25.4;
+
+/// A rectangle on the sheet, in millimetres.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct RectMm {
+    pub x: f32,
+    pub y: f32,
+    pub width: f32,
+    pub height: f32,
+}
+
+/// One photo's place on the sheet.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct CellLayout {
+    pub cell: RectMm,
+    /// The photo area, whole millimetres, in the photo's orientation.
+    pub area: (u32, u32),
+    /// Where the area's top-left corner sits on the sheet.
+    pub x: f32,
+    pub y: f32,
+}
+
+/// A laid-out sheet: its size and where each photo goes.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct SheetLayout {
+    /// The sheet in millimetres, as printed (width × height).
+    pub width: f32,
+    pub height: f32,
+    /// The cells sit side by side (a landscape sheet) or one above the other.
+    pub side_by_side: bool,
+    /// The two cells; `None` for an empty one (an odd last photo).
+    pub cells: [Option<CellLayout>; 2],
+}
+
+/// The sheet's print size: the chosen one, or 10 × 15 when it is Original, which has no
+/// size of its own until a photo gives it one.
+pub fn sheet_print(settings: &RenderSettings) -> PrintSize {
+    settings
+        .validate()
+        .ok()
+        .filter(|p| !p.is_original())
+        .unwrap_or(PrintSize::ALL[1])
+}
+
+/// The sheet turns to suit its first photo: a landscape photo gets landscape cells, so the
+/// sheet stands up; a portrait one gets the half-frame look. `turned` is the user's choice
+/// the other way.
+pub fn side_by_side(first: (u32, u32), turned: bool) -> bool {
+    let landscape_photo = first.0 >= first.1;
+    landscape_photo == turned
+}
+
+/// The sheet split across its long edge: side by side on a landscape sheet, one above the
+/// other on a standing one.
+pub fn cells(print: PrintSize, side_by_side: bool) -> (f32, f32, [RectMm; 2]) {
+    #[allow(clippy::cast_precision_loss)]
+    let (short, long) = (print.short_mm as f32, print.long_mm as f32);
+    if side_by_side {
+        let (w, h) = (long, short);
+        let half = w / 2.0;
+        (
+            w,
+            h,
+            [
+                RectMm {
+                    x: 0.0,
+                    y: 0.0,
+                    width: half,
+                    height: h,
+                },
+                RectMm {
+                    x: half,
+                    y: 0.0,
+                    width: half,
+                    height: h,
+                },
+            ],
+        )
+    } else {
+        let (w, h) = (short, long);
+        let half = h / 2.0;
+        (
+            w,
+            h,
+            [
+                RectMm {
+                    x: 0.0,
+                    y: 0.0,
+                    width: w,
+                    height: half,
+                },
+                RectMm {
+                    x: 0.0,
+                    y: half,
+                    width: w,
+                    height: half,
+                },
+            ],
+        )
+    }
+}
+
+/// The photo area's ratio `w : h`, in the photo's orientation.
+fn area_ratio(photo: (u32, u32), print: PrintSize, ratio: CellRatio) -> (f64, f64) {
+    let landscape = photo.0 >= photo.1;
+    let (long, short) = match ratio {
+        CellRatio::Photo => {
+            let (w, h) = (f64::from(photo.0.max(1)), f64::from(photo.1.max(1)));
+            return (w, h);
+        }
+        CellRatio::Sheet => (f64::from(print.long_mm), f64::from(print.short_mm)),
+        CellRatio::FourThree => (4.0, 3.0),
+        CellRatio::Square => (1.0, 1.0),
+    };
+    if landscape {
+        (long, short)
+    } else {
+        (short, long)
+    }
+}
+
+/// Whole millimetres, rounded down, forgiving float noise (59.999… is 60).
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+fn floor_mm(v: f64) -> u32 {
+    ((v + 1e-6).floor().max(1.0)) as u32
+}
+
+/// The largest area at `ratio` inside `available`, rounded down to the millimetre.
+fn fit(available: (f64, f64), ratio: (f64, f64)) -> (u32, u32) {
+    let scale = (available.0 / ratio.0).min(available.1 / ratio.1);
+    (floor_mm(ratio.0 * scale), floor_mm(ratio.1 * scale))
+}
+
+/// The suggested photo area for a photo in a cell: the largest at the chosen ratio that
+/// leaves the margin free, in whole millimetres (a 2:3 photo in 75 × 100 with 5 mm: 60 × 90).
+pub fn suggested_area(
+    cell: (f32, f32),
+    photo: (u32, u32),
+    print: PrintSize,
+    settings: &CollageSettings,
+) -> (u32, u32) {
+    fit(
+        available(cell, settings),
+        area_ratio(photo, print, settings.ratio),
+    )
+}
+
+fn available(cell: (f32, f32), settings: &CollageSettings) -> (f64, f64) {
+    #[allow(clippy::cast_precision_loss)]
+    let m = 2.0
+        * f64::from(
+            settings
+                .margin_mm
+                .min(crate::settings::MAX_COLLAGE_MARGIN_MM),
+        );
+    (
+        (f64::from(cell.0) - m).max(1.0),
+        (f64::from(cell.1) - m).max(1.0),
+    )
+}
+
+/// The photo area for a photo in a cell: the suggested one, or the size the user typed,
+/// clamped so it always fits inside the margin (FR-035).
+pub fn photo_area(
+    cell: (f32, f32),
+    photo: (u32, u32),
+    print: PrintSize,
+    settings: &CollageSettings,
+) -> (u32, u32) {
+    let settings = settings.sanitized();
+    let suggested = suggested_area(cell, photo, print, &settings);
+    let Some(size) = settings.size else {
+        return suggested;
+    };
+    let room = available(cell, &settings);
+    let landscape = photo.0 >= photo.1;
+    if settings.lock_ratio {
+        // The short edge typed; the long one follows the chosen ratio.
+        let (rw, rh) = area_ratio(photo, print, settings.ratio);
+        let (short, long_per_short) = (f64::from(size.short_mm), rw.max(rh) / rw.min(rh));
+        let long = short * long_per_short;
+        let (w, h) = if rw >= rh {
+            (long, short)
+        } else {
+            (short, long)
+        };
+        if w <= room.0 + 1e-6 && h <= room.1 + 1e-6 {
+            (floor_mm(w), floor_mm(h))
+        } else {
+            suggested
+        }
+    } else {
+        let (w, h) = if landscape {
+            (size.long_mm, size.short_mm)
+        } else {
+            (size.short_mm, size.long_mm)
+        };
+        (
+            floor_mm(f64::from(w).min(room.0)),
+            floor_mm(f64::from(h).min(room.1)),
+        )
+    }
+}
+
+/// Lays out a sheet for one or two photos (upright pixel sizes). With the cut line, each
+/// photo is centred in its cell; without it, the two meet at the middle, like a half-frame
+/// strip.
+pub fn layout(
+    print: PrintSize,
+    photos: [Option<(u32, u32)>; 2],
+    turned: bool,
+    settings: &CollageSettings,
+) -> SheetLayout {
+    let first = photos[0].or(photos[1]).unwrap_or((3, 2));
+    let side = side_by_side(first, turned);
+    let (width, height, rects) = cells(print, side);
+    let place = |i: usize, photo: (u32, u32)| {
+        let cell = rects[i];
+        let area = photo_area((cell.width, cell.height), photo, print, settings);
+        #[allow(clippy::cast_precision_loss)]
+        let (aw, ah) = (area.0 as f32, area.1 as f32);
+        let centred = (
+            cell.x + (cell.width - aw) / 2.0,
+            cell.y + (cell.height - ah) / 2.0,
+        );
+        let (x, y) = match (settings.cut_line, side, i) {
+            (true, _, _) => centred,
+            (false, true, 0) => (cell.x + cell.width - aw, centred.1),
+            (false, true, _) => (cell.x, centred.1),
+            (false, false, 0) => (centred.0, cell.y + cell.height - ah),
+            (false, false, _) => (centred.0, cell.y),
+        };
+        CellLayout { cell, area, x, y }
+    };
+    SheetLayout {
+        width,
+        height,
+        side_by_side: side,
+        cells: [
+            photos[0].map(|p| place(0, p)),
+            photos[1].map(|p| place(1, p)),
+        ],
+    }
+}
+
+/// What the panel says about one photo of a sheet (FR-035, FR-026).
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct CellInfo {
+    pub id: PhotoId,
+    /// The photo area, as printed (width × height), in millimetres.
+    pub area_width_mm: u32,
+    pub area_height_mm: u32,
+    /// The suggested area for this photo, the same way round.
+    pub suggested_width_mm: u32,
+    pub suggested_height_mm: u32,
+    /// The photo left inside the 3 mm border (FR-067), or the whole area without it.
+    pub photo_width_mm: f32,
+    pub photo_height_mm: f32,
+    /// Effective DPI of the photo at that size, and its band.
+    pub dpi: u32,
+    pub quality: DpiBand,
+}
+
+/// A sheet as the panel and the grid see it.
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct SheetInfo {
+    pub width_mm: f32,
+    pub height_mm: f32,
+    pub side_by_side: bool,
+    pub cells: Vec<CellInfo>,
+}
+
+/// Facts about a laid-out sheet, from the photos' sizes only (no decode).
+pub fn info(
+    print: PrintSize,
+    photos: [Option<(PhotoId, (u32, u32))>; 2],
+    turned: bool,
+    settings: &RenderSettings,
+) -> SheetInfo {
+    let sheet = layout(
+        print,
+        photos.map(|p| p.map(|(_, size)| size)),
+        turned,
+        &settings.collage,
+    );
+    let inset = if settings.border {
+        2.0 * crate::frame::CROP_BORDER_MM
+    } else {
+        0.0
+    };
+    let cells = sheet
+        .cells
+        .iter()
+        .zip(photos)
+        .filter_map(|(cell, photo)| {
+            let (cell, (id, size)) = ((*cell)?, photo?);
+            let suggested = suggested_area(
+                (cell.cell.width, cell.cell.height),
+                size,
+                print,
+                &settings.collage,
+            );
+            #[allow(clippy::cast_precision_loss)]
+            let (pw, ph) = (
+                (cell.area.0 as f32 - inset).max(1.0),
+                (cell.area.1 as f32 - inset).max(1.0),
+            );
+            let crop = center_crop_to(
+                size.0,
+                size.1,
+                u64::from(cell.area.0),
+                u64::from(cell.area.1),
+            );
+            #[allow(
+                clippy::cast_precision_loss,
+                clippy::cast_possible_truncation,
+                clippy::cast_sign_loss
+            )]
+            let dpi = (crop.width.max(crop.height) as f32 / pw.max(ph) * MM_PER_IN).round() as u32;
+            Some(CellInfo {
+                id,
+                area_width_mm: cell.area.0,
+                area_height_mm: cell.area.1,
+                suggested_width_mm: suggested.0,
+                suggested_height_mm: suggested.1,
+                photo_width_mm: pw,
+                photo_height_mm: ph,
+                dpi,
+                quality: crate::plan::dpi_band(dpi),
+            })
+        })
+        .collect();
+    SheetInfo {
+        width_mm: sheet.width,
+        height_mm: sheet.height,
+        side_by_side: sheet.side_by_side,
+        cells,
+    }
+}
+
+/// One photo to render into a cell: the upright image and its own edits.
+#[derive(Debug, Clone, Copy)]
+pub struct CellSource<'a> {
+    pub image: &'a RgbImage,
+    pub capture: Option<NaiveDateTime>,
+    pub crop: Option<CropFrame>,
+    pub straighten: f32,
+    pub place: Option<&'a str>,
+    /// The photo's own stamp (FR-044); `None` follows the settings.
+    pub stamp: Option<&'a StampSettings>,
+}
+
+/// Renders a sheet. `max_long_edge` bounds the sheet's long edge for previews; `None`
+/// keeps the density of the less sharp photo, at most 600 DPI (ADR-0032).
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
+pub fn render_sheet(
+    settings: &RenderSettings,
+    print: PrintSize,
+    sources: [Option<CellSource<'_>>; 2],
+    turned: bool,
+    max_long_edge: Option<u32>,
+) -> Result<RgbImage, RenderError> {
+    let sizes = sources.map(|s| s.map(|s| (s.image.width, s.image.height)));
+    let sheet = layout(print, sizes, turned, &settings.collage);
+    let inset = if settings.border {
+        2.0 * crate::frame::CROP_BORDER_MM
+    } else {
+        0.0
+    };
+    let input =
+        |source: &CellSource<'_>, cell: &CellLayout, own: &RenderSettings, max: Option<u32>| {
+            let (a, b) = cell.area;
+            let area = PrintSize::custom(a.min(b), a.max(b));
+            plan(&PlanInput {
+                width: source.image.width,
+                height: source.image.height,
+                capture: source.capture,
+                settings: own,
+                print: area,
+                max_long_edge: max,
+                frame: None,
+                crop: source.crop,
+                place: source.place,
+                straighten: source.straighten,
+            })
+        };
+    let owns: [Option<RenderSettings>; 2] =
+        sources.map(|s| s.map(|s| settings.for_photo(s.stamp).into_owned()));
+
+    // The density of the less sharp photo, so neither is enlarged.
+    let mut density = MAX_SHEET_DPI / MM_PER_IN;
+    for ((source, cell), own) in sources.iter().zip(&sheet.cells).zip(&owns) {
+        if let (Some(source), Some(cell), Some(own)) = (source, cell, own) {
+            let p = input(source, cell, own, None);
+            let photo_long = (cell.area.0.max(cell.area.1) as f32 - inset).max(1.0);
+            density = density.min(p.out_width.max(p.out_height) as f32 / photo_long);
+        }
+    }
+    if let Some(max) = max_long_edge {
+        density = density.min(max as f32 / sheet.width.max(sheet.height));
+    }
+    let density = density.max(1.0 / MM_PER_IN);
+
+    let px = |mm: f32| (mm * density).round().max(1.0) as u32;
+    let mut canvas = filled(px(sheet.width), px(sheet.height), MAT_WHITE);
+    for ((source, cell), own) in sources.iter().zip(&sheet.cells).zip(&owns) {
+        let (Some(source), Some(cell), Some(own)) = (source, cell, own) else {
+            continue;
+        };
+        let photo_long = (cell.area.0.max(cell.area.1) as f32 - inset).max(1.0);
+        let p = input(source, cell, own, Some(px(photo_long)));
+        let image = render(source.image, &p)?;
+        // Centred on the area's centre, so pixel rounding never shifts it.
+        let cx = (cell.x + cell.area.0 as f32 / 2.0) * density - image.width as f32 / 2.0;
+        let cy = (cell.y + cell.area.1 as f32 / 2.0) * density - image.height as f32 / 2.0;
+        blit(
+            &mut canvas,
+            &image,
+            cx.round().max(0.0) as u32,
+            cy.round().max(0.0) as u32,
+        );
+    }
+    if settings.collage.cut_line {
+        draw_cut_line(&mut canvas, &sheet, density);
+    }
+    Ok(canvas)
+}
+
+/// A thin light line between the cells, with darker ticks at the sheet's edges.
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+fn draw_cut_line(canvas: &mut RgbImage, sheet: &SheetLayout, density: f32) {
+    let line = (CUT_LINE_MM * density).round().max(1.0) as u32;
+    let tick_len = (CUT_TICK_MM * density).round().max(1.0) as u32;
+    let (w, h) = (canvas.width, canvas.height);
+    if sheet.side_by_side {
+        let x = (w / 2).saturating_sub(line / 2);
+        fill_rect(canvas, x, 0, line, h, CUT_LINE);
+        fill_rect(canvas, x, 0, line, tick_len, CUT_TICK);
+        fill_rect(
+            canvas,
+            x,
+            h.saturating_sub(tick_len),
+            line,
+            tick_len,
+            CUT_TICK,
+        );
+    } else {
+        let y = (h / 2).saturating_sub(line / 2);
+        fill_rect(canvas, 0, y, w, line, CUT_LINE);
+        fill_rect(canvas, 0, y, tick_len, line, CUT_TICK);
+        fill_rect(
+            canvas,
+            w.saturating_sub(tick_len),
+            y,
+            tick_len,
+            line,
+            CUT_TICK,
+        );
+    }
+}
+
+fn fill_rect(canvas: &mut RgbImage, x: u32, y: u32, width: u32, height: u32, color: [u8; 3]) {
+    let block = filled(
+        width.min(canvas.width.saturating_sub(x)).max(1),
+        height.min(canvas.height.saturating_sub(y)).max(1),
+        color,
+    );
+    blit(canvas, &block, x, y);
+}
+
+/// Photos in collage order: by the position the user gave them (FR-035), then by their
+/// place in the view; paired 1 + 2, 3 + 4…, an odd last photo alone.
+pub fn pairs(photos: &[(PhotoId, Option<u32>)]) -> Vec<(PhotoId, Option<PhotoId>)> {
+    let mut order: Vec<(u32, usize, PhotoId)> = photos
+        .iter()
+        .enumerate()
+        .map(|(i, (id, position))| {
+            (
+                position.unwrap_or_else(|| u32::try_from(i).unwrap_or(u32::MAX)),
+                i,
+                *id,
+            )
+        })
+        .collect();
+    order.sort_unstable();
+    order
+        .chunks(2)
+        .map(|pair| (pair[0].2, pair.get(1).map(|p| p.2)))
+        .collect()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn print() -> PrintSize {
+        PrintSize::by_id("10x15").unwrap_or(PrintSize::ALL[1])
+    }
+
+    #[test]
+    fn fr_035_a_10x15_holds_two_10x7_5_cells_turned_to_the_first_photo() {
+        // A portrait photo: the half-frame look, two 7.5 × 10 cells side by side.
+        let (w, h, cells_lr) = cells(print(), side_by_side((4000, 6000), false));
+        assert_eq!((w, h), (150.0, 100.0));
+        assert_eq!(
+            (cells_lr[1].x, cells_lr[1].width, cells_lr[1].height),
+            (75.0, 75.0, 100.0)
+        );
+        // A landscape photo: the sheet stands up, two 10 × 7.5 cells one above the other.
+        let (w, h, cells_tb) = cells(print(), side_by_side((6000, 4000), false));
+        assert_eq!((w, h), (100.0, 150.0));
+        assert_eq!(
+            (cells_tb[1].y, cells_tb[1].width, cells_tb[1].height),
+            (75.0, 100.0, 75.0)
+        );
+        // The user turns it back.
+        assert!(side_by_side((6000, 4000), true));
+    }
+
+    #[test]
+    fn fr_035_the_suggested_size_leaves_the_margin_free() {
+        let s = CollageSettings::default();
+        // 2:3 in a 7.5 × 10 cell, 5 mm a side: 6 × 9 cm.
+        assert_eq!(
+            suggested_area((75.0, 100.0), (4000, 6000), print(), &s),
+            (60, 90)
+        );
+        assert_eq!(
+            suggested_area((100.0, 75.0), (6000, 4000), print(), &s),
+            (90, 60)
+        );
+        // 4:3 and square in the same cell.
+        let four = CollageSettings {
+            ratio: CellRatio::FourThree,
+            ..s
+        };
+        assert_eq!(
+            suggested_area((75.0, 100.0), (4000, 6000), print(), &four),
+            (65, 86)
+        );
+        let square = CollageSettings {
+            ratio: CellRatio::Square,
+            ..s
+        };
+        assert_eq!(
+            suggested_area((75.0, 100.0), (4000, 6000), print(), &square),
+            (65, 65)
+        );
+        // The sheet's ratio on a 4:3 photo is still 2:3.
+        let sheet = CollageSettings {
+            ratio: CellRatio::Sheet,
+            ..s
+        };
+        assert_eq!(
+            suggested_area((75.0, 100.0), (3000, 4000), print(), &sheet),
+            (60, 90)
+        );
+    }
+
+    #[test]
+    fn fr_035_a_typed_size_keeps_the_ratio_when_locked_and_is_clamped() {
+        let typed = |short, long, lock| CollageSettings {
+            size: Some(crate::settings::CellSize {
+                short_mm: short,
+                long_mm: long,
+            }),
+            lock_ratio: lock,
+            ..CollageSettings::default()
+        };
+        let cell = (75.0, 100.0);
+        // Locked: the short edge counts, 50 mm gives 50 × 75.
+        assert_eq!(
+            photo_area(cell, (4000, 6000), print(), &typed(50, 75, true)),
+            (50, 75)
+        );
+        // Too large for the cell: back to the suggested size.
+        assert_eq!(
+            photo_area(cell, (4000, 6000), print(), &typed(70, 105, true)),
+            (60, 90)
+        );
+        // Unlocked: both edges, each clamped inside the margin.
+        assert_eq!(
+            photo_area(cell, (4000, 6000), print(), &typed(55, 80, false)),
+            (55, 80)
+        );
+        assert_eq!(
+            photo_area(cell, (4000, 6000), print(), &typed(90, 120, false)),
+            (65, 90)
+        );
+    }
+
+    #[test]
+    fn fr_035_without_the_cut_line_the_photos_meet_in_the_middle() {
+        let mut s = CollageSettings::default();
+        let photos = [Some((4000, 6000)), Some((4000, 6000))];
+        let centred = layout(print(), photos, false, &s);
+        let [Some(a), Some(b)] = centred.cells else {
+            panic!("two cells");
+        };
+        assert!((a.x - 7.5).abs() < 1e-3 && (b.x - 82.5).abs() < 1e-3);
+        s.cut_line = false;
+        let together = layout(print(), photos, false, &s);
+        let [Some(a), Some(b)] = together.cells else {
+            panic!("two cells");
+        };
+        assert!((a.x + 60.0 - 75.0).abs() < 1e-3, "{}", a.x);
+        assert!((b.x - 75.0).abs() < 1e-3);
+        assert!((a.y - 5.0).abs() < 1e-3);
+    }
+
+    #[test]
+    fn fr_035_the_border_leaves_5_4_by_8_4_of_photo() {
+        let settings = RenderSettings {
+            border: true,
+            ..RenderSettings::default()
+        };
+        let sheet = info(
+            print(),
+            [
+                Some((PhotoId(1), (4000, 6000))),
+                Some((PhotoId(2), (4000, 6000))),
+            ],
+            false,
+            &settings,
+        );
+        let a = &sheet.cells[0];
+        assert_eq!((a.area_width_mm, a.area_height_mm), (60, 90));
+        assert!((a.photo_width_mm - 54.0).abs() < 1e-3 && (a.photo_height_mm - 84.0).abs() < 1e-3);
+        assert_eq!(a.quality, DpiBand::Excellent);
+    }
+
+    #[test]
+    fn fr_035_photos_pair_in_order_and_follow_their_position() {
+        let ids: Vec<(PhotoId, Option<u32>)> = (0..5).map(|i| (PhotoId(i), None)).collect();
+        assert_eq!(
+            pairs(&ids),
+            vec![
+                (PhotoId(0), Some(PhotoId(1))),
+                (PhotoId(2), Some(PhotoId(3))),
+                (PhotoId(4), None)
+            ]
+        );
+        // The user moved photo 4 to the front.
+        let moved = vec![
+            (PhotoId(0), Some(1)),
+            (PhotoId(1), Some(2)),
+            (PhotoId(2), Some(3)),
+            (PhotoId(3), Some(4)),
+            (PhotoId(4), Some(0)),
+        ];
+        assert_eq!(pairs(&moved)[0], (PhotoId(4), Some(PhotoId(0))));
+    }
+
+    #[test]
+    fn fr_035_a_sheet_renders_at_the_print_ratio_with_both_photos() -> Result<(), RenderError> {
+        let a = filled(1200, 1800, [200, 30, 30]);
+        let b = filled(1800, 1200, [30, 30, 200]);
+        let mut settings = RenderSettings::default();
+        settings.stamp.enabled = false;
+        let source = |image| CellSource {
+            image,
+            capture: None,
+            crop: None,
+            straighten: 0.0,
+            place: None,
+            stamp: None,
+        };
+        let out = render_sheet(
+            &settings,
+            print(),
+            [Some(source(&a)), Some(source(&b))],
+            false,
+            Some(1500),
+        )?;
+        // A portrait first photo: a landscape sheet, 3:2, at most 1500 px long.
+        assert_eq!(out.width, 1500);
+        assert_eq!(out.height, 1000);
+        let at = |x: u32, y: u32| {
+            let i = ((y * out.width + x) * 3) as usize;
+            [out.data[i], out.data[i + 1], out.data[i + 2]]
+        };
+        assert_eq!(
+            at(375, 500),
+            [200, 30, 30],
+            "the first photo in the left cell"
+        );
+        assert_eq!(at(1125, 500), [30, 30, 200], "the second in the right cell");
+        assert_eq!(at(10, 10), MAT_WHITE, "the margin is white");
+        assert_eq!(at(750, 500), CUT_LINE, "the cut line in the middle");
+        Ok(())
+    }
+}

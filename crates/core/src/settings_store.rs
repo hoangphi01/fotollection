@@ -21,7 +21,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v8 (FR-053): `render.exportTarget` (prints or a share preset), absent before (prints).
 /// v9 (FR-065): `frame.border`, the Crop-to-fill border, absent before (off).
 /// v10 (FR-067, FR-048): `render.border`, the 3 mm border on every print, where a v9
-/// `frame.border` moves; `ui.mode`, absent before (Professional).
+/// `frame.border` moves; `ui.mode`, absent before (Professional); `render.collage`
+/// (FR-035), absent before (the defaults).
 pub const SCHEMA_VERSION: u32 = 10;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
@@ -141,6 +142,7 @@ fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
         return Err("invalid fonts table".into());
     }
     let mut render = file.render;
+    render.collage = render.collage.sanitized();
     let mut frame = file.frame;
     // v9 → v10: FR-065's Crop-to-fill border becomes the border on every print (FR-067).
     if version < 10 && frame.border {

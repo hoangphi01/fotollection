@@ -134,7 +134,91 @@ fn export_one(
     reserved: &Mutex<HashSet<PathBuf>>,
 ) -> Result<u64, ExportError> {
     let (jpeg, share) = encode_photo(record, options, codec, cancel)?;
-    write_photo(record, options, &jpeg, share, cancel, reserved)
+    write_photo(
+        record,
+        options,
+        &jpeg,
+        share,
+        cancel,
+        reserved,
+        &file_stem(record),
+    )
+}
+
+fn file_stem(record: &PhotoRecord) -> String {
+    Path::new(&record.file_name)
+        .file_stem()
+        .map_or_else(|| "photo".to_owned(), |s| s.to_string_lossy().into_owned())
+}
+
+/// Two photos on one print (FR-035): the first and, unless the last photo was odd, the
+/// second.
+pub type SheetRecords = (PhotoRecord, Option<PhotoRecord>);
+
+/// One collage sheet as a print JPEG, in memory (FR-035, ADR-0032). Sheets are always
+/// prints: a share target does not apply to them.
+fn encode_sheet(
+    sheet: &SheetRecords,
+    options: &ExportOptions<'_>,
+    codec: &dyn JpegCodec,
+    cancel: &CancellationToken,
+) -> Result<Vec<u8>, ExportError> {
+    let (first, second) = (&sheet.0, sheet.1.as_ref());
+    let mut decoded = Vec::with_capacity(2);
+    let mut icc = None;
+    for record in std::iter::once(first).chain(second) {
+        if cancel.is_cancelled() {
+            return Err(ExportError::Cancelled);
+        }
+        let bytes = std::fs::read(&record.path)?;
+        let d = decode_image(codec, &bytes)?;
+        icc = icc.or(d.icc);
+        decoded.push((
+            apply_orientation(d.image, record.display_orientation()),
+            (options.place_for)(record),
+        ));
+    }
+    let print = crate::sheet::sheet_print(options.settings);
+    let records = [Some(first), second];
+    let mut sources = [None, None];
+    for (slot, ((image, place), record)) in sources
+        .iter_mut()
+        .zip(decoded.iter().zip(records.into_iter().flatten()))
+    {
+        *slot = Some(crate::sheet::CellSource {
+            image,
+            capture: record.stamp_date(),
+            crop: record.edits.crop,
+            straighten: record.edits.straighten,
+            place: place.as_deref(),
+            stamp: record.edits.stamp.as_ref(),
+        });
+    }
+    let image = crate::sheet::render_sheet(
+        options.settings,
+        print,
+        sources,
+        first.edits.sheet_turned,
+        None,
+    )?;
+    drop(decoded);
+    if cancel.is_cancelled() {
+        return Err(ExportError::Cancelled);
+    }
+    let jpeg = codec.encode(
+        &image,
+        EncodeOptions::print(options.quality),
+        icc.as_deref(),
+    )?;
+    Ok(with_exif(jpeg, first, first.stamp_date()))
+}
+
+/// `<first>+<second>`, the file name of a sheet.
+fn sheet_stem(sheet: &SheetRecords) -> String {
+    match &sheet.1 {
+        Some(second) => format!("{}+{}", file_stem(&sheet.0), file_stem(second)),
+        None => file_stem(&sheet.0),
+    }
 }
 
 /// The exported JPEG of one photo, in memory, and whether it is a share export.
@@ -227,6 +311,7 @@ fn write_photo(
     share: bool,
     cancel: &CancellationToken,
     reserved: &Mutex<HashSet<PathBuf>>,
+    stem: &str,
 ) -> Result<u64, ExportError> {
     let base = match (options.group_for)(record) {
         Some(group) => options.destination.join(group),
@@ -238,10 +323,7 @@ fn write_photo(
         base.join(day_folder(record))
     };
     std::fs::create_dir_all(&dir)?;
-    let stem = Path::new(&record.file_name)
-        .file_stem()
-        .map_or_else(|| "photo".to_owned(), |s| s.to_string_lossy().into_owned());
-    let target = reserve_name(&dir, &stem, reserved);
+    let target = reserve_name(&dir, stem, reserved);
     let tmp = dir.join(format!(".{stem}.{}.part", record.id.0));
     std::fs::write(&tmp, jpeg)?;
     if cancel.is_cancelled() {
@@ -308,24 +390,55 @@ pub const ESTIMATE_SAMPLES: usize = 4;
 
 /// Estimates [`run_export`] for `records` by encoding up to `samples` of them, spread
 /// evenly, and scaling their output-to-source ratio to the whole set. Nothing is written.
-#[allow(clippy::cast_precision_loss)]
 pub fn estimate_export(
     records: &[PhotoRecord],
     options: &ExportOptions<'_>,
     codec: &dyn JpegCodec,
     samples: usize,
 ) -> ExportEstimate {
-    let total: u64 = records.iter().map(|r| r.size).sum();
-    let n = records.len();
-    let k = samples.clamp(1, n.max(1)).min(n);
-    let picks: Vec<&PhotoRecord> = (0..k).map(|i| &records[i * n / k.max(1)]).collect();
     let cancel = CancellationToken::new();
+    estimate(
+        records,
+        samples,
+        |r| r.size,
+        |r| encode_photo(r, options, codec, &cancel).map(|(jpeg, _)| jpeg),
+    )
+}
+
+/// Estimates an export of collage sheets (FR-035), as [`estimate_export`] does for photos.
+pub fn estimate_sheets(
+    sheets: &[SheetRecords],
+    options: &ExportOptions<'_>,
+    codec: &dyn JpegCodec,
+    samples: usize,
+) -> ExportEstimate {
+    let cancel = CancellationToken::new();
+    estimate(sheets, samples, sheet_size, |s| {
+        encode_sheet(s, options, codec, &cancel)
+    })
+}
+
+fn sheet_size(sheet: &SheetRecords) -> u64 {
+    sheet.0.size + sheet.1.as_ref().map_or(0, |r| r.size)
+}
+
+#[allow(clippy::cast_precision_loss)]
+fn estimate<T: Sync>(
+    items: &[T],
+    samples: usize,
+    size: impl Fn(&T) -> u64 + Sync,
+    encode: impl Fn(&T) -> Result<Vec<u8>, ExportError> + Sync,
+) -> ExportEstimate {
+    let total: u64 = items.iter().map(&size).sum();
+    let n = items.len();
+    let k = samples.clamp(1, n.max(1)).min(n);
+    let picks: Vec<&T> = (0..k).map(|i| &items[i * n / k.max(1)]).collect();
     let sizes: Vec<(u64, u64)> = picks
         .par_iter()
-        .filter_map(|r| {
-            encode_photo(r, options, codec, &cancel)
+        .filter_map(|item| {
+            encode(item)
                 .ok()
-                .map(|(jpeg, _)| (r.size, jpeg.len() as u64))
+                .map(|jpeg| (size(item), jpeg.len() as u64))
         })
         .collect();
     let (src, out) = sizes
@@ -352,27 +465,81 @@ pub fn run_export(
     cancel: &CancellationToken,
     on_progress: &(dyn Fn(u32, u32) + Sync),
 ) -> ExportSummary {
-    let total = u32::try_from(records.len()).unwrap_or(u32::MAX);
+    let reserved = Mutex::new(HashSet::new());
+    run(
+        records,
+        options,
+        on_progress,
+        |r| r,
+        |r| r.size,
+        |r| export_one(r, options, codec, cancel, &reserved),
+        cancel,
+    )
+}
+
+/// Exports collage sheets, one file per sheet (FR-035). `on_progress(done, total)` counts
+/// sheets; a failure is reported for the sheet's first photo.
+pub fn run_export_sheets(
+    sheets: &[SheetRecords],
+    options: &ExportOptions<'_>,
+    codec: &dyn JpegCodec,
+    cancel: &CancellationToken,
+    on_progress: &(dyn Fn(u32, u32) + Sync),
+) -> ExportSummary {
+    let reserved = Mutex::new(HashSet::new());
+    run(
+        sheets,
+        options,
+        on_progress,
+        |s| &s.0,
+        sheet_size,
+        |sheet| {
+            let jpeg = encode_sheet(sheet, options, codec, cancel)?;
+            write_photo(
+                &sheet.0,
+                options,
+                &jpeg,
+                false,
+                cancel,
+                &reserved,
+                &sheet_stem(sheet),
+            )
+        },
+        cancel,
+    )
+}
+
+/// Runs `export` over `items` in a pool of `max_inflight` threads, isolating failures.
+fn run<T: Sync>(
+    items: &[T],
+    options: &ExportOptions<'_>,
+    on_progress: &(dyn Fn(u32, u32) + Sync),
+    record: impl Fn(&T) -> &PhotoRecord + Sync,
+    size: impl Fn(&T) -> u64 + Sync,
+    export: impl Fn(&T) -> Result<u64, ExportError> + Sync,
+    cancel: &CancellationToken,
+) -> ExportSummary {
+    let total = u32::try_from(items.len()).unwrap_or(u32::MAX);
     let done = AtomicU32::new(0);
     let exported = AtomicU32::new(0);
     let (source_bytes, output_bytes) = (AtomicU64::new(0), AtomicU64::new(0));
     let failed = Mutex::new(Vec::new());
-    let reserved = Mutex::new(HashSet::new());
 
     let work = || {
-        records.par_iter().for_each(|record| {
-            match export_one(record, options, codec, cancel, &reserved) {
+        items.par_iter().for_each(|item| {
+            match export(item) {
                 Ok(written) => {
                     exported.fetch_add(1, Ordering::Relaxed);
-                    source_bytes.fetch_add(record.size, Ordering::Relaxed);
+                    source_bytes.fetch_add(size(item), Ordering::Relaxed);
                     output_bytes.fetch_add(written, Ordering::Relaxed);
                 }
                 Err(ExportError::Cancelled) => {}
                 Err(e) => {
+                    let r = record(item);
                     if let Ok(mut f) = failed.lock() {
                         f.push(ExportFailure {
-                            id: record.id,
-                            file_name: record.file_name.clone(),
+                            id: r.id,
+                            file_name: r.file_name.clone(),
                             code: e.code().to_owned(),
                             message: e.to_string(),
                         });

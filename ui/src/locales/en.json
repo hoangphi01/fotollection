@@ -248,6 +248,8 @@
     "buttonThis": "Export this photo",
     "buttonCount_one": "Export {{count}} photo",
     "buttonCount_other": "Export {{count}} photos",
+    "buttonSheets_one": "Export {{count}} sheet",
+    "buttonSheets_other": "Export {{count}} sheets",
     "filteredHint": "Only the photos the library filter shows are exported.",
     "target": {
       "print": "Print",

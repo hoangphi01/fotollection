@@ -57,7 +57,8 @@ crates/
       image.rs           † # RgbImage + EXIF orientation transforms
       metadata.rs        † # EXIF allowlist + validation, embedded thumbnail (FR-002)
       settings.rs        † # RenderSettings (in memory until projects land)
-      plan.rs            † # RenderPlan: centred crop, stamp, optional frame plan (FR-004/006/040)
+      plan.rs            † # RenderPlan: centred crop, stamp, optional frame plan, 3 mm border (FR-004/006/040/067)
+      sheet.rs           † # collage sheets: cells, photo areas, pairing, render (FR-035, ADR-0032)
       frame.rs           † # info frame: settings, camera profiles, text, ratio-safe layout (FR-040)
       logo.rs            † # user PNG logos: validation + decode (ADR-0014)
       fonts.rs           † # user OTF/TTF fonts: validation + FontArc (FR-042)
@@ -106,6 +107,7 @@ crates/
 src-tauri/               † # app shell: commands, protocol, capabilities
   src/lib.rs             † # tauri-specta builder + bindings export
   src/commands.rs        † # IPC commands (§6)
+  src/collage.rs         † # Collage mode: sheets, their order, turning, sheet facts, the `sheet` preview (FR-035)
   src/places.rs          † # place search, dates and places set by hand, renamed places (FR-005, FR-032); every input checked here
   src/document.rs        † # New / Open / Save / Save As / Relink of .fotollection documents (FR-023)
   src/menu.rs            † # native File/Edit/Window menu (macOS), rebuilt on language change
@@ -233,8 +235,8 @@ Commands marked † are implemented.
 | `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`), stored per machine in `settings.json` v3 | FR-020 |
 | `set_photo_override(id, override)` | Per-photo crop frame or place name | FR-005, FR-006 |
 | `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
-| `estimate_export(filter, only) -> ExportEstimate` † | The originals' total and the export's estimated size, from up to four photos encoded in memory with the current settings; nothing is written | FR-053 |
-| `start_export(filter, only, separate) -> JobId` † | Exports exactly the photos `filter` keeps (the set the grid shows, including its folders), or only the photo `only` (the preview), to the chosen destination, as prints or share files (`render.exportTarget`); `separate` gives each source folder its own subfolder | FR-008, FR-009, FR-010, FR-022, FR-053, FR-055, FR-056 |
+| `estimate_export(filter, only, sheets) -> ExportEstimate` † | The originals' total and the export's estimated size, from up to four photos encoded in memory with the current settings; nothing is written | FR-053 |
+| `start_export(filter, only, separate, sheets) -> JobId` † | With `sheets`, the photos go out two to a print, one file `<first>+<second>.jpg` per sheet (FR-035). Exports exactly the photos `filter` keeps (the set the grid shows, including its folders), or only the photo `only` (the preview), to the chosen destination, as prints or share files (`render.exportTarget`); `separate` gives each source folder its own subfolder | FR-008, FR-009, FR-010, FR-022, FR-053, FR-055, FR-056 |
 | `cancel_job(job_id)` † | Cancel a running job | FR-011 |
 | `get_frame_config()` / `set_frame_settings(settings)` † | Info frame settings plus camera profiles (with EXIF-derived defaults) | FR-040 |
 | `set_camera_profile(profile)` † | Per-camera overrides: name, brand, lens, focal, aperture, photo style, logo kind | FR-040 |
@@ -250,6 +252,8 @@ Commands marked † are implemented.
 | `rotate_photos(ids, clockwise)` † | Lossless quarter turns on top of the EXIF orientation, composed into one pass (`image::compose_orientation`); crops turn with the photo; undoable | FR-006 |
 | `set_photo_rating(ids, 0–5)` † / `set_photo_flag(ids, pick\|reject\|null)` † | Culling: one undoable step for 1–10,000 photos; ratings above 5 and unknown IDs are rejected | FR-022, FR-023 |
 | `set_photo_queue(ids, print\|aside\|null)` † | The print basket and set aside (`null` back to the gallery): one undoable step for 1–10,000 photos; nothing is deleted | FR-050, FR-023 |
+| `list_sheets(filter) -> SheetPair[]` † / `set_collage_order(ids)` † / `turn_sheet(first)` † | Collage mode: the sheets of the photos shown, paired in collage order (`photos[].collage`, then the view's); a drag sends the photos shown in their new order; turning a sheet flips `sheet_turned`. Each change is one undoable step | FR-035, FR-048 |
+| `sheet_info(sheet) -> SheetInfo` † | A sheet's size and, per photo, its area, the suggested size, the photo left inside the 3 mm border and its DPI band, from the photos' header sizes | FR-035, FR-026 |
 | `get_photo_stamp(id)` / `set_photo_stamp(id, stamp?)` † | One photo's own date stamp from the preview (FR-044); `null` follows the settings again. Undoable; the caption is validated in Rust | FR-044 |
 | `apply_stamp_to_all(id)` / `reset_photo_stamps()` † | "Apply to all" in the preview (the photo's stamp becomes the setting and no photo keeps its own) and "Reset" in the settings panel (every photo follows the settings again) | FR-044 |
 | `undo()` / `redo()` † | History (also Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z) | FR-023 |
@@ -323,6 +327,7 @@ Pixels **never** cross IPC as JSON or base64. Thumbnails and previews are served
 - `fotothumb://localhost/preview/{id}?rev={n}`: about 1600 px, rendered from the T2 cache with the **same** `RenderPlan` code as the export. `rev` is the settings revision.
 - `fotothumb://localhost/preview/{id}?rev={n}&region={x},{y},{w},{h}&px={n}`: one part of the **full-resolution** render, for zoom past the preview's pixels (FR-057). The region is in fractions of the photo and `px` the widest it should come back (at most 4,096); both are checked in Rust before any work. The original is decoded on the first such request into a second cache bounded at about 200 MB (`PreviewCache::full`; the photo on screen always stays), rendered with the export's plan, and only the region is encoded. The UI lays that part over the zoomed preview at its final on-screen size and only translates it: a CSS `scale()` would make WebKit rasterise it at its small layout size first and lose the detail.
 
+- `fotothumb://localhost/sheet/{first}/{second}?rev={n}[&small=1]`: a collage sheet (FR-035), both photos from the T2 cache through `sheet::render_sheet`, the same code as its export; 1600 px, or 640 px with `small=1` for the sheet grid. `{second}` is left out for an odd last photo.
 - `fotothumb://localhost/camera/live?seq={n}`: the connected camera's latest live-view frame, a JPEG already in memory (FR-062). It is never decoded, cached or written to disk; `seq` only defeats the webview's cache.
 
 The UI just sets `<img src>`. Routes are parsed strictly: anything other than these routes returns 404.

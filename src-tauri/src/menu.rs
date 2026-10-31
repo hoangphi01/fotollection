@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
-//! Native menu (macOS) with the File commands of FR-023, in the interface language. On
-//! Windows the same shortcuts are handled by the UI, so no menu bar is added to the window.
+//! Native menu (macOS) with the File commands of FR-023 and the three modes of FR-048, in
+//! the interface language. On Windows the same shortcuts are handled by the UI, so no menu
+//! bar is added to the window.
 
 use fotollection_core::settings::Language;
 use serde::{Deserialize, Serialize};
@@ -12,7 +13,7 @@ use tauri_specta::Event;
 use crate::events::MenuAction;
 use crate::i18n::strings;
 
-/// File commands the UI runs when their menu item is chosen.
+/// Commands the UI runs when their menu item is chosen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum Action {
@@ -20,16 +21,23 @@ pub enum Action {
     Open,
     Save,
     SaveAs,
+    /// Simple, Collage or Pro (FR-048).
+    ModeSimple,
+    ModeCollage,
+    ModeProfessional,
     /// The OS handed over a `.fotollection` file (not a menu item).
     OpenRequested,
 }
 
 impl Action {
-    const ALL: [(Self, &'static str); 4] = [
+    const ALL: [(Self, &'static str); 7] = [
         (Self::New, "new"),
         (Self::Open, "open"),
         (Self::Save, "save"),
         (Self::SaveAs, "save_as"),
+        (Self::ModeSimple, "mode_simple"),
+        (Self::ModeCollage, "mode_collage"),
+        (Self::ModeProfessional, "mode_professional"),
     ];
 }
 
@@ -58,6 +66,15 @@ pub fn build<R: Runtime>(app: &AppHandle<R>, language: Language) -> tauri::Resul
         .paste_with_text(t.paste)
         .select_all_with_text(t.select_all)
         .build()?;
+    let view = SubmenuBuilder::new(app, t.view)
+        .item(&item("mode_simple", t.mode_simple, "CmdOrCtrl+1")?)
+        .item(&item("mode_collage", t.mode_collage, "CmdOrCtrl+2")?)
+        .item(&item(
+            "mode_professional",
+            t.mode_professional,
+            "CmdOrCtrl+3",
+        )?)
+        .build()?;
     let window = SubmenuBuilder::new(app, t.window)
         .minimize_with_text(t.minimize)
         .close_window_with_text(t.close_window)
@@ -74,7 +91,7 @@ pub fn build<R: Runtime>(app: &AppHandle<R>, language: Language) -> tauri::Resul
         .quit_with_text(t.quit)
         .build()?;
     MenuBuilder::new(app)
-        .items(&[&app_menu, &file, &edit, &window])
+        .items(&[&app_menu, &file, &edit, &view, &window])
         .build()
 }
 
@@ -90,7 +107,7 @@ pub fn refresh<R: Runtime>(app: &AppHandle<R>, language: Language) {
     }
 }
 
-/// Forwards File menu clicks to the UI.
+/// Forwards File and View menu clicks to the UI.
 pub fn on_event<R: Runtime>(app: &AppHandle<R>, event: &MenuEvent) {
     if let Some((action, _)) = Action::ALL.iter().find(|(_, id)| event.id() == *id) {
         let _ = MenuAction { action: *action }.emit(app);

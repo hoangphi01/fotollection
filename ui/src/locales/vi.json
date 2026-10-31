@@ -236,6 +236,7 @@
     "button": "Xuất ảnh",
     "buttonThis": "Xuất ảnh này",
     "buttonCount_other": "Xuất {{count}} ảnh",
+    "buttonSheets_other": "Xuất {{count}} tấm",
     "filteredHint": "Chỉ xuất những ảnh đang hiện theo bộ lọc thư viện.",
     "target": {
       "print": "In ảnh",

@@ -24,6 +24,8 @@ type ExportSectionProps = {
   folderCount?: number
   /** Settings revision, so the size estimate follows every change. */
   revision: number
+  /** Collage sheets the photos make, when they go out two to a print (FR-035). */
+  sheets?: number
 }
 
 function folderName(path: string): string {
@@ -38,14 +40,22 @@ export function ExportSection({
   only,
   folderCount = 1,
   revision,
+  sheets,
 }: ExportSectionProps) {
   const { t } = useTranslation()
   const { state, destination, chooseDestination, exportPhotos, cancel, dismiss } = exporter
   const single = only !== undefined
   const [separate, setSeparate] = useState(false)
-  const canSplit = !single && folderCount > 1
+  const collage = sheets !== undefined
+  const canSplit = !single && !collage && folderCount > 1
   const running = state.kind === 'running'
-  const { estimate, stale } = useExportEstimate(filter, only ?? null, revision, !running && (single || photoCount > 0))
+  const { estimate, stale } = useExportEstimate(
+    filter,
+    only ?? null,
+    revision,
+    !running && (single || photoCount > 0),
+    collage,
+  )
 
   return (
     <div className="space-y-3">
@@ -167,12 +177,16 @@ export function ExportSection({
         <Button
           className="w-full"
           disabled={!single && photoCount === 0}
-          onClick={() => void exportPhotos(filter, photoCount, only ?? null, canSplit && separate)}
+          onClick={() =>
+            void exportPhotos(filter, sheets ?? photoCount, only ?? null, canSplit && separate, collage)
+          }
         >
           <Download data-icon="inline-start" />
           {single
             ? t('export.buttonThis')
-            : photoCount > 0
+            : sheets !== undefined && sheets > 0
+              ? t('export.buttonSheets', { count: sheets })
+              : photoCount > 0
               ? t('export.buttonCount', { count: photoCount })
               : t('export.button')}
         </Button>

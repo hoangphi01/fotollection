@@ -223,6 +223,40 @@ impl PreviewCache {
         Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
     }
 
+    /// A collage sheet's preview JPEG (FR-035): both photos from their cached sources,
+    /// the sheet's long edge at most `long_edge`. Each photo comes with its place.
+    pub fn render_sheet_jpeg(
+        &self,
+        photos: [Option<(&PhotoRecord, Option<&str>)>; 2],
+        settings: &RenderSettings,
+        long_edge: u32,
+        codec: &dyn JpegCodec,
+    ) -> Result<Vec<u8>, ThumbError> {
+        let mut images = [None, None];
+        for (slot, photo) in images.iter_mut().zip(&photos) {
+            if let Some((record, _)) = photo {
+                *slot = Some(self.source(record, codec)?);
+            }
+        }
+        let mut sources = [None, None];
+        for ((slot, image), photo) in sources.iter_mut().zip(&images).zip(&photos) {
+            if let (Some(image), Some((record, place))) = (image, photo) {
+                *slot = Some(crate::sheet::CellSource {
+                    image,
+                    capture: record.stamp_date(),
+                    crop: record.edits.crop,
+                    straighten: record.edits.straighten,
+                    place: *place,
+                    stamp: record.edits.stamp.as_ref(),
+                });
+            }
+        }
+        let print = crate::sheet::sheet_print(settings);
+        let turned = photos[0].is_some_and(|(r, _)| r.edits.sheet_turned);
+        let image = crate::sheet::render_sheet(settings, print, sources, turned, Some(long_edge))?;
+        Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
+    }
+
     /// One region of the full-resolution render (FR-057): the pixels export would write,
     /// downsized only when wider than `region.px`.
     pub fn render_region(

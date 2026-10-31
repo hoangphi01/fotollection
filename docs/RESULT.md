@@ -1,6 +1,6 @@
 # Measured Results — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-10-25
+> **Status:** Living · **Last reviewed:** 2026-10-31
 >
 > The **latest measured numbers** for speed and memory, in one readable page. Each number links to the run that produced it.
 > This page is a summary. The append-only history of every measurement is the benchmark log in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log), and the budgets are defined in [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets). When a new run changes a number, update this page and add the row to §5 in the same commit.
@@ -345,3 +345,15 @@ Measured while building FR-031 with `crates/core/examples/measure_borrow.rs`, RE
 - **The cost is the layout comparison:** colour passes, so every donor is compared over 5 zooms, 3 scales and 49 shifts. Stopping at the first sure match makes the common case 40 times faster, but not the worst one.
 - **Four nearest donors** brings the worst case within NFR-020 (2 s). A phone photo of the same scene is usually seconds from the camera's, so the nearest four hold it.
 - The thresholds (applied at layout ≥ 0.75, colour ≥ 0.8, five minutes; suggested at 0.6 and 0.65) are still the provisional ones of §14 until real camera and phone pairs are scored.
+
+## 18. Collage sheets (v0.9.0)
+
+Measured while building FR-035 with `crates/core/examples/measure_sheet.rs`, REF-MAC (M3), release build, median of 5, on two 26 MP demo photos (`baeren-tuebingen-1.jpg`, `grevy-zebras-in-der-wilhelma-3.jpg`), 10 × 15, default settings. Swap was high but steady during the runs (9.7 GB used after the build, unchanged by them).
+
+| Step | Photo A alone | Photo B alone | A + B | Sheet | NFR-021 budget |
+|------|-----:|-----:|-----:|-----:|-----:|
+| Preview, warm cache (1600 px) | 17 ms | 19 ms | 36 ms | **24 ms** | ≤ 38 ms (2 × the slower photo) |
+| Export render and encode, q95 | 302 ms | 331 ms | 633 ms | **214 ms** | ≤ 633 ms |
+
+- **The sheet is cheaper than its two photos** because it is smaller: at 600 DPI, a 10 × 15 sheet is 2362 × 3543 px (8.4 MP, 2.8 MB), while each photo alone exports at its full 26 MP. Decoding the two photos costs the same either way, so it is left out of both columns.
+- The 600 DPI cap of ADR-0032 is twice what a lab prints at; it keeps the files small without a visible loss on paper.

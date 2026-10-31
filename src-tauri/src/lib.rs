@@ -4,6 +4,7 @@
 
 mod cache;
 mod camera;
+mod collage;
 mod commands;
 mod culling;
 #[cfg(debug_assertions)]
@@ -26,6 +27,8 @@ use tauri_specta::{Builder, Event as _, collect_commands, collect_events};
 pub const BINDINGS_PATH: &str = "../ui/src/ipc/bindings.ts";
 
 /// Builds the IPC surface. Shared by the app and the bindings export test.
+// One line per command: the list grows with the app, and splitting it would hide it.
+#[allow(clippy::too_many_lines)]
 pub fn specta_builder() -> Builder<tauri::Wry> {
     Builder::<tauri::Wry>::new()
         .commands(collect_commands![
@@ -74,6 +77,10 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::set_photo_rating,
             commands::set_photo_flag,
             commands::set_photo_queue,
+            collage::list_sheets,
+            collage::set_collage_order,
+            collage::turn_sheet,
+            collage::sheet_info,
             places::search_places,
             places::set_photo_date,
             places::set_photo_place,

@@ -156,13 +156,17 @@ pub fn effective_dpi(width: u32, height: u32, print: PrintSize) -> (u32, DpiBand
     let long_in = f64::from(print.long_mm) / 25.4;
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let dpi = (long_px / long_in).round() as u32;
-    let band = match dpi {
+    (dpi, dpi_band(dpi))
+}
+
+/// The quality band of an effective DPI (FR-026).
+pub fn dpi_band(dpi: u32) -> DpiBand {
+    match dpi {
         300.. => DpiBand::Excellent,
         200..300 => DpiBand::Good,
         150..200 => DpiBand::Fair,
         _ => DpiBand::Poor,
-    };
-    (dpi, band)
+    }
 }
 
 pub fn format_date(dt: NaiveDateTime, format: DateFormat) -> String {

@@ -7,6 +7,8 @@
 //! - `fotothumb://localhost/preview/{id}?rev=…&region={x},{y},{w},{h}&px={width}`: one part
 //!   of the full-resolution render, for zoom (FR-057); fractions of the photo, checked here
 //! - `fotothumb://localhost/source/{id}?rev=…`
+//! - `fotothumb://localhost/sheet/{first}/{second}?rev=…[&small=1]`: a collage sheet
+//!   (FR-035); `{second}` is left out for an odd last photo
 //!
 //! On Windows the webview addresses it as `http://fotothumb.localhost/…`.
 
@@ -32,6 +34,8 @@ enum Route {
     Source(PhotoId),
     /// The latest live-view frame of the connected camera, from memory (FR-062).
     CameraLive,
+    /// A collage sheet, small for the grid (FR-035).
+    Sheet(crate::collage::SheetPair, bool),
 }
 
 /// `region=x,y,w,h&px=n` from the query: `Ok(None)` without one, `Err` when it is malformed
@@ -67,6 +71,21 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
     }
     let mut parts = path.trim_matches('/').split('/');
     let kind = parts.next()?;
+    if kind == "sheet" {
+        let first = PhotoId(parts.next()?.parse().ok()?);
+        let second = match parts.next() {
+            Some(id) => Some(PhotoId(id.parse().ok()?)),
+            None => None,
+        };
+        if parts.next().is_some() || second == Some(first) {
+            return None;
+        }
+        let small = query.unwrap_or_default().split('&').any(|p| p == "small=1");
+        return Some(Route::Sheet(
+            crate::collage::SheetPair { first, second },
+            small,
+        ));
+    }
     let id = PhotoId(parts.next()?.parse().ok()?);
     if parts.next().is_some() {
         return None;
@@ -146,6 +165,15 @@ pub fn handle<R: Runtime>(
                 ),
             },
             Route::CameraLive => {}
+            Route::Sheet(sheet, small) => match crate::collage::sheet_bytes(&state, sheet, small) {
+                Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
+                Err(message) => respond(
+                    responder,
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    message.into_bytes(),
+                    false,
+                ),
+            },
             Route::Preview(id) => match preview_bytes(&state, id) {
                 Ok(bytes) => {
                     crate::timing::mark(&crate::timing::FIRST_PREVIEW, "first preview");
@@ -180,6 +208,33 @@ mod tests {
         assert!(route("/thumb/7/extra", None).is_none());
         assert!(route("/other/1", None).is_none());
         assert!(route("/thumb/-1", None).is_none());
+    }
+
+    #[test]
+    fn fr_035_sheet_routes_are_strict() {
+        assert!(matches!(
+            route("/sheet/3/4", Some("rev=2&small=1")),
+            Some(Route::Sheet(
+                crate::collage::SheetPair {
+                    first: PhotoId(3),
+                    second: Some(PhotoId(4))
+                },
+                true
+            ))
+        ));
+        assert!(matches!(
+            route("/sheet/3", Some("rev=2")),
+            Some(Route::Sheet(
+                crate::collage::SheetPair {
+                    first: PhotoId(3),
+                    second: None
+                },
+                false
+            ))
+        ));
+        assert!(route("/sheet/3/3", None).is_none());
+        assert!(route("/sheet/3/4/5", None).is_none());
+        assert!(route("/sheet/a/4", None).is_none());
     }
 
     #[test]

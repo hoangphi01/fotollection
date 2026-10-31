@@ -31,6 +31,7 @@ import { ExportSection } from '@/features/export/export-section'
 import { ExportTargetPicker } from '@/features/export/export-target-picker'
 import type { ExportApi } from '@/features/export/use-export'
 import { FitSizeNote } from '@/features/frame/fit-size-note'
+import { MOD } from '@/lib/platform'
 import { sendTo } from './send-to'
 import { useShownSrc } from './use-shown-src'
 import { FrameSection } from '@/features/frame/frame-section'
@@ -66,7 +67,6 @@ import { verdictOf } from '@/features/print-advice/verdict'
 import { VerdictBadge } from '@/features/print-advice/verdict-badge'
 
 /** The zoom shortcut's modifier as each platform names it. */
-const MOD = navigator.userAgent.includes('Mac') ? '⌘' : 'Ctrl'
 
 type PreviewDialogProps = {
   photos: PhotoSummary[]

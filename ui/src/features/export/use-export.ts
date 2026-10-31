@@ -45,21 +45,25 @@ export function useExport() {
     return null
   }, [])
 
-  const start = useCallback(async (filter: CullFilter, total: number, only: number | null, separate: boolean) => {
-    const result = await commands.startExport(filter, only, separate)
+  const start = useCallback(
+    async (filter: CullFilter, total: number, only: number | null, separate: boolean, sheets: boolean) => {
+    const result = await commands.startExport(filter, only, separate, sheets)
     if (result.status === 'ok') setState({ kind: 'running', jobId: result.data, done: 0, total })
     else setState({ kind: 'error', message: errorText(result.error) })
-  }, [])
+    },
+    [],
+  )
 
   /**
    * Picks a destination if none yet, then exports the photos `filter` keeps, or only the
    * photo `only` (the one open in the preview, FR-055). `separate` gives each source folder
-   * its own subfolder (FR-056).
+   * its own subfolder (FR-056). With `sheets`, the photos go out two to a print and
+   * `total` counts sheets (FR-035).
    */
   const exportPhotos = useCallback(
-    async (filter: CullFilter, total: number, only: number | null = null, separate = false) => {
+    async (filter: CullFilter, total: number, only: number | null = null, separate = false, sheets = false) => {
       const dest = destination ?? (await chooseDestination())
-      if (dest) await start(filter, only === null ? total : 1, only, separate)
+      if (dest) await start(filter, only === null ? total : 1, only, separate, sheets)
     },
     [destination, chooseDestination, start],
   )

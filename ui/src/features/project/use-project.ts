@@ -3,11 +3,9 @@ import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { commands, events, type Action, type DocumentState } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { isTyping } from '@/lib/keyboard'
+import { isMac } from '@/lib/platform'
 
 export type UnsavedChoice = 'save' | 'discard' | 'cancel'
-
-/** macOS has the native File menu; elsewhere the shortcuts are handled here. */
-const isMac = navigator.userAgent.includes('Mac')
 
 type Result<T> =
   | { status: 'ok'; data: T }
@@ -84,14 +82,14 @@ export function useProject() {
 
   // Native menu (macOS) and files handed over by the OS.
   useEffect(() => {
-    const actions: Record<Action, () => unknown> = {
+    const actions: Partial<Record<Action, () => unknown>> = {
       new: newProject,
       open,
       save,
       saveAs,
       openRequested,
     }
-    const unlisten = events.menuAction.listen(({ payload }) => void actions[payload.action]())
+    const unlisten = events.menuAction.listen(({ payload }) => void actions[payload.action]?.())
     return () => void unlisten.then((fn) => fn())
   }, [newProject, open, save, saveAs, openRequested])
 

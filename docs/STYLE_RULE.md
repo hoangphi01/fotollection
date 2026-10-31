@@ -1,6 +1,6 @@
 # Style Rules — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-10-30
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-10-31
 >
 > These rules apply to all code and docs. Tooling enforces them where possible. Where tooling can't, reviewers do.
 > If a rule blocks you, propose changing it in a PR. Don't silently break it.
@@ -113,7 +113,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
 
 ## 6. Documentation
 
-- **Language:** English for all repository docs, code and commits. The one exception is `README.vi.md`, the Vietnamese README that GitHub readers reach through the **VI** link at the top of `README.md`. Every change to `README.md` updates `README.vi.md` in the same commit, and `scripts/check-docs.sh` checks that both have the same sections and charts. Any other translation goes under `docs/vi/`.
+- **Language:** English for all repository docs, code and commits. Two exceptions: `README.vi.md`, the Vietnamese README that GitHub readers reach through the **VI** link at the top of `README.md`, and `docs/USER_GUIDE.vi.md`, the Vietnamese manual on the website ([ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)). Each changes in the same commit as its English original, and `scripts/check-docs.sh` checks that both have the same sections (and charts, or chapters and screenshots). Any other translation goes under `docs/vi/`.
 - **Single source of truth:** every fact has exactly one home (see [docs/README.md](README.md#where-does-each-fact-live)). Other files link to it rather than copying it.
 - **Stable IDs:** `FR-NNN`, `NFR-NNN` and `ADR-NNNN` are never renumbered or reused. Retired items are marked *Withdrawn* or *Superseded*.
 - **Write an ADR** when a decision is hard to reverse, affects more than one module, or chooses between real alternatives. Use [adr/0000-template.md](adr/0000-template.md).

@@ -19,7 +19,9 @@ pub const FORMAT: &str = "fotollection-project";
 /// v7: `cameras[]`, each body's clock offset and time zone (FR-030).
 /// v8: `photos[].date`, `photos[].place` and `place_source` (FR-032, FR-031), and `places[]`,
 /// the places the user renamed (FR-005).
-pub const SCHEMA_VERSION: u32 = 8;
+/// v9: `photos[].collage`, the position in the collage order, and `photos[].sheet_turned`
+/// (FR-035).
+pub const SCHEMA_VERSION: u32 = 9;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -79,6 +81,12 @@ pub struct PhotoRow {
     /// `manual` or `borrowed`, with `place` (v8).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub place_source: Option<PlaceSource>,
+    /// Position in the collage order (v9); absent in the view's own order.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub collage: Option<u32>,
+    /// The sheet this photo starts is turned (v9).
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub sheet_turned: bool,
 }
 
 /// A place the user renamed (v8, FR-005).
@@ -196,6 +204,8 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 date: edits.date.and_then(date_text),
                 place: edits.place.map(|p| p.geonames_id),
                 place_source: edits.place.map(|p| p.source),
+                collage: edits.collage,
+                sheet_turned: edits.sheet_turned,
             })
         })
         .collect();
@@ -492,6 +502,8 @@ pub fn restore_into(
                         geonames_id,
                         source,
                     }),
+                collage: row.collage,
+                sheet_turned: row.sheet_turned,
             },
         );
         summary.restored += 1;
@@ -560,6 +572,8 @@ mod tests {
                     rotation: 1,
                     straighten: -3.5,
                     queue: Some(Queue::Print),
+                    collage: Some(3),
+                    sheet_turned: true,
                     ..PhotoEdits::default()
                 },
             );
@@ -586,6 +600,9 @@ mod tests {
             .map(|id| fresh.edits(id));
         assert_eq!(restored.as_ref().and_then(|e| e.crop), Some(crop()));
         assert_eq!(restored.as_ref().map(|e| e.rating), Some(4));
+        // The collage order and a turned sheet (v9, FR-035).
+        assert_eq!(restored.as_ref().and_then(|e| e.collage), Some(3));
+        assert_eq!(restored.as_ref().map(|e| e.sheet_turned), Some(true));
         assert_eq!(
             restored.and_then(|e| e.stamp).map(|s| s.caption),
             Some("Lisbon".into()),
@@ -689,9 +706,9 @@ mod tests {
         let path = dir.path().join("p.fotollection");
         std::fs::write(
             &path,
-            br#"{"format":"fotollection-project","schema_version":9}"#,
+            br#"{"format":"fotollection-project","schema_version":10}"#,
         )?;
-        assert_eq!(load(&path), Loaded::NewerVersion(9));
+        assert_eq!(load(&path), Loaded::NewerVersion(10));
 
         let mut file = snapshot(&library_with(&["/trip/a.jpg"]));
         file.photos.push(PhotoRow {
@@ -710,6 +727,8 @@ mod tests {
             date: None,
             place: None,
             place_source: None,
+            collage: None,
+            sheet_turned: false,
         });
         save(&path, &file)?;
         assert!(
@@ -750,6 +769,31 @@ mod tests {
         let degrees: Vec<Option<f32>> = file.photos.iter().map(|p| p.straighten).collect();
         // 40° from a file is clamped to 15°.
         assert_eq!(degrees, [Some(2.5), None, Some(15.0)]);
+    }
+
+    #[test]
+    fn fr_035_v9_fixture_keeps_the_collage_order_and_v8_has_none() {
+        let Loaded::Ok(v9) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v9.fotollection"))
+        else {
+            panic!("v9 project should load");
+        };
+        let rows: Vec<(Option<u32>, bool)> = v9
+            .photos
+            .iter()
+            .map(|p| (p.collage, p.sheet_turned))
+            .collect();
+        assert_eq!(rows, [(Some(1), false), (Some(0), true)]);
+        let Loaded::Ok(v8) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v8.fotollection"))
+        else {
+            panic!("v8 project should load");
+        };
+        assert!(
+            v8.photos
+                .iter()
+                .all(|p| p.collage.is_none() && !p.sheet_turned)
+        );
     }
 
     #[test]

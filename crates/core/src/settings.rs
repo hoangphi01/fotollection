@@ -68,6 +68,95 @@ pub struct RenderSettings {
     /// before settings v10, where FR-065's `frame.border` held it for Crop to fill only.
     #[serde(default)]
     pub border: bool,
+    /// Two photos on one print, the Collage mode (FR-035, FR-048). Absent before settings
+    /// v10: the defaults.
+    #[serde(default)]
+    pub collage: CollageSettings,
+}
+
+/// The ratio of the photo area in a collage cell (FR-035).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum CellRatio {
+    /// Each photo's own ratio.
+    #[default]
+    Photo,
+    /// The sheet's ratio: 2:3 on a 10 × 15.
+    Sheet,
+    FourThree,
+    Square,
+}
+
+/// A photo size typed by the user for collage cells, in whole millimetres.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct CellSize {
+    pub short_mm: u32,
+    pub long_mm: u32,
+}
+
+/// How two photos share one print (FR-035).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct CollageSettings {
+    #[serde(default)]
+    pub ratio: CellRatio,
+    /// White kept round the photo in its cell, on every side.
+    #[serde(default = "default_collage_margin")]
+    pub margin_mm: u32,
+    /// The size typed by the user; `None` uses the suggested size.
+    #[serde(default)]
+    pub size: Option<CellSize>,
+    /// With the ratio locked, a typed size keeps the chosen ratio: only its short edge counts.
+    #[serde(default = "yes")]
+    pub lock_ratio: bool,
+    /// A thin line between the cells, to cut the print in two.
+    #[serde(default = "yes")]
+    pub cut_line: bool,
+}
+
+/// The largest collage margin, in millimetres.
+pub const MAX_COLLAGE_MARGIN_MM: u32 = 20;
+/// Edges a typed collage size may have, in millimetres.
+pub const COLLAGE_EDGE_MM: std::ops::RangeInclusive<u32> = 10..=1000;
+
+fn default_collage_margin() -> u32 {
+    5
+}
+
+fn yes() -> bool {
+    true
+}
+
+impl Default for CollageSettings {
+    fn default() -> Self {
+        Self {
+            ratio: CellRatio::Photo,
+            margin_mm: default_collage_margin(),
+            size: None,
+            lock_ratio: true,
+            cut_line: true,
+        }
+    }
+}
+
+impl CollageSettings {
+    /// Brings values from the webview or a file within range (SECURITY.md §2).
+    #[must_use]
+    pub fn sanitized(self) -> Self {
+        let edge = |v: u32| v.clamp(*COLLAGE_EDGE_MM.start(), *COLLAGE_EDGE_MM.end());
+        Self {
+            margin_mm: self.margin_mm.min(MAX_COLLAGE_MARGIN_MM),
+            size: self.size.map(|s| {
+                let (a, b) = (edge(s.short_mm), edge(s.long_mm));
+                CellSize {
+                    short_mm: a.min(b),
+                    long_mm: a.max(b),
+                }
+            }),
+            ..self
+        }
+    }
 }
 
 /// A saved custom print size (FR-043). Stored in millimetres, short edge first.
@@ -204,6 +293,7 @@ impl Default for RenderSettings {
             place_format: crate::geocode::PlaceFormat::default(),
             export_target: crate::share::ExportTarget::default(),
             border: false,
+            collage: CollageSettings::default(),
         }
     }
 }
