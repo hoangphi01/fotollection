@@ -13,6 +13,13 @@
 
 ## 2026-10-31
 
+### The website build broke on a Liquid include (landing page, FR-048)
+
+- **Seen:** the Pages build failed with "Invalid syntax for include tag: name=r alt=t[show_key]" after the "Three modes" section was added; the live site kept the previous build.
+- **Why:** Jekyll's `include` parameters take a variable or a quoted string, not a lookup like `t[key]`. The print-basket section next to it assigns the lookup to a variable first, and the new section was written without that step.
+- **Fix:** `assign show_alt = t[show_key]`, then `alt=show_alt`, and a named `cycle` so the two sections keep their own alternation.
+- **Rule:** never pass `t[...]` straight to `include`; copy the nearest working section's Liquid, and watch the `pages` run after every site push.
+
 ### Simple mode came up in English (FR-048)
 
 - **Seen:** on a Vietnamese machine, the Simple mode screen and its panel were in English, while Professional was in Vietnamese.

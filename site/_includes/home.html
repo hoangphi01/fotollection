@@ -164,8 +164,9 @@
     {%- capture title_key %}{{ r }}_title{% endcapture -%}
     {%- capture text_key %}{{ r }}_text{% endcapture -%}
     {%- capture show_key %}show_{{ r }}{% endcapture -%}
-    <div class="showcase-row{% cycle '', ' flip' %}">
-      <figure class="shot">{% include shot.html name=r alt=t[show_key] %}</figure>
+    {%- assign show_alt = t[show_key] %}
+    <div class="showcase-row{% cycle 'modes': '', ' flip' %}">
+      <figure class="shot">{% include shot.html name=r alt=show_alt %}</figure>
       <div class="showcase-text">
         <h3>{{ t[title_key] }}</h3>
         <p>{{ t[text_key] }}</p>
