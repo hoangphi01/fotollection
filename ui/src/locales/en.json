@@ -248,6 +248,8 @@
     "buttonThis": "Export this photo",
     "buttonCount_one": "Export {{count}} photo",
     "buttonCount_other": "Export {{count}} photos",
+    "buttonTicked_one": "Export {{count}} selected photo",
+    "buttonTicked_other": "Export {{count}} selected photos",
     "filteredHint": "Only the photos the library filter shows are exported.",
     "target": {
       "print": "Print",
@@ -479,7 +481,9 @@
   },
   "about": {
     "versions": "Versions",
-    "current": "This version"
+    "current": "This version",
+    "report": "Report",
+    "reportHint": "Report a problem or suggest an idea on GitHub (opens in your browser)"
   },
   "update": {
     "check": "Check for updates",

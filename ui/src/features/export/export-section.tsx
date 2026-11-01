@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import type { CullFilter } from '@/ipc/bindings'
+import type { CullFilter, PhotoId } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { formatBytes } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -24,7 +24,11 @@ type ExportSectionProps = {
   folderCount?: number
   /** Settings revision, so the size estimate follows every change. */
   revision: number
+  /** Photos ticked in select mode: when there are some, only they go out (FR-050). */
+  ticked?: readonly PhotoId[]
 }
+
+const NO_TICKS: readonly PhotoId[] = []
 
 function folderName(path: string): string {
   return path.split(/[\\/]/).filter(Boolean).pop() ?? path
@@ -38,14 +42,17 @@ export function ExportSection({
   only,
   folderCount = 1,
   revision,
+  ticked = NO_TICKS,
 }: ExportSectionProps) {
   const { t } = useTranslation()
   const { state, destination, chooseDestination, exportPhotos, cancel, dismiss } = exporter
   const single = only !== undefined
+  const picked = single ? NO_TICKS : ticked
+  const count = picked.length > 0 ? picked.length : photoCount
   const [separate, setSeparate] = useState(false)
   const canSplit = !single && folderCount > 1
   const running = state.kind === 'running'
-  const { estimate, stale } = useExportEstimate(filter, only ?? null, revision, !running && (single || photoCount > 0))
+  const { estimate, stale } = useExportEstimate(filter, only ?? null, revision, !running && (single || count > 0), picked)
 
   return (
     <div className="space-y-3">
@@ -166,18 +173,20 @@ export function ExportSection({
       ) : (
         <Button
           className="w-full"
-          disabled={!single && photoCount === 0}
-          onClick={() => void exportPhotos(filter, photoCount, only ?? null, canSplit && separate)}
+          disabled={!single && count === 0}
+          onClick={() => void exportPhotos(filter, count, only ?? null, canSplit && separate, picked)}
         >
           <Download data-icon="inline-start" />
           {single
             ? t('export.buttonThis')
-            : photoCount > 0
+            : picked.length > 0
+              ? t('export.buttonTicked', { count })
+              : photoCount > 0
               ? t('export.buttonCount', { count: photoCount })
               : t('export.button')}
         </Button>
       )}
-      {!single && (filter.flag !== 'all' || filter.minRating > 0) && !running && (
+      {!single && picked.length === 0 && (filter.flag !== 'all' || filter.minRating > 0) && !running && (
         <p className="text-xs text-muted-foreground">{t('export.filteredHint')}</p>
       )}
     </div>

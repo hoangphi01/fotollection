@@ -8,6 +8,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- Fixed: with photos ticked, Export now writes only those photos and says how many
+- New: a red Report button next to the version, to tell us about a problem or an idea
+
+### Fixed
+
+- **Export with ticked photos:** while photos are ticked in select mode, the export button says *Export 3 selected photos* and writes only those, with the size estimate for them, instead of every photo shown. Untick them all and it exports the whole view again (user feedback).
+
+### Added
+
+- **Report a problem:** a red *Report* button next to the version at the foot of the settings panel opens the project's GitHub page for problems and ideas in your browser. The app itself sends nothing.
+
 ## [0.8.2] - 2026-11-01 — Linux
 
 ### Highlights

@@ -71,6 +71,10 @@ export function App() {
   // Select mode (FR-050), like the Select button on an iPhone: photos are ticked by id.
   const [selectMode, setSelectMode] = useState(false)
   const [checked, setChecked] = useState<ReadonlySet<number>>(new Set())
+  /** The ticks in the order the gallery shows them, then those in other folder tabs (FR-056). */
+  const shownTicks = photos.filter((p) => checked.has(p.id)).map((p) => p.id)
+  const inView = new Set(shownTicks)
+  const ticks = [...shownTicks, ...[...checked].filter((id) => !inView.has(id))]
   /** The ticked photos whose date and place are being set (FR-032). */
   const [datePlaceIds, setDatePlaceIds] = useState<number[] | null>(null)
   const [anchor, setAnchor] = useState<number | null>(null)
@@ -444,6 +448,7 @@ export function App() {
         filter={filter}
         photo={photos[current]}
         revision={revision}
+        ticked={selectMode ? ticks : undefined}
       />
       </div>
     </div>

@@ -27,6 +27,7 @@ import {
   commands,
   type CullFilter,
   type Language,
+  type PhotoId,
   type PhotoSummary,
   type PlaceFormat,
   type RenderSettings,
@@ -35,7 +36,7 @@ import type { FontsApi } from '@/features/fonts/use-fonts'
 import { PrintAdviceNote } from '@/features/print-advice/print-advice-note'
 import { FitSizeNote } from '@/features/frame/fit-size-note'
 import { StampStyleFields } from '@/features/stamp/stamp-style-fields'
-import { VersionHistory } from '@/features/about/version-history'
+import { PanelFooter } from '@/features/about/panel-footer'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { LANGUAGES } from '@/i18n'
 import { PrintSizePicker } from './print-size-picker'
@@ -58,6 +59,8 @@ type SettingsPanelProps = {
   photo?: PhotoSummary
   /** Settings revision, so size notes follow every change. */
   revision: number
+  /** Photos ticked in select mode, exported instead of the whole view (FR-050). */
+  ticked?: readonly PhotoId[]
 }
 
 const PLACE_FORMATS: PlaceFormat[] = ['city', 'cityCountryCode', 'cityCountry']
@@ -77,11 +80,11 @@ export function SettingsPanel({
   filter,
   photo,
   revision,
+  ticked,
 }: SettingsPanelProps) {
   const { t } = useTranslation()
   const { language, change: changeLanguage } = useLanguage()
   const printSizes = useIpcQuery(commands.listPrintSizes)
-  const appInfo = useIpcQuery(commands.appInfo)
   const sizesKey = (settings?.customSizes ?? []).map((c) => `${c.id}:${c.shortMm}x${c.longMm}`).join()
   const advice = usePrintAdvice(photo?.id, sizesKey)
   const stamp = settings?.stamp
@@ -221,11 +224,8 @@ export function SettingsPanel({
 
       <Separator />
       <div className="space-y-3 p-4">
-        <ExportSection exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} revision={revision} />
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>{t('settings.footer')}</span>
-          {appInfo && <VersionHistory version={appInfo.appVersion} />}
-        </div>
+        <ExportSection exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} revision={revision} ticked={ticked} />
+        <PanelFooter />
       </div>
     </aside>
   )

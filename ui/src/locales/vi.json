@@ -236,6 +236,7 @@
     "button": "Xuất ảnh",
     "buttonThis": "Xuất ảnh này",
     "buttonCount_other": "Xuất {{count}} ảnh",
+    "buttonTicked_other": "Xuất {{count}} ảnh đã chọn",
     "filteredHint": "Chỉ xuất những ảnh đang hiện theo bộ lọc thư viện.",
     "target": {
       "print": "In ảnh",
@@ -463,7 +464,9 @@
   },
   "about": {
     "versions": "Các phiên bản",
-    "current": "Bản đang dùng"
+    "current": "Bản đang dùng",
+    "report": "Báo lỗi",
+    "reportHint": "Báo lỗi hoặc góp ý trên GitHub (mở trong trình duyệt)"
   },
   "update": {
     "check": "Kiểm tra cập nhật",

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useCallback, useEffect, useState } from 'react'
-import { commands, events, type CullFilter, type ExportSummary } from '@/ipc/bindings'
+import { commands, events, type CullFilter, type ExportSummary, type PhotoId } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 
 export type ExportState =
@@ -45,21 +45,25 @@ export function useExport() {
     return null
   }, [])
 
-  const start = useCallback(async (filter: CullFilter, total: number, only: number | null, separate: boolean) => {
-    const result = await commands.startExport(filter, only, separate)
+  const start = useCallback(
+    async (filter: CullFilter, total: number, only: number | null, ticked: PhotoId[], separate: boolean) => {
+    const result = await commands.startExport(filter, only, ticked, separate)
     if (result.status === 'ok') setState({ kind: 'running', jobId: result.data, done: 0, total })
     else setState({ kind: 'error', message: errorText(result.error) })
-  }, [])
+    },
+    [],
+  )
 
   /**
    * Picks a destination if none yet, then exports the photos `filter` keeps, or only the
    * photo `only` (the one open in the preview, FR-055). `separate` gives each source folder
-   * its own subfolder (FR-056).
+   * its own subfolder (FR-056). Photos `ticked` in select mode go out instead of the whole
+   * view (FR-050).
    */
   const exportPhotos = useCallback(
-    async (filter: CullFilter, total: number, only: number | null = null, separate = false) => {
+    async (filter: CullFilter, total: number, only: number | null = null, separate = false, ticked: readonly PhotoId[] = []) => {
       const dest = destination ?? (await chooseDestination())
-      if (dest) await start(filter, only === null ? total : 1, only, separate)
+      if (dest) await start(filter, only === null ? total : 1, only, [...ticked], separate)
     },
     [destination, chooseDestination, start],
   )

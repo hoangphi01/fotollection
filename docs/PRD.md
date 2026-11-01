@@ -548,6 +548,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **One place per photo:** the gallery, the print basket or set aside, never two. Independent of stars and pick/reject ([FR-022](#fr-022--culling-rate-flag-filter)): a pick does not have to be printed.
 - **Set aside is never deletion:** the photo leaves *All photos* and the folders, its file is never touched, and it can be brought back at any time.
 - **The sidebar lists both areas** under *All photos*, with their counts. Opening one shows only its photos; *Export* then follows the view, so the basket exports exactly the basket and photos set aside are never exported from the gallery.
+- **Ticked photos export first (v0.8.3, user feedback 2026-11-01):** while photos are ticked in select mode, *Export* writes only them and says so (*Export 3 selected photos*), with the size estimate for them; with no tick it follows the view again. Ticks in other folder tabs count too (FR-056). Collage sheets keep following the view.
 - **In the preview:** **↑** puts the photo in the basket and moves to the next photo; **↓** sets it aside and the next photo takes its place. A *Print basket* button on the photo does the same as ↑, and a photo set aside offers *Back to the gallery*.
 - **In the gallery, select mode** (like the Select button on an iPhone): *Select* turns clicks into ticks (Shift+click for a range, Cmd/Ctrl+A for all), and a bar moves the ticked photos to the basket, aside, or back to the gallery. Ticks are temporary; the areas are saved.
 - **Saved and undoable:** stored per photo in the project (schema v6, [DATABASE.md](DATABASE.md)); every move is one undo step.
@@ -713,6 +714,10 @@ Next to the batch settings, any other setting will later be overridable for one 
 ### FR-068 — HEIC on Linux through the system's libheif
 
 **P2 (planned, after v0.9.0).** On Linux, HEIC photos open through the `libheif` that the user's distribution installs (`libheif1` on Ubuntu and Debian, `libheif` on Fedora and Arch), loaded at run time; Fotollection never bundles an HEVC decoder, because HEVC is covered by patent pools ([ADR-0034](adr/0034-linux-lean.md)). Without it, HEIC is skipped with the command to install it. Until then, HEIC on Linux is skipped as "not supported on Linux yet".
+
+### FR-069 — Report a problem
+
+**P1 (v0.8.3, owner's request 2026-11-01).** A red **Report** button at the foot of the panel, in every mode, next to the version, and a **Report a problem or suggest an idea** button in the website's footer. Both open the project's GitHub issue forms (bug or idea) in the browser. The app sends nothing itself: the address is fixed in Rust and opened with the system browser, as for *Check for updates* ([FR-061](#fr-061--check-for-updates)), so the webview never supplies a URL ([SECURITY.md](SECURITY.md)).
 
 ## 7. Non-functional requirements
 

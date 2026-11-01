@@ -226,6 +226,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-064 | Watch a folder for new photos | 2 | Not Started | Planned: fallback for a maker's wired tether app; also feeds FR-063's session folder |
 | FR-065 | Border in Crop to fill | 1 | In Progress | ✓ `frame.border` (settings v9), 3 mm inside the print in `frame::layout`, the crop and export follow the smaller photo area (`fr_065_*`); *Add border* switch under Crop to fill. Left: check a print at a CEWE kiosk size by hand |
 | FR-066 | Borrow places from a GPX track | 3 | Not Started | Split out of FR-031 for v0.8.0 |
+| FR-069 | Report a problem | 1 | Done | `PanelFooter` at the foot of the settings panel, `open_issue_page` (fixed URL, opener from Rust); the website footer's `.button.report` (on `main`). v0.8.3 |
 | FR-068 | HEIC on Linux through the system's libheif | 3 | Not Started | v0.8.2 skips HEIC on Linux with its own reason (`HeicNotOnLinux`); after v0.9.0 ([ADR-0034](adr/0034-linux-lean.md)) |
 | FR-059 | Quick-preview | 1 | In Progress | ✓ Hold Space in select mode over a photo: thumbnail at once, then the render with the gallery's settings; ← → and Enter while held (`use-quick-preview.ts`). Left: check by hand in the app |
 | FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print; every editing session adds a journal entry (instax-style) |
