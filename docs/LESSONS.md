@@ -13,6 +13,13 @@
 
 ## 2026-11-01
 
+### A bare container is not a desktop: the first v0.8.2 run stopped on its own smoke test (ADR-0034)
+
+- **Seen:** the arm64 build passed on Ubuntu 22.04, then the AppImage exited with 127 in `debian:12`: `libfontconfig.so.1: cannot open shared object file`. The failed job cancelled the other three, so nothing was released.
+- **Why:** an AppImage leaves out on purpose the libraries every desktop already has (fontconfig, freetype, GL, X11: the AppImage exclude list), because bundling them breaks on other drivers. The `debian:12` image has none of them; no one runs a photo app there.
+- **Fix:** the container first installs GTK 3 and GL (`libgtk-3-0 libgl1 libegl1 libgbm1`), the floor of any Debian desktop, then runs `ldd` over the extracted AppImage and prints every library still missing before it starts the app, so one run shows the whole list instead of the first missing file.
+- **Rule:** a test environment must match what a user has, no less: test an AppImage on the desktop floor, not on a bare image. A smoke test that fails prints everything that is wrong at once. A release dry run (dispatch before the version bump) catches this without a failed release run.
+
 ### A decoder can be silently wrong: JPEGs came out as green stripes (ADR-0033)
 
 - **Seen:** a v0.8.0 user's folder showed half its photos as green tiles with fine horizontal stripes and a ghost of the picture. The owner first suspected our RAW decoder; the files were JPEGs.

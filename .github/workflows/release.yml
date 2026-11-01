@@ -135,9 +135,20 @@ jobs:
           code=0; timeout 20 xvfb-run -a "$appimage" --appimage-extract-and-run || code=$?
           [ "$code" = 124 ] || { echo "the AppImage exited with $code"; exit 1; }
           code=0
+          # A bare debian:12 image has no desktop libraries at all. An AppImage leaves out the
+          # ones every desktop ships (fontconfig, GL, X11: the AppImage exclude list), so the
+          # container first gets GTK 3 and GL, the floor of any Debian desktop, then lists any
+          # library the AppImage still cannot find before it runs (LESSONS 2026-11-01).
           docker run --rm -v "$PWD/$appimage:/app.AppImage:ro" debian:12 bash -c \
-            'apt-get update -qq && apt-get install -y -qq xvfb xauth >/dev/null &&
-             timeout 20 xvfb-run -a /app.AppImage --appimage-extract-and-run' || code=$?
+            'apt-get update -qq &&
+             apt-get install -y -qq xvfb xauth libgtk-3-0 libgl1 libegl1 libgbm1 >/dev/null &&
+             cd /tmp && /app.AppImage --appimage-extract >/dev/null &&
+             export LD_LIBRARY_PATH=$(find squashfs-root/usr -name "*.so*" -printf "%h\n" | sort -u | paste -sd:) &&
+             missing=$(find squashfs-root/usr -type f \( -name "*.so*" -o -perm -u+x \) -exec ldd {} + 2>/dev/null |
+               grep "not found" | sort -u) &&
+             unset LD_LIBRARY_PATH &&
+             [ -z "$missing" ] || { echo "missing on Debian 12: $missing"; exit 1; };
+             timeout 20 xvfb-run -a squashfs-root/AppRun' || code=$?
           [ "$code" = 124 ] || { echo "the AppImage exited with $code on Debian 12"; exit 1; }
 
       - uses: actions/upload-artifact@v4
