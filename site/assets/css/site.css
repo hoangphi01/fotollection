@@ -409,8 +409,9 @@ h2 .fn-ref { font-size: 0.4em; }
 .footer-made { max-width: 46ch; font-size: 0.9rem; }
 .footer-visits { margin-top: 14px; }
 /* Report a problem (FR-069): filled red, white text (5.6:1), the same in both themes. */
-.footer-report { margin-top: 16px; }
-.button.report { flex: 0 0 auto; height: 40px; background: #c62828; border-color: #c62828; color: #fff; }
+.footer-report { margin-top: 14px; }
+.button.report { flex: 0 0 auto; height: 34px; padding: 0 14px; gap: 6px; font-size: 0.88rem; white-space: nowrap; background: #c62828; border-color: #c62828; color: #fff; }
+.button.report .icon { width: 16px; height: 16px; }
 .button.report:hover { background: #c62828; filter: brightness(1.1); }
 .footer-visits .pill { cursor: default; }
 .footer-visits .pill:hover { border-color: var(--line); }
