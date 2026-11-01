@@ -8,7 +8,7 @@ fn main() {
     fotollection_lib::run();
 }
 
-/// WebKitGTK's DMA-BUF renderer leaves the window blank with Nvidia's driver (ADR-0034).
+/// `WebKitGTK`'s DMA-BUF renderer leaves the window blank with Nvidia's driver (ADR-0034).
 /// Where that driver is loaded and the user has not chosen, the app starts itself again
 /// with the renderer off: setting the variable in this process would need `unsafe` in Rust
 /// 2024, and `exec` replaces the process, so nothing else runs twice. Other machines keep
