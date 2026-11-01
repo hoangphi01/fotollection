@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Highlights
 
 - Fixed: with photos ticked, Export now writes only those photos and says how many
-- New: a red Report button next to the version, to tell us about a problem or an idea
+- New: a red Report button under the version, to tell us about a problem or an idea
 
 ### Fixed
 
@@ -21,7 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- **Report a problem:** a red *Report* button next to the version at the foot of the settings panel opens the project's GitHub page for problems and ideas in your browser. The app itself sends nothing.
+- **Report a problem:** a red *Report a problem or an idea* button in the versions popover (click the version at the foot of the settings panel) opens the project's GitHub page for problems and ideas in your browser. The app itself sends nothing.
 
 ## [0.8.2] - 2026-11-01 — Linux
 

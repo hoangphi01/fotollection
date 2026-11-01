@@ -717,7 +717,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-069 — Report a problem
 
-**P1 (v0.8.3, owner's request 2026-11-01).** A red **Report** button at the foot of the panel, in every mode, next to the version, and a **Report a problem or suggest an idea** button in the website's footer. Both open the project's GitHub issue forms (bug or idea) in the browser. The app sends nothing itself: the address is fixed in Rust and opened with the system browser, as for *Check for updates* ([FR-061](#fr-061--check-for-updates)), so the webview never supplies a URL ([SECURITY.md](SECURITY.md)).
+**P1 (v0.8.3, owner's request 2026-11-01).** A red **Report a problem or an idea** button in the versions popover (click the version at the foot of the panel), under *Check for updates*, and a **Report a problem or suggest an idea** button in the website's footer. Both open the project's GitHub issue forms (bug or idea) in the browser. The app sends nothing itself: the address is fixed in Rust and opened with the system browser, as for *Check for updates* ([FR-061](#fr-061--check-for-updates)), so the webview never supplies a URL ([SECURITY.md](SECURITY.md)).
 
 ## 7. Non-functional requirements
 

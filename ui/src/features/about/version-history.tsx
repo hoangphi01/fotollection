@@ -7,12 +7,14 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { releaseSummaries } from '@/lib/changelog'
 import { cn } from '@/lib/utils'
 import { CacheUsage } from './cache-usage'
+import { ReportIssue } from './report-issue'
 import { UpdateCheck } from './update-check'
 
 /**
  * The app's version; clicking it lists every release with two lines on what it brought.
  * The CHANGELOG is bundled at build time, so this works offline (FR-021); checking for a newer
- * version is a button, the only time the app goes online (FR-061).
+ * version is a button, the only time the app goes online (FR-061); "Report a problem" opens
+ * the project's issue page in the browser (FR-069).
  */
 export function VersionHistory({ version }: { version: string }) {
   const { t } = useTranslation()
@@ -50,6 +52,7 @@ export function VersionHistory({ version }: { version: string }) {
           ))}
         </ol>
         <UpdateCheck />
+        <ReportIssue />
         <CacheUsage />
       </PopoverContent>
     </Popover>
