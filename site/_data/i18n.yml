@@ -131,7 +131,7 @@ en:
   nav_kiosk: Print shops
   nav_changelog: What's new
   changelog_title: What's new
-  changelog_lead: Every change, newest first. "Unreleased" is what the next version will bring.
+  changelog_lead: Every released version, newest first, beginning with the one you download here.
   changelog_latest: Latest release
   changelog_full: Full changelog on GitHub
   changelog_hint: Click to scroll
@@ -499,7 +499,7 @@ vi:
   nav_kiosk: Tiệm in
   nav_changelog: Có gì mới
   changelog_title: Có gì mới
-  changelog_lead: Mọi thay đổi, mới nhất ở trên cùng (viết bằng tiếng Anh). "Unreleased" là những gì bản tiếp theo sẽ có.
+  changelog_lead: Mọi phiên bản đã phát hành, mới nhất ở trên cùng, bắt đầu từ bản bạn tải ở đây (viết bằng tiếng Anh).
   changelog_latest: Bản phát hành mới nhất
   changelog_full: Changelog đầy đủ trên GitHub
   changelog_hint: Bấm để cuộn
