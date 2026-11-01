@@ -13,6 +13,13 @@
 
 ## 2026-11-01
 
+### The APT repository's first real run copied a folder into itself (ADR-0035)
+
+- **Seen:** the first website build after v0.8.2 failed in *APT repository*: `cp: cannot copy a directory, '.', into itself, '_site/apt/.'`. Every earlier build had skipped the step, since no release had a `.deb` yet.
+- **Why:** `apt-repo.sh` took its output folder as given (`_site/apt`, relative), then `cd` into its temporary folder to build; the relative path then pointed inside that folder.
+- **Fix:** the script makes the output path absolute before it changes folder.
+- **Rule:** a script that changes folder resolves its path arguments first. A step that only runs once a release exists is run by hand before that release (here, against a test release or a local `.deb`), or its first real run is the test.
+
 ### A bare container is not a desktop: the first v0.8.2 run stopped on its own smoke test (ADR-0034)
 
 - **Seen:** the arm64 build passed on Ubuntu 22.04, then the AppImage exited with 127 in `debian:12`: `libfontconfig.so.1: cannot open shared object file`. The failed job cancelled the other three, so nothing was released.

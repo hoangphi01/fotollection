@@ -10,6 +10,10 @@
 set -euo pipefail
 
 out=${1:?usage: apt-repo.sh <output-dir>}
+# Absolute now: the script works in a temporary folder below, and a relative path would
+# then point inside it (LESSONS 2026-11-01).
+mkdir -p "$out"
+out=$(cd "$out" && pwd)
 if [ -z "${APT_GPG_PRIVATE_KEY:-}" ]; then
   echo "apt-repo: no APT_GPG_PRIVATE_KEY, skipped"
   exit 0
@@ -51,6 +55,5 @@ gpg --batch --yes --armor --detach-sign -o dists/stable/Release.gpg dists/stable
 # The key apt checks with (`signed-by`), in the binary form /usr/share/keyrings expects.
 gpg --batch --export > fotollection.gpg
 
-mkdir -p "$out"
 cp -R . "$out/"
 echo "apt-repo: $(find pool -name '*.deb' | wc -l | tr -d ' ') packages signed into $out"
