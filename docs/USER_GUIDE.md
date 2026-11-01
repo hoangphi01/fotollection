@@ -389,7 +389,7 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
 2. The photos are paired in order, 1 + 2, 3 + 4…, and each sheet shows as it will print. An odd last photo leaves the other half white.
 3. **Sheet size**: the print size, 10 × 15 for example; Original is not offered, as a sheet needs a fixed size. The sheet is split in half across its long edge and turns to suit its first photo: two landscape photos one above the other, or two portrait photos side by side. The **turn** button on a sheet, or **R**, turns it the other way.
 4. **Two photos per sheet**:
-   - **Fill each half**: no white at all. Each photo fills its half (7.5 × 10 on a 10 × 15) and the two meet edge to edge; crop each photo (step 7) to choose what stays, by dragging and zooming. The settings below are then hidden.
+   - **Fill each half**: no white at all. Each photo fills its half (7.5 × 10 on a 10 × 15) and the two meet edge to edge; crop each photo (step 7) to choose what stays, by dragging and zooming. The settings below, the cut line included, are then hidden.
    - **Photo ratio**: each photo's own (**Photo**), the sheet's (**Sheet**, 2:3 on a 10 × 15), **4:3** or **1:1**. The rest of the half stays white.
    - **Photo size**: the app suggests the largest size that leaves 5 mm of white round the photo, for example 6 × 9 cm for a 2:3 photo in a 7.5 × 10 half. Type another size if you like; with the **lock** on, one edge gives the other. **Use the suggestion** goes back.
    - **Cut line**: a thin line between the photos, to cut the print in two. Off, there is no line, and the photos keep the white between them.

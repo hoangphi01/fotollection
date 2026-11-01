@@ -482,8 +482,10 @@ pub fn render_sheet(
             cy.round().max(0.0) as u32,
         );
     }
-    // A sheet with one photo has nothing to cut apart.
-    if settings.collage.cut_line && sheet.cells.iter().all(Option::is_some) {
+    // A sheet with one photo has nothing to cut apart, and filled halves meet at an edge
+    // that needs no line.
+    let collage = &settings.collage;
+    if collage.cut_line && !collage.fill && sheet.cells.iter().all(Option::is_some) {
         draw_cut_line(&mut canvas, &sheet, density);
     }
     Ok(canvas)
@@ -721,7 +723,7 @@ mod tests {
             ..RenderSettings::default()
         };
         settings.stamp.enabled = false;
-        settings.collage.cut_line = false;
+        // The cut line stays on: filled halves draw none.
         let source = |image| CellSource {
             image,
             capture: None,
@@ -748,6 +750,11 @@ mod tests {
             at(998, 1497),
             [200, 30, 30],
             "the second photo reaches its corner"
+        );
+        assert_eq!(
+            at(500, 750),
+            [200, 30, 30],
+            "no cut line between filled halves"
         );
         Ok(())
     }

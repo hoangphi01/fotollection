@@ -357,3 +357,12 @@ Measured while building FR-035 with `crates/core/examples/measure_sheet.rs`, REF
 
 - **The sheet is cheaper than its two photos** because it is smaller: at 600 DPI, a 10 × 15 sheet is 2362 × 3543 px (8.4 MP, 2.8 MB), while each photo alone exports at its full 26 MP. Decoding the two photos costs the same either way, so it is left out of both columns.
 - The 600 DPI cap of ADR-0032 is twice what a lab prints at; it keeps the files small without a visible loss on paper.
+
+**The grid after a change of setting** (`crates/core/examples/measure_sheet_grid.rs`, 2026-11-01): ten sheets of twenty demo photos at the grid's 640 px.
+
+| Source of each sheet's photos | First pass | After a change |
+|------|-----:|-----:|
+| The 2048 px preview sources (cache of 8 photos) | 4,095 ms | 4,088 ms |
+| The photos' T1 thumbnails (cache of 64) | 42 ms | **29 ms** |
+
+The preview sources missed every time: twenty photos do not fit a cache of eight, so each sheet decoded its two 26 MP photos again, about 200 ms each. A grid tile needs a few hundred pixels, which the thumbnail already has.

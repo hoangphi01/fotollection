@@ -79,6 +79,7 @@ fn main() {
                 [Some((&a, None)), Some((&b, None))],
                 &settings,
                 PREVIEW_LONG_EDGE,
+                None,
                 codec.as_ref(),
             )
             .unwrap()

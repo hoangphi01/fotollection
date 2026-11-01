@@ -274,6 +274,9 @@ pub fn sheet_bytes(state: &AppState, sheet: SheetPair, small: bool) -> Result<Ve
         crate::state::place_for(r, &names, settings.place_format)
     };
     let (place_a, place_b) = (place(&first), second.as_ref().and_then(place));
+    // The grid's sheets come from the photos' thumbnails: no photo is decoded again when a
+    // setting changes (FR-035, OPTIMIZATION §5).
+    let thumbnail = |r: &fotollection_core::library::PhotoRecord| state.thumbs.cached_t1(r);
     state
         .previews
         .render_sheet_jpeg(
@@ -283,6 +286,7 @@ pub fn sheet_bytes(state: &AppState, sheet: SheetPair, small: bool) -> Result<Ve
             ],
             &settings,
             if small { SMALL_SHEET } else { LARGE_SHEET },
+            small.then_some(&thumbnail as &dyn Fn(&_) -> _),
             state.codec.as_ref(),
         )
         .map_err(|e| e.to_string())

@@ -70,6 +70,8 @@ export function CollageCellsCard({ settings, onChange, cell }: CollageCellsCardP
       </div>
       <CollageSizeFields settings={settings} onChange={onChange} cell={cell} />
       </Collapse>
+      {/* Filled halves meet at an edge: a cut line means nothing there. */}
+      <Collapse open={!fill}>
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
           <Label htmlFor={cutLineId} className="flex items-center gap-2 text-sm font-normal">
@@ -86,6 +88,7 @@ export function CollageCellsCard({ settings, onChange, cell }: CollageCellsCardP
           {t(collage?.cutLine === false ? 'collage.togetherHint' : 'collage.cutLineHint')}
         </p>
       </div>
+      </Collapse>
       {cell && (
         <p className="rounded-md bg-muted/60 px-2.5 py-2 text-xs text-muted-foreground">
           {t(settings?.border ? 'collage.adviceBorder' : 'collage.advice', {

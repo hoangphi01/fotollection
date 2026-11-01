@@ -12,6 +12,7 @@
 2. **Budgets are tests.** Once code exists, CI compares benchmark results against `bench/budgets.toml` and fails if a regression exceeds 10%.
 3. **Optimize the pipeline, not the micro-op.** Throughput comes from parallelism, avoiding redundant decodes, and bounded memory, rather than from clever loops.
 4. **Never trade correctness for speed.** Orientation, ICC profiles and stamp placement must be identical between the fast path and the slow path.
+5. **Speed is the first quality of a photo tool that works in batches.** Every change that renders many photos at once (a grid, a sheet list, an export) is measured on a full screen of them, in the build the owner uses, before it ships; a change of setting must answer at once, and anything that can take more than 200 ms shows that it is working.
 
 ## 2. Why native Rust instead of a web app
 
@@ -87,7 +88,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [NFR-013](PRD.md#nfr-013--project-safety) | Edit-to-disk latency; project save time for 10,000 photos | ≤ 5 s; < 50 ms | `bench_project_save`, kill-during-write test |
 | [NFR-014](PRD.md#nfr-014--best-shot-analysis-speed) | Best-shot analysis per photo, 8 cores in parallel | ≤ 20 ms; ≤ 40 ms with faces | `bench_culling` on the `bench` corpus |
 | [NFR-015](PRD.md#nfr-015--normal-mode-speed) | Simple-mode export (after v0.9.0) to 10×15 @ 300 DPI, q90; first screen of 1,000 photos | ≥ 3× Professional (≥ 50 photos/s); < 0.5 s | `measure_folder` with a Simple-mode flag, same folders as `bench/run.sh` |
-| [NFR-021](PRD.md#nfr-021--collage-sheet-speed) | Collage sheet preview; sheet export | ≤ 2× NFR-002; ≤ its two photos exported alone | `measure_sheet` (`crates/core/examples/measure_sheet.rs`), two 26 MP demo photos |
+| [NFR-021](PRD.md#nfr-021--collage-sheet-speed) | Collage sheet preview; sheet export; the grid after a change of setting | ≤ 2× NFR-002; ≤ its two photos exported alone; ten sheets < 100 ms | `measure_sheet` and `measure_sheet_grid` (`crates/core/examples/`), 26 MP demo photos |
 
 ### Reference machines
 
@@ -120,6 +121,7 @@ The preview renders the same `RenderPlan` as the export ([ARCHITECTURE.md §4](A
 - Crop before any per-pixel work, so only the pixels that survive are processed.
 - For **crop-only** JPEG output (no stamp), use a lossless DCT-domain crop (`tjTransform`). This is faster and gives zero quality loss.
 - Memoize geocoding per ~1 km grid cell. A trip of 800 photos needs only tens of lookups.
+- **Render a grid from thumbnails, never from the photos.** A tile only needs a few hundred pixels: the Collage grid's sheets come from each photo's cached T1 (400 px), kept for 64 photos, so a change of setting renders ten sheets in 29 ms instead of 4 s, when each sheet decoded its two photos again (§5, 2026-11-01). The large preview keeps the 2048 px sources.
 
 ### 4.3 Parallelism and back-pressure
 
@@ -192,6 +194,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-10-27 | ADR-0030 (FR-016, NFR-004) | REF-MAC (M3) | `measure_rawler` + `raw_memory` + `raw_phases` + `raw_compare.py`: Ricoh GR III DNG, our own decoder against rawler and ImageIO, finished to the embedded JPEG, median of 3 | develop 355 ms (rawler 640, ImageIO 554) · peak 526 MB (1.33 GB, 668 MB) · ΔE2000 to the JPEG 2.67 (4.08, 5.22) · SSIM to ImageIO 0.976 · lossless JPEG 241 → 109 ms (Huffman table), demosaic 179 → 34 ms (padded buffer), finish 123 → 48 ms (encode table) | DNG through our own decoder first. RESULT §16 |
 | 2026-10-27 | FR-031, NFR-020 | REF-MAC (M3) | `measure_borrow`: 1,000 camera + 1,000 phone photos, signatures precomputed, median of 5 | same scenes 2,338 → 56 ms (stop at the first sure match and zoom) · worst case (same colours, other layout) 2,265 → 1,113 ms with 4 donors instead of 8 | NFR-020 met. RESULT §17 |
 | 2026-10-31 | FR-035, NFR-021 | REF-MAC (M3) | `measure_sheet`: two 26 MP demo photos on a 10 × 15 sheet against each alone, median of 5 | preview warm 24 ms (17 + 19 ms alone) · export render + encode 214 ms (302 + 331 ms alone); sheet 2362 × 3543 px at the 600 DPI cap | NFR-021 met. Swap high but steady. RESULT §18 |
+| 2026-11-01 | FR-035, NFR-021 | REF-MAC (M3) | `measure_sheet_grid`: the Collage grid, 10 sheets of 20 demo photos at 640 px, rendered again after a change of setting, median of 3 | from the preview sources 4,088 ms (409 ms a sheet: the 8-photo source cache cannot hold 20, so each sheet decoded its two 26 MP photos again; the owner saw about 5 s in the app) → from the T1 thumbnails 29 ms (2.9 ms a sheet), first pass 42 ms | 140× faster; the grid renders from thumbnails (§4.2). Release and dev builds measured alike (the core is `opt-level = 3` in dev) |
 
 ### 5.1 Planned measurements
 

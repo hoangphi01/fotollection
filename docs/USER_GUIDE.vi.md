@@ -387,7 +387,7 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 2. Các ảnh được ghép theo thứ tự, 1 + 2, 3 + 4…, và mỗi tấm hiện đúng như khi in. Ảnh lẻ cuối cùng để nửa kia trắng.
 3. **Khổ tấm in**: khổ in, ví dụ 10 × 15; khổ Gốc không có ở đây, vì tấm ghép cần một khổ cố định. Tấm được chia đôi theo cạnh dài và xoay theo ảnh đầu tiên: hai ảnh ngang thì trên dưới, hai ảnh dọc thì cạnh nhau. Nút **xoay** trên mỗi tấm, hoặc phím **R**, xoay tấm sang hướng kia.
 4. **Hai ảnh mỗi tấm**:
-   - **Lấp đầy mỗi nửa**: không lề trắng. Mỗi ảnh phủ kín nửa tấm (7,5 × 10 với tấm 10 × 15) và hai ảnh giáp cạnh nhau; cắt từng ảnh (bước 7) để chọn phần được giữ, bằng cách kéo và phóng to. Các thiết lập bên dưới khi đó được ẩn.
+   - **Lấp đầy mỗi nửa**: không lề trắng. Mỗi ảnh phủ kín nửa tấm (7,5 × 10 với tấm 10 × 15) và hai ảnh giáp cạnh nhau; cắt từng ảnh (bước 7) để chọn phần được giữ, bằng cách kéo và phóng to. Các thiết lập bên dưới, cả đường cắt, khi đó được ẩn.
    - **Tỷ lệ ảnh**: tỷ lệ gốc của từng ảnh (**Ảnh**), tỷ lệ của tấm (**Tấm**, 2:3 với 10 × 15), **4:3** hoặc **1:1**. Phần còn lại của nửa tấm để trắng.
    - **Cỡ ảnh**: app gợi ý cỡ lớn nhất còn chừa 5 mm trắng quanh ảnh, ví dụ 6 × 9 cm cho ảnh 2:3 trong nửa tấm 7,5 × 10. Bạn có thể gõ cỡ khác; khi **khoá** tỷ lệ, nhập một cạnh thì cạnh kia tự tính. **Dùng gợi ý** để quay lại.
    - **Đường cắt**: một nét mảnh giữa hai ảnh, để cắt tấm in làm đôi. Tắt đi thì không có nét cắt, và hai ảnh vẫn giữ khoảng trắng giữa chúng.

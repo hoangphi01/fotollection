@@ -24,6 +24,11 @@ pub const PREVIEW_LONG_EDGE: u32 = 1600;
 const PREVIEW_QUALITY: u8 = 85;
 /// About 12.5 MB each at 2048×1365, so the cache stays near 100 MB.
 const CAPACITY: usize = 8;
+/// Small sources kept for the collage grid: about 0.3 MB each, so 64 photos (32 sheets, more
+/// than a grid shows) cost about 20 MB (FR-035, NFR-021).
+const SMALL_CAPACITY: usize = 64;
+/// The long edge of a small source made from the full photo when it has no thumbnail yet.
+const SMALL_LONG_EDGE: u32 = crate::thumbs::T1_LONG_EDGE;
 /// Full-resolution sources kept for zoom: two 32 MP photos (97 MB each, RESULT §11). The
 /// photo being looked at always stays, whatever its size.
 const FULL_BUDGET_BYTES: usize = 200_000_000;
@@ -92,11 +97,16 @@ fn take_cached(
     Some(image)
 }
 
+/// Gives a photo's T1 thumbnail JPEG, when it has one (the thumbnail cache).
+pub type Thumbnail<'a> = dyn Fn(&PhotoRecord) -> Option<Vec<u8>> + 'a;
+
 #[derive(Default)]
 pub struct PreviewCache {
     entries: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
     /// Upright originals, decoded only for zoom; bounded by `FULL_BUDGET_BYTES`.
     full: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
+    /// Small upright sources for the collage grid's sheets, from the photos' thumbnails.
+    small: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
 }
 
 impl PreviewCache {
@@ -113,6 +123,41 @@ impl PreviewCache {
         if let Ok(mut full) = self.full.lock() {
             full.clear();
         }
+        if let Ok(mut small) = self.small.lock() {
+            small.clear();
+        }
+    }
+
+    /// A small upright source for a sheet in the collage grid (FR-035): the photo's thumbnail
+    /// (`thumbnail` gives its T1 JPEG, upright by EXIF), turned by the user's quarter turns;
+    /// without one, the preview source made small. Kept for `SMALL_CAPACITY` photos, so a
+    /// change of setting renders the grid again without decoding a single photo.
+    fn small_source(
+        &self,
+        record: &PhotoRecord,
+        thumbnail: &Thumbnail<'_>,
+        codec: &dyn JpegCodec,
+    ) -> Result<Arc<RgbImage>, ThumbError> {
+        let key = (record.id, record.display_orientation());
+        if let Some(image) = take_cached(&self.small, key) {
+            return Ok(image);
+        }
+        let image = match thumbnail(record) {
+            Some(bytes) => {
+                let decoded = decode_image(codec, &bytes)?;
+                let turns = crate::image::compose_orientation(1, record.edits.rotation);
+                apply_orientation(decoded.image, turns)
+            }
+            None => fit_long_edge(self.source(record, codec)?.as_ref(), SMALL_LONG_EDGE)?,
+        };
+        let image = Arc::new(image);
+        if let Ok(mut small) = self.small.lock() {
+            if small.len() >= SMALL_CAPACITY {
+                small.remove(0);
+            }
+            small.push((key, Arc::clone(&image)));
+        }
+        Ok(image)
     }
 
     fn source(
@@ -228,18 +273,23 @@ impl PreviewCache {
     }
 
     /// A collage sheet's preview JPEG (FR-035): both photos from their cached sources,
-    /// the sheet's long edge at most `long_edge`. Each photo comes with its place.
+    /// the sheet's long edge at most `long_edge`. Each photo comes with its place. With
+    /// `thumbnail`, for the grid's small sheets, the photos come from their thumbnails.
     pub fn render_sheet_jpeg(
         &self,
         photos: [Option<(&PhotoRecord, Option<&str>)>; 2],
         settings: &RenderSettings,
         long_edge: u32,
+        thumbnail: Option<&Thumbnail<'_>>,
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
         let mut images = [None, None];
         for (slot, photo) in images.iter_mut().zip(&photos) {
             if let Some((record, _)) = photo {
-                *slot = Some(self.source(record, codec)?);
+                *slot = Some(match thumbnail {
+                    Some(thumbnail) => self.small_source(record, thumbnail, codec)?,
+                    None => self.source(record, codec)?,
+                });
             }
         }
         let mut sources = [None, None];
