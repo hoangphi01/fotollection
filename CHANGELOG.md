@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.3] - 2026-11-01 — Export what you ticked
+
 ### Highlights
 
 - Fixed: with photos ticked, Export now writes only those photos and says how many
