@@ -249,6 +249,7 @@
     "buttonCount_other": "Xuất {{count}} ảnh",
     "buttonTicked_other": "Xuất {{count}} ảnh đã chọn",
     "buttonSheets_other": "Xuất {{count}} tấm",
+    "buttonSheetsTicked_other": "Xuất {{count}} tấm đã chọn",
     "filteredHint": "Chỉ xuất những ảnh đang hiện theo bộ lọc thư viện.",
     "target": {
       "print": "In ảnh",
@@ -506,6 +507,7 @@
     "done": "Xong",
     "hint": "Tích ảnh để cho vào giỏ in hoặc để riêng; giữ Space trên một ảnh để xem nhanh",
     "count_other": "Đã chọn {{count}} ảnh",
+    "countSheets_other": "Đã chọn {{count}} tấm",
     "elsewhere_other": "trong đó {{count}} ảnh ở thư mục khác",
     "toBasket": "Giỏ in",
     "toAside": "Để riêng",

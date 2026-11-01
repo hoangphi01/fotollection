@@ -263,6 +263,8 @@
     "buttonTicked_other": "Export {{count}} selected photos",
     "buttonSheets_one": "Export {{count}} sheet",
     "buttonSheets_other": "Export {{count}} sheets",
+    "buttonSheetsTicked_one": "Export {{count}} selected sheet",
+    "buttonSheetsTicked_other": "Export {{count}} selected sheets",
     "filteredHint": "Only the photos the library filter shows are exported.",
     "target": {
       "print": "Print",
@@ -525,6 +527,8 @@
     "hint": "Tick photos for the print basket or to set aside; hold Space over a photo to look at it",
     "count_one": "{{count}} photo selected",
     "count_other": "{{count}} photos selected",
+    "countSheets_one": "{{count}} sheet selected",
+    "countSheets_other": "{{count}} sheets selected",
     "elsewhere_one": "{{count}} of them in another folder",
     "elsewhere_other": "{{count}} of them in other folders",
     "toBasket": "Print basket",

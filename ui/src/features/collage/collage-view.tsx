@@ -6,8 +6,9 @@ import type { ExportApi } from '@/features/export/use-export'
 import { formatNumber } from '@/lib/format'
 import { SelectModeButton } from '@/features/library/select-mode-button'
 import { SelectionBar } from '@/features/library/selection-bar'
-import { useSelectMode } from '@/features/library/use-select-mode'
+import type { SelectModeApi } from '@/features/library/use-select-mode'
 import { DatePlaceDialog } from '@/features/places/date-place-dialog'
+import { tickedSheets } from './sheet-cells'
 import { SheetGrid } from './sheet-grid'
 import { SheetPreviewDialog } from './sheet-preview-dialog'
 import type { CollageApi } from './use-collage'
@@ -23,6 +24,8 @@ type CollageViewProps = {
   customStamps: number
   revision: number
   generation: number
+  /** Select mode, shared with the panel so Export follows the ticked sheets (FR-050). */
+  select: SelectModeApi
 }
 
 /**
@@ -39,10 +42,10 @@ export function CollageView({
   customStamps,
   revision,
   generation,
+  select,
 }: CollageViewProps) {
   const { t } = useTranslation()
   const [viewing, setViewing] = useState(false)
-  const select = useSelectMode(photos)
   const [datePlaceIds, setDatePlaceIds] = useState<PhotoId[] | null>(null)
   const { sheets, index } = collage
   const view = filter.queue ?? 'gallery'
@@ -64,12 +67,14 @@ export function CollageView({
           {t('collage.count', { count: sheets.length, sheets: formatNumber(sheets.length), photos: formatNumber(photos.length) })}
         </span>
         <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{t('collage.keysHint')}</span>
-        {/* Select mode (FR-050): tick photos for the basket or to set aside, as in the gallery. */}
+        {/* Select mode (FR-050): tick sheets, both photos at once, for the basket, to set aside
+            or to export. */}
         <SelectModeButton select={select} />
       </div>
       {select.active && (
         <SelectionBar
-          count={select.checked.size}
+          count={tickedSheets(sheets, select.checked)}
+          unit="sheets"
           elsewhere={select.checked.size - photos.filter((p) => select.checked.has(p.id)).length}
           view={view}
           onMove={select.move}
@@ -88,7 +93,7 @@ export function CollageView({
         selectMode={select.active}
         checked={select.checked}
         inBasket={(photo) => queueOf.get(photo) === 'print'}
-        onToggle={select.toggleId}
+        onToggle={(sheet) => select.toggleGroup(sheet.second === null ? [sheet.first] : [sheet.first, sheet.second])}
         onToggleAll={select.tickAll}
         onSelect={collage.select}
         onOpen={(sheet, cell) => {

@@ -21,13 +21,13 @@ type SheetTileProps = {
   /** The photo being dragged, and the cell under the pointer (`null` for an empty one). */
   dragging: PhotoId | null
   over: PhotoId | null | undefined
-  /** Select mode (FR-050): a click ticks a photo instead of choosing it; no dragging. */
+  /** Select mode (FR-050): a click ticks the whole sheet, both photos; no dragging. */
   selectMode: boolean
   checked: ReadonlySet<number>
   /** Photos in the print basket, badged like the gallery's. */
   inBasket: (photo: PhotoId) => boolean
   onSelect: (cell: 0 | 1) => void
-  onToggle: (photo: PhotoId) => void
+  onToggle: () => void
   onOpen: (cell: 0 | 1) => void
   onTurn: () => void
   onDragStart: (photo: PhotoId, event: PointerEvent) => void
@@ -58,6 +58,7 @@ export function SheetTile({
   const { t } = useTranslation()
   const src = sheetUrl(sheet.first, sheet.second, revision, true)
   const shape = useSheetShape(src)
+  const ticked = checked.has(sheet.first) && (sheet.second === null || checked.has(sheet.second))
 
   return (
     <div
@@ -73,7 +74,7 @@ export function SheetTile({
       {!shape.loaded && (
         <LoaderCircle className="absolute inset-0 m-auto size-5 animate-spin text-muted-foreground" />
       )}
-      <div className="relative">
+      <div className={cn('relative rounded-sm', selectMode && ticked && 'ring-[3px] ring-primary')}>
         <img
           src={src}
           alt={t('collage.sheetLabel')}
@@ -97,19 +98,16 @@ export function SheetTile({
               )}
               onPointerDown={(e) => {
                 onSelect(cell)
-                if (photo === null) return
-                if (selectMode) onToggle(photo)
-                else onDragStart(photo, e)
+                if (selectMode) onToggle()
+                else if (photo !== null) onDragStart(photo, e)
               }}
               onDoubleClick={() => photo !== null && !selectMode && onOpen(cell)}
             >
               {photo !== null && inBasket(photo) && <BasketBadge className="absolute top-1 right-1" />}
-              {selectMode && photo !== null && (
-                <TickCircle checked={checked.has(photo)} className="absolute right-1 bottom-1" />
-              )}
             </div>
           )}
         </SheetCellsOverlay>
+        {selectMode && <TickCircle checked={ticked} className="pointer-events-none absolute right-1.5 bottom-1.5" />}
       </div>
       <Button
         variant="secondary"

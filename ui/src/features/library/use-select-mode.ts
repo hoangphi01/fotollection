@@ -31,6 +31,17 @@ export function useSelectMode(photos: readonly { id: PhotoId }[], isBlocked: () 
     [photos, anchor],
   )
   const toggleId = (id: PhotoId) => toggle(photos.findIndex((p) => p.id === id))
+  /** Ticks or unticks photos together, as one collage sheet (FR-035): all ticked → none. */
+  const toggleGroup = (ids: readonly PhotoId[]) =>
+    setChecked((prev) => {
+      const next = new Set(prev)
+      const all = ids.every((id) => next.has(id))
+      for (const id of ids) {
+        if (all) next.delete(id)
+        else next.add(id)
+      }
+      return next
+    })
   // Ticks in other folder tabs stay (FR-056).
   const tickAll = () => setChecked((prev) => new Set([...prev, ...photos.map((p) => p.id)]))
   const clear = () => setChecked(new Set())
@@ -73,6 +84,7 @@ export function useSelectMode(photos: readonly { id: PhotoId }[], isBlocked: () 
     anchor,
     toggle,
     toggleId,
+    toggleGroup,
     tickAll,
     clear,
     reset,

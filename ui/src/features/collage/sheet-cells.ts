@@ -15,3 +15,8 @@ export function sheetOrder(sheets: SheetPair[]): { photo: PhotoId; sheet: number
     sheetCells(s).flatMap(([photo, cell]) => (photo === null ? [] : [{ photo, sheet, cell }])),
   )
 }
+
+/** The sheets whose every photo is ticked: a sheet is ticked as a whole (FR-035). */
+export function tickedSheets(sheets: readonly SheetPair[], checked: ReadonlySet<PhotoId>): number {
+  return sheets.filter((s) => checked.has(s.first) && (s.second === null || checked.has(s.second))).length
+}

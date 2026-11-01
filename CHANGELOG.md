@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Collage:** select mode ticks whole sheets, both photos at once, with one tick on each sheet; the bar counts sheets, and Export writes only the ticked sheets (*Export 2 selected sheets*).
 - **Collage:** *Rotate photo* turns only the photo in its half; the sheet no longer turns with it when the photo is the sheet's first.
 - **Export with ticked photos:** while photos are ticked in select mode, the export button says *Export 3 selected photos* and writes only those, instead of every photo shown (user feedback).
 - **3 mm border:** photos exported for social media no longer get it; Pro's photo preview shows the switch again; the size badges and the DPI follow the photo inside the border; dragging the photo in the preview keeps pace with the pointer.

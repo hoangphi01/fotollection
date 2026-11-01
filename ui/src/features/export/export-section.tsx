@@ -26,7 +26,8 @@ type ExportSectionProps = {
   revision: number
   /** Collage sheets the photos make, when they go out two to a print (FR-035). */
   sheets?: number
-  /** Photos ticked in select mode: when there are some, only they go out (FR-050). */
+  /** Photos ticked in select mode: when there are some, only they go out (FR-050); in
+   * Collage, the photos of the ticked sheets, with `sheets` counting those sheets. */
   ticked?: readonly PhotoId[]
 }
 
@@ -52,7 +53,7 @@ export function ExportSection({
   const single = only !== undefined
   const [separate, setSeparate] = useState(false)
   const collage = sheets !== undefined
-  const picked = single || collage ? NO_TICKS : ticked
+  const picked = single ? NO_TICKS : ticked
   const count = picked.length > 0 ? picked.length : photoCount
   const canSplit = !single && !collage && folderCount > 1
   const running = state.kind === 'running'
@@ -196,7 +197,7 @@ export function ExportSection({
           {single
             ? t(collage ? 'export.buttonThisSheet' : 'export.buttonThis')
             : sheets !== undefined && sheets > 0
-              ? t('export.buttonSheets', { count: sheets })
+              ? t(picked.length > 0 ? 'export.buttonSheetsTicked' : 'export.buttonSheets', { count: sheets })
               : picked.length > 0
               ? t('export.buttonTicked', { count })
               : photoCount > 0

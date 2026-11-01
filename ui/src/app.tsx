@@ -44,6 +44,7 @@ import { useAppMode } from '@/features/modes/use-app-mode'
 import { useModeShortcuts } from '@/features/modes/use-mode-shortcuts'
 import { CollagePanel } from '@/features/collage/collage-panel'
 import { CollageView } from '@/features/collage/collage-view'
+import { tickedSheets } from '@/features/collage/sheet-cells'
 import { useCollage } from '@/features/collage/use-collage'
 import { SimplePanel } from '@/features/simple/simple-panel'
 import { SimpleView } from '@/features/simple/simple-view'
@@ -255,6 +256,7 @@ export function App() {
             customStamps={customStamps}
             revision={revision}
             generation={project.document.generation}
+            select={select}
           />
         ) : simple ? (
           <SimpleView
@@ -442,6 +444,8 @@ export function App() {
           filter={viewFilter}
           photoCount={photos.length}
           sheetCount={collage.sheets.length}
+          ticked={selectMode ? select.ordered : undefined}
+          tickedSheets={selectMode ? tickedSheets(collage.sheets, select.checked) : 0}
           cell={collage.cell}
           customStamps={customStamps}
           revision={revision}

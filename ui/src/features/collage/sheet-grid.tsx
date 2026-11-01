@@ -20,11 +20,11 @@ type SheetGridProps = {
   generation: number
   selected: number
   selectedCell: 0 | 1
-  /** Select mode (FR-050), as in the gallery: clicks tick photos, Enter ticks the chosen one. */
+  /** Select mode (FR-050): a click ticks a whole sheet, Enter the chosen one. */
   selectMode: boolean
   checked: ReadonlySet<number>
   inBasket: (photo: PhotoId) => boolean
-  onToggle: (photo: PhotoId) => void
+  onToggle: (sheet: SheetPair) => void
   onToggleAll: () => void
   onSelect: (sheet: number, cell: 0 | 1) => void
   /** Opens the sheet's preview, on one of its photos. */
@@ -146,9 +146,9 @@ export function SheetGrid({
     } else if (row !== 0) {
       event.preventDefault()
       onSelect(Math.min(sheets.length - 1, Math.max(0, selected + row)), 0)
-    } else if (selectMode && event.key === 'Enter' && cells[at]) {
+    } else if (selectMode && event.key === 'Enter' && sheet) {
       event.preventDefault()
-      onToggle(cells[at].photo)
+      onToggle(sheet)
     } else if (selectMode && event.key.toLowerCase() === 'a' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault()
       onToggleAll()
@@ -190,7 +190,7 @@ export function SheetGrid({
                   selectMode={selectMode}
                   checked={checked}
                   inBasket={inBasket}
-                  onToggle={onToggle}
+                  onToggle={() => onToggle(sheet)}
                   dragging={drag?.moved ? drag.photo : null}
                   over={over}
                   onSelect={(cell) => onSelect(index, cell)}

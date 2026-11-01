@@ -792,7 +792,7 @@ fn export_records(
 }
 
 /// What an export covers: its photos and, with `sheets`, their collage sheets (FR-035).
-/// Sheets follow the view: ticks choose photos, not sheets.
+/// With ticks, only the sheets holding a ticked photo: Collage ticks whole sheets.
 fn export_scope(
     library: &fotollection_core::library::Library,
     filter: &CullFilter,
@@ -804,11 +804,17 @@ fn export_scope(
     Vec<fotollection_core::export::SheetRecords>,
 ) {
     let pairs = if sheets {
-        sheet_records(library, filter, only)
+        let mut pairs = sheet_records(library, filter, only);
+        if only.is_none() && !ticked.is_empty() {
+            let picked: HashSet<PhotoId> = ticked.iter().copied().collect();
+            pairs.retain(|(a, b)| {
+                picked.contains(&a.id) || b.as_ref().is_some_and(|b| picked.contains(&b.id))
+            });
+        }
+        pairs
     } else {
         Vec::new()
     };
-    let ticked = if sheets { &[][..] } else { ticked };
     (export_records(library, filter, only, ticked), pairs)
 }
 

@@ -2,7 +2,7 @@
 import { useTranslation } from 'react-i18next'
 import { PanelFooter } from '@/features/about/panel-footer'
 import { SidePanel } from '@/components/layout/side-panel'
-import type { CellInfo, CullFilter, RenderSettings } from '@/ipc/bindings'
+import type { CellInfo, CullFilter, PhotoId, RenderSettings } from '@/ipc/bindings'
 import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
@@ -16,6 +16,9 @@ type CollagePanelProps = {
   filter: CullFilter
   photoCount: number
   sheetCount: number
+  /** Photos of the sheets ticked in select mode, and how many sheets: only they go out (FR-050). */
+  ticked?: readonly PhotoId[]
+  tickedSheets?: number
   /** The photo chosen on the selected sheet, for the size fields and the advice. */
   cell: CellInfo | undefined
   /** Photos with their own stamp from the preview (FR-044). */
@@ -35,6 +38,8 @@ export function CollagePanel({
   filter,
   photoCount,
   sheetCount,
+  ticked,
+  tickedSheets = 0,
   cell,
   customStamps,
   revision,
@@ -45,7 +50,7 @@ export function CollagePanel({
       title={t('collage.title')}
       footer={
         <>
-          <ExportSection exporter={exporter} photoCount={photoCount} filter={filter} revision={revision} sheets={sheetCount} />
+          <ExportSection exporter={exporter} photoCount={photoCount} filter={filter} revision={revision} sheets={tickedSheets > 0 ? tickedSheets : sheetCount} ticked={tickedSheets > 0 ? ticked : undefined} />
           <PanelFooter />
         </>
       }
