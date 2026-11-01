@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } fr
 import { useTranslation } from 'react-i18next'
 import type { PhotoId, SheetPair } from '@/ipc/bindings'
 import { thumbUrl } from '@/lib/photo-url'
+import { sheetOrder } from './sheet-cells'
 import { SheetTile } from './sheet-tile'
 
 const TILE = 248
@@ -128,12 +129,7 @@ export function SheetGrid({
   }
 
   // The photos in order, each with its sheet and cell, for ← → and ⌥/Alt ← →.
-  const cells = sheets.flatMap((s, i) =>
-    s.second === null ? [{ photo: s.first, sheet: i, cell: 0 as const }] : [
-      { photo: s.first, sheet: i, cell: 0 as const },
-      { photo: s.second, sheet: i, cell: 1 as const },
-    ],
-  )
+  const cells = sheetOrder(sheets)
   const at = cells.findIndex((c) => c.sheet === selected && c.cell === selectedCell)
 
   const onKeyDown = (event: KeyboardEvent) => {

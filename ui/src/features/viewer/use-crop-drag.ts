@@ -58,8 +58,11 @@ export function useCropDrag(photoId: number | undefined, geometry: CropGeometry 
       const g = geometry
       const start = { cx: g.crop?.cx ?? 0.5, cy: g.crop?.cy ?? 0.5, zoom: g.crop?.zoom ?? 1 }
       const crop = straightenedRect(g.width, g.height, g.targetWidth, g.targetHeight, start, g.straighten ?? 0)
-      // The photo spans the preview's width (with a frame, the bar sits below it).
-      const scale = crop.width / Math.max(1, e.target.getBoundingClientRect().width)
+      // The photo's share of the preview's width: all of it, or less inside the 3 mm border
+      // (FR-067); with a frame, the bar sits below it.
+      const [photoCm, printCm] = [g.printWidthCm ?? 0, g.outputWidthCm ?? 0]
+      const share = printCm > 0 && photoCm > 0 ? Math.min(1, photoCm / printCm) : 1
+      const scale = crop.width / Math.max(1, e.target.getBoundingClientRect().width * share)
       drag.current = { x: e.clientX, y: e.clientY, start, scale, amend: false }
       e.currentTarget.setPointerCapture(e.pointerId)
       setDragging(true)

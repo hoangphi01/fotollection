@@ -642,10 +642,11 @@
     "next": "Next photo",
     "inBasket": "Kept",
     "done": "Every photo is sorted",
-    "doneHint_one": "{{count}} photo is in the print basket. Export it from the panel on the right.",
-    "doneHint_other": "{{count}} photos are in the print basket. Export them from the panel on the right.",
+    "doneHint_one": "{{kept}} photo is in the print basket. Export it from the panel on the right.",
+    "doneHint_other": "{{kept}} photos are in the print basket. Export them from the panel on the right.",
     "exportHint_one": "Export sends the {{count}} photo you kept (the print basket).",
-    "exportHint_other": "Export sends the {{count}} photos you kept (the print basket)."
+    "exportHint_other": "Export sends the {{count}} photos you kept (the print basket).",
+    "review": "Look through them again"
   },
   "collage": {
     "title": "Collage",
@@ -677,8 +678,8 @@
     "adviceBorder": "Area {{area}}, photo {{photo}} inside the border · {{dpi}} DPI, {{quality}}",
     "empty": "No photos to put on sheets",
     "emptyHint": "Open a folder, or choose the print basket in the sidebar: its photos are paired in order, two to a sheet.",
-    "count_one": "{{count}} sheet from {{photos}} photos",
-    "count_other": "{{count}} sheets from {{photos}} photos",
+    "count_one": "{{sheets}} sheet from {{photos}} photos",
+    "count_other": "{{sheets}} sheets from {{photos}} photos",
     "keysHint": "Drag a photo onto another to swap them · ← → choose · ⌥ ← → move · Enter or double-click to preview · R turn",
     "ratioHints": {
       "photo": "Each photo keeps its own ratio",
@@ -693,6 +694,9 @@
     "photosOnSheet": "Photos on this sheet",
     "emptyCell": "Empty half",
     "originalNote": "A sheet needs a fixed size: Original is not used here, so sheets are 10 × 15. Choose a size above.",
-    "pickToCrop": "Click a photo on the sheet to crop it"
+    "pickToCrop": "Click a photo on the sheet to crop it",
+    "pairNames": "{{first}} + {{second}}",
+    "position": "{{index}} / {{count}}",
+    "by": "×"
   }
 }

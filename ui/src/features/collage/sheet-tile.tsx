@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Check, LoaderCircle, RotateCw, ShoppingBasket } from 'lucide-react'
-import { useState, type PointerEvent } from 'react'
+import { LoaderCircle, RotateCw } from 'lucide-react'
+import type { PointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import type { PhotoId, SheetPair } from '@/ipc/bindings'
 import { sheetUrl } from '@/lib/photo-url'
 import { cn } from '@/lib/utils'
+import { BasketBadge } from '@/features/library/basket-badge'
+import { TickCircle } from '@/features/library/tick-circle'
+import { SheetCellsOverlay } from './sheet-cells-overlay'
+import { useSheetShape } from './use-sheet-shape'
 
 type SheetTileProps = {
   sheet: SheetPair
@@ -53,19 +57,14 @@ export function SheetTile({
 }: SheetTileProps) {
   const { t } = useTranslation()
   const src = sheetUrl(sheet.first, sheet.second, revision, true)
-  const [loaded, setLoaded] = useState<{ src: string; sideBySide: boolean } | null>(null)
-  // The sheet's shape tells how its cells sit: side by side on a landscape sheet.
-  const sideBySide = loaded?.sideBySide ?? true
-  const cells: [PhotoId | null, 0 | 1][] = [
-    [sheet.first, 0],
-    [sheet.second, 1],
-  ]
+  const shape = useSheetShape(src)
 
   return (
     <div
       className={cn(
         'group relative flex shrink-0 items-center justify-center rounded-md bg-muted/40 p-2',
-        selected && 'ring-2 ring-primary',
+        // Framed like the gallery's selected photo (thumb-tile.tsx).
+        selected && 'ring-[3px] ring-primary ring-offset-2 ring-offset-background',
       )}
       style={{ width: size, height: size }}
     >
@@ -74,17 +73,15 @@ export function SheetTile({
           src={src}
           alt={t('collage.sheetLabel')}
           draggable={false}
-          onLoad={(e) =>
-            setLoaded({ src, sideBySide: e.currentTarget.naturalWidth >= e.currentTarget.naturalHeight })
-          }
+          onLoad={shape.onLoad}
           className="block rounded-sm object-contain shadow-md"
           style={{ maxWidth: size - 16, maxHeight: size - 16 }}
         />
-        {loaded?.src !== src && (
+        {!shape.loaded && (
           <LoaderCircle className="absolute inset-0 m-auto size-5 animate-spin text-muted-foreground" />
         )}
-        <div className={cn('absolute inset-0 flex', !sideBySide && 'flex-col')}>
-          {cells.map(([photo, cell]) => (
+        <SheetCellsOverlay sheet={sheet} sideBySide={shape.sideBySide}>
+          {(photo, cell) => (
             <div
               key={cell}
               data-cell
@@ -104,25 +101,13 @@ export function SheetTile({
               }}
               onDoubleClick={() => photo !== null && !selectMode && onOpen(cell)}
             >
-              {photo !== null && inBasket(photo) && (
-                <span className="absolute top-1 right-1 rounded bg-primary p-0.5 text-primary-foreground" aria-label={t('library.inBasket')}>
-                  <ShoppingBasket className="size-3" />
-                </span>
-              )}
+              {photo !== null && inBasket(photo) && <BasketBadge className="absolute top-1 right-1" />}
               {selectMode && photo !== null && (
-                <span
-                  className={cn(
-                    'absolute right-1 bottom-1 flex size-5 items-center justify-center rounded-full border-2 shadow',
-                    checked.has(photo) ? 'border-primary bg-primary text-primary-foreground' : 'border-white bg-black/30',
-                  )}
-                  aria-hidden
-                >
-                  {checked.has(photo) && <Check className="size-3" strokeWidth={3} />}
-                </span>
+                <TickCircle checked={checked.has(photo)} className="absolute right-1 bottom-1" />
               )}
             </div>
-          ))}
-        </div>
+          )}
+        </SheetCellsOverlay>
       </div>
       <Button
         variant="secondary"

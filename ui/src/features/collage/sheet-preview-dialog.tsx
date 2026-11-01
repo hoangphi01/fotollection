@@ -1,27 +1,34 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ChevronLeft, ChevronRight, Crop, Images, LoaderCircle, RotateCw, ShoppingBasket } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Crop, Download, Images, RotateCw, ShoppingBasket } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import { SectionCard } from '@/components/layout/section-card'
+import { InspectorSection } from '@/components/layout/inspector-section'
+import { KeyHints } from '@/components/layout/key-hints'
+import { StageSpinner } from '@/components/layout/stage-spinner'
 import { ViewerFrame } from '@/components/layout/viewer-frame'
 import { commands, type CullFilter, type PhotoId, type PhotoSummary, type Queue, type RenderSettings } from '@/ipc/bindings'
 import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
+import { DateStampCard } from '@/features/stamp/date-stamp-card'
 import { CropEditor } from '@/features/viewer/crop-editor'
 import { sendTo } from '@/features/viewer/send-to'
 import { useShownSrc } from '@/features/viewer/use-shown-src'
 import { useZoom } from '@/features/viewer/use-zoom'
 import { ZoomControls } from '@/features/viewer/zoom-controls'
-import { formatCapture } from '@/lib/format'
+import { formatCapture, formatNumber } from '@/lib/format'
 import { ownsArrowKeys } from '@/lib/keyboard'
 import { sheetUrl, sourceUrl, thumbUrl } from '@/lib/photo-url'
 import { MOD } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 import { CollageCellsCard } from './collage-cells-card'
+import { sheetCells } from './sheet-cells'
+import { SheetCellsOverlay } from './sheet-cells-overlay'
+import { SheetSizeCard } from './sheet-size-card'
 import { useCellGeometry } from './use-cell-geometry'
-import { useSheetInfo } from './use-sheet-info'
 import type { CollageApi } from './use-collage'
+import { useSheetInfo } from './use-sheet-info'
+import { useSheetShape } from './use-sheet-shape'
 
 type SheetPreviewDialogProps = {
   collage: CollageApi
@@ -32,6 +39,8 @@ type SheetPreviewDialogProps = {
   onSettingsChange: (change: (current: RenderSettings) => RenderSettings) => void
   exporter: ExportApi
   filter: CullFilter
+  /** Photos with their own stamp from the preview (FR-044). */
+  customStamps: number
   revision: number
   generation: number
   onClose: () => void
@@ -39,7 +48,9 @@ type SheetPreviewDialogProps = {
 
 /**
  * A collage sheet as it will print (FR-035), in the same frame as the photo preview: zoom,
- * the sheet's two photos with their crop, its settings, and the export of this sheet only.
+ * the same cards as the Collage panel in the same order, the export of this sheet only, then
+ * the sheet's two photos with their basket and crop. A photo's crop here is its crop on
+ * sheets, apart from its print crop.
  */
 export function SheetPreviewDialog({
   collage,
@@ -49,6 +60,7 @@ export function SheetPreviewDialog({
   onSettingsChange,
   exporter,
   filter,
+  customStamps,
   revision,
   generation,
   onClose,
@@ -56,11 +68,12 @@ export function SheetPreviewDialog({
   const { t } = useTranslation()
   const { sheets, index, sheet } = collage
   const key = sheet ? `${sheet.first}:${sheet.second}` : undefined
-  const shownSrc = useShownSrc(key, sheet ? sheetUrl(sheet.first, sheet.second, revision) : '')
+  const src = sheet ? sheetUrl(sheet.first, sheet.second, revision) : ''
+  const shownSrc = useShownSrc(key, src)
+  const shape = useSheetShape(shownSrc ?? '')
   const [stage, setStage] = useState<HTMLDivElement | null>(null)
   const [cropping, setCropping] = useState(false)
   const zoom = useZoom(stage, `${key}:${cropping}`)
-  const [sideBySide, setSideBySide] = useState(true)
   const contentRef = useRef<HTMLDivElement>(null)
   // No photo is chosen until the user picks one, so the sheet shows as it prints.
   const [picked, setPicked] = useState<{ key: string | undefined; cell: 0 | 1 } | null>(null)
@@ -71,6 +84,7 @@ export function SheetPreviewDialog({
   const cell = info?.cells.find((c) => c.id === photo) ?? info?.cells[0]
   const geometry = useCellGeometry(cropping ? photo : null, sheet, revision)
   const summary = (id: PhotoId | null) => (id === null ? undefined : photos.find((p) => p.id === id))
+  const cells = sheet ? sheetCells(sheet) : []
 
   useEffect(() => {
     if (!cropping) contentRef.current?.focus()
@@ -93,19 +107,18 @@ export function SheetPreviewDialog({
   const onKeyDown = (event: KeyboardEvent) => {
     if (cropping || ownsArrowKeys(event.target)) return
     if (zoom.onKey(event)) return
-    const key = event.key.toLowerCase()
+    const pressed = event.key.toLowerCase()
     if (event.key === 'ArrowRight') go(1)
     else if (event.key === 'ArrowLeft') go(-1)
     else if (event.key === 'ArrowUp') send('print')
     else if (event.key === 'ArrowDown') send('aside')
-    else if (key === '1' || key === '2') choose(key === '1' ? 0 : 1)
-    else if (key === 'c' && photo !== null) setCropping(true)
-    else if (key === 'r' && sheet && !event.metaKey && !event.ctrlKey) collage.turn(sheet.first)
+    else if (pressed === '1' || pressed === '2') choose(pressed === '1' ? 0 : 1)
+    else if (pressed === 'c' && photo !== null) setCropping(true)
+    else if (pressed === 'r' && sheet && !event.metaKey && !event.ctrlKey) collage.turn(sheet.first)
     else return
     event.preventDefault()
   }
-
-  const cells: [PhotoId | null, 0 | 1][] = sheet ? [[sheet.first, 0], [sheet.second, 1]] : []
+  const names = cells.flatMap(([id]) => summary(id)?.fileName ?? [])
 
   return (
     <ViewerFrame
@@ -124,22 +137,29 @@ export function SheetPreviewDialog({
         }
       }}
       stageRef={setStage}
-      title={t('collage.sheetOf', { index: index + 1, count: sheets.length })}
-      description={[summary(sheet?.first ?? null)?.fileName, summary(sheet?.second ?? null)?.fileName].filter(Boolean).join(' + ')}
+      title={t('collage.sheetOf', { index: formatNumber(index + 1), count: formatNumber(sheets.length) })}
+      description={names.length === 2 ? t('collage.pairNames', { first: names[0], second: names[1] }) : names[0]}
       footer={
-        cropping ? (
-          <>
-            <kbd className="font-mono">←</kbd> <kbd className="font-mono">→</kbd> {t('viewer.level')} · <kbd className="font-mono">Enter</kbd>{' '}
-            {t('common.done')} · <kbd className="font-mono">Esc</kbd> {t('viewer.leaveCrop')}
-          </>
-        ) : (
-          <>
-            <kbd className="font-mono">←</kbd> <kbd className="font-mono">→</kbd> {t('collage.browse')} · <kbd className="font-mono">1</kbd>{' '}
-            <kbd className="font-mono">2</kbd> {t('collage.choose')} · <kbd className="font-mono">↑</kbd> {t('viewer.upBasket')} ·{' '}
-            <kbd className="font-mono">↓</kbd> {t('viewer.downAside')} · <kbd className="font-mono">C</kbd> {t('viewer.crop')} ·{' '}
-            <kbd className="font-mono">R</kbd> {t('collage.turn')} · <kbd className="font-mono">Esc</kbd> {t('viewer.close')}
-          </>
-        )
+        <KeyHints
+          hints={
+            cropping
+              ? [
+                  { keys: ['←', '→'], label: t('viewer.level') },
+                  { keys: ['Enter'], label: t('common.done') },
+                  { keys: ['Esc'], label: t('viewer.leaveCrop') },
+                ]
+              : [
+                  { keys: ['←', '→'], label: t('collage.browse') },
+                  { keys: [`${MOD} + −`], label: t('viewer.zoom') },
+                  { keys: ['1', '2'], label: t('collage.choose') },
+                  { keys: ['↑'], label: t('viewer.upBasket') },
+                  { keys: ['↓'], label: t('viewer.downAside') },
+                  { keys: ['C'], label: t('viewer.crop') },
+                  { keys: ['R'], label: t('collage.turn') },
+                  { keys: ['Esc'], label: t('viewer.close') },
+                ]
+          }
+        />
       }
       stage={
         cropping && geometry && photo !== null ? (
@@ -150,26 +170,27 @@ export function SheetPreviewDialog({
             onCancel={() => setCropping(false)}
             onCommit={(crop, straighten) => {
               setCropping(false)
-              void commands.setPhotoCrop(photo, crop, straighten, false)
+              // The crop on sheets, apart from the print crop (FR-035).
+              void commands.setCollageCrop(photo, crop, straighten)
             }}
           />
         ) : (
           <>
-            {shownSrc ? (
+            {shownSrc && sheet ? (
               <div className="relative max-h-full max-w-full" style={{ transform: zoom.transform }}>
                 <img
                   src={shownSrc}
                   alt={t('collage.sheetLabel')}
                   draggable={false}
-                  onLoad={(e) => setSideBySide(e.currentTarget.naturalWidth >= e.currentTarget.naturalHeight)}
+                  onLoad={shape.onLoad}
                   onPointerDown={zoom.pointer.onPointerDown}
                   onPointerMove={zoom.pointer.onPointerMove}
                   onPointerUp={zoom.pointer.onPointerUp}
                   className="block max-h-[calc(90vh-4rem)] max-w-full animate-in rounded-sm object-contain shadow-2xl fade-in-0"
                 />
                 {!zoom.zoomed && (
-                  <div className={cn('absolute inset-0 flex', !sideBySide && 'flex-col')}>
-                    {cells.map(([id, c]) => (
+                  <SheetCellsOverlay sheet={sheet} sideBySide={shape.sideBySide}>
+                    {(id, c) => (
                       <button
                         key={c}
                         type="button"
@@ -183,26 +204,20 @@ export function SheetPreviewDialog({
                           setCropping(true)
                         }}
                       />
-                    ))}
-                  </div>
+                    )}
+                  </SheetCellsOverlay>
                 )}
               </div>
             ) : (
-              <div className="absolute flex flex-col items-center gap-2 text-white/60">
-                <LoaderCircle className="size-7 animate-spin" />
-                <span className="text-xs">{t('viewer.rendering')}</span>
-              </div>
+              <StageSpinner />
             )}
             <div className="absolute top-3 left-3 flex gap-1.5">
-              <Button
-                variant="secondary"
-                size="sm"
-                disabled={photo === null}
-                data-hint={photo === null ? t('collage.pickToCrop') : undefined}
-                onClick={() => setCropping(true)}
-              >
-                <Crop data-icon="inline-start" /> {t('viewer.crop')}
-              </Button>
+              {/* A disabled button gets no pointer events: its hint sits on a wrapper. */}
+              <span data-hint={photo === null ? t('collage.pickToCrop') : undefined}>
+                <Button variant="secondary" size="sm" disabled={photo === null} onClick={() => setCropping(true)}>
+                  <Crop data-icon="inline-start" /> {t('viewer.crop')}
+                </Button>
+              </span>
               <Button variant="secondary" size="sm" disabled={!sheet} onClick={() => sheet && collage.turn(sheet.first)}>
                 <RotateCw data-icon="inline-start" /> {t('collage.turn')}
               </Button>
@@ -230,7 +245,7 @@ export function SheetPreviewDialog({
               <ChevronRight />
             </Button>
             <span className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-xs text-white/80 tabular-nums">
-              {index + 1} / {sheets.length}
+              {t('collage.position', { index: formatNumber(index + 1), count: formatNumber(sheets.length) })}
             </span>
             <ZoomControls
               percent={zoom.percent}
@@ -246,14 +261,28 @@ export function SheetPreviewDialog({
         )
       }
     >
-      <SectionCard icon={<Images />} title={<span className="text-sm font-semibold">{t('collage.photosOnSheet')}</span>}>
+      {/* The same cards in the same order as the Collage panel (STYLE_RULE §4); the sheet's
+          own photos follow, as a photo's facts follow in its preview. */}
+      <SheetSizeCard settings={settings} onChange={onSettingsChange} />
+      <CollageCellsCard settings={settings} onChange={onSettingsChange} cell={cell} />
+      <DateStampCard settings={settings} onChange={onSettingsChange} customStamps={customStamps} />
+      {sheet && (
+        <InspectorSection icon={<Download className="size-4" />} title={t('export.title')}>
+          <ExportSection
+            exporter={exporter}
+            photoCount={sheet.second === null ? 1 : 2}
+            filter={filter}
+            only={sheet.first}
+            revision={revision}
+            sheets={1}
+          />
+        </InspectorSection>
+      )}
+      <InspectorSection icon={<Images className="size-4" />} title={t('collage.photosOnSheet')}>
         {cells.map(([id, c]) => {
           const p = summary(id)
           return (
-            <div
-              key={c}
-              className={cn('flex items-center gap-2.5 rounded-md p-1.5', chosen === c && p && 'bg-primary/10')}
-            >
+            <div key={c} className={cn('flex items-center gap-2.5 rounded-md p-1.5', chosen === c && p && 'bg-primary/10')}>
               {p ? (
                 <>
                   <button type="button" className="shrink-0" onClick={() => choose(chosen === c ? null : c)} aria-label={p.fileName}>
@@ -292,18 +321,7 @@ export function SheetPreviewDialog({
             </div>
           )
         })}
-      </SectionCard>
-      <CollageCellsCard settings={settings} onChange={onSettingsChange} cell={cell} />
-      {sheet && (
-        <ExportSection
-          exporter={exporter}
-          photoCount={sheet.second === null ? 1 : 2}
-          filter={filter}
-          only={sheet.first}
-          revision={revision}
-          sheets={1}
-        />
-      )}
+      </InspectorSection>
     </ViewerFrame>
   )
 }

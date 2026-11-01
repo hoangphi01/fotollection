@@ -2,6 +2,7 @@
 import { Aperture, FileImage, Gauge, LoaderCircle, Timer } from 'lucide-react'
 import { useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import { KeyHints } from '@/components/layout/key-hints'
 import { ViewerFrame } from '@/components/layout/viewer-frame'
 import { useIpcQuery } from '@/features/settings/use-ipc-query'
 import { commands, type CameraShot, type RenderSettings } from '@/ipc/bindings'
@@ -113,10 +114,12 @@ export function CaptureDialog({ capture, settings, thumbVersions, generation, on
         <ShotStrip shots={capture.shots} thumbVersions={thumbVersions} generation={generation} onOpen={onOpenShot} />
       }
       footer={
-        <>
-          <kbd className="font-mono">Space</kbd> {t('capture.shootKey')} · <kbd className="font-mono">Esc</kbd>{' '}
-          {t('capture.close')}
-        </>
+        <KeyHints
+          hints={[
+            { keys: ['Space'], label: t('capture.shootKey') },
+            { keys: ['Esc'], label: t('capture.close') },
+          ]}
+        />
       }
     >
       <CameraControls capture={capture} />

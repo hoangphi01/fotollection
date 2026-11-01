@@ -8,6 +8,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { SectionCard } from '@/components/layout/section-card'
 import type { CellInfo, CellRatio, RenderSettings } from '@/ipc/bindings'
 import { formatNumber } from '@/lib/format'
+import { dimsLabel, displayUnit } from '@/lib/print-size'
 import { CollageSizeFields } from './collage-size-fields'
 
 const RATIOS: CellRatio[] = ['photo', 'sheet', 'fourThree', 'square']
@@ -28,7 +29,7 @@ export function CollageCellsCard({ settings, onChange, cell }: CollageCellsCardP
   const collage = settings?.collage
   const setCollage = (patch: Partial<RenderSettings['collage']>) =>
     onChange((s) => ({ ...s, collage: { ...s.collage, ...patch } }))
-  const cm = (mm: number) => formatNumber(mm / 10, 1)
+  const unit = displayUnit(settings)
   // Mounted twice (panel and preview), so the switch's id must be unique.
   const cutLineId = useId()
 
@@ -72,9 +73,9 @@ export function CollageCellsCard({ settings, onChange, cell }: CollageCellsCardP
       {cell && (
         <p className="rounded-md bg-muted/60 px-2.5 py-2 text-xs text-muted-foreground">
           {t(settings?.border ? 'collage.adviceBorder' : 'collage.advice', {
-            area: `${cm(cell.areaWidthMm)} × ${cm(cell.areaHeightMm)} cm`,
-            photo: `${formatNumber((cell.photoWidthMm ?? 0) / 10, 1)} × ${formatNumber((cell.photoHeightMm ?? 0) / 10, 1)} cm`,
-            dpi: cell.dpi,
+            area: dimsLabel(cell.areaWidthMm, cell.areaHeightMm, unit),
+            photo: dimsLabel(cell.photoWidthMm ?? cell.areaWidthMm, cell.photoHeightMm ?? cell.areaHeightMm, unit),
+            dpi: formatNumber(cell.dpi),
             quality: t(`dpi.${cell.quality}`),
           })}
         </p>

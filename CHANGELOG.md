@@ -27,6 +27,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Website:** a "Three modes" section on the landing page with Collage and Simple, marked as coming in v0.9.0; every screenshot taken again with the mode switch in the sidebar.
 - **Website:** the print-basket and best-shot screenshots show a cat photographed by the author on a Lumix GX9, with a softer, a shaken and a darker copy beside it for best shot.
 
+### Fixed
+
+- **3 mm border:** photos exported for social media no longer get it; Pro's photo preview shows the switch again; the size badges and the DPI follow the photo inside the border; dragging the photo in the preview keeps pace with the pointer.
+- **Collage:** cropping a photo on a sheet no longer changes its print crop (sheets have a crop of their own); reordering in one folder keeps the others' order; a sheet's quality counts the photo's crop and straightening.
+- **Modes:** Pro's star and flag filters no longer hide photos in Simple and Collage; select mode, Quick-preview and an open preview no longer carry over to another mode; Cmd/Ctrl+1/2/3 wait while a dialog is open; "Open with" switches to Pro, where the preview is.
+- **Simple:** choose prints or social media, as in Pro; "Every photo is sorted" shows once each photo is kept or dropped, with a way to look through them again; a photo with its own date stamp can be reset from the panel.
+
 ### Changed
 
 - **Website:** "Quality" moves from the top bar to the footer, to make room for "Manual".

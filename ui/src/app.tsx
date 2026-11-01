@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { FilterX, ListChecks, OctagonX, Sparkles, Square } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { FilterX, OctagonX, Sparkles, Square } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,7 @@ import { GroupsView } from '@/features/best-shot/groups-view'
 import { useBestShots } from '@/features/best-shot/use-best-shots'
 import { CullFilterBar } from '@/features/culling/cull-filter-bar'
 import { ALL_PHOTOS } from '@/features/culling/filter'
-import { commands, events, type CullFilter, type OpenPhoto, type Queue } from '@/ipc/bindings'
+import { commands, events, type CullFilter, type OpenPhoto } from '@/ipc/bindings'
 import { LibraryEmptyState } from '@/features/library/library-empty-state'
 import { LibraryGrid } from '@/features/library/library-grid'
 import { TaskProgressBar } from '@/features/library/task-progress-bar'
@@ -38,6 +38,8 @@ import { CaptureDialog } from '@/features/capture/capture-dialog'
 import { ConnectCameraButton } from '@/features/capture/connect-camera-button'
 import { DiscardSessionDialog, type SessionChoice } from '@/features/capture/discard-session-dialog'
 import { useCapture } from '@/features/capture/use-capture'
+import { SelectModeButton } from '@/features/library/select-mode-button'
+import { useSelectMode } from '@/features/library/use-select-mode'
 import { useAppMode } from '@/features/modes/use-app-mode'
 import { useModeShortcuts } from '@/features/modes/use-mode-shortcuts'
 import { CollagePanel } from '@/features/collage/collage-panel'
@@ -57,8 +59,11 @@ export function App() {
   const simple = mode === 'simple'
   const collageMode = mode === 'collage'
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
+  // Simple and Collage follow the sidebar only (folders, basket, set aside); Pro's star and
+  // flag filters stay in Pro, where they can be seen and cleared.
+  const viewFilter: CullFilter = mode === 'professional' ? filter : { ...filter, flag: 'all', minRating: 0 }
   const { photos, total, folders, queueCounts, customStamps, thumbVersions, lastImport, error, importFolder, refresh, removeFolder } =
-    useLibrary(filter)
+    useLibrary(viewFilter)
   const { settings, revision: renderRevision, update, reload } = useRenderSettings()
   // Render and frame changes bump the same Rust counter; the newest one wins.
   const [frameRevision, setFrameRevision] = useState(0)
@@ -80,70 +85,35 @@ export function App() {
   const [relinkHiddenFor, setRelinkHiddenFor] = useState<number | null>(null)
   const revision = Math.max(renderRevision, frameRevision, history.revision)
   // Two photos on one print (FR-035): the sheets of the photos shown.
-  const collage = useCollage(filter, revision, collageMode)
+  const collage = useCollage(viewFilter, revision, collageMode)
   const [selected, setSelected] = useState(0)
   const [viewing, setViewing] = useState(false)
   // A rating or flag change can drop the current photo out of the filter; stay in range.
   const current = Math.max(0, Math.min(selected, photos.length - 1))
   // Select mode (FR-050), like the Select button on an iPhone: photos are ticked by id.
-  const [selectMode, setSelectMode] = useState(false)
-  const [checked, setChecked] = useState<ReadonlySet<number>>(new Set())
+  const [hovered, setHovered] = useState<number | null>(null)
+  // Esc closes Quick-preview first, and only then leaves select mode.
+  const select = useSelectMode(photos, () => document.querySelector('[data-quick-preview]') !== null)
+  const selectMode = select.active
   /** The ticked photos whose date and place are being set (FR-032). */
   const [datePlaceIds, setDatePlaceIds] = useState<number[] | null>(null)
-  const [anchor, setAnchor] = useState<number | null>(null)
-  const [hovered, setHovered] = useState<number | null>(null)
   // Ticks follow the user across folder tabs (FR-056), so photos from several folders can be
   // gathered in one go; any other change of view starts again with none.
   const setFilter = (next: CullFilter, keepTicks = false) => {
     setFilterState(next)
     setSelected(0)
-    if (!keepTicks) setChecked(new Set())
-    setAnchor(null)
+    if (!keepTicks) select.reset()
   }
-  const tickAll = () => setChecked((prev) => new Set([...prev, ...photos.map((p) => p.id)]))
-  const toggle = useCallback(
-    (index: number, range = false) => {
-      const id = photos[index]?.id
-      if (id === undefined) return
-      setChecked((prev) => {
-        const next = new Set(prev)
-        if (range && anchor !== null) {
-          const [a, b] = [Math.min(anchor, index), Math.max(anchor, index)]
-          for (const p of photos.slice(a, b + 1)) next.add(p.id)
-        } else if (next.has(id)) next.delete(id)
-        else next.add(id)
-        return next
-      })
-      setAnchor(index)
-    },
-    [photos, anchor],
-  )
-  const leaveSelect = () => {
-    setSelectMode(false)
-    setChecked(new Set())
-    setAnchor(null)
-  }
-  // Moves the ticked photos, in every folder tab, to the basket, aside, or back (FR-050); one
-  // undoable step.
-  const moveChecked = (queue: Queue | null) => {
-    const ids = [...checked]
-    if (ids.length > 0) void commands.setPhotoQueue(ids, queue)
-    setChecked(new Set())
-  }
-  const quick = useQuickPreview(selectMode, photos.length, hovered, anchor ?? current, toggle)
+  const quick = useQuickPreview(selectMode, photos.length, hovered, select.anchor ?? current, select.toggle)
   const quickPhoto = quick.index === null ? undefined : photos[quick.index]
-  // Esc leaves select mode, unless a dialog or Quick-preview has it first.
-  useEffect(() => {
-    if (!selectMode) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape' || quick.index !== null || document.querySelector('[role="dialog"]')) return
-      setSelectMode(false)
-      setChecked(new Set())
-      setAnchor(null)
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [selectMode, quick.index])
+  // Another mode starts clean: no select mode, no preview, no Quick-preview left over from
+  // Pro (FR-048).
+  const [shownMode, setShownMode] = useState(mode)
+  if (shownMode !== mode) {
+    setShownMode(mode)
+    setViewing(false)
+    select.leave()
+  }
 
   // Best-shot groups of the folders shown (FR-056): a group belongs to its first photo's folder.
   const scopedShots = filter.folders?.length
@@ -165,7 +135,9 @@ export function App() {
   // are listed (an older list would give the wrong index).
   const [photoRequest, setPhotoRequest] = useState<OpenPhoto | null>(null)
   useOpenWith((request) => {
-    setSelectMode(false)
+    // The photo opens in the preview, which is Pro's (FR-054, FR-048).
+    setMode('professional')
+    select.leave()
     setFilter({ ...ALL_PHOTOS, folders: [request.folder] })
     setPhotoRequest(request)
   })
@@ -181,7 +153,8 @@ export function App() {
     const folder = shot?.folder ?? capture.sessionFolder
     void capture.disconnect()
     if (folder === null) return
-    setSelectMode(false)
+    if (shot) setMode('professional')
+    select.leave()
     setFilter({ ...ALL_PHOTOS, folders: [folder] })
     if (shot) setPhotoRequest(shot)
   }
@@ -278,7 +251,8 @@ export function App() {
             settings={settings}
             onSettingsChange={(c) => void update(c)}
             exporter={exporter}
-            filter={filter}
+            filter={viewFilter}
+            customStamps={customStamps}
             revision={revision}
             generation={project.document.generation}
           />
@@ -356,29 +330,20 @@ export function App() {
               {view === 'photos' && (
                 <div className="ml-auto flex items-center gap-2">
                   {/* Select mode (FR-050): tick photos for the basket or to set aside. */}
-                  <Button
-                    variant={selectMode ? 'default' : 'outline'}
-                    size="sm"
-                    aria-pressed={selectMode}
-                    data-hint={t('select.hint')}
-                    onClick={() => (selectMode ? leaveSelect() : setSelectMode(true))}
-                  >
-                    <ListChecks data-icon="inline-start" />
-                    <span className="hidden @3xl:inline">{t(selectMode ? 'select.done' : 'select.start')}</span>
-                  </Button>
+                  <SelectModeButton select={select} />
                   <CullFilterBar filter={filter} onChange={setFilter} />
                 </div>
               )}
             </div>
             {view === 'photos' && selectMode && (
               <SelectionBar
-                count={checked.size}
-                elsewhere={checked.size - photos.filter((p) => checked.has(p.id)).length}
+                count={select.checked.size}
+                elsewhere={select.checked.size - photos.filter((p) => select.checked.has(p.id)).length}
                 view={filter.queue ?? 'gallery'}
-                onMove={moveChecked}
-                onDatePlace={() => setDatePlaceIds([...checked])}
-                onSelectAll={tickAll}
-                onClear={() => setChecked(new Set())}
+                onMove={select.move}
+                onDatePlace={() => setDatePlaceIds([...select.checked])}
+                onSelectAll={select.tickAll}
+                onClear={select.clear}
               />
             )}
             {datePlaceIds && <DatePlaceDialog ids={datePlaceIds} onClose={() => setDatePlaceIds(null)} />}
@@ -405,9 +370,9 @@ export function App() {
                 onSelect={setSelected}
                 onOpen={open}
                 selectMode={selectMode}
-                checked={checked}
-                onToggle={toggle}
-                onToggleAll={tickAll}
+                checked={select.checked}
+                onToggle={select.toggle}
+                onToggleAll={select.tickAll}
                 onHover={setHovered}
               />
             )}
@@ -420,7 +385,7 @@ export function App() {
           revision={revision}
           thumbVersion={thumbVersions[quickPhoto.id] ?? 0}
           generation={project.document.generation}
-          checked={checked.has(quickPhoto.id)}
+          checked={select.checked.has(quickPhoto.id)}
           onClose={quick.close}
         />
       )}
@@ -474,10 +439,11 @@ export function App() {
           settings={settings}
           onChange={(c) => void update(c)}
           exporter={exporter}
-          filter={filter}
+          filter={viewFilter}
           photoCount={photos.length}
           sheetCount={collage.sheets.length}
           cell={collage.cell}
+          customStamps={customStamps}
           revision={revision}
         />
       ) : simple ? (
@@ -486,6 +452,7 @@ export function App() {
           onChange={(c) => void update(c)}
           exporter={exporter}
           basketCount={queueCounts.print}
+          customStamps={customStamps}
           revision={revision}
         />
       ) : (

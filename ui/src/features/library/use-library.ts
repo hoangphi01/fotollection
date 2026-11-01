@@ -21,9 +21,13 @@ export function useLibrary(filter: CullFilter) {
   const [lastImport, setLastImport] = useState<ImportSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  // Keyed by the filter's content, not its identity: a caller may build the filter anew on
+  // every render (Simple and Collage drop Pro's star and flag filters, FR-048).
+  const key = JSON.stringify(filter)
   useEffect(() => {
+    const view = JSON.parse(key) as CullFilter
     const load = () =>
-      commands.listPhotos(filter).then((result) => {
+      commands.listPhotos(view).then((result) => {
         if (result.status === 'ok') {
           setPhotos(result.data.photos)
           setTotal(result.data.total)
@@ -42,7 +46,7 @@ export function useLibrary(filter: CullFilter) {
     return () => {
       for (const unlisten of unlisteners) void unlisten.then((fn) => fn())
     }
-  }, [filter])
+  }, [key])
 
   const importFolder = useCallback(async () => {
     setError(null)

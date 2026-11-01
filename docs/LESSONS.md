@@ -11,6 +11,15 @@
 3. **Reproduce with the user's photo when the user sees it.** A synthetic test passed while the real app was soft: unit tests prove the pixels, only the real webview proves what is shown.
 4. **Write the lesson here** before moving on.
 
+## 2026-11-01
+
+### Collage mode froze the window after one click (FR-048)
+
+- **Seen:** with the audit's "Simple and Collage ignore Pro's star and flag filters", the Collage screen drew once, then stopped answering: no click, no key, the screenshot script timed out.
+- **Why:** `app.tsx` built the filter for Simple and Collage (`{ ...filter, flag: 'all', minRating: 0 }`) anew on every render, and `useLibrary` refetched whenever the filter *object* changed. Each answer re-rendered the app, which built a new object, which refetched: an endless loop.
+- **Fix:** `useLibrary` keys its effect on the filter's content (`JSON.stringify`), as `useSheets` already did.
+- **Rule:** a hook that fetches from IPC keys its effect on the request's content (a string), never on an object a caller may rebuild.
+
 ## 2026-10-31
 
 ### The website build broke on a Liquid include (landing page, FR-048)

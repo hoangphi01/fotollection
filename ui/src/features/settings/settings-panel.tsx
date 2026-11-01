@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, Crop, Languages, MapPin, RotateCcw } from 'lucide-react'
+import { Crop, Languages, MapPin } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -10,12 +9,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Collapse } from '@/components/layout/collapse'
 import { CameraClocksCard } from '@/features/cameras/camera-clocks-card'
 import { PlacesCard } from '@/features/places/places-card'
 import { SectionCard } from '@/components/layout/section-card'
+import { SidePanel } from '@/components/layout/side-panel'
 import { CommitInput } from '@/components/forms/commit-input'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ExportSection } from '@/features/export/export-section'
@@ -35,7 +34,7 @@ import type { FontsApi } from '@/features/fonts/use-fonts'
 import { PrintAdviceNote } from '@/features/print-advice/print-advice-note'
 import { FitSizeNote } from '@/features/frame/fit-size-note'
 import { BorderSwitch } from './border-switch'
-import { StampStyleFields } from '@/features/stamp/stamp-style-fields'
+import { DateStampCard } from '@/features/stamp/date-stamp-card'
 import { VersionHistory } from '@/features/about/version-history'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { LANGUAGES } from '@/i18n'
@@ -83,20 +82,24 @@ export function SettingsPanel({
   const { language, change: changeLanguage } = useLanguage()
   const printSizes = useIpcQuery(commands.listPrintSizes)
   const appInfo = useIpcQuery(commands.appInfo)
-  const sizesKey = (settings?.customSizes ?? []).map((c) => `${c.id}:${c.shortMm}x${c.longMm}`).join()
-  const advice = usePrintAdvice(photo?.id, sizesKey)
+  const advice = usePrintAdvice(photo?.id, settings)
   const stamp = settings?.stamp
   const setStamp = (patch: Partial<RenderSettings['stamp']>) =>
     onChange((s) => ({ ...s, stamp: { ...s.stamp, ...patch } }))
 
   return (
-    <aside className="flex w-72 shrink-0 flex-col border-l bg-sidebar text-sidebar-foreground">
-      <div className="flex h-12 items-center px-4">
-        <span className="text-sm font-semibold">{t('settings.title')}</span>
-      </div>
-      <Separator />
-
-      <div className="flex-1 space-y-3 overflow-y-auto p-3">
+    <SidePanel
+      title={t('settings.title')}
+      footer={
+        <>
+          <ExportSection exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} revision={revision} />
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>{t('settings.footer')}</span>
+            {appInfo && <VersionHistory version={appInfo.appVersion} />}
+          </div>
+        </>
+      }
+    >
         <SectionCard
           icon={<Languages />}
           title={
@@ -141,33 +144,7 @@ export function SettingsPanel({
           )}
         </SectionCard>
 
-        <SectionCard
-          icon={<CalendarDays />}
-          title={
-            <Label htmlFor="date-stamp" className="text-sm font-semibold">
-              {t('settings.dateStamp')}
-            </Label>
-          }
-          action={
-            <Switch
-              id="date-stamp"
-              checked={stamp?.enabled ?? false}
-              onCheckedChange={(enabled) => setStamp({ enabled })}
-            />
-          }
-          open={stamp?.enabled ?? false}
-          footer={
-            customStamps > 0 && (
-              <Button variant="outline" size="sm" className="w-full" onClick={() => void commands.resetPhotoStamps()}>
-                <RotateCcw data-icon="inline-start" />
-                {t('settings.resetCustomStamps', { count: customStamps })}
-              </Button>
-            )
-          }
-        >
-
-
-            <StampStyleFields stamp={stamp} onChange={setStamp} />
+        <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps}>
 
             {/* The place on the date line (FR-005), from the photo's GPS. */}
             <div className="flex items-center justify-between">
@@ -214,21 +191,11 @@ export function SettingsPanel({
               />
               <p className="text-xs text-muted-foreground">{t('settings.captionHint')}</p>
             </div>
-        </SectionCard>
+        </DateStampCard>
 
         <FrameSection frame={frame} fonts={fonts} />
         <CameraClocksCard />
         <PlacesCard />
-      </div>
-
-      <Separator />
-      <div className="space-y-3 p-4">
-        <ExportSection exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} revision={revision} />
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>{t('settings.footer')}</span>
-          {appInfo && <VersionHistory version={appInfo.appVersion} />}
-        </div>
-      </div>
-    </aside>
+    </SidePanel>
   )
 }

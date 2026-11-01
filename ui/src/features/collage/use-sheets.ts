@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useCallback, useEffect, useState } from 'react'
 import { commands, events, type CullFilter, type PhotoId, type SheetPair } from '@/ipc/bindings'
+import { sheetOrder } from './sheet-cells'
 
 /**
  * The collage sheets of the photos shown, in order (FR-035), refreshed after every edit, and
@@ -26,7 +27,7 @@ export function useSheets(filter: CullFilter, enabled: boolean) {
 
   const move = useCallback(
     (photo: PhotoId, target: PhotoId | null) => {
-      const order = sheets.flatMap((s) => (s.second === null ? [s.first] : [s.first, s.second]))
+      const order = sheetOrder(sheets).map((c) => c.photo)
       const from = order.indexOf(photo)
       if (from < 0 || photo === target) return
       if (target === null) {

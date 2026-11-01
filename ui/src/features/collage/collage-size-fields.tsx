@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Toggle } from '@/components/ui/toggle'
 import type { CellInfo, RenderSettings } from '@/ipc/bindings'
-import { formatNumber } from '@/lib/format'
+import { dimsLabel, displayUnit, lengthIn, parseLength } from '@/lib/print-size'
 
 type CollageSizeFieldsProps = {
   settings: RenderSettings | null
@@ -15,7 +15,6 @@ type CollageSizeFieldsProps = {
   cell: CellInfo | undefined
 }
 
-const parseCm = (text: string) => Number.parseFloat(text.replace(',', '.'))
 
 /**
  * The photo's size in its cell (FR-035): the suggested size until one is typed. With the
@@ -28,7 +27,8 @@ export function CollageSizeFields({ settings, onChange, cell }: CollageSizeField
   const typed = collage?.size != null
   const width = cell?.areaWidthMm ?? 0
   const height = cell?.areaHeightMm ?? 0
-  const cm = (mm: number) => (mm > 0 ? formatNumber(mm / 10, 1) : '')
+  const unit = displayUnit(settings)
+  const length = (mm: number) => (mm > 0 ? lengthIn(mm, unit) : '')
 
   const setSize = (w: number, h: number) =>
     onChange((s) => ({
@@ -38,9 +38,9 @@ export function CollageSizeFields({ settings, onChange, cell }: CollageSizeField
         size: { shortMm: Math.round(Math.min(w, h)), longMm: Math.round(Math.max(w, h)) },
       },
     }))
-  // A typed edge in cm; with the lock, the other edge keeps the photo's ratio.
+  // A typed edge, in cm or inches; with the lock, the other edge keeps the photo's ratio.
   const commit = (edge: 'width' | 'height', text: string) => {
-    const mm = parseCm(text) * 10
+    const mm = parseLength(text, unit)
     if (!Number.isFinite(mm) || mm <= 0 || width <= 0 || height <= 0) return
     if (edge === 'width') setSize(mm, locked ? (mm * height) / width : height)
     else setSize(locked ? (mm * width) / height : width, mm)
@@ -51,21 +51,21 @@ export function CollageSizeFields({ settings, onChange, cell }: CollageSizeField
       <Label className="text-sm font-normal">{t('collage.size')}</Label>
       <div className="flex items-center gap-1.5">
         <CommitInput
-          value={cm(width)}
+          value={length(width)}
           placeholder={t('collage.width')}
           ariaLabel={t('collage.width')}
           numeric
           onCommit={(v) => commit('width', v)}
         />
-        <span className="text-xs text-muted-foreground">×</span>
+        <span className="text-xs text-muted-foreground">{t('collage.by')}</span>
         <CommitInput
-          value={cm(height)}
+          value={length(height)}
           placeholder={t('collage.height')}
           ariaLabel={t('collage.height')}
           numeric
           onCommit={(v) => commit('height', v)}
         />
-        <span className="text-xs text-muted-foreground">cm</span>
+        <span className="text-xs text-muted-foreground">{unit}</span>
         <Toggle
           variant="outline"
           size="sm"
@@ -81,7 +81,7 @@ export function CollageSizeFields({ settings, onChange, cell }: CollageSizeField
         <p className="text-xs text-muted-foreground">
           {cell &&
             t('collage.suggested', {
-              size: `${cm(cell.suggestedWidthMm)} × ${cm(cell.suggestedHeightMm)} cm`,
+              size: dimsLabel(cell.suggestedWidthMm, cell.suggestedHeightMm, unit),
             })}
         </p>
         {typed && (

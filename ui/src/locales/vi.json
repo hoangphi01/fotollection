@@ -620,8 +620,9 @@
     "next": "Ảnh sau",
     "inBasket": "Đã giữ",
     "done": "Đã xem hết ảnh",
-    "doneHint_other": "Có {{count}} ảnh trong giỏ in. Xuất ảnh ở bảng bên phải.",
-    "exportHint_other": "Xuất sẽ lưu {{count}} ảnh bạn đã giữ (giỏ in)."
+    "doneHint_other": "Có {{kept}} ảnh trong giỏ in. Xuất ảnh ở bảng bên phải.",
+    "exportHint_other": "Xuất sẽ lưu {{count}} ảnh bạn đã giữ (giỏ in).",
+    "review": "Xem lại các ảnh"
   },
   "collage": {
     "title": "Ghép ảnh",
@@ -653,7 +654,7 @@
     "adviceBorder": "Vùng {{area}}, ảnh {{photo}} trong viền · {{dpi}} DPI, {{quality}}",
     "empty": "Chưa có ảnh để ghép",
     "emptyHint": "Mở một thư mục, hoặc chọn Giỏ in ở thanh bên: các ảnh được ghép theo thứ tự, hai ảnh một tấm.",
-    "count_other": "{{count}} tấm từ {{photos}} ảnh",
+    "count_other": "{{sheets}} tấm từ {{photos}} ảnh",
     "keysHint": "Kéo một ảnh thả lên ảnh khác để đổi chỗ · ← → chọn · ⌥ ← → dời · Enter hoặc nhấp đúp để xem · R xoay",
     "ratioHints": {
       "photo": "Mỗi ảnh giữ tỷ lệ gốc của nó",
@@ -668,6 +669,9 @@
     "photosOnSheet": "Ảnh trên tấm này",
     "emptyCell": "Nửa tấm trống",
     "originalNote": "Tấm ghép cần một khổ cố định: khổ Gốc không dùng ở đây, nên tấm đang là 10 × 15. Hãy chọn một khổ ở trên.",
-    "pickToCrop": "Nhấp vào một ảnh trên tấm để cắt"
+    "pickToCrop": "Nhấp vào một ảnh trên tấm để cắt",
+    "pairNames": "{{first}} + {{second}}",
+    "position": "{{index}} / {{count}}",
+    "by": "×"
   }
 }

@@ -8,7 +8,6 @@ import {
   Crop,
   Download,
   ImageIcon,
-  LoaderCircle,
   MapPin,
   RotateCcw,
   RotateCw,
@@ -16,7 +15,7 @@ import {
   Star,
   Undo2,
 } from 'lucide-react'
-import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -32,6 +31,10 @@ import { ExportTargetPicker } from '@/features/export/export-target-picker'
 import type { ExportApi } from '@/features/export/use-export'
 import { FitSizeNote } from '@/features/frame/fit-size-note'
 import { MOD } from '@/lib/platform'
+import { InspectorSection } from '@/components/layout/inspector-section'
+import { KeyHints } from '@/components/layout/key-hints'
+import { StageSpinner } from '@/components/layout/stage-spinner'
+import { BorderSwitch } from '@/features/settings/border-switch'
 import { sendTo } from './send-to'
 import { useShownSrc } from './use-shown-src'
 import { FrameSection } from '@/features/frame/frame-section'
@@ -59,14 +62,11 @@ import { useZoom } from './use-zoom'
 import { ZoomControls } from './zoom-controls'
 import { ownsArrowKeys } from '@/lib/keyboard'
 import { cn } from '@/lib/utils'
-import { SectionCard } from '@/components/layout/section-card'
 import { ViewerFrame } from '@/components/layout/viewer-frame'
 import { PrintAdviceNote } from '@/features/print-advice/print-advice-note'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { verdictOf } from '@/features/print-advice/verdict'
 import { VerdictBadge } from '@/features/print-advice/verdict-badge'
-
-/** The zoom shortcut's modifier as each platform names it. */
 
 type PreviewDialogProps = {
   photos: PhotoSummary[]
@@ -130,14 +130,6 @@ function useCropGeometry(id: number | undefined, revision: number): CropGeometry
   return geometry && geometry.id === id ? geometry.value : null
 }
 
-function Section({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
-  return (
-    <SectionCard icon={icon} title={title}>
-      <div className="space-y-1">{children}</div>
-    </SectionCard>
-  )
-}
-
 /**
  * Print preview in a dialog (FR-007): the Rust-rendered image on the left (exact crop and
  * stamp of the export) and an inspector on the right with capture details, print quality
@@ -164,8 +156,7 @@ export function PreviewDialog({
   const [datePlace, setDatePlace] = useState(false)
   const printSizes = useIpcQuery(commands.listPrintSizes)
   // The same sharp / acceptable / pixelated advice as the settings panel (FR-026).
-  const sizesKey = (settings?.customSizes ?? []).map((c) => `${c.id}:${c.shortMm}x${c.longMm}`).join()
-  const advice = usePrintAdvice(photo?.id, sizesKey)
+  const advice = usePrintAdvice(photo?.id, settings)
   const src = photo ? previewUrl(photo.id, revision) : ''
   const shownSrc = useShownSrc(photo?.id, src)
   const geometry = useCropGeometry(photo?.id, revision)
@@ -234,17 +225,20 @@ export function PreviewDialog({
       description={details?.folderPath ?? photo?.folderName}
       descriptionHint={details?.folderPath}
       footer={
-        <>
-          <kbd className="font-mono">←</kbd> <kbd className="font-mono">→</kbd> {t(cropping ? 'viewer.level' : 'viewer.browse')} ·{' '}
-          {!cropping && (
-            <>
-              <kbd className="font-mono">{MOD} + −</kbd> {t('viewer.zoom')} ·{' '}
-              {canDrag && <>{t('viewer.dragToFrame')} · </>}
-              <kbd className="font-mono">↑</kbd> {t('viewer.upBasket')} · <kbd className="font-mono">↓</kbd> {t('viewer.downAside')} ·{' '}
-            </>
-          )}
-          <kbd className="font-mono">Esc</kbd> {t(cropping ? 'viewer.leaveCrop' : 'viewer.close')}
-        </>
+        <KeyHints
+          hints={[
+            { keys: ['←', '→'], label: t(cropping ? 'viewer.level' : 'viewer.browse') },
+            ...(cropping
+              ? []
+              : [
+                  { keys: [`${MOD} + −`], label: t('viewer.zoom') },
+                  ...(canDrag ? [{ label: t('viewer.dragToFrame') }] : []),
+                  { keys: ['↑'], label: t('viewer.upBasket') },
+                  { keys: ['↓'], label: t('viewer.downAside') },
+                ]),
+            { keys: ['Esc'], label: t(cropping ? 'viewer.leaveCrop' : 'viewer.close') },
+          ]}
+        />
       }
       stage={
         <>
@@ -288,12 +282,7 @@ export function PreviewDialog({
                   className="pointer-events-none absolute top-1/2 left-1/2 max-w-none"
                 />
               )}
-              {!shownSrc && (
-                <div className="absolute flex flex-col items-center gap-2 text-white/60">
-                  <LoaderCircle className="size-7 animate-spin" />
-                  <span className="text-xs">{t('viewer.rendering')}</span>
-                </div>
-              )}
+              {!shownSrc && <StageSpinner />}
               <div className="absolute top-3 left-3 flex gap-1.5">
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -403,7 +392,7 @@ export function PreviewDialog({
     >
             {/* The same tools in the same order as the settings panel: print size, date stamp,
                 info frame, export (STYLE_RULE §4). The photo's own facts follow. */}
-            <Section icon={<Crop className="size-4" />} title={t('settings.printSize')}>
+            <InspectorSection icon={<Crop className="size-4" />} title={t('settings.printSize')}>
               <ExportTargetPicker settings={settings} onChange={onSettingsChange} />
               {settings?.exportTarget?.kind !== 'share' && (
                 <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onSettingsChange} advice={advice} />
@@ -412,6 +401,7 @@ export function PreviewDialog({
                 <PrintAdviceNote advice={advice} fileName={photo.fileName} />
               )}
               {settings?.exportTarget?.kind !== 'share' && <FitSizeNote photoId={photo?.id} revision={revision} />}
+              {settings?.exportTarget?.kind !== 'share' && <BorderSwitch settings={settings} onChange={onSettingsChange} />}
               {settings?.exportTarget?.kind !== 'share' && details && (
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-xs text-muted-foreground">{t('viewer.resolution')}</span>
@@ -441,7 +431,7 @@ export function PreviewDialog({
                   )}
                 </span>
               </div>
-            </Section>
+            </InspectorSection>
 
             {photo && (
               <PhotoStampControls photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
@@ -455,7 +445,7 @@ export function PreviewDialog({
             {/* Like it? Export just this one, with the same controls as the panel (FR-055). */}
             {photo && (
               <div ref={exportRef}>
-              <Section icon={<Download className="size-4" />} title={t('export.title')}>
+              <InspectorSection icon={<Download className="size-4" />} title={t('export.title')}>
                 <ExportSection
                   exporter={exporter}
                   photoCount={1}
@@ -463,19 +453,19 @@ export function PreviewDialog({
                   only={photo.id}
                   revision={revision}
                 />
-              </Section>
+              </InspectorSection>
               </div>
             )}
 
             <Separator />
 
             {photo && (
-              <Section icon={<Star className="size-4" />} title={t('viewer.ratingFlag')}>
+              <InspectorSection icon={<Star className="size-4" />} title={t('viewer.ratingFlag')}>
                 <CullControls photo={photo} />
-              </Section>
+              </InspectorSection>
             )}
 
-            <Section icon={<CalendarDays className="size-4" />} title={t('viewer.captured')}>
+            <InspectorSection icon={<CalendarDays className="size-4" />} title={t('viewer.captured')}>
               <p>{photo ? formatCaptureLong(photo.capture) : '—'}</p>
               {photo?.timeShifted && details && (
                 <p className="text-xs text-muted-foreground">
@@ -508,13 +498,13 @@ export function PreviewDialog({
               {photo && details?.clockId != null && clockMatch && (
                 <ClockMatchDialog photoId={photo.id} clockId={details.clockId} open onClose={() => setClockMatch(false)} />
               )}
-            </Section>
+            </InspectorSection>
 
-            <Section icon={<Camera className="size-4" />} title={t('viewer.camera')}>
+            <InspectorSection icon={<Camera className="size-4" />} title={t('viewer.camera')}>
               <p>{photo?.camera ?? t('viewer.unknownCamera')}</p>
-            </Section>
+            </InspectorSection>
 
-            <Section icon={<ImageIcon className="size-4" />} title={t('viewer.image')}>
+            <InspectorSection icon={<ImageIcon className="size-4" />} title={t('viewer.image')}>
               {details ? (
                 <p className="tabular-nums">
                   {details.width} × {details.height} px ·{' '}
@@ -524,9 +514,9 @@ export function PreviewDialog({
               ) : (
                 <p className="text-muted-foreground">{t('common.loading')}</p>
               )}
-            </Section>
+            </InspectorSection>
 
-            <Section icon={<MapPin className="size-4" />} title={t('viewer.location')}>
+            <InspectorSection icon={<MapPin className="size-4" />} title={t('viewer.location')}>
               <p>{details?.place?.label ?? t('places.none')}</p>
               {details?.place && <Badge variant="outline">{t(`places.${details.place.source}`)}</Badge>}
               {details?.gps && details.gps.lat !== null && details.gps.lon !== null ? (
@@ -550,7 +540,7 @@ export function PreviewDialog({
                   onClose={() => setDatePlace(false)}
                 />
               )}
-            </Section>
+            </InspectorSection>
     </ViewerFrame>
   )
 }

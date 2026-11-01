@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, LoaderCircle, ShoppingBasket } from 'lucide-react'
-import { useEffect } from 'react'
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, RotateCcw, ShoppingBasket } from 'lucide-react'
+import { useEffect, useEffectEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { KeyHints } from '@/components/layout/key-hints'
+import { StageSpinner } from '@/components/layout/stage-spinner'
 import type { PhotoSummary, Queue, QueueView } from '@/ipc/bindings'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { sendTo } from '@/features/viewer/send-to'
 import { useShownSrc } from '@/features/viewer/use-shown-src'
 import { ownsArrowKeys } from '@/lib/keyboard'
+import { formatNumber } from '@/lib/format'
 import { previewUrl } from '@/lib/photo-url'
 
 type SimpleViewProps = {
@@ -33,28 +36,38 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
     if (photo) sendTo(photo.id, queue, view, () => go(1))
   }
 
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (ownsArrowKeys(event.target) || document.querySelector('[role="dialog"]')) return
-      if (handleCullKey(event, photo?.id)) event.preventDefault()
-      else if (event.key === 'ArrowRight') go(1)
-      else if (event.key === 'ArrowLeft') go(-1)
-      else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-        event.preventDefault()
-        send(event.key === 'ArrowUp' ? 'print' : 'aside')
-      } else return
+  // The keys of the preview (FR-050) and its culling keys (FR-022): 0–5, P / X / U, [ ].
+  const onKey = useEffectEvent((event: KeyboardEvent) => {
+    if (ownsArrowKeys(event.target) || document.querySelector('[role="dialog"]')) return
+    if (handleCullKey(event, photo?.id)) event.preventDefault()
+    else if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+      event.preventDefault()
+      go(event.key === 'ArrowRight' ? 1 : -1)
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+      event.preventDefault()
+      send(event.key === 'ArrowUp' ? 'print' : 'aside')
     }
+  })
+  useEffect(() => {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  })
+  }, [])
 
-  if (!photo) {
+  // Every photo shown is decided: kept photos stay in the gallery, dropped ones leave it.
+  const [reviewing, setReviewing] = useState(false)
+  const sorted = photos.every((p) => p.queue === 'print')
+  if (!photo || (sorted && !reviewing)) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">
         <p className="font-medium">{t('simple.done')}</p>
         <p className="max-w-sm text-sm text-muted-foreground">
-          {t('simple.doneHint', { count: queueCounts.print })}
+          {t('simple.doneHint', { count: queueCounts.print, kept: formatNumber(queueCounts.print) })}
         </p>
+        {photo && (
+          <Button variant="outline" size="sm" className="mt-2" onClick={() => setReviewing(true)}>
+            <RotateCcw data-icon="inline-start" /> {t('simple.review')}
+          </Button>
+        )}
       </div>
     )
   }
@@ -63,10 +76,10 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex min-h-[49px] items-center gap-3 border-b px-4 py-1.5 text-sm">
         <span className="font-medium tabular-nums">
-          {t('simple.progress', { index: index + 1, count: photos.length })}
+          {t('simple.progress', { index: formatNumber(index + 1), count: formatNumber(photos.length) })}
         </span>
         <span className="text-xs text-muted-foreground tabular-nums">
-          {t('simple.counts', { kept: queueCounts.print, dropped: queueCounts.aside })}
+          {t('simple.counts', { kept: formatNumber(queueCounts.print), dropped: formatNumber(queueCounts.aside) })}
         </span>
         <span className="ml-auto truncate text-xs text-muted-foreground">{photo.fileName}</span>
       </div>
@@ -79,10 +92,7 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
             className="max-h-full max-w-full animate-in rounded-sm object-contain shadow-2xl fade-in-0"
           />
         ) : (
-          <div className="flex flex-col items-center gap-2 text-white/60">
-            <LoaderCircle className="size-7 animate-spin" />
-            <span className="text-xs">{t('viewer.rendering')}</span>
-          </div>
+          <StageSpinner />
         )}
         {photo.queue === 'print' && (
           <Badge className="absolute top-3 left-3 gap-1">
@@ -112,8 +122,13 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
         </Button>
       </div>
       <p className="pb-3 text-center text-xs text-muted-foreground">
-        <kbd className="font-mono">↑</kbd> {t('simple.keep')} · <kbd className="font-mono">↓</kbd> {t('simple.drop')} ·{' '}
-        <kbd className="font-mono">←</kbd> <kbd className="font-mono">→</kbd> {t('viewer.browse')}
+        <KeyHints
+          hints={[
+            { keys: ['↑'], label: t('simple.keep') },
+            { keys: ['↓'], label: t('simple.drop') },
+            { keys: ['←', '→'], label: t('viewer.browse') },
+          ]}
+        />
       </p>
     </div>
   )
