@@ -62,6 +62,10 @@ Layer 1: FILE VALIDATION (before parsing)
   - Reject files > 200 MB; reject declared dimensions > 200 MP (decompression-bomb guard)
   - Polyglot scan of the first 4 KB: <html, <script, %PDF, PK, MZ → reject
   - JPEG: warn if significant data follows the EOI marker (FF D9)
+  - JPEG: `jpeg_layout::read` walks the markers up to the first scan with bounds checks on
+    every read, so a cut or forged header returns "unknown", never a panic (tested on every
+    truncation of a fixture); the reference decoder checks the same size limits before it
+    allocates (ADR-0033)
   - HEIC: decoded by the OS (ImageIO / WIC) in `fotollection-oscodec`, one of the two crates
     with `unsafe` FFI (the other is `fotollection-oscamera`); the size from the header is checked against the same limits
     before the bitmap is allocated

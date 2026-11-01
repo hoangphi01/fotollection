@@ -260,8 +260,87 @@ pub fn default_codec() -> Arc<dyn JpegCodec> {
     Arc::new(PureRustCodec)
 }
 
-/// `zune-jpeg` for decoding, `jpeg-encoder` for encoding. No C dependencies.
+/// `zune-jpeg` for decoding the layouts it has proven, `jpeg-decoder` for the rest and when
+/// zune fails (ADR-0033), `jpeg-encoder` for encoding. No C dependencies.
 pub struct PureRustCodec;
+
+/// The fast decoder, for the layouts `jpeg_layout` says it handles.
+fn decode_zune(bytes: &[u8]) -> Result<Decoded, CodecError> {
+    let options = DecoderOptions::default()
+        .jpeg_set_out_colorspace(ColorSpace::RGB)
+        .set_max_width(MAX_EDGE as usize)
+        .set_max_height(MAX_EDGE as usize);
+    let mut decoder = JpegDecoder::new_with_options(ZCursor::new(bytes), options);
+    decoder
+        .decode_headers()
+        .map_err(|e| CodecError::Decode(e.to_string()))?;
+    let info = decoder
+        .info()
+        .ok_or_else(|| CodecError::Decode("missing image header".into()))?;
+    let (width, height) = (u32::from(info.width), u32::from(info.height));
+    if u64::from(width) * u64::from(height) > MAX_PIXELS {
+        return Err(CodecError::TooLarge(width, height));
+    }
+
+    let pixels = decoder
+        .decode()
+        .map_err(|e| CodecError::Decode(e.to_string()))?;
+    let Some(image) = RgbImage::from_raw(width, height, pixels) else {
+        return Err(CodecError::Decode("unexpected pixel layout".into()));
+    };
+    Ok(Decoded {
+        image,
+        icc: decoder.icc_profile(),
+    })
+}
+
+/// The reference decoder (ADR-0033): slower, and right on every layout the corpus holds.
+fn decode_reference(bytes: &[u8]) -> Result<Decoded, CodecError> {
+    let mut decoder = jpeg_decoder::Decoder::new(Cursor::new(bytes));
+    decoder
+        .read_info()
+        .map_err(|e| CodecError::Decode(e.to_string()))?;
+    let info = decoder
+        .info()
+        .ok_or_else(|| CodecError::Decode("missing image header".into()))?;
+    let (width, height) = (u32::from(info.width), u32::from(info.height));
+    check_size(width, height)?;
+    let pixels = decoder
+        .decode()
+        .map_err(|e| CodecError::Decode(e.to_string()))?;
+    let rgb = match info.pixel_format {
+        jpeg_decoder::PixelFormat::RGB24 => pixels,
+        jpeg_decoder::PixelFormat::L8 => pixels.iter().flat_map(|&l| [l, l, l]).collect(),
+        // Big-endian 16-bit grey: the high byte.
+        jpeg_decoder::PixelFormat::L16 => pixels
+            .as_chunks::<2>()
+            .0
+            .iter()
+            .flat_map(|&[high, _]| [high, high, high])
+            .collect(),
+        // Adobe CMYK comes inverted: each ink's value times the key's.
+        jpeg_decoder::PixelFormat::CMYK32 => pixels
+            .as_chunks::<4>()
+            .0
+            .iter()
+            .flat_map(|p| {
+                let k = u16::from(p[3]);
+                p[..3].iter().map(move |&c| {
+                    #[allow(clippy::cast_possible_truncation)]
+                    let v = (u16::from(c) * k / 255) as u8;
+                    v
+                })
+            })
+            .collect(),
+    };
+    let Some(image) = RgbImage::from_raw(width, height, rgb) else {
+        return Err(CodecError::Decode("unexpected pixel layout".into()));
+    };
+    Ok(Decoded {
+        image,
+        icc: decoder.icc_profile(),
+    })
+}
 
 impl JpegCodec for PureRustCodec {
     fn dimensions(&self, bytes: &[u8]) -> Result<(u32, u32), CodecError> {
@@ -276,32 +355,18 @@ impl JpegCodec for PureRustCodec {
     }
 
     fn decode(&self, bytes: &[u8]) -> Result<Decoded, CodecError> {
-        let options = DecoderOptions::default()
-            .jpeg_set_out_colorspace(ColorSpace::RGB)
-            .set_max_width(MAX_EDGE as usize)
-            .set_max_height(MAX_EDGE as usize);
-        let mut decoder = JpegDecoder::new_with_options(ZCursor::new(bytes), options);
-        decoder
-            .decode_headers()
-            .map_err(|e| CodecError::Decode(e.to_string()))?;
-        let info = decoder
-            .info()
-            .ok_or_else(|| CodecError::Decode("missing image header".into()))?;
-        let (width, height) = (u32::from(info.width), u32::from(info.height));
-        if u64::from(width) * u64::from(height) > MAX_PIXELS {
-            return Err(CodecError::TooLarge(width, height));
+        // A layout zune-jpeg has not proven goes to the reference decoder: a wrong decode
+        // comes back without an error, so it cannot be caught afterwards (ADR-0033).
+        let proven = crate::jpeg_layout::read(bytes).is_none_or(|l| l.zune_proven());
+        if !proven {
+            return decode_reference(bytes);
         }
-
-        let pixels = decoder
-            .decode()
-            .map_err(|e| CodecError::Decode(e.to_string()))?;
-        let Some(image) = RgbImage::from_raw(width, height, pixels) else {
-            return Err(CodecError::Decode("unexpected pixel layout".into()));
-        };
-        Ok(Decoded {
-            image,
-            icc: decoder.icc_profile(),
-        })
+        match decode_zune(bytes) {
+            Ok(decoded) => Ok(decoded),
+            Err(e @ CodecError::TooLarge(..)) => Err(e),
+            // A file zune refuses may still be a valid JPEG.
+            Err(e) => decode_reference(bytes).map_err(|_| e),
+        }
     }
 
     fn encode(
@@ -521,5 +586,61 @@ mod tests {
     fn fr_011_garbage_is_a_decode_error_not_a_panic() {
         let result = PureRustCodec.decode(b"\xFF\xD8\xFFnot really a jpeg");
         assert!(matches!(result, Err(CodecError::Decode(_))));
+    }
+
+    fn layout_fixture(name: &str) -> Vec<u8> {
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/jpeg")
+            .join(name);
+        std::fs::read(path).unwrap_or_default()
+    }
+
+    #[test]
+    fn fr_001_the_reference_decoder_reads_every_layout_like_zune() -> Result<(), CodecError> {
+        // The fallback must be as right as the fast path wherever both can decode.
+        for name in [
+            "baseline-444.jpg",
+            "baseline-420.jpg",
+            "baseline-440.jpg",
+            "baseline-411.jpg",
+            "progressive-420.jpg",
+            "restart-420.jpg",
+            "grey.jpg",
+        ] {
+            let bytes = layout_fixture(name);
+            let (zune, reference) = (decode_zune(&bytes)?, decode_reference(&bytes)?);
+            assert_eq!(zune.image.width, reference.image.width, "{name}");
+            let diff: u64 = zune
+                .image
+                .data
+                .iter()
+                .zip(&reference.image.data)
+                .map(|(a, b)| u64::from(a.abs_diff(*b)))
+                .sum();
+            let mean = diff / zune.image.data.len() as u64;
+            assert!(mean <= 2, "{name}: mean difference {mean}");
+        }
+        Ok(())
+    }
+
+    #[test]
+    fn fr_001_our_own_small_flat_jpegs_keep_their_colour() -> Result<(), CodecError> {
+        // zune-jpeg 0.5.15 darkens small flat images with optimised Huffman tables
+        // (zune-image #496); our thumbnails are such files.
+        for colour in [[0, 255, 1], [200, 30, 30], [250, 250, 249], [13, 13, 13]] {
+            let mut image = RgbImage::new(16, 16);
+            for px in image.data.as_chunks_mut::<3>().0 {
+                px.copy_from_slice(&colour);
+            }
+            for options in [EncodeOptions::print(90), EncodeOptions::screen(82)] {
+                let jpeg = PureRustCodec.encode(&image, options, None)?;
+                let back = PureRustCodec.decode(&jpeg)?;
+                let centre = &back.image.data[(8 * 16 + 8) * 3..(8 * 16 + 8) * 3 + 3];
+                for (got, want) in centre.iter().zip(colour) {
+                    assert!(got.abs_diff(want) <= 6, "{colour:?} came back {centre:?}");
+                }
+            }
+        }
+        Ok(())
     }
 }

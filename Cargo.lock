@@ -1507,7 +1507,7 @@ dependencies = [
 
 [[package]]
 name = "fotollection"
-version = "0.8.0"
+version = "0.8.1"
 dependencies = [
  "chrono",
  "fotollection-core",
@@ -1530,7 +1530,7 @@ dependencies = [
 
 [[package]]
 name = "fotollection-core"
-version = "0.8.0"
+version = "0.8.1"
 dependencies = [
  "ab_glyph",
  "blake3",
@@ -1541,6 +1541,7 @@ dependencies = [
  "fotollection-oscodec",
  "fotollection-rawcore",
  "fotollection-rawlgpl",
+ "jpeg-decoder",
  "jpeg-encoder",
  "kamadak-exif",
  "little_exif",
@@ -1562,14 +1563,14 @@ dependencies = [
 
 [[package]]
 name = "fotollection-geodata"
-version = "0.8.0"
+version = "0.8.1"
 dependencies = [
  "blake3",
 ]
 
 [[package]]
 name = "fotollection-oscamera"
-version = "0.8.0"
+version = "0.8.1"
 dependencies = [
  "block2",
  "objc2",
@@ -1583,7 +1584,7 @@ dependencies = [
 
 [[package]]
 name = "fotollection-oscodec"
-version = "0.8.0"
+version = "0.8.1"
 dependencies = [
  "objc2-core-foundation",
  "objc2-core-graphics",
@@ -1594,7 +1595,7 @@ dependencies = [
 
 [[package]]
 name = "fotollection-rawcore"
-version = "0.8.0"
+version = "0.8.1"
 dependencies = [
  "rayon",
  "thiserror 2.0.21",
@@ -1602,7 +1603,7 @@ dependencies = [
 
 [[package]]
 name = "fotollection-rawlgpl"
-version = "0.8.0"
+version = "0.8.1"
 dependencies = [
  "image",
  "rawler",
@@ -2519,6 +2520,12 @@ dependencies = [
  "quote",
  "syn 2.0.119",
 ]
+
+[[package]]
+name = "jpeg-decoder"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "00810f1d8b74be64b13dbf3db89ac67740615d6c891f0e7b6179326533011a07"
 
 [[package]]
 name = "jpeg-encoder"
@@ -3885,7 +3892,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b570b25f7617e43d59005d0990ccb79e950a423952cea19671b7a876da390adf"
 dependencies = [
  "anyhow",
- "itertools 0.13.0",
+ "itertools 0.14.0",
  "proc-macro2",
  "quote",
  "syn 2.0.119",

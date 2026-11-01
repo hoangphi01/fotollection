@@ -30,6 +30,7 @@ The corpus is stored **outside** git, because the photos are personal and large.
 |--------|----------|---------|
 | Synthetic (generated) | `crates/core/tests/common/mod.rs` builds JPEGs with chosen EXIF (date, GPS, orientation) through `jpeg-encoder` + `little_exif`, plus broken and spoofed files, at test time. **Nothing personal is committed** | Unit, pipeline and security tests (implemented) |
 | `fixtures` (in git) | ~20 small files: each orientation (1–8), no-EXIF, GPS/no-GPS, (0,0) GPS, HEIC, PNG, wide-gamut ICC, CMYK JPEG, corrupt/truncated files, polyglot | Unit, golden and security tests |
+| JPEG layouts (in git) | `crates/core/tests/fixtures/jpeg/`: one drawn picture saved by `cjpeg` in 13 layouts (4:4:4, 4:2:2, 4:2:0, 4:4:0, 4:1:1, progressive, restart markers, optimised tables, one scan per component, grey); `tests/jpeg_layouts.rs` compares each decode with the picture, so a decoder upgrade that breaks a layout fails ([ADR-0033](adr/0033-reference-jpeg-decoder.md)) | Decoder regression tests |
 | `bench` | 200 × 24 MP JPEG (Lumix GX9), 100 × 12 MP HEIC (iPhone), 20 × PNG | Benchmarks |
 | `stress` | 2,000+ mixed files | Memory ceiling, long-run stability |
 | Print-quality set | 20 photos of the same folder, plus Display P3 versions made with macOS's profile at test time | `bench/quality/audit.py` against the source, pixel by pixel ([RESULT.md §9](RESULT.md#9-print-quality)) |

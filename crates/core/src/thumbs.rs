@@ -71,10 +71,16 @@ impl ThumbCache {
     }
 }
 
-/// Cache key of a source file: `blake3(path ‖ size ‖ mtime)` in hex, so an edited or replaced
-/// file misses the cache (DATABASE.md §8).
+/// Bumped when a decoder fix changes the pixels of files already seen, so every cache made
+/// from them is made again (ADR-0033). 2: v0.8.1, one-scan-per-component JPEGs were green
+/// (version 1 had no salt). Old files are left to the cache's size limit.
+pub const CACHE_VERSION: u8 = 2;
+
+/// Cache key of a source file: `blake3(version ‖ path ‖ size ‖ mtime)` in hex, so an edited or
+/// replaced file, or a decoder fix, misses the cache (DATABASE.md §8).
 pub fn content_key(record: &PhotoRecord) -> String {
     let mut hasher = blake3::Hasher::new();
+    hasher.update(&[CACHE_VERSION]);
     hasher.update(record.path.as_os_str().as_encoded_bytes());
     hasher.update(&record.size.to_le_bytes());
     hasher.update(&record.mtime.to_le_bytes());

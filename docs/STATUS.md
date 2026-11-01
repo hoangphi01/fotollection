@@ -5,7 +5,9 @@
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 1 — MVP, v0.8.0 released; v0.9.0 "Three modes" built, to check by hand before release
+## Current phase: Phase 1 — MVP, v0.8.1 released; v0.9.0 "Three modes" built, to check by hand before release
+
+**Hotfix v0.8.1 (2026-11-01).** A user saw JPEGs as green stripes: baseline files with one scan per component and 4:2:0 colour, which `zune-jpeg` 0.5.15 decodes wrongly without an error. v0.8.1, built from the `v0.8.0` tag on `hotfix/0.8.1`, reads the layout from the header and sends every layout zune has not proven to `jpeg-decoder` ([ADR-0033](adr/0033-reference-jpeg-decoder.md), [LESSONS](LESSONS.md)); thumbnails are made again once. Merged into `main` the same day, so v0.9.0 carries it.
 
 **v0.9.0 "Three modes" (2026-11-01, on `main`, not released).** Simple, Collage and Pro modes (FR-048), switched at the top of the sidebar or with Cmd/Ctrl+1/2/3; Collage puts two photos on one print like a half-frame camera, with a suggested size, a cut line, drag to reorder, a crop of its own per photo, a "fill each half" choice with no white, a preview in the photo preview's frame and one file per sheet (FR-035, ADR-0032, NFR-021 met); the 3 mm border on every print (FR-067); a small, medium or large date stamp sized to the print (FR-004). Audited on 2026-11-01 against the existing features, STYLE_RULE and DOCS_GUIDE; the fixes are in. Left: the owner checks it by hand on macOS and Windows, a real collage print, then `scripts/release.sh 0.9.0` and removing the "coming in v0.9.0" markers (DOCS_GUIDE, release row).
 
@@ -307,6 +309,7 @@ Native libraries pinned for security tracking (versions to be filled in at scaff
 |---------|----------------|-------|
 | libjpeg-turbo | — | via `turbojpeg` crate |
 | objc2-image-io / windows | 0.3.2 / 0.62.2 | HEIC through ImageIO / WIC in `fotollection-oscodec` ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
+| zune-jpeg / jpeg-decoder | 0.5.15 / 0.3.2 | zune decodes only the layouts `tests/jpeg_layouts.rs` proves; retry 0.5.16 **stable** against that test before upgrading, never an RC ([ADR-0033](adr/0033-reference-jpeg-decoder.md)) |
 | tract-onnx | 0.23.9 | Face models for best-shot suggestions ([ADR-0018](adr/0018-face-models-and-runtime.md)); models are parsed from bundled, checksummed bytes only |
 | lcms2 | — | |
 
