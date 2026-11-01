@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { CalendarDays, CopyCheck } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
 import { SectionCard } from '@/components/layout/section-card'
@@ -27,11 +27,15 @@ type PhotoStampControlsProps = {
 export function PhotoStampControls({ photoId, revision, onAppliedToAll }: PhotoStampControlsProps) {
   const { t } = useTranslation()
   const [current, setCurrent] = useState<PhotoStamp | null>(null)
+  // Local changes so far: an answer asked for before the latest one would put an older
+  // stamp back on screen (STYLE_RULE §4).
+  const changes = useRef(0)
 
   useEffect(() => {
     let live = true
+    const asked = changes.current
     void commands.getPhotoStamp(photoId).then((result) => {
-      if (live && result.status === 'ok') setCurrent(result.data)
+      if (live && result.status === 'ok' && asked === changes.current) setCurrent(result.data)
     })
     return () => {
       live = false
@@ -43,6 +47,7 @@ export function PhotoStampControls({ photoId, revision, onAppliedToAll }: PhotoS
   const set = (patch: Partial<StampSettings>) => {
     const next = { ...stamp, ...patch }
     // Optimistic; Rust validates. An own stamp carries its line, so the own line goes.
+    changes.current += 1
     setCurrent({ stamp: next, custom: true, caption: null })
     void commands.setPhotoStamp(photoId, next)
   }

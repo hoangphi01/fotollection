@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { CircleCheck } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { PhotoSummary } from '@/ipc/bindings'
 import { previewUrl, thumbUrl } from '@/lib/photo-url'
 import { cn } from '@/lib/utils'
+import { useShownSrc } from './use-shown-src'
 
 type QuickPreviewProps = {
   photo: PhotoSummary
@@ -18,21 +18,11 @@ type QuickPreviewProps = {
 /**
  * Quick-preview (FR-059): the photo as it will be exported, with the gallery's print size,
  * stamp and frame, and nothing to edit. The thumbnail shows at once; the render replaces it
- * when it arrives.
+ * when it arrives, and stays while a newer one loads.
  */
 export function QuickPreview({ photo, revision, thumbVersion, generation, checked, onClose }: QuickPreviewProps) {
   const { t } = useTranslation()
-  const src = previewUrl(photo.id, revision)
-  const [ready, setReady] = useState<string | null>(null)
-  useEffect(() => {
-    let live = true
-    const img = new Image()
-    img.onload = () => live && setReady(src)
-    img.src = src
-    return () => {
-      live = false
-    }
-  }, [src])
+  const shown = useShownSrc(photo.id, previewUrl(photo.id, revision))
 
   return (
     <div
@@ -42,8 +32,8 @@ export function QuickPreview({ photo, revision, thumbVersion, generation, checke
       data-quick-preview
     >
       <div className="relative flex min-h-0 flex-1 items-center justify-center">
-        {ready === src ? (
-          <img src={src} alt={photo.fileName} className="max-h-full max-w-full object-contain stage-photo" />
+        {shown ? (
+          <img src={shown} alt={photo.fileName} className="max-h-full max-w-full object-contain stage-photo" />
         ) : (
           <img
             src={thumbUrl(photo.id, thumbVersion, generation)}

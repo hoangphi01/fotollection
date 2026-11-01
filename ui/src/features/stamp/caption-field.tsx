@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
 import { Label } from '@/components/ui/label'
@@ -25,7 +25,11 @@ export function CaptionField({ caption, onCommit, photos = [], revision = 0 }: C
   const id = useId()
   const ids = photos.map((p) => p.id)
   const key = ids.join(':')
-  const [own, setOwn] = useState<(string | null)[]>([])
+  // Each photo's own line, for the photos it was read for.
+  const [owned, setOwned] = useState<{ key: string; lines: (string | null)[] }>({ key: '', lines: [] })
+  const own = owned.key === key ? owned.lines : []
+  // Local changes so far: an answer asked for before the latest one is dropped (STYLE_RULE §4).
+  const changes = useRef(0)
   // The switch turned off on these photos before either has its own line.
   const [apartFor, setApartFor] = useState<string | null>(null)
 
@@ -34,8 +38,10 @@ export function CaptionField({ caption, onCommit, photos = [], revision = 0 }: C
     if (key === '') return
     let live = true
     const list = key.split(':').map(Number)
+    const asked = changes.current
     void Promise.all(list.map((photo) => commands.getPhotoStamp(photo))).then((results) => {
-      if (live) setOwn(results.map((r) => (r.status === 'ok' ? r.data.caption : null)))
+      if (live && asked === changes.current)
+        setOwned({ key, lines: results.map((r) => (r.status === 'ok' ? r.data.caption : null)) })
     })
     return () => {
       live = false
@@ -48,12 +54,14 @@ export function CaptionField({ caption, onCommit, photos = [], revision = 0 }: C
     if (!same) return setApartFor(key)
     setApartFor(null)
     if (anyOwn) {
-      setOwn(ids.map(() => null)) // optimistic; the next revision confirms it
+      changes.current += 1
+      setOwned({ key, lines: ids.map(() => null) }) // optimistic; the next revision confirms it
       void commands.setPhotoCaption(ids, null)
     }
   }
   const setPhoto = (index: number, photo: PhotoId, line: string) => {
-    setOwn((current) => ids.map((_, i) => (i === index ? line : (current[i] ?? null))))
+    changes.current += 1
+    setOwned({ key, lines: ids.map((_, i) => (i === index ? line : (own[i] ?? null))) })
     void commands.setPhotoCaption([photo], line)
   }
 

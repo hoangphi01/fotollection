@@ -11,7 +11,7 @@ const MARGIN = 0.1
 const SHARP_ENOUGH = 1.05
 
 type Rect = { x: number; y: number; w: number; h: number }
-type Loaded = { src: string; base: string; rect: Rect }
+type Loaded = { src: string; photoId: number; rect: Rect }
 
 /**
  * The sharp layer of a zoomed preview (FR-057). The preview is at most 1600 px, which a
@@ -53,7 +53,7 @@ export function useSharpRegion(
       const src = regionUrl(photoId, revision, rect, px)
       setWanted(src)
       const next = new Image()
-      next.onload = () => live && setLoaded({ src, base, rect })
+      next.onload = () => live && setLoaded({ src, photoId, rect })
       next.src = src
     }, SETTLE_MS)
     return () => {
@@ -62,7 +62,9 @@ export function useSharpRegion(
     }
   }, [zoomed, img, stage, size, view, photoId, revision, base])
 
-  const current = zoomed && loaded && loaded.base === base && size ? loaded : null
+  // The last sharp part of this photo stays until the next has loaded, as the preview
+  // under it does (useShownSrc): a change of setting never turns the zoomed photo soft.
+  const current = zoomed && loaded && loaded.photoId === photoId && size ? loaded : null
   return {
     /** The sharp part and where it sits, or null while there is none for this view. */
     layer: current && size ? { src: current.src, style: layerStyle(current.rect, view, size) } : null,

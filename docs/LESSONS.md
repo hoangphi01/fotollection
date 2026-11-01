@@ -13,6 +13,12 @@
 
 ## 2026-11-01
 
+### Typing in the date stamp made the panel jump and the text slip back (FR-036)
+
+- **Seen:** each keystroke in *Line under the date* made the cards below jump up, and the text sometimes went back a few letters before catching up.
+- **Why:** two faults. `useSheetInfo` returned `null` whenever `revision` changed, so the note under *Two photos per sheet* vanished until Rust answered and the card shrank. And `CommitInput` commits while typing (every 300 ms); `useRenderSettings` applied every answer, so a late answer to an earlier commit put the older text back into the field.
+- **Rule:** keep the last answer while a new one loads (`useLiveQuery`); apply only the answer to the latest request; never feed an outside value into a focused field. STYLE_RULE §4, "Nothing blinks, nothing jumps".
+
 ### The dev app failed to link after two builds overlapped (tooling)
 
 - **Seen:** `npm run dev` rebuilt on a file change while `cargo test` was running, and then every start failed with `Undefined symbols … fotollection_core.llvm…` from the linker; a restart printed `Port 5173 is already in use`.

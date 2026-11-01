@@ -41,13 +41,11 @@ import { FrameSection } from '@/features/frame/frame-section'
 import type { FontsApi } from '@/features/fonts/use-fonts'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
 import { PrintSizePicker } from '@/features/settings/print-size-picker'
-import { useIpcQuery } from '@/features/settings/use-ipc-query'
+import { useIpcQuery, useLiveQuery } from '@/features/settings/use-ipc-query'
 import {
   commands,
-  type CropGeometry,
   type CullFilter,
   type Queue,
-  type PhotoDetails,
   type PhotoSummary,
   type RenderSettings,
 } from '@/ipc/bindings'
@@ -100,34 +98,14 @@ function formatCaptureLong(capture: string): string {
   })
 }
 
-function usePhotoDetails(id: number | undefined, revision: number): PhotoDetails | null {
-  const [details, setDetails] = useState<PhotoDetails | null>(null)
-  useEffect(() => {
-    if (id === undefined) return
-    let live = true
-    void commands.photoDetails(id).then((result) => {
-      if (live && result.status === 'ok') setDetails(result.data)
-    })
-    return () => {
-      live = false
-    }
-  }, [id, revision])
-  return details && details.id === id ? details : null
+const loadDetails = async (subject: string) => {
+  const result = await commands.photoDetails(Number(subject))
+  return result.status === 'ok' ? result.data : null
 }
 
-function useCropGeometry(id: number | undefined, revision: number): CropGeometry | null {
-  const [geometry, setGeometry] = useState<{ id: number; value: CropGeometry } | null>(null)
-  useEffect(() => {
-    if (id === undefined) return
-    let live = true
-    void commands.getCropGeometry(id, null).then((result) => {
-      if (live && result.status === 'ok') setGeometry({ id, value: result.data })
-    })
-    return () => {
-      live = false
-    }
-  }, [id, revision])
-  return geometry && geometry.id === id ? geometry.value : null
+const loadGeometry = async (subject: string) => {
+  const result = await commands.getCropGeometry(Number(subject), null)
+  return result.status === 'ok' ? result.data : null
 }
 
 /**
@@ -151,7 +129,9 @@ export function PreviewDialog({
 }: PreviewDialogProps) {
   const { t } = useTranslation()
   const photo = index === null ? undefined : photos[index]
-  const details = usePhotoDetails(photo?.id, revision)
+  // The last photo's facts hold their place while the next one's load, so ← → never make
+  // the inspector jump (STYLE_RULE §4); actions use the photo itself.
+  const details = useLiveQuery(photo ? String(photo.id) : null, revision, loadDetails).data
   const [clockMatch, setClockMatch] = useState(false)
   const [datePlace, setDatePlace] = useState(false)
   const printSizes = useIpcQuery(commands.listPrintSizes)
@@ -159,7 +139,10 @@ export function PreviewDialog({
   const advice = usePrintAdvice(photo?.id, settings)
   const src = photo ? previewUrl(photo.id, revision) : ''
   const shownSrc = useShownSrc(photo?.id, src)
-  const geometry = useCropGeometry(photo?.id, revision)
+  // The crop editor and the drag need this photo's geometry; the crop row only shows it.
+  const geometryQuery = useLiveQuery(photo ? String(photo.id) : null, revision, loadGeometry)
+  const geometry = geometryQuery.current
+  const shownGeometry = geometryQuery.data
   const [cropping, setCropping] = useState(false)
   // The stage mounts only when the preview opens, so it is kept in state, not a ref.
   const [stage, setStage] = useState<HTMLDivElement | null>(null)
@@ -244,7 +227,7 @@ export function PreviewDialog({
         <>
           {cropping && geometry && photo ? (
             <CropEditor
-              key={`${photo.id}:${revision}`}
+              key={photo.id}
               geometry={geometry}
               sourceSrc={sourceUrl(photo.id, revision)}
               onCancel={() => setCropping(false)}
@@ -290,7 +273,7 @@ export function PreviewDialog({
                       <Button
                         variant="secondary"
                         size="sm"
-                        disabled={!geometry || geometry.cropDisabled}
+                        disabled={!shownGeometry || shownGeometry.cropDisabled}
                         onClick={() => setCropping(true)}
                       >
                         <Crop data-icon="inline-start" /> {t('viewer.crop')}
@@ -298,7 +281,7 @@ export function PreviewDialog({
                     </span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    {geometry?.cropDisabled ? t('viewer.cropFitMode') : t('viewer.adjustCrop')}
+                    {shownGeometry?.cropDisabled ? t('viewer.cropFitMode') : t('viewer.adjustCrop')}
                   </TooltipContent>
                 </Tooltip>
                 {/* Lossless quarter turns (FR-006); the crop turns with the photo. */}
@@ -416,16 +399,16 @@ export function PreviewDialog({
                   <Crop className="size-3.5" /> {t('viewer.crop')}
                 </span>
                 <span className="flex items-center gap-1.5 text-xs">
-                  {geometry?.crop
-                    ? t('viewer.cropCustom', { zoom: formatNumber(geometry.crop.zoom ?? 1, 1, 1) })
+                  {shownGeometry?.crop
+                    ? t('viewer.cropCustom', { zoom: formatNumber(shownGeometry.crop.zoom ?? 1, 1, 1) })
                     : t('viewer.cropCentred')}
-                  {geometry?.crop && photo && (
+                  {shownGeometry?.crop && photo && (
                     <Button variant="ghost" size="xs" onClick={() => void commands.setPhotoCrop(photo.id, null, 0, false)}>
                       {t('common.reset')}
                     </Button>
                   )}
-                  {!geometry?.crop && (
-                    <Button variant="ghost" size="xs" disabled={!geometry || geometry.cropDisabled} onClick={() => setCropping(true)}>
+                  {!shownGeometry?.crop && (
+                    <Button variant="ghost" size="xs" disabled={!shownGeometry || shownGeometry.cropDisabled} onClick={() => setCropping(true)}>
                       {t('viewer.adjust')}
                     </Button>
                   )}

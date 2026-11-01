@@ -49,7 +49,7 @@ export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps
   }
   const p = view.profile
   const exif = formatExif(details, t('camera.manualLens'))
-  const save = (patch: Partial<CameraProfile>) => void frame.setProfile({ ...p, ...patch })
+  const save = (patch: Partial<CameraProfile>) => void frame.setProfile(p.id, patch)
   const k = (v: unknown) => `${p.id}:${String(v)}`
 
   return (

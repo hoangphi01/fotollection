@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Ruler } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { commands, type CropGeometry } from '@/ipc/bindings'
+import { commands } from '@/ipc/bindings'
+import { useLiveQuery } from '@/features/settings/use-ipc-query'
 import { formatNumber } from '@/lib/format'
 
 /**
@@ -10,20 +10,15 @@ import { formatNumber } from '@/lib/format'
  * comes out larger than the chosen size, because the full-size photo gets a 5 mm border
  * and the bar. Shown for the photo at hand, as the size depends on its ratio.
  */
+const load = async (subject: string) => {
+  const result = await commands.getCropGeometry(Number(subject), null)
+  return result.status === 'ok' ? result.data : null
+}
+
 export function FitSizeNote({ photoId, revision }: { photoId: number | undefined; revision: number }) {
   const { t } = useTranslation()
-  const [geometry, setGeometry] = useState<{ id: number; value: CropGeometry } | null>(null)
-  useEffect(() => {
-    if (photoId === undefined) return
-    let live = true
-    void commands.getCropGeometry(photoId, null).then((result) => {
-      if (live && result.status === 'ok') setGeometry({ id: photoId, value: result.data })
-    })
-    return () => {
-      live = false
-    }
-  }, [photoId, revision])
-  const g = geometry?.id === photoId ? geometry?.value : null
+  // The last answer holds its place while the next loads (LESSONS).
+  const g = useLiveQuery(photoId === undefined ? null : String(photoId), revision, load).data
   if (!g?.printGrows || g.outputWidthCm === null || g.outputHeightCm === null) return null
   const inches = g.unit === 'in'
   const size = (cm: number) => formatNumber(inches ? cm / 2.54 : cm, 1, 1)

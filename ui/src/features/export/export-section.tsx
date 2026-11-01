@@ -166,6 +166,9 @@ export function ExportSection({
           before
           stale={stale}
         />
+      ) : !running && !estimate && photoCount > 0 ? (
+        // The figure's room, kept while the first estimate is computed, so the footer never grows.
+        <p className="h-6" aria-hidden />
       ) : null}
 
       {running ? (
@@ -235,7 +238,9 @@ function SizeChange({
         'rounded-md px-2 py-1 text-xs tabular-nums transition-opacity',
         before ? '' : 'mt-1.5',
         lighter ? 'bg-primary/10 font-medium text-primary' : 'bg-muted text-muted-foreground',
-        stale && 'opacity-50',
+        // Dimmed only when the new figure is slow to come: a quick refresh while typing
+        // never blinks (STYLE_RULE §4).
+        stale && 'opacity-50 delay-700',
       )}
     >
       {t(key, values)}

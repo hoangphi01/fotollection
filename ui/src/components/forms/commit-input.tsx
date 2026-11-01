@@ -35,9 +35,11 @@ export function CommitInput({
     }
   }
   // A change from elsewhere (undo, another photo) replaces the draft; our own commits
-  // already match, so typing is never interrupted.
+  // already match. While the field has focus, typing wins: a late echo of an earlier commit
+  // must never pull the text back (LESSONS).
+  const focused = useRef(false)
   useEffect(() => {
-    if (value !== committed.current) {
+    if (!focused.current && value !== committed.current) {
       committed.current = value
       setDraft(value)
     }
@@ -57,7 +59,18 @@ export function CommitInput({
       inputMode={numeric ? 'decimal' : undefined}
       className="h-8 w-full min-w-0 text-sm"
       onChange={(e) => setDraft(e.target.value)}
-      onBlur={() => commit(draft)}
+      onFocus={() => {
+        focused.current = true
+      }}
+      onBlur={() => {
+        focused.current = false
+        if (draft !== committed.current) commit(draft)
+        else if (value !== committed.current) {
+          // Nothing typed, but the value changed meanwhile (an undo): show it now.
+          committed.current = value
+          setDraft(value)
+        }
+      }}
       onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
     />
   )

@@ -166,7 +166,7 @@ export function SheetPreviewDialog({
       stage={
         cropping && geometry && photo !== null ? (
           <CropEditor
-            key={`${photo}:${revision}`}
+            key={photo}
             geometry={geometry}
             sourceSrc={sourceUrl(photo, revision)}
             onCancel={() => setCropping(false)}
@@ -247,10 +247,13 @@ export function SheetPreviewDialog({
               <ChevronRight />
             </Button>
             <span className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-black/60 px-3 py-1 text-xs text-white/80 tabular-nums">
-              {/* The new render after a change of setting is on its way. */}
-              {shownSrc !== null && shownSrc !== src && (
-                <LoaderCircle className="size-3 animate-spin" aria-label={t('viewer.rendering')} />
-              )}
+              {/* The new render after a change of setting is on its way; the spinner keeps
+                  its place when hidden, so the text never shifts. */}
+              <LoaderCircle
+                className={cn('size-3 animate-spin', (shownSrc === null || shownSrc === src) && 'invisible')}
+                aria-label={shownSrc !== null && shownSrc !== src ? t('viewer.rendering') : undefined}
+                aria-hidden={shownSrc === null || shownSrc === src}
+              />
               {t('collage.position', { index: formatNumber(index + 1), count: formatNumber(sheets.length) })}
             </span>
             <ZoomControls
