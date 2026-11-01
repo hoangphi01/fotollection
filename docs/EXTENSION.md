@@ -1,6 +1,6 @@
 # File Formats — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-10-23
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-01
 >
 > The registry of **every file type Fotollection reads or writes**. For each type it lists the extension, MIME type, Uniform Type Identifier (UTI), how the file is recognized, the container, the current version, its limits and where it lives.
 > **Field-level schemas live only in [DATABASE.md](DATABASE.md)**; this file links to them and never repeats them. Any change to a format updates this file and DATABASE.md in the same commit ([§6](#6-change-rules)).

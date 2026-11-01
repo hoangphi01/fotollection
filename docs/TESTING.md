@@ -1,6 +1,6 @@
 # Testing Strategy — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-10-23
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-01
 >
 > How we prove that Fotollection is correct, robust and fast. Performance benchmarks are specified in [OPTIMIZATION.md](OPTIMIZATION.md).
 
@@ -81,3 +81,5 @@ Before tagging a release, on both `REF-MAC` and `REF-WIN`:
 3. Cancel an export midway. No partial files remain.
 4. Run with the network disabled. Everything works.
 5. Install over the previous version. Settings are preserved.
+6. Switch between Simple, Collage and Pro, with the menu and Cmd/Ctrl+1/2/3: the photos, basket and settings stay, and nothing of one mode shows in another.
+7. Print one collage sheet at a shop, with and without the cut line, and one print with the 3 mm border: measure the photo areas and the border against the app's figures.

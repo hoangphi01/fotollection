@@ -46,9 +46,9 @@ Nobody combines EXIF date/location stamping, trip auto-organization, and batch c
 ## 4. Core user journey
 
 1. **Import:** open a folder, or drag and drop photos or folders into the app. The library grid appears instantly, grouped by date (by trip in Phase 2).
-2. **Cull:** step through the photos with the keyboard, rate and flag them, and filter down to the set to print ([FR-022](#fr-022--culling-rate-flag-filter)). Later, a full-screen swipe mode builds the print list with ↑ / ↓ ([FR-046](#fr-046--swipe-culling)). Work is saved automatically to a project file ([FR-023](#fr-023--projects-autosave-and-undo)).
+2. **Cull:** step through the photos with the keyboard, rate and flag them, and filter down to the set to print ([FR-022](#fr-022--culling-rate-flag-filter)). In Simple mode, one photo at a time, ↑ keeps it and ↓ drops it ([FR-048](#fr-048--simple-collage-and-professional-modes), [FR-046](#fr-046--swipe-culling)). Work is saved automatically to a project file ([FR-023](#fr-023--projects-autosave-and-undo)).
 3. **Fix time and place:** correct a camera's clock offset ([FR-030](#fr-030--camera-clock-offset)), and fill in a missing date or place by hand ([FR-032](#fr-032--manual-date-and-place)) or from a phone or GPX track (Phase 2).
-4. **Choose sizes and style:** pick a print size per photo or per group ([FR-025](#fr-025--mixed-print-sizes-per-order)) and a stamp style ([FR-033](#fr-033--retro-film-date-stamp-and-stamp-presets)). Adjust crop frames. A live preview updates as settings change.
+4. **Choose sizes and style:** print one photo per sheet, or two to a sheet in Collage mode ([FR-035](#fr-035--multi-photo-layouts)); pick a print size per photo or per group ([FR-025](#fr-025--mixed-print-sizes-per-order)) and a stamp style ([FR-033](#fr-033--retro-film-date-stamp-and-stamp-presets)). Adjust crop frames. A live preview updates as settings change.
 5. **Check:** resolution warnings ([FR-026](#fr-026--resolution-warning)) and the safe-area overlay ([FR-028](#fr-028--safe-area-and-borders)) flag problems before printing.
 6. **Export:** export to a folder, or later with a lab preset ([FR-034](#fr-034--lab-presets)), with sRGB conversion ([FR-027](#fr-027--srgb-conversion-for-labs)). A progress view shows the batch, and the user can cancel at any time.
 7. **Order:** upload the exported folders to the print lab.
@@ -516,7 +516,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P2 (future); the full-screen ↑ / ↓ part is P1 in v0.9.0 as the Simple mode of [FR-048](#fr-048--simple-collage-and-professional-modes).** A full-screen, keyboard-first culling mode, inspired by swipe apps (right = like, left = pass) and Lightroom's loupe. It builds the **print list** at the speed of a key press.
 
-- One photo fills the screen. **↑ adds it to the print list, ↓ leaves it out** (already in the preview since v0.5.0, as the print basket and set aside of [FR-050](#fr-050--print-basket)), and both move on to the next photo at once. **← / →** step back and forward without deciding. **Space** shows the photo without overlays, and **Cmd/Ctrl+Z** undoes the last decision.
+- One photo fills the screen. **↑ adds it to the print list, ↓ leaves it out** (already in the preview since v0.5.0, as the print basket and set aside of [FR-050](#fr-050--print-basket)), and both move on to the next photo at once. **← / →** step back and forward without deciding. **Space** shows the photo without overlays (later; not in v0.9.0's Simple mode), and **Cmd/Ctrl+Z** undoes the last decision.
 - Leaving a photo out only removes it from the list. The file is never deleted or moved.
 - The print list is the set that gets exported. It builds on pick/reject ([FR-022](#fr-022--culling-rate-flag-filter)): ↑ is *pick*, ↓ is *reject*, and an undecided photo stays *unflagged*. Stars keep working inside the mode (`0`–`5`).
 - A progress bar shows decided / total and the size of the print list. The mode can resume where it stopped, and best-shot suggestions ([FR-041](#fr-041--best-shot-suggestions)) can pre-sort a burst so the best frame comes first.
@@ -540,7 +540,8 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Collage** puts two photos on one print, like a half-frame film camera put two frames on one negative ([FR-035](#fr-035--multi-photo-layouts)).
 - **Simple** is the "instant" mode: the shortest path from a folder to prints.
   - **One screen, three steps:** open a folder → one photo at a time, **↑ keep** (print basket) or **↓ drop** (set aside), and the next photo comes at once; two large buttons do the same with the mouse ([FR-050](#fr-050--print-basket), the full-screen part of [FR-046](#fr-046--swipe-culling)) → **Export**.
-  - **Few choices, good defaults:** print size (10×15 by default), date stamp on or off, the 3 mm border ([FR-067](#fr-067--3-mm-border-on-every-print)) and the destination. Crop is centred automatically, and everything else uses the Professional settings. No inspector, frame editor, fonts or crop editor on screen.
+  - **Few choices, good defaults:** prints or a size for social media ([FR-053](#fr-053--export-for-social-media)), print size (10×15 by default), the 3 mm border ([FR-067](#fr-067--3-mm-border-on-every-print)), the date stamp and its size, and the destination. Each photo keeps the crop, frame and stamp it has from Pro (centred when it has none); no inspector, frame editor, fonts or crop editor on screen. Pro's star and flag filters do not apply: the sidebar's folders and basket do.
+  - The culling keys work as in the preview: 0–5 stars, P / X / U flags, [ ] quarter turns ([FR-022](#fr-022--culling-rate-flag-filter)).
   - It exports the print basket at Professional quality.
 - **Later:** a faster Simple export sized for the print, at 300 DPI on the chosen size (about 1800 × 1200 px for 10×15) and q90, with decoding at reduced scale ([NFR-015](#nfr-015--normal-mode-speed)), measured before it is built; the grid on embedded EXIF thumbnails only.
 
@@ -661,7 +662,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-060 — Start-up screen
 
-**P1 (v0.6.0).** Opening the app shows the **logo and a loading bar** on the theme's background, never a half-built window: the screen is painted by the page itself before any script runs, and it fades out onto the finished workspace once the last session is back ([FR-023](#fr-023--projects-autosave-and-undo)). When the session reopens folders, the bar shows the import's progress, like the import bar; otherwise it slides. It never stays more than 15 s. It is the place where the choice between Simple, Collage and Professional mode ([FR-048](#fr-048--simple-collage-and-professional-modes)) will be asked the first time.
+**P1 (v0.6.0).** Opening the app shows the **logo and a loading bar** on the theme's background, never a half-built window: the screen is painted by the page itself before any script runs, and it fades out onto the finished workspace once the last session is back ([FR-023](#fr-023--projects-autosave-and-undo)). When the session reopens folders, the bar shows the import's progress, like the import bar; otherwise it slides. It never stays more than 15 s. Later, it may ask which mode to start in the first time ([FR-048](#fr-048--simple-collage-and-professional-modes)); not planned for v0.9.0.
 
 ### FR-061 — Check for updates
 

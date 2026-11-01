@@ -1,6 +1,6 @@
 # Architecture — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-10-23
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-01
 >
 > This document describes **how** the system is built. Requirements live in [PRD.md](PRD.md).
 > Performance design rationale lives in [OPTIMIZATION.md](OPTIMIZATION.md).
@@ -126,7 +126,7 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
   .oxlintrc.json         † # lint rules (bans dangerouslySetInnerHTML / eval)
   src/
     components/ui/       † # shadcn/ui components (copied in via the shadcn CLI, owned by us)
-    features/            † # library/, settings/, export/, culling/, frame/, viewer/, modes/, simple/ — feature components + hooks
+    features/            † # one folder per feature (components + hooks): library/, culling/, best-shot/, viewer/, settings/, stamp/, frame/, fonts/, export/, places/, cameras/, capture/, project/, history/, open-with/, startup/, window/, appearance/, about/, print-advice/, modes/, simple/, collage/
     i18n/                † # i18next setup + typed keys (FR-020, ADR-0015)
     locales/             † # en.json (default), vi.json — bundled, never fetched
     ipc/bindings.ts      † # GENERATED from Rust types — do not edit
@@ -232,7 +232,7 @@ Commands marked † are implemented.
 | `refresh_library() -> ImportSummary` † | Scans the library's folders again and adds photos that appeared since; photos already known keep every edit, and a refresh that finds nothing marks nothing as edited | FR-001, FR-023 |
 | `list_photos(filter) -> { photos: [PhotoSummary], total, customStamps, folders: [FolderSummary], printCount, asideCount }` † | Data for the grid, sorted by capture time and filtered in Rust by flag, minimum rating, folders (empty = all) and view (`gallery` hides photos set aside; `print` and `aside` show one holding area). Summaries carry `rating`, `flag` and `queue`; `folders` lists every source folder with its unfiltered count | FR-003, FR-022, FR-050, FR-056 |
 | `get_settings()` / `set_settings(settings) -> SettingsState` † | Validated render settings plus a `revision` used to refresh previews | FR-004, FR-006 |
-| `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`), stored per machine in `settings.json` v3 | FR-020 |
+| `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`, v3), theme (v6) and mode (`simple` / `collage` / `professional`, v10), stored per machine in `settings.json` | FR-020, FR-052, FR-048 |
 | `set_photo_override(id, override)` | Per-photo crop frame or place name | FR-005, FR-006 |
 | `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
 | `estimate_export(filter, only, sheets) -> ExportEstimate` † | The originals' total and the export's estimated size, from up to four photos encoded in memory with the current settings; nothing is written | FR-053 |
@@ -305,7 +305,7 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 | `export-finished` † | `{ jobId, summary: { exported, failed[], cancelled, destination, sourceBytes, outputBytes } }`. Per-photo failures are reported here; the two sizes let the UI say how much lighter the export is |
 | `revision-changed` † | `{ revision, canUndo, canRedo }` after any render-affecting edit; previews refresh |
 | `document-changed` † | `{ document }` after any edit, save, open, new or relink; the window title follows (`Trip — Edited — Fotollection`) |
-| `menu-action` † | `{ action: new \| open \| save \| saveAs \| openRequested }` from the native File menu (macOS) or a file handed over by the OS; the UI runs its own flow, unsaved-changes question included |
+| `menu-action` † | `{ action: new \| open \| save \| saveAs \| modeSimple \| modeCollage \| modeProfessional \| openRequested }` from the native File and View menus (macOS) or a file handed over by the OS; the UI runs its own flow, unsaved-changes question included |
 | `camera-status` † | `{ connected, name, issue? }`: a session started, or ended (`issue` says why: unplugged, failed calls) |
 | `camera-frame` † | `{ seq }`: a new live-view frame at `fotothumb://localhost/camera/live?seq={n}` |
 | `camera-settings-changed` † | `{ settings: { iso?, isoAuto, shutter?: { numerator, denominator }, aperture?, format? } }`, only when a value changed |

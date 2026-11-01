@@ -1,6 +1,6 @@
 # Optimization — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-10-23
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-01
 >
 > Performance is the #1 product quality for Fotollection, which targets enthusiast and professional photographers.
 > This document holds the **budgets**, the **methodology** used to measure them, the **design techniques** that meet them, and a **log** of every measurement.
@@ -87,7 +87,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [NFR-013](PRD.md#nfr-013--project-safety) | Edit-to-disk latency; project save time for 10,000 photos | ≤ 5 s; < 50 ms | `bench_project_save`, kill-during-write test |
 | [NFR-014](PRD.md#nfr-014--best-shot-analysis-speed) | Best-shot analysis per photo, 8 cores in parallel | ≤ 20 ms; ≤ 40 ms with faces | `bench_culling` on the `bench` corpus |
 | [NFR-015](PRD.md#nfr-015--normal-mode-speed) | Simple-mode export (after v0.9.0) to 10×15 @ 300 DPI, q90; first screen of 1,000 photos | ≥ 3× Professional (≥ 50 photos/s); < 0.5 s | `measure_folder` with a Simple-mode flag, same folders as `bench/run.sh` |
-| [NFR-021](PRD.md#nfr-021--collage-sheet-speed) | Collage sheet preview; sheet export | ≤ 2× NFR-002; ≤ its two photos exported alone | `measure_sheet` (to add), demo folder pairs |
+| [NFR-021](PRD.md#nfr-021--collage-sheet-speed) | Collage sheet preview; sheet export | ≤ 2× NFR-002; ≤ its two photos exported alone | `measure_sheet` (`crates/core/examples/measure_sheet.rs`), two 26 MP demo photos |
 
 ### Reference machines
 

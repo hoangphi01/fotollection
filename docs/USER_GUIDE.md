@@ -371,9 +371,9 @@ The same popover shows the **cache**: the thumbnails and best-shot analyses Foto
 2. The first photo fills the middle, **as it will print**, with your print size, date stamp and border.
 3. Press **↑** or click **Keep**: the photo goes into the print basket, and the next one comes.
 4. Press **↓** or click **Drop**: the photo is set aside, never deleted, and the next one comes.
-5. **← →** step back and forward without deciding. **Cmd/Ctrl+Z** undoes the last keep or drop.
+5. **← →** step back and forward without deciding. **Cmd/Ctrl+Z** undoes the last keep or drop. The culling keys of the preview work too: **0**–**5** stars, **P** / **X** / **U** flags, **[** / **]** quarter turns.
 6. The bar above the photo counts where you are, and how many you kept and dropped.
-7. In the panel on the right, choose the **print size**, the **3 mm border** and the **date stamp** with its size, then **Choose destination…** and **Export**: it saves the photos you kept.
+7. In the panel on the right, choose **Print** or **Share online**, the **print size**, the **3 mm border** and the **date stamp** with its size, then **Choose destination…** and **Export**: it saves the photos you kept.
 
 <!-- shot: simple | Simple mode: the photo as it will print, Keep and Drop, and Export of the kept photos -->
 
@@ -448,7 +448,7 @@ Every change is one undo step. The date stamp prints on each photo; the info fra
 | Select mode | click, **Shift**+click | Tick one photo, tick a range |
 | Select mode | **Cmd/Ctrl+A** | Tick every photo shown |
 | Select mode | **Enter** | Tick the selected photo |
-| Select mode | hold **Space** | Quick-preview; **← →** next, **Enter** tick, release to close |
+| Select mode (Pro) | hold **Space** | Quick-preview; **← →** next, **Enter** tick, release to close |
 | Select mode | **Esc** | Leave select mode |
 | Everywhere | **Cmd/Ctrl+Z**, **Shift+Cmd/Ctrl+Z** or **Cmd/Ctrl+Y** | Undo, redo (chapter 13) |
 | Everywhere | **Cmd/Ctrl+1**, **2**, **3** | Simple, Collage, Pro (chapter 1) |

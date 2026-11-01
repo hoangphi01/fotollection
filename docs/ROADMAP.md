@@ -1,6 +1,6 @@
 # Roadmap — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-10-23
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-01
 >
 > This file defines **when**: it assigns requirements to phases. What each requirement means is defined in [PRD.md](PRD.md). Progress is tracked in [STATUS.md](STATUS.md).
 > Every FR in the PRD appears in exactly one phase below. `scripts/check-docs.sh` enforces this.

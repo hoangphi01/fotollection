@@ -369,9 +369,9 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 2. Ảnh đầu tiên hiện ở giữa, **đúng như khi in**, với khổ in, dấu ngày và viền của bạn.
 3. Nhấn **↑** hoặc nhấp **Giữ**: ảnh vào giỏ in, và ảnh kế tiếp hiện ra.
 4. Nhấn **↓** hoặc nhấp **Bỏ**: ảnh được để riêng, không bao giờ bị xoá, và ảnh kế tiếp hiện ra.
-5. **← →** đi lùi, đi tới mà không quyết định. **Cmd/Ctrl+Z** hoàn tác lần giữ hoặc bỏ vừa rồi.
+5. **← →** đi lùi, đi tới mà không quyết định. **Cmd/Ctrl+Z** hoàn tác lần giữ hoặc bỏ vừa rồi. Các phím lọc ảnh của bản xem trước cũng dùng được: **0**–**5** chấm sao, **P** / **X** / **U** gắn cờ, **[** / **]** xoay một phần tư.
 6. Thanh phía trên ảnh cho biết bạn đang ở ảnh nào, đã giữ và đã bỏ bao nhiêu.
-7. Ở bảng bên phải, chọn **khổ in**, **viền 3 mm** và **dấu ngày** cùng cỡ chữ, rồi **Chọn nơi lưu…** và **Xuất**: app lưu những ảnh bạn đã giữ.
+7. Ở bảng bên phải, chọn **In ảnh** hoặc **Mạng xã hội**, **khổ in**, **viền 3 mm** và **dấu ngày** cùng cỡ chữ, rồi **Chọn nơi lưu…** và **Xuất**: app lưu những ảnh bạn đã giữ.
 
 <!-- shot: simple | Chế độ Đơn giản: ảnh đúng như khi in, nút Giữ và Bỏ, và Xuất những ảnh đã giữ -->
 
@@ -446,7 +446,7 @@ Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên t�
 | Chế độ Chọn | nhấp, **Shift**+nhấp | Tích một tấm, tích cả dải |
 | Chế độ Chọn | **Cmd/Ctrl+A** | Tích mọi ảnh đang hiện |
 | Chế độ Chọn | **Enter** | Tích ảnh đang chọn |
-| Chế độ Chọn | giữ **Space** | Xem nhanh; **← →** tấm sau, **Enter** tích, thả ra để đóng |
+| Chế độ Chọn (Pro) | giữ **Space** | Xem nhanh; **← →** tấm sau, **Enter** tích, thả ra để đóng |
 | Chế độ Chọn | **Esc** | Rời chế độ Chọn |
 | Mọi nơi | **Cmd/Ctrl+Z**, **Shift+Cmd/Ctrl+Z** hoặc **Cmd/Ctrl+Y** | Hoàn tác, làm lại (chương 13) |
 | Mọi nơi | **Cmd/Ctrl+1**, **2**, **3** | Đơn giản, Ghép ảnh, Pro (chương 1) |

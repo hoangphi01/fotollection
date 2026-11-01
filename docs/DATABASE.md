@@ -1,6 +1,6 @@
 # Data & Persistence — Fotollection
 
-> **Status:** Draft v0.2 · **Last reviewed:** 2026-10-23
+> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-01
 >
 > This document is the single source of truth for **everything Fotollection stores**: where it lives, the **normalized data model**, the schemas, versioning and migration, safe writes, the in-memory layout, and retention.
 > Fotollection has **no database server and no embedded SQL database** ([ADR-0010](adr/0010-project-file-format.md)). Persistent state is a small set of versioned files, modelled **as if they were relational tables** and normalized to 3NF ([§2](#2-normalization-rules)).
@@ -189,6 +189,10 @@ Photo 18 stores only its flag. Every other value comes from `settings` (rule N5)
 | `crop` | `{ cx, cy, zoom }`: centre 0–1 of the upright photo, zoom 1–8 | **Ratio-independent** (N4): the rectangle is derived at render time for the current print size or framed photo area, so changing size never invalidates it. Sanitized on load |
 | `date` (planned as `manual_date`) | camera-local `YYYY-MM-DDTHH:MM:SS`, 1826–2100 (v8) | A date set by hand; it wins over the camera's time and any clock offset ([FR-032](PRD.md#fr-032--manual-date-and-place)). Unreadable or out-of-range values are dropped on load |
 | `place` + `place_source` | GeoNames id + `manual` / `borrowed` (v8) | Only for **manual or borrowed** places ([FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track), [FR-032](PRD.md#fr-032--manual-date-and-place)). GPS read from EXIF is never copied here (N4). An id not in the bundled data, or any other source, drops both on load |
+| `queue` | `print` / `aside` (v6) | The print basket or set aside ([FR-050](PRD.md#fr-050--print-basket)); omitted in the gallery |
+| `collage` | `u32` (v9) | The photo's place in the library's one collage order ([FR-035](PRD.md#fr-035--multi-photo-layouts)); omitted until the user reorders |
+| `sheet_turned` | `true` (v9) | The sheet this photo starts is turned against it; omitted when not |
+| `collage_crop` | `{ cx, cy, zoom }` (v9) | The photo's crop on a collage sheet, apart from `crop`; omitted to use `crop` |
 | `places[].name` | string, 1–80 characters (v8) | The name printed for a place the user renamed ([FR-005](PRD.md#fr-005--location-stamp-offline)), trimmed on load; empty names are dropped. Not part of the undo history, like camera clocks |
 | `preset` | FK → `presets` | Omitted when it equals `settings.default_preset` ([FR-038](PRD.md#fr-038--print-presets)) |
 | `overrides` | object of setting paths → values | Only the values that differ from the effective preset (N5) |
@@ -255,14 +259,17 @@ These are read-only and compiled into the binary or bundled as resources, so the
 ```json
 {
   "format": "fotollection-settings",
-  "schema_version": 8,
-  "ui": { "language": "vi" },
+  "schema_version": 10,
+  "ui": { "language": "vi", "theme": "system", "mode": "professional" },
   "render": {
     "printSize": "custom-1",
     "stamp": { "enabled": true, "format": "retro", "corner": "bottomRight", "color": "retroOrange",
-               "place": true, "caption": "Summer in Debrecen" },
+               "place": true, "caption": "Summer in Debrecen", "size": "medium" },
     "customSizes": [ { "id": "custom-1", "name": "4×6 US", "shortMm": 102, "longMm": 152, "unit": "in" } ],
-    "placeFormat": "city"
+    "placeFormat": "city",
+    "exportTarget": { "kind": "print" },
+    "border": false,
+    "collage": { "ratio": "photo", "marginMm": 5, "size": null, "lockRatio": true, "cutLine": true }
   },
   "frame": {
     "enabled": true, "fit": "crop", "color": "white", "dateFormat": "slash", "font": 1, "logoStyle": "classic",
@@ -282,7 +289,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 - **`cameras` is a table** (N1–N3): the key is `id`, `(make, model)` is unique, and every override is optional (sparse, N5). A missing value falls back to EXIF or to a derived default, which is computed and never stored (N4). A row is created the first time a camera is imported.
 - **`fonts` is a table** (FR-042): `id` is the key, and the file lives at `fonts/<id>.<ttf|otf>`. `render.stamp.font` and `frame.font` are foreign keys. A dangling key falls back to Inter on load (N7) rather than failing.
 - **`render.customSizes`** (FR-043): values are in mm, `unit` only affects labels, and `printSize` may reference a custom `id`.
-- **`ui`** (FR-020): per-machine interface preferences, today only `language` (`"en"` or `"vi"`, default `"en"`). They are never copied into a project file, so opening a project on another machine keeps that machine's language.
+- **`ui`** (FR-020): per-machine interface preferences: `language` (`"en"` or `"vi"`, default `"en"`), `theme` (v6) and `mode` (v10: `simple`, `collage` or `professional`, the default). They are never copied into a project file, so opening a project on another machine keeps that machine's language.
 - **Logos** live next to the file as `logos/<camera-id>.png`, copied in after validation ([ADR-0014](adr/0014-user-supplied-brand-logos.md)). The JSON never references paths outside the config dir. `logo: "image"` means the file exists.
 - **Writes** use the same atomic protocol as projects ([§4.4](#44-write-protocol)): `.json.tmp`, then fsync, then the previous file copied to `.json.bak`, then rename. A write happens on every settings change; changes are rare and the file is tiny.
 - **Load rules:**
