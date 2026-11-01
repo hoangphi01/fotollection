@@ -5,9 +5,11 @@
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 1 — MVP, v0.8.2 released (Linux); v0.9.0 "Three modes" built, to check by hand before release
+## Current phase: Phase 1 — MVP, v0.8.3 released; v0.9.0 "Three modes" built, to check by hand before release
 
 **Hotfix v0.8.1 (2026-11-01).** A user saw JPEGs as green stripes: baseline files with one scan per component and 4:2:0 colour, which `zune-jpeg` 0.5.15 decodes wrongly without an error. v0.8.1, built from the `v0.8.0` tag on `hotfix/0.8.1`, reads the layout from the header and sends every layout zune has not proven to `jpeg-decoder` ([ADR-0033](adr/0033-reference-jpeg-decoder.md), [LESSONS](LESSONS.md)); thumbnails are made again once. Merged into `main` the same day, so v0.9.0 carries it.
+
+**v0.8.3 (2026-11-01).** From `release/0.8`, after user feedback: with photos ticked, Export writes only them (FR-050), and a red *Report a problem* button in the versions popover opens the GitHub issue forms (FR-069). Merged into `main`.
 
 **v0.8.2 "Linux" (2026-11-01).** The lean Linux build from `release/0.8`: AppImage and `.deb` for x86_64 and ARM64, no camera capture, HEIC later (FR-068) ([ADR-0034](adr/0034-linux-lean.md)). The release smoke-tests both on Ubuntu 22.04 and Debian 12; `curl -fsSL https://fotollection.org/install.sh | sh` and the signed APT repository at fotollection.org/apt ([ADR-0035](adr/0035-linux-install-from-fotollection-org.md)) were checked by installing in a Debian 12 container. Merged into `main`.
 
