@@ -64,8 +64,9 @@ export function SheetTile({
     <div
       className={cn(
         'group relative flex shrink-0 items-center justify-center rounded-md bg-muted/40 p-2',
-        // Framed like the gallery's selected photo (thumb-tile.tsx).
-        selected && 'ring-[3px] ring-primary ring-offset-2 ring-offset-background',
+        // Framed like the gallery's selected photo (thumb-tile.tsx). In select mode the one
+        // frame says the sheet is ticked: no frame per photo, no chosen cell.
+        (selectMode ? ticked : selected) && 'ring-[3px] ring-primary ring-offset-2 ring-offset-background',
       )}
       style={{ width: size, height: size }}
     >
@@ -74,7 +75,7 @@ export function SheetTile({
       {!shape.loaded && (
         <LoaderCircle className="absolute inset-0 m-auto size-5 animate-spin text-muted-foreground" />
       )}
-      <div className={cn('relative rounded-sm', selectMode && ticked && 'ring-[3px] ring-primary')}>
+      <div className="relative">
         <img
           src={src}
           alt={t('collage.sheetLabel')}
@@ -92,7 +93,7 @@ export function SheetTile({
               className={cn(
                 'relative flex-1 rounded-sm transition-colors',
                 selectMode ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing',
-                selected && selectedCell === cell && 'ring-2 ring-primary ring-inset',
+                !selectMode && selected && selectedCell === cell && 'ring-2 ring-primary ring-inset',
                 dragging !== null && over !== undefined && over === photo && dragging !== photo && 'bg-primary/25',
                 dragging === photo && photo !== null && 'outline-2 -outline-offset-2 outline-primary outline-dashed',
               )}
@@ -109,16 +110,18 @@ export function SheetTile({
         </SheetCellsOverlay>
         {selectMode && <TickCircle checked={ticked} className="pointer-events-none absolute right-1.5 bottom-1.5" />}
       </div>
-      <Button
-        variant="secondary"
-        size="icon-xs"
-        className={cn('absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100', selected && 'opacity-100')}
-        aria-label={t('collage.turn')}
-        data-hint={t('collage.turnHint')}
-        onClick={onTurn}
-      >
-        <RotateCw />
-      </Button>
+      {!selectMode && (
+        <Button
+          variant="secondary"
+          size="icon-xs"
+          className={cn('absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100', selected && 'opacity-100')}
+          aria-label={t('collage.turn')}
+          data-hint={t('collage.turnHint')}
+          onClick={onTurn}
+        >
+          <RotateCw />
+        </Button>
+      )}
     </div>
   )
 }
