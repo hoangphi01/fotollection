@@ -51,7 +51,9 @@ jobs:
     needs: [detect, check]
     name: build (${{ matrix.os }})
     strategy:
-      fail-fast: true
+      # Every system finishes and reports, so one run shows every failure; publish still
+      # needs all four.
+      fail-fast: false
       matrix:
         include:
           - os: macos-latest
@@ -116,6 +118,14 @@ jobs:
           # shellcheck disable=SC2086 # the arguments are meant to split
           npm run build -- $args
 
+      # Uploaded before the smoke test, so a failed test leaves the installers to try by hand;
+      # publish still needs every build job to pass.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          path: ${{ matrix.bundle }}
+          if-no-files-found: error
+
       # Linux has no machine of ours to try it on, so the release proves it starts
       # (TESTING §7): the .deb installs and registers its file types, and the AppImage
       # runs for 20 s without a crash, here (glibc 2.35) and on Debian 12.
@@ -137,11 +147,12 @@ jobs:
           code=0
           # A bare debian:12 image has no desktop libraries at all. An AppImage leaves out the
           # ones every desktop ships (fontconfig, GL, X11: the AppImage exclude list), so the
-          # container first gets GTK 3 and GL, the floor of any Debian desktop, then lists any
-          # library the AppImage still cannot find before it runs (LESSONS 2026-11-01).
+          # container first gets GTK 3 and Mesa (GL, EGL, GLES, DRI), the floor of any Debian
+          # desktop, then lists any library the AppImage still cannot find before it runs.
+          # WebKit opens GLES at run time, which ldd cannot see (LESSONS 2026-11-01).
           docker run --rm -v "$PWD/$appimage:/app.AppImage:ro" debian:12 bash -c \
             'apt-get update -qq &&
-             apt-get install -y -qq xvfb xauth libgtk-3-0 libgl1 libegl1 libgbm1 >/dev/null &&
+             apt-get install -y -qq xvfb xauth libgtk-3-0 libgl1 libegl1 libgles2 libgbm1 libgl1-mesa-dri >/dev/null &&
              cd /tmp && /app.AppImage --appimage-extract >/dev/null &&
              export LD_LIBRARY_PATH=$(find squashfs-root/usr -name "*.so*" -printf "%h\n" | sort -u | paste -sd:) &&
              missing=$(find squashfs-root/usr -type f \( -name "*.so*" -o -perm -u+x \) -exec ldd {} + 2>/dev/null |
@@ -150,12 +161,6 @@ jobs:
              [ -z "$missing" ] || { echo "missing on Debian 12: $missing"; exit 1; };
              timeout 20 xvfb-run -a squashfs-root/AppRun' || code=$?
           [ "$code" = 124 ] || { echo "the AppImage exited with $code on Debian 12"; exit 1; }
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: installers-${{ matrix.os }}
-          path: ${{ matrix.bundle }}
-          if-no-files-found: error
 
   publish:
     needs: [detect, build]
