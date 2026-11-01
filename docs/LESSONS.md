@@ -13,6 +13,13 @@
 
 ## 2026-11-01
 
+### Rotate photo turned the whole collage sheet (FR-035)
+
+- **Seen:** on a collage sheet, *Rotate photo* on the first photo stood the sheet up instead of turning only the photo in its half.
+- **Why:** the sheet takes its orientation from its first photo's shape, and that shape was read after the photo's turns in its cell, so turning the photo also changed the input that decides the sheet.
+- **Fix:** `sheet::layout_turned` lays the sheet out from the photo before its cell turns, in the panel, the crop editor, the preview and the export.
+- **Rule:** a setting that changes one thing must not feed the input of another decision; when a value is derived (the sheet's orientation from the first photo), derive it from the state before the new edit, and test that the edit leaves the rest unchanged.
+
 ### The APT repository's first real run copied a folder into itself (ADR-0035)
 
 - **Seen:** the first website build after v0.8.2 failed in *APT repository*: `cp: cannot copy a directory, '.', into itself, '_site/apt/.'`. Every earlier build had skipped the step, since no release had a `.deb` yet.

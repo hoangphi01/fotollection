@@ -314,7 +314,14 @@ impl PreviewCache {
             }
         }
         let print = crate::sheet::sheet_print(settings);
-        let turned = photos[0].is_some_and(|(r, _)| r.edits.sheet_turned);
+        let turned = match (photos[0], &images[0]) {
+            (Some((r, _)), Some(image)) => crate::sheet::layout_turned(
+                r.edits.sheet_turned,
+                r.edits.sheet_turns(),
+                (image.width, image.height),
+            ),
+            _ => false,
+        };
         let image = crate::sheet::render_sheet(settings, print, sources, turned, Some(long_edge))?;
         Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
     }

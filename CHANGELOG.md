@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Collage:** *Rotate photo* turns only the photo in its half; the sheet no longer turns with it when the photo is the sheet's first.
 - **Export with ticked photos:** while photos are ticked in select mode, the export button says *Export 3 selected photos* and writes only those, instead of every photo shown (user feedback).
 - **3 mm border:** photos exported for social media no longer get it; Pro's photo preview shows the switch again; the size badges and the DPI follow the photo inside the border; dragging the photo in the preview keeps pace with the pointer.
 - **Collage:** cropping a photo on a sheet no longer changes its print crop (sheets have a crop of their own); reordering in one folder keeps the others' order; a sheet's quality counts the photo's crop and straightening.

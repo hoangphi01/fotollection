@@ -206,13 +206,16 @@ fn encode_sheet(
             caption: record.edits.caption.as_deref(),
         });
     }
-    let image = crate::sheet::render_sheet(
-        options.settings,
-        print,
-        sources,
-        first.edits.sheet_turned,
-        None,
-    )?;
+    let turned = decoded
+        .first()
+        .map_or(first.edits.sheet_turned, |(image, _)| {
+            crate::sheet::layout_turned(
+                first.edits.sheet_turned,
+                first.edits.sheet_turns(),
+                (image.width, image.height),
+            )
+        });
+    let image = crate::sheet::render_sheet(options.settings, print, sources, turned, None)?;
     drop(decoded);
     if cancel.is_cancelled() {
         return Err(ExportError::Cancelled);

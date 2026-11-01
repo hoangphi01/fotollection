@@ -212,10 +212,11 @@ pub async fn sheet_info(app: AppHandle, sheet: SheetPair) -> Result<SheetInfo, I
             };
         let a = fact(&first)?;
         let b = second.as_ref().map(fact).transpose()?;
+        let turned = sheet::layout_turned(first.edits.sheet_turned, first.edits.sheet_turns(), a.1);
         Ok(sheet::info(
             sheet::sheet_print(&settings),
             [Some(a), b],
-            first.edits.sheet_turned,
+            turned,
             &settings,
         ))
     })
@@ -242,7 +243,7 @@ pub fn cell_geometry(
             "The photo is not on this sheet",
         ));
     };
-    let (first, turned) = {
+    let (first, partner) = {
         let library = state
             .library
             .read()
@@ -250,13 +251,22 @@ pub fn cell_geometry(
         let first = library
             .record(sheet.first)
             .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
-        let other = partner.and_then(|id| library.record(id));
-        (other, first.edits.sheet_turned)
+        (first, partner.and_then(|id| library.record(id)))
     };
-    let other = match &first {
+    let other = match &partner {
         Some(r) => Some(sheet_size(state, r)?),
         None => None,
     };
+    let first_size = if sheet.first == record.id {
+        size
+    } else {
+        other.unwrap_or(size)
+    };
+    let turned = sheet::layout_turned(
+        first.edits.sheet_turned,
+        first.edits.sheet_turns(),
+        first_size,
+    );
     let photos = if sheet.first == record.id {
         [Some(size), other]
     } else {

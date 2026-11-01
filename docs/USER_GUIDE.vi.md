@@ -405,7 +405,7 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
    - **← →** sang các tấm khác; khi đã chọn ảnh, **↑** cho ảnh vào giỏ in và **↓** để riêng (hoặc nút giỏ cạnh ảnh), các nút phóng to hoặc **Cmd/Ctrl + / −** để phóng;
    - **Cắt ảnh** (hoặc **C**, hoặc nút cắt cạnh mỗi ảnh) cắt và cân ngang ảnh đang chọn cho vị trí của nó trên tấm; việc này không đổi bản in của ảnh, và Đặt lại đưa vùng cắt về giữa;
    - **Xoay tấm** (**R**) xoay tấm sang hướng kia;
-   - **Xoay ảnh** (**⇧R**) xoay ảnh đang chọn 90° trong nửa của nó, chỉ trên tấm này: khi một ảnh ngang chung tấm với một ảnh dọc, ảnh ngang sẽ lấp đầy nửa của nó thay vì nằm nhỏ ở giữa. Bản in riêng của ảnh không đổi;
+   - **Xoay ảnh** (**⇧R**) xoay ảnh đang chọn 90° trong nửa của nó, chỉ trên tấm này, còn tấm giữ nguyên (**Xoay tấm** mới xoay cả tấm): khi một ảnh ngang chung tấm với một ảnh dọc, ảnh ngang sẽ lấp đầy nửa của nó thay vì nằm nhỏ ở giữa. Bản in riêng của ảnh không đổi;
    - bảng bên phải liệt kê hai ảnh, có cùng thẻ *Hai ảnh mỗi tấm* và *Dấu ngày*, và **Xuất tấm này** lưu riêng tấm đó. Ở *Dòng chữ dưới ngày*, tắt **Giống nhau cho cả 2 ảnh** để gõ dòng riêng cho từng ảnh; phần còn lại của dấu ngày vẫn như nhau cho cả hai;
 8. **Xuất** ở bảng bên phải lưu mỗi tấm một tệp, đặt tên theo hai ảnh của nó (ví dụ `P1000123+P1000124.jpg`), trong thư mục ngày của ảnh đầu.
 

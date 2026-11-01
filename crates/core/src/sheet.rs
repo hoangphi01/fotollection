@@ -86,6 +86,17 @@ pub fn side_by_side(first: (u32, u32), turned: bool) -> bool {
     landscape_photo == turned
 }
 
+/// The `turned` to lay a sheet out with, given its first photo as it sits on the sheet
+/// (`size`, its own `cell_turns` included): a photo turned in its cell keeps the sheet as it
+/// was, since only the photo turns (FR-035). A square photo looks the same either way.
+pub fn layout_turned(turned: bool, cell_turns: u8, size: (u32, u32)) -> bool {
+    if cell_turns % 2 == 1 && size.0 != size.1 {
+        !turned
+    } else {
+        turned
+    }
+}
+
 /// The sheet split across its long edge: side by side on a landscape sheet, one above the
 /// other on a standing one.
 pub fn cells(print: PrintSize, side_by_side: bool) -> (f32, f32, [RectMm; 2]) {
@@ -985,5 +996,23 @@ mod tests {
         assert_eq!(at(750, 500), CUT_LINE_ON_BLACK, "a darker cut line");
         assert_eq!(at(375, 500), [200, 30, 30], "the photo itself");
         Ok(())
+    }
+
+    #[test]
+    fn fr_035_turning_a_photo_in_its_cell_keeps_the_sheet() {
+        let s = CollageSettings::default();
+        // A portrait photo: two side by side, the half-frame look.
+        let upright = (4000, 6000);
+        let before = layout(print(), [Some(upright), Some(upright)], false, &s);
+        // Turned a quarter in its cell, it lies; the sheet must not stand up with it.
+        let lying = (6000, 4000);
+        let turned = layout_turned(false, 1, lying);
+        let after = layout(print(), [Some(lying), Some(upright)], turned, &s);
+        assert_eq!(before.side_by_side, after.side_by_side);
+        assert_eq!((before.width, before.height), (after.width, after.height));
+        // Two quarter turns, or a square photo, change nothing; "Turn sheet" still turns it.
+        assert!(!layout_turned(false, 2, lying));
+        assert!(!layout_turned(false, 1, (5000, 5000)));
+        assert!(layout_turned(true, 0, upright));
     }
 }
