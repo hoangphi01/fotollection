@@ -13,6 +13,9 @@ en:
   nav_manual: Manual
   to_top: Back to top
   copy_label: Copy
+  dl_title: Download
+  dl_description: "Fotollection for macOS, Windows and Linux: the installers, the first-launch steps, the Linux commands and repository, and what is new in each version."
+  dl_kicker: Download
   copied_label: Copied
   star: Star on GitHub
   badge: Free · Open source · No account
@@ -378,6 +381,9 @@ vi:
   nav_manual: Hướng dẫn
   to_top: Lên đầu trang
   copy_label: Sao chép
+  dl_title: Tải về
+  dl_description: "Fotollection cho macOS, Windows và Linux: bộ cài, các bước mở lần đầu, lệnh cài và kho APT cho Linux, và những gì mới trong từng phiên bản."
+  dl_kicker: Tải về
   copied_label: Đã sao chép
   star: Gắn sao trên GitHub
   badge: Miễn phí · Mã nguồn mở · Không cần tài khoản

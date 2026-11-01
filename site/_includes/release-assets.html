@@ -1,0 +1,18 @@
+{%- comment -%} The latest release and its files, for the download buttons of the home page and the
+     Download page (site/README.md). {%- endcomment -%}
+{%- assign release = site.github.latest_release -%}
+{%- assign mac = nil -%}{%- assign win = nil -%}
+{%- comment -%} Linux has four files (ADR-0034), matched on how the name ends, so the updater's
+     .AppImage.tar.gz and .sig files never match. {%- endcomment -%}
+{%- assign appimage_x64 = nil -%}{%- assign appimage_arm = nil -%}{%- assign deb_x64 = nil -%}{%- assign deb_arm = nil -%}
+{%- for asset in release.assets -%}
+  {%- if asset.name contains '.dmg' -%}{%- assign mac = asset.browser_download_url -%}{%- endif -%}
+  {%- if asset.name contains '-setup.exe' -%}{%- assign win = asset.browser_download_url -%}{%- endif -%}
+  {%- assign end15 = asset.name | slice: -15, 15 -%}{%- assign end17 = asset.name | slice: -17, 17 -%}{%- assign end10 = asset.name | slice: -10, 10 -%}
+  {%- if end15 == '_amd64.AppImage' -%}{%- assign appimage_x64 = asset.browser_download_url -%}{%- endif -%}
+  {%- if end17 == '_aarch64.AppImage' -%}{%- assign appimage_arm = asset.browser_download_url -%}{%- endif -%}
+  {%- if end10 == '_amd64.deb' -%}{%- assign deb_x64 = asset.browser_download_url -%}{%- endif -%}
+  {%- if end10 == '_arm64.deb' -%}{%- assign deb_arm = asset.browser_download_url -%}{%- endif -%}
+{%- endfor -%}
+{%- capture releases %}{{ site.repo_url }}/releases/latest{% endcapture -%}
+{%- if page.lang == 'vi' %}{% assign path_download = '/vi/download/' | relative_url %}{% else %}{% assign path_download = '/download/' | relative_url %}{% endif -%}
