@@ -1587,15 +1587,15 @@ pub async fn get_crop_geometry(
             .map_err(|e| IpcError::internal(e.to_string()))?
             .0
             .clone();
-        // A photo of a collage sheet is cropped to its photo area (FR-035).
+        // A photo of a collage sheet is cropped to its photo area, turned as it sits there
+        // (FR-035).
         if let Some(sheet) = sheet {
-            return crate::collage::cell_geometry(
-                &state,
-                &record,
-                (width, height),
-                sheet,
-                &settings,
-            );
+            let size = if record.edits.sheet_turns() % 2 == 1 {
+                (height, width)
+            } else {
+                (width, height)
+            };
+            return crate::collage::cell_geometry(&state, &record, size, sheet, &settings);
         }
         let print = settings
             .print_for(width, height)
@@ -1840,7 +1840,7 @@ pub fn redo(app: AppHandle, state: State<'_, AppState>) -> Result<HistoryState, 
 }
 
 /// Bytes for `fotothumb://localhost/source/{id}`: the upright, uncropped T2 image.
-pub fn source_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
+pub fn source_bytes(state: &AppState, id: PhotoId, sheet: bool) -> Result<Vec<u8>, String> {
     let record = state
         .library
         .read()
@@ -1849,7 +1849,7 @@ pub fn source_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
         .ok_or_else(|| "unknown photo".to_owned())?;
     state
         .previews
-        .source_jpeg(&record, state.codec.as_ref())
+        .source_jpeg(&record, sheet, state.codec.as_ref())
         .map_err(|e| e.to_string())
 }
 

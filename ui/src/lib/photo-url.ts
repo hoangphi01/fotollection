@@ -13,9 +13,9 @@ export function thumbUrl(id: number, version = 0, generation = 0): string {
   return `${base}/thumb/${id}?v=${version}&g=${generation}`
 }
 
-/** The upright, uncropped photo, for the crop editor. */
-export function sourceUrl(id: number, revision: number): string {
-  return `${base}/source/${id}?rev=${revision}`
+/** The upright, uncropped photo, for the crop editor; `sheet` turns it as it sits in its collage cell. */
+export function sourceUrl(id: number, revision: number, sheet = false): string {
+  return `${base}/source/${id}?rev=${revision}${sheet ? '&sheet=1' : ''}`
 }
 
 /** The connected camera's latest live-view frame (FR-062); `seq` comes with `camera-frame`. */

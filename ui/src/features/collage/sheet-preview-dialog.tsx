@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ChevronLeft, ChevronRight, Crop, Download, Images, LoaderCircle, RotateCw, ShoppingBasket } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Crop, Download, Images, LoaderCircle, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -104,6 +104,8 @@ export function SheetPreviewDialog({
     choose(null)
     collage.select(Math.min(sheets.length - 1, Math.max(0, index + delta)), 0)
   }
+  // A quarter turn of the photo in its cell only (FR-035): its print keeps its orientation.
+  const rotatePhoto = (id: PhotoId) => void commands.rotateCollagePhoto(id)
   const onKeyDown = (event: KeyboardEvent) => {
     if (cropping || ownsArrowKeys(event.target)) return
     if (zoom.onKey(event)) return
@@ -114,6 +116,8 @@ export function SheetPreviewDialog({
     else if (event.key === 'ArrowDown') send('aside')
     else if (pressed === '1' || pressed === '2') choose(pressed === '1' ? 0 : 1)
     else if (pressed === 'c' && photo !== null) setCropping(true)
+    // ⇧R turns the chosen photo in its cell; R alone turns the sheet.
+    else if (pressed === 'r' && event.shiftKey && photo !== null) rotatePhoto(photo)
     else if (pressed === 'r' && sheet && !event.metaKey && !event.ctrlKey) collage.turn(sheet.first)
     else return
     event.preventDefault()
@@ -158,6 +162,7 @@ export function SheetPreviewDialog({
                   { keys: ['↓'], label: t('viewer.downAside') },
                   { keys: ['C'], label: t('viewer.crop') },
                   { keys: ['R'], label: t('collage.turn') },
+                  { keys: ['⇧R'], label: t('collage.rotatePhoto') },
                   { keys: ['Esc'], label: t('viewer.close') },
                 ]
           }
@@ -168,7 +173,7 @@ export function SheetPreviewDialog({
           <CropEditor
             key={photo}
             geometry={geometry}
-            sourceSrc={sourceUrl(photo, revision)}
+            sourceSrc={sourceUrl(photo, revision, true)}
             onCancel={() => setCropping(false)}
             onCommit={(crop, straighten) => {
               setCropping(false)
@@ -223,6 +228,12 @@ export function SheetPreviewDialog({
               <Button variant="secondary" size="sm" disabled={!sheet} onClick={() => sheet && collage.turn(sheet.first)}>
                 <RotateCw data-icon="inline-start" /> {t('collage.turn')}
               </Button>
+              {/* Turns the chosen photo in its cell, so a landscape photo fills a standing cell. */}
+              <span data-hint={photo === null ? t('collage.pickToRotate') : t('collage.rotatePhotoHint')}>
+                <Button variant="secondary" size="sm" disabled={photo === null} onClick={() => photo !== null && rotatePhoto(photo)}>
+                  <RotateCwSquare data-icon="inline-start" /> {t('collage.rotatePhoto')}
+                </Button>
+              </span>
             </div>
             <Button
               variant="secondary"

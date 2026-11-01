@@ -401,6 +401,7 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
    - **← →** go to the other sheets; with a photo chosen, **↑** puts it in the print basket and **↓** sets it aside (or the basket button next to it), and the zoom buttons or **Cmd/Ctrl + / −** zoom in;
    - **Crop** (or **C**, or the crop button next to a photo) crops and straightens the chosen photo for its place on the sheet; this never changes its print, and Reset centres it;
    - **Turn the sheet** (**R**) turns it the other way;
+   - **Rotate photo** (**⇧R**) turns the chosen photo a quarter in its half, on this sheet only: when a landscape photo shares a sheet with a portrait one, it then fills its half instead of sitting small in the middle. Its own print does not change;
    - the panel lists the two photos, holds the same *Two photos per sheet* and *Date stamp* cards, and **Export this sheet** saves this one sheet. Under *Line under the date*, turn **Same on both photos** off to type a line for each photo; the rest of the stamp stays the same for both;
 8. **Export** in the panel writes one file per sheet, named after its two photos (for example `P1000123+P1000124.jpg`), in the first photo's date folder.
 
@@ -430,6 +431,7 @@ Every change is one undo step. The date stamp prints on each photo, with its pla
 | Collage mode | **⌥/Alt ← →** | Move the chosen photo one place |
 | Collage mode | **Enter**, **Space**, double-click | Open the sheet's preview |
 | Collage mode | **R** | Turn the sheet |
+| Collage mode, sheet preview | **⇧R** | Rotate the chosen photo in its half |
 | Sheet preview | **← →** / **1**, **2** | Other sheets / choose a photo |
 | Sheet preview | **C** / **R** | Crop the chosen photo / turn the sheet |
 | Sheet preview | **↑** / **↓** | Put the chosen photo in the print basket / set it aside |

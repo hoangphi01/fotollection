@@ -81,6 +81,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             collage::set_collage_order,
             collage::turn_sheet,
             collage::set_collage_crop,
+            collage::rotate_collage_photo,
             collage::sheet_info,
             places::search_places,
             places::set_photo_date,

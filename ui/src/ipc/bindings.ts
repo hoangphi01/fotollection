@@ -230,6 +230,13 @@ export const commands = {
 	zoom: number | null,
 } | null, straighten: number | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_collage_crop", { id, crop, straighten })),
 	/**
+	 *  Turns a photo a quarter clockwise in its collage cell, so a landscape photo can fill a
+	 *  standing cell (FR-035); its print and the other modes keep their orientation. The
+	 *  sheet crop starts again from the centre, at its zoom, since the old frame no longer
+	 *  lies on the same pixels. One undoable step.
+	 */
+	rotateCollagePhoto: (id: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("rotate_collage_photo", { id })),
+	/**
 	 *  What the panel says about a sheet: its size, each photo's area, the suggested size,
 	 *  the photo left inside the border and the print quality (FR-035, FR-026).
 	 */

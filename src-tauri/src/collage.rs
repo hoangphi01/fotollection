@@ -136,6 +136,46 @@ pub fn set_collage_crop(
     })
 }
 
+/// The photo's size as it sits in its collage cell: upright, then its own turns there
+/// (FR-035).
+pub(crate) fn sheet_size(
+    state: &AppState,
+    record: &fotollection_core::library::PhotoRecord,
+) -> Result<(u32, u32), IpcError> {
+    let (w, h) = upright_size(state, record)?;
+    Ok(if record.edits.sheet_turns() % 2 == 1 {
+        (h, w)
+    } else {
+        (w, h)
+    })
+}
+
+/// Turns a photo a quarter clockwise in its collage cell, so a landscape photo can fill a
+/// standing cell (FR-035); its print and the other modes keep their orientation. The
+/// sheet crop starts again from the centre, at its zoom, since the old frame no longer
+/// lies on the same pixels. One undoable step.
+#[tauri::command]
+#[specta::specta]
+pub fn rotate_collage_photo(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: PhotoId,
+) -> Result<HistoryState, IpcError> {
+    use fotollection_core::plan::CropFrame;
+    edit_photos(&app, &state, &[id], |_, e| {
+        let zoom = e.sheet_crop().map_or(1.0, |c| c.zoom);
+        e.collage_rotation = (e.sheet_turns() + 1) % 4;
+        e.collage_crop = Some(
+            CropFrame {
+                cx: 0.5,
+                cy: 0.5,
+                zoom,
+            }
+            .sanitized(),
+        );
+    })
+}
+
 /// What the panel says about a sheet: its size, each photo's area, the suggested size,
 /// the photo left inside the border and the print quality (FR-035, FR-026).
 #[tauri::command]
@@ -165,7 +205,7 @@ pub async fn sheet_info(app: AppHandle, sheet: SheetPair) -> Result<SheetInfo, I
             |r: &fotollection_core::library::PhotoRecord| -> Result<sheet::SheetPhoto, IpcError> {
                 Ok((
                     r.id,
-                    upright_size(&state, r)?,
+                    sheet_size(&state, r)?,
                     r.edits.sheet_crop(),
                     r.edits.sheet_straighten(),
                 ))
@@ -214,7 +254,7 @@ pub fn cell_geometry(
         (other, first.edits.sheet_turned)
     };
     let other = match &first {
-        Some(r) => Some(upright_size(state, r)?),
+        Some(r) => Some(sheet_size(state, r)?),
         None => None,
     };
     let photos = if sheet.first == record.id {

@@ -147,12 +147,21 @@ pub struct PhotoEdits {
     /// stamp's.
     #[serde(default)]
     pub caption: Option<String>,
+    /// Quarter turns clockwise of the photo in its collage cell, on top of its own
+    /// orientation (FR-035); 0–3. Prints outside a sheet are not turned by it.
+    #[serde(default)]
+    pub collage_rotation: u8,
 }
 
 impl PhotoEdits {
     /// The crop used on a collage sheet: its own, or the print crop (FR-035).
     pub fn sheet_crop(&self) -> Option<CropFrame> {
         self.collage_crop.or(self.crop)
+    }
+
+    /// The quarter turns of the photo in its collage cell (FR-035).
+    pub fn sheet_turns(&self) -> u8 {
+        self.collage_rotation % 4
     }
 
     /// The straightening used on a collage sheet: its own, or the print's (FR-035).
@@ -262,6 +271,15 @@ impl PhotoRecord {
     /// user's quarter turns (FR-006).
     pub fn display_orientation(&self) -> u8 {
         crate::image::compose_orientation(self.orientation, self.edits.rotation)
+    }
+
+    /// The orientation the photo takes on a collage sheet: as shown, plus its own turns in
+    /// the cell (FR-035).
+    pub fn sheet_orientation(&self) -> u8 {
+        crate::image::compose_orientation(
+            self.orientation,
+            self.edits.rotation.wrapping_add(self.edits.sheet_turns()) % 4,
+        )
     }
 
     /// The date stamped on the photo and written in its frame (FR-004, FR-040): the capture
@@ -1091,6 +1109,36 @@ mod tests {
             .map(|r| r.capture.format("%H:%M:%S").to_string())
             .collect();
         assert_eq!(times, vec!["09:58:30", "10:00:00"]);
+    }
+
+    #[test]
+    fn fr_035_turns_in_the_cell_turn_the_sheet_only() {
+        let mut lib = Library::new();
+        let f = lib.add_folder(Path::new("/trip"));
+        let meta = PhotoMeta {
+            orientation: 1,
+            ..PhotoMeta::default()
+        };
+        let Some(id) = lib.push(f, &file("/trip/wide.jpg", 1_780_000_000), &meta) else {
+            panic!("import");
+        };
+        lib.set_edits(
+            id,
+            PhotoEdits {
+                collage_rotation: 5,
+                ..PhotoEdits::default()
+            },
+        );
+        let Some(r) = lib.record(id) else {
+            panic!("record");
+        };
+        // A quarter turn on the sheet; the print and the other modes keep their orientation.
+        assert_eq!(r.edits.sheet_turns(), 1);
+        assert_eq!(r.display_orientation(), 1);
+        assert_eq!(
+            r.sheet_orientation(),
+            crate::image::compose_orientation(1, 1)
+        );
     }
 
     #[test]

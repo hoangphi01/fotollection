@@ -30,8 +30,9 @@ enum Route {
     Preview(PhotoId),
     /// A full-resolution region of the preview, for zoom.
     Region(PhotoId, Region),
-    /// Upright, uncropped T2 image for the crop editor.
-    Source(PhotoId),
+    /// Upright, uncropped T2 image for the crop editor; `true` turns it as the photo sits
+    /// in its collage cell (FR-035).
+    Source(PhotoId, bool),
     /// The latest live-view frame of the connected camera, from memory (FR-062).
     CameraLive,
     /// A collage sheet, small for the grid (FR-035).
@@ -96,7 +97,11 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
             Some(region) => Route::Region(id, region),
             None => Route::Preview(id),
         }),
-        "source" => Some(Route::Source(id)),
+        // `sheet=1`: as the photo sits in its collage cell, for the sheet's crop editor.
+        "source" => Some(Route::Source(
+            id,
+            query.unwrap_or_default().split('&').any(|p| p == "sheet=1"),
+        )),
         _ => None,
     }
 }
@@ -146,7 +151,7 @@ pub fn handle<R: Runtime>(
                 }
                 None => respond(responder, StatusCode::NOT_FOUND, Vec::new(), false),
             },
-            Route::Source(id) => match source_bytes(&state, id) {
+            Route::Source(id, sheet) => match source_bytes(&state, id, sheet) {
                 Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
                 Err(message) => respond(
                     responder,

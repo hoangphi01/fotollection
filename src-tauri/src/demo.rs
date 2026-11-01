@@ -189,7 +189,7 @@ fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, 
         write(&out.join(format!("img/thumb/{key}.jpg")), &thumb)?;
         write(
             &out.join(format!("img/source/{key}.jpg")),
-            &source_bytes(&state, id)?,
+            &source_bytes(&state, id, false)?,
         )?;
     }
     common.insert("photo_details", Value::Object(details));

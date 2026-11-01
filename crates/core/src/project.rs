@@ -22,7 +22,7 @@ pub const FORMAT: &str = "fotollection-project";
 /// v9: `photos[].collage`, the position in the collage order, `photos[].sheet_turned` and
 /// `photos[].collage_crop` and `photos[].collage_straighten`, the photo's own crop and
 /// straightening on a sheet (FR-035), and `photos[].caption`, the photo's own line under the
-/// date (FR-036).
+/// date (FR-036), and `photos[].collage_rotation`, its quarter turns in its collage cell.
 pub const SCHEMA_VERSION: u32 = 9;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
@@ -98,6 +98,9 @@ pub struct PhotoRow {
     /// The photo's own line under the date, at most 80 characters (v9).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub caption: Option<String>,
+    /// Quarter turns of the photo in its collage cell, 1–3 (v9); absent when not turned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub collage_rotation: Option<u8>,
 }
 
 /// A place the user renamed (v8, FR-005).
@@ -219,6 +222,8 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 sheet_turned: edits.sheet_turned,
                 collage_crop: edits.collage_crop,
                 collage_straighten: edits.collage_straighten,
+                collage_rotation: (edits.collage_rotation % 4 != 0)
+                    .then_some(edits.collage_rotation % 4),
                 caption: edits.caption,
             })
         })
@@ -524,6 +529,7 @@ pub fn restore_into(
                     .caption
                     .as_deref()
                     .map(crate::settings::sanitize_caption),
+                collage_rotation: row.collage_rotation.unwrap_or(0) % 4,
             },
         );
         summary.restored += 1;
@@ -600,6 +606,7 @@ mod tests {
                         zoom: 2.0,
                     }),
                     caption: Some("Grandma's".into()),
+                    collage_rotation: 3,
                     ..PhotoEdits::default()
                 },
             );
@@ -626,6 +633,8 @@ mod tests {
             .map(|id| fresh.edits(id));
         assert_eq!(restored.as_ref().and_then(|e| e.crop), Some(crop()));
         assert_eq!(restored.as_ref().map(|e| e.rating), Some(4));
+        // The photo's turns in its collage cell (v9, FR-035).
+        assert_eq!(restored.as_ref().map(|e| e.collage_rotation), Some(3));
         // The photo's own line under the date (v9, FR-036).
         assert_eq!(
             restored.as_ref().and_then(|e| e.caption.as_deref()),
@@ -770,6 +779,7 @@ mod tests {
             collage_crop: None,
             collage_straighten: None,
             caption: None,
+            collage_rotation: None,
         });
         save(&path, &file)?;
         assert!(

@@ -174,7 +174,8 @@ fn encode_sheet(
         let d = decode_image(codec, &bytes)?;
         profiles.push(d.icc);
         decoded.push((
-            apply_orientation(d.image, record.display_orientation()),
+            // As the photo sits on the sheet, its own turns in the cell included (FR-035).
+            apply_orientation(d.image, record.sheet_orientation()),
             (options.place_for)(record),
         ));
     }

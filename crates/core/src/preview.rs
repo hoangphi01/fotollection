@@ -184,13 +184,18 @@ impl PreviewCache {
         Ok(image)
     }
 
-    /// The upright, uncropped T2 image as JPEG: the background of the crop editor.
+    /// The upright, uncropped T2 image as JPEG: the background of the crop editor. With
+    /// `sheet`, as the photo sits in its collage cell, its own turns included (FR-035).
     pub fn source_jpeg(
         &self,
         record: &PhotoRecord,
+        sheet: bool,
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
-        let source = self.source(record, codec)?;
+        let mut source = self.source(record, codec)?;
+        if sheet {
+            source = turned_in_cell(source, record);
+        }
         Ok(codec.encode(&source, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
     }
 
@@ -287,10 +292,11 @@ impl PreviewCache {
         let mut images = [None, None];
         for (slot, photo) in images.iter_mut().zip(&photos) {
             if let Some((record, _)) = photo {
-                *slot = Some(match thumbnail {
+                let upright = match thumbnail {
                     Some(thumbnail) => self.small_source(record, thumbnail, codec)?,
                     None => self.source(record, codec)?,
-                });
+                };
+                *slot = Some(turned_in_cell(upright, record));
             }
         }
         let mut sources = [None, None];
@@ -357,6 +363,18 @@ impl PreviewCache {
     ) -> Result<Vec<u8>, ThumbError> {
         let image = self.render_region(record, settings, frame, place, region, codec)?;
         Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
+    }
+}
+
+/// The upright image turned as the photo sits in its collage cell (FR-035); the cached image
+/// itself when the photo has no turns there.
+fn turned_in_cell(upright: Arc<RgbImage>, record: &PhotoRecord) -> Arc<RgbImage> {
+    match record.edits.sheet_turns() {
+        0 => upright,
+        turns => Arc::new(apply_orientation(
+            upright.as_ref().clone(),
+            crate::image::compose_orientation(1, turns),
+        )),
     }
 }
 
