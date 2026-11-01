@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.2] - 2026-11-01 — Linux
+
 ### Highlights
 
 - New: Fotollection for Linux, as an AppImage and a `.deb`, for x86_64 and ARM64
