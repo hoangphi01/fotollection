@@ -13,6 +13,12 @@
 
 ## 2026-11-01
 
+### The dev app failed to link after two builds overlapped (tooling)
+
+- **Seen:** `npm run dev` rebuilt on a file change while `cargo test` was running, and then every start failed with `Undefined symbols … fotollection_core.llvm…` from the linker; a restart printed `Port 5173 is already in use`.
+- **Why:** an interrupted build left `fotollection-core`'s incremental objects half written, so the binary linked against code that was not there. Stopping the Tauri process leaves its Vite server running.
+- **Rule:** while the dev app runs, wait for its rebuild before running `cargo test` or clippy, or stop it first. On `Undefined symbols` in our own crate, `cargo clean -p fotollection-core` (it also freed 18 GB) and start again; before a restart, free the port with `lsof -ti :5173 | xargs kill`.
+
 ### Collage mode froze the window after one click (FR-048)
 
 - **Seen:** with the audit's "Simple and Collage ignore Pro's star and flag filters", the Collage screen drew once, then stopped answering: no click, no key, the screenshot script timed out.
