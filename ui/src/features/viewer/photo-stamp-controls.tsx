@@ -42,7 +42,8 @@ export function PhotoStampControls({ photoId, revision, onAppliedToAll }: PhotoS
   const stamp = current.stamp
   const set = (patch: Partial<StampSettings>) => {
     const next = { ...stamp, ...patch }
-    setCurrent({ stamp: next, custom: true }) // optimistic; Rust validates
+    // Optimistic; Rust validates. An own stamp carries its line, so the own line goes.
+    setCurrent({ stamp: next, custom: true, caption: null })
     void commands.setPhotoStamp(photoId, next)
   }
 

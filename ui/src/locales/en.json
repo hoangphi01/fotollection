@@ -151,6 +151,8 @@
     "caption": "Line under the date",
     "captionPlaceholder": "e.g. KY NIEM BUDAPEST",
     "captionHint": "Printed in capitals without accents, across the photo.",
+    "captionSame": "Same on both photos",
+    "captionFor": "Line under the date for {{name}}",
     "resetCustomStamps_one": "Reset {{count}} photo with its own stamp",
     "resetCustomStamps_other": "Reset {{count}} photos with their own stamp",
     "stampSize": {

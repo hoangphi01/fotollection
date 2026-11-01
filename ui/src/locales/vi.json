@@ -143,6 +143,8 @@
     "caption": "Dòng chữ dưới ngày",
     "captionPlaceholder": "VD: KY NIEM BUDAPEST",
     "captionHint": "In bằng chữ hoa không dấu, chạy ngang ảnh.",
+    "captionSame": "Giống nhau cho cả 2 ảnh",
+    "captionFor": "Dòng chữ dưới ngày cho {{name}}",
     "resetCustomStamps_other": "Đặt lại {{count}} ảnh có dấu riêng",
     "stampSize": {
       "label": "Cỡ dấu ngày",

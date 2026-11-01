@@ -202,6 +202,7 @@ fn encode_sheet(
             straighten: record.edits.sheet_straighten(),
             place: place.as_deref(),
             stamp: record.edits.stamp.as_ref(),
+            caption: record.edits.caption.as_deref(),
         });
     }
     let image = crate::sheet::render_sheet(
@@ -267,7 +268,7 @@ fn encode_photo(
     let frame = (options.frame_for)(record);
     let place = (options.place_for)(record);
     // The photo's own stamp, when it has one (FR-044).
-    let settings = base.for_photo(record.edits.stamp.as_ref());
+    let settings = base.for_photo(record.edits.stamp.as_ref(), record.edits.caption.as_deref());
     let p = plan(&PlanInput {
         width: upright.width,
         height: upright.height,

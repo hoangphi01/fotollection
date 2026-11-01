@@ -8,8 +8,8 @@ import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Collapse } from '@/components/layout/collapse'
 import { SectionCard } from '@/components/layout/section-card'
-import { CommitInput } from '@/components/forms/commit-input'
-import { commands, type PlaceFormat, type RenderSettings, type StampSettings } from '@/ipc/bindings'
+import { commands, type PhotoId, type PlaceFormat, type RenderSettings, type StampSettings } from '@/ipc/bindings'
+import { CaptionField } from './caption-field'
 import { StampStyleFields } from './stamp-style-fields'
 
 const PLACE_FORMATS: PlaceFormat[] = ['city', 'cityCountryCode', 'cityCountry']
@@ -19,6 +19,10 @@ type DateStampCardProps = {
   onChange: (change: (current: RenderSettings) => RenderSettings) => void
   /** Photos with their own stamp from the preview (FR-044): they offer a reset. */
   customStamps: number
+  /** The photos of an open collage sheet: each may have its own line under the date. */
+  photos?: { id: PhotoId; name: string }[]
+  /** Bumps on every edit and undo, for those photos' own lines. */
+  revision?: number
 }
 
 /**
@@ -27,7 +31,7 @@ type DateStampCardProps = {
  * that brings them back to it. One card, so every mode offers the same stamp (STYLE_RULE §4,
  * same tools, same order).
  */
-export function DateStampCard({ settings, onChange, customStamps }: DateStampCardProps) {
+export function DateStampCard({ settings, onChange, customStamps, photos, revision }: DateStampCardProps) {
   const { t } = useTranslation()
   const id = useId()
   const stamp = settings?.stamp
@@ -80,18 +84,12 @@ export function DateStampCard({ settings, onChange, customStamps }: DateStampCar
       </Collapse>
 
       {/* A line of the user's own text under the date (FR-036). */}
-      <div className="space-y-1.5">
-        <Label className="text-xs font-normal text-muted-foreground">{t('settings.caption')}</Label>
-        <CommitInput
-          value={stamp?.caption ?? ''}
-          placeholder={t('settings.captionPlaceholder')}
-          maxLength={80}
-          liveMs={300}
-          ariaLabel={t('settings.caption')}
-          onCommit={(caption) => setStamp({ caption })}
-        />
-        <p className="text-xs text-muted-foreground">{t('settings.captionHint')}</p>
-      </div>
+      <CaptionField
+        caption={stamp?.caption ?? ''}
+        onCommit={(caption) => setStamp({ caption })}
+        photos={photos}
+        revision={revision}
+      />
     </SectionCard>
   )
 }

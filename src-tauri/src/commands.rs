@@ -344,7 +344,8 @@ pub struct PhotoList {
     pub photos: Vec<PhotoSummary>,
     /// All photos in the library, filtered or not.
     pub total: u32,
-    /// Photos with their own stamp set in the preview (FR-044), for the Reset button.
+    /// Photos with their own stamp or line set in the preview (FR-044, FR-036), for the Reset
+    /// button.
     pub custom_stamps: u32,
     /// Every source folder with its own count, whatever the filter (FR-056).
     pub folders: Vec<fotollection_core::library::FolderSummary>,
@@ -361,7 +362,10 @@ pub fn list_photos(state: State<'_, AppState>, filter: CullFilter) -> Result<Pho
         .library
         .read()
         .map_err(|e| IpcError::internal(e.to_string()))?;
-    let custom_stamps = library.edited().filter(|(_, e)| e.stamp.is_some()).count();
+    let custom_stamps = library
+        .edited()
+        .filter(|(_, e)| e.stamp.is_some() || e.caption.is_some())
+        .count();
     Ok(PhotoList {
         photos: library.summaries(&filter),
         total: u32::try_from(library.len()).unwrap_or(u32::MAX),
@@ -378,8 +382,11 @@ pub fn list_photos(state: State<'_, AppState>, filter: CullFilter) -> Result<Pho
 pub struct PhotoStamp {
     /// The stamp this photo prints with: its own, or the settings'.
     pub stamp: fotollection_core::settings::StampSettings,
-    /// True when the photo has its own stamp.
+    /// True when the photo has its own stamp or its own line under the date.
     pub custom: bool,
+    /// The photo's own line under the date (FR-036), already in `stamp`; `None` uses the
+    /// stamp's.
+    pub caption: Option<String>,
 }
 
 #[tauri::command]
@@ -392,9 +399,9 @@ pub fn get_photo_stamp(state: State<'_, AppState>, id: PhotoId) -> Result<PhotoS
     if library.record(id).is_none() {
         return Err(IpcError::new("photo.unknown", "Unknown photo"));
     }
-    let own = library.edits(id).stamp;
-    let custom = own.is_some();
-    let stamp = match own {
+    let edits = library.edits(id);
+    let custom = edits.stamp.is_some() || edits.caption.is_some();
+    let mut stamp = match edits.stamp {
         Some(stamp) => stamp,
         None => state
             .settings
@@ -404,10 +411,18 @@ pub fn get_photo_stamp(state: State<'_, AppState>, id: PhotoId) -> Result<PhotoS
             .stamp
             .clone(),
     };
-    Ok(PhotoStamp { stamp, custom })
+    if let Some(caption) = &edits.caption {
+        caption.clone_into(&mut stamp.caption);
+    }
+    Ok(PhotoStamp {
+        stamp,
+        custom,
+        caption: edits.caption,
+    })
 }
 
 /// Gives one photo its own stamp, or (`None`) makes it follow the settings again; undoable.
+/// Either way its own line goes: an own stamp carries its line.
 #[tauri::command]
 #[specta::specta]
 pub fn set_photo_stamp(
@@ -420,7 +435,27 @@ pub fn set_photo_stamp(
         s.validate()
             .map_err(|e| IpcError::new("settings.invalid", e.to_string()))?;
     }
-    edit_photos(&app, &state, &[id], |_, e| e.stamp.clone_from(&stamp))
+    edit_photos(&app, &state, &[id], |_, e| {
+        e.stamp.clone_from(&stamp);
+        e.caption = None;
+    })
+}
+
+/// Gives photos their own line under the date (FR-036), or (`None`) the stamp's again, in
+/// one undoable step. The rest of their stamp still follows the settings.
+#[tauri::command]
+#[specta::specta]
+pub fn set_photo_caption(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    ids: Vec<PhotoId>,
+    caption: Option<String>,
+) -> Result<HistoryState, IpcError> {
+    if let Some(caption) = &caption {
+        fotollection_core::settings::validate_caption(caption)
+            .map_err(|e| IpcError::new("settings.invalid", e.to_string()))?;
+    }
+    edit_photos(&app, &state, &ids, |_, e| e.caption.clone_from(&caption))
 }
 
 /// "Apply to all" in the preview: this photo's stamp becomes the setting for every photo,
@@ -455,13 +490,16 @@ pub fn reset_photo_stamps(
         .read()
         .map_err(|e| IpcError::internal(e.to_string()))?
         .edited()
-        .filter(|(_, e)| e.stamp.is_some())
+        .filter(|(_, e)| e.stamp.is_some() || e.caption.is_some())
         .map(|(id, _)| id)
         .collect();
     if ids.is_empty() {
         return Ok(changed(&app, &state));
     }
-    edit_photos(&app, &state, &ids, |_, e| e.stamp = None)
+    edit_photos(&app, &state, &ids, |_, e| {
+        e.stamp = None;
+        e.caption = None;
+    })
 }
 
 #[derive(Debug, Clone, Serialize, Type)]

@@ -401,7 +401,7 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
    - **← →** go to the other sheets; with a photo chosen, **↑** puts it in the print basket and **↓** sets it aside (or the basket button next to it), and the zoom buttons or **Cmd/Ctrl + / −** zoom in;
    - **Crop** (or **C**, or the crop button next to a photo) crops and straightens the chosen photo for its place on the sheet; this never changes its print, and Reset centres it;
    - **Turn the sheet** (**R**) turns it the other way;
-   - the panel lists the two photos, holds the same *Two photos per sheet* card, and **Export this sheet** saves this one sheet.
+   - the panel lists the two photos, holds the same *Two photos per sheet* and *Date stamp* cards, and **Export this sheet** saves this one sheet. Under *Line under the date*, turn **Same on both photos** off to type a line for each photo; the rest of the stamp stays the same for both;
 8. **Export** in the panel writes one file per sheet, named after its two photos (for example `P1000123+P1000124.jpg`), in the first photo's date folder.
 
 <!-- shot: collage | Collage mode: sheets as they will print, with the photo ratio, the suggested size and the cut line -->

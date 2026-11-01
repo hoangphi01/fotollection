@@ -395,6 +395,8 @@ Put several photos on one print to save cost. **P1 (v0.9.0) for 2-up**, the Coll
 
 **P1.** Add a free-text caption under the date stamp: a line of up to 80 characters, in the stamp's colour and LCD face, set in capitals without accents and running across the photo (done, settings v5; variables below are still to come). The caption can use the variables `{date}`, `{time}`, `{place}`, `{country}`, `{trip}`, `{camera}` and `{filename}`. Captions use the same layout rules as stamps (inside the safe area or on the border).
 
+**A line per photo (v0.9.0, 2026-11-01, owner's request).** In a collage sheet's preview, a switch **Same on both photos** (on by default) keeps one line; off, each photo gets its own field, and that line is kept per photo (`photos[].caption`, project v9) while the rest of its stamp still follows the settings. A photo's own stamp from the preview ([FR-044](#fr-044--per-photo-overrides)) carries its own line instead, and *Reset n photos with their own stamp* clears both.
+
 ### FR-037 — Contact sheet
 
 **P2.** Export a contact sheet (PDF or JPEG) of the print set: thumbnails with file name, date, place, size and copies. It is useful for archiving and for checking the order before sending it.

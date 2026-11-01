@@ -392,6 +392,8 @@ pub struct CellSource<'a> {
     pub place: Option<&'a str>,
     /// The photo's own stamp (FR-044); `None` follows the settings.
     pub stamp: Option<&'a StampSettings>,
+    /// The photo's own line under the date (FR-036); `None` uses the stamp's.
+    pub caption: Option<&'a str>,
 }
 
 /// Renders a sheet. `max_long_edge` bounds the sheet's long edge for previews; `None`
@@ -441,7 +443,7 @@ pub fn render_sheet(
             })
         };
     let owns: [Option<RenderSettings>; 2] =
-        sources.map(|s| s.map(|s| settings.for_photo(s.stamp).into_owned()));
+        sources.map(|s| s.map(|s| settings.for_photo(s.stamp, s.caption).into_owned()));
 
     // The density of the less sharp photo, so neither is enlarged.
     let mut density = MAX_SHEET_DPI / MM_PER_IN;
@@ -731,6 +733,7 @@ mod tests {
             straighten: 0.0,
             place: None,
             stamp: None,
+            caption: None,
         };
         // The first photo lies, so the sheet stands; the portrait one is cropped to lie too.
         let out = render_sheet(
@@ -866,6 +869,7 @@ mod tests {
             straighten: 0.0,
             place: None,
             stamp: None,
+            caption: None,
         };
         let out = render_sheet(&settings, print(), [Some(source), None], false, Some(1500))?;
         let middle = ((500 * out.width + 750) * 3) as usize;
@@ -911,6 +915,7 @@ mod tests {
             straighten: 0.0,
             place: None,
             stamp: None,
+            caption: None,
         };
         let out = render_sheet(
             &settings,

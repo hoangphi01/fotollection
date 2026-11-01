@@ -11,6 +11,7 @@
 
 **Bugs the owner reports while trying v0.9.0** (newest first; each fix in the commit that names it):
 
+- 2026-11-01 ✓ A collage sheet's two photos can have their own line under the date: a switch *Same on both photos* in the sheet preview's stamp card, off shows a field per photo (`photos[].caption`, project v9, `set_photo_caption`). The rest of the stamp still follows the settings.
 - 2026-11-01 ✓ Simple and Collage now have Pro's whole date stamp card: format, corner, colour, size, place and the caption line. One `DateStampCard` holds them all, so the three modes cannot drift apart. The Simple panel screenshot is to retake before the release.
 - 2026-11-01 ✓ After dragging a photo to another sheet, the sheet's loading spinner sat in a corner: it was centred in the image, which has no size until it loads; it is now centred in the tile.
 - 2026-11-01 ✓ With a sheet's preview open, switching the mode (Cmd/Ctrl+1/2/3, the View menu) did nothing: the audit had held the switch for any open dialog. Now only a crop being edited holds it; a preview closes and the mode changes. The switches inside the preview (fill, cut line, ratio, border) were checked to ask for a new render, and Rust renders each differently (2026-11-01); if a preview ever stays unchanged, note the steps.

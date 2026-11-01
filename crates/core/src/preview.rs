@@ -234,7 +234,8 @@ impl PreviewCache {
             .print_for(source.width, source.height)
             .unwrap_or(crate::PrintSize::ALL[1]);
         let capture = record.stamp_date();
-        let settings = settings.for_photo(record.edits.stamp.as_ref());
+        let settings =
+            settings.for_photo(record.edits.stamp.as_ref(), record.edits.caption.as_deref());
         let p = plan(&PlanInput {
             width: source.width,
             height: source.height,
@@ -302,6 +303,7 @@ impl PreviewCache {
                     straighten: record.edits.sheet_straighten(),
                     place: *place,
                     stamp: record.edits.stamp.as_ref(),
+                    caption: record.edits.caption.as_deref(),
                 });
             }
         }

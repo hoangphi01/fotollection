@@ -237,24 +237,32 @@ impl StampSize {
 /// Longest stamp caption, in characters.
 pub const MAX_CAPTION_CHARS: usize = 80;
 
+/// A caption within limits: no control characters, 80 characters.
+pub fn sanitize_caption(caption: &str) -> String {
+    caption
+        .chars()
+        .filter(|c| !c.is_control())
+        .take(MAX_CAPTION_CHARS)
+        .collect()
+}
+
+/// Checks a caption coming over IPC (SECURITY.md §2).
+pub fn validate_caption(caption: &str) -> Result<(), SettingsError> {
+    if caption.chars().count() > MAX_CAPTION_CHARS || caption.chars().any(char::is_control) {
+        return Err(SettingsError::InvalidCaption);
+    }
+    Ok(())
+}
+
 impl StampSettings {
     /// Brings a caption from a file within limits: no control characters, 80 characters.
     pub fn sanitize(&mut self) {
-        self.caption = self
-            .caption
-            .chars()
-            .filter(|c| !c.is_control())
-            .take(MAX_CAPTION_CHARS)
-            .collect();
+        self.caption = sanitize_caption(&self.caption);
     }
 
     /// Checks a stamp coming over IPC (SECURITY.md §2).
     pub fn validate(&self) -> Result<(), SettingsError> {
-        let caption = &self.caption;
-        if caption.chars().count() > MAX_CAPTION_CHARS || caption.chars().any(char::is_control) {
-            return Err(SettingsError::InvalidCaption);
-        }
-        Ok(())
+        validate_caption(&self.caption)
     }
 }
 
@@ -273,15 +281,24 @@ impl RenderSettings {
         }
     }
 
-    /// The settings one photo is rendered with: its own stamp when it has one (FR-044).
-    pub fn for_photo(&self, stamp: Option<&StampSettings>) -> std::borrow::Cow<'_, Self> {
-        match stamp {
-            Some(own) => std::borrow::Cow::Owned(Self {
-                stamp: own.clone(),
-                ..self.clone()
-            }),
-            None => std::borrow::Cow::Borrowed(self),
+    /// The settings one photo is rendered with: its own stamp when it has one (FR-044), and
+    /// its own line under the date over either (FR-036).
+    pub fn for_photo(
+        &self,
+        stamp: Option<&StampSettings>,
+        caption: Option<&str>,
+    ) -> std::borrow::Cow<'_, Self> {
+        if stamp.is_none() && caption.is_none() {
+            return std::borrow::Cow::Borrowed(self);
         }
+        let mut own = self.clone();
+        if let Some(stamp) = stamp {
+            own.stamp = stamp.clone();
+        }
+        if let Some(caption) = caption {
+            caption.clone_into(&mut own.stamp.caption);
+        }
+        std::borrow::Cow::Owned(own)
     }
 }
 
@@ -420,6 +437,31 @@ impl RenderSettings {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fr_036_a_photos_own_line_wins_and_the_rest_follows_the_settings() {
+        let mut settings = RenderSettings::default();
+        settings.stamp.caption = "TRIP".into();
+        settings.stamp.color = StampColor::RetroOrange;
+        // No own stamp, no own line: the settings themselves.
+        assert!(matches!(
+            settings.for_photo(None, None),
+            std::borrow::Cow::Borrowed(_)
+        ));
+        // Its own line only: the line changes, the colour still follows the settings.
+        let own = settings.for_photo(None, Some("GRANDMA"));
+        assert_eq!(own.stamp.caption, "GRANDMA");
+        assert_eq!(own.stamp.color, StampColor::RetroOrange);
+        // Over its own stamp too.
+        let stamp = StampSettings {
+            caption: "OWN".into(),
+            ..settings.stamp.clone()
+        };
+        assert_eq!(
+            settings.for_photo(Some(&stamp), Some("LINE")).stamp.caption,
+            "LINE"
+        );
+    }
 
     fn with_custom(sizes: Vec<CustomPrintSize>, selected: &str) -> RenderSettings {
         RenderSettings {

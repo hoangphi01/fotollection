@@ -21,7 +21,8 @@ pub const FORMAT: &str = "fotollection-project";
 /// the places the user renamed (FR-005).
 /// v9: `photos[].collage`, the position in the collage order, `photos[].sheet_turned` and
 /// `photos[].collage_crop` and `photos[].collage_straighten`, the photo's own crop and
-/// straightening on a sheet (FR-035).
+/// straightening on a sheet (FR-035), and `photos[].caption`, the photo's own line under the
+/// date (FR-036).
 pub const SCHEMA_VERSION: u32 = 9;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
@@ -94,6 +95,9 @@ pub struct PhotoRow {
     /// The photo's own straightening on a collage sheet, ±15° (v9).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub collage_straighten: Option<f32>,
+    /// The photo's own line under the date, at most 80 characters (v9).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub caption: Option<String>,
 }
 
 /// A place the user renamed (v8, FR-005).
@@ -215,6 +219,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 sheet_turned: edits.sheet_turned,
                 collage_crop: edits.collage_crop,
                 collage_straighten: edits.collage_straighten,
+                caption: edits.caption,
             })
         })
         .collect();
@@ -515,6 +520,10 @@ pub fn restore_into(
                 sheet_turned: row.sheet_turned,
                 collage_crop: row.collage_crop.map(CropFrame::sanitized),
                 collage_straighten: row.collage_straighten.map(crate::straighten::sanitize),
+                caption: row
+                    .caption
+                    .as_deref()
+                    .map(crate::settings::sanitize_caption),
             },
         );
         summary.restored += 1;
@@ -590,6 +599,7 @@ mod tests {
                         cy: 0.5,
                         zoom: 2.0,
                     }),
+                    caption: Some("Grandma's".into()),
                     ..PhotoEdits::default()
                 },
             );
@@ -616,6 +626,11 @@ mod tests {
             .map(|id| fresh.edits(id));
         assert_eq!(restored.as_ref().and_then(|e| e.crop), Some(crop()));
         assert_eq!(restored.as_ref().map(|e| e.rating), Some(4));
+        // The photo's own line under the date (v9, FR-036).
+        assert_eq!(
+            restored.as_ref().and_then(|e| e.caption.as_deref()),
+            Some("Grandma's")
+        );
         // The collage order and a turned sheet (v9, FR-035).
         assert_eq!(restored.as_ref().and_then(|e| e.collage), Some(3));
         assert_eq!(restored.as_ref().map(|e| e.sheet_turned), Some(true));
@@ -754,6 +769,7 @@ mod tests {
             sheet_turned: false,
             collage_crop: None,
             collage_straighten: None,
+            caption: None,
         });
         save(&path, &file)?;
         assert!(

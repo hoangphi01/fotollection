@@ -143,6 +143,10 @@ pub struct PhotoEdits {
     /// uses the print's.
     #[serde(default)]
     pub collage_straighten: Option<f32>,
+    /// The photo's own line under the date (FR-036), over the stamp's; `None` uses the
+    /// stamp's.
+    #[serde(default)]
+    pub caption: Option<String>,
 }
 
 impl PhotoEdits {

@@ -269,7 +269,13 @@ export function SheetPreviewDialog({
           own photos follow, as a photo's facts follow in its preview. */}
       <SheetSizeCard settings={settings} onChange={onSettingsChange} />
       <CollageCellsCard settings={settings} onChange={onSettingsChange} cell={cell} />
-      <DateStampCard settings={settings} onChange={onSettingsChange} customStamps={customStamps} />
+      <DateStampCard
+        settings={settings}
+        onChange={onSettingsChange}
+        customStamps={customStamps}
+        photos={cells.flatMap(([id]) => (id === null ? [] : [{ id, name: summary(id)?.fileName ?? '' }]))}
+        revision={revision}
+      />
       {sheet && (
         <InspectorSection icon={<Download className="size-4" />} title={t('export.title')}>
           <ExportSection

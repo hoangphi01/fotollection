@@ -92,6 +92,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::rotate_photos,
             commands::get_photo_stamp,
             commands::set_photo_stamp,
+            commands::set_photo_caption,
             commands::apply_stamp_to_all,
             commands::reset_photo_stamps,
             commands::undo,

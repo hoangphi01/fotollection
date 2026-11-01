@@ -265,7 +265,10 @@ export const commands = {
 	/**  Turns photos a quarter turn (FR-006), lossless; their crops turn with them. Undoable. */
 	rotatePhotos: (ids: PhotoId[], clockwise: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("rotate_photos", { ids, clockwise })),
 	getPhotoStamp: (id: PhotoId) => typedError<PhotoStamp, IpcError>(__TAURI_INVOKE("get_photo_stamp", { id })),
-	/**  Gives one photo its own stamp, or (`None`) makes it follow the settings again; undoable. */
+	/**
+	 *  Gives one photo its own stamp, or (`None`) makes it follow the settings again; undoable.
+	 *  Either way its own line goes: an own stamp carries its line.
+	 */
 	setPhotoStamp: (id: PhotoId, stamp: {
 	enabled: boolean,
 	format: DateFormat,
@@ -288,6 +291,11 @@ export const commands = {
 	 */
 	size?: StampSize,
 } | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_stamp", { id, stamp })),
+	/**
+	 *  Gives photos their own line under the date (FR-036), or (`None`) the stamp's again, in
+	 *  one undoable step. The rest of their stamp still follows the settings.
+	 */
+	setPhotoCaption: (ids: PhotoId[], caption: string | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_caption", { ids, caption })),
 	/**
 	 *  "Apply to all" in the preview: this photo's stamp becomes the setting for every photo,
 	 *  and no photo keeps its own any more (the photo edits are one undoable step).
@@ -1000,7 +1008,10 @@ export type PhotoList = {
 	photos: PhotoSummary[],
 	/**  All photos in the library, filtered or not. */
 	total: number,
-	/**  Photos with their own stamp set in the preview (FR-044), for the Reset button. */
+	/**
+	 *  Photos with their own stamp or line set in the preview (FR-044, FR-036), for the Reset
+	 *  button.
+	 */
 	customStamps: number,
 	/**  Every source folder with its own count, whatever the filter (FR-056). */
 	folders: FolderSummary[],
@@ -1029,8 +1040,13 @@ export type PhotoScore = {
 export type PhotoStamp = {
 	/**  The stamp this photo prints with: its own, or the settings'. */
 	stamp: StampSettings,
-	/**  True when the photo has its own stamp. */
+	/**  True when the photo has its own stamp or its own line under the date. */
 	custom: boolean,
+	/**
+	 *  The photo's own line under the date (FR-036), already in `stamp`; `None` uses the
+	 *  stamp's.
+	 */
+	caption: string | null,
 };
 
 /**  Grid data sent to the UI (FR-003). */
