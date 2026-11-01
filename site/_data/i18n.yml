@@ -12,6 +12,8 @@ en:
   nav_coffee: Coffee
   nav_manual: Manual
   to_top: Back to top
+  copy_label: Copy
+  copied_label: Copied
   star: Star on GitHub
   badge: Free · Open source · No account
   hero_title_1: Thousands of photos, only looked at
@@ -375,6 +377,8 @@ vi:
   nav_coffee: Cà phê
   nav_manual: Hướng dẫn
   to_top: Lên đầu trang
+  copy_label: Sao chép
+  copied_label: Đã sao chép
   star: Gắn sao trên GitHub
   badge: Miễn phí · Mã nguồn mở · Không cần tài khoản
   hero_title_1: Chụp hàng nghìn ảnh, chỉ xem lại khi

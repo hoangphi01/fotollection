@@ -79,7 +79,7 @@
     </script>
     {%- endif %}
   </head>
-  <body>
+  <body data-copy="{{ t.copy_label }}" data-copied="{{ t.copied_label }}">
     <span id="top"></span>
     <header class="nav">
       <div class="wrap nav-row">
@@ -118,6 +118,52 @@
         window.scrollTo({ top: 0, behavior: 'smooth' })
         history.replaceState(null, '', location.pathname + location.search)
       })
+
+      // Every command box gets a Copy button, shown on hover or focus and always on touch
+      // screens. Built with DOM calls only (STYLE_RULE: no innerHTML).
+      const svg = (paths) => {
+        const ns = 'http://www.w3.org/2000/svg'
+        const icon = document.createElementNS(ns, 'svg')
+        for (const [k, v] of Object.entries({ viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'aria-hidden': 'true', class: 'icon' })) icon.setAttribute(k, v)
+        for (const d of paths) {
+          const path = document.createElementNS(ns, 'path')
+          path.setAttribute('d', d)
+          icon.append(path)
+        }
+        return icon
+      }
+      const copyIcon = ['M8 8h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2z', 'M4 16a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2']
+      const doneIcon = ['M20 6 9 17l-5-5']
+      const { copy, copied } = document.body.dataset
+      for (const pre of document.querySelectorAll('pre.code')) {
+        const box = document.createElement('div')
+        box.className = 'code-box'
+        pre.replaceWith(box)
+        const button = document.createElement('button')
+        button.type = 'button'
+        button.className = 'copy-code'
+        button.setAttribute('aria-label', copy)
+        button.dataset.hintText = copy
+        button.append(svg(copyIcon))
+        box.append(pre, button)
+        let timer
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(pre.textContent.trim() + '\n')
+          } catch {
+            return
+          }
+          button.replaceChildren(svg(doneIcon))
+          button.classList.add('done')
+          button.setAttribute('aria-label', copied)
+          clearTimeout(timer)
+          timer = setTimeout(() => {
+            button.replaceChildren(svg(copyIcon))
+            button.classList.remove('done')
+            button.setAttribute('aria-label', copy)
+          }, 1600)
+        })
+      }
 
       // The changelog box lets the page scroll past it until it is clicked; then it scrolls
       // inside, outlined, until a click outside or Escape.
