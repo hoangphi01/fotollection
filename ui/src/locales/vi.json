@@ -478,8 +478,8 @@
   "about": {
     "versions": "Các phiên bản",
     "current": "Bản đang dùng",
-    "report": "Báo lỗi",
-    "reportHint": "Báo lỗi hoặc góp ý trên GitHub (mở trong trình duyệt)"
+    "report": "Báo lỗi / góp ý",
+    "reportHint": "Mở trang của dự án trên GitHub trong trình duyệt. Ứng dụng không tự gửi gì đi."
   },
   "update": {
     "check": "Kiểm tra cập nhật",

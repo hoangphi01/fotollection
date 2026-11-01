@@ -363,7 +363,7 @@ Fotollection không bao giờ tự lên mạng ([FR-021](PRD.md#fr-021--manual-u
 
 Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đẹp nhất mà Fotollection giữ để mở thư mục nhanh, kèm dung lượng so với giới hạn 2 GB. Vượt giới hạn, các mục cũ nhất tự bị xoá. **Xoá cache** làm trống nó bất kỳ lúc nào; không mất gì của bạn, và ảnh nhỏ sẽ được tạo lại khi bạn duyệt.
 
-**Gặp lỗi, hay có ý tưởng?** Nút đỏ **Báo lỗi** cạnh số phiên bản mở trang báo lỗi và góp ý của dự án trên GitHub, trong trình duyệt ([FR-069](PRD.md#fr-069--report-a-problem)). Hãy ghi bạn đã làm gì, thấy gì, phiên bản và hệ điều hành.
+**Gặp lỗi, hay có ý tưởng?** Bấm số phiên bản ở chân bảng, rồi nút đỏ **Báo lỗi / góp ý**: nút này mở trang báo lỗi và góp ý của dự án trên GitHub, trong trình duyệt ([FR-069](PRD.md#fr-069--report-a-problem)). Hãy ghi bạn đã làm gì, thấy gì, phiên bản và hệ điều hành.
 
 <!-- chapter: simple -->
 

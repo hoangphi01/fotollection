@@ -365,7 +365,7 @@ Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates
 
 The same popover shows the **cache**: the thumbnails and best-shot analyses Fotollection keeps so folders open fast, with its size against its 2 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
 
-**Something wrong, or an idea?** The red **Report** button next to the version opens the project's page for problems and ideas on GitHub, in your browser ([FR-069](PRD.md#fr-069--report-a-problem)). Say what you did, what you saw, and your version and system.
+**Something wrong, or an idea?** Click the version number at the foot of the panel, then the red **Report a problem or an idea**: it opens the project's page for problems and ideas on GitHub, in your browser ([FR-069](PRD.md#fr-069--report-a-problem)). Say what you did, what you saw, and your version and system.
 
 <!-- chapter: simple -->
 

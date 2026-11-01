@@ -496,8 +496,8 @@
   "about": {
     "versions": "Versions",
     "current": "This version",
-    "report": "Report",
-    "reportHint": "Report a problem or suggest an idea on GitHub (opens in your browser)"
+    "report": "Report a problem or an idea",
+    "reportHint": "Opens the project's page on GitHub in your browser. The app sends nothing itself."
   },
   "update": {
     "check": "Check for updates",
