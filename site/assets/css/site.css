@@ -225,7 +225,7 @@ p { margin: 0; }
 .key-chips kbd { font: 700 1rem/1 ui-monospace, monospace; color: var(--brand); }
 /* Performance page: a heading, then one section per measurement and the explanations. */
 .kicker { margin: 0 0 10px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
-.perf-head { padding-bottom: 24px; }
+.section.perf-head { padding-bottom: 24px; } /* also on wide screens, where .section gets 96px */
 .perf-part { display: grid; grid-template-columns: 1fr; gap: 8px; }
 .perf-part .charts { margin: 12px 0 0; }
 .qa { max-width: 860px; margin-top: 24px; }
@@ -380,6 +380,12 @@ h3.with-logo .logo-os { height: 0.95em; }
 .linux .sizes-label { margin-top: 22px; }
 .linux .more { margin-top: 16px; }
 .distros { margin-top: 56px; }
+/* Download page: the install cards follow the page header with no heading of their own, so
+   no section gap above them; the table and the distributions open their own sections. */
+#install { padding-top: 0; }
+#install .install { margin-top: 8px; }
+#systems .systems, #linux .distros { margin-top: 0; }
+.systems-link { margin-top: 32px; }
 .distros > .muted { margin-top: 8px; }
 
 /* Footer */
