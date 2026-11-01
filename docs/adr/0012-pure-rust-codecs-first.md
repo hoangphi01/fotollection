@@ -1,6 +1,6 @@
 # ADR-0012: Start with pure-Rust JPEG codecs behind a trait
 
-- **Status:** Accepted
+- **Status:** Accepted. Amended by [ADR-0033](0033-reference-jpeg-decoder.md): zune-jpeg decodes only the layouts a corpus proves, `jpeg-decoder` the rest
 - **Date:** 2026-10-23
 - **Related:** ADR-0004, NFR-002, NFR-003, NFR-007
 

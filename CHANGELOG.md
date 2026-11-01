@@ -8,6 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-11-01 — Green photos fixed
+
+### Highlights
+
+- Fixed: some JPEG photos showed, and exported, as green stripes
+- Thumbnails are made once more after the update, so the green ones go
+
+### Fixed
+
+- **Green, striped photos:** JPEGs saved in a rare layout (one scan for each colour, written by some editors and online tools) showed as green tiles with fine stripes in the gallery and the preview, and exported that way. They now open with their real colours; the usual JPEGs from cameras and phones open as fast as before. Every thumbnail is made once more after the update, so no green one stays.
+
 ## [0.8.0] - 2026-10-27 — Places and Lightroom
 
 ### Highlights

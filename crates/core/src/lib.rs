@@ -19,6 +19,7 @@ pub mod geocode;
 pub mod history;
 pub mod image;
 pub mod import;
+pub mod jpeg_layout;
 pub mod library;
 pub mod logo;
 pub mod metadata;

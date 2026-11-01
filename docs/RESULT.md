@@ -345,3 +345,23 @@ Measured while building FR-031 with `crates/core/examples/measure_borrow.rs`, RE
 - **The cost is the layout comparison:** colour passes, so every donor is compared over 5 zooms, 3 scales and 49 shifts. Stopping at the first sure match makes the common case 40 times faster, but not the worst one.
 - **Four nearest donors** brings the worst case within NFR-020 (2 s). A phone photo of the same scene is usually seconds from the camera's, so the nearest four hold it.
 - The thresholds (applied at layout ≥ 0.75, colour ≥ 0.8, five minutes; suggested at 0.6 and 0.65) are still the provisional ones of §14 until real camera and phone pairs are scored.
+
+## 19. JPEG layouts and the reference decoder (v0.8.1)
+
+A v0.8.0 user saw JPEGs as green stripes: they were saved with one scan per component, which `zune-jpeg` 0.5.15 decodes wrongly without an error ([ADR-0033](adr/0033-reference-jpeg-decoder.md)). Measured with `crates/core/examples/measure_jpeg_layout.rs` and `tests/jpeg_layouts.rs`, REF-MAC (M3), release build, median of 5.
+
+| Layout (fixture, 250 × 186, quality 90) | Mean error per channel against the picture, 0.8.0 | 0.8.1 |
+|---|---:|---:|
+| Baseline 4:4:4, 4:2:2, 4:2:0, 4:4:0, 4:1:1, progressive, restart markers, optimised tables, grey | within 8 (zune) | the same (zune) |
+| **Baseline, one scan per component, 4:2:0** | **111.9 (green stripes)** | within 8 (reference decoder) |
+| Baseline, one scan per component, 4:4:4 (and a real 4:2:2 photo saved that way) | within 8 | within 8 (reference decoder) |
+
+| Cost | Time |
+|---|---:|
+| Reading the layout from the header | 0.18 µs a file (96 camera JPEGs, all on zune) |
+| Decode 4608 × 3456, as the camera saved it (zune) | 45 ms |
+| The same photo with one scan per component (reference decoder) | 88 ms |
+
+- **The bug needs both:** one scan per component and colour halved vertically (4:2:0). A 16 MP camera photo (4:2:2) rewritten with one scan per component by `jpegtran` decodes right on 0.8.0; the same photo saved 4:2:0 that way comes out as the user saw it, green with horizontal stripes. Every one-scan-per-component baseline goes to the reference decoder anyway: the allowlist holds only what the corpus proves.
+- The fast path is unchanged for the usual files; a rare layout costs twice as much and decodes right.
+- Small flat images that the app encodes itself (thumbnails) decode right on 0.5.15 (`fr_001_our_own_small_flat_jpegs_keep_their_colour`), so zune-image #496 does not touch us.

@@ -1,6 +1,6 @@
 # Lessons — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-10-27
+> **Status:** Living · **Last reviewed:** 2026-11-01
 >
 > What each debugging session taught us, so the same mistake is not made twice. Every bug that took more than one look to find gets an entry here in the same commit as its fix ([DOCS_GUIDE.md](DOCS_GUIDE.md) §2). Newest first. Each entry says what we saw, why it happened, the fix, and the rule to follow from now on. Performance-only lessons stay in [OPTIMIZATION.md](OPTIMIZATION.md) (for example §4.3.1, interactive work off background queues).
 
@@ -10,6 +10,16 @@
 2. **Split the path and log both ends.** A temporary log on the UI side (what was asked) and one on the Rust side (what was answered, how long) tells which layer fails in one try. Name them `DEBUG-…` and remove them before the commit (`grep -rn DEBUG ui/src src-tauri/src` must be empty).
 3. **Reproduce with the user's photo when the user sees it.** A synthetic test passed while the real app was soft: unit tests prove the pixels, only the real webview proves what is shown.
 4. **Write the lesson here** before moving on.
+
+## 2026-11-01
+
+### A decoder can be silently wrong: JPEGs came out as green stripes (ADR-0033)
+
+- **Seen:** a v0.8.0 user's folder showed half its photos as green tiles with fine horizontal stripes and a ghost of the picture. The owner first suspected our RAW decoder; the files were JPEGs.
+- **Why:** they were saved with one scan per component and colour halved both ways (4:2:0), a rare but valid baseline layout. `zune-jpeg` 0.5.15 reads the Cb scan into the Cr one and returns the result as a success: the brightness survives as the ghost, the colour planes are wrong, hence green. The same decode feeds thumbnails, preview, best shot and export, so prints were green too, and the bad thumbnails stayed in the disk cache keyed only by the file.
+- **How we found it:** the symptom (luma kept, chroma wrong, in rows) pointed at the colour planes of a JPEG decode; the upstream tracker had the layout; one fixture per layout, saved with `cjpeg`, reproduced it (mean error 111.9 against 2–4 for the others) before any fix.
+- **Fix:** read the layout from the header (`jpeg_layout`); zune decodes only the layouts the corpus proves, `jpeg-decoder` every other one and any file zune refuses; `thumbs::CACHE_VERSION` makes every thumbnail and analysis again.
+- **Rule:** a fast decoder is trusted only on the layouts a test proves; everything else goes to a reference decoder. Every decoder upgrade runs the layout corpus first, and an RC never ships. A fix that changes the pixels of files already seen bumps the cache version. When a user reports a picture problem without the file, rebuild the layout from the symptom and make a fixture of it.
 
 ## 2026-10-27
 

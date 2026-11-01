@@ -7,6 +7,8 @@
 
 ## Current phase: Phase 1 — MVP, v0.7.0 released
 
+**Hotfix v0.8.1 (2026-11-01).** A user saw JPEGs as green stripes: baseline files with one scan per component and 4:2:0 colour, which `zune-jpeg` 0.5.15 decodes wrongly without an error. v0.8.1, built from the `v0.8.0` tag on `hotfix/0.8.1`, reads the layout from the header and sends every layout zune has not proven to `jpeg-decoder` ([ADR-0033](adr/0033-reference-jpeg-decoder.md), [LESSONS](LESSONS.md)); thumbnails are made again once. The branch is then merged into `main` for v0.9.0.
+
 **Where we are (2026-10-25).** The app works end to end for **JPEG, PNG, HEIC and camera RAW** (RW2, CR2, CR3, NEF, ARW, RAF, ORF, DNG), opens photos from Finder and Explorer ("Open with"); open folders as tabs (FR-056), cull with stars, flags, filters and best-shot suggestions, preview with crop, drag-to-reframe, zoom (FR-057), straightening, the film-style date stamp and the "Shot on" frame (Crop to fill, or Fit whole photo framed like an instax print), then export for print at original quality or **for social media** in sRGB with safe EXIF (FR-053), the whole set or one photo from the preview (FR-055). **[v0.7.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.7.0) "Open with and RAW" was published on 2026-10-25** (universal `.dmg` 38.3 MB, `-setup.exe` 13.7 MB, `.msi` 18.8 MB, `SHA256SUMS.txt`), after v0.5.0 "Print basket" and v0.6.0 "Photo viewer" the same day; the website's download buttons point to it. On `main` since: *Check for updates* (FR-061), the pinned MSI upgrade code, the disk cache kept under 2 GB with *Clear cache*, the first camera-over-USB work (FR-063 Step 0), and the first v0.8.0 work: camera clock offsets (FR-030) and the border in Crop to fill (FR-065). Nothing of this is in an installer yet: no release or beta since v0.7.0.
 
 **Picking up on another machine (2026-10-26).** `git pull`, then read this file, [ROADMAP.md](ROADMAP.md#release-plan-2026-10-25) and [LESSONS.md](LESSONS.md). Open work, in order:
@@ -296,6 +298,7 @@ Native libraries pinned for security tracking (versions to be filled in at scaff
 |---------|----------------|-------|
 | libjpeg-turbo | — | via `turbojpeg` crate |
 | objc2-image-io / windows | 0.3.2 / 0.62.2 | HEIC through ImageIO / WIC in `fotollection-oscodec` ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
+| zune-jpeg / jpeg-decoder | 0.5.15 / 0.3.2 | zune decodes only the layouts `tests/jpeg_layouts.rs` proves; retry 0.5.16 **stable** against that test before upgrading, never an RC ([ADR-0033](adr/0033-reference-jpeg-decoder.md)) |
 | tract-onnx | 0.23.9 | Face models for best-shot suggestions ([ADR-0018](adr/0018-face-models-and-runtime.md)); models are parsed from bundled, checksummed bytes only |
 | lcms2 | — | |
 

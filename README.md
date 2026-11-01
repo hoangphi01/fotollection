@@ -241,7 +241,7 @@ Every tool version is pinned: `rust-toolchain.toml`, `.node-version`, `Cargo.loc
 
 | Layer | Technology |
 |-------|------------|
-| Core (Rust) | Pure-Rust codecs: zune-jpeg, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md)); HEIC and camera RAW through the OS (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md), [ADR-0023](docs/adr/0023-raw-through-os-codecs.md)); fast_image_resize, ab_glyph, rayon; GeoNames for offline places ([ADR-0003](docs/adr/0003-offline-geocoding-geonames.md)). Planned: lcms2 for colour |
+| Core (Rust) | Pure-Rust codecs: zune-jpeg with jpeg-decoder for rare layouts, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md), [ADR-0033](docs/adr/0033-reference-jpeg-decoder.md)); HEIC and camera RAW through the OS (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md), [ADR-0023](docs/adr/0023-raw-through-os-codecs.md)); fast_image_resize, ab_glyph, rayon; GeoNames for offline places ([ADR-0003](docs/adr/0003-offline-geocoding-geonames.md)). Planned: lcms2 for colour |
 | Shell | [Tauri 2](https://v2.tauri.app/): the system webview, no bundled Chromium |
 | UI | React 19, TypeScript, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/), [Lucide](https://lucide.dev/) |
 | Typed IPC | [tauri-specta](https://github.com/specta-rs/tauri-specta): TypeScript bindings generated from Rust |
