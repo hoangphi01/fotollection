@@ -63,7 +63,7 @@
       <div class="table-scroll card">
         <table class="table systems-table">
           <thead>
-            <tr><th scope="col">{{ t.pf_feature }}</th><th scope="col">macOS</th><th scope="col">Windows</th><th scope="col">Linux</th></tr>
+            <tr><th scope="col">{{ t.pf_feature }}</th><th scope="col"><span class="os-head">{% include logos/apple.svg %}<span>macOS</span></span></th><th scope="col"><span class="os-head">{% include logos/windows.svg %}<span>Windows</span></span></th><th scope="col"><span class="os-head">{% include logos/linux.svg %}<span>Linux</span></span></th></tr>
           </thead>
           <tbody>
             {%- for row in site.data.platforms.rows %}
@@ -295,16 +295,16 @@
     <p class="lead narrow">{{ t.install_lead }}</p>
     <div class="install">
       <div class="card">
-        <h3>{{ t.mac_title }}</h3>
+        <h3 class="with-logo">{% include logos/apple.svg %}{{ t.mac_title }}</h3>
         <ol><li>{{ t.mac_1 }}</li><li>{{ t.mac_2 }}</li><li>{{ t.mac_3 }}</li></ol>
       </div>
       <div class="card">
-        <h3>{{ t.win_title }}</h3>
+        <h3 class="with-logo">{% include logos/windows.svg %}{{ t.win_title }}</h3>
         <ol><li>{{ t.win_1 }}</li><li>{{ t.win_2 }}</li><li>{{ t.win_3 }}</li></ol>
       </div>
       {%- comment -%} Linux: the install script and the APT repository on fotollection.org, or a file. {%- endcomment %}
       <div class="card linux" id="install-linux">
-        <h3>{{ t.linux_title }}</h3>
+        <h3 class="with-logo">{% include logos/linux.svg %}{{ t.linux_title }}</h3>
         <div class="linux-ways">
           <div>
             <p class="way">{{ t.linux_script_title }}</p>

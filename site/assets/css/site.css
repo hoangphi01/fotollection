@@ -266,6 +266,13 @@ p { margin: 0; }
 .inline-logo { display: inline-block; width: auto; color: var(--brand); }
 .logo-dm { height: 1.2em; vertical-align: -0.3em; }
 .logo-rossmann { height: 0.72em; vertical-align: -0.02em; }
+/* System logos (Simple Icons, CC0), drawn in the text colour: above the names in the table
+   by system, before the titles of the install cards. The names stay as text beside them. */
+.logo-os { height: 1em; width: auto; flex: none; }
+.os-head { display: inline-flex; flex-direction: column; align-items: center; gap: 0.4em; }
+.os-head .logo-os { height: 1.6em; }
+h3.with-logo { display: flex; align-items: center; gap: 0.45em; }
+h3.with-logo .logo-os { height: 0.95em; }
 .sizes-label { margin: 16px 0 8px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .chips li { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -290,7 +297,9 @@ p { margin: 0; }
 .changelog p { margin-top: 8px; color: var(--ink-2); }
 .changelog a { color: var(--brand); }
 .js .changelog { position: relative; overflow: hidden; cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s; }
-.js .changelog::after { content: ''; position: sticky; display: block; bottom: 0; height: 56px; margin: -56px -28px -24px; background: linear-gradient(transparent, var(--surface)); pointer-events: none; }
+/* The fade over the last lines while the box is closed. Absolute, not sticky: a sticky fade sat
+   above the box's bottom padding and left the last line unfaded, a sharp line across. */
+.js .changelog::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 96px; border-radius: 0 0 inherit inherit; background: linear-gradient(transparent, var(--surface) 85%); pointer-events: none; }
 .js .changelog.active { overflow-y: auto; cursor: auto; border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand); }
 .js .changelog.active::after, .js .changelog.active .changelog-hint { display: none; }
 /* A thin scroll bar in the theme colour that stays inside the rounded outline. */
