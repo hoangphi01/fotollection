@@ -147,7 +147,7 @@ Chọn khổ bạn sẽ in, Fotollection cắt mọi ảnh theo khổ đó và c
    Mỗi khổ có một huy hiệu cho ảnh đang chọn trong gallery: **Nét** (từ 300 DPI), **Tạm được** (150–299 DPI, ổn khi cầm xem) hoặc **Sẽ vỡ** (dưới 150 DPI). Rê chuột lên huy hiệu để xem số DPI.
 3. Dưới danh sách, một dòng cho biết ảnh đang chọn in nét tới cỡ nào, và vẫn chấp nhận được tới cỡ nào.
 4. Mọi ảnh được cắt theo tỉ lệ của khổ, **mặc định ở giữa**. Chọn phần được giữ cho từng ảnh trong bản xem trước (chương 6).
-5. **Viền 3 mm** để một viền trắng rộng 3 mm ở mọi cạnh, lấn vào ảnh: bản in vẫn đúng khổ của máy in tại tiệm. Với khổ **Gốc**, không mất pixel nào: viền bao quanh cả tấm ảnh, cạnh ngắn vẫn 10 cm và cạnh dài thêm 6 mm. Ảnh xuất cho mạng xã hội không bao giờ có viền. Khi bật khung thông tin, viền theo màu khung (chương 9).
+5. **Viền 3 mm** để một viền rộng 3 mm ở mọi cạnh, **Trắng** hoặc **Đen** tuỳ bạn chọn dưới công tắc, lấn vào ảnh: bản in vẫn đúng khổ của máy in tại tiệm. Với khổ **Gốc**, không mất pixel nào: viền bao quanh cả tấm ảnh, cạnh ngắn vẫn 10 cm và cạnh dài thêm 6 mm. Ảnh xuất cho mạng xã hội không bao giờ có viền. Khi bật khung thông tin, viền theo màu khung (chương 9).
 
 <!-- shot: manual-size | Danh sách khổ in, mỗi khổ một huy hiệu độ nét -->
 
@@ -385,7 +385,7 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 
 1. Nhấp **Ghép ảnh** ở đầu thanh bên. Chọn ảnh để ghép ở thanh bên, thường là **Giỏ in**.
 2. Các ảnh được ghép theo thứ tự, 1 + 2, 3 + 4…, và mỗi tấm hiện đúng như khi in. Ảnh lẻ cuối cùng để nửa kia trắng.
-3. **Khổ tấm in**: khổ in, ví dụ 10 × 15; khổ Gốc không có ở đây, vì tấm ghép cần một khổ cố định. Tấm được chia đôi theo cạnh dài và xoay theo ảnh đầu tiên: hai ảnh ngang thì trên dưới, hai ảnh dọc thì cạnh nhau. Nút **xoay** trên mỗi tấm, hoặc phím **R**, xoay tấm sang hướng kia.
+3. **Khổ tấm in**: khổ in, ví dụ 10 × 15; khổ Gốc không có ở đây, vì tấm ghép cần một khổ cố định. Tấm được chia đôi theo cạnh dài và xoay theo ảnh đầu tiên: hai ảnh ngang thì trên dưới, hai ảnh dọc thì cạnh nhau. Nút **xoay** trên mỗi tấm, hoặc phím **R**, xoay tấm sang hướng kia. **Trắng** hoặc **Đen** dưới *Viền 3 mm* tô cả phần giấy quanh các ảnh lẫn viền.
 4. **Hai ảnh mỗi tấm**:
    - **Lấp đầy mỗi nửa**: không lề trắng. Mỗi ảnh phủ kín nửa tấm (7,5 × 10 với tấm 10 × 15) và hai ảnh giáp cạnh nhau; cắt từng ảnh (bước 7) để chọn phần được giữ, bằng cách kéo và phóng to. Các thiết lập bên dưới, cả đường cắt, khi đó được ẩn.
    - **Tỷ lệ ảnh**: tỷ lệ gốc của từng ảnh (**Ảnh**), tỷ lệ của tấm (**Tấm**, 2:3 với 10 × 15), **4:3** hoặc **1:1**. Phần còn lại của nửa tấm để trắng.

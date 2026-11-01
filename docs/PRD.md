@@ -732,7 +732,8 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P1 (v0.9.0).** A **3 mm border** switch in the print-size card, for every mode and every frame style. It extends [FR-065](#fr-065--border-in-crop-to-fill), which offered the border only in the info frame's Crop to fill. The border cuts into the photo, 3 mm a side; the print keeps the exact size of the shop's kiosk.
 
-- **No info frame:** a white border round the photo; the photo is cropped to the print size less 6 mm on each edge. **Original** keeps every pixel: the border goes round the whole photo and the print keeps its 10 cm short edge, so its long edge grows by the border.
+- **Colour (2026-11-01, owner's request):** **White** or **Black** under the switch (`render.borderColor`). On a collage sheet it is also the colour of the paper round the photos, so the choice shows there whenever the sheet has paper (not with *Fill each half* and no border); the cut line turns dark grey on black. An info frame keeps its own colour.
+- **No info frame:** a white or black border round the photo; the photo is cropped to the print size less 6 mm on each edge. **Original** keeps every pixel: the border goes round the whole photo and the print keeps its 10 cm short edge, so its long edge grows by the border.
 - **Not on shared photos:** an export for social media ([FR-053](#fr-053--export-for-social-media)) is not a print and has no border.
 - **Info frame, Crop to fill:** as FR-065, in the frame colour on the top and sides, with the bar below.
 - **Info frame, Fit whole photo:** the print no longer grows. The whole photo is fitted inside the print size, less the border and the bar, centred, and the rest is the frame colour. With the switch off, Fit whole photo keeps its own 5 mm border and the larger print.

@@ -68,10 +68,33 @@ pub struct RenderSettings {
     /// before settings v10, where FR-065's `frame.border` held it for Crop to fill only.
     #[serde(default)]
     pub border: bool,
+    /// The colour of the 3 mm border and of a collage sheet's paper round its photos (FR-067,
+    /// FR-035). An info frame keeps its own colour. Absent: white.
+    #[serde(default)]
+    pub border_color: BorderColor,
     /// Two photos on one print, the Collage mode (FR-035, FR-048). Absent before settings
     /// v10: the defaults.
     #[serde(default)]
     pub collage: CollageSettings,
+}
+
+/// The colour of the paper left round a photo: its 3 mm border, a sheet's margins (FR-067).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum BorderColor {
+    #[default]
+    White,
+    Black,
+}
+
+impl BorderColor {
+    /// The paper's pixel colour, the same white and black as the info frame's.
+    pub const fn rgb(self) -> [u8; 3] {
+        match self {
+            Self::White => crate::plan::MAT_WHITE,
+            Self::Black => [13, 13, 13],
+        }
+    }
 }
 
 /// The ratio of the photo area in a collage cell (FR-035).
@@ -356,6 +379,7 @@ impl Default for RenderSettings {
             place_format: crate::geocode::PlaceFormat::default(),
             export_target: crate::share::ExportTarget::default(),
             border: false,
+            border_color: BorderColor::White,
             collage: CollageSettings::default(),
         }
     }

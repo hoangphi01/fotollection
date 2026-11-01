@@ -15,7 +15,7 @@ type SheetSizeCardProps = {
 
 /**
  * The size of a collage sheet (FR-035): a fixed print size (Original has none), the 3 mm
- * border, and a reminder that sheets are always prints. The same card in the Collage panel
+ * border and the paper's colour, and a reminder that sheets are always prints. The same card in the Collage panel
  * and the sheet preview.
  */
 export function SheetSizeCard({ settings, onChange }: SheetSizeCardProps) {
@@ -39,7 +39,7 @@ export function SheetSizeCard({ settings, onChange }: SheetSizeCardProps) {
         </p>
       )}
       <p className="text-xs text-muted-foreground">{t('collage.sheetSizeHint')}</p>
-      <BorderSwitch settings={settings} onChange={onChange} />
+      <BorderSwitch settings={settings} onChange={onChange} paper={!settings?.collage?.fill} />
     </SectionCard>
   )
 }

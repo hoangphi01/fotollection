@@ -10,10 +10,10 @@ use specta::Type;
 
 use crate::image::RgbImage;
 use crate::library::PhotoId;
-use crate::plan::{CropFrame, DpiBand, MAT_WHITE, PlanInput, plan};
+use crate::plan::{CropFrame, DpiBand, PlanInput, plan};
 use crate::print_size::PrintSize;
 use crate::render::{RenderError, blit, filled, render};
-use crate::settings::{CellRatio, CollageSettings, RenderSettings, StampSettings};
+use crate::settings::{BorderColor, CellRatio, CollageSettings, RenderSettings, StampSettings};
 
 /// The sheet's pixel density never goes past this, however sharp the photos (ADR-0032).
 pub const MAX_SHEET_DPI: f32 = 600.0;
@@ -22,6 +22,9 @@ const CUT_LINE_MM: f32 = 0.2;
 const CUT_LINE: [u8; 3] = [200, 200, 200];
 const CUT_TICK_MM: f32 = 4.0;
 const CUT_TICK: [u8; 3] = [120, 120, 120];
+/// The same line on black paper: still faint, its ticks lighter.
+const CUT_LINE_ON_BLACK: [u8; 3] = [70, 70, 70];
+const CUT_TICK_ON_BLACK: [u8; 3] = [150, 150, 150];
 const MM_PER_IN: f32 = 25.4;
 
 /// A rectangle on the sheet, in millimetres.
@@ -460,7 +463,11 @@ pub fn render_sheet(
     let density = density.max(1.0 / MM_PER_IN);
 
     let px = |mm: f32| (mm * density).round().max(1.0) as u32;
-    let mut canvas = filled(px(sheet.width), px(sheet.height), MAT_WHITE);
+    let mut canvas = filled(
+        px(sheet.width),
+        px(sheet.height),
+        settings.border_color.rgb(),
+    );
     for ((source, cell), own) in sources.iter().zip(&sheet.cells).zip(&owns) {
         let (Some(source), Some(cell), Some(own)) = (source, cell, own) else {
             continue;
@@ -488,7 +495,7 @@ pub fn render_sheet(
     // that needs no line.
     let collage = &settings.collage;
     if collage.cut_line && !collage.fill && sheet.cells.iter().all(Option::is_some) {
-        draw_cut_line(&mut canvas, &sheet, density);
+        draw_cut_line(&mut canvas, &sheet, density, settings.border_color);
     }
     Ok(canvas)
 }
@@ -501,33 +508,37 @@ fn stamp_scale(print: PrintSize, area: (u32, u32)) -> f32 {
 
 /// A thin light line between the cells, with darker ticks at the sheet's edges.
 #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-fn draw_cut_line(canvas: &mut RgbImage, sheet: &SheetLayout, density: f32) {
+fn draw_cut_line(canvas: &mut RgbImage, sheet: &SheetLayout, density: f32, paper: BorderColor) {
+    let (cut_line, cut_tick) = match paper {
+        BorderColor::White => (CUT_LINE, CUT_TICK),
+        BorderColor::Black => (CUT_LINE_ON_BLACK, CUT_TICK_ON_BLACK),
+    };
     let line = (CUT_LINE_MM * density).round().max(1.0) as u32;
     let tick_len = (CUT_TICK_MM * density).round().max(1.0) as u32;
     let (w, h) = (canvas.width, canvas.height);
     if sheet.side_by_side {
         let x = (w / 2).saturating_sub(line / 2);
-        fill_rect(canvas, x, 0, line, h, CUT_LINE);
-        fill_rect(canvas, x, 0, line, tick_len, CUT_TICK);
+        fill_rect(canvas, x, 0, line, h, cut_line);
+        fill_rect(canvas, x, 0, line, tick_len, cut_tick);
         fill_rect(
             canvas,
             x,
             h.saturating_sub(tick_len),
             line,
             tick_len,
-            CUT_TICK,
+            cut_tick,
         );
     } else {
         let y = (h / 2).saturating_sub(line / 2);
-        fill_rect(canvas, 0, y, w, line, CUT_LINE);
-        fill_rect(canvas, 0, y, tick_len, line, CUT_TICK);
+        fill_rect(canvas, 0, y, w, line, cut_line);
+        fill_rect(canvas, 0, y, tick_len, line, cut_tick);
         fill_rect(
             canvas,
             w.saturating_sub(tick_len),
             y,
             tick_len,
             line,
-            CUT_TICK,
+            cut_tick,
         );
     }
 }
@@ -591,6 +602,7 @@ pub fn pairs(photos: &[(PhotoId, Option<u32>)]) -> Vec<(PhotoId, Option<PhotoId>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::plan::MAT_WHITE;
 
     fn print() -> PrintSize {
         PrintSize::by_id("10x15").unwrap_or(PrintSize::ALL[1])
@@ -939,6 +951,39 @@ mod tests {
         assert_eq!(at(1125, 500), [30, 30, 200], "the second in the right cell");
         assert_eq!(at(10, 10), MAT_WHITE, "the margin is white");
         assert_eq!(at(750, 500), CUT_LINE, "the cut line in the middle");
+        Ok(())
+    }
+
+    #[test]
+    fn fr_067_black_paper_colours_the_margins_and_the_border() -> Result<(), RenderError> {
+        let a = filled(1200, 1800, [200, 30, 30]);
+        let mut settings = RenderSettings::default();
+        settings.stamp.enabled = false;
+        settings.border = true;
+        settings.border_color = BorderColor::Black;
+        let source = |image| CellSource {
+            image,
+            capture: None,
+            crop: None,
+            straighten: 0.0,
+            place: None,
+            stamp: None,
+            caption: None,
+        };
+        let out = render_sheet(
+            &settings,
+            print(),
+            [Some(source(&a)), Some(source(&a))],
+            false,
+            Some(1500),
+        )?;
+        let at = |x: u32, y: u32| {
+            let i = ((y * out.width + x) * 3) as usize;
+            [out.data[i], out.data[i + 1], out.data[i + 2]]
+        };
+        assert_eq!(at(10, 10), BorderColor::Black.rgb(), "the margin is black");
+        assert_eq!(at(750, 500), CUT_LINE_ON_BLACK, "a darker cut line");
+        assert_eq!(at(375, 500), [200, 30, 30], "the photo itself");
         Ok(())
     }
 }

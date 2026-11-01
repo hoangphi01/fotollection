@@ -149,7 +149,7 @@ Choose the size you will print at, and Fotollection crops every photo to it and 
    Each size carries a badge for the photo selected in the gallery: **Sharp** (300 DPI or more), **Acceptable** (150–299 DPI, fine at arm's length) or **Pixelated** (under 150 DPI). Hover over it to see the DPI.
 3. Under the list, a line says how large the selected photo prints sharp, and how large it is still acceptable.
 4. Every photo is cropped to the size's ratio, **centred by default**. Choose what stays per photo in the preview (chapter 6).
-5. **3 mm border** leaves a white border 3 mm wide on every side, cut into the photo: the print keeps the exact size of the shop's kiosk. With **Original**, no pixel is lost: the border goes round the whole photo, the short edge stays 10 cm and the long edge grows by 6 mm. Photos for social media never get it. With the info frame on, the border takes the frame's colour (chapter 9).
+5. **3 mm border** leaves a border 3 mm wide on every side, **White** or **Black** as you choose under the switch, cut into the photo: the print keeps the exact size of the shop's kiosk. With **Original**, no pixel is lost: the border goes round the whole photo, the short edge stays 10 cm and the long edge grows by 6 mm. Photos for social media never get it. With the info frame on, the border takes the frame's colour (chapter 9).
 
 <!-- shot: manual-size | The print size list, a sharpness badge on each size -->
 
@@ -387,7 +387,7 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
 
 1. Click **Collage** at the top of the sidebar. Choose what to put on sheets in the sidebar, usually the **Print basket**.
 2. The photos are paired in order, 1 + 2, 3 + 4…, and each sheet shows as it will print. An odd last photo leaves the other half white.
-3. **Sheet size**: the print size, 10 × 15 for example; Original is not offered, as a sheet needs a fixed size. The sheet is split in half across its long edge and turns to suit its first photo: two landscape photos one above the other, or two portrait photos side by side. The **turn** button on a sheet, or **R**, turns it the other way.
+3. **Sheet size**: the print size, 10 × 15 for example; Original is not offered, as a sheet needs a fixed size. The sheet is split in half across its long edge and turns to suit its first photo: two landscape photos one above the other, or two portrait photos side by side. The **turn** button on a sheet, or **R**, turns it the other way. **White** or **Black** under *3 mm border* colours the paper round the photos as well as the border.
 4. **Two photos per sheet**:
    - **Fill each half**: no white at all. Each photo fills its half (7.5 × 10 on a 10 × 15) and the two meet edge to edge; crop each photo (step 7) to choose what stays, by dragging and zooming. The settings below, the cut line included, are then hidden.
    - **Photo ratio**: each photo's own (**Photo**), the sheet's (**Sheet**, 2:3 on a 10 × 15), **4:3** or **1:1**. The rest of the half stays white.

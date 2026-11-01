@@ -367,7 +367,7 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
         Mat {
             canvas_width: out_width + 2 * m,
             canvas_height: out_height + 2 * m,
-            background: MAT_WHITE,
+            background: input.settings.border_color.rgb(),
             photo: frame::Rect {
                 x: m,
                 y: m,
@@ -733,6 +733,34 @@ mod tests {
             ..RenderSettings::default()
         };
         assert!(settings.validate().is_ok_and(PrintSize::is_original));
+    }
+
+    #[test]
+    fn fr_067_the_border_takes_the_chosen_colour() {
+        for (color, rgb) in [
+            (crate::settings::BorderColor::White, MAT_WHITE),
+            (crate::settings::BorderColor::Black, [13, 13, 13]),
+        ] {
+            let settings = RenderSettings {
+                border: true,
+                border_color: color,
+                ..RenderSettings::default()
+            };
+            let p = plan(&PlanInput {
+                width: 6000,
+                height: 4000,
+                capture: None,
+                settings: &settings,
+                print: size("10x15"),
+                max_long_edge: None,
+                frame: None,
+                crop: None,
+                place: None,
+                straighten: 0.0,
+                ratio: None,
+            });
+            assert_eq!(p.mat.map(|m| m.background), Some(rgb));
+        }
     }
 
     #[test]

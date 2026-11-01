@@ -23,7 +23,7 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v10 (FR-067, FR-048): `render.border`, the 3 mm border on every print, where a v9
 /// `frame.border` moves; `ui.mode`, absent before (Professional); `render.collage`
 /// (FR-035), absent before (the defaults); `render.stamp.size` (FR-004), absent before
-/// (medium).
+/// (medium); `render.borderColor` (FR-067), absent before (white).
 pub const SCHEMA_VERSION: u32 = 10;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
