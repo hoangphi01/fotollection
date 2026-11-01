@@ -405,30 +405,5 @@ for (const language of ['en', 'vi']) {
   }
 }
 
-// Link previews (Open Graph), 1200 × 630: the info-frame preview under the headline.
-for (const language of ['en', 'vi']) {
-  const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 })
-  await page.route('**/*', async (route) => {
-    const url = new URL(route.request().url())
-    if (url.host !== 'og.localhost') return route.abort()
-    const name = path.basename(url.pathname)
-    const file =
-      url.pathname === '/'
-        ? path.join(root, 'site/screenshots/og.html')
-        : name === 'mark.png'
-          ? path.join(root, 'ui/public/brand/mark-84.png')
-          : url.pathname.startsWith('/fonts/')
-            ? path.join(root, 'site/assets/fonts', name)
-            : path.join(outDir, name)
-    return route.fulfill({ body: await readFile(file), contentType: file.endsWith('.html') ? 'text/html' : file.endsWith('.woff2') ? 'font/woff2' : 'image/png' })
-  })
-  await page.goto(`http://og.localhost/?lang=${language}`)
-  await page.waitForFunction(() => document.fonts.ready.then(() => [...document.images].every((i) => i.complete)))
-  const file = path.join(outDir, `og-${language}.png`)
-  await page.screenshot({ path: file })
-  shots.push(file)
-  await page.close()
-}
-
 await browser.close()
 console.log(shots.map((s) => path.relative(root, s)).join('\n'))

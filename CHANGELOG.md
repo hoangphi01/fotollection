@@ -41,6 +41,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Website:** every page has its own link preview (title, description and image) when shared: Download, Performance, Manual and Code signing, in English and Vietnamese.
 - **Website:** a red *Report a problem or suggest an idea* button in the footer of every page, to the GitHub issue forms, as the app's own *Report* button (v0.8.3).
 - **Website:** a Download page (fotollection.org/download) with the three download buttons under its title, every installer, the first-launch steps, the Linux commands with a Copy button, the table of features by system, what is new in the released versions (no longer the unreleased one) and which Linux distributions run it; the home page keeps only its download buttons, and the Download button at the top leads there.
 - **Website:** "Quality" moves from the top bar to the footer, to make room for "Manual".

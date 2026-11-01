@@ -6,8 +6,9 @@ The screenshots on the website show the **real app on demo photos**, never anyon
 2. `site/screenshots/build.sh <folder> <work-dir>` then:
    - runs the debug app with `FOTOLLECTION_DEMO_FOLDER` and `FOTOLLECTION_DEMO_DUMP` ([`src-tauri/src/demo.rs`](../../src-tauri/src/demo.rs)): it imports the folder with its own settings, cache and project (never the user's), runs the best-shot analysis, records what each IPC command answers and the image protocol's bytes, then quits;
    - shoots the real interface (`ui/dist`) with Playwright ([`shoot.mjs`](shoot.mjs)), answering IPC from that recording, in English and Vietnamese, dark and light: the library, the date stamp, the info frame, the crop editor, best-shot groups, Simple mode (`simple`), Collage mode (`collage` and a sheet's preview `manual-collage-preview`, from the sheets `demo.rs` records with the date stamp and the 3 mm border), and for the manual the filters, the Project block, the print sizes, the frame card, the groups list, the place picker and the Places card (`manual-*`);
-   - renders the link previews from [`og.html`](og.html) (1200 × 630);
-   - writes 1600 px WebP screenshots and JPEG link previews to `site/assets/img/` (shots named `check-*` are only for checking controls by eye and stay out of the site; shots named `manual-*` are only for the manual, placed by the `<!-- shot: … -->` markers in `docs/USER_GUIDE.md` and `USER_GUIDE.vi.md`, [ADR-0031](../../docs/adr/0031-manual-on-the-website-from-the-user-guide.md)).
+   - writes 1600 px WebP screenshots to `site/assets/img/` (shots named `check-*` are only for checking controls by eye and stay out of the site; shots named `manual-*` are only for the manual, placed by the `<!-- shot: … -->` markers in `docs/USER_GUIDE.md` and `USER_GUIDE.vi.md`, [ADR-0031](../../docs/adr/0031-manual-on-the-website-from-the-user-guide.md)).
+
+   - renders every page's link preview (Open Graph, 1200 × 630 JPEG) with [`og.mjs`](og.mjs) from [`og.html`](og.html) and those screenshots: `og-{lang}.jpg` for the home page, `og-{page}-{lang}.jpg` for Download, Performance, Manual and Code signing. A page names its card with `og:` in its front matter. `node site/screenshots/og.mjs` renders them alone, after a change of wording, with no app and no recording.
 
 Photos are chosen by file name in `shoot.mjs`.
 

@@ -1,6 +1,6 @@
 <!doctype html>
 <!-- SPDX-License-Identifier: GPL-3.0-only -->
-<!-- The link-preview card (Open Graph, 1200 × 630), rendered by shoot.mjs with the site's own fonts. -->
+<!-- The link-preview cards (Open Graph, 1200 × 630), one per page and language, rendered by og.mjs with the site's own fonts. -->
 <html>
   <head>
     <meta charset="utf-8" />
@@ -27,6 +27,8 @@
       .shield { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; padding: 7px 14px; border-radius: 10px; background: #fffaee; color: #3f7d1a; font-weight: 600; font-size: 18px; }
       .shield svg { width: 22px; height: 22px; }
       .shot { position: relative; height: 100%; }
+      .kicker { margin-top: 30px; font-weight: 600; font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase; color: #f6c98b; }
+      .kicker + h1 { margin-top: 10px; }
       .shot img {
         position: absolute; left: 20px; top: 70px; width: 900px;
         border-radius: 8px; border: 8px solid #fffaee; outline: 4px solid #9a5a2c; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
@@ -36,6 +38,7 @@
   <body>
     <div class="text">
       <div class="brand"><img src="/mark.png" alt="" />Fotollection</div>
+      <p class="kicker" id="kicker" hidden></p>
       <h1 id="title"></h1>
       <p id="sub"></p>
       <div class="shield">
@@ -45,18 +48,51 @@
     </div>
     <div class="shot"><img id="shot" alt="" /></div>
     <script>
-      const lang = new URLSearchParams(location.search).get('lang') === 'vi' ? 'vi' : 'en'
-      const text = {
-        en: [['Thousands of photos, only looked at ', 'on the plane', ' home?'], 'Take one real look back with Fotollection: best shots, date stamp, ready to print. Free and offline.', 'Private: your photos never leave your computer'],
-        vi: [['Chụp hàng nghìn ảnh, chỉ xem lại khi ', 'ngồi trên máy bay', '?'], 'Hãy thử một lần nhìn lại cùng Fotollection: ảnh đẹp nhất, dấu ngày, sẵn sàng để in. Miễn phí, offline.', 'Riêng tư: ảnh không bao giờ rời khỏi máy'],
-      }[lang]
-      const [before, accent, after] = text[0]
+      // ?lang=en|vi&page=home|download|performance|manual|code-signing. Each card: a kicker
+      // (none on the home page), the headline with its accent, a line, the shield and a
+      // screenshot from site/assets/img.
+      const params = new URLSearchParams(location.search)
+      const lang = params.get('lang') === 'vi' ? 'vi' : 'en'
+      const cards = {
+        home: {
+          shot: `frame-${lang}-dark.webp`,
+          en: ['', ['Thousands of photos, only looked at ', 'on the plane', ' home?'], 'Take one real look back with Fotollection: best shots, date stamp, ready to print. Free and offline.', 'Private: your photos never leave your computer'],
+          vi: ['', ['Chụp hàng nghìn ảnh, chỉ xem lại khi ', 'ngồi trên máy bay', '?'], 'Hãy thử một lần nhìn lại cùng Fotollection: ảnh đẹp nhất, dấu ngày, sẵn sàng để in. Miễn phí, offline.', 'Riêng tư: ảnh không bao giờ rời khỏi máy'],
+        },
+        download: {
+          shot: `grid-${lang}-dark.webp`,
+          en: ['Download', ['Install ', 'in a minute', ''], 'macOS, Windows and Linux. On Ubuntu, Debian and Mint, one command sets it up.', 'Free and open source (GPL-3.0)'],
+          vi: ['Tải về', ['Cài đặt ', 'trong một phút', ''], 'macOS, Windows và Linux. Trên Ubuntu, Debian và Mint, một lệnh là xong.', 'Miễn phí, mã nguồn mở (GPL-3.0)'],
+        },
+        performance: {
+          shot: `charts/bench-budgets-${lang}.svg`,
+          en: ['Performance', ['Measured, ', 'not promised', ''], 'Speed, memory and print quality, measured on an ordinary laptop. Anyone can run the benchmarks again.', 'The benchmarks live in the source code'],
+          vi: ['Hiệu năng', ['Đo thật, ', 'không hứa suông', ''], 'Tốc độ, RAM và chất lượng in, đo trên một laptop bình thường. Ai cũng chạy lại được.', 'Chương trình đo nằm ngay trong mã nguồn'],
+        },
+        manual: {
+          shot: `stamp-${lang}-dark.webp`,
+          en: ['Manual', ['Step by step, ', 'with screenshots', ''], 'From choosing the photos to the print, in English and Vietnamese.', 'Private: your photos never leave your computer'],
+          vi: ['Hướng dẫn', ['Từng bước, ', 'có ảnh minh hoạ', ''], 'Từ chọn ảnh đến bản in, bằng tiếng Việt và tiếng Anh.', 'Riêng tư: ảnh không bao giờ rời khỏi máy'],
+        },
+        'code-signing': {
+          shot: `select-${lang}-dark.webp`,
+          en: ['Trust', ['How the installers ', 'are made', ''], 'Built from the public source code on GitHub Actions, with a SHA-256 checksum for every file.', 'No telemetry, no account'],
+          vi: ['Tin cậy', ['Bộ cài ', 'được làm ra thế nào', ''], 'Build từ mã nguồn công khai trên GitHub Actions, mỗi tệp kèm mã SHA-256.', 'Không theo dõi, không cần tài khoản'],
+        },
+      }
+      const card = cards[params.get('page')] ?? cards.home
+      const [kicker, [before, accent, after], sub, shield] = card[lang]
+      if (kicker) {
+        const k = document.getElementById('kicker')
+        k.textContent = kicker
+        k.hidden = false
+      }
       const em = document.createElement('em')
       em.textContent = accent
       document.getElementById('title').append(before, em, after)
-      document.getElementById('sub').textContent = text[1]
-      document.getElementById('shield').textContent = text[2]
-      document.getElementById('shot').src = `/frame-${lang}-dark.png`
+      document.getElementById('sub').textContent = sub
+      document.getElementById('shield').textContent = shield
+      document.getElementById('shot').src = `/img/${card.shot}`
     </script>
   </body>
 </html>

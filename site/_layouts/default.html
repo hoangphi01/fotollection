@@ -14,7 +14,9 @@
 {%- if page.title_key %}{% assign page_title = t[page.title_key] | append: ' · Fotollection' %}{% else %}{% assign page_title = t.title %}{% endif -%}
 {%- if page.description_key %}{% assign page_description = t[page.description_key] %}{% else %}{% assign page_description = t.description %}{% endif -%}
 {%- assign canonical = page.url | absolute_url -%}
-{%- capture og_image %}{{ '/assets/img/og-' | append: page.lang | append: '.jpg' | absolute_url }}{% endcapture -%}
+{%- comment -%} Each page's own link preview (site/screenshots/og.mjs): og-{page}-{lang}.jpg, the home page's og-{lang}.jpg. {%- endcomment -%}
+{%- if page.og %}{% assign og_name = 'og-' | append: page.og | append: '-' | append: page.lang %}{% else %}{% assign og_name = 'og-' | append: page.lang %}{% endif -%}
+{%- capture og_image %}{{ '/assets/img/' | append: og_name | append: '.jpg' | absolute_url }}{% endcapture -%}
 <!doctype html>
 <html lang="{{ t.html_lang }}">
   <head>
@@ -45,12 +47,12 @@
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="{{ t.title }}" />
+    <meta property="og:image:alt" content="{{ page_title }}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ page_title }}" />
     <meta name="twitter:description" content="{{ page_description }}" />
     <meta name="twitter:image" content="{{ og_image }}" />
-    <meta name="twitter:image:alt" content="{{ t.title }}" />
+    <meta name="twitter:image:alt" content="{{ page_title }}" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
