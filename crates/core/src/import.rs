@@ -66,8 +66,7 @@ pub struct ImportedFile {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub enum RejectReason {
-    /// Not a format this build can read (a RAW we do not know, a plain TIFF), or HEIC and
-    /// RAW on Linux.
+    /// Not a format this build can read (a RAW we do not know, a plain TIFF).
     Unsupported,
     /// HEIC on Windows without the HEIF/HEVC extensions from the Microsoft Store (ADR-0017).
     CodecMissing,
@@ -78,6 +77,8 @@ pub enum RejectReason {
     Unreadable,
     /// Magic bytes don't match, or the head contains script/markup (possible polyglot).
     Suspicious,
+    /// HEIC on Linux, where no system codec is used yet (ADR-0034, FR-068).
+    HeicNotOnLinux,
 }
 
 impl RejectReason {
@@ -89,6 +90,7 @@ impl RejectReason {
             Self::TooLarge => "import.too_large",
             Self::Unreadable => "import.unreadable",
             Self::Suspicious => "import.suspicious",
+            Self::HeicNotOnLinux => "import.heic_linux",
         }
     }
 }
@@ -149,6 +151,8 @@ pub fn check_file(path: &Path) -> Result<ImportedFile, RejectReason> {
         Sniffed::Heif => {
             return Err(if cfg!(target_os = "windows") {
                 RejectReason::CodecMissing
+            } else if cfg!(target_os = "linux") {
+                RejectReason::HeicNotOnLinux
             } else {
                 RejectReason::Unsupported
             });
@@ -284,6 +288,8 @@ mod tests {
         } else {
             let heic = if cfg!(target_os = "windows") {
                 RejectReason::CodecMissing
+            } else if cfg!(target_os = "linux") {
+                RejectReason::HeicNotOnLinux
             } else {
                 RejectReason::Unsupported
             };

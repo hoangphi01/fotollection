@@ -308,15 +308,16 @@ Fotollection mở ảnh RAW của hầu hết máy ảnh như chúng vốn có, 
 - Mở thư mục như thường. Ảnh nhỏ và gợi ý ảnh đẹp nhất hiện nhanh như với JPEG, vì chúng dùng bản xem trước nhỏ mà máy ảnh nào cũng lưu sẵn trong tệp RAW.
 - Bản xem trước để in sẽ xử lý toàn bộ ảnh ở lần mở đầu, mất khoảng một giây; sau đó đổi thiết lập là thấy ngay. Khi xuất, mỗi ảnh RAW được xử lý theo cùng cách.
 - Màu sắc và độ nét là cách xử lý trung tính của hệ điều hành, không phải của một trình sửa RAW: Fotollection chuẩn bị ảnh để in, không thay thế Lightroom.
+- **Trên Linux**, RAW được mở bằng trình đọc có sẵn trong Fotollection, không cần cài thêm gì.
 - **Trên Windows**, hãy cài *Raw Image Extension* miễn phí của Microsoft từ Microsoft Store trước. Không có nó, tệp RAW bị bỏ qua và dòng gợi ý sẽ nói rõ. Một trình đọc RAW có sẵn trong Fotollection, không cần extension, đang được làm ([STATUS.md](STATUS.md)).
 
 <!-- chapter: open-with -->
 
-## 15. Mở ảnh từ Finder hoặc Explorer
+## 15. Mở ảnh từ Finder, Explorer hoặc trình quản lý tệp
 
 Fotollection có thể là app mở ảnh khi bạn nhấp đúp ([FR-054](PRD.md#fr-054--open-photos-with-fotollection)). Nó không bao giờ tự đặt mình làm mặc định: bạn chọn.
 
-- **Một lần:** nhấp phải vào ảnh → **Mở bằng** → **Fotollection** (macOS), hoặc **Mở bằng** → **Fotollection** (Windows).
+- **Một lần:** nhấp phải vào ảnh → **Mở bằng** → **Fotollection** (macOS), hoặc **Mở bằng** → **Fotollection** (Windows). Trên Linux, khi đã cài bản `.deb`: nhấp phải → **Open With** → **Fotollection** trong Files, Dolphin hoặc Nemo; bản AppImage không có trong danh sách này, trừ khi một công cụ như AppImageLauncher đăng ký nó.
 - **Luôn luôn:** trên Mac, chọn ảnh, nhấn Cmd+I, chọn Fotollection trong *Mở bằng* rồi nhấp *Thay đổi tất cả*. Trên Windows, chọn **Mở bằng** → **Chọn ứng dụng khác**, chọn Fotollection và tích *Luôn dùng ứng dụng này*.
 
 Ảnh mở ngay trong bản xem trước. Thư mục của nó thành một tab ở thanh bên, chỉ có ảnh của đúng thư mục đó (không gồm thư mục con), nên **← →** đi qua cả thư mục. Mọi thứ hoạt động như ở bất kỳ tab nào: sao, giỏ in, khung cắt, xuất ảnh. Xong thì nhấp **×** trên tab; ảnh vẫn nằm trên ổ đĩa của bạn. Mở một ảnh khác khi Fotollection đang chạy sẽ đưa cửa sổ lên trước với ảnh đó.
@@ -325,7 +326,7 @@ Fotollection có thể là app mở ảnh khi bạn nhấp đúp ([FR-054](PRD.m
 
 ## 16. Chụp với máy ảnh cắm vào máy tính
 
-Khi máy ảnh cắm cáp, Fotollection hiện những gì máy thấy và chụp ảnh ([FR-062](PRD.md#fr-062--live-view-from-a-camera), [FR-063](PRD.md#fr-063--tethered-capture-over-usb)). Hiện tính năng này chạy trên Windows, với Sony a6400. Các máy Sony cùng thời có thể chạy được, nhưng chưa được kiểm tra.
+Khi máy ảnh cắm cáp, Fotollection hiện những gì máy thấy và chụp ảnh ([FR-062](PRD.md#fr-062--live-view-from-a-camera), [FR-063](PRD.md#fr-063--tethered-capture-over-usb)). Hiện tính năng này chạy trên Windows, với Sony a6400; bản Linux không có chụp qua máy ảnh ([ADR-0034](adr/0034-linux-lean.md)). Các máy Sony cùng thời có thể chạy được, nhưng chưa được kiểm tra.
 
 1. **Trên máy ảnh:** *MENU → Setup → USB Connection → PC Remote*. Cắm cáp dữ liệu và bật máy. Đóng Imaging Edge Remote, vì mỗi lúc chỉ một app điều khiển được máy ảnh.
 2. **Nhấp nút máy ảnh** cạnh *Mở thư mục* ở thanh bên. Màn hình chụp mở ra.
@@ -356,6 +357,8 @@ Fotollection không bao giờ tự lên mạng ([FR-021](PRD.md#fr-021--manual-u
 3. Cài đè lên bản đang dùng. Cài đặt, hồ sơ máy ảnh và dự án của bạn vẫn giữ nguyên.
    - **Mac:** mở tệp đĩa và kéo Fotollection vào Applications, rồi chọn **Thay thế**.
    - **Windows:** chạy tệp `-setup.exe`; giữ lựa chọn đầu tiên, *Gỡ cài đặt trước khi cài*. Nếu bạn đã cài bằng `.msi`, hãy cập nhật bằng `.msi`: trộn hai loại sẽ để lại hai bản.
+   - **Linux AppImage:** nút này tải AppImage mới; cho phép chạy (`chmod +x`) rồi dùng nó thay cho tệp cũ.
+   - **Linux `.deb`:** nút này mở trang phát hành; tải `.deb` mới rồi chạy `sudo apt install ./Fotollection_*_amd64.deb` (`_arm64.deb` trên ARM).
 
 Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đẹp nhất mà Fotollection giữ để mở thư mục nhanh, kèm dung lượng so với giới hạn 2 GB. Vượt giới hạn, các mục cũ nhất tự bị xoá. **Xoá cache** làm trống nó bất kỳ lúc nào; không mất gì của bạn, và ảnh nhỏ sẽ được tạo lại khi bạn duyệt.
 

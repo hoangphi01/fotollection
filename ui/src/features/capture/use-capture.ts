@@ -12,6 +12,8 @@ import { errorText } from '@/lib/errors'
 
 /** Connecting a camera works on Windows for now (ADR-0028). */
 export const CAMERA_AVAILABLE = navigator.userAgent.includes('Windows')
+/** The lean Linux build has no camera capture at all, so the button is not shown (ADR-0034). */
+export const CAMERA_OFFERED = !navigator.userAgent.includes('Linux')
 
 type Phase = 'idle' | 'connecting' | 'connected'
 

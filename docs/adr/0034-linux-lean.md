@@ -18,7 +18,7 @@ Three things do not carry over:
 
 - **A lean Linux build:** every photo feature, without camera capture (the button is not shown) and without HEIC for now. HEIC is rejected with its own reason, "not supported on Linux yet". Later, FR-068 loads the system's own `libheif` at run time (installed by the user's distribution, never bundled), so we never ship an HEVC decoder.
 - **Packages:** AppImage (any distribution) and `.deb` (Debian, Ubuntu, Mint…), for x86_64 and ARM64, built on `ubuntu-22.04` runners, so **glibc 2.35 is the floor**. No signing, as on the other systems (ADR-0009); `SHA256SUMS.txt` covers every file.
-- **Proof without a machine:** every release installs the `.deb` and checks its file types, and runs the AppImage for 20 s under a virtual display, on Ubuntu 22.04 and in a Debian 12 container. CI runs the whole test suite on Ubuntu on every change.
+- **Proof without a machine:** every release installs the `.deb` and checks its file types, and runs the AppImage for 20 s under a virtual display, on Ubuntu 22.04 and in a Debian 12 container with only GTK 3 and GL added, the floor of a Debian desktop. CI runs the whole test suite on Ubuntu on every change.
 - **Nvidia:** WebKitGTK's DMA-BUF renderer leaves the window blank with Nvidia's driver; when that driver is loaded, the app restarts itself once with `WEBKIT_DISABLE_DMABUF_RENDERER=1` (`exec`, no `unsafe`).
 - **Versioning:** a new platform for the same features is packaging, not a feature: it may ship in a PATCH release. Linux first ships in **v0.8.2**, released from the `release/0.8` branch; v0.9.0 ships the three systems together.
 - **Check for updates:** an AppImage downloads the AppImage for its architecture; a `.deb` install opens the release page.

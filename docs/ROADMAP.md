@@ -161,4 +161,4 @@ These ideas have no ID yet. Promote one to a PRD requirement before scheduling i
 - **Support from abroad:** a Ko-fi or GitHub Sponsors link next to the VietQR code on the website.
 - Append-only edit journal for the session (NFR-013): not urgent, a full save is 70 ms at 70,000 edited photos (2026-10-25)
 - Lossless rotation fix-up tool
-- Linux build
+- ~~Linux build~~: shipped as the lean build in v0.8.2 ([ADR-0034](adr/0034-linux-lean.md)); HEIC there is FR-068

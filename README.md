@@ -8,7 +8,7 @@ by [@hoangphi01](https://github.com/hoangphi01)
 
 **English** · [VI](README.vi.md) · [Website](https://fotollection.org/)
 
-**Fast, private, offline photo-print preparation for macOS and Windows.**
+**Fast, private, offline photo-print preparation for macOS, Windows and Linux.**
 
 Stamp the date and place on your photos, crop them to real print sizes, and get them ready for the lab, all without a single photo leaving your computer.
 
@@ -18,7 +18,7 @@ Stamp the date and place on your photos, crop them to real print sizes, and get 
 [![Status: pre-alpha](https://img.shields.io/badge/status-pre--alpha-orange.svg)](docs/STATUS.md)
 [![Latest release](https://img.shields.io/github/v/release/hoangphi01/fotollection?include_prereleases&sort=semver&label=release)](https://github.com/hoangphi01/fotollection/releases)
 
-[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows-lightgrey.svg)](docs/RELEASE.md)
+[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)](docs/RELEASE.md)
 [![Rust 1.99](https://img.shields.io/badge/rust-1.99-b7410e.svg?logo=rust)](rust-toolchain.toml)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-24c8db.svg?logo=tauri&logoColor=white)](https://v2.tauri.app/)
 [![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=black)](https://react.dev/)
@@ -203,30 +203,86 @@ Reproduce everything with `bench/run.sh <photo-folder>` and `bench/batch.sh <pho
 
 ## Download
 
-Get the latest version from the [Download page](https://fotollection.org/download/) or the [Releases](https://github.com/hoangphi01/fotollection/releases/latest) page: a `.dmg` for macOS 11+ (Apple Silicon and Intel), and a `-setup.exe` or `.msi` for Windows 10/11. Versions follow [Semantic Versioning](docs/RELEASE.md#1-versioning); 0.x releases are previews until the MVP is complete. The app never checks for updates on its own, so look here for new versions; installing over an older one keeps your settings and projects.
+Get the latest version from the [Download page](https://fotollection.org/download/) or the [Releases](https://github.com/hoangphi01/fotollection/releases/latest) page: a `.dmg` for macOS 11+ (Apple Silicon and Intel), a `-setup.exe` or `.msi` for Windows 10/11, and an AppImage or `.deb` for 64-bit Linux ([which distributions](#linux)). Versions follow [Semantic Versioning](docs/RELEASE.md#1-versioning); 0.x releases are previews until the MVP is complete. The app never checks for updates on its own, so look here for new versions; installing over an older one keeps your settings and projects.
 
 > [!IMPORTANT]
 > Builds are **unsigned** for now ([ADR-0009](docs/adr/0009-unsigned-distribution.md)). On first launch:
 >
 > - **macOS:** System Settings → Privacy & Security → **Open Anyway**
 > - **Windows:** SmartScreen → **More info** → **Run anyway**
+> - **Linux:** nothing to approve; make the AppImage executable, or install the `.deb` (below)
 >
 > Verify each download against `SHA256SUMS.txt` on the release page. See the [code signing and privacy policy](https://fotollection.org/code-signing/).
+
+### By system
+
+The same app on every system, with these differences ([ADR-0034](docs/adr/0034-linux-lean.md)):
+
+| | macOS | Windows | Linux |
+|---|:-:|:-:|:-:|
+| Culling, stars, flags, best shot, print basket | ✓ | ✓ | ✓ |
+| Print sizes, crop, straighten, zoom, date stamp, info frame | ✓ | ✓ | ✓ |
+| Offline places, dates and places by hand, camera clocks | ✓ | ✓ | ✓ |
+| Export for print and for social media | ✓ | ✓ | ✓ |
+| JPEG and PNG | ✓ | ✓ | ✓ |
+| Camera RAW | ✓ ¹ | ✓ | ✓ |
+| HEIC (iPhone photos) | ✓ | ✓ ² | not yet ³ |
+| Shoot with a camera over USB | not yet | ✓ ⁴ | — |
+| "Open with" from the file manager | ✓ | ✓ | ✓ ⁵ |
+| *Check for updates* downloads the new version | ✓ | ✓ | ✓ ⁶ |
+
+1. On macOS, RAW formats other than DNG are developed by the system, with its lens corrections; Linux, and Windows without Microsoft's Raw Image Extension, use the reader built into Fotollection, without them.
+2. With Microsoft's free **HEIF Image Extensions** and **HEVC Video Extensions**.
+3. HEIC needs an HEVC decoder, which Linux does not ship and Fotollection will not bundle (patents). A later version will use the `libheif` your distribution installs (FR-068). Until then, convert HEIC photos to JPEG.
+4. Sony a6400 first ([FR-063](docs/PRD.md#fr-063--tethered-capture-over-usb)).
+5. With the `.deb`. An AppImage is not registered with the file manager unless a tool such as AppImageLauncher does it.
+6. The AppImage downloads the new AppImage; the `.deb` opens the release page.
+
+### Linux
+
+**Works** on 64-bit Linux with glibc 2.35 or later, x86_64 or ARM64:
+
+- **AppImage:** Ubuntu 22.04+, Debian 12+, Linux Mint 21+, Pop!_OS 22.04+, elementary OS 7+, Zorin OS 17+, Fedora 36+, openSUSE Tumbleweed, Arch, Manjaro and others of that age.
+- **`.deb`:** Ubuntu, Debian, Mint, Pop!_OS, elementary OS and Zorin OS.
+
+**Works with a step:**
+
+- **Ubuntu 24.04 and newer:** the AppImage needs FUSE 2 once: `sudo apt install libfuse2t64`. You can also run it with `--appimage-extract-and-run`.
+- **NixOS:** `appimage-run Fotollection_*.AppImage`.
+- **Fedora Silverblue and other immutable systems:** use the AppImage.
+- **Nvidia graphics:** Fotollection turns off WebKit's DMA-BUF renderer by itself, which avoids a blank window.
+
+**Does not run** on:
+
+- glibc older than 2.35: Ubuntu 20.04, Debian 11, RHEL, CentOS, Rocky or Alma 8, openSUSE Leap 15;
+- musl systems such as Alpine;
+- 32-bit machines;
+- ChromeOS without its Linux container.
+
+**Install:**
+
+```sh
+# AppImage (any distribution above), x86_64; use _aarch64 on ARM
+chmod +x Fotollection_*_amd64.AppImage && ./Fotollection_*_amd64.AppImage
+
+# .deb (Ubuntu, Debian, Mint…), from the folder you downloaded it to; _arm64.deb on ARM
+sudo apt install ./Fotollection_*_amd64.deb
+```
 
 ### System requirements
 
 | | Minimum | Recommended | Notes |
 |---|---|---|---|
-| **Operating system** | macOS 11 Big Sur, or Windows 10 64-bit | macOS 13 or later, or Windows 11 | Apple Silicon and Intel Macs. Windows uses the WebView2 runtime, built into Windows 11 and installed automatically on Windows 10 |
+| **Operating system** | macOS 11 Big Sur, Windows 10 64-bit, or 64-bit Linux with glibc 2.35 ([which distributions](#linux)) | macOS 13 or later, Windows 11, or Ubuntu 24.04 | Apple Silicon and Intel Macs. Windows uses the WebView2 runtime, built into Windows 11 and installed automatically on Windows 10. Linux uses WebKitGTK 4.1, bundled in the AppImage and installed with the `.deb` |
 | **Processor** | Any 64-bit CPU from the last ~8 years | Apple Silicon, or a recent 4+ core x64 | Work is spread over all cores. Every number in [Performance](#performance) is from an Apple M3 |
 | **Memory (RAM)** | 4 GB | 8 GB or more | Fotollection stays under 2 GB even for 5,000+ photos (measured peak 1.45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)) |
 | **Disk** | 100 MB free plus the cache | 1 GB free | The app is meant to stay under 25 MB ([NFR-008](docs/PRD.md#nfr-008--install-size)). The cache takes about 25 MB per 1,000 photos (thumbnails about 22 KB and best-shot analysis about 4 KB each) and is safe to delete. Exports need space for the full-resolution files |
 | **Display** | 1280 × 800 | 1920 × 1080 or a Retina display | The toolbar adapts to narrow windows |
 | **Internet** | Not needed | — | Everything runs offline: faces, places and previews included. Nothing is uploaded |
-| **HEIC (iPhone photos)** | macOS: built in | — | Windows: install **HEIF Image Extensions** and **HEVC Video Extensions** from the Microsoft Store ([ADR-0017](docs/adr/0017-heic-through-os-codecs.md)) |
-| **Camera RAW** | macOS: built in | — | Windows: install the free **Raw Image Extension** from the Microsoft Store ([ADR-0023](docs/adr/0023-raw-through-os-codecs.md)) |
+| **HEIC (iPhone photos)** | macOS: built in | — | Windows: install **HEIF Image Extensions** and **HEVC Video Extensions** from the Microsoft Store ([ADR-0017](docs/adr/0017-heic-through-os-codecs.md)). Linux: not yet ([ADR-0034](docs/adr/0034-linux-lean.md)) |
+| **Camera RAW** | macOS: built in | — | Windows: install the free **Raw Image Extension** from the Microsoft Store ([ADR-0023](docs/adr/0023-raw-through-os-codecs.md)). Linux: built into Fotollection ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md)) |
 
-To build from source you also need about 10 GB free for Rust build files (a debug and a release build; `scripts/clean.sh` reclaims them), Rust (installed by `rustup`, version pinned in `rust-toolchain.toml`), Node.js 22 or later, and Xcode Command Line Tools (macOS) or the MSVC Build Tools (Windows). The full list is in [docs/DEVELOPMENT.md §1.3](docs/DEVELOPMENT.md#13-prerequisites).
+To build from source you also need about 10 GB free for Rust build files (a debug and a release build; `scripts/clean.sh` reclaims them), Rust (installed by `rustup`, version pinned in `rust-toolchain.toml`), Node.js 22 or later, and Xcode Command Line Tools (macOS), the MSVC Build Tools (Windows), or WebKitGTK 4.1 and GTK 3 development packages (Linux, as `scripts/bootstrap.sh` installs them). The full list is in [docs/DEVELOPMENT.md §1.3](docs/DEVELOPMENT.md#13-prerequisites).
 
 ## Build from source
 

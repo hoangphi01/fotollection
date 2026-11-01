@@ -13,6 +13,13 @@
 
 ## 2026-11-01
 
+### A bare container is not a desktop: the first v0.8.2 run stopped on its own smoke test (ADR-0034)
+
+- **Seen:** the arm64 build passed on Ubuntu 22.04, then the AppImage exited with 127 in `debian:12`: `libfontconfig.so.1: cannot open shared object file`. The failed job cancelled the other three, so nothing was released.
+- **Why:** an AppImage leaves out on purpose the libraries every desktop already has (fontconfig, freetype, GL, X11: the AppImage exclude list), because bundling them breaks on other drivers. The `debian:12` image has none of them; no one runs a photo app there.
+- **Fix:** the container first installs GTK 3 and GL (`libgtk-3-0 libgl1 libegl1 libgbm1`), the floor of any Debian desktop, then runs `ldd` over the extracted AppImage and prints every library still missing before it starts the app, so one run shows the whole list instead of the first missing file.
+- **Rule:** a test environment must match what a user has, no less: test an AppImage on the desktop floor, not on a bare image. A smoke test that fails prints everything that is wrong at once. A release dry run (dispatch before the version bump) catches this without a failed release run.
+
 ### Typing in the date stamp made the panel jump and the text slip back (FR-036)
 
 - **Seen:** each keystroke in *Line under the date* made the cards below jump up, and the text sometimes went back a few letters before catching up.
@@ -32,6 +39,14 @@
 - **Fix:** `useLibrary` keys its effect on the filter's content (`JSON.stringify`), as `useSheets` already did.
 - **Rule:** a hook that fetches from IPC keys its effect on the request's content (a string), never on an object a caller may rebuild.
 
+### A decoder can be silently wrong: JPEGs came out as green stripes (ADR-0033)
+
+- **Seen:** a v0.8.0 user's folder showed half its photos as green tiles with fine horizontal stripes and a ghost of the picture. The owner first suspected our RAW decoder; the files were JPEGs.
+- **Why:** they were saved with one scan per component and colour halved both ways (4:2:0), a rare but valid baseline layout. `zune-jpeg` 0.5.15 reads the Cb scan into the Cr one and returns the result as a success: the brightness survives as the ghost, the colour planes are wrong, hence green. The same decode feeds thumbnails, preview, best shot and export, so prints were green too, and the bad thumbnails stayed in the disk cache keyed only by the file.
+- **How we found it:** the symptom (luma kept, chroma wrong, in rows) pointed at the colour planes of a JPEG decode; the upstream tracker had the layout; one fixture per layout, saved with `cjpeg`, reproduced it (mean error 111.9 against 2–4 for the others) before any fix.
+- **Fix:** read the layout from the header (`jpeg_layout`); zune decodes only the layouts the corpus proves, `jpeg-decoder` every other one and any file zune refuses; `thumbs::CACHE_VERSION` makes every thumbnail and analysis again.
+- **Rule:** a fast decoder is trusted only on the layouts a test proves; everything else goes to a reference decoder. Every decoder upgrade runs the layout corpus first, and an RC never ships. A fix that changes the pixels of files already seen bumps the cache version. When a user reports a picture problem without the file, rebuild the layout from the symptom and make a fixture of it.
+
 ## 2026-10-31
 
 ### The website build broke on a Liquid include (landing page, FR-048)
@@ -47,14 +62,6 @@
 - **Why:** the saved language was applied by `useLanguage`'s effect, and the only component that called it was the language card in Professional's settings panel. Simple mode does not mount that panel, so the language was never applied.
 - **Fix:** `App` calls `useLanguage()`, so the language applies in every mode.
 - **Rule:** a per-machine preference is applied once, at the top of the app, never as a side effect of the control that changes it.
-
-### A decoder can be silently wrong: JPEGs came out as green stripes (ADR-0033)
-
-- **Seen:** a v0.8.0 user's folder showed half its photos as green tiles with fine horizontal stripes and a ghost of the picture. The owner first suspected our RAW decoder; the files were JPEGs.
-- **Why:** they were saved with one scan per component and colour halved both ways (4:2:0), a rare but valid baseline layout. `zune-jpeg` 0.5.15 reads the Cb scan into the Cr one and returns the result as a success: the brightness survives as the ghost, the colour planes are wrong, hence green. The same decode feeds thumbnails, preview, best shot and export, so prints were green too, and the bad thumbnails stayed in the disk cache keyed only by the file.
-- **How we found it:** the symptom (luma kept, chroma wrong, in rows) pointed at the colour planes of a JPEG decode; the upstream tracker had the layout; one fixture per layout, saved with `cjpeg`, reproduced it (mean error 111.9 against 2–4 for the others) before any fix.
-- **Fix:** read the layout from the header (`jpeg_layout`); zune decodes only the layouts the corpus proves, `jpeg-decoder` every other one and any file zune refuses; `thumbs::CACHE_VERSION` makes every thumbnail and analysis again.
-- **Rule:** a fast decoder is trusted only on the layouts a test proves; everything else goes to a reference decoder. Every decoder upgrade runs the layout corpus first, and an RC never ships. A fix that changes the pixels of files already seen bumps the cache version. When a user reports a picture problem without the file, rebuild the layout from the symptom and make a fixture of it.
 
 ## 2026-10-27
 

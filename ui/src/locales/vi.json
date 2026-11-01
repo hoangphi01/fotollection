@@ -392,7 +392,8 @@
       "unreadable": "Không đọc được tệp",
       "unsupported": "Định dạng này chưa được hỗ trợ",
       "heic_codec_missing": "HEIC cần cài \"HEIF Image Extensions\" và \"HEVC Video Extensions\" từ Microsoft Store",
-      "raw_codec_missing": "Ảnh RAW cần cài \"Raw Image Extension\" miễn phí từ Microsoft Store"
+      "raw_codec_missing": "Ảnh RAW cần cài \"Raw Image Extension\" miễn phí từ Microsoft Store",
+      "heic_linux": "Ảnh HEIC chưa được hỗ trợ trên Linux: hãy chuyển sang JPEG, hoặc mở trên macOS hay Windows"
     },
     "logo": {
       "decode_failed": "Không giải mã được logo",
@@ -532,7 +533,7 @@
   "capture": {
     "connect": "Kết nối máy ảnh",
     "connectHint": "Chụp từ máy ảnh cắm dây: xem trực tiếp, bấm Chụp, ảnh vào một tab mới",
-    "windowsOnly": "Hiện chỉ kết nối máy ảnh được trên Windows",
+    "windowsOnly": "Hiện chỉ kết nối máy ảnh được trên Windows; macOS sẽ có sau",
     "liveView": "Hình trực tiếp từ máy ảnh",
     "waitingLiveView": "Đang chờ hình trực tiếp từ máy ảnh…",
     "sessionNote": "Ảnh nằm trong một tab tạm cho tới khi bạn lưu",

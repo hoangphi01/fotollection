@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //! Native menu (macOS) with the File commands of FR-023 and the three modes of FR-048, in
-//! the interface language. On Windows the same shortcuts are handled by the UI, so no menu
-//! bar is added to the window.
+//! the interface language. On Windows and Linux the same shortcuts are handled by the UI, so
+//! no menu bar is added to the window.
 
 use fotollection_core::settings::Language;
 use serde::{Deserialize, Serialize};

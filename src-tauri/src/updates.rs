@@ -47,6 +47,11 @@ pub struct PendingDownload(Mutex<Option<String>>);
 enum Platform {
     Mac,
     Windows,
+    /// Linux run as an `AppImage` (ADR-0034), on an ARM64 machine or not. A `.deb` install is
+    /// `Other`: APT or the release page updates it.
+    LinuxAppImage {
+        arm: bool,
+    },
     Other,
 }
 
@@ -56,6 +61,10 @@ impl Platform {
             Self::Mac
         } else if cfg!(target_os = "windows") {
             Self::Windows
+        } else if cfg!(target_os = "linux") && std::env::var_os("APPIMAGE").is_some() {
+            Self::LinuxAppImage {
+                arm: cfg!(target_arch = "aarch64"),
+            }
         } else {
             Self::Other
         }
@@ -66,6 +75,8 @@ impl Platform {
         match self {
             Self::Mac => Some("_universal.dmg"),
             Self::Windows => Some("_x64-setup.exe"),
+            Self::LinuxAppImage { arm: false } => Some("_amd64.AppImage"),
+            Self::LinuxAppImage { arm: true } => Some("_aarch64.AppImage"),
             Self::Other => None,
         }
     }
@@ -201,7 +212,10 @@ mod tests {
                "assets":[
                  {{"name":"Fotollection_{v}_universal.dmg","browser_download_url":"{RELEASES}download/{tag}/Fotollection_{v}_universal.dmg"}},
                  {{"name":"Fotollection_{v}_x64-setup.exe","browser_download_url":"{RELEASES}download/{tag}/Fotollection_{v}_x64-setup.exe"}},
-                 {{"name":"Fotollection_{v}_x64_en-US.msi","browser_download_url":"{RELEASES}download/{tag}/Fotollection_{v}_x64_en-US.msi"}}]}}"#,
+                 {{"name":"Fotollection_{v}_x64_en-US.msi","browser_download_url":"{RELEASES}download/{tag}/Fotollection_{v}_x64_en-US.msi"}},
+                 {{"name":"Fotollection_{v}_amd64.AppImage","browser_download_url":"{RELEASES}download/{tag}/Fotollection_{v}_amd64.AppImage"}},
+                 {{"name":"Fotollection_{v}_aarch64.AppImage","browser_download_url":"{RELEASES}download/{tag}/Fotollection_{v}_aarch64.AppImage"}},
+                 {{"name":"Fotollection_{v}_amd64.deb","browser_download_url":"{RELEASES}download/{tag}/Fotollection_{v}_amd64.deb"}}]}}"#,
             v = tag.trim_start_matches('v'),
         )
         .into_bytes()
@@ -218,7 +232,14 @@ mod tests {
         assert!(download.ends_with("Fotollection_0.8.0_universal.dmg"));
         let (_, download) = evaluate(&release("v0.8.0", false), "0.7.0", Platform::Windows)?;
         assert!(download.ends_with("_x64-setup.exe"));
-        // No installer for this system: the release page.
+        // An AppImage gets the AppImage for its architecture (ADR-0034).
+        let intel = Platform::LinuxAppImage { arm: false };
+        let (_, download) = evaluate(&release("v0.8.2", false), "0.8.1", intel)?;
+        assert!(download.ends_with("Fotollection_0.8.2_amd64.AppImage"));
+        let arm = Platform::LinuxAppImage { arm: true };
+        let (_, download) = evaluate(&release("v0.8.2", false), "0.8.1", arm)?;
+        assert!(download.ends_with("Fotollection_0.8.2_aarch64.AppImage"));
+        // No installer for this system (a .deb install): the release page.
         let (check, download) = evaluate(&release("v0.8.0", false), "0.7.0", Platform::Other)?;
         assert_eq!(download, check.page_url);
         Ok(())

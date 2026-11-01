@@ -25,6 +25,7 @@
 |----------|--------|----------|
 | macOS 11+ | `universal-apple-darwin` (arm64 + x86_64) | `.dmg` |
 | Windows 10/11 | `x86_64-pc-windows-msvc` | `.msi` and NSIS `-setup.exe` |
+| Linux, glibc 2.35+ (since v0.8.2, [ADR-0034](adr/0034-linux-lean.md)) | `x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`, built on `ubuntu-22.04` and `ubuntu-22.04-arm` | `_amd64.AppImage`, `_aarch64.AppImage`, `_amd64.deb`, `_arm64.deb` |
 | All | — | `SHA256SUMS.txt` |
 
 The WebView2 runtime is bootstrapped by the Windows installer when it is missing. Installer size is budgeted by [NFR-008](PRD.md#nfr-008--install-size).
@@ -36,6 +37,7 @@ The WebView2 runtime is bootstrapped by the Windows installer when it is missing
 | Platform | What we do now | Paid option (not used) | User experience |
 |----------|----------------|------------------------|-----------------|
 | macOS | Ad-hoc signature (required on Apple Silicon) | Developer ID + notarization, 99 USD/year | Gatekeeper blocks the first launch. The user goes to **System Settings → Privacy & Security → Open Anyway** (right-click → Open no longer works on macOS 15+) |
+| Linux | Unsigned, as is usual for AppImage and a downloaded `.deb`; `SHA256SUMS.txt` covers them | — | Nothing to approve: `chmod +x` the AppImage, or `sudo apt install ./….deb` |
 | Windows | Unsigned. SignPath Foundation (free for OSS) declined on 2026-10-26; reapply later | Authenticode / Azure Trusted Signing | SmartScreen warning: **More info → Run anyway** |
 
 - Every release publishes `SHA256SUMS.txt` for all artifacts.
@@ -61,17 +63,19 @@ git push
 
 1. **detect:** reads the version from `Cargo.toml`. If the tag `vX.Y.Z` exists, it stops. A dependency change in `Cargo.toml` therefore starts it but releases nothing.
 2. **check:** the full CI (`ci.yml`, called as a reusable workflow): fmt, clippy, tests, bindings, `cargo deny`.
-3. **build:** `tauri-action` on `macos-latest` (universal, ad-hoc signed) and `windows-latest`.
+3. **build:** `tauri-action` on `macos-latest` (universal, ad-hoc signed), `windows-latest`, `ubuntu-22.04` and `ubuntu-22.04-arm`. The Linux jobs then run a **smoke test**: install the `.deb` and check its desktop entry and MIME types, and run the AppImage for 20 s under `xvfb-run`, on the runner and in a `debian:12` container given GTK 3 and GL, the libraries every desktop has and an AppImage leaves out; the container first lists any library the AppImage still lacks. A crash fails the release ([ADR-0034](adr/0034-linux-lean.md)).
 4. **publish:** tags the commit, creates the GitHub Release **published** (pre-release when the version has a `-`), titled `Fotollection vX.Y.Z`, followed by the release's name when the CHANGELOG heading has one after the date (`## [0.8.0] - 2026-10-27 — Places and Lightroom`; add it to the heading `release.sh` writes, before pushing), with the version's **Highlights** from the CHANGELOG (a few one-line points such as "New: …", "UI update: …", "Fixes: …"), a link to the full changelog, the first-launch steps and `SHA256SUMS.txt`. The CHANGELOG itself keeps every detail.
 5. **website:** triggers the Pages workflow, so the download buttons show the new version.
 
 A failed build publishes nothing. Re-running the workflow retries it.
 
+**A release from a maintenance branch** (a fix or a package for the last version while `main` holds the next one, as v0.8.1 and v0.8.2 on `release/0.8`): `release.sh` refuses any branch but `main`, so set the version by hand as it does (`Cargo.toml`, `cargo update --workspace`, `npm version X.Y.Z --workspace ui --no-git-tag-version`, the CHANGELOG heading), commit `chore(release): vX.Y.Z`, push the branch and run `gh workflow run release.yml --ref <branch>`; the tag goes on the branch's commit. Then merge the branch into `main`, and **push `main` only once the tag exists**: `main`'s `Cargo.toml` then carries the same version, and a push without the tag would release it from `main`.
+
 **Which workflows run on a push.** Each one runs only when its own files change, so a docs-only or website-only push builds nothing:
 
 | Workflow | Runs when the push changes |
 |----------|----------------------------|
-| `ci` (fmt, clippy, tests, bindings, `cargo deny` on macOS and Windows) | `crates/`, `src-tauri/`, `ui/`, `Cargo.toml`, `Cargo.lock`, the npm manifests, `rust-toolchain.toml`, `deny.toml` |
+| `ci` (fmt, clippy, tests, bindings on macOS, Windows and Ubuntu 22.04; `cargo deny`) | `crates/`, `src-tauri/`, `ui/`, `Cargo.toml`, `Cargo.lock`, the npm manifests, `rust-toolchain.toml`, `deny.toml` |
 | `docs` (`check-docs.sh`, markdownlint, internal links) | any `.md` file, `docs/`, `bench/results/`, and the files `check-docs.sh` compares with the docs (versions, `tauri.conf.json`) |
 | `pages` (the website) | `site/`, `CHANGELOG.md`; and after every release |
 | `release` | `Cargo.toml` (or started by hand from the Actions tab, for example to retry a failed release) |
@@ -89,11 +93,12 @@ Installing a new version over an old one **replaces it** and keeps settings, pro
 - **Windows `-setup.exe` (recommended):** the reinstall page defaults to uninstalling the old version first; app data is kept unless its box is ticked.
 - **Windows `.msi`:** `MajorUpgrade` removes the old version and refuses downgrades. This needs the same `UpgradeCode` in every release, so it is pinned in `tauri.conf.json` (`bundle.windows.wix.upgradeCode`); never change it.
 - Do not mix the two Windows installers: one installs per user, the other per machine, so both copies would stay.
+- **Linux AppImage:** replace the old file with the new one (*Check for updates* downloads it). **Linux `.deb`:** `sudo apt install ./Fotollection_X.Y.Z_amd64.deb` over the old one.
 
 ## 6. Release checklist
 
 - [ ] CHANGELOG `Unreleased` describes the release in user terms
 - [ ] Benchmarks are within budget, and the results are logged in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log)
 - [ ] `scripts/release.sh` run, commit pushed
-- [ ] Workflow green; the release has the `.dmg`, `.msi`, `-setup.exe` and `SHA256SUMS.txt`
+- [ ] Workflow green, Linux smoke tests included; the release has the `.dmg`, `.msi`, `-setup.exe`, the two AppImages, the two `.deb` and `SHA256SUMS.txt`
 - [ ] Smoke test of the published installer on macOS ([TESTING.md §7](TESTING.md#7-manual-release-checklist)); a broken release is fixed by a PATCH release, never by replacing assets

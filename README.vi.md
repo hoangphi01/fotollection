@@ -9,7 +9,7 @@ by [@hoangphi01](https://github.com/hoangphi01)
 
 [EN](README.md) · **Tiếng Việt** · [Trang giới thiệu](https://fotollection.org/vi/)
 
-**Chuẩn bị ảnh để in: nhanh, riêng tư, chạy offline trên macOS và Windows.**
+**Chuẩn bị ảnh để in: nhanh, riêng tư, chạy offline trên macOS, Windows và Linux.**
 
 In ngày và nơi chụp lên ảnh, crop đúng khổ in thật, rồi gửi đi tiệm in, mà không có tấm ảnh nào rời khỏi máy của bạn.
 
@@ -19,7 +19,7 @@ In ngày và nơi chụp lên ảnh, crop đúng khổ in thật, rồi gửi đ
 [![Status: pre-alpha](https://img.shields.io/badge/status-pre--alpha-orange.svg)](docs/STATUS.md)
 [![Latest release](https://img.shields.io/github/v/release/hoangphi01/fotollection?include_prereleases&sort=semver&label=release)](https://github.com/hoangphi01/fotollection/releases)
 
-[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows-lightgrey.svg)](docs/RELEASE.md)
+[![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)](docs/RELEASE.md)
 [![Rust 1.99](https://img.shields.io/badge/rust-1.99-b7410e.svg?logo=rust)](rust-toolchain.toml)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-24c8db.svg?logo=tauri&logoColor=white)](https://v2.tauri.app/)
 [![React 19](https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=black)](https://react.dev/)
@@ -204,30 +204,86 @@ Phân tích vẫn nằm trong ngân sách: 17,4 ms mỗi ảnh, 27,6 ms khi có 
 
 ## Tải về
 
-Tải phiên bản mới nhất ở [trang Tải về](https://fotollection.org/vi/download/) hoặc trang [Releases](https://github.com/hoangphi01/fotollection/releases/latest): file `.dmg` cho macOS 11+ (Apple Silicon và Intel), file `-setup.exe` hoặc `.msi` cho Windows 10/11. Số phiên bản theo [Semantic Versioning](docs/RELEASE.md#1-versioning); các bản 0.x là bản xem trước cho tới khi xong MVP. App không tự kiểm tra cập nhật, nên hãy xem ở đây khi muốn bản mới; cài đè lên bản cũ vẫn giữ nguyên thiết lập và dự án của bạn.
+Tải phiên bản mới nhất ở [trang Tải về](https://fotollection.org/vi/download/) hoặc trang [Releases](https://github.com/hoangphi01/fotollection/releases/latest): file `.dmg` cho macOS 11+ (Apple Silicon và Intel), file `-setup.exe` hoặc `.msi` cho Windows 10/11, và AppImage hoặc `.deb` cho Linux 64-bit ([những distro nào](#linux)). Số phiên bản theo [Semantic Versioning](docs/RELEASE.md#1-versioning); các bản 0.x là bản xem trước cho tới khi xong MVP. App không tự kiểm tra cập nhật, nên hãy xem ở đây khi muốn bản mới; cài đè lên bản cũ vẫn giữ nguyên thiết lập và dự án của bạn.
 
 > [!IMPORTANT]
 > Các bản build hiện **chưa được ký số** ([ADR-0009](docs/adr/0009-unsigned-distribution.md)). Lần mở đầu tiên:
 >
 > - **macOS:** System Settings → Privacy & Security → **Open Anyway**
 > - **Windows:** SmartScreen → **More info** → **Run anyway**
+> - **Linux:** không cần bấm gì thêm; cho AppImage quyền chạy, hoặc cài file `.deb` (bên dưới)
 >
 > Kiểm tra từng file tải về với `SHA256SUMS.txt` trên trang phát hành. Xem [chính sách ký mã và quyền riêng tư](https://fotollection.org/vi/code-signing/).
+
+### Theo hệ điều hành
+
+Cùng một app trên mọi hệ điều hành, với các khác biệt sau ([ADR-0034](docs/adr/0034-linux-lean.md)):
+
+| | macOS | Windows | Linux |
+|---|:-:|:-:|:-:|
+| Lọc ảnh, sao, cờ, ảnh đẹp nhất, giỏ in | ✓ | ✓ | ✓ |
+| Khổ in, cắt, cân ngang, phóng to, dấu ngày, khung thông tin | ✓ | ✓ | ✓ |
+| Địa điểm offline, ngày và nơi chụp đặt tay, đồng hồ máy ảnh | ✓ | ✓ | ✓ |
+| Xuất để in và để đăng mạng xã hội | ✓ | ✓ | ✓ |
+| JPEG và PNG | ✓ | ✓ | ✓ |
+| Ảnh RAW | ✓ ¹ | ✓ | ✓ |
+| HEIC (ảnh iPhone) | ✓ | ✓ ² | chưa có ³ |
+| Chụp qua cáp USB từ máy ảnh | chưa có | ✓ ⁴ | — |
+| "Mở bằng" từ trình quản lý file | ✓ | ✓ | ✓ ⁵ |
+| *Kiểm tra cập nhật* tải bản mới | ✓ | ✓ | ✓ ⁶ |
+
+1. Trên macOS, các định dạng RAW khác DNG do hệ điều hành xử lý, có hiệu chỉnh ống kính; Linux, và Windows chưa cài Raw Image Extension của Microsoft, dùng bộ đọc RAW có sẵn trong Fotollection, không có hiệu chỉnh đó.
+2. Cần cài miễn phí **HEIF Image Extensions** và **HEVC Video Extensions** của Microsoft.
+3. HEIC cần bộ giải mã HEVC, thứ Linux không có sẵn và Fotollection không đóng gói kèm (vì bằng sáng chế). Bản sau sẽ dùng `libheif` mà distro của bạn cài (FR-068). Trước đó, hãy chuyển ảnh HEIC sang JPEG.
+4. Sony a6400 trước ([FR-063](docs/PRD.md#fr-063--tethered-capture-over-usb)).
+5. Với bản `.deb`. AppImage không tự đăng ký với trình quản lý file, trừ khi dùng công cụ như AppImageLauncher.
+6. AppImage tải AppImage mới; bản `.deb` mở trang phát hành.
+
+### Linux
+
+**Chạy được** trên Linux 64-bit có glibc 2.35 trở lên, x86_64 hoặc ARM64:
+
+- **AppImage:** Ubuntu 22.04+, Debian 12+, Linux Mint 21+, Pop!_OS 22.04+, elementary OS 7+, Zorin OS 17+, Fedora 36+, openSUSE Tumbleweed, Arch, Manjaro và các distro cùng thời.
+- **`.deb`:** Ubuntu, Debian, Mint, Pop!_OS, elementary OS và Zorin OS.
+
+**Chạy được, cần thêm một bước:**
+
+- **Ubuntu 24.04 trở lên:** AppImage cần FUSE 2, cài một lần: `sudo apt install libfuse2t64`. Cũng có thể chạy với `--appimage-extract-and-run`.
+- **NixOS:** `appimage-run Fotollection_*.AppImage`.
+- **Fedora Silverblue và các hệ bất biến khác:** dùng AppImage.
+- **Card đồ hoạ Nvidia:** Fotollection tự tắt bộ dựng DMA-BUF của WebKit, tránh lỗi cửa sổ trắng.
+
+**Không chạy** trên:
+
+- glibc cũ hơn 2.35: Ubuntu 20.04, Debian 11, RHEL, CentOS, Rocky hoặc Alma 8, openSUSE Leap 15;
+- hệ dùng musl như Alpine;
+- máy 32-bit;
+- ChromeOS khi chưa bật Linux.
+
+**Cài đặt:**
+
+```sh
+# AppImage (các distro trên), x86_64; máy ARM dùng file _aarch64
+chmod +x Fotollection_*_amd64.AppImage && ./Fotollection_*_amd64.AppImage
+
+# .deb (Ubuntu, Debian, Mint…), trong thư mục đã tải về; máy ARM dùng _arm64.deb
+sudo apt install ./Fotollection_*_amd64.deb
+```
 
 ### Cấu hình yêu cầu
 
 | | Tối thiểu | Khuyến nghị | Ghi chú |
 |---|---|---|---|
-| **Hệ điều hành** | macOS 11 Big Sur, hoặc Windows 10 64-bit | macOS 13 trở lên, hoặc Windows 11 | Máy Mac Apple Silicon và Intel. Windows dùng WebView2, có sẵn trên Windows 11 và tự cài trên Windows 10 |
+| **Hệ điều hành** | macOS 11 Big Sur, Windows 10 64-bit, hoặc Linux 64-bit có glibc 2.35 ([những distro nào](#linux)) | macOS 13 trở lên, Windows 11, hoặc Ubuntu 24.04 | Máy Mac Apple Silicon và Intel. Windows dùng WebView2, có sẵn trên Windows 11 và tự cài trên Windows 10. Linux dùng WebKitGTK 4.1, có sẵn trong AppImage và được cài kèm bản `.deb` |
 | **Bộ xử lý** | CPU 64-bit bất kỳ trong khoảng 8 năm gần đây | Apple Silicon, hoặc x64 đời mới từ 4 nhân | Công việc được chia cho mọi nhân. Mọi số liệu trong [Hiệu năng](#hiệu-năng) đo trên Apple M3 |
 | **RAM** | 4 GB | Từ 8 GB | Fotollection luôn dưới 2 GB kể cả với hơn 5.000 ảnh (đo được đỉnh 1,45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)) |
 | **Ổ đĩa** | Trống 100 MB, cộng phần cache | Trống 1 GB | App được giữ dưới 25 MB ([NFR-008](docs/PRD.md#nfr-008--install-size)). Cache tốn khoảng 25 MB cho 1.000 ảnh (thumbnail khoảng 22 KB, phân tích ảnh đẹp nhất khoảng 4 KB mỗi ảnh) và xoá lúc nào cũng được. File export cần chỗ cho ảnh độ phân giải đầy đủ |
 | **Màn hình** | 1280 × 800 | 1920 × 1080 hoặc màn Retina | Thanh công cụ tự co khi cửa sổ hẹp |
 | **Internet** | Không cần | — | Mọi thứ chạy offline, kể cả nhận diện khuôn mặt, địa điểm và preview. Không có gì được tải lên |
-| **HEIC (ảnh iPhone)** | macOS: có sẵn | — | Windows: cài **HEIF Image Extensions** và **HEVC Video Extensions** từ Microsoft Store ([ADR-0017](docs/adr/0017-heic-through-os-codecs.md)) |
-| **Ảnh RAW** | macOS: có sẵn | — | Windows: cài **Raw Image Extension** miễn phí từ Microsoft Store ([ADR-0023](docs/adr/0023-raw-through-os-codecs.md)) |
+| **HEIC (ảnh iPhone)** | macOS: có sẵn | — | Windows: cài **HEIF Image Extensions** và **HEVC Video Extensions** từ Microsoft Store ([ADR-0017](docs/adr/0017-heic-through-os-codecs.md)). Linux: chưa có ([ADR-0034](docs/adr/0034-linux-lean.md)) |
+| **Ảnh RAW** | macOS: có sẵn | — | Windows: cài **Raw Image Extension** miễn phí từ Microsoft Store ([ADR-0023](docs/adr/0023-raw-through-os-codecs.md)). Linux: có sẵn trong Fotollection ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md)) |
 
-Để build từ mã nguồn, bạn cần thêm khoảng 10 GB trống cho file build Rust (một bản debug và một bản release; `scripts/clean.sh` dọn lại được), Rust (cài qua `rustup`, phiên bản ghim trong `rust-toolchain.toml`), Node.js 22 trở lên, và Xcode Command Line Tools (macOS) hoặc MSVC Build Tools (Windows). Danh sách đầy đủ ở [docs/DEVELOPMENT.md §1.3](docs/DEVELOPMENT.md#13-prerequisites) (tiếng Anh).
+Để build từ mã nguồn, bạn cần thêm khoảng 10 GB trống cho file build Rust (một bản debug và một bản release; `scripts/clean.sh` dọn lại được), Rust (cài qua `rustup`, phiên bản ghim trong `rust-toolchain.toml`), Node.js 22 trở lên, và Xcode Command Line Tools (macOS), MSVC Build Tools (Windows), hoặc các gói phát triển WebKitGTK 4.1 và GTK 3 (Linux, như `scripts/bootstrap.sh` cài). Danh sách đầy đủ ở [docs/DEVELOPMENT.md §1.3](docs/DEVELOPMENT.md#13-prerequisites) (tiếng Anh).
 
 ## Build từ mã nguồn
 

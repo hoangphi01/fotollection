@@ -1,0 +1,117 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "bundle": {
+    "targets": [
+      "appimage",
+      "deb"
+    ],
+    "fileAssociations": [
+      {
+        "ext": [
+          "fotollection"
+        ],
+        "name": "Fotollection project",
+        "description": "Fotollection project",
+        "role": "Editor",
+        "mimeType": "application/vnd.fotollection.project+zip"
+      },
+      {
+        "ext": [
+          "jpg",
+          "jpeg",
+          "jpe"
+        ],
+        "name": "JPEG photo",
+        "role": "Viewer",
+        "mimeType": "image/jpeg"
+      },
+      {
+        "ext": [
+          "png"
+        ],
+        "name": "PNG image",
+        "role": "Viewer",
+        "mimeType": "image/png"
+      },
+      {
+        "ext": [
+          "rw2"
+        ],
+        "name": "Camera RAW photo",
+        "role": "Viewer",
+        "mimeType": "image/x-panasonic-rw2"
+      },
+      {
+        "ext": [
+          "cr2"
+        ],
+        "name": "Camera RAW photo",
+        "role": "Viewer",
+        "mimeType": "image/x-canon-cr2"
+      },
+      {
+        "ext": [
+          "cr3"
+        ],
+        "name": "Camera RAW photo",
+        "role": "Viewer",
+        "mimeType": "image/x-canon-cr3"
+      },
+      {
+        "ext": [
+          "nef"
+        ],
+        "name": "Camera RAW photo",
+        "role": "Viewer",
+        "mimeType": "image/x-nikon-nef"
+      },
+      {
+        "ext": [
+          "arw"
+        ],
+        "name": "Camera RAW photo",
+        "role": "Viewer",
+        "mimeType": "image/x-sony-arw"
+      },
+      {
+        "ext": [
+          "raf"
+        ],
+        "name": "Camera RAW photo",
+        "role": "Viewer",
+        "mimeType": "image/x-fuji-raf"
+      },
+      {
+        "ext": [
+          "orf"
+        ],
+        "name": "Camera RAW photo",
+        "role": "Viewer",
+        "mimeType": "image/x-olympus-orf"
+      },
+      {
+        "ext": [
+          "dng"
+        ],
+        "name": "Camera RAW photo",
+        "role": "Viewer",
+        "mimeType": "image/x-adobe-dng"
+      }
+    ],
+    "linux": {
+      "deb": {
+        "depends": [
+          "libwebkit2gtk-4.1-0",
+          "libgtk-3-0"
+        ],
+        "section": "graphics",
+        "files": {
+          "/usr/share/mime/packages/fotollection.xml": "linux/fotollection-mime.xml"
+        }
+      },
+      "appimage": {
+        "bundleMediaFramework": false
+      }
+    }
+  }
+}

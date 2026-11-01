@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<!-- The project file type, so "Open with" and file managers know .fotollection (ADR-0034). -->
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/vnd.fotollection.project+zip">
+    <comment>Fotollection project</comment>
+    <sub-class-of type="application/zip"/>
+    <glob pattern="*.fotollection"/>
+  </mime-type>
+</mime-info>

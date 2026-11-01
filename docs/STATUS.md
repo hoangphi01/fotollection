@@ -159,7 +159,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | Cargo workspace + Tauri 2 scaffold | Done | Tauri 2.12, Rust 1.99.1 pinned |
 | UI scaffold: React + Tailwind + shadcn/ui + Lucide | Done | [ADR-0007](adr/0007-ui-react-shadcn-lucide.md) |
 | Build-size profiles in `Cargo.toml` + `scripts/clean.sh` | Done | First dev build: `target/` ≈ 1.0 GB ([DEVELOPMENT.md §4](DEVELOPMENT.md#4-build-disk-hygiene)) |
-| CI build/test matrix (macOS, Windows) | Done | `.github/workflows/ci.yml` |
+| CI build/test matrix (macOS, Windows, Ubuntu 22.04) | Done | `.github/workflows/ci.yml`; Ubuntu since v0.8.2 (ADR-0034) |
 | Reproducible setup (`scripts/bootstrap.sh` / `.ps1`, lockfiles) | Done | [DEVELOPMENT.md §1](DEVELOPMENT.md#1-setting-up-a-machine) |
 | `tauri-specta` bindings + staleness check | Done | `cargo test` regenerates; CI runs `git diff --exit-code` |
 | Benchmark harness + `bench` corpus | In Progress | `examples/measure_folder.rs` on a real folder, plus `bench/run.sh`, the Rust vs Chromium comparison (OPTIMIZATION §2.1). `criterion` benches pending |
@@ -252,7 +252,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | NFR-004 | Memory ceiling | ≤ 2 GB | Core: 1.35 GB (95 photos), 1.45 GB (5,035 photos), flat. Whole-app run with 5,035 photos pending | In Progress |
 | NFR-005 | UI responsiveness | < 100 ms | — | Not Started |
 | NFR-006 | Offline and zero telemetry | 0 requests | — | Not Started |
-| NFR-007 | Platforms | macOS 11+, Win 10/11 | — | Not Started |
+| NFR-007 | Platforms | macOS 11+, Win 10/11, Linux glibc 2.35+ (x86_64, ARM64) | macOS and Windows shipping; Linux from v0.8.2, smoke-tested in CI on Ubuntu 22.04 and Debian 12 | In Progress |
 | NFR-008 | Install size | ≤ 25 MB | v0.3.0: `-setup.exe` 13.5 MB, `.msi` 18.5 MB ✓; universal `.dmg` 37.7 MB ✗ (two architectures in one file) | In Progress |
 | NFR-009 | Colour fidelity | ICC kept, Δ ≤ 1 | ICC kept 25/25, ΔE2000 mean 0.19 (sRGB) / 0.31 (Display P3), detail and saturation kept; web-editor export for reference 1.39 / 2.15 ([RESULT.md §9](RESULT.md#9-print-quality)) | In Progress |
 | NFR-010 | Cold start | < 1.5 s | page loaded 0.31–0.40 s, first thumbnail 0.50–0.58 s (release build, 4 runs); the very first launch after install 2.7 s, 2.1 s of it WebKit starting (`scripts/measure-startup.sh`) | In Progress |
