@@ -112,6 +112,100 @@ pub fn turn_sheet(
     })
 }
 
+/// Auto turn (FR-035), for prints cut in two: every sheet shown lies landscape, its two
+/// photos standing side by side, each photo turned to stand if it lies, so no standing photo
+/// sits next to a lying one. With `revert`, every sheet and photo goes back to its own
+/// orientation. A photo that turns gets its sheet crop centred again, as with Rotate photo.
+/// One undoable step; returns how many photos changed (0: nothing to do).
+#[tauri::command]
+#[specta::specta]
+pub async fn auto_turn_collage(
+    app: AppHandle,
+    filter: CullFilter,
+    revert: bool,
+) -> Result<u32, IpcError> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let sheets: Vec<(
+            fotollection_core::library::PhotoRecord,
+            Option<fotollection_core::library::PhotoRecord>,
+        )> = {
+            let library = state
+                .library
+                .read()
+                .map_err(|e| IpcError::internal(e.to_string()))?;
+            sheet_pairs(&library, &filter)
+                .into_iter()
+                .filter_map(|p| {
+                    Some((
+                        library.record(p.first)?,
+                        p.second.and_then(|id| library.record(id)),
+                    ))
+                })
+                .collect()
+        };
+        // Per photo: its quarter turns in the cell and, for a sheet's first photo, the sheet's turn.
+        let mut wanted: std::collections::HashMap<PhotoId, (u8, Option<bool>)> =
+            std::collections::HashMap::new();
+        for (first, second) in &sheets {
+            if revert {
+                wanted.insert(first.id, (0, Some(false)));
+                if let Some(r) = second {
+                    wanted.insert(r.id, (0, None));
+                }
+                continue;
+            }
+            let base = upright_size(&state, first)?;
+            let turned = sheet::landscape_turned(base);
+            wanted.insert(
+                first.id,
+                (sheet::fitting_turns(turned, base, base), Some(turned)),
+            );
+            if let Some(r) = second {
+                let size = upright_size(&state, r)?;
+                wanted.insert(r.id, (sheet::fitting_turns(turned, base, size), None));
+            }
+        }
+        let ids: Vec<PhotoId> = sheets
+            .iter()
+            .flat_map(|(a, b)| std::iter::once(a).chain(b.as_ref()))
+            .filter(|r| {
+                wanted.get(&r.id).is_some_and(|(t, sheet)| {
+                    *t != r.edits.sheet_turns() || sheet.is_some_and(|s| s != r.edits.sheet_turned)
+                })
+            })
+            .map(|r| r.id)
+            .collect();
+        if ids.is_empty() {
+            return Ok(0);
+        }
+        edit_photos(&app, &state, &ids, |id, e| {
+            let Some((turns, sheet)) = wanted.get(&id).copied() else {
+                return;
+            };
+            if let Some(turned) = sheet {
+                e.sheet_turned = turned;
+            }
+            if turns == e.sheet_turns() {
+                return;
+            }
+            let zoom = e.sheet_crop().map_or(1.0, |c| c.zoom);
+            e.collage_rotation = turns;
+            e.collage_crop = Some(
+                fotollection_core::plan::CropFrame {
+                    cx: 0.5,
+                    cy: 0.5,
+                    zoom,
+                }
+                .sanitized(),
+            );
+        })?;
+        Ok(u32::try_from(ids.len()).unwrap_or(u32::MAX))
+    })
+    .await
+    .map_err(|e| IpcError::internal(e.to_string()))?
+}
+
 /// Sets a photo's crop and straightening on collage sheets, apart from its print's; `None`
 /// (Reset in the crop editor) centres it. One undoable step (FR-035).
 #[tauri::command]

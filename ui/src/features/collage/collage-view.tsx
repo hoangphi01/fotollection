@@ -3,11 +3,13 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CullFilter, PhotoId, PhotoSummary, RenderSettings } from '@/ipc/bindings'
 import type { ExportApi } from '@/features/export/use-export'
+import { KeysInfo } from '@/components/layout/keys-info'
 import { formatNumber } from '@/lib/format'
 import { SelectModeButton } from '@/features/library/select-mode-button'
 import { SelectionBar } from '@/features/library/selection-bar'
 import type { SelectModeApi } from '@/features/library/use-select-mode'
 import { DatePlaceDialog } from '@/features/places/date-place-dialog'
+import { AutoTurnButtons } from './auto-turn-buttons'
 import { tickedSheets } from './sheet-cells'
 import { SheetGrid } from './sheet-grid'
 import { SheetPreviewDialog } from './sheet-preview-dialog'
@@ -66,9 +68,11 @@ export function CollageView({
         <span className="shrink-0 font-medium tabular-nums">
           {t('collage.count', { count: sheets.length, sheets: formatNumber(sheets.length), photos: formatNumber(photos.length) })}
         </span>
-        <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{t('collage.keysHint')}</span>
+        <KeysInfo lines={t('collage.keysHint').split(' · ')} />
+        <span className="flex-1" />
         {/* Select mode (FR-050): tick sheets, both photos at once, for the basket, to set aside
             or to export. */}
+        {!select.active && <AutoTurnButtons filter={filter} />}
         <SelectModeButton select={select} />
       </div>
       {select.active && (

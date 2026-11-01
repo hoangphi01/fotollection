@@ -86,6 +86,23 @@ pub fn side_by_side(first: (u32, u32), turned: bool) -> bool {
     landscape_photo == turned
 }
 
+/// The quarter turns (0 or 1) that make a photo lie the way its cell does, for sheets that
+/// are cut in two (FR-035): standing cells on a sheet whose photos sit side by side, lying
+/// ones otherwise. `first` and `photo` are upright sizes before any turn in the cell; the
+/// sheet keeps the orientation its first photo and `turned` give it. A square photo never turns.
+pub fn fitting_turns(turned: bool, first: (u32, u32), photo: (u32, u32)) -> u8 {
+    let standing_cells = side_by_side(first, turned);
+    let lies = photo.0 > photo.1;
+    let stands = photo.0 < photo.1;
+    u8::from((standing_cells && lies) || (!standing_cells && stands))
+}
+
+/// The sheet's `turned` that lays it landscape, its photos side by side, whatever the shape
+/// of its first photo (FR-035, Auto turn).
+pub fn landscape_turned(first: (u32, u32)) -> bool {
+    first.0 >= first.1
+}
+
 /// The `turned` to lay a sheet out with, given its first photo as it sits on the sheet
 /// (`size`, its own `cell_turns` included): a photo turned in its cell keeps the sheet as it
 /// was, since only the photo turns (FR-035). A square photo looks the same either way.
@@ -1014,5 +1031,25 @@ mod tests {
         assert!(!layout_turned(false, 2, lying));
         assert!(!layout_turned(false, 1, (5000, 5000)));
         assert!(layout_turned(true, 0, upright));
+    }
+
+    #[test]
+    fn fr_035_auto_turn_makes_every_photo_lie_like_its_cell() {
+        let (portrait, landscape, square) = ((4000, 6000), (6000, 4000), (5000, 5000));
+        // A portrait first photo: side by side, standing cells; a landscape partner turns.
+        assert_eq!(fitting_turns(false, portrait, portrait), 0);
+        assert_eq!(fitting_turns(false, portrait, landscape), 1);
+        // A landscape first photo: one above the other, lying cells; a portrait one turns.
+        assert_eq!(fitting_turns(false, landscape, landscape), 0);
+        assert_eq!(fitting_turns(false, landscape, portrait), 1);
+        // A sheet turned by hand turns its first photo too, so both still match.
+        assert_eq!(fitting_turns(true, portrait, portrait), 1);
+        assert_eq!(fitting_turns(false, portrait, square), 0);
+        // Auto turn lays every sheet landscape: side by side whatever its first photo.
+        for first in [portrait, landscape, square] {
+            assert!(side_by_side(first, landscape_turned(first)));
+            assert_eq!(fitting_turns(landscape_turned(first), first, landscape), 1);
+            assert_eq!(fitting_turns(landscape_turned(first), first, portrait), 0);
+        }
     }
 }

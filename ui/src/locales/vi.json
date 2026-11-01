@@ -7,6 +7,7 @@
     "dismiss": "Đóng"
   },
   "app": {
+    "keysInfo": "Phím tắt và chuột",
     "byline": "by @hoangphi01",
     "photos_other": "{{count}} ảnh",
     "filtered_other": "{{shown}} / {{count}} ảnh",
@@ -636,6 +637,10 @@
     "review": "Xem lại các ảnh"
   },
   "collage": {
+    "autoTurn": "Tự xoay",
+    "autoTurnHint": "Xoay ảnh cho khớp với nửa tấm của nó: không còn ảnh đứng cạnh ảnh nằm, tiện khi in ra để cắt đôi. Hoàn tác bằng Cmd/Ctrl+Z",
+    "revertTurns": "Về chiều gốc",
+    "revertTurnsHint": "Đưa mọi ảnh trên các tấm về đúng chiều của nó",
     "title": "Ghép ảnh",
     "sheetLabel": "Một tấm ghép",
     "gridLabel": "Các tấm ghép",

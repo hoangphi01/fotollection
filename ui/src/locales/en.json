@@ -7,6 +7,7 @@
     "dismiss": "Dismiss"
   },
   "app": {
+    "keysInfo": "Keys and mouse",
     "byline": "by @hoangphi01",
     "photos_one": "{{count}} photo",
     "photos_other": "{{count}} photos",
@@ -663,6 +664,10 @@
     "review": "Look through them again"
   },
   "collage": {
+    "autoTurn": "Auto turn",
+    "autoTurnHint": "Turn the photos so each lies like its half: no standing photo next to a lying one, for prints you cut in two. Undo with Cmd/Ctrl+Z",
+    "revertTurns": "Revert",
+    "revertTurnsHint": "Bring every photo back to its own orientation on the sheets",
     "title": "Collage",
     "sheetLabel": "A collage sheet",
     "gridLabel": "Collage sheets",

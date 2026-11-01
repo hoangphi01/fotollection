@@ -2,6 +2,7 @@
 import { FilterX, OctagonX, Sparkles, Square } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { KeysInfo } from '@/components/layout/keys-info'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
@@ -325,9 +326,7 @@ export function App() {
                 </span>
               )}
               {view === 'photos' && (
-                <span className="hidden min-w-0 flex-1 truncate text-xs text-muted-foreground @6xl:inline">
-                  {t('app.enterToPreview')} · {t('culling.keysHint')}
-                </span>
+                <KeysInfo lines={[t('app.enterToPreview'), ...t('culling.keysHint').split(' · ')]} />
               )}
               {view === 'photos' && (
                 <div className="ml-auto flex items-center gap-2">

@@ -243,6 +243,14 @@ export const commands = {
 	 */
 	rotateCollagePhoto: (id: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("rotate_collage_photo", { id })),
 	/**
+	 *  Auto turn (FR-035), for prints cut in two: every sheet shown lies landscape, its two
+	 *  photos standing side by side, each photo turned to stand if it lies, so no standing photo
+	 *  sits next to a lying one. With `revert`, every sheet and photo goes back to its own
+	 *  orientation. A photo that turns gets its sheet crop centred again, as with Rotate photo.
+	 *  One undoable step; returns how many photos changed (0: nothing to do).
+	 */
+	autoTurnCollage: (filter: CullFilter, revert: boolean) => typedError<number, IpcError>(__TAURI_INVOKE("auto_turn_collage", { filter, revert })),
+	/**
 	 *  What the panel says about a sheet: its size, each photo's area, the suggested size,
 	 *  the photo left inside the border and the print quality (FR-035, FR-026).
 	 */
