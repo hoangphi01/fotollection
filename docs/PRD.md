@@ -741,6 +741,10 @@ Next to the batch settings, any other setting will later be overridable for one 
 - The crop editor, the print-quality advice (the sizes' badges and the inspector's DPI) and the export follow the smaller photo area; the date stamp stays inside the photo.
 - Off by default; `render.border` in `settings.json` v10, which takes over FR-065's `frame.border` (a v9 file with the border on keeps it on).
 
+### FR-068 — HEIC on Linux through the system's libheif
+
+**P2 (planned, after v0.9.0).** On Linux, HEIC photos open through the `libheif` that the user's distribution installs (`libheif1` on Ubuntu and Debian, `libheif` on Fedora and Arch), loaded at run time; Fotollection never bundles an HEVC decoder, because HEVC is covered by patent pools ([ADR-0034](adr/0034-linux-lean.md)). Without it, HEIC is skipped with the command to install it. Until then, HEIC on Linux is skipped as "not supported on Linux yet".
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

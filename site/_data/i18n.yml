@@ -20,7 +20,8 @@ en:
   hero_lead: No internet up there, and still no idea which ones to keep. Take one real look back with Fotollection - it finds the best shots, stamps the date and gets them ready to print. Automatic, free and fully offline.
   download_mac: Download for macOS
   download_win: Download for Windows
-  download_note: macOS 11+ (Apple Silicon and Intel) · Windows 10/11
+  download_linux: Download for Linux
+  download_note: macOS 11+ (Apple Silicon and Intel) · Windows 10/11 · Linux 64-bit, glibc 2.35+
   latest: Latest version
   no_release: Releases are on GitHub
   shot_grid: The library, culled with stars and picks
@@ -37,13 +38,31 @@ en:
   f_quality_title: Original quality
   f_quality_text: Full resolution, the colour profile kept, 4:4:4 JPEG. What comes out looks like what went in.
   f_raw_title: Camera RAW, no conversion
-  f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG open as they are, with their date and exposure. Thumbnails come from the preview inside each file, so RAW browses as fast as JPEG. On Windows, RAW needs Microsoft's free Raw Image Extension for now; a built-in RAW reader is on its way."
+  f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG open as they are, with their date and exposure. Thumbnails come from the preview inside each file, so RAW browses as fast as JPEG. On Windows, RAW needs Microsoft's free Raw Image Extension for now; a built-in RAW reader is on its way. On Linux, the reader built into Fotollection opens them."
   f_open_title: Open photos from anywhere
   f_speed_title: Fast on any computer
   f_speed_text: A thousand photos open in 0.12 s, a new setting redraws the preview in 17 ms, and from the second launch the app starts in about 0.4 s. A 32 MP photo previews as fast as a small one.
-  f_open_text: Right-click a photo in Finder or Explorer and choose Fotollection. It opens at once, and its folder becomes a tab.
+  f_open_text: Right-click a photo in Finder, Explorer or your Linux file manager and choose Fotollection. It opens at once, and its folder becomes a tab.
   f_private_title: Private and offline
   f_private_text: No account, no upload, no telemetry. Place names come from a map bundled in the app, and GPS is removed on export.
+  pf_title: "By system"
+  pf_lead: "The same app on macOS, Windows and Linux, with these differences."
+  pf_feature: Feature
+  pf_ok: "Yes"
+  pf_soon: Not yet
+  pf_none: "No"
+  pf_coming: Coming in v0.9.0
+  pf_cull: Culling, stars, flags, best shot, print basket
+  pf_print: Print sizes, crop, straighten, zoom, date stamp, info frame
+  pf_places: Offline places, dates and places by hand, camera clocks
+  pf_export: Export for print and for social media
+  pf_modes: "Three modes: Simple, Collage, Pro"
+  pf_jpeg: JPEG and PNG
+  pf_raw: Camera RAW
+  pf_heic: HEIC (iPhone photos)
+  pf_tether: Shoot with a camera over USB
+  pf_openwith: Open with, from the file manager
+  pf_update: Check for updates downloads the new version
   show_stamp: Date stamp with the town from the photo's GPS
   show_frame: The "Shot on" info frame with the camera's logo
   show_crop: Straightening a horizon in the crop editor
@@ -56,7 +75,7 @@ en:
         - q: "Why not just use Lightroom?"
           a: "Lightroom, the built-in Photos apps and IrfanView are made for editing and viewing; none of them is designed for a photo printer. To print with them, you crop every photo to the paper's ratio yourself, or hand the files over and let the shop's machine or staff crop them, which often cuts off a head or the edge of a sign. Fotollection starts from the print: it knows the sizes at dm and Rossmann, crops each photo to them so what you see is exactly what comes out, warns when a photo is too small, stamps the date like a film camera and exports files the kiosk takes. It is light and fast, free, and works next to Lightroom: your originals are never changed."
         - q: "My computer already has Photos, or I use IrfanView. Why another app?"
-          a: "The built-in Photos apps and IrfanView are great viewers, each on its own system. None of them knows the size of a 10 × 15 print at dm or Rossmann, warns you when a photo is too small for it, stamps the date like a film camera, or sends the best shots of five folders to one print basket. Fotollection does, it looks and works the same on a Mac and on Windows, and it can be the viewer you open photos with: right-click a photo, Open with, Fotollection, camera RAW included."
+          a: "The built-in Photos apps and IrfanView are great viewers, each on its own system. None of them knows the size of a 10 × 15 print at dm or Rossmann, warns you when a photo is too small for it, stamps the date like a film camera, or sends the best shots of five folders to one print basket. Fotollection does, it looks and works the same on a Mac, on Windows and on Linux, and it can be the viewer you open photos with: right-click a photo, Open with, Fotollection, camera RAW included."
     - label: "Speed and weight"
       items:
         - q: "Is it heavy? Will it run on my older laptop?"
@@ -65,8 +84,8 @@ en:
           a: "Opening 1,000 photos takes about 0.12 s, because Fotollection reads each file's small built-in thumbnail first. Changing a setting redraws the preview in 17 ms, export runs at 18 full-size photos per second, and after the first launch the app opens in about 0.4 s. Every number was measured on an ordinary laptop, and the Performance page explains how to measure them yourself."
     - label: "Platforms and cost"
       items:
-        - q: "Does it work on Mac and Windows, and is it really free?"
-          a: "Yes. One download for macOS 11 or later, on Apple silicon and Intel alike, and one for Windows 10 and 11. It is free with no ads, no account and no in-app purchases, and the source code is public under GPL-3.0, so anyone can check what it does."
+        - q: "Does it work on Mac, Windows and Linux, and is it really free?"
+          a: "Yes. One download for macOS 11 or later, on Apple silicon and Intel alike, one for Windows 10 and 11, and for 64-bit Linux an AppImage or a .deb, on Intel/AMD or ARM, for any distribution with glibc 2.35 or later. Linux gets the lean build: no HEIC (iPhone) photos yet, no shooting with a camera over USB, and RAW without the lens corrections macOS adds; the table under Features shows every difference. It is free with no ads, no account and no in-app purchases, and the source code is public under GPL-3.0, so anyone can check what it does."
   tabs_title: "Work like browsing the web"
   tabs_lead: "Every folder you open becomes a tab in the same workspace, so a trip spread over several memory cards and phones stays in one place."
   tabs_row_title: "Folders as tabs, ticks that follow you"
@@ -133,7 +152,7 @@ en:
   fn_open: Free means no price, no ads and no in-app purchases; buying the author a coffee is your choice, and it helps the author keep improving Fotollection. Open source means the full source code is public on GitHub under the GPL-3.0 licence, so anyone can read, build and check what the app does. No account means the app never asks who you are and has nothing to sign in to.
   perf_speed_fn: [4, 5]
   fn_rust: "Rust and the Rust logo are trademarks of the Rust Foundation. Fotollection's core is written in Rust and runs directly on your computer."
-  fn_webview: "The app's window is built with Tauri and drawn by the system's own web view: WebKit (WKWebView) on macOS and Microsoft Edge WebView2 on Windows. Tauri is a project of the Tauri Programme within the Commons Conservancy; WebKit is a trademark of Apple Inc.; Microsoft Edge and WebView2 are trademarks of Microsoft Corporation. The browser comparison ran the same job in headless Chromium 156, the open-source project behind Google Chrome, with one Web Worker per processor core."
+  fn_webview: "The app's window is built with Tauri and drawn by the system's own web view: WebKit (WKWebView) on macOS, Microsoft Edge WebView2 on Windows and WebKitGTK, the GTK port of WebKit, on Linux. Tauri is a project of the Tauri Programme within the Commons Conservancy; WebKit is a trademark of Apple Inc.; GTK is a project of the GNOME Foundation; Microsoft Edge and WebView2 are trademarks of Microsoft Corporation. The browser comparison ran the same job in headless Chromium 156, the open-source project behind Google Chrome, with one Web Worker per processor core."
   fn_de: "ΔE2000 (CIEDE2000) is the colour-difference formula of the International Commission on Illumination (CIE), standardised as ISO/CIE 11664-6; the CIELAB colour space it works in is ISO/CIE 11664-4."
   fn_ssim: "SSIM was introduced by Zhou Wang, Alan C. Bovik, Hamid R. Sheikh and Eero P. Simoncelli in Image quality assessment: from error visibility to structural similarity, IEEE Transactions on Image Processing, 13(4), 2004."
   fn_jpeg: "JPEG is the image format of the Joint Photographic Experts Group, standardised as ISO/IEC 10918-1 and ITU-T T.81."
@@ -142,15 +161,23 @@ en:
   fn_adobe: "Adobe RGB (1998) is a colour space specified by Adobe Inc.; Adobe is a registered trademark of Adobe Inc."
   fn_charts: "Every chart: figures are for reference, measured on an ordinary laptop (Apple M3, 16 GB); yours depend on the computer you use."
   fn_dng: "Adobe DNG Converter was not run for this page. The figure is a third-party estimate (1,000 CR3 files in 20–30 minutes on modern hardware, machine not stated), from convertintomp4.com's blog post on batch RAW-to-DNG conversion. Adobe is a registered trademark of Adobe Inc."
+  fn_pf_raw: "On macOS, RAW formats other than DNG are developed by the system, with its lens corrections. Linux, and Windows without Microsoft's Raw Image Extension, use the reader built into Fotollection, without them."
+  fn_pf_heic_win: "With Microsoft's free HEIF Image Extensions and HEVC Video Extensions, from the Microsoft Store."
+  fn_pf_heic_linux: "HEIC needs an HEVC decoder, which Linux does not ship and Fotollection will not bundle, because of its patents. A later version will use the libheif your distribution installs. Until then, convert HEIC photos to JPEG."
+  fn_pf_tether: "Sony a6400 first; other cameras will follow."
+  fn_pf_openwith: "With the .deb, or with the install script. An AppImage you run by itself is not registered with the file manager, unless a tool such as AppImageLauncher does it."
+  fn_pf_update: "The AppImage downloads the new AppImage; the .deb opens the release page, and with the APT repository, sudo apt upgrade brings the new version."
+  fn_glibc: "glibc, the GNU C Library, is the base library every Linux program runs on. To see yours, type ldd --version in a terminal. Fotollection is built on Ubuntu 22.04, which has glibc 2.35, so it needs that version or a newer one."
+  fn_nvidia: "With NVIDIA's own driver, WebKitGTK's DMA-BUF renderer can leave the window blank. When that driver is loaded, Fotollection restarts itself once with that renderer turned off."
   fn_dm: dm and the dm logo are trademarks of dm-drogerie markt GmbH + Co. KG.
   fn_rossmann: ROSSMANN and the ROSSMANN logo are trademarks of Dirk Rossmann GmbH.
   fn_cewe: The photo services at dm and Rossmann are made by CEWE, a trademark of CEWE Stiftung & Co. KGaA. Print sizes were checked against dm's price list in October 2026; the shops may change them.
   fn_photos: "The demo photos in the screenshots are in the public domain (CC0) on Wikimedia Commons, by Dktue (18 photos), Pierre Blaché from Paris, France (3) and Kate Branch (1). The cat in the print-basket and best-shot screenshots was photographed by @hoangphi01 on a Lumix GX9, all rights reserved; the softer, shaken and darker copies beside it were made from that one photo, to show how the best shot is chosen."
   fn_photos_link: "Every file, its page and its checksum."
   fn_rawsamples: "The RAW measurements use nine samples in the public domain (CC0) from raw.pixls.us, one per format; scripts/fetch-raw-samples.py downloads and checks them."
-  fn_rawformats: "RAW formats named on this site belong to the camera makers that define them: RW2 (Panasonic Holdings Corporation), CR2 and CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) and ORF (OM Digital Solutions Corporation, formerly Olympus). DNG is an open specification published by Adobe Inc. Fotollection reads them through the codecs of macOS and Windows; it is not made or endorsed by any of these companies."
+  fn_rawformats: "RAW formats named on this site belong to the camera makers that define them: RW2 (Panasonic Holdings Corporation), CR2 and CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) and ORF (OM Digital Solutions Corporation, formerly Olympus). DNG is an open specification published by Adobe Inc. Fotollection reads them through the codecs of macOS and Windows, and on Linux, or on Windows without Microsoft's Raw Image Extension, through a reader built into Fotollection; it is not made or endorsed by any of these companies."
   fn_cameras: "Camera names and logos in the screenshots and in the app's info frame are trademarks of their owners, used only to show which camera took a photo: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) and Sony (Sony Group Corporation)."
-  fn_others: Apple and macOS are trademarks of Apple Inc.; Windows of Microsoft Corporation; Facebook and Instagram of Meta Platforms, Inc.; GitHub of GitHub, Inc.; Google Analytics of Google LLC; Lightroom of Adobe Inc.; IrfanView of Irfan Škiljan; VietQR of NAPAS; Wikimedia Commons of the Wikimedia Foundation.
+  fn_others: Apple and macOS are trademarks of Apple Inc.; Windows of Microsoft Corporation; Linux is the registered trademark of Linus Torvalds in the U.S. and other countries; Ubuntu of Canonical Ltd.; Debian of Software in the Public Interest, Inc.; Fedora, Red Hat, RHEL and CentOS of Red Hat, Inc.; openSUSE of SUSE LLC; Pop!_OS of System76, Inc.; Rocky Linux of the Rocky Enterprise Software Foundation; AlmaLinux of the AlmaLinux OS Foundation; ChromeOS of Google LLC; NVIDIA of NVIDIA Corporation; the names of the other Linux distributions belong to their projects; Facebook and Instagram of Meta Platforms, Inc.; GitHub of GitHub, Inc.; Google Analytics of Google LLC; Lightroom of Adobe Inc.; IrfanView of Irfan Škiljan; VietQR of NAPAS; Wikimedia Commons of the Wikimedia Foundation.
   fn_brand: "The Fotollection name and logo identify the official app, made by @hoangphi01. Official downloads come only from fotollection.org and the project's GitHub releases. The GPL-3.0 licence lets anyone share or sell copies, changed or not, as long as they keep this licence and offer the source code; a changed or resold copy must not use the Fotollection name or logo in a way that suggests it is the official app."
   fn_notify: "Sharing or selling Fotollection, or building on it? Please tell the author first by opening an issue on GitHub (github.com/hoangphi01/fotollection/issues). The app is free and made in spare time; a short note is the fair way to say thanks."
   fn_cite: Quoting, reviewing or showing the app, or using these screenshots? Please credit Fotollection and link to fotollection.org.
@@ -188,7 +215,7 @@ en:
   cs_title: Code signing policy
   cs_kicker: Trust
   cs_description: "How Fotollection's installers are built and published, who approves each release, and what the app does and does not send over the network."
-  cs_lead: "The installers are not signed with a certificate yet: Windows shows a SmartScreen warning on the first launch, and macOS builds carry an ad-hoc signature only. Every release lists SHA-256 checksums, so you can check that a download is the one published here."
+  cs_lead: "The installers are not signed with a certificate yet: Windows shows a SmartScreen warning on the first launch, macOS builds carry an ad-hoc signature only, and the Linux AppImage and .deb are unsigned too. Every release lists SHA-256 checksums in SHA256SUMS.txt, so you can check that a download is the one published here. The APT repository at fotollection.org/apt is signed with the project's GPG key, so apt checks every package it installs from it."
   cs_parts:
     - id: team
       title: Team roles
@@ -217,9 +244,9 @@ en:
       lead: Installing adds only what the app needs, and uninstalling removes it.
       items:
         - title: Open with
-          text: "The installer adds Fotollection to the Open with menu for photo files. It never makes itself the default app."
+          text: "The installer, and on Linux the .deb, adds Fotollection to the Open with menu for photo files. It never makes itself the default app."
         - title: Uninstall
-          text: "Remove it from Windows Settings, or delete the app on macOS. The Windows uninstaller also removes the Open with entries."
+          text: "Remove it from Windows Settings, or delete the app on macOS. The Windows uninstaller also removes the Open with entries. On Linux, run sudo apt remove fotollection, or delete the AppImage, or run the install script with --uninstall, which also removes the APT repository and its key. Settings and projects stay in your home folder."
   footer_signing: Code signing policy
   perf_title: "Performance"
   perf_description: "Every measurement behind Fotollection, explained in plain words: speed, memory, print quality, photos for social media and best-shot suggestions, with what ΔE, SSIM, JPEG and colour profiles mean."
@@ -276,6 +303,52 @@ en:
   win_1: Run the -setup.exe (or the .msi).
   win_2: If SmartScreen says "Windows protected your PC", click More info.
   win_3: Click Run anyway.
+  linux_title: Linux
+  linux_soon: "Linux arrives with v0.8.2. Until it is published, these links open the releases page."
+  linux_script_title: One command
+  linux_script_text: "Picks the right package for your system: Ubuntu, Debian and Mint get the APT repository, other distributions the AppImage in ~/.local. To remove it:"
+  linux_apt_title: Or add the APT repository
+  linux_apt_text: "For Ubuntu, Debian, Mint and the rest of that family. Updates then come with"
+  linux_appimage_title: Or run the AppImage
+  linux_appimage_text: "Download it, make it executable and start it. On ARM, the file ends in _aarch64."
+  linux_files: "The files"
+  linux_appimage_x64: AppImage, x86_64
+  linux_appimage_arm: AppImage, ARM64
+  linux_deb_x64: .deb, amd64
+  linux_deb_arm: .deb, arm64
+  linux_which: Which distributions?
+  distro_title: Which Linux distributions
+  distro_lead: "Fotollection runs on 64-bit Linux, x86_64 or ARM64, with glibc 2.35 or later."
+  distro_groups:
+    - title: Works
+      items:
+        - text: "AppImage: Ubuntu 22.04+, Debian 12+, Linux Mint 21+, Pop!_OS 22.04+, elementary OS 7+, Zorin OS 17+, Fedora 36+, openSUSE Tumbleweed, Arch, Manjaro and others of that age."
+        - text: ".deb and the APT repository: Ubuntu, Debian, Mint, Pop!_OS, elementary OS and Zorin OS."
+    - title: Works with a step
+      items:
+        - text: "Ubuntu 24.04 and newer: the AppImage needs FUSE 2 once,"
+          code: sudo apt install libfuse2t64
+          after: ", or run it with"
+          code2: "--appimage-extract-and-run"
+          after2: ". The .deb needs nothing."
+        - text: "NixOS: start it through"
+          code: appimage-run
+        - text: "Fedora Silverblue and other immutable systems: use the AppImage."
+        - text: "NVIDIA graphics: nothing to do, the app avoids WebKit's blank-window issue by itself."
+          fn: 21
+    - title: Does not run
+      items:
+        - text: "glibc older than 2.35: Ubuntu 20.04, Debian 11, RHEL, CentOS, Rocky or Alma 8, openSUSE Leap 15."
+        - text: "musl systems such as Alpine."
+        - text: "32-bit machines."
+        - text: "ChromeOS without its Linux container."
+    - title: Limits on every distribution
+      items:
+        - text: "No HEIC (iPhone) photos yet: convert them to JPEG first."
+          fn: 16
+        - text: "No shooting with a camera over USB."
+        - text: "RAW opens without the lens corrections macOS adds."
+          fn: 14
   checksums: Every release lists SHA-256 checksums next to the downloads.
   updates: There is no auto-update, so the app never goes online. New versions are announced here and on GitHub.
   footer_tagline: Photos ready to print, fully offline.
@@ -310,7 +383,8 @@ vi:
   hero_lead: Không có internet, và vẫn chưa biết giữ tấm nào. Hãy thử một lần nhìn lại cùng Fotollection - tự tìm ảnh đẹp nhất, in ngày chụp và chuẩn bị sẵn để in. Tự động, miễn phí và không cần internet.
   download_mac: Tải cho macOS
   download_win: Tải cho Windows
-  download_note: macOS 11+ (Apple Silicon và Intel) · Windows 10/11
+  download_linux: Tải cho Linux
+  download_note: macOS 11+ (Apple Silicon và Intel) · Windows 10/11 · Linux 64-bit, glibc 2.35+
   latest: Phiên bản mới nhất
   no_release: Các bản phát hành ở trên GitHub
   shot_grid: Thư viện ảnh, đã chấm sao và chọn ảnh
@@ -327,13 +401,31 @@ vi:
   f_quality_title: Giữ nguyên chất lượng gốc
   f_quality_text: Đủ độ phân giải, giữ hồ sơ màu, JPEG 4:4:4. Ảnh in ra giống ảnh bạn đã chụp.
   f_raw_title: Ảnh RAW, không cần chuyển đổi
-  f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG mở được nguyên dạng, đủ ngày chụp và thông số. Ảnh thu nhỏ lấy từ bản xem trước có sẵn trong mỗi tệp, nên duyệt RAW nhanh như JPEG. Trên Windows, hiện vẫn cần cài Raw Image Extension miễn phí của Microsoft; bộ đọc RAW tích hợp sẵn đang được làm."
+  f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG mở được nguyên dạng, đủ ngày chụp và thông số. Ảnh thu nhỏ lấy từ bản xem trước có sẵn trong mỗi tệp, nên duyệt RAW nhanh như JPEG. Trên Windows, hiện vẫn cần cài Raw Image Extension miễn phí của Microsoft; bộ đọc RAW tích hợp sẵn đang được làm. Trên Linux, bộ đọc có sẵn trong Fotollection mở được ngay."
   f_open_title: Mở ảnh từ bất cứ đâu
   f_speed_title: Nhanh trên mọi máy
   f_speed_text: Một nghìn ảnh mở trong 0,12 giây, đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, và từ lần mở thứ hai ứng dụng khởi động trong khoảng 0,4 giây. Ảnh 32 MP xem trước nhanh như ảnh nhỏ.
-  f_open_text: Bấm chuột phải vào một ảnh trong Finder hoặc Explorer và chọn Fotollection. Ảnh mở ngay, và thư mục của ảnh thành một tab.
+  f_open_text: Bấm chuột phải vào một ảnh trong Finder, Explorer hay trình quản lý file trên Linux và chọn Fotollection. Ảnh mở ngay, và thư mục của ảnh thành một tab.
   f_private_title: Riêng tư, không cần internet
   f_private_text: Không tài khoản, không tải lên, không theo dõi. Tên địa điểm lấy từ bản đồ có sẵn trong ứng dụng, GPS được xóa khi xuất.
+  pf_title: "Theo hệ điều hành"
+  pf_lead: "Cùng một ứng dụng trên macOS, Windows và Linux, chỉ khác nhau ở những điểm sau."
+  pf_feature: Tính năng
+  pf_ok: "Có"
+  pf_soon: Chưa có
+  pf_none: "Không"
+  pf_coming: Sắp có trong v0.9.0
+  pf_cull: Lọc ảnh, chấm sao, gắn cờ, ảnh đẹp nhất, giỏ in
+  pf_print: Khổ in, cắt, cân ngang, phóng to, dấu ngày, khung thông tin
+  pf_places: Địa điểm offline, tự đặt ngày và nơi chụp, chỉnh đồng hồ máy ảnh
+  pf_export: Xuất để in và để đăng mạng xã hội
+  pf_modes: "Ba chế độ: Đơn giản, Ghép ảnh, Pro"
+  pf_jpeg: JPEG và PNG
+  pf_raw: Ảnh RAW
+  pf_heic: HEIC (ảnh iPhone)
+  pf_tether: Chụp qua cáp USB từ máy ảnh
+  pf_openwith: Mở bằng, từ trình quản lý file
+  pf_update: Kiểm tra cập nhật tải luôn bản mới
   show_stamp: Dấu ngày kèm tên nơi chụp từ GPS của ảnh
   show_frame: Khung "Shot on" với logo của hãng máy ảnh
   show_crop: Cân lại đường chân trời trong màn cắt ảnh
@@ -346,7 +438,7 @@ vi:
         - q: "Sao không dùng luôn Lightroom?"
           a: "Lightroom, ứng dụng Ảnh có sẵn và IrfanView được làm ra để chỉnh sửa và xem ảnh; chưa có ứng dụng nào được thiết kế cho máy in ảnh. Muốn in, bạn phải tự cắt từng ảnh theo tỉ lệ khổ giấy, hoặc giao tệp cho tiệm để máy hay nhân viên ở đó tự căn, và thường bị cắt mất đầu người hay mép tấm biển. Fotollection bắt đầu từ chính bản in: biết sẵn các khổ in ở dm và Rossmann, cắt từng ảnh đúng khổ để ảnh bạn thấy chính là ảnh in ra, báo khi ảnh quá nhỏ, in ngày chụp như máy phim và xuất tệp đúng chuẩn máy in ở tiệm. Ứng dụng nhẹ, nhanh, miễn phí và dùng song song với Lightroom được: ảnh gốc không bao giờ bị thay đổi."
         - q: "Máy tôi đã có sẵn Ảnh (Photos), hoặc tôi dùng IrfanView. Sao phải thêm ứng dụng?"
-          a: "Ứng dụng Ảnh có sẵn và IrfanView đều là trình xem ảnh tốt, mỗi cái trên một hệ điều hành. Không cái nào biết khổ ảnh 10 × 15 ở dm hay Rossmann, báo khi ảnh quá nhỏ để in khổ đó, in ngày chụp như máy phim, hay gom ảnh đẹp nhất của năm thư mục vào một giỏ in. Fotollection làm được, dùng giống hệt nhau trên Mac lẫn Windows, và còn có thể là trình xem ảnh của bạn: bấm chuột phải vào ảnh, chọn Mở bằng, Fotollection, kể cả ảnh RAW."
+          a: "Ứng dụng Ảnh có sẵn và IrfanView đều là trình xem ảnh tốt, mỗi cái trên một hệ điều hành. Không cái nào biết khổ ảnh 10 × 15 ở dm hay Rossmann, báo khi ảnh quá nhỏ để in khổ đó, in ngày chụp như máy phim, hay gom ảnh đẹp nhất của năm thư mục vào một giỏ in. Fotollection làm được, dùng giống hệt nhau trên Mac, Windows lẫn Linux, và còn có thể là trình xem ảnh của bạn: bấm chuột phải vào ảnh, chọn Mở bằng, Fotollection, kể cả ảnh RAW."
     - label: "Tốc độ và độ nhẹ"
       items:
         - q: "Ứng dụng có nặng không? Máy cũ có chạy được không?"
@@ -355,8 +447,8 @@ vi:
           a: "Mở 1.000 ảnh mất khoảng 0,12 giây, vì Fotollection đọc ảnh thu nhỏ có sẵn trong mỗi tệp trước. Đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, xuất ảnh đạt 18 ảnh cỡ đầy đủ mỗi giây, và từ lần thứ hai trở đi ứng dụng mở trong khoảng 0,4 giây. Mọi con số đều đo trên một chiếc máy tính xách tay bình thường, và trang Hiệu năng hướng dẫn bạn tự đo lại."
     - label: "Nền tảng và chi phí"
       items:
-        - q: "Có chạy trên Mac và Windows không, có thật sự miễn phí không?"
-          a: "Có. Một bản tải cho macOS 11 trở lên, chạy được cả trên chip Apple lẫn Intel, và một bản cho Windows 10 và 11. Ứng dụng miễn phí, không quảng cáo, không cần tài khoản, không mua thêm trong ứng dụng, và mã nguồn công khai theo giấy phép GPL-3.0, ai cũng có thể kiểm tra ứng dụng làm gì."
+        - q: "Có chạy trên Mac, Windows và Linux không, có thật sự miễn phí không?"
+          a: "Có. Một bản tải cho macOS 11 trở lên, chạy được cả trên chip Apple lẫn Intel, một bản cho Windows 10 và 11, và với Linux 64-bit thì có AppImage hoặc .deb, cho máy Intel/AMD lẫn ARM, chạy trên mọi distro có glibc 2.35 trở lên. Bản Linux là bản gọn: chưa mở được ảnh HEIC (ảnh iPhone), chưa chụp qua cáp USB từ máy ảnh, và ảnh RAW không có phần hiệu chỉnh ống kính như trên macOS; bảng ở mục Tính năng liệt kê đủ mọi khác biệt. Ứng dụng miễn phí, không quảng cáo, không cần tài khoản, không mua thêm trong ứng dụng, và mã nguồn công khai theo giấy phép GPL-3.0, ai cũng có thể kiểm tra ứng dụng làm gì."
   tabs_title: "Chỉnh ảnh như lướt web"
   tabs_lead: "Mỗi thư mục bạn mở trở thành một tab trong cùng một không gian làm việc, nên một chuyến đi nằm rải trên nhiều thẻ nhớ và điện thoại vẫn gọn ở một chỗ."
   tabs_row_title: "Thư mục là tab, ô tích đi theo bạn"
@@ -423,7 +515,7 @@ vi:
   fn_open: Miễn phí là không thu tiền, không quảng cáo, không mua thêm trong ứng dụng; mời tác giả một ly cà phê là lựa chọn của bạn, để tác giả có thêm động lực phát triển và hoàn thiện Fotollection. Mã nguồn mở là toàn bộ mã nguồn được công khai trên GitHub theo giấy phép GPL-3.0, ai cũng có thể đọc, tự xây dựng và kiểm tra ứng dụng làm gì. Không cần tài khoản là ứng dụng không bao giờ hỏi bạn là ai và không có gì để đăng nhập.
   perf_speed_fn: [4, 5]
   fn_rust: "Rust và logo Rust là nhãn hiệu của Rust Foundation. Phần lõi của Fotollection viết bằng Rust và chạy trực tiếp trên máy của bạn."
-  fn_webview: "Cửa sổ ứng dụng được làm bằng Tauri và hiển thị bằng trình hiển thị web (web view) có sẵn của hệ điều hành: WebKit (WKWebView) trên macOS và Microsoft Edge WebView2 trên Windows. Tauri là dự án của Tauri Programme thuộc Commons Conservancy; WebKit là nhãn hiệu của Apple Inc.; Microsoft Edge và WebView2 là nhãn hiệu của Microsoft Corporation. Phép so sánh với trình duyệt chạy cùng một việc trong Chromium 156 không giao diện, dự án mã nguồn mở phía sau Google Chrome, mỗi nhân xử lý một Web Worker."
+  fn_webview: "Cửa sổ ứng dụng được làm bằng Tauri và hiển thị bằng trình hiển thị web (web view) có sẵn của hệ điều hành: WebKit (WKWebView) trên macOS, Microsoft Edge WebView2 trên Windows và WebKitGTK, bản WebKit cho GTK, trên Linux. Tauri là dự án của Tauri Programme thuộc Commons Conservancy; WebKit là nhãn hiệu của Apple Inc.; GTK là dự án của GNOME Foundation; Microsoft Edge và WebView2 là nhãn hiệu của Microsoft Corporation. Phép so sánh với trình duyệt chạy cùng một việc trong Chromium 156 không giao diện, dự án mã nguồn mở phía sau Google Chrome, mỗi nhân xử lý một Web Worker."
   fn_de: "ΔE2000 (CIEDE2000) là công thức tính sai lệch màu của Uỷ ban Quốc tế về Chiếu sáng (CIE), được chuẩn hoá thành ISO/CIE 11664-6; không gian màu CIELAB mà công thức dùng là ISO/CIE 11664-4."
   fn_ssim: "SSIM do Zhou Wang, Alan C. Bovik, Hamid R. Sheikh và Eero P. Simoncelli giới thiệu trong bài Image quality assessment: from error visibility to structural similarity, IEEE Transactions on Image Processing, 13(4), 2004."
   fn_jpeg: "JPEG là định dạng ảnh của nhóm Joint Photographic Experts Group, được chuẩn hoá thành ISO/IEC 10918-1 và ITU-T T.81."
@@ -432,15 +524,23 @@ vi:
   fn_adobe: "Adobe RGB (1998) là không gian màu do Adobe Inc. đặc tả; Adobe là nhãn hiệu đã đăng ký của Adobe Inc."
   fn_charts: "Mọi biểu đồ: số liệu mang tính tham khảo, đo trên một máy tính xách tay bình thường (Apple M3, 16 GB), và phụ thuộc vào cấu hình máy tính bạn sử dụng."
   fn_dng: "Chúng tôi không chạy Adobe DNG Converter cho trang này. Con số là ước tính của bên thứ ba (1.000 tệp CR3 trong 20–30 phút trên máy hiện đại, không nói rõ máy), theo bài viết về chuyển hàng loạt RAW sang DNG trên blog của convertintomp4.com. Adobe là nhãn hiệu đã đăng ký của Adobe Inc."
+  fn_pf_raw: "Trên macOS, các định dạng RAW khác DNG do hệ điều hành xử lý, có hiệu chỉnh ống kính. Linux, và Windows chưa cài Raw Image Extension của Microsoft, dùng bộ đọc RAW có sẵn trong Fotollection, không có phần hiệu chỉnh đó."
+  fn_pf_heic_win: "Cần cài HEIF Image Extensions và HEVC Video Extensions miễn phí của Microsoft, từ Microsoft Store."
+  fn_pf_heic_linux: "HEIC cần bộ giải mã HEVC, thứ Linux không có sẵn và Fotollection sẽ không đóng gói kèm, vì vướng bằng sáng chế. Bản sau sẽ dùng libheif do distro của bạn cài. Trước mắt, hãy chuyển ảnh HEIC sang JPEG."
+  fn_pf_tether: "Trước mắt là Sony a6400; các máy khác sẽ có sau."
+  fn_pf_openwith: "Với bản .deb, hoặc khi cài bằng lệnh cài đặt. AppImage chạy riêng lẻ không tự đăng ký với trình quản lý file, trừ khi dùng công cụ như AppImageLauncher."
+  fn_pf_update: "AppImage tự tải AppImage mới; bản .deb mở trang phát hành, còn nếu cài qua kho APT thì sudo apt upgrade sẽ mang bản mới về."
+  fn_glibc: "glibc (GNU C Library) là thư viện nền mà mọi chương trình trên Linux đều chạy trên đó. Muốn biết máy mình có bản nào, gõ ldd --version trong terminal. Fotollection được build trên Ubuntu 22.04, có glibc 2.35, nên cần bản đó hoặc mới hơn."
+  fn_nvidia: "Với driver chính hãng của NVIDIA, bộ dựng DMA-BUF của WebKitGTK có thể khiến cửa sổ trắng trơn. Khi driver đó đang chạy, Fotollection tự khởi động lại một lần với bộ dựng ấy đã tắt."
   fn_dm: dm và logo dm là thương hiệu của dm-drogerie markt GmbH + Co. KG.
   fn_rossmann: ROSSMANN và logo ROSSMANN là thương hiệu của Dirk Rossmann GmbH.
   fn_cewe: Dịch vụ in ảnh của dm và Rossmann do CEWE thực hiện; CEWE là thương hiệu của CEWE Stiftung & Co. KGaA. Khổ in được đối chiếu với bảng giá của dm vào tháng 10/2026; cửa hàng có thể thay đổi.
   fn_photos: "Ảnh demo trong các ảnh chụp màn hình thuộc phạm vi công cộng (CC0) trên Wikimedia Commons, của Dktue (18 ảnh), Pierre Blaché from Paris, France (3 ảnh) và Kate Branch (1 ảnh). Chú mèo trong ảnh chụp màn hình phần giỏ in và ảnh đẹp nhất do @hoangphi01 chụp bằng Lumix GX9, giữ mọi quyền; các bản mờ hơn, rung tay và tối hơn bên cạnh được tạo từ chính tấm ảnh đó, để minh hoạ cách chọn ảnh đẹp nhất."
   fn_photos_link: "Danh sách từng tệp, trang gốc và mã kiểm tra."
   fn_rawsamples: "Các số đo RAW dùng chín tệp mẫu thuộc phạm vi công cộng (CC0) từ raw.pixls.us, mỗi định dạng một tệp; scripts/fetch-raw-samples.py tải về và kiểm tra chúng."
-  fn_rawformats: "Các định dạng RAW nhắc đến trên trang này thuộc về hãng máy ảnh đã tạo ra chúng: RW2 (Panasonic Holdings Corporation), CR2 và CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) và ORF (OM Digital Solutions Corporation, trước đây là Olympus). DNG là đặc tả mở do Adobe Inc. công bố. Fotollection đọc các định dạng này qua bộ giải mã có sẵn của macOS và Windows; ứng dụng không do hãng nào trong số này làm ra hay bảo trợ."
+  fn_rawformats: "Các định dạng RAW nhắc đến trên trang này thuộc về hãng máy ảnh đã tạo ra chúng: RW2 (Panasonic Holdings Corporation), CR2 và CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) và ORF (OM Digital Solutions Corporation, trước đây là Olympus). DNG là đặc tả mở do Adobe Inc. công bố. Fotollection đọc các định dạng này qua bộ giải mã có sẵn của macOS và Windows, còn trên Linux, hay trên Windows chưa cài Raw Image Extension của Microsoft, thì qua bộ đọc có sẵn trong Fotollection; ứng dụng không do hãng nào trong số này làm ra hay bảo trợ."
   fn_cameras: "Tên và logo máy ảnh trong ảnh chụp màn hình và trong khung thông tin của ứng dụng là thương hiệu của chủ sở hữu, chỉ dùng để cho biết ảnh được chụp bằng máy nào: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) và Sony (Sony Group Corporation)."
-  fn_others: Apple và macOS là thương hiệu của Apple Inc.; Windows của Microsoft Corporation; Facebook và Instagram của Meta Platforms, Inc.; GitHub của GitHub, Inc.; Google Analytics của Google LLC; Lightroom của Adobe Inc.; IrfanView của Irfan Škiljan; VietQR của NAPAS; Wikimedia Commons của Wikimedia Foundation.
+  fn_others: Apple và macOS là thương hiệu của Apple Inc.; Windows của Microsoft Corporation; Linux là nhãn hiệu đã đăng ký của Linus Torvalds tại Hoa Kỳ và các nước khác; Ubuntu của Canonical Ltd.; Debian của Software in the Public Interest, Inc.; Fedora, Red Hat, RHEL và CentOS của Red Hat, Inc.; openSUSE của SUSE LLC; Pop!_OS của System76, Inc.; Rocky Linux của Rocky Enterprise Software Foundation; AlmaLinux của AlmaLinux OS Foundation; ChromeOS của Google LLC; NVIDIA của NVIDIA Corporation; tên các distro Linux khác thuộc về dự án của chúng; Facebook và Instagram của Meta Platforms, Inc.; GitHub của GitHub, Inc.; Google Analytics của Google LLC; Lightroom của Adobe Inc.; IrfanView của Irfan Škiljan; VietQR của NAPAS; Wikimedia Commons của Wikimedia Foundation.
   fn_brand: "Tên và logo Fotollection dùng để nhận biết ứng dụng chính thức do @hoangphi01 làm. Bản tải chính thức chỉ có ở fotollection.org và trang phát hành GitHub của dự án. Giấy phép GPL-3.0 cho phép bất kỳ ai chia sẻ hay bán bản sao, có sửa hay không, miễn là giữ nguyên giấy phép này và cung cấp mã nguồn; bản đã sửa hoặc bán lại không được dùng tên hay logo Fotollection theo cách khiến người khác nghĩ đó là ứng dụng chính thức."
   fn_notify: "Bạn muốn phân phối, bán lại hay phát triển tiếp từ Fotollection? Xin hãy báo cho tác giả trước bằng một mục góp ý (issue) trên GitHub (github.com/hoangphi01/fotollection/issues). Ứng dụng miễn phí và được làm trong thời gian rảnh; một lời báo ngắn là cách công bằng để cảm ơn."
   fn_cite: Khi trích dẫn, viết bài, giới thiệu ứng dụng hay dùng ảnh chụp màn hình này, xin ghi nguồn Fotollection và dẫn link về fotollection.org.
@@ -478,7 +578,7 @@ vi:
   cs_title: Chính sách ký mã
   cs_kicker: Tin cậy
   cs_description: "Bộ cài Fotollection được xây dựng và phát hành thế nào, ai duyệt mỗi bản phát hành, và ứng dụng gửi gì, không gửi gì qua mạng."
-  cs_lead: "Bộ cài chưa được ký bằng chứng chỉ: Windows hiện cảnh báo SmartScreen ở lần mở đầu, và bản macOS chỉ có chữ ký ad-hoc. Mỗi bản phát hành kèm mã SHA-256, để bạn kiểm tra tệp tải về đúng là tệp được phát hành ở đây."
+  cs_lead: "Bộ cài chưa được ký bằng chứng chỉ: Windows hiện cảnh báo SmartScreen ở lần mở đầu, bản macOS chỉ có chữ ký ad-hoc, và AppImage cùng .deb cho Linux cũng chưa được ký. Mỗi bản phát hành kèm mã SHA-256 trong SHA256SUMS.txt, để bạn kiểm tra tệp tải về đúng là tệp được phát hành ở đây. Kho APT ở fotollection.org/apt được ký bằng khoá GPG của dự án, nên apt tự kiểm tra mọi gói cài từ đó."
   cs_parts:
     - id: team
       title: Vai trò trong nhóm
@@ -507,9 +607,9 @@ vi:
       lead: Cài đặt chỉ thêm những gì ứng dụng cần, và gỡ cài đặt sẽ xoá chúng.
       items:
         - title: Mở bằng
-          text: "Bộ cài thêm Fotollection vào menu Mở bằng cho các tệp ảnh. Ứng dụng không bao giờ tự đặt mình làm ứng dụng mặc định."
+          text: "Bộ cài, và trên Linux là gói .deb, thêm Fotollection vào menu Mở bằng cho các tệp ảnh. Ứng dụng không bao giờ tự đặt mình làm ứng dụng mặc định."
         - title: Gỡ cài đặt
-          text: "Gỡ trong Cài đặt Windows, hoặc xoá ứng dụng trên macOS. Trình gỡ của Windows cũng xoá các mục Mở bằng."
+          text: "Gỡ trong Cài đặt Windows, hoặc xoá ứng dụng trên macOS. Trình gỡ của Windows cũng xoá các mục Mở bằng. Trên Linux, chạy sudo apt remove fotollection, hoặc xoá tệp AppImage, hoặc chạy lệnh cài với --uninstall, lệnh này xoá luôn kho APT và khoá của nó. Thiết lập và dự án vẫn nằm trong thư mục cá nhân của bạn."
   footer_signing: Chính sách ký mã
   perf_title: "Hiệu năng"
   perf_description: "Mọi số đo phía sau Fotollection, giải thích bằng lời dễ hiểu: tốc độ, RAM, chất lượng in, ảnh đăng mạng xã hội, gợi ý ảnh đẹp nhất, kèm ý nghĩa của ΔE, SSIM, JPEG và hồ sơ màu."
@@ -566,6 +666,52 @@ vi:
   win_1: Chạy tệp -setup.exe (hoặc .msi).
   win_2: Nếu SmartScreen báo "Windows protected your PC", bấm More info.
   win_3: Bấm Run anyway.
+  linux_title: Linux
+  linux_soon: "Linux có từ bản v0.8.2. Khi bản đó chưa phát hành, các liên kết này mở trang phát hành."
+  linux_script_title: Một lệnh là xong
+  linux_script_text: "Tự chọn gói hợp với máy bạn: Ubuntu, Debian và Mint dùng kho APT, các distro khác dùng AppImage đặt trong ~/.local. Muốn gỡ:"
+  linux_apt_title: Hoặc thêm kho APT
+  linux_apt_text: "Cho Ubuntu, Debian, Mint và các distro cùng họ. Sau đó, bản mới về cùng lệnh"
+  linux_appimage_title: Hoặc chạy AppImage
+  linux_appimage_text: "Tải về, cho phép chạy rồi mở. Máy ARM dùng tệp có đuôi _aarch64."
+  linux_files: "Các tệp"
+  linux_appimage_x64: AppImage, x86_64
+  linux_appimage_arm: AppImage, ARM64
+  linux_deb_x64: .deb, amd64
+  linux_deb_arm: .deb, arm64
+  linux_which: Chạy trên những distro nào?
+  distro_title: Những distro Linux nào chạy được
+  distro_lead: "Fotollection chạy trên Linux 64-bit, x86_64 hoặc ARM64, có glibc 2.35 trở lên."
+  distro_groups:
+    - title: Chạy được
+      items:
+        - text: "AppImage: Ubuntu 22.04+, Debian 12+, Linux Mint 21+, Pop!_OS 22.04+, elementary OS 7+, Zorin OS 17+, Fedora 36+, openSUSE Tumbleweed, Arch, Manjaro và các distro cùng thời."
+        - text: ".deb và kho APT: Ubuntu, Debian, Mint, Pop!_OS, elementary OS và Zorin OS."
+    - title: Chạy được, thêm một bước
+      items:
+        - text: "Ubuntu 24.04 trở lên: AppImage cần FUSE 2, cài một lần"
+          code: sudo apt install libfuse2t64
+          after: ", hoặc chạy với"
+          code2: "--appimage-extract-and-run"
+          after2: ". Bản .deb thì không cần gì thêm."
+        - text: "NixOS: mở qua"
+          code: appimage-run
+        - text: "Fedora Silverblue và các hệ bất biến khác: dùng AppImage."
+        - text: "Card đồ hoạ NVIDIA: không cần làm gì, ứng dụng tự tránh lỗi cửa sổ trắng của WebKit."
+          fn: 21
+    - title: Không chạy
+      items:
+        - text: "glibc cũ hơn 2.35: Ubuntu 20.04, Debian 11, RHEL, CentOS, Rocky hoặc Alma 8, openSUSE Leap 15."
+        - text: "Hệ dùng musl như Alpine."
+        - text: "Máy 32-bit."
+        - text: "ChromeOS khi chưa bật Linux."
+    - title: Giới hạn trên mọi distro
+      items:
+        - text: "Chưa mở được ảnh HEIC (ảnh iPhone): hãy chuyển sang JPEG trước."
+          fn: 16
+        - text: "Chưa chụp được qua cáp USB từ máy ảnh."
+        - text: "Ảnh RAW không có phần hiệu chỉnh ống kính như trên macOS."
+          fn: 14
   checksums: Mỗi bản phát hành có mã SHA-256 bên cạnh tệp tải về.
   updates: Ứng dụng không tự cập nhật, nên không bao giờ tự lên mạng. Phiên bản mới được thông báo ở đây và trên GitHub.
   footer_tagline: Ảnh sẵn sàng để in, không cần internet.

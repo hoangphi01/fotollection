@@ -8,7 +8,7 @@ on:
     - cron: "17 */6 * * *"
   push:
     branches: [main]
-    paths: ["site/**", "CHANGELOG.md", "docs/USER_GUIDE.md", "docs/USER_GUIDE.vi.md", "scripts/site-manual.sh", "scripts/ga-visits.mjs", ".github/workflows/pages.yml"]
+    paths: ["site/**", "CHANGELOG.md", "docs/USER_GUIDE.md", "docs/USER_GUIDE.vi.md", "scripts/site-manual.sh", "scripts/ga-visits.mjs", "scripts/apt-repo.sh", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -54,6 +54,16 @@ jobs:
           source: site
           destination: _site
           token: ${{ github.token }}
+
+      # The signed APT repository at /apt, from the latest release's .deb files (ADR-0035).
+      # Without the key secret, or before a release has a .deb, the site goes out without it.
+      - name: APT repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APT_GPG_PRIVATE_KEY: ${{ secrets.APT_GPG_PRIVATE_KEY }}
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" _site
+          scripts/apt-repo.sh _site/apt
 
       - uses: actions/upload-pages-artifact@v3
 

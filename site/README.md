@@ -6,6 +6,7 @@ The project's website, <https://fotollection.org/>, in English (`/`) and Vietnam
 |------|---------------|
 | `_config.yml` | Address (`url`, `baseurl`) and the `jekyll-github-metadata` plugin, which reads the latest release |
 | `_data/i18n.yml` | Every string, in `en` and `vi`, with the same keys |
+| `_data/platforms.yml` | The facts of the "By system" table under Features (macOS, Windows, Linux): one row per feature, a mark per system (`ok`, `soon`, `none`) and the footnote number a cell carries; the words are the `pf_*` keys, so the two languages cannot drift ([ADR-0034](../docs/adr/0034-linux-lean.md)). The install section's Linux card (`#install-linux`: the `install.sh` one-liner, the APT repository, the AppImage, the four files matched on how their names end, falling back to the releases page) and the distributions block (`#linux`, `distro_groups`) are in `home.html`. New footnotes are appended to the `notes` list in `default.html`, never inserted, so the numbers stay put |
 | `_layouts/default.html` | Page shell: meta tags, Open Graph and Twitter cards, `hreflang`, navigation, footer |
 | `_includes/home.html` | The page itself, including the "Three modes" section (`modes_*`, `collage_*`, `simple_*` keys, the `collage` and `simple` screenshots, marked as coming until v0.9.0 ships); `shot.html` (a screenshot, dark or light), `star.html` (the GitHub star link), `icons/` (Lucide, ISC) |
 | `index.html`, `vi/index.html` | The two languages |

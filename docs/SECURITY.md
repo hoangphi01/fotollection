@@ -164,6 +164,14 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 
 **Website secrets.** The footer's visit count (`scripts/ga-visits.mjs`, run by `pages.yml`) reads Google Analytics with a service account that has the *Viewer* role on the one GA property and nothing else. Its JSON key and the property ID live only in the repository secrets `GA_SERVICE_ACCOUNT` and `GA_PROPERTY_ID`; the script never prints them, asks only for the `analytics.readonly` scope, accepts a numeric property ID and a whole number back, and writes nothing on any error. Workflows for pull requests from forks get no secrets. If the key leaks, delete it in Google Cloud and add a new one.
 
+**APT signing key** ([ADR-0035](adr/0035-linux-install-from-fotollection-org.md)).
+
+- **What it is:** the Linux repository at fotollection.org/apt is signed with an Ed25519 key made for it alone (fingerprint `1F67 E8C1 93CD CA68 BFC8 82DA 5850 9F27 C429 45A3`).
+- **Where it lives:** the private key is only in the secret `APT_GPG_PRIVATE_KEY`, plus the owner's offline backup outside the repository. `scripts/apt-repo.sh` imports it into a temporary GnuPG home that is deleted after signing, and never prints it.
+- **How users trust it:** they add the key with `signed-by`, so it vouches for this repository and nothing else on their system.
+- **The install script:** `install.sh` is plain POSIX sh served over HTTPS. It verifies the AppImage against `SHA256SUMS.txt` and asks for sudo only to add the repository.
+- **If the key leaks:** make a new key, replace the secret, publish the new public key, and say so in the next release notes.
+
 ## 8. Resilience and error handling
 
 - **Per-photo isolation:** every stage returns a per-photo `Result`. A failure is reported through the `job://photo-error` event and the batch continues.
