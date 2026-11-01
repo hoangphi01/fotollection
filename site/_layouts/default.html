@@ -196,7 +196,8 @@
           {%- assign n = forloop.index %}
           {%- assign back = false %}{% if n >= first and n <= last %}{% assign back = true %}{% endif %}
           {%- if page.title_key == 'perf_title' and n == 13 %}{% assign back = true %}{% endif %}
-          {%- comment -%} 14–19: the table by system; 20–21: the distributions; both on the Download page. {%- endcomment %}
+          {%- comment -%} 14–19: the table by system; 20–21: the distributions; both on the Download page. 14 is also on the home page's RAW card. {%- endcomment %}
+          {%- if page.title_key == nil and n == 14 %}{% assign back = true %}{% endif %}
           {%- if page.title_key == 'dl_title' and n >= 14 %}{% assign back = true %}{% endif %}
           <li id="fn-{{ n }}"><span class="fn-num">{{ n }}.</span> {{ t[key] }}{% if back %} <a class="fn-back" href="#fnref-{{ n }}" aria-label="{{ t.fn_back }}">{% include icons/corner-left-up.svg %}</a>{% endif %}</li>
           {%- endfor %}

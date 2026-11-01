@@ -43,7 +43,7 @@ en:
   f_quality_title: Original quality
   f_quality_text: Full resolution, the colour profile kept, 4:4:4 JPEG. What comes out looks like what went in.
   f_raw_title: Camera RAW, no conversion
-  f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG open as they are, with their date and exposure. Thumbnails come from the preview inside each file, so RAW browses as fast as JPEG. On Windows, RAW needs Microsoft's free Raw Image Extension for now; a built-in RAW reader is on its way. On Linux, the reader built into Fotollection opens them."
+  f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG open as they are, with their date and exposure. Thumbnails come from the preview inside each file, so RAW browses as fast as JPEG."
   f_open_title: Open photos from anywhere
   f_speed_title: Fast on any computer
   f_speed_text: A thousand photos open in 0.12 s, a new setting redraws the preview in 17 ms, and from the second launch the app starts in about 0.4 s. A 32 MP photo previews as fast as a small one.
@@ -412,7 +412,7 @@ vi:
   f_quality_title: Giữ nguyên chất lượng gốc
   f_quality_text: Đủ độ phân giải, giữ hồ sơ màu, JPEG 4:4:4. Ảnh in ra giống ảnh bạn đã chụp.
   f_raw_title: Ảnh RAW, không cần chuyển đổi
-  f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG mở được nguyên dạng, đủ ngày chụp và thông số. Ảnh thu nhỏ lấy từ bản xem trước có sẵn trong mỗi tệp, nên duyệt RAW nhanh như JPEG. Trên Windows, hiện vẫn cần cài Raw Image Extension miễn phí của Microsoft; bộ đọc RAW tích hợp sẵn đang được làm. Trên Linux, bộ đọc có sẵn trong Fotollection mở được ngay."
+  f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG mở được nguyên dạng, đủ ngày chụp và thông số. Ảnh thu nhỏ lấy từ bản xem trước có sẵn trong mỗi tệp, nên duyệt RAW nhanh như JPEG."
   f_open_title: Mở ảnh từ bất cứ đâu
   f_speed_title: Nhanh trên mọi máy
   f_speed_text: Một nghìn ảnh mở trong 0,12 giây, đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, và từ lần mở thứ hai ứng dụng khởi động trong khoảng 0,4 giây. Ảnh 32 MP xem trước nhanh như ảnh nhỏ.
