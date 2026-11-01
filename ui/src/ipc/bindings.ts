@@ -219,8 +219,8 @@ export const commands = {
 	/**  Turns the sheet that `first` starts against its photo, or back (FR-035). Undoable. */
 	turnSheet: (first: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("turn_sheet", { first })),
 	/**
-	 *  Sets (or, with `None`, resets to the print crop) a photo's crop on collage sheets, with
-	 *  its straightening, which the photo shares with its prints. One undoable step (FR-035).
+	 *  Sets a photo's crop and straightening on collage sheets, apart from its print's; `None`
+	 *  (Reset in the crop editor) centres it. One undoable step (FR-035).
 	 */
 	setCollageCrop: (id: PhotoId, crop: {
 	/**  Centre, 0–1 of the upright photo's width and height. */
@@ -602,6 +602,11 @@ export type CollageSettings = {
 	lockRatio?: boolean,
 	/**  A thin line between the cells, to cut the print in two. */
 	cutLine?: boolean,
+	/**
+	 *  Each photo fills its whole cell, with no white: the two meet edge to edge, and the
+	 *  user chooses what each keeps with its crop. Ratio, size and margin do not apply.
+	 */
+	fill?: boolean,
 };
 
 /**  How sure a borrowed place is (FR-031). */

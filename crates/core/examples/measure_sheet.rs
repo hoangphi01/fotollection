@@ -97,6 +97,7 @@ fn main() {
             crop: None,
             place: None,
             straighten: 0.0,
+            ratio: None,
         });
         let out = render(image, &p).unwrap();
         codec.encode(&out, EncodeOptions::print(95), None).unwrap()

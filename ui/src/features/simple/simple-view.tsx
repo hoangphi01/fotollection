@@ -53,9 +53,12 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  // Every photo shown is decided: kept photos stay in the gallery, dropped ones leave it.
+  // Every photo in the gallery is decided: kept photos stay there, dropped ones leave it.
+  // (The basket view lists only kept photos: that is a review, not a finished sort.)
   const [reviewing, setReviewing] = useState(false)
-  const sorted = photos.every((p) => p.queue === 'print')
+  const sorted = view === 'gallery' && photos.every((p) => p.queue === 'print')
+  // A photo not decided yet (a new folder, an undo) ends the review.
+  if (reviewing && !sorted) setReviewing(false)
   if (!photo || (sorted && !reviewing)) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">

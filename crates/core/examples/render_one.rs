@@ -95,6 +95,7 @@ fn main() {
         crop: None,
         place: None,
         straighten,
+        ratio: None,
     });
     let t = std::time::Instant::now();
     let image = render(&upright, &p).unwrap();

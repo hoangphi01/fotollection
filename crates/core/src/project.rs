@@ -20,7 +20,8 @@ pub const FORMAT: &str = "fotollection-project";
 /// v8: `photos[].date`, `photos[].place` and `place_source` (FR-032, FR-031), and `places[]`,
 /// the places the user renamed (FR-005).
 /// v9: `photos[].collage`, the position in the collage order, `photos[].sheet_turned` and
-/// `photos[].collage_crop`, the photo's own crop on a sheet (FR-035).
+/// `photos[].collage_crop` and `photos[].collage_straighten`, the photo's own crop and
+/// straightening on a sheet (FR-035).
 pub const SCHEMA_VERSION: u32 = 9;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
@@ -90,6 +91,9 @@ pub struct PhotoRow {
     /// The photo's own crop on a collage sheet (v9).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub collage_crop: Option<CropFrame>,
+    /// The photo's own straightening on a collage sheet, ±15° (v9).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub collage_straighten: Option<f32>,
 }
 
 /// A place the user renamed (v8, FR-005).
@@ -210,6 +214,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 collage: edits.collage,
                 sheet_turned: edits.sheet_turned,
                 collage_crop: edits.collage_crop,
+                collage_straighten: edits.collage_straighten,
             })
         })
         .collect();
@@ -509,6 +514,7 @@ pub fn restore_into(
                 collage: row.collage,
                 sheet_turned: row.sheet_turned,
                 collage_crop: row.collage_crop.map(CropFrame::sanitized),
+                collage_straighten: row.collage_straighten.map(crate::straighten::sanitize),
             },
         );
         summary.restored += 1;
@@ -747,6 +753,7 @@ mod tests {
             collage: None,
             sheet_turned: false,
             collage_crop: None,
+            collage_straighten: None,
         });
         save(&path, &file)?;
         assert!(

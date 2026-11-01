@@ -113,6 +113,10 @@ pub struct CollageSettings {
     /// A thin line between the cells, to cut the print in two.
     #[serde(default = "yes")]
     pub cut_line: bool,
+    /// Each photo fills its whole cell, with no white: the two meet edge to edge, and the
+    /// user chooses what each keeps with its crop. Ratio, size and margin do not apply.
+    #[serde(default)]
+    pub fill: bool,
 }
 
 /// The largest collage margin, in millimetres.
@@ -136,6 +140,7 @@ impl Default for CollageSettings {
             size: None,
             lock_ratio: true,
             cut_line: true,
+            fill: false,
         }
     }
 }
@@ -254,6 +259,20 @@ impl StampSettings {
 }
 
 impl RenderSettings {
+    /// The settings for the chosen export target: a photo for social media is not a print,
+    /// so it keeps its own ratio and has no print border (FR-053, FR-067). Export and
+    /// preview both use this, so the preview shows what is exported.
+    pub fn for_target(&self) -> std::borrow::Cow<'_, Self> {
+        match self.export_target.sanitized() {
+            crate::share::ExportTarget::Share(_) => std::borrow::Cow::Owned(Self {
+                print_size: crate::PrintSize::ORIGINAL_ID.to_owned(),
+                border: false,
+                ..self.clone()
+            }),
+            crate::share::ExportTarget::Print => std::borrow::Cow::Borrowed(self),
+        }
+    }
+
     /// The settings one photo is rendered with: its own stamp when it has one (FR-044).
     pub fn for_photo(&self, stamp: Option<&StampSettings>) -> std::borrow::Cow<'_, Self> {
         match stamp {

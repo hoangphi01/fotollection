@@ -157,17 +157,23 @@ pub fn effective_dpi(width: u32, height: u32, print: PrintSize) -> (u32, DpiBand
     (dpi, dpi_band(dpi))
 }
 
-/// The part of `print` the photo fills: the print less the 3 mm border on each side when it
-/// is on (FR-067). Original keeps its size, as its border is added round the photo.
-pub fn photo_area(print: PrintSize, border: bool) -> PrintSize {
-    if !border || print.is_original() {
+/// The part of `print` the photo fills, in whole millimetres: the print less the 3 mm border
+/// on each side when it is on (FR-067). Original keeps its 10 cm short edge for the whole
+/// print, so its photo is 94 mm on the short edge and its long edge follows the photo; the
+/// border makes the print longer. One rule for planning, the crop editor and the advice.
+pub fn print_photo_area(print: PrintSize, border: bool) -> PrintSize {
+    if !border {
         return print;
     }
     let inset = 2 * border_mm();
-    PrintSize::custom(
-        print.short_mm.saturating_sub(inset).max(1),
-        print.long_mm.saturating_sub(inset).max(1),
-    )
+    let short = print.short_mm.saturating_sub(inset).max(1);
+    let long = if print.is_original() {
+        let scaled = u64::from(print.long_mm) * u64::from(short) / u64::from(print.short_mm.max(1));
+        u32::try_from(scaled).unwrap_or(u32::MAX).max(short)
+    } else {
+        print.long_mm.saturating_sub(inset).max(1)
+    };
+    PrintSize::custom(short, long)
 }
 
 /// The quality band of an effective DPI (FR-026).
@@ -300,6 +306,9 @@ pub struct PlanInput<'a> {
     pub place: Option<&'a str>,
     /// Straightening in degrees, ±15 (FR-006); 0 is the lossless path.
     pub straighten: f32,
+    /// A crop ratio `w : h` that wins over the print's, whatever the photo's orientation: a
+    /// collage cell, which may stand when its photo lies (FR-035). Without a frame only.
+    pub ratio: Option<(u64, u64)>,
 }
 
 /// Builds the plan for one photo.
@@ -309,16 +318,11 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
     }
     let (width, height, print) = (input.width, input.height, input.print);
     // With the border, the photo is cropped to the print less 3 mm on every side (FR-067).
-    let inset = if input.settings.border {
-        2 * border_mm()
-    } else {
-        0
-    };
-    let (long, short) = (
-        u64::from(print.long_mm.saturating_sub(inset).max(1)),
-        u64::from(print.short_mm.saturating_sub(inset).max(1)),
-    );
-    let (rw, rh) = if print.is_original() {
+    let area = print_photo_area(print, input.settings.border);
+    let (long, short) = (u64::from(area.long_mm), u64::from(area.short_mm));
+    let (rw, rh) = if let Some(ratio) = input.ratio {
+        ratio
+    } else if print.is_original() {
         // The exact pixel ratio: Original never loses a pixel to mm rounding (FR-045); with
         // the border, the print grows by it instead of cropping the photo.
         (u64::from(width), u64::from(height))
@@ -333,10 +337,10 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
     // so the whole print still fits it, as in a framed print (FR-067).
     let limit = input.max_long_edge.map(|limit| {
         if input.settings.border {
-            let photo_mm = f64::from(print.long_mm.saturating_sub(inset).max(1));
+            let photo_mm = f64::from(area.long_mm);
+            let print_mm = photo_mm + f64::from(2 * border_mm());
             #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-            let fitted =
-                (f64::from(limit) * photo_mm / f64::from(print.long_mm.max(1))).floor() as u32;
+            let fitted = (f64::from(limit) * photo_mm / print_mm).floor() as u32;
             fitted.max(1)
         } else {
             limit
@@ -644,6 +648,7 @@ mod tests {
             crop: None,
             place: None,
             straighten: 0.0,
+            ratio: None,
         });
         assert_eq!((p.out_width, p.out_height), (1600, 1067));
         assert!(p.stamp.is_none(), "no capture date, no stamp");
@@ -665,6 +670,7 @@ mod tests {
             crop: None,
             place: Some("Budapest"),
             straighten: 0.0,
+            ratio: None,
         });
         let Some(stamp) = p.stamp else {
             panic!("the caption is printed without a date");
@@ -700,6 +706,7 @@ mod tests {
                 crop: None,
                 place: None,
                 straighten: 0.0,
+                ratio: None,
             });
             assert_eq!(
                 (p.crop.x, p.crop.y, p.crop.width, p.crop.height),
@@ -747,6 +754,7 @@ mod tests {
                 crop: None,
                 place: None,
                 straighten: 0.0,
+                ratio: None,
             });
             let Some(mat) = p.mat else {
                 panic!("the border needs a canvas");
@@ -777,6 +785,7 @@ mod tests {
             crop: None,
             place: None,
             straighten: 0.0,
+            ratio: None,
         });
         assert!(p.mat.is_none());
         assert_eq!(p.output_size(), (6000, 4000));
@@ -802,6 +811,7 @@ mod tests {
             crop: None,
             place: None,
             straighten: 0.0,
+            ratio: None,
         });
         assert_eq!((p.crop.width, p.crop.height), (4608, 3456));
         assert!(p.mat.is_some_and(|m| m.photo.x > 0));
@@ -810,12 +820,15 @@ mod tests {
     #[test]
     fn fr_067_print_quality_follows_the_photo_inside_the_border() {
         let print = size("10x15");
-        assert_eq!(photo_area(print, false), print);
-        let area = photo_area(print, true);
+        assert_eq!(print_photo_area(print, false), print);
+        let area = print_photo_area(print, true);
         assert_eq!((area.short_mm, area.long_mm), (94, 144));
         let (plain, _) = effective_dpi(6000, 4000, print);
         let (bordered, _) = effective_dpi(6000, 4000, area);
         assert!(bordered > plain, "a smaller area, more pixels per inch");
+        // Original keeps its 10 cm short edge: a 3:2 photo is 94 × 141 inside the border.
+        let original = print_photo_area(PrintSize::original(6000, 4000), true);
+        assert_eq!((original.short_mm, original.long_mm), (94, 141));
     }
 
     #[test]
@@ -835,6 +848,7 @@ mod tests {
             crop: None,
             place: None,
             straighten: 0.0,
+            ratio: None,
         });
         let (w, h) = p.output_size();
         assert!(w.max(h) <= 1600 && w.max(h) >= 1590, "{w}×{h}");
@@ -857,6 +871,7 @@ mod tests {
                 crop: None,
                 place: None,
                 straighten: 0.0,
+                ratio: None,
             });
             p.stamp.map_or(0.0, |s| s.font_px)
         };

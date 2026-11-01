@@ -199,7 +199,7 @@ fn encode_sheet(
             image,
             capture: record.stamp_date(),
             crop: record.edits.sheet_crop(),
-            straighten: record.edits.straighten,
+            straighten: record.edits.sheet_straighten(),
             place: place.as_deref(),
             stamp: record.edits.stamp.as_ref(),
         });
@@ -252,18 +252,9 @@ fn encode_photo(
         ExportTarget::Share(preset) => Some(preset),
         ExportTarget::Print => None,
     };
-    let share_settings;
-    let base = if share.is_some() {
-        // Shared photos are not prints: no print crop and no print border (FR-053, FR-067).
-        share_settings = RenderSettings {
-            print_size: crate::PrintSize::ORIGINAL_ID.to_owned(),
-            border: false,
-            ..options.settings.clone()
-        };
-        &share_settings
-    } else {
-        options.settings
-    };
+    // Shared photos are not prints: no print crop and no print border (FR-053, FR-067).
+    let base = options.settings.for_target();
+    let base = base.as_ref();
     let max_long_edge = share.and_then(|preset| {
         let (w, h) = target_size(upright.width, upright.height, preset);
         let long = w.max(h);
@@ -288,6 +279,7 @@ fn encode_photo(
         crop: record.edits.crop,
         place: place.as_deref(),
         straighten: record.edits.straighten,
+        ratio: None,
     });
     let mut image = render(&upright, &p)?;
     drop(upright);

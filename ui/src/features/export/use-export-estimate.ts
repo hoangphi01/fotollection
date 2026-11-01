@@ -18,12 +18,15 @@ export function useExportEstimate(
   sheets = false,
 ) {
   const [estimate, setEstimate] = useState<{ key: string; value: ExportEstimate } | null>(null)
-  const key = `${JSON.stringify(filter)}:${only}:${revision}:${sheets}`
+  const filterKey = JSON.stringify(filter)
+  const key = `${filterKey}:${only}:${revision}:${sheets}`
+  // Keyed by the filter's content: Simple and Collage build theirs on every render (LESSONS).
   useEffect(() => {
     if (!enabled) return
     let live = true
+    const view = JSON.parse(filterKey) as CullFilter
     const timer = window.setTimeout(() => {
-      void commands.estimateExport(filter, only, sheets).then((result) => {
+      void commands.estimateExport(view, only, sheets).then((result) => {
         if (live && result.status === 'ok') setEstimate({ key, value: result.data })
       })
     }, DELAY_MS)
@@ -31,7 +34,7 @@ export function useExportEstimate(
       live = false
       window.clearTimeout(timer)
     }
-  }, [key, filter, only, enabled, sheets])
+  }, [key, filterKey, only, enabled, sheets])
   return {
     estimate: estimate?.value ?? null,
     /** The shown figure belongs to older settings while a new one is computed. */

@@ -139,12 +139,21 @@ pub struct PhotoEdits {
     /// the print crop.
     #[serde(default)]
     pub collage_crop: Option<CropFrame>,
+    /// The photo's straightening on a collage sheet, apart from its print's (FR-035); `None`
+    /// uses the print's.
+    #[serde(default)]
+    pub collage_straighten: Option<f32>,
 }
 
 impl PhotoEdits {
     /// The crop used on a collage sheet: its own, or the print crop (FR-035).
     pub fn sheet_crop(&self) -> Option<CropFrame> {
         self.collage_crop.or(self.crop)
+    }
+
+    /// The straightening used on a collage sheet: its own, or the print's (FR-035).
+    pub fn sheet_straighten(&self) -> f32 {
+        self.collage_straighten.unwrap_or(self.straighten)
     }
 }
 

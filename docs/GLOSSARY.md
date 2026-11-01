@@ -9,7 +9,7 @@
 | **ADR** | Architecture Decision Record: a short document capturing one significant decision, its context and its consequences. See [adr/](adr/README.md). |
 | **Back-pressure** | When a slower downstream stage blocks upstream stages from producing more work, so that memory stays bounded. |
 | **Bleed / safe area** | Labs trim a little (about 1–2 mm) from each edge when cutting prints. The *safe area* is the region guaranteed to survive trimming, so stamps and captions go inside it. |
-| **Cell** | One half of a collage sheet. The photo sits centred in it, with a white margin round its photo area. |
+| **Cell** | One half of a collage sheet. The photo sits centred in it, with a white margin round its photo area, or fills it whole (*Fill each half*). |
 | **CEWE** | Large European photo-printing service (also behind the dm and Rossmann photo services). Its paper sizes define our print ratios. |
 | **Chroma subsampling** | JPEG stores colour at lower resolution than brightness (4:2:0). 4:4:4 keeps full colour resolution, which gives sharper coloured text stamps. |
 | **Collage / sheet** | Two photos on one print, like a half-frame camera ([FR-035](PRD.md#fr-035--multi-photo-layouts)): a 10 × 15 sheet holds two 10 × 7.5 cells. One file per sheet on export. |

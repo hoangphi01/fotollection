@@ -189,6 +189,7 @@ fn main() {
                 crop: None,
                 place: None,
                 straighten: 0.0,
+                ratio: None,
             });
             let image = render(&t2, &p).unwrap();
             draw.push(t.elapsed().as_secs_f64() * 1e3);

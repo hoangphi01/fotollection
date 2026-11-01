@@ -102,6 +102,7 @@ fn main() {
             crop: None,
             place: None,
             straighten: 0.0,
+            ratio: None,
         });
         let (full_render, rendered) = time(|| render(&full, &p).unwrap());
 

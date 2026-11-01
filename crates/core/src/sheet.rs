@@ -174,6 +174,9 @@ pub fn suggested_area(
     print: PrintSize,
     settings: &CollageSettings,
 ) -> (u32, u32) {
+    if settings.fill {
+        return (floor_mm(f64::from(cell.0)), floor_mm(f64::from(cell.1)));
+    }
     fit(
         available(cell, settings),
         area_ratio(photo, print, settings.ratio),
@@ -203,6 +206,10 @@ pub fn photo_area(
     settings: &CollageSettings,
 ) -> (u32, u32) {
     let settings = settings.sanitized();
+    // Filled: the whole cell, as it stands, whatever the photo's orientation.
+    if settings.fill {
+        return (floor_mm(f64::from(cell.0)), floor_mm(f64::from(cell.1)));
+    }
     let suggested = suggested_area(cell, photo, print, &settings);
     let Some(size) = settings.size else {
         return suggested;
@@ -408,6 +415,17 @@ pub fn render_sheet(
         |source: &CellSource<'_>, cell: &CellLayout, own: &RenderSettings, max: Option<u32>| {
             let (a, b) = cell.area;
             let area = PrintSize::custom(a.min(b), a.max(b));
+            // The crop takes the area's own shape, inside the border, even when the photo
+            // lies and the cell stands (a filled cell).
+            #[allow(
+                clippy::cast_precision_loss,
+                clippy::cast_possible_truncation,
+                clippy::cast_sign_loss
+            )]
+            let ratio = (
+                ((a as f32 - inset).max(1.0) * 10.0).round() as u64,
+                ((b as f32 - inset).max(1.0) * 10.0).round() as u64,
+            );
             plan(&PlanInput {
                 width: source.image.width,
                 height: source.image.height,
@@ -419,6 +437,7 @@ pub fn render_sheet(
                 crop: source.crop,
                 place: source.place,
                 straighten: source.straighten,
+                ratio: Some(ratio),
             })
         };
     let owns: [Option<RenderSettings>; 2] =
@@ -518,29 +537,25 @@ fn fill_rect(canvas: &mut RgbImage, x: u32, y: u32, width: u32, height: u32, col
     blit(canvas, &block, x, y);
 }
 
-/// The collage order of every placed photo after a reorder in one view (FR-035). `placed`
-/// holds the photos that already have a position; `view` is the view's photos in their new
-/// order. The view's photos take back the slots they held in the whole order (new ones at
-/// the end), so a reorder in one folder never mixes with another folder's order.
-pub fn reorder(placed: &[(PhotoId, u32)], view: &[PhotoId]) -> Vec<PhotoId> {
-    let mut sorted: Vec<(u32, PhotoId)> = placed.iter().map(|(id, p)| (*p, *id)).collect();
-    sorted.sort_unstable();
-    let mut order: Vec<PhotoId> = sorted.into_iter().map(|(_, id)| id).collect();
-    for id in view {
-        if !order.contains(id) {
-            order.push(*id);
-        }
-    }
-    let slots: Vec<usize> = order
+/// New collage positions after a reorder in one view (FR-035). `placed` holds the photos that
+/// already have a position; `view` is the view's photos in their new order. The view's photos
+/// share the positions they already held, in their new order, and those without one take
+/// fresh positions after every other photo. Photos outside the view keep theirs, so a reorder
+/// in one folder never touches another, and only the view's photos are written.
+pub fn reorder(placed: &[(PhotoId, u32)], view: &[PhotoId]) -> Vec<(PhotoId, u32)> {
+    let held: std::collections::HashMap<PhotoId, u32> = placed.iter().copied().collect();
+    let mut slots: Vec<u32> = view.iter().filter_map(|id| held.get(id).copied()).collect();
+    slots.sort_unstable();
+    let mut next = placed
         .iter()
-        .enumerate()
-        .filter(|(_, id)| view.contains(id))
-        .map(|(i, _)| i)
-        .collect();
-    for (slot, id) in slots.into_iter().zip(view) {
-        order[slot] = *id;
+        .map(|(_, p)| *p)
+        .max()
+        .map_or(0, |p| p.saturating_add(1));
+    while slots.len() < view.len() {
+        slots.push(next);
+        next = next.saturating_add(1);
     }
-    order
+    view.iter().copied().zip(slots).collect()
 }
 
 /// Photos in collage order (FR-035): first those the user placed, by their position, then
@@ -686,6 +701,58 @@ mod tests {
     }
 
     #[test]
+    fn fr_035_a_filled_cell_has_no_white_and_crops_to_the_cell() -> Result<(), RenderError> {
+        let s = CollageSettings {
+            fill: true,
+            ..CollageSettings::default()
+        };
+        // Two landscape photos on a standing 10 × 15: each fills its 10 × 7.5 half.
+        let sheet = layout(print(), [Some((6000, 4000)), Some((6000, 4000))], false, &s);
+        let [Some(a), Some(b)] = sheet.cells else {
+            panic!("two cells");
+        };
+        assert_eq!((a.area, a.x, a.y), ((100, 75), 0.0, 0.0));
+        assert_eq!((b.area, b.y), ((100, 75), 75.0));
+        // A portrait photo in a landscape half is cropped to the half, not letterboxed.
+        let red = filled(1200, 1800, [200, 30, 30]);
+        let blue = filled(1800, 1200, [30, 30, 200]);
+        let mut settings = RenderSettings {
+            collage: s,
+            ..RenderSettings::default()
+        };
+        settings.stamp.enabled = false;
+        settings.collage.cut_line = false;
+        let source = |image| CellSource {
+            image,
+            capture: None,
+            crop: None,
+            straighten: 0.0,
+            place: None,
+            stamp: None,
+        };
+        // The first photo lies, so the sheet stands; the portrait one is cropped to lie too.
+        let out = render_sheet(
+            &settings,
+            print(),
+            [Some(source(&blue)), Some(source(&red))],
+            false,
+            Some(1500),
+        )?;
+        assert_eq!((out.width, out.height), (1000, 1500));
+        let at = |x: u32, y: u32| {
+            let i = ((y * out.width + x) * 3) as usize;
+            [out.data[i], out.data[i + 1], out.data[i + 2]]
+        };
+        assert_eq!(at(2, 2), [30, 30, 200], "no white at the corner");
+        assert_eq!(
+            at(998, 1497),
+            [200, 30, 30],
+            "the second photo reaches its corner"
+        );
+        Ok(())
+    }
+
+    #[test]
     fn fr_004_each_stamp_on_a_sheet_is_half_the_sheets_own() {
         // 10 × 15 sheet, a 60 × 90 photo area: medium is 3.6 % of 100 mm alone, 1.8 mm here.
         let scale = stamp_scale(print(), (60, 90));
@@ -747,12 +814,18 @@ mod tests {
         let id = PhotoId;
         // Folder A (1, 2, 3) was arranged first, then folder B (10, 11).
         let placed = [(id(1), 0), (id(2), 1), (id(3), 2), (id(10), 3), (id(11), 4)];
-        // In folder B's tab the user swaps its two photos.
-        let order = reorder(&placed, &[id(11), id(10)]);
-        assert_eq!(order, [id(1), id(2), id(3), id(11), id(10)]);
-        // A view with a new photo: it joins at the end.
-        let order = reorder(&placed, &[id(2), id(1), id(12)]);
-        assert_eq!(order, [id(2), id(1), id(3), id(10), id(11), id(12)]);
+        // In folder B's tab the user swaps its two photos: only B's photos move.
+        assert_eq!(
+            reorder(&placed, &[id(11), id(10)]),
+            [(id(11), 3), (id(10), 4)]
+        );
+        // A view with a new photo: it joins after every placed photo.
+        assert_eq!(
+            reorder(&placed, &[id(2), id(1), id(12)]),
+            [(id(2), 0), (id(1), 1), (id(12), 5)]
+        );
+        // Nothing placed yet: positions from 0.
+        assert_eq!(reorder(&[], &[id(7), id(6)]), [(id(7), 0), (id(6), 1)]);
     }
 
     #[test]

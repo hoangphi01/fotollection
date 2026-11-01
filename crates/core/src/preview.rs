@@ -182,6 +182,9 @@ impl PreviewCache {
         place: Option<&str>,
         max_long_edge: Option<u32>,
     ) -> Result<RgbImage, ThumbError> {
+        // The preview shows what is exported, for prints or for social media (FR-053).
+        let settings = settings.for_target();
+        let settings = settings.as_ref();
         let print = settings
             .print_for(source.width, source.height)
             .unwrap_or(crate::PrintSize::ALL[1]);
@@ -198,6 +201,7 @@ impl PreviewCache {
             crop: record.edits.crop,
             place,
             straighten: record.edits.straighten,
+            ratio: None,
         });
         Ok(render(source, &p)?)
     }
@@ -245,7 +249,7 @@ impl PreviewCache {
                     image,
                     capture: record.stamp_date(),
                     crop: record.edits.sheet_crop(),
-                    straighten: record.edits.straighten,
+                    straighten: record.edits.sheet_straighten(),
                     place: *place,
                     stamp: record.edits.stamp.as_ref(),
                 });

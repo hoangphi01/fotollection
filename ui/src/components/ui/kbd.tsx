@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-only
 import { cn } from "cn"
 
 function Kbd({ className, ...props }: React.ComponentProps<"kbd">) {

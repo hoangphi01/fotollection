@@ -672,6 +672,9 @@
     "pickToCrop": "Nhấp vào một ảnh trên tấm để cắt",
     "pairNames": "{{first}} + {{second}}",
     "position": "{{index}} / {{count}}",
-    "by": "×"
+    "by": "×",
+    "fill": "Lấp đầy mỗi nửa",
+    "fillHint": "Không lề trắng: hai ảnh giáp cạnh nhau, mỗi ảnh phủ kín nửa tấm. Cắt từng ảnh để chọn phần được giữ.",
+    "marginHint": "Mỗi ảnh có lề trắng quanh nó; chọn tỷ lệ và cỡ ảnh bên dưới."
   }
 }

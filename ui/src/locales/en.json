@@ -697,6 +697,9 @@
     "pickToCrop": "Click a photo on the sheet to crop it",
     "pairNames": "{{first}} + {{second}}",
     "position": "{{index}} / {{count}}",
-    "by": "×"
+    "by": "×",
+    "fill": "Fill each half",
+    "fillHint": "No white: the two photos meet edge to edge, each filling its half. Crop each one to choose what it keeps.",
+    "marginHint": "A white margin stays round each photo; choose its ratio and size below."
   }
 }

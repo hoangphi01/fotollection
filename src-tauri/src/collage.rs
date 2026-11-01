@@ -82,7 +82,8 @@ pub fn set_collage_order(
             "A photo is listed twice",
         ));
     }
-    // One order for the whole library, so reordering one folder keeps the others' order.
+    // One order for the whole library: the view's photos swap the positions they hold, so
+    // reordering one folder keeps the others' order (FR-035).
     let placed: Vec<(PhotoId, u32)> = state
         .library
         .read()
@@ -90,18 +91,11 @@ pub fn set_collage_order(
         .edited()
         .filter_map(|(id, e)| e.collage.map(|p| (id, p)))
         .collect();
-    let order = sheet::reorder(&placed, &ids);
-    let position = |id: PhotoId| {
-        order
-            .iter()
-            .position(|i| *i == id)
-            .and_then(|p| u32::try_from(p).ok())
-    };
-    edit_photos(&app, &state, &order, |id, e| {
-        e.collage = position(id);
-        if ids.contains(&id) {
-            e.sheet_turned = false;
-        }
+    let positions: std::collections::HashMap<PhotoId, u32> =
+        sheet::reorder(&placed, &ids).into_iter().collect();
+    edit_photos(&app, &state, &ids, |id, e| {
+        e.collage = positions.get(&id).copied();
+        e.sheet_turned = false;
     })
 }
 
@@ -118,8 +112,8 @@ pub fn turn_sheet(
     })
 }
 
-/// Sets (or, with `None`, resets to the print crop) a photo's crop on collage sheets, with
-/// its straightening, which the photo shares with its prints. One undoable step (FR-035).
+/// Sets a photo's crop and straightening on collage sheets, apart from its print's; `None`
+/// (Reset in the crop editor) centres it. One undoable step (FR-035).
 #[tauri::command]
 #[specta::specta]
 pub fn set_collage_crop(
@@ -129,10 +123,16 @@ pub fn set_collage_crop(
     crop: Option<fotollection_core::plan::CropFrame>,
     straighten: f32,
 ) -> Result<HistoryState, IpcError> {
+    use fotollection_core::plan::CropFrame;
     let degrees = fotollection_core::straighten::sanitize(straighten);
+    let centred = CropFrame {
+        cx: 0.5,
+        cy: 0.5,
+        zoom: 1.0,
+    };
     edit_photos(&app, &state, &[id], |_, e| {
-        e.collage_crop = crop.map(fotollection_core::plan::CropFrame::sanitized);
-        e.straighten = degrees;
+        e.collage_crop = Some(crop.unwrap_or(centred).sanitized());
+        e.collage_straighten = Some(degrees);
     })
 }
 
@@ -167,7 +167,7 @@ pub async fn sheet_info(app: AppHandle, sheet: SheetPair) -> Result<SheetInfo, I
                     r.id,
                     upright_size(&state, r)?,
                     r.edits.sheet_crop(),
-                    r.edits.straighten,
+                    r.edits.sheet_straighten(),
                 ))
             };
         let a = fact(&first)?;
@@ -247,7 +247,7 @@ pub fn cell_geometry(
         print_width_cm: (area_w - inset).max(1.0) / 10.0,
         print_height_cm: (area_h - inset).max(1.0) / 10.0,
         crop: record.edits.sheet_crop(),
-        straighten: record.edits.straighten,
+        straighten: record.edits.sheet_straighten(),
         crop_disabled: false,
         output_width_cm: area_w / 10.0,
         output_height_cm: area_h / 10.0,

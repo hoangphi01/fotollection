@@ -372,6 +372,7 @@ mod tests {
                 crop: None,
                 place: None,
                 straighten: 0.0,
+                ratio: None,
             });
             let spec = p.stamp.as_ref();
             let lines = spec.map(|s| crate::stamp::layout(p.out_width, p.out_height, s));
@@ -406,6 +407,7 @@ mod tests {
             crop: None,
             place: None,
             straighten: 0.0,
+            ratio: None,
         });
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         let changed = out.data.iter().filter(|&&v| v != 0).count();
@@ -434,6 +436,7 @@ mod tests {
             crop: None,
             place: None,
             straighten: 0.0,
+            ratio: None,
         }); // 15x15 square
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         assert_eq!((out.width, out.height), (20, 20));
@@ -477,6 +480,7 @@ mod tests {
             crop: None,
             place: None,
             straighten: 0.0,
+            ratio: None,
         });
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         (out, p)
@@ -541,6 +545,7 @@ mod tests {
             crop: None,
             place: None,
             straighten: 0.0,
+            ratio: None,
         });
         let Some(frame) = p.frame else {
             panic!("frame expected");

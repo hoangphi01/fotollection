@@ -1022,7 +1022,7 @@ pub async fn print_advice(app: AppHandle, id: PhotoId) -> Result<PrintAdvice, Ip
             (guard.0.custom_sizes.clone(), guard.0.border)
         };
         // With the 3 mm border, each size's photo is the size less the border (FR-067).
-        let area = |size| fotollection_core::plan::photo_area(size, border);
+        let area = |size| fotollection_core::plan::print_photo_area(size, border);
         let sizes = PrintSize::ALL
             .iter()
             .map(|s| (s.id, area(*s)))
@@ -1066,7 +1066,7 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
         let (print_dpi, print_quality) = effective_dpi(
             width,
             height,
-            fotollection_core::plan::photo_area(print, border),
+            fotollection_core::plan::print_photo_area(print, border),
         );
         let shot = record.shot.clone();
         let camera_id = state.frame.read().ok().and_then(|f| {
@@ -1579,6 +1579,7 @@ pub async fn get_crop_geometry(
             crop: None,
             place: None,
             straighten: 0.0,
+            ratio: None,
         });
         let (canvas_w, canvas_h) = p.output_size();
         let (canvas_width_cm, canvas_height_cm) = canvas_cm(print, (width, height), &p);

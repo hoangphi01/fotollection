@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Columns2, Scissors } from 'lucide-react'
+import { Columns2, Maximize, Scissors } from 'lucide-react'
 import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Collapse } from '@/components/layout/collapse'
 import { SectionCard } from '@/components/layout/section-card'
 import type { CellInfo, CellRatio, RenderSettings } from '@/ipc/bindings'
 import { formatNumber } from '@/lib/format'
@@ -30,11 +31,25 @@ export function CollageCellsCard({ settings, onChange, cell }: CollageCellsCardP
   const setCollage = (patch: Partial<RenderSettings['collage']>) =>
     onChange((s) => ({ ...s, collage: { ...s.collage, ...patch } }))
   const unit = displayUnit(settings)
-  // Mounted twice (panel and preview), so the switch's id must be unique.
+  // Mounted twice (panel and preview), so the switches' ids must be unique.
   const cutLineId = useId()
+  const fillId = useId()
+  const fill = collage?.fill ?? false
 
   return (
     <SectionCard icon={<Columns2 />} title={<span className="text-sm font-semibold">{t('collage.cells')}</span>}>
+      {/* No white: each photo fills its half, and its crop chooses what it keeps (FR-035). */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <Label htmlFor={fillId} className="flex items-center gap-2 text-sm font-normal">
+            <Maximize className="size-4 text-muted-foreground" />
+            {t('collage.fill')}
+          </Label>
+          <Switch id={fillId} checked={fill} onCheckedChange={(on) => setCollage({ fill: on })} />
+        </div>
+        <p className="text-xs text-muted-foreground">{t(fill ? 'collage.fillHint' : 'collage.marginHint')}</p>
+      </div>
+      <Collapse open={!fill} className="space-y-3">
       <div className="space-y-1.5">
         <Label className="text-sm font-normal">{t('collage.ratio')}</Label>
         <ToggleGroup
@@ -54,6 +69,7 @@ export function CollageCellsCard({ settings, onChange, cell }: CollageCellsCardP
         </ToggleGroup>
       </div>
       <CollageSizeFields settings={settings} onChange={onChange} cell={cell} />
+      </Collapse>
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
           <Label htmlFor={cutLineId} className="flex items-center gap-2 text-sm font-normal">
