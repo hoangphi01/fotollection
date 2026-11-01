@@ -92,7 +92,7 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
             src={shownSrc}
             alt={photo.fileName}
             draggable={false}
-            className="max-h-full max-w-full animate-in rounded-sm object-contain shadow-2xl fade-in-0"
+            className="max-h-full max-w-full animate-in object-contain stage-photo fade-in-0"
           />
         ) : (
           <StageSpinner />

@@ -267,7 +267,7 @@ export function PreviewDialog({
                   onDoubleClick={zoom.pointer.onDoubleClick}
                   style={{ transform: zoom.transform }}
                   className={cn(
-                    'max-h-full max-w-full animate-in rounded-sm object-contain shadow-2xl fade-in-0',
+                    'max-h-full max-w-full animate-in object-contain stage-photo fade-in-0',
                     zoom.zoomed || canDrag ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in',
                   )}
                 />

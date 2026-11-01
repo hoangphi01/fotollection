@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import type { KeyboardEventHandler, PointerEventHandler, ReactNode, Ref } from 'react'
+import type { KeyboardEventHandler, MouseEvent, PointerEventHandler, ReactNode, Ref } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 
@@ -18,6 +18,8 @@ type ViewerFrameProps = {
   onStagePointerDown?: StagePointer
   onStagePointerMove?: StagePointer
   onStagePointerUp?: StagePointer
+  /** A click on the stage's own ground, around what it shows. */
+  onStageGroundClick?: () => void
   /** What the stage shows, on neutral black (STYLE_RULE §4). */
   stage: ReactNode
   /** A strip under the stage (the capture screen's shots). */
@@ -46,6 +48,7 @@ export function ViewerFrame({
   onStagePointerDown,
   onStagePointerMove,
   onStagePointerUp,
+  onStageGroundClick,
   stage,
   below,
   title,
@@ -70,6 +73,7 @@ export function ViewerFrame({
             onPointerDown={onStagePointerDown}
             onPointerMove={onStagePointerMove}
             onPointerUp={onStagePointerUp}
+            onClick={(e: MouseEvent<HTMLDivElement>) => e.target === e.currentTarget && onStageGroundClick?.()}
           >
             {stage}
           </div>

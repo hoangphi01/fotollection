@@ -130,6 +130,13 @@
     --sidebar-ring: oklch(0.685 0.106 61.2);
 }
 
+/* A photo or sheet on the black stage: a faint neutral outline shows its edge even when the
+   print's own border is black (STYLE_RULE §4, neutral ground). */
+@utility stage-photo {
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 0 1px oklch(1 0 0 / 0.22), 0 25px 50px -12px oklch(0 0 0 / 0.25);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

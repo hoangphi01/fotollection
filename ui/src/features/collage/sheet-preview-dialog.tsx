@@ -137,6 +137,8 @@ export function SheetPreviewDialog({
         }
       }}
       stageRef={setStage}
+      // A click on the ground around the sheet lets go of the chosen photo, like Esc.
+      onStageGroundClick={() => !cropping && choose(null)}
       title={t('collage.sheetOf', { index: formatNumber(index + 1), count: formatNumber(sheets.length) })}
       description={names.length === 2 ? t('collage.pairNames', { first: names[0], second: names[1] }) : names[0]}
       footer={
@@ -186,7 +188,7 @@ export function SheetPreviewDialog({
                   onPointerDown={zoom.pointer.onPointerDown}
                   onPointerMove={zoom.pointer.onPointerMove}
                   onPointerUp={zoom.pointer.onPointerUp}
-                  className="block max-h-[calc(90vh-4rem)] max-w-full animate-in rounded-sm object-contain shadow-2xl fade-in-0"
+                  className="block max-h-[calc(90vh-4rem)] max-w-full animate-in object-contain stage-photo fade-in-0"
                 />
                 {!zoom.zoomed && (
                   <SheetCellsOverlay sheet={sheet} sideBySide={shape.sideBySide}>

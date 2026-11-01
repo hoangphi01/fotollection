@@ -43,13 +43,13 @@ export function QuickPreview({ photo, revision, thumbVersion, generation, checke
     >
       <div className="relative flex min-h-0 flex-1 items-center justify-center">
         {ready === src ? (
-          <img src={src} alt={photo.fileName} className="max-h-full max-w-full rounded-sm object-contain shadow-2xl" />
+          <img src={src} alt={photo.fileName} className="max-h-full max-w-full object-contain stage-photo" />
         ) : (
           <img
             src={thumbUrl(photo.id, thumbVersion, generation)}
             alt={photo.fileName}
             style={photo.rotation ? { transform: `rotate(${photo.rotation * 90}deg)` } : undefined}
-            className="max-h-full max-w-full rounded-sm object-contain opacity-80 shadow-2xl blur-[1px]"
+            className="max-h-full max-w-full rounded-sm object-contain opacity-80 stage-photo blur-[1px]"
           />
         )}
       </div>

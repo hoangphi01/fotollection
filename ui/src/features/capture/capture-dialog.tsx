@@ -75,7 +75,7 @@ export function CaptureDialog({ capture, settings, thumbVersions, generation, on
                 const { naturalWidth: w, naturalHeight: h } = e.currentTarget
                 if (w > 0 && h > 0) setFrameRatio(Math.max(w, h) / Math.min(w, h))
               }}
-              className="max-h-full max-w-full rounded-sm object-contain shadow-2xl"
+              className="max-h-full max-w-full object-contain stage-photo"
             />
             {/* The print's shape over the live view: what stays after Crop to fill. */}
             {overlay && (

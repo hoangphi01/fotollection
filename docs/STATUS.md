@@ -11,6 +11,7 @@
 
 **Bugs the owner reports while trying v0.9.0** (newest first; each fix in the commit that names it):
 
+- 2026-11-01 ✓ On the black stage a photo or sheet with a black border lost its edge: every stage image now has a faint neutral outline (`stage-photo`). The stage stays black (STYLE_RULE §4, owner's choice after weighing a theme-coloured one). A click on the ground around a sheet lets go of the chosen photo, like Esc.
 - 2026-11-01 ✓ A collage sheet's two photos can have their own line under the date: a switch *Same on both photos* in the sheet preview's stamp card, off shows a field per photo (`photos[].caption`, project v9, `set_photo_caption`). The rest of the stamp still follows the settings.
 - 2026-11-01 ✓ Simple and Collage now have Pro's whole date stamp card: format, corner, colour, size, place and the caption line. One `DateStampCard` holds them all, so the three modes cannot drift apart. The Simple panel screenshot is to retake before the release.
 - 2026-11-01 ✓ After dragging a photo to another sheet, the sheet's loading spinner sat in a corner: it was centred in the image, which has no size until it loads; it is now centred in the tile.
