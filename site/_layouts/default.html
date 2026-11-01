@@ -56,7 +56,7 @@
         "@type": "SoftwareApplication",
         "name": "Fotollection",
         "applicationCategory": "MultimediaApplication",
-        "operatingSystem": "macOS 11+, Windows 10/11",
+        "operatingSystem": "macOS 11+, Windows 10/11, Linux (64-bit, glibc 2.35+)",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
         "license": "https://www.gnu.org/licenses/gpl-3.0.html",
         "url": "{{ '/' | absolute_url }}",
@@ -142,11 +142,13 @@
         {%- comment -%} One list on every page; the back link only where this page carries the mark. {%- endcomment %}
         {%- if page.title_key == 'perf_title' %}{% assign first = 4 %}{% assign last = 11 %}{% else %}{% assign first = 1 %}{% assign last = 3 %}{% endif %}
         <ol>
-          {%- assign notes = "fn_open,fn_dm,fn_rossmann,fn_rust,fn_webview,fn_de,fn_ssim,fn_jpeg,fn_srgb,fn_p3,fn_adobe,fn_charts,fn_dng" | split: "," %}
+          {%- assign notes = "fn_open,fn_dm,fn_rossmann,fn_rust,fn_webview,fn_de,fn_ssim,fn_jpeg,fn_srgb,fn_p3,fn_adobe,fn_charts,fn_dng,fn_pf_raw,fn_pf_heic_win,fn_pf_heic_linux,fn_pf_tether,fn_pf_openwith,fn_pf_update,fn_glibc,fn_nvidia" | split: "," %}
           {%- for key in notes %}
           {%- assign n = forloop.index %}
           {%- assign back = false %}{% if n >= first and n <= last %}{% assign back = true %}{% endif %}
           {%- if page.title_key == 'perf_title' and n == 13 %}{% assign back = true %}{% endif %}
+          {%- comment -%} 14 and on: the home page's table by system and its Linux notes. {%- endcomment %}
+          {%- if page.title_key == nil and n >= 14 %}{% assign back = true %}{% endif %}
           <li id="fn-{{ n }}"><span class="fn-num">{{ n }}.</span> {{ t[key] }}{% if back %} <a class="fn-back" href="#fnref-{{ n }}" aria-label="{{ t.fn_back }}">{% include icons/corner-left-up.svg %}</a>{% endif %}</li>
           {%- endfor %}
         </ol>

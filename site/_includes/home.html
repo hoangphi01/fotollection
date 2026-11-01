@@ -1,9 +1,17 @@
 {%- assign t = site.data.i18n[page.lang] -%}
 {%- assign release = site.github.latest_release -%}
 {%- assign mac = nil -%}{%- assign win = nil -%}
+{%- comment -%} Linux has four files (ADR-0034), matched on how the name ends, so the updater's
+     .AppImage.tar.gz and .sig files never match. {%- endcomment -%}
+{%- assign appimage_x64 = nil -%}{%- assign appimage_arm = nil -%}{%- assign deb_x64 = nil -%}{%- assign deb_arm = nil -%}
 {%- for asset in release.assets -%}
   {%- if asset.name contains '.dmg' -%}{%- assign mac = asset.browser_download_url -%}{%- endif -%}
   {%- if asset.name contains '-setup.exe' -%}{%- assign win = asset.browser_download_url -%}{%- endif -%}
+  {%- assign end15 = asset.name | slice: -15, 15 -%}{%- assign end17 = asset.name | slice: -17, 17 -%}{%- assign end10 = asset.name | slice: -10, 10 -%}
+  {%- if end15 == '_amd64.AppImage' -%}{%- assign appimage_x64 = asset.browser_download_url -%}{%- endif -%}
+  {%- if end17 == '_aarch64.AppImage' -%}{%- assign appimage_arm = asset.browser_download_url -%}{%- endif -%}
+  {%- if end10 == '_amd64.deb' -%}{%- assign deb_x64 = asset.browser_download_url -%}{%- endif -%}
+  {%- if end10 == '_arm64.deb' -%}{%- assign deb_arm = asset.browser_download_url -%}{%- endif -%}
 {%- endfor -%}
 {%- capture releases %}{{ site.repo_url }}/releases/latest{% endcapture -%}
 
@@ -19,6 +27,7 @@
       <div class="cta" id="download">
         <a class="button primary" href="{{ mac | default: releases }}">{% include icons/download.svg %}{{ t.download_mac }}</a>
         <a class="button" href="{{ win | default: releases }}">{% include icons/download.svg %}{{ t.download_win }}</a>
+        <a class="button" href="#install-linux">{% include icons/download.svg %}{{ t.download_linux }}</a>
       </div>
       <p class="small muted">
         {% if release.tag_name %}{{ t.latest }}: <a href="{{ release.html_url }}">{{ release.tag_name }}</a> · {% else %}<a href="{{ site.repo_url }}/releases">{{ t.no_release }}</a> · {% endif %}{{ t.download_note }}
@@ -46,6 +55,36 @@
       <article class="card">{% include icons/camera.svg %}<h3>{{ t.f_raw_title }}</h3><p>{{ t.f_raw_text }}</p></article>
       <article class="card">{% include icons/mouse-pointer-click.svg %}<h3>{{ t.f_open_title }}</h3><p>{{ t.f_open_text }}</p></article>
       <article class="card">{% include icons/shield-check.svg %}<h3>{{ t.f_private_title }}</h3><p>{{ t.f_private_text }}</p></article>
+    </div>
+    {%- comment -%} The table by system: facts in _data/platforms.yml, words in i18n.yml (pf_*). {%- endcomment %}
+    <div class="systems" id="systems">
+      <h3>{{ t.pf_title }}</h3>
+      <p class="muted">{{ t.pf_lead }}</p>
+      <div class="table-scroll card">
+        <table class="table systems-table">
+          <thead>
+            <tr><th scope="col">{{ t.pf_feature }}</th><th scope="col">macOS</th><th scope="col">Windows</th><th scope="col">Linux</th></tr>
+          </thead>
+          <tbody>
+            {%- for row in site.data.platforms.rows %}
+            {%- capture label_key %}pf_{{ row.key }}{% endcapture %}
+            <tr>
+              <th scope="row">{{ t[label_key] }}{% if row.coming %} <span class="soon">{{ t.pf_coming }}</span>{% endif %}</th>
+              {%- for sys in site.data.platforms.systems %}
+              {%- capture fn_key %}{{ sys }}_fn{% endcapture %}
+              {%- assign mark = row[sys] %}{% assign fn = row[fn_key] %}
+              <td class="mark-{{ mark }}">
+                {%- if mark == 'ok' %}{% include icons/check.svg %}<span class="sr-only">{{ t.pf_ok }}</span>
+                {%- elsif mark == 'soon' %}{{ t.pf_soon }}
+                {%- else %}<span aria-hidden="true">—</span><span class="sr-only">{{ t.pf_none }}</span>{% endif %}
+                {%- if fn %}<sup class="fn-ref"><a href="#fn-{{ fn }}" id="fnref-{{ fn }}" aria-label="{{ t.fn_label }} {{ fn }}">{{ fn }}</a></sup>{% endif -%}
+              </td>
+              {%- endfor %}
+            </tr>
+            {%- endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </section>
@@ -263,12 +302,65 @@
         <h3>{{ t.win_title }}</h3>
         <ol><li>{{ t.win_1 }}</li><li>{{ t.win_2 }}</li><li>{{ t.win_3 }}</li></ol>
       </div>
+      {%- comment -%} Linux: the install script and the APT repository on fotollection.org, or a file. {%- endcomment %}
+      <div class="card linux" id="install-linux">
+        <h3>{{ t.linux_title }}</h3>
+        <div class="linux-ways">
+          <div>
+            <p class="way">{{ t.linux_script_title }}</p>
+            <pre class="code"><code>curl -fsSL https://fotollection.org/install.sh | sh</code></pre>
+            <p>{{ t.linux_script_text }} <code>curl -fsSL https://fotollection.org/install.sh | sh -s -- --uninstall</code></p>
+          </div>
+          <div>
+            <p class="way">{{ t.linux_apt_title }}</p>
+            <pre class="code"><code>curl -fsSL https://fotollection.org/apt/fotollection.gpg | sudo tee /usr/share/keyrings/fotollection.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/fotollection.gpg] https://fotollection.org/apt stable main" | sudo tee /etc/apt/sources.list.d/fotollection.list
+sudo apt update && sudo apt install fotollection</code></pre>
+            <p>{{ t.linux_apt_text }} <code>sudo apt upgrade</code></p>
+          </div>
+          <div>
+            <p class="way">{{ t.linux_appimage_title }}</p>
+            <pre class="code"><code>chmod +x Fotollection_*_amd64.AppImage
+./Fotollection_*_amd64.AppImage</code></pre>
+            <p>{{ t.linux_appimage_text }}</p>
+          </div>
+        </div>
+        <p class="sizes-label">{{ t.linux_files }}</p>
+        <p class="linux-files">
+          <a class="pill" href="{{ appimage_x64 | default: releases }}">{% include icons/download.svg %}{{ t.linux_appimage_x64 }}</a>
+          <a class="pill" href="{{ appimage_arm | default: releases }}">{% include icons/download.svg %}{{ t.linux_appimage_arm }}</a>
+          <a class="pill" href="{{ deb_x64 | default: releases }}">{% include icons/download.svg %}{{ t.linux_deb_x64 }}</a>
+          <a class="pill" href="{{ deb_arm | default: releases }}">{% include icons/download.svg %}{{ t.linux_deb_arm }}</a>
+        </p>
+        {%- unless appimage_x64 or deb_x64 %}
+        <p class="small muted">{{ t.linux_soon }}</p>
+        {%- endunless %}
+        <p><a class="more" href="#linux">{{ t.linux_which }} {% include icons/arrow-right.svg %}</a></p>
+      </div>
     </div>
     <p class="small muted">{{ t.checksums }} {{ t.updates }}</p>
     <div class="cta">
       <a class="button primary" href="{{ mac | default: releases }}">{% include icons/download.svg %}{{ t.download_mac }}</a>
       <a class="button" href="{{ win | default: releases }}">{% include icons/download.svg %}{{ t.download_win }}</a>
+      <a class="button" href="#install-linux">{% include icons/download.svg %}{{ t.download_linux }}</a>
       {% include star.html %}
+    </div>
+
+    <div class="distros" id="linux">
+      <h3>{{ t.distro_title }}</h3>
+      <p class="muted">{{ t.distro_lead }}<sup class="fn-ref"><a href="#fn-20" id="fnref-20" aria-label="{{ t.fn_label }} 20">20</a></sup></p>
+      <div class="install">
+        {%- for group in t.distro_groups %}
+        <div class="card">
+          <h3>{{ group.title }}</h3>
+          <ul>
+            {%- for item in group.items %}
+            <li>{{ item.text }}{% if item.code %} <code>{{ item.code }}</code>{% endif %}{% if item.after %}{{ item.after }}{% endif %}{% if item.code2 %} <code>{{ item.code2 }}</code>{% endif %}{% if item.after2 %}{{ item.after2 }}{% endif %}{% if item.fn %}<sup class="fn-ref"><a href="#fn-{{ item.fn }}"{% if item.fn == 21 %} id="fnref-21"{% endif %} aria-label="{{ t.fn_label }} {{ item.fn }}">{{ item.fn }}</a></sup>{% endif %}</li>
+            {%- endfor %}
+          </ul>
+        </div>
+        {%- endfor %}
+      </div>
     </div>
   </div>
 </section>
