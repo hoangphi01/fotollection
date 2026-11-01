@@ -191,7 +191,7 @@ Bản xem trước ban đầu được hiện ở cỡ nhẹ để máy nào cũ
 
 Ngày ở góc ảnh in, như máy ảnh phim, lấy theo lúc chụp ([FR-004](PRD.md#fr-004--date-stamp), [FR-033](PRD.md#fr-033--retro-film-date-stamp-and-stamp-presets)). Mặc định đang bật.
 
-1. Trong thẻ **Dấu ngày**, công tắc bật hoặc tắt dấu cho mọi ảnh.
+1. Trong thẻ **Dấu ngày**, công tắc bật hoặc tắt dấu cho mọi ảnh. Thẻ này như nhau ở chế độ Đơn giản, Ghép ảnh và Chuyên nghiệp, đủ mọi lựa chọn dưới đây.
 2. Chọn:
    - **định dạng**: `2026-07-14`, `14.07.2026` hoặc `'26 07 14`, kiểu máy ảnh phim;
    - **góc**: *Góc dưới phải*, *Góc dưới trái*, *Góc trên phải* hoặc *Góc trên trái*;
@@ -371,7 +371,7 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 4. Nhấn **↓** hoặc nhấp **Bỏ**: ảnh được để riêng, không bao giờ bị xoá, và ảnh kế tiếp hiện ra.
 5. **← →** đi lùi, đi tới mà không quyết định. **Cmd/Ctrl+Z** hoàn tác lần giữ hoặc bỏ vừa rồi. Các phím lọc ảnh của bản xem trước cũng dùng được: **0**–**5** chấm sao, **P** / **X** / **U** gắn cờ, **[** / **]** xoay một phần tư.
 6. Thanh phía trên ảnh cho biết bạn đang ở ảnh nào, đã giữ và đã bỏ bao nhiêu.
-7. Ở bảng bên phải, chọn **In ảnh** hoặc **Mạng xã hội**, **khổ in**, **viền 3 mm** và **dấu ngày** cùng cỡ chữ, rồi **Chọn nơi lưu…** và **Xuất**: app lưu những ảnh bạn đã giữ.
+7. Ở bảng bên phải, chọn **In ảnh** hoặc **Mạng xã hội**, **khổ in**, **viền 3 mm** và **dấu ngày** (định dạng, góc, màu, cỡ, địa điểm và dòng chữ riêng, như ở Chuyên nghiệp), rồi **Chọn nơi lưu…** và **Xuất**: app lưu những ảnh bạn đã giữ.
 
 <!-- shot: simple | Chế độ Đơn giản: ảnh đúng như khi in, nút Giữ và Bỏ, và Xuất những ảnh đã giữ -->
 
@@ -406,7 +406,7 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 
 <!-- shot: manual-collage-preview | Bản xem trước một tấm: tấm cỡ lớn, hai ảnh của nó, thẻ Hai ảnh mỗi tấm và Xuất tấm này -->
 
-Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên từng ảnh; khung thông tin không dùng trên tấm ghép.
+Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên từng ảnh, kèm địa điểm và dòng chữ riêng nếu bạn chọn; khung thông tin không dùng trên tấm ghép.
 
 <!-- chapter: shortcuts -->
 

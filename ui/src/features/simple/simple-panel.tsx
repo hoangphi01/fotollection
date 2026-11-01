@@ -30,7 +30,7 @@ const BASKET: CullFilter = { ...ALL_PHOTOS, queue: 'print' }
 
 /**
  * Simple mode's few choices (FR-048): prints or a share size, the print size and the 3 mm
- * border, the date stamp and its size, and Export, with the same controls as Pro so both
+ * border, the date stamp, and Export, with the same controls as Pro so both
  * stay in step.
  */
 export function SimplePanel({ settings, onChange, exporter, basketCount, customStamps, revision }: SimplePanelProps) {
@@ -59,7 +59,7 @@ export function SimplePanel({ settings, onChange, exporter, basketCount, customS
           </>
         )}
       </SectionCard>
-      <DateStampCard settings={settings} onChange={onChange} fields="size" customStamps={customStamps} />
+      <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} />
       <p className="flex gap-1.5 px-1 text-xs text-muted-foreground">
         <ShoppingBasket className="mt-0.5 size-3.5 shrink-0 text-primary" />
         {t('simple.exportHint', { count: basketCount })}

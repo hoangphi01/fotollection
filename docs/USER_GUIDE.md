@@ -193,7 +193,7 @@ The preview is first shown at a light size that any computer draws quickly. When
 
 A date in the corner of the print, like a film camera's, taken from when the photo was shot ([FR-004](PRD.md#fr-004--date-stamp), [FR-033](PRD.md#fr-033--retro-film-date-stamp-and-stamp-presets)). It is on by default.
 
-1. In the **Date stamp** card, the switch turns it on or off for every photo.
+1. In the **Date stamp** card, the switch turns it on or off for every photo. The card is the same in Simple, Collage and Professional mode, with every choice below.
 2. Choose:
    - the **format**: `2026-07-14`, `14.07.2026` or `'26 07 14`, the film-camera style;
    - the **corner**: *Bottom right*, *Bottom left*, *Top right* or *Top left*;
@@ -373,7 +373,7 @@ The same popover shows the **cache**: the thumbnails and best-shot analyses Foto
 4. Press **↓** or click **Drop**: the photo is set aside, never deleted, and the next one comes.
 5. **← →** step back and forward without deciding. **Cmd/Ctrl+Z** undoes the last keep or drop. The culling keys of the preview work too: **0**–**5** stars, **P** / **X** / **U** flags, **[** / **]** quarter turns.
 6. The bar above the photo counts where you are, and how many you kept and dropped.
-7. In the panel on the right, choose **Print** or **Share online**, the **print size**, the **3 mm border** and the **date stamp** with its size, then **Choose destination…** and **Export**: it saves the photos you kept.
+7. In the panel on the right, choose **Print** or **Share online**, the **print size**, the **3 mm border** and the **date stamp** (format, corner, colour, size, place and your own line, as in Pro), then **Choose destination…** and **Export**: it saves the photos you kept.
 
 <!-- shot: simple | Simple mode: the photo as it will print, Keep and Drop, and Export of the kept photos -->
 
@@ -408,7 +408,7 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
 
 <!-- shot: manual-collage-preview | A sheet’s preview: the sheet large, its two photos, the Two photos per sheet card and Export this sheet -->
 
-Every change is one undo step. The date stamp prints on each photo; the info frame is not used on sheets.
+Every change is one undo step. The date stamp prints on each photo, with its place and your own line if you chose them; the info frame is not used on sheets.
 
 <!-- chapter: shortcuts -->
 

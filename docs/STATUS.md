@@ -11,6 +11,7 @@
 
 **Bugs the owner reports while trying v0.9.0** (newest first; each fix in the commit that names it):
 
+- 2026-11-01 ✓ Simple and Collage now have Pro's whole date stamp card: format, corner, colour, size, place and the caption line. One `DateStampCard` holds them all, so the three modes cannot drift apart. The Simple panel screenshot is to retake before the release.
 - 2026-11-01 ✓ After dragging a photo to another sheet, the sheet's loading spinner sat in a corner: it was centred in the image, which has no size until it loads; it is now centred in the tile.
 - 2026-11-01 ✓ With a sheet's preview open, switching the mode (Cmd/Ctrl+1/2/3, the View menu) did nothing: the audit had held the switch for any open dialog. Now only a crop being edited holds it; a preview closes and the mode changes. The switches inside the preview (fill, cut line, ratio, border) were checked to ask for a new render, and Rust renders each differently (2026-11-01); if a preview ever stays unchanged, note the steps.
 - 2026-11-01 ✓ A switch in the Collage panel took about 5 s to show: every sheet of the grid decoded its two photos again (the preview source cache holds 8 photos, the grid shows 20). The grid now renders from the photos' thumbnails, 4,088 → 29 ms for ten sheets (OPTIMIZATION §5); the sheet preview shows a spinner while it renders again.
