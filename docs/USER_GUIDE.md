@@ -23,7 +23,7 @@ Fotollection works on the folders of photos you already have. It reads them wher
 
 <!-- shot: grid | The library, culled with stars and picks -->
 
-**Three modes:** the buttons at the top of the sidebar switch between **Simple** (one photo at a time, ↑ keep, ↓ drop, then export: chapter 18), **Collage** (two photos on one print: chapter 19) and **Pro**, the app this guide describes. Your photos, basket and settings are the same in every mode, and the mode is remembered on this computer. **Cmd/Ctrl+1**, **2** and **3** switch between them ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
+**Three modes:** the buttons at the top of the sidebar switch between **Simple** (one photo at a time, ↑ keep, ↓ drop, then export: chapter 18), **Collage** (two photos on one print: chapter 19) and **Pro**, the app this guide describes. Your photos, basket and settings are the same in every mode, and the mode is remembered on this computer. **Cmd/Ctrl+1**, **2** and **3** switch between them, also from a preview, which closes (not while a crop is being edited) ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
 
 **Language and look:** choose *English* or *Tiếng Việt* in the **Language** card at the top of the panel. The three buttons at the foot of the sidebar set the look: **Follow the system**, **Light** or **Dark** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
 

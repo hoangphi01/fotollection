@@ -68,6 +68,11 @@ export function SheetTile({
       )}
       style={{ width: size, height: size }}
     >
+      {/* Centred in the tile, not in the image, which has no size until it loads (a sheet
+          made new by a reorder). */}
+      {!shape.loaded && (
+        <LoaderCircle className="absolute inset-0 m-auto size-5 animate-spin text-muted-foreground" />
+      )}
       <div className="relative">
         <img
           src={src}
@@ -77,9 +82,6 @@ export function SheetTile({
           className="block rounded-sm object-contain shadow-md"
           style={{ maxWidth: size - 16, maxHeight: size - 16 }}
         />
-        {!shape.loaded && (
-          <LoaderCircle className="absolute inset-0 m-auto size-5 animate-spin text-muted-foreground" />
-        )}
         <SheetCellsOverlay sheet={sheet} sideBySide={shape.sideBySide}>
           {(photo, cell) => (
             <div

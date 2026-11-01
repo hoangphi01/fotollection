@@ -163,6 +163,7 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
     // oxlint-disable-next-line jsx-a11y/no-static-element-interactions -- keyboard handled, focusable
     <div
       ref={rootRef}
+      data-crop-editor
       className="flex size-full flex-col gap-3 outline-none"
       tabIndex={0}
       onKeyDown={onKeyDown}

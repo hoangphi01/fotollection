@@ -11,8 +11,11 @@ const FROM_MENU: Partial<Record<Action, AppMode>> = {
 }
 const FROM_KEY: Record<string, AppMode> = { '1': 'simple', '2': 'collage', '3': 'professional' }
 
-/** An open dialog (the preview, a crop) keeps its work: the mode changes once it closes. */
-const busy = () => document.querySelector('[role="dialog"]') !== null
+/**
+ * A crop being edited keeps its work: the mode changes once it is done. Any other dialog
+ * (a photo's or a sheet's preview) closes as the mode changes, as App does on a new mode.
+ */
+const busy = () => document.querySelector('[data-crop-editor]') !== null
 
 /** Cmd/Ctrl+1, 2, 3 switch to Simple, Collage and Pro (FR-048): the View menu on macOS. */
 export function useModeShortcuts(setMode: (mode: AppMode) => void) {
