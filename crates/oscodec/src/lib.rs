@@ -102,6 +102,8 @@ pub enum OsCodecError {
     Decode(String),
 }
 
+// Used by the macOS and Windows codecs; Linux has none yet (ADR-0034), only the tests.
+#[cfg_attr(not(any(target_os = "macos", target_os = "windows")), allow(dead_code))]
 fn check(width: usize, height: usize, limits: Limits) -> Result<(u32, u32), OsCodecError> {
     let (Ok(w), Ok(h)) = (u32::try_from(width), u32::try_from(height)) else {
         return Err(OsCodecError::TooLarge(u32::MAX, u32::MAX));
