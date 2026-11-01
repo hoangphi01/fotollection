@@ -26,6 +26,11 @@ export const commands = {
 	checkForUpdate: () => typedError<UpdateCheck, IpcError>(__TAURI_INVOKE("check_for_update")),
 	/**  Opens the installer found by the last check in the browser. */
 	openUpdateDownload: () => typedError<null, IpcError>(__TAURI_INVOKE("open_update_download")),
+	/**
+	 *  Opens the project's issue page in the browser (FR-069). The address is fixed here, so the
+	 *  webview cannot open any other; the app itself sends nothing.
+	 */
+	openIssuePage: () => typedError<null, IpcError>(__TAURI_INVOKE("open_issue_page")),
 	/**  How much the cache holds; about 0.2 s for 70,000 files (OPTIMIZATION.md §5). */
 	cacheUsage: () => __TAURI_INVOKE<CacheUsage>("cache_usage"),
 	/**  *Clear cache*: deletes every thumbnail and analysis; returns what is left (nothing). */
@@ -56,17 +61,18 @@ export const commands = {
 	/**
 	 *  Starts exporting the photos kept by `filter` to the chosen destination
 	 *  (FR-008, FR-009, FR-011, FR-022), or only the photo `only` when it is set: the one open
-	 *  in the preview (FR-055). With `separate`, each source folder goes into its own subfolder
+	 *  in the preview (FR-055), or only the photos `ticked` in select mode when there are some
+	 *  (FR-050). With `separate`, each source folder goes into its own subfolder
 	 *  of the destination (FR-056). With `sheets`, the photos go out two to a print, as the
 	 *  Collage mode shows them (FR-035).
 	 *  Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
 	 */
-	startExport: (filter: CullFilter, only: number | null, separate: boolean, sheets: boolean) => typedError<number, IpcError>(__TAURI_INVOKE("start_export", { filter, only, separate, sheets })),
+	startExport: (filter: CullFilter, only: number | null, ticked: PhotoId[], separate: boolean, sheets: boolean) => typedError<number, IpcError>(__TAURI_INVOKE("start_export", { filter, only, ticked, separate, sheets })),
 	/**
 	 *  What the export will weigh, before it runs (FR-053): the originals' total and an estimate
 	 *  from a few photos encoded in memory with the current settings. Nothing is written.
 	 */
-	estimateExport: (filter: CullFilter, only: number | null, sheets: boolean) => typedError<ExportEstimate, IpcError>(__TAURI_INVOKE("estimate_export", { filter, only, sheets })),
+	estimateExport: (filter: CullFilter, only: number | null, ticked: PhotoId[], sheets: boolean) => typedError<ExportEstimate, IpcError>(__TAURI_INVOKE("estimate_export", { filter, only, ticked, sheets })),
 	cancelJob: (jobId: number) => typedError<null, IpcError>(__TAURI_INVOKE("cancel_job", { jobId })),
 	/**  Details for the preview inspector (FR-002, FR-007, FR-026). Reads only the JPEG header. */
 	photoDetails: (id: PhotoId) => typedError<PhotoDetails, IpcError>(__TAURI_INVOKE("photo_details", { id })),

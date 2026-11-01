@@ -18,7 +18,7 @@ use fotollection_core::codec::image_dimensions;
 use fotollection_core::export::{EXPORT_QUALITY, ExportOptions, default_inflight, run_export};
 use fotollection_core::frame::{CameraProfile, FrameSettings, LogoKind};
 use fotollection_core::import::{self, ImportedFile};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use fotollection_core::library::{
     CameraClock, ClockError, CullFilter, Flag, PhotoEdits, PhotoId, PhotoRecord, PhotoSummary,
@@ -625,7 +625,8 @@ pub async fn pick_export_folder(app: AppHandle) -> Result<Option<String>, IpcErr
 
 /// Starts exporting the photos kept by `filter` to the chosen destination
 /// (FR-008, FR-009, FR-011, FR-022), or only the photo `only` when it is set: the one open
-/// in the preview (FR-055). With `separate`, each source folder goes into its own subfolder
+/// in the preview (FR-055), or only the photos `ticked` in select mode when there are some
+/// (FR-050). With `separate`, each source folder goes into its own subfolder
 /// of the destination (FR-056). With `sheets`, the photos go out two to a print, as the
 /// Collage mode shows them (FR-035).
 /// Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
@@ -636,9 +637,11 @@ pub fn start_export(
     state: State<'_, AppState>,
     filter: CullFilter,
     only: Option<PhotoId>,
+    ticked: Vec<PhotoId>,
     separate: bool,
     sheets: bool,
 ) -> Result<u32, IpcError> {
+    check_ticked(&ticked)?;
     let destination = state
         .export_destination
         .lock()
@@ -655,7 +658,7 @@ pub fn start_export(
         } else {
             HashMap::new()
         };
-        let (records, pairs) = export_scope(&library, &filter, only, sheets);
+        let (records, pairs) = export_scope(&library, &filter, only, &ticked, sheets);
         (records, pairs, groups)
     };
     if records.is_empty() || (sheets && pairs.is_empty()) {
@@ -743,28 +746,58 @@ pub fn start_export(
     Ok(job_id)
 }
 
-/// The photos an export covers: only the photo `only` (the preview; an unknown id exports
-/// nothing), or exactly the photos the grid shows (FR-022).
+/// The photos an export covers: only the photo `only` (the preview), else the photos ticked
+/// in select mode, once each and in the order given (FR-050), else exactly the photos the
+/// grid shows (FR-022). Unknown ids export nothing.
+fn export_ids(
+    only: Option<PhotoId>,
+    ticked: &[PhotoId],
+    shown: impl FnOnce() -> Vec<PhotoId>,
+) -> Vec<PhotoId> {
+    if let Some(id) = only {
+        return vec![id];
+    }
+    if ticked.is_empty() {
+        return shown();
+    }
+    let mut seen = HashSet::new();
+    ticked
+        .iter()
+        .copied()
+        .filter(|id| seen.insert(*id))
+        .collect()
+}
+
+/// Ticks are bounded like any other selection (SECURITY.md §2).
+fn check_ticked(ticked: &[PhotoId]) -> Result<(), IpcError> {
+    if ticked.len() > MAX_EDIT_IDS {
+        return Err(IpcError::new(
+            "photo.invalid_selection",
+            "Select between 1 and 10,000 photos",
+        ));
+    }
+    Ok(())
+}
+
 fn export_records(
     library: &fotollection_core::library::Library,
     filter: &CullFilter,
     only: Option<PhotoId>,
+    ticked: &[PhotoId],
 ) -> Vec<fotollection_core::library::PhotoRecord> {
-    match only {
-        Some(id) => library.record(id).into_iter().collect(),
-        None => library
-            .filtered_ids(filter)
-            .into_iter()
-            .filter_map(|id| library.record(id))
-            .collect(),
-    }
+    export_ids(only, ticked, || library.filtered_ids(filter))
+        .into_iter()
+        .filter_map(|id| library.record(id))
+        .collect()
 }
 
 /// What an export covers: its photos and, with `sheets`, their collage sheets (FR-035).
+/// Sheets follow the view: ticks choose photos, not sheets.
 fn export_scope(
     library: &fotollection_core::library::Library,
     filter: &CullFilter,
     only: Option<PhotoId>,
+    ticked: &[PhotoId],
     sheets: bool,
 ) -> (
     Vec<fotollection_core::library::PhotoRecord>,
@@ -775,7 +808,8 @@ fn export_scope(
     } else {
         Vec::new()
     };
-    (export_records(library, filter, only), pairs)
+    let ticked = if sheets { &[][..] } else { ticked };
+    (export_records(library, filter, only, ticked), pairs)
 }
 
 /// The collage sheets of the photos `filter` keeps, in order, or only the sheet holding the
@@ -804,8 +838,10 @@ pub async fn estimate_export(
     app: AppHandle,
     filter: CullFilter,
     only: Option<PhotoId>,
+    ticked: Vec<PhotoId>,
     sheets: bool,
 ) -> Result<fotollection_core::export::ExportEstimate, IpcError> {
+    check_ticked(&ticked)?;
     tauri::async_runtime::spawn_blocking(move || {
         let state = app.state::<AppState>();
         let (records, pairs) = {
@@ -813,7 +849,7 @@ pub async fn estimate_export(
                 .library
                 .read()
                 .map_err(|e| IpcError::internal(e.to_string()))?;
-            export_scope(&library, &filter, only, sheets)
+            export_scope(&library, &filter, only, &ticked, sheets)
         };
         let settings = state
             .settings
@@ -2013,4 +2049,27 @@ pub fn remove_font(app: AppHandle, state: State<'_, AppState>, id: u32) -> Resul
     state.persist();
     changed(&app, &state);
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn fr_050_ticked_photos_are_exported_instead_of_the_view() {
+        let shown = || vec![PhotoId(1), PhotoId(2), PhotoId(3), PhotoId(4)];
+        assert_eq!(export_ids(None, &[], shown), shown());
+        assert_eq!(
+            export_ids(None, &[PhotoId(3), PhotoId(1), PhotoId(3)], shown),
+            vec![PhotoId(3), PhotoId(1)]
+        );
+        // A tick in another folder tab counts too (FR-056).
+        assert_eq!(export_ids(None, &[PhotoId(9)], shown), vec![PhotoId(9)]);
+        // The preview's own photo wins over the ticks (FR-055).
+        assert_eq!(
+            export_ids(Some(PhotoId(2)), &[PhotoId(3)], shown),
+            vec![PhotoId(2)]
+        );
+        assert!(check_ticked(&vec![PhotoId(1); MAX_EDIT_IDS + 1]).is_err());
+    }
 }

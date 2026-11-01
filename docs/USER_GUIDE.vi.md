@@ -102,6 +102,7 @@ Khi bạn mở bản xem trước từ *Giỏ in* hoặc *Để riêng*, ↑ và
    - **Giỏ in**: cho chúng vào giỏ.
    - **Để riêng**: đưa chúng ra khỏi gallery.
    - **Trả về gallery**: chỉ có trong *Giỏ in* và *Để riêng*; đưa chúng trở lại.
+   - **Xuất ảnh**: khi đang có ảnh được tích, nút xuất ở chân bảng ghi *Xuất 3 ảnh đã chọn* và chỉ xuất những ảnh đó; bỏ tích hết thì nút lại xuất cả khung đang xem.
    - **Bỏ chọn**: bỏ tích tất cả.
 4. Nhấp **Xong**, hoặc nhấn **Esc**, để rời chế độ Chọn. Dấu tích chỉ là tạm thời: điều quyết định là mỗi ảnh đang ở khu vực nào.
 
@@ -128,7 +129,7 @@ Ngoài chế độ Chọn, Space vẫn mở bản xem trước thường.
 
 - Nhấp **Giỏ in** hoặc **Để riêng** ở thanh bên để chỉ xem những ảnh đó. Đổi ý bằng ↑ ↓ trong bản xem trước, hoặc bằng chế độ Chọn và **Trả về gallery**.
 - Nhấp **Tất cả ảnh**, hoặc một thư mục, để về gallery.
-- **Xuất ảnh theo đúng chỗ bạn đang xem** (chương 12). Từ *Giỏ in*, *Xuất ảnh* ghi đúng những tấm trong giỏ, với ước tính dung lượng ngay trên nút ([FR-053](PRD.md#fr-053--export-for-social-media)). Từ *Tất cả ảnh* hay một thư mục, ảnh để riêng không bao giờ được xuất.
+- **Xuất ảnh theo đúng chỗ bạn đang xem** (chương 12), trừ khi đang có ảnh được tích: khi đó chỉ những ảnh đó được xuất (§4.2). Từ *Giỏ in*, *Xuất ảnh* ghi đúng những tấm trong giỏ, với ước tính dung lượng ngay trên nút ([FR-053](PRD.md#fr-053--export-for-social-media)). Từ *Tất cả ảnh* hay một thư mục, ảnh để riêng không bao giờ được xuất.
 
 <!-- shot: estimate | Ô ước tính dung lượng ngay trên nút xuất ảnh, khi xuất cho Facebook -->
 
@@ -361,6 +362,8 @@ Fotollection không bao giờ tự lên mạng ([FR-021](PRD.md#fr-021--manual-u
    - **Linux `.deb`:** nút này mở trang phát hành; tải `.deb` mới rồi chạy `sudo apt install ./Fotollection_*_amd64.deb` (`_arm64.deb` trên ARM).
 
 Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đẹp nhất mà Fotollection giữ để mở thư mục nhanh, kèm dung lượng so với giới hạn 2 GB. Vượt giới hạn, các mục cũ nhất tự bị xoá. **Xoá cache** làm trống nó bất kỳ lúc nào; không mất gì của bạn, và ảnh nhỏ sẽ được tạo lại khi bạn duyệt.
+
+**Gặp lỗi, hay có ý tưởng?** Nút đỏ **Báo lỗi** cạnh số phiên bản mở trang báo lỗi và góp ý của dự án trên GitHub, trong trình duyệt ([FR-069](PRD.md#fr-069--report-a-problem)). Hãy ghi bạn đã làm gì, thấy gì, phiên bản và hệ điều hành.
 
 <!-- chapter: simple -->
 

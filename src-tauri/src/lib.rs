@@ -38,6 +38,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             document::document_requested,
             updates::check_for_update,
             updates::open_update_download,
+            updates::open_issue_page,
             cache::cache_usage,
             cache::clear_cache,
             commands::list_print_sizes,

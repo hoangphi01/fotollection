@@ -221,6 +221,8 @@
           </a>
           <p class="muted">{{ t.footer_tagline }}</p>
           <p class="muted footer-made">{{ t.footer_made }}</p>
+          {%- comment -%} Straight to the issue forms, bug or idea (FR-069), as the app's own button. {%- endcomment %}
+          <p class="footer-report"><a class="button report" href="{{ site.repo_url }}/issues/new/choose">{% include icons/message-square-warning.svg %}{{ t.footer_report }}</a></p>
           {%- if site.data.visits %}
           {%- comment -%} Written at build time by scripts/ga-visits.mjs; absent without the GA secrets. {%- endcomment %}
           <p class="footer-visits"><span class="pill" title="{{ t.footer_visits_hint }}">{% include icons/eye.svg %}<span>{{ t.footer_visits }}</span><span class="star-count">{{ site.data.visits[page.lang] }}</span></span></p>

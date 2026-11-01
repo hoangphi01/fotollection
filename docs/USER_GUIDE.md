@@ -105,6 +105,7 @@ When you open the preview from the *Print basket* or *Set aside* view, ↑ and �
    - **Set aside**: take them out of the gallery.
    - **Back to the gallery**: only in the *Print basket* and *Set aside* views; brings them back.
    - **Clear**: untick everything.
+   - **Export**: while photos are ticked, the export button at the foot of the panel says *Export 3 selected photos* and writes only those; untick them all and it exports the whole view again.
 4. Click **Done**, or press **Esc**, to leave select mode. Ticks are temporary: what counts is the area each photo is in.
 
 <!-- shot: select | Select mode: ticked photos, the print basket and the set-aside pile -->
@@ -130,7 +131,7 @@ Outside select mode, Space keeps opening the normal preview.
 
 - Click **Print basket** or **Set aside** in the sidebar to see only those photos. Change your mind with ↑ ↓ in the preview, or with select mode and **Back to the gallery**.
 - Click **All photos**, or a folder, to return to the gallery.
-- **Export follows the view** (chapter 12). From *Print basket*, *Export* writes exactly the basket, with the size estimate above the button ([FR-053](PRD.md#fr-053--export-for-social-media)). From *All photos* or a folder, photos set aside are never exported.
+- **Export follows the view** (chapter 12), unless photos are ticked: then only they go out (§4.2). From *Print basket*, *Export* writes exactly the basket, with the size estimate above the button ([FR-053](PRD.md#fr-053--export-for-social-media)). From *All photos* or a folder, photos set aside are never exported.
 
 <!-- shot: estimate | The size estimate above the export button, sharing for Facebook -->
 
@@ -363,6 +364,8 @@ Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates
    - **Linux `.deb`:** the button opens the release page; download the new `.deb` and run `sudo apt install ./Fotollection_*_amd64.deb` (`_arm64.deb` on ARM).
 
 The same popover shows the **cache**: the thumbnails and best-shot analyses Fotollection keeps so folders open fast, with its size against its 2 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
+
+**Something wrong, or an idea?** The red **Report** button next to the version opens the project's page for problems and ideas on GitHub, in your browser ([FR-069](PRD.md#fr-069--report-a-problem)). Say what you did, what you saw, and your version and system.
 
 <!-- chapter: simple -->
 

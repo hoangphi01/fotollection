@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Export with ticked photos:** while photos are ticked in select mode, the export button says *Export 3 selected photos* and writes only those, instead of every photo shown (user feedback).
 - **3 mm border:** photos exported for social media no longer get it; Pro's photo preview shows the switch again; the size badges and the DPI follow the photo inside the border; dragging the photo in the preview keeps pace with the pointer.
 - **Collage:** cropping a photo on a sheet no longer changes its print crop (sheets have a crop of their own); reordering in one folder keeps the others' order; a sheet's quality counts the photo's crop and straightening.
 - **Modes:** Pro's star and flag filters no longer hide photos in Simple and Collage; select mode, Quick-preview and an open preview no longer carry over to another mode; Cmd/Ctrl+1/2/3 work from a preview (it closes) and wait only while a crop is being edited; "Open with" switches to Pro, where the preview is.
@@ -38,6 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Report a problem:** a red *Report* button next to the version, in every mode, opens the project's GitHub page for problems and ideas; the website's footer has one too.
 - **Website:** a Download page (fotollection.org/download) with the three download buttons under its title, every installer, the first-launch steps, the Linux commands with a Copy button, the table of features by system, what is new in the released versions (no longer the unreleased one) and which Linux distributions run it; the home page keeps only its download buttons, and the Download button at the top leads there.
 - **Website:** "Quality" moves from the top bar to the footer, to make room for "Manual".
 - **Website:** a "Sponsor on GitHub" button in "Buy me a coffee", so you can support from any country by card, monthly or once.

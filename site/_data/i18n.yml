@@ -358,6 +358,7 @@ en:
   updates: There is no auto-update, so the app never goes online. New versions are announced here and on GitHub.
   footer_tagline: Photos ready to print, fully offline.
   footer_made: Made by a user, for users. Only someone who looks through their own photos every day knows what an ordinary person needs from a photo viewer.
+  footer_report: Report a problem or suggest an idea
   footer_license: GPL-3.0 licence
   footer_changelog: What's new
   footer_source: Source code
@@ -726,6 +727,7 @@ vi:
   updates: Ứng dụng không tự cập nhật, nên không bao giờ tự lên mạng. Phiên bản mới được thông báo ở đây và trên GitHub.
   footer_tagline: Ảnh sẵn sàng để in, không cần internet.
   footer_made: Làm bởi người dùng, cho người dùng. Chỉ người ngày nào cũng xem ảnh của chính mình mới biết người dùng bình thường cần gì từ một trình xem ảnh.
+  footer_report: Báo lỗi / góp ý
   footer_license: Giấy phép GPL-3.0
   footer_changelog: Có gì mới
   footer_source: Mã nguồn

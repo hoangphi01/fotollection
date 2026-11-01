@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import type { CullFilter } from '@/ipc/bindings'
+import type { CullFilter, PhotoId } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { formatBytes } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -26,7 +26,11 @@ type ExportSectionProps = {
   revision: number
   /** Collage sheets the photos make, when they go out two to a print (FR-035). */
   sheets?: number
+  /** Photos ticked in select mode: when there are some, only they go out (FR-050). */
+  ticked?: readonly PhotoId[]
 }
+
+const NO_TICKS: readonly PhotoId[] = []
 
 function folderName(path: string): string {
   return path.split(/[\\/]/).filter(Boolean).pop() ?? path
@@ -41,20 +45,24 @@ export function ExportSection({
   folderCount = 1,
   revision,
   sheets,
+  ticked = NO_TICKS,
 }: ExportSectionProps) {
   const { t } = useTranslation()
   const { state, destination, chooseDestination, exportPhotos, cancel, dismiss } = exporter
   const single = only !== undefined
   const [separate, setSeparate] = useState(false)
   const collage = sheets !== undefined
+  const picked = single || collage ? NO_TICKS : ticked
+  const count = picked.length > 0 ? picked.length : photoCount
   const canSplit = !single && !collage && folderCount > 1
   const running = state.kind === 'running'
   const { estimate, stale } = useExportEstimate(
     filter,
     only ?? null,
     revision,
-    !running && (single || photoCount > 0),
+    !running && (single || count > 0),
     collage,
+    picked,
   )
 
   return (
@@ -166,7 +174,7 @@ export function ExportSection({
           before
           stale={stale}
         />
-      ) : !running && !estimate && photoCount > 0 ? (
+      ) : !running && !estimate && count > 0 ? (
         // The figure's room, kept while the first estimate is computed, so the footer never grows.
         <p className="h-6" aria-hidden />
       ) : null}
@@ -179,9 +187,9 @@ export function ExportSection({
       ) : (
         <Button
           className="w-full"
-          disabled={!single && photoCount === 0}
+          disabled={!single && count === 0}
           onClick={() =>
-            void exportPhotos(filter, sheets ?? photoCount, only ?? null, canSplit && separate, collage)
+            void exportPhotos(filter, sheets ?? count, only ?? null, canSplit && separate, collage, picked)
           }
         >
           <Download data-icon="inline-start" />
@@ -189,12 +197,14 @@ export function ExportSection({
             ? t(collage ? 'export.buttonThisSheet' : 'export.buttonThis')
             : sheets !== undefined && sheets > 0
               ? t('export.buttonSheets', { count: sheets })
+              : picked.length > 0
+              ? t('export.buttonTicked', { count })
               : photoCount > 0
               ? t('export.buttonCount', { count: photoCount })
               : t('export.button')}
         </Button>
       )}
-      {!single && (filter.flag !== 'all' || filter.minRating > 0) && !running && (
+      {!single && picked.length === 0 && (filter.flag !== 'all' || filter.minRating > 0) && !running && (
         <p className="text-xs text-muted-foreground">{t('export.filteredHint')}</p>
       )}
     </div>

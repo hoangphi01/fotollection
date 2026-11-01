@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Crop, ShoppingBasket } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { PanelFooter } from '@/features/about/panel-footer'
 import { Label } from '@/components/ui/label'
 import { SectionCard } from '@/components/layout/section-card'
 import { SidePanel } from '@/components/layout/side-panel'
@@ -40,7 +41,12 @@ export function SimplePanel({ settings, onChange, exporter, basketCount, customS
   return (
     <SidePanel
       title={t('simple.title')}
-      footer={<ExportSection exporter={exporter} photoCount={basketCount} filter={BASKET} revision={revision} />}
+      footer={
+        <>
+          <ExportSection exporter={exporter} photoCount={basketCount} filter={BASKET} revision={revision} />
+          <PanelFooter />
+        </>
+      }
     >
       <SectionCard
         icon={<Crop />}

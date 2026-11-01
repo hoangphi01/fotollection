@@ -59,11 +59,17 @@ export function useSelectMode(photos: readonly { id: PhotoId }[], isBlocked: () 
     return () => window.removeEventListener('keydown', onEscape)
   }, [active])
 
+  /** The ticks in the order the gallery shows them, then those in other folder tabs (FR-056). */
+  const shown = photos.filter((p) => checked.has(p.id)).map((p) => p.id)
+  const inView = new Set(shown)
+  const ordered = [...shown, ...[...checked].filter((id) => !inView.has(id))]
+
   return {
     active,
     start: () => setActive(true),
     leave,
     checked,
+    ordered,
     anchor,
     toggle,
     toggleId,

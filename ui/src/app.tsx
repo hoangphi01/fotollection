@@ -468,6 +468,7 @@ export function App() {
         filter={filter}
         photo={photos[current]}
         revision={revision}
+        ticked={selectMode ? select.ordered : undefined}
       />
       )}
       </div>

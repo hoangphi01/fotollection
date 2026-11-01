@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Crop, Languages } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { PanelFooter } from '@/features/about/panel-footer'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -22,6 +23,7 @@ import {
   commands,
   type CullFilter,
   type Language,
+  type PhotoId,
   type PhotoSummary,
   type RenderSettings,
 } from '@/ipc/bindings'
@@ -30,7 +32,6 @@ import { PrintAdviceNote } from '@/features/print-advice/print-advice-note'
 import { FitSizeNote } from '@/features/frame/fit-size-note'
 import { BorderSwitch } from './border-switch'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
-import { VersionHistory } from '@/features/about/version-history'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { LANGUAGES } from '@/i18n'
 import { PrintSizePicker } from './print-size-picker'
@@ -53,6 +54,8 @@ type SettingsPanelProps = {
   photo?: PhotoSummary
   /** Settings revision, so size notes follow every change. */
   revision: number
+  /** Photos ticked in select mode, exported instead of the whole view (FR-050). */
+  ticked?: readonly PhotoId[]
 }
 
 
@@ -71,11 +74,11 @@ export function SettingsPanel({
   filter,
   photo,
   revision,
+  ticked,
 }: SettingsPanelProps) {
   const { t } = useTranslation()
   const { language, change: changeLanguage } = useLanguage()
   const printSizes = useIpcQuery(commands.listPrintSizes)
-  const appInfo = useIpcQuery(commands.appInfo)
   const advice = usePrintAdvice(photo?.id, settings)
 
   return (
@@ -83,11 +86,8 @@ export function SettingsPanel({
       title={t('settings.title')}
       footer={
         <>
-          <ExportSection exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} revision={revision} />
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{t('settings.footer')}</span>
-            {appInfo && <VersionHistory version={appInfo.appVersion} />}
-          </div>
+          <ExportSection exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} revision={revision} ticked={ticked} />
+          <PanelFooter />
         </>
       }
     >

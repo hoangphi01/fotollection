@@ -408,6 +408,10 @@ h2 .fn-ref { font-size: 0.4em; }
 .footer-row p { margin-top: 8px; }
 .footer-made { max-width: 46ch; font-size: 0.9rem; }
 .footer-visits { margin-top: 14px; }
+/* Report a problem (FR-069): filled red, white text (5.6:1), the same in both themes. */
+.footer-report { margin-top: 16px; }
+.button.report { flex: 0 0 auto; height: 40px; background: #c62828; border-color: #c62828; color: #fff; }
+.button.report:hover { background: #c62828; filter: brightness(1.1); }
 .footer-visits .pill { cursor: default; }
 .footer-visits .pill:hover { border-color: var(--line); }
 .footer-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 24px; }

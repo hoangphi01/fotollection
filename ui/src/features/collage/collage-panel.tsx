@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useTranslation } from 'react-i18next'
+import { PanelFooter } from '@/features/about/panel-footer'
 import { SidePanel } from '@/components/layout/side-panel'
 import type { CellInfo, CullFilter, RenderSettings } from '@/ipc/bindings'
 import { ExportSection } from '@/features/export/export-section'
@@ -42,7 +43,12 @@ export function CollagePanel({
   return (
     <SidePanel
       title={t('collage.title')}
-      footer={<ExportSection exporter={exporter} photoCount={photoCount} filter={filter} revision={revision} sheets={sheetCount} />}
+      footer={
+        <>
+          <ExportSection exporter={exporter} photoCount={photoCount} filter={filter} revision={revision} sheets={sheetCount} />
+          <PanelFooter />
+        </>
+      }
     >
       <SheetSizeCard settings={settings} onChange={onChange} />
       <CollageCellsCard settings={settings} onChange={onChange} cell={cell} />
