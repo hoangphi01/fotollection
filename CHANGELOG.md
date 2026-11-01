@@ -38,7 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- **Website:** a Download page (fotollection.org/download) with every installer, the first-launch steps, the Linux commands with a Copy button, the table of features by system, what is new in the released versions (no longer the unreleased one) and which Linux distributions run it; the home page keeps only its download buttons, and the Download button at the top leads there.
+- **Website:** a Download page (fotollection.org/download) with the three download buttons under its title, every installer, the first-launch steps, the Linux commands with a Copy button, the table of features by system, what is new in the released versions (no longer the unreleased one) and which Linux distributions run it; the home page keeps only its download buttons, and the Download button at the top leads there.
 - **Website:** "Quality" moves from the top bar to the footer, to make room for "Manual".
 - **Website:** a "Sponsor on GitHub" button in "Buy me a coffee", so you can support from any country by card, monthly or once.
 

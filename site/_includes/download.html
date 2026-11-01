@@ -8,6 +8,7 @@
     <p class="kicker">{{ t.dl_kicker }}</p>
     <h1>{{ t.install_title }}</h1>
     <p class="lead narrow">{{ t.install_lead }}</p>
+    {% include download-buttons.html %}
     <p class="small muted">{% if release.tag_name %}{{ t.latest }}: <a href="{{ release.html_url }}">{{ release.tag_name }}</a> · {% else %}<a href="{{ site.repo_url }}/releases">{{ t.no_release }}</a> · {% endif %}{{ t.download_note }}</p>
   </div>
 </section>
@@ -60,12 +61,6 @@ sudo apt update && sudo apt install fotollection</code></pre>
       </div>
     </div>
     <p class="small muted">{{ t.checksums }} {{ t.updates }}</p>
-    <div class="cta">
-      <a class="button primary" href="{{ mac | default: releases }}">{% include icons/download.svg %}{{ t.download_mac }}</a>
-      <a class="button" href="{{ win | default: releases }}">{% include icons/download.svg %}{{ t.download_win }}</a>
-            {% include star.html %}
-    </div>
-
   </div>
 </section>
 
