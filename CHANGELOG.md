@@ -8,6 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: Fotollection for Linux, as an AppImage and a `.deb`, for x86_64 and ARM64
+- Linux has every photo feature except camera capture, and HEIC comes later
+
+### Added
+
+- **Linux (64-bit, glibc 2.35 or later):** an AppImage that runs on Ubuntu 22.04+, Debian 12+, Linux Mint 21+, Fedora 36+, Arch and others, and a `.deb` for Ubuntu, Debian and Mint that adds Fotollection to *Open With* for JPEG, PNG and camera RAW. Culling, best shot, print sizes, crop, the date stamp, the info frame, places, RAW and export all work as on macOS and Windows. Not on Linux yet: HEIC photos (they are skipped with a message saying so) and shooting with a camera over USB (no button). *Check for updates* in the AppImage downloads the new AppImage. On computers with Nvidia graphics, the app avoids WebKit's blank-window problem by itself.
+
 ## [0.8.1] - 2026-11-01 — Green photos fixed
 
 ### Highlights

@@ -333,10 +333,11 @@ All persisted data (project files, settings, presets, the thumbnail cache, built
 
 ## 8. Platform notes
 
-| | macOS | Windows |
-|---|---|---|
-| Webview | WKWebView (system) | WebView2 (evergreen, bootstrapped by installer) |
-| Native deps | None (ImageIO and Core Graphics are system frameworks) | None (WIC is part of Windows; HEIC needs the Store extensions) |
-| Target | `universal-apple-darwin` | `x86_64-pc-windows-msvc` |
+| | macOS | Windows | Linux ([ADR-0034](adr/0034-linux-lean.md)) |
+|---|---|---|---|
+| Webview | WKWebView (system) | WebView2 (evergreen, bootstrapped by installer) | WebKitGTK 4.1 (bundled in the AppImage, a dependency of the `.deb`); DMA-BUF renderer off with Nvidia's driver (`main.rs`) |
+| Native deps | None (ImageIO and Core Graphics are system frameworks) | None (WIC is part of Windows; HEIC needs the Store extensions) | GTK 3 and WebKitGTK; no OS codec (`oscodec` answers unsupported), no camera module |
+| Target | `universal-apple-darwin` | `x86_64-pc-windows-msvc` | `x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`, built on Ubuntu 22.04 (glibc 2.35) |
+| Packages | `.dmg` | `-setup.exe`, `.msi` | AppImage, `.deb` (`tauri.linux.conf.json`) |
 
 Release packaging and signing are described in [RELEASE.md](RELEASE.md).

@@ -35,6 +35,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0029](0029-raw-through-rawler-then-our-own-decoder.md) | Camera RAW through rawler (LGPL-2.1, the only LGPL dependency) behind a `RawDecoder` trait, finished to the camera's embedded JPEG; Windows first rawler, macOS first ImageIO; our own decoder replaces it format by format; `panic = "unwind"` | Accepted, supersedes 0023 in part | 2026-10-26 |
 | [0030](0030-our-own-raw-decoder.md) | Our own RAW decoder (`crates/rawcore`), clean room, one format at a time behind a quality gate; DNG colour model, then the camera's look learned from its embedded JPEG (lens shading, luminance curve, 3×3 matrix); DNG first | Accepted | 2026-10-27 |
 | [0033](0033-reference-jpeg-decoder.md) | A reference JPEG decoder behind the fast one: `zune-jpeg` decodes only the layouts a corpus test proves, read from the header first; every other layout, and any file zune refuses, goes to `jpeg-decoder`; a decoder fix salts the caches made from pixels | Accepted, amends 0012 | 2026-11-01 |
+| [0034](0034-linux-lean.md) | Linux, the lean build: every photo feature without camera capture or HEIC (later through the system's libheif, never a bundled HEVC decoder); AppImage and `.deb`, x86_64 and ARM64, glibc 2.35; smoke-tested in every release; a new platform may ship in a PATCH release | Accepted, amends 0021 and 0009 | 2026-11-01 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

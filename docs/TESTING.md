@@ -67,15 +67,16 @@ Any crash found by fuzzing is added to `fixtures` as a regression test.
 
 | Job | macOS (arm64) | Windows (x64) | Ubuntu |
 |-----|:---:|:---:|:---:|
-| fmt / clippy / unit / golden | ✓ | ✓ | ✓ |
-| Integration (small) | ✓ | ✓ | |
-| Build installer | ✓ | ✓ | |
+| fmt / clippy / unit / golden | ✓ | ✓ | ✓ (22.04, since v0.8.2) |
+| Integration (small) | ✓ | ✓ | ✓ |
+| Build installer | ✓ | ✓ | ✓ (release: x86_64 and ARM64) |
+| Installed-package smoke test (`.deb` file types, AppImage runs 20 s, also on Debian 12) | | | ✓ (release) |
 | Docs checks ([docs.yml](../.github/workflows/docs.yml)) | | | ✓ |
 | Fuzz, benchmarks (nightly) | ✓ | | ✓ |
 
 ## 7. Manual release checklist
 
-Before tagging a release, on both `REF-MAC` and `REF-WIN`:
+Before tagging a release, on both `REF-MAC` and `REF-WIN`. Linux has no reference machine yet: the release's smoke test stands in for it ([ADR-0034](adr/0034-linux-lean.md)), and a Linux user's report is welcome.
 
 1. Import the `bench` corpus. Thumbnails appear within budget.
 2. Export with each print size. Spot-check 10 outputs for rotation, stamp placement and colour.

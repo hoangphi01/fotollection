@@ -17,7 +17,7 @@ People shoot thousands of photos but print almost none. Preparing a print order 
 
 ## 2. Product vision
 
-**Fotollection is a fast, private, offline desktop app (macOS and Windows) that turns a folder of photos into a print-ready set.** It stamps date and location from EXIF, crops to standard EU print sizes, groups photos by trip, and keeps the original quality. Photos never leave the user's machine.
+**Fotollection is a fast, private, offline desktop app (macOS, Windows and Linux) that turns a folder of photos into a print-ready set.** It stamps date and location from EXIF, crops to standard EU print sizes, groups photos by trip, and keeps the original quality. Photos never leave the user's machine.
 
 It has two modes ([FR-048](#fr-048--normal-and-professional-modes)): **Normal**, for "pick, stamp, print" in a few clicks, and **Professional**, with every control described in this document.
 
@@ -100,7 +100,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 **P0.** Import photos from a folder picker (recursive), drag and drop of files and folders, or a file picker.
 
 - Accepts JPEG, HEIC/HEIF and PNG, detected by magic bytes rather than file extension.
-- HEIC/HEIF (iPhone) is decoded by the operating system ([ADR-0017](adr/0017-heic-through-os-codecs.md)): ImageIO on macOS, and WIC on Windows when the free *HEIF Image Extensions* and the *HEVC Video Extensions* from the Microsoft Store are installed. Without them, HEIC files are listed as skipped with a message that says what to install. EXIF (date, GPS, orientation) is read from the HEIC itself.
+- HEIC/HEIF (iPhone) is decoded by the operating system ([ADR-0017](adr/0017-heic-through-os-codecs.md)): ImageIO on macOS, and WIC on Windows when the free *HEIF Image Extensions* and the *HEVC Video Extensions* from the Microsoft Store are installed. Without them, HEIC files are listed as skipped with a message that says what to install. On Linux HEIC is not supported yet and is skipped with its own reason ([ADR-0034](adr/0034-linux-lean.md), [FR-068](#fr-068--heic-on-linux-through-the-systems-libheif)). EXIF (date, GPS, orientation) is read from the HEIC itself.
 - PNG photos and screenshots are converted to 8-bit RGB. 16-bit, greyscale and palette images are supported, and transparency is flattened onto white, as it would print. An embedded ICC profile is kept for export. A PNG without EXIF takes its date from the file's modification time and is marked as such.
 - Unsupported or invalid files are listed with a reason. They never abort the import.
 - Importing does not modify source files. The app opens sources read-only.
@@ -255,7 +255,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P2.** New versions are published on GitHub Releases and the website; people download and install them when they choose. There is **no in-app updater**, and the app never checks on its own: a newer version is looked for only when the user clicks *Check for updates* ([FR-061](#fr-061--check-for-updates), [NFR-006](#nfr-006--offline-and-zero-telemetry), [ADR-0025](adr/0025-update-check-on-click.md)).
 
-- **Installing over the old version replaces it** and keeps settings, profiles and projects: on macOS by dragging into Applications and choosing *Replace*; on Windows the `-setup.exe` uninstalls the old version first by default, and the MSI removes it through its pinned `UpgradeCode`. Use one Windows installer, preferably `-setup.exe`: mixing it with the MSI installs two copies.
+- **Installing over the old version replaces it** and keeps settings, profiles and projects: on macOS by dragging into Applications and choosing *Replace*; on Windows the `-setup.exe` uninstalls the old version first by default, and the MSI removes it through its pinned `UpgradeCode`. Use one Windows installer, preferably `-setup.exe`: mixing it with the MSI installs two copies. On Linux, a new AppImage replaces the old file, and a new `.deb` installs over the old one with `apt` ([ADR-0034](adr/0034-linux-lean.md)).
 
 - The app shows its version (for example `v0.1.0`) at the foot of the settings panel. Clicking it lists every release with two lines from its Highlights, read from the CHANGELOG bundled at build time (no network).
 - Installing over an older version keeps settings, camera profiles and projects; their files are migrated on first open ([DATABASE.md](DATABASE.md)).
@@ -594,7 +594,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P2 (v0.7.0, in progress).** Fotollection can replace a classic photo viewer (IrfanView, Photos): choosing it in the system's "Open with" menu for a JPEG, PNG, HEIC or camera RAW shows that photo straight away in the preview, and ← → browse the other photos of its folder ([ADR-0024](adr/0024-optional-photo-viewer.md)).
 
-- **Never the default viewer.** macOS lists Fotollection under "Open With" (rank `Alternate`); Windows lists it under each type's `OpenWithProgids`, written by the installer and removed on uninstall. Making it the default is the user's choice in the system's settings.
+- **Never the default viewer.** macOS lists Fotollection under "Open With" (rank `Alternate`); Windows lists it under each type's `OpenWithProgids`, written by the installer and removed on uninstall; on Linux the `.deb` lists it for JPEG, PNG and the RAW types in its desktop entry (no HEIC there yet). Making it the default is the user's choice in the system's settings.
 - **The photo's folder becomes a tab** in the current session, listed without its subfolders so a photo in Downloads opens fast; a photo already in the library opens in its existing tab. Basket, edits and export work as for any folder.
 - **One instance:** opening another photo while the app runs brings the running app forward with that photo.
 - Paths come from the operating system, not the webview, and are checked like imported files ([SECURITY.md](SECURITY.md)). A request that arrives during start-up waits for the last session to be restored and is never lost.
@@ -710,6 +710,10 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P2 (planned).** Photos without GPS get a place by interpolating their effective time along a GPX track the user opens (from a phone app or a watch), in the time zone set for the camera ([FR-030](#fr-030--camera-clock-offset)). Marked *borrowed* like [FR-031](#fr-031--borrow-gps-from-a-phone-or-gpx-track), reviewable and undoable. Split out of FR-031 for v0.8.0.
 
+### FR-068 — HEIC on Linux through the system's libheif
+
+**P2 (planned, after v0.9.0).** On Linux, HEIC photos open through the `libheif` that the user's distribution installs (`libheif1` on Ubuntu and Debian, `libheif` on Fedora and Arch), loaded at run time; Fotollection never bundles an HEVC decoder, because HEVC is covered by patent pools ([ADR-0034](adr/0034-linux-lean.md)). Without it, HEIC is skipped with the command to install it. Until then, HEIC on Linux is skipped as "not supported on Linux yet".
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
@@ -740,7 +744,7 @@ The app works with no network connection. By default it makes **zero** network r
 
 ### NFR-007 — Platforms
 
-The app supports macOS 11 or later (Apple Silicon and Intel, shipped as a universal binary) and Windows 10/11 x64.
+The app supports macOS 11 or later (Apple Silicon and Intel, shipped as a universal binary), Windows 10/11 x64, and, since v0.8.2, 64-bit Linux with glibc 2.35 or later on x86_64 and ARM64, as an AppImage and a `.deb` ([ADR-0034](adr/0034-linux-lean.md)). Linux is the lean build: no camera capture ([FR-063](#fr-063--tethered-capture-over-usb)) and no HEIC yet ([FR-068](#fr-068--heic-on-linux-through-the-systems-libheif)). Every release proves the Linux packages start, on Ubuntu 22.04 and Debian 12, since the owner has no Linux machine.
 
 ### NFR-008 — Install size
 

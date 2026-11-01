@@ -76,11 +76,11 @@ In the preview, the **zoom buttons** at the bottom right of the photo show the z
 
 The preview is first shown at a light size that any computer draws quickly. When you zoom past what it holds, a small spinner appears beside the zoom level, and a moment after you stop moving the part on screen is replaced by the **full-resolution** pixels, exactly as the exported file will have them. Only the visible part is loaded, so even a 32 MP photo stays light.
 
-## 3. Opening a photo from Finder or Explorer
+## 3. Opening a photo from Finder, Explorer or your file manager
 
 Fotollection can be the app that opens a photo you double-click ([FR-054](PRD.md#fr-054--open-photos-with-fotollection)). It never makes itself the default: you choose it.
 
-- **Once:** right-click a photo → **Open With** → **Fotollection** (macOS), or **Open with** → **Fotollection** (Windows).
+- **Once:** right-click a photo → **Open With** → **Fotollection** (macOS), or **Open with** → **Fotollection** (Windows). On Linux, with the `.deb` installed, right-click → **Open With** → **Fotollection** in Files, Dolphin or Nemo; the AppImage is not listed there unless a tool such as AppImageLauncher registers it.
 - **Always:** on a Mac, select a photo, press Cmd+I, choose Fotollection under *Open with* and click *Change All*. On Windows, choose **Open with** → **Choose another app**, pick Fotollection and tick *Always use this app*.
 
 The photo opens in the preview straight away. Its folder becomes a tab in the sidebar, with only that folder's photos (not its subfolders), so **← →** go through the folder. Everything works as in any tab: stars, the print basket, crops, export. Click **×** on the tab when you are done; the photos stay on your disk. Opening another photo while Fotollection is running brings the window forward with that photo.
@@ -92,6 +92,7 @@ Fotollection opens the RAW files of most cameras as they are, with no conversion
 - Open the folder as usual. Thumbnails and best-shot suggestions appear as fast as for JPEG, because they use the small preview every camera stores inside its RAW files.
 - The print preview develops the full photo the first time you open it, which takes about a second; changing a setting afterwards is instant. The export develops each RAW the same way.
 - Colours and sharpness are the operating system's neutral development, not a RAW editor's: Fotollection prepares prints, it does not replace Lightroom.
+- **On Linux**, RAW opens through the reader built into Fotollection, with nothing to install.
 - **On Windows**, install Microsoft's free *Raw Image Extension* from the Microsoft Store first. Without it, RAW files are skipped and the hint says so. A RAW reader built into Fotollection, which needs no extension, is being built ([STATUS.md](STATUS.md)).
 
 ## 5. Updating to a new version
@@ -103,6 +104,8 @@ Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates
 3. Install it over the current version. Your settings, camera profiles and projects stay.
    - **Mac:** open the disk image and drag Fotollection into Applications, then choose **Replace**.
    - **Windows:** run the `-setup.exe`; keep the first choice, *Uninstall before installing*. If you installed with the `.msi`, update with the `.msi`: mixing the two leaves two copies.
+   - **Linux AppImage:** the button downloads the new AppImage; make it executable (`chmod +x`) and use it in place of the old file.
+   - **Linux `.deb`:** the button opens the release page; download the new `.deb` and run `sudo apt install ./Fotollection_*_amd64.deb` (`_arm64.deb` on ARM).
 
 The same popover shows the **cache**: the thumbnails and best-shot analyses Fotollection keeps so folders open fast, with its size against its 2 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
 
@@ -135,7 +138,7 @@ When a folder you open was culled in Lightroom, Bridge, Capture One or darktable
 
 ## 8. Shooting with a camera connected
 
-With a camera plugged in by cable, Fotollection shows what it sees and takes the photo ([FR-062](PRD.md#fr-062--live-view-from-a-camera), [FR-063](PRD.md#fr-063--tethered-capture-over-usb)). For now this works on Windows, with the Sony a6400. Other Sony bodies of the same years may work, but they are not checked yet.
+With a camera plugged in by cable, Fotollection shows what it sees and takes the photo ([FR-062](PRD.md#fr-062--live-view-from-a-camera), [FR-063](PRD.md#fr-063--tethered-capture-over-usb)). For now this works on Windows, with the Sony a6400; the Linux version has no camera capture ([ADR-0034](adr/0034-linux-lean.md)). Other Sony bodies of the same years may work, but they are not checked yet.
 
 1. **On the camera:** *MENU → Setup → USB Connection → PC Remote*. Plug in a data cable and turn the camera on. Close Imaging Edge Remote, since only one app can drive the camera at a time.
 2. **Click the camera button** next to *Open folder* in the sidebar. The capture screen opens.
