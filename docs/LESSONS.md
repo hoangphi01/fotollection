@@ -17,8 +17,9 @@
 
 - **Seen:** the arm64 build passed on Ubuntu 22.04, then the AppImage exited with 127 in `debian:12`: `libfontconfig.so.1: cannot open shared object file`. The failed job cancelled the other three, so nothing was released.
 - **Why:** an AppImage leaves out on purpose the libraries every desktop already has (fontconfig, freetype, GL, X11: the AppImage exclude list), because bundling them breaks on other drivers. The `debian:12` image has none of them; no one runs a photo app there.
-- **Fix:** the container first installs GTK 3 and GL (`libgtk-3-0 libgl1 libegl1 libgbm1`), the floor of any Debian desktop, then runs `ldd` over the extracted AppImage and prints every library still missing before it starts the app, so one run shows the whole list instead of the first missing file.
-- **Rule:** a test environment must match what a user has, no less: test an AppImage on the desktop floor, not on a bare image. A smoke test that fails prints everything that is wrong at once. A release dry run (dispatch before the version bump) catches this without a failed release run.
+- **Second run:** `ldd` found nothing missing, then WebKit aborted on `libGLESv2.so.2`: it opens GLES with `dlopen` at run time, which `ldd` cannot see. Every desktop has it through Mesa.
+- **Fix:** the container first installs GTK 3 and Mesa (`libgtk-3-0 libgl1 libegl1 libgles2 libgbm1 libgl1-mesa-dri`), the floor of any Debian desktop, then runs `ldd` over the extracted AppImage and prints every library still missing before it starts the app. The installers are uploaded before the smoke test and the build matrix no longer stops at the first failure, so a failed run leaves every installer to try locally (Docker on the M3 runs the arm64 one) instead of costing another 30-minute run.
+- **Rule:** a test environment must match what a user has, no less: test an AppImage on the desktop floor, not on a bare image. A smoke test that fails prints everything that is wrong at once, and keeps what it tested; a library check by `ldd` misses what is opened at run time, so the app must still start. A release dry run (dispatch before the version bump) catches this without a failed release run.
 
 ### Typing in the date stamp made the panel jump and the text slip back (FR-036)
 
