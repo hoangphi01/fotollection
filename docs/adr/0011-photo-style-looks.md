@@ -3,6 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-10-23
 - **Related:** FR-038, FR-039, NFR-002, NFR-003, ADR-0010
+- **Amended by:** [ADR-0036](0036-colour-looks-cube-luts-first.md) (2026-11-02): `.cube` import comes first, as FR-070, on this engine
 
 ## Context
 

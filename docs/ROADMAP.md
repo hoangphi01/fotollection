@@ -98,7 +98,9 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.8.0 | Places and Lightroom, and the camera (title to confirm at release) | FR-032, FR-005, FR-030, FR-031, FR-058 (XMP), FR-061 (check for updates), FR-065 (border in Crop to fill), FR-062 + FR-063 (capture screen with live view, Windows, Sony a6400; [ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)) | Lookup speed with manual places, a mixed camera + phone folder; XMP read on a Lightroom-culled folder; NFR-018 and NFR-019 measured in the app with the a6400 |
 | v0.9.0 | Three modes: Simple, Collage, Professional (title to confirm at release) | FR-048 (the three modes), FR-035 (2-up collage, half-frame style), FR-067 (3 mm border on every print), FR-046 (full-screen ↑ / ↓ in Simple), NFR-021 | Single-photo preview and export, then a sheet against its two photos (NFR-021). The faster Simple export (NFR-015) comes later |
 | To place | Camera, continued | The camera on macOS, other Sony bodies (read-only probe first), FR-064 (watch a folder), webcam (UVC) live view | [cameras/README.md](cameras/README.md), [cameras/sony.md](cameras/sony.md) |
-| Later | Looks, presets, trips, journal | FR-039, FR-047, FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
+| v0.10.0 | Looks (planned, 2026-11-02) | FR-070 (looks from `.cube` LUT files, strength, per photo; built-in looks of our own), [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export (`measure_look`) |
+| After v0.10.0 | Photo Style sliders on the looks engine | FR-039, then FR-047 | — |
+| Later | Presets, trips, journal | FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
 
 ## Phase 2 — Smart features
 
@@ -136,6 +138,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-065 | Border in Crop to fill: 3 mm in the frame colour inside the print size, instant-photo look at the exact kiosk size |
 | FR-066 | Borrow places from a GPX track: interpolate each photo's time along the track (split out of FR-031) |
 | FR-067 | 3 mm border on every print: every mode and frame style, inside the print size (extends FR-065) |
+| FR-070 | Looks from LUT files (`.cube`, strength, per photo), LUMIX Lab style; v0.10.0, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
 | FR-069 | Report a problem: a red button in the app's versions popover and the website's footer, to the GitHub issue forms (v0.8.3) |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |

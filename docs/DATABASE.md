@@ -17,6 +17,7 @@
 | App settings `settings.json` † | JSON, versioned ([§6](#6-app-settings)) | App config dir | `settings_store.rs` | Until uninstall or reset | Camera names/lenses only |
 | Camera logos `logos/<id>.png` † | PNG, validated copy | App config dir | `logo.rs` | Until removed | No |
 | User fonts `fonts/<id>.ttf\|otf` † | TTF/OTF, validated copy | App config dir | `fonts.rs` | Until removed | No |
+| Looks `looks/<hash>.cube`, planned v0.10.0 ([FR-070](PRD.md#fr-070--looks-from-lut-files)) | `.cube` text, validated copy named by content hash; the settings gain `render.look` `{ id, strength }` and photos a sparse `look` override (settings and project schema bumps); a project embeds the LUTs it uses | App config dir | `look.rs` | Until removed | No |
 | Recent projects `recent.json` | JSON array of up to 10 paths | App config dir | `settings.rs` | Until cleared | Yes: paths |
 | Preset library `presets/*.fotopreset` | JSON, one file per preset ([§7](#7-presets)) | App config dir | `presets.rs` | Until the user deletes them | No |
 | Thumbnail cache `thumbs/` | JPEG files + `index.bin` ([§8](#8-thumbnail-cache)) | App cache dir | `thumbs.rs` | LRU, 2 GB cap, can be cleared at any time | **Yes**: image content |

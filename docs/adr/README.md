@@ -39,6 +39,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0033](0033-reference-jpeg-decoder.md) | A reference JPEG decoder behind the fast one: `zune-jpeg` decodes only the layouts a corpus test proves, read from the header first; every other layout, and any file zune refuses, goes to `jpeg-decoder`; a decoder fix salts the caches made from pixels | Accepted, amends 0012 | 2026-11-01 |
 | [0034](0034-linux-lean.md) | Linux, the lean build: every photo feature without camera capture or HEIC (later through the system's libheif, never a bundled HEVC decoder); AppImage and `.deb`, x86_64 and ARM64, glibc 2.35; smoke-tested in every release; a new platform may ship in a PATCH release | Accepted, amends 0021 and 0009 | 2026-11-01 |
 | [0035](0035-linux-install-from-fotollection-org.md) | Linux install from fotollection.org: `install.sh` (APT on the Debian family, else the AppImage in ~/.local, checked against SHA256SUMS) and a signed APT repository at /apt built from the latest release by `pages.yml`; an Ed25519 key for that repository only, in a GitHub secret | Accepted | 2026-11-01 |
+| [0036](0036-colour-looks-cube-luts-first.md) | Colour looks: `.cube` LUTs first (FR-070, v0.10.0), then the Photo Style sliders (FR-039) on the same 33³ engine; amends ADR-0011's "no `.cube` import"; the parser capped and fuzzed, no third-party LUTs shipped | Accepted | 2026-11-02 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

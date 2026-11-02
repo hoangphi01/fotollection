@@ -89,6 +89,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [NFR-014](PRD.md#nfr-014--best-shot-analysis-speed) | Best-shot analysis per photo, 8 cores in parallel | ≤ 20 ms; ≤ 40 ms with faces | `bench_culling` on the `bench` corpus |
 | [NFR-015](PRD.md#nfr-015--normal-mode-speed) | Simple-mode export (after v0.9.0) to 10×15 @ 300 DPI, q90; first screen of 1,000 photos | ≥ 3× Professional (≥ 50 photos/s); < 0.5 s | `measure_folder` with a Simple-mode flag, same folders as `bench/run.sh` |
 | [NFR-021](PRD.md#nfr-021--collage-sheet-speed) | Collage sheet preview; sheet export; the grid after a change of setting | ≤ 2× NFR-002; ≤ its two photos exported alone; ten sheets < 100 ms | `measure_sheet` and `measure_sheet_grid` (`crates/core/examples/`), 26 MP demo photos |
+| [FR-070](PRD.md#fr-070--looks-from-lut-files) (planned v0.10.0) | Applying a look (33³ LUT, strength) | ≤ 5 ms on the 1600 px preview; ≤ 60 ms on a 24 MP export | `measure_look`, to be written with the feature ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
 
 ### Reference machines
 

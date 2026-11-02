@@ -426,6 +426,7 @@ Put several photos on one print to save cost. **P1 (v0.9.0) for 2-up**, the Coll
 - **Built-in recipes:** *C200 Natural*, taken from the owner's GX9 recipe (Natural base; Contrast −1, Sharpness −3, Saturation +1; highlights slightly darker, shadows slightly brighter; WB A+3 / M+1), plus a few classic film-inspired looks.
 - **Scope boundary:** these are **global** adjustments on the already-rendered JPEG/HEIC (or a RAW preview). There are no local masks, HSL panel, curve editor, retouching or RAW development ([ADR-0011](adr/0011-photo-style-looks.md)).
 - **Non-destructive:** the look is applied in preview and at export. Stamps, captions and borders are drawn **after** the look, so they are never tinted. A before/after toggle (`\`) compares with the original.
+- **After FR-070 (2026-11-02):** `.cube` looks ship first ([FR-070](#fr-070--looks-from-lut-files), v0.10.0); these sliders follow on the same engine ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)).
 
 ### FR-040 — EXIF info frame
 
@@ -751,6 +752,19 @@ Next to the batch settings, any other setting will later be overridable for one 
 ### FR-069 — Report a problem
 
 **P1 (v0.8.3, owner's request 2026-11-01).** A red **Report a problem or an idea** button in the versions popover (click the version at the foot of the panel), under *Check for updates*, and a **Report a problem** button in the website's footer. Both open the project's GitHub issue forms (bug or idea) in the browser. The app sends nothing itself: the address is fixed in Rust and opened with the system browser, as for *Check for updates* ([FR-061](#fr-061--check-for-updates)), so the webview never supplies a URL ([SECURITY.md](SECURITY.md)).
+
+### FR-070 — Looks from LUT files
+
+**P1 (planned, v0.10.0; owner's request 2026-11-02).** Colour looks as in LUMIX Lab: choose a look, set its strength, print ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)). The Photo Style sliders ([FR-039](#fr-039--photo-style-looks)) come after it, on the same engine.
+
+- **Import** a `.cube` file (1D or 3D, 2–65 points a side, `DOMAIN_MIN`/`DOMAIN_MAX`): from LUMIX Lab, the user's own, or downloaded. It is copied into the app's `looks/` folder by content hash, so the original can move. Panasonic's `.vlt` is a candidate once its format is checked.
+- **Built-in looks** made by our own code, under our own names (no copied LUT files, no trademarked names, as [FR-047](#fr-047--film-looks)), including one for *C200 Natural*.
+- **Strength** 0–100 %, default 100.
+- **For every photo, or one photo as an override**, like the date stamp ([FR-044](#fr-044--per-photo-overrides)); a collage sheet uses each photo's own look.
+- **Preview and export, in every mode**; thumbnails stay plain. The look comes after the crop and before the date stamp, frame and border, which are never tinted. `\` compares before and after.
+- **Info frame:** the look's name can fill its `<photo style>` line ([FR-040](#fr-040--exif-info-frame)).
+- **Projects** embed the LUTs they use, so they render the same on another machine ([ADR-0016](adr/0016-self-contained-project-bundle.md)).
+- **Speed:** ≤ 5 ms on the 1600 px preview, ≤ 60 ms on a 24 MP export ([OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets)).
 
 ## 7. Non-functional requirements
 
