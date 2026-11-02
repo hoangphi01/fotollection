@@ -28,11 +28,11 @@ The audit of 2026-11-02 read the RAW path, the JPEG and colour path and the docs
    - ✓ a header `jpeg_layout::read` cannot parse goes to the reference decoder; SOF1 leaves `zune_proven` until a fixture proves it;
    - ✓ the corpus test checks the mean and 99th-percentile error and the route of each file (zune, reference, refused); a JPEG cut short is refused (`ERR-IMG-0006`);
    - ✓ `ErrCode` in `IpcError` and the core's errors, in the bindings and on screen; the check fails on a code without its row.
-   - ☐ `import.raw_codec_missing` (ERR-EXT-0003) is unreachable (`raw.rs` `first()` swallows it): raise it again with a current message, or retire it.
+   - ✓ `import.raw_codec_missing` (ERR-EXT-0003) raised again by `raw.rs` `first()` when every reader passed and Windows has no codec, with a current message (session 3).
 3. **Session 3: v0.9.1, then release.**
-   - ☐ DNG black-level repeat from the ActiveArea origin, checked against the spec with a synthetic DNG;
+   - ✓ DNG: `CFAPattern` and `BlackLevel` count from the ActiveArea's corner (they counted from the image's: an odd area swapped red and blue), black levels repeated 1×2 or 2×1 read; synthetic DNG tests;
    - ✓ "4:4:4" said only of print exports (README, site, done in session 1); ✓ `thumbs::CACHE_VERSION` 3, so thumbnails made from 16-bit grey or cut-short JPEGs are made again;
-   - ☐ the offline error log (rotating, no image data, GPS or full paths), *Copy diagnostics* next to *Report a problem*, the panic hook writing `ERR-RUS`;
+   - ✓ the offline error log (`error_log.rs`, 5 × 1 MB, paths and file names cut to their extension), *Copy diagnostics* under *Report a problem*, the panic hook writing `ERR-RUS-0005`;
    - ☐ release v0.9.1 (RELEASE.md §6).
 4. **Session 4: v0.10.0, FR-071 image facts.** ☐ `jpeg_layout::read` reads APP14, the ICC description and DRI; RAW gives its sensor kind; `PhotoRecord` keeps them (project schema bump); the inspector shows "4:2:0 · Display P3" or "X-Trans · 14-bit", with a grid badge for unusual files.
 5. **Sessions 5–6: v0.10.0, colour management everywhere.** ☐ Previews, thumbnails, zoom and the crop source converted for the screen and served with their profile; PNG gAMA/cHRM/sRGB and dithering; linear-light resizing within NFR-002; straighten prefiltered; tests with real P3 and Adobe RGB profiles.
@@ -200,7 +200,7 @@ Defined in [SECURITY.md](SECURITY.md).
 | S4 | `cargo deny` / `cargo audit` / `npm audit` in CI | P1 | Done |
 | S5 | Fuzz targets (`crates/core/fuzz/`) | P1 | Not Started |
 | S6 | DOM-API grep gate + network-free core check | P1 | Done |
-| S7 | Panic hook + user-facing error mapping | P2 | Not Started |
+| S7 | Panic hook + user-facing error mapping | P2 | In Progress (v0.9.1: the hook logs `ERR-RUS-0005`, every error shows its `ERR-` code; the dialog after a crash is left) |
 
 ## Open decisions
 

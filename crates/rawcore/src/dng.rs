@@ -146,14 +146,19 @@ pub fn parse(data: &[u8]) -> Result<Dng, RawError> {
     let black = {
         let dim = list(&tiff, &ifd, tag::BLACK_LEVEL_REPEAT_DIM);
         let levels = reals(&tiff, &ifd, tag::BLACK_LEVEL);
+        // Rows × columns of the repeat (1 × 1 when absent), the values row by row; a 2×2
+        // pattern position takes the value its row and column fall on.
+        let (rows, cols) = match dim.as_slice() {
+            [r, c] if (1..=2).contains(r) && (1..=2).contains(c) => (*r as usize, *c as usize),
+            _ => (1, 1),
+        };
         let mut black = [0f32; 4];
-        match (dim.as_slice(), levels.len()) {
-            ([2, 2], 4) => black
-                .iter_mut()
-                .zip(&levels)
-                .for_each(|(b, l)| *b = *l as f32),
-            (_, n) if n >= 1 => black = [levels[0] as f32; 4],
-            _ => {}
+        if levels.len() >= rows * cols {
+            for (i, b) in black.iter_mut().enumerate() {
+                *b = levels[(i / 2 % rows) * cols + i % 2 % cols] as f32;
+            }
+        } else if let Some(l) = levels.first() {
+            black = [*l as f32; 4];
         }
         black
     };
@@ -344,4 +349,149 @@ pub fn embedded_jpeg(data: &[u8]) -> Option<&[u8]> {
         })
         .max_by_key(|(w, _)| *w)
         .map(|(_, b)| b)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A little-endian, uncompressed 16-bit DNG of `w × h` with `extra` entries
+    /// (tag, TIFF type, count, value bytes) beside the ones every raw image needs.
+    fn synthetic(w: u16, h: u16, data: &[u16], extra: &[(u16, u16, u32, Vec<u8>)]) -> Vec<u8> {
+        let short = |v: &[u16]| v.iter().flat_map(|s| s.to_le_bytes()).collect::<Vec<u8>>();
+        let long = |v: u32| v.to_le_bytes().to_vec();
+        let pixels: Vec<u8> = short(data);
+        let mut entries: Vec<(u16, u16, u32, Vec<u8>)> = vec![
+            (tag::NEW_SUBFILE_TYPE, 4, 1, long(0)),
+            (tag::WIDTH, 3, 1, short(&[w])),
+            (tag::HEIGHT, 3, 1, short(&[h])),
+            (tag::BITS_PER_SAMPLE, 3, 1, short(&[16])),
+            (tag::COMPRESSION, 3, 1, short(&[1])),
+            (tag::PHOTOMETRIC, 3, 1, short(&[32803])),
+            (tag::STRIP_OFFSETS, 4, 1, long(0)),
+            (tag::SAMPLES_PER_PIXEL, 3, 1, short(&[1])),
+            (tag::ROWS_PER_STRIP, 3, 1, short(&[h])),
+            (
+                tag::STRIP_BYTE_COUNTS,
+                4,
+                1,
+                long(u32::try_from(pixels.len()).unwrap_or(0)),
+            ),
+            (tag::CFA_REPEAT_PATTERN_DIM, 3, 2, short(&[2, 2])),
+            (tag::CFA_PATTERN, 1, 4, vec![0, 1, 1, 2]),
+            (tag::DNG_VERSION, 1, 4, vec![1, 6, 0, 0]),
+        ];
+        entries.extend_from_slice(extra);
+        entries.sort_by_key(|e| e.0);
+        let ifd_len = 2 + 12 * entries.len() + 4;
+        let mut values = Vec::new();
+        let mut ifd = u16::try_from(entries.len())
+            .unwrap_or(0)
+            .to_le_bytes()
+            .to_vec();
+        let pixels_at = 8 + ifd_len + entries.iter().map(|e| e.3.len().max(4)).sum::<usize>();
+        for (t, kind, count, bytes) in &entries {
+            ifd.extend_from_slice(&t.to_le_bytes());
+            ifd.extend_from_slice(&kind.to_le_bytes());
+            ifd.extend_from_slice(&count.to_le_bytes());
+            let bytes = if *t == tag::STRIP_OFFSETS {
+                long(u32::try_from(pixels_at).unwrap_or(0))
+            } else {
+                bytes.clone()
+            };
+            if bytes.len() <= 4 {
+                let mut inline = bytes;
+                inline.resize(4, 0);
+                ifd.extend_from_slice(&inline);
+            } else {
+                let at = 8 + ifd_len + values.len();
+                ifd.extend_from_slice(&u32::try_from(at).unwrap_or(0).to_le_bytes());
+                values.extend_from_slice(&bytes);
+            }
+        }
+        ifd.extend_from_slice(&0u32.to_le_bytes());
+        let mut file = b"II*\0".to_vec();
+        file.extend_from_slice(&8u32.to_le_bytes());
+        file.extend(ifd);
+        file.extend(values);
+        file.resize(pixels_at, 0);
+        file.extend(pixels);
+        file
+    }
+
+    fn shorts(v: &[u16]) -> Vec<u8> {
+        v.iter().flat_map(|s| s.to_le_bytes()).collect()
+    }
+
+    /// DNG 1.7, `BlackLevel` and `CFAPattern`: both patterns start at the top-left corner of
+    /// the `ActiveArea`, not of the stored image. An active area at an odd row and column
+    /// would otherwise swap red with blue and each site's black level with its neighbour's.
+    #[test]
+    fn patterns_start_at_the_active_area() -> Result<(), RawError> {
+        let (w, h) = (8u16, 6u16);
+        let (top, left) = (1usize, 1usize);
+        let black = [10u16, 20, 30, 40];
+        // Each pixel holds exactly its own black level, so every level reads 0.
+        let mut data = vec![999u16; usize::from(w) * usize::from(h)];
+        for y in top..usize::from(h) - 1 {
+            for x in left..usize::from(w) - 1 {
+                data[y * usize::from(w) + x] = black[((y - top) & 1) * 2 + ((x - left) & 1)];
+            }
+        }
+        let file = synthetic(
+            w,
+            h,
+            &data,
+            &[
+                (tag::BLACK_LEVEL_REPEAT_DIM, 3, 2, shorts(&[2, 2])),
+                (tag::BLACK_LEVEL, 3, 4, shorts(&black)),
+                (tag::WHITE_LEVEL, 3, 1, shorts(&[1000])),
+                (tag::ACTIVE_AREA, 3, 4, shorts(&[1, 1, h - 1, w - 1])),
+            ],
+        );
+        let m = parse(&file)?.mosaic;
+        assert_eq!(m.active, [1, 1, 5, 7]);
+        for y in top..m.active[2] {
+            for x in left..m.active[3] {
+                assert_eq!(
+                    m.site(x, y),
+                    [0, 1, 1, 2][((y - top) & 1) * 2 + ((x - left) & 1)]
+                );
+                assert!(
+                    m.level(x, y).abs() < 1e-6,
+                    "({x}, {y}) reads {}",
+                    m.level(x, y)
+                );
+            }
+        }
+        Ok(())
+    }
+
+    /// A black level repeated per column (`BlackLevelRepeatDim` 1 × 2) applies to every row.
+    #[test]
+    fn a_black_level_per_column() -> Result<(), RawError> {
+        let (w, h) = (4u16, 4u16);
+        let data: Vec<u16> = (0..16).map(|i| if i % 2 == 0 { 64 } else { 80 }).collect();
+        let file = synthetic(
+            w,
+            h,
+            &data,
+            &[
+                (tag::BLACK_LEVEL_REPEAT_DIM, 3, 2, shorts(&[1, 2])),
+                (tag::BLACK_LEVEL, 3, 2, shorts(&[64, 80])),
+                (tag::WHITE_LEVEL, 3, 1, shorts(&[1000])),
+            ],
+        );
+        let m = parse(&file)?.mosaic;
+        for y in 0..4 {
+            for x in 0..4 {
+                assert!(
+                    m.level(x, y).abs() < 1e-6,
+                    "({x}, {y}) reads {}",
+                    m.level(x, y)
+                );
+            }
+        }
+        Ok(())
+    }
 }

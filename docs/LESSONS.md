@@ -13,6 +13,13 @@
 
 ## 2026-11-02
 
+### A repeating pattern has an origin: DNG counted the CFA and black level from the wrong corner (ADR-0030)
+
+- **Seen:** reading `rawcore/src/cfa.rs` against the DNG specification, `site` and `level` took the 2×2 phase from the stored image's `(x & 1, y & 1)`. A synthetic DNG with its `ActiveArea` at row 1, column 1 read red as green and each pixel with its neighbour's black level; no sample had shown it, because nearly every camera starts its active area on an even row and column.
+- **Why:** DNG starts `CFAPattern` and `BlackLevel` at the active area's top-left corner. The code was written and tested only on areas at (0, 0), where both origins agree.
+- **Fix:** `Mosaic::phase` counts from `active[0]`, `active[1]`; `BlackLevelRepeatDim` 1×2 and 2×1 are read as well.
+- **Rule:** every pattern, table or offset in a format names its origin; write the test with the origin moved off zero (odd, for a 2×2 pattern), where a wrong origin cannot hide.
+
 ### A fixture that cannot fail proves nothing: the 16-bit grey test passed on broken code (ERR-IMG-0002, ADR-0033)
 
 - **Seen:** the audit read that the 16-bit grey path keeps the wrong byte of each sample (jpeg-decoder gives them in the machine's byte order). The first fixture for it decoded with no error at all on the old code.

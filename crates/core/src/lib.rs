@@ -11,6 +11,7 @@ pub mod cancel;
 pub mod codec;
 pub mod colour;
 pub mod culling;
+pub mod error_log;
 pub mod errors;
 pub mod exif_out;
 pub mod export;

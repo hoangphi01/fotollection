@@ -56,6 +56,7 @@ crates/
       codec.rs           † # JpegCodec trait + pure-Rust implementation (ADR-0012); decode_image/image_dimensions dispatch by magic bytes (PNG via `png`, RAW and HEIC via `oscodec`); decode_for_screen gives a RAW's embedded preview for thumbnails and analysis; EncodeOptions::print (4:4:4, optimized Huffman) for exports vs ::screen (4:2:0, plain) for previews/thumbnails
       jpeg_layout.rs     † # a JPEG's layout from its header (frame, sampling, first scan), which picks zune-jpeg or the reference decoder (ADR-0033); `ends_early` refuses a file cut short
       errors.rs          † # the ERR-<KIND>-<NNNN> code of every stable error code, held equal to docs/ERROR_CONTROL.md by its tests
+      error_log.rs       † # the offline error log: one line per error and panic, rotated 5 × 1 MB, paths and file names cut to their extension; the text of Copy diagnostics
       raw.rs             † # camera RAW: the format from its bytes, the `RawDecoder`s tried in order (our own DNG reader, rawler, the OS codec; the OS codec second on macOS, last elsewhere), one full develop at a time (FR-016, ADR-0029, ADR-0030)
       raw_finish.rs      † # a rawler develop finished to the camera's look: per-channel curves matched to the embedded JPEG, or an automatic exposure and S curve (ADR-0029)
       image.rs           † # RgbImage + EXIF orientation transforms
@@ -118,7 +119,7 @@ src-tauri/               † # app shell: commands, protocol, capabilities
   src/camera.rs          † # tethered capture (FR-062, FR-063, ADR-0028): connect, a session thread that owns the camera (live view, settings every 300 ms, queued jobs), shots written atomically into a session folder that becomes a tab, Save all and Delete photos, `quit_app` after the closing question; the Sony logic is written against a `CameraLink` trait and tested with a scripted camera
   src/open_with.rs       † # "Open with" (FR-054, ADR-0024): one route for macOS Opened events, command-line paths and second launches; the photo's folder as a tab
   src/timing.rs          † # start-up milestones printed only with FOTOLLECTION_TIMING (NFR-010, scripts/measure-startup.sh)
-  src/updates.rs         † # "Check for updates" (FR-061, ADR-0025): one GitHub request on click, the installer opened in the browser from Rust; "Report a problem" opens the fixed issue page (FR-069)
+  src/updates.rs         † # "Check for updates" (FR-061, ADR-0025): one GitHub request on click, the installer opened in the browser from Rust; "Report a problem" opens the fixed issue page (FR-069); "Copy diagnostics" reads the error log
   src/cache.rs           † # the disk cache's size, Clear cache, and the background prune under 2 GB (DATABASE.md §8)
   src/i18n.rs            † # the shell's own strings: menu, window title, dialogs (FR-020)
   src/demo.rs            † # debug builds only: records IPC answers for demo photos, for the website screenshots
@@ -284,6 +285,7 @@ Commands marked † are implemented.
 | `startup_finished() -> bool` † | Whether the last session is back, for a page that loaded after `startup-finished`; the start-up screen waits for it | FR-060 |
 | `check_for_update() -> UpdateCheck` † / `open_update_download()` † | On click only: asks GitHub for the latest release (`{ current, latest, newer, pageUrl }`) and keeps the installer link for this system in Rust; the second opens it in the browser. Errors: `update.offline`, `update.unreadable`, `update.none` | FR-061 |
 | `open_issue_page()` † | Report a problem: opens the project's issue page in the browser; the address is fixed in Rust, so the webview cannot open another, and the app sends nothing | FR-069 |
+| `diagnostics() -> string` † | Copy diagnostics: the version, the system and the last 20 lines of the error log, without paths ([ERROR_CONTROL.md §3](ERROR_CONTROL.md#3-status-of-the-plan-v091)) | FR-069 |
 | `quit_app()` † | Closes the app after the user answered the closing question: the camera is let go and the app waits (at most 10 s) for the last shot to be written | FR-063, ADR-0028 |
 | `cache_usage() -> CacheUsage` † / `clear_cache() -> CacheUsage` † | The thumbnail and analysis cache's size against its 2 GB limit (`{ bytes, files, limitBytes }`), and emptying it | DATABASE §8 |
 | `rename_document(name) -> DocumentState` † | Renames the project: the saved file in its folder (never over another file), or the name an untitled project will be saved under. The name is validated in Rust as a portable file name | FR-023 |

@@ -8,6 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- Fixes: JPEGs cut short are refused instead of showing half a photo; 16-bit grey and CMYK JPEGs show right
+- Fixes: DNG files whose sensor area starts at an odd row keep their colours
+- New: every error message ends with a code such as ERR-IMG-0006, to quote in a report
+- New: Copy diagnostics, next to Report a problem, copies your version and the last error codes; the small error log behind it stays on your computer, without photos, places or file names
+
 ### Fixed
 
 - **JPEG files cut short** (a card pulled out, a copy that stopped) are refused with a message instead of showing a grey half photo.
@@ -15,10 +22,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **CMYK JPEGs** read the same on both decoders; the fallback one no longer turns them negative.
 - A grey or CMYK colour profile is no longer attached to an exported RGB photo, where it made labs read the colours wrong.
 - Thumbnails are made once more after the update, so the wrong ones of such files go.
+- **DNG files whose sensor area starts at an odd row or column** (some cameras and converters) keep their colours: red was read as blue, and each pixel took its neighbour's black level. A black level given per row or per column is now read too.
+- **On Windows, a RAW from a camera not read yet** says so, and that Microsoft's free Raw Image Extension may open it, instead of a general "could not be decoded".
 
 ### Added
 
 - **Error codes:** every error message ends with its code, such as `ERR-IMG-0006`, to quote when reporting a problem; the dictionary of codes is in `docs/ERROR_CONTROL.md`.
+- **Copy diagnostics,** next to *Report a problem* (click the version at the foot of the panel): copies your version, your system and the last error codes, to paste into the report. The app keeps a small error log on your computer for this (5 files of 1 MB at most), with no photos, places or folder names in it, and sends nothing.
 
 ## [0.9.0] - 2026-11-02 — Three modes
 

@@ -64,18 +64,26 @@ pub struct CameraIssue {
 }
 
 impl CameraIssue {
+    /// The issue, written to the error log as it is made (`error_log`).
     fn new(code: &str, message: impl Into<String>) -> Self {
+        let message = message.into();
+        fotollection_core::error_log::record(code, &message);
         Self {
             code: code.to_owned(),
             err: fotollection_core::errors::err_code(code).to_owned(),
-            message: message.into(),
+            message,
         }
     }
 }
 
+/// Already logged as a `CameraIssue`, so not again.
 impl From<CameraIssue> for IpcError {
     fn from(i: CameraIssue) -> Self {
-        IpcError::new(&i.code, i.message)
+        IpcError {
+            code: i.code,
+            err: i.err,
+            message: i.message,
+        }
     }
 }
 

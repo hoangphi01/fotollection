@@ -39,6 +39,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             updates::check_for_update,
             updates::open_update_download,
             updates::open_issue_page,
+            updates::diagnostics,
             cache::cache_usage,
             cache::clear_cache,
             commands::list_print_sizes,
@@ -183,6 +184,33 @@ fn spawn_autosave(handle: tauri::AppHandle) {
     });
 }
 
+/// Every panic leaves an `ERR-RUS-0005` line in the error log before the default hook runs
+/// (STATUS S7). Release builds are stripped, so the line holds the panic's message and
+/// where it happened in the source, its last folders joined by `::` so the log's path
+/// redaction keeps it (it is the build machine's path, never the user's).
+fn log_panics() {
+    let default = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |info| {
+        let at = info.location().map_or_else(String::new, |l| {
+            let parts: Vec<&str> = l.file().split(['/', '\\']).collect();
+            let tail = parts[parts.len().saturating_sub(4)..].join("::");
+            format!("{tail}:{}", l.line())
+        });
+        let payload = info.payload();
+        let what = payload
+            .downcast_ref::<&str>()
+            .map(|s| (*s).to_owned())
+            .or_else(|| payload.downcast_ref::<String>().cloned())
+            .unwrap_or_default();
+        let thread = std::thread::current()
+            .name()
+            .unwrap_or("unnamed")
+            .to_owned();
+        fotollection_core::error_log::record("panic", &format!("at {at} ({thread}): {what}"));
+        default(info);
+    }));
+}
+
 pub fn run() {
     timing::start();
     let builder = specta_builder();
@@ -208,6 +236,12 @@ pub fn run() {
         .register_asynchronous_uri_scheme_protocol(protocol::SCHEME, protocol::handle)
         .setup(move |app| {
             builder.mount_events(app);
+            // The offline error log, first, so every later error and panic is in it.
+            fotollection_core::error_log::init(
+                app.path().app_data_dir()?.join("logs"),
+                env!("CARGO_PKG_VERSION"),
+            );
+            log_panics();
             let thumb_dir = app.path().app_cache_dir()?.join("thumbs");
             let config_dir = app.path().app_config_dir()?;
             let project_path = app

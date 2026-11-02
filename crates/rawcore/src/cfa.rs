@@ -12,9 +12,9 @@ pub struct Mosaic {
     pub width: usize,
     pub height: usize,
     pub data: Vec<u16>,
-    /// The colours of the 2×2 pattern, row by row, at the image's top-left corner.
+    /// The colours of the 2×2 pattern, row by row, at the active area's top-left corner.
     pub pattern: [Site; 4],
-    /// Black level per pattern position.
+    /// Black level per pattern position, from the same corner.
     pub black: [f32; 4],
     pub white: f32,
     /// `[top, left, bottom, right]` of the pixels that saw light.
@@ -74,14 +74,21 @@ impl Mosaic {
         (self.active[1] + self.crop[0], self.active[0] + self.crop[1])
     }
 
+    /// The pattern position of mosaic position `(x, y)`. DNG 1.7 counts `CFAPattern` and
+    /// `BlackLevel` from the top-left corner of the active area, so an area starting at an
+    /// odd row or column shifts the phase. Wrapping keeps the parity of a masked pixel too.
+    fn phase(&self, x: usize, y: usize) -> usize {
+        (y.wrapping_sub(self.active[0]) & 1) * 2 + (x.wrapping_sub(self.active[1]) & 1)
+    }
+
     /// The filter colour at mosaic position `(x, y)`.
     pub fn site(&self, x: usize, y: usize) -> Site {
-        self.pattern[(y & 1) * 2 + (x & 1)]
+        self.pattern[self.phase(x, y)]
     }
 
     /// The value at `(x, y)` scaled so black is 0 and white 1 (not clipped).
     pub fn level(&self, x: usize, y: usize) -> f32 {
-        let i = (y & 1) * 2 + (x & 1);
+        let i = self.phase(x, y);
         (f32::from(self.data[y * self.width + x]) - self.black[i]) / (self.white - self.black[i])
     }
 }

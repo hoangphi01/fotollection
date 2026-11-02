@@ -15,6 +15,7 @@
 | Session autosave † `<app data>/projects/session.fotollection` | JSON project tables ([§4](#4-project-file-schema)) | App data dir | `project.rs` | Overwritten while working; crash safety only | Yes: folder paths |
 | Project backup `*.fotollection.bak` | Same as the project | Next to the project file | `project.rs` | Replaced on each successful save | Yes |
 | App settings `settings.json` † | JSON, versioned ([§6](#6-app-settings)) | App config dir | `settings_store.rs` | Until uninstall or reset | Camera names/lenses only |
+| Error log `logs/errors.log` … `errors.4.log` † | Text, one line per error or panic ([ERROR_CONTROL.md §3](ERROR_CONTROL.md#3-status-of-the-plan-v091)) | App data dir | `error_log.rs` | Rotated at 1 MB, 5 files at most | No: paths and file names are cut to their extension |
 | Camera logos `logos/<id>.png` † | PNG, validated copy | App config dir | `logo.rs` | Until removed | No |
 | User fonts `fonts/<id>.ttf\|otf` † | TTF/OTF, validated copy | App config dir | `fonts.rs` | Until removed | No |
 | Looks `looks/<hash>.cube`, planned v0.10.0 ([FR-070](PRD.md#fr-070--looks-from-lut-files)) | `.cube` text, validated copy named by content hash; the settings gain `render.look` `{ id, strength }` and photos a sparse `look` override (settings and project schema bumps); a project embeds the LUTs it uses | App config dir | `look.rs` | Until removed | No |

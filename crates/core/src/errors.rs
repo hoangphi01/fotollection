@@ -88,6 +88,7 @@ pub const CODES: &[(&str, &str)] = &[
     ("encode.failed", "ERR-RUS-0002"),
     ("internal", "ERR-RUS-0003"),
     ("render.failed", "ERR-RUS-0004"),
+    ("panic", "ERR-RUS-0005"),
 ];
 
 /// The `ERR-` code for a stable Rust error code. Every code the app raises has a row (the

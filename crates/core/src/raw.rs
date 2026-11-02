@@ -317,19 +317,25 @@ pub fn decoders() -> [&'static dyn RawDecoder; 3] {
 }
 
 /// The first decoder's answer that works; otherwise the most telling error (a missing
-/// codec only when nothing else said more).
+/// codec only when nothing else said more: every reader passed on the file and Windows has
+/// no codec for it, ERR-EXT-0003).
 fn first<T>(
     mut call: impl FnMut(&dyn RawDecoder) -> Result<T, CodecError>,
 ) -> Result<T, CodecError> {
     let mut worst = CodecError::Unsupported;
+    let mut missing = false;
     for decoder in decoders() {
         match call(decoder) {
             Ok(v) => return Ok(v),
-            Err(CodecError::RawCodecMissing | CodecError::Unsupported) => {}
+            Err(CodecError::RawCodecMissing) => missing = true,
+            Err(CodecError::Unsupported) => {}
             Err(e) => worst = e,
         }
     }
-    Err(worst)
+    Err(match worst {
+        CodecError::Unsupported if missing => CodecError::RawCodecMissing,
+        e => e,
+    })
 }
 
 /// The full develop, for the print preview, zoom and export.
@@ -361,6 +367,38 @@ pub fn available() -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// `first` with the decoders answering `answers` in turn.
+    fn answers(answers: Vec<CodecError>) -> CodecError {
+        let mut answers = answers.into_iter();
+        match first::<()>(|_| Err(answers.next().unwrap_or(CodecError::Unsupported))) {
+            Err(e) => e,
+            Ok(()) => CodecError::Unsupported,
+        }
+    }
+
+    /// ERR-EXT-0003: a missing codec is reported when no reader said more, and only then.
+    #[test]
+    fn a_missing_codec_is_reported_when_nothing_said_more() {
+        use CodecError as E;
+        assert_eq!(
+            answers(vec![E::Unsupported, E::Unsupported, E::RawCodecMissing]).code(),
+            "import.raw_codec_missing"
+        );
+        assert_eq!(
+            answers(vec![
+                E::Unsupported,
+                E::Decode("bad".into()),
+                E::RawCodecMissing
+            ])
+            .code(),
+            "decode.failed"
+        );
+        assert_eq!(
+            answers(vec![E::Unsupported, E::Unsupported, E::Unsupported]).code(),
+            "import.unsupported"
+        );
+    }
 
     /// A little-endian TIFF head with one IFD0 holding `entries` (tag, type, count, value),
     /// then `tail` at offset 8 + 2 + 12 × n + 4.

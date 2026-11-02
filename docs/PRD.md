@@ -753,6 +753,8 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P1 (v0.8.3, owner's request 2026-11-01).** A red **Report a problem or an idea** button in the versions popover (click the version at the foot of the panel), under *Check for updates*, and a **Report a problem** button in the website's footer. Both open the project's GitHub issue forms (bug or idea) in the browser. The app sends nothing itself: the address is fixed in Rust and opened with the system browser, as for *Check for updates* ([FR-061](#fr-061--check-for-updates)), so the webview never supplies a URL ([SECURITY.md](SECURITY.md)).
 
+**Copy diagnostics (v0.9.1),** under the red button, copies the version, the system and the last error codes from the app's local error log, for the user to paste into the issue ([ERROR_CONTROL.md §3](ERROR_CONTROL.md#3-status-of-the-plan-v091)). The log never holds photos, GPS, paths or file names.
+
 ### FR-070 — Looks from LUT files
 
 **P1 (planned, v0.11.0; owner's request 2026-11-02; moved after the v0.10.0 core, [FR-072](#fr-072--our-own-develop-core), so looks apply in its linear working space).** Colour looks as in LUMIX Lab: choose a look, set its strength, print ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)). The Photo Style sliders ([FR-039](#fr-039--photo-style-looks)) come after it, on the same engine.

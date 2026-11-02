@@ -365,7 +365,9 @@ Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates
 
 The same popover shows the **cache**: the thumbnails and best-shot analyses Fotollection keeps so folders open fast, with its size against its 2 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
 
-**Something wrong, or an idea?** Click the version number at the foot of the panel, then the red **Report a problem or an idea**: it opens the project's page for problems and ideas on GitHub, in your browser ([FR-069](PRD.md#fr-069--report-a-problem)). Say what you did, what you saw, and your version and system.
+**Something wrong, or an idea?** Click the version number at the foot of the panel, then the red **Report a problem or an idea**: it opens the project's page for problems and ideas on GitHub, in your browser ([FR-069](PRD.md#fr-069--report-a-problem)). Say what you did and what you saw, then click **Copy diagnostics** and paste it into the report: it holds your version, your system and the last error codes.
+
+**An error code.** Every error message ends with a code such as `ERR-IMG-0006`. The first letters say what kind of problem it is: `IMG` the photo file itself, `FS` a file or folder the app could not read or write, `EXT` a codec missing from the system, `DRV` the camera's connection, `CFG` a setting, font or logo, `EXP` the export, `NET` *Check for updates*, `RUS` the app itself. Each code is explained, with what to do, in [ERROR_CONTROL.md](ERROR_CONTROL.md). The app keeps a small log of these errors on your computer (no photos, places or file names) only so *Copy diagnostics* can quote them; it sends nothing.
 
 <!-- chapter: simple -->
 

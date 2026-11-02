@@ -396,7 +396,7 @@
       "unreadable": "Không đọc được tệp",
       "unsupported": "Định dạng này chưa được hỗ trợ",
       "heic_codec_missing": "HEIC cần cài \"HEIF Image Extensions\" và \"HEVC Video Extensions\" từ Microsoft Store",
-      "raw_codec_missing": "Ảnh RAW cần cài \"Raw Image Extension\" miễn phí từ Microsoft Store",
+      "raw_codec_missing": "Chưa đọc được ảnh RAW của máy ảnh này. Cài \"Raw Image Extension\" miễn phí từ Microsoft Store có thể mở được",
       "heic_linux": "Ảnh HEIC chưa được hỗ trợ trên Linux: hãy chuyển sang JPEG, hoặc mở trên macOS hay Windows"
     },
     "logo": {
@@ -482,7 +482,9 @@
     "versions": "Các phiên bản",
     "current": "Bản đang dùng",
     "report": "Báo lỗi / góp ý",
-    "reportHint": "Mở trang của dự án trên GitHub trong trình duyệt. Ứng dụng không tự gửi gì đi."
+    "reportHint": "Mở trang của dự án trên GitHub trong trình duyệt. Dán thông tin chẩn đoán vào đó: phiên bản, hệ điều hành và các mã lỗi gần nhất, không có đường dẫn hay ảnh. Ứng dụng không tự gửi gì đi.",
+    "diagnostics": "Sao chép thông tin chẩn đoán",
+    "copied": "Đã sao chép"
   },
   "update": {
     "check": "Kiểm tra cập nhật",

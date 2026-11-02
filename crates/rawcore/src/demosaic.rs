@@ -157,4 +157,32 @@ mod tests {
         }
         Ok(())
     }
+
+    /// The pattern counts from the active area: with it at an odd row and column, the red
+    /// sites are the odd ones of the stored image, and the scene still comes out red.
+    #[test]
+    fn a_red_field_is_red_behind_an_odd_active_area() -> Result<(), crate::RawError> {
+        let (w, h) = (17, 13);
+        let mut data = vec![0u16; w * h];
+        for y in (1..h).step_by(2) {
+            for x in (1..w).step_by(2) {
+                data[y * w + x] = 1000;
+            }
+        }
+        let mosaic = Mosaic::new(
+            w,
+            h,
+            data,
+            [0, 1, 1, 2],
+            [0.0; 4],
+            1000.0,
+            [1, 1, h, w],
+            [2, 2, 12, 8],
+        )?;
+        let out = demosaic(&mosaic, [1.0, 1.0, 1.0], 1.0);
+        for px in out.rgb.as_chunks::<3>().0 {
+            assert!(px[0] > 0.9 && px[1] < 0.1 && px[2] < 0.1, "{px:?}");
+        }
+        Ok(())
+    }
 }

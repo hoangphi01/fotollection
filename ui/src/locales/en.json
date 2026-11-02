@@ -413,7 +413,7 @@
       "unreadable": "The file could not be read",
       "unsupported": "This format is not supported yet",
       "heic_codec_missing": "HEIC needs the free \"HEIF Image Extensions\" and the \"HEVC Video Extensions\" from the Microsoft Store",
-      "raw_codec_missing": "RAW photos need the free \"Raw Image Extension\" from the Microsoft Store",
+      "raw_codec_missing": "This camera's RAW files can't be read yet. Microsoft's free \"Raw Image Extension\" may open them",
       "heic_linux": "HEIC photos are not supported on Linux yet: convert them to JPEG, or open them on macOS or Windows"
     },
     "logo": {
@@ -501,7 +501,9 @@
     "versions": "Versions",
     "current": "This version",
     "report": "Report a problem or an idea",
-    "reportHint": "Opens the project's page on GitHub in your browser. The app sends nothing itself."
+    "reportHint": "Opens the project's page on GitHub in your browser. Paste the diagnostics there: the version, the system and the last error codes, without paths or photos. The app sends nothing itself.",
+    "diagnostics": "Copy diagnostics",
+    "copied": "Copied"
   },
   "update": {
     "check": "Check for updates",

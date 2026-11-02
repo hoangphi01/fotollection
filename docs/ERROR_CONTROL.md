@@ -37,9 +37,9 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 
 1. ✓ **In the code:** `crates/core/src/errors.rs` maps every stable Rust code to its `ERR-` code; `IpcError` and `CameraIssue` carry it as `err`. Its tests fail when this dictionary and the table differ, or when an error named in the source (`IpcError::new`, `CameraIssue::new`, a `code()` arm) has no row.
 2. ✓ **On screen:** every error message ends with its code, for example "The photo could not be decoded (ERR-IMG-0002)" (`ui/src/lib/errors.ts`). A click that copies it comes with *Copy diagnostics* (step 4).
-3. **An offline log in place of Sentry:** a rotating error log (5 files of 1 MB) in the app's data folder. Each line has the time, the code, the app version, the system, and technical context such as the JPEG layout, the RAW sensor kind or the decoder used. **It never holds image data, GPS, or full paths** (only the file name's last part) ([SECURITY.md](SECURITY.md)).
-4. **Copy diagnostics:** a button next to *Report a problem* in the versions popover copies the version, the system and the last codes, for the user to paste into an issue. The app sends nothing by itself.
-5. **The panic hook** (SECURITY S7) writes an `ERR-RUS` line with a short backtrace instead of closing silently.
+3. ✓ **An offline log in place of Sentry** (`crates/core/src/error_log.rs`): `<app data>/logs/errors.log`, rotated to `errors.1.log` … `errors.4.log` (5 files of 1 MB). Every `IpcError` and `CameraIssue` writes one line as it is made (a cancel does not, and the same error twice in a row is written once): the time, the `ERR-` code, the stable code, the app version, the system, and the error's text. **It never holds image data, GPS, paths or file names:** each path, and each word ending in a photo or project extension, becomes `<path>` plus the extension ([SECURITY.md](SECURITY.md)). Technical context (JPEG layout, sensor kind, decoder) joins the line with FR-071.
+4. ✓ **Copy diagnostics:** a button under *Report a problem* in the versions popover copies the version, the system and the last 20 lines, for the user to paste into an issue; where the clipboard is refused, the text is shown to select. The app sends nothing by itself.
+5. ✓ **The panic hook** (STATUS S7, `src-tauri/src/lib.rs` `log_panics`) writes an `ERR-RUS-0005` line, then lets the default hook run. Release builds are stripped of symbols, so instead of a backtrace the line holds the panic's message and its place in our source (`crates::core::src::raw.rs:120`).
 
 ## 4. Dictionary
 
@@ -62,6 +62,7 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 | `ERR-RUS-0002` | v0.9.1 | `encode.failed` | `crates/core/src/codec.rs:47` | The image could not be encoded | The JPEG encoder failed on an image the app made. | Report it with the diagnostics. |
 | `ERR-RUS-0003` | v0.9.1 | `internal` | `src-tauri/src/state.rs (`IpcError::internal`)` | Something went wrong | An internal failure: a poisoned lock, a failed background task, or an unexpected state. The message carries the detail. | Report it with the diagnostics. |
 | `ERR-RUS-0004` | v0.9.1 | `render.failed` | `crates/core/src/export.rs:50` | The preview could not be rendered | A render plan could not be executed (crop outside the image, resize failure). | Report it with the photo's size and crop. |
+| `ERR-RUS-0005` | v0.9.1 | `panic` | `src-tauri/src/lib.rs` (`log_panics`) | Nothing (log only) | A part of the app panicked. Release builds have no symbols, so the line holds the panic's message and its `file:line` in our source instead of a backtrace. A panic inside a RAW reader is also caught and shown as `decode.failed` (ERR-IMG-0002). | Report it with the diagnostics: the `file:line` points at the bug. |
 
 ### HDW: Hardware: cameras, cards, drives
 
@@ -93,7 +94,7 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 |------|-------|-----------|-----------|---------------|-------|------------|
 | `ERR-EXT-0001` | v0.9.1 | `import.heic_codec_missing` | `crates/core/src/codec.rs:48` | HEIC needs the free "HEIF Image Extensions" and the "HEVC Video Extensions" from the Microsoft Store | Windows has no HEIC decoder: the HEIF and HEVC extensions are missing. | Install both free extensions from the Microsoft Store, then refresh the folder. |
 | `ERR-EXT-0002` | v0.9.1 | `import.heic_linux` | `crates/core/src/import.rs:93` | HEIC photos are not supported on Linux yet: convert them to JPEG, or open them on macOS or Windows | HEIC is not supported on Linux yet; FR-068 will use the system libheif. | Convert to JPEG, or open the photos on macOS or Windows. |
-| `ERR-EXT-0003` | v0.9.1 | `import.raw_codec_missing` | `crates/core/src/codec.rs:49` | RAW photos need the free "Raw Image Extension" from the Microsoft Store | No reader could open this RAW and the system has no codec for it. **Unreachable since v0.8.0:** `raw.rs` `first()` swallows this error and reports `decode.failed` (ERR-IMG-0002); v0.9.1 either raises it again or retires it, and its message ("needs the Raw Image Extension") is out of date. | Report the camera model; installing Microsoft's Raw Image Extension may open it meanwhile. |
+| `ERR-EXT-0003` | v0.9.1 | `import.raw_codec_missing` | `crates/core/src/raw.rs` (`first`) | This camera's RAW files can't be read yet. Microsoft's free "Raw Image Extension" may open them | Windows only: every RAW reader passed on the file (our DNG reader and rawler do not know the camera) and WIC has no codec for it. A reader that failed with a reason wins over this code. Unreachable in v0.8.0–v0.9.0, raised again in v0.9.1. | Report the camera model; installing Microsoft's Raw Image Extension may open it meanwhile. |
 
 ### FS: File system
 

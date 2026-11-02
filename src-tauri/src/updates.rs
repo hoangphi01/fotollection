@@ -214,6 +214,15 @@ pub fn open_issue_page(app: AppHandle) -> Result<(), IpcError> {
         .map_err(|e| IpcError::internal(e.to_string()))
 }
 
+/// What *Copy diagnostics* copies: the version, the system and the last lines of the error
+/// log, already free of paths (`error_log`). The user pastes it into an issue; the app sends
+/// nothing.
+#[tauri::command]
+#[specta::specta]
+pub fn diagnostics() -> String {
+    fotollection_core::error_log::diagnostics(20)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

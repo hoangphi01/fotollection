@@ -31,6 +31,12 @@ export const commands = {
 	 *  webview cannot open any other; the app itself sends nothing.
 	 */
 	openIssuePage: () => typedError<null, IpcError>(__TAURI_INVOKE("open_issue_page")),
+	/**
+	 *  What *Copy diagnostics* copies: the version, the system and the last lines of the error
+	 *  log, already free of paths (`error_log`). The user pastes it into an issue; the app sends
+	 *  nothing.
+	 */
+	diagnostics: () => __TAURI_INVOKE<string>("diagnostics"),
 	/**  How much the cache holds; about 0.2 s for 70,000 files (OPTIMIZATION.md §5). */
 	cacheUsage: () => __TAURI_INVOKE<CacheUsage>("cache_usage"),
 	/**  *Clear cache*: deletes every thumbnail and analysis; returns what is left (nothing). */

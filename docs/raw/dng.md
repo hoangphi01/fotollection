@@ -7,7 +7,8 @@ Specification: Adobe's *Digital Negative Specification* 1.7 (public), on top of 
 - **The raw image:** the IFD (IFD0 or a SubIFD) with `NewSubfileType` 0 and `PhotometricInterpretation` 32803 (CFA). A linear DNG (34892) is refused, so the next decoder takes it.
 - **Filter:** `CFARepeatPatternDim` must be 2×2 and `CFAPattern` a Bayer one (one red, one blue, the greens on a diagonal).
 - **Compression:** 1 (strips; 8 or 16 bits as stored, other depths packed most significant bit first, each row starting on a byte) and 7 (lossless JPEG, strips or tiles, decoded in parallel). Others (lossy 34892, deflate floating point) are refused.
-- **Levels:** `LinearizationTable`, `BlackLevel` with its repeat dimension (up to 2×2), `WhiteLevel`.
+- **Levels:** `LinearizationTable`, `BlackLevel` with its repeat dimension (1×1, 1×2, 2×1 or 2×2, values row by row), `WhiteLevel`. `BlackLevelDeltaH`/`DeltaV` are not read yet.
+- **Origin:** `CFAPattern` and `BlackLevel` both start at the top-left corner of the `ActiveArea`, not of the stored image (`Mosaic::phase`); an area at an odd row or column shifts both (tested on a synthetic DNG in `dng.rs`).
 - **Geometry:** `ActiveArea`, then `DefaultCropOrigin`/`DefaultCropSize`, which count from the active area. The develop has exactly the crop's size, and `dimensions` reads the same tags without decoding.
 - **Colour:** `ColorMatrix1/2`, `ForwardMatrix1/2`, `CameraCalibration1/2`, `CalibrationIlluminant1/2`, `AnalogBalance`, `AsShotNeutral`, `BaselineExposure`.
 - **Embedded JPEG:** the largest IFD with `NewSubfileType` 1 and JPEG compression, used for the preview and to learn the camera's look.

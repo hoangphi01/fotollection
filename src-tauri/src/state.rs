@@ -358,11 +358,17 @@ pub struct IpcError {
 }
 
 impl IpcError {
+    /// The error, written to the error log as it is made (`error_log`), except a cancel,
+    /// which the user asked for.
     pub fn new(code: &str, message: impl Into<String>) -> Self {
+        let message = message.into();
+        if !code.ends_with(".cancelled") {
+            fotollection_core::error_log::record(code, &message);
+        }
         Self {
             code: code.to_owned(),
             err: fotollection_core::errors::err_code(code).to_owned(),
-            message: message.into(),
+            message,
         }
     }
 
