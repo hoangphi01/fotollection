@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-11-02
+
 ### Highlights
 
 - Fixes: JPEGs cut short are refused instead of showing half a photo; 16-bit grey and CMYK JPEGs show right
