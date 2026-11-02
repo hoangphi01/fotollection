@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-02 — Three modes
+
 ### Highlights
 
 - New: three modes, Simple, Collage and Pro, switched at the top of the sidebar or with Cmd/Ctrl+1, 2, 3
