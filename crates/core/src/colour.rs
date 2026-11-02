@@ -23,6 +23,12 @@ pub enum Conversion {
     Unreadable,
 }
 
+/// True when an ICC profile describes RGB data (its header's colour space is `RGB `). A grey
+/// or CMYK profile cannot travel with pixels the decoder has turned into RGB.
+pub fn is_rgb_profile(icc: &[u8]) -> bool {
+    icc.get(16..20) == Some(b"RGB ")
+}
+
 /// Converts `image` from `icc` to sRGB in place.
 pub fn to_srgb(image: &mut RgbImage, icc: Option<&[u8]>) -> Conversion {
     let Some(bytes) = icc else {

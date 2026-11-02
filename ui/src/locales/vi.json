@@ -366,7 +366,8 @@
       "not_imported": "Ảnh đã được lưu vào thư mục phiên chụp nhưng không thêm được vào tab"
     },
     "decode": {
-      "failed": "Không giải mã được ảnh"
+      "failed": "Không giải mã được ảnh",
+      "truncated": "Tệp kết thúc trước khi hết ảnh: có thể nó chỉ được chép một phần"
     },
     "encode": {
       "failed": "Không mã hóa được ảnh"

@@ -73,8 +73,9 @@ impl ThumbCache {
 
 /// Bumped when a decoder fix changes the pixels of files already seen, so every cache made
 /// from them is made again (ADR-0033). 2: v0.8.1, one-scan-per-component JPEGs were green
-/// (version 1 had no salt). Old files are left to the cache's size limit.
-pub const CACHE_VERSION: u8 = 2;
+/// (version 1 had no salt). 3: v0.9.1, 16-bit grey JPEGs were noise and JPEGs cut short
+/// were half photos. Old files are left to the cache's size limit.
+pub const CACHE_VERSION: u8 = 3;
 
 /// Cache key of a source file: `blake3(version ‖ path ‖ size ‖ mtime)` in hex, so an edited or
 /// replaced file, or a decoder fix, misses the cache (DATABASE.md §8).

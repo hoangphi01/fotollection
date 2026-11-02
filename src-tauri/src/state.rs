@@ -346,11 +346,14 @@ impl AppState {
     }
 }
 
-/// Error shape for every IPC command: a stable code plus a human-readable message.
+/// Error shape for every IPC command: a stable code the interface translates, its permanent
+/// `ERR-` code from `docs/ERROR_CONTROL.md` (shown with the message, the user's clue for a
+/// report), and a human-readable message.
 #[derive(Debug, Clone, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct IpcError {
     pub code: String,
+    pub err: String,
     pub message: String,
 }
 
@@ -358,6 +361,7 @@ impl IpcError {
     pub fn new(code: &str, message: impl Into<String>) -> Self {
         Self {
             code: code.to_owned(),
+            err: fotollection_core::errors::err_code(code).to_owned(),
             message: message.into(),
         }
     }

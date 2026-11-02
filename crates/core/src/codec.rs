@@ -36,6 +36,10 @@ pub enum CodecError {
     /// A format this platform cannot decode.
     #[error("this format is not supported here")]
     Unsupported,
+    /// A JPEG that ends before its image does: decoders fill the rest with grey and say
+    /// nothing, so it is refused before decoding (ERR-IMG-0006).
+    #[error("the file ends before the image does")]
+    Truncated,
 }
 
 impl CodecError {
@@ -48,6 +52,7 @@ impl CodecError {
             Self::CodecMissing => "import.heic_codec_missing",
             Self::RawCodecMissing => "import.raw_codec_missing",
             Self::Unsupported => "import.unsupported",
+            Self::Truncated => "decode.truncated",
         }
     }
 }
@@ -312,23 +317,27 @@ fn decode_reference(bytes: &[u8]) -> Result<Decoded, CodecError> {
     let rgb = match info.pixel_format {
         jpeg_decoder::PixelFormat::RGB24 => pixels,
         jpeg_decoder::PixelFormat::L8 => pixels.iter().flat_map(|&l| [l, l, l]).collect(),
-        // Big-endian 16-bit grey: the high byte.
+        // 16-bit grey, in the machine's byte order (jpeg-decoder's `to_ne_bytes`): its high byte.
         jpeg_decoder::PixelFormat::L16 => pixels
             .as_chunks::<2>()
             .0
             .iter()
-            .flat_map(|&[high, _]| [high, high, high])
+            .flat_map(|&pair| {
+                let [high, _] = u16::from_ne_bytes(pair).to_be_bytes();
+                [high, high, high]
+            })
             .collect(),
-        // Adobe CMYK comes inverted: each ink's value times the key's.
+        // jpeg-decoder has already undone Adobe's inversion: each value is the amount of ink,
+        // so a channel is what its ink and the key leave of white.
         jpeg_decoder::PixelFormat::CMYK32 => pixels
             .as_chunks::<4>()
             .0
             .iter()
             .flat_map(|p| {
-                let k = u16::from(p[3]);
+                let white_k = 255 - u16::from(p[3]);
                 p[..3].iter().map(move |&c| {
                     #[allow(clippy::cast_possible_truncation)]
-                    let v = (u16::from(c) * k / 255) as u8;
+                    let v = ((255 - u16::from(c)) * white_k / 255) as u8;
                     v
                 })
             })
@@ -356,18 +365,30 @@ impl JpegCodec for PureRustCodec {
     }
 
     fn decode(&self, bytes: &[u8]) -> Result<Decoded, CodecError> {
-        // A layout zune-jpeg has not proven goes to the reference decoder: a wrong decode
-        // comes back without an error, so it cannot be caught afterwards (ADR-0033).
-        let proven = crate::jpeg_layout::read(bytes).is_none_or(|l| l.zune_proven());
-        if !proven {
-            return decode_reference(bytes);
+        // A file cut short decodes "fine" with grey where the data stopped: refuse it.
+        if crate::jpeg_layout::ends_early(bytes) {
+            return Err(CodecError::Truncated);
         }
-        match decode_zune(bytes) {
-            Ok(decoded) => Ok(decoded),
-            Err(e @ CodecError::TooLarge(..)) => Err(e),
-            // A file zune refuses may still be a valid JPEG.
-            Err(e) => decode_reference(bytes).map_err(|_| e),
-        }
+        // A layout zune-jpeg has not proven, or a header we cannot read, goes to the reference
+        // decoder: a wrong decode comes back without an error, so it cannot be caught
+        // afterwards (ADR-0033).
+        let proven = crate::jpeg_layout::read(bytes).is_some_and(|l| l.zune_proven());
+        let decoded = if proven {
+            match decode_zune(bytes) {
+                Ok(decoded) => Ok(decoded),
+                Err(e @ CodecError::TooLarge(..)) => Err(e),
+                // A file zune refuses may still be a valid JPEG.
+                Err(e) => decode_reference(bytes).map_err(|_| e),
+            }
+        } else {
+            decode_reference(bytes)
+        };
+        // The pixels are RGB now: a grey or CMYK profile no longer describes them, and
+        // embedding it in an RGB print would make the lab read them wrong.
+        decoded.map(|d| Decoded {
+            icc: d.icc.filter(|p| crate::colour::is_rgb_profile(p)),
+            ..d
+        })
     }
 
     fn encode(
@@ -402,6 +423,46 @@ impl JpegCodec for PureRustCodec {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn fr_001_cmyk_reads_the_same_on_both_decoders() {
+        // zune is the route (tests/jpeg_layouts.rs); the reference decoder is the fallback
+        // when zune refuses a file, so its CMYK conversion must agree, not come out negative.
+        let bytes = layout_fixture("cmyk.jpg");
+        let (Ok(zune), Ok(reference)) = (decode_zune(&bytes), decode_reference(&bytes)) else {
+            panic!("cmyk.jpg did not decode");
+        };
+        let worst = zune
+            .image
+            .data
+            .iter()
+            .zip(&reference.image.data)
+            .map(|(a, b)| a.abs_diff(*b))
+            .max()
+            .unwrap_or(u8::MAX);
+        assert!(worst <= 3, "the decoders differ by up to {worst}");
+    }
+
+    #[test]
+    fn fr_001_a_file_cut_short_is_refused() {
+        let codec = PureRustCodec;
+        assert!(matches!(
+            codec.decode(&layout_fixture("truncated-420.jpg")),
+            Err(CodecError::Truncated)
+        ));
+        assert!(codec.decode(&layout_fixture("baseline-420.jpg")).is_ok());
+    }
+
+    #[test]
+    fn only_an_rgb_profile_travels_with_rgb_pixels() {
+        let mut rgb = vec![0u8; 128];
+        rgb[16..20].copy_from_slice(b"RGB ");
+        let mut grey = vec![0u8; 128];
+        grey[16..20].copy_from_slice(b"GRAY");
+        assert!(crate::colour::is_rgb_profile(&rgb));
+        assert!(!crate::colour::is_rgb_profile(&grey));
+        assert!(!crate::colour::is_rgb_profile(&[0u8; 8]));
+    }
 
     #[test]
     fn roundtrip_keeps_size_and_roughly_the_colour() {

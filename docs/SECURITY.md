@@ -188,16 +188,7 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 
 ### User-facing error messages
 
-| Code | Message | Recovery |
-|------|---------|----------|
-| `import.unsupported` | "This file isn't a supported photo (JPEG, HEIC, PNG, camera RAW)." | Skipped |
-| `import.raw_codec_missing` | "RAW photos need the free Raw Image Extension from the Microsoft Store." | Skipped (Windows only) |
-| `import.too_large` | "This photo is too large to process safely." | Skipped |
-| `meta.missing_date` | "No capture date found — using file date." | Continue with fallback |
-| `meta.unreadable` | "Couldn't read photo information." | Process without stamp |
-| `geo.no_gps` | "No location in this photo." | Date-only stamp |
-| `decode.failed` | "This photo appears to be damaged." | Skipped |
-| `export.write_failed` | "Couldn't save to the destination folder." | Retry or choose another folder |
+Every error the app can show, its message, cause and what the user does, is in [ERROR_CONTROL.md](ERROR_CONTROL.md), with its permanent `ERR-<KIND>-<NNNN>` code. Messages never carry image data, GPS or full paths.
 
 ## 9. Verification checklist
 
@@ -207,7 +198,7 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 | JPEG+HTML polyglot | Rejected: `import.unsupported` |
 | `.html` renamed to `.jpg` | Rejected by magic bytes |
 | 65535×65535 declared JPEG | Rejected before allocation |
-| Truncated/corrupt JPEG, HEIC, PNG | Photo fails; app and batch continue |
+| Truncated/corrupt JPEG, HEIC, PNG | Photo fails (a JPEG cut short: `ERR-IMG-0006`, never half a photo); app and batch continue |
 | Trip name `../../etc` or `CON` | Sanitized; file stays under `dest_root` |
 | Export with GPS present, default settings | Output has no GPS tags |
 | App run with network disabled | All MVP features work; zero connection attempts |

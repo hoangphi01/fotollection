@@ -54,7 +54,8 @@ crates/
       print_size.rs      † # CEWE/EU print sizes (FR-006)
       import.rs          † # discovery, magic bytes, size + polyglot checks (FR-001)
       codec.rs           † # JpegCodec trait + pure-Rust implementation (ADR-0012); decode_image/image_dimensions dispatch by magic bytes (PNG via `png`, RAW and HEIC via `oscodec`); decode_for_screen gives a RAW's embedded preview for thumbnails and analysis; EncodeOptions::print (4:4:4, optimized Huffman) for exports vs ::screen (4:2:0, plain) for previews/thumbnails
-      jpeg_layout.rs     † # a JPEG's layout from its header (frame, sampling, first scan), which picks zune-jpeg or the reference decoder (ADR-0033)
+      jpeg_layout.rs     † # a JPEG's layout from its header (frame, sampling, first scan), which picks zune-jpeg or the reference decoder (ADR-0033); `ends_early` refuses a file cut short
+      errors.rs          † # the ERR-<KIND>-<NNNN> code of every stable error code, held equal to docs/ERROR_CONTROL.md by its tests
       raw.rs             † # camera RAW: the format from its bytes, the `RawDecoder`s tried in order (our own DNG reader, rawler, the OS codec; the OS codec second on macOS, last elsewhere), one full develop at a time (FR-016, ADR-0029, ADR-0030)
       raw_finish.rs      † # a rawler develop finished to the camera's look: per-channel curves matched to the embedded JPEG, or an automatic exposure and S curve (ADR-0029)
       image.rs           † # RgbImage + EXIF orientation transforms
@@ -223,6 +224,8 @@ import → metadata → adjust → geocode → (cluster) → cull/select → pla
 ## 6. IPC contract
 
 All types are defined in Rust and exported to `ui/src/ipc/bindings.ts` through `tauri-specta`. CI fails if the bindings are stale.
+
+Every command fails with an `IpcError { code, err, message }`: `code` is the stable key the interface translates (`errors.<code>` in the locales), `err` its permanent `ERR-<KIND>-<NNNN>` code from [ERROR_CONTROL.md](ERROR_CONTROL.md), shown after the message (`ui/src/lib/errors.ts`), and `message` the English detail. Camera problems carry the same pair (`CameraIssue`).
 
 ### Commands (UI → core)
 

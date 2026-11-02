@@ -521,6 +521,8 @@ export type CameraInfo = {
 /**  A problem to show, with a stable code the UI translates (`errors.camera.*`). */
 export type CameraIssue = {
 	code: string,
+	/**  Its `ERR-` code (`docs/ERROR_CONTROL.md`). */
+	err: string,
 	message: string,
 };
 
@@ -927,9 +929,14 @@ export type ImportSummary = {
 	fromXmp: number,
 };
 
-/**  Error shape for every IPC command: a stable code plus a human-readable message. */
+/**
+ *  Error shape for every IPC command: a stable code the interface translates, its permanent
+ *  `ERR-` code from `docs/ERROR_CONTROL.md` (shown with the message, the user's clue for a
+ *  report), and a human-readable message.
+ */
 export type IpcError = {
 	code: string,
+	err: string,
 	message: string,
 };
 

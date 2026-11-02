@@ -35,8 +35,8 @@ Code · since which version users see it · Rust code · where it is raised (`fi
 
 The codes below are assigned; the app shows them from **v0.9.1**:
 
-1. **In the code:** `IpcError` and the core's error enums carry an `ErrCode`; the bindings give the interface the same constants. A test (or `scripts/check-docs.sh`) fails when a code in the code has no row here, or a row here has no code and is not retired.
-2. **On screen:** every error message ends with its code, for example "The photo could not be decoded (ERR-IMG-0002)", and a click copies it.
+1. ✓ **In the code:** `crates/core/src/errors.rs` maps every stable Rust code to its `ERR-` code; `IpcError` and `CameraIssue` carry it as `err`. Its tests fail when this dictionary and the table differ, or when an error named in the source (`IpcError::new`, `CameraIssue::new`, a `code()` arm) has no row.
+2. ✓ **On screen:** every error message ends with its code, for example "The photo could not be decoded (ERR-IMG-0002)" (`ui/src/lib/errors.ts`). A click that copies it comes with *Copy diagnostics* (step 4).
 3. **An offline log in place of Sentry:** a rotating error log (5 files of 1 MB) in the app's data folder. Each line has the time, the code, the app version, the system, and technical context such as the JPEG layout, the RAW sensor kind or the decoder used. **It never holds image data, GPS, or full paths** (only the file name's last part) ([SECURITY.md](SECURITY.md)).
 4. **Copy diagnostics:** a button next to *Report a problem* in the versions popover copies the version, the system and the last codes, for the user to paste into an issue. The app sends nothing by itself.
 5. **The panic hook** (SECURITY S7) writes an `ERR-RUS` line with a short backtrace instead of closing silently.
@@ -52,6 +52,7 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 | `ERR-IMG-0003` | v0.9.1 | `import.suspicious` | `crates/core/src/import.rs:92` | The file looks suspicious and was skipped | The file's bytes do not match its extension or look crafted (magic-byte check). | Re-export the photo from its source; report it if it came straight from a camera. |
 | `ERR-IMG-0004` | v0.9.1 | `import.too_large` | `crates/core/src/codec.rs:46` | The file is too large | The image is wider or taller than the decoder limit, or the file is over the size cap (decompression-bomb guard, SECURITY §3). | Use a smaller copy; if the photo is genuine, report it with its size. |
 | `ERR-IMG-0005` | v0.9.1 | `import.unsupported` | `crates/core/src/codec.rs:50` | This format is not supported yet | The format is not one Fotollection reads (not JPEG, PNG, HEIC or a known RAW). | Convert it to JPEG, or open an issue with the file type. |
+| `ERR-IMG-0006` | v0.9.1 | `decode.truncated` | `crates/core/src/codec.rs` (`PureRustCodec::decode`, `jpeg_layout::ends_early`) | The file ends before the photo does: it may have been copied only in part | A JPEG whose data starts but has no end-of-image marker: a card pulled out, a copy or download that stopped. Decoders would paint grey where the data stops, so it is refused (fixture `truncated-420.jpg`). | Copy the photo again from the card or the source. |
 
 ### RUS: Rust core
 

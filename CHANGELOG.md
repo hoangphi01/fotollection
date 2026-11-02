@@ -8,6 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **JPEG files cut short** (a card pulled out, a copy that stopped) are refused with a message instead of showing a grey half photo.
+- **16-bit grey JPEGs** (lossless) show the picture instead of noise.
+- **CMYK JPEGs** read the same on both decoders; the fallback one no longer turns them negative.
+- A grey or CMYK colour profile is no longer attached to an exported RGB photo, where it made labs read the colours wrong.
+- Thumbnails are made once more after the update, so the wrong ones of such files go.
+
+### Added
+
+- **Error codes:** every error message ends with its code, such as `ERR-IMG-0006`, to quote when reporting a problem; the dictionary of codes is in `docs/ERROR_CONTROL.md`.
+
 ## [0.9.0] - 2026-11-02 — Three modes
 
 ### Highlights

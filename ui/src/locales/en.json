@@ -383,7 +383,8 @@
       "not_imported": "The shot was saved in the session folder but could not be added to the tab"
     },
     "decode": {
-      "failed": "The photo could not be decoded"
+      "failed": "The photo could not be decoded",
+      "truncated": "The file ends before the photo does: it may have been copied only in part"
     },
     "encode": {
       "failed": "The image could not be encoded"

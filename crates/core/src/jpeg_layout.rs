@@ -74,15 +74,58 @@ pub fn read(bytes: &[u8]) -> Option<Layout> {
     }
 }
 
+/// True when the image data starts but never ends: no end-of-image marker after the first
+/// scan, as in a file cut short by a card pulled out or a download that stopped. Inside
+/// entropy-coded data a 0xFF is always followed by 0x00 or a restart marker, so `FF D9` there
+/// can only be the end of the image; an embedded thumbnail sits in APP1, before the first
+/// scan. A file with no scan at all is not "cut short": the decoder reports it.
+pub fn ends_early(bytes: &[u8]) -> bool {
+    first_scan(bytes).is_some_and(|scan| {
+        !bytes
+            .get(scan..)
+            .is_some_and(|rest| rest.windows(2).any(|w| w == [0xFF, 0xD9]))
+    })
+}
+
+/// Where the first scan header (SOS) starts, walking the marker segments as `read` does.
+fn first_scan(bytes: &[u8]) -> Option<usize> {
+    if bytes.get(..2)? != [0xFF, 0xD8] {
+        return None;
+    }
+    let mut at = 2;
+    loop {
+        while *bytes.get(at)? != 0xFF {
+            at += 1;
+        }
+        while *bytes.get(at)? == 0xFF {
+            at += 1;
+        }
+        let marker = *bytes.get(at)?;
+        at += 1;
+        if marker == 0x01 || (0xD0..=0xD7).contains(&marker) {
+            continue;
+        }
+        if marker == 0xDA {
+            return Some(at);
+        }
+        if marker == 0xD9 {
+            return None;
+        }
+        let length = usize::from(u16::from_be_bytes([*bytes.get(at)?, *bytes.get(at + 1)?]));
+        at += length.max(2);
+    }
+}
+
 impl Layout {
     /// True for the layouts `zune-jpeg` decodes correctly, as `tests/jpeg_layouts.rs` proves:
-    /// 8-bit baseline, extended or progressive, grey or colour, colour halved in any of the
-    /// usual ways (4:4:4, 4:2:2, 4:2:0, 4:4:0, 4:1:1), and in a baseline file every component
-    /// in the first scan. A new layout joins only with a fixture that proves it.
+    /// 8-bit baseline or progressive (extended SOF1 has no fixture yet), grey, Adobe CMYK or
+    /// colour halved in any of the usual ways (4:4:4, 4:2:2, 4:2:0, 4:4:0, 4:1:1), and in a
+    /// baseline file every component in the first scan. A new layout joins only with a
+    /// fixture that proves it.
     pub fn zune_proven(&self) -> bool {
-        let frame = matches!(self.frame, 0xC0..=0xC2);
+        let frame = matches!(self.frame, 0xC0 | 0xC2);
         let usual = match self.sampling.as_slice() {
-            // Grey; or CMYK, zune's conversion as before until a fixture proves either decoder.
+            // Grey, and Adobe CMYK (`cmyk.jpg`).
             [_] | [_, _, _, _] => true,
             [luma, cb, cr] => {
                 *cb == (1, 1) && *cr == (1, 1) && matches!(luma, (1 | 2, 1 | 2) | (4, 1))

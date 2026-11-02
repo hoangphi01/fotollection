@@ -11,6 +11,15 @@
 3. **Reproduce with the user's photo when the user sees it.** A synthetic test passed while the real app was soft: unit tests prove the pixels, only the real webview proves what is shown.
 4. **Write the lesson here** before moving on.
 
+## 2026-11-02
+
+### A fixture that cannot fail proves nothing: the 16-bit grey test passed on broken code (ERR-IMG-0002, ADR-0033)
+
+- **Seen:** the audit read that the 16-bit grey path keeps the wrong byte of each sample (jpeg-decoder gives them in the machine's byte order). The first fixture for it decoded with no error at all on the old code.
+- **Why:** the fixture's samples were `luma × 257`, whose high and low bytes are equal, so keeping either byte gives the same picture. A second fixture, with a low byte unrelated to the high one, failed on the old code at once (mean error 79 of 255), and passes with the fix.
+- **Also found by writing fixtures first:** a JPEG cut short decoded "fine" as half a photo on grey (now refused, `ERR-IMG-0006`); Adobe CMYK, suspected, decodes right on zune, while the reference decoder's fallback really came out negative (a difference of 255 between the two decoders).
+- **Rule:** before trusting a fixture, make it fail on the code it is meant to catch: build it so the wrong answer and the right one differ, and run it once on the old code. Read the dependency's source for byte order and inversions, never the comment above our call.
+
 ## 2026-11-01
 
 ### Rotate photo turned the whole collage sheet (FR-035)

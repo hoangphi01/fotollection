@@ -23,15 +23,15 @@ The audit of 2026-11-02 read the RAW path, the JPEG and colour path and the docs
    - ✓ The audit's stale and contradicting statements fixed (STATUS, ROADMAP phases, README, USER_GUIDE, ARCHITECTURE, SECURITY, TESTING, OPTIMIZATION, DATABASE, site copy, ADR index).
    - ✓ `check-docs.sh` checks that ROADMAP and STATUS give every FR the same phase, and that a commit changing code also changes docs.
 2. **Session 2: v0.9.1, decoding fixes.** Fixtures first in `crates/core/tests/fixtures/jpeg/` (16-bit lossless grey, Adobe CMYK, YCCK, progressive with a non-interleaved DC scan, restart intervals on 4:4:4 and 4:2:2, a cut-off file), each test failing on the old code, then:
-   - ☐ 16-bit grey reads the high byte of native-endian samples (`codec.rs`, jpeg-decoder's `to_ne_bytes`);
-   - ☐ CMYK and YCCK: the right formula for jpeg-decoder's output, every 4-component JPEG on jpeg-decoder, no grey or CMYK ICC profile on RGB output;
-   - ☐ a header `jpeg_layout::read` cannot parse goes to the reference decoder; SOF1 leaves `zune_proven` until a fixture proves it;
-   - ☐ the corpus test checks the maximum and 99th-percentile error and which decoder ran;
-   - ☐ `ErrCode` in `IpcError` and the core's errors, in the bindings and on screen; the check fails on a code without its row.
+   - ✓ 16-bit grey reads the high byte of native-endian samples (`codec.rs`, jpeg-decoder's `to_ne_bytes`);
+   - ✓ CMYK: a fixture proves zune's conversion, the jpeg-decoder fallback no longer comes out negative, no grey or CMYK ICC profile on RGB output; ☐ YCCK still needs a fixture (no tool here writes one);
+   - ✓ a header `jpeg_layout::read` cannot parse goes to the reference decoder; SOF1 leaves `zune_proven` until a fixture proves it;
+   - ✓ the corpus test checks the mean and 99th-percentile error and the route of each file (zune, reference, refused); a JPEG cut short is refused (`ERR-IMG-0006`);
+   - ✓ `ErrCode` in `IpcError` and the core's errors, in the bindings and on screen; the check fails on a code without its row.
    - ☐ `import.raw_codec_missing` (ERR-EXT-0003) is unreachable (`raw.rs` `first()` swallows it): raise it again with a current message, or retire it.
 3. **Session 3: v0.9.1, then release.**
    - ☐ DNG black-level repeat from the ActiveArea origin, checked against the spec with a synthetic DNG;
-   - ☐ "4:4:4" said only of print exports (README, site);
+   - ✓ "4:4:4" said only of print exports (README, site, done in session 1); ✓ `thumbs::CACHE_VERSION` 3, so thumbnails made from 16-bit grey or cut-short JPEGs are made again;
    - ☐ the offline error log (rotating, no image data, GPS or full paths), *Copy diagnostics* next to *Report a problem*, the panic hook writing `ERR-RUS`;
    - ☐ release v0.9.1 (RELEASE.md §6).
 4. **Session 4: v0.10.0, FR-071 image facts.** ☐ `jpeg_layout::read` reads APP14, the ICC description and DRI; RAW gives its sensor kind; `PhotoRecord` keeps them (project schema bump); the inspector shows "4:2:0 · Display P3" or "X-Trans · 14-bit", with a grid badge for unusual files.

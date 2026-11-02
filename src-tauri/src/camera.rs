@@ -58,6 +58,8 @@ const MAX_NAME: usize = 64;
 #[serde(rename_all = "camelCase")]
 pub struct CameraIssue {
     pub code: String,
+    /// Its `ERR-` code (`docs/ERROR_CONTROL.md`).
+    pub err: String,
     pub message: String,
 }
 
@@ -65,6 +67,7 @@ impl CameraIssue {
     fn new(code: &str, message: impl Into<String>) -> Self {
         Self {
             code: code.to_owned(),
+            err: fotollection_core::errors::err_code(code).to_owned(),
             message: message.into(),
         }
     }
