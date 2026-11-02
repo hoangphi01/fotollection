@@ -31,7 +31,7 @@ export function VersionHistory({ version }: { version: string }) {
       </PopoverTrigger>
       <PopoverContent side="top" align="end" className="w-80 p-0">
         <p className="border-b px-4 py-2.5 text-sm font-semibold">{t('about.versions')}</p>
-        <ol className="max-h-80 space-y-0 overflow-y-auto">
+        <ol className="max-h-80 space-y-0 overflow-y-auto overscroll-contain">
           {releases.map((r) => (
             <li key={r.version} className={cn('border-b px-4 py-2.5 last:border-b-0', r.version === version && 'bg-muted/60')}>
               <div className="flex items-baseline gap-2">
