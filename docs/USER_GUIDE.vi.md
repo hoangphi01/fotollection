@@ -17,13 +17,13 @@ Fotollection làm việc trên các thư mục ảnh bạn đã có. Nó đọc 
    - **từng thư mục**, kèm số ảnh. Nhấp một thư mục để chỉ xem ảnh của nó. Ctrl/⌘-nhấp, hoặc nút **Chọn thư mục**, để xem nhiều thư mục cùng lúc. Dấu **×** hiện trên thư mục sẽ gỡ nó khỏi thư viện; tệp vẫn còn nguyên trên máy.
 3. **Làm mới thư mục** (hai mũi tên xoay vòng) tìm ảnh mới được thêm vào các thư mục này; các chỉnh sửa được giữ nguyên.
 4. **Gallery** nằm ở giữa. Thanh công cụ phía trên có *Ảnh* / *Nhóm* và *Tìm ảnh đẹp nhất* (chương 3), số ảnh, *Chọn* (chương 4) và các bộ lọc (chương 2).
-5. **Bảng Thiết lập in** bên phải có, từ trên xuống: *Ngôn ngữ*, *Khổ in / xuất ảnh* (chương 5), *Dấu ngày* (chương 8), *Khung thông tin* (chương 9), *Đồng hồ máy ảnh* (chương 11) và *Địa điểm* (chương 10) khi thư viện đã có, rồi phần xuất ảnh (chương 12) và số phiên bản (chương 17).
+5. **Bảng Thiết lập in** bên phải có, từ trên xuống: *Khổ in / xuất ảnh* (chương 5), *Dấu ngày* (chương 8), *Khung thông tin* (chương 9), *Đồng hồ máy ảnh* (chương 11) và *Địa điểm* (chương 10) khi thư viện đã có, rồi phần xuất ảnh (chương 12) và số phiên bản (chương 17).
 
 <!-- shot: grid | Thư viện ảnh, đã chấm sao và chọn ảnh -->
 
 **Ba chế độ:** các nút ở đầu thanh bên chuyển giữa **Đơn giản** (từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất: chương 18), **Ghép ảnh** (hai ảnh trên một tấm in: chương 19) và **Pro**, phần app mà hướng dẫn này mô tả. Ảnh, giỏ in và thiết lập của bạn giống nhau ở mọi chế độ, và chế độ được nhớ trên máy này. **Cmd/Ctrl+1**, **2** và **3** chuyển giữa chúng, kể cả khi đang xem trước (bản xem trước sẽ đóng; trừ lúc đang cắt ảnh) ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
 
-**Ngôn ngữ và giao diện:** chọn *English* hoặc *Tiếng Việt* trong thẻ **Ngôn ngữ** ở đầu bảng. Ba nút ở cuối thanh bên đổi giao diện: **Theo hệ thống**, **Sáng** hoặc **Tối** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
+**Ngôn ngữ và giao diện:** bấm số phiên bản ở chân bảng bất kỳ, rồi chọn *English* hoặc *Tiếng Việt* ở mục **Ngôn ngữ**; ở chế độ nào cũng giống nhau. Ba nút ở cuối thanh bên đổi giao diện: **Theo hệ thống**, **Sáng** hoặc **Tối** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
 
 <!-- chapter: cull -->
 
@@ -361,7 +361,7 @@ Fotollection không bao giờ tự lên mạng ([FR-021](PRD.md#fr-021--manual-u
    - **Linux AppImage:** nút này tải AppImage mới; cho phép chạy (`chmod +x`) rồi dùng nó thay cho tệp cũ.
    - **Linux `.deb`:** nút này mở trang phát hành; tải `.deb` mới rồi chạy `sudo apt install ./Fotollection_*_amd64.deb` (`_arm64.deb` trên ARM).
 
-Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đẹp nhất mà Fotollection giữ để mở thư mục nhanh, kèm dung lượng so với giới hạn 2 GB. Vượt giới hạn, các mục cũ nhất tự bị xoá. **Xoá cache** làm trống nó bất kỳ lúc nào; không mất gì của bạn, và ảnh nhỏ sẽ được tạo lại khi bạn duyệt.
+Cùng ô đó có mục **Ngôn ngữ** (chương 1) và hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đẹp nhất mà Fotollection giữ để mở thư mục nhanh, kèm dung lượng so với giới hạn 2 GB. Vượt giới hạn, các mục cũ nhất tự bị xoá. **Xoá cache** làm trống nó bất kỳ lúc nào; không mất gì của bạn, và ảnh nhỏ sẽ được tạo lại khi bạn duyệt.
 
 **Gặp lỗi, hay có ý tưởng?** Bấm số phiên bản ở chân bảng, rồi nút đỏ **Báo lỗi / góp ý**: nút này mở trang báo lỗi và góp ý của dự án trên GitHub, trong trình duyệt ([FR-069](PRD.md#fr-069--report-a-problem)). Hãy ghi bạn đã làm gì và thấy gì, rồi bấm **Sao chép thông tin chẩn đoán** và dán vào: phần này có phiên bản, hệ điều hành và các mã lỗi gần nhất.
 

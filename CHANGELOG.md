@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- UI update: the language is chosen in the version popover, the same in every mode, so the Print panel has one card less
+
+### Changed
+
+- **Language** moved from the top of the Print settings panel to the popover behind the version number at the foot of every panel, next to *Check for updates* and the cache. Simple and Collage modes can now change it too.
+
 ## [0.9.1] - 2026-11-02
 
 ### Highlights

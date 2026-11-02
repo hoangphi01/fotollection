@@ -1,15 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Crop, Languages } from 'lucide-react'
+import { Crop } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PanelFooter } from '@/features/about/panel-footer'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { CameraClocksCard } from '@/features/cameras/camera-clocks-card'
 import { PlacesCard } from '@/features/places/places-card'
 import { SectionCard } from '@/components/layout/section-card'
@@ -22,7 +15,6 @@ import type { FrameConfigApi } from '@/features/frame/use-frame-config'
 import {
   commands,
   type CullFilter,
-  type Language,
   type PhotoId,
   type PhotoSummary,
   type RenderSettings,
@@ -33,9 +25,7 @@ import { FitSizeNote } from '@/features/frame/fit-size-note'
 import { BorderSwitch } from './border-switch'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
-import { LANGUAGES } from '@/i18n'
 import { PrintSizePicker } from './print-size-picker'
-import { useLanguage } from './use-language'
 import { useIpcQuery } from './use-ipc-query'
 
 type SettingsPanelProps = {
@@ -77,7 +67,6 @@ export function SettingsPanel({
   ticked,
 }: SettingsPanelProps) {
   const { t } = useTranslation()
-  const { language, change: changeLanguage } = useLanguage()
   const printSizes = useIpcQuery(commands.listPrintSizes)
   const advice = usePrintAdvice(photo?.id, settings)
 
@@ -91,29 +80,6 @@ export function SettingsPanel({
         </>
       }
     >
-        <SectionCard
-          icon={<Languages />}
-          title={
-            <Label htmlFor="ui-language" className="text-sm font-semibold whitespace-nowrap">
-              {t('settings.language')}
-            </Label>
-          }
-          action={
-          <Select value={language} onValueChange={(v) => void changeLanguage(v as Language)}>
-            <SelectTrigger id="ui-language" size="sm" className="w-auto gap-1 px-2 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {LANGUAGES.map((l) => (
-                <SelectItem key={l.value} value={l.value}>
-                  {l.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          }
-        />
-
         <SectionCard
           icon={<Crop />}
           title={

@@ -19,13 +19,13 @@ Fotollection works on the folders of photos you already have. It reads them wher
    - **each folder**, with its count. Click a folder to show only its photos. Ctrl/⌘-click, or the **Select folders** button, shows several together. The **×** that appears on a folder removes it from the library; the files stay on disk.
 3. **Refresh folders** (the circling arrows) picks up photos added to these folders since; your edits are kept.
 4. **The gallery** fills the middle. The toolbar above it holds *Photos* / *Groups* and *Find best shots* (chapter 3), the photo count, *Select* (chapter 4) and the filters (chapter 2).
-5. **The Print settings panel** on the right holds, top to bottom: *Language*, *Print / export size* (chapter 5), *Date stamp* (chapter 8), *Info frame* (chapter 9), *Camera clocks* (chapter 11) and *Places* (chapter 10) once the library has them, then the export controls (chapter 12) and the version number (chapter 17).
+5. **The Print settings panel** on the right holds, top to bottom: *Print / export size* (chapter 5), *Date stamp* (chapter 8), *Info frame* (chapter 9), *Camera clocks* (chapter 11) and *Places* (chapter 10) once the library has them, then the export controls (chapter 12) and the version number (chapter 17).
 
 <!-- shot: grid | The library, culled with stars and picks -->
 
 **Three modes:** the buttons at the top of the sidebar switch between **Simple** (one photo at a time, ↑ keep, ↓ drop, then export: chapter 18), **Collage** (two photos on one print: chapter 19) and **Pro**, the app this guide describes. Your photos, basket and settings are the same in every mode, and the mode is remembered on this computer. **Cmd/Ctrl+1**, **2** and **3** switch between them, also from a preview, which closes (not while a crop is being edited) ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
 
-**Language and look:** choose *English* or *Tiếng Việt* in the **Language** card at the top of the panel. The three buttons at the foot of the sidebar set the look: **Follow the system**, **Light** or **Dark** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
+**Language and look:** click the version number at the foot of any panel, then choose *English* or *Tiếng Việt* under **Language**; it is the same in every mode. The three buttons at the foot of the sidebar set the look: **Follow the system**, **Light** or **Dark** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
 
 <!-- chapter: cull -->
 
@@ -363,7 +363,7 @@ Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates
    - **Linux AppImage:** the button downloads the new AppImage; make it executable (`chmod +x`) and use it in place of the old file.
    - **Linux `.deb`:** the button opens the release page; download the new `.deb` and run `sudo apt install ./Fotollection_*_amd64.deb` (`_arm64.deb` on ARM).
 
-The same popover shows the **cache**: the thumbnails and best-shot analyses Fotollection keeps so folders open fast, with its size against its 2 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
+The same popover holds the **Language** choice (chapter 1) and shows the **cache**: the thumbnails and best-shot analyses Fotollection keeps so folders open fast, with its size against its 2 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
 
 **Something wrong, or an idea?** Click the version number at the foot of the panel, then the red **Report a problem or an idea**: it opens the project's page for problems and ideas on GitHub, in your browser ([FR-069](PRD.md#fr-069--report-a-problem)). Say what you did and what you saw, then click **Copy diagnostics** and paste it into the report: it holds your version, your system and the last error codes.
 
