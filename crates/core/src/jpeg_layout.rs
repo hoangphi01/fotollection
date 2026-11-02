@@ -125,7 +125,7 @@ impl Layout {
     pub fn zune_proven(&self) -> bool {
         let frame = matches!(self.frame, 0xC0 | 0xC2);
         let usual = match self.sampling.as_slice() {
-            // Grey, and Adobe CMYK (`cmyk.jpg`).
+            // Grey, and Adobe CMYK or YCCK (`cmyk.jpg`, `ycck.jpg`).
             [_] | [_, _, _, _] => true,
             [luma, cb, cr] => {
                 *cb == (1, 1) && *cr == (1, 1) && matches!(luma, (1 | 2, 1 | 2) | (4, 1))

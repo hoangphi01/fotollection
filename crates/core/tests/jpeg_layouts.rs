@@ -62,6 +62,11 @@ fn fr_001_every_jpeg_layout_decodes_like_the_photo() -> Result<(), CodecError> {
         ("lossless-rgb.jpg", Reference),
         // Adobe CMYK, as Photoshop writes it.
         ("cmyk.jpg", Zune),
+        // Adobe YCCK (APP14 transform 2), as Photoshop writes CMYK at most qualities.
+        ("ycck.jpg", Zune),
+        // 8-bit extended sequential (SOF1): a quantization value above 255. zune decodes this
+        // one right, but SOF1 also allows four Huffman tables, which no fixture covers yet.
+        ("extended-sof1-420.jpg", Reference),
         // Neither decoder reads arithmetic coding; a cut-off file must not paint a half photo.
         ("arithmetic-420.jpg", Refused),
         ("truncated-420.jpg", Refused),

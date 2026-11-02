@@ -25,7 +25,9 @@ The JPEGs were made with libjpeg-turbo 3.1 from `source.png` converted to PPM, a
 | `cmyk.jpg` | Pillow 11 `convert('CMYK').save(quality=90)` | Adobe CMYK (APP14, inverted values), as Photoshop writes it |
 | `arithmetic-420.jpg` | `-sample 2x2 -arithmetic` | arithmetic coding (SOF9): neither decoder reads it, so it must be refused |
 | `truncated-420.jpg` | the first 60 % of `baseline-420.jpg` | a file cut short: must be refused (`ERR-IMG-0006`), never decoded as half a photo |
+| `ycck.jpg` | `ycck.c` (libjpeg-turbo 3.1, build line at its top): `in_color_space = JCS_CMYK`, `jpeg_set_colorspace(JCS_YCCK)`, quality 90, ink stored inverted as Photoshop does (`R, G, B, 255`) | Adobe YCCK (APP14 transform 2). The same file with the ink not inverted decodes with a mean error of 124, so the test can tell |
+| `extended-sof1-420.jpg` | `-quality 50 -qtables sof1.qtables -qslots 0,1,1 -sample 2x2`: the Annex K tables with their last value set to 300 | 8-bit extended sequential (SOF1), written because a quantization value is above 255. zune decodes it right, yet SOF1 stays off `zune_proven`: it also allows four Huffman tables, which no fixture covers |
 
-Not yet: YCCK (Adobe transform 2) and 8-bit extended (SOF1), which neither `cjpeg` nor Pillow writes; SOF1 stays off zune until a fixture proves it.
+Not yet: SOF1 with more than two Huffman tables, 12-bit JPEG.
 
 To add a layout, save `source.png` in it, add the file to the table and to the test's list with the route it must take (zune, the reference decoder, or refused), and allow it in `Layout::zune_proven` only once the test shows zune decodes it right. The test compares the mean and the 99th-percentile error per channel, and checks the route.

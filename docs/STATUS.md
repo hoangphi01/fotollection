@@ -24,8 +24,8 @@ The audit of 2026-11-02 read the RAW path, the JPEG and colour path and the docs
    - ✓ `check-docs.sh` checks that ROADMAP and STATUS give every FR the same phase, and that a commit changing code also changes docs.
 2. **Session 2: v0.9.1, decoding fixes.** Fixtures first in `crates/core/tests/fixtures/jpeg/` (16-bit lossless grey, Adobe CMYK, YCCK, progressive with a non-interleaved DC scan, restart intervals on 4:4:4 and 4:2:2, a cut-off file), each test failing on the old code, then:
    - ✓ 16-bit grey reads the high byte of native-endian samples (`codec.rs`, jpeg-decoder's `to_ne_bytes`);
-   - ✓ CMYK: a fixture proves zune's conversion, the jpeg-decoder fallback no longer comes out negative, no grey or CMYK ICC profile on RGB output; ☐ YCCK still needs a fixture (no tool here writes one);
-   - ✓ a header `jpeg_layout::read` cannot parse goes to the reference decoder; SOF1 leaves `zune_proven` until a fixture proves it;
+   - ✓ CMYK: a fixture proves zune's conversion, the jpeg-decoder fallback no longer comes out negative, no grey or CMYK ICC profile on RGB output; ✓ YCCK: `ycck.jpg` (written by `ycck.c` on libjpeg) decodes right on zune (session 3);
+   - ✓ a header `jpeg_layout::read` cannot parse goes to the reference decoder; SOF1 leaves `zune_proven`; `extended-sof1-420.jpg` decodes right on zune, but SOF1 stays off until a fixture with four Huffman tables;
    - ✓ the corpus test checks the mean and 99th-percentile error and the route of each file (zune, reference, refused); a JPEG cut short is refused (`ERR-IMG-0006`);
    - ✓ `ErrCode` in `IpcError` and the core's errors, in the bindings and on screen; the check fails on a code without its row.
    - ✓ `import.raw_codec_missing` (ERR-EXT-0003) raised again by `raw.rs` `first()` when every reader passed and Windows has no codec, with a current message (session 3).
