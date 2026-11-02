@@ -25,7 +25,6 @@ rows:
     win: ok
     linux: ok
   - key: modes
-    coming: true
     mac: ok
     win: ok
     linux: ok

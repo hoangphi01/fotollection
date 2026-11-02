@@ -58,8 +58,8 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 |---|---------|-------|
 | 📅 | **Date and location stamps** from EXIF, in your own OTF/TTF font. Places are resolved offline, with no API calls | MVP |
 | ✂️ | **Batch crop** to 8 EU print sizes (9×13 … 20×30, square, strip), your own sizes (e.g. 4 × 6 in) or the photo's **original** ratio, with an adjustable crop per photo | MVP |
-| 🎚️ | **Three modes** (v0.9.0, coming): **Simple**, one photo at a time, ↑ keep, ↓ drop, then export; **Collage**, two photos on one print like a half-frame camera (a 10 × 15 holds two 10 × 7.5), with a suggested size, a cut line and drag to reorder; **Pro**, every control | 1 |
-| 🔲 | **3 mm border** inside the print size on every print, with or without the info frame (v0.9.0, coming) | 1 |
+| 🎚️ | **Three modes** (new in v0.9.0): **Simple**, one photo at a time, ↑ keep, ↓ drop, then export; **Collage**, two photos on one print like a half-frame camera (a 10 × 15 holds two 10 × 7.5), with a suggested size, a cut line and drag to reorder; **Pro**, every control | 1 |
+| 🔲 | **3 mm border** inside the print size on every print, with or without the info frame (new in v0.9.0) | 1 |
 | ⭐ | **Culling**: stars, pick/reject flags and filters; export writes exactly the filtered set | MVP |
 | ✨ | **Best-shot suggestions**: groups bursts and similar shots and suggests the best of each (sharpest, eyes open, no shake), with reasons. Fully offline | MVP |
 | 🏷️ | **"Shot on …" info frame** with camera, lens and exposure, LUMIX Lab style, at the exact print ratio | MVP |

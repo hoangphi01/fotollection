@@ -369,7 +369,7 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 
 ## 18. Chế độ Đơn giản
 
-*Mới trong v0.9.0, chưa phát hành.* Đường ngắn nhất từ một thư mục tới ảnh in: xem mỗi ảnh một lần, giữ hoặc bỏ, rồi xuất những ảnh đã giữ ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes), [FR-050](PRD.md#fr-050--print-basket)).
+*Mới trong v0.9.0.* Đường ngắn nhất từ một thư mục tới ảnh in: xem mỗi ảnh một lần, giữ hoặc bỏ, rồi xuất những ảnh đã giữ ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes), [FR-050](PRD.md#fr-050--print-basket)).
 
 1. Nhấp **Đơn giản** ở đầu thanh bên, và mở một thư mục nếu thư viện còn trống.
 2. Ảnh đầu tiên hiện ở giữa, **đúng như khi in**, với khổ in, dấu ngày và viền của bạn.
@@ -387,7 +387,7 @@ Cùng ô đó hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đ
 
 ## 19. Chế độ Ghép ảnh
 
-*Mới trong v0.9.0, chưa phát hành.* Hai ảnh trên một tấm in, như máy ảnh film half-frame chụp hai khung trên một ô phim: một tấm 10 × 15 chứa hai ảnh 10 × 7,5, nên in cả bộ chỉ tốn một nửa ([FR-035](PRD.md#fr-035--multi-photo-layouts)).
+*Mới trong v0.9.0.* Hai ảnh trên một tấm in, như máy ảnh film half-frame chụp hai khung trên một ô phim: một tấm 10 × 15 chứa hai ảnh 10 × 7,5, nên in cả bộ chỉ tốn một nửa ([FR-035](PRD.md#fr-035--multi-photo-layouts)).
 
 1. Nhấp **Ghép ảnh** ở đầu thanh bên. Chọn ảnh để ghép ở thanh bên, thường là **Giỏ in**.
 2. Các ảnh được ghép theo thứ tự, 1 + 2, 3 + 4…, và mỗi tấm hiện đúng như khi in. Ảnh lẻ cuối cùng để nửa kia trắng.

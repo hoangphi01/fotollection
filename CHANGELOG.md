@@ -11,27 +11,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Highlights
 
 - New: three modes, Simple, Collage and Pro, switched at the top of the sidebar or with Cmd/Ctrl+1, 2, 3
-- New: Collage, two photos on one print like a half-frame camera, with a suggested size and a cut line
+- New: Collage, two photos on one print like a half-frame camera, with a suggested size, a cut line and Auto turn for prints you cut in two
 - New: Simple, one photo at a time, ↑ keep, ↓ drop, then export
 - New: a 3 mm border on every print, white or black, and a small, medium or large date stamp
 - Website: a Manual in English and Vietnamese, and a Sponsor on GitHub button
 
 ### Added
 
-- **Collage, Auto turn:** **Auto turn** lays every sheet landscape with its two photos standing, for prints you cut in two, and **Revert** brings sheets and photos back to their own orientation; the keys of the toolbar, here and in the gallery, sit behind an **ⓘ** button.
 - **Three modes**, switched at the top of the sidebar or with Cmd/Ctrl+1, 2 and 3, and remembered on this computer: **Simple**, **Collage** and **Pro**, the app as you know it. Your photos, basket and settings are the same in every mode.
 - **Collage mode**, inspired by half-frame film cameras: two photos on one print, so a 10 × 15 holds two 10 × 7.5 photos and a set costs half as much. Photos pair in order and each sheet shows as it will print; drag a photo onto another to swap them, turn a sheet, crop each photo for its place, and open a sheet like a photo for a large preview with zoom, crop and Export this sheet. Fill each half for no white at all, the two photos edge to edge and each cropped by you; or choose the photo ratio, take the suggested size (6 × 9 cm for a 2:3 photo, with 5 mm of white round it) or type your own with the ratio locked, and switch the cut line on to cut the print in two, or off for a half-frame strip. In a sheet's preview, **Rotate photo** (⇧R) turns the chosen photo a quarter in its half, so a landscape photo next to a portrait one fills its half; its own print does not change. The line under the date can differ per photo: turn *Same on both photos* off and type one for each. A change of setting shows on the sheets at once. Select mode and the print basket work as in the gallery, and ↑ / ↓ in a sheet's preview. Export writes one file per sheet.
+- **Collage, choosing and turning:** **Select** ticks whole sheets, both photos at once, with one tick and one frame round each sheet; the bar counts sheets, and Export writes only the ticked sheets (*Export 2 selected sheets*). *Rotate photo* turns a photo in its half and keeps the sheet. **Auto turn** lays every sheet landscape with its two photos standing, for prints you cut in two, and **Revert** brings sheets and photos back to their own orientation; the keys of the toolbar, here and in the gallery, sit behind an **ⓘ** button.
 - **Simple mode:** one photo at a time, as it will print. **↑ Keep** puts it in the print basket, **↓ Drop** sets it aside, and the next photo comes at once; two large buttons do the same with the mouse. The panel keeps only the print size, the 3 mm border, the date stamp (the same card as Pro: format, corner, colour, size, place and your own line) and Export, which sends the basket.
 - **3 mm border on every print:** the *3 mm border* switch moves to the print-size card and works with or without the info frame. Without a frame, a border 3 mm wide runs round the photo, white or black (on a collage sheet, the paper round the photos too); with Fit whole photo, the whole photo now fits inside the size you chose instead of making the print larger. The print always keeps the exact kiosk size. A border you had in Crop to fill stays on.
 - **Date stamp size:** Small, Medium or Large, in every mode and for one photo in the preview, sized to the print: larger on a larger print, and half on each photo of a collage sheet. Stamps you had stay Medium.
 - **Website:** a Manual page, in English and Vietnamese, with screenshots of the real app, in 20 chapters that follow the way you work: getting started, stars and filters, best shot, the print basket, print size, crop and straighten, zoom, the date stamp, the info frame, dates and places, camera clocks, export, projects and undo, RAW, Open with, shooting with a camera, updates, Simple mode, Collage mode, and every shortcut. The chapter list opens from a round button bottom left.
-- **Website:** a "Three modes" section on the landing page with Collage and Simple, marked as coming in v0.9.0; every screenshot taken again with the mode switch in the sidebar.
+- **Website:** a "Three modes" section on the landing page with Collage and Simple; every screenshot taken again with the mode switch in the sidebar.
 - **Website:** the print-basket and best-shot screenshots show a cat photographed by the author on a Lumix GX9, with a softer, a shaken and a darker copy beside it for best shot.
 
 ### Fixed
 
-- **Collage:** select mode ticks whole sheets, both photos at once, with one tick and one frame round each ticked sheet (no frame per photo, no dragging); the bar counts sheets, and Export writes only the ticked sheets (*Export 2 selected sheets*).
-- **Collage:** *Rotate photo* turns only the photo in its half; the sheet no longer turns with it when the photo is the sheet's first.
 - **3 mm border:** photos exported for social media no longer get it; Pro's photo preview shows the switch again; the size badges and the DPI follow the photo inside the border; dragging the photo in the preview keeps pace with the pointer.
 - **Collage:** cropping a photo on a sheet no longer changes its print crop (sheets have a crop of their own); reordering in one folder keeps the others' order; a sheet's quality counts the photo's crop and straightening.
 - **Modes:** Pro's star and flag filters no longer hide photos in Simple and Collage; select mode, Quick-preview and an open preview no longer carry over to another mode; Cmd/Ctrl+1/2/3 work from a preview (it closes) and wait only while a crop is being edited; "Open with" switches to Pro, where the preview is.
