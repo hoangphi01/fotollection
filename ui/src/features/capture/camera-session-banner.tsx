@@ -14,7 +14,7 @@ type CameraSessionBannerProps = {
 export function CameraSessionBanner({ count, onSave, onDiscard }: CameraSessionBannerProps) {
   const { t } = useTranslation()
   return (
-    <Alert className="m-3 mb-0 w-auto">
+    <Alert>
       <Camera />
       <AlertDescription className="flex flex-wrap items-center gap-3">
         <span className="min-w-0 flex-1">{t('capture.sessionBanner', { count })}</span>

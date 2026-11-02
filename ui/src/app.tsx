@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { FilterX, OctagonX, Sparkles, Square } from 'lucide-react'
+import { FilterX, Sparkles, Square } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { KeysInfo } from '@/components/layout/keys-info'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { ErrorNotice, NoticeStack } from '@/components/layout/notice-stack'
 import { Button } from '@/components/ui/button'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -15,6 +15,7 @@ import { commands, events, type CullFilter, type OpenPhoto } from '@/ipc/binding
 import { LibraryEmptyState } from '@/features/library/library-empty-state'
 import { LibraryGrid } from '@/features/library/library-grid'
 import { TaskProgressBar } from '@/features/library/task-progress-bar'
+import { useTaskProgress } from '@/features/library/use-task-progress'
 import { LibrarySidebar } from '@/features/library/library-sidebar'
 import { SelectionBar } from '@/features/library/selection-bar'
 import { DatePlaceDialog } from '@/features/places/date-place-dialog'
@@ -188,6 +189,13 @@ export function App() {
     onlyFolder !== undefined && (filter.queue ?? 'gallery') === 'gallery' && capture.sessions.includes(onlyFolder)
       ? onlyFolder
       : null
+  // The main view's error. A dismissed one stays hidden while it lasts; once it clears, the
+  // same error from a new attempt (another Connect) shows again.
+  const mainError = error ?? bestShots.error ?? (capture.phase === 'connected' ? null : capture.error)
+  const [dismissedError, setDismissedError] = useState<string | null>(null)
+  if (mainError === null && dismissedError !== null) setDismissedError(null)
+  const shownError = mainError !== dismissedError ? mainError : null
+  const taskProgress = useTaskProgress()
   const discardSession = (folder: number) => {
     // Folder ids are renumbered when a tab goes: show every photo again.
     setFilter({ ...filter, folders: [], queue: 'gallery' })
@@ -230,20 +238,17 @@ export function App() {
         cameraAction={<ConnectCameraButton capture={capture} />}
       />
       <main className="flex min-w-0 flex-1 flex-col">
-        {(error ?? bestShots.error ?? (capture.phase === 'connected' ? null : capture.error)) && (
-          <Alert variant="destructive" className="m-3 w-auto">
-            <OctagonX />
-            <AlertDescription>{error ?? bestShots.error ?? capture.error}</AlertDescription>
-          </Alert>
-        )}
-        {sessionTab !== null && (
-          <CameraSessionBanner
-            count={folders.find((f) => f.id === sessionTab)?.count ?? 0}
-            onSave={() => void capture.saveSession(sessionTab)}
-            onDiscard={() => setDiscarding(sessionTab)}
-          />
-        )}
-        <TaskProgressBar />
+        <NoticeStack>
+          {shownError && <ErrorNotice message={shownError} onDismiss={() => setDismissedError(shownError)} />}
+          {sessionTab !== null && (
+            <CameraSessionBanner
+              count={folders.find((f) => f.id === sessionTab)?.count ?? 0}
+              onSave={() => void capture.saveSession(sessionTab)}
+              onDiscard={() => setDiscarding(sessionTab)}
+            />
+          )}
+          {taskProgress && <TaskProgressBar progress={taskProgress} />}
+        </NoticeStack>
         {total === 0 ? (
           <LibraryEmptyState onOpenFolder={() => void importFolder()} />
         ) : collageMode ? (

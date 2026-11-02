@@ -286,7 +286,7 @@ export function LibrarySidebar({
         <p
           className="border-t px-4 py-2 text-xs text-muted-foreground"
           data-hint={lastImport.rejected
-            .map((r) => `${r.fileName}: ${errorText({ code: r.code, message: r.code })}`)
+            .map((r) => `${r.fileName}: ${errorText({ code: r.code, message: r.code, err: r.err })}`)
             .join('\n')}
         >
           {t('library.skipped', { count: lastImport.rejectedTotal })}

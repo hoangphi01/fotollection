@@ -1237,6 +1237,8 @@ export type Reason =
 export type RejectedSummary = {
 	fileName: string,
 	code: string,
+	/**  Its `ERR-` code (`docs/ERROR_CONTROL.md`). */
+	err: string,
 };
 
 export type RenderSettings = {

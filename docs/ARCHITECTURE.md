@@ -131,7 +131,7 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
   .oxlintrc.json         † # lint rules (bans dangerouslySetInnerHTML / eval)
   src/
     components/ui/       † # shadcn/ui components (copied in via the shadcn CLI, owned by us)
-    components/layout/   † # shared layout pieces (STYLE_RULE §4): side-panel, section-card, inspector-section, collapse, viewer-frame, stage-spinner, hint-layer, key-hints, keys-info (the keys popover behind the info button)
+    components/layout/   † # shared layout pieces (STYLE_RULE §4): side-panel, section-card, inspector-section, collapse, viewer-frame, stage-spinner, hint-layer, key-hints, keys-info (the keys popover behind the info button), notice-stack (the main view's notices: an error with its dismiss button, a camera session, a task's progress)
     components/forms/    † # shared form controls (commit-input)
     features/            † # one folder per feature (components + hooks): library/, culling/, best-shot/, viewer/, settings/, stamp/, frame/, fonts/, export/, places/, cameras/, capture/, project/, history/, open-with/, startup/, window/, appearance/, about/, print-advice/, modes/, simple/, collage/. Among them: about/panel-footer.tsx (the panel's version line and its popover), about/report-issue.tsx (Report a problem, FR-069), collage/auto-turn-buttons.tsx (Auto turn and Revert, FR-035)
     i18n/                † # i18next setup + typed keys (FR-020, ADR-0015)

@@ -23,6 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - A grey or CMYK colour profile is no longer attached to an exported RGB photo, where it made labs read the colours wrong.
 - Thumbnails are made once more after the update, so the wrong ones of such files go.
 - **DNG files whose sensor area starts at an odd row or column** (some cameras and converters) keep their colours: red was read as blue, and each pixel took its neighbour's black level. A black level given per row or per column is now read too.
+- The notices over the photos (an error, the camera's temporary folder, the progress of thumbnails) are evenly spaced blocks; the progress bar no longer sticks to the notice above it. An error can be dismissed with its × button.
+- Files skipped at import show their error code in the list too.
 - Scrolling to the end of the versions list, a search list or the compare window no longer scrolls the app behind it.
 - **On Windows, a RAW from a camera not read yet** says so, and that Microsoft's free Raw Image Extension may open it, instead of a general "could not be decoded".
 

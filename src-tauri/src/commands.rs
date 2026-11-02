@@ -94,6 +94,8 @@ pub fn list_print_sizes() -> Vec<PrintSize> {
 pub struct RejectedSummary {
     pub file_name: String,
     pub code: String,
+    /// Its `ERR-` code (`docs/ERROR_CONTROL.md`).
+    pub err: String,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Type)]
@@ -239,6 +241,7 @@ pub fn import_paths_with(app: &AppHandle, paths: Vec<PathBuf>, recursive: bool) 
             summary.rejected.push(RejectedSummary {
                 file_name: file_name(&rejected.path),
                 code: rejected.reason.code().to_owned(),
+                err: fotollection_core::errors::err_code(rejected.reason.code()).to_owned(),
             });
         }
     }
