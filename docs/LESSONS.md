@@ -13,6 +13,13 @@
 
 ## 2026-11-02
 
+### A crate yanked between CI and the release stops the release (v0.9.1)
+
+- **Seen:** the push of `chore(release): v0.9.1` failed its `security` check: `cargo deny` found `async-executor 1.14.0` (under zbus, on Linux) yanked. The same lockfile had passed CI an hour earlier. Pushing the fix in `Cargo.lock` started no release, because only a change to `Cargo.toml` does.
+- **Why:** a yank lands at any time and `cargo deny` checks against today's index. `scripts/release.sh` runs `cargo update --workspace`, which updates only our own crates.
+- **Fix:** `cargo update -p async-executor` (1.14.1), committed, then the `release` workflow started by hand (`gh workflow run release --ref main`). No tag had been made, so nothing was published twice.
+- **Rule:** run `cargo deny check advisories` just before `scripts/release.sh`; when a release fails before *publish*, fix on `main` and start the workflow by hand, never bump the version for it.
+
 ### A repeating pattern has an origin: DNG counted the CFA and black level from the wrong corner (ADR-0030)
 
 - **Seen:** reading `rawcore/src/cfa.rs` against the DNG specification, `site` and `level` took the 2×2 phase from the stored image's `(x & 1, y & 1)`. A synthetic DNG with its `ActiveArea` at row 1, column 1 read red as green and each pixel with its neighbour's black level; no sample had shown it, because nearly every camera starts its active area on an even row and column.
