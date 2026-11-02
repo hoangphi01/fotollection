@@ -1,6 +1,6 @@
 # User Guide — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-10-31
+> **Status:** Living · **Last reviewed:** 2026-11-02
 >
 > How to use the app, step by step, for the person at the keyboard. It describes behaviour that has shipped or is on `main`; the reasons and the full rules are in [PRD.md](PRD.md), linked from each section. Update it in the same commit as any change a user would notice ([DOCS_GUIDE.md](DOCS_GUIDE.md)).
 >
@@ -310,9 +310,9 @@ Fotollection opens the RAW files of most cameras as they are, with no conversion
 
 - Open the folder as usual. Thumbnails and best-shot suggestions appear as fast as for JPEG, because they use the small preview every camera stores inside its RAW files.
 - The print preview develops the full photo the first time you open it, which takes about a second; changing a setting afterwards is instant. The export develops each RAW the same way.
-- Colours and sharpness are the operating system's neutral development, not a RAW editor's: Fotollection prepares prints, it does not replace Lightroom.
+- Colours and sharpness are a neutral development (the system's on macOS, with its lens corrections; Fotollection's own elsewhere), not a RAW editor's: Fotollection prepares prints, it does not replace Lightroom.
 - **On Linux**, RAW opens through the reader built into Fotollection, with nothing to install.
-- **On Windows**, install Microsoft's free *Raw Image Extension* from the Microsoft Store first. Without it, RAW files are skipped and the hint says so. A RAW reader built into Fotollection, which needs no extension, is being built ([STATUS.md](STATUS.md)).
+- **On Windows**, RAW also opens through the reader built into Fotollection, with nothing to install ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)). If Microsoft's *Raw Image Extension* is installed, the system's codec is a last fallback for a file the built-in reader cannot open.
 
 <!-- chapter: open-with -->
 

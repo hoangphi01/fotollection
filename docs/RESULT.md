@@ -1,6 +1,6 @@
 # Measured Results — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-10-31
+> **Status:** Living · **Last reviewed:** 2026-11-02
 >
 > The **latest measured numbers** for speed and memory, in one readable page. Each number links to the run that produced it.
 > This page is a summary. The append-only history of every measurement is the benchmark log in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log), and the budgets are defined in [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets). When a new run changes a number, update this page and add the row to §5 in the same commit.
@@ -243,9 +243,9 @@ python3 -I scripts/fetch-raw-samples.py /tmp/raw
 cargo run --release -p fotollection-core --example measure_raw -- /tmp/raw/*
 ```
 
-## 13. Camera over USB, Step 0 (planned FR-062, FR-063)
+## 13. Camera over USB, Step 0 (FR-062, FR-063)
 
-Measured before building camera support ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)) with `crates/oscamera/examples/probe_camera.rs` on the owner's bodies, by USB cable, through ImageCaptureCore (no driver), REF-MAC (M3), macOS 26. Details per maker in [cameras/](cameras/README.md).
+Both shipped in v0.8.0 (Windows, Sony a6400 first). Measured before building camera support ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)) with `crates/oscamera/examples/probe_camera.rs` on the owner's bodies, by USB cable, through ImageCaptureCore (no driver), REF-MAC (M3), macOS 26. Details per maker in [cameras/](cameras/README.md).
 
 | Body, USB mode | Session open | GetDeviceInfo | Maker operations | Capture from the computer | Shutter on the body | Live view over USB |
 |------|-----:|-----:|-----|-----|-----|-----|

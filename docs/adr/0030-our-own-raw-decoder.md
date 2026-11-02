@@ -1,6 +1,7 @@
 # ADR-0030: Our own RAW decoder, format by format, coloured like the camera
 
 - **Status:** Accepted. Carries out the "our own decoder next" part of [ADR-0029](0029-raw-through-rawler-then-our-own-decoder.md)
+- **Amended by:** [ADR-0037](0037-our-own-develop-core.md) (2026-11-02): Malvar-He-Cutler gives way to RCD (Bayer) and Markesteijn (X-Trans); the look match to the embedded JPEG becomes an option; quality is scored against independent references
 - **Date:** 2026-10-27
 - **Related:** FR-016, NFR-004, NFR-017, ADR-0008, ADR-0029, [RESULT.md §16](../RESULT.md#16-our-own-raw-decoder-dng-v080-measured-first), [docs/raw/](../raw/README.md)
 

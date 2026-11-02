@@ -1,20 +1,34 @@
 # Testing Strategy — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-01
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-02
 >
 > How we prove that Fotollection is correct, robust and fast. Performance benchmarks are specified in [OPTIMIZATION.md](OPTIMIZATION.md).
 
 ## 1. Test pyramid
 
+**Today:**
+
 | Level | Scope | Tooling | Runs |
 |-------|-------|---------|------|
-| Unit | Pure functions in `crates/core` (crop math, stamp layout, date formatting, path sanitizing, geocode lookup) | `cargo test`, `proptest` | Every push that changes code (RELEASE.md §4) |
-| UI component | React components and hooks, with IPC mocked | `vitest` + Testing Library | Every push that changes code |
-| Golden image | Full `RenderPlan` → pixels for fixed inputs, compared to reference outputs | `cargo test` + image diff | Every push that changes code |
-| Integration | Pipeline end-to-end on the sample corpus (import → export to a temp dir) | `cargo test --test pipeline` | Every push that changes code (small set), nightly (full set) |
-| Fuzz | RAW decoder today (mutation testing on stable); decoders, EXIF parser, path sanitizer planned with `cargo-fuzz` | `examples/mutate.rs`, `cargo-fuzz` | Before a RAW format moves; nightly once set up |
-| E2E | Real app window: import, adjust, export, cancel | Tauri WebDriver (`tauri-driver`) | Before each release, on macOS and Windows |
-| Benchmark | Budgets from [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets) | `criterion` | Nightly + before each release |
+| Unit | Pure functions in `crates/core`, `crates/rawcore`, `crates/oscamera` and `src-tauri` (crop math, stamp layout, date formatting, path sanitizing, geocode lookup, PTP answers), named `fr_NNN_…` | `cargo test` | Every push that changes code (RELEASE.md §4), on macOS, Windows and Ubuntu ([ci.yml](../.github/workflows/ci.yml)) |
+| Integration | `crates/core/tests/pipeline.rs` (import → metadata → library → export on synthetic files) and `tests/jpeg_layouts.rs` (every JPEG layout decodes to the picture, [ADR-0033](adr/0033-reference-jpeg-decoder.md)) | `cargo test` | Every push that changes code |
+| UI checks | Types, lint (bans `dangerouslySetInnerHTML` / `eval`), the same i18n keys in both languages, the production build | `tsc -b`, `oxlint`, `ui/scripts/check-i18n.mjs`, `vite build` | Every push that changes code |
+| Fuzz | RAW decoder: mutation testing on stable Rust (§4) | `crates/rawcore/examples/mutate.rs` | By hand, before a RAW format moves to our own decoder |
+| Benchmark | Budgets from [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets) | `crates/core/examples/measure_*`, `bench/run.sh`, `bench/batch.sh`, `scripts/measure-startup.sh` | By hand, logged in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log) |
+| Release smoke test | The installed Linux packages (`.deb` file types, the AppImage runs 20 s, also on Debian 12) | [release.yml](../.github/workflows/release.yml) | Every release |
+| Manual | §7 checklist | By hand | Before each release |
+
+**Planned** (none of these exists yet):
+
+| Level | Scope | Tooling |
+|-------|-------|---------|
+| Property tests | Crop math, path sanitizing | `proptest` |
+| UI component | React components and hooks, with IPC mocked (no `*.test.ts` file yet) | `vitest` + Testing Library |
+| Golden image | Full `RenderPlan` → pixels for fixed inputs, compared to reference outputs (§5) | `cargo test` + image diff |
+| Integration, full set | The pipeline on the whole sample corpus (§3) | `cargo test --test pipeline`, nightly |
+| Fuzz | Decoders, EXIF parser, path sanitizer, `.cube` parser (§4) | `cargo-fuzz`, nightly |
+| E2E | Real app window: import, adjust, export, cancel | Tauri WebDriver (`tauri-driver`), on macOS and Windows before each release |
+| Benchmark in CI | The §3 budgets checked automatically (`criterion` is a dev-dependency, but no `benches/` exist yet) | `criterion`, nightly |
 
 ## 2. Requirement traceability
 
@@ -29,7 +43,7 @@ The corpus is stored **outside** git, because the photos are personal and large.
 | Subset | Contents | Purpose |
 |--------|----------|---------|
 | Synthetic (generated) | `crates/core/tests/common/mod.rs` builds JPEGs with chosen EXIF (date, GPS, orientation) through `jpeg-encoder` + `little_exif`, plus broken and spoofed files, at test time. **Nothing personal is committed** | Unit, pipeline and security tests (implemented) |
-| `fixtures` (in git) | ~20 small files: each orientation (1–8), no-EXIF, GPS/no-GPS, (0,0) GPS, HEIC, PNG, wide-gamut ICC, CMYK JPEG, corrupt/truncated files, polyglot | Unit, golden and security tests |
+| `fixtures` (in git) | `crates/core/tests/fixtures/`: one project file per schema version (`project/v1.fotollection`, `v3`…`v9`), one settings file per version (`settings/v1…v9.json`) and a v1 bundle, so every migration is tested. **Planned:** ~20 small photos (each orientation 1–8, no-EXIF, (0,0) GPS, HEIC, PNG, wide-gamut ICC, CMYK, polyglot) | Migration tests today; golden and security tests later |
 | JPEG layouts (in git) | `crates/core/tests/fixtures/jpeg/`: one drawn picture saved by `cjpeg` in 13 layouts (4:4:4, 4:2:2, 4:2:0, 4:4:0, 4:1:1, progressive, restart markers, optimised tables, one scan per component, grey); `tests/jpeg_layouts.rs` compares each decode with the picture, so a decoder upgrade that breaks a layout fails ([ADR-0033](adr/0033-reference-jpeg-decoder.md)) | Decoder regression tests |
 | `bench` | 200 × 24 MP JPEG (Lumix GX9), 100 × 12 MP HEIC (iPhone), 20 × PNG | Benchmarks |
 | `stress` | 2,000+ mixed files | Memory ceiling, long-run stability |
@@ -60,6 +74,8 @@ Any crash found by fuzzing is added to `fixtures` as a regression test.
 
 ## 5. Golden images
 
+**Planned:** none exist yet, and `crates/core/tests/golden/` does not exist. The plan:
+
 - Reference outputs live in `crates/core/tests/golden/`.
 - Comparison: exact match on stamp geometry. On pixels, a maximum per-channel difference of 1 and a PSNR of at least 50 dB, to tolerate codec version differences.
 - To regenerate, run `UPDATE_GOLDEN=1 cargo test`. The diff must be reviewed visually in the PR.
@@ -69,12 +85,12 @@ Any crash found by fuzzing is added to `fixtures` as a regression test.
 
 | Job | macOS (arm64) | Windows (x64) | Ubuntu |
 |-----|:---:|:---:|:---:|
-| fmt / clippy / unit / golden | ✓ | ✓ | ✓ (22.04, since v0.8.2) |
-| Integration (small) | ✓ | ✓ | ✓ |
-| Build installer | ✓ | ✓ | ✓ (release: x86_64 and ARM64) |
+| fmt / clippy / unit / integration (`cargo test`) | ✓ | ✓ | ✓ (22.04, since v0.8.2) |
+| UI typecheck, lint, i18n keys, build | ✓ | ✓ | ✓ |
+| Build installer ([release.yml](../.github/workflows/release.yml); Windows MSI and NSIS also in [installers.yml](../.github/workflows/installers.yml) when their configuration changes) | ✓ (release) | ✓ | ✓ (release: x86_64 and ARM64) |
 | Installed-package smoke test (`.deb` file types, AppImage runs 20 s, also on Debian 12) | | | ✓ (release) |
 | Docs checks ([docs.yml](../.github/workflows/docs.yml)) | | | ✓ |
-| Fuzz, benchmarks (nightly) | ✓ | | ✓ |
+| Fuzz, golden images, benchmarks (nightly): **planned**, no nightly job exists (the only scheduled workflow is the website's `pages.yml`) | | | |
 
 ## 7. Manual release checklist
 

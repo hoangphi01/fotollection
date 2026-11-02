@@ -77,7 +77,8 @@ pub struct EncodeOptions {
 }
 
 impl EncodeOptions {
-    /// Files that leave the app: full chroma, smallest file (FR-008).
+    /// Print exports: full chroma (4:4:4), smallest file (FR-008). Share exports use 4:2:0
+    /// (`share.rs`), previews and thumbnails `screen`.
     pub const fn print(quality: u8) -> Self {
         Self {
             quality,

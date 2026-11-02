@@ -5,7 +5,7 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
 ## Non-negotiable rules
 
 1. **Docs move with code.** Any change to behaviour, architecture, performance, security or the website updates the matching docs **in the same commit** ([ADR-0006](docs/adr/0006-docs-as-code.md)). **[docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md) is the checklist:** find the rows for your change and do all of them (CHANGELOG, PRD/ROADMAP/STATUS, ARCHITECTURE, DATABASE + schema bump, README.vi.md, the website and its screenshots…).
-2. **Requirement IDs are permanent.** Never renumber or reuse `FR-`, `NFR-` or `ADR-` IDs. Add new ones at the end.
+2. **IDs are permanent.** Never renumber or reuse `FR-`, `NFR-`, `ADR-` or `ERR-` IDs. Add new ones at the end. Every error the app can show has its `ERR-<KIND>-<NNNN>` row in [docs/ERROR_CONTROL.md](docs/ERROR_CONTROL.md), the only debugging clue in an offline app.
 3. **Performance first, measured.** No optimization without a benchmark. Respect the budgets in [docs/OPTIMIZATION.md §3](docs/OPTIMIZATION.md#3-budgets).
 4. **Privacy.** No network calls in the core, no telemetry, GPS stripped on export by default.
 5. **Security.** Never render metadata as HTML (`dangerouslySetInnerHTML` and `innerHTML` are banned). Validate all IPC input in Rust. Follow [docs/SECURITY.md](docs/SECURITY.md).

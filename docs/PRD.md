@@ -1,6 +1,6 @@
 # Product Requirements Document — Fotollection
 
-> **Owner:** product · **Status:** Draft v0.1 · **Last reviewed:** 2026-10-31
+> **Owner:** product · **Status:** Draft v0.1 · **Last reviewed:** 2026-11-02
 >
 > This document is the single source of truth for **what** Fotollection does and **why**.
 > *How* it is built lives in [ARCHITECTURE.md](ARCHITECTURE.md); *when* lives in [ROADMAP.md](ROADMAP.md).
@@ -175,9 +175,9 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P0.** Export at full resolution.
 
-- JPEG quality is configurable, with a default of 95 and 4:4:4 chroma subsampling.
+- JPEG quality is configurable, with a default of 95 and 4:4:4 chroma subsampling for prints (share exports, [FR-053](#fr-053--export-for-social-media), are 4:2:0).
 - The embedded ICC profile is preserved.
-- Photos that are crop-only with no stamp use a lossless DCT-domain crop when possible.
+- Photos that are crop-only with no stamp use a lossless DCT-domain crop when possible (planned; today every export is re-encoded).
 
 ### FR-009 — Export by date
 
@@ -311,7 +311,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 ### FR-027 — sRGB conversion for labs
 
-**P0.** On export, colours are converted from the embedded ICC profile (Display P3, Adobe RGB…) to **sRGB**, which is what most labs expect. The conversion is on by default and can be turned off per preset.
+**P0.** On export, colours are converted from the embedded ICC profile (Display P3, Adobe RGB…) to **sRGB**, which is what most labs expect. **Target:** on by default, turned off per preset. **Today (v0.9.0):** only share exports convert; prints keep the original's profile (see the last point).
 
 - The rendering intent is configurable: perceptual (default) or relative colorimetric with black-point compensation.
 - The output embeds the sRGB profile.
@@ -426,7 +426,7 @@ Put several photos on one print to save cost. **P1 (v0.9.0) for 2-up**, the Coll
 - **Built-in recipes:** *C200 Natural*, taken from the owner's GX9 recipe (Natural base; Contrast −1, Sharpness −3, Saturation +1; highlights slightly darker, shadows slightly brighter; WB A+3 / M+1), plus a few classic film-inspired looks.
 - **Scope boundary:** these are **global** adjustments on the already-rendered JPEG/HEIC (or a RAW preview). There are no local masks, HSL panel, curve editor, retouching or RAW development ([ADR-0011](adr/0011-photo-style-looks.md)).
 - **Non-destructive:** the look is applied in preview and at export. Stamps, captions and borders are drawn **after** the look, so they are never tinted. A before/after toggle (`\`) compares with the original.
-- **After FR-070 (2026-11-02):** `.cube` looks ship first ([FR-070](#fr-070--looks-from-lut-files), v0.10.0); these sliders follow on the same engine ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)).
+- **After FR-070 (2026-11-02):** `.cube` looks ship first ([FR-070](#fr-070--looks-from-lut-files), v0.11.0, after the v0.10.0 core of [FR-072](#fr-072--our-own-develop-core)); these sliders follow on the same engine ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)).
 
 ### FR-040 — EXIF info frame
 
@@ -549,7 +549,7 @@ Next to the batch settings, any other setting will later be overridable for one 
   - **Few choices, good defaults:** prints or a size for social media ([FR-053](#fr-053--export-for-social-media)), print size (10×15 by default), the 3 mm border ([FR-067](#fr-067--3-mm-border-on-every-print)), the date stamp with the same card as Pro (format, corner, colour, size, place and caption; changed 2026-11-01 at the owner's request, it had the size only), and the destination. Each photo keeps the crop, frame and stamp it has from Pro (centred when it has none); no inspector, frame editor, fonts or crop editor on screen. Pro's star and flag filters do not apply: the sidebar's folders and basket do.
   - The culling keys work as in the preview: 0–5 stars, P / X / U flags, [ ] quarter turns ([FR-022](#fr-022--culling-rate-flag-filter)).
   - It exports the print basket at Professional quality.
-- **Later:** a faster Simple export sized for the print, at 300 DPI on the chosen size (about 1800 × 1200 px for 10×15) and q90, with decoding at reduced scale ([NFR-015](#nfr-015--normal-mode-speed)), measured before it is built; the grid on embedded EXIF thumbnails only.
+- **Later:** a faster Simple export sized for the print, at 300 DPI on the chosen size (about 1800 × 1200 px for 10×15) and q90, with decoding at reduced scale ([NFR-015](#nfr-015--simple-mode-speed)), measured before it is built; the grid on embedded EXIF thumbnails only.
 
 ### FR-049 — Trip journal
 
@@ -755,7 +755,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-070 — Looks from LUT files
 
-**P1 (planned, v0.10.0; owner's request 2026-11-02).** Colour looks as in LUMIX Lab: choose a look, set its strength, print ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)). The Photo Style sliders ([FR-039](#fr-039--photo-style-looks)) come after it, on the same engine.
+**P1 (planned, v0.11.0; owner's request 2026-11-02; moved after the v0.10.0 core, [FR-072](#fr-072--our-own-develop-core), so looks apply in its linear working space).** Colour looks as in LUMIX Lab: choose a look, set its strength, print ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)). The Photo Style sliders ([FR-039](#fr-039--photo-style-looks)) come after it, on the same engine.
 
 - **Import** a `.cube` file (1D or 3D, 2–65 points a side, `DOMAIN_MIN`/`DOMAIN_MAX`): from LUMIX Lab, the user's own, or downloaded. It is copied into the app's `looks/` folder by content hash, so the original can move. Panasonic's `.vlt` is a candidate once its format is checked.
 - **Built-in looks** made by our own code, under our own names (no copied LUT files, no trademarked names, as [FR-047](#fr-047--film-looks)), including one for *C200 Natural*.
@@ -765,6 +765,27 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Info frame:** the look's name can fill its `<photo style>` line ([FR-040](#fr-040--exif-info-frame)).
 - **Projects** embed the LUTs they use, so they render the same on another machine ([ADR-0016](adr/0016-self-contained-project-bundle.md)).
 - **Speed:** ≤ 5 ms on the 1600 px preview, ≤ 60 ms on a 24 MP export ([OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets)).
+
+### FR-071 — Image facts
+
+**P1 (planned, v0.10.0; owner's request 2026-11-02).** What each file is, shown at import and in the preview's inspector, so a user (and a bug report) knows what the app is decoding ([ADR-0037](adr/0037-our-own-develop-core.md)).
+
+- **JPEG:** chroma subsampling (4:4:4, 4:2:2, 4:2:0, 4:4:0, 4:1:1, or grey), baseline or progressive, bit depth, the colour space named by its ICC profile (sRGB, Display P3, Adobe RGB, grey, CMYK) and the decoder that read it (ADR-0033).
+- **RAW:** the sensor's colour filter, Bayer with its pattern (RGGB, BGGR…), X-Trans 6 × 6, four-colour, linear or monochrome, the bit depth, the maker and the path that developed it.
+- **Where:** the inspector's Image line, for example "6000 × 4000 · 4:2:0 · Display P3" or "RAF · X-Trans · 14-bit"; a small badge in the grid, and a filter, for unusual files.
+- **Read once** at import, from the header only, and kept in the project (a schema bump, [DATABASE.md](DATABASE.md)). It also goes into the error log's context ([ERROR_CONTROL.md](ERROR_CONTROL.md)).
+
+### FR-072 — Our own develop core
+
+**P1 (planned, v0.10.0; owner's request 2026-11-02).** From the sensor's raw samples to the screen and the print, every step is ours, written from the published methods and measured ([ADR-0037](adr/0037-our-own-develop-core.md)). Maker formats are still unpacked by our DNG reader or by rawler; the system codecs become a last fallback.
+
+- **The sensor kind decides the path:** Bayer, X-Trans, four-colour, linear and monochrome each have their own branch; an unknown kind is a clean "not supported" error, never a panic or a guess.
+- **Before demosaicing:** per-site black levels from the ActiveArea origin, white level, **green equilibration (Gr/Gb)** against maze and worm patterns, hot-pixel removal, the as-shot white balance.
+- **Demosaicing:** RCD (ratio corrected demosaicing) for Bayer; Markesteijn for X-Trans (one pass by default, three passes as the quality option). Malvar-He-Cutler stays only as a test reference.
+- **After demosaicing:** false-colour suppression (a median on colour differences) and highlight reconstruction.
+- **Colour:** camera → XYZ → a **linear f32 working space**, the tone curve last, then sRGB or Display P3 with its matching profile. FR-070's looks apply in this space.
+- **Colour management everywhere:** previews, thumbnails, zoom and the crop source convert the photo's profile for the screen; PNG honours gAMA, cHRM and sRGB and dithers 16 → 8 bits; resizing works in linear light within [NFR-002](#nfr-002--preview-latency).
+- **Measured, not guessed:** synthetic test charts (zone plate, Siemens star) score zipper, maze and false colour against the old paths; colour is checked against an independent reference develop, never against the embedded JPEG the look is fitted to. Budgets in [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets).
 
 ## 7. Non-functional requirements
 
@@ -804,7 +825,7 @@ The installer is **at most 25 MB** per platform.
 
 ### NFR-009 — Colour fidelity
 
-The output either keeps the source ICC profile or, when sRGB conversion is on ([FR-027](#fr-027--srgb-conversion-for-labs)), converts it exactly. The result is within ΔE₂₀₀₀ < 1 of a reference `lcms2` transform. Without conversion, a pixel outside the stamp area differs from a reference decode by at most 1 per channel, apart from JPEG re-encoding error at the configured quality.
+The output either keeps the source ICC profile or, when sRGB conversion is on ([FR-027](#fr-027--srgb-conversion-for-labs)), converts it exactly. The app converts with `qcms`; the result is within ΔE₂₀₀₀ < 1 of an independent reference transform (`lcms2`, used only to check, never shipped). Without conversion, a pixel outside the stamp area differs from a reference decode by at most 1 per channel, apart from JPEG re-encoding error at the configured quality.
 
 ### NFR-010 — Cold start
 
@@ -826,7 +847,7 @@ Edits reach the project file within **5 s**, and writes are atomic, so a crash o
 
 Best-shot analysis ([FR-041](#fr-041--best-shot-suggestions)) takes **≤ 20 ms per photo without faces and ≤ 40 ms with faces** on REF-MAC, running in parallel on the background pool. It never blocks the grid or the preview. The budget is benchmarked before the feature ships.
 
-### NFR-015 — Normal mode speed
+### NFR-015 — Simple mode speed
 
 In Simple mode ([FR-048](#fr-048--simple-collage-and-professional-modes)), export of 16–24 MP JPEGs to 10×15 at 300 DPI reaches **at least 3× the Professional throughput** on REF-MAC (target ≥ 50 photos/s), with peak memory still within [NFR-004](#nfr-004--memory-ceiling). The first screen of a 1,000-photo folder appears in **under 0.5 s**. Budgets are confirmed by benchmark before the mode ships.
 

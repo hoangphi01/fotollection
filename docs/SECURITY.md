@@ -1,6 +1,6 @@
 # Security, Privacy & Resilience — Fotollection
 
-> **Status:** Draft v0.2 · **Last reviewed:** 2026-10-23
+> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-02
 >
 > Threat model and defenses for an **offline desktop app** (Tauri 2 + Rust core).
 > v0.1 targeted a browser-based web app. Concerns that only applied to that architecture (Cloudflare headers, Nominatim rate limits, browser memory limits) were removed in v0.2. See [ADR-0001](adr/0001-desktop-tauri-over-web.md).
@@ -125,7 +125,7 @@ Layer 4: SAFE RENDERING (UI)
 
 ## 5. Privacy
 
-- **Zero network by default** ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)). No telemetry, no crash upload, no update checks unless the user opts in. CI asserts that no networking crate is linked into the core.
+- **Zero network by default** ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)). No telemetry, no crash upload. The only request is *Check for updates*, on click; *Report a problem* only opens a fixed page in the browser ([§2](#2-tauri-hardening)). CI asserts that no networking crate is linked into the core.
 - **The public privacy policy** is on the website's [code signing policy page](https://fotollection.org/code-signing/#privacy) (`site/_includes/code-signing.html`), as SignPath Foundation requires. It must match this section and [FR-061](PRD.md#fr-061--check-for-updates): change both together.
 - Reverse geocoding uses a bundled dataset, so coordinates never leave the device ([ADR-0003](adr/0003-offline-geocoding-geonames.md)).
 - GPS is stripped from exported files by default ([FR-010](PRD.md#fr-010--metadata-privacy-on-export)).
@@ -179,10 +179,10 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 
 ## 8. Resilience and error handling
 
-- **Per-photo isolation:** every stage returns a per-photo `Result`. A failure is reported through the `job://photo-error` event and the batch continues.
+- **Per-photo isolation:** every stage returns a per-photo `Result`. A failure is listed in the `export-finished` event's `failed[]` (or counted in `analysis-finished`) and the batch continues.
 - **Cancellation:** jobs check a token between stages, and temporary files are removed on cancel.
 - **Memory:** the bounded pipeline keeps peak memory under [NFR-004](PRD.md#nfr-004--memory-ceiling) for any batch size ([OPTIMIZATION.md §4.3](OPTIMIZATION.md#43-parallelism-and-back-pressure)).
-- **Panics:** the app shell installs a panic hook that logs locally and shows a friendly dialog. Worker panics are caught and turned into per-photo errors. The release profile unwinds (`panic = "unwind"`, ADR-0029) so that a panic inside a third-party decoder can be caught: rawler, which reads untrusted RAW files, runs inside `catch_unwind` in `crates/rawlgpl`, and its failure becomes a per-photo error, never a crash.
+- **Panics:** a panic hook that logs locally and shows a friendly dialog, and catching worker panics as per-photo errors, are planned (S7 in §9). Today the release profile unwinds (`panic = "unwind"`, ADR-0029) so that a panic inside a third-party decoder can be caught: rawler, which reads untrusted RAW files, runs inside `catch_unwind` in `crates/rawlgpl`, and its failure becomes a per-photo error, never a crash.
 - **Our own RAW decoder** ([ADR-0030](adr/0030-our-own-raw-decoder.md)): `crates/rawcore` has no `unsafe`; the TIFF reader bounds every offset and count (1,024 entries per directory), the pixel count is capped before any buffer is allocated, lossless JPEG rejects difference sizes above 16, and a bad file is an error, never a panic. Tested on samples cut short at 256 places and by 10 minutes of mutation testing ([TESTING.md §4](TESTING.md#4-fuzzing)).
 - **Camera RAW through rawler** ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)): the pixel count is checked against the import limits before any develop; rawler's network feature (`rawdb`) is off, and `cargo tree -p fotollection-core` still contains no networking crate.
 

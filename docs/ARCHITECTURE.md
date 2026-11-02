@@ -1,6 +1,6 @@
 # Architecture — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-01
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-02
 >
 > This document describes **how** the system is built. Requirements live in [PRD.md](PRD.md).
 > Performance design rationale lives in [OPTIMIZATION.md](OPTIMIZATION.md).
@@ -39,7 +39,7 @@ flowchart LR
 
 ## 2. Repository layout
 
-Files marked † exist today (Phase 0 scaffold). Everything else is the target layout.
+Files marked † exist today. Everything else is planned.
 
 ```text
 Cargo.toml               † # Cargo workspace, shared lints, build-size profiles
@@ -54,6 +54,9 @@ crates/
       print_size.rs      † # CEWE/EU print sizes (FR-006)
       import.rs          † # discovery, magic bytes, size + polyglot checks (FR-001)
       codec.rs           † # JpegCodec trait + pure-Rust implementation (ADR-0012); decode_image/image_dimensions dispatch by magic bytes (PNG via `png`, RAW and HEIC via `oscodec`); decode_for_screen gives a RAW's embedded preview for thumbnails and analysis; EncodeOptions::print (4:4:4, optimized Huffman) for exports vs ::screen (4:2:0, plain) for previews/thumbnails
+      jpeg_layout.rs     † # a JPEG's layout from its header (frame, sampling, first scan), which picks zune-jpeg or the reference decoder (ADR-0033)
+      raw.rs             † # camera RAW: the format from its bytes, the `RawDecoder`s tried in order (our own DNG reader, rawler, the OS codec; the OS codec second on macOS, last elsewhere), one full develop at a time (FR-016, ADR-0029, ADR-0030)
+      raw_finish.rs      † # a rawler develop finished to the camera's look: per-channel curves matched to the embedded JPEG, or an automatic exposure and S curve (ADR-0029)
       image.rs           † # RgbImage + EXIF orientation transforms
       metadata.rs        † # EXIF allowlist + validation, embedded thumbnail (FR-002)
       settings.rs        † # RenderSettings (in memory until projects land)
@@ -78,27 +81,23 @@ crates/
                            # faces.rs (YuNet + FaceMesh eye aspect ratio), models.rs (bundled ONNX, BLAKE3, tract),
                            # similar.rs (layout + colour signature, ADR-0019), group.rs (bursts),
                            # score.rs (robust z within the group + reasons), cache.rs (analysis/)
-      timeline.rs          # clock offsets, manual date/place, GPS borrowing + GPX (FR-030/031/032)
       geocode.rs         † # offline reverse geocoder + place search: bundled GeoNames, BLAKE3-checked, 1° grid index (FR-005/032)
       xmp.rs             † # XMP sidecars of other apps, read only on import: `xmp:Rating` → stars or reject; ≤ 1 MB, no DTD (FR-058)
-      places.rs          † # a photo's effective place (ADR-0027): set by hand → borrowed → GPS → none, with the user's names for renamed places (FR-005/031/032)
+      places.rs          † # a photo's effective place (ADR-0027): set by hand → borrowed → GPS → none, with the user's names for renamed places; borrowing from another device's photo of the same scene (FR-005/031/032). GPX tracks are planned (FR-066)
       cluster.rs           # trip DBSCAN (Phase 2)
-      library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag)
+      library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag, date set by hand); the effective time with each body's clock offset (FR-030, ADR-0027)
       project.rs         † # project tables v2: snapshot/restore by folder+path, FK validation, relocate/resolve folders
       bundle.rs          † # .fotollection ZIP bundle: manifest + BLAKE3, allowlisted parts, zip-bomb limits (ADR-0016)
       cache_limit.rs     † # the disk cache's 2 GB limit: usage, LRU prune by modification time, clear, touch on hit (DATABASE.md §8)
       history.rs         † # undo/redo stack of inverse edits (FR-023)
       atomic.rs          † # tmp + fsync + .bak + rename
       presets.rs           # preset library: partial/stackable, linked, .fotopreset I/O (FR-033/034/038)
-      quality.rs           # effective-DPI checks (FR-026)
-      render/              # (target) crop.rs, style.rs (Photo Style → 3D LUT + tone curve + grain, FR-039),
-                           # border.rs, stamp.rs (incl. retro LED), caption.rs,
-                           # color.rs (ICC → sRGB), sharpen.rs (Phase 3)
-      layout/              # multi-photo sheets + contact sheet (Phase 3, FR-035/037)
-      render.rs          † # crop/resize + stamp drawing today; splits into render/* as features land
+      looks.rs             # colour looks: `.cube` LUTs, then Photo Style sliders, on one 33³ engine (FR-070, FR-039, ADR-0036)
+      render.rs          † # crop/resize, border and the drawing of stamp and frame; the stamp, colour and sharpening live in stamp.rs, colour.rs and sharpen.rs. 4-up sheets and the contact sheet (FR-035, FR-037) will extend sheet.rs
       export.rs          † # bounded parallel export, cancel, per-photo errors, no overwrite (FR-008/009/011)
       thumbs.rs          † # T0 (embedded) + T1 disk cache (DATABASE.md §8)
-    benches/               # criterion benchmarks (see OPTIMIZATION.md)
+    examples/          † # measure_* benchmarks named in OPTIMIZATION.md §3/§5, quality_export (print quality audit), eval_bestshot, raw_* and render_one helpers
+    tests/             † # integration tests: pipeline.rs (import → export), jpeg_layouts.rs (every JPEG layout decodes, ADR-0033); fixtures/
   oscodec/               † # HEIC and camera RAW via ImageIO (macOS) / WIC (Windows): decode, dimensions, embedded preview; one of the two crates allowed `unsafe` (ADR-0017, ADR-0023)
   rawcore/               † # our own camera RAW decoder (ADR-0030), pure Rust, no `unsafe`: `tiff` (bounded IFD reader), `ljpeg` (lossless JPEG), `dng`, `cfa`, `demosaic` (Malvar–He–Cutler), `color` (the DNG colour model), `tone` (the camera's look from its embedded JPEG); `examples/mutate.rs` (mutation testing). First in `raw::decoders()` for the formats it has taken over (DNG); notes per format in `docs/raw/`
   rawlgpl/               † # camera RAW through rawler (LGPL-2.1, ADR-0029): develop, embedded preview, size; panics caught; the only crate with an LGPL dependency, removed before any relicensing
@@ -107,14 +106,18 @@ crates/
 src-tauri/               † # app shell: commands, protocol, capabilities
   src/lib.rs             † # tauri-specta builder + bindings export
   src/commands.rs        † # IPC commands (§6)
-  src/collage.rs         † # Collage mode: sheets, their order, turning, sheet facts, the `sheet` preview (FR-035)
+  src/state.rs           † # shared app state (library, settings, jobs); heavy work never on the UI thread (NFR-005)
+  src/events.rs          † # typed events, core → UI (§6)
+  src/protocol.rs        † # the `fotothumb://` protocol: thumbnails, previews, zoom regions, sources and collage sheets as JPEG bytes (§6)
+  src/culling.rs         † # best-shot commands: analyse in the background, list groups, keep the best (FR-041)
+  src/collage.rs         † # Collage mode: sheets, their order, turning, Auto turn and Revert, sheet facts, the `sheet` preview (FR-035)
   src/places.rs          † # place search, dates and places set by hand, renamed places (FR-005, FR-032); every input checked here
   src/document.rs        † # New / Open / Save / Save As / Relink of .fotollection documents (FR-023)
   src/menu.rs            † # native File/Edit/Window menu (macOS), rebuilt on language change
-  src/camera.rs          † # tethered capture (FR-062, FR-063, ADR-0028): connect, a session thread that owns the camera (live view, settings every 300 ms, queued jobs), shots written atomically into a session folder that becomes a tab, Save all and Delete photos; the Sony logic is written against a `CameraLink` trait and tested with a scripted camera
+  src/camera.rs          † # tethered capture (FR-062, FR-063, ADR-0028): connect, a session thread that owns the camera (live view, settings every 300 ms, queued jobs), shots written atomically into a session folder that becomes a tab, Save all and Delete photos, `quit_app` after the closing question; the Sony logic is written against a `CameraLink` trait and tested with a scripted camera
   src/open_with.rs       † # "Open with" (FR-054, ADR-0024): one route for macOS Opened events, command-line paths and second launches; the photo's folder as a tab
   src/timing.rs          † # start-up milestones printed only with FOTOLLECTION_TIMING (NFR-010, scripts/measure-startup.sh)
-  src/updates.rs         † # "Check for updates" (FR-061, ADR-0025): one GitHub request on click, the installer opened in the browser from Rust
+  src/updates.rs         † # "Check for updates" (FR-061, ADR-0025): one GitHub request on click, the installer opened in the browser from Rust; "Report a problem" opens the fixed issue page (FR-069)
   src/cache.rs           † # the disk cache's size, Clear cache, and the background prune under 2 GB (DATABASE.md §8)
   src/i18n.rs            † # the shell's own strings: menu, window title, dialogs (FR-020)
   src/demo.rs            † # debug builds only: records IPC answers for demo photos, for the website screenshots
@@ -126,7 +129,9 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
   .oxlintrc.json         † # lint rules (bans dangerouslySetInnerHTML / eval)
   src/
     components/ui/       † # shadcn/ui components (copied in via the shadcn CLI, owned by us)
-    features/            † # one folder per feature (components + hooks): library/, culling/, best-shot/, viewer/, settings/, stamp/, frame/, fonts/, export/, places/, cameras/, capture/, project/, history/, open-with/, startup/, window/, appearance/, about/, print-advice/, modes/, simple/, collage/
+    components/layout/   † # shared layout pieces (STYLE_RULE §4): side-panel, section-card, inspector-section, collapse, viewer-frame, stage-spinner, hint-layer, key-hints, keys-info (the keys popover behind the info button)
+    components/forms/    † # shared form controls (commit-input)
+    features/            † # one folder per feature (components + hooks): library/, culling/, best-shot/, viewer/, settings/, stamp/, frame/, fonts/, export/, places/, cameras/, capture/, project/, history/, open-with/, startup/, window/, appearance/, about/, print-advice/, modes/, simple/, collage/. Among them: about/panel-footer.tsx (the panel's version line and its popover), about/report-issue.tsx (Report a problem, FR-069), collage/auto-turn-buttons.tsx (Auto turn and Revert, FR-035)
     i18n/                † # i18next setup + typed keys (FR-020, ADR-0015)
     locales/             † # en.json (default), vi.json — bundled, never fetched
     ipc/bindings.ts      † # GENERATED from Rust types — do not edit
@@ -134,7 +139,7 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
     index.css            † # Tailwind layers + shadcn theme tokens (CSS variables)
 scripts/                 † # bootstrap, clean, check-docs, release.sh (RELEASE.md §4), small-icons.py (≤ 64 px icons from assets/logo-small.png)
 site/                    † # the website (Jekyll, GitHub Pages, EN + VI); screenshots/ makes its images from the real app on CC0 demo photos (site/README.md)
-.github/workflows/       † # ci.yml, docs.yml, release.yml (release on a version change, ADR-0021), pages.yml (website)
+.github/workflows/       † # ci.yml, docs.yml, release.yml (release on a version change, ADR-0021), installers.yml (builds the Windows MSI and NSIS installers when their configuration changes, publishes nothing), pages.yml (website, also every 6 hours)
 bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batch.sh (5,000-photo memory check), lib.sh, web/ (Chromium via Playwright), chart.mjs (EN + VI SVG charts), results/ (numbers only, incl. budgets.json mirrored from OPTIMIZATION §3)
 ```
 
@@ -151,10 +156,10 @@ bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batc
 | Virtualized grid | `@tanstack/react-virtual` | Required for 1,000+ thumbnails ([NFR-001](PRD.md#nfr-001--library-load-time)) |
 | UI state | React state + a small store (`zustand`) | Server state lives in Rust. The UI only caches it |
 | IPC type bindings | `specta` + `tauri-specta` | TS types generated from Rust and checked in CI |
-| JPEG decode/encode | **Today:** `zune-jpeg` + `jpeg-encoder` (pure Rust) behind the `JpegCodec` trait ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). `jpeg_layout` reads the header first: zune decodes only the layouts the corpus test proves, `jpeg-decoder` every other one and any file zune refuses ([ADR-0033](adr/0033-reference-jpeg-decoder.md)). **Candidate:** `turbojpeg` for DCT scaling and lossless crop ([ADR-0004](adr/0004-libjpeg-turbo-default-codec.md)) | 4:4:4, quality 95, ICC copied |
+| JPEG decode/encode | **Today:** `zune-jpeg` + `jpeg-encoder` (pure Rust) behind the `JpegCodec` trait ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). `jpeg_layout` reads the header first: zune decodes only the layouts the corpus test proves, `jpeg-decoder` every other one and any file zune refuses ([ADR-0033](adr/0033-reference-jpeg-decoder.md)). **Candidate:** `turbojpeg` behind the same trait for DCT scaling and lossless crop ([ADR-0004](adr/0004-libjpeg-turbo-default-codec.md), superseded by ADR-0012) | Prints: 4:4:4, quality 95, ICC copied. Share exports: 4:2:0 (`share.rs`). Previews: 4:2:0 |
 | JPEG max-quality encode | `mozjpeg` (optional) | Opt-in "smallest file" mode |
 | HEIC/HEIF | OS codecs via `fotollection-oscodec`: ImageIO (`objc2-image-io`) on macOS, WIC (`windows`) on Windows | Nothing linked, no LGPL; Windows needs the HEIF/HEVC Store extensions ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
-| Camera RAW | The same OS codecs; `crates/core/src/raw.rs` recognises the format by its bytes; one full develop at a time | Nothing linked, no LGPL; Windows needs the Raw Image Extension ([ADR-0023](adr/0023-raw-through-os-codecs.md)) |
+| Camera RAW | `crates/core/src/raw.rs` recognises the format by its bytes and tries its decoders in order: our own DNG reader (`crates/rawcore`), rawler (`crates/rawlgpl`), then the OS codecs (on macOS ImageIO comes before rawler); one full develop at a time | rawler is the only LGPL dependency ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)); Windows needs no Raw Image Extension, which is only a last fallback when installed ([ADR-0023](adr/0023-raw-through-os-codecs.md), [ADR-0030](adr/0030-our-own-raw-decoder.md)) |
 | PNG | `png` | |
 | Face models (FR-041) | `tract-onnx` (MIT/Apache), pure Rust; YuNet + FaceMesh V2 ONNX compiled in | One code path on macOS and Windows, no native runtime; BLAKE3-checked at load ([ADR-0018](adr/0018-face-models-and-runtime.md)) |
 | Resize | `fast_image_resize` | SIMD (NEON/AVX2) |
@@ -233,10 +238,9 @@ Commands marked † are implemented.
 | `list_photos(filter) -> { photos: [PhotoSummary], total, customStamps, folders: [FolderSummary], printCount, asideCount }` † | Data for the grid, sorted by capture time and filtered in Rust by flag, minimum rating, folders (empty = all) and view (`gallery` hides photos set aside; `print` and `aside` show one holding area). Summaries carry `rating`, `flag` and `queue`; `folders` lists every source folder with its unfiltered count | FR-003, FR-022, FR-050, FR-056 |
 | `get_settings()` / `set_settings(settings) -> SettingsState` † | Validated render settings plus a `revision` used to refresh previews | FR-004, FR-006 |
 | `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`, v3), theme (v6) and mode (`simple` / `collage` / `professional`, v10), stored per machine in `settings.json` | FR-020, FR-052, FR-048 |
-| `set_photo_override(id, override)` | Per-photo crop frame or place name | FR-005, FR-006 |
 | `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
-| `estimate_export(filter, only, sheets) -> ExportEstimate` † | The originals' total and the export's estimated size, from up to four photos encoded in memory with the current settings; nothing is written | FR-053 |
-| `start_export(filter, only, separate, sheets) -> JobId` † | With `sheets`, the photos go out two to a print, one file `<first>+<second>.jpg` per sheet, or with `only` just the sheet holding that photo (FR-035). Exports exactly the photos `filter` keeps (the set the grid shows, including its folders), or only the photo `only` (the preview), to the chosen destination, as prints or share files (`render.exportTarget`); `separate` gives each source folder its own subfolder | FR-008, FR-009, FR-010, FR-022, FR-053, FR-055, FR-056 |
+| `estimate_export(filter, only, ticked, sheets) -> ExportEstimate` † | For the same photos as `start_export`: the originals' total and the export's estimated size, from up to four photos encoded in memory with the current settings; nothing is written | FR-053 |
+| `start_export(filter, only, ticked, separate, sheets) -> JobId` † | `ticked` (the photos ticked in select mode, when there are some) exports only those (FR-050, v0.8.3). With `sheets`, the photos go out two to a print, one file `<first>+<second>.jpg` per sheet, or with `only` just the sheet holding that photo (FR-035). Exports exactly the photos `filter` keeps (the set the grid shows, including its folders), or only the photo `only` (the preview), to the chosen destination, as prints or share files (`render.exportTarget`); `separate` gives each source folder its own subfolder | FR-008, FR-009, FR-010, FR-022, FR-053, FR-055, FR-056 |
 | `cancel_job(job_id)` † | Cancel a running job | FR-011 |
 | `get_frame_config()` / `set_frame_settings(settings)` † | Info frame settings plus camera profiles (with EXIF-derived defaults) | FR-040 |
 | `set_camera_profile(profile)` † | Per-camera overrides: name, brand, lens, focal, aperture, photo style, logo kind | FR-040 |
@@ -248,11 +252,12 @@ Commands marked † are implemented.
 | `clock_offset_between(photo, reference) -> f64` † / `clock_match_candidates(photo, limit ≤ 24)` † | The helper: the offset that makes a photo match another device's photo of the same moment, and the other devices' photos closest in time (within a day) to pick from | FR-030 |
 | `pick_camera_logo(camera_id)` / `clear_camera_logo(camera_id)` † | Choose a PNG with a **Rust-side** dialog, validate it, copy it into `config/logos/` | FR-040 |
 | `get_crop_geometry(id, sheet?) -> CropGeometry` † | Upright size, target ratio, printed cm of the crop area, current crop; with a collage `sheet`, the photo's area in its cell | FR-006, FR-035 |
-| `set_photo_crop(id, crop?, straighten)` † | Set or reset a photo's crop (centre + zoom) and straightening angle (±15°, clamped in Rust), undoable | FR-006, FR-023 |
+| `set_photo_crop(id, crop?, straighten, amend)` † | Set or reset a photo's crop (centre + zoom) and straightening angle (±15°, clamped in Rust), undoable; with `amend`, folded into the same photo's previous step, as a drag in the preview does | FR-006, FR-023 |
 | `rotate_photos(ids, clockwise)` † | Lossless quarter turns on top of the EXIF orientation, composed into one pass (`image::compose_orientation`); crops turn with the photo; undoable | FR-006 |
 | `set_photo_rating(ids, 0–5)` † / `set_photo_flag(ids, pick\|reject\|null)` † | Culling: one undoable step for 1–10,000 photos; ratings above 5 and unknown IDs are rejected | FR-022, FR-023 |
 | `set_photo_queue(ids, print\|aside\|null)` † | The print basket and set aside (`null` back to the gallery): one undoable step for 1–10,000 photos; nothing is deleted | FR-050, FR-023 |
 | `list_sheets(filter) -> SheetPair[]` † / `set_collage_order(ids)` † / `turn_sheet(first)` † / `set_collage_crop(id, crop?, straighten)` † / `rotate_collage_photo(id)` † | Collage mode: the sheets of the photos shown, paired in collage order (`photos[].collage`, then the view's); a drag sends the photos shown in their new order, which take back their slots in the library's one order; turning a sheet flips `sheet_turned`; a cell's crop is `collage_crop`, apart from the print crop; a photo's quarter turns in its cell are `collage_rotation` (its crop editor reads `fotothumb://…/source/{id}?sheet=1`, turned the same way). Each change is one undoable step | FR-035, FR-048 |
+| `auto_turn_collage(filter, revert) -> u32` † | Auto turn: every sheet shown lies landscape, each photo turned to stand if it lies; with `revert`, every sheet and photo back to its own orientation. One undoable step; returns how many photos changed | FR-035 |
 | `sheet_info(sheet) -> SheetInfo` † | A sheet's size and, per photo, its area, the suggested size, the photo left inside the 3 mm border and its DPI band, from the photos' header sizes | FR-035, FR-026 |
 | `get_photo_stamp(id)` / `set_photo_stamp(id, stamp?)` † | One photo's own date stamp from the preview (FR-044); `null` follows the settings again. Undoable; the caption is validated in Rust | FR-044 |
 | `set_photo_caption(ids, caption?)` † | Photos' own line under the date (FR-036), from a collage sheet's preview; `null` uses the stamp's again. One undo step; validated in Rust like the stamp's caption | FR-036 |
@@ -275,19 +280,19 @@ Commands marked † are implemented.
 | `take_photo_request() -> OpenPhoto?` † | The photo the OS asked to show ("Open with"), once: `{ id, folder }`, kept in Rust until taken, so a request made during start-up is not lost | FR-054 |
 | `startup_finished() -> bool` † | Whether the last session is back, for a page that loaded after `startup-finished`; the start-up screen waits for it | FR-060 |
 | `check_for_update() -> UpdateCheck` † / `open_update_download()` † | On click only: asks GitHub for the latest release (`{ current, latest, newer, pageUrl }`) and keeps the installer link for this system in Rust; the second opens it in the browser. Errors: `update.offline`, `update.unreadable`, `update.none` | FR-061 |
+| `open_issue_page()` † | Report a problem: opens the project's issue page in the browser; the address is fixed in Rust, so the webview cannot open another, and the app sends nothing | FR-069 |
+| `quit_app()` † | Closes the app after the user answered the closing question: the camera is let go and the app waits (at most 10 s) for the last shot to be written | FR-063, ADR-0028 |
 | `cache_usage() -> CacheUsage` † / `clear_cache() -> CacheUsage` † | The thumbnail and analysis cache's size against its 2 GB limit (`{ bytes, files, limitBytes }`), and emptying it | DATABASE §8 |
 | `rename_document(name) -> DocumentState` † | Renames the project: the saved file in its folder (never over another file), or the name an untitled project will be saved under. The name is validated in Rust as a portable file name | FR-023 |
 | `relink_folder(folder_id)` † | Picks the new location of a missing folder (Rust-side dialog), re-scans it and restores its edits | FR-023 |
 | `analyze_library() -> JobId` † | Best-shot analysis of every photo on the background pool, reusing the analysis cache; cancel with `cancel_job`. A second call while one runs returns the running job | FR-041, NFR-014 |
 | `list_groups() -> [Group]` † | Groups of similar shots from the last analysis: `{ id, result: { photos (best first, with score parts, closed eyes, faces), reasons, tooClose } }`. `id` is the group's first photo | FR-041 |
-| `keep_best(group_ids) -> HistoryState` † | Picks each group's best photo and rejects the rest as one undoable step; 1–5,000 groups, unknown groups are rejected | FR-041, FR-022 |
-| `keep_one(group_id, photo_id) -> HistoryState` † | Keeps the chosen photo of one group and rejects the others, one undoable step (for "Too close to call" or a different preference) | FR-041, FR-022 |
+| `keep_best(groups) -> HistoryState` † | Picks each group's best photo and rejects the rest as one undoable step; 1–5,000 groups, unknown groups are rejected | FR-041, FR-022 |
+| `keep_one(group, photo) -> HistoryState` † | Keeps the chosen photo of one group and rejects the others, one undoable step (for "Too close to call" or a different preference) | FR-041, FR-022 |
 | Filters by date, camera, GPS, DPI in `list_photos` | Planned culling filters | FR-022, FR-026 |
 | `set_copies(ids, n)` / `order_summary() -> OrderSummary` | Copies and cost estimate | FR-024 |
 | `set_print_size(ids, size_id)` | Per-photo print size | FR-025 |
-| `set_clock_offset(camera, offset)` / `match_clock(photo_id, reference_id)` | Clock correction | FR-030 |
-| `borrow_gps(source, window)` | Infer GPS from another device or a GPX file | FR-031 |
-| `set_manual_meta(ids, date?, place?)` / `search_places(query) -> [Place]` | Manual date and place, offline place search | FR-032 |
+| A GPX track command (name to be decided) | Places from a GPX track, interpolated along it | FR-066 |
 | `list_presets()` / `save_preset(preset)` / `delete_preset(id)` | Preset library (stamp, lab, style and print groups) | FR-033, FR-034, FR-038 |
 | `apply_preset(ids, preset_id)` / `detach_preset(ids)` / `reset_to_preset(ids)` | Link, detach or reset photos | FR-038 |
 | `preview_preset(id, preset_id) -> PreviewHandle` | Hover preview without applying | FR-038 |
@@ -307,6 +312,7 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 | `revision-changed` † | `{ revision, canUndo, canRedo }` after any render-affecting edit; previews refresh |
 | `document-changed` † | `{ document }` after any edit, save, open, new or relink; the window title follows (`Trip — Edited — Fotollection`) |
 | `menu-action` † | `{ action: new \| open \| save \| saveAs \| modeSimple \| modeCollage \| modeProfessional \| openRequested }` from the native File and View menus (macOS) or a file handed over by the OS; the UI runs its own flow, unsaved-changes question included |
+| `quit-blocked` † | `{ sessions, connected }`: closing the app was held back because shots exist only in Fotollection's data (a camera connected, or session tabs not saved); the UI asks *Save all*, *Delete photos* or *Cancel*, then calls `quit_app` (ADR-0028) |
 | `camera-status` † | `{ connected, name, issue? }`: a session started, or ended (`issue` says why: unplugged, failed calls) |
 | `camera-frame` † | `{ seq }`: a new live-view frame at `fotothumb://localhost/camera/live?seq={n}` |
 | `camera-settings-changed` † | `{ settings: { iso?, isoAuto, shutter?: { numerator, denominator }, aperture?, format? } }`, only when a value changed |

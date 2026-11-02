@@ -53,6 +53,19 @@
 | FR-048 | Simple, Collage and Professional modes |
 | FR-050 | Print basket: the photos that will really be printed, exported to an extra folder |
 | FR-020 | Localization (English and Vietnamese; German later) |
+| FR-052 | Appearance: System / Light / Dark theme, Windows title bar in the app's colours, app-drawn hover hints |
+| FR-053 | Export for social media: Original / Facebook / Instagram / custom sizes, sRGB, EXIF with the app's name and never GPS |
+| FR-055 | Export the photo open in the preview, with the same export controls as the panel |
+| FR-056 | Folders as tabs: All photos, one folder or several ticked, exported together or separately |
+| FR-057 | Zoom in the preview: pinch, Ctrl/⌘ + − 0, drag to move, double-click for 200 % |
+| FR-059 | Quick-preview: hold Space in select mode to look at a photo as it will print |
+| FR-060 | Start-up screen: the logo and a loading bar until the last session is back |
+| FR-062 | Live view from a camera plugged in by cable (own PTP driver, UVC webcam or HDMI capture card), with the print ratio drawn over it |
+| FR-065 | Border in Crop to fill: 3 mm in the frame colour inside the print size, instant-photo look at the exact kiosk size |
+| FR-067 | 3 mm border on every print: every mode and frame style, inside the print size (extends FR-065) |
+| FR-069 | Report a problem: a red button in the app's versions popover and the website's footer, to the GitHub issue forms (v0.8.3) |
+| FR-071 | Image facts at import and in the inspector: chroma subsampling, colour space, sensor kind; v0.10.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
+| FR-072 | Our own develop core: sensor kind first, RCD and Markesteijn, Gr/Gb, false colour, highlights, linear working space, colour management everywhere; v0.10.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
 
 **Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v1.0.0 is released. Until then, each work stage ships as a 0.y.0 preview release, starting with v0.1.0 ([RELEASE.md](RELEASE.md#1-versioning)).
 
@@ -91,15 +104,19 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 
 | Release | Theme | Requirements | First, measure |
 |---------|-------|--------------|----------------|
+| v0.1.0 – v0.3.1 | First previews (2026-10-24 to 10-25): import, culling, crop, stamp, export, info frame, places, best shot | Phase 1 core | NFR-001 to NFR-004 (RESULT) |
 | v0.4.0 | Sharing and folders | FR-053, FR-055, FR-056, FR-057 (zoom on the preview), FR-040 (instax-style Fit, drag to reframe) | Done: RESULT §10 |
 | v0.5.0 | Print basket | FR-050 (basket and set aside, select mode), FR-059 (Quick-preview) | — |
 | v0.6.0 | Photo viewer | FR-057 (full-resolution zoom, zoom buttons), FR-060 (start-up screen) | Done: cold start (NFR-010), open to first photo (NFR-016), preview and zoom at 16/26/32 MP (RESULT §11) |
 | v0.7.0 | Open with and RAW | FR-054 ("Open with"), FR-016 (RAW through the OS codecs) | Done: RAW on nine CC0 samples (RESULT §12, NFR-017), open to first photo (NFR-016) |
-| v0.8.0 | Places and Lightroom, and the camera (title to confirm at release) | FR-032, FR-005, FR-030, FR-031, FR-058 (XMP), FR-061 (check for updates), FR-065 (border in Crop to fill), FR-062 + FR-063 (capture screen with live view, Windows, Sony a6400; [ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)) | Lookup speed with manual places, a mixed camera + phone folder; XMP read on a Lightroom-culled folder; NFR-018 and NFR-019 measured in the app with the a6400 |
-| v0.9.0 | Three modes: Simple, Collage, Professional (title to confirm at release) | FR-048 (the three modes), FR-035 (2-up collage, half-frame style), FR-067 (3 mm border on every print), FR-046 (full-screen ↑ / ↓ in Simple), NFR-021 | Single-photo preview and export, then a sheet against its two photos (NFR-021). The faster Simple export (NFR-015) comes later |
+| v0.8.0 | Places and Lightroom (shipped 2026-10-27) | FR-032, FR-005, FR-030, FR-031, FR-058 (XMP), FR-061 (check for updates), FR-065 (border in Crop to fill), FR-062 + FR-063 (capture screen with live view, Windows, Sony a6400; [ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)) | Lookup speed with manual places, a mixed camera + phone folder; XMP read on a Lightroom-culled folder; NFR-018 and NFR-019 measured in the app with the a6400 |
+| v0.8.1 – v0.8.3 | Patches from `release/0.8` (shipped 2026-11-01): green-stripe JPEGs fixed (ADR-0033), Linux (ADR-0034, ADR-0035), Export what you ticked and Report a problem (FR-050, FR-069) | FR-016, NFR-007, FR-050, FR-069 | Linux smoke tests on Ubuntu 22.04 and Debian 12 |
+| v0.9.0 | Three modes (shipped 2026-11-02) | FR-048 (the three modes), FR-035 (2-up collage, half-frame style), FR-067 (3 mm border on every print), FR-046 (full-screen ↑ / ↓ in Simple), NFR-021 | Single-photo preview and export, then a sheet against its two photos (NFR-021). The faster Simple export (NFR-015) comes later |
 | To place | Camera, continued | The camera on macOS, other Sony bodies (read-only probe first), FR-064 (watch a folder), webcam (UVC) live view | [cameras/README.md](cameras/README.md), [cameras/sony.md](cameras/sony.md) |
-| v0.10.0 | Looks (planned, 2026-11-02) | FR-070 (looks from `.cube` LUT files, strength, per photo; built-in looks of our own), [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export (`measure_look`) |
-| After v0.10.0 | Photo Style sliders on the looks engine | FR-039, then FR-047 | — |
+| v0.9.1 | Correctness and error codes (planned, 2026-11-02) | Decoding fixes from the 2026-11-02 audit (16-bit grey and CMYK JPEG, the reference decoder for unparsed headers, no grey or CMYK profile on RGB output, DNG black-level origin); `ERR-` codes on screen and an offline error log ([ERROR_CONTROL.md](ERROR_CONTROL.md)) | A fixture for each fix first |
+| v0.10.0 | Core (planned, 2026-11-02) | FR-071 (image facts: chroma subsampling, colour space, sensor kind), FR-072 (our own develop: RCD and Markesteijn, Gr/Gb, false colour, highlights, a linear working space, colour management everywhere), [ADR-0037](adr/0037-our-own-develop-core.md) | Test charts and an independent reference first; RCD ≤ 400 ms on 24 MP, Markesteijn ≤ 700 ms on 26 MP |
+| v0.11.0 | Looks (planned, 2026-11-02) | FR-070 (looks from `.cube` LUT files, strength, per photo; built-in looks of our own), [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export (`measure_look`) |
+| After v0.11.0 | Photo Style sliders on the looks engine | FR-039, then FR-047 | — |
 | Later | Presets, trips, journal | FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
 
 ## Phase 2 — Smart features
@@ -122,24 +139,13 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-046 | Swipe culling (full-screen ↑ / ↓ print list) |
 | FR-047 | Film looks (Fujifilm-style film simulations, own names and LUTs) |
 | FR-051 | Landmark recognition: suggest a place from what the photo shows (offline, optional model pack) |
-| FR-052 | Appearance: System / Light / Dark theme, Windows title bar in the app's colours, app-drawn hover hints |
-| FR-053 | Export for social media: Original / Facebook / Instagram / custom sizes, sRGB, EXIF with the app's name and never GPS |
 | FR-054 | Open photos with Fotollection from the system's "Open with" menu, as a photo viewer |
-| FR-055 | Export the photo open in the preview, with the same export controls as the panel |
-| FR-056 | Folders as tabs: All photos, one folder or several ticked, exported together or separately |
-| FR-057 | Zoom in the preview: pinch, Ctrl/⌘ + − 0, drag to move, double-click for 200 % |
 | FR-058 | Lightroom compatibility: read XMP sidecars on import, write `.xmp` as an opt-in, photos never touched |
-| FR-059 | Quick-preview: hold Space in select mode to look at a photo as it will print |
-| FR-060 | Start-up screen: the logo and a loading bar until the last session is back |
 | FR-061 | Check for updates: a button that asks GitHub once, then opens the installer in the browser |
-| FR-062 | Live view from a camera plugged in by cable (own PTP driver, UVC webcam or HDMI capture card), with the print ratio drawn over it |
 | FR-063 | Tethered capture over USB: Capture in the app, the full-resolution photo opens at once; own PTP drivers per maker, no install ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)) |
 | FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |
-| FR-065 | Border in Crop to fill: 3 mm in the frame colour inside the print size, instant-photo look at the exact kiosk size |
 | FR-066 | Borrow places from a GPX track: interpolate each photo's time along the track (split out of FR-031) |
-| FR-067 | 3 mm border on every print: every mode and frame style, inside the print size (extends FR-065) |
-| FR-070 | Looks from LUT files (`.cube`, strength, per photo), LUMIX Lab style; v0.10.0, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
-| FR-069 | Report a problem: a red button in the app's versions popover and the website's footer, to the GitHub issue forms (v0.8.3) |
+| FR-070 | Looks from LUT files (`.cube`, strength, per photo), LUMIX Lab style; v0.11.0, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 

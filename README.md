@@ -35,7 +35,7 @@ Stamp the date and place on your photos, crop them to real print sizes, and get 
 ---
 
 > [!NOTE]
-> **Fotollection is in early development.** It already works end to end for **JPEG, PNG, HEIC and camera RAW**: import → cull with stars and flags → preview with crop, date stamp and info frame → export. Projects save as one `.fotollection` file that opens the same on another machine. Offline place names and best-shot suggestions are on the way. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Fotollection is in early development.** It already works end to end for **JPEG, PNG, HEIC and camera RAW**: import → cull with stars and flags → preview with crop, date stamp and info frame → export. Projects save as one `.fotollection` file that opens the same on another machine. Offline place names and best-shot suggestions are in too. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
 
 <p align="center">
   <img src="docs/images/screenshot-light.png" alt="Fotollection main window (light theme)" width="49%" />
@@ -56,26 +56,26 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 
 | | Feature | Phase |
 |---|---------|-------|
-| 📅 | **Date and location stamps** from EXIF, in your own OTF/TTF font. Places are resolved offline, with no API calls | MVP |
-| ✂️ | **Batch crop** to 8 EU print sizes (9×13 … 20×30, square, strip), your own sizes (e.g. 4 × 6 in) or the photo's **original** ratio, with an adjustable crop per photo | MVP |
+| 📅 | **Date and location stamps** from EXIF, in a film-camera LCD face. Places are resolved offline, with no API calls | 1 |
+| ✂️ | **Batch crop** to 8 EU print sizes (9×13 … 20×30, square, strip), your own sizes (e.g. 4 × 6 in) or the photo's **original** ratio, with an adjustable crop per photo | 1 |
 | 🎚️ | **Three modes** (new in v0.9.0): **Simple**, one photo at a time, ↑ keep, ↓ drop, then export; **Collage**, two photos on one print like a half-frame camera (a 10 × 15 holds two 10 × 7.5), with a suggested size, a cut line and drag to reorder; **Pro**, every control | 1 |
-| 🔲 | **3 mm border** inside the print size on every print, with or without the info frame (new in v0.9.0) | 1 |
-| ⭐ | **Culling**: stars, pick/reject flags and filters; export writes exactly the filtered set | MVP |
-| ✨ | **Best-shot suggestions**: groups bursts and similar shots and suggests the best of each (sharpest, eyes open, no shake), with reasons. Fully offline | MVP |
-| 🏷️ | **"Shot on …" info frame** with camera, lens and exposure, LUMIX Lab style, at the exact print ratio | MVP |
-| 🖼️ | **Original quality**: full resolution, ICC profile preserved, lossless crop when possible | MVP |
-| 💬 | **Share online**: light sRGB JPEGs at the original size, 2048 px for Facebook, 1080 px for Instagram or your own size, with the camera details and "Fotollection" as the editing app, never GPS. Export one photo straight from the preview | MVP |
-| 📱 | **JPEG, PNG and HEIC** (iPhone) input | MVP |
-| 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, through the system's own codecs; thumbnails from the preview inside each file. **Windows: needs the free Raw Image Extension for now** (a built-in reader is in progress) | 3 |
+| 🔲 | **3 mm border** inside the print size on every print, with or without the info frame (new in v0.9.0) | 2 |
+| ⭐ | **Culling**: stars, pick/reject flags and filters; export writes exactly the filtered set | 1 |
+| ✨ | **Best-shot suggestions**: groups bursts and similar shots and suggests the best of each (sharpest, eyes open, no shake), with reasons. Fully offline | 1 |
+| 🏷️ | **"Shot on …" info frame** with camera, lens and exposure, LUMIX Lab style, at the exact print ratio | 1 |
+| 🖼️ | **Original quality**: export at full resolution, ICC profile preserved, 4:4:4 JPEG for print | 1 |
+| 💬 | **Share online**: light sRGB JPEGs at the original size, 2048 px for Facebook, 1080 px for Instagram or your own size, with the camera details and "Fotollection" as the editing app, never GPS. Export one photo straight from the preview | 2 |
+| 📱 | **JPEG, PNG and HEIC** (iPhone) input | 1 |
+| 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, through the reader built into Fotollection (on macOS, the system's codec first, with its lens corrections); thumbnails from the preview inside each file. Nothing to install on Windows | 3 |
 | 🖱️ | **Open with Fotollection** from Finder or Explorer: the photo opens at once and its folder becomes a tab | 2 |
-| ⏱️ | **Camera clocks**: a camera set to the wrong time is corrected from one phone photo of the same moment; every photo from it moves, the files stay untouched | 2 |
+| ⏱️ | **Camera clocks**: a camera set to the wrong time is corrected from one phone photo of the same moment; every photo from it moves, the files stay untouched | 1 |
 | ⭐ | **Stars from Lightroom**: stars and rejects saved in XMP sidecars by Lightroom, Bridge, Capture One or darktable come in with the photos; the sidecars are never changed | 2 |
 | 🧭 | **Places from your phone**: a camera without GPS takes the place of a phone photo of the same scene shot minutes apart; sure matches are filled in, the rest are shown side by side to accept | 2 |
-| 📍 | **Dates and places by hand**: give scans and photos without EXIF or GPS a date and a place, one photo or many at once, with an offline place search; rename a place ("Praha 1" → "Prague") and every print follows | 2 |
-| 🎥 | **Shoot from a camera on a cable**: live view with the print's shape, Capture, and the shots in a tab to save or delete; no driver to install (Windows, Sony a6400 first) | MVP |
-| 🔒 | **GPS stripped on export** by default. No account, no cloud, no telemetry | MVP |
-| 🌐 | **English and Vietnamese** interface | MVP |
-| 📦 | **Project files like `.docx`**: save, open on another machine with the same fonts, logos and settings, relink moved folders | MVP |
+| 📍 | **Dates and places by hand**: give scans and photos without EXIF or GPS a date and a place, one photo or many at once, with an offline place search; rename a place ("Praha 1" → "Prague") and every print follows | 1 |
+| 🎥 | **Shoot from a camera on a cable**: live view with the print's shape, Capture, and the shots in a tab to save or delete; no driver to install (Windows, Sony a6400 first) | 2 |
+| 🔒 | **GPS stripped on export** by default. No account, no cloud, no telemetry | 1 |
+| 🌐 | **English and Vietnamese** interface | 1 |
+| 📦 | **Project files like `.docx`**: save, open on another machine with the same fonts, logos and settings, relink moved folders | 1 |
 | 🧳 | **Trip grouping**, face-aware smart crop, duplicate detection | 2 |
 | 🎞️ | Photo-book preview, QR codes on the back of prints | 3 |
 
@@ -124,7 +124,7 @@ The obvious alternative is a web app that does the same work in the browser (`cr
 
 On raw export speed the browser is just as fast, because Chromium uses libjpeg-turbo with SIMD. Fotollection is now faster on previews. Speed alone is not the argument for a native app, though:
 
-- The browser can only encode JPEG with 4:2:0 chroma, which halves colour resolution. Fotollection exports 4:4:4, with twice the chroma data, in the same time.
+- The browser can only encode JPEG with 4:2:0 chroma, which halves colour resolution. Fotollection exports prints in 4:4:4, with twice the chroma data, in the same time.
 - Fotollection uses 24 % less memory, and its export is bounded, as the large-batch test shows. A browser tab has a hard ceiling.
 - Fotollection writes the files with atomic renames and writes no EXIF, so GPS never leaves your machine. The browser only produced blobs and never wrote them.
 - Colour profiles (ICC), 16-bit RAW in Phase 3, and HEIC are out of reach in the browser.
@@ -140,7 +140,7 @@ On raw export speed the browser is just as fast, because Chromium uses libjpeg-t
 | JPEG encode | 7.0 ms | 42 % |
 | **Total** | **16.7 ms** | budget 50 ms · Chromium 18.5 ms |
 
-The encoder used to be the bottleneck: 16.2 ms, 62 % of a 26 ms preview. Previews are only ever shown on screen, so they now encode with 4:2:0 chroma and plain Huffman tables, which looks the same at 3× zoom. Exports keep 4:4:4 and optimized tables. That one change took the preview from 26 ms to 17 ms.
+The encoder used to be the bottleneck: 16.2 ms, 62 % of a 26 ms preview. Previews are only ever shown on screen, so they now encode with 4:2:0 chroma and plain Huffman tables, which looks the same at 3× zoom. Print exports keep 4:4:4 and optimized tables. That one change took the preview from 26 ms to 17 ms.
 
 ### Print quality: does the export keep the photo?
 
@@ -162,7 +162,7 @@ Why a web-editor print looks flat, and what Fotollection does instead:
 
 - **The colour profile is dropped.** Phone photos are in Display P3, a wider colour space than sRGB. Without the profile, the lab reads the colours as sRGB and they print about 13 % less saturated. Fotollection keeps the photo's own ICC profile in every export.
 - **The photo is shrunk, then blown up again.** A 2000 px image printed at 10 × 15 cm loses 87 % of the fine detail, so surfaces turn smooth and colours look blotchy. Fotollection exports at full resolution, and only resizes, with a Lanczos3 filter, when a print size needs it.
-- **The colour is halved, and the JPEG is squeezed harder.** Common editors use 4:2:0 chroma, which halves colour resolution, at quality 80. Fotollection exports at 4:4:4 and quality 95.
+- **The colour is halved, and the JPEG is squeezed harder.** Common editors use 4:2:0 chroma, which halves colour resolution, at quality 80. Fotollection exports prints at 4:4:4 and quality 95.
 
 The test used 20 photos from a Canon compact, plus 5 of them converted to Display P3 with macOS's own profile. The web editor is simulated with standard settings (sRGB assumed, profile dropped, 4:2:0, q80, 2000 px, upscaled back for print). Reproduce it with `cargo run --release -p fotollection-core --example quality_export -- <out> <photos…>`, then `uv run bench/quality/audit.py <photos> <out>`.
 
@@ -231,7 +231,7 @@ The same app on every system, with these differences ([ADR-0034](docs/adr/0034-l
 | "Open with" from the file manager | ✓ | ✓ | ✓ ⁵ |
 | *Check for updates* downloads the new version | ✓ | ✓ | ✓ ⁶ |
 
-1. On macOS, RAW formats other than DNG are developed by the system, with its lens corrections; Linux, and Windows without Microsoft's Raw Image Extension, use the reader built into Fotollection, without them.
+1. On macOS, RAW formats other than DNG are developed by the system, with its lens corrections; Linux and Windows use the reader built into Fotollection, without them. On Windows, Microsoft's Raw Image Extension, when installed, is only a last fallback.
 2. With Microsoft's free **HEIF Image Extensions** and **HEVC Video Extensions**.
 3. HEIC needs an HEVC decoder, which Linux does not ship and Fotollection will not bundle (patents). A later version will use the `libheif` your distribution installs (FR-068). Until then, convert HEIC photos to JPEG.
 4. Sony a6400 first ([FR-063](docs/PRD.md#fr-063--tethered-capture-over-usb)).
@@ -280,7 +280,7 @@ sudo apt install ./Fotollection_*_amd64.deb
 | **Display** | 1280 × 800 | 1920 × 1080 or a Retina display | The toolbar adapts to narrow windows |
 | **Internet** | Not needed | — | Everything runs offline: faces, places and previews included. Nothing is uploaded |
 | **HEIC (iPhone photos)** | macOS: built in | — | Windows: install **HEIF Image Extensions** and **HEVC Video Extensions** from the Microsoft Store ([ADR-0017](docs/adr/0017-heic-through-os-codecs.md)). Linux: not yet ([ADR-0034](docs/adr/0034-linux-lean.md)) |
-| **Camera RAW** | macOS: built in | — | Windows: install the free **Raw Image Extension** from the Microsoft Store ([ADR-0023](docs/adr/0023-raw-through-os-codecs.md)). Linux: built into Fotollection ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md)) |
+| **Camera RAW** | macOS: built in | — | Windows and Linux: built into Fotollection, nothing to install ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md)). With Microsoft's **Raw Image Extension** installed, the system's codec is a last fallback on Windows ([ADR-0023](docs/adr/0023-raw-through-os-codecs.md)) |
 
 To build from source you also need about 10 GB free for Rust build files (a debug and a release build; `scripts/clean.sh` reclaims them), Rust (installed by `rustup`, version pinned in `rust-toolchain.toml`), Node.js 22 or later, and Xcode Command Line Tools (macOS), the MSVC Build Tools (Windows), or WebKitGTK 4.1 and GTK 3 development packages (Linux, as `scripts/bootstrap.sh` installs them). The full list is in [docs/DEVELOPMENT.md §1.3](docs/DEVELOPMENT.md#13-prerequisites).
 

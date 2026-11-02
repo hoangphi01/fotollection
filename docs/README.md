@@ -8,7 +8,7 @@
 |-------------|------|
 | New to the project | [PRD](PRD.md) → [ARCHITECTURE](ARCHITECTURE.md) → [ROADMAP](ROADMAP.md) → [STATUS](STATUS.md) |
 | About to write code | [DEVELOPMENT](DEVELOPMENT.md) → [STYLE_RULE](STYLE_RULE.md) → [TESTING](TESTING.md) → [LESSONS](LESSONS.md) → [CONTRIBUTING](../CONTRIBUTING.md) |
-| Debugging something | [LESSONS](LESSONS.md) first: it may have happened before |
+| Debugging something | [LESSONS](LESSONS.md) first: it may have happened before; a user's `ERR-…` code in [ERROR_CONTROL](ERROR_CONTROL.md) |
 | Working on performance | [RESULT](RESULT.md) → [OPTIMIZATION](OPTIMIZATION.md) |
 | Touching file input, IPC or the webview | [SECURITY](SECURITY.md) |
 | Changing anything that is saved to disk | [DATABASE](DATABASE.md) → [EXTENSION](EXTENSION.md) |
@@ -32,7 +32,8 @@
 | Latest measured speed and memory, in one readable page | [RESULT.md](RESULT.md) |
 | Code, UI, git and docs conventions | [STYLE_RULE.md](STYLE_RULE.md) |
 | Toolchain setup, build commands, build disk cleanup | [DEVELOPMENT.md](DEVELOPMENT.md) |
-| Threat model, defenses, error codes | [SECURITY.md](SECURITY.md) |
+| Threat model and defenses | [SECURITY.md](SECURITY.md) |
+| **Every error code** (`ERR-<KIND>-<NNNN>`): meaning, cause, what to do, where it is raised | [ERROR_CONTROL.md](ERROR_CONTROL.md) |
 | Test strategy, corpus, CI matrix | [TESTING.md](TESTING.md) |
 | Versioning, build, signing, distribution | [RELEASE.md](RELEASE.md) |
 | What each camera can do over USB, and each maker's protocol notes | [cameras/README.md](cameras/README.md) |

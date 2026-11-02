@@ -5,87 +5,58 @@
 > Living progress tracker. Update it **in the same commit** as the work ([ADR-0006](adr/0006-docs-as-code.md)).
 > Statuses: `Not Started` · `In Progress` · `Blocked` · `Done` · `Withdrawn`. An FR is `Done` only when its `fr_NNN_*` test passes ([TESTING.md §2](TESTING.md#2-requirement-traceability)).
 
-## Current phase: Phase 1 — MVP, v0.8.3 released; v0.9.0 "Three modes" built, to check by hand before release
+## Current phase: Phase 1 — MVP, v0.9.0 released (2026-11-02); next v0.9.1, then v0.10.0 "Core"
 
-**Hotfix v0.8.1 (2026-11-01).** A user saw JPEGs as green stripes: baseline files with one scan per component and 4:2:0 colour, which `zune-jpeg` 0.5.15 decodes wrongly without an error. v0.8.1, built from the `v0.8.0` tag on `hotfix/0.8.1`, reads the layout from the header and sends every layout zune has not proven to `jpeg-decoder` ([ADR-0033](adr/0033-reference-jpeg-decoder.md), [LESSONS](LESSONS.md)); thumbnails are made again once. Merged into `main` the same day, so v0.9.0 carries it.
+**Released** (details in [CHANGELOG.md](../CHANGELOG.md), measurements in [RESULT.md](RESULT.md)): v0.1.0 to v0.8.0 (2026-10-24 to 10-27); **v0.8.1** green-stripe JPEGs fixed ([ADR-0033](adr/0033-reference-jpeg-decoder.md)); **v0.8.2** Linux, AppImage and `.deb` for x86_64 and ARM64, installed with `install.sh` or the signed APT repository at fotollection.org/apt ([ADR-0034](adr/0034-linux-lean.md), [ADR-0035](adr/0035-linux-install-from-fotollection-org.md)); **v0.8.3** Export what you ticked (FR-050) and Report a problem (FR-069), all three from `release/0.8` (2026-11-01); **v0.9.0 "Three modes"** from `main` (2026-11-02): Simple, Collage and Pro (FR-048), two photos on one print with Auto turn (FR-035), the 3 mm border on every print (FR-067), three date stamp sizes (FR-004). v0.9.0 was released at the owner's call without the manual checks of TESTING §7 on Windows and a real collage print: those stay open below.
 
-**v0.8.3 (2026-11-01).** From `release/0.8`, after user feedback: with photos ticked, Export writes only them (FR-050), and a red *Report a problem* button in the versions popover opens the GitHub issue forms (FR-069). Merged into `main`.
+**What the app does today.** JPEG, PNG, HEIC and camera RAW (RW2, CR2, CR3, NEF, ARW, RAF, ORF, DNG) on macOS, Windows and Linux; open with, folders as tabs, culling with stars, flags and best-shot suggestions, the print basket, crop, quarter turns and straightening, the film-style date stamp with place and caption, the "Shot on" info frame, offline place names, camera clocks, dates and places by hand, XMP from Lightroom, collage sheets, export for print and for social media, the `.fotollection` project, Check for updates and Report a problem. English and Vietnamese. Measured performance meets every budget ([RESULT.md](RESULT.md)).
 
-**v0.8.2 "Linux" (2026-11-01).** The lean Linux build from `release/0.8`: AppImage and `.deb` for x86_64 and ARM64, no camera capture, HEIC later (FR-068) ([ADR-0034](adr/0034-linux-lean.md)). The release smoke-tests both on Ubuntu 22.04 and Debian 12; `curl -fsSL https://fotollection.org/install.sh | sh` and the signed APT repository at fotollection.org/apt ([ADR-0035](adr/0035-linux-install-from-fotollection-org.md)) were checked by installing in a Debian 12 container. Merged into `main`.
+**Shipping.** A version change on `main` (or a dispatch on a `release/*` branch) builds, tags and publishes the macOS `.dmg`, the Windows `-setup.exe` and `.msi`, the Linux AppImages and `.deb` for x86_64 and ARM64, and `SHA256SUMS.txt`, after a Linux smoke test ([RELEASE.md](RELEASE.md), [ADR-0021](adr/0021-versioning-and-automated-releases.md)). The website at <https://fotollection.org/> updates its downloads, What's new and the APT repository by itself ([site/README.md](../site/README.md)). [DOCS_GUIDE.md](DOCS_GUIDE.md) is the checklist of what to update for each change.
 
-**v0.9.0 "Three modes" (2026-11-01, on `main`, not released).** Simple, Collage and Pro modes (FR-048), switched at the top of the sidebar or with Cmd/Ctrl+1/2/3; Collage puts two photos on one print like a half-frame camera, with a suggested size, a cut line, drag to reorder, a crop of its own per photo, a "fill each half" choice with no white, a preview in the photo preview's frame and one file per sheet (FR-035, ADR-0032, NFR-021 met); the 3 mm border on every print (FR-067); a small, medium or large date stamp sized to the print (FR-004). Audited on 2026-11-01 against the existing features, STYLE_RULE and DOCS_GUIDE; the fixes are in. Left: the owner checks it by hand on macOS and Windows, a real collage print, then `scripts/release.sh 0.9.0` and removing the "coming in v0.9.0" markers (DOCS_GUIDE, release row).
+### Next, in order (plan of 2026-11-02, the audit before v1.0.0)
 
-**Bugs the owner reports while trying v0.9.0** (newest first; each fix in the commit that names it):
+The audit of 2026-11-02 read the RAW path, the JPEG and colour path and the docs; its findings are summarised in [ADR-0037](adr/0037-our-own-develop-core.md) and the rows below. **Every session starts here: take the first open box.** Docs move in the same commit as the code ([DOCS_GUIDE.md](DOCS_GUIDE.md)); a session ends with this list true.
 
-- 2026-11-01 ✓ A landscape photo next to a portrait one sat small in its standing half: **Rotate photo** (⇧R) in the sheet preview turns the chosen photo a quarter in its cell only (`collage_rotation`, project v9, `rotate_collage_photo`).
-- 2026-11-01 ✓ Typing the date stamp's line made the panel jump and the text slip back. Root causes and the sweep that followed (STYLE_RULE §4 "Nothing blinks, nothing jumps", LESSONS): a shared `useLiveQuery` keeps the last answer while reloading (sheet info, cell geometry, photo details, crop row, print advice, fit-size note); `useRenderSettings`, `useFrameConfig` (settings, camera profiles, reloads), the photo's own stamp and the per-photo lines apply only the latest answer; `CommitInput` ignores outside values while focused; sheet tiles spin only before their first image; the zoomed sharp layer and Quick-preview keep the last image; the crop editor is keyed on the photo, not the revision; the export estimate keeps its room and dims only after 700 ms; the sheet preview's spinner keeps its place. Still open, low: the project name may show the old name for a moment after Enter; the zoom percentage may widen with its spinner; the photo's own stamp card appears a moment after the preview opens.
-- 2026-11-01 ✓ The 3 mm border can be white or black in every mode (`render.borderColor`, settings v10); on a collage sheet the colour is also the paper round the photos, offered whenever the sheet has paper.
-- 2026-11-01 ✓ On the black stage a photo or sheet with a black border lost its edge: every stage image now has a faint neutral outline (`stage-photo`). The stage stays black (STYLE_RULE §4, owner's choice after weighing a theme-coloured one). A click on the ground around a sheet lets go of the chosen photo, like Esc.
-- 2026-11-01 ✓ A collage sheet's two photos can have their own line under the date: a switch *Same on both photos* in the sheet preview's stamp card, off shows a field per photo (`photos[].caption`, project v9, `set_photo_caption`). The rest of the stamp still follows the settings.
-- 2026-11-01 ✓ Simple and Collage now have Pro's whole date stamp card: format, corner, colour, size, place and the caption line. One `DateStampCard` holds them all, so the three modes cannot drift apart. The Simple panel screenshot is to retake before the release.
-- 2026-11-01 ✓ After dragging a photo to another sheet, the sheet's loading spinner sat in a corner: it was centred in the image, which has no size until it loads; it is now centred in the tile.
-- 2026-11-01 ✓ With a sheet's preview open, switching the mode (Cmd/Ctrl+1/2/3, the View menu) did nothing: the audit had held the switch for any open dialog. Now only a crop being edited holds it; a preview closes and the mode changes. The switches inside the preview (fill, cut line, ratio, border) were checked to ask for a new render, and Rust renders each differently (2026-11-01); if a preview ever stays unchanged, note the steps.
-- 2026-11-01 ✓ A switch in the Collage panel took about 5 s to show: every sheet of the grid decoded its two photos again (the preview source cache holds 8 photos, the grid shows 20). The grid now renders from the photos' thumbnails, 4,088 → 29 ms for ten sheets (OPTIMIZATION §5); the sheet preview shows a spinner while it renders again.
-- 2026-11-01 ✓ With *Fill each half* on, the cut line switch hides and no line is drawn: filled halves meet at an edge.
-- To look for next (owner, 2026-11-02): more bugs in Simple and Collage on a real folder.
+1. **Session 1: docs in sync (docs only).**
+   - ✓ The plan written into the PRD (FR-071, FR-072; FR-070 moved to v0.11.0), [ADR-0037](adr/0037-our-own-develop-core.md), the ROADMAP rows v0.9.1, v0.10.0 and v0.11.0, and this list.
+   - ✓ [ERROR_CONTROL.md](ERROR_CONTROL.md): the `ERR-<KIND>-<NNNN>` dictionary of all 80 current errors.
+   - ✓ The audit's stale and contradicting statements fixed (STATUS, ROADMAP phases, README, USER_GUIDE, ARCHITECTURE, SECURITY, TESTING, OPTIMIZATION, DATABASE, site copy, ADR index).
+   - ✓ `check-docs.sh` checks that ROADMAP and STATUS give every FR the same phase, and that a commit changing code also changes docs.
+2. **Session 2: v0.9.1, decoding fixes.** Fixtures first in `crates/core/tests/fixtures/jpeg/` (16-bit lossless grey, Adobe CMYK, YCCK, progressive with a non-interleaved DC scan, restart intervals on 4:4:4 and 4:2:2, a cut-off file), each test failing on the old code, then:
+   - ☐ 16-bit grey reads the high byte of native-endian samples (`codec.rs`, jpeg-decoder's `to_ne_bytes`);
+   - ☐ CMYK and YCCK: the right formula for jpeg-decoder's output, every 4-component JPEG on jpeg-decoder, no grey or CMYK ICC profile on RGB output;
+   - ☐ a header `jpeg_layout::read` cannot parse goes to the reference decoder; SOF1 leaves `zune_proven` until a fixture proves it;
+   - ☐ the corpus test checks the maximum and 99th-percentile error and which decoder ran;
+   - ☐ `ErrCode` in `IpcError` and the core's errors, in the bindings and on screen; the check fails on a code without its row.
+   - ☐ `import.raw_codec_missing` (ERR-EXT-0003) is unreachable (`raw.rs` `first()` swallows it): raise it again with a current message, or retire it.
+3. **Session 3: v0.9.1, then release.**
+   - ☐ DNG black-level repeat from the ActiveArea origin, checked against the spec with a synthetic DNG;
+   - ☐ "4:4:4" said only of print exports (README, site);
+   - ☐ the offline error log (rotating, no image data, GPS or full paths), *Copy diagnostics* next to *Report a problem*, the panic hook writing `ERR-RUS`;
+   - ☐ release v0.9.1 (RELEASE.md §6).
+4. **Session 4: v0.10.0, FR-071 image facts.** ☐ `jpeg_layout::read` reads APP14, the ICC description and DRI; RAW gives its sensor kind; `PhotoRecord` keeps them (project schema bump); the inspector shows "4:2:0 · Display P3" or "X-Trans · 14-bit", with a grid badge for unusual files.
+5. **Sessions 5–6: v0.10.0, colour management everywhere.** ☐ Previews, thumbnails, zoom and the crop source converted for the screen and served with their profile; PNG gAMA/cHRM/sRGB and dithering; linear-light resizing within NFR-002; straighten prefiltered; tests with real P3 and Adobe RGB profiles.
+6. **Sessions 7–9: v0.10.0, FR-072 develop core.** ☐ Test charts and an artifact score first, with Malvar, PPG and bilinear X-Trans as the baseline (RESULT); the sensor kind enum; black levels, Gr/Gb, hot pixels; RCD and Markesteijn; false colour and highlights; the linear working space; the JPEG look match as an option; an independent reference, golden images, fuzzing, the RAW corpus in CI.
+7. **Session 10: release v0.10.0 "Core"**, checked by hand on macOS **and Windows**.
+8. **Then:** v0.11.0 "Looks" (FR-070, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md)); the Photo Style sliders (FR-039) and film looks (FR-047) on the same engine; towards v1.0.0, the P0 work below.
 
-**Where we are (2026-10-27).** The app works end to end for **JPEG, PNG, HEIC and camera RAW** (RW2, CR2, CR3, NEF, ARW, RAF, ORF, DNG), opens photos from Finder and Explorer ("Open with"); open folders as tabs (FR-056), cull with stars, flags, filters and best-shot suggestions, preview with crop, drag-to-reframe, zoom (FR-057), straightening, the film-style date stamp and the "Shot on" frame (Crop to fill, or Fit whole photo framed like an instax print), then export for print at original quality or **for social media** in sRGB with safe EXIF (FR-053), the whole set or one photo from the preview (FR-055). **[v0.8.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.8.0) "Places and Lightroom" was published on 2026-10-27** (universal `.dmg` 47.5 MB, `-setup.exe` 17.8 MB, `.msi` 24.9 MB, `SHA256SUMS.txt`), after v0.7.0 "Open with and RAW" on 2026-10-25; the website's download buttons point to it. It adds dates and places by hand (FR-032), renamed places (FR-005), places borrowed from phone photos (FR-031), stars and rejects from XMP sidecars (FR-058), camera clocks (FR-030), the border in Crop to fill (FR-065), *Check for updates* (FR-061), RAW built in with our own DNG reader (FR-016, ADR-0029, ADR-0030) and capture with a Sony a6400 on Windows (FR-062, FR-063). Its Windows-only parts are still to be tried by the owner (item 5 below).
+**Towards v1.0.0** ([ROADMAP.md](ROADMAP.md) Phase 1 exit criteria): P0 with code left, FR-003 (day grouping), FR-008 (lossless crop), FR-010 (metadata options), FR-022 (date, camera, GPS and DPI filters), FR-025 (mixed sizes), FR-026 (grid badge, pre-export summary), FR-027 (conversion for prints), FR-028 (safe area); NFR-005, 006, 011 and 012; NFR-008 by one `.dmg` per architecture; `REF-WIN` defined and measured; fuzzing (S5) and the panic hook (S7); the CLA.
 
-**Picking up on another machine (2026-10-26).** `git pull`, then read this file, [ROADMAP.md](ROADMAP.md#release-plan-2026-10-25) and [LESSONS.md](LESSONS.md). Open work, in order:
+**Still open from earlier releases:** the manual checks of TESTING §7 for v0.9.0 on Windows and a real collage print (FR-035, FR-067); about 20 real GX9 + phone pairs to score FR-031's thresholds; XMP crop and angle wait for a real Lightroom sidecar; more Simple and Collage use on a real folder.
 
-- **First, in this order (decided 2026-10-26 after the owner's review):**
-  1. ✓ The RAW claims corrected: on Windows RAW needs the Raw Image Extension (site, READMEs, guide, v0.7.0 release notes).
-  2. ✓ A save-or-discard question when the app is closed during a camera session; sessions left by a crash come back as tabs.
-  3. ✓ The fixes found in review of the branch `camera/sony-usb-protocol` (one press at a time, Disconnect drops queued shots, session ids, Save all and Delete wait for the last shot, Save all into a session folder and rolled back on error, one file imported per shot, an unplugged camera shows its tab, macOS clippy). Check on Windows by hand, then merge into `main`.
-  4. Capture on macOS through ImageCaptureCore.
-  5. All camera controls: tap to focus, exposure, focus mode, white balance, JPEG/RAW, self-timer (USB captures on Windows first).
-  6. A STYLE_RULE audit of the capture screen, with real screenshots.
-  7. RAW built in ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)): ✓ 7a rawler behind the `RawDecoder` trait, finished to the camera's embedded JPEG (`raw_finish`), first on Windows, fallback on macOS; measured (RESULT §15). Left for 7a: try RAW on a Windows PC **without** the Raw Image Extension, then drop the extension from the site and the guide. 7b: our own decoder ([ADR-0030](adr/0030-our-own-raw-decoder.md), `crates/rawcore`): ✓ DNG, first on both systems, faster, lighter and closer to the camera's JPEG than rawler and ImageIO (RESULT §16). Next ARW (a6400), RW2 (GX9, S5 greys ≤ 1.5), lens distortion, then NEF, CR2, ORF, CR3, RAF; rawler goes when all have moved.
-- **Then:** v0.8.0 "Places and Lightroom" shipped on 2026-10-27; v0.9.0 is built (above). Still open from v0.8.0: score about 20 real GX9 + phone pairs for FR-031's thresholds; XMP crop and angle wait for a real Lightroom sidecar.
-- **The manual on the website** ([ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)): ✓ `/manual/` and `/vi/manual/` built from `USER_GUIDE.md` and `USER_GUIDE.vi.md`, 20 chapters in the order of the work, 13 screenshots (best shot on the owner's cat, `site/screenshots/best_shot_photos.py`). Next: a screenshot for the chapters still without one (zoom, Open with, updates, camera clocks, the capture screen, the date stamp card), and the RAW chapter once the Windows check is done.
-- **Camera over USB** (not blocking v0.8.0): on the Windows PC, record Imaging Edge Remote driving the a6400 by following [cameras/capture-guide.md](cameras/capture-guide.md) (`scripts/camera-capture.ps1`), then write [cameras/sony.md](cameras/sony.md) from it, clean-room ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)). Captures are never committed. The GX9 has no USB tether at all; Wi-Fi for it is an open decision. Debugging lessons are now kept in [LESSONS.md](LESSONS.md).
+**Alongside, never blocking a release:** the append-only edit journal (NFR-013; a full save stays at 70 ms for 70,000 edited photos); the Windows title bar on a real machine (FR-052); SignPath signing for Windows (declined 2026-10-26, reapply later, RELEASE.md §3); a Ko-fi link once the account exists.
 
-1. Open or drop a folder; refresh it to pick up new photos.
-2. Cull with stars, flags and filters, helped by best-shot suggestions: groups of similar shots, the best of each with reasons, and Keep best.
-3. Preview with crop, quarter turns and straightening (±15°), a film-style date stamp with the place and a caption line, per photo or for all, and the "Shot on" info frame with bundled brand logos. Each print size shows whether the photo prints sharp, acceptably or pixelated, including the square CEWE kiosk sizes of dm and Rossmann.
-4. Export exactly the filtered set, at original quality.
-5. Save the work as a self-contained `.fotollection` document that opens the same on another machine.
+**Camera over USB (FR-062, FR-063, FR-064; [ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md), [ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)).** Capture works on Windows with the Sony a6400 ([cameras/sony.md](cameras/sony.md), [RESULT §13](RESULT.md#13-camera-over-usb-step-0-fr-062-fr-063)). Open concerns:
 
-The interface is in English and Vietnamese, themed from the logo (teal and wood, photos on near-neutral ground). Measured performance meets every budget ([RESULT.md](RESULT.md)): preview 17 ms (faster than Chromium), export 18 photos/s, memory flat at 1.45 GB for 5,035 photos, and the export keeps the original's colour and detail (mean ΔE2000 0.19).
-
-**Shipping.** Versioning and automatic releases are in place ([ADR-0021](adr/0021-versioning-and-automated-releases.md), [RELEASE.md](RELEASE.md)): a version change on `main` builds, tags and publishes the macOS and Windows installers. **[v0.1.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.1.0), the first public preview, was published on 2026-10-24** (universal `.dmg`, `.msi`, `-setup.exe`, `SHA256SUMS.txt`), after the `v0.1.0-beta.1` pipeline trial. **`v0.2.0`** (theme switch, Windows title bar, folder removal, preview print badges, one accent per mode) **was published on 2026-10-24** ([v0.2.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.2.0): universal `.dmg`, `.msi`, `-setup.exe`, `SHA256SUMS.txt`); the website's download buttons point to it. The website is live at <https://fotollection.org/> (custom domain since 2026-10-25; the old `hoangphi01.github.io/fotollection/` address redirects) (English and Vietnamese, [site/README.md](../site/README.md)): download buttons for the latest release, privacy section, print-shop sizes for dm and Rossmann, screenshots of the real app in alternating rows, benchmark charts, a VietQR "buy me a coffee" section, a link to the author's blog, and a scrollable "What's new" box built from the CHANGELOG. [DOCS_GUIDE.md](DOCS_GUIDE.md) is the checklist of what to update for each kind of change.
-
-### Done, by stage ([ROADMAP.md — Phase 1 work order](ROADMAP.md#phase-1-work-order-2026-10-23))
-
-1. **Stage 1:**
-   - `docs/EXTENSION.md`;
-   - PNG input (FR-001);
-   - culling with stars, flags, filter and export of the filtered set (FR-022);
-   - Original print size (FR-045);
-   - preview profiling, the 6 vs 8 in-flight decision, and the 5,035-photo memory check.
-2. **Stage 2:**
-   - faster previews, 26 → 17 ms (NFR-002);
-   - frame controls inside the preview (FR-040);
-   - English + Vietnamese UI (FR-020, [ADR-0015](adr/0015-ui-localization-i18next.md));
-   - the `.fotollection` document with Save / Save As / Open / New / Relink, the native menu and the file association (FR-023, [ADR-0016](adr/0016-self-contained-project-bundle.md)).
-3. **Stage 3:**
-   - HEIC input through the OS codecs (FR-001, [ADR-0017](adr/0017-heic-through-os-codecs.md));
-   - best-shot suggestions with face and eye models, the Groups and compare views, and Keep best (FR-041, NFR-014, [ADR-0018](adr/0018-face-models-and-runtime.md));
-   - accuracy scored on 95 hand-labelled photos, with grouping rebuilt on a layout and colour signature ([ADR-0019](adr/0019-grouping-by-visual-signature.md)).
-4. **Stage 3, continued (2026-10-24):**
-   - offline place names from GeoNames on the date line (FR-005, [ADR-0003](adr/0003-offline-geocoding-geonames.md));
-   - film-style DSEG14 date stamp with a caption line and LED glow, per photo or for all (FR-004, FR-033, FR-036, FR-044);
-   - bundled brand logos for the info frame ([ADR-0020](adr/0020-bundled-brand-logos.md));
-   - rotate and straighten in the crop editor, arrow keys included (FR-006, project schema v4–v5);
-   - print-size advice with sharp / acceptable / pixelated badges (FR-026) and the square kiosk sizes (FR-006);
-   - print-quality audit against a web editor (NFR-009, [RESULT.md §9](RESULT.md#9-print-quality));
-   - theme from the logo (STYLE_RULE §4);
-   - versioning, release automation and the website (FR-021, ADR-0021).
-5. **Docs and tooling:**
-   - README with four measured charts and a Vietnamese version (`README.vi.md`);
-   - `bench/run.sh`, `bench/batch.sh`, `measure_folder --analyze` and `eval_bestshot`;
-   - `docs/RESULT.md`;
-   - the `check-i18n` and README-parity gates.
+1. Touch to focus needs a USB recording of Remote setting the focus point first (clean-room rule).
+2. The new-photo event `0xC201` does not come through WPD; shots are noticed by polling `0xD215` every 100 ms.
+3. A new file format applies one shot late; the delay is not measured.
+4. macOS: the transport must run on the main thread, so *Connect camera* is disabled there.
+5. Other Sony bodies are untested; a read-only probe is planned (a friend's ZV-E10 first).
+6. To check by hand: *Save all* to another drive, closing a session tab, unplugging during live view, the Vietnamese UI, a print ratio that is not 3:2.
+7. To measure in the app: NFR-018 (press to preview) and NFR-019 (frames per second).
+8. Missing fuzz targets for `ptp` and `sony`.
+9. Open decision: a Wi-Fi exception to NFR-006 for bodies like the GX9 (a direct link to the camera's own network, never the internet).
 
 ### To check by hand first (not covered by automated tests)
 
@@ -94,66 +65,6 @@ The interface is in English and Vietnamese, themed from the logo (teal and wood,
 - Double-click the project name to rename it: a saved project (file renamed in Finder / Explorer) and an untitled one (the name is offered by Save).
 - Best-shot flow: Find best shots → Groups → Compare → Keep best / Keep this one → undo, in English and Vietnamese, and a narrow window.
 - Double-clicking a `.fotollection` file. This needs a release build (`npm run build`), because file associations are not active in `npm run dev`.
-
-### Next, in order (release plan, 2026-10-25)
-
-One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
-
-1. **v0.4.0 "Sharing and folders": published 2026-10-25.** Still to check by hand in the installed app: export one photo from the preview, export two folders together and separately, trackpad zoom, drag to reframe, Fit on a landscape and a portrait photo.
-2. **v0.5.0 "Print basket" (FR-050, FR-059): published 2026-10-25.** Check by hand ([USER_GUIDE.md §4](USER_GUIDE.md#4-choosing-the-photos-to-print)).
-3. **v0.6.0 "Photo viewer" (FR-057, FR-060):** measured first (NFR-010, NFR-016, RESULT §11); zoom buttons and full-resolution zoom of the visible part; start-up screen. Checked by hand by the owner on a GX9 photo before release.
-4. **v0.7.0 "Open with and RAW" (FR-054, FR-016): published 2026-10-25** ([v0.7.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.7.0): universal `.dmg` 38.3 MB, `-setup.exe` 13.7 MB, `.msi` 18.8 MB, `SHA256SUMS.txt`), after v0.7.0-beta.1 was checked on Windows by the owner. The first v0.7.0 build failed on the MSI (ICE69, LESSONS.md); fixed and started again by hand. Still to check by hand: the `.msi` on Windows ("Open with", then uninstall).
-5. **v0.8.0 "Places and Lightroom" (FR-032, FR-005, FR-030, FR-031, FR-058, FR-065, FR-061, FR-016, FR-062, FR-063): published 2026-10-27** ([v0.8.0](https://github.com/hoangphi01/fotollection/releases/tag/v0.8.0): universal `.dmg` 47.5 MB, `-setup.exe` 17.8 MB, `.msi` 24.9 MB, `SHA256SUMS.txt`). Dates and places by hand, renamed places, places borrowed from phone photos, stars and rejects from XMP, camera clocks, border in Crop to fill, Check for updates, RAW built in (our own DNG reader), Sony a6400 capture on Windows. **Still to try on Windows** (the owner): RAW without the Raw Image Extension, held Space, the quit question with unsaved shots, unplugging, *Save all* to Pictures; then drop the extension from the site and the guide. The `.msi` is 24.9 MB, at the edge of NFR-008's 25 MB.
-6. **v0.9.0 "Three modes" (FR-048, FR-035, FR-067, FR-046, FR-004, NFR-021): built 2026-10-31 to 11-01, on `main`.** ✓ (0) docs and baseline; ✓ (1) the 3 mm border on every print; ✓ (2) the mode switch; ✓ (3) collage in the core; ✓ (4) the collage screen and the sheet preview; ✓ (5) Simple mode; ✓ (6) manual, website, screenshots; ✓ the audit of 2026-11-01. Left: the owner's check by hand, a real print of a sheet, `scripts/release.sh 0.9.0`, then remove the "coming" markers. Not done yet: a shortcut for the Select button (gallery and Collage), Space to show the photo without overlays in Simple (FR-046). The faster Simple export (NFR-015) moves after v0.9.0.
-7. **v0.10.0 "Looks" (FR-070), planned 2026-11-02:** colour looks from `.cube` LUT files, as in LUMIX Lab, with a strength slider and a per-photo override; built-in looks of our own ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)). Not in v0.9.0, which is waiting only for the owner's check.
-   **Later (Phase 2):** the Photo Style sliders on the same engine (FR-039), film looks (FR-047), print presets (FR-038), trips and journal (FR-012, FR-014, FR-049), duplicates (FR-015), landmark recognition (FR-051).
-8. **Alongside, never blocking a release:** the append-only edit journal (NFR-013; not urgent, as a full save stays at 70 ms for 70,000 edited photos); the Windows title bar on a real machine (FR-052); SignPath signing for Windows (declined 2026-10-26 for too little public adoption yet; reapply once the project has independent mentions and stars, RELEASE.md §3); a Ko-fi link once the account exists; NFR-008 by publishing one `.dmg` per architecture; FR-022 filters by date, camera, GPS and DPI.
-9. **Camera over USB (FR-062, FR-063, FR-064; ADR-0026 and ADR-0028 accepted):**
-   - **Step 0, macOS (2026-10-26)** ([RESULT §13](RESULT.md#13-camera-over-usb-step-0-planned-fr-062-fr-063), [cameras/README.md](cameras/README.md)):
-     - no driver is needed;
-     - the a6400 needs Sony's handshake;
-     - the GX9 cannot be tethered over USB at all: it is not on the bus while it can shoot;
-     - an HDMI capture card was dropped, as it is what any streaming tool does.
-   - **Done since:**
-     - USB captures of Imaging Edge Remote on Windows (2026-10-26) showed Sony's handshake, shutter, settings and live view ([cameras/sony.md](cameras/sony.md));
-     - `vendor/sony.rs` encodes them;
-     - the WPD transport (`windows.rs`) drove the a6400 from our own code (`examples/sony_remote.rs`): JPEG and RAW shots in memory 1.1–1.7 s after the press, live view at 30 fps ([RESULT §13.1](RESULT.md#131-sony-a6400-from-fotollections-own-code-windows)).
-     - **In the app (2026-10-26, v0.8.0, Windows):** *Connect camera* next to *Open folder*. It opens a capture screen with the preview's frame:
-       - live view with the print ratio and the camera's settings;
-       - a strip of the shots under it;
-       - ISO and shutter steps, JPEG / RAW and Capture (Space).
-
-       Shots land in a temporary session tab with *Save all* and *Delete photos* ([ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)). Checked by hand on the a6400: connect, live view, settings, a shot written to the session folder.
-   - **Open concerns (2026-10-26):**
-     1. **RAW on Windows** needs Microsoft's *Raw Image Extension* (ADR-0023), which was not installed on the test PC (Windows 10 IoT LTSC): an ARW shot was saved, but the tab could not show it, and the screen now says why. Imaging Edge and Adobe ship their own closed decoders, which Fotollection cannot ship. **Decision pending by the owner:**
-        - keep the OS codec, with a button that opens the Store page;
-        - or a new ADR allowing `rawler` (LGPL) for RAW only, which costs part of ADR-0008's relicensing freedom;
-        - or our own clean-room ARW decoder.
-     2. **Touch to focus** on the live view is not built: it needs a USB recording of Remote setting the focus point (Focus Area: Flexible Spot) first, by the clean-room rule.
-     3. **The new-photo event `0xC201` does not come through WPD.** A shot is noticed by polling the shot state `0xD215`, which works, but costs a settings read every 100 ms while waiting.
-     4. **A new file format applies one shot late.** The UI says so; the exact delay is not measured yet.
-     5. **macOS:** the transport must run on the main thread, so *Connect camera* is disabled there until it has a thread of its own.
-     6. **Other Sony bodies are untested.** Imaging Edge's libusbK driver lists 65 other models, mostly newer, which may not go through WPD at all. A read-only remote probe is planned, with a friend's ZV-E10 first ([cameras/sony.md](cameras/sony.md)).
-     7. **Still to check by hand:**
-        - *Save all* to another drive;
-        - closing a session tab (the question);
-        - unplugging during live view;
-        - the Vietnamese UI;
-        - the print-ratio frame with a size that is not 3:2.
-     8. **Still to measure in the app:** NFR-018 (press to preview) and NFR-019 (frames shown per second).
-     9. **Missing:** fuzz targets for `ptp` and `sony`.
-     10. **To confirm at release:** v0.8.0's title ("Places and Lightroom", and the camera).
-     11. **Blocking v0.8.0: closing the app loses the session in practice.** Quitting with unsaved shots asks nothing. After a restart the session tab did not come back. The shots stay in `%APPDATA%\com.hoangphi01.fotollection\camera\<session>\`, but nothing in the app leads to them. To do (ADR-0028, Consequences):
-         - ask before quitting (*Save all* / *Delete photos* / *Cancel*);
-         - on start, bring back any session left in `camera/`.
-   - **Next:**
-     - concern 11: the question on quit, and sessions found again on start;
-     - the owner's decision on RAW (concern 1);
-     - the focus recording (concern 2);
-     - the manual checks above;
-     - the macOS run of `sony_remote`.
-   - **Open decision:** a Wi-Fi exception to NFR-006 for bodies like the GX9 (a direct link to the camera's own network, never the internet).
-   - **Then** its release is placed in the ROADMAP.
 
 ## Phase 0 — Foundation
 
@@ -213,7 +124,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-033 | Retro film date stamp and stamp presets | 1 | In Progress | ✓ DSEG14 Italic (OFL) LCD face with LED glow and faint shadow (`fr_033_*`). Presets to come |
 | FR-034 | Lab presets | 2 | Not Started | |
 | FR-035 | Multi-photo layouts | 3 | In Progress | **v0.9.0: 2-up collage** ([ADR-0032](adr/0032-collage-sheets-from-two-cell-plans.md)). ✓ Core: `sheet.rs` (cells, margin, suggested and typed size, cut line, pairing), `render.collage` (settings v10), `photos[].collage` and `sheet_turned` (project v9), `fotothumb://…/sheet/{a}/{b}`, `list_sheets`, `set_collage_order`, `turn_sheet`, `sheet_info`, export one file per sheet (`fr_035_*`). ✓ The Collage screen: `SheetGrid` (virtualized, drag on pointer events, ← → ⌥ ← → R, Enter / Space / double-click open the preview), `CollagePanel` (sheet size without Original, `CollageCellsCard`, date stamp, export of sheets), `SheetPreviewDialog` in the preview's frame (zoom, ← → 1 2 C R, crop per photo, Export this sheet: `start_export` with `only` + `sheets`; ↑ / ↓ and a basket button per photo); select mode and the selection bar reused from the gallery, basket badges on cells. Audit of 2026-10-31 fixed: one ICC profile per sheet (sRGB when the photos differ), preview area matching export, photos added later at the end, turns reset on reorder, half the exports in flight, quality from the photo's own crop, no cut line on a lone photo, the bordered preview within its long edge, `sheet::border_inset`, drag listeners attached once. Left: check by hand, a real print. 4-up and strips later ✓ 2026-11-02: Rotate photo keeps the sheet (`sheet::layout_turned`); select mode ticks whole sheets, one frame each, and Export writes only the ticked sheets; **Auto turn** / **Revert** (`auto_turn_collage`, `sheet::landscape_turned`, `sheet::fitting_turns`); toolbar keys behind ⓘ (`KeysInfo`). |
-| FR-036 | Custom captions | 2 | In Progress | ✓ A caption line under the date, in the stamp's LCD face (`fr_036_*`). Variables (`{trip}` needs FR-012) and per-photo captions to come |
+| FR-036 | Custom captions | 2 | In Progress | ✓ A caption line under the date, in the stamp's LCD face (`fr_036_*`). ✓ Per photo (v0.9.0, `photos[].caption`, project v9), and per photo on a collage sheet. Variables (`{trip}` needs FR-012) to come |
 | FR-037 | Contact sheet | 3 | Not Started | |
 | FR-038 | Print presets | 2 | Not Started | Storage model: [DATABASE.md §7](DATABASE.md#7-presets) |
 | FR-040 | EXIF info frame | 1 | In Progress | Crop/Fit at print ratio, field switches, per-camera overrides (persisted), user PNG logo, bundled logos of 12 brands (Noritsu film scans added 2026-10-25), a long lens wraps clear of the logo (`fr_040_a_long_lens_*`), Fit frames the full-size photo with a 5 mm border and the bar, instax-style, and shows the resulting print size (`fr_040_crop_keeps_the_print_and_fit_adds_the_bar_below`), APEX shutter fallback, with Classic / Brand colours / One colour styles ([ADR-0020](adr/0020-bundled-brand-logos.md), `fr_040_*`). Place needs FR-005 ✓ Logo size slider, the same for every photo (settings v7, `fr_040_logo_scale_*`) |
@@ -230,7 +141,7 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-051 | Landmark recognition | 2 | Not Started | Future: offline landmark model as an optional pack; licence research done (Google on-device classifiers, Apache-2.0); needs an ADR and a size/speed spike |
 | FR-053 | Export for social media | 1 | Done | Print / Share target (settings v8), Original, Facebook 2048, Instagram 1080 (3:4 cap), custom 640–6000 px (`fr_053_*`), sRGB via `qcms`, unsharp 0.2 after downscale, q88 (Original q80), EXIF allowlist with `Software = Fotollection`, no GPS, `Share/` folder. Measured 2026-10-25 (RESULT §10): SSIM ≈ 0.98, Original ΔE 0.96 at 46 % of the file, after Facebook P3 colour 99.6 % vs 86 % |
 | FR-054 | Open photos with Fotollection | 2 | In Progress | ✓ `open_with.rs`: one route for macOS `Opened`, command-line paths and second launches (`tauri-plugin-single-instance`); the folder imported without subfolders as a tab; the request kept until the UI takes it (`take_photo_request`, `OpenPhoto`). ✓ macOS "Open With" as `Alternate` (`tauri.macos.conf.json`); Windows `OpenWithProgids` through an NSIS hook and a WiX fragment (ADR-0024). ✓ Cold and warm launches from `open -a` on the release bundle; checked by the owner on Windows with the NSIS installer (v0.7.0-beta.1): listed under "Open with", not the default, one window, removed on uninstall. Left: the MSI's WiX fragment ships first in v0.7.0 |
-| FR-055 | Export from the preview | 1 | Done | Export card in the preview inspector (same `ExportSection` as the panel, one shared job and destination), Export button on the photo; `start_export(filter, only)` |
+| FR-055 | Export from the preview | 1 | In Progress | Export card in the preview inspector (same `ExportSection` as the panel, one shared job and destination), Export button on the photo; `start_export(filter, only, ticked, …)`. Left: an `fr_055_*` test (STATUS rule: Done needs its test) |
 | FR-056 | Folders as tabs | 1 | Done | All photos row, click = one folder, select mode / Ctrl-⌘-click = several (`CullFilter.folders`), counts from `list_photos.folders`, groups scoped, export together or separately (`start_export(…, separate)`, `fr_056_*`); ticks follow the tabs in select mode (`setFilter(…, keepTicks)`, `SelectionBar` `elsewhere`) |
 | FR-057 | Zoom in the preview | 1 | In Progress | ✓ Pinch / Ctrl-⌘ + − 0 about the pointer, 100–800 %, drag and two-finger pan, double-click 200 % (`use-zoom.ts`). ✓ Zoom buttons − · level · + · fit (`zoom-controls.tsx`). ✓ Past the preview's pixels, the visible part at full resolution, 150 ms after the view settles (`use-sharp-region.ts`, `PreviewCache::render_region`, originals cached ≤ 200 MB); measured first, RESULT §11. Left: check by hand in the app |
 | FR-058 | Lightroom compatibility through XMP | 2 | In Progress | ✓ Read on import: `xmp::read_for` finds `name.xmp` / `name.ext.xmp`, `xmp:Rating` → stars or reject for new photos, the project still wins; ≤ 1 MB, no DTD (`fr_058_*`); the sidebar counts them. Left: crop and straightening (`crs:`) once checked against a real Lightroom sidecar; opt-in writing (needs an ADR) |
@@ -240,11 +151,13 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | FR-063 | Tethered capture over USB | 2 | In Progress | ✓ Step 0 on macOS (RESULT §13): `crates/oscamera` with `ptp` (tested) and the ImageCaptureCore transport, `probe_camera`. ✓ a6400 protocol from USB captures on Windows (sony.md), ✓ `vendor/sony.rs`: handshake, shutter, settings block, live-view frame (tested). ✓ WPD transport, first shots and live view from our code on Windows (RESULT §13.1). ✓ In the app (v0.8.0, Windows): Connect camera, the capture screen, shots into a session tab, Save all and Delete photos (`camera.rs`, `fr_063_*`; ADR-0028). GX9: no capture or live view over USB at all. Left: the open concerns in "Next" item 9 (RAW codec on Windows, touch to focus, macOS, other bodies, manual checks) |
 | FR-064 | Watch a folder for new photos | 2 | Not Started | Planned: fallback for a maker's wired tether app; also feeds FR-063's session folder |
 | FR-065 | Border in Crop to fill | 1 | In Progress | ✓ `frame.border` (settings v9), 3 mm inside the print in `frame::layout`, the crop and export follow the smaller photo area (`fr_065_*`); the switch moved to the print-size card with FR-067 (v0.9.0). Left: check a print at a CEWE kiosk size by hand |
-| FR-066 | Borrow places from a GPX track | 3 | Not Started | Split out of FR-031 for v0.8.0 |
+| FR-066 | Borrow places from a GPX track | 2 | Not Started | Split out of FR-031 for v0.8.0 |
 | FR-067 | 3 mm border on every print | 1 | In Progress | ✓ `render.border` (settings v10, a v9 `frame.border` moves there), `plan::Mat` without a frame, Crop to fill as FR-065, Fit whole photo inside the print size (`frame::contain`), *3 mm border* switch in the print-size card (`BorderSwitch`), `fr_067_*`. Left: collage cells (FR-035); check a print by hand |
-| FR-069 | Report a problem | 1 | Done | `ReportIssue` in the versions popover (`PanelFooter` shows the version in every mode), `open_issue_page` (fixed URL, opener from Rust); the website footer's `.button.report`. v0.8.3 |
-| FR-070 | Looks from LUT files | 2 | Not Started | Planned for v0.10.0 (owner, 2026-11-02): `.cube` import, built-in looks of our own, strength, per-photo override; one 33³ engine shared with FR-039 ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
-| FR-068 | HEIC on Linux through the system's libheif | 3 | Not Started | v0.8.2 skips HEIC on Linux with its own reason (`HeicNotOnLinux`); after v0.9.0 ([ADR-0034](adr/0034-linux-lean.md)) |
+| FR-069 | Report a problem | 1 | In Progress | `ReportIssue` in the versions popover (`PanelFooter` shows the version in every mode), `open_issue_page` (fixed URL, opener from Rust); the website footer's `.button.report`. v0.8.3. Left: an `fr_069_*` test that the address is the fixed one |
+| FR-070 | Looks from LUT files | 2 | Not Started | Planned for v0.11.0, after the v0.10.0 core (owner, 2026-11-02): `.cube` import, built-in looks of our own, strength, per-photo override; one 33³ engine shared with FR-039 ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
+| FR-071 | Image facts | 1 | Not Started | Planned for v0.10.0 (owner, 2026-11-02): chroma subsampling, colour space, sensor kind at import and in the inspector ([ADR-0037](adr/0037-our-own-develop-core.md)). Session 4 in "Next, in order" |
+| FR-072 | Our own develop core | 1 | Not Started | Planned for v0.10.0 (owner, 2026-11-02): sensor kind first, RCD and Markesteijn, Gr/Gb, false colour, highlights, linear working space, colour management everywhere ([ADR-0037](adr/0037-our-own-develop-core.md)). Sessions 5–9 |
+| FR-068 | HEIC on Linux through the system's libheif | 2 | Not Started | v0.8.2 skips HEIC on Linux with its own reason (`HeicNotOnLinux`); after v0.9.0 ([ADR-0034](adr/0034-linux-lean.md)) |
 | FR-059 | Quick-preview | 1 | In Progress | ✓ Hold Space in select mode over a photo: thumbnail at once, then the render with the gallery's settings; ← → and Enter while held (`use-quick-preview.ts`). Left: check by hand in the app |
 | FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print; every editing session adds a journal entry (instax-style) |
 | FR-039 | Photo Style looks | 2 | Not Started | [ADR-0011](adr/0011-photo-style-looks.md); "C200 Natural" built-in. After FR-070 (v0.10.0), on its engine ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
@@ -260,17 +173,17 @@ One theme per release ([ROADMAP.md](ROADMAP.md#release-plan-2026-10-25)):
 | NFR-005 | UI responsiveness | < 100 ms | — | Not Started |
 | NFR-006 | Offline and zero telemetry | 0 requests | — | Not Started |
 | NFR-007 | Platforms | macOS 11+, Win 10/11, Linux glibc 2.35+ (x86_64, ARM64) | macOS and Windows shipping; Linux from v0.8.2, smoke-tested in CI on Ubuntu 22.04 and Debian 12 | In Progress |
-| NFR-008 | Install size | ≤ 25 MB | v0.3.0: `-setup.exe` 13.5 MB, `.msi` 18.5 MB ✓; universal `.dmg` 37.7 MB ✗ (two architectures in one file) | In Progress |
+| NFR-008 | Install size | ≤ 25 MB | v0.8.3: `-setup.exe` 17 MB, `.msi` 23.8 MB, `.deb` 22–24 MB ✓; universal `.dmg` 45.4 MB ✗ (two architectures in one file); AppImage 94–97 MB ✗ (it bundles WebKitGTK) | In Progress |
 | NFR-009 | Colour fidelity | ICC kept, Δ ≤ 1 | ICC kept 25/25, ΔE2000 mean 0.19 (sRGB) / 0.31 (Display P3), detail and saturation kept; web-editor export for reference 1.39 / 2.15 ([RESULT.md §9](RESULT.md#9-print-quality)) | In Progress |
 | NFR-010 | Cold start | < 1.5 s | page loaded 0.31–0.40 s, first thumbnail 0.50–0.58 s (release build, 4 runs); the very first launch after install 2.7 s, 2.1 s of it WebKit starting (`scripts/measure-startup.sh`) | In Progress |
 | NFR-011 | Robustness | 0 crashes | — | Not Started |
 | NFR-012 | Culling navigation | < 100 ms p95 | — | Not Started |
 | NFR-013 | Project safety | ≤ 5 s, atomic | autosave ≤ ~1 s, atomic + .bak; full save 10 ms at 5,035 edited photos, 70 ms at 70,000 (`measure_project`) | In Progress |
 | NFR-014 | Best-shot analysis speed | ≤ 20 ms/photo (≤ 40 ms with faces) | 17.4 ms p50 / 18.0 ms p95 without faces, 27.8 ms p50 / 36 ms p95 with faces, one thread (`measure_folder --analyze`) | In Progress |
-| NFR-015 | Normal mode speed | ≥ 3× Professional export (≥ 50 photos/s), first screen < 0.5 s for 1,000 photos | — | Not Started |
+| NFR-015 | Simple mode speed | ≥ 3× Professional export (≥ 50 photos/s), first screen < 0.5 s for 1,000 photos | — | Not Started |
 | NFR-016 | Open to first photo | < 1 s after the first launch | measured end to end (`open -a`, release bundle): JPEG 0.70 s when its folder is already a tab, 1.25 s for a new folder (its import first); RAW 1.4–2.5 s (develop, NFR-017) | In Progress |
-| NFR-020 | Place inference speed | ≤ 2 s per 1,000 camera photos | 54 ms per 1,000 when the scenes match, 1.11 s in the worst case (`measure_borrow`, RESULT §17) | Met |
-| NFR-021 | Collage sheet speed | Preview ≤ 2× NFR-002; export ≤ its two photos alone; ten grid sheets after a change < 100 ms | Preview 24 ms (17 + 19 alone), export render + encode 214 ms (633 alone), grid 29 ms (`measure_sheet`, `measure_sheet_grid`, RESULT §18) | Met |
+| NFR-020 | Place inference speed | ≤ 2 s per 1,000 camera photos | 54 ms per 1,000 when the scenes match, 1.11 s in the worst case (`measure_borrow`, RESULT §17) | Done |
+| NFR-021 | Collage sheet speed | Preview ≤ 2× NFR-002; export ≤ its two photos alone; ten grid sheets after a change < 100 ms | Preview 24 ms (17 + 19 alone), export render + encode 214 ms (633 alone), grid 29 ms (`measure_sheet`, `measure_sheet_grid`, RESULT §18) | Done |
 | NFR-018 | Shot to screen | ≈ 2 s for JPEG (to be set by Step 0) | — | Not Started |
 | NFR-019 | Live view | ≥ 15 fps, < 200 ms (to be confirmed) | — | Not Started |
 | NFR-017 | Camera RAW speed | preview < 100 ms, first RAW print preview < 2.5 s, memory within NFR-004 | embedded preview 9–80 ms, develop 0.39–2.17 s, 1.29 GB peak for one 31 MP develop (`measure_raw`, RESULT §12) | In Progress |
@@ -316,11 +229,11 @@ Native libraries pinned for security tracking (versions to be filled in at scaff
 
 | Library | Pinned version | Notes |
 |---------|----------------|-------|
-| libjpeg-turbo | — | via `turbojpeg` crate |
 | objc2-image-io / windows | 0.3.2 / 0.62.2 | HEIC through ImageIO / WIC in `fotollection-oscodec` ([ADR-0017](adr/0017-heic-through-os-codecs.md)) |
 | zune-jpeg / jpeg-decoder | 0.5.15 / 0.3.2 | zune decodes only the layouts `tests/jpeg_layouts.rs` proves; retry 0.5.16 **stable** against that test before upgrading, never an RC ([ADR-0033](adr/0033-reference-jpeg-decoder.md)) |
 | tract-onnx | 0.23.9 | Face models for best-shot suggestions ([ADR-0018](adr/0018-face-models-and-runtime.md)); models are parsed from bundled, checksummed bytes only |
-| lcms2 | — | |
+| qcms | 0.3.0 | ICC conversion (share exports today; every screen surface in FR-072). `lcms2` only as a test reference for NFR-009 |
+| rawler | 0.8.0 | LGPL-2.1, unpacking only from v0.10.0 ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md), [ADR-0037](adr/0037-our-own-develop-core.md)); its panics are caught |
 
 ## Blockers
 

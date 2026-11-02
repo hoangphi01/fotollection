@@ -118,6 +118,21 @@ grep -q '"version"' src-tauri/tauri.conf.json && fail "tauri.conf.json must not 
 
 # Markdown style, the same rules and version as CI (docs.yml), so a passing check-docs.sh
 # means a green docs workflow. Skipped only where npx is missing.
+echo "• ROADMAP and STATUS give every FR the same phase"
+awk '
+  FNR == 1 { file++ }
+  file == 1 && /^## Phase [0-9]/ { phase = $3; next }
+  file == 1 && /^## / { phase = "" }
+  file == 1 && phase != "" && match($0, /^\| FR-[0-9][0-9][0-9] \|/) { id = substr($0, 3, 6); if (!(id in road)) road[id] = phase }
+  file == 2 && match($0, /^\| FR-[0-9][0-9][0-9] \| [^|]+ \| [0-9] \|/) { split($0, f, "|"); gsub(/ /, "", f[2]); gsub(/ /, "", f[4]); st[f[2]] = f[4] }
+  END { for (id in road) if (id in st && st[id] != road[id]) print id " is Phase " road[id] " in ROADMAP but " st[id] " in STATUS" }
+' "$ROADMAP" "$STATUS" | while read -r line; do echo "  ✗ $line"; done | tee /tmp/check-docs-phase.$$
+[ -s /tmp/check-docs-phase.$$ ] && fail "phases differ between ROADMAP and STATUS"
+rm -f /tmp/check-docs-phase.$$
+
+echo "• Code changes come with docs (DOCS_GUIDE.md)"
+scripts/check-docs-with-code.sh || fail "code changed without docs; add the doc rows of DOCS_GUIDE.md, or [no-docs] with a reason in the message"
+
 echo "• Markdown lint (markdownlint-cli2)"
 if command -v npx >/dev/null 2>&1; then
   npx -y markdownlint-cli2@0.17.2 "**/*.md" "#node_modules" "#target" >/tmp/check-docs-mdlint.$$ 2>&1 \

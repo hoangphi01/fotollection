@@ -1,6 +1,6 @@
 # ADR-0021: One SemVer version, released automatically when it changes on `main`; no in-app updater
 
-- **Status:** Accepted. Amended by [ADR-0034](0034-linux-lean.md): a new platform for the same features may ship in a PATCH release
+- **Status:** Accepted. Superseded in part by [ADR-0025](0025-update-check-on-click.md) (Check for updates). Amended by [ADR-0034](0034-linux-lean.md): a new platform for the same features may ship in a PATCH release
 - **Date:** 2026-10-24
 - **Supersedes:** [ADR-0009](0009-unsigned-distribution.md) in part (the signed updater manifest); unsigned installers stay
 - **Related:** FR-021, NFR-006, [RELEASE.md](../RELEASE.md), ADR-0006

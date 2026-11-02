@@ -7,39 +7,40 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0001](0001-desktop-tauri-over-web.md) | Desktop app with Tauri 2 instead of a web app | Accepted | 2026-10-23 |
 | [0002](0002-rust-core-crate-separation.md) | Tauri-independent Rust core crate | Accepted | 2026-10-23 |
 | [0003](0003-offline-geocoding-geonames.md) | Offline reverse geocoding with GeoNames | Accepted | 2026-10-23 |
-| [0004](0004-libjpeg-turbo-default-codec.md) | libjpeg-turbo as the default JPEG codec | Accepted | 2026-10-23 |
-| [0005](0005-input-formats-jpeg-heic-png.md) | MVP input formats: JPEG, HEIC, PNG | Accepted | 2026-10-23 |
+| [0004](0004-libjpeg-turbo-default-codec.md) | libjpeg-turbo as the default JPEG codec | Superseded by 0012 | 2026-10-23 |
+| [0005](0005-input-formats-jpeg-heic-png.md) | MVP input formats: JPEG, HEIC, PNG | Accepted, HEIC decoder superseded by 0017 | 2026-10-23 |
 | [0006](0006-docs-as-code.md) | Docs-as-code with requirement traceability | Accepted | 2026-10-23 |
 | [0007](0007-ui-react-shadcn-lucide.md) | UI stack: React + shadcn/ui + Lucide | Accepted | 2026-10-23 |
 | [0008](0008-license-gpl3-with-relicensing-option.md) | License: GPL-3.0, keeping the option to relicense | Accepted | 2026-10-23 |
-| [0009](0009-unsigned-distribution.md) | Ship unsigned builds (no paid certificates) | Accepted, updater part superseded by 0021 | 2026-10-23 |
+| [0009](0009-unsigned-distribution.md) | Ship unsigned builds (no paid certificates) | Accepted, updater part superseded by 0021, amended by 0034 | 2026-10-23 |
 | [0010](0010-project-file-format.md) | Project file format for culling and edits | Superseded by 0016 | 2026-10-23 |
-| [0011](0011-photo-style-looks.md) | Photo Style looks via baked 3D LUTs, global adjustments only | Accepted | 2026-10-23 |
-| [0012](0012-pure-rust-codecs-first.md) | Start with pure-Rust JPEG codecs behind a trait | Accepted | 2026-10-23 |
+| [0011](0011-photo-style-looks.md) | Photo Style looks via baked 3D LUTs, global adjustments only | Accepted, amended by 0036 | 2026-10-23 |
+| [0012](0012-pure-rust-codecs-first.md) | Start with pure-Rust JPEG codecs behind a trait | Accepted, supersedes 0004, amended by 0033 | 2026-10-23 |
 | [0013](0013-csp-inline-styles.md) | Allow inline styles in the CSP, keep scripts strict | Accepted | 2026-10-23 |
-| [0014](0014-user-supplied-brand-logos.md) | Camera brand logos are user-supplied | Accepted | 2026-10-23 |
+| [0014](0014-user-supplied-brand-logos.md) | Camera brand logos are user-supplied | Accepted, superseded in part by 0020 | 2026-10-23 |
 | [0015](0015-ui-localization-i18next.md) | Interface localization with bundled i18next resources | Accepted | 2026-10-23 |
 | [0016](0016-self-contained-project-bundle.md) | Self-contained project bundle (ZIP) | Accepted | 2026-10-24 |
 | [0017](0017-heic-through-os-codecs.md) | Decode HEIC with the operating system's codecs | Accepted | 2026-10-24 |
 | [0018](0018-face-models-and-runtime.md) | Face and eye models for best-shot suggestions, run with tract | Accepted | 2026-10-24 |
 | [0019](0019-grouping-by-visual-signature.md) | Group similar shots by a layout and colour signature, scored on labelled photos | Accepted | 2026-10-24 |
 | [0020](0020-bundled-brand-logos.md) | Bundle public-domain camera-brand logos for the info frame | Accepted | 2026-10-24 |
-| [0021](0021-versioning-and-automated-releases.md) | One SemVer version, released automatically when it changes on `main`; no in-app updater | Accepted | 2026-10-24 |
+| [0021](0021-versioning-and-automated-releases.md) | One SemVer version, released automatically when it changes on `main`; no in-app updater | Accepted, superseded in part by 0025, amended by 0034 | 2026-10-24 |
 | [0022](0022-srgb-and-exif-for-share-exports.md) | Share exports: sRGB through `qcms`, an allowlisted EXIF block with the app's name, never GPS | Accepted | 2026-10-25 |
-| [0023](0023-raw-through-os-codecs.md) | Camera RAW through the OS codecs (ImageIO, WIC + Raw Image Extension); embedded preview for thumbnails and analysis, full develop for preview and export | Accepted | 2026-10-25 |
+| [0023](0023-raw-through-os-codecs.md) | Camera RAW through the OS codecs (ImageIO, WIC + Raw Image Extension); embedded preview for thumbnails and analysis, full develop for preview and export | Accepted, superseded in part by 0029 | 2026-10-25 |
 | [0024](0024-optional-photo-viewer.md) | Fotollection as an optional viewer: "Open with" without becoming the default, the photo's folder as a tab, one instance | Accepted | 2026-10-25 |
 | [0025](0025-update-check-on-click.md) | Check for updates only when the user clicks; the installer opens in the browser, never installed by the app | Accepted, supersedes 0021 in part | 2026-10-25 |
 | [0026](0026-cameras-through-the-os-usb-stack.md) | Cameras over USB through the OS imaging stack (ImageCaptureCore, WPD), with our own clean-room vendor drivers; UVC/HDMI and a watched folder as fallbacks; no libgphoto2, SDKs, WinUSB or Wi-Fi | Accepted | 2026-10-26 |
 | [0027](0027-effective-time-and-place.md) | Effective time and place: per-body clock offsets in the project, manual and borrowed places in a fixed order, the camera's own values kept | Accepted | 2026-10-26 |
 | [0028](0028-camera-sessions-saved-on-demand.md) | Camera sessions: shots go to a temporary folder in the app's data directory, shown as a tab; Save all moves them and keeps edits, closing the tab asks; Windows first | Accepted | 2026-10-26 |
-| [0029](0029-raw-through-rawler-then-our-own-decoder.md) | Camera RAW through rawler (LGPL-2.1, the only LGPL dependency) behind a `RawDecoder` trait, finished to the camera's embedded JPEG; Windows first rawler, macOS first ImageIO; our own decoder replaces it format by format; `panic = "unwind"` | Accepted, supersedes 0023 in part | 2026-10-26 |
-| [0030](0030-our-own-raw-decoder.md) | Our own RAW decoder (`crates/rawcore`), clean room, one format at a time behind a quality gate; DNG colour model, then the camera's look learned from its embedded JPEG (lens shading, luminance curve, 3×3 matrix); DNG first | Accepted | 2026-10-27 |
+| [0029](0029-raw-through-rawler-then-our-own-decoder.md) | Camera RAW through rawler (LGPL-2.1, the only LGPL dependency) behind a `RawDecoder` trait, finished to the camera's embedded JPEG; Windows first rawler, macOS first ImageIO; our own decoder replaces it format by format; `panic = "unwind"` | Accepted, supersedes 0023 in part, amended by 0037 | 2026-10-26 |
+| [0030](0030-our-own-raw-decoder.md) | Our own RAW decoder (`crates/rawcore`), clean room, one format at a time behind a quality gate; DNG colour model, then the camera's look learned from its embedded JPEG (lens shading, luminance curve, 3×3 matrix); DNG first | Accepted, amended by 0037 | 2026-10-27 |
 | [0031](0031-manual-on-the-website-from-the-user-guide.md) | The manual on the website is built from `USER_GUIDE.md` and its Vietnamese mirror `USER_GUIDE.vi.md` at build time (`scripts/site-manual.sh`); HTML-comment markers give chapter anchors and screenshots; `check-docs.sh` keeps the two in step | Accepted | 2026-10-30 |
 | [0032](0032-collage-sheets-from-two-cell-plans.md) | Collage sheets are composed from two ordinary cell plans in `sheet.rs`, at the lower of the two photos' densities (cap 600 DPI); a `sheet` preview route; one export file per sheet; drag and drop on pointer events | Accepted | 2026-10-31 |
 | [0033](0033-reference-jpeg-decoder.md) | A reference JPEG decoder behind the fast one: `zune-jpeg` decodes only the layouts a corpus test proves, read from the header first; every other layout, and any file zune refuses, goes to `jpeg-decoder`; a decoder fix salts the caches made from pixels | Accepted, amends 0012 | 2026-11-01 |
 | [0034](0034-linux-lean.md) | Linux, the lean build: every photo feature without camera capture or HEIC (later through the system's libheif, never a bundled HEVC decoder); AppImage and `.deb`, x86_64 and ARM64, glibc 2.35; smoke-tested in every release; a new platform may ship in a PATCH release | Accepted, amends 0021 and 0009 | 2026-11-01 |
 | [0035](0035-linux-install-from-fotollection-org.md) | Linux install from fotollection.org: `install.sh` (APT on the Debian family, else the AppImage in ~/.local, checked against SHA256SUMS) and a signed APT repository at /apt built from the latest release by `pages.yml`; an Ed25519 key for that repository only, in a GitHub secret | Accepted | 2026-11-01 |
-| [0036](0036-colour-looks-cube-luts-first.md) | Colour looks: `.cube` LUTs first (FR-070, v0.10.0), then the Photo Style sliders (FR-039) on the same 33³ engine; amends ADR-0011's "no `.cube` import"; the parser capped and fuzzed, no third-party LUTs shipped | Accepted | 2026-11-02 |
+| [0036](0036-colour-looks-cube-luts-first.md) | Colour looks: `.cube` LUTs first (FR-070, v0.11.0 after the v0.10.0 core of ADR-0037), then the Photo Style sliders (FR-039) on the same 33³ engine; amends ADR-0011's "no `.cube` import"; the parser capped and fuzzed, no third-party LUTs shipped | Accepted | 2026-11-02 |
+| [0037](0037-our-own-develop-core.md) | Our own develop core (FR-071, FR-072, v0.10.0): rawler and our DNG reader only unpack; sensor kind first; RCD for Bayer, Markesteijn for X-Trans; Gr/Gb equilibration, false-colour and highlight steps; a linear working space; colour management on every surface; scored against independent references. Amends ADR-0029 and ADR-0030 | Accepted | 2026-11-02 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

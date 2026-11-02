@@ -1,6 +1,6 @@
 # ADR-0004: libjpeg-turbo as the default JPEG codec
 
-- **Status:** Accepted (to be confirmed by the Phase 0 benchmark)
+- **Status:** Superseded by [ADR-0012](0012-pure-rust-codecs-first.md): pure-Rust codecs behind a `JpegCodec` trait instead; turbojpeg stays an option behind that trait
 - **Date:** 2026-10-23
 - **Related:** NFR-001, NFR-003, FR-008
 

@@ -1,6 +1,6 @@
 # Hướng dẫn sử dụng — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-10-31
+> **Status:** Living · **Last reviewed:** 2026-11-02
 >
 > Bản tiếng Việt của [USER_GUIDE.md](USER_GUIDE.md), cũng là trang hướng dẫn trên website ([fotollection.org/vi/manual](https://fotollection.org/vi/manual/), [ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)). Giữ đúng các chương, mốc chương (`<!-- chapter: id -->`, ở dòng trước tiêu đề chương) và ảnh chụp màn hình (`<!-- shot: tên | mô tả -->`) như bản tiếng Anh, dùng đúng nhãn của app trong `ui/src/locales/vi.json`; `scripts/check-docs.sh` kiểm tra hai bản khớp nhau.
 
@@ -308,9 +308,9 @@ Fotollection mở ảnh RAW của hầu hết máy ảnh như chúng vốn có, 
 
 - Mở thư mục như thường. Ảnh nhỏ và gợi ý ảnh đẹp nhất hiện nhanh như với JPEG, vì chúng dùng bản xem trước nhỏ mà máy ảnh nào cũng lưu sẵn trong tệp RAW.
 - Bản xem trước để in sẽ xử lý toàn bộ ảnh ở lần mở đầu, mất khoảng một giây; sau đó đổi thiết lập là thấy ngay. Khi xuất, mỗi ảnh RAW được xử lý theo cùng cách.
-- Màu sắc và độ nét là cách xử lý trung tính của hệ điều hành, không phải của một trình sửa RAW: Fotollection chuẩn bị ảnh để in, không thay thế Lightroom.
+- Màu sắc và độ nét là cách xử lý trung tính (của hệ điều hành trên macOS, có hiệu chỉnh ống kính; của chính Fotollection trên các hệ khác), không phải của một trình sửa RAW: Fotollection chuẩn bị ảnh để in, không thay thế Lightroom.
 - **Trên Linux**, RAW được mở bằng trình đọc có sẵn trong Fotollection, không cần cài thêm gì.
-- **Trên Windows**, hãy cài *Raw Image Extension* miễn phí của Microsoft từ Microsoft Store trước. Không có nó, tệp RAW bị bỏ qua và dòng gợi ý sẽ nói rõ. Một trình đọc RAW có sẵn trong Fotollection, không cần extension, đang được làm ([STATUS.md](STATUS.md)).
+- **Trên Windows**, RAW cũng được mở bằng trình đọc có sẵn trong Fotollection, không cần cài thêm gì ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)). Nếu đã cài *Raw Image Extension* của Microsoft, codec của hệ điều hành là phương án dự phòng cuối cùng cho tệp mà trình đọc có sẵn không mở được.
 
 <!-- chapter: open-with -->
 

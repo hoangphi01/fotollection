@@ -1,0 +1,32 @@
+name: docs-with-code
+
+# Docs move with code (ADR-0006): every pushed commit that changes the app's code also
+# changes a doc, the CHANGELOG or a README, unless its message says [no-docs] with a reason.
+on:
+  push:
+    branches: [main, "release/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  docs-with-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Every code commit changes a doc
+        env:
+          BEFORE: ${{ github.event.before }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          from="${BASE:-$BEFORE}"
+          # A new branch has no "before": check only the last commit.
+          if [ -z "$from" ] || [ "$from" = "0000000000000000000000000000000000000000" ]; then
+            from="$HEAD_SHA~1"
+          fi
+          bash scripts/check-docs-with-code.sh "$from..$HEAD_SHA"

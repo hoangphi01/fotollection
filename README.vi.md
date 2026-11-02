@@ -36,7 +36,7 @@ In ngày và nơi chụp lên ảnh, crop đúng khổ in thật, rồi gửi đ
 ---
 
 > [!NOTE]
-> **Fotollection đang trong giai đoạn phát triển sớm.** Ứng dụng đã chạy trọn vẹn với **JPEG, PNG, HEIC và ảnh RAW**: nhập ảnh → lọc ảnh bằng sao và cờ → xem trước với crop, dấu ngày và khung thông tin → export. Dự án được lưu thành một file `.fotollection`, mở trên máy khác vẫn y như cũ. Tên địa điểm offline và gợi ý ảnh tốt nhất đang được làm. Theo dõi tiến độ ở [docs/STATUS.md](docs/STATUS.md) và [docs/ROADMAP.md](docs/ROADMAP.md) (tiếng Anh).
+> **Fotollection đang trong giai đoạn phát triển sớm.** Ứng dụng đã chạy trọn vẹn với **JPEG, PNG, HEIC và ảnh RAW**: nhập ảnh → lọc ảnh bằng sao và cờ → xem trước với crop, dấu ngày và khung thông tin → export. Dự án được lưu thành một file `.fotollection`, mở trên máy khác vẫn y như cũ. Tên địa điểm offline và gợi ý ảnh tốt nhất cũng đã có. Theo dõi tiến độ ở [docs/STATUS.md](docs/STATUS.md) và [docs/ROADMAP.md](docs/ROADMAP.md) (tiếng Anh).
 
 <p align="center">
   <img src="docs/images/screenshot-light.png" alt="Cửa sổ chính của Fotollection (giao diện sáng)" width="49%" />
@@ -57,26 +57,26 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 
 | | Tính năng | Giai đoạn |
 |---|---------|-------|
-| 📅 | **Dấu ngày và nơi chụp** lấy từ EXIF, dùng được font OTF/TTF của riêng bạn. Địa điểm tra offline, không gọi API nào | MVP |
-| ✂️ | **Crop hàng loạt** theo 8 khổ in châu Âu (9×13 … 20×30, vuông, dải), khổ của riêng bạn (ví dụ 4 × 6 in) hoặc giữ **tỉ lệ gốc** của ảnh, chỉnh được khung crop từng ảnh | MVP |
+| 📅 | **Dấu ngày và nơi chụp** lấy từ EXIF, bằng kiểu chữ LCD như máy ảnh phim. Địa điểm tra offline, không gọi API nào | 1 |
+| ✂️ | **Crop hàng loạt** theo 8 khổ in châu Âu (9×13 … 20×30, vuông, dải), khổ của riêng bạn (ví dụ 4 × 6 in) hoặc giữ **tỉ lệ gốc** của ảnh, chỉnh được khung crop từng ảnh | 1 |
 | 🎚️ | **Ba chế độ** (mới trong v0.9.0): **Đơn giản**, từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất; **Ghép ảnh**, hai ảnh trên một tấm in như máy half-frame (một tấm 10 × 15 chứa hai ảnh 10 × 7,5), có cỡ gợi ý, đường cắt và kéo-thả để đổi thứ tự; **Pro**, đủ mọi điều khiển | 1 |
-| 🔲 | **Viền 3 mm** nằm trong khổ in cho mọi tấm in, có hay không có khung thông tin (mới trong v0.9.0) | 1 |
-| ⭐ | **Lọc ảnh**: chấm sao, cờ chọn/loại và bộ lọc; export đúng tập ảnh đang lọc | MVP |
-| ✨ | **Gợi ý ảnh đẹp nhất**: gom các ảnh chụp liên tiếp và gần giống nhau, gợi ý ảnh đẹp nhất mỗi nhóm (nét nhất, mắt mở, không rung) kèm lý do. Chạy hoàn toàn offline | MVP |
-| 🏷️ | **Khung thông tin "Shot on …"** với máy ảnh, ống kính và thông số phơi sáng, kiểu LUMIX Lab, đúng tỉ lệ khổ in | MVP |
-| 🖼️ | **Giữ nguyên chất lượng**: độ phân giải đầy đủ, giữ ICC profile, crop không mất chất lượng khi có thể | MVP |
-| 💬 | **Đăng mạng xã hội**: JPEG sRGB nhẹ ở kích thước gốc, 2048 px cho Facebook, 1080 px cho Instagram hoặc cỡ tuỳ chọn, giữ thông số máy và ghi "Fotollection" là app chỉnh ảnh, không bao giờ có GPS. Export một ảnh ngay trong preview | MVP |
-| 📱 | Đầu vào **JPEG, PNG và HEIC** (iPhone) | MVP |
-| 📷 | **Ảnh RAW** nguyên dạng, không cần DNG: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG, qua codec có sẵn của hệ điều hành; ảnh thu nhỏ lấy từ bản xem trước trong mỗi tệp. **Windows: hiện vẫn cần cài Raw Image Extension miễn phí** (bộ đọc tích hợp sẵn đang được làm) | 3 |
+| 🔲 | **Viền 3 mm** nằm trong khổ in cho mọi tấm in, có hay không có khung thông tin (mới trong v0.9.0) | 2 |
+| ⭐ | **Lọc ảnh**: chấm sao, cờ chọn/loại và bộ lọc; export đúng tập ảnh đang lọc | 1 |
+| ✨ | **Gợi ý ảnh đẹp nhất**: gom các ảnh chụp liên tiếp và gần giống nhau, gợi ý ảnh đẹp nhất mỗi nhóm (nét nhất, mắt mở, không rung) kèm lý do. Chạy hoàn toàn offline | 1 |
+| 🏷️ | **Khung thông tin "Shot on …"** với máy ảnh, ống kính và thông số phơi sáng, kiểu LUMIX Lab, đúng tỉ lệ khổ in | 1 |
+| 🖼️ | **Giữ nguyên chất lượng**: export ở độ phân giải đầy đủ, giữ ICC profile, JPEG 4:4:4 cho ảnh in | 1 |
+| 💬 | **Đăng mạng xã hội**: JPEG sRGB nhẹ ở kích thước gốc, 2048 px cho Facebook, 1080 px cho Instagram hoặc cỡ tuỳ chọn, giữ thông số máy và ghi "Fotollection" là app chỉnh ảnh, không bao giờ có GPS. Export một ảnh ngay trong preview | 2 |
+| 📱 | Đầu vào **JPEG, PNG và HEIC** (iPhone) | 1 |
+| 📷 | **Ảnh RAW** nguyên dạng, không cần DNG: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG, qua bộ đọc RAW có sẵn trong Fotollection (trên macOS, codec của hệ điều hành được dùng trước, có hiệu chỉnh ống kính); ảnh thu nhỏ lấy từ bản xem trước trong mỗi tệp. Trên Windows không cần cài gì thêm | 3 |
 | 🖱️ | **Mở ảnh bằng Fotollection** từ Finder hoặc Explorer: ảnh mở ngay, thư mục của ảnh thành một tab | 2 |
-| ⏱️ | **Đồng hồ máy ảnh**: máy để sai giờ được chỉnh theo một ảnh điện thoại chụp cùng lúc; mọi ảnh của máy đó dịch theo, tệp ảnh không bị sửa | 2 |
+| ⏱️ | **Đồng hồ máy ảnh**: máy để sai giờ được chỉnh theo một ảnh điện thoại chụp cùng lúc; mọi ảnh của máy đó dịch theo, tệp ảnh không bị sửa | 1 |
 | ⭐ | **Sao từ Lightroom**: số sao và cờ loại mà Lightroom, Bridge, Capture One hay darktable lưu trong tệp XMP đi kèm được nhập cùng ảnh; tệp XMP không bao giờ bị sửa | 2 |
 | 🧭 | **Vị trí từ điện thoại**: ảnh máy ảnh không có GPS lấy vị trí từ ảnh điện thoại chụp cùng cảnh cách vài phút; cặp chắc chắn được điền ngay, cặp còn lại hiện cạnh nhau để bạn duyệt | 2 |
-| 📍 | **Đặt ngày và nơi bằng tay**: gán ngày và nơi chụp cho ảnh scan, ảnh không có EXIF hay GPS, từng ảnh hoặc nhiều ảnh một lúc, tìm địa điểm offline; đổi tên một nơi ("Praha 1" → "Prague") thì mọi bản in đổi theo | 2 |
-| 🎥 | **Chụp từ máy ảnh cắm dây**: xem trực tiếp với khung cỡ in, bấm Chụp, ảnh vào một tab để lưu hoặc xóa; không cần cài driver (Windows, Sony a6400 trước) | MVP |
-| 🔒 | **Xóa GPS khi export** theo mặc định. Không tài khoản, không cloud, không telemetry | MVP |
-| 🌐 | Giao diện **tiếng Anh và tiếng Việt** | MVP |
-| 📦 | **File dự án như `.docx`**: lưu lại, mở trên máy khác với đúng font, logo và thiết lập, chỉ lại thư mục ảnh đã bị chuyển | MVP |
+| 📍 | **Đặt ngày và nơi bằng tay**: gán ngày và nơi chụp cho ảnh scan, ảnh không có EXIF hay GPS, từng ảnh hoặc nhiều ảnh một lúc, tìm địa điểm offline; đổi tên một nơi ("Praha 1" → "Prague") thì mọi bản in đổi theo | 1 |
+| 🎥 | **Chụp từ máy ảnh cắm dây**: xem trực tiếp với khung cỡ in, bấm Chụp, ảnh vào một tab để lưu hoặc xóa; không cần cài driver (Windows, Sony a6400 trước) | 2 |
+| 🔒 | **Xóa GPS khi export** theo mặc định. Không tài khoản, không cloud, không telemetry | 1 |
+| 🌐 | Giao diện **tiếng Anh và tiếng Việt** | 1 |
+| 📦 | **File dự án như `.docx`**: lưu lại, mở trên máy khác với đúng font, logo và thiết lập, chỉ lại thư mục ảnh đã bị chuyển | 1 |
 | 🧳 | **Gom ảnh theo chuyến đi**, crop thông minh theo khuôn mặt, phát hiện ảnh trùng | 2 |
 | 🎞️ | Xem trước photobook, mã QR ở mặt sau ảnh in | 3 |
 
@@ -125,7 +125,7 @@ Phương án thay thế dễ thấy nhất là một web app làm đúng việc 
 
 Về tốc độ export thô, trình duyệt nhanh ngang ngửa vì Chromium dùng libjpeg-turbo có SIMD. Giờ Fotollection đã preview nhanh hơn. Tuy vậy, tốc độ không phải lý do chính để làm app native:
 
-- Trình duyệt chỉ mã hóa JPEG được ở chế độ màu 4:2:0, tức một nửa độ phân giải màu. Fotollection export 4:4:4, gấp đôi dữ liệu màu, trong cùng thời gian.
+- Trình duyệt chỉ mã hóa JPEG được ở chế độ màu 4:2:0, tức một nửa độ phân giải màu. Fotollection export ảnh in ở 4:4:4, gấp đôi dữ liệu màu, trong cùng thời gian.
 - Fotollection dùng ít hơn 24 % RAM, và việc export có giới hạn RAM, như bài thử batch lớn cho thấy. Một tab trình duyệt thì có trần cứng.
 - Fotollection ghi file ra đĩa với rename nguyên tử và không ghi EXIF, nên GPS không bao giờ rời khỏi máy bạn. Trình duyệt chỉ tạo blob trong RAM và không ghi file nào.
 - ICC profile, RAW 16-bit ở Phase 3, và HEIC nằm ngoài khả năng của trình duyệt.
@@ -141,7 +141,7 @@ Về tốc độ export thô, trình duyệt nhanh ngang ngửa vì Chromium dù
 | Mã hóa JPEG | 7,0 ms | 42 % |
 | **Tổng** | **16,7 ms** | ngân sách 50 ms · Chromium 18,5 ms |
 
-Trước đây bộ mã hóa là nút thắt: 16,2 ms, chiếm 62 % của 26 ms. Preview chỉ để xem trên màn hình, nên giờ được mã hóa ở chế độ màu 4:2:0 với bảng Huffman thường. Phóng to 3× vẫn nhìn giống hệt. Ảnh export vẫn giữ 4:4:4 và bảng Huffman tối ưu. Chỉ một thay đổi đó đã đưa preview từ 26 ms xuống 17 ms.
+Trước đây bộ mã hóa là nút thắt: 16,2 ms, chiếm 62 % của 26 ms. Preview chỉ để xem trên màn hình, nên giờ được mã hóa ở chế độ màu 4:2:0 với bảng Huffman thường. Phóng to 3× vẫn nhìn giống hệt. Ảnh export để in vẫn giữ 4:4:4 và bảng Huffman tối ưu. Chỉ một thay đổi đó đã đưa preview từ 26 ms xuống 17 ms.
 
 ### Chất lượng in: bản xuất có giữ nguyên ảnh không?
 
@@ -163,7 +163,7 @@ Vì sao in qua web editor trông nông màu, và Fotollection làm khác thế n
 
 - **Colour profile bị bỏ.** Ảnh điện thoại dùng Display P3, dải màu rộng hơn sRGB. Mất profile, tiệm in đọc màu như sRGB, nên ảnh in ra nhạt hơn khoảng 13 %. Fotollection giữ nguyên ICC profile của ảnh trong mọi bản xuất.
 - **Ảnh bị thu nhỏ rồi phóng to lại.** Ảnh 2000 px in khổ 10 × 15 cm mất 87 % chi tiết nhỏ, nên bề mặt bị mịn đi và màu trông bệt. Fotollection xuất ở độ phân giải đầy đủ, và chỉ resize, bằng bộ lọc Lanczos3, khi khổ in cần.
-- **Màu bị giảm một nửa và nén mạnh hơn.** Các web editor phổ biến dùng lấy mẫu màu 4:2:0, tức giảm một nửa độ phân giải màu, ở chất lượng 80. Fotollection xuất 4:4:4 ở chất lượng 95.
+- **Màu bị giảm một nửa và nén mạnh hơn.** Các web editor phổ biến dùng lấy mẫu màu 4:2:0, tức giảm một nửa độ phân giải màu, ở chất lượng 80. Fotollection xuất ảnh in ở 4:4:4, chất lượng 95.
 
 Bài kiểm tra dùng 20 ảnh từ máy Canon compact, cộng thêm 5 ảnh trong số đó được chuyển sang Display P3 bằng profile có sẵn của macOS. Web editor được mô phỏng theo cài đặt phổ biến (coi là sRGB, bỏ profile, 4:2:0, q80, 2000 px, phóng to lại khi in). Đo lại bằng `cargo run --release -p fotollection-core --example quality_export -- <thư-mục-xuất> <ảnh…>`, rồi `uv run bench/quality/audit.py <thư-mục-ảnh> <thư-mục-xuất>`.
 
@@ -232,7 +232,7 @@ Cùng một app trên mọi hệ điều hành, với các khác biệt sau ([AD
 | "Mở bằng" từ trình quản lý file | ✓ | ✓ | ✓ ⁵ |
 | *Kiểm tra cập nhật* tải bản mới | ✓ | ✓ | ✓ ⁶ |
 
-1. Trên macOS, các định dạng RAW khác DNG do hệ điều hành xử lý, có hiệu chỉnh ống kính; Linux, và Windows chưa cài Raw Image Extension của Microsoft, dùng bộ đọc RAW có sẵn trong Fotollection, không có hiệu chỉnh đó.
+1. Trên macOS, các định dạng RAW khác DNG do hệ điều hành xử lý, có hiệu chỉnh ống kính; Linux và Windows dùng bộ đọc RAW có sẵn trong Fotollection, không có hiệu chỉnh đó. Trên Windows, Raw Image Extension của Microsoft, nếu đã cài, chỉ là phương án dự phòng cuối cùng.
 2. Cần cài miễn phí **HEIF Image Extensions** và **HEVC Video Extensions** của Microsoft.
 3. HEIC cần bộ giải mã HEVC, thứ Linux không có sẵn và Fotollection không đóng gói kèm (vì bằng sáng chế). Bản sau sẽ dùng `libheif` mà distro của bạn cài (FR-068). Trước đó, hãy chuyển ảnh HEIC sang JPEG.
 4. Sony a6400 trước ([FR-063](docs/PRD.md#fr-063--tethered-capture-over-usb)).
@@ -281,7 +281,7 @@ sudo apt install ./Fotollection_*_amd64.deb
 | **Màn hình** | 1280 × 800 | 1920 × 1080 hoặc màn Retina | Thanh công cụ tự co khi cửa sổ hẹp |
 | **Internet** | Không cần | — | Mọi thứ chạy offline, kể cả nhận diện khuôn mặt, địa điểm và preview. Không có gì được tải lên |
 | **HEIC (ảnh iPhone)** | macOS: có sẵn | — | Windows: cài **HEIF Image Extensions** và **HEVC Video Extensions** từ Microsoft Store ([ADR-0017](docs/adr/0017-heic-through-os-codecs.md)). Linux: chưa có ([ADR-0034](docs/adr/0034-linux-lean.md)) |
-| **Ảnh RAW** | macOS: có sẵn | — | Windows: cài **Raw Image Extension** miễn phí từ Microsoft Store ([ADR-0023](docs/adr/0023-raw-through-os-codecs.md)). Linux: có sẵn trong Fotollection ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md)) |
+| **Ảnh RAW** | macOS: có sẵn | — | Windows và Linux: có sẵn trong Fotollection, không cần cài gì ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md)). Trên Windows, nếu đã cài **Raw Image Extension** của Microsoft, codec của hệ điều hành là phương án dự phòng cuối cùng ([ADR-0023](docs/adr/0023-raw-through-os-codecs.md)) |
 
 Để build từ mã nguồn, bạn cần thêm khoảng 10 GB trống cho file build Rust (một bản debug và một bản release; `scripts/clean.sh` dọn lại được), Rust (cài qua `rustup`, phiên bản ghim trong `rust-toolchain.toml`), Node.js 22 trở lên, và Xcode Command Line Tools (macOS), MSVC Build Tools (Windows), hoặc các gói phát triển WebKitGTK 4.1 và GTK 3 (Linux, như `scripts/bootstrap.sh` cài). Danh sách đầy đủ ở [docs/DEVELOPMENT.md §1.3](docs/DEVELOPMENT.md#13-prerequisites) (tiếng Anh).
 

@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
-//! Camera RAW input (FR-016, ADR-0023): which RAW a file is, from its bytes alone, and its
-//! two decode paths through the operating system's codecs. The embedded preview feeds
-//! thumbnails and best-shot analysis; the full develop feeds the print preview and export.
+//! Camera RAW input (FR-016, ADR-0023, ADR-0029, ADR-0030): which RAW a file is, from its
+//! bytes alone, and its decoders, tried in the order of [`decoders`]: our own DNG reader,
+//! rawler, and the operating system's codecs (first after our own on macOS, the last fallback
+//! elsewhere). The embedded preview feeds thumbnails and best-shot analysis; the full develop
+//! feeds the print preview and export.
 
 pub use fotollection_oscodec::RawKind;
 

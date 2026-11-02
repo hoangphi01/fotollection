@@ -1,6 +1,6 @@
 # Optimization — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-01
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-02
 >
 > Performance is the #1 product quality for Fotollection, which targets enthusiast and professional photographers.
 > This document holds the **budgets**, the **methodology** used to measure them, the **design techniques** that meet them, and a **log** of every measurement.
@@ -77,17 +77,20 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 
 | NFR | Metric | Budget | How it is measured |
 |-----|--------|--------|--------------------|
-| [NFR-001](PRD.md#nfr-001--library-load-time) | First thumbnails for 1,000 JPEGs | < 1 s; all ready in < 10 s | `bench_library_load`, cold cache |
-| [NFR-002](PRD.md#nfr-002--preview-latency) | Preview re-render, p95 | < 50 ms | `bench_preview`, 2 MP preview buffer |
-| [NFR-003](PRD.md#nfr-003--export-throughput) | Export throughput, 24 MP JPEG | ≥ 8 photos/s | `bench_export_batch`, 200 files |
-| [NFR-004](PRD.md#nfr-004--memory-ceiling) | Peak RSS during export | ≤ 2 GB | export of 2,000 files, RSS sampled every 50 ms |
-| [NFR-005](PRD.md#nfr-005--ui-responsiveness) | Input latency during export | < 100 ms | Manual + E2E probe |
-| [NFR-008](PRD.md#nfr-008--install-size) | Installer size | ≤ 25 MB | CI artifact size check |
-| [NFR-010](PRD.md#nfr-010--cold-start) | Launch to interactive | < 1.5 s | E2E timing |
-| [NFR-012](PRD.md#nfr-012--culling-navigation) | Loupe next/previous to a sharp preview, p95 | < 100 ms | `bench_loupe_navigation` + E2E probe |
-| [NFR-013](PRD.md#nfr-013--project-safety) | Edit-to-disk latency; project save time for 10,000 photos | ≤ 5 s; < 50 ms | `bench_project_save`, kill-during-write test |
-| [NFR-014](PRD.md#nfr-014--best-shot-analysis-speed) | Best-shot analysis per photo, 8 cores in parallel | ≤ 20 ms; ≤ 40 ms with faces | `bench_culling` on the `bench` corpus |
-| [NFR-015](PRD.md#nfr-015--normal-mode-speed) | Simple-mode export (after v0.9.0) to 10×15 @ 300 DPI, q90; first screen of 1,000 photos | ≥ 3× Professional (≥ 50 photos/s); < 0.5 s | `measure_folder` with a Simple-mode flag, same folders as `bench/run.sh` |
+| [NFR-001](PRD.md#nfr-001--library-load-time) | First thumbnails for 1,000 JPEGs | < 1 s; all ready in < 10 s | `measure_folder` (import, EXIF, T1 thumbnails), cold cache |
+| [NFR-002](PRD.md#nfr-002--preview-latency) | Preview re-render, p95 | < 50 ms | `measure_folder` (warm 1600 px preview, median of 20) and `measure_preview`; `bench/run.sh` against Chromium |
+| [NFR-003](PRD.md#nfr-003--export-throughput) | Export throughput, 24 MP JPEG | ≥ 8 photos/s | `measure_folder` export; `bench/run.sh` against Chromium |
+| [NFR-004](PRD.md#nfr-004--memory-ceiling) | Peak RSS during export | ≤ 2 GB | `bench/batch.sh`: `measure_folder --discard-output` on 5,000+ photos, peak RSS from `/usr/bin/time -l` |
+| [NFR-005](PRD.md#nfr-005--ui-responsiveness) | Input latency during export | < 100 ms | Manual; E2E probe planned |
+| [NFR-008](PRD.md#nfr-008--install-size) | Installer size | ≤ 25 MB | Release asset sizes, checked by hand; a CI check is planned |
+| [NFR-010](PRD.md#nfr-010--cold-start) | Launch to interactive | < 1.5 s | `scripts/measure-startup.sh` (`FOTOLLECTION_TIMING`, release build) |
+| [NFR-012](PRD.md#nfr-012--culling-navigation) | Loupe next/previous to a sharp preview, p95 | < 100 ms | Planned: a loupe benchmark + E2E probe |
+| [NFR-013](PRD.md#nfr-013--project-safety) | Edit-to-disk latency; project save time for 10,000 photos | ≤ 5 s; < 50 ms | `measure_project` (synthetic library, every photo edited); kill-during-write test planned |
+| [NFR-014](PRD.md#nfr-014--best-shot-analysis-speed) | Best-shot analysis per photo, 8 cores in parallel | ≤ 20 ms; ≤ 40 ms with faces | `measure_folder --analyze` on the `bench` corpus |
+| [NFR-015](PRD.md#nfr-015--simple-mode-speed) | Simple-mode export (after v0.9.0) to 10×15 @ 300 DPI, q90; first screen of 1,000 photos | ≥ 3× Professional (≥ 50 photos/s); < 0.5 s | `measure_folder` with a Simple-mode flag, same folders as `bench/run.sh` |
+| [NFR-016](PRD.md#nfr-016--open-to-first-photo) | "Open with" to the photo in the preview, after the first launch | < 1 s | `open -a` on the release bundle with `FOTOLLECTION_TIMING` (§5, 2026-10-25) |
+| [NFR-017](PRD.md#nfr-017--camera-raw-speed) | Camera RAW: thumbnail or analysis input from the embedded preview; first print preview of a 16–31 MP RAW | < 100 ms; < 2.5 s; RAW export within NFR-004 | `measure_raw` on the nine CC0 samples (`scripts/fetch-raw-samples.py`); `measure_rawler`, `raw_memory` |
+| [NFR-020](PRD.md#nfr-020--place-inference-speed) | Borrowing places from another device's photos | ≤ 2 s per 1,000 camera photos | `measure_borrow`, 1,000 camera + 1,000 phone photos |
 | [NFR-021](PRD.md#nfr-021--collage-sheet-speed) | Collage sheet preview; sheet export; the grid after a change of setting | ≤ 2× NFR-002; ≤ its two photos exported alone; ten sheets < 100 ms | `measure_sheet` and `measure_sheet_grid` (`crates/core/examples/`), 26 MP demo photos |
 | [FR-070](PRD.md#fr-070--looks-from-lut-files) (planned v0.10.0) | Applying a look (33³ LUT, strength) | ≤ 5 ms on the 1600 px preview; ≤ 60 ms on a 24 MP export | `measure_look`, to be written with the feature ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
 

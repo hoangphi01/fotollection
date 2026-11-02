@@ -41,7 +41,7 @@ en:
   f_crop_title: Crops that fit the print
   f_crop_text: Every photo is cropped to the print size with live DPI. Rotate a quarter turn or straighten a horizon by up to 15°.
   f_quality_title: Original quality
-  f_quality_text: Full resolution, the colour profile kept, 4:4:4 JPEG. What comes out looks like what went in.
+  f_quality_text: Full resolution, the colour profile kept, 4:4:4 JPEG for print. What comes out looks like what went in.
   f_raw_title: Camera RAW, no conversion
   f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG open as they are, with their date and exposure. Thumbnails come from the preview inside each file, so RAW browses as fast as JPEG."
   f_open_title: Open photos from anywhere
@@ -166,7 +166,7 @@ en:
   fn_adobe: "Adobe RGB (1998) is a colour space specified by Adobe Inc.; Adobe is a registered trademark of Adobe Inc."
   fn_charts: "Every chart: figures are for reference, measured on an ordinary laptop (Apple M3, 16 GB); yours depend on the computer you use."
   fn_dng: "Adobe DNG Converter was not run for this page. The figure is a third-party estimate (1,000 CR3 files in 20–30 minutes on modern hardware, machine not stated), from convertintomp4.com's blog post on batch RAW-to-DNG conversion. Adobe is a registered trademark of Adobe Inc."
-  fn_pf_raw: "On macOS, RAW formats other than DNG are developed by the system, with its lens corrections. Linux, and Windows without Microsoft's Raw Image Extension, use the reader built into Fotollection, without them."
+  fn_pf_raw: "On macOS, RAW formats other than DNG are developed by the system, with its lens corrections. Linux and Windows use the reader built into Fotollection, without them; on Windows, Microsoft's Raw Image Extension, when installed, is only a last fallback."
   fn_pf_heic_win: "With Microsoft's free HEIF Image Extensions and HEVC Video Extensions, from the Microsoft Store."
   fn_pf_heic_linux: "HEIC needs an HEVC decoder, which Linux does not ship and Fotollection will not bundle, because of its patents. A later version will use the libheif your distribution installs. Until then, convert HEIC photos to JPEG."
   fn_pf_tether: "Sony a6400 first; other cameras will follow."
@@ -180,7 +180,7 @@ en:
   fn_photos: "The demo photos in the screenshots are in the public domain (CC0) on Wikimedia Commons, by Dktue (18 photos), Pierre Blaché from Paris, France (3) and Kate Branch (1). The cat in the print-basket and best-shot screenshots was photographed by @hoangphi01 on a Lumix GX9, all rights reserved; the softer, shaken and darker copies beside it were made from that one photo, to show how the best shot is chosen."
   fn_photos_link: "Every file, its page and its checksum."
   fn_rawsamples: "The RAW measurements use nine samples in the public domain (CC0) from raw.pixls.us, one per format; scripts/fetch-raw-samples.py downloads and checks them."
-  fn_rawformats: "RAW formats named on this site belong to the camera makers that define them: RW2 (Panasonic Holdings Corporation), CR2 and CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) and ORF (OM Digital Solutions Corporation, formerly Olympus). DNG is an open specification published by Adobe Inc. Fotollection reads them through the codecs of macOS and Windows, and on Linux, or on Windows without Microsoft's Raw Image Extension, through a reader built into Fotollection; it is not made or endorsed by any of these companies."
+  fn_rawformats: "RAW formats named on this site belong to the camera makers that define them: RW2 (Panasonic Holdings Corporation), CR2 and CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) and ORF (OM Digital Solutions Corporation, formerly Olympus). DNG is an open specification published by Adobe Inc. Fotollection reads them through a reader built into Fotollection, and on macOS through the system's codecs first (on Windows, Microsoft's Raw Image Extension is a last fallback when installed); it is not made or endorsed by any of these companies."
   fn_cameras: "Camera names and logos in the screenshots and in the app's info frame are trademarks of their owners, used only to show which camera took a photo: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) and Sony (Sony Group Corporation)."
   fn_others: Apple and macOS are trademarks of Apple Inc.; Windows of Microsoft Corporation; Linux is the registered trademark of Linus Torvalds in the U.S. and other countries; Ubuntu of Canonical Ltd.; Debian of Software in the Public Interest, Inc.; Fedora, Red Hat, RHEL and CentOS of Red Hat, Inc.; openSUSE of SUSE LLC; Pop!_OS of System76, Inc.; Rocky Linux of the Rocky Enterprise Software Foundation; AlmaLinux of the AlmaLinux OS Foundation; ChromeOS of Google LLC; NVIDIA of NVIDIA Corporation; the names of the other Linux distributions belong to their projects; Facebook and Instagram of Meta Platforms, Inc.; GitHub of GitHub, Inc.; Google Analytics of Google LLC; Lightroom of Adobe Inc.; IrfanView of Irfan Škiljan; VietQR of NAPAS; Wikimedia Commons of the Wikimedia Foundation. The Apple, Windows and Linux (Tux, first drawn by Larry Ewing) marks are drawn from Simple Icons (CC0) and only show which system a column or a step is about.
   fn_brand: "The Fotollection name and logo identify the official app, made by @hoangphi01. Official downloads come only from fotollection.org and the project's GitHub releases. The GPL-3.0 licence lets anyone share or sell copies, changed or not, as long as they keep this licence and offer the source code; a changed or resold copy must not use the Fotollection name or logo in a way that suggests it is the official app."
@@ -267,7 +267,7 @@ en:
   perf_share_text: "Facebook shrinks every photo to 2,048 px and recompresses it, and it ignores colour profiles. The Share export does that work properly first: the photo is converted to sRGB, resized with a high-quality filter, lightly sharpened and saved at a size Facebook does not touch again. After Facebook's own recompression, the result stays closer to the photo than the usual way, and iPhone-style Display P3 photos keep 99.6 % of their colour instead of 86 %. The Original size option keeps every pixel at half the file, with a colour error under 1."
   chart_raw: "Camera RAW: from the file to the screen, per camera and against Adobe DNG Converter"
   perf_raw_title: "Camera RAW: open it as it is"
-  perf_raw_text: "Fotollection opens RAW files from nine common cameras without converting them first. The thumbnail comes from the preview the camera stores in the file, in 9 to 32 ms. The full picture for the print preview and the export takes 0.4 to 2.2 s, 0.9 s for the median camera. Adobe DNG Converter, by comparison, takes about 1.2 to 1.8 s per file only to turn one RAW file into another, before anything can be seen or printed. Measured on macOS. On Windows, RAW needs Microsoft's free Raw Image Extension for now; a built-in RAW reader is on its way."
+  perf_raw_text: "Fotollection opens RAW files from nine common cameras without converting them first. The thumbnail comes from the preview the camera stores in the file, in 9 to 32 ms. The full picture for the print preview and the export takes 0.4 to 2.2 s, 0.9 s for the median camera. Adobe DNG Converter, by comparison, takes about 1.2 to 1.8 s per file only to turn one RAW file into another, before anything can be seen or printed. Measured on macOS. On Windows and Linux, RAW opens through the reader built into Fotollection, with nothing to install."
   perf_raw_fn: [13]
   perf_best_title: "Best-shot suggestions: checked against a person's choice"
   perf_best_text: "We sorted 95 real photos by hand into 22 moments, and picked the best photo where there was a clear one. Fotollection finds 15 of those moments without ever grouping two different ones, and its suggestion is acceptable in all six moments with a clear best. Each photo takes 17 ms to analyse, 28 ms when it has faces."
@@ -309,7 +309,7 @@ en:
   win_2: If SmartScreen says "Windows protected your PC", click More info.
   win_3: Click Run anyway.
   linux_title: Linux
-  linux_soon: "Linux arrives with v0.8.2. Until it is published, these links open the releases page."
+  linux_soon: "If the download links are missing, the release page has every file."
   linux_script_title: One command
   linux_script_text: "Picks the right package for your system: Ubuntu, Debian and Mint get the APT repository, other distributions the AppImage in ~/.local. To remove it:"
   linux_apt_title: Or add the APT repository
@@ -410,7 +410,7 @@ vi:
   f_crop_title: Cắt vừa khổ in
   f_crop_text: Mỗi ảnh được cắt đúng khổ in, hiện DPI ngay khi kéo. Xoay ¼ vòng hoặc cân lại đường chân trời tới 15°.
   f_quality_title: Giữ nguyên chất lượng gốc
-  f_quality_text: Đủ độ phân giải, giữ hồ sơ màu, JPEG 4:4:4. Ảnh in ra giống ảnh bạn đã chụp.
+  f_quality_text: Đủ độ phân giải, giữ hồ sơ màu, JPEG 4:4:4 cho ảnh in. Ảnh in ra giống ảnh bạn đã chụp.
   f_raw_title: Ảnh RAW, không cần chuyển đổi
   f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG mở được nguyên dạng, đủ ngày chụp và thông số. Ảnh thu nhỏ lấy từ bản xem trước có sẵn trong mỗi tệp, nên duyệt RAW nhanh như JPEG."
   f_open_title: Mở ảnh từ bất cứ đâu
@@ -535,7 +535,7 @@ vi:
   fn_adobe: "Adobe RGB (1998) là không gian màu do Adobe Inc. đặc tả; Adobe là nhãn hiệu đã đăng ký của Adobe Inc."
   fn_charts: "Mọi biểu đồ: số liệu mang tính tham khảo, đo trên một máy tính xách tay bình thường (Apple M3, 16 GB), và phụ thuộc vào cấu hình máy tính bạn sử dụng."
   fn_dng: "Chúng tôi không chạy Adobe DNG Converter cho trang này. Con số là ước tính của bên thứ ba (1.000 tệp CR3 trong 20–30 phút trên máy hiện đại, không nói rõ máy), theo bài viết về chuyển hàng loạt RAW sang DNG trên blog của convertintomp4.com. Adobe là nhãn hiệu đã đăng ký của Adobe Inc."
-  fn_pf_raw: "Trên macOS, các định dạng RAW khác DNG do hệ điều hành xử lý, có hiệu chỉnh ống kính. Linux, và Windows chưa cài Raw Image Extension của Microsoft, dùng bộ đọc RAW có sẵn trong Fotollection, không có phần hiệu chỉnh đó."
+  fn_pf_raw: "Trên macOS, các định dạng RAW khác DNG do hệ điều hành xử lý, có hiệu chỉnh ống kính. Linux và Windows dùng bộ đọc RAW có sẵn trong Fotollection, không có phần hiệu chỉnh đó; trên Windows, Raw Image Extension của Microsoft, nếu đã cài, chỉ là phương án dự phòng cuối cùng."
   fn_pf_heic_win: "Cần cài HEIF Image Extensions và HEVC Video Extensions miễn phí của Microsoft, từ Microsoft Store."
   fn_pf_heic_linux: "HEIC cần bộ giải mã HEVC, thứ Linux không có sẵn và Fotollection sẽ không đóng gói kèm, vì vướng bằng sáng chế. Bản sau sẽ dùng libheif do distro của bạn cài. Trước mắt, hãy chuyển ảnh HEIC sang JPEG."
   fn_pf_tether: "Trước mắt là Sony a6400; các máy khác sẽ có sau."
@@ -549,7 +549,7 @@ vi:
   fn_photos: "Ảnh demo trong các ảnh chụp màn hình thuộc phạm vi công cộng (CC0) trên Wikimedia Commons, của Dktue (18 ảnh), Pierre Blaché from Paris, France (3 ảnh) và Kate Branch (1 ảnh). Chú mèo trong ảnh chụp màn hình phần giỏ in và ảnh đẹp nhất do @hoangphi01 chụp bằng Lumix GX9, giữ mọi quyền; các bản mờ hơn, rung tay và tối hơn bên cạnh được tạo từ chính tấm ảnh đó, để minh hoạ cách chọn ảnh đẹp nhất."
   fn_photos_link: "Danh sách từng tệp, trang gốc và mã kiểm tra."
   fn_rawsamples: "Các số đo RAW dùng chín tệp mẫu thuộc phạm vi công cộng (CC0) từ raw.pixls.us, mỗi định dạng một tệp; scripts/fetch-raw-samples.py tải về và kiểm tra chúng."
-  fn_rawformats: "Các định dạng RAW nhắc đến trên trang này thuộc về hãng máy ảnh đã tạo ra chúng: RW2 (Panasonic Holdings Corporation), CR2 và CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) và ORF (OM Digital Solutions Corporation, trước đây là Olympus). DNG là đặc tả mở do Adobe Inc. công bố. Fotollection đọc các định dạng này qua bộ giải mã có sẵn của macOS và Windows, còn trên Linux, hay trên Windows chưa cài Raw Image Extension của Microsoft, thì qua bộ đọc có sẵn trong Fotollection; ứng dụng không do hãng nào trong số này làm ra hay bảo trợ."
+  fn_rawformats: "Các định dạng RAW nhắc đến trên trang này thuộc về hãng máy ảnh đã tạo ra chúng: RW2 (Panasonic Holdings Corporation), CR2 và CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) và ORF (OM Digital Solutions Corporation, trước đây là Olympus). DNG là đặc tả mở do Adobe Inc. công bố. Fotollection đọc các định dạng này qua bộ đọc có sẵn trong Fotollection, còn trên macOS thì qua bộ giải mã của hệ điều hành trước (trên Windows, Raw Image Extension của Microsoft, nếu đã cài, là phương án dự phòng cuối cùng); ứng dụng không do hãng nào trong số này làm ra hay bảo trợ."
   fn_cameras: "Tên và logo máy ảnh trong ảnh chụp màn hình và trong khung thông tin của ứng dụng là thương hiệu của chủ sở hữu, chỉ dùng để cho biết ảnh được chụp bằng máy nào: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) và Sony (Sony Group Corporation)."
   fn_others: Apple và macOS là thương hiệu của Apple Inc.; Windows của Microsoft Corporation; Linux là nhãn hiệu đã đăng ký của Linus Torvalds tại Hoa Kỳ và các nước khác; Ubuntu của Canonical Ltd.; Debian của Software in the Public Interest, Inc.; Fedora, Red Hat, RHEL và CentOS của Red Hat, Inc.; openSUSE của SUSE LLC; Pop!_OS của System76, Inc.; Rocky Linux của Rocky Enterprise Software Foundation; AlmaLinux của AlmaLinux OS Foundation; ChromeOS của Google LLC; NVIDIA của NVIDIA Corporation; tên các distro Linux khác thuộc về dự án của chúng; Facebook và Instagram của Meta Platforms, Inc.; GitHub của GitHub, Inc.; Google Analytics của Google LLC; Lightroom của Adobe Inc.; IrfanView của Irfan Škiljan; VietQR của NAPAS; Wikimedia Commons của Wikimedia Foundation. Biểu tượng Apple, Windows và Linux (chim cánh cụt Tux, do Larry Ewing vẽ lần đầu) lấy từ Simple Icons (CC0), chỉ để cho biết cột hay bước cài đặt nói về hệ điều hành nào.
   fn_brand: "Tên và logo Fotollection dùng để nhận biết ứng dụng chính thức do @hoangphi01 làm. Bản tải chính thức chỉ có ở fotollection.org và trang phát hành GitHub của dự án. Giấy phép GPL-3.0 cho phép bất kỳ ai chia sẻ hay bán bản sao, có sửa hay không, miễn là giữ nguyên giấy phép này và cung cấp mã nguồn; bản đã sửa hoặc bán lại không được dùng tên hay logo Fotollection theo cách khiến người khác nghĩ đó là ứng dụng chính thức."
@@ -636,7 +636,7 @@ vi:
   perf_share_text: "Facebook thu mọi ảnh về 2.048 px, nén lại và bỏ qua hồ sơ màu. Kiểu xuất Mạng xã hội làm trước những việc đó cho đúng: chuyển ảnh sang sRGB, thu nhỏ bằng bộ lọc chất lượng cao, làm nét nhẹ và lưu đúng cỡ để Facebook không phải thu nhỏ thêm. Sau khi Facebook nén lại, ảnh vẫn giống ảnh gốc hơn cách làm thông thường, và ảnh Display P3 kiểu iPhone giữ được 99,6 % màu thay vì 86 %. Lựa chọn Giữ cỡ gốc giữ nguyên từng điểm ảnh mà tệp chỉ còn khoảng một nửa, sai lệch màu dưới 1."
   chart_raw: "Ảnh RAW: từ tệp đến màn hình, theo từng máy và so với Adobe DNG Converter"
   perf_raw_title: "Ảnh RAW: mở thẳng, không cần chuyển đổi"
-  perf_raw_text: "Fotollection mở tệp RAW của chín dòng máy ảnh phổ biến mà không cần chuyển đổi trước. Ảnh thu nhỏ lấy từ bản xem trước máy ảnh lưu sẵn trong tệp, mất 9 đến 32 ms. Ảnh đầy đủ cho bản xem trước để in và cho bản xuất mất 0,4 đến 2,2 giây, trung vị 0,9 giây. Để so sánh, Adobe DNG Converter mất khoảng 1,2 đến 1,8 giây mỗi tệp chỉ để đổi từ RAW này sang RAW khác, trước khi xem hay in được gì. Đo trên macOS. Trên Windows, hiện vẫn cần cài Raw Image Extension miễn phí của Microsoft; bộ đọc RAW tích hợp sẵn đang được làm."
+  perf_raw_text: "Fotollection mở tệp RAW của chín dòng máy ảnh phổ biến mà không cần chuyển đổi trước. Ảnh thu nhỏ lấy từ bản xem trước máy ảnh lưu sẵn trong tệp, mất 9 đến 32 ms. Ảnh đầy đủ cho bản xem trước để in và cho bản xuất mất 0,4 đến 2,2 giây, trung vị 0,9 giây. Để so sánh, Adobe DNG Converter mất khoảng 1,2 đến 1,8 giây mỗi tệp chỉ để đổi từ RAW này sang RAW khác, trước khi xem hay in được gì. Đo trên macOS. Trên Windows và Linux, RAW được mở bằng bộ đọc có sẵn trong Fotollection, không cần cài thêm gì."
   perf_raw_fn: [13]
   perf_best_title: "Gợi ý ảnh đẹp nhất: đối chiếu với lựa chọn của người thật"
   perf_best_text: "Chúng tôi tự tay chia 95 ảnh thật thành 22 khoảnh khắc, và chọn ảnh đẹp nhất ở những khoảnh khắc có ảnh đẹp rõ ràng. Fotollection tìm ra 15 khoảnh khắc mà không bao giờ gộp nhầm hai khoảnh khắc khác nhau, và ảnh được gợi ý đều chấp nhận được ở cả sáu khoảnh khắc có ảnh đẹp nhất rõ ràng. Mỗi ảnh được phân tích trong 17 ms, 28 ms nếu có khuôn mặt."
@@ -678,7 +678,7 @@ vi:
   win_2: Nếu SmartScreen báo "Windows protected your PC", bấm More info.
   win_3: Bấm Run anyway.
   linux_title: Linux
-  linux_soon: "Linux có từ bản v0.8.2. Khi bản đó chưa phát hành, các liên kết này mở trang phát hành."
+  linux_soon: "Nếu thiếu liên kết tải về, trang phát hành có đủ mọi tệp."
   linux_script_title: Một lệnh là xong
   linux_script_text: "Tự chọn gói hợp với máy bạn: Ubuntu, Debian và Mint dùng kho APT, các distro khác dùng AppImage đặt trong ~/.local. Muốn gỡ:"
   linux_apt_title: Hoặc thêm kho APT
