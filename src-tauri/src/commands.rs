@@ -1070,6 +1070,8 @@ pub struct PhotoDetails {
     pub f_number: Option<f32>,
     pub exposure_s: Option<f32>,
     pub iso: Option<u32>,
+    /// What the file is (FR-071): subsampling, colour space, sensor, decoder.
+    pub facts: fotollection_core::facts::ImageFacts,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Type)]
@@ -1085,7 +1087,16 @@ pub(crate) fn upright_size(
 ) -> Result<(u32, u32), IpcError> {
     let bytes = std::fs::read(&record.path)
         .map_err(|e| IpcError::new("import.unreadable", e.to_string()))?;
-    let (w, h) = image_dimensions(state.codec.as_ref(), &bytes)
+    upright_size_of(state, record, &bytes)
+}
+
+/// [`upright_size`] of a file already read.
+fn upright_size_of(
+    state: &AppState,
+    record: &fotollection_core::library::PhotoRecord,
+    bytes: &[u8],
+) -> Result<(u32, u32), IpcError> {
+    let (w, h) = image_dimensions(state.codec.as_ref(), bytes)
         .map_err(|e| IpcError::new(e.code(), e.to_string()))?;
     Ok(if record.display_orientation() >= 5 {
         (h, w)
@@ -1143,7 +1154,10 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             .map_err(|e| IpcError::internal(e.to_string()))?
             .record(id)
             .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
-        let (width, height) = upright_size(&state, &record)?;
+        let bytes = std::fs::read(&record.path)
+            .map_err(|e| IpcError::new("import.unreadable", e.to_string()))?;
+        let (width, height) = upright_size_of(&state, &record, &bytes)?;
+        let facts = full_facts(&state, id, record.facts, &bytes);
         let (print, border) = {
             let guard = state
                 .settings
@@ -1205,10 +1219,35 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             f_number: shot.f_number,
             exposure_s: shot.exposure_s,
             iso: shot.iso,
+            facts,
         })
     })
     .await
     .map_err(|e| IpcError::internal(e.to_string()))?
+}
+
+/// A photo's facts once its whole file is read (FR-071): a RAW's sensor is known only to
+/// rawler, which needs the whole file, and a DNG may keep its directories past the head read
+/// at import. Kept in the library, so it is read once.
+fn full_facts(
+    state: &AppState,
+    id: PhotoId,
+    facts: fotollection_core::facts::ImageFacts,
+    bytes: &[u8],
+) -> fotollection_core::facts::ImageFacts {
+    let Some(kind) = fotollection_core::raw::kind(bytes) else {
+        return facts;
+    };
+    if facts.sensor.is_some() {
+        return facts;
+    }
+    let Some(full) = fotollection_core::facts::of_raw(bytes, kind) else {
+        return facts;
+    };
+    if let Ok(mut library) = state.library.write() {
+        library.set_facts(id, full);
+    }
+    full
 }
 
 /// A camera profile plus the defaults the UI shows as placeholders.

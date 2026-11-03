@@ -36,7 +36,18 @@ pub mod tag {
     pub const DEFAULT_CROP_ORIGIN: u16 = 50719;
     pub const DEFAULT_CROP_SIZE: u16 = 50720;
     pub const ACTIVE_AREA: u16 = 50829;
+    pub const SAMPLE_FORMAT: u16 = 339;
+    pub const ORIGINAL_RAW_FILE_DATA: u16 = 50817;
+    pub const OPCODE_LIST_2: u16 = 51009;
 }
+
+/// `PhotometricInterpretation` of a colour-filter raw image and of a demosaiced one.
+const CFA: u32 = 32803;
+const LINEAR_RAW: u32 = 34892;
+/// The `GainMap` opcode (DNG 1.7, chapter 7), the lens shading of phone DNGs.
+const GAIN_MAP: u32 = 9;
+/// Opcodes looked at in a list, at most; a real list holds a handful (SECURITY.md §3).
+const MAX_OPCODES: u32 = 256;
 
 /// A raw image larger than this is refused before decoding.
 const MAX_PIXELS: u64 = 250_000_000;
@@ -92,6 +103,113 @@ fn raw_ifd(tiff: &Tiff<'_>, first: &Ifd) -> Result<Ifd, RawError> {
     Err(RawError::Unsupported(
         "no colour-filter raw image (a linear DNG)",
     ))
+}
+
+/// The colour filter in front of the sensor, as a DNG states it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Filter {
+    /// A 2×2 pattern, top-left site first, row by row (0 red, 1 green, 2 blue).
+    Bayer([u8; 4]),
+    /// Fujifilm's 6×6 pattern.
+    XTrans,
+    /// Any other repeat (four colours, an unusual size).
+    Other,
+    /// Already demosaiced (`LinearRaw`), with its samples per pixel: 1 is monochrome.
+    Linear(u8),
+}
+
+/// What kind of DNG a file is (FR-071, docs/raw/dng.md "DNG kinds met in the wild"), read
+/// from its directories without decoding a pixel. Works on the head of a file: whatever
+/// lies past the bytes given is simply not seen.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Facts {
+    pub filter: Filter,
+    pub bits: u8,
+    /// `Compression`: 1 none, 7 lossless JPEG, 8 deflate, 34892 lossy JPEG, 52546 JPEG XL.
+    pub compression: u32,
+    /// Floating-point samples (`SampleFormat` 3), as in HDR and panorama merges.
+    pub float: bool,
+    /// `OpcodeList2` holds a gain map, which the develop does not apply yet.
+    pub gain_map: bool,
+    /// The original maker RAW is embedded (`OriginalRawFileData`).
+    pub original_raw: bool,
+}
+
+pub fn facts(data: &[u8]) -> Option<Facts> {
+    let tiff = Tiff::new(data).ok()?;
+    let first = tiff.ifd(tiff.first_ifd().ok()?).ok()?;
+    first.get(tag::DNG_VERSION)?;
+    let is_main = |ifd: &Ifd| {
+        one(&tiff, ifd, tag::NEW_SUBFILE_TYPE).unwrap_or(0) == 0
+            && matches!(one(&tiff, ifd, tag::PHOTOMETRIC), Some(CFA | LINEAR_RAW))
+    };
+    let ifd = if is_main(&first) {
+        first.clone()
+    } else {
+        list(&tiff, &first, tag::SUB_IFDS)
+            .into_iter()
+            .filter_map(|o| tiff.ifd(o).ok())
+            .find(is_main)?
+    };
+    let filter = if one(&tiff, &ifd, tag::PHOTOMETRIC) == Some(LINEAR_RAW) {
+        let samples = one(&tiff, &ifd, tag::SAMPLES_PER_PIXEL).unwrap_or(1);
+        Filter::Linear(u8::try_from(samples).unwrap_or(u8::MAX))
+    } else {
+        let pattern = ifd.get(tag::CFA_PATTERN).and_then(|e| tiff.raw(e).ok());
+        match (
+            list(&tiff, &ifd, tag::CFA_REPEAT_PATTERN_DIM).as_slice(),
+            pattern,
+        ) {
+            ([2, 2], Some(&[a, b, c, d])) if [a, b, c, d].iter().all(|&s| s <= 2) => {
+                Filter::Bayer([a, b, c, d])
+            }
+            ([6, 6], _) => Filter::XTrans,
+            _ => Filter::Other,
+        }
+    };
+    let gain_map = ifd
+        .get(tag::OPCODE_LIST_2)
+        .or_else(|| first.get(tag::OPCODE_LIST_2))
+        .and_then(|e| tiff.raw(e).ok())
+        .is_some_and(holds_gain_map);
+    Some(Facts {
+        filter,
+        bits: u8::try_from(one(&tiff, &ifd, tag::BITS_PER_SAMPLE).unwrap_or(16)).unwrap_or(0),
+        compression: one(&tiff, &ifd, tag::COMPRESSION).unwrap_or(1),
+        float: one(&tiff, &ifd, tag::SAMPLE_FORMAT) == Some(3),
+        gain_map,
+        original_raw: first.get(tag::ORIGINAL_RAW_FILE_DATA).is_some(),
+    })
+}
+
+/// Whether an opcode list (big-endian whatever the file's order: a count, then per opcode
+/// its id, version, flags, byte size and parameters) holds a `GainMap`.
+fn holds_gain_map(list: &[u8]) -> bool {
+    let be = |at: usize| {
+        list.get(at..at + 4)
+            .and_then(|b| b.try_into().ok())
+            .map(u32::from_be_bytes)
+    };
+    let Some(count) = be(0) else {
+        return false;
+    };
+    let mut at = 4usize;
+    for _ in 0..count.min(MAX_OPCODES) {
+        let (Some(id), Some(size)) = (be(at), be(at + 12)) else {
+            return false;
+        };
+        if id == GAIN_MAP {
+            return true;
+        }
+        let Some(next) = at
+            .checked_add(16)
+            .and_then(|a| a.checked_add(size as usize))
+        else {
+            return false;
+        };
+        at = next;
+    }
+    false
 }
 
 pub fn parse(data: &[u8]) -> Result<Dng, RawError> {
@@ -356,7 +474,8 @@ mod tests {
     use super::*;
 
     /// A little-endian, uncompressed 16-bit DNG of `w × h` with `extra` entries
-    /// (tag, TIFF type, count, value bytes) beside the ones every raw image needs.
+    /// (tag, TIFF type, count, value bytes) beside, or instead of, the ones every raw image
+    /// needs.
     fn synthetic(w: u16, h: u16, data: &[u16], extra: &[(u16, u16, u32, Vec<u8>)]) -> Vec<u8> {
         let short = |v: &[u16]| v.iter().flat_map(|s| s.to_le_bytes()).collect::<Vec<u8>>();
         let long = |v: u32| v.to_le_bytes().to_vec();
@@ -381,6 +500,8 @@ mod tests {
             (tag::CFA_PATTERN, 1, 4, vec![0, 1, 1, 2]),
             (tag::DNG_VERSION, 1, 4, vec![1, 6, 0, 0]),
         ];
+        // An extra entry replaces the default one with its tag.
+        entries.retain(|e| extra.iter().all(|x| x.0 != e.0));
         entries.extend_from_slice(extra);
         entries.sort_by_key(|e| e.0);
         let ifd_len = 2 + 12 * entries.len() + 4;
@@ -465,6 +586,72 @@ mod tests {
             }
         }
         Ok(())
+    }
+
+    /// An opcode list of `ids`, each with `size` bytes of zeroed parameters.
+    fn opcodes(ids: &[u32], size: u32) -> Vec<u8> {
+        let mut out = u32::try_from(ids.len()).unwrap_or(0).to_be_bytes().to_vec();
+        for id in ids {
+            for v in [*id, 0x0103_0000, 0, size] {
+                out.extend_from_slice(&v.to_be_bytes());
+            }
+            out.resize(out.len() + size as usize, 0);
+        }
+        out
+    }
+
+    /// FR-071: a plain Bayer DNG reads as one; a phone's `OpcodeList2` gain map, a 6×6
+    /// X-Trans filter and a demosaiced `LinearRaw` image are told apart; a file cut short
+    /// anywhere gives no facts or partial ones, never a panic.
+    #[test]
+    fn facts_tell_the_dng_kinds_apart() {
+        let data = vec![0u16; 16];
+        let plain = synthetic(4, 4, &data, &[]);
+        assert_eq!(
+            facts(&plain),
+            Some(Facts {
+                filter: Filter::Bayer([0, 1, 1, 2]),
+                bits: 16,
+                compression: 1,
+                float: false,
+                gain_map: false,
+                original_raw: false,
+            })
+        );
+        // The count of an UNDEFINED entry is its byte length.
+        let list = opcodes(&[4, 9], 8);
+        let len = u32::try_from(list.len()).unwrap_or(0);
+        let phone = synthetic(4, 4, &data, &[(tag::OPCODE_LIST_2, 7, len, list)]);
+        assert!(facts(&phone).is_some_and(|f| f.gain_map));
+        let no_map = opcodes(&[4, 1], 8);
+        let len = u32::try_from(no_map.len()).unwrap_or(0);
+        let lens = synthetic(4, 4, &data, &[(tag::OPCODE_LIST_2, 7, len, no_map)]);
+        assert!(facts(&lens).is_some_and(|f| !f.gain_map));
+        let xtrans = synthetic(
+            4,
+            4,
+            &data,
+            &[(tag::CFA_REPEAT_PATTERN_DIM, 3, 2, shorts(&[6, 6]))],
+        );
+        assert_eq!(facts(&xtrans).map(|f| f.filter), Some(Filter::XTrans));
+        let linear = synthetic(
+            4,
+            4,
+            &data,
+            &[
+                (tag::PHOTOMETRIC, 3, 1, shorts(&[34892])),
+                (tag::SAMPLES_PER_PIXEL, 3, 1, shorts(&[3])),
+                (tag::COMPRESSION, 3, 1, shorts(&[34892])),
+            ],
+        );
+        assert_eq!(
+            facts(&linear).map(|f| (f.filter, f.compression)),
+            Some((Filter::Linear(3), 34892))
+        );
+        for cut in 0..phone.len() {
+            let _ = facts(&phone[..cut]);
+        }
+        assert!(!holds_gain_map(&[0xFF, 0xFF, 0xFF, 0xFF, 0, 0, 0, 1]));
     }
 
     /// A black level repeated per column (`BlackLevelRepeatDim` 1 × 2) applies to every row.

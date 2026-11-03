@@ -17,15 +17,34 @@ pub struct Layout {
     pub first_scan: u8,
 }
 
+/// The layout and what else the header says about colour (FR-071).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Header {
+    pub layout: Layout,
+    /// The Adobe APP14 colour transform: 0 none (RGB or CMYK as stored), 1 YCbCr, 2 YCCK.
+    pub adobe_transform: Option<u8>,
+    /// The ICC profile from the APP2 `ICC_PROFILE` chunks, joined in file order; empty when
+    /// there is none.
+    pub icc: Vec<u8>,
+}
+
 /// Reads the layout, or `None` when the header is not a JPEG's or ends early. Bounds-checked:
 /// any input, however broken, returns without a panic (SECURITY.md §3).
 pub fn read(bytes: &[u8]) -> Option<Layout> {
+    read_header(bytes).map(|h| h.layout)
+}
+
+/// Reads the header up to the first scan: the layout, the Adobe transform and the ICC
+/// profile. Bounds-checked like [`read`].
+pub fn read_header(bytes: &[u8]) -> Option<Header> {
     if bytes.get(..2)? != [0xFF, 0xD8] {
         return None;
     }
     let mut at = 2;
     // The frame header seen so far: marker, precision, sampling.
     let mut frame: Option<Layout> = None;
+    let mut adobe_transform = None;
+    let mut icc = Vec::new();
     loop {
         // Markers may be padded with any number of 0xFF.
         while *bytes.get(at)? != 0xFF {
@@ -62,10 +81,20 @@ pub fn read(bytes: &[u8]) -> Option<Layout> {
                     first_scan: 0,
                 });
             }
+            // APP2: "ICC_PROFILE\0", the chunk's number and count, then the profile's bytes.
+            0xE2 if body.starts_with(b"ICC_PROFILE\0") => {
+                icc.extend_from_slice(body.get(14..).unwrap_or_default());
+            }
+            // APP14: "Adobe", version, two flag words, then the transform.
+            0xEE if body.starts_with(b"Adobe") => adobe_transform = body.get(11).copied(),
             0xDA => {
-                return Some(Layout {
-                    first_scan: *body.first()?,
-                    ..frame?
+                return Some(Header {
+                    layout: Layout {
+                        first_scan: *body.first()?,
+                        ..frame?
+                    },
+                    adobe_transform,
+                    icc,
                 });
             }
             _ => {}

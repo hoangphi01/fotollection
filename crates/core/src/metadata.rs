@@ -33,22 +33,91 @@ pub struct PhotoMeta {
     pub f_number: Option<f32>,
     pub exposure_s: Option<f32>,
     pub iso: Option<u32>,
+    /// What the file is (FR-071), from the same head.
+    pub facts: crate::facts::ImageFacts,
 }
 
 const MAX_STRING_CHARS: usize = 100;
 
+/// How much of a JPEG or PNG import reads: its EXIF (at most 64 KB, first) and the header
+/// up to the first scan almost always fit (FR-071). A file whose header lies further is read
+/// again, up to [`LONG_HEAD_BYTES`].
+const HEAD_BYTES: u64 = 128 * 1024;
+const LONG_HEAD_BYTES: u64 = 4 * 1024 * 1024;
+
 /// Reads metadata from a file. Missing or unreadable EXIF yields defaults rather than an error,
 /// so a photo without metadata is still usable (FR-002). A camera RAW goes to [`read_raw`].
+/// The file is opened once and its head read once, for both the EXIF and the facts.
 pub fn read_path(path: &Path) -> PhotoMeta {
-    if let Some(kind) = raw_kind_of(path) {
-        return read_raw(path, kind);
-    }
-    let Ok(file) = File::open(path) else {
+    use std::io::Read;
+    let Ok(mut file) = File::open(path) else {
         return PhotoMeta::with_defaults();
     };
-    Reader::new()
-        .read_from_container(&mut BufReader::new(file))
-        .map_or_else(|_| PhotoMeta::with_defaults(), |exif| from_exif(&exif))
+    let mut head = Vec::new();
+    if file
+        .by_ref()
+        .take(HEAD_BYTES)
+        .read_to_end(&mut head)
+        .is_err()
+    {
+        return PhotoMeta::with_defaults();
+    }
+    let jpeg = head.starts_with(&[0xFF, 0xD8]);
+    let png = head.starts_with(b"\x89PNG");
+    if !jpeg && !png {
+        let sniff = head.len().min(16 + crate::raw::HEAD_BYTES);
+        if let Some(kind) = crate::raw::kind(&head[..sniff]) {
+            return read_raw(path, kind);
+        }
+    }
+    let whole = head.len() < usize::try_from(HEAD_BYTES).unwrap_or(usize::MAX);
+    let facts_of = |bytes: &[u8]| {
+        if jpeg {
+            crate::facts::of_jpeg(bytes)
+        } else if png {
+            crate::facts::of_png(bytes)
+        } else {
+            None
+        }
+    };
+    let mut facts = facts_of(&head);
+    if facts.is_none() && (jpeg || png) && !whole {
+        let mut long = Vec::new();
+        if File::open(path)
+            .and_then(|f| f.take(LONG_HEAD_BYTES).read_to_end(&mut long))
+            .is_ok()
+        {
+            facts = facts_of(&long);
+        }
+    }
+    let exif = Reader::new()
+        .read_from_container(&mut std::io::Cursor::new(&head))
+        .ok()
+        .or_else(|| {
+            // EXIF past the head (or in a container read from its end): read it all.
+            (!whole).then(|| {
+                let file = File::open(path).ok()?;
+                Reader::new()
+                    .read_from_container(&mut BufReader::new(file))
+                    .ok()
+            })?
+        });
+    let mut meta = exif
+        .as_ref()
+        .map_or_else(PhotoMeta::with_defaults, from_exif);
+    let mut facts = facts.unwrap_or_default();
+    // A camera set to Adobe RGB writes no profile, only the interoperability index R03.
+    if facts.space == Some(crate::facts::Space::Untagged) && exif.as_ref().is_some_and(adobe_rgb) {
+        facts.space = Some(crate::facts::Space::AdobeRgb);
+    }
+    meta.facts = facts;
+    meta
+}
+
+/// The EXIF interoperability index "R03": the camera recorded Adobe RGB (DCF 2.0).
+fn adobe_rgb(exif: &Exif) -> bool {
+    exif.get_field(Tag::InteroperabilityIndex, In::PRIMARY)
+        .is_some_and(|f| matches!(&f.value, Value::Ascii(v) if v.first().is_some_and(|s| s.starts_with(b"R03"))))
 }
 
 /// Reads metadata from an in-memory JPEG.
@@ -56,22 +125,6 @@ pub fn read_bytes(bytes: &[u8]) -> PhotoMeta {
     Reader::new()
         .read_from_container(&mut std::io::Cursor::new(bytes))
         .map_or_else(|_| PhotoMeta::with_defaults(), |exif| from_exif(&exif))
-}
-
-/// The RAW kind of a file, reading 16 bytes for a JPEG or PNG and the RAW head otherwise.
-fn raw_kind_of(path: &Path) -> Option<crate::raw::RawKind> {
-    use std::io::Read;
-    let mut file = File::open(path).ok()?;
-    let mut magic = [0u8; 16];
-    let n = file.read(&mut magic).ok()?;
-    if magic[..n].starts_with(&[0xFF, 0xD8]) || magic[..n].starts_with(b"\x89PNG") {
-        return None;
-    }
-    let mut head = magic[..n].to_vec();
-    file.take(crate::raw::HEAD_BYTES as u64)
-        .read_to_end(&mut head)
-        .ok()?;
-    crate::raw::kind(&head)
 }
 
 /// How much of a RAW file is read for its metadata: enough for the IFDs of every tested
@@ -96,6 +149,9 @@ pub fn read_raw(path: &Path, kind: crate::raw::RawKind) -> PhotoMeta {
         .or_else(|| raw_meta(path, &std::fs::read(path).ok()?, kind))
         .unwrap_or_else(PhotoMeta::with_defaults);
     meta.has_embedded_thumbnail = false;
+    if kind == crate::raw::RawKind::Dng {
+        meta.facts = crate::facts::of_dng(&head).unwrap_or_default();
+    }
     meta
 }
 
@@ -237,6 +293,7 @@ fn from_fields<'a>(
         iso: field(Tag::PhotographicSensitivity)
             .and_then(|f| f.value.get_uint(0))
             .filter(|iso| (25..=1_638_400).contains(iso)),
+        facts: crate::facts::ImageFacts::default(),
     }
 }
 

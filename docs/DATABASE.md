@@ -109,6 +109,7 @@ The library loads into **columnar arenas**: a structure of arrays indexed by a d
 | `copies` | `u8` | 1 |
 | `lat`, `lon` | `f32` (≈ 1 m precision, plenty for stamping) | 8 |
 | `flags` | `u16` bitfield: has GPS, GPS inferred, manual date, DPI band, missing file… | 2 |
+| `facts` | `ImageFacts` (FR-071): chroma, coding, bits, colour space, sensor, Bayer pattern, DNG kind, decoder; read at import, **never saved** (N4) | 12 |
 | Sparse `overrides` | `HashMap<PhotoIdx, OverrideIdx>` → a separate arena | 0 for photos without overrides |
 
 That is **about 42 bytes per photo, plus the path**: roughly 1 MB for 10,000 photos. Filters such as "pick + ≥ 3 stars + has GPS" are evaluated as **bitsets** over these columns. Undo/redo stores **inverse operations** (for example `SetRating { idx, old, new }`), never snapshots.

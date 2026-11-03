@@ -305,6 +305,31 @@ impl RawDecoder for Own {
     }
 }
 
+/// The sensor's filter, its Bayer pattern and bit depth, from rawler without developing
+/// (FR-071); `None` when rawler cannot read the file.
+pub fn sensor(bytes: &[u8]) -> Option<(crate::facts::Sensor, Option<crate::facts::Cfa>, u8)> {
+    use crate::facts::Sensor;
+    use fotollection_rawlgpl::Filter;
+    let (filter, bits) = fotollection_rawlgpl::sensor(bytes).ok()?;
+    Some(match filter {
+        Filter::Bayer(name) => {
+            let mut sites = [3u8; 4];
+            for (site, c) in sites.iter_mut().zip(name.chars()) {
+                *site = match c {
+                    'R' => 0,
+                    'G' => 1,
+                    _ => 2,
+                };
+            }
+            (Sensor::Bayer, crate::facts::cfa_of(sites), bits)
+        }
+        Filter::XTrans => (Sensor::XTrans, None, bits),
+        Filter::Other(_) => (Sensor::OtherFilter, None, bits),
+        Filter::Linear => (Sensor::Linear, None, bits),
+        Filter::Mono => (Sensor::Monochrome, None, bits),
+    })
+}
+
 /// The order RAW decoders are tried in (ADR-0029, ADR-0030). Our own decoder goes first for
 /// the formats it reads. Then macOS keeps `ImageIO` (it corrects lens distortion), with
 /// rawler for what it cannot read; Windows uses rawler, with WIC for what rawler cannot read.

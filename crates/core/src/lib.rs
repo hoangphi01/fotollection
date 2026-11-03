@@ -15,6 +15,7 @@ pub mod error_log;
 pub mod errors;
 pub mod exif_out;
 pub mod export;
+pub mod facts;
 pub mod fonts;
 pub mod frame;
 pub mod geocode;

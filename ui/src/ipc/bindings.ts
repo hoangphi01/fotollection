@@ -631,6 +631,19 @@ export type CellSize = {
 	longMm: number,
 };
 
+/**  A Bayer pattern, top-left site first, row by row. */
+export type Cfa = "RGGB" | "BGGR" | "GRBG" | "GBRG";
+
+/**  How the colour of a JPEG is sampled, or what its components are. */
+export type Chroma = "4:4:4" | "4:2:2" | "4:2:0" | "4:4:0" | "4:1:1" | 
+/**  Three components sampled some other way. */
+"other" | "grey" | 
+/**  Three components stored as RGB, not YCbCr (Adobe transform 0). */
+"rgb" | "cmyk" | "ycck";
+
+/**  The JPEG coding process, from the frame marker. */
+export type Coding = "baseline" | "extended" | "progressive" | "lossless" | "arithmetic" | "hierarchical";
+
 /**  How two photos share one print (FR-035). */
 export type CollageSettings = {
 	ratio?: CellRatio,
@@ -737,6 +750,34 @@ export type DateFormat =
 "dmy" | 
 /**  `'26 10 23`, as on 1990s film cameras */
 "retro";
+
+/**
+ *  The decoder that reads the file (ADR-0029, ADR-0030, ADR-0033), as the routing rules
+ *  choose it: the first in line, before any fallback after an error.
+ */
+export type Decoder = 
+/**  zune-jpeg, for the layouts our corpus proves. */
+"zune" | 
+/**  jpeg-decoder, the reference for every other JPEG. */
+"reference" | 
+/**  Our own DNG develop. */
+"own" | "rawler" | 
+/**  The operating system's codec (`ImageIO` on macOS, WIC on Windows). */
+"system";
+
+/**  The DNG kinds our develop does not read yet (docs/raw/dng.md). */
+export type DngKind = {
+	/**  Lossy JPEG compression (34892). */
+	lossy: boolean,
+	/**  JPEG XL compression (52546). */
+	jpegXl: boolean,
+	/**  Floating-point samples: an HDR or panorama merge. */
+	float: boolean,
+	/**  A phone's lens shading in `OpcodeList2`, not applied yet. */
+	gainMap: boolean,
+	/**  The original maker RAW is embedded. */
+	originalRaw: boolean,
+};
 
 /**  The project document changed: name, unsaved changes, or a new library (FR-023). */
 export type DocumentChanged = {
@@ -925,6 +966,19 @@ export type HistoryState = {
 	canRedo: boolean,
 };
 
+/**  Everything FR-071 shows about one file. Small and `Copy`: one per photo in RAM. */
+export type ImageFacts = {
+	chroma: Chroma | null,
+	coding: Coding | null,
+	/**  Bits per sample. */
+	bits: number | null,
+	space: Space | null,
+	sensor: Sensor | null,
+	cfa: Cfa | null,
+	dng: DngKind | null,
+	decoder: Decoder | null,
+};
+
 export type ImportSummary = {
 	added: number,
 	duplicates: number,
@@ -1035,6 +1089,8 @@ export type PhotoDetails = {
 	fNumber: number | null,
 	exposureS: number | null,
 	iso: number | null,
+	/**  What the file is (FR-071): subsampling, colour space, sensor, decoder. */
+	facts: ImageFacts,
 };
 
 /**  Dense index of a photo within this session's library. */
@@ -1114,6 +1170,8 @@ export type PhotoSummary = {
 	dateManual: boolean,
 	/**  Where the photo's place comes from, when it has one (FR-032, FR-031). */
 	placeSource: PlaceSource | null,
+	/**  A file outside the common path (FR-071), badged in the grid. */
+	unusual: boolean,
 };
 
 /**  A town or city. */
@@ -1275,6 +1333,13 @@ export type RevisionChanged = {
 	canRedo: boolean,
 };
 
+/**  The colour filter in front of a RAW's sensor. */
+export type Sensor = "bayer" | "xTrans" | 
+/**  Another pattern, such as four colours. */
+"otherFilter" | 
+/**  Already demosaiced (a linear DNG, `ProRAW`). */
+"linear" | "monochrome";
+
 export type SettingsState = {
 	settings: RenderSettings,
 	/**  Bumps on every change; previews use it to refresh. */
@@ -1315,6 +1380,13 @@ export type SizeAdvice = {
 	dpi: number,
 	verdict: PrintVerdict,
 };
+
+/**  The colour space a file states: by its ICC profile's name, its header or EXIF. */
+export type Space = "srgb" | "displayP3" | "adobeRgb" | "proPhoto" | "grey" | "cmyk" | 
+/**  A profile with another name. */
+"otherProfile" | 
+/**  No profile: read as sRGB. */
+"untagged";
 
 export type StampColor = "white" | "retroOrange";
 

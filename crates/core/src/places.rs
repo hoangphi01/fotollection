@@ -195,6 +195,7 @@ mod tests {
                 ..PhotoEdits::default()
             },
             camera_time: time,
+            facts: crate::facts::ImageFacts::default(),
         }
     }
 

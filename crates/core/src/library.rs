@@ -264,6 +264,8 @@ pub struct PhotoRecord {
     /// The time the camera wrote, before its clock offset (FR-030). Equal to `capture` when
     /// the body has no offset or the date comes from the file.
     pub camera_time: NaiveDateTime,
+    /// What the file is (FR-071).
+    pub facts: crate::facts::ImageFacts,
 }
 
 impl PhotoRecord {
@@ -332,6 +334,8 @@ pub struct PhotoSummary {
     pub date_manual: bool,
     /// Where the photo's place comes from, when it has one (FR-032, FR-031).
     pub place_source: Option<PlaceSource>,
+    /// A file outside the common path (FR-071), badged in the grid.
+    pub unusual: bool,
 }
 
 #[derive(Default)]
@@ -369,6 +373,8 @@ pub struct Library {
     f_number: Vec<f32>,
     exposure_s: Vec<f32>,
     iso: Vec<u32>,
+    /// What each file is (FR-071): read at import, never saved (DATABASE.md N4).
+    facts: Vec<crate::facts::ImageFacts>,
 }
 
 const NONE_U16: u16 = u16::MAX;
@@ -712,6 +718,7 @@ impl Library {
         self.f_number.push(meta.f_number.unwrap_or(f32::NAN));
         self.exposure_s.push(meta.exposure_s.unwrap_or(f32::NAN));
         self.iso.push(meta.iso.unwrap_or(0));
+        self.facts.push(meta.facts);
         Some(id)
     }
 
@@ -758,7 +765,16 @@ impl Library {
             gps,
             shot,
             edits: self.edits(id),
+            facts: self.facts[i],
         })
+    }
+
+    /// Replaces a photo's facts, once the whole file has been read (FR-071: a RAW other than
+    /// DNG knows its sensor only then).
+    pub fn set_facts(&mut self, id: PhotoId, facts: crate::facts::ImageFacts) {
+        if let Some(i) = self.index(id) {
+            self.facts[i] = facts;
+        }
     }
 
     /// The photo at `path`, if imported.
@@ -842,6 +858,7 @@ impl Library {
                 .place
                 .map(|p| p.source)
                 .or((record.flags & flags::HAS_GPS != 0).then_some(PlaceSource::Gps)),
+            unusual: record.facts.unusual(),
         })
     }
 

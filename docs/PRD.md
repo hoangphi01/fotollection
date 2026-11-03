@@ -775,7 +775,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **JPEG:** chroma subsampling (4:4:4, 4:2:2, 4:2:0, 4:4:0, 4:1:1, or grey), baseline or progressive, bit depth, the colour space named by its ICC profile (sRGB, Display P3, Adobe RGB, grey, CMYK) and the decoder that read it (ADR-0033).
 - **RAW:** the sensor's colour filter, Bayer with its pattern (RGGB, BGGR…), X-Trans 6 × 6, four-colour, linear or monochrome, the bit depth, the maker and the path that developed it.
 - **Where:** the inspector's Image line, for example "6000 × 4000 · 4:2:0 · Display P3" or "RAF · X-Trans · 14-bit"; a small badge in the grid, and a filter, for unusual files.
-- **Read once** at import, from the header only, and kept in the project (a schema bump, [DATABASE.md](DATABASE.md)). It also goes into the error log's context ([ERROR_CONTROL.md](ERROR_CONTROL.md)).
+- **Read at import**, from the head of the file the EXIF pass reads anyway, and kept in RAM only: it is derived data, so it is never saved and the project schema does not change ([DATABASE.md](DATABASE.md) N4). A RAW other than DNG gets its sensor when the inspector first reads the whole file (only rawler knows it). HEIC has no facts yet. The error log's context follows with the error-context work of session 5.
 
 ### FR-072 — Our own develop core
 

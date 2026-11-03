@@ -86,6 +86,57 @@ pub fn dimensions(bytes: &[u8]) -> Result<(u32, u32), RawError> {
     })
 }
 
+/// The colour filter in front of the sensor, as rawler reads it (FR-071).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Filter {
+    /// A 2×2 red, green and blue pattern, named top-left first (`RGGB`, `BGGR`…).
+    Bayer(String),
+    /// Fujifilm's 6×6 pattern.
+    XTrans,
+    /// Another pattern (four colours such as `CYGM`, an unusual size), by its name.
+    Other(String),
+    /// Already demosaiced samples.
+    Linear,
+    /// One sample per pixel and no filter.
+    Mono,
+}
+
+/// The sensor's filter and bit depth, read without developing (FR-071).
+pub fn sensor(bytes: &[u8]) -> Result<(Filter, u8), RawError> {
+    use rawler::rawimage::RawPhotometricInterpretation as P;
+    guarded(|| {
+        let source = RawSource::new_from_slice(bytes);
+        let decoder = loader()
+            .get_decoder(&source)
+            .map_err(|e| RawError::Unsupported(e.to_string()))?;
+        let raw = decoder
+            .raw_image(&source, &RawDecodeParams::default(), true)
+            .map_err(|e| RawError::Decode(e.to_string()))?;
+        let filter = match &raw.photometric {
+            P::Cfa(config) => {
+                let cfa = &config.cfa;
+                let rgb = cfa.name.chars().all(|c| matches!(c, 'R' | 'G' | 'B'));
+                match (cfa.width, cfa.height) {
+                    (2, 2) if rgb => Filter::Bayer(cfa.name.clone()),
+                    (6, 6) if rgb => Filter::XTrans,
+                    _ => Filter::Other(cfa.name.clone()),
+                }
+            }
+            P::LinearRaw => Filter::Linear,
+            P::BlackIsZero => Filter::Mono,
+        };
+        // rawler stores samples in 16 bits; the white level tells the sensor's own depth
+        // (16383 is 14 bits).
+        let white = raw.whitelevel.0.iter().copied().max().unwrap_or(0);
+        let bits = if white > 0 {
+            32 - white.leading_zeros()
+        } else {
+            u32::try_from(raw.bps).unwrap_or(16)
+        };
+        Ok((filter, u8::try_from(bits).unwrap_or(u8::MAX)))
+    })
+}
+
 /// Develops the whole photo (demosaic, white balance, camera colour, sRGB), refusing files
 /// with more than `max_pixels` before any pixel is developed.
 pub fn develop(bytes: &[u8], max_pixels: u64) -> Result<Rgb16, RawError> {
