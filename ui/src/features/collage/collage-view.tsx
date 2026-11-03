@@ -10,6 +10,7 @@ import { SelectionBar } from '@/features/library/selection-bar'
 import type { SelectModeApi } from '@/features/library/use-select-mode'
 import { DatePlaceDialog } from '@/features/places/date-place-dialog'
 import { AutoTurnButtons } from './auto-turn-buttons'
+import { SheetKindToggle } from './sheet-kind-toggle'
 import { tickedSheets } from './sheet-cells'
 import { SheetGrid } from './sheet-grid'
 import { SheetPreviewDialog } from './sheet-preview-dialog'
@@ -74,6 +75,8 @@ export function CollageView({
             or to export. */}
         {/* A postcard stays the way it is held (FR-073): nothing to turn. */}
         {!select.active && !settings?.collage?.postcard?.enabled && <AutoTurnButtons filter={filter} />}
+        {/* Two photos to a print, or a postcard each (FR-073): 50 photos, 25 sheets or 50. */}
+        {!select.active && <SheetKindToggle settings={settings} onChange={onSettingsChange} />}
         <SelectModeButton select={select} />
       </div>
       {select.active && (

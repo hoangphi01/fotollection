@@ -778,6 +778,10 @@
     "textPlaceholder": "A message, an address… or nothing, to write by hand",
     "textHint": "Set on the lines in the font above; what does not fit the lines is left out of the print.",
     "chars": "{{count}} / {{max}}",
-    "sheetSizeHint": "Each sheet holds one photo and a postcard back, held the way the Postcard card says."
+    "sheetSizeHint": "Each sheet holds one photo and a postcard back, held the way the Postcard card says.",
+    "kind": "Sheet kind",
+    "pair": "Two photos",
+    "pairHint": "Two photos on each print",
+    "cardHint": "One photo and a postcard back on each print"
   }
 }

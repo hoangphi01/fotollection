@@ -426,7 +426,7 @@ Every change is one undo step. The date stamp prints on each photo, with its pla
 
 *Coming in v0.9.4.* A kiosk print becomes a postcard you can post: one photo on one half, the back of a postcard on the other ([FR-073](PRD.md#fr-073--postcard-sheets)).
 
-1. In Collage mode, turn on **Postcard** in the panel. Each sheet now holds one photo.
+1. In Collage mode, choose **Postcard** in the bar above the sheets, next to **Select** (**Two photos** goes back). Each photo now makes its own sheet: 50 photos are 25 sheets of two, or 50 postcards. The **Postcard** card appears in the panel.
 2. **Held**: **Landscape** puts the photo on the left and the card on the right; **Portrait** puts the card on top and the photo below. A dashed **stamp box** sits at the top right, about the size of a German or Hungarian stamp, and under it the **writing lines**: **3 lines** or **4 lines**.
 3. The photo half works as before: ratio, size, *Fill each half*, the 3 mm border, the date stamp, **Crop** and **Rotate photo** in the preview. A postcard has no cut line and does not turn; Auto turn is hidden.
 4. **Type the text**, or leave the lines blank to write by hand: open a postcard's preview (double-click it) and type under **Postcard text**, a message or an address, up to 400 characters. It is set on the lines in the typewriter face *Xanh Mono*, or in one of your own fonts chosen under **Typed text** (**Import OTF/TTF…**, as in chapter 9). What does not fit the lines is left out of the print, as the preview shows.

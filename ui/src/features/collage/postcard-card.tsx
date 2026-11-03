@@ -1,23 +1,20 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Mail, PenLine, RectangleHorizontal, RectangleVertical } from 'lucide-react'
-import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { PanelNote } from '@/components/layout/panel-note'
 import { SectionCard } from '@/components/layout/section-card'
 import type { PostcardOrientation, PostcardSettings, RenderSettings } from '@/ipc/bindings'
 import { FontSelect } from '@/features/fonts/font-select'
 import { useFonts } from '@/features/fonts/use-fonts'
+import { POSTCARD_DEFAULTS } from './postcard-defaults'
 
 const ORIENTATIONS: { value: PostcardOrientation; icon: typeof RectangleHorizontal }[] = [
   { value: 'landscape', icon: RectangleHorizontal },
   { value: 'portrait', icon: RectangleVertical },
 ]
 const LINES = [3, 4]
-/** As `PostcardSettings::default()` in Rust, for a file from before FR-073. */
-const DEFAULTS: PostcardSettings = { enabled: false, orientation: 'landscape', lines: 4, font: null }
 
 type PostcardCardProps = {
   settings: RenderSettings | null
@@ -25,29 +22,22 @@ type PostcardCardProps = {
 }
 
 /**
- * The postcard switch of Collage mode (FR-073), laid out like the date stamp card: on, each
- * sheet holds one photo and a postcard back with a dashed stamp box and writing lines. The
- * way it is held, the number of lines and the typed text's font; the pen note, as photo
- * paper takes only some pens. Each postcard's own text is typed in its preview.
+ * The postcard's settings in Collage mode (FR-073), laid out like the date stamp card, shown
+ * while the bar above the sheets is on Postcard: the way it is held, the number of lines and
+ * the typed text's font; the pen note, as photo paper takes only some pens. Each postcard's
+ * own text is typed in its preview.
  */
 export function PostcardCard({ settings, onChange }: PostcardCardProps) {
   const { t } = useTranslation()
-  const id = useId()
   const fonts = useFonts()
   const postcard = settings?.collage?.postcard
   const setPostcard = (patch: Partial<PostcardSettings>) =>
-    onChange((s) => ({ ...s, collage: { ...s.collage, postcard: { ...DEFAULTS, ...s.collage?.postcard, ...patch } } }))
+    onChange((s) => ({ ...s, collage: { ...s.collage, postcard: { ...POSTCARD_DEFAULTS, ...s.collage?.postcard, ...patch } } }))
+  // Turned on in the bar above the sheets; nothing to show otherwise (a block with nothing
+  // to say is not rendered, STYLE_RULE §4).
+  if (!postcard?.enabled) return null
   return (
-    <SectionCard
-      icon={<Mail />}
-      title={
-        <Label htmlFor={id} className="text-sm font-semibold">
-          {t('postcard.title')}
-        </Label>
-      }
-      action={<Switch id={id} checked={postcard?.enabled ?? false} onCheckedChange={(enabled) => setPostcard({ enabled })} />}
-      open={postcard?.enabled ?? false}
-    >
+    <SectionCard icon={<Mail />} title={t('postcard.title')}>
       <p className="text-xs text-muted-foreground">{t('postcard.hint')}</p>
       <div className="space-y-1.5">
         <Label className="text-xs font-normal text-muted-foreground">{t('postcard.orientation')}</Label>
