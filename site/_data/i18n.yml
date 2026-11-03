@@ -48,8 +48,8 @@ en:
   f_speed_title: Fast on any computer
   f_speed_text: A thousand photos open in 0.12 s, a new setting redraws the preview in 17 ms, and from the second launch the app starts in about 0.4 s. A 32 MP photo previews as fast as a small one.
   f_open_text: Right-click a photo in Finder, Explorer or your Linux file manager and choose Fotollection. It opens at once, and its folder becomes a tab.
-  f_private_title: Private and offline
-  f_private_text: No account, no upload, no telemetry. Place names come from a map bundled in the app, and GPS is removed on export.
+  f_postcard_title: Postcards from your photos
+  f_postcard_text: "One switch in Collage mode: your photo on half of a 10 × 15 print, a stamp box and writing lines on the other. Type the message and address, or write them by hand."
   pf_title: "By system"
   pf_lead: "The same app on macOS, Windows and Linux, with these differences."
   pf_feature: Feature
@@ -102,6 +102,15 @@ en:
   postcard_text: "In Collage mode, one switch turns each print into a postcard: your photo on one half, and on the other a dashed stamp box and lines for a message or an address. Type the text, set in a typewriter face, or write it by hand with a fine permanent marker. A 10 × 15 print is within the postcard sizes Deutsche Post takes."
   show_postcard: "Collage mode with Postcard on: one photo and a postcard back on each print"
   postcard_coming: Coming in v0.9.4
+  pc_title: "Send home a postcard of your own trip"
+  pc_lead: "Not the shop's postcard of the bridge, but the tram you waited for. Fotollection turns any kiosk print into a postcard you can post."
+  pc_s1: "Turn on Postcard in Collage mode: every photo becomes its own card, held landscape or portrait."
+  pc_s2: "Type the message and the address, or leave the lines blank for your own hand."
+  pc_s3: "Print at dm or Rossmann like any other photo, stick on a stamp and post it."
+  pc_type_title: "Typed, or written by hand"
+  pc_type_text: "The message and the address each have their own lines, with bold, italic and underline, in a typewriter face or a font of your own. Every letter of the European languages written in Latin script is there, so an address in Praha or Kraków prints as typed. Pick the ink, black, blue, sepia or red, and add a small credit line at the foot."
+  pc_pens: "Writing on photo paper? Use a fine permanent marker, try it in the stamp box first and let it dry for a minute: ballpoint and gel pens skip or smear."
+  show_postcard_text: "A postcard's preview: the red tram on the front half, \"Ahoj Praha!\" and the address on the back"
   collage_title: "Two photos on one print"
   collage_text: "Inspired by half-frame film cameras: a 10 × 15 print holds two 10 × 7.5 photos, so a set costs half as much. Photos pair in order, a drag swaps them, and the app suggests a size with white round it, 6 × 9 cm for a 2:3 photo. A thin cut line splits the print in two, or leave it off for a half-frame strip."
   show_collage: "Collage mode: sheets as they will print, with the photo ratio, the suggested size and the cut line"
@@ -160,6 +169,17 @@ en:
   fn_back: Back to the text
   fn_open: Free means no price, no ads and no in-app purchases; buying the author a coffee is your choice, and it helps the author keep improving Fotollection. Open source means the full source code is public on GitHub under the GPL-3.0 licence, so anyone can read, build and check what the app does. No account means the app never asks who you are and has nothing to sign in to.
   perf_speed_fn: [4, 5]
+  perf_trip_fn: [22]
+  perf_trip_title: "A real trip: 422 files from Prague"
+  perf_trip_text: "Test sets can flatter, so here is one folder exactly as it came off a Lumix GX9 after a weekend in Prague: 396 JPEGs at 20 MP, about 11 MB each, and 26 RAW files beside them, 4.7 GB in all. Opening it reads every file's EXIF in 0.23 seconds. The preview re-renders in 19 ms, a RAW develops in 0.35 seconds and ten postcards redraw in 21 ms. Two numbers miss their budget on these large files, and we say so: export runs at 7.6 photos a second, under the 8 we aim for, and peak memory reaches 2.14 GB, just over the 2 GB ceiling. Both are the next things to fix."
+  trip_stats:
+    - { v: "0.23 s", l: "to open all 422 files, EXIF included" }
+    - { v: "19 ms", l: "preview re-render, p95 (budget 50 ms)" }
+    - { v: "0.35 s", l: "to develop a 20 MP RAW (median)" }
+    - { v: "21 ms", l: "to redraw ten postcards (budget 100 ms)" }
+    - { v: "7.6 / s", l: "photos exported, JPEG and RAW (budget 8 / s)" }
+    - { v: "2.14 GB", l: "peak memory (ceiling 2 GB)" }
+  fn_trip: "The Prague folder is the author's own and is not published (© @hoangphi01, all rights reserved). Median of 3 runs of bench/trip.sh on an Apple M3 with 16 GB, with other apps open, on 2026-11-03; run it on a folder of your own to compare."
   fn_rust: "Rust and the Rust logo are trademarks of the Rust Foundation. Fotollection's core is written in Rust and runs directly on your computer."
   fn_webview: "The app's window is built with Tauri and drawn by the system's own web view: WebKit (WKWebView) on macOS, Microsoft Edge WebView2 on Windows and WebKitGTK, the GTK port of WebKit, on Linux. Tauri is a project of the Tauri Programme within the Commons Conservancy; WebKit is a trademark of Apple Inc.; GTK is a project of the GNOME Foundation; Microsoft Edge and WebView2 are trademarks of Microsoft Corporation. The browser comparison ran the same job in headless Chromium 156, the open-source project behind Google Chrome, with one Web Worker per processor core."
   fn_de: "ΔE2000 (CIEDE2000) is the colour-difference formula of the International Commission on Illumination (CIE), standardised as ISO/CIE 11664-6; the CIELAB colour space it works in is ISO/CIE 11664-4."
@@ -181,7 +201,7 @@ en:
   fn_dm: dm and the dm logo are trademarks of dm-drogerie markt GmbH + Co. KG.
   fn_rossmann: ROSSMANN and the ROSSMANN logo are trademarks of Dirk Rossmann GmbH.
   fn_cewe: The photo services at dm and Rossmann are made by CEWE, a trademark of CEWE Stiftung & Co. KGaA. Print sizes were checked against dm's price list in October 2026; the shops may change them.
-  fn_photos: "The demo photos in the screenshots are in the public domain (CC0) on Wikimedia Commons, by Dktue (18 photos), Pierre Blaché from Paris, France (3) and Kate Branch (1). The cat in the print-basket and best-shot screenshots was photographed by @hoangphi01 on a Lumix GX9, all rights reserved; the softer, shaken and darker copies beside it were made from that one photo, to show how the best shot is chosen."
+  fn_photos: "The Prague photos in the screenshots (the trams, the streets, the Vltava) were taken by @hoangphi01 on a Lumix GX9 in November 2026: © @hoangphi01, all rights reserved. They are not covered by the app's licence and may not be reused. The other demo photos are in the public domain (CC0) on Wikimedia Commons, by Dktue (7 photos), Pierre Blaché from Paris, France (2) and Kate Branch (1). The cat in the print-basket and best-shot screenshots was also photographed by @hoangphi01 on the GX9, all rights reserved; the softer, shaken and darker copies beside it were made from that one photo, to show how the best shot is chosen."
   fn_photos_link: "Every file, its page and its checksum."
   fn_rawsamples: "The RAW measurements use nine samples in the public domain (CC0) from raw.pixls.us, one per format; scripts/fetch-raw-samples.py downloads and checks them."
   fn_rawformats: "RAW formats named on this site belong to the camera makers that define them: RW2 (Panasonic Holdings Corporation), CR2 and CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) and ORF (OM Digital Solutions Corporation, formerly Olympus). DNG is an open specification published by Adobe Inc. Fotollection reads them through a reader built into Fotollection, and on macOS through the system's codecs first (on Windows, Microsoft's Raw Image Extension is a last fallback when installed); it is not made or endorsed by any of these companies."
@@ -212,6 +232,7 @@ en:
   chart_quality: What the export keeps of the original, against a typical web editor
   chart_bestshot: Best-shot suggestions, scored against photos sorted by hand
   charts_more: "All measurements, explained"
+  charts_trip: "Also measured on a real trip: 422 files from Prague, JPEG and RAW, as they came off the camera."
   chart_share: "Photos for Facebook: what viewers see after Facebook recompresses them"
   chart_memory: "Peak memory as the batch grows to 5,035 photos"
   chart_browser: "The same job in Fotollection and in a web browser"
@@ -264,7 +285,7 @@ en:
   perf_speed_title: "Speed: a thousand photos in a blink"
   perf_speed_text: "Opening a folder reads each photo's EXIF and its small embedded thumbnail, not the whole image: 1,000 photos take 0.12 seconds, eight times under the budget we set before writing the code. Changing a setting re-renders the preview in 17 ms, faster than a screen refreshes twice. Export runs at 18 photos per second at full 16 MP quality. Native Rust also beats a web browser doing the same job: the same speed for export, a faster preview, and a quarter less memory. Camera RAW works the same way: thumbnails come from the preview stored in each RAW file in 9 to 80 ms, and only the print preview develops the full photo, in about a second."
   perf_memory_title: "Memory: 5,035 photos, and it stays flat"
-  perf_memory_text: "A trip can mean thousands of photos. Fotollection keeps only a few bytes per photo in memory, writes thumbnails to a disk cache and works on at most six full-size images at a time. With 53 times more photos, peak memory grows by 0.1 GB: 1.35 GB for 95 photos, 1.45 GB for 5,035, well under the 2 GB ceiling."
+  perf_memory_text: "A trip can mean thousands of photos. Fotollection keeps only a few bytes per photo in memory, writes thumbnails to a disk cache and works on at most six full-size images at a time. With 53 times more photos, peak memory grows by 0.1 GB: 1.35 GB for 95 photos, 1.45 GB for 5,035, under the 2 GB ceiling. Larger photos need more: a real folder of 20 MP files reaches 2.14 GB (above)."
   perf_print_title: "Print quality: the print looks like the photo"
   perf_print_text: "Prints made through a web editor often look flat. We measured why: the editor drops the colour profile (13 % of the saturation of iPhone photos lost), shrinks the photo to 2,000 px and lets the lab blow it up again (87 % of the fine detail lost), and saves at quality 80 with halved colour resolution. Fotollection keeps the profile, exports at full resolution in 4:4:4 at quality 95, and its colour error stays at 0.19, far below the 1 where an eye starts to notice."
   perf_share_title: "Photos for Facebook and Instagram: light, and still the photo"
@@ -421,8 +442,8 @@ vi:
   f_speed_title: Nhanh trên mọi máy
   f_speed_text: Một nghìn ảnh mở trong 0,12 giây, đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, và từ lần mở thứ hai ứng dụng khởi động trong khoảng 0,4 giây. Ảnh 32 MP xem trước nhanh như ảnh nhỏ.
   f_open_text: Bấm chuột phải vào một ảnh trong Finder, Explorer hay trình quản lý file trên Linux và chọn Fotollection. Ảnh mở ngay, và thư mục của ảnh thành một tab.
-  f_private_title: Riêng tư, không cần internet
-  f_private_text: Không tài khoản, không tải lên, không theo dõi. Tên địa điểm lấy từ bản đồ có sẵn trong ứng dụng, GPS được xóa khi xuất.
+  f_postcard_title: Bưu thiếp từ ảnh của bạn
+  f_postcard_text: "Một công tắc trong chế độ Ghép ảnh: ảnh của bạn ở nửa tấm in 10 × 15, nửa kia là ô dán tem và dòng kẻ. Gõ lời nhắn và địa chỉ, hoặc viết tay."
   pf_title: "Theo hệ điều hành"
   pf_lead: "Cùng một ứng dụng trên macOS, Windows và Linux, chỉ khác nhau ở những điểm sau."
   pf_feature: Tính năng
@@ -475,6 +496,15 @@ vi:
   postcard_text: "Trong chế độ Ghép ảnh, một công tắc biến mỗi tấm in thành bưu thiếp: ảnh của bạn ở một nửa, nửa kia là ô dán tem nét đứt và dòng kẻ để viết lời nhắn hoặc địa chỉ. Gõ chữ, in bằng font máy đánh chữ, hoặc viết tay bằng bút dạ dầu nét mảnh. Tấm 10 × 15 nằm trong khổ bưu thiếp mà Deutsche Post nhận."
   show_postcard: "Chế độ Ghép ảnh khi bật Bưu thiếp: mỗi tấm in có một ảnh và mặt sau bưu thiếp"
   postcard_coming: Sắp có trong v0.9.4
+  pc_title: "Gửi về nhà một tấm bưu thiếp từ chính chuyến đi"
+  pc_lead: "Không phải tấm bưu thiếp cây cầu bán ở tiệm, mà là chuyến tram bạn đã đứng chờ. Fotollection biến bất kỳ tấm ảnh in nào ở máy in ảnh thành bưu thiếp gửi được qua bưu điện."
+  pc_s1: "Bật Bưu thiếp trong chế độ Ghép ảnh: mỗi ảnh thành một tấm riêng, cầm ngang hoặc dọc."
+  pc_s2: "Gõ lời nhắn và địa chỉ, hoặc để trống dòng kẻ để tự viết tay."
+  pc_s3: "In ở dm hoặc Rossmann như mọi ảnh khác, dán tem và gửi đi."
+  pc_type_title: "Gõ chữ, hoặc viết tay"
+  pc_type_text: "Lời nhắn và địa chỉ có dòng riêng, chỉnh được đậm, nghiêng, gạch chân, bằng font máy đánh chữ hoặc font của bạn. Font có đủ chữ cái của các tiếng châu Âu viết bằng chữ Latin, nên một địa chỉ ở Praha hay Kraków in ra đúng như khi gõ. Chọn màu mực đen, xanh, nâu sepia hoặc đỏ, và thêm một dòng ghi công nhỏ ở chân tấm."
+  pc_pens: "Viết lên giấy ảnh? Dùng bút dạ dầu nét mảnh, thử ở ô tem trước và để khô khoảng một phút: bút bi và bút gel dễ mất nét hoặc bị lem."
+  show_postcard_text: "Xem trước một bưu thiếp: chiếc tram đỏ ở nửa trước, \"Ahoj Praha!\" và địa chỉ ở mặt sau"
   collage_title: "Hai ảnh trên một tấm in"
   collage_text: "Lấy cảm hứng từ máy ảnh film half-frame: một tấm 10 × 15 chứa hai ảnh 10 × 7,5, nên in cả bộ chỉ tốn một nửa. Ảnh được ghép theo thứ tự, kéo-thả để đổi chỗ, và app gợi ý cỡ ảnh có chừa viền trắng, 6 × 9 cm cho ảnh 2:3. Một đường cắt mảnh chia tấm làm đôi, hoặc tắt đi để giữ dải half-frame liền nhau."
   show_collage: "Chế độ Ghép ảnh: các tấm đúng như khi in, cùng tỷ lệ ảnh, cỡ gợi ý và đường cắt"
@@ -533,6 +563,17 @@ vi:
   fn_back: Quay lại đoạn văn
   fn_open: Miễn phí là không thu tiền, không quảng cáo, không mua thêm trong ứng dụng; mời tác giả một ly cà phê là lựa chọn của bạn, để tác giả có thêm động lực phát triển và hoàn thiện Fotollection. Mã nguồn mở là toàn bộ mã nguồn được công khai trên GitHub theo giấy phép GPL-3.0, ai cũng có thể đọc, tự xây dựng và kiểm tra ứng dụng làm gì. Không cần tài khoản là ứng dụng không bao giờ hỏi bạn là ai và không có gì để đăng nhập.
   perf_speed_fn: [4, 5]
+  perf_trip_fn: [22]
+  perf_trip_title: "Một chuyến đi thật: 422 tệp từ Praha"
+  perf_trip_text: "Bộ ảnh thử dễ cho số đẹp, nên đây là một thư mục đúng như khi chép ra từ Lumix GX9 sau một cuối tuần ở Praha: 396 ảnh JPEG 20 MP, mỗi tấm khoảng 11 MB, cùng 26 tệp RAW bên cạnh, tổng cộng 4,7 GB. Mở thư mục đọc EXIF của mọi tệp trong 0,23 giây. Xem trước dựng lại trong 19 ms, một ảnh RAW được xử lý trong 0,35 giây và mười tấm bưu thiếp vẽ lại trong 21 ms. Với những tệp lớn này có hai con số chưa đạt mục tiêu, và chúng tôi nói rõ: xuất ảnh đạt 7,6 ảnh mỗi giây, dưới mức 8 đặt ra, và RAM dùng nhiều nhất lên 2,14 GB, vượt nhẹ mức trần 2 GB. Đây là hai việc sẽ sửa tiếp theo."
+  trip_stats:
+    - { v: "0,23 s", l: "để mở cả 422 tệp, gồm cả EXIF" }
+    - { v: "19 ms", l: "dựng lại xem trước, p95 (mục tiêu 50 ms)" }
+    - { v: "0,35 s", l: "để xử lý một ảnh RAW 20 MP (trung vị)" }
+    - { v: "21 ms", l: "để vẽ lại mười tấm bưu thiếp (mục tiêu 100 ms)" }
+    - { v: "7,6 / s", l: "ảnh được xuất, cả JPEG lẫn RAW (mục tiêu 8 / s)" }
+    - { v: "2,14 GB", l: "RAM dùng nhiều nhất (trần 2 GB)" }
+  fn_trip: "Thư mục ảnh Praha là của tác giả và không công khai (© @hoangphi01, giữ mọi quyền). Trung vị của 3 lần chạy bench/trip.sh trên Apple M3 16 GB, khi các ứng dụng khác vẫn mở, ngày 3/11/2026; hãy chạy trên thư mục ảnh của bạn để so sánh."
   fn_rust: "Rust và logo Rust là nhãn hiệu của Rust Foundation. Phần lõi của Fotollection viết bằng Rust và chạy trực tiếp trên máy của bạn."
   fn_webview: "Cửa sổ ứng dụng được làm bằng Tauri và hiển thị bằng trình hiển thị web (web view) có sẵn của hệ điều hành: WebKit (WKWebView) trên macOS, Microsoft Edge WebView2 trên Windows và WebKitGTK, bản WebKit cho GTK, trên Linux. Tauri là dự án của Tauri Programme thuộc Commons Conservancy; WebKit là nhãn hiệu của Apple Inc.; GTK là dự án của GNOME Foundation; Microsoft Edge và WebView2 là nhãn hiệu của Microsoft Corporation. Phép so sánh với trình duyệt chạy cùng một việc trong Chromium 156 không giao diện, dự án mã nguồn mở phía sau Google Chrome, mỗi nhân xử lý một Web Worker."
   fn_de: "ΔE2000 (CIEDE2000) là công thức tính sai lệch màu của Uỷ ban Quốc tế về Chiếu sáng (CIE), được chuẩn hoá thành ISO/CIE 11664-6; không gian màu CIELAB mà công thức dùng là ISO/CIE 11664-4."
@@ -554,7 +595,7 @@ vi:
   fn_dm: dm và logo dm là thương hiệu của dm-drogerie markt GmbH + Co. KG.
   fn_rossmann: ROSSMANN và logo ROSSMANN là thương hiệu của Dirk Rossmann GmbH.
   fn_cewe: Dịch vụ in ảnh của dm và Rossmann do CEWE thực hiện; CEWE là thương hiệu của CEWE Stiftung & Co. KGaA. Khổ in được đối chiếu với bảng giá của dm vào tháng 10/2026; cửa hàng có thể thay đổi.
-  fn_photos: "Ảnh demo trong các ảnh chụp màn hình thuộc phạm vi công cộng (CC0) trên Wikimedia Commons, của Dktue (18 ảnh), Pierre Blaché from Paris, France (3 ảnh) và Kate Branch (1 ảnh). Chú mèo trong ảnh chụp màn hình phần giỏ in và ảnh đẹp nhất do @hoangphi01 chụp bằng Lumix GX9, giữ mọi quyền; các bản mờ hơn, rung tay và tối hơn bên cạnh được tạo từ chính tấm ảnh đó, để minh hoạ cách chọn ảnh đẹp nhất."
+  fn_photos: "Các ảnh Praha trong ảnh chụp màn hình (tram, phố, sông Vltava) do @hoangphi01 chụp bằng Lumix GX9 vào tháng 11/2026: © @hoangphi01, giữ mọi quyền. Các ảnh này không thuộc giấy phép của ứng dụng và không được dùng lại. Các ảnh demo còn lại thuộc phạm vi công cộng (CC0) trên Wikimedia Commons, của Dktue (7 ảnh), Pierre Blaché from Paris, France (2 ảnh) và Kate Branch (1 ảnh). Chú mèo trong ảnh chụp màn hình phần giỏ in và ảnh đẹp nhất cũng do @hoangphi01 chụp bằng GX9, giữ mọi quyền; các bản mờ hơn, rung tay và tối hơn bên cạnh được tạo từ chính tấm ảnh đó, để minh hoạ cách chọn ảnh đẹp nhất."
   fn_photos_link: "Danh sách từng tệp, trang gốc và mã kiểm tra."
   fn_rawsamples: "Các số đo RAW dùng chín tệp mẫu thuộc phạm vi công cộng (CC0) từ raw.pixls.us, mỗi định dạng một tệp; scripts/fetch-raw-samples.py tải về và kiểm tra chúng."
   fn_rawformats: "Các định dạng RAW nhắc đến trên trang này thuộc về hãng máy ảnh đã tạo ra chúng: RW2 (Panasonic Holdings Corporation), CR2 và CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) và ORF (OM Digital Solutions Corporation, trước đây là Olympus). DNG là đặc tả mở do Adobe Inc. công bố. Fotollection đọc các định dạng này qua bộ đọc có sẵn trong Fotollection, còn trên macOS thì qua bộ giải mã của hệ điều hành trước (trên Windows, Raw Image Extension của Microsoft, nếu đã cài, là phương án dự phòng cuối cùng); ứng dụng không do hãng nào trong số này làm ra hay bảo trợ."
@@ -585,6 +626,7 @@ vi:
   chart_quality: Bản xuất giữ lại được bao nhiêu so với ảnh gốc, so với một trình sửa ảnh web thông thường
   chart_bestshot: Gợi ý ảnh đẹp nhất, chấm điểm so với ảnh do người chọn tay
   charts_more: "Xem toàn bộ số đo và giải thích"
+  charts_trip: "Đo cả trên một chuyến đi thật: 422 tệp từ Praha, JPEG lẫn RAW, đúng như khi chép từ máy ảnh."
   chart_share: "Ảnh đăng Facebook: người xem thấy gì sau khi Facebook nén lại"
   chart_memory: "RAM dùng nhiều nhất khi số ảnh tăng lên 5.035 tấm"
   chart_browser: "Cùng một việc, trên Fotollection và trên trình duyệt web"
@@ -637,7 +679,7 @@ vi:
   perf_speed_title: "Tốc độ: một nghìn ảnh trong chớp mắt"
   perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong tệp, chứ không đọc cả ảnh: 1.000 ảnh mất 0,12 giây, nhanh gấp tám lần mức ngân sách đặt ra trước khi viết mã nguồn. Đổi một thiết lập thì bản xem trước vẽ lại trong 17 ms, chưa bằng hai lần màn hình làm tươi. Xuất ảnh đạt 18 ảnh mỗi giây ở chất lượng đầy đủ 16 MP. Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư RAM. Ảnh RAW cũng vậy: ảnh thu nhỏ lấy từ bản xem trước lưu sẵn trong mỗi tệp RAW, mất 9 đến 80 ms, và chỉ bản xem trước để in mới giải mã đầy đủ ảnh, mất khoảng một giây."
   perf_memory_title: "RAM: 5.035 ảnh vẫn không tăng"
-  perf_memory_text: "Một chuyến đi có thể có hàng nghìn ảnh. Fotollection chỉ giữ vài byte cho mỗi ảnh trong RAM, ghi ảnh thu nhỏ ra ổ đĩa và xử lý tối đa sáu ảnh cỡ lớn cùng lúc. Với số ảnh gấp 53 lần, RAM dùng nhiều nhất chỉ tăng 0,1 GB: 1,35 GB với 95 ảnh, 1,45 GB với 5.035 ảnh, dưới xa mức trần 2 GB."
+  perf_memory_text: "Một chuyến đi có thể có hàng nghìn ảnh. Fotollection chỉ giữ vài byte cho mỗi ảnh trong RAM, ghi ảnh thu nhỏ ra ổ đĩa và xử lý tối đa sáu ảnh cỡ lớn cùng lúc. Với số ảnh gấp 53 lần, RAM dùng nhiều nhất chỉ tăng 0,1 GB: 1,35 GB với 95 ảnh, 1,45 GB với 5.035 ảnh, dưới mức trần 2 GB. Ảnh lớn hơn thì cần nhiều hơn: một thư mục thật gồm ảnh 20 MP lên tới 2,14 GB (xem ở trên)."
   perf_print_title: "Chất lượng in: ảnh in giống ảnh gốc"
   perf_print_text: "Ảnh in qua trình chỉnh sửa ảnh trên web thường trông nông màu. Chúng tôi đã đo xem vì sao: trình chỉnh sửa đó bỏ mất hồ sơ màu (ảnh iPhone mất 13 % độ bão hoà màu), thu ảnh xuống 2.000 px rồi để tiệm in phóng to lại (mất 87 % chi tiết nhỏ), và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên hồ sơ màu, xuất ở độ phân giải đầy đủ, 4:4:4, chất lượng 95, và sai lệch màu chỉ 0,19, thấp hơn rất xa mức 1 mà mắt người bắt đầu nhận ra."
   perf_share_title: "Ảnh cho Facebook và Instagram: nhẹ mà vẫn đúng là ảnh của bạn"

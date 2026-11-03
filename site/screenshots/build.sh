@@ -2,7 +2,10 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # Rebuilds the website's screenshots from the demo photos (site/screenshots/README.md).
 #
-#   site/screenshots/build.sh <demo-photo-folder> <work-dir> [best-shot-photo]
+#   site/screenshots/build.sh <demo-photo-folder> <work-dir> [best-shot-photo] [owner-folder]
+#
+# The photos shown are those listed in demo_set.txt: the CC0 demo photos from
+# <demo-photo-folder> and, with [owner-folder], the owner's own (README.md).
 #
 # 1. The real app (debug build) records its answers for the demo folder (src-tauri/src/demo.rs).
 # 2. Playwright shoots the real interface with those answers (shoot.mjs).
@@ -12,9 +15,23 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-folder=$(cd "$1" && pwd)
+demo=$(cd "$1" && pwd)
 work=$(mkdir -p "$2" && cd "$2" && pwd)
 out=site/assets/img
+owner=${4:-}
+
+# The shown set, gathered into one folder (copies on APFS cost no space).
+folder="$work/demo-src"
+rm -rf "$folder" && mkdir -p "$folder"
+while read -r stem; do
+  case "$stem" in ''|'#'*) continue ;; esac
+  for dir in "$demo" ${owner:+"$owner"}; do
+    for f in "$dir/$stem".jpg "$dir/$stem".JPG; do
+      [ -f "$f" ] && cp -c "$f" "$folder/" 2>/dev/null || { [ -f "$f" ] && cp "$f" "$folder/"; }
+    done
+  done
+done < site/screenshots/demo_set.txt
+echo "demo set: $(ls "$folder" | wc -l | tr -d ' ') photos"
 
 cargo build -q -p fotollection
 rm -rf "$work/dump" "$work/png"

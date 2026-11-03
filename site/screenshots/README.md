@@ -1,9 +1,9 @@
 # Website screenshots
 
-The screenshots on the website show the **real app on demo photos**, never anyone's own photos.
+The screenshots on the website show the **real app on demo photos**: the CC0 photos listed below and, since 2026-11-03, sixteen of the owner's own photos of Prague (Lumix GX9), with the owner's consent. Never anyone else's photos.
 
 1. `python3 -I site/screenshots/fetch_photos.py <folder>` downloads the demo photos listed in [`photos.json`](photos.json) from Wikimedia Commons and checks each one's SHA-256 and licence. They are not kept in the repository.
-2. `site/screenshots/build.sh <folder> <work-dir>` then:
+2. `site/screenshots/build.sh <folder> <work-dir> [best-shot-photo] [owner-folder]` then gathers the photos named in [`demo_set.txt`](demo_set.txt), the CC0 ones from `<folder>` and the owner's from `<owner-folder>`, and:
    - runs the debug app with `FOTOLLECTION_DEMO_FOLDER` and `FOTOLLECTION_DEMO_DUMP` ([`src-tauri/src/demo.rs`](../../src-tauri/src/demo.rs)): it imports the folder with its own settings, cache and project (never the user's), runs the best-shot analysis, records what each IPC command answers and the image protocol's bytes, then quits;
    - shoots the real interface (`ui/dist`) with Playwright ([`shoot.mjs`](shoot.mjs)), answering IPC from that recording, in English and Vietnamese, dark and light: the library, the date stamp, the info frame, the crop editor, best-shot groups, Simple mode (`simple`), Collage mode (`collage` and a sheet's preview `manual-collage-preview`, from the sheets `demo.rs` records with the date stamp and the 3 mm border), and for the manual the filters, the Project block, the print sizes, the frame card, the groups list, the place picker and the Places card (`manual-*`);
    - writes 1600 px WebP screenshots to `site/assets/img/` (shots named `check-*` are only for checking controls by eye and stay out of the site; shots named `manual-*` are only for the manual, placed by the `<!-- shot: … -->` markers in `docs/USER_GUIDE.md` and `USER_GUIDE.vi.md`, [ADR-0031](../../docs/adr/0031-manual-on-the-website-from-the-user-guide.md)).
@@ -13,6 +13,10 @@ The screenshots on the website show the **real app on demo photos**, never anyon
 Photos are chosen by file name in `shoot.mjs`.
 
 **The print-basket preview (`swipe`) and best shot show the owner's cat**, not the demo photos. `uv run python -I site/screenshots/best_shot_photos.py P1057694.JPG <folder>` makes a burst from that one photo (Lumix GX9, by @hoangphi01, all rights reserved, not kept in the repository): the photo itself, a softer, a shaken and a darker copy, one second apart, EXIF kept. `build.sh` records it on its own when given the photo as a third argument, and `shoot.mjs` shoots the basket preview (`swipe`, the sharp shot in the basket) and the best-shot screens (`groups`, `manual-groups`) from that recording, so every other shot keeps the demo photos. The app groups the four and picks the sharp one with its real scores. Needs cargo, npm, `cwebp` and uv (for Python with Pillow).
+
+## The owner's photos
+
+Sixteen photos of Prague, November 2026, taken by the owner (@hoangphi01) on a Lumix DC-GX9, listed by file name in [`demo_set.txt`](demo_set.txt): trams by night and by day, the Vltava, autumn, food, the Old Town. **All rights reserved**; the photos are never kept in the repository, only the screenshots that show them. The GX9 records no GPS, so they carry no location; a few show strangers small in a crowd. The grid's chosen photo and the Lumix info frame come from them when they are in the set (`shoot.mjs`).
 
 ## Demo photos
 

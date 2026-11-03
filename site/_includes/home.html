@@ -23,11 +23,43 @@
   </div>
 </section>
 
+<section class="section tint" id="postcard">
+  <div class="wrap">
+    <h2>{{ t.pc_title }} <span class="soon">{{ t.postcard_coming }}</span></h2>
+    <p class="lead narrow">{{ t.pc_lead }}</p>
+  </div>
+  <div class="wrap showcase">
+    <div class="showcase-row">
+      <figure class="shot">{% include shot.html name="postcard" alt=t.show_postcard %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.postcard_title }}</h3>
+        <p>{{ t.postcard_text }}</p>
+        <ol class="steps">
+          <li>{{ t.pc_s1 }}</li>
+          <li>{{ t.pc_s2 }}</li>
+          <li>{{ t.pc_s3 }}</li>
+        </ol>
+        <p class="small muted">{{ t.show_postcard }}</p>
+      </div>
+    </div>
+    <div class="showcase-row flip">
+      <figure class="shot">{% include shot.html name="manual-postcard" alt=t.show_postcard_text %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.pc_type_title }}</h3>
+        <p>{{ t.pc_type_text }}</p>
+        <p>{{ t.pc_pens }}</p>
+        <p class="small muted">{{ t.show_postcard_text }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="section" id="features">
   <div class="wrap">
     <h2>{{ t.features_title }}</h2>
     <p class="lead narrow">{{ t.features_lead }}</p>
     <div class="cards">
+      <article class="card">{% include icons/mail.svg %}<h3>{{ t.f_postcard_title }}</h3><p>{{ t.f_postcard_text }}</p></article>
       <article class="card">{% include icons/calendar-days.svg %}<h3>{{ t.f_stamp_title }}</h3><p>{{ t.f_stamp_text }}</p></article>
       <article class="card">{% include icons/frame.svg %}<h3>{{ t.f_frame_title }}</h3><p>{{ t.f_frame_text }}</p></article>
       <article class="card">{% include icons/sparkles.svg %}<h3>{{ t.f_best_title }}</h3><p>{{ t.f_best_text }}</p></article>
@@ -36,7 +68,6 @@
       <article class="card">{% include icons/gauge.svg %}<h3>{{ t.f_speed_title }}</h3><p>{{ t.f_speed_text }}</p></article>
       <article class="card">{% include icons/camera.svg %}<h3>{{ t.f_raw_title }}</h3><p>{{ t.f_raw_text }}<sup class="fn-ref"><a href="#fn-14" id="fnref-14" aria-label="{{ t.fn_label }} 14">14</a></sup></p></article>
       <article class="card">{% include icons/mouse-pointer-click.svg %}<h3>{{ t.f_open_title }}</h3><p>{{ t.f_open_text }}</p></article>
-      <article class="card">{% include icons/shield-check.svg %}<h3>{{ t.f_private_title }}</h3><p>{{ t.f_private_text }}</p></article>
     </div>
     <p class="systems-link"><a class="more" href="{{ path_download }}#systems">{{ t.pf_title }} {% include icons/arrow-right.svg %}</a></p>
   </div>
@@ -151,7 +182,7 @@
     <p class="lead narrow">{{ t.modes_lead }}</p>
   </div>
   <div class="wrap showcase">
-    {%- assign rows = "postcard,collage,simple" | split: "," -%}
+    {%- assign rows = "collage,simple" | split: "," -%}
     {%- for r in rows -%}
     {%- capture title_key %}{{ r }}_title{% endcapture -%}
     {%- capture text_key %}{{ r }}_text{% endcapture -%}
@@ -160,7 +191,7 @@
     <div class="showcase-row{% cycle 'modes': '', ' flip' %}">
       <figure class="shot">{% include shot.html name=r alt=show_alt %}</figure>
       <div class="showcase-text">
-        <h3>{{ t[title_key] }}{% if r == "postcard" %} <span class="soon">{{ t.postcard_coming }}</span>{% endif %}</h3>
+        <h3>{{ t[title_key] }}</h3>
         <p>{{ t[text_key] }}</p>
         <p class="small muted">{{ t[show_key] }}</p>
       </div>
@@ -222,6 +253,7 @@
       </figure>
       {%- endfor -%}
     </div>
+    <p><a class="more" href="{% if page.lang == 'vi' %}{{ '/vi/performance/#trip' | relative_url }}{% else %}{{ '/performance/#trip' | relative_url }}{% endif %}">{{ t.charts_trip }} {% include icons/arrow-right.svg %}</a></p>
     <p><a class="pill pill-primary" href="{% if page.lang == 'vi' %}{{ '/vi/performance/' | relative_url }}{% else %}{{ '/performance/' | relative_url }}{% endif %}">{{ t.charts_more }} {% include icons/arrow-right.svg %}</a></p>
   </div>
 </section>

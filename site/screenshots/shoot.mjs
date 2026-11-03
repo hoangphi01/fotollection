@@ -53,7 +53,7 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode }) {
     photos.map((p, i) => ({ ...p, queue: queues.print.includes(i) ? 'print' : queues.aside.includes(i) ? 'aside' : null }))
   // The folder-tabs shot (FR-056): the demo photos as three folders, by file name.
   const tabOf = (name) =>
-    /wilhelma/.test(name) ? [0, 'Wilhelma Zoo'] : /tuebingen|ammerschlag|anlagensee|neckar/.test(name) ? [1, 'Tübingen'] : [2, 'Travels']
+    /wilhelma/.test(name) ? [0, 'Wilhelma Zoo'] : /tuebingen|ammerschlag|anlagensee|neckar/.test(name) ? [1, 'Tübingen'] : /^P10|charles-bridge/.test(name) ? [2, 'Praha'] : [3, 'Travels']
   const inTabs = (photos) =>
     tabs ? photos.map((p) => { const [folderId, folderName] = tabOf(p.fileName); return { ...p, folderId, folderName } }) : photos
   const inView = (photos, filter) => {
@@ -145,7 +145,7 @@ const browser = await chromium.launch()
 const shots = []
 
 // Demo culling state for the print basket (FR-050), by position: the trip's, or none.
-const TRIP_QUEUES = { print: [1, 4, 6], aside: [9, 13] }
+const TRIP_QUEUES = { print: [1, 4, 6], aside: [7, 13] } // not the shown photos (SHOW)
 const NO_QUEUES = { print: [], aside: [] }
 
 async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional' }) {
@@ -226,13 +226,27 @@ const idOf = (name) => {
   if (!photo) throw new Error(`demo photo ${name} is missing`)
   return photo.id
 }
+// The owner's Prague photos when the set has them (demo_set.txt), the CC0 ones otherwise.
+const has = (name) => fixtures.common.list_photos.photos.some((p) => p.fileName.startsWith(name))
 const SHOW = {
-  grid: idOf('erdmaennchen-in-der-wilhelma-1'),
+  grid: idOf(has('P1068073') ? 'P1068073' : 'erdmaennchen-in-der-wilhelma-1'),
   stamp: idOf('bennetts-beach'), // has GPS: the place joins the date
-  frame: idOf('erdmaennchen-in-der-wilhelma-1'),
+  // The Lumix frame on the owner's tram, the Fujifilm one otherwise.
+  frame: idOf(has('P1067865') ? 'P1067865' : 'erdmaennchen-in-der-wilhelma-1'),
   crop: idOf('bir-hakeim-bridge'),
 }
 const tile = (page, id) => page.locator(`img[src*="/thumb/${id}?"]`).first()
+// The grid is virtualized: scroll it (up, then down) until the photo's tile is drawn.
+const reach = async (page, id) => {
+  const t = tile(page, id)
+  for (const dy of [...Array(12).fill(-900), ...Array(24).fill(900)]) {
+    if (await t.count()) break
+    await page.mouse.move(700, 500)
+    await page.mouse.wheel(0, dy)
+    await page.waitForTimeout(150)
+  }
+  return t
+}
 
 for (const language of ['en', 'vi']) {
   for (const theme of ['dark', 'light']) {
@@ -240,7 +254,7 @@ for (const language of ['en', 'vi']) {
 
     // 1. The library grid, culled.
     let { context, page } = await open({ scenario: 'stamp', language, theme })
-    await tile(page, SHOW.grid).click()
+    await (await reach(page, SHOW.grid)).click()
     await settle(page)
     await save(page, `grid-${suffix}`)
 
@@ -267,7 +281,7 @@ for (const language of ['en', 'vi']) {
     await page.keyboard.press('Escape')
 
     // 2. Preview with the date stamp (the default style) and the place (GPS photo).
-    await tile(page, SHOW.stamp).dblclick()
+    await (await reach(page, SHOW.stamp)).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.stamp}"]`)
     await settle(page)
     await save(page, `stamp-${suffix}`)
@@ -300,7 +314,7 @@ for (const language of ['en', 'vi']) {
     await page.mouse.wheel(0, 4000)
     await page.waitForTimeout(300)
     await save(page, `manual-places-${suffix}`)
-    await tile(page, SHOW.frame).dblclick()
+    await (await reach(page, SHOW.frame)).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.frame}"]`)
     await settle(page)
     await save(page, `frame-${suffix}`)
@@ -310,7 +324,7 @@ for (const language of ['en', 'vi']) {
     await save(page, `check-export-${suffix}`)
     await page.keyboard.press('Escape')
     await page.waitForTimeout(300)
-    await tile(page, SHOW.crop).dblclick()
+    await (await reach(page, SHOW.crop)).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
     await settle(page)
 
@@ -380,7 +394,7 @@ for (const language of ['en', 'vi']) {
     await page.getByRole('button', { name: /^(Select|Chọn)$/ }).click()
     await page.locator('img[src*="/thumb/"]').nth(1).click()
     await page.locator('img[src*="/thumb/"]').nth(4).click()
-    await tab('Tübingen').click()
+    await tab('Praha').click()
     await page.waitForTimeout(300)
     await page.locator('img[src*="/thumb/"]').nth(2).click()
     await tab('Travels').hover()
@@ -409,10 +423,13 @@ for (const language of ['en', 'vi']) {
     // 11. Postcards (FR-073): one photo and a postcard back on each print, the panel's
     // postcard card open; then a card's preview with its typed text, for the manual.
     ;({ context, page } = await open({ scenario: 'postcard', language, theme, mode: 'collage', queues: NO_QUEUES }))
-    await page.locator('[data-cell]').first().click()
+    // The card on the owner's red tram, which carries the first typed text (demo.rs).
+    const card = page.locator(`[data-cell][data-photo="${SHOW.frame}"]`).first()
+    await card.scrollIntoViewIfNeeded()
+    await card.click()
     await settle(page)
     await save(page, `postcard-${suffix}`)
-    await page.locator('[data-cell]').first().dblclick()
+    await card.dblclick()
     await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
     await settle(page)
     await save(page, `manual-postcard-${suffix}`)

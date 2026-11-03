@@ -1,0 +1,30 @@
+# The photos the website's screenshots show (site/screenshots/README.md), by file stem.
+# CC0 demo photos from photos.json, kept for variety (animals, Fujifilm, Sony, GPS):
+erdmaennchen-in-der-wilhelma-1
+erdmaennchen-in-der-wilhelma-2
+erdmaennchen-in-der-wilhelma-3
+grevy-zebras-in-der-wilhelma-1
+brillenpinguin-in-der-wilhelma
+bennetts-beach-hawks-nest-captured-by-kate-branch
+bir-hakeim-bridge-paris-24-june-2021
+charles-bridge-at-sunset-prague-50489016846
+ammerschlag
+baeren-tuebingen-2
+# The owner's own photos, Prague, November 2026, Lumix GX9 (© @hoangphi01, all rights
+# reserved, never in the repository): read from the folder given to build.sh.
+P1067819
+P1067829
+P1067865
+P1067882
+P1067947
+P1067955
+P1067963
+P1067998
+P1068073
+P1068086
+P1068110
+P1068142
+P1068150
+P1068160
+P1068184
+P1068192

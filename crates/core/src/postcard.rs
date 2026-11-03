@@ -662,7 +662,7 @@ mod tests {
         else {
             panic!("the bundled faces load");
         };
-        for c in "àçéœÿ čřůž őű ąłż șț åøæ ñ ğış āėų ơư"
+        for c in "àçéœÿ áěí čřůž őű ąłż șț åøæ ñ ğış āėų ơư"
             .chars()
             .filter(|c| !c.is_whitespace())
         {

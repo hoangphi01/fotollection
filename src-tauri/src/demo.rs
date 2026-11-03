@@ -292,24 +292,17 @@ fn record_collage(app: &AppHandle, out: &Path) -> Result<Value, String> {
     }))
 }
 
-/// The messages and addresses typed on the first three demo postcards.
+/// The messages typed on three demo postcards, each sent to the National Museum in
+/// Prague (a public address, so it can be shown), on the address's three lines.
 const POSTCARD_TEXTS: [(&str, &str); 3] = [
-    (
-        "Liebe Grüße aus Tübingen!\nWir vermissen euch. Bis bald,\nAnna & Max",
-        "Familie Schmidt\nHauptstraße 1\n10115 Berlin",
-    ),
-    (
-        "Greetings from the Neckar!\nThe weather is lovely. Love, Kate",
-        "Kate Branch\n12 Rue des Fleurs\n75004 Paris, France",
-    ),
-    (
-        "Thương gửi cả nhà!\nHẹn gặp lại ở Hà Nội.",
-        "Nguyễn Văn An\n12 Phố Huế\nHà Nội, Việt Nam",
-    ),
+    ("Ahoj Praha!\nPozdravy z Prahy.", NATIONAL_MUSEUM),
+    ("Ahoj Praha!\nLove from the funicular.", NATIONAL_MUSEUM),
+    ("Ahoj Praha!\nThương gửi cả nhà.", NATIONAL_MUSEUM),
 ];
+const NATIONAL_MUSEUM: &str = "Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1, Czechia";
 
 /// Postcards (FR-073), after the collage: the same photos, one per card, held landscape,
-/// the first three with a typed message; each card's facts, its text and its images.
+/// three with a typed message; each card's facts, its text and its images.
 fn record_postcard(app: &AppHandle, out: &Path) -> Result<Value, String> {
     let state = app.state::<AppState>();
     let mut settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
@@ -317,7 +310,19 @@ fn record_postcard(app: &AppHandle, out: &Path) -> Result<Value, String> {
     ok(commands::set_settings(app.clone(), app.state(), settings))?;
     let sheets = crate::collage::list_sheets(app.state(), CullFilter::default())
         .map_err(|e| format!("{e:?}"))?;
-    for (sheet, (message, address)) in sheets.iter().zip(POSTCARD_TEXTS) {
+    // From the owner's red tram on (demo_set.txt) when the set has it, the first cards otherwise.
+    let start = {
+        let lib = state.library.read().map_err(|e| e.to_string())?;
+        sheets
+            .iter()
+            .position(|sheet| {
+                lib.summary(sheet.first)
+                    .is_some_and(|s| s.file_name.starts_with("P1067865"))
+            })
+            .unwrap_or(0)
+    };
+    let texted = sheets.iter().cycle().skip(start).take(sheets.len());
+    for (sheet, (message, address)) in texted.zip(POSTCARD_TEXTS) {
         for (part, text) in [
             (fotollection_core::settings::PostcardPart::Message, message),
             (fotollection_core::settings::PostcardPart::Address, address),
