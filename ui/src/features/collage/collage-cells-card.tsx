@@ -70,8 +70,8 @@ export function CollageCellsCard({ settings, onChange, cell }: CollageCellsCardP
       </div>
       <CollageSizeFields settings={settings} onChange={onChange} cell={cell} />
       </Collapse>
-      {/* Filled halves meet at an edge: a cut line means nothing there. */}
-      <Collapse open={!fill}>
+      {/* Filled halves meet at an edge, and a postcard is not cut: no cut line there. */}
+      <Collapse open={!fill && !collage?.postcard?.enabled}>
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
           <Label htmlFor={cutLineId} className="flex items-center gap-2 text-sm font-normal">

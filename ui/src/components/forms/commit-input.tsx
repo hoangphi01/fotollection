@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useEffect, useRef, useState } from 'react'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 
 type CommitInputProps = {
   value: string
@@ -10,6 +11,10 @@ type CommitInputProps = {
   ariaLabel?: string
   /** Also commit while typing, this long after the last key (live preview). */
   liveMs?: number
+  /** Several lines (a postcard's text): Enter breaks the line, blur commits. */
+  multiline?: boolean
+  /** Keeps a draft within limits as it is typed (e.g. a line count). */
+  limit?: (value: string) => string
   onCommit(value: string): void
 }
 
@@ -24,6 +29,8 @@ export function CommitInput({
   maxLength,
   ariaLabel,
   liveMs,
+  multiline,
+  limit = (v) => v,
   onCommit,
 }: CommitInputProps) {
   const [draft, setDraft] = useState(value)
@@ -50,6 +57,33 @@ export function CommitInput({
     const timer = setTimeout(() => commit(draft), liveMs)
     return () => clearTimeout(timer)
   })
+  const events = {
+    onFocus: () => {
+      focused.current = true
+    },
+    onBlur: () => {
+      focused.current = false
+      if (draft !== committed.current) commit(draft)
+      else if (value !== committed.current) {
+        // Nothing typed, but the value changed meanwhile (an undo): show it now.
+        committed.current = value
+        setDraft(value)
+      }
+    },
+  }
+  if (multiline) {
+    return (
+      <Textarea
+        value={draft}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        aria-label={ariaLabel}
+        className="min-h-20 w-full min-w-0 text-sm"
+        onChange={(e) => setDraft(limit(e.target.value))}
+        {...events}
+      />
+    )
+  }
   return (
     <Input
       value={draft}
@@ -58,19 +92,8 @@ export function CommitInput({
       aria-label={ariaLabel}
       inputMode={numeric ? 'decimal' : undefined}
       className="h-8 w-full min-w-0 text-sm"
-      onChange={(e) => setDraft(e.target.value)}
-      onFocus={() => {
-        focused.current = true
-      }}
-      onBlur={() => {
-        focused.current = false
-        if (draft !== committed.current) commit(draft)
-        else if (value !== committed.current) {
-          // Nothing typed, but the value changed meanwhile (an undo): show it now.
-          committed.current = value
-          setDraft(value)
-        }
-      }}
+      onChange={(e) => setDraft(limit(e.target.value))}
+      {...events}
       onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
     />
   )

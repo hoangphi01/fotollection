@@ -22,10 +22,12 @@ type FontSelectProps = {
   value: number | null | undefined
   onChange: (fontId: number | null) => void
   label: string
+  /** The built-in face's name, when it is not Inter (a postcard's typewriter face). */
+  builtIn?: string
 }
 
-/** Font picker shared by the date stamp and the info frame (FR-042). */
-export function FontSelect({ fonts, value, onChange, label }: FontSelectProps) {
+/** Font picker shared by the info frame and the postcard (FR-042, FR-073). */
+export function FontSelect({ fonts, value, onChange, label, builtIn }: FontSelectProps) {
   const { t } = useTranslation()
   const selected = value ? String(value) : BUILT_IN
   const current = fonts.fonts.find((f) => f.id === value)
@@ -48,7 +50,7 @@ export function FontSelect({ fonts, value, onChange, label }: FontSelectProps) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={BUILT_IN}>{t('fonts.builtIn')}</SelectItem>
+            <SelectItem value={BUILT_IN}>{builtIn ?? t('fonts.builtIn')}</SelectItem>
             {fonts.fonts.length > 0 && (
               <SelectGroup>
                 <SelectLabel>{t('fonts.yours')}</SelectLabel>

@@ -30,7 +30,8 @@ type SheetGridProps = {
   /** Opens the sheet's preview, on one of its photos. */
   onOpen: (sheet: number, cell: 0 | 1) => void
   onMove: (photo: PhotoId, target: PhotoId | null) => void
-  onTurn: (first: PhotoId) => void
+  /** Turns a sheet; absent when sheets do not turn (postcards, FR-073). */
+  onTurn?: (first: PhotoId) => void
 }
 
 /**
@@ -158,7 +159,7 @@ export function SheetGrid({
       onOpen(cells[at].sheet, cells[at].cell)
     } else if (event.key.toLowerCase() === 'r' && sheet && !event.metaKey && !event.ctrlKey && !event.altKey) {
       event.preventDefault()
-      onTurn(sheet.first)
+      onTurn?.(sheet.first)
     }
   }
 
@@ -195,7 +196,7 @@ export function SheetGrid({
                   over={over}
                   onSelect={(cell) => onSelect(index, cell)}
                   onOpen={(cell) => onOpen(index, cell)}
-                  onTurn={() => onTurn(sheet.first)}
+                  onTurn={onTurn && (() => onTurn(sheet.first))}
                   onDragStart={startDrag}
                 />
               )

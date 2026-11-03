@@ -7,6 +7,7 @@ import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
 import { CollageCellsCard } from './collage-cells-card'
+import { PostcardCard } from './postcard-card'
 import { SheetSizeCard } from './sheet-size-card'
 
 type CollagePanelProps = {
@@ -27,9 +28,9 @@ type CollagePanelProps = {
 }
 
 /**
- * Collage mode's panel (FR-035, FR-048), in the shared order: the sheet's size, how two
- * photos share it, the date stamp, and Export, which writes one file per sheet. Sheets are
- * always prints.
+ * Collage mode's panel (FR-035, FR-048), in the shared order: the sheet's size, the postcard
+ * switch (FR-073), how the photos share it, the date stamp, and Export, which writes one
+ * file per sheet. Sheets are always prints.
  */
 export function CollagePanel({
   settings,
@@ -56,6 +57,7 @@ export function CollagePanel({
       }
     >
       <SheetSizeCard settings={settings} onChange={onChange} />
+      <PostcardCard settings={settings} onChange={onChange} />
       <CollageCellsCard settings={settings} onChange={onChange} cell={cell} />
       <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} />
     </SidePanel>

@@ -422,6 +422,24 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
 
 Every change is one undo step. The date stamp prints on each photo, with its place and your own line if you chose them; the info frame is not used on sheets.
 
+### 19.1 Postcards
+
+*Coming in v0.9.4.* A kiosk print becomes a postcard you can post: one photo on one half, the back of a postcard on the other ([FR-073](PRD.md#fr-073--postcard-sheets)).
+
+1. In Collage mode, turn on **Postcard** in the panel. Each sheet now holds one photo.
+2. **Held**: **Landscape** puts the photo on the left and the card on the right; **Portrait** puts the card on top and the photo below. A dashed **stamp box** sits at the top right, about the size of a German or Hungarian stamp, and under it the **writing lines**: **3 lines** or **4 lines**.
+3. The photo half works as before: ratio, size, *Fill each half*, the 3 mm border, the date stamp, **Crop** and **Rotate photo** in the preview. A postcard has no cut line and does not turn; Auto turn is hidden.
+4. **Type the text**, or leave the lines blank to write by hand: open a postcard's preview (double-click it) and type under **Postcard text**, a message or an address, up to 400 characters. It is set on the lines in the typewriter face *Xanh Mono*, or in one of your own fonts chosen under **Typed text** (**Import OTF/TTF…**, as in chapter 9). What does not fit the lines is left out of the print, as the preview shows.
+5. **Export** writes one file per postcard, named after its photo (for example `P1000123-postcard.jpg`).
+
+**Writing by hand.** A print's face is a coating that many pens do not take. Use a fine permanent marker (Sharpie Ultra Fine, edding 400, Stabilo OHPen S), try it in the stamp box first, and let it dry for about a minute; ballpoint pens often skip and gel or fineliner pens smear. Typed text has none of these problems.
+
+**Posting it.** A 10 × 15 print is 15.2 × 10.2 cm: Deutsche Post takes postcards from 14 × 9 to 23.5 × 12.5 cm and 150–500 g/m² (photo paper is about 240), and Magyar Posta's rules give 9 × 14 to 12 × 23.5 cm (to check at the counter). Česká pošta allows postcards only up to 14.8 cm long, so there it goes as a letter. The post may print a barcode along the bottom edge, which can rub off a glossy print; ask at the counter when in doubt.
+
+<!-- shot: postcard | Collage mode with Postcard on: each print holds one photo and a postcard back with a dashed stamp box and writing lines -->
+
+<!-- shot: manual-postcard | A postcard’s preview: the card large, the Postcard card and the Postcard text field -->
+
 <!-- chapter: shortcuts -->
 
 ## 20. Keyboard shortcuts

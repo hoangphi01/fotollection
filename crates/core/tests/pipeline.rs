@@ -225,6 +225,60 @@ fn fr_035_sheets_export_one_file_per_pair_in_the_first_photos_day() {
     assert_eq!(metadata::read_bytes(&pair).gps, None);
 }
 
+/// FR-073: postcards export one file per photo, named `<photo>-postcard`, held portrait
+/// (the photo below, the card on top) when the panel says so.
+#[test]
+fn fr_073_postcards_export_one_file_per_photo() {
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    let landscape = Fixture {
+        width: 600,
+        height: 400,
+        date: Some("2026:07:14 10:00:00"),
+        ..Fixture::default()
+    };
+    write(src.path(), "P1.jpg", &jpeg(&landscape));
+    write(src.path(), "P2.jpg", &jpeg(&landscape));
+    let lib = import(src.path());
+    let mut all = records(&lib);
+    all.sort_by(|a, b| a.file_name.cmp(&b.file_name));
+    all[0].edits.postcard = Some("Liebe Grüße!".into());
+    let sheets: Vec<fotollection_core::export::SheetRecords> =
+        all.iter().map(|r| (r.clone(), None)).collect();
+    let mut settings = RenderSettings::default();
+    settings.collage.postcard.enabled = true;
+    settings.collage.postcard.orientation =
+        fotollection_core::settings::PostcardOrientation::Portrait;
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 2,
+        place_for: &|_| None,
+        frame_for: &|_| None,
+        group_for: &|_| None,
+        postcard_font: None,
+    };
+    let summary = fotollection_core::export::run_export_sheets(
+        &sheets,
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert_eq!(summary.exported, 2);
+    let day = dest.path().join("2026-07-14");
+    let card = std::fs::read(day.join("P1-postcard.jpg")).unwrap();
+    assert!(day.join("P2-postcard.jpg").exists());
+    let decoded = PureRustCodec.decode(&card).unwrap().image;
+    assert!(
+        decoded.height > decoded.width,
+        "portrait: {}×{}",
+        decoded.width,
+        decoded.height
+    );
+}
+
 #[test]
 fn fr_056_folders_exported_separately_get_their_own_subfolder() {
     let src = tempfile::tempdir().unwrap();

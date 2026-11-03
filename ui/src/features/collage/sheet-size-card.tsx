@@ -2,6 +2,7 @@
 import { Crop, TriangleAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Label } from '@/components/ui/label'
+import { PanelNote } from '@/components/layout/panel-note'
 import { SectionCard } from '@/components/layout/section-card'
 import { commands, type RenderSettings } from '@/ipc/bindings'
 import { BorderSwitch } from '@/features/settings/border-switch'
@@ -33,12 +34,11 @@ export function SheetSizeCard({ settings, onChange }: SheetSizeCardProps) {
       <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onChange} allowOriginal={false} />
       {/* Original has no size until a photo gives it one: sheets use 10 × 15 (FR-035). */}
       {settings?.printSize === 'original' && (
-        <p className="flex gap-1.5 rounded-md bg-muted/60 px-2.5 py-2 text-xs text-muted-foreground">
-          <TriangleAlert className="mt-0.5 size-3.5 shrink-0 text-primary" />
-          {t('collage.originalNote')}
-        </p>
+        <PanelNote icon={<TriangleAlert />}>{t('collage.originalNote')}</PanelNote>
       )}
-      <p className="text-xs text-muted-foreground">{t('collage.sheetSizeHint')}</p>
+      <p className="text-xs text-muted-foreground">
+        {t(settings?.collage?.postcard?.enabled ? 'postcard.sheetSizeHint' : 'collage.sheetSizeHint')}
+      </p>
       <BorderSwitch settings={settings} onChange={onChange} paper={!settings?.collage?.fill} />
     </SectionCard>
   )

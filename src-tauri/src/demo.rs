@@ -68,6 +68,7 @@ fn record(app: &AppHandle, folder: PathBuf, out: &Path) -> Result<(), String> {
         "common": record_common(app, &ids, out)?,
         "scenarios": record_scenarios(app, &ids, out)?,
         "collage": record_collage(app, out)?,
+        "postcard": record_postcard(app, out)?,
     });
     let text = serde_json::to_string_pretty(&fixtures).map_err(|e| e.to_string())?;
     write(&out.join("fixtures.json"), text.as_bytes())?;
@@ -288,5 +289,69 @@ fn record_collage(app: &AppHandle, out: &Path) -> Result<Value, String> {
         "list_sheets": to_json(&sheets)?,
         "sheet_info": info,
         "get_crop_geometry": geometry,
+    }))
+}
+
+/// The messages typed on the first three demo postcards.
+const POSTCARD_TEXTS: [&str; 3] = [
+    "Liebe Grüße aus Tübingen!\nWir vermissen euch. Bis bald,\nAnna & Max",
+    "Greetings from the Neckar!\nThe weather is lovely. Love, Kate",
+    "Thương gửi cả nhà!\nHẹn gặp lại ở Hà Nội.",
+];
+
+/// Postcards (FR-073), after the collage: the same photos, one per card, held landscape,
+/// the first three with a typed message; each card's facts, its text and its images.
+fn record_postcard(app: &AppHandle, out: &Path) -> Result<Value, String> {
+    let state = app.state::<AppState>();
+    let mut settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
+    settings.collage.postcard.enabled = true;
+    ok(commands::set_settings(app.state(), settings))?;
+    let sheets = crate::collage::list_sheets(app.state(), CullFilter::default())
+        .map_err(|e| format!("{e:?}"))?;
+    for (sheet, text) in sheets.iter().zip(POSTCARD_TEXTS) {
+        ok(commands::set_postcard_text(
+            app.clone(),
+            app.state(),
+            sheet.first,
+            Some(text.to_owned()),
+        ))?;
+    }
+    let mut info = serde_json::Map::new();
+    let mut geometry = serde_json::Map::new();
+    let mut texts = serde_json::Map::new();
+    for &sheet in &sheets {
+        let key = sheet.first.0.to_string();
+        info.insert(
+            key.clone(),
+            ok(tauri::async_runtime::block_on(crate::collage::sheet_info(
+                app.clone(),
+                sheet,
+            )))?,
+        );
+        geometry.insert(
+            key.clone(),
+            ok(tauri::async_runtime::block_on(commands::get_crop_geometry(
+                app.clone(),
+                sheet.first,
+                Some(sheet),
+            )))?,
+        );
+        texts.insert(
+            key.clone(),
+            ok(commands::get_postcard_text(app.state(), sheet.first))?,
+        );
+        for (small, suffix) in [(true, "-small"), (false, "")] {
+            write(
+                &out.join(format!("img/sheet-postcard/{key}{suffix}.jpg")),
+                &crate::collage::sheet_bytes(&state, sheet, small).map_err(|e| e.message)?,
+            )?;
+        }
+    }
+    Ok(json!({
+        "get_settings": ok(commands::get_settings(app.state()))?,
+        "list_sheets": to_json(&sheets)?,
+        "sheet_info": info,
+        "get_crop_geometry": geometry,
+        "get_postcard_text": texts,
     }))
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ChevronLeft, ChevronRight, Crop, Download, Images, LoaderCircle, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Crop, Download, Images, LoaderCircle, Mail, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -22,6 +22,8 @@ import { sheetUrl, sourceUrl, thumbUrl } from '@/lib/photo-url'
 import { MOD } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 import { CollageCellsCard } from './collage-cells-card'
+import { PostcardCard } from './postcard-card'
+import { PostcardTextField } from './postcard-text-field'
 import { sheetCells } from './sheet-cells'
 import { SheetCellsOverlay } from './sheet-cells-overlay'
 import { SheetSizeCard } from './sheet-size-card'
@@ -105,6 +107,7 @@ export function SheetPreviewDialog({
     collage.select(Math.min(sheets.length - 1, Math.max(0, index + delta)), 0)
   }
   // A quarter turn of the photo in its cell only (FR-035): its print keeps its orientation.
+  const postcard = settings?.collage?.postcard?.enabled ?? false
   const rotatePhoto = (id: PhotoId) => void commands.rotateCollagePhoto(id)
   const onKeyDown = (event: KeyboardEvent) => {
     if (cropping || ownsArrowKeys(event.target)) return
@@ -118,7 +121,7 @@ export function SheetPreviewDialog({
     else if (pressed === 'c' && photo !== null) setCropping(true)
     // ⇧R turns the chosen photo in its cell; R alone turns the sheet.
     else if (pressed === 'r' && event.shiftKey && photo !== null) rotatePhoto(photo)
-    else if (pressed === 'r' && sheet && !event.metaKey && !event.ctrlKey) collage.turn(sheet.first)
+    else if (pressed === 'r' && sheet && !postcard && !event.metaKey && !event.ctrlKey) collage.turn(sheet.first)
     else return
     event.preventDefault()
   }
@@ -161,7 +164,7 @@ export function SheetPreviewDialog({
                   { keys: ['↑'], label: t('viewer.upBasket') },
                   { keys: ['↓'], label: t('viewer.downAside') },
                   { keys: ['C'], label: t('viewer.crop') },
-                  { keys: ['R'], label: t('collage.turn') },
+                  ...(postcard ? [] : [{ keys: ['R'], label: t('collage.turn') }]),
                   { keys: ['⇧R'], label: t('collage.rotatePhoto') },
                   { keys: ['Esc'], label: t('viewer.close') },
                 ]
@@ -225,9 +228,12 @@ export function SheetPreviewDialog({
                   <Crop data-icon="inline-start" /> {t('viewer.crop')}
                 </Button>
               </span>
-              <Button variant="secondary" size="sm" disabled={!sheet} onClick={() => sheet && collage.turn(sheet.first)}>
-                <RotateCw data-icon="inline-start" /> {t('collage.turn')}
-              </Button>
+              {/* A postcard is held the way the panel says: only the photo turns. */}
+              {!postcard && (
+                <Button variant="secondary" size="sm" disabled={!sheet} onClick={() => sheet && collage.turn(sheet.first)}>
+                  <RotateCw data-icon="inline-start" /> {t('collage.turn')}
+                </Button>
+              )}
               {/* Turns the chosen photo in its cell, so a landscape photo fills a standing cell. */}
               <span data-hint={photo === null ? t('collage.pickToRotate') : t('collage.rotatePhotoHint')}>
                 <Button variant="secondary" size="sm" disabled={photo === null} onClick={() => photo !== null && rotatePhoto(photo)}>
@@ -284,6 +290,12 @@ export function SheetPreviewDialog({
       {/* The same cards in the same order as the Collage panel (STYLE_RULE §4); the sheet's
           own photos follow, as a photo's facts follow in its preview. */}
       <SheetSizeCard settings={settings} onChange={onSettingsChange} />
+      <PostcardCard settings={settings} onChange={onSettingsChange} />
+      {postcard && sheet && (
+        <InspectorSection icon={<Mail className="size-4" />} title={t('postcard.text')}>
+          <PostcardTextField photo={sheet.first} revision={revision} />
+        </InspectorSection>
+      )}
       <CollageCellsCard settings={settings} onChange={onSettingsChange} cell={cell} />
       <DateStampCard
         settings={settings}

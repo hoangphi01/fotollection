@@ -420,6 +420,24 @@ Cùng ô đó có mục **Ngôn ngữ** (chương 1) và hiện **cache**: ảnh
 
 Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên từng ảnh, kèm địa điểm và dòng chữ riêng nếu bạn chọn; khung thông tin không dùng trên tấm ghép.
 
+### 19.1 Bưu thiếp
+
+*Sắp có trong v0.9.4.* Một tấm ảnh in ở kiosk thành bưu thiếp gửi được qua bưu điện: một ảnh ở một nửa, mặt sau bưu thiếp ở nửa kia ([FR-073](PRD.md#fr-073--postcard-sheets)).
+
+1. Trong chế độ Ghép ảnh, bật **Bưu thiếp** trong bảng bên phải. Mỗi tấm giờ chỉ có một ảnh.
+2. **Chiều cầm**: **Ngang** đặt ảnh bên trái, bưu thiếp bên phải; **Dọc** đặt bưu thiếp ở trên, ảnh ở dưới. Một **ô dán tem** nét đứt nằm ở góc trên bên phải, cỡ chừng một con tem của Đức hay Hungary, bên dưới là các **dòng kẻ**: **3 dòng** hoặc **4 dòng**.
+3. Nửa ảnh vẫn như trước: tỷ lệ, cỡ ảnh, *Lấp đầy mỗi nửa*, viền 3 mm, dấu ngày, **Cắt ảnh** và **Xoay ảnh** trong bản xem trước. Bưu thiếp không có đường cắt và không xoay tấm; nút Tự xoay được ẩn.
+4. **Gõ chữ**, hoặc để trống để viết tay: mở bản xem trước của một bưu thiếp (bấm đúp) và gõ vào **Chữ trên bưu thiếp**, một lời nhắn hoặc một địa chỉ, tối đa 400 ký tự. Chữ được in lên các dòng kẻ bằng font máy đánh chữ *Xanh Mono*, hoặc một font của bạn chọn ở **Chữ gõ** (**Nhập OTF/TTF…**, như chương 9). Phần không vừa các dòng sẽ không được in, đúng như bản xem trước.
+5. **Xuất ảnh** ghi mỗi bưu thiếp thành một tệp, đặt tên theo ảnh của nó (ví dụ `P1000123-postcard.jpg`).
+
+**Viết tay.** Mặt ảnh in là một lớp phủ mà nhiều loại bút không ăn. Hãy dùng bút dạ dầu nét mảnh (Sharpie Ultra Fine, edding 400, Stabilo OHPen S), thử ở ô tem trước và để khô khoảng một phút; bút bi hay bị đứt nét, bút gel và bút kim dễ lem. Chữ gõ thì không gặp các vấn đề này.
+
+**Gửi đi.** Ảnh 10 × 15 thực ra là 15,2 × 10,2 cm: Deutsche Post nhận bưu thiếp từ 14 × 9 đến 23,5 × 12,5 cm và 150–500 g/m² (giấy ảnh khoảng 240), quy định của Magyar Posta ghi từ 9 × 14 đến 12 × 23,5 cm (nên hỏi lại tại quầy). Česká pošta chỉ nhận bưu thiếp dài tối đa 14,8 cm, nên ở Séc nó được tính như thư. Bưu điện có thể in mã vạch dọc mép dưới, mực này dễ bị chùi trên ảnh bóng; khi không chắc, hãy hỏi tại quầy.
+
+<!-- shot: postcard | Chế độ Ghép ảnh khi bật Bưu thiếp: mỗi tấm in có một ảnh và mặt sau bưu thiếp với ô tem nét đứt và dòng kẻ -->
+
+<!-- shot: manual-postcard | Bản xem trước một bưu thiếp: tấm cỡ lớn, thẻ Bưu thiếp và ô Chữ trên bưu thiếp -->
+
 <!-- chapter: shortcuts -->
 
 ## 20. Phím tắt

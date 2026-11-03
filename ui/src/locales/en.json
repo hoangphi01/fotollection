@@ -759,5 +759,25 @@
     "gainMap": "Lens shading map not applied yet",
     "originalRaw": "Original RAW inside",
     "readBy": "read by {{name}}"
+  },
+  "postcard": {
+    "title": "Postcard",
+    "hint": "Each sheet becomes a postcard: one photo, and on the other half a stamp box and lines for a message or an address.",
+    "orientation": "Held",
+    "landscape": "Landscape",
+    "portrait": "Portrait",
+    "landscapeHint": "The photo on the left, the card on the right",
+    "portraitHint": "The card on top, the photo below",
+    "lines": "Writing lines",
+    "lineCount_one": "{{count}} line",
+    "lineCount_other": "{{count}} lines",
+    "font": "Typed text",
+    "typewriter": "Typewriter (Xanh Mono)",
+    "pens": "Writing by hand on photo paper: use a fine permanent marker (Sharpie Ultra Fine, edding 400, Stabilo OHPen S). Try it in the stamp box first and let it dry for a minute; ballpoint and gel pens smear or skip on the coating. Or type the text in the postcard's preview.",
+    "text": "Postcard text",
+    "textPlaceholder": "A message, an address… or nothing, to write by hand",
+    "textHint": "Set on the lines in the font above; what does not fit the lines is left out of the print.",
+    "chars": "{{count}} / {{max}}",
+    "sheetSizeHint": "Each sheet holds one photo and a postcard back, held the way the Postcard card says."
   }
 }

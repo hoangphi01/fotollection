@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: postcards in Collage mode: one photo and a postcard back (stamp box, writing lines) on each print, with your text typed in a typewriter face or room to write by hand
+
+### Added
+
+- **Postcards** (Collage mode): a switch turns each sheet into one photo and the back of a postcard, held landscape (photo left) or portrait (photo below), with a dashed stamp box at the top right and 3 or 4 writing lines. Type a message or an address for each card in its preview, set in Xanh Mono or one of your own fonts, or leave the lines for handwriting; the panel says which pens write on photo paper. Each card exports as `<photo>-postcard.jpg`.
+
 ## [0.9.3] - 2026-11-03
 
 ### Highlights

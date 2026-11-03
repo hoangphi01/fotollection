@@ -72,7 +72,8 @@ export function CollageView({
         <span className="flex-1" />
         {/* Select mode (FR-050): tick sheets, both photos at once, for the basket, to set aside
             or to export. */}
-        {!select.active && <AutoTurnButtons filter={filter} />}
+        {/* A postcard stays the way it is held (FR-073): nothing to turn. */}
+        {!select.active && !settings?.collage?.postcard?.enabled && <AutoTurnButtons filter={filter} />}
         <SelectModeButton select={select} />
       </div>
       {select.active && (
@@ -105,7 +106,7 @@ export function CollageView({
           setViewing(true)
         }}
         onMove={collage.move}
-        onTurn={collage.turn}
+        onTurn={settings?.collage?.postcard?.enabled ? undefined : collage.turn}
       />
       <SheetPreviewDialog
         collage={collage}

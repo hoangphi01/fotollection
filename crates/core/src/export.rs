@@ -238,10 +238,12 @@ fn encode_sheet(
     Ok(with_exif(jpeg, first, first.stamp_date()))
 }
 
-/// `<first>+<second>`, the file name of a sheet.
-fn sheet_stem(sheet: &SheetRecords) -> String {
+/// `<first>+<second>`, the file name of a sheet; `<photo>-postcard` for a postcard.
+fn sheet_stem(sheet: &SheetRecords, postcard: bool) -> String {
     match &sheet.1 {
         Some(second) => format!("{}+{}", file_stem(&sheet.0), file_stem(second)),
+        // `<photo>-postcard`, so it never takes the name of the photo's own print (FR-073).
+        None if postcard => format!("{}-postcard", file_stem(&sheet.0)),
         None => file_stem(&sheet.0),
     }
 }
@@ -532,7 +534,7 @@ pub fn run_export_sheets(
                 false,
                 cancel,
                 &reserved,
-                &sheet_stem(sheet),
+                &sheet_stem(sheet, options.settings.collage.postcard.enabled),
             )
         },
         cancel,

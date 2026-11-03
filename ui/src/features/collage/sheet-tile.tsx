@@ -29,7 +29,8 @@ type SheetTileProps = {
   onSelect: (cell: 0 | 1) => void
   onToggle: () => void
   onOpen: (cell: 0 | 1) => void
-  onTurn: () => void
+  /** Absent when the sheet does not turn (a postcard, FR-073). */
+  onTurn?: () => void
   onDragStart: (photo: PhotoId, event: PointerEvent) => void
 }
 
@@ -110,7 +111,7 @@ export function SheetTile({
         </SheetCellsOverlay>
         {selectMode && <TickCircle checked={ticked} className="pointer-events-none absolute right-1.5 bottom-1.5" />}
       </div>
-      {!selectMode && (
+      {!selectMode && onTurn && (
         <Button
           variant="secondary"
           size="icon-xs"

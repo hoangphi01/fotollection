@@ -41,6 +41,7 @@
 | **Perceptual hash** | Compact image fingerprint that stays similar for visually similar images. Used for duplicate detection. |
 | **Photo Style** | Panasonic Lumix's in-camera look system: a base style plus contrast, sharpness, saturation, hue and highlight/shadow controls. Fotollection's looks are modelled on it ([FR-039](PRD.md#fr-039--photo-style-looks)). |
 | **Polyglot file** | A file that is valid in two formats at once (for example JPEG and HTML), used to smuggle content past validation. |
+| **Postcard** | A collage sheet with one photo and the back of a postcard on its other half: a dashed stamp box and writing lines, with typed text or room to write by hand ([FR-073](PRD.md#fr-073--postcard-sheets)). |
 | **Preset (partial)** | A saved bundle of settings that owns only some setting groups, so presets can be stacked ([FR-038](PRD.md#fr-038--print-presets)). |
 | **Print basket / set aside** | The two holding areas ([FR-050](PRD.md#fr-050--print-basket)): the photos that will really be printed, and the ones taken out of the gallery for now. Nothing is ever deleted. |
 | **Rendering intent** | How a colour conversion handles colours outside the target space: *perceptual* compresses the whole gamut smoothly, *relative colorimetric* clips only out-of-gamut colours. |
