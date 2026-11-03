@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //! The postcard half of a collage sheet (FR-073): a dashed stamp box at the sheet's top
-//! right and writing lines over the whole half, the message on the top ones and the address
-//! on the bottom ones, short beside the stamp. Each card's own text is typed on them in a
+//! right with room for more stamps beside or under it, and the writing lines together at
+//! the foot, the message's then the address's. Each card's own text is typed on them in a
 //! typewriter face (Xanh Mono, OFL) or the user's font (FR-042), bold, italic or underlined
 //! per part. Drawn on the sheet's paper after the photo, in millimetres turned into pixels.
 
@@ -30,6 +30,12 @@ pub const EDGE_MM: f32 = 5.0;
 const STAMP_GAP_MM: f32 = 4.0;
 /// The address lines, under the message's: name, street, town and country.
 pub const ADDRESS_LINES: u8 = 3;
+/// Lines no further apart than a ruled notebook's, and the gap between the message's and
+/// the address's, in lines.
+const MAX_STEP_MM: f32 = 8.0;
+const PART_GAP: f32 = 0.5;
+/// The room between a portrait card's two columns, the rule in its middle.
+const COLUMN_GAP_MM: f32 = 6.0;
 const OUTLINE_MM: f32 = 0.3;
 /// The stamp box's dashes and the gaps between them.
 const DASH_MM: f32 = 1.2;
@@ -74,14 +80,19 @@ pub struct CardLayout {
     pub address: Vec<Line>,
     /// The distance between two lines.
     pub step: f32,
+    /// A portrait card's rule between its two columns: x, top and bottom.
+    pub divider: Option<(f32, f32, f32)>,
     /// The credit's left edge and its top.
     pub credit: (f32, f32),
 }
 
-/// Lays out the postcard half `card` of a sheet `sheet_width` wide: the stamp box at the
-/// sheet's top-right corner, then `message_lines` lines, one blank, and the address lines,
-/// spread evenly from the half's top to the credit's room at its foot; a line beside the
-/// stamp stops short of it.
+/// Lays out the postcard half `card` of a sheet `sheet_width` wide. The stamp box sits at
+/// the sheet's top-right corner and the band across the top stays free, for more stamps or a
+/// long label printed at the post office. The lines fill the rest from the foot up, no
+/// further apart than a ruled notebook's: on a landscape card (its half stands) the
+/// `message_lines`, half a line's gap, then the address's; on a portrait card (its half
+/// lies, too low to stack them) the message in the left column and the address in the
+/// right, a rule between them.
 pub fn layout(sheet_width: f32, card: RectMm, message_lines: u8) -> CardLayout {
     let stamp = RectMm {
         x: sheet_width - EDGE_MM - STAMP_MM.0,
@@ -89,29 +100,52 @@ pub fn layout(sheet_width: f32, card: RectMm, message_lines: u8) -> CardLayout {
         width: STAMP_MM.0,
         height: STAMP_MM.1,
     };
-    let top = card.y + EDGE_MM;
+    let standing = card.height >= card.width;
+    let top = stamp.y + stamp.height + STAMP_GAP_MM;
+    let (x0, x1) = (card.x + EDGE_MM, card.x + card.width - EDGE_MM);
     let bottom = card.y + card.height - EDGE_MM - CREDIT_ROOM_MM;
     let message_lines = message_lines.max(1);
-    let rows = f32::from(message_lines + 1 + ADDRESS_LINES);
-    let step = (bottom - top) / rows;
-    let (x0, x1) = (card.x + EDGE_MM, card.x + card.width - EDGE_MM);
-    let line = |row: u8| {
-        let y = top + step * (f32::from(row) + 1.0) - step * 0.15;
-        // The row's text reaches up a line spacing: beside the stamp it stops before it.
-        let beside = y - step < stamp.y + stamp.height && stamp.x < x1;
-        Line {
-            y,
-            x0,
-            x1: if beside { stamp.x - STAMP_GAP_MM } else { x1 },
-        }
+    let line = |y: f32, x0: f32, x1: f32| Line { y, x0, x1 };
+    if standing {
+        let address_at = f32::from(message_lines) + PART_GAP;
+        let last = address_at + f32::from(ADDRESS_LINES - 1);
+        let step = ((bottom - top) / (last + 1.0)).min(MAX_STEP_MM);
+        // Row `at` (in lines from the first), the last one just above the credit's room.
+        let y = |at: f32| bottom - step * (last - at) - step * 0.15;
+        return CardLayout {
+            stamp,
+            message: (0..message_lines)
+                .map(|k| line(y(f32::from(k)), x0, x1))
+                .collect(),
+            address: (0..ADDRESS_LINES)
+                .map(|k| line(y(address_at + f32::from(k)), x0, x1))
+                .collect(),
+            step,
+            divider: None,
+            credit: (x0, bottom + 0.6),
+        };
+    }
+    let mid = f32::midpoint(x0, x1);
+    let rows = message_lines.max(ADDRESS_LINES);
+    let step = ((bottom - top) / f32::from(rows)).min(MAX_STEP_MM);
+    // Both columns end on the same last line.
+    let column = |count: u8, x0: f32, x1: f32| {
+        (0..count)
+            .map(|k| {
+                line(
+                    bottom - step * f32::from(count - 1 - k) - step * 0.15,
+                    x0,
+                    x1,
+                )
+            })
+            .collect()
     };
     CardLayout {
         stamp,
-        message: (0..message_lines).map(line).collect(),
-        address: (0..ADDRESS_LINES)
-            .map(|k| line(message_lines + 1 + k))
-            .collect(),
+        message: column(message_lines, x0, mid - COLUMN_GAP_MM / 2.0),
+        address: column(ADDRESS_LINES, mid + COLUMN_GAP_MM / 2.0, x1),
         step,
+        divider: Some((mid, bottom - step * f32::from(rows), bottom)),
         credit: (x0, bottom + 0.6),
     }
 }
@@ -144,6 +178,16 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
     let px = |mm: f32| (mm * density).round().max(0.0) as u32;
     let thick = |mm: f32| (mm * density).round().max(1.0) as u32;
     draw_stamp_box(canvas, density, layout.stamp, outline);
+    if let Some((x, top, bottom)) = layout.divider {
+        crate::sheet::fill_rect(
+            canvas,
+            px(x),
+            px(top),
+            thick(LINE_MM),
+            px(bottom - top),
+            rule,
+        );
+    }
     for line in layout.message.iter().chain(&layout.address) {
         crate::sheet::fill_rect(
             canvas,
@@ -449,32 +493,45 @@ mod tests {
         }
     }
 
-    /// FR-073: the stamp box sits 5 mm from the sheet's top-right corner; the message's lines
-    /// come first, then a blank one and the 3 address lines, evenly spaced over the half; a
-    /// line beside the stamp stops before it, and a portrait card uses the room left of it.
+    /// FR-073: the stamp box sits 5 mm from the sheet's top-right corner and the band across
+    /// the top stays free for more stamps or a long label; the lines sit at the foot, no more
+    /// than 8 mm apart: stacked on a landscape card, the address half a line under the
+    /// message; in two columns with a rule between them on a portrait card.
     #[test]
-    fn fr_073_message_and_address_lines_fill_the_half() {
+    fn fr_073_lines_sit_together_at_the_foot() {
         let landscape = layout(152.0, half(76.0, 0.0, 76.0, 102.0), 4);
+        let portrait = layout(102.0, half(0.0, 0.0, 102.0, 76.0), 4);
         assert_eq!(landscape.stamp, half(121.0, 5.0, 26.0, 32.0));
-        assert_eq!((landscape.message.len(), landscape.address.len()), (4, 3));
-        let ys: Vec<f32> = landscape
-            .message
-            .iter()
-            .chain(&landscape.address)
-            .map(|l| l.y)
-            .collect();
-        assert!(ys.windows(2).all(|w| w[1] > w[0]));
-        // The blank line between the parts: two spacings from the last message line.
-        let gap = landscape.address[0].y - landscape.message[3].y;
-        assert!((gap - 2.0 * landscape.step).abs() < 1e-3, "{gap}");
-        for line in landscape.message.iter().chain(&landscape.address) {
-            let beside = line.y - landscape.step < landscape.stamp.y + landscape.stamp.height;
-            assert_eq!(line.x1 < landscape.stamp.x, beside, "{line:?}");
-            assert!(line.y < 102.0 - EDGE_MM - CREDIT_ROOM_MM + 1e-3);
-        }
-        let portrait = layout(102.0, half(0.0, 0.0, 102.0, 76.0), 3);
         assert_eq!(portrait.stamp, half(71.0, 5.0, 26.0, 32.0));
-        assert!(portrait.message[0].x1 < 71.0 && portrait.address[2].x1 > 90.0);
+        for (l, bottom) in [(&landscape, 102.0), (&portrait, 76.0)] {
+            assert_eq!((l.message.len(), l.address.len()), (4, 3));
+            assert!(l.step <= MAX_STEP_MM + 1e-3);
+            let lines: Vec<&Line> = l.message.iter().chain(&l.address).collect();
+            // Nothing in the band of the stamps, nothing in the credit's room.
+            assert!(
+                lines
+                    .iter()
+                    .all(|line| line.y - l.step > l.stamp.y + l.stamp.height)
+            );
+            assert!(
+                lines
+                    .iter()
+                    .all(|line| line.y < bottom - EDGE_MM - CREDIT_ROOM_MM)
+            );
+        }
+        let gap = landscape.address[0].y - landscape.message[3].y;
+        assert!(
+            (gap - (1.0 + PART_GAP) * landscape.step).abs() < 1e-3,
+            "{gap}"
+        );
+        assert!(landscape.divider.is_none() && landscape.address[0].x1 > 140.0);
+        // Portrait: the message on the left, the address on the right, ending together.
+        let Some((rule, _, _)) = portrait.divider else {
+            panic!("a portrait card has a rule between its columns");
+        };
+        assert!(portrait.message.iter().all(|line| line.x1 < rule));
+        assert!(portrait.address.iter().all(|line| line.x0 > rule));
+        assert!((portrait.message[3].y - portrait.address[2].y).abs() < 1e-3);
     }
 
     /// The message and the address each go on their own lines: an address never spills onto

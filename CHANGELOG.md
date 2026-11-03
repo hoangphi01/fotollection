@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- **Postcards** (Collage mode): the **Postcard** switch above the sheets turns each sheet into one photo and the back of a postcard, held landscape (photo left) or portrait (photo below), with a dashed stamp box at the top right, 3 or 4 lines for the message and 3 for the address. Type each card's message and address in the panel or its preview, in Xanh Mono or one of your own fonts (an address in Greek or Cyrillic prints too), small, medium or large, in black, blue, sepia or red, bold, italic or underlined per part, with a small credit line under every card if you like; or leave the lines for handwriting, and the panel says which pens write on photo paper. Each card exports as `<photo>-postcard.jpg`.
+- **Postcards** (Collage mode): the **Postcard** switch above the sheets turns each sheet into one photo and the back of a postcard, held landscape (photo left) or portrait (photo below), with a dashed stamp box at the top right and room beside it for more stamps or a long post-office label, and the writing lines together at the foot: 3 or 4 for the message and 3 for the address, side by side on a portrait card. Type each card's message and address in the panel or its preview, in Xanh Mono or one of your own fonts (an address in Greek or Cyrillic prints too), small, medium or large, in black, blue, sepia or red, bold, italic or underlined per part, with a small credit line under every card if you like; or leave the lines for handwriting, and the panel says which pens write on photo paper. Each card exports as `<photo>-postcard.jpg`.
 
 ## [0.9.3] - 2026-11-03
 
