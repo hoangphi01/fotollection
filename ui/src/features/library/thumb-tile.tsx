@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarX2, LoaderCircle, MapPinCheck, MapPinOff } from 'lucide-react'
+import { CalendarX2, Info, LoaderCircle, MapPinCheck, MapPinOff } from 'lucide-react'
 import { memo, useState, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { PhotoSummary } from '@/ipc/bindings'
@@ -87,6 +87,15 @@ export const ThumbTile = memo(function ThumbTile({
       )}
       <div className="absolute top-1 right-1 flex gap-0.5">
         {photo.queue === 'print' && <BasketBadge />}
+        {photo.unusual && (
+          <span
+            className="rounded bg-black/60 p-0.5 text-white/80"
+            aria-label={t('library.unusual')}
+            data-hint={t('library.unusual')}
+          >
+            <Info className="size-3" />
+          </span>
+        )}
         {photo.dateFromFile && (
           <span className="rounded bg-black/60 p-0.5 text-amber-300" aria-label={t('library.noCaptureDate')}>
             <CalendarX2 className="size-3" />

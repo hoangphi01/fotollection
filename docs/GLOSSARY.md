@@ -12,6 +12,7 @@
 | **Cell** | One half of a collage sheet. The photo sits centred in it, with a white margin round its photo area, or fills it whole (*Fill each half*). |
 | **CEWE** | Large European photo-printing service (also behind the dm and Rossmann photo services). Its paper sizes define our print ratios. |
 | **Chroma subsampling** | JPEG stores colour at lower resolution than brightness (4:2:0). 4:4:4 keeps full colour resolution, which gives sharper coloured text stamps. |
+| **Chroma subsampling** | How much of a JPEG's colour is kept against its brightness: 4:4:4 keeps all of it, 4:2:2 half across, 4:2:0 half each way (most cameras and phones). Shown in the preview's Image card ([FR-071](PRD.md#fr-071--image-facts)); print exports are 4:4:4. |
 | **Collage / sheet** | Two photos on one print, like a half-frame camera ([FR-035](PRD.md#fr-035--multi-photo-layouts)): a 10 × 15 sheet holds two 10 × 7.5 cells. One file per sheet on export. |
 | **Contact sheet** | A single page of thumbnails, with details, for an entire print set. |
 | **Culling** | Quickly reviewing many photos to rate, flag and keep only the best ones. |
@@ -48,3 +49,4 @@
 | **Tauri** | Rust framework for desktop apps that use the operating system's native webview for the UI. |
 | **Tier (T0–T3)** | Preview resolution levels, from the embedded thumbnail to full resolution. See [OPTIMIZATION.md §4.1](OPTIMIZATION.md#41-multi-tier-preview). |
 | **WebView2 / WKWebView** | The system webviews on Windows and macOS. |
+| **X-Trans** | Fujifilm's 6 × 6 colour filter, in place of the 2 × 2 Bayer pattern of other sensors; it needs its own demosaic ([FR-072](PRD.md#fr-072--our-own-develop-core)). |

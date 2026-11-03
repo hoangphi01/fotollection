@@ -50,6 +50,7 @@ import {
   type RenderSettings,
 } from '@/ipc/bindings'
 import i18n from '@/i18n'
+import { factsParts } from '@/lib/facts'
 import { formatBytes, formatNumber } from '@/lib/format'
 import { previewUrl, sourceUrl } from '@/lib/photo-url'
 import { CropEditor } from './crop-editor'
@@ -496,6 +497,18 @@ export function PreviewDialog({
                 </p>
               ) : (
                 <p className="text-muted-foreground">{t('common.loading')}</p>
+              )}
+              {/* Recorded screenshot data from before FR-071 has no facts. */}
+              {details?.facts && photo && (
+                <p className="text-xs text-muted-foreground">
+                  {/* A line breaks between facts, never inside one ("zune-jpeg"). */}
+                  {factsParts(details.facts, photo.fileName).map((part, i) => (
+                    <span key={part}>
+                      {i > 0 && ' · '}
+                      <span className="whitespace-nowrap">{part}</span>
+                    </span>
+                  ))}
+                </p>
               )}
             </InspectorSection>
 

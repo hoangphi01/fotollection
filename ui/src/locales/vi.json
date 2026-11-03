@@ -42,7 +42,8 @@
     "inBasket": "Trong giỏ in",
     "placeBorrowed": "Vị trí mượn từ ảnh điện thoại",
     "fromXmp_one": "Lấy sao hoặc cờ loại từ {{count}} tệp XMP (Lightroom, Bridge…)",
-    "fromXmp_other": "Lấy sao hoặc cờ loại từ {{count}} tệp XMP (Lightroom, Bridge…)"
+    "fromXmp_other": "Lấy sao hoặc cờ loại từ {{count}} tệp XMP (Lightroom, Bridge…)",
+    "unusual": "File lạ: xem phần thông tin ảnh để biết chi tiết"
   },
   "task": {
     "import": "Đang đọc ảnh",
@@ -55,7 +56,8 @@
       "all": "Tất cả",
       "picks": "Đã chọn",
       "unflagged": "Chưa gắn cờ",
-      "rejects": "Đã loại"
+      "rejects": "Đã loại",
+      "unusual": "File lạ"
     },
     "filterByFlag": "Lọc theo cờ",
     "minRating": "Số sao tối thiểu",
@@ -120,7 +122,10 @@
     "borderHint": "Viền trắng hoặc đen 3 mm nằm trong khổ in, lấn vào ảnh: bản in vẫn đúng khổ của máy in tại tiệm. Khi có khung thông tin, viền theo màu khung, và Giữ trọn ảnh sẽ thu ảnh vào trong khổ thay vì làm bản in to ra.",
     "borderHintPaper": "Viền 3 mm quanh từng ảnh, lấn vào ảnh. Trắng hay đen cũng là màu giấy quanh các ảnh.",
     "borderColor": "Màu viền",
-    "borderColors": { "white": "Trắng", "black": "Đen" },
+    "borderColors": {
+      "white": "Trắng",
+      "black": "Đen"
+    },
     "dateStamp": "Dấu ngày",
     "dateStampFont": "Phông chữ dấu ngày",
     "stampPosition": "Vị trí dấu ngày",
@@ -698,5 +703,33 @@
     "fill": "Lấp đầy mỗi nửa",
     "fillHint": "Không lề trắng: hai ảnh giáp cạnh nhau, mỗi ảnh phủ kín nửa tấm. Cắt từng ảnh để chọn phần được giữ.",
     "marginHint": "Mỗi ảnh có lề trắng quanh nó; chọn tỷ lệ và cỡ ảnh bên dưới."
+  },
+  "facts": {
+    "grey": "Ảnh xám",
+    "otherSampling": "Lấy mẫu màu lạ",
+    "coding": {
+      "baseline": "Baseline",
+      "extended": "Extended",
+      "progressive": "Progressive",
+      "lossless": "Không nén mất dữ liệu",
+      "arithmetic": "Mã hoá số học",
+      "hierarchical": "Phân cấp"
+    },
+    "sensor": {
+      "bayer": "Bayer",
+      "xTrans": "X-Trans",
+      "otherFilter": "Bộ lọc màu khác",
+      "linear": "Linear (đã demosaic)",
+      "monochrome": "Đơn sắc"
+    },
+    "bits_one": "{{count}}-bit",
+    "bits_other": "{{count}}-bit",
+    "untagged": "Không có hồ sơ màu (đọc như sRGB)",
+    "otherProfile": "Hồ sơ màu khác",
+    "lossy": "DNG nén mất dữ liệu",
+    "float": "HDR (số thực)",
+    "gainMap": "Chưa áp bản đồ sửa tối góc",
+    "originalRaw": "Có kèm RAW gốc",
+    "readBy": "đọc bằng {{name}}"
   }
 }

@@ -8,6 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: the preview says what each file is: chroma subsampling, colour profile, sensor, the decoder that reads it; unusual files are marked in the gallery and have their own filter
+
+### Added
+
+- **Image facts** in the preview's Image card: a JPEG's chroma subsampling (4:2:0…), coding, bit depth and colour profile (sRGB, Display P3, Adobe RGB…), a RAW's sensor (Bayer RGGB, X-Trans) and bit depth, the kind of DNG, and the decoder that reads the file. Read with the EXIF at import, which now opens each file once instead of twice.
+- **Unusual files**, a new choice in the flag filter, and an ⓘ in the gallery: CMYK or 16-bit JPEGs, Adobe RGB photos, X-Trans RAWs and DNG kinds the app does not develop itself yet.
+
 ## [0.9.2] - 2026-11-03
 
 ### Highlights

@@ -45,7 +45,8 @@
     "inBasket": "In the print basket",
     "placeBorrowed": "Place borrowed from a phone photo",
     "fromXmp_one": "Stars or reject from {{count}} XMP sidecar (Lightroom, Bridge…)",
-    "fromXmp_other": "Stars or rejects from {{count}} XMP sidecars (Lightroom, Bridge…)"
+    "fromXmp_other": "Stars or rejects from {{count}} XMP sidecars (Lightroom, Bridge…)",
+    "unusual": "Unusual file: see the inspector for what it is"
   },
   "task": {
     "import": "Reading photos",
@@ -58,7 +59,8 @@
       "all": "All",
       "picks": "Picks",
       "unflagged": "Unflagged",
-      "rejects": "Rejects"
+      "rejects": "Rejects",
+      "unusual": "Unusual files"
     },
     "filterByFlag": "Filter by flag",
     "minRating": "Minimum rating",
@@ -128,7 +130,10 @@
     "borderHint": "A white or black border 3 mm wide inside the print size, cut into the photo: the print stays the exact kiosk size. With the info frame, the border takes the frame’s colour, and Fit whole photo fits inside the size instead of growing.",
     "borderHintPaper": "A 3 mm border round each photo, cut into it. White or black is also the colour of the paper round the photos.",
     "borderColor": "Border colour",
-    "borderColors": { "white": "White", "black": "Black" },
+    "borderColors": {
+      "white": "White",
+      "black": "Black"
+    },
     "dateStamp": "Date stamp",
     "dateStampFont": "Date stamp font",
     "stampPosition": "Stamp position",
@@ -726,5 +731,33 @@
     "fill": "Fill each half",
     "fillHint": "No white: the two photos meet edge to edge, each filling its half. Crop each one to choose what it keeps.",
     "marginHint": "A white margin stays round each photo; choose its ratio and size below."
+  },
+  "facts": {
+    "grey": "Greyscale",
+    "otherSampling": "Unusual sampling",
+    "coding": {
+      "baseline": "Baseline",
+      "extended": "Extended",
+      "progressive": "Progressive",
+      "lossless": "Lossless",
+      "arithmetic": "Arithmetic coding",
+      "hierarchical": "Hierarchical"
+    },
+    "sensor": {
+      "bayer": "Bayer",
+      "xTrans": "X-Trans",
+      "otherFilter": "Other colour filter",
+      "linear": "Linear (demosaiced)",
+      "monochrome": "Monochrome"
+    },
+    "bits_one": "{{count}}-bit",
+    "bits_other": "{{count}}-bit",
+    "untagged": "No colour profile (read as sRGB)",
+    "otherProfile": "Other colour profile",
+    "lossy": "Lossy DNG",
+    "float": "HDR (floating point)",
+    "gainMap": "Lens shading map not applied yet",
+    "originalRaw": "Original RAW inside",
+    "readBy": "read by {{name}}"
   }
 }

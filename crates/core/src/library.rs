@@ -57,6 +57,8 @@ pub enum FlagFilter {
     Picks,
     Unflagged,
     Rejects,
+    /// Files outside the common path (FR-071), whatever their flag.
+    Unusual,
 }
 
 /// The library filter (FR-022). The grid shows, and export writes, exactly the photos it keeps.
@@ -86,12 +88,15 @@ pub struct FolderSummary {
 }
 
 impl CullFilter {
-    pub fn matches(&self, edits: &PhotoEdits) -> bool {
+    /// Whether a photo with these edits is kept; `unusual` is its file's
+    /// [`ImageFacts::unusual`](crate::facts::ImageFacts::unusual).
+    pub fn matches(&self, edits: &PhotoEdits, unusual: bool) -> bool {
         let flag_ok = match self.flag {
             FlagFilter::All => true,
             FlagFilter::Picks => edits.flag == Some(Flag::Pick),
             FlagFilter::Unflagged => edits.flag.is_none(),
             FlagFilter::Rejects => edits.flag == Some(Flag::Reject),
+            FlagFilter::Unusual => unusual,
         };
         let queue_ok = match self.queue {
             QueueView::Gallery => edits.queue != Some(Queue::Aside),
@@ -896,7 +901,10 @@ impl Library {
                 || self
                     .folder_of(id)
                     .is_some_and(|f| filter.folders.contains(&f)))
-                && filter.matches(&self.edits(id))
+                && filter.matches(
+                    &self.edits(id),
+                    self.index(id).is_some_and(|i| self.facts[i].unusual()),
+                )
         });
         ids
     }
@@ -1053,6 +1061,36 @@ mod tests {
             orientation: 1,
             ..PhotoMeta::default()
         }
+    }
+
+    /// FR-071: the Unusual filter keeps the files outside the common path, and the summary
+    /// badges them; a record carries its facts until the inspector replaces them.
+    #[test]
+    fn fr_071_the_unusual_filter_keeps_unusual_files() {
+        use crate::facts::{Chroma, ImageFacts};
+        let mut lib = Library::new();
+        let f = lib.add_folder(Path::new("/trip"));
+        let plain = lib.push(f, &file("/trip/a.jpg", 0), &meta_at(1));
+        let cmyk = PhotoMeta {
+            facts: ImageFacts {
+                chroma: Some(Chroma::Cmyk),
+                ..ImageFacts::default()
+            },
+            ..meta_at(2)
+        };
+        let odd = lib.push(f, &file("/trip/b.jpg", 0), &cmyk);
+        let (Some(plain), Some(odd)) = (plain, odd) else {
+            panic!("both photos imported");
+        };
+        let unusual = CullFilter {
+            flag: FlagFilter::Unusual,
+            ..CullFilter::default()
+        };
+        assert_eq!(lib.filtered_ids(&unusual), [odd]);
+        assert!(lib.summary(odd).is_some_and(|s| s.unusual));
+        assert!(lib.summary(plain).is_some_and(|s| !s.unusual));
+        lib.set_facts(odd, ImageFacts::default());
+        assert_eq!(lib.filtered_ids(&unusual), []);
     }
 
     #[test]
@@ -1284,17 +1322,17 @@ mod tests {
         assert!(
             [&pick3, &reject, &plain]
                 .into_iter()
-                .all(|e| CullFilter::default().matches(e))
+                .all(|e| CullFilter::default().matches(e, false))
         );
-        assert!(only(FlagFilter::Picks, 0).matches(&pick3));
-        assert!(!only(FlagFilter::Picks, 0).matches(&plain));
-        assert!(only(FlagFilter::Rejects, 0).matches(&reject));
-        assert!(only(FlagFilter::Unflagged, 0).matches(&plain));
-        assert!(!only(FlagFilter::Unflagged, 0).matches(&pick3));
-        assert!(only(FlagFilter::All, 3).matches(&pick3));
-        assert!(!only(FlagFilter::All, 2).matches(&plain));
+        assert!(only(FlagFilter::Picks, 0).matches(&pick3, false));
+        assert!(!only(FlagFilter::Picks, 0).matches(&plain, false));
+        assert!(only(FlagFilter::Rejects, 0).matches(&reject, false));
+        assert!(only(FlagFilter::Unflagged, 0).matches(&plain, false));
+        assert!(!only(FlagFilter::Unflagged, 0).matches(&pick3, false));
+        assert!(only(FlagFilter::All, 3).matches(&pick3, false));
+        assert!(!only(FlagFilter::All, 2).matches(&plain, false));
         // Out-of-range minimums clamp to 5 stars instead of hiding everything.
-        assert!(only(FlagFilter::All, 9).matches(&edits(5, None)));
+        assert!(only(FlagFilter::All, 9).matches(&edits(5, None), false));
     }
 
     #[test]

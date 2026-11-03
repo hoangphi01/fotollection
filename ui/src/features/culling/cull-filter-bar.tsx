@@ -11,7 +11,7 @@ import {
 import type { CullFilter, FlagFilter } from '@/ipc/bindings'
 import { cn } from '@/lib/utils'
 
-const FLAGS: FlagFilter[] = ['all', 'picks', 'unflagged', 'rejects']
+const FLAGS: FlagFilter[] = ['all', 'picks', 'unflagged', 'rejects', 'unusual']
 
 type CullFilterBarProps = {
   filter: CullFilter

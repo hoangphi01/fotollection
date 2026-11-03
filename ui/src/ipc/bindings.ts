@@ -871,7 +871,9 @@ export type ExposureSetting = "iso" | "shutter";
 export type Flag = "pick" | "reject";
 
 /**  Which flags a culling filter keeps (FR-022). */
-export type FlagFilter = "all" | "picks" | "unflagged" | "rejects";
+export type FlagFilter = "all" | "picks" | "unflagged" | "rejects" | 
+/**  Files outside the common path (FR-071), whatever their flag. */
+"unusual";
 
 /**  One source folder in the library list (FR-056). */
 export type FolderSummary = {
