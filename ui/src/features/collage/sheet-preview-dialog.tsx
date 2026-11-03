@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ChevronLeft, ChevronRight, Crop, Download, Images, LoaderCircle, Mail, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Crop, Download, Images, LoaderCircle, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -23,7 +23,7 @@ import { MOD } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 import { CollageCellsCard } from './collage-cells-card'
 import { PostcardCard } from './postcard-card'
-import { PostcardTextField } from './postcard-text-field'
+import { PostcardTextCard } from './postcard-text-card'
 import { sheetCells } from './sheet-cells'
 import { SheetCellsOverlay } from './sheet-cells-overlay'
 import { SheetSizeCard } from './sheet-size-card'
@@ -291,11 +291,7 @@ export function SheetPreviewDialog({
           own photos follow, as a photo's facts follow in its preview. */}
       <SheetSizeCard settings={settings} onChange={onSettingsChange} />
       <PostcardCard settings={settings} onChange={onSettingsChange} />
-      {postcard && sheet && (
-        <InspectorSection icon={<Mail className="size-4" />} title={t('postcard.text')}>
-          <PostcardTextField photo={sheet.first} revision={revision} />
-        </InspectorSection>
-      )}
+      <PostcardTextCard settings={settings} onChange={onSettingsChange} photo={sheet?.first} revision={revision} />
       <CollageCellsCard settings={settings} onChange={onSettingsChange} cell={cell} />
       <DateStampCard
         settings={settings}

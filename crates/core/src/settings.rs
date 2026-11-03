@@ -202,6 +202,19 @@ pub struct PostcardSettings {
     /// The typed text's ink.
     #[serde(default)]
     pub ink: PostcardInk,
+    /// The typed text's size, the date stamp's three steps (`POSTCARD_TEXT_MM`).
+    #[serde(default)]
+    pub text_size: StampSize,
+}
+
+/// The typed text's em in millimetres for each size, about 10, 12 and 15 pt: what a
+/// typewriter or a hand writes on a card. A size the lines cannot hold is made smaller.
+pub fn postcard_text_mm(size: StampSize) -> f32 {
+    match size {
+        StampSize::Small => 3.4,
+        StampSize::Medium => 4.2,
+        StampSize::Large => 5.2,
+    }
 }
 
 /// How many writing lines a postcard may have.
@@ -220,6 +233,7 @@ impl Default for PostcardSettings {
             font: None,
             credit: String::new(),
             ink: PostcardInk::Auto,
+            text_size: StampSize::Medium,
         }
     }
 }

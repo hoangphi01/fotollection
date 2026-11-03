@@ -774,7 +774,7 @@
     "font": "Typed text",
     "typewriter": "Typewriter (Xanh Mono)",
     "pens": "Writing by hand on photo paper: use a fine permanent marker (Sharpie Ultra Fine, edding 400, Stabilo OHPen S). Try it in the stamp box first and let it dry for a minute; ballpoint and gel pens smear or skip on the coating. Or type the text in the postcard's preview.",
-    "text": "Postcard text",
+    "text": "Text on the postcard",
     "textPlaceholder": "A message, an address… or nothing, to write by hand",
     "textHint": "Set on the lines in the font above; what does not fit the lines is left out of the print.",
     "chars": "{{count}} / {{max}}",
@@ -788,6 +788,9 @@
       "blue": "Blue",
       "sepia": "Sepia",
       "red": "Red"
-    }
+    },
+    "size": "Size",
+    "pickToType": "Choose a postcard to type its text.",
+    "body": "This card's text"
   }
 }

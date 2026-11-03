@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import type { PostcardSettings } from '@/ipc/bindings'
+import type { PostcardSettings, RenderSettings } from '@/ipc/bindings'
 
 /** As `PostcardSettings::default()` in Rust, for a settings file from before FR-073. */
 export const POSTCARD_DEFAULTS: PostcardSettings = {
@@ -9,4 +9,16 @@ export const POSTCARD_DEFAULTS: PostcardSettings = {
   font: null,
   credit: '',
   ink: 'auto',
+  textSize: 'medium',
+}
+
+/** Patches a postcard setting, from a file written before FR-073 too. */
+export function patchPostcard(
+  onChange: (change: (current: RenderSettings) => RenderSettings) => void,
+  patch: Partial<PostcardSettings>,
+) {
+  onChange((s) => ({
+    ...s,
+    collage: { ...s.collage, postcard: { ...POSTCARD_DEFAULTS, ...s.collage?.postcard, ...patch } },
+  }))
 }

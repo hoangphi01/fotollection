@@ -760,6 +760,9 @@
       "blue": "Xanh",
       "sepia": "Nâu",
       "red": "Đỏ"
-    }
+    },
+    "size": "Cỡ chữ",
+    "pickToType": "Chọn một bưu thiếp để gõ chữ cho nó.",
+    "body": "Chữ của tấm này"
   }
 }

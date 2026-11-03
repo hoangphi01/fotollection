@@ -29,7 +29,7 @@ export function PostcardTextField({ photo, revision }: { photo: PhotoId; revisio
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between gap-2">
-        <Label className="text-xs font-normal text-muted-foreground">{t('postcard.text')}</Label>
+        <Label className="text-xs font-normal text-muted-foreground">{t('postcard.body')}</Label>
         <span className="text-xs text-muted-foreground tabular-nums">
           {t('postcard.chars', { count: text.length, max: MAX_CHARS })}
         </span>

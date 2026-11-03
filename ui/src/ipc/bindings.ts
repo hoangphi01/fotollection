@@ -1257,6 +1257,8 @@ export type PostcardSettings = {
 	credit?: string,
 	/**  The typed text's ink. */
 	ink?: PostcardInk,
+	/**  The typed text's size, the date stamp's three steps (`POSTCARD_TEXT_MM`). */
+	textSize?: StampSize,
 };
 
 /**  How large one photo prints well, and the verdict for each size. */

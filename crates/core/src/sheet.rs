@@ -559,6 +559,7 @@ pub fn render_sheet(
                 font: card_font,
                 paper: settings.border_color,
                 ink: settings.collage.postcard.ink,
+                text_size: settings.collage.postcard.text_size,
             },
         );
     }

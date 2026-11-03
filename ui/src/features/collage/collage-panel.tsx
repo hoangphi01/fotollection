@@ -8,6 +8,7 @@ import type { ExportApi } from '@/features/export/use-export'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
 import { CollageCellsCard } from './collage-cells-card'
 import { PostcardCard } from './postcard-card'
+import { PostcardTextCard } from './postcard-text-card'
 import { SheetSizeCard } from './sheet-size-card'
 
 type CollagePanelProps = {
@@ -58,6 +59,7 @@ export function CollagePanel({
     >
       <SheetSizeCard settings={settings} onChange={onChange} />
       <PostcardCard settings={settings} onChange={onChange} />
+      <PostcardTextCard settings={settings} onChange={onChange} photo={cell?.id} revision={revision} />
       <CollageCellsCard settings={settings} onChange={onChange} cell={cell} />
       <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} />
     </SidePanel>

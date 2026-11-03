@@ -29,10 +29,9 @@ const LINE_MM: f32 = 0.25;
 /// The word in the stamp box, its height in millimetres.
 const STAMP_WORD: &str = "STAMP";
 const STAMP_WORD_MM: f32 = 3.2;
-/// Typed text: its em as a share of the line spacing, at most `MAX_TEXT_MM` (about 12 pt,
-/// typewriter size, however far apart the lines are), and the gap above each line.
-const TEXT_EM: f32 = 0.5;
-const MAX_TEXT_MM: f32 = 4.2;
+/// Typed text: at most this share of the line spacing, whatever size is chosen, so a row
+/// never reaches the line above; and the gap above each line.
+const TEXT_EM: f32 = 0.75;
 const BASELINE_GAP: f32 = 0.18;
 /// Room left and right of the typed text inside the box.
 const TEXT_PAD_MM: f32 = 2.0;
@@ -92,6 +91,8 @@ pub struct CardSpec<'a> {
     pub paper: BorderColor,
     /// The typed text's ink.
     pub ink: PostcardInk,
+    /// The typed text's size.
+    pub text_size: crate::settings::StampSize,
 }
 
 /// Grey for the stamp box and the credit, and for the writing lines, on this paper.
@@ -187,7 +188,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
         return;
     };
     let step = layout.text.height / f32::from(spec.lines.max(1));
-    let text_px = (step * TEXT_EM).min(MAX_TEXT_MM) * density;
+    let text_px = (step * TEXT_EM).min(crate::settings::postcard_text_mm(spec.text_size)) * density;
     let room = (layout.text.width - 2.0 * TEXT_PAD_MM) * density;
     for (row, y) in wrap(faces, text_px, text, room).iter().zip(&layout.lines) {
         let baseline = (y - step * BASELINE_GAP / 2.0) * density;
@@ -403,6 +404,7 @@ mod tests {
                     font: None,
                     paper: BorderColor::White,
                     ink: PostcardInk::Auto,
+                    text_size: crate::settings::StampSize::Medium,
                 },
             );
             let box_bottom = layout(152.0, card, 4).text;
@@ -434,6 +436,7 @@ mod tests {
                 font: None,
                 paper: BorderColor::White,
                 ink: PostcardInk::Blue,
+                text_size: crate::settings::StampSize::Medium,
             },
         );
         let blue = canvas

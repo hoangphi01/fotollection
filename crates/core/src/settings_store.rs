@@ -427,6 +427,7 @@ mod tests {
             font: Some(7),
             credit: "Photo © Anna Schmidt".into(),
             ink: crate::settings::PostcardInk::Blue,
+            text_size: crate::settings::StampSize::Large,
         };
         save(&path, &s)?;
         let Loaded::Ok(back) = load(&path) else {
