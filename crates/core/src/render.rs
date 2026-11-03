@@ -78,6 +78,9 @@ fn crop_and_resize(source: &RgbImage, plan: &RenderPlan) -> Result<RgbImage, Ren
     }
     let src = ImageRef::new(source.width, source.height, &source.data, PixelType::U8x3)
         .map_err(|e| RenderError::Resize(e.to_string()))?;
+    if plan.linear_light {
+        return resize_linear(&src, plan);
+    }
     let mut dst = Image::new(plan.out_width, plan.out_height, PixelType::U8x3);
     let options = ResizeOptions::new()
         .resize_alg(ResizeAlg::Convolution(FilterType::Lanczos3))
@@ -91,6 +94,36 @@ fn crop_and_resize(source: &RgbImage, plan: &RenderPlan) -> Result<RgbImage, Ren
         .resize(&src, &mut dst, &options)
         .map_err(|e| RenderError::Resize(e.to_string()))?;
     RgbImage::from_raw(plan.out_width, plan.out_height, dst.into_vec()).ok_or(RenderError::BadCrop)
+}
+
+/// [`crop_and_resize`] in linear light (FR-072): sRGB → 16-bit linear, Lanczos3, back to
+/// sRGB, with the crate's own tables. Fine black-and-white detail shrinks to the grey it
+/// looks like from afar (188), not to the darker mean of its sRGB values (128). It costs
+/// about 50 ms more on a 16 MP photo, so share exports use it and the screen does not.
+fn resize_linear(src: &ImageRef<'_>, plan: &RenderPlan) -> Result<RgbImage, RenderError> {
+    use fast_image_resize::create_srgb_mapper;
+    use std::sync::OnceLock;
+    static MAPPER: OnceLock<fast_image_resize::PixelComponentMapper> = OnceLock::new();
+    let mapper = MAPPER.get_or_init(create_srgb_mapper);
+    let err = |e: &dyn std::fmt::Display| RenderError::Resize(e.to_string());
+    let c = plan.crop;
+    let mut linear = Image::new(src.width(), src.height(), PixelType::U16x3);
+    mapper.forward_map(src, &mut linear).map_err(|e| err(&e))?;
+    let mut small = Image::new(plan.out_width, plan.out_height, PixelType::U16x3);
+    let options = ResizeOptions::new()
+        .resize_alg(ResizeAlg::Convolution(FilterType::Lanczos3))
+        .crop(
+            f64::from(c.x),
+            f64::from(c.y),
+            f64::from(c.width),
+            f64::from(c.height),
+        );
+    Resizer::new()
+        .resize(&linear, &mut small, &options)
+        .map_err(|e| err(&e))?;
+    let mut out = Image::new(plan.out_width, plan.out_height, PixelType::U8x3);
+    mapper.backward_map(&small, &mut out).map_err(|e| err(&e))?;
+    RgbImage::from_raw(plan.out_width, plan.out_height, out.into_vec()).ok_or(RenderError::BadCrop)
 }
 
 /// Downsizes so the long edge is at most `long_edge` (no-op if already smaller).
@@ -115,6 +148,7 @@ pub fn fit_long_edge(source: &RgbImage, long_edge: u32) -> Result<RgbImage, Rend
         frame: None,
         mat: None,
         straighten: 0.0,
+        linear_light: false,
     };
     crop_and_resize(source, &plan)
 }
@@ -341,6 +375,50 @@ mod tests {
     use crate::print_size::PrintSize;
     use crate::settings::Corner;
     use crate::settings::RenderSettings;
+
+    /// FR-072: a one-pixel black-and-white checkerboard halved in linear light is the grey it
+    /// looks like (about 188); the screen's faster resize gives the mean of its values (128).
+    #[test]
+    fn fr_072_linear_light_halves_a_checkerboard_to_188() {
+        let (w, h) = (64u32, 64u32);
+        let data: Vec<u8> = (0..w * h)
+            .flat_map(|i| {
+                let v = if (i % w + i / w) % 2 == 0 { 255 } else { 0 };
+                [v, v, v]
+            })
+            .collect();
+        let source = RgbImage::from_raw(w, h, data).unwrap_or_else(|| RgbImage::new(w, h));
+        let mean = |linear_light: bool| {
+            let plan = RenderPlan {
+                print: crate::print_size::PrintSize::ALL[1],
+                crop: crate::plan::CropRect {
+                    x: 0,
+                    y: 0,
+                    width: w,
+                    height: h,
+                },
+                out_width: w / 2,
+                out_height: h / 2,
+                stamp: None,
+                frame: None,
+                mat: None,
+                straighten: 0.0,
+                linear_light,
+            };
+            let out = crop_and_resize(&source, &plan).unwrap_or_else(|_| RgbImage::new(1, 1));
+            // The middle, away from the edges' ringing.
+            let row = out.width as usize * 3;
+            let px = |x: usize, y: usize| f64::from(out.data[y * row + x * 3]);
+            (8..24)
+                .flat_map(|y| (8..24).map(move |x| (x, y)))
+                .map(|(x, y)| px(x, y))
+                .sum::<f64>()
+                / 256.0
+        };
+        let (linear, gamma) = (mean(true), mean(false));
+        assert!((linear - 188.0).abs() < 3.0, "linear {linear}");
+        assert!((gamma - 128.0).abs() < 3.0, "gamma {gamma}");
+    }
 
     fn square_15() -> PrintSize {
         PrintSize::by_id("15x15").unwrap_or(PrintSize::ALL[1])

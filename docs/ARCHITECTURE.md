@@ -96,7 +96,7 @@ crates/
       atomic.rs          † # tmp + fsync + .bak + rename
       presets.rs           # preset library: partial/stackable, linked, .fotopreset I/O (FR-033/034/038)
       looks.rs             # colour looks: `.cube` LUTs, then Photo Style sliders, on one 33³ engine (FR-070, FR-039, ADR-0036)
-      render.rs          † # crop/resize, border and the drawing of stamp and frame; the stamp, colour and sharpening live in stamp.rs, colour.rs and sharpen.rs. 4-up sheets and the contact sheet (FR-035, FR-037) will extend sheet.rs
+      render.rs          † # crop/resize (in linear light for share exports, `RenderPlan::linear_light`), border and the drawing of stamp and frame; the stamp, colour and sharpening live in stamp.rs, colour.rs and sharpen.rs. 4-up sheets and the contact sheet (FR-035, FR-037) will extend sheet.rs
       export.rs          † # bounded parallel export, cancel, per-photo errors, no overwrite (FR-008/009/011)
       thumbs.rs          † # T0 (embedded) + T1 disk cache (DATABASE.md §8)
     examples/          † # measure_* benchmarks named in OPTIMIZATION.md §3/§5, quality_export (print quality audit), eval_bestshot, raw_* and render_one helpers

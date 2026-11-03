@@ -89,6 +89,9 @@ pub struct RenderPlan {
     /// Degrees the photo is straightened by (FR-006); `crop` is then in the straightened
     /// frame.
     pub straighten: f32,
+    /// Resample in linear light: share exports only (FR-072); the screen keeps the faster
+    /// resize (OPTIMIZATION §5).
+    pub linear_light: bool,
 }
 
 impl RenderPlan {
@@ -385,6 +388,7 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
         frame: None,
         mat,
         straighten: crate::straighten::sanitize(input.straighten),
+        linear_light: false,
     }
 }
 
@@ -492,6 +496,7 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
         }),
         mat: None,
         straighten: crate::straighten::sanitize(input.straighten),
+        linear_light: false,
     }
 }
 

@@ -18,6 +18,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Display P3 and Adobe RGB photos** (iPhone photos, cameras set to Adobe RGB) no longer look washed out in the app: thumbnails, previews, zoom and the crop view now convert them to the screen's sRGB, as share exports always did. Thumbnails made before are made again.
 - **PNG:** 16-bit images no longer show bands in smooth gradients (they are dithered to 8 bits), a PNG that declares its gamma or primaries (`gAMA`, `cHRM`) shows in its true colours, and semi-transparent pixels are mixed onto white as light mixes, no longer too dark.
 
+### Changed
+
+- **Share exports** are downsized in linear light, so fine detail keeps its brightness (a thin black-and-white pattern stays the grey it looks like, no longer darker). About a quarter slower: 18 instead of 23 photos a second for 16 MP photos on an Apple M3.
+
 ### Added
 
 - **Image facts** in the preview's Image card: a JPEG's chroma subsampling (4:2:0…), coding, bit depth and colour profile (sRGB, Display P3, Adobe RGB…), a RAW's sensor (Bayer RGGB, X-Trans) and bit depth, an HEIC's colour space and depth, the kind of DNG, and the decoder that reads the file. Read with the EXIF at import, which now opens each file once instead of twice.

@@ -286,6 +286,10 @@ fn encode_photo(
         straighten: record.edits.straighten,
         ratio: None,
     });
+    let p = crate::plan::RenderPlan {
+        linear_light: share.is_some(),
+        ..p
+    };
     let mut image = render(&upright, &p)?;
     drop(upright);
     let jpeg = if let Some(preset) = share {
