@@ -175,6 +175,73 @@ pub fn to_srgb(image: &mut RgbImage, icc: Option<&[u8]>) -> Conversion {
     Conversion::Converted
 }
 
+/// The encoding gamma of sRGB as a PNG `gAMA` chunk states it (1/2.2).
+const SRGB_PNG_GAMMA: f32 = 0.454_55;
+
+/// Converts a PNG's pixels to sRGB from its `gAMA` (the encoding gamma, 0.45455 for about
+/// sRGB) and `cHRM` (white and primaries, xy; sRGB's when absent): a file that states the
+/// sRGB values, or nothing, is left as it is (FR-072).
+pub fn declared_to_srgb(
+    image: &mut RgbImage,
+    gamma: Option<f32>,
+    chromaticities: Option<png::SourceChromaticities>,
+) {
+    use qcms::{CIE_xyY, CIE_xyYTRIPLE};
+    let xy = |(x, y): (png::ScaledFloat, png::ScaledFloat)| CIE_xyY {
+        x: f64::from(x.into_value()),
+        y: f64::from(y.into_value()),
+        Y: 1.0,
+    };
+    let srgb_like = |c: &png::SourceChromaticities| {
+        let near = |(x, y): (png::ScaledFloat, png::ScaledFloat), (a, b): (f32, f32)| {
+            (x.into_value() - a).abs() < 0.005 && (y.into_value() - b).abs() < 0.005
+        };
+        near(c.white, (0.3127, 0.329))
+            && near(c.red, (0.64, 0.33))
+            && near(c.green, (0.30, 0.60))
+            && near(c.blue, (0.15, 0.06))
+    };
+    let gamma = gamma.filter(|g| *g > 0.01 && (g - SRGB_PNG_GAMMA).abs() > 0.005);
+    let chromaticities = chromaticities.filter(|c| !srgb_like(c));
+    if gamma.is_none() && chromaticities.is_none() {
+        return;
+    }
+    let c = chromaticities.unwrap_or_else(|| {
+        png::SourceChromaticities::new((0.3127, 0.329), (0.64, 0.33), (0.30, 0.60), (0.15, 0.06))
+    });
+    let decode = 1.0 / gamma.unwrap_or(SRGB_PNG_GAMMA);
+    let Some(source) = Profile::new_rgb_with_gamma_set(
+        xy(c.white),
+        CIE_xyYTRIPLE {
+            red: xy(c.red),
+            green: xy(c.green),
+            blue: xy(c.blue),
+        },
+        decode,
+        decode,
+        decode,
+    ) else {
+        return;
+    };
+    let Some(transform) = Transform::new(
+        &source,
+        &Profile::new_sRGB(),
+        DataType::RGB8,
+        Intent::Perceptual,
+    ) else {
+        return;
+    };
+    let row = image.width as usize * 3;
+    if row == 0 {
+        return;
+    }
+    let transform = &transform;
+    image
+        .data
+        .par_chunks_mut(row * ROWS_PER_TASK)
+        .for_each(|rows| transform.apply(rows));
+}
+
 /// A decoded photo as the screen shows it (FR-072): sRGB, whatever profile it came with. Every
 /// image the interface gets passes here (thumbnails, previews, zoom, the crop source, the
 /// best-shot analysis); a profile `qcms` cannot read leaves the pixels as they are.

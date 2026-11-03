@@ -13,6 +13,13 @@
 
 ## 2026-11-03
 
+### png 0.18 fills `source_gamma` only when encoding: a PNG's `gAMA` read as absent (FR-072)
+
+- **Seen:** the new test `fr_072_png_gamma_is_converted` wrote a PNG with `gAMA` 1.0 (linear light) and expected sRGB 188 for 128; it came back 128, unconverted. `colour::declared_to_srgb` alone gave 188.
+- **Why:** after `read_info`, png 0.18's `Info::source_gamma` and `source_chromaticities` stay `None`; the chunks as read are in `gama_chunk` and `chrm_chunk` (`source_*` is what the encoder writes, and the docs only say "prefer `source_gamma`").
+- **Fix:** `decode_png` reads `gama_chunk` and `chrm_chunk`; `srgb` still marks a file as sRGB.
+- **Rule:** for a decoder's metadata field, write a file with the encoder and read it back in a test before trusting the field's name.
+
 ### A lock held across rayon work hangs the pool: zooming into a RAW froze every preview (FR-057, FR-016)
 
 - **Seen:** the owner opened an ARW, zoomed (the sharp layer came slowly), pressed → for the next photo: its preview spun for five minutes, and so did every photo opened after closing the preview. `measure_zoom` on its own was fast (preview 0.9 s, first region 0.7 s), but on a two-thread pool with a region asked every 150 ms, as the preview window asks, three DNGs stopped after the first photo with the CPU idle: a deadlock, not slowness. The Mac's ARW path (ImageIO) uses no rayon and hid it; rawler (Windows) and our DNG decoder use rayon inside the develop.

@@ -209,18 +209,97 @@ fn check_size(width: u32, height: u32) -> Result<(), CodecError> {
     Ok(())
 }
 
-/// PNG → RGB8 (FR-001): 16-bit, grey and palette images are normalized to 8-bit colour,
-/// and alpha is flattened onto white, as a print would show it. The iCCP profile is kept.
+/// The 4 × 4 Bayer matrix, for ordered dithering: thresholds 0–15, spread so neighbours differ.
+const BAYER_4: [u8; 16] = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+
+/// A sample as 0–1: 8-bit as stored, 16-bit big-endian.
+fn sample(buf: &[u8], sixteen: bool, i: usize) -> f32 {
+    if sixteen {
+        f32::from(u16::from_be_bytes([buf[2 * i], buf[2 * i + 1]])) / 65535.0
+    } else {
+        f32::from(buf[i]) / 255.0
+    }
+}
+
+/// Steps of the linear → sRGB table: fine enough that the darkest step is under one 8-bit
+/// level.
+const ENCODE_STEPS: usize = 16_384;
+
+/// sRGB curve tables, built once: decode by 16-bit value, encode by linear step.
+struct Curves {
+    decode: Vec<f32>,
+    encode: Vec<f32>,
+}
+
+fn curves() -> &'static Curves {
+    static CURVES: std::sync::OnceLock<Curves> = std::sync::OnceLock::new();
+    CURVES.get_or_init(|| {
+        #[allow(clippy::cast_precision_loss)]
+        let decode = (0..=u16::MAX)
+            .map(|v| {
+                let v = f32::from(v) / 65535.0;
+                if v <= 0.040_45 {
+                    v / 12.92
+                } else {
+                    ((v + 0.055) / 1.055).powf(2.4)
+                }
+            })
+            .collect();
+        #[allow(clippy::cast_precision_loss)]
+        let encode = (0..=ENCODE_STEPS)
+            .map(|i| {
+                let v = i as f32 / ENCODE_STEPS as f32;
+                if v <= 0.003_130_8 {
+                    12.92 * v
+                } else {
+                    1.055 * v.powf(1.0 / 2.4) - 0.055
+                }
+            })
+            .collect();
+        Curves { decode, encode }
+    })
+}
+
+impl Curves {
+    fn decode(&self, v: f32) -> f32 {
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+        self.decode[(v * 65535.0).round() as usize & 0xFFFF]
+    }
+
+    fn encode(&self, linear: f32) -> f32 {
+        #[allow(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            clippy::cast_precision_loss
+        )]
+        let i = (linear.clamp(0.0, 1.0) * ENCODE_STEPS as f32).round() as usize;
+        self.encode[i.min(ENCODE_STEPS)]
+    }
+}
+
+/// PNG → RGB8 (FR-001, FR-072): palette and low-bit images are expanded; 16-bit samples
+/// come down to 8 bits through a 4 × 4 ordered dither, so a smooth gradient keeps no bands;
+/// alpha is flattened onto white in linear light, as a print would show it. The iCCP
+/// profile is kept; without one, `gAMA` and `cHRM` (unless `sRGB` says it is sRGB) are
+/// turned into sRGB here, as no profile can carry them on.
 fn decode_png(bytes: &[u8]) -> Result<Decoded, CodecError> {
     let mut decoder = png::Decoder::new(Cursor::new(bytes));
-    decoder.set_transformations(png::Transformations::normalize_to_color8());
+    decoder.set_transformations(png::Transformations::EXPAND);
     let mut reader = decoder
         .read_info()
         .map_err(|e| CodecError::Decode(e.to_string()))?;
     let (width, height) = (reader.info().width, reader.info().height);
     // Checked before the pixel buffer is allocated (decompression-bomb guard).
     check_size(width, height)?;
-    let icc = reader.info().icc_profile.as_ref().map(|p| p.to_vec());
+    let info = reader.info();
+    let icc = info.icc_profile.as_ref().map(|p| p.to_vec());
+    let declared = (info.srgb.is_none() && icc.is_none()).then(|| {
+        (
+            // The chunks as read: `source_gamma` is only filled when encoding.
+            info.gama_chunk.map(png::ScaledFloat::into_value),
+            info.chrm_chunk,
+        )
+    });
     let size = reader
         .output_buffer_size()
         .ok_or_else(|| CodecError::Decode("unknown buffer size".into()))?;
@@ -229,36 +308,83 @@ fn decode_png(bytes: &[u8]) -> Result<Decoded, CodecError> {
         .next_frame(&mut buf)
         .map_err(|e| CodecError::Decode(e.to_string()))?;
     buf.truncate(frame.buffer_size());
-
-    let over_white = |c: u8, a: u8| {
-        let (c, a) = (u16::from(c), u16::from(a));
-        // Rounded c·a/255 + 255·(1 − a/255); always ≤ 255.
-        u8::try_from((c * a + 255 * (255 - a) + 127) / 255).unwrap_or(u8::MAX)
-    };
-    let data: Vec<u8> = match frame.color_type {
-        png::ColorType::Rgb => buf,
-        png::ColorType::Rgba => buf
-            .as_chunks::<4>()
-            .0
-            .iter()
-            .flat_map(|&[r, g, b, a]| [over_white(r, a), over_white(g, a), over_white(b, a)])
-            .collect(),
-        png::ColorType::Grayscale => buf.iter().flat_map(|&v| [v, v, v]).collect(),
-        png::ColorType::GrayscaleAlpha => buf
-            .as_chunks::<2>()
-            .0
-            .iter()
-            .flat_map(|&[v, a]| {
-                let v = over_white(v, a);
-                [v, v, v]
-            })
-            .collect(),
+    let sixteen = frame.bit_depth == png::BitDepth::Sixteen;
+    let channels = match frame.color_type {
+        png::ColorType::Grayscale => 1,
+        png::ColorType::GrayscaleAlpha => 2,
+        png::ColorType::Rgb => 3,
+        png::ColorType::Rgba => 4,
         png::ColorType::Indexed => return Err(CodecError::Decode("unexpanded palette".into())),
     };
-    let Some(image) = RgbImage::from_raw(width, height, data) else {
+    let (w, h) = (width as usize, height as usize);
+    if w == 0 || buf.len() < w * h * channels * if sixteen { 2 } else { 1 } {
+        return Err(CodecError::Decode("unexpected pixel layout".into()));
+    }
+    let alpha = channels % 2 == 0;
+    let curves = curves();
+    // 8-bit without alpha needs nothing done: the common screenshot, as fast as before.
+    let data = match (sixteen, channels) {
+        (false, 3) => buf,
+        (false, 1) => buf.iter().flat_map(|&v| [v, v, v]).collect(),
+        _ => flatten(&buf, w, h, channels, sixteen, alpha, curves),
+    };
+    let Some(mut image) = RgbImage::from_raw(width, height, data) else {
         return Err(CodecError::Decode("unexpected pixel layout".into()));
     };
+    if let Some((gamma, chromaticities)) = declared {
+        crate::colour::declared_to_srgb(&mut image, gamma, chromaticities);
+    }
     Ok(Decoded { image, icc })
+}
+
+/// 16-bit or alpha PNG samples to RGB8: dithered, flattened onto white in linear light.
+fn flatten(
+    buf: &[u8],
+    w: usize,
+    h: usize,
+    channels: usize,
+    sixteen: bool,
+    alpha: bool,
+    curves: &Curves,
+) -> Vec<u8> {
+    use rayon::prelude::*;
+    let mut data = vec![0u8; w * h * 3];
+    data.par_chunks_mut(w * 3).enumerate().for_each(|(y, row)| {
+        for x in 0..w {
+            let p = (y * w + x) * channels;
+            let a = if alpha {
+                sample(buf, sixteen, p + channels - 1)
+            } else {
+                1.0
+            };
+            if !sixteen && a >= 1.0 {
+                for c in 0..3 {
+                    row[x * 3 + c] = buf[p + if channels < 3 { 0 } else { c }];
+                }
+                continue;
+            }
+            // A fraction of one 8-bit step: ordered for 16-bit samples, a plain rounding for
+            // 8-bit ones, which are exact already.
+            let dither = if sixteen {
+                (f32::from(BAYER_4[(y % 4) * 4 + x % 4]) + 0.5) / 16.0
+            } else {
+                0.5
+            };
+            for c in 0..3 {
+                let v = sample(buf, sixteen, p + if channels < 3 { 0 } else { c });
+                let v = if a < 1.0 {
+                    curves.encode(curves.decode(v) * a + (1.0 - a))
+                } else {
+                    v
+                };
+                #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+                {
+                    row[x * 3 + c] = (v * 255.0 + dither).floor().clamp(0.0, 255.0) as u8;
+                }
+            }
+        }
+    });
+    data
 }
 
 /// The codec used by the app today.
@@ -509,6 +635,49 @@ mod tests {
         decode_image(&PureRustCodec, bytes).map_or_else(|_| Vec::new(), |d| d.image.data)
     }
 
+    /// FR-072: a 16-bit value between two 8-bit levels dithers to both, its mean kept (a
+    /// smooth 16-bit gradient keeps no bands); truncation gave the lower level everywhere.
+    #[test]
+    fn fr_072_png_16_bit_dithers_to_8() {
+        // 100.25 in 8-bit units, as 16-bit grey, on a 4 × 4 block (one dither tile).
+        let v: u16 = 25_764; // 100.25 × 65535 / 255, rounded
+        let pixels: Vec<u8> = std::iter::repeat_n(v.to_be_bytes(), 16).flatten().collect();
+        let bytes = png_bytes(
+            (4, 4),
+            png::ColorType::Grayscale,
+            png::BitDepth::Sixteen,
+            &pixels,
+            None,
+        );
+        let out = decode_png_pixels(&bytes);
+        assert_eq!(out.len(), 48);
+        let mean = out.iter().map(|&b| f64::from(b)).sum::<f64>() / 48.0;
+        assert!((mean - 100.25).abs() < 0.07, "mean {mean}");
+        assert!(out.iter().all(|&b| b == 100 || b == 101));
+    }
+
+    /// FR-072: a PNG that declares linear light (`gAMA` 1.0) shows as sRGB: linear 0.5 is
+    /// sRGB 188; one that declares sRGB's own gamma is left as it is.
+    #[test]
+    fn fr_072_png_gamma_is_converted() {
+        let with_gamma = |gamma: f32| {
+            let mut info = png::Info::with_size(1, 1);
+            info.color_type = png::ColorType::Rgb;
+            info.bit_depth = png::BitDepth::Eight;
+            info.source_gamma = Some(png::ScaledFloat::new(gamma));
+            let mut out = Vec::new();
+            if let Ok(encoder) = png::Encoder::with_info(&mut out, info)
+                && let Ok(mut writer) = encoder.write_header()
+            {
+                let _ = writer.write_image_data(&[128, 128, 128]);
+            }
+            decode_png_pixels(&out)
+        };
+        let linear = with_gamma(1.0);
+        assert!(linear.iter().all(|&v| v.abs_diff(188) <= 2), "{linear:?}");
+        assert_eq!(with_gamma(0.454_55), [128, 128, 128]);
+    }
+
     #[test]
     fn fr_001_png_rgb_decodes() {
         let bytes = png_bytes(
@@ -525,7 +694,8 @@ mod tests {
 
     #[test]
     fn fr_001_png_alpha_flattens_on_white() {
-        // Opaque red, fully transparent, and half-transparent black.
+        // Opaque red, fully transparent, and half-transparent black. Mixed in linear light,
+        // half black on white is half the light: 187, not the 127 of mixing sRGB values.
         let bytes = png_bytes(
             (3, 1),
             png::ColorType::Rgba,
@@ -535,7 +705,7 @@ mod tests {
         );
         assert_eq!(
             decode_png_pixels(&bytes),
-            [255, 0, 0, 255, 255, 255, 127, 127, 127]
+            [255, 0, 0, 255, 255, 255, 187, 187, 187]
         );
     }
 
