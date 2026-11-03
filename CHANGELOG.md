@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-11-04
+
 ### Highlights
 
 - New: postcards in Collage mode: one photo and a postcard back (stamp box, writing lines) on each print, with your text typed in a typewriter face or room to write by hand
