@@ -211,6 +211,7 @@ mod tests {
     /// grey; sampling at twice the output size turned them into bands at 3× and 4× (a
     /// standard deviation of 44 and 91 levels).
     #[test]
+    #[allow(clippy::cast_precision_loss)] // a few thousand samples
     fn fr_072_straightened_reductions_do_not_alias() {
         let (w, h) = (1200u32, 1200u32);
         let data: Vec<u8> = (0..w * h)
