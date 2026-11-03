@@ -422,7 +422,7 @@ Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên t�
 
 ### 19.1 Bưu thiếp
 
-*Sắp có trong v0.9.4.* Một tấm ảnh in ở kiosk thành bưu thiếp gửi được qua bưu điện: một ảnh ở một nửa, mặt sau bưu thiếp ở nửa kia ([FR-073](PRD.md#fr-073--postcard-sheets)).
+*Mới trong v0.9.4.* Một tấm ảnh in ở kiosk thành bưu thiếp gửi được qua bưu điện: một ảnh ở một nửa, mặt sau bưu thiếp ở nửa kia ([FR-073](PRD.md#fr-073--postcard-sheets)).
 
 1. Trong chế độ Ghép ảnh, bật công tắc **Bưu thiếp** ở thanh phía trên các tấm, cạnh nút **Chọn** (tắt để quay về hai ảnh mỗi tấm). Mỗi ảnh giờ thành một tấm riêng: 50 ảnh là 25 tấm hai ảnh, hoặc 50 bưu thiếp. Thẻ **Bưu thiếp** hiện ra trong bảng bên phải.
 2. **Chiều cầm**: **Ngang** đặt ảnh bên trái, bưu thiếp bên phải; **Dọc** đặt bưu thiếp ở trên, ảnh ở dưới. Một **ô dán tem** nét đứt nằm ở góc trên bên phải, cỡ chừng một con tem của Đức hay Hungary, và cả dải phía trên để trống cho thêm tem hoặc nhãn cước dài in tại bưu điện. Các **dòng kẻ** nằm cùng nhau ở phía dưới: **3 dòng** hoặc **4 dòng** cho lời nhắn, rồi 3 dòng cho địa chỉ; bưu thiếp ngang xếp trên dưới, bưu thiếp dọc chia hai cột (lời nhắn bên trái, địa chỉ bên phải).

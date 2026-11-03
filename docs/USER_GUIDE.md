@@ -424,7 +424,7 @@ Every change is one undo step. The date stamp prints on each photo, with its pla
 
 ### 19.1 Postcards
 
-*Coming in v0.9.4.* A kiosk print becomes a postcard you can post: one photo on one half, the back of a postcard on the other ([FR-073](PRD.md#fr-073--postcard-sheets)).
+*New in v0.9.4.* A kiosk print becomes a postcard you can post: one photo on one half, the back of a postcard on the other ([FR-073](PRD.md#fr-073--postcard-sheets)).
 
 1. In Collage mode, turn on the **Postcard** switch in the bar above the sheets, next to **Select** (off goes back to two photos a sheet). Each photo now makes its own sheet: 50 photos are 25 sheets of two, or 50 postcards. The **Postcard** card appears in the panel.
 2. **Held**: **Landscape** puts the photo on the left and the card on the right; **Portrait** puts the card on top and the photo below. A dashed **stamp box** sits at the top right, about the size of a German or Hungarian stamp, and the band across the top stays free for more stamps or a long label printed at the post office. The **writing lines** sit together at the foot: **3 lines** or **4 lines** for the message, then 3 for the address, one under the other on a landscape card and side by side on a portrait one (message left, address right).

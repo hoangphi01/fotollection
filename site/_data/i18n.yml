@@ -101,7 +101,7 @@ en:
   postcard_title: "A postcard from your own photo"
   postcard_text: "In Collage mode, one switch turns each print into a postcard: your photo on one half, and on the other a dashed stamp box and lines for a message or an address. Type the text, set in a typewriter face, or write it by hand with a fine permanent marker. A 10 × 15 print is within the postcard sizes Deutsche Post takes."
   show_postcard: "Collage mode with Postcard on: one photo and a postcard back on each print"
-  postcard_coming: Coming in v0.9.4
+  postcard_coming: New in v0.9.4
   pc_title: "Send home a postcard of your own trip"
   pc_lead: "Not the shop's postcard of the bridge, but the tram you waited for. Fotollection turns any kiosk print into a postcard you can post."
   pc_s1: "Turn on Postcard in Collage mode: every photo becomes its own card, held landscape or portrait."
@@ -495,7 +495,7 @@ vi:
   postcard_title: "Bưu thiếp từ chính ảnh của bạn"
   postcard_text: "Trong chế độ Ghép ảnh, một công tắc biến mỗi tấm in thành bưu thiếp: ảnh của bạn ở một nửa, nửa kia là ô dán tem nét đứt và dòng kẻ để viết lời nhắn hoặc địa chỉ. Gõ chữ, in bằng font máy đánh chữ, hoặc viết tay bằng bút dạ dầu nét mảnh. Tấm 10 × 15 nằm trong khổ bưu thiếp mà Deutsche Post nhận."
   show_postcard: "Chế độ Ghép ảnh khi bật Bưu thiếp: mỗi tấm in có một ảnh và mặt sau bưu thiếp"
-  postcard_coming: Sắp có trong v0.9.4
+  postcard_coming: Mới trong v0.9.4
   pc_title: "Gửi về nhà một tấm bưu thiếp từ chính chuyến đi"
   pc_lead: "Không phải tấm bưu thiếp cây cầu bán ở tiệm, mà là chuyến tram bạn đã đứng chờ. Fotollection biến bất kỳ tấm ảnh in nào ở máy in ảnh thành bưu thiếp gửi được qua bưu điện."
   pc_s1: "Bật Bưu thiếp trong chế độ Ghép ảnh: mỗi ảnh thành một tấm riêng, cầm ngang hoặc dọc."
