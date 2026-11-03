@@ -10,7 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Highlights
 
+- Fixes: Display P3 and Adobe RGB photos show their true colours in the app, no longer washed out
 - New: the preview says what each file is: chroma subsampling, colour profile, sensor, the decoder that reads it; unusual files are marked in the gallery and have their own filter
+
+### Fixed
+
+- **Display P3 and Adobe RGB photos** (iPhone photos, cameras set to Adobe RGB) no longer look washed out in the app: thumbnails, previews, zoom and the crop view now convert them to the screen's sRGB, as share exports always did. Thumbnails made before are made again.
 
 ### Added
 

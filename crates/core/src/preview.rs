@@ -98,6 +98,16 @@ fn take_cached(
     Some(image)
 }
 
+/// A full-resolution upright image, and the profile its pixels are still in: converting a
+/// 24 MP photo to sRGB costs about 20 ms, so it waits until a zoom needs the full pixels;
+/// the preview converts its 2048 px copy instead (FR-072, OPTIMIZATION §5).
+#[derive(Clone)]
+struct Full {
+    image: Arc<RgbImage>,
+    /// `Some` until converted to sRGB.
+    icc: Option<Arc<[u8]>>,
+}
+
 /// Gives a photo's T1 thumbnail JPEG, when it has one (the thumbnail cache).
 pub type Thumbnail<'a> = dyn Fn(&PhotoRecord) -> Option<Vec<u8>> + 'a;
 
@@ -105,7 +115,7 @@ pub type Thumbnail<'a> = dyn Fn(&PhotoRecord) -> Option<Vec<u8>> + 'a;
 pub struct PreviewCache {
     entries: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
     /// Upright originals, decoded only for zoom; bounded by `FULL_BUDGET_BYTES`.
-    full: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
+    full: Mutex<Vec<(SourceKey, Full)>>,
     /// Small upright sources for the collage grid's sheets, from the photos' thumbnails.
     small: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
 }
@@ -171,18 +181,24 @@ impl PreviewCache {
         }
         let key = (record.id, record.display_orientation());
         // Zoomed before: the full image is already here.
-        let upright = if let Some(full) = take_cached(&self.full, key) {
+        let full = if let Some(full) = self.take_full(key) {
             full
         } else {
             let bytes = std::fs::read(&record.path)?;
             let decoded = decode_image(codec, &bytes)?;
-            let full = Arc::new(apply_orientation(decoded.image, key.1));
+            let full = Full {
+                image: Arc::new(apply_orientation(decoded.image, key.1)),
+                icc: decoded.icc.map(Arc::from),
+            };
             // Kept for zoom, so its first sharp region does not decode the photo again: a
             // RAW develop costs 0.4 to 2 s (FR-057, RESULT §11).
-            self.keep_full(key, Arc::clone(&full));
+            self.keep_full(key, full.clone());
             full
         };
-        let image = Arc::new(fit_long_edge(&upright, T2_LONG_EDGE)?);
+        let mut image = fit_long_edge(&full.image, T2_LONG_EDGE)?;
+        // Every view of the photo is made from this sRGB copy (FR-072).
+        crate::colour::to_srgb(&mut image, full.icc.as_deref());
+        let image = Arc::new(image);
         if let Ok(mut entries) = self.entries.lock() {
             if entries.len() >= CAPACITY {
                 entries.remove(0);
@@ -214,24 +230,63 @@ impl PreviewCache {
         codec: &dyn JpegCodec,
     ) -> Result<Arc<RgbImage>, ThumbError> {
         let key = (record.id, record.display_orientation());
-        if let Some(image) = take_cached(&self.full, key) {
-            return Ok(image);
-        }
-        let bytes = std::fs::read(&record.path)?;
-        let decoded = decode_image(codec, &bytes)?;
-        let image = Arc::new(apply_orientation(decoded.image, key.1));
-        self.keep_full(key, Arc::clone(&image));
+        let cached = match self.take_full(key) {
+            Some(Full { image, icc: None }) => return Ok(image),
+            // Out of the cache while it converts, so the pixels are converted in place.
+            Some(_) => self.remove_full(key),
+            None => None,
+        };
+        let image = match cached {
+            Some(Full { image, icc: None }) => return Ok(image),
+            // Kept by the preview, still in the photo's profile: converted now, once.
+            Some(Full {
+                image,
+                icc: Some(icc),
+            }) => {
+                let mut image = Arc::unwrap_or_clone(image);
+                crate::colour::to_srgb(&mut image, Some(&icc));
+                image
+            }
+            None => {
+                let bytes = std::fs::read(&record.path)?;
+                crate::colour::screen(decode_image(codec, &bytes)?)
+            }
+        };
+        let image = Arc::new(image);
+        self.keep_full(
+            key,
+            Full {
+                image: Arc::clone(&image),
+                icc: None,
+            },
+        );
         Ok(image)
     }
 
+    /// The cached full image of `key`, marked most recently used.
+    fn take_full(&self, key: SourceKey) -> Option<Full> {
+        let mut full = self.full.lock().ok()?;
+        let pos = full.iter().position(|(k, _)| *k == key)?;
+        let entry = full.remove(pos);
+        let found = entry.1.clone();
+        full.push(entry);
+        Some(found)
+    }
+
+    fn remove_full(&self, key: SourceKey) -> Option<Full> {
+        let mut full = self.full.lock().ok()?;
+        let pos = full.iter().position(|(k, _)| *k == key)?;
+        Some(full.remove(pos).1)
+    }
+
     /// Keeps a full-resolution image within `FULL_BUDGET_BYTES`, the newest always.
-    fn keep_full(&self, key: SourceKey, image: Arc<RgbImage>) {
+    fn keep_full(&self, key: SourceKey, image: Full) {
         if let Ok(mut full) = self.full.lock() {
             full.retain(|(k, _)| *k != key);
             full.push((key, image));
-            let mut bytes: usize = full.iter().map(|(_, i)| i.data.len()).sum();
+            let mut bytes: usize = full.iter().map(|(_, f)| f.image.data.len()).sum();
             while bytes > FULL_BUDGET_BYTES && full.len() > 1 {
-                bytes -= full.remove(0).1.data.len();
+                bytes -= full.remove(0).1.image.data.len();
             }
         }
     }
@@ -504,7 +559,7 @@ mod tests {
             record.id = PhotoId(i);
             cache.full_source(&record, codec.as_ref())?;
             let full = cache.full.lock().map_err(|_| "lock")?;
-            let bytes: usize = full.iter().map(|(_, i)| i.data.len()).sum();
+            let bytes: usize = full.iter().map(|(_, f)| f.image.data.len()).sum();
             assert!(bytes <= FULL_BUDGET_BYTES, "{bytes} bytes after photo {i}");
             assert_eq!(full.last().map(|(k, _)| k.0), Some(PhotoId(i)));
         }

@@ -77,7 +77,7 @@ crates/
       straighten.rs      † # ±15° levelling: largest inscribed crop, bicubic resampling of the crop only (FR-006)
       brands.rs          † # bundled brand logos, EXIF make → brand, Classic/Original/Mono recolouring (ADR-0020)
       share.rs           † # share export targets: Original / Facebook / Instagram / custom sizes, JPEG settings (FR-053)
-      colour.rs          † # ICC → sRGB with qcms, parallel over rows (FR-027, ADR-0022)
+      colour.rs          † # ICC → sRGB with qcms, parallel over rows, one cached transform per profile (FR-027, ADR-0022); `screen` gives every in-app image sRGB (FR-072): thumbnails convert after the resize, previews their 2048 px copy, zoom the full image once
       sharpen.rs         † # light unsharp mask after a downscale (FR-053)
       exif_out.rs        † # minimal EXIF writer from an allowlist, never GPS; APP1 insertion (FR-010, FR-053)
       culling/           † # best-shot suggestions (FR-041): metrics.rs (sharpness, shake, exposure, noise, dHash),

@@ -74,7 +74,9 @@ impl ThumbCache {
         // A RAW's embedded preview, not a one-second develop (ADR-0023).
         let decoded = decode_for_screen(codec, &bytes, T1_LONG_EDGE)?;
         let upright = apply_orientation(decoded.image, record.orientation);
-        let small = fit_long_edge(&upright, T1_LONG_EDGE)?;
+        let mut small = fit_long_edge(&upright, T1_LONG_EDGE)?;
+        // To sRGB after the resize, on a 25th of the pixels (FR-072).
+        crate::colour::to_srgb(&mut small, decoded.icc.as_deref());
         let jpeg = codec.encode(&small, EncodeOptions::screen(THUMB_QUALITY), None)?;
         let path = self.t1_path(record);
         write_atomic(&path, &jpeg)?;
@@ -85,8 +87,9 @@ impl ThumbCache {
 /// Bumped when a decoder fix changes the pixels of files already seen, so every cache made
 /// from them is made again (ADR-0033). 2: v0.8.1, one-scan-per-component JPEGs were green
 /// (version 1 had no salt). 3: v0.9.1, 16-bit grey JPEGs were noise and JPEGs cut short
-/// were half photos. Old files are left to the cache's size limit.
-pub const CACHE_VERSION: u8 = 3;
+/// were half photos. 4: v0.10.0, Display P3 and Adobe RGB photos were shown unconverted,
+/// washed out (FR-072). Old files are left to the cache's size limit.
+pub const CACHE_VERSION: u8 = 4;
 
 /// Cache key of a source file: `blake3(version ‖ path ‖ size ‖ mtime)` in hex, so an edited or
 /// replaced file, or a decoder fix, misses the cache (DATABASE.md §8).
@@ -101,6 +104,14 @@ pub fn content_key(record: &PhotoRecord) -> String {
 
 /// T0 from the EXIF thumbnail, rotated upright (embedded thumbnails carry no orientation).
 pub fn t0(record: &PhotoRecord, codec: &dyn JpegCodec) -> Option<Vec<u8>> {
+    // A camera's EXIF thumbnail is in the photo's own space, untagged: only an sRGB photo's
+    // can be shown as it is (FR-072); T1 converts the others.
+    if !matches!(
+        record.facts.space,
+        None | Some(crate::facts::Space::Srgb | crate::facts::Space::Untagged)
+    ) {
+        return None;
+    }
     let raw = metadata::embedded_thumbnail(&record.path)?;
     if record.orientation <= 1 {
         return Some(raw);

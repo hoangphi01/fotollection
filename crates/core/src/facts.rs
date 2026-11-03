@@ -163,12 +163,62 @@ impl ImageFacts {
     }
 }
 
-/// The colour space an ICC profile names. RGB profiles are told apart by their description.
+/// The D50-adapted primaries (`rXYZ`, `gXYZ`, `bXYZ`) of the common RGB spaces.
+const PRIMARIES: &[([[f64; 3]; 3], Space)] = &[
+    (
+        [
+            [0.4361, 0.2225, 0.0139],
+            [0.3851, 0.7169, 0.0971],
+            [0.1431, 0.0606, 0.7141],
+        ],
+        Space::Srgb,
+    ),
+    (
+        [
+            [0.5151, 0.2412, -0.0011],
+            [0.2920, 0.6922, 0.0419],
+            [0.1571, 0.0666, 0.7841],
+        ],
+        Space::DisplayP3,
+    ),
+    (
+        [
+            [0.6097, 0.3111, 0.0195],
+            [0.2053, 0.6257, 0.0609],
+            [0.1492, 0.0632, 0.7446],
+        ],
+        Space::AdobeRgb,
+    ),
+    (
+        [
+            [0.7977, 0.2880, 0.0000],
+            [0.1352, 0.7119, 0.0000],
+            [0.0313, 0.0001, 0.8249],
+        ],
+        Space::ProPhoto,
+    ),
+];
+
+/// The colour space an ICC profile names: by its primaries, else by its description.
 pub fn profile_space(icc: &[u8]) -> Space {
     match icc.get(16..20) {
         Some(b"GRAY") => return Space::Grey,
         Some(b"CMYK") => return Space::Cmyk,
         _ => {}
+    }
+    // The primaries first: names vary ("Adobe RGB (1998)", "A98C"), the colorants do not.
+    if let Some(p) = crate::colour::primaries(icc) {
+        let near = |known: &[[f64; 3]; 3]| {
+            p.iter()
+                .flatten()
+                .zip(known.iter().flatten())
+                .all(|(a, b)| (a - b).abs() < 0.005)
+        };
+        for (known, space) in PRIMARIES {
+            if near(known) {
+                return *space;
+            }
+        }
     }
     let name = crate::colour::profile_name(icc)
         .unwrap_or_default()
@@ -177,7 +227,7 @@ pub fn profile_space(icc: &[u8]) -> Space {
         Space::Srgb
     } else if name.contains("p3") {
         Space::DisplayP3
-    } else if name.contains("adobe rgb") || name.contains("adobergb") {
+    } else if name.contains("adobe rgb") || name.contains("adobergb") || name.contains("a98") {
         Space::AdobeRgb
     } else if name.contains("prophoto") || name.contains("romm") {
         Space::ProPhoto

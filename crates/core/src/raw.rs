@@ -242,13 +242,14 @@ impl Own {
         }
     }
 
-    /// The camera's own JPEG inside the file, decoded.
+    /// The camera's own JPEG inside the file, decoded and in sRGB, like the develop it is
+    /// matched to and the thumbnails made from it (a camera set to Adobe RGB tags it so).
     fn embedded(bytes: &[u8]) -> Option<RgbImage> {
         let jpeg = fotollection_rawcore::dng::embedded_jpeg(bytes)?;
         crate::codec::default_codec()
             .decode(jpeg)
             .ok()
-            .map(|d| d.image)
+            .map(crate::colour::screen)
     }
 }
 
