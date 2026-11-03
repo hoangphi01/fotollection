@@ -145,9 +145,9 @@ fn sample(image: &RgbImage, x: f32, y: f32) -> [u8; 3] {
     acc.map(|v| v.round().clamp(0.0, 255.0) as u8)
 }
 
-/// Renders the straightened `crop` of `source` at `out_width` × `out_height`. Strong
-/// reductions are sampled at twice the output size first and finished with Lanczos3, so
-/// fine detail does not alias.
+/// Renders the straightened `crop` of `source` at `out_width` × `out_height`. A reduction is
+/// sampled at the crop's resolution first and finished with Lanczos3, so fine detail does
+/// not alias.
 #[allow(
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss,
@@ -163,17 +163,12 @@ pub fn render(
     let theta = sanitize(degrees).to_radians();
     let (cos, sin) = (theta.cos(), theta.sin());
     let (half_w, half_h) = (source.width as f32 / 2.0, source.height as f32 / 2.0);
+    // Sampled at the crop's own resolution (one sample per source pixel at most), then
+    // reduced with Lanczos3: sampling at twice the output, as before, stepped 1.5 to 2 source
+    // pixels at a 3–4× reduction and turned fine stripes into bands (FR-072, OPTIMIZATION §5).
     let (sw, sh) = (
-        out_width
-            .saturating_mul(2)
-            .min(crop.width)
-            .max(out_width)
-            .max(1),
-        out_height
-            .saturating_mul(2)
-            .min(crop.height)
-            .max(out_height)
-            .max(1),
+        crop.width.max(out_width).max(1),
+        crop.height.max(out_height).max(1),
     );
     let (step_x, step_y) = (
         crop.width as f32 / sw as f32,
@@ -211,6 +206,35 @@ pub fn render(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// FR-006, FR-072: stripes 2 px apart, straightened and shrunk 1.5× to 6×, fade into
+    /// grey; sampling at twice the output size turned them into bands at 3× and 4× (a
+    /// standard deviation of 44 and 91 levels).
+    #[test]
+    fn fr_072_straightened_reductions_do_not_alias() {
+        let (w, h) = (1200u32, 1200u32);
+        let data: Vec<u8> = (0..w * h)
+            .flat_map(|i| {
+                let v = if (i % w) % 2 == 0 { 255 } else { 0 };
+                [v, v, v]
+            })
+            .collect();
+        let src = RgbImage::from_raw(w, h, data).unwrap_or_else(|| RgbImage::new(1, 1));
+        let crop = CropRect {
+            x: 300,
+            y: 300,
+            width: 600,
+            height: 600,
+        };
+        for out in [400u32, 300, 240, 200, 150, 100] {
+            let img = render(&src, crop, 0.5, out, out).unwrap_or_else(|| RgbImage::new(1, 1));
+            let vals: Vec<f64> = img.data.iter().step_by(3).map(|&v| f64::from(v)).collect();
+            let mean = vals.iter().sum::<f64>() / vals.len() as f64;
+            let sd =
+                (vals.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / vals.len() as f64).sqrt();
+            assert!(sd < 3.0, "{out} px: standard deviation {sd:.1}");
+        }
+    }
 
     #[test]
     fn fr_006_level_photos_keep_the_plain_crop() {

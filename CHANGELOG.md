@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - **Display P3 and Adobe RGB photos** (iPhone photos, cameras set to Adobe RGB) no longer look washed out in the app: thumbnails, previews, zoom and the crop view now convert them to the screen's sRGB, as share exports always did. Thumbnails made before are made again.
+- **Straightened photos** shrunk more than 2× (a preview of a large crop, a share export) no longer turn fine detail such as fences or fabric into bands.
 - **PNG:** 16-bit images no longer show bands in smooth gradients (they are dithered to 8 bits), a PNG that declares its gamma or primaries (`gAMA`, `cHRM`) shows in its true colours, and semi-transparent pixels are mixed onto white as light mixes, no longer too dark.
 
 ### Changed

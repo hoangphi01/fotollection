@@ -13,6 +13,13 @@
 
 ## 2026-11-03
 
+### Sampling at twice the output size still aliases past a 2× reduction: straightened photos got bands (FR-006, FR-072)
+
+- **Seen:** a probe for session 6 (stripes 2 px apart, straightened by 0.5° and shrunk) gave flat grey up to 2.5× but bands at 3× and 4× (standard deviations of 44 and 91 levels, against about 1).
+- **Why:** `straighten::render` sampled the turned crop at twice the output size, then finished with Lanczos3. At a 3× reduction that is one sample every 1.5 source pixels and at 4× every 2: the bicubic sample sees one pixel, not their average, and a pattern finer than the step folds into a coarse one. The comment said "so fine detail does not alias"; it held only up to 2×.
+- **Fix:** sample at the crop's own resolution (one sample per source pixel at most), then Lanczos3 (`fr_072_straightened_reductions_do_not_alias`). The preview samples its 2048 px source as before; only a share export of a straightened photo samples more.
+- **Rule:** a resampling claim gets a test with a pattern at the Nyquist limit over the whole range of factors, not one factor.
+
 ### png 0.18 fills `source_gamma` only when encoding: a PNG's `gAMA` read as absent (FR-072)
 
 - **Seen:** the new test `fr_072_png_gamma_is_converted` wrote a PNG with `gAMA` 1.0 (linear light) and expected sRGB 188 for 128; it came back 128, unconverted. `colour::declared_to_srgb` alone gave 188.
