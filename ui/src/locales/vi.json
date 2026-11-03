@@ -751,9 +751,6 @@
     "textHint": "Chữ được in lên các dòng kẻ bằng font ở trên; phần không vừa các dòng sẽ không được in.",
     "chars": "{{count}} / {{max}}",
     "sheetSizeHint": "Mỗi tấm chứa một ảnh và mặt sau bưu thiếp, theo chiều cầm chọn ở thẻ Bưu thiếp.",
-    "kind": "Kiểu tấm",
-    "pair": "Hai ảnh",
-    "pairHint": "Hai ảnh trên mỗi tấm in",
     "cardHint": "Một ảnh và mặt sau bưu thiếp trên mỗi tấm in"
   }
 }

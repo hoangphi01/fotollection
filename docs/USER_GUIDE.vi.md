@@ -424,7 +424,7 @@ Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên t�
 
 *Sắp có trong v0.9.4.* Một tấm ảnh in ở kiosk thành bưu thiếp gửi được qua bưu điện: một ảnh ở một nửa, mặt sau bưu thiếp ở nửa kia ([FR-073](PRD.md#fr-073--postcard-sheets)).
 
-1. Trong chế độ Ghép ảnh, chọn **Bưu thiếp** ở thanh phía trên các tấm, cạnh nút **Chọn** (**Hai ảnh** để quay lại). Mỗi ảnh giờ thành một tấm riêng: 50 ảnh là 25 tấm hai ảnh, hoặc 50 bưu thiếp. Thẻ **Bưu thiếp** hiện ra trong bảng bên phải.
+1. Trong chế độ Ghép ảnh, bật công tắc **Bưu thiếp** ở thanh phía trên các tấm, cạnh nút **Chọn** (tắt để quay về hai ảnh mỗi tấm). Mỗi ảnh giờ thành một tấm riêng: 50 ảnh là 25 tấm hai ảnh, hoặc 50 bưu thiếp. Thẻ **Bưu thiếp** hiện ra trong bảng bên phải.
 2. **Chiều cầm**: **Ngang** đặt ảnh bên trái, bưu thiếp bên phải; **Dọc** đặt bưu thiếp ở trên, ảnh ở dưới. Một **ô dán tem** nét đứt nằm ở góc trên bên phải, cỡ chừng một con tem của Đức hay Hungary, bên dưới là các **dòng kẻ**: **3 dòng** hoặc **4 dòng**.
 3. Nửa ảnh vẫn như trước: tỷ lệ, cỡ ảnh, *Lấp đầy mỗi nửa*, viền 3 mm, dấu ngày, **Cắt ảnh** và **Xoay ảnh** trong bản xem trước. Bưu thiếp không có đường cắt và không xoay tấm; nút Tự xoay được ẩn.
 4. **Gõ chữ**, hoặc để trống để viết tay: mở bản xem trước của một bưu thiếp (bấm đúp) và gõ vào **Chữ trên bưu thiếp**, một lời nhắn hoặc một địa chỉ, tối đa 400 ký tự. Chữ được in lên các dòng kẻ bằng font máy đánh chữ *Xanh Mono*, hoặc một font của bạn chọn ở **Chữ gõ** (**Nhập OTF/TTF…**, như chương 9). Phần không vừa các dòng sẽ không được in, đúng như bản xem trước.
