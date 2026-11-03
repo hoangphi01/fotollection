@@ -13,6 +13,13 @@
 
 ## 2026-11-03
 
+### Deleting `target/debug/incremental` by hand can leave a debug build that does not link
+
+- **Seen:** after freeing disk by removing `target/debug/incremental` (8 GB), `npm run dev` failed at link time: `Undefined symbols … drop_glue … rayon_core … fotollection_core.llvm.…`, while `cargo check` and the tests passed.
+- **Why:** the core crate's `.rlib` came from a build that used the deleted incremental session; the next build reused it beside freshly compiled crates, and the internal (`.llvm.`) symbols no longer matched.
+- **Fix:** `cargo clean -p fotollection-core` and build again (a minute, not a full rebuild).
+- **Rule:** free disk with `scripts/clean.sh` (whole profiles), not by deleting part of a profile; if you did, clean the crates that failed to link.
+
 ### A setting that regroups the sheets must say so from Rust: the count stayed at 25 after turning postcards on (FR-073)
 
 - **Seen:** the owner turned the new Postcard switch on in the dev app: each sheet showed one photo, but the bar still said 25 sheets for 50 photos, and the grid kept 25 tiles.
