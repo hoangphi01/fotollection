@@ -206,7 +206,7 @@ fn encode_sheet(
             place: place.as_deref(),
             stamp: record.edits.stamp.as_ref(),
             caption: record.edits.caption.as_deref(),
-            postcard: record.edits.postcard.as_deref(),
+            postcard: record.edits.postcard.as_ref(),
         });
     }
     let turned = decoded

@@ -324,12 +324,13 @@ export const commands = {
 	 */
 	setPhotoCaption: (ids: PhotoId[], caption: string | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_caption", { ids, caption })),
 	/**
-	 *  Types `text` on a photo's postcard (FR-073), or (`None`, or only blanks) leaves its lines
-	 *  blank for handwriting. One undoable step; checked here, never trusted from the UI.
+	 *  Types one part of a photo's postcard (FR-073), its message or its address; `None`, or
+	 *  only blanks, leaves that part's lines blank for handwriting. One undoable step; checked
+	 *  here, never trusted from the UI.
 	 */
-	setPostcardText: (id: PhotoId, text: string | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_postcard_text", { id, text })),
-	/**  The text typed on a photo's postcard (FR-073), if any. */
-	getPostcardText: (id: PhotoId) => typedError<string | null, IpcError>(__TAURI_INVOKE("get_postcard_text", { id })),
+	setPostcardText: (id: PhotoId, part: PostcardPart, text: string | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_postcard_text", { id, part, text })),
+	/**  The text typed on a photo's postcard (FR-073): its message and address, empty when none. */
+	getPostcardText: (id: PhotoId) => typedError<PostcardText, IpcError>(__TAURI_INVOKE("get_postcard_text", { id })),
 	/**
 	 *  "Apply to all" in the preview: this photo's stamp becomes the setting for every photo,
 	 *  and no photo keeps its own any more (the photo edits are one undoable step).
@@ -1242,6 +1243,9 @@ export type PostcardInk = "auto" |
  */
 export type PostcardOrientation = "landscape" | "portrait";
 
+/**  The two parts of a postcard's text (FR-073). */
+export type PostcardPart = "message" | "address";
+
 /**
  *  The postcard half of a collage sheet (FR-073). The text on each card is the photo's own
  *  (`PhotoEdits::postcard`).
@@ -1257,8 +1261,20 @@ export type PostcardSettings = {
 	credit?: string,
 	/**  The typed text's ink. */
 	ink?: PostcardInk,
-	/**  The typed text's size, the date stamp's three steps (`POSTCARD_TEXT_MM`). */
+	/**  The typed text's size, the date stamp's three steps (`postcard_text_mm`). */
 	textSize?: StampSize,
+	/**  How the message and the address are set. */
+	messageStyle?: TextStyle,
+	addressStyle?: TextStyle,
+};
+
+/**
+ *  A postcard's own text (FR-073): the message on its top lines, the address on its bottom
+ *  ones. An empty part leaves its lines blank.
+ */
+export type PostcardText = {
+	message?: string,
+	address?: string,
 };
 
 /**  How large one photo prints well, and the verdict for each size. */
@@ -1476,6 +1492,13 @@ export type TaskProgress = {
 	task: TaskKind,
 	done: number,
 	total: number,
+};
+
+/**  Bold, italic and underline for one part of a postcard's text (FR-073). */
+export type TextStyle = {
+	bold?: boolean,
+	italic?: boolean,
+	underline?: boolean,
 };
 
 /**  Light or dark interface (FR-052). `System` follows the operating system. */

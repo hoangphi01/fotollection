@@ -17,7 +17,10 @@
       "path": "P1000001.JPG",
       "fp_size": 5000000,
       "fp_mtime": 1726000000,
-      "postcard": "Liebe Grüße aus Budapest!\nAnna Schmidt\nHauptstraße 1\n10115 Berlin"
+      "postcard": {
+        "message": "Liebe Grüße aus Budapest!",
+        "address": "Anna Schmidt\nHauptstraße 1\n10115 Berlin"
+      }
     },
     {
       "id": 2,
@@ -25,7 +28,10 @@
       "path": "P1000002.JPG",
       "fp_size": 5000000,
       "fp_mtime": 1726000001,
-      "postcard": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\u0007"
+      "postcard": {
+        "message": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\u0007",
+        "address": "a\nb\nc\nd\ne\nf"
+      }
     }
   ]
 }

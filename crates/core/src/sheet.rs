@@ -448,7 +448,7 @@ pub struct CellSource<'a> {
     /// The photo's own line under the date (FR-036); `None` uses the stamp's.
     pub caption: Option<&'a str>,
     /// The text typed on the photo's postcard (FR-073).
-    pub postcard: Option<&'a str>,
+    pub postcard: Option<&'a crate::library::PostcardText>,
 }
 
 /// Renders a sheet. `max_long_edge` bounds the sheet's long edge for previews; `None`
@@ -553,13 +553,10 @@ pub fn render_sheet(
             &crate::postcard::CardSpec {
                 card,
                 sheet_width: sheet.width,
-                lines: settings.collage.postcard.lines,
+                settings: &settings.collage.postcard,
                 text: sources[0].and_then(|s| s.postcard),
-                credit: Some(settings.collage.postcard.credit.as_str()),
                 font: card_font,
                 paper: settings.border_color,
-                ink: settings.collage.postcard.ink,
-                text_size: settings.collage.postcard.text_size,
             },
         );
     }
@@ -958,6 +955,10 @@ mod tests {
     fn fr_073_a_postcard_sheet_draws_one_photo_and_the_card() -> Result<(), RenderError> {
         use crate::settings::{PostcardOrientation, PostcardSettings};
         let image = filled(1800, 1200, [200, 30, 30]);
+        let text = crate::library::PostcardText {
+            message: "Liebe Grüße aus Budapest!".into(),
+            address: "Anna Schmidt".into(),
+        };
         let source = CellSource {
             image: &image,
             capture: None,
@@ -966,7 +967,7 @@ mod tests {
             place: None,
             stamp: None,
             caption: None,
-            postcard: Some("Liebe Grüße aus Budapest!"),
+            postcard: Some(&text),
         };
         for orientation in [
             PostcardOrientation::Landscape,

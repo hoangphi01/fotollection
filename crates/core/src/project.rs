@@ -23,7 +23,7 @@ pub const FORMAT: &str = "fotollection-project";
 /// `photos[].collage_crop` and `photos[].collage_straighten`, the photo's own crop and
 /// straightening on a sheet (FR-035), and `photos[].caption`, the photo's own line under the
 /// date (FR-036), and `photos[].collage_rotation`, its quarter turns in its collage cell.
-/// v10: `photos[].postcard`, the text typed on the photo's postcard (FR-073).
+/// v10: `photos[].postcard`, the message and address typed on the photo's postcard (FR-073).
 pub const SCHEMA_VERSION: u32 = 10;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
@@ -102,9 +102,10 @@ pub struct PhotoRow {
     /// Quarter turns of the photo in its collage cell, 1–3 (v9); absent when not turned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub collage_rotation: Option<u8>,
-    /// The text typed on the photo's postcard, at most 400 characters and 8 lines (v10).
+    /// The text typed on the photo's postcard (v10): its message (at most 400 characters
+    /// and 8 lines) and its address (200 characters, 5 lines).
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub postcard: Option<String>,
+    pub postcard: Option<crate::library::PostcardText>,
 }
 
 /// A place the user renamed (v8, FR-005).
@@ -537,8 +538,8 @@ pub fn restore_into(
                 collage_rotation: row.collage_rotation.unwrap_or(0) % 4,
                 postcard: row
                     .postcard
-                    .as_deref()
-                    .map(crate::settings::sanitize_postcard),
+                    .as_ref()
+                    .and_then(crate::library::PostcardText::sanitized),
             },
         );
         summary.restored += 1;
@@ -842,15 +843,26 @@ mod tests {
         else {
             panic!("v10 project should load");
         };
+        let first = v10.photos[0].postcard.as_ref();
         assert_eq!(
-            v10.photos[0].postcard.as_deref(),
-            Some("Liebe Grüße aus Budapest!\nAnna Schmidt\nHauptstraße 1\n10115 Berlin")
+            first.map(|p| (p.message.as_str(), p.address.as_str())),
+            Some((
+                "Liebe Grüße aus Budapest!",
+                "Anna Schmidt\nHauptstraße 1\n10115 Berlin"
+            ))
         );
+        // Too many lines and a control character are brought within limits on load.
         let cut = v10.photos[1]
             .postcard
-            .as_deref()
-            .map(crate::settings::sanitize_postcard);
-        assert_eq!(cut.as_deref(), Some("1\n2\n3\n4\n5\n6\n7\n8"));
+            .as_ref()
+            .and_then(crate::library::PostcardText::sanitized);
+        assert_eq!(
+            cut.map(|p| (p.message, p.address)),
+            Some((
+                "1\n2\n3\n4\n5\n6\n7\n8".to_owned(),
+                "a\nb\nc\nd\ne".to_owned()
+            ))
+        );
         let Loaded::Ok(v9) =
             from_bytes(include_bytes!("../tests/fixtures/project/v9.fotollection"))
         else {

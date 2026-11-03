@@ -181,6 +181,18 @@ impl PostcardInk {
     }
 }
 
+/// Bold, italic and underline for one part of a postcard's text (FR-073).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct TextStyle {
+    #[serde(default)]
+    pub bold: bool,
+    #[serde(default)]
+    pub italic: bool,
+    #[serde(default)]
+    pub underline: bool,
+}
+
 /// The postcard half of a collage sheet (FR-073). The text on each card is the photo's own
 /// (`PhotoEdits::postcard`).
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -202,9 +214,14 @@ pub struct PostcardSettings {
     /// The typed text's ink.
     #[serde(default)]
     pub ink: PostcardInk,
-    /// The typed text's size, the date stamp's three steps (`POSTCARD_TEXT_MM`).
+    /// The typed text's size, the date stamp's three steps (`postcard_text_mm`).
     #[serde(default)]
     pub text_size: StampSize,
+    /// How the message and the address are set.
+    #[serde(default)]
+    pub message_style: TextStyle,
+    #[serde(default)]
+    pub address_style: TextStyle,
 }
 
 /// The typed text's em in millimetres for each size, about 10, 12 and 15 pt: what a
@@ -234,6 +251,8 @@ impl Default for PostcardSettings {
             credit: String::new(),
             ink: PostcardInk::Auto,
             text_size: StampSize::Medium,
+            message_style: TextStyle::default(),
+            address_style: TextStyle::default(),
         }
     }
 }
@@ -374,29 +393,42 @@ pub fn sanitize_caption(caption: &str) -> String {
         .collect()
 }
 
-/// Longest postcard text (FR-073), in characters, and its most lines: the text box holds
-/// four, a longer text is cut at the box's last line.
-pub const MAX_POSTCARD_CHARS: usize = 400;
-pub const MAX_POSTCARD_LINES: usize = 8;
+/// The two parts of a postcard's text (FR-073).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum PostcardPart {
+    Message,
+    Address,
+}
 
-/// A postcard text within limits: line breaks kept, other control characters dropped, at
-/// most `MAX_POSTCARD_LINES` lines and `MAX_POSTCARD_CHARS` characters.
-pub fn sanitize_postcard(text: &str) -> String {
+impl PostcardPart {
+    /// The most characters and lines this part takes: the card has 3 or 4 lines for the
+    /// message and 3 for the address; more is kept but cut on the print.
+    pub fn limits(self) -> (usize, usize) {
+        match self {
+            Self::Message => (400, 8),
+            Self::Address => (200, 5),
+        }
+    }
+}
+
+/// A postcard part within limits: line breaks kept, other control characters dropped, at
+/// most its characters and lines.
+pub fn sanitize_postcard(part: PostcardPart, text: &str) -> String {
+    let (chars, lines) = part.limits();
     let kept: String = text
         .chars()
         .filter(|c| *c == '\n' || !c.is_control())
-        .take(MAX_POSTCARD_CHARS)
+        .take(chars)
         .collect();
-    kept.split('\n')
-        .take(MAX_POSTCARD_LINES)
-        .collect::<Vec<_>>()
-        .join("\n")
+    kept.split('\n').take(lines).collect::<Vec<_>>().join("\n")
 }
 
-/// Checks a postcard text coming over IPC (SECURITY.md §2).
-pub fn validate_postcard(text: &str) -> bool {
-    text.chars().count() <= MAX_POSTCARD_CHARS
-        && text.split('\n').count() <= MAX_POSTCARD_LINES
+/// Checks a postcard part coming over IPC (SECURITY.md §2).
+pub fn validate_postcard(part: PostcardPart, text: &str) -> bool {
+    let (chars, lines) = part.limits();
+    text.chars().count() <= chars
+        && text.split('\n').count() <= lines
         && !text.chars().any(|c| c != '\n' && c.is_control())
 }
 

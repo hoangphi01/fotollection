@@ -159,7 +159,30 @@ pub struct PhotoEdits {
     /// The text typed on the photo's postcard (FR-073); `None` leaves its lines blank for
     /// handwriting.
     #[serde(default)]
-    pub postcard: Option<String>,
+    pub postcard: Option<PostcardText>,
+}
+
+/// A postcard's own text (FR-073): the message on its top lines, the address on its bottom
+/// ones. An empty part leaves its lines blank.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PostcardText {
+    #[serde(default)]
+    pub message: String,
+    #[serde(default)]
+    pub address: String,
+}
+
+impl PostcardText {
+    /// Both parts within their limits; `None` when both are blank.
+    pub fn sanitized(&self) -> Option<Self> {
+        use crate::settings::{PostcardPart, sanitize_postcard};
+        let text = Self {
+            message: sanitize_postcard(PostcardPart::Message, &self.message),
+            address: sanitize_postcard(PostcardPart::Address, &self.address),
+        };
+        (!text.message.trim().is_empty() || !text.address.trim().is_empty()).then_some(text)
+    }
 }
 
 impl PhotoEdits {

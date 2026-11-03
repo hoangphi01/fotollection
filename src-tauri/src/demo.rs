@@ -292,11 +292,20 @@ fn record_collage(app: &AppHandle, out: &Path) -> Result<Value, String> {
     }))
 }
 
-/// The messages typed on the first three demo postcards.
-const POSTCARD_TEXTS: [&str; 3] = [
-    "Liebe Grüße aus Tübingen!\nWir vermissen euch. Bis bald,\nAnna & Max",
-    "Greetings from the Neckar!\nThe weather is lovely. Love, Kate",
-    "Thương gửi cả nhà!\nHẹn gặp lại ở Hà Nội.",
+/// The messages and addresses typed on the first three demo postcards.
+const POSTCARD_TEXTS: [(&str, &str); 3] = [
+    (
+        "Liebe Grüße aus Tübingen!\nWir vermissen euch. Bis bald,\nAnna & Max",
+        "Familie Schmidt\nHauptstraße 1\n10115 Berlin",
+    ),
+    (
+        "Greetings from the Neckar!\nThe weather is lovely. Love, Kate",
+        "Kate Branch\n12 Rue des Fleurs\n75004 Paris, France",
+    ),
+    (
+        "Thương gửi cả nhà!\nHẹn gặp lại ở Hà Nội.",
+        "Nguyễn Văn An\n12 Phố Huế\nHà Nội, Việt Nam",
+    ),
 ];
 
 /// Postcards (FR-073), after the collage: the same photos, one per card, held landscape,
@@ -308,13 +317,19 @@ fn record_postcard(app: &AppHandle, out: &Path) -> Result<Value, String> {
     ok(commands::set_settings(app.clone(), app.state(), settings))?;
     let sheets = crate::collage::list_sheets(app.state(), CullFilter::default())
         .map_err(|e| format!("{e:?}"))?;
-    for (sheet, text) in sheets.iter().zip(POSTCARD_TEXTS) {
-        ok(commands::set_postcard_text(
-            app.clone(),
-            app.state(),
-            sheet.first,
-            Some(text.to_owned()),
-        ))?;
+    for (sheet, (message, address)) in sheets.iter().zip(POSTCARD_TEXTS) {
+        for (part, text) in [
+            (fotollection_core::settings::PostcardPart::Message, message),
+            (fotollection_core::settings::PostcardPart::Address, address),
+        ] {
+            ok(commands::set_postcard_text(
+                app.clone(),
+                app.state(),
+                sheet.first,
+                part,
+                Some(text.to_owned()),
+            ))?;
+        }
     }
     let mut info = serde_json::Map::new();
     let mut geometry = serde_json::Map::new();

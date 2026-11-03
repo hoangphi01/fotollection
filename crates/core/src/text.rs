@@ -95,6 +95,24 @@ pub fn draw_text(
     });
 }
 
+/// Draws `run` slanted: each pixel moves right by `slant` times its height above the
+/// baseline, an oblique for faces with no italic of their own (a postcard's text, FR-073).
+#[allow(clippy::cast_possible_truncation, clippy::cast_precision_loss)]
+pub fn draw_text_slanted(
+    image: &mut RgbImage,
+    run: &TextRun<'_>,
+    left: f32,
+    top: f32,
+    color: [u8; 3],
+    slant: f32,
+) {
+    let baseline = top + run.font.as_scaled(PxScale::from(run.px)).ascent();
+    rasterize(run, left, top, |x, y, coverage| {
+        let shift = ((baseline - y as f32) * slant).round() as i32;
+        blend(image, x + shift, y, color, coverage);
+    });
+}
+
 /// The glyph coverage of `run` in a `width` × `height` mask, with the text's top-left at
 /// (`left`, `top`) inside the mask. Used for effects that need the shape (glow, shadow).
 #[allow(clippy::cast_sign_loss, clippy::cast_possible_wrap)]

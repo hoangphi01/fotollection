@@ -428,6 +428,15 @@ mod tests {
             credit: "Photo © Anna Schmidt".into(),
             ink: crate::settings::PostcardInk::Blue,
             text_size: crate::settings::StampSize::Large,
+            message_style: crate::settings::TextStyle {
+                italic: true,
+                ..crate::settings::TextStyle::default()
+            },
+            address_style: crate::settings::TextStyle {
+                bold: true,
+                underline: true,
+                ..crate::settings::TextStyle::default()
+            },
         };
         save(&path, &s)?;
         let Loaded::Ok(back) = load(&path) else {

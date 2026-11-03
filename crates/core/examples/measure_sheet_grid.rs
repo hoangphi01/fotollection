@@ -40,9 +40,10 @@ fn main() {
             let id = lib.push(folder, &file, &meta)?;
             let mut record = lib.record(id)?;
             if postcard {
-                record.edits.postcard = Some(
-                    "Liebe Grüße aus Budapest!\nAnna Schmidt\nHauptstraße 1, 10115 Berlin".into(),
-                );
+                record.edits.postcard = Some(fotollection_core::library::PostcardText {
+                    message: "Liebe Grüße aus Budapest! Bis bald.".into(),
+                    address: "Anna Schmidt\nHauptstraße 1\n10115 Berlin".into(),
+                });
             }
             Some(record)
         })

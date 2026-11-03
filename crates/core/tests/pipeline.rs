@@ -242,7 +242,10 @@ fn fr_073_postcards_export_one_file_per_photo() {
     let lib = import(src.path());
     let mut all = records(&lib);
     all.sort_by(|a, b| a.file_name.cmp(&b.file_name));
-    all[0].edits.postcard = Some("Liebe Grüße!".into());
+    all[0].edits.postcard = Some(fotollection_core::library::PostcardText {
+        message: "Liebe Grüße!".into(),
+        address: "Anna Schmidt, Berlin".into(),
+    });
     let sheets: Vec<fotollection_core::export::SheetRecords> =
         all.iter().map(|r| (r.clone(), None)).collect();
     let mut settings = RenderSettings::default();

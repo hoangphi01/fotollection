@@ -10,6 +10,8 @@ export const POSTCARD_DEFAULTS: PostcardSettings = {
   credit: '',
   ink: 'auto',
   textSize: 'medium',
+  messageStyle: { bold: false, italic: false, underline: false },
+  addressStyle: { bold: false, italic: false, underline: false },
 }
 
 /** Patches a postcard setting, from a file written before FR-073 too. */

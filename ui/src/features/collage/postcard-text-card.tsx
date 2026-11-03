@@ -42,7 +42,22 @@ export function PostcardTextCard({ settings, onChange, photo, revision }: Postca
   return (
     <SectionCard icon={<Type />} title={t('postcard.text')}>
       {photo != null ? (
-        <PostcardTextField photo={photo} revision={revision} />
+        <>
+          <PostcardTextField
+            photo={photo}
+            part="message"
+            revision={revision}
+            style={postcard.messageStyle}
+            onStyle={(messageStyle) => patchPostcard(onChange, { messageStyle })}
+          />
+          <PostcardTextField
+            photo={photo}
+            part="address"
+            revision={revision}
+            style={postcard.addressStyle}
+            onStyle={(addressStyle) => patchPostcard(onChange, { addressStyle })}
+          />
+        </>
       ) : (
         <p className="text-xs text-muted-foreground">{t('postcard.pickToType')}</p>
       )}

@@ -461,44 +461,50 @@ pub fn set_photo_caption(
     edit_photos(&app, &state, &ids, |_, e| e.caption.clone_from(&caption))
 }
 
-/// The text typed on a photo's postcard (FR-073), if any.
+/// The text typed on a photo's postcard (FR-073): its message and address, empty when none.
 #[tauri::command]
 #[specta::specta]
 pub fn get_postcard_text(
     state: State<'_, AppState>,
     id: PhotoId,
-) -> Result<Option<String>, IpcError> {
+) -> Result<fotollection_core::library::PostcardText, IpcError> {
     let library = state.library.read().map_err(crate::document::poisoned)?;
     library
         .record(id)
-        .map(|r| r.edits.postcard)
+        .map(|r| r.edits.postcard.unwrap_or_default())
         .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))
 }
 
-/// Types `text` on a photo's postcard (FR-073), or (`None`, or only blanks) leaves its lines
-/// blank for handwriting. One undoable step; checked here, never trusted from the UI.
+/// Types one part of a photo's postcard (FR-073), its message or its address; `None`, or
+/// only blanks, leaves that part's lines blank for handwriting. One undoable step; checked
+/// here, never trusted from the UI.
 #[tauri::command]
 #[specta::specta]
 pub fn set_postcard_text(
     app: AppHandle,
     state: State<'_, AppState>,
     id: PhotoId,
+    part: fotollection_core::settings::PostcardPart,
     text: Option<String>,
 ) -> Result<HistoryState, IpcError> {
-    if let Some(text) = &text
-        && !fotollection_core::settings::validate_postcard(text)
-    {
+    let text = text.unwrap_or_default();
+    if !fotollection_core::settings::validate_postcard(part, &text) {
+        let (chars, lines) = part.limits();
         return Err(IpcError::new(
             "postcard.text_invalid",
             format!(
-                "the postcard text has more than {} characters or {} lines, or a control character",
-                fotollection_core::settings::MAX_POSTCARD_CHARS,
-                fotollection_core::settings::MAX_POSTCARD_LINES
+                "the postcard text has more than {chars} characters or {lines} lines, or a control character"
             ),
         ));
     }
-    let text = text.filter(|t| !t.trim().is_empty());
-    edit_photos(&app, &state, &[id], |_, e| e.postcard.clone_from(&text))
+    edit_photos(&app, &state, &[id], |_, e| {
+        let mut both = e.postcard.clone().unwrap_or_default();
+        match part {
+            fotollection_core::settings::PostcardPart::Message => both.message.clone_from(&text),
+            fotollection_core::settings::PostcardPart::Address => both.address.clone_from(&text),
+        }
+        e.postcard = both.sanitized();
+    })
 }
 
 /// "Apply to all" in the preview: this photo's stamp becomes the setting for every photo,
