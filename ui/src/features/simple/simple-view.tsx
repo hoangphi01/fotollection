@@ -30,7 +30,7 @@ type SimpleViewProps = {
 export function SimpleView({ photos, index, onIndexChange, view, revision, queueCounts }: SimpleViewProps) {
   const { t } = useTranslation()
   const photo = photos[index]
-  const shownSrc = useShownSrc(photo?.id, photo ? previewUrl(photo.id, revision) : '')
+  const { src: shownSrc, error: shownError } = useShownSrc(photo?.id, photo ? previewUrl(photo.id, revision) : '')
   const go = (delta: number) => onIndexChange(Math.min(photos.length - 1, Math.max(0, index + delta)))
   const send = (queue: Queue) => {
     if (photo) sendTo(photo.id, queue, view, () => go(1))
@@ -95,7 +95,7 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
             className="max-h-full max-w-full animate-in object-contain stage-photo fade-in-0"
           />
         ) : (
-          <StageSpinner />
+          <StageSpinner error={shownError} />
         )}
         {photo.queue === 'print' && (
           <Badge className="absolute top-3 left-3 gap-1">

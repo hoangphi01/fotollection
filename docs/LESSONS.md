@@ -11,6 +11,15 @@
 3. **Reproduce with the user's photo when the user sees it.** A synthetic test passed while the real app was soft: unit tests prove the pixels, only the real webview proves what is shown.
 4. **Write the lesson here** before moving on.
 
+## 2026-11-03
+
+### A lock held across rayon work hangs the pool: zooming into a RAW froze every preview (FR-057, FR-016)
+
+- **Seen:** the owner opened an ARW, zoomed (the sharp layer came slowly), pressed → for the next photo: its preview spun for five minutes, and so did every photo opened after closing the preview. `measure_zoom` on its own was fast (preview 0.9 s, first region 0.7 s), but on a two-thread pool with a region asked every 150 ms, as the preview window asks, three DNGs stopped after the first photo with the CPU idle: a deadlock, not slowness. The Mac's ARW path (ImageIO) uses no rayon and hid it; rawler (Windows) and our DNG decoder use rayon inside the develop.
+- **Why:** `raw::decode` took the `DEVELOP` mutex (one develop at a time, NFR-004) on the pool thread, then the develop ran `par_iter`. A rayon thread that waits for its parallel work runs other queued jobs of its pool meanwhile; it took up a zoom request, which called `raw::decode` and waited for `DEVELOP`, held below it on the same thread. The other thread waited for the lock too, and no preview, region or source could be answered again. A batch export of RAWs could hang the same way. And the first sharp region developed the RAW a second time, because the preview kept only its 2048 px copy.
+- **Fix:** `raw::one_at_a_time` runs the develop and its lock on a plain thread of its own, which never takes up other jobs; the caller only waits (test `develops_asked_while_one_runs_all_finish` hangs on the old code). The preview keeps the full image it developed in the zoom cache (`PreviewCache::keep_full`), so the first region needs no second develop (ARW 712 → 42 ms, OPTIMIZATION §5). A failed preview answers its `IpcError` as JSON and the stage shows it with its `ERR-` code; before, an image that failed to load left the spinner on for good.
+- **Rule:** never hold a lock while rayon work runs (STYLE_RULE §2, Errors). Test what runs on a pool on a small pool, with requests arriving while one runs, not one call at a time. And every image the UI waits for has an `onerror`.
+
 ## 2026-11-02
 
 ### A crate yanked between CI and the release stops the release (v0.9.1)

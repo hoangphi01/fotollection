@@ -54,6 +54,8 @@ export function useSharpRegion(
       setWanted(src)
       const next = new Image()
       next.onload = () => live && setLoaded({ src, photoId, rect })
+      // A failed region leaves the preview as it is, without a spinner for good.
+      next.onerror = () => live && setWanted(null)
       next.src = src
     }, SETTLE_MS)
     return () => {

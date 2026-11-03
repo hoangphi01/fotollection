@@ -221,6 +221,7 @@ import → metadata → adjust → geocode → (cluster) → cull/select → pla
   - **export** has its own bounded pool.
 
   Visible thumbnails therefore never wait behind background work. A request for a photo whose T1 isn't ready gets the embedded T0 at once.
+- A RAW develop runs one at a time (`raw::DEVELOP`, NFR-004), on a plain thread of its own, never on a pool thread: a pool thread waiting for the develop's rayon work would take up other requests meanwhile, and one asking for a develop would wait for the lock its own thread holds (LESSONS 2026-11-03).
 
 ## 6. IPC contract
 
@@ -337,12 +338,12 @@ Pixels **never** cross IPC as JSON or base64. Thumbnails and previews are served
 - `fotothumb://localhost/thumb/{id}?v={n}`: the cached T1, else the embedded T0, else a T1 generated on the spot. `v` bumps on `thumb-ready`.
 - `fotothumb://localhost/source/{id}?rev={n}`: the upright, **uncropped**, unstamped T2 image, the crop editor's background.
 - `fotothumb://localhost/preview/{id}?rev={n}`: about 1600 px, rendered from the T2 cache with the **same** `RenderPlan` code as the export. `rev` is the settings revision.
-- `fotothumb://localhost/preview/{id}?rev={n}&region={x},{y},{w},{h}&px={n}`: one part of the **full-resolution** render, for zoom past the preview's pixels (FR-057). The region is in fractions of the photo and `px` the widest it should come back (at most 4,096); both are checked in Rust before any work. The original is decoded on the first such request into a second cache bounded at about 200 MB (`PreviewCache::full`; the photo on screen always stays), rendered with the export's plan, and only the region is encoded. The UI lays that part over the zoomed preview at its final on-screen size and only translates it: a CSS `scale()` would make WebKit rasterise it at its small layout size first and lose the detail.
+- `fotothumb://localhost/preview/{id}?rev={n}&region={x},{y},{w},{h}&px={n}`: one part of the **full-resolution** render, for zoom past the preview's pixels (FR-057). The region is in fractions of the photo and `px` the widest it should come back (at most 4,096); both are checked in Rust before any work. The full image the preview was decoded from is kept in a second cache bounded at about 200 MB (`PreviewCache::full`; the newest photo always stays), so the first region decodes nothing again, rendered with the export's plan, and only the region is encoded. The UI lays that part over the zoomed preview at its final on-screen size and only translates it: a CSS `scale()` would make WebKit rasterise it at its small layout size first and lose the detail.
 
 - `fotothumb://localhost/sheet/{first}/{second}?rev={n}[&small=1]`: a collage sheet (FR-035), both photos from the T2 cache through `sheet::render_sheet`, the same code as its export; 1600 px, or 640 px with `small=1` for the sheet grid, which renders from the photos' T1 thumbnails (no photo decoded again when a setting changes, OPTIMIZATION §4.2). `{second}` is left out for an odd last photo.
 - `fotothumb://localhost/camera/live?seq={n}`: the connected camera's latest live-view frame, a JPEG already in memory (FR-062). It is never decoded, cached or written to disk; `seq` only defeats the webview's cache.
 
-The UI just sets `<img src>`. Routes are parsed strictly: anything other than these routes returns 404.
+The UI just sets `<img src>`. Routes are parsed strictly: anything other than these routes returns 404. A photo that cannot be shown answers 500 with its `IpcError` as JSON (`{ code, err, message }`, also written to the error log); the stage reads it on the image's `error` and shows the reason with its `ERR-` code (`useShownSrc`), never a spinner for good.
 
 ## 7. Persistence
 

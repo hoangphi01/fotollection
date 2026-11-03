@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { CircleCheck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { StageSpinner } from '@/components/layout/stage-spinner'
 import type { PhotoSummary } from '@/ipc/bindings'
 import { previewUrl, thumbUrl } from '@/lib/photo-url'
 import { cn } from '@/lib/utils'
@@ -22,7 +23,7 @@ type QuickPreviewProps = {
  */
 export function QuickPreview({ photo, revision, thumbVersion, generation, checked, onClose }: QuickPreviewProps) {
   const { t } = useTranslation()
-  const shown = useShownSrc(photo.id, previewUrl(photo.id, revision))
+  const { src: shown, error } = useShownSrc(photo.id, previewUrl(photo.id, revision))
 
   return (
     <div
@@ -42,6 +43,7 @@ export function QuickPreview({ photo, revision, thumbVersion, generation, checke
             className="max-h-full max-w-full rounded-sm object-contain opacity-80 stage-photo blur-[1px]"
           />
         )}
+        {error && <StageSpinner error={error} />}
       </div>
       <p className="flex items-center gap-2 text-sm text-white/80">
         <span className="truncate">{photo.fileName}</span>

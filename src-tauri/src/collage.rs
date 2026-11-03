@@ -402,17 +402,23 @@ pub fn cell_geometry(
 
 /// Bytes for `fotothumb://localhost/sheet/{first}/{second}`: the sheet with the current
 /// settings, `SMALL_SHEET` or `LARGE_SHEET` pixels on its long edge.
-pub fn sheet_bytes(state: &AppState, sheet: SheetPair, small: bool) -> Result<Vec<u8>, String> {
+pub fn sheet_bytes(state: &AppState, sheet: SheetPair, small: bool) -> Result<Vec<u8>, IpcError> {
+    let unknown = || IpcError::new("photo.unknown", "unknown photo");
     let (first, second) = {
-        let library = state.library.read().map_err(|e| e.to_string())?;
-        let first = library.record(sheet.first).ok_or("unknown photo")?;
+        let library = state.library.read().map_err(crate::document::poisoned)?;
+        let first = library.record(sheet.first).ok_or_else(unknown)?;
         let second = match sheet.second {
-            Some(id) => Some(library.record(id).ok_or("unknown photo")?),
+            Some(id) => Some(library.record(id).ok_or_else(unknown)?),
             None => None,
         };
         (first, second)
     };
-    let settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
+    let settings = state
+        .settings
+        .read()
+        .map_err(crate::document::poisoned)?
+        .0
+        .clone();
     let names = place_names(state);
     let place = |r: &fotollection_core::library::PhotoRecord| {
         crate::state::place_for(r, &names, settings.place_format)
@@ -433,7 +439,7 @@ pub fn sheet_bytes(state: &AppState, sheet: SheetPair, small: bool) -> Result<Ve
             small.then_some(&thumbnail as &dyn Fn(&_) -> _),
             state.codec.as_ref(),
         )
-        .map_err(|e| e.to_string())
+        .map_err(|e| crate::commands::shown_error(&e))
 }
 
 #[cfg(test)]

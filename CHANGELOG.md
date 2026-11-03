@@ -10,7 +10,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Highlights
 
+- Fixes: zooming into a camera RAW no longer freezes every preview after it; the first sharp zoom of a RAW comes at once
 - UI update: the language is chosen in the version popover, the same in every mode, so the Print panel has one card less
+
+### Fixed
+
+- **Zooming into a camera RAW** (ARW, NEF, CR3, DNG…), mostly on Windows: after a zoom the next photo's preview could spin for good, and every preview after it, until the app was restarted. Two RAW develops asked at once waited for each other. They now always finish.
+- **The first sharp zoom of a RAW** no longer develops the file a second time: the full image the preview was made from is kept for zoom (0.7 s → 0.04 s for a 24 MP ARW on a Mac).
+- **A preview that cannot be made** shows why, with its error code (for example ERR-IMG-0006 for a file cut short), instead of a spinner that never stops.
 
 ### Changed
 

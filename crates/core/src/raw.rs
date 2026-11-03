@@ -340,11 +340,30 @@ fn first<T>(
 
 /// The full develop, for the print preview, zoom and export.
 pub fn decode(bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError> {
-    // A poisoned lock only means another develop panicked; the lock itself guards nothing.
-    let _one = DEVELOP
-        .lock()
-        .unwrap_or_else(std::sync::PoisonError::into_inner);
-    first(|d| d.decode(bytes, kind))
+    one_at_a_time(|| first(|d| d.decode(bytes, kind)))
+        .unwrap_or_else(|| Err(CodecError::Decode("the RAW develop failed".into())))
+}
+
+/// Runs `develop` holding `DEVELOP`, on a thread of its own: `None` if it panicked.
+///
+/// Never on the caller's thread. A develop runs rayon work, and a rayon thread waiting for
+/// that work takes up other jobs of its pool meanwhile; when one of them asks for a develop
+/// too, it waits for a lock its own thread holds, and the pool stops for good (LESSONS
+/// 2026-11-03: zooming into a RAW hung every preview after it). A plain thread never takes
+/// up other jobs, so whoever holds the lock always finishes; the caller only waits.
+fn one_at_a_time<T: Send>(develop: impl FnOnce() -> T + Send) -> Option<T> {
+    std::thread::scope(|scope| {
+        scope
+            .spawn(|| {
+                // A poisoned lock only means another develop panicked; it guards nothing.
+                let _one = DEVELOP
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner);
+                develop()
+            })
+            .join()
+            .ok()
+    })
 }
 
 /// The developed size, the only one to use for geometry (crops are fractions of it).
@@ -367,6 +386,33 @@ pub fn available() -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Develops asked on a small pool while one runs, as zooming asks for regions while the
+    /// preview develops: the develop's parallel work must not take up a waiting request that
+    /// needs the same lock on the same thread (LESSONS 2026-11-03).
+    #[test]
+    fn develops_asked_while_one_runs_all_finish() -> Result<(), rayon::ThreadPoolBuildError> {
+        use rayon::prelude::*;
+        const ASKED: u64 = 8;
+        let pool = rayon::ThreadPoolBuilder::new().num_threads(2).build()?;
+        let (tx, rx) = std::sync::mpsc::channel();
+        for i in 0..ASKED {
+            let tx = tx.clone();
+            pool.spawn(move || {
+                let sum =
+                    one_at_a_time(|| (0..400_000u64).into_par_iter().map(|x| x % 7).sum::<u64>());
+                let _ = tx.send((i, sum));
+            });
+        }
+        for _ in 0..ASKED {
+            let answer = rx.recv_timeout(std::time::Duration::from_secs(20));
+            assert!(
+                matches!(answer, Ok((_, Some(_)))),
+                "a develop never finished: {answer:?}"
+            );
+        }
+        Ok(())
+    }
 
     /// `first` with the decoders answering `answers` in turn.
     fn answers(answers: Vec<CodecError>) -> CodecError {

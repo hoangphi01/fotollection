@@ -25,6 +25,17 @@ pub enum ThumbError {
     Io(#[from] std::io::Error),
 }
 
+impl ThumbError {
+    /// Stable machine-readable code (SECURITY.md §8), for the `ERR-` code on screen.
+    pub fn code(&self) -> &'static str {
+        match self {
+            Self::Codec(e) => e.code(),
+            Self::Render(_) => "render.failed",
+            Self::Io(_) => "io.read_failed",
+        }
+    }
+}
+
 pub struct ThumbCache {
     dir: PathBuf,
 }

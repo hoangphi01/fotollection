@@ -25,6 +25,7 @@
 - `crates/core`: each module exposes a typed error enum built with `thiserror`. Errors carry context such as the file path or photo ID.
 - `src-tauri`: `anyhow` may be used internally. Errors that cross IPC are converted to a serializable `IpcError { code, message }`. `code` is a stable, machine-readable string, for example `decode.unsupported`.
 - **No `unwrap()` or `expect()` in non-test code**, except on proven invariants. Those require a comment that starts with `// INVARIANT:`.
+- **Never hold a lock while rayon work runs** (2026-11-03). A rayon thread that waits for its parallel work runs other jobs of its pool meanwhile; if one needs the same lock, the thread waits for itself and the pool stops for good. Work that must run one at a time behind a lock (the RAW develop, `raw::one_at_a_time`) runs on a plain thread of its own, which never takes up other jobs.
 - One bad photo must never fail the batch ([NFR-011](PRD.md#nfr-011--robustness)). Return per-photo `Result`s and aggregate them.
 
 ### Unsafe and FFI

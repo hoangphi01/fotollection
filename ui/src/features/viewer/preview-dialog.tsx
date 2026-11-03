@@ -138,7 +138,7 @@ export function PreviewDialog({
   // The same sharp / acceptable / pixelated advice as the settings panel (FR-026).
   const advice = usePrintAdvice(photo?.id, settings)
   const src = photo ? previewUrl(photo.id, revision) : ''
-  const shownSrc = useShownSrc(photo?.id, src)
+  const { src: shownSrc, error: shownError } = useShownSrc(photo?.id, src)
   // The crop editor and the drag need this photo's geometry; the crop row only shows it.
   const geometryQuery = useLiveQuery(photo ? String(photo.id) : null, revision, loadGeometry)
   const geometry = geometryQuery.current
@@ -265,7 +265,7 @@ export function PreviewDialog({
                   className="pointer-events-none absolute top-1/2 left-1/2 max-w-none"
                 />
               )}
-              {!shownSrc && <StageSpinner />}
+              {!shownSrc && <StageSpinner error={shownError} />}
               <div className="absolute top-3 left-3 flex gap-1.5">
                 <Tooltip>
                   <TooltipTrigger asChild>

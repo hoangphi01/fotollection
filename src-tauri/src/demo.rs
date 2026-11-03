@@ -189,7 +189,7 @@ fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, 
         write(&out.join(format!("img/thumb/{key}.jpg")), &thumb)?;
         write(
             &out.join(format!("img/source/{key}.jpg")),
-            &source_bytes(&state, id, false)?,
+            &source_bytes(&state, id, false).map_err(|e| e.message)?,
         )?;
     }
     common.insert("photo_details", Value::Object(details));
@@ -227,7 +227,7 @@ fn record_scenarios(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Valu
             stamps.insert(key.clone(), ok(commands::get_photo_stamp(app.state(), id))?);
             write(
                 &out.join(format!("img/preview/{scenario}/{key}.jpg")),
-                &preview_bytes(&state, id)?,
+                &preview_bytes(&state, id).map_err(|e| e.message)?,
             )?;
         }
         scenarios.insert(
@@ -279,7 +279,7 @@ fn record_collage(app: &AppHandle, out: &Path) -> Result<Value, String> {
         for (small, suffix) in [(true, "-small"), (false, "")] {
             write(
                 &out.join(format!("img/sheet/{key}{suffix}.jpg")),
-                &crate::collage::sheet_bytes(&state, sheet, small)?,
+                &crate::collage::sheet_bytes(&state, sheet, small).map_err(|e| e.message)?,
             )?;
         }
     }

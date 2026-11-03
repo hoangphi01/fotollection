@@ -3,9 +3,10 @@
 //! (~2 MP) kept in a small LRU; re-rendering for new settings then only crops, resizes
 //! and stamps that buffer (NFR-002).
 //!
-//! Zooming past the preview's pixels (FR-057) asks for one region at full resolution: the
-//! original is decoded only then, into a second cache bounded by bytes, rendered exactly as
-//! export renders it, and only the visible part is encoded.
+//! Zooming past the preview's pixels (FR-057) asks for one region at full resolution. The
+//! full image the preview was made from is kept in a second cache bounded by bytes, so the
+//! first region needs no second decode; it is rendered exactly as export renders it, and
+//! only the visible part is encoded.
 
 use std::sync::{Arc, Mutex};
 
@@ -168,18 +169,25 @@ impl PreviewCache {
         if let Some(image) = take_cached(&self.entries, (record.id, record.display_orientation())) {
             return Ok(image);
         }
-        let bytes = std::fs::read(&record.path)?;
-        let decoded = decode_image(codec, &bytes)?;
-        let upright = apply_orientation(decoded.image, record.display_orientation());
+        let key = (record.id, record.display_orientation());
+        // Zoomed before: the full image is already here.
+        let upright = if let Some(full) = take_cached(&self.full, key) {
+            full
+        } else {
+            let bytes = std::fs::read(&record.path)?;
+            let decoded = decode_image(codec, &bytes)?;
+            let full = Arc::new(apply_orientation(decoded.image, key.1));
+            // Kept for zoom, so its first sharp region does not decode the photo again: a
+            // RAW develop costs 0.4 to 2 s (FR-057, RESULT §11).
+            self.keep_full(key, Arc::clone(&full));
+            full
+        };
         let image = Arc::new(fit_long_edge(&upright, T2_LONG_EDGE)?);
         if let Ok(mut entries) = self.entries.lock() {
             if entries.len() >= CAPACITY {
                 entries.remove(0);
             }
-            entries.push((
-                (record.id, record.display_orientation()),
-                Arc::clone(&image),
-            ));
+            entries.push((key, Arc::clone(&image)));
         }
         Ok(image)
     }
@@ -212,14 +220,20 @@ impl PreviewCache {
         let bytes = std::fs::read(&record.path)?;
         let decoded = decode_image(codec, &bytes)?;
         let image = Arc::new(apply_orientation(decoded.image, key.1));
+        self.keep_full(key, Arc::clone(&image));
+        Ok(image)
+    }
+
+    /// Keeps a full-resolution image within `FULL_BUDGET_BYTES`, the newest always.
+    fn keep_full(&self, key: SourceKey, image: Arc<RgbImage>) {
         if let Ok(mut full) = self.full.lock() {
-            full.push((key, Arc::clone(&image)));
+            full.retain(|(k, _)| *k != key);
+            full.push((key, image));
             let mut bytes: usize = full.iter().map(|(_, i)| i.data.len()).sum();
             while bytes > FULL_BUDGET_BYTES && full.len() > 1 {
                 bytes -= full.remove(0).1.data.len();
             }
         }
-        Ok(image)
     }
 
     /// Renders `record` from `source` with the current settings, downsized to

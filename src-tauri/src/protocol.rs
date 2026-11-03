@@ -106,6 +106,19 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
     }
 }
 
+/// A photo that could not be shown: its `IpcError` as JSON, so the UI can say why with
+/// the `ERR-` code instead of waiting for an image that never comes.
+fn fail(responder: UriSchemeResponder, error: &crate::state::IpcError) {
+    let body = serde_json::to_vec(error).unwrap_or_default();
+    let builder = Response::builder()
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .header(header::CACHE_CONTROL, "no-cache")
+        .header(header::CONTENT_TYPE, "application/json");
+    if let Ok(response) = builder.body(body) {
+        responder.respond(response);
+    }
+}
+
 fn respond(responder: UriSchemeResponder, status: StatusCode, body: Vec<u8>, jpeg: bool) {
     let mut builder = Response::builder()
         .status(status)
@@ -153,43 +166,23 @@ pub fn handle<R: Runtime>(
             },
             Route::Source(id, sheet) => match source_bytes(&state, id, sheet) {
                 Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
-                Err(message) => respond(
-                    responder,
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    message.into_bytes(),
-                    false,
-                ),
+                Err(error) => fail(responder, &error),
             },
             Route::Region(id, region) => match region_bytes(&state, id, region) {
                 Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
-                Err(message) => respond(
-                    responder,
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    message.into_bytes(),
-                    false,
-                ),
+                Err(error) => fail(responder, &error),
             },
             Route::CameraLive => {}
             Route::Sheet(sheet, small) => match crate::collage::sheet_bytes(&state, sheet, small) {
                 Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
-                Err(message) => respond(
-                    responder,
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    message.into_bytes(),
-                    false,
-                ),
+                Err(error) => fail(responder, &error),
             },
             Route::Preview(id) => match preview_bytes(&state, id) {
                 Ok(bytes) => {
                     crate::timing::mark(&crate::timing::FIRST_PREVIEW, "first preview");
                     respond(responder, StatusCode::OK, bytes, true);
                 }
-                Err(message) => respond(
-                    responder,
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    message.into_bytes(),
-                    false,
-                ),
+                Err(error) => fail(responder, &error),
             },
         }
     });

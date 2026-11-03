@@ -971,25 +971,30 @@ fn preview_inputs(
         Option<String>,
         Option<FrameRequest>,
     ),
-    String,
+    IpcError,
 > {
     let record = state
         .library
         .read()
         .ok()
         .and_then(|l| l.record(id))
-        .ok_or_else(|| "unknown photo".to_owned())?;
-    let settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
+        .ok_or_else(|| IpcError::new("photo.unknown", "unknown photo"))?;
+    let settings = state
+        .settings
+        .read()
+        .map_err(crate::document::poisoned)?
+        .0
+        .clone();
     let place = crate::state::place_for(&record, &place_names(state), settings.place_format);
     let frame = {
-        let f = state.frame.read().map_err(|e| e.to_string())?;
+        let f = state.frame.read().map_err(crate::document::poisoned)?;
         f.request(&record, place.as_deref())
     };
     Ok((record, settings, place, frame))
 }
 
 /// Bytes for `fotothumb://localhost/preview/{id}`, rendered with the current settings.
-pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
+pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, IpcError> {
     let (record, settings, place, frame) = preview_inputs(state, id)?;
     state
         .previews
@@ -1000,7 +1005,13 @@ pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, String> {
             place.as_deref(),
             state.codec.as_ref(),
         )
-        .map_err(|e| e.to_string())
+        .map_err(|e| shown_error(&e))
+}
+
+/// A photo that could not be shown, with the code of why (ERR-IMG-0006 for a file cut
+/// short), written to the error log: the UI shows it instead of waiting (FR-069).
+pub fn shown_error(e: &fotollection_core::thumbs::ThumbError) -> IpcError {
+    IpcError::new(e.code(), e.to_string())
 }
 
 /// One full-resolution region of the preview, for zoom (FR-057).
@@ -1008,7 +1019,7 @@ pub fn region_bytes(
     state: &AppState,
     id: PhotoId,
     region: fotollection_core::preview::Region,
-) -> Result<Vec<u8>, String> {
+) -> Result<Vec<u8>, IpcError> {
     let (record, settings, place, frame) = preview_inputs(state, id)?;
     state
         .previews
@@ -1020,7 +1031,7 @@ pub fn region_bytes(
             region,
             state.codec.as_ref(),
         )
-        .map_err(|e| e.to_string())
+        .map_err(|e| shown_error(&e))
 }
 
 /// Everything the preview inspector shows about one photo.
@@ -1885,17 +1896,17 @@ pub fn redo(app: AppHandle, state: State<'_, AppState>) -> Result<HistoryState, 
 }
 
 /// Bytes for `fotothumb://localhost/source/{id}`: the upright, uncropped T2 image.
-pub fn source_bytes(state: &AppState, id: PhotoId, sheet: bool) -> Result<Vec<u8>, String> {
+pub fn source_bytes(state: &AppState, id: PhotoId, sheet: bool) -> Result<Vec<u8>, IpcError> {
     let record = state
         .library
         .read()
         .ok()
         .and_then(|l| l.record(id))
-        .ok_or_else(|| "unknown photo".to_owned())?;
+        .ok_or_else(|| IpcError::new("photo.unknown", "unknown photo"))?;
     state
         .previews
         .source_jpeg(&record, sheet, state.codec.as_ref())
-        .map_err(|e| e.to_string())
+        .map_err(|e| shown_error(&e))
 }
 
 /// Reopens the session project: re-scans its folders and re-applies the saved edits.

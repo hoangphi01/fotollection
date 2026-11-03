@@ -69,7 +69,7 @@ export function SheetPreviewDialog({
   const { sheets, index, sheet } = collage
   const key = sheet ? `${sheet.first}:${sheet.second}` : undefined
   const src = sheet ? sheetUrl(sheet.first, sheet.second, revision) : ''
-  const shownSrc = useShownSrc(key, src)
+  const { src: shownSrc, error: shownError } = useShownSrc(key, src)
   const shape = useSheetShape(shownSrc ?? '')
   const [stage, setStage] = useState<HTMLDivElement | null>(null)
   const [cropping, setCropping] = useState(false)
@@ -216,7 +216,7 @@ export function SheetPreviewDialog({
                 )}
               </div>
             ) : (
-              <StageSpinner />
+              <StageSpinner error={shownError} />
             )}
             <div className="absolute top-3 left-3 flex gap-1.5">
               {/* A disabled button gets no pointer events: its hint sits on a wrapper. */}
