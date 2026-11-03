@@ -151,7 +151,7 @@
     <p class="lead narrow">{{ t.modes_lead }}</p>
   </div>
   <div class="wrap showcase">
-    {%- assign rows = "collage,simple" | split: "," -%}
+    {%- assign rows = "postcard,collage,simple" | split: "," -%}
     {%- for r in rows -%}
     {%- capture title_key %}{{ r }}_title{% endcapture -%}
     {%- capture text_key %}{{ r }}_text{% endcapture -%}
@@ -160,7 +160,7 @@
     <div class="showcase-row{% cycle 'modes': '', ' flip' %}">
       <figure class="shot">{% include shot.html name=r alt=show_alt %}</figure>
       <div class="showcase-text">
-        <h3>{{ t[title_key] }}</h3>
+        <h3>{{ t[title_key] }}{% if r == "postcard" %} <span class="soon">{{ t.postcard_coming }}</span>{% endif %}</h3>
         <p>{{ t[text_key] }}</p>
         <p class="small muted">{{ t[show_key] }}</p>
       </div>

@@ -370,7 +370,7 @@ h3.with-logo .logo-os { height: 0.95em; }
 .systems-table .mark-ok { color: var(--brand); }
 .systems-table .mark-ok .icon { vertical-align: -0.2em; }
 .systems-table .mark-soon, .systems-table .mark-none { color: var(--muted); }
-.table .soon { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 8px; background: var(--flower-soft); color: var(--flower); font-size: 0.75rem; font-weight: 600; vertical-align: 0.1em; }
+.table .soon, .showcase-text .soon { display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 8px; background: var(--flower-soft); color: var(--flower); font-size: 0.75rem; font-weight: 600; vertical-align: 0.1em; }
 .changelog { scrollbar-width: thin; scrollbar-color: var(--brand) transparent; }
 .changelog::-webkit-scrollbar { width: 8px; }
 .changelog::-webkit-scrollbar-track { background: transparent; margin: 14px 0; }

@@ -98,6 +98,10 @@ en:
   show_tabs: "Three folders as tabs: photos ticked in two of them, and the close button on a tab"
   modes_title: "Three modes: Simple, Collage, Pro"
   modes_lead: "New in v0.9.0. Switch at the top of the sidebar. Your photos, print basket and settings stay the same in every mode."
+  postcard_title: "A postcard from your own photo"
+  postcard_text: "In Collage mode, one switch turns each print into a postcard: your photo on one half, and on the other a dashed stamp box and lines for a message or an address. Type the text, set in a typewriter face, or write it by hand with a fine permanent marker. A 10 × 15 print is within the postcard sizes Deutsche Post takes."
+  show_postcard: "Collage mode with Postcard on: one photo and a postcard back on each print"
+  postcard_coming: Coming in v0.9.4
   collage_title: "Two photos on one print"
   collage_text: "Inspired by half-frame film cameras: a 10 × 15 print holds two 10 × 7.5 photos, so a set costs half as much. Photos pair in order, a drag swaps them, and the app suggests a size with white round it, 6 × 9 cm for a 2:3 photo. A thin cut line splits the print in two, or leave it off for a half-frame strip."
   show_collage: "Collage mode: sheets as they will print, with the photo ratio, the suggested size and the cut line"
@@ -467,6 +471,10 @@ vi:
   show_tabs: "Ba thư mục là ba tab: ảnh đã tích ở hai thư mục, và nút đóng trên một tab"
   modes_title: "Ba chế độ: Đơn giản, Ghép ảnh, Pro"
   modes_lead: "Mới trong v0.9.0. Chuyển ở đầu thanh bên. Ảnh, giỏ in và thiết lập của bạn giữ nguyên ở mọi chế độ."
+  postcard_title: "Bưu thiếp từ chính ảnh của bạn"
+  postcard_text: "Trong chế độ Ghép ảnh, một công tắc biến mỗi tấm in thành bưu thiếp: ảnh của bạn ở một nửa, nửa kia là ô dán tem nét đứt và dòng kẻ để viết lời nhắn hoặc địa chỉ. Gõ chữ, in bằng font máy đánh chữ, hoặc viết tay bằng bút dạ dầu nét mảnh. Tấm 10 × 15 nằm trong khổ bưu thiếp mà Deutsche Post nhận."
+  show_postcard: "Chế độ Ghép ảnh khi bật Bưu thiếp: mỗi tấm in có một ảnh và mặt sau bưu thiếp"
+  postcard_coming: Sắp có trong v0.9.4
   collage_title: "Hai ảnh trên một tấm in"
   collage_text: "Lấy cảm hứng từ máy ảnh film half-frame: một tấm 10 × 15 chứa hai ảnh 10 × 7,5, nên in cả bộ chỉ tốn một nửa. Ảnh được ghép theo thứ tự, kéo-thả để đổi chỗ, và app gợi ý cỡ ảnh có chừa viền trắng, 6 × 9 cm cho ảnh 2:3. Một đường cắt mảnh chia tấm làm đôi, hoặc tắt đi để giữ dải half-frame liền nhau."
   show_collage: "Chế độ Ghép ảnh: các tấm đúng như khi in, cùng tỷ lệ ảnh, cỡ gợi ý và đường cắt"

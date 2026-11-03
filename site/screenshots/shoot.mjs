@@ -42,10 +42,12 @@ const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
 function bridge({ fixtures, scenario, language, os, tabs, queues, mode }) {
   const { common, scenarios } = fixtures
   // Collage mode (FR-035) has its own recording; older dumps have none.
-  const collage = fixtures.collage ?? { list_sheets: [], sheet_info: {}, get_crop_geometry: {} }
+  // Postcards (FR-073) are recorded after the collage, as its own sheets; older dumps have none.
+  const empty = { list_sheets: [], sheet_info: {}, get_crop_geometry: {}, get_postcard_text: {} }
+  const collage = (scenario === 'postcard' ? fixtures.postcard : fixtures.collage) ?? empty
   const look = scenarios[scenario] ?? scenarios.stamp
   const byId = (table, args) => table[String(args?.id)]
-  let current = scenario === 'collage' ? collage.get_settings : look.get_settings
+  let current = scenario === 'collage' || scenario === 'postcard' ? collage.get_settings : look.get_settings
   // The print basket and set-aside photos (FR-050), by position (TRIP_QUEUES).
   const withQueues = (photos) =>
     photos.map((p, i) => ({ ...p, queue: queues.print.includes(i) ? 'print' : queues.aside.includes(i) ? 'aside' : null }))
@@ -69,6 +71,7 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode }) {
     list_fonts: () => common.list_fonts,
     get_ui_settings: () => ({ ...common.get_ui_settings, language, mode }),
     list_sheets: () => collage.list_sheets,
+    get_postcard_text: (a) => collage.get_postcard_text?.[String(a?.id)] ?? null,
     sheet_info: (a) => collage.sheet_info[a.sheet.second == null ? `${a.sheet.first}` : `${a.sheet.first}-${a.sheet.second}`],
     get_document: () => ({ ...common.get_document, edited: false, name: 'Trip 2018' }),
     list_groups: () => common.list_groups,
@@ -168,7 +171,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
       if (kind === 'sheet') {
         // A collage sheet (FR-035): `{first}-{second}`, `-small` for the sheet grid.
         const name = `${id}${second ? `-${second}` : ''}${url.searchParams.get('small') ? '-small' : ''}`
-        const sheet = path.join(dump, 'img/sheet', `${name}.jpg`)
+        const sheet = path.join(dump, scenario === 'postcard' ? 'img/sheet-postcard' : 'img/sheet', `${name}.jpg`)
         if (!existsSync(sheet)) return route.fulfill({ status: 404 })
         return route.fulfill({ body: await readFile(sheet), contentType: 'image/jpeg' })
       }
@@ -401,6 +404,18 @@ for (const language of ['en', 'vi']) {
     await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
     await settle(page)
     await save(page, `manual-collage-preview-${suffix}`)
+    await context.close()
+
+    // 11. Postcards (FR-073): one photo and a postcard back on each print, the panel's
+    // postcard card open; then a card's preview with its typed text, for the manual.
+    ;({ context, page } = await open({ scenario: 'postcard', language, theme, mode: 'collage', queues: NO_QUEUES }))
+    await page.locator('[data-cell]').first().click()
+    await settle(page)
+    await save(page, `postcard-${suffix}`)
+    await page.locator('[data-cell]').first().dblclick()
+    await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
+    await settle(page)
+    await save(page, `manual-postcard-${suffix}`)
     await context.close()
   }
 }
