@@ -8,4 +8,5 @@ export const POSTCARD_DEFAULTS: PostcardSettings = {
   lines: 4,
   font: null,
   credit: '',
+  ink: 'auto',
 }

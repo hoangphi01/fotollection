@@ -155,6 +155,32 @@ pub enum PostcardOrientation {
     Portrait,
 }
 
+/// The ink of a postcard's typed text (FR-073). `Auto` is near-black on white paper and
+/// near-white on black; the others print the same on both.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum PostcardInk {
+    #[default]
+    Auto,
+    /// The blue of a ballpoint pen.
+    Blue,
+    Sepia,
+    Red,
+}
+
+impl PostcardInk {
+    /// The colour on this paper.
+    pub fn rgb(self, paper: BorderColor) -> [u8; 3] {
+        match (self, paper) {
+            (Self::Auto, BorderColor::White) => [35, 35, 35],
+            (Self::Auto, BorderColor::Black) => [235, 235, 235],
+            (Self::Blue, _) => [28, 62, 150],
+            (Self::Sepia, _) => [112, 66, 20],
+            (Self::Red, _) => [176, 32, 32],
+        }
+    }
+}
+
 /// The postcard half of a collage sheet (FR-073). The text on each card is the photo's own
 /// (`PhotoEdits::postcard`).
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -173,6 +199,9 @@ pub struct PostcardSettings {
     /// A small line under the text box on every card ("Photo © …"); empty prints nothing.
     #[serde(default)]
     pub credit: String,
+    /// The typed text's ink.
+    #[serde(default)]
+    pub ink: PostcardInk,
 }
 
 /// How many writing lines a postcard may have.
@@ -190,6 +219,7 @@ impl Default for PostcardSettings {
             lines: default_postcard_lines(),
             font: None,
             credit: String::new(),
+            ink: PostcardInk::Auto,
         }
     }
 }

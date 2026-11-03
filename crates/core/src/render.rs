@@ -29,6 +29,12 @@ static SEMIBOLD: LazyLock<Option<FontArc>> = LazyLock::new(|| inter(600.0));
 static REGULAR: LazyLock<Option<FontArc>> = LazyLock::new(|| inter(400.0));
 static BLACK: LazyLock<Option<FontArc>> = LazyLock::new(|| inter(800.0));
 
+/// Bundled Inter Regular: also the fallback for letters another face lacks (a postcard's
+/// Greek or Cyrillic, FR-073).
+pub fn regular() -> Option<&'static FontArc> {
+    REGULAR.as_ref()
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum RenderError {
     #[error("resize failed: {0}")]

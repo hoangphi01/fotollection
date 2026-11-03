@@ -1229,6 +1229,14 @@ export type PlaceUse = {
 };
 
 /**
+ *  The ink of a postcard's typed text (FR-073). `Auto` is near-black on white paper and
+ *  near-white on black; the others print the same on both.
+ */
+export type PostcardInk = "auto" | 
+/**  The blue of a ballpoint pen. */
+"blue" | "sepia" | "red";
+
+/**
  *  Which way a postcard sheet is held: landscape puts the photo on the left half, portrait
  *  on the bottom half; the stamp box is always at the top right (FR-073).
  */
@@ -1247,6 +1255,8 @@ export type PostcardSettings = {
 	font?: number | null,
 	/**  A small line under the text box on every card ("Photo © …"); empty prints nothing. */
 	credit?: string,
+	/**  The typed text's ink. */
+	ink?: PostcardInk,
 };
 
 /**  How large one photo prints well, and the verdict for each size. */

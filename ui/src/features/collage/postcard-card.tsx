@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { PanelNote } from '@/components/layout/panel-note'
 import { SectionCard } from '@/components/layout/section-card'
-import type { PostcardOrientation, PostcardSettings, RenderSettings } from '@/ipc/bindings'
+import type { PostcardInk, PostcardOrientation, PostcardSettings, RenderSettings } from '@/ipc/bindings'
 import { FontSelect } from '@/features/fonts/font-select'
 import { useFonts } from '@/features/fonts/use-fonts'
 import { POSTCARD_DEFAULTS } from './postcard-defaults'
@@ -16,6 +16,13 @@ const ORIENTATIONS: { value: PostcardOrientation; icon: typeof RectangleHorizont
   { value: 'portrait', icon: RectangleVertical },
 ]
 const LINES = [3, 4]
+/** The inks, each with its swatch, as the date stamp shows its colours. */
+const INKS: { value: PostcardInk; swatch: string }[] = [
+  { value: 'auto', swatch: 'bg-neutral-800' },
+  { value: 'blue', swatch: 'bg-[#1c3e96]' },
+  { value: 'sepia', swatch: 'bg-[#704214]' },
+  { value: 'red', swatch: 'bg-[#b02020]' },
+]
 
 type PostcardCardProps = {
   settings: RenderSettings | null
@@ -83,6 +90,24 @@ export function PostcardCard({ settings, onChange }: PostcardCardProps) {
           label={t('postcard.font')}
           builtIn={t('postcard.typewriter')}
         />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-xs font-normal text-muted-foreground">{t('postcard.ink')}</Label>
+        <ToggleGroup
+          type="single"
+          variant="outline"
+          size="sm"
+          className="w-full"
+          value={postcard?.ink ?? 'auto'}
+          onValueChange={(v) => v && setPostcard({ ink: v as PostcardInk })}
+        >
+          {INKS.map((ink) => (
+            <ToggleGroupItem key={ink.value} value={ink.value} className="flex-1 gap-1.5 px-1 text-xs">
+              <span className={`size-3 rounded-full border ${ink.swatch}`} />
+              {t(`postcard.inks.${ink.value}`)}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
       </div>
       <div className="space-y-1.5">
         <Label className="text-xs font-normal text-muted-foreground">{t('postcard.credit')}</Label>

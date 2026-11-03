@@ -753,6 +753,13 @@
     "sheetSizeHint": "Mỗi tấm chứa một ảnh và mặt sau bưu thiếp, theo chiều cầm chọn ở thẻ Bưu thiếp.",
     "cardHint": "Một ảnh và mặt sau bưu thiếp trên mỗi tấm in",
     "credit": "Dòng ghi công (tuỳ chọn)",
-    "creditPlaceholder": "ví dụ: Ảnh © Anna Schmidt"
+    "creditPlaceholder": "ví dụ: Ảnh © Anna Schmidt",
+    "ink": "Màu chữ",
+    "inks": {
+      "auto": "Đen",
+      "blue": "Xanh",
+      "sepia": "Nâu",
+      "red": "Đỏ"
+    }
   }
 }

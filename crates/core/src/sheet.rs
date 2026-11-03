@@ -558,6 +558,7 @@ pub fn render_sheet(
                 credit: Some(settings.collage.postcard.credit.as_str()),
                 font: card_font,
                 paper: settings.border_color,
+                ink: settings.collage.postcard.ink,
             },
         );
     }

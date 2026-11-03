@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-//! The postcard half of a collage sheet (FR-073): a stamp box at the sheet's top right, and
-//! under it a text box with writing lines, the photo's own text typed on them in a
+//! The postcard half of a collage sheet (FR-073): a dashed stamp box at the sheet's top
+//! right, and under it writing lines, the photo's own text typed on them in a
 //! typewriter face (Xanh Mono, OFL) or the user's font (FR-042). Drawn on the sheet's paper
 //! after the photo, in millimetres turned into the sheet's pixels.
 
@@ -9,7 +9,7 @@ use std::sync::LazyLock;
 use ab_glyph::{Font, FontArc, PxScale, ScaleFont};
 
 use crate::image::RgbImage;
-use crate::settings::BorderColor;
+use crate::settings::{BorderColor, PostcardInk};
 use crate::sheet::RectMm;
 use crate::text::{TextRun, draw_text, text_width};
 
@@ -90,13 +90,15 @@ pub struct CardSpec<'a> {
     /// The face for the typed text; `None` uses the bundled one.
     pub font: Option<&'a FontArc>,
     pub paper: BorderColor,
+    /// The typed text's ink.
+    pub ink: PostcardInk,
 }
 
-/// Ink for the boxes, the lines and the typed text on this paper.
-fn inks(paper: BorderColor) -> ([u8; 3], [u8; 3], [u8; 3]) {
+/// Grey for the stamp box and the credit, and for the writing lines, on this paper.
+fn inks(paper: BorderColor) -> ([u8; 3], [u8; 3]) {
     match paper {
-        BorderColor::White => ([140, 140, 140], [185, 185, 185], [35, 35, 35]),
-        BorderColor::Black => ([150, 150, 150], [95, 95, 95], [235, 235, 235]),
+        BorderColor::White => ([140, 140, 140], [185, 185, 185]),
+        BorderColor::Black => ([150, 150, 150], [95, 95, 95]),
     }
 }
 
@@ -108,39 +110,37 @@ fn inks(paper: BorderColor) -> ([u8; 3], [u8; 3], [u8; 3]) {
 )]
 pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
     let layout = layout(spec.sheet_width, spec.card, spec.lines);
-    let (outline, rule, ink) = inks(spec.paper);
+    let (outline, rule) = inks(spec.paper);
+    let ink = spec.ink.rgb(spec.paper);
     let px = |mm: f32| (mm * density).round().max(0.0) as u32;
     let thick = |mm: f32| (mm * density).round().max(1.0) as u32;
-    // A box's four sides; `dash` in pixels breaks them into dashes and gaps of that length.
-    let frame = |canvas: &mut RgbImage, r: RectMm, dash: Option<u32>| {
-        let (x, y, w, h, t) = (
-            px(r.x),
-            px(r.y),
-            px(r.width),
-            px(r.height),
-            thick(OUTLINE_MM),
-        );
-        let mut side = |x: u32, y: u32, len: u32, across: bool| {
-            let step = dash.unwrap_or(len).max(1);
-            let mut at = 0;
-            while at < len {
-                let run = step.min(len - at);
-                if across {
-                    crate::sheet::fill_rect(canvas, x + at, y, run, t, outline);
-                } else {
-                    crate::sheet::fill_rect(canvas, x, y + at, t, run, outline);
-                }
-                at += 2 * step;
+    // The stamp box, dashed as on a postcard: dashes and gaps of `DASH_MM` along each side.
+    // The text needs only its lines.
+    let s = layout.stamp;
+    let (x, y, w, h, t) = (
+        px(s.x),
+        px(s.y),
+        px(s.width),
+        px(s.height),
+        thick(OUTLINE_MM),
+    );
+    let dash = thick(DASH_MM);
+    let mut side = |x: u32, y: u32, len: u32, across: bool| {
+        let mut at = 0;
+        while at < len {
+            let run = dash.min(len - at);
+            if across {
+                crate::sheet::fill_rect(canvas, x + at, y, run, t, outline);
+            } else {
+                crate::sheet::fill_rect(canvas, x, y + at, t, run, outline);
             }
-        };
-        side(x, y, w, true);
-        side(x, (y + h).saturating_sub(t), w, true);
-        side(x, y, h, false);
-        side((x + w).saturating_sub(t), y, h, false);
+            at += 2 * dash;
+        }
     };
-    // The stamp box is dashed, as on a postcard; the text box is a plain line.
-    frame(canvas, layout.stamp, Some(thick(DASH_MM)));
-    frame(canvas, layout.text, None);
+    side(x, y, w, true);
+    side(x, (y + h).saturating_sub(t), w, true);
+    side(x, y, h, false);
+    side((x + w).saturating_sub(t), y, h, false);
     let rule_inset = TEXT_PAD_MM / 2.0;
     for y in &layout.lines {
         crate::sheet::fill_rect(
@@ -173,9 +173,14 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
         outline,
         1.0,
     );
-    let face = spec.font.unwrap_or(bundled);
+    // The chosen face, with Inter for the letters it lacks (Xanh Mono has no Greek or
+    // Cyrillic): an address copied from anywhere in Europe prints as typed.
+    let faces = Faces {
+        main: spec.font.unwrap_or(bundled),
+        fallback: crate::render::regular(),
+    };
     if let Some(credit) = spec.credit {
-        draw_credit(canvas, density, face, &layout, credit, outline);
+        draw_credit(canvas, density, faces, &layout, credit, outline);
     }
     // The typed text, wrapped to the box and set on the lines; what does not fit is cut.
     let Some(text) = spec.text.filter(|t| !t.trim().is_empty()) else {
@@ -184,22 +189,94 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
     let step = layout.text.height / f32::from(spec.lines.max(1));
     let text_px = (step * TEXT_EM).min(MAX_TEXT_MM) * density;
     let room = (layout.text.width - 2.0 * TEXT_PAD_MM) * density;
-    let ascent = face.as_scaled(PxScale::from(text_px)).ascent();
-    for (row, y) in wrap(face, text_px, text, room).iter().zip(&layout.lines) {
+    for (row, y) in wrap(faces, text_px, text, room).iter().zip(&layout.lines) {
         let baseline = (y - step * BASELINE_GAP / 2.0) * density;
-        draw_text(
+        faces.draw(
             canvas,
-            &TextRun {
-                font: face,
-                text: row,
-                px: text_px,
-                tracking: 0.0,
-            },
+            row,
             (layout.text.x + TEXT_PAD_MM) * density,
-            baseline - ascent,
+            baseline,
+            text_px,
             ink,
-            1.0,
         );
+    }
+}
+
+/// A face and the one that sets the letters it lacks; each run of text goes to the first
+/// face with its glyphs.
+#[derive(Clone, Copy)]
+pub struct Faces<'a> {
+    pub main: &'a FontArc,
+    pub fallback: Option<&'a FontArc>,
+}
+
+impl<'a> Faces<'a> {
+    fn pick(&self, c: char) -> &'a FontArc {
+        if c.is_whitespace() || self.main.glyph_id(c).0 != 0 {
+            return self.main;
+        }
+        self.fallback
+            .filter(|f| f.glyph_id(c).0 != 0)
+            .unwrap_or(self.main)
+    }
+
+    /// `text` cut where the face changes.
+    fn runs<'s>(&self, text: &'s str) -> Vec<(&'a FontArc, &'s str)> {
+        let mut runs: Vec<(&'a FontArc, &'s str)> = Vec::new();
+        let mut start = 0;
+        let mut current: Option<&'a FontArc> = None;
+        for (i, c) in text.char_indices() {
+            let face = self.pick(c);
+            if let Some(prev) = current
+                && !std::ptr::eq(prev, face)
+            {
+                runs.push((prev, &text[start..i]));
+                start = i;
+            }
+            current = Some(face);
+        }
+        if let Some(face) = current {
+            runs.push((face, &text[start..]));
+        }
+        runs
+    }
+
+    /// The width of `text` in pixels.
+    pub fn width(&self, px: f32, text: &str) -> f32 {
+        self.runs(text)
+            .iter()
+            .map(|(f, s)| text_width(f, px, s, 0.0))
+            .sum()
+    }
+
+    /// Draws `text` from `left` with its baseline at `baseline`, each face on that baseline.
+    fn draw(
+        &self,
+        canvas: &mut RgbImage,
+        text: &str,
+        left: f32,
+        baseline: f32,
+        px: f32,
+        ink: [u8; 3],
+    ) {
+        let mut x = left;
+        for (face, run) in self.runs(text) {
+            let ascent = face.as_scaled(PxScale::from(px)).ascent();
+            draw_text(
+                canvas,
+                &TextRun {
+                    font: face,
+                    text: run,
+                    px,
+                    tracking: 0.0,
+                },
+                x,
+                baseline - ascent,
+                ink,
+                1.0,
+            );
+            x += text_width(face, px, run, 0.0);
+        }
     }
 }
 
@@ -207,7 +284,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
 fn draw_credit(
     canvas: &mut RgbImage,
     density: f32,
-    face: &FontArc,
+    faces: Faces<'_>,
     layout: &CardLayout,
     credit: &str,
     ink: [u8; 3],
@@ -217,20 +294,10 @@ fn draw_credit(
         return;
     }
     let px = CREDIT_MM * density;
-    if let Some(row) = wrap(face, px, credit, layout.text.width * density).first() {
-        draw_text(
-            canvas,
-            &TextRun {
-                font: face,
-                text: row,
-                px,
-                tracking: 0.0,
-            },
-            layout.text.x * density,
-            (layout.text.y + layout.text.height + CREDIT_GAP_MM) * density,
-            ink,
-            1.0,
-        );
+    if let Some(row) = wrap(faces, px, credit, layout.text.width * density).first() {
+        let top = (layout.text.y + layout.text.height + CREDIT_GAP_MM) * density;
+        let ascent = faces.main.as_scaled(PxScale::from(px)).ascent();
+        faces.draw(canvas, row, layout.text.x * density, top + ascent, px, ink);
     }
 }
 
@@ -244,8 +311,8 @@ fn cap_height(font: &FontArc) -> f32 {
 
 /// `text` broken into rows no wider than `room` pixels: at its own line breaks, then between
 /// words, and inside a word too long for a row.
-pub fn wrap(font: &FontArc, px: f32, text: &str, room: f32) -> Vec<String> {
-    let fits = |s: &str| text_width(font, px, s, 0.0) <= room;
+pub fn wrap(faces: Faces<'_>, px: f32, text: &str, room: f32) -> Vec<String> {
+    let fits = |s: &str| faces.width(px, s) <= room;
     let mut rows = Vec::new();
     for paragraph in text.split('\n') {
         let mut row = String::new();
@@ -335,6 +402,7 @@ mod tests {
                     credit,
                     font: None,
                     paper: BorderColor::White,
+                    ink: PostcardInk::Auto,
                 },
             );
             let box_bottom = layout(152.0, card, 4).text;
@@ -349,6 +417,63 @@ mod tests {
         assert!(ink_under_box(Some("Photo © Anna Schmidt")) > 50);
     }
 
+    /// FR-073: the typed text takes the chosen ink; the lines stay grey.
+    #[test]
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    fn fr_073_the_text_takes_its_ink() {
+        let mut canvas = crate::render::filled(1520, 1020, [255, 255, 255]);
+        draw(
+            &mut canvas,
+            10.0,
+            &CardSpec {
+                card: half(76.0, 0.0, 76.0, 102.0),
+                sheet_width: 152.0,
+                lines: 4,
+                text: Some("Liebe Grüße"),
+                credit: None,
+                font: None,
+                paper: BorderColor::White,
+                ink: PostcardInk::Blue,
+            },
+        );
+        let blue = canvas
+            .data
+            .as_chunks::<3>()
+            .0
+            .iter()
+            .filter(|[r, g, b]| *b > 120 && *r < 60 && *g < 90)
+            .count();
+        assert!(blue > 100, "{blue} blue pixels");
+        assert_eq!(PostcardInk::Auto.rgb(BorderColor::Black), [235, 235, 235]);
+    }
+
+    /// FR-073: an address in any European script prints: the Latin letters of French,
+    /// Czech, Hungarian or Polish are in Xanh Mono, and Greek or Cyrillic come from Inter.
+    #[test]
+    fn fr_073_european_addresses_find_their_letters() {
+        let (Some(mono), Some(inter)) = (font(), crate::render::regular()) else {
+            panic!("the bundled faces load");
+        };
+        for c in "àçéœÿ čřůž őű ąłż șț åøæ ñ ğış āėų"
+            .chars()
+            .filter(|c| !c.is_whitespace())
+        {
+            assert_ne!(mono.glyph_id(c).0, 0, "{c} in Xanh Mono");
+        }
+        let faces = Faces {
+            main: mono,
+            fallback: Some(inter),
+        };
+        let runs = faces.runs("Ул. Витоша 1, Athína Αθήνα");
+        assert!(runs.len() >= 3, "{} runs", runs.len());
+        for (face, run) in &runs {
+            for c in run.chars().filter(|c| !c.is_whitespace()) {
+                assert_ne!(face.glyph_id(c).0, 0, "{c} has no glyph in its run");
+            }
+        }
+        assert!(faces.width(20.0, "Αθήνα") > 0.0);
+    }
+
     /// Text wraps between words, keeps its own line breaks, and splits a word wider than a
     /// row; Vietnamese, Hungarian and German letters are in the face.
     #[test]
@@ -356,12 +481,16 @@ mod tests {
         let Some(face) = font() else {
             panic!("the bundled face loads");
         };
+        let only = Faces {
+            main: face,
+            fallback: None,
+        };
         let room = text_width(face, 20.0, "Liebe Grüße", 0.0) + 1.0;
         assert_eq!(
-            wrap(face, 20.0, "Liebe Grüße aus\nBudapest", room),
+            wrap(only, 20.0, "Liebe Grüße aus\nBudapest", room),
             ["Liebe Grüße", "aus", "Budapest"]
         );
-        let long = wrap(face, 20.0, "Donaudampfschifffahrt", room / 2.0);
+        let long = wrap(only, 20.0, "Donaudampfschifffahrt", room / 2.0);
         assert!(long.len() > 1 && long.concat() == "Donaudampfschifffahrt");
         for c in "Thương nhớ Hà Nội őű čř ß €"
             .chars()

@@ -781,6 +781,13 @@
     "sheetSizeHint": "Each sheet holds one photo and a postcard back, held the way the Postcard card says.",
     "cardHint": "One photo and a postcard back on each print",
     "credit": "Credit line (optional)",
-    "creditPlaceholder": "e.g. Photo © Anna Schmidt"
+    "creditPlaceholder": "e.g. Photo © Anna Schmidt",
+    "ink": "Ink",
+    "inks": {
+      "auto": "Black",
+      "blue": "Blue",
+      "sepia": "Sepia",
+      "red": "Red"
+    }
   }
 }
