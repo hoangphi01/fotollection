@@ -60,6 +60,7 @@ struct FileV4 {
 }
 
 #[derive(Debug, PartialEq)]
+#[allow(clippy::large_enum_variant)] // read once at start-up, never stored in bulk
 pub enum Loaded {
     /// The file was read and validated.
     Ok(StoredSettings),
@@ -424,6 +425,7 @@ mod tests {
             orientation: PostcardOrientation::Portrait,
             lines: 3,
             font: Some(7),
+            credit: "Photo © Anna Schmidt".into(),
         };
         save(&path, &s)?;
         let Loaded::Ok(back) = load(&path) else {

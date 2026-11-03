@@ -36,6 +36,9 @@ const MAX_TEXT_MM: f32 = 4.2;
 const BASELINE_GAP: f32 = 0.18;
 /// Room left and right of the typed text inside the box.
 const TEXT_PAD_MM: f32 = 2.0;
+/// The credit line under the text box: its em, and the gap above it.
+const CREDIT_MM: f32 = 2.2;
+const CREDIT_GAP_MM: f32 = 0.9;
 
 /// The bundled typewriter face.
 pub fn font() -> Option<&'static FontArc> {
@@ -82,6 +85,8 @@ pub struct CardSpec<'a> {
     pub sheet_width: f32,
     pub lines: u8,
     pub text: Option<&'a str>,
+    /// A small line under the text box on every card ("Photo © …").
+    pub credit: Option<&'a str>,
     /// The face for the typed text; `None` uses the bundled one.
     pub font: Option<&'a FontArc>,
     pub paper: BorderColor,
@@ -168,11 +173,14 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
         outline,
         1.0,
     );
+    let face = spec.font.unwrap_or(bundled);
+    if let Some(credit) = spec.credit {
+        draw_credit(canvas, density, face, &layout, credit, outline);
+    }
     // The typed text, wrapped to the box and set on the lines; what does not fit is cut.
     let Some(text) = spec.text.filter(|t| !t.trim().is_empty()) else {
         return;
     };
-    let face = spec.font.unwrap_or(bundled);
     let step = layout.text.height / f32::from(spec.lines.max(1));
     let text_px = (step * TEXT_EM).min(MAX_TEXT_MM) * density;
     let room = (layout.text.width - 2.0 * TEXT_PAD_MM) * density;
@@ -189,6 +197,37 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
             },
             (layout.text.x + TEXT_PAD_MM) * density,
             baseline - ascent,
+            ink,
+            1.0,
+        );
+    }
+}
+
+/// The credit, small and light, in the margin under the text box; cut to the box's width.
+fn draw_credit(
+    canvas: &mut RgbImage,
+    density: f32,
+    face: &FontArc,
+    layout: &CardLayout,
+    credit: &str,
+    ink: [u8; 3],
+) {
+    let credit = credit.trim();
+    if credit.is_empty() {
+        return;
+    }
+    let px = CREDIT_MM * density;
+    if let Some(row) = wrap(face, px, credit, layout.text.width * density).first() {
+        draw_text(
+            canvas,
+            &TextRun {
+                font: face,
+                text: row,
+                px,
+                tracking: 0.0,
+            },
+            layout.text.x * density,
+            (layout.text.y + layout.text.height + CREDIT_GAP_MM) * density,
             ink,
             1.0,
         );
@@ -274,6 +313,40 @@ mod tests {
         assert_eq!(portrait.stamp, half(71.0, 5.0, 26.0, 32.0));
         assert_eq!(portrait.text, half(5.0, 42.0, 92.0, 29.0));
         assert_eq!(portrait.lines.len(), 3);
+    }
+
+    /// FR-073: the credit line prints small in the margin under the text box, and nothing
+    /// prints there without one.
+    #[test]
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    fn fr_073_the_credit_sits_under_the_text_box() {
+        let density = 10.0; // px per mm
+        let card = half(76.0, 0.0, 76.0, 102.0);
+        let ink_under_box = |credit: Option<&str>| {
+            let mut canvas = crate::render::filled(1520, 1020, [255, 255, 255]);
+            draw(
+                &mut canvas,
+                density,
+                &CardSpec {
+                    card,
+                    sheet_width: 152.0,
+                    lines: 4,
+                    text: None,
+                    credit,
+                    font: None,
+                    paper: BorderColor::White,
+                },
+            );
+            let box_bottom = layout(152.0, card, 4).text;
+            let y0 = ((box_bottom.y + box_bottom.height) * density) as u32 + 2;
+            (y0..1020)
+                .flat_map(|y| (760..1520).map(move |x| (x, y)))
+                .filter(|&(x, y)| canvas.data[((y * 1520 + x) * 3) as usize] < 200)
+                .count()
+        };
+        assert_eq!(ink_under_box(None), 0);
+        assert_eq!(ink_under_box(Some("   ")), 0);
+        assert!(ink_under_box(Some("Photo © Anna Schmidt")) > 50);
     }
 
     /// Text wraps between words, keeps its own line breaks, and splits a word wider than a

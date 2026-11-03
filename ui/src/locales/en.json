@@ -779,6 +779,8 @@
     "textHint": "Set on the lines in the font above; what does not fit the lines is left out of the print.",
     "chars": "{{count}} / {{max}}",
     "sheetSizeHint": "Each sheet holds one photo and a postcard back, held the way the Postcard card says.",
-    "cardHint": "One photo and a postcard back on each print"
+    "cardHint": "One photo and a postcard back on each print",
+    "credit": "Credit line (optional)",
+    "creditPlaceholder": "e.g. Photo © Anna Schmidt"
   }
 }

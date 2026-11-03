@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Mail, PenLine, RectangleHorizontal, RectangleVertical } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { CommitInput } from '@/components/forms/commit-input'
 import { Label } from '@/components/ui/label'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { PanelNote } from '@/components/layout/panel-note'
@@ -81,6 +82,17 @@ export function PostcardCard({ settings, onChange }: PostcardCardProps) {
           onChange={(font) => setPostcard({ font })}
           label={t('postcard.font')}
           builtIn={t('postcard.typewriter')}
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label className="text-xs font-normal text-muted-foreground">{t('postcard.credit')}</Label>
+        <CommitInput
+          value={postcard?.credit ?? ''}
+          placeholder={t('postcard.creditPlaceholder')}
+          ariaLabel={t('postcard.credit')}
+          maxLength={80}
+          liveMs={600}
+          onCommit={(credit) => setPostcard({ credit })}
         />
       </div>
       <PanelNote icon={<PenLine />}>{t('postcard.pens')}</PanelNote>

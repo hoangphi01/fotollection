@@ -1245,6 +1245,8 @@ export type PostcardSettings = {
 	lines?: number,
 	/**  A user font for the typed text (FR-042); `None` uses the bundled typewriter face. */
 	font?: number | null,
+	/**  A small line under the text box on every card ("Photo © …"); empty prints nothing. */
+	credit?: string,
 };
 
 /**  How large one photo prints well, and the verdict for each size. */

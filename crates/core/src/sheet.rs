@@ -238,7 +238,7 @@ pub fn photo_area(
     print: PrintSize,
     settings: &CollageSettings,
 ) -> (u32, u32) {
-    let settings = settings.sanitized();
+    let settings = settings.clone().sanitized();
     // Filled: the whole cell, as it stands, whatever the photo's orientation.
     if settings.fill {
         return (floor_mm(f64::from(cell.0)), floor_mm(f64::from(cell.1)));
@@ -555,6 +555,7 @@ pub fn render_sheet(
                 sheet_width: sheet.width,
                 lines: settings.collage.postcard.lines,
                 text: sources[0].and_then(|s| s.postcard),
+                credit: Some(settings.collage.postcard.credit.as_str()),
                 font: card_font,
                 paper: settings.border_color,
             },
@@ -720,7 +721,7 @@ mod tests {
         // 4:3 and square in the same cell.
         let four = CollageSettings {
             ratio: CellRatio::FourThree,
-            ..s
+            ..s.clone()
         };
         assert_eq!(
             suggested_area((75.0, 100.0), (4000, 6000), print(), &four),
@@ -728,7 +729,7 @@ mod tests {
         );
         let square = CollageSettings {
             ratio: CellRatio::Square,
-            ..s
+            ..s.clone()
         };
         assert_eq!(
             suggested_area((75.0, 100.0), (4000, 6000), print(), &square),
@@ -737,7 +738,7 @@ mod tests {
         // The sheet's ratio on a 4:3 photo is still 2:3.
         let sheet = CollageSettings {
             ratio: CellRatio::Sheet,
-            ..s
+            ..s.clone()
         };
         assert_eq!(
             suggested_area((75.0, 100.0), (3000, 4000), print(), &sheet),

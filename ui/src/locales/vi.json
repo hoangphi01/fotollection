@@ -751,6 +751,8 @@
     "textHint": "Chữ được in lên các dòng kẻ bằng font ở trên; phần không vừa các dòng sẽ không được in.",
     "chars": "{{count}} / {{max}}",
     "sheetSizeHint": "Mỗi tấm chứa một ảnh và mặt sau bưu thiếp, theo chiều cầm chọn ở thẻ Bưu thiếp.",
-    "cardHint": "Một ảnh và mặt sau bưu thiếp trên mỗi tấm in"
+    "cardHint": "Một ảnh và mặt sau bưu thiếp trên mỗi tấm in",
+    "credit": "Dòng ghi công (tuỳ chọn)",
+    "creditPlaceholder": "ví dụ: Ảnh © Anna Schmidt"
   }
 }

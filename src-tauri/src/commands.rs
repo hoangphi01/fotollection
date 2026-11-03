@@ -1072,7 +1072,7 @@ pub fn postcard_font_of(
     frames: &crate::state::FrameState,
     settings: &fotollection_core::settings::RenderSettings,
 ) -> Option<fotollection_core::fonts::LoadedFont> {
-    let postcard = settings.collage.postcard;
+    let postcard = &settings.collage.postcard;
     frames.font(postcard.enabled.then_some(postcard.font).flatten())
 }
 

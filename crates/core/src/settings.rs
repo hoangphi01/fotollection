@@ -119,7 +119,7 @@ pub struct CellSize {
 }
 
 /// How two photos share one print (FR-035).
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct CollageSettings {
     #[serde(default)]
@@ -157,7 +157,7 @@ pub enum PostcardOrientation {
 
 /// The postcard half of a collage sheet (FR-073). The text on each card is the photo's own
 /// (`PhotoEdits::postcard`).
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct PostcardSettings {
     #[serde(default)]
@@ -170,6 +170,9 @@ pub struct PostcardSettings {
     /// A user font for the typed text (FR-042); `None` uses the bundled typewriter face.
     #[serde(default)]
     pub font: Option<u32>,
+    /// A small line under the text box on every card ("Photo © …"); empty prints nothing.
+    #[serde(default)]
+    pub credit: String,
 }
 
 /// How many writing lines a postcard may have.
@@ -186,6 +189,7 @@ impl Default for PostcardSettings {
             orientation: PostcardOrientation::Landscape,
             lines: default_postcard_lines(),
             font: None,
+            credit: String::new(),
         }
     }
 }
@@ -229,7 +233,8 @@ impl CollageSettings {
                     .postcard
                     .lines
                     .clamp(*POSTCARD_LINES.start(), *POSTCARD_LINES.end()),
-                ..self.postcard
+                credit: sanitize_caption(&self.postcard.credit),
+                ..self.postcard.clone()
             },
             size: self.size.map(|s| {
                 let (a, b) = (edge(s.short_mm), edge(s.long_mm));
