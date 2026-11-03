@@ -77,7 +77,7 @@ pub fn read_path(path: &Path) -> PhotoMeta {
         } else if png {
             crate::facts::of_png(bytes)
         } else {
-            None
+            crate::facts::of_heif(bytes)
         }
     };
     let mut facts = facts_of(&head);

@@ -1005,13 +1005,17 @@ pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, IpcError>
             place.as_deref(),
             state.codec.as_ref(),
         )
-        .map_err(|e| shown_error(&e))
+        .map_err(|e| shown_error(&e, &record))
 }
 
 /// A photo that could not be shown, with the code of why (ERR-IMG-0006 for a file cut
-/// short), written to the error log: the UI shows it instead of waiting (FR-069).
-pub fn shown_error(e: &fotollection_core::thumbs::ThumbError) -> IpcError {
-    IpcError::new(e.code(), e.to_string())
+/// short), written to the error log with what the file is (FR-071): the UI shows it instead
+/// of waiting (FR-069).
+pub fn shown_error(
+    e: &fotollection_core::thumbs::ThumbError,
+    record: &fotollection_core::library::PhotoRecord,
+) -> IpcError {
+    IpcError::for_photo(e.code(), e.to_string(), &record.facts)
 }
 
 /// One full-resolution region of the preview, for zoom (FR-057).
@@ -1031,7 +1035,7 @@ pub fn region_bytes(
             region,
             state.codec.as_ref(),
         )
-        .map_err(|e| shown_error(&e))
+        .map_err(|e| shown_error(&e, &record))
 }
 
 /// Everything the preview inspector shows about one photo.
@@ -1945,7 +1949,7 @@ pub fn source_bytes(state: &AppState, id: PhotoId, sheet: bool) -> Result<Vec<u8
     state
         .previews
         .source_jpeg(&record, sheet, state.codec.as_ref())
-        .map_err(|e| shown_error(&e))
+        .map_err(|e| shown_error(&e, &record))
 }
 
 /// Reopens the session project: re-scans its folders and re-applies the saved edits.

@@ -138,6 +138,41 @@ pub struct ImageFacts {
 }
 
 impl ImageFacts {
+    /// One short line for the error log's context (FR-071, `docs/ERROR_CONTROL.md`): the names the
+    /// interface gets, e.g. `4:2:0 progressive 8-bit displayP3 zune`. No path, no pixels.
+    pub fn short(&self) -> String {
+        fn name<T: Serialize>(value: &T) -> String {
+            serde_json::to_string(value)
+                .unwrap_or_default()
+                .trim_matches('"')
+                .to_owned()
+        }
+        let mut parts: Vec<String> = Vec::new();
+        parts.extend(self.chroma.as_ref().map(name));
+        parts.extend(self.coding.as_ref().map(name));
+        parts.extend(self.sensor.as_ref().map(name));
+        parts.extend(self.cfa.as_ref().map(name));
+        parts.extend(self.bits.map(|b| format!("{b}-bit")));
+        parts.extend(self.space.as_ref().map(name));
+        if let Some(d) = self.dng {
+            let kinds = [
+                (d.lossy, "lossy"),
+                (d.jpeg_xl, "jpegXl"),
+                (d.float, "float"),
+                (d.gain_map, "gainMap"),
+                (d.original_raw, "originalRaw"),
+            ];
+            parts.extend(
+                kinds
+                    .iter()
+                    .filter(|(on, _)| *on)
+                    .map(|(_, n)| (*n).to_owned()),
+            );
+        }
+        parts.extend(self.decoder.as_ref().map(name));
+        parts.join(" ")
+    }
+
     /// A file outside the common path, worth a badge in the grid and its own filter: CMYK,
     /// RGB-coded or oddly sampled JPEGs, more than 8 bits, lossless, arithmetic or
     /// hierarchical coding, a wide or unknown profile other than Display P3, a sensor other
@@ -340,6 +375,60 @@ pub fn of_png(head: &[u8]) -> Option<ImageFacts> {
     })
 }
 
+/// An HEIF's (HEIC, AVIF) facts from its head: the colour space from the first `colr`
+/// property (an ICC profile, or `nclx` primaries: 1 is BT.709/sRGB, 12 Display P3) and the
+/// bit depth from the first `pixi`, found in `meta` → `iprp` → `ipco` (ISO/IEC 23008-12).
+/// Every box size is checked against the bytes, at most 4,096 boxes are walked.
+pub fn of_heif(head: &[u8]) -> Option<ImageFacts> {
+    if head.get(4..8)? != b"ftyp" {
+        return None;
+    }
+    let mut facts = ImageFacts::default();
+    let mut walked = 0usize;
+    // (start, end) of the box lists still to read, with how many header bytes each list's
+    // parent skips before its children (4 for the FullBox `meta`).
+    let mut lists = vec![(0usize, head.len())];
+    while let Some((mut at, end)) = lists.pop() {
+        while at + 8 <= end && walked < 4096 {
+            walked += 1;
+            let size = u32::from_be_bytes(head.get(at..at + 4)?.try_into().ok()?) as usize;
+            let kind = head.get(at + 4..at + 8)?;
+            // 0 runs to the end; 1 is a 64-bit size, never needed for these small boxes.
+            let size = match size {
+                0 => end - at,
+                1 => break,
+                s if s < 8 => break,
+                s => s,
+            };
+            let body = (at + 8, (at + size).min(end));
+            match kind {
+                b"meta" => lists.push((body.0 + 4, body.1)),
+                b"iprp" | b"ipco" => lists.push(body),
+                b"colr" if facts.space.is_none() => {
+                    let data = head.get(body.0..body.1)?;
+                    facts.space = match data.get(..4)? {
+                        b"prof" | b"rICC" => Some(profile_space(data.get(4..)?)),
+                        b"nclx" => match u16::from_be_bytes([*data.get(4)?, *data.get(5)?]) {
+                            1 => Some(Space::Srgb),
+                            12 => Some(Space::DisplayP3),
+                            _ => Some(Space::OtherProfile),
+                        },
+                        _ => None,
+                    };
+                }
+                // FullBox: version and flags, the channel count, then bits per channel.
+                b"pixi" if facts.bits.is_none() => facts.bits = head.get(body.0 + 5).copied(),
+                _ => {}
+            }
+            at += size;
+        }
+    }
+    (facts != ImageFacts::default()).then_some(ImageFacts {
+        decoder: Some(Decoder::System),
+        ..facts
+    })
+}
+
 /// A DNG's facts from its head or whole file: the filter, the bit depth and the kinds our
 /// develop does not read yet.
 pub fn of_dng(data: &[u8]) -> Option<ImageFacts> {
@@ -445,6 +534,12 @@ mod tests {
                 "{name}"
             );
         }
+        assert_eq!(
+            of_jpeg(&fixture("progressive-420.jpg"))
+                .map(|f| f.short())
+                .as_deref(),
+            Some("4:2:0 progressive 8-bit untagged zune")
+        );
         let plain = of_jpeg(&fixture("baseline-420.jpg"));
         assert!(plain.is_some_and(|f| !f.unusual() && f.decoder == Some(Decoder::Zune)));
         let cmyk = of_jpeg(&fixture("cmyk.jpg"));
@@ -517,6 +612,37 @@ mod tests {
         );
         for cut in 0..png.len() {
             let _ = of_png(&png[..cut]);
+        }
+    }
+
+    /// An HEIC's `colr` (nclx P3 or a profile) and `pixi` are found under `meta`; any head
+    /// cut short is safe.
+    #[test]
+    fn heif_space_and_depth() {
+        let boxed = |kind: &[u8; 4], body: &[u8]| {
+            let mut b = u32::try_from(body.len() + 8)
+                .unwrap_or(0)
+                .to_be_bytes()
+                .to_vec();
+            b.extend_from_slice(kind);
+            b.extend_from_slice(body);
+            b
+        };
+        let nclx = boxed(
+            b"colr",
+            &[b"nclx".as_slice(), &[0, 12, 0, 13, 0, 6, 0x80]].concat(),
+        );
+        let pixi = boxed(b"pixi", &[0, 0, 0, 0, 3, 10, 10, 10]);
+        let ipco = boxed(b"ipco", &[nclx, pixi].concat());
+        let iprp = boxed(b"iprp", &ipco);
+        let meta = boxed(b"meta", &[vec![0, 0, 0, 0], iprp].concat());
+        let file = [boxed(b"ftyp", b"heic\0\0\0\0mif1heic"), meta].concat();
+        assert_eq!(
+            of_heif(&file).map(|f| (f.space, f.bits)),
+            Some((Some(Space::DisplayP3), Some(10)))
+        );
+        for cut in 0..file.len() {
+            let _ = of_heif(&file[..cut]);
         }
     }
 

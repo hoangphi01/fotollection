@@ -372,6 +372,22 @@ impl IpcError {
         }
     }
 
+    /// A photo's error, logged with what the file is beside the message (FR-071): the log is
+    /// the only clue in a bug report, the interface shows the message alone.
+    pub fn for_photo(
+        code: &str,
+        message: impl Into<String>,
+        facts: &fotollection_core::facts::ImageFacts,
+    ) -> Self {
+        let message = message.into();
+        fotollection_core::error_log::record(code, &format!("{message} [{}]", facts.short()));
+        Self {
+            code: code.to_owned(),
+            err: fotollection_core::errors::err_code(code).to_owned(),
+            message,
+        }
+    }
+
     pub fn internal(message: impl Into<String>) -> Self {
         Self::new("internal", message)
     }

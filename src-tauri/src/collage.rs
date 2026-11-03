@@ -439,7 +439,7 @@ pub fn sheet_bytes(state: &AppState, sheet: SheetPair, small: bool) -> Result<Ve
             small.then_some(&thumbnail as &dyn Fn(&_) -> _),
             state.codec.as_ref(),
         )
-        .map_err(|e| crate::commands::shown_error(&e))
+        .map_err(|e| crate::commands::shown_error(&e, &first))
 }
 
 #[cfg(test)]
