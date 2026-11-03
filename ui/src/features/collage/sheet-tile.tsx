@@ -102,11 +102,12 @@ export function SheetTile({
                 dragging === photo && photo !== null && 'outline-2 -outline-offset-2 outline-primary outline-dashed',
               )}
               onPointerDown={(e) => {
-                onSelect(cell)
+                // A postcard's card half belongs to its photo: it picks the sheet (FR-073).
+                onSelect(postcard ? 0 : cell)
                 if (selectMode) onToggle()
                 else if (photo !== null) onDragStart(photo, e)
               }}
-              onDoubleClick={() => photo !== null && !selectMode && onOpen(cell)}
+              onDoubleClick={() => (photo !== null || postcard) && !selectMode && onOpen(postcard ? 0 : cell)}
             >
               {photo !== null && inBasket(photo) && <BasketBadge className="absolute top-1 right-1" />}
             </div>
