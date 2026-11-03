@@ -210,7 +210,7 @@ fn record_scenarios(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Valu
             place: true,
             ..settings.stamp
         };
-        ok(commands::set_settings(app.state(), settings))?;
+        ok(commands::set_settings(app.clone(), app.state(), settings))?;
         let frame = FrameSettings {
             enabled: scenario == "frame",
             ..state
@@ -250,7 +250,7 @@ fn record_collage(app: &AppHandle, out: &Path) -> Result<Value, String> {
     let mut settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
     settings.stamp.enabled = true;
     settings.border = true;
-    ok(commands::set_settings(app.state(), settings))?;
+    ok(commands::set_settings(app.clone(), app.state(), settings))?;
     let sheets = crate::collage::list_sheets(app.state(), CullFilter::default())
         .map_err(|e| format!("{e:?}"))?;
     let mut info = serde_json::Map::new();
@@ -305,7 +305,7 @@ fn record_postcard(app: &AppHandle, out: &Path) -> Result<Value, String> {
     let state = app.state::<AppState>();
     let mut settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
     settings.collage.postcard.enabled = true;
-    ok(commands::set_settings(app.state(), settings))?;
+    ok(commands::set_settings(app.clone(), app.state(), settings))?;
     let sheets = crate::collage::list_sheets(app.state(), CullFilter::default())
         .map_err(|e| format!("{e:?}"))?;
     for (sheet, text) in sheets.iter().zip(POSTCARD_TEXTS) {

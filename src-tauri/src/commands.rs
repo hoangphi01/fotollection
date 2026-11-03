@@ -570,6 +570,7 @@ pub fn get_settings(state: State<'_, AppState>) -> Result<SettingsState, IpcErro
 #[tauri::command]
 #[specta::specta]
 pub fn set_settings(
+    app: AppHandle,
     state: State<'_, AppState>,
     mut settings: RenderSettings,
 ) -> Result<SettingsState, IpcError> {
@@ -583,6 +584,9 @@ pub fn set_settings(
         .settings
         .write()
         .map_err(|e| IpcError::internal(e.to_string()))?;
+    // Postcards hold one photo a sheet (FR-073): switching them pairs the photos again, so
+    // the sheet lists are told once the new setting is in place.
+    let regrouped = guard.0.collage.postcard.enabled != settings.collage.postcard.enabled;
     guard.0 = settings;
     guard.1 = guard.1.wrapping_add(1);
     let result = SettingsState {
@@ -591,6 +595,13 @@ pub fn set_settings(
     };
     drop(guard);
     state.persist();
+    if regrouped {
+        let count = state
+            .library
+            .read()
+            .map_or(0, |l| u32::try_from(l.len()).unwrap_or(u32::MAX));
+        let _ = LibraryChanged { count }.emit(&app);
+    }
     Ok(result)
 }
 

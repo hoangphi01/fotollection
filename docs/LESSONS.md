@@ -13,6 +13,13 @@
 
 ## 2026-11-03
 
+### A setting that regroups the sheets must say so from Rust: the count stayed at 25 after turning postcards on (FR-073)
+
+- **Seen:** the owner turned the new Postcard switch on in the dev app: each sheet showed one photo, but the bar still said 25 sheets for 50 photos, and the grid kept 25 tiles.
+- **Why:** the sheet list (`useSheets`) reloads when the filter changes or Rust sends `LibraryChanged`. A setting is not a library edit, so nothing told it that pairing had changed. Listing again from the interface right after the switch would race `set_settings`: the interface shows the new value before Rust has stored it, and the two commands may run in either order.
+- **Fix:** `set_settings` emits `LibraryChanged` after storing a settings change that turns postcards on or off, so every sheet list reloads from the new pairing.
+- **Rule:** when a setting changes what a list contains, Rust announces it after the change is stored; the interface never guesses from its optimistic copy.
+
 ### Sampling at twice the output size still aliases past a 2× reduction: straightened photos got bands (FR-006, FR-072)
 
 - **Seen:** a probe for session 6 (stripes 2 px apart, straightened by 0.5° and shrunk) gave flat grey up to 2.5× but bands at 3× and 4× (standard deviations of 44 and 91 levels, against about 1).

@@ -4,7 +4,8 @@ import { commands, events, type CullFilter, type PhotoId, type SheetPair } from 
 import { sheetOrder } from './sheet-cells'
 
 /**
- * The collage sheets of the photos shown, in order (FR-035), refreshed after every edit, and
+ * The collage sheets of the photos shown, in order (FR-035), refreshed after every edit (and
+ * when postcards are switched, which Rust announces as a library change, FR-073), and
  * the way to reorder them (only listed while `enabled`, in Collage mode): `move` drops a photo on another photo's cell, or on an empty one.
  */
 export function useSheets(filter: CullFilter, enabled: boolean) {
