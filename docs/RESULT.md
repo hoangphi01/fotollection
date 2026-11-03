@@ -386,3 +386,22 @@ A v0.8.0 user saw JPEGs as green stripes: they were saved with one scan per comp
 - **The bug needs both:** one scan per component and colour halved vertically (4:2:0). A 16 MP camera photo (4:2:2) rewritten with one scan per component by `jpegtran` decodes right on 0.8.0; the same photo saved 4:2:0 that way comes out as the user saw it, green with horizontal stripes. Every one-scan-per-component baseline goes to the reference decoder anyway: the allowlist holds only what the corpus proves.
 - The fast path is unchanged for the usual files; a rare layout costs twice as much and decodes right.
 - Small flat images that the app encodes itself (thumbnails) decode right on 0.5.15 (`fr_001_our_own_small_flat_jpegs_keep_their_colour`), so zune-image #496 does not touch us.
+
+## 20. A real trip (Prague, GX9)
+
+One folder exactly as it came off the card of a Lumix DC-GX9 after a weekend in Prague, November 2026: 396 JPEGs at 20 MP (5184 × 3888, 4:2:2 baseline, about 11 MB each) and 26 RW2 files beside them, 4.7 GB in all. The photos are the owner's (© @hoangphi01, all rights reserved) and stay outside git ([TESTING.md §3](TESTING.md#3-sample-corpus)). `bench/trip.sh` runs `measure_folder --discard-output` on the folder three times and `measure_raw` on its RAW files, and writes the medians to `bench/results/trip.json` (counts, times and memory only). REF-MAC (M3, 16 GB), release build, 2026-11-03, with the editor and a browser open and swap nearly full.
+
+| What | Measured | Budget |
+|---|---:|---|
+| Import + EXIF, 422 files | 0.23 s | NFR-001 ✓ (< 1 s for 1,000) |
+| Embedded thumbnails (T0) | 21 ms | ✓ |
+| T1 thumbnails (full decode → 400 px) | 22 photos/s | background |
+| Preview re-render, warm p50 / p95 | 17.9 / 18.8 ms | NFR-002 ✓ (< 50 ms) |
+| RAW: full develop / embedded preview ≤ 400 px / ≤ 2048 px (median of 26) | 350 / 9 / 19 ms | NFR-017 ✓ |
+| Ten postcards redrawn from thumbnails (`measure_sheet_grid`, `POSTCARD=1`) | 21 ms | NFR-021 ✓ (< 100 ms) |
+| **Export, JPEG and RAW, 6 in flight** | **7.6 photos/s** | **NFR-003 ✗** (≥ 8 at 24 MP) |
+| **Peak RSS of the whole run** | **2.14 GB** | **NFR-004 ✗** (≤ 2 GB) |
+
+- **Two budgets missed.** The earlier runs used 16 MP Canon JPEGs of about 5 MB; these are 1.27× the pixels and about twice the bytes. A full decode takes 89 ms here against 45 ms there, so decoding is bound by the compressed bytes as much as by the pixels. The JPEGs alone (no RAW) gave 7.2–9.8 photos/s and 1.97 GB across two runs.
+- **Memory:** 1.27 GB stays resident after the thumbnail pass, before export starts; the export's six 20 MP images in flight then push the peak over 2 GB. The fix is the next box in [STATUS.md](STATUS.md) "Next, in order".
+- The machine was loaded (swap 12–13 GB of 13 GB used), so speeds may be low; the memory is the process's own.
