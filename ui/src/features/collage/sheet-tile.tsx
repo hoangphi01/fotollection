@@ -31,6 +31,8 @@ type SheetTileProps = {
   onOpen: (cell: 0 | 1) => void
   /** Absent when the sheet does not turn (a postcard, FR-073). */
   onTurn?: () => void
+  /** The sheet is a postcard (FR-073): its photo half is the left or bottom one. */
+  postcard?: boolean
   onDragStart: (photo: PhotoId, event: PointerEvent) => void
 }
 
@@ -54,6 +56,7 @@ export function SheetTile({
   onToggle,
   onOpen,
   onTurn,
+  postcard = false,
   onDragStart,
 }: SheetTileProps) {
   const { t } = useTranslation()
@@ -85,7 +88,7 @@ export function SheetTile({
           className="block rounded-sm object-contain shadow-md"
           style={{ maxWidth: size - 16, maxHeight: size - 16 }}
         />
-        <SheetCellsOverlay sheet={sheet} sideBySide={shape.sideBySide}>
+        <SheetCellsOverlay sheet={sheet} sideBySide={shape.sideBySide} postcard={postcard}>
           {(photo, cell) => (
             <div
               key={cell}

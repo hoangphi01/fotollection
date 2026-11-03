@@ -199,7 +199,7 @@ export function SheetPreviewDialog({
                   className="block max-h-[calc(90vh-4rem)] max-w-full animate-in object-contain stage-photo fade-in-0"
                 />
                 {!zoom.zoomed && (
-                  <SheetCellsOverlay sheet={sheet} sideBySide={shape.sideBySide}>
+                  <SheetCellsOverlay sheet={sheet} sideBySide={shape.sideBySide} postcard={postcard}>
                     {(id, c) => (
                       <button
                         key={c}

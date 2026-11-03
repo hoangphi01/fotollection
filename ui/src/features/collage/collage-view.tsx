@@ -110,6 +110,7 @@ export function CollageView({
         }}
         onMove={collage.move}
         onTurn={settings?.collage?.postcard?.enabled ? undefined : collage.turn}
+        postcard={settings?.collage?.postcard?.enabled ?? false}
       />
       <SheetPreviewDialog
         collage={collage}

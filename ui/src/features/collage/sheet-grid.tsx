@@ -32,6 +32,8 @@ type SheetGridProps = {
   onMove: (photo: PhotoId, target: PhotoId | null) => void
   /** Turns a sheet; absent when sheets do not turn (postcards, FR-073). */
   onTurn?: (first: PhotoId) => void
+  /** The sheets are postcards (FR-073). */
+  postcard?: boolean
 }
 
 /**
@@ -54,6 +56,7 @@ export function SheetGrid({
   onOpen,
   onMove,
   onTurn,
+  postcard = false,
 }: SheetGridProps) {
   const { t } = useTranslation()
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -197,6 +200,7 @@ export function SheetGrid({
                   onSelect={(cell) => onSelect(index, cell)}
                   onOpen={(cell) => onOpen(index, cell)}
                   onTurn={onTurn && (() => onTurn(sheet.first))}
+                  postcard={postcard}
                   onDragStart={startDrag}
                 />
               )
