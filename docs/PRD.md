@@ -787,6 +787,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **After demosaicing:** false-colour suppression (a median on colour differences) and highlight reconstruction.
 - **Colour:** camera → XYZ → a **linear f32 working space**, the tone curve last, then sRGB or Display P3 with its matching profile. FR-070's looks apply in this space.
 - **Colour management everywhere:** previews, thumbnails, zoom and the crop source convert the photo's profile for the screen; PNG honours gAMA, cHRM and sRGB and dithers 16 → 8 bits; resizing works in linear light within [NFR-002](#nfr-002--preview-latency).
+- **DNG as it is met in the wild** ([docs/raw/dng.md](raw/dng.md)), in this order: phone gain maps (`OpcodeList2`), lossy LinearRaw (34892), LinearRaw with lossless JPEG or JPEG XL (ProRAW), the raw image digest as a damaged-file check, floating-point HDR merges, X-Trans DNGs with Markesteijn.
 - **Measured, not guessed:** synthetic test charts (zone plate, Siemens star) score zipper, maze and false colour against the old paths; colour is checked against an independent reference develop, never against the embedded JPEG the look is fitted to. Budgets in [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets).
 
 ## 7. Non-functional requirements

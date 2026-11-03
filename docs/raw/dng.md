@@ -21,6 +21,29 @@ Specification: Adobe's *Digital Negative Specification* 1.7 (public), on top of 
 
 White balance is applied before the demosaic (Malvar–He–Cutler), and sites are clipped at the white level so blown highlights stay neutral.
 
+## DNG kinds met in the wild (researched 2026-11-03)
+
+Prompted by Martin Evening's *DNG Pros, Cons and Myths* (Adobe, 2015) and by phone DNGs. Our reader takes one of them today, the Bayer DNG from the Adobe DNG Converter or a camera; every other kind is refused and goes to the next decoder (`ImageIO` on macOS, rawler elsewhere), whose result we do not control. FR-071 shows which kind a file is; FR-072 reads them, in the order of the last column.
+
+| Kind | Made by | How to tell | Today | Plan (FR-072) |
+|---|---|---|---|---|
+| Bayer, lossless JPEG or uncompressed | DNG Converter, Leica, Pentax, Ricoh, our tests | Photometric 32803, `CFARepeatPatternDim` 2×2, Compression 1 or 7 | **Ours** | Stays ours; RCD replaces Malvar |
+| Phone DNG with a gain map | Android (Pixel, Samsung…), camera apps | Bayer, and `OpcodeList2` holds `GainMap` opcodes, one per CFA channel, applied before the demosaic | Ours, **gain map ignored**: corners darker and tinted. The shading is learned from the embedded JPEG (ADR-0030), but these files rarely carry a large one | **1st.** `GainMap` from `OpcodeList2`, with caps on the opcode count and the map size (an untrusted list, SECURITY §3); needs a Pixel sample first |
+| Lossy DNG | Lightroom "lossy compression", smart previews | Photometric 34892 (LinearRaw), Compression 34892, 8-bit, 3 samples | Refused | **2nd.** Already demosaiced: decode the JPEG tiles with our JPEG path, then the colour tags |
+| JPEG XL DNG, Apple ProRAW | DNG Converter 1.7 ("JPEG XL"), iPhone | LinearRaw; Compression 52546 (JPEG XL) or lossless JPEG on 3 samples | Refused | **3rd.** LinearRaw with lossless JPEG first; JPEG XL needs a permissive decoder (licence check) |
+| Raw image digest | DNG Converter, most writers | `RawImageDigest` / `NewRawImageDigest` (MD5) | Not checked | **4th.** A mismatch is a damaged file with its own `ERR-IMG` code, instead of a garbled develop. Read the tags' exact definition in the specification before writing it |
+| HDR or panorama merge | Lightroom / Camera Raw Photo Merge | SampleFormat 3 (floating point, 16, 24 or 32 bits), Compression 8 (deflate) with Predictor 34894 or 34895; often LinearRaw | Refused | **5th.** Float samples, more than 30 stops: needs tone mapping before the curve |
+| X-Trans | DNG Converter on Fujifilm RAF | `CFARepeatPatternDim` 6×6 | Refused (rawler's bilinear) | **6th,** with Markesteijn |
+| Original raw embedded | DNG Converter option | `OriginalRawFileData` | Ignored, correctly | Nothing; the file is about twice as large, and the develop reads it whole into memory |
+| Edited in Lightroom, settings saved into the file | Lightroom, Camera Raw | XMP `crs:` settings inside the DNG; the embedded preview is the **edited** image | The thumbnail shows the edit, our develop does not; the look match learns part of the edit; `crs:Crop` is not applied | Decide with a real sample: skip the look match when `crs:` settings exist, apply `crs:Crop` with the XMP work of FR-031 |
+| A JPEG saved as DNG | Lightroom "Convert to DNG" on a JPEG | Not a raw image | Refused (not a CFA) | Unverified how Adobe stores it; check with a sample before planning |
+
+**Not verified yet:** the exact definitions of the digest tags, and how a JPEG converted to DNG is stored. Both need the specification text or a sample, never a guess.
+
+**Samples wanted:** a Pixel or Samsung DNG, a lossy DNG, an HDR merge DNG, a ProRAW file, a DNG edited in Lightroom.
+
+**Sources:** Martin Evening, *DNG Pros, Cons and Myths*, Adobe blog, 2015-12-07; Adobe, [DNG 1.4 specification notes](https://webarchive.library.unt.edu/web/20130114140633oe_/http://blogs.adobe.com/lightroomjournal/2012/10/dng-1-4-specification-notes.html) (floating point, lossy 34892); [TIFF Predictor](https://awaresystems.be/imaging/tiff/tifftags/predictor.html); pixls.us, [Smartphone DNGs and lens shading](https://discuss.pixls.us/t/smartphone-dngs-and-lens-shading/24858).
+
 ## Not done yet
 
 - Opcode lists (`OpcodeList1/2/3`): gain maps, lens distortion (WarpRectilinear), vignette correction. The lens shading is learned from the embedded JPEG instead (ADR-0030).

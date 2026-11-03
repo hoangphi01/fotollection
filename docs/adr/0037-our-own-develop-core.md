@@ -3,6 +3,7 @@
 - **Status:** Accepted (planned for v0.10.0)
 - **Date:** 2026-11-02
 - **Related:** FR-016, FR-071, FR-072, FR-070, NFR-002, NFR-009, NFR-017, ADR-0029, ADR-0030, ADR-0033, ADR-0036
+- **Amended:** 2026-11-03: the DNG kinds met in the wild and their order ([docs/raw/dng.md](../raw/dng.md)), added to FR-072.
 - **Amends:** [ADR-0029](0029-raw-through-rawler-then-our-own-decoder.md) and [ADR-0030](0030-our-own-raw-decoder.md)
 
 ## Context
