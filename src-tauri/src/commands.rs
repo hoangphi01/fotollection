@@ -461,6 +461,46 @@ pub fn set_photo_caption(
     edit_photos(&app, &state, &ids, |_, e| e.caption.clone_from(&caption))
 }
 
+/// The text typed on a photo's postcard (FR-073), if any.
+#[tauri::command]
+#[specta::specta]
+pub fn get_postcard_text(
+    state: State<'_, AppState>,
+    id: PhotoId,
+) -> Result<Option<String>, IpcError> {
+    let library = state.library.read().map_err(crate::document::poisoned)?;
+    library
+        .record(id)
+        .map(|r| r.edits.postcard)
+        .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))
+}
+
+/// Types `text` on a photo's postcard (FR-073), or (`None`, or only blanks) leaves its lines
+/// blank for handwriting. One undoable step; checked here, never trusted from the UI.
+#[tauri::command]
+#[specta::specta]
+pub fn set_postcard_text(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: PhotoId,
+    text: Option<String>,
+) -> Result<HistoryState, IpcError> {
+    if let Some(text) = &text
+        && !fotollection_core::settings::validate_postcard(text)
+    {
+        return Err(IpcError::new(
+            "postcard.text_invalid",
+            format!(
+                "the postcard text has more than {} characters or {} lines, or a control character",
+                fotollection_core::settings::MAX_POSTCARD_CHARS,
+                fotollection_core::settings::MAX_POSTCARD_LINES
+            ),
+        ));
+    }
+    let text = text.filter(|t| !t.trim().is_empty());
+    edit_photos(&app, &state, &[id], |_, e| e.postcard.clone_from(&text))
+}
+
 /// "Apply to all" in the preview: this photo's stamp becomes the setting for every photo,
 /// and no photo keeps its own any more (the photo edits are one undoable step).
 #[tauri::command]
@@ -631,10 +671,11 @@ pub async fn pick_export_folder(app: AppHandle) -> Result<Option<String>, IpcErr
 /// in the preview (FR-055), or only the photos `ticked` in select mode when there are some
 /// (FR-050). With `separate`, each source folder goes into its own subfolder
 /// of the destination (FR-056). With `sheets`, the photos go out two to a print, as the
-/// Collage mode shows them (FR-035).
+/// Collage mode shows them (FR-035), or one to a postcard (FR-073).
 /// Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
 #[tauri::command]
 #[specta::specta]
+#[allow(clippy::too_many_lines)] // the job's setup, one step after another
 pub fn start_export(
     app: AppHandle,
     state: State<'_, AppState>,
@@ -651,6 +692,7 @@ pub fn start_export(
         .map_err(|e| IpcError::internal(e.to_string()))?
         .clone()
         .ok_or_else(|| IpcError::new("export.no_destination", "Choose a destination first"))?;
+    let scope = sheets.then(|| crate::collage::postcards(&state));
     let (records, pairs, groups) = {
         let library = state
             .library
@@ -661,7 +703,7 @@ pub fn start_export(
         } else {
             HashMap::new()
         };
-        let (records, pairs) = export_scope(&library, &filter, only, &ticked, sheets);
+        let (records, pairs) = export_scope(&library, &filter, only, &ticked, scope);
         (records, pairs, groups)
     };
     if records.is_empty() || (sheets && pairs.is_empty()) {
@@ -712,6 +754,7 @@ pub fn start_export(
             place_for: &place_for,
             frame_for: &frame_for,
             group_for: &group_for,
+            postcard_font: postcard_font_of(&frames, &settings).map(|f| f.font),
         };
         let throttle = Throttle::default();
         let on_progress = |done: u32, total: u32| {
@@ -794,20 +837,21 @@ fn export_records(
         .collect()
 }
 
-/// What an export covers: its photos and, with `sheets`, their collage sheets (FR-035).
+/// What an export covers: its photos and, with `sheets`, their collage sheets (FR-035), one
+/// photo each with `Some(true)` (postcards, FR-073).
 /// With ticks, only the sheets holding a ticked photo: Collage ticks whole sheets.
 fn export_scope(
     library: &fotollection_core::library::Library,
     filter: &CullFilter,
     only: Option<PhotoId>,
     ticked: &[PhotoId],
-    sheets: bool,
+    sheets: Option<bool>,
 ) -> (
     Vec<fotollection_core::library::PhotoRecord>,
     Vec<fotollection_core::export::SheetRecords>,
 ) {
-    let pairs = if sheets {
-        let mut pairs = sheet_records(library, filter, only);
+    let pairs = if let Some(single) = sheets {
+        let mut pairs = sheet_records(library, filter, only, single);
         if only.is_none() && !ticked.is_empty() {
             let picked: HashSet<PhotoId> = ticked.iter().copied().collect();
             pairs.retain(|(a, b)| {
@@ -827,8 +871,9 @@ fn sheet_records(
     library: &fotollection_core::library::Library,
     filter: &CullFilter,
     only: Option<PhotoId>,
+    single: bool,
 ) -> Vec<fotollection_core::export::SheetRecords> {
-    crate::collage::only_sheet(crate::collage::sheet_pairs(library, filter), only)
+    crate::collage::only_sheet(crate::collage::sheet_pairs(library, filter, single), only)
         .into_iter()
         .filter_map(|pair| {
             Some((
@@ -853,12 +898,13 @@ pub async fn estimate_export(
     check_ticked(&ticked)?;
     tauri::async_runtime::spawn_blocking(move || {
         let state = app.state::<AppState>();
+        let scope = sheets.then(|| crate::collage::postcards(&state));
         let (records, pairs) = {
             let library = state
                 .library
                 .read()
                 .map_err(|e| IpcError::internal(e.to_string()))?;
-            export_scope(&library, &filter, only, &ticked, sheets)
+            export_scope(&library, &filter, only, &ticked, scope)
         };
         let settings = state
             .settings
@@ -888,6 +934,7 @@ pub async fn estimate_export(
             place_for: &place_for,
             frame_for: &frame_for,
             group_for: &|_| None,
+            postcard_font: postcard_font_of(&frames, &settings).map(|f| f.font),
         };
         let samples = fotollection_core::export::ESTIMATE_SAMPLES;
         Ok(if sheets {
@@ -1006,6 +1053,16 @@ pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, IpcError>
             state.codec.as_ref(),
         )
         .map_err(|e| shown_error(&e, &record))
+}
+
+/// The user's font for postcard text (FR-073, FR-042), when the postcard is on and one is
+/// chosen and loaded.
+pub fn postcard_font_of(
+    frames: &crate::state::FrameState,
+    settings: &fotollection_core::settings::RenderSettings,
+) -> Option<fotollection_core::fonts::LoadedFont> {
+    let postcard = settings.collage.postcard;
+    frames.font(postcard.enabled.then_some(postcard.font).flatten())
 }
 
 /// A photo that could not be shown, with the code of why (ERR-IMG-0006 for a file cut

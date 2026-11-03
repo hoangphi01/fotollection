@@ -156,6 +156,10 @@ pub struct PhotoEdits {
     /// orientation (FR-035); 0–3. Prints outside a sheet are not turned by it.
     #[serde(default)]
     pub collage_rotation: u8,
+    /// The text typed on the photo's postcard (FR-073); `None` leaves its lines blank for
+    /// handwriting.
+    #[serde(default)]
+    pub postcard: Option<String>,
 }
 
 impl PhotoEdits {

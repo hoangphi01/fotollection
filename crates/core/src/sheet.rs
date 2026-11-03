@@ -55,8 +55,10 @@ pub struct SheetLayout {
     pub height: f32,
     /// The cells sit side by side (a landscape sheet) or one above the other.
     pub side_by_side: bool,
-    /// The two cells; `None` for an empty one (an odd last photo).
+    /// The two cells; `None` for an empty one (an odd last photo, or a postcard's).
     pub cells: [Option<CellLayout>; 2],
+    /// A postcard sheet's writing half (FR-073); its photo is in `cells[0]`.
+    pub card: Option<RectMm>,
 }
 
 /// The sheet's print size: the chosen one, or 10 × 15 when it is Original, which has no
@@ -284,10 +286,15 @@ pub fn layout(
     settings: &CollageSettings,
 ) -> SheetLayout {
     let first = photos[0].or(photos[1]).unwrap_or((3, 2));
-    let side = side_by_side(first, turned);
+    let postcard = settings.postcard.enabled;
+    // A postcard is held the way the user chose; its photo takes the left or bottom half.
+    let side = if postcard {
+        settings.postcard.orientation == crate::settings::PostcardOrientation::Landscape
+    } else {
+        side_by_side(first, turned)
+    };
     let (width, height, rects) = cells(print, side);
-    let place = |i: usize, photo: (u32, u32)| {
-        let cell = rects[i];
+    let place = |cell: RectMm, photo: (u32, u32)| {
         let area = photo_area((cell.width, cell.height), photo, print, settings);
         #[allow(clippy::cast_precision_loss)]
         let (aw, ah) = (area.0 as f32, area.1 as f32);
@@ -302,14 +309,29 @@ pub fn layout(
             y: centred.1,
         }
     };
+    if postcard {
+        let (photo_half, card) = if side {
+            (rects[0], rects[1])
+        } else {
+            (rects[1], rects[0])
+        };
+        return SheetLayout {
+            width,
+            height,
+            side_by_side: side,
+            cells: [photos[0].map(|p| place(photo_half, p)), None],
+            card: Some(card),
+        };
+    }
     SheetLayout {
         width,
         height,
         side_by_side: side,
         cells: [
-            photos[0].map(|p| place(0, p)),
-            photos[1].map(|p| place(1, p)),
+            photos[0].map(|p| place(rects[0], p)),
+            photos[1].map(|p| place(rects[1], p)),
         ],
+        card: None,
     }
 }
 
@@ -425,10 +447,14 @@ pub struct CellSource<'a> {
     pub stamp: Option<&'a StampSettings>,
     /// The photo's own line under the date (FR-036); `None` uses the stamp's.
     pub caption: Option<&'a str>,
+    /// The text typed on the photo's postcard (FR-073).
+    pub postcard: Option<&'a str>,
 }
 
 /// Renders a sheet. `max_long_edge` bounds the sheet's long edge for previews; `None`
-/// keeps the density of the less sharp photo, at most 600 DPI (ADR-0032).
+/// keeps the density of the less sharp photo, at most 600 DPI (ADR-0032). A postcard
+/// sheet (FR-073) draws its writing half after the photo, its text in `card_font` (the
+/// user's, FR-042) or the bundled typewriter face.
 #[allow(
     clippy::cast_precision_loss,
     clippy::cast_possible_truncation,
@@ -440,6 +466,7 @@ pub fn render_sheet(
     sources: [Option<CellSource<'_>>; 2],
     turned: bool,
     max_long_edge: Option<u32>,
+    card_font: Option<&ab_glyph::FontArc>,
 ) -> Result<RgbImage, RenderError> {
     let sizes = sources.map(|s| s.map(|s| (s.image.width, s.image.height)));
     let sheet = layout(print, sizes, turned, &settings.collage);
@@ -519,6 +546,20 @@ pub fn render_sheet(
             cy.round().max(0.0) as u32,
         );
     }
+    if let Some(card) = sheet.card {
+        crate::postcard::draw(
+            &mut canvas,
+            density,
+            &crate::postcard::CardSpec {
+                card,
+                sheet_width: sheet.width,
+                lines: settings.collage.postcard.lines,
+                text: sources[0].and_then(|s| s.postcard),
+                font: card_font,
+                paper: settings.border_color,
+            },
+        );
+    }
     // A sheet with one photo has nothing to cut apart, and filled halves meet at an edge
     // that needs no line.
     let collage = &settings.collage;
@@ -571,7 +612,14 @@ fn draw_cut_line(canvas: &mut RgbImage, sheet: &SheetLayout, density: f32, paper
     }
 }
 
-fn fill_rect(canvas: &mut RgbImage, x: u32, y: u32, width: u32, height: u32, color: [u8; 3]) {
+pub(crate) fn fill_rect(
+    canvas: &mut RgbImage,
+    x: u32,
+    y: u32,
+    width: u32,
+    height: u32,
+    color: [u8; 3],
+) {
     let block = filled(
         width.min(canvas.width.saturating_sub(x)).max(1),
         height.min(canvas.height.saturating_sub(y)).max(1),
@@ -603,8 +651,9 @@ pub fn reorder(placed: &[(PhotoId, u32)], view: &[PhotoId]) -> Vec<(PhotoId, u32
 
 /// Photos in collage order (FR-035): first those the user placed, by their position, then
 /// the others in the view's order, so a photo added later joins at the end instead of
-/// pushing every sheet along. Paired 1 + 2, 3 + 4…, an odd last photo alone.
-pub fn pairs(photos: &[(PhotoId, Option<u32>)]) -> Vec<(PhotoId, Option<PhotoId>)> {
+/// pushing every sheet along. Paired 1 + 2, 3 + 4…, an odd last photo alone; with `single`
+/// (postcards, FR-073), one photo per sheet.
+pub fn pairs(photos: &[(PhotoId, Option<u32>)], single: bool) -> Vec<(PhotoId, Option<PhotoId>)> {
     let mut placed: Vec<(u32, usize, PhotoId)> = photos
         .iter()
         .enumerate()
@@ -622,7 +671,7 @@ pub fn pairs(photos: &[(PhotoId, Option<u32>)]) -> Vec<(PhotoId, Option<PhotoId>
         )
         .collect();
     order
-        .chunks(2)
+        .chunks(if single { 1 } else { 2 })
         .map(|pair| (pair[0], pair.get(1).copied()))
         .collect()
 }
@@ -774,6 +823,7 @@ mod tests {
             place: None,
             stamp: None,
             caption: None,
+            postcard: None,
         };
         // The first photo lies, so the sheet stands; the portrait one is cropped to lie too.
         let out = render_sheet(
@@ -782,6 +832,7 @@ mod tests {
             [Some(source(&blue)), Some(source(&red))],
             false,
             Some(1500),
+            None,
         )?;
         assert_eq!((out.width, out.height), (1000, 1500));
         let at = |x: u32, y: u32| {
@@ -835,7 +886,7 @@ mod tests {
     fn fr_035_photos_pair_in_order_and_follow_their_position() {
         let ids: Vec<(PhotoId, Option<u32>)> = (0..5).map(|i| (PhotoId(i), None)).collect();
         assert_eq!(
-            pairs(&ids),
+            pairs(&ids, false),
             vec![
                 (PhotoId(0), Some(PhotoId(1))),
                 (PhotoId(2), Some(PhotoId(3))),
@@ -850,11 +901,15 @@ mod tests {
             (PhotoId(3), Some(4)),
             (PhotoId(4), Some(0)),
         ];
-        assert_eq!(pairs(&moved)[0], (PhotoId(4), Some(PhotoId(0))));
+        assert_eq!(pairs(&moved, false)[0], (PhotoId(4), Some(PhotoId(0))));
+        assert_eq!(
+            pairs(&moved, true)[..2],
+            [(PhotoId(4), None), (PhotoId(0), None)]
+        );
         // A photo added later, first by date, joins at the end instead of shifting every sheet.
         let mut added = vec![(PhotoId(9), None)];
         added.extend(moved);
-        let after = pairs(&added);
+        let after = pairs(&added, false);
         assert_eq!(after[0], (PhotoId(4), Some(PhotoId(0))));
         assert_eq!(after[2], (PhotoId(3), Some(PhotoId(9))));
     }
@@ -888,6 +943,106 @@ mod tests {
         );
     }
 
+    /// FR-073: a postcard sheet puts its one photo on the left (landscape) or bottom
+    /// (portrait) half, the dashed stamp box at the top right and the lines and typed text in
+    /// the other half; nothing of the photo reaches the postcard half.
+    #[test]
+    #[allow(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss
+    )]
+    fn fr_073_a_postcard_sheet_draws_one_photo_and_the_card() -> Result<(), RenderError> {
+        use crate::settings::{PostcardOrientation, PostcardSettings};
+        let image = filled(1800, 1200, [200, 30, 30]);
+        let source = CellSource {
+            image: &image,
+            capture: None,
+            crop: None,
+            straighten: 0.0,
+            place: None,
+            stamp: None,
+            caption: None,
+            postcard: Some("Liebe Grüße aus Budapest!"),
+        };
+        for orientation in [
+            PostcardOrientation::Landscape,
+            PostcardOrientation::Portrait,
+        ] {
+            let mut settings = RenderSettings::default();
+            settings.stamp.enabled = false;
+            settings.collage.postcard = PostcardSettings {
+                enabled: true,
+                orientation,
+                ..PostcardSettings::default()
+            };
+            let sheet = layout(
+                print(),
+                [Some((1800, 1200)), None],
+                false,
+                &settings.collage,
+            );
+            assert!(sheet.cells[1].is_none());
+            let (Some(cell), Some(card)) = (sheet.cells[0], sheet.card) else {
+                panic!("a photo and a card");
+            };
+            let out = render_sheet(
+                &settings,
+                print(),
+                [Some(source), None],
+                false,
+                Some(1520),
+                None,
+            )?;
+            let density = out.width as f32 / sheet.width;
+            let at = |x_mm: f32, y_mm: f32| {
+                let (x, y) = ((x_mm * density) as usize, (y_mm * density) as usize);
+                let i = (y * out.width as usize + x) * 3;
+                [out.data[i], out.data[i + 1], out.data[i + 2]]
+            };
+            let landscape = orientation == PostcardOrientation::Landscape;
+            assert_eq!(sheet.side_by_side, landscape);
+            // The photo is red in the middle of its half, which is left or bottom.
+            let photo_mid = (
+                cell.cell.x + cell.cell.width / 2.0,
+                cell.cell.y + cell.cell.height / 2.0,
+            );
+            assert_eq!(at(photo_mid.0, photo_mid.1), [200, 30, 30]);
+            if landscape {
+                assert!(card.x > cell.cell.x);
+            } else {
+                assert!(card.y < cell.cell.y);
+            }
+            // The card half has no red at all, and some ink: box lines and the typed text.
+            let (x0, y0) = ((card.x * density) as u32, (card.y * density) as u32);
+            let (x1, y1) = (
+                ((card.x + card.width) * density) as u32,
+                ((card.y + card.height) * density) as u32,
+            );
+            let mut inked = 0usize;
+            for y in y0..y1.min(out.height) {
+                for x in x0..x1.min(out.width) {
+                    let i = ((y * out.width + x) * 3) as usize;
+                    let p = &out.data[i..i + 3];
+                    assert!(!(p[0] > 150 && p[1] < 80), "red in the card at {x},{y}");
+                    inked += usize::from(p[0] < 200);
+                }
+            }
+            assert!(inked > 500, "{inked} inked pixels");
+            // The stamp box's top edge is dashed: ink and paper alternate along it.
+            let card_layout = crate::postcard::layout(sheet.width, card, 4);
+            let edge_y = card_layout.stamp.y + 0.1;
+            let along: Vec<bool> = (0..40)
+                .map(|i| at(card_layout.stamp.x + 1.0 + i as f32 * 0.5, edge_y)[0] < 200)
+                .collect();
+            assert!(
+                along.iter().any(|&a| a) && along.iter().any(|&a| !a),
+                "{along:?}"
+            );
+        }
+        Ok(())
+    }
+
     #[test]
     fn fr_035_a_lone_photo_stays_centred_and_has_no_cut_line() -> Result<(), RenderError> {
         let s = CollageSettings {
@@ -910,8 +1065,16 @@ mod tests {
             place: None,
             stamp: None,
             caption: None,
+            postcard: None,
         };
-        let out = render_sheet(&settings, print(), [Some(source), None], false, Some(1500))?;
+        let out = render_sheet(
+            &settings,
+            print(),
+            [Some(source), None],
+            false,
+            Some(1500),
+            None,
+        )?;
         let middle = ((500 * out.width + 750) * 3) as usize;
         assert_eq!(
             &out.data[middle..middle + 3],
@@ -956,6 +1119,7 @@ mod tests {
             place: None,
             stamp: None,
             caption: None,
+            postcard: None,
         };
         let out = render_sheet(
             &settings,
@@ -963,6 +1127,7 @@ mod tests {
             [Some(source(&a)), Some(source(&b))],
             false,
             Some(1500),
+            None,
         )?;
         // A portrait first photo: a landscape sheet, 3:2, at most 1500 px long.
         assert_eq!(out.width, 1500);
@@ -997,6 +1162,7 @@ mod tests {
             place: None,
             stamp: None,
             caption: None,
+            postcard: None,
         };
         let out = render_sheet(
             &settings,
@@ -1004,6 +1170,7 @@ mod tests {
             [Some(source(&a)), Some(source(&a))],
             false,
             Some(1500),
+            None,
         )?;
         let at = |x: u32, y: u32| {
             let i = ((y * out.width + x) * 3) as usize;

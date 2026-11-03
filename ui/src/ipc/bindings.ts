@@ -70,7 +70,7 @@ export const commands = {
 	 *  in the preview (FR-055), or only the photos `ticked` in select mode when there are some
 	 *  (FR-050). With `separate`, each source folder goes into its own subfolder
 	 *  of the destination (FR-056). With `sheets`, the photos go out two to a print, as the
-	 *  Collage mode shows them (FR-035).
+	 *  Collage mode shows them (FR-035), or one to a postcard (FR-073).
 	 *  Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
 	 */
 	startExport: (filter: CullFilter, only: number | null, ticked: PhotoId[], separate: boolean, sheets: boolean) => typedError<number, IpcError>(__TAURI_INVOKE("start_export", { filter, only, ticked, separate, sheets })),
@@ -323,6 +323,13 @@ export const commands = {
 	 *  one undoable step. The rest of their stamp still follows the settings.
 	 */
 	setPhotoCaption: (ids: PhotoId[], caption: string | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_caption", { ids, caption })),
+	/**
+	 *  Types `text` on a photo's postcard (FR-073), or (`None`, or only blanks) leaves its lines
+	 *  blank for handwriting. One undoable step; checked here, never trusted from the UI.
+	 */
+	setPostcardText: (id: PhotoId, text: string | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_postcard_text", { id, text })),
+	/**  The text typed on a photo's postcard (FR-073), if any. */
+	getPostcardText: (id: PhotoId) => typedError<string | null, IpcError>(__TAURI_INVOKE("get_postcard_text", { id })),
 	/**
 	 *  "Apply to all" in the preview: this photo's stamp becomes the setting for every photo,
 	 *  and no photo keeps its own any more (the photo edits are one undoable step).
@@ -660,6 +667,8 @@ export type CollageSettings = {
 	 *  user chooses what each keeps with its crop. Ratio, size and margin do not apply.
 	 */
 	fill?: boolean,
+	/**  One photo and a postcard back instead of two photos (FR-073). */
+	postcard?: PostcardSettings,
 };
 
 /**  How sure a borrowed place is (FR-031). */
@@ -1217,6 +1226,25 @@ export type PlaceUse = {
 	country: string,
 	renamed: boolean,
 	photos: number,
+};
+
+/**
+ *  Which way a postcard sheet is held: landscape puts the photo on the left half, portrait
+ *  on the bottom half; the stamp box is always at the top right (FR-073).
+ */
+export type PostcardOrientation = "landscape" | "portrait";
+
+/**
+ *  The postcard half of a collage sheet (FR-073). The text on each card is the photo's own
+ *  (`PhotoEdits::postcard`).
+ */
+export type PostcardSettings = {
+	enabled?: boolean,
+	orientation?: PostcardOrientation,
+	/**  Writing lines in the text box, `POSTCARD_LINES`. */
+	lines?: number,
+	/**  A user font for the typed text (FR-042); `None` uses the bundled typewriter face. */
+	font?: number | null,
 };
 
 /**  How large one photo prints well, and the verdict for each size. */

@@ -97,6 +97,8 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::get_photo_stamp,
             commands::set_photo_stamp,
             commands::set_photo_caption,
+            commands::set_postcard_text,
+            commands::get_postcard_text,
             commands::apply_stamp_to_all,
             commands::reset_photo_stamps,
             commands::undo,

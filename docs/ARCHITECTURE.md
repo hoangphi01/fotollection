@@ -64,7 +64,8 @@ crates/
       facts.rs           † # what each file is (FR-071): chroma subsampling, coding, bits, colour space by ICC name, sensor filter, DNG kind, decoder; `unusual()` for the grid badge
       settings.rs        † # RenderSettings (in memory until projects land)
       plan.rs            † # RenderPlan: centred crop, stamp, optional frame plan, 3 mm border (FR-004/006/040/067)
-      sheet.rs           † # collage sheets: cells, photo areas, pairing, render (FR-035, ADR-0032)
+      sheet.rs           † # collage sheets: cells, photo areas, pairing, render (FR-035, ADR-0032); a postcard sheet's one photo and card half (FR-073)
+      postcard.rs        † # a postcard's back: dashed stamp box, text box, writing lines, typed text in Xanh Mono or the user's font (FR-073)
       frame.rs           † # info frame: settings, camera profiles, text, ratio-safe layout (FR-040)
       logo.rs            † # user PNG logos: validation + decode (ADR-0014)
       fonts.rs           † # user OTF/TTF fonts: validation + FontArc (FR-042)
@@ -267,6 +268,7 @@ Commands marked † are implemented.
 | `sheet_info(sheet) -> SheetInfo` † | A sheet's size and, per photo, its area, the suggested size, the photo left inside the 3 mm border and its DPI band, from the photos' header sizes | FR-035, FR-026 |
 | `get_photo_stamp(id)` / `set_photo_stamp(id, stamp?)` † | One photo's own date stamp from the preview (FR-044); `null` follows the settings again. Undoable; the caption is validated in Rust | FR-044 |
 | `set_photo_caption(ids, caption?)` † | Photos' own line under the date (FR-036), from a collage sheet's preview; `null` uses the stamp's again. One undo step; validated in Rust like the stamp's caption | FR-036 |
+| `set_postcard_text(id, text?)` †, `get_postcard_text(id)` † | The text typed on a photo's postcard (FR-073); `null` or blanks leave the lines blank. At most 400 characters and 8 lines, no control character but line breaks, checked in Rust (`ERR-IPC-0022`). One undo step | FR-073 |
 | `apply_stamp_to_all(id)` / `reset_photo_stamps()` † | "Apply to all" in the preview (the photo's stamp becomes the setting and no photo keeps its own) and "Reset" in the settings panel (every photo follows the settings again) | FR-044 |
 | `undo()` / `redo()` † | History (also Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z) | FR-023 |
 | `list_fonts()` / `import_font()` / `remove_font(id)` † | User fonts; import opens a **Rust-side** dialog and copies a validated file | FR-042 |

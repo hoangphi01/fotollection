@@ -89,6 +89,8 @@ pub struct ExportOptions<'a> {
     /// A subfolder of the destination for one photo, when folders are exported separately
     /// (FR-056); `None` puts every photo straight into the destination.
     pub group_for: &'a (dyn Fn(&PhotoRecord) -> Option<String> + Sync),
+    /// The user's font for postcard text (FR-073, FR-042); `None` uses the bundled face.
+    pub postcard_font: Option<ab_glyph::FontArc>,
 }
 
 /// A sensible default for `max_inflight`: one per core, capped so decoded 24 MP buffers
@@ -204,6 +206,7 @@ fn encode_sheet(
             place: place.as_deref(),
             stamp: record.edits.stamp.as_ref(),
             caption: record.edits.caption.as_deref(),
+            postcard: record.edits.postcard.as_deref(),
         });
     }
     let turned = decoded
@@ -215,7 +218,14 @@ fn encode_sheet(
                 (image.width, image.height),
             )
         });
-    let image = crate::sheet::render_sheet(options.settings, print, sources, turned, None)?;
+    let image = crate::sheet::render_sheet(
+        options.settings,
+        print,
+        sources,
+        turned,
+        None,
+        options.postcard_font.as_ref(),
+    )?;
     drop(decoded);
     if cancel.is_cancelled() {
         return Err(ExportError::Cancelled);
@@ -504,6 +514,7 @@ pub fn run_export_sheets(
     // of single photos (NFR-004).
     let options = &ExportOptions {
         max_inflight: options.max_inflight.div_ceil(2),
+        postcard_font: options.postcard_font.clone(),
         ..*options
     };
     run(

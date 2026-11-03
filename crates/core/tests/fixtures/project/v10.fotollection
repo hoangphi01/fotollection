@@ -1,0 +1,31 @@
+{
+  "format": "fotollection-project",
+  "schema_version": 10,
+  "app_version": "0.9.4",
+  "modified_at": "2026-11-03T20:00:00+00:00",
+  "folders": [
+    {
+      "id": 1,
+      "path": "/Users/someone/Pictures/Trip",
+      "path_kind": "absolute"
+    }
+  ],
+  "photos": [
+    {
+      "id": 1,
+      "folder": 1,
+      "path": "P1000001.JPG",
+      "fp_size": 5000000,
+      "fp_mtime": 1726000000,
+      "postcard": "Liebe Grüße aus Budapest!\nAnna Schmidt\nHauptstraße 1\n10115 Berlin"
+    },
+    {
+      "id": 2,
+      "folder": 1,
+      "path": "P1000002.JPG",
+      "fp_size": 5000000,
+      "fp_mtime": 1726000001,
+      "postcard": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\u0007"
+    }
+  ]
+}

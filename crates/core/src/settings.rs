@@ -140,6 +140,54 @@ pub struct CollageSettings {
     /// user chooses what each keeps with its crop. Ratio, size and margin do not apply.
     #[serde(default)]
     pub fill: bool,
+    /// One photo and a postcard back instead of two photos (FR-073).
+    #[serde(default)]
+    pub postcard: PostcardSettings,
+}
+
+/// Which way a postcard sheet is held: landscape puts the photo on the left half, portrait
+/// on the bottom half; the stamp box is always at the top right (FR-073).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum PostcardOrientation {
+    #[default]
+    Landscape,
+    Portrait,
+}
+
+/// The postcard half of a collage sheet (FR-073). The text on each card is the photo's own
+/// (`PhotoEdits::postcard`).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PostcardSettings {
+    #[serde(default)]
+    pub enabled: bool,
+    #[serde(default)]
+    pub orientation: PostcardOrientation,
+    /// Writing lines in the text box, `POSTCARD_LINES`.
+    #[serde(default = "default_postcard_lines")]
+    pub lines: u8,
+    /// A user font for the typed text (FR-042); `None` uses the bundled typewriter face.
+    #[serde(default)]
+    pub font: Option<u32>,
+}
+
+/// How many writing lines a postcard may have.
+pub const POSTCARD_LINES: std::ops::RangeInclusive<u8> = 3..=4;
+
+fn default_postcard_lines() -> u8 {
+    4
+}
+
+impl Default for PostcardSettings {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            orientation: PostcardOrientation::Landscape,
+            lines: default_postcard_lines(),
+            font: None,
+        }
+    }
 }
 
 /// The largest collage margin, in millimetres.
@@ -164,6 +212,7 @@ impl Default for CollageSettings {
             lock_ratio: true,
             cut_line: true,
             fill: false,
+            postcard: PostcardSettings::default(),
         }
     }
 }
@@ -175,6 +224,13 @@ impl CollageSettings {
         let edge = |v: u32| v.clamp(*COLLAGE_EDGE_MM.start(), *COLLAGE_EDGE_MM.end());
         Self {
             margin_mm: self.margin_mm.min(MAX_COLLAGE_MARGIN_MM),
+            postcard: PostcardSettings {
+                lines: self
+                    .postcard
+                    .lines
+                    .clamp(*POSTCARD_LINES.start(), *POSTCARD_LINES.end()),
+                ..self.postcard
+            },
             size: self.size.map(|s| {
                 let (a, b) = (edge(s.short_mm), edge(s.long_mm));
                 CellSize {
@@ -267,6 +323,32 @@ pub fn sanitize_caption(caption: &str) -> String {
         .filter(|c| !c.is_control())
         .take(MAX_CAPTION_CHARS)
         .collect()
+}
+
+/// Longest postcard text (FR-073), in characters, and its most lines: the text box holds
+/// four, a longer text is cut at the box's last line.
+pub const MAX_POSTCARD_CHARS: usize = 400;
+pub const MAX_POSTCARD_LINES: usize = 8;
+
+/// A postcard text within limits: line breaks kept, other control characters dropped, at
+/// most `MAX_POSTCARD_LINES` lines and `MAX_POSTCARD_CHARS` characters.
+pub fn sanitize_postcard(text: &str) -> String {
+    let kept: String = text
+        .chars()
+        .filter(|c| *c == '\n' || !c.is_control())
+        .take(MAX_POSTCARD_CHARS)
+        .collect();
+    kept.split('\n')
+        .take(MAX_POSTCARD_LINES)
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+/// Checks a postcard text coming over IPC (SECURITY.md §2).
+pub fn validate_postcard(text: &str) -> bool {
+    text.chars().count() <= MAX_POSTCARD_CHARS
+        && text.split('\n').count() <= MAX_POSTCARD_LINES
+        && !text.chars().any(|c| c != '\n' && c.is_control())
 }
 
 /// Checks a caption coming over IPC (SECURITY.md §2).

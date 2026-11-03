@@ -75,6 +75,7 @@ pub const CODES: &[(&str, &str)] = &[
     ("place.query_too_long", "ERR-IPC-0019"),
     ("place.unknown", "ERR-IPC-0020"),
     ("project.unknown_folder", "ERR-IPC-0021"),
+    ("postcard.text_invalid", "ERR-IPC-0022"),
     ("update.none", "ERR-NET-0001"),
     ("update.offline", "ERR-NET-0002"),
     ("update.unreadable", "ERR-NET-0003"),

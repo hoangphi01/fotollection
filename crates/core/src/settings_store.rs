@@ -24,7 +24,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// `frame.border` moves; `ui.mode`, absent before (Professional); `render.collage`
 /// (FR-035), absent before (the defaults); `render.stamp.size` (FR-004), absent before
 /// (medium); `render.borderColor` (FR-067), absent before (white).
-pub const SCHEMA_VERSION: u32 = 10;
+/// v11 (FR-073): `render.collage.postcard`, absent before (off).
+pub const SCHEMA_VERSION: u32 = 11;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -403,6 +404,32 @@ mod tests {
             panic!("v10 should load");
         };
         assert!(back.render.border);
+        Ok(())
+    }
+
+    /// FR-073: a v10 file has no postcard: it loads with the postcard off and four lines,
+    /// and the postcard settings round-trip.
+    #[test]
+    fn fr_073_v10_files_have_no_postcard_and_it_round_trips() -> std::io::Result<()> {
+        use crate::settings::{PostcardOrientation, PostcardSettings};
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v10.json"))?;
+        let Loaded::Ok(mut s) = load(&path) else {
+            panic!("v10 should load");
+        };
+        assert_eq!(s.render.collage.postcard, PostcardSettings::default());
+        s.render.collage.postcard = PostcardSettings {
+            enabled: true,
+            orientation: PostcardOrientation::Portrait,
+            lines: 3,
+            font: Some(7),
+        };
+        save(&path, &s)?;
+        let Loaded::Ok(back) = load(&path) else {
+            panic!("v11 should load");
+        };
+        assert_eq!(back.render.collage.postcard, s.render.collage.postcard);
         Ok(())
     }
 

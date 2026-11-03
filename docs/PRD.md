@@ -489,7 +489,7 @@ Put several photos on one print to save cost. **P1 (v0.9.0) for 2-up**, the Coll
 
 ### FR-042 — Custom fonts
 
-**P1.** Import **OTF/TTF** fonts and choose them for the info-frame text ([FR-040](#fr-040--exif-info-frame)). The text inside the photo always uses the bundled LCD face ([FR-004](#fr-004--date-stamp)); its font choice was removed to keep the stamp simple (settings v5).
+**P1.** Import **OTF/TTF** fonts and choose them for the info-frame text ([FR-040](#fr-040--exif-info-frame)) and a postcard's typed text ([FR-073](#fr-073--postcard-sheets)). The text inside the photo always uses the bundled LCD face ([FR-004](#fr-004--date-stamp)); its font choice was removed to keep the stamp simple (settings v5).
 
 - Fonts are validated before use: TTF/OTF magic bytes (font collections and WOFF are rejected), a 20 MB cap, a full parse, and digits 0–9 must be present. They are then copied into the app's config folder, like logos ([ADR-0014](adr/0014-user-supplied-brand-logos.md)).
 - Variable fonts render at their default instance.
@@ -789,6 +789,16 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Colour management everywhere:** previews, thumbnails, zoom and the crop source convert the photo's profile to sRGB for the screen (done 2026-11-03; the owner chose sRGB over a tagged Display P3, so every system shows the same, Linux included); PNG honours gAMA, cHRM and sRGB, dithers 16 → 8 bits and flattens alpha in linear light (done 2026-11-03); share exports resize in linear light (2026-11-03: measured about 50 ms more per 16 MP photo on screen, so the owner kept the screen's faster resize and chose linear light for share exports only, OPTIMIZATION §5).
 - **DNG as it is met in the wild** ([docs/raw/dng.md](raw/dng.md)), in this order: phone gain maps (`OpcodeList2`), lossy LinearRaw (34892), LinearRaw with lossless JPEG or JPEG XL (ProRAW), the raw image digest as a damaged-file check, floating-point HDR merges, X-Trans DNGs with Markesteijn.
 - **Measured, not guessed:** synthetic test charts (zone plate, Siemens star) score zipper, maze and false colour against the old paths; colour is checked against an independent reference develop, never against the embedded JPEG the look is fitted to. Budgets in [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets).
+
+### FR-073 — Postcard sheets
+
+**P1 (v0.9.4; owner's request 2026-11-03).** In Collage mode, a switch turns each sheet into a postcard: one photo on one half of the 10 × 15 print, the back of a postcard on the other, so a kiosk print can be posted (Deutsche Post takes 14–23.5 × 9–12.5 cm cards of 150–500 g/m²; Magyar Posta 9 × 14 to 12 × 23.5 cm; Česká pošta's limit of 14.8 cm makes it a letter there).
+
+- **Layout,** after the owner's sketch: **landscape** puts the photo on the left half, **portrait** on the bottom half; the other half has a **dashed stamp box** of 26 × 32 mm (about a German or Hungarian stamp, so a real one covers it) at the sheet's top right with the word STAMP, and under it a **text box** with **3 or 4 writing lines**. The post's 15 mm coding strip is not kept clear (owner's choice).
+- **The photo half** is the collage cell it was: ratio, margin, fill, crop, the photo's quarter turns, the date stamp and the 3 mm border all apply. One photo per sheet; Auto turn does nothing, as the card is held the way the user chose.
+- **Typed text:** each postcard's own message or address (at most 400 characters and 8 lines, checked in Rust), set on its lines in the bundled typewriter face **Xanh Mono** (OFL, with Vietnamese, German, Hungarian and Czech letters) or the user's font ([FR-042](#fr-042--custom-fonts)); left empty, the lines stay blank for handwriting.
+- **Writing by hand:** the panel says to use a fine permanent marker (Sharpie Ultra Fine, edding 400, Stabilo OHPen S) on photo paper, to try it in the stamp box first and let it dry, and that ballpoint and gel pens smear or skip on the coating.
+- Settings v11 (`render.collage.postcard`), project v10 (`photos[].postcard`), [DATABASE.md](DATABASE.md).
 
 ## 7. Non-functional requirements
 

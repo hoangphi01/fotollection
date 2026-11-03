@@ -26,14 +26,15 @@ pub struct SheetPair {
     pub second: Option<PhotoId>,
 }
 
-/// The sheets of the photos `filter` keeps, in collage order (FR-035).
-pub fn sheet_pairs(library: &Library, filter: &CullFilter) -> Vec<SheetPair> {
+/// The sheets of the photos `filter` keeps, in collage order (FR-035); one photo each with
+/// `single` (postcards, FR-073).
+pub fn sheet_pairs(library: &Library, filter: &CullFilter, single: bool) -> Vec<SheetPair> {
     let photos: Vec<(PhotoId, Option<u32>)> = library
         .filtered_ids(filter)
         .into_iter()
         .map(|id| (id, library.edits(id).collage))
         .collect();
-    sheet::pairs(&photos)
+    sheet::pairs(&photos, single)
         .into_iter()
         .map(|(first, second)| SheetPair { first, second })
         .collect()
@@ -58,11 +59,21 @@ pub fn list_sheets(
     state: State<'_, AppState>,
     filter: CullFilter,
 ) -> Result<Vec<SheetPair>, IpcError> {
+    let single = postcards(&state);
     let library = state
         .library
         .read()
         .map_err(|e| IpcError::internal(e.to_string()))?;
-    Ok(sheet_pairs(&library, &filter))
+    Ok(sheet_pairs(&library, &filter, single))
+}
+
+/// Whether collage sheets are postcards (FR-073): one photo each. Read it before taking the
+/// library lock, so no lock is ever taken while another is held.
+pub fn postcards(state: &AppState) -> bool {
+    state
+        .settings
+        .read()
+        .is_ok_and(|s| s.0.collage.postcard.enabled)
 }
 
 /// The collage order after a drag: `ids` are the photos shown, in their new order. A turn
@@ -126,6 +137,11 @@ pub async fn auto_turn_collage(
 ) -> Result<u32, IpcError> {
     tauri::async_runtime::spawn_blocking(move || {
         let state = app.state::<AppState>();
+        // A postcard is held the way the user chose and its photo stays upright on it:
+        // nothing to turn (FR-073).
+        if postcards(&state) {
+            return Ok(0);
+        }
         let sheets: Vec<(
             fotollection_core::library::PhotoRecord,
             Option<fotollection_core::library::PhotoRecord>,
@@ -134,7 +150,7 @@ pub async fn auto_turn_collage(
                 .library
                 .read()
                 .map_err(|e| IpcError::internal(e.to_string()))?;
-            sheet_pairs(&library, &filter)
+            sheet_pairs(&library, &filter, false)
                 .into_iter()
                 .filter_map(|p| {
                     Some((
@@ -427,6 +443,11 @@ pub fn sheet_bytes(state: &AppState, sheet: SheetPair, small: bool) -> Result<Ve
     // The grid's sheets come from the photos' thumbnails: no photo is decoded again when a
     // setting changes (FR-035, OPTIMIZATION §5).
     let thumbnail = |r: &fotollection_core::library::PhotoRecord| state.thumbs.cached_t1(r);
+    let card_font = state
+        .frame
+        .read()
+        .ok()
+        .and_then(|f| crate::commands::postcard_font_of(&f, &settings));
     state
         .previews
         .render_sheet_jpeg(
@@ -437,6 +458,7 @@ pub fn sheet_bytes(state: &AppState, sheet: SheetPair, small: bool) -> Result<Ve
             &settings,
             if small { SMALL_SHEET } else { LARGE_SHEET },
             small.then_some(&thumbnail as &dyn Fn(&_) -> _),
+            card_font.as_ref().map(|f| &f.font),
             state.codec.as_ref(),
         )
         .map_err(|e| crate::commands::shown_error(&e, &first))

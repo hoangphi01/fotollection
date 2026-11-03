@@ -7,6 +7,8 @@
 //! `cargo run --release -p fotollection-core --example measure_sheet_grid -- <photo.jpg>…`
 //!
 //! An even number of photos makes the sheets: 20 photos are the 10 sheets a grid shows.
+//! With `POSTCARD=1`, postcards instead (FR-073): one photo each, with typed text, so 10
+//! photos are 10 sheets.
 
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::cast_precision_loss)]
 
@@ -26,6 +28,8 @@ const SMALL_SHEET: u32 = 640;
 fn main() {
     let codec = default_codec();
     let mut lib = Library::new();
+    let postcard = std::env::var_os("POSTCARD").is_some();
+    let per_sheet = if postcard { 1 } else { 2 };
     let records: Vec<PhotoRecord> = std::env::args()
         .skip(1)
         .filter_map(|path| {
@@ -34,7 +38,13 @@ fn main() {
             let meta = metadata::read_path(&file.path);
             let folder = lib.add_folder(file.path.parent()?);
             let id = lib.push(folder, &file, &meta)?;
-            lib.record(id)
+            let mut record = lib.record(id)?;
+            if postcard {
+                record.edits.postcard = Some(
+                    "Liebe Grüße aus Budapest!\nAnna Schmidt\nHauptstraße 1, 10115 Berlin".into(),
+                );
+            }
+            Some(record)
         })
         .collect();
     let dir = tempfile::tempdir().unwrap();
@@ -46,13 +56,14 @@ fn main() {
     for (name, from_thumbnails) in [("preview sources", false), ("thumbnails", true)] {
         let cache = PreviewCache::new();
         let mut settings = RenderSettings::default();
+        settings.collage.postcard.enabled = postcard;
         let pass = |settings: &RenderSettings| {
             let t = Instant::now();
-            for pair in records.chunks(2) {
+            for pair in records.chunks(per_sheet) {
                 let photos = [Some((&pair[0], None)), pair.get(1).map(|r| (r, None))];
                 let small = from_thumbnails.then_some(&thumbnail as &dyn Fn(&_) -> _);
                 cache
-                    .render_sheet_jpeg(photos, settings, SMALL_SHEET, small, codec.as_ref())
+                    .render_sheet_jpeg(photos, settings, SMALL_SHEET, small, None, codec.as_ref())
                     .unwrap();
             }
             t.elapsed().as_secs_f64() * 1e3
@@ -68,10 +79,10 @@ fn main() {
         runs.sort_by(f64::total_cmp);
         println!(
             "{name}: {} sheets from {} photos at {SMALL_SHEET} px: first {first:.0} ms, after a change {:.0} ms ({:.1} ms a sheet)",
-            records.len().div_ceil(2),
+            records.len().div_ceil(per_sheet),
             records.len(),
             runs[1],
-            runs[1] / records.len().div_ceil(2) as f64
+            runs[1] / records.len().div_ceil(per_sheet) as f64
         );
     }
 }

@@ -28,6 +28,7 @@ pub mod logo;
 pub mod metadata;
 pub mod places;
 pub mod plan;
+pub mod postcard;
 pub mod preview;
 pub mod print_advice;
 pub mod print_size;

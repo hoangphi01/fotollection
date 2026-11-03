@@ -356,6 +356,7 @@ impl PreviewCache {
         settings: &RenderSettings,
         long_edge: u32,
         thumbnail: Option<&Thumbnail<'_>>,
+        card_font: Option<&ab_glyph::FontArc>,
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
         let mut images = [None, None];
@@ -379,6 +380,7 @@ impl PreviewCache {
                     place: *place,
                     stamp: record.edits.stamp.as_ref(),
                     caption: record.edits.caption.as_deref(),
+                    postcard: record.edits.postcard.as_deref(),
                 });
             }
         }
@@ -391,7 +393,14 @@ impl PreviewCache {
             ),
             _ => false,
         };
-        let image = crate::sheet::render_sheet(settings, print, sources, turned, Some(long_edge))?;
+        let image = crate::sheet::render_sheet(
+            settings,
+            print,
+            sources,
+            turned,
+            Some(long_edge),
+            card_font,
+        )?;
         Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
     }
 

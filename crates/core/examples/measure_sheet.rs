@@ -53,6 +53,7 @@ fn source(image: &RgbImage) -> CellSource<'_> {
         place: None,
         stamp: None,
         caption: None,
+        postcard: None,
     }
 }
 
@@ -80,6 +81,7 @@ fn main() {
                 [Some((&a, None)), Some((&b, None))],
                 &settings,
                 PREVIEW_LONG_EDGE,
+                None,
                 None,
                 codec.as_ref(),
             )
@@ -112,6 +114,7 @@ fn main() {
             sheet_print(&settings),
             [Some(source(&image_a)), Some(source(&image_b))],
             false,
+            None,
             None,
         )
         .unwrap();

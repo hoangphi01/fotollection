@@ -23,7 +23,8 @@ pub const FORMAT: &str = "fotollection-project";
 /// `photos[].collage_crop` and `photos[].collage_straighten`, the photo's own crop and
 /// straightening on a sheet (FR-035), and `photos[].caption`, the photo's own line under the
 /// date (FR-036), and `photos[].collage_rotation`, its quarter turns in its collage cell.
-pub const SCHEMA_VERSION: u32 = 9;
+/// v10: `photos[].postcard`, the text typed on the photo's postcard (FR-073).
+pub const SCHEMA_VERSION: u32 = 10;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -101,6 +102,9 @@ pub struct PhotoRow {
     /// Quarter turns of the photo in its collage cell, 1–3 (v9); absent when not turned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub collage_rotation: Option<u8>,
+    /// The text typed on the photo's postcard, at most 400 characters and 8 lines (v10).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub postcard: Option<String>,
 }
 
 /// A place the user renamed (v8, FR-005).
@@ -225,6 +229,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 collage_rotation: (edits.collage_rotation % 4 != 0)
                     .then_some(edits.collage_rotation % 4),
                 caption: edits.caption,
+                postcard: edits.postcard,
             })
         })
         .collect();
@@ -530,6 +535,10 @@ pub fn restore_into(
                     .as_deref()
                     .map(crate::settings::sanitize_caption),
                 collage_rotation: row.collage_rotation.unwrap_or(0) % 4,
+                postcard: row
+                    .postcard
+                    .as_deref()
+                    .map(crate::settings::sanitize_postcard),
             },
         );
         summary.restored += 1;
@@ -753,9 +762,9 @@ mod tests {
         let path = dir.path().join("p.fotollection");
         std::fs::write(
             &path,
-            br#"{"format":"fotollection-project","schema_version":10}"#,
+            br#"{"format":"fotollection-project","schema_version":11}"#,
         )?;
-        assert_eq!(load(&path), Loaded::NewerVersion(10));
+        assert_eq!(load(&path), Loaded::NewerVersion(11));
 
         let mut file = snapshot(&library_with(&["/trip/a.jpg"]));
         file.photos.push(PhotoRow {
@@ -780,6 +789,7 @@ mod tests {
             collage_straighten: None,
             caption: None,
             collage_rotation: None,
+            postcard: None,
         });
         save(&path, &file)?;
         assert!(
@@ -820,6 +830,33 @@ mod tests {
         let degrees: Vec<Option<f32>> = file.photos.iter().map(|p| p.straighten).collect();
         // 40° from a file is clamped to 15°.
         assert_eq!(degrees, [Some(2.5), None, Some(15.0)]);
+    }
+
+    /// FR-073: a v10 file keeps each photo's postcard text, line breaks included; one with
+    /// too many lines or a control character is brought within limits on load; a v9 file
+    /// has none.
+    #[test]
+    fn fr_073_v10_fixture_keeps_postcard_texts_within_limits() {
+        let Loaded::Ok(v10) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v10.fotollection"))
+        else {
+            panic!("v10 project should load");
+        };
+        assert_eq!(
+            v10.photos[0].postcard.as_deref(),
+            Some("Liebe Grüße aus Budapest!\nAnna Schmidt\nHauptstraße 1\n10115 Berlin")
+        );
+        let cut = v10.photos[1]
+            .postcard
+            .as_deref()
+            .map(crate::settings::sanitize_postcard);
+        assert_eq!(cut.as_deref(), Some("1\n2\n3\n4\n5\n6\n7\n8"));
+        let Loaded::Ok(v9) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v9.fotollection"))
+        else {
+            panic!("v9 project should load");
+        };
+        assert!(v9.photos.iter().all(|p| p.postcard.is_none()));
     }
 
     #[test]

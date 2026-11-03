@@ -140,6 +140,7 @@ fn fr_009_export_by_date_never_overwrites() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        postcard_font: None,
     };
     let summary = run_export(
         &records(&lib),
@@ -198,6 +199,7 @@ fn fr_035_sheets_export_one_file_per_pair_in_the_first_photos_day() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        postcard_font: None,
     };
     let summary = fotollection_core::export::run_export_sheets(
         &sheets,
@@ -255,6 +257,7 @@ fn fr_056_folders_exported_separately_get_their_own_subfolder() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &group,
+        postcard_font: None,
     };
     let summary = run_export(
         &records(&lib),
@@ -296,6 +299,7 @@ fn fr_053_the_estimate_is_exact_when_every_photo_is_sampled() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        postcard_font: None,
     };
     let all = records(&lib);
     let estimate = estimate_export(&all, &options, &PureRustCodec, 10);
@@ -341,6 +345,7 @@ fn fr_010_prints_keep_the_camera_details_but_never_gps() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        postcard_font: None,
     };
     let summary = run_export(
         &records(&lib),
@@ -402,6 +407,7 @@ fn fr_001_png_and_jpeg_export_together() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        postcard_font: None,
     };
     let summary = run_export(
         &all,
@@ -470,6 +476,7 @@ fn fr_022_export_uses_only_the_filtered_set() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        postcard_font: None,
     };
     let summary = run_export(
         &kept,
@@ -518,6 +525,7 @@ fn fr_011_bad_file_does_not_fail_batch() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        postcard_font: None,
     };
     let summary = run_export(
         &records(&lib),
@@ -555,6 +563,7 @@ fn fr_011_cancel_stops_and_removes_partials() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        postcard_font: None,
     };
     let cancel = CancellationToken::new();
     let summary = run_export(
@@ -741,6 +750,7 @@ fn fr_001_heic_imports_and_exports() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        postcard_font: None,
     };
     let summary = run_export(
         &all,
@@ -802,6 +812,7 @@ fn fr_016_rw2_imports_and_exports() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        postcard_font: None,
     };
     let summary = run_export(
         &all,
@@ -848,6 +859,7 @@ fn fr_067_share_exports_have_no_border() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        postcard_font: None,
     };
     let summary = run_export(
         &records(&lib),
@@ -895,6 +907,7 @@ fn fr_053_share_export_resizes_keeps_ratio_and_writes_safe_exif() {
             place_for: &|_| None,
             frame_for: &|_| None,
             group_for: &|_| None,
+            postcard_font: None,
         };
         let summary = run_export(
             &records(&lib),

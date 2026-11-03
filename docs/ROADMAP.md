@@ -66,6 +66,7 @@
 | FR-069 | Report a problem: a red button in the app's versions popover and the website's footer, to the GitHub issue forms (v0.8.3) |
 | FR-071 | Image facts at import and in the inspector: chroma subsampling, colour space, sensor kind; v0.10.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
 | FR-072 | Our own develop core: sensor kind first, RCD and Markesteijn, Gr/Gb, false colour, highlights, linear working space, colour management everywhere; v0.10.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
+| FR-073 | Postcard sheets in Collage mode: one photo and a postcard back (stamp box, writing lines, typed text); v0.9.4 |
 
 **Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v1.0.0 is released. Until then, each work stage ships as a 0.y.0 preview release, starting with v0.1.0 ([RELEASE.md](RELEASE.md#1-versioning)).
 
@@ -116,6 +117,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.9.1 | Correctness and error codes (shipped 2026-11-02) | Decoding fixes from the 2026-11-02 audit (16-bit grey and CMYK JPEG, the reference decoder for unparsed headers, no grey or CMYK profile on RGB output, DNG black-level origin); `ERR-` codes on screen and an offline error log ([ERROR_CONTROL.md](ERROR_CONTROL.md)) | A fixture for each fix first |
 | v0.9.2 | Zoom into RAW fixed (shipped 2026-11-03) | A RAW develop never deadlocks the preview pool; the first zoom reuses the preview's full image; a failed preview shows its `ERR-` code; the language in the version popover (FR-057, FR-016, FR-020) | A test that hung on the old code first |
 | v0.9.3 | Image facts and true colours (2026-11-03) | What each file is in the inspector, unusual files badged and filtered (FR-071); thumbnails, previews and zoom converted to sRGB, PNG gamma and dithering, share exports resized in linear light, straightened reductions without bands, the HEIC profile kept on Windows (the colour part of FR-072) | A PATCH number by the owner's choice (RELEASE.md §1) |
+| v0.9.4 | Postcards (planned, 2026-11-03) | FR-073: a Collage switch turns each sheet into one photo and a postcard back, landscape or portrait, with a stamp box, writing lines and typed text | A PATCH number by the owner's choice (RELEASE.md §1) |
 | v0.10.0 | Core (planned, 2026-11-02) | FR-071 (image facts: chroma subsampling, colour space, sensor kind), FR-072 (our own develop: RCD and Markesteijn, Gr/Gb, false colour, highlights, a linear working space, colour management everywhere), [ADR-0037](adr/0037-our-own-develop-core.md) | Test charts and an independent reference first; RCD ≤ 400 ms on 24 MP, Markesteijn ≤ 700 ms on 26 MP |
 | v0.11.0 | Looks (planned, 2026-11-02) | FR-070 (looks from `.cube` LUT files, strength, per photo; built-in looks of our own), [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export (`measure_look`) |
 | After v0.11.0 | Photo Style sliders on the looks engine | FR-039, then FR-047 | — |

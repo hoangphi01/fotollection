@@ -235,6 +235,7 @@ fn main() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        postcard_font: None,
     };
     let t = Instant::now();
     let summary = run_export(
