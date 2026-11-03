@@ -325,9 +325,9 @@ mod imp {
     use windows::Win32::Foundation::RPC_E_CHANGED_MODE;
     use windows::Win32::Graphics::Imaging::{
         CLSID_WICImagingFactory, GUID_ContainerFormatHeif, GUID_ContainerFormatRaw,
-        GUID_WICPixelFormat24bppRGB, IWICBitmapDecoder, IWICBitmapSource, IWICImagingFactory,
-        WICBitmapDitherTypeNone, WICBitmapInterpolationModeFant, WICBitmapPaletteTypeCustom,
-        WICDecodeMetadataCacheOnDemand,
+        GUID_WICPixelFormat24bppRGB, IWICBitmapDecoder, IWICBitmapSource, IWICColorContext,
+        IWICImagingFactory, WICBitmapDitherTypeNone, WICBitmapInterpolationModeFant,
+        WICBitmapPaletteTypeCustom, WICColorContextProfile, WICDecodeMetadataCacheOnDemand,
     };
     use windows::Win32::System::Com::{
         CLSCTX_INPROC_SERVER, COINIT_MULTITHREADED, CoCreateInstance, CoInitializeEx,
@@ -422,9 +422,49 @@ mod imp {
         size(&frame(&decoder)?)
     }
 
+    /// A profile larger than this is not read (a real one is a few kilobytes).
+    const MAX_PROFILE_BYTES: u32 = 4 * 1024 * 1024;
+
+    /// The ICC profile of frame 0, when the file has one: an iPhone's HEIC carries Display P3,
+    /// which the screen and exports convert (FR-072). Exif colour-space contexts are skipped.
+    fn profile(factory: &IWICImagingFactory, decoder: &IWICBitmapDecoder) -> Option<Vec<u8>> {
+        // SAFETY: every call reads the decoder's frame 0 or a colour context WIC filled in;
+        // each buffer is exactly the length WIC is told.
+        unsafe {
+            let frame = decoder.GetFrame(0).ok()?;
+            let mut count = 0u32;
+            frame.GetColorContexts(&mut [], &raw mut count).ok()?;
+            let mut contexts: Vec<Option<IWICColorContext>> = (0..count.min(8))
+                .map(|_| factory.CreateColorContext().ok())
+                .collect();
+            if contexts.iter().any(Option::is_none) {
+                return None;
+            }
+            frame.GetColorContexts(&mut contexts, &raw mut count).ok()?;
+            contexts.iter().flatten().find_map(|context| {
+                if context.GetType().ok()? != WICColorContextProfile {
+                    return None;
+                }
+                let mut size = 0u32;
+                context.GetProfileBytes(&mut [], &raw mut size).ok()?;
+                if size == 0 || size > MAX_PROFILE_BYTES {
+                    return None;
+                }
+                let mut icc = vec![0u8; size as usize];
+                context.GetProfileBytes(&mut icc, &raw mut size).ok()?;
+                icc.truncate(size as usize);
+                Some(icc)
+            })
+        }
+    }
+
     pub fn decode(bytes: &[u8], format: Format, limits: Limits) -> Result<OsImage, OsCodecError> {
         let (factory, decoder) = decoder(bytes, format)?;
-        to_rgb(&factory, &frame(&decoder)?, limits)
+        let image = to_rgb(&factory, &frame(&decoder)?, limits)?;
+        Ok(OsImage {
+            icc: profile(&factory, &decoder),
+            ..image
+        })
     }
 
     pub fn preview(
@@ -441,10 +481,12 @@ mod imp {
             .or_else(|_| unsafe { decoder.GetFrame(0)?.GetThumbnail() })
             .map_err(|e| error(&e))
             .or_else(|_| frame(&decoder))?;
+        let icc = profile(&factory, &decoder);
+        let with_icc = |image: OsImage| OsImage { icc, ..image };
         let (w, h) = size(&source)?;
         let long = w.max(h);
         if long <= max_px || max_px == 0 {
-            return to_rgb(&factory, &source, limits);
+            return to_rgb(&factory, &source, limits).map(with_icc);
         }
         let scale = |v: u32| {
             u32::try_from(u64::from(v) * u64::from(max_px) / u64::from(long))
@@ -459,11 +501,11 @@ mod imp {
                 .map_err(|e| error(&e))?;
             scaler
         };
-        to_rgb(&factory, &scaler.cast().map_err(|e| error(&e))?, limits)
+        to_rgb(&factory, &scaler.cast().map_err(|e| error(&e))?, limits).map(with_icc)
     }
 
-    /// Copies `source` as 8-bit RGB. The embedded ICC profile is not read on Windows yet;
-    /// colours are left as stored.
+    /// Copies `source` as 8-bit RGB, colours as stored; the caller adds the frame's profile
+    /// (`profile`).
     fn to_rgb(
         factory: &IWICImagingFactory,
         source: &IWICBitmapSource,

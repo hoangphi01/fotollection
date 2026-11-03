@@ -104,3 +104,4 @@ Before tagging a release, on both `REF-MAC` and `REF-WIN`. Linux has no referenc
 5. Install over the previous version. Settings are preserved.
 6. Switch between Simple, Collage and Pro, with the menu and Cmd/Ctrl+1/2/3: the photos, basket and settings stay, and nothing of one mode shows in another.
 7. Print one collage sheet at a shop, with and without the cut line, and one print with the 3 mm border: measure the photo areas and the border against the app's figures.
+8. Colour (FR-072): open an iPhone HEIC and a JPEG from a camera set to Adobe RGB, next to the system's photo viewer. Thumbnail, preview, zoom and crop view show the same colours as the viewer, not paler. On Windows this is the only check of WIC handing over the HEIC's profile (`oscodec` `profile`); the preview's Image line says *Display P3*.
