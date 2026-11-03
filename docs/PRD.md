@@ -801,6 +801,10 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Writing by hand:** the panel says to use a fine permanent marker (Sharpie Ultra Fine, edding 400, Stabilo OHPen S) on photo paper, to try it in the stamp box first and let it dry, and that ballpoint and gel pens smear or skip on the coating.
 - Settings v11 (`render.collage.postcard`), project v10 (`photos[].postcard`), [DATABASE.md](DATABASE.md).
 
+### FR-074 — Postcard backs: colour and patterns
+
+**P2 (planned; owner's idea 2026-11-03).** The back of a postcard ([FR-073](#fr-073--postcard-sheets)) gets its own look: a **background colour** (cream, kraft, pale blue…) and the colour of the lines and stamp box with it, or a **pattern** (stripes along the edge like an airmail envelope, a light grid, a texture), chosen in the *Postcard* card and the same on every card. Text and lines stay readable on it: the ink follows the background as it follows black paper today. To be designed and measured before it is scheduled (a pattern drawn at 300 DPI must keep NFR-021).
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

@@ -44,10 +44,10 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode }) {
   // Collage mode (FR-035) has its own recording; older dumps have none.
   // Postcards (FR-073) are recorded after the collage, as its own sheets; older dumps have none.
   const empty = { list_sheets: [], sheet_info: {}, get_crop_geometry: {}, get_postcard_text: {} }
-  const collage = (scenario === 'postcard' ? fixtures.postcard : fixtures.collage) ?? empty
+  const collage = (scenario === 'postcard' ? fixtures.postcard : scenario === 'postcard-full' ? fixtures.postcard_full : fixtures.collage) ?? empty
   const look = scenarios[scenario] ?? scenarios.stamp
   const byId = (table, args) => table[String(args?.id)]
-  let current = scenario === 'collage' || scenario === 'postcard' ? collage.get_settings : look.get_settings
+  let current = ['collage', 'postcard', 'postcard-full'].includes(scenario) ? collage.get_settings : look.get_settings
   // The print basket and set-aside photos (FR-050), by position (TRIP_QUEUES).
   const withQueues = (photos) =>
     photos.map((p, i) => ({ ...p, queue: queues.print.includes(i) ? 'print' : queues.aside.includes(i) ? 'aside' : null }))
@@ -171,7 +171,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
       if (kind === 'sheet') {
         // A collage sheet (FR-035): `{first}-{second}`, `-small` for the sheet grid.
         const name = `${id}${second ? `-${second}` : ''}${url.searchParams.get('small') ? '-small' : ''}`
-        const sheet = path.join(dump, scenario === 'postcard' ? 'img/sheet-postcard' : 'img/sheet', `${name}.jpg`)
+        const sheet = path.join(dump, scenario === 'postcard' ? 'img/sheet-postcard' : scenario === 'postcard-full' ? 'img/sheet-postcard-full' : 'img/sheet', `${name}.jpg`)
         if (!existsSync(sheet)) return route.fulfill({ status: 404 })
         return route.fulfill({ body: await readFile(sheet), contentType: 'image/jpeg' })
       }
@@ -234,6 +234,8 @@ const SHOW = {
   // The Lumix frame on the owner's tram, the Fujifilm one otherwise.
   frame: idOf(has('P1067865') ? 'P1067865' : 'erdmaennchen-in-der-wilhelma-1'),
   crop: idOf('bir-hakeim-bridge'),
+  // A tram by night on a postcard filled to the edge (demo.rs FULL), when the set has it.
+  night: has('P1068073') ? idOf('P1068073') : null,
 }
 const tile = (page, id) => page.locator(`img[src*="/thumb/${id}?"]`).first()
 // The grid is virtualized: scroll it (up, then down) until the photo's tile is drawn.
@@ -434,6 +436,19 @@ for (const language of ['en', 'vi']) {
     await settle(page)
     await save(page, `manual-postcard-${suffix}`)
     await context.close()
+
+    // 11b. The other way to set a postcard, for the landing page: a tram by night, its photo
+    // filling the half with no border.
+    if (SHOW.night !== null) {
+      ;({ context, page } = await open({ scenario: 'postcard-full', language, theme, mode: 'collage', queues: NO_QUEUES }))
+      const night = page.locator(`[data-cell][data-photo="${SHOW.night}"]`).first()
+      await night.scrollIntoViewIfNeeded()
+      await night.dblclick()
+      await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
+      await settle(page)
+      await save(page, `postcard-night-${suffix}`)
+      await context.close()
+    }
   }
 }
 

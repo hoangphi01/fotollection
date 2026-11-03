@@ -68,7 +68,8 @@ fn record(app: &AppHandle, folder: PathBuf, out: &Path) -> Result<(), String> {
         "common": record_common(app, &ids, out)?,
         "scenarios": record_scenarios(app, &ids, out)?,
         "collage": record_collage(app, out)?,
-        "postcard": record_postcard(app, out)?,
+        "postcard": record_postcard(app, out, &BORDERED)?,
+        "postcard_full": record_postcard(app, out, &FULL)?,
     });
     let text = serde_json::to_string_pretty(&fixtures).map_err(|e| e.to_string())?;
     write(&out.join("fixtures.json"), text.as_bytes())?;
@@ -292,40 +293,72 @@ fn record_collage(app: &AppHandle, out: &Path) -> Result<Value, String> {
     }))
 }
 
-/// The messages typed on three demo postcards, each sent to the National Museum in
-/// Prague (a public address, so it can be shown), on the address's three lines.
-const POSTCARD_TEXTS: [(&str, &str); 3] = [
-    ("Ahoj Praha!\nPozdravy z Prahy.", NATIONAL_MUSEUM),
-    ("Ahoj Praha!\nLove from the funicular.", NATIONAL_MUSEUM),
-    ("Ahoj Praha!\nThương gửi cả nhà.", NATIONAL_MUSEUM),
-];
+/// One recording of the demo postcards (FR-073): how the photo half is set, and the
+/// messages typed on three cards from the named photo on (the owner's, `demo_set.txt`), or
+/// from the first card when the set does not have it. Each is sent to the National Museum
+/// in Prague, a public address, on the address's three lines.
+struct PostcardDemo {
+    key: &'static str,
+    border: bool,
+    fill: bool,
+    from: &'static str,
+    messages: [&'static str; 3],
+}
 const NATIONAL_MUSEUM: &str = "Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1, Czechia";
+/// The red tram by day, with the 3 mm border round the photo.
+const BORDERED: PostcardDemo = PostcardDemo {
+    key: "sheet-postcard",
+    border: true,
+    fill: false,
+    from: "P1067865",
+    messages: [
+        "Ahoj Praha!\nPozdravy z Prahy.",
+        "Ahoj Praha!\nLove from the funicular.",
+        "Ahoj Praha!\nThương gửi cả nhà.",
+    ],
+};
+/// The trams by night, the photo filling its half to the edge.
+const FULL: PostcardDemo = PostcardDemo {
+    key: "sheet-postcard-full",
+    border: false,
+    fill: true,
+    from: "P1068073",
+    messages: [
+        "Ahoj Praha!\nDobrou noc z Prahy.",
+        "Ahoj Praha!\nPozdrav z tramvaje.",
+        "Ahoj Praha!\nThe last 22 home.",
+    ],
+};
 
 /// Postcards (FR-073), after the collage: the same photos, one per card, held landscape,
 /// three with a typed message; each card's facts, its text and its images.
-fn record_postcard(app: &AppHandle, out: &Path) -> Result<Value, String> {
+fn record_postcard(app: &AppHandle, out: &Path, demo: &PostcardDemo) -> Result<Value, String> {
     let state = app.state::<AppState>();
     let mut settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
     settings.collage.postcard.enabled = true;
+    settings.border = demo.border;
+    settings.collage.fill = demo.fill;
     ok(commands::set_settings(app.clone(), app.state(), settings))?;
     let sheets = crate::collage::list_sheets(app.state(), CullFilter::default())
         .map_err(|e| format!("{e:?}"))?;
-    // From the owner's red tram on (demo_set.txt) when the set has it, the first cards otherwise.
     let start = {
         let lib = state.library.read().map_err(|e| e.to_string())?;
         sheets
             .iter()
             .position(|sheet| {
                 lib.summary(sheet.first)
-                    .is_some_and(|s| s.file_name.starts_with("P1067865"))
+                    .is_some_and(|s| s.file_name.starts_with(demo.from))
             })
             .unwrap_or(0)
     };
     let texted = sheets.iter().cycle().skip(start).take(sheets.len());
-    for (sheet, (message, address)) in texted.zip(POSTCARD_TEXTS) {
+    for (sheet, message) in texted.zip(demo.messages) {
         for (part, text) in [
             (fotollection_core::settings::PostcardPart::Message, message),
-            (fotollection_core::settings::PostcardPart::Address, address),
+            (
+                fotollection_core::settings::PostcardPart::Address,
+                NATIONAL_MUSEUM,
+            ),
         ] {
             ok(commands::set_postcard_text(
                 app.clone(),
@@ -362,7 +395,7 @@ fn record_postcard(app: &AppHandle, out: &Path) -> Result<Value, String> {
         );
         for (small, suffix) in [(true, "-small"), (false, "")] {
             write(
-                &out.join(format!("img/sheet-postcard/{key}{suffix}.jpg")),
+                &out.join(format!("img/{}/{key}{suffix}.jpg", demo.key)),
                 &crate::collage::sheet_bytes(&state, sheet, small).map_err(|e| e.message)?,
             )?;
         }
