@@ -1,0 +1,14 @@
+# The "treat me" menu of the support section (home.html, assets/js/support.js): what a
+# visitor can buy the author, priced for a VietQR transfer (VND) and for GitHub Sponsors
+# (EUR, a suggestion: Sponsors takes any amount). Names are the treat_* keys in i18n.yml.
+# The bank's VietQR merchant data, read from the published code (assets/img/vietqr.png):
+# Techcombank's BIN and the account; the page builds a dynamic code from them.
+bank: Techcombank
+bin: "970407"
+account: "19036384814013"
+items:
+  - { id: tea, icon: cup-soda, vnd: 5000, eur: 1, note: "Fotollection tra da" }
+  - { id: coffee, icon: coffee, vnd: 25000, eur: 2, note: "Fotollection ca phe" }
+  - { id: banhmi, icon: sandwich, vnd: 30000, eur: 3, note: "Fotollection banh mi" }
+  - { id: pho, icon: soup, vnd: 60000, eur: 5, note: "Fotollection pho" }
+  - { id: meal, icon: utensils, vnd: 120000, eur: 10, note: "Fotollection bua com" }

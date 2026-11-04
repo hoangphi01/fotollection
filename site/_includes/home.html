@@ -261,16 +261,32 @@
 
 <section class="section" id="support">
   <div class="wrap">
-    <div class="card support">
-      <img src="{{ '/assets/img/vietqr.png' | relative_url }}" width="260" height="350" alt="{{ t.support_alt }}" loading="lazy" decoding="async" />
-      <div>
+    {%- assign treat = site.data.support %}
+    <div class="card support" data-treat data-bin="{{ treat.bin }}" data-account="{{ treat.account }}" data-qr-label="{{ t.support_alt }}" data-own-hint="{{ t.treat_own_hint }}">
+      {%- comment %} On a phone the code comes right under the menu, beside it on a wide screen. {% endcomment %}
+      <div class="support-head">
         <h2 class="with-icon">{% include icons/coffee.svg %}{{ t.support_title }}</h2>
         <p class="lead">{{ t.support_text }}</p>
-        <div class="cta"><a class="button sponsor" href="https://github.com/sponsors/hoangphi01">{% include icons/heart.svg %}{{ t.support_sponsor }}</a></div>
-        <p class="small muted">{{ t.support_note }}</p>
       </div>
+      <fieldset class="treat-menu">
+        <legend class="sizes-label">{{ t.treat_pick }}</legend>
+        {%- for item in treat.items %}
+        {%- capture name_key %}treat_{{ item.id }}{% endcapture %}
+        <label class="treat"><input type="radio" name="treat" value="{{ item.id }}" data-vnd="{{ item.vnd }}" data-note="{{ item.note }}"{% if item.id == 'coffee' %} checked{% endif %} />{% include icons/{{ item.icon }}.svg %}<span class="treat-name">{{ t[name_key] }}</span><span class="treat-price">{{ item.vnd | divided_by: 1000 }}k ₫ · €{{ item.eur }}</span></label>
+        {%- endfor %}
+        <label class="treat treat-own"><input type="radio" name="treat" value="own" data-note="Fotollection" />{% include icons/hand-heart.svg %}<span class="treat-name">{{ t.treat_own }}</span><input class="treat-amount" type="number" inputmode="numeric" min="1000" step="1000" placeholder="50000" aria-label="{{ t.treat_own_label }}" data-treat-own /><span class="treat-price">₫</span></label>
+      </fieldset>
+      <figure class="treat-qr">
+        {%- comment %} The published code until assets/js/support.js draws one with the amount. {% endcomment %}
+        <div data-treat-qr><img src="{{ '/assets/img/vietqr.png' | relative_url }}" width="260" height="350" alt="{{ t.support_alt }}" loading="lazy" decoding="async" /></div>
+        <figcaption class="small muted" data-treat-amount>{{ treat.bank }} · Napas 247</figcaption>
+      </figure>
+      <div class="cta"><a class="button sponsor" href="https://github.com/sponsors/hoangphi01?frequency=one-time">{% include icons/heart.svg %}{{ t.support_sponsor }}</a></div>
+      <p class="small muted support-note">{{ t.support_note }}</p>
     </div>
   </div>
+  <script src="{{ '/assets/js/qrcode.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/js/support.js' | relative_url }}" defer></script>
 </section>
 
 <section class="section" id="faq">
