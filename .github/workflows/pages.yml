@@ -8,7 +8,7 @@ on:
     - cron: "17 */6 * * *"
   push:
     branches: [main]
-    paths: ["site/**", "CHANGELOG.md", "docs/USER_GUIDE.md", "docs/USER_GUIDE.vi.md", "scripts/site-manual.sh", "scripts/ga-visits.mjs", "scripts/apt-repo.sh", ".github/workflows/pages.yml"]
+    paths: ["site/**", "CHANGELOG.md", "docs/USER_GUIDE.md", "docs/USER_GUIDE.vi.md", "scripts/site-manual.sh", "scripts/ga-visits.mjs", "scripts/download-stats.mjs", "scripts/apt-repo.sh", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -40,6 +40,13 @@ jobs:
           GA_PROPERTY_ID: ${{ secrets.GA_PROPERTY_ID }}
           GA_SERVICE_ACCOUNT: ${{ secrets.GA_SERVICE_ACCOUNT }}
         run: node scripts/ga-visits.mjs
+
+      # How often the installers were downloaded, from GitHub's release counts, split by the
+      # clicks on the site's own links (scripts/download-stats.mjs). Nothing on any error.
+      - name: Download count
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/download-stats.mjs
 
       # The CHANGELOG, from the first version heading on, for the "What's new" box.
       - name: Changelog for the page

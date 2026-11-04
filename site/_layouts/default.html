@@ -71,7 +71,8 @@
     <link rel="preload" href="{{ '/assets/fonts/bitter-latin-wght-normal.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}" />
     {%- if jekyll.environment == 'production' and site.google_analytics %}
-    <!-- Google tag (gtag.js): visits to this website only; the app itself has no analytics. -->
+    <!-- Google tag (gtag.js): visits to this website and clicks on its download links only;
+         the app itself has no analytics. -->
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -79,6 +80,12 @@
       gtag('js', new Date());
 
       gtag('config', '{{ site.google_analytics }}');
+      // A click on an installer link (data-download): its file and system, nothing else, so
+      // the downloads from this site can be told from the app's updates (download-stats.mjs).
+      document.addEventListener('click', function (e) {
+        var link = e.target instanceof Element && e.target.closest('a[data-download]');
+        if (link) gtag('event', 'app_download', { link_url: link.href, os: link.dataset.download, transport_type: 'beacon' });
+      });
     </script>
     {%- endif %}
   </head>
@@ -195,14 +202,14 @@
         {%- comment -%} One list on every page; the back link only where this page carries the mark. {%- endcomment %}
         {%- if page.title_key == 'perf_title' %}{% assign first = 4 %}{% assign last = 11 %}{% elsif page.title_key == nil %}{% assign first = 1 %}{% assign last = 3 %}{% else %}{% assign first = 0 %}{% assign last = 0 %}{% endif %}
         <ol>
-          {%- assign notes = "fn_open,fn_dm,fn_rossmann,fn_rust,fn_webview,fn_de,fn_ssim,fn_jpeg,fn_srgb,fn_p3,fn_adobe,fn_charts,fn_dng,fn_pf_raw,fn_pf_heic_win,fn_pf_heic_linux,fn_pf_tether,fn_pf_openwith,fn_pf_update,fn_glibc,fn_nvidia,fn_trip" | split: "," %}
+          {%- assign notes = "fn_open,fn_dm,fn_rossmann,fn_rust,fn_webview,fn_de,fn_ssim,fn_jpeg,fn_srgb,fn_p3,fn_adobe,fn_charts,fn_dng,fn_pf_raw,fn_pf_heic_win,fn_pf_heic_linux,fn_pf_tether,fn_pf_openwith,fn_pf_update,fn_glibc,fn_nvidia,fn_trip,fn_downloads" | split: "," %}
           {%- for key in notes %}
           {%- assign n = forloop.index %}
           {%- assign back = false %}{% if n >= first and n <= last %}{% assign back = true %}{% endif %}
           {%- if page.title_key == 'perf_title' and n == 13 or page.title_key == 'perf_title' and n == 22 %}{% assign back = true %}{% endif %}
-          {%- comment -%} 14–19: the table by system; 20–21: the distributions; both on the Download page. 22: the real trip, on the Performance page. 14 is also on the home page's RAW card. {%- endcomment %}
+          {%- comment -%} 14–19: the table by system; 20–21: the distributions; both on the Download page. 22: the real trip, on the Performance page. 23: the download count, on the Download page. 14 is also on the home page's RAW card. {%- endcomment %}
           {%- if page.title_key == nil and n == 14 %}{% assign back = true %}{% endif %}
-          {%- if page.title_key == 'dl_title' and n >= 14 and n <= 21 %}{% assign back = true %}{% endif %}
+          {%- if page.title_key == 'dl_title' and n >= 14 and n <= 21 or page.title_key == 'dl_title' and n == 23 %}{% assign back = true %}{% endif %}
           <li id="fn-{{ n }}"><span class="fn-num">{{ n }}.</span> {{ t[key] }}{% if back %} <a class="fn-back" href="#fnref-{{ n }}" aria-label="{{ t.fn_back }}">{% include icons/corner-left-up.svg %}</a>{% endif %}</li>
           {%- endfor %}
         </ol>
@@ -230,9 +237,13 @@
           <p class="muted footer-made">{{ t.footer_made }}</p>
           {%- comment -%} Straight to the issue forms, bug or idea (FR-069), as the app's own button. {%- endcomment %}
           <p class="footer-report"><a class="button report" href="{{ site.repo_url }}/issues/new/choose">{% include icons/message-square-warning.svg %}{{ t.footer_report }}</a></p>
-          {%- if site.data.visits %}
-          {%- comment -%} Written at build time by scripts/ga-visits.mjs; absent without the GA secrets. {%- endcomment %}
-          <p class="footer-visits"><span class="pill" title="{{ t.footer_visits_hint }}">{% include icons/eye.svg %}<span>{{ t.footer_visits }}</span><span class="star-count">{{ site.data.visits[page.lang] }}</span></span></p>
+          {%- if site.data.visits or site.data.downloads %}
+          {%- comment -%} Written at build time by scripts/ga-visits.mjs and scripts/download-stats.mjs; each
+               pill is left out when its file is absent. {%- endcomment %}
+          <p class="footer-visits">
+            {%- if site.data.visits %}<span class="pill" title="{{ t.footer_visits_hint }}">{% include icons/eye.svg %}<span>{{ t.footer_visits }}</span><span class="star-count">{{ site.data.visits[page.lang] }}</span></span>{% endif %}
+            {%- if site.data.downloads %} <a class="pill" href="{{ path_download }}" title="{{ t.footer_downloads_hint }}">{% include icons/download.svg %}<span>{{ t.footer_downloads }}</span><span class="star-count">{{ site.data.downloads[page.lang] }}</span></a>{% endif %}
+          </p>
           {%- endif %}
         </div>
         <ul class="footer-links">

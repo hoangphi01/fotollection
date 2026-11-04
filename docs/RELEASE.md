@@ -103,3 +103,5 @@ Installing a new version over an old one **replaces it** and keeps settings, pro
 - [ ] `scripts/release.sh` run, commit pushed
 - [ ] Workflow green, Linux smoke tests included; the release has the `.dmg`, `.msi`, `-setup.exe`, the two AppImages, the two `.deb` and `SHA256SUMS.txt`
 - [ ] Smoke test of the published installer on macOS ([TESTING.md §7](TESTING.md#7-manual-release-checklist)); a broken release is fixed by a PATCH release, never by replacing assets
+
+The website shows GitHub's download counts as they are (`scripts/download-stats.mjs`): the smoke test and other checks of a release add a download or two to each file.

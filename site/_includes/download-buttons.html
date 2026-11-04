@@ -1,7 +1,7 @@
 {%- comment -%} The three download buttons, the same on the home page and the Download page
      (site/README.md). Needs release-assets.html first; include.id names the block. {%- endcomment %}
 <div class="cta"{% if include.id %} id="{{ include.id }}"{% endif %}>
-  <a class="button primary" href="{{ mac | default: releases }}">{% include icons/download.svg %}{{ t.download_mac }}</a>
-  <a class="button" href="{{ win | default: releases }}">{% include icons/download.svg %}{{ t.download_win }}</a>
+  <a class="button primary" href="{{ mac | default: releases }}"{% if mac %} data-download="mac"{% endif %}>{% include icons/download.svg %}{{ t.download_mac }}</a>
+  <a class="button" href="{{ win | default: releases }}"{% if win %} data-download="win"{% endif %}>{% include icons/download.svg %}{{ t.download_win }}</a>
   <a class="button" href="{{ path_download }}#install-linux">{% include icons/download.svg %}{{ t.download_linux }}</a>
 </div>

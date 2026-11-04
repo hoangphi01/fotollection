@@ -10,6 +10,11 @@
     <p class="lead narrow">{{ t.install_lead }}</p>
     {% include download-buttons.html %}
     <p class="small muted">{% if release.tag_name %}{{ t.latest }}: <a href="{{ release.html_url }}">{{ release.tag_name }}</a> · {% else %}<a href="{{ site.repo_url }}/releases">{{ t.no_release }}</a> · {% endif %}{{ t.download_note }}</p>
+    {%- assign d = site.data.downloads %}
+    {%- if d %}
+    {%- comment %} Written at build time by scripts/download-stats.mjs; absent without it. {% endcomment %}
+    <p class="small muted">{{ t.dl_count | replace: "[n]", d[page.lang] | replace: "[mac]", d.mac | replace: "[win]", d.win | replace: "[linux]", d.linux }}{% if d.latest %} {{ t.dl_count_split | replace: "[tag]", d.latest.tag | replace: "[site]", d.latest.site | replace: "[updates]", d.latest.updates }}{% endif %}<sup class="fn-ref"><a href="#fn-23" id="fnref-23" aria-label="{{ t.fn_label }} 23">23</a></sup></p>
+    {%- endif %}
   </div>
 </section>
 
@@ -49,10 +54,10 @@ sudo apt update && sudo apt install fotollection</code></pre>
         </div>
         <p class="sizes-label">{{ t.linux_files }}</p>
         <p class="linux-files">
-          <a class="pill" href="{{ appimage_x64 | default: releases }}">{% include icons/download.svg %}{{ t.linux_appimage_x64 }}</a>
-          <a class="pill" href="{{ appimage_arm | default: releases }}">{% include icons/download.svg %}{{ t.linux_appimage_arm }}</a>
-          <a class="pill" href="{{ deb_x64 | default: releases }}">{% include icons/download.svg %}{{ t.linux_deb_x64 }}</a>
-          <a class="pill" href="{{ deb_arm | default: releases }}">{% include icons/download.svg %}{{ t.linux_deb_arm }}</a>
+          <a class="pill" href="{{ appimage_x64 | default: releases }}"{% if appimage_x64 %} data-download="linux"{% endif %}>{% include icons/download.svg %}{{ t.linux_appimage_x64 }}</a>
+          <a class="pill" href="{{ appimage_arm | default: releases }}"{% if appimage_arm %} data-download="linux"{% endif %}>{% include icons/download.svg %}{{ t.linux_appimage_arm }}</a>
+          <a class="pill" href="{{ deb_x64 | default: releases }}"{% if deb_x64 %} data-download="linux"{% endif %}>{% include icons/download.svg %}{{ t.linux_deb_x64 }}</a>
+          <a class="pill" href="{{ deb_arm | default: releases }}"{% if deb_arm %} data-download="linux"{% endif %}>{% include icons/download.svg %}{{ t.linux_deb_arm }}</a>
         </p>
         {%- unless appimage_x64 or deb_x64 %}
         <p class="small muted">{{ t.linux_soon }}</p>
