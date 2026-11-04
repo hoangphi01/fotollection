@@ -330,3 +330,9 @@
 - **Seen:** the owner's postcard showed bold "Minh" with a doubled M, two thin strokes side by side.
 - **Why:** bold was the text drawn a second time 0.045 em to the right. Xanh Mono's strokes are thinner than that offset at print size, so the two copies did not touch.
 - **Rule:** to embolden, draw at steps of at most half a pixel across the extra width and keep each pixel's highest coverage, then blend once (`text::draw_text_bold`); a test checks one run per stem. Look at a print-size render of a thin face before trusting a style.
+
+### A fit check must count only what prints (FR-073)
+
+- **Seen:** a postcard address that printed whole on its four lines still showed the red "does not fit" mark.
+- **Why:** the text ended with a line break, and `wrap` turned it into one more, empty row, which printed nothing but counted as a fifth line. Rows past the last line were also measured with no room, so each left-over letter became a row of its own.
+- **Rule:** drop trailing blank rows before counting, measure rows past the last line as long as it, and test the check on text as the app's field sends it (doubled spaces, a trailing break), not only on tidy strings.

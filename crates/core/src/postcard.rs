@@ -202,16 +202,23 @@ fn typeset(spec: &CardSpec<'_>, faces: Faces<'_>, density: f32) -> Typeset {
         };
         let (message_px, address_px) = (size(layout.step), size(layout.address_step));
         let rows = |part: &str, lines: &[Line], text_px: f32| {
+            // Rows past the last line are cut; they are measured as long as it, so what is
+            // left over counts as rows, not as one letter a row.
             let room = |row: usize| {
                 lines
                     .get(row)
+                    .or(lines.last())
                     .map_or(0.0, |l| (l.x1 - l.x0 - TEXT_PAD_MM) * density)
             };
             if part.trim().is_empty() {
-                Vec::new()
-            } else {
-                wrap(faces, text_px, part, room)
+                return Vec::new();
             }
+            // A break or blanks typed after the last word print nothing: no row for them.
+            let mut rows = wrap(faces, text_px, part, room);
+            while rows.last().is_some_and(|r| r.trim().is_empty()) {
+                rows.pop();
+            }
+            rows
         };
         let message = rows(&text.message, &layout.message, message_px);
         let address = rows(&text.address, &layout.address, address_px);
@@ -686,6 +693,14 @@ mod tests {
             (4, Fit::default()),
             "the owner's address fits on four"
         );
+        // As typed in the app: one line break, doubled spaces, a trailing break. With three
+        // breaks it does need a fifth line, and the warning is right.
+        let typed = "Cao-Minh TRUONG  /\nChambre 248, Collège Franco-Britannique, 9B, Boulevard Jourdan, 75014, Paris, France";
+        for t in [typed.to_owned(), format!("{typed}\n")] {
+            assert_eq!(card(&text("", &t)), (4, Fit::default()), "{t:?}");
+        }
+        let broken = "Cao-Minh TRUONG /\nChambre 248, Collège Franco-Britannique,\n9B, Boulevard Jourdan, 75014, Paris, France";
+        assert!(card(&text("", broken)).1.address_cut);
         let long = text(
             &"Liebe Grüße aus Budapest! ".repeat(20),
             &"Hauptstraße 1, ".repeat(12),
