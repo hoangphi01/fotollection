@@ -7,16 +7,21 @@ const MAX = 8
 const STEP = 1.25
 /** Double-click zoom. */
 const CLOSE_UP = 2
+/** Zoom per pixel of a pinch, and of a two-finger scroll or wheel. */
+const PINCH_RATE = 0.01
+const SCROLL_RATE = 0.005
+/** A mouse wheel's notch is ~100 px: at most this much of it counts, so one notch is ~1.35×. */
+const MAX_SCROLL = 60
 
 /** The photo's scale and its offset from the stage centre, in CSS pixels. */
 export type View = { scale: number; x: number; y: number }
 const FIT: View = { scale: 1, x: 0, y: 0 }
 
 /**
- * Zoom and pan for the preview stage (FR-057): a trackpad pinch (sent by WebKit and
- * WebView2 as a wheel event with Ctrl held) or Ctrl/⌘ + − 0 zoom about the pointer; a
- * drag or a two-finger scroll moves the zoomed photo; a double-click toggles fit and 2×; the
- * zoom buttons step about the centre.
+ * Zoom and pan for the preview stage (FR-057): a two-finger scroll up or down (or the mouse
+ * wheel), a trackpad pinch (sent by WebKit and WebView2 as a wheel event with Ctrl held) or
+ * Ctrl/⌘ + − 0 zoom about the pointer; a drag, or a sideways two-finger scroll, moves the
+ * zoomed photo; a double-click toggles fit and 2×; the zoom buttons step about the centre.
  * `stage` is the element that takes the wheel events; another `resetKey` (another photo, the
  * crop editor) starts again at fit.
  */
@@ -56,13 +61,20 @@ export function useZoom(stage: HTMLElement | null, resetKey: string) {
   useEffect(() => {
     if (!stage) return
     const onWheel = (e: WheelEvent) => {
-      if (e.ctrlKey || e.metaKey) {
-        e.preventDefault()
-        zoomAt(Math.exp(-e.deltaY * 0.01), ...fromCentre(e.clientX, e.clientY))
+      e.preventDefault()
+      const at = fromCentre(e.clientX, e.clientY)
+      if (e.ctrlKey || e.metaKey) return zoomAt(Math.exp(-e.deltaY * PINCH_RATE), ...at)
+      // Fingers moving up zoom in, whichever way the system scrolls: WebKit says when macOS's
+      // natural scrolling has turned the deltas around (the wheel's forward notch zooms in too).
+      const natural = (e as WheelEvent & { webkitDirectionInvertedFromDevice?: boolean })
+        .webkitDirectionInvertedFromDevice
+      const up = natural ? e.deltaY : -e.deltaY
+      if (Math.abs(e.deltaY) >= Math.abs(e.deltaX)) {
+        const step = Math.max(-MAX_SCROLL, Math.min(MAX_SCROLL, up))
+        zoomAt(Math.exp(step * SCROLL_RATE), ...at)
       } else if (zoomed) {
-        // Zoomed in, a two-finger scroll moves the photo instead of the page.
-        e.preventDefault()
-        setView((v) => ({ ...v, x: v.x - e.deltaX, y: v.y - e.deltaY }))
+        // Sideways, it moves the zoomed photo.
+        setView((v) => ({ ...v, x: v.x - e.deltaX }))
       }
     }
     stage.addEventListener('wheel', onWheel, { passive: false })

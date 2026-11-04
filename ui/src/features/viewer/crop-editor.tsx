@@ -81,6 +81,8 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
     if (!el) return
     const onWheel = (e: WheelEvent) => {
       e.preventDefault()
+      // The crop's own zoom: the stage behind it must not zoom as well (FR-057).
+      e.stopPropagation()
       setFrame((f) => {
         const zoom = Math.min(MAX_ZOOM, Math.max(1, f.zoom * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015))))
         const r = straightenedRect(g.width, g.height, g.targetWidth, g.targetHeight, { ...f, zoom }, angle)

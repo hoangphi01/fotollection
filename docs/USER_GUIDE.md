@@ -189,9 +189,9 @@ In the preview's size card, *Crop* says **Centred**, with **Adjust**, or **Custo
 
 In the preview, the **zoom buttons** at the bottom right of the photo show the zoom level between **−** and **+**; the last button goes back to fit ([FR-057](PRD.md#fr-057--zoom-in-the-preview)). The same with the keyboard and the trackpad:
 
-- **Pinch** on the trackpad, or **Cmd/Ctrl +** and **Cmd/Ctrl −**, zoom about the pointer, up to 800 %.
+- **Scroll up or down with two fingers** (or the mouse wheel), **pinch** on the trackpad, or press **Cmd/Ctrl +** and **Cmd/Ctrl −**: the photo zooms about the pointer, up to 800 %. Fingers up zoom in.
 - **Double-click** the photo to go between fit and 200 %.
-- Zoomed in, **drag** the photo, or scroll with two fingers, to move around it.
+- Zoomed in, **drag** the photo, or scroll sideways with two fingers, to move around it.
 - **Cmd/Ctrl 0** or the fit button goes back to the whole photo.
 
 The preview is first shown at a light size that any computer draws quickly. When you zoom past what it holds, a small spinner appears beside the zoom level, and a moment after you stop moving the part on screen is replaced by the **full-resolution** pixels, exactly as the exported file will have them. Only the visible part is loaded, so even a 32 MP photo stays light.
@@ -483,7 +483,7 @@ Every change is one undo step. The date stamp prints on each photo, with its pla
 | Sheet preview | **C** / **R** | Crop the chosen photo / turn the sheet |
 | Sheet preview | **↑** / **↓** | Put the chosen photo in the print basket / set it aside |
 | Preview | **C** | Open the crop editor (chapter 6) |
-| Preview | **Cmd/Ctrl + / −**, trackpad pinch, the zoom buttons | Zoom in / out (§7) |
+| Preview | **Cmd/Ctrl + / −**, two-finger scroll, trackpad pinch, the zoom buttons | Zoom in / out (§7) |
 | Preview | **Cmd/Ctrl 0**, the fit button | Back to fit |
 | Preview | double-click the photo | Toggle fit and 200 % |
 | Preview | drag the photo (not zoomed) | Choose what the print keeps (*Crop to fill*) |

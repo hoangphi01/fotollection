@@ -647,8 +647,8 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P1.** The preview zooms like a photo viewer, to check focus and detail.
 
-- **Trackpad pinch** (sent as Ctrl + wheel by WebKit and WebView2) and **Ctrl/⌘ + / − / 0** zoom about the pointer, from fit up to 800 %; a **double-click** toggles fit and 200 %.
-- Zoomed in, a **drag** or a two-finger scroll moves the photo.
+- A **two-finger scroll up or down** (fingers up zoom in, whatever the system's scroll direction; the mouse wheel's forward notch too), a **trackpad pinch** (sent as Ctrl + wheel by WebKit and WebView2) and **Ctrl/⌘ + / − / 0** zoom about the pointer, from fit up to 800 %; a **double-click** toggles fit and 200 %.
+- Zoomed in, a **drag** or a sideways two-finger scroll moves the photo.
 - **Zoom buttons** at the bottom right of the photo (− · level · + · fit), so zoom can be found without knowing the shortcuts; each tooltip names its shortcut and the pinch.
 - Another photo, or the crop editor, starts again at fit; ← → still browse.
 - **A safe preview, full detail on demand.** The preview is never larger than 1,600 px, rendered from a 2,048 px copy, whatever the camera: a weak machine never decodes a 32 MP photo just to show it. Zoomed past the preview's own pixels, once the view has been still for 150 ms, the UI asks Rust for **only the visible part** (plus a 10 % margin) at the screen's pixel count, at most 4,096 px wide. Rust decodes the original then, keeps at most about 200 MB of originals (two 32 MP photos; the one on screen always stays), renders it exactly as export does and sends that part. The zoomed preview stays on screen meanwhile, with a spinner beside the zoom level. Measured cost, REF-MAC: decode 46 ms (16 MP) to 84 ms (32 MP) the first time, then 17 ms per region ([RESULT.md §11](RESULT.md#11-preview-and-zoom-cost-v060)).

@@ -187,9 +187,9 @@ Trong thẻ khổ của bản xem trước, dòng *Cắt ảnh* ghi **Ở giữa
 
 Trong bản xem trước, **các nút phóng to** ở góc dưới bên phải ảnh hiện mức phóng giữa **−** và **+**; nút cuối cùng đưa ảnh về vừa khung ([FR-057](PRD.md#fr-057--zoom-in-the-preview)). Bàn phím và trackpad cũng làm được như vậy:
 
-- **Chụm hai ngón** trên trackpad, hoặc **Cmd/Ctrl +** và **Cmd/Ctrl −**, phóng quanh con trỏ, tới 800 %.
+- **Vuốt hai ngón lên hoặc xuống** (hoặc lăn chuột), **chụm hai ngón** trên trackpad, hoặc bấm **Cmd/Ctrl +** và **Cmd/Ctrl −**: ảnh phóng quanh con trỏ, tới 800 %. Vuốt lên là phóng to.
 - **Nhấp đúp** vào ảnh để chuyển giữa vừa khung và 200 %.
-- Khi đã phóng to, **kéo** ảnh, hoặc cuộn bằng hai ngón, để di chuyển trong ảnh.
+- Khi đã phóng to, **kéo** ảnh, hoặc vuốt ngang bằng hai ngón, để di chuyển trong ảnh.
 - **Cmd/Ctrl 0** hoặc nút vừa khung đưa về toàn bộ ảnh.
 
 Bản xem trước ban đầu được hiện ở cỡ nhẹ để máy nào cũng vẽ nhanh. Khi bạn phóng vượt quá cỡ đó, một vòng xoay nhỏ hiện cạnh mức phóng, và một lát sau khi bạn ngừng di chuyển, phần trên màn hình được thay bằng điểm ảnh **độ phân giải đầy đủ**, đúng như trong tệp sẽ xuất. Chỉ phần đang thấy được tải, nên kể cả ảnh 32 MP vẫn nhẹ.
@@ -481,7 +481,7 @@ Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên t�
 | Xem trước tấm | **C** / **R** | Cắt ảnh đang chọn / xoay tấm |
 | Xem trước tấm | **↑** / **↓** | Cho ảnh đang chọn vào giỏ in / để riêng |
 | Xem trước | **C** | Mở màn cắt ảnh (chương 6) |
-| Xem trước | **Cmd/Ctrl + / −**, chụm trên trackpad, các nút phóng | Phóng to / thu nhỏ (§7) |
+| Xem trước | **Cmd/Ctrl + / −**, vuốt hai ngón, chụm trên trackpad, các nút phóng | Phóng to / thu nhỏ (§7) |
 | Xem trước | **Cmd/Ctrl 0**, nút vừa khung | Về vừa khung |
 | Xem trước | nhấp đúp vào ảnh | Chuyển giữa vừa khung và 200 % |
 | Xem trước | kéo ảnh (khi chưa phóng) | Chọn phần được in (*Cắt cho đầy*) |

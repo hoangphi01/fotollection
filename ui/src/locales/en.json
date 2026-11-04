@@ -379,7 +379,7 @@
     "zoomIn": "Zoom in ({{mod}} +)",
     "zoomOut": "Zoom out ({{mod}} −)",
     "zoomFit": "Fit to window ({{mod}} 0)",
-    "zoomPinch": "or pinch the trackpad, or double-click the photo",
+    "zoomPinch": "or scroll up or down with two fingers, pinch, or double-click the photo",
     "zoomSharpening": "Loading full detail…",
     "dragToFrame": "drag to reframe",
     "upBasket": "print basket",
