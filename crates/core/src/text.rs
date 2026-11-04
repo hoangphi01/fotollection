@@ -95,6 +95,59 @@ pub fn draw_text(
     });
 }
 
+/// Draws `run` emboldened by `bold` pixels and slanted by `slant` (0 for upright): the
+/// glyphs are drawn at steps of at most half a pixel across `bold`, each pixel keeps its
+/// highest coverage, and the result is blended once. The strokes thicken into one, where
+/// two copies side by side showed as doubled lines on a thin face (a postcard's bold text,
+/// FR-073).
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    clippy::cast_possible_wrap
+)]
+pub fn draw_text_bold(
+    image: &mut RgbImage,
+    run: &TextRun<'_>,
+    left: f32,
+    top: f32,
+    color: [u8; 3],
+    bold: f32,
+    slant: f32,
+) {
+    let scaled = run.font.as_scaled(PxScale::from(run.px));
+    let baseline = top + scaled.ascent();
+    // Room for overhangs past the advance and above or below the line: an em each side.
+    let pad = run.px.ceil() as i32;
+    let x0 = left.floor() as i32 - pad;
+    let y0 = top.floor() as i32 - pad;
+    let width =
+        (text_width(run.font, run.px, run.text, run.tracking) + bold).ceil() as i32 + 2 * pad;
+    let height = (scaled.ascent() - scaled.descent()).ceil() as i32 + 2 * pad;
+    if width <= 0 || height <= 0 {
+        return;
+    }
+    let mut cover = vec![0.0f32; width as usize * height as usize];
+    let steps = (bold / 0.5).ceil().max(1.0) as u32;
+    for i in 0..=steps {
+        let dx = bold * i as f32 / steps as f32;
+        rasterize(run, left + dx, top, |x, y, coverage| {
+            let (cx, cy) = (x - x0, y - y0);
+            if cx >= 0 && cy >= 0 && cx < width && cy < height {
+                let c = &mut cover[cy as usize * width as usize + cx as usize];
+                *c = c.max(coverage);
+            }
+        });
+    }
+    for (i, &coverage) in cover.iter().enumerate() {
+        if coverage > 0.0 {
+            let (x, y) = (x0 + (i as i32 % width), y0 + (i as i32 / width));
+            let shift = ((baseline - y as f32) * slant).round() as i32;
+            blend(image, x + shift, y, color, coverage);
+        }
+    }
+}
+
 /// Draws `run` slanted: each pixel moves right by `slant` times its height above the
 /// baseline, an oblique for faces with no italic of their own (a postcard's text, FR-073).
 #[allow(clippy::cast_possible_truncation, clippy::cast_precision_loss)]
@@ -168,5 +221,54 @@ mod tests {
         assert_eq!(to_ascii_upper("Hà Nội · Tết 2025!"), "HA NOI  TET 2025!");
         assert_eq!(to_ascii_upper("Budaörs"), "BUDAORS");
         assert_eq!(to_ascii_upper("Đà Lạt\n"), "DA LAT");
+    }
+
+    /// The dark runs across one row of a white image.
+    fn runs(image: &RgbImage, y: u32) -> Vec<u32> {
+        let mut widths = Vec::new();
+        let mut current = 0;
+        for x in 0..image.width {
+            let i = ((y * image.width + x) * 3) as usize;
+            if image.data[i] < 128 {
+                current += 1;
+            } else if current > 0 {
+                widths.push(current);
+                current = 0;
+            }
+        }
+        widths
+    }
+
+    /// FR-073: a postcard's bold thickens each stroke into one, wider than the regular one,
+    /// where two copies side by side showed doubled lines on Xanh Mono's thin strokes.
+    #[test]
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    fn fr_073_bold_strokes_thicken_without_doubling() {
+        let Some(font) = crate::postcard::font() else {
+            panic!("the bundled face loads");
+        };
+        let run = TextRun {
+            font,
+            text: "H",
+            px: 50.0,
+            tracking: 0.0,
+        };
+        let blank = || RgbImage {
+            width: 80,
+            height: 80,
+            data: vec![255; 80 * 80 * 3],
+        };
+        let (mut regular, mut bold) = (blank(), blank());
+        draw_text(&mut regular, &run, 10.0, 10.0, [0, 0, 0], 1.0);
+        draw_text_bold(&mut bold, &run, 10.0, 10.0, [0, 0, 0], 0.035 * 50.0, 0.0);
+        // A row through both stems, above the crossbar.
+        let y = 10 + (font.as_scaled(PxScale::from(50.0)).ascent() * 0.45) as u32;
+        let (r, b) = (runs(&regular, y), runs(&bold, y));
+        assert_eq!(r.len(), 2, "regular stems {r:?}");
+        assert_eq!(b.len(), 2, "one run per bold stem, no doubled line: {b:?}");
+        assert!(
+            b.iter().zip(&r).all(|(b, r)| b > r),
+            "bold {b:?} regular {r:?}"
+        );
     }
 }

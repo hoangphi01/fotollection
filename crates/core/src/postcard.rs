@@ -13,7 +13,7 @@ use crate::image::RgbImage;
 use crate::library::PostcardText;
 use crate::settings::{BorderColor, PostcardSettings, TextStyle};
 use crate::sheet::RectMm;
-use crate::text::{TextRun, draw_text, draw_text_slanted, text_width};
+use crate::text::{TextRun, draw_text, draw_text_bold, draw_text_slanted, text_width};
 
 static XANH_MONO: &[u8] = include_bytes!("../assets/fonts/XanhMono-Regular.ttf");
 static XANH_MONO_ITALIC: &[u8] = include_bytes!("../assets/fonts/XanhMono-Italic.ttf");
@@ -52,9 +52,9 @@ const TEXT_PAD_MM: f32 = 1.0;
 /// The credit line at the foot of the half: its em, and the room kept for it.
 const CREDIT_MM: f32 = 2.2;
 const CREDIT_ROOM_MM: f32 = 3.5;
-/// Bold, underline and oblique, in em: the second stroke's offset, the underline's depth
+/// Bold, underline and oblique, in em: how much bold thickens the strokes, the underline's depth
 /// and thickness, and the slant of a face with no italic.
-const BOLD_EM: f32 = 0.045;
+const BOLD_EM: f32 = 0.035;
 const UNDERLINE_EM: f32 = 0.12;
 const UNDERLINE_THICK_EM: f32 = 0.055;
 const SLANT: f32 = 0.2;
@@ -380,20 +380,31 @@ impl<'a> Faces<'a> {
                 .flatten();
             let face = own_italic.unwrap_or(face);
             let ascent = face.as_scaled(PxScale::from(px)).ascent();
-            let strokes: &[f32] = if style.bold { &[0.0, BOLD_EM] } else { &[0.0] };
-            for dx in strokes {
-                let run_text = TextRun {
-                    font: face,
-                    text: run,
-                    px,
-                    tracking: 0.0,
-                };
-                let at = x + dx * px;
-                if style.italic && own_italic.is_none() {
-                    draw_text_slanted(canvas, &run_text, at, baseline - ascent, ink, SLANT);
-                } else {
-                    draw_text(canvas, &run_text, at, baseline - ascent, ink, 1.0);
-                }
+            let run_text = TextRun {
+                font: face,
+                text: run,
+                px,
+                tracking: 0.0,
+            };
+            let slant = if style.italic && own_italic.is_none() {
+                SLANT
+            } else {
+                0.0
+            };
+            if style.bold {
+                draw_text_bold(
+                    canvas,
+                    &run_text,
+                    x,
+                    baseline - ascent,
+                    ink,
+                    BOLD_EM * px,
+                    slant,
+                );
+            } else if slant > 0.0 {
+                draw_text_slanted(canvas, &run_text, x, baseline - ascent, ink, slant);
+            } else {
+                draw_text(canvas, &run_text, x, baseline - ascent, ink, 1.0);
             }
             x += text_width(face, px, run, 0.0);
         }

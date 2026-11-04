@@ -324,3 +324,9 @@
 - **Seen:** after sixteen Prague photos joined the demo set, `shoot.mjs` timed out waiting for the crop photo's tile, then for a fifth photo in a folder tab.
 - **Why:** the basket and set-aside photos were chosen by their position in the list (`TRIP_QUEUES`), so a new set put the crop photo in *Set aside*, out of the gallery; the folder tabs were matched by name and kept fewer photos than the clicks assumed. The gallery is virtualized too, so a tile far down the list is not in the page until it is scrolled to.
 - **Rule:** when the demo set changes, check that every position still names a photo the shot does not show, and reach a photo's tile with `reach()` (it scrolls the grid) instead of assuming it is drawn. Screenshot the page when a wait times out; the cause is on screen.
+
+### Faux bold by drawing twice doubles a thin face (FR-073)
+
+- **Seen:** the owner's postcard showed bold "Minh" with a doubled M, two thin strokes side by side.
+- **Why:** bold was the text drawn a second time 0.045 em to the right. Xanh Mono's strokes are thinner than that offset at print size, so the two copies did not touch.
+- **Rule:** to embolden, draw at steps of at most half a pixel across the extra width and keep each pixel's highest coverage, then blend once (`text::draw_text_bold`); a test checks one run per stem. Look at a print-size render of a thin face before trusting a style.

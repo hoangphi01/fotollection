@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Highlights
 
 - UI update: a smaller stamp box on postcards, hidden by the stamp you stick on
+- Fixes: bold text on postcards prints as one solid stroke, no longer a doubled line
+
+### Fixed
+
+- **Postcards:** bold text no longer shows doubled strokes (clearest on M and W in the typewriter face); each stroke is thickened into one.
 
 ### Changed
 
