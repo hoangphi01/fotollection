@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.9.8] - 2026-11-04
+
 ### Highlights
 
 - New: in the preview, scroll up or down with two fingers to zoom in and out
