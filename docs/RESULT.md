@@ -78,7 +78,7 @@ How the preview went from 26 ms to 17 ms (Stage 2, each step measured on the sam
 | Plain Huffman tables | 11.7 ms |
 | Plain Huffman + 4:2:0 chroma (**kept**) | 7.0 ms |
 
-- Previews are only shown on screen, so 4:2:0 is safe there. A 3× crop of the date stamp looks the same in both. Exports keep 4:4:4 and optimized tables (`EncodeOptions::print`).
+- Previews are only shown on screen, so 4:2:0 is safe there. A 3× crop of the date stamp looks the same in both. Exports keep 4:4:4 (`EncodeOptions::print`), with the standard Huffman tables since 2026-11-04 (§20).
 - A cheaper resize filter was tried as well: CatmullRom took **12.5 ms** against 9.7 ms for Lanczos3 in `fast_image_resize` on M3, so Lanczos3 stays.
 
 ## 6. Export concurrency
@@ -399,9 +399,14 @@ One folder exactly as it came off the card of a Lumix DC-GX9 after a weekend in 
 | Preview re-render, warm p50 / p95 | 17.9 / 18.8 ms | NFR-002 ✓ (< 50 ms) |
 | RAW: full develop / embedded preview ≤ 400 px / ≤ 2048 px (median of 26) | 350 / 9 / 19 ms | NFR-017 ✓ |
 | Ten postcards redrawn from thumbnails (`measure_sheet_grid`, `POSTCARD=1`) | 21 ms | NFR-021 ✓ (< 100 ms) |
-| **Export, JPEG and RAW, 6 in flight** | **7.6 photos/s** | **NFR-003 ✗** (≥ 8 at 24 MP) |
-| **Peak RSS of the whole run** | **2.14 GB** | **NFR-004 ✗** (≤ 2 GB) |
+| **Export, the 396 JPEGs, 6 in flight** (median of 3, 2026-11-04) | **10.1 photos/s** (9.0–11.8) | **NFR-003 ✓** (≥ 8 at 24 MP) |
+| Export, JPEG and RAW together (the 26 RAWs develop one at a time, NFR-017) | 7.9 photos/s | — |
+| **Peak RSS of the whole run, JPEG and RAW** | **1.31 GB** | **NFR-004 ✓** (≤ 2 GB) |
+| Peak RSS during the JPEG export | 0.86–0.92 GB | — |
 
-- **Two budgets missed.** The earlier runs used 16 MP Canon JPEGs of about 5 MB; these are 1.27× the pixels and about twice the bytes. A full decode takes 89 ms here against 45 ms there, so decoding is bound by the compressed bytes as much as by the pixels. The JPEGs alone (no RAW) gave 7.2–9.8 photos/s and 1.97 GB across two runs.
-- **Memory:** 1.27 GB stays resident after the thumbnail pass, before export starts; the export's six 20 MP images in flight then push the peak over 2 GB. The fix is the next box in [STATUS.md](STATUS.md) "Next, in order".
-- The machine was loaded (swap 12–13 GB of 13 GB used), so speeds may be low; the memory is the process's own.
+- **Before (2026-11-03): both budgets missed,** export 7.6 photos/s and 2.14 GB at peak. Measured again the same way on 2026-11-04 before the fix: 5.0 photos/s and 1.73 GB during the export of the JPEGs.
+- **Where the time and memory went:** per 20 MP photo, the decode takes about 100 ms, the crop 2 ms, and the print encode 203 ms. The encoder's optimized Huffman tables are a second pass over coefficients it keeps for the whole image, about 160 MB a photo; six in flight held about 1.5 GB. With the standard tables it writes in strips: 138 ms, the files **0.9 % larger**, the error against the rendered image the same (0.755 in both, mean absolute difference per channel). Prints now use the standard tables ([OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log)).
+- **The "1.27 GB after thumbnails" was the benchmark's own:** `measure_folder` made T1 thumbnails on every core and kept its preview measurements alive through the export. On the app's two background threads, and with those let go, 0.35–0.39 GB stays before the export starts.
+- **Photos in flight** now follow the largest photo of the export (`export::inflight_for`): six for these, fewer for very large ones (two at 60 MP), so the peak stays under the ceiling at any size.
+- The 16 MP Canon set (95 photos) is faster too: 23.5 photos/s at 0.66 GB, against 18.0 and 1.30 GB.
+- The machine was loaded (swap 12–13 GB of 13 GB used) in every run, before and after, so speeds may be low and vary from run to run; the memory is the process's own.

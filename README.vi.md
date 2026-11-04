@@ -99,7 +99,7 @@ Fotollection dành cho người chụp ảnh nghiêm túc và nhiếp ảnh gia,
 | RAM đỉnh | ≤ 2 GB với batch bất kỳ | **1,45 GB** với 5.035 ảnh | ✓ |
 | Phân tích ảnh đẹp nhất, mỗi ảnh (24/10/2026) | ≤ 20 ms, ≤ 40 ms khi có mặt người | **17 ms**, 28 ms khi có mặt người | ✓ |
 
-Với một chuyến đi thật (một thư mục ảnh 20 MP từ Lumix GX9, 422 tệp, 03/11/2026), nhập ảnh và preview vẫn nằm gọn trong ngân sách, nhưng export đạt 7,6 ảnh/s với RAM đỉnh 2,14 GB, hơi vượt ngân sách export và RAM; tăng tốc export ảnh lớn là bước tiếp theo ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)).
+Với một chuyến đi thật (một thư mục ảnh 20 MP từ Lumix GX9, 422 tệp), ngày 03/11/2026 export chỉ đạt 7,6 ảnh/s với RAM đỉnh 2,14 GB. Bản sửa, có trong bản phát hành tới, export phần JPEG ở 10,1 ảnh/s, và cả lượt chạy dùng RAM tối đa 1,31 GB, nằm trong cả hai ngân sách ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)).
 
 ### Batch lớn
 
@@ -144,7 +144,7 @@ Về tốc độ export thô, trình duyệt nhanh ngang ngửa vì Chromium dù
 | Mã hóa JPEG | 7,0 ms | 42 % |
 | **Tổng** | **16,7 ms** | ngân sách 50 ms · Chromium 18,5 ms |
 
-Trước đây bộ mã hóa là nút thắt: 16,2 ms, chiếm 62 % của 26 ms. Preview chỉ để xem trên màn hình, nên giờ được mã hóa ở chế độ màu 4:2:0 với bảng Huffman thường. Phóng to 3× vẫn nhìn giống hệt. Ảnh export để in vẫn giữ 4:4:4 và bảng Huffman tối ưu. Chỉ một thay đổi đó đã đưa preview từ 26 ms xuống 17 ms.
+Trước đây bộ mã hóa là nút thắt: 16,2 ms, chiếm 62 % của 26 ms. Preview chỉ để xem trên màn hình, nên giờ được mã hóa ở chế độ màu 4:2:0 với bảng Huffman thường. Phóng to 3× vẫn nhìn giống hệt. Ảnh export để in vẫn giữ 4:4:4. Chỉ một thay đổi đó đã đưa preview từ 26 ms xuống 17 ms.
 
 ### Chất lượng in: bản xuất có giữ nguyên ảnh không?
 

@@ -776,7 +776,8 @@ pub fn start_export(
             destination: &destination,
             settings: &settings,
             quality: EXPORT_QUALITY,
-            max_inflight: default_inflight(),
+            // Fewer at once for very large photos, so the export keeps NFR-004.
+            max_inflight: fotollection_core::export::inflight_for(records.iter()),
             place_for: &place_for,
             frame_for: &frame_for,
             group_for: &group_for,

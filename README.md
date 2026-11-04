@@ -98,7 +98,7 @@ Fotollection is built for enthusiast and professional photographers, so speed is
 | Peak memory | ≤ 2 GB at any batch size | **1.45 GB** with 5,035 photos | ✓ |
 | Best-shot analysis, per photo (2026-10-24) | ≤ 20 ms, ≤ 40 ms with faces | **17 ms**, 28 ms with faces | ✓ |
 
-On a real trip (one folder of 20 MP Lumix GX9 photos, 422 files, 2026-11-03) import and previews stay well within budget, but the export reaches 7.6 photos/s with a 2.14 GB peak, just outside the export and memory budgets; making large photos export faster is the next step ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)).
+On a real trip (one folder of 20 MP Lumix GX9 photos, 422 files) the export reached only 7.6 photos/s with a 2.14 GB peak on 2026-11-03. The fix, in the next release, exports its JPEGs at 10.1 photos/s, and the whole run peaks at 1.31 GB, within both budgets ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)).
 
 ### Large batches
 
@@ -143,7 +143,7 @@ On raw export speed the browser is just as fast, because Chromium uses libjpeg-t
 | JPEG encode | 7.0 ms | 42 % |
 | **Total** | **16.7 ms** | budget 50 ms · Chromium 18.5 ms |
 
-The encoder used to be the bottleneck: 16.2 ms, 62 % of a 26 ms preview. Previews are only ever shown on screen, so they now encode with 4:2:0 chroma and plain Huffman tables, which looks the same at 3× zoom. Print exports keep 4:4:4 and optimized tables. That one change took the preview from 26 ms to 17 ms.
+The encoder used to be the bottleneck: 16.2 ms, 62 % of a 26 ms preview. Previews are only ever shown on screen, so they now encode with 4:2:0 chroma and plain Huffman tables, which looks the same at 3× zoom. Print exports keep 4:4:4. That one change took the preview from 26 ms to 17 ms.
 
 ### Print quality: does the export keep the photo?
 

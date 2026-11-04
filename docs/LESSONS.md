@@ -13,6 +13,13 @@
 
 ## 2026-11-04
 
+### Measure the benchmark too: half the "memory after thumbnails" was the benchmark's own (NFR-004)
+
+- **Seen:** the real trip's export peaked at 2.14 GB; 1.27 GB stayed resident after the thumbnail pass, before the export began.
+- **Why:** `measure_folder` made T1 thumbnails on every core, where the app uses two background threads, and kept its own preview measurements (a decoded 20 MP photo, the file, a preview cache) alive through the export. The real cost was elsewhere: the print encoder's optimized Huffman tables keep every coefficient of the image, about 160 MB a 20 MP photo, and take a third of the export's time, for files 0.9 % smaller.
+- **Fix:** the benchmark mirrors the app (two T1 threads, its measurements let go, the export's RSS sampled while it runs); prints use the standard tables; photos in flight follow the largest one.
+- **Rule:** before optimizing a number, check that the tool measures what the app does, and time each stage of one item; a lossless option still has a cost in memory. Two JPEG encoder paths can differ by a few levels even when only the Huffman setting changes, so compare each against the source, not against each other.
+
 ### `glyph_bounds` is the line box, not the glyph: a "cap height" that was always 1 (FR-076)
 
 - **Seen:** the test that keeps a bundled postcard face's strokes thick enough failed the same way after scaling the handwriting face by its capital height: the scale was exactly 1.

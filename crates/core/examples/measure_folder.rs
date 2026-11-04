@@ -5,10 +5,15 @@
 //!
 //! - `--json`: the human-readable lines go to stderr and one JSON object to stdout
 //!   (read by `bench/chart.mjs`).
-//! - `--inflight N`: photos exported in parallel (default: `default_inflight()`).
+//! - `--inflight N`: photos exported in parallel (default: `inflight_for`, as the app).
 //! - `--discard-output`: delete exported files as soon as they are written, so batches of
 //!   thousands of photos can be measured without the disk space (NFR-004).
 //! - `--analyze`: measure best-shot analysis instead (FR-041, NFR-014) and print the groups.
+//! - `--jpeg-only`: leave RAW files out of the run.
+//!
+//! As in the app, T1 thumbnails run on two threads (the app's background pool), and what the
+//! measurements before the export hold is let go before it starts; the export's own peak is
+//! sampled every 100 ms (`peakExportRssMb`), beside the whole run's from `/usr/bin/time`.
 
 #![allow(
     clippy::unwrap_used,
@@ -25,7 +30,7 @@ use std::time::Instant;
 use fotollection_core::cancel::CancellationToken;
 use fotollection_core::codec::{EncodeOptions, decode_image, default_codec};
 use fotollection_core::culling::{self, group, score};
-use fotollection_core::export::{EXPORT_QUALITY, ExportOptions, default_inflight, run_export};
+use fotollection_core::export::{EXPORT_QUALITY, ExportOptions, inflight_for, run_export};
 use fotollection_core::image::apply_orientation;
 use fotollection_core::import::scan;
 use fotollection_core::library::Library;
@@ -62,11 +67,10 @@ fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let json = args.iter().any(|a| a == "--json");
     let discard = args.iter().any(|a| a == "--discard-output");
-    let inflight = args
+    let inflight_arg: Option<usize> = args
         .iter()
         .position(|a| a == "--inflight")
-        .and_then(|i| args.get(i + 1)?.parse().ok())
-        .unwrap_or_else(default_inflight);
+        .and_then(|i| args.get(i + 1)?.parse().ok());
     let root = PathBuf::from(
         args.iter()
             .enumerate()
@@ -94,10 +98,20 @@ fn main() {
         lib.push(folder, file, meta);
     }
     let import_ms = t.elapsed().as_secs_f64() * 1e3;
+    let jpeg_only = args.iter().any(|a| a == "--jpeg-only");
     let records: Vec<_> = lib
         .sorted_ids()
         .into_iter()
         .filter_map(|id| lib.record(id))
+        .filter(|r| {
+            !jpeg_only
+                || r.path
+                    .extension()
+                    .and_then(|e| e.to_str())
+                    .is_some_and(|e| {
+                        e.eq_ignore_ascii_case("jpg") || e.eq_ignore_ascii_case("jpeg")
+                    })
+        })
         .collect();
     report!(
         "import+exif: {} photos in {import_ms:.0} ms ({} rejected), RSS {:.0} MB",
@@ -106,6 +120,7 @@ fn main() {
         rss_mb()
     );
     let rss_import = rss_mb();
+    let inflight = inflight_arg.unwrap_or_else(|| inflight_for(records.iter()));
     if args.iter().any(|a| a == "--analyze") {
         analyze(&records, codec.as_ref(), json);
         return;
@@ -122,9 +137,16 @@ fn main() {
     let cache_dir = tempfile::tempdir().unwrap();
     let cache = ThumbCache::new(cache_dir.path().to_path_buf());
     let t = Instant::now();
-    records.par_iter().for_each(|r| {
-        cache.make_t1(r, codec.as_ref()).unwrap();
-    });
+    // Two threads, as the app's background pool makes them (src-tauri/src/state.rs).
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(2)
+        .build()
+        .unwrap()
+        .install(|| {
+            records.par_iter().for_each(|r| {
+                cache.make_t1(r, codec.as_ref()).unwrap();
+            });
+        });
     let t1 = t.elapsed().as_secs_f64();
     report!(
         "T1 thumbnails: {} in {:.2} s ({:.1}/s), RSS {:.0} MB",
@@ -226,6 +248,9 @@ fn main() {
         t.elapsed().as_secs_f64() * 1e3
     );
 
+    // What the measurements above hold is let go, as the app holds none of it.
+    drop((bytes, t2, decoded, previews));
+    let rss_before_export = rss_mb();
     let dest = tempfile::tempdir().unwrap();
     let options = ExportOptions {
         destination: dest.path(),
@@ -237,6 +262,18 @@ fn main() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+    };
+    let sampling = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(true));
+    let sampler = {
+        let sampling = sampling.clone();
+        std::thread::spawn(move || {
+            let mut peak = 0.0_f64;
+            while sampling.load(std::sync::atomic::Ordering::Relaxed) {
+                peak = peak.max(rss_mb());
+                std::thread::sleep(std::time::Duration::from_millis(100));
+            }
+            peak
+        })
     };
     let t = Instant::now();
     let summary = run_export(
@@ -251,6 +288,9 @@ fn main() {
         },
     );
     let secs = t.elapsed().as_secs_f64();
+    sampling.store(false, std::sync::atomic::Ordering::Relaxed);
+    let peak_export = sampler.join().unwrap_or(0.0).max(rss_mb());
+    report!("export peak RSS {peak_export:.0} MB (before export {rss_before_export:.0} MB)");
     report!(
         "export: {} photos in {secs:.2} s ({:.2}/s, inflight {inflight}), {} failed, RSS {:.0} MB",
         summary.exported,
@@ -277,6 +317,8 @@ fn main() {
             "rssAfterImportMb": rss_import,
             "rssAfterT1Mb": rss_t1,
             "rssAfterExportMb": rss_export,
+            "rssBeforeExportMb": rss_before_export,
+            "peakExportRssMb": peak_export,
             "previewDrawMs": draw_plain_ms,
             "previewStampMs": draw_ms - draw_plain_ms,
             "previewEncodeMs": encode_ms,

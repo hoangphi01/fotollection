@@ -53,7 +53,7 @@ crates/
       lib.rs             †
       print_size.rs      † # CEWE/EU print sizes (FR-006)
       import.rs          † # discovery, magic bytes, size + polyglot checks (FR-001)
-      codec.rs           † # JpegCodec trait + pure-Rust implementation (ADR-0012); decode_image/image_dimensions dispatch by magic bytes (PNG via `png`, RAW and HEIC via `oscodec`); decode_for_screen gives a RAW's embedded preview for thumbnails and analysis; EncodeOptions::print (4:4:4, optimized Huffman) for exports vs ::screen (4:2:0, plain) for previews/thumbnails
+      codec.rs           † # JpegCodec trait + pure-Rust implementation (ADR-0012); decode_image/image_dimensions dispatch by magic bytes (PNG via `png`, RAW and HEIC via `oscodec`); decode_for_screen gives a RAW's embedded preview for thumbnails and analysis; EncodeOptions::print (4:4:4, standard Huffman tables) for exports vs ::screen (4:2:0, plain) for previews/thumbnails
       jpeg_layout.rs     † # a JPEG's layout from its header (frame, sampling, first scan), which picks zune-jpeg or the reference decoder (ADR-0033); `ends_early` refuses a file cut short; `read_header` adds the Adobe transform and the ICC profile (FR-071)
       errors.rs          † # the ERR-<KIND>-<NNNN> code of every stable error code, held equal to docs/ERROR_CONTROL.md by its tests
       error_log.rs       † # the offline error log: one line per error and panic, rotated 5 × 1 MB, paths and file names cut to their extension; the text of Copy diagnostics

@@ -96,10 +96,39 @@ pub struct ExportOptions<'a> {
     pub postcard_font: Option<ab_glyph::FontArc>,
 }
 
-/// A sensible default for `max_inflight`: one per core, capped so decoded 24 MP buffers
-/// (~160 MB each, including the crop and encode buffers) stay within the 2 GB budget.
+/// A sensible default for `max_inflight`: one per core, capped at 6.
 pub fn default_inflight() -> usize {
     std::thread::available_parallelism().map_or(2, |n| n.get().clamp(1, 6))
+}
+
+/// The memory an export's photos in flight may hold together, under NFR-004's 2 GB with room
+/// for the rest of the app (previews, thumbnails, the library).
+pub const EXPORT_MEMORY_BUDGET: u64 = 1_200_000_000;
+
+/// What one photo in flight holds, estimated from its file before it is read: a JPEG's
+/// decoded and cropped images and its output are about 14 bytes per byte of a camera file
+/// (a 20 MP, 11 MB JPEG holds about 125 MB, measured 2026-11-04); a RAW or HEIC file packs
+/// fewer pixels per byte, about 6.
+pub fn inflight_bytes(record: &PhotoRecord) -> u64 {
+    let jpeg = record
+        .path
+        .extension()
+        .and_then(|e| e.to_str())
+        .is_some_and(|e| e.eq_ignore_ascii_case("jpg") || e.eq_ignore_ascii_case("jpeg"));
+    record.size.saturating_mul(if jpeg { 14 } else { 6 })
+}
+
+/// Photos exported at once for `records` (NFR-003, NFR-004): one per core up to 6, fewer when
+/// the largest photo would push them past [`EXPORT_MEMORY_BUDGET`]; at least one.
+pub fn inflight_for<'a>(records: impl IntoIterator<Item = &'a PhotoRecord>) -> usize {
+    let largest = records.into_iter().map(inflight_bytes).max().unwrap_or(0);
+    inflight_within(largest, default_inflight())
+}
+
+/// How many photos holding `largest` bytes each fit the budget, from one to `cores`.
+fn inflight_within(largest: u64, cores: usize) -> usize {
+    let fit = usize::try_from(EXPORT_MEMORY_BUDGET / largest.max(1)).unwrap_or(usize::MAX);
+    fit.clamp(1, cores.max(1))
 }
 
 /// `YYYY-MM-DD` folder for a photo (FR-009).
@@ -263,6 +292,8 @@ fn encode_photo(
     }
     let bytes = std::fs::read(&record.path)?;
     let decoded = decode_image(codec, &bytes)?;
+    // The file's bytes are not needed past the decode (NFR-004).
+    drop(bytes);
     let upright = apply_orientation(decoded.image, record.display_orientation());
     if cancel.is_cancelled() {
         return Err(ExportError::Cancelled);
@@ -609,5 +640,24 @@ fn run<T: Sync>(
         source_bytes: source_bytes.into_inner() as f64,
         #[allow(clippy::cast_precision_loss)]
         output_bytes: output_bytes.into_inner() as f64,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// NFR-003, NFR-004: 20 MP camera JPEGs (11 MB) run one per core up to 6; 60 MP ones
+    /// (about 30 MB) only two at once, inside the budget; a photo larger than the budget
+    /// still runs, alone.
+    #[test]
+    fn nfr_004_photos_in_flight_follow_the_largest_photo() {
+        let jpeg = |mb: u64| mb * 1_000_000 * 14;
+        assert_eq!(inflight_within(jpeg(11), 6), 6);
+        assert_eq!(inflight_within(jpeg(11), 4), 4);
+        assert_eq!(inflight_within(jpeg(30), 6), 2);
+        assert!(inflight_within(jpeg(30), 6) as u64 * jpeg(30) <= EXPORT_MEMORY_BUDGET);
+        assert_eq!(inflight_within(jpeg(200), 6), 1);
+        assert_eq!(inflight_within(0, 6), 6);
     }
 }

@@ -82,13 +82,15 @@ pub struct EncodeOptions {
 }
 
 impl EncodeOptions {
-    /// Print exports: full chroma (4:4:4), smallest file (FR-008). Share exports use 4:2:0
-    /// (`share.rs`), previews and thumbnails `screen`.
+    /// Print exports: full chroma (4:4:4) (FR-008), with the standard Huffman tables: the
+    /// optimized ones made 20 MP files only 0.9 % smaller but cost a third more time and kept
+    /// the whole image's coefficients, about 160 MB a photo (OPTIMIZATION §5, 2026-11-04).
+    /// Share exports use 4:2:0 (`share.rs`), previews and thumbnails `screen`.
     pub const fn print(quality: u8) -> Self {
         Self {
             quality,
             chroma: Chroma::Full,
-            optimize_huffman: true,
+            optimize_huffman: false,
         }
     }
 
