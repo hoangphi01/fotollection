@@ -54,6 +54,50 @@
   </div>
 </section>
 
+<section class="section" id="modes">
+  <div class="wrap">
+    <h2>{{ t.modes_title }}</h2>
+    <p class="lead narrow">{{ t.modes_lead }}</p>
+    <div class="cards modes-cards">
+      {%- assign modes = "simple:zap,collage:columns-2,pro:sliders-horizontal" | split: "," -%}
+      {%- for m in modes -%}
+      {%- assign parts = m | split: ":" -%}
+      {%- assign k = parts[0] -%}
+      {%- capture icon %}icons/{{ parts[1] }}.svg{% endcapture -%}
+      {%- capture name_key %}mode_{{ k }}{% endcapture -%}
+      {%- capture for_key %}mode_{{ k }}_for{% endcapture %}
+      <article class="card">{% include {{ icon }} %}<h3>{{ t[name_key] }}</h3><p>{{ t[for_key] }}</p>
+        <ol class="steps">
+          {%- for i in (1..3) -%}
+          {%- capture step_key %}mode_{{ k }}_s{{ i }}{% endcapture %}
+          <li>{{ t[step_key] }}</li>
+          {%- endfor %}
+        </ol>
+      </article>
+      {%- endfor %}
+    </div>
+    <p class="systems-link"><a class="more" href="{% if page.lang == 'vi' %}{{ '/vi/manual/' | relative_url }}{% else %}{{ '/manual/' | relative_url }}{% endif %}">{{ t.modes_manual }} {% include icons/arrow-right.svg %}</a></p>
+  </div>
+  <div class="wrap showcase">
+    {%- assign rows = "collage,collage-preview,simple" | split: "," -%}
+    {%- for r in rows -%}
+    {%- assign k = r | replace: "-", "_" -%}
+    {%- capture title_key %}{{ k }}_title{% endcapture -%}
+    {%- capture text_key %}{{ k }}_text{% endcapture -%}
+    {%- capture show_key %}show_{{ k }}{% endcapture -%}
+    {%- assign show_alt = t[show_key] %}
+    <div class="showcase-row{% cycle 'modes': '', ' flip' %}">
+      <figure class="shot">{% include shot.html name=r alt=show_alt %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t[title_key] }}</h3>
+        <p>{{ t[text_key] }}</p>
+        <p class="small muted">{{ t[show_key] }}</p>
+      </div>
+    </div>
+    {%- endfor %}
+  </div>
+</section>
+
 <section class="section" id="features">
   <div class="wrap">
     <h2>{{ t.features_title }}</h2>
@@ -173,31 +217,6 @@
         <p class="small muted">{{ t.show_tabs }}</p>
       </div>
     </div>
-  </div>
-</section>
-
-<section class="section" id="modes">
-  <div class="wrap">
-    <h2>{{ t.modes_title }}</h2>
-    <p class="lead narrow">{{ t.modes_lead }}</p>
-  </div>
-  <div class="wrap showcase">
-    {%- assign rows = "collage,collage-preview,simple" | split: "," -%}
-    {%- for r in rows -%}
-    {%- assign k = r | replace: "-", "_" -%}
-    {%- capture title_key %}{{ k }}_title{% endcapture -%}
-    {%- capture text_key %}{{ k }}_text{% endcapture -%}
-    {%- capture show_key %}show_{{ k }}{% endcapture -%}
-    {%- assign show_alt = t[show_key] %}
-    <div class="showcase-row{% cycle 'modes': '', ' flip' %}">
-      <figure class="shot">{% include shot.html name=r alt=show_alt %}</figure>
-      <div class="showcase-text">
-        <h3>{{ t[title_key] }}</h3>
-        <p>{{ t[text_key] }}</p>
-        <p class="small muted">{{ t[show_key] }}</p>
-      </div>
-    </div>
-    {%- endfor %}
   </div>
 </section>
 
