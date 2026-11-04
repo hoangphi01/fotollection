@@ -370,6 +370,17 @@ h3.with-logo .logo-os { height: 0.95em; }
 .manual h2:first-child { margin-top: 0; }
 .manual h3 { font-size: 1.15rem; margin-top: 32px; }
 .manual p, .manual ul, .manual ol, .manual table { margin-top: 14px; color: var(--ink-2); }
+/* The story reads like a book: each chapter's title centred, its first letter two lines tall. */
+.story h2 { text-align: center; }
+.story h2 + p::first-letter {
+  float: left;
+  font-family: 'Bitter', Georgia, serif;
+  font-weight: 800;
+  font-size: 3.4em;
+  line-height: 0.82;
+  margin: 0.08em 0.1em 0 0;
+  color: var(--ink);
+}
 .manual ul, .manual ol { padding-left: 1.3em; }
 .manual li + li, .manual li > ul { margin-top: 6px; }
 .manual strong { color: var(--ink); }
