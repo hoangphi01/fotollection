@@ -2,7 +2,8 @@
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Field } from '@/components/forms/field'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import type { ExportTarget, RenderSettings, SharePreset } from '@/ipc/bindings'
 import { ShareFillFields } from './share-fill-fields'
 
@@ -29,29 +30,23 @@ export function ExportTargetPicker({ settings, onChange, disabled = false }: Exp
     } as ExportTarget)
 
   return (
-    <div className="space-y-2">
-      <ToggleGroup
-        type="single"
-        variant="outline"
-        size="sm"
-        className="w-full"
+    <>
+      <SegmentedToggle<ExportTarget['kind']>
         disabled={disabled}
         value={target.kind}
-        onValueChange={(kind) => kind && set(kind === 'print' ? { kind: 'print' } : { kind: 'share', preset })}
-      >
-        <ToggleGroupItem value="print" className="flex-1 text-xs">
-          {t('export.target.print')}
-        </ToggleGroupItem>
-        <ToggleGroupItem value="share" className="flex-1 text-xs">
-          {t('export.target.share')}
-        </ToggleGroupItem>
-      </ToggleGroup>
+        options={[
+          { value: 'print', label: t('export.target.print') },
+          { value: 'share', label: t('export.target.share') },
+        ]}
+        onChange={(kind) => set(kind === 'print' ? { kind: 'print' } : { kind: 'share', preset })}
+      />
 
       {target.kind === 'share' && (
         <>
+          <Field hint={t(`export.presetHint.${preset.kind}`)}>
           <div className="flex gap-2">
             <Select value={preset.kind} onValueChange={(v) => setPreset(v as SharePreset['kind'])} disabled={disabled}>
-              <SelectTrigger size="sm" className="min-w-0 flex-1 text-xs" aria-label={t('export.target.preset')}>
+              <SelectTrigger className="min-w-0 flex-1" aria-label={t('export.target.preset')}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -77,10 +72,10 @@ export function ExportTargetPicker({ settings, onChange, disabled = false }: Exp
               </div>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">{t(`export.presetHint.${preset.kind}`)}</p>
+          </Field>
           <ShareFillFields settings={settings} onChange={onChange} disabled={disabled} />
         </>
       )}
-    </div>
+    </>
   )
 }

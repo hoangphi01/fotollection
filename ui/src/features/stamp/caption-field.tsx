@@ -2,7 +2,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
-import { Label } from '@/components/ui/label'
+import { Field, FieldLabel } from '@/components/forms/field'
 import { Switch } from '@/components/ui/switch'
 import { commands, type PhotoId } from '@/ipc/bindings'
 
@@ -66,22 +66,19 @@ export function CaptionField({ caption, onCommit, photos = [], revision = 0 }: C
   }
 
   return (
-    <div className="space-y-1.5">
+    <Field hint={t('settings.captionHint')}>
       <div className="flex items-center justify-between gap-2">
-        <Label className="text-xs font-normal text-muted-foreground">{t('settings.caption')}</Label>
+        <FieldLabel>{t('settings.caption')}</FieldLabel>
         {photos.length > 1 && (
           <div className="flex items-center gap-2">
-            <Label htmlFor={id} className="text-xs font-normal text-muted-foreground">
-              {t('settings.captionSame')}
-            </Label>
-            <Switch id={id} size="sm" checked={!apart} onCheckedChange={setSame} />
+            <FieldLabel htmlFor={id}>{t('settings.captionSame')}</FieldLabel>
+            <Switch id={id} checked={!apart} onCheckedChange={setSame} />
           </div>
         )}
       </div>
       {apart ? (
         photos.map((p, i) => (
-          <div key={p.id} className="space-y-1">
-            <p className="truncate text-xs text-muted-foreground">{p.name}</p>
+          <Field key={p.id} label={p.name}>
             <CommitInput
               value={own[i] ?? caption}
               placeholder={t('settings.captionPlaceholder')}
@@ -90,7 +87,7 @@ export function CaptionField({ caption, onCommit, photos = [], revision = 0 }: C
               ariaLabel={t('settings.captionFor', { name: p.name })}
               onCommit={(line) => setPhoto(i, p.id, line)}
             />
-          </div>
+          </Field>
         ))
       ) : (
         <CommitInput
@@ -102,7 +99,6 @@ export function CaptionField({ caption, onCommit, photos = [], revision = 0 }: C
           onCommit={onCommit}
         />
       )}
-      <p className="text-xs text-muted-foreground">{t('settings.captionHint')}</p>
-    </div>
+    </Field>
   )
 }

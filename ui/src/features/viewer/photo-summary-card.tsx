@@ -2,6 +2,7 @@
 import { ChevronDown, Info } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { FactLines } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
 import type { PhotoDetails, PhotoSummary } from '@/ipc/bindings'
 import { factsParts } from '@/lib/facts'
@@ -57,7 +58,7 @@ export function PhotoSummaryCard({ photo, details }: PhotoSummaryCardProps) {
         </button>
       }
     >
-      <div className="space-y-1">
+      <FactLines>
         {lines.map((line, i) => (
           <p key={line} className={i === 0 ? 'font-medium' : 'text-xs text-muted-foreground tabular-nums'}>
             {line}
@@ -75,7 +76,7 @@ export function PhotoSummaryCard({ photo, details }: PhotoSummaryCardProps) {
             ))}
           </p>
         )}
-      </div>
+      </FactLines>
     </SectionCard>
   )
 }

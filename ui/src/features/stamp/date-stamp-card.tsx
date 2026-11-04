@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Collapse } from '@/components/layout/collapse'
+import { Hint } from '@/components/forms/field'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
+import { SwitchField } from '@/components/forms/switch-field'
 import { SectionCard } from '@/components/layout/section-card'
 import { commands, type PhotoId, type PlaceFormat, type RenderSettings, type StampSettings } from '@/ipc/bindings'
 import { CaptionField } from './caption-field'
@@ -58,30 +59,20 @@ export function DateStampCard({ settings, onChange, customStamps, photos, revisi
       <StampStyleFields stamp={stamp} onChange={setStamp} />
 
       {/* The place on the date line (FR-005), from the photo's GPS. */}
-      <div className="flex items-center justify-between">
-        <Label htmlFor={`${id}-place`} className="flex items-center gap-2 text-sm font-normal">
-          <MapPin className="size-4 text-muted-foreground" />
-          {t('settings.location')}
-        </Label>
-        <Switch id={`${id}-place`} checked={stamp?.place ?? false} onCheckedChange={(place) => setStamp({ place })} />
-      </div>
-      <Collapse open={stamp?.place ?? false} className="space-y-1.5">
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          className="w-full"
-          value={settings?.placeFormat ?? ''}
-          onValueChange={(v) => v && onChange((s) => ({ ...s, placeFormat: v as PlaceFormat }))}
-        >
-          {PLACE_FORMATS.map((f) => (
-            <ToggleGroupItem key={f} value={f} className="flex-1 text-xs">
-              {t(`settings.placeFormat.${f}`)}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-        <p className="text-xs text-muted-foreground">{t('settings.locationHint')}</p>
-      </Collapse>
+      <SwitchField
+        icon={<MapPin />}
+        label={t('settings.location')}
+        checked={stamp?.place ?? false}
+        onChange={(place) => setStamp({ place })}
+      >
+        <SegmentedToggle
+          value={settings?.placeFormat}
+          options={PLACE_FORMATS.map((f) => ({ value: f, label: t(`settings.placeFormat.${f}`) }))}
+          onChange={(placeFormat) => onChange((s) => ({ ...s, placeFormat }))}
+          ariaLabel={t('settings.location')}
+        />
+        <Hint>{t('settings.locationHint')}</Hint>
+      </SwitchField>
 
       {/* A line of the user's own text under the date (FR-036). */}
       <CaptionField

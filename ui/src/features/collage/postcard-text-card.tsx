@@ -2,8 +2,8 @@
 import { Type } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
+import { Field, Hint } from '@/components/forms/field'
 import { SwatchToggle } from '@/components/forms/swatch-toggle'
-import { Label } from '@/components/ui/label'
 import { SectionCard } from '@/components/layout/section-card'
 import type { CullFilter, PhotoId, PostcardFace, PostcardInk, RenderSettings } from '@/ipc/bindings'
 import { FontSelect } from '@/features/fonts/font-select'
@@ -68,10 +68,9 @@ export function PostcardTextCard({ settings, onChange, photo, revision, filter, 
           />
         </>
       ) : (
-        <p className="text-xs text-muted-foreground">{t('postcard.pickToType')}</p>
+        <Hint>{t('postcard.pickToType')}</Hint>
       )}
-      <div className="space-y-1.5">
-        <Label className="text-xs font-normal text-muted-foreground">{t('postcard.font')}</Label>
+      <Field label={t('postcard.font')}>
         <FontSelect
           fonts={fonts}
           value={postcard.font}
@@ -85,26 +84,23 @@ export function PostcardTextCard({ settings, onChange, photo, revision, filter, 
           ]}
           builtIn={postcard.face ?? 'typewriter'}
         />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-xs font-normal text-muted-foreground">{t('postcard.size')}</Label>
+      </Field>
+      <Field label={t('postcard.size')}>
         <SizeField
           value={postcard.textSize}
           onChange={(textSize) => patchPostcard(onChange, { textSize })}
           label={t('postcard.size')}
         />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-xs font-normal text-muted-foreground">{t('postcard.ink')}</Label>
+      </Field>
+      <Field label={t('postcard.ink')}>
         <SwatchToggle
           dense
           value={postcard.ink ?? 'auto'}
           options={INKS.map((ink) => ({ ...ink, label: t(`postcard.inks.${ink.value}`) }))}
           onChange={(ink) => patchPostcard(onChange, { ink })}
         />
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-xs font-normal text-muted-foreground">{t('postcard.credit')}</Label>
+      </Field>
+      <Field label={t('postcard.credit')}>
         <CommitInput
           value={postcard.credit ?? ''}
           placeholder={t('postcard.creditPlaceholder')}
@@ -113,7 +109,7 @@ export function PostcardTextCard({ settings, onChange, photo, revision, filter, 
           liveMs={600}
           onCommit={(credit) => patchPostcard(onChange, { credit })}
         />
-      </div>
+      </Field>
     </SectionCard>
   )
 }

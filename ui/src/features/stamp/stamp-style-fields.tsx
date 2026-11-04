@@ -2,7 +2,7 @@
 import { useTranslation } from 'react-i18next'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { SwatchToggle } from '@/components/forms/swatch-toggle'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import type { Corner, DateFormat, StampColor, StampSettings } from '@/ipc/bindings'
 import { StampSizeField } from './stamp-size-field'
 
@@ -32,20 +32,13 @@ export function StampStyleFields({ stamp, onChange }: StampStyleFieldsProps) {
   const { t } = useTranslation()
   return (
     <>
-      <ToggleGroup
-        type="single"
-        variant="outline"
-        size="sm"
-        className="w-full"
-        value={stamp?.format ?? ''}
-        onValueChange={(format) => format && onChange({ format: format as DateFormat })}
-      >
-        {FORMATS.map((f) => (
-          <ToggleGroupItem key={f.value} value={f.value} className="min-w-0 flex-1 px-1 font-mono text-[11px] tracking-tight">
-            {f.label}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+      <SegmentedToggle
+        mono
+        value={stamp?.format}
+        options={FORMATS}
+        onChange={(format) => onChange({ format })}
+        ariaLabel={t('settings.dateFormat')}
+      />
 
       <Select value={stamp?.corner ?? ''} onValueChange={(corner) => onChange({ corner: corner as Corner })}>
         <SelectTrigger className="w-full" aria-label={t('settings.stampPosition')}>

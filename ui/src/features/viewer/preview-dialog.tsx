@@ -24,21 +24,17 @@ import { CullControls } from '@/features/culling/cull-controls'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
 import { ExportSection } from '@/features/export/export-section'
-import { ExportTargetPicker } from '@/features/export/export-target-picker'
 import type { ExportApi } from '@/features/export/use-export'
-import { FitSizeNote } from '@/features/frame/fit-size-note'
 import { MOD } from '@/lib/platform'
-import { InspectorSection } from '@/components/layout/inspector-section'
 import { SectionCard } from '@/components/layout/section-card'
+import { InspectorSection } from '@/components/layout/inspector-section'
 import { KeyHints } from '@/components/layout/key-hints'
 import { StageSpinner } from '@/components/layout/stage-spinner'
-import { BorderSwitch } from '@/features/settings/border-switch'
 import { sendTo } from './send-to'
 import { useShownSrc } from './use-shown-src'
 import { FrameSection } from '@/features/frame/frame-section'
 import type { FontsApi } from '@/features/fonts/use-fonts'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
-import { PrintSizePicker } from '@/features/settings/print-size-picker'
 import { useIpcQuery, useLiveQuery } from '@/features/settings/use-ipc-query'
 import {
   commands,
@@ -59,10 +55,11 @@ import { ZoomControls } from './zoom-controls'
 import { ownsArrowKeys } from '@/lib/keyboard'
 import { cn } from '@/lib/utils'
 import { ViewerFrame } from '@/components/layout/viewer-frame'
-import { PrintAdviceNote } from '@/features/print-advice/print-advice-note'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { verdictOf } from '@/features/print-advice/verdict'
 import { VerdictBadge } from '@/features/print-advice/verdict-badge'
+import { PrintSizeCard } from '@/features/settings/print-size-card'
+import { ValueRow } from '@/components/forms/field'
 
 type PreviewDialogProps = {
   photos: PhotoSummary[]
@@ -354,46 +351,36 @@ export function PreviewDialog({
             {photo && <PhotoSummaryCard photo={photo} details={details} />}
             {/* A card of controls, spaced as in the settings panel; InspectorSection's tighter
                 rows are for the photo's facts below (STYLE_RULE §4). */}
-            <SectionCard icon={<Crop className="size-4" />} title={t('settings.printSize')}>
-              <ExportTargetPicker settings={settings} onChange={onSettingsChange} />
-              {settings?.exportTarget?.kind !== 'share' && (
-                <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onSettingsChange} advice={advice} />
-              )}
-              {settings?.exportTarget?.kind !== 'share' && advice && photo && (
-                <PrintAdviceNote advice={advice} fileName={photo.fileName} />
-              )}
-              {settings?.exportTarget?.kind !== 'share' && <FitSizeNote photoId={photo?.id} revision={revision} />}
-              {settings?.exportTarget?.kind !== 'share' && <BorderSwitch settings={settings} onChange={onSettingsChange} />}
+            <PrintSizeCard
+              settings={settings}
+              onChange={onSettingsChange}
+              printSizes={printSizes}
+              photo={photo}
+              advice={advice}
+              revision={revision}
+            >
               {settings?.exportTarget?.kind !== 'share' && details && (
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-xs text-muted-foreground">{t('viewer.resolution')}</span>
-                  <span className="flex items-center gap-1.5 text-xs tabular-nums">
-                    {details.printDpi} DPI
-                    <VerdictBadge verdict={verdictOf(details.printQuality)} dpi={details.printDpi} />
-                  </span>
-                </div>
+                <ValueRow label={t('viewer.resolution')}>
+                  {details.printDpi} DPI
+                  <VerdictBadge verdict={verdictOf(details.printQuality)} dpi={details.printDpi} />
+                </ValueRow>
               )}
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Crop className="size-3.5" /> {t('viewer.crop')}
-                </span>
-                <span className="flex items-center gap-1.5 text-xs">
-                  {shownGeometry?.crop
-                    ? t('viewer.cropCustom', { zoom: formatNumber(shownGeometry.crop.zoom ?? 1, 1, 1) })
-                    : t('viewer.cropCentred')}
-                  {shownGeometry?.crop && photo && (
-                    <Button variant="ghost" size="xs" onClick={() => void commands.setPhotoCrop(photo.id, null, 0, false)}>
-                      {t('common.reset')}
-                    </Button>
-                  )}
-                  {!shownGeometry?.crop && (
-                    <Button variant="ghost" size="xs" disabled={!shownGeometry || shownGeometry.cropDisabled} onClick={() => setCropping(true)}>
-                      {t('viewer.adjust')}
-                    </Button>
-                  )}
-                </span>
-              </div>
-            </SectionCard>
+              <ValueRow icon={<Crop />} label={t('viewer.crop')}>
+                {shownGeometry?.crop
+                  ? t('viewer.cropCustom', { zoom: formatNumber(shownGeometry.crop.zoom ?? 1, 1, 1) })
+                  : t('viewer.cropCentred')}
+                {shownGeometry?.crop && photo && (
+                  <Button variant="ghost" size="xs" onClick={() => void commands.setPhotoCrop(photo.id, null, 0, false)}>
+                    {t('common.reset')}
+                  </Button>
+                )}
+                {!shownGeometry?.crop && (
+                  <Button variant="ghost" size="xs" disabled={!shownGeometry || shownGeometry.cropDisabled} onClick={() => setCropping(true)}>
+                    {t('viewer.adjust')}
+                  </Button>
+                )}
+              </ValueRow>
+            </PrintSizeCard>
 
             {photo && (
               <PhotoStampControls photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
@@ -407,7 +394,7 @@ export function PreviewDialog({
             {/* Like it? Export just this one, with the same controls as the panel (FR-055). */}
             {photo && (
               <div ref={exportRef}>
-              <InspectorSection icon={<Download className="size-4" />} title={t('export.title')}>
+              <SectionCard icon={<Download />} title={t('export.title')}>
                 <ExportSection
                   exporter={exporter}
                   photoCount={1}
@@ -415,7 +402,7 @@ export function PreviewDialog({
                   only={photo.id}
                   revision={revision}
                 />
-              </InspectorSection>
+              </SectionCard>
               </div>
             )}
 

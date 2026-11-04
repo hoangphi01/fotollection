@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Plus, Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,7 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Inset } from '@/components/forms/field'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import type { CustomPrintSize, LengthUnit, PrintAdvice, PrintSize, RenderSettings } from '@/ipc/bindings'
 import { VerdictBadge } from '@/features/print-advice/verdict-badge'
 import { ratioLabel } from '@/lib/crop-geometry'
@@ -37,6 +38,7 @@ type PrintSizePickerProps = {
 /** Built-in and saved custom print sizes, with an inline "add custom size" form (FR-043). */
 export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOriginal = true }: PrintSizePickerProps) {
   const { t } = useTranslation()
+  const id = useId()
   const custom = settings?.customSizes ?? []
   const [adding, setAdding] = useState(false)
   const [name, setName] = useState('')
@@ -81,7 +83,7 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
     }))
 
   return (
-    <div className="space-y-2">
+    <>
       <div className="flex items-center gap-2">
         <Select
           value={settings?.printSize ?? ''}
@@ -90,7 +92,7 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
             else onChange((s) => ({ ...s, printSize: v }))
           }}
         >
-          <SelectTrigger id="print-size" className="w-full">
+          <SelectTrigger id={id} className="w-full" aria-label={t('settings.printSize')}>
             <SelectValue placeholder={t('common.loading')} />
           </SelectTrigger>
           <SelectContent>
@@ -154,20 +156,14 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
       </div>
 
       {adding && (
-        <div className="space-y-2 rounded-lg border bg-muted/30 p-3">
-          <Input
-            placeholder={t('print.namePlaceholder')}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="h-8 text-sm"
-          />
+        <Inset>
+          <Input placeholder={t('print.namePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} />
           <div className="flex items-center gap-2">
             <Input
               placeholder="4"
               inputMode="decimal"
               value={width}
               onChange={(e) => setWidth(e.target.value)}
-              className="h-8 text-sm"
               aria-label={t('print.width')}
             />
             <span className="text-muted-foreground">×</span>
@@ -176,23 +172,17 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
               inputMode="decimal"
               value={height}
               onChange={(e) => setHeight(e.target.value)}
-              className="h-8 text-sm"
               aria-label={t('print.height')}
             />
-            <ToggleGroup
-              type="single"
-              variant="outline"
-              size="sm"
+            <SegmentedToggle<LengthUnit>
+              fit
               value={unit}
-              onValueChange={(u) => u && setUnit(u as LengthUnit)}
-            >
-              <ToggleGroupItem value="cm" className="text-xs">
-                cm
-              </ToggleGroupItem>
-              <ToggleGroupItem value="in" className="text-xs">
-                in
-              </ToggleGroupItem>
-            </ToggleGroup>
+              options={[
+                { value: 'cm', label: 'cm' },
+                { value: 'in', label: 'in' },
+              ]}
+              onChange={setUnit}
+            />
           </div>
           {formError && <p className="text-xs text-destructive">{formError}</p>}
           <div className="flex justify-end gap-2">
@@ -203,8 +193,8 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
               {t('print.save')}
             </Button>
           </div>
-        </div>
+        </Inset>
       )}
-    </div>
+    </>
   )
 }

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import type { ReactNode } from 'react'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 
 type SidePanelProps = {
@@ -16,14 +17,17 @@ type SidePanelProps = {
  */
 export function SidePanel({ title, children, footer }: SidePanelProps) {
   return (
-    <aside className="flex w-72 shrink-0 flex-col border-l bg-sidebar text-sidebar-foreground">
+    <aside className="flex w-panel shrink-0 flex-col border-l bg-sidebar text-sidebar-foreground">
       <div className="flex h-12 items-center px-4">
         <span className="text-sm font-semibold">{title}</span>
       </div>
       <Separator />
-      <div className="flex-1 space-y-3 overflow-y-auto p-3">{children}</div>
+      {/* An overlay scrollbar, as in the folder list, so the cards keep the panel's width. */}
+      <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
+        <div className="space-y-3 p-3">{children}</div>
+      </ScrollArea>
       <Separator />
-      <div className="space-y-3 p-4">{footer}</div>
+      <div className="space-y-3 p-3">{footer}</div>
     </aside>
   )
 }

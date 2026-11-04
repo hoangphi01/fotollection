@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Mail, PenLine, RectangleHorizontal, RectangleVertical } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Label } from '@/components/ui/label'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Field, Hint } from '@/components/forms/field'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { PanelNote } from '@/components/layout/panel-note'
 import { SectionCard } from '@/components/layout/section-card'
 import type { PostcardOrientation, PostcardSettings, RenderSettings } from '@/ipc/bindings'
@@ -33,41 +33,31 @@ export function PostcardCard({ settings, onChange }: PostcardCardProps) {
   const setPostcard = (patch: Partial<PostcardSettings>) => patchPostcard(onChange, patch)
   return (
     <SectionCard icon={<Mail />} title={t('postcard.title')}>
-      <p className="text-xs text-muted-foreground">{t('postcard.hint')}</p>
-      <div className="space-y-1.5">
-        <Label className="text-xs font-normal text-muted-foreground">{t('postcard.orientation')}</Label>
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          className="w-full"
+      <Hint>{t('postcard.hint')}</Hint>
+      <Field label={t('postcard.orientation')}>
+        <SegmentedToggle<PostcardOrientation>
           value={postcard.orientation ?? 'landscape'}
-          onValueChange={(v) => v && setPostcard({ orientation: v as PostcardOrientation })}
-        >
-          {ORIENTATIONS.map(({ value, icon: Icon }) => (
-            <ToggleGroupItem key={value} value={value} className="flex-1 px-1 text-xs" data-hint={t(`postcard.${value}Hint`)}>
-              <Icon /> {t(`postcard.${value}`)}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </div>
-      <div className="space-y-1.5">
-        <Label className="text-xs font-normal text-muted-foreground">{t('postcard.lines')}</Label>
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          className="w-full"
+          options={ORIENTATIONS.map(({ value, icon: Icon }) => ({
+            value,
+            label: (
+              <>
+                <Icon /> {t(`postcard.${value}`)}
+              </>
+            ),
+            hint: t(`postcard.${value}Hint`),
+          }))}
+          onChange={(orientation) => setPostcard({ orientation })}
+          ariaLabel={t('postcard.orientation')}
+        />
+      </Field>
+      <Field label={t('postcard.lines')}>
+        <SegmentedToggle
           value={String(postcard.lines ?? 4)}
-          onValueChange={(v) => v && setPostcard({ lines: Number(v) })}
-        >
-          {LINES.map((n) => (
-            <ToggleGroupItem key={n} value={String(n)} className="flex-1 px-1 text-xs">
-              {t('postcard.lineCount', { count: n })}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </div>
+          options={LINES.map((n) => ({ value: String(n), label: t('postcard.lineCount', { count: n }) }))}
+          onChange={(v) => setPostcard({ lines: Number(v) })}
+          ariaLabel={t('postcard.lines')}
+        />
+      </Field>
       <PanelNote icon={<PenLine />}>{t('postcard.pens')}</PanelNote>
     </SectionCard>
   )

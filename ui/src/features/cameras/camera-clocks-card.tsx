@@ -2,6 +2,7 @@
 import { Clock, RotateCcw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
+import { Hint, RowList } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
 import type { CameraClock } from '@/ipc/bindings'
@@ -26,8 +27,8 @@ export function CameraClocksCard() {
   if (clocks.length === 0) return null
   return (
     <SectionCard icon={<Clock />} title={t('cameras.title')}>
-      <p className="text-xs text-muted-foreground">{t('cameras.hint')}</p>
-      <ul className="space-y-2">
+      <Hint>{t('cameras.hint')}</Hint>
+      <RowList>
         {clocks.map((clock) => {
           const offset = clock.offsetS ?? 0
           return (
@@ -62,7 +63,7 @@ export function CameraClocksCard() {
             </li>
           )
         })}
-      </ul>
+      </RowList>
       {error && <p className="text-xs text-destructive">{error}</p>}
     </SectionCard>
   )

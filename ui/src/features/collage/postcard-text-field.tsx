@@ -2,8 +2,8 @@
 import { Bold, Italic, Underline } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
-import { Label } from '@/components/ui/label'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Field, FieldLabel, Hint } from '@/components/forms/field'
+import { Toggle } from '@/components/ui/toggle'
 import { commands, type CullFilter, type PhotoId, type PostcardPart, type TextStyle } from '@/ipc/bindings'
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
 import { PostcardCutBadge } from './postcard-cut-badge'
@@ -61,31 +61,31 @@ export function PostcardTextField({
   const { chars, lines } = LIMITS[part]
   // The last answer holds its place while the next loads (LESSONS).
   const text = useLiveQuery(String(photo), revision, load).data?.[part] ?? ''
-  const on = STYLES.filter((s) => style?.[s.key]).map((s) => s.key)
   return (
-    <div className="space-y-1.5">
+    <Field>
       <div className="flex items-center justify-between gap-2">
-        <Label className="text-xs font-normal text-muted-foreground">{t(`postcard.${part}`)}</Label>
+        <FieldLabel>{t(`postcard.${part}`)}</FieldLabel>
         {cut && <PostcardCutBadge />}
-        <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+        <span className="flex-1 text-right text-xs text-muted-foreground tabular-nums">
           {t('postcard.chars', { count: text.length, max: chars })}
         </span>
-        <ToggleGroup
-          type="multiple"
-          variant="outline"
-          size="sm"
-          value={on}
-          onValueChange={(keys) =>
-            onStyle({ bold: keys.includes('bold'), italic: keys.includes('italic'), underline: keys.includes('underline') })
-          }
-          aria-label={t('postcard.style')}
-        >
+        <div className="flex gap-1" role="group" aria-label={t('postcard.style')}>
           {STYLES.map(({ key, icon: Icon }) => (
-            <ToggleGroupItem key={key} value={key} className="size-7 px-0" aria-label={t(`postcard.styles.${key}`)} data-hint={t(`postcard.styles.${key}`)}>
+            <Toggle
+              key={key}
+              variant="outline"
+              size="sm"
+              pressed={style?.[key] ?? false}
+              onPressedChange={(pressed) =>
+                onStyle({ bold: false, italic: false, underline: false, ...style, [key]: pressed })
+              }
+              aria-label={t(`postcard.styles.${key}`)}
+              data-hint={t(`postcard.styles.${key}`)}
+            >
               <Icon />
-            </ToggleGroupItem>
+            </Toggle>
           ))}
-        </ToggleGroup>
+        </div>
       </div>
       <CommitInput
         multiline
@@ -97,7 +97,7 @@ export function PostcardTextField({
         liveMs={600}
         onCommit={(next) => void commands.setPostcardText(photo, part, next.trim() === '' ? null : next)}
       />
-      {cut && <p className="text-xs text-destructive">{t('postcard.cutHint')}</p>}
+      {cut && <Hint className="text-destructive">{t('postcard.cutHint')}</Hint>}
       {part === 'address' && filter && (
         <PostcardTextReuse
           filter={filter}
@@ -109,6 +109,6 @@ export function PostcardTextField({
           onPick={(address) => void commands.setPostcardText(photo, part, address)}
         />
       )}
-    </div>
+    </Field>
   )
 }

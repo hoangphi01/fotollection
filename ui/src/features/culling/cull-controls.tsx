@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Flag as FlagIcon, FlagOff, Star } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Field } from '@/components/forms/field'
 import { Button } from '@/components/ui/button'
 import { commands, type PhotoSummary } from '@/ipc/bindings'
 import { cn } from '@/lib/utils'
@@ -10,7 +11,7 @@ export function CullControls({ photo }: { photo: PhotoSummary }) {
   const { t } = useTranslation()
   const rate = (n: number) => void commands.setPhotoRating([photo.id], photo.rating === n ? 0 : n)
   return (
-    <div className="space-y-1.5">
+    <Field hint={t('culling.keysHint')}>
       <div className="flex items-center gap-3">
         <div className="flex" role="radiogroup" aria-label={t('culling.rating')}>
           {[1, 2, 3, 4, 5].map((n) => (
@@ -51,7 +52,6 @@ export function CullControls({ photo }: { photo: PhotoSummary }) {
           </Button>
         </div>
       </div>
-      <p className="text-[11px] text-muted-foreground">{t('culling.keysHint')}</p>
-    </div>
+    </Field>
   )
 }

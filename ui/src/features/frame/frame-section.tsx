@@ -8,7 +8,8 @@ import { Switch } from '@/components/ui/switch'
 import { Collapse } from '@/components/layout/collapse'
 import { SectionCard } from '@/components/layout/section-card'
 import { SwatchToggle } from '@/components/forms/swatch-toggle'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Field, Hint } from '@/components/forms/field'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import type {
   FrameColor,
   FrameDateFormat,
@@ -73,59 +74,37 @@ export function FrameSection({ frame, fonts, compact = false, children }: FrameS
       }
       open={enabled}
     >
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          className="w-full"
-          value={settings?.fit ?? ''}
-          onValueChange={(fit) =>
-            fit && void frame.setSettings((s) => ({ ...s, fit: fit as FrameFit }))
-          }
-        >
-          <ToggleGroupItem value="crop" className="flex-1 text-xs">
-            {t('frame.cropToFill')}
-          </ToggleGroupItem>
-          <ToggleGroupItem value="fit" className="flex-1 text-xs">
-            {t('frame.fitWhole')}
-          </ToggleGroupItem>
-        </ToggleGroup>
-        <p className="text-xs text-muted-foreground">
-          {t(settings?.fit === 'fit' ? 'frame.fitHint' : 'frame.cropHint')}
-        </p>
+      <Field hint={t(settings?.fit === 'fit' ? 'frame.fitHint' : 'frame.cropHint')}>
+        <SegmentedToggle<FrameFit>
+          value={settings?.fit}
+          options={[
+            { value: 'crop', label: t('frame.cropToFill') },
+            { value: 'fit', label: t('frame.fitWhole') },
+          ]}
+          onChange={(fit) => void frame.setSettings((s) => ({ ...s, fit }))}
+        />
+      </Field>
 
-        <div className="flex gap-2">
-          <SwatchToggle<FrameColor>
-            className="flex-1"
-            value={settings?.color}
-            options={[
-              { value: 'white', swatch: 'bg-white', label: t('frame.white') },
-              { value: 'black', swatch: 'bg-neutral-900', label: t('frame.black') },
-            ]}
-            onChange={(color) => void frame.setSettings((s) => ({ ...s, color }))}
-          />
-        </div>
+      <SwatchToggle<FrameColor>
+        value={settings?.color}
+        options={[
+          { value: 'white', swatch: 'bg-white', label: t('frame.white') },
+          { value: 'black', swatch: 'bg-neutral-900', label: t('frame.black') },
+        ]}
+        onChange={(color) => void frame.setSettings((s) => ({ ...s, color }))}
+      />
 
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          className="w-full"
-          value={settings?.dateFormat ?? ''}
-          onValueChange={(f) =>
-            f && void frame.setSettings((s) => ({ ...s, dateFormat: f as FrameDateFormat }))
-          }
-        >
-          <ToggleGroupItem value="slash" className="flex-1 font-mono text-[11px]">
-            2026/10/18
-          </ToggleGroupItem>
-          <ToggleGroupItem value="iso" className="flex-1 font-mono text-[11px]">
-            2026-10-18
-          </ToggleGroupItem>
-          <ToggleGroupItem value="dmy" className="flex-1 font-mono text-[11px]">
-            18.10.2026
-          </ToggleGroupItem>
-        </ToggleGroup>
+      <SegmentedToggle<FrameDateFormat>
+        mono
+        value={settings?.dateFormat}
+        options={[
+          { value: 'slash', label: '2026/10/18' },
+          { value: 'iso', label: '2026-10-18' },
+          { value: 'dmy', label: '18.10.2026' },
+        ]}
+        onChange={(dateFormat) => void frame.setSettings((s) => ({ ...s, dateFormat }))}
+        ariaLabel={t('settings.dateFormat')}
+      />
 
         <FontSelect
           fonts={fonts}
@@ -134,58 +113,44 @@ export function FrameSection({ frame, fonts, compact = false, children }: FrameS
           onChange={(font) => void frame.setSettings((s) => ({ ...s, font }))}
         />
 
-        <div className="space-y-1.5">
-          <span className="text-xs font-medium text-muted-foreground uppercase">
-            {t('frame.show')}
-          </span>
-          <div className="grid grid-cols-2 gap-x-3 gap-y-2">
-            {FIELDS.map(({ key }) => (
-              <label key={key} className="flex items-center gap-2 text-sm">
-                <Checkbox
-                  checked={settings?.fields[key] ?? false}
-                  onCheckedChange={(checked) =>
-                    void frame.setSettings((s) => ({
-                      ...s,
-                      fields: { ...s.fields, [key]: checked === true },
-                    }))
-                  }
-                />
-                <span>{t(`frame.field.${key}`)}</span>
-              </label>
-            ))}
-          </div>
+      <Field label={t('frame.show')}>
+        <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+          {FIELDS.map(({ key }) => (
+            <label key={key} className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={settings?.fields[key] ?? false}
+                onCheckedChange={(checked) =>
+                  void frame.setSettings((s) => ({
+                    ...s,
+                    fields: { ...s.fields, [key]: checked === true },
+                  }))
+                }
+              />
+              <span>{t(`frame.field.${key}`)}</span>
+            </label>
+          ))}
         </div>
-        {/* Colours of the bundled brand logos (ADR-0020), while the logo is shown. */}
-        <Collapse open={settings?.fields.logo ?? false} className="space-y-1.5">
-          <span className="text-xs font-medium text-muted-foreground uppercase">
-            {t('frame.logoStyle')}
-          </span>
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            size="sm"
-            className="w-full"
-            value={settings?.logoStyle ?? ''}
-            onValueChange={(v) =>
-              v && void frame.setSettings((s) => ({ ...s, logoStyle: v as LogoStyle }))
-            }
-          >
-            {LOGO_STYLES.map((style) => (
-              <ToggleGroupItem key={style} value={style} className="flex-1 text-xs">
-                {t(`frame.logoStyles.${style}`)}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
+      </Field>
+      {/* Colours of the bundled brand logos (ADR-0020), while the logo is shown. */}
+      <Collapse open={settings?.fields.logo ?? false}>
+        <Field label={t('frame.logoStyle')}>
+          <SegmentedToggle<LogoStyle>
+            value={settings?.logoStyle}
+            options={LOGO_STYLES.map((style) => ({ value: style, label: t(`frame.logoStyles.${style}`) }))}
+            onChange={(logoStyle) => void frame.setSettings((s) => ({ ...s, logoStyle }))}
+            ariaLabel={t('frame.logoStyle')}
+          />
           <LogoScaleSlider
             value={settings?.logoScale ?? 1}
             onCommit={(logoScale) => void frame.setSettings((s) => ({ ...s, logoScale }))}
           />
-        </Collapse>
-        <p className="text-xs text-muted-foreground">
-          {t('frame.keepsSize')}
-          {!compact && ` ${t('frame.editInPreview')}`}
-        </p>
-        {children}
+        </Field>
+      </Collapse>
+      <Hint>
+        {t('frame.keepsSize')}
+        {!compact && ` ${t('frame.editInPreview')}`}
+      </Hint>
+      {children}
     </SectionCard>
   )
 }

@@ -85,7 +85,7 @@ export function LibrarySidebar({
     )
 
   return (
-    <aside className="flex w-72 shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground">
+    <aside className="flex w-panel shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground">
       <div className="flex h-12 items-center gap-2 px-4">
         {/* Simplified mark (no wordmark) pre-rendered per density, so WebKit never downscales */}
         <img

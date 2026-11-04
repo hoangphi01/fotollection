@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Field, Hint, Stack } from '@/components/forms/field'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import type { CullFilter, ExportFolders, PhotoId } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
@@ -71,9 +72,9 @@ export function ExportSection({
   )
 
   return (
-    <div className="space-y-3">
+    <Stack>
       {state.kind === 'running' && (
-        <div className="space-y-1.5">
+        <Field>
           <div className="flex justify-between text-xs text-muted-foreground tabular-nums">
             <span>{t('export.running')}</span>
             <span>
@@ -81,7 +82,7 @@ export function ExportSection({
             </span>
           </div>
           <Progress value={state.total ? (state.done / state.total) * 100 : 0} />
-        </div>
+        </Field>
       )}
 
       {state.kind === 'finished' && (
@@ -134,52 +135,34 @@ export function ExportSection({
       )}
 
       {canSplit && (
-        <div className="space-y-1">
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            size="sm"
-            className="w-full"
+        <Field
+          hint={t(separate ? 'export.folders.separateHint' : 'export.folders.togetherHint', { count: folderCount })}
+        >
+          <SegmentedToggle
             disabled={running}
             value={separate ? 'separate' : 'together'}
-            onValueChange={(v) => v && setSeparate(v === 'separate')}
-            aria-label={t('export.folders.label')}
-          >
-            <ToggleGroupItem value="together" className="flex-1 text-xs">
-              {t('export.folders.together')}
-            </ToggleGroupItem>
-            <ToggleGroupItem value="separate" className="flex-1 text-xs">
-              {t('export.folders.separate')}
-            </ToggleGroupItem>
-          </ToggleGroup>
-          <p className="text-xs text-muted-foreground">
-            {t(separate ? 'export.folders.separateHint' : 'export.folders.togetherHint', { count: folderCount })}
-          </p>
-        </div>
+            options={[
+              { value: 'together', label: t('export.folders.together') },
+              { value: 'separate', label: t('export.folders.separate') },
+            ]}
+            onChange={(v) => setSeparate(v === 'separate')}
+            ariaLabel={t('export.folders.label')}
+          />
+        </Field>
       )}
 
-      <div className="space-y-1">
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          className="w-full"
+      <Field hint={t(byDay ? 'export.days.byDayHint' : 'export.days.oneFolderHint')}>
+        <SegmentedToggle<ExportFolders>
           disabled={running}
           value={ui.exportFolders}
-          onValueChange={(v) => v && void update({ exportFolders: v as ExportFolders })}
-          aria-label={t('export.days.label')}
-        >
-          <ToggleGroupItem value="oneFolder" className="flex-1 text-xs">
-            {t('export.days.oneFolder')}
-          </ToggleGroupItem>
-          <ToggleGroupItem value="byDay" className="flex-1 text-xs">
-            {t('export.days.byDay')}
-          </ToggleGroupItem>
-        </ToggleGroup>
-        <p className="text-xs text-muted-foreground">
-          {t(byDay ? 'export.days.byDayHint' : 'export.days.oneFolderHint')}
-        </p>
-      </div>
+          options={[
+            { value: 'oneFolder', label: t('export.days.oneFolder') },
+            { value: 'byDay', label: t('export.days.byDay') },
+          ]}
+          onChange={(exportFolders) => void update({ exportFolders })}
+          ariaLabel={t('export.days.label')}
+        />
+      </Field>
 
       <button
         type="button"
@@ -233,9 +216,9 @@ export function ExportSection({
         </Button>
       )}
       {!single && picked.length === 0 && (filter.flag !== 'all' || filter.minRating > 0) && !running && (
-        <p className="text-xs text-muted-foreground">{t('export.filteredHint')}</p>
+        <Hint>{t('export.filteredHint')}</Hint>
       )}
-    </div>
+    </Stack>
   )
 }
 

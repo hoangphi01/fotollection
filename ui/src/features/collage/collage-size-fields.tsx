@@ -2,8 +2,8 @@
 import { Lock, LockOpen, RotateCcw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
+import { Field, Hint } from '@/components/forms/field'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
 import { Toggle } from '@/components/ui/toggle'
 import type { CellInfo, RenderSettings } from '@/ipc/bindings'
 import { dimsLabel, displayUnit, lengthIn, parseLength } from '@/lib/print-size'
@@ -14,7 +14,6 @@ type CollageSizeFieldsProps = {
   /** The photo the panel shows: its area now, and the size suggested for it. */
   cell: CellInfo | undefined
 }
-
 
 /**
  * The photo's size in its cell (FR-035): the suggested size until one is typed. With the
@@ -47,8 +46,7 @@ export function CollageSizeFields({ settings, onChange, cell }: CollageSizeField
   }
 
   return (
-    <div className="space-y-1.5">
-      <Label className="text-sm font-normal">{t('collage.size')}</Label>
+    <Field label={t('collage.size')}>
       <div className="flex items-center gap-1.5">
         <CommitInput
           value={length(width)}
@@ -68,7 +66,6 @@ export function CollageSizeFields({ settings, onChange, cell }: CollageSizeField
         <span className="text-xs text-muted-foreground">{unit}</span>
         <Toggle
           variant="outline"
-          size="sm"
           pressed={locked}
           onPressedChange={(lockRatio) => onChange((s) => ({ ...s, collage: { ...s.collage, lockRatio } }))}
           aria-label={t('collage.lockRatio')}
@@ -78,12 +75,12 @@ export function CollageSizeFields({ settings, onChange, cell }: CollageSizeField
         </Toggle>
       </div>
       <div className="flex items-center justify-between gap-2">
-        <p className="text-xs text-muted-foreground">
+        <Hint>
           {cell &&
             t('collage.suggested', {
               size: dimsLabel(cell.suggestedWidthMm, cell.suggestedHeightMm, unit),
             })}
-        </p>
+        </Hint>
         {typed && (
           <Button
             variant="ghost"
@@ -95,6 +92,6 @@ export function CollageSizeFields({ settings, onChange, cell }: CollageSizeField
           </Button>
         )}
       </div>
-    </div>
+    </Field>
   )
 }

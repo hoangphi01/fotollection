@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Frame } from 'lucide-react'
-import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import { SwatchToggle } from '@/components/forms/swatch-toggle'
+import { SwitchField } from '@/components/forms/switch-field'
 import type { BorderColor, RenderSettings } from '@/ipc/bindings'
 
 const COLORS: { value: BorderColor; swatch: string }[] = [
@@ -25,26 +23,22 @@ type BorderSwitchProps = {
  */
 export function BorderSwitch({ settings, onChange, paper = false }: BorderSwitchProps) {
   const { t } = useTranslation()
-  const id = useId()
   const border = settings?.border ?? false
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between">
-        <Label htmlFor={id} className="flex items-center gap-2 text-sm font-normal">
-          <Frame className="size-4 text-muted-foreground" />
-          {t('settings.border')}
-        </Label>
-        <Switch id={id} checked={border} onCheckedChange={(next) => onChange((s) => ({ ...s, border: next }))} />
-      </div>
-      {(border || paper) && (
-        <SwatchToggle
-          ariaLabel={t('settings.borderColor')}
-          value={settings?.borderColor ?? 'white'}
-          options={COLORS.map((c) => ({ ...c, label: t(`settings.borderColors.${c.value}`) }))}
-          onChange={(borderColor) => onChange((s) => ({ ...s, borderColor }))}
-        />
-      )}
-      <p className="text-xs text-muted-foreground">{t(paper ? 'settings.borderHintPaper' : 'settings.borderHint')}</p>
-    </div>
+    <SwitchField
+      icon={<Frame />}
+      label={t('settings.border')}
+      checked={border}
+      onChange={(next) => onChange((s) => ({ ...s, border: next }))}
+      alwaysOpen={paper}
+      hint={t(paper ? 'settings.borderHintPaper' : 'settings.borderHint')}
+    >
+      <SwatchToggle
+        ariaLabel={t('settings.borderColor')}
+        value={settings?.borderColor ?? 'white'}
+        options={COLORS.map((c) => ({ ...c, label: t(`settings.borderColors.${c.value}`) }))}
+        onChange={(borderColor) => onChange((s) => ({ ...s, borderColor }))}
+      />
+    </SwitchField>
   )
 }

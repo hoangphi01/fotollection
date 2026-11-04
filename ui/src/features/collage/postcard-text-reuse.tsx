@@ -2,6 +2,7 @@
 import { CopyCheck, History, X } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Field, Hint, RowList } from '@/components/forms/field'
 import { Button } from '@/components/ui/button'
 import { commands, type CullFilter, type PhotoId, type PostcardPart } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
@@ -68,16 +69,16 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
         {(blank > 0 || differ > 0) && (
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
             {blank > 0 && (
-              <Button variant="link" size="sm" className="h-auto gap-1.5 p-0 text-xs" onClick={() => void apply(false)}>
-                <CopyCheck className="size-3.5" />
+              <Button variant="link" size="xs" className="px-0" onClick={() => void apply(false)}>
+                <CopyCheck />
                 {t(`postcard.reuse.blank${scope}`, { count: blank })}
               </Button>
             )}
             {differ > 0 && (
               <Button
                 variant="link"
-                size="sm"
-                className="h-auto p-0 text-xs text-muted-foreground"
+                size="xs"
+                className="px-0 text-muted-foreground"
                 onClick={() => void apply(true)}
               >
                 {t(`postcard.reuse.overwrite${scope}`, { count: blank + differ })}
@@ -86,26 +87,22 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
           </div>
         )}
         {done?.photo === photo && done.count > 0 && (
-          <p className="text-xs text-muted-foreground">{t('postcard.reuse.done', { count: done.count })}</p>
+          <Hint>{t('postcard.reuse.done', { count: done.count })}</Hint>
         )}
-        {error && <p className="text-xs text-destructive">{error}</p>}
+        {error && <Hint className="text-destructive">{error}</Hint>}
       </>
     )
   }
   if (part !== 'address' || recent.length === 0) return null
   return (
-    <div className="space-y-1">
-      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <History className="size-3.5" />
-        {t('postcard.reuse.recent')}
-      </p>
-      <ul className="space-y-1">
+    <Field label={<span className="flex items-center gap-1.5"><History className="size-3.5" />{t('postcard.reuse.recent')}</span>}>
+      <RowList>
         {recent.map((address) => (
           <li key={address} className="flex items-center gap-1">
             <Button
               variant="outline"
               size="sm"
-              className="h-auto min-w-0 flex-1 justify-start px-2 py-1 text-left text-xs font-normal"
+              className="min-w-0 flex-1 justify-start font-normal"
               data-hint={address}
               onClick={() => onPick(address)}
             >
@@ -113,7 +110,7 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
             </Button>
             <Button
               variant="ghost"
-              size="icon-xs"
+              size="icon-sm"
               aria-label={t('postcard.reuse.forget')}
               data-hint={t('postcard.reuse.forget')}
               onClick={() => void forget(address)}
@@ -122,7 +119,7 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
             </Button>
           </li>
         ))}
-      </ul>
-    </div>
+      </RowList>
+    </Field>
   )
 }

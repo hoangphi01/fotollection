@@ -12,7 +12,7 @@
 |-------|-------|---------|------|
 | Unit | Pure functions in `crates/core`, `crates/rawcore`, `crates/oscamera` and `src-tauri` (crop math, stamp layout, date formatting, path sanitizing, geocode lookup, PTP answers), named `fr_NNN_…` | `cargo test` | Every push that changes code (RELEASE.md §4), on macOS, Windows and Ubuntu ([ci.yml](../.github/workflows/ci.yml)) |
 | Integration | `crates/core/tests/pipeline.rs` (import → metadata → library → export on synthetic files) and `tests/jpeg_layouts.rs` (every JPEG layout decodes to the picture, [ADR-0033](adr/0033-reference-jpeg-decoder.md)) | `cargo test` | Every push that changes code |
-| UI checks | Types, lint (bans `dangerouslySetInnerHTML` / `eval`), the same i18n keys in both languages, the production build | `tsc -b`, `oxlint`, `ui/scripts/check-i18n.mjs`, `vite build` | Every push that changes code |
+| UI checks | Types, lint (bans `dangerouslySetInnerHTML` / `eval`), the same i18n keys in both languages, panel cards built from the lego blocks (STYLE_RULE §4), the production build | `tsc -b`, `oxlint`, `ui/scripts/check-i18n.mjs`, `ui/scripts/check-lego.mjs`, `vite build` | Every push that changes code |
 | Fuzz | RAW decoder: mutation testing on stable Rust (§4) | `crates/rawcore/examples/mutate.rs` | By hand, before a RAW format moves to our own decoder |
 | Benchmark | Budgets from [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets) | `crates/core/examples/measure_*`, `bench/run.sh`, `bench/batch.sh`, `scripts/measure-startup.sh` | By hand, logged in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log) |
 | Release smoke test | The installed Linux packages (`.deb` file types, the AppImage runs 20 s, also on Debian 12) | [release.yml](../.github/workflows/release.yml) | Every release |

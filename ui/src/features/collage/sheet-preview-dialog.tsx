@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Crop, Download, Images, LoaderCircle, Rotate
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { SectionCard } from '@/components/layout/section-card'
 import { InspectorSection } from '@/components/layout/inspector-section'
 import { KeyHints } from '@/components/layout/key-hints'
 import { StageSpinner } from '@/components/layout/stage-spinner'
@@ -311,7 +312,7 @@ export function SheetPreviewDialog({
         revision={revision}
       />
       {sheet && (
-        <InspectorSection icon={<Download className="size-4" />} title={t('export.title')}>
+        <SectionCard icon={<Download />} title={t('export.title')}>
           <ExportSection
             exporter={exporter}
             photoCount={sheet.second === null ? 1 : 2}
@@ -320,13 +321,13 @@ export function SheetPreviewDialog({
             revision={revision}
             sheets={1}
           />
-        </InspectorSection>
+        </SectionCard>
       )}
       <InspectorSection icon={<Images className="size-4" />} title={t('collage.photosOnSheet')}>
         {cells.map(([id, c]) => {
           const p = summary(id)
           return (
-            <div key={c} className={cn('flex items-center gap-2.5 rounded-md p-1.5', chosen === c && p && 'bg-primary/10')}>
+            <div key={c} className={cn('flex items-center gap-2 rounded-md p-1.5', chosen === c && p && 'bg-primary/10')}>
               {p ? (
                 <>
                   <button type="button" className="shrink-0" onClick={() => choose(chosen === c ? null : c)} aria-label={p.fileName}>

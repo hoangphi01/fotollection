@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useTranslation } from 'react-i18next'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import type { StampSize } from '@/ipc/bindings'
 
 const SIZES: StampSize[] = ['small', 'medium', 'large']
@@ -18,20 +18,11 @@ type SizeFieldProps = {
 export function SizeField({ value, onChange, label }: SizeFieldProps) {
   const { t } = useTranslation()
   return (
-    <ToggleGroup
-      type="single"
-      variant="outline"
-      size="sm"
-      className="w-full"
+    <SegmentedToggle
       value={value ?? 'medium'}
-      onValueChange={(size) => size && onChange(size as StampSize)}
-      aria-label={label}
-    >
-      {SIZES.map((s) => (
-        <ToggleGroupItem key={s} value={s} className="flex-1 text-xs">
-          {t(`settings.stampSize.${s}`)}
-        </ToggleGroupItem>
-      ))}
-    </ToggleGroup>
+      options={SIZES.map((s) => ({ value: s, label: t(`settings.stampSize.${s}`) }))}
+      onChange={onChange}
+      ariaLabel={label}
+    />
   )
 }

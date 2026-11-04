@@ -3,6 +3,7 @@ import { MapPin, MapPinCheck, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
+import { Field, Hint, RowList } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
 import { BorrowDialog } from './borrow-dialog'
@@ -28,11 +29,12 @@ export function PlacesCard() {
       }
     >
       {borrowing && <BorrowDialog onClose={() => setBorrowing(false)} />}
-      <p className="text-xs text-muted-foreground">{t('places.hint')}</p>
-      <ul className="space-y-2">
+      <Hint>{t('places.hint')}</Hint>
+      <RowList>
         {places.map((place) => (
           <li key={place.geonamesId} className="flex items-center gap-2">
             <div className="min-w-0 flex-1">
+              <Field>
               <CommitInput
                 value={place.name}
                 placeholder={place.original}
@@ -40,10 +42,11 @@ export function PlacesCard() {
                 ariaLabel={t('places.renameLabel', { place: place.original })}
                 onCommit={(text) => void rename(place, text.trim() === '' ? null : text)}
               />
-              <p className="mt-0.5 truncate text-xs text-muted-foreground">
+              <Hint className="truncate">
                 {place.renamed ? `${place.original}, ${place.country}` : place.country} ·{' '}
                 {t('cameras.photos', { count: place.photos })}
-              </p>
+              </Hint>
+              </Field>
             </div>
             <Button
               size="icon-sm"
@@ -57,7 +60,7 @@ export function PlacesCard() {
             </Button>
           </li>
         ))}
-      </ul>
+      </RowList>
       {error && <p className="text-xs text-destructive">{error}</p>}
     </SectionCard>
   )

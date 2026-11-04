@@ -372,3 +372,21 @@
 - **Seen:** the navbar's Coffee button scrolled to a point 800 to 1,800 px above the support section; every other anchor landed right.
 - **Why:** the benchmark charts above it were `loading="lazy"` with a width and no height. The page scrolled toward `#support` with each chart counted at zero height; as they loaded on the way, the section moved down and the scroll stopped short.
 - **Rule:** every lazy image on the site carries both `width` and `height` (charts get theirs from `site/_data/charts.json`, written by `bench/chart.mjs`). After a layout change, click every in-page link and check where it lands, not only that it scrolls.
+
+### A style rule without numbers and a check lets the drift back (UI)
+
+- **Seen:** after one card's spacing was fixed, the same kind of fault was still in other cards: six values for the space inside a field, five label styles, selects of 28 and 32 px side by side, a preview spaced 20 px against the panel's 12 px, and a right panel that looked narrower than the folder list though both were 288 px.
+- **Why:** STYLE_RULE said "use the shared pieces" but gave no measures, and nothing failed when a card spaced itself by hand. The right panel's native scroll bar and its extra padding took width the folder list's overlay bar does not.
+- **Rule:** the measures are a table in STYLE_RULE §4 (the lego rule), each owned by one block, and `check-lego.mjs` in `npm run lint` fails on hand-made spacing, sizes and toggle groups in `src/features`. Prove a panel change with a measurement table across every mode (`getBoundingClientRect`), every cell the same value.
+
+### A folded Collapse still takes its stack's gap (UI)
+
+- **Seen:** with *3 mm border* off, its hint sat 12 px under the switch instead of 6; a postcard's cells card had a 24 px gap where its cut-line option was folded.
+- **Why:** a folded `Collapse` is 0 px tall but is still a child of a `space-y` stack, so the gaps on both of its sides add up.
+- **Rule:** every stack block sets `--stack-gap`, and a folded `Collapse` pulls itself up by it (`collapse.tsx`). Measure with every switch both on and off.
+
+### The demo recording exits at once while the dev app runs (screenshots)
+
+- **Seen:** `FOTOLLECTION_DEMO_FOLDER=… target/debug/fotollection` returned in 0.1 s and wrote no dump.
+- **Why:** the single-instance plugin handed the launch to the `tauri dev` app already running, and quit.
+- **Rule:** stop the dev app before recording a demo dump (`site/screenshots/build.sh`), then start it again.

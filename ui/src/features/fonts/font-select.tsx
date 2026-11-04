@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Plus, Trash2, Type } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Field } from '@/components/forms/field'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -41,7 +42,7 @@ export function FontSelect({ fonts, value, onChange, label, builtIns, builtIn }:
   const current = fonts.fonts.find((f) => f.id === value)
 
   return (
-    <div className="space-y-1.5">
+    <Field hint={fonts.error && <span className="text-destructive">{fonts.error}</span>}>
       <div className="flex items-center gap-2">
         <Select
           value={selected}
@@ -93,7 +94,6 @@ export function FontSelect({ fonts, value, onChange, label, builtIns, builtIn }:
           </Button>
         )}
       </div>
-      {fonts.error && <p className="text-xs text-destructive">{fonts.error}</p>}
-    </div>
+    </Field>
   )
 }

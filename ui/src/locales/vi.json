@@ -129,6 +129,7 @@
     "dateStamp": "Dấu ngày",
     "dateStampFont": "Phông chữ dấu ngày",
     "stampPosition": "Vị trí dấu ngày",
+    "dateFormat": "Định dạng ngày",
     "corner": {
       "bottomRight": "Góc dưới phải",
       "bottomLeft": "Góc dưới trái",

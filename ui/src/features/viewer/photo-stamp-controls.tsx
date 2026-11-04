@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, CopyCheck } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { CalendarDays, CopyCheck, MapPin } from 'lucide-react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CommitInput } from '@/components/forms/commit-input'
+import { SwitchField } from '@/components/forms/switch-field'
 import { SectionCard } from '@/components/layout/section-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { CaptionField } from '@/features/stamp/caption-field'
 import { StampStyleFields } from '@/features/stamp/stamp-style-fields'
 import { commands, type PhotoStamp, type StampSettings } from '@/ipc/bindings'
-
 
 type PhotoStampControlsProps = {
   photoId: number
@@ -26,6 +26,7 @@ type PhotoStampControlsProps = {
  */
 export function PhotoStampControls({ photoId, revision, onAppliedToAll }: PhotoStampControlsProps) {
   const { t } = useTranslation()
+  const id = useId()
   const [current, setCurrent] = useState<PhotoStamp | null>(null)
   // Local changes so far: an answer asked for before the latest one would put an older
   // stamp back on screen (STYLE_RULE §4).
@@ -56,14 +57,14 @@ export function PhotoStampControls({ photoId, revision, onAppliedToAll }: PhotoS
     <SectionCard
       icon={<CalendarDays />}
       title={
-        <Label htmlFor="photo-stamp" className="text-sm font-semibold">
+        <Label htmlFor={id} className="text-sm font-semibold">
           {t('viewer.dateStamp')}
         </Label>
       }
       action={
         <>
           {current.custom && <Badge variant="outline">{t('viewer.thisPhoto')}</Badge>}
-          <Switch id="photo-stamp" checked={stamp.enabled} onCheckedChange={(enabled) => set({ enabled })} />
+          <Switch id={id} checked={stamp.enabled} onCheckedChange={(enabled) => set({ enabled })} />
         </>
       }
       open={stamp.enabled}
@@ -81,21 +82,14 @@ export function PhotoStampControls({ photoId, revision, onAppliedToAll }: PhotoS
       }
     >
       <StampStyleFields stamp={stamp} onChange={set} />
-      <div className="flex items-center justify-between">
-        <Label htmlFor="photo-stamp-place" className="text-sm font-normal">
-          {t('settings.location')}
-        </Label>
-        <Switch id="photo-stamp-place" checked={stamp.place ?? false} onCheckedChange={(place) => set({ place })} />
-      </div>
-      <CommitInput
-        key={photoId}
-        value={stamp.caption ?? ''}
-        placeholder={t('settings.captionPlaceholder')}
-        maxLength={80}
-        liveMs={300}
-        ariaLabel={t('settings.caption')}
-        onCommit={(caption) => set({ caption })}
+      <SwitchField
+        icon={<MapPin />}
+        label={t('settings.location')}
+        checked={stamp.place ?? false}
+        onChange={(place) => set({ place })}
+        hint={t('settings.locationHint')}
       />
+      <CaptionField key={photoId} caption={stamp.caption ?? ''} onCommit={(caption) => set({ caption })} />
     </SectionCard>
   )
 }

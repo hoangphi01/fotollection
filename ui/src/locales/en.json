@@ -137,6 +137,7 @@
     "dateStamp": "Date stamp",
     "dateStampFont": "Date stamp font",
     "stampPosition": "Stamp position",
+    "dateFormat": "Date format",
     "corner": {
       "bottomRight": "Bottom right",
       "bottomLeft": "Bottom left",

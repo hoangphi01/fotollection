@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Proportions } from 'lucide-react'
-import { useId, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
 import { SwatchToggle } from '@/components/forms/swatch-toggle'
-import { Collapse } from '@/components/layout/collapse'
-import { Label } from '@/components/ui/label'
+import { SwitchField } from '@/components/forms/switch-field'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
 import type { RenderSettings, ShareFill } from '@/ipc/bindings'
 
 /** The ratios people post at; anything else is Custom. Rust keeps a ratio to 1–100 a side. */
@@ -50,7 +48,6 @@ type ShareFillFieldsProps = {
  */
 export function ShareFillFields({ settings, onChange, disabled = false }: ShareFillFieldsProps) {
   const { t } = useTranslation()
-  const id = useId()
   const fill = { ...DEFAULT_FILL, ...settings?.shareFill }
   const set = (change: Partial<ShareFill>) =>
     onChange((s) => ({ ...s, shareFill: { ...DEFAULT_FILL, ...s.shareFill, ...change } }))
@@ -78,15 +75,14 @@ export function ShareFillFields({ settings, onChange, disabled = false }: ShareF
   }
 
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center justify-between">
-        <Label htmlFor={id} className="flex items-center gap-2 text-sm font-normal">
-          <Proportions className="size-4 text-muted-foreground" />
-          {t('export.fill.label')}
-        </Label>
-        <Switch id={id} checked={fill.enabled} disabled={disabled} onCheckedChange={(enabled) => set({ enabled })} />
-      </div>
-      <Collapse open={fill.enabled} className="space-y-2">
+    <SwitchField
+      icon={<Proportions />}
+      label={t('export.fill.label')}
+      checked={fill.enabled}
+      disabled={disabled}
+      onChange={(enabled) => set({ enabled })}
+      hint={t('export.fill.hint')}
+    >
         <div className="flex gap-2">
           <Select
             value={ratioValue}
@@ -101,7 +97,7 @@ export function ShareFillFields({ settings, onChange, disabled = false }: ShareF
               set({ ratio: [w ?? 1, h ?? 1] })
             }}
           >
-            <SelectTrigger size="sm" className="min-w-0 flex-1 text-xs" aria-label={t('export.fill.ratio')}>
+            <SelectTrigger className="min-w-0 flex-1" aria-label={t('export.fill.ratio')}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -163,8 +159,6 @@ export function ShareFillFields({ settings, onChange, disabled = false }: ShareF
             />
           </div>
         )}
-      </Collapse>
-      <p className="text-xs text-muted-foreground">{t('export.fill.hint')}</p>
-    </div>
+    </SwitchField>
   )
 }

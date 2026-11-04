@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Field, ValueRow } from '@/components/forms/field'
 import { Slider } from '@/components/ui/slider'
 import { formatNumber } from '@/lib/format'
 
@@ -21,11 +22,8 @@ export function LogoScaleSlider({ value, onCommit }: LogoScaleSliderProps) {
   const shown = draft ?? value
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground uppercase">{t('frame.logoSize')}</span>
-        <span className="text-xs text-muted-foreground tabular-nums">{formatNumber(shown * 100, 0)} %</span>
-      </div>
+    <Field>
+      <ValueRow label={t('frame.logoSize')}>{formatNumber(shown * 100, 0)} %</ValueRow>
       <Slider
         min={MIN}
         max={MAX}
@@ -40,6 +38,6 @@ export function LogoScaleSlider({ value, onCommit }: LogoScaleSliderProps) {
         onDoubleClick={() => onCommit(1)}
         data-hint={t('frame.logoSizeHint')}
       />
-    </div>
+    </Field>
   )
 }

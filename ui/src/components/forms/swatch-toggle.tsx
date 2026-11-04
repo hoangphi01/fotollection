@@ -21,7 +21,7 @@ type SwatchToggleProps<T extends string> = {
 }
 
 /**
- * A row of colours, each with its dot: the border's, the stamp's, the frame's, the postcard
+ * A row of colours, each with its dot, 32 px tall like every control in a panel: the border's, the stamp's, the frame's, the postcard
  * ink's and a shared photo's fill (FR-067, FR-004, FR-040, FR-073, FR-075). One control, so
  * every colour choice looks and behaves the same.
  */
@@ -38,7 +38,6 @@ export function SwatchToggle<T extends string>({
     <ToggleGroup
       type="single"
       variant="outline"
-      size="sm"
       className={className}
       aria-label={ariaLabel}
       disabled={disabled}
@@ -48,7 +47,7 @@ export function SwatchToggle<T extends string>({
       {options.map((o) => {
         const css = o.swatch.startsWith('#') || o.swatch.startsWith('rgb')
         return (
-          <ToggleGroupItem key={o.value} value={o.value} className={cn('flex-1 gap-1.5 text-xs', dense && 'px-1')}>
+          <ToggleGroupItem key={o.value} value={o.value} className={cn('min-w-0 flex-1 gap-1.5 text-xs', dense && 'px-1')}>
             <span
               className={cn('size-3 shrink-0 rounded-full border', !css && o.swatch)}
               style={css ? { backgroundColor: o.swatch } : undefined}

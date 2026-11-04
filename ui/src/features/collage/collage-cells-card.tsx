@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Columns2, Maximize, Scissors } from 'lucide-react'
-import { useId } from 'react'
+import { Columns2, Maximize, Ruler, Scissors } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Field } from '@/components/forms/field'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
+import { SwitchField } from '@/components/forms/switch-field'
+import { PanelNote } from '@/components/layout/panel-note'
 import { Collapse } from '@/components/layout/collapse'
 import { SectionCard } from '@/components/layout/section-card'
 import type { CellInfo, CellRatio, RenderSettings } from '@/ipc/bindings'
@@ -31,73 +31,53 @@ export function CollageCellsCard({ settings, onChange, cell }: CollageCellsCardP
   const setCollage = (patch: Partial<RenderSettings['collage']>) =>
     onChange((s) => ({ ...s, collage: { ...s.collage, ...patch } }))
   const unit = displayUnit(settings)
-  // Mounted twice (panel and preview), so the switches' ids must be unique.
-  const cutLineId = useId()
-  const fillId = useId()
   const fill = collage?.fill ?? false
 
   return (
-    <SectionCard icon={<Columns2 />} title={<span className="text-sm font-semibold">{t('collage.cells')}</span>}>
+    <SectionCard icon={<Columns2 />} title={t('collage.cells')}>
       {/* No white: each photo fills its half, and its crop chooses what it keeps (FR-035). */}
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <Label htmlFor={fillId} className="flex items-center gap-2 text-sm font-normal">
-            <Maximize className="size-4 text-muted-foreground" />
-            {t('collage.fill')}
-          </Label>
-          <Switch id={fillId} checked={fill} onCheckedChange={(on) => setCollage({ fill: on })} />
-        </div>
-        <p className="text-xs text-muted-foreground">{t(fill ? 'collage.fillHint' : 'collage.marginHint')}</p>
-      </div>
-      <Collapse open={!fill} className="space-y-3">
-      <div className="space-y-1.5">
-        <Label className="text-sm font-normal">{t('collage.ratio')}</Label>
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          className="w-full"
-          value={collage?.ratio ?? 'photo'}
-          onValueChange={(v) => v && setCollage({ ratio: v as CellRatio })}
-          aria-label={t('collage.ratio')}
-        >
-          {RATIOS.map((r) => (
-            <ToggleGroupItem key={r} value={r} className="flex-1 px-1 text-xs" data-hint={t(`collage.ratioHints.${r}`)}>
-              {t(`collage.ratios.${r}`)}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </div>
-      <CollageSizeFields settings={settings} onChange={onChange} cell={cell} />
+      <SwitchField
+        icon={<Maximize />}
+        label={t('collage.fill')}
+        checked={fill}
+        onChange={(on) => setCollage({ fill: on })}
+        hint={t(fill ? 'collage.fillHint' : 'collage.marginHint')}
+      />
+      <Collapse open={!fill} stack="card">
+        <Field label={t('collage.ratio')}>
+          <SegmentedToggle
+            dense
+            value={collage?.ratio ?? 'photo'}
+            options={RATIOS.map((r) => ({
+              value: r,
+              label: t(`collage.ratios.${r}`),
+              hint: t(`collage.ratioHints.${r}`),
+            }))}
+            onChange={(ratio) => setCollage({ ratio })}
+            ariaLabel={t('collage.ratio')}
+          />
+        </Field>
+        <CollageSizeFields settings={settings} onChange={onChange} cell={cell} />
       </Collapse>
       {/* Filled halves meet at an edge, and a postcard is not cut: no cut line there. */}
       <Collapse open={!fill && !collage?.postcard?.enabled}>
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <Label htmlFor={cutLineId} className="flex items-center gap-2 text-sm font-normal">
-            <Scissors className="size-4 text-muted-foreground" />
-            {t('collage.cutLine')}
-          </Label>
-          <Switch
-            id={cutLineId}
-            checked={collage?.cutLine ?? true}
-            onCheckedChange={(cutLine) => setCollage({ cutLine })}
-          />
-        </div>
-        <p className="text-xs text-muted-foreground">
-          {t(collage?.cutLine === false ? 'collage.togetherHint' : 'collage.cutLineHint')}
-        </p>
-      </div>
+        <SwitchField
+          icon={<Scissors />}
+          label={t('collage.cutLine')}
+          checked={collage?.cutLine ?? true}
+          onChange={(cutLine) => setCollage({ cutLine })}
+          hint={t(collage?.cutLine === false ? 'collage.togetherHint' : 'collage.cutLineHint')}
+        />
       </Collapse>
       {cell && (
-        <p className="rounded-md bg-muted/60 px-2.5 py-2 text-xs text-muted-foreground">
+        <PanelNote icon={<Ruler />}>
           {t(settings?.border ? 'collage.adviceBorder' : 'collage.advice', {
             area: dimsLabel(cell.areaWidthMm, cell.areaHeightMm, unit),
             photo: dimsLabel(cell.photoWidthMm ?? cell.areaWidthMm, cell.photoHeightMm ?? cell.areaHeightMm, unit),
             dpi: formatNumber(cell.dpi),
             quality: t(`dpi.${cell.quality}`),
           })}
-        </p>
+        </PanelNote>
       )}
     </SectionCard>
   )

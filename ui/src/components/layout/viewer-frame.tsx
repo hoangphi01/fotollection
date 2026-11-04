@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import type { KeyboardEventHandler, MouseEvent, PointerEventHandler, ReactNode, Ref } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 
 type DivRef = Ref<HTMLDivElement>
@@ -82,7 +83,7 @@ export function ViewerFrame({
 
         {/* Inspector */}
         <aside className="flex w-96 shrink-0 flex-col border-l bg-background">
-          <div className="space-y-0.5 px-5 pt-5 pb-4 pr-12">
+          <div className="space-y-0.5 px-4 pt-4 pb-3 pr-12">
             <DialogTitle className="truncate text-base">{title}</DialogTitle>
             <DialogDescription className="truncate text-xs" data-hint={descriptionHint}>
               {description}
@@ -90,10 +91,13 @@ export function ViewerFrame({
           </div>
           <Separator />
 
-          <div className="flex-1 space-y-5 overflow-y-auto p-5">{children}</div>
+          {/* Cards spaced as in the side panel, 12 px (STYLE_RULE §4, the lego rule). */}
+          <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
+            <div className="space-y-3 p-3">{children}</div>
+          </ScrollArea>
 
           <Separator />
-          <p className="px-5 py-3 text-[11px] text-muted-foreground">{footer}</p>
+          <p className="px-4 py-3 text-xs text-muted-foreground">{footer}</p>
         </aside>
       </DialogContent>
     </Dialog>

@@ -11,9 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Highlights
 
 - Fixes: the preview's Print / export size card is spaced like the panel's
+- UI update: every panel spaced and sized the same way in every mode; the tools panel lines up with the folder list
 
 ### Changed
 
+- **Panels:** one spacing and one control size in every card of Pro, Simple, Collage and both previews: every select and choice is the same height, every label the same style, and an option switched off leaves no gap. The tools panel now has the folder list's thin overlay scroll bar, so both sides are the same width.
+- **Preview:** cards are spaced as in the panel, 12 px apart, and *Export* is a card like the others.
 - **Preview:** **This photo** now also says what the file is, and takes the place of the Camera and Image cards, so the panel is shorter; click its title to fold it away.
 
 ### Fixed
