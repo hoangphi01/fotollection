@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Preview:** a tooltip of two or three lines, such as the zoom buttons', is no longer cut off at the bottom of the window: it opens above its button when there is no room below.
 - **Windows:** the tooltips of the preview's buttons (crop, turn, zoom) and of best shot no longer run under the title bar: every tooltip now opens below its button, in the same style.
 - **Preview:** the *Print / export size* card no longer packs its controls tight; it is spaced like the same card in the panel and like *Date stamp* beside it.
 

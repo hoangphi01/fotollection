@@ -390,3 +390,9 @@
 - **Seen:** `FOTOLLECTION_DEMO_FOLDER=… target/debug/fotollection` returned in 0.1 s and wrote no dump.
 - **Why:** the single-instance plugin handed the launch to the `tauri dev` app already running, and quit.
 - **Rule:** stop the dev app before recording a demo dump (`site/screenshots/build.sh`), then start it again.
+
+### A tooltip placed by a guessed height runs off the window (FR-057)
+
+- **Seen:** the zoom buttons' three-line hint, at the bottom of the preview, was cut off by the window's edge.
+- **Why:** `HintLayer` chose above or below with a fixed 40 px allowance, the height of a one-line hint; the new hint was three lines.
+- **Rule:** place a floating element after measuring it (`useLayoutEffect`, hidden until placed), never by an assumed size. Check every hint near a window edge with its longest text, in both languages.
