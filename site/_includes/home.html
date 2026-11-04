@@ -182,11 +182,12 @@
     <p class="lead narrow">{{ t.modes_lead }}</p>
   </div>
   <div class="wrap showcase">
-    {%- assign rows = "collage,simple" | split: "," -%}
+    {%- assign rows = "collage,collage-preview,simple" | split: "," -%}
     {%- for r in rows -%}
-    {%- capture title_key %}{{ r }}_title{% endcapture -%}
-    {%- capture text_key %}{{ r }}_text{% endcapture -%}
-    {%- capture show_key %}show_{{ r }}{% endcapture -%}
+    {%- assign k = r | replace: "-", "_" -%}
+    {%- capture title_key %}{{ k }}_title{% endcapture -%}
+    {%- capture text_key %}{{ k }}_text{% endcapture -%}
+    {%- capture show_key %}show_{{ k }}{% endcapture -%}
     {%- assign show_alt = t[show_key] %}
     <div class="showcase-row{% cycle 'modes': '', ' flip' %}">
       <figure class="shot">{% include shot.html name=r alt=show_alt %}</figure>

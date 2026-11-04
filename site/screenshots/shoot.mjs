@@ -236,17 +236,24 @@ const SHOW = {
   crop: idOf('bir-hakeim-bridge'),
   // A tram by night on a postcard filled to the edge (demo.rs FULL), when the set has it.
   night: has('P1068073') ? idOf('P1068073') : null,
+  // A collage sheet by night: a tram and the National Museum, two photos on one print.
+  pair: has('P1068256') ? idOf('P1068256') : null,
 }
 const tile = (page, id) => page.locator(`img[src*="/thumb/${id}?"]`).first()
 // The grid is virtualized: scroll it (up, then down) until the photo's tile is drawn.
-const reach = async (page, id) => {
-  const t = tile(page, id)
+const reach = async (page, id) => scrollTo(page, tile(page, id))
+// A collage sheet's cell holding the photo, scrolled to in the same way.
+const cell = (page, id) => scrollTo(page, page.locator(`[data-cell][data-photo="${id}"]`).first())
+const scrollTo = async (page, t) => {
   for (const dy of [...Array(12).fill(-900), ...Array(24).fill(900)]) {
     if (await t.count()) break
     await page.mouse.move(700, 500)
     await page.mouse.wheel(0, dy)
     await page.waitForTimeout(150)
   }
+  // Drawn in the overscan is not yet on screen: bring it in and let the grid settle.
+  await t.scrollIntoViewIfNeeded()
+  await page.waitForTimeout(300)
   return t
 }
 
@@ -412,22 +419,23 @@ for (const language of ['en', 'vi']) {
 
     // 10. Collage mode (FR-035): two photos on one print, the panel with its size and cut line.
     ;({ context, page } = await open({ scenario: 'collage', language, theme, mode: 'collage', queues: NO_QUEUES }))
-    await page.locator('[data-cell]').nth(2).click()
+    const sheet = SHOW.pair !== null ? await cell(page, SHOW.pair) : page.locator('[data-cell]').nth(2)
+    await sheet.click()
     await settle(page)
     await save(page, `collage-${suffix}`)
     // 10b. A sheet's preview (FR-035), opened like a photo's.
-    await page.locator('[data-cell]').nth(2).dblclick()
+    await sheet.dblclick()
     await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
     await settle(page)
     await save(page, `manual-collage-preview-${suffix}`)
+    await save(page, `collage-preview-${suffix}`) // the same preview, for the landing page
     await context.close()
 
     // 11. Postcards (FR-073): one photo and a postcard back on each print, the panel's
     // postcard card open; then a card's preview with its typed text, for the manual.
     ;({ context, page } = await open({ scenario: 'postcard', language, theme, mode: 'collage', queues: NO_QUEUES }))
     // The card on the owner's red tram, which carries the first typed text (demo.rs).
-    const card = page.locator(`[data-cell][data-photo="${SHOW.frame}"]`).first()
-    await card.scrollIntoViewIfNeeded()
+    const card = await cell(page, SHOW.frame)
     await card.click()
     await settle(page)
     await save(page, `postcard-${suffix}`)
@@ -441,8 +449,7 @@ for (const language of ['en', 'vi']) {
     // filling the half with no border.
     if (SHOW.night !== null) {
       ;({ context, page } = await open({ scenario: 'postcard-full', language, theme, mode: 'collage', queues: NO_QUEUES }))
-      const night = page.locator(`[data-cell][data-photo="${SHOW.night}"]`).first()
-      await night.scrollIntoViewIfNeeded()
+      const night = await cell(page, SHOW.night)
       await night.dblclick()
       await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
       await settle(page)

@@ -1,6 +1,6 @@
 # Website screenshots
 
-The screenshots on the website show the **real app on demo photos**: the CC0 photos listed below and, since 2026-11-03, sixteen of the owner's own photos of Prague (Lumix GX9), with the owner's consent. Never anyone else's photos.
+The screenshots on the website show the **real app on demo photos**: the CC0 photos listed below and, since 2026-11-03, twenty-five of the owner's own photos of Prague (Lumix GX9), with the owner's consent. Never anyone else's photos.
 
 1. `python3 -I site/screenshots/fetch_photos.py <folder>` downloads the demo photos listed in [`photos.json`](photos.json) from Wikimedia Commons and checks each one's SHA-256 and licence. They are not kept in the repository.
 2. `site/screenshots/build.sh <folder> <work-dir> [best-shot-photo] [owner-folder]` then gathers the photos named in [`demo_set.txt`](demo_set.txt), the CC0 ones from `<folder>` and the owner's from `<owner-folder>`, and:
@@ -16,7 +16,7 @@ Photos are chosen by file name in `shoot.mjs`.
 
 ## The owner's photos
 
-Sixteen photos of Prague, November 2026, taken by the owner (@hoangphi01) on a Lumix DC-GX9, listed by file name in [`demo_set.txt`](demo_set.txt): trams by night and by day, the Vltava, autumn, food, the Old Town. **All rights reserved**; the photos are never kept in the repository, only the screenshots that show them. The GX9 records no GPS, so they carry no location; a few show strangers small in a crowd. The grid's chosen photo and the Lumix info frame come from them when they are in the set (`shoot.mjs`).
+Twenty-five photos of Prague, November 2026, taken by the owner (@hoangphi01) on a Lumix DC-GX9, listed by file name in [`demo_set.txt`](demo_set.txt): trams by night and by day, the city from Letná, the National Museum by night, the metro, the Vltava, autumn, food, the Old Town. **All rights reserved**; the photos are never kept in the repository, only the screenshots that show them. The GX9 records no GPS, so they carry no location; a few show strangers small in a crowd. The grid's chosen photo and the Lumix info frame come from them when they are in the set (`shoot.mjs`).
 
 ## Demo photos
 
