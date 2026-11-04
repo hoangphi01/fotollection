@@ -119,6 +119,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.9.3 | Image facts and true colours (shipped 2026-11-03) | What each file is in the inspector, unusual files badged and filtered (FR-071); thumbnails, previews and zoom converted to sRGB, PNG gamma and dithering, share exports resized in linear light, straightened reductions without bands, the HEIC profile kept on Windows (the colour part of FR-072) | A PATCH number by the owner's choice (RELEASE.md §1) |
 | v0.9.4 | Postcards (shipped 2026-11-04) | FR-073: a Collage switch turns each sheet into one photo and a postcard back, landscape or portrait, with a stamp box, writing lines and typed text | A PATCH number by the owner's choice (RELEASE.md §1) |
 | v0.9.5 | Postcard fixes (shipped 2026-11-04) | FR-073: a smaller stamp box, bold as one stroke, a fourth address line when needed, a red ! when text is cut | Fixes and small changes |
+| v0.9.6 | Export folders and share fill (shipped 2026-11-04) | FR-009: one folder or a folder per day, one folder by default; FR-075: shared photos whole in a frame of any ratio, filled with white, black or a colour of one's own | A PATCH number by the owner's choice (RELEASE.md §1) |
 | v0.10.0 | Core (planned, 2026-11-02) | FR-071 (image facts: chroma subsampling, colour space, sensor kind), FR-072 (our own develop: RCD and Markesteijn, Gr/Gb, false colour, highlights, a linear working space, colour management everywhere), [ADR-0037](adr/0037-our-own-develop-core.md) | Test charts and an independent reference first; RCD ≤ 400 ms on 24 MP, Markesteijn ≤ 700 ms on 26 MP |
 | v0.11.0 | Looks (planned, 2026-11-02) | FR-070 (looks from `.cube` LUT files, strength, per photo; built-in looks of our own), [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export (`measure_look`) |
 | After v0.11.0 | Photo Style sliders on the looks engine | FR-039, then FR-047 | — |
@@ -152,7 +153,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-066 | Borrow places from a GPX track: interpolate each photo's time along the track (split out of FR-031) |
 | FR-070 | Looks from LUT files (`.cube`, strength, per photo), LUMIX Lab style; v0.11.0, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
 | FR-074 | Postcard backs: a background colour or a pattern (airmail stripes, a grid, a texture) behind the lines; planned, not scheduled |
-| FR-075 | Share exports fitted whole into a ratio (1:1, 4:5, 3:2… or custom), the rest filled with white, black or a colour of one's own; built 2026-11-04 |
+| FR-075 | Share exports fitted whole into a ratio (1:1, 4:5, 3:2… or custom), the rest filled with white, black or a colour of one's own; v0.9.6 |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 

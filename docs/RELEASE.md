@@ -15,7 +15,7 @@
   - **MINOR:** new features, backwards compatible.
   - **PATCH:** fixes only.
 - **Pre-releases** are `X.Y.Z-beta.N` and are marked as pre-releases on GitHub. They ship the Windows `-setup.exe` only, because an MSI version cannot carry a pre-release tag.
-- **Exception (owner, 2026-11-03):** v0.9.3 (image facts, colour management) and v0.9.4 (postcards) carry new features as PATCH releases, so v0.10.0 stays the name of the "Core" release in [ROADMAP.md](ROADMAP.md).
+- **Exception (owner, 2026-11-03):** v0.9.3 (image facts, colour management), v0.9.4 (postcards) and v0.9.6 (export folders, share fill) carry new features as PATCH releases, so v0.10.0 stays the name of the "Core" release in [ROADMAP.md](ROADMAP.md).
 - **Commits suggest the bump.** With no argument, `scripts/release.sh` proposes the next version from the [Conventional Commits](https://www.conventionalcommits.org/) since the last tag: a `feat` gives MINOR, otherwise PATCH. The owner decides.
 - **File formats are versioned separately.** Each persisted format has its own `schema_version` ([DATABASE.md](DATABASE.md), [EXTENSION.md](EXTENSION.md)). Release notes name the schemas that changed.
 - Every release has a section in [CHANGELOG.md](../CHANGELOG.md).

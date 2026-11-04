@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.9.6] - 2026-11-04
+
 ### Highlights
 
 - New: export into one folder, or a folder per day as before: a switch above Choose destination
