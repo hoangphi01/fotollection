@@ -272,7 +272,7 @@
         <legend class="sizes-label">{{ t.treat_pick }}</legend>
         {%- for item in treat.items %}
         {%- capture name_key %}treat_{{ item.id }}{% endcapture %}
-        <label class="treat"><input type="radio" name="treat" value="{{ item.id }}" data-vnd="{{ item.vnd }}" data-note="{{ item.note }}"{% if item.id == 'coffee' %} checked{% endif %} />{% include icons/{{ item.icon }}.svg %}<span class="treat-name">{{ t[name_key] }}</span><span class="treat-price">{{ item.vnd | divided_by: 1000 }}k ₫ · €{{ item.eur }}</span></label>
+        <label class="treat"><input type="radio" name="treat" value="{{ item.id }}" data-vnd="{{ item.vnd }}" data-note="{{ item.note }}"{% if item.id == 'coffee' %} checked{% endif %} />{% include icons/{{ item.icon }}.svg %}<span class="treat-name">{{ t[name_key] }}</span><span class="treat-price">{{ item.vnd | divided_by: 1000 }}k ₫</span></label>
         {%- endfor %}
         <label class="treat treat-own"><input type="radio" name="treat" value="own" data-note="Fotollection" />{% include icons/hand-heart.svg %}<span class="treat-name">{{ t.treat_own }}</span><input class="treat-amount" type="number" inputmode="numeric" min="1000" step="1000" placeholder="50000" aria-label="{{ t.treat_own_label }}" data-treat-own /><span class="treat-price">₫</span></label>
       </fieldset>
