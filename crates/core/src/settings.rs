@@ -89,6 +89,63 @@ pub struct RenderSettings {
     /// v10: the defaults.
     #[serde(default)]
     pub collage: CollageSettings,
+    /// Shared photos fitted whole into a ratio, the rest filled (FR-075). Absent before
+    /// settings v12: off.
+    #[serde(default)]
+    pub share_fill: ShareFill,
+}
+
+/// A shared photo fitted whole into a frame of a set ratio, the rest filled with one colour,
+/// as for a square feed (FR-075). Share exports only; prints keep their print size.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ShareFill {
+    #[serde(default)]
+    pub enabled: bool,
+    /// The frame's width and height ratio, `[1, 1]` for a square.
+    #[serde(default = "default_fill_ratio")]
+    pub ratio: [u16; 2],
+    /// The fill's colour, sRGB.
+    #[serde(default = "default_fill_color")]
+    pub color: [u8; 3],
+}
+
+const fn default_fill_ratio() -> [u16; 2] {
+    [1, 1]
+}
+
+const fn default_fill_color() -> [u8; 3] {
+    [255, 255, 255]
+}
+
+/// Each side of a fill ratio, and the most one side may be of the other.
+pub const FILL_RATIO_SIDE: std::ops::RangeInclusive<u16> = 1..=100;
+pub const FILL_RATIO_MAX: u16 = 4;
+
+impl Default for ShareFill {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            ratio: default_fill_ratio(),
+            color: default_fill_color(),
+        }
+    }
+}
+
+impl ShareFill {
+    /// The fill with its ratio kept to whole sides of 1–100, at most 4:1 either way (files
+    /// and IPC are not trusted).
+    #[must_use]
+    pub fn sanitized(self) -> Self {
+        let side = |v: u16| v.clamp(*FILL_RATIO_SIDE.start(), *FILL_RATIO_SIDE.end());
+        let [mut w, mut h] = self.ratio.map(side);
+        w = w.min(h * FILL_RATIO_MAX);
+        h = h.min(w * FILL_RATIO_MAX);
+        Self {
+            ratio: [w, h],
+            ..self
+        }
+    }
 }
 
 /// The colour of the paper left round a photo: its 3 mm border, a sheet's margins (FR-067).
@@ -558,6 +615,7 @@ impl Default for RenderSettings {
             border: false,
             border_color: BorderColor::White,
             collage: CollageSettings::default(),
+            share_fill: ShareFill::default(),
         }
     }
 }

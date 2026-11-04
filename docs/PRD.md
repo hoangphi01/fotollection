@@ -152,7 +152,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
   - **Edge labels:** the top edge shows the printed width and the left edge the printed height (cm, or inches for sizes entered in inches), each with its pixel count. A centre pill shows the **aspect ratio** (`2:3`, `1:1`, or `1:1.44` for uneven sizes), the print size and the **live DPI** with its quality band ([FR-026](#fr-026--resolution-warning)). When a frame is on, the sizes are those of the photo area.
   - The crop is stored as a centre and zoom, so it survives changes of print size ([FR-025](#fr-025--mixed-print-sizes-per-order)).
   - It is undoable ([FR-023](#fr-023--projects-autosave-and-undo)).
-- Offers a "fit with border" (letterbox) alternative to cropping.
+- Offers a "fit with border" (letterbox) alternative to cropping. For shared photos this is [FR-075](#fr-075--fit-a-shared-photo-whole-into-a-ratio); prints keep their print size.
 
 - **Rotate:** turn a photo a quarter turn left or right (buttons next to Crop in the preview, or `[` and `]`), losslessly, on top of its EXIF orientation. This fixes photos taken upside down or sideways. The crop turns with the photo. It is undoable and saved in the project (`photos[].rotation`, project schema v4).
 - **Straighten:** a slider in the crop editor levels a tilted horizon by up to ±15° (0.1° steps; double-click or `0` resets). In crop mode, ← and → turn it by 1° (with ⌥ by 0.1°) and ↑ ↓ still nudge the crop; once the crop is applied or cancelled, ← and → move between photos again. The photo turns under the crop box live, with a fine levelling grid. The crop is then as large as it can be without showing an empty corner, at the print ratio, and the export resamples only the cropped pixels (bicubic, supersampled when reducing). A level photo keeps the plain lossless path, so 0° gives exactly the same file as before. Undoable and saved in the project (`photos[].straighten`, project schema v5).
@@ -608,6 +608,7 @@ Next to the batch settings, any other setting will later be overridable for one 
   - **Facebook:** 2048 px on the long edge, the size Facebook shows without resizing;
   - **Instagram:** 1080 px wide; portraits stop at 3:4 (1080 × 1440), as Instagram crops anything taller;
   - **Custom:** a long edge of 640–6000 px, clamped in Rust.
+  - **Whole photo in a frame** ([FR-075](#fr-075--fit-a-shared-photo-whole-into-a-ratio)): the photo whole in a frame of a chosen ratio, the rest filled.
 - **Pipeline:** the photo's edits (crop, straightening, date stamp, info frame) as for prints, then conversion to **sRGB** ([FR-027](#fr-027--srgb-conversion-for-labs)), a light unsharp mask (0.2) after a downscale, JPEG with 4:2:0 chroma and optimized Huffman tables, at quality 88, or 80 for *Original*.
 - **Metadata:** camera, lens, exposure and capture time, and `Software = "Fotollection <version>"`, which phone galleries show as the editing app (as they do for Snapseed). **GPS is never written** ([FR-010](#fr-010--metadata-privacy-on-export)).
 - **Where:** `<destination>/Share/`, apart from prints, in `<YYYY-MM-DD>/` subfolders when exported by day ([FR-009](#fr-009--export-by-date)).
@@ -806,6 +807,17 @@ Next to the batch settings, any other setting will later be overridable for one 
 ### FR-074 — Postcard backs: colour and patterns
 
 **P2 (planned; owner's idea 2026-11-03).** The back of a postcard ([FR-073](#fr-073--postcard-sheets)) gets its own look: a **background colour** (cream, kraft, pale blue…) and the colour of the lines and stamp box with it, or a **pattern** (stripes along the edge like an airmail envelope, a light grid, a texture), chosen in the *Postcard* card and the same on every card. Text and lines stay readable on it: the ink follows the background as it follows black paper today. To be designed and measured before it is scheduled (a pattern drawn at 300 DPI must keep NFR-021).
+
+### FR-075 — Fit a shared photo whole into a ratio
+
+**P1 (owner's request 2026-11-04).** A portrait posted to a square feed such as Instagram's is cut at the top and bottom; to keep it whole, people make a white square in Photoshop and drag the photo onto it. In a **Share online** export ([FR-053](#fr-053--export-for-social-media)), a **Whole photo in a frame** switch under the share size does it for every photo:
+
+- **Ratio:** Square 1:1, Portrait 4:5, 3:4 or 2:3, Landscape 3:2 or 16:9, Story 9:16, or a custom `W : H` (each side 1–100, at most 4:1 either way, clamped in Rust). The frame keeps the ratio as written, whatever the photo's orientation, so a feed stays even.
+- **Fill:** White, Black or a colour of the user's (a colour picker and a `#rrggbb` code), pure sRGB, not the prints' paper white.
+- **The photo is whole:** centred, nothing cut, never enlarged. The photo's own crop, straightening, date stamp and info frame are kept; the fill goes round all of it.
+- **Size:** Instagram makes the frame 1080 px wide (1080 × 1080 at 1:1, 1080 × 1350 at 4:5); Facebook 2048 px and Custom the chosen edge on the frame's long side; Original the smallest frame that holds the photo at full size.
+- **Prints never get it:** with *Print*, the print size sets the shape ([FR-006](#fr-006--crop-to-print-ratio)); collage sheets and postcards keep their own paper.
+- The same switch in the Pro panel, Simple mode and the preview (under the share size); the preview shows the frame as it is exported. Stored in `settings.json` (`render.shareFill`, v12).
 
 ## 7. Non-functional requirements
 

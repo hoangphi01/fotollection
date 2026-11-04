@@ -86,6 +86,9 @@ pub struct RenderPlan {
     pub frame: Option<FramePlan>,
     /// Without a frame, the 3 mm border's canvas (FR-067).
     pub mat: Option<Mat>,
+    /// A shared photo's fill (FR-075): the whole output above, centred on a canvas of the
+    /// chosen ratio.
+    pub pad: Option<Mat>,
     /// Degrees the photo is straightened by (FR-006); `crop` is then in the straightened
     /// frame.
     pub straighten: f32,
@@ -97,6 +100,9 @@ pub struct RenderPlan {
 impl RenderPlan {
     /// Final output size, including the frame canvas.
     pub fn output_size(&self) -> (u32, u32) {
+        if let Some(pad) = &self.pad {
+            return (pad.canvas_width, pad.canvas_height);
+        }
         match (&self.frame, &self.mat) {
             (Some(f), _) => (f.layout.canvas_width, f.layout.canvas_height),
             (None, Some(m)) => (m.canvas_width, m.canvas_height),
@@ -316,6 +322,70 @@ pub struct PlanInput<'a> {
 
 /// Builds the plan for one photo.
 pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
+    let Some(fill) = share_fill(input) else {
+        return plan_content(input);
+    };
+    // The limit bounds the whole canvas: the content is planned at full size first, then
+    // again within the limit the canvas leaves it (no pixels are touched here).
+    let unbounded = plan_content(&PlanInput {
+        max_long_edge: None,
+        ..*input
+    });
+    let (cw, ch) = unbounded.output_size();
+    let (fw, fh) = fill_canvas(cw, ch, fill.ratio);
+    let content = match input.max_long_edge {
+        Some(limit) if fw.max(fh) > limit => {
+            let scale = f64::from(limit) / f64::from(fw.max(fh));
+            plan_content(&PlanInput {
+                max_long_edge: Some(scale_dim(cw.max(ch), scale)),
+                ..*input
+            })
+        }
+        _ => unbounded,
+    };
+    let (cw, ch) = content.output_size();
+    let (canvas_width, canvas_height) = fill_canvas(cw, ch, fill.ratio);
+    RenderPlan {
+        pad: Some(Mat {
+            canvas_width,
+            canvas_height,
+            background: fill.color,
+            photo: frame::Rect {
+                x: (canvas_width - cw) / 2,
+                y: (canvas_height - ch) / 2,
+                width: cw,
+                height: ch,
+            },
+        }),
+        ..content
+    }
+}
+
+/// The fill a shared photo gets (FR-075): share exports only, and never a collage cell, which
+/// has its own paper.
+fn share_fill(input: &PlanInput<'_>) -> Option<crate::settings::ShareFill> {
+    let settings = input.settings;
+    (input.ratio.is_none()
+        && settings.share_fill.enabled
+        && matches!(settings.export_target, crate::share::ExportTarget::Share(_)))
+    .then(|| settings.share_fill.sanitized())
+}
+
+/// The smallest canvas of ratio `w : h` that holds `width × height` whole.
+pub fn fill_canvas(width: u32, height: u32, ratio: [u16; 2]) -> (u32, u32) {
+    let (rw, rh) = (u64::from(ratio[0].max(1)), u64::from(ratio[1].max(1)));
+    let (w, h) = (u64::from(width), u64::from(height));
+    // The side that binds: the content is wider than the ratio, or taller.
+    let (cw, ch) = if w * rh >= h * rw {
+        (w, (w * rh).div_ceil(rw))
+    } else {
+        ((h * rw).div_ceil(rh), h)
+    };
+    let clamp = |v: u64| u32::try_from(v).unwrap_or(u32::MAX);
+    (clamp(cw).max(width), clamp(ch).max(height))
+}
+
+fn plan_content(input: &PlanInput<'_>) -> RenderPlan {
     if let Some(request) = input.frame.filter(|f| f.settings.enabled) {
         return plan_framed(input, request);
     }
@@ -387,6 +457,7 @@ pub fn plan(input: &PlanInput<'_>) -> RenderPlan {
         stamp: stamp_spec(input, px_per_mm),
         frame: None,
         mat,
+        pad: None,
         straighten: crate::straighten::sanitize(input.straighten),
         linear_light: false,
     }
@@ -495,6 +566,7 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
             font: request.font.clone(),
         }),
         mat: None,
+        pad: None,
         straighten: crate::straighten::sanitize(input.straighten),
         linear_light: false,
     }
@@ -917,5 +989,57 @@ mod tests {
         assert!((medium - 3.6 * 40.0).abs() < 0.5, "{medium}");
         assert!(small < medium && medium < large);
         assert!((large / medium - 4.8 / 3.6).abs() < 1e-3);
+    }
+    /// FR-075: a portrait shared with a square fill keeps every pixel, centred on a square
+    /// canvas within the limit; prints and collage cells never get a fill.
+    #[test]
+    fn fr_075_a_shared_portrait_sits_whole_in_a_square_fill() {
+        use crate::settings::ShareFill;
+        use crate::share::{ExportTarget, SharePreset};
+        let share = RenderSettings {
+            print_size: PrintSize::ORIGINAL_ID.into(),
+            export_target: ExportTarget::Share(SharePreset::Instagram),
+            share_fill: ShareFill {
+                enabled: true,
+                ..ShareFill::default()
+            },
+            ..RenderSettings::default()
+        };
+        let input = |settings: &RenderSettings, limit: Option<u32>, ratio| {
+            plan(&PlanInput {
+                width: 4000,
+                height: 6000,
+                capture: None,
+                settings,
+                print: PrintSize::original(4000, 6000),
+                max_long_edge: limit,
+                frame: None,
+                crop: None,
+                place: None,
+                straighten: 0.0,
+                ratio,
+            })
+        };
+        let full = input(&share, None, None);
+        assert_eq!(full.output_size(), (6000, 6000));
+        assert_eq!((full.out_width, full.out_height), (4000, 6000));
+        let Some(pad) = full.pad else {
+            panic!("a shared photo with a fill has a canvas");
+        };
+        assert_eq!((pad.photo.x, pad.photo.y), (1000, 0));
+        assert_eq!(pad.background, [255, 255, 255]);
+        // Instagram: 1080 × 1080, the photo 720 × 1080 in the middle.
+        let small = input(&share, Some(1080), None);
+        assert_eq!(small.output_size(), (1080, 1080));
+        assert_eq!((small.out_width, small.out_height), (720, 1080));
+        // 4:5 for a landscape photo: the fill goes above and below.
+        assert_eq!(fill_canvas(6000, 4000, [4, 5]), (6000, 7500));
+        // Prints, and a collage cell, have none.
+        let print = RenderSettings {
+            export_target: ExportTarget::Print,
+            ..share.clone()
+        };
+        assert!(input(&print, None, None).pad.is_none());
+        assert!(input(&share, None, Some((2, 3))).pad.is_none());
     }
 }

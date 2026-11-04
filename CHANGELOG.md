@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Highlights
 
 - New: export into one folder, or a folder per day as before: a switch above Choose destination
+- New: share a photo whole in a square or any ratio, the rest white, black or a colour of your own, nothing cut off
+
+### Added
+
+- **Whole photo in a frame** for *Share online*: under the share size, a switch fits every photo whole into a frame of the ratio you pick (Square 1:1, Portrait 4:5, 3:4 or 2:3, Landscape 3:2 or 16:9, Story 9:16, or your own), centred, with the rest filled in white, black or a colour you choose. A portrait goes on a square feed without losing its top and bottom, and without a trip to Photoshop. On Instagram the frame is 1080 px wide (1080 × 1080 for a square). Prints keep their print size.
 
 ### Changed
 

@@ -135,6 +135,8 @@ Outside select mode, Space keeps opening the normal preview.
 - Click **All photos**, or a folder, to return to the gallery.
 - **Export follows the view** (chapter 12), unless photos are ticked: then only they go out (§4.2). From *Print basket*, *Export* writes exactly the basket, with the size estimate above the button ([FR-053](PRD.md#fr-053--export-for-social-media)). From *All photos* or a folder, photos set aside are never exported.
 
+<!-- shot: manual-share-fill | Share online with Whole photo in a frame on: Square 1:1 and a white fill -->
+
 <!-- shot: estimate | The size estimate above the export button, sharing for Facebook -->
 
 <!-- chapter: size -->
@@ -279,6 +281,8 @@ Export writes new files for the lab or for sharing; your originals are never cha
    - **Custom size**: 640–6000 px on the long edge.
 
    Shared files are in sRGB, so they look the same on every screen.
+
+   **Whole photo in a frame**, under the share size, keeps every photo whole for a feed of one shape ([FR-075](PRD.md#fr-075--fit-a-shared-photo-whole-into-a-ratio)): pick a ratio (**Square · 1:1**, **Portrait · 4:5**, **3:4** or **2:3**, **Landscape · 3:2** or **16:9**, **Story · 9:16**, or **Custom ratio…** with its two numbers), then the fill: **White**, **Black** or **Custom**, with a colour picker and its code. Each photo sits in the middle and nothing is cut off; on Instagram the frame is 1080 px wide. Prints never get it: they keep their print size.
 3. **Where:** click **Choose destination…** at the foot of the panel, and pick a folder. Above it, choose **One folder** (every file straight into it) or **By day** (a folder for each day, such as `2026-07-14`); the app remembers the choice on this computer.
 4. **How many folders:** with several folders shown, choose **Together** (all together) or **Separately** (each in a subfolder with its name).
 5. Above the button, an **estimate** says how large the files will be. Click **Export n photos**. A bar shows the progress, and **Cancel** stops it: the photos already exported stay, and a file half written is removed. A photo that cannot be exported is skipped, and the summary says how many failed.

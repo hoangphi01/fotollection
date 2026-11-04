@@ -66,7 +66,7 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | ✨ | **Gợi ý ảnh đẹp nhất**: gom các ảnh chụp liên tiếp và gần giống nhau, gợi ý ảnh đẹp nhất mỗi nhóm (nét nhất, mắt mở, không rung) kèm lý do. Chạy hoàn toàn offline | 1 |
 | 🏷️ | **Khung thông tin "Shot on …"** với máy ảnh, ống kính và thông số phơi sáng, kiểu LUMIX Lab, đúng tỉ lệ khổ in | 1 |
 | 🖼️ | **Giữ nguyên chất lượng**: export ở độ phân giải đầy đủ, giữ ICC profile, JPEG 4:4:4 cho ảnh in | 1 |
-| 💬 | **Đăng mạng xã hội**: JPEG sRGB nhẹ ở kích thước gốc, 2048 px cho Facebook, 1080 px cho Instagram hoặc cỡ tuỳ chọn, giữ thông số máy và ghi "Fotollection" là app chỉnh ảnh, không bao giờ có GPS. Export một ảnh ngay trong preview | 2 |
+| 💬 | **Đăng mạng xã hội**: JPEG sRGB nhẹ ở kích thước gốc, 2048 px cho Facebook, 1080 px cho Instagram hoặc cỡ tuỳ chọn, có thể giữ trọn ảnh trong khung vuông hay tỷ lệ bất kỳ kèm nền, giữ thông số máy và ghi "Fotollection" là app chỉnh ảnh, không bao giờ có GPS. Export một ảnh ngay trong preview | 2 |
 | 📱 | Đầu vào **JPEG, PNG và HEIC** (iPhone) | 1 |
 | 📷 | **Ảnh RAW** nguyên dạng, không cần DNG: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG, qua bộ đọc RAW có sẵn trong Fotollection (trên macOS, codec của hệ điều hành được dùng trước, có hiệu chỉnh ống kính); ảnh thu nhỏ lấy từ bản xem trước trong mỗi tệp. Trên Windows không cần cài gì thêm | 3 |
 | 🖱️ | **Mở ảnh bằng Fotollection** từ Finder hoặc Explorer: ảnh mở ngay, thư mục của ảnh thành một tab | 2 |

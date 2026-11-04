@@ -272,6 +272,30 @@
     "buttonSheetsTicked_one": "Export {{count}} selected sheet",
     "buttonSheetsTicked_other": "Export {{count}} selected sheets",
     "filteredHint": "Only the photos the library filter shows are exported.",
+    "fill": {
+      "label": "Whole photo in a frame",
+      "hint": "Each photo stays whole, centred in a frame of the ratio, the rest filled: a portrait on a square feed, nothing cut off.",
+      "ratio": "Frame ratio",
+      "width": "Ratio width",
+      "height": "Ratio height",
+      "color": "Fill colour",
+      "hex": "Colour code",
+      "ratios": {
+        "1x1": "Square · 1:1",
+        "4x5": "Portrait · 4:5",
+        "3x4": "Portrait · 3:4",
+        "2x3": "Portrait · 2:3",
+        "3x2": "Landscape · 3:2",
+        "16x9": "Landscape · 16:9",
+        "9x16": "Story · 9:16",
+        "custom": "Custom ratio…"
+      },
+      "colors": {
+        "white": "White",
+        "black": "Black",
+        "custom": "Custom"
+      }
+    },
     "target": {
       "print": "Print",
       "share": "Share online",

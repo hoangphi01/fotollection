@@ -65,7 +65,7 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | ✨ | **Best-shot suggestions**: groups bursts and similar shots and suggests the best of each (sharpest, eyes open, no shake), with reasons. Fully offline | 1 |
 | 🏷️ | **"Shot on …" info frame** with camera, lens and exposure, LUMIX Lab style, at the exact print ratio | 1 |
 | 🖼️ | **Original quality**: export at full resolution, ICC profile preserved, 4:4:4 JPEG for print | 1 |
-| 💬 | **Share online**: light sRGB JPEGs at the original size, 2048 px for Facebook, 1080 px for Instagram or your own size, with the camera details and "Fotollection" as the editing app, never GPS. Export one photo straight from the preview | 2 |
+| 💬 | **Share online**: light sRGB JPEGs at the original size, 2048 px for Facebook, 1080 px for Instagram or your own size, whole in a square or any ratio with a fill if you like, with the camera details and "Fotollection" as the editing app, never GPS. Export one photo straight from the preview | 2 |
 | 📱 | **JPEG, PNG and HEIC** (iPhone) input | 1 |
 | 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, through the reader built into Fotollection (on macOS, the system's codec first, with its lens corrections); thumbnails from the preview inside each file. Nothing to install on Windows | 3 |
 | 🖱️ | **Open with Fotollection** from Finder or Explorer: the photo opens at once and its folder becomes a tab | 2 |

@@ -257,6 +257,30 @@
     "buttonSheets_other": "Xuất {{count}} tấm",
     "buttonSheetsTicked_other": "Xuất {{count}} tấm đã chọn",
     "filteredHint": "Chỉ xuất những ảnh đang hiện theo bộ lọc thư viện.",
+    "fill": {
+      "label": "Giữ trọn ảnh trong khung",
+      "hint": "Mỗi ảnh nằm trọn, căn giữa trong khung theo tỷ lệ, phần thừa là nền: ảnh dọc lên lưới vuông mà không bị cắt.",
+      "ratio": "Tỷ lệ khung",
+      "width": "Chiều rộng tỷ lệ",
+      "height": "Chiều cao tỷ lệ",
+      "color": "Màu nền",
+      "hex": "Mã màu",
+      "ratios": {
+        "1x1": "Vuông · 1:1",
+        "4x5": "Dọc · 4:5",
+        "3x4": "Dọc · 3:4",
+        "2x3": "Dọc · 2:3",
+        "3x2": "Ngang · 3:2",
+        "16x9": "Ngang · 16:9",
+        "9x16": "Story · 9:16",
+        "custom": "Tỷ lệ tùy chỉnh…"
+      },
+      "colors": {
+        "white": "Trắng",
+        "black": "Đen",
+        "custom": "Tùy chọn"
+      }
+    },
     "target": {
       "print": "In ảnh",
       "share": "Mạng xã hội",

@@ -133,6 +133,8 @@ Ngoài chế độ Chọn, Space vẫn mở bản xem trước thường.
 - Nhấp **Tất cả ảnh**, hoặc một thư mục, để về gallery.
 - **Xuất ảnh theo đúng chỗ bạn đang xem** (chương 12), trừ khi đang có ảnh được tích: khi đó chỉ những ảnh đó được xuất (§4.2). Từ *Giỏ in*, *Xuất ảnh* ghi đúng những tấm trong giỏ, với ước tính dung lượng ngay trên nút ([FR-053](PRD.md#fr-053--export-for-social-media)). Từ *Tất cả ảnh* hay một thư mục, ảnh để riêng không bao giờ được xuất.
 
+<!-- shot: manual-share-fill | Mạng xã hội khi bật Giữ trọn ảnh trong khung: Vuông 1:1 và nền trắng -->
+
 <!-- shot: estimate | Ô ước tính dung lượng ngay trên nút xuất ảnh, khi xuất cho Facebook -->
 
 <!-- chapter: size -->
@@ -277,6 +279,8 @@ Xuất ảnh ghi ra các tệp mới để đem đi in hoặc chia sẻ; ảnh g
    - **Cỡ tùy chỉnh**: cạnh dài 640–6000 px.
 
    Tệp chia sẻ ở hệ màu sRGB, nên trông giống nhau trên mọi màn hình.
+
+   **Giữ trọn ảnh trong khung**, ngay dưới cỡ chia sẻ, giữ nguyên vẹn mọi ảnh khi đăng lên một lưới ảnh cùng khuôn ([FR-075](PRD.md#fr-075--fit-a-shared-photo-whole-into-a-ratio)): chọn tỷ lệ (**Vuông · 1:1**, **Dọc · 4:5**, **3:4** hoặc **2:3**, **Ngang · 3:2** hoặc **16:9**, **Story · 9:16**, hoặc **Tỷ lệ tùy chỉnh…** với hai con số của nó), rồi chọn nền: **Trắng**, **Đen** hoặc **Tùy chọn**, với bảng chọn màu và mã màu. Mỗi ảnh nằm giữa khung và không bị cắt mất phần nào; trên Instagram khung rộng 1080 px. Ảnh in không dùng tính năng này: chúng vẫn theo khổ in.
 3. **Lưu vào đâu:** nhấp **Chọn nơi lưu…** ở cuối bảng bên, rồi chọn một thư mục. Ngay phía trên, chọn **Một thư mục** (mọi tệp vào thẳng thư mục đó) hoặc **Theo ngày** (mỗi ngày một thư mục, ví dụ `2026-07-14`); app nhớ lựa chọn này trên máy.
 4. **Bao nhiêu thư mục:** khi đang hiện nhiều thư mục, chọn **Chung** (gộp chung) hoặc **Riêng** (mỗi thư mục một thư mục con mang tên nó).
 5. Phía trên nút, phần **ước tính** cho biết các tệp sẽ nặng bao nhiêu. Nhấp **Xuất n ảnh**. Một thanh hiện tiến độ, và **Hủy** dừng lại: các ảnh đã xuất xong vẫn giữ, tệp đang ghi dở bị xoá. Ảnh nào không xuất được sẽ bị bỏ qua, và phần tổng kết cho biết bao nhiêu ảnh lỗi.

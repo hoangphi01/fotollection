@@ -25,7 +25,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// (FR-035), absent before (the defaults); `render.stamp.size` (FR-004), absent before
 /// (medium); `render.borderColor` (FR-067), absent before (white).
 /// v11 (FR-073): `render.collage.postcard`, absent before (off).
-/// v12 (FR-009): `ui.exportFolders`, absent before (one folder).
+/// v12 (FR-009, FR-075): `ui.exportFolders`, absent before (one folder); `render.shareFill`,
+/// absent before (off).
 pub const SCHEMA_VERSION: u32 = 12;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
@@ -147,6 +148,7 @@ fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
     }
     let mut render = file.render;
     render.collage = render.collage.sanitized();
+    render.share_fill = render.share_fill.sanitized();
     let mut frame = file.frame;
     // v9 → v10: FR-065's Crop-to-fill border becomes the border on every print (FR-067),
     // only where it showed: with the info frame on, in Crop to fill.
@@ -466,6 +468,36 @@ mod tests {
             panic!("v12 should load");
         };
         assert_eq!(back.ui.export_folders, ExportFolders::ByDay);
+        Ok(())
+    }
+
+    /// FR-075: a v11 file has no fill: it loads off, a fill round-trips, and a ratio out of
+    /// range is kept to 4:1 at most.
+    #[test]
+    fn fr_075_v11_files_have_no_fill_and_it_round_trips() -> std::io::Result<()> {
+        use crate::settings::ShareFill;
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v11.json"))?;
+        let Loaded::Ok(mut s) = load(&path) else {
+            panic!("v11 should load");
+        };
+        assert_eq!(s.render.share_fill, ShareFill::default());
+        s.render.share_fill = ShareFill {
+            enabled: true,
+            ratio: [4, 5],
+            color: [20, 40, 60],
+        };
+        save(&path, &s)?;
+        let Loaded::Ok(back) = load(&path) else {
+            panic!("v12 should load");
+        };
+        assert_eq!(back.render.share_fill, s.render.share_fill);
+        let wild = ShareFill {
+            ratio: [900, 0],
+            ..ShareFill::default()
+        };
+        assert_eq!(wild.sanitized().ratio, [4, 1]);
         Ok(())
     }
 

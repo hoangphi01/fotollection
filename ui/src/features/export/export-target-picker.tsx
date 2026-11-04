@@ -4,6 +4,7 @@ import { CommitInput } from '@/components/forms/commit-input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { ExportTarget, RenderSettings, SharePreset } from '@/ipc/bindings'
+import { ShareFillFields } from './share-fill-fields'
 
 /** Matches `share::CUSTOM_EDGE_RANGE`; Rust clamps whatever is sent. */
 const CUSTOM_DEFAULT = 1600
@@ -77,6 +78,7 @@ export function ExportTargetPicker({ settings, onChange, disabled = false }: Exp
             )}
           </div>
           <p className="text-xs text-muted-foreground">{t(`export.presetHint.${preset.kind}`)}</p>
+          <ShareFillFields settings={settings} onChange={onChange} disabled={disabled} />
         </>
       )}
     </div>

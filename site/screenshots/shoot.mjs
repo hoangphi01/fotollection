@@ -396,6 +396,19 @@ for (const language of ['en', 'vi']) {
       const x = Math.min(1440 - width, note.x + note.width / 2 - width / 2)
       await zoomed(page, `estimate-${suffix}`, { x, y: top, width, height })
     }
+    // 6d. For the manual: each shared photo whole in a square frame, a fill round it (FR-075).
+    await page.getByRole('switch', { name: /^(Whole photo in a frame|Giữ trọn ảnh trong khung)$/ }).click()
+    await page.waitForTimeout(500)
+    const fillCard = await page.locator('section', { has: page.getByRole('switch', { name: /^(Whole photo in a frame|Giữ trọn ảnh trong khung)$/ }) }).first().boundingBox()
+    if (fillCard) {
+      const c = fillCard
+      await zoomed(page, `manual-share-fill-${suffix}`, { x: c.x - 16, y: c.y - 16, width: c.width + 32, height: c.height + 32 })
+      // For checking by eye: a colour of one's own, with its picker and code.
+      await page.getByRole('radio', { name: /^(Custom|Tùy chọn)$/ }).click()
+      await page.waitForTimeout(400)
+      const open = await page.locator('section', { has: page.getByRole('switch', { name: /^(Whole photo in a frame|Giữ trọn ảnh trong khung)$/ }) }).first().boundingBox()
+      if (open) await zoomed(page, `check-share-fill-${suffix}`, { x: open.x - 16, y: open.y - 16, width: open.width + 32, height: open.height + 32 })
+    }
     await context.close()
     // 7. Folders as tabs (FR-056): tick photos in one folder, switch tabs, tick more; the bar
     // counts them all, and hovering a tab shows its close button.

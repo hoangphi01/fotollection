@@ -2,8 +2,8 @@
 import { Type } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
+import { SwatchToggle } from '@/components/forms/swatch-toggle'
 import { Label } from '@/components/ui/label'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { SectionCard } from '@/components/layout/section-card'
 import type { PhotoId, PostcardInk, RenderSettings } from '@/ipc/bindings'
 import { FontSelect } from '@/features/fonts/font-select'
@@ -85,21 +85,12 @@ export function PostcardTextCard({ settings, onChange, photo, revision }: Postca
       </div>
       <div className="space-y-1.5">
         <Label className="text-xs font-normal text-muted-foreground">{t('postcard.ink')}</Label>
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          className="w-full"
+        <SwatchToggle
+          dense
           value={postcard.ink ?? 'auto'}
-          onValueChange={(v) => v && patchPostcard(onChange, { ink: v as PostcardInk })}
-        >
-          {INKS.map((ink) => (
-            <ToggleGroupItem key={ink.value} value={ink.value} className="flex-1 gap-1.5 px-1 text-xs">
-              <span className={`size-3 rounded-full border ${ink.swatch}`} />
-              {t(`postcard.inks.${ink.value}`)}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+          options={INKS.map((ink) => ({ ...ink, label: t(`postcard.inks.${ink.value}`) }))}
+          onChange={(ink) => patchPostcard(onChange, { ink })}
+        />
       </div>
       <div className="space-y-1.5">
         <Label className="text-xs font-normal text-muted-foreground">{t('postcard.credit')}</Label>

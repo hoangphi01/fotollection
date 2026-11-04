@@ -77,6 +77,21 @@ impl SharePreset {
     }
 }
 
+/// The long edge of a shared photo's fill canvas of ratio `w : h` (FR-075): Instagram's
+/// 1080 px width (1080 × 1080 for a square, 1080 × 1350 at 4:5), Facebook's 2048 px or the
+/// custom edge on the long side; `None` for Original, whose canvas is the photo's own size.
+/// The plan never enlarges the photo to reach it.
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+pub fn fill_long_edge(preset: SharePreset, ratio: [u16; 2]) -> Option<u32> {
+    let (w, h) = (f64::from(ratio[0].max(1)), f64::from(ratio[1].max(1)));
+    match preset.sanitized() {
+        SharePreset::Original => None,
+        SharePreset::Facebook => Some(FACEBOOK_LONG_EDGE),
+        SharePreset::Custom(edge) => Some(edge),
+        SharePreset::Instagram => Some((f64::from(INSTAGRAM_WIDTH) * w.max(h) / w).round() as u32),
+    }
+}
+
 /// The size, in pixels, at which a `width` × `height` photo is shared. Never larger than
 /// the photo itself, and the photo's own aspect ratio is kept.
 #[allow(
@@ -123,6 +138,19 @@ mod tests {
             (1080, 1440)
         );
         assert_eq!(target_size(4000, 6000, SharePreset::Instagram), (960, 1440));
+    }
+
+    #[test]
+    fn fr_075_a_fill_canvas_is_1080_wide_on_instagram_and_the_long_edge_elsewhere() {
+        assert_eq!(fill_long_edge(SharePreset::Instagram, [1, 1]), Some(1080));
+        assert_eq!(fill_long_edge(SharePreset::Instagram, [4, 5]), Some(1350));
+        assert_eq!(fill_long_edge(SharePreset::Instagram, [16, 9]), Some(1080));
+        assert_eq!(fill_long_edge(SharePreset::Facebook, [4, 5]), Some(2048));
+        assert_eq!(
+            fill_long_edge(SharePreset::Custom(1600), [1, 1]),
+            Some(1600)
+        );
+        assert_eq!(fill_long_edge(SharePreset::Original, [1, 1]), None);
     }
 
     #[test]

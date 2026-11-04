@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Collapse } from '@/components/layout/collapse'
 import { SectionCard } from '@/components/layout/section-card'
+import { SwatchToggle } from '@/components/forms/swatch-toggle'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type {
   FrameColor,
@@ -94,23 +95,15 @@ export function FrameSection({ frame, fonts, compact = false, children }: FrameS
         </p>
 
         <div className="flex gap-2">
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            size="sm"
+          <SwatchToggle<FrameColor>
             className="flex-1"
-            value={settings?.color ?? ''}
-            onValueChange={(color) =>
-              color && void frame.setSettings((s) => ({ ...s, color: color as FrameColor }))
-            }
-          >
-            <ToggleGroupItem value="white" className="flex-1 gap-1.5 text-xs">
-              <span className="size-3 rounded-full border bg-white" /> {t('frame.white')}
-            </ToggleGroupItem>
-            <ToggleGroupItem value="black" className="flex-1 gap-1.5 text-xs">
-              <span className="size-3 rounded-full border bg-neutral-900" /> {t('frame.black')}
-            </ToggleGroupItem>
-          </ToggleGroup>
+            value={settings?.color}
+            options={[
+              { value: 'white', swatch: 'bg-white', label: t('frame.white') },
+              { value: 'black', swatch: 'bg-neutral-900', label: t('frame.black') },
+            ]}
+            onChange={(color) => void frame.setSettings((s) => ({ ...s, color }))}
+          />
         </div>
 
         <ToggleGroup

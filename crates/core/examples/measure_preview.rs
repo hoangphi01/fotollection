@@ -7,7 +7,8 @@
 //! `cargo run --release -p fotollection-core --example measure_preview -- <photo.jpg>…`
 //!
 //! Peak RSS comes from the caller: run it under `/usr/bin/time -l` with one photo.
-//! `RAYON_NUM_THREADS=2` approximates a weak two-core machine.
+//! `RAYON_NUM_THREADS=2` approximates a weak two-core machine. `SHARE_FILL=1` measures a share
+//! export to Instagram with a square fill round each photo (FR-075).
 
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::cast_precision_loss)]
 
@@ -54,7 +55,20 @@ fn region(image: &RgbImage, x: u32, y: u32, w: u32, h: u32) -> RgbImage {
 
 fn main() {
     let codec = default_codec();
-    let settings = RenderSettings::default();
+    let settings = if std::env::var_os("SHARE_FILL").is_some() {
+        RenderSettings {
+            export_target: fotollection_core::share::ExportTarget::Share(
+                fotollection_core::share::SharePreset::Instagram,
+            ),
+            share_fill: fotollection_core::settings::ShareFill {
+                enabled: true,
+                ..Default::default()
+            },
+            ..RenderSettings::default()
+        }
+    } else {
+        RenderSettings::default()
+    };
     println!(
         "| Photo | Decode | Decoded RAM | Preview cold | Preview warm | Full render | Region 1:1 | Region 2:1 |"
     );

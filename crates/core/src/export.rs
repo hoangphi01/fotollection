@@ -276,6 +276,11 @@ fn encode_photo(
     let base = options.settings.for_target();
     let base = base.as_ref();
     let max_long_edge = share.and_then(|preset| {
+        // A photo with a fill is sized by its canvas (FR-075); the plan never enlarges it.
+        let fill = base.share_fill.sanitized();
+        if fill.enabled {
+            return crate::share::fill_long_edge(preset, fill.ratio);
+        }
         let (w, h) = target_size(upright.width, upright.height, preset);
         let long = w.max(h);
         (long < upright.width.max(upright.height)).then_some(long)
@@ -305,13 +310,14 @@ fn encode_photo(
         linear_light: share.is_some(),
         ..p
     };
+    let downscaled = p.out_width.max(p.out_height) < p.crop.width.max(p.crop.height);
     let mut image = render(&upright, &p)?;
     drop(upright);
     let jpeg = if let Some(preset) = share {
         share_jpeg(
             &mut image,
             preset,
-            max_long_edge.is_some(),
+            downscaled,
             decoded.icc.as_deref(),
             record,
             capture,

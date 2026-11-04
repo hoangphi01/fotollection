@@ -50,10 +50,15 @@ pub fn render(source: &RgbImage, plan: &RenderPlan) -> Result<RgbImage, RenderEr
     if let Some(stamp) = &plan.stamp {
         crate::stamp::draw(&mut photo, stamp);
     }
-    Ok(match (&plan.frame, &plan.mat) {
+    let out = match (&plan.frame, &plan.mat) {
         (Some(frame), _) => compose_frame(&photo, frame),
         (None, Some(mat)) => compose_mat(&photo, mat),
         (None, None) => photo,
+    };
+    // A shared photo's fill goes round everything else (FR-075).
+    Ok(match &plan.pad {
+        Some(pad) => compose_mat(&out, pad),
+        None => out,
     })
 }
 
@@ -153,6 +158,7 @@ pub fn fit_long_edge(source: &RgbImage, long_edge: u32) -> Result<RgbImage, Rend
         stamp: None,
         frame: None,
         mat: None,
+        pad: None,
         straighten: 0.0,
         linear_light: false,
     };
@@ -168,7 +174,8 @@ pub fn filled(width: u32, height: u32, color: [u8; 3]) -> RgbImage {
     canvas
 }
 
-/// Places the photo inside its 3 mm border, without an info frame (FR-067).
+/// Places the photo on a canvas of one colour: inside its 3 mm border, without an info frame
+/// (FR-067), or a shared photo inside its fill (FR-075).
 fn compose_mat(photo: &RgbImage, mat: &Mat) -> RgbImage {
     let mut canvas = filled(mat.canvas_width, mat.canvas_height, mat.background);
     blit(&mut canvas, photo, mat.photo.x, mat.photo.y);
@@ -408,6 +415,7 @@ mod tests {
                 stamp: None,
                 frame: None,
                 mat: None,
+                pad: None,
                 straighten: 0.0,
                 linear_light,
             };

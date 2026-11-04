@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useTranslation } from 'react-i18next'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { SwatchToggle } from '@/components/forms/swatch-toggle'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import type { Corner, DateFormat, StampColor, StampSettings } from '@/ipc/bindings'
 import { StampSizeField } from './stamp-size-field'
@@ -59,21 +60,11 @@ export function StampStyleFields({ stamp, onChange }: StampStyleFieldsProps) {
         </SelectContent>
       </Select>
 
-      <ToggleGroup
-        type="single"
-        variant="outline"
-        size="sm"
-        className="w-full"
-        value={stamp?.color ?? ''}
-        onValueChange={(color) => color && onChange({ color: color as StampColor })}
-      >
-        {COLORS.map((c) => (
-          <ToggleGroupItem key={c.value} value={c.value} className="flex-1 gap-1.5 text-xs">
-            <span className={`size-3 rounded-full border ${c.swatch}`} />
-            {t(`settings.color.${c.value}`)}
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+      <SwatchToggle
+        value={stamp?.color}
+        options={COLORS.map((c) => ({ ...c, label: t(`settings.color.${c.value}`) }))}
+        onChange={(color) => onChange({ color })}
+      />
 
       <StampSizeField stamp={stamp} onChange={onChange} />
     </>

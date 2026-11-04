@@ -4,7 +4,7 @@ import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { SwatchToggle } from '@/components/forms/swatch-toggle'
 import type { BorderColor, RenderSettings } from '@/ipc/bindings'
 
 const COLORS: { value: BorderColor; swatch: string }[] = [
@@ -37,22 +37,12 @@ export function BorderSwitch({ settings, onChange, paper = false }: BorderSwitch
         <Switch id={id} checked={border} onCheckedChange={(next) => onChange((s) => ({ ...s, border: next }))} />
       </div>
       {(border || paper) && (
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          className="w-full"
-          aria-label={t('settings.borderColor')}
+        <SwatchToggle
+          ariaLabel={t('settings.borderColor')}
           value={settings?.borderColor ?? 'white'}
-          onValueChange={(color) => color && onChange((s) => ({ ...s, borderColor: color as BorderColor }))}
-        >
-          {COLORS.map((c) => (
-            <ToggleGroupItem key={c.value} value={c.value} className="flex-1 gap-1.5 text-xs">
-              <span className={`size-3 rounded-full border ${c.swatch}`} />
-              {t(`settings.borderColors.${c.value}`)}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
+          options={COLORS.map((c) => ({ ...c, label: t(`settings.borderColors.${c.value}`) }))}
+          onChange={(borderColor) => onChange((s) => ({ ...s, borderColor }))}
+        />
       )}
       <p className="text-xs text-muted-foreground">{t(paper ? 'settings.borderHintPaper' : 'settings.borderHint')}</p>
     </div>

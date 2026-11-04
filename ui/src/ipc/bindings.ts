@@ -1409,6 +1409,11 @@ export type RenderSettings = {
 	 *  v10: the defaults.
 	 */
 	collage?: CollageSettings,
+	/**
+	 *  Shared photos fitted whole into a ratio, the rest filled (FR-075). Absent before
+	 *  settings v12: off.
+	 */
+	shareFill?: ShareFill,
 };
 
 /**  Render-affecting state changed (settings, frame, crops, undo); previews refresh. */
@@ -1429,6 +1434,18 @@ export type SettingsState = {
 	settings: RenderSettings,
 	/**  Bumps on every change; previews use it to refresh. */
 	revision: number,
+};
+
+/**
+ *  A shared photo fitted whole into a frame of a set ratio, the rest filled with one colour,
+ *  as for a square feed (FR-075). Share exports only; prints keep their print size.
+ */
+export type ShareFill = {
+	enabled?: boolean,
+	/**  The frame's width and height ratio, `[1, 1]` for a square. */
+	ratio?: [number, number],
+	/**  The fill's colour, sRGB. */
+	color?: [number, number, number],
 };
 
 /**  Where the exported photos are going. */

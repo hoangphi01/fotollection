@@ -583,6 +583,7 @@ pub fn set_settings(
     // A custom share size from the webview is clamped here (FR-053).
     settings.export_target = settings.export_target.sanitized();
     settings.collage = settings.collage.sanitized();
+    settings.share_fill = settings.share_fill.sanitized();
     settings
         .validate()
         .map_err(|e| IpcError::new("settings.invalid", e.to_string()))?;

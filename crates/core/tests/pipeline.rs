@@ -1006,6 +1006,65 @@ fn fr_067_share_exports_have_no_border() {
     assert_eq!((image.width, image.height), (600, 400));
 }
 
+/// FR-075: a portrait shared to Instagram with a square fill comes out 1080 × 1080, the
+/// whole photo in the middle and the fill's colour at the sides.
+#[test]
+fn fr_075_a_portrait_shared_with_a_square_fill_is_whole_and_square() {
+    use fotollection_core::settings::ShareFill;
+    use fotollection_core::share::{ExportTarget, SharePreset};
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    write(
+        src.path(),
+        "IMG_1.jpg",
+        &jpeg(&Fixture {
+            width: 2000,
+            height: 3000,
+            date: Some("2026:07:14 10:00:00"),
+            ..Fixture::default()
+        }),
+    );
+    let lib = import(src.path());
+    let settings = RenderSettings {
+        export_target: ExportTarget::Share(SharePreset::Instagram),
+        share_fill: ShareFill {
+            enabled: true,
+            ratio: [1, 1],
+            color: [20, 40, 200],
+        },
+        ..RenderSettings::default()
+    };
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 1,
+        place_for: &|_| None,
+        frame_for: &|_| None,
+        group_for: &|_| None,
+        by_day: false,
+        postcard_font: None,
+    };
+    let summary = run_export(
+        &records(&lib),
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert_eq!(summary.exported, 1);
+    let out = std::fs::read(dest.path().join("Share/IMG_1.jpg")).unwrap();
+    let image = PureRustCodec.decode(&out).unwrap().image;
+    assert_eq!((image.width, image.height), (1080, 1080));
+    // A corner is the fill (JPEG keeps it within a few levels).
+    let px = &image.data[0..3];
+    let near = |a: u8, b: u8| a.abs_diff(b) <= 8;
+    assert!(
+        near(px[0], 20) && near(px[1], 40) && near(px[2], 200),
+        "{px:?}"
+    );
+}
+
 #[test]
 fn fr_053_share_export_resizes_keeps_ratio_and_writes_safe_exif() {
     use fotollection_core::share::{ExportTarget, SharePreset};
