@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- UI update: a smaller stamp box on postcards, hidden by the stamp you stick on
+
+### Changed
+
+- **Postcards:** the dashed stamp box is smaller, 20 × 25 mm, so the stamp you stick on hides it. The manual now says what glossy paper means at the post (the postmark may smear off the stamp, a gummed stamp may not hold) and suggests matt paper or a self-adhesive stamp.
+
 ## [0.9.4] - 2026-11-04
 
 ### Highlights

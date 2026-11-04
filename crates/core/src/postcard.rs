@@ -22,9 +22,9 @@ static FONT: LazyLock<Option<FontArc>> =
 static ITALIC: LazyLock<Option<FontArc>> =
     LazyLock::new(|| FontArc::try_from_vec(XANH_MONO_ITALIC.to_vec()).ok());
 
-/// The stamp box, width × height: about the size of a German or Hungarian stamp, so a real
-/// one covers it without reaching the address.
-pub const STAMP_MM: (f32, f32) = (26.0, 32.0);
+/// The stamp box, width × height: smaller than most stamps, so the stamp stuck on it hides
+/// its dashed line (owner, 2026-11-04; 26 × 32 mm before), and far from the address.
+pub const STAMP_MM: (f32, f32) = (20.0, 25.0);
 /// Space between the sheet's edge and what is drawn, and between the stamp and the lines.
 pub const EDGE_MM: f32 = 5.0;
 const STAMP_GAP_MM: f32 = 4.0;
@@ -501,8 +501,8 @@ mod tests {
     fn fr_073_lines_sit_together_at_the_foot() {
         let landscape = layout(152.0, half(76.0, 0.0, 76.0, 102.0), 4);
         let portrait = layout(102.0, half(0.0, 0.0, 102.0, 76.0), 4);
-        assert_eq!(landscape.stamp, half(121.0, 5.0, 26.0, 32.0));
-        assert_eq!(portrait.stamp, half(71.0, 5.0, 26.0, 32.0));
+        assert_eq!(landscape.stamp, half(127.0, 5.0, 20.0, 25.0));
+        assert_eq!(portrait.stamp, half(77.0, 5.0, 20.0, 25.0));
         for (l, bottom) in [(&landscape, 102.0), (&portrait, 76.0)] {
             assert_eq!((l.message.len(), l.address.len()), (4, 3));
             assert!(l.step <= MAX_STEP_MM + 1e-3);
