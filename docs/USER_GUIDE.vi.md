@@ -41,7 +41,7 @@ Fotollection làm việc trên các thư mục ảnh bạn đã có. Nó đọc 
 
    Bộ lọc đang bật có viền màu chủ đề, và số ảnh cho biết đang hiện bao nhiêu trên tổng số. Khi không ảnh nào khớp, **Hiện tất cả ảnh** bỏ các bộ lọc.
 
-   **File lạ** ([FR-071](PRD.md#fr-071--image-facts)) là những tệp nằm ngoài đường đi thông thường, có dấu **ⓘ** trong gallery: JPEG CMYK hoặc 16-bit, ảnh Adobe RGB, RAW X-Trans của Fujifilm, loại DNG mà app chưa tự develop. Thẻ **Ảnh** trong bản xem trước cho biết mỗi tệp là gì, ngay dưới kích thước: ví dụ *JPEG · 4:2:0 · Baseline · 8-bit · Display P3 · đọc bằng zune-jpeg* hoặc *ARW · Bayer RGGB · 14-bit · đọc bằng ImageIO*. RAW không phải DNG hiện cảm biến sau khi đã mở trong bản xem trước. Hãy gửi kèm dòng này khi báo lỗi.
+   **File lạ** ([FR-071](PRD.md#fr-071--image-facts)) là những tệp nằm ngoài đường đi thông thường, có dấu **ⓘ** trong gallery: JPEG CMYK hoặc 16-bit, ảnh Adobe RGB, RAW X-Trans của Fujifilm, loại DNG mà app chưa tự develop. Thẻ **Ảnh này** trong bản xem trước cho biết mỗi tệp là gì, ngay dưới kích thước: ví dụ *JPEG · 4:2:0 · Baseline · 8-bit · Display P3 · đọc bằng zune-jpeg* hoặc *ARW · Bayer RGGB · 14-bit · đọc bằng ImageIO*. RAW không phải DNG hiện cảm biến sau khi đã mở trong bản xem trước. Hãy gửi kèm dòng này khi báo lỗi.
 
 <!-- shot: manual-filters | Bộ lọc cờ đang mở phía trên gallery: Tất cả, Đã chọn, Chưa gắn cờ, Đã loại, File lạ -->
 
@@ -93,7 +93,7 @@ Nút **Giỏ in** trên ảnh (cạnh *Cắt ảnh*, các nút xoay và *Xuất 
 
 Khi bạn mở bản xem trước từ *Giỏ in* hoặc *Để riêng*, ↑ và ↓ chuyển ảnh sang khu vực còn lại; ảnh ở nguyên chỗ cũ thì chuyển sang tấm tiếp theo.
 
-**Xem nhanh ảnh:** thẻ đầu tiên bên phải, **Ảnh này**, cho biết bạn đang xem gì ([FR-078](PRD.md#fr-078--the-photo-at-a-glance-in-the-preview)): máy ảnh và ống kính (theo tên bạn đặt cho khung thông tin, chương 9), thông số phơi sáng đúng như khung in ra (*20mm · F1.7 · 1/60s · ISO800*), chụp ở đâu và khi nào, và kích thước theo điểm ảnh, megapixel và megabyte. Các thẻ bên dưới dùng để sửa ngày và nơi chụp.
+**Xem nhanh ảnh:** thẻ đầu tiên bên phải, **Ảnh này**, cho biết bạn đang xem gì ([FR-078](PRD.md#fr-078--the-photo-at-a-glance-in-the-preview)): máy ảnh và ống kính (theo tên bạn đặt cho khung thông tin, chương 9), thông số phơi sáng đúng như khung in ra (*20mm · F1.7 · 1/60s · ISO800*), chụp ở đâu và khi nào, kích thước theo điểm ảnh, megapixel và megabyte, và tệp đó là gì (chương 2). Bấm vào tiêu đề để thu gọn thẻ, bấm lần nữa để mở; thẻ giữ nguyên như bạn để cho những ảnh tiếp theo. Các thẻ bên dưới dùng để sửa ngày và nơi chụp.
 
 <!-- shot: manual-summary | Thẻ Ảnh này ở đầu bản xem trước: máy và ống kính, thông số, nơi và ngày chụp, kích thước -->
 

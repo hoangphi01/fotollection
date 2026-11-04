@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Fixes: the preview's Print / export size card is spaced like the panel's
 
+### Changed
+
+- **Preview:** **This photo** now also says what the file is, and takes the place of the Camera and Image cards, so the panel is shorter; click its title to fold it away.
+
 ### Fixed
 
 - **Preview:** the *Print / export size* card no longer packs its controls tight; it is spaced like the same card in the panel and like *Date stamp* beside it.

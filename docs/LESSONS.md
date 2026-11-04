@@ -13,6 +13,13 @@
 
 ## 2026-11-04
 
+### A card of controls in the preview was spaced as a card of facts (FR-007)
+
+- **Seen:** the owner found the preview's *Print / export size* card tighter than usual: its toggles, size picker, advice and border switch sat 4 px apart, against 12 px in the same card in the panel and in *Date stamp* beside it.
+- **Why:** it was an `InspectorSection`, whose tight rows are meant for the photo's facts (capture date, location); the same controls in the panel sit in a `SectionCard`.
+- **Fix:** the preview's print size card is a `SectionCard`; STYLE_RULE §4 says which card is for what.
+- **Rule:** a card of controls is a `SectionCard` wherever it appears; `InspectorSection` is only for facts. Compare a shared card in both places side by side before calling it done.
+
 ### Measure the benchmark too: half the "memory after thumbnails" was the benchmark's own (NFR-004)
 
 - **Seen:** the real trip's export peaked at 2.14 GB; 1.27 GB stayed resident after the thumbnail pass, before the export began.

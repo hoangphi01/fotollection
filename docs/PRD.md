@@ -838,7 +838,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-078 — The photo at a glance in the preview
 
-**P1 (owner's request 2026-11-04).** The preview's first card, **This photo**, sums the photo up before the tools: the camera and lens with the camera profile's names (as the info frame, [FR-040](#fr-040--exif-info-frame)), the exposure as the frame prints it (`20mm · F1.7 · 1/60s · ISO800`, `frame::shot_summary`), the place and the capture date (after a clock offset or a date set by hand), and the size in pixels, megapixels and megabytes. Lines with nothing to say are left out. The cards below it still change the date, the place and the camera's details.
+**P1 (owner's request 2026-11-04).** The preview's first card, **This photo**, sums the photo up before the tools: the camera and lens with the camera profile's names (as the info frame, [FR-040](#fr-040--exif-info-frame)), the exposure as the frame prints it (`20mm · F1.7 · 1/60s · ISO800`, `frame::shot_summary`), the place and the capture date (after a clock offset or a date set by hand), and the size in pixels, megapixels and megabytes. Lines with nothing to say are left out. It also holds what the file is ([FR-071](#fr-071--image-facts)), so the preview has no separate Camera and Image cards (owner, 2026-11-04), and its title folds it away, kept while the app runs. The cards below it still change the date, the place and the camera's details.
 
 ## 7. Non-functional requirements
 

@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import {
   CalendarDays,
-  Camera,
   ChevronLeft,
   ChevronRight,
   Clock,
   Crop,
   Download,
-  ImageIcon,
   MapPin,
   RotateCcw,
   RotateCw,
@@ -50,8 +48,7 @@ import {
   type PhotoSummary,
   type RenderSettings,
 } from '@/ipc/bindings'
-import { factsParts } from '@/lib/facts'
-import { formatBytes, formatCaptureLong, formatMegapixels, formatNumber } from '@/lib/format'
+import { formatCaptureLong, formatNumber } from '@/lib/format'
 import { previewUrl, sourceUrl } from '@/lib/photo-url'
 import { CropEditor } from './crop-editor'
 import { PhotoStampControls } from './photo-stamp-controls'
@@ -472,34 +469,6 @@ export function PreviewDialog({
               )}
               {photo && details?.clockId != null && clockMatch && (
                 <ClockMatchDialog photoId={photo.id} clockId={details.clockId} open onClose={() => setClockMatch(false)} />
-              )}
-            </InspectorSection>
-
-            <InspectorSection icon={<Camera className="size-4" />} title={t('viewer.camera')}>
-              <p>{photo?.camera ?? t('viewer.unknownCamera')}</p>
-            </InspectorSection>
-
-            <InspectorSection icon={<ImageIcon className="size-4" />} title={t('viewer.image')}>
-              {details ? (
-                <p className="tabular-nums">
-                  {details.width} × {details.height} px ·{' '}
-                  {formatMegapixels(details.width, details.height)} MP ·{' '}
-                  {formatBytes(details.fileBytes ?? 0)}
-                </p>
-              ) : (
-                <p className="text-muted-foreground">{t('common.loading')}</p>
-              )}
-              {/* Recorded screenshot data from before FR-071 has no facts. */}
-              {details?.facts && photo && (
-                <p className="text-xs text-muted-foreground">
-                  {/* A line breaks between facts, never inside one ("zune-jpeg"). */}
-                  {factsParts(details.facts, photo.fileName).map((part, i) => (
-                    <span key={part}>
-                      {i > 0 && ' · '}
-                      <span className="whitespace-nowrap">{part}</span>
-                    </span>
-                  ))}
-                </p>
               )}
             </InspectorSection>
 

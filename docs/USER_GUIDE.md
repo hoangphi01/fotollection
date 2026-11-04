@@ -43,7 +43,7 @@ Mark photos as you look through them, then show only the ones you want ([FR-022]
 
    An active filter is outlined in the theme colour, and the count shows how many photos are shown out of how many. When nothing matches, **Show all photos** clears the filters.
 
-   **Unusual files** ([FR-071](PRD.md#fr-071--image-facts)) are the ones outside the common path, marked with an **ⓘ** in the gallery: a CMYK or 16-bit JPEG, an Adobe RGB photo, a Fujifilm X-Trans RAW, a DNG kind the app does not develop itself yet. The preview's **Image** card says what each file is, under its size: for example *JPEG · 4:2:0 · Baseline · 8-bit · Display P3 · read by zune-jpeg* or *ARW · Bayer RGGB · 14-bit · read by ImageIO*. A camera RAW other than DNG shows its sensor once it has been opened in the preview. Give this line in a bug report.
+   **Unusual files** ([FR-071](PRD.md#fr-071--image-facts)) are the ones outside the common path, marked with an **ⓘ** in the gallery: a CMYK or 16-bit JPEG, an Adobe RGB photo, a Fujifilm X-Trans RAW, a DNG kind the app does not develop itself yet. The preview's **This photo** card says what each file is, under its size: for example *JPEG · 4:2:0 · Baseline · 8-bit · Display P3 · read by zune-jpeg* or *ARW · Bayer RGGB · 14-bit · read by ImageIO*. A camera RAW other than DNG shows its sensor once it has been opened in the preview. Give this line in a bug report.
 
 <!-- shot: manual-filters | The flag filter open above the gallery: All, Picks, Unflagged, Rejects, Unusual files -->
 
@@ -95,7 +95,7 @@ The **Print basket** button on the photo (next to *Crop*, the turn buttons and *
 
 When you open the preview from the *Print basket* or *Set aside* view, ↑ and ↓ move the photo to the other area; a photo that stays where it is moves on to the next one.
 
-**The photo at a glance:** the first card on the right, **This photo**, says what you are looking at ([FR-078](PRD.md#fr-078--the-photo-at-a-glance-in-the-preview)): the camera and lens (with the names you gave them for the info frame, chapter 9), the exposure as the frame prints it (*20mm · F1.7 · 1/60s · ISO800*), where and when it was taken, and its size in pixels, megapixels and megabytes. The cards further down change the date and the place.
+**The photo at a glance:** the first card on the right, **This photo**, says what you are looking at ([FR-078](PRD.md#fr-078--the-photo-at-a-glance-in-the-preview)): the camera and lens (with the names you gave them for the info frame, chapter 9), the exposure as the frame prints it (*20mm · F1.7 · 1/60s · ISO800*), where and when it was taken, its size in pixels, megapixels and megabytes, and what the file is (chapter 2). Click its title to fold it away, and again to open it; it stays as you left it for the next photos. The cards further down change the date and the place.
 
 <!-- shot: manual-summary | The This photo card at the top of the preview: camera and lens, exposure, place and date, size -->
 
