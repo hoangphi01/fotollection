@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
-- **Windows:** a tooltip near the top of the window, such as the one on *Crop* in the preview, no longer runs under the title bar; it opens below its button when there is no room above.
+- **Windows:** the tooltips of the preview's buttons (crop, turn, zoom) and of best shot no longer run under the title bar: every tooltip now opens below its button, in the same style.
 - **Preview:** the *Print / export size* card no longer packs its controls tight; it is spaced like the same card in the panel and like *Date stamp* beside it.
 
 ## [0.9.7] - 2026-11-04

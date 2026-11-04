@@ -13,6 +13,13 @@
 
 ## 2026-11-04
 
+### Two kinds of tooltip, and only one knew about the Windows title bar (FR-052)
+
+- **Seen:** on Windows, the tooltip of *Crop* in the preview ran under the app's own title bar; on macOS it looked right.
+- **Why:** STYLE_RULE asks for one hint layer (`data-hint`), but four places still used shadcn's `Tooltip`, which opens above its button and knows nothing of the 32 px title bar the app draws on Windows.
+- **Fix:** all four moved to `data-hint`, which opens below.
+- **Rule:** one kind of tooltip in the app. When a rule names the shared piece, search for the other ones it replaced (`grep -rn "<Tooltip" ui/src`) before calling the rule kept.
+
 ### A card of controls in the preview was spaced as a card of facts (FR-007)
 
 - **Seen:** the owner found the preview's *Print / export size* card tighter than usual: its toggles, size picker, advice and border switch sat 4 px apart, against 12 px in the same card in the panel and in *Date stamp* beside it.

@@ -18,7 +18,6 @@ import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ClockMatchDialog } from '@/features/cameras/clock-match-dialog'
 import { DatePlaceDialog } from '@/features/places/date-place-dialog'
 import { CullControls } from '@/features/culling/cull-controls'
@@ -252,23 +251,17 @@ export function PreviewDialog({
               )}
               {!shownSrc && <StageSpinner error={shownError} />}
               <div className="absolute top-3 left-3 flex gap-1.5">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        disabled={!shownGeometry || shownGeometry.cropDisabled}
-                        onClick={() => setCropping(true)}
-                      >
-                        <Crop data-icon="inline-start" /> {t('viewer.crop')}
-                      </Button>
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {shownGeometry?.cropDisabled ? t('viewer.cropFitMode') : t('viewer.adjustCrop')}
-                  </TooltipContent>
-                </Tooltip>
+                {/* The hint sits on the wrapper, as a disabled button gets no pointer events. */}
+                <span data-hint={shownGeometry?.cropDisabled ? t('viewer.cropFitMode') : t('viewer.adjustCrop')}>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={!shownGeometry || shownGeometry.cropDisabled}
+                    onClick={() => setCropping(true)}
+                  >
+                    <Crop data-icon="inline-start" /> {t('viewer.crop')}
+                  </Button>
+                </span>
                 {/* Lossless quarter turns (FR-006); the crop turns with the photo. */}
                 {(
                   [
@@ -276,20 +269,17 @@ export function PreviewDialog({
                     [true, RotateCw, 'viewer.rotateRight'],
                   ] as const
                 ).map(([clockwise, Icon, label]) => (
-                  <Tooltip key={label}>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="secondary"
-                        size="icon-sm"
-                        aria-label={t(label)}
-                        disabled={!photo}
-                        onClick={() => photo && void commands.rotatePhotos([photo.id], clockwise)}
-                      >
-                        <Icon />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>{t(label)}</TooltipContent>
-                  </Tooltip>
+                  <Button
+                    key={label}
+                    variant="secondary"
+                    size="icon-sm"
+                    aria-label={t(label)}
+                    data-hint={t(label)}
+                    disabled={!photo}
+                    onClick={() => photo && void commands.rotatePhotos([photo.id], clockwise)}
+                  >
+                    <Icon />
+                  </Button>
                 ))}
                 {/* The print basket (FR-050): the same as ↑; a photo set aside can come back. */}
                 {photo && (

@@ -66,7 +66,7 @@ export function HintLayer() {
     <div
       ref={ref}
       role="tooltip"
-      className="pointer-events-none fixed z-[100] w-max max-w-xs animate-in rounded-md bg-foreground px-3 py-1.5 text-xs break-words text-background fade-in-0 zoom-in-95"
+      className="pointer-events-none fixed z-[100] w-max max-w-xs animate-in rounded-md bg-foreground px-3 py-1.5 text-xs break-words whitespace-pre-line text-background fade-in-0 zoom-in-95"
       style={{
         left: EDGE,
         top: shown.y,

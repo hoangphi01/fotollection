@@ -6,7 +6,6 @@ import { KeysInfo } from '@/components/layout/keys-info'
 import { ErrorNotice, NoticeStack } from '@/components/layout/notice-stack'
 import { Button } from '@/components/ui/button'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { GroupsView } from '@/features/best-shot/groups-view'
 import { useBestShots } from '@/features/best-shot/use-best-shots'
 import { CullFilterBar } from '@/features/culling/cull-filter-bar'
@@ -294,35 +293,32 @@ export function App() {
                   {t('bestShot.viewGroups', { count: scopedShots.groups.length })}
                 </ToggleGroupItem>
               </ToggleGroup>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  {bestShots.running ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={bestShots.cancel}
-                      aria-label={t('bestShot.stop')}
-                    >
-                      <Square data-icon="inline-start" />
-                      <span className="hidden @3xl:inline">{t('bestShot.stop')}</span>
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setView('groups')
-                        void bestShots.analyze()
-                      }}
-                      aria-label={t('bestShot.find')}
-                    >
-                      <Sparkles data-icon="inline-start" />
-                      <span className="hidden @3xl:inline">{t('bestShot.find')}</span>
-                    </Button>
-                  )}
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs">{t('bestShot.findHint')}</TooltipContent>
-              </Tooltip>
+                {bestShots.running ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={bestShots.cancel}
+                    aria-label={t('bestShot.stop')}
+                    data-hint={t('bestShot.findHint')}
+                  >
+                    <Square data-icon="inline-start" />
+                    <span className="hidden @3xl:inline">{t('bestShot.stop')}</span>
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setView('groups')
+                      void bestShots.analyze()
+                    }}
+                    aria-label={t('bestShot.find')}
+                    data-hint={t('bestShot.findHint')}
+                  >
+                    <Sparkles data-icon="inline-start" />
+                    <span className="hidden @3xl:inline">{t('bestShot.find')}</span>
+                  </Button>
+                )}
               {view === 'photos' && (
                 <span className="shrink-0 font-medium whitespace-nowrap tabular-nums">
                   {photos.length === total

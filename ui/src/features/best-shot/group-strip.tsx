@@ -4,7 +4,6 @@ import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { Group, PhotoSummary } from '@/ipc/bindings'
 import { CullBadges } from '@/features/culling/cull-badges'
 import { thumbUrl } from '@/lib/photo-url'
@@ -54,16 +53,13 @@ export const GroupStrip = memo(function GroupStrip({
           <Button variant="outline" size="sm" onClick={onCompare}>
             <Columns2 data-icon="inline-start" /> {t('bestShot.compare')}
           </Button>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="sm" onClick={tooClose ? onCompare : onKeepBest}>
-                <Check data-icon="inline-start" /> {t('bestShot.keepBest')}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {tooClose ? t('bestShot.chooseHint') : t('bestShot.keepBestHint')}
-            </TooltipContent>
-          </Tooltip>
+          <Button
+            size="sm"
+            onClick={tooClose ? onCompare : onKeepBest}
+            data-hint={tooClose ? t('bestShot.chooseHint') : t('bestShot.keepBestHint')}
+          >
+            <Check data-icon="inline-start" /> {t('bestShot.keepBest')}
+          </Button>
         </div>
       </div>
       <div className="flex gap-2 overflow-x-auto p-1.5">

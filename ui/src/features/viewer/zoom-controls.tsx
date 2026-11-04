@@ -2,7 +2,6 @@
 import { LoaderCircle, Scan, ZoomIn, ZoomOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 type ZoomControlsProps = {
   percent: number
@@ -29,19 +28,12 @@ export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomI
     { key: 'fit', Icon: Scan, label: t('viewer.zoomFit', { mod }), disabled: !zoomed, onClick: onFit },
   ] as const
   const button = ({ key, Icon, label, disabled, onClick }: (typeof buttons)[number]) => (
-    <Tooltip key={key}>
-      <TooltipTrigger asChild>
-        <span>
-          <Button variant="secondary" size="icon-sm" aria-label={label} disabled={disabled} onClick={onClick}>
-            <Icon />
-          </Button>
-        </span>
-      </TooltipTrigger>
-      <TooltipContent>
-        {label}
-        {key === 'in' && <span className="block opacity-70">{t('viewer.zoomPinch')}</span>}
-      </TooltipContent>
-    </Tooltip>
+    // On the wrapper: a disabled button gets no pointer events.
+    <span key={key} data-hint={key === 'in' ? `${label}\n${t('viewer.zoomPinch')}` : label}>
+      <Button variant="secondary" size="icon-sm" aria-label={label} disabled={disabled} onClick={onClick}>
+        <Icon />
+      </Button>
+    </span>
   )
   return (
     <div className="absolute right-3 bottom-3 flex items-center gap-1 rounded-lg bg-black/60 p-1">
