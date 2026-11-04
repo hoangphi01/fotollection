@@ -280,8 +280,9 @@
       <figure class="treat-qr">
         {%- comment %} The published code until assets/js/support.js draws one with the amount. {% endcomment %}
         <div data-treat-qr><img src="{{ '/assets/img/vietqr.png' | relative_url }}" width="260" height="350" alt="{{ t.support_alt }}" loading="lazy" decoding="async" /></div>
+        <template data-treat-error>{% include icons/circle-alert.svg %}</template>
         <figcaption class="small muted" data-treat-amount>{{ treat.bank }} · Napas 247</figcaption>
-        <p class="treat-marks"><img src="{{ '/assets/img/logos/vietqr.png' | relative_url }}" width="45" height="24" alt="VietQR" loading="lazy" decoding="async" /><img src="{{ '/assets/img/logos/napas247.png' | relative_url }}" width="111" height="24" alt="NAPAS 247" loading="lazy" decoding="async" /><sup class="fn-ref"><a href="#fn-24" id="fnref-24" aria-label="{{ t.fn_label }} 24">24</a></sup></p>
+        <p class="treat-marks"><img class="mark-vietqr" src="{{ '/assets/img/logos/vietqr.png' | relative_url }}" width="61" height="34" alt="VietQR" loading="lazy" decoding="async" /><img class="mark-napas" src="{{ '/assets/img/logos/napas247.png' | relative_url }}" width="110" height="26" alt="NAPAS 247" loading="lazy" decoding="async" /><sup class="fn-ref"><a href="#fn-24" id="fnref-24" aria-label="{{ t.fn_label }} 24">24</a></sup></p>
       </figure>
       <div class="cta"><a class="button sponsor" href="https://github.com/sponsors/hoangphi01?frequency=one-time">{% include icons/heart.svg %}{{ t.support_sponsor }}</a></div>
       <p class="small muted support-note">{{ t.support_note }}</p>

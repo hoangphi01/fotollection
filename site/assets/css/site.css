@@ -73,6 +73,7 @@
   --teal: #4aada4;
   --wood: #9a5a2c;
   --accent: #b5652a;
+  --danger: #c62828;
   --sponsor: #bf3989;
   --leaf: #3f7d1a;
   --leaf-soft: #e1efc9;
@@ -99,6 +100,7 @@
     --teal: #5cc0b4;
     --wood: #c98a52;
     --accent: #e3a067;
+    --danger: #ef6b6b;
     --sponsor: #db61a2;
     --leaf: #a9d86e;
     --leaf-soft: #27331b;
@@ -188,7 +190,11 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .badge.shield .icon { width: 1.1em; height: 1.1em; }
 .badge.shield:hover { filter: brightness(1.08); }
 .badge { display: inline-block; padding: 3px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--leaf) 25%, transparent); background: var(--leaf-soft); color: var(--leaf); font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; }
-.cta { display: flex; flex-wrap: wrap; gap: 10px; margin: 28px 0 12px; }
+.cta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 28px 0 12px; }
+.cta-count { display: inline-flex; align-items: center; gap: 6px; padding: 0 6px; color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+/* Under the stacked buttons of a phone it centres on its own line; beside them on a wide screen. */
+@media (max-width: 719px) { .cta-count { flex: 1 0 100%; justify-content: center; } }
+.cta-count .icon { width: 16px; height: 16px; }
 /* shadcn/ui-style buttons (default and outline variants), in the logo's colours. */
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-decoration: none; font-weight: 600; font-size: 0.95rem; flex: 1 1 100%; box-shadow: 0 1px 2px rgb(74 52 30 / 6%); transition: background-color 0.15s, border-color 0.15s, filter 0.15s; }
 .button:hover { background: var(--tint); }
@@ -309,9 +315,14 @@ h3.with-logo .logo-os { height: 0.95em; }
 /* The treat menu (assets/js/support.js): a choice of chips; the chosen one draws the code. */
 .treat-qr { margin: 0; display: grid; gap: 10px; justify-items: center; }
 .treat-qr svg, .treat-qr img { width: 220px; max-width: 100%; height: auto; border-radius: 14px; background: #fff; }
-.treat-qr [data-treat-qr][data-off] svg { visibility: hidden; }
-.treat-marks { margin: 0; display: inline-flex; align-items: center; gap: 12px; padding: 6px 12px; border-radius: 10px; background: #fff; }
-.treat-marks img { display: block; height: 24px; width: auto; }
+.treat-qr-error { width: 220px; max-width: 100%; aspect-ratio: 1; display: grid; place-content: center; justify-items: center; gap: 10px; padding: 20px; border-radius: 14px; border: 2px dashed var(--danger); color: var(--danger); text-align: center; }
+.treat-qr-error .icon { width: 32px; height: 32px; }
+.treat-qr-error p { margin: 0; font-weight: 600; font-size: 0.95rem; }
+.treat-amount[aria-invalid="true"] { border-color: var(--danger); box-shadow: 0 0 0 2px color-mix(in srgb, var(--danger) 30%, transparent); }
+.treat-marks { margin: 0; display: inline-flex; align-items: center; gap: 10px; padding: 4px 12px 4px 8px; border-radius: 10px; background: #fff; }
+.support .treat-marks img { display: block; width: auto; max-width: none; border-radius: 0; background: none; }
+.treat-marks .mark-vietqr { height: 34px; }
+.treat-marks .mark-napas { height: 26px; }
 .treat-marks .fn-ref a { color: #555; }
 .treat-qr figcaption { margin: 0; text-align: center; font-variant-numeric: tabular-nums; }
 .treat-menu { margin: 0; padding: 0; border: 0; display: flex; flex-wrap: wrap; gap: 8px; }

@@ -11,6 +11,7 @@
   var account = box.dataset.account
   var amountLabel = box.querySelector('[data-treat-amount]')
   var own = box.querySelector('[data-treat-own]')
+  var errorIcon = box.querySelector('template[data-treat-error]')
   var locale = document.documentElement.lang === 'vi' ? 'vi-VN' : 'en-US'
   // Napas takes whole đồng; an amount outside this range draws no code at all.
   var MIN = 1000
@@ -68,6 +69,17 @@
     figure.replaceChildren(svg)
   }
 
+  var showError = function (text) {
+    var panel = document.createElement('div')
+    panel.className = 'treat-qr-error'
+    panel.setAttribute('role', 'alert')
+    if (errorIcon) panel.append(errorIcon.content.cloneNode(true))
+    var p = document.createElement('p')
+    p.textContent = text
+    panel.append(p)
+    figure.replaceChildren(panel)
+  }
+
   var update = function () {
     var chosen = box.querySelector('input[name="treat"]:checked')
     if (!chosen) return
@@ -75,10 +87,12 @@
     var amount = isOwn ? Math.floor(Number(own && own.value)) : Number(chosen.dataset.vnd)
     var valid = Number.isFinite(amount) && amount >= MIN && amount <= MAX
     var note = chosen.dataset.note || 'Fotollection'
-    // No code for an amount the bank would refuse: the space stays, the hint says why.
-    figure.toggleAttribute('data-off', !valid)
+    // An amount the bank would refuse draws no code: the error takes its place, and the field
+    // says it too.
+    if (own) own.setAttribute('aria-invalid', String(isOwn && !valid))
     if (valid) draw(payload(amount, note), box.dataset.qrLabel)
-    if (amountLabel) amountLabel.textContent = valid ? amount.toLocaleString(locale) + ' ₫ · ' + note : box.dataset.ownHint
+    else showError(box.dataset.ownHint)
+    if (amountLabel) amountLabel.textContent = valid ? amount.toLocaleString(locale) + ' ₫ · ' + note : ''
   }
 
   box.addEventListener('change', update)

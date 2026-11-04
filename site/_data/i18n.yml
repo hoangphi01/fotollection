@@ -406,6 +406,7 @@ en:
   footer_visits: Visits
   footer_visits_hint: Total visits, from Google Analytics, updated once a day
   footer_downloads: Downloads
+  cta_downloads: "[n] downloads"
   footer_downloads_hint: "Every installer downloaded from GitHub, the app's own updates included, counted by GitHub"
   dl_count: "Downloaded [n] times: macOS [mac] · Windows [win] · Linux [linux], the app's own updates included."
   dl_count_split: "Of [tag]: [site] from this website, about [updates] through the update in the app."
@@ -818,6 +819,7 @@ vi:
   footer_visits: Lượt truy cập
   footer_visits_hint: Tổng lượt truy cập, theo Google Analytics, cập nhật mỗi ngày
   footer_downloads: Lượt tải
+  cta_downloads: "[n] lượt tải"
   footer_downloads_hint: "Mọi lượt tải bộ cài từ GitHub, gồm cả cập nhật trong ứng dụng, do GitHub đếm"
   dl_count: "Đã tải [n] lần: macOS [mac] · Windows [win] · Linux [linux], gồm cả cập nhật trong ứng dụng."
   dl_count_split: "Riêng [tag]: [site] từ trang web này, khoảng [updates] qua cập nhật trong ứng dụng."

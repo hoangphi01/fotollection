@@ -4,4 +4,8 @@
   <a class="button primary" href="{{ mac | default: releases }}"{% if mac %} data-download="mac"{% endif %}>{% include icons/download.svg %}{{ t.download_mac }}</a>
   <a class="button" href="{{ win | default: releases }}"{% if win %} data-download="win"{% endif %}>{% include icons/download.svg %}{{ t.download_win }}</a>
   <a class="button" href="{{ path_download }}#install-linux">{% include icons/download.svg %}{{ t.download_linux }}</a>
+  {%- if site.data.downloads %}
+  {%- comment %} How often the installers were downloaded (scripts/download-stats.mjs), beside the buttons. {% endcomment %}
+  <span class="cta-count" title="{{ t.footer_downloads_hint }}">{% include icons/download.svg %}{{ t.cta_downloads | replace: "[n]", site.data.downloads[page.lang] }}</span>
+  {%- endif %}
 </div>
