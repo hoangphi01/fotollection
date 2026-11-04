@@ -7,6 +7,7 @@ export const POSTCARD_DEFAULTS: PostcardSettings = {
   orientation: 'landscape',
   lines: 4,
   font: null,
+  face: 'typewriter',
   credit: '',
   ink: 'auto',
   textSize: 'medium',

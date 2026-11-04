@@ -1254,6 +1254,13 @@ export type PostcardCut = {
 	fit: Fit,
 };
 
+/**  The bundled faces a postcard's text can be typed in (FR-073, FR-076). */
+export type PostcardFace = 
+/**  Xanh Mono, with its own italic. */
+"typewriter" | 
+/**  Patrick Hand; italic is an oblique. */
+"handwriting";
+
 /**
  *  The ink of a postcard's typed text (FR-073). `Auto` is near-black on white paper and
  *  near-white on black; the others print the same on both.
@@ -1280,8 +1287,13 @@ export type PostcardSettings = {
 	orientation?: PostcardOrientation,
 	/**  Writing lines in the text box, `POSTCARD_LINES`. */
 	lines?: number,
-	/**  A user font for the typed text (FR-042); `None` uses the bundled typewriter face. */
+	/**  A user font for the typed text (FR-042); `None` uses the bundled face `face`. */
 	font?: number | null,
+	/**
+	 *  The bundled face when no user font is chosen: the typewriter or the handwriting one
+	 *  (FR-076). Absent before settings v13: the typewriter.
+	 */
+	face?: PostcardFace,
 	/**  A small line under the text box on every card ("Photo © …"); empty prints nothing. */
 	credit?: string,
 	/**  The typed text's ink. */

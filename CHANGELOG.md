@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: a handwriting face for postcards, Patrick Hand, as easy to read on a print as the typewriter
+
+### Added
+
+- **Postcards:** a handwriting face, **Handwriting (Patrick Hand)**, in the *Font* list next to the typewriter. It has every letter of Vietnamese and of Europe's Latin-script languages, and its strokes are at least as thick as the typewriter's at the medium size, the thinnest a test print showed readable, even at the small size. A size looks the same in both faces.
+
 ## [0.9.6] - 2026-11-04
 
 ### Highlights

@@ -5,7 +5,7 @@ import { CommitInput } from '@/components/forms/commit-input'
 import { SwatchToggle } from '@/components/forms/swatch-toggle'
 import { Label } from '@/components/ui/label'
 import { SectionCard } from '@/components/layout/section-card'
-import type { PhotoId, PostcardInk, RenderSettings } from '@/ipc/bindings'
+import type { PhotoId, PostcardFace, PostcardInk, RenderSettings } from '@/ipc/bindings'
 import { FontSelect } from '@/features/fonts/font-select'
 import { useFonts } from '@/features/fonts/use-fonts'
 import { SizeField } from '@/features/stamp/size-field'
@@ -70,9 +70,15 @@ export function PostcardTextCard({ settings, onChange, photo, revision }: Postca
         <FontSelect
           fonts={fonts}
           value={postcard.font}
-          onChange={(font) => patchPostcard(onChange, { font })}
+          onChange={(font, face) =>
+            patchPostcard(onChange, face ? { font, face: face as PostcardFace } : { font })
+          }
           label={t('postcard.font')}
-          builtIn={t('postcard.typewriter')}
+          builtIns={[
+            { key: 'typewriter', label: t('postcard.typewriter') },
+            { key: 'handwriting', label: t('postcard.handwriting') },
+          ]}
+          builtIn={postcard.face ?? 'typewriter'}
         />
       </div>
       <div className="space-y-1.5">

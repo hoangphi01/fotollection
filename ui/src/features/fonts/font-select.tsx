@@ -17,19 +17,27 @@ import type { FontsApi } from './use-fonts'
 const BUILT_IN = 'builtin'
 const IMPORT = 'import'
 
+/** A face bundled with the app, by its own key (a postcard's typewriter or handwriting). */
+export type BuiltInFace = { key: string; label: string }
+
 type FontSelectProps = {
   fonts: FontsApi
   value: number | null | undefined
-  onChange: (fontId: number | null) => void
+  /** A user font's id, or `null` and the bundled face's key when one of `builtIns` is chosen. */
+  onChange: (fontId: number | null, builtIn?: string) => void
   label: string
-  /** The built-in face's name, when it is not Inter (a postcard's typewriter face). */
+  /** The bundled faces, when they are not just Inter (a postcard's typewriter and handwriting). */
+  builtIns?: readonly BuiltInFace[]
+  /** Which of `builtIns` is in use while no user font is. */
   builtIn?: string
 }
 
 /** Font picker shared by the info frame and the postcard (FR-042, FR-073). */
-export function FontSelect({ fonts, value, onChange, label, builtIn }: FontSelectProps) {
+export function FontSelect({ fonts, value, onChange, label, builtIns, builtIn }: FontSelectProps) {
   const { t } = useTranslation()
-  const selected = value ? String(value) : BUILT_IN
+  const faces = builtIns ?? [{ key: BUILT_IN, label: t('fonts.builtIn') }]
+  const builtInValue = (key: string) => `${BUILT_IN}:${key}`
+  const selected = value ? String(value) : builtInValue(builtIn ?? faces[0]?.key ?? BUILT_IN)
   const current = fonts.fonts.find((f) => f.id === value)
 
   return (
@@ -40,8 +48,10 @@ export function FontSelect({ fonts, value, onChange, label, builtIn }: FontSelec
           onValueChange={(v) => {
             if (v === IMPORT) {
               void fonts.importFont().then((font) => font && onChange(font.id))
+            } else if (v.startsWith(`${BUILT_IN}:`)) {
+              onChange(null, v.slice(BUILT_IN.length + 1))
             } else {
-              onChange(v === BUILT_IN ? null : Number(v))
+              onChange(Number(v))
             }
           }}
         >
@@ -50,7 +60,11 @@ export function FontSelect({ fonts, value, onChange, label, builtIn }: FontSelec
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={BUILT_IN}>{builtIn ?? t('fonts.builtIn')}</SelectItem>
+            {faces.map((face) => (
+              <SelectItem key={face.key} value={builtInValue(face.key)}>
+                {face.label}
+              </SelectItem>
+            ))}
             {fonts.fonts.length > 0 && (
               <SelectGroup>
                 <SelectLabel>{t('fonts.yours')}</SelectLabel>

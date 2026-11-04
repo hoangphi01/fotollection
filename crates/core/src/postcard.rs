@@ -2,7 +2,8 @@
 //! The postcard half of a collage sheet (FR-073): a dashed stamp box at the sheet's top
 //! right with room for more stamps beside or under it, and the writing lines together at
 //! the foot, the message's then the address's. Each card's own text is typed on them in a
-//! typewriter face (Xanh Mono, OFL) or the user's font (FR-042), bold, italic or underlined
+//! typewriter face (Xanh Mono, OFL), a handwriting one (Patrick Hand, OFL, FR-076) or the
+//! user's font (FR-042), bold, italic or underlined
 //! per part. Drawn on the sheet's paper after the photo, in millimetres turned into pixels.
 
 use std::sync::LazyLock;
@@ -21,6 +22,9 @@ static FONT: LazyLock<Option<FontArc>> =
     LazyLock::new(|| FontArc::try_from_vec(XANH_MONO.to_vec()).ok());
 static ITALIC: LazyLock<Option<FontArc>> =
     LazyLock::new(|| FontArc::try_from_vec(XANH_MONO_ITALIC.to_vec()).ok());
+static PATRICK_HAND: &[u8] = include_bytes!("../assets/fonts/PatrickHand-Regular.ttf");
+static HANDWRITING: LazyLock<Option<FontArc>> =
+    LazyLock::new(|| FontArc::try_from_vec(PATRICK_HAND.to_vec()).ok());
 
 /// The stamp box, width × height: smaller than most stamps, so the stamp stuck on it hides
 /// its dashed line (owner, 2026-11-04; 26 × 32 mm before), and far from the address.
@@ -42,7 +46,8 @@ const OUTLINE_MM: f32 = 0.3;
 /// The stamp box's dashes and the gaps between them.
 const DASH_MM: f32 = 1.2;
 const LINE_MM: f32 = 0.25;
-/// The word in the stamp box, its height in millimetres.
+/// The word in the stamp box: its size in millimetres, the face's line height (ascender to
+/// descender), so its capitals stand about 2 mm tall.
 const STAMP_WORD: &str = "STAMP";
 const STAMP_WORD_MM: f32 = 3.2;
 /// Typed text: at most this share of the line spacing, whatever size is chosen, so a row
@@ -64,6 +69,46 @@ const SLANT: f32 = 0.2;
 /// The bundled typewriter face.
 pub fn font() -> Option<&'static FontArc> {
     FONT.as_ref()
+}
+
+/// The bundled handwriting face (FR-076).
+pub fn handwriting() -> Option<&'static FontArc> {
+    HANDWRITING.as_ref()
+}
+
+/// The size a face is drawn at for text of `px`: the handwriting face is scaled so its
+/// capitals stand as tall as the typewriter's, so a size reads the same in both and its
+/// strokes stay as thick as the print test asks (FR-076); any other face as it is.
+fn face_px(face: &FontArc, px: f32) -> f32 {
+    static SCALE: LazyLock<f32> = LazyLock::new(|| match (font(), handwriting()) {
+        (Some(mono), Some(hand)) => capital(mono) / capital(hand),
+        _ => 1.0,
+    });
+    if handwriting().is_some_and(|h| std::ptr::eq(h, face)) {
+        px * *SCALE
+    } else {
+        px
+    }
+}
+
+/// How tall a capital H stands, inked, as a share of the size it is drawn at.
+fn capital(face: &FontArc) -> f32 {
+    let glyph = face
+        .glyph_id('H')
+        .with_scale_and_position(PxScale::from(100.0), ab_glyph::point(0.0, 0.0));
+    face.outline_glyph(glyph)
+        .map_or(1.0, |o| (o.px_bounds().height() / 100.0).max(0.3))
+}
+
+/// The face a card's text is typed in: the user's font, or the bundled face the settings
+/// name, or the typewriter.
+fn main_face<'a>(spec: &CardSpec<'a>, bundled: &'a FontArc) -> &'a FontArc {
+    spec.font
+        .or_else(|| match spec.settings.face {
+            crate::settings::PostcardFace::Handwriting => handwriting(),
+            crate::settings::PostcardFace::Typewriter => None,
+        })
+        .unwrap_or(bundled)
 }
 
 /// One writing line, in millimetres on the sheet.
@@ -245,7 +290,7 @@ pub fn fit(spec: &CardSpec<'_>) -> Fit {
         return Fit::default();
     };
     let faces = Faces {
-        main: spec.font.unwrap_or(bundled),
+        main: main_face(spec, bundled),
         fallback: crate::render::regular(),
     };
     // Widths scale with the size, so any density gives the print's rows.
@@ -274,7 +319,7 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
     // The chosen face, with Inter for the letters it lacks (Xanh Mono has no Greek or
     // Cyrillic): an address copied from anywhere in Europe prints as typed.
     let faces = Faces {
-        main: spec.font.unwrap_or(bundled),
+        main: main_face(spec, bundled),
         fallback: crate::render::regular(),
     };
     let set = typeset(spec, faces, density);
@@ -386,7 +431,7 @@ fn draw_stamp_box(canvas: &mut RgbImage, density: f32, s: RectMm, outline: [u8; 
     let Some(face) = font() else {
         return;
     };
-    let word_px = STAMP_WORD_MM * density / cap_height(face);
+    let word_px = STAMP_WORD_MM * density;
     let word_w = text_width(face, word_px, STAMP_WORD, 0.08);
     let scaled = face.as_scaled(PxScale::from(word_px));
     draw_text(
@@ -447,7 +492,7 @@ impl<'a> Faces<'a> {
     pub fn width(&self, px: f32, text: &str) -> f32 {
         self.runs(text)
             .iter()
-            .map(|(f, s)| text_width(f, px, s, 0.0))
+            .map(|(f, s)| text_width(f, face_px(f, px), s, 0.0))
             .sum()
     }
 
@@ -476,6 +521,7 @@ impl<'a> Faces<'a> {
                 .then(|| ITALIC.as_ref())
                 .flatten();
             let face = own_italic.unwrap_or(face);
+            let px = face_px(face, px);
             let ascent = face.as_scaled(PxScale::from(px)).ascent();
             let run_text = TextRun {
                 font: face,
@@ -516,14 +562,6 @@ impl<'a> Faces<'a> {
             );
         }
     }
-}
-
-/// The height of a capital (its "H") per pixel of em, so the stamp word is sized by its
-/// visible letters.
-fn cap_height(font: &FontArc) -> f32 {
-    let scaled = font.as_scaled(PxScale::from(100.0));
-    let bounds = font.glyph_bounds(&scaled.scaled_glyph('H'));
-    (bounds.height() / 100.0).max(0.3)
 }
 
 /// `text` broken into rows, row `n` no wider than `room(n)` pixels: at its own line breaks,
@@ -866,6 +904,85 @@ mod tests {
             }
         }
         assert!(faces.width(20.0, "Αθήνα") > 0.0);
+    }
+
+    /// The thickness of a stem (`l`) at `size_mm`, in millimetres: the widest run of ink
+    /// across the glyph's middle row, rasterized at 300 px a millimetre.
+    fn stem_mm(face: &FontArc, size_mm: f32) -> f32 {
+        const PX_PER_MM: f32 = 300.0;
+        let glyph = face.glyph_id('l').with_scale_and_position(
+            PxScale::from(size_mm * PX_PER_MM),
+            ab_glyph::point(0.0, 0.0),
+        );
+        let Some(outline) = face.outline_glyph(glyph) else {
+            return 0.0;
+        };
+        let bounds = outline.px_bounds();
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+        let (w, h) = (bounds.width() as usize + 1, bounds.height() as usize + 1);
+        let mut ink = vec![false; w * h];
+        outline.draw(|x, y, c| {
+            if let Some(px) = ink.get_mut(y as usize * w + x as usize) {
+                *px = c > 0.5;
+            }
+        });
+        let row = &ink[(h / 2) * w..(h / 2) * w + w];
+        #[allow(clippy::cast_precision_loss)]
+        let widest = row.split(|on| !on).map(<[bool]>::len).max().unwrap_or(0) as f32;
+        widest / PX_PER_MM
+    }
+
+    /// FR-076: the handwriting face holds the letters of Europe's Latin-script languages and
+    /// of Vietnamese, and its strokes at the smallest size are no thinner than the
+    /// typewriter's at the medium one, the thinnest the owner's print test read (2026-11-04).
+    #[test]
+    fn fr_076_the_handwriting_face_has_the_letters_and_strokes_thick_enough() {
+        use crate::settings::{StampSize, postcard_text_mm};
+        let (Some(hand), Some(mono)) = (handwriting(), font()) else {
+            panic!("the bundled faces load");
+        };
+        for c in "àçéœÿ áěí čřůž őű ąłż șț åøæ ñ ğış āėų ơư ầẫặữỵđĐ ẮẶỆỘỢỰ ěščřžýůú"
+            .chars()
+            .filter(|c| !c.is_whitespace())
+        {
+            assert_ne!(hand.glyph_id(c).0, 0, "{c} in Patrick Hand");
+        }
+        let floor = stem_mm(mono, postcard_text_mm(StampSize::Medium));
+        let small = postcard_text_mm(StampSize::Small);
+        let thinnest = stem_mm(hand, face_px(hand, small));
+        assert!(floor > 0.15, "Xanh Mono's stem {floor} mm");
+        assert!(
+            thinnest >= floor,
+            "Patrick Hand at the small size {thinnest} mm, the floor {floor} mm"
+        );
+    }
+
+    /// A card set in the handwriting face uses it; a user font still wins over it.
+    #[test]
+    fn fr_076_the_face_setting_picks_the_bundled_face() {
+        use crate::settings::PostcardFace;
+        let (Some(hand), Some(mono)) = (handwriting(), font()) else {
+            panic!("the bundled faces load");
+        };
+        let settings = PostcardSettings {
+            face: PostcardFace::Handwriting,
+            ..PostcardSettings::default()
+        };
+        let spec = |font| CardSpec {
+            card: RectMm {
+                x: 0.0,
+                y: 0.0,
+                width: 76.0,
+                height: 102.0,
+            },
+            sheet_width: 152.0,
+            settings: &settings,
+            text: None,
+            font,
+            paper: BorderColor::White,
+        };
+        assert!(std::ptr::eq(main_face(&spec(None), mono), hand));
+        assert!(std::ptr::eq(main_face(&spec(Some(mono)), mono), mono));
     }
 
     /// Text wraps between words, keeps its own line breaks, and splits a word wider than a

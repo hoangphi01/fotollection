@@ -778,6 +778,7 @@
     "lineCount_other": "{{count}} dòng",
     "font": "Chữ gõ",
     "typewriter": "Máy đánh chữ (Xanh Mono)",
+    "handwriting": "Viết tay (Patrick Hand)",
     "pens": "Viết tay trên giấy ảnh: dùng bút dạ dầu nét mảnh (Sharpie Ultra Fine, edding 400, Stabilo OHPen S). Thử ở ô tem trước và để khô khoảng một phút; bút bi và bút gel dễ lem hoặc không ăn mực trên lớp phủ. Hoặc gõ chữ ngay trong bản xem trước của bưu thiếp.",
     "text": "Chữ trên bưu thiếp",
     "chars": "{{count}} / {{max}}",

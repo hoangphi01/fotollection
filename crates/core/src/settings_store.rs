@@ -27,7 +27,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v11 (FR-073): `render.collage.postcard`, absent before (off).
 /// v12 (FR-009, FR-075): `ui.exportFolders`, absent before (one folder); `render.shareFill`,
 /// absent before (off).
-pub const SCHEMA_VERSION: u32 = 12;
+/// v13 (FR-076): `render.collage.postcard.face`, absent before (the typewriter).
+pub const SCHEMA_VERSION: u32 = 13;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -428,6 +429,7 @@ mod tests {
             orientation: PostcardOrientation::Portrait,
             lines: 3,
             font: Some(7),
+            face: crate::settings::PostcardFace::Handwriting,
             credit: "Photo © Anna Schmidt".into(),
             ink: crate::settings::PostcardInk::Blue,
             text_size: crate::settings::StampSize::Large,
@@ -468,6 +470,29 @@ mod tests {
             panic!("v12 should load");
         };
         assert_eq!(back.ui.export_folders, ExportFolders::ByDay);
+        Ok(())
+    }
+
+    /// FR-076: a v12 file has no postcard face: it loads with the typewriter, keeps what v12
+    /// added, and the handwriting face round-trips.
+    #[test]
+    fn fr_076_v12_files_type_in_the_typewriter_and_the_face_round_trips() -> std::io::Result<()> {
+        use crate::settings::{ExportFolders, PostcardFace};
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v12.json"))?;
+        let Loaded::Ok(mut s) = load(&path) else {
+            panic!("v12 should load");
+        };
+        assert_eq!(s.render.collage.postcard.face, PostcardFace::Typewriter);
+        assert_eq!(s.ui.export_folders, ExportFolders::ByDay);
+        assert_eq!(s.render.share_fill.ratio, [4, 5]);
+        s.render.collage.postcard.face = PostcardFace::Handwriting;
+        save(&path, &s)?;
+        let Loaded::Ok(back) = load(&path) else {
+            panic!("v13 should load");
+        };
+        assert_eq!(back.render.collage.postcard.face, PostcardFace::Handwriting);
         Ok(())
     }
 

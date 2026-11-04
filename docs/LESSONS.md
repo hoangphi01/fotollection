@@ -11,6 +11,15 @@
 3. **Reproduce with the user's photo when the user sees it.** A synthetic test passed while the real app was soft: unit tests prove the pixels, only the real webview proves what is shown.
 4. **Write the lesson here** before moving on.
 
+## 2026-11-04
+
+### `glyph_bounds` is the line box, not the glyph: a "cap height" that was always 1 (FR-076)
+
+- **Seen:** the test that keeps a bundled postcard face's strokes thick enough failed the same way after scaling the handwriting face by its capital height: the scale was exactly 1.
+- **Why:** `postcard::cap_height` measured `font.glyph_bounds(&scaled_glyph('H'))`, which ab_glyph sizes by the face's ascent and descent, the same for every glyph. Every face got 1, so the stamp box's word was sized by its whole line, not by its capitals as its comment said.
+- **Fix:** a capital's height now comes from its outline (`outline_glyph(…).px_bounds()`, `postcard::capital`). The old helper went: the stamp word is the same size as before, and its constant now says it is a line height.
+- **Rule:** to measure ink, use the outline's `px_bounds`; `glyph_bounds` is only for laying out lines.
+
 ## 2026-11-03
 
 ### Deleting `target/debug/incremental` by hand can leave a debug build that does not link

@@ -65,7 +65,7 @@ crates/
       settings.rs        † # RenderSettings (in memory until projects land)
       plan.rs            † # RenderPlan: centred crop, stamp, optional frame plan, 3 mm border (FR-004/006/040/067), a shared photo's fill round it all (`pad`, FR-075)
       sheet.rs           † # collage sheets: cells, photo areas, pairing, render (FR-035, ADR-0032); a postcard sheet's one photo and card half (FR-073)
-      postcard.rs        † # a postcard's back: dashed stamp box, the message's and the address's lines, typed text in Xanh Mono (its italic) or the user's font, Inter for missing letters, bold, oblique and underline (FR-073)
+      postcard.rs        † # a postcard's back: dashed stamp box, the message's and the address's lines, typed text in Xanh Mono (its italic), Patrick Hand (drawn with Xanh Mono's capital height, FR-076) or the user's font, Inter for missing letters, bold, oblique and underline (FR-073)
       frame.rs           † # info frame: settings, camera profiles, text, ratio-safe layout (FR-040)
       logo.rs            † # user PNG logos: validation + decode (ADR-0014)
       fonts.rs           † # user OTF/TTF fonts: validation + FontArc (FR-042)

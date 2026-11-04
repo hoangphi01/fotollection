@@ -225,6 +225,17 @@ pub enum PostcardOrientation {
     Portrait,
 }
 
+/// The bundled faces a postcard's text can be typed in (FR-073, FR-076).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum PostcardFace {
+    /// Xanh Mono, with its own italic.
+    #[default]
+    Typewriter,
+    /// Patrick Hand; italic is an oblique.
+    Handwriting,
+}
+
 /// The ink of a postcard's typed text (FR-073). `Auto` is near-black on white paper and
 /// near-white on black; the others print the same on both.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -275,9 +286,13 @@ pub struct PostcardSettings {
     /// Writing lines in the text box, `POSTCARD_LINES`.
     #[serde(default = "default_postcard_lines")]
     pub lines: u8,
-    /// A user font for the typed text (FR-042); `None` uses the bundled typewriter face.
+    /// A user font for the typed text (FR-042); `None` uses the bundled face `face`.
     #[serde(default)]
     pub font: Option<u32>,
+    /// The bundled face when no user font is chosen: the typewriter or the handwriting one
+    /// (FR-076). Absent before settings v13: the typewriter.
+    #[serde(default)]
+    pub face: PostcardFace,
     /// A small line under the text box on every card ("Photo © …"); empty prints nothing.
     #[serde(default)]
     pub credit: String,
@@ -318,6 +333,7 @@ impl Default for PostcardSettings {
             orientation: PostcardOrientation::Landscape,
             lines: default_postcard_lines(),
             font: None,
+            face: PostcardFace::Typewriter,
             credit: String::new(),
             ink: PostcardInk::Auto,
             text_size: StampSize::Medium,
