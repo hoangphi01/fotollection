@@ -84,11 +84,13 @@ try {
     vi: fmt(total, 'vi-VN'),
     updated: new Date().toISOString().slice(0, 10),
   }
-  // The latest release published since the clicks were counted, split by where its macOS and
+  // The latest release, published after the clicks were first counted, split by where its macOS and
   // Windows downloads came from; Linux is left out, as install.sh also fetches from GitHub.
   const clicks = readClicks()
   const latest = perRelease.find((r) => !r.prerelease)
-  if (clicks && latest && latest.published >= clicks.since) {
+  // Only a release published after the day clicks were first counted: on that day the clicks
+  // before the tracking went live are missing.
+  if (clicks && latest && latest.published > clicks.since) {
     let site = 0
     let all = 0
     for (const [name, { system, count }] of Object.entries(latest.files)) {
