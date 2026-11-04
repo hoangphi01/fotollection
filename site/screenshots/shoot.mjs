@@ -72,6 +72,8 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode }) {
     get_ui_settings: () => ({ ...common.get_ui_settings, language, mode }),
     list_sheets: () => collage.list_sheets,
     get_postcard_text: (a) => collage.get_postcard_text?.[String(a?.id)] ?? null,
+    // The demo's texts all fit: no card is marked as cut.
+    postcard_cuts: () => [],
     sheet_info: (a) => collage.sheet_info[a.sheet.second == null ? `${a.sheet.first}` : `${a.sheet.first}-${a.sheet.second}`],
     get_document: () => ({ ...common.get_document, edited: false, name: 'Trip 2018' }),
     list_groups: () => common.list_groups,
@@ -432,24 +434,24 @@ for (const language of ['en', 'vi']) {
     await context.close()
 
     // 11. Postcards (FR-073): one photo and a postcard back on each print, the panel's
-    // postcard card open; then a card's preview with its typed text, for the manual.
+    // postcard card open, for the landing page.
     ;({ context, page } = await open({ scenario: 'postcard', language, theme, mode: 'collage', queues: NO_QUEUES }))
     // The card on the owner's red tram, which carries the first typed text (demo.rs).
     const card = await cell(page, SHOW.frame)
     await card.click()
     await settle(page)
     await save(page, `postcard-${suffix}`)
-    await card.dblclick()
-    await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
-    await settle(page)
-    await save(page, `manual-postcard-${suffix}`)
     await context.close()
 
-    // 11b. The other way to set a postcard, for the landing page: a tram by night, its photo
-    // filling the half with no border.
+    // 11b. The other way to set a postcard: trams by night, each photo filling its half with
+    // no border; the sheets for the manual, then a card's preview with its typed text, for the
+    // manual and the landing page.
     if (SHOW.night !== null) {
       ;({ context, page } = await open({ scenario: 'postcard-full', language, theme, mode: 'collage', queues: NO_QUEUES }))
       const night = await cell(page, SHOW.night)
+      await night.click()
+      await settle(page)
+      await save(page, `manual-postcard-${suffix}`)
       await night.dblclick()
       await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
       await settle(page)

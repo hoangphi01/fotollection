@@ -1,6 +1,6 @@
 # User Guide — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-02
+> **Status:** Living · **Last reviewed:** 2026-11-04
 >
 > How to use the app, step by step, for the person at the keyboard. It describes behaviour that has shipped or is on `main`; the reasons and the full rules are in [PRD.md](PRD.md), linked from each section. Update it in the same commit as any change a user would notice ([DOCS_GUIDE.md](DOCS_GUIDE.md)).
 >
@@ -23,7 +23,7 @@ Fotollection works on the folders of photos you already have. It reads them wher
 
 <!-- shot: grid | The library, culled with stars and picks -->
 
-**Three modes:** the buttons at the top of the sidebar switch between **Simple** (one photo at a time, ↑ keep, ↓ drop, then export: chapter 18), **Collage** (two photos on one print: chapter 19) and **Pro**, the app this guide describes. Your photos, basket and settings are the same in every mode, and the mode is remembered on this computer. **Cmd/Ctrl+1**, **2** and **3** switch between them, also from a preview, which closes (not while a crop is being edited) ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
+**Three modes:** the buttons at the top of the sidebar switch between **Simple** (one photo at a time, ↑ keep, ↓ drop, then export: chapter 18), **Collage** (two photos on one print: chapter 19, or postcards: chapter 20) and **Pro**, the app this guide describes. Your photos, basket and settings are the same in every mode, and the mode is remembered on this computer. **Cmd/Ctrl+1**, **2** and **3** switch between them, also from a preview, which closes (not while a crop is being edited) ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
 
 **Language and look:** click the version number at the foot of any panel, then choose *English* or *Tiếng Việt* under **Language**; it is the same in every mode. The three buttons at the foot of the sidebar set the look: **Follow the system**, **Light** or **Dark** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
 
@@ -420,9 +420,11 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
 
 <!-- shot: manual-collage-preview | A sheet’s preview: the sheet large, its two photos, the Two photos per sheet card and Export this sheet -->
 
-Every change is one undo step. The date stamp prints on each photo, with its place and your own line if you chose them; the info frame is not used on sheets.
+Every change is one undo step. The date stamp prints on each photo, with its place and your own line if you chose them; the info frame is not used on sheets. Collage mode also makes postcards: chapter 20.
 
-### 19.1 Postcards
+<!-- chapter: postcards -->
+
+## 20. Postcards
 
 *New in v0.9.4.* A kiosk print becomes a postcard you can post: one photo on one half, the back of a postcard on the other ([FR-073](PRD.md#fr-073--postcard-sheets)).
 
@@ -438,13 +440,13 @@ Every change is one undo step. The date stamp prints on each photo, with its pla
 
 **Glossy paper and the post.** The postmark on the stamp itself is fine, as a stamp is paper, but where it runs onto the glossy coating its ink may smear before it dries, and sorting machines can scuff the photo's face. If the shop lets you choose, print postcards on **matt** paper; use a self-adhesive stamp, as a gummed one may not hold on the coating; or post it in an envelope, as a letter. Try one card before sending a whole set.
 
-<!-- shot: postcard | Collage mode with Postcard on: each print holds one photo and a postcard back with a dashed stamp box and writing lines -->
+<!-- shot: manual-postcard | Collage mode with Postcard on: trams by night in Prague, each print one photo filling its half and a postcard back with a stamp box and writing lines -->
 
-<!-- shot: manual-postcard | A postcard’s preview: the card large, the Postcard card and the Postcard text field -->
+<!-- shot: postcard-night | A postcard’s preview: a night tram, the typed message and address to the National Museum, the Postcard text card -->
 
 <!-- chapter: shortcuts -->
 
-## 20. Keyboard shortcuts
+## 21. Keyboard shortcuts
 
 | Where | Key | Action |
 |-------|-----|--------|

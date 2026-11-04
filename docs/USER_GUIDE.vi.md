@@ -1,6 +1,6 @@
 # Hướng dẫn sử dụng — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-02
+> **Status:** Living · **Last reviewed:** 2026-11-04
 >
 > Bản tiếng Việt của [USER_GUIDE.md](USER_GUIDE.md), cũng là trang hướng dẫn trên website ([fotollection.org/vi/manual](https://fotollection.org/vi/manual/), [ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)). Giữ đúng các chương, mốc chương (`<!-- chapter: id -->`, ở dòng trước tiêu đề chương) và ảnh chụp màn hình (`<!-- shot: tên | mô tả -->`) như bản tiếng Anh, dùng đúng nhãn của app trong `ui/src/locales/vi.json`; `scripts/check-docs.sh` kiểm tra hai bản khớp nhau.
 
@@ -21,7 +21,7 @@ Fotollection làm việc trên các thư mục ảnh bạn đã có. Nó đọc 
 
 <!-- shot: grid | Thư viện ảnh, đã chấm sao và chọn ảnh -->
 
-**Ba chế độ:** các nút ở đầu thanh bên chuyển giữa **Đơn giản** (từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất: chương 18), **Ghép ảnh** (hai ảnh trên một tấm in: chương 19) và **Pro**, phần app mà hướng dẫn này mô tả. Ảnh, giỏ in và thiết lập của bạn giống nhau ở mọi chế độ, và chế độ được nhớ trên máy này. **Cmd/Ctrl+1**, **2** và **3** chuyển giữa chúng, kể cả khi đang xem trước (bản xem trước sẽ đóng; trừ lúc đang cắt ảnh) ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
+**Ba chế độ:** các nút ở đầu thanh bên chuyển giữa **Đơn giản** (từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất: chương 18), **Ghép ảnh** (hai ảnh trên một tấm in: chương 19, hoặc bưu thiếp: chương 20) và **Pro**, phần app mà hướng dẫn này mô tả. Ảnh, giỏ in và thiết lập của bạn giống nhau ở mọi chế độ, và chế độ được nhớ trên máy này. **Cmd/Ctrl+1**, **2** và **3** chuyển giữa chúng, kể cả khi đang xem trước (bản xem trước sẽ đóng; trừ lúc đang cắt ảnh) ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
 
 **Ngôn ngữ và giao diện:** bấm số phiên bản ở chân bảng bất kỳ, rồi chọn *English* hoặc *Tiếng Việt* ở mục **Ngôn ngữ**; ở chế độ nào cũng giống nhau. Ba nút ở cuối thanh bên đổi giao diện: **Theo hệ thống**, **Sáng** hoặc **Tối** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
 
@@ -418,9 +418,11 @@ Cùng ô đó có mục **Ngôn ngữ** (chương 1) và hiện **cache**: ảnh
 
 <!-- shot: manual-collage-preview | Bản xem trước một tấm: tấm cỡ lớn, hai ảnh của nó, thẻ Hai ảnh mỗi tấm và Xuất tấm này -->
 
-Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên từng ảnh, kèm địa điểm và dòng chữ riêng nếu bạn chọn; khung thông tin không dùng trên tấm ghép.
+Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên từng ảnh, kèm địa điểm và dòng chữ riêng nếu bạn chọn; khung thông tin không dùng trên tấm ghép. Chế độ Ghép ảnh cũng làm được bưu thiếp: chương 20.
 
-### 19.1 Bưu thiếp
+<!-- chapter: postcards -->
+
+## 20. Bưu thiếp
 
 *Mới trong v0.9.4.* Một tấm ảnh in ở kiosk thành bưu thiếp gửi được qua bưu điện: một ảnh ở một nửa, mặt sau bưu thiếp ở nửa kia ([FR-073](PRD.md#fr-073--postcard-sheets)).
 
@@ -436,13 +438,13 @@ Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên t�
 
 **Giấy bóng và bưu điện.** Dấu bưu điện đóng lên chính con tem thì không sao, vì tem là giấy; nhưng phần dấu lan ra lớp phủ bóng có thể nhoè trước khi mực khô, và máy phân loại có thể làm xước mặt ảnh. Nếu cửa hàng cho chọn, hãy in bưu thiếp trên giấy **mờ (matt)**; dùng tem tự dính, vì tem phải liếm nước có thể không bám trên lớp phủ; hoặc cho vào phong bì và gửi như thư. Hãy gửi thử một tấm trước khi gửi cả bộ.
 
-<!-- shot: postcard | Chế độ Ghép ảnh khi bật Bưu thiếp: mỗi tấm in có một ảnh và mặt sau bưu thiếp với ô tem nét đứt và dòng kẻ -->
+<!-- shot: manual-postcard | Chế độ Ghép ảnh khi bật Bưu thiếp: tàu điện Praha về đêm, mỗi tấm in có một ảnh tràn nửa tấm và mặt sau bưu thiếp với ô tem và dòng kẻ -->
 
-<!-- shot: manual-postcard | Bản xem trước một bưu thiếp: tấm cỡ lớn, thẻ Bưu thiếp và ô Chữ trên bưu thiếp -->
+<!-- shot: postcard-night | Bản xem trước một bưu thiếp: tàu điện đêm, lời nhắn và địa chỉ Bảo tàng Quốc gia đã gõ, thẻ Chữ trên bưu thiếp -->
 
 <!-- chapter: shortcuts -->
 
-## 20. Phím tắt
+## 21. Phím tắt
 
 | Ở đâu | Phím | Việc |
 |-------|------|------|
