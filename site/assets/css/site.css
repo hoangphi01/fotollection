@@ -370,16 +370,45 @@ h3.with-logo .logo-os { height: 0.95em; }
 .manual h2:first-child { margin-top: 0; }
 .manual h3 { font-size: 1.15rem; margin-top: 32px; }
 .manual p, .manual ul, .manual ol, .manual table { margin-top: 14px; color: var(--ink-2); }
-/* The story reads like a book: each chapter's title centred, its first letter two lines tall. */
-.story h2 { text-align: center; }
+/* The story reads like a book (owner, 2026-11-04): a title page centred, then one column of
+   serif text at a book's measure, centred so both margins stay equal; paragraphs indented, not
+   spaced; each chapter opens on a centred title and a two-line initial, chapters part with an
+   ornament, and the last one ends on it too. */
+.story-head { text-align: center; }
+.story-head .lead { margin-inline: auto; }
+.story {
+  max-width: 40rem;
+  margin-inline: auto;
+  font-family: 'Bitter', Georgia, serif;
+  font-size: 1.12rem;
+  line-height: 1.8;
+}
+.story p { margin-top: 0; color: var(--ink); text-wrap: pretty; }
+.story p + p { text-indent: 1.6em; }
+.story h2 { text-align: center; margin-top: 0; margin-bottom: 28px; }
+.story h2:not(:first-child)::before,
+.story::after {
+  content: '\2022\2002\2022\2002\2022';
+  display: block;
+  margin: 64px 0 56px;
+  font-size: 0.9rem;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  text-align: center;
+}
+.story h2:not(:first-child)::before { font-family: 'Bitter', Georgia, serif; font-weight: 400; }
+.story::after { margin-bottom: 0; }
 .story h2 + p::first-letter {
   float: left;
   font-family: 'Bitter', Georgia, serif;
   font-weight: 800;
-  font-size: 3.4em;
-  line-height: 0.82;
-  margin: 0.08em 0.1em 0 0;
+  font-size: 3.55em;
+  line-height: 0.8;
+  margin: 0.1em 0.1em 0 0;
   color: var(--ink);
+}
+@media (min-width: 720px) {
+  .story p { text-align: justify; hyphens: auto; }
 }
 .manual ul, .manual ol { padding-left: 1.3em; }
 .manual li + li, .manual li > ul { margin-top: 6px; }
