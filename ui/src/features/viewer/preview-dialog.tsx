@@ -32,6 +32,7 @@ import type { ExportApi } from '@/features/export/use-export'
 import { FitSizeNote } from '@/features/frame/fit-size-note'
 import { MOD } from '@/lib/platform'
 import { InspectorSection } from '@/components/layout/inspector-section'
+import { SectionCard } from '@/components/layout/section-card'
 import { KeyHints } from '@/components/layout/key-hints'
 import { StageSpinner } from '@/components/layout/stage-spinner'
 import { BorderSwitch } from '@/features/settings/border-switch'
@@ -364,7 +365,9 @@ export function PreviewDialog({
                 the settings panel: print size, date stamp, info frame, export (STYLE_RULE §4).
                 The photo's own facts follow, to change them. */}
             {photo && <PhotoSummaryCard photo={photo} details={details} />}
-            <InspectorSection icon={<Crop className="size-4" />} title={t('settings.printSize')}>
+            {/* A card of controls, spaced as in the settings panel; InspectorSection's tighter
+                rows are for the photo's facts below (STYLE_RULE §4). */}
+            <SectionCard icon={<Crop className="size-4" />} title={t('settings.printSize')}>
               <ExportTargetPicker settings={settings} onChange={onSettingsChange} />
               {settings?.exportTarget?.kind !== 'share' && (
                 <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onSettingsChange} advice={advice} />
@@ -403,7 +406,7 @@ export function PreviewDialog({
                   )}
                 </span>
               </div>
-            </InspectorSection>
+            </SectionCard>
 
             {photo && (
               <PhotoStampControls photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />

@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- Fixes: the preview's Print / export size card is spaced like the panel's
+
+### Fixed
+
+- **Preview:** the *Print / export size* card no longer packs its controls tight; it is spaced like the same card in the panel and like *Date stamp* beside it.
+
 ## [0.9.7] - 2026-11-04
 
 ### Highlights
