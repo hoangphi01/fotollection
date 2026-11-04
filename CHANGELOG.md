@@ -10,9 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Highlights
 
-- Fixes: the preview's Print / export size card is spaced like the panel's
 - New: in the preview, scroll up or down with two fingers to zoom in and out
 - UI update: every panel spaced and sized the same way in every mode; the tools panel lines up with the folder list
+- UI update: This photo holds the camera and image facts, and folds from its title
+- Fixes: tooltips stay inside the window on Windows and at the bottom of the preview
 
 ### Changed
 
@@ -24,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - **Preview:** a tooltip of two or three lines, such as the zoom buttons', is no longer cut off at the bottom of the window: it opens above its button when there is no room below.
-- **Windows:** the tooltips of the preview's buttons (crop, turn, zoom) and of best shot no longer run under the title bar: every tooltip now opens below its button, in the same style.
+- **Windows:** the tooltips of the preview's buttons (crop, turn, zoom) and of best shot no longer run under the title bar: every tooltip now opens below its button (above it when there is no room), in the same style.
 - **Preview:** the *Print / export size* card no longer packs its controls tight; it is spaced like the same card in the panel and like *Date stamp* beside it.
 
 ## [0.9.7] - 2026-11-04
