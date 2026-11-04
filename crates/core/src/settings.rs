@@ -519,6 +519,31 @@ pub fn validate_postcard(part: PostcardPart, text: &str) -> bool {
         && !text.chars().any(|c| c != '\n' && c.is_control())
 }
 
+/// How many addresses a machine remembers for the next postcards (FR-077).
+pub const MAX_RECENT_ADDRESSES: usize = 8;
+
+/// Puts `address` first in `recent`, once, and keeps the newest few: the addresses typed on
+/// this machine's postcards, offered on the next card (FR-077). Blank or invalid ones are
+/// not kept.
+pub fn remember_address(recent: &mut Vec<String>, address: &str) {
+    let address = address.trim();
+    if address.is_empty() || !validate_postcard(PostcardPart::Address, address) {
+        return;
+    }
+    recent.retain(|a| a != address);
+    recent.insert(0, address.to_owned());
+    recent.truncate(MAX_RECENT_ADDRESSES);
+}
+
+/// The remembered addresses as read from a file: valid, distinct and at most the limit.
+pub fn sanitized_addresses(recent: &[String]) -> Vec<String> {
+    let mut kept = Vec::new();
+    for address in recent.iter().rev() {
+        remember_address(&mut kept, address);
+    }
+    kept
+}
+
 /// Checks a caption coming over IPC (SECURITY.md §2).
 pub fn validate_caption(caption: &str) -> Result<(), SettingsError> {
     if caption.chars().count() > MAX_CAPTION_CHARS || caption.chars().any(char::is_control) {
@@ -781,5 +806,24 @@ mod tests {
             with_custom(vec![], "custom-9").validate().is_err(),
             "unknown id"
         );
+    }
+    /// FR-077: the newest address comes first, once, the list keeps eight, and blank or
+    /// invalid ones are never kept, from a file either.
+    #[test]
+    fn fr_077_recent_addresses_are_newest_first_distinct_and_few() {
+        let mut recent = Vec::new();
+        for n in 0..10 {
+            remember_address(&mut recent, &format!("Street {n}\nPraha"));
+        }
+        remember_address(&mut recent, "Street 3\nPraha");
+        remember_address(&mut recent, "   ");
+        remember_address(&mut recent, &"x\n".repeat(9));
+        assert_eq!(recent.len(), MAX_RECENT_ADDRESSES);
+        assert_eq!(recent[0], "Street 3\nPraha");
+        assert_eq!(recent[1], "Street 9\nPraha");
+        assert_eq!(recent.iter().filter(|a| *a == "Street 3\nPraha").count(), 1);
+        let from_file =
+            sanitized_addresses(&["A".into(), "A".into(), "bad\u{7}".into(), "B".into()]);
+        assert_eq!(from_file, ["A", "B"]);
     }
 }

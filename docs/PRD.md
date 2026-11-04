@@ -828,6 +828,18 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Styles:** bold thickens each stroke as in the other faces; italic is an oblique, as Patrick Hand has no italic.
 - Stored as `render.collage.postcard.face` (`typewriter` | `handwriting`, settings v13), used when no user font is chosen.
 
+### FR-077 — One address for many postcards
+
+**P1 (owner's request 2026-11-04).** A set of postcards often goes to one person, and typing the same address on every card is the slow part. In the *Postcard text* card, in the panel and in a postcard's preview:
+
+- **Use for N postcards without an address**, under the address once it is typed: it goes onto every other postcard shown that has no address, one undoable step. **Or for all N other postcards** replaces theirs too. With postcards ticked in select mode, only the ticked ones get it. The counts come from Rust (`postcard_text_gaps`) and follow every edit.
+- **Recent addresses** on a card with none: the last 8 addresses typed on this machine, newest first, each a click to put it on the card and × to forget it. Kept in `settings.json` (`recentAddresses`, settings v13), checked like a typed address when saved and loaded, never in a project file or a bundle, never in the error log.
+- An address put on a card keeps the card's message.
+
+### FR-078 — The photo at a glance in the preview
+
+**P1 (owner's request 2026-11-04).** The preview's first card, **This photo**, sums the photo up before the tools: the camera and lens with the camera profile's names (as the info frame, [FR-040](#fr-040--exif-info-frame)), the exposure as the frame prints it (`20mm · F1.7 · 1/60s · ISO800`, `frame::shot_summary`), the place and the capture date (after a clock offset or a date set by hand), and the size in pixels, megapixels and megabytes. Lines with nothing to say are left out. The cards below it still change the date, the place and the camera's details.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

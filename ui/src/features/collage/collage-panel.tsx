@@ -59,7 +59,14 @@ export function CollagePanel({
     >
       <SheetSizeCard settings={settings} onChange={onChange} />
       <PostcardCard settings={settings} onChange={onChange} />
-      <PostcardTextCard settings={settings} onChange={onChange} photo={cell?.id} revision={revision} />
+      <PostcardTextCard
+        settings={settings}
+        onChange={onChange}
+        photo={cell?.id}
+        revision={revision}
+        filter={filter}
+        ticked={tickedSheets > 0 ? ticked : undefined}
+      />
       <CollageCellsCard settings={settings} onChange={onChange} cell={cell} />
       <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} />
     </SidePanel>

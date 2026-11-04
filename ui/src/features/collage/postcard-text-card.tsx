@@ -5,7 +5,7 @@ import { CommitInput } from '@/components/forms/commit-input'
 import { SwatchToggle } from '@/components/forms/swatch-toggle'
 import { Label } from '@/components/ui/label'
 import { SectionCard } from '@/components/layout/section-card'
-import type { PhotoId, PostcardFace, PostcardInk, RenderSettings } from '@/ipc/bindings'
+import type { CullFilter, PhotoId, PostcardFace, PostcardInk, RenderSettings } from '@/ipc/bindings'
 import { FontSelect } from '@/features/fonts/font-select'
 import { useFonts } from '@/features/fonts/use-fonts'
 import { SizeField } from '@/features/stamp/size-field'
@@ -28,6 +28,9 @@ type PostcardTextCardProps = {
   photo: PhotoId | null | undefined
   /** Bumps on every edit and undo, so the field follows. */
   revision: number
+  /** The postcards shown, and those ticked, for "Use for N postcards" (FR-077). */
+  filter?: CullFilter
+  ticked?: readonly PhotoId[]
 }
 
 /**
@@ -35,7 +38,7 @@ type PostcardTextCardProps = {
  * every card sets it (font, size, ink) and the credit line under all of them. The same card
  * in the Collage panel and in a postcard's preview; shown while postcards are on.
  */
-export function PostcardTextCard({ settings, onChange, photo, revision }: PostcardTextCardProps) {
+export function PostcardTextCard({ settings, onChange, photo, revision, filter, ticked }: PostcardTextCardProps) {
   const { t } = useTranslation()
   const fonts = useFonts()
   const postcard = settings?.collage?.postcard
@@ -60,6 +63,8 @@ export function PostcardTextCard({ settings, onChange, photo, revision }: Postca
             style={postcard.addressStyle}
             cut={fit?.addressCut ?? false}
             onStyle={(addressStyle) => patchPostcard(onChange, { addressStyle })}
+            filter={filter}
+            ticked={ticked}
           />
         </>
       ) : (

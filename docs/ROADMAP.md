@@ -155,6 +155,8 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-074 | Postcard backs: a background colour or a pattern (airmail stripes, a grid, a texture) behind the lines; planned, not scheduled |
 | FR-075 | Share exports fitted whole into a ratio (1:1, 4:5, 3:2… or custom), the rest filled with white, black or a colour of one's own; v0.9.6 |
 | FR-076 | A bundled handwriting face for postcards (Patrick Hand), strokes as thick as the print test asks; built 2026-11-04 |
+| FR-077 | One address for many postcards: Use for N postcards, and the recent addresses of this machine; built 2026-11-04 |
+| FR-078 | The photo at a glance at the top of the preview: camera, lens, exposure, place, date, size; built 2026-11-04 |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 

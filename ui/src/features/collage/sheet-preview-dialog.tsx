@@ -295,7 +295,13 @@ export function SheetPreviewDialog({
           own photos follow, as a photo's facts follow in its preview. */}
       <SheetSizeCard settings={settings} onChange={onSettingsChange} />
       <PostcardCard settings={settings} onChange={onSettingsChange} />
-      <PostcardTextCard settings={settings} onChange={onSettingsChange} photo={sheet?.first} revision={revision} />
+      <PostcardTextCard
+        settings={settings}
+        onChange={onSettingsChange}
+        photo={sheet?.first}
+        revision={revision}
+        filter={filter}
+      />
       <CollageCellsCard settings={settings} onChange={onSettingsChange} cell={cell} />
       <DateStampCard
         settings={settings}

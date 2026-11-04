@@ -497,14 +497,14 @@ pub fn set_postcard_text(
             ),
         ));
     }
-    edit_photos(&app, &state, &[id], |_, e| {
-        let mut both = e.postcard.clone().unwrap_or_default();
-        match part {
-            fotollection_core::settings::PostcardPart::Message => both.message.clone_from(&text),
-            fotollection_core::settings::PostcardPart::Address => both.address.clone_from(&text),
-        }
-        e.postcard = both.sanitized();
-    })
+    let history = edit_photos(&app, &state, &[id], |_, e| {
+        crate::collage::set_part(e, part, &text);
+    })?;
+    // An address typed is offered on the next cards (FR-077).
+    if part == fotollection_core::settings::PostcardPart::Address {
+        crate::collage::remember_address(&state, &text);
+    }
+    Ok(history)
 }
 
 /// "Apply to all" in the preview: this photo's stamp becomes the setting for every photo,
@@ -842,7 +842,7 @@ fn export_ids(
 }
 
 /// Ticks are bounded like any other selection (SECURITY.md §2).
-fn check_ticked(ticked: &[PhotoId]) -> Result<(), IpcError> {
+pub(crate) fn check_ticked(ticked: &[PhotoId]) -> Result<(), IpcError> {
     if ticked.len() > MAX_EDIT_IDS {
         return Err(IpcError::new(
             "photo.invalid_selection",
@@ -1161,6 +1161,12 @@ pub struct PhotoDetails {
     pub iso: Option<u32>,
     /// What the file is (FR-071): subsampling, colour space, sensor, decoder.
     pub facts: fotollection_core::facts::ImageFacts,
+    /// The camera, lens and exposure as the info frame names them, with the camera
+    /// profile's overrides (FR-040), for the preview's summary (FR-078).
+    pub camera_name: Option<String>,
+    pub lens_name: Option<String>,
+    /// Focal length, aperture, shutter and ISO, as printed: `15mm`, `F2.8`, `1/60s`, `ISO800`.
+    pub exposure: Vec<String>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Type)]
@@ -1266,10 +1272,12 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             fotollection_core::plan::print_photo_area(print, border),
         );
         let shot = record.shot.clone();
-        let camera_id = state.frame.read().ok().and_then(|f| {
+        let profile = state.frame.read().ok().and_then(|f| {
             f.profile_for(shot.make.as_deref(), shot.model.as_deref())
-                .map(|p| p.id)
+                .cloned()
         });
+        let camera_id = profile.as_ref().map(|p| p.id);
+        let summary = fotollection_core::frame::shot_summary(&shot, profile.as_ref());
         let clock_id = state.library.read().ok().and_then(|l| l.clock_of(id));
         Ok(PhotoDetails {
             id,
@@ -1309,6 +1317,9 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
             exposure_s: shot.exposure_s,
             iso: shot.iso,
             facts,
+            exposure: summary.exposure(),
+            camera_name: summary.camera,
+            lens_name: summary.lens,
         })
     })
     .await

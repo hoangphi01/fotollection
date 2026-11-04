@@ -27,7 +27,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v11 (FR-073): `render.collage.postcard`, absent before (off).
 /// v12 (FR-009, FR-075): `ui.exportFolders`, absent before (one folder); `render.shareFill`,
 /// absent before (off).
-/// v13 (FR-076): `render.collage.postcard.face`, absent before (the typewriter).
+/// v13 (FR-076, FR-077): `render.collage.postcard.face`, absent before (the typewriter);
+/// `recentAddresses`, absent before (none).
 pub const SCHEMA_VERSION: u32 = 13;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
@@ -43,6 +44,9 @@ pub struct StoredSettings {
     pub fonts: Vec<UserFont>,
     /// Interface preferences of this machine (FR-020).
     pub ui: UiSettings,
+    /// The addresses last typed on postcards, newest first, for the next cards (FR-077).
+    /// This machine's only: never in a project bundle.
+    pub recent_addresses: Vec<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -60,6 +64,9 @@ struct FileV4 {
     /// Absent before v3: English (FR-020).
     #[serde(default)]
     ui: UiSettings,
+    /// Absent before v13: none (FR-077).
+    #[serde(default)]
+    recent_addresses: Vec<String>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -167,6 +174,7 @@ fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
         cameras,
         fonts: file.fonts,
         ui: file.ui,
+        recent_addresses: crate::settings::sanitized_addresses(&file.recent_addresses),
     })
 }
 
@@ -191,6 +199,7 @@ pub fn to_bytes(settings: &StoredSettings) -> std::io::Result<Vec<u8>> {
         cameras: settings.cameras.clone(),
         fonts: settings.fonts.clone(),
         ui: settings.ui,
+        recent_addresses: settings.recent_addresses.clone(),
     };
     serde_json::to_vec_pretty(&file).map_err(std::io::Error::other)
 }
@@ -473,8 +482,8 @@ mod tests {
         Ok(())
     }
 
-    /// FR-076: a v12 file has no postcard face: it loads with the typewriter, keeps what v12
-    /// added, and the handwriting face round-trips.
+    /// FR-076, FR-077: a v12 file has no postcard face and no remembered addresses: it loads
+    /// with the typewriter, keeps what v12 added, and both round-trip.
     #[test]
     fn fr_076_v12_files_type_in_the_typewriter_and_the_face_round_trips() -> std::io::Result<()> {
         use crate::settings::{ExportFolders, PostcardFace};
@@ -487,12 +496,15 @@ mod tests {
         assert_eq!(s.render.collage.postcard.face, PostcardFace::Typewriter);
         assert_eq!(s.ui.export_folders, ExportFolders::ByDay);
         assert_eq!(s.render.share_fill.ratio, [4, 5]);
+        assert_eq!(s.recent_addresses, Vec::<String>::new());
         s.render.collage.postcard.face = PostcardFace::Handwriting;
+        s.recent_addresses = vec!["Národní muzeum\n110 00 Praha 1".into()];
         save(&path, &s)?;
         let Loaded::Ok(back) = load(&path) else {
             panic!("v13 should load");
         };
         assert_eq!(back.render.collage.postcard.face, PostcardFace::Handwriting);
+        assert_eq!(back.recent_addresses, s.recent_addresses);
         Ok(())
     }
 

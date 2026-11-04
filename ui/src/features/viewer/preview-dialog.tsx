@@ -49,12 +49,12 @@ import {
   type PhotoSummary,
   type RenderSettings,
 } from '@/ipc/bindings'
-import i18n from '@/i18n'
 import { factsParts } from '@/lib/facts'
-import { formatBytes, formatNumber } from '@/lib/format'
+import { formatBytes, formatCaptureLong, formatMegapixels, formatNumber } from '@/lib/format'
 import { previewUrl, sourceUrl } from '@/lib/photo-url'
 import { CropEditor } from './crop-editor'
 import { PhotoStampControls } from './photo-stamp-controls'
+import { PhotoSummaryCard } from './photo-summary-card'
 import { useCropDrag } from './use-crop-drag'
 import { useSharpRegion } from './use-sharp-region'
 import { useZoom } from './use-zoom'
@@ -84,20 +84,6 @@ type PreviewDialogProps = {
   onClose: () => void
 }
 
-
-function formatCaptureLong(capture: string): string {
-  const date = new Date(capture)
-  if (Number.isNaN(date.getTime())) return capture
-  return date.toLocaleString(i18n.language, {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  })
-}
 
 const loadDetails = async (subject: string) => {
   const result = await commands.photoDetails(Number(subject))
@@ -374,8 +360,10 @@ export function PreviewDialog({
         </>
       }
     >
-            {/* The same tools in the same order as the settings panel: print size, date stamp,
-                info frame, export (STYLE_RULE §4). The photo's own facts follow. */}
+            {/* What the photo is at a glance (FR-078), then the same tools in the same order as
+                the settings panel: print size, date stamp, info frame, export (STYLE_RULE §4).
+                The photo's own facts follow, to change them. */}
+            {photo && <PhotoSummaryCard photo={photo} details={details} />}
             <InspectorSection icon={<Crop className="size-4" />} title={t('settings.printSize')}>
               <ExportTargetPicker settings={settings} onChange={onSettingsChange} />
               {settings?.exportTarget?.kind !== 'share' && (
@@ -492,7 +480,7 @@ export function PreviewDialog({
               {details ? (
                 <p className="tabular-nums">
                   {details.width} × {details.height} px ·{' '}
-                  {formatNumber((details.width * details.height) / 1e6, 1, 1)} MP ·{' '}
+                  {formatMegapixels(details.width, details.height)} MP ·{' '}
                   {formatBytes(details.fileBytes ?? 0)}
                 </p>
               ) : (

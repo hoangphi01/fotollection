@@ -111,6 +111,184 @@ pub fn postcard_cuts(state: State<'_, AppState>) -> Result<Vec<PostcardCut>, Ipc
         .collect())
 }
 
+/// Sets one part of a postcard's text on a photo's edits, the other part kept (FR-073).
+pub fn set_part(
+    edits: &mut fotollection_core::library::PhotoEdits,
+    part: fotollection_core::settings::PostcardPart,
+    text: &str,
+) {
+    use fotollection_core::settings::PostcardPart;
+    let mut both = edits.postcard.clone().unwrap_or_default();
+    match part {
+        PostcardPart::Message => text.clone_into(&mut both.message),
+        PostcardPart::Address => text.clone_into(&mut both.address),
+    }
+    edits.postcard = both.sanitized();
+}
+
+/// One part of a photo's postcard text, empty when there is none.
+fn part_of(
+    library: &Library,
+    id: PhotoId,
+    part: fotollection_core::settings::PostcardPart,
+) -> String {
+    use fotollection_core::settings::PostcardPart;
+    library
+        .record(id)
+        .and_then(|r| r.edits.postcard)
+        .map(|t| match part {
+            PostcardPart::Message => t.message,
+            PostcardPart::Address => t.address,
+        })
+        .unwrap_or_default()
+}
+
+/// The other postcards a card's text could go to (FR-077): the ticked ones among those
+/// shown when some are ticked, else every one shown; never the card itself.
+fn other_cards(
+    library: &Library,
+    filter: &CullFilter,
+    source: PhotoId,
+    ticked: &[PhotoId],
+) -> Vec<PhotoId> {
+    let ticked: std::collections::HashSet<PhotoId> = ticked.iter().copied().collect();
+    library
+        .filtered_ids(filter)
+        .into_iter()
+        .filter(|id| *id != source && (ticked.is_empty() || ticked.contains(id)))
+        .collect()
+}
+
+/// How many other postcards lack this card's text, and how many have a different one: the
+/// counts on "Use for N postcards" (FR-077). Zero while postcards are off.
+#[derive(Debug, Clone, Copy, Default, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct TextGaps {
+    pub blank: u32,
+    pub differ: u32,
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn postcard_text_gaps(
+    state: State<'_, AppState>,
+    filter: CullFilter,
+    source: PhotoId,
+    part: fotollection_core::settings::PostcardPart,
+    ticked: Vec<PhotoId>,
+) -> Result<TextGaps, IpcError> {
+    crate::commands::check_ticked(&ticked)?;
+    if !postcards(&state) {
+        return Ok(TextGaps::default());
+    }
+    let library = state
+        .library
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?;
+    let text = part_of(&library, source, part);
+    if text.is_empty() {
+        return Ok(TextGaps::default());
+    }
+    let mut gaps = TextGaps::default();
+    for id in other_cards(&library, &filter, source, &ticked) {
+        let other = part_of(&library, id, part);
+        if other.is_empty() {
+            gaps.blank += 1;
+        } else if other != text {
+            gaps.differ += 1;
+        }
+    }
+    Ok(gaps)
+}
+
+/// This card's message or address on the other postcards (FR-077): those still blank, or
+/// with `overwrite` every other one too. One undoable step; returns how many changed.
+#[tauri::command]
+#[specta::specta]
+pub fn apply_postcard_text(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    filter: CullFilter,
+    source: PhotoId,
+    part: fotollection_core::settings::PostcardPart,
+    overwrite: bool,
+    ticked: Vec<PhotoId>,
+) -> Result<u32, IpcError> {
+    crate::commands::check_ticked(&ticked)?;
+    let (text, ids) = {
+        let library = state
+            .library
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        let text = part_of(&library, source, part);
+        let ids: Vec<PhotoId> = other_cards(&library, &filter, source, &ticked)
+            .into_iter()
+            .filter(|id| {
+                let other = part_of(&library, *id, part);
+                other != text && (overwrite || other.is_empty())
+            })
+            .collect();
+        (text, ids)
+    };
+    if text.is_empty() {
+        return Err(IpcError::new(
+            "postcard.no_text",
+            "This postcard has no text to use",
+        ));
+    }
+    if ids.is_empty() {
+        return Ok(0);
+    }
+    edit_photos(&app, &state, &ids, |_, e| set_part(e, part, &text))?;
+    if part == fotollection_core::settings::PostcardPart::Address {
+        remember_address(&state, &text);
+    }
+    Ok(u32::try_from(ids.len()).unwrap_or(u32::MAX))
+}
+
+/// Puts an address first among those this machine offers on the next cards, and saves it
+/// (FR-077). The list's lock is let go before the settings are written.
+pub fn remember_address(state: &AppState, address: &str) {
+    let changed = state.recent_addresses.lock().is_ok_and(|mut recent| {
+        let before = recent.clone();
+        fotollection_core::settings::remember_address(&mut recent, address);
+        *recent != before
+    });
+    if changed {
+        state.save_settings();
+    }
+}
+
+/// The addresses typed on this machine's last postcards, newest first (FR-077).
+#[tauri::command]
+#[specta::specta]
+pub fn recent_addresses(state: State<'_, AppState>) -> Result<Vec<String>, IpcError> {
+    state
+        .recent_addresses
+        .lock()
+        .map(|r| r.clone())
+        .map_err(|e| IpcError::internal(e.to_string()))
+}
+
+/// Forgets one remembered address (FR-077); returns the list left.
+#[tauri::command]
+#[specta::specta]
+pub fn forget_address(
+    state: State<'_, AppState>,
+    address: String,
+) -> Result<Vec<String>, IpcError> {
+    let left = {
+        let mut recent = state
+            .recent_addresses
+            .lock()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        recent.retain(|a| *a != address);
+        recent.clone()
+    };
+    state.save_settings();
+    Ok(left)
+}
+
 /// Whether collage sheets are postcards (FR-073): one photo each. Read it before taking the
 /// library lock, so no lock is ever taken while another is held.
 pub fn postcards(state: &AppState) -> bool {
@@ -529,5 +707,32 @@ mod tests {
             vec![pair(5, None)]
         );
         assert_eq!(only_sheet(all, Some(PhotoId(9))), Vec::new());
+    }
+
+    /// FR-077: an address put on a card keeps its message, and a blank one leaves no text.
+    #[test]
+    fn fr_077_setting_one_part_keeps_the_other() {
+        use fotollection_core::library::{PhotoEdits, PostcardText};
+        use fotollection_core::settings::PostcardPart;
+        let mut edits = PhotoEdits {
+            postcard: Some(PostcardText {
+                message: "Ahoj Praha!".into(),
+                address: String::new(),
+            }),
+            ..PhotoEdits::default()
+        };
+        set_part(
+            &mut edits,
+            PostcardPart::Address,
+            "Národní muzeum\n110 00 Praha 1",
+        );
+        let Some(text) = edits.postcard.clone() else {
+            panic!("the card has text");
+        };
+        assert_eq!(text.message, "Ahoj Praha!");
+        assert_eq!(text.address, "Národní muzeum\n110 00 Praha 1");
+        set_part(&mut edits, PostcardPart::Message, "");
+        set_part(&mut edits, PostcardPart::Address, "  ");
+        assert_eq!(edits.postcard, None);
     }
 }

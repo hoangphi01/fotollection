@@ -102,6 +102,8 @@ pub struct AppState {
     pub frame: RwLock<FrameState>,
     /// Interface language and other per-machine UI preferences (FR-020).
     pub ui: RwLock<UiSettings>,
+    /// Addresses last typed on postcards, newest first (FR-077); this machine's only.
+    pub recent_addresses: Mutex<Vec<String>>,
     /// Chosen through the Rust-side dialog only, never sent by the webview (SECURITY.md §2).
     pub export_destination: Mutex<Option<PathBuf>>,
     pub jobs: Mutex<HashMap<u32, CancellationToken>>,
@@ -218,6 +220,7 @@ impl AppState {
                 loaded_fonts,
             }),
             ui: RwLock::new(stored.ui),
+            recent_addresses: Mutex::new(stored.recent_addresses),
             export_destination: Mutex::new(None),
             jobs: Mutex::new(HashMap::new()),
             next_job: AtomicU32::new(1),
@@ -283,6 +286,10 @@ impl AppState {
         if !self.store_writable.load(Ordering::Relaxed) {
             return;
         }
+        // Read on its own first: no lock is held while another is taken.
+        let Ok(recent_addresses) = self.recent_addresses.lock().map(|r| r.clone()) else {
+            return;
+        };
         let (Ok(render), Ok(frame), Ok(ui)) =
             (self.settings.read(), self.frame.read(), self.ui.read())
         else {
@@ -294,6 +301,7 @@ impl AppState {
             cameras: frame.cameras.clone(),
             fonts: frame.fonts.clone(),
             ui: *ui,
+            recent_addresses,
         };
         drop((render, frame, ui));
         let _guard = self.store_lock.lock();

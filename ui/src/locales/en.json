@@ -355,6 +355,7 @@
     "noExifDate": "No EXIF date · using file time",
     "fromExif": "From EXIF",
     "camera": "Camera",
+    "summary": "This photo",
     "unknownCamera": "Unknown camera",
     "frameProfile": "Frame & camera profile",
     "image": "Image",
@@ -458,6 +459,9 @@
       "too_large": "The logo is larger than 2 MB or 4096 px",
       "unreadable": "The logo file could not be read",
       "write_failed": "The logo could not be saved"
+    },
+    "postcard": {
+      "no_text": "This postcard has no text to use"
     },
     "photo": {
       "invalid_rating": "Ratings are 0 to 5 stars",
@@ -792,6 +796,20 @@
     "readBy": "read by {{name}}"
   },
   "postcard": {
+    "reuse": {
+      "blankAll_one": "Use for {{count}} postcard without an address",
+      "blankAll_other": "Use for {{count}} postcards without an address",
+      "blankTicked_one": "Use for {{count}} ticked postcard without an address",
+      "blankTicked_other": "Use for {{count}} ticked postcards without an address",
+      "overwriteAll_one": "· or for {{count}} other postcard, replacing its own",
+      "overwriteAll_other": "· or for all {{count}} other postcards, replacing their own",
+      "overwriteTicked_one": "· or for {{count}} ticked postcard, replacing its own",
+      "overwriteTicked_other": "· or for all {{count}} ticked postcards, replacing their own",
+      "done_one": "Used for {{count}} postcard · Cmd/Ctrl+Z undoes it",
+      "done_other": "Used for {{count}} postcards · Cmd/Ctrl+Z undoes it",
+      "recent": "Recent addresses",
+      "forget": "Forget this address"
+    },
     "cut": "Some text does not fit",
     "cutHint": "Not all of it fits its lines and the rest is left off the print: shorten it, or choose a smaller size.",
     "title": "Postcard",

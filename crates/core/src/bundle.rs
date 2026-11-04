@@ -178,8 +178,10 @@ pub fn is_bundle(bytes: &[u8]) -> bool {
 /// same project always produces the same bytes.
 pub fn to_bytes(bundle: &Bundle) -> Result<Vec<u8>, BundleError> {
     let write_err = |e: &dyn std::fmt::Display| BundleError::Write(e.to_string());
+    // This machine's own: the interface and the addresses it remembers stay out (FR-077).
     let settings = StoredSettings {
         ui: UiSettings::default(),
+        recent_addresses: Vec::new(),
         ..bundle.settings.clone()
     };
     let project = ProjectFile {
@@ -837,6 +839,17 @@ mod tests {
             ),
             bytes,
         )
+    }
+
+    /// FR-077: the addresses a machine remembers never travel in a project.
+    #[test]
+    fn fr_077_a_bundle_carries_no_remembered_addresses() {
+        let mut bundle = sample(false);
+        bundle.settings.recent_addresses = vec!["Národní muzeum\n110 00 Praha 1".into()];
+        let Ok(back) = from_bytes(&to_bytes(&bundle).unwrap_or_default()) else {
+            panic!("the bundle reads back");
+        };
+        assert_eq!(back.settings.recent_addresses, Vec::<String>::new());
     }
 
     #[test]

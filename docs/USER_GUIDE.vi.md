@@ -93,6 +93,10 @@ Nút **Giỏ in** trên ảnh (cạnh *Cắt ảnh*, các nút xoay và *Xuất 
 
 Khi bạn mở bản xem trước từ *Giỏ in* hoặc *Để riêng*, ↑ và ↓ chuyển ảnh sang khu vực còn lại; ảnh ở nguyên chỗ cũ thì chuyển sang tấm tiếp theo.
 
+**Xem nhanh ảnh:** thẻ đầu tiên bên phải, **Ảnh này**, cho biết bạn đang xem gì ([FR-078](PRD.md#fr-078--the-photo-at-a-glance-in-the-preview)): máy ảnh và ống kính (theo tên bạn đặt cho khung thông tin, chương 9), thông số phơi sáng đúng như khung in ra (*20mm · F1.7 · 1/60s · ISO800*), chụp ở đâu và khi nào, và kích thước theo điểm ảnh, megapixel và megabyte. Các thẻ bên dưới dùng để sửa ngày và nơi chụp.
+
+<!-- shot: manual-summary | Thẻ Ảnh này ở đầu bản xem trước: máy và ống kính, thông số, nơi và ngày chụp, kích thước -->
+
 ### 4.2 Cách B: tích ảnh ngay trong gallery (chế độ Chọn)
 
 1. Nhấp **Chọn** trên thanh công cụ, phía trên các ảnh. Nút đổi thành **Xong**, và một thanh hiện ra dưới thanh công cụ.
@@ -435,6 +439,12 @@ Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên t�
 3. Nửa ảnh vẫn như trước: tỷ lệ, cỡ ảnh, *Lấp đầy mỗi nửa*, viền 3 mm, dấu ngày, **Cắt ảnh** và **Xoay ảnh** trong bản xem trước. Bưu thiếp không có đường cắt và không xoay tấm; nút Tự xoay được ẩn.
 4. **Chữ trên bưu thiếp**, thẻ ngay bên dưới, hoặc để trống các dòng để viết tay. Chọn một bưu thiếp (bấm vào nó, hoặc mở bản xem trước) rồi gõ **Lời nhắn** (tối đa 400 ký tự, trên các dòng phía trên) và **Địa chỉ** (tối đa 200 ký tự; trên 3 dòng của nó, hoặc 4 dòng nhỏ hơn trong cùng khoảng đó khi địa chỉ dài). Các nút **B**, *I*, U cạnh mỗi phần làm phần đó đậm, nghiêng hoặc gạch chân trên mọi bưu thiếp. Cũng thẻ đó chỉnh cách mọi bưu thiếp in chữ: **Font**, font máy đánh chữ *Xanh Mono*, font viết tay *Patrick Hand* hoặc font của bạn (**Nhập OTF/TTF…**, như chương 9), có đủ chữ của mọi tiếng châu Âu viết bằng chữ Latin (chữ Hy Lạp hay Cyrillic lấy từ font kia của app), nên địa chỉ dán vào in đúng như gõ; **Cỡ chữ** nhỏ, vừa hoặc lớn; **Màu chữ**, **Đen** (thành trắng trên giấy đen), **Xanh**, **Nâu** hoặc **Đỏ**; và **Dòng ghi công (tuỳ chọn)**, một dòng chữ nhỏ ở chân mọi bưu thiếp, ví dụ *Ảnh © Anna Schmidt*. Phần không vừa các dòng của nó sẽ không được in, đúng như bản xem trước, và một dấu **!** đỏ hiện trên bưu thiếp ở lưới, ở bản xem trước và ở phần bị cắt: hãy rút ngắn, hoặc chọn cỡ chữ nhỏ hơn.
 5. **Xuất ảnh** ghi mỗi bưu thiếp thành một tệp, đặt tên theo ảnh của nó (ví dụ `P1000123-postcard.jpg`).
+
+**Một địa chỉ cho cả bộ** ([FR-077](PRD.md#fr-077--one-address-for-many-postcards)). Gõ địa chỉ ở một tấm; ngay bên dưới, **Dùng cho N bưu thiếp chưa có địa chỉ** điền nó vào mọi tấm đang hiện chưa có địa chỉ, trong một bước mà **Cmd/Ctrl+Z** hoàn tác được. **Hoặc cho cả N tấm khác** thay luôn địa chỉ của chúng. Khi đang tick bưu thiếp ở chế độ chọn, địa chỉ chỉ vào các tấm đã tick. Ở tấm chưa có địa chỉ, **Địa chỉ gần đây** liệt kê các địa chỉ vừa gõ trên máy này: bấm một mục để điền vào tấm, hoặc × để quên nó. Chúng chỉ nằm trên máy này, không bao giờ vào file dự án.
+
+<!-- shot: manual-postcard-apply | Thẻ Chữ trên bưu thiếp: địa chỉ đã gõ, và Dùng cho N bưu thiếp chưa có địa chỉ bên dưới -->
+
+<!-- shot: manual-postcard-recent | Một tấm chưa có địa chỉ: Địa chỉ gần đây để chọn -->
 
 **Viết tay.** Mặt ảnh in là một lớp phủ mà nhiều loại bút không ăn. Hãy dùng bút dạ dầu nét mảnh (Sharpie Ultra Fine, edding 400, Stabilo OHPen S), thử ở ô tem trước và để khô khoảng một phút; bút bi hay bị đứt nét, bút gel và bút kim dễ lem. Chữ gõ thì không gặp các vấn đề này.
 

@@ -95,6 +95,10 @@ The **Print basket** button on the photo (next to *Crop*, the turn buttons and *
 
 When you open the preview from the *Print basket* or *Set aside* view, ↑ and ↓ move the photo to the other area; a photo that stays where it is moves on to the next one.
 
+**The photo at a glance:** the first card on the right, **This photo**, says what you are looking at ([FR-078](PRD.md#fr-078--the-photo-at-a-glance-in-the-preview)): the camera and lens (with the names you gave them for the info frame, chapter 9), the exposure as the frame prints it (*20mm · F1.7 · 1/60s · ISO800*), where and when it was taken, and its size in pixels, megapixels and megabytes. The cards further down change the date and the place.
+
+<!-- shot: manual-summary | The This photo card at the top of the preview: camera and lens, exposure, place and date, size -->
+
 ### 4.2 Workflow B: tick photos in the gallery (select mode)
 
 1. Click **Select** in the toolbar, above the photos. It becomes **Done**, and a bar appears under the toolbar.
@@ -437,6 +441,12 @@ Every change is one undo step. The date stamp prints on each photo, with its pla
 3. The photo half works as before: ratio, size, *Fill each half*, the 3 mm border, the date stamp, **Crop** and **Rotate photo** in the preview. A postcard has no cut line and does not turn; Auto turn is hidden.
 4. **Text on the postcard**, the card under it, or leave the lines blank to write by hand. Choose a postcard (click it, or open its preview) and type its **Message** (up to 400 characters, on the top lines) and its **Address** (up to 200 characters; on its 3 lines, or 4 smaller ones in the same room when it is long). **B**, *I* and U next to each set that part bold, italic or underlined on every card. The same card sets how every postcard prints its text: **Font**, the typewriter face *Xanh Mono*, the handwriting face *Patrick Hand* or one of your own (**Import OTF/TTF…**, as in chapter 9), which has the letters of every European language written in Latin script (Greek or Cyrillic come from the app's other font), so a copied address prints as typed; **Size**, small, medium or large; **Ink**, **Black** (white on black paper), **Blue**, **Sepia** or **Red**; and **Credit line (optional)**, a small line at the foot of every card, for example *Photo © Anna Schmidt*. What does not fit its lines is left out of the print, as the preview shows, and a red **!** marks the card in the grid and in its preview, and the part that is cut: shorten it, or choose a smaller size.
 5. **Export** writes one file per postcard, named after its photo (for example `P1000123-postcard.jpg`).
+
+**One address for a whole set** ([FR-077](PRD.md#fr-077--one-address-for-many-postcards)). Type the address on one card; under it, **Use for N postcards without an address** puts it on every other card shown that has none, in one step that **Cmd/Ctrl+Z** undoes. **Or for all N other postcards** replaces theirs too. With postcards ticked in select mode, it goes to the ticked ones only. On a card with no address yet, **Recent addresses** lists the last ones typed on this computer: click one to put it on the card, or × to forget it. They stay on this computer and never go into a project file.
+
+<!-- shot: manual-postcard-apply | The Postcard text card: the address typed, and Use for N postcards without an address under it -->
+
+<!-- shot: manual-postcard-recent | A card without an address: Recent addresses to pick from -->
 
 **Writing by hand.** A print's face is a coating that many pens do not take. Use a fine permanent marker (Sharpie Ultra Fine, edding 400, Stabilo OHPen S), try it in the stamp box first, and let it dry for about a minute; ballpoint pens often skip and gel or fineliner pens smear. Typed text has none of these problems.
 

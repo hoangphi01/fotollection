@@ -144,6 +144,7 @@ fn build_bundle(state: &AppState, base: &Path) -> Result<Bundle, IpcError> {
         cameras: frame.cameras.clone(),
         fonts: frame.fonts.clone(),
         ui: fotollection_core::settings::UiSettings::default(),
+        recent_addresses: Vec::new(),
     };
     settings.fonts = bundle::used_fonts(&settings);
     let mut font_files = std::collections::BTreeMap::new();
@@ -331,6 +332,7 @@ fn install_settings(state: &AppState, bundle: &Bundle) -> Result<(), IpcError> {
         cameras: frame.cameras.clone(),
         fonts: frame.fonts.clone(),
         ui: state.ui.read().map(|u| *u).unwrap_or_default(),
+        recent_addresses: Vec::new(),
     };
     let font_path = |f: &UserFont| {
         state

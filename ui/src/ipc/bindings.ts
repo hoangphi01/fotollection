@@ -268,6 +268,16 @@ export const commands = {
 	 *  font are read first, then the library: no lock is taken while another is held.
 	 */
 	postcardCuts: () => typedError<PostcardCut[], IpcError>(__TAURI_INVOKE("postcard_cuts")),
+	postcardTextGaps: (filter: CullFilter, source: PhotoId, part: PostcardPart, ticked: PhotoId[]) => typedError<TextGaps, IpcError>(__TAURI_INVOKE("postcard_text_gaps", { filter, source, part, ticked })),
+	/**
+	 *  This card's message or address on the other postcards (FR-077): those still blank, or
+	 *  with `overwrite` every other one too. One undoable step; returns how many changed.
+	 */
+	applyPostcardText: (filter: CullFilter, source: PhotoId, part: PostcardPart, overwrite: boolean, ticked: PhotoId[]) => typedError<number, IpcError>(__TAURI_INVOKE("apply_postcard_text", { filter, source, part, overwrite, ticked })),
+	/**  The addresses typed on this machine's last postcards, newest first (FR-077). */
+	recentAddresses: () => typedError<string[], IpcError>(__TAURI_INVOKE("recent_addresses")),
+	/**  Forgets one remembered address (FR-077); returns the list left. */
+	forgetAddress: (address: string) => typedError<string[], IpcError>(__TAURI_INVOKE("forget_address", { address })),
 	/**  Places whose name starts with `query`, largest first, from the bundled data (FR-032). */
 	searchPlaces: (query: string, limit: number) => typedError<Place[], IpcError>(__TAURI_INVOKE("search_places", { query, limit })),
 	/**
@@ -1122,6 +1132,14 @@ export type PhotoDetails = {
 	iso: number | null,
 	/**  What the file is (FR-071): subsampling, colour space, sensor, decoder. */
 	facts: ImageFacts,
+	/**
+	 *  The camera, lens and exposure as the info frame names them, with the camera
+	 *  profile's overrides (FR-040), for the preview's summary (FR-078).
+	 */
+	cameraName: string | null,
+	lensName: string | null,
+	/**  Focal length, aperture, shutter and ISO, as printed: `15mm`, `F2.8`, `1/60s`, `ISO800`. */
+	exposure: string[],
 };
 
 /**  Dense index of a photo within this session's library. */
@@ -1546,6 +1564,15 @@ export type TaskProgress = {
 	task: TaskKind,
 	done: number,
 	total: number,
+};
+
+/**
+ *  How many other postcards lack this card's text, and how many have a different one: the
+ *  counts on "Use for N postcards" (FR-077). Zero while postcards are off.
+ */
+export type TextGaps = {
+	blank: number,
+	differ: number,
 };
 
 /**  Bold, italic and underline for one part of a postcard's text (FR-073). */

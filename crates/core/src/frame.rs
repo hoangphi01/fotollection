@@ -303,6 +303,46 @@ impl FrameText {
     }
 }
 
+/// A shot as the info frame names it: the camera's name, its lens and its exposure, from
+/// EXIF with the camera profile's overrides, each set as the frame prints it. The preview's
+/// summary shows the same (FR-040, FR-078).
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct ShotSummary {
+    pub camera: Option<String>,
+    pub lens: Option<String>,
+    pub focal: Option<String>,
+    pub aperture: Option<String>,
+    pub shutter: Option<String>,
+    pub iso: Option<String>,
+    pub photo_style: Option<String>,
+}
+
+impl ShotSummary {
+    /// Focal length, aperture, shutter and ISO, those known, in that order.
+    pub fn exposure(&self) -> Vec<String> {
+        [&self.focal, &self.aperture, &self.shutter, &self.iso]
+            .into_iter()
+            .flatten()
+            .cloned()
+            .collect()
+    }
+}
+
+/// A shot's camera, lens and exposure with the profile's overrides (FR-040, FR-078).
+pub fn shot_summary(shot: &ShotInfo, profile: Option<&CameraProfile>) -> ShotSummary {
+    let fallback = CameraProfile::new(0, shot.make.clone(), shot.model.clone());
+    let p = profile.unwrap_or(&fallback);
+    ShotSummary {
+        camera: p.display_name.clone().or_else(|| p.default_display_name()),
+        lens: p.lens.clone().or_else(|| shot.lens.clone()),
+        focal: p.focal_mm.or(shot.focal_mm).map(format_focal),
+        aperture: p.f_number.or(shot.f_number).map(format_aperture),
+        shutter: shot.exposure_s.map(format_shutter),
+        iso: shot.iso.map(|iso| format!("ISO{iso}")),
+        photo_style: p.photo_style.clone(),
+    }
+}
+
 /// Builds the frame text from EXIF, the camera profile overrides and the field switches.
 pub fn build_text(
     shot: &ShotInfo,
@@ -314,10 +354,11 @@ pub fn build_text(
     let f = settings.fields;
     let fallback = CameraProfile::new(0, shot.make.clone(), shot.model.clone());
     let p = profile.unwrap_or(&fallback);
+    let summary = shot_summary(shot, Some(p));
 
     let mut lines = Vec::new();
     if f.camera
-        && let Some(name) = p.display_name.clone().or_else(|| p.default_display_name())
+        && let Some(name) = summary.camera
     {
         lines.push(format!("Shot on  {name}"));
     }
@@ -325,30 +366,20 @@ pub fn build_text(
     let mut exposure = Vec::new();
     let mut lens_len = 0;
     if f.lens
-        && let Some(lens) = p.lens.clone().or_else(|| shot.lens.clone())
+        && let Some(lens) = summary.lens
     {
         lens_len = lens.len();
         exposure.push(lens);
     }
-    if f.focal
-        && let Some(mm) = p.focal_mm.or(shot.focal_mm)
-    {
-        exposure.push(format_focal(mm));
-    }
-    if f.aperture
-        && let Some(fnum) = p.f_number.or(shot.f_number)
-    {
-        exposure.push(format_aperture(fnum));
-    }
-    if f.shutter
-        && let Some(s) = shot.exposure_s
-    {
-        exposure.push(format_shutter(s));
-    }
-    if f.iso
-        && let Some(iso) = shot.iso
-    {
-        exposure.push(format!("ISO{iso}"));
+    for (on, part) in [
+        (f.focal, summary.focal),
+        (f.aperture, summary.aperture),
+        (f.shutter, summary.shutter),
+        (f.iso, summary.iso),
+    ] {
+        if let (true, Some(part)) = (on, part) {
+            exposure.push(part);
+        }
     }
     let mut wrap = None;
     if !exposure.is_empty() {
@@ -359,7 +390,7 @@ pub fn build_text(
     }
 
     if f.photo_style
-        && let Some(style) = p.photo_style.clone()
+        && let Some(style) = summary.photo_style
     {
         lines.push(style);
     }
@@ -676,6 +707,32 @@ pub fn layout(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// FR-078: the preview's summary names the shot as the frame does: the profile's name and
+    /// lens over EXIF's, the exposure set as printed.
+    #[test]
+    fn fr_078_the_summary_takes_the_profile_over_exif() {
+        let shot = ShotInfo {
+            make: Some("Panasonic".into()),
+            model: Some("DC-GX9".into()),
+            lens: Some("LUMIX G 20/F1.7 II".into()),
+            focal_mm: Some(20.0),
+            f_number: Some(1.7),
+            exposure_s: Some(1.0 / 60.0),
+            iso: Some(800),
+        };
+        let plain = shot_summary(&shot, None);
+        assert_eq!(plain.lens.as_deref(), Some("LUMIX G 20/F1.7 II"));
+        assert_eq!(plain.exposure(), ["20mm", "F1.7", "1/60s", "ISO800"]);
+        let mut profile = CameraProfile::new(1, shot.make.clone(), shot.model.clone());
+        profile.display_name = Some("LUMIX GX9".into());
+        profile.lens = Some("Industar-50-2".into());
+        profile.f_number = Some(3.5);
+        let named = shot_summary(&shot, Some(&profile));
+        assert_eq!(named.camera.as_deref(), Some("LUMIX GX9"));
+        assert_eq!(named.lens.as_deref(), Some("Industar-50-2"));
+        assert_eq!(named.aperture.as_deref(), Some("F3.5"));
+    }
 
     fn shot() -> ShotInfo {
         ShotInfo {

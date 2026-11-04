@@ -11,9 +11,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Highlights
 
 - New: a handwriting face for postcards, Patrick Hand, as easy to read on a print as the typewriter
+- New: type an address once, then use it for every postcard of the set in one click; recent addresses to pick from
+- UI update: the preview opens with the photo at a glance: camera, lens, exposure, place, date and size
 
 ### Added
 
+- **Postcards, one address for a set:** under the address typed on a card, **Use for N postcards without an address** puts it on every other card shown that has none, in one undoable step (or on all of them, replacing theirs, or only on the ticked ones). A card without an address offers the **Recent addresses** typed on this computer, to pick with one click or forget with ×; they never go into a project file.
+- **The photo at a glance:** the preview's first card, **This photo**, shows the camera and lens (with the names you gave them for the info frame), the exposure as the frame prints it, where and when the photo was taken, and its size in pixels, megapixels and megabytes.
 - **Postcards:** a handwriting face, **Handwriting (Patrick Hand)**, in the *Font* list next to the typewriter. It has every letter of Vietnamese and of Europe's Latin-script languages, and its strokes are at least as thick as the typewriter's at the medium size, the thinnest a test print showed readable, even at the small size. A size looks the same in both faces.
 
 ## [0.9.6] - 2026-11-04

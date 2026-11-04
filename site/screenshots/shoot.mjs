@@ -74,6 +74,26 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode }) {
     get_postcard_text: (a) => collage.get_postcard_text?.[String(a?.id)] ?? null,
     // The demo's texts all fit: no card is marked as cut.
     postcard_cuts: () => [],
+    // "Use for N postcards" (FR-077): the other cards without this card's address, counted
+    // from the recorded texts; and two public addresses as this machine's recent ones.
+    postcard_text_gaps: (a) => {
+      const texts = collage.get_postcard_text ?? {}
+      const own = texts[String(a?.source)]?.[a?.part] ?? ''
+      if (!own) return { blank: 0, differ: 0 }
+      let blank = 0
+      let differ = 0
+      for (const sheet of collage.list_sheets) {
+        if (sheet.first === a.source) continue
+        const other = texts[String(sheet.first)]?.[a.part] ?? ''
+        if (!other) blank += 1
+        else if (other !== own) differ += 1
+      }
+      return { blank, differ }
+    },
+    recent_addresses: () => [
+      'Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1, Czechia',
+      'Magyar Nemzeti Múzeum\nMúzeum krt. 14–16\n1088 Budapest, Hungary',
+    ],
     sheet_info: (a) => collage.sheet_info[a.sheet.second == null ? `${a.sheet.first}` : `${a.sheet.first}-${a.sheet.second}`],
     get_document: () => ({ ...common.get_document, edited: false, name: 'Trip 2018' }),
     list_groups: () => common.list_groups,
@@ -296,6 +316,14 @@ for (const language of ['en', 'vi']) {
     await page.waitForSelector(`img[src*="/preview/${SHOW.stamp}"]`)
     await settle(page)
     await save(page, `stamp-${suffix}`)
+    // 2a. For the manual: the photo at a glance, at the top of the inspector (FR-078).
+    const summary = await page
+      .locator('[role="dialog"] section', { hasText: /^(This photo|Ảnh này)/ })
+      .first()
+      .boundingBox()
+    if (summary) {
+      await zoomed(page, `manual-summary-${suffix}`, { x: summary.x - 16, y: summary.y - 16, width: summary.width + 32, height: summary.height + 32 })
+    }
     // 2b. The place in the Location card (for checking only), and the place picker for the
     // manual (FR-032).
     const inspector = page.locator('[role="dialog"]')
@@ -469,6 +497,28 @@ for (const language of ['en', 'vi']) {
       await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
       await settle(page)
       await save(page, `postcard-night-${suffix}`)
+      // 11c. For the manual (FR-077): the typed address, "Use for N postcards" under it; then
+      // a card without an address, and the recent addresses offered on it.
+      const textCard = (pattern) =>
+        page.locator('[role="dialog"] section', { has: page.getByText(pattern) }).first()
+      const apply = textCard(/^(Use for|Dùng cho) \d+/)
+      if (await apply.count()) {
+        await apply.scrollIntoViewIfNeeded()
+        await settle(page)
+        const box = await apply.boundingBox()
+        if (box) await zoomed(page, `manual-postcard-apply-${suffix}`, { x: box.x - 16, y: box.y - 16, width: box.width + 32, height: box.height + 32 })
+      }
+      for (let i = 0; i < 8 && !(await page.getByText(/^(Recent addresses|Địa chỉ gần đây)$/).count()); i++) {
+        await page.keyboard.press('ArrowRight')
+        await settle(page)
+      }
+      const recent = textCard(/^(Recent addresses|Địa chỉ gần đây)$/)
+      if (await recent.count()) {
+        await recent.scrollIntoViewIfNeeded()
+        await settle(page)
+        const box = await recent.boundingBox()
+        if (box) await zoomed(page, `manual-postcard-recent-${suffix}`, { x: box.x - 16, y: box.y - 16, width: box.width + 32, height: box.height + 32 })
+      }
       await context.close()
     }
   }
