@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.9.5] - 2026-11-04
+
 ### Highlights
 
 - UI update: a smaller stamp box on postcards, hidden by the stamp you stick on
