@@ -761,6 +761,8 @@
     "readBy": "read by {{name}}"
   },
   "postcard": {
+    "cut": "Some text does not fit",
+    "cutHint": "Not all of it fits its lines and the rest is left off the print: shorten it, or choose a smaller size.",
     "title": "Postcard",
     "hint": "Each sheet becomes a postcard: one photo, and on the other half a stamp box and lines for a message or an address.",
     "orientation": "Held",

@@ -23,12 +23,14 @@ import { MOD } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 import { CollageCellsCard } from './collage-cells-card'
 import { PostcardCard } from './postcard-card'
+import { PostcardCutBadge } from './postcard-cut-badge'
 import { PostcardTextCard } from './postcard-text-card'
 import { sheetCells } from './sheet-cells'
 import { SheetCellsOverlay } from './sheet-cells-overlay'
 import { SheetSizeCard } from './sheet-size-card'
 import { useCellGeometry } from './use-cell-geometry'
 import type { CollageApi } from './use-collage'
+import { usePostcardCuts } from './use-postcard-cuts'
 import { useSheetInfo } from './use-sheet-info'
 import { useSheetShape } from './use-sheet-shape'
 
@@ -108,6 +110,7 @@ export function SheetPreviewDialog({
   }
   // A quarter turn of the photo in its cell only (FR-035): its print keeps its orientation.
   const postcard = settings?.collage?.postcard?.enabled ?? false
+  const cut = usePostcardCuts(settings, revision).has(sheet?.first ?? -1)
   const rotatePhoto = (id: PhotoId) => void commands.rotateCollagePhoto(id)
   const onKeyDown = (event: KeyboardEvent) => {
     if (cropping || ownsArrowKeys(event.target)) return
@@ -217,6 +220,7 @@ export function SheetPreviewDialog({
                     )}
                   </SheetCellsOverlay>
                 )}
+                {cut && <PostcardCutBadge className="absolute top-2 left-2" />}
               </div>
             ) : (
               <StageSpinner error={shownError} />

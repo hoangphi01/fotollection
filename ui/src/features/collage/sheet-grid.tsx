@@ -6,6 +6,7 @@ import type { PhotoId, SheetPair } from '@/ipc/bindings'
 import { thumbUrl } from '@/lib/photo-url'
 import { sheetOrder } from './sheet-cells'
 import { SheetTile } from './sheet-tile'
+import type { PostcardCuts } from './use-postcard-cuts'
 
 const TILE = 248
 const GAP = 12
@@ -34,6 +35,8 @@ type SheetGridProps = {
   onTurn?: (first: PhotoId) => void
   /** The sheets are postcards (FR-073). */
   postcard?: boolean
+  /** The postcards whose text does not all fit, by photo (FR-073). */
+  cuts?: PostcardCuts
 }
 
 /**
@@ -57,6 +60,7 @@ export function SheetGrid({
   onMove,
   onTurn,
   postcard = false,
+  cuts,
 }: SheetGridProps) {
   const { t } = useTranslation()
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -201,6 +205,7 @@ export function SheetGrid({
                   onOpen={(cell) => onOpen(index, cell)}
                   onTurn={onTurn && (() => onTurn(sheet.first))}
                   postcard={postcard}
+                  cut={cuts?.has(sheet.first) ?? false}
                   onDragStart={startDrag}
                 />
               )

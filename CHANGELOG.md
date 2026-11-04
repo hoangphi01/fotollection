@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - UI update: a smaller stamp box on postcards, hidden by the stamp you stick on
 - Fixes: bold text on postcards prints as one solid stroke, no longer a doubled line
+- UI update: a long address gets a fourth line, and a red ! marks a postcard whose text is cut
 
 ### Fixed
 
@@ -19,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Postcards:** a long address gets a fourth line, in the room of its three (closer and a little smaller), and the address takes at most 4 lines. When a message or an address does not all fit, a red **!** marks the card in the grid and in its preview, and the part that is cut.
 - **Postcards:** the dashed stamp box is smaller, 20 × 25 mm, so the stamp you stick on hides it. The manual now says what glossy paper means at the post (the postmark may smear off the stamp, a gummed stamp may not hold) and suggests matt paper or a self-adhesive stamp.
 
 ## [0.9.4] - 2026-11-04

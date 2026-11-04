@@ -733,6 +733,8 @@
     "readBy": "đọc bằng {{name}}"
   },
   "postcard": {
+    "cut": "Chữ không in hết",
+    "cutHint": "Chữ dài hơn các dòng kẻ, phần thừa sẽ không được in: rút ngắn lại, hoặc chọn cỡ chữ nhỏ hơn.",
     "title": "Bưu thiếp",
     "hint": "Mỗi tấm thành một bưu thiếp: một ảnh, nửa còn lại có ô dán tem và dòng kẻ để viết lời nhắn hoặc địa chỉ.",
     "orientation": "Chiều cầm",

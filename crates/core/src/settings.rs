@@ -403,11 +403,12 @@ pub enum PostcardPart {
 
 impl PostcardPart {
     /// The most characters and lines this part takes: the card has 3 or 4 lines for the
-    /// message and 3 for the address; more is kept but cut on the print.
+    /// message and 3 for the address, 4 when it needs them; more is kept but cut on the
+    /// print, and the card shows a warning.
     pub fn limits(self) -> (usize, usize) {
         match self {
             Self::Message => (400, 8),
-            Self::Address => (200, 5),
+            Self::Address => (200, 4),
         }
     }
 }

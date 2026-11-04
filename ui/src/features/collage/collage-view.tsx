@@ -15,6 +15,7 @@ import { tickedSheets } from './sheet-cells'
 import { SheetGrid } from './sheet-grid'
 import { SheetPreviewDialog } from './sheet-preview-dialog'
 import type { CollageApi } from './use-collage'
+import { usePostcardCuts } from './use-postcard-cuts'
 
 type CollageViewProps = {
   collage: CollageApi
@@ -49,6 +50,7 @@ export function CollageView({
 }: CollageViewProps) {
   const { t } = useTranslation()
   const [viewing, setViewing] = useState(false)
+  const cuts = usePostcardCuts(settings, revision)
   const [datePlaceIds, setDatePlaceIds] = useState<PhotoId[] | null>(null)
   const { sheets, index } = collage
   const view = filter.queue ?? 'gallery'
@@ -111,6 +113,7 @@ export function CollageView({
         onMove={collage.move}
         onTurn={settings?.collage?.postcard?.enabled ? undefined : collage.turn}
         postcard={settings?.collage?.postcard?.enabled ?? false}
+        cuts={cuts}
       />
       <SheetPreviewDialog
         collage={collage}

@@ -11,6 +11,7 @@ import { useFonts } from '@/features/fonts/use-fonts'
 import { SizeField } from '@/features/stamp/size-field'
 import { patchPostcard } from './postcard-defaults'
 import { PostcardTextField } from './postcard-text-field'
+import { usePostcardCuts } from './use-postcard-cuts'
 
 /** The inks, each with its swatch, as the date stamp shows its colours. */
 const INKS: { value: PostcardInk; swatch: string }[] = [
@@ -38,6 +39,7 @@ export function PostcardTextCard({ settings, onChange, photo, revision }: Postca
   const { t } = useTranslation()
   const fonts = useFonts()
   const postcard = settings?.collage?.postcard
+  const fit = usePostcardCuts(settings, revision).get(photo ?? -1)
   if (!postcard?.enabled) return null
   return (
     <SectionCard icon={<Type />} title={t('postcard.text')}>
@@ -48,6 +50,7 @@ export function PostcardTextCard({ settings, onChange, photo, revision }: Postca
             part="message"
             revision={revision}
             style={postcard.messageStyle}
+            cut={fit?.messageCut ?? false}
             onStyle={(messageStyle) => patchPostcard(onChange, { messageStyle })}
           />
           <PostcardTextField
@@ -55,6 +58,7 @@ export function PostcardTextCard({ settings, onChange, photo, revision }: Postca
             part="address"
             revision={revision}
             style={postcard.addressStyle}
+            cut={fit?.addressCut ?? false}
             onStyle={(addressStyle) => patchPostcard(onChange, { addressStyle })}
           />
         </>

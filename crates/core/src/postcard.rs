@@ -28,8 +28,10 @@ pub const STAMP_MM: (f32, f32) = (20.0, 25.0);
 /// Space between the sheet's edge and what is drawn, and between the stamp and the lines.
 pub const EDGE_MM: f32 = 5.0;
 const STAMP_GAP_MM: f32 = 4.0;
-/// The address lines, under the message's: name, street, town and country.
+/// The address lines, under the message's: name, street, town; a long address gets four
+/// in the room of those three, closer together and in smaller type (owner, 2026-11-04).
 pub const ADDRESS_LINES: u8 = 3;
+pub const MAX_ADDRESS_LINES: u8 = 4;
 /// Lines no further apart than a ruled notebook's, and the gap between the message's and
 /// the address's, in lines.
 const MAX_STEP_MM: f32 = 8.0;
@@ -78,8 +80,10 @@ pub struct CardLayout {
     pub stamp: RectMm,
     pub message: Vec<Line>,
     pub address: Vec<Line>,
-    /// The distance between two lines.
+    /// The distance between two lines, and between two of the address's (closer when it has
+    /// four).
     pub step: f32,
+    pub address_step: f32,
     /// A portrait card's rule between its two columns: x, top and bottom.
     pub divider: Option<(f32, f32, f32)>,
     /// The credit's left edge and its top.
@@ -90,10 +94,10 @@ pub struct CardLayout {
 /// the sheet's top-right corner and the band across the top stays free, for more stamps or a
 /// long label printed at the post office. The lines fill the rest from the foot up, no
 /// further apart than a ruled notebook's: on a landscape card (its half stands) the
-/// `message_lines`, half a line's gap, then the address's; on a portrait card (its half
-/// lies, too low to stack them) the message in the left column and the address in the
+/// `message_lines`, half a line's gap, then the `address_lines`; on a portrait card (its
+/// half lies, too low to stack them) the message in the left column and the address in the
 /// right, a rule between them.
-pub fn layout(sheet_width: f32, card: RectMm, message_lines: u8) -> CardLayout {
+pub fn layout(sheet_width: f32, card: RectMm, message_lines: u8, address_lines: u8) -> CardLayout {
     let stamp = RectMm {
         x: sheet_width - EDGE_MM - STAMP_MM.0,
         y: EDGE_MM,
@@ -105,6 +109,9 @@ pub fn layout(sheet_width: f32, card: RectMm, message_lines: u8) -> CardLayout {
     let (x0, x1) = (card.x + EDGE_MM, card.x + card.width - EDGE_MM);
     let bottom = card.y + card.height - EDGE_MM - CREDIT_ROOM_MM;
     let message_lines = message_lines.max(1);
+    let address_lines = address_lines.clamp(1, MAX_ADDRESS_LINES);
+    // The address keeps the room of its three lines whatever their number.
+    let address_step = |step: f32| step * f32::from(ADDRESS_LINES) / f32::from(address_lines);
     let line = |y: f32, x0: f32, x1: f32| Line { y, x0, x1 };
     if standing {
         let address_at = f32::from(message_lines) + PART_GAP;
@@ -112,15 +119,18 @@ pub fn layout(sheet_width: f32, card: RectMm, message_lines: u8) -> CardLayout {
         let step = ((bottom - top) / (last + 1.0)).min(MAX_STEP_MM);
         // Row `at` (in lines from the first), the last one just above the credit's room.
         let y = |at: f32| bottom - step * (last - at) - step * 0.15;
+        let a_step = address_step(step);
         return CardLayout {
             stamp,
             message: (0..message_lines)
                 .map(|k| line(y(f32::from(k)), x0, x1))
                 .collect(),
-            address: (0..ADDRESS_LINES)
-                .map(|k| line(y(address_at + f32::from(k)), x0, x1))
+            // From the address's last line up, as many as it has.
+            address: (0..address_lines)
+                .map(|k| line(y(last) - a_step * f32::from(address_lines - 1 - k), x0, x1))
                 .collect(),
             step,
+            address_step: a_step,
             divider: None,
             credit: (x0, bottom + 0.6),
         };
@@ -128,8 +138,9 @@ pub fn layout(sheet_width: f32, card: RectMm, message_lines: u8) -> CardLayout {
     let mid = f32::midpoint(x0, x1);
     let rows = message_lines.max(ADDRESS_LINES);
     let step = ((bottom - top) / f32::from(rows)).min(MAX_STEP_MM);
+    let a_step = address_step(step);
     // Both columns end on the same last line.
-    let column = |count: u8, x0: f32, x1: f32| {
+    let column = |count: u8, step: f32, x0: f32, x1: f32| {
         (0..count)
             .map(|k| {
                 line(
@@ -142,9 +153,10 @@ pub fn layout(sheet_width: f32, card: RectMm, message_lines: u8) -> CardLayout {
     };
     CardLayout {
         stamp,
-        message: column(message_lines, x0, mid - COLUMN_GAP_MM / 2.0),
-        address: column(ADDRESS_LINES, mid + COLUMN_GAP_MM / 2.0, x1),
+        message: column(message_lines, step, x0, mid - COLUMN_GAP_MM / 2.0),
+        address: column(address_lines, a_step, mid + COLUMN_GAP_MM / 2.0, x1),
         step,
+        address_step: a_step,
         divider: Some((mid, bottom - step * f32::from(rows), bottom)),
         credit: (x0, bottom + 0.6),
     }
@@ -161,6 +173,82 @@ pub struct CardSpec<'a> {
     pub paper: BorderColor,
 }
 
+/// Which parts of a card's text do not fit their lines and are cut on the print.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, serde::Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct Fit {
+    pub message_cut: bool,
+    pub address_cut: bool,
+}
+
+/// A card laid out for its text: the lines (with a fourth address line when the address
+/// needs it), the text's size in pixels and each part's rows, at `density` pixels per mm.
+struct Typeset {
+    layout: CardLayout,
+    message_px: f32,
+    address_px: f32,
+    message: Vec<String>,
+    address: Vec<String>,
+}
+
+fn typeset(spec: &CardSpec<'_>, faces: Faces<'_>, density: f32) -> Typeset {
+    let settings = spec.settings;
+    let empty = PostcardText::default();
+    let text = spec.text.unwrap_or(&empty);
+    let set = |address_lines: u8| {
+        let layout = layout(spec.sheet_width, spec.card, settings.lines, address_lines);
+        let size = |step: f32| {
+            (step * TEXT_EM).min(crate::settings::postcard_text_mm(settings.text_size)) * density
+        };
+        let (message_px, address_px) = (size(layout.step), size(layout.address_step));
+        let rows = |part: &str, lines: &[Line], text_px: f32| {
+            let room = |row: usize| {
+                lines
+                    .get(row)
+                    .map_or(0.0, |l| (l.x1 - l.x0 - TEXT_PAD_MM) * density)
+            };
+            if part.trim().is_empty() {
+                Vec::new()
+            } else {
+                wrap(faces, text_px, part, room)
+            }
+        };
+        let message = rows(&text.message, &layout.message, message_px);
+        let address = rows(&text.address, &layout.address, address_px);
+        Typeset {
+            layout,
+            message_px,
+            address_px,
+            message,
+            address,
+        }
+    };
+    let three = set(ADDRESS_LINES);
+    if three.address.len() > usize::from(ADDRESS_LINES) {
+        set(MAX_ADDRESS_LINES)
+    } else {
+        three
+    }
+}
+
+/// Whether the card's text fits its lines (FR-073), as the print sets it: the warning on a
+/// card whose message or address would be cut.
+pub fn fit(spec: &CardSpec<'_>) -> Fit {
+    let Some(bundled) = font() else {
+        return Fit::default();
+    };
+    let faces = Faces {
+        main: spec.font.unwrap_or(bundled),
+        fallback: crate::render::regular(),
+    };
+    // Widths scale with the size, so any density gives the print's rows.
+    let t = typeset(spec, faces, 12.0);
+    Fit {
+        message_cut: t.message.len() > t.layout.message.len(),
+        address_cut: t.address.len() > t.layout.address.len(),
+    }
+}
+
 /// Grey for the stamp box and the credit, and for the writing lines, on this paper.
 fn inks(paper: BorderColor) -> ([u8; 3], [u8; 3]) {
     match paper {
@@ -173,7 +261,17 @@ fn inks(paper: BorderColor) -> ([u8; 3], [u8; 3]) {
 #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
 pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
     let settings = spec.settings;
-    let layout = layout(spec.sheet_width, spec.card, settings.lines);
+    let Some(bundled) = font() else {
+        return;
+    };
+    // The chosen face, with Inter for the letters it lacks (Xanh Mono has no Greek or
+    // Cyrillic): an address copied from anywhere in Europe prints as typed.
+    let faces = Faces {
+        main: spec.font.unwrap_or(bundled),
+        fallback: crate::render::regular(),
+    };
+    let set = typeset(spec, faces, density);
+    let layout = &set.layout;
     let (outline, rule) = inks(spec.paper);
     let px = |mm: f32| (mm * density).round().max(0.0) as u32;
     let thick = |mm: f32| (mm * density).round().max(1.0) as u32;
@@ -198,15 +296,6 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
             rule,
         );
     }
-    let Some(bundled) = font() else {
-        return;
-    };
-    // The chosen face, with Inter for the letters it lacks (Xanh Mono has no Greek or
-    // Cyrillic): an address copied from anywhere in Europe prints as typed.
-    let faces = Faces {
-        main: spec.font.unwrap_or(bundled),
-        fallback: crate::render::regular(),
-    };
     let credit = settings.credit.trim();
     if !credit.is_empty() {
         let cpx = CREDIT_MM * density;
@@ -225,25 +314,26 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
             );
         }
     }
-    let Some(text) = spec.text else {
-        return;
-    };
     // Each part on its own lines, wrapped to their lengths; what does not fit is cut.
-    let text_px = (layout.step * TEXT_EM)
-        .min(crate::settings::postcard_text_mm(settings.text_size))
-        * density;
     let ink = settings.ink.rgb(spec.paper);
-    for (part, lines, style) in [
-        (&text.message, &layout.message, settings.message_style),
-        (&text.address, &layout.address, settings.address_style),
+    for (rows, lines, style, text_px, step) in [
+        (
+            &set.message,
+            &layout.message,
+            settings.message_style,
+            set.message_px,
+            layout.step,
+        ),
+        (
+            &set.address,
+            &layout.address,
+            settings.address_style,
+            set.address_px,
+            layout.address_step,
+        ),
     ] {
-        let room = |row: usize| {
-            lines
-                .get(row)
-                .map_or(0.0, |l| (l.x1 - l.x0 - TEXT_PAD_MM) * density)
-        };
-        for (row, line) in wrap(faces, text_px, part, room).iter().zip(lines) {
-            let baseline = (line.y - layout.step * BASELINE_GAP) * density;
+        for (row, line) in rows.iter().zip(lines) {
+            let baseline = (line.y - step * BASELINE_GAP) * density;
             faces.draw(
                 canvas,
                 row,
@@ -510,8 +600,8 @@ mod tests {
     /// message; in two columns with a rule between them on a portrait card.
     #[test]
     fn fr_073_lines_sit_together_at_the_foot() {
-        let landscape = layout(152.0, half(76.0, 0.0, 76.0, 102.0), 4);
-        let portrait = layout(102.0, half(0.0, 0.0, 102.0, 76.0), 4);
+        let landscape = layout(152.0, half(76.0, 0.0, 76.0, 102.0), 4, ADDRESS_LINES);
+        let portrait = layout(102.0, half(0.0, 0.0, 102.0, 76.0), 4, ADDRESS_LINES);
         assert_eq!(landscape.stamp, half(127.0, 5.0, 20.0, 25.0));
         assert_eq!(portrait.stamp, half(77.0, 5.0, 20.0, 25.0));
         for (l, bottom) in [(&landscape, 102.0), (&portrait, 76.0)] {
@@ -545,6 +635,70 @@ mod tests {
         assert!((portrait.message[3].y - portrait.address[2].y).abs() < 1e-3);
     }
 
+    /// FR-073: the address has 3 lines, and a fourth when it needs one; text that still does
+    /// not fit is reported for the warning on the card, part by part.
+    #[test]
+    fn fr_073_a_long_address_gets_a_fourth_line_and_a_cut_is_reported() {
+        let settings = PostcardSettings {
+            enabled: true,
+            ..PostcardSettings::default()
+        };
+        let card = |text: &PostcardText| -> (usize, Fit) {
+            let spec = CardSpec {
+                card: half(76.0, 0.0, 76.0, 102.0),
+                sheet_width: 152.0,
+                settings: &settings,
+                text: Some(text),
+                font: None,
+                paper: BorderColor::White,
+            };
+            let Some(bundled) = font() else {
+                panic!("the bundled face loads");
+            };
+            let faces = Faces {
+                main: bundled,
+                fallback: crate::render::regular(),
+            };
+            (typeset(&spec, faces, 12.0).layout.address.len(), fit(&spec))
+        };
+        // Four address lines take the room of three; the message's lines do not move.
+        for card in [half(76.0, 0.0, 76.0, 102.0), half(0.0, 0.0, 102.0, 76.0)] {
+            let width = if card.x > 0.0 { 152.0 } else { 102.0 };
+            let (three, four) = (layout(width, card, 4, 3), layout(width, card, 4, 4));
+            assert_eq!(three.message, four.message);
+            assert!((three.step - four.step).abs() < 1e-6);
+            let room =
+                |l: &CardLayout| l.address[l.address.len() - 1].y - l.address[0].y + l.address_step;
+            assert!((room(&three) - room(&four)).abs() < 1e-3);
+            assert!((four.address_step - three.step * 0.75).abs() < 1e-3);
+        }
+        let short = text(
+            "Ahoj Praha!",
+            "Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1",
+        );
+        assert_eq!(card(&short), (3, Fit::default()));
+        let paris = text(
+            "",
+            "Cao-Minh TRUONG / Chambre 248, Collège Franco-Britannique, 9B, Boulevard Jourdan, 75014, Paris, France",
+        );
+        assert_eq!(
+            card(&paris),
+            (4, Fit::default()),
+            "the owner's address fits on four"
+        );
+        let long = text(
+            &"Liebe Grüße aus Budapest! ".repeat(20),
+            &"Hauptstraße 1, ".repeat(12),
+        );
+        assert_eq!(
+            card(&long).1,
+            Fit {
+                message_cut: true,
+                address_cut: true
+            }
+        );
+    }
+
     /// The message and the address each go on their own lines: an address never spills onto
     /// the message's lines, and a long message is cut at its last line.
     #[test]
@@ -554,7 +708,12 @@ mod tests {
             enabled: true,
             ..PostcardSettings::default()
         };
-        let l = layout(152.0, half(76.0, 0.0, 76.0, 102.0), settings.lines);
+        let l = layout(
+            152.0,
+            half(76.0, 0.0, 76.0, 102.0),
+            settings.lines,
+            ADDRESS_LINES,
+        );
         let band = |canvas: &RgbImage, line: &Line| {
             let (y0, y1) = (
                 ((line.y - l.step * 0.8) * 10.0) as u32,

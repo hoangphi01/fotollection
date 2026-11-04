@@ -67,6 +67,50 @@ pub fn list_sheets(
     Ok(sheet_pairs(&library, &filter, single))
 }
 
+/// A postcard whose typed text does not all fit its lines (FR-073).
+#[derive(Debug, Clone, serde::Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PostcardCut {
+    pub photo: PhotoId,
+    pub fit: fotollection_core::postcard::Fit,
+}
+
+/// The postcards whose message or address is cut on the print, for the red warning on the
+/// card and beside its field (FR-073); empty while postcards are off. Settings and the
+/// font are read first, then the library: no lock is taken while another is held.
+#[tauri::command]
+#[specta::specta]
+pub fn postcard_cuts(state: State<'_, AppState>) -> Result<Vec<PostcardCut>, IpcError> {
+    let settings = state
+        .settings
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?
+        .0
+        .clone();
+    if !settings.collage.postcard.enabled {
+        return Ok(Vec::new());
+    }
+    let font = state
+        .frame
+        .read()
+        .ok()
+        .and_then(|f| crate::commands::postcard_font_of(&f, &settings));
+    let print = sheet::sheet_print(&settings);
+    let library = state
+        .library
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?;
+    Ok(library
+        .sorted_ids()
+        .into_iter()
+        .filter_map(|id| {
+            let text = library.record(id)?.edits.postcard?;
+            let fit = sheet::postcard_fit(print, &settings, &text, font.as_ref().map(|f| &f.font));
+            (fit.message_cut || fit.address_cut).then_some(PostcardCut { photo: id, fit })
+        })
+        .collect())
+}
+
 /// Whether collage sheets are postcards (FR-073): one photo each. Read it before taking the
 /// library lock, so no lock is ever taken while another is held.
 pub fn postcards(state: &AppState) -> bool {

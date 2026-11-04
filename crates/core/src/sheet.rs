@@ -368,6 +368,28 @@ pub struct SheetInfo {
 /// straightening in degrees.
 pub type SheetPhoto = (PhotoId, (u32, u32), Option<CropFrame>, f32);
 
+/// Whether a postcard's text fits its lines on the print (FR-073), for the warning on the
+/// card. The card half depends on how the card is held, not on the photo.
+pub fn postcard_fit(
+    print: PrintSize,
+    settings: &RenderSettings,
+    text: &crate::library::PostcardText,
+    font: Option<&ab_glyph::FontArc>,
+) -> crate::postcard::Fit {
+    let sheet = layout(print, [Some((1000, 1000)), None], false, &settings.collage);
+    let Some(card) = sheet.card else {
+        return crate::postcard::Fit::default();
+    };
+    crate::postcard::fit(&crate::postcard::CardSpec {
+        card,
+        sheet_width: sheet.width,
+        settings: &settings.collage.postcard,
+        text: Some(text),
+        font,
+        paper: settings.border_color,
+    })
+}
+
 /// Facts about a laid-out sheet, from the photos' sizes only (no decode).
 pub fn info(
     print: PrintSize,
@@ -1034,7 +1056,8 @@ mod tests {
             }
             assert!(inked > 500, "{inked} inked pixels");
             // The stamp box's top edge is dashed: ink and paper alternate along it.
-            let card_layout = crate::postcard::layout(sheet.width, card, 4);
+            let card_layout =
+                crate::postcard::layout(sheet.width, card, 4, crate::postcard::ADDRESS_LINES);
             let edge_y = card_layout.stamp.y + 0.1;
             let along: Vec<bool> = (0..40)
                 .map(|i| at(card_layout.stamp.x + 1.0 + i as f32 * 0.5, edge_y)[0] < 200)

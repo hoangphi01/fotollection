@@ -8,6 +8,7 @@ import { sheetUrl } from '@/lib/photo-url'
 import { cn } from '@/lib/utils'
 import { BasketBadge } from '@/features/library/basket-badge'
 import { TickCircle } from '@/features/library/tick-circle'
+import { PostcardCutBadge } from './postcard-cut-badge'
 import { SheetCellsOverlay } from './sheet-cells-overlay'
 import { useSheetShape } from './use-sheet-shape'
 
@@ -33,6 +34,8 @@ type SheetTileProps = {
   onTurn?: () => void
   /** The sheet is a postcard (FR-073): its photo half is the left or bottom one. */
   postcard?: boolean
+  /** Its typed text does not all fit its lines (FR-073). */
+  cut?: boolean
   onDragStart: (photo: PhotoId, event: PointerEvent) => void
 }
 
@@ -57,6 +60,7 @@ export function SheetTile({
   onOpen,
   onTurn,
   postcard = false,
+  cut = false,
   onDragStart,
 }: SheetTileProps) {
   const { t } = useTranslation()
@@ -114,6 +118,7 @@ export function SheetTile({
           )}
         </SheetCellsOverlay>
         {selectMode && <TickCircle checked={ticked} className="pointer-events-none absolute right-1.5 bottom-1.5" />}
+        {cut && <PostcardCutBadge className="absolute top-1 left-1" />}
       </div>
       {!selectMode && onTurn && (
         <Button

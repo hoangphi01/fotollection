@@ -261,6 +261,12 @@ export const commands = {
 	 *  the photo left inside the border and the print quality (FR-035, FR-026).
 	 */
 	sheetInfo: (sheet: SheetPair) => typedError<SheetInfo, IpcError>(__TAURI_INVOKE("sheet_info", { sheet })),
+	/**
+	 *  The postcards whose message or address is cut on the print, for the red warning on the
+	 *  card and beside its field (FR-073); empty while postcards are off. Settings and the
+	 *  font are read first, then the library: no lock is taken while another is held.
+	 */
+	postcardCuts: () => typedError<PostcardCut[], IpcError>(__TAURI_INVOKE("postcard_cuts")),
 	/**  Places whose name starts with `query`, largest first, from the bundled data (FR-032). */
 	searchPlaces: (query: string, limit: number) => typedError<Place[], IpcError>(__TAURI_INVOKE("search_places", { query, limit })),
 	/**
@@ -877,6 +883,12 @@ export type ExportTarget =
 
 export type ExposureSetting = "iso" | "shutter";
 
+/**  Which parts of a card's text do not fit their lines and are cut on the print. */
+export type Fit = {
+	messageCut: boolean,
+	addressCut: boolean,
+};
+
 /**  Pick/reject flag for culling (FR-022). */
 export type Flag = "pick" | "reject";
 
@@ -1227,6 +1239,12 @@ export type PlaceUse = {
 	country: string,
 	renamed: boolean,
 	photos: number,
+};
+
+/**  A postcard whose typed text does not all fit its lines (FR-073). */
+export type PostcardCut = {
+	photo: PhotoId,
+	fit: Fit,
 };
 
 /**
