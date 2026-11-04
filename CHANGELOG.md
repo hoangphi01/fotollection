@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.9.7] - 2026-11-04
+
 ### Highlights
 
 - New: a handwriting face for postcards, Patrick Hand, as easy to read on a print as the typewriter

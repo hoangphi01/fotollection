@@ -59,7 +59,7 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | 📅 | **Date and location stamps** from EXIF, in a film-camera LCD face. Places are resolved offline, with no API calls | 1 |
 | ✂️ | **Batch crop** to 8 EU print sizes (9×13 … 20×30, square, strip), your own sizes (e.g. 4 × 6 in) or the photo's **original** ratio, with an adjustable crop per photo | 1 |
 | 🎚️ | **Three modes** (new in v0.9.0): **Simple**, one photo at a time, ↑ keep, ↓ drop, then export; **Collage**, two photos on one print like a half-frame camera (a 10 × 15 holds two 10 × 7.5), with a suggested size, a cut line and drag to reorder; **Pro**, every control | 1 |
-| ✉️ | **Postcards** (new in v0.9.4): in Collage mode, one photo and a postcard back on each 10 × 15 print, a dashed stamp box and writing lines, the text typed in a typewriter face or written by hand | 1 |
+| ✉️ | **Postcards** (new in v0.9.4): in Collage mode, one photo and a postcard back on each 10 × 15 print, a dashed stamp box and writing lines, the text typed in a typewriter or a handwriting face or written by hand, one address for the whole set | 1 |
 | 🔲 | **3 mm border** inside the print size on every print, with or without the info frame (new in v0.9.0) | 2 |
 | ⭐ | **Culling**: stars, pick/reject flags and filters; export writes exactly the filtered set | 1 |
 | ✨ | **Best-shot suggestions**: groups bursts and similar shots and suggests the best of each (sharpest, eyes open, no shake), with reasons. Fully offline | 1 |
@@ -98,7 +98,7 @@ Fotollection is built for enthusiast and professional photographers, so speed is
 | Peak memory | ≤ 2 GB at any batch size | **1.45 GB** with 5,035 photos | ✓ |
 | Best-shot analysis, per photo (2026-10-24) | ≤ 20 ms, ≤ 40 ms with faces | **17 ms**, 28 ms with faces | ✓ |
 
-On a real trip (one folder of 20 MP Lumix GX9 photos, 422 files) the export reached only 7.6 photos/s with a 2.14 GB peak on 2026-11-03. The fix, in the next release, exports its JPEGs at 10.1 photos/s, and the whole run peaks at 1.31 GB, within both budgets ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)).
+On a real trip (one folder of 20 MP Lumix GX9 photos, 422 files) the export reached only 7.6 photos/s with a 2.14 GB peak on 2026-11-03. The fix, in v0.9.7, exports its JPEGs at 10.1 photos/s, and the whole run peaks at 1.31 GB, within both budgets ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)).
 
 ### Large batches
 

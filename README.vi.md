@@ -60,7 +60,7 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | 📅 | **Dấu ngày và nơi chụp** lấy từ EXIF, bằng kiểu chữ LCD như máy ảnh phim. Địa điểm tra offline, không gọi API nào | 1 |
 | ✂️ | **Crop hàng loạt** theo 8 khổ in châu Âu (9×13 … 20×30, vuông, dải), khổ của riêng bạn (ví dụ 4 × 6 in) hoặc giữ **tỉ lệ gốc** của ảnh, chỉnh được khung crop từng ảnh | 1 |
 | 🎚️ | **Ba chế độ** (mới trong v0.9.0): **Đơn giản**, từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất; **Ghép ảnh**, hai ảnh trên một tấm in như máy half-frame (một tấm 10 × 15 chứa hai ảnh 10 × 7,5), có cỡ gợi ý, đường cắt và kéo-thả để đổi thứ tự; **Pro**, đủ mọi điều khiển | 1 |
-| ✉️ | **Bưu thiếp** (mới trong v0.9.4): trong chế độ Ghép ảnh, mỗi tấm 10 × 15 có một ảnh và mặt sau bưu thiếp, ô dán tem nét đứt và dòng kẻ, chữ gõ bằng font máy đánh chữ hoặc viết tay | 1 |
+| ✉️ | **Bưu thiếp** (mới trong v0.9.4): trong chế độ Ghép ảnh, mỗi tấm 10 × 15 có một ảnh và mặt sau bưu thiếp, ô dán tem nét đứt và dòng kẻ, chữ gõ bằng font máy đánh chữ hoặc font viết tay, hay tự viết tay, một địa chỉ cho cả bộ | 1 |
 | 🔲 | **Viền 3 mm** nằm trong khổ in cho mọi tấm in, có hay không có khung thông tin (mới trong v0.9.0) | 2 |
 | ⭐ | **Lọc ảnh**: chấm sao, cờ chọn/loại và bộ lọc; export đúng tập ảnh đang lọc | 1 |
 | ✨ | **Gợi ý ảnh đẹp nhất**: gom các ảnh chụp liên tiếp và gần giống nhau, gợi ý ảnh đẹp nhất mỗi nhóm (nét nhất, mắt mở, không rung) kèm lý do. Chạy hoàn toàn offline | 1 |
@@ -99,7 +99,7 @@ Fotollection dành cho người chụp ảnh nghiêm túc và nhiếp ảnh gia,
 | RAM đỉnh | ≤ 2 GB với batch bất kỳ | **1,45 GB** với 5.035 ảnh | ✓ |
 | Phân tích ảnh đẹp nhất, mỗi ảnh (24/10/2026) | ≤ 20 ms, ≤ 40 ms khi có mặt người | **17 ms**, 28 ms khi có mặt người | ✓ |
 
-Với một chuyến đi thật (một thư mục ảnh 20 MP từ Lumix GX9, 422 tệp), ngày 03/11/2026 export chỉ đạt 7,6 ảnh/s với RAM đỉnh 2,14 GB. Bản sửa, có trong bản phát hành tới, export phần JPEG ở 10,1 ảnh/s, và cả lượt chạy dùng RAM tối đa 1,31 GB, nằm trong cả hai ngân sách ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)).
+Với một chuyến đi thật (một thư mục ảnh 20 MP từ Lumix GX9, 422 tệp), ngày 03/11/2026 export chỉ đạt 7,6 ảnh/s với RAM đỉnh 2,14 GB. Bản sửa trong v0.9.7 export phần JPEG ở 10,1 ảnh/s, và cả lượt chạy dùng RAM tối đa 1,31 GB, nằm trong cả hai ngân sách ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)).
 
 ### Batch lớn
 

@@ -199,7 +199,7 @@ en:
   perf_speed_fn: [4, 5]
   perf_trip_fn: [22]
   perf_trip_title: "A real trip: 422 files from Prague"
-  perf_trip_text: "Test sets can flatter, so here is one folder exactly as it came off a Lumix GX9 after a weekend in Prague: 396 JPEGs at 20 MP, about 11 MB each, and 26 RAW files beside them, 4.7 GB in all. Opening it reads every file's EXIF in 0.23 seconds. The preview re-renders in 19 ms, a RAW develops in 0.35 seconds and ten postcards redraw in 21 ms. On 2026-11-03 two numbers missed their budget on these large files: export ran at 7.6 photos a second and memory peaked at 2.14 GB. The cause was found and fixed for the next release: the JPEGs now export at 10.1 a second, and the whole run stays under 1.31 GB."
+  perf_trip_text: "Test sets can flatter, so here is one folder exactly as it came off a Lumix GX9 after a weekend in Prague: 396 JPEGs at 20 MP, about 11 MB each, and 26 RAW files beside them, 4.7 GB in all. Opening it reads every file's EXIF in 0.23 seconds. The preview re-renders in 19 ms, a RAW develops in 0.35 seconds and ten postcards redraw in 21 ms. On 2026-11-03 two numbers missed their budget on these large files: export ran at 7.6 photos a second and memory peaked at 2.14 GB. The cause was found and fixed in v0.9.7: the JPEGs now export at 10.1 a second, and the whole run stays under 1.31 GB."
   trip_stats:
     - { v: "0.23 s", l: "to open all 422 files, EXIF included" }
     - { v: "19 ms", l: "preview re-render, p95 (budget 50 ms)" }
@@ -207,7 +207,7 @@ en:
     - { v: "21 ms", l: "to redraw ten postcards (budget 100 ms)" }
     - { v: "10.1 / s", l: "JPEGs exported (budget 8 / s)" }
     - { v: "1.31 GB", l: "peak memory, JPEG and RAW (ceiling 2 GB)" }
-  fn_trip: "The Prague folder is the author's own and is not published (© @hoangphi01, all rights reserved). Medians of 3 runs of bench/trip.sh and of measure_folder on its JPEGs, on an Apple M3 with 16 GB, with other apps open, on 2026-11-04, with the export of the next release; run them on a folder of your own to compare."
+  fn_trip: "The Prague folder is the author's own and is not published (© @hoangphi01, all rights reserved). Medians of 3 runs of bench/trip.sh and of measure_folder on its JPEGs, on an Apple M3 with 16 GB, with other apps open, on 2026-11-04, with the export of v0.9.7; run them on a folder of your own to compare."
   fn_downloads: "Counted by GitHub."
   fn_payment: "VietQR and NAPAS 247 and their logos are trademarks of the National Payment Corporation of Vietnam (NAPAS); Techcombank of Vietnam Technological and Commercial Joint Stock Bank. Shown as the marks of the payment the code uses; Fotollection is not connected with them."
   fn_rust: "Rust and the Rust logo are trademarks of the Rust Foundation. Fotollection's core is written in Rust and runs directly on your computer."
@@ -628,7 +628,7 @@ vi:
   perf_speed_fn: [4, 5]
   perf_trip_fn: [22]
   perf_trip_title: "Một chuyến đi thật: 422 tệp từ Praha"
-  perf_trip_text: "Bộ ảnh thử dễ cho số đẹp, nên đây là một thư mục đúng như khi chép ra từ Lumix GX9 sau một cuối tuần ở Praha: 396 ảnh JPEG 20 MP, mỗi tấm khoảng 11 MB, cùng 26 tệp RAW bên cạnh, tổng cộng 4,7 GB. Mở thư mục đọc EXIF của mọi tệp trong 0,23 giây. Xem trước dựng lại trong 19 ms, một ảnh RAW được xử lý trong 0,35 giây và mười tấm bưu thiếp vẽ lại trong 21 ms. Ngày 3/11/2026, với những tệp lớn này có hai con số chưa đạt mục tiêu: xuất ảnh chỉ 7,6 ảnh mỗi giây và RAM lên tới 2,14 GB. Nguyên nhân đã được tìm ra và sửa cho bản phát hành tới: phần JPEG giờ xuất 10,1 ảnh mỗi giây, và cả lượt chạy dùng không quá 1,31 GB."
+  perf_trip_text: "Bộ ảnh thử dễ cho số đẹp, nên đây là một thư mục đúng như khi chép ra từ Lumix GX9 sau một cuối tuần ở Praha: 396 ảnh JPEG 20 MP, mỗi tấm khoảng 11 MB, cùng 26 tệp RAW bên cạnh, tổng cộng 4,7 GB. Mở thư mục đọc EXIF của mọi tệp trong 0,23 giây. Xem trước dựng lại trong 19 ms, một ảnh RAW được xử lý trong 0,35 giây và mười tấm bưu thiếp vẽ lại trong 21 ms. Ngày 3/11/2026, với những tệp lớn này có hai con số chưa đạt mục tiêu: xuất ảnh chỉ 7,6 ảnh mỗi giây và RAM lên tới 2,14 GB. Nguyên nhân đã được tìm ra và sửa trong v0.9.7: phần JPEG giờ xuất 10,1 ảnh mỗi giây, và cả lượt chạy dùng không quá 1,31 GB."
   trip_stats:
     - { v: "0,23 s", l: "để mở cả 422 tệp, gồm cả EXIF" }
     - { v: "19 ms", l: "dựng lại xem trước, p95 (mục tiêu 50 ms)" }
@@ -636,7 +636,7 @@ vi:
     - { v: "21 ms", l: "để vẽ lại mười tấm bưu thiếp (mục tiêu 100 ms)" }
     - { v: "10,1 / s", l: "ảnh JPEG được xuất (mục tiêu 8 / s)" }
     - { v: "1,31 GB", l: "RAM dùng nhiều nhất, cả JPEG lẫn RAW (trần 2 GB)" }
-  fn_trip: "Thư mục ảnh Praha là của tác giả và không công khai (© @hoangphi01, giữ mọi quyền). Trung vị của 3 lần chạy bench/trip.sh và measure_folder trên phần JPEG, trên Apple M3 16 GB, khi các ứng dụng khác vẫn mở, ngày 4/11/2026, với phần xuất ảnh của bản phát hành tới; hãy chạy trên thư mục ảnh của bạn để so sánh."
+  fn_trip: "Thư mục ảnh Praha là của tác giả và không công khai (© @hoangphi01, giữ mọi quyền). Trung vị của 3 lần chạy bench/trip.sh và measure_folder trên phần JPEG, trên Apple M3 16 GB, khi các ứng dụng khác vẫn mở, ngày 4/11/2026, với phần xuất ảnh của v0.9.7; hãy chạy trên thư mục ảnh của bạn để so sánh."
   fn_downloads: "Do GitHub đếm."
   fn_payment: "VietQR, NAPAS 247 và logo của chúng là nhãn hiệu của Công ty Cổ phần Thanh toán Quốc gia Việt Nam (NAPAS); Techcombank là của Ngân hàng TMCP Kỹ thương Việt Nam. Hiển thị để cho biết hình thức thanh toán mà mã sử dụng; Fotollection không liên quan tới các đơn vị này."
   fn_rust: "Rust và logo Rust là nhãn hiệu của Rust Foundation. Phần lõi của Fotollection viết bằng Rust và chạy trực tiếp trên máy của bạn."
