@@ -266,6 +266,11 @@ en:
   chart_share: "Photos for Facebook: what viewers see after Facebook recompresses them"
   chart_memory: "Peak memory as the batch grows to 5,035 photos"
   chart_browser: "The same job in Fotollection and in a web browser"
+  story_title: The story
+  story_kicker: A diary
+  story_description: "The story behind Fotollection: twenty years of photos never looked at again, a winter of looking back, and the first kilometres of a marathon to turn memories back into prints."
+  story_lead: "Why Fotollection exists, and how it found its own way: a diary of the first kilometres, told from the docs and the history of the code."
+  footer_story: The story
   man_title: Manual
   man_kicker: Help
   man_description: "How to use Fotollection, step by step, with a screenshot of each step: choosing the photos to print, zoom, RAW, camera clocks, dates and places, shooting with a camera connected, and every shortcut."
@@ -695,6 +700,11 @@ vi:
   chart_share: "Ảnh đăng Facebook: người xem thấy gì sau khi Facebook nén lại"
   chart_memory: "RAM dùng nhiều nhất khi số ảnh tăng lên 5.035 tấm"
   chart_browser: "Cùng một việc, trên Fotollection và trên trình duyệt web"
+  story_title: Câu chuyện
+  story_kicker: Nhật ký
+  story_description: "Câu chuyện phía sau Fotollection: hai mươi năm ảnh chưa xem lại, một mùa đông nhìn về những năm cũ, và những cây số đầu của một cuộc marathon để kỷ niệm trở lại thành ảnh in."
+  story_lead: "Vì sao có Fotollection, và nó đã tìm ra con đường riêng thế nào: nhật ký của những cây số đầu tiên, kể lại từ tài liệu và lịch sử code của dự án."
+  footer_story: Câu chuyện
   man_title: Hướng dẫn
   man_kicker: Trợ giúp
   man_description: "Cách dùng Fotollection từng bước, mỗi bước kèm ảnh chụp màn hình: chọn ảnh để in, phóng to, ảnh RAW, đồng hồ máy ảnh, ngày và nơi chụp, chụp với máy ảnh cắm vào máy tính, và mọi phím tắt."

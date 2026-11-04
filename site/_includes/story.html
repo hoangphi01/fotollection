@@ -1,0 +1,23 @@
+{%- comment %} The story of Fotollection (site/README.md): the author's own account, in chapters, as a long text. Laid out like the manual: the same header, the text in the manual's prose, and its chapter list. The text is story-<lang>.md; scripts/site-manual.sh writes its chapter list, story-toc-<lang>.md, at build time. {% endcomment -%}
+{%- assign t = site.data.i18n[page.lang] -%}
+{%- capture toc_file %}story-toc-{{ page.lang }}.md{% endcapture -%}
+{%- capture body_file %}story-{{ page.lang }}.md{% endcapture -%}
+{%- capture toc %}{% include {{ toc_file }} %}{% endcapture -%}
+{%- capture body %}{% include {{ body_file }} %}{% endcapture -%}
+<section class="section perf-head">
+  <div class="wrap">
+    <p class="kicker">{{ t.story_kicker }}</p>
+    <h1>{{ t.story_title }}</h1>
+    <p class="lead narrow">{{ t.story_lead }}</p>
+  </div>
+</section>
+
+<section class="section tint">
+  <div class="wrap">
+    <div class="manual story">
+      {{ body | markdownify }}
+    </div>
+  </div>
+</section>
+
+{% include chapter-list.html toc=toc label=t.man_toc %}

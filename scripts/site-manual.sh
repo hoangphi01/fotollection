@@ -7,6 +7,7 @@
 #
 # For each language, docs/USER_GUIDE[.vi].md becomes site/_includes/manual-<lang>.md (from
 # the first chapter on) and manual-toc-<lang>.md (one link per chapter). Neither is committed.
+# The story page's chapter list, story-toc-<lang>.md, comes from its committed text the same way.
 #   <!-- chapter: raw --> + ## 4. Camera RAW  ->  ## 4. Camera RAW {#raw}
 #   <!-- shot: grid | alt text -->            ->  the screenshot, dark or light (site/_includes/shot.html)
 #   [PRD](PRD.md#fr-016--raw-input)           ->  [PRD](docs/PRD.md#…), linked to GitHub by manual.html
@@ -25,4 +26,7 @@ for lang in en vi; do
     > "site/_includes/manual-$lang.md"
   grep -E '^## ' "site/_includes/manual-$lang.md" | sed -E 's/^## (.*) \{#([a-z0-9-]+)\}$/- [\1](#\2)/' \
     > "site/_includes/manual-toc-$lang.md"
+  # The story page's chapter list, from its own text (site/_includes/story-<lang>.md).
+  grep -E '^## ' "site/_includes/story-$lang.md" | sed -E 's/^## (.*) \{#([a-z0-9-]+)\}$/- [\1](#\2)/' \
+    > "site/_includes/story-toc-$lang.md"
 done

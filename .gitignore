@@ -36,3 +36,4 @@ captures/
 *.pcapng
 *.pcap
 site/_includes/manual-*.md
+site/_includes/story-toc-*.md

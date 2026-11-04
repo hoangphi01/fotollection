@@ -22,26 +22,5 @@
   </div>
 </section>
 
-{%- comment %} The chapter list: a round button bottom left, the mirror of "back to top", opens it as a popover; picking a chapter closes it. {% endcomment %}
-<button class="pill pill-primary toc-button" type="button" popovertarget="manual-toc" aria-label="{{ t.man_toc }}">{% include icons/list.svg %}</button>
-<nav class="card manual-toc" id="manual-toc" popover aria-label="{{ t.man_toc }}">
-  <h2>{{ t.man_toc }}</h2>
-  {{ toc | markdownify }}
-  <p class="small muted"><a href="{{ site.repo_url }}/blob/main/docs/{{ guide }}">{{ t.man_source }}</a></p>
-</nav>
-<script>
-  // Picking a chapter closes the list; the chapter being read is marked in it.
-  const toc = document.getElementById('manual-toc')
-  toc.addEventListener('click', (e) => e.target.closest('a[href^="#"]') && toc.hidePopover?.())
-  // The chapter being read: the last title that has scrolled under the top bar, or the last
-  // chapter once the page is scrolled to the end (it may be too short to reach the top).
-  const links = [...toc.querySelectorAll('a[href^="#"]')]
-  const titles = [...document.querySelectorAll('.manual h2[id]')]
-  const mark = () => {
-    const end = innerHeight + scrollY >= document.documentElement.scrollHeight - 2
-    const current = end ? titles.at(-1) : titles.filter((h) => h.getBoundingClientRect().top < 120).pop()
-    links.forEach((a) => a.toggleAttribute('aria-current', a.hash === '#' + current?.id))
-  }
-  addEventListener('scroll', () => requestAnimationFrame(mark), { passive: true })
-  mark()
-</script>
+{%- capture source %}{{ site.repo_url }}/blob/main/docs/{{ guide }}{% endcapture -%}
+{% include chapter-list.html toc=toc label=t.man_toc source=source source_label=t.man_source %}
