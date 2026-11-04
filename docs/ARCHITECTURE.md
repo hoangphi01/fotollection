@@ -1,6 +1,6 @@
 # Architecture — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-02
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-04
 >
 > This document describes **how** the system is built. Requirements live in [PRD.md](PRD.md).
 > Performance design rationale lives in [OPTIMIZATION.md](OPTIMIZATION.md).

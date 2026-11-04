@@ -1,6 +1,6 @@
 # Optimization — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-02
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-04
 >
 > Performance is the #1 product quality for Fotollection, which targets enthusiast and professional photographers.
 > This document holds the **budgets**, the **methodology** used to measure them, the **design techniques** that meet them, and a **log** of every measurement.

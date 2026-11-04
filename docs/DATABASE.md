@@ -1,6 +1,6 @@
 # Data & Persistence — Fotollection
 
-> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-02
+> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-04
 >
 > This document is the single source of truth for **everything Fotollection stores**: where it lives, the **normalized data model**, the schemas, versioning and migration, safe writes, the in-memory layout, and retention.
 > Fotollection has **no database server and no embedded SQL database** ([ADR-0010](adr/0010-project-file-format.md)). Persistent state is a small set of versioned files, modelled **as if they were relational tables** and normalized to 3NF ([§2](#2-normalization-rules)).

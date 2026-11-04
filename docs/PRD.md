@@ -1,6 +1,6 @@
 # Product Requirements Document — Fotollection
 
-> **Owner:** product · **Status:** Draft v0.1 · **Last reviewed:** 2026-11-02
+> **Owner:** product · **Status:** Draft v0.1 · **Last reviewed:** 2026-11-04
 >
 > This document is the single source of truth for **what** Fotollection does and **why**.
 > *How* it is built lives in [ARCHITECTURE.md](ARCHITECTURE.md); *when* lives in [ROADMAP.md](ROADMAP.md).
