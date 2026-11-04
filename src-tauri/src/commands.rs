@@ -686,7 +686,8 @@ pub async fn pick_export_folder(app: AppHandle) -> Result<Option<String>, IpcErr
 /// Starts exporting the photos kept by `filter` to the chosen destination
 /// (FR-008, FR-009, FR-011, FR-022), or only the photo `only` when it is set: the one open
 /// in the preview (FR-055), or only the photos `ticked` in select mode when there are some
-/// (FR-050). With `separate`, each source folder goes into its own subfolder
+/// (FR-050), into one folder or a folder per day as `ui.exportFolders` says (FR-009).
+/// With `separate`, each source folder goes into its own subfolder
 /// of the destination (FR-056). With `sheets`, the photos go out two to a print, as the
 /// Collage mode shows them (FR-035), or one to a postcard (FR-073).
 /// Progress and the result arrive as `ExportProgress` / `ExportFinished` events.
@@ -709,6 +710,13 @@ pub fn start_export(
         .map_err(|e| IpcError::internal(e.to_string()))?
         .clone()
         .ok_or_else(|| IpcError::new("export.no_destination", "Choose a destination first"))?;
+    // Into one folder, or a folder per day (FR-009): a per-machine choice.
+    let by_day = state
+        .ui
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?
+        .export_folders
+        == fotollection_core::settings::ExportFolders::ByDay;
     let scope = sheets.then(|| crate::collage::postcards(&state));
     let (records, pairs, groups) = {
         let library = state
@@ -771,6 +779,7 @@ pub fn start_export(
             place_for: &place_for,
             frame_for: &frame_for,
             group_for: &group_for,
+            by_day,
             postcard_font: postcard_font_of(&frames, &settings).map(|f| f.font),
         };
         let throttle = Throttle::default();
@@ -951,6 +960,7 @@ pub async fn estimate_export(
             place_for: &place_for,
             frame_for: &frame_for,
             group_for: &|_| None,
+            by_day: false,
             postcard_font: postcard_font_of(&frames, &settings).map(|f| f.font),
         };
         let samples = fotollection_core::export::ESTIMATE_SAMPLES;

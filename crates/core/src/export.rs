@@ -89,6 +89,9 @@ pub struct ExportOptions<'a> {
     /// A subfolder of the destination for one photo, when folders are exported separately
     /// (FR-056); `None` puts every photo straight into the destination.
     pub group_for: &'a (dyn Fn(&PhotoRecord) -> Option<String> + Sync),
+    /// A `YYYY-MM-DD` subfolder for each day (FR-009); `false` puts the files straight into
+    /// the destination (or its group, or `Share/`).
+    pub by_day: bool,
     /// The user's font for postcard text (FR-073, FR-042); `None` uses the bundled face.
     pub postcard_font: Option<ab_glyph::FontArc>,
 }
@@ -327,7 +330,8 @@ fn encode_photo(
     Ok((jpeg, share.is_some()))
 }
 
-/// Writes one exported JPEG under the destination's dated folder; returns its size.
+/// Writes one exported JPEG into the destination, under its day's folder when exported by
+/// day; returns its size.
 fn write_photo(
     record: &PhotoRecord,
     options: &ExportOptions<'_>,
@@ -341,10 +345,11 @@ fn write_photo(
         Some(group) => options.destination.join(group),
         None => options.destination.to_path_buf(),
     };
-    let dir = if share {
-        base.join(SHARE_FOLDER).join(day_folder(record))
-    } else {
+    let base = if share { base.join(SHARE_FOLDER) } else { base };
+    let dir = if options.by_day {
         base.join(day_folder(record))
+    } else {
+        base
     };
     std::fs::create_dir_all(&dir)?;
     let target = reserve_name(&dir, stem, reserved);

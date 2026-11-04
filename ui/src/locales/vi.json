@@ -279,8 +279,15 @@
       "label": "Cách xuất các thư mục",
       "together": "Chung",
       "separate": "Riêng",
-      "togetherHint_other": "{{count}} thư mục, gộp chung vào các thư mục theo ngày",
+      "togetherHint_other": "{{count}} thư mục, gộp chung",
       "separateHint_other": "{{count}} thư mục, mỗi thư mục một thư mục con mang tên nó"
+    },
+    "days": {
+      "label": "Nơi lưu các tệp",
+      "oneFolder": "Một thư mục",
+      "byDay": "Theo ngày",
+      "oneFolderHint": "Mọi ảnh vào thẳng thư mục bạn chọn",
+      "byDayHint": "Mỗi ngày một thư mục, ví dụ 2026-07-14"
     },
     "buttonThisSheet": "Xuất tấm này"
   },

@@ -57,7 +57,7 @@ Exports are plain JPEG files that any lab accepts. They are not a Fotollection f
 
 | Property | Value |
 |----------|-------|
-| Path | `<destination>/YYYY-MM-DD/<source stem>.jpg`, or `undated/` when there is no capture date ([FR-009](PRD.md#fr-009--export-by-date)) |
+| Path | `<destination>/<source stem>.jpg` (one folder, the default), or `<destination>/YYYY-MM-DD/<source stem>.jpg` by day, `undated/` when there is no capture date ([FR-009](PRD.md#fr-009--export-by-date)) |
 | Name collisions | `_1`, `_2`, … appended; an existing file is never overwritten |
 | Encoding | Baseline JPEG, quality 95, 4:4:4 chroma, optimized Huffman tables |
 | Colour | The source ICC profile is copied unchanged (sRGB conversion: [FR-027](PRD.md#fr-027--srgb-conversion-for-labs)) |

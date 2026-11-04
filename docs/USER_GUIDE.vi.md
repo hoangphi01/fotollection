@@ -277,13 +277,13 @@ Xuất ảnh ghi ra các tệp mới để đem đi in hoặc chia sẻ; ảnh g
    - **Cỡ tùy chỉnh**: cạnh dài 640–6000 px.
 
    Tệp chia sẻ ở hệ màu sRGB, nên trông giống nhau trên mọi màn hình.
-3. **Lưu vào đâu:** nhấp **Chọn nơi lưu…** ở cuối bảng bên, rồi chọn một thư mục.
-4. **Bao nhiêu thư mục:** khi đang hiện nhiều thư mục, chọn **Chung** (gộp vào cùng các thư mục theo ngày) hoặc **Riêng** (mỗi thư mục một thư mục con mang tên nó).
+3. **Lưu vào đâu:** nhấp **Chọn nơi lưu…** ở cuối bảng bên, rồi chọn một thư mục. Ngay phía trên, chọn **Một thư mục** (mọi tệp vào thẳng thư mục đó) hoặc **Theo ngày** (mỗi ngày một thư mục, ví dụ `2026-07-14`); app nhớ lựa chọn này trên máy.
+4. **Bao nhiêu thư mục:** khi đang hiện nhiều thư mục, chọn **Chung** (gộp chung) hoặc **Riêng** (mỗi thư mục một thư mục con mang tên nó).
 5. Phía trên nút, phần **ước tính** cho biết các tệp sẽ nặng bao nhiêu. Nhấp **Xuất n ảnh**. Một thanh hiện tiến độ, và **Hủy** dừng lại: các ảnh đã xuất xong vẫn giữ, tệp đang ghi dở bị xoá. Ảnh nào không xuất được sẽ bị bỏ qua, và phần tổng kết cho biết bao nhiêu ảnh lỗi.
 
 <!-- shot: estimate | Ô ước tính dung lượng ngay trên nút xuất ảnh, khi xuất cho Facebook -->
 
-Tệp được xếp vào mỗi ngày một thư mục, đặt tên theo ngày (`2026-07-14`), và `undated` cho ảnh không có ngày; tệp chia sẻ nằm trong thư mục `Share`. Không tệp nào ghi đè tệp khác: bản thứ hai mang thêm `_1`, `_2`. Thông số máy ảnh được giữ, còn **vị trí GPS luôn bị xoá**, để ảnh chia sẻ không làm lộ nơi bạn ở.
+Với **Theo ngày**, tệp được xếp vào mỗi ngày một thư mục, đặt tên theo ngày (`2026-07-14`), và `undated` cho ảnh không có ngày. Tệp chia sẻ luôn nằm trong thư mục `Share`. Không tệp nào ghi đè tệp khác: bản thứ hai mang thêm `_1`, `_2`. Thông số máy ảnh được giữ, còn **vị trí GPS luôn bị xoá**, để ảnh chia sẻ không làm lộ nơi bạn ở.
 
 **Một tấm:** trong bản xem trước, nút **Xuất ảnh** phía trên ảnh dẫn tới nút **Xuất ảnh này**, cùng nơi lưu.
 
@@ -412,7 +412,7 @@ Cùng ô đó có mục **Ngôn ngữ** (chương 1) và hiện **cache**: ảnh
    - **Xoay tấm** (**R**) xoay tấm sang hướng kia;
    - **Xoay ảnh** (**⇧R**) xoay ảnh đang chọn 90° trong nửa của nó, chỉ trên tấm này, còn tấm giữ nguyên (**Xoay tấm** mới xoay cả tấm): khi một ảnh ngang chung tấm với một ảnh dọc, ảnh ngang sẽ lấp đầy nửa của nó thay vì nằm nhỏ ở giữa. Bản in riêng của ảnh không đổi;
    - bảng bên phải liệt kê hai ảnh, có cùng thẻ *Hai ảnh mỗi tấm* và *Dấu ngày*, và **Xuất tấm này** lưu riêng tấm đó. Ở *Dòng chữ dưới ngày*, tắt **Giống nhau cho cả 2 ảnh** để gõ dòng riêng cho từng ảnh; phần còn lại của dấu ngày vẫn như nhau cho cả hai;
-8. **Xuất** ở bảng bên phải lưu mỗi tấm một tệp, đặt tên theo hai ảnh của nó (ví dụ `P1000123+P1000124.jpg`), trong thư mục ngày của ảnh đầu.
+8. **Xuất** ở bảng bên phải lưu mỗi tấm một tệp, đặt tên theo hai ảnh của nó (ví dụ `P1000123+P1000124.jpg`), trong thư mục ngày của ảnh đầu khi xuất theo ngày.
 
 <!-- shot: collage | Chế độ Ghép ảnh: các tấm đúng như khi in, cùng tỷ lệ ảnh, cỡ gợi ý và đường cắt -->
 

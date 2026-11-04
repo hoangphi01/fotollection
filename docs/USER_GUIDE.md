@@ -279,13 +279,13 @@ Export writes new files for the lab or for sharing; your originals are never cha
    - **Custom size**: 640–6000 px on the long edge.
 
    Shared files are in sRGB, so they look the same on every screen.
-3. **Where:** click **Choose destination…** at the foot of the panel, and pick a folder.
-4. **How many folders:** with several folders shown, choose **Together** (into the same date folders) or **Separately** (each in a subfolder with its name).
+3. **Where:** click **Choose destination…** at the foot of the panel, and pick a folder. Above it, choose **One folder** (every file straight into it) or **By day** (a folder for each day, such as `2026-07-14`); the app remembers the choice on this computer.
+4. **How many folders:** with several folders shown, choose **Together** (all together) or **Separately** (each in a subfolder with its name).
 5. Above the button, an **estimate** says how large the files will be. Click **Export n photos**. A bar shows the progress, and **Cancel** stops it: the photos already exported stay, and a file half written is removed. A photo that cannot be exported is skipped, and the summary says how many failed.
 
 <!-- shot: estimate | The size estimate above the export button, sharing for Facebook -->
 
-The files go into one folder per day, named by the date (`2026-07-14`), and `undated` for photos without a date; shared files go into a `Share` folder. A file never overwrites another: a second copy gets `_1`, `_2`. Camera details are kept and the **GPS position is always removed**, so a shared photo does not give away where you live.
+With **By day**, the files go into one folder per day, named by the date (`2026-07-14`), and `undated` for photos without a date. Shared files go into a `Share` folder either way. A file never overwrites another: a second copy gets `_1`, `_2`. Camera details are kept and the **GPS position is always removed**, so a shared photo does not give away where you live.
 
 **One photo:** in the preview, **Export** above the photo goes to the **Export this photo** button, with the same destination.
 
@@ -414,7 +414,7 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
    - **Turn the sheet** (**R**) turns it the other way;
    - **Rotate photo** (**⇧R**) turns the chosen photo a quarter in its half, on this sheet only, and the sheet stays as it is (**Turn the sheet** turns the sheet): when a landscape photo shares a sheet with a portrait one, it then fills its half instead of sitting small in the middle. Its own print does not change;
    - the panel lists the two photos, holds the same *Two photos per sheet* and *Date stamp* cards, and **Export this sheet** saves this one sheet. Under *Line under the date*, turn **Same on both photos** off to type a line for each photo; the rest of the stamp stays the same for both;
-8. **Export** in the panel writes one file per sheet, named after its two photos (for example `P1000123+P1000124.jpg`), in the first photo's date folder.
+8. **Export** in the panel writes one file per sheet, named after its two photos (for example `P1000123+P1000124.jpg`), in the first photo's day folder when you export by day.
 
 <!-- shot: collage | Collage mode: sheets as they will print, with the photo ratio, the suggested size and the cut line -->
 

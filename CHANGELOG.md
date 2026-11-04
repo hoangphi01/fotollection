@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: export into one folder, or a folder per day as before: a switch above Choose destination
+
+### Changed
+
+- **Export:** a **One folder / By day** switch above *Choose destination…*. **One folder**, now the default, puts every file straight into the chosen folder, so photos exported together are found together; **By day** keeps a folder for each day (`2026-07-14`), as every export did before. The app remembers the choice on this computer. It works in every mode, for prints, shared files (in `Share`), collage sheets and postcards.
+
 ## [0.9.5] - 2026-11-04
 
 ### Highlights

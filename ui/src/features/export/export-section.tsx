@@ -6,7 +6,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import type { CullFilter, PhotoId } from '@/ipc/bindings'
+import { useUiSettings } from '@/features/settings/use-ui-settings'
+import type { CullFilter, ExportFolders, PhotoId } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { formatBytes } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -52,6 +53,9 @@ export function ExportSection({
   const { state, destination, chooseDestination, exportPhotos, cancel, dismiss } = exporter
   const single = only !== undefined
   const [separate, setSeparate] = useState(false)
+  // Into one folder or a folder per day (FR-009), remembered on this computer.
+  const { ui, update } = useUiSettings()
+  const byDay = ui.exportFolders === 'byDay'
   const collage = sheets !== undefined
   const picked = single ? NO_TICKS : ticked
   const count = picked.length > 0 ? picked.length : photoCount
@@ -153,6 +157,29 @@ export function ExportSection({
           </p>
         </div>
       )}
+
+      <div className="space-y-1">
+        <ToggleGroup
+          type="single"
+          variant="outline"
+          size="sm"
+          className="w-full"
+          disabled={running}
+          value={ui.exportFolders}
+          onValueChange={(v) => v && void update({ exportFolders: v as ExportFolders })}
+          aria-label={t('export.days.label')}
+        >
+          <ToggleGroupItem value="oneFolder" className="flex-1 text-xs">
+            {t('export.days.oneFolder')}
+          </ToggleGroupItem>
+          <ToggleGroupItem value="byDay" className="flex-1 text-xs">
+            {t('export.days.byDay')}
+          </ToggleGroupItem>
+        </ToggleGroup>
+        <p className="text-xs text-muted-foreground">
+          {t(byDay ? 'export.days.byDayHint' : 'export.days.oneFolderHint')}
+        </p>
+      </div>
 
       <button
         type="button"

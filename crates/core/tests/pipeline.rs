@@ -140,6 +140,7 @@ fn fr_009_export_by_date_never_overwrites() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        by_day: true,
         postcard_font: None,
     };
     let summary = run_export(
@@ -168,6 +169,67 @@ fn fr_009_export_by_date_never_overwrites() {
     let decoded = PureRustCodec.decode(&out).unwrap().image;
     assert_eq!((decoded.width, decoded.height), (300, 200));
     assert_eq!(metadata::read_bytes(&out).gps, None);
+}
+
+/// Into one folder (FR-009, the default): photos of two days side by side in the
+/// destination, a same name from another folder renamed, a share export in `Share/`.
+#[test]
+fn fr_009_export_into_one_folder_puts_every_day_together() {
+    use fotollection_core::share::{ExportTarget, SharePreset};
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    let a = Fixture {
+        width: 300,
+        height: 200,
+        date: Some("2026:07:14 10:00:00"),
+        ..Fixture::default()
+    };
+    write(src.path(), "a/IMG_1.jpg", &jpeg(&a));
+    write(src.path(), "b/IMG_1.jpg", &jpeg(&a));
+    write(
+        src.path(),
+        "IMG_2.jpg",
+        &jpeg(&Fixture {
+            date: Some("2026:07:15 09:00:00"),
+            ..a.clone()
+        }),
+    );
+    let lib = import(src.path());
+    let export = |settings: &RenderSettings| {
+        let options = ExportOptions {
+            destination: dest.path(),
+            settings,
+            quality: 90,
+            max_inflight: 2,
+            place_for: &|_| None,
+            frame_for: &|_| None,
+            group_for: &|_| None,
+            by_day: false,
+            postcard_font: None,
+        };
+        run_export(
+            &records(&lib),
+            &options,
+            &PureRustCodec,
+            &CancellationToken::new(),
+            &|_, _| {},
+        )
+    };
+    assert_eq!(export(&RenderSettings::default()).exported, 3);
+    let mut names: Vec<_> = std::fs::read_dir(dest.path())
+        .unwrap()
+        .map(|e| e.unwrap().file_name().into_string().unwrap())
+        .collect();
+    names.sort();
+    assert_eq!(names, ["IMG_1.jpg", "IMG_1_1.jpg", "IMG_2.jpg"]);
+
+    let share = RenderSettings {
+        export_target: ExportTarget::Share(SharePreset::Original),
+        ..RenderSettings::default()
+    };
+    assert_eq!(export(&share).exported, 3);
+    assert!(dest.path().join("Share/IMG_2.jpg").exists());
+    assert!(!dest.path().join("Share/2026-07-15").exists());
 }
 
 #[test]
@@ -199,6 +261,7 @@ fn fr_035_sheets_export_one_file_per_pair_in_the_first_photos_day() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        by_day: true,
         postcard_font: None,
     };
     let summary = fotollection_core::export::run_export_sheets(
@@ -260,6 +323,7 @@ fn fr_073_postcards_export_one_file_per_photo() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        by_day: true,
         postcard_font: None,
     };
     let summary = fotollection_core::export::run_export_sheets(
@@ -314,6 +378,7 @@ fn fr_056_folders_exported_separately_get_their_own_subfolder() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &group,
+        by_day: true,
         postcard_font: None,
     };
     let summary = run_export(
@@ -356,6 +421,7 @@ fn fr_053_the_estimate_is_exact_when_every_photo_is_sampled() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        by_day: true,
         postcard_font: None,
     };
     let all = records(&lib);
@@ -402,6 +468,7 @@ fn fr_010_prints_keep_the_camera_details_but_never_gps() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        by_day: true,
         postcard_font: None,
     };
     let summary = run_export(
@@ -464,6 +531,7 @@ fn fr_001_png_and_jpeg_export_together() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        by_day: true,
         postcard_font: None,
     };
     let summary = run_export(
@@ -533,6 +601,7 @@ fn fr_022_export_uses_only_the_filtered_set() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        by_day: true,
         postcard_font: None,
     };
     let summary = run_export(
@@ -582,6 +651,7 @@ fn fr_011_bad_file_does_not_fail_batch() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        by_day: true,
         postcard_font: None,
     };
     let summary = run_export(
@@ -620,6 +690,7 @@ fn fr_011_cancel_stops_and_removes_partials() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        by_day: true,
         postcard_font: None,
     };
     let cancel = CancellationToken::new();
@@ -807,6 +878,7 @@ fn fr_001_heic_imports_and_exports() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        by_day: true,
         postcard_font: None,
     };
     let summary = run_export(
@@ -869,6 +941,7 @@ fn fr_016_rw2_imports_and_exports() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        by_day: true,
         postcard_font: None,
     };
     let summary = run_export(
@@ -916,6 +989,7 @@ fn fr_067_share_exports_have_no_border() {
         place_for: &|_| None,
         frame_for: &|_| None,
         group_for: &|_| None,
+        by_day: true,
         postcard_font: None,
     };
     let summary = run_export(
@@ -964,6 +1038,7 @@ fn fr_053_share_export_resizes_keeps_ratio_and_writes_safe_exif() {
             place_for: &|_| None,
             frame_for: &|_| None,
             group_for: &|_| None,
+            by_day: true,
             postcard_font: None,
         };
         let summary = run_export(

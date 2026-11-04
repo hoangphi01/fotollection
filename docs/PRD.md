@@ -183,6 +183,8 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P0.** Write the export to a user-chosen folder using `YYYY-MM-DD/` subfolders and stable, sortable file names.
 
+- **One folder or by day** (a user's feedback, owner 2026-11-04): a switch in the export card, **One folder** (the default, every file straight into the destination, as a kiosk USB stick wants) or **By day** (the `YYYY-MM-DD/` subfolders, `undated/` without a date). Remembered per machine (`ui.exportFolders`, settings v12). It applies to prints, share exports (inside `Share/`), collage sheets and postcards, and inside each subfolder of a separate export ([FR-056](#fr-056--folders-as-tabs)).
+
 - Existing files are never overwritten silently. The user picks a rule: skip, rename, or overwrite after confirmation.
 
 ### FR-010 — Metadata privacy on export
@@ -390,7 +392,7 @@ Put several photos on one print to save cost. **P1 (v0.9.0) for 2-up**, the Coll
 - **Preview.** A sheet opens like a photo from the gallery (double-click, Enter or Space) in the photo preview's frame, with no photo chosen, so it shows exactly as it prints: the sheet large with zoom, ← → through the sheets, a click (or 1, 2) to choose a photo and again (or Esc) to let go, each photo cropped there for its place ([FR-006](#fr-006--crop-to-print-ratio)), the sheet turned, and **Export this sheet**, as [FR-055](#fr-055--export-from-the-preview) does for a photo.
 - **Sheet size.** Any built-in or custom size; Original is not offered, since a sheet needs a fixed size (a sheet kept on Original prints at 10 × 15, and the panel says so).
 - **Advice.** The panel shows the suggested size, the photo left inside the border and the print quality ([FR-026](#fr-026--resolution-warning)), for example "6 × 9 cm · 2:3 · with border 5.4 × 8.4 cm".
-- **Export.** One file per sheet, named `<first>+<second>.jpg` in the first photo's date folder, never overwriting ([FR-009](#fr-009--export-by-date)); EXIF from the first photo, without GPS ([FR-010](#fr-010--metadata-privacy-on-export)). Two photos in one colour space keep its profile; two in different spaces are both converted to sRGB ([FR-027](#fr-027--srgb-conversion-for-labs)). Half as many sheets are exported at once as photos, as each holds two decoded photos ([NFR-004](#nfr-004--memory-ceiling)). The sheet's pixel density is the lower of the two cells' own, so no photo is enlarged ([ADR-0032](adr/0032-collage-sheets-from-two-cell-plans.md)).
+- **Export.** One file per sheet, named `<first>+<second>.jpg` in the first photo's day folder when exported by day, never overwriting ([FR-009](#fr-009--export-by-date)); EXIF from the first photo, without GPS ([FR-010](#fr-010--metadata-privacy-on-export)). Two photos in one colour space keep its profile; two in different spaces are both converted to sRGB ([FR-027](#fr-027--srgb-conversion-for-labs)). Half as many sheets are exported at once as photos, as each holds two decoded photos ([NFR-004](#nfr-004--memory-ceiling)). The sheet's pixel density is the lower of the two cells' own, so no photo is enlarged ([ADR-0032](adr/0032-collage-sheets-from-two-cell-plans.md)).
 - **Not in 2-up yet:** the info frame (its bar does not fit a 7.5 cm cell). The date stamp works in each cell.
 
 ### FR-036 — Custom captions
@@ -608,7 +610,7 @@ Next to the batch settings, any other setting will later be overridable for one 
   - **Custom:** a long edge of 640–6000 px, clamped in Rust.
 - **Pipeline:** the photo's edits (crop, straightening, date stamp, info frame) as for prints, then conversion to **sRGB** ([FR-027](#fr-027--srgb-conversion-for-labs)), a light unsharp mask (0.2) after a downscale, JPEG with 4:2:0 chroma and optimized Huffman tables, at quality 88, or 80 for *Original*.
 - **Metadata:** camera, lens, exposure and capture time, and `Software = "Fotollection <version>"`, which phone galleries show as the editing app (as they do for Snapseed). **GPS is never written** ([FR-010](#fr-010--metadata-privacy-on-export)).
-- **Where:** `<destination>/Share/<YYYY-MM-DD>/`, apart from prints.
+- **Where:** `<destination>/Share/`, apart from prints, in `<YYYY-MM-DD>/` subfolders when exported by day ([FR-009](#fr-009--export-by-date)).
 - **How much lighter, before and after:** the export card estimates the size before exporting ("Estimated: 17.0 MB → ≈ 1.4 MB, 92 % lighter"), from up to four photos encoded in memory with the current settings and updated as they change, exact when every photo was sampled; when the export finishes, it reports the real figure. Print files, which keep every detail, can be larger, and the card says so.
 - **Measured, not guessed** ([RESULT.md §10](RESULT.md#10-photos-for-social-media)): against the original resized with Lanczos, SSIM ≈ 0.98 for every preset and mean ΔE2000 0.96 for *Original* (at about half the file); after a simulated Facebook recompression, closer to the photo than the usual way and 99.6 % of the colour of Display P3 photos kept (86 % the usual way). Resized photos stay at ΔE2000 1.3–1.6 because of the 4:2:0 chroma every platform recompresses to.
 
@@ -636,7 +638,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **All photos** sits above the folders, with the total count: the grid shows every photo of every folder.
 - **Clicking a folder shows only that folder**: the grid, the best-shot groups and the export all work on it, like switching tabs. The folder counts never depend on the star or flag filter.
 - **Several folders:** the select button above the list (or Ctrl/⌘-click) turns the folders into tick boxes; the grid and the export then cover the ticked folders.
-- **Together or separately:** when the export covers two folders or more, the export card asks whether they go **together** (the usual date folders) or **separately** (one subfolder per source folder, named after it; two folders with the same name get " (2)").
+- **Together or separately:** when the export covers two folders or more, the export card asks whether they go **together** (the usual folder, or date folders) or **separately** (one subfolder per source folder, named after it; two folders with the same name get " (2)").
 - **Ticks follow the tabs:** in select mode ([FR-050](#fr-050--print-basket)), photos ticked in one folder stay ticked when another folder or *All photos* is shown, so the best of several folders goes to the basket in one move. The selection bar counts every ticked photo and says how many are in other folders. Opening the basket or the set-aside view, or leaving select mode, clears the ticks.
 - The choice of folders is view state, not saved in the project. Removing a folder shows all photos again, since folder ids are renumbered.
 

@@ -25,7 +25,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// (FR-035), absent before (the defaults); `render.stamp.size` (FR-004), absent before
 /// (medium); `render.borderColor` (FR-067), absent before (white).
 /// v11 (FR-073): `render.collage.postcard`, absent before (off).
-pub const SCHEMA_VERSION: u32 = 11;
+/// v12 (FR-009): `ui.exportFolders`, absent before (one folder).
+pub const SCHEMA_VERSION: u32 = 12;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -443,6 +444,28 @@ mod tests {
             panic!("v11 should load");
         };
         assert_eq!(back.render.collage.postcard, s.render.collage.postcard);
+        Ok(())
+    }
+
+    /// FR-009: a v11 file has no export folders choice: it loads as one folder, the
+    /// choice of a new install, and a folder per day round-trips.
+    #[test]
+    fn fr_009_v11_files_export_into_one_folder_and_by_day_round_trips() -> std::io::Result<()> {
+        use crate::settings::ExportFolders;
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v11.json"))?;
+        let Loaded::Ok(mut s) = load(&path) else {
+            panic!("v11 should load");
+        };
+        assert_eq!(s.ui.export_folders, ExportFolders::OneFolder);
+        assert!(s.render.collage.postcard.enabled);
+        s.ui.export_folders = ExportFolders::ByDay;
+        save(&path, &s)?;
+        let Loaded::Ok(back) = load(&path) else {
+            panic!("v12 should load");
+        };
+        assert_eq!(back.ui.export_folders, ExportFolders::ByDay);
         Ok(())
     }
 

@@ -47,6 +47,19 @@ pub struct UiSettings {
     /// Absent before settings v10: Professional, the app as it was (FR-048).
     #[serde(default)]
     pub mode: AppMode,
+    /// Where an export puts its files (FR-009). Absent before settings v12: one folder.
+    #[serde(default)]
+    pub export_folders: ExportFolders,
+}
+
+/// Where an export puts its files (FR-009): all in the chosen folder, or a `YYYY-MM-DD`
+/// subfolder for each day.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum ExportFolders {
+    #[default]
+    OneFolder,
+    ByDay,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Type)]

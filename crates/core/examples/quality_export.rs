@@ -71,6 +71,7 @@ fn main() {
             place_for: &|_| None,
             frame_for: &|_| None,
             group_for: &|_| None,
+            by_day: true,
             postcard_font: None,
         },
         default_codec().as_ref(),

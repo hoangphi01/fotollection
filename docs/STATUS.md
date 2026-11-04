@@ -98,7 +98,7 @@ The audit of 2026-11-02 read the RAW path, the JPEG and colour path and the docs
 | FR-006 | Crop to print ratio | 1 | In Progress | Crop editor with edge labels (cm/in + px), ratio pill and live DPI; centre + zoom storage. ✓ Lossless quarter turns with `[` `]`, crop follows (`fr_006_*`, project v4). ✓ Straighten ±15° in the crop editor, inscribed crop, crop-only bicubic resampling (project v5) |
 | FR-007 | Live preview | 1 | In Progress | Preview dialog with inspector (capture, camera, image, GPS, print DPI, stamp controls). Rust-rendered, warm p95 18 ms (p50 17 ms) |
 | FR-008 | Original-quality export | 1 | In Progress | Full resolution, q95 4:4:4, ICC copied. Lossless crop-only path pending |
-| FR-009 | Export by date | 1 | Done | `YYYY-MM-DD/` folders, never overwrites (`_1`, `_2`…). `fr_009_*` passes |
+| FR-009 | Export by date | 1 | Done | `YYYY-MM-DD/` folders, never overwrites (`_1`, `_2`…). Since 2026-11-04 (a user's feedback) a **One folder / By day** switch in the export card, one folder by default, remembered per machine (`ui.exportFolders`, settings v12). `fr_009_*` passes |
 | FR-010 | Metadata privacy on export | 1 | In Progress | Every export writes an allowlisted EXIF block (camera, lens, exposure, date, `Software`), never GPS, read back in tests (`fr_010_prints_keep_the_camera_details_but_never_gps`, `fr_053_*`). Options to keep more or less for prints pending |
 | FR-011 | Batch progress, cancel and recovery | 1 | Done | Progress events, cancel removes partials, per-photo failures. `fr_011_*` pass |
 | FR-012 | Trip auto-grouping | 2 | Not Started | |

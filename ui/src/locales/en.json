@@ -294,10 +294,17 @@
       "label": "How the folders are exported",
       "together": "Together",
       "separate": "Separately",
-      "togetherHint_one": "{{count}} folder into the same date folders",
-      "togetherHint_other": "{{count}} folders into the same date folders",
+      "togetherHint_one": "{{count}} folder, all together",
+      "togetherHint_other": "{{count}} folders, all together",
       "separateHint_one": "{{count}} folder, each in a subfolder with its name",
       "separateHint_other": "{{count}} folders, each in a subfolder with its name"
+    },
+    "days": {
+      "label": "Where the files go",
+      "oneFolder": "One folder",
+      "byDay": "By day",
+      "oneFolderHint": "Every photo straight into the folder you choose",
+      "byDayHint": "A folder for each day, such as 2026-07-14"
     },
     "buttonThisSheet": "Export this sheet"
   },
