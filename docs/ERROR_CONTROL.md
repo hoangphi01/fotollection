@@ -1,6 +1,6 @@
 # Error control — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-02
+> **Status:** Living · **Last reviewed:** 2026-11-04
 >
 > The dictionary of every error the app can show: the single source of truth for error codes. Fotollection is offline and sends nothing (NFR-006), so there is no Sentry. **The code a user reads out, `ERR-IMG-0002` for example, is the only clue we get.** It must say at once what went wrong, where it was raised, why, and what to do. Every new error gets its row here in the same commit as the code ([DOCS_GUIDE.md](DOCS_GUIDE.md) §2).
 

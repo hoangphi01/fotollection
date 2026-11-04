@@ -1,6 +1,6 @@
 # Security, Privacy & Resilience — Fotollection
 
-> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-02
+> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-04
 >
 > Threat model and defenses for an **offline desktop app** (Tauri 2 + Rust core).
 > v0.1 targeted a browser-based web app. Concerns that only applied to that architecture (Cloudflare headers, Nominatim rate limits, browser memory limits) were removed in v0.2. See [ADR-0001](adr/0001-desktop-tauri-over-web.md).

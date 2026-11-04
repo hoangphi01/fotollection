@@ -175,8 +175,8 @@ The audit of 2026-11-02 read the RAW path, the JPEG and colour path and the docs
 |----|-------------|--------|---------------|--------|
 | NFR-001 | Library load time | < 1 s first screen | 5,035 photos: import+EXIF 383 ms, T0 236 ms = 0.12 s per 1,000 ([RESULT.md](RESULT.md)) | In Progress |
 | NFR-002 | Preview latency | < 50 ms p95 | 18 ms p95, 17 ms p50 (warm), faster than Chromium (18.5 ms) after the screen encoder | In Progress |
-| NFR-003 | Export throughput | ≥ 8 photos/s | 18.0/s (16 MP, median of 3) | In Progress |
-| NFR-004 | Memory ceiling | ≤ 2 GB | Core: 1.35 GB (95 photos), 1.45 GB (5,035 photos), flat. Whole-app run with 5,035 photos pending | In Progress |
+| NFR-003 | Export throughput | ≥ 8 photos/s | 18.0/s (16 MP, median of 3, 2026-10-23); 2026-11-04 after the encoder change: 23.5/s (16 MP), 10.1/s on 20 MP camera JPEGs (the Prague trip, median of 3, loaded machine; RESULT §20) | In Progress |
+| NFR-004 | Memory ceiling | ≤ 2 GB | Core: 1.35 GB (95 photos), 1.45 GB (5,035 photos), flat. 2026-11-04: 0.66 GB (16 MP), 1.31 GB for the Prague trip with RAW (20 MP, was 2.14), photos in flight set by the largest (`export::inflight_for`). Whole-app run with 5,035 photos pending | In Progress |
 | NFR-005 | UI responsiveness | < 100 ms | — | Not Started |
 | NFR-006 | Offline and zero telemetry | 0 requests | — | Not Started |
 | NFR-007 | Platforms | macOS 11+, Win 10/11, Linux glibc 2.35+ (x86_64, ARM64) | macOS and Windows shipping; Linux from v0.8.2, smoke-tested in CI on Ubuntu 22.04 and Debian 12 | In Progress |

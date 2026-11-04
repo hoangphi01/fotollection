@@ -80,7 +80,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [NFR-001](PRD.md#nfr-001--library-load-time) | First thumbnails for 1,000 JPEGs | < 1 s; all ready in < 10 s | `measure_folder` (import, EXIF, T1 thumbnails), cold cache |
 | [NFR-002](PRD.md#nfr-002--preview-latency) | Preview re-render, p95 | < 50 ms | `measure_folder` (warm 1600 px preview, median of 20) and `measure_preview`; `bench/run.sh` against Chromium |
 | [NFR-003](PRD.md#nfr-003--export-throughput) | Export throughput, 24 MP JPEG | ≥ 8 photos/s | `measure_folder` export; `bench/run.sh` against Chromium |
-| [NFR-004](PRD.md#nfr-004--memory-ceiling) | Peak RSS during export | ≤ 2 GB | `bench/batch.sh`: `measure_folder --discard-output` on 5,000+ photos, peak RSS from `/usr/bin/time -l` |
+| [NFR-004](PRD.md#nfr-004--memory-ceiling) | Peak RSS during export | ≤ 2 GB | `bench/batch.sh`: `measure_folder --discard-output` on 5,000+ photos, peak RSS from `/usr/bin/time -l`; `peakExportRssMb`, sampled during the export; `bench/trip.sh` on large camera files |
 | [NFR-005](PRD.md#nfr-005--ui-responsiveness) | Input latency during export | < 100 ms | Manual; E2E probe planned |
 | [NFR-008](PRD.md#nfr-008--install-size) | Installer size | ≤ 25 MB | Release asset sizes, checked by hand; a CI check is planned |
 | [NFR-010](PRD.md#nfr-010--cold-start) | Launch to interactive | < 1.5 s | `scripts/measure-startup.sh` (`FOTOLLECTION_TIMING`, release build) |

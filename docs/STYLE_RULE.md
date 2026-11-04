@@ -1,6 +1,6 @@
 # Style Rules — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-10-31
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-04
 >
 > These rules apply to all code and docs. Tooling enforces them where possible. Where tooling can't, reviewers do.
 > If a rule blocks you, propose changing it in a PR. Don't silently break it.
