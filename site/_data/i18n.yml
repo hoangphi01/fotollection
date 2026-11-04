@@ -269,7 +269,7 @@ en:
   story_title: The story
   story_kicker: A diary
   story_description: "The story behind Fotollection: twenty years of photos never looked at again, a winter of looking back, and the first kilometres of a marathon to turn memories back into prints."
-  story_lead: "Why Fotollection exists, and how it found its own way: a diary of the first kilometres, told from the docs and the history of the code."
+  story_lead: "Why Fotollection exists, and how it found its own way: a diary of the first kilometres, told from the project's notes and the history of its code."
   footer_story: The story
   man_title: Manual
   man_kicker: Help
@@ -703,7 +703,7 @@ vi:
   story_title: Câu chuyện
   story_kicker: Nhật ký
   story_description: "Câu chuyện phía sau Fotollection: hai mươi năm ảnh chưa xem lại, một mùa đông nhìn về những năm cũ, và những cây số đầu của một cuộc marathon để kỷ niệm trở lại thành ảnh in."
-  story_lead: "Vì sao có Fotollection, và nó đã tìm ra con đường riêng thế nào: nhật ký của những cây số đầu tiên, kể lại từ tài liệu và lịch sử code của dự án."
+  story_lead: "Vì sao có Fotollection, và nó đã tìm ra con đường riêng thế nào: nhật ký của những cây số đầu tiên, kể lại từ những ghi chép và lịch sử mã nguồn của dự án."
   footer_story: Câu chuyện
   man_title: Hướng dẫn
   man_kicker: Trợ giúp
