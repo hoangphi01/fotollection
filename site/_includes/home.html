@@ -249,7 +249,8 @@
       {%- for c in charts -%}
       {%- capture key %}chart_{{ c }}{% endcapture -%}
       <figure class="card chart">
-        <img src="{{ '/assets/img/charts/bench-' | append: c | append: '-' | append: page.lang | append: '.svg' | relative_url }}" width="752" alt="{{ t[key] }}" loading="lazy" decoding="async" />
+        {%- capture chart %}bench-{{ c }}{% endcapture %}{%- assign size = site.data.charts[chart] %}
+        <img src="{{ '/assets/img/charts/bench-' | append: c | append: '-' | append: page.lang | append: '.svg' | relative_url }}" width="{{ size.width | default: 752 }}" height="{{ size.height | default: 400 }}" alt="{{ t[key] }}" loading="lazy" decoding="async" />
         <figcaption>{{ t[key] }}<sup class="fn-ref"><a href="#fn-12" aria-label="{{ t.fn_label }} 12">12</a></sup></figcaption>
       </figure>
       {%- endfor -%}
@@ -274,7 +275,7 @@
         {%- capture name_key %}treat_{{ item.id }}{% endcapture %}
         <label class="treat"><input type="radio" name="treat" value="{{ item.id }}" data-vnd="{{ item.vnd }}" data-note="{{ item.note }}"{% if item.id == 'coffee' %} checked{% endif %} />{% include icons/{{ item.icon }}.svg %}<span class="treat-name">{{ t[name_key] }}</span><span class="treat-price">{{ item.vnd | divided_by: 1000 }}k ₫</span></label>
         {%- endfor %}
-        <label class="treat treat-own"><input type="radio" name="treat" value="own" data-note="Fotollection" />{% include icons/hand-heart.svg %}<span class="treat-name">{{ t.treat_own }}</span><input class="treat-amount" type="number" inputmode="numeric" min="1000" step="1000" placeholder="50000" aria-label="{{ t.treat_own_label }}" data-treat-own /><span class="treat-price">₫</span></label>
+        <label class="treat treat-own"><input type="radio" name="treat" value="own" data-note="Fotollection" />{% include icons/hand-heart.svg %}<span class="treat-name">{{ t.treat_own }}</span><input class="treat-amount" type="number" inputmode="numeric" min="1000" max="100000000" step="1000" placeholder="50000" aria-label="{{ t.treat_own_label }}" data-treat-own /><span class="treat-price">₫</span></label>
       </fieldset>
       <figure class="treat-qr">
         {%- comment %} The published code until assets/js/support.js draws one with the amount. {% endcomment %}

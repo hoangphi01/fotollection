@@ -36,7 +36,8 @@
       {%- endif -%}
       {%- if c == 'bench' %}{% assign file = 'bench' %}{% assign cap = t.chart_browser %}{% else %}{% capture file %}bench-{{ c }}{% endcapture %}{% capture cap_key %}chart_{{ c }}{% endcapture %}{% assign cap = t[cap_key] %}{% endif %}
       <figure class="card chart">
-        <img src="{{ chart_base }}{{ file }}-{{ page.lang }}.svg" width="752" alt="{{ cap }}" loading="lazy" decoding="async" />
+        {%- assign size = site.data.charts[file] %}
+        <img src="{{ chart_base }}{{ file }}-{{ page.lang }}.svg" width="{{ size.width | default: 752 }}" height="{{ size.height | default: 400 }}" alt="{{ cap }}" loading="lazy" decoding="async" />
         <figcaption>{{ cap }}<sup class="fn-ref"><a href="#fn-12" aria-label="{{ t.fn_label }} 12">12</a></sup></figcaption>
       </figure>
       {%- endfor -%}

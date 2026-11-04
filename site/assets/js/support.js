@@ -12,6 +12,9 @@
   var amountLabel = box.querySelector('[data-treat-amount]')
   var own = box.querySelector('[data-treat-own]')
   var locale = document.documentElement.lang === 'vi' ? 'vi-VN' : 'en-US'
+  // Napas takes whole đồng; an amount outside this range draws no code at all.
+  var MIN = 1000
+  var MAX = 100000000
 
   var tlv = function (id, value) {
     return id + String(value.length).padStart(2, '0') + value
@@ -69,11 +72,13 @@
     var chosen = box.querySelector('input[name="treat"]:checked')
     if (!chosen) return
     var isOwn = chosen.value === 'own'
-    var amount = isOwn ? Math.round(Number(own && own.value)) : Number(chosen.dataset.vnd)
-    if (!Number.isFinite(amount) || amount < 1000 || amount > 100000000) amount = 0
+    var amount = isOwn ? Math.floor(Number(own && own.value)) : Number(chosen.dataset.vnd)
+    var valid = Number.isFinite(amount) && amount >= MIN && amount <= MAX
     var note = chosen.dataset.note || 'Fotollection'
-    draw(payload(amount, note), box.dataset.qrLabel)
-    if (amountLabel) amountLabel.textContent = amount ? amount.toLocaleString(locale) + ' ₫ · ' + note : box.dataset.ownHint
+    // No code for an amount the bank would refuse: the space stays, the hint says why.
+    figure.toggleAttribute('data-off', !valid)
+    if (valid) draw(payload(amount, note), box.dataset.qrLabel)
+    if (amountLabel) amountLabel.textContent = valid ? amount.toLocaleString(locale) + ' ₫ · ' + note : box.dataset.ownHint
   }
 
   box.addEventListener('change', update)
@@ -82,6 +87,10 @@
     own.addEventListener('input', function () {
       var radio = box.querySelector('input[name="treat"][value="own"]')
       if (radio) radio.checked = true
+      // Digits only, and never past the most a transfer takes here.
+      var digits = own.value.replace(/\D/g, '')
+      if (digits !== own.value) own.value = digits
+      if (Number(digits) > MAX) own.value = String(MAX)
       update()
     })
   update()

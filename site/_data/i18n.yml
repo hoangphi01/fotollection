@@ -164,7 +164,7 @@ en:
   treat_meal: A student meal
   treat_own: As you like
   treat_own_label: Your own amount, in đồng
-  treat_own_hint: Type an amount of at least 1,000 ₫
+  treat_own_hint: Type an amount from 1,000 ₫ to 100,000,000 ₫
   kiosk_title: Ready for the photo kiosk at
   kiosk_and: and
   kiosk_lead: The photo services at dm and Rossmann are made by CEWE. Fotollection has every size of their price list built in, so the crop you see is exactly what comes out of the printer, with no surprise trimming at the edges.
@@ -575,7 +575,7 @@ vi:
   treat_meal: Một bữa cơm no
   treat_own: Tuỳ tâm
   treat_own_label: Số tiền tuỳ tâm, tính bằng đồng
-  treat_own_hint: Nhập số tiền từ 1.000 ₫
+  treat_own_hint: Nhập số tiền từ 1.000 ₫ đến 100.000.000 ₫
   kiosk_title: Sẵn sàng cho máy in ảnh ở
   kiosk_and: và
   kiosk_lead: Dịch vụ in ảnh của dm và Rossmann đều do CEWE thực hiện. Fotollection có sẵn mọi khổ trong bảng giá của họ, nên khung cắt bạn thấy chính là ảnh máy in trả ra, không bị xén mép bất ngờ.

@@ -336,3 +336,9 @@
 - **Seen:** a postcard address that printed whole on its four lines still showed the red "does not fit" mark.
 - **Why:** the text ended with a line break, and `wrap` turned it into one more, empty row, which printed nothing but counted as a fifth line. Rows past the last line were also measured with no room, so each left-over letter became a row of its own.
 - **Rule:** drop trailing blank rows before counting, measure rows past the last line as long as it, and test the check on text as the app's field sends it (doubled spaces, a trailing break), not only on tidy strings.
+
+### A lazy image with no height moves the anchors below it (website)
+
+- **Seen:** the navbar's Coffee button scrolled to a point 800 to 1,800 px above the support section; every other anchor landed right.
+- **Why:** the benchmark charts above it were `loading="lazy"` with a width and no height. The page scrolled toward `#support` with each chart counted at zero height; as they loaded on the way, the section moved down and the scroll stopped short.
+- **Rule:** every lazy image on the site carries both `width` and `height` (charts get theirs from `site/_data/charts.json`, written by `bench/chart.mjs`). After a layout change, click every in-page link and check where it lands, not only that it scrolls.

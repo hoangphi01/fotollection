@@ -309,6 +309,7 @@ h3.with-logo .logo-os { height: 0.95em; }
 /* The treat menu (assets/js/support.js): a choice of chips; the chosen one draws the code. */
 .treat-qr { margin: 0; display: grid; gap: 10px; justify-items: center; }
 .treat-qr svg, .treat-qr img { width: 220px; max-width: 100%; height: auto; border-radius: 14px; background: #fff; }
+.treat-qr [data-treat-qr][data-off] svg { visibility: hidden; }
 .treat-qr figcaption { margin: 0; text-align: center; font-variant-numeric: tabular-nums; }
 .treat-menu { margin: 0; padding: 0; border: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .treat-menu legend { padding: 0; margin-bottom: 10px; }

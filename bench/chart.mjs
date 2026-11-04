@@ -648,8 +648,16 @@ for (const lang of ['en', 'vi']) {
 STYLE = styleFor(THEMES.site)
 const SITE_CHARTS = ['bench-budgets', 'bench-quality', 'bench-share', 'bench-raw', 'bench-bestshot', 'bench-memory', 'bench']
 mkdirSync(join(root, 'site/assets/img/charts'), { recursive: true })
+// Each chart's size, for the width and height of its <img>: a lazy chart with no height grew
+// as it loaded and moved the anchors below it while the page scrolled to them (LESSONS).
+const sizes = {}
 for (const lang of ['en', 'vi']) {
   const all = charts(lang)
-  for (const name of SITE_CHARTS) writeFileSync(join(root, 'site/assets/img/charts', `${name}-${lang}.svg`), all[name])
+  for (const name of SITE_CHARTS) {
+    writeFileSync(join(root, 'site/assets/img/charts', `${name}-${lang}.svg`), all[name])
+    const [, , w, h] = (/viewBox="([^"]+)"/.exec(all[name])?.[1] ?? '0 0 752 400').split(/\s+/).map(Number)
+    sizes[name] = { width: w, height: h }
+  }
 }
+writeFileSync(join(root, 'site/_data/charts.json'), `${JSON.stringify(sizes, null, 2)}\n`)
 console.log(JSON.stringify({ measured, rust, web, inflight8, batch }, null, 2))
