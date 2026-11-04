@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-23
-- **Related:** ADR-0005, [SECURITY.md §6](../SECURITY.md#6-supply-chain), [CONTRIBUTING.md](../../CONTRIBUTING.md#contributor-license-agreement)
+- **Related:** ADR-0005, [SECURITY.md §6](../SECURITY.md#6-supply-chain), [CONTRIBUTING.md](../../CONTRIBUTING.md#11-licence-and-the-cla)
 
 ## Context
 

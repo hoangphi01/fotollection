@@ -1,6 +1,6 @@
 # Docs Guide — Fotollection
 
-> **Last reviewed:** 2026-11-01
+> **Last reviewed:** 2026-11-04
 >
 > The checklist for keeping docs, the website and the code in step ([ADR-0006](adr/0006-docs-as-code.md)). Before you commit, find every row below that matches your change and do all of it, in the same commit. Where a fact lives is mapped in [README.md](README.md); this page says **what to update when something changes**.
 
@@ -36,6 +36,7 @@
 | **A bug that took more than one look to find** | An entry at the top of [LESSONS.md](LESSONS.md): what was seen, why, the fix, the rule from now on | Remove every temporary `DEBUG-` log before the commit |
 | **A release** | `scripts/release.sh X.Y.Z` (version everywhere + CHANGELOG), then push ([RELEASE.md](RELEASE.md) §4, §6). Remove the "coming in vX" markers: `site/_data/i18n.yml`, README.md and README.vi.md, the USER_GUIDE chapters (both languages) | [STATUS.md](STATUS.md) "Shipping" line once it is published; the website updates its download buttons and changelog by itself |
 | **A new platform or package format** (an OS, an architecture, AppImage, `.deb`…) | An ADR; [PRD.md](PRD.md) NFR-007; [RELEASE.md](RELEASE.md) §2–§6 (artifacts, signing, pipeline, updating, checklist); `release.yml` and `ci.yml` matrices with a smoke test; `.github/release-notes.md`; README and README.vi (download, requirements, the table "By system"); the website (download buttons, the feature table by system, install steps, FAQ, footnotes, `operatingSystem` in `default.html`) | [ARCHITECTURE.md](ARCHITECTURE.md) §8; [TESTING.md](TESTING.md) §6–§7; [SECURITY.md](SECURITY.md) (installer row); USER_GUIDE (updating, Open with); `updates.rs` asset names; [STATUS.md](STATUS.md) and [ROADMAP.md](ROADMAP.md) |
+| **How we work** (a rule for commits, pull requests, issues or IDs) | [CONTRIBUTING.md](../CONTRIBUTING.md) and the templates in `.github/` (`ISSUE_TEMPLATE/`, `pull_request_template.md`) | [CLAUDE.md](../CLAUDE.md) when the rule binds AI assistants too |
 | **Progress** (a stage done, a next step decided) | [STATUS.md](STATUS.md) "Current phase" and "Next, in order" | [ROADMAP.md](ROADMAP.md) ideas backlog for things decided but not yet requirements |
 
 ## 3. Before every commit

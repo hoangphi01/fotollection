@@ -167,7 +167,7 @@ bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batc
 | PNG | `png` | |
 | Face models (FR-041) | `tract-onnx` (MIT/Apache), pure Rust; YuNet + FaceMesh V2 ONNX compiled in | One code path on macOS and Windows, no native runtime; BLAKE3-checked at load ([ADR-0018](adr/0018-face-models-and-runtime.md)) |
 | Resize | `fast_image_resize` | SIMD (NEON/AVX2) |
-| Colour management | `lcms2` | Preserve or convert the ICC profile |
+| Colour management | `qcms` | Preserve or convert the ICC profile (`colour.rs`) |
 | Text rendering | `ab_glyph` `FontArc`: bundled Inter (OFL, variable weights) or a user OTF/TTF (FR-042) | `cosmic-text` if complex shaping is ever needed |
 | EXIF read | `kamadak-exif` | Allowlisted fields only. Also extracts the IFD1 thumbnail for T0 |
 | EXIF write | `little_exif` (candidate) | Writes the privacy-filtered metadata |
@@ -204,7 +204,7 @@ import → metadata → adjust → geocode → (cluster) → cull/select → pla
 | **plan** | meta + settings → `RenderPlan` | Pure function: print size per photo, crop rect, border, safe area, stamp/caption text and position, colour intent, output path. Also yields the effective-DPI check ([FR-026](PRD.md#fr-026--resolution-warning)) |
 | **frame** | photo + `FramePlan` → canvas | When enabled: a canvas at the print ratio; the photo is cropped to fill or fitted above the info bar; brand + lines drawn (FR-040) |
 | **render** | `RenderPlan` + pixels → pixels | Crop, then the **Photo Style look** (one 3D-LUT pass + tone curve + grain, [FR-039](PRD.md#fr-039--photo-style-looks)), then fit into the border, then stamp/caption inside the safe area. Overlays come after the look, so they are never tinted |
-| **color** | pixels + source ICC → sRGB pixels | `lcms2` transform, with a configurable rendering intent ([FR-027](PRD.md#fr-027--srgb-conversion-for-labs)) |
+| **color** | pixels + source ICC → sRGB pixels | `qcms` transform, one cached per profile ([FR-027](PRD.md#fr-027--srgb-conversion-for-labs), [FR-072](PRD.md#fr-072--our-own-develop-core)) |
 | **sharpen** | pixels → pixels | Output sharpening for size and paper (Phase 3, [FR-029](PRD.md#fr-029--output-sharpening)) |
 | **encode** | pixels → bytes | turbojpeg, ICC re-embedded, metadata filtered ([FR-010](PRD.md#fr-010--metadata-privacy-on-export)) |
 | **write** | bytes → file | Written to a temp file, then atomically renamed. Removed if the user cancels |

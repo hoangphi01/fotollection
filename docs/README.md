@@ -44,6 +44,7 @@
 | User-visible changes per version | [CHANGELOG.md](../CHANGELOG.md) |
 | What to update when something changes (the checklist) | [DOCS_GUIDE.md](DOCS_GUIDE.md) |
 | What each debugging session taught us, and how we debug | [LESSONS.md](LESSONS.md) |
+| How to contribute: issues, pull requests, IDs, error codes, the docs rules explained (for people and agents) | [CONTRIBUTING.md](../CONTRIBUTING.md) |
 | Rules for AI assistants | [CLAUDE.md](../CLAUDE.md) |
 
 ## Keeping docs in sync with code

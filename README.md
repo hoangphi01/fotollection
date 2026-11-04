@@ -35,11 +35,11 @@ Stamp the date and place on your photos, crop them to real print sizes, and get 
 ---
 
 > [!NOTE]
-> **Fotollection is in early development.** It already works end to end for **JPEG, PNG, HEIC and camera RAW**: import → cull with stars and flags → preview with crop, date stamp and info frame → export. Projects save as one `.fotollection` file that opens the same on another machine. Offline place names and best-shot suggestions are in too. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md).
+> **Fotollection is in active development (0.x), with a new version every few days.** It works end to end on macOS, Windows and Linux, for **JPEG, PNG, HEIC and camera RAW**, in three modes: **Simple** (keep or drop, then print), **Collage** (two photos on one print, or postcards) and **Pro** (stars, flags, best shot, crop, date stamp, info frame). Projects save as one `.fotollection` file that opens the same on another machine. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md); the [manual](https://fotollection.org/manual/) shows every step.
 
 <p align="center">
-  <img src="docs/images/screenshot-light.png" alt="Fotollection main window (light theme)" width="49%" />
-  <img src="docs/images/screenshot-dark.png" alt="Fotollection main window (dark theme)" width="49%" />
+  <img src="site/assets/img/grid-en-light.webp" alt="Fotollection main window (light theme)" width="49%" />
+  <img src="site/assets/img/grid-en-dark.webp" alt="Fotollection main window (dark theme)" width="49%" />
 </p>
 
 ## Why Fotollection?
@@ -97,6 +97,8 @@ Fotollection is built for enthusiast and professional photographers, so speed is
 | Export throughput | ≥ 8 photos/s at 24 MP | **18.0 photos/s** at 16 MP | ✓ |
 | Peak memory | ≤ 2 GB at any batch size | **1.45 GB** with 5,035 photos | ✓ |
 | Best-shot analysis, per photo (2026-10-24) | ≤ 20 ms, ≤ 40 ms with faces | **17 ms**, 28 ms with faces | ✓ |
+
+On a real trip (one folder of 20 MP Lumix GX9 photos, 422 files, 2026-11-03) import and previews stay well within budget, but the export reaches 7.6 photos/s with a 2.14 GB peak, just outside the export and memory budgets; making large photos export faster is the next step ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)).
 
 ### Large batches
 
@@ -204,7 +206,7 @@ Reproduce everything with `bench/run.sh <photo-folder>` and `bench/batch.sh <pho
 
 ## Download
 
-Get the latest version from the [Download page](https://fotollection.org/download/) or the [Releases](https://github.com/hoangphi01/fotollection/releases/latest) page: a `.dmg` for macOS 11+ (Apple Silicon and Intel), a `-setup.exe` or `.msi` for Windows 10/11, and an AppImage or `.deb` for 64-bit Linux ([which distributions](#linux)). Versions follow [Semantic Versioning](docs/RELEASE.md#1-versioning); 0.x releases are previews until the MVP is complete. The app never checks for updates on its own, so look here for new versions; installing over an older one keeps your settings and projects.
+Get the latest version from the [Download page](https://fotollection.org/download/) or the [Releases](https://github.com/hoangphi01/fotollection/releases/latest) page: a `.dmg` for macOS 11+ (Apple Silicon and Intel), a `-setup.exe` or `.msi` for Windows 10/11, and an AppImage or `.deb` for 64-bit Linux ([which distributions](#linux)). Versions follow [Semantic Versioning](docs/RELEASE.md#1-versioning); 0.x releases are previews until the MVP is complete. The app never checks for updates on its own: **Check for updates**, in the popover of the version number at the foot of any panel, asks GitHub when you click it. Installing over an older one keeps your settings and projects.
 
 > [!IMPORTANT]
 > Builds are **unsigned** for now ([ADR-0009](docs/adr/0009-unsigned-distribution.md)). On first launch:
@@ -263,6 +265,15 @@ The same app on every system, with these differences ([ADR-0034](docs/adr/0034-l
 **Install:**
 
 ```sh
+# One line for any distribution above: the signed APT repository on Ubuntu, Debian, Mint and
+# their family (updates then come with sudo apt upgrade), the AppImage in ~/.local elsewhere
+curl -fsSL https://fotollection.org/install.sh | sh
+
+# Or the APT repository by hand
+curl -fsSL https://fotollection.org/apt/fotollection.gpg | sudo tee /usr/share/keyrings/fotollection.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/fotollection.gpg] https://fotollection.org/apt stable main" | sudo tee /etc/apt/sources.list.d/fotollection.list
+sudo apt update && sudo apt install fotollection
+
 # AppImage (any distribution above), x86_64; use _aarch64 on ARM
 chmod +x Fotollection_*_amd64.AppImage && ./Fotollection_*_amd64.AppImage
 
@@ -300,7 +311,7 @@ Every tool version is pinned: `rust-toolchain.toml`, `.node-version`, `Cargo.loc
 
 | Layer | Technology |
 |-------|------------|
-| Core (Rust) | Pure-Rust codecs: zune-jpeg with jpeg-decoder for rare layouts, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md), [ADR-0033](docs/adr/0033-reference-jpeg-decoder.md)); HEIC and camera RAW through the OS (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md), [ADR-0023](docs/adr/0023-raw-through-os-codecs.md)); fast_image_resize, ab_glyph, rayon; GeoNames for offline places ([ADR-0003](docs/adr/0003-offline-geocoding-geonames.md)). Planned: lcms2 for colour |
+| Core (Rust) | Pure-Rust codecs: zune-jpeg with jpeg-decoder for rare layouts, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md), [ADR-0033](docs/adr/0033-reference-jpeg-decoder.md)); HEIC through the OS (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md)); camera RAW through Fotollection's own reader and rawler, the system's codec first on macOS ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md), [ADR-0030](docs/adr/0030-our-own-raw-decoder.md)); colour management with qcms ([FR-027](docs/PRD.md#fr-027--srgb-conversion-for-labs)); fast_image_resize, ab_glyph, rayon; GeoNames for offline places ([ADR-0003](docs/adr/0003-offline-geocoding-geonames.md)) |
 | Shell | [Tauri 2](https://v2.tauri.app/): the system webview, no bundled Chromium |
 | UI | React 19, TypeScript, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/), [Lucide](https://lucide.dev/) |
 | Typed IPC | [tauri-specta](https://github.com/specta-rs/tauri-specta): TypeScript bindings generated from Rust |
@@ -321,13 +332,20 @@ All docs live in [`docs/`](docs/README.md) and change together with the code ([A
 | [Style rules](docs/STYLE_RULE.md) | Rust, TypeScript, UI, git and docs conventions |
 | [Security](docs/SECURITY.md) | Threat model, privacy, supply chain |
 | [Roadmap](docs/ROADMAP.md) / [Status](docs/STATUS.md) | Phases and progress |
+| [User guide](docs/USER_GUIDE.md) | How to use the app, step by step; also the [manual on the website](https://fotollection.org/manual/) |
+| [Error codes](docs/ERROR_CONTROL.md) | Every `ERR-…` code the app can show: cause and what to do |
+| [Docs guide](docs/DOCS_GUIDE.md) | What to update when something changes |
+| [Development](docs/DEVELOPMENT.md) / [Testing](docs/TESTING.md) / [Release](docs/RELEASE.md) | Setting up, tests, how a version ships |
+| [Lessons](docs/LESSONS.md) | What each debugging session taught |
+| [Changelog](CHANGELOG.md) | What changed in each version |
 
 ## Contributing
 
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first:
+Contributions are welcome, from people and from AI agents. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first: it explains where each fact lives, how to keep the docs in step with the code, how to read and add error codes, and how to open issues and pull requests. In short:
 
-- Every change traces to a requirement ID.
-- Docs are updated in the same PR.
+- Every change traces to a requirement ID (`FR-…`, `NFR-…`), and IDs are never reused.
+- Docs are updated in the same commit, following [docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md).
+- A bug report brings the `ERR-…` code and the app's *Copy diagnostics* text.
 - **Outside contributions require signing a CLA** ([ADR-0008](docs/adr/0008-license-gpl3-with-relicensing-option.md)).
 
 Report security issues through a private [GitHub security advisory](https://github.com/hoangphi01/fotollection/security/advisories/new), not a public issue.

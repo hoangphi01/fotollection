@@ -377,7 +377,7 @@ When a change touches any persisted format (project, settings, presets, cache la
 5. Add a CHANGELOG entry if users can notice the change.
 6. If the file type itself changes (extension, container, MIME/UTI, limits), update [EXTENSION.md](EXTENSION.md).
 
-This is part of the Definition of Done ([CONTRIBUTING.md](../CONTRIBUTING.md#definition-of-done)).
+This is part of the Definition of Done ([CONTRIBUTING.md](../CONTRIBUTING.md#8-branches-commits-and-pull-requests)).
 
 ## 10. When to adopt a real database
 

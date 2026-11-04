@@ -14,6 +14,10 @@ labels: bug
 
 1.
 
+**Error code and diagnostics**
+
+<!-- The code at the end of the error message, e.g. ERR-IMG-0006. Then click the version number at the foot of any panel, "Copy diagnostics", and paste it here. It holds no photos, places or file names. -->
+
 **Environment**
 
 - Fotollection version:
