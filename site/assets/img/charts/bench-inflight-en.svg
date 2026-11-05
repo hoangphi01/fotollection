@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -16 752 252" width="752" height="252" role="img" aria-labelledby="t d">
+<title id="t">Export speed by photos worked on at once</title>
+<desc id="d">2: 4.9 photos/s, 485 MB. 4: 9.4 photos/s, 829 MB. 6: 11.5 photos/s, 940 MB. 8: 12.5 photos/s, 1214 MB</desc>
+<style>
+  .bg{fill:#fffaee} .t1{fill:#2b2219;font:600 13px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t2{fill:#514435;font:13px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t3{fill:#7a6a55;font:12px system-ui,-apple-system,Segoe UI,sans-serif}
+  .h{font-size:15px} .num{font-variant-numeric:tabular-nums} .axis{stroke:#e2d4b3;stroke-width:1}
+  .ref{stroke:#514435;stroke-width:1.5;stroke-dasharray:4 3} .refw{stroke:#b5652a;stroke-width:1.5;stroke-dasharray:4 3}
+  .s1{fill:#008a74} .old{fill-opacity:.45} .s2{fill:#b5652a} .s3{fill:#1baf7a} .s4{fill:#eda100} .s5{fill:#e87ba4} .gap{stroke:#fffaee;stroke-width:2}
+  .in{fill:#fff}
+  @media (prefers-color-scheme: dark){
+    .bg{fill:#262019} .t1{fill:#f3ead6} .t2{fill:#d8cab0} .t3{fill:#a8977c} .axis{stroke:#3b3127}
+    .ref{stroke:#d8cab0} .refw{stroke:#cc7f3e}
+    .s1{fill:#21a593} .s2{fill:#cc7f3e} .s3{fill:#199e70} .s4{fill:#c98500} .s5{fill:#d55181} .gap{stroke:#262019}
+  }
+</style>
+<rect class="bg" x="-16" y="-16" width="752" height="252" rx="8"/>
+<text class="t1 h" x="0" y="8">Export speed by photos worked on at once</text>
+<text class="t3" x="0" y="30">photos/s, 24–26 MP JPEGs · higher is better</text><text class="t2" x="180" y="65" text-anchor="end">2 at once</text><path class="s1 old" d="M190 50h140.3339130434783a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-140.3339130434783z"><title>2 at once: 4.9</title></path><text class="t1 num" x="342.33391304347833" y="66">4.9 · 0.49 GB</text><text class="t2" x="180" y="97" text-anchor="end">4 at once</text><path class="s1 old" d="M190 82h269.1826086956522a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-269.1826086956522z"><title>4 at once: 9.4</title></path><text class="t1 num" x="471.1826086956522" y="98">9.4 · 0.83 GB</text><text class="t2" x="180" y="129" text-anchor="end">6 at once</text><path class="s1" d="M190 114h332.00000000000006a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-332.00000000000006z"><title>6 at once: 11.5</title></path><text class="t1 num" x="534" y="130">11.5 · 0.94 GB · the app now</text><text class="t2" x="180" y="161" text-anchor="end">8 at once</text><path class="s1 old" d="M190 146h361.21739130434787a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-361.21739130434787z"><title>8 at once: 12.5</title></path><text class="t1 num" x="563.2173913043479" y="162">12.5 · 1.21 GB</text><line class="axis" x1="190" x2="190" y1="46" y2="172"/><text class="t3" x="0" y="198">Why not 8: on a real trip folder with RAW files, 8 was no faster and used 0.2 GB more.</text><text class="t3" x="0" y="216">22 CC0 photos · Apple M3, 16 GB · 2026-11-05 · memory is the peak of the export</text>
+</svg>

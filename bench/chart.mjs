@@ -57,6 +57,10 @@ const quality = read('quality.json')
 const share = read('share.json')
 const raw = read('raw.json')
 const meta = read('machine.json')
+// The GPU while editing and the photos in flight (ADR-0039, RESULT §22).
+const gpu = read('gpu.json')
+const drag = read('drag.json')
+const inflight = read('inflight.json')
 if (!rust || !web) throw new Error('run bench/run.sh first')
 
 const openSource = batch ?? rust
@@ -152,6 +156,18 @@ const T = {
       `${n} real photos (people, food, streets, night, sunsets) · ${g} groups labelled by hand`,
       `No group was ever wrong: pair precision 100 % at every step`,
     ],
+    gpuTitle: 'One step of a colour slider: the CPU path against the GPU',
+    gpuUnit: 'ms a step · lower is better',
+    gpuCpu: 'CPU (Rust + JPEG)',
+    gpuEngines: { 'WebKit (Apple GPU)': 'GPU, macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU, Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'No GPU (SwiftShader)' },
+    gpuFooter: (f) => `1600 px preview, 26 MP photos · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · ΔE2000 to Rust's render: mean ${f(gpu.parity.webkit.photoMean, 2)}, p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
+    noGpuNote: 'A machine without a GPU keeps the CPU path.',
+    inflightTitle: 'Export speed by photos worked on at once',
+    inflightUnit: 'photos/s, 24–26 MP JPEGs · higher is better',
+    inflightRow: (n) => `${n} at once`,
+    inflightChosen: 'the app now',
+    inflightWhy: 'Why not 8: on a real trip folder with RAW files, 8 was no faster and used 0.2 GB more.',
+    inflightFooter: (f) => `22 CC0 photos · ${inflight.machine.split(',').slice(0, 2).join(',')} · ${inflight.date} · memory is the peak of the export`,
   },
   vi: {
     lower: 'càng thấp càng tốt',
@@ -228,6 +244,18 @@ const T = {
       `${n} ảnh thật (người, đồ ăn, phố, cảnh đêm, hoàng hôn) · ${g} nhóm gán nhãn tay`,
       `Không lần nào gom sai: độ chính xác theo cặp 100 % ở mọi bước`,
     ],
+    gpuTitle: 'Một nhịp kéo thanh màu: đường CPU so với GPU',
+    gpuUnit: 'ms mỗi nhịp · càng thấp càng tốt',
+    gpuCpu: 'CPU (Rust + JPEG)',
+    gpuEngines: { 'WebKit (Apple GPU)': 'GPU, macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU, Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'Không có GPU (SwiftShader)' },
+    gpuFooter: (f) => `Bản xem trước 1600 px, ảnh 26 MP · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · ΔE2000 so với Rust: trung bình ${f(gpu.parity.webkit.photoMean, 2)}, p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
+    noGpuNote: 'Máy không có GPU vẫn dùng đường CPU.',
+    inflightTitle: 'Tốc độ xuất theo số ảnh xử lý cùng lúc',
+    inflightUnit: 'ảnh/giây, JPEG 24–26 MP · càng cao càng tốt',
+    inflightRow: (n) => `${n} ảnh cùng lúc`,
+    inflightChosen: 'app hiện dùng',
+    inflightWhy: 'Vì sao không 8: với thư mục thật của một chuyến đi có ảnh RAW, 8 không nhanh hơn mà tốn thêm 0,2 GB.',
+    inflightFooter: (f) => `22 ảnh CC0 · ${inflight.machine.split(',').slice(0, 2).join(',')} · ${inflight.date} · RAM là mức đỉnh khi xuất`,
   },
 }
 
@@ -636,6 +664,56 @@ function charts(lang) {
       .join('. ')
     out['bench-bestshot'] = doc(t.bsTitle, desc, h, body)
   }
+  // 9. The GPU while editing (ADR-0039): one slider step, the CPU path's parts against the GPU.
+  {
+    const cpu = drag.photos[0]
+    const decode = gpu.engines.find((e) => e.name.startsWith('WebKit'))?.decodeMs ?? 0
+    const cpuMs = cpu.parts.tableMs + cpu.parts.lookStampMs + cpu.parts.encodeMs + decode
+    const rows = [
+      { name: t.gpuCpu, cls: 's2', v: cpuMs },
+      ...gpu.engines.map((e) => ({ name: t.gpuEngines[e.name] ?? e.name, cls: /SwiftShader/.test(e.name) ? 's2 old' : 's1', v: e.stepMs })),
+    ]
+    const max = Math.max(...rows.map((r) => r.v)) * 1.1
+    let body = `<text class="t3" x="0" y="30">${esc(t.gpuUnit)}</text>`
+    const y0 = 50
+    rows.forEach((r, i) => {
+      const y = y0 + i * 32
+      const w = Math.max(4, (PLOT * r.v) / max)
+      body += `<text class="t2" x="${LEFT - 10}" y="${y + 15}" text-anchor="end">${esc(r.name)}</text>`
+      body += bar(r.cls, LEFT, y, w, 22, `${r.name}: ${f(r.v, 1)} ms`)
+      body += `<text class="t1 num" x="${LEFT + w + 8}" y="${y + 16}">${f(r.v, 1)} ms</text>`
+    })
+    const yEnd = y0 + rows.length * 32 - 6
+    body += `<line class="axis" x1="${LEFT}" x2="${LEFT}" y1="${y0 - 4}" y2="${yEnd}"/>`
+    const h = yEnd + 46
+    body += `<text class="t3" x="0" y="${h - 22}">${esc(t.noGpuNote)}</text>`
+    body += `<text class="t3" x="0" y="${h - 4}">${esc(t.gpuFooter(f))}</text>`
+    out['bench-gpu'] = doc(t.gpuTitle, rows.map((r) => `${r.name}: ${f(r.v, 1)} ms`).join('. '), h, body)
+  }
+
+  // 10. Export speed by photos in flight (ADR-0039), with the peak memory of each.
+  {
+    const set = inflight.sets[0]
+    const chosen = set.defaultAfter.inflight
+    const max = Math.max(...set.runs.map((r) => r.photosPerSecond)) * 1.15
+    let body = `<text class="t3" x="0" y="30">${esc(t.inflightUnit)}</text>`
+    const y0 = 50
+    set.runs.forEach((r, i) => {
+      const y = y0 + i * 32
+      const w = Math.max(4, (PLOT * r.photosPerSecond) / max)
+      const label = t.inflightRow(r.inflight)
+      body += `<text class="t2" x="${LEFT - 10}" y="${y + 15}" text-anchor="end">${esc(label)}</text>`
+      body += bar(r.inflight === chosen ? 's1' : 's1 old', LEFT, y, w, 22, `${label}: ${f(r.photosPerSecond, 1)}`)
+      const gb = f(r.exportRssMb / 1000, 2)
+      body += `<text class="t1 num" x="${LEFT + w + 8}" y="${y + 16}">${f(r.photosPerSecond, 1)} · ${gb} GB${r.inflight === chosen ? ` · ${esc(t.inflightChosen)}` : ''}</text>`
+    })
+    const yEnd = y0 + set.runs.length * 32 - 6
+    body += `<line class="axis" x1="${LEFT}" x2="${LEFT}" y1="${y0 - 4}" y2="${yEnd}"/>`
+    const h = yEnd + 48
+    body += `<text class="t3" x="0" y="${h - 22}">${esc(t.inflightWhy)}</text>`
+    body += `<text class="t3" x="0" y="${h - 4}">${esc(t.inflightFooter(f))}</text>`
+    out['bench-inflight'] = doc(t.inflightTitle, set.runs.map((r) => `${r.inflight}: ${f(r.photosPerSecond, 1)} photos/s, ${r.exportRssMb} MB`).join('. '), h, body)
+  }
   return out
 }
 
@@ -646,7 +724,7 @@ for (const lang of ['en', 'vi']) {
 }
 // The website shows these in its own colours: the home page and the performance page (site/README.md).
 STYLE = styleFor(THEMES.site)
-const SITE_CHARTS = ['bench-budgets', 'bench-quality', 'bench-share', 'bench-raw', 'bench-bestshot', 'bench-memory', 'bench']
+const SITE_CHARTS = ['bench-budgets', 'bench-quality', 'bench-share', 'bench-raw', 'bench-bestshot', 'bench-memory', 'bench', 'bench-gpu', 'bench-inflight']
 mkdirSync(join(root, 'site/assets/img/charts'), { recursive: true })
 // Each chart's size, for the width and height of its <img>: a lazy chart with no height grew
 // as it loaded and moved the anchors below it while the page scrolled to them (LESSONS).

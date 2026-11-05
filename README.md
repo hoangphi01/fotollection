@@ -146,6 +146,16 @@ On raw export speed the browser is just as fast, because Chromium uses libjpeg-t
 
 The encoder used to be the bottleneck: 16.2 ms, 62 % of a 26 ms preview. Previews are only ever shown on screen, so they now encode with 4:2:0 chroma and plain Huffman tables, which looks the same at 3× zoom. Print exports keep 4:4:4. That one change took the preview from 26 ms to 17 ms.
 
+### The graphics card while editing, every core for exports
+
+![One step of a colour slider: the CPU path 25.7 ms (Rust's render, its JPEG and the web view's decode), on the GPU 1.0 ms in WebKit and 2.0 ms in Chromium with Metal; 16.5 ms without a GPU (SwiftShader).](docs/images/bench-gpu.svg)
+
+While a colour slider is dragged, the look is drawn by the graphics card from the same table Rust builds, so a step costs 1–2 ms instead of about 26, and the photo follows the slider; the date stamp, the frame and the border are left out, and Rust's render takes over when the drag ends (ΔE2000 to it: mean 0.13, p99 0.77). A machine without a capable GPU keeps the CPU path; the app decides by itself. Exports stay on the processor, so a print comes out the same on every computer ([ADR-0039](docs/adr/0039-gpu-for-editing-cpu-for-exports.md)).
+
+![Export of 22 photos of 24–26 MP: 4.9 photos/s with 2 at once, 9.4 with 4, 11.5 with 6 (what the app uses), 12.5 with 8.](docs/images/bench-inflight.svg)
+
+A photo is decoded and encoded on one core, so speed follows how many are worked on at once, within the memory budget. The app takes six: on a real trip folder with RAW files, eight was no faster and used 0.2 GB more.
+
 ### Print quality: does the export keep the photo?
 
 Speed means nothing if the print comes out flat. Prints made through a web editor often look shallow, with flat, blotchy colour and less depth than the original. So Fotollection's export is checked pixel by pixel against the original (`bench/quality/audit.py`), next to a typical web-editor export.

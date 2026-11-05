@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -16 752 252" width="752" height="252" role="img" aria-labelledby="t d">
+<title id="t">Tốc độ xuất theo số ảnh xử lý cùng lúc</title>
+<desc id="d">2: 4,9 photos/s, 485 MB. 4: 9,4 photos/s, 829 MB. 6: 11,5 photos/s, 940 MB. 8: 12,5 photos/s, 1214 MB</desc>
+<style>
+  .bg{fill:#fcfcfb} .t1{fill:#1f1f1e;font:600 13px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t2{fill:#52514c;font:13px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t3{fill:#6f6e68;font:12px system-ui,-apple-system,Segoe UI,sans-serif}
+  .h{font-size:15px} .num{font-variant-numeric:tabular-nums} .axis{stroke:#c9c8c1;stroke-width:1}
+  .ref{stroke:#52514c;stroke-width:1.5;stroke-dasharray:4 3} .refw{stroke:#eb6834;stroke-width:1.5;stroke-dasharray:4 3}
+  .s1{fill:#2a78d6} .old{fill-opacity:.45} .s2{fill:#eb6834} .s3{fill:#1baf7a} .s4{fill:#eda100} .s5{fill:#e87ba4} .gap{stroke:#fcfcfb;stroke-width:2}
+  .in{fill:#fff}
+  @media (prefers-color-scheme: dark){
+    .bg{fill:#1a1a19} .t1{fill:#f0efec} .t2{fill:#c3c2b7} .t3{fill:#9d9c93} .axis{stroke:#45443f}
+    .ref{stroke:#c3c2b7} .refw{stroke:#d95926}
+    .s1{fill:#3987e5} .s2{fill:#d95926} .s3{fill:#199e70} .s4{fill:#c98500} .s5{fill:#d55181} .gap{stroke:#1a1a19}
+  }
+</style>
+<rect class="bg" x="-16" y="-16" width="752" height="252" rx="8"/>
+<text class="t1 h" x="0" y="8">Tốc độ xuất theo số ảnh xử lý cùng lúc</text>
+<text class="t3" x="0" y="30">ảnh/giây, JPEG 24–26 MP · càng cao càng tốt</text><text class="t2" x="180" y="65" text-anchor="end">2 ảnh cùng lúc</text><path class="s1 old" d="M190 50h140.3339130434783a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-140.3339130434783z"><title>2 ảnh cùng lúc: 4,9</title></path><text class="t1 num" x="342.33391304347833" y="66">4,9 · 0,49 GB</text><text class="t2" x="180" y="97" text-anchor="end">4 ảnh cùng lúc</text><path class="s1 old" d="M190 82h269.1826086956522a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-269.1826086956522z"><title>4 ảnh cùng lúc: 9,4</title></path><text class="t1 num" x="471.1826086956522" y="98">9,4 · 0,83 GB</text><text class="t2" x="180" y="129" text-anchor="end">6 ảnh cùng lúc</text><path class="s1" d="M190 114h332.00000000000006a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-332.00000000000006z"><title>6 ảnh cùng lúc: 11,5</title></path><text class="t1 num" x="534" y="130">11,5 · 0,94 GB · app hiện dùng</text><text class="t2" x="180" y="161" text-anchor="end">8 ảnh cùng lúc</text><path class="s1 old" d="M190 146h361.21739130434787a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-361.21739130434787z"><title>8 ảnh cùng lúc: 12,5</title></path><text class="t1 num" x="563.2173913043479" y="162">12,5 · 1,21 GB</text><line class="axis" x1="190" x2="190" y1="46" y2="172"/><text class="t3" x="0" y="198">Vì sao không 8: với thư mục thật của một chuyến đi có ảnh RAW, 8 không nhanh hơn mà tốn thêm 0,2 GB.</text><text class="t3" x="0" y="216">22 ảnh CC0 · Apple M3, 16 GB · 2026-11-05 · RAM là mức đỉnh khi xuất</text>
+</svg>

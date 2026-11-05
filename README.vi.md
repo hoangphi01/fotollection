@@ -147,6 +147,16 @@ Về tốc độ export thô, trình duyệt nhanh ngang ngửa vì Chromium dù
 
 Trước đây bộ mã hóa là nút thắt: 16,2 ms, chiếm 62 % của 26 ms. Preview chỉ để xem trên màn hình, nên giờ được mã hóa ở chế độ màu 4:2:0 với bảng Huffman thường. Phóng to 3× vẫn nhìn giống hệt. Ảnh export để in vẫn giữ 4:4:4. Chỉ một thay đổi đó đã đưa preview từ 26 ms xuống 17 ms.
 
+### Card đồ hoạ khi chỉnh ảnh, mọi nhân CPU khi xuất
+
+![Một nhịp kéo thanh màu: đường CPU 25,7 ms (Rust dựng ảnh, mã hoá JPEG và webview giải mã), trên GPU 1,0 ms với WebKit và 2,0 ms với Chromium Metal; 16,5 ms khi không có GPU (SwiftShader).](docs/images/bench-gpu-vi.svg)
+
+Khi kéo một thanh chỉnh màu, card đồ hoạ vẽ look từ đúng bảng màu Rust dựng, nên mỗi nhịp chỉ tốn 1–2 ms thay vì khoảng 26 ms, và ảnh chạy theo thanh trượt; dấu ngày, khung và viền được giữ nguyên, rồi Rust dựng lại bản chính xác khi thả tay (ΔE2000 so với nó: trung bình 0,13, p99 0,77). Máy không có GPU đủ mạnh vẫn dùng đường CPU; app tự quyết. Xuất ảnh vẫn chạy trên bộ xử lý, để ảnh in giống hệt nhau trên mọi máy ([ADR-0039](docs/adr/0039-gpu-for-editing-cpu-for-exports.md)).
+
+![Xuất 22 ảnh 24–26 MP: 4,9 ảnh/giây với 2 ảnh cùng lúc, 9,4 với 4, 11,5 với 6 (app đang dùng), 12,5 với 8.](docs/images/bench-inflight-vi.svg)
+
+Mỗi ảnh được giải mã và mã hoá trên một nhân, nên tốc độ đi theo số ảnh xử lý cùng lúc, trong hạn mức RAM. App chọn sáu: với thư mục thật của một chuyến đi có ảnh RAW, tám không nhanh hơn mà tốn thêm 0,2 GB.
+
 ### Chất lượng in: bản xuất có giữ nguyên ảnh không?
 
 Nhanh mà bản in bị nông màu thì cũng vô nghĩa. Ảnh in qua web editor thường trông nông, màu bị bệt và mất chiều sâu so với ảnh gốc. Vì vậy bản xuất của Fotollection được so từng điểm ảnh với ảnh gốc (`bench/quality/audit.py`), đặt cạnh bản xuất của một web editor thông thường.
