@@ -96,7 +96,7 @@ crates/
       history.rs         † # undo/redo stack of inverse edits (FR-023)
       atomic.rs          † # tmp + fsync + .bak + rename
       presets.rs           # preset library: partial/stackable, linked, .fotopreset I/O (FR-033/034/038)
-      looks.rs             # colour looks: `.cube` LUTs, then Photo Style sliders, on one 33³ engine (FR-070, FR-039, ADR-0036)
+      looks.rs           † # colour looks (FR-079, FR-070, ADR-0038): the 33³ table, integer tetrahedral interpolation on rayon, a cache of the last 8 tables; the sliders and `.cube` LUTs bake into it
       render.rs          † # crop/resize (in linear light for share exports, `RenderPlan::linear_light`), border, a shared photo's fill (`compose_mat` for both) and the drawing of stamp and frame; the stamp, colour and sharpening live in stamp.rs, colour.rs and sharpen.rs. 4-up sheets and the contact sheet (FR-035, FR-037) will extend sheet.rs
       export.rs          † # bounded parallel export, cancel, per-photo errors, no overwrite (FR-008/009/011)
       thumbs.rs          † # T0 (embedded) + T1 disk cache (DATABASE.md §8)

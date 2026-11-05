@@ -410,3 +410,18 @@ One folder exactly as it came off the card of a Lumix DC-GX9 after a weekend in 
 - **Photos in flight** now follow the largest photo of the export (`export::inflight_for`): six for these, fewer for very large ones (two at 60 MP), so the peak stays under the ceiling at any size.
 - The 16 MP Canon set (95 photos) is faster too: 23.5 photos/s at 0.66 GB, against 18.0 and 1.30 GB.
 - The machine was loaded (swap 12–13 GB of 13 GB used) in every run, before and after, so speeds may be low and vary from run to run; the memory is the process's own.
+
+## 21. Colour looks: the table (v0.10.0, session 8)
+
+The engine of [FR-079](PRD.md#fr-079--colour-adjustments) and [FR-070](PRD.md#fr-070--looks-from-lut-files) ([ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)): every per-pixel adjustment becomes one 33³ table of u16, applied with tetrahedral interpolation in integers, a row at a time on rayon (`looks.rs`). Measured with `examples/measure_look.rs`, a strong look (every channel changed), median of 5, REF-MAC (M3) loaded (swap 12–13 GB of 13 GB used), 2026-11-05:
+
+| What | 8 threads | 2 threads | Budget |
+|---|---|---|---|
+| Build the table (35,937 points) | 0.18–0.67 ms | 0.21 ms | — |
+| Apply, 1600 × 1067 preview (made up) | 1.78–2.20 ms | 4.23–4.40 ms | ≤ 5 ms |
+| Apply, 6000 × 4000 (24 MP, made up) | 23.6–24.1 ms | 58.7–59.1 ms | ≤ 60 ms |
+| Apply, 6240 × 4160 (26 MP, a CC0 demo photo) | 25.3 ms | 64.2 ms (≈ 59 ms for 24 MP) | ≤ 60 ms on 24 MP |
+
+- **First version, then one change:** the first loop computed each of the four corners' index from three grid steps: 5.08 ms and 70.6 ms on two threads, over budget. Taking the cell's index once and adding fixed steps for the corners gave 4.23 ms and 59.1 ms; nothing else was changed.
+- **Accuracy:** the identity table gives back every grey and a sample of 256³ exactly; against tetrahedral interpolation in f64 on a strong table, 200,000 random pixels differ by at most one level (`fr_079_*` in `looks.rs`).
+- The cost does not depend on what is set: more sliders only change the table, built in under a millisecond and kept by the hash of what built it.
