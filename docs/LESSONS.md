@@ -432,3 +432,10 @@
 - **Seen:** in Collage mode the colour sliders seemed to change only the second photo of a sheet, and they stayed on screen with no photo picked.
 - **Why:** the Collage panel and the sheet's preview edited the shared look, built for the gallery; a photo with a look of its own (set in its preview) ignores the shared one, so only the other photo moved. The panel had no "no photo picked" state at all.
 - **Rule:** every change from now on is checked against Collage mode too: two photos to a sheet, each with its own edits; what the picked cell means; what shows when none is picked; the sheet's preview as well as the panel; postcards. DOCS_GUIDE's checklist names it.
+
+### A score against the camera's JPEG mixes the develop and the fit (FR-072)
+
+- **Seen:** once our develop took every Bayer format, three samples were further from the camera's JPEG than rawler's develop (D750 2.26 against 1.18), though the S5's greys were more neutral.
+- **Why:** each path fits its own tone to the embedded JPEG: rawler's with three curves, ours with one curve and a matrix. The score measured both steps at once.
+- **Fix:** none needed in the develop: finished with rawler's fit, ours scored at least as well on every sample tried. The fit is chosen per file in session 17.
+- **Rule:** when a pipeline gets worse against a reference, swap one stage at a time between the old and the new path before changing either. The samples folder can hold folders too: a test that walks it skips anything that is not a file.

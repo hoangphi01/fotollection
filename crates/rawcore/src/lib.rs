@@ -45,13 +45,17 @@ pub fn dimensions(data: &[u8]) -> Result<(usize, usize), RawError> {
     Ok(dng::parse(data)?.mosaic.size())
 }
 
-/// Develops the photo to scene-linear sRGB (demosaic, white balance, the colour model);
+/// Develops a DNG to scene-linear sRGB (demosaic, white balance, the colour model);
 /// `finish` gives it its tone.
 pub fn develop(data: &[u8]) -> Result<Linear, RawError> {
     let dng = dng::parse(data)?;
-    let rendering =
-        color::rendering(&dng.color).ok_or(RawError::Unsupported("no colour matrix"))?;
-    let camera = demosaic::demosaic(&dng.mosaic, rendering.gains, 1.0);
+    develop_mosaic(&dng.mosaic, &dng.color)
+}
+
+/// Develops a sensor's mosaic, whatever file it came from, with its colour tags.
+pub fn develop_mosaic(mosaic: &cfa::Mosaic, tags: &color::ColorTags) -> Result<Linear, RawError> {
+    let rendering = color::rendering(tags).ok_or(RawError::Unsupported("no colour matrix"))?;
+    let camera = demosaic::demosaic(mosaic, rendering.gains, 1.0);
     let m = rendering.to_srgb;
     #[allow(clippy::cast_possible_truncation)]
     let m32 = m.map(|row| row.map(|v| v as f32));
@@ -83,7 +87,11 @@ mod tests {
             return Ok(());
         };
         for entry in std::fs::read_dir(dir)? {
-            let bytes = std::fs::read(entry?.path())?;
+            let path = entry?.path();
+            if !path.is_file() {
+                continue;
+            }
+            let bytes = std::fs::read(path)?;
             if !supports(&bytes) {
                 continue;
             }

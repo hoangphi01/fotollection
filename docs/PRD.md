@@ -225,7 +225,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P2 (v0.7.0, in progress).** Import camera RAW files natively, **without asking for DNG**: RW2 (Panasonic), CR2 and CR3 (Canon), NEF (Nikon), ARW (Sony), RAF (Fujifilm), ORF (Olympus / OM System) and DNG, each tested on a CC0 sample ([ADR-0023](adr/0023-raw-through-os-codecs.md)).
 
-- **Three decoders, tried in order** ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md), [ADR-0030](adr/0030-our-own-raw-decoder.md)): Fotollection's own reader for the formats it has taken over (DNG for now), finished to the camera's embedded JPEG; then on macOS ImageIO (with the file's type identifier as a hint, as for HEIC, [ADR-0017](adr/0017-heic-through-os-codecs.md)) and rawler (LGPL-2.1, built in) for what it cannot read; on Windows rawler, with WIC and Microsoft's *Raw Image Extension* as the fallback. rawler is removed once our own reader covers every format, before any relicensing ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)).
+- **Three decoders, tried in order** ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md), [ADR-0030](adr/0030-our-own-raw-decoder.md), [ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md)): Fotollection's own develop first for every Bayer sensor (a DNG read by our own reader, any other format unpacked by rawler and developed by us since v0.11.0's session 16), finished to the camera's embedded JPEG; then on macOS ImageIO (with the file's type identifier as a hint, as for HEIC, [ADR-0017](adr/0017-heic-through-os-codecs.md)) and rawler's own develop (LGPL-2.1, built in) for what it cannot read, X-Trans for now; on Windows rawler, with WIC and Microsoft's *Raw Image Extension* as the fallback. On macOS, Panasonic and Olympus RAW keep ImageIO first, because it corrects their lenses' distortion ([FR-085](#fr-085--lens-distortion-correction); owner, 2026-11-05). rawler is removed once our own reader covers every format, before any relicensing ([ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)).
 - **Recognised by content**, never by extension: each format's own magic bytes, or for TIFF-based RAW the header plus IFD0 (`DNGVersion`, the maker in `Make`). CR3 is no longer mistaken for HEIC.
 - **Two paths** ([NFR-017](#nfr-017--camera-raw-speed)): thumbnails and best-shot analysis use the **preview embedded in every RAW** (9–80 ms); the print preview, zoom and export use the **full develop** (0.4–2.2 s), one at a time, and its size is the only one used for crops.
 - **EXIF** comes from the first 1 MB: RW2 and ORF are read as TIFF, RAF from its embedded JPEG, CR3 from its `CMT1`/`CMT2` boxes, Panasonic's ISO from its own tag. CR3's GPS is not read yet.
@@ -906,6 +906,14 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Two ways in:** a pull request that adds it to the repository (it then ships with the app), or **Load a language…** in the version popover, which copies the file into the app's `languages/` folder; the language list shows it with its authors.
 - **Travels with the app's brain:** `.fotosettings` ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)) carries the packs a user loaded, as it carries fonts and LUTs; it is not the pack's own format, since a pack is made to be shared and the brain is personal.
 - The manual (USER_GUIDE) and the website stay in English and Vietnamese; a pack translates the app.
+
+### FR-085 — Lens distortion correction
+
+**P1 (planned, after v0.11.0 unless the owner moves it; found 2026-11-05).** Our own develop corrects the lens's distortion, as the camera's JPEG and macOS's ImageIO do, so Fotollection's develop can take over every format on every system.
+
+- **From the file, never from a guessed lens profile:** the correction the camera itself records (Panasonic and Olympus maker data, which Micro Four Thirds lenses rely on), DNG's `WarpRectilinear` opcode.
+- **Until then:** on macOS, Panasonic and Olympus RAW go to ImageIO first ([FR-016](#fr-016--raw-input)); elsewhere they are developed without the correction, as rawler did.
+- **Measured:** against the camera's embedded JPEG by structure (SSIM) and by the shift of straight edges; budgets in [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets) before it is built.
 
 ## 7. Non-functional requirements
 

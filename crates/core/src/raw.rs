@@ -228,9 +228,11 @@ impl RawDecoder for Rawler {
     }
 }
 
-/// Fotollection's own decoder (ADR-0030), for the formats that passed its quality gate:
-/// DNG for now. Its develop is finished to the camera's embedded JPEG (tone, lens shading
-/// and colour look); anything else it answers `Unsupported`, so the next decoder takes it.
+/// Fotollection's own develop (ADR-0030, ADR-0040): DNG through our own reader, every other
+/// format unpacked by rawler and developed here, for the Bayer sensors (X-Trans follows in
+/// v0.11.0's session 18). Its develop is finished to the camera's embedded JPEG (tone, lens
+/// shading and colour look); anything else it answers `Unsupported`, so the next decoder
+/// takes it.
 pub struct Own;
 
 fn own_error(e: fotollection_rawcore::RawError) -> CodecError {
@@ -245,7 +247,15 @@ fn own_error(e: fotollection_rawcore::RawError) -> CodecError {
 
 impl Own {
     fn supports(bytes: &[u8], kind: RawKind) -> Result<(), CodecError> {
-        if kind == RawKind::Dng && fotollection_rawcore::supports(bytes) {
+        let ours = if kind == RawKind::Dng {
+            fotollection_rawcore::supports(bytes)
+        } else {
+            matches!(
+                fotollection_rawlgpl::sensor(bytes),
+                Ok((fotollection_rawlgpl::Filter::Bayer(_), _))
+            )
+        };
+        if ours {
             Ok(())
         } else {
             Err(CodecError::Unsupported)
@@ -254,20 +264,42 @@ impl Own {
 
     /// The camera's own JPEG inside the file, decoded and in sRGB, like the develop it is
     /// matched to and the thumbnails made from it (a camera set to Adobe RGB tags it so).
-    fn embedded(bytes: &[u8]) -> Option<RgbImage> {
+    fn embedded(bytes: &[u8], kind: RawKind) -> Option<RgbImage> {
+        if kind != RawKind::Dng {
+            return fotollection_rawlgpl::preview(bytes)
+                .ok()
+                .flatten()
+                .and_then(rgb8);
+        }
         let jpeg = fotollection_rawcore::dng::embedded_jpeg(bytes)?;
         crate::codec::default_codec()
             .decode(jpeg)
             .ok()
             .map(crate::colour::screen)
     }
+
+    /// The scene-linear develop: a DNG read by our own reader, any other file's sensor data
+    /// unpacked by rawler, with the camera's matrices and white balance.
+    fn linear(bytes: &[u8], kind: RawKind) -> Result<fotollection_rawcore::Linear, CodecError> {
+        if kind == RawKind::Dng {
+            Self::supports(bytes, kind)?;
+            return fotollection_rawcore::develop(bytes).map_err(own_error);
+        }
+        let u = fotollection_rawlgpl::unpack(bytes, LIMITS.max_pixels).map_err(rawler_error)?;
+        let tags =
+            fotollection_rawcore::color::ColorTags::from_camera(&u.matrices, u.white_balance);
+        let mosaic = fotollection_rawcore::cfa::Mosaic::new(
+            u.width, u.height, u.data, u.pattern, u.black, u.white, u.active, u.crop,
+        )
+        .map_err(own_error)?;
+        fotollection_rawcore::develop_mosaic(&mosaic, &tags).map_err(own_error)
+    }
 }
 
 impl RawDecoder for Own {
     fn decode(&self, bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError> {
-        Self::supports(bytes, kind)?;
-        let linear = fotollection_rawcore::develop(bytes).map_err(own_error)?;
-        let look = Self::embedded(bytes).and_then(|jpeg| {
+        let linear = Self::linear(bytes, kind)?;
+        let look = Self::embedded(bytes, kind).and_then(|jpeg| {
             fotollection_rawcore::match_look(
                 &linear,
                 &fotollection_rawcore::Reference {
@@ -294,7 +326,12 @@ impl RawDecoder for Own {
 
     fn dimensions(&self, bytes: &[u8], kind: RawKind) -> Result<(u32, u32), CodecError> {
         Self::supports(bytes, kind)?;
-        let (w, h) = fotollection_rawcore::dimensions(bytes).map_err(own_error)?;
+        let (w, h) = if kind == RawKind::Dng {
+            fotollection_rawcore::dimensions(bytes).map_err(own_error)?
+        } else {
+            let (w, h) = fotollection_rawlgpl::dimensions(bytes).map_err(rawler_error)?;
+            (w as usize, h as usize)
+        };
         match (u32::try_from(w), u32::try_from(h)) {
             (Ok(w), Ok(h)) => Ok((w, h)),
             _ => Err(CodecError::TooLarge(LIMITS.max_edge, LIMITS.max_edge)),
@@ -303,7 +340,7 @@ impl RawDecoder for Own {
 
     fn preview(&self, bytes: &[u8], kind: RawKind, max_px: u32) -> Result<Decoded, CodecError> {
         Self::supports(bytes, kind)?;
-        let image = match Self::embedded(bytes) {
+        let image = match Self::embedded(bytes, kind) {
             Some(image) => image,
             None => self.decode(bytes, kind)?.image,
         };
@@ -341,26 +378,38 @@ pub fn sensor(bytes: &[u8]) -> Option<(crate::facts::Sensor, Option<crate::facts
     })
 }
 
-/// The order RAW decoders are tried in (ADR-0029, ADR-0030). Our own decoder goes first for
-/// the formats it reads. Then macOS keeps `ImageIO` (it corrects lens distortion), with
-/// rawler for what it cannot read; Windows uses rawler, with WIC for what rawler cannot read.
-pub fn decoders() -> [&'static dyn RawDecoder; 3] {
+/// The order RAW decoders are tried in (ADR-0029, ADR-0030, ADR-0040). Our own develop goes
+/// first; rawler's develop and the system's codecs are fallbacks for what it does not read
+/// yet. On macOS, Panasonic and Olympus RAW keep `ImageIO` first, because it corrects their
+/// lenses' distortion, which Micro Four Thirds rely on and our core does not do yet (owner,
+/// 2026-11-05; FR-085).
+pub fn decoders(kind: RawKind) -> [&'static dyn RawDecoder; 3] {
     if cfg!(target_os = "macos") {
-        [&Own, &Os, &Rawler]
+        if os_first(kind) {
+            [&Os, &Own, &Rawler]
+        } else {
+            [&Own, &Os, &Rawler]
+        }
     } else {
         [&Own, &Rawler, &Os]
     }
+}
+
+/// The formats macOS's own codec reads first (`decoders`): lens distortion corrected.
+pub fn os_first(kind: RawKind) -> bool {
+    cfg!(target_os = "macos") && matches!(kind, RawKind::Rw2 | RawKind::Orf)
 }
 
 /// The first decoder's answer that works; otherwise the most telling error (a missing
 /// codec only when nothing else said more: every reader passed on the file and Windows has
 /// no codec for it, ERR-EXT-0003).
 fn first<T>(
+    kind: RawKind,
     mut call: impl FnMut(&dyn RawDecoder) -> Result<T, CodecError>,
 ) -> Result<T, CodecError> {
     let mut worst = CodecError::Unsupported;
     let mut missing = false;
-    for decoder in decoders() {
+    for decoder in decoders(kind) {
         match call(decoder) {
             Ok(v) => return Ok(v),
             Err(CodecError::RawCodecMissing) => missing = true,
@@ -376,7 +425,7 @@ fn first<T>(
 
 /// The full develop, for the print preview, zoom and export.
 pub fn decode(bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError> {
-    one_at_a_time(|| first(|d| d.decode(bytes, kind)))
+    one_at_a_time(|| first(kind, |d| d.decode(bytes, kind)))
         .unwrap_or_else(|| Err(CodecError::Decode("the RAW develop failed".into())))
 }
 
@@ -404,14 +453,14 @@ fn one_at_a_time<T: Send>(develop: impl FnOnce() -> T + Send) -> Option<T> {
 
 /// The developed size, the only one to use for geometry (crops are fractions of it).
 pub fn dimensions(bytes: &[u8], kind: RawKind) -> Result<(u32, u32), CodecError> {
-    first(|d| d.dimensions(bytes, kind))
+    first(kind, |d| d.dimensions(bytes, kind))
 }
 
 /// The preview the RAW carries, at most `max_px` on its long edge: 30 to 100 times faster
 /// than a develop (RESULT.md §12), for thumbnails and best-shot analysis. Its size can
 /// differ from `dimensions`.
 pub fn preview(bytes: &[u8], kind: RawKind, max_px: u32) -> Result<Decoded, CodecError> {
-    first(|d| d.preview(bytes, kind, max_px))
+    first(kind, |d| d.preview(bytes, kind, max_px))
 }
 
 /// Whether this machine can develop RAW: always, since rawler is built in (ADR-0029).
@@ -453,7 +502,9 @@ mod tests {
     /// `first` with the decoders answering `answers` in turn.
     fn answers(answers: Vec<CodecError>) -> CodecError {
         let mut answers = answers.into_iter();
-        match first::<()>(|_| Err(answers.next().unwrap_or(CodecError::Unsupported))) {
+        match first::<()>(RawKind::Dng, |_| {
+            Err(answers.next().unwrap_or(CodecError::Unsupported))
+        }) {
             Err(e) => e,
             Ok(()) => CodecError::Unsupported,
         }
@@ -571,13 +622,31 @@ mod tests {
             );
             let thumb = Rawler.preview(&bytes, expected, 400)?;
             assert!(thumb.image.width.max(thumb.image.height) <= 400);
-            // Our own decoder, where it reads the format: same rule.
-            if let Ok((w, h)) = Own.dimensions(&bytes, expected) {
-                let developed = Own.decode(&bytes, expected)?;
-                assert_eq!((developed.image.width, developed.image.height), (w, h));
-                let thumb = Own.preview(&bytes, expected, 400)?;
-                assert!(thumb.image.width.max(thumb.image.height) <= 400);
+            // Our own develop reads every Bayer sample, at rawler's size (ADR-0040); the
+            // X-Trans one is left to the fallback until session 18.
+            if expected == RawKind::Raf {
+                assert!(matches!(
+                    Own.dimensions(&bytes, expected),
+                    Err(CodecError::Unsupported)
+                ));
+                continue;
             }
+            let (w, h) = Own.dimensions(&bytes, expected)?;
+            assert_eq!(
+                (w, h),
+                Rawler.dimensions(&bytes, expected)?,
+                "{}",
+                path.display()
+            );
+            let developed = Own.decode(&bytes, expected)?;
+            assert_eq!(
+                (developed.image.width, developed.image.height),
+                (w, h),
+                "{}",
+                path.display()
+            );
+            let thumb = Own.preview(&bytes, expected, 400)?;
+            assert!(thumb.image.width.max(thumb.image.height) <= 400);
         }
         Ok(())
     }

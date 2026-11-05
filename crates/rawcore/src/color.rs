@@ -87,6 +87,37 @@ impl ColorTags {
     }
 }
 
+impl ColorTags {
+    /// The tags of a format with no DNG colour tags, from the camera's XYZ to camera matrices
+    /// (`(LightSource, matrix row by row)`) and its white balance as gains on camera red,
+    /// green and blue. The coolest and the warmest known illuminants are kept, so the
+    /// rendering blends them by the shot's white as DNG does.
+    pub fn from_camera(matrices: &[(u16, [f64; 9])], white_balance: Option<[f32; 3]>) -> Self {
+        let mut known: Vec<(f64, u16, Mat3)> = matrices
+            .iter()
+            .filter_map(|(code, m)| Some((temperature(*code)?, *code, mat3(m)?)))
+            .collect();
+        known.sort_by(|a, b| a.0.total_cmp(&b.0));
+        let (first, second) = match known.as_slice() {
+            [] => (None, None),
+            [only] => (Some(*only), None),
+            [warm, .., cool] => (Some(*warm), Some(*cool)),
+        };
+        let as_shot_neutral = white_balance.and_then(|wb| {
+            let g = f64::from(wb[1]);
+            let n = wb.map(|v| g / f64::from(v));
+            n.iter().all(|v| v.is_finite() && *v > 0.0).then_some(n)
+        });
+        Self {
+            color_matrix: [first.map(|t| t.2), second.map(|t| t.2)],
+            illuminant: [first.map_or(0, |t| t.1), second.map_or(0, |t| t.1)],
+            analog_balance: [1.0; 3],
+            as_shot_neutral,
+            ..Self::default()
+        }
+    }
+}
+
 pub fn mul(a: &Mat3, b: &Mat3) -> Mat3 {
     let mut m = [[0.0; 3]; 3];
     for (i, row) in m.iter_mut().enumerate() {
@@ -306,6 +337,28 @@ mod tests {
         for v in out {
             assert!((v - 1.0).abs() < 0.01, "{out:?}");
         }
+    }
+
+    /// A camera whose matrix is XYZ itself, under D65 and A, with the white balance of a
+    /// D50 white: white stays white, and the warm matrix comes first.
+    #[test]
+    fn fr_072_camera_matrices_keep_white_white() {
+        let id = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
+        #[allow(clippy::cast_possible_truncation)]
+        let wb = D50.map(|v| (1.0 / v) as f32);
+        let tags = ColorTags::from_camera(&[(21, id), (17, id), (99, id)], Some(wb));
+        assert_eq!(tags.illuminant, [17, 21]);
+        let Some(r) = rendering(&tags) else {
+            panic!("a rendering");
+        };
+        for v in apply(&r.to_srgb, [1.0; 3]) {
+            assert!((v - 1.0).abs() < 0.01, "{v}");
+        }
+        assert!(
+            ColorTags::from_camera(&[], Some([0.0, 1.0, 1.0]))
+                .as_shot_neutral
+                .is_none()
+        );
     }
 
     #[test]

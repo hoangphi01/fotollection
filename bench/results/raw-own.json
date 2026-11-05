@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-05",
+  "machine": "REF-MAC (M3), loaded (swap 13–14 GB of 14–15 GB)",
+  "command": "cargo run --release -p fotollection-core --example measure_rawler -- <out> <samples>; uv run bench/quality/raw_compare.py <out>",
+  "note": "Median of 3, full develop finished to the camera's look; ΔE2000 mean against the camera's embedded JPEG at 1600 px. 'own3curves' is our develop finished with rawler's three-curve fit (a one-off probe), to separate the develop from the fit.",
+  "samples": {
+    "canon-eos-5d-mark-iv":  { "ms": { "own": 462, "rawler": 565, "imageio": 418 }, "deltaE": { "own": 1.93, "rawler": 4.16, "imageio": 5.51, "own3curves": 3.78 } },
+    "canon-eos-r10":         { "ms": { "own": 293, "rawler": 360, "imageio": 1647 }, "deltaE": { "own": 4.88, "rawler": 5.64, "imageio": 2.67, "own3curves": 5.20 } },
+    "nikon-d750":            { "ms": { "own": 340, "rawler": 402, "imageio": 412 }, "deltaE": { "own": 2.26, "rawler": 1.18, "imageio": 2.41, "own3curves": 1.16 } },
+    "olympus-e-m10-mark-iii":{ "ms": { "own": 211, "rawler": 364, "imageio": 1164 }, "deltaE": { "own": 18.58, "rawler": 16.03, "imageio": 5.43 } },
+    "panasonic-dc-gx9":      { "ms": { "own": 184, "rawler": 216, "imageio": 436 }, "deltaE": { "own": 3.99, "rawler": 3.00, "imageio": 4.56, "own3curves": 2.86 } },
+    "panasonic-dc-s5":       { "ms": { "own": 202, "rawler": 301, "imageio": 1044 }, "deltaE": { "own": 6.58, "rawler": 6.76, "imageio": 3.47 }, "greyMeanC": { "own": 1.42, "rawler": 2.43, "imageio": 1.38, "embedded": 1.26 } },
+    "ricoh-gr-iii":          { "ms": { "own": 333, "rawler": 650 }, "deltaE": { "own": 2.69, "rawler": 4.10 } },
+    "sony-ilce-7m3":         { "ms": { "own": 211, "rawler": 241, "imageio": 488 }, "deltaE": { "own": 3.50, "rawler": 4.35, "imageio": 3.42 } },
+    "fujifilm-x-t3":         { "ms": { "rawler": 524, "imageio": 1339 }, "deltaE": { "rawler": 7.56, "imageio": 10.10 }, "note": "X-Trans: not ours until session 18" }
+  }
+}

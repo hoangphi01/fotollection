@@ -471,11 +471,20 @@ pub fn of_raw(bytes: &[u8], kind: RawKind) -> Option<ImageFacts> {
         return of_dng(bytes);
     }
     let (sensor, cfa, bits) = crate::raw::sensor(bytes)?;
+    // Our own develop reads every Bayer sensor (ADR-0040), apart from the formats macOS's
+    // codec reads first for its lens correction (`raw::decoders`).
+    let decoder = if crate::raw::os_first(kind) {
+        Decoder::System
+    } else if sensor == Sensor::Bayer {
+        Decoder::Own
+    } else {
+        raw_fallback()
+    };
     Some(ImageFacts {
         bits: Some(bits),
         sensor: Some(sensor),
         cfa,
-        decoder: Some(raw_fallback()),
+        decoder: Some(decoder),
         ..ImageFacts::default()
     })
 }

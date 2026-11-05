@@ -469,3 +469,24 @@ Synthetic charts whose truth is known, mosaicked to a Bayer RGGB sensor (12-bit,
 - Malvar is about 4 dB better than bilinear on grey detail, as published, but worse on saturated colour edges: its correction borrows the green channel's detail, which is wrong where the colours do not move together. RCD and the false-colour step (session 17) are scored against both.
 - Neither method removes the maze: green's spread on the flat chart comes from the 2 % Gr/Gb gap. That is the job of the green equilibration before demosaic.
 - The bilinear here is the scorer's own floor, not rawler's PPG; rawler's develop is scored on the nine real samples with `raw_compare.py`.
+
+## 24. One develop path for every RAW format (v0.11.0, session 16)
+
+Our own develop now takes every Bayer format: rawler only unpacks the sensor's data (`rawlgpl::unpack`), and `rawcore::develop_mosaic` demosaics (Malvar) and converts it with the camera's matrices, then the camera's look is fitted to its embedded JPEG as before ([ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md)). Measured on REF-MAC, loaded, on the nine CC0 samples (`measure_rawler`, median of 3; `raw_compare.py`, ΔE2000 mean to the camera's JPEG at 1600 px; `bench/results/raw-own.json`):
+
+| Sample | Ours | rawler | ImageIO | ΔE ours | ΔE rawler | ΔE ImageIO |
+|---|---|---|---|---|---|---|
+| Canon 5D Mark IV (CR2) | 462 ms | 565 ms | 418 ms | **1.93** | 4.16 | 5.51 |
+| Canon R10 (CR3) | 293 ms | 360 ms | 1,647 ms | 4.88 | 5.64 | **2.67** |
+| Nikon D750 (NEF) | 340 ms | 402 ms | 412 ms | 2.26 | **1.18** | 2.41 |
+| Olympus E-M10 III (ORF) | 211 ms | 364 ms | 1,164 ms | 18.6 | 16.0 | **5.4** |
+| Panasonic GX9 (RW2) | 184 ms | 216 ms | 436 ms | 3.99 | **3.00** | 4.56 |
+| Panasonic S5 (RW2) | 202 ms | 301 ms | 1,044 ms | 6.58 | 6.76 | **3.47** |
+| Ricoh GR III (DNG) | 333 ms | 650 ms | — | **2.69** | 4.10 | (ours before) |
+| Sony A7 III (ARW) | 211 ms | 241 ms | 488 ms | 3.50 | 4.35 | **3.42** |
+| Fujifilm X-T3 (RAF, X-Trans) | — | 524 ms | 1,339 ms | — | 7.56 | 10.10 |
+
+- **Speed:** ours is the fastest develop on every sample but the 5D IV, where ImageIO is 10 % faster.
+- **The develop or the fit?** Swapping one part at a time: our develop finished with rawler's three-curve fit scores D750 1.16, GX9 2.86, R10 5.20 and 5D IV 3.78, at least as well as rawler's develop with the same fit. The differences in the table are the fit: our one curve and fitted matrix win on the Canons, three curves on the D750 and the GX9. The look "Like the camera's JPEG" (session 17) keeps the better of the two per file.
+- **Neutral greys:** the S5's grey patches have a mean C\* of 1.42 (rawler 2.43, ImageIO 1.38, the camera's JPEG 1.26).
+- **ORF and RW2:** the E-M10 III file has no embedded image, so neither develop is fitted, and ImageIO's lens correction changes its geometry (SSIM 0.5). On macOS, RW2 and ORF keep ImageIO first for that correction until [FR-085](PRD.md#fr-085--lens-distortion-correction).
