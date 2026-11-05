@@ -153,7 +153,7 @@ The full rules are in [docs/STYLE_RULE.md](docs/STYLE_RULE.md); these catch most
 
 - **Rust:** no `unwrap()` or `expect()` outside tests, except on a proven invariant with a `// INVARIANT:` comment; errors with `thiserror` in the core; `clippy -D warnings` clean.
 - **Locks:** never hold a lock while rayon work runs, and read what you need from one lock before taking the next ([STYLE_RULE.md §2](docs/STYLE_RULE.md#errors), [LESSONS.md](docs/LESSONS.md)).
-- **Interface:** shadcn/ui components and Lucide icons only; reuse an existing component before adding one (the same control in the same order everywhere); every string in both locales.
+- **Interface:** shadcn/ui components and Lucide icons only; panel cards built only from the lego blocks of [STYLE_RULE §4](docs/STYLE_RULE.md#4-uiux) (`npm run lint` runs `check-lego`); the same control in the same order everywhere; every string in both locales. The steps to check a UI change are in [`.claude/skills/style-audit/SKILL.md`](.claude/skills/style-audit/SKILL.md), for people and agents alike.
 - **Untrusted input:** photos, metadata and IPC arguments are untrusted. Validate in Rust, never render metadata as HTML.
 - **Performance:** respect the budgets; an optimization comes with its benchmark and a row in [OPTIMIZATION.md §5](docs/OPTIMIZATION.md#5-benchmark-log).
 

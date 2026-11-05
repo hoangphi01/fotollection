@@ -2,6 +2,7 @@
 // Screenshots of the real interface for the website (site/screenshots/README.md).
 //
 //   node site/screenshots/shoot.mjs <demo-dump> [out-dir] [best-shot-dump]
+//   MEASURE=1 node site/screenshots/shoot.mjs <demo-dump> <out-dir>   (the panels' measures)
 //
 // Serves ui/dist, answers IPC with the answers the real app recorded for the demo photos
 // (src-tauri/src/demo.rs), and serves the recorded thumbnails and previews. No Tauri, no
@@ -277,6 +278,101 @@ const scrollTo = async (page, t) => {
   await t.scrollIntoViewIfNeeded()
   await page.waitForTimeout(300)
   return t
+}
+
+// MEASURE=1: instead of the screenshots, a table of every panel's spacing and control sizes,
+// failing when one differs from STYLE_RULE §4's measures (the lego rule; the style-audit skill).
+/** Spacing and control sizes inside one panel, as sets of distinct values. */
+async function measure(page, rootSel) {
+  return page.evaluate((rootSel) => {
+    const roots = [...document.querySelectorAll(rootSel)]
+    const root = roots[roots.length - 1]
+    const r = (n) => Math.round(n * 10) / 10
+    const vis = (el) => { const b = el.getBoundingClientRect(); return b.height > 0.5 && b.width > 0.5 }
+    const gaps = (parent) => {
+      const kids = [...parent.children].filter(vis)
+      const out = []
+      for (let i = 1; i < kids.length; i++) out.push(r(kids[i].getBoundingClientRect().top - kids[i - 1].getBoundingClientRect().bottom))
+      return out
+    }
+    const set = (xs) => [...new Set(xs)].sort((a, b) => a - b).join(' ')
+    const sections = [...root.querySelectorAll('section')].filter(vis)
+    const cardGap = set([...new Set(sections.map((s) => s.parentElement))].flatMap((p) => gaps(p).filter((g) => g >= 0)))
+    const bodies = sections.map((s) => s.querySelector(':scope > div > div > div')).filter(Boolean).filter(vis)
+    const blockGap = set(bodies.flatMap(gaps))
+    const fields = [...root.querySelectorAll('section .space-y-1\\.5')].filter(vis)
+    const fieldGap = set(fields.flatMap(gaps))
+    const odd = fields.filter((f) => gaps(f).some((g) => g > 7)).map((f) => f.textContent.slice(0, 40))
+    const ctl = (sel) => set([...root.querySelectorAll(`section ${sel}`)].filter(vis).map((e) => r(e.getBoundingClientRect().height)))
+    return {
+      width: r(root.getBoundingClientRect().width),
+      cardWidth: set(sections.map((s) => r(s.getBoundingClientRect().width))),
+      cardGap, blockGap, fieldGap, odd: odd.join(' / '),
+      select: ctl('[role="combobox"]'),
+      toggle: ctl('[data-slot="toggle-group-item"]'),
+      input: ctl('input:not([type="checkbox"]):not([role="switch"])'),
+      iconBtn: ctl('button[data-size="icon-sm"]'),
+    }
+  }, rootSel)
+}
+
+/** STYLE_RULE §4: each column holds this one value, in every view that has it. */
+const MEASURES = { cardGap: '12', blockGap: '12', fieldGap: '6', select: '32', toggle: '32', input: '32', iconBtn: '28' }
+
+async function measurePanels() {
+  const rows = []
+  const theme = process.env.MEASURE_THEME ?? 'light'
+    const language = process.env.MEASURE_LANG ?? 'en'
+  let { context, page } = await open({ scenario: 'stamp', language, theme })
+  rows.push(['folder list', await measure(page, 'aside.border-r')])
+  rows.push(['Pro panel', await measure(page, 'aside.border-l')])
+  await (await reach(page, SHOW.crop)).dblclick()
+  await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
+  await settle(page)
+  rows.push(['photo preview', await measure(page, '[role="dialog"] aside')])
+  await page.screenshot({ path: path.join(outDir, 'measure-preview.png') })
+  await context.close()
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme, mode: 'simple' }))
+  await settle(page)
+  rows.push(['Simple panel', await measure(page, 'aside.border-l')])
+  await page.screenshot({ path: path.join(outDir, 'measure-simple.png') })
+  await context.close()
+  ;({ context, page } = await open({ scenario: 'collage', language, theme, mode: 'collage', queues: NO_QUEUES }))
+  let sheet = page.locator('[data-cell]').nth(2)
+  await sheet.click(); await settle(page)
+  rows.push(['Collage panel', await measure(page, 'aside.border-l')])
+  await page.screenshot({ path: path.join(outDir, 'measure-collage.png') })
+  await sheet.dblclick(); await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]'); await settle(page)
+  rows.push(['sheet preview', await measure(page, '[role="dialog"] aside')])
+  await page.screenshot({ path: path.join(outDir, 'measure-sheet.png') })
+  await context.close()
+  ;({ context, page } = await open({ scenario: 'postcard', language, theme, mode: 'collage', queues: NO_QUEUES }))
+  sheet = await cell(page, SHOW.frame)
+  await sheet.click(); await settle(page)
+  rows.push(['Postcard panel', await measure(page, 'aside.border-l')])
+  await page.screenshot({ path: path.join(outDir, 'measure-postcard.png') })
+  await sheet.dblclick(); await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]'); await settle(page)
+  rows.push(['postcard preview', await measure(page, '[role="dialog"] aside')])
+  await page.screenshot({ path: path.join(outDir, 'measure-postcard-preview.png') })
+  await context.close()
+  const keys = Object.keys(rows[0][1])
+  console.log(['view', ...keys].join(' | '))
+  for (const [name, m] of rows) console.log([name, ...keys.map((k) => m[k] || '–')].join(' | '))
+  const off = rows.flatMap(([name, m]) =>
+    Object.entries(MEASURES).filter(([k, v]) => m[k] && m[k] !== v).map(([k, v]) => `${name}: ${k} is ${m[k]}, not ${v}`),
+  )
+  const widths = new Set(rows.filter(([name]) => /panel|folder/.test(name)).map(([, m]) => m.width))
+  if (widths.size > 1) off.push(`the folder list and the panels differ in width: ${[...widths].join(', ')}`)
+  if (off.length) {
+    console.error(off.join('\n'))
+    process.exitCode = 1
+  }
+}
+
+if (process.env.MEASURE) {
+  await measurePanels()
+  await browser.close()
+  process.exit()
 }
 
 for (const language of ['en', 'vi']) {

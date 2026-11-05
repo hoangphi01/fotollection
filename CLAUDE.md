@@ -17,6 +17,7 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
 - Walk through [docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md) §2 for every kind of change you made, then run its §3 checks.
 - Check resources before, during and after every build and test (`scripts/resources.sh`, [docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md) §3): free disk, memory pressure, swap.
 - After a debugging session, add what it taught to [docs/LESSONS.md](docs/LESSONS.md) in the fix's commit; read it before debugging.
+- A UI change (component, card, panel, dialog, hint) follows the `style-audit` skill (`.claude/skills/style-audit/SKILL.md`): lego blocks, `check-lego`, the measure table, both themes and languages.
 - Run `scripts/check-docs.sh` on its own (never piped into `&&`). It must pass.
 - Once code exists, also run `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test`, and the UI lint and tests.
 - Commit messages follow Conventional Commits, with the requirement ID: `feat(stamp): … [FR-004]`.

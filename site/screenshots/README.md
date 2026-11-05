@@ -12,6 +12,8 @@ The screenshots on the website show the **real app on demo photos**: the CC0 pho
 
 Photos are chosen by file name in `shoot.mjs`.
 
+**Measuring the panels.** `MEASURE=1 node site/screenshots/shoot.mjs <dump> <out-dir>` (with `MEASURE_LANG=vi` and `MEASURE_THEME=dark` for the other variants) shoots nothing for the site: it opens every panel and preview on the recording, prints a table of their widths, gaps and control heights, saves `measure-*.png` to look at, and fails when one differs from the lego table in [STYLE_RULE §4](../../docs/STYLE_RULE.md#4-uiux). The `style-audit` skill (`.claude/skills/style-audit/`) runs it for every UI change. Stop `tauri dev` before recording a dump: the running app would take the launch.
+
 **The print-basket preview (`swipe`) and best shot show the owner's cat**, not the demo photos. `uv run python -I site/screenshots/best_shot_photos.py P1057694.JPG <folder>` makes a burst from that one photo (Lumix GX9, by @hoangphi01, all rights reserved, not kept in the repository): the photo itself, a softer, a shaken and a darker copy, one second apart, EXIF kept. `build.sh` records it on its own when given the photo as a third argument, and `shoot.mjs` shoots the basket preview (`swipe`, the sharp shot in the basket) and the best-shot screens (`groups`, `manual-groups`) from that recording, so every other shot keeps the demo photos. The app groups the four and picks the sharp one with its real scores. Needs cargo, npm, `cwebp` and uv (for Python with Pillow).
 
 ## The owner's photos
