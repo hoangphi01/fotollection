@@ -11,7 +11,7 @@ import { ViewerFrame } from '@/components/layout/viewer-frame'
 import { commands, type CullFilter, type PhotoId, type PhotoSummary, type Queue, type RenderSettings } from '@/ipc/bindings'
 import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
-import { LookCards } from '@/features/look/look-cards'
+import { PhotoLookCards } from '@/features/look/photo-look-cards'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
 import { CropEditor } from '@/features/viewer/crop-editor'
 import { sendTo } from '@/features/viewer/send-to'
@@ -43,6 +43,8 @@ type SheetPreviewDialogProps = {
   photos: PhotoSummary[]
   settings: RenderSettings | null
   onSettingsChange: (change: (current: RenderSettings) => RenderSettings) => void
+  /** After a photo's look became everyone's (FR-079). */
+  onSettingsReload: () => void
   exporter: ExportApi
   filter: CullFilter
   /** Photos with their own stamp from the preview (FR-044). */
@@ -64,6 +66,7 @@ export function SheetPreviewDialog({
   photos,
   settings,
   onSettingsChange,
+  onSettingsReload,
   exporter,
   filter,
   customStamps,
@@ -305,7 +308,10 @@ export function SheetPreviewDialog({
         filter={filter}
       />
       <CollageCellsCard settings={settings} onChange={onSettingsChange} cell={cell} />
-      <LookCards settings={settings} onChange={onSettingsChange} />
+      {/* The picked photo's colour, as in the panel; none picked, no colour cards (FR-079). */}
+      {photo !== null && (
+        <PhotoLookCards photoId={photo} revision={revision} onAppliedToAll={onSettingsReload} />
+      )}
       <DateStampCard
         settings={settings}
         onChange={onSettingsChange}

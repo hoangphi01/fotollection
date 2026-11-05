@@ -30,6 +30,8 @@ type CollageViewProps = {
   generation: number
   /** Select mode, shared with the panel so Export follows the ticked sheets (FR-050). */
   select: SelectModeApi
+  /** After a photo's look became everyone's (FR-079). */
+  onSettingsReload: () => void
 }
 
 /**
@@ -37,6 +39,7 @@ type CollageViewProps = {
  * print basket as in the gallery (FR-050), and a sheet's preview, opened like a photo's.
  */
 export function CollageView({
+  onSettingsReload,
   collage,
   photos,
   settings,
@@ -99,13 +102,14 @@ export function CollageView({
         revision={revision}
         generation={generation}
         selected={index}
-        selectedCell={collage.cellIndex}
+        selectedCell={collage.picked ? collage.cellIndex : null}
         selectMode={select.active}
         checked={select.checked}
         inBasket={(photo) => queueOf.get(photo) === 'print'}
         onToggle={(sheet) => select.toggleGroup(sheet.second === null ? [sheet.first] : [sheet.first, sheet.second])}
         onToggleAll={select.tickAll}
         onSelect={collage.select}
+        onBlank={collage.unpick}
         onOpen={(sheet, cell) => {
           collage.select(sheet, cell)
           setViewing(true)
@@ -121,6 +125,7 @@ export function CollageView({
         photos={photos}
         settings={settings}
         onSettingsChange={onSettingsChange}
+        onSettingsReload={onSettingsReload}
         exporter={exporter}
         filter={filter}
         customStamps={customStamps}

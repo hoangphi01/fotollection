@@ -18,7 +18,7 @@ type SheetTileProps = {
   size: number
   selected: boolean
   /** The cell the keyboard and the panel work on, on the selected sheet. */
-  selectedCell: 0 | 1
+  selectedCell: 0 | 1 | null
   /** The photo being dragged, and the cell under the pointer (`null` for an empty one). */
   dragging: PhotoId | null
   over: PhotoId | null | undefined
@@ -70,6 +70,7 @@ export function SheetTile({
 
   return (
     <div
+      data-sheet-tile
       className={cn(
         'group relative flex shrink-0 items-center justify-center rounded-md bg-muted/40 p-2',
         // Framed like the gallery's selected photo (thumb-tile.tsx). In select mode the one

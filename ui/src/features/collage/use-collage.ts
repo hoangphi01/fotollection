@@ -11,6 +11,9 @@ import { useSheets } from './use-sheets'
 export function useCollage(filter: CullFilter, revision: number, enabled: boolean) {
   const { sheets, move, turn } = useSheets(filter, enabled)
   const [chosen, setChosen] = useState<{ sheet: number; cell: 0 | 1 }>({ sheet: 0, cell: 0 })
+  // Whether a photo is picked: a click on a cell picks it, a click beside the sheets lets go.
+  // The colour cards edit the picked photo only, and are gone while none is (FR-079).
+  const [picked, setPicked] = useState(false)
   // The list can shrink under the choice (a photo leaves the view): stay in range.
   const index = Math.max(0, Math.min(chosen.sheet, sheets.length - 1))
   const sheet = enabled ? sheets[index] : undefined
@@ -24,7 +27,12 @@ export function useCollage(filter: CullFilter, revision: number, enabled: boolea
     cellIndex,
     sheet,
     cell,
-    select: (sheet: number, cell: 0 | 1) => setChosen({ sheet, cell }),
+    picked,
+    select: (sheet: number, cell: 0 | 1) => {
+      setChosen({ sheet, cell })
+      setPicked(true)
+    },
+    unpick: () => setPicked(false),
     move,
     turn,
   }

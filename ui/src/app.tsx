@@ -262,6 +262,7 @@ export function App() {
             revision={revision}
             generation={project.document.generation}
             select={select}
+            onSettingsReload={reload}
           />
         ) : simple ? (
           <SimpleView
@@ -449,6 +450,8 @@ export function App() {
           cell={collage.cell}
           customStamps={customStamps}
           revision={revision}
+          picked={collage.picked ? (collage.cell?.id ?? null) : null}
+          onSettingsReload={reload}
         />
       ) : simple ? (
         <SimplePanel

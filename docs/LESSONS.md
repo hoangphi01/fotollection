@@ -426,3 +426,9 @@
 - **Seen:** after the v0.9.9 push, the `docs-with-code` workflow failed on 9b0d846 (the badges' centring), which changed two UI files and no doc; it was not the last commit, and the release itself was not blocked.
 - **Why:** `scripts/check-docs.sh` runs `check-docs-with-code.sh` on the working tree or the last commit only; CI checks every pushed commit.
 - **Rule:** before a push, run `scripts/check-docs-with-code.sh origin/main..HEAD`, as CI does; a fix too small for a doc row still gets its line in the CHANGELOG, or `[no-docs]` with a reason in its message.
+
+### A feature built for one photo must be checked in Collage mode (owner, 2026-11-05)
+
+- **Seen:** in Collage mode the colour sliders seemed to change only the second photo of a sheet, and they stayed on screen with no photo picked.
+- **Why:** the Collage panel and the sheet's preview edited the shared look, built for the gallery; a photo with a look of its own (set in its preview) ignores the shared one, so only the other photo moved. The panel had no "no photo picked" state at all.
+- **Rule:** every change from now on is checked against Collage mode too: two photos to a sheet, each with its own edits; what the picked cell means; what shows when none is picked; the sheet's preview as well as the panel; postcards. DOCS_GUIDE's checklist names it.

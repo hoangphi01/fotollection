@@ -470,6 +470,7 @@ Two cards change a photo's colour, between **Print / export size** and **Date st
 - A folded card says how many of its sliders are set ("Tools · 2 changed"); the ↺ on its title resets the card.
 - In the preview, hold **Before** (or the **\\** key) to see the photo without its look.
 - The date stamp, the info frame and the border are never tinted, and a photo with nothing set prints exactly as before.
+- **In Collage mode**, click a photo on a sheet to change its colour; the cards show only while a photo is picked. Click beside the sheets, or press **Esc**, to let go. The sheet's preview works the same way.
 
 <!-- chapter: shortcuts -->
 

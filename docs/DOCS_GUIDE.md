@@ -41,7 +41,7 @@
 
 ## 3. Before every commit
 
-**Docs move with code, in the same commit.** `scripts/check-docs.sh` fails when the working tree (or the last commit) changes `crates/`, `src-tauri/src/` or `ui/src/` without a doc, the CHANGELOG or a README, and the `docs-with-code` workflow checks every pushed commit the same way. A commit that truly needs no doc says `[no-docs]` and why in its message. **Before a push**, run `scripts/check-docs-with-code.sh origin/main..HEAD`: it checks every commit about to go out, as CI will (LESSONS 2026-11-05). It also checks that ROADMAP and STATUS give every FR the same phase.
+**Docs move with code, in the same commit.** `scripts/check-docs.sh` fails when the working tree (or the last commit) changes `crates/`, `src-tauri/src/` or `ui/src/` without a doc, the CHANGELOG or a README, and the `docs-with-code` workflow checks every pushed commit the same way. A commit that truly needs no doc says `[no-docs]` and why in its message. **Every change works in Collage mode too** (owner, 2026-11-05): check it with two photos to a sheet, each with its own edits, with a photo picked and with none, in the panel and the sheet's preview, and with postcards on (LESSONS). **Before a push**, run `scripts/check-docs-with-code.sh origin/main..HEAD`: it checks every commit about to go out, as CI will (LESSONS 2026-11-05). It also checks that ROADMAP and STATUS give every FR the same phase.
 
 **Check resources before, during and after every build and test run.** The dev machine has a small disk and little free swap; a full disk fails builds halfway, and heavy swap makes every timing meaningless.
 

@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **Collage:** the colour cards change the photo picked on a sheet, in the panel and in the sheet's preview, and are hidden while no photo is picked (a click beside the sheets, or Esc). They used to change the shared look, which a photo with a look of its own ignored, so only one photo of a sheet seemed to follow.
+
 ### Changed
 
 - **Preview:** dragging a colour slider is drawn on the graphics card where the computer has a capable one, about ten times quicker a step, so the photo follows the slider; the date stamp, the frame and the border are never tinted. The app decides by itself, and Rust's render takes over when the drag ends, so what settles is what prints.

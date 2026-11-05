@@ -468,6 +468,7 @@ Hai thẻ chỉnh màu ảnh, nằm giữa **Khổ in / xuất** và **Dấu ng�
 - Thẻ đang gập vẫn báo có bao nhiêu thanh đã chỉnh ("Công cụ · đã chỉnh 2"); nút ↺ trên tiêu đề đặt lại cả thẻ.
 - Trong bản xem trước, giữ nút **Trước** (hoặc phím **\\**) để xem ảnh khi chưa có look.
 - Dấu ngày, khung thông tin và viền không bao giờ bị nhuộm màu, và ảnh chưa chỉnh gì in ra y như trước.
+- **Trong chế độ Ghép ảnh**, nhấp vào một ảnh trên tấm để chỉnh màu ảnh đó; hai thẻ chỉ hiện khi có ảnh đang được chọn. Nhấp ra ngoài các tấm, hoặc nhấn **Esc**, để bỏ chọn. Bản xem trước tấm ghép cũng làm như vậy.
 
 <!-- chapter: shortcuts -->
 

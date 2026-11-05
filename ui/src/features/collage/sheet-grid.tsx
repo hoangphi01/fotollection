@@ -20,7 +20,8 @@ type SheetGridProps = {
   revision: number
   generation: number
   selected: number
-  selectedCell: 0 | 1
+  /** The picked cell of the selected sheet; `null` when no photo is picked. */
+  selectedCell: 0 | 1 | null
   /** Select mode (FR-050): a click ticks a whole sheet, Enter the chosen one. */
   selectMode: boolean
   checked: ReadonlySet<number>
@@ -28,6 +29,8 @@ type SheetGridProps = {
   onToggle: (sheet: SheetPair) => void
   onToggleAll: () => void
   onSelect: (sheet: number, cell: 0 | 1) => void
+  /** A click beside the sheets: no photo is picked any more. */
+  onBlank?: () => void
   /** Opens the sheet's preview, on one of its photos. */
   onOpen: (sheet: number, cell: 0 | 1) => void
   onMove: (photo: PhotoId, target: PhotoId | null) => void
@@ -56,6 +59,7 @@ export function SheetGrid({
   onToggle,
   onToggleAll,
   onSelect,
+  onBlank,
   onOpen,
   onMove,
   onTurn,
@@ -138,7 +142,7 @@ export function SheetGrid({
 
   // The photos in order, each with its sheet and cell, for ← → and ⌥/Alt ← →.
   const cells = sheetOrder(sheets)
-  const at = cells.findIndex((c) => c.sheet === selected && c.cell === selectedCell)
+  const at = cells.findIndex((c) => c.sheet === selected && c.cell === (selectedCell ?? 0))
 
   const onKeyDown = (event: KeyboardEvent) => {
     const sheet = sheets[selected]
@@ -164,6 +168,9 @@ export function SheetGrid({
       // As in the gallery: Enter or Space opens the preview.
       event.preventDefault()
       onOpen(cells[at].sheet, cells[at].cell)
+    } else if (event.key === 'Escape') {
+      // As a click beside the sheets: no photo picked, so no colour cards.
+      onBlank?.()
     } else if (event.key.toLowerCase() === 'r' && sheet && !event.metaKey && !event.ctrlKey && !event.altKey) {
       event.preventDefault()
       onTurn?.(sheet.first)
@@ -175,6 +182,10 @@ export function SheetGrid({
       ref={scrollRef}
       tabIndex={0}
       onKeyDown={onKeyDown}
+      // Beside the sheets (the grid's own ground or a row's gap): let go of the picked photo.
+      onPointerDown={(e) => {
+        if (!(e.target instanceof Element) || !e.target.closest('[data-sheet-tile]')) onBlank?.()
+      }}
       className="flex-1 overflow-y-auto p-3 outline-none select-none"
       aria-label={t('collage.gridLabel')}
     >

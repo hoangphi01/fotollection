@@ -5,7 +5,7 @@ import { SidePanel } from '@/components/layout/side-panel'
 import type { CellInfo, CullFilter, PhotoId, RenderSettings } from '@/ipc/bindings'
 import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
-import { LookCards } from '@/features/look/look-cards'
+import { PhotoLookCards } from '@/features/look/photo-look-cards'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
 import { CollageCellsCard } from './collage-cells-card'
 import { PostcardCard } from './postcard-card'
@@ -27,6 +27,10 @@ type CollagePanelProps = {
   /** Photos with their own stamp from the preview (FR-044). */
   customStamps: number
   revision: number
+  /** The photo picked on a sheet, whose colour the cards edit; none picked, no colour cards. */
+  picked: PhotoId | null
+  /** After a photo's look became everyone's (FR-079). */
+  onSettingsReload: () => void
 }
 
 /**
@@ -46,6 +50,8 @@ export function CollagePanel({
   cell,
   customStamps,
   revision,
+  picked,
+  onSettingsReload,
 }: CollagePanelProps) {
   const { t } = useTranslation()
   return (
@@ -69,7 +75,10 @@ export function CollagePanel({
         ticked={tickedSheets > 0 ? ticked : undefined}
       />
       <CollageCellsCard settings={settings} onChange={onChange} cell={cell} />
-      <LookCards settings={settings} onChange={onChange} />
+      {/* Each photo of a sheet has its colour: the cards edit the picked one (FR-079). */}
+      {picked !== null && (
+        <PhotoLookCards photoId={picked} revision={revision} onAppliedToAll={onSettingsReload} />
+      )}
       <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} />
     </SidePanel>
   )
