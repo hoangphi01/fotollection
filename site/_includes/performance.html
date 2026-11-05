@@ -59,6 +59,21 @@
 </section>
 {%- endfor %}
 
+{%- comment %} A small wiki: how a photo is made, from the sensor to the print, and what Fotollection does at each step. Committed Markdown, one file per language (perf-wiki-<lang>.md); scripts/site-manual.sh writes its chapter list, perf-wiki-toc-<lang>.md, at build time. {% endcomment -%}
+{%- capture wiki_toc_file %}perf-wiki-toc-{{ page.lang }}.md{% endcapture -%}
+{%- capture wiki_file %}perf-wiki-{{ page.lang }}.md{% endcapture -%}
+{%- capture wiki_toc %}{% include {{ wiki_toc_file }} %}{% endcapture -%}
+{%- capture wiki %}{% include {{ wiki_file }} %}{% endcapture %}
+<section class="section tint" id="wiki">
+  <div class="wrap">
+    <h2>{{ t.perf_wiki_title }}</h2>
+    <p class="lead narrow">{{ t.perf_wiki_lead }}</p>
+    <div class="manual perf-wiki">
+      {{ wiki | markdownify | replace: '<table>', '<div class="table-scroll"><table>' | replace: '</table>', '</table></div>' }}
+    </div>
+  </div>
+</section>
+
 <section class="section" id="explained">
   <div class="wrap">
     <h2>{{ t.perf_explain_title }}</h2>
@@ -87,3 +102,5 @@ uv run bench/quality/share_audit.py ~/Pictures/some-folder /tmp/share</code></pr
     </p>
   </div>
 </section>
+
+{% include chapter-list.html toc=wiki_toc label=t.perf_wiki_toc %}

@@ -370,6 +370,8 @@ h3.with-logo .logo-os { height: 0.95em; }
 .manual-toc .small { margin-top: 18px; }
 .manual-toc .small a { color: var(--brand); font-weight: 400; }
 .manual { min-width: 0; }
+/* The Performance page's wiki sits under its section's lead, as the FAQ does. */
+.perf-wiki { margin-top: 28px; }
 .manual h2 { font-size: clamp(1.4rem, 3vw, 1.75rem); margin-top: 56px; }
 .manual h2:first-child { margin-top: 0; }
 .manual h3 { font-size: 1.15rem; margin-top: 32px; }
