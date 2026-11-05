@@ -376,9 +376,9 @@ Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates
    - **Linux AppImage:** the button downloads the new AppImage; make it executable (`chmod +x`) and use it in place of the old file.
    - **Linux `.deb`:** the button opens the release page; download the new `.deb` and run `sudo apt install ./Fotollection_*_amd64.deb` (`_arm64.deb` on ARM).
 
-The same popover holds the **Language** choice (chapter 1) and shows the **cache**: the thumbnails and best-shot analyses Fotollection keeps so folders open fast, with its size against its 2 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
+The same popover holds the **Language** choice (chapter 1) and shows the **cache**: the thumbnails, previews and best-shot analyses Fotollection keeps so folders and photos open fast, with its size against its 5 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
 
-**Coming in v0.11.0: instant previews.** After a folder's thumbnails, Fotollection prepares a preview of every photo in the background (*Preparing previews* in the gallery's bar) and keeps it in the cache, so any photo you open shows at once, RAW photos too, and → and ← show the next ones without waiting. It uses up to a quarter of your computer's memory for this, and the cache's limit becomes 5 GB.
+**Instant previews.** After a folder's thumbnails, Fotollection prepares a preview of every photo in the background (*Preparing previews* in the gallery's bar) and keeps it in the cache, so any photo you open shows at once, RAW photos too, and → and ← show the next ones without waiting. It uses up to a quarter of your computer's memory for this, and the cache's limit is 5 GB (it was 2 GB).
 
 **Something wrong, or an idea?** Click the version number at the foot of the panel, then the red **Report a problem or an idea**: it opens the project's page for problems and ideas on GitHub, in your browser ([FR-069](PRD.md#fr-069--report-a-problem)). Say what you did and what you saw, then click **Copy diagnostics** and paste it into the report: it holds your version, your system and the last error codes.
 

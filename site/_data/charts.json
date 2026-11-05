@@ -34,5 +34,9 @@
   "bench-inflight": {
     "width": 752,
     "height": 252
+  },
+  "bench-open": {
+    "width": 752,
+    "height": 336
   }
 }

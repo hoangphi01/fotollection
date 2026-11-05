@@ -556,3 +556,9 @@ a:focus-visible, .button:focus-visible { outline: 2px solid var(--brand); outlin
 }
 h2.with-icon { display: flex; align-items: center; gap: 0.35em; }
 h2.with-icon .icon { width: 0.85em; height: 0.85em; flex: none; color: var(--brand); }
+
+/* A warning everyone must read before downloading: red border and tint, the theme's --danger. */
+.alert-danger { display: flex; gap: 12px; align-items: flex-start; max-width: 720px; margin: 20px 0; padding: 14px 16px; border: 2px solid var(--danger); border-radius: 14px; background: color-mix(in srgb, var(--danger) 9%, var(--surface)); color: var(--ink); text-align: left; }
+.alert-danger svg { flex: none; width: 22px; height: 22px; margin-top: 1px; color: var(--danger); }
+.alert-danger p { margin: 0; }
+.alert-danger strong { color: var(--danger); }

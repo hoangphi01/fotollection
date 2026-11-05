@@ -101,6 +101,12 @@ Fotollection is built for enthusiast and professional photographers, so speed is
 
 On a real trip (one folder of 20 MP Lumix GX9 photos, 422 files) the export reached only 7.6 photos/s with a 2.14 GB peak on 2026-11-03. The fix, in v0.9.7, exports its JPEGs at 10.1 photos/s, and the whole run peaks at 1.31 GB, within both budgets ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)).
 
+### Opening a photo
+
+Since v0.11.0 a preview of every photo is prepared in the background and kept on disk, so any photo opens at once, RAW too ([FR-091](docs/PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)). On one trip's 422 photos, each version measured from its own code:
+
+![Opening a photo: v0.9.0 took 274 ms for a JPEG and 531 ms for a RAW, v0.10.0 278 and 440 ms, v0.11.0 27 ms for both, against a 100 ms budget.](docs/images/bench-open.svg)
+
 ### Large batches
 
 Memory must not grow with the number of photos. A batch 53 times larger costs 0.1 GB more at peak:
@@ -298,7 +304,7 @@ sudo apt install ./Fotollection_*_amd64.deb
 |---|---|---|---|
 | **Operating system** | macOS 11 Big Sur, Windows 10 64-bit, or 64-bit Linux with glibc 2.35 ([which distributions](#linux)) | macOS 13 or later, Windows 11, or Ubuntu 24.04 | Apple Silicon and Intel Macs. Windows uses the WebView2 runtime, built into Windows 11 and installed automatically on Windows 10. Linux uses WebKitGTK 4.1, bundled in the AppImage and installed with the `.deb` |
 | **Processor** | Any 64-bit CPU from the last ~8 years | Apple Silicon, or a recent 4+ core x64 | Work is spread over all cores. Every number in [Performance](#performance) is from an Apple M3 |
-| **Memory (RAM)** | 4 GB | 8 GB or more | An export stays under 2 GB even for 5,000+ photos (measured peak 1.45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)). Coming in v0.11.0: the preview keeps up to a quarter of the memory so photos open at once ([FR-091](docs/PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) |
+| **Memory (RAM)** | 4 GB | 8 GB or more | An export stays under 2 GB even for 5,000+ photos (measured peak 1.45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)). Since v0.11.0, the preview keeps up to a quarter of the memory so photos open at once ([FR-091](docs/PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) |
 | **Disk** | 100 MB free plus the cache | 1 GB free | The app is meant to stay under 25 MB ([NFR-008](docs/PRD.md#nfr-008--install-size)). The cache takes about 25 MB per 1,000 photos (thumbnails about 22 KB and best-shot analysis about 4 KB each) and is safe to delete. Exports need space for the full-resolution files |
 | **Display** | 1280 × 800 | 1920 × 1080 or a Retina display | The toolbar adapts to narrow windows |
 | **Internet** | Not needed | — | Everything runs offline: faces, places and previews included. Nothing is uploaded |

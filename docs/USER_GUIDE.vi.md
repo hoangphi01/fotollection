@@ -374,9 +374,9 @@ Fotollection không bao giờ tự lên mạng ([FR-021](PRD.md#fr-021--manual-u
    - **Linux AppImage:** nút này tải AppImage mới; cho phép chạy (`chmod +x`) rồi dùng nó thay cho tệp cũ.
    - **Linux `.deb`:** nút này mở trang phát hành; tải `.deb` mới rồi chạy `sudo apt install ./Fotollection_*_amd64.deb` (`_arm64.deb` trên ARM).
 
-Cùng ô đó có mục **Ngôn ngữ** (chương 1) và hiện **cache**: ảnh nhỏ và kết quả phân tích ảnh đẹp nhất mà Fotollection giữ để mở thư mục nhanh, kèm dung lượng so với giới hạn 2 GB. Vượt giới hạn, các mục cũ nhất tự bị xoá. **Xoá cache** làm trống nó bất kỳ lúc nào; không mất gì của bạn, và ảnh nhỏ sẽ được tạo lại khi bạn duyệt.
+Cùng ô đó có mục **Ngôn ngữ** (chương 1) và hiện **cache**: ảnh nhỏ, bản xem trước và kết quả phân tích ảnh đẹp nhất mà Fotollection giữ để mở thư mục và ảnh nhanh, kèm dung lượng so với giới hạn 5 GB. Vượt giới hạn, các mục cũ nhất tự bị xoá. **Xoá cache** làm trống nó bất kỳ lúc nào; không mất gì của bạn, và ảnh nhỏ sẽ được tạo lại khi bạn duyệt.
 
-**Sắp có trong v0.11.0: bản xem trước tức thì.** Sau khi có ảnh nhỏ của một thư mục, Fotollection chuẩn bị sẵn bản xem trước của mọi ảnh ở chế độ nền (*Đang chuẩn bị bản xem trước* trên thanh của gallery) và giữ trong cache, nên mở ảnh nào cũng hiện ngay, kể cả ảnh RAW, và → ← hiện ảnh kế tiếp không phải chờ. Việc này dùng tối đa một phần tư bộ nhớ máy, và giới hạn cache lên 5 GB.
+**Bản xem trước tức thì.** Sau khi có ảnh nhỏ của một thư mục, Fotollection chuẩn bị sẵn bản xem trước của mọi ảnh ở chế độ nền (*Đang chuẩn bị bản xem trước* trên thanh của gallery) và giữ trong cache, nên mở ảnh nào cũng hiện ngay, kể cả ảnh RAW, và → ← hiện ảnh kế tiếp không phải chờ. Việc này dùng tối đa một phần tư bộ nhớ máy, và giới hạn cache là 5 GB (trước đây 2 GB).
 
 **Gặp lỗi, hay có ý tưởng?** Bấm số phiên bản ở chân bảng, rồi nút đỏ **Báo lỗi / góp ý**: nút này mở trang báo lỗi và góp ý của dự án trên GitHub, trong trình duyệt ([FR-069](PRD.md#fr-069--report-a-problem)). Hãy ghi bạn đã làm gì và thấy gì, rồi bấm **Sao chép thông tin chẩn đoán** và dán vào: phần này có phiên bản, hệ điều hành và các mã lỗi gần nhất.
 

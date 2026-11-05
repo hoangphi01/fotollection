@@ -61,6 +61,7 @@ const meta = read('machine.json')
 const gpu = read('gpu.json')
 const drag = read('drag.json')
 const inflight = read('inflight.json')
+const browse = read('browse.json')
 if (!rust || !web) throw new Error('run bench/run.sh first')
 
 const openSource = batch ?? rust
@@ -162,6 +163,12 @@ const T = {
     gpuEngines: { 'WebKit (Apple GPU)': 'GPU, macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU, Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'No GPU (SwiftShader)' },
     gpuFooter: (f) => `1600 px preview, 26 MP photos · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · ΔE2000 to Rust's render: mean ${f(gpu.parity.webkit.photoMean, 2)}, p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
     noGpuNote: 'A machine without a GPU keeps the CPU path.',
+    photoOpenTitle: 'Opening a photo, then and now',
+    photoOpenUnit: 'ms to open a photo with nothing of it in memory, p50 (lower is better)',
+    photoOpenRow: (v, kind) => `${v} · ${kind}`,
+    photoOpenBudget: 'budget 100 ms',
+    photoOpenFooter: () => `${browse.photos.jpeg} JPEG and ${browse.photos.raw} RAW from one trip (Lumix GX9, 20 MP) · ${browse.machine} · ${browse.date}`,
+    photoOpenWhy: 'v0.11.0 opens each photo from a preview prepared in the background; before, each was decoded on demand',
     inflightTitle: 'Export speed by photos worked on at once',
     inflightUnit: 'photos/s, 24–26 MP JPEGs · higher is better',
     inflightRow: (n) => `${n} at once`,
@@ -250,6 +257,12 @@ const T = {
     gpuEngines: { 'WebKit (Apple GPU)': 'GPU, macOS (WebKit)', 'Chromium, ANGLE Metal': 'GPU, Chromium (Metal)', 'Chromium, SwiftShader (no GPU)': 'Không có GPU (SwiftShader)' },
     gpuFooter: (f) => `Bản xem trước 1600 px, ảnh 26 MP · ${gpu.machine.split(',').slice(0, 2).join(',')} · ${gpu.date} · ΔE2000 so với Rust: trung bình ${f(gpu.parity.webkit.photoMean, 2)}, p99 ${f(gpu.parity.webkit.photoP99, 2)}`,
     noGpuNote: 'Máy không có GPU vẫn dùng đường CPU.',
+    photoOpenTitle: 'Mở một tấm ảnh, trước và nay',
+    photoOpenUnit: 'ms để mở một ảnh chưa có gì trong bộ nhớ, trung vị (thấp hơn là tốt hơn)',
+    photoOpenRow: (v, kind) => `${v} · ${kind}`,
+    photoOpenBudget: 'ngân sách 100 ms',
+    photoOpenFooter: () => `${browse.photos.jpeg} JPEG và ${browse.photos.raw} RAW của một chuyến đi (Lumix GX9, 20 MP) · ${browse.machine} · ${browse.date}`,
+    photoOpenWhy: 'v0.11.0 mở mỗi ảnh từ bản xem trước chuẩn bị sẵn ở chế độ nền; trước đó mỗi ảnh được giải mã khi cần',
     inflightTitle: 'Tốc độ xuất theo số ảnh xử lý cùng lúc',
     inflightUnit: 'ảnh/giây, JPEG 24–26 MP · càng cao càng tốt',
     inflightRow: (n) => `${n} ảnh cùng lúc`,
@@ -320,7 +333,8 @@ function bar(cls, x, y, w, h, tip) {
  */
 function refLine(cls, x, y0, y1, label, anchor = 'middle', gap = null) {
   const line = (a, b) => `<line class="${cls}" x1="${x}" x2="${x}" y1="${a}" y2="${b}"/>`
-  const lines = gap ? line(y0, gap[0]) + line(gap[1], y1) : line(y0, y1)
+  // A gap that reaches the end leaves only the first part.
+  const lines = gap ? line(y0, gap[0]) + (gap[1] < y1 ? line(gap[1], y1) : '') : line(y0, y1)
   return `${lines}<text class="t3" x="${x}" y="${y0 - 4}" text-anchor="${anchor}">${esc(label)}</text>`
 }
 
@@ -714,6 +728,36 @@ function charts(lang) {
     body += `<text class="t3" x="0" y="${h - 4}">${esc(t.inflightFooter(f))}</text>`
     out['bench-inflight'] = doc(t.inflightTitle, set.runs.map((r) => `${r.inflight}: ${f(r.photosPerSecond, 1)} photos/s, ${r.exportRssMb} MB`).join('. '), h, body)
   }
+
+  // 11. Opening a photo across versions (FR-091): one hue, the older versions muted, the
+  // current one full, a line at NFR-012's 100 ms.
+  {
+    const current = browse.versions[browse.versions.length - 1].version
+    const rows = browse.versions.flatMap((v) => [
+      { name: t.photoOpenRow(v.version, 'JPEG'), v: v.jpeg_p50, now: v.version === current },
+      { name: t.photoOpenRow(v.version, 'RAW'), v: v.raw_p50, now: v.version === current },
+    ])
+    const max = Math.max(...rows.map((r) => r.v)) * 1.15
+    let body = `<text class="t3" x="0" y="30">${esc(t.photoOpenUnit)}</text>`
+    const y0 = 62
+    rows.forEach((r, i) => {
+      // A small gap between versions, none between a version's two rows.
+      const y = y0 + i * 30 + Math.floor(i / 2) * 10
+      const w = Math.max(4, (PLOT * r.v) / max)
+      body += `<text class="t2" x="${LEFT - 10}" y="${y + 15}" text-anchor="end">${esc(r.name)}</text>`
+      body += bar(r.now ? 's1' : 's1 old', LEFT, y, w, 22, `${r.name}: ${f(r.v, 0)} ms`)
+      body += `<text class="t1 num" x="${LEFT + w + 8}" y="${y + 16}">${f(r.v, 0)} ms</text>`
+    })
+    const yEnd = y0 + rows.length * 30 + Math.floor((rows.length - 1) / 2) * 10 - 6
+    body += `<line class="axis" x1="${LEFT}" x2="${LEFT}" y1="${y0 - 4}" y2="${yEnd}"/>`
+    // The line breaks where the current version's short bars carry their numbers.
+    const lastGroup = y0 + (rows.length - 2) * 30 + Math.floor((rows.length - 2) / 2) * 10
+    body += refLine('ref', LEFT + (PLOT * 100) / max, y0 - 8, yEnd, t.photoOpenBudget, 'middle', [lastGroup - 6, yEnd])
+    const h = yEnd + 48
+    body += `<text class="t3" x="0" y="${h - 22}">${esc(t.photoOpenWhy)}</text>`
+    body += `<text class="t3" x="0" y="${h - 4}">${esc(t.photoOpenFooter())}</text>`
+    out['bench-open'] = doc(t.photoOpenTitle, rows.map((r) => `${r.name}: ${f(r.v, 0)} ms`).join('. '), h, body)
+  }
   return out
 }
 
@@ -724,7 +768,7 @@ for (const lang of ['en', 'vi']) {
 }
 // The website shows these in its own colours: the home page and the performance page (site/README.md).
 STYLE = styleFor(THEMES.site)
-const SITE_CHARTS = ['bench-budgets', 'bench-quality', 'bench-share', 'bench-raw', 'bench-bestshot', 'bench-memory', 'bench', 'bench-gpu', 'bench-inflight']
+const SITE_CHARTS = ['bench-budgets', 'bench-quality', 'bench-share', 'bench-raw', 'bench-bestshot', 'bench-memory', 'bench', 'bench-gpu', 'bench-inflight', 'bench-open']
 mkdirSync(join(root, 'site/assets/img/charts'), { recursive: true })
 // Each chart's size, for the width and height of its <img>: a lazy chart with no height grew
 // as it loaded and moved the anchors below it while the page scrolled to them (LESSONS).

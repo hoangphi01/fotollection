@@ -66,8 +66,16 @@ Then I put the app to a real test: a whole folder copied off a Lumix GX9 after a
 
 The night trams of Prague now sit on the home page, as a postcard addressed to the National Museum, with "Ahoj Praha!" on its lines. The memory of a weekend has become something you can put a stamp on and send.
 
-## XI. How far still {#how-far}
+## XI. A second wind {#second-wind}
 
-Thirteen days, more than three hundred and seventy commits, more than twenty releases. Counted as a marathon, I have only passed the first kilometres. Ahead are v0.11.0, one window for every setting, then v0.12.0 "Looks", with looks of one's own, and further on, version 1.0.
+On 5 November two things came together. v0.10.0 gave Fotollection its own RAW engine: every Bayer camera developed by our own code, opened neutral, with the camera's look one click away, and brightness, highlights and shadows worked on the sensor's own data, as a RAW editor does. That same evening I opened my Prague RAW files and the preview's spinner kept turning and never stopped.
+
+I did not guess. A snapshot of every thread in the running app showed the knot: every worker was waiting for a develop, and the develop was waiting for a worker. That was fixed the same night, and then a second, quieter hang in the screen itself. Then I asked for more. In Lightroom, once a folder has loaded, any photo you click is simply there. I wrote down a sentence that changed how I think about the app: it is not good to use little memory, it is good to use memory well.
+
+So since v0.11.0 Fotollection prepares a preview of every photo in the background once the thumbnails are done, keeps it on disk, and gives the photos around the one on screen a quarter of the computer's memory. On the same 422 photos from Prague, v0.9.0 took 274 ms to open a JPEG and 531 ms to open a RAW. v0.11.0 takes 27 ms for either. It felt like a rocket, and like a second wind in a long race.
+
+## XII. How far still {#how-far}
+
+Fourteen days, more than four hundred and thirty commits, twenty-four releases. Counted as a marathon, I have only passed the first kilometres. Ahead are v0.12.0, one window for every setting and a strip of photos under the preview to skim a trip, then v0.13.0 "Looks", with looks of one's own, and further on, version 1.0.
 
 I often ask myself how far I can take Fotollection. Could it one day be like the open-source projects a whole community knows, the repositories tens of thousands of people trust every day? I do not know yet. What I know is that each photo printed is a memory no longer behind glass, like my grandparents' albums once were. If you have read this far, thank you for running a stretch of the road with me. The road is still long, and I am still running.

@@ -23,7 +23,7 @@
   </div>
 </section>
 
-{%- assign parts = "speed:budgets,bench|gpu:gpu,inflight|trip:trip|memory:memory|print:quality|share:share|raw:raw|best:bestshot" | split: "|" -%}
+{%- assign parts = "speed:budgets,bench|open:open|gpu:gpu,inflight|trip:trip|memory:memory|print:quality|share:share|raw:raw|best:bestshot" | split: "|" -%}
 {%- for part in parts -%}
 {%- assign kv = part | split: ":" -%}
 {%- assign key = kv[0] -%}

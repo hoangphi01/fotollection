@@ -102,6 +102,12 @@ Fotollection dành cho người chụp ảnh nghiêm túc và nhiếp ảnh gia,
 
 Với một chuyến đi thật (một thư mục ảnh 20 MP từ Lumix GX9, 422 tệp), ngày 03/11/2026 export chỉ đạt 7,6 ảnh/s với RAM đỉnh 2,14 GB. Bản sửa trong v0.9.7 export phần JPEG ở 10,1 ảnh/s, và cả lượt chạy dùng RAM tối đa 1,31 GB, nằm trong cả hai ngân sách ([RESULT.md §20](docs/RESULT.md#20-a-real-trip-prague-gx9)).
 
+### Mở một tấm ảnh
+
+Từ v0.11.0, bản xem trước của mọi ảnh được chuẩn bị sẵn ở chế độ nền và giữ trên đĩa, nên mở ảnh nào cũng hiện ngay, kể cả RAW ([FR-091](docs/PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)). Trên 422 ảnh của một chuyến đi, mỗi phiên bản đo trên chính mã nguồn của nó:
+
+![Mở một tấm ảnh: v0.9.0 mất 274 ms cho ảnh JPEG và 531 ms cho ảnh RAW, v0.10.0 mất 278 và 440 ms, v0.11.0 mất 27 ms cho cả hai, so với ngân sách 100 ms.](docs/images/bench-open-vi.svg)
+
 ### Batch lớn
 
 RAM không được tăng theo số ảnh. Batch lớn gấp 53 lần chỉ tốn thêm 0,1 GB ở mức đỉnh:
@@ -299,7 +305,7 @@ sudo apt install ./Fotollection_*_amd64.deb
 |---|---|---|---|
 | **Hệ điều hành** | macOS 11 Big Sur, Windows 10 64-bit, hoặc Linux 64-bit có glibc 2.35 ([những distro nào](#linux)) | macOS 13 trở lên, Windows 11, hoặc Ubuntu 24.04 | Máy Mac Apple Silicon và Intel. Windows dùng WebView2, có sẵn trên Windows 11 và tự cài trên Windows 10. Linux dùng WebKitGTK 4.1, có sẵn trong AppImage và được cài kèm bản `.deb` |
 | **Bộ xử lý** | CPU 64-bit bất kỳ trong khoảng 8 năm gần đây | Apple Silicon, hoặc x64 đời mới từ 4 nhân | Công việc được chia cho mọi nhân. Mọi số liệu trong [Hiệu năng](#hiệu-năng) đo trên Apple M3 |
-| **RAM** | 4 GB | Từ 8 GB | Khi xuất ảnh, Fotollection luôn dưới 2 GB kể cả với hơn 5.000 ảnh (đo được đỉnh 1,45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)). Sắp có trong v0.11.0: bản xem trước giữ tối đa một phần tư bộ nhớ để ảnh mở ngay ([FR-091](docs/PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) |
+| **RAM** | 4 GB | Từ 8 GB | Khi xuất ảnh, Fotollection luôn dưới 2 GB kể cả với hơn 5.000 ảnh (đo được đỉnh 1,45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)). Từ v0.11.0, bản xem trước giữ tối đa một phần tư bộ nhớ để ảnh mở ngay ([FR-091](docs/PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) |
 | **Ổ đĩa** | Trống 100 MB, cộng phần cache | Trống 1 GB | App được giữ dưới 25 MB ([NFR-008](docs/PRD.md#nfr-008--install-size)). Cache tốn khoảng 25 MB cho 1.000 ảnh (thumbnail khoảng 22 KB, phân tích ảnh đẹp nhất khoảng 4 KB mỗi ảnh) và xoá lúc nào cũng được. File export cần chỗ cho ảnh độ phân giải đầy đủ |
 | **Màn hình** | 1280 × 800 | 1920 × 1080 hoặc màn Retina | Thanh công cụ tự co khi cửa sổ hẹp |
 | **Internet** | Không cần | — | Mọi thứ chạy offline, kể cả nhận diện khuôn mặt, địa điểm và preview. Không có gì được tải lên |

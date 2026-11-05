@@ -65,7 +65,7 @@
 | FR-067 | 3 mm border on every print: every mode and frame style, inside the print size (extends FR-065) |
 | FR-069 | Report a problem: a red button in the app's versions popover and the website's footer, to the GitHub issue forms (v0.8.3) |
 | FR-071 | Image facts at import and in the inspector: chroma subsampling, colour space, sensor kind; shipped in v0.9.3, [ADR-0037](adr/0037-our-own-develop-core.md) |
-| FR-072 | Our own develop core: sensor kind first, RCD and Markesteijn, Gr/Gb, false colour, highlights, linear working space, colour management everywhere; Bayer develop, neutral colour and the RAW sliders shipped in v0.10.0, X-Trans, GPU and DNG kinds in v0.13.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
+| FR-072 | Our own develop core: sensor kind first, RCD and Markesteijn, Gr/Gb, false colour, highlights, linear working space, colour management everywhere; Bayer develop, neutral colour and the RAW sliders shipped in v0.10.0, X-Trans, GPU and DNG kinds in v0.14.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
 | FR-073 | Postcard sheets in Collage mode: one photo and a postcard back (stamp box, writing lines, typed text); v0.9.4 |
 
 **Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v1.0.0 is released. Until then, each work stage ships as a 0.y.0 preview release, starting with v0.1.0 ([RELEASE.md](RELEASE.md#1-versioning)).
@@ -124,10 +124,11 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.9.8 | Two-finger zoom, panels of one style (shipped 2026-11-04) | FR-057: two-finger scroll zooms the preview; every panel card built from the lego blocks, checked by `check-lego` (STYLE_RULE §4); hints kept inside the window (FR-052) | A PATCH number by the owner's choice (RELEASE.md §1) |
 | v0.9.9 | Colour, first cards (shipped 2026-11-05) | FR-079: Faves and Tools, a photo's own look, Before / After, a drag that follows the pointer; RAW badges and the RAW filter (FR-022, FR-078) | The Looks card, LUTs, grain and vignette follow in v0.10.0 |
 | v0.10.0 | Core (shipped 2026-11-05) | FR-072 (our own develop for every Bayer camera: rawler only unpacks; stuck pixels, green balance, a directional demosaic, a false-colour median; neutral RAW colour by default and the camera's look in one click), FR-088 (brightness, highlights, shadows and white balance on a RAW's own data, with headroom), damaged RAW files refused, [ADR-0037](adr/0037-our-own-develop-core.md), [ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md) | Re-ordered by the owner (2026-11-05): the develop core shipped before the Looks; RESULT §23–§28 |
-| v0.11.0 | Settings (planned, 2026-11-05) | FR-086 (one Settings window, two columns as on an iPad), FR-087 (a collage sheet's pixels against its print size), FR-090 (a filmstrip in the photo's preview), FR-091 (instant previews: standard previews on disk, a quarter of the RAM, prefetch) | The owner's next request after v0.10.0 |
-| v0.12.0 | Looks (planned, 2026-11-05) | FR-079 (the Looks card, built-in looks of our own), FR-070 (looks from `.cube` and HaldCLUT LUTs, the highlight of Simple mode: look, choose a colour, print), FR-089 (Lightroom presets), grain and vignette, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export whatever is set (`measure_look`) |
-| v0.13.0 | Core 2 (planned) | FR-072 (X-Trans with Markesteijn, the develop on the GPU with `wgpu`, the DNG kinds of `raw/dng.md`, highlight reconstruction by colour, a linear Rec.2020 working space), FR-085 (lens distortion correction) | Markesteijn ≤ 700 ms on 26 MP; GPU develop ≤ 80 ms on 24 MP, ΔE ≤ 1 to the CPU |
-| After v0.13.0 | Film looks as built-in recipes on the looks engine | FR-047 (FR-039 merged into FR-079) | — |
+| v0.11.0 | Instant previews (shipped 2026-11-05) | FR-091 (standard previews on disk after the thumbnails, a quarter of the RAM for the preview, prefetch, the photo on screen develops first: any photo opens in 27 ms, was 274–531 ms); colour cards in the previews only, every card flagged where it shows (FR-079); sliders take a near press and the arrow keys; RAW hangs fixed | The owner's request after v0.10.0 ("like Lightroom") |
+| v0.12.0 | Settings (planned, 2026-11-05) | FR-086 (one Settings window, two columns as on an iPad), FR-087 (a collage sheet's pixels against its print size), FR-090 (a filmstrip in the photo's preview) | The owner's next request after v0.10.0 |
+| v0.13.0 | Looks (planned, 2026-11-05) | FR-079 (the Looks card, built-in looks of our own), FR-070 (looks from `.cube` and HaldCLUT LUTs, the highlight of Simple mode: look, choose a colour, print), FR-089 (Lightroom presets), grain and vignette, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export whatever is set (`measure_look`) |
+| v0.14.0 | Core 2 (planned) | FR-072 (X-Trans with Markesteijn, the develop on the GPU with `wgpu`, the DNG kinds of `raw/dng.md`, highlight reconstruction by colour, a linear Rec.2020 working space), FR-085 (lens distortion correction) | Markesteijn ≤ 700 ms on 26 MP; GPU develop ≤ 80 ms on 24 MP, ΔE ≤ 1 to the CPU |
+| After v0.14.0 | Film looks as built-in recipes on the looks engine | FR-047 (FR-039 merged into FR-079) | — |
 | Later | Presets, trips, journal | FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
 
 ## Phase 2 — Smart features
@@ -156,13 +157,13 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-063 | Tethered capture over USB: Capture in the app, the full-resolution photo opens at once; own PTP drivers per maker, no install ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)) |
 | FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |
 | FR-066 | Borrow places from a GPX track: interpolate each photo's time along the track (split out of FR-031) |
-| FR-070 | Looks from LUT files (`.cube`, HaldCLUT, strength, per photo), LUMIX Lab style; v0.12.0, the highlight of Simple mode, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
+| FR-070 | Looks from LUT files (`.cube`, HaldCLUT, strength, per photo), LUMIX Lab style; v0.13.0, the highlight of Simple mode, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
 | FR-074 | Postcard backs: a background colour or a pattern (airmail stripes, a grid, a texture) behind the lines; planned, not scheduled |
 | FR-075 | Share exports fitted whole into a ratio (1:1, 4:5, 3:2… or custom), the rest filled with white, black or a colour of one's own; v0.9.6 |
 | FR-076 | A bundled handwriting face for postcards (Patrick Hand), strokes as thick as the print test asks; v0.9.7 |
 | FR-077 | One address for many postcards: Use for N postcards, and the recent addresses of this machine; v0.9.7 |
 | FR-078 | The photo at a glance at the top of the preview: camera, lens, exposure, place, date, size; v0.9.7 |
-| FR-079 | Colour adjustments, moderate: Looks, Faves and Tools cards (tone, colour, style, effects), looks with an amount, per photo; Faves and Tools shipped in v0.9.9, the Looks card in v0.12.0, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) |
+| FR-079 | Colour adjustments, moderate: Looks, Faves and Tools cards (tone, colour, style, effects), looks with an amount, per photo; Faves and Tools shipped in v0.9.9, the Looks card in v0.13.0, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) |
 | FR-080 | The panel's cards in an order of one's own, the same in the gallery and the previews, with *Reset order*; later, not scheduled |
 | FR-081 | A welcome screen on the first launch: pick the cards one likes, Pinterest style, they come first (with FR-080); *Skip*; later, not scheduled |
 | FR-082 | The app's brain in one file: *Export / Import settings* as `.fotosettings` (every setting, the card order, looks and LUTs, fonts, logos, postcard addresses), to move to another computer; later, not scheduled |

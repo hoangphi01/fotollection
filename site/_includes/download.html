@@ -8,6 +8,11 @@
     <p class="kicker">{{ t.dl_kicker }}</p>
     <h1>{{ t.install_title }}</h1>
     <p class="lead narrow">{{ t.install_lead }}</p>
+    {%- comment %} Older versions can hang on RAW previews (LESSONS 2026-11-05): ask everyone to update. {% endcomment %}
+    <div class="alert-danger" role="alert">
+      {% include icons/circle-alert.svg %}
+      <p><strong>{{ t.dl_warn_title }}</strong> {{ t.dl_warn_text }}</p>
+    </div>
     {% include download-buttons.html %}
     <p class="small muted">{% if release.tag_name %}{{ t.latest }}: <a href="{{ release.html_url }}">{{ release.tag_name }}</a> · {% else %}<a href="{{ site.repo_url }}/releases">{{ t.no_release }}</a> · {% endif %}{{ t.download_note }}</p>
     {%- assign d = site.data.downloads %}

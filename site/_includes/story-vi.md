@@ -66,8 +66,16 @@ Rồi tôi đem ứng dụng vào một lần chạy thật: nguyên một thư 
 
 Những tấm ảnh tàu điện đêm ở Praha giờ nằm trên trang chủ, thành một tấm bưu thiếp đề địa chỉ Bảo tàng Quốc gia, với dòng "Ahoj Praha!". Kỷ niệm của một cuối tuần đã thành một thứ có thể dán tem và gửi đi.
 
-## XI. Còn bao xa nữa {#how-far}
+## XI. Cú bứt tốc {#second-wind}
 
-Mười ba ngày, hơn ba trăm bảy mươi bản vá, hơn hai mươi bản phát hành. Tính theo cuộc marathon thì tôi mới qua những cây số đầu tiên. Phía trước là bản v0.11.0, một cửa sổ cho mọi cài đặt, rồi v0.12.0 "Looks", với những tông màu của riêng mỗi người, và xa hơn nữa là phiên bản 1.0.
+Ngày 5 tháng 11, hai chuyện đến cùng lúc. Bản v0.10.0 cho Fotollection bộ xử lý RAW của riêng mình: mọi máy ảnh có cảm biến Bayer đều được develop bằng mã nguồn của chính dự án, ảnh mở ra ở màu trung tính, màu giống JPEG của máy chỉ cách một cú bấm, còn độ sáng, vùng sáng và vùng tối được chỉnh ngay trên dữ liệu của cảm biến, như một trình chỉnh RAW thực thụ. Cũng tối hôm ấy, tôi mở những tấm RAW chụp ở Praha, và vòng xoay của bản xem trước cứ quay mãi không dừng.
+
+Tôi không đoán. Một lần chụp lại mọi luồng trong ứng dụng đang chạy cho thấy chỗ thắt nút: mọi luồng đều chờ một lần develop, còn lần develop ấy lại chờ một luồng rảnh. Lỗi đó được gỡ ngay đêm ấy, rồi đến một lỗi treo thứ hai, lặng lẽ hơn, nằm ở chính màn hình. Rồi tôi muốn nhiều hơn. Trong Lightroom, khi một thư mục đã mở xong, bấm vào ảnh nào cũng hiện ngay. Tôi viết ra một câu đã thay đổi cách tôi nghĩ về ứng dụng: ít RAM không phải là tốt, dùng RAM cho hiệu quả mới là tốt.
+
+Vì thế từ bản v0.11.0, làm xong ảnh nhỏ là Fotollection chuẩn bị sẵn bản xem trước của mọi ảnh ở chế độ nền, giữ chúng trên đĩa, và dành một phần tư bộ nhớ của máy cho những ảnh quanh ảnh đang xem. Trên cùng 422 tấm ảnh Praha, bản v0.9.0 mất 274 ms để mở một ảnh JPEG và 531 ms cho một ảnh RAW. Bản v0.11.0 mất 27 ms cho cả hai. Cảm giác như một tên lửa, như được tiếp thêm hơi giữa một cuộc chạy dài.
+
+## XII. Còn bao xa nữa {#how-far}
+
+Mười bốn ngày, hơn bốn trăm ba mươi bản vá, hai mươi bốn bản phát hành. Tính theo cuộc marathon thì tôi mới qua những cây số đầu tiên. Phía trước là bản v0.12.0, một cửa sổ cho mọi cài đặt và một dải ảnh dưới bản xem trước để lướt cả chuyến đi, rồi v0.13.0 "Looks", với những tông màu của riêng mỗi người, và xa hơn nữa là phiên bản 1.0.
 
 Tôi hay tự hỏi mình có thể đưa Fotollection đi xa đến đâu. Liệu một ngày nó có thể giống những dự án mã nguồn mở mà cả cộng đồng đều biết, những kho mã có hàng chục nghìn người tin dùng mỗi ngày? Tôi chưa biết. Điều tôi biết là mỗi tấm ảnh được in ra là một kỷ niệm không còn nằm sau tấm kính, như những cuốn album của ông bà ngày trước. Nếu bạn đã đọc tới đây, cảm ơn bạn đã chạy cùng tôi một đoạn. Con đường vẫn còn dài, và tôi vẫn đang chạy.

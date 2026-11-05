@@ -577,11 +577,13 @@ Each photo of the owner's Prague trip (396 JPEG and 26 RW2 from a GX9, 20 MP) op
 
 | Step | JPEG p50 / p95 | RAW p50 / p95 |
 |---|---|---|
-| Open a photo with nothing kept (before FR-091) | 278 / 293 ms | 440 / 471 ms |
+| v0.9.0, built from its tag: open a photo with nothing kept | 274 / 286 ms | 531 / 550 ms |
+| v0.10.0: open a photo with nothing kept (before FR-091) | 278 / 293 ms | 440 / 471 ms |
 | Make its standard preview on disk (background) | 276 / 293 ms | 437 / 453 ms |
 | **Open it from its standard preview** | **27 / 32 ms** | **27 / 30 ms** |
 | Open it again from memory | 27 / 32 ms | 28 / 30 ms |
 
+- **Against v0.9.0** (built from its tag, same folder and machine; its RAW through macOS ImageIO): ten times faster for a JPEG, twenty times for a RAW.
 - **Any photo, near or far, in a tenth of the time** for a JPEG and a sixteenth for a RAW, within NFR-012's 100 ms. Reading the disk copy costs as little as memory: what is left is the preview's own crop, resize, look and encode.
 - **Disk:** 0.66 MB a photo (JPEG q90), about 280 MB for this trip; the cache limit is now 5 GB.
 - **Pixels:** a preview made from the disk copy differs from a fresh one by 1.35 levels of 255 on average (20 photos).

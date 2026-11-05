@@ -9,7 +9,8 @@
 1. **Measure or observe before guessing.** The v0.6.0 plan assumed a 32 MP preview might be built; measuring first showed the preview was already capped at 1600 px, and the real gap was zoom ([RESULT.md §11](RESULT.md#11-preview-and-zoom-cost-v060)).
 2. **Split the path and log both ends.** A temporary log on the UI side (what was asked) and one on the Rust side (what was answered, how long) tells which layer fails in one try. Name them `DEBUG-…` and remove them before the commit (`grep -rn DEBUG ui/src src-tauri/src` must be empty).
 3. **Reproduce with the user's photo when the user sees it.** A synthetic test passed while the real app was soft: unit tests prove the pixels, only the real webview proves what is shown.
-4. **Write the lesson here** before moving on.
+4. **When the app hangs, look at every thread before guessing:** `sample <pid> 3` on macOS names what each thread waits for. Rust threads all idle with a spinner on screen means the UI never asked; threads waiting on each other is a deadlock (2026-11-05).
+5. **Write the lesson here** before moving on.
 
 ## 2026-11-05
 
@@ -41,6 +42,90 @@
 - **Fix:** `borrow_and_apply` lets the library go before it takes `analyses`; `install_settings` reads `settings` and `ui` before it takes `frame`. Every other pair that is held at once is taken in one order: `document_lock` → `library` → `pending` → `document`; `library` → `analyses`; `settings` → `frame` → `ui`; `running` → `busy` / `live` in the camera.
 - **Rule:** hold one lock at a time where you can (read what you need, let it go, take the next); where two must be held together, take them in the order above. A read lock is no exception: a waiting writer turns it into a wait.
 
+### A slider's knob reaches 7 px past its track: a 4 px inset clipped it (UI)
+
+- **Seen:** the owner found the last slider of Faves' *More* section cut at the bottom while hovered, just above the *Less* button.
+- **Why:** `Collapse` clips its content to animate its height, and kept 4 px around it for focus rings. A slider's 12 px knob is absolutely placed on a 4 px track, so it adds no height to the row; with its 3 px hover ring it reaches 7 px below the track.
+- **Fix:** the inset is 8 px (`-m-2 p-2`, which cancel, so nothing moves).
+- **Rule:** a container that clips leaves room for what its blocks draw outside their own box (rings, knobs, shadows); check the last block of every clipping container with its hover and focus states on.
+
+### A score on block averages chose the wrong camera fit (FR-072)
+
+- **Seen:** "Like the camera's JPEG" picked three curves for the R10 and the A7 III, which then sat further from the camera's JPEG (4.76 and 4.44 against 4.42 and 3.29 in ΔE2000).
+- **Why:** the two fits were scored on 48 × 32 block averages with CIE76: a fit can match every block's mean and still miss the colours inside it, and CIE76 weighs saturated colours too much.
+- **Fix:** score pixel by pixel on a 480 px copy, ΔE2000 against the JPEG averaged down to it; all seven Bayer samples now pick the fit the full-size measurement prefers.
+- **Rule:** a selector must agree with the measurement it stands in for: check its picks against the full measurement on every sample before trusting it.
+
+### A build beside the editor ran the Mac out of memory (tooling, 2026-11-05)
+
+- **Seen:** a release build of the examples, then a measurement of 24 MP RAW files, ended with the process killed (exit 137) and the machine restarting; the scratch folder in `/tmp` went with it, the RAW samples included.
+- **Why:** the editor's own tools held about 5 GB (rust-analyzer 1.9 GB, the C/C++ extension 1 GB, VS Code's helpers), the swap was nearly full, and cargo built on every core while a develop held a 24 MP image several times over.
+- **Rule:** when `scripts/resources.sh` shows little free memory, build with `CARGO_BUILD_JOBS=4`, never run the dev app beside a build or a test, measure large files one at a time, and keep anything worth keeping outside `/tmp`.
+
+### A label that hides leaves its icon off centre; a size read from a whole file (FR-035, UI)
+
+- **Seen:** the owner found the toolbar's Auto turn, Revert and Select icons a little off centre, and Auto turn 3–5 s late on 518 photos.
+- **Why:** each button set its icon as `data-icon="inline-start"`, which gives the button 6 px of padding on the left and 10 on the right for a label; below the `@3xl` width the label hides and the icon sits 2 px left of centre. And Auto turn asked every photo's size by reading the whole file, 4.4 GB for the trip's folder, one file after another: 3.7 s.
+- **Fix:** `ToolbarButton` (components/forms): a square button with the icon centred when the label hides, the label's padding only when it shows, a spinner while its work runs; `check-lego` refuses a hand-hidden label, and `MEASURE=1` measures every icon-only button (it failed on the old code at 2 px). The size reads the first megabyte (0.4 s for the folder).
+- **Rule:** an icon-only state of a button is a layout of its own: measure it (`MEASURE=1`), do not trust padding written for the labelled one. Before reading a file to learn one fact, check how much of the file that fact needs.
+
+### Two readers make up the end of a RAW file cut short (FR-016, FR-072)
+
+- **Seen:** testing damaged copies of the owner's GX9 files, a RW2 cut to 10 % previewed and exported "fine": macOS's ImageIO filled the missing 90 % with coloured stripes. Then a CR2 cut to 20 % developed through our own path with diagonal stripes: rawler's CR2 reader reads on past the end without an error.
+- **Why:** both readers treat missing data as data. On a Mac, Panasonic and Olympus go to ImageIO first (for its lens correction), and any format reaches it when our develop fails; since session 16, CR2 also goes through rawler's reader first, where before it went to ImageIO, which refuses that file.
+- **Fix:** `rawcore::cut_short` (every strip and tile must end inside the file) before any develop, and `raw::intact` (rawler or our DNG reader reads the sensor data through) before the system's codec; a test cuts each CC0 sample to 40 % and expects the chain to refuse it, and failed on the old code for the CR2.
+- **Rule:** a decoder's "ok" on a damaged file is not trusted: make damaged copies of a good file (cut at several points, inside and past its image data, flipped, overwritten) and look at what comes out, through every reader the chain can fall back to. Where the image data ends depends on the format: a CR2's ends at half the file, so a test that cuts at 60 % proves nothing.
+
+### A method's name is not a result: RCD's own step scored worse here (FR-072)
+
+- **Seen:** the plan said "RCD"; written from its description, its ratio-corrected green was the weakest of three variants on the zone plate (15.3 dB against Malvar's 17.3) and second on the Siemens star.
+- **Why:** a published method is tuned for its authors' pipeline and test images; on ours (balanced before demosaicing, these charts), a Laplacian-corrected estimate per side, weighted by gradient, did better (star 37.9 dB, colour edges 10.4).
+- **Fix:** the variant the charts kept, with RCD's direction decision, named `directional` and described as what it is, in the code and the docs.
+- **Rule:** score every variant of a step on the charts before naming it in a plan, a doc or the website; ship the measured one under an honest name, and state any score that got worse.
+
+### A score against the camera's JPEG mixes the develop and the fit (FR-072)
+
+- **Seen:** once our develop took every Bayer format, three samples were further from the camera's JPEG than rawler's develop (D750 2.26 against 1.18), though the S5's greys were more neutral.
+- **Why:** each path fits its own tone to the embedded JPEG: rawler's with three curves, ours with one curve and a matrix. The score measured both steps at once.
+- **Fix:** none needed in the develop: finished with rawler's fit, ours scored at least as well on every sample tried. The fit is chosen per file in session 17.
+- **Rule:** when a pipeline gets worse against a reference, swap one stage at a time between the old and the new path before changing either. The samples folder can hold folders too: a test that walks it skips anything that is not a file.
+
+### A feature built for one photo must be checked in Collage mode (owner, 2026-11-05)
+
+- **Seen:** in Collage mode the colour sliders seemed to change only the second photo of a sheet, and they stayed on screen with no photo picked.
+- **Why:** the Collage panel and the sheet's preview edited the shared look, built for the gallery; a photo with a look of its own (set in its preview) ignores the shared one, so only the other photo moved. The panel had no "no photo picked" state at all.
+- **Rule:** every change from now on is checked against Collage mode too: two photos to a sheet, each with its own edits; what the picked cell means; what shows when none is picked; the sheet's preview as well as the panel; postcards. DOCS_GUIDE's checklist names it.
+
+### A code commit without docs slipped through the local check (docs)
+
+- **Seen:** after the v0.9.9 push, the `docs-with-code` workflow failed on 9b0d846 (the badges' centring), which changed two UI files and no doc; it was not the last commit, and the release itself was not blocked.
+- **Why:** `scripts/check-docs.sh` runs `check-docs-with-code.sh` on the working tree or the last commit only; CI checks every pushed commit.
+- **Rule:** before a push, run `scripts/check-docs-with-code.sh origin/main..HEAD`, as CI does; a fix too small for a doc row still gets its line in the CHANGELOG, or `[no-docs]` with a reason in its message.
+
+### A third filter did not fit the toolbar (UI)
+
+- **Seen:** a third dropdown (RAW or not) was hidden under the right-hand panel at the minimum window, 141–186 px short; nothing reported it, and `check-lego` missed the toolbar's small selects because their props span several lines.
+- **Why:** the toolbar has a floor (STYLE_RULE §4), and two dropdowns already filled it.
+- **Rule:** measure a new toolbar control at `minWidth` in both languages before keeping it; group filters behind one **Filters** button. `check-lego` reads one line at a time: a rule about a JSX prop must allow for props written on several lines.
+
+### Capitals in a badge sit high (UI)
+
+- **Seen:** the RAW and JPEG badges looked a little high; the first fix (`pt-px`) moved the letters higher still.
+- **Why:** flexbox centres the line box, and capitals have no descenders, so the letters sit in its upper part. `pt-px` lowered the top padding from 2 px to 1 px, which lifts the line.
+- **Rule:** centre capitals on the letters: a one-line-high box (`leading-none`) lowered 1 px (`pt-px pb-0`). Check by counting the pixels between the letters and the border on a zoomed screenshot (here 38 / 51 px at 8× before, 46 / 43 after), never by eye alone.
+
+### Top-level keys of settings.json are snake_case (tests)
+
+- **Seen:** a v13 fixture written with `"recentAddresses"` would not load ("unknown field").
+- **Why:** inside `render`, `frame` and `ui` the keys are camelCase, but the file's own top-level keys (`schema_version`, `recent_addresses`) are snake_case, and unknown fields are refused.
+- **Rule:** write a fixture by saving one from the code, or copy the previous fixture; never type a key from the docs' example.
+
+### A preview that restarts on every step never lands during a drag (FR-079)
+
+- **Seen:** dragging a colour slider, the preview hardly moved, then jumped when the drag ended; the owner compared it with Lightroom.
+- **Why:** three costs on every step. The webview started a new image for each new URL and dropped the one still loading, so with a step every 16 ms and a render of 20–40 ms none finished; Rust resized the photo again although only the look changed; and the main thread wrote `settings.json` with an fsync.
+- **Rule:** a live view loads one image at a time and the newest next (`use-shown-src.ts`); what a gesture does not change is kept between its steps (`PreviewCache::resized`); a file written for a setting is written off the main thread, coalesced, and flushed on quit. Measure one step of the gesture (`measure_preview LOOK_DRAG=1`) before and after.
+
 ## 2026-11-04
 
 ### Two kinds of tooltip, and only one knew about the Windows title bar (FR-052)
@@ -70,6 +155,54 @@
 - **Why:** `postcard::cap_height` measured `font.glyph_bounds(&scaled_glyph('H'))`, which ab_glyph sizes by the face's ascent and descent, the same for every glyph. Every face got 1, so the stamp box's word was sized by its whole line, not by its capitals as its comment said.
 - **Fix:** a capital's height now comes from its outline (`outline_glyph(…).px_bounds()`, `postcard::capital`). The old helper went: the stamp word is the same size as before, and its constant now says it is a line height.
 - **Rule:** to measure ink, use the outline's `px_bounds`; `glyph_bounds` is only for laying out lines.
+
+### A tooltip placed by a guessed height runs off the window (FR-057)
+
+- **Seen:** the zoom buttons' three-line hint, at the bottom of the preview, was cut off by the window's edge.
+- **Why:** `HintLayer` chose above or below with a fixed 40 px allowance, the height of a one-line hint; the new hint was three lines.
+- **Rule:** place a floating element after measuring it (`useLayoutEffect`, hidden until placed), never by an assumed size. Check every hint near a window edge with its longest text, in both languages.
+
+### The demo recording exits at once while the dev app runs (screenshots)
+
+- **Seen:** `FOTOLLECTION_DEMO_FOLDER=… target/debug/fotollection` returned in 0.1 s and wrote no dump.
+- **Why:** the single-instance plugin handed the launch to the `tauri dev` app already running, and quit.
+- **Rule:** stop the dev app before recording a demo dump (`site/screenshots/build.sh`), then start it again.
+
+### A folded Collapse still takes its stack's gap (UI)
+
+- **Seen:** with *3 mm border* off, its hint sat 12 px under the switch instead of 6; a postcard's cells card had a 24 px gap where its cut-line option was folded.
+- **Why:** a folded `Collapse` is 0 px tall but is still a child of a `space-y` stack, so the gaps on both of its sides add up.
+- **Rule:** every stack block sets `--stack-gap`, and a folded `Collapse` pulls itself up by it (`collapse.tsx`). Measure with every switch both on and off.
+
+### A style rule without numbers and a check lets the drift back (UI)
+
+- **Seen:** after one card's spacing was fixed, the same kind of fault was still in other cards: six values for the space inside a field, five label styles, selects of 28 and 32 px side by side, a preview spaced 20 px against the panel's 12 px, and a right panel that looked narrower than the folder list though both were 288 px.
+- **Why:** STYLE_RULE said "use the shared pieces" but gave no measures, and nothing failed when a card spaced itself by hand. The right panel's native scroll bar and its extra padding took width the folder list's overlay bar does not.
+- **Rule:** the measures are a table in STYLE_RULE §4 (the lego rule), each owned by one block, and `check-lego.mjs` in `npm run lint` fails on hand-made spacing, sizes and toggle groups in `src/features`. Prove a panel change with a measurement table across every mode (`getBoundingClientRect`), every cell the same value.
+
+### A lazy image with no height moves the anchors below it (website)
+
+- **Seen:** the navbar's Coffee button scrolled to a point 800 to 1,800 px above the support section; every other anchor landed right.
+- **Why:** the benchmark charts above it were `loading="lazy"` with a width and no height. The page scrolled toward `#support` with each chart counted at zero height; as they loaded on the way, the section moved down and the scroll stopped short.
+- **Rule:** every lazy image on the site carries both `width` and `height` (charts get theirs from `site/_data/charts.json`, written by `bench/chart.mjs`). After a layout change, click every in-page link and check where it lands, not only that it scrolls.
+
+### A fit check must count only what prints (FR-073)
+
+- **Seen:** a postcard address that printed whole on its four lines still showed the red "does not fit" mark.
+- **Why:** the text ended with a line break, and `wrap` turned it into one more, empty row, which printed nothing but counted as a fifth line. Rows past the last line were also measured with no room, so each left-over letter became a row of its own.
+- **Rule:** drop trailing blank rows before counting, measure rows past the last line as long as it, and test the check on text as the app's field sends it (doubled spaces, a trailing break), not only on tidy strings.
+
+### Faux bold by drawing twice doubles a thin face (FR-073)
+
+- **Seen:** the owner's postcard showed bold "Minh" with a doubled M, two thin strokes side by side.
+- **Why:** bold was the text drawn a second time 0.045 em to the right. Xanh Mono's strokes are thinner than that offset at print size, so the two copies did not touch.
+- **Rule:** to embolden, draw at steps of at most half a pixel across the extra width and keep each pixel's highest coverage, then blend once (`text::draw_text_bold`); a test checks one run per stem. Look at a print-size render of a thin face before trusting a style.
+
+### Screenshot steps that pick photos by position (screenshots)
+
+- **Seen:** after sixteen Prague photos joined the demo set, `shoot.mjs` timed out waiting for the crop photo's tile, then for a fifth photo in a folder tab.
+- **Why:** the basket and set-aside photos were chosen by their position in the list (`TRIP_QUEUES`), so a new set put the crop photo in *Set aside*, out of the gallery; the folder tabs were matched by name and kept fewer photos than the clicks assumed. The gallery is virtualized too, so a tile far down the list is not in the page until it is scrolled to.
+- **Rule:** when the demo set changes, check that every position still names a photo the shot does not show, and reach a photo's tile with `reach()` (it scrolls the grid) instead of assuming it is drawn. Screenshot the page when a wait times out; the cause is on screen.
 
 ## 2026-11-03
 
@@ -197,6 +330,26 @@
 - **Why:** the saved language was applied by `useLanguage`'s effect, and the only component that called it was the language card in Professional's settings panel. Simple mode does not mount that panel, so the language was never applied.
 - **Fix:** `App` calls `useLanguage()`, so the language applies in every mode.
 - **Rule:** a per-machine preference is applied once, at the top of the app, never as a side effect of the control that changes it.
+
+## 2026-10-30
+
+### A comment in a heading changes its anchor (manual, ADR-0031)
+
+- **Seen:** the docs workflow failed after the manual's chapter anchors went into the guide's titles (`## 1. Choosing the photos to print <!-- choose -->`): links from PRD and STATUS to `USER_GUIDE.md#1-choosing-the-photos-to-print` could no longer be found.
+- **Why:** lychee builds a heading's anchor from its raw text, comment included, although GitHub does not show the comment. `check-docs.sh` does not check anchors, so only CI saw it.
+- **Rule:** keep markers out of headings: put them on their own line above (`<!-- chapter: choose -->`). After renaming or marking a heading, `grep` the docs for links to its old anchor before pushing.
+
+### A narrow column left on its own looks broken (manual)
+
+- **Seen:** the owner found the manual "pushed to one side": its text had `max-width: 880px` inside the 1180 px `.wrap`, left-aligned, so a wide empty band ran down the right.
+- **Why:** reading width was chosen for the text alone, without comparing the page with the landing page, whose sections fill the `.wrap`.
+- **Rule:** on the website, content spans the `.wrap` like the landing page's sections ([STYLE_RULE.md §4](STYLE_RULE.md#website-site)); measure that the left and right margins match before pushing.
+
+### A screenshot of the start-up screen (website screenshots)
+
+- **Seen:** the manual's frame-card shot came out as the logo and a loading bar, and a full shoot took almost 8 minutes instead of under 2.
+- **Why:** the mock IPC bridge in `shoot.mjs` did not answer `startup_finished`, so the start-up screen (FR-060) stayed until its 15-second safety timer; shots taken right after loading caught it. `scrollIntoView` was not the cause, though it also scrolls the page, not only the panel.
+- **Rule:** when the app gains a command it calls at start-up, answer it in the mock bridge; `open()` now waits until `#splash` is gone, and a shot that needs a scrolled panel scrolls that panel's own box.
 
 ## 2026-10-27
 
@@ -336,24 +489,6 @@
 - **Why:** React Fast Refresh keeps the mounted component's hook list; a different number of hooks is a hook-order error, and with no error boundary the tree unmounts.
 - **Rule:** this is a dev-only artefact, not a bug: restart `npm run dev`. Prefer changes that keep the hook count when testing live.
 
-### A screenshot of the start-up screen (website screenshots)
-
-- **Seen:** the manual's frame-card shot came out as the logo and a loading bar, and a full shoot took almost 8 minutes instead of under 2.
-- **Why:** the mock IPC bridge in `shoot.mjs` did not answer `startup_finished`, so the start-up screen (FR-060) stayed until its 15-second safety timer; shots taken right after loading caught it. `scrollIntoView` was not the cause, though it also scrolls the page, not only the panel.
-- **Rule:** when the app gains a command it calls at start-up, answer it in the mock bridge; `open()` now waits until `#splash` is gone, and a shot that needs a scrolled panel scrolls that panel's own box.
-
-### A narrow column left on its own looks broken (manual)
-
-- **Seen:** the owner found the manual "pushed to one side": its text had `max-width: 880px` inside the 1180 px `.wrap`, left-aligned, so a wide empty band ran down the right.
-- **Why:** reading width was chosen for the text alone, without comparing the page with the landing page, whose sections fill the `.wrap`.
-- **Rule:** on the website, content spans the `.wrap` like the landing page's sections ([STYLE_RULE.md §4](STYLE_RULE.md#website-site)); measure that the left and right margins match before pushing.
-
-### A comment in a heading changes its anchor (manual, ADR-0031)
-
-- **Seen:** the docs workflow failed after the manual's chapter anchors went into the guide's titles (`## 1. Choosing the photos to print <!-- choose -->`): links from PRD and STATUS to `USER_GUIDE.md#1-choosing-the-photos-to-print` could no longer be found.
-- **Why:** lychee builds a heading's anchor from its raw text, comment included, although GitHub does not show the comment. `check-docs.sh` does not check anchors, so only CI saw it.
-- **Rule:** keep markers out of headings: put them on their own line above (`<!-- chapter: choose -->`). After renaming or marking a heading, `grep` the docs for links to its old anchor before pushing.
-
 ### GPL-3.0 cannot forbid sharing or selling (website)
 
 - **Seen:** the owner asked for "no redistribution or resale in any form" on the site.
@@ -378,135 +513,3 @@
 
 - **Seen:** *Fit* was built twice the wrong way before the owner explained it with real sizes.
 - **Rule:** for a visual rule, restate it with numbers (10 × 15 cm keeps 10 × 15; *Fit* adds 5 mm on three sides plus the bar) and get a yes before coding.
-
-### Screenshot steps that pick photos by position (screenshots)
-
-- **Seen:** after sixteen Prague photos joined the demo set, `shoot.mjs` timed out waiting for the crop photo's tile, then for a fifth photo in a folder tab.
-- **Why:** the basket and set-aside photos were chosen by their position in the list (`TRIP_QUEUES`), so a new set put the crop photo in *Set aside*, out of the gallery; the folder tabs were matched by name and kept fewer photos than the clicks assumed. The gallery is virtualized too, so a tile far down the list is not in the page until it is scrolled to.
-- **Rule:** when the demo set changes, check that every position still names a photo the shot does not show, and reach a photo's tile with `reach()` (it scrolls the grid) instead of assuming it is drawn. Screenshot the page when a wait times out; the cause is on screen.
-
-### Faux bold by drawing twice doubles a thin face (FR-073)
-
-- **Seen:** the owner's postcard showed bold "Minh" with a doubled M, two thin strokes side by side.
-- **Why:** bold was the text drawn a second time 0.045 em to the right. Xanh Mono's strokes are thinner than that offset at print size, so the two copies did not touch.
-- **Rule:** to embolden, draw at steps of at most half a pixel across the extra width and keep each pixel's highest coverage, then blend once (`text::draw_text_bold`); a test checks one run per stem. Look at a print-size render of a thin face before trusting a style.
-
-### A fit check must count only what prints (FR-073)
-
-- **Seen:** a postcard address that printed whole on its four lines still showed the red "does not fit" mark.
-- **Why:** the text ended with a line break, and `wrap` turned it into one more, empty row, which printed nothing but counted as a fifth line. Rows past the last line were also measured with no room, so each left-over letter became a row of its own.
-- **Rule:** drop trailing blank rows before counting, measure rows past the last line as long as it, and test the check on text as the app's field sends it (doubled spaces, a trailing break), not only on tidy strings.
-
-### A lazy image with no height moves the anchors below it (website)
-
-- **Seen:** the navbar's Coffee button scrolled to a point 800 to 1,800 px above the support section; every other anchor landed right.
-- **Why:** the benchmark charts above it were `loading="lazy"` with a width and no height. The page scrolled toward `#support` with each chart counted at zero height; as they loaded on the way, the section moved down and the scroll stopped short.
-- **Rule:** every lazy image on the site carries both `width` and `height` (charts get theirs from `site/_data/charts.json`, written by `bench/chart.mjs`). After a layout change, click every in-page link and check where it lands, not only that it scrolls.
-
-### A style rule without numbers and a check lets the drift back (UI)
-
-- **Seen:** after one card's spacing was fixed, the same kind of fault was still in other cards: six values for the space inside a field, five label styles, selects of 28 and 32 px side by side, a preview spaced 20 px against the panel's 12 px, and a right panel that looked narrower than the folder list though both were 288 px.
-- **Why:** STYLE_RULE said "use the shared pieces" but gave no measures, and nothing failed when a card spaced itself by hand. The right panel's native scroll bar and its extra padding took width the folder list's overlay bar does not.
-- **Rule:** the measures are a table in STYLE_RULE §4 (the lego rule), each owned by one block, and `check-lego.mjs` in `npm run lint` fails on hand-made spacing, sizes and toggle groups in `src/features`. Prove a panel change with a measurement table across every mode (`getBoundingClientRect`), every cell the same value.
-
-### A folded Collapse still takes its stack's gap (UI)
-
-- **Seen:** with *3 mm border* off, its hint sat 12 px under the switch instead of 6; a postcard's cells card had a 24 px gap where its cut-line option was folded.
-- **Why:** a folded `Collapse` is 0 px tall but is still a child of a `space-y` stack, so the gaps on both of its sides add up.
-- **Rule:** every stack block sets `--stack-gap`, and a folded `Collapse` pulls itself up by it (`collapse.tsx`). Measure with every switch both on and off.
-
-### The demo recording exits at once while the dev app runs (screenshots)
-
-- **Seen:** `FOTOLLECTION_DEMO_FOLDER=… target/debug/fotollection` returned in 0.1 s and wrote no dump.
-- **Why:** the single-instance plugin handed the launch to the `tauri dev` app already running, and quit.
-- **Rule:** stop the dev app before recording a demo dump (`site/screenshots/build.sh`), then start it again.
-
-### A tooltip placed by a guessed height runs off the window (FR-057)
-
-- **Seen:** the zoom buttons' three-line hint, at the bottom of the preview, was cut off by the window's edge.
-- **Why:** `HintLayer` chose above or below with a fixed 40 px allowance, the height of a one-line hint; the new hint was three lines.
-- **Rule:** place a floating element after measuring it (`useLayoutEffect`, hidden until placed), never by an assumed size. Check every hint near a window edge with its longest text, in both languages.
-
-### A preview that restarts on every step never lands during a drag (FR-079)
-
-- **Seen:** dragging a colour slider, the preview hardly moved, then jumped when the drag ended; the owner compared it with Lightroom.
-- **Why:** three costs on every step. The webview started a new image for each new URL and dropped the one still loading, so with a step every 16 ms and a render of 20–40 ms none finished; Rust resized the photo again although only the look changed; and the main thread wrote `settings.json` with an fsync.
-- **Rule:** a live view loads one image at a time and the newest next (`use-shown-src.ts`); what a gesture does not change is kept between its steps (`PreviewCache::resized`); a file written for a setting is written off the main thread, coalesced, and flushed on quit. Measure one step of the gesture (`measure_preview LOOK_DRAG=1`) before and after.
-
-### Top-level keys of settings.json are snake_case (tests)
-
-- **Seen:** a v13 fixture written with `"recentAddresses"` would not load ("unknown field").
-- **Why:** inside `render`, `frame` and `ui` the keys are camelCase, but the file's own top-level keys (`schema_version`, `recent_addresses`) are snake_case, and unknown fields are refused.
-- **Rule:** write a fixture by saving one from the code, or copy the previous fixture; never type a key from the docs' example.
-
-### Capitals in a badge sit high (UI)
-
-- **Seen:** the RAW and JPEG badges looked a little high; the first fix (`pt-px`) moved the letters higher still.
-- **Why:** flexbox centres the line box, and capitals have no descenders, so the letters sit in its upper part. `pt-px` lowered the top padding from 2 px to 1 px, which lifts the line.
-- **Rule:** centre capitals on the letters: a one-line-high box (`leading-none`) lowered 1 px (`pt-px pb-0`). Check by counting the pixels between the letters and the border on a zoomed screenshot (here 38 / 51 px at 8× before, 46 / 43 after), never by eye alone.
-
-### A third filter did not fit the toolbar (UI)
-
-- **Seen:** a third dropdown (RAW or not) was hidden under the right-hand panel at the minimum window, 141–186 px short; nothing reported it, and `check-lego` missed the toolbar's small selects because their props span several lines.
-- **Why:** the toolbar has a floor (STYLE_RULE §4), and two dropdowns already filled it.
-- **Rule:** measure a new toolbar control at `minWidth` in both languages before keeping it; group filters behind one **Filters** button. `check-lego` reads one line at a time: a rule about a JSX prop must allow for props written on several lines.
-
-### A code commit without docs slipped through the local check (docs)
-
-- **Seen:** after the v0.9.9 push, the `docs-with-code` workflow failed on 9b0d846 (the badges' centring), which changed two UI files and no doc; it was not the last commit, and the release itself was not blocked.
-- **Why:** `scripts/check-docs.sh` runs `check-docs-with-code.sh` on the working tree or the last commit only; CI checks every pushed commit.
-- **Rule:** before a push, run `scripts/check-docs-with-code.sh origin/main..HEAD`, as CI does; a fix too small for a doc row still gets its line in the CHANGELOG, or `[no-docs]` with a reason in its message.
-
-### A feature built for one photo must be checked in Collage mode (owner, 2026-11-05)
-
-- **Seen:** in Collage mode the colour sliders seemed to change only the second photo of a sheet, and they stayed on screen with no photo picked.
-- **Why:** the Collage panel and the sheet's preview edited the shared look, built for the gallery; a photo with a look of its own (set in its preview) ignores the shared one, so only the other photo moved. The panel had no "no photo picked" state at all.
-- **Rule:** every change from now on is checked against Collage mode too: two photos to a sheet, each with its own edits; what the picked cell means; what shows when none is picked; the sheet's preview as well as the panel; postcards. DOCS_GUIDE's checklist names it.
-
-### A score against the camera's JPEG mixes the develop and the fit (FR-072)
-
-- **Seen:** once our develop took every Bayer format, three samples were further from the camera's JPEG than rawler's develop (D750 2.26 against 1.18), though the S5's greys were more neutral.
-- **Why:** each path fits its own tone to the embedded JPEG: rawler's with three curves, ours with one curve and a matrix. The score measured both steps at once.
-- **Fix:** none needed in the develop: finished with rawler's fit, ours scored at least as well on every sample tried. The fit is chosen per file in session 17.
-- **Rule:** when a pipeline gets worse against a reference, swap one stage at a time between the old and the new path before changing either. The samples folder can hold folders too: a test that walks it skips anything that is not a file.
-
-### A method's name is not a result: RCD's own step scored worse here (FR-072)
-
-- **Seen:** the plan said "RCD"; written from its description, its ratio-corrected green was the weakest of three variants on the zone plate (15.3 dB against Malvar's 17.3) and second on the Siemens star.
-- **Why:** a published method is tuned for its authors' pipeline and test images; on ours (balanced before demosaicing, these charts), a Laplacian-corrected estimate per side, weighted by gradient, did better (star 37.9 dB, colour edges 10.4).
-- **Fix:** the variant the charts kept, with RCD's direction decision, named `directional` and described as what it is, in the code and the docs.
-- **Rule:** score every variant of a step on the charts before naming it in a plan, a doc or the website; ship the measured one under an honest name, and state any score that got worse.
-
-### Two readers make up the end of a RAW file cut short (FR-016, FR-072)
-
-- **Seen:** testing damaged copies of the owner's GX9 files, a RW2 cut to 10 % previewed and exported "fine": macOS's ImageIO filled the missing 90 % with coloured stripes. Then a CR2 cut to 20 % developed through our own path with diagonal stripes: rawler's CR2 reader reads on past the end without an error.
-- **Why:** both readers treat missing data as data. On a Mac, Panasonic and Olympus go to ImageIO first (for its lens correction), and any format reaches it when our develop fails; since session 16, CR2 also goes through rawler's reader first, where before it went to ImageIO, which refuses that file.
-- **Fix:** `rawcore::cut_short` (every strip and tile must end inside the file) before any develop, and `raw::intact` (rawler or our DNG reader reads the sensor data through) before the system's codec; a test cuts each CC0 sample to 40 % and expects the chain to refuse it, and failed on the old code for the CR2.
-- **Rule:** a decoder's "ok" on a damaged file is not trusted: make damaged copies of a good file (cut at several points, inside and past its image data, flipped, overwritten) and look at what comes out, through every reader the chain can fall back to. Where the image data ends depends on the format: a CR2's ends at half the file, so a test that cuts at 60 % proves nothing.
-
-### A label that hides leaves its icon off centre; a size read from a whole file (FR-035, UI)
-
-- **Seen:** the owner found the toolbar's Auto turn, Revert and Select icons a little off centre, and Auto turn 3–5 s late on 518 photos.
-- **Why:** each button set its icon as `data-icon="inline-start"`, which gives the button 6 px of padding on the left and 10 on the right for a label; below the `@3xl` width the label hides and the icon sits 2 px left of centre. And Auto turn asked every photo's size by reading the whole file, 4.4 GB for the trip's folder, one file after another: 3.7 s.
-- **Fix:** `ToolbarButton` (components/forms): a square button with the icon centred when the label hides, the label's padding only when it shows, a spinner while its work runs; `check-lego` refuses a hand-hidden label, and `MEASURE=1` measures every icon-only button (it failed on the old code at 2 px). The size reads the first megabyte (0.4 s for the folder).
-- **Rule:** an icon-only state of a button is a layout of its own: measure it (`MEASURE=1`), do not trust padding written for the labelled one. Before reading a file to learn one fact, check how much of the file that fact needs.
-
-### A build beside the editor ran the Mac out of memory (tooling, 2026-11-05)
-
-- **Seen:** a release build of the examples, then a measurement of 24 MP RAW files, ended with the process killed (exit 137) and the machine restarting; the scratch folder in `/tmp` went with it, the RAW samples included.
-- **Why:** the editor's own tools held about 5 GB (rust-analyzer 1.9 GB, the C/C++ extension 1 GB, VS Code's helpers), the swap was nearly full, and cargo built on every core while a develop held a 24 MP image several times over.
-- **Rule:** when `scripts/resources.sh` shows little free memory, build with `CARGO_BUILD_JOBS=4`, never run the dev app beside a build or a test, measure large files one at a time, and keep anything worth keeping outside `/tmp`.
-
-### A score on block averages chose the wrong camera fit (FR-072)
-
-- **Seen:** "Like the camera's JPEG" picked three curves for the R10 and the A7 III, which then sat further from the camera's JPEG (4.76 and 4.44 against 4.42 and 3.29 in ΔE2000).
-- **Why:** the two fits were scored on 48 × 32 block averages with CIE76: a fit can match every block's mean and still miss the colours inside it, and CIE76 weighs saturated colours too much.
-- **Fix:** score pixel by pixel on a 480 px copy, ΔE2000 against the JPEG averaged down to it; all seven Bayer samples now pick the fit the full-size measurement prefers.
-- **Rule:** a selector must agree with the measurement it stands in for: check its picks against the full measurement on every sample before trusting it.
-
-### A slider's knob reaches 7 px past its track: a 4 px inset clipped it (UI)
-
-- **Seen:** the owner found the last slider of Faves' *More* section cut at the bottom while hovered, just above the *Less* button.
-- **Why:** `Collapse` clips its content to animate its height, and kept 4 px around it for focus rings. A slider's 12 px knob is absolutely placed on a 4 px track, so it adds no height to the row; with its 3 px hover ring it reaches 7 px below the track.
-- **Fix:** the inset is 8 px (`-m-2 p-2`, which cancel, so nothing moves).
-- **Rule:** a container that clips leaves room for what its blocks draw outside their own box (rings, knobs, shadows); check the last block of every clipping container with its hover and focus states on.

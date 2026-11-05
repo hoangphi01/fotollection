@@ -323,6 +323,7 @@ en:
     - { t: "Native code on every core", d: "The work runs in Rust, compiled for your processor, spread over all its cores, with the vector instructions (SIMD) processors have for pixels." }
     - { t: "Only what is needed", d: "Opening a folder reads each file's EXIF and its small embedded thumbnail, not the whole photo, and thumbnails are kept in a cache on disk." }
     - { t: "Never more pixels than the screen", d: "A preview is at most 1600 px, made from a 2048 px copy kept in memory; the full photo is read only when you zoom in, a part at a time." }
+    - { t: "Ready before you click", d: "Once the thumbnails are done, a preview of every photo is prepared in the background and kept on disk, and a quarter of the memory holds the photos around the one on screen: any photo opens in about 27 ms." }
     - { t: "Nothing done twice", d: "While you drag a colour slider, the photo is not resized again, only its colour changes. Every colour slider is folded into one table of 33 × 33 × 33 colours, so ten sliders cost what one does: about 2 ms on a preview." }
     - { t: "Memory kept in budget", d: "Export works on as many full-size photos at once as fit the memory budget, set by the largest photo of the export." }
     - { t: "Encoders tuned by measurement", d: "Print files skip a table optimisation that made them less than 1 % smaller and cost a third of the encoding time." }
@@ -331,6 +332,11 @@ en:
   perf_gpu_text: "While you drag a colour slider, the graphics card draws the look from the same table the app's core builds, so a step takes 1 to 2 ms instead of about 26, and the photo follows your hand. The date stamp, the frame and the border are left out, and the exact render takes over when you let go: the two differ by 0.13 on average in ΔE2000, far below what an eye sees. A computer without a capable graphics card keeps the processor; the app decides by itself. Exports stay on the processor, so a print comes out the same on every computer, and six photos are worked on at once where memory allows: 10.8 a second for 26 MP photos, a fifth faster than before."
   chart_gpu: "One step of a colour slider: the processor against the graphics card"
   chart_inflight: "Export speed by photos worked on at once"
+  dl_warn_title: "Update to v0.11.0 or later."
+  dl_warn_text: "Versions up to v0.10.0 can freeze while opening RAW photos: the preview's spinner turns for good, and every RAW opened after it waits too. v0.11.0 fixes it, and opens any photo about ten times faster."
+  chart_open: "Opening a photo: v0.9.0 and v0.10.0 against v0.11.0, on one trip's 422 photos"
+  perf_open_title: "Opening a photo: ten to twenty times faster since v0.11.0"
+  perf_open_text: "Click any photo, near or far, JPEG or RAW: it opens in about 27 milliseconds. Fotollection now prepares a preview of every photo in the background once the thumbnails are done and keeps it on disk, as Lightroom does with its standard previews, and it uses the memory your computer has instead of as little as possible. Measured on the same trip's 422 photos, v0.9.0 took 274 ms for a JPEG and 531 ms for a RAW, v0.10.0 278 and 440."
   perf_speed_title: "Speed: a thousand photos in a blink"
   perf_speed_text: "Opening a folder reads each photo's EXIF and its small embedded thumbnail, not the whole image: 1,000 photos take 0.12 seconds, eight times under the budget we set before writing the code. Changing a setting re-renders the preview in 17 ms, faster than a screen refreshes twice. Export runs at 23.5 photos a second at full 16 MP quality since v0.9.7 (18 in the chart, measured before a faster print encoder). Native Rust also beats a web browser doing the same job: the same speed for export, a faster preview, and a quarter less memory. Camera RAW works the same way: thumbnails come from the preview stored in each RAW file in 9 to 32 ms, and only the print preview develops the full photo, in about a second."
   perf_memory_title: "Memory: 5,035 photos, and it stays flat"
@@ -775,6 +781,7 @@ vi:
     - { t: "Mã gốc, chạy trên mọi nhân", d: "Mọi việc chạy bằng Rust, biên dịch cho đúng bộ xử lý của bạn, chia đều cho tất cả các nhân, có dùng lệnh vector (SIMD) mà bộ xử lý dành cho điểm ảnh." }
     - { t: "Chỉ đọc những gì cần", d: "Mở một thư mục chỉ đọc EXIF và ảnh thu nhỏ có sẵn trong mỗi tệp, không đọc cả ảnh; ảnh thu nhỏ được giữ lại trong bộ nhớ đệm trên ổ đĩa." }
     - { t: "Không bao giờ nhiều điểm ảnh hơn màn hình", d: "Bản xem trước tối đa 1600 px, dựng từ một bản 2048 px giữ trong RAM; ảnh gốc chỉ được đọc khi bạn phóng to, từng phần một." }
+    - { t: "Sẵn sàng trước khi bạn bấm", d: "Làm xong ảnh nhỏ là bản xem trước của mọi ảnh được chuẩn bị ở chế độ nền và giữ trên đĩa, còn một phần tư bộ nhớ giữ các ảnh quanh ảnh đang xem: mở ảnh nào cũng chỉ khoảng 27 ms." }
     - { t: "Không làm một việc hai lần", d: "Khi bạn kéo một thanh chỉnh màu, ảnh không bị thu nhỏ lại từ đầu, chỉ màu thay đổi. Mọi thanh chỉnh màu được gộp vào một bảng 33 × 33 × 33 màu, nên mười thanh tốn ngang một thanh: khoảng 2 ms trên bản xem trước." }
     - { t: "RAM luôn trong hạn mức", d: "Khi xuất, app chỉ xử lý cùng lúc số ảnh cỡ lớn vừa với hạn mức RAM, tính theo ảnh lớn nhất trong lượt xuất." }
     - { t: "Bộ mã hoá chỉnh theo số đo", d: "Ảnh in bỏ qua một bước tối ưu bảng mã chỉ làm tệp nhỏ đi chưa tới 1 % mà tốn một phần ba thời gian mã hoá." }
@@ -783,6 +790,11 @@ vi:
   perf_gpu_text: "Khi bạn kéo một thanh chỉnh màu, card đồ hoạ vẽ look từ đúng bảng màu mà phần lõi của app dựng, nên mỗi nhịp chỉ mất 1 đến 2 ms thay vì khoảng 26 ms, và ảnh chạy theo tay bạn. Dấu ngày, khung và viền được giữ nguyên, rồi bản dựng chính xác thay vào khi bạn thả tay: hai bản chỉ khác nhau trung bình 0,13 theo ΔE2000, thấp hơn nhiều so với ngưỡng mắt thấy được. Máy không có card đồ hoạ đủ mạnh vẫn dùng bộ xử lý; app tự quyết. Xuất ảnh vẫn chạy trên bộ xử lý, để ảnh in giống hệt nhau trên mọi máy, và xử lý cùng lúc sáu ảnh khi RAM cho phép: 10,8 ảnh mỗi giây với ảnh 26 MP, nhanh hơn trước một phần năm."
   chart_gpu: "Một nhịp kéo thanh màu: bộ xử lý so với card đồ hoạ"
   chart_inflight: "Tốc độ xuất theo số ảnh xử lý cùng lúc"
+  dl_warn_title: "Hãy cập nhật lên v0.11.0 trở lên."
+  dl_warn_text: "Các bản từ v0.10.0 trở về trước có thể bị treo khi mở ảnh RAW: vòng xoay của bản xem trước quay mãi, và mọi ảnh RAW mở sau đó cũng phải chờ theo. Bản v0.11.0 đã sửa lỗi này, và mở ảnh nào cũng nhanh gấp khoảng mười lần."
+  chart_open: "Mở một tấm ảnh: v0.9.0 và v0.10.0 so với v0.11.0, trên 422 ảnh của một chuyến đi"
+  perf_open_title: "Mở một tấm ảnh: nhanh gấp mười đến hai mươi lần từ v0.11.0"
+  perf_open_text: "Bấm vào bất kỳ ảnh nào, gần hay xa, JPEG hay RAW: ảnh mở ra trong khoảng 27 mili giây. Giờ đây, làm xong ảnh nhỏ là Fotollection chuẩn bị sẵn bản xem trước của mọi ảnh ở chế độ nền và giữ trên đĩa, như Lightroom làm với standard preview, và dùng bộ nhớ máy bạn có thay vì cố dùng càng ít càng tốt. Đo trên cùng 422 ảnh của một chuyến đi, v0.9.0 mất 274 ms cho một ảnh JPEG và 531 ms cho một ảnh RAW, v0.10.0 mất 278 và 440."
   perf_speed_title: "Tốc độ: một nghìn ảnh trong chớp mắt"
   perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong tệp, chứ không đọc cả ảnh: 1.000 ảnh mất 0,12 giây, nhanh gấp tám lần mức ngân sách đặt ra trước khi viết mã nguồn. Đổi một thiết lập thì bản xem trước vẽ lại trong 17 ms, chưa bằng hai lần màn hình làm tươi. Từ v0.9.7, xuất ảnh đạt 23,5 ảnh mỗi giây ở chất lượng đầy đủ 16 MP (biểu đồ ghi 18, đo trước khi có bộ mã hoá ảnh in nhanh hơn). Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư RAM. Ảnh RAW cũng vậy: ảnh thu nhỏ lấy từ bản xem trước lưu sẵn trong mỗi tệp RAW, mất 9 đến 32 ms, và chỉ bản xem trước để in mới giải mã đầy đủ ảnh, mất khoảng một giây."
   perf_memory_title: "RAM: 5.035 ảnh vẫn không tăng"
