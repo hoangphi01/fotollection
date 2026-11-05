@@ -150,8 +150,32 @@ pub trait RawDecoder: Sync {
 /// Windows (ADR-0023). They correct lens distortion, which rawler does not.
 pub struct Os;
 
+/// The system's codecs develop a RAW file cut short without an error, the missing part as
+/// coloured stripes (`ImageIO`, LESSONS 2026-11-05). Before one is asked, the sensor data is
+/// read through by our own DNG reader or rawler, and a file either finds damaged is refused
+/// like the same file through them. A format neither unpacks (X-Trans until v0.11.0's
+/// session 18, some DNG kinds) is left to the system.
+fn intact(bytes: &[u8], kind: RawKind) -> Result<(), CodecError> {
+    let read = if kind == RawKind::Dng {
+        fotollection_rawcore::dng::parse(bytes)
+            .map(|_| ())
+            .map_err(own_error)
+    } else {
+        fotollection_rawlgpl::unpack(bytes, LIMITS.max_pixels)
+            .map(|_| ())
+            .map_err(rawler_error)
+    };
+    match read {
+        Ok(()) | Err(CodecError::Unsupported | CodecError::TooLarge(..)) => Ok(()),
+        Err(_) => Err(CodecError::Decode(
+            "the RAW file is damaged or cut short".into(),
+        )),
+    }
+}
+
 impl RawDecoder for Os {
     fn decode(&self, bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError> {
+        intact(bytes, kind)?;
         let format = fotollection_oscodec::Format::Raw(kind);
         decoded(fotollection_oscodec::decode(bytes, format, LIMITS).map_err(error)?)
     }
@@ -425,6 +449,10 @@ fn first<T>(
 
 /// The full develop, for the print preview, zoom and export.
 pub fn decode(bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError> {
+    // Image data past the end of the file is refused before any reader makes up the rest.
+    if fotollection_rawcore::cut_short(bytes) {
+        return Err(CodecError::Decode("the RAW file is cut short".into()));
+    }
     one_at_a_time(|| first(kind, |d| d.decode(bytes, kind)))
         .unwrap_or_else(|| Err(CodecError::Decode("the RAW develop failed".into())))
 }
@@ -647,6 +675,14 @@ mod tests {
             );
             let thumb = Own.preview(&bytes, expected, 400)?;
             assert!(thumb.image.width.max(thumb.image.height) <= 400);
+            // Cut short, a file is refused by the whole chain: the system's codec would
+            // develop it with the missing part as stripes (LESSONS 2026-11-05).
+            let cut = &bytes[..bytes.len() * 4 / 10];
+            assert!(
+                decode(cut, expected).is_err(),
+                "{} cut short",
+                path.display()
+            );
         }
         Ok(())
     }

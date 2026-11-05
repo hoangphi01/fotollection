@@ -61,7 +61,17 @@ The corpus is stored **outside** git, because the photos are personal and large.
 cargo run --release -p fotollection-rawcore --example mutate -- 600 path/to/samples/*.dng
 ```
 
-`cargo test -p fotollection-rawcore` with `FOTOLLECTION_RAW_SAMPLES` set also cuts every sample short at 256 places.
+`cargo test -p fotollection-rawcore` with `FOTOLLECTION_RAW_SAMPLES` set also cuts every sample short at 256 places, and `cargo test -p fotollection-core` checks that each sample cut to 40 % is refused by the app's whole chain.
+
+Two more tools go through the app's own paths, for every RAW format, on any files (the owner's photos stay on the owner's machine; only counts are reported):
+
+- `crates/core/examples/raw_mutate.rs` mutates files as above and runs each through format recognition, our own develop, rawler and `raw::decode` with its fallbacks: panics in our code, rawler's panics caught by its crate, decodes slower than 10 s.
+- `crates/core/examples/check_files.rs` takes a folder through import, the embedded and 400 px thumbnails, the print preview and the export, one row per file with each step's `ERR-` code: for a set of damaged, renamed or hostile files made from a good one.
+
+```sh
+cargo run --release -p fotollection-core --example raw_mutate -- 600 path/to/raw/*
+cargo run --release -p fotollection-core --example check_files -- path/to/folder
+```
 
 **Planned** (`cargo-fuzz` needs a nightly toolchain, not installed yet; `crates/core/fuzz/` does not exist yet):
 

@@ -512,3 +512,24 @@ Four steps, each kept only once the score card (§23, now with a sixth chart, `h
 - **RCD as described, then the variant kept.** RCD's ratio-corrected green was written first and was the weakest of the three on the zone plate; replacing it with each side's green corrected by the site's own Laplacian, weighted against the side's gradient, scored best on the star and the colour edges. The zone plate's PSNR stays 0.8 dB below Malvar's, near green's Nyquist where every method aliases, while its false colour halves.
 - **On the nine samples**, through the same fit (`measure_rawler`, `raw_compare.py`), ΔE2000 to the camera's JPEG went from Malvar's to the chain's: 5D IV 1.96 → 1.88, R10 4.88 → 4.42, D750 2.31 → 2.26, E-M10 III 18.58 → 18.35, GX9 3.99 → 3.85, S5 6.58 → 6.45, GR III 2.69 → 2.70, A7 III 3.56 → 3.29; the S5's grey patches mean C\* 1.42 → 1.41.
 - **Time on 24 MP** (the GR III DNG): balance 8 ms, hot pixels 12, green balance 16, directional 87 (Malvar 34), false colour 56 (72 before a fixed median network and computing the difference planes once): about 180 ms against Malvar's 42, within the 400 ms budget. The whole develop went from 153–155 to 313–325 ms; a full RAW preview takes 0.33–0.68 s on the eight Bayer samples, under a nearly full swap.
+
+## 26. A real trip's RAW through our develop, and damaged files (2026-11-05)
+
+**The Prague trip's 26 RW2 files** (Lumix GX9, the owner's, measured locally) through our own develop, bypassing the macOS order that gives Panasonic to ImageIO (`measure_rawler`, median of 3; `raw_compare.py` against each file's embedded JPEG): all 26 develop; ours takes 310–370 ms (median 330), rawler 180–318 (197), ImageIO 336–857 (736). ΔE2000 to the camera's JPEG, median and worst: ours 4.88 and **7.49**, rawler 5.23 and 10.14, ImageIO 4.87 and 13.86; SSIM 0.973 for ours and rawler, 0.942 for ImageIO, whose lens correction moves the geometry. The whole folder (396 JPEG and 26 RW2) then went through import, thumbnails, the print preview and the export with no error (`check_files`).
+
+**Damaged files made from one good RW2** (and two CC0 samples), each through the app's steps (`check_files`), before and after the fix below:
+
+| File | Before | After |
+|---|---|---|
+| Cut to 10 % or 90 % | preview and export made by ImageIO, the missing part as coloured stripes | refused, `ERR-IMG-0002` |
+| A CR2 cut to 20 % or 50 % (its image data ends at 53 %) | developed by rawler with diagonal stripes in place of the missing data | refused, `ERR-IMG-0002` |
+| A NEF cut to 60 % | refused | refused |
+| Header zeroed, empty, text with a `.RW2` name | refused at import | refused at import |
+| A JPEG renamed `.RW2` | read as the JPEG it is | the same |
+| 1,000 bits flipped, a third of the data overwritten | developed, the damage visible where it is | the same: without a checksum the damage cannot be told from a picture |
+| Extreme values in the header, the directory offset past the end | `ERR-IMG-0002` | the same |
+
+**Mutation testing** of every format through the app's chain (`raw_mutate`, 3 Prague RW2 and the 9 CC0 samples): before the fix, 393 inputs in 600 s, 0 panics in our code, 69 of rawler's caught by its crate, none slower than 10 s, 19 refused (5 %); after it, 174 inputs in 300 s, 0 panics, 31 of rawler's caught, none slow, 51 refused (29 %).
+
+- **The fix:** `rawcore::cut_short` checks every strip and tile of a TIFF-based RAW against the file's end before any develop (Panasonic's placeholder strip followed to its own offset tag), and `raw::intact` has rawler or our DNG reader read the sensor data through before the system's codec is asked. Reading the size of a RW2 through it adds no time ImageIO's own spread (336–894 ms) lets us see.
+- **Still open:** a cut-short X-Trans RAF or CR3 is refused today because rawler refuses it; neither is TIFF-based, so `cut_short` says nothing about them.

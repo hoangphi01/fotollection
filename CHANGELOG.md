@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Camera RAW:** a RAW file cut short (an interrupted copy, a damaged card) is refused with an error instead of being shown and exported with made-up stripes where its data is missing.
 - **Collage:** the colour cards change the photo picked on a sheet, in the panel and in the sheet's preview, and are hidden while no photo is picked (a click beside the sheets, or Esc). They used to change the shared look, which a photo with a look of its own ignored, so only one photo of a sheet seemed to follow.
 
 ### Changed

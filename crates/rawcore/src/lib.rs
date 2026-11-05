@@ -43,6 +43,69 @@ pub fn supports(data: &[u8]) -> bool {
     dng::is_dng(data)
 }
 
+/// Whether a TIFF-based RAW (CR2, NEF, ARW, DNG, ORF, RW2…) points at image data past its
+/// own end: some decoders read on past the end and make up the missing part instead of
+/// failing (rawler's CR2 draws diagonal stripes, LESSONS 2026-11-05). Every strip and tile
+/// of the main directories and their sub-directories must end inside the file. A file that
+/// is not TIFF says nothing here (`false`); at most [`MAX_DIRECTORIES`] are looked at.
+pub fn cut_short(data: &[u8]) -> bool {
+    const STRIP_OFFSETS: u16 = 273;
+    const STRIP_BYTE_COUNTS: u16 = 279;
+    const TILE_OFFSETS: u16 = 324;
+    const TILE_BYTE_COUNTS: u16 = 325;
+    const SUB_IFDS: u16 = 330;
+    const PANASONIC_RAW_OFFSET: u16 = 280;
+    let Ok(tiff) = tiff::Tiff::new(data) else {
+        return false;
+    };
+    let Ok(first) = tiff.first_ifd() else {
+        return true;
+    };
+    let mut queue = vec![first];
+    let mut seen = Vec::new();
+    while let Some(offset) = queue.pop() {
+        if offset == 0 || seen.contains(&offset) || seen.len() >= MAX_DIRECTORIES {
+            continue;
+        }
+        seen.push(offset);
+        let Ok(ifd) = tiff.ifd(offset) else {
+            // The main directory must be there; a damaged later one is not ours to judge.
+            return seen.len() == 1;
+        };
+        queue.push(ifd.next);
+        if let Some(e) = ifd.get(SUB_IFDS) {
+            queue.extend(tiff.uints(e).unwrap_or_default());
+        }
+        for (offsets, counts) in [
+            (STRIP_OFFSETS, STRIP_BYTE_COUNTS),
+            (TILE_OFFSETS, TILE_BYTE_COUNTS),
+        ] {
+            let (Some(o), Some(c)) = (ifd.get(offsets), ifd.get(counts)) else {
+                continue;
+            };
+            let mut o = tiff.uints(o).unwrap_or_default();
+            let c = tiff.uints(c).unwrap_or_default();
+            // Panasonic writes a placeholder strip and the data's offset in a tag of its own.
+            if o == [u32::MAX] {
+                let raw = ifd
+                    .get(PANASONIC_RAW_OFFSET)
+                    .and_then(|e| tiff.uints(e).ok());
+                o = raw.unwrap_or_default();
+            }
+            if o.iter()
+                .zip(&c)
+                .any(|(&o, &c)| u64::from(o) + u64::from(c) > data.len() as u64)
+            {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+/// Directories [`cut_short`] looks at, at most (a real RAW has a handful).
+const MAX_DIRECTORIES: usize = 32;
+
 /// The developed size: the camera's default crop.
 pub fn dimensions(data: &[u8]) -> Result<(usize, usize), RawError> {
     Ok(dng::parse(data)?.mosaic.size())
@@ -90,6 +153,30 @@ mod tests {
     /// The CC0 samples (`scripts/fetch-raw-samples.py`) when `FOTOLLECTION_RAW_SAMPLES` names
     /// their folder: each file this decoder reads develops at the size `dimensions` gives, and
     /// cut short at 256 places it fails cleanly, never panics. `examples/mutate.rs` goes further.
+    /// A strip that ends past the file is caught, one that ends inside it is not, and a
+    /// file that is not TIFF says nothing.
+    #[test]
+    fn fr_016_a_strip_past_the_end_is_cut_short() {
+        // IFD0 at 8 with StripOffsets = 26 and StripByteCounts = n, then the data.
+        let file = |count: u32, data: usize| {
+            let mut t = b"II*\0".to_vec();
+            t.extend_from_slice(&8u32.to_le_bytes());
+            t.extend_from_slice(&2u16.to_le_bytes());
+            for (tag, value) in [(273u16, 38u32), (279, count)] {
+                t.extend_from_slice(&tag.to_le_bytes());
+                t.extend_from_slice(&4u16.to_le_bytes());
+                t.extend_from_slice(&1u32.to_le_bytes());
+                t.extend_from_slice(&value.to_le_bytes());
+            }
+            t.extend_from_slice(&0u32.to_le_bytes());
+            t.extend(std::iter::repeat_n(7u8, data));
+            t
+        };
+        assert!(!cut_short(&file(100, 100)));
+        assert!(cut_short(&file(100, 60)));
+        assert!(!cut_short(b"not a tiff at all"));
+    }
+
     #[test]
     fn samples_develop_at_their_size_and_truncation_never_panics()
     -> Result<(), Box<dyn std::error::Error>> {

@@ -446,3 +446,10 @@
 - **Why:** a published method is tuned for its authors' pipeline and test images; on ours (balanced before demosaicing, these charts), a Laplacian-corrected estimate per side, weighted by gradient, did better (star 37.9 dB, colour edges 10.4).
 - **Fix:** the variant the charts kept, with RCD's direction decision, named `directional` and described as what it is, in the code and the docs.
 - **Rule:** score every variant of a step on the charts before naming it in a plan, a doc or the website; ship the measured one under an honest name, and state any score that got worse.
+
+### Two readers make up the end of a RAW file cut short (FR-016, FR-072)
+
+- **Seen:** testing damaged copies of the owner's GX9 files, a RW2 cut to 10 % previewed and exported "fine": macOS's ImageIO filled the missing 90 % with coloured stripes. Then a CR2 cut to 20 % developed through our own path with diagonal stripes: rawler's CR2 reader reads on past the end without an error.
+- **Why:** both readers treat missing data as data. On a Mac, Panasonic and Olympus go to ImageIO first (for its lens correction), and any format reaches it when our develop fails; since session 16, CR2 also goes through rawler's reader first, where before it went to ImageIO, which refuses that file.
+- **Fix:** `rawcore::cut_short` (every strip and tile must end inside the file) before any develop, and `raw::intact` (rawler or our DNG reader reads the sensor data through) before the system's codec; a test cuts each CC0 sample to 40 % and expects the chain to refuse it, and failed on the old code for the CR2.
+- **Rule:** a decoder's "ok" on a damaged file is not trusted: make damaged copies of a good file (cut at several points, inside and past its image data, flipped, overwritten) and look at what comes out, through every reader the chain can fall back to. Where the image data ends depends on the format: a CR2's ends at half the file, so a test that cuts at 60 % proves nothing.
