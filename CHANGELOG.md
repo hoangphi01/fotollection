@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.9.9] - 2026-11-05
+
 ### Highlights
 
 - New: colour for every photo or one photo: Faves (brightness, contrast, warm / cool, saturation…) and Tools (fade, toned shadows and highlights, black and white through a filter)
