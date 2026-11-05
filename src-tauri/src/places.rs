@@ -206,7 +206,7 @@ pub fn borrow_and_apply(app: &AppHandle, window_s: i64) -> Result<BorrowReport, 
     let state = app.state::<AppState>();
     let poisoned = |e: &dyn std::fmt::Display| IpcError::internal(e.to_string());
     // Photos that could be compared: every one with a candidate, and its donors.
-    let (needed, known) = {
+    let (records, ids) = {
         let library = state.library.read().map_err(|e| poisoned(&e))?;
         let mut needed: Vec<PhotoId> = Vec::new();
         for (photo, donors) in library.borrow_candidates(window_s, places::DONORS_PER_PHOTO) {
@@ -215,18 +215,21 @@ pub fn borrow_and_apply(app: &AppHandle, window_s: i64) -> Result<BorrowReport, 
         }
         needed.sort_unstable_by_key(|id| id.0);
         needed.dedup();
-        let analyses = state.analyses.lock().map_err(|e| poisoned(&e))?;
-        let known: HashMap<PhotoId, Signature> = needed
-            .iter()
-            .filter_map(|id| Some((*id, analyses.by_photo.get(id)?.signature.clone())))
-            .collect();
-        let records: Vec<_> = needed
-            .iter()
-            .filter(|id| !known.contains_key(id))
-            .filter_map(|&id| library.record(id))
-            .collect();
-        (records, known)
+        let records: Vec<_> = needed.iter().filter_map(|&id| library.record(id)).collect();
+        (records, needed)
     };
+    // Taken after the library is let go: `analyze_library` takes `analyses` first, and two
+    // locks taken in both orders can hang the app (LESSONS 2026-11-05).
+    let known: HashMap<PhotoId, Signature> = {
+        let analyses = state.analyses.lock().map_err(|e| poisoned(&e))?;
+        ids.iter()
+            .filter_map(|id| Some((*id, analyses.by_photo.get(id)?.signature.clone())))
+            .collect()
+    };
+    let needed: Vec<_> = records
+        .into_iter()
+        .filter(|r| !known.contains_key(&r.id))
+        .collect();
     // The rest are analysed once and cached on disk, as the best-shot analysis does.
     let computed: Vec<(PhotoId, Signature)> = state.background_pool.install(|| {
         needed

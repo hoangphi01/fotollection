@@ -325,13 +325,17 @@ fn reset_library(state: &AppState) -> Result<(), IpcError> {
 /// ([`bundle::merge_settings`]): fonts already here with the same content are reused and
 /// ids are remapped. The interface language stays this machine's.
 fn install_settings(state: &AppState, bundle: &Bundle) -> Result<(), IpcError> {
+    // Settings and ui are read before `frame` is taken: `save_settings` holds them while it
+    // takes `frame`, and two locks taken in both orders can hang the app (LESSONS 2026-11-05).
+    let render = state.settings.read().map_err(poisoned)?.0.clone();
+    let ui = state.ui.read().map(|u| *u).unwrap_or_default();
     let mut frame = state.frame.write().map_err(poisoned)?;
     let mut local = StoredSettings {
-        render: state.settings.read().map_err(poisoned)?.0.clone(),
+        render,
         frame: frame.settings.clone(),
         cameras: frame.cameras.clone(),
         fonts: frame.fonts.clone(),
-        ui: state.ui.read().map(|u| *u).unwrap_or_default(),
+        ui,
         recent_addresses: Vec::new(),
     };
     let font_path = |f: &UserFont| {

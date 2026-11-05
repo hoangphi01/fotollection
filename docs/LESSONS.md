@@ -20,6 +20,13 @@
 - **Fix:** the develop's parallel work runs on a pool of its own (`raw::develop_pool`), used only under `DEVELOP`, so the holder always has its threads whoever waits. Test `develops_asked_from_the_whole_global_pool_all_finish` asks twice as many develops as the global pool has threads from inside it; it hung on the old code (30 s timeout) and passes in 0.01 s.
 - **Rule:** work that runs behind a lock gets threads nobody waiting for that lock can hold: its own pool, not the one its callers block. When the app hangs, `sample <pid>` first: it names every thread's wait in one look.
 
+### Two locks taken in both orders: found by a sweep, not yet seen hanging (FR-031, FR-023)
+
+- **Seen:** after the hang above, the owner asked whether others like it were left. A script listed every function taking two of `AppState`'s locks and the order it takes them in; each pair taken in both orders was read to see whether both guards are held at once.
+- **Why:** `analyze_library` holds `analyses` while it reads `library`, and `borrow_and_apply` held a read of `library` while it took `analyses`. `install_settings` held `frame` for writing while it read `settings` and `ui`, and `save_settings` holds reads of all three, `settings` first. Two reads of an `RwLock` share it, but std's `RwLock` lets no new reader in while a writer waits, so a third thread writing (a rating, a slider) closes the circle and the three wait for good.
+- **Fix:** `borrow_and_apply` lets the library go before it takes `analyses`; `install_settings` reads `settings` and `ui` before it takes `frame`. Every other pair that is held at once is taken in one order: `document_lock` → `library` → `pending` → `document`; `library` → `analyses`; `settings` → `frame` → `ui`; `running` → `busy` / `live` in the camera.
+- **Rule:** hold one lock at a time where you can (read what you need, let it go, take the next); where two must be held together, take them in the order above. A read lock is no exception: a waiting writer turns it into a wait.
+
 ## 2026-11-04
 
 ### Two kinds of tooltip, and only one knew about the Windows title bar (FR-052)

@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - **Camera RAW:** opening a RAW no longer hangs for good after moving on from one that was still loading; the export's size estimate and the preview waited for each other.
+- **Stability:** two rare hangs found by a sweep and removed: finding borrowed places while a best-shot analysis starts, and opening a project while a setting is changed.
 
 ## [0.10.0] - 2026-11-05
 
