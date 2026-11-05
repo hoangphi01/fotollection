@@ -111,6 +111,9 @@ opt-level = 2                # dependencies optimized: image codecs are usable i
 [profile.dev.package.fotollection-core]
 opt-level = 3                # our pixel loops too: unoptimized they made dev ~10× slower
 
+[profile.dev.package.fotollection-rawcore]   # and rawlgpl, oscodec: workspace members
+opt-level = 3                # miss "*"; unoptimized, a RAW preview took 1.8 s in dev
+
 [profile.release]
 debug = false
 strip = "symbols"

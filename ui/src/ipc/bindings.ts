@@ -80,6 +80,12 @@ export const commands = {
 	 *  from a few photos encoded in memory with the current settings. Nothing is written.
 	 */
 	estimateExport: (filter: CullFilter, only: number | null, ticked: PhotoId[], sheets: boolean) => typedError<ExportEstimate, IpcError>(__TAURI_INVOKE("estimate_export", { filter, only, ticked, sheets })),
+	/**
+	 *  Loads the photos about to be shown into memory, from their standard previews (FR-091):
+	 *  the preview asks for the next ones in the direction of travel once its photo is on
+	 *  screen. A newer request stops an older one; it runs behind the photo on screen.
+	 */
+	prefetchPreviews: (ids: PhotoId[]) => __TAURI_INVOKE<void>("prefetch_previews", { ids }),
 	cancelJob: (jobId: number) => typedError<null, IpcError>(__TAURI_INVOKE("cancel_job", { jobId })),
 	/**  Details for the preview inspector (FR-002, FR-007, FR-026). Reads only the JPEG header. */
 	photoDetails: (id: PhotoId) => typedError<PhotoDetails, IpcError>(__TAURI_INVOKE("photo_details", { id })),
@@ -1681,7 +1687,9 @@ export type TaskKind =
 /**  Generating sharp (T1) thumbnails in the background. */
 "thumbnails" | 
 /**  Best-shot analysis of the library (FR-041). */
-"analyze";
+"analyze" | 
+/**  Standard previews made on disk, so any photo opens at once (FR-091). */
+"previews";
 
 /**  Progress of a background task, for the progress bar (coalesced to ≤ 30 per second). */
 export type TaskProgress = {

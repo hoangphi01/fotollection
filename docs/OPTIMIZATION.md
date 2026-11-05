@@ -84,7 +84,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [NFR-005](PRD.md#nfr-005--ui-responsiveness) | Input latency during export | < 100 ms | Manual; E2E probe planned |
 | [NFR-008](PRD.md#nfr-008--install-size) | Installer size | ≤ 150 MB (25 MB until 2026-11-05) | Release asset sizes, checked by hand; a CI check is planned |
 | [NFR-010](PRD.md#nfr-010--cold-start) | Launch to interactive | < 1.5 s | `scripts/measure-startup.sh` (`FOTOLLECTION_TIMING`, release build) |
-| [NFR-012](PRD.md#nfr-012--culling-navigation) | Loupe next/previous to a sharp preview, p95 | < 100 ms | Planned: a loupe benchmark + E2E probe |
+| [NFR-012](PRD.md#nfr-012--culling-navigation) | Loupe next/previous to a sharp preview, p95; since FR-091 any photo once its standard preview is made | < 100 ms | `measure_browse` (a folder, each photo opened from disk, from memory and with nothing kept) |
 | [NFR-013](PRD.md#nfr-013--project-safety) | Edit-to-disk latency; project save time for 10,000 photos | ≤ 5 s; < 50 ms | `measure_project` (synthetic library, every photo edited); kill-during-write test planned |
 | [NFR-014](PRD.md#nfr-014--best-shot-analysis-speed) | Best-shot analysis per photo, 8 cores in parallel | ≤ 20 ms; ≤ 40 ms with faces | `measure_folder --analyze` on the `bench` corpus |
 | [NFR-015](PRD.md#nfr-015--simple-mode-speed) | Simple-mode export (after v0.9.0) to 10×15 @ 300 DPI, q90; first screen of 1,000 photos | ≥ 3× Professional (≥ 50 photos/s); < 0.5 s | `measure_folder` with a Simple-mode flag, same folders as `bench/run.sh` |
@@ -113,14 +113,14 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 |------|--------|------|----------|
 | T0 | EXIF-embedded thumbnail | ~160 px | Instant grid on first paint |
 | T1 | DCT-scaled decode (1/8) | ~400 px | Sharp grid thumbnails, disk-cached |
-| T2 | DCT-scaled decode (1/2–1/4) + resize | ~2 MP | Interactive preview of stamp and crop |
+| T2 | Decode or RAW develop + resize to 2048 px, kept on disk as a standard preview (FR-091) | ~2 MP | Interactive preview of stamp and crop; opens any photo in ~27 ms once made |
 | T3 | Full decode | Original | Export only |
 
 The preview renders the same `RenderPlan` as the export ([ARCHITECTURE.md §4](ARCHITECTURE.md#4-processing-pipeline)), only at T2 scale.
 
 **Photo Style cost ([FR-039](PRD.md#fr-039--photo-style-looks)):** style parameters are baked into a 33³ 3D LUT (about 430 KB, built in about 1 ms when a parameter changes) plus a 1D tone curve. Applying the look is **one trilinear lookup per pixel**, done with SIMD across rayon threads. Estimated cost: about 2 ms on a 2 MP preview (within [NFR-002](PRD.md#nfr-002--preview-latency)) and about 15–25 ms per 24 MP export on 8 cores (to be checked against [NFR-003](PRD.md#nfr-003--export-throughput) in Phase 0/2 benchmarks). Grain uses a precomputed tiled noise texture with a per-photo seed, so it is deterministic and costs no extra RNG.
 
-**Culling prefetch ([NFR-012](PRD.md#nfr-012--culling-navigation)):** the loupe keeps T2 previews of the current photo and of the **next two and previous one** in an LRU cache (about 8 MB each). Moving to the next photo shows the cached T2 immediately and requests the next prefetch. Rating and flagging only change project state, never pixels, so they are instant. The safe-area overlay and the DPI badge are computed from `RenderPlan` geometry, not from pixels.
+**Instant previews ([FR-091](PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well), [NFR-012](PRD.md#nfr-012--culling-navigation), [ADR-0041](adr/0041-instant-previews-disk-and-memory.md)):** after the thumbnails, every photo's T2 is made in the background and kept on disk (0.66 MB a photo), so a click on any photo opens it from there (27 ms p50, against 278 ms for a JPEG and 440 ms for a RAW decoded on demand). The preview keeps up to a quarter of the machine's RAM by bytes, and loads the next two photos in the direction of travel and the one behind once the photo on screen has landed. RAW develops for work the user does not wait for (standard previews, prefetch, the export's estimate, exports) wait at the develop gate while the photo on screen needs one (`raw::with_priority`).
 
 ### 4.2 Avoid redundant work
 
@@ -222,6 +222,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-11-05 | FR-035 | REF-MAC (M3), loaded | A photo's size for every photo of a folder, as Auto turn and Revert ask it (`upright_size`), the Prague trip's 422 files | Whole files, one after another 3,741 ms; whole files in parallel 1,684 ms; the first megabyte 402–423 ms, the same size for all 422 | The owner found Auto turn 3–5 s late. A JPEG's, PNG's or HEIC's size comes from its first megabyte; a RAW, or a file whose head does not tell, is read whole (on the CC0 samples the head of a RAW gave no size, never a wrong one). The button spins while it works |
 | 2026-11-05 | FR-072 | REF-MAC (M3), loaded | `raw_fits` and `measure_rawler` on the nine CC0 samples and the Prague trip's 26 RW2: the neutral and the camera finish | Finish 100–210 ms of a 0.29–0.69 s develop, either choice; the camera choice fits both ways on a 480 px copy | Only the closer fit is rendered at full size; the preview cache is keyed by the choice, so switching back costs nothing. RESULT §27 |
 | 2026-11-05 | FR-088, NFR-002 | REF-MAC (M3), loaded | `raw_depth` on the nine CC0 samples and three Prague RW2: one step of a RAW slider, the kept 2048 px develop re-finished, median of 5 | 4.3–11.0 ms (the old way, a full develop, was 0.3–0.7 s) | The develop is kept per photo (`raw_finish::Prepared`, three photos, about 50 MB each) with its fits; the T2 is keyed by the five sliders. RESULT §28 |
+| 2026-11-05 | FR-091, NFR-012 | REF-MAC (M3) | `measure_browse` on the Prague trip (396 JPEG, 26 RW2), each photo rendered and encoded as the preview window gets it | Nothing kept: JPEG 278 / 293 ms, RAW 440 / 471 ms (p50 / p95). Making the standard preview: 276 / 437 ms a photo in the background. **From the standard preview: 27 / 32 ms JPEG, 27 / 30 ms RAW**; from memory the same. 0.66 MB a photo on disk, 1.35 levels of 255 from a fresh preview; peak RSS 3.3 GB with a 4 GB budget | NFR-012 ✓ ([RESULT §29](RESULT.md#29-instant-previews-v0110-fr-091)) |
 
 ### 5.1 Planned measurements
 

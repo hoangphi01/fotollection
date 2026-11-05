@@ -70,7 +70,7 @@ crates/
       logo.rs            † # user PNG logos: validation + decode (ADR-0014)
       fonts.rs           † # user OTF/TTF fonts: validation + FontArc (FR-042)
       settings_store.rs  † # settings.json v14: load/validate/atomic save (DATABASE.md §6)
-      preview.rs         † # T2 LRU + preview rendering (FR-007)
+      preview.rs         † # T2 sources in memory (a quarter of the RAM, by bytes) and on disk as standard previews, prefetch, preview rendering (FR-007, FR-091)
       cancel.rs          † # CancellationToken
       stamp.rs           † # text inside the photo: DSEG14 Italic, date · place line + caption, LED glow (FR-004/005/033/036)
       text.rs            † # text measuring/drawing shared by stamp and frame, ASCII folding
@@ -219,7 +219,7 @@ import → metadata → adjust → geocode → (cluster) → cull/select → pla
 - Progress events are coalesced to at most 30 per second.
 - Three pools never compete:
   - the **interactive** pool (2 threads) serves `fotothumb://` requests for what is on screen;
-  - the **background** pool (2 threads) reads EXIF during import and pre-generates T1 thumbnails;
+  - the **background** pool (2 threads) reads EXIF during import, pre-generates T1 thumbnails, then the T2 standard previews on disk (FR-091, [ADR-0041](adr/0041-instant-previews-disk-and-memory.md)); every RAW develop it asks for is `Background` at the develop gate (`raw::with_priority`), so the photo on screen develops first;
   - **export** has its own bounded pool.
 
   Visible thumbnails therefore never wait behind background work. A request for a photo whose T1 isn't ready gets the embedded T0 at once.
@@ -247,6 +247,7 @@ Commands marked † are implemented.
 | `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`, v3), theme (v6), mode (`simple` / `collage` / `professional`, v10) and export folders (`oneFolder` / `byDay`, v12, FR-009), stored per machine in `settings.json` | FR-020, FR-052, FR-048 |
 | `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
 | `estimate_export(filter, only, ticked, sheets) -> ExportEstimate` † | For the same photos as `start_export`: the originals' total and the export's estimated size, from up to four photos encoded in memory with the current settings; nothing is written | FR-053 |
+| `prefetch_previews(ids)` | Loads up to eight photos about to be shown into memory, from their standard previews, behind the photo on screen; a newer call stops an older one | FR-091 |
 | `start_export(filter, only, ticked, separate, sheets) -> JobId` † | `ticked` (the photos ticked in select mode, when there are some) exports only those (FR-050, v0.8.3). With `sheets`, the photos go out two to a print, one file `<first>+<second>.jpg` per sheet, or with `only` just the sheet holding that photo (FR-035). Exports exactly the photos `filter` keeps (the set the grid shows, including its folders), or only the photo `only` (the preview), to the chosen destination, as prints or share files (`render.exportTarget`); `separate` gives each source folder its own subfolder; inside, everything goes into one folder or a folder per day, as `ui.exportFolders` says (FR-009); with `sheets` and postcards on, each sheet is a postcard (FR-073) | FR-008, FR-009, FR-010, FR-022, FR-053, FR-055, FR-056 |
 | `cancel_job(job_id)` † | Cancel a running job | FR-011 |
 | `get_frame_config()` / `set_frame_settings(settings)` † | Info frame settings plus camera profiles (with EXIF-derived defaults) | FR-040 |
@@ -334,7 +335,7 @@ Events are typed through `tauri-specta` and named in kebab-case. Events marked �
 | `camera-shot-failed` † | `{ issue }`: a press did not give a photo (`camera.no_shot`), or a step or format change was refused |
 | `open-photo` † | `{ id, folder }`: a photo handed over by the OS is in the library; the UI takes it with `take_photo_request`, shows its folder's tab and opens the preview once that folder is listed |
 | `startup-finished` † | The last session is back (or there was none): the start-up screen fades out (FR-060) |
-| `task-progress` † | `{ task: "import" \| "thumbnails" \| "analyze", done, total }`, coalesced to ≤ 30 per second. Drives the progress bar |
+| `task-progress` † | `{ task: "import" \| "thumbnails" \| "analyze" \| "previews", done, total }`, coalesced to ≤ 30 per second. Drives the progress bar |
 | `analysis-finished` † | `{ jobId, analyzed, failed, groups, cancelled }`. The UI refetches `list_groups` |
 | `project://saved` | `{ path, at }`, for the autosave indicator |
 | `history://changed` | `{ can_undo, can_redo }` |

@@ -69,6 +69,17 @@ opt-level = 2
 [profile.dev.package.fotollection-core]
 opt-level = 3
 
+# So is the RAW develop: workspace members do not take the "*" profile above, and unoptimized
+# a RAW's preview took 1.8 s in the dev app against 0.4 s released (LESSONS 2026-11-05).
+[profile.dev.package.fotollection-rawcore]
+opt-level = 3
+
+[profile.dev.package.fotollection-rawlgpl]
+opt-level = 3
+
+[profile.dev.package.fotollection-oscodec]
+opt-level = 3
+
 [profile.release]
 debug = false
 strip = "symbols"

@@ -10,6 +10,44 @@
 
 #![allow(unsafe_code)]
 
+/// The machine's physical memory in bytes, or `None` when the system does not say: the
+/// preview sizes its caches from it (FR-091, ADR-0041).
+pub fn total_memory() -> Option<u64> {
+    #[cfg(target_os = "macos")]
+    {
+        let out = std::process::Command::new("/usr/sbin/sysctl")
+            .args(["-n", "hw.memsize"])
+            .output()
+            .ok()?;
+        String::from_utf8(out.stdout).ok()?.trim().parse().ok()
+    }
+    #[cfg(target_os = "windows")]
+    {
+        use windows::Win32::System::SystemInformation::{GlobalMemoryStatusEx, MEMORYSTATUSEX};
+        let mut status = MEMORYSTATUSEX {
+            dwLength: u32::try_from(std::mem::size_of::<MEMORYSTATUSEX>()).ok()?,
+            ..Default::default()
+        };
+        // SAFETY: `status` is a MEMORYSTATUSEX with its length set, as the call requires, and
+        // lives for the whole call.
+        unsafe { GlobalMemoryStatusEx(&raw mut status) }.ok()?;
+        Some(status.ullTotalPhys)
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    {
+        let info = std::fs::read_to_string("/proc/meminfo").ok()?;
+        let kb: u64 = info
+            .lines()
+            .find_map(|l| l.strip_prefix("MemTotal:"))?
+            .trim()
+            .trim_end_matches("kB")
+            .trim()
+            .parse()
+            .ok()?;
+        kb.checked_mul(1024)
+    }
+}
+
 /// A decoded image: 8-bit RGB, upright as stored (EXIF orientation is applied by the caller),
 /// transparency flattened onto white, plus the embedded ICC profile when there is one.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -135,8 +135,92 @@ fn decoded(image: fotollection_oscodec::OsImage) -> Result<Decoded, CodecError> 
 }
 
 /// One develop at a time across the app: a single develop can hold more than 1 GB
-/// (RESULT.md §12), so a batch export of RAW stays within the 2 GB ceiling (NFR-004).
-static DEVELOP: std::sync::Mutex<()> = std::sync::Mutex::new(());
+/// (RESULT.md §12), so a batch export of RAW stays within the 2 GB ceiling (NFR-004). The
+/// photo on screen goes first (FR-091): a background develop waits while any interactive one
+/// waits.
+static DEVELOP: Gate = Gate {
+    state: std::sync::Mutex::new(GateState {
+        busy: false,
+        interactive_waiting: 0,
+    }),
+    turn: std::sync::Condvar::new(),
+};
+
+/// Who is waiting for a develop: the photo on screen, or work the user does not wait for
+/// (standard previews, prefetch, the export's estimate, an export) (FR-091).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Priority {
+    Interactive,
+    Background,
+}
+
+thread_local! {
+    static PRIORITY: std::cell::Cell<Priority> = const { std::cell::Cell::new(Priority::Interactive) };
+}
+
+/// Runs `work` with `priority` for every develop it asks for on this thread. Work for many
+/// photos on a pool sets it inside each item, on the thread that runs it.
+pub fn with_priority<T>(priority: Priority, work: impl FnOnce() -> T) -> T {
+    struct Restore(Priority);
+    impl Drop for Restore {
+        fn drop(&mut self) {
+            PRIORITY.with(|p| p.set(self.0));
+        }
+    }
+    let _restore = Restore(PRIORITY.with(|p| p.replace(priority)));
+    work()
+}
+
+struct GateState {
+    busy: bool,
+    interactive_waiting: usize,
+}
+
+struct Gate {
+    state: std::sync::Mutex<GateState>,
+    turn: std::sync::Condvar,
+}
+
+/// Holds the develop's turn; giving it back wakes the waiters, even after a panic.
+struct Turn<'a>(&'a Gate);
+
+impl Gate {
+    fn enter(&self, priority: Priority) -> Turn<'_> {
+        // A poisoned lock only means a develop panicked; the state is two plain fields.
+        let mut s = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        let interactive = priority == Priority::Interactive;
+        if interactive {
+            s.interactive_waiting += 1;
+        }
+        while s.busy || (!interactive && s.interactive_waiting > 0) {
+            s = self
+                .turn
+                .wait(s)
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+        }
+        if interactive {
+            s.interactive_waiting -= 1;
+        }
+        s.busy = true;
+        Turn(self)
+    }
+}
+
+impl Drop for Turn<'_> {
+    fn drop(&mut self) {
+        let mut s = self
+            .0
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        s.busy = false;
+        drop(s);
+        self.0.turn.notify_all();
+    }
+}
 
 /// One way to read camera RAW (ADR-0029). Fotollection tries them in [`decoders`] order,
 /// so our own decoder can take over format by format without changing any caller.
@@ -580,13 +664,12 @@ fn develop_pool() -> Option<&'static rayon::ThreadPool> {
 /// every one of its threads waits for `DEVELOP`, the develop holding it finds none left for
 /// its parallel work and never ends (LESSONS 2026-11-05: the export estimate's samples).
 fn one_at_a_time<T: Send>(develop: impl FnOnce() -> T + Send) -> Option<T> {
+    // Read on the caller's thread, where the work set it.
+    let priority = PRIORITY.with(std::cell::Cell::get);
     std::thread::scope(|scope| {
         scope
             .spawn(|| {
-                // A poisoned lock only means another develop panicked; it guards nothing.
-                let _one = DEVELOP
-                    .lock()
-                    .unwrap_or_else(std::sync::PoisonError::into_inner);
+                let _turn = DEVELOP.enter(priority);
                 match develop_pool() {
                     Some(pool) => pool.install(develop),
                     None => develop(),
@@ -665,6 +748,37 @@ mod tests {
         });
         let answer = rx.recv_timeout(std::time::Duration::from_secs(30));
         assert_eq!(answer, Ok(asked), "the develops never finished");
+    }
+
+    /// FR-091: the photo on screen goes before work the user does not wait for. While one
+    /// develop runs, a background develop asks, then an interactive one: the interactive one
+    /// runs next.
+    #[test]
+    fn fr_091_an_interactive_develop_goes_before_a_background_one() {
+        use std::sync::{Arc, Mutex};
+        use std::time::Duration;
+        let order = Arc::new(Mutex::new(Vec::new()));
+        let run = |name: &'static str, priority: Priority, hold: u64| {
+            let order = Arc::clone(&order);
+            std::thread::spawn(move || {
+                with_priority(priority, || {
+                    one_at_a_time(|| {
+                        order.lock().map(|mut o| o.push(name)).ok();
+                        std::thread::sleep(Duration::from_millis(hold));
+                    })
+                });
+            })
+        };
+        let first = run("first", Priority::Background, 300);
+        std::thread::sleep(Duration::from_millis(50));
+        let background = run("background", Priority::Background, 10);
+        std::thread::sleep(Duration::from_millis(50));
+        let interactive = run("interactive", Priority::Interactive, 10);
+        for t in [first, background, interactive] {
+            assert!(t.join().is_ok());
+        }
+        let order = order.lock().map(|o| o.clone()).unwrap_or_default();
+        assert_eq!(order, ["first", "interactive", "background"]);
     }
 
     /// `first` with the decoders answering `answers` in turn.

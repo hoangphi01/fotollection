@@ -500,6 +500,11 @@ impl Prepared {
         }
     }
 
+    /// About what it holds in memory: its linear copy and the camera's JPEG (FR-091).
+    pub fn bytes(&self) -> usize {
+        self.linear.rgb.len() * 4 + self.reference.as_ref().map_or(0, |r| r.data.len())
+    }
+
     /// The preview's copy finished as `look` asks with `adjust`.
     pub fn finish(
         &self,

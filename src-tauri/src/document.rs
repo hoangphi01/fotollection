@@ -311,6 +311,9 @@ pub async fn save_document_as(app: AppHandle) -> Result<Option<DocumentState>, I
 fn reset_library(state: &AppState) -> Result<(), IpcError> {
     *state.library.write().map_err(poisoned)? = Library::new();
     state.history.lock().map_err(poisoned)?.clear();
+    state
+        .library_generation
+        .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
     state.previews.clear();
     *state.pending.lock().map_err(poisoned)? = None;
     let mut analyses = state.analyses.lock().map_err(poisoned)?;

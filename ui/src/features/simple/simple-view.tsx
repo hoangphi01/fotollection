@@ -10,6 +10,7 @@ import type { PhotoSummary, Queue, QueueView } from '@/ipc/bindings'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { sendTo } from '@/features/viewer/send-to'
 import { useShownSrc } from '@/features/viewer/use-shown-src'
+import { usePrefetch } from '@/features/viewer/use-prefetch'
 import { ownsArrowKeys } from '@/lib/keyboard'
 import { formatNumber } from '@/lib/format'
 import { previewUrl } from '@/lib/photo-url'
@@ -31,6 +32,8 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
   const { t } = useTranslation()
   const photo = photos[index]
   const { src: shownSrc, error: shownError } = useShownSrc(photo?.id, photo ? previewUrl(photo.id, revision) : '')
+  // The next photos load while this one is looked at (FR-091).
+  usePrefetch(photos, index, !!photo && shownSrc === previewUrl(photo.id, revision))
   const go = (delta: number) => onIndexChange(Math.min(photos.length - 1, Math.max(0, index + delta)))
   const send = (queue: Queue) => {
     if (photo) sendTo(photo.id, queue, view, () => go(1))

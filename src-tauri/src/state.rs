@@ -3,7 +3,7 @@
 
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, RwLock};
 
 use fotollection_core::brands;
@@ -108,6 +108,11 @@ pub struct AppState {
     pub export_destination: Mutex<Option<PathBuf>>,
     pub jobs: Mutex<HashMap<u32, CancellationToken>>,
     pub next_job: AtomicU32,
+    /// Bumped when another library replaces this one: background preview work for the old
+    /// one stops (FR-091).
+    pub library_generation: AtomicU64,
+    /// Bumped by each prefetch request: an older one still running stops (FR-091).
+    pub prefetch_generation: AtomicU64,
     pub codec: Arc<dyn JpegCodec>,
     pub thumbs: ThumbCache,
     /// `analysis/` next to `thumbs/` in the cache dir (DATABASE.md §8).
@@ -227,6 +232,8 @@ impl AppState {
             export_destination: Mutex::new(None),
             jobs: Mutex::new(HashMap::new()),
             next_job: AtomicU32::new(1),
+            library_generation: AtomicU64::new(0),
+            prefetch_generation: AtomicU64::new(0),
             codec: default_codec(),
             analysis_cache: AnalysisCache::new(
                 thumb_dir
@@ -234,8 +241,11 @@ impl AppState {
                     .map_or_else(|| thumb_dir.join("analysis"), |p| p.join("analysis")),
             ),
             analyses: Mutex::new(Analyses::default()),
+            previews: PreviewCache::with(
+                fotollection_core::preview::machine_budget(),
+                Some(thumb_dir.clone()),
+            ),
             thumbs: ThumbCache::new(thumb_dir),
-            previews: PreviewCache::new(),
             interactive_pool: rayon::ThreadPoolBuilder::new()
                 .num_threads(2)
                 .thread_name(|i| format!("fotollection-ui-{i}"))

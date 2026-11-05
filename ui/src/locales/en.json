@@ -51,6 +51,7 @@
   "task": {
     "import": "Reading photos",
     "thumbnails": "Preparing thumbnails",
+    "previews": "Preparing previews",
     "analyze": "Finding the best shots"
   },
   "culling": {
@@ -568,8 +569,8 @@
     "usage": "Cache: {{size}} of {{limit}}",
     "measuring": "Measuring the cache…",
     "clear": "Clear cache",
-    "clearHint": "Deletes thumbnails and best-shot analyses; they are made again when needed",
-    "note": "Thumbnails and analyses only. The oldest go by themselves past the limit; your photos and projects are never touched."
+    "clearHint": "Deletes thumbnails, previews and best-shot analyses; they are made again when needed",
+    "note": "Thumbnails, previews and analyses only. The oldest go by themselves past the limit; your photos and projects are never touched."
   },
   "estimate": {
     "smaller": "Estimated: {{from}} → {{to}} ({{percent}} % lighter)",

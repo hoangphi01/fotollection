@@ -13,6 +13,13 @@
 
 ## 2026-11-05
 
+### The dev app was slower than the release for a reason of its own: our crates unoptimized (tooling, FR-091)
+
+- **Seen:** while chasing the spinner, a temporary `DEBUG-hang` log in `protocol.rs` showed each RAW preview taking 1.8 s, one 5.3 s, in the dev app; `measure_preview` gave 0.4 s for the same file in release.
+- **Why:** `Cargo.toml` optimizes dependencies in dev (`[profile.dev.package."*"]`) and `fotollection-core` by name, but `"*"` does not cover the workspace's own members: `rawcore`, `rawlgpl` and `oscodec` ran unoptimized, and the RAW develop lives there.
+- **Fix:** `opt-level = 3` for the three in the dev profile (DEVELOPMENT §4.1).
+- **Rule:** before judging a speed in the dev app, compare with a release measurement; a new workspace crate with hot loops gets its own dev profile line.
+
 ### Callers waiting on a pool can starve the work they wait for: the export estimate hung every RAW (FR-016, FR-053)
 
 - **Seen:** in v0.10.0 the owner moved to the next RAW while one was loading, closed the preview and opened a RAW again: the spinner turned for good, and so did every RAW after it. `sample` on the running app showed all eight threads of rayon's global pool in `raw::one_at_a_time`, each waiting for a develop thread, and the develop holding `DEVELOP` waiting for its own `par_iter` work, with the CPU idle.

@@ -288,15 +288,85 @@ fn warm_thumbnails(app: &AppHandle, ids: Vec<PhotoId>) {
                 let record = state.library.read().ok().and_then(|l| l.record(id));
                 if let Some(record) = record
                     && state.thumbs.cached_t1(&record).is_none()
-                    && state.thumbs.make_t1(&record, state.codec.as_ref()).is_ok()
+                    && background(|| state.thumbs.make_t1(&record, state.codec.as_ref())).is_ok()
                 {
                     let _ = ThumbReady { id }.emit(&app);
                 }
                 tick();
             });
         });
-        // New thumbnails may push the cache past its limit (DATABASE.md §8).
+        warm_standard_previews(&app, &ids);
+        // New thumbnails and previews may push the cache past its limit (DATABASE.md §8).
         crate::cache::prune_in_background(&app);
+    });
+}
+
+/// Runs `work` behind anything the user is waiting for: its RAW develops wait while the
+/// photo on screen needs one (FR-091).
+fn background<T>(work: impl FnOnce() -> T) -> T {
+    fotollection_core::raw::with_priority(fotollection_core::raw::Priority::Background, work)
+}
+
+/// Makes the standard previews of `ids` on disk after their thumbnails (FR-091, ADR-0041):
+/// a click on any of them then opens from disk instead of decoding. Behind the photo on
+/// screen, paused while an export or an analysis runs, stopped when another library comes.
+fn warm_standard_previews(app: &AppHandle, ids: &[PhotoId]) {
+    let state = app.state::<AppState>();
+    let generation = state.library_generation.load(Ordering::SeqCst);
+    let current = || state.library_generation.load(Ordering::SeqCst) == generation;
+    let total = u32::try_from(ids.len()).unwrap_or(u32::MAX);
+    let tick = progress_reporter(app, TaskKind::Previews, total);
+    state.background_pool.install(|| {
+        ids.par_iter().for_each(|&id| {
+            // An export or an analysis first: a preview made now would only slow it.
+            while current() && state.jobs.lock().is_ok_and(|j| !j.is_empty()) {
+                std::thread::sleep(std::time::Duration::from_millis(500));
+            }
+            if current() {
+                let record = state.library.read().ok().and_then(|l| l.record(id));
+                let settings = state.settings.read().ok().map(|s| s.0.clone());
+                if let (Some(record), Some(settings)) = (record, settings) {
+                    let _ = background(|| {
+                        state
+                            .previews
+                            .ensure_standard(&record, &settings, state.codec.as_ref())
+                    });
+                }
+            }
+            tick();
+        });
+    });
+}
+
+/// Photos a prefetch takes at most; more would only push out what is near.
+const MAX_PREFETCH: usize = 8;
+
+/// Loads the photos about to be shown into memory, from their standard previews (FR-091):
+/// the preview asks for the next ones in the direction of travel once its photo is on
+/// screen. A newer request stops an older one; it runs behind the photo on screen.
+#[tauri::command]
+#[specta::specta]
+pub fn prefetch_previews(app: AppHandle, ids: Vec<PhotoId>) {
+    let state = app.state::<AppState>();
+    let generation = state.prefetch_generation.fetch_add(1, Ordering::SeqCst) + 1;
+    let mut ids = ids;
+    ids.truncate(MAX_PREFETCH);
+    std::thread::spawn(move || {
+        let state = app.state::<AppState>();
+        for id in ids {
+            if state.prefetch_generation.load(Ordering::SeqCst) != generation {
+                return;
+            }
+            let record = state.library.read().ok().and_then(|l| l.record(id));
+            let settings = state.settings.read().ok().map(|s| s.0.clone());
+            if let (Some(record), Some(settings)) = (record, settings) {
+                let _ = background(|| {
+                    state
+                        .previews
+                        .prefetch(&record, &settings, state.codec.as_ref())
+                });
+            }
+        }
     });
 }
 

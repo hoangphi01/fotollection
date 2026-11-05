@@ -24,16 +24,90 @@ pub const T2_LONG_EDGE: u32 = 2048;
 /// Long edge of the preview sent to the UI.
 pub const PREVIEW_LONG_EDGE: u32 = 1600;
 const PREVIEW_QUALITY: u8 = 85;
-/// About 12.5 MB each at 2048×1365, so the cache stays near 100 MB.
-const CAPACITY: usize = 8;
+/// What the preview may keep in memory, in bytes (FR-091, ADR-0041): the app gives it a
+/// quarter of the machine's RAM, split between the 2048 px sources (about 12.5 MB each), the
+/// kept RAW develops (about 50 MB each) and the full images for zoom. The image on screen
+/// is always kept, whatever its size.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Budget {
+    pub sources: usize,
+    pub prepared: usize,
+    pub full: usize,
+}
+
+impl Budget {
+    /// `total` bytes, split 60 / 25 / 15 between sources, RAW develops and zoom.
+    pub fn of(total: u64) -> Self {
+        let total = usize::try_from(total).unwrap_or(usize::MAX);
+        Self {
+            sources: total / 100 * 60,
+            prepared: total / 100 * 25,
+            full: total / 100 * 15,
+        }
+    }
+}
+
+/// Quality of a standard preview on disk: the screen's 85 would add its own loss to the
+/// preview's, so a little higher (about 1 MB at 2048 px).
+const STANDARD_QUALITY: u8 = 90;
+
+/// Writes a standard preview atomically (`.part`, then a rename), as T1 is written; a failed
+/// write only means it is made again next time.
+fn write_standard(path: &std::path::Path, image: &RgbImage, codec: &dyn JpegCodec) {
+    let Ok(bytes) = codec.encode(image, EncodeOptions::screen(STANDARD_QUALITY), None) else {
+        return;
+    };
+    let Some(dir) = path.parent() else { return };
+    let part = path.with_extension("part");
+    let written = std::fs::create_dir_all(dir)
+        .and_then(|()| std::fs::write(&part, &bytes))
+        .and_then(|()| std::fs::rename(&part, path));
+    if written.is_err() {
+        let _ = std::fs::remove_file(&part);
+    }
+}
+
+/// The share of the machine's RAM the preview may keep (owner, 2026-11-05: use the memory
+/// for instant previews, ADR-0041): a quarter, of 8 GB when the system does not say.
+pub fn machine_budget() -> Budget {
+    const UNKNOWN: u64 = 8 * 1024 * 1024 * 1024;
+    Budget::of(fotollection_oscodec::total_memory().unwrap_or(UNKNOWN) / 4)
+}
+
+impl Default for Budget {
+    /// The sizes before FR-091: eight sources, three RAW develops, two 32 MP photos.
+    fn default() -> Self {
+        Self {
+            sources: 100_000_000,
+            prepared: 150_000_000,
+            full: 200_000_000,
+        }
+    }
+}
+
+/// Keeps `value` under `key` as the most recently used, then lets the oldest go until the
+/// rest fit in `budget` bytes; the newest always stays.
+fn keep_bounded<K: PartialEq, V>(
+    entries: &Mutex<Vec<(K, V)>>,
+    key: K,
+    value: V,
+    bytes: impl Fn(&V) -> usize,
+    budget: usize,
+) {
+    if let Ok(mut entries) = entries.lock() {
+        entries.retain(|(k, _)| *k != key);
+        entries.push((key, value));
+        let mut total: usize = entries.iter().map(|(_, v)| bytes(v)).sum();
+        while total > budget && entries.len() > 1 {
+            total -= bytes(&entries.remove(0).1);
+        }
+    }
+}
 /// Small sources kept for the collage grid: about 0.3 MB each, so 64 photos (32 sheets, more
 /// than a grid shows) cost about 20 MB (FR-035, NFR-021).
 const SMALL_CAPACITY: usize = 64;
 /// The long edge of a small source made from the full photo when it has no thumbnail yet.
 const SMALL_LONG_EDGE: u32 = crate::thumbs::T1_LONG_EDGE;
-/// Full-resolution sources kept for zoom: two 32 MP photos (97 MB each, RESULT §11). The
-/// photo being looked at always stays, whatever its size.
-const FULL_BUDGET_BYTES: usize = 200_000_000;
 /// Widest region the UI may ask for, in pixels: a 4K screen at 1:1.
 pub const REGION_MAX_PX: u32 = 4096;
 
@@ -63,9 +137,6 @@ pub fn split_look(record: &PhotoRecord, settings: &RenderSettings) -> (RawSlider
         (RawSliders::default(), look.clone())
     }
 }
-
-/// RAW develops the preview keeps, at most this many (about 50 MB each at 2048 px).
-const PREPARED_CAPACITY: usize = 3;
 
 /// A part of the rendered photo, in fractions of its width and height, wanted at most
 /// `px` pixels wide (FR-057).
@@ -142,7 +213,7 @@ pub type Thumbnail<'a> = dyn Fn(&PhotoRecord) -> Option<Vec<u8>> + 'a;
 #[derive(Default)]
 pub struct PreviewCache {
     entries: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
-    /// Upright originals, decoded only for zoom; bounded by `FULL_BUDGET_BYTES`.
+    /// Upright originals, decoded only for zoom; bounded by `budget.full`.
     full: Mutex<Vec<(SourceKey, Full)>>,
     /// Small upright sources for the collage grid's sheets, from the photos' thumbnails.
     small: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
@@ -151,6 +222,9 @@ pub struct PreviewCache {
     /// RAW develops at 2048 px with their fits, so a RAW slider's step only re-finishes
     /// (FR-088).
     prepared: Mutex<Vec<(PhotoId, Arc<Prepared>)>>,
+    budget: Budget,
+    /// The thumbnail cache's folder, where standard previews are kept on disk (FR-091).
+    disk: Option<std::path::PathBuf>,
 }
 
 /// A kept RAW develop and the profile of what it finishes to.
@@ -183,6 +257,16 @@ impl Resized {
 impl PreviewCache {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// A cache keeping up to `budget` in memory and its standard previews in `disk`, the
+    /// thumbnail cache's folder (FR-091).
+    pub fn with(budget: Budget, disk: Option<std::path::PathBuf>) -> Self {
+        Self {
+            budget,
+            disk,
+            ..Self::default()
+        }
     }
 
     /// Forgets every cached image, e.g. when another project replaces the library and
@@ -238,9 +322,13 @@ impl PreviewCache {
         Ok(image)
     }
 
-    /// The kept develop of a RAW (FR-088), made once per photo and kept for a few; `None`
-    /// when the file is not a RAW after all (a JPEG renamed).
-    fn prepared(&self, record: &PhotoRecord) -> Result<Option<Arc<Prepared>>, ThumbError> {
+    /// The kept develop of a RAW (FR-088), made once per photo and kept within the budget
+    /// when `keep`; `None` when the file is not a RAW after all (a JPEG renamed).
+    fn prepared(
+        &self,
+        record: &PhotoRecord,
+        keep: bool,
+    ) -> Result<Option<Arc<Prepared>>, ThumbError> {
         if let Ok(mut kept) = self.prepared.lock()
             && let Some(i) = kept.iter().position(|(id, _)| *id == record.id)
         {
@@ -255,13 +343,74 @@ impl PreviewCache {
         };
         let (raw, icc) = crate::raw::prepare(&bytes, kind)?;
         let prepared = Arc::new(Prepared { raw, icc });
-        if let Ok(mut kept) = self.prepared.lock() {
-            if kept.len() >= PREPARED_CAPACITY {
-                kept.remove(0);
-            }
-            kept.push((record.id, Arc::clone(&prepared)));
+        if keep {
+            keep_bounded(
+                &self.prepared,
+                record.id,
+                Arc::clone(&prepared),
+                |p| p.raw.bytes() + p.icc.as_ref().map_or(0, Vec::len),
+                self.budget.prepared,
+            );
         }
         Ok(Some(prepared))
+    }
+
+    /// Where `record`'s standard preview for `key` is kept on disk (FR-091), or `None` without
+    /// a disk cache, or for a RAW with linear sliders set (each step of one is another image,
+    /// made from the kept develop instead).
+    fn standard_path(&self, record: &PhotoRecord, key: SourceKey) -> Option<std::path::PathBuf> {
+        let dir = self.disk.as_ref()?;
+        if key.3 != RawSliders::default() {
+            return None;
+        }
+        let look = match key.2 {
+            crate::raw::RawLook::Neutral => "neutral",
+            crate::raw::RawLook::Camera => "camera",
+        };
+        let name = crate::thumbs::content_key(record);
+        Some(
+            dir.join(&name[..2])
+                .join(format!("{name}.t2-o{}-{look}.jpg", key.1)),
+        )
+    }
+
+    /// The 2048 px upright sRGB source of `record`: from memory, from its standard preview on
+    /// disk, or made from the file, in that order (FR-091). With `keep`, what was read or made
+    /// stays in memory (the photo on screen, a prefetch); the background builder keeps
+    /// nothing, so it never pushes out what the user looked at.
+    fn source_kept(
+        &self,
+        record: &PhotoRecord,
+        raw: RawSliders,
+        codec: &dyn JpegCodec,
+        keep: bool,
+    ) -> Result<Arc<RgbImage>, ThumbError> {
+        let key = source_key(record, raw);
+        if let Some(image) = take_cached(&self.entries, key) {
+            return Ok(image);
+        }
+        let standard = self.standard_path(record, key);
+        if let Some(path) = &standard
+            && let Ok(bytes) = std::fs::read(path)
+            && let Ok(decoded) = decode_image(codec, &bytes)
+        {
+            crate::cache_limit::touch(path);
+            let image = Arc::new(decoded.image);
+            if keep {
+                self.keep_source(key, &image);
+            }
+            return Ok(image);
+        }
+        let mut image = self.make_source(record, raw, key, codec, keep)?;
+        image.data.shrink_to_fit();
+        if let Some(path) = &standard {
+            write_standard(path, &image, codec);
+        }
+        let image = Arc::new(image);
+        if keep {
+            self.keep_source(key, &image);
+        }
+        Ok(image)
     }
 
     fn source(
@@ -270,54 +419,85 @@ impl PreviewCache {
         raw: RawSliders,
         codec: &dyn JpegCodec,
     ) -> Result<Arc<RgbImage>, ThumbError> {
-        let key = source_key(record, raw);
-        if let Some(image) = take_cached(&self.entries, key) {
-            return Ok(image);
-        }
+        self.source_kept(record, raw, codec, true)
+    }
+
+    /// Decodes or develops `record` into its 2048 px source.
+    fn make_source(
+        &self,
+        record: &PhotoRecord,
+        raw: RawSliders,
+        key: SourceKey,
+        codec: &dyn JpegCodec,
+        keep: bool,
+    ) -> Result<RgbImage, ThumbError> {
         let prepared = if crate::raw::is_raw_name(&record.file_name) {
-            self.prepared(record)?
+            self.prepared(record, keep)?
         } else {
             None
         };
         // A RAW: its kept develop finished with the sliders made in linear light, so a step of
         // one costs a finish at 2048 px, not a develop (FR-088).
-        let mut image = if let Some(prepared) = prepared {
+        if let Some(prepared) = prepared {
             let finished = prepared
                 .raw
                 .finish(key.2, &raw.adjust())
                 .ok_or(crate::render::RenderError::BadCrop)?;
             let mut image = fit_long_edge(&apply_orientation(finished, key.1), T2_LONG_EDGE)?;
             crate::colour::to_srgb(&mut image, prepared.icc.as_deref());
-            image
-        } else {
-            // Zoomed before: the full image is already here.
-            let full = if let Some(full) = self.take_full(key) {
-                full
-            } else {
-                let bytes = std::fs::read(&record.path)?;
-                let decoded = decode_photo(codec, &bytes, key.2, &raw.adjust())?;
-                let full = Full {
-                    image: Arc::new(apply_orientation(decoded.image, key.1)),
-                    icc: decoded.icc.map(Arc::from),
-                };
-                // Kept for zoom, so its first sharp region does not decode it again.
-                self.keep_full(key, full.clone());
-                full
-            };
-            let mut image = fit_long_edge(&full.image, T2_LONG_EDGE)?;
-            // Every view of the photo is made from this sRGB copy (FR-072).
-            crate::colour::to_srgb(&mut image, full.icc.as_deref());
-            image
-        };
-        image.data.shrink_to_fit();
-        let image = Arc::new(image);
-        if let Ok(mut entries) = self.entries.lock() {
-            if entries.len() >= CAPACITY {
-                entries.remove(0);
-            }
-            entries.push((key, Arc::clone(&image)));
+            return Ok(image);
         }
+        // Zoomed before: the full image is already here.
+        let full = if let Some(full) = self.take_full(key) {
+            full
+        } else {
+            let bytes = std::fs::read(&record.path)?;
+            let decoded = decode_photo(codec, &bytes, key.2, &raw.adjust())?;
+            let full = Full {
+                image: Arc::new(apply_orientation(decoded.image, key.1)),
+                icc: decoded.icc.map(Arc::from),
+            };
+            // Kept for zoom, so its first sharp region does not decode it again.
+            if keep {
+                self.keep_full(key, full.clone());
+            }
+            full
+        };
+        let mut image = fit_long_edge(&full.image, T2_LONG_EDGE)?;
+        // Every view of the photo is made from this sRGB copy (FR-072).
+        crate::colour::to_srgb(&mut image, full.icc.as_deref());
         Ok(image)
+    }
+
+    /// Makes `record`'s standard preview on disk if it has none, keeping nothing in memory
+    /// (FR-091); `true` when one was made. A RAW with linear sliders set has none to make.
+    pub fn ensure_standard(
+        &self,
+        record: &PhotoRecord,
+        settings: &RenderSettings,
+        codec: &dyn JpegCodec,
+    ) -> Result<bool, ThumbError> {
+        let raw = split_look(record, settings).0;
+        let Some(path) = self.standard_path(record, source_key(record, raw)) else {
+            return Ok(false);
+        };
+        if path.exists() || take_cached(&self.entries, source_key(record, raw)).is_some() {
+            return Ok(false);
+        }
+        self.source_kept(record, raw, codec, false)?;
+        Ok(true)
+    }
+
+    /// Loads `record`'s source into memory before it is clicked (FR-091): from its standard
+    /// preview when there is one.
+    pub fn prefetch(
+        &self,
+        record: &PhotoRecord,
+        settings: &RenderSettings,
+        codec: &dyn JpegCodec,
+    ) -> Result<(), ThumbError> {
+        self.source(record, split_look(record, settings).0, codec)
+            .map(|_| ())
     }
 
     /// The upright, uncropped T2 image as JPEG: the background of the crop editor. With
@@ -393,16 +573,26 @@ impl PreviewCache {
         Some(full.remove(pos).1)
     }
 
-    /// Keeps a full-resolution image within `FULL_BUDGET_BYTES`, the newest always.
+    /// Keeps a full-resolution image within `budget.full`, the newest always.
     fn keep_full(&self, key: SourceKey, image: Full) {
-        if let Ok(mut full) = self.full.lock() {
-            full.retain(|(k, _)| *k != key);
-            full.push((key, image));
-            let mut bytes: usize = full.iter().map(|(_, f)| f.image.data.len()).sum();
-            while bytes > FULL_BUDGET_BYTES && full.len() > 1 {
-                bytes -= full.remove(0).1.image.data.len();
-            }
-        }
+        keep_bounded(
+            &self.full,
+            key,
+            image,
+            |f| f.image.data.len(),
+            self.budget.full,
+        );
+    }
+
+    /// Keeps a 2048 px source within `budget.sources`, the newest always.
+    fn keep_source(&self, key: SourceKey, image: &Arc<RgbImage>) {
+        keep_bounded(
+            &self.entries,
+            key,
+            Arc::clone(image),
+            |i| i.data.len(),
+            self.budget.sources,
+        );
     }
 
     /// Renders `record` from `source` with the current settings, downsized to
@@ -849,6 +1039,67 @@ mod tests {
         Ok(())
     }
 
+    /// FR-091: once its standard preview is on disk, a photo opens from it in a new session
+    /// (here with the file itself gone, so nothing else could answer), with the pixels of a
+    /// source made from the file, within the JPEG's loss; the builder keeps nothing in memory.
+    #[test]
+    fn fr_091_a_standard_preview_on_disk_opens_the_photo() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let cache_dir = tempfile::tempdir()?;
+        let codec = default_codec();
+        let record = photo(dir.path(), 3000, 2000)?;
+        let settings = RenderSettings::default();
+        let fresh =
+            PreviewCache::new().render_rgb(&record, &settings, None, None, codec.as_ref())?;
+
+        let builder = PreviewCache::with(Budget::default(), Some(cache_dir.path().to_path_buf()));
+        assert!(builder.ensure_standard(&record, &settings, codec.as_ref())?);
+        assert!(!builder.ensure_standard(&record, &settings, codec.as_ref())?);
+        assert!(builder.entries.lock().map_err(|_| "lock")?.is_empty());
+
+        std::fs::remove_file(&record.path)?;
+        let session = PreviewCache::with(Budget::default(), Some(cache_dir.path().to_path_buf()));
+        let shown = session.render_rgb(&record, &settings, None, None, codec.as_ref())?;
+        assert_eq!((shown.width, shown.height), (fresh.width, fresh.height));
+        let error: f64 = shown
+            .data
+            .iter()
+            .zip(&fresh.data)
+            .map(|(a, b)| f64::from(a.abs_diff(*b)))
+            .sum::<f64>()
+            / f64::from(u32::try_from(shown.data.len())?);
+        // This test pattern is all hard edges, JPEG's worst case (2.4 levels at q90); real
+        // photos differ by 1.35 (RESULT §29).
+        assert!(error < 3.0, "mean error {error}");
+        Ok(())
+    }
+
+    /// FR-091: a cache keeps what fits in its bytes, letting the oldest go, and always keeps
+    /// the newest, even when it alone is over.
+    #[test]
+    fn fr_091_byte_budgets_let_the_oldest_go_and_keep_the_newest() -> TestResult {
+        let kept: Mutex<Vec<(u32, usize)>> = Mutex::new(Vec::new());
+        for (key, bytes) in [(1, 40), (2, 40), (3, 40), (2, 40)] {
+            keep_bounded(&kept, key, bytes, |b| *b, 100);
+        }
+        let keys: Vec<u32> = kept
+            .lock()
+            .map_err(|_| "lock")?
+            .iter()
+            .map(|(k, _)| *k)
+            .collect();
+        assert_eq!(keys, [3, 2]);
+        keep_bounded(&kept, 9, 500, |b| *b, 100);
+        let keys: Vec<u32> = kept
+            .lock()
+            .map_err(|_| "lock")?
+            .iter()
+            .map(|(k, _)| *k)
+            .collect();
+        assert_eq!(keys, [9]);
+        Ok(())
+    }
+
     #[test]
     fn full_cache_stays_within_budget() -> TestResult {
         let dir = tempfile::tempdir()?;
@@ -863,7 +1114,10 @@ mod tests {
             cache.full_source(&record, RawSliders::default(), codec.as_ref())?;
             let full = cache.full.lock().map_err(|_| "lock")?;
             let bytes: usize = full.iter().map(|(_, f)| f.image.data.len()).sum();
-            assert!(bytes <= FULL_BUDGET_BYTES, "{bytes} bytes after photo {i}");
+            assert!(
+                bytes <= Budget::default().full,
+                "{bytes} bytes after photo {i}"
+            );
             assert_eq!(full.last().map(|(k, _)| k.0), Some(PhotoId(i)));
         }
         Ok(())

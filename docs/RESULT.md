@@ -1,6 +1,6 @@
 # Measured Results — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-04
+> **Status:** Living · **Last reviewed:** 2026-11-05
 >
 > The **latest measured numbers** for speed and memory, in one readable page. Each number links to the run that produced it.
 > This page is a summary. The append-only history of every measurement is the benchmark log in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log), and the budgets are defined in [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets). When a new run changes a number, update this page and add the row to §5 in the same commit.
@@ -570,3 +570,19 @@ The same edits made the old way, by the look's 33³ table on the finished 8-bit 
 - **Not on a Mac's RW2 and ORF:** macOS's ImageIO develops them to 8 bits, so there is no headroom to bring back (FR-085).
 - **Speed:** one step of a RAW slider re-finishes the kept 2048 px develop in 4.3–11.0 ms, drawn by Rust (the GPU's shader only applies the table).
 - **The camera's look, fitted on the same 2048 px copy as the preview** so the print matches it: ΔE2000 to the camera's JPEG 5D IV 1.88, R10 4.40, D750 1.12, GX9 2.73, S5 6.52, GR III 2.77, A7 III 3.32 (session 17b: 1.88, 4.42, 1.16, 2.76, 6.45, 2.70, 3.29). The fits are scored on a 1024 px copy: at 480 px the A7 III's close call went the wrong way (3.80).
+
+## 29. Instant previews (v0.11.0, FR-091)
+
+Each photo of the owner's Prague trip (396 JPEG and 26 RW2 from a GX9, 20 MP) opened as the preview window gets it, rendered and encoded at 1600 px, on the M3 (`cargo run --release -p fotollection-core --example measure_browse -- <folder>`, [bench/results/browse.json](../bench/results/browse.json), [ADR-0041](adr/0041-instant-previews-disk-and-memory.md)).
+
+| Step | JPEG p50 / p95 | RAW p50 / p95 |
+|---|---|---|
+| Open a photo with nothing kept (before FR-091) | 278 / 293 ms | 440 / 471 ms |
+| Make its standard preview on disk (background) | 276 / 293 ms | 437 / 453 ms |
+| **Open it from its standard preview** | **27 / 32 ms** | **27 / 30 ms** |
+| Open it again from memory | 27 / 32 ms | 28 / 30 ms |
+
+- **Any photo, near or far, in a tenth of the time** for a JPEG and a sixteenth for a RAW, within NFR-012's 100 ms. Reading the disk copy costs as little as memory: what is left is the preview's own crop, resize, look and encode.
+- **Disk:** 0.66 MB a photo (JPEG q90), about 280 MB for this trip; the cache limit is now 5 GB.
+- **Pixels:** a preview made from the disk copy differs from a fresh one by 1.35 levels of 255 on average (20 photos).
+- **Memory:** the run peaked at 3.3 GB with a 4 GB budget, the quarter of a 16 GB machine the app gives the preview.

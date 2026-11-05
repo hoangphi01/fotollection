@@ -54,6 +54,8 @@ pub enum TaskKind {
     Thumbnails,
     /// Best-shot analysis of the library (FR-041).
     Analyze,
+    /// Standard previews made on disk, so any photo opens at once (FR-091).
+    Previews,
 }
 
 /// Start-up is over: the last session is back, or there was none (FR-060).

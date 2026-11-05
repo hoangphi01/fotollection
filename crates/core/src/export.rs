@@ -520,7 +520,8 @@ fn estimate<T: Sync>(
     let sizes: Vec<(u64, u64)> = picks
         .par_iter()
         .filter_map(|item| {
-            encode(item)
+            // Behind the photo on screen: a RAW sample develops in full (FR-091).
+            crate::raw::with_priority(crate::raw::Priority::Background, || encode(item))
                 .ok()
                 .map(|jpeg| (size(item), jpeg.len() as u64))
         })
@@ -618,7 +619,8 @@ fn run<T: Sync>(
 
     let work = || {
         items.par_iter().for_each(|item| {
-            match export(item) {
+            // A photo the user opens meanwhile develops first (FR-091).
+            match crate::raw::with_priority(crate::raw::Priority::Background, || export(item)) {
                 Ok(written) => {
                     exported.fetch_add(1, Ordering::Relaxed);
                     source_bytes.fetch_add(size(item), Ordering::Relaxed);

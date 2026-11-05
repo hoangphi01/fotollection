@@ -920,6 +920,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P1 (planned, owner's request 2026-11-05).** Every setting of the app in one window instead of a corner of each panel: a gear button beside "by @hoangphi01" opens it, laid out as the preview window is, in two columns as on an iPad, the narrow one a list of tabs and the wide one that tab's settings.
 
+- **The cache, to manage** (owner, 2026-11-05): how much the thumbnails, the standard previews ([FR-091](#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) and the analyses take on disk against the limit, and how much memory the previews may use, with *Clear cache*.
 - **In it:** the language, the theme, `.fotosettings` export and import ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)), language packs ([FR-084](#fr-084--language-packs-anyone-can-add)), the cache, updates, *Report a problem*, the version and the changelog, and every other app-wide setting now spread over the panels and the version popover.
 - **Built from the lego blocks** (STYLE_RULE §4), measured with `MEASURE=1`, in both themes and languages.
 
@@ -953,6 +954,16 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **The same order and filter as the gallery**, with the RAW, rating and print-basket badges of the grid tiles; select mode and the cull keys keep working.
 - **Lego:** one block, shown in the preview only (`@shown preview`), at a fixed height measured in both themes and languages; it hides with the inspector in full screen.
 
+### FR-091 — Instant previews: standard previews on disk and memory used well
+
+**P1 (planned, v0.11.0; owner's request 2026-11-05: "like Lightroom, once the gallery has loaded any photo clicked shows almost at once; use the RAM well, not as little as possible").** [ADR-0041](adr/0041-instant-previews-disk-and-memory.md).
+
+- **Standard previews on disk:** after a folder's thumbnails, every photo's 2048 px upright sRGB source (for a RAW, finished with its RAW colour and no linear slider) is made in the background and kept in the cache folder; a click on any photo, far or near, opens from it instead of decoding or developing (measured 27 ms against 278 ms for a JPEG and 440 ms for a RAW, [RESULT §29](RESULT.md#29-instant-previews-v0110-fr-091)). Made one photo at a time behind the photo on screen, paused during an export or an analysis, with its progress in the gallery's bar.
+- **Memory used well:** the preview keeps up to a quarter of the machine's RAM (on a 16 GB Mac about 190 sources, 20 RAW develops and 600 MB for zoom), the oldest let go first, the photo on screen always kept.
+- **Prefetch:** once a photo is on screen, the next two in the direction of travel and the one behind are loaded into memory, so ← and → show at once ([NFR-012](#nfr-012--culling-navigation)).
+- **The photo on screen first:** every RAW develop for work the user does not wait for (standard previews, prefetch, the export's estimate, an export) waits while the photo on screen needs one.
+- **The cache:** its limit is 5 GB (was 2 GB), the oldest files go first; *Clear cache* empties the standard previews too. The Settings window shows it ([FR-086](#fr-086--one-settings-window)).
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
@@ -971,7 +982,7 @@ Export (decode → crop → stamp → encode → write) runs at **8 or more 24 M
 
 ### NFR-004 — Memory ceiling
 
-Peak resident memory during export stays **at or below 2 GB**, regardless of batch size.
+Peak resident memory during export stays **at or below 2 GB**, regardless of batch size. The preview's own caches are sized apart, to a quarter of the machine's RAM ([FR-091](#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well), owner, 2026-11-05).
 
 ### NFR-005 — UI responsiveness
 
@@ -1003,7 +1014,7 @@ No input file, however malformed, can crash the app or hang the batch. A bad fil
 
 ### NFR-012 — Culling navigation
 
-In the loupe view, moving to the next or previous photo shows a sharp preview in **under 100 ms** (p95). Neighbouring photos are prefetched.
+In the loupe view, moving to the next or previous photo shows a sharp preview in **under 100 ms** (p95). Neighbouring photos are prefetched. Since [FR-091](#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well), the same holds for any photo once its standard preview is made.
 
 ### NFR-013 — Project safety
 

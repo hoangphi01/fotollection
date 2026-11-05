@@ -299,7 +299,7 @@ sudo apt install ./Fotollection_*_amd64.deb
 |---|---|---|---|
 | **Hệ điều hành** | macOS 11 Big Sur, Windows 10 64-bit, hoặc Linux 64-bit có glibc 2.35 ([những distro nào](#linux)) | macOS 13 trở lên, Windows 11, hoặc Ubuntu 24.04 | Máy Mac Apple Silicon và Intel. Windows dùng WebView2, có sẵn trên Windows 11 và tự cài trên Windows 10. Linux dùng WebKitGTK 4.1, có sẵn trong AppImage và được cài kèm bản `.deb` |
 | **Bộ xử lý** | CPU 64-bit bất kỳ trong khoảng 8 năm gần đây | Apple Silicon, hoặc x64 đời mới từ 4 nhân | Công việc được chia cho mọi nhân. Mọi số liệu trong [Hiệu năng](#hiệu-năng) đo trên Apple M3 |
-| **RAM** | 4 GB | Từ 8 GB | Fotollection luôn dưới 2 GB kể cả với hơn 5.000 ảnh (đo được đỉnh 1,45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)) |
+| **RAM** | 4 GB | Từ 8 GB | Khi xuất ảnh, Fotollection luôn dưới 2 GB kể cả với hơn 5.000 ảnh (đo được đỉnh 1,45 GB, [NFR-004](docs/PRD.md#nfr-004--memory-ceiling)). Sắp có trong v0.11.0: bản xem trước giữ tối đa một phần tư bộ nhớ để ảnh mở ngay ([FR-091](docs/PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) |
 | **Ổ đĩa** | Trống 100 MB, cộng phần cache | Trống 1 GB | App được giữ dưới 25 MB ([NFR-008](docs/PRD.md#nfr-008--install-size)). Cache tốn khoảng 25 MB cho 1.000 ảnh (thumbnail khoảng 22 KB, phân tích ảnh đẹp nhất khoảng 4 KB mỗi ảnh) và xoá lúc nào cũng được. File export cần chỗ cho ảnh độ phân giải đầy đủ |
 | **Màn hình** | 1280 × 800 | 1920 × 1080 hoặc màn Retina | Thanh công cụ tự co khi cửa sổ hẹp |
 | **Internet** | Không cần | — | Mọi thứ chạy offline, kể cả nhận diện khuôn mặt, địa điểm và preview. Không có gì được tải lên |

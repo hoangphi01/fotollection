@@ -19,6 +19,7 @@ import { KeyHints } from '@/components/layout/key-hints'
 import { StageSpinner } from '@/components/layout/stage-spinner'
 import { sendTo } from './send-to'
 import { useShownSrc } from './use-shown-src'
+import { usePrefetch } from './use-prefetch'
 import { useGpuLook } from './use-gpu-look'
 import { FrameSection } from '@/features/frame/frame-section'
 import type { FontsApi } from '@/features/fonts/use-fonts'
@@ -111,6 +112,8 @@ export function PreviewDialog({
   const [before, setBefore] = useState(false)
   const src = photo ? `${previewUrl(photo.id, revision)}${before ? '&plain=1' : ''}` : ''
   const { src: shownSrc, error: shownError } = useShownSrc(photo?.id, src)
+  // The next photos load while this one is looked at (FR-091).
+  usePrefetch(photos, index, !!photo && shownSrc === src)
   // While a colour slider is dragged, the look is drawn on the GPU (ADR-0039).
   const { attach: attachGpu, active: onGpu } = useGpuLook(photo?.id, revision, shownSrc === src)
   // The crop editor and the drag need this photo's geometry; the crop row only shows it.

@@ -8,7 +8,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: any photo opens at once, RAW too: previews are prepared in the background and kept, as in Lightroom
+- UI update: colour cards in the previews only; sliders take a near press and the arrow keys
+- Fixes: a RAW preview that could hang for good
+
+### Added
+
+- **Instant previews:** after a folder's thumbnails, a preview of every photo is prepared in the background (*Preparing previews*) and kept in the cache, so any photo opens in about 30 ms instead of 0.3 s for a JPEG and 0.4 s for a RAW; → and ← load the next photos while you look. The preview uses up to a quarter of the computer's memory, and the cache's limit is 5 GB (was 2 GB).
+
 ### Changed
+
+- **Speed:** the photo on screen is developed before anything working in the background (previews being prepared, the export's size estimate, an export).
 
 - **Colour:** the colour cards are in the previews only, where the photo is seen large; the gallery's panel keeps the print size, the date stamp, the frame and export. *Apply this look to all photos* still sets everyone's look.
 - **Sliders:** a press just above or below a slider still takes it, and a click on its name lets the arrow keys move it (by 1, by 10 with Shift), as in a RAW editor.

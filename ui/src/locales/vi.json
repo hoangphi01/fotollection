@@ -48,6 +48,7 @@
   "task": {
     "import": "Đang đọc ảnh",
     "thumbnails": "Đang tạo thumbnail",
+    "previews": "Đang chuẩn bị bản xem trước",
     "analyze": "Đang tìm ảnh đẹp nhất"
   },
   "culling": {
@@ -548,8 +549,8 @@
     "usage": "Cache: {{size}} / {{limit}}",
     "measuring": "Đang đo cache…",
     "clear": "Xoá cache",
-    "clearHint": "Xoá ảnh thu nhỏ và kết quả phân tích ảnh đẹp nhất; chúng sẽ được tạo lại khi cần",
-    "note": "Chỉ gồm ảnh thu nhỏ và kết quả phân tích. Vượt giới hạn thì phần cũ nhất tự được xoá; ảnh và dự án của bạn không bao giờ bị đụng tới."
+    "clearHint": "Xoá ảnh thu nhỏ, bản xem trước và kết quả phân tích ảnh đẹp nhất; chúng sẽ được tạo lại khi cần",
+    "note": "Chỉ gồm ảnh thu nhỏ, bản xem trước và kết quả phân tích. Vượt giới hạn thì phần cũ nhất tự được xoá; ảnh và dự án của bạn không bao giờ bị đụng tới."
   },
   "estimate": {
     "smaller": "Ước tính: {{from}} → {{to}} (nhẹ hơn {{percent}} %)",

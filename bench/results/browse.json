@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-05",
+  "machine": "REF-MAC (M3, 16 GB)",
+  "command": "cargo run --release -p fotollection-core --example measure_browse -- <folder>",
+  "note": "FR-091, NFR-012. The owner's Prague trip (396 JPEG and 26 RW2 from a GX9, 20 MP), aggregate numbers only. Each photo opened as the preview window gets it (rendered and encoded, 1600 px): with nothing kept (before FR-091), from its standard preview on disk in a new session, and again from memory; the standard preview made on disk.",
+  "photos": { "jpeg": 396, "raw": 26 },
+  "open_nothing_kept_ms": { "jpeg_p50": 278, "jpeg_p95": 293, "raw_p50": 440, "raw_p95": 471 },
+  "make_standard_preview_ms": { "jpeg_p50": 276, "jpeg_p95": 293, "raw_p50": 437, "raw_p95": 453 },
+  "open_from_standard_preview_ms": { "jpeg_p50": 27, "jpeg_p95": 32, "raw_p50": 27, "raw_p95": 30 },
+  "open_from_memory_ms": { "jpeg_p50": 27, "jpeg_p95": 32, "raw_p50": 28, "raw_p95": 30 },
+  "disk_mb_per_photo": 0.66,
+  "mean_difference_levels": 1.35,
+  "peak_rss_gb": 3.32
+}
