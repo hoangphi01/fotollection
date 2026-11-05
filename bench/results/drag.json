@@ -1,0 +1,39 @@
+{
+  "machine": "Apple M3, 16 GB, macOS 26.3.1, loaded (swap 12–13 GB of 13–14 GB)",
+  "date": "2026-11-05",
+  "command": "LOOK_DRAG=1 measure_preview <26 MP CC0 JPEGs>; webview decode from bench/gpu",
+  "photos": [
+    {
+      "name": "anlagensee-mit-nymphengruppe-1.jpg, 6240×4160",
+      "stepMs": 14.0,
+      "parts": {
+        "resizeKeptMs": 9.9,
+        "tableMs": 0.9,
+        "lookStampMs": 2.2,
+        "encodeMs": 10.6,
+        "jpegKb": 765
+      }
+    },
+    {
+      "name": "ammerschlag.jpg, 4160×6240",
+      "stepMs": 10.7,
+      "parts": {
+        "resizeKeptMs": 10.1,
+        "tableMs": 1.3,
+        "lookStampMs": 2.2,
+        "encodeMs": 7.4,
+        "jpegKb": 261
+      }
+    }
+  ],
+  "history": {
+    "before session fix (resize every step)": [
+      23.5,
+      20.8
+    ],
+    "after keeping the resize": [
+      15.6,
+      11.1
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "machine": "Apple M3, 16 GB, macOS 26.3.1, loaded (swap 12–13 GB of 13–14 GB)",
+  "date": "2026-11-05",
+  "command": "bench/gpu/run.mjs (Playwright): 1600 px JPEG, a new 33³ table each step, tetrahedral with texelFetch, synced with readPixels; median of 30 steps",
+  "engines": [
+    {
+      "name": "WebKit (Apple GPU)",
+      "renderer": "Apple GPU",
+      "decodeMs": 12,
+      "uploadMs": 34,
+      "stepMs": 1,
+      "stepMaxMs": 6
+    },
+    {
+      "name": "Chromium, ANGLE Metal",
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M3, Unspecified Version)",
+      "decodeMs": 8.600000023841858,
+      "uploadMs": 7.100000023841858,
+      "stepMs": 2,
+      "stepMaxMs": 4.099999964237213
+    },
+    {
+      "name": "Chromium, SwiftShader (no GPU)",
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+      "decodeMs": 8.199999988079071,
+      "uploadMs": 70.09999996423721,
+      "stepMs": 16.5,
+      "stepMaxMs": 72.80000001192093
+    }
+  ],
+  "cpuStepMs": {
+    "rust": [
+      10.7,
+      14
+    ],
+    "plusWebviewDecode": [
+      9,
+      15
+    ]
+  },
+  "parityDeltaE": null
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<!-- The look on the GPU (ADR-0039): what one slider step costs in a webview. bench/gpu/run.mjs serves it. -->
+<meta charset="utf-8"><canvas id="c"></canvas>
+<script>
+const N = 33
+// A strong made-up look, baked on the CPU as Rust would send it: RGBA8 3D texture.
+function lut() {
+  const d = new Uint8Array(N * N * N * 4)
+  let i = 0
+  for (let b = 0; b < N; b++) for (let g = 0; g < N; g++) for (let r = 0; r < N; r++) {
+    const R = r / 32, G = g / 32, B = b / 32
+    d[i++] = 255 * Math.pow(0.8 * R + 0.2 * G, 0.9); d[i++] = 255 * Math.pow(0.9 * G + 0.1 * B, 1.1); d[i++] = 255 * Math.min(1, 0.05 + 0.9 * B); d[i++] = 255
+  }
+  return d
+}
+const vs = `#version 300 es
+in vec2 p; out vec2 uv; void main(){ uv = p * 0.5 + 0.5; uv.y = 1.0 - uv.y; gl_Position = vec4(p, 0, 1); }`
+// Tetrahedral interpolation by hand, texelFetch only (ADR-0039): no hardware filtering.
+const fs = `#version 300 es
+precision highp float; precision highp sampler3D;
+uniform sampler2D img; uniform sampler3D lut; in vec2 uv; out vec4 o;
+vec3 at(ivec3 q){ return texelFetch(lut, q, 0).rgb; }
+void main(){
+  vec3 c = texture(img, uv).rgb * 32.0;
+  ivec3 b = ivec3(min(floor(c), vec3(31.0))); vec3 f = c - vec3(b);
+  vec3 c0 = at(b), c3 = at(b + ivec3(1));
+  ivec3 s1, s2; vec3 w;
+  if (f.r >= f.g) { if (f.g >= f.b) { s1 = ivec3(1,0,0); s2 = ivec3(1,1,0); w = f.rgb; }
+    else if (f.r >= f.b) { s1 = ivec3(1,0,0); s2 = ivec3(1,0,1); w = f.rbg; }
+    else { s1 = ivec3(0,0,1); s2 = ivec3(1,0,1); w = f.brg; } }
+  else if (f.b > f.g) { s1 = ivec3(0,0,1); s2 = ivec3(0,1,1); w = f.bgr; }
+  else if (f.b > f.r) { s1 = ivec3(0,1,0); s2 = ivec3(0,1,1); w = f.gbr; }
+  else { s1 = ivec3(0,1,0); s2 = ivec3(1,1,0); w = f.grb; }
+  vec3 c1 = at(b + s1), c2 = at(b + s2);
+  o = vec4(c0 + w.x * (c1 - c0) + w.y * (c2 - c1) + w.z * (c3 - c2), 1.0);
+}`
+window.run = async () => {
+  const out = {}
+  const blob = await (await fetch('photo.jpg')).blob()
+  let t = []
+  for (let i = 0; i < 7; i++) { const s = performance.now(); const bmp = await createImageBitmap(blob); t.push(performance.now() - s); bmp.close() }
+  t.sort((a, b) => a - b); out.decode = t[3]
+  const bmp = await createImageBitmap(blob)
+  const cv = document.getElementById('c'); cv.width = bmp.width; cv.height = bmp.height
+  const gl = cv.getContext('webgl2', { powerPreference: 'high-performance' })
+  if (!gl) return { decode: out.decode, webgl2: false }
+  const dbg = gl.getExtension('WEBGL_debug_renderer_info')
+  out.renderer = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER)
+  const sh = (k, src) => { const s = gl.createShader(k); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(s); return s }
+  const pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(pr); gl.useProgram(pr)
+  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW)
+  const loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
+  const px = new Uint8Array(4)
+  const sync = () => gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px)
+  // Upload the photo once.
+  const tex = gl.createTexture(); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+  let s = performance.now(); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, bmp); sync(); out.upload = performance.now() - s
+  const lt = gl.createTexture(); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_3D, lt)
+  gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+  gl.uniform1i(gl.getUniformLocation(pr, 'img'), 0); gl.uniform1i(gl.getUniformLocation(pr, 'lut'), 1)
+  const table = lut()
+  t = []
+  for (let i = 0; i < 30; i++) {
+    s = performance.now()
+    gl.texImage3D(gl.TEXTURE_3D, 0, gl.RGBA8, N, N, N, 0, gl.RGBA, gl.UNSIGNED_BYTE, table) // a new table each step
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4); sync()
+    t.push(performance.now() - s)
+  }
+  t.sort((a, b) => a - b); out.step = t[15]; out.stepMax = t[29]
+  return out
+}
+</script>

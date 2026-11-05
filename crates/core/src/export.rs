@@ -96,14 +96,20 @@ pub struct ExportOptions<'a> {
     pub postcard_font: Option<ab_glyph::FontArc>,
 }
 
-/// A sensible default for `max_inflight`: one per core, capped at 6.
+/// A sensible default for `max_inflight`: one per core, capped at 6. A photo is decoded and
+/// encoded on one core, so throughput follows the photos in flight; past 6 it stops paying
+/// on a real folder (ADR-0039, measured 2026-11-05: 26 MP JPEGs 9.4, 11.5, 12.5 photos/s at
+/// 4, 6, 8; the Prague trip with its RAW files 9.54 at 6 and 9.21–9.31 at 8, with 0.2 GB
+/// more memory). The memory budget below decides how many fit.
 pub fn default_inflight() -> usize {
     std::thread::available_parallelism().map_or(2, |n| n.get().clamp(1, 6))
 }
 
 /// The memory an export's photos in flight may hold together, under NFR-004's 2 GB with room
-/// for the rest of the app (previews, thumbnails, the library).
-pub const EXPORT_MEMORY_BUDGET: u64 = 1_200_000_000;
+/// for the rest of the app (previews, thumbnails, the library). 1.6 GB since 2026-11-05: the
+/// per-photo estimate is about twice what a photo holds (106 MB measured for a 26 MP JPEG
+/// estimated at 240 MB), so the whole process stayed at 1.21 GB with eight in flight.
+pub const EXPORT_MEMORY_BUDGET: u64 = 1_600_000_000;
 
 /// What one photo in flight holds, estimated from its file before it is read: a JPEG's
 /// decoded and cropped images and its output are about 14 bytes per byte of a camera file
@@ -660,7 +666,7 @@ mod tests {
         let jpeg = |mb: u64| mb * 1_000_000 * 14;
         assert_eq!(inflight_within(jpeg(11), 6), 6);
         assert_eq!(inflight_within(jpeg(11), 4), 4);
-        assert_eq!(inflight_within(jpeg(30), 6), 2);
+        assert_eq!(inflight_within(jpeg(30), 6), 3);
         assert!(inflight_within(jpeg(30), 6) as u64 * jpeg(30) <= EXPORT_MEMORY_BUDGET);
         assert_eq!(inflight_within(jpeg(200), 6), 1);
         assert_eq!(inflight_within(0, 6), 6);

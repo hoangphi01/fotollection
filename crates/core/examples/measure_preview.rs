@@ -75,6 +75,60 @@ fn drag_step(
         "drag step (new look each time, preview JPEG): median {:.1} ms",
         median(runs)
     );
+    drag_parts(record, settings, codec);
+}
+
+/// One drag step split into its parts (ADR-0039 stage 1): building the look's table, the
+/// look and stamp on the resized photo, and the screen JPEG encode. The resize is kept
+/// between steps, so it is timed once, apart.
+fn drag_parts(
+    record: &fotollection_core::library::PhotoRecord,
+    settings: &RenderSettings,
+    codec: &dyn fotollection_core::codec::JpegCodec,
+) {
+    use fotollection_core::render::{crop_and_resize, finish};
+    let bytes = std::fs::read(&record.path).unwrap();
+    let full = apply_orientation(
+        decode_image(codec, &bytes).unwrap().image,
+        record.display_orientation(),
+    );
+    let source = fit_long_edge(&full, 2048).unwrap();
+    let mut step = settings.clone();
+    step.look.adjust.saturation = 10;
+    let p = plan(&PlanInput {
+        width: source.width,
+        height: source.height,
+        capture: record.stamp_date(),
+        settings: &step,
+        print: step
+            .print_for(source.width, source.height)
+            .unwrap_or(fotollection_core::PrintSize::ALL[1]),
+        max_long_edge: Some(1600),
+        frame: None,
+        crop: None,
+        place: None,
+        straighten: 0.0,
+        ratio: None,
+    });
+    let (resize, resized) = time(|| crop_and_resize(&source, &p).unwrap());
+    let mut i = 0i8;
+    let (bake, _) = time(|| {
+        i += 1;
+        step.look.adjust.brightness = i;
+        step.look.table()
+    });
+    let (look_stamp, image) = time(|| finish(resized.clone(), &p));
+    let (encode, jpeg) = time(|| {
+        codec
+            .encode(&image, EncodeOptions::screen(85), None)
+            .unwrap()
+    });
+    println!(
+        "drag parts: resize {resize:.1} ms (kept between steps) · table {bake:.1} · look + stamp + copy {look_stamp:.1} · screen JPEG encode {encode:.1} ms ({} KB, {}×{})",
+        jpeg.len() / 1024,
+        image.width,
+        image.height
+    );
 }
 
 fn main() {

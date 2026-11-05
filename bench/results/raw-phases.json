@@ -1,0 +1,31 @@
+{
+  "machine": "Apple M3, 16 GB, macOS 26.3.1, loaded (swap 12–13 GB of 13–14 GB)",
+  "date": "2026-11-05",
+  "command": "raw_phases ricoh-gr-iii.dng (6000×4000), runs 1 and 2 (run 0 cold)",
+  "phasesMs": {
+    "parseDecompress": [
+      109,
+      107
+    ],
+    "demosaic": [
+      51,
+      38
+    ],
+    "develop": [
+      155,
+      153
+    ],
+    "embeddedJpeg": [
+      53,
+      52
+    ],
+    "look": [
+      77,
+      77
+    ],
+    "finish": [
+      63,
+      49
+    ]
+  }
+}

@@ -895,6 +895,16 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Export:** a multi-page PDF, or one PNG per page, at the print size's resolution.
 - **Learnt from 7-Eleven Japan's multicopy** (research 2026-11-05, Fujifilm's pages): every product is a short line of steps (product, size, photos, adjust, check, output) with a small set of fixed templates that place and crop the photos themselves; the user changes only a few things (frame, colours, copies, date). Its calendar print (Feb 2026) is one L or 2L sheet in 8 designs, with a theme and a text colour and marked days; a third-party desk calendar adds Sunday or Monday start and the photo left or right of the grid. Neither offers twelve months, a year on one page or a PDF, so those are ours. **Seen on their prints** (the owner's photo of real 7-Eleven calendars, 2026-11-05): one L print holds **two months side by side with a cut line between them**, each half a small calendar of its own; a half is either the photo above the month's grid on a seasonal pattern (cherry blossom for March, mint waves for April), or the photo filling the half with the grid printed over it in a colour that suits it; the heading reads "3 / March" with the year, weeks start on Sunday. **So the calendar is built on the collage sheet** ([FR-035](#fr-035--multi-photo-layouts), [ADR-0032](adr/0032-collage-sheets-from-two-cell-plans.md)): two month cells to a print, with its cut line, border and looks; what is new is the month grid and a few designs. Worth borrowing too: a summary before output, and saying plainly that a print's edge is trimmed a little.
 
+### FR-084 — Language packs anyone can add
+
+**P2 (later, not scheduled; owner's request 2026-11-05).** A language beyond English and Vietnamese can be added without a new build, the way CrystalDiskInfo takes language files: a contributor writes one, others load it.
+
+- **One standard:** a `.fotolang` file, UTF-8 JSON in the app's own i18next layout (the keys of `ui/src/locales/en.json`), with a header `{ "format": "fotollection-language", "schema_version", "code" (BCP 47), "name" (in the language itself), "app_version", "authors" }`. Keys missing from it fall back to English.
+- **Checked like any input from outside:** read only in Rust, size-capped; only strings, no markup (the UI shows text, never HTML, [SECURITY.md](SECURITY.md)); every `{{name}}` placeholder must match English's; plural forms follow the language's rules. `ui/scripts/check-i18n.mjs` checks a pack the same way, so a contributor sees what is missing before sending it.
+- **Two ways in:** a pull request that adds it to the repository (it then ships with the app), or **Load a language…** in the version popover, which copies the file into the app's `languages/` folder; the language list shows it with its authors.
+- **Travels with the app's brain:** `.fotosettings` ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)) carries the packs a user loaded, as it carries fonts and LUTs; it is not the pack's own format, since a pack is made to be shared and the brain is personal.
+- The manual (USER_GUIDE) and the website stay in English and Vietnamese; a pack translates the app.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

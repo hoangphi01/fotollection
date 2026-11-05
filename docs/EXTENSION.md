@@ -14,6 +14,7 @@
 | Preset | `.fotopreset` | `application/vnd.fotollection.preset+json` | `com.hoangphi01.fotollection.preset` | `"format": "fotollection-preset"` | JSON, UTF-8 | `schema_version` 1 (draft) | Planned ([FR-038](PRD.md#fr-038--print-presets)) |
 | App settings | `settings.json` | `application/json` | — (internal) | `"format": "fotollection-settings"` | JSON, UTF-8 | `schema_version` 14 | Implemented |
 | Settings bundle, "the app's brain" | `.fotosettings` | `application/vnd.fotollection.settings+zip` | `com.hoangphi01.fotollection.settings` | ZIP magic + `manifest.json` with `"format": "fotollection-settings-bundle"` | ZIP (deflate) | manifest `schema_version` 1 (draft) | Planned ([FR-082](PRD.md#fr-082--the-apps-brain-in-one-file-fotosettings)) |
+| Language pack | `.fotolang` | `application/vnd.fotollection.language+json` | `com.hoangphi01.fotollection.language` | `"format": "fotollection-language"` | JSON, UTF-8 | `schema_version` 1 (draft) | Planned ([FR-084](PRD.md#fr-084--language-packs-anyone-can-add)) |
 | User font | `fonts/<id>.ttf`, `fonts/<id>.otf` | `font/ttf`, `font/otf` | — (internal copy) | Magic `00 01 00 00` / `true` (TTF), `OTTO` (OTF) | sfnt | — | Implemented ([FR-042](PRD.md#fr-042--custom-fonts)) |
 | Camera logo | `logos/<id>.png` | `image/png` | — (internal copy) | PNG magic | PNG | — | Implemented ([FR-040](PRD.md#fr-040--exif-info-frame)) |
 | Thumbnail cache | `thumbs/…` | `image/jpeg` | — (internal) | Path only | JPEG files | — | Implemented; disposable |

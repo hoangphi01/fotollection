@@ -1,0 +1,63 @@
+{
+  "machine": "Apple M3, 16 GB, macOS 26.3.1, loaded (swap 12–13 GB of 13–14 GB)",
+  "date": "2026-11-05",
+  "command": "measure_folder <folder> --discard-output --inflight N; peak RSS from /usr/bin/time -l",
+  "sets": [
+    {
+      "name": "22 CC0 demo JPEGs, 24–26 MP (site/screenshots/photos.json)",
+      "runs": [
+        {
+          "inflight": 2,
+          "photosPerSecond": 4.94,
+          "exportRssMb": 485
+        },
+        {
+          "inflight": 4,
+          "photosPerSecond": 9.35,
+          "exportRssMb": 829
+        },
+        {
+          "inflight": 6,
+          "photosPerSecond": 11.5,
+          "exportRssMb": 940
+        },
+        {
+          "inflight": 8,
+          "photosPerSecond": 12.5,
+          "exportRssMb": 1214
+        }
+      ],
+      "defaultBefore": {
+        "inflight": 4,
+        "photosPerSecond": 8.91,
+        "peakRssMb": 755
+      },
+      "defaultAfter": {
+        "inflight": 6,
+        "photosPerSecond": 10.82,
+        "peakRssMb": 1076
+      }
+    },
+    {
+      "name": "The Prague trip: 396 JPEGs at 20 MP and 26 RW2 (the owner's, not published)",
+      "runs": [
+        {
+          "inflight": 6,
+          "photosPerSecond": 9.54,
+          "peakRssMb": 1281
+        },
+        {
+          "inflight": 8,
+          "photosPerSecond": 9.21,
+          "peakRssMb": 1481
+        },
+        {
+          "inflight": 8,
+          "photosPerSecond": 9.31,
+          "peakRssMb": 1427
+        }
+      ]
+    }
+  ],
+  "decision": "EXPORT_MEMORY_BUDGET 1.2 → 1.6 GB, default_inflight kept at most 6 (ADR-0039)"
+}

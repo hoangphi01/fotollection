@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- **Export:** large photos export about a fifth faster: more of them are worked on at once where memory allows (26 MP JPEGs, 8.9 → 10.8 photos a second).
+
 ## [0.9.9] - 2026-11-05
 
 ### Highlights
