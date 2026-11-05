@@ -66,6 +66,20 @@ impl Table {
         Self::from_fn(|c| c)
     }
 
+    /// The table as the webview's shader reads it (ADR-0039): RGBA8, red fastest, alpha 255,
+    /// `GRID`³ × 4 bytes. Rounded from u16, half a level at most at a grid point.
+    pub fn to_rgba8(&self) -> Vec<u8> {
+        let mut out = Vec::with_capacity(self.data.len() * 4);
+        for px in &self.data {
+            for &v in px {
+                // 65535 → 255 rounded: (v + 128) / 257, at most 255.
+                out.push(u8::try_from((u32::from(v) + 128) / 257).unwrap_or(u8::MAX));
+            }
+            out.push(u8::MAX);
+        }
+        out
+    }
+
     #[cfg(test)]
     fn get(&self, r: usize, g: usize, b: usize) -> [u16; 3] {
         self.data[at(r, g, b)]

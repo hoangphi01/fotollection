@@ -1178,6 +1178,31 @@ fn preview_inputs(
 }
 
 /// Bytes for `fotothumb://localhost/preview/{id}`, rendered with the current settings.
+/// The preview's mask for the webview's look while dragging (ADR-0039): where the photo is.
+pub fn preview_mask_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, IpcError> {
+    let (record, settings, place, frame) = preview_inputs(state, id)?;
+    state
+        .previews
+        .render_mask_png(
+            &record,
+            &settings,
+            frame.as_ref(),
+            place.as_deref(),
+            state.codec.as_ref(),
+        )
+        .map_err(|e| shown_error(&e, &record))
+}
+
+/// The photo's colour look as the webview's shader reads it (ADR-0039); empty when its look
+/// changes nothing.
+pub fn look_table_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, IpcError> {
+    let (record, settings, _, _) = preview_inputs(state, id)?;
+    Ok(
+        fotollection_core::preview::PreviewCache::look_table(&record, &settings)
+            .unwrap_or_default(),
+    )
+}
+
 /// The preview JPEG; `plain` leaves the colour look out, for *Before / After* (FR-079).
 pub fn preview_bytes(state: &AppState, id: PhotoId, plain: bool) -> Result<Vec<u8>, IpcError> {
     let (mut record, mut settings, place, frame) = preview_inputs(state, id)?;

@@ -93,6 +93,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [NFR-020](PRD.md#nfr-020--place-inference-speed) | Borrowing places from another device's photos | ≤ 2 s per 1,000 camera photos | `measure_borrow`, 1,000 camera + 1,000 phone photos |
 | [NFR-021](PRD.md#nfr-021--collage-sheet-speed) | Collage sheet preview; sheet export; the grid after a change of setting | ≤ 2× NFR-002; ≤ its two photos exported alone; ten sheets < 100 ms | `measure_sheet` and `measure_sheet_grid` (`crates/core/examples/`), 26 MP demo photos |
 | [FR-070](PRD.md#fr-070--looks-from-lut-files), [FR-079](PRD.md#fr-079--colour-adjustments) (planned v0.10.0; on the GPU while editing, the CPU for exports, [ADR-0039](adr/0039-gpu-for-editing-cpu-for-exports.md)) | Applying a look (33³ table, strength, every slider, grain and vignette) | ≤ 5 ms on the 1600 px preview; ≤ 60 ms on a 24 MP export | `examples/measure_look.rs` ([RESULT §21](RESULT.md#21-colour-looks-the-table-v0100-session-8)); the table alone today, sliders, grain and vignette as they land ([ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)) |
+| [FR-079](PRD.md#fr-079--colour-adjustments), [ADR-0039](adr/0039-gpu-for-editing-cpu-for-exports.md) | A slider step drawn on the GPU while dragging | ≤ 4 ms a step on REF-MAC; ΔE2000 to Rust's render mean and p99 ≤ 1 on the photo | `bench/gpu/run.mjs` (1–2 ms), `look_parity` + `bench/gpu/parity.mjs` + `bench/quality/look_parity.py` (0.13 / 0.77), RESULT §22 |
 
 ### Reference machines
 

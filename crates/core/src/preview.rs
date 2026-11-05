@@ -389,6 +389,68 @@ impl PreviewCache {
         Ok(photo)
     }
 
+    /// Where the preview shows the photo itself (255) and where the stamp, the frame, the
+    /// border or the fill cover it (0), as a grey PNG the preview's size: the webview tints
+    /// only the photo while a colour slider is dragged (ADR-0039). Found without geometry:
+    /// the photo goes through the plan once as it is and once inverted; where nothing is
+    /// drawn over it, the second is exactly the inverse of the first.
+    pub fn render_mask_png(
+        &self,
+        record: &PhotoRecord,
+        settings: &RenderSettings,
+        frame: Option<&FrameRequest>,
+        place: Option<&str>,
+        codec: &dyn JpegCodec,
+    ) -> Result<Vec<u8>, ThumbError> {
+        let source = self.source(record, codec)?;
+        let mut plain = record.clone();
+        plain.edits.look = None;
+        let mut settings = settings.clone();
+        settings.look = crate::looks::LookSettings::default();
+        let p = Self::plan_from(
+            &source,
+            &plain,
+            &settings,
+            frame,
+            place,
+            Some(PREVIEW_LONG_EDGE),
+        );
+        let photo = self.resized(&source, &p)?;
+        let mut inverted = photo.as_ref().clone();
+        inverted.data.iter_mut().for_each(|v| *v = 255 - *v);
+        let (a, b) = (finish(photo.as_ref().clone(), &p), finish(inverted, &p));
+        let mask: Vec<u8> = a
+            .data
+            .as_chunks::<3>()
+            .0
+            .iter()
+            .zip(b.data.as_chunks::<3>().0)
+            // Untouched photo: the inverted run is exactly its inverse. Anything drawn over
+            // it, even partly (a stamp's soft edge), breaks that and stays out of the tint.
+            .map(|(x, y)| if *y == x.map(|v| 255 - v) { u8::MAX } else { 0 })
+            .collect();
+        let mut out = Vec::new();
+        let mut encoder = png::Encoder::new(&mut out, a.width, a.height);
+        encoder.set_color(png::ColorType::Grayscale);
+        encoder.set_depth(png::BitDepth::Eight);
+        encoder.set_compression(png::Compression::Fast);
+        let mut writer = encoder.write_header().map_err(|e| {
+            ThumbError::Codec(crate::codec::CodecError::Encode(format!("mask PNG: {e}")))
+        })?;
+        writer.write_image_data(&mask).map_err(|e| {
+            ThumbError::Codec(crate::codec::CodecError::Encode(format!("mask PNG: {e}")))
+        })?;
+        drop(writer);
+        Ok(out)
+    }
+
+    /// The colour look's table for `record` as the webview's shader reads it (RGBA8,
+    /// [`crate::looks::Table::to_rgba8`]); `None` when its look changes nothing.
+    pub fn look_table(record: &PhotoRecord, settings: &RenderSettings) -> Option<Vec<u8>> {
+        let settings = settings.for_photo(None, None, record.edits.look.as_ref());
+        settings.look.table().map(|t| t.to_rgba8())
+    }
+
     /// Renders the preview JPEG for `record` with the current settings.
     pub fn render_jpeg(
         &self,
@@ -398,6 +460,19 @@ impl PreviewCache {
         place: Option<&str>,
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
+        let image = self.render_rgb(record, settings, frame, place, codec)?;
+        Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
+    }
+
+    /// The preview's pixels, before the JPEG: what [`Self::render_jpeg`] encodes.
+    pub fn render_rgb(
+        &self,
+        record: &PhotoRecord,
+        settings: &RenderSettings,
+        frame: Option<&FrameRequest>,
+        place: Option<&str>,
+        codec: &dyn JpegCodec,
+    ) -> Result<RgbImage, ThumbError> {
         let source = self.source(record, codec)?;
         let p = Self::plan_from(
             &source,
@@ -407,8 +482,7 @@ impl PreviewCache {
             place,
             Some(PREVIEW_LONG_EDGE),
         );
-        let image = finish(self.resized(&source, &p)?.as_ref().clone(), &p);
-        Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
+        Ok(finish(self.resized(&source, &p)?.as_ref().clone(), &p))
     }
 
     /// A collage sheet's preview JPEG (FR-035): both photos from their cached sources,
@@ -561,6 +635,66 @@ mod tests {
             .push(folder, &file, &PhotoMeta::default())
             .ok_or("photo")?;
         Ok(lib.record(id).ok_or("record")?)
+    }
+
+    /// ADR-0039: the mask is the photo itself, 255, and 0 where the 3 mm border or the date
+    /// stamp cover it; it has the preview's size.
+    #[test]
+    fn fr_079_the_mask_marks_the_photo_not_the_border_or_the_stamp() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let record = photo(dir.path(), 3000, 2000)?;
+        let codec = default_codec();
+        let settings = RenderSettings {
+            border: true,
+            ..RenderSettings::default()
+        };
+        let cache = PreviewCache::new();
+        let png = cache.render_mask_png(&record, &settings, None, None, codec.as_ref())?;
+        let jpeg = cache.render_jpeg(&record, &settings, None, None, codec.as_ref())?;
+        let preview = crate::codec::decode_image(codec.as_ref(), &jpeg)?.image;
+        let mut reader = png::Decoder::new(std::io::Cursor::new(png)).read_info()?;
+        let mut mask = vec![0; reader.output_buffer_size().ok_or("size")?];
+        let info = reader.next_frame(&mut mask)?;
+        assert_eq!((info.width, info.height), (preview.width, preview.height));
+        let at = |x: u32, y: u32| mask[(y * info.width + x) as usize];
+        assert_eq!(at(1, 1), 0, "the border");
+        assert_eq!(at(info.width / 2, info.height / 2), 255, "the photo");
+        // The stamp sits at the bottom right inside the border: some of that corner is 0.
+        let corner = (info.height * 3 / 4..info.height - 20)
+            .flat_map(|y| (info.width * 3 / 4..info.width - 20).map(move |x| (x, y)))
+            .filter(|&(x, y)| at(x, y) == 0)
+            .count();
+        assert!(corner > 50, "the stamp is left out: {corner}");
+        Ok(())
+    }
+
+    /// ADR-0039: the shader's table is the CPU's, in RGBA8; no table without a look.
+    #[test]
+    fn fr_079_the_look_table_goes_to_the_webview_as_rgba8() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let mut record = photo(dir.path(), 300, 200)?;
+        let mut settings = RenderSettings::default();
+        assert!(PreviewCache::look_table(&record, &settings).is_none());
+        settings.look.adjust.saturation = 40;
+        let table = PreviewCache::look_table(&record, &settings).ok_or("a table")?;
+        let n = crate::looks::GRID;
+        assert_eq!(table.len(), n * n * n * 4);
+        // A photo's own look wins: black and white on this one.
+        record.edits.look = Some(crate::looks::LookSettings {
+            adjust: crate::looks::Adjust {
+                mono: crate::looks::Mono::Neutral,
+                ..crate::looks::Adjust::default()
+            },
+            ..crate::looks::LookSettings::default()
+        });
+        let mono = PreviewCache::look_table(&record, &settings).ok_or("its own")?;
+        // Pure red at grid (32, 0, 0): grey, alpha 255.
+        let red = &mono[32 * 4..32 * 4 + 4];
+        assert!(
+            red[0] == red[1] && red[1] == red[2] && red[3] == 255,
+            "{red:?}"
+        );
+        Ok(())
     }
 
     #[test]

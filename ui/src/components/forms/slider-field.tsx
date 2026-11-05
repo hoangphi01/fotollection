@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Slider } from '@/components/ui/slider'
+import { setDragging } from '@/lib/drag-state'
 import { Field, ValueRow } from './field'
 
 type SliderFieldProps = {
@@ -74,6 +75,8 @@ export function SliderField({
           setDraft(v)
           if (!dragging.current) {
             dragging.current = true
+            // The preview follows on the GPU while the drag lasts (ADR-0039).
+            setDragging(true)
             onChange(v, true)
             return
           }
@@ -86,6 +89,7 @@ export function SliderField({
           pending.current = null
           if (v !== undefined) onChange(v, false)
           dragging.current = false
+          setDragging(false)
           setDraft(null)
         }}
         onDoubleClick={() => onChange(reset, true)}

@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Preview:** dragging a colour slider is drawn on the graphics card where the computer has a capable one, about ten times quicker a step, so the photo follows the slider; the date stamp, the frame and the border are never tinted. The app decides by itself, and Rust's render takes over when the drag ends, so what settles is what prints.
 - **Export:** large photos export about a fifth faster: more of them are worked on at once where memory allows (26 MP JPEGs, 8.9 → 10.8 photos a second).
 
 ## [0.9.9] - 2026-11-05

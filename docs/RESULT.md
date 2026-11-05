@@ -426,3 +426,30 @@ The engine of [FR-079](PRD.md#fr-079--colour-adjustments) and [FR-070](PRD.md#fr
 - **Accuracy:** the identity table gives back every grey and a sample of 256³ exactly; against tetrahedral interpolation in f64 on a strong table, 200,000 random pixels differ by at most one level (`fr_079_*` in `looks.rs`).
 - The cost does not depend on what is set: more sliders only change the table, kept by the hash of what built it. **Session 9 (2026-11-05):** with the sliders' real maths (warmth and tint in linear light, the tone curve, saturation and vibrance in OKLab, fade, both tints), building the table with every slider set takes 2.56 ms on 8 threads and 5.03 ms on 2, so a drag step costs about 5 ms on the preview, table and apply together.
 - **A drag that follows the pointer (2026-11-05):** the owner found the preview "not smooth like Lightroom" while dragging. Measured, one step of a drag (a new look, the 1600 px preview JPEG, `measure_preview` with `LOOK_DRAG=1`, two 26 MP CC0 photos): **23.5 and 20.8 ms**, of which the look was 3–5 ms; the rest was the same resize at every step. The preview now keeps the cropped and resized photo and only applies the look, the stamp and the encode again: **15.6 and 11.1 ms**. Two more causes were not in Rust's time: every step wrote `settings.json` with an fsync (about 4 ms measured on this disk) on the main thread, now written by the autosave thread within 250 ms; and the webview started a new image for every step and dropped the one loading, so none landed during a drag: one now loads at a time, the newest next (`use-shown-src.ts`, LESSONS).
+
+## 22. The GPU while editing, and every core for exports (2026-11-05)
+
+Measured on REF-MAC (M3) loaded, before the GPU path was built ([ADR-0039](adr/0039-gpu-for-editing-cpu-for-exports.md)); the numbers are in `bench/results/`.
+
+**One step of a colour slider's drag** (`measure_preview` with `LOOK_DRAG=1`, two 26 MP CC0 photos; `bench/gpu/run.mjs`):
+
+| Part | CPU path today | GPU path |
+|---|---|---|
+| The look's table | 0.9–1.3 ms (Rust) | the same table, 140 KB to the webview |
+| The look, the stamp, a copy | 2.2 ms (Rust) | 1 ms WebKit, 2 ms Chromium Metal, 16.5 ms SwiftShader |
+| Screen JPEG encode | 7.4–10.6 ms (261–765 KB) | none |
+| Webview decode of the 1600 px JPEG | 9 ms Chromium, 15 ms WebKit | none |
+| Once per drag | — | upload the plain photo and its mask: 30 ms WebKit, 7–66 ms Chromium |
+
+**Parity of the GPU look** (`look_parity` → `bench/gpu/parity.mjs` → `bench/quality/look_parity.py`), a strong look on every slider with the border and the stamp on, 1600 × 1067: ΔE2000 on the photo mean **0.131**, p99 **0.774**, in WebKit and Chromium alike; 15 of 1.5 million pixels over 2, by the stamp's soft shadow. The stamp, the border and the frame are left out by the mask. The machine's own test (`GpuLook.worthIt`) chose the GPU in WebKit and Chromium Metal and Rust's path with SwiftShader.
+
+**Export, photos in flight** (`measure_folder --discard-output --inflight N`):
+
+| In flight | 2 | 4 | 6 | 8 |
+|---|---|---|---|---|
+| 22 CC0 JPEGs, 24–26 MP | 4.94 /s, 485 MB | 9.35 /s, 829 MB | 11.50 /s, 940 MB | 12.50 /s, 1,214 MB |
+| The Prague trip (396 JPEG + 26 RW2) | | | 9.54 /s, 1.28 GB | 9.21–9.31 /s, 1.43–1.48 GB |
+
+The app chose 4 for the 26 MP photos (the memory budget); with a 1.6 GB budget it chooses 6: **10.82 photos/s** instead of 8.91 (+21 %), peak 1.08 GB.
+
+**A RAW develop's phases** (`raw_phases`, a 24 MP Ricoh GR III DNG, warm runs): parse and decompress 107–109 ms (serial, the CPU's), demosaic 38–51, develop 153–155, embedded JPEG 52–53, the camera's look 77, finish 49–63 ms.

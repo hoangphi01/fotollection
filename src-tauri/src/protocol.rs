@@ -29,6 +29,10 @@ enum Route {
     Thumb(PhotoId),
     /// The preview; `true` without the colour look, for *Before / After* (FR-079).
     Preview(PhotoId, bool),
+    /// Where the preview shows the photo, a grey PNG, for the look on the GPU (ADR-0039).
+    Mask(PhotoId),
+    /// The photo's colour look as a 33³ RGBA8 table, for the look on the GPU (ADR-0039).
+    Look(PhotoId),
     /// A full-resolution region of the preview, for zoom.
     Region(PhotoId, Region),
     /// Upright, uncropped T2 image for the crop editor; `true` turns it as the photo sits
@@ -92,8 +96,11 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
     if parts.next().is_some() {
         return None;
     }
+    let flag = |name: &str| query.unwrap_or_default().split('&').any(|p| p == name);
     match kind {
         "thumb" => Some(Route::Thumb(id)),
+        "preview" if flag("mask=1") => Some(Route::Mask(id)),
+        "look" => Some(Route::Look(id)),
         "preview" => Some(match region(query).ok()? {
             Some(region) => Route::Region(id, region),
             None => Route::Preview(
@@ -124,11 +131,20 @@ fn fail(responder: UriSchemeResponder, error: &crate::state::IpcError) {
 }
 
 fn respond(responder: UriSchemeResponder, status: StatusCode, body: Vec<u8>, jpeg: bool) {
+    respond_as(responder, status, body, jpeg.then_some("image/jpeg"));
+}
+
+fn respond_as(
+    responder: UriSchemeResponder,
+    status: StatusCode,
+    body: Vec<u8>,
+    kind: Option<&str>,
+) {
     let mut builder = Response::builder()
         .status(status)
         .header(header::CACHE_CONTROL, "no-cache");
-    if jpeg {
-        builder = builder.header(header::CONTENT_TYPE, "image/jpeg");
+    if let Some(kind) = kind {
+        builder = builder.header(header::CONTENT_TYPE, kind);
     }
     if let Ok(response) = builder.body(body) {
         responder.respond(response);
@@ -181,6 +197,19 @@ pub fn handle<R: Runtime>(
                 Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
                 Err(error) => fail(responder, &error),
             },
+            Route::Mask(id) => match crate::commands::preview_mask_bytes(&state, id) {
+                Ok(bytes) => respond_as(responder, StatusCode::OK, bytes, Some("image/png")),
+                Err(error) => fail(responder, &error),
+            },
+            Route::Look(id) => match crate::commands::look_table_bytes(&state, id) {
+                Ok(bytes) => respond_as(
+                    responder,
+                    StatusCode::OK,
+                    bytes,
+                    Some("application/octet-stream"),
+                ),
+                Err(error) => fail(responder, &error),
+            },
             Route::Preview(id, plain) => match preview_bytes(&state, id, plain) {
                 Ok(bytes) => {
                     crate::timing::mark(&crate::timing::FIRST_PREVIEW, "first preview");
@@ -209,6 +238,14 @@ mod tests {
         assert!(matches!(
             route("/preview/4", Some("rev=3&plain=1")),
             Some(Route::Preview(PhotoId(4), true))
+        ));
+        assert!(matches!(
+            route("/preview/4", Some("rev=3&mask=1")),
+            Some(Route::Mask(PhotoId(4)))
+        ));
+        assert!(matches!(
+            route("/look/9", Some("rev=3")),
+            Some(Route::Look(PhotoId(9)))
         ));
         assert!(route("/thumb/../etc", None).is_none());
         assert!(route("/thumb/7/extra", None).is_none());

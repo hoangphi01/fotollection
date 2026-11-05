@@ -19,6 +19,7 @@ import { KeyHints } from '@/components/layout/key-hints'
 import { StageSpinner } from '@/components/layout/stage-spinner'
 import { sendTo } from './send-to'
 import { useShownSrc } from './use-shown-src'
+import { useGpuLook } from './use-gpu-look'
 import { FrameSection } from '@/features/frame/frame-section'
 import type { FontsApi } from '@/features/fonts/use-fonts'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
@@ -110,6 +111,8 @@ export function PreviewDialog({
   const [before, setBefore] = useState(false)
   const src = photo ? `${previewUrl(photo.id, revision)}${before ? '&plain=1' : ''}` : ''
   const { src: shownSrc, error: shownError } = useShownSrc(photo?.id, src)
+  // While a colour slider is dragged, the look is drawn on the GPU (ADR-0039).
+  const { attach: attachGpu, active: onGpu } = useGpuLook(photo?.id, revision, shownSrc === src)
   // The crop editor and the drag need this photo's geometry; the crop row only shows it.
   const geometryQuery = useLiveQuery(photo ? String(photo.id) : null, revision, loadGeometry)
   const geometry = geometryQuery.current
@@ -234,10 +237,18 @@ export function PreviewDialog({
                   className={cn(
                     'max-h-full max-w-full animate-in object-contain stage-photo fade-in-0',
                     zoom.zoomed || canDrag ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in',
+                    onGpu && 'hidden',
                   )}
                 />
               )}
-              {sharp.layer && (
+              {/* The same place and size as the image: it stands in for it while drawing. */}
+              <canvas
+                ref={attachGpu}
+                aria-hidden
+                style={{ transform: zoom.transform }}
+                className={cn('max-h-full max-w-full stage-photo', !onGpu && 'hidden')}
+              />
+              {sharp.layer && !onGpu && (
                 <img
                   src={sharp.layer.src}
                   alt=""

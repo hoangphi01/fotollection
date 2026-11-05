@@ -38,5 +38,21 @@
       15
     ]
   },
-  "parityDeltaE": null
+  "parity": {
+    "photo": "anlagensee-mit-nymphengruppe-1.jpg (CC0), 1600×1067, a strong look on every slider, the border and the date stamp on",
+    "command": "look_parity → bench/gpu/parity.mjs → bench/quality/look_parity.py",
+    "webkit": {
+      "photoMean": 0.131,
+      "photoP99": 0.774,
+      "photoMax": 5.794,
+      "over2": 15
+    },
+    "chromiumMetal": {
+      "photoMean": 0.131,
+      "photoP99": 0.774,
+      "photoMax": 5.794,
+      "over2": 15
+    },
+    "note": "the few pixels over 2 sit by the date stamp's soft shadow; the stamp itself is never tinted (mask)"
+  }
 }

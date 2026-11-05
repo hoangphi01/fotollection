@@ -49,3 +49,13 @@ export function sheetUrl(first: number, second: number | null, revision: number,
   const path = second === null ? `${first}` : `${first}/${second}`
   return `${base}/sheet/${path}?rev=${revision}${small ? '&small=1' : ''}`
 }
+
+/** Where the preview shows the photo itself, a grey PNG, for the look on the GPU (ADR-0039). */
+export function maskUrl(id: number, revision: number): string {
+  return `${previewUrl(id, revision)}&mask=1`
+}
+
+/** The photo's colour look as a 33³ RGBA8 table; empty when it changes nothing (ADR-0039). */
+export function lookTableUrl(id: number, revision: number): string {
+  return `${base}/look/${id}?rev=${revision}`
+}

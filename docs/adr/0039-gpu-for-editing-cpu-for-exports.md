@@ -64,3 +64,15 @@ Option 3.
 - Two implementations of the interpolation (Rust and GLSL) must not drift: the parity test guards it, and curves are computed only in Rust.
 - New rows when each stage lands: OPTIMIZATION budgets and log, ERROR_CONTROL codes for GPU fallbacks, a setting in DATABASE §6, LESSONS for driver quirks.
 - The installer budget (NFR-008) decides about `wgpu`. The `.msi` and amd64 `.deb` are already just over it at v0.9.8.
+
+## Stage results (2026-11-05)
+
+Measured before building ([RESULT §22](../RESULT.md#22-the-gpu-while-editing-and-every-core-for-exports-2026-11-05), `bench/results/{drag,gpu,inflight,raw-phases}.json`):
+
+- **A slider step on the CPU:** 10.7–14 ms in Rust, of which the screen JPEG encode is 7–11 ms; then 9–15 ms for the webview to decode it. **On the GPU (WebGL2):** 1 ms in WebKit, 2 ms in Chromium with Metal; 16.5 ms with SwiftShader, a machine without a GPU.
+- **Stage 3 is built**, with three choices made on the way:
+  - **The mask** keeps the date stamp, the frame, the border and the fill untinted while dragging. It needs no geometry: Rust renders the plain photo once as it is and once inverted, and a pixel belongs to the photo where the second run is exactly the inverse of the first.
+  - **The parity** against Rust's own render, on a strong look with the border and the stamp: ΔE2000 mean 0.13, p99 0.77 on the photo in WebKit and in Chromium. 15 pixels in 1.5 million are over 2, by the stamp's soft shadow.
+  - **No switch** (owner, 2026-11-05: "an editor, not an Airbus cockpit"). The app decides once per session, at the first drag (`GpuLook.worthIt`): the CPU path when there is no WebGL2, when the renderer is a software one (SwiftShader, llvmpipe, WARP), or when a test step at the preview's size takes 8 ms or more. Linux takes the same test instead of being off. A failure falls back to the CPU path for the session, silently: nothing is shown, so no `ERR-` code.
+- **Exports:** a photo is decoded and encoded on one core, so throughput follows the photos in flight. The memory budget had held 26 MP photos to 4; it is 1.6 GB now, and 26 MP JPEGs go from 8.9 to 10.8 photos/s. The cap stays at 6, because on the Prague trip 8 in flight was no faster and used 0.2 GB more.
+- **RAW (stage 4 later):** decompressing takes 107 ms and stays on the CPU; demosaic to finish, about 280 of a 24 MP DNG's 390 ms, would go to the GPU.
