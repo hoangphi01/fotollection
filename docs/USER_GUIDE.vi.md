@@ -458,11 +458,11 @@ Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên t�
 
 <!-- chapter: colour -->
 
-## 21. Màu: Hay dùng và Công cụ
+## 21. Màu: Cơ bản và Công cụ
 
 Hai thẻ chỉnh màu ảnh, nằm giữa **Khổ in / xuất** và **Dấu ngày**, trong panel Pro, panel Ghép ảnh và các bản xem trước. Chúng đổi màu mọi ảnh; trong bản xem trước một ảnh thì chỉ đổi riêng ảnh đó, như dấu ngày, và **Dùng look này cho mọi ảnh** biến look của ảnh đó thành look chung.
 
-- **Hay dùng** hiện bốn thanh: **Sáng**, **Tương phản**, **Ấm / lạnh** và **Bão hoà**. **Thêm** mở thêm **Vùng sáng**, **Vùng tối**, **Tint** và **Rực màu**. Rê chuột lên một thanh để đọc nó làm gì; nhấp đúp để đưa về 0.
+- **Cơ bản** hiện bốn thanh: **Sáng**, **Tương phản**, **Ấm / lạnh** và **Bão hoà**. **Thêm** mở thêm **Vùng sáng**, **Vùng tối**, **Tint** và **Rực màu**. Rê chuột lên một thanh để đọc nó làm gì; nhấp đúp để đưa về 0.
 - **Công cụ** gập sẵn; nhấp vào tiêu đề để mở. **Fade** nâng điểm đen, **Nhuộm vùng tối** và **Nhuộm vùng sáng** phủ một màu lên phần tối và phần sáng (có **Cân bằng** giữa hai vùng), còn **Trắng đen** chuyển ảnh sang xám qua một kính lọc: lọc đỏ làm trời xanh tối nhất, lọc xanh làm lá sáng lên.
 - Thẻ đang gập vẫn báo có bao nhiêu thanh đã chỉnh ("Công cụ · đã chỉnh 2"); nút ↺ trên tiêu đề đặt lại cả thẻ.
 - Trong bản xem trước, giữ nút **Trước** (hoặc phím **\\**) để xem ảnh khi chưa có look.

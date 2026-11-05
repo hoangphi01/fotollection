@@ -263,7 +263,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 
 ## 6. App settings
 
-`settings.json` in the app config dir is the **first persisted file** (implemented). It holds app-wide state that must survive restarts:
+`settings.json` in the app config dir is the **first persisted file** (implemented). It holds app-wide state that must survive restarts. A print setting changed in the app is written by the autosave thread within 250 ms, one write for a whole slider drag, and at once when the app quits (`AppState::persist`, `flush_settings`, v0.10.0):
 
 ```json
 {

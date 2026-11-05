@@ -13,8 +13,8 @@ use std::sync::{Arc, Mutex};
 use crate::codec::{EncodeOptions, JpegCodec, decode_image};
 use crate::image::{RgbImage, apply_orientation};
 use crate::library::{PhotoId, PhotoRecord};
-use crate::plan::{FrameRequest, PlanInput, plan};
-use crate::render::{fit_long_edge, render};
+use crate::plan::{CropRect, FrameRequest, PlanInput, RenderPlan, plan};
+use crate::render::{crop_and_resize, finish, fit_long_edge, render};
 use crate::settings::RenderSettings;
 use crate::thumbs::ThumbError;
 
@@ -118,6 +118,29 @@ pub struct PreviewCache {
     full: Mutex<Vec<(SourceKey, Full)>>,
     /// Small upright sources for the collage grid's sheets, from the photos' thumbnails.
     small: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
+    /// The last preview photo cropped and resized, before its look and stamp.
+    resized: Mutex<Option<Resized>>,
+}
+
+/// A preview photo cropped and resized, and what it was made from: a slider's drag changes
+/// only the look, so each step reuses it and skips the resize (FR-079, OPTIMIZATION §5).
+struct Resized {
+    source: Arc<RgbImage>,
+    crop: CropRect,
+    size: (u32, u32),
+    straighten: u32,
+    linear_light: bool,
+    photo: Arc<RgbImage>,
+}
+
+impl Resized {
+    fn fits(&self, source: &Arc<RgbImage>, p: &RenderPlan) -> bool {
+        Arc::ptr_eq(&self.source, source)
+            && self.crop == p.crop
+            && self.size == (p.out_width, p.out_height)
+            && self.straighten == p.straighten.to_bits()
+            && self.linear_light == p.linear_light
+    }
 }
 
 impl PreviewCache {
@@ -136,6 +159,9 @@ impl PreviewCache {
         }
         if let Ok(mut small) = self.small.lock() {
             small.clear();
+        }
+        if let Ok(mut resized) = self.resized.lock() {
+            *resized = None;
         }
     }
 
@@ -301,6 +327,19 @@ impl PreviewCache {
         place: Option<&str>,
         max_long_edge: Option<u32>,
     ) -> Result<RgbImage, ThumbError> {
+        let p = Self::plan_from(source, record, settings, frame, place, max_long_edge);
+        Ok(render(source, &p)?)
+    }
+
+    /// The plan [`Self::render_from`] renders with.
+    fn plan_from(
+        source: &RgbImage,
+        record: &PhotoRecord,
+        settings: &RenderSettings,
+        frame: Option<&FrameRequest>,
+        place: Option<&str>,
+        max_long_edge: Option<u32>,
+    ) -> RenderPlan {
         // The preview shows what is exported, for prints or for social media (FR-053).
         let settings = settings.for_target();
         let settings = settings.as_ref();
@@ -313,7 +352,7 @@ impl PreviewCache {
             record.edits.caption.as_deref(),
             record.edits.look.as_ref(),
         );
-        let p = plan(&PlanInput {
+        plan(&PlanInput {
             width: source.width,
             height: source.height,
             capture,
@@ -325,8 +364,29 @@ impl PreviewCache {
             place,
             straighten: record.edits.straighten,
             ratio: None,
-        });
-        Ok(render(source, &p)?)
+        })
+    }
+
+    /// The cropped and resized photo for `p`, kept from the last preview when nothing but
+    /// the look or the stamp changed since. Never held while the resize runs.
+    fn resized(&self, source: &Arc<RgbImage>, p: &RenderPlan) -> Result<Arc<RgbImage>, ThumbError> {
+        if let Ok(kept) = self.resized.lock()
+            && let Some(kept) = kept.as_ref().filter(|r| r.fits(source, p))
+        {
+            return Ok(Arc::clone(&kept.photo));
+        }
+        let photo = Arc::new(crop_and_resize(source, p)?);
+        if let Ok(mut kept) = self.resized.lock() {
+            *kept = Some(Resized {
+                source: Arc::clone(source),
+                crop: p.crop,
+                size: (p.out_width, p.out_height),
+                straighten: p.straighten.to_bits(),
+                linear_light: p.linear_light,
+                photo: Arc::clone(&photo),
+            });
+        }
+        Ok(photo)
     }
 
     /// Renders the preview JPEG for `record` with the current settings.
@@ -339,14 +399,15 @@ impl PreviewCache {
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
         let source = self.source(record, codec)?;
-        let image = Self::render_from(
+        let p = Self::plan_from(
             &source,
             record,
             settings,
             frame,
             place,
             Some(PREVIEW_LONG_EDGE),
-        )?;
+        );
+        let image = finish(self.resized(&source, &p)?.as_ref().clone(), &p);
         Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
     }
 

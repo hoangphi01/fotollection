@@ -178,15 +178,20 @@ fn prepare_window(app: &tauri::AppHandle) {
     }
 }
 
-/// Autosave (NFR-013): at most ~1 s after the last edit, atomically.
+/// Autosave (NFR-013): the project at most ~1 s after the last edit, the settings within a
+/// quarter second, atomically.
 fn spawn_autosave(handle: tauri::AppHandle) {
     std::thread::spawn(move || {
+        let mut tick = 0u8;
         loop {
-            std::thread::sleep(std::time::Duration::from_secs(1));
+            std::thread::sleep(std::time::Duration::from_millis(250));
+            tick = tick.wrapping_add(1);
             let state = handle.state::<state::AppState>();
-            if state
-                .project_dirty
-                .swap(false, std::sync::atomic::Ordering::Relaxed)
+            state.flush_settings();
+            if tick.is_multiple_of(4)
+                && state
+                    .project_dirty
+                    .swap(false, std::sync::atomic::Ordering::Relaxed)
             {
                 state.save_project();
             }
@@ -360,6 +365,10 @@ fn on_run_event(handle: &tauri::AppHandle, event: tauri::RunEvent) {
     {
         api.prevent_exit();
         let _ = blocked.emit(handle);
+    }
+    // A setting changed in the last quarter second is written before the app goes.
+    if let tauri::RunEvent::Exit = &event {
+        handle.state::<state::AppState>().flush_settings();
     }
     let _ = (handle, event);
 }

@@ -8,7 +8,8 @@
 //!
 //! Peak RSS comes from the caller: run it under `/usr/bin/time -l` with one photo.
 //! `RAYON_NUM_THREADS=2` approximates a weak two-core machine. `SHARE_FILL=1` measures a share
-//! export to Instagram with a square fill round each photo (FR-075).
+//! export to Instagram with a square fill round each photo (FR-075). `LOOK_DRAG=1` also times
+//! one step of a colour slider's drag: the preview rendered with a new look each time (FR-079).
 
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::cast_precision_loss)]
 
@@ -51,6 +52,29 @@ fn region(image: &RgbImage, x: u32, y: u32, w: u32, h: u32) -> RgbImage {
         out.extend_from_slice(&image.data[start..start + w as usize * 3]);
     }
     RgbImage::from_raw(w, h, out).unwrap()
+}
+
+/// One step of a slider's drag (FR-079): a new look each time, so its table is built too,
+/// as when the preview follows the pointer.
+fn drag_step(
+    cache: &PreviewCache,
+    record: &fotollection_core::library::PhotoRecord,
+    settings: &RenderSettings,
+    codec: &dyn fotollection_core::codec::JpegCodec,
+) {
+    let mut step = settings.clone();
+    let mut runs = Vec::new();
+    for i in 0..20i8 {
+        step.look.adjust.brightness = i;
+        step.look.adjust.saturation = 10;
+        let t = Instant::now();
+        std::hint::black_box(cache.render_jpeg(record, &step, None, None, codec).unwrap());
+        runs.push(t.elapsed().as_secs_f64() * 1e3);
+    }
+    println!(
+        "drag step (new look each time, preview JPEG): median {:.1} ms",
+        median(runs)
+    );
 }
 
 fn main() {
@@ -102,6 +126,10 @@ fn main() {
                 .render_jpeg(&record, &settings, None, None, codec.as_ref())
                 .unwrap()
         });
+
+        if std::env::var_os("LOOK_DRAG").is_some() {
+            drag_step(&cache, &record, &settings, codec.as_ref());
+        }
 
         let p = plan(&PlanInput {
             width: full.width,

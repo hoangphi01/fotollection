@@ -46,7 +46,13 @@ pub enum RenderError {
 /// Crops (and, for previews, downsizes) `source` per the plan, applies the colour look,
 /// draws the stamp, and composes the frame when the plan has one.
 pub fn render(source: &RgbImage, plan: &RenderPlan) -> Result<RgbImage, RenderError> {
-    let mut photo = crop_and_resize(source, plan)?;
+    Ok(finish(crop_and_resize(source, plan)?, plan))
+}
+
+/// What [`render`] does after the crop and resize: the look, the stamp, the frame, the
+/// border and the fill. A preview that only changes its look reuses the resized photo and
+/// starts here (FR-079, OPTIMIZATION §5).
+pub fn finish(mut photo: RgbImage, plan: &RenderPlan) -> RgbImage {
     // The look before anything drawn on the print, so the stamp keeps its colour (FR-079).
     if let Some(table) = &plan.look {
         crate::looks::apply(&mut photo, table);
@@ -60,13 +66,14 @@ pub fn render(source: &RgbImage, plan: &RenderPlan) -> Result<RgbImage, RenderEr
         (None, None) => photo,
     };
     // A shared photo's fill goes round everything else (FR-075).
-    Ok(match &plan.pad {
+    match &plan.pad {
         Some(pad) => compose_mat(&out, pad),
         None => out,
-    })
+    }
 }
 
-fn crop_and_resize(source: &RgbImage, plan: &RenderPlan) -> Result<RgbImage, RenderError> {
+/// The source pixels the plan keeps, cropped, straightened and resized to the plan's size.
+pub fn crop_and_resize(source: &RgbImage, plan: &RenderPlan) -> Result<RgbImage, RenderError> {
     let c = plan.crop;
     if crate::straighten::is_straightened(plan.straighten) {
         return crate::straighten::render(

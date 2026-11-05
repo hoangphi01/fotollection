@@ -883,6 +883,16 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Import** shows what the file holds and asks before replacing the settings in place; a newer file than the app reads is refused with its `ERR-` code; every part goes through the validators of its own kind (fonts, logos, LUTs, sizes), as untrusted input.
 - **Privacy:** the file holds the addresses typed on postcards; the dialog says so, and it is written only where the user chooses. Nothing leaves the machine otherwise.
 
+### FR-083 — A personal photo calendar
+
+**P2 (later, not scheduled; owner's idea 2026-11-05).** Beside postcards, a calendar made from one's own photos, to print or to share.
+
+- **A calendar engine** built in, offline: it lays out any year (or a run of months from any month), weeks starting on Monday or Sunday, week numbers optional, in the interface language.
+- **Important days:** the user marks dates (birthdays, anniversaries, trips) with a short label; public holidays of a chosen country could come from a bundled table, never from the network.
+- **Photos:** one per month (or a cover and twelve), chosen from the library with the same crop, look ([FR-079](#fr-079--colour-adjustments)) and print quality as a print.
+- **Export:** a multi-page PDF, or one PNG per page, at the print size's resolution.
+- Layouts to study first: 7-Eleven Japan's multicopy calendars and split prints (research 2026-11-05).
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

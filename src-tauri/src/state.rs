@@ -125,6 +125,9 @@ pub struct AppState {
     /// False when the file was written by a newer app: never overwrite it.
     pub store_writable: AtomicBool,
     store_lock: Mutex<()>,
+    /// A setting changed since `settings.json` was last written: the autosave thread writes
+    /// it within a quarter second, so a slider's drag is one write, not one per step (FR-079).
+    pub settings_dirty: AtomicBool,
     /// Session project (FR-023): autosaved by a background thread when dirty.
     pub project_path: PathBuf,
     pub project_dirty: AtomicBool,
@@ -246,6 +249,7 @@ impl AppState {
             font_dir,
             store_writable: AtomicBool::new(writable),
             store_lock: Mutex::new(()),
+            settings_dirty: AtomicBool::new(false),
             project_path,
             project_dirty: AtomicBool::new(false),
             startup_done: AtomicBool::new(false),
@@ -268,10 +272,19 @@ impl AppState {
         })
     }
 
-    /// A print setting changed: save `settings.json` and mark the document edited.
+    /// A print setting changed: mark the document edited, and `settings.json` for the
+    /// autosave thread to write (within 250 ms; at once on quit, `flush_settings`). Writing
+    /// here, on the main thread, cost an fsync (about 4 ms) on every step of a drag.
     pub fn persist(&self) {
         self.mark_edited();
-        self.save_settings();
+        self.settings_dirty.store(true, Ordering::Relaxed);
+    }
+
+    /// Writes `settings.json` when a change is waiting.
+    pub fn flush_settings(&self) {
+        if self.settings_dirty.swap(false, Ordering::Relaxed) {
+            self.save_settings();
+        }
     }
 
     /// Marks the document as having unsaved changes (FR-023).

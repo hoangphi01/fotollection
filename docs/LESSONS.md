@@ -396,3 +396,15 @@
 - **Seen:** the zoom buttons' three-line hint, at the bottom of the preview, was cut off by the window's edge.
 - **Why:** `HintLayer` chose above or below with a fixed 40 px allowance, the height of a one-line hint; the new hint was three lines.
 - **Rule:** place a floating element after measuring it (`useLayoutEffect`, hidden until placed), never by an assumed size. Check every hint near a window edge with its longest text, in both languages.
+
+### A preview that restarts on every step never lands during a drag (FR-079)
+
+- **Seen:** dragging a colour slider, the preview hardly moved, then jumped when the drag ended; the owner compared it with Lightroom.
+- **Why:** three costs on every step. The webview started a new image for each new URL and dropped the one still loading, so with a step every 16 ms and a render of 20–40 ms none finished; Rust resized the photo again although only the look changed; and the main thread wrote `settings.json` with an fsync.
+- **Rule:** a live view loads one image at a time and the newest next (`use-shown-src.ts`); what a gesture does not change is kept between its steps (`PreviewCache::resized`); a file written for a setting is written off the main thread, coalesced, and flushed on quit. Measure one step of the gesture (`measure_preview LOOK_DRAG=1`) before and after.
+
+### Top-level keys of settings.json are snake_case (tests)
+
+- **Seen:** a v13 fixture written with `"recentAddresses"` would not load ("unknown field").
+- **Why:** inside `render`, `frame` and `ui` the keys are camelCase, but the file's own top-level keys (`schema_version`, `recent_addresses`) are snake_case, and unknown fields are refused.
+- **Rule:** write a fixture by saving one from the code, or copy the previous fixture; never type a key from the docs' example.
