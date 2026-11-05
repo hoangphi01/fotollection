@@ -9,6 +9,19 @@
   </div>
 </section>
 
+{%- comment %} How it is fast: the choices behind the numbers below (ADR-0038, ADR-0039). {% endcomment %}
+<section class="section tint" id="how">
+  <div class="wrap">
+    <h2>{{ t.perf_how_title }}</h2>
+    <p class="lead narrow">{{ t.perf_how_lead }}</p>
+    <ol class="how-list">
+      {%- for item in t.perf_how_items %}
+      <li><strong>{{ item.t }}.</strong> {{ item.d }}</li>
+      {%- endfor %}
+    </ol>
+  </div>
+</section>
+
 {%- assign parts = "speed:budgets,bench|trip:trip|memory:memory|print:quality|share:share|raw:raw|best:bestshot" | split: "|" -%}
 {%- for part in parts -%}
 {%- assign kv = part | split: ":" -%}

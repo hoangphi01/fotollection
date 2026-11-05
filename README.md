@@ -60,8 +60,9 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | ✂️ | **Batch crop** to 11 EU print sizes (9×13 … 20×30, square, strip), your own sizes (e.g. 4 × 6 in) or the photo's **original** ratio, with an adjustable crop per photo | 1 |
 | 🎚️ | **Three modes** (new in v0.9.0): **Simple**, one photo at a time, ↑ keep, ↓ drop, then export; **Collage**, two photos on one print like a half-frame camera (a 10 × 15 holds two 10 × 7.5), with a suggested size, a cut line and drag to reorder; **Pro**, every control | 1 |
 | ✉️ | **Postcards** (new in v0.9.4): in Collage mode, one photo and a postcard back on each 10 × 15 print, a dashed stamp box and writing lines, the text typed in a typewriter or a handwriting face or written by hand, one address for the whole set | 1 |
+| 🎨 | **Colour** (new in v0.9.9): **Faves** (brightness, contrast, warm / cool, saturation, then highlights, shadows, tint, vibrance) and **Tools** (fade, toned shadows and highlights, black and white through a filter), for every photo or one; the stamp and the border are never tinted, and a photo with nothing set prints as before | 2 |
 | 🔲 | **3 mm border** inside the print size on every print, with or without the info frame (new in v0.9.0) | 2 |
-| ⭐ | **Culling**: stars, pick/reject flags and filters; export writes exactly the filtered set | 1 |
+| ⭐ | **Culling**: stars, pick/reject flags and filters (flag, stars, RAW or not), RAW photos badged in the grid; export writes exactly the filtered set | 1 |
 | ✨ | **Best-shot suggestions**: groups bursts and similar shots and suggests the best of each (sharpest, eyes open, no shake), with reasons. Fully offline | 1 |
 | 🏷️ | **"Shot on …" info frame** with camera, lens and exposure, LUMIX Lab style, at the exact print ratio | 1 |
 | 🖼️ | **Original quality**: export at full resolution, ICC profile preserved, 4:4:4 JPEG for print | 1 |

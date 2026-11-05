@@ -307,6 +307,10 @@ h3.with-logo .logo-os { height: 0.95em; }
 .sizes .small { display: flex; gap: 6px; align-items: center; margin-top: 16px; }
 .sizes .small .icon { color: var(--leaf); }
 .kiosk-steps ol, .steps { margin: 14px 0 18px; padding-left: 1.3em; color: var(--ink-2); }
+/* Performance: how it is fast, one short paragraph per choice. */
+.how-list { max-width: 680px; margin: 18px 0 0; padding-left: 1.3em; color: var(--ink-2); }
+.how-list li + li { margin-top: 10px; }
+.how-list strong { color: var(--ink); }
 .kiosk-steps li + li, .steps li + li { margin-top: 8px; }
 .kiosk-steps li::marker, .steps li::marker { color: var(--accent); font-weight: 700; }
 /* Support: the owner's VietQR code next to a short thank-you. The QR card keeps its own white. */
