@@ -70,7 +70,17 @@
     "starClear": "{{count}} (bấm lần nữa để xóa)",
     "starKey": "{{count}} (phím {{count}})",
     "pickKey": "Chọn (P)",
-    "rejectKey": "Loại (X)"
+    "rejectKey": "Loại (X)",
+    "filterByKind": "Lọc theo loại tệp",
+    "kind": {
+      "all": "Mọi tệp",
+      "raw": "Chỉ RAW",
+      "notRaw": "Không RAW"
+    },
+    "filters": "Bộ lọc",
+    "filtersOn_other": "{{count}} bộ lọc",
+    "filtersHint": "Cờ, sao, RAW hay không: gallery và file xuất chỉ gồm những ảnh được giữ",
+    "clearFilters": "Bỏ mọi bộ lọc"
   },
   "bestShot": {
     "find": "Tìm ảnh đẹp nhất",

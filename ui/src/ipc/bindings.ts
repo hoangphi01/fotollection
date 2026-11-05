@@ -801,6 +801,8 @@ export type CullFilter = {
 	folders?: number[],
 	/**  The gallery, the print basket or the photos set aside (FR-050). */
 	queue?: QueueView,
+	/**  RAW files only, or none. */
+	kind?: KindFilter,
 };
 
 /**  A saved custom print size (FR-043). Stored in millimetres, short edge first. */
@@ -1093,6 +1095,9 @@ export type IpcError = {
 	err: string,
 	message: string,
 };
+
+/**  RAW or not, as the grid's badge says (FR-022, owner 2026-11-05). */
+export type KindFilter = "all" | "raw" | "notRaw";
 
 /**  Interface language (FR-020). English is the default; text printed on photos never follows it. */
 export type Language = "en" | "vi";

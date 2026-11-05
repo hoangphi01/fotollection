@@ -14,7 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- **Preview and gallery:** a **RAW** badge on RAW photos, in the grid's tiles and on *This photo*, which shows the format of other files (JPEG, HEIC, PNG).
+- **Preview and gallery:** a **RAW** badge on RAW photos, in the theme colour on the grid's tiles so they show while scrolling, and on *This photo*, which shows the format of other files (JPEG, HEIC, PNG).
+- **Gallery:** the filters are one **Filters** button, with a new choice, **RAW only** or **No RAW**; the button says how many filters are on.
 - **Colour** (FR-079): two cards between the print size and the date stamp, in Pro, Collage and the previews. **Faves** shows brightness, contrast, warm / cool and saturation, **More** adds highlights, shadows, tint and vibrance; **Tools**, folded at first, holds fade, a tint for the shadows and one for the highlights, and black and white through a yellow, orange, red or green filter. In a photo's preview they change that photo only, with *Apply this look to all photos*; hold **Before** or `\` to compare. The date stamp, the frame and the border are never tinted, and a photo with nothing set prints exactly as before.
 
 ## [0.9.8] - 2026-11-04

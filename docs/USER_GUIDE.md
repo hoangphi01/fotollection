@@ -37,15 +37,16 @@ Mark photos as you look through them, then show only the ones you want ([FR-022]
 2. Press **1**–**5** to give it stars, **0** to clear them.
 3. Press **P** to pick it, **X** to reject it, **U** to clear its flag. A rejected photo stays in the gallery, faded, until you filter it out; nothing is deleted.
 4. In the preview, the **Rating & flag** card does the same with the mouse: click a star (click it again to clear), **Pick (P)** or **Reject (X)**.
-5. Filter the gallery with the two lists at the right of the toolbar:
+5. Filter the gallery with **Filters** at the right of the toolbar. It opens three choices:
    - flags: **All**, **Picks**, **Unflagged**, **Rejects** or **Unusual files**;
-   - stars: **Any rating**, or **≥ 1** to **≥ 5**.
+   - stars: **Any rating**, or **≥ 1** to **≥ 5**;
+   - file kind: **All files**, **RAW only** or **No RAW**. RAW photos carry a **RAW** badge in the theme colour in the gallery.
 
-   An active filter is outlined in the theme colour, and the count shows how many photos are shown out of how many. When nothing matches, **Show all photos** clears the filters.
+   While a filter is on, the button is outlined in the theme colour and says how many are on ("2 filters"), and the count shows how many photos are shown out of how many. **Clear the filters** in the same place, or **Show all photos** when nothing matches, brings everything back.
 
    **Unusual files** ([FR-071](PRD.md#fr-071--image-facts)) are the ones outside the common path, marked with an **ⓘ** in the gallery: a CMYK or 16-bit JPEG, an Adobe RGB photo, a Fujifilm X-Trans RAW, a DNG kind the app does not develop itself yet. The preview's **This photo** card says what each file is, under its size: for example *JPEG · 4:2:0 · Baseline · 8-bit · Display P3 · read by zune-jpeg* or *ARW · Bayer RGGB · 14-bit · read by ImageIO*. A camera RAW other than DNG shows its sensor once it has been opened in the preview. Give this line in a bug report.
 
-<!-- shot: manual-filters | The flag filter open above the gallery: All, Picks, Unflagged, Rejects, Unusual files -->
+<!-- shot: manual-filters | Filters open above the gallery: flags, stars and file kind -->
 
 What the filters show is also what *Export* writes (chapter 12). Stars and rejects from Lightroom and other apps come in by themselves (§10.1).
 

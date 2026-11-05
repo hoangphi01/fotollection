@@ -61,6 +61,16 @@ pub enum FlagFilter {
     Unusual,
 }
 
+/// RAW or not, as the grid's badge says (FR-022, owner 2026-11-05).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum KindFilter {
+    #[default]
+    All,
+    Raw,
+    NotRaw,
+}
+
 /// The library filter (FR-022). The grid shows, and export writes, exactly the photos it keeps.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
@@ -75,6 +85,9 @@ pub struct CullFilter {
     /// The gallery, the print basket or the photos set aside (FR-050).
     #[serde(default)]
     pub queue: QueueView,
+    /// RAW files only, or none.
+    #[serde(default)]
+    pub kind: KindFilter,
 }
 
 /// One source folder in the library list (FR-056).
@@ -89,8 +102,9 @@ pub struct FolderSummary {
 
 impl CullFilter {
     /// Whether a photo with these edits is kept; `unusual` is its file's
-    /// [`ImageFacts::unusual`](crate::facts::ImageFacts::unusual).
-    pub fn matches(&self, edits: &PhotoEdits, unusual: bool) -> bool {
+    /// [`ImageFacts::unusual`](crate::facts::ImageFacts::unusual), `raw` whether it is a
+    /// camera RAW.
+    pub fn matches(&self, edits: &PhotoEdits, unusual: bool, raw: bool) -> bool {
         let flag_ok = match self.flag {
             FlagFilter::All => true,
             FlagFilter::Picks => edits.flag == Some(Flag::Pick),
@@ -103,7 +117,12 @@ impl CullFilter {
             QueueView::Print => edits.queue == Some(Queue::Print),
             QueueView::Aside => edits.queue == Some(Queue::Aside),
         };
-        flag_ok && queue_ok && edits.rating >= self.min_rating.min(5)
+        let kind_ok = match self.kind {
+            KindFilter::All => true,
+            KindFilter::Raw => raw,
+            KindFilter::NotRaw => !raw,
+        };
+        flag_ok && queue_ok && kind_ok && edits.rating >= self.min_rating.min(5)
     }
 }
 
@@ -872,7 +891,7 @@ impl Library {
             .file_name()
             .map(|n| n.to_string_lossy().into_owned())
             .unwrap_or_default();
-        let raw = crate::raw::is_raw_name(&record.file_name) || record.facts.sensor.is_some();
+        let raw = self.is_raw_at(i);
         Some(PhotoSummary {
             id,
             file_name: record.file_name,
@@ -927,6 +946,12 @@ impl Library {
         }
     }
 
+    /// A camera RAW, by its file name or its known sensor: the grid's badge and filter.
+    fn is_raw_at(&self, i: usize) -> bool {
+        crate::raw::is_raw_name(self.strings.get(self.rel_path[i]))
+            || self.facts[i].sensor.is_some()
+    }
+
     /// Photos kept by `filter`, in capture order (FR-003, FR-022).
     pub fn filtered_ids(&self, filter: &CullFilter) -> Vec<PhotoId> {
         let mut ids = self.sorted_ids();
@@ -935,10 +960,9 @@ impl Library {
                 || self
                     .folder_of(id)
                     .is_some_and(|f| filter.folders.contains(&f)))
-                && filter.matches(
-                    &self.edits(id),
-                    self.index(id).is_some_and(|i| self.facts[i].unusual()),
-                )
+                && self.index(id).is_some_and(|i| {
+                    filter.matches(&self.edits(id), self.facts[i].unusual(), self.is_raw_at(i))
+                })
         });
         ids
     }
@@ -1356,17 +1380,31 @@ mod tests {
         assert!(
             [&pick3, &reject, &plain]
                 .into_iter()
-                .all(|e| CullFilter::default().matches(e, false))
+                .all(|e| CullFilter::default().matches(e, false, false))
         );
-        assert!(only(FlagFilter::Picks, 0).matches(&pick3, false));
-        assert!(!only(FlagFilter::Picks, 0).matches(&plain, false));
-        assert!(only(FlagFilter::Rejects, 0).matches(&reject, false));
-        assert!(only(FlagFilter::Unflagged, 0).matches(&plain, false));
-        assert!(!only(FlagFilter::Unflagged, 0).matches(&pick3, false));
-        assert!(only(FlagFilter::All, 3).matches(&pick3, false));
-        assert!(!only(FlagFilter::All, 2).matches(&plain, false));
+        assert!(only(FlagFilter::Picks, 0).matches(&pick3, false, false));
+        assert!(!only(FlagFilter::Picks, 0).matches(&plain, false, false));
+        assert!(only(FlagFilter::Rejects, 0).matches(&reject, false, false));
+        assert!(only(FlagFilter::Unflagged, 0).matches(&plain, false, false));
+        assert!(!only(FlagFilter::Unflagged, 0).matches(&pick3, false, false));
+        assert!(only(FlagFilter::All, 3).matches(&pick3, false, false));
+        assert!(!only(FlagFilter::All, 2).matches(&plain, false, false));
         // Out-of-range minimums clamp to 5 stars instead of hiding everything.
-        assert!(only(FlagFilter::All, 9).matches(&edits(5, None), false));
+        assert!(only(FlagFilter::All, 9).matches(&edits(5, None), false, false));
+    }
+
+    #[test]
+    fn fr_022_the_kind_filter_keeps_raw_files_or_the_others() {
+        let plain = PhotoEdits::default();
+        let kind = |kind| CullFilter {
+            kind,
+            ..CullFilter::default()
+        };
+        assert!(kind(KindFilter::All).matches(&plain, false, true));
+        assert!(kind(KindFilter::Raw).matches(&plain, false, true));
+        assert!(!kind(KindFilter::Raw).matches(&plain, false, false));
+        assert!(kind(KindFilter::NotRaw).matches(&plain, false, false));
+        assert!(!kind(KindFilter::NotRaw).matches(&plain, false, true));
     }
 
     #[test]

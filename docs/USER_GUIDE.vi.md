@@ -35,15 +35,16 @@ Fotollection làm việc trên các thư mục ảnh bạn đã có. Nó đọc 
 2. Nhấn **1**–**5** để chấm sao, **0** để xoá sao.
 3. Nhấn **P** để chọn, **X** để loại, **U** để bỏ cờ. Ảnh bị loại vẫn ở trong gallery, mờ đi, cho đến khi bạn lọc nó ra; không gì bị xoá.
 4. Trong bản xem trước, thẻ **Sao & cờ** làm việc đó bằng chuột: nhấp một ngôi sao (nhấp lần nữa để xoá), **Chọn (P)** hoặc **Loại (X)**.
-5. Lọc gallery bằng hai danh sách ở bên phải thanh công cụ:
+5. Lọc gallery bằng nút **Bộ lọc** ở bên phải thanh công cụ. Nút mở ra ba lựa chọn:
    - cờ: **Tất cả**, **Đã chọn**, **Chưa gắn cờ**, **Đã loại** hoặc **File lạ**;
-   - sao: **Mọi số sao**, hoặc **≥ 1** đến **≥ 5**.
+   - sao: **Mọi số sao**, hoặc **≥ 1** đến **≥ 5**;
+   - loại tệp: **Mọi tệp**, **Chỉ RAW** hoặc **Không RAW**. Ảnh RAW có badge **RAW** màu chủ đề trong gallery.
 
-   Bộ lọc đang bật có viền màu chủ đề, và số ảnh cho biết đang hiện bao nhiêu trên tổng số. Khi không ảnh nào khớp, **Hiện tất cả ảnh** bỏ các bộ lọc.
+   Khi có bộ lọc đang bật, nút có viền màu chủ đề và ghi số bộ lọc ("2 bộ lọc"), còn số ảnh cho biết đang hiện bao nhiêu trên tổng số. **Bỏ mọi bộ lọc** ngay trong đó, hoặc **Hiện tất cả ảnh** khi không ảnh nào khớp, đưa mọi ảnh trở lại.
 
    **File lạ** ([FR-071](PRD.md#fr-071--image-facts)) là những tệp nằm ngoài đường đi thông thường, có dấu **ⓘ** trong gallery: JPEG CMYK hoặc 16-bit, ảnh Adobe RGB, RAW X-Trans của Fujifilm, loại DNG mà app chưa tự develop. Thẻ **Ảnh này** trong bản xem trước cho biết mỗi tệp là gì, ngay dưới kích thước: ví dụ *JPEG · 4:2:0 · Baseline · 8-bit · Display P3 · đọc bằng zune-jpeg* hoặc *ARW · Bayer RGGB · 14-bit · đọc bằng ImageIO*. RAW không phải DNG hiện cảm biến sau khi đã mở trong bản xem trước. Hãy gửi kèm dòng này khi báo lỗi.
 
-<!-- shot: manual-filters | Bộ lọc cờ đang mở phía trên gallery: Tất cả, Đã chọn, Chưa gắn cờ, Đã loại, File lạ -->
+<!-- shot: manual-filters | Bộ lọc đang mở phía trên gallery: cờ, sao và loại tệp -->
 
 Những gì bộ lọc hiện cũng là những gì *Xuất ảnh* ghi ra (chương 12). Sao và cờ loại từ Lightroom và các app khác được đọc tự động (§10.1).
 

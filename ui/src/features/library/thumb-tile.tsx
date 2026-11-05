@@ -87,9 +87,10 @@ export const ThumbTile = memo(function ThumbTile({
       )}
       <div className="absolute top-1 right-1 flex gap-0.5">
         {photo.queue === 'print' && <BasketBadge />}
-        {/* RAW at a glance, as on the preview's This photo card (owner, 2026-11-05). */}
+        {/* RAW at a glance, in the theme colour so it shows while scrolling, as on the
+            preview's This photo card (owner, 2026-11-05). */}
         {photo.raw && (
-          <span className="inline-flex h-4 items-center rounded bg-black/60 px-1 pt-px text-[10px] leading-none font-semibold tracking-wide text-white/90">
+          <span className="inline-flex h-4 items-center rounded bg-primary px-1 pt-px text-[10px] leading-none font-semibold tracking-wide text-primary-foreground">
             RAW
           </span>
         )}

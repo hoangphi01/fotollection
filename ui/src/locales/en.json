@@ -74,7 +74,18 @@
     "starClear": "{{count}} (click again to clear)",
     "starKey": "{{count}} (key {{count}})",
     "pickKey": "Pick (P)",
-    "rejectKey": "Reject (X)"
+    "rejectKey": "Reject (X)",
+    "filterByKind": "Filter by file kind",
+    "kind": {
+      "all": "All files",
+      "raw": "RAW only",
+      "notRaw": "No RAW"
+    },
+    "filters": "Filters",
+    "filtersOn_one": "{{count}} filter",
+    "filtersOn_other": "{{count}} filters",
+    "filtersHint": "Flags, stars, RAW or not: the gallery and the export show what they keep",
+    "clearFilters": "Clear the filters"
   },
   "bestShot": {
     "find": "Find best shots",

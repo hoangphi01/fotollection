@@ -385,10 +385,10 @@ for (const language of ['en', 'vi']) {
     await settle(page)
     await save(page, `grid-${suffix}`)
 
-    // 1a. For the manual: the flag filter open (FR-022), and the Project block (FR-023),
+    // 1a. For the manual: the filters open (FR-022), and the Project block (FR-023),
     // zoomed in like the print-basket shots.
-    await page.getByRole('combobox', { name: /Filter by flag|Lọc theo cờ/ }).click()
-    await page.waitForSelector('[role="option"]')
+    await page.getByRole('button', { name: /^(Filters|Bộ lọc)$/ }).click()
+    await page.waitForSelector('[role="dialog"], [data-slot="popover-content"]')
     await page.waitForTimeout(300)
     await save(page, `manual-filters-${suffix}`)
     await page.keyboard.press('Escape')

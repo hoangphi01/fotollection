@@ -408,3 +408,15 @@
 - **Seen:** a v13 fixture written with `"recentAddresses"` would not load ("unknown field").
 - **Why:** inside `render`, `frame` and `ui` the keys are camelCase, but the file's own top-level keys (`schema_version`, `recent_addresses`) are snake_case, and unknown fields are refused.
 - **Rule:** write a fixture by saving one from the code, or copy the previous fixture; never type a key from the docs' example.
+
+### Capitals in a badge sit high (UI)
+
+- **Seen:** the RAW and JPEG badges looked a little high; the first fix (`pt-px`) moved the letters higher still.
+- **Why:** flexbox centres the line box, and capitals have no descenders, so the letters sit in its upper part. `pt-px` lowered the top padding from 2 px to 1 px, which lifts the line.
+- **Rule:** centre capitals on the letters: a one-line-high box (`leading-none`) lowered 1 px (`pt-px pb-0`). Check by counting the pixels between the letters and the border on a zoomed screenshot (here 38 / 51 px at 8× before, 46 / 43 after), never by eye alone.
+
+### A third filter did not fit the toolbar (UI)
+
+- **Seen:** a third dropdown (RAW or not) was hidden under the right-hand panel at the minimum window, 141–186 px short; nothing reported it, and `check-lego` missed the toolbar's small selects because their props span several lines.
+- **Why:** the toolbar has a floor (STYLE_RULE §4), and two dropdowns already filled it.
+- **Rule:** measure a new toolbar control at `minWidth` in both languages before keeping it; group filters behind one **Filters** button. `check-lego` reads one line at a time: a rule about a JSX prop must allow for props written on several lines.
