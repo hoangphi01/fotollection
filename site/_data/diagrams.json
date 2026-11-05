@@ -1,0 +1,14 @@
+{
+  "gpu-cpu": {
+    "height": 480,
+    "width": 1050
+  },
+  "layers": {
+    "height": 610,
+    "width": 1050
+  },
+  "raw-develop": {
+    "height": 396,
+    "width": 1060
+  }
+}

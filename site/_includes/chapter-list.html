@@ -1,4 +1,4 @@
-{%- comment %} The chapter list of a long page (the manual, the story): a round button bottom left, the mirror of "back to top", opens it as a popover; picking a chapter closes it, and the chapter being read is marked. Takes `toc` (the list as Markdown), `label` and, optionally, `source` and `source_label` for a link under it. The chapters are the `.manual h2[id]` titles. {% endcomment -%}
+{%- comment %} The chapter list of a long page (the manual, the story): a round button bottom left, the mirror of "back to top", opens it as a popover; picking a chapter closes it, and the chapter being read is marked. Takes `toc` (the list as Markdown), `label` and, optionally, `source` and `source_label` for a link under it, and `selector`, the elements that are the chapters (the `.manual h2[id]` titles by default; the Performance page's sections). {% endcomment -%}
 <button class="pill pill-primary toc-button" type="button" popovertarget="manual-toc" aria-label="{{ include.label }}">{% include icons/list.svg %}</button>
 <nav class="card manual-toc" id="manual-toc" popover aria-label="{{ include.label }}">
   <h2>{{ include.label }}</h2>
@@ -14,7 +14,7 @@
   // The chapter being read: the last title that has scrolled under the top bar, or the last
   // chapter once the page is scrolled to the end (it may be too short to reach the top).
   const links = [...toc.querySelectorAll('a[href^="#"]')]
-  const titles = [...document.querySelectorAll('.manual h2[id]')]
+  const titles = [...document.querySelectorAll('{{ include.selector | default: ".manual h2[id]" }}')]
   const mark = () => {
     const end = innerHeight + scrollY >= document.documentElement.scrollHeight - 2
     const current = end ? titles.at(-1) : titles.filter((h) => h.getBoundingClientRect().top < 120).pop()

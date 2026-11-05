@@ -19,6 +19,7 @@
       <li><strong>{{ item.t }}.</strong> {{ item.d }}</li>
       {%- endfor %}
     </ol>
+    {%- include perf-diagram.html name="layers" %}
   </div>
 </section>
 
@@ -56,23 +57,18 @@
       {%- endfor -%}
     </div>
   </div>
-</section>
-{%- endfor %}
-
-{%- comment %} A small wiki: how a photo is made, from the sensor to the print, and what Fotollection does at each step. Committed Markdown, one file per language (perf-wiki-<lang>.md); scripts/site-manual.sh writes its chapter list, perf-wiki-toc-<lang>.md, at build time. {% endcomment -%}
-{%- capture wiki_toc_file %}perf-wiki-toc-{{ page.lang }}.md{% endcapture -%}
-{%- capture wiki_file %}perf-wiki-{{ page.lang }}.md{% endcapture -%}
-{%- capture wiki_toc %}{% include {{ wiki_toc_file }} %}{% endcapture -%}
-{%- capture wiki %}{% include {{ wiki_file }} %}{% endcapture %}
-<section class="section tint" id="wiki">
-  <div class="wrap">
-    <h2>{{ t.perf_wiki_title }}</h2>
-    <p class="lead narrow">{{ t.perf_wiki_lead }}</p>
-    <div class="manual perf-wiki">
-      {{ wiki | markdownify | replace: '<table>', '<div class="table-scroll"><table>' | replace: '</table>', '</table></div>' }}
+  {%- comment %} What the numbers mean, at length, under the charts: perf/<key>-<lang>.md, committed Markdown in the manual's prose. {% endcomment %}
+  {%- capture deep_file %}perf/{{ key }}-{{ page.lang }}.md{% endcapture -%}
+  {%- capture deep %}{% include {{ deep_file }} %}{% endcapture %}
+  <div class="wrap perf-deep">
+    {%- if key == 'gpu' %}{% include perf-diagram.html name="gpu-cpu" %}{% endif %}
+    {%- if key == 'raw' %}{% include perf-diagram.html name="raw-develop" %}{% endif %}
+    <div class="manual">
+      {{ deep | markdownify | replace: '<table>', '<div class="table-scroll"><table>' | replace: '</table>', '</table></div>' }}
     </div>
   </div>
 </section>
+{%- endfor %}
 
 <section class="section" id="explained">
   <div class="wrap">
@@ -103,4 +99,10 @@ uv run bench/quality/share_audit.py ~/Pictures/some-folder /tmp/share</code></pr
   </div>
 </section>
 
-{% include chapter-list.html toc=wiki_toc label=t.perf_wiki_toc %}
+{%- comment %} The page's chapter list: its sections, opened from the round button as on the manual. {% endcomment -%}
+{%- capture toc %}- [{{ t.perf_how_title }}](#how)
+{% for part in parts %}{% assign kv = part | split: ":" %}{% capture title_key %}perf_{{ kv[0] }}_title{% endcapture %}- [{{ t[title_key] }}](#{{ kv[0] }})
+{% endfor %}- [{{ t.perf_explain_title }}](#explained)
+- [{{ t.perf_repro_title }}](#reproduce)
+{% endcapture %}
+{% include chapter-list.html toc=toc label=t.perf_toc selector="main section[id]" %}

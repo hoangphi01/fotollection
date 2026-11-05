@@ -1,0 +1,8 @@
+{%- comment %} One diagram of the Performance page: site/assets/img/diagrams/<name>-<lang>.svg, drawn in draw.io (docs/diagrams/<name>.drawio) and exported by scripts/site-diagrams.py, which also writes its size to site/_data/diagrams.json. Takes `name`. {% endcomment -%}
+{%- assign t = site.data.i18n[page.lang] -%}
+{%- assign size = site.data.diagrams[include.name] -%}
+{%- capture alt_key %}diagram_{{ include.name | replace: "-", "_" }}{% endcapture -%}
+<figure class="card diagram">
+  <img src="{{ '/assets/img/diagrams/' | relative_url }}{{ include.name }}-{{ page.lang }}.svg" width="{{ size.width }}" height="{{ size.height }}" alt="{{ t[alt_key] }}" loading="lazy" decoding="async" />
+  <figcaption>{{ t[alt_key] }}</figcaption>
+</figure>

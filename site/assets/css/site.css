@@ -370,8 +370,12 @@ h3.with-logo .logo-os { height: 0.95em; }
 .manual-toc .small { margin-top: 18px; }
 .manual-toc .small a { color: var(--brand); font-weight: 400; }
 .manual { min-width: 0; }
-/* The Performance page's wiki sits under its section's lead, as the FAQ does. */
-.perf-wiki { margin-top: 28px; }
+/* The Performance page: each part's explanation and diagram under its charts. */
+.perf-deep { margin-top: 40px; }
+.diagram { margin: 0 0 32px; padding: 16px; }
+.diagram img { display: block; width: 100%; height: auto; }
+.diagram figcaption { margin-top: 10px; color: var(--muted); font-size: 0.92rem; }
+#how .diagram { margin: 32px 0 0; }
 .manual h2 { font-size: clamp(1.4rem, 3vw, 1.75rem); margin-top: 56px; }
 .manual h2:first-child { margin-top: 0; }
 .manual h3 { font-size: 1.15rem; margin-top: 32px; }

@@ -37,4 +37,3 @@ captures/
 *.pcap
 site/_includes/manual-*.md
 site/_includes/story-toc-*.md
-site/_includes/perf-wiki-toc-*.md
