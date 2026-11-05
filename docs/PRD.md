@@ -891,7 +891,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Important days:** the user marks dates (birthdays, anniversaries, trips) with a short label; public holidays of a chosen country could come from a bundled table, never from the network.
 - **Photos:** one per month (or a cover and twelve), chosen from the library with the same crop, look ([FR-079](#fr-079--colour-adjustments)) and print quality as a print.
 - **Export:** a multi-page PDF, or one PNG per page, at the print size's resolution.
-- Layouts to study first: 7-Eleven Japan's multicopy calendars and split prints (research 2026-11-05).
+- **Learnt from 7-Eleven Japan's multicopy** (research 2026-11-05, Fujifilm's pages): every product is a short line of steps (product, size, photos, adjust, check, output) with a small set of fixed templates that place and crop the photos themselves; the user changes only a few things (frame, colours, copies, date). Its calendar print (Feb 2026) is one L or 2L sheet in 8 designs, with a theme and a text colour and marked days; a third-party desk calendar adds Sunday or Monday start and the photo left or right of the grid. Neither offers twelve months, a year on one page or a PDF, so those are ours. Worth borrowing too: a summary before output, and saying plainly that a print's edge is trimmed a little.
 
 ## 7. Non-functional requirements
 
