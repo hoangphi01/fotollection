@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-11-05
+
 ### Highlights
 
 - New: any photo opens at once, RAW too: previews are prepared in the background and kept, as in Lightroom
