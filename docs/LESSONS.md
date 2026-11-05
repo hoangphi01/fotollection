@@ -1,6 +1,6 @@
 # Lessons — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-04
+> **Status:** Living · **Last reviewed:** 2026-11-05
 >
 > What each debugging session taught us, so the same mistake is not made twice. Every bug that took more than one look to find gets an entry here in the same commit as its fix ([DOCS_GUIDE.md](DOCS_GUIDE.md) §2). Newest first. Each entry says what we saw, why it happened, the fix, and the rule to follow from now on. Performance-only lessons stay in [OPTIMIZATION.md](OPTIMIZATION.md) (for example §4.3.1, interactive work off background queues).
 
@@ -10,6 +10,15 @@
 2. **Split the path and log both ends.** A temporary log on the UI side (what was asked) and one on the Rust side (what was answered, how long) tells which layer fails in one try. Name them `DEBUG-…` and remove them before the commit (`grep -rn DEBUG ui/src src-tauri/src` must be empty).
 3. **Reproduce with the user's photo when the user sees it.** A synthetic test passed while the real app was soft: unit tests prove the pixels, only the real webview proves what is shown.
 4. **Write the lesson here** before moving on.
+
+## 2026-11-05
+
+### Callers waiting on a pool can starve the work they wait for: the export estimate hung every RAW (FR-016, FR-053)
+
+- **Seen:** in v0.10.0 the owner moved to the next RAW while one was loading, closed the preview and opened a RAW again: the spinner turned for good, and so did every RAW after it. `sample` on the running app showed all eight threads of rayon's global pool in `raw::one_at_a_time`, each waiting for a develop thread, and the develop holding `DEVELOP` waiting for its own `par_iter` work, with the CPU idle.
+- **Why:** the preview asks for the export's estimate of the photo shown (FR-053), and the estimate encodes its samples with `par_iter` on the global pool; for a RAW, each sample develops in full. A caller in `one_at_a_time` waits in `join`, which lends its thread to nothing. The develop's own parallel work also went to the global pool, so once every thread of it waited for `DEVELOP` (two or three estimates queued while browsing), the develop holding the lock had no thread left and never ended. The 2026-11-03 fix (a plain thread for the develop) only covered a thread waiting for itself.
+- **Fix:** the develop's parallel work runs on a pool of its own (`raw::develop_pool`), used only under `DEVELOP`, so the holder always has its threads whoever waits. Test `develops_asked_from_the_whole_global_pool_all_finish` asks twice as many develops as the global pool has threads from inside it; it hung on the old code (30 s timeout) and passes in 0.01 s.
+- **Rule:** work that runs behind a lock gets threads nobody waiting for that lock can hold: its own pool, not the one its callers block. When the app hangs, `sample <pid>` first: it names every thread's wait in one look.
 
 ## 2026-11-04
 

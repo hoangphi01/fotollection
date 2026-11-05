@@ -554,13 +554,31 @@ pub fn prepare(
     .unwrap_or_else(|| Err(CodecError::Decode("the RAW develop failed".into())))
 }
 
-/// Runs `develop` holding `DEVELOP`, on a thread of its own: `None` if it panicked.
+/// The pool a develop's parallel work runs on, used by nobody else: whoever holds `DEVELOP`
+/// always has its threads (`None` if the system refused to start them).
+fn develop_pool() -> Option<&'static rayon::ThreadPool> {
+    static POOL: std::sync::OnceLock<Option<rayon::ThreadPool>> = std::sync::OnceLock::new();
+    POOL.get_or_init(|| {
+        rayon::ThreadPoolBuilder::new()
+            .thread_name(|i| format!("fotollection-develop-{i}"))
+            .build()
+            .ok()
+    })
+    .as_ref()
+}
+
+/// Runs `develop` holding `DEVELOP`, on a thread of its own, its parallel work on the
+/// develop's own pool: `None` if it panicked.
 ///
 /// Never on the caller's thread. A develop runs rayon work, and a rayon thread waiting for
 /// that work takes up other jobs of its pool meanwhile; when one of them asks for a develop
 /// too, it waits for a lock its own thread holds, and the pool stops for good (LESSONS
 /// 2026-11-03: zooming into a RAW hung every preview after it). A plain thread never takes
 /// up other jobs, so whoever holds the lock always finishes; the caller only waits.
+///
+/// Nor on the global pool: callers on it wait here without lending their thread, and when
+/// every one of its threads waits for `DEVELOP`, the develop holding it finds none left for
+/// its parallel work and never ends (LESSONS 2026-11-05: the export estimate's samples).
 fn one_at_a_time<T: Send>(develop: impl FnOnce() -> T + Send) -> Option<T> {
     std::thread::scope(|scope| {
         scope
@@ -569,7 +587,10 @@ fn one_at_a_time<T: Send>(develop: impl FnOnce() -> T + Send) -> Option<T> {
                 let _one = DEVELOP
                     .lock()
                     .unwrap_or_else(std::sync::PoisonError::into_inner);
-                develop()
+                match develop_pool() {
+                    Some(pool) => pool.install(develop),
+                    None => develop(),
+                }
             })
             .join()
             .ok()
@@ -622,6 +643,28 @@ mod tests {
             );
         }
         Ok(())
+    }
+
+    /// Develops asked from every thread of the global pool at once, as the export estimate
+    /// asks for its samples: each waits for `DEVELOP` without lending its thread, so the
+    /// develop holding it must not need that pool for its parallel work (LESSONS 2026-11-05).
+    /// Hangs on the code before the develop's own pool.
+    #[test]
+    fn develops_asked_from_the_whole_global_pool_all_finish() {
+        use rayon::prelude::*;
+        let asked = 2 * rayon::current_num_threads();
+        let (tx, rx) = std::sync::mpsc::channel();
+        std::thread::spawn(move || {
+            let done = (0..asked)
+                .into_par_iter()
+                .filter_map(|_| {
+                    one_at_a_time(|| (0..400_000u64).into_par_iter().map(|x| x % 7).sum::<u64>())
+                })
+                .count();
+            let _ = tx.send(done);
+        });
+        let answer = rx.recv_timeout(std::time::Duration::from_secs(30));
+        assert_eq!(answer, Ok(asked), "the develops never finished");
     }
 
     /// `first` with the decoders answering `answers` in turn.

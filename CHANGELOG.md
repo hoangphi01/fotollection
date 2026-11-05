@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **Camera RAW:** opening a RAW no longer hangs for good after moving on from one that was still loading; the export's size estimate and the preview waited for each other.
+
 ## [0.10.0] - 2026-11-05
 
 ### Highlights

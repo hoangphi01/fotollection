@@ -1,6 +1,6 @@
 # Style Rules — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-04
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-05
 >
 > These rules apply to all code and docs. Tooling enforces them where possible. Where tooling can't, reviewers do.
 > If a rule blocks you, propose changing it in a PR. Don't silently break it.
@@ -25,7 +25,7 @@
 - `crates/core`: each module exposes a typed error enum built with `thiserror`. Errors carry context such as the file path or photo ID.
 - `src-tauri`: `anyhow` may be used internally. Errors that cross IPC are converted to a serializable `IpcError { code, err, message }`. `code` is a stable, machine-readable string, for example `decode.unsupported`.
 - **No `unwrap()` or `expect()` in non-test code**, except on proven invariants. Those require a comment that starts with `// INVARIANT:`.
-- **Never hold a lock while rayon work runs** (2026-11-03). A rayon thread that waits for its parallel work runs other jobs of its pool meanwhile; if one needs the same lock, the thread waits for itself and the pool stops for good. Work that must run one at a time behind a lock (the RAW develop, `raw::one_at_a_time`) runs on a plain thread of its own, which never takes up other jobs.
+- **Never hold a lock while rayon work runs** (2026-11-03). A rayon thread that waits for its parallel work runs other jobs of its pool meanwhile; if one needs the same lock, the thread waits for itself and the pool stops for good. Work that must run one at a time behind a lock (the RAW develop, `raw::one_at_a_time`) runs on a plain thread of its own, which never takes up other jobs. Its parallel work runs on a pool of its own: callers blocked on the lock must not be able to hold the threads it needs (2026-11-05).
 - One bad photo must never fail the batch ([NFR-011](PRD.md#nfr-011--robustness)). Return per-photo `Result`s and aggregate them.
 
 ### Unsafe and FFI

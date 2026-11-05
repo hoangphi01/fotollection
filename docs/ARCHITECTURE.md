@@ -1,6 +1,6 @@
 # Architecture — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-04
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-05
 >
 > This document describes **how** the system is built. Requirements live in [PRD.md](PRD.md).
 > Performance design rationale lives in [OPTIMIZATION.md](OPTIMIZATION.md).
@@ -223,7 +223,7 @@ import → metadata → adjust → geocode → (cluster) → cull/select → pla
   - **export** has its own bounded pool.
 
   Visible thumbnails therefore never wait behind background work. A request for a photo whose T1 isn't ready gets the embedded T0 at once.
-- A RAW develop runs one at a time (`raw::DEVELOP`, NFR-004), on a plain thread of its own, never on a pool thread: a pool thread waiting for the develop's rayon work would take up other requests meanwhile, and one asking for a develop would wait for the lock its own thread holds (LESSONS 2026-11-03).
+- A RAW develop runs one at a time (`raw::DEVELOP`, NFR-004), on a plain thread of its own, never on a pool thread: a pool thread waiting for the develop's rayon work would take up other requests meanwhile, and one asking for a develop would wait for the lock its own thread holds (LESSONS 2026-11-03). Its parallel work runs on a pool of its own (`raw::develop_pool`), never the global one, where callers waiting for the lock could hold every thread (LESSONS 2026-11-05).
 
 ## 6. IPC contract
 
