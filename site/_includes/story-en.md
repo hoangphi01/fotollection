@@ -68,6 +68,6 @@ The night trams of Prague now sit on the home page, as a postcard addressed to t
 
 ## XI. How far still {#how-far}
 
-Thirteen days, more than three hundred and seventy commits, more than twenty releases. Counted as a marathon, I have only passed the first kilometres. Ahead are v0.10.0 "Looks", with colour to adjust and looks of one's own, then v0.11.0 "Core", with Fotollection's own RAW development, and further on, version 1.0.
+Thirteen days, more than three hundred and seventy commits, more than twenty releases. Counted as a marathon, I have only passed the first kilometres. Ahead are v0.11.0, one window for every setting, then v0.12.0 "Looks", with looks of one's own, and further on, version 1.0.
 
 I often ask myself how far I can take Fotollection. Could it one day be like the open-source projects a whole community knows, the repositories tens of thousands of people trust every day? I do not know yet. What I know is that each photo printed is a memory no longer behind glass, like my grandparents' albums once were. If you have read this far, thank you for running a stretch of the road with me. The road is still long, and I am still running.

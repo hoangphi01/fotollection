@@ -762,7 +762,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-070 — Looks from LUT files
 
-**P1 (planned, v0.10.0; owner's request 2026-11-02; moved before the develop core on 2026-11-05, as a LUT works on the photo's encoded values, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** Colour looks as in LUMIX Lab: choose a look, set its strength, print ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)). The sliders of [FR-079](#fr-079--colour-adjustments) bake into the same table, so an imported LUT and the sliders make one look.
+**P1 (planned, v0.12.0 since the owner's re-ordering of 2026-11-05; owner's request 2026-11-02; moved before the develop core on 2026-11-05, as a LUT works on the photo's encoded values, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** Colour looks as in LUMIX Lab: choose a look, set its strength, print ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)). The sliders of [FR-079](#fr-079--colour-adjustments) bake into the same table, so an imported LUT and the sliders make one look.
 
 - **Import** a `.cube` file (1D or 3D, 2–65 points a side, `DOMAIN_MIN`/`DOMAIN_MAX`) or a HaldCLUT PNG: from LUMIX Lab, the user's own, or downloaded. A LUMIX LUT tagged `#LUMIXPHOTOSTYLE VLOG` is written for V-Log footage and gets a warning: on a JPEG it comes out far too strong. It is copied into the app's `looks/` folder by content hash, so the original can move. Panasonic's `.vlt` is a candidate once its format is checked.
 - **Built-in looks** made by our own code, under our own names (no copied LUT files, no trademarked names, as [FR-047](#fr-047--film-looks)), including one for *C200 Natural*.
@@ -776,7 +776,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-071 — Image facts
 
-**P1 (planned, v0.10.0; owner's request 2026-11-02).** What each file is, shown at import and in the preview's inspector, so a user (and a bug report) knows what the app is decoding ([ADR-0037](adr/0037-our-own-develop-core.md)).
+**P1 (done; owner's request 2026-11-02).** What each file is, shown at import and in the preview's inspector, so a user (and a bug report) knows what the app is decoding ([ADR-0037](adr/0037-our-own-develop-core.md)).
 
 - **JPEG:** chroma subsampling (4:4:4, 4:2:2, 4:2:0, 4:4:0, 4:1:1, or grey), baseline or progressive, bit depth, the colour space named by its ICC profile (sRGB, Display P3, Adobe RGB, grey, CMYK) and the decoder that read it (ADR-0033).
 - **RAW:** the sensor's colour filter, Bayer with its pattern (RGGB, BGGR…), X-Trans 6 × 6, four-colour, linear or monochrome, the bit depth, the maker and the path that developed it.
@@ -785,7 +785,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-072 — Our own develop core
 
-**P1 (planned, v0.11.0, after the looks of v0.10.0 (owner, 2026-11-05); owner's request 2026-11-02).** From the sensor's raw samples to the screen and the print, every step is ours, written from the published methods and measured ([ADR-0037](adr/0037-our-own-develop-core.md)). Maker formats are still unpacked by our DNG reader or by rawler; the system codecs become a last fallback.
+**P1 (the Bayer develop, neutral colour and FR-088 shipped in v0.10.0, 2026-11-05; X-Trans, the GPU develop and the DNG kinds planned for v0.13.0; owner's request 2026-11-02).** From the sensor's raw samples to the screen and the print, every step is ours, written from the published methods and measured ([ADR-0037](adr/0037-our-own-develop-core.md)). Maker formats are still unpacked by our DNG reader or by rawler; the system codecs become a last fallback.
 
 - **The sensor kind decides the path:** Bayer, X-Trans, four-colour, linear and monochrome each have their own branch; an unknown kind is a clean "not supported" error, never a panic or a guess.
 - **Before demosaicing:** per-site black levels from the ActiveArea origin, white level, **green equilibration (Gr/Gb)** against maze and worm patterns, hot-pixel removal, the as-shot white balance.
@@ -846,7 +846,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-079 — Colour adjustments
 
-**P1 (planned, v0.10.0 "Looks"; owner's request 2026-11-05, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** A **moderate** colour editor, in the spirit of Snapseed's *Tune Image* and LUMIX Lab's looks, far short of Lightroom: global adjustments only, one card, the same result on screen and on paper.
+**P1 (Faves and Tools shipped in v0.9.9, the Looks card planned for v0.12.0 "Looks"; owner's request 2026-11-05, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** A **moderate** colour editor, in the spirit of Snapseed's *Tune Image* and LUMIX Lab's looks, far short of Lightroom: global adjustments only, one card, the same result on screen and on paper.
 
 - **Three cards, as Snapseed 3 splits Looks, Faves and Tools** (owner, 2026-11-05), each a lego card of its own, in the Pro and Collage panels and in the photo and sheet previews, after *Print / export size* and before *Date stamp*; Simple mode shows only **Looks**:
   - **Looks:** the list of looks, the built-in ones, the user's own and the LUTs imported from LUMIX Lab or elsewhere ([FR-070](#fr-070--looks-from-lut-files)), each shown as the chosen photo through it, small; the **amount**; *Import LUT…* and *Save as look*.
@@ -857,7 +857,7 @@ Next to the batch settings, any other setting will later be overridable for one 
   2. **Faves**, open with four sliders: brightness, contrast, warmth, saturation; *More* shows highlights, shadows, tint and vibrance.
   3. **Tools**, folded at first; its title opens it, and the app remembers which cards are open.
   - A folded card still says what it holds ("Tools · 2 changed"); each card's title has a reset, and a double-click resets one slider; a visible *Before / After* button on the photo, besides the `\` key. Labels are plain words; what a slider does shows on hover, so the cards stay short.
-- **Later, not in v0.10.0:** *Selective*, Snapseed's local control points (brightness, contrast, saturation around a point), as an FR of its own: it cannot bake into the table and needs its own measurement.
+- **Later, not in v0.12.0:** *Selective*, Snapseed's local control points (brightness, contrast, saturation around a point), as an FR of its own: it cannot bake into the table and needs its own measurement.
 - **Sliders:** each from −100 to +100 (amounts and grain 0–100), 0 by default; a double-click resets one. The preview follows while dragging; one undo step per release. Hold `\` to compare with the original.
 - **Looks:** a look is the sliders' values, an optional imported LUT ([FR-070](#fr-070--looks-from-lut-files)) with its strength, and an **amount** of 0–100 % that scales all of them together. Built-in looks are slider recipes made by the project under its own names (no third-party LUTs, no trademarked film or camera names), among them *C200 Natural* ([FR-039](#fr-039--photo-style-looks)) and film-inspired looks ([FR-047](#fr-047--film-looks)). *Save as look* keeps the current values under a name of the user's.
 - **For every photo, or one photo as an override,** as the date stamp ([FR-044](#fr-044--per-photo-overrides)), with *Apply to all*; a collage sheet uses each photo's own look.
@@ -910,7 +910,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-085 — Lens distortion correction
 
-**P1 (planned, after v0.11.0 unless the owner moves it; found 2026-11-05).** Our own develop corrects the lens's distortion, as the camera's JPEG and macOS's ImageIO do, so Fotollection's develop can take over every format on every system.
+**P1 (planned for v0.13.0 unless the owner moves it; found 2026-11-05).** Our own develop corrects the lens's distortion, as the camera's JPEG and macOS's ImageIO do, so Fotollection's develop can take over every format on every system.
 
 - **From the file, never from a guessed lens profile:** the correction the camera itself records (Panasonic and Olympus maker data, which Micro Four Thirds lenses rely on), DNG's `WarpRectilinear` opcode.
 - **Until then:** on macOS, Panasonic and Olympus RAW go to ImageIO first ([FR-016](#fr-016--raw-input)); elsewhere they are developed without the correction, as rawler did.

@@ -68,7 +68,7 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | 🖼️ | **Original quality**: export at full resolution, ICC profile preserved, 4:4:4 JPEG for print | 1 |
 | 💬 | **Share online**: light sRGB JPEGs at the original size, 2048 px for Facebook, 1080 px for Instagram or your own size, whole in a square or any ratio with a fill if you like, with the camera details and "Fotollection" as the editing app, never GPS. Export one photo straight from the preview | 2 |
 | 📱 | **JPEG, PNG and HEIC** (iPhone) input | 1 |
-| 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, through the reader built into Fotollection (on macOS, the system's codec first, with its lens corrections); thumbnails from the preview inside each file. Nothing to install on Windows | 3 |
+| 📷 | **Camera RAW** as it is, no DNG needed: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG, developed by Fotollection's own engine (a cleaner demosaic, neutral colour or the camera's look in one click, brightness, highlights, shadows and white balance made on the camera's own data); on macOS, Panasonic and Olympus by the system, with its lens corrections; thumbnails from the preview inside each file. Nothing to install on Windows | 3 |
 | 🖱️ | **Open with Fotollection** from Finder or Explorer: the photo opens at once and its folder becomes a tab | 2 |
 | ⏱️ | **Camera clocks**: a camera set to the wrong time is corrected from one phone photo of the same moment; every photo from it moves, the files stay untouched | 1 |
 | ⭐ | **Stars from Lightroom**: stars and rejects saved in XMP sidecars by Lightroom, Bridge, Capture One or darktable come in with the photos; the sidecars are never changed | 2 |
@@ -245,7 +245,7 @@ The same app on every system, with these differences ([ADR-0034](docs/adr/0034-l
 | "Open with" from the file manager | ✓ | ✓ | ✓ ⁵ |
 | *Check for updates* downloads the new version | ✓ | ✓ | ✓ ⁶ |
 
-1. On macOS, RAW formats other than DNG are developed by the system, with its lens corrections; Linux and Windows use the reader built into Fotollection, without them. On Windows, Microsoft's Raw Image Extension, when installed, is only a last fallback.
+1. Every system develops RAW with Fotollection's own engine; on macOS, Panasonic and Olympus RAW go to the system first, for its lens corrections, which Fotollection's engine does not make yet. On Windows, Microsoft's Raw Image Extension, when installed, is only a last fallback.
 2. With Microsoft's free **HEIF Image Extensions** and **HEVC Video Extensions**.
 3. HEIC needs an HEVC decoder, which Linux does not ship and Fotollection will not bundle (patents). A later version will use the `libheif` your distribution installs (FR-068). Until then, convert HEIC photos to JPEG.
 4. Sony a6400 first ([FR-063](docs/PRD.md#fr-063--tethered-capture-over-usb)).

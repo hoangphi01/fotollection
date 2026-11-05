@@ -8,6 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: RAW photos edited on the camera's own data: highlights pulled down bring back detail near white, shadows lift without banding, warmth changes the white balance
+- New: RAW photos open neutral; a *RAW colour* card makes them look like the camera's JPEG in one click
+- Faster, cleaner RAW: Fotollection's own develop for Canon, Nikon, Sony and more, 0.2–0.5 s a photo
+- Colour sliders drawn on the graphics card while dragging; exports about a fifth faster
+
 ### Fixed
 
 - **Colour cards:** a slider's knob is no longer cut off at the bottom while the pointer is over it, at the end of the *More* sliders.

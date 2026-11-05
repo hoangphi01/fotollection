@@ -68,6 +68,6 @@ Những tấm ảnh tàu điện đêm ở Praha giờ nằm trên trang chủ, 
 
 ## XI. Còn bao xa nữa {#how-far}
 
-Mười ba ngày, hơn ba trăm bảy mươi bản vá, hơn hai mươi bản phát hành. Tính theo cuộc marathon thì tôi mới qua những cây số đầu tiên. Phía trước là bản v0.10.0 "Looks", với công cụ chỉnh màu và những tông màu của riêng mỗi người, rồi v0.11.0 "Core", với cách xử lý ảnh RAW của riêng Fotollection, và xa hơn nữa là phiên bản 1.0.
+Mười ba ngày, hơn ba trăm bảy mươi bản vá, hơn hai mươi bản phát hành. Tính theo cuộc marathon thì tôi mới qua những cây số đầu tiên. Phía trước là bản v0.11.0, một cửa sổ cho mọi cài đặt, rồi v0.12.0 "Looks", với những tông màu của riêng mỗi người, và xa hơn nữa là phiên bản 1.0.
 
 Tôi hay tự hỏi mình có thể đưa Fotollection đi xa đến đâu. Liệu một ngày nó có thể giống những dự án mã nguồn mở mà cả cộng đồng đều biết, những kho mã có hàng chục nghìn người tin dùng mỗi ngày? Tôi chưa biết. Điều tôi biết là mỗi tấm ảnh được in ra là một kỷ niệm không còn nằm sau tấm kính, như những cuốn album của ông bà ngày trước. Nếu bạn đã đọc tới đây, cảm ơn bạn đã chạy cùng tôi một đoạn. Con đường vẫn còn dài, và tôi vẫn đang chạy.

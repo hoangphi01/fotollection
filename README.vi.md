@@ -69,7 +69,7 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | 🖼️ | **Giữ nguyên chất lượng**: export ở độ phân giải đầy đủ, giữ ICC profile, JPEG 4:4:4 cho ảnh in | 1 |
 | 💬 | **Đăng mạng xã hội**: JPEG sRGB nhẹ ở kích thước gốc, 2048 px cho Facebook, 1080 px cho Instagram hoặc cỡ tuỳ chọn, có thể giữ trọn ảnh trong khung vuông hay tỷ lệ bất kỳ kèm nền, giữ thông số máy và ghi "Fotollection" là app chỉnh ảnh, không bao giờ có GPS. Export một ảnh ngay trong preview | 2 |
 | 📱 | Đầu vào **JPEG, PNG và HEIC** (iPhone) | 1 |
-| 📷 | **Ảnh RAW** nguyên dạng, không cần DNG: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG, qua bộ đọc RAW có sẵn trong Fotollection (trên macOS, codec của hệ điều hành được dùng trước, có hiệu chỉnh ống kính); ảnh thu nhỏ lấy từ bản xem trước trong mỗi tệp. Trên Windows không cần cài gì thêm | 3 |
+| 📷 | **Ảnh RAW** nguyên dạng, không cần DNG: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG, xử lý bằng bộ xử lý của riêng Fotollection (demosaic sạch hơn, màu trung tính hoặc màu của máy chỉ với một cú nhấp, độ sáng, vùng sáng, vùng tối và cân bằng trắng chỉnh trên chính dữ liệu của máy ảnh); trên macOS, Panasonic và Olympus do hệ điều hành xử lý, có hiệu chỉnh ống kính; ảnh thu nhỏ lấy từ bản xem trước trong mỗi tệp. Trên Windows không cần cài gì thêm | 3 |
 | 🖱️ | **Mở ảnh bằng Fotollection** từ Finder hoặc Explorer: ảnh mở ngay, thư mục của ảnh thành một tab | 2 |
 | ⏱️ | **Đồng hồ máy ảnh**: máy để sai giờ được chỉnh theo một ảnh điện thoại chụp cùng lúc; mọi ảnh của máy đó dịch theo, tệp ảnh không bị sửa | 1 |
 | ⭐ | **Sao từ Lightroom**: số sao và cờ loại mà Lightroom, Bridge, Capture One hay darktable lưu trong tệp XMP đi kèm được nhập cùng ảnh; tệp XMP không bao giờ bị sửa | 2 |
@@ -246,7 +246,7 @@ Cùng một app trên mọi hệ điều hành, với các khác biệt sau ([AD
 | "Mở bằng" từ trình quản lý file | ✓ | ✓ | ✓ ⁵ |
 | *Kiểm tra cập nhật* tải bản mới | ✓ | ✓ | ✓ ⁶ |
 
-1. Trên macOS, các định dạng RAW khác DNG do hệ điều hành xử lý, có hiệu chỉnh ống kính; Linux và Windows dùng bộ đọc RAW có sẵn trong Fotollection, không có hiệu chỉnh đó. Trên Windows, Raw Image Extension của Microsoft, nếu đã cài, chỉ là phương án dự phòng cuối cùng.
+1. Mọi hệ điều hành đều xử lý RAW bằng bộ xử lý của riêng Fotollection; trên macOS, ảnh RAW Panasonic và Olympus do hệ điều hành xử lý trước để được sửa méo ống kính, việc bộ xử lý của Fotollection chưa làm. Trên Windows, Raw Image Extension của Microsoft, nếu đã cài, chỉ là phương án dự phòng cuối cùng.
 2. Cần cài miễn phí **HEIF Image Extensions** và **HEVC Video Extensions** của Microsoft.
 3. HEIC cần bộ giải mã HEVC, thứ Linux không có sẵn và Fotollection không đóng gói kèm (vì bằng sáng chế). Bản sau sẽ dùng `libheif` mà distro của bạn cài (FR-068). Trước đó, hãy chuyển ảnh HEIC sang JPEG.
 4. Sony a6400 trước ([FR-063](docs/PRD.md#fr-063--tethered-capture-over-usb)).
