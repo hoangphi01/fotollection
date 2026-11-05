@@ -420,3 +420,9 @@
 - **Seen:** a third dropdown (RAW or not) was hidden under the right-hand panel at the minimum window, 141–186 px short; nothing reported it, and `check-lego` missed the toolbar's small selects because their props span several lines.
 - **Why:** the toolbar has a floor (STYLE_RULE §4), and two dropdowns already filled it.
 - **Rule:** measure a new toolbar control at `minWidth` in both languages before keeping it; group filters behind one **Filters** button. `check-lego` reads one line at a time: a rule about a JSX prop must allow for props written on several lines.
+
+### A code commit without docs slipped through the local check (docs)
+
+- **Seen:** after the v0.9.9 push, the `docs-with-code` workflow failed on 9b0d846 (the badges' centring), which changed two UI files and no doc; it was not the last commit, and the release itself was not blocked.
+- **Why:** `scripts/check-docs.sh` runs `check-docs-with-code.sh` on the working tree or the last commit only; CI checks every pushed commit.
+- **Rule:** before a push, run `scripts/check-docs-with-code.sh origin/main..HEAD`, as CI does; a fix too small for a doc row still gets its line in the CHANGELOG, or `[no-docs]` with a reason in its message.
