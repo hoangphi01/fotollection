@@ -473,3 +473,10 @@
 - **Why:** the two fits were scored on 48 × 32 block averages with CIE76: a fit can match every block's mean and still miss the colours inside it, and CIE76 weighs saturated colours too much.
 - **Fix:** score pixel by pixel on a 480 px copy, ΔE2000 against the JPEG averaged down to it; all seven Bayer samples now pick the fit the full-size measurement prefers.
 - **Rule:** a selector must agree with the measurement it stands in for: check its picks against the full measurement on every sample before trusting it.
+
+### A slider's knob reaches 7 px past its track: a 4 px inset clipped it (UI)
+
+- **Seen:** the owner found the last slider of Faves' *More* section cut at the bottom while hovered, just above the *Less* button.
+- **Why:** `Collapse` clips its content to animate its height, and kept 4 px around it for focus rings. A slider's 12 px knob is absolutely placed on a 4 px track, so it adds no height to the row; with its 3 px hover ring it reaches 7 px below the track.
+- **Fix:** the inset is 8 px (`-m-2 p-2`, which cancel, so nothing moves).
+- **Rule:** a container that clips leaves room for what its blocks draw outside their own box (rings, knobs, shadows); check the last block of every clipping container with its hover and focus states on.

@@ -31,10 +31,13 @@ export function Collapse({ open, children, className, stack }: CollapseProps) {
       inert={!open}
       aria-hidden={!open}
     >
-      {/* The 4 px inset keeps focus rings from being clipped by the overflow. */}
+      {/* An 8 px inset keeps what reaches past a block from being clipped by the overflow:
+          focus rings, and a slider's thumb, 12 px on a 4 px track, with its 3 px hover ring
+          (7 px below the track; 4 px clipped it, owner 2026-11-05). Margin and padding
+          cancel, so the layout does not move. */}
       <div
         className={cn(
-          '-m-1 min-h-0 overflow-hidden p-1 [--stack-gap:0px]',
+          '-m-2 min-h-0 overflow-hidden p-2 [--stack-gap:0px]',
           stack === 'field' && 'space-y-1.5 [--stack-gap:--spacing(1.5)]',
           stack === 'card' && 'space-y-3 [--stack-gap:--spacing(3)]',
           className,

@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Colour cards:** a slider's knob is no longer cut off at the bottom while the pointer is over it, at the end of the *More* sliders.
 - **Toolbar:** the icons of Auto turn, Revert, Select and Find best shots sit in the centre of their buttons when the window is narrow and their labels hide; they were 2 px to the left.
 - **Collage:** Auto turn and Revert answer in about half a second on a trip's 500 photos, where they took 3 to 5 seconds, and their button shows a spinner while they work.
 - **Camera RAW:** a RAW file cut short (an interrupted copy, a damaged card) is refused with an error instead of being shown and exported with made-up stripes where its data is missing.
