@@ -310,32 +310,36 @@ fn background<T>(work: impl FnOnce() -> T) -> T {
 /// Makes the standard previews of `ids` on disk after their thumbnails (FR-091, ADR-0041):
 /// a click on any of them then opens from disk instead of decoding. Behind the photo on
 /// screen, paused while an export or an analysis runs, stopped when another library comes.
+///
+/// One photo at a time on the caller's plain thread, never on a pool: it waits while a job
+/// runs, and a pool thread that waits can be the one the job itself needs. On the background
+/// pool, an analysis waiting for its own parallel work took up a photo of this pass, which then
+/// waited for the analysis to end: both hung (LESSONS 2026-11-06).
 fn warm_standard_previews(app: &AppHandle, ids: &[PhotoId]) {
     let state = app.state::<AppState>();
     let generation = state.library_generation.load(Ordering::SeqCst);
     let current = || state.library_generation.load(Ordering::SeqCst) == generation;
     let total = u32::try_from(ids.len()).unwrap_or(u32::MAX);
     let tick = progress_reporter(app, TaskKind::Previews, total);
-    state.background_pool.install(|| {
-        ids.par_iter().for_each(|&id| {
-            // An export or an analysis first: a preview made now would only slow it.
-            while current() && state.jobs.lock().is_ok_and(|j| !j.is_empty()) {
-                std::thread::sleep(std::time::Duration::from_millis(500));
-            }
-            if current() {
-                let record = state.library.read().ok().and_then(|l| l.record(id));
-                let settings = state.settings.read().ok().map(|s| s.0.clone());
-                if let (Some(record), Some(settings)) = (record, settings) {
-                    let _ = background(|| {
-                        state
-                            .previews
-                            .ensure_standard(&record, &settings, state.codec.as_ref())
-                    });
-                }
-            }
-            tick();
-        });
-    });
+    for &id in ids {
+        // An export or an analysis first: a preview made now would only slow it.
+        while current() && state.jobs.lock().is_ok_and(|j| !j.is_empty()) {
+            std::thread::sleep(std::time::Duration::from_millis(500));
+        }
+        if !current() {
+            return;
+        }
+        let record = state.library.read().ok().and_then(|l| l.record(id));
+        let settings = state.settings.read().ok().map(|s| s.0.clone());
+        if let (Some(record), Some(settings)) = (record, settings) {
+            let _ = background(|| {
+                state
+                    .previews
+                    .ensure_standard(&record, &settings, state.codec.as_ref())
+            });
+        }
+        tick();
+    }
 }
 
 /// Photos a prefetch takes at most; more would only push out what is near.

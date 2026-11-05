@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Previews:** preparing previews in the background and *Find best shots* at the same time no longer hang each other.
 - **Preview:** a photo opened while the one before was still developing no longer waits for it, and the spinner can no longer turn for good.
 
 - **Camera RAW:** opening a RAW no longer hangs for good after moving on from one that was still loading; the export's size estimate and the preview waited for each other.

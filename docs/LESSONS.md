@@ -12,6 +12,15 @@
 4. **When the app hangs, look at every thread before guessing:** `sample <pid> 3` on macOS names what each thread waits for. Rust threads all idle with a spinner on screen means the UI never asked; threads waiting on each other is a deadlock (2026-11-05).
 5. **Write the lesson here** before moving on.
 
+## 2026-11-06
+
+### A wait inside a pool's job: the preview pass and the best-shot analysis hung each other (FR-091, FR-041)
+
+- **Seen:** the screenshot build's best-shot recording stopped for 20 minutes at 0 % CPU, on the v0.11.0 candidate. `sample` showed a background-pool thread inside the analysis's `par_iter`, which had taken up a photo of the standard-preview pass, asleep in its "wait while a job runs" loop.
+- **Why:** `warm_standard_previews` ran its photos with `par_iter` on the background pool and, in each one, slept while any job (an export, an analysis) was registered. The analysis runs on the same pool; a rayon thread waiting for its own parallel work runs other jobs of its pool meanwhile, so the analysis's thread ran a preview photo that waited for the analysis to end, which waited for that thread. The rule of 2026-11-03 and 2026-11-05 again, in a new form: a wait inside a pool's job.
+- **Fix:** the pass runs one photo at a time on the plain thread that made the thumbnails, never on a pool; the wait for jobs is outside any pool. Caught before v0.11.0 was published: its release run was cancelled and started again with the fix.
+- **Rule:** never block or sleep inside a job of a rayon pool, whatever it waits for; a loop that waits belongs to a plain thread. When the work also needs parallelism, give it a pool no one it waits for uses.
+
 ## 2026-11-05
 
 ### The dev app was slower than the release for a reason of its own: our crates unoptimized (tooling, FR-091)
