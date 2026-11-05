@@ -1,6 +1,6 @@
 # ADR-0039: The GPU for editing, the CPU for exports
 
-- **Status:** Accepted (owner, 2026-11-05); stages measured one at a time
+- **Status:** Accepted (owner, 2026-11-05); stages measured one at a time; amended by [ADR-0040](0040-neutral-raw-colour-and-gpu-develop.md) (`wgpu` for the RAW develop)
 - **Date:** 2026-11-05
 - **Related:** FR-079, FR-057, FR-072, NFR-002, NFR-003, NFR-008, NFR-017, ADR-0038
 

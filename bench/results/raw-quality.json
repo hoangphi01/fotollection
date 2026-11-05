@@ -1,0 +1,9 @@
+{
+  "date": "2026-11-05",
+  "command": "cargo run --release -p fotollection-rawcore --example charts",
+  "size": 768,
+  "methods": {
+    "bilinear": { "zone": { "psnr": 12.99, "falseColour": 65.904, "edgeError": 0.000, "maze": 0.000 }, "star": { "psnr": 21.33, "falseColour": 9.443, "edgeError": 0.000, "maze": 0.000 }, "edges": { "psnr": 31.09, "falseColour": 0.000, "edgeError": 11.580, "maze": 0.000 }, "ramps": { "psnr": 78.93, "falseColour": 0.000, "edgeError": 0.019, "maze": 0.000 }, "flat": { "psnr": 56.40, "falseColour": 0.535, "edgeError": 0.000, "maze": 0.378 }, "ms": 32.6 },
+    "malvar": { "zone": { "psnr": 17.31, "falseColour": 43.046, "edgeError": 0.000, "maze": 0.000 }, "star": { "psnr": 25.23, "falseColour": 8.365, "edgeError": 0.000, "maze": 0.000 }, "edges": { "psnr": 27.52, "falseColour": 0.000, "edgeError": 21.618, "maze": 0.000 }, "ramps": { "psnr": 77.53, "falseColour": 0.000, "edgeError": 0.022, "maze": 0.000 }, "flat": { "psnr": 54.23, "falseColour": 0.536, "edgeError": 0.000, "maze": 0.378 }, "ms": 17.8 }
+  }
+}

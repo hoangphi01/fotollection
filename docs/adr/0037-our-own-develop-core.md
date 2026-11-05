@@ -1,6 +1,6 @@
 # ADR-0037: Our own develop core: rawler unpacks, we demosaic and manage colour
 
-- **Status:** Accepted (planned for v0.10.0; v0.11.0 since [ADR-0038](0038-moderate-colour-editor-on-one-lut-engine.md), after the looks)
+- **Status:** Accepted (planned for v0.10.0; v0.11.0 since [ADR-0038](0038-moderate-colour-editor-on-one-lut-engine.md), after the looks); amended by [ADR-0040](0040-neutral-raw-colour-and-gpu-develop.md) (neutral colour by default)
 - **Date:** 2026-11-02
 - **Related:** FR-016, FR-071, FR-072, FR-070, NFR-002, NFR-009, NFR-017, ADR-0029, ADR-0030, ADR-0033, ADR-0036
 - **Amended:** 2026-11-03: the DNG kinds met in the wild and their order ([docs/raw/dng.md](../raw/dng.md)), added to FR-072.

@@ -453,3 +453,19 @@ Measured on REF-MAC (M3) loaded, before the GPU path was built ([ADR-0039](adr/0
 The app chose 4 for the 26 MP photos (the memory budget); with a 1.6 GB budget it chooses 6: **10.82 photos/s** instead of 8.91 (+21 %), peak 1.08 GB.
 
 **A RAW develop's phases** (`raw_phases`, a 24 MP Ricoh GR III DNG, warm runs): parse and decompress 107–109 ms (serial, the CPU's), demosaic 38–51, develop 153–155, embedded JPEG 52–53, the camera's look 77, finish 49–63 ms.
+
+## 23. The demosaic's score card (v0.11.0, session 15)
+
+Synthetic charts whose truth is known, mosaicked to a Bayer RGGB sensor (12-bit, no noise), demosaiced, and compared with the truth on sRGB values inside an 8-pixel margin (`cargo run --release -p fotollection-rawcore --example charts`, `bench/results/raw-quality.json`, REF-MAC, 2026-11-05). Each new method (RCD, then Markesteijn on an X-Trans version of the charts) is scored on the same charts ([ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md)).
+
+| Chart (768 px) | What it shows | Bilinear | Malvar (ours today) |
+|---|---|---|---|
+| Zone plate, grey, up to green's Nyquist | PSNR; false colour (mean chroma, 0–255) | 13.0 dB; 65.9 | 17.3 dB; 43.0 |
+| Siemens star, grey, 72 spokes | PSNR; false colour | 21.3 dB; 9.4 | 25.2 dB; 8.4 |
+| Saturated colour bars on grey, three directions | PSNR; mean error within 2 px of an edge | 31.1 dB; 11.6 | 27.5 dB; 21.6 |
+| Smooth colour ramps | PSNR | 78.9 dB | 77.5 dB |
+| Flat grey, the two greens 2 % apart | Spread of green (maze) | 0.38 | 0.38 |
+
+- Malvar is about 4 dB better than bilinear on grey detail, as published, but worse on saturated colour edges: its correction borrows the green channel's detail, which is wrong where the colours do not move together. RCD and the false-colour step (session 17) are scored against both.
+- Neither method removes the maze: green's spread on the flat chart comes from the 2 % Gr/Gb gap. That is the job of the green equilibration before demosaic.
+- The bilinear here is the scorer's own floor, not rawler's PPG; rawler's develop is scored on the nine real samples with `raw_compare.py`.
