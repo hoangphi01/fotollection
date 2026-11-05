@@ -6,9 +6,10 @@
 
 ## 1. How to use it
 
-1. Read the rows of §2 that match the change. Most changes match several rows: a new feature is "behaviour", "UI text" and often "website".
-2. Update every file in the row. "Also check" lists files that change only sometimes; look at them and decide.
-3. Run §3 before committing. CI runs the same checks.
+1. Before any work, read this page and [LESSONS.md](LESSONS.md) in full (the `pre-work` skill, `.claude/skills/pre-work/`; owner, 2026-11-05).
+2. Read the rows of §2 that match the change. Most changes match several rows: a new feature is "behaviour", "UI text" and often "website".
+3. Update every file in the row. "Also check" lists files that change only sometimes; look at them and decide.
+4. Run §3 before committing. CI runs the same checks.
 
 ## 2. Checklist by kind of change
 

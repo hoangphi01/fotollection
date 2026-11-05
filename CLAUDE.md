@@ -12,6 +12,10 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
 6. **License (GPL-3.0-only, relicensable).** Add only permissive-licensed dependencies (MIT, Apache-2.0, BSD…). **Never add GPL or AGPL dependencies.** New source files start with `// SPDX-License-Identifier: GPL-3.0-only` ([ADR-0008](docs/adr/0008-license-gpl3-with-relicensing-option.md)).
 7. **Style.** Follow [docs/STYLE_RULE.md](docs/STYLE_RULE.md): no `unwrap` in non-test code, `thiserror` in the core, shadcn/ui components, Lucide icons only.
 
+## Before starting a task
+
+- Run the `pre-work` skill (`.claude/skills/pre-work/`): read [docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md) and [docs/LESSONS.md](docs/LESSONS.md) in full before doing anything, then STATUS "Next, in order" (owner, 2026-11-05).
+
 ## Before finishing a task
 
 - Walk through [docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md) §2 for every kind of change you made, then run its §3 checks.
