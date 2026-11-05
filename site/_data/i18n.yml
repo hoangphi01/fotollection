@@ -335,8 +335,12 @@ en:
   dl_warn_title: "Update to v0.11.0 or later."
   dl_warn_text: "Versions up to v0.10.0 can freeze while opening RAW photos: the preview's spinner turns for good, and every RAW opened after it waits too. v0.11.0 fixes it, and opens any photo about ten times faster."
   chart_open: "Opening a photo: v0.9.0 and v0.10.0 against v0.11.0, on one trip's 422 photos"
-  perf_open_title: "Opening a photo: ten to twenty times faster since v0.11.0"
-  perf_open_text: "Click any photo, near or far, JPEG or RAW: it opens in about 27 milliseconds. Fotollection now prepares a preview of every photo in the background once the thumbnails are done and keeps it on disk, as Lightroom does with its standard previews, and it uses the memory your computer has instead of as little as possible. Measured on the same trip's 422 photos, v0.9.0 took 274 ms for a JPEG and 531 ms for a RAW, v0.10.0 278 and 440."
+  perf_open_title: "Up to 20× faster. A new way to use memory."
+  perf_open_text: "v0.11.0 rethinks how Fotollection keeps your photos. Every photo's preview is prepared in the background once its thumbnail is done and kept on disk, a quarter of your computer's memory holds the photos around the one you see, and the photo on screen always goes first. The result: any photo, near or far, JPEG or RAW, opens in 27 milliseconds. Opening a RAW is up to 20 times faster than v0.9.0, a JPEG 10 times faster, measured on the same 422 photos of one trip."
+  open_stats:
+    - { v: "20×", l: "faster to open a RAW photo than v0.9.0 (531 → 27 ms)" }
+    - { v: "10×", l: "faster to open a JPEG than v0.9.0 (274 → 27 ms)" }
+    - { v: "27 ms", l: "to open any photo, near or far (budget 100 ms)" }
   perf_speed_title: "Speed: a thousand photos in a blink"
   perf_speed_text: "Opening a folder reads each photo's EXIF and its small embedded thumbnail, not the whole image: 1,000 photos take 0.12 seconds, eight times under the budget we set before writing the code. Changing a setting re-renders the preview in 17 ms, faster than a screen refreshes twice. Export runs at 23.5 photos a second at full 16 MP quality since v0.9.7 (18 in the chart, measured before a faster print encoder). Native Rust also beats a web browser doing the same job: the same speed for export, a faster preview, and a quarter less memory. Camera RAW works the same way: thumbnails come from the preview stored in each RAW file in 9 to 32 ms, and only the print preview develops the full photo, in about a second."
   perf_memory_title: "Memory: 5,035 photos, and it stays flat"
@@ -793,8 +797,12 @@ vi:
   dl_warn_title: "Hãy cập nhật lên v0.11.0 trở lên."
   dl_warn_text: "Các bản từ v0.10.0 trở về trước có thể bị treo khi mở ảnh RAW: vòng xoay của bản xem trước quay mãi, và mọi ảnh RAW mở sau đó cũng phải chờ theo. Bản v0.11.0 đã sửa lỗi này, và mở ảnh nào cũng nhanh gấp khoảng mười lần."
   chart_open: "Mở một tấm ảnh: v0.9.0 và v0.10.0 so với v0.11.0, trên 422 ảnh của một chuyến đi"
-  perf_open_title: "Mở một tấm ảnh: nhanh gấp mười đến hai mươi lần từ v0.11.0"
-  perf_open_text: "Bấm vào bất kỳ ảnh nào, gần hay xa, JPEG hay RAW: ảnh mở ra trong khoảng 27 mili giây. Giờ đây, làm xong ảnh nhỏ là Fotollection chuẩn bị sẵn bản xem trước của mọi ảnh ở chế độ nền và giữ trên đĩa, như Lightroom làm với standard preview, và dùng bộ nhớ máy bạn có thay vì cố dùng càng ít càng tốt. Đo trên cùng 422 ảnh của một chuyến đi, v0.9.0 mất 274 ms cho một ảnh JPEG và 531 ms cho một ảnh RAW, v0.10.0 mất 278 và 440."
+  perf_open_title: "Nhanh hơn tới 20 lần. Một cách dùng bộ nhớ hoàn toàn mới."
+  perf_open_text: "Bản v0.11.0 nghĩ lại từ đầu cách Fotollection giữ ảnh của bạn. Làm xong ảnh nhỏ là bản xem trước của mọi ảnh được chuẩn bị ở chế độ nền và giữ trên đĩa, một phần tư bộ nhớ máy giữ những ảnh quanh ảnh bạn đang xem, và ảnh trên màn hình luôn được làm trước. Kết quả: mở ảnh nào, gần hay xa, JPEG hay RAW, cũng chỉ 27 mili giây. Mở một ảnh RAW nhanh gấp tới 20 lần so với v0.9.0, ảnh JPEG gấp 10 lần, đo trên cùng 422 ảnh của một chuyến đi."
+  open_stats:
+    - { v: "20×", l: "nhanh hơn khi mở ảnh RAW so với v0.9.0 (531 → 27 ms)" }
+    - { v: "10×", l: "nhanh hơn khi mở ảnh JPEG so với v0.9.0 (274 → 27 ms)" }
+    - { v: "27 ms", l: "để mở bất kỳ ảnh nào, gần hay xa (ngân sách 100 ms)" }
   perf_speed_title: "Tốc độ: một nghìn ảnh trong chớp mắt"
   perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong tệp, chứ không đọc cả ảnh: 1.000 ảnh mất 0,12 giây, nhanh gấp tám lần mức ngân sách đặt ra trước khi viết mã nguồn. Đổi một thiết lập thì bản xem trước vẽ lại trong 17 ms, chưa bằng hai lần màn hình làm tươi. Từ v0.9.7, xuất ảnh đạt 23,5 ảnh mỗi giây ở chất lượng đầy đủ 16 MP (biểu đồ ghi 18, đo trước khi có bộ mã hoá ảnh in nhanh hơn). Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư RAM. Ảnh RAW cũng vậy: ảnh thu nhỏ lấy từ bản xem trước lưu sẵn trong mỗi tệp RAW, mất 9 đến 32 ms, và chỉ bản xem trước để in mới giải mã đầy đủ ảnh, mất khoảng một giây."
   perf_memory_title: "RAM: 5.035 ảnh vẫn không tăng"
