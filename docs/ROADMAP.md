@@ -160,6 +160,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-077 | One address for many postcards: Use for N postcards, and the recent addresses of this machine; v0.9.7 |
 | FR-078 | The photo at a glance at the top of the preview: camera, lens, exposure, place, date, size; v0.9.7 |
 | FR-079 | Colour adjustments, moderate: Looks, Faves and Tools cards (tone, colour, style, effects), looks with an amount, per photo; v0.10.0, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) |
+| FR-080 | The panel's cards in an order of one's own, the same in the gallery and the previews, with *Reset order*; later, not scheduled |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 

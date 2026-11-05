@@ -848,6 +848,11 @@ Next to the batch settings, any other setting will later be overridable for one 
   - **Looks:** the list of looks, the built-in ones, the user's own and the LUTs imported from LUMIX Lab or elsewhere ([FR-070](#fr-070--looks-from-lut-files)), each shown as the chosen photo through it, small; the **amount**; *Import LUT…* and *Save as look*.
   - **Faves**, the everyday sliders, a fixed set: **tone** (brightness, contrast, highlights, shadows) and **colour** (warmth, blue–amber; tint, green–magenta; saturation; vibrance, which spares skin and colours already strong).
   - **Tools**, the rest: **style** (fade, lifted blacks; a tint for the shadows and one for the highlights with their balance; black and white through a yellow, orange, red or green filter) and **effects** (grain, its amount and size in millimetres on the print, so it looks the same at every print size; vignette around the cropped photo).
+- **Three levels, as a car: drive first, learn the rest later** (owner, 2026-11-05). A newcomer needs only the first:
+  1. **Looks**, always open, in every mode: tap a look, set the amount. Built-in looks are there from the first launch, named by feel ("Warm old film", "Clear", "Black and white, red filter").
+  2. **Faves**, open with four sliders: brightness, contrast, warmth, saturation; *More* shows highlights, shadows, tint and vibrance.
+  3. **Tools**, folded at first; its title opens it, and the app remembers which cards are open.
+  - A folded card still says what it holds ("Tools · 2 changed"); each card's title has a reset, and a double-click resets one slider; a visible *Before / After* button on the photo, besides the `\` key. Labels are plain words, each slider with a one-line hint.
 - **Later, not in v0.10.0:** *Selective*, Snapseed's local control points (brightness, contrast, saturation around a point), as an FR of its own: it cannot bake into the table and needs its own measurement.
 - **Sliders:** each from −100 to +100 (amounts and grain 0–100), 0 by default; a double-click resets one. The preview follows while dragging; one undo step per release. Hold `\` to compare with the original.
 - **Looks:** a look is the sliders' values, an optional imported LUT ([FR-070](#fr-070--looks-from-lut-files)) with its strength, and an **amount** of 0–100 % that scales all of them together. Built-in looks are slider recipes made by the project under its own names (no third-party LUTs, no trademarked film or camera names), among them *C200 Natural* ([FR-039](#fr-039--photo-style-looks)) and film-inspired looks ([FR-047](#fr-047--film-looks)). *Save as look* keeps the current values under a name of the user's.
@@ -856,6 +861,10 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Exact when unused:** with every slider at 0 and no LUT, a print is the same, bit for bit, as without this feature.
 - **Speed:** whatever is set, ≤ 5 ms on the 1600 px preview and ≤ 60 ms on a 24 MP export ([OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets)): every per-pixel adjustment is baked into one 33³ table, grain and vignette run in the same pass.
 - **Out of scope:** masks and local adjustments other than the later *Selective* points, a full HSL matrix, a free curve editor, retouching ([§8](#8-out-of-scope)).
+
+### FR-080 — Card order of one's own
+
+**P2 (later, not scheduled; owner's request 2026-11-05).** The user puts the right-hand panel's cards in an order of their own, by dragging a card's title (or with the keyboard), in the gallery's panel and in the previews alike: one order, so the same tools stay in the same order everywhere ([STYLE_RULE §4](STYLE_RULE.md#4-uiux)), only it is the user's. *Reset order* brings back the app's order. The order is stored per machine with the UI settings (`ui.cardOrder`, [DATABASE.md §6](DATABASE.md#6-app-settings)); a card added by a later version takes its default place.
 
 ## 7. Non-functional requirements
 
