@@ -182,6 +182,9 @@ pub struct PhotoEdits {
     /// The photo's own colour look, set in the preview (FR-079); `None` follows the settings.
     #[serde(default)]
     pub look: Option<crate::looks::LookSettings>,
+    /// How a camera RAW photo is finished (FR-072, ADR-0040); `None` is neutral.
+    #[serde(default)]
+    pub raw_look: Option<crate::raw_finish::RawLook>,
 }
 
 /// A postcard's own text (FR-073): the message on its top lines, the address on its bottom
@@ -254,6 +257,11 @@ pub const MAX_PLACE_NAME: usize = 80;
 impl PhotoEdits {
     pub fn is_default(&self) -> bool {
         *self == Self::default()
+    }
+
+    /// How the photo is finished if it is a camera RAW (absent: neutral).
+    pub fn raw_look(&self) -> crate::raw_finish::RawLook {
+        self.raw_look.unwrap_or_default()
     }
 }
 
@@ -392,6 +400,8 @@ pub struct PhotoSummary {
     pub unusual: bool,
     /// A camera RAW file, badged RAW in the grid and the preview.
     pub raw: bool,
+    /// How a RAW is finished (FR-072, ADR-0040); neutral for any other file.
+    pub raw_look: crate::raw_finish::RawLook,
 }
 
 #[derive(Default)]
@@ -917,6 +927,7 @@ impl Library {
                 .or((record.flags & flags::HAS_GPS != 0).then_some(PlaceSource::Gps)),
             unusual: record.facts.unusual(),
             raw,
+            raw_look: record.edits.raw_look(),
         })
     }
 

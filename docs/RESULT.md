@@ -533,3 +533,21 @@ Four steps, each kept only once the score card (§23, now with a sixth chart, `h
 
 - **The fix:** `rawcore::cut_short` checks every strip and tile of a TIFF-based RAW against the file's end before any develop (Panasonic's placeholder strip followed to its own offset tag), and `raw::intact` has rawler or our DNG reader read the sensor data through before the system's codec is asked. Reading the size of a RW2 through it adds no time ImageIO's own spread (336–894 ms) lets us see.
 - **Still open:** a cut-short X-Trans RAF or CR3 is refused today because rawler refuses it; neither is TIFF-based, so `cut_short` says nothing about them.
+
+## 27. RAW colour: neutral or like the camera's JPEG (v0.11.0, session 17b)
+
+ΔE2000 mean to each sample's embedded JPEG at 1600 px (`measure_rawler`, `raw_compare.py`), on the same develop as session 17a, REF-MAC, 2026-11-05 (`bench/results/raw-look.json`):
+
+| Sample | Like the camera's JPEG | Before (one curve and a matrix) | Fit taken | Neutral |
+|---|---|---|---|---|
+| Canon 5D Mark IV | 1.88 | 1.88 | curve and matrix | 3.23 |
+| Canon R10 | 4.42 | 4.42 | curve and matrix | 5.55 |
+| Nikon D750 | **1.16** | 2.26 | three curves | 4.46 |
+| Panasonic GX9 | **2.76** | 3.85 | three curves | 4.40 |
+| Panasonic S5 | 6.45 | 6.45 | curve and matrix | 6.61 |
+| Ricoh GR III | 2.70 | 2.70 | curve and matrix | 2.78 |
+| Sony A7 III | 3.29 | 3.29 | curve and matrix | 3.99 |
+
+- **Choosing the fit:** both are made on a copy 480 px across and scored against the JPEG averaged down to it, ΔE2000 pixel by pixel (`examples/raw_fits.rs`); only the closer one is rendered at full size. A first score on 48 × 32 block averages (CIE76) picked the worse fit for the R10 and the A7 III (4.76 and 4.44 instead of 4.42 and 3.29); per pixel it picks right for all seven. On the Prague trip's 26 RW2: three curves for 22, one curve and a matrix for 4, a mean score of 2.69 against 3.17 and 2.91 for either fit alone.
+- **Neutral:** the camera's matrix, the lens shading and the exposure of its JPEG (the median brightness), and a gentle tone: a soft shoulder, an S of half strength, and a soft toe `d²/(d + 0.01)`. The S5's grey patches, L\* white to black, neutral 85.8 74.6 61.0 45.1 27.5 12.9 against the camera's 86.2 75.6 62.6 46.3 25.0 8.1, colour cast C\* 1.39 (the camera's JPEG 1.26). Tried and dropped: no S (black at L\* 24); a black offset (0.004 to 0.014) that matched the S5's black but crushed the D750's shadows (SSIM 0.987 → 0.77–0.92).
+- **Time:** a full develop with either choice takes 0.29–0.69 s on the eight Bayer samples (the finish 100–210 ms of it); both choices stay in the preview cache, so switching back is instant.

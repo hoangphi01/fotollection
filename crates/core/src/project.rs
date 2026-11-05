@@ -24,7 +24,9 @@ pub const FORMAT: &str = "fotollection-project";
 /// straightening on a sheet (FR-035), and `photos[].caption`, the photo's own line under the
 /// date (FR-036), and `photos[].collage_rotation`, its quarter turns in its collage cell.
 /// v10: `photos[].postcard`, the message and address typed on the photo's postcard (FR-073).
-/// v11: `photos[].look`, a photo's own colour look set in the preview (FR-079).
+/// v11: `photos[].look`, a photo's own colour look set in the preview (FR-079), and
+/// `photos[].raw_look`, how a camera RAW is finished (FR-072, ADR-0040). A file from before
+/// v11 opens its RAW photos with the camera's look, as they printed then.
 pub const SCHEMA_VERSION: u32 = 11;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
@@ -110,6 +112,9 @@ pub struct PhotoRow {
     /// The photo's own colour look (v11); absent when it follows the settings.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub look: Option<crate::looks::LookSettings>,
+    /// How the photo is finished if it is a camera RAW (v11); absent is neutral.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub raw_look: Option<crate::raw_finish::RawLook>,
 }
 
 /// A place the user renamed (v8, FR-005).
@@ -236,6 +241,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 caption: edits.caption,
                 postcard: edits.postcard,
                 look: edits.look,
+                raw_look: edits.raw_look,
             })
         })
         .collect();
@@ -546,9 +552,25 @@ pub fn restore_into(
                     .as_ref()
                     .and_then(crate::library::PostcardText::sanitized),
                 look: row.look.clone().map(crate::looks::LookSettings::sanitized),
+                raw_look: row.raw_look,
             },
         );
         summary.restored += 1;
+    }
+    // Before v11 every RAW was finished to the camera's JPEG: a project from then keeps that
+    // look for its RAW photos, edited or not, so its prints keep their colours (ADR-0040).
+    if file.schema_version < 11 {
+        for id in library.sorted_ids() {
+            let in_project = library.record(id).is_some_and(|r| {
+                folders.iter().any(|(_, f)| r.path.starts_with(f))
+                    && crate::raw::is_raw_name(&r.file_name)
+            });
+            let mut edits = library.edits(id);
+            if in_project && edits.raw_look.is_none() {
+                edits.raw_look = Some(crate::raw_finish::RawLook::Camera);
+                library.set_edits(id, edits);
+            }
+        }
     }
     for row in &file.places {
         library.rename_place(row.geonames_id, Some(&row.name));
@@ -798,6 +820,7 @@ mod tests {
             collage_rotation: None,
             postcard: None,
             look: None,
+            raw_look: None,
         });
         save(&path, &file)?;
         assert!(
@@ -886,6 +909,65 @@ mod tests {
             panic!("v10 project should load");
         };
         assert!(v10.photos.iter().all(|p| p.look.is_none()));
+    }
+
+    /// FR-072, ADR-0040: a RAW photo's finish is saved and read back (`raw_look`); a project
+    /// from before v11 opens every RAW photo of its folders, edited or not, as the camera's
+    /// JPEG, the way it printed then, and leaves other files and newer projects neutral.
+    #[test]
+    fn fr_072_old_projects_keep_the_cameras_look_for_raw() -> std::io::Result<()> {
+        use crate::raw_finish::RawLook;
+        let Loaded::Ok(v11) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v11.fotollection"))
+        else {
+            panic!("v11 project should load");
+        };
+        assert_eq!(v11.photos[2].raw_look, Some(RawLook::Camera));
+        assert_eq!(v11.photos[0].raw_look, None);
+        let paths = ["/trip/a.RW2", "/trip/b.jpg", "/trip/c.ARW"];
+        let mut lib = library_with(&paths);
+        let ids = lib.sorted_ids();
+        // Only `c` was edited in the old project: `a` has no row at all.
+        let c = ids[2];
+        lib.set_edits(
+            c,
+            PhotoEdits {
+                rating: 3,
+                ..PhotoEdits::default()
+            },
+        );
+        let mut old = snapshot(&lib);
+        old.schema_version = 10;
+        let mut fresh = library_with(&paths);
+        restore(&mut fresh, &old);
+        let looks: Vec<_> = fresh
+            .sorted_ids()
+            .iter()
+            .map(|&id| fresh.edits(id).raw_look)
+            .collect();
+        assert_eq!(
+            looks,
+            vec![Some(RawLook::Camera), None, Some(RawLook::Camera)]
+        );
+        // Saved again as v11, the choice travels in the file; a v11 file is not migrated.
+        let Loaded::Ok(again) = from_bytes(&to_bytes(&snapshot(&fresh))?) else {
+            panic!("reload");
+        };
+        let mut newer = library_with(&paths);
+        restore(&mut newer, &again);
+        assert_eq!(
+            newer.edits(newer.sorted_ids()[0]).raw_look,
+            Some(RawLook::Camera)
+        );
+        let mut neutral = library_with(&paths);
+        restore(&mut neutral, &snapshot(&lib));
+        assert!(
+            neutral
+                .sorted_ids()
+                .iter()
+                .all(|&id| neutral.edits(id).raw_look.is_none())
+        );
+        Ok(())
     }
 
     /// FR-073: a v10 file keeps each photo's postcard text, line breaks included; one with

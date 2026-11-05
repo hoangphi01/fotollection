@@ -10,7 +10,7 @@
 
 use std::sync::{Arc, Mutex};
 
-use crate::codec::{EncodeOptions, JpegCodec, decode_image};
+use crate::codec::{EncodeOptions, JpegCodec, decode_image, decode_photo};
 use crate::image::{RgbImage, apply_orientation};
 use crate::library::{PhotoId, PhotoRecord};
 use crate::plan::{CropRect, FrameRequest, PlanInput, RenderPlan, plan};
@@ -37,7 +37,17 @@ const FULL_BUDGET_BYTES: usize = 200_000_000;
 pub const REGION_MAX_PX: u32 = 4096;
 
 /// A photo and the orientation it was decoded in, so a rotated photo is decoded again.
-type SourceKey = (PhotoId, u8);
+/// A photo, its orientation and how it is finished if it is a RAW (ADR-0040): either change
+/// is another image, so it misses the cache and the other stays for a quick comparison.
+type SourceKey = (PhotoId, u8, crate::raw::RawLook);
+
+fn source_key(record: &PhotoRecord) -> SourceKey {
+    (
+        record.id,
+        record.display_orientation(),
+        record.edits.raw_look(),
+    )
+}
 
 /// A part of the rendered photo, in fractions of its width and height, wanted at most
 /// `px` pixels wide (FR-057).
@@ -175,7 +185,7 @@ impl PreviewCache {
         thumbnail: &Thumbnail<'_>,
         codec: &dyn JpegCodec,
     ) -> Result<Arc<RgbImage>, ThumbError> {
-        let key = (record.id, record.display_orientation());
+        let key = source_key(record);
         if let Some(image) = take_cached(&self.small, key) {
             return Ok(image);
         }
@@ -202,16 +212,16 @@ impl PreviewCache {
         record: &PhotoRecord,
         codec: &dyn JpegCodec,
     ) -> Result<Arc<RgbImage>, ThumbError> {
-        if let Some(image) = take_cached(&self.entries, (record.id, record.display_orientation())) {
+        if let Some(image) = take_cached(&self.entries, source_key(record)) {
             return Ok(image);
         }
-        let key = (record.id, record.display_orientation());
+        let key = source_key(record);
         // Zoomed before: the full image is already here.
         let full = if let Some(full) = self.take_full(key) {
             full
         } else {
             let bytes = std::fs::read(&record.path)?;
-            let decoded = decode_image(codec, &bytes)?;
+            let decoded = decode_photo(codec, &bytes, key.2)?;
             let full = Full {
                 image: Arc::new(apply_orientation(decoded.image, key.1)),
                 icc: decoded.icc.map(Arc::from),
@@ -255,7 +265,7 @@ impl PreviewCache {
         record: &PhotoRecord,
         codec: &dyn JpegCodec,
     ) -> Result<Arc<RgbImage>, ThumbError> {
-        let key = (record.id, record.display_orientation());
+        let key = source_key(record);
         let cached = match self.take_full(key) {
             Some(Full { image, icc: None }) => return Ok(image),
             // Out of the cache while it converts, so the pixels are converted in place.
@@ -275,7 +285,7 @@ impl PreviewCache {
             }
             None => {
                 let bytes = std::fs::read(&record.path)?;
-                crate::colour::screen(decode_image(codec, &bytes)?)
+                crate::colour::screen(decode_photo(codec, &bytes, key.2)?)
             }
         };
         let image = Arc::new(image);

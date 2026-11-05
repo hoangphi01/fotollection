@@ -790,7 +790,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Before demosaicing:** per-site black levels from the ActiveArea origin, white level, **green equilibration (Gr/Gb)** against maze and worm patterns, hot-pixel removal, the as-shot white balance.
 - **Demosaicing:** for Bayer, a directional interpolation (RCD's direction decision, Hamilton–Adams estimates weighted by gradient; RCD's own ratio-corrected green scored worse on the charts, RESULT §25); Markesteijn for X-Trans (one pass by default, three passes as the quality option). Malvar-He-Cutler stays only as a test reference.
 - **After demosaicing:** false-colour suppression (a median on colour differences) and highlight reconstruction.
-- **Colour:** camera → XYZ → a **linear f32 working space**, the tone curve last, then sRGB or Display P3 with its matching profile. FR-070's looks apply in this space. **Neutral by default** (owner, 2026-11-05): the sensor's colour through its matrix and a gentle curve; the camera's look, fitted to its embedded JPEG, is the built-in look "Like the camera's JPEG" for RAW photos ([ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md)).
+- **Colour:** camera → XYZ → a **linear f32 working space**, the tone curve last, then sRGB or Display P3 with its matching profile. FR-070's looks apply in this space. **Neutral by default** (owner, 2026-11-05): the sensor's colour through its matrix, the lens shading and the exposure of the camera's JPEG, and a gentle curve with a soft toe; the camera's look, fitted to its embedded JPEG with whichever of two fits comes closer for that file (one curve and a matrix, or three curves), is the choice "Like the camera's JPEG", in a RAW photo's *RAW colour* card with *Apply to all RAW photos* ([ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md), RESULT §27). A project from before v0.11.0 opens its RAW photos with the camera's look, so its prints keep their colours.
 - **On the GPU while editing** ([ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md)): the develop for the preview, zoom and thumbnails runs on `wgpu` where the machine has a capable GPU, with a CPU twin for every step; exports stay on the CPU. The machine decides, no switch.
 - **Colour management everywhere:** previews, thumbnails, zoom and the crop source convert the photo's profile to sRGB for the screen (done 2026-11-03; the owner chose sRGB over a tagged Display P3, so every system shows the same, Linux included); PNG honours gAMA, cHRM and sRGB, dithers 16 → 8 bits and flattens alpha in linear light (done 2026-11-03); share exports resize in linear light (2026-11-03: measured about 50 ms more per 16 MP photo on screen, so the owner kept the screen's faster resize and chose linear light for share exports only, OPTIMIZATION §5).
 - **DNG as it is met in the wild** ([docs/raw/dng.md](raw/dng.md)), in this order: phone gain maps (`OpcodeList2`), lossy LinearRaw (34892), LinearRaw with lossless JPEG or JPEG XL (ProRAW), the raw image digest as a damaged-file check, floating-point HDR merges, X-Trans DNGs with Markesteijn.
@@ -914,6 +914,17 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **From the file, never from a guessed lens profile:** the correction the camera itself records (Panasonic and Olympus maker data, which Micro Four Thirds lenses rely on), DNG's `WarpRectilinear` opcode.
 - **Until then:** on macOS, Panasonic and Olympus RAW go to ImageIO first ([FR-016](#fr-016--raw-input)); elsewhere they are developed without the correction, as rawler did.
 - **Measured:** against the camera's embedded JPEG by structure (SSIM) and by the shift of straight edges; budgets in [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets) before it is built.
+
+### FR-086 — One Settings window
+
+**P1 (planned, owner's request 2026-11-05).** Every setting of the app in one window instead of a corner of each panel: a gear button beside "by @hoangphi01" opens it, laid out as the preview window is, in two columns as on an iPad, the narrow one a list of tabs and the wide one that tab's settings.
+
+- **In it:** the language, the theme, `.fotosettings` export and import ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)), language packs ([FR-084](#fr-084--language-packs-anyone-can-add)), the cache, updates, *Report a problem*, the version and the changelog, and every other app-wide setting now spread over the panels and the version popover.
+- **Built from the lego blocks** (STYLE_RULE §4), measured with `MEASURE=1`, in both themes and languages.
+
+### FR-087 — How large a collage sheet prints
+
+**P1 (planned, owner's request 2026-11-05).** In Collage mode, the *Print size* card says how many pixels a sheet of two photos side by side or one above the other has (two 16 MP photos make a sheet of about W × H px), and whether that is sharp, acceptable or soft for the chosen size, as the resolution warning does for one photo ([FR-026](#fr-026--resolution-warning)).
 
 ## 7. Non-functional requirements
 

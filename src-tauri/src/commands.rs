@@ -560,6 +560,9 @@ pub struct PhotoLook {
     pub look: LookSettings,
     /// True when the photo has its own look.
     pub custom: bool,
+    /// How the photo is finished when it is a camera RAW (FR-072, ADR-0040); `None` for any
+    /// other file, which has no such choice.
+    pub raw: Option<fotollection_core::raw::RawLook>,
 }
 
 #[tauri::command]
@@ -569,11 +572,16 @@ pub fn get_photo_look(state: State<'_, AppState>, id: PhotoId) -> Result<PhotoLo
         .library
         .read()
         .map_err(|e| IpcError::internal(e.to_string()))?;
-    if library.record(id).is_none() {
+    let Some(summary) = library.summary(id) else {
         return Err(IpcError::new("photo.unknown", "Unknown photo"));
-    }
+    };
+    let raw = summary.raw.then_some(summary.raw_look);
     if let Some(look) = library.edits(id).look {
-        return Ok(PhotoLook { look, custom: true });
+        return Ok(PhotoLook {
+            look,
+            custom: true,
+            raw,
+        });
     }
     drop(library);
     let look = state
@@ -586,6 +594,7 @@ pub fn get_photo_look(state: State<'_, AppState>, id: PhotoId) -> Result<PhotoLo
     Ok(PhotoLook {
         look,
         custom: false,
+        raw,
     })
 }
 
@@ -623,6 +632,53 @@ pub fn set_photo_look(
         }
     }
     Ok(changed(&app, &state))
+}
+
+/// How a camera RAW photo is finished (FR-072, ADR-0040): neutral or like the camera's JPEG.
+/// One undoable step; the preview, the sheets and the export follow from the new revision.
+#[tauri::command]
+#[specta::specta]
+pub fn set_raw_look(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: PhotoId,
+    look: fotollection_core::raw::RawLook,
+) -> Result<HistoryState, IpcError> {
+    edit_photos(&app, &state, &[id], |_, e| {
+        e.raw_look = (look != fotollection_core::raw::RawLook::Neutral).then_some(look);
+    })
+}
+
+/// "Apply to all RAW photos": every camera RAW of the library finished as `look`, one
+/// undoable step.
+#[tauri::command]
+#[specta::specta]
+pub fn apply_raw_look_to_all(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    look: fotollection_core::raw::RawLook,
+) -> Result<HistoryState, IpcError> {
+    let ids: Vec<PhotoId> = {
+        let library = state
+            .library
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        library
+            .sorted_ids()
+            .into_iter()
+            .filter(|&id| {
+                library
+                    .summary(id)
+                    .is_some_and(|s| s.raw && s.raw_look != look)
+            })
+            .collect()
+    };
+    if ids.is_empty() {
+        return Ok(changed(&app, &state));
+    }
+    edit_photos(&app, &state, &ids, |_, e| {
+        e.raw_look = (look != fotollection_core::raw::RawLook::Neutral).then_some(look);
+    })
 }
 
 /// "Apply to all" in the preview: this photo's look becomes the setting for every photo,

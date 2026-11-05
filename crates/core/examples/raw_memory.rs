@@ -17,11 +17,11 @@ fn main() {
     let t = Instant::now();
     let size = match args[0].as_str() {
         "os" => raw::Os
-            .decode(&bytes, kind)
+            .decode(&bytes, kind, fotollection_core::raw::RawLook::Neutral)
             .map(|d| (d.image.width as usize, d.image.height as usize))
             .expect("os"),
         "rawler" => raw::Rawler
-            .decode(&bytes, kind)
+            .decode(&bytes, kind, fotollection_core::raw::RawLook::Neutral)
             .map(|d| (d.image.width as usize, d.image.height as usize))
             .expect("rawler"),
         _ => {

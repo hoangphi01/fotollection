@@ -108,6 +108,8 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::get_photo_look,
             commands::set_photo_look,
             commands::apply_look_to_all,
+            commands::set_raw_look,
+            commands::apply_raw_look_to_all,
             commands::reset_photo_stamps,
             commands::undo,
             commands::redo,

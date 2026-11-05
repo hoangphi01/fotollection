@@ -30,7 +30,11 @@ Options 2 and 4.
 ## Consequences
 
 - Session 15 sets the score card first: synthetic charts mosaicked and scored (`crates/rawcore/examples/charts.rs`, `bench/results/raw-quality.json`), and the budgets in [OPTIMIZATION §3](../OPTIMIZATION.md#3-budgets).
-- RAW thumbnails change colour: `thumbs::CACHE_VERSION` goes up with the neutral rendering (session 17).
+- RAW thumbnails do not change: they are the camera's embedded preview, as in Lightroom (owner, 2026-11-05), so `thumbs::CACHE_VERSION` stays; the preview cache is keyed by the choice.
 - Two implementations of each develop step (Rust and WGSL) must not drift: the parity test guards it, the CPU path stays the reference, and golden tests stay CPU-only. CI runs the GPU path on software adapters with a tolerance.
 - New docs when each step lands: NFR-008 in the PRD and STATUS, `ERR-GPU-*` and the unsupported sensor kind in ERROR_CONTROL, ARCHITECTURE (`rawcore`, `rawlgpl::unpack`), TESTING, the RAW chapter of the manual.
 - Amends ADR-0037 (the camera's look is no longer the default) and ADR-0039 (`wgpu` for the RAW develop now, not only for later features).
+
+## Stage results
+
+- **Neutral and the camera's look (session 17b, 2026-11-05, [RESULT §27](../RESULT.md#27-raw-colour-neutral-or-like-the-cameras-jpeg-v0110-session-17b)):** the neutral rendering keeps the lens shading and the exposure fitted from the camera's JPEG (a property of the lens and of the shot, not of the look), with a gentle curve and a soft toe; the S5's greys stay neutral (C\* 1.39). "Like the camera's JPEG" fits both ways measured in session 16 on a small copy and keeps the closer one per file (ΔE2000 per pixel; a block-average score picked wrong for two of seven cameras): better or equal on every Bayer sample (D750 2.26 → 1.16, GX9 3.85 → 2.76). The owner chose a card among the colour cards, *Apply to all RAW photos*, no setting, and the camera's look for projects from before v0.11.0.

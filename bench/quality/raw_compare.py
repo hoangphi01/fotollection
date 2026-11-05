@@ -62,7 +62,7 @@ def greys(img: Image.Image) -> list[tuple[float, float]]:
     return out
 
 
-DECODERS = ("os", "rawler", "rawcore")
+DECODERS = ("os", "rawler", "rawcore", "neutral")
 
 
 def main() -> None:

@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 
 use crate::cancel::CancellationToken;
-use crate::codec::{CodecError, EncodeOptions, JpegCodec, decode_image};
+use crate::codec::{CodecError, EncodeOptions, JpegCodec, decode_photo};
 use crate::image::apply_orientation;
 use crate::library::{PhotoId, PhotoRecord, flags};
 use crate::plan::{FrameRequest, PlanInput, plan};
@@ -211,7 +211,7 @@ fn encode_sheet(
             return Err(ExportError::Cancelled);
         }
         let bytes = std::fs::read(&record.path)?;
-        let d = decode_image(codec, &bytes)?;
+        let d = decode_photo(codec, &bytes, record.edits.raw_look())?;
         profiles.push(d.icc);
         decoded.push((
             // As the photo sits on the sheet, its own turns in the cell included (FR-035).
@@ -298,7 +298,7 @@ fn encode_photo(
         return Err(ExportError::Cancelled);
     }
     let bytes = std::fs::read(&record.path)?;
-    let decoded = decode_image(codec, &bytes)?;
+    let decoded = decode_photo(codec, &bytes, record.edits.raw_look())?;
     // The file's bytes are not needed past the decode (NFR-004).
     drop(bytes);
     let upright = apply_orientation(decoded.image, record.display_orientation());

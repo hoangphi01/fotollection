@@ -875,5 +875,13 @@
       "balance": "Ranh giới giữa vùng tối và vùng sáng.",
       "mono": "Trắng đen qua kính lọc màu như phim: lọc đỏ làm trời xanh tối nhất."
     }
+  },
+  "rawLook": {
+    "title": "Màu RAW",
+    "neutral": "Trung tính",
+    "camera": "Như JPEG của máy",
+    "neutralHint": "Màu của cảm biến với độ sáng của máy và một đường cong nhẹ: điểm xuất phát dịu để bạn tự chỉnh màu.",
+    "cameraHint": "Khớp theo ảnh JPEG máy ảnh lưu trong tệp: độ tương phản và màu của máy, như trên màn hình máy ảnh.",
+    "applyToAll": "Áp dụng cho mọi ảnh RAW"
   }
 }

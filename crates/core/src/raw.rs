@@ -7,6 +7,8 @@
 
 pub use fotollection_oscodec::RawKind;
 
+pub use crate::raw_finish::RawLook;
+
 use crate::codec::{CodecError, Decoded, MAX_EDGE, MAX_PIXELS};
 use crate::image::RgbImage;
 
@@ -138,8 +140,8 @@ static DEVELOP: std::sync::Mutex<()> = std::sync::Mutex::new(());
 /// One way to read camera RAW (ADR-0029). Fotollection tries them in [`decoders`] order,
 /// so our own decoder can take over format by format without changing any caller.
 pub trait RawDecoder: Sync {
-    /// The full develop, finished to the camera's look.
-    fn decode(&self, bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError>;
+    /// The full develop, finished as `look` asks (ADR-0040).
+    fn decode(&self, bytes: &[u8], kind: RawKind, look: RawLook) -> Result<Decoded, CodecError>;
     /// The developed size, the only one to use for geometry.
     fn dimensions(&self, bytes: &[u8], kind: RawKind) -> Result<(u32, u32), CodecError>;
     /// An image the camera stored in the file, at most `max_px` on its long edge.
@@ -174,10 +176,39 @@ fn intact(bytes: &[u8], kind: RawKind) -> Result<(), CodecError> {
 }
 
 impl RawDecoder for Os {
-    fn decode(&self, bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError> {
+    /// Neutral is the system's own rendering; the camera's look fits one curve per channel of
+    /// it to the embedded JPEG, as rawler's develop was.
+    fn decode(&self, bytes: &[u8], kind: RawKind, look: RawLook) -> Result<Decoded, CodecError> {
         intact(bytes, kind)?;
         let format = fotollection_oscodec::Format::Raw(kind);
-        decoded(fotollection_oscodec::decode(bytes, format, LIMITS).map_err(error)?)
+        let developed =
+            decoded(fotollection_oscodec::decode(bytes, format, LIMITS).map_err(error)?)?;
+        if look == RawLook::Neutral {
+            return Ok(developed);
+        }
+        let Some(reference) = embedded_reference(bytes, kind) else {
+            return Ok(developed);
+        };
+        let wide: Vec<u16> = developed
+            .image
+            .data
+            .iter()
+            .map(|&v| u16::from(v) * 257)
+            .collect();
+        Ok(
+            match crate::raw_finish::match_reference(&wide, &reference) {
+                Some(curves) => Decoded {
+                    image: crate::raw_finish::apply(
+                        &wide,
+                        developed.image.width,
+                        developed.image.height,
+                        &curves,
+                    ),
+                    icc: developed.icc,
+                },
+                None => developed,
+            },
+        )
     }
 
     fn dimensions(&self, bytes: &[u8], kind: RawKind) -> Result<(u32, u32), CodecError> {
@@ -210,26 +241,34 @@ fn rgb8(image: fotollection_rawlgpl::Rgb8) -> Option<RgbImage> {
 }
 
 impl RawDecoder for Rawler {
-    fn decode(&self, bytes: &[u8], _kind: RawKind) -> Result<Decoded, CodecError> {
+    /// rawler's develop (sRGB-encoded, untoned) back to linear light, then finished as our own.
+    fn decode(&self, bytes: &[u8], _kind: RawKind, look: RawLook) -> Result<Decoded, CodecError> {
         let developed =
             fotollection_rawlgpl::develop(bytes, LIMITS.max_pixels).map_err(rawler_error)?;
         let reference = fotollection_rawlgpl::preview(bytes)
             .ok()
             .flatten()
             .and_then(rgb8);
-        let curves = reference
-            .as_ref()
-            .and_then(|r| crate::raw_finish::match_reference(&developed.rgb, r))
-            .unwrap_or_else(|| crate::raw_finish::default_curves(&developed.rgb));
-        Ok(Decoded {
-            image: crate::raw_finish::apply(
-                &developed.rgb,
-                developed.width,
-                developed.height,
-                &curves,
-            ),
-            icc: None,
-        })
+        let table: Vec<f32> = (0..=u16::MAX)
+            .map(|v| {
+                let c = f32::from(v) / 65535.0;
+                if c <= 0.040_45 {
+                    c / 12.92
+                } else {
+                    ((c + 0.055) / 1.055).powf(2.4)
+                }
+            })
+            .collect();
+        let linear = fotollection_rawcore::Linear {
+            width: developed.width as usize,
+            height: developed.height as usize,
+            rgb: developed
+                .rgb
+                .iter()
+                .map(|&v| table[usize::from(v)])
+                .collect(),
+        };
+        finished(&linear, reference.as_ref(), look)
     }
 
     fn dimensions(&self, bytes: &[u8], _kind: RawKind) -> Result<(u32, u32), CodecError> {
@@ -241,7 +280,7 @@ impl RawDecoder for Rawler {
             Some(embedded) => rgb8(embedded)
                 .ok_or_else(|| CodecError::Decode("unexpected pixel layout".into()))?,
             // No image in the file (some ORF): develop it, once, for the thumbnail.
-            None => self.decode(bytes, kind)?.image,
+            None => self.decode(bytes, kind, RawLook::Neutral)?.image,
         };
         let small = crate::render::fit_long_edge(&image, max_px)
             .map_err(|e| CodecError::Decode(e.to_string()))?;
@@ -250,6 +289,34 @@ impl RawDecoder for Rawler {
             icc: None,
         })
     }
+}
+
+/// A linear develop finished as `look` asks against the camera's JPEG (`raw_finish`).
+fn finished(
+    linear: &fotollection_rawcore::Linear,
+    reference: Option<&RgbImage>,
+    look: RawLook,
+) -> Result<Decoded, CodecError> {
+    let finished = crate::raw_finish::finish_linear(linear, reference, look)
+        .ok_or(CodecError::TooLarge(LIMITS.max_edge, LIMITS.max_edge))?;
+    Ok(Decoded {
+        image: finished.image,
+        icc: None,
+    })
+}
+
+/// Our own scene-linear develop of a Bayer RAW and the camera's embedded JPEG, unfinished:
+/// for measuring the finishes (`examples/raw_fits.rs`).
+pub fn develop_linear(
+    bytes: &[u8],
+    kind: RawKind,
+) -> Result<(fotollection_rawcore::Linear, Option<RgbImage>), CodecError> {
+    Ok((Own::linear(bytes, kind)?, Own::embedded(bytes, kind)))
+}
+
+/// The camera's embedded JPEG, whatever reads the file, for fitting the camera's look.
+fn embedded_reference(bytes: &[u8], kind: RawKind) -> Option<RgbImage> {
+    Own::embedded(bytes, kind)
 }
 
 /// Fotollection's own develop (ADR-0030, ADR-0040): DNG through our own reader, every other
@@ -321,31 +388,9 @@ impl Own {
 }
 
 impl RawDecoder for Own {
-    fn decode(&self, bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError> {
+    fn decode(&self, bytes: &[u8], kind: RawKind, look: RawLook) -> Result<Decoded, CodecError> {
         let linear = Self::linear(bytes, kind)?;
-        let look = Self::embedded(bytes, kind).and_then(|jpeg| {
-            fotollection_rawcore::match_look(
-                &linear,
-                &fotollection_rawcore::Reference {
-                    width: jpeg.width as usize,
-                    height: jpeg.height as usize,
-                    rgb: &jpeg.data,
-                },
-            )
-        });
-        let picture = match look {
-            Some(look) => fotollection_rawcore::finish_look(&linear, &look),
-            None => {
-                fotollection_rawcore::finish(&linear, &fotollection_rawcore::default_curve(&linear))
-            }
-        };
-        let (Ok(width), Ok(height)) = (u32::try_from(picture.width), u32::try_from(picture.height))
-        else {
-            return Err(CodecError::TooLarge(LIMITS.max_edge, LIMITS.max_edge));
-        };
-        let image = RgbImage::from_raw(width, height, picture.rgb)
-            .ok_or_else(|| CodecError::Decode("unexpected pixel layout".into()))?;
-        Ok(Decoded { image, icc: None })
+        finished(&linear, Self::embedded(bytes, kind).as_ref(), look)
     }
 
     fn dimensions(&self, bytes: &[u8], kind: RawKind) -> Result<(u32, u32), CodecError> {
@@ -366,7 +411,7 @@ impl RawDecoder for Own {
         Self::supports(bytes, kind)?;
         let image = match Self::embedded(bytes, kind) {
             Some(image) => image,
-            None => self.decode(bytes, kind)?.image,
+            None => self.decode(bytes, kind, RawLook::Neutral)?.image,
         };
         let small = crate::render::fit_long_edge(&image, max_px)
             .map_err(|e| CodecError::Decode(e.to_string()))?;
@@ -448,12 +493,12 @@ fn first<T>(
 }
 
 /// The full develop, for the print preview, zoom and export.
-pub fn decode(bytes: &[u8], kind: RawKind) -> Result<Decoded, CodecError> {
+pub fn decode(bytes: &[u8], kind: RawKind, look: RawLook) -> Result<Decoded, CodecError> {
     // Image data past the end of the file is refused before any reader makes up the rest.
     if fotollection_rawcore::cut_short(bytes) {
         return Err(CodecError::Decode("the RAW file is cut short".into()));
     }
-    one_at_a_time(|| first(kind, |d| d.decode(bytes, kind)))
+    one_at_a_time(|| first(kind, |d| d.decode(bytes, kind, look)))
         .unwrap_or_else(|| Err(CodecError::Decode("the RAW develop failed".into())))
 }
 
@@ -641,7 +686,7 @@ mod tests {
             // rawler, on every system (ADR-0029): its size is the develop's, and every file
             // gives a thumbnail.
             let (w, h) = Rawler.dimensions(&bytes, expected)?;
-            let developed = Rawler.decode(&bytes, expected)?;
+            let developed = Rawler.decode(&bytes, expected, RawLook::Neutral)?;
             assert_eq!(
                 (developed.image.width, developed.image.height),
                 (w, h),
@@ -666,7 +711,7 @@ mod tests {
                 "{}",
                 path.display()
             );
-            let developed = Own.decode(&bytes, expected)?;
+            let developed = Own.decode(&bytes, expected, RawLook::Camera)?;
             assert_eq!(
                 (developed.image.width, developed.image.height),
                 (w, h),
@@ -679,7 +724,7 @@ mod tests {
             // develop it with the missing part as stripes (LESSONS 2026-11-05).
             let cut = &bytes[..bytes.len() * 4 / 10];
             assert!(
-                decode(cut, expected).is_err(),
+                decode(cut, expected, RawLook::Neutral).is_err(),
                 "{} cut short",
                 path.display()
             );

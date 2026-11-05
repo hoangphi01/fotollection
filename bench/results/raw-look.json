@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-05",
+  "machine": "REF-MAC (M3), loaded",
+  "note": "Session 17b. ΔE2000 mean to the camera's embedded JPEG at 1600 px (measure_rawler + raw_compare.py); 'cameraBefore' is session 17a's curve-and-matrix fit on the same develop. Fits scored by raw_fits (ΔE2000 per pixel at 480 px).",
+  "samples": {
+    "canon-eos-5d-mark-iv": { "camera": 1.88, "cameraBefore": 1.88, "neutral": 3.23, "fit": "CurveAndMatrix" },
+    "canon-eos-r10": { "camera": 4.42, "cameraBefore": 4.42, "neutral": 5.55, "fit": "CurveAndMatrix" },
+    "nikon-d750": { "camera": 1.16, "cameraBefore": 2.26, "neutral": 4.46, "fit": "ThreeCurves" },
+    "panasonic-dc-gx9": { "camera": 2.76, "cameraBefore": 3.85, "neutral": 4.40, "fit": "ThreeCurves" },
+    "panasonic-dc-s5": { "camera": 6.45, "cameraBefore": 6.45, "neutral": 6.61, "fit": "CurveAndMatrix" },
+    "ricoh-gr-iii": { "camera": 2.70, "cameraBefore": 2.70, "neutral": 2.78, "fit": "CurveAndMatrix" },
+    "sony-ilce-7m3": { "camera": 3.29, "cameraBefore": 3.29, "neutral": 3.99, "fit": "CurveAndMatrix" }
+  },
+  "s5Grey": { "embeddedL": [86.2, 75.6, 62.6, 46.3, 25.0, 8.1], "neutralL": [85.8, 74.6, 61.0, 45.1, 27.5, 12.9], "neutralMeanC": 1.39 },
+  "prague26": { "threeCurves": 22, "curveAndMatrix": 4, "meanCurveAndMatrix": 3.17, "meanThreeCurves": 2.91, "meanTaken": 2.69 }
+}

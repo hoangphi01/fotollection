@@ -910,5 +910,13 @@
       "balance": "Where the shadows end and the highlights begin.",
       "mono": "Black and white through a colour filter, as on film: red darkens a blue sky the most."
     }
+  },
+  "rawLook": {
+    "title": "RAW colour",
+    "neutral": "Neutral",
+    "camera": "Like the camera's JPEG",
+    "neutralHint": "The sensor's colours with the camera's exposure and a gentle curve: a calm starting point for your own look.",
+    "cameraHint": "Fitted to the JPEG the camera made inside the file: its contrast and colours, as on the camera's screen.",
+    "applyToAll": "Apply to all RAW photos"
   }
 }

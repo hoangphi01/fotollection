@@ -33,6 +33,14 @@
         "lut": "not-a-hash",
         "amount": 100
       }
+    },
+    {
+      "id": 3,
+      "folder": 1,
+      "path": "P1000003.RW2",
+      "fp_size": 24000000,
+      "fp_mtime": 1726000002,
+      "raw_look": "camera"
     }
   ]
 }

@@ -23,7 +23,7 @@ use thiserror::Error;
 
 pub use tone::{
     Linear, Look, Picture, Reference, default_curve, finish, finish_look, match_look,
-    match_reference,
+    match_reference, neutral_look,
 };
 
 #[derive(Debug, Clone, Copy, Error, PartialEq, Eq)]

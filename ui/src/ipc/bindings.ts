@@ -373,6 +373,16 @@ export const commands = {
 	 *  and no photo keeps its own any more (the photo edits are one undoable step).
 	 */
 	applyLookToAll: (id: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("apply_look_to_all", { id })),
+	/**
+	 *  How a camera RAW photo is finished (FR-072, ADR-0040): neutral or like the camera's JPEG.
+	 *  One undoable step; the preview, the sheets and the export follow from the new revision.
+	 */
+	setRawLook: (id: PhotoId, look: RawLook) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_raw_look", { id, look })),
+	/**
+	 *  "Apply to all RAW photos": every camera RAW of the library finished as `look`, one
+	 *  undoable step.
+	 */
+	applyRawLookToAll: (look: RawLook) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("apply_raw_look_to_all", { look })),
 	/**  "Reset" in the gallery: every photo follows the settings' stamp again; undoable. */
 	resetPhotoStamps: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("reset_photo_stamps")),
 	undo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("undo")),
@@ -1246,6 +1256,11 @@ export type PhotoLook = {
 	look: LookSettings,
 	/**  True when the photo has its own look. */
 	custom: boolean,
+	/**
+	 *  How the photo is finished when it is a camera RAW (FR-072, ADR-0040); `None` for any
+	 *  other file, which has no such choice.
+	 */
+	raw: RawLook | null,
 };
 
 /**  One photo's result inside its group. */
@@ -1309,6 +1324,8 @@ export type PhotoSummary = {
 	unusual: boolean,
 	/**  A camera RAW file, badged RAW in the grid and the preview. */
 	raw: boolean,
+	/**  How a RAW is finished (FR-072, ADR-0040); neutral for any other file. */
+	rawLook: RawLook,
 };
 
 /**  A town or city. */
@@ -1477,6 +1494,20 @@ export type QuitBlocked = {
 	sessions: number[],
 	connected: boolean,
 };
+
+/**
+ *  How a camera RAW photo is finished (ADR-0040, FR-072). Absent from a photo's edits means
+ *  [`RawLook::Neutral`]; a project from before v0.11.0 opens with [`RawLook::Camera`], so its
+ *  prints keep their colours.
+ */
+export type RawLook = 
+/**
+ *  The sensor's colours through the camera's matrix, the lens's shading corrected, the
+ *  camera's exposure, a gentle curve.
+ */
+"neutral" | 
+/**  Fitted to the camera's own JPEG inside the file: its contrast and colours. */
+"camera";
 
 /**  Why the best photo won, compared with the runner-up. The UI words these (FR-020). */
 export type Reason = 

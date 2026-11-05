@@ -11,6 +11,9 @@
 
 use rayon::prelude::*;
 
+use serde::{Deserialize, Serialize};
+use specta::Type;
+
 use crate::image::RgbImage;
 
 /// The 16-bit input is looked up in this many steps (16 levels each).
@@ -133,6 +136,291 @@ pub fn apply(developed: &[u16], width: u32, height: u32, curves: &Curves) -> Rgb
         width,
         height,
         data,
+    }
+}
+
+/// How a camera RAW photo is finished (ADR-0040, FR-072). Absent from a photo's edits means
+/// [`RawLook::Neutral`]; a project from before v0.11.0 opens with [`RawLook::Camera`], so its
+/// prints keep their colours.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum RawLook {
+    /// The sensor's colours through the camera's matrix, the lens's shading corrected, the
+    /// camera's exposure, a gentle curve.
+    #[default]
+    Neutral,
+    /// Fitted to the camera's own JPEG inside the file: its contrast and colours.
+    Camera,
+}
+
+/// One 8-bit sRGB pixel in CIELAB (D65).
+fn lab(p: [u8; 3]) -> [f32; 3] {
+    let lin = |v: u8| {
+        let c = f32::from(v) / 255.0;
+        if c <= 0.040_45 {
+            c / 12.92
+        } else {
+            ((c + 0.055) / 1.055).powf(2.4)
+        }
+    };
+    let [r, g, b] = p.map(lin);
+    let xyz = [
+        0.4124 * r + 0.3576 * g + 0.1805 * b,
+        0.2126 * r + 0.7152 * g + 0.0722 * b,
+        0.0193 * r + 0.1192 * g + 0.9505 * b,
+    ];
+    let f = |t: f32| {
+        if t > 0.008_856 {
+            t.cbrt()
+        } else {
+            7.787 * t + 16.0 / 116.0
+        }
+    };
+    let (fx, fy, fz) = (f(xyz[0] / 0.950_47), f(xyz[1]), f(xyz[2] / 1.088_83));
+    [116.0 * fy - 16.0, 500.0 * (fx - fy), 200.0 * (fy - fz)]
+}
+
+/// CIEDE2000 between two CIELAB colours (Sharma, Wu and Dalal's formulation).
+#[allow(clippy::many_single_char_names, clippy::similar_names)]
+fn de2000(a: [f32; 3], b: [f32; 3]) -> f32 {
+    use std::f32::consts::PI;
+    let (l1, a1, b1) = (a[0], a[1], a[2]);
+    let (l2, a2, b2) = (b[0], b[1], b[2]);
+    let c_mean = f32::midpoint(a1.hypot(b1), a2.hypot(b2));
+    let g = 0.5 * (1.0 - (c_mean.powi(7) / (c_mean.powi(7) + 25f32.powi(7))).sqrt());
+    let (a1p, a2p) = (a1 * (1.0 + g), a2 * (1.0 + g));
+    let (c1p, c2p) = (a1p.hypot(b1), a2p.hypot(b2));
+    let hue = |b: f32, a: f32| {
+        let h = b.atan2(a);
+        if h < 0.0 { h + 2.0 * PI } else { h }
+    };
+    let (h1p, h2p) = (hue(b1, a1p), hue(b2, a2p));
+    let dl = l2 - l1;
+    let dc = c2p - c1p;
+    let mut dh = h2p - h1p;
+    if c1p * c2p == 0.0 {
+        dh = 0.0;
+    } else if dh > PI {
+        dh -= 2.0 * PI;
+    } else if dh < -PI {
+        dh += 2.0 * PI;
+    }
+    let dhh = 2.0 * (c1p * c2p).sqrt() * (dh / 2.0).sin();
+    let lm = f32::midpoint(l1, l2);
+    let cm = f32::midpoint(c1p, c2p);
+    let hm = if c1p * c2p == 0.0 {
+        h1p + h2p
+    } else if (h1p - h2p).abs() <= PI {
+        f32::midpoint(h1p, h2p)
+    } else if h1p + h2p < 2.0 * PI {
+        0.5 * (h1p + h2p + 2.0 * PI)
+    } else {
+        0.5 * (h1p + h2p - 2.0 * PI)
+    };
+    let t = 1.0 - 0.17 * (hm - PI / 6.0).cos()
+        + 0.24 * (2.0 * hm).cos()
+        + 0.32 * (3.0 * hm + PI / 30.0).cos()
+        - 0.20 * (4.0 * hm - 63.0 * PI / 180.0).cos();
+    let d_theta = (30.0 * PI / 180.0) * (-(((hm * 180.0 / PI) - 275.0) / 25.0).powi(2)).exp();
+    let rc = 2.0 * (cm.powi(7) / (cm.powi(7) + 25f32.powi(7))).sqrt();
+    let sl = 1.0 + 0.015 * (lm - 50.0).powi(2) / (20.0 + (lm - 50.0).powi(2)).sqrt();
+    let sc = 1.0 + 0.045 * cm;
+    let sh = 1.0 + 0.015 * cm * t;
+    let rt = -(2.0 * d_theta).sin() * rc;
+    ((dl / sl).powi(2) + (dc / sc).powi(2) + (dhh / sh).powi(2) + rt * (dc / sc) * (dhh / sh))
+        .max(0.0)
+        .sqrt()
+}
+
+/// Mean ΔE2000, pixel by pixel, between a small rendering and the camera's JPEG averaged
+/// down to the same size: per pixel, not per block, since a fit can match block averages and
+/// still miss the colours in them (RESULT §27).
+#[allow(clippy::cast_precision_loss)]
+fn error_against(width: usize, height: usize, rgb: &[u8], reference: &RgbImage) -> f32 {
+    let (rw, rh) = (reference.width as usize, reference.height as usize);
+    let total: f64 = (0..height)
+        .into_par_iter()
+        .map(|y| {
+            let (y0, y1) = (
+                y * rh / height,
+                ((y + 1) * rh / height).max(y * rh / height + 1).min(rh),
+            );
+            let mut sum = 0f64;
+            for x in 0..width {
+                let (x0, x1) = (
+                    x * rw / width,
+                    ((x + 1) * rw / width).max(x * rw / width + 1).min(rw),
+                );
+                let mut acc = [0u32; 3];
+                let mut n = 0u32;
+                for ry in y0..y1 {
+                    for rx in x0..x1 {
+                        let j = (ry * rw + rx) * 3;
+                        for (c, sum) in acc.iter_mut().enumerate() {
+                            *sum += u32::from(reference.data[j + c]);
+                        }
+                        n += 1;
+                    }
+                }
+                let theirs = acc.map(|v| u8::try_from(v / n.max(1)).unwrap_or(u8::MAX));
+                let i = (y * width + x) * 3;
+                sum += f64::from(de2000(lab([rgb[i], rgb[i + 1], rgb[i + 2]]), lab(theirs)));
+            }
+            sum
+        })
+        .sum();
+    #[allow(clippy::cast_possible_truncation)]
+    let mean = (total / (width * height).max(1) as f64) as f32;
+    mean
+}
+
+/// Scene-linear sRGB to 16-bit sRGB-encoded values, as the three-curve fit reads them.
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::cast_precision_loss
+)]
+fn encode16(rgb: &[f32]) -> Vec<u16> {
+    const STEPS: usize = 1 << 16;
+    let table: Vec<u16> = (0..=STEPS)
+        .map(|i| {
+            let c = i as f32 / STEPS as f32;
+            let e = if c <= 0.003_130_8 {
+                12.92 * c
+            } else {
+                1.055 * c.powf(1.0 / 2.4) - 0.055
+            };
+            (e * 65535.0).round() as u16
+        })
+        .collect();
+    rgb.par_iter()
+        .map(|&v| table[(v.clamp(0.0, 1.0) * STEPS as f32) as usize])
+        .collect()
+}
+
+/// A box-averaged copy of `linear`, at most `max` pixels across, for comparing fits cheaply.
+fn shrink(linear: &fotollection_rawcore::Linear, max: usize) -> fotollection_rawcore::Linear {
+    let f = linear.width.div_ceil(max).max(1);
+    let (w, h) = (linear.width / f, linear.height / f);
+    let mut rgb = vec![0f32; w * h * 3];
+    rgb.par_chunks_mut(w * 3).enumerate().for_each(|(y, row)| {
+        for x in 0..w {
+            let mut sum = [0f32; 3];
+            for dy in 0..f {
+                for dx in 0..f {
+                    let i = ((y * f + dy) * linear.width + x * f + dx) * 3;
+                    for (c, v) in sum.iter_mut().enumerate() {
+                        *v += linear.rgb[i + c];
+                    }
+                }
+            }
+            #[allow(clippy::cast_precision_loss)]
+            let n = (f * f) as f32;
+            for c in 0..3 {
+                row[x * 3 + c] = sum[c] / n;
+            }
+        }
+    });
+    fotollection_rawcore::Linear {
+        width: w,
+        height: h,
+        rgb,
+    }
+}
+
+fn picture(p: fotollection_rawcore::Picture) -> Option<RgbImage> {
+    RgbImage::from_raw(
+        u32::try_from(p.width).ok()?,
+        u32::try_from(p.height).ok()?,
+        p.rgb,
+    )
+}
+
+/// A finished RAW, with the camera fit taken and both fits' block errors against the
+/// camera's JPEG (`[curve and matrix, three curves]`), for the measurements (RESULT §27).
+pub struct Finished {
+    pub image: RgbImage,
+    pub fit: Option<CameraFit>,
+    pub scores: [Option<f32>; 2],
+}
+
+/// Which camera fit a develop takes (RESULT §27).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum CameraFit {
+    /// One tone curve, a colour matrix and the lens shading (`rawcore::match_look`).
+    CurveAndMatrix,
+    /// One curve per channel (`match_reference`).
+    ThreeCurves,
+}
+
+/// Finishes a scene-linear develop as `look` asks, against the camera's embedded JPEG when
+/// there is one. For [`RawLook::Camera`] both fits are made on a small copy, scored against
+/// the JPEG on a block grid, and only the closer one is rendered at full size; the fit taken
+/// comes back for the measurements. Without a usable JPEG, an automatic exposure and a
+/// gentle curve.
+pub fn finish_linear(
+    linear: &fotollection_rawcore::Linear,
+    reference: Option<&RgbImage>,
+    look: RawLook,
+) -> Option<Finished> {
+    let done = |image, fit, scores| Finished { image, fit, scores };
+    let fallback = || {
+        picture(fotollection_rawcore::finish(
+            linear,
+            &fotollection_rawcore::default_curve(linear),
+        ))
+        .map(|p| done(p, None, [None, None]))
+    };
+    let Some(reference) = reference.filter(|r| r.width.min(r.height) >= MIN_REFERENCE_EDGE) else {
+        return fallback();
+    };
+    let r = fotollection_rawcore::Reference {
+        width: reference.width as usize,
+        height: reference.height as usize,
+        rgb: &reference.data,
+    };
+    match look {
+        RawLook::Neutral => match fotollection_rawcore::neutral_look(linear, &r) {
+            Some(n) => picture(fotollection_rawcore::finish_look(linear, &n))
+                .map(|p| done(p, None, [None, None])),
+            None => fallback(),
+        },
+        RawLook::Camera => {
+            let small = shrink(linear, 480);
+            let fitted = fotollection_rawcore::match_look(linear, &r);
+            let curves = match_reference(&encode16(&small.rgb), reference);
+            let score_a = fitted.as_ref().map(|l| {
+                let p = fotollection_rawcore::finish_look(&small, l);
+                error_against(p.width, p.height, &p.rgb, reference)
+            });
+            let (sw, sh) = (
+                u32::try_from(small.width).ok()?,
+                u32::try_from(small.height).ok()?,
+            );
+            let score_b = curves.as_ref().map(|c| {
+                let p = apply(&encode16(&small.rgb), sw, sh, c);
+                error_against(small.width, small.height, &p.data, reference)
+            });
+            let scores = [score_a, score_b];
+            let three = |c: &Curves| {
+                let (w, h) = (
+                    u32::try_from(linear.width).ok()?,
+                    u32::try_from(linear.height).ok()?,
+                );
+                Some(done(
+                    apply(&encode16(&linear.rgb), w, h, c),
+                    Some(CameraFit::ThreeCurves),
+                    scores,
+                ))
+            };
+            match (fitted, curves, score_a, score_b) {
+                (_, Some(c), Some(a), Some(b)) if b < a => three(&c),
+                (Some(l), ..) => picture(fotollection_rawcore::finish_look(linear, &l))
+                    .map(|p| done(p, Some(CameraFit::CurveAndMatrix), scores)),
+                (None, Some(c), ..) => three(&c),
+                _ => fallback(),
+            }
+        }
     }
 }
 

@@ -167,6 +167,8 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-083 | A personal photo calendar: a built-in calendar engine for any year, important days marked, a photo a month, PDF or PNG pages; later, not scheduled |
 | FR-084 | Language packs anyone can add: a `.fotolang` file in the app's i18next layout, checked in Rust and by `check-i18n`, loaded from the version popover or shipped through a pull request; carried by `.fotosettings`; later, not scheduled |
 | FR-085 | Lens distortion correction in our own develop (Panasonic and Olympus maker data, DNG `WarpRectilinear`), so ImageIO is no longer first for RW2 and ORF on macOS; after v0.11.0 |
+| FR-086 | One Settings window: a gear beside the author's name opens every app setting in two columns as on an iPad (language, theme, `.fotosettings`, language packs, cache, updates, version and changelog), the preview's layout reused |
+| FR-087 | How large a collage sheet prints: the sheet's pixels and a sharp / acceptable / soft verdict for the chosen size in Collage's *Print size* card |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 

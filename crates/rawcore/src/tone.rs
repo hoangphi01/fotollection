@@ -271,6 +271,105 @@ pub fn match_look(linear: &Linear, reference: &Reference<'_>) -> Option<Look> {
     })
 }
 
+/// Scene-linear luminance to display-linear for the neutral rendering (ADR-0040): a soft
+/// shoulder that reaches white two stops over middle grey's exposure instead of clipping at
+/// once, then a gentle S in encoded terms, the same shape as [`default_curve`]'s.
+fn neutral_tone(x: f32) -> f32 {
+    const WHITE: f32 = 2.0;
+    let x = x.max(0.0);
+    let h = (x * (1.0 + x / (WHITE * WHITE)) / (1.0 + x)).min(1.0);
+    let e = linear_to_srgb(h);
+    let s = e * e * (3.0 - 2.0 * e);
+    let out = 0.5 * e + 0.5 * s;
+    let display = if out <= 0.040_45 {
+        out / 12.92
+    } else {
+        ((out + 0.055) / 1.055).powf(2.4)
+    };
+    // A soft toe: the darkest tones sink toward black as a print's do, instead of a lifted
+    // grey, without clipping any of them (an offset crushed the D750's shadows, RESULT §27).
+    display * display / (display + NEUTRAL_TOE) * (1.0 + NEUTRAL_TOE)
+}
+
+/// Display-linear level taken off the neutral tone's shadows (RESULT §27).
+const NEUTRAL_TOE: f32 = 0.01;
+
+/// The median of luminances sampled from `values`, 0 when there are none.
+fn median(mut values: Vec<f32>) -> f32 {
+    if values.is_empty() {
+        return 0.0;
+    }
+    let mid = values.len() / 2;
+    values.select_nth_unstable_by(mid, f32::total_cmp);
+    values[mid]
+}
+
+/// A neutral rendering of the shot (ADR-0040): the sensor's colours through the camera's
+/// matrix only (no colour matrix fitted to the camera's JPEG), the lens shading the camera
+/// corrected (a property of the lens, not of its look), and an exposure that puts the
+/// photo's median brightness where the camera's JPEG has it, through [`neutral_tone`].
+/// `None` when the JPEG says too little to fit the shading.
+#[allow(clippy::cast_precision_loss)]
+pub fn neutral_look(linear: &Linear, reference: &Reference<'_>) -> Option<Look> {
+    let fitted = match_look(linear, reference)?;
+    let shading = fitted.shading;
+    let step = (linear.rgb.len() / 3 / MAX_SAMPLES).max(1);
+    let ours = median(
+        linear
+            .rgb
+            .as_chunks::<3>()
+            .0
+            .iter()
+            .enumerate()
+            .step_by(step)
+            .map(|(i, p)| {
+                let g = shading.gain(
+                    i % linear.width,
+                    i / linear.width,
+                    linear.width,
+                    linear.height,
+                );
+                luminance(p) * g
+            })
+            .collect(),
+    );
+    let lut: Vec<f32> = (0..=255u8).map(srgb_to_linear).collect();
+    let rstep = (reference.width * reference.height / MAX_SAMPLES).max(1);
+    let theirs = median(
+        reference
+            .rgb
+            .as_chunks::<3>()
+            .0
+            .iter()
+            .step_by(rstep)
+            .map(|p| luminance(&p.map(|v| lut[usize::from(v)])))
+            .collect(),
+    );
+    if ours <= 0.0 || theirs <= 0.0 {
+        return None;
+    }
+    // The exposure that brings our median to theirs, by bisection on its logarithm (the
+    // tone is monotonic).
+    let (mut lo, mut hi) = (-8f32, 8f32);
+    for _ in 0..40 {
+        let mid = f32::midpoint(lo, hi);
+        if neutral_tone(ours * mid.exp2()) < theirs {
+            lo = mid;
+        } else {
+            hi = mid;
+        }
+    }
+    let exposure = f32::midpoint(lo, hi).exp2();
+    let curve = (0..BINS)
+        .map(|b| neutral_tone(b as f32 / (BINS - 1) as f32 * RANGE * exposure))
+        .collect();
+    Some(Look {
+        shading,
+        curve: Curve(curve),
+        matrix: [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
+    })
+}
+
 /// The 3×3 matrix, rows summing to 1 so neutrals stay neutral, that best maps our block
 /// colours to the JPEG's; the identity when too few blocks are usable.
 #[allow(clippy::cast_possible_truncation)]
