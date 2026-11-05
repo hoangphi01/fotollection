@@ -95,6 +95,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
   | A list of rows (camera bodies, places, addresses) | 8 px | `RowList` |
   | Select, input, segmented choice, swatch choice | 32 px tall, choices in `text-xs` | default `Select`, `CommitInput`, `SegmentedToggle`, `SwatchToggle` |
   | Icon button in a row | 28 px | `size="icon-sm"`, `Toggle size="sm"` |
+  | Toolbar button: icon alone when the toolbar is narrow, icon and label from `@3xl`; the icon in the centre (≤ 0.5 px off, `MEASURE=1`); a spinner in its place while the work it started runs | 28 px | `ToolbarButton` |
   | A field's label / the line under a control | `text-xs`, muted, sentence case | `FieldLabel` / `Hint` |
   | A fact and its value / a note with an icon | `text-xs` | `ValueRow` / `PanelNote` |
   | A slider with its label and value; what it does on hover | label `text-xs`, value right, a signed slider shows no filled side; a double-click resets it | `SliderField` |

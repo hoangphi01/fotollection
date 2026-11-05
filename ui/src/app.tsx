@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { KeysInfo } from '@/components/layout/keys-info'
 import { ErrorNotice, NoticeStack } from '@/components/layout/notice-stack'
+import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { Button } from '@/components/ui/button'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { GroupsView } from '@/features/best-shot/groups-view'
@@ -295,30 +296,22 @@ export function App() {
                 </ToggleGroupItem>
               </ToggleGroup>
                 {bestShots.running ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
+                  <ToolbarButton
+                    icon={<Square />}
+                    label={t('bestShot.stop')}
                     onClick={bestShots.cancel}
-                    aria-label={t('bestShot.stop')}
                     data-hint={t('bestShot.findHint')}
-                  >
-                    <Square data-icon="inline-start" />
-                    <span className="hidden @3xl:inline">{t('bestShot.stop')}</span>
-                  </Button>
+                  />
                 ) : (
-                  <Button
-                    variant="outline"
-                    size="sm"
+                  <ToolbarButton
+                    icon={<Sparkles />}
+                    label={t('bestShot.find')}
                     onClick={() => {
                       setView('groups')
                       void bestShots.analyze()
                     }}
-                    aria-label={t('bestShot.find')}
                     data-hint={t('bestShot.findHint')}
-                  >
-                    <Sparkles data-icon="inline-start" />
-                    <span className="hidden @3xl:inline">{t('bestShot.find')}</span>
-                  </Button>
+                  />
                 )}
               {view === 'photos' && (
                 <span className="shrink-0 font-medium whitespace-nowrap tabular-nums">

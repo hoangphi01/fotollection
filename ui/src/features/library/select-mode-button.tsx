@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { ListChecks } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '@/components/ui/button'
+import { ToolbarButton } from '@/components/forms/toolbar-button'
 import type { SelectModeApi } from './use-select-mode'
 
 type SelectModeButtonProps = {
@@ -12,15 +12,13 @@ type SelectModeButtonProps = {
 export function SelectModeButton({ select }: SelectModeButtonProps) {
   const { t } = useTranslation()
   return (
-    <Button
+    <ToolbarButton
+      icon={<ListChecks />}
+      label={t(select.active ? 'select.done' : 'select.start')}
       variant={select.active ? 'default' : 'outline'}
-      size="sm"
       aria-pressed={select.active}
       data-hint={t('select.hint')}
       onClick={() => (select.active ? select.leave() : select.start())}
-    >
-      <ListChecks data-icon="inline-start" />
-      <span className="hidden @3xl:inline">{t(select.active ? 'select.done' : 'select.start')}</span>
-    </Button>
+    />
   )
 }

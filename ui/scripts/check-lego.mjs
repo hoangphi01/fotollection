@@ -53,6 +53,10 @@ const RULES = [
   },
   { test: /className="[^"]*\b-?m[ty]-[0-9.]+/, say: 'a margin: a block owns none, its container spaces it' },
   { test: /\btext-\[(10|11|12)px\]/, say: 'an odd text size: text-xs or text-sm' },
+  {
+    test: /\bhidden @[0-9a-z]+:inline\b/,
+    say: 'a label that hides by hand: use ToolbarButton (components/forms), which keeps the icon centred when it hides',
+  },
   { test: /\bid="[^"{]+"/, say: 'a hard-coded id: two panels can show the same card, use useId()' },
   {
     test: /<Switch\b[^>]*size=/,

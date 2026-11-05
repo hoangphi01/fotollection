@@ -70,7 +70,9 @@ MEASURE=1 MEASURE_LANG=vi MEASURE_THEME=dark node site/screenshots/shoot.mjs <du
 
 It prints one row per view (folder list, Pro, Simple, Collage, Postcard panels, the photo,
 sheet and postcard previews) and fails when a gap or a control height differs from the §4
-table, or the two side panels differ in width. A new kind of panel or card gets a row in
+table, or the two side panels differ in width. It also opens the gallery and Collage mode at
+1180 and 1600 px and fails when an icon-only button's icon is more than 0.5 px off its centre
+(a toolbar button is a `ToolbarButton`, never a hand-hidden label). A new kind of panel or card gets a row in
 `measurePanels` (`site/screenshots/shoot.mjs`).
 
 ## 5. Look at it

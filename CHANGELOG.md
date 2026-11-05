@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Toolbar:** the icons of Auto turn, Revert, Select and Find best shots sit in the centre of their buttons when the window is narrow and their labels hide; they were 2 px to the left.
+- **Collage:** Auto turn and Revert answer in about half a second on a trip's 500 photos, where they took 3 to 5 seconds, and their button shows a spinner while they work.
 - **Camera RAW:** a RAW file cut short (an interrupted copy, a damaged card) is refused with an error instead of being shown and exported with made-up stripes where its data is missing.
 - **Collage:** the colour cards change the photo picked on a sheet, in the panel and in the sheet's preview, and are hidden while no photo is picked (a click beside the sheets, or Esc). They used to change the shared look, which a photo with a look of its own ignored, so only one photo of a sheet seemed to follow.
 

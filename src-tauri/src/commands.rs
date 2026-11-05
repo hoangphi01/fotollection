@@ -1319,10 +1319,31 @@ pub(crate) fn upright_size(
     state: &AppState,
     record: &fotollection_core::library::PhotoRecord,
 ) -> Result<(u32, u32), IpcError> {
-    let bytes = std::fs::read(&record.path)
-        .map_err(|e| IpcError::new("import.unreadable", e.to_string()))?;
+    use std::io::Read;
+    let unreadable = |e: std::io::Error| IpcError::new("import.unreadable", e.to_string());
+    // A JPEG's, PNG's or HEIC's size is in its first megabyte: reading only that turned Auto
+    // turn on a trip's 422 photos from 3.7 s into 0.4 s (2026-11-05). A RAW's directories
+    // can lie anywhere, so it is read whole, as is any file whose head does not tell.
+    let mut head = Vec::new();
+    std::fs::File::open(&record.path)
+        .and_then(|f| f.take(SIZE_HEAD).read_to_end(&mut head))
+        .map_err(unreadable)?;
+    let whole = head.len() < usize::try_from(SIZE_HEAD).unwrap_or(usize::MAX);
+    if !whole
+        && fotollection_core::raw::kind(&head).is_none()
+        && let Ok(size) = upright_size_of(state, record, &head)
+    {
+        return Ok(size);
+    }
+    if whole {
+        return upright_size_of(state, record, &head);
+    }
+    let bytes = std::fs::read(&record.path).map_err(unreadable)?;
     upright_size_of(state, record, &bytes)
 }
+
+/// How much of a file [`upright_size`] reads first.
+const SIZE_HEAD: u64 = 1 << 20;
 
 /// [`upright_size`] of a file already read.
 fn upright_size_of(

@@ -316,6 +316,37 @@ async function measure(page, rootSel) {
   }, rootSel)
 }
 
+/**
+ * Every visible button that shows an icon and no text: how far the icon's centre is from the
+ * button's, in CSS pixels (STYLE_RULE §4: an icon is centred, the owner saw toolbar icons off
+ * by 2 px when their labels hid).
+ */
+async function iconOffsets(page) {
+  return page.evaluate(() => {
+    const out = []
+    for (const b of document.querySelectorAll('button')) {
+      const box = b.getBoundingClientRect()
+      if (box.width < 1 || box.height < 1) continue
+      const svg = b.querySelector('svg')
+      // Text that takes room on screen, wherever it sits (a hidden label takes none).
+      const walker = document.createTreeWalker(b, NodeFilter.SHOW_TEXT)
+      let text = false
+      for (let n = walker.nextNode(); n && !text; n = walker.nextNode()) {
+        if (!n.textContent.trim()) continue
+        const range = document.createRange()
+        range.selectNodeContents(n)
+        text = range.getBoundingClientRect().width > 0
+      }
+      if (!svg || text) continue
+      const i = svg.getBoundingClientRect()
+      const dx = Math.abs(i.left + i.width / 2 - (box.left + box.width / 2))
+      const dy = Math.abs(i.top + i.height / 2 - (box.top + box.height / 2))
+      out.push({ label: b.getAttribute('aria-label') ?? '?', off: Math.round(Math.max(dx, dy) * 10) / 10 })
+    }
+    return out
+  })
+}
+
 /** STYLE_RULE §4: each column holds this one value, in every view that has it. */
 const MEASURES = { cardGap: '12', blockGap: '12', fieldGap: '6', select: '32', toggle: '32', input: '32', iconBtn: '28' }
 
@@ -355,6 +386,16 @@ async function measurePanels() {
   rows.push(['postcard preview', await measure(page, '[role="dialog"] aside')])
   await page.screenshot({ path: path.join(outDir, 'measure-postcard-preview.png') })
   await context.close()
+  // Icon-only buttons at the narrowest window and a wide one, in the gallery and Collage mode.
+  const offCentre = []
+  for (const width of [1180, 1600]) {
+    for (const mode of ['professional', 'collage']) {
+      ;({ context, page } = await open({ scenario: mode === 'collage' ? 'collage' : 'stamp', language, theme, mode, width, queues: NO_QUEUES }))
+      await settle(page)
+      for (const b of await iconOffsets(page)) if (b.off > 0.5) offCentre.push(`${mode} at ${width} px: "${b.label}" icon ${b.off} px off centre`)
+      await context.close()
+    }
+  }
   const keys = Object.keys(rows[0][1])
   console.log(['view', ...keys].join(' | '))
   for (const [name, m] of rows) console.log([name, ...keys.map((k) => m[k] || '–')].join(' | '))
@@ -363,6 +404,8 @@ async function measurePanels() {
   )
   const widths = new Set(rows.filter(([name]) => /panel|folder/.test(name)).map(([, m]) => m.width))
   if (widths.size > 1) off.push(`the folder list and the panels differ in width: ${[...widths].join(', ')}`)
+  off.push(...offCentre)
+  console.log(offCentre.length ? '' : 'icons: every icon-only button has its icon centred (≤ 0.5 px)')
   if (off.length) {
     console.error(off.join('\n'))
     process.exitCode = 1
