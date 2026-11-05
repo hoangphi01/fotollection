@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Highlights
 
 - New: colour for every photo or one photo: Faves (brightness, contrast, warm / cool, saturation…) and Tools (fade, toned shadows and highlights, black and white through a filter)
+- New: RAW photos badged in the gallery, and a RAW only / No RAW filter
 
 ### Added
 
