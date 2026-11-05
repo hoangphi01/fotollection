@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Date:** 2026-10-23
 - **Related:** FR-038, FR-039, NFR-002, NFR-003, ADR-0010
-- **Amended by:** [ADR-0036](0036-colour-looks-cube-luts-first.md) (2026-11-02): `.cube` import comes first, as FR-070, on this engine
+- **Amended by:** [ADR-0036](0036-colour-looks-cube-luts-first.md) (2026-11-02): `.cube` import comes first, as FR-070, on this engine; [ADR-0038](0038-moderate-colour-editor-on-one-lut-engine.md) (2026-11-05): a moderate editor (FR-079) with global curves, split toning and vibrance on the same table
 
 ## Context
 

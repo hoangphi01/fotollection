@@ -65,7 +65,7 @@
 | FR-067 | 3 mm border on every print: every mode and frame style, inside the print size (extends FR-065) |
 | FR-069 | Report a problem: a red button in the app's versions popover and the website's footer, to the GitHub issue forms (v0.8.3) |
 | FR-071 | Image facts at import and in the inspector: chroma subsampling, colour space, sensor kind; shipped in v0.9.3, [ADR-0037](adr/0037-our-own-develop-core.md) |
-| FR-072 | Our own develop core: sensor kind first, RCD and Markesteijn, Gr/Gb, false colour, highlights, linear working space, colour management everywhere; v0.10.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
+| FR-072 | Our own develop core: sensor kind first, RCD and Markesteijn, Gr/Gb, false colour, highlights, linear working space, colour management everywhere; v0.11.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
 | FR-073 | Postcard sheets in Collage mode: one photo and a postcard back (stamp box, writing lines, typed text); v0.9.4 |
 
 **Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v1.0.0 is released. Until then, each work stage ships as a 0.y.0 preview release, starting with v0.1.0 ([RELEASE.md](RELEASE.md#1-versioning)).
@@ -122,9 +122,9 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.9.6 | Export folders and share fill (shipped 2026-11-04) | FR-009: one folder or a folder per day, one folder by default; FR-075: shared photos whole in a frame of any ratio, filled with white, black or a colour of one's own | A PATCH number by the owner's choice (RELEASE.md §1) |
 | v0.9.7 | Postcards to send, faster export (shipped 2026-11-04) | FR-076: a handwriting face; FR-077: one address for many postcards; FR-078: the photo at a glance in the preview; NFR-003 and NFR-004 met on 20 MP photos | A PATCH number by the owner's choice (RELEASE.md §1) |
 | v0.9.8 | Two-finger zoom, panels of one style (shipped 2026-11-04) | FR-057: two-finger scroll zooms the preview; every panel card built from the lego blocks, checked by `check-lego` (STYLE_RULE §4); hints kept inside the window (FR-052) | A PATCH number by the owner's choice (RELEASE.md §1) |
-| v0.10.0 | Core (planned, 2026-11-02) | FR-072 (our own develop: RCD and Markesteijn, Gr/Gb, false colour, highlights, a linear working space, colour management everywhere), [ADR-0037](adr/0037-our-own-develop-core.md) | Test charts and an independent reference first; RCD ≤ 400 ms on 24 MP, Markesteijn ≤ 700 ms on 26 MP |
-| v0.11.0 | Looks (planned, 2026-11-02) | FR-070 (looks from `.cube` LUT files, strength, per photo; built-in looks of our own), [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export (`measure_look`) |
-| After v0.11.0 | Photo Style sliders on the looks engine | FR-039, then FR-047 | — |
+| v0.10.0 | Looks (planned, 2026-11-05) | FR-079 (three cards: Looks, Faves with tone and colour, Tools with style and effects; looks with an amount; per photo; built-in looks of our own), FR-070 (looks from `.cube` and HaldCLUT LUTs, strength), [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export whatever is set (`measure_look`); bit-exact when nothing is set |
+| v0.11.0 | Core (planned, 2026-11-02) | FR-072 (our own develop: RCD and Markesteijn, Gr/Gb, false colour, highlights, a linear working space, colour management everywhere), [ADR-0037](adr/0037-our-own-develop-core.md) | Test charts and an independent reference first; RCD ≤ 400 ms on 24 MP, Markesteijn ≤ 700 ms on 26 MP |
+| After v0.11.0 | Film looks as built-in recipes on the looks engine | FR-047 (FR-039 merged into FR-079) | — |
 | Later | Presets, trips, journal | FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
 
 ## Phase 2 — Smart features
@@ -142,7 +142,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-034 | Lab presets |
 | FR-036 | Custom captions |
 | FR-038 | Print presets |
-| FR-039 | Photo Style looks |
+| FR-039 | Photo Style looks (merged into FR-079, 2026-11-05) |
 | FR-044 | Per-photo overrides |
 | FR-046 | Swipe culling (full-screen ↑ / ↓ print list) |
 | FR-047 | Film looks (Fujifilm-style film simulations, own names and LUTs) |
@@ -153,12 +153,13 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-063 | Tethered capture over USB: Capture in the app, the full-resolution photo opens at once; own PTP drivers per maker, no install ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)) |
 | FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |
 | FR-066 | Borrow places from a GPX track: interpolate each photo's time along the track (split out of FR-031) |
-| FR-070 | Looks from LUT files (`.cube`, strength, per photo), LUMIX Lab style; v0.11.0, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
+| FR-070 | Looks from LUT files (`.cube`, HaldCLUT, strength, per photo), LUMIX Lab style; v0.10.0, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
 | FR-074 | Postcard backs: a background colour or a pattern (airmail stripes, a grid, a texture) behind the lines; planned, not scheduled |
 | FR-075 | Share exports fitted whole into a ratio (1:1, 4:5, 3:2… or custom), the rest filled with white, black or a colour of one's own; v0.9.6 |
 | FR-076 | A bundled handwriting face for postcards (Patrick Hand), strokes as thick as the print test asks; v0.9.7 |
 | FR-077 | One address for many postcards: Use for N postcards, and the recent addresses of this machine; v0.9.7 |
 | FR-078 | The photo at a glance at the top of the preview: camera, lens, exposure, place, date, size; v0.9.7 |
+| FR-079 | Colour adjustments, moderate: Looks, Faves and Tools cards (tone, colour, style, effects), looks with an amount, per photo; v0.10.0, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 

@@ -428,7 +428,7 @@ Put several photos on one print to save cost. **P1 (v0.9.0) for 2-up**, the Coll
 - **Built-in recipes:** *C200 Natural*, taken from the owner's GX9 recipe (Natural base; Contrast −1, Sharpness −3, Saturation +1; highlights slightly darker, shadows slightly brighter; WB A+3 / M+1), plus a few classic film-inspired looks.
 - **Scope boundary:** these are **global** adjustments on the already-rendered JPEG/HEIC (or a RAW preview). There are no local masks, HSL panel, curve editor, retouching or RAW development ([ADR-0011](adr/0011-photo-style-looks.md)).
 - **Non-destructive:** the look is applied in preview and at export. Stamps, captions and borders are drawn **after** the look, so they are never tinted. A before/after toggle (`\`) compares with the original.
-- **After FR-070 (2026-11-02):** `.cube` looks ship first ([FR-070](#fr-070--looks-from-lut-files), v0.11.0, after the v0.10.0 core of [FR-072](#fr-072--our-own-develop-core)); these sliders follow on the same engine ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)).
+- **Merged into [FR-079](#fr-079--colour-adjustments) (2026-11-05):** the moderate editor takes these parameters, *C200 Natural* becomes one of its built-in looks, and its scope boundary is the one written there ([ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)). Before that: `.cube` looks ship first ([FR-070](#fr-070--looks-from-lut-files)); these sliders follow on the same engine ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)).
 
 ### FR-040 — EXIF info frame
 
@@ -533,7 +533,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-047 — Film looks
 
-**P2 (future).** A set of **film-simulation looks** comparable to Fujifilm's in-camera film simulations, applied with one click to a photo or the whole batch. They use the same engine as Photo Style ([FR-039](#fr-039--photo-style-looks), [ADR-0011](adr/0011-photo-style-looks.md)): a 3D LUT, a tone curve, a white-balance shift and grain.
+**P2 (future; on the FR-079 engine as built-in slider recipes, 2026-11-05, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** A set of **film-simulation looks** comparable to Fujifilm's in-camera film simulations, applied with one click to a photo or the whole batch. They use the same engine as Photo Style ([FR-039](#fr-039--photo-style-looks), [ADR-0011](adr/0011-photo-style-looks.md)): a 3D LUT, a tone curve, a white-balance shift and grain.
 
 - **The looks, by intent:** a neutral slide (like Provia), a vivid landscape slide (like Velvia), a soft portrait slide (like Astia), a muted documentary chrome (like Classic Chrome), a hard-shadow negative with shifted colours (like Classic Negative), a warm amber negative (like Nostalgic Neg), a flat cinema look (like Eterna), a natural modern negative (like Reala Ace), a soft studio negative (like Pro Neg Std), and fine-grain black-and-white with filter options (like Acros). Each has *strength* 0–100 % and the usual Photo Style parameters on top.
 - **Names and data are ours.** Fujifilm's film-simulation names are trademarks, so the UI uses descriptive names of its own (for example *Chrome Muted*, *Negative Classic*). Fujifilm appears in the docs only to describe the inspiration. The LUTs and curves are built from the project's own reference shots and published recipes, and never copied from Fujifilm software or from third-party LUT packs without a compatible licence.
@@ -760,9 +760,9 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-070 — Looks from LUT files
 
-**P1 (planned, v0.11.0; owner's request 2026-11-02; moved after the v0.10.0 core, [FR-072](#fr-072--our-own-develop-core), so looks apply in its linear working space).** Colour looks as in LUMIX Lab: choose a look, set its strength, print ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)). The Photo Style sliders ([FR-039](#fr-039--photo-style-looks)) come after it, on the same engine.
+**P1 (planned, v0.10.0; owner's request 2026-11-02; moved before the develop core on 2026-11-05, as a LUT works on the photo's encoded values, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** Colour looks as in LUMIX Lab: choose a look, set its strength, print ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)). The sliders of [FR-079](#fr-079--colour-adjustments) bake into the same table, so an imported LUT and the sliders make one look.
 
-- **Import** a `.cube` file (1D or 3D, 2–65 points a side, `DOMAIN_MIN`/`DOMAIN_MAX`): from LUMIX Lab, the user's own, or downloaded. It is copied into the app's `looks/` folder by content hash, so the original can move. Panasonic's `.vlt` is a candidate once its format is checked.
+- **Import** a `.cube` file (1D or 3D, 2–65 points a side, `DOMAIN_MIN`/`DOMAIN_MAX`) or a HaldCLUT PNG: from LUMIX Lab, the user's own, or downloaded. A LUMIX LUT tagged `#LUMIXPHOTOSTYLE VLOG` is written for V-Log footage and gets a warning: on a JPEG it comes out far too strong. It is copied into the app's `looks/` folder by content hash, so the original can move. Panasonic's `.vlt` is a candidate once its format is checked.
 - **Built-in looks** made by our own code, under our own names (no copied LUT files, no trademarked names, as [FR-047](#fr-047--film-looks)), including one for *C200 Natural*.
 - **Strength** 0–100 %, default 100.
 - **For every photo, or one photo as an override**, like the date stamp ([FR-044](#fr-044--per-photo-overrides)); a collage sheet uses each photo's own look.
@@ -782,7 +782,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-072 — Our own develop core
 
-**P1 (planned, v0.10.0; owner's request 2026-11-02).** From the sensor's raw samples to the screen and the print, every step is ours, written from the published methods and measured ([ADR-0037](adr/0037-our-own-develop-core.md)). Maker formats are still unpacked by our DNG reader or by rawler; the system codecs become a last fallback.
+**P1 (planned, v0.11.0, after the looks of v0.10.0 (owner, 2026-11-05); owner's request 2026-11-02).** From the sensor's raw samples to the screen and the print, every step is ours, written from the published methods and measured ([ADR-0037](adr/0037-our-own-develop-core.md)). Maker formats are still unpacked by our DNG reader or by rawler; the system codecs become a last fallback.
 
 - **The sensor kind decides the path:** Bayer, X-Trans, four-colour, linear and monochrome each have their own branch; an unknown kind is a clean "not supported" error, never a panic or a guess.
 - **Before demosaicing:** per-site black levels from the ActiveArea origin, white level, **green equilibration (Gr/Gb)** against maze and worm patterns, hot-pixel removal, the as-shot white balance.
@@ -839,6 +839,23 @@ Next to the batch settings, any other setting will later be overridable for one 
 ### FR-078 — The photo at a glance in the preview
 
 **P1 (owner's request 2026-11-04).** The preview's first card, **This photo**, sums the photo up before the tools: the camera and lens with the camera profile's names (as the info frame, [FR-040](#fr-040--exif-info-frame)), the exposure as the frame prints it (`20mm · F1.7 · 1/60s · ISO800`, `frame::shot_summary`), the place and the capture date (after a clock offset or a date set by hand), and the size in pixels, megapixels and megabytes. Lines with nothing to say are left out. It also holds what the file is ([FR-071](#fr-071--image-facts)), so the preview has no separate Camera and Image cards (owner, 2026-11-04), and its title folds it away, kept while the app runs. The cards below it still change the date, the place and the camera's details.
+
+### FR-079 — Colour adjustments
+
+**P1 (planned, v0.10.0 "Looks"; owner's request 2026-11-05, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** A **moderate** colour editor, in the spirit of Snapseed's *Tune Image* and LUMIX Lab's looks, far short of Lightroom: global adjustments only, one card, the same result on screen and on paper.
+
+- **Three cards, as Snapseed 3 splits Looks, Faves and Tools** (owner, 2026-11-05), each a lego card of its own, in the Pro and Collage panels and in the photo and sheet previews, after *Print / export size* and before *Date stamp*; Simple mode shows only **Looks**:
+  - **Looks:** the list of looks, the built-in ones, the user's own and the LUTs imported from LUMIX Lab or elsewhere ([FR-070](#fr-070--looks-from-lut-files)), each shown as the chosen photo through it, small; the **amount**; *Import LUT…* and *Save as look*.
+  - **Faves**, the everyday sliders, a fixed set: **tone** (brightness, contrast, highlights, shadows) and **colour** (warmth, blue–amber; tint, green–magenta; saturation; vibrance, which spares skin and colours already strong).
+  - **Tools**, the rest: **style** (fade, lifted blacks; a tint for the shadows and one for the highlights with their balance; black and white through a yellow, orange, red or green filter) and **effects** (grain, its amount and size in millimetres on the print, so it looks the same at every print size; vignette around the cropped photo).
+- **Later, not in v0.10.0:** *Selective*, Snapseed's local control points (brightness, contrast, saturation around a point), as an FR of its own: it cannot bake into the table and needs its own measurement.
+- **Sliders:** each from −100 to +100 (amounts and grain 0–100), 0 by default; a double-click resets one. The preview follows while dragging; one undo step per release. Hold `\` to compare with the original.
+- **Looks:** a look is the sliders' values, an optional imported LUT ([FR-070](#fr-070--looks-from-lut-files)) with its strength, and an **amount** of 0–100 % that scales all of them together. Built-in looks are slider recipes made by the project under its own names (no third-party LUTs, no trademarked film or camera names), among them *C200 Natural* ([FR-039](#fr-039--photo-style-looks)) and film-inspired looks ([FR-047](#fr-047--film-looks)). *Save as look* keeps the current values under a name of the user's.
+- **For every photo, or one photo as an override,** as the date stamp ([FR-044](#fr-044--per-photo-overrides)), with *Apply to all*; a collage sheet uses each photo's own look. Projects keep each photo's look and embed the LUTs they use ([ADR-0016](adr/0016-self-contained-project-bundle.md)).
+- **Never tinted:** the date stamp, the info frame, the border and the fill are drawn after the look. Thumbnails stay plain. The info frame's `<photo style>` line can show the look's name ([FR-040](#fr-040--exif-info-frame)).
+- **Exact when unused:** with every slider at 0 and no LUT, a print is the same, bit for bit, as without this feature.
+- **Speed:** whatever is set, ≤ 5 ms on the 1600 px preview and ≤ 60 ms on a 24 MP export ([OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets)): every per-pixel adjustment is baked into one 33³ table, grain and vignette run in the same pass.
+- **Out of scope:** masks and local adjustments other than the later *Selective* points, a full HSL matrix, a free curve editor, retouching ([§8](#8-out-of-scope)).
 
 ## 7. Non-functional requirements
 
@@ -933,7 +950,7 @@ A collage sheet ([FR-035](#fr-035--multi-photo-layouts)) previews in **at most t
 The following are out of scope (for now):
 
 - Cloud sync, accounts, and any kind of server backend.
-- General photo editing beyond the global Photo Style looks of [FR-039](#fr-039--photo-style-looks): local adjustments, masks, HSL/curve editors, retouching and RAW development controls ([ADR-0011](adr/0011-photo-style-looks.md)).
+- General photo editing beyond the global colour adjustments of [FR-079](#fr-079--colour-adjustments): local adjustments, masks, a full HSL matrix, a free curve editor, retouching and RAW development controls ([ADR-0011](adr/0011-photo-style-looks.md), [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).
 - Writing ratings, flags or edits back into source files. Sources stay read-only. XMP sidecar files next to photos are planned as an opt-in ([FR-058](#fr-058--lightroom-compatibility-through-xmp)).
 - Mobile apps.
 - Video.

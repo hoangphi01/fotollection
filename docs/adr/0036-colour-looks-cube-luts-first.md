@@ -1,6 +1,7 @@
 # ADR-0036: Colour looks: `.cube` LUTs first, then Photo Style on the same engine
 
-- **Status:** Accepted (planned for v0.11.0, after the v0.10.0 core of [ADR-0037](0037-our-own-develop-core.md))
+- **Status:** Accepted (planned for v0.10.0, before the develop core, since [ADR-0038](0038-moderate-colour-editor-on-one-lut-engine.md))
+- **Amended by:** [ADR-0038](0038-moderate-colour-editor-on-one-lut-engine.md) (2026-11-05): looks apply on the photo's encoded values, and the sliders of FR-079 bake into the same table
 - **Date:** 2026-11-02
 - **Related:** FR-070, FR-039, FR-047, FR-040, FR-044, NFR-002, NFR-003, ADR-0011, ADR-0016
 - **Amends:** [ADR-0011](0011-photo-style-looks.md) (its "no `.cube` import")
@@ -17,7 +18,7 @@ The owner edits with **LUMIX Lab**, where a look is a LUT: a file that maps ever
 
 ## Decision
 
-Option 3: FR-070 in v0.11.0 (on the linear working space of ADR-0037), then FR-039, then the film looks of FR-047, all on one engine.
+Option 3: FR-070 in v0.11.0 (on the linear working space of ADR-0037; since ADR-0038, v0.10.0 on encoded values), then FR-039, then the film looks of FR-047, all on one engine.
 
 - **One engine:** every look, imported or built in, is resampled once to a **33³ table** (u16), applied with tetrahedral interpolation and rayon, and blended with the original by a strength of 0–100 %. Sliders (FR-039) later bake into the same table.
 - **Order:** crop, then the look, then the date stamp, frame and border, so those are never tinted. Thumbnails stay plain, so a look never invalidates the cache.

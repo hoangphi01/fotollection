@@ -92,7 +92,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [NFR-017](PRD.md#nfr-017--camera-raw-speed) | Camera RAW: thumbnail or analysis input from the embedded preview; first print preview of a 16–31 MP RAW | < 100 ms; < 2.5 s; RAW export within NFR-004 | `measure_raw` on the nine CC0 samples (`scripts/fetch-raw-samples.py`); `measure_rawler`, `raw_memory` |
 | [NFR-020](PRD.md#nfr-020--place-inference-speed) | Borrowing places from another device's photos | ≤ 2 s per 1,000 camera photos | `measure_borrow`, 1,000 camera + 1,000 phone photos |
 | [NFR-021](PRD.md#nfr-021--collage-sheet-speed) | Collage sheet preview; sheet export; the grid after a change of setting | ≤ 2× NFR-002; ≤ its two photos exported alone; ten sheets < 100 ms | `measure_sheet` and `measure_sheet_grid` (`crates/core/examples/`), 26 MP demo photos |
-| [FR-070](PRD.md#fr-070--looks-from-lut-files) (planned v0.11.0) | Applying a look (33³ LUT, strength) | ≤ 5 ms on the 1600 px preview; ≤ 60 ms on a 24 MP export | `measure_look`, to be written with the feature ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
+| [FR-070](PRD.md#fr-070--looks-from-lut-files), [FR-079](PRD.md#fr-079--colour-adjustments) (planned v0.10.0) | Applying a look (33³ table, strength, every slider, grain and vignette) | ≤ 5 ms on the 1600 px preview; ≤ 60 ms on a 24 MP export | `measure_look`, to be written with the feature ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
 
 ### Reference machines
 
