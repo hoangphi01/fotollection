@@ -460,3 +460,16 @@
 - **Why:** each button set its icon as `data-icon="inline-start"`, which gives the button 6 px of padding on the left and 10 on the right for a label; below the `@3xl` width the label hides and the icon sits 2 px left of centre. And Auto turn asked every photo's size by reading the whole file, 4.4 GB for the trip's folder, one file after another: 3.7 s.
 - **Fix:** `ToolbarButton` (components/forms): a square button with the icon centred when the label hides, the label's padding only when it shows, a spinner while its work runs; `check-lego` refuses a hand-hidden label, and `MEASURE=1` measures every icon-only button (it failed on the old code at 2 px). The size reads the first megabyte (0.4 s for the folder).
 - **Rule:** an icon-only state of a button is a layout of its own: measure it (`MEASURE=1`), do not trust padding written for the labelled one. Before reading a file to learn one fact, check how much of the file that fact needs.
+
+### A build beside the editor ran the Mac out of memory (tooling, 2026-11-05)
+
+- **Seen:** a release build of the examples, then a measurement of 24 MP RAW files, ended with the process killed (exit 137) and the machine restarting; the scratch folder in `/tmp` went with it, the RAW samples included.
+- **Why:** the editor's own tools held about 5 GB (rust-analyzer 1.9 GB, the C/C++ extension 1 GB, VS Code's helpers), the swap was nearly full, and cargo built on every core while a develop held a 24 MP image several times over.
+- **Rule:** when `scripts/resources.sh` shows little free memory, build with `CARGO_BUILD_JOBS=4`, never run the dev app beside a build or a test, measure large files one at a time, and keep anything worth keeping outside `/tmp`.
+
+### A score on block averages chose the wrong camera fit (FR-072)
+
+- **Seen:** "Like the camera's JPEG" picked three curves for the R10 and the A7 III, which then sat further from the camera's JPEG (4.76 and 4.44 against 4.42 and 3.29 in ΔE2000).
+- **Why:** the two fits were scored on 48 × 32 block averages with CIE76: a fit can match every block's mean and still miss the colours inside it, and CIE76 weighs saturated colours too much.
+- **Fix:** score pixel by pixel on a 480 px copy, ΔE2000 against the JPEG averaged down to it; all seven Bayer samples now pick the fit the full-size measurement prefers.
+- **Rule:** a selector must agree with the measurement it stands in for: check its picks against the full measurement on every sample before trusting it.

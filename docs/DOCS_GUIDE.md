@@ -47,7 +47,7 @@
 **Check resources before, during and after every build and test run.** The dev machine has a small disk and little free swap; a full disk fails builds halfway, and heavy swap makes every timing meaningless.
 
 - **Before:** `scripts/resources.sh` (free disk, memory pressure, swap, size of `target/`). It fails under 10 GB free; `scripts/resources.sh --clean` runs `cargo clean` when `target/` is over 12 GB.
-- **During** a long build or a benchmark: watch it (`top -l 1 -o mem -n 8`, `df -h .`) and stop it before the disk fills.
+- **During** a long build or a benchmark: watch it (`top -l 1 -o mem -n 8`, `df -h .`) and stop it before the disk fills. With little free memory, build with `CARGO_BUILD_JOBS=4` and never beside the dev app (LESSONS 2026-11-05).
 - **After:** run `scripts/resources.sh` again and note what the build or test cost. Benchmarks are only logged when memory pressure was normal and swap was not growing ([OPTIMIZATION.md](OPTIMIZATION.md) §5).
 
 ```sh
