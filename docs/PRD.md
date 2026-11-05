@@ -945,6 +945,14 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P1 (planned, owner's request 2026-11-05).** In Collage mode, the *Print size* card says how many pixels a sheet of two photos side by side or one above the other has (two 16 MP photos make a sheet of about W × H px), and whether that is sharp, acceptable or soft for the chosen size, as the resolution warning does for one photo ([FR-026](#fr-026--resolution-warning)).
 
+### FR-090 — A filmstrip in the photo's preview
+
+**P1 (planned, v0.11.0; owner's request 2026-11-05).** In Pro mode, the photo's preview shows a strip of thumbnails under the photo, as Lightroom's filmstrip: the photos of the current view in their order, the one shown marked and kept in sight, so a user skims the set and picks a photo with one click instead of ← → one at a time.
+
+- **Fast:** the strip uses the gallery's T1 thumbnails (no new decode), virtualized so a 500-photo set scrolls smoothly; moving to a far photo starts its preview at once and never waits for the last one's (LESSONS 2026-11-05).
+- **The same order and filter as the gallery**, with the RAW, rating and print-basket badges of the grid tiles; select mode and the cull keys keep working.
+- **Lego:** one block, shown in the preview only (`@shown preview`), at a fixed height measured in both themes and languages; it hides with the inspector in full screen.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
