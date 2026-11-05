@@ -51,8 +51,9 @@ export function PhotoSummaryCard({ photo, details }: PhotoSummaryCardProps) {
       open={open}
       action={
         kind && (
-          // Capitals have no descenders: a line-high box would set them visibly high.
-          <Badge variant={raw ? 'default' : 'outline'} className="leading-none pt-px" data-hint={raw ? ext : undefined}>
+          // Capitals have no descenders, so centring the line box sets them 1.6 px high
+          // (measured): a one-line-high box, 1 px lower, centres the letters themselves.
+          <Badge variant={raw ? 'default' : 'outline'} className="pt-px pb-0 leading-none" data-hint={raw ? ext : undefined}>
             {kind}
           </Badge>
         )
