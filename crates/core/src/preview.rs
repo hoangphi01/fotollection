@@ -13,6 +13,7 @@ use std::sync::{Arc, Mutex};
 use crate::codec::{EncodeOptions, JpegCodec, decode_image, decode_photo};
 use crate::image::{RgbImage, apply_orientation};
 use crate::library::{PhotoId, PhotoRecord};
+use crate::looks::{LookSettings, RawSliders};
 use crate::plan::{CropRect, FrameRequest, PlanInput, RenderPlan, plan};
 use crate::render::{crop_and_resize, finish, fit_long_edge, render};
 use crate::settings::RenderSettings;
@@ -39,15 +40,32 @@ pub const REGION_MAX_PX: u32 = 4096;
 /// A photo and the orientation it was decoded in, so a rotated photo is decoded again.
 /// A photo, its orientation and how it is finished if it is a RAW (ADR-0040): either change
 /// is another image, so it misses the cache and the other stays for a quick comparison.
-type SourceKey = (PhotoId, u8, crate::raw::RawLook);
+/// The RAW sliders made in linear light (FR-088) are part of it too: each step of one is
+/// another image, re-finished from the kept develop (`prepared`).
+type SourceKey = (PhotoId, u8, crate::raw::RawLook, RawSliders);
 
-fn source_key(record: &PhotoRecord) -> SourceKey {
+fn source_key(record: &PhotoRecord, raw: RawSliders) -> SourceKey {
     (
         record.id,
         record.display_orientation(),
         record.edits.raw_look(),
+        raw,
     )
 }
+
+/// For `record` with `settings`: the sliders its RAW takes in linear light and the look left
+/// for the table (FR-088); any other file keeps its whole look in the table.
+pub fn split_look(record: &PhotoRecord, settings: &RenderSettings) -> (RawSliders, LookSettings) {
+    let look = record.edits.look.as_ref().unwrap_or(&settings.look);
+    if crate::raw::is_raw_name(&record.file_name) {
+        look.split_for_raw()
+    } else {
+        (RawSliders::default(), look.clone())
+    }
+}
+
+/// RAW develops the preview keeps, at most this many (about 50 MB each at 2048 px).
+const PREPARED_CAPACITY: usize = 3;
 
 /// A part of the rendered photo, in fractions of its width and height, wanted at most
 /// `px` pixels wide (FR-057).
@@ -130,6 +148,15 @@ pub struct PreviewCache {
     small: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
     /// The last preview photo cropped and resized, before its look and stamp.
     resized: Mutex<Option<Resized>>,
+    /// RAW develops at 2048 px with their fits, so a RAW slider's step only re-finishes
+    /// (FR-088).
+    prepared: Mutex<Vec<(PhotoId, Arc<Prepared>)>>,
+}
+
+/// A kept RAW develop and the profile of what it finishes to.
+struct Prepared {
+    raw: crate::raw_finish::Prepared,
+    icc: Option<Vec<u8>>,
 }
 
 /// A preview photo cropped and resized, and what it was made from: a slider's drag changes
@@ -173,6 +200,9 @@ impl PreviewCache {
         if let Ok(mut resized) = self.resized.lock() {
             *resized = None;
         }
+        if let Ok(mut prepared) = self.prepared.lock() {
+            prepared.clear();
+        }
     }
 
     /// A small upright source for a sheet in the collage grid (FR-035): the photo's thumbnail
@@ -182,10 +212,11 @@ impl PreviewCache {
     fn small_source(
         &self,
         record: &PhotoRecord,
+        raw: RawSliders,
         thumbnail: &Thumbnail<'_>,
         codec: &dyn JpegCodec,
     ) -> Result<Arc<RgbImage>, ThumbError> {
-        let key = source_key(record);
+        let key = source_key(record, raw);
         if let Some(image) = take_cached(&self.small, key) {
             return Ok(image);
         }
@@ -195,7 +226,7 @@ impl PreviewCache {
                 let turns = crate::image::compose_orientation(1, record.edits.rotation);
                 apply_orientation(decoded.image, turns)
             }
-            None => fit_long_edge(self.source(record, codec)?.as_ref(), SMALL_LONG_EDGE)?,
+            None => fit_long_edge(self.source(record, raw, codec)?.as_ref(), SMALL_LONG_EDGE)?,
         };
         let image = Arc::new(image);
         if let Ok(mut small) = self.small.lock() {
@@ -207,33 +238,78 @@ impl PreviewCache {
         Ok(image)
     }
 
+    /// The kept develop of a RAW (FR-088), made once per photo and kept for a few; `None`
+    /// when the file is not a RAW after all (a JPEG renamed).
+    fn prepared(&self, record: &PhotoRecord) -> Result<Option<Arc<Prepared>>, ThumbError> {
+        if let Ok(mut kept) = self.prepared.lock()
+            && let Some(i) = kept.iter().position(|(id, _)| *id == record.id)
+        {
+            let entry = kept.remove(i);
+            let found = Arc::clone(&entry.1);
+            kept.push(entry);
+            return Ok(Some(found));
+        }
+        let bytes = std::fs::read(&record.path)?;
+        let Some(kind) = crate::raw::kind(&bytes[..bytes.len().min(crate::raw::HEAD_BYTES)]) else {
+            return Ok(None);
+        };
+        let (raw, icc) = crate::raw::prepare(&bytes, kind)?;
+        let prepared = Arc::new(Prepared { raw, icc });
+        if let Ok(mut kept) = self.prepared.lock() {
+            if kept.len() >= PREPARED_CAPACITY {
+                kept.remove(0);
+            }
+            kept.push((record.id, Arc::clone(&prepared)));
+        }
+        Ok(Some(prepared))
+    }
+
     fn source(
         &self,
         record: &PhotoRecord,
+        raw: RawSliders,
         codec: &dyn JpegCodec,
     ) -> Result<Arc<RgbImage>, ThumbError> {
-        if let Some(image) = take_cached(&self.entries, source_key(record)) {
+        let key = source_key(record, raw);
+        if let Some(image) = take_cached(&self.entries, key) {
             return Ok(image);
         }
-        let key = source_key(record);
-        // Zoomed before: the full image is already here.
-        let full = if let Some(full) = self.take_full(key) {
-            full
+        let prepared = if crate::raw::is_raw_name(&record.file_name) {
+            self.prepared(record)?
         } else {
-            let bytes = std::fs::read(&record.path)?;
-            let decoded = decode_photo(codec, &bytes, key.2)?;
-            let full = Full {
-                image: Arc::new(apply_orientation(decoded.image, key.1)),
-                icc: decoded.icc.map(Arc::from),
-            };
-            // Kept for zoom, so its first sharp region does not decode the photo again: a
-            // RAW develop costs 0.4 to 2 s (FR-057, RESULT §11).
-            self.keep_full(key, full.clone());
-            full
+            None
         };
-        let mut image = fit_long_edge(&full.image, T2_LONG_EDGE)?;
-        // Every view of the photo is made from this sRGB copy (FR-072).
-        crate::colour::to_srgb(&mut image, full.icc.as_deref());
+        // A RAW: its kept develop finished with the sliders made in linear light, so a step of
+        // one costs a finish at 2048 px, not a develop (FR-088).
+        let mut image = if let Some(prepared) = prepared {
+            let finished = prepared
+                .raw
+                .finish(key.2, &raw.adjust())
+                .ok_or(crate::render::RenderError::BadCrop)?;
+            let mut image = fit_long_edge(&apply_orientation(finished, key.1), T2_LONG_EDGE)?;
+            crate::colour::to_srgb(&mut image, prepared.icc.as_deref());
+            image
+        } else {
+            // Zoomed before: the full image is already here.
+            let full = if let Some(full) = self.take_full(key) {
+                full
+            } else {
+                let bytes = std::fs::read(&record.path)?;
+                let decoded = decode_photo(codec, &bytes, key.2, &raw.adjust())?;
+                let full = Full {
+                    image: Arc::new(apply_orientation(decoded.image, key.1)),
+                    icc: decoded.icc.map(Arc::from),
+                };
+                // Kept for zoom, so its first sharp region does not decode it again.
+                self.keep_full(key, full.clone());
+                full
+            };
+            let mut image = fit_long_edge(&full.image, T2_LONG_EDGE)?;
+            // Every view of the photo is made from this sRGB copy (FR-072).
+            crate::colour::to_srgb(&mut image, full.icc.as_deref());
+            image
+        };
+        image.data.shrink_to_fit();
         let image = Arc::new(image);
         if let Ok(mut entries) = self.entries.lock() {
             if entries.len() >= CAPACITY {
@@ -249,10 +325,11 @@ impl PreviewCache {
     pub fn source_jpeg(
         &self,
         record: &PhotoRecord,
+        settings: &RenderSettings,
         sheet: bool,
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
-        let mut source = self.source(record, codec)?;
+        let mut source = self.source(record, split_look(record, settings).0, codec)?;
         if sheet {
             source = turned_in_cell(source, record);
         }
@@ -263,9 +340,10 @@ impl PreviewCache {
     fn full_source(
         &self,
         record: &PhotoRecord,
+        raw: RawSliders,
         codec: &dyn JpegCodec,
     ) -> Result<Arc<RgbImage>, ThumbError> {
-        let key = source_key(record);
+        let key = source_key(record, raw);
         let cached = match self.take_full(key) {
             Some(Full { image, icc: None }) => return Ok(image),
             // Out of the cache while it converts, so the pixels are converted in place.
@@ -285,7 +363,7 @@ impl PreviewCache {
             }
             None => {
                 let bytes = std::fs::read(&record.path)?;
-                crate::colour::screen(decode_photo(codec, &bytes, key.2)?)
+                crate::colour::screen(decode_photo(codec, &bytes, key.2, &raw.adjust())?)
             }
         };
         let image = Arc::new(image);
@@ -357,10 +435,12 @@ impl PreviewCache {
             .print_for(source.width, source.height)
             .unwrap_or(crate::PrintSize::ALL[1]);
         let capture = record.stamp_date();
+        // A RAW's five linear sliders are in its source already (FR-088): the table gets the rest.
+        let (_, table_look) = split_look(record, settings);
         let settings = settings.for_photo(
             record.edits.stamp.as_ref(),
             record.edits.caption.as_deref(),
-            record.edits.look.as_ref(),
+            Some(&table_look),
         );
         plan(&PlanInput {
             width: source.width,
@@ -412,7 +492,7 @@ impl PreviewCache {
         place: Option<&str>,
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
-        let source = self.source(record, codec)?;
+        let source = self.source(record, split_look(record, settings).0, codec)?;
         let mut plain = record.clone();
         plain.edits.look = None;
         let mut settings = settings.clone();
@@ -457,8 +537,7 @@ impl PreviewCache {
     /// The colour look's table for `record` as the webview's shader reads it (RGBA8,
     /// [`crate::looks::Table::to_rgba8`]); `None` when its look changes nothing.
     pub fn look_table(record: &PhotoRecord, settings: &RenderSettings) -> Option<Vec<u8>> {
-        let settings = settings.for_photo(None, None, record.edits.look.as_ref());
-        settings.look.table().map(|t| t.to_rgba8())
+        split_look(record, settings).1.table().map(|t| t.to_rgba8())
     }
 
     /// Renders the preview JPEG for `record` with the current settings.
@@ -483,7 +562,7 @@ impl PreviewCache {
         place: Option<&str>,
         codec: &dyn JpegCodec,
     ) -> Result<RgbImage, ThumbError> {
-        let source = self.source(record, codec)?;
+        let source = self.source(record, split_look(record, settings).0, codec)?;
         let p = Self::plan_from(
             &source,
             record,
@@ -508,18 +587,24 @@ impl PreviewCache {
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
         let mut images = [None, None];
-        for (slot, photo) in images.iter_mut().zip(&photos) {
-            if let Some((record, _)) = photo {
+        // Each RAW cell's five linear sliders go to its source, the rest to the table (FR-088).
+        let looks = photos.map(|p| p.map(|(record, _)| split_look(record, settings)));
+        for ((slot, photo), look) in images.iter_mut().zip(&photos).zip(&looks) {
+            if let (Some((record, _)), Some((raw, _))) = (photo, look) {
                 let upright = match thumbnail {
-                    Some(thumbnail) => self.small_source(record, thumbnail, codec)?,
-                    None => self.source(record, codec)?,
+                    Some(thumbnail) => self.small_source(record, *raw, thumbnail, codec)?,
+                    None => self.source(record, *raw, codec)?,
                 };
                 *slot = Some(turned_in_cell(upright, record));
             }
         }
         let mut sources = [None, None];
-        for ((slot, image), photo) in sources.iter_mut().zip(&images).zip(&photos) {
-            if let (Some(image), Some((record, place))) = (image, photo) {
+        for (((slot, image), photo), look) in
+            sources.iter_mut().zip(&images).zip(&photos).zip(&looks)
+        {
+            if let (Some(image), Some((record, place)), Some((_, table_look))) =
+                (image, photo, look)
+            {
                 *slot = Some(crate::sheet::CellSource {
                     image,
                     capture: record.stamp_date(),
@@ -528,7 +613,7 @@ impl PreviewCache {
                     place: *place,
                     stamp: record.edits.stamp.as_ref(),
                     caption: record.edits.caption.as_deref(),
-                    look: record.edits.look.as_ref(),
+                    look: Some(table_look),
                     postcard: record.edits.postcard.as_ref(),
                 });
             }
@@ -564,7 +649,7 @@ impl PreviewCache {
         region: Region,
         codec: &dyn JpegCodec,
     ) -> Result<RgbImage, ThumbError> {
-        let source = self.full_source(record, codec)?;
+        let source = self.full_source(record, split_look(record, settings).0, codec)?;
         let full = Self::render_from(&source, record, settings, frame, place, None)?;
         let (x, y, w, h) = region.rect(full.width, full.height);
         let row = full.width as usize * 3;
@@ -716,7 +801,7 @@ mod tests {
         let settings = RenderSettings::default();
         let cache = PreviewCache::new();
         let full = PreviewCache::render_from(
-            &*cache.full_source(&record, codec.as_ref())?,
+            &*cache.full_source(&record, RawSliders::default(), codec.as_ref())?,
             &record,
             &settings,
             None,
@@ -775,7 +860,7 @@ mod tests {
             std::fs::create_dir(&sub)?;
             let mut record = photo(&sub, 5000, 4000)?;
             record.id = PhotoId(i);
-            cache.full_source(&record, codec.as_ref())?;
+            cache.full_source(&record, RawSliders::default(), codec.as_ref())?;
             let full = cache.full.lock().map_err(|_| "lock")?;
             let bytes: usize = full.iter().map(|(_, f)| f.image.data.len()).sum();
             assert!(bytes <= FULL_BUDGET_BYTES, "{bytes} bytes after photo {i}");

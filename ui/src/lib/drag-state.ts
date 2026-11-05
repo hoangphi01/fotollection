@@ -8,12 +8,27 @@ import { useSyncExternalStore } from 'react'
  */
 let drag = 0
 let count = 0
+/** Whether the drag in progress can be drawn on the GPU: a RAW's sliders made in linear
+ * light (FR-088) are not in the look's table, so Rust renders each of their steps. */
+let gpu = true
 const listeners = new Set<() => void>()
 
-export function setDragging(next: boolean) {
+export function setDragging(next: boolean, onGpu = true) {
   if (next === (drag !== 0)) return
   drag = next ? ++count : 0
+  gpu = onGpu
   listeners.forEach((l) => l())
+}
+
+/** Whether the drag in progress may be drawn on the GPU (see `setDragging`). */
+export function useDragOnGpu(): boolean {
+  return useSyncExternalStore(
+    (l) => {
+      listeners.add(l)
+      return () => listeners.delete(l)
+    },
+    () => gpu,
+  )
 }
 
 /** The drag in progress, numbered from 1, or 0. */

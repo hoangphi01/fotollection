@@ -336,8 +336,8 @@ fn picture(p: fotollection_rawcore::Picture) -> Option<RgbImage> {
     )
 }
 
-/// A finished RAW, with the camera fit taken and both fits' block errors against the
-/// camera's JPEG (`[curve and matrix, three curves]`), for the measurements (RESULT §27).
+/// A finished RAW, with the camera fit taken and both fits' errors against the camera's
+/// JPEG (`[curve and matrix, three curves]`), for the measurements (RESULT §27).
 pub struct Finished {
     pub image: RgbImage,
     pub fit: Option<CameraFit>,
@@ -353,26 +353,44 @@ pub enum CameraFit {
     ThreeCurves,
 }
 
-/// Finishes a scene-linear develop as `look` asks, against the camera's embedded JPEG when
-/// there is one. For [`RawLook::Camera`] both fits are made on a small copy, scored against
-/// the JPEG on a block grid, and only the closer one is rendered at full size; the fit taken
-/// comes back for the measurements. Without a usable JPEG, an automatic exposure and a
-/// gentle curve.
-pub fn finish_linear(
-    linear: &fotollection_rawcore::Linear,
+/// The largest copy a fit is made on. The preview and the export fit the same copy, so what
+/// prints is what was shown, and a slider's step re-finishes only this copy (FR-088).
+pub const FIT_EDGE: usize = 2048;
+
+/// The copy the two camera fits are scored on: at 480 px they tied on close calls the
+/// full-size measurement told apart (the A7 III, RESULT §27).
+const SCORE_EDGE: usize = 1024;
+
+/// How a develop is finished, fitted once.
+pub enum Fit {
+    /// A curve on luminance, a colour matrix and the lens shading: neutral, or the camera's
+    /// look by one curve and a matrix.
+    Look(fotollection_rawcore::Look),
+    /// The camera's look by one curve per channel.
+    Curves(Curves),
+    /// No usable JPEG: an automatic exposure and a gentle curve.
+    Auto(fotollection_rawcore::tone::Curve),
+    /// Already toned by the system's codec: encoded as it is.
+    AsIs,
+}
+
+/// Fits `small` (at most [`FIT_EDGE`] across) as `look` asks. `toned` is a develop the
+/// system's codec already finished (its neutral is its own rendering).
+pub fn fit(
+    small: &fotollection_rawcore::Linear,
     reference: Option<&RgbImage>,
     look: RawLook,
-) -> Option<Finished> {
-    let done = |image, fit, scores| Finished { image, fit, scores };
-    let fallback = || {
-        picture(fotollection_rawcore::finish(
-            linear,
-            &fotollection_rawcore::default_curve(linear),
-        ))
-        .map(|p| done(p, None, [None, None]))
+    toned: bool,
+) -> (Fit, Option<CameraFit>, [Option<f32>; 2]) {
+    let auto = || {
+        if toned {
+            Fit::AsIs
+        } else {
+            Fit::Auto(fotollection_rawcore::default_curve(small))
+        }
     };
     let Some(reference) = reference.filter(|r| r.width.min(r.height) >= MIN_REFERENCE_EDGE) else {
-        return fallback();
+        return (auto(), None, [None, None]);
     };
     let r = fotollection_rawcore::Reference {
         width: reference.width as usize,
@@ -380,47 +398,132 @@ pub fn finish_linear(
         rgb: &reference.data,
     };
     match look {
-        RawLook::Neutral => match fotollection_rawcore::neutral_look(linear, &r) {
-            Some(n) => picture(fotollection_rawcore::finish_look(linear, &n))
-                .map(|p| done(p, None, [None, None])),
-            None => fallback(),
+        RawLook::Neutral if toned => (Fit::AsIs, None, [None, None]),
+        RawLook::Neutral => match fotollection_rawcore::neutral_look(small, &r) {
+            Some(n) => (Fit::Look(n), None, [None, None]),
+            None => (auto(), None, [None, None]),
         },
         RawLook::Camera => {
-            let small = shrink(linear, 480);
-            let fitted = fotollection_rawcore::match_look(linear, &r);
+            let tiny = shrink(small, SCORE_EDGE);
+            let fitted = if toned {
+                None
+            } else {
+                fotollection_rawcore::match_look(small, &r)
+            };
             let curves = match_reference(&encode16(&small.rgb), reference);
             let score_a = fitted.as_ref().map(|l| {
-                let p = fotollection_rawcore::finish_look(&small, l);
+                let p = fotollection_rawcore::finish_look(&tiny, l);
                 error_against(p.width, p.height, &p.rgb, reference)
             });
-            let (sw, sh) = (
-                u32::try_from(small.width).ok()?,
-                u32::try_from(small.height).ok()?,
-            );
-            let score_b = curves.as_ref().map(|c| {
-                let p = apply(&encode16(&small.rgb), sw, sh, c);
-                error_against(small.width, small.height, &p.data, reference)
+            let score_b = curves.as_ref().and_then(|c| {
+                let (tw, th) = (
+                    u32::try_from(tiny.width).ok()?,
+                    u32::try_from(tiny.height).ok()?,
+                );
+                let p = apply(&encode16(&tiny.rgb), tw, th, c);
+                Some(error_against(tiny.width, tiny.height, &p.data, reference))
             });
             let scores = [score_a, score_b];
-            let three = |c: &Curves| {
-                let (w, h) = (
-                    u32::try_from(linear.width).ok()?,
-                    u32::try_from(linear.height).ok()?,
-                );
-                Some(done(
-                    apply(&encode16(&linear.rgb), w, h, c),
-                    Some(CameraFit::ThreeCurves),
-                    scores,
-                ))
-            };
             match (fitted, curves, score_a, score_b) {
-                (_, Some(c), Some(a), Some(b)) if b < a => three(&c),
-                (Some(l), ..) => picture(fotollection_rawcore::finish_look(linear, &l))
-                    .map(|p| done(p, Some(CameraFit::CurveAndMatrix), scores)),
-                (None, Some(c), ..) => three(&c),
-                _ => fallback(),
+                (_, Some(c), Some(a), Some(b)) if b < a => {
+                    (Fit::Curves(c), Some(CameraFit::ThreeCurves), scores)
+                }
+                (Some(l), ..) => (Fit::Look(l), Some(CameraFit::CurveAndMatrix), scores),
+                (None, Some(c), ..) => (Fit::Curves(c), Some(CameraFit::ThreeCurves), scores),
+                _ => (auto(), None, scores),
             }
         }
+    }
+}
+
+/// Renders a (possibly adjusted) linear develop with a fit, 8-bit sRGB.
+pub fn render(linear: &fotollection_rawcore::Linear, fit: &Fit) -> Option<RgbImage> {
+    let (w, h) = (
+        u32::try_from(linear.width).ok()?,
+        u32::try_from(linear.height).ok()?,
+    );
+    match fit {
+        Fit::Look(l) => picture(fotollection_rawcore::finish_look(linear, l)),
+        Fit::Curves(c) => Some(apply(&encode16(&linear.rgb), w, h, c)),
+        Fit::Auto(c) => picture(fotollection_rawcore::finish(linear, c)),
+        Fit::AsIs => RgbImage::from_raw(
+            w,
+            h,
+            encode16(&linear.rgb)
+                .iter()
+                .map(|&v| u8::try_from(v >> 8).unwrap_or(u8::MAX))
+                .collect(),
+        ),
+    }
+}
+
+/// Finishes a whole develop as `look` asks with `adjust` made in linear light first (FR-088),
+/// the fit made on a copy at most [`FIT_EDGE`] across, as the preview's.
+pub fn finish_linear(
+    mut linear: fotollection_rawcore::Linear,
+    reference: Option<&RgbImage>,
+    look: RawLook,
+    adjust: &fotollection_rawcore::RawAdjust,
+    toned: bool,
+) -> Option<Finished> {
+    let small = shrink(&linear, FIT_EDGE);
+    let (fitted, kind, scores) = fit(&small, reference, look, toned);
+    drop(small);
+    fotollection_rawcore::adjust(&mut linear, adjust);
+    Some(Finished {
+        image: render(&linear, &fitted)?,
+        fit: kind,
+        scores,
+    })
+}
+
+/// A RAW ready for the preview (FR-088): its develop at most [`FIT_EDGE`] across, the
+/// camera's JPEG, and the fits made so far, so a slider's step only re-finishes this copy.
+pub struct Prepared {
+    linear: fotollection_rawcore::Linear,
+    reference: Option<RgbImage>,
+    toned: bool,
+    fits: std::sync::Mutex<Vec<(RawLook, std::sync::Arc<Fit>)>>,
+}
+
+impl Prepared {
+    pub fn new(
+        full: &fotollection_rawcore::Linear,
+        reference: Option<RgbImage>,
+        toned: bool,
+    ) -> Self {
+        Self {
+            linear: shrink(full, FIT_EDGE),
+            reference,
+            toned,
+            fits: std::sync::Mutex::new(Vec::new()),
+        }
+    }
+
+    /// The preview's copy finished as `look` asks with `adjust`.
+    pub fn finish(
+        &self,
+        look: RawLook,
+        adjust: &fotollection_rawcore::RawAdjust,
+    ) -> Option<RgbImage> {
+        let cached = self.fits.lock().ok().and_then(|f| {
+            f.iter()
+                .find(|(l, _)| *l == look)
+                .map(|(_, f)| std::sync::Arc::clone(f))
+        });
+        let fitted = if let Some(f) = cached {
+            f
+        } else {
+            let f =
+                std::sync::Arc::new(fit(&self.linear, self.reference.as_ref(), look, self.toned).0);
+            if let Ok(mut fits) = self.fits.lock() {
+                fits.push((look, std::sync::Arc::clone(&f)));
+            }
+            f
+        };
+        let mut linear = self.linear.clone();
+        fotollection_rawcore::adjust(&mut linear, adjust);
+        render(&linear, &fitted)
     }
 }
 

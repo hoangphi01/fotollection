@@ -105,10 +105,25 @@ fn main() {
         let outcome = catch_unwind(AssertUnwindSafe(|| {
             let kind = raw::kind(&data[..data.len().min(raw::HEAD_BYTES)])?;
             let _ = Own.dimensions(&data, kind);
-            let own = Own.decode(&data, kind, raw::RawLook::Neutral);
-            let rawler = Rawler.decode(&data, kind, raw::RawLook::Neutral);
+            let own = Own.decode(
+                &data,
+                kind,
+                raw::RawLook::Neutral,
+                &raw::RawAdjust::default(),
+            );
+            let rawler = Rawler.decode(
+                &data,
+                kind,
+                raw::RawLook::Neutral,
+                &raw::RawAdjust::default(),
+            );
             let _ = raw::dimensions(&data, kind);
-            let chain = raw::decode(&data, kind, raw::RawLook::Neutral);
+            let chain = raw::decode(
+                &data,
+                kind,
+                raw::RawLook::Neutral,
+                &raw::RawAdjust::default(),
+            );
             Some((own.is_ok(), rawler, chain))
         }));
         if start.elapsed() > SLOW {

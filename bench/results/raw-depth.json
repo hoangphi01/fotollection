@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-05",
+  "machine": "REF-MAC (M3), loaded",
+  "command": "cargo run --release -p fotollection-core --example raw_depth -- <raw>…",
+  "note": "FR-088. Highlights −100 in the near-white pixels (luma ≥ 250 at rest) and shadows +100 in the dark pixels (luma ≤ 30): distinct levels / standard deviation (/ empty bins between the extremes), the old way (the table on the finished 8-bit picture) against the new (linear light before the tone). stepMs: one RAW slider step, the kept 2048 px develop re-finished, median of 5. RW2 and ORF go to ImageIO first on a Mac: 8-bit, no headroom.",
+  "samples": {
+    "canon-eos-5d-mark-iv": { "stepMs": 7.9, "highlightsOld": [11, 2.5], "highlightsNew": [19, 9.5], "shadowsOld": [38, 11.8, 11], "shadowsNew": [58, 10.8, 4] },
+    "canon-eos-r10": { "stepMs": 10.9, "highlightsOld": [12, 1.5], "highlightsNew": [40, 11.8], "shadowsOld": [52, 14.4, 0], "shadowsNew": [67, 12.0, 0] },
+    "nikon-d750": { "stepMs": 10.7, "highlightsOld": [12, 2.5], "highlightsNew": [49, 13.0], "shadowsOld": [53, 14.3, 0], "shadowsNew": [67, 14.4, 0] },
+    "ricoh-gr-iii": { "stepMs": 10.8, "highlightsOld": [11, 2.5], "highlightsNew": [4, 0.9], "shadowsOld": [43, 9.7, 9], "shadowsNew": [62, 8.1, 5] },
+    "sony-ilce-7m3": { "stepMs": 11.0, "highlightsOld": [12, 2.7], "highlightsNew": [42, 11.0], "shadowsOld": [17, 4.4, 6], "shadowsNew": [15, 2.8, 0] },
+    "panasonic-dc-gx9 (ImageIO on a Mac)": { "stepMs": 5.8, "highlightsOld": [9, 2.7], "highlightsNew": [2, 0.3], "shadowsOld": [51, 10.6, 0], "shadowsNew": [51, 8.7, 0] }
+  },
+  "cameraDeltaE": { "canon-eos-5d-mark-iv": 1.88, "canon-eos-r10": 4.40, "nikon-d750": 1.12, "panasonic-dc-gx9": 2.73, "panasonic-dc-s5": 6.52, "ricoh-gr-iii": 2.77, "sony-ilce-7m3": 3.32 }
+}

@@ -28,7 +28,7 @@ pub const SCHEME: &str = "fotothumb";
 enum Route {
     Thumb(PhotoId),
     /// The preview; `true` without the colour look, for *Before / After* (FR-079).
-    Preview(PhotoId, bool),
+    Preview(PhotoId, crate::commands::PreviewPart),
     /// Where the preview shows the photo, a grey PNG, for the look on the GPU (ADR-0039).
     Mask(PhotoId),
     /// The photo's colour look as a 33³ RGBA8 table, for the look on the GPU (ADR-0039).
@@ -105,7 +105,13 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
             Some(region) => Route::Region(id, region),
             None => Route::Preview(
                 id,
-                query.unwrap_or_default().split('&').any(|p| p == "plain=1"),
+                if flag("plain=1") {
+                    crate::commands::PreviewPart::Plain
+                } else if flag("base=1") {
+                    crate::commands::PreviewPart::Base
+                } else {
+                    crate::commands::PreviewPart::All
+                },
             ),
         }),
         // `sheet=1`: as the photo sits in its collage cell, for the sheet's crop editor.
@@ -233,11 +239,17 @@ mod tests {
         ));
         assert!(matches!(
             route("/preview/0", Some("rev=3")),
-            Some(Route::Preview(PhotoId(0), false))
+            Some(Route::Preview(
+                PhotoId(0),
+                crate::commands::PreviewPart::All
+            ))
         ));
         assert!(matches!(
             route("/preview/4", Some("rev=3&plain=1")),
-            Some(Route::Preview(PhotoId(4), true))
+            Some(Route::Preview(
+                PhotoId(4),
+                crate::commands::PreviewPart::Plain
+            ))
         ));
         assert!(matches!(
             route("/preview/4", Some("rev=3&mask=1")),

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useEffect, useRef, useState } from 'react'
-import { useDrag } from '@/lib/drag-state'
+import { useDrag, useDragOnGpu } from '@/lib/drag-state'
 import { lookTableUrl, maskUrl, previewUrl } from '@/lib/photo-url'
 import { GpuLook } from './gpu-look'
 
@@ -25,6 +25,8 @@ type GpuLookState = {
  */
 export function useGpuLook(photoId: number | undefined, revision: number, settled: boolean): GpuLookState {
   const drag = useDrag()
+  // A RAW's linear sliders (FR-088) are not in the table: Rust renders each of their steps.
+  const onGpu = useDragOnGpu()
   // The drag the photo was last loaded for, so a drag that ends keeps its canvas until
   // Rust's render lands, and the next one loads the photo again (its stamp may have changed).
   const [lastDrag, setLastDrag] = useState(0)
@@ -33,7 +35,7 @@ export function useGpuLook(photoId: number | undefined, revision: number, settle
   const gpu = useRef<{ canvas: HTMLCanvasElement; look: GpuLook } | null>(null)
   const [ready, setReady] = useState<string | null>(null)
   const key = photoId === undefined ? null : `${photoId}:${drag || lastDrag}`
-  const want = !broken && photoId !== undefined
+  const want = !broken && photoId !== undefined && onGpu
   const asked = useRef(0)
 
   // A drag starts: the plain photo and its mask, for this photo, once.
@@ -51,7 +53,8 @@ export function useGpuLook(photoId: number | undefined, revision: number, settle
           gpu.current = { canvas, look }
         }
         const [photo, mask] = await Promise.all([
-          bitmap(`${previewUrl(photoId, revision)}&plain=1`),
+          // The photo without what the table does: a RAW keeps its linear sliders (FR-088).
+          bitmap(`${previewUrl(photoId, revision)}&base=1`),
           bitmap(maskUrl(photoId, revision)),
         ])
         if (!live) return

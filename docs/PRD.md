@@ -923,6 +923,24 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **In it:** the language, the theme, `.fotosettings` export and import ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)), language packs ([FR-084](#fr-084--language-packs-anyone-can-add)), the cache, updates, *Report a problem*, the version and the changelog, and every other app-wide setting now spread over the panels and the version popover.
 - **Built from the lego blocks** (STYLE_RULE §4), measured with `MEASURE=1`, in both themes and languages.
 
+### FR-088 — RAW edited in linear light
+
+**P1 (v0.10.0; owner's question 2026-11-05: "can a RAW be pushed as far as in Lightroom?").** On a camera RAW, the sliders a RAW editor applies before its tone curve act in scene-linear light, on the develop's own data, before the finish: **brightness as exposure** (±2 stops), **highlights** and **shadows** (brightness-weighted gains up to two stops, from middle grey up into the headroom above white, and down six stops), **warmth** and **tint** as channel gains (the same gains as on a JPEG, so each slider means the same). The rest of the look stays in the 33³ table ([ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)). JPEG, HEIC and PNG are unchanged.
+
+- **Headroom:** each channel clips at its own saturation after white balance, and what nears a clip goes to a neutral at its brightest channel, never magenta or cyan; so highlights −100 brings back gradation an 8-bit picture has lost.
+- **Speed:** the preview keeps each RAW's develop at 2048 px with its fits (`raw_finish::Prepared`); a step of one of the five sliders re-finishes that copy, 4–11 ms, and is drawn by Rust, not the GPU (whose shader only applies the table). The export develops at full size with the same fits, so what prints is what was shown.
+- **Not yet:** Panasonic and Olympus RAW go to macOS's ImageIO first on a Mac (for its lens correction, [FR-085](#fr-085--lens-distortion-correction)), which gives an 8-bit picture: there the sliders still act in linear light, without the headroom.
+- Measured old against new on the samples (RESULT §28).
+
+### FR-089 — Lightroom presets
+
+**P2 (planned with the Looks, after v0.12.0's LUT import; owner's request 2026-11-05, researched the same day).** *Import preset…* reads a user's own Lightroom® preset, an `.xmp` (`crs:PresetType="Normal"`) or a legacy Develop `.lrtemplate`, into a look of their own.
+
+- **Parsed safely:** XML without DOCTYPE or entities, size- and depth-capped; an `.lrtemplate` read by a small parser of Lua's table constructors only, never run as Lua; every number clamped, NaN refused; each failure with its `ERR-` code. Fuzzed.
+- **Mapped honestly:** the 2012-process sliders that match ours (contrast, highlights, shadows, vibrance, saturation, incremental warmth and tint, split toning, vignette, grain, black and white by its nearest filter) are applied; exposure is approximated; what has no counterpart yet (Whites and Blacks, tone curves, HSL, colour grading, clarity, texture, dehaze, sharpening, absolute white balance, Adobe's camera profiles, older process versions) is listed after the import as *not applied*, with its reason, and kept in the look so a later engine can use it. Next steps in the table, without new UI: an imported tone curve, then HSL and colour grading.
+- **Profiles** (`.xmp` with `crs:RGBTable`) become a LUT on the [FR-070](#fr-070--looks-from-lut-files) path, after the presets.
+- **Never shipped:** no Adobe or third-party preset or profile is bundled or used as a test fixture; fixtures are written by us. Wording names Lightroom® only to say what is read.
+
 ### FR-087 — How large a collage sheet prints
 
 **P1 (planned, owner's request 2026-11-05).** In Collage mode, the *Print size* card says how many pixels a sheet of two photos side by side or one above the other has (two 16 MP photos make a sheet of about W × H px), and whether that is sharp, acceptable or soft for the chosen size, as the resolution warning does for one photo ([FR-026](#fr-026--resolution-warning)).
@@ -961,7 +979,7 @@ The app supports macOS 11 or later (Apple Silicon and Intel, shipped as a univer
 
 ### NFR-008 — Install size
 
-The installer is **at most 25 MB** per platform.
+The installer is **at most 150 MB** per platform (owner, 2026-11-05: Fotollection has become a semi-professional app, with its own RAW develop and, next, a GPU develop; the budget was 25 MB until then, 30 MB proposed by ADR-0040). The AppImage, which carries its own libraries, is held to the same 150 MB.
 
 ### NFR-009 — Colour fidelity
 

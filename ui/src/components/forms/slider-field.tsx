@@ -17,6 +17,8 @@ type SliderFieldProps = {
   format?: (value: number) => ReactNode
   /** What it does, shown on hover, so a card of sliders stays short (FR-079). */
   hint?: string
+  /** `false` when its drag cannot be drawn on the GPU (a RAW's linear sliders, FR-088). */
+  gpu?: boolean
 }
 
 const signed = (v: number) => (v > 0 ? `+${v}` : v < 0 ? `−${-v}` : '0')
@@ -36,6 +38,7 @@ export function SliderField({
   reset = 0,
   format = signed,
   hint,
+  gpu = true,
 }: SliderFieldProps) {
   const [draft, setDraft] = useState<number | null>(null)
   const dragging = useRef(false)
@@ -76,7 +79,7 @@ export function SliderField({
           if (!dragging.current) {
             dragging.current = true
             // The preview follows on the GPU while the drag lasts (ADR-0039).
-            setDragging(true)
+            setDragging(true, gpu)
             onChange(v, true)
             return
           }

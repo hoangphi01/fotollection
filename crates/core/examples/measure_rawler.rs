@@ -66,7 +66,14 @@ fn main() {
         let name = path.file_stem().unwrap().to_string_lossy().into_owned();
         let bytes = std::fs::read(path).expect("read sample");
         let kind = raw::kind(&bytes).expect("a RAW file");
-        let (os, os_ms) = timed(|| raw::decode(&bytes, kind, raw::RawLook::Camera));
+        let (os, os_ms) = timed(|| {
+            raw::decode(
+                &bytes,
+                kind,
+                raw::RawLook::Camera,
+                &raw::RawAdjust::default(),
+            )
+        });
         // rawler's develop finished to the camera's look with its own embedded image.
         let (rl, rl_ms) = timed(|| {
             let developed = fotollection_rawlgpl::develop(&bytes, 200_000_000)?;
@@ -87,9 +94,21 @@ fn main() {
         });
         // Our own develop (ADR-0040): every Bayer file, like the camera's JPEG and neutral.
         let own = Some(timed(|| {
-            raw::Own.decode(&bytes, kind, raw::RawLook::Camera)
+            raw::Own.decode(
+                &bytes,
+                kind,
+                raw::RawLook::Camera,
+                &raw::RawAdjust::default(),
+            )
         }));
-        let (neutral, neutral_ms) = timed(|| raw::Own.decode(&bytes, kind, raw::RawLook::Neutral));
+        let (neutral, neutral_ms) = timed(|| {
+            raw::Own.decode(
+                &bytes,
+                kind,
+                raw::RawLook::Neutral,
+                &raw::RawAdjust::default(),
+            )
+        });
         if let Ok(d) = &neutral {
             println!("  neutral: {neutral_ms:.0} ms");
             write_png(&out.join(format!("{name}.neutral.png")), &d.image);

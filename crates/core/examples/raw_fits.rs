@@ -33,10 +33,23 @@ fn main() {
             continue;
         };
         let t = Instant::now();
-        let _ = finish_linear(&linear, reference.as_ref(), RawLook::Neutral);
+        let _ = finish_linear(
+            linear.clone(),
+            reference.as_ref(),
+            RawLook::Neutral,
+            &raw::RawAdjust::default(),
+            false,
+        );
         let neutral = t.elapsed().as_secs_f64() * 1e3;
         let t = Instant::now();
-        let f = finish_linear(&linear, reference.as_ref(), RawLook::Camera).expect("finish");
+        let f = finish_linear(
+            linear,
+            reference.as_ref(),
+            RawLook::Camera,
+            &raw::RawAdjust::default(),
+            false,
+        )
+        .expect("finish");
         let camera = t.elapsed().as_secs_f64() * 1e3;
         let score = |s: Option<f32>| s.map_or("–".to_owned(), |v| format!("{v:.2}"));
         println!(

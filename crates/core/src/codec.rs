@@ -157,20 +157,26 @@ fn decode_heif(bytes: &[u8]) -> Result<Decoded, CodecError> {
 /// Decodes any supported input photo: PNG, camera RAW (developed) and HEIC here, everything
 /// else through `codec` (JPEG).
 pub fn decode_image(codec: &dyn JpegCodec, bytes: &[u8]) -> Result<Decoded, CodecError> {
-    decode_photo(codec, bytes, crate::raw::RawLook::Neutral)
+    decode_photo(
+        codec,
+        bytes,
+        crate::raw::RawLook::Neutral,
+        &crate::raw::RawAdjust::default(),
+    )
 }
 
-/// [`decode_image`] for a photo with edits: a camera RAW is finished as `look` asks
-/// (ADR-0040); every other format ignores it.
+/// [`decode_image`] for a photo with edits: a camera RAW is adjusted in linear light and
+/// finished as `look` asks (ADR-0040, FR-088); every other format ignores both.
 pub fn decode_photo(
     codec: &dyn JpegCodec,
     bytes: &[u8],
     look: crate::raw::RawLook,
+    adjust: &crate::raw::RawAdjust,
 ) -> Result<Decoded, CodecError> {
     if bytes.starts_with(PNG_MAGIC) {
         decode_png(bytes)
     } else if let Some(kind) = crate::raw::kind(bytes) {
-        crate::raw::decode(bytes, kind, look)
+        crate::raw::decode(bytes, kind, look, adjust)
     } else if is_heif(bytes) {
         decode_heif(bytes)
     } else {

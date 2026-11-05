@@ -169,6 +169,8 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-085 | Lens distortion correction in our own develop (Panasonic and Olympus maker data, DNG `WarpRectilinear`), so ImageIO is no longer first for RW2 and ORF on macOS; after v0.11.0 |
 | FR-086 | One Settings window: a gear beside the author's name opens every app setting in two columns as on an iPad (language, theme, `.fotosettings`, language packs, cache, updates, version and changelog), the preview's layout reused |
 | FR-087 | How large a collage sheet prints: the sheet's pixels and a sharp / acceptable / soft verdict for the chosen size in Collage's *Print size* card |
+| FR-088 | RAW edited in linear light: exposure, highlights, shadows, warmth and tint on the RAW's own data before its tone, with headroom above white; v0.10.0 |
+| FR-089 | Lightroom presets: a user's own `.xmp` or `.lrtemplate` imported into a look, parsed safely, unsupported settings listed; with the Looks |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 

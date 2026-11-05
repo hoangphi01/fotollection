@@ -18,13 +18,18 @@ type FavesCardProps = {
   onChange: LookChange
   /** Extra controls under the sliders: the preview's *Apply to all*. */
   footer?: ReactNode
+  /** The photo is a camera RAW: its linear sliders are drawn by Rust, not the GPU (FR-088). */
+  raw?: boolean
 }
+
+/** The sliders a RAW takes in linear light before its tone (FR-088, `split_for_raw`). */
+const RAW_LINEAR: readonly SignedKey[] = ['brightness', 'highlights', 'shadows', 'warmth', 'tint']
 
 /**
  * The everyday sliders (FR-079, Faves): brightness, contrast, warmth and saturation at once,
  * highlights, shadows, tint and vibrance behind *More*, so a newcomer sees four.
  */
-export function FavesCard({ look, onChange, footer }: FavesCardProps) {
+export function FavesCard({ look, onChange, footer, raw = false }: FavesCardProps) {
   const { t } = useTranslation()
   const [more, setMore] = useState(moreOpen)
   const adjust = fullLook(look).adjust
@@ -35,6 +40,7 @@ export function FavesCard({ look, onChange, footer }: FavesCardProps) {
       label={t(`look.${key}`)}
       hint={t(`look.hints.${key}`)}
       value={adjust[key]}
+      gpu={!(raw && RAW_LINEAR.includes(key))}
       onChange={(v, first) => onChange((l) => ({ ...l, adjust: { ...l.adjust, [key]: v } }), first)}
     />
   )

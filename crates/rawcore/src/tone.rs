@@ -271,6 +271,75 @@ pub fn match_look(linear: &Linear, reference: &Reference<'_>) -> Option<Look> {
     })
 }
 
+/// Adjustments a camera RAW takes in scene-linear light, before its tone (FR-088), as a RAW
+/// editor makes them: the data past white is still there for the highlights, the shadows
+/// are not yet squeezed into 8 bits, and white balance is a gain, not a tint.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct RawAdjust {
+    /// Stops of exposure, + brighter.
+    pub exposure: f32,
+    /// −1 to 1: pulls the tones above middle grey down (−) or up, most at three stops over.
+    pub highlights: f32,
+    /// −1 to 1: lifts the tones below middle grey (+) or sinks them, most six stops under.
+    pub shadows: f32,
+    /// Channel gains for white balance, luminance kept.
+    pub gains: [f32; 3],
+}
+
+impl Default for RawAdjust {
+    fn default() -> Self {
+        Self {
+            exposure: 0.0,
+            highlights: 0.0,
+            shadows: 0.0,
+            gains: [1.0; 3],
+        }
+    }
+}
+
+impl RawAdjust {
+    /// Whether it changes nothing.
+    pub fn is_identity(&self) -> bool {
+        *self == Self::default()
+    }
+}
+
+fn smoothstep(edge0: f32, edge1: f32, x: f32) -> f32 {
+    let t = ((x - edge0) / (edge1 - edge0)).clamp(0.0, 1.0);
+    t * t * (3.0 - 2.0 * t)
+}
+
+/// Applies `a` to a scene-linear develop, in place. Highlights and shadows are gains in
+/// stops weighted by each pixel's brightness against middle grey, applied to its three
+/// channels alike, so hues stay; up to two stops at full strength.
+pub fn adjust(linear: &mut Linear, a: &RawAdjust) {
+    if a.is_identity() {
+        return;
+    }
+    let scale = a.exposure.exp2();
+    let gains = a.gains.map(|g| g * scale);
+    linear.rgb.par_chunks_exact_mut(3).for_each(|p| {
+        for (v, g) in p.iter_mut().zip(gains) {
+            *v *= g;
+        }
+        if a.highlights == 0.0 && a.shadows == 0.0 {
+            return;
+        }
+        let y = luminance(p);
+        if y <= 0.0 {
+            return;
+        }
+        let ev = (y / 0.18).log2();
+        let stops = 2.0
+            * (a.highlights * smoothstep(0.0, 3.0, ev)
+                + a.shadows * (1.0 - smoothstep(-6.0, 0.0, ev)));
+        let g = stops.exp2();
+        for v in p.iter_mut() {
+            *v *= g;
+        }
+    });
+}
+
 /// Scene-linear luminance to display-linear for the neutral rendering (ADR-0040): a soft
 /// shoulder that reaches white two stops over middle grey's exposure instead of clipping at
 /// once, then a gentle S in encoded terms, the same shape as [`default_curve`]'s.

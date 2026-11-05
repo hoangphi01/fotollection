@@ -206,12 +206,16 @@ fn encode_sheet(
     let (first, second) = (&sheet.0, sheet.1.as_ref());
     let mut decoded = Vec::with_capacity(2);
     let mut profiles = Vec::with_capacity(2);
+    // A RAW cell's five linear sliders go to its develop, the rest to the table (FR-088).
+    let mut looks = Vec::with_capacity(2);
     for record in std::iter::once(first).chain(second) {
         if cancel.is_cancelled() {
             return Err(ExportError::Cancelled);
         }
+        let (raw, table_look) = crate::preview::split_look(record, options.settings);
+        looks.push(table_look);
         let bytes = std::fs::read(&record.path)?;
-        let d = decode_photo(codec, &bytes, record.edits.raw_look())?;
+        let d = decode_photo(codec, &bytes, record.edits.raw_look(), &raw.adjust())?;
         profiles.push(d.icc);
         decoded.push((
             // As the photo sits on the sheet, its own turns in the cell included (FR-035).
@@ -232,9 +236,10 @@ fn encode_sheet(
     let print = crate::sheet::sheet_print(options.settings);
     let records = [Some(first), second];
     let mut sources = [None, None];
-    for (slot, ((image, place), record)) in sources
+    for ((slot, ((image, place), record)), table_look) in sources
         .iter_mut()
         .zip(decoded.iter().zip(records.into_iter().flatten()))
+        .zip(&looks)
     {
         *slot = Some(crate::sheet::CellSource {
             image,
@@ -244,7 +249,7 @@ fn encode_sheet(
             place: place.as_deref(),
             stamp: record.edits.stamp.as_ref(),
             caption: record.edits.caption.as_deref(),
-            look: record.edits.look.as_ref(),
+            look: Some(table_look),
             postcard: record.edits.postcard.as_ref(),
         });
     }
@@ -298,7 +303,8 @@ fn encode_photo(
         return Err(ExportError::Cancelled);
     }
     let bytes = std::fs::read(&record.path)?;
-    let decoded = decode_photo(codec, &bytes, record.edits.raw_look())?;
+    let (raw, table_look) = crate::preview::split_look(record, options.settings);
+    let decoded = decode_photo(codec, &bytes, record.edits.raw_look(), &raw.adjust())?;
     // The file's bytes are not needed past the decode (NFR-004).
     drop(bytes);
     let upright = apply_orientation(decoded.image, record.display_orientation());
@@ -333,7 +339,7 @@ fn encode_photo(
     let settings = base.for_photo(
         record.edits.stamp.as_ref(),
         record.edits.caption.as_deref(),
-        record.edits.look.as_ref(),
+        Some(&table_look),
     );
     let p = plan(&PlanInput {
         width: upright.width,

@@ -72,7 +72,7 @@ export function PhotoLookCards({ photoId, revision, onAppliedToAll }: PhotoLookC
           onApplyToAll={() => current.raw != null && void commands.applyRawLookToAll(current.raw)}
         />
       )}
-      <FavesCard look={current.look} onChange={change} footer={applyToAll} />
+      <FavesCard look={current.look} onChange={change} footer={applyToAll} raw={current.raw != null} />
       <ToolsCard look={current.look} onChange={change} />
     </>
   )

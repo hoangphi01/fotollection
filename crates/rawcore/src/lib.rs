@@ -22,8 +22,8 @@ use rayon::prelude::*;
 use thiserror::Error;
 
 pub use tone::{
-    Linear, Look, Picture, Reference, default_curve, finish, finish_look, match_look,
-    match_reference, neutral_look,
+    Linear, Look, Picture, RawAdjust, Reference, adjust, default_curve, finish, finish_look,
+    match_look, match_reference, neutral_look,
 };
 
 #[derive(Debug, Clone, Copy, Error, PartialEq, Eq)]
@@ -118,6 +118,25 @@ pub fn develop(data: &[u8]) -> Result<Linear, RawError> {
     develop_mosaic(&dng.mosaic, &dng.color)
 }
 
+/// Where any channel nears its sensor's clip (its white-balance gain), the pixel moves toward
+/// a neutral at its brightest channel: the other channels' values there say how bright it
+/// was, but not its colour, which a clipped channel would make magenta or cyan (FR-088).
+pub fn highlights_to_white(rgb: &mut [f32], clip: [f32; 3]) {
+    const FROM: f32 = 0.85;
+    rgb.par_chunks_exact_mut(3).for_each(|p| {
+        let t = (0..3)
+            .map(|c| ((p[c] / clip[c] - FROM) / (1.0 - FROM)).clamp(0.0, 1.0))
+            .fold(0f32, f32::max);
+        if t > 0.0 {
+            let t = t * t * (3.0 - 2.0 * t);
+            let m = p[0].max(p[1]).max(p[2]);
+            for v in p.iter_mut() {
+                *v += (m - *v) * t;
+            }
+        }
+    });
+}
+
 /// Develops a sensor's mosaic, whatever file it came from, with its colour tags.
 pub fn develop_mosaic(mosaic: &cfa::Mosaic, tags: &color::ColorTags) -> Result<Linear, RawError> {
     let rendering = color::rendering(tags).ok_or(RawError::Unsupported("no colour matrix"))?;
@@ -126,9 +145,14 @@ pub fn develop_mosaic(mosaic: &cfa::Mosaic, tags: &color::ColorTags) -> Result<L
     let mut plane = demosaic::balance(mosaic, rendering.gains);
     prepare::hot_pixels(&mut plane);
     prepare::green_balance(&mut plane);
-    let mut camera = directional::directional(&plane, 1.0);
+    // Each channel keeps its own range after white balance (its gain over green's), so a
+    // highlight past green's clip still holds red and blue (FR-088); what nears a channel's
+    // clip goes to white instead of turning magenta or cyan.
+    let headroom = rendering.gains.iter().copied().fold(1.0f32, f32::max);
+    let mut camera = directional::directional(&plane, headroom);
     drop(plane);
     falsecolour::suppress(&mut camera);
+    highlights_to_white(&mut camera.rgb, rendering.gains);
     let m = rendering.to_srgb;
     #[allow(clippy::cast_possible_truncation)]
     let m32 = m.map(|row| row.map(|v| v as f32));
@@ -175,6 +199,64 @@ mod tests {
         assert!(!cut_short(&file(100, 100)));
         assert!(cut_short(&file(100, 60)));
         assert!(!cut_short(b"not a tiff at all"));
+    }
+
+    /// A pixel whose green reached its clip while red and blue did not comes out neutral, at
+    /// its brightest channel; one far from any clip keeps its colour.
+    #[test]
+    fn fr_088_a_clipped_channel_goes_to_white_not_to_a_colour() {
+        let gains = [2.0, 1.0, 1.6];
+        let mut rgb = vec![1.4, 1.0, 1.2, 0.3, 0.5, 0.2];
+        highlights_to_white(&mut rgb, gains);
+        assert!(
+            (rgb[0] - 1.4).abs() < 1e-6
+                && (rgb[1] - 1.4).abs() < 1e-6
+                && (rgb[2] - 1.4).abs() < 1e-6,
+            "{rgb:?}"
+        );
+        assert_eq!(&rgb[3..], &[0.3, 0.5, 0.2]);
+    }
+
+    /// FR-088: highlights −1 brings a ramp from middle grey to three stops over white down,
+    /// still in order (detail kept, not flattened), and leaves middle grey and below alone;
+    /// shadows +1 lifts the dark end, also in order.
+    #[test]
+    fn fr_088_highlights_and_shadows_keep_the_order_of_tones() {
+        let ramp: Vec<f32> = [0.002, 0.02, 0.18, 0.5, 1.0, 2.0, 4.0, 8.0]
+            .iter()
+            .flat_map(|&v| [v, v, v])
+            .collect();
+        let run = |a: RawAdjust| {
+            let mut l = Linear {
+                width: 8,
+                height: 1,
+                rgb: ramp.clone(),
+            };
+            adjust(&mut l, &a);
+            l.rgb
+                .as_chunks::<3>()
+                .0
+                .iter()
+                .map(|p| p[1])
+                .collect::<Vec<_>>()
+        };
+        let down = run(RawAdjust {
+            highlights: -1.0,
+            ..RawAdjust::default()
+        });
+        assert!(down.windows(2).all(|w| w[0] < w[1]), "{down:?}");
+        assert!(
+            (down[2] - 0.18).abs() < 1e-4 && down[7] < 8.0 / 3.0,
+            "{down:?}"
+        );
+        let up = run(RawAdjust {
+            shadows: 1.0,
+            ..RawAdjust::default()
+        });
+        assert!(
+            up.windows(2).all(|w| w[0] < w[1]) && up[0] > 0.002 * 3.0,
+            "{up:?}"
+        );
     }
 
     #[test]

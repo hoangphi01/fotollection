@@ -1259,12 +1259,40 @@ pub fn look_table_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, IpcErr
     )
 }
 
-/// The preview JPEG; `plain` leaves the colour look out, for *Before / After* (FR-079).
-pub fn preview_bytes(state: &AppState, id: PhotoId, plain: bool) -> Result<Vec<u8>, IpcError> {
+/// What a preview leaves out of the photo's look.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PreviewPart {
+    /// Everything, as it prints.
+    All,
+    /// No look at all, for *Before / After* (FR-079).
+    Plain,
+    /// What the look's table does, kept out for the webview to draw while a slider is
+    /// dragged (ADR-0039); a RAW keeps its sliders made in linear light (FR-088).
+    Base,
+}
+
+/// The preview JPEG, with the part of its look `part` asks for.
+pub fn preview_bytes(
+    state: &AppState,
+    id: PhotoId,
+    part: PreviewPart,
+) -> Result<Vec<u8>, IpcError> {
     let (mut record, mut settings, place, frame) = preview_inputs(state, id)?;
-    if plain {
-        record.edits.look = None;
-        settings.look = LookSettings::default();
+    match part {
+        PreviewPart::All => {}
+        PreviewPart::Plain => {
+            record.edits.look = None;
+            settings.look = LookSettings::default();
+        }
+        PreviewPart::Base => {
+            let look = record.edits.look.as_ref().unwrap_or(&settings.look);
+            let base = if fotollection_core::raw::is_raw_name(&record.file_name) {
+                look.raw_only()
+            } else {
+                LookSettings::default()
+            };
+            record.edits.look = Some(base);
+        }
     }
     state
         .previews
@@ -2258,9 +2286,15 @@ pub fn source_bytes(state: &AppState, id: PhotoId, sheet: bool) -> Result<Vec<u8
         .ok()
         .and_then(|l| l.record(id))
         .ok_or_else(|| IpcError::new("photo.unknown", "unknown photo"))?;
+    let settings = state
+        .settings
+        .read()
+        .map_err(crate::document::poisoned)?
+        .0
+        .clone();
     state
         .previews
-        .source_jpeg(&record, sheet, state.codec.as_ref())
+        .source_jpeg(&record, &settings, sheet, state.codec.as_ref())
         .map_err(|e| shown_error(&e, &record))
 }
 

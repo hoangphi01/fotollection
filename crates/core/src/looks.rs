@@ -327,7 +327,87 @@ pub struct Grain {
     pub size: u8,
 }
 
+/// The sliders a camera RAW takes in scene-linear light before its tone (FR-088): brightness
+/// as exposure, highlights, shadows, warmth and tint, scaled by the look's amount. Kept as
+/// the slider values, so it can key a cache.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
+pub struct RawSliders {
+    pub brightness: i8,
+    pub highlights: i8,
+    pub shadows: i8,
+    pub warmth: i8,
+    pub tint: i8,
+    pub amount: u8,
+}
+
+impl RawSliders {
+    /// The adjustment in linear light: brightness ±100 is ±2 stops; highlights and shadows
+    /// ±100 are rawcore's ±1; warmth and tint the same luminance-kept gains as on a JPEG
+    /// (`Params`), so each slider means the same on both.
+    pub fn adjust(&self) -> fotollection_rawcore::RawAdjust {
+        let k = f32::from(self.amount) / 100.0;
+        let s = |v: i8| f32::from(v) / 100.0 * k;
+        let (w, t) = (s(self.warmth), s(self.tint));
+        let raw = [(0.3 * w).exp2(), (-0.45 * t).exp2(), (-0.3 * w).exp2()];
+        let y = 0.2126 * raw[0] + 0.7152 * raw[1] + 0.0722 * raw[2];
+        fotollection_rawcore::RawAdjust {
+            exposure: 2.0 * s(self.brightness),
+            highlights: s(self.highlights),
+            shadows: s(self.shadows),
+            gains: raw.map(|g| g / y),
+        }
+    }
+}
+
 impl LookSettings {
+    /// For a camera RAW (FR-088): the five sliders it takes in linear light, and the look
+    /// left for the table, those five at zero, so none is applied twice.
+    #[must_use]
+    pub fn split_for_raw(&self) -> (RawSliders, Self) {
+        let a = self.adjust;
+        let raw = RawSliders {
+            brightness: a.brightness,
+            highlights: a.highlights,
+            shadows: a.shadows,
+            warmth: a.warmth,
+            tint: a.tint,
+            amount: self.amount,
+        };
+        let mut rest = self.clone();
+        rest.adjust.brightness = 0;
+        rest.adjust.highlights = 0;
+        rest.adjust.shadows = 0;
+        rest.adjust.warmth = 0;
+        rest.adjust.tint = 0;
+        let raw = if a.brightness == 0
+            && a.highlights == 0
+            && a.shadows == 0
+            && a.warmth == 0
+            && a.tint == 0
+        {
+            RawSliders::default()
+        } else {
+            raw
+        };
+        (raw, rest)
+    }
+
+    /// Only the five sliders a RAW takes in linear light, the rest at rest: a RAW's base
+    /// for the webview's look while dragging (FR-088), whose table holds the rest.
+    #[must_use]
+    pub fn raw_only(&self) -> Self {
+        let mut only = Self {
+            amount: self.amount,
+            ..Self::default()
+        };
+        only.adjust.brightness = self.adjust.brightness;
+        only.adjust.highlights = self.adjust.highlights;
+        only.adjust.shadows = self.adjust.shadows;
+        only.adjust.warmth = self.adjust.warmth;
+        only.adjust.tint = self.adjust.tint;
+        only
+    }
+
     /// Within the sliders' ranges, whatever the file or the webview sent.
     #[must_use]
     pub fn sanitized(mut self) -> Self {
@@ -600,6 +680,37 @@ fn from_oklab([l, a, b]: [f32; 3]) -> [f32; 3] {
 )]
 mod tests {
     use super::*;
+
+    /// FR-088: on a RAW, brightness, highlights, shadows, warmth and tint leave the table for
+    /// linear light, the rest stays; warmth's gains are the table's own, white kept.
+    #[test]
+    fn fr_088_five_sliders_leave_the_table_for_a_raw() {
+        let mut look = LookSettings::default();
+        look.adjust.brightness = 50;
+        look.adjust.warmth = 40;
+        look.adjust.saturation = 30;
+        let (raw, rest) = look.split_for_raw();
+        assert_eq!((raw.brightness, raw.warmth, raw.amount), (50, 40, 100));
+        assert_eq!(
+            (
+                rest.adjust.brightness,
+                rest.adjust.warmth,
+                rest.adjust.saturation
+            ),
+            (0, 0, 30)
+        );
+        let a = raw.adjust();
+        assert!((a.exposure - 1.0).abs() < 1e-6);
+        let y = 0.2126 * a.gains[0] + 0.7152 * a.gains[1] + 0.0722 * a.gains[2];
+        assert!((y - 1.0).abs() < 1e-5 && a.gains[0] > a.gains[2]);
+        // Only the five set: nothing left for the table.
+        look.adjust.saturation = 0;
+        assert!(look.split_for_raw().1.table().is_none());
+        assert_eq!(
+            LookSettings::default().split_for_raw().0,
+            RawSliders::default()
+        );
+    }
 
     /// Tetrahedral interpolation in f64 straight from its definition, for checking the
     /// integer one.

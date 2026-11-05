@@ -229,7 +229,8 @@ fn record_scenarios(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Valu
             stamps.insert(key.clone(), ok(commands::get_photo_stamp(app.state(), id))?);
             write(
                 &out.join(format!("img/preview/{scenario}/{key}.jpg")),
-                &preview_bytes(&state, id, false).map_err(|e| e.message)?,
+                &preview_bytes(&state, id, crate::commands::PreviewPart::All)
+                    .map_err(|e| e.message)?,
             )?;
         }
         scenarios.insert(

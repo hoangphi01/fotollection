@@ -551,3 +551,22 @@ Four steps, each kept only once the score card (§23, now with a sixth chart, `h
 - **Choosing the fit:** both are made on a copy 480 px across and scored against the JPEG averaged down to it, ΔE2000 pixel by pixel (`examples/raw_fits.rs`); only the closer one is rendered at full size. A first score on 48 × 32 block averages (CIE76) picked the worse fit for the R10 and the A7 III (4.76 and 4.44 instead of 4.42 and 3.29); per pixel it picks right for all seven. On the Prague trip's 26 RW2: three curves for 22, one curve and a matrix for 4, a mean score of 2.69 against 3.17 and 2.91 for either fit alone.
 - **Neutral:** the camera's matrix, the lens shading and the exposure of its JPEG (the median brightness), and a gentle tone: a soft shoulder, an S of half strength, and a soft toe `d²/(d + 0.01)`. The S5's grey patches, L\* white to black, neutral 85.8 74.6 61.0 45.1 27.5 12.9 against the camera's 86.2 75.6 62.6 46.3 25.0 8.1, colour cast C\* 1.39 (the camera's JPEG 1.26). Tried and dropped: no S (black at L\* 24); a black offset (0.004 to 0.014) that matched the S5's black but crushed the D750's shadows (SSIM 0.987 → 0.77–0.92).
 - **Time:** a full develop with either choice takes 0.29–0.69 s on the eight Bayer samples (the finish 100–210 ms of it); both choices stay in the preview cache, so switching back is instant.
+
+## 28. RAW edited in linear light (v0.10.0, FR-088)
+
+The same edits made the old way, by the look's 33³ table on the finished 8-bit picture, and the new way, in scene-linear light before the tone (`cargo run --release -p fotollection-core --example raw_depth`, `bench/results/raw-depth.json`), REF-MAC, 2026-11-05. In each photo's near-white pixels (luma ≥ 250 at rest) and dark pixels (luma ≤ 30): distinct levels / standard deviation, and for the shadows the empty histogram bins between their darkest and brightest (banding).
+
+| Sample | Highlights −100, old | new | Shadows +100, old | new |
+|---|---|---|---|---|
+| Canon 5D Mark IV | 11 / 2.5 | 19 / 9.5 | 38 / 11.8, 11 gaps | **58** / 10.8, **4 gaps** |
+| Canon R10 | 12 / 1.5 | **40 / 11.8** | 52 / 14.4 | 67 / 12.0 |
+| Nikon D750 | 12 / 2.5 | **49 / 13.0** | 53 / 14.3 | 67 / 14.4 |
+| Ricoh GR III | 11 / 2.5 | 4 / 0.9 | 43 / 9.7, 9 gaps | **62** / 8.1, **5 gaps** |
+| Sony A7 III | 12 / 2.7 | **42 / 11.0** | 17 / 4.4, 6 gaps | 15 / 2.8, **0 gaps** |
+| Panasonic GX9 (ImageIO on a Mac) | 9 / 2.7 | 2 / 0.3 | 51 / 10.6 | 51 / 8.7 |
+
+- **Highlights:** where a photo has near-white areas, pulling them down now brings back gradation (40 to 49 levels with a spread of 11 to 13, against 12 levels and 1.5 to 2.7): the develop keeps each channel up to its own clip and sends what nears it to white, and the slider acts before the tone compresses it. On the GR III and the 5D IV almost nothing is near white (under 0.1 %).
+- **Shadows:** lifted before the tone, the dark tones keep more levels and fewer gaps.
+- **Not on a Mac's RW2 and ORF:** macOS's ImageIO develops them to 8 bits, so there is no headroom to bring back (FR-085).
+- **Speed:** one step of a RAW slider re-finishes the kept 2048 px develop in 4.3–11.0 ms, drawn by Rust (the GPU's shader only applies the table).
+- **The camera's look, fitted on the same 2048 px copy as the preview** so the print matches it: ΔE2000 to the camera's JPEG 5D IV 1.88, R10 4.40, D750 1.12, GX9 2.73, S5 6.52, GR III 2.77, A7 III 3.32 (session 17b: 1.88, 4.42, 1.16, 2.76, 6.45, 2.70, 3.29). The fits are scored on a 1024 px copy: at 480 px the A7 III's close call went the wrong way (3.80).
