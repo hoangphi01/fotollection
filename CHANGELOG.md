@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-05
+
 ### Highlights
 
 - New: RAW photos edited on the camera's own data: highlights pulled down bring back detail near white, shadows lift without banding, warmth changes the white balance
