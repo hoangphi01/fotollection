@@ -874,6 +874,15 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Never in the way:** *Skip* keeps the app's order; every choice can be changed later, by dragging the cards or with *Reset order* (FR-080). It does not delay the first window ([NFR-010](#nfr-010--cold-start)): the library loads behind it.
 - What else the welcome holds (the language, the three modes) is decided when it is built.
 
+### FR-082 — The app's brain in one file (`.fotosettings`)
+
+**P2 (later, not scheduled; owner's request 2026-11-05).** Everything Fotollection has learnt on one computer goes to another in one file, "the app's brain": *Export settings…* writes a `.fotosettings` file, *Import settings…* reads one ([EXTENSION.md §2.3](EXTENSION.md#23-settings-bundle-fotosettings)).
+
+- **What it holds:** all of `settings.json`: the interface (language, theme, mode, export folders, the card order and the welcome's choices of [FR-080](#fr-080--card-order-of-ones-own) and [FR-081](#fr-081--a-welcome-screen-on-the-first-launch)), every print and stamp setting, custom print sizes, camera profiles and clocks, the postcard settings and the **recent postcard addresses**, the user's looks with the LUT files they use ([FR-079](#fr-079--colour-adjustments)), fonts and camera logos.
+- **What it never holds:** photos, folder paths, projects or the caches. Albums travel as `.fotollection` projects ([FR-023](#fr-023--projects-autosave-and-undo)), which keep leaving the interface group and the addresses out, so opening someone's album never changes one's own app.
+- **Import** shows what the file holds and asks before replacing the settings in place; a newer file than the app reads is refused with its `ERR-` code; every part goes through the validators of its own kind (fonts, logos, LUTs, sizes), as untrusted input.
+- **Privacy:** the file holds the addresses typed on postcards; the dialog says so, and it is written only where the user chooses. Nothing leaves the machine otherwise.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

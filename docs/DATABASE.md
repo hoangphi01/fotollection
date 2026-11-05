@@ -19,6 +19,7 @@
 | Camera logos `logos/<id>.png` † | PNG, validated copy | App config dir | `logo.rs` | Until removed | No |
 | User fonts `fonts/<id>.ttf\|otf` † | TTF/OTF, validated copy | App config dir | `fonts.rs` | Until removed | No |
 | Looks `looks/<hash>.cube`, planned v0.10.0 ([FR-070](PRD.md#fr-070--looks-from-lut-files)) | `.cube` text, validated copy named by content hash; the settings gain `render.look` (the sliders of FR-079, an optional LUT and its strength, an amount) and the user's saved looks, photos a sparse `look` override (settings and project schema bumps); a project embeds the LUTs it uses | App config dir | `looks.rs` | Until removed | No |
+| Settings bundle `*.fotosettings`, planned ([FR-082](PRD.md#fr-082--the-apps-brain-in-one-file-fotosettings)) | ZIP: `manifest.json`, `settings.json` whole (its `ui` group and the recent addresses included), the user's looks and LUTs, fonts and logos ([EXTENSION.md §2.3](EXTENSION.md#23-settings-bundle-fotosettings)) | Chosen by the user with *Export settings…* | `settings_bundle.rs` | Until the user deletes it | **Yes**: postcard addresses |
 | Recent projects `recent.json` | JSON array of up to 10 paths | App config dir | `settings.rs` | Until cleared | Yes: paths |
 | Preset library `presets/*.fotopreset` | JSON, one file per preset ([§7](#7-presets)) | App config dir | `presets.rs` | Until the user deletes them | No |
 | Thumbnail cache `thumbs/` † | JPEG files, no index file ([§8](#8-thumbnail-cache)) | App cache dir | `thumbs.rs` | LRU, 2 GB cap, can be cleared at any time | **Yes**: image content |

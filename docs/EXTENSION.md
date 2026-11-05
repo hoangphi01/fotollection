@@ -9,10 +9,11 @@
 
 | Type | Extension | MIME type | UTI | Recognized by | Container | Current version | Status |
 |------|-----------|-----------|-----|---------------|-----------|-----------------|--------|
-| Project (legacy, and the session autosave) | `.fotollection` | `application/vnd.fotollection.project+json` | `com.hoangphi01.fotollection.project` | `"format": "fotollection-project"` | JSON, UTF-8 | `schema_version` 9 | Implemented: read always, written only for the session autosave |
+| Project (legacy, and the session autosave) | `.fotollection` | `application/vnd.fotollection.project+json` | `com.hoangphi01.fotollection.project` | `"format": "fotollection-project"` | JSON, UTF-8 | `schema_version` 10 | Implemented: read always, written only for the session autosave |
 | Project bundle | `.fotollection` | `application/vnd.fotollection.project+zip` | `com.hoangphi01.fotollection.project` | ZIP magic `PK\x03\x04` + `manifest.json` with `"format": "fotollection-bundle"` | ZIP (deflate) | manifest `schema_version` 1 | Implemented ([ADR-0016](adr/0016-self-contained-project-bundle.md)): what Save / Save As write |
 | Preset | `.fotopreset` | `application/vnd.fotollection.preset+json` | `com.hoangphi01.fotollection.preset` | `"format": "fotollection-preset"` | JSON, UTF-8 | `schema_version` 1 (draft) | Planned ([FR-038](PRD.md#fr-038--print-presets)) |
-| App settings | `settings.json` | `application/json` | — (internal) | `"format": "fotollection-settings"` | JSON, UTF-8 | `schema_version` 10 | Implemented |
+| App settings | `settings.json` | `application/json` | — (internal) | `"format": "fotollection-settings"` | JSON, UTF-8 | `schema_version` 13 | Implemented |
+| Settings bundle, "the app's brain" | `.fotosettings` | `application/vnd.fotollection.settings+zip` | `com.hoangphi01.fotollection.settings` | ZIP magic + `manifest.json` with `"format": "fotollection-settings-bundle"` | ZIP (deflate) | manifest `schema_version` 1 (draft) | Planned ([FR-082](PRD.md#fr-082--the-apps-brain-in-one-file-fotosettings)) |
 | User font | `fonts/<id>.ttf`, `fonts/<id>.otf` | `font/ttf`, `font/otf` | — (internal copy) | Magic `00 01 00 00` / `true` (TTF), `OTTO` (OTF) | sfnt | — | Implemented ([FR-042](PRD.md#fr-042--custom-fonts)) |
 | Camera logo | `logos/<id>.png` | `image/png` | — (internal copy) | PNG magic | PNG | — | Implemented ([FR-040](PRD.md#fr-040--exif-info-frame)) |
 | Thumbnail cache | `thumbs/…` | `image/jpeg` | — (internal) | Path only | JPEG files | — | Implemented; disposable |
@@ -51,7 +52,11 @@ These files leave the app. Users copy, email and open them on other machines, so
 
 A partial, stackable set of print or Photo Style settings ([DATABASE.md §7.1](DATABASE.md#71-preset-file-fotopreset)). Import is untrusted input, and a preset that fails to parse is skipped with a warning.
 
-### 2.3 Exported prints
+### 2.3 Settings bundle `.fotosettings`
+
+Everything the app has learnt on one machine, to carry to another ([FR-082](PRD.md#fr-082--the-apps-brain-in-one-file-fotosettings)): `settings.json` whole, its `ui` group included (unlike a project bundle), with the user's looks and imported LUTs, fonts and camera logos beside it. Never a photo or a project. Import is untrusted input, read by the same validators as the files it holds.
+
+### 2.4 Exported prints
 
 Exports are plain JPEG files that any lab accepts. They are not a Fotollection format, but their conventions are fixed:
 
