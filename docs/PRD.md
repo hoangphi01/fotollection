@@ -864,7 +864,15 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-080 — Card order of one's own
 
-**P2 (later, not scheduled; owner's request 2026-11-05).** The user puts the right-hand panel's cards in an order of their own, by dragging a card's title (or with the keyboard), in the gallery's panel and in the previews alike: one order, so the same tools stay in the same order everywhere ([STYLE_RULE §4](STYLE_RULE.md#4-uiux)), only it is the user's. *Reset order* brings back the app's order. The order is stored per machine with the UI settings (`ui.cardOrder`, [DATABASE.md §6](DATABASE.md#6-app-settings)); a card added by a later version takes its default place.
+**P2 (later, not scheduled; owner's request 2026-11-05).** The user puts the right-hand panel's cards in an order of their own, by dragging a card's title (or with the keyboard), in the gallery's panel and in the previews alike: one order, so the same tools stay in the same order everywhere ([STYLE_RULE §4](STYLE_RULE.md#4-uiux)), only it is the user's. *Reset order* brings back the app's order. On the first launch the welcome screen ([FR-081](#fr-081--a-welcome-screen-on-the-first-launch)) asks which cards the user likes, and puts them first. The order is stored per machine with the UI settings (`ui.cardOrder`, [DATABASE.md §6](DATABASE.md#6-app-settings)); a card added by a later version takes its default place.
+
+### FR-081 — A welcome screen on the first launch
+
+**P2 (later, not scheduled; owner's request 2026-11-05).** The very first launch opens a short welcome before the library, made together with [FR-080](#fr-080--card-order-of-ones-own), and never shown again unless asked for.
+
+- **Pick what you use**, as Pinterest asks for one's tastes when an account is made: the panel's cards shown as tiles (Looks, Faves, Tools, Print / export size, Date stamp, Info frame, Places…), each with a small picture of what it does; the ones the user taps come first in the panel and the previews, the rest follow in the app's order (`ui.cardOrder`).
+- **Never in the way:** *Skip* keeps the app's order; every choice can be changed later, by dragging the cards or with *Reset order* (FR-080). It does not delay the first window ([NFR-010](#nfr-010--cold-start)): the library loads behind it.
+- What else the welcome holds (the language, the three modes) is decided when it is built.
 
 ## 7. Non-functional requirements
 
