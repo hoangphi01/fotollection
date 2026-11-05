@@ -850,5 +850,54 @@
       "italic": "Italic",
       "underline": "Underline"
     }
+  },
+  "look": {
+    "faves": "Faves",
+    "tools": "Tools",
+    "changed_one": "{{count}} changed",
+    "changed_other": "{{count}} changed",
+    "reset": "Reset this card",
+    "more": "More",
+    "less": "Less",
+    "brightness": "Brightness",
+    "contrast": "Contrast",
+    "highlights": "Highlights",
+    "shadows": "Shadows",
+    "warmth": "Warm / cool",
+    "tint": "Tint",
+    "saturation": "Saturation",
+    "vibrance": "Vibrance",
+    "fade": "Fade",
+    "shadowTint": "Tint the shadows",
+    "highlightTint": "Tint the highlights",
+    "hue": "Colour",
+    "balance": "Balance",
+    "mono": "Black and white",
+    "monoOptions": {
+      "off": "Off",
+      "neutral": "Plain",
+      "yellow": "Yellow",
+      "orange": "Orange",
+      "red": "Red",
+      "green": "Green"
+    },
+    "applyToAll": "Apply this look to all photos",
+    "before": "Before",
+    "beforeHint": "Hold to see the photo without its look (\\)",
+    "hints": {
+      "brightness": "The midtones lighter or darker; black and white stay.",
+      "contrast": "More or less difference between light and dark.",
+      "highlights": "The bright parts: bring back a sky, or brighten it.",
+      "shadows": "The dark parts: open them up, or deepen them.",
+      "warmth": "Towards amber, or towards blue.",
+      "tint": "Towards magenta, or towards green.",
+      "saturation": "Every colour stronger, or towards grey.",
+      "vibrance": "Dull colours stronger first; skin is spared.",
+      "fade": "Lifted blacks, a matte print.",
+      "shadowTint": "A colour over the dark parts, as a film look.",
+      "highlightTint": "A colour over the bright parts.",
+      "balance": "Where the shadows end and the highlights begin.",
+      "mono": "Black and white through a colour filter, as on film: red darkens a blue sky the most."
+    }
   }
 }

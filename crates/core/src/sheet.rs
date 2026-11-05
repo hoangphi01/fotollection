@@ -469,6 +469,8 @@ pub struct CellSource<'a> {
     pub stamp: Option<&'a StampSettings>,
     /// The photo's own line under the date (FR-036); `None` uses the stamp's.
     pub caption: Option<&'a str>,
+    /// The photo's own colour look (FR-079); `None` follows the settings.
+    pub look: Option<&'a crate::looks::LookSettings>,
     /// The text typed on the photo's postcard (FR-073).
     pub postcard: Option<&'a crate::library::PostcardText>,
 }
@@ -523,7 +525,7 @@ pub fn render_sheet(
             })
         };
     let owns: [Option<RenderSettings>; 2] =
-        sources.map(|s| s.map(|s| settings.for_photo(s.stamp, s.caption).into_owned()));
+        sources.map(|s| s.map(|s| settings.for_photo(s.stamp, s.caption, s.look).into_owned()));
 
     // The density of the less sharp photo, so neither is enlarged.
     let mut density = MAX_SHEET_DPI / MM_PER_IN;
@@ -845,6 +847,7 @@ mod tests {
             place: None,
             stamp: None,
             caption: None,
+            look: None,
             postcard: None,
         };
         // The first photo lies, so the sheet stands; the portrait one is cropped to lie too.
@@ -989,6 +992,7 @@ mod tests {
             place: None,
             stamp: None,
             caption: None,
+            look: None,
             postcard: Some(&text),
         };
         for orientation in [
@@ -1092,6 +1096,7 @@ mod tests {
             place: None,
             stamp: None,
             caption: None,
+            look: None,
             postcard: None,
         };
         let out = render_sheet(
@@ -1146,6 +1151,7 @@ mod tests {
             place: None,
             stamp: None,
             caption: None,
+            look: None,
             postcard: None,
         };
         let out = render_sheet(
@@ -1189,6 +1195,7 @@ mod tests {
             place: None,
             stamp: None,
             caption: None,
+            look: None,
             postcard: None,
         };
         let out = render_sheet(

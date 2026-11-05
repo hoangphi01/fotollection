@@ -817,5 +817,53 @@
       "italic": "Nghiêng",
       "underline": "Gạch chân"
     }
+  },
+  "look": {
+    "faves": "Hay dùng",
+    "tools": "Công cụ",
+    "changed_other": "đã chỉnh {{count}}",
+    "reset": "Đặt lại thẻ này",
+    "more": "Thêm",
+    "less": "Bớt",
+    "brightness": "Sáng",
+    "contrast": "Tương phản",
+    "highlights": "Vùng sáng",
+    "shadows": "Vùng tối",
+    "warmth": "Ấm / lạnh",
+    "tint": "Tint",
+    "saturation": "Bão hoà",
+    "vibrance": "Rực màu",
+    "fade": "Fade",
+    "shadowTint": "Nhuộm vùng tối",
+    "highlightTint": "Nhuộm vùng sáng",
+    "hue": "Màu",
+    "balance": "Cân bằng",
+    "mono": "Trắng đen",
+    "monoOptions": {
+      "off": "Tắt",
+      "neutral": "Thường",
+      "yellow": "Vàng",
+      "orange": "Cam",
+      "red": "Đỏ",
+      "green": "Xanh"
+    },
+    "applyToAll": "Dùng look này cho mọi ảnh",
+    "before": "Trước",
+    "beforeHint": "Giữ để xem ảnh khi chưa có look (\\)",
+    "hints": {
+      "brightness": "Vùng trung tính sáng lên hoặc tối đi; đen và trắng giữ nguyên.",
+      "contrast": "Chênh lệch giữa sáng và tối nhiều hơn hoặc ít hơn.",
+      "highlights": "Phần sáng: lấy lại bầu trời, hoặc làm sáng thêm.",
+      "shadows": "Phần tối: mở ra, hoặc làm sâu hơn.",
+      "warmth": "Ngả về hổ phách, hoặc ngả về xanh lam.",
+      "tint": "Ngả về hồng tím, hoặc ngả về xanh lá.",
+      "saturation": "Mọi màu đậm hơn, hoặc nhạt về xám.",
+      "vibrance": "Màu nhạt đậm lên trước; màu da được giữ.",
+      "fade": "Nâng điểm đen, như ảnh in mờ.",
+      "shadowTint": "Phủ một màu lên phần tối, như phim.",
+      "highlightTint": "Phủ một màu lên phần sáng.",
+      "balance": "Ranh giới giữa vùng tối và vùng sáng.",
+      "mono": "Trắng đen qua kính lọc màu như phim: lọc đỏ làm trời xanh tối nhất."
+    }
   }
 }

@@ -458,9 +458,21 @@ Every change is one undo step. The date stamp prints on each photo, with its pla
 
 <!-- shot: postcard-night | A postcard’s preview: a night tram, the typed message and address to the National Museum, the Postcard text card -->
 
+<!-- chapter: colour -->
+
+## 21. Colour: Faves and Tools
+
+Two cards change a photo's colour, between **Print / export size** and **Date stamp**, in the Pro and Collage panels and in the previews. They change every photo; in a photo's preview they change that photo only, as its date stamp does, and **Apply this look to all photos** makes its look everyone's.
+
+- **Faves** shows four sliders: **Brightness**, **Contrast**, **Warm / cool** and **Saturation**. **More** adds **Highlights**, **Shadows**, **Tint** and **Vibrance**. Hover a slider to read what it does; double-click it to put it back to 0.
+- **Tools** is folded at first; click its title to open it. **Fade** lifts the blacks, **Tint the shadows** and **Tint the highlights** lay a colour over the dark and the bright parts (with **Balance** between them), and **Black and white** turns the photo grey through a filter: red darkens a blue sky the most, green lightens leaves.
+- A folded card says how many of its sliders are set ("Tools · 2 changed"); the ↺ on its title resets the card.
+- In the preview, hold **Before** (or the **\\** key) to see the photo without its look.
+- The date stamp, the info frame and the border are never tinted, and a photo with nothing set prints exactly as before.
+
 <!-- chapter: shortcuts -->
 
-## 21. Keyboard shortcuts
+## 22. Keyboard shortcuts
 
 | Where | Key | Action |
 |-------|-----|--------|
@@ -483,6 +495,7 @@ Every change is one undo step. The date stamp prints on each photo, with its pla
 | Sheet preview | **C** / **R** | Crop the chosen photo / turn the sheet |
 | Sheet preview | **↑** / **↓** | Put the chosen photo in the print basket / set it aside |
 | Preview | **C** | Open the crop editor (chapter 6) |
+| Preview | Hold **\\** | Before / After: the photo without its look (§21) |
 | Preview | **Cmd/Ctrl + / −**, two-finger scroll, trackpad pinch, the zoom buttons | Zoom in / out (§7) |
 | Preview | **Cmd/Ctrl 0**, the fit button | Back to fit |
 | Preview | double-click the photo | Toggle fit and 200 % |

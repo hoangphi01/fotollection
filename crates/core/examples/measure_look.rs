@@ -89,8 +89,14 @@ fn main() {
             saturation: 10,
             vibrance: 30,
             fade: 20,
-            shadow_tint: Tint { hue: 200, amount: 40 },
-            highlight_tint: Tint { hue: 60, amount: 30 },
+            shadow_tint: Tint {
+                hue: 200,
+                amount: 40,
+            },
+            highlight_tint: Tint {
+                hue: 60,
+                amount: 30,
+            },
             balance: 10,
             mono: Mono::Off,
             ..Adjust::default()

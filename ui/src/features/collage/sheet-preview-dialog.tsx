@@ -11,6 +11,7 @@ import { ViewerFrame } from '@/components/layout/viewer-frame'
 import { commands, type CullFilter, type PhotoId, type PhotoSummary, type Queue, type RenderSettings } from '@/ipc/bindings'
 import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
+import { LookCards } from '@/features/look/look-cards'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
 import { CropEditor } from '@/features/viewer/crop-editor'
 import { sendTo } from '@/features/viewer/send-to'
@@ -304,6 +305,7 @@ export function SheetPreviewDialog({
         filter={filter}
       />
       <CollageCellsCard settings={settings} onChange={onSettingsChange} cell={cell} />
+      <LookCards settings={settings} onChange={onSettingsChange} />
       <DateStampCard
         settings={settings}
         onChange={onSettingsChange}

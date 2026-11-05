@@ -160,6 +160,9 @@ pub struct PhotoEdits {
     /// handwriting.
     #[serde(default)]
     pub postcard: Option<PostcardText>,
+    /// The photo's own colour look, set in the preview (FR-079); `None` follows the settings.
+    #[serde(default)]
+    pub look: Option<crate::looks::LookSettings>,
 }
 
 /// A postcard's own text (FR-073): the message on its top lines, the address on its bottom

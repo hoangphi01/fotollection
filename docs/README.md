@@ -39,7 +39,7 @@
 | What each camera can do over USB, and each maker's protocol notes | [cameras/README.md](cameras/README.md) |
 | Which RAW formats our own decoder reads, and each format's notes | [raw/README.md](raw/README.md) |
 | The public website and how its screenshots are made | [site/README.md](../site/README.md) |
-| The three modes, collage sheets, the 3 mm border, the date stamp's size | [PRD.md](PRD.md) FR-048, FR-035 ([ADR-0032](adr/0032-collage-sheets-from-two-cell-plans.md)), FR-067, FR-004; how they are saved in [DATABASE.md](DATABASE.md) §6 (settings v14) and §4 (project v10) |
+| The three modes, collage sheets, the 3 mm border, the date stamp's size | [PRD.md](PRD.md) FR-048, FR-035 ([ADR-0032](adr/0032-collage-sheets-from-two-cell-plans.md)), FR-067, FR-004; how they are saved in [DATABASE.md](DATABASE.md) §6 (settings v14) and §4 (project v11) |
 | How to use the app, step by step, with every shortcut (also the website's manual, <https://fotollection.org/manual/>) | [USER_GUIDE.md](USER_GUIDE.md), mirrored in [USER_GUIDE.vi.md](USER_GUIDE.vi.md) |
 | User-visible changes per version | [CHANGELOG.md](../CHANGELOG.md) |
 | What to update when something changes (the checklist) | [DOCS_GUIDE.md](DOCS_GUIDE.md) |

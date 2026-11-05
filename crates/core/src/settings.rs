@@ -589,13 +589,17 @@ impl RenderSettings {
         &self,
         stamp: Option<&StampSettings>,
         caption: Option<&str>,
+        look: Option<&crate::looks::LookSettings>,
     ) -> std::borrow::Cow<'_, Self> {
-        if stamp.is_none() && caption.is_none() {
+        if stamp.is_none() && caption.is_none() && look.is_none() {
             return std::borrow::Cow::Borrowed(self);
         }
         let mut own = self.clone();
         if let Some(stamp) = stamp {
             own.stamp = stamp.clone();
+        }
+        if let Some(look) = look {
+            own.look = look.clone();
         }
         if let Some(caption) = caption {
             caption.clone_into(&mut own.stamp.caption);
@@ -750,11 +754,11 @@ mod tests {
         settings.stamp.color = StampColor::RetroOrange;
         // No own stamp, no own line: the settings themselves.
         assert!(matches!(
-            settings.for_photo(None, None),
+            settings.for_photo(None, None, None),
             std::borrow::Cow::Borrowed(_)
         ));
         // Its own line only: the line changes, the colour still follows the settings.
-        let own = settings.for_photo(None, Some("GRANDMA"));
+        let own = settings.for_photo(None, Some("GRANDMA"), None);
         assert_eq!(own.stamp.caption, "GRANDMA");
         assert_eq!(own.stamp.color, StampColor::RetroOrange);
         // Over its own stamp too.
@@ -763,7 +767,10 @@ mod tests {
             ..settings.stamp.clone()
         };
         assert_eq!(
-            settings.for_photo(Some(&stamp), Some("LINE")).stamp.caption,
+            settings
+                .for_photo(Some(&stamp), Some("LINE"), None)
+                .stamp
+                .caption,
             "LINE"
         );
     }

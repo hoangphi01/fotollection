@@ -1,0 +1,38 @@
+{
+  "format": "fotollection-project",
+  "schema_version": 11,
+  "app_version": "0.10.0",
+  "modified_at": "2026-11-05T20:00:00+00:00",
+  "folders": [
+    {
+      "id": 1,
+      "path": "/Users/someone/Pictures/Trip",
+      "path_kind": "absolute"
+    }
+  ],
+  "photos": [
+    {
+      "id": 1,
+      "folder": 1,
+      "path": "P1000001.JPG",
+      "fp_size": 5000000,
+      "fp_mtime": 1726000000,
+      "look": {
+        "adjust": { "brightness": 15, "warmth": 40, "mono": "red" },
+        "amount": 70
+      }
+    },
+    {
+      "id": 2,
+      "folder": 1,
+      "path": "P1000002.JPG",
+      "fp_size": 5000000,
+      "fp_mtime": 1726000001,
+      "look": {
+        "adjust": { "contrast": 120, "fade": 101 },
+        "lut": "not-a-hash",
+        "amount": 100
+      }
+    }
+  ]
+}

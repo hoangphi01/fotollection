@@ -90,7 +90,7 @@ crates/
       places.rs          † # a photo's effective place (ADR-0027): set by hand → borrowed → GPS → none, with the user's names for renamed places; borrowing from another device's photo of the same scene (FR-005/031/032). GPX tracks are planned (FR-066)
       cluster.rs           # trip DBSCAN (Phase 2)
       library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag, date set by hand); the effective time with each body's clock offset (FR-030, ADR-0027)
-      project.rs         † # project tables v10: snapshot/restore by folder+path, FK validation, relocate/resolve folders
+      project.rs         † # project tables v11: snapshot/restore by folder+path, FK validation, relocate/resolve folders
       bundle.rs          † # .fotollection ZIP bundle: manifest + BLAKE3, allowlisted parts, zip-bomb limits (ADR-0016)
       cache_limit.rs     † # the disk cache's 2 GB limit: usage, LRU prune by modification time, clear, touch on hit (DATABASE.md §8)
       history.rs         † # undo/redo stack of inverse edits (FR-023)
@@ -273,6 +273,7 @@ Commands marked † are implemented.
 | `postcard_text_gaps(filter, source, part, ticked) -> TextGaps` †, `apply_postcard_text(filter, source, part, overwrite, ticked) -> u32` † | How many other postcards shown (or ticked) lack this card's message or address, or have another; and putting it on them, the blank ones or all, in one undo step (`edit_photos`). The text is the card's own, read in Rust, never sent by the webview; `ERR-IPC-0023` when it is blank | FR-077 |
 | `recent_addresses() -> Vec<String>` †, `forget_address(address)` † | The addresses last typed on this machine's postcards, newest first, at most 8 (`settings::remember_address`, saved in `settings.json`); forgetting one saves the list | FR-077 |
 | `apply_stamp_to_all(id)` / `reset_photo_stamps()` † | "Apply to all" in the preview (the photo's stamp becomes the setting and no photo keeps its own) and "Reset" in the settings panel (every photo follows the settings again) | FR-044 |
+| `get_photo_look(id) -> PhotoLook` †, `set_photo_look(id, look?, amend)` †, `apply_look_to_all(id)` † | A photo's own colour look in the preview (FR-079): its look and whether it is its own; set (sanitized in Rust) or `null` to follow the settings, `amend` folding a slider's drag into one undo step; *Apply to all* makes it the setting and clears every photo's own, one undo step | FR-079 |
 | `undo()` / `redo()` † | History (also Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z) | FR-023 |
 | `list_fonts()` / `import_font()` / `remove_font(id)` † | User fonts; import opens a **Rust-side** dialog and copies a validated file | FR-042 |
 | `photo_details(id) -> PhotoDetails` † | Inspector data: the camera, lens and exposure as the info frame names them (`frame::shot_summary`, FR-078), pixel size (header only), file size, GPS, effective DPI at the current print size, the image facts (a RAW's sensor read here once, from the whole file, and kept) | FR-002, FR-007, FR-026, FR-071 |
@@ -343,7 +344,7 @@ Pixels **never** cross IPC as JSON or base64. Thumbnails and previews are served
 
 - `fotothumb://localhost/thumb/{id}?v={n}`: the cached T1, else the embedded T0, else a T1 generated on the spot. `v` bumps on `thumb-ready`.
 - `fotothumb://localhost/source/{id}?rev={n}`: the upright, **uncropped**, unstamped T2 image, the crop editor's background.
-- `fotothumb://localhost/preview/{id}?rev={n}`: about 1600 px, rendered from the T2 cache with the **same** `RenderPlan` code as the export. `rev` is the settings revision.
+- `fotothumb://localhost/preview/{id}?rev={n}`: about 1600 px, rendered from the T2 cache with the **same** `RenderPlan` code as the export. `rev` is the settings revision; `&plain=1` leaves the colour look out, for *Before* (FR-079).
 - `fotothumb://localhost/preview/{id}?rev={n}&region={x},{y},{w},{h}&px={n}`: one part of the **full-resolution** render, for zoom past the preview's pixels (FR-057). The region is in fractions of the photo and `px` the widest it should come back (at most 4,096); both are checked in Rust before any work. The full image the preview was decoded from is kept in a second cache bounded at about 200 MB (`PreviewCache::full`; the newest photo always stays), so the first region decodes nothing again, rendered with the export's plan, and only the region is encoded. The UI lays that part over the zoomed preview at its final on-screen size and only translates it: a CSS `scale()` would make WebKit rasterise it at its small layout size first and lose the detail.
 
 - `fotothumb://localhost/sheet/{first}/{second}?rev={n}[&small=1]`: a collage sheet (FR-035), both photos from the T2 cache through `sheet::render_sheet`, the same code as its export; 1600 px, or 640 px with `small=1` for the sheet grid, which renders from the photos' T1 thumbnails (no photo decoded again when a setting changes, OPTIMIZATION §4.2). `{second}` is left out for an odd last photo.

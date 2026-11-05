@@ -238,6 +238,7 @@ fn encode_sheet(
             place: place.as_deref(),
             stamp: record.edits.stamp.as_ref(),
             caption: record.edits.caption.as_deref(),
+            look: record.edits.look.as_ref(),
             postcard: record.edits.postcard.as_ref(),
         });
     }
@@ -323,7 +324,11 @@ fn encode_photo(
     let frame = (options.frame_for)(record);
     let place = (options.place_for)(record);
     // The photo's own stamp, when it has one (FR-044).
-    let settings = base.for_photo(record.edits.stamp.as_ref(), record.edits.caption.as_deref());
+    let settings = base.for_photo(
+        record.edits.stamp.as_ref(),
+        record.edits.caption.as_deref(),
+        record.edits.look.as_ref(),
+    );
     let p = plan(&PlanInput {
         width: upright.width,
         height: upright.height,

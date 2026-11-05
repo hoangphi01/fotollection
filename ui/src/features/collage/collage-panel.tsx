@@ -5,6 +5,7 @@ import { SidePanel } from '@/components/layout/side-panel'
 import type { CellInfo, CullFilter, PhotoId, RenderSettings } from '@/ipc/bindings'
 import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
+import { LookCards } from '@/features/look/look-cards'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
 import { CollageCellsCard } from './collage-cells-card'
 import { PostcardCard } from './postcard-card'
@@ -68,6 +69,7 @@ export function CollagePanel({
         ticked={tickedSheets > 0 ? ticked : undefined}
       />
       <CollageCellsCard settings={settings} onChange={onChange} cell={cell} />
+      <LookCards settings={settings} onChange={onChange} />
       <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} />
     </SidePanel>
   )

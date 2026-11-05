@@ -353,6 +353,26 @@ export const commands = {
 	 *  and no photo keeps its own any more (the photo edits are one undoable step).
 	 */
 	applyStampToAll: (id: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("apply_stamp_to_all", { id })),
+	getPhotoLook: (id: PhotoId) => typedError<PhotoLook, IpcError>(__TAURI_INVOKE("get_photo_look", { id })),
+	/**
+	 *  Gives one photo its own look, or (`None`) makes it follow the settings again; undoable.
+	 *  With `amend`, folded into the previous step of the same photo: a slider's drag sends
+	 *  many values and is undone in one go (FR-079, as the crop's drag).
+	 */
+	setPhotoLook: (id: PhotoId, look: {
+	adjust?: Adjust,
+	/**  The content hash of an imported LUT in `looks/` (FR-070, session 12); none yet. */
+	lut?: string | null,
+	/**  How much of the LUT, 0–100 %. */
+	lutStrength?: number,
+	/**  How much of the whole look, 0–100 %. */
+	amount?: number,
+} | null, amend: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_look", { id, look, amend })),
+	/**
+	 *  "Apply to all" in the preview: this photo's look becomes the setting for every photo,
+	 *  and no photo keeps its own any more (the photo edits are one undoable step).
+	 */
+	applyLookToAll: (id: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("apply_look_to_all", { id })),
 	/**  "Reset" in the gallery: every photo follows the settings' stamp again; undoable. */
 	resetPhotoStamps: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("reset_photo_stamps")),
 	undo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("undo")),
@@ -1213,6 +1233,14 @@ export type PhotoList = {
 	/**  Photos in the print basket and set aside (FR-050). */
 	printCount: number,
 	asideCount: number,
+};
+
+/**  One photo's colour look as the preview edits it (FR-079). */
+export type PhotoLook = {
+	/**  The look this photo prints with: its own, or the settings'. */
+	look: LookSettings,
+	/**  True when the photo has its own look. */
+	custom: boolean,
 };
 
 /**  One photo's result inside its group. */

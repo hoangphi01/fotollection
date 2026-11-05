@@ -53,6 +53,7 @@ fn source(image: &RgbImage) -> CellSource<'_> {
         place: None,
         stamp: None,
         caption: None,
+        look: None,
         postcard: None,
     }
 }

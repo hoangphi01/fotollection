@@ -1,18 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import {
-  CalendarDays,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  Crop,
-  Download,
-  MapPin,
-  RotateCcw,
-  RotateCw,
-  ShoppingBasket,
-  Star,
-  Undo2,
-} from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, Crop, Download, Eye, MapPin, RotateCcw, RotateCw, ShoppingBasket, Star, Undo2 } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
@@ -47,6 +34,7 @@ import { formatCaptureLong, formatNumber } from '@/lib/format'
 import { previewUrl, sourceUrl } from '@/lib/photo-url'
 import { CropEditor } from './crop-editor'
 import { PhotoStampControls } from './photo-stamp-controls'
+import { PhotoLookCards } from '@/features/look/photo-look-cards'
 import { PhotoSummaryCard } from './photo-summary-card'
 import { useCropDrag } from './use-crop-drag'
 import { useSharpRegion } from './use-sharp-region'
@@ -118,7 +106,9 @@ export function PreviewDialog({
   const printSizes = useIpcQuery(commands.listPrintSizes)
   // The same sharp / acceptable / pixelated advice as the settings panel (FR-026).
   const advice = usePrintAdvice(photo?.id, settings)
-  const src = photo ? previewUrl(photo.id, revision) : ''
+  // Held down, the photo without its colour look (FR-079): the button or the \ key.
+  const [before, setBefore] = useState(false)
+  const src = photo ? `${previewUrl(photo.id, revision)}${before ? '&plain=1' : ''}` : ''
   const { src: shownSrc, error: shownError } = useShownSrc(photo?.id, src)
   // The crop editor and the drag need this photo's geometry; the crop row only shows it.
   const geometryQuery = useLiveQuery(photo ? String(photo.id) : null, revision, loadGeometry)
@@ -130,7 +120,7 @@ export function PreviewDialog({
   const zoom = useZoom(stage, `${photo?.id}:${cropping}`)
   // Zoomed past the preview's pixels, the visible part comes again at full resolution.
   const [previewImg, setPreviewImg] = useState<HTMLImageElement | null>(null)
-  const sharp = useSharpRegion(previewImg, stage, zoom.view, photo?.id, revision, shownSrc === src ? shownSrc : null)
+  const sharp = useSharpRegion(previewImg, stage, zoom.view, photo?.id, revision, shownSrc === src && !before ? shownSrc : null)
   // Without zoom, dragging the photo moves the crop (Crop to fill, or no frame).
   const cropDrag = useCropDrag(photo?.id, geometry, !cropping && !zoom.zoomed && !!geometry && !geometry.cropDisabled)
   const canDrag = !zoom.zoomed && !!geometry && !geometry.cropDisabled
@@ -146,6 +136,16 @@ export function PreviewDialog({
   useEffect(() => {
     if (!cropping) contentRef.current?.focus()
   }, [cropping])
+  useEffect(() => {
+    const up = (event: globalThis.KeyboardEvent) => event.key === '\\' && setBefore(false)
+    const away = () => setBefore(false)
+    window.addEventListener('keyup', up)
+    window.addEventListener('blur', away)
+    return () => {
+      window.removeEventListener('keyup', up)
+      window.removeEventListener('blur', away)
+    }
+  }, [])
   const onKeyDown = (event: KeyboardEvent) => {
     // A focused slider or field keeps its own arrow keys (the logo size, the caption…).
     if (cropping || ownsArrowKeys(event.target)) return
@@ -156,7 +156,8 @@ export function PreviewDialog({
     else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
       event.preventDefault()
       send(event.key === 'ArrowUp' ? 'print' : 'aside')
-    } else if (event.key.toLowerCase() === 'c' && geometry && !geometry.cropDisabled) setCropping(true)
+    } else if (event.key === '\\') setBefore(true)
+    else if (event.key.toLowerCase() === 'c' && geometry && !geometry.cropDisabled) setCropping(true)
   }
 
   const view = filter.queue ?? 'gallery'
@@ -295,6 +296,20 @@ export function PreviewDialog({
                     <Undo2 data-icon="inline-start" /> {t('select.toGallery')}
                   </Button>
                 )}
+                {/* Before / After (FR-079): the photo without its look while held. */}
+                {photo && (
+                  <Button
+                    variant={before ? 'default' : 'secondary'}
+                    size="sm"
+                    aria-pressed={before}
+                    data-hint={t('look.beforeHint')}
+                    onPointerDown={() => setBefore(true)}
+                    onPointerUp={() => setBefore(false)}
+                    onPointerLeave={() => setBefore(false)}
+                  >
+                    <Eye data-icon="inline-start" /> {t('look.before')}
+                  </Button>
+                )}
                 {/* Like what you see? Jump to the export card for this photo (FR-055). */}
                 <Button
                   variant="secondary"
@@ -382,6 +397,9 @@ export function PreviewDialog({
               </ValueRow>
             </PrintSizeCard>
 
+            {photo && (
+              <PhotoLookCards photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
+            )}
             {photo && (
               <PhotoStampControls photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
             )}

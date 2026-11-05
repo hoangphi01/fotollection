@@ -27,7 +27,8 @@ pub const SCHEME: &str = "fotothumb";
 
 enum Route {
     Thumb(PhotoId),
-    Preview(PhotoId),
+    /// The preview; `true` without the colour look, for *Before / After* (FR-079).
+    Preview(PhotoId, bool),
     /// A full-resolution region of the preview, for zoom.
     Region(PhotoId, Region),
     /// Upright, uncropped T2 image for the crop editor; `true` turns it as the photo sits
@@ -95,7 +96,10 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
         "thumb" => Some(Route::Thumb(id)),
         "preview" => Some(match region(query).ok()? {
             Some(region) => Route::Region(id, region),
-            None => Route::Preview(id),
+            None => Route::Preview(
+                id,
+                query.unwrap_or_default().split('&').any(|p| p == "plain=1"),
+            ),
         }),
         // `sheet=1`: as the photo sits in its collage cell, for the sheet's crop editor.
         "source" => Some(Route::Source(
@@ -177,7 +181,7 @@ pub fn handle<R: Runtime>(
                 Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
                 Err(error) => fail(responder, &error),
             },
-            Route::Preview(id) => match preview_bytes(&state, id) {
+            Route::Preview(id, plain) => match preview_bytes(&state, id, plain) {
                 Ok(bytes) => {
                     crate::timing::mark(&crate::timing::FIRST_PREVIEW, "first preview");
                     respond(responder, StatusCode::OK, bytes, true);
@@ -200,7 +204,11 @@ mod tests {
         ));
         assert!(matches!(
             route("/preview/0", Some("rev=3")),
-            Some(Route::Preview(PhotoId(0)))
+            Some(Route::Preview(PhotoId(0), false))
+        ));
+        assert!(matches!(
+            route("/preview/4", Some("rev=3&plain=1")),
+            Some(Route::Preview(PhotoId(4), true))
         ));
         assert!(route("/thumb/../etc", None).is_none());
         assert!(route("/thumb/7/extra", None).is_none());

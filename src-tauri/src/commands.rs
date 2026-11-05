@@ -25,6 +25,7 @@ use fotollection_core::library::{
     flags,
 };
 use fotollection_core::logo;
+use fotollection_core::looks::LookSettings;
 use fotollection_core::metadata;
 use fotollection_core::plan::{CropFrame, DpiBand, FrameRequest, PlanInput, effective_dpi, plan};
 use fotollection_core::print_advice::{self, PrintAdvice};
@@ -551,6 +552,112 @@ pub fn reset_photo_stamps(
     })
 }
 
+/// One photo's colour look as the preview edits it (FR-079).
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PhotoLook {
+    /// The look this photo prints with: its own, or the settings'.
+    pub look: LookSettings,
+    /// True when the photo has its own look.
+    pub custom: bool,
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn get_photo_look(state: State<'_, AppState>, id: PhotoId) -> Result<PhotoLook, IpcError> {
+    let library = state
+        .library
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?;
+    if library.record(id).is_none() {
+        return Err(IpcError::new("photo.unknown", "Unknown photo"));
+    }
+    if let Some(look) = library.edits(id).look {
+        return Ok(PhotoLook { look, custom: true });
+    }
+    drop(library);
+    let look = state
+        .settings
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?
+        .0
+        .look
+        .clone();
+    Ok(PhotoLook {
+        look,
+        custom: false,
+    })
+}
+
+/// Gives one photo its own look, or (`None`) makes it follow the settings again; undoable.
+/// With `amend`, folded into the previous step of the same photo: a slider's drag sends
+/// many values and is undone in one go (FR-079, as the crop's drag).
+#[tauri::command]
+#[specta::specta]
+pub fn set_photo_look(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: PhotoId,
+    look: Option<LookSettings>,
+    amend: bool,
+) -> Result<HistoryState, IpcError> {
+    let look = look.map(LookSettings::sanitized);
+    {
+        let mut library = state
+            .library
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        if library.record(id).is_none() {
+            return Err(IpcError::new("photo.unknown", "Unknown photo"));
+        }
+        let mut edits = library.edits(id);
+        edits.look = look;
+        let mut history = state
+            .history
+            .lock()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        if amend {
+            history.amend(&mut library, &[(id, edits)]);
+        } else {
+            history.apply(&mut library, &[(id, edits)]);
+        }
+    }
+    Ok(changed(&app, &state))
+}
+
+/// "Apply to all" in the preview: this photo's look becomes the setting for every photo,
+/// and no photo keeps its own any more (the photo edits are one undoable step).
+#[tauri::command]
+#[specta::specta]
+pub fn apply_look_to_all(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: PhotoId,
+) -> Result<HistoryState, IpcError> {
+    let look = get_photo_look(state.clone(), id)?.look;
+    {
+        let mut settings = state
+            .settings
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        settings.0.look = look;
+        settings.1 = settings.1.wrapping_add(1);
+    }
+    state.persist();
+    let ids: Vec<PhotoId> = state
+        .library
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?
+        .edited()
+        .filter(|(_, e)| e.look.is_some())
+        .map(|(id, _)| id)
+        .collect();
+    if ids.is_empty() {
+        return Ok(changed(&app, &state));
+    }
+    edit_photos(&app, &state, &ids, |_, e| e.look = None)
+}
+
 #[derive(Debug, Clone, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct SettingsState {
@@ -1071,8 +1178,13 @@ fn preview_inputs(
 }
 
 /// Bytes for `fotothumb://localhost/preview/{id}`, rendered with the current settings.
-pub fn preview_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, IpcError> {
-    let (record, settings, place, frame) = preview_inputs(state, id)?;
+/// The preview JPEG; `plain` leaves the colour look out, for *Before / After* (FR-079).
+pub fn preview_bytes(state: &AppState, id: PhotoId, plain: bool) -> Result<Vec<u8>, IpcError> {
+    let (mut record, mut settings, place, frame) = preview_inputs(state, id)?;
+    if plain {
+        record.edits.look = None;
+        settings.look = LookSettings::default();
+    }
     state
         .previews
         .render_jpeg(

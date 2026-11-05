@@ -19,6 +19,7 @@ import type { FontsApi } from '@/features/fonts/use-fonts'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { useIpcQuery } from './use-ipc-query'
+import { LookCards } from '@/features/look/look-cards'
 import { PrintSizeCard } from './print-size-card'
 
 type SettingsPanelProps = {
@@ -74,6 +75,8 @@ export function SettingsPanel({
       }
     >
         <PrintSizeCard settings={settings} onChange={onChange} printSizes={printSizes} photo={photo} advice={advice} revision={revision} />
+
+        <LookCards settings={settings} onChange={onChange} />
 
         <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} />
 

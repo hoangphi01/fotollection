@@ -601,6 +601,7 @@ mod tests {
                 caption: None,
                 collage_rotation: None,
                 postcard: None,
+                look: None,
             }],
             cameras: vec![CameraRow {
                 make: Some("Panasonic".into()),

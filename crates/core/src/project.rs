@@ -24,7 +24,8 @@ pub const FORMAT: &str = "fotollection-project";
 /// straightening on a sheet (FR-035), and `photos[].caption`, the photo's own line under the
 /// date (FR-036), and `photos[].collage_rotation`, its quarter turns in its collage cell.
 /// v10: `photos[].postcard`, the message and address typed on the photo's postcard (FR-073).
-pub const SCHEMA_VERSION: u32 = 10;
+/// v11: `photos[].look`, a photo's own colour look set in the preview (FR-079).
+pub const SCHEMA_VERSION: u32 = 11;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -106,6 +107,9 @@ pub struct PhotoRow {
     /// and 8 lines) and its address (200 characters, 4 lines).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub postcard: Option<crate::library::PostcardText>,
+    /// The photo's own colour look (v11); absent when it follows the settings.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub look: Option<crate::looks::LookSettings>,
 }
 
 /// A place the user renamed (v8, FR-005).
@@ -231,6 +235,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                     .then_some(edits.collage_rotation % 4),
                 caption: edits.caption,
                 postcard: edits.postcard,
+                look: edits.look,
             })
         })
         .collect();
@@ -540,6 +545,7 @@ pub fn restore_into(
                     .postcard
                     .as_ref()
                     .and_then(crate::library::PostcardText::sanitized),
+                look: row.look.clone().map(crate::looks::LookSettings::sanitized),
             },
         );
         summary.restored += 1;
@@ -763,9 +769,9 @@ mod tests {
         let path = dir.path().join("p.fotollection");
         std::fs::write(
             &path,
-            br#"{"format":"fotollection-project","schema_version":11}"#,
+            br#"{"format":"fotollection-project","schema_version":12}"#,
         )?;
-        assert_eq!(load(&path), Loaded::NewerVersion(11));
+        assert_eq!(load(&path), Loaded::NewerVersion(12));
 
         let mut file = snapshot(&library_with(&["/trip/a.jpg"]));
         file.photos.push(PhotoRow {
@@ -791,6 +797,7 @@ mod tests {
             caption: None,
             collage_rotation: None,
             postcard: None,
+            look: None,
         });
         save(&path, &file)?;
         assert!(
@@ -831,6 +838,54 @@ mod tests {
         let degrees: Vec<Option<f32>> = file.photos.iter().map(|p| p.straighten).collect();
         // 40° from a file is clamped to 15°.
         assert_eq!(degrees, [Some(2.5), None, Some(15.0)]);
+    }
+
+    /// FR-079: a v11 file keeps each photo's own look, in range; a v10 file has none.
+    #[test]
+    fn fr_079_v11_fixture_keeps_each_photos_look_within_range() {
+        use crate::looks::Mono;
+        let Loaded::Ok(v11) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v11.fotollection"))
+        else {
+            panic!("v11 project should load");
+        };
+        let Some(first) = v11.photos[0]
+            .look
+            .clone()
+            .map(crate::looks::LookSettings::sanitized)
+        else {
+            panic!("photo 1 has its own look");
+        };
+        assert_eq!(
+            (
+                first.adjust.brightness,
+                first.adjust.warmth,
+                first.adjust.mono
+            ),
+            (15, 40, Mono::Red)
+        );
+        assert_eq!(
+            (first.adjust.contrast, first.lut_strength, first.amount),
+            (0, 100, 70)
+        );
+        // Out of range on disk: kept within it once restored, the bad LUT name dropped.
+        let Some(second) = v11.photos[1]
+            .look
+            .clone()
+            .map(crate::looks::LookSettings::sanitized)
+        else {
+            panic!("photo 2 has its own look");
+        };
+        assert_eq!(
+            (second.adjust.contrast, second.adjust.fade, second.lut),
+            (100, 100, None)
+        );
+        let Loaded::Ok(v10) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v10.fotollection"))
+        else {
+            panic!("v10 project should load");
+        };
+        assert!(v10.photos.iter().all(|p| p.look.is_none()));
     }
 
     /// FR-073: a v10 file keeps each photo's postcard text, line breaks included; one with
