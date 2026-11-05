@@ -490,3 +490,25 @@ Our own develop now takes every Bayer format: rawler only unpacks the sensor's d
 - **The develop or the fit?** Swapping one part at a time: our develop finished with rawler's three-curve fit scores D750 1.16, GX9 2.86, R10 5.20 and 5D IV 3.78, at least as well as rawler's develop with the same fit. The differences in the table are the fit: our one curve and fitted matrix win on the Canons, three curves on the D750 and the GX9. The look "Like the camera's JPEG" (session 17) keeps the better of the two per file.
 - **Neutral greys:** the S5's grey patches have a mean C\* of 1.42 (rawler 2.43, ImageIO 1.38, the camera's JPEG 1.26).
 - **ORF and RW2:** the E-M10 III file has no embedded image, so neither develop is fitted, and ImageIO's lens correction changes its geometry (SSIM 0.5). On macOS, RW2 and ORF keep ImageIO first for that correction until [FR-085](PRD.md#fr-085--lens-distortion-correction).
+
+## 25. A better Bayer demosaic (v0.11.0, session 17a)
+
+Four steps, each kept only once the score card (§23, now with a sixth chart, `hot`: a soft texture with about one site in 2,000 stuck at white) showed it wins (`cargo run --release -p fotollection-rawcore --example charts`, `bench/results/raw-quality.json`; `raw_phases`; `bench/results/raw-demosaic.json`), REF-MAC loaded, 2026-11-05:
+
+- **Hot pixels** (`prepare::hot_pixels`): a site more than twice as bright as every same-colour neighbour and every touching one, plus 3 % of white, takes the median of its same-colour neighbours; a 3 × 3 point of light is kept.
+- **Green balance** (`prepare::green_balance`): where the two greens around a green site agree within 6 %, it moves halfway to the other green's local mean.
+- **Directional demosaic** (`directional.rs`): RCD's vertical/horizontal decision from first and second differences, green from Hamilton–Adams estimates on each side weighted against their gradients, red and blue from colour differences.
+- **False colour** (`falsecolour::suppress`): one 3 × 3 median of red − green and blue − green.
+
+| Chart | Malvar | RCD as described | Directional | The whole chain |
+|---|---|---|---|---|
+| Zone plate: PSNR / false colour | 17.31 dB / 43.0 | 15.31 / 40.4 | 16.61 / 31.2 | 16.53 / **18.7** |
+| Siemens star: PSNR / false colour | 25.23 dB / 8.4 | 32.48 / 2.6 | 37.87 / 0.25 | **37.89 / 0.16** |
+| Colour bars: PSNR / edge error | 27.52 dB / 21.6 | 28.56 / 11.2 | 28.37 / 10.4 | 28.35 / **10.5** |
+| Ramps: PSNR | 77.53 dB | 77.86 | 77.53 | 78.44 |
+| Flat grey, greens 2 % apart: PSNR / maze | 54.23 dB / 0.38 | 54.24 / 0.38 | 54.23 / 0.38 | 58.06 / **0** |
+| Texture with hot pixels: PSNR / left per 10,000 | 33.72 dB / 66.5 | 36.93 / 15.4 | 37.03 / 15.4 | **72.67 / 0** |
+
+- **RCD as described, then the variant kept.** RCD's ratio-corrected green was written first and was the weakest of the three on the zone plate; replacing it with each side's green corrected by the site's own Laplacian, weighted against the side's gradient, scored best on the star and the colour edges. The zone plate's PSNR stays 0.8 dB below Malvar's, near green's Nyquist where every method aliases, while its false colour halves.
+- **On the nine samples**, through the same fit (`measure_rawler`, `raw_compare.py`), ΔE2000 to the camera's JPEG went from Malvar's to the chain's: 5D IV 1.96 → 1.88, R10 4.88 → 4.42, D750 2.31 → 2.26, E-M10 III 18.58 → 18.35, GX9 3.99 → 3.85, S5 6.58 → 6.45, GR III 2.69 → 2.70, A7 III 3.56 → 3.29; the S5's grey patches mean C\* 1.42 → 1.41.
+- **Time on 24 MP** (the GR III DNG): balance 8 ms, hot pixels 12, green balance 16, directional 87 (Malvar 34), false colour 56 (72 before a fixed median network and computing the difference planes once): about 180 ms against Malvar's 42, within the 400 ms budget. The whole develop went from 153–155 to 313–325 ms; a full RAW preview takes 0.33–0.68 s on the eight Bayer samples, under a nearly full swap.

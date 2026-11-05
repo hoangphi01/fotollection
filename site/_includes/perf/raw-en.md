@@ -43,6 +43,7 @@ Rebuilding the two missing colours of every pixel from its neighbours is called 
 - **PPG** (patterned pixel grouping) first decides along which direction the image changes least, and interpolates along that direction only. rawler, and so Fotollection's Windows and Linux builds for most formats today, use it.
 - **RCD** (ratio corrected demosaicing, by Luis Sanz Rodríguez) works on ratios between the colours rather than differences, which holds better in bright and dark areas alike, and is known for few artefacts on fine detail; darktable and RawTherapee offer it.
 - **Markesteijn**, after Frank Markesteijn, is the method made for X-Trans, in one pass or, slower and cleaner, three.
+- **Fotollection's next demosaic (coming in v0.11.0)** takes RCD's way of deciding direction, then estimates green from each side corrected by the site's own colour (as Hamilton and Adams did), weighted against how much each side changes. We wrote RCD's own ratio step first, and it scored worse on our charts, so the variant that won is the one that ships, under its own name.
 
 When a method guesses wrong, it shows in four typical ways:
 
@@ -53,17 +54,18 @@ When a method guesses wrong, it shows in four typical ways:
 
 **How we judge one.** Our eyes are easily fooled by a sharper-looking result, so every method is scored on pictures whose truth is known exactly. A computer draws five charts at 768 px: a zone plate (rings that get finer towards the edge, up to the finest detail the green photosites can hold), a Siemens star with 72 spokes, bars of saturated colour on grey in three directions, smooth colour ramps, and a flat grey with the two greens 2 % apart. Each is turned into what a Bayer sensor would record, demosaiced, and compared with the original. PSNR measures the overall error in decibels (higher is better; every 6 dB halves it); false colour is the average colour that appears on the grey charts; the edge error is the average error within 2 px of an edge.
 
-| Chart (768 px) | Bilinear | Malvar (ours today) |
-|---|---|---|
-| Zone plate: PSNR, higher is better | 13.0 dB | 17.3 dB |
-| Zone plate: false colour, lower is better | 65.9 | 43.0 |
-| Siemens star: PSNR | 21.3 dB | 25.2 dB |
-| Siemens star: false colour | 9.4 | 8.4 |
-| Saturated colour bars: error along the edges, lower is better | 11.6 | 21.6 |
-| Smooth ramps: PSNR | 78.9 dB | 77.5 dB |
-| Flat grey with a green gap: maze, lower is better | 0.38 | 0.38 |
+| Chart (768 px) | Bilinear | Malvar (ours today) | The new chain (v0.11.0) |
+|---|---|---|---|
+| Zone plate: PSNR, higher is better | 13.0 dB | 17.3 dB | 16.5 dB |
+| Zone plate: false colour, lower is better | 65.9 | 43.0 | 18.7 |
+| Siemens star: PSNR | 21.3 dB | 25.2 dB | 37.9 dB |
+| Siemens star: false colour | 9.4 | 8.4 | 0.16 |
+| Saturated colour bars: error along the edges, lower is better | 11.6 | 21.6 | 10.5 |
+| Smooth ramps: PSNR | 78.9 dB | 77.5 dB | 78.4 dB |
+| Flat grey with a green gap: maze, lower is better | 0.38 | 0.38 | 0 |
+| Texture with stuck pixels: left per 10,000, lower is better | 35.8 | 66.5 | 0 |
 
-Malvar is about 4 dB better than bilinear on fine grey detail, as its paper promises, but worse along edges between strong colours, because its correction borrows the detail of one colour for the others and assumes they change together, which a red sign on a grey wall does not. Neither removes the maze, which is not a demosaicing problem but a difference between the two greens, to be evened out before. Those are the gaps the next steps have to close, each measured on the same charts before it is kept (coming in v0.11.0).
+Malvar is about 4 dB better than bilinear on fine grey detail, as its paper promises, but worse along edges between strong colours, because its correction borrows the detail of one colour for the others and assumes they change together, which a red sign on a grey wall does not. Neither removes the maze, which is not a demosaicing problem but a difference between the two greens, to be evened out before. Those are the gaps the new chain closes, coming in v0.11.0: stuck pixels and the green imbalance are fixed while each site still holds only what it measured, the directional demosaic rebuilds the colours, and a small median on the colour differences removes the false colour left. On the charts it wins everywhere but the zone plate's overall PSNR, 0.8 dB lower than Malvar's near the finest detail, where every method aliases; even there its false colour halves. On the nine real files it brings every Bayer camera's develop as close or closer to the camera's own JPEG, and costs about 180 ms on 24 MP, against Malvar's 40.
 
 ### From the camera's colours to yours
 
@@ -91,7 +93,7 @@ For a full develop, the one behind the print preview, zoom and export:
 1. **Recognise** the format from the file's first bytes, never its name, so a renamed file or a RAW that looks like a plain TIFF is still read right.
 2. **Read** the sensor's numbers: DNG with our own reader, the other formats unpacked by rawler. A file too large or damaged is refused before any pixel is decoded, with an error code.
 3. **Levels:** black to 0 and white to 1, for each position of the colour filter, counted from the corner of the active area.
-4. **White balance**, then **demosaic** (Malvar today; RCD for Bayer and Markesteijn for X-Trans coming in v0.11.0).
+4. **White balance**, then **demosaic** (Malvar today; coming in v0.11.0: stuck pixels and green balance first, the directional demosaic, the false-colour median, and Markesteijn for X-Trans).
 5. **Colour:** the camera's matrices, blended for the light of the shot, in linear light.
 6. **Tone and look**, fitted to the camera's preview, with its lens shading.
 7. From here a RAW photo is like any other: crop, date stamp, frame, print size and colour profile, exported at full resolution in 4:4:4 at quality 95.

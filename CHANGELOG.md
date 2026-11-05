@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- **Camera RAW:** photos from Canon, Nikon, Sony and other cameras with a standard colour filter are now developed by Fotollection's own engine, as DNG already was: a full develop takes 0.2–0.5 s, faster than before on nearly every sample camera. Fujifilm X-Trans follows; on a Mac, Panasonic and Olympus photos are still developed by macOS, which corrects their lenses' distortion.
+- **Camera RAW:** photos from Canon, Nikon, Sony and other cameras with a standard colour filter are now developed by Fotollection's own engine, as DNG already was: a full develop takes 0.2–0.5 s, faster than before on nearly every sample camera. They come out cleaner too: stuck pixels and the fine maze pattern of many sensors are removed before the colours are rebuilt, fine detail shows far less false colour, and edges between strong colours no longer fringe. Fujifilm X-Trans follows; on a Mac, Panasonic and Olympus photos are still developed by macOS, which corrects their lenses' distortion.
 - **Preview:** dragging a colour slider is drawn on the graphics card where the computer has a capable one, about ten times quicker a step, so the photo follows the slider; the date stamp, the frame and the border are never tinted. The app decides by itself, and Rust's render takes over when the drag ends, so what settles is what prints.
 - **Export:** large photos export about a fifth faster: more of them are worked on at once where memory allows (26 MP JPEGs, 8.9 → 10.8 photos a second).
 

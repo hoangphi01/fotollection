@@ -6,7 +6,7 @@
 
 use rayon::prelude::*;
 
-use crate::cfa::Mosaic;
+use crate::cfa::{Mosaic, Site};
 
 /// White-balanced, demosaiced camera RGB, linear, row by row, for the default crop.
 #[derive(Debug, Clone)]
@@ -16,17 +16,42 @@ pub struct CameraRgb {
     pub rgb: Vec<f32>,
 }
 
-/// Demosaics the default crop of `mosaic`, multiplying each site by `gains[colour]` first
-/// (white balance before interpolation keeps the colour differences small, which the
-/// kernels assume). Values are clipped at `clip` so blown highlights stay neutral.
-pub fn demosaic(mosaic: &Mosaic, gains: [f32; 3], clip: f32) -> CameraRgb {
-    const PAD: usize = 2;
-    let (w, h) = mosaic.size();
-    let (ox, oy) = mosaic.origin();
+/// The balanced sensor values over the active area, black at 0, with a border of `pad`
+/// pixels reflected around it so every method's reads are plain indexes. Reflection
+/// (-v, 2(n-1)-v) keeps each site's parity, so a border pixel has the colour of the site it
+/// copies; `pad` is even, so the pattern lines up with the padded grid too.
+#[derive(Debug, Clone)]
+pub struct Plane {
+    pub width: usize,
+    pub height: usize,
+    pub pad: usize,
+    pub data: Vec<f32>,
+    /// The 2×2 filter colours from the active area's corner (as `Mosaic::pattern`).
+    pub pattern: [Site; 4],
+    /// `[x, y, width, height]` of the default crop inside the active area.
+    pub crop: [usize; 4],
+}
+
+impl Plane {
+    /// The filter colour at padded position `(x, y)`.
+    pub fn site(&self, x: usize, y: usize) -> Site {
+        self.pattern[(y & 1) * 2 + (x & 1)]
+    }
+
+    /// The padded index of crop pixel `(x, y)`.
+    pub fn index_of_crop(&self, x: usize, y: usize) -> usize {
+        (self.crop[1] + y + self.pad) * self.width + self.crop[0] + x + self.pad
+    }
+}
+
+/// The border every method can read past the active area's edge.
+pub const PAD: usize = 8;
+
+/// The active area of `mosaic`, black-subtracted and multiplied by `gains[colour]` (white
+/// balance before interpolation keeps the colour differences small, which every method
+/// assumes), with a reflected border of [`PAD`] pixels.
+pub fn balance(mosaic: &Mosaic, gains: [f32; 3]) -> Plane {
     let [top, left, bottom, right] = mosaic.active;
-    // Balanced values over the active area with a 2-pixel border reflected around it, so
-    // every kernel read is a plain index. Reflection (-v, 2(n-1)-v) keeps each site's parity,
-    // so a border pixel has the colour of the site it copies.
     let (aw, ah) = (right - left, bottom - top);
     let (pw, ph) = (aw + 2 * PAD, ah + 2 * PAD);
     #[allow(clippy::cast_possible_wrap, clippy::cast_sign_loss)]
@@ -41,8 +66,8 @@ pub fn demosaic(mosaic: &Mosaic, gains: [f32; 3], clip: f32) -> CameraRgb {
         };
         v.clamp(0, n - 1) as usize
     };
-    let mut bal = vec![0f32; pw * ph];
-    bal.par_chunks_mut(pw).enumerate().for_each(|(r, row)| {
+    let mut data = vec![0f32; pw * ph];
+    data.par_chunks_mut(pw).enumerate().for_each(|(r, row)| {
         #[allow(clippy::cast_possible_wrap)]
         let y = top + reflect(r as isize - PAD as isize, ah);
         for (c, v) in row.iter_mut().enumerate() {
@@ -51,22 +76,41 @@ pub fn demosaic(mosaic: &Mosaic, gains: [f32; 3], clip: f32) -> CameraRgb {
             *v = (mosaic.level(x, y) * gains[usize::from(mosaic.site(x, y))]).max(0.0);
         }
     });
+    Plane {
+        width: pw,
+        height: ph,
+        pad: PAD,
+        data,
+        pattern: mosaic.pattern,
+        crop: mosaic.crop,
+    }
+}
+
+/// Demosaics the default crop of `mosaic` with Malvar–He–Cutler, multiplying each site by
+/// `gains[colour]` first. Values are clipped at `clip` so blown highlights stay neutral.
+pub fn demosaic(mosaic: &Mosaic, gains: [f32; 3], clip: f32) -> CameraRgb {
+    malvar(&balance(mosaic, gains), clip)
+}
+
+/// Malvar–He–Cutler on a balanced [`Plane`], for its default crop.
+pub fn malvar(plane: &Plane, clip: f32) -> CameraRgb {
+    let [_, _, w, h] = plane.crop;
+    let pw = plane.width;
+    let bal = &plane.data;
     let mut rgb = vec![0f32; w * h * 3];
     rgb.par_chunks_mut(w * 3).enumerate().for_each(|(r, row)| {
-        let y = oy - top + r;
         for c in 0..w {
-            let x = ox - left + c;
-            let site = mosaic.site(left + x, top + y);
-            // (x, y) in the active area is (x + PAD, y + PAD) in the padded buffer.
-            let base = (y + PAD) * pw + x + PAD;
+            let base = plane.index_of_crop(c, r);
+            let (px, py) = (base % pw, base / pw);
+            let site = plane.site(px, py);
             #[allow(clippy::cast_sign_loss, clippy::cast_possible_wrap)]
             let p = |dx: isize, dy: isize| bal[(base as isize + dy * pw as isize + dx) as usize];
             let centre = p(0, 0);
-            // Green at a red or blue site.
+            // Green at red or blue sites.
             let g_at_rb = (4.0 * centre + 2.0 * (p(0, -1) + p(0, 1) + p(-1, 0) + p(1, 0))
                 - (p(0, -2) + p(0, 2) + p(-2, 0) + p(2, 0)))
                 / 8.0;
-            // At a green site: the colour of the horizontal neighbours, and of the vertical ones.
+            // Red or blue at green sites, from the row's or the column's neighbours.
             let along_row = (5.0 * centre + 4.0 * (p(-1, 0) + p(1, 0))
                 - (p(-2, 0) + p(2, 0) + p(-1, -1) + p(1, -1) + p(-1, 1) + p(1, 1))
                 + f32::midpoint(p(0, -2), p(0, 2)))
@@ -75,7 +119,7 @@ pub fn demosaic(mosaic: &Mosaic, gains: [f32; 3], clip: f32) -> CameraRgb {
                 - (p(0, -2) + p(0, 2) + p(-1, -1) + p(1, -1) + p(-1, 1) + p(1, 1))
                 + f32::midpoint(p(-2, 0), p(2, 0)))
                 / 8.0;
-            // Red at a blue site, or blue at a red site.
+            // Red at blue or blue at red, from the diagonal neighbours.
             let opposite = (6.0 * centre + 2.0 * (p(-1, -1) + p(1, -1) + p(-1, 1) + p(1, 1))
                 - 1.5 * (p(0, -2) + p(0, 2) + p(-2, 0) + p(2, 0)))
                 / 8.0;
@@ -83,9 +127,8 @@ pub fn demosaic(mosaic: &Mosaic, gains: [f32; 3], clip: f32) -> CameraRgb {
                 0 => (centre, g_at_rb, opposite),
                 2 => (opposite, g_at_rb, centre),
                 _ => {
-                    // Green: which colour shares the row?
-                    let row_site = mosaic.site(left + x + 1, top + y);
-                    if row_site == 0 {
+                    // Green on a red row has red to its left and right.
+                    if plane.site(px + 1, py) == 0 {
                         (along_row, centre, along_col)
                     } else {
                         (along_col, centre, along_row)

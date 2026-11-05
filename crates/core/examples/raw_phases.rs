@@ -20,14 +20,29 @@ fn main() {
         let t = Instant::now();
         let parsed = fotollection_rawcore::dng::parse(&bytes).expect("parse");
         let parse = t.elapsed();
-        let t = Instant::now();
         let rendering = fotollection_rawcore::color::rendering(&parsed.color).expect("colour");
-        let _camera =
-            fotollection_rawcore::demosaic::demosaic(&parsed.mosaic, rendering.gains, 1.0);
+        let ms = |t: Instant| t.elapsed().as_secs_f64() * 1e3;
+        let t = Instant::now();
+        let mut plane = fotollection_rawcore::demosaic::balance(&parsed.mosaic, rendering.gains);
+        let balance = ms(t);
+        let t = Instant::now();
+        fotollection_rawcore::prepare::hot_pixels(&mut plane);
+        let hot = ms(t);
+        let t = Instant::now();
+        fotollection_rawcore::prepare::green_balance(&mut plane);
+        let green = ms(t);
+        let t = Instant::now();
+        let _malvar = fotollection_rawcore::demosaic::malvar(&plane, 1.0);
+        let malvar = ms(t);
+        let t = Instant::now();
+        let mut camera = fotollection_rawcore::directional::directional(&plane, 1.0);
+        let directional = ms(t);
+        let t = Instant::now();
+        fotollection_rawcore::falsecolour::suppress(&mut camera);
+        let false_colour = ms(t);
         println!(
-            "run {run}: parse + decompress {:.0} ms · demosaic {:.0} ms",
+            "run {run}: parse + decompress {:.0} ms · balance {balance:.0} · hot pixels {hot:.0} · green {green:.0} · (Malvar {malvar:.0}) · directional {directional:.0} · false colour {false_colour:.0} ms",
             parse.as_secs_f64() * 1e3,
-            t.elapsed().as_secs_f64() * 1e3
         );
         let t = Instant::now();
         let linear = fotollection_rawcore::develop(&bytes).expect("develop");

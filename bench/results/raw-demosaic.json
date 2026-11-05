@@ -1,0 +1,18 @@
+{
+  "date": "2026-11-05",
+  "machine": "REF-MAC (M3), loaded (swap 13–15 GB of 14–16 GB)",
+  "note": "Session 17a: hot pixels, green balance, the directional demosaic and the false-colour median against Malvar. Phases on the 24 MP Ricoh GR III DNG (raw_phases, warm runs); ΔE2000 mean to the camera's embedded JPEG through the same fit (measure_rawler + raw_compare.py), before (session 16, Malvar) and after.",
+  "phasesMs": { "balance": 8, "hotPixels": 12, "greenBalance": 16, "malvar": 34, "directional": 87, "falseColour": 56 },
+  "developMs": { "before": [153, 155], "after": [313, 325] },
+  "deltaE": {
+    "canon-eos-5d-mark-iv": [1.96, 1.88],
+    "canon-eos-r10": [4.88, 4.42],
+    "nikon-d750": [2.31, 2.26],
+    "olympus-e-m10-mark-iii": [18.58, 18.35],
+    "panasonic-dc-gx9": [3.99, 3.85],
+    "panasonic-dc-s5": [6.58, 6.45],
+    "ricoh-gr-iii": [2.69, 2.70],
+    "sony-ilce-7m3": [3.56, 3.29]
+  },
+  "s5GreyMeanC": [1.42, 1.41]
+}

@@ -439,3 +439,10 @@
 - **Why:** each path fits its own tone to the embedded JPEG: rawler's with three curves, ours with one curve and a matrix. The score measured both steps at once.
 - **Fix:** none needed in the develop: finished with rawler's fit, ours scored at least as well on every sample tried. The fit is chosen per file in session 17.
 - **Rule:** when a pipeline gets worse against a reference, swap one stage at a time between the old and the new path before changing either. The samples folder can hold folders too: a test that walks it skips anything that is not a file.
+
+### A method's name is not a result: RCD's own step scored worse here (FR-072)
+
+- **Seen:** the plan said "RCD"; written from its description, its ratio-corrected green was the weakest of three variants on the zone plate (15.3 dB against Malvar's 17.3) and second on the Siemens star.
+- **Why:** a published method is tuned for its authors' pipeline and test images; on ours (balanced before demosaicing, these charts), a Laplacian-corrected estimate per side, weighted by gradient, did better (star 37.9 dB, colour edges 10.4).
+- **Fix:** the variant the charts kept, with RCD's direction decision, named `directional` and described as what it is, in the code and the docs.
+- **Rule:** score every variant of a step on the charts before naming it in a plan, a doc or the website; ship the measured one under an honest name, and state any score that got worse.

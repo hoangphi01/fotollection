@@ -10,6 +10,8 @@
 //! - `ramps`: smooth colour gradients: what every method should get right.
 //! - `flat`: flat grey with the two greens 2 % apart, as on many sensors: the maze (worm)
 //!   pattern, the green channel's spread where it should be flat.
+//! - `hot`: a soft grey texture with about one site in 2,000 stuck at white: hot pixels left
+//!   (output pixels more than 24 levels off the truth, per 10,000).
 //!
 //! `cargo run --release -p fotollection-rawcore --example charts [out.json]`
 //!
@@ -31,7 +33,10 @@
 )]
 
 use fotollection_rawcore::cfa::Mosaic;
-use fotollection_rawcore::demosaic::{CameraRgb, demosaic};
+use fotollection_rawcore::demosaic::{CameraRgb, balance, demosaic};
+use fotollection_rawcore::directional::directional;
+use fotollection_rawcore::falsecolour::suppress;
+use fotollection_rawcore::prepare::{green_balance, hot_pixels};
 
 const N: usize = 768;
 const MARGIN: usize = 8;
@@ -47,6 +52,8 @@ struct Truth {
     grey: bool,
     /// Green sites at blue rows read this much more (the maze test).
     gb_gain: f32,
+    /// About one site in this many is stuck at white (the hot-pixel test); 0 for none.
+    hot_every: usize,
 }
 
 fn to_linear(v: f32) -> f32 {
@@ -113,36 +120,49 @@ fn charts() -> Vec<Truth> {
         [u, v, 1.0 - 0.5 * (u + v)].map(|e| to_linear(0.1 + 0.8 * e))
     });
     let flat = vec![grey(0.45); N * N];
+    let texture = at(&|x, y| grey(0.35 + 0.1 * (x / 9.0).sin() * (y / 13.0).cos()));
     vec![
         Truth {
             name: "zone",
             rgb: zone,
             grey: true,
             gb_gain: 1.0,
+            hot_every: 0,
         },
         Truth {
             name: "star",
             rgb: star,
             grey: true,
             gb_gain: 1.0,
+            hot_every: 0,
         },
         Truth {
             name: "edges",
             rgb: edges,
             grey: false,
             gb_gain: 1.0,
+            hot_every: 0,
         },
         Truth {
             name: "ramps",
             rgb: ramps,
             grey: false,
             gb_gain: 1.0,
+            hot_every: 0,
         },
         Truth {
             name: "flat",
             rgb: flat,
             grey: true,
             gb_gain: 1.02,
+            hot_every: 0,
+        },
+        Truth {
+            name: "hot",
+            rgb: texture,
+            grey: true,
+            gb_gain: 1.0,
+            hot_every: 2000,
         },
     ]
 }
@@ -157,6 +177,10 @@ fn mosaic(truth: &Truth) -> Mosaic {
             } else {
                 1.0
             };
+            // A fixed scatter (a multiplicative hash), so every run sees the same spikes.
+            if truth.hot_every > 0 && (i.wrapping_mul(2_654_435_761) >> 7) % truth.hot_every == 0 {
+                return WHITE as u16;
+            }
             (truth.rgb[i][usize::from(site)] * gain * WHITE)
                 .round()
                 .clamp(0.0, WHITE) as u16
@@ -227,6 +251,7 @@ struct Score {
     false_colour: f64,
     edge_error: f64,
     maze: f64,
+    hot: f64,
 }
 
 fn score(truth: &Truth, out: &CameraRgb) -> Score {
@@ -237,6 +262,7 @@ fn score(truth: &Truth, out: &CameraRgb) -> Score {
     };
     let (mut se, mut n, mut chroma, mut edge, mut edge_n) = (0f64, 0f64, 0f64, 0f64, 0f64);
     let mut greens = Vec::new();
+    let mut off = 0f64;
     for i in (0..N * N).filter(|&i| inside(i)) {
         let got = [0, 1, 2].map(|ch| enc(out.rgb[i * 3 + ch]));
         let want = truth.rgb[i].map(enc);
@@ -262,6 +288,9 @@ fn score(truth: &Truth, out: &CameraRgb) -> Score {
             edge_n += 1.0;
         }
         greens.push(got[1]);
+        if (0..3).any(|ch| (got[ch] - want[ch]).abs() > 24.0) {
+            off += 1.0;
+        }
     }
     let mse = se / n;
     let mean = greens.iter().sum::<f64>() / greens.len() as f64;
@@ -276,6 +305,11 @@ fn score(truth: &Truth, out: &CameraRgb) -> Score {
         false_colour: if truth.grey { chroma / (n / 3.0) } else { 0.0 },
         edge_error: if edge_n > 0.0 { edge / edge_n } else { 0.0 },
         maze: if truth.gb_gain == 1.0 { 0.0 } else { spread },
+        hot: if truth.hot_every == 0 {
+            0.0
+        } else {
+            off / (n / 3.0) * 10_000.0
+        },
     }
 }
 
@@ -284,6 +318,20 @@ fn main() {
     let methods: Vec<(&str, fn(&Mosaic) -> CameraRgb)> = vec![
         ("bilinear", bilinear),
         ("malvar", |m| demosaic(m, [1.0; 3], f32::MAX)),
+        ("direct", |m| directional(&balance(m, [1.0; 3]), f32::MAX)),
+        ("direct+fc", |m| {
+            let mut out = directional(&balance(m, [1.0; 3]), f32::MAX);
+            suppress(&mut out);
+            out
+        }),
+        ("full", |m| {
+            let mut plane = balance(m, [1.0; 3]);
+            hot_pixels(&mut plane);
+            green_balance(&mut plane);
+            let mut out = directional(&plane, f32::MAX);
+            suppress(&mut out);
+            out
+        }),
     ];
     let mut json = String::from("{\n  \"date\": \"");
     json.push_str(
@@ -295,8 +343,8 @@ fn main() {
     );
     json.push_str("\",\n  \"command\": \"cargo run --release -p fotollection-rawcore --example charts\",\n  \"size\": 768,\n  \"methods\": {\n");
     println!(
-        "{:<10} {:<6} {:>7} {:>13} {:>11} {:>6}",
-        "method", "chart", "PSNR", "false colour", "edge error", "maze"
+        "{:<10} {:<6} {:>7} {:>13} {:>11} {:>6} {:>6}",
+        "method", "chart", "PSNR", "false colour", "edge error", "maze", "hot"
     );
     let mut ms = vec![0f64; methods.len()];
     for (mi, (name, run)) in methods.iter().enumerate() {
@@ -308,13 +356,13 @@ fn main() {
             ms[mi] += start.elapsed().as_secs_f64() * 1000.0;
             let s = score(truth, &got);
             println!(
-                "{name:<10} {:<6} {:>7.2} {:>13.2} {:>11.2} {:>6.2}",
-                truth.name, s.psnr, s.false_colour, s.edge_error, s.maze
+                "{name:<10} {:<6} {:>7.2} {:>13.2} {:>11.2} {:>6.2} {:>6.1}",
+                truth.name, s.psnr, s.false_colour, s.edge_error, s.maze, s.hot
             );
             json.push_str(&format!(
-                "{}\"{}\": {{ \"psnr\": {:.2}, \"falseColour\": {:.3}, \"edgeError\": {:.3}, \"maze\": {:.3} }}",
+                "{}\"{}\": {{ \"psnr\": {:.2}, \"falseColour\": {:.3}, \"edgeError\": {:.3}, \"maze\": {:.3}, \"hot\": {:.1} }}",
                 if ci == 0 { " " } else { ", " },
-                truth.name, s.psnr, s.false_colour, s.edge_error, s.maze
+                truth.name, s.psnr, s.false_colour, s.edge_error, s.maze, s.hot
             ));
         }
         json.push_str(&format!(", \"ms\": {:.1} }}", ms[mi]));
@@ -322,7 +370,7 @@ fn main() {
     }
     json.push_str("  }\n}\n");
     for (mi, (name, _)) in methods.iter().enumerate() {
-        println!("{name}: {:.1} ms for the five charts", ms[mi]);
+        println!("{name}: {:.1} ms for the six charts", ms[mi]);
     }
     if let Some(path) = out {
         std::fs::write(&path, json).unwrap();

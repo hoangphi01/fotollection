@@ -10,8 +10,11 @@
 pub mod cfa;
 pub mod color;
 pub mod demosaic;
+pub mod directional;
 pub mod dng;
+pub mod falsecolour;
 pub mod ljpeg;
+pub mod prepare;
 pub mod tiff;
 pub mod tone;
 
@@ -55,7 +58,14 @@ pub fn develop(data: &[u8]) -> Result<Linear, RawError> {
 /// Develops a sensor's mosaic, whatever file it came from, with its colour tags.
 pub fn develop_mosaic(mosaic: &cfa::Mosaic, tags: &color::ColorTags) -> Result<Linear, RawError> {
     let rendering = color::rendering(tags).ok_or(RawError::Unsupported("no colour matrix"))?;
-    let camera = demosaic::demosaic(mosaic, rendering.gains, 1.0);
+    // Faults of single sites first, while each still holds only what it measured; then the
+    // directional demosaic and the false-colour median (RESULT §25).
+    let mut plane = demosaic::balance(mosaic, rendering.gains);
+    prepare::hot_pixels(&mut plane);
+    prepare::green_balance(&mut plane);
+    let mut camera = directional::directional(&plane, 1.0);
+    drop(plane);
+    falsecolour::suppress(&mut camera);
     let m = rendering.to_srgb;
     #[allow(clippy::cast_possible_truncation)]
     let m32 = m.map(|row| row.map(|v| v as f32));

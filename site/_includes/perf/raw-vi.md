@@ -43,6 +43,7 @@ Dựng lại hai màu còn thiếu của mỗi điểm ảnh từ các điểm x
 - **PPG** (patterned pixel grouping) trước hết xem ảnh ít thay đổi nhất theo hướng nào, rồi chỉ nội suy theo hướng đó. rawler dùng cách này, nên bản Windows và Linux của Fotollection hiện cũng dùng nó cho phần lớn định dạng.
 - **RCD** (ratio corrected demosaicing, của Luis Sanz Rodríguez) làm việc trên tỉ lệ giữa các màu thay vì hiệu số, nên đứng vững cả ở vùng sáng lẫn vùng tối, và nổi tiếng ít lỗi trên chi tiết nhỏ; darktable và RawTherapee đều có.
 - **Markesteijn**, theo tên Frank Markesteijn, là cách dành riêng cho X-Trans, chạy một lượt, hoặc ba lượt chậm hơn mà sạch hơn.
+- **Cách demosaic tiếp theo của Fotollection (sắp có trong v0.11.0)** lấy cách quyết định hướng của RCD, rồi ước lượng màu xanh lá từ từng phía, hiệu chỉnh theo chính màu của điểm đó (như Hamilton và Adams), và cân theo mức thay đổi của mỗi phía. Chúng tôi viết bước tỉ lệ của RCD trước, nhưng nó cho điểm kém hơn trên các ảnh chuẩn, nên biến thể thắng mới là thứ được dùng, dưới đúng tên của nó.
 
 Khi đoán sai, lỗi hiện ra theo bốn kiểu quen thuộc:
 
@@ -53,17 +54,18 @@ Khi đoán sai, lỗi hiện ra theo bốn kiểu quen thuộc:
 
 **Cách chúng tôi chấm điểm.** Mắt người dễ bị một kết quả trông nét hơn đánh lừa, nên mọi cách đều được chấm trên những ảnh đã biết chính xác đáp án. Máy tính vẽ năm ảnh chuẩn 768 px: một zone plate (các vòng tròn mảnh dần về phía mép, tới mức chi tiết nhỏ nhất các điểm xanh lá còn giữ được), một hình sao Siemens 72 nan, các dải màu đậm trên nền xám theo ba hướng, các dải chuyển màu mượt, và một nền xám phẳng với hai điểm xanh lá lệch nhau 2 %. Mỗi ảnh được biến thành đúng những gì một cảm biến Bayer sẽ ghi, demosaic, rồi so với ảnh gốc. PSNR đo sai số chung theo decibel (càng cao càng tốt; cứ 6 dB thì sai số giảm một nửa); màu giả là lượng màu trung bình xuất hiện trên các ảnh xám; sai số ở cạnh là sai số trung bình trong phạm vi 2 px quanh cạnh.
 
-| Ảnh chuẩn (768 px) | Bilinear | Malvar (đang dùng) |
-|---|---|---|
-| Zone plate: PSNR, càng cao càng tốt | 13,0 dB | 17,3 dB |
-| Zone plate: màu giả, càng thấp càng tốt | 65,9 | 43,0 |
-| Sao Siemens: PSNR | 21,3 dB | 25,2 dB |
-| Sao Siemens: màu giả | 9,4 | 8,4 |
-| Dải màu đậm: sai số dọc theo cạnh, càng thấp càng tốt | 11,6 | 21,6 |
-| Dải chuyển màu: PSNR | 78,9 dB | 77,5 dB |
-| Nền xám lệch xanh lá: mê cung, càng thấp càng tốt | 0,38 | 0,38 |
+| Ảnh chuẩn (768 px) | Bilinear | Malvar (đang dùng) | Chuỗi mới (v0.11.0) |
+|---|---|---|---|
+| Zone plate: PSNR, càng cao càng tốt | 13,0 dB | 17,3 dB | 16,5 dB |
+| Zone plate: màu giả, càng thấp càng tốt | 65,9 | 43,0 | 18,7 |
+| Sao Siemens: PSNR | 21,3 dB | 25,2 dB | 37,9 dB |
+| Sao Siemens: màu giả | 9,4 | 8,4 | 0,16 |
+| Dải màu đậm: sai số dọc theo cạnh, càng thấp càng tốt | 11,6 | 21,6 | 10,5 |
+| Dải chuyển màu: PSNR | 78,9 dB | 77,5 dB | 78,4 dB |
+| Nền xám lệch xanh lá: mê cung, càng thấp càng tốt | 0,38 | 0,38 | 0 |
+| Vân mịn có điểm chết: còn lại trên 10.000, càng thấp càng tốt | 35,8 | 66,5 | 0 |
 
-Malvar tốt hơn bilinear khoảng 4 dB trên chi tiết xám nhỏ, đúng như bài báo của nó hứa, nhưng kém hơn ở cạnh giữa hai màu đậm, vì phép hiệu chỉnh mượn chi tiết của một màu cho các màu kia và giả định chúng thay đổi cùng nhau, điều mà một biển báo đỏ trên bức tường xám không làm. Cả hai đều không xoá được vân mê cung, vốn không phải lỗi demosaic mà là chênh lệch giữa hai điểm xanh lá, phải cân lại từ trước. Đó là những khoảng trống các bước tiếp theo phải lấp, mỗi bước đều được đo trên đúng những ảnh chuẩn này trước khi được giữ lại (sắp có trong v0.11.0).
+Malvar tốt hơn bilinear khoảng 4 dB trên chi tiết xám nhỏ, đúng như bài báo của nó hứa, nhưng kém hơn ở cạnh giữa hai màu đậm, vì phép hiệu chỉnh mượn chi tiết của một màu cho các màu kia và giả định chúng thay đổi cùng nhau, điều mà một biển báo đỏ trên bức tường xám không làm. Cả hai đều không xoá được vân mê cung, vốn không phải lỗi demosaic mà là chênh lệch giữa hai điểm xanh lá, phải cân lại từ trước. Chuỗi mới lấp những khoảng trống đó, sắp có trong v0.11.0: điểm chết và chênh lệch xanh lá được sửa khi mỗi điểm còn giữ đúng thứ nó đo được, cách demosaic theo hướng dựng lại màu, và một phép trung vị nhỏ trên hiệu màu xoá màu giả còn sót. Trên các ảnh chuẩn, nó thắng ở mọi chỗ trừ PSNR chung của zone plate, thấp hơn Malvar 0,8 dB ở vùng chi tiết nhỏ nhất, nơi cách nào cũng bị răng cưa; ngay cả ở đó màu giả vẫn giảm một nửa. Trên chín tệp thật, nó đưa kết quả của mọi máy Bayer gần JPEG của máy bằng hoặc hơn trước, và tốn khoảng 180 ms cho ảnh 24 MP, so với 40 ms của Malvar.
 
 ### Từ màu của máy ảnh tới màu bạn thấy
 
@@ -91,7 +93,7 @@ Cho một lần xử lý đầy đủ, thứ đứng sau bản xem trước đ�
 1. **Nhận biết** định dạng từ những byte đầu tiên của tệp, không bao giờ dựa vào tên, để tệp bị đổi tên hay tệp RAW trông như TIFF thường vẫn được đọc đúng.
 2. **Đọc** các con số của cảm biến: DNG bằng bộ đọc của riêng mình, các định dạng khác do rawler giải nén. Tệp quá lớn hoặc hỏng bị từ chối trước khi giải mã bất kỳ điểm ảnh nào, kèm một mã lỗi.
 3. **Mức:** đưa đen về 0 và trắng về 1, cho từng vị trí của tấm lọc màu, tính từ góc của vùng hoạt động.
-4. **Cân bằng trắng**, rồi **demosaic** (hiện là Malvar; RCD cho Bayer và Markesteijn cho X-Trans sắp có trong v0.11.0).
+4. **Cân bằng trắng**, rồi **demosaic** (hiện là Malvar; sắp có trong v0.11.0: sửa điểm chết và cân xanh lá trước, demosaic theo hướng, trung vị chống màu giả, và Markesteijn cho X-Trans).
 5. **Màu:** các ma trận của máy ảnh, pha theo ánh sáng lúc chụp, trong ánh sáng tuyến tính.
 6. **Tông và màu riêng**, khớp theo bản xem trước của máy, kèm độ tối góc.
 7. Từ đây ảnh RAW giống mọi ảnh khác: cắt khung, dấu ngày, khung viền, cỡ in và hồ sơ màu, xuất ở độ phân giải đầy đủ, 4:4:4, chất lượng 95.
