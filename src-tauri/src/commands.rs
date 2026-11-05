@@ -584,6 +584,7 @@ pub fn set_settings(
     settings.export_target = settings.export_target.sanitized();
     settings.collage = settings.collage.sanitized();
     settings.share_fill = settings.share_fill.sanitized();
+    settings.look = settings.look.sanitized();
     settings
         .validate()
         .map_err(|e| IpcError::new("settings.invalid", e.to_string()))?;

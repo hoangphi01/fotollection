@@ -459,6 +459,31 @@ export type Action = "new" | "open" | "save" | "saveAs" |
 /**  The OS handed over a `.fotollection` file (not a menu item). */
 "openRequested";
 
+/**  The sliders, each 0 when unset (FR-079). Signed ones run −100…100, the others 0…100. */
+export type Adjust = {
+	brightness?: number,
+	contrast?: number,
+	highlights?: number,
+	shadows?: number,
+	/**  Blue (−) to amber (+). */
+	warmth?: number,
+	/**  Green (−) to magenta (+). */
+	tint?: number,
+	saturation?: number,
+	/**  Saturation that spares skin and colours already strong. */
+	vibrance?: number,
+	/**  Lifted blacks, 0…100. */
+	fade?: number,
+	shadowTint?: Tint,
+	highlightTint?: Tint,
+	/**  Where shadows end and highlights begin for the tints: − more shadows, + more highlights. */
+	balance?: number,
+	mono?: Mono,
+	grain?: Grain,
+	/**  Darker (−) or lighter (+) corners round the cropped photo. */
+	vignette?: number,
+};
+
 /**  A best-shot analysis finished (or was cancelled); the UI refetches the groups. */
 export type AnalysisFinished = {
 	jobId: number,
@@ -986,6 +1011,14 @@ export type GpsPoint = {
 	lon: number | null,
 };
 
+/**  Film grain, sized on the print (session 13). */
+export type Grain = {
+	/**  0…100. */
+	amount?: number,
+	/**  0…100, from fine to coarse. */
+	size?: number,
+};
+
 /**  One group of similar shots with its ranking, for the Groups view (FR-041). */
 export type Group = {
 	/**  The group's first photo in capture order; identifies the group in commands. */
@@ -1073,6 +1106,20 @@ export type LogoStyle =
 "mono";
 
 /**
+ *  A photo's colour look (FR-079): the sliders, an optional imported LUT (FR-070) with its
+ *  strength, and an amount that scales all of them together, as a Lightroom preset's.
+ */
+export type LookSettings = {
+	adjust?: Adjust,
+	/**  The content hash of an imported LUT in `looks/` (FR-070, session 12); none yet. */
+	lut?: string | null,
+	/**  How much of the LUT, 0–100 %. */
+	lutStrength?: number,
+	/**  How much of the whole look, 0–100 %. */
+	amount?: number,
+};
+
+/**
  *  A native menu item was chosen. The UI runs the same flow as its own buttons, including
  *  the unsaved-changes question (FR-023).
  */
@@ -1086,6 +1133,12 @@ export type MissingFolder = {
 	path: string,
 	name: string,
 };
+
+/**
+ *  Black and white, through a coloured filter as on film (FR-079, as the Lumix Monochrome
+ *  filter effect): yellow darkens blue skies a little, red a lot, green lightens leaves.
+ */
+export type Mono = "off" | "neutral" | "yellow" | "orange" | "red" | "green";
 
 /**
  *  A photo to show: its id and the folder tab it belongs to. Kept until the UI takes it, so a
@@ -1444,6 +1497,11 @@ export type RenderSettings = {
 	 *  settings v12: off.
 	 */
 	shareFill?: ShareFill,
+	/**
+	 *  The colour look of every photo that has none of its own (FR-079). Absent before
+	 *  settings v14: none.
+	 */
+	look?: LookSettings,
 };
 
 /**  Render-affecting state changed (settings, frame, crops, undo); previews refresh. */
@@ -1588,6 +1646,14 @@ export type ThemePreference = "system" | "light" | "dark";
 /**  A sharper thumbnail (T1) is now cached for this photo. */
 export type ThumbReady = {
 	id: PhotoId,
+};
+
+/**  A colour laid over the shadows or the highlights (split toning). */
+export type Tint = {
+	/**  Degrees on the colour wheel, 0–359. */
+	hue?: number,
+	/**  0…100. */
+	amount?: number,
 };
 
 /**  Per-machine interface preferences (FR-020, FR-052). Never part of a project file. */

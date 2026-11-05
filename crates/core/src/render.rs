@@ -43,10 +43,14 @@ pub enum RenderError {
     BadCrop,
 }
 
-/// Crops (and, for previews, downsizes) `source` per the plan, draws the stamp, and
-/// composes the frame when the plan has one.
+/// Crops (and, for previews, downsizes) `source` per the plan, applies the colour look,
+/// draws the stamp, and composes the frame when the plan has one.
 pub fn render(source: &RgbImage, plan: &RenderPlan) -> Result<RgbImage, RenderError> {
     let mut photo = crop_and_resize(source, plan)?;
+    // The look before anything drawn on the print, so the stamp keeps its colour (FR-079).
+    if let Some(table) = &plan.look {
+        crate::looks::apply(&mut photo, table);
+    }
     if let Some(stamp) = &plan.stamp {
         crate::stamp::draw(&mut photo, stamp);
     }
@@ -161,6 +165,7 @@ pub fn fit_long_edge(source: &RgbImage, long_edge: u32) -> Result<RgbImage, Rend
         pad: None,
         straighten: 0.0,
         linear_light: false,
+        look: None,
     };
     crop_and_resize(source, &plan)
 }
@@ -418,6 +423,7 @@ mod tests {
                 pad: None,
                 straighten: 0.0,
                 linear_light,
+                look: None,
             };
             let out = crop_and_resize(&source, &plan).unwrap_or_else(|_| RgbImage::new(1, 1));
             // The middle, away from the edges' ringing.
@@ -507,6 +513,54 @@ mod tests {
         // Top-left quadrant must stay untouched for a bottom-right stamp.
         let untouched = (0..500).all(|y| (0..700).all(|x| out.data[(y * 1500 + x) * 3] == 0));
         assert!(untouched);
+    }
+
+    /// A 300 × 200 photo of colour bands, planned with `settings` (no stamp), rendered.
+    fn banded(settings: &RenderSettings) -> RgbImage {
+        let mut source = RgbImage::new(300, 200);
+        for (i, px) in source.data.as_chunks_mut::<3>().0.iter_mut().enumerate() {
+            let x = u8::try_from(i % 300 * 255 / 299).unwrap_or(0);
+            *px = [x, 255 - x, x / 2 + 60];
+        }
+        let p = plan(&PlanInput {
+            width: 300,
+            height: 200,
+            capture: None,
+            settings,
+            print: PrintSize::ALL[1],
+            max_long_edge: None,
+            frame: None,
+            crop: None,
+            place: None,
+            straighten: 0.0,
+            ratio: None,
+        });
+        render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0))
+    }
+
+    #[test]
+    fn fr_079_a_look_at_rest_prints_the_same_bytes_and_never_tints_the_border() {
+        let mut settings = RenderSettings::default();
+        settings.stamp.enabled = false;
+        settings.border = true;
+        let plain = banded(&settings);
+        // Every slider at 0 (or the amount at 0): the same print, bit for bit.
+        settings.look = crate::looks::LookSettings {
+            amount: 0,
+            ..crate::looks::LookSettings::default()
+        };
+        settings.look.adjust.saturation = -100;
+        assert_eq!(banded(&settings).data, plain.data);
+        settings.look = crate::looks::LookSettings::default();
+        assert_eq!(banded(&settings).data, plain.data);
+        // Black and white: the photo loses its colour, the 3 mm border keeps its white.
+        settings.look.adjust.mono = crate::looks::Mono::Neutral;
+        let mono = banded(&settings);
+        assert_eq!((mono.width, mono.height), (plain.width, plain.height));
+        assert_eq!(mono.data[..3], plain.data[..3], "the border's corner");
+        let mid = ((mono.height / 2 * mono.width + mono.width / 2) * 3) as usize;
+        assert!(mono.data[mid] == mono.data[mid + 1] && mono.data[mid + 1] == mono.data[mid + 2]);
+        assert_ne!(plain.data[mid], plain.data[mid + 1]);
     }
 
     #[test]

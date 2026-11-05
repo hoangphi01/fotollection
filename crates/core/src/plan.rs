@@ -95,6 +95,9 @@ pub struct RenderPlan {
     /// Resample in linear light: share exports only (FR-072); the screen keeps the faster
     /// resize (OPTIMIZATION §5).
     pub linear_light: bool,
+    /// The colour look's table (FR-079), applied after the crop and before the stamp, the
+    /// frame and the border, which are never tinted. `None` when the look changes nothing.
+    pub look: Option<std::sync::Arc<crate::looks::Table>>,
 }
 
 impl RenderPlan {
@@ -460,6 +463,7 @@ fn plan_content(input: &PlanInput<'_>) -> RenderPlan {
         pad: None,
         straighten: crate::straighten::sanitize(input.straighten),
         linear_light: false,
+        look: input.settings.look.table(),
     }
 }
 
@@ -569,6 +573,7 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
         pad: None,
         straighten: crate::straighten::sanitize(input.straighten),
         linear_light: false,
+        look: input.settings.look.table(),
     }
 }
 

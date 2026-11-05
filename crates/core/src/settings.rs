@@ -93,6 +93,10 @@ pub struct RenderSettings {
     /// settings v12: off.
     #[serde(default)]
     pub share_fill: ShareFill,
+    /// The colour look of every photo that has none of its own (FR-079). Absent before
+    /// settings v14: none.
+    #[serde(default)]
+    pub look: crate::looks::LookSettings,
 }
 
 /// A shared photo fitted whole into a frame of a set ratio, the rest filled with one colour,
@@ -657,6 +661,7 @@ impl Default for RenderSettings {
             border_color: BorderColor::White,
             collage: CollageSettings::default(),
             share_fill: ShareFill::default(),
+            look: crate::looks::LookSettings::default(),
         }
     }
 }

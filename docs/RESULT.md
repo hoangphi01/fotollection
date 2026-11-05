@@ -424,4 +424,4 @@ The engine of [FR-079](PRD.md#fr-079--colour-adjustments) and [FR-070](PRD.md#fr
 
 - **First version, then one change:** the first loop computed each of the four corners' index from three grid steps: 5.08 ms and 70.6 ms on two threads, over budget. Taking the cell's index once and adding fixed steps for the corners gave 4.23 ms and 59.1 ms; nothing else was changed.
 - **Accuracy:** the identity table gives back every grey and a sample of 256³ exactly; against tetrahedral interpolation in f64 on a strong table, 200,000 random pixels differ by at most one level (`fr_079_*` in `looks.rs`).
-- The cost does not depend on what is set: more sliders only change the table, built in under a millisecond and kept by the hash of what built it.
+- The cost does not depend on what is set: more sliders only change the table, kept by the hash of what built it. **Session 9 (2026-11-05):** with the sliders' real maths (warmth and tint in linear light, the tone curve, saturation and vibrance in OKLab, fade, both tints), building the table with every slider set takes 2.56 ms on 8 threads and 5.03 ms on 2, so a drag step costs about 5 ms on the preview, table and apply together.

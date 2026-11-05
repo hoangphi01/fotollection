@@ -267,7 +267,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 ```json
 {
   "format": "fotollection-settings",
-  "schema_version": 13,
+  "schema_version": 14,
   "ui": { "language": "vi", "theme": "system", "mode": "professional", "exportFolders": "oneFolder" },
   "render": {
     "printSize": "custom-1",
@@ -277,6 +277,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
     "placeFormat": "city",
     "exportTarget": { "kind": "print" },
     "shareFill": { "enabled": false, "ratio": [1, 1], "color": [255, 255, 255] },
+    "look": { "adjust": { "brightness": 10, "warmth": 20, "fade": 15, "mono": "off" }, "lut": null, "lutStrength": 100, "amount": 100 },
     "border": false,
     "collage": { "ratio": "photo", "marginMm": 5, "size": null, "lockRatio": true, "cutLine": true, "fill": false,
                  "postcard": { "enabled": false, "orientation": "landscape", "lines": 4, "font": null,
@@ -292,7 +293,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
       "lens": "Индустар-50-2", "focalMm": 50.0, "fNumber": 4.0, "photoStyle": "L. Monochrome D", "logo": "text" }
   ],
   "fonts": [ { "id": 1, "name": "DSEG7 Classic", "format": "ttf" } ],
-  "recentAddresses": [ "Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1" ]
+  "recent_addresses": [ "Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1" ]
 }
 ```
 
@@ -324,7 +325,8 @@ These are read-only and compiled into the binary or bundled as resources, so the
 | 10 | 0.9.x | `render.border`: the 3 mm border on every print, with or without the info frame, inside the print size (FR-067). `ui.mode`: `simple` \| `collage` \| `professional` (FR-048), absent means `professional`. `render.collage`: `ratio` (`photo` \| `sheet` \| `fourThree` \| `square`), `marginMm` (0–20, default 5), `size` (`null` for the suggested size, or `{shortMm, longMm}`, 10–1000), `lockRatio`, `cutLine`, `fill` (each photo fills its cell, no white) (FR-035); absent means the defaults, and values out of range are clamped. `render.borderColor`: `white` \| `black`, the 3 mm border's colour and a collage sheet's paper round its photos (FR-067, FR-035), absent means `white`; an info frame keeps its own colour. `render.stamp.size`: `small` \| `medium` \| `large` (FR-004), absent means `medium`; the same field in a photo's own stamp (`photos[].stamp.size` in the project, read with the same default). **Migration v9 → v10:** a v9 `frame.border: true` becomes `render.border: true` only when the info frame was on in Crop to fill, where the border showed (test `fr_067_a_v9_border_without_the_frame_stays_off`); `frame.border` is then always written as `false` and ignored. Fixture `v9.json`, test `fr_067_a_v9_border_moves_to_every_print_and_round_trips` |
 | 11 | 0.9.4 | `render.collage.postcard` (FR-073): `enabled`, `orientation` (`landscape` \| `portrait`), `lines` (3–4, clamped, default 4), `font` (a user font id, or `null` for the bundled Xanh Mono), `credit` (a small line under every card's writing lines, at most 80 characters, no control characters; empty prints nothing), `ink` (`auto` \| `blue` \| `sepia` \| `red`, the typed text's colour; `auto` is near-black on white paper and near-white on black), `textSize` (`small` \| `medium` \| `large`, 3.4, 4.2 or 5.2 mm, smaller when the lines are closer), `messageStyle` and `addressStyle` (`{bold, italic, underline}`), and `lines` now counts the message's lines (the address has 3, or 4 when its text needs them, since v0.9.5). **Migration v10 → v11:** absent means off. Fixture `v10.json`, test `fr_073_v10_files_have_no_postcard_and_it_round_trips` |
 | 12 | 0.9.6 | `render.shareFill` (FR-075): `enabled`, `ratio` (`[w, h]`, each 1–100 and at most 4:1, clamped), `color` (`[r, g, b]`, sRGB); absent means off, 1:1, white. `ui.exportFolders` (FR-009): `oneFolder` (every file straight into the destination) \| `byDay` (a `YYYY-MM-DD` folder per day). **Migration v11 → v12:** an absent fill is off; an absent `exportFolders` means `oneFolder`, also for an update from a version that always exported by day (owner's choice, 2026-11-04). Fixture `v11.json`, tests `fr_009_v11_files_export_into_one_folder_and_by_day_round_trips` and `fr_075_v11_files_have_no_fill_and_it_round_trips` |
-| 13 | 0.9.7 | `render.collage.postcard.face` (FR-076): `typewriter` (Xanh Mono) \| `handwriting` (Patrick Hand), the bundled face used when `font` is `null`. `recentAddresses` (FR-077): the addresses last typed on this machine's postcards, newest first, at most 8, each checked like a typed address (200 characters, 4 lines, no control characters) and kept only when valid and distinct; never written into a project bundle. **Migration v12 → v13:** an absent face means `typewriter`, absent addresses none. Fixture `v12.json`, test `fr_076_v12_files_type_in_the_typewriter_and_the_face_round_trips` |
+| 13 | 0.9.7 | `render.collage.postcard.face` (FR-076): `typewriter` (Xanh Mono) \| `handwriting` (Patrick Hand), the bundled face used when `font` is `null`. Top-level `recent_addresses` (FR-077): the addresses last typed on this machine's postcards, newest first, at most 8, each checked like a typed address (200 characters, 4 lines, no control characters) and kept only when valid and distinct; never written into a project bundle. **Migration v12 → v13:** an absent face means `typewriter`, absent addresses none. Fixture `v12.json`, test `fr_076_v12_files_type_in_the_typewriter_and_the_face_round_trips` |
+| 14 | 0.10.0 | `render.look` (FR-079, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)): `adjust` (`brightness`, `contrast`, `highlights`, `shadows`, `warmth`, `tint`, `saturation`, `vibrance`, `balance`, `vignette` −100…100; `fade` 0…100; `shadowTint` and `highlightTint` `{hue 0–359, amount 0–100}`; `mono` `off` \| `neutral` \| `yellow` \| `orange` \| `red` \| `green`; `grain` `{amount, size}` 0…100), `lut` (a 64-hex content hash in `looks/`, or `null`), `lutStrength` and `amount` 0–100 (default 100). Every value is clamped on load and over IPC (`LookSettings::sanitized`); a `lut` that is not a hash is dropped. **Migration v13 → v14:** absent means no look. Fixtures `v13.json`, `v14.json`, test `fr_079_v13_files_have_no_look_and_v14_keeps_it` |
 
 ## 7. Presets
 

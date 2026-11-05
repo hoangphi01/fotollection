@@ -29,7 +29,7 @@ pub const FORMAT: &str = "fotollection-settings";
 /// absent before (off).
 /// v13 (FR-076, FR-077): `render.collage.postcard.face`, absent before (the typewriter);
 /// `recentAddresses`, absent before (none).
-pub const SCHEMA_VERSION: u32 = 13;
+pub const SCHEMA_VERSION: u32 = 14;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -157,6 +157,7 @@ fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
     let mut render = file.render;
     render.collage = render.collage.sanitized();
     render.share_fill = render.share_fill.sanitized();
+    render.look = render.look.sanitized();
     let mut frame = file.frame;
     // v9 → v10: FR-065's Crop-to-fill border becomes the border on every print (FR-067),
     // only where it showed: with the info frame on, in Crop to fill.
@@ -505,6 +506,42 @@ mod tests {
         };
         assert_eq!(back.render.collage.postcard.face, PostcardFace::Handwriting);
         assert_eq!(back.recent_addresses, s.recent_addresses);
+        Ok(())
+    }
+
+    /// FR-079: a v13 file has no look: it loads with none, and a v14 file keeps its sliders,
+    /// the ones it leaves out at 0, and round-trips.
+    #[test]
+    fn fr_079_v13_files_have_no_look_and_v14_keeps_it() -> std::io::Result<()> {
+        use crate::looks::{LookSettings, Mono};
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v13.json"))?;
+        let loaded = load(&path);
+        let Loaded::Ok(old) = loaded else {
+            panic!("v13 should load: {loaded:?}");
+        };
+        assert_eq!(old.render.look, LookSettings::default());
+        assert_eq!(old.recent_addresses.len(), 1);
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v14.json"))?;
+        let Loaded::Ok(s) = load(&path) else {
+            panic!("v14 should load");
+        };
+        let a = s.render.look.adjust;
+        assert_eq!(
+            (a.brightness, a.contrast, a.warmth, a.fade),
+            (20, -10, 30, 25)
+        );
+        assert_eq!(
+            (a.shadow_tint.hue, a.shadow_tint.amount, a.mono),
+            (200, 30, Mono::Off)
+        );
+        assert_eq!((a.tint, a.highlights, s.render.look.amount), (0, 0, 80));
+        save(&path, &s)?;
+        let Loaded::Ok(back) = load(&path) else {
+            panic!("v14 should load again");
+        };
+        assert_eq!(back.render.look, s.render.look);
         Ok(())
     }
 

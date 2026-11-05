@@ -1,0 +1,154 @@
+{
+  "format": "fotollection-settings",
+  "schema_version": 14,
+  "render": {
+    "printSize": "10x15",
+    "stamp": {
+      "enabled": false,
+      "format": "iso",
+      "corner": "bottomRight",
+      "color": "white",
+      "place": true,
+      "caption": ""
+    },
+    "customSizes": [],
+    "placeFormat": "city",
+    "exportTarget": {
+      "kind": "print"
+    },
+    "border": false,
+    "borderColor": "white",
+    "shareFill": {
+      "enabled": true,
+      "ratio": [
+        4,
+        5
+      ],
+      "color": [
+        255,
+        255,
+        255
+      ]
+    },
+    "collage": {
+      "ratio": "photo",
+      "marginMm": 5,
+      "size": null,
+      "lockRatio": true,
+      "cutLine": true,
+      "fill": false,
+      "postcard": {
+        "enabled": true,
+        "orientation": "landscape",
+        "lines": 4,
+        "font": null,
+        "credit": "",
+        "ink": "auto",
+        "textSize": "medium",
+        "messageStyle": {
+          "bold": false,
+          "italic": false,
+          "underline": false
+        },
+        "addressStyle": {
+          "bold": false,
+          "italic": false,
+          "underline": false
+        },
+        "face": "handwriting"
+      }
+    },
+    "look": {
+      "adjust": {
+        "brightness": 20,
+        "contrast": -10,
+        "warmth": 30,
+        "saturation": 15,
+        "fade": 25,
+        "shadowTint": {
+          "hue": 200,
+          "amount": 30
+        },
+        "mono": "off",
+        "grain": {
+          "amount": 40,
+          "size": 50
+        },
+        "vignette": -20
+      },
+      "lut": null,
+      "lutStrength": 100,
+      "amount": 80
+    }
+  },
+  "frame": {
+    "enabled": true,
+    "fit": "crop",
+    "color": "white",
+    "dateFormat": "slash",
+    "fields": {
+      "logo": true,
+      "camera": true,
+      "lens": true,
+      "focal": true,
+      "aperture": true,
+      "shutter": true,
+      "iso": true,
+      "photoStyle": true,
+      "date": true,
+      "place": true
+    },
+    "font": null,
+    "logoStyle": "classic",
+    "logoScale": 1.5,
+    "border": false
+  },
+  "cameras": [
+    {
+      "id": 1,
+      "make": "FUJIFILM",
+      "model": "X-T3",
+      "displayName": null,
+      "brandText": null,
+      "lens": null,
+      "focalMm": null,
+      "fNumber": null,
+      "photoStyle": null,
+      "logo": "brand"
+    },
+    {
+      "id": 2,
+      "make": "SONY",
+      "model": "ILCE-7M3",
+      "displayName": null,
+      "brandText": null,
+      "lens": null,
+      "focalMm": null,
+      "fNumber": null,
+      "photoStyle": null,
+      "logo": "brand"
+    },
+    {
+      "id": 3,
+      "make": "FUJIFILM",
+      "model": "X100V",
+      "displayName": null,
+      "brandText": null,
+      "lens": null,
+      "focalMm": null,
+      "fNumber": null,
+      "photoStyle": null,
+      "logo": "brand"
+    }
+  ],
+  "fonts": [],
+  "ui": {
+    "language": "vi",
+    "theme": "dark",
+    "mode": "collage",
+    "exportFolders": "byDay"
+  },
+  "recent_addresses": [
+    "Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1"
+  ]
+}

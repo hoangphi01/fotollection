@@ -69,7 +69,7 @@ crates/
       frame.rs           † # info frame: settings, camera profiles, text, ratio-safe layout (FR-040)
       logo.rs            † # user PNG logos: validation + decode (ADR-0014)
       fonts.rs           † # user OTF/TTF fonts: validation + FontArc (FR-042)
-      settings_store.rs  † # settings.json v13: load/validate/atomic save (DATABASE.md §6)
+      settings_store.rs  † # settings.json v14: load/validate/atomic save (DATABASE.md §6)
       preview.rs         † # T2 LRU + preview rendering (FR-007)
       cancel.rs          † # CancellationToken
       stamp.rs           † # text inside the photo: DSEG14 Italic, date · place line + caption, LED glow (FR-004/005/033/036)

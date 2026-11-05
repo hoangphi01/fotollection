@@ -20,7 +20,7 @@ use std::time::Instant;
 
 use fotollection_core::codec::{decode_image, default_codec};
 use fotollection_core::image::RgbImage;
-use fotollection_core::looks::{Table, apply};
+use fotollection_core::looks::{Adjust, LookSettings, Mono, Table, Tint, apply, bake};
 use fotollection_core::render::fit_long_edge;
 
 const RUNS: usize = 5;
@@ -77,6 +77,29 @@ fn main() {
         std::hint::black_box(look());
     });
     let table = look();
+    // Every slider set: the table a drag builds on each step (FR-079).
+    let sliders = LookSettings {
+        adjust: Adjust {
+            brightness: 20,
+            contrast: 30,
+            highlights: -20,
+            shadows: 25,
+            warmth: 15,
+            tint: -5,
+            saturation: 10,
+            vibrance: 30,
+            fade: 20,
+            shadow_tint: Tint { hue: 200, amount: 40 },
+            highlight_tint: Tint { hue: 60, amount: 30 },
+            balance: 10,
+            mono: Mono::Off,
+            ..Adjust::default()
+        },
+        ..LookSettings::default()
+    };
+    let bake_sliders = time(|| {
+        std::hint::black_box(bake(&sliders));
+    });
 
     let (preview, export) = match std::env::args().nth(1) {
         Some(path) => {
@@ -106,7 +129,7 @@ fn main() {
 
     let mp = |i: &RgbImage| f64::from(i.width) * f64::from(i.height) / 1e6;
     println!("threads {threads}, median of {RUNS}");
-    println!("build the 33³ table: {build:.2} ms");
+    println!("build the 33³ table: {build:.2} ms; with every slider set: {bake_sliders:.2} ms");
     println!(
         "apply, preview {}×{} ({:.1} MP): {:.2} ms (budget 5)",
         preview.width,
