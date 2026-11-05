@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Preview:** *This photo* shows a badge, **RAW** or the file's format (JPEG, HEIC, PNG), so a RAW is told apart at a glance.
 - **Colour** (FR-079): two cards between the print size and the date stamp, in Pro, Collage and the previews. **Faves** shows brightness, contrast, warm / cool and saturation, **More** adds highlights, shadows, tint and vibrance; **Tools**, folded at first, holds fade, a tint for the shadows and one for the highlights, and black and white through a yellow, orange, red or green filter. In a photo's preview they change that photo only, with *Apply this look to all photos*; hold **Before** or `\` to compare. The date stamp, the frame and the border are never tinted, and a photo with nothing set prints exactly as before.
 
 ## [0.9.8] - 2026-11-04

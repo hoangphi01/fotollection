@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FactLines } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
+import { Badge } from '@/components/ui/badge'
 import type { PhotoDetails, PhotoSummary } from '@/ipc/bindings'
 import { factsParts } from '@/lib/facts'
 import { formatBytes, formatCaptureLong, formatMegapixels } from '@/lib/format'
@@ -40,10 +41,22 @@ export function PhotoSummaryCard({ photo, details }: PhotoSummaryCardProps) {
       ? `${details.width} × ${details.height} px · ${formatMegapixels(details.width, details.height)} MP · ${formatBytes(details.fileBytes ?? 0)}`
       : t('common.loading'),
   ].filter(Boolean)
+  // RAW or not at a glance (owner, 2026-11-05): a sensor's kind is known only for RAW files.
+  const raw = details?.facts?.sensor != null
+  const ext = photo.fileName.split('.').pop()?.toUpperCase() ?? ''
+  const kind = raw ? 'RAW' : ext === 'JPG' ? 'JPEG' : ext
   return (
     <SectionCard
       icon={<Info className="size-4" />}
       open={open}
+      action={
+        kind && (
+          // Capitals have no descenders: a line-high box would set them visibly high.
+          <Badge variant={raw ? 'default' : 'outline'} className="leading-none pt-px" data-hint={raw ? ext : undefined}>
+            {kind}
+          </Badge>
+        )
+      }
       title={
         <button
           type="button"
