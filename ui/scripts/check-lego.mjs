@@ -88,9 +88,40 @@ for (const path of files) {
     })
 }
 
+// Where each card shows (STYLE_RULE §4, where each card shows): its file says `@shown both`, `@shown gallery` or
+// `@shown preview`, and the panels below may only hold the cards their place allows.
+const PLACES = {
+  'features/settings/settings-panel.tsx': 'gallery',
+  'features/simple/simple-panel.tsx': 'gallery',
+  'features/collage/collage-panel.tsx': 'gallery',
+  'features/viewer/preview-dialog.tsx': 'preview',
+  'features/collage/sheet-preview-dialog.tsx': 'preview',
+}
+const shownIn = new Map()
+for (const [panel, place] of Object.entries(PLACES)) {
+  const text = readFileSync(join(root, 'src', panel), 'utf8')
+  const imports = new Map()
+  for (const m of text.matchAll(/import \{([^}]*)\} from '(?:@\/|\.\/)([^']+)'/g)) {
+    const from = m[2].startsWith('features/') || m[2].startsWith('components/') ? m[2] : `${panel.replace(/[^/]+$/, '')}${m[2]}`
+    for (const name of m[1].split(',').map((n) => n.trim()))
+      if (name) imports.set(name, from)
+  }
+  for (const m of new Set([...text.matchAll(/<([A-Z]\w*(?:Card|Cards|Section))\b/g)].map((m) => m[1]))) {
+    const from = imports.get(m)
+    // The shared pieces (SectionCard…) live in components and show anywhere.
+    if (!from || !from.startsWith('features/')) continue
+    const source = readFileSync(join(root, 'src', `${from}.tsx`), 'utf8')
+    const flag = /@shown (both|gallery|preview)\b/.exec(source)?.[1]
+    if (!flag) problems.push(`${from}.tsx: no @shown flag (both, gallery or preview), and ${panel} shows it`)
+    else if (flag !== 'both' && flag !== place)
+      problems.push(`${panel}: shows ${m}, flagged @shown ${flag}, in the ${place}`)
+    shownIn.set(m, flag)
+  }
+}
+
 if (problems.length) {
   console.error(problems.join('\n'))
   console.error(`check-lego: ${problems.length} problem(s); see STYLE_RULE §4 (the lego rule)`)
   process.exit(1)
 }
-console.log(`check-lego: ${files.length} files, every card built from the shared pieces`)
+console.log(`check-lego: ${files.length} files, every card built from the shared pieces; ${shownIn.size} cards in their place`)

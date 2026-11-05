@@ -20,6 +20,13 @@
 - **Fix:** the develop's parallel work runs on a pool of its own (`raw::develop_pool`), used only under `DEVELOP`, so the holder always has its threads whoever waits. Test `develops_asked_from_the_whole_global_pool_all_finish` asks twice as many develops as the global pool has threads from inside it; it hung on the old code (30 s timeout) and passes in 0.01 s.
 - **Rule:** work that runs behind a lock gets threads nobody waiting for that lock can hold: its own pool, not the one its callers block. When the app hangs, `sample <pid>` first: it names every thread's wait in one look.
 
+### The spinner that waited for a load nobody watched (FR-057, FR-016)
+
+- **Seen:** with the develop's hang fixed, the owner opened a RAW again and its spinner turned for good. `sample` showed every Rust thread idle and no request in flight: Rust had answered all it was asked, so the stage never asked for this photo.
+- **Why:** `useShownSrc` loads one render at a time, so a slider's drag cannot start a request per frame. It also made **another photo** wait for the old photo's load, and it held that load only through the `Image`'s own handlers. A RAW still developing kept the next photo waiting; and an `Image` nobody references can be collected by WebKit before its `load` fires (the likeliest cause; it was not caught in the act), after which `loading` stayed set for good, so every photo after it waited in that dialog, which stays mounted while closed.
+- **Fix:** the loading image is kept in a ref; another photo lets the old load go and starts at once (only renders of the same photo wait for each other); a closed dialog lets go of its load. Not covered by a test (the UI has no unit tests yet): checked by the owner in the dev app.
+- **Rule:** when the UI waits for Rust, `sample` the app first: idle threads with a spinner mean the request was never sent. Keep a reference to every `Image` you wait on, and never make one photo's load wait for another's.
+
 ### Two locks taken in both orders: found by a sweep, not yet seen hanging (FR-031, FR-023)
 
 - **Seen:** after the hang above, the owner asked whether others like it were left. A script listed every function taking two of `AppState`'s locks and the order it takes them in; each pair taken in both orders was read to see whether both guards are held at once.

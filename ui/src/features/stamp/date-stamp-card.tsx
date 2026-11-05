@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+// @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
 import { CalendarDays, MapPin, RotateCcw } from 'lucide-react'
 import { useId } from 'react'
 import { useTranslation } from 'react-i18next'

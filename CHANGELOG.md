@@ -8,7 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- **Colour:** the colour cards are in the previews only, where the photo is seen large; the gallery's panel keeps the print size, the date stamp, the frame and export. *Apply this look to all photos* still sets everyone's look.
+- **Sliders:** a press just above or below a slider still takes it, and a click on its name lets the arrow keys move it (by 1, by 10 with Shift), as in a RAW editor.
+
 ### Fixed
+
+- **Preview:** a photo opened while the one before was still developing no longer waits for it, and the spinner can no longer turn for good.
 
 - **Camera RAW:** opening a RAW no longer hangs for good after moving on from one that was still loading; the export's size estimate and the preview waited for each other.
 - **Stability:** two rare hangs found by a sweep and removed: finding borrowed places while a best-shot analysis starts, and opening a project while a setting is changed.

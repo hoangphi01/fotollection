@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+// @shown preview: in the preview only (STYLE_RULE §4, where each card shows, checked by check-lego).
 import { ChevronDown, Info } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+// @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
 import { Mail, PenLine, RectangleHorizontal, RectangleVertical } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Field, Hint } from '@/components/forms/field'

@@ -10,14 +10,17 @@ type Shown = { key: string | number; src: string } | { key: string | number; err
  * caller can show a spinner. A render that fails gives `error`, the reason with its `ERR-`
  * code from Rust's answer, so the caller shows it instead of a spinner that never stops.
  *
- * One render loads at a time: while it does, newer sources only replace the one waiting,
- * and the newest starts when it lands. A slider's drag changes the source every frame;
- * starting each would let none finish before the next, and the photo would stand still
- * until the drag ends (LESSONS, FR-079).
+ * One render of a photo loads at a time: while it does, newer sources of the same photo only
+ * replace the one waiting, and the newest starts when it lands. A slider's drag changes the
+ * source every frame; starting each would let none finish before the next, and the photo
+ * would stand still until the drag ends (LESSONS, FR-079). Another photo never waits: the
+ * old load is let go and the new one starts at once, so a RAW still developing cannot hold
+ * the next photo back. The loading image is kept in a ref: an `Image` nobody holds can be
+ * collected before its `load` fires, and the spinner would never stop (LESSONS 2026-11-05).
  */
 export function useShownSrc(key: string | number | undefined, src: string): { src: string | null; error: string | null } {
   const [shown, setShown] = useState<Shown | null>(null)
-  const loading = useRef<string | null>(null)
+  const loading = useRef<{ key: string | number; src: string; img: HTMLImageElement } | null>(null)
   const wanted = useRef<{ key: string | number; src: string } | null>(null)
   const alive = useRef(true)
 
@@ -25,17 +28,26 @@ export function useShownSrc(key: string | number | undefined, src: string): { sr
     alive.current = true
     return () => {
       alive.current = false
+      loading.current = null
     }
   }, [])
 
   useEffect(() => {
-    if (key === undefined || !src) return
+    if (key === undefined || !src) {
+      // Closed: nothing is wanted, and a load still running is let go.
+      wanted.current = null
+      loading.current = null
+      return
+    }
     wanted.current = { key, src }
-    if (loading.current !== null) return
+    if (loading.current !== null && loading.current.key === key) return
     const start = (next: { key: string | number; src: string }) => {
-      loading.current = next.src
       const img = new Image()
+      const mine = { ...next, img }
+      loading.current = mine
       const done = (result: Shown) => {
+        // A load let go for another photo answers nobody.
+        if (loading.current !== mine) return
         loading.current = null
         // Shown only while it is still this photo; a newer source loads next.
         if (alive.current && wanted.current?.key === next.key) setShown(result)

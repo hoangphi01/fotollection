@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+// @shown gallery: in the gallery panels only (STYLE_RULE §4, where each card shows, checked by check-lego).
 import { Clock, RotateCcw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'

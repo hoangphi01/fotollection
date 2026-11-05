@@ -443,8 +443,6 @@ export function App() {
           cell={collage.cell}
           customStamps={customStamps}
           revision={revision}
-          picked={collage.picked ? (collage.cell?.id ?? null) : null}
-          onSettingsReload={reload}
         />
       ) : simple ? (
         <SimplePanel

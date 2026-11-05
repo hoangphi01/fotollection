@@ -21,13 +21,18 @@ type SliderFieldProps = {
   gpu?: boolean
 }
 
+/** The thumb Radix renders, the element that takes the arrow keys. */
+const THUMB = '[role=slider]'
+
 const signed = (v: number) => (v > 0 ? `+${v}` : v < 0 ? `−${-v}` : '0')
 
 /**
  * A slider with its label and value on one line (STYLE_RULE §4, the lego rule); what it does
  * shows on hover. The value moves at once; while dragging, changes go out at most once a
  * frame, the last one always, so a preview follows without a request per pixel. A
- * double-click resets it.
+ * double-click resets it. As in a RAW editor, a press a little above or below the track still
+ * takes it (the slider's 8 px of reach), and a click on the label focuses it for the arrow
+ * keys: ±1, with Shift ±10.
  */
 export function SliderField({
   label,
@@ -44,7 +49,12 @@ export function SliderField({
   const dragging = useRef(false)
   const pending = useRef<number | null>(null)
   const frame = useRef<number | null>(null)
+  const root = useRef<HTMLSpanElement>(null)
   const shown = draft ?? value
+  const focusThumb = () => {
+    const thumb = root.current?.querySelector(THUMB)
+    if (thumb instanceof HTMLElement) thumb.focus()
+  }
 
   const flush = () => {
     frame.current = null
@@ -62,10 +72,11 @@ export function SliderField({
 
   return (
     <Field>
-      <div data-hint={hint}>
+      <div data-hint={hint} onClick={focusThumb}>
         <ValueRow label={label}>{format(shown)}</ValueRow>
       </div>
       <Slider
+        ref={root}
         // A signed slider has no "on" side: no filled range from its left end at 0.
         className={min < 0 ? '[&_[data-slot=slider-range]]:bg-transparent' : undefined}
         min={min}

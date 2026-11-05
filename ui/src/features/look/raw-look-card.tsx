@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+// @shown preview: in the preview only (STYLE_RULE §4, where each card shows, checked by check-lego).
 import { Aperture, CopyCheck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Field } from '@/components/forms/field'

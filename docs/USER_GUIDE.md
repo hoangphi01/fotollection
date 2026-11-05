@@ -465,14 +465,14 @@ Every change is one undo step. The date stamp prints on each photo, with its pla
 
 ## 21. Colour: Faves and Tools
 
-Two cards change a photo's colour, between **Print / export size** and **Date stamp**, in the Pro and Collage panels and in the previews. They change every photo; in a photo's preview they change that photo only, as its date stamp does, and **Apply this look to all photos** makes its look everyone's.
+Two cards change a photo's colour, under **Print / export size**, in the previews only: open a photo (or a collage sheet) to change its colour. They change that photo only, as its date stamp does, and **Apply this look to all photos** makes its look everyone's.
 
-- **Faves** shows four sliders: **Brightness**, **Contrast**, **Warm / cool** and **Saturation**. **More** adds **Highlights**, **Shadows**, **Tint** and **Vibrance**. Hover a slider to read what it does; double-click it to put it back to 0.
+- **Faves** shows four sliders: **Brightness**, **Contrast**, **Warm / cool** and **Saturation**. **More** adds **Highlights**, **Shadows**, **Tint** and **Vibrance**. Hover a slider to read what it does; double-click it to put it back to 0. A press just above or below the bar still takes it, and a click on a slider's name lets the ← and → keys move it (by 1, by 10 with Shift).
 - **Tools** is folded at first; click its title to open it. **Fade** lifts the blacks, **Tint the shadows** and **Tint the highlights** lay a colour over the dark and the bright parts (with **Balance** between them), and **Black and white** turns the photo grey through a filter: red darkens a blue sky the most, green lightens leaves.
 - A folded card says how many of its sliders are set ("Tools · 2 changed"); the ↺ on its title resets the card.
 - In the preview, hold **Before** (or the **\\** key) to see the photo without its look.
 - The date stamp, the info frame and the border are never tinted, and a photo with nothing set prints exactly as before.
-- **In Collage mode**, click a photo on a sheet to change its colour; the cards show only while a photo is picked. Click beside the sheets, or press **Esc**, to let go. The sheet's preview works the same way.
+- **In Collage mode**, open a sheet's preview and click a photo on it to change its colour; the cards show only while a photo is picked. Click beside the photos, or press **Esc**, to let go.
 
 <!-- chapter: shortcuts -->
 
