@@ -1,6 +1,6 @@
 # Roadmap — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-01
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-05
 >
 > This file defines **when**: it assigns requirements to phases. What each requirement means is defined in [PRD.md](PRD.md). Progress is tracked in [STATUS.md](STATUS.md).
 > Every FR in the PRD appears in exactly one phase below. `scripts/check-docs.sh` enforces this.
@@ -57,14 +57,14 @@
 | FR-053 | Export for social media: Original / Facebook / Instagram / custom sizes, sRGB, EXIF with the app's name and never GPS |
 | FR-055 | Export the photo open in the preview, with the same export controls as the panel |
 | FR-056 | Folders as tabs: All photos, one folder or several ticked, exported together or separately |
-| FR-057 | Zoom in the preview: pinch, Ctrl/⌘ + − 0, drag to move, double-click for 200 % |
+| FR-057 | Zoom in the preview: two-finger scroll, pinch, Ctrl/⌘ + − 0, drag to move, double-click for 200 % |
 | FR-059 | Quick-preview: hold Space in select mode to look at a photo as it will print |
 | FR-060 | Start-up screen: the logo and a loading bar until the last session is back |
 | FR-062 | Live view from a camera plugged in by cable (own PTP driver, UVC webcam or HDMI capture card), with the print ratio drawn over it |
 | FR-065 | Border in Crop to fill: 3 mm in the frame colour inside the print size, instant-photo look at the exact kiosk size |
 | FR-067 | 3 mm border on every print: every mode and frame style, inside the print size (extends FR-065) |
 | FR-069 | Report a problem: a red button in the app's versions popover and the website's footer, to the GitHub issue forms (v0.8.3) |
-| FR-071 | Image facts at import and in the inspector: chroma subsampling, colour space, sensor kind; v0.10.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
+| FR-071 | Image facts at import and in the inspector: chroma subsampling, colour space, sensor kind; shipped in v0.9.3, [ADR-0037](adr/0037-our-own-develop-core.md) |
 | FR-072 | Our own develop core: sensor kind first, RCD and Markesteijn, Gr/Gb, false colour, highlights, linear working space, colour management everywhere; v0.10.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
 | FR-073 | Postcard sheets in Collage mode: one photo and a postcard back (stamp box, writing lines, typed text); v0.9.4 |
 
@@ -121,7 +121,8 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.9.5 | Postcard fixes (shipped 2026-11-04) | FR-073: a smaller stamp box, bold as one stroke, a fourth address line when needed, a red ! when text is cut | Fixes and small changes |
 | v0.9.6 | Export folders and share fill (shipped 2026-11-04) | FR-009: one folder or a folder per day, one folder by default; FR-075: shared photos whole in a frame of any ratio, filled with white, black or a colour of one's own | A PATCH number by the owner's choice (RELEASE.md §1) |
 | v0.9.7 | Postcards to send, faster export (shipped 2026-11-04) | FR-076: a handwriting face; FR-077: one address for many postcards; FR-078: the photo at a glance in the preview; NFR-003 and NFR-004 met on 20 MP photos | A PATCH number by the owner's choice (RELEASE.md §1) |
-| v0.10.0 | Core (planned, 2026-11-02) | FR-071 (image facts: chroma subsampling, colour space, sensor kind), FR-072 (our own develop: RCD and Markesteijn, Gr/Gb, false colour, highlights, a linear working space, colour management everywhere), [ADR-0037](adr/0037-our-own-develop-core.md) | Test charts and an independent reference first; RCD ≤ 400 ms on 24 MP, Markesteijn ≤ 700 ms on 26 MP |
+| v0.9.8 | Two-finger zoom, panels of one style (shipped 2026-11-04) | FR-057: two-finger scroll zooms the preview; every panel card built from the lego blocks, checked by `check-lego` (STYLE_RULE §4); hints kept inside the window (FR-052) | A PATCH number by the owner's choice (RELEASE.md §1) |
+| v0.10.0 | Core (planned, 2026-11-02) | FR-072 (our own develop: RCD and Markesteijn, Gr/Gb, false colour, highlights, a linear working space, colour management everywhere), [ADR-0037](adr/0037-our-own-develop-core.md) | Test charts and an independent reference first; RCD ≤ 400 ms on 24 MP, Markesteijn ≤ 700 ms on 26 MP |
 | v0.11.0 | Looks (planned, 2026-11-02) | FR-070 (looks from `.cube` LUT files, strength, per photo; built-in looks of our own), [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export (`measure_look`) |
 | After v0.11.0 | Photo Style sliders on the looks engine | FR-039, then FR-047 | — |
 | Later | Presets, trips, journal | FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |

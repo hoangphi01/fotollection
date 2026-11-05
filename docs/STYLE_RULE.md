@@ -17,13 +17,13 @@
 ### Formatting and linting
 
 - `cargo fmt` uses the default `rustfmt` config. CI checks it.
-- `cargo clippy --all-targets -- -D warnings` must pass. `clippy::pedantic` is enabled at the workspace level with these exceptions: `module_name_repetitions`, `must_use_candidate`, `missing_errors_doc` (until 1.0).
-- `#![forbid(unsafe_code)]` is set in `crates/core`, except in the explicitly whitelisted FFI modules under `decode/`.
+- `cargo clippy --all-targets -- -D warnings` must pass. `clippy::pedantic` is enabled at the workspace level with these exceptions: `module_name_repetitions`, `must_use_candidate`, `missing_errors_doc` (until 1.0), `many_single_char_names`; `unwrap_used` and `expect_used` warn, so `-D warnings` keeps them out of non-test code.
+- `unsafe_code = "forbid"` is set for the workspace; the only exceptions are the OS bindings described below.
 
 ### Errors
 
 - `crates/core`: each module exposes a typed error enum built with `thiserror`. Errors carry context such as the file path or photo ID.
-- `src-tauri`: `anyhow` may be used internally. Errors that cross IPC are converted to a serializable `IpcError { code, message }`. `code` is a stable, machine-readable string, for example `decode.unsupported`.
+- `src-tauri`: `anyhow` may be used internally. Errors that cross IPC are converted to a serializable `IpcError { code, err, message }`. `code` is a stable, machine-readable string, for example `decode.unsupported`.
 - **No `unwrap()` or `expect()` in non-test code**, except on proven invariants. Those require a comment that starts with `// INVARIANT:`.
 - **Never hold a lock while rayon work runs** (2026-11-03). A rayon thread that waits for its parallel work runs other jobs of its pool meanwhile; if one needs the same lock, the thread waits for itself and the pool stops for good. Work that must run one at a time behind a lock (the RAW develop, `raw::one_at_a_time`) runs on a plain thread of its own, which never takes up other jobs.
 - One bad photo must never fail the batch ([NFR-011](PRD.md#nfr-011--robustness)). Return per-photo `Result`s and aggregate them.
@@ -52,7 +52,7 @@
 | Functions/vars | `snake_case` | `plan_crop` |
 | Constants | `SCREAMING_SNAKE_CASE` | `MAX_FILE_BYTES` |
 | Tests tied to a requirement | `fr_NNN_<behaviour>` | `fr_006_portrait_crop_matches_ratio` |
-| Benchmarks | `bench_<area>` | `bench_export_batch` |
+| Benchmarks | `measure_<area>` examples in `crates/core/examples/` | `measure_folder` |
 
 ## 3. TypeScript (UI)
 
@@ -77,7 +77,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
 - **Components:** build from shadcn/ui first. Add components with `npx shadcn@latest add <name>`, which places them in `ui/src/components/ui/`. Customize them there. Don't write a parallel component library. Feature components compose these primitives.
 - **Icons:** Lucide only (`lucide-react`). Import icons individually (`import { Crop } from "lucide-react"`). Default size is 16 px in dense UI and 20 px in toolbars, at the default stroke width. Icon-only buttons must have an `aria-label` and a tooltip.
 - **Styling:** use Tailwind utility classes and the shadcn theme tokens (`bg-background`, `text-muted-foreground`…). Never hard-code colours. Merge classes with `cn()` from `lib/utils.ts`. Use a 4 px spacing scale (Tailwind default).
-- Light and dark themes follow the OS setting, using shadcn's CSS-variable theming.
+- Light and dark themes follow the OS setting by default, or the System / Light / Dark choice in the version popover (`ui.theme`, FR-052), using shadcn's CSS-variable theming.
 - **Brand theme from the logo** (`ui/src/index.css`): **one accent per mode, never mixed:** `primary` is the logo's teal tile in light mode and its wooden frame in dark mode. Buttons, switches, checkboxes, the selected photo's ring, badges and focus rings all use `primary`, so they change together. Lines (`border`, `input`, `sidebar-border`) are a pale tint of the same accent; section cards draw theirs at 1.5 px, everything else at 1 px so the column headers stay aligned. The panels carry a faint cream (light) or warm brown (dark). Use the tokens (`bg-primary`, `ring-primary`), never the hex values. **Photos are judged on neutral ground:** surfaces right around photos keep a chroma of 0.01 or less, and the preview stage stays neutral black, so the theme never shifts how a photo's colours read (kept on 2026-11-01 when the owner weighed a teal or wood stage). A photo or sheet on the stage carries the `stage-photo` utility, a faint neutral outline, so its edge shows even when its border is black. The website (`site/`) follows the same rule.
 - **Logo:** at 64 px and below, use the **simplified tile** (`assets/logo-small.png`: frame + flower, no wordmark) through `ui/public/brand/mark-{28,56,84}.png`, with `srcSet` for 1x/2x/3x. The same tile supplies the favicon and every app-icon layer up to 64 px (`.ico`, `.icns`, `32x32`, `64x64`, `Square30x30`, `Square44x44`). Never let the webview downscale the full logo: WebKit's resampling turns its fine line art and text into noise. Regenerate all of these with `uv run scripts/small-icons.py` (Lanczos resampling).
 - **Selected options stand out:** a pressed toggle (segmented choices such as Crop to fill / Fit whole photo, date formats, colours) is filled with `primary`, set once in `ui/src/components/ui/toggle.tsx`. Never style a selected option grey.

@@ -12,7 +12,7 @@
 Fotollection is a **Tauri 2** desktop application ([ADR-0001](adr/0001-desktop-tauri-over-web.md)):
 
 - A **Rust core** does all image work: decoding, metadata, geocoding, clustering, cropping, stamping, encoding and file I/O.
-- A **thin web UI** (Vite + React + TypeScript, styled with Tailwind CSS, shadcn/ui components and Lucide icons; see [ADR-0007](adr/0007-ui-react-shadcn-lucide.md)) renders inside the operating system's own webview: WKWebView on macOS, WebView2 on Windows. No Chromium and no Node.js runtime are bundled.
+- A **thin web UI** (Vite + React + TypeScript, styled with Tailwind CSS, shadcn/ui components and Lucide icons; see [ADR-0007](adr/0007-ui-react-shadcn-lucide.md)) renders inside the operating system's own webview: WKWebView on macOS, WebView2 on Windows, WebKitGTK on Linux. No Chromium and no Node.js runtime are bundled.
 - The core is a plain Rust library with **no dependency on Tauri** ([ADR-0002](adr/0002-rust-core-crate-separation.md)), so it can be unit-tested, benchmarked and fuzzed on its own.
 
 ```mermaid
@@ -62,14 +62,14 @@ crates/
       image.rs           † # RgbImage + EXIF orientation transforms
       metadata.rs        † # EXIF allowlist + validation, embedded thumbnail (FR-002); one 128 KB head read gives the EXIF and the facts
       facts.rs           † # what each file is (FR-071): chroma subsampling, coding, bits, colour space by ICC name, sensor filter, DNG kind, decoder; `unusual()` for the grid badge
-      settings.rs        † # RenderSettings (in memory until projects land)
+      settings.rs        † # RenderSettings and the UI settings, the recent postcard addresses (`remember_address`)
       plan.rs            † # RenderPlan: centred crop, stamp, optional frame plan, 3 mm border (FR-004/006/040/067), a shared photo's fill round it all (`pad`, FR-075)
       sheet.rs           † # collage sheets: cells, photo areas, pairing, render (FR-035, ADR-0032); a postcard sheet's one photo and card half (FR-073)
       postcard.rs        † # a postcard's back: dashed stamp box, the message's and the address's lines, typed text in Xanh Mono (its italic), Patrick Hand (drawn with Xanh Mono's capital height, FR-076) or the user's font, Inter for missing letters, bold, oblique and underline (FR-073)
       frame.rs           † # info frame: settings, camera profiles, text, ratio-safe layout (FR-040)
       logo.rs            † # user PNG logos: validation + decode (ADR-0014)
       fonts.rs           † # user OTF/TTF fonts: validation + FontArc (FR-042)
-      settings_store.rs  † # settings.json v1: load/validate/atomic save (DATABASE.md §6)
+      settings_store.rs  † # settings.json v13: load/validate/atomic save (DATABASE.md §6)
       preview.rs         † # T2 LRU + preview rendering (FR-007)
       cancel.rs          † # CancellationToken
       stamp.rs           † # text inside the photo: DSEG14 Italic, date · place line + caption, LED glow (FR-004/005/033/036)
@@ -90,7 +90,7 @@ crates/
       places.rs          † # a photo's effective place (ADR-0027): set by hand → borrowed → GPS → none, with the user's names for renamed places; borrowing from another device's photo of the same scene (FR-005/031/032). GPX tracks are planned (FR-066)
       cluster.rs           # trip DBSCAN (Phase 2)
       library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag, date set by hand); the effective time with each body's clock offset (FR-030, ADR-0027)
-      project.rs         † # project tables v2: snapshot/restore by folder+path, FK validation, relocate/resolve folders
+      project.rs         † # project tables v10: snapshot/restore by folder+path, FK validation, relocate/resolve folders
       bundle.rs          † # .fotollection ZIP bundle: manifest + BLAKE3, allowlisted parts, zip-bomb limits (ADR-0016)
       cache_limit.rs     † # the disk cache's 2 GB limit: usage, LRU prune by modification time, clear, touch on hit (DATABASE.md §8)
       history.rs         † # undo/redo stack of inverse edits (FR-023)
@@ -117,7 +117,7 @@ src-tauri/               † # app shell: commands, protocol, capabilities
   src/collage.rs         † # Collage mode: sheets, their order, turning, Auto turn and Revert, sheet facts, the `sheet` preview (FR-035)
   src/places.rs          † # place search, dates and places set by hand, renamed places (FR-005, FR-032); every input checked here
   src/document.rs        † # New / Open / Save / Save As / Relink of .fotollection documents (FR-023)
-  src/menu.rs            † # native File/Edit/Window menu (macOS), rebuilt on language change
+  src/menu.rs            † # native File/Edit/View/Window menu (macOS), rebuilt on language change
   src/camera.rs          † # tethered capture (FR-062, FR-063, ADR-0028): connect, a session thread that owns the camera (live view, settings every 300 ms, queued jobs), shots written atomically into a session folder that becomes a tab, Save all and Delete photos, `quit_app` after the closing question; the Sony logic is written against a `CameraLink` trait and tested with a scripted camera
   src/open_with.rs       † # "Open with" (FR-054, ADR-0024): one route for macOS Opened events, command-line paths and second launches; the photo's folder as a tab
   src/timing.rs          † # start-up milestones printed only with FOTOLLECTION_TIMING (NFR-010, scripts/measure-startup.sh)
@@ -133,9 +133,9 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
   .oxlintrc.json         † # lint rules (bans dangerouslySetInnerHTML / eval)
   src/
     components/ui/       † # shadcn/ui components (copied in via the shadcn CLI, owned by us)
-    components/layout/   † # shared layout pieces (STYLE_RULE §4): side-panel, section-card, inspector-section, collapse, viewer-frame, stage-spinner, hint-layer, key-hints, keys-info (the keys popover behind the info button), notice-stack (the main view's notices: an error with its dismiss button, a camera session, a task's progress)
-    components/forms/    † # shared form controls (commit-input)
-    features/            † # one folder per feature (components + hooks): library/, culling/, best-shot/, viewer/, settings/, stamp/, frame/, fonts/, export/, places/, cameras/, capture/, project/, history/, open-with/, startup/, window/, appearance/, about/, print-advice/, modes/, simple/, collage/. Among them: about/panel-footer.tsx (the panel's version line and its popover), about/report-issue.tsx (Report a problem, FR-069), collage/auto-turn-buttons.tsx (Auto turn and Revert, FR-035)
+    components/layout/   † # shared layout pieces (STYLE_RULE §4): side-panel, section-card, inspector-section, panel-note, collapse, viewer-frame, stage-spinner, hint-layer, key-hints, keys-info (the keys popover behind the info button), notice-stack (the main view's notices: an error with its dismiss button, a camera session, a task's progress)
+    components/forms/    † # the lego blocks (STYLE_RULE §4): commit-input, field (Field, FieldLabel, Hint, Inset, ValueRow, RowList, FactLines, Stack), switch-field, segmented-toggle, swatch-toggle
+    features/            † # one folder per feature (components + hooks): library/, culling/, best-shot/, viewer/, settings/, stamp/, frame/, fonts/, export/, places/, cameras/, capture/, project/, history/, open-with/, startup/, appearance/, about/, print-advice/, modes/, simple/, collage/. Among them: about/panel-footer.tsx (the panel's version line and its popover), about/report-issue.tsx (Report a problem, FR-069), collage/auto-turn-buttons.tsx (Auto turn and Revert, FR-035)
     i18n/                † # i18next setup + typed keys (FR-020, ADR-0015)
     locales/             † # en.json (default), vi.json — bundled, never fetched
     ipc/bindings.ts      † # GENERATED from Rust types — do not edit
@@ -143,7 +143,7 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
     index.css            † # Tailwind layers + shadcn theme tokens (CSS variables)
 scripts/                 † # bootstrap, clean, check-docs, release.sh (RELEASE.md §4), small-icons.py (≤ 64 px icons from assets/logo-small.png)
 site/                    † # the website (Jekyll, GitHub Pages, EN + VI); screenshots/ makes its images from the real app on CC0 demo photos (site/README.md)
-.github/workflows/       † # ci.yml, docs.yml, release.yml (release on a version change, ADR-0021), installers.yml (builds the Windows MSI and NSIS installers when their configuration changes, publishes nothing), pages.yml (website, also every 6 hours)
+.github/workflows/       † # ci.yml, docs.yml, docs-with-code.yml (a code change comes with docs), release.yml (release on a version change, ADR-0021), installers.yml (builds the Windows MSI and NSIS installers when their configuration changes, publishes nothing), pages.yml (website, also every 6 hours)
 bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batch.sh (5,000-photo memory check), lib.sh, web/ (Chromium via Playwright), chart.mjs (EN + VI SVG charts), results/ (numbers only, incl. budgets.json mirrored from OPTIMIZATION §3)
 ```
 
@@ -158,7 +158,7 @@ bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batc
 | Project bundle | `zip` (MIT), deflate only via `flate2` + pure-Rust `miniz_oxide` | One-file `.fotollection` like `.docx`, readable by any unzip tool ([ADR-0016](adr/0016-self-contained-project-bundle.md)) |
 | Icons | Lucide (`lucide-react`) | Tree-shaken: import individual icons only |
 | Virtualized grid | `@tanstack/react-virtual` | Required for 1,000+ thumbnails ([NFR-001](PRD.md#nfr-001--library-load-time)) |
-| UI state | React state + a small store (`zustand`) | Server state lives in Rust. The UI only caches it |
+| UI state | React state and hooks | Server state lives in Rust. The UI only caches it |
 | IPC type bindings | `specta` + `tauri-specta` | TS types generated from Rust and checked in CI |
 | JPEG decode/encode | **Today:** `zune-jpeg` + `jpeg-encoder` (pure Rust) behind the `JpegCodec` trait ([ADR-0012](adr/0012-pure-rust-codecs-first.md)). `jpeg_layout` reads the header first: zune decodes only the layouts the corpus test proves, `jpeg-decoder` every other one and any file zune refuses ([ADR-0033](adr/0033-reference-jpeg-decoder.md)). **Candidate:** `turbojpeg` behind the same trait for DCT scaling and lossless crop ([ADR-0004](adr/0004-libjpeg-turbo-default-codec.md), superseded by ADR-0012) | Prints: 4:4:4, quality 95, ICC copied. Share exports: 4:2:0 (`share.rs`). Previews: 4:2:0 |
 | JPEG max-quality encode | `mozjpeg` (optional) | Opt-in "smallest file" mode |
@@ -170,12 +170,12 @@ bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batc
 | Colour management | `qcms` | Preserve or convert the ICC profile (`colour.rs`) |
 | Text rendering | `ab_glyph` `FontArc`: bundled Inter (OFL, variable weights) or a user OTF/TTF (FR-042) | `cosmic-text` if complex shaping is ever needed |
 | EXIF read | `kamadak-exif` | Allowlisted fields only. Also extracts the IFD1 thumbnail for T0 |
-| EXIF write | `little_exif` (candidate) | Writes the privacy-filtered metadata |
+| EXIF write | our own `exif_out.rs` (`little_exif` only in tests) | Writes the privacy-filtered metadata |
 | Reverse geocoding | GeoNames `cities1000`, packed by `crates/geodata`, indexed in a 1° grid at first use | Offline, 5.4 MB packed, no extra dependency ([ADR-0003](adr/0003-offline-geocoding-geonames.md)) |
 | Trip clustering | DBSCAN over (lat, lon, time) | Phase 2 |
-| Perceptual hash | `image_hasher` | Phase 2 |
-| Face detection | ONNX model via `ort` | Phase 2, on-device |
-| Parallelism | `rayon` + bounded `crossbeam-channel` | See [§5](#5-concurrency-and-memory-model) |
+| Perceptual hash | our own dHash and layout signature (`culling/`) | FR-024 |
+| Face detection | ONNX model via `tract-onnx` ([ADR-0018](adr/0018-face-models-and-runtime.md)) | On-device |
+| Parallelism | `rayon`, photos in flight bounded by memory (`export::inflight_for`) | See [§5](#5-concurrency-and-memory-model) |
 | Errors | `thiserror` (core), `anyhow` (shell only) | See [STYLE_RULE.md](STYLE_RULE.md) |
 | Project file | `serde_json` + versioned schema | [ADR-0010](adr/0010-project-file-format.md) |
 | GPX tracks | `gpx` (candidate; license checked by `cargo deny`) | Phase 2, [FR-031](PRD.md#fr-031--borrow-gps-from-a-phone-or-gpx-track) |
@@ -206,7 +206,7 @@ import → metadata → adjust → geocode → (cluster) → cull/select → pla
 | **render** | `RenderPlan` + pixels → pixels | Crop, then the **Photo Style look** (one 3D-LUT pass + tone curve + grain, [FR-039](PRD.md#fr-039--photo-style-looks)), then fit into the border, then stamp/caption inside the safe area. Overlays come after the look, so they are never tinted |
 | **color** | pixels + source ICC → sRGB pixels | `qcms` transform, one cached per profile ([FR-027](PRD.md#fr-027--srgb-conversion-for-labs), [FR-072](PRD.md#fr-072--our-own-develop-core)) |
 | **sharpen** | pixels → pixels | Output sharpening for size and paper (Phase 3, [FR-029](PRD.md#fr-029--output-sharpening)) |
-| **encode** | pixels → bytes | turbojpeg, ICC re-embedded, metadata filtered ([FR-010](PRD.md#fr-010--metadata-privacy-on-export)) |
+| **encode** | pixels → bytes | `jpeg-encoder` behind `JpegCodec` ([ADR-0012](adr/0012-pure-rust-codecs-first.md)), ICC re-embedded, metadata filtered ([FR-010](PRD.md#fr-010--metadata-privacy-on-export)) |
 | **write** | bytes → file | Written to a temp file, then atomically renamed. Removed if the user cancels |
 
 `RenderPlan` is pure and serializable. The **preview** and the **export** both consume the same plan, so what the user sees is what gets printed.
@@ -244,10 +244,10 @@ Commands marked † are implemented.
 | `refresh_library() -> ImportSummary` † | Scans the library's folders again and adds photos that appeared since; photos already known keep every edit, and a refresh that finds nothing marks nothing as edited | FR-001, FR-023 |
 | `list_photos(filter) -> { photos: [PhotoSummary], total, customStamps, folders: [FolderSummary], printCount, asideCount }` † | Data for the grid, sorted by capture time and filtered in Rust by flag, minimum rating, folders (empty = all) and view (`gallery` hides photos set aside; `print` and `aside` show one holding area). Summaries carry `rating`, `flag` and `queue`; `folders` lists every source folder with its unfiltered count | FR-003, FR-022, FR-050, FR-056 |
 | `get_settings()` / `set_settings(settings) -> SettingsState` † | Validated render settings plus a `revision` used to refresh previews | FR-004, FR-006 |
-| `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`, v3), theme (v6) and mode (`simple` / `collage` / `professional`, v10), stored per machine in `settings.json` | FR-020, FR-052, FR-048 |
+| `get_ui_settings()` / `set_ui_settings(ui) -> UiSettings` † | Interface language (`en` / `vi`, v3), theme (v6), mode (`simple` / `collage` / `professional`, v10) and export folders (`oneFolder` / `byDay`, v12, FR-009), stored per machine in `settings.json` | FR-020, FR-052, FR-048 |
 | `pick_export_folder() -> String?` † | Opens the destination dialog **in Rust** and remembers the choice | FR-009 |
 | `estimate_export(filter, only, ticked, sheets) -> ExportEstimate` † | For the same photos as `start_export`: the originals' total and the export's estimated size, from up to four photos encoded in memory with the current settings; nothing is written | FR-053 |
-| `start_export(filter, only, ticked, separate, sheets) -> JobId` † | `ticked` (the photos ticked in select mode, when there are some) exports only those (FR-050, v0.8.3). With `sheets`, the photos go out two to a print, one file `<first>+<second>.jpg` per sheet, or with `only` just the sheet holding that photo (FR-035). Exports exactly the photos `filter` keeps (the set the grid shows, including its folders), or only the photo `only` (the preview), to the chosen destination, as prints or share files (`render.exportTarget`); `separate` gives each source folder its own subfolder | FR-008, FR-009, FR-010, FR-022, FR-053, FR-055, FR-056 |
+| `start_export(filter, only, ticked, separate, sheets) -> JobId` † | `ticked` (the photos ticked in select mode, when there are some) exports only those (FR-050, v0.8.3). With `sheets`, the photos go out two to a print, one file `<first>+<second>.jpg` per sheet, or with `only` just the sheet holding that photo (FR-035). Exports exactly the photos `filter` keeps (the set the grid shows, including its folders), or only the photo `only` (the preview), to the chosen destination, as prints or share files (`render.exportTarget`); `separate` gives each source folder its own subfolder; inside, everything goes into one folder or a folder per day, as `ui.exportFolders` says (FR-009); with `sheets` and postcards on, each sheet is a postcard (FR-073) | FR-008, FR-009, FR-010, FR-022, FR-053, FR-055, FR-056 |
 | `cancel_job(job_id)` † | Cancel a running job | FR-011 |
 | `get_frame_config()` / `set_frame_settings(settings)` † | Info frame settings plus camera profiles (with EXIF-derived defaults) | FR-040 |
 | `set_camera_profile(profile)` † | Per-camera overrides: name, brand, lens, focal, aperture, photo style, logo kind | FR-040 |
@@ -269,9 +269,9 @@ Commands marked † are implemented.
 | `get_photo_stamp(id)` / `set_photo_stamp(id, stamp?)` † | One photo's own date stamp from the preview (FR-044); `null` follows the settings again. Undoable; the caption is validated in Rust | FR-044 |
 | `set_photo_caption(ids, caption?)` † | Photos' own line under the date (FR-036), from a collage sheet's preview; `null` uses the stamp's again. One undo step; validated in Rust like the stamp's caption | FR-036 |
 | `set_postcard_text(id, part, text?)` †, `get_postcard_text(id)` † | One part of a photo's postcard (FR-073), `message` or `address`; `null` or blanks leave its lines blank. At most 400 characters and 8 lines for the message, 200 and 4 for the address, no control character but line breaks, checked in Rust (`ERR-IPC-0022`). One undo step | FR-073 |
-| `postcard_cuts()` | The postcards whose message or address does not all fit its lines as the print sets them (`postcard::fit`), for the red warning on the card, its preview and the part's field; empty while postcards are off. Read only | FR-073 |
-| `postcard_text_gaps(filter, source, part, ticked) -> TextGaps`, `apply_postcard_text(filter, source, part, overwrite, ticked) -> u32` | How many other postcards shown (or ticked) lack this card's message or address, or have another; and putting it on them, the blank ones or all, in one undo step (`edit_photos`). The text is the card's own, read in Rust, never sent by the webview; `ERR-IPC-0023` when it is blank | FR-077 |
-| `recent_addresses() -> Vec<String>`, `forget_address(address)` | The addresses last typed on this machine's postcards, newest first, at most 8 (`settings::remember_address`, saved in `settings.json`); forgetting one saves the list | FR-077 |
+| `postcard_cuts()` † | The postcards whose message or address does not all fit its lines as the print sets them (`postcard::fit`), for the red warning on the card, its preview and the part's field; empty while postcards are off. Read only | FR-073 |
+| `postcard_text_gaps(filter, source, part, ticked) -> TextGaps` †, `apply_postcard_text(filter, source, part, overwrite, ticked) -> u32` † | How many other postcards shown (or ticked) lack this card's message or address, or have another; and putting it on them, the blank ones or all, in one undo step (`edit_photos`). The text is the card's own, read in Rust, never sent by the webview; `ERR-IPC-0023` when it is blank | FR-077 |
+| `recent_addresses() -> Vec<String>` †, `forget_address(address)` † | The addresses last typed on this machine's postcards, newest first, at most 8 (`settings::remember_address`, saved in `settings.json`); forgetting one saves the list | FR-077 |
 | `apply_stamp_to_all(id)` / `reset_photo_stamps()` † | "Apply to all" in the preview (the photo's stamp becomes the setting and no photo keeps its own) and "Reset" in the settings panel (every photo follows the settings again) | FR-044 |
 | `undo()` / `redo()` † | History (also Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z) | FR-023 |
 | `list_fonts()` / `import_font()` / `remove_font(id)` † | User fonts; import opens a **Rust-side** dialog and copies a validated file | FR-042 |

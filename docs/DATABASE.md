@@ -18,10 +18,10 @@
 | Error log `logs/errors.log` … `errors.4.log` † | Text, one line per error or panic ([ERROR_CONTROL.md §3](ERROR_CONTROL.md#3-status-of-the-plan-v091)) | App data dir | `error_log.rs` | Rotated at 1 MB, 5 files at most | No: paths and file names are cut to their extension |
 | Camera logos `logos/<id>.png` † | PNG, validated copy | App config dir | `logo.rs` | Until removed | No |
 | User fonts `fonts/<id>.ttf\|otf` † | TTF/OTF, validated copy | App config dir | `fonts.rs` | Until removed | No |
-| Looks `looks/<hash>.cube`, planned v0.10.0 ([FR-070](PRD.md#fr-070--looks-from-lut-files)) | `.cube` text, validated copy named by content hash; the settings gain `render.look` `{ id, strength }` and photos a sparse `look` override (settings and project schema bumps); a project embeds the LUTs it uses | App config dir | `look.rs` | Until removed | No |
+| Looks `looks/<hash>.cube`, planned v0.11.0 ([FR-070](PRD.md#fr-070--looks-from-lut-files)) | `.cube` text, validated copy named by content hash; the settings gain `render.look` `{ id, strength }` and photos a sparse `look` override (settings and project schema bumps); a project embeds the LUTs it uses | App config dir | `looks.rs` | Until removed | No |
 | Recent projects `recent.json` | JSON array of up to 10 paths | App config dir | `settings.rs` | Until cleared | Yes: paths |
 | Preset library `presets/*.fotopreset` | JSON, one file per preset ([§7](#7-presets)) | App config dir | `presets.rs` | Until the user deletes them | No |
-| Thumbnail cache `thumbs/` | JPEG files + `index.bin` ([§8](#8-thumbnail-cache)) | App cache dir | `thumbs.rs` | LRU, 2 GB cap, can be cleared at any time | **Yes**: image content |
+| Thumbnail cache `thumbs/` † | JPEG files, no index file ([§8](#8-thumbnail-cache)) | App cache dir | `thumbs.rs` | LRU, 2 GB cap, can be cleared at any time | **Yes**: image content |
 | Logs `logs/*.log` | Text, rotated (3 × 5 MB) | App log dir | shell | Rotated | File names only ([SECURITY.md §5](SECURITY.md#5-privacy)) |
 | Built-in data | Compiled into the binary ([§5](#5-built-in-datasets)) | — | `geocode.rs`, `presets.rs`, `print_size.rs` | Per release | No |
 | In-memory state | Columnar arenas ([§3.3](#33-in-memory-layout)) | RAM | `library.rs`, `history.rs` | Process lifetime | — |
@@ -210,7 +210,7 @@ Parsing is strict: `serde` with `deny_unknown_fields`, typed enums, and range ch
 ### 4.3 Versioning and migration
 
 - `schema_version` is a monotonically increasing integer. Every **released** version is frozen and never edited.
-- Migrations are pure functions `v(N) → v(N+1)` in `crates/core/src/project/migrate.rs`, applied in sequence when a project is opened. The migrated file is written back only on the next save, and the original stays as `.bak`.
+- Migrations live in `crates/core/src/project.rs`: each version only adds optional fields, so an older file loads with their defaults when a project is opened. The migrated file is written back only on the next save, and the original stays as `.bak`.
 - An app that sees a `schema_version` newer than it knows **refuses to open the file read-write** and offers read-only viewing ([NFR-013](PRD.md#nfr-013--project-safety)).
 - Every version has a fixture `crates/core/tests/fixtures/project/v{N}.fotollection`. Tests load each fixture, migrate it to the current version, and compare with a golden result ([TESTING.md §5](TESTING.md#5-golden-images)).
 
@@ -225,7 +225,7 @@ Parsing is strict: `serde` with `deny_unknown_fields`, typed enums, and range ch
 | 7 | 0.8.x | `cameras[]`: corrected camera clocks (FR-030, [ADR-0027](adr/0027-effective-time-and-place.md)), one row per body with `make`, `model`, `serial` (when the camera writes one), `offset_s` (seconds added to the camera's time, at most a month either way) and `tz_minutes` (optional, ±14 h); bodies without a correction are not written. Rows outside the limits are dropped on load. **Migration v6 → v7:** optional table, read as is, so older projects have no correction. Fixture `v7.fotollection`, test `fr_030_v7_fixture_keeps_camera_clocks_and_drops_impossible_ones` |
 | 8 | 0.8.x | `photos[].date` (a date set by hand, FR-032), `photos[].place` + `place_source` (a GeoNames id set by hand or borrowed, FR-032, FR-031) and `places[]` (`geonames_id`, `name`: places the user renamed, FR-005), following [ADR-0027](adr/0027-effective-time-and-place.md). Dates outside 1826–2100, unknown place ids, sources other than `manual`/`borrowed` and empty names are dropped on load. **Migration v7 → v8:** optional fields, read as is. Fixture `v8.fotollection`, tests `fr_032_v8_fixture_keeps_dates_places_and_names_and_drops_impossible_ones` and `fr_032_dates_and_places_round_trip_through_the_project` |
 | 9 | 0.9.x | `photos[].collage` (the photo's position in the collage order, one order for the whole library, set when the user drags a photo onto another cell), `photos[].sheet_turned` (the sheet this photo starts is turned against it) `photos[].collage_crop` and `photos[].collage_straighten` (the photo's own crop and straightening on a sheet; absent, its print's), FR-035, `photos[].caption` (the photo's own line under the date, FR-036) and `photos[].collage_rotation` (its quarter turns in its collage cell, FR-035). **Migration v8 → v9:** optional fields, read as is (absent: the view's own order, not turned). Fixture `v9.fotollection`, test `fr_035_v9_fixture_keeps_the_collage_order_and_v8_has_none` |
-| 10 | 0.9.4 | `photos[].postcard`: `{message, address}`, the text typed on the photo's postcard (FR-073), the message at most 400 characters and 8 lines, the address 200 and 5; line breaks kept, other control characters dropped on load, both blank means none. **Migration v9 → v10:** optional, absent means blank lines. Fixture `v10.fotollection`, test `fr_073_v10_fixture_keeps_postcard_texts_within_limits` |
+| 10 | 0.9.4 | `photos[].postcard`: `{message, address}`, the text typed on the photo's postcard (FR-073), the message at most 400 characters and 8 lines, the address 200 and 4; line breaks kept, other control characters dropped on load, both blank means none. **Migration v9 → v10:** optional, absent means blank lines. Fixture `v10.fotollection`, test `fr_073_v10_fixture_keeps_postcard_texts_within_limits` |
 
 ### 4.4 Write protocol
 
@@ -246,7 +246,7 @@ Because rows are sparse and shared values are normalized, the file size grows wi
 | 1,000 | ~0.15 MB | < 10 ms |
 | 10,000 | ~1.5 MB | < 50 ms ([OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets)) |
 
-These budgets are measured by `bench_project_save`. If they are exceeded, see [§10](#10-when-to-adopt-a-real-database).
+These budgets are measured by `crates/core/examples/measure_project.rs`. If they are exceeded, see [§10](#10-when-to-adopt-a-real-database).
 
 ## 5. Built-in datasets
 
@@ -266,8 +266,8 @@ These are read-only and compiled into the binary or bundled as resources, so the
 ```json
 {
   "format": "fotollection-settings",
-  "schema_version": 11,
-  "ui": { "language": "vi", "theme": "system", "mode": "professional" },
+  "schema_version": 13,
+  "ui": { "language": "vi", "theme": "system", "mode": "professional", "exportFolders": "oneFolder" },
   "render": {
     "printSize": "custom-1",
     "stamp": { "enabled": true, "format": "retro", "corner": "bottomRight", "color": "retroOrange",
@@ -275,8 +275,11 @@ These are read-only and compiled into the binary or bundled as resources, so the
     "customSizes": [ { "id": "custom-1", "name": "4×6 US", "shortMm": 102, "longMm": 152, "unit": "in" } ],
     "placeFormat": "city",
     "exportTarget": { "kind": "print" },
+    "shareFill": { "enabled": false, "ratio": [1, 1], "color": [255, 255, 255] },
     "border": false,
-    "collage": { "ratio": "photo", "marginMm": 5, "size": null, "lockRatio": true, "cutLine": true }
+    "collage": { "ratio": "photo", "marginMm": 5, "size": null, "lockRatio": true, "cutLine": true, "fill": false,
+                 "postcard": { "enabled": false, "orientation": "landscape", "lines": 4, "font": null,
+                               "face": "typewriter", "credit": "", "ink": "auto", "textSize": "medium" } }
   },
   "frame": {
     "enabled": true, "fit": "crop", "color": "white", "dateFormat": "slash", "font": 1, "logoStyle": "classic",
@@ -287,14 +290,15 @@ These are read-only and compiled into the binary or bundled as resources, so the
     { "id": 1, "make": "Panasonic", "model": "DC-GX9", "displayName": "LUMIX GX9", "brandText": "LUMIX",
       "lens": "Индустар-50-2", "focalMm": 50.0, "fNumber": 4.0, "photoStyle": "L. Monochrome D", "logo": "text" }
   ],
-  "fonts": [ { "id": 1, "name": "DSEG7 Classic", "format": "ttf" } ]
+  "fonts": [ { "id": 1, "name": "DSEG7 Classic", "format": "ttf" } ],
+  "recentAddresses": [ "Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1" ]
 }
 ```
 
 `render.printSize` is a built-in `PrintSize.id`, a `customSizes[].id`, or `"original"`, which keeps each photo's own ratio ([FR-045](PRD.md#fr-045--original-aspect-ratio)). `"original"` needs no new field, so it did not change the schema version. Builds from before FR-045 reject the value and fall back to defaults; none of them was released.
 
 - **`cameras` is a table** (N1–N3): the key is `id`, `(make, model)` is unique, and every override is optional (sparse, N5). A missing value falls back to EXIF or to a derived default, which is computed and never stored (N4). A row is created the first time a camera is imported.
-- **`fonts` is a table** (FR-042): `id` is the key, and the file lives at `fonts/<id>.<ttf|otf>`. `render.stamp.font` and `frame.font` are foreign keys. A dangling key falls back to Inter on load (N7) rather than failing.
+- **`fonts` is a table** (FR-042): `id` is the key, and the file lives at `fonts/<id>.<ttf|otf>`. `frame.font` and `render.collage.postcard.font` are foreign keys (`render.stamp.font` was dropped in v5). A dangling key falls back to Inter on load (N7) rather than failing.
 - **`render.customSizes`** (FR-043): values are in mm, `unit` only affects labels, and `printSize` may reference a custom `id`.
 - **`ui`** (FR-020): per-machine interface preferences: `language` (`"en"` or `"vi"`, default `"en"`), `theme` (v6), `mode` (v10: `simple`, `collage` or `professional`, the default) and `exportFolders` (v12: `oneFolder`, the default, or `byDay`, FR-009). They are never copied into a project file, so opening a project on another machine keeps that machine's language.
 - **Logos** live next to the file as `logos/<camera-id>.png`, copied in after validation ([ADR-0014](adr/0014-user-supplied-brand-logos.md)). The JSON never references paths outside the config dir. `logo: "image"` means the file exists.
@@ -303,7 +307,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
   - A missing file means defaults.
   - A `schema_version` newer than the app understands means defaults, and the file is **never overwritten**.
   - An invalid file (bad JSON, unknown fields, duplicate camera rows, unknown print size) is moved to `.json.corrupt`, and defaults are used.
-- **Not here:** per-project choices (ratings, per-photo sizes and crops) belong in the project file ([§4](#4-project-file-schema)) once FR-023 lands.
+- **Not here:** per-project choices (ratings, per-photo sizes and crops) belong in the project file ([§4](#4-project-file-schema)).
 
 | Version | App version | Change |
 |---------|-------------|--------|
@@ -317,7 +321,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 | 8 | 0.4.x | `render.exportTarget`: `{"kind": "print"}` or `{"kind": "share", "preset": {"kind": "original" \| "facebook" \| "instagram" \| "custom", "longEdge": 640–6000}}` (FR-053). **Migration v7 → v8:** absent means print; a custom edge out of range is clamped. Fixture `v7.json`, test `fr_053_v7_files_default_to_print_and_a_share_target_round_trips` |
 | 9 | 0.8.x | `frame.border`: in Crop to fill, a 3 mm border in the frame colour on the top and sides, inside the print size (FR-065). **Migration v8 → v9:** absent means off. Fixture `v8.json`, test `fr_065_v8_files_have_no_border_and_the_border_round_trips` |
 | 10 | 0.9.x | `render.border`: the 3 mm border on every print, with or without the info frame, inside the print size (FR-067). `ui.mode`: `simple` \| `collage` \| `professional` (FR-048), absent means `professional`. `render.collage`: `ratio` (`photo` \| `sheet` \| `fourThree` \| `square`), `marginMm` (0–20, default 5), `size` (`null` for the suggested size, or `{shortMm, longMm}`, 10–1000), `lockRatio`, `cutLine`, `fill` (each photo fills its cell, no white) (FR-035); absent means the defaults, and values out of range are clamped. `render.borderColor`: `white` \| `black`, the 3 mm border's colour and a collage sheet's paper round its photos (FR-067, FR-035), absent means `white`; an info frame keeps its own colour. `render.stamp.size`: `small` \| `medium` \| `large` (FR-004), absent means `medium`; the same field in a photo's own stamp (`photos[].stamp.size` in the project, read with the same default). **Migration v9 → v10:** a v9 `frame.border: true` becomes `render.border: true` only when the info frame was on in Crop to fill, where the border showed (test `fr_067_a_v9_border_without_the_frame_stays_off`); `frame.border` is then always written as `false` and ignored. Fixture `v9.json`, test `fr_067_a_v9_border_moves_to_every_print_and_round_trips` |
-| 11 | 0.9.4 | `render.collage.postcard` (FR-073): `enabled`, `orientation` (`landscape` \| `portrait`), `lines` (3–4, clamped, default 4), `font` (a user font id, or `null` for the bundled Xanh Mono), `credit` (a small line under every card's writing lines, at most 80 characters, no control characters; empty prints nothing), `ink` (`auto` \| `blue` \| `sepia` \| `red`, the typed text's colour; `auto` is near-black on white paper and near-white on black), `textSize` (`small` \| `medium` \| `large`, 3.4, 4.2 or 5.2 mm, smaller when the lines are closer), `messageStyle` and `addressStyle` (`{bold, italic, underline}`), and `lines` now counts the message's lines (the address always has 3). **Migration v10 → v11:** absent means off. Fixture `v10.json`, test `fr_073_v10_files_have_no_postcard_and_it_round_trips` |
+| 11 | 0.9.4 | `render.collage.postcard` (FR-073): `enabled`, `orientation` (`landscape` \| `portrait`), `lines` (3–4, clamped, default 4), `font` (a user font id, or `null` for the bundled Xanh Mono), `credit` (a small line under every card's writing lines, at most 80 characters, no control characters; empty prints nothing), `ink` (`auto` \| `blue` \| `sepia` \| `red`, the typed text's colour; `auto` is near-black on white paper and near-white on black), `textSize` (`small` \| `medium` \| `large`, 3.4, 4.2 or 5.2 mm, smaller when the lines are closer), `messageStyle` and `addressStyle` (`{bold, italic, underline}`), and `lines` now counts the message's lines (the address has 3, or 4 when its text needs them, since v0.9.5). **Migration v10 → v11:** absent means off. Fixture `v10.json`, test `fr_073_v10_files_have_no_postcard_and_it_round_trips` |
 | 12 | 0.9.6 | `render.shareFill` (FR-075): `enabled`, `ratio` (`[w, h]`, each 1–100 and at most 4:1, clamped), `color` (`[r, g, b]`, sRGB); absent means off, 1:1, white. `ui.exportFolders` (FR-009): `oneFolder` (every file straight into the destination) \| `byDay` (a `YYYY-MM-DD` folder per day). **Migration v11 → v12:** an absent fill is off; an absent `exportFolders` means `oneFolder`, also for an update from a version that always exported by day (owner's choice, 2026-11-04). Fixture `v11.json`, tests `fr_009_v11_files_export_into_one_folder_and_by_day_round_trips` and `fr_075_v11_files_have_no_fill_and_it_round_trips` |
 | 13 | 0.9.7 | `render.collage.postcard.face` (FR-076): `typewriter` (Xanh Mono) \| `handwriting` (Patrick Hand), the bundled face used when `font` is `null`. `recentAddresses` (FR-077): the addresses last typed on this machine's postcards, newest first, at most 8, each checked like a typed address (200 characters, 4 lines, no control characters) and kept only when valid and distinct; never written into a project bundle. **Migration v12 → v13:** an absent face means `typewriter`, absent addresses none. Fixture `v12.json`, test `fr_076_v12_files_type_in_the_typewriter_and_the_face_round_trips` |
 
@@ -352,7 +356,7 @@ Presets work like Lightroom presets, applied to *print* settings ([FR-038](PRD.m
 
 ## 8. Thumbnail cache
 
-- **Layout:** `thumbs/<first 2 hex chars>/<blake3(version ‖ path ‖ size ‖ mtime)>.<tier>.jpg`, where `version` is `thumbs::CACHE_VERSION` (3 since v0.9.1, 2 since v0.8.1; v0.8.0 and before had none). Tiers T1 and T2 are defined in [OPTIMIZATION.md §4.1](OPTIMIZATION.md#41-multi-tier-preview). Thumbnails are of the **unstyled** source. Photo Style and stamps are applied live in the preview, so changing a preset never invalidates the cache.
+- **Layout:** `thumbs/<first 2 hex chars>/<blake3(version ‖ path ‖ size ‖ mtime)>.<tier>.jpg`, where `version` is `thumbs::CACHE_VERSION` (4 since v0.9.3, for the sRGB screen images; 3 since v0.9.1, 2 since v0.8.1; v0.8.0 and before had none). Tiers T1 and T2 are defined in [OPTIMIZATION.md §4.1](OPTIMIZATION.md#41-multi-tier-preview). Thumbnails are of the **unstyled** source. Photo Style and stamps are applied live in the preview, so changing a preset never invalidates the cache.
 - **Recency:** no index file: each cache file's modification time is its last use. A hit refreshes it at most once a day (`cache_limit::touch`), so browsing does not write to disk.
 - **Eviction:** least-recently-used over `thumbs/` and `analysis/` together, when the total passes **2 GB** (`cache_limit::LIMIT_BYTES`), down to 90 % of it. It runs on the background pool after start-up and after each batch of thumbnails; it also removes `.part` files older than an hour (writes that never finished). Measured: 0.22 s to walk 70,000 files; deleting 38,500 takes 7 s, in the background (OPTIMIZATION.md §5).
 - **Invalidation:** the key includes size and mtime, so a changed source automatically misses the cache. A decoder fix that changes the pixels of files already seen bumps `CACHE_VERSION`, which changes every key: thumbnails and analyses (§8.1, same key) are made again once ([ADR-0033](adr/0033-reference-jpeg-decoder.md)). Old entries age out through LRU.
