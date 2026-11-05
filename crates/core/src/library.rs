@@ -371,6 +371,8 @@ pub struct PhotoSummary {
     pub place_source: Option<PlaceSource>,
     /// A file outside the common path (FR-071), badged in the grid.
     pub unusual: bool,
+    /// A camera RAW file, badged RAW in the grid and the preview.
+    pub raw: bool,
 }
 
 #[derive(Default)]
@@ -870,6 +872,7 @@ impl Library {
             .file_name()
             .map(|n| n.to_string_lossy().into_owned())
             .unwrap_or_default();
+        let raw = crate::raw::is_raw_name(&record.file_name) || record.facts.sensor.is_some();
         Some(PhotoSummary {
             id,
             file_name: record.file_name,
@@ -894,6 +897,7 @@ impl Library {
                 .map(|p| p.source)
                 .or((record.flags & flags::HAS_GPS != 0).then_some(PlaceSource::Gps)),
             unusual: record.facts.unusual(),
+            raw,
         })
     }
 

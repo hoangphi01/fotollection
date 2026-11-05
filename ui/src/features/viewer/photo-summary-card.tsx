@@ -41,8 +41,8 @@ export function PhotoSummaryCard({ photo, details }: PhotoSummaryCardProps) {
       ? `${details.width} × ${details.height} px · ${formatMegapixels(details.width, details.height)} MP · ${formatBytes(details.fileBytes ?? 0)}`
       : t('common.loading'),
   ].filter(Boolean)
-  // RAW or not at a glance (owner, 2026-11-05): a sensor's kind is known only for RAW files.
-  const raw = details?.facts?.sensor != null
+  // RAW or not at a glance (owner, 2026-11-05), as the grid's tile says it.
+  const raw = photo.raw
   const ext = photo.fileName.split('.').pop()?.toUpperCase() ?? ''
   const kind = raw ? 'RAW' : ext === 'JPG' ? 'JPEG' : ext
   return (

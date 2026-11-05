@@ -1302,6 +1302,8 @@ export type PhotoSummary = {
 	placeSource: PlaceSource | null,
 	/**  A file outside the common path (FR-071), badged in the grid. */
 	unusual: boolean,
+	/**  A camera RAW file, badged RAW in the grid and the preview. */
+	raw: boolean,
 };
 
 /**  A town or city. */

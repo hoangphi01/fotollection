@@ -22,6 +22,16 @@ const LIMITS: fotollection_oscodec::Limits = fotollection_oscodec::Limits {
 /// The RAW format of `bytes` (the head of a file is enough), or `None` for anything else,
 /// including a plain TIFF. Reads only inside `bytes`, so a truncated or hostile file cannot
 /// make it panic.
+/// File names of the camera RAW formats the app reads, badged RAW in the grid and the
+/// preview (owner, 2026-11-05). A TIFF may come from a scanner, so it is not one.
+pub fn is_raw_name(name: &str) -> bool {
+    const RAW: &[&str] = &["dng", "rw2", "cr2", "cr3", "nef", "arw", "raf", "orf"];
+    std::path::Path::new(name)
+        .extension()
+        .and_then(|e| e.to_str())
+        .is_some_and(|e| RAW.iter().any(|x| e.eq_ignore_ascii_case(x)))
+}
+
 pub fn kind(bytes: &[u8]) -> Option<RawKind> {
     if bytes.starts_with(b"IIU\0") {
         return Some(RawKind::Rw2);
@@ -570,5 +580,24 @@ mod tests {
             }
         }
         Ok(())
+    }
+
+    #[test]
+    fn raw_names_are_camera_formats_not_tiff_or_jpeg() {
+        for name in [
+            "P1067968.RW2",
+            "a.cr3",
+            "b.NEF",
+            "c.dng",
+            "d.arw",
+            "e.RAF",
+            "f.orf",
+            "g.CR2",
+        ] {
+            assert!(is_raw_name(name), "{name}");
+        }
+        for name in ["scan.tif", "x.jpg", "y.HEIC", "z.png", "rw2", "a.rw2.jpg"] {
+            assert!(!is_raw_name(name), "{name}");
+        }
     }
 }
