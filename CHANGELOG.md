@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.11.1] - 2026-11-06
+
 ### Highlights
 
 - Fixes: instant previews keep the photo on screen, and never mix up photos after another project is opened
