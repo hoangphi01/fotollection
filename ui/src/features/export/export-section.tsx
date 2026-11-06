@@ -108,7 +108,9 @@ export function ExportSection({
             <p>
               {t('export.exported', { count: state.summary.exported })}
               {state.summary.failed.length > 0 &&
-                `, ${t('export.failed', { count: state.summary.failed.length })}`}{' '}
+                `, ${t('export.failed', { count: state.summary.failed.length })}`}
+              {(state.summary.skipped ?? 0) > 0 && `, ${t('export.skipped', { count: state.summary.skipped })}`}
+              {(state.summary.overLimit ?? 0) > 0 && `, ${t('export.overLimit', { count: state.summary.overLimit })}`}{' '}
               →{' '}
               {folderName(state.summary.destination)}
             </p>
@@ -151,7 +153,11 @@ export function ExportSection({
       >
         {[
           t(share ? 'export.target.share' : 'export.target.print'),
+          ...(ui.exportSubfolder ? [ui.exportSubfolder] : []),
           t(byDay ? 'export.days.byDay' : 'export.days.oneFolder'),
+          ...(ui.exportNaming?.template && ui.exportNaming.template !== 'original'
+            ? [t(`exportDialog.templates.${ui.exportNaming.template}`)]
+            : []),
           t('export.qualityLine', { quality: ui.exportQuality }),
           ui.exportDestination ? folderName(ui.exportDestination) : t('export.chooseDestination'),
         ].join(' · ')}

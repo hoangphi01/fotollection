@@ -89,7 +89,61 @@ pub struct UiSettings {
     /// Absent before settings v16.
     #[serde(default)]
     pub export_destination: Option<String>,
+    /// A subfolder of the destination the export goes into (FR-009, Lightroom's *Put in
+    /// subfolder*), one level, cleaned; `None` writes into the destination. Absent before
+    /// settings v16.
+    #[serde(default)]
+    pub export_subfolder: Option<String>,
+    /// How exported files are named (FR-104). Absent before settings v16: the photo's name.
+    #[serde(default)]
+    pub export_naming: crate::naming::ExportNaming,
+    /// What an export does with a file of the same name (FR-009). Absent before settings
+    /// v16: add a number, as exports always did.
+    #[serde(default)]
+    pub export_existing: ExistingFiles,
+    /// What the exported files say about the photo (FR-010); GPS never. Absent before
+    /// settings v16: the camera details, as exports always wrote.
+    #[serde(default)]
+    pub export_metadata: ExportMetadata,
+    /// The largest file an export writes, in KB of 1,000 bytes (FR-105); `None` for no limit.
+    /// Absent before settings v16.
+    #[serde(default)]
+    pub export_limit_kb: Option<u32>,
+    /// Whether the app looks for a newer version when it starts (FR-103). Absent before
+    /// settings v16: on, as the owner asked (2026-11-06), until the user turns it off.
+    #[serde(default = "default_check_updates")]
+    pub check_updates_at_start: bool,
 }
+
+/// What an export does when a file of the same name is already there (FR-009, Lightroom's
+/// *Existing files*).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum ExistingFiles {
+    /// `name_1.jpg`, `name_2.jpg`: nothing is overwritten.
+    #[default]
+    AddNumber,
+    /// The existing file stays and the photo is not written.
+    Skip,
+    /// The existing file is replaced, once the new one is complete.
+    Replace,
+}
+
+/// What an exported file says about the photo (FR-010). GPS is never written.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum ExportMetadata {
+    /// Camera, lens, exposure, capture time and Fotollection's name (`exif_out`'s allowlist).
+    #[default]
+    Camera,
+    /// The capture time and Fotollection's name only.
+    DateOnly,
+    /// No EXIF at all.
+    Nothing,
+}
+
+/// File-size limits one can set, in KB (FR-105).
+pub const EXPORT_LIMIT_KB_RANGE: std::ops::RangeInclusive<u32> = 100..=50_000;
 
 /// Export qualities one can choose (FR-092).
 pub const EXPORT_QUALITY_RANGE: std::ops::RangeInclusive<u8> = 60..=100;
@@ -131,6 +185,9 @@ const fn default_filmstrip() -> bool {
 const fn default_export_quality() -> u8 {
     crate::export::EXPORT_QUALITY
 }
+const fn default_check_updates() -> bool {
+    true
+}
 const fn default_export_ask() -> bool {
     true
 }
@@ -151,6 +208,12 @@ impl Default for UiSettings {
             export_ask: default_export_ask(),
             export_separate: false,
             export_destination: None,
+            export_subfolder: None,
+            export_naming: crate::naming::ExportNaming::default(),
+            export_existing: ExistingFiles::default(),
+            export_metadata: ExportMetadata::default(),
+            export_limit_kb: None,
+            check_updates_at_start: default_check_updates(),
         }
     }
 }
@@ -179,6 +242,14 @@ impl UiSettings {
         {
             self.export_destination = None;
         }
+        // Names from the webview never leave the destination (SECURITY.md §2).
+        self.export_subfolder = self
+            .export_subfolder
+            .and_then(|f| crate::naming::sanitize_component(&f));
+        self.export_naming = self.export_naming.sanitized();
+        self.export_limit_kb = self
+            .export_limit_kb
+            .map(|kb| kb.clamp(*EXPORT_LIMIT_KB_RANGE.start(), *EXPORT_LIMIT_KB_RANGE.end()));
         self
     }
 

@@ -262,6 +262,7 @@ fn main() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let sampling = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(true));
     let sampler = {

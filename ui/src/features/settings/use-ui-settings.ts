@@ -22,6 +22,14 @@ let current: Required<UiSettings> = {
   exportAsk: true,
   exportSeparate: false,
   exportDestination: null,
+  // Lightroom's file rules (FR-009, FR-010, FR-104, FR-105), as Rust's defaults.
+  exportSubfolder: null,
+  exportNaming: { template: 'original', text: '', start: 1 },
+  exportExisting: 'addNumber',
+  exportMetadata: 'camera',
+  exportLimitKb: null,
+  // The update check at start (FR-103): on until the user turns it off.
+  checkUpdatesAtStart: true,
 }
 let requested = false
 const listeners = new Set<() => void>()

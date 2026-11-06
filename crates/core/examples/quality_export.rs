@@ -73,6 +73,7 @@ fn main() {
             group_for: &|_| None,
             by_day: true,
             postcard_font: None,
+            files: &fotollection_core::export::ExportFiles::default(),
         },
         default_codec().as_ref(),
         &CancellationToken::new(),

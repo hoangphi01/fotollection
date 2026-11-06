@@ -8,10 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: an export dialog as Lightroom's: presets, a quality slider that says what prints well, subfolders, file names, a size limit and metadata choices
+- UI update: a new look in Be Vietnam Pro, controls with depth, one height for every control, red for every remove and reset
+- UI update: on macOS the title bar takes the app's own colours
+- Fixes: *New project* no longer drops unsaved work after a restart
+
 ### Added
 
 - **New project asks for its name** (FR-023): a small dialog, *Create* or *Cancel*.
 - **An export dialog, as Lightroom's** (FR-093): *Export* opens it, with presets on the left (prints, Facebook, Instagram, original size, custom) and every choice on the right: where the photos go, by day or in one folder, the quality, the size and the names. Tick *Don't ask again* and *Export* exports at once; Settings → *Export* holds the same choices and *Ask every time*. The folder, the quality and the rest are kept for next time.
+- **Everything of Lightroom's Export dialog that a print needs** (FR-009, FR-010, FR-104, FR-105): put the export in a **subfolder**; choose what happens to a file already there (**add a number**, **skip**, **replace**); **name the files** as Lightroom's templates (date, original name, your own text and a number), with a live example; **limit the file size** for a lab's upload; keep the **camera details**, the **date only** or **nothing** in the files, GPS always removed.
 - **Export quality on a slider** (FR-092), from 60 to 100, prints at **90** by default (95 before: a third larger for a difference no one sees on paper, so a print could weigh more than the camera's own JPEG): the size estimate follows it, and a badge says what it is good for, measured on real prints: *Prints beautifully* from 90, *Prints well* from 75, below that *Screens only*.
 
 ### Fixed

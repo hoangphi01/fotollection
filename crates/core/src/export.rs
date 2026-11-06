@@ -77,6 +77,47 @@ pub struct ExportSummary {
     /// has no u64), so the UI can say how much lighter the export is (FR-053).
     pub source_bytes: f64,
     pub output_bytes: f64,
+    /// Photos not written because a file of their name was there and the rule is *Skip*
+    /// (FR-009).
+    #[serde(default)]
+    pub skipped: u32,
+    /// Files still over the size limit at the lowest quality (FR-105).
+    #[serde(default)]
+    pub over_limit: u32,
+}
+
+/// The rules for the files an export writes, kept per machine (settings v16): Lightroom's
+/// *Export location*, *File naming*, *Limit file size* and *Metadata* (FR-009, FR-010,
+/// FR-104, FR-105).
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct ExportFiles {
+    /// One cleaned folder name under the destination (and the source folder's, when apart).
+    pub subfolder: Option<String>,
+    pub naming: crate::naming::ExportNaming,
+    pub existing: crate::settings::ExistingFiles,
+    pub metadata: crate::settings::ExportMetadata,
+    /// The largest file, in bytes.
+    pub limit: Option<u64>,
+}
+
+impl ExportFiles {
+    /// The rules as the user's settings give them.
+    pub fn from_ui(ui: &crate::settings::UiSettings) -> Self {
+        Self {
+            subfolder: ui.export_subfolder.clone(),
+            naming: ui.export_naming.clone(),
+            existing: ui.export_existing,
+            metadata: ui.export_metadata,
+            limit: ui.export_limit_kb.map(|kb| u64::from(kb) * 1000),
+        }
+    }
+}
+
+/// What writing one file came to.
+struct Written {
+    bytes: u64,
+    skipped: bool,
+    over_limit: bool,
 }
 
 pub struct ExportOptions<'a> {
@@ -97,6 +138,9 @@ pub struct ExportOptions<'a> {
     pub by_day: bool,
     /// The user's font for postcard text (FR-073, FR-042); `None` uses the bundled face.
     pub postcard_font: Option<ab_glyph::FontArc>,
+    /// Subfolder, names, existing files, metadata and size limit (FR-009, FR-010, FR-104,
+    /// FR-105).
+    pub files: &'a ExportFiles,
 }
 
 /// A sensible default for `max_inflight`: one per core, capped at 6. A photo is decoded and
@@ -148,9 +192,34 @@ pub fn day_folder(record: &PhotoRecord) -> String {
     record.capture.format("%Y-%m-%d").to_string()
 }
 
-/// Picks `dir/stem.jpg`, or `stem_1.jpg`, `stem_2.jpg`… so nothing existing is overwritten
-/// and parallel workers never collide.
-fn reserve_name(dir: &Path, stem: &str, reserved: &Mutex<HashSet<PathBuf>>) -> PathBuf {
+/// The file this photo goes to, by the rule for existing files (FR-009): its own name when
+/// free; a file there from before is skipped (`None`) or replaced, as the rule says; a name
+/// another photo of this run took gets `_1`, `_2`, whatever the rule, so a run never writes
+/// over itself.
+fn reserve_name(
+    dir: &Path,
+    stem: &str,
+    reserved: &Mutex<HashSet<PathBuf>>,
+    existing: crate::settings::ExistingFiles,
+) -> Option<PathBuf> {
+    use crate::settings::ExistingFiles;
+    let own = dir.join(format!("{stem}.jpg"));
+    if existing != ExistingFiles::AddNumber
+        && let Ok(mut set) = reserved.lock()
+        && !set.contains(&own)
+    {
+        if own.exists() && existing == ExistingFiles::Skip {
+            return None;
+        }
+        set.insert(own.clone());
+        return Some(own);
+    }
+    Some(number_name(dir, stem, reserved))
+}
+
+/// `dir/stem.jpg`, or `stem_1.jpg`, `stem_2.jpg`… so nothing existing is overwritten and
+/// parallel workers never collide.
+fn number_name(dir: &Path, stem: &str, reserved: &Mutex<HashSet<PathBuf>>) -> PathBuf {
     let mut n = 0u32;
     loop {
         let name = if n == 0 {
@@ -169,29 +238,37 @@ fn reserve_name(dir: &Path, stem: &str, reserved: &Mutex<HashSet<PathBuf>>) -> P
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn export_one(
     record: &PhotoRecord,
+    index: usize,
+    total: usize,
     options: &ExportOptions<'_>,
     codec: &dyn JpegCodec,
     cancel: &CancellationToken,
     reserved: &Mutex<HashSet<PathBuf>>,
-) -> Result<u64, ExportError> {
-    let (jpeg, share) = encode_photo(record, options, codec, cancel)?;
-    write_photo(
-        record,
-        options,
-        &jpeg,
-        share,
-        cancel,
-        reserved,
-        &file_stem(record),
-    )
+) -> Result<Written, ExportError> {
+    let (jpeg, share, fits) = encode_photo(record, options, codec, cancel)?;
+    let name = export_name(options.files, &file_stem(record), record, index, total);
+    let mut written = write_photo(record, options, &jpeg, share, cancel, reserved, &name)?;
+    written.over_limit = !fits;
+    Ok(written)
 }
 
 fn file_stem(record: &PhotoRecord) -> String {
-    Path::new(&record.file_name)
-        .file_stem()
-        .map_or_else(|| "photo".to_owned(), |s| s.to_string_lossy().into_owned())
+    crate::naming::original_stem(record)
+}
+
+/// The `index`-th of `total` files' name, without `.jpg`: the template applied to `own`
+/// (FR-104), the day as its day folder says.
+pub fn export_name(
+    files: &ExportFiles,
+    own: &str,
+    record: &PhotoRecord,
+    index: usize,
+    total: usize,
+) -> String {
+    crate::naming::file_name(&files.naming, own, &day_folder(record), index, total)
 }
 
 /// Two photos on one print (FR-035): the first and, unless the last photo was odd, the
@@ -205,7 +282,7 @@ fn encode_sheet(
     options: &ExportOptions<'_>,
     codec: &dyn JpegCodec,
     cancel: &CancellationToken,
-) -> Result<Vec<u8>, ExportError> {
+) -> Result<(Vec<u8>, bool), ExportError> {
     let (first, second) = (&sheet.0, sheet.1.as_ref());
     let mut decoded = Vec::with_capacity(2);
     let mut profiles = Vec::with_capacity(2);
@@ -277,12 +354,13 @@ fn encode_sheet(
     if cancel.is_cancelled() {
         return Err(ExportError::Cancelled);
     }
-    let jpeg = codec.encode(
-        &image,
-        EncodeOptions::print(options.quality),
-        icc.as_deref(),
-    )?;
-    Ok(with_exif(jpeg, first, first.stamp_date()))
+    let (jpeg, fits) = encode_within(options.files.limit, options.quality, |q| {
+        codec.encode(&image, EncodeOptions::print(q), icc.as_deref())
+    })?;
+    Ok((
+        with_exif(jpeg, first, first.stamp_date(), options.files.metadata),
+        fits,
+    ))
 }
 
 /// `<first>+<second>`, the file name of a sheet; `<photo>-postcard` for a postcard.
@@ -295,13 +373,14 @@ fn sheet_stem(sheet: &SheetRecords, postcard: bool) -> String {
     }
 }
 
-/// The exported JPEG of one photo, in memory, and whether it is a share export.
+/// The exported JPEG of one photo, in memory, whether it is a share export, and whether it
+/// fits the size limit (FR-105).
 fn encode_photo(
     record: &PhotoRecord,
     options: &ExportOptions<'_>,
     codec: &dyn JpegCodec,
     cancel: &CancellationToken,
-) -> Result<(Vec<u8>, bool), ExportError> {
+) -> Result<(Vec<u8>, bool, bool), ExportError> {
     if cancel.is_cancelled() {
         return Err(ExportError::Cancelled);
     }
@@ -364,11 +443,11 @@ fn encode_photo(
     let downscaled = p.out_width.max(p.out_height) < p.crop.width.max(p.crop.height);
     let mut image = render(&upright, &p)?;
     drop(upright);
-    let jpeg = if let Some(preset) = share {
+    let (jpeg, fits) = if let Some(preset) = share {
         share_jpeg(
             &mut image,
             preset,
-            options.quality,
+            options,
             downscaled,
             decoded.icc.as_deref(),
             record,
@@ -377,15 +456,16 @@ fn encode_photo(
         )?
     } else {
         // Prints keep the camera details from an allowlist, never GPS (FR-010).
-        let jpeg = codec.encode(
-            &image,
-            EncodeOptions::print(options.quality),
-            decoded.icc.as_deref(),
-        )?;
-        with_exif(jpeg, record, capture)
+        let (jpeg, fits) = encode_within(options.files.limit, options.quality, |q| {
+            codec.encode(&image, EncodeOptions::print(q), decoded.icc.as_deref())
+        })?;
+        (
+            with_exif(jpeg, record, capture, options.files.metadata),
+            fits,
+        )
     };
     drop(image);
-    Ok((jpeg, share.is_some()))
+    Ok((jpeg, share.is_some(), fits))
 }
 
 /// The lowest quality a size limit may go down to (FR-105): the slider's own floor.
@@ -439,10 +519,15 @@ fn write_photo(
     cancel: &CancellationToken,
     reserved: &Mutex<HashSet<PathBuf>>,
     stem: &str,
-) -> Result<u64, ExportError> {
+) -> Result<Written, ExportError> {
     let base = match (options.group_for)(record) {
         Some(group) => options.destination.join(group),
         None => options.destination.to_path_buf(),
+    };
+    // Lightroom's *Put in subfolder* (FR-009): one cleaned name, before Share and the days.
+    let base = match &options.files.subfolder {
+        Some(sub) => base.join(sub),
+        None => base,
     };
     let base = if share { base.join(SHARE_FOLDER) } else { base };
     let dir = if options.by_day {
@@ -451,17 +536,28 @@ fn write_photo(
         base
     };
     std::fs::create_dir_all(&dir)?;
-    let target = reserve_name(&dir, stem, reserved);
+    let Some(target) = reserve_name(&dir, stem, reserved, options.files.existing) else {
+        return Ok(Written {
+            bytes: 0,
+            skipped: true,
+            over_limit: false,
+        });
+    };
     let tmp = dir.join(format!(".{stem}.{}.part", record.id.0));
     std::fs::write(&tmp, jpeg)?;
     if cancel.is_cancelled() {
         let _ = std::fs::remove_file(&tmp);
         return Err(ExportError::Cancelled);
     }
+    // Over a file being replaced, the rename swaps it in whole (FR-009).
     std::fs::rename(&tmp, &target).inspect_err(|_| {
         let _ = std::fs::remove_file(&tmp);
     })?;
-    Ok(jpeg.len() as u64)
+    Ok(Written {
+        bytes: jpeg.len() as u64,
+        skipped: false,
+        over_limit: false,
+    })
 }
 
 /// A shared photo's JPEG (FR-053): sRGB, lightly sharpened after a downscale, the share
@@ -470,13 +566,13 @@ fn write_photo(
 fn share_jpeg(
     image: &mut crate::image::RgbImage,
     preset: SharePreset,
-    quality: u8,
+    options: &ExportOptions<'_>,
     downscaled: bool,
     icc: Option<&[u8]>,
     record: &PhotoRecord,
     capture: Option<chrono::NaiveDateTime>,
     codec: &dyn JpegCodec,
-) -> Result<Vec<u8>, ExportError> {
+) -> Result<(Vec<u8>, bool), ExportError> {
     let conversion = colour::to_srgb(image, icc);
     if downscaled {
         sharpen::unsharp(image, SHARE_SHARPEN);
@@ -487,27 +583,41 @@ fn share_jpeg(
         .flatten();
     // The preset's settings, at the quality chosen for this export (FR-092; a share preset
     // sets its own default, 88 or 80, when chosen).
-    let jpeg = codec.encode(
-        image,
-        EncodeOptions {
-            quality,
-            ..preset.encode_options()
-        },
-        keep,
-    )?;
-    Ok(with_exif(jpeg, record, capture))
+    let image = &*image;
+    let (jpeg, fits) = encode_within(options.files.limit, options.quality, |quality| {
+        codec.encode(
+            image,
+            EncodeOptions {
+                quality,
+                ..preset.encode_options()
+            },
+            keep,
+        )
+    })?;
+    Ok((
+        with_exif(jpeg, record, capture, options.files.metadata),
+        fits,
+    ))
 }
 
-/// `jpeg` with the photo's camera details and Fotollection's name: the EXIF allowlist of
-/// `exif_out`, which has no GPS (FR-010, FR-053). Pixels are written upright, so no
-/// orientation tag is needed.
+/// `jpeg` with what `metadata` keeps (FR-010): the camera details and Fotollection's name
+/// (the EXIF allowlist of `exif_out`), the capture time and the name only, or nothing. GPS is
+/// never written (FR-053). Pixels are written upright, so no orientation tag is needed.
 fn with_exif(
     jpeg: Vec<u8>,
     record: &PhotoRecord,
     capture: Option<chrono::NaiveDateTime>,
+    metadata: crate::settings::ExportMetadata,
 ) -> Vec<u8> {
+    use crate::settings::ExportMetadata;
     let software = format!("Fotollection {}", crate::VERSION);
-    let app1 = exif_out::exif_app1(&record.shot, capture, &software);
+    let app1 = match metadata {
+        ExportMetadata::Camera => exif_out::exif_app1(&record.shot, capture, &software),
+        ExportMetadata::DateOnly => {
+            exif_out::exif_app1(&crate::library::ShotInfo::default(), capture, &software)
+        }
+        ExportMetadata::Nothing => return jpeg,
+    };
     exif_out::insert_app1(&jpeg, &app1).unwrap_or(jpeg)
 }
 
@@ -540,7 +650,7 @@ pub fn estimate_export(
         records,
         samples,
         |r| r.size,
-        |r| encode_photo(r, options, codec, &cancel).map(|(jpeg, _)| jpeg),
+        |r| encode_photo(r, options, codec, &cancel).map(|(jpeg, _, _)| jpeg),
     )
 }
 
@@ -554,7 +664,7 @@ pub fn estimate_sheets(
     let cancel = CancellationToken::new();
     // Two decoded photos per sample: half as many at once (NFR-004).
     estimate(sheets, samples.div_ceil(2), sheet_size, |s| {
-        encode_sheet(s, options, codec, &cancel)
+        encode_sheet(s, options, codec, &cancel).map(|(jpeg, _)| jpeg)
     })
 }
 
@@ -613,7 +723,7 @@ pub fn run_export(
         on_progress,
         |r| r,
         |r| r.size,
-        |r| export_one(r, options, codec, cancel, &reserved),
+        |r, index| export_one(r, index, records.len(), options, codec, cancel, &reserved),
         cancel,
     )
 }
@@ -641,17 +751,14 @@ pub fn run_export_sheets(
         on_progress,
         |s| &s.0,
         sheet_size,
-        |sheet| {
-            let jpeg = encode_sheet(sheet, options, codec, cancel)?;
-            write_photo(
-                &sheet.0,
-                options,
-                &jpeg,
-                false,
-                cancel,
-                &reserved,
-                &sheet_stem(sheet, options.settings.collage.postcard.enabled),
-            )
+        |sheet, index| {
+            let (jpeg, fits) = encode_sheet(sheet, options, codec, cancel)?;
+            let own = sheet_stem(sheet, options.settings.collage.postcard.enabled);
+            let name = export_name(options.files, &own, &sheet.0, index, sheets.len());
+            let mut written =
+                write_photo(&sheet.0, options, &jpeg, false, cancel, &reserved, &name)?;
+            written.over_limit = !fits;
+            Ok(written)
         },
         cancel,
     )
@@ -664,7 +771,7 @@ fn run<T: Sync>(
     on_progress: &(dyn Fn(u32, u32) + Sync),
     record: impl Fn(&T) -> &PhotoRecord + Sync,
     size: impl Fn(&T) -> u64 + Sync,
-    export: impl Fn(&T) -> Result<u64, ExportError> + Sync,
+    export: impl Fn(&T, usize) -> Result<Written, ExportError> + Sync,
     cancel: &CancellationToken,
 ) -> ExportSummary {
     let total = u32::try_from(items.len()).unwrap_or(u32::MAX);
@@ -672,15 +779,26 @@ fn run<T: Sync>(
     let exported = AtomicU32::new(0);
     let (source_bytes, output_bytes) = (AtomicU64::new(0), AtomicU64::new(0));
     let failed = Mutex::new(Vec::new());
+    let (skipped, over_limit) = (AtomicU32::new(0), AtomicU32::new(0));
 
     let work = || {
-        items.par_iter().for_each(|item| {
+        // Each item's place in the export is fixed before any thread starts, so a sequence
+        // number in its name (FR-104) never depends on which photo finishes first.
+        items.par_iter().enumerate().for_each(|(index, item)| {
             // A photo the user opens meanwhile develops first (FR-091).
-            match crate::raw::with_priority(crate::raw::Priority::Background, || export(item)) {
+            match crate::raw::with_priority(crate::raw::Priority::Background, || {
+                export(item, index)
+            }) {
+                Ok(written) if written.skipped => {
+                    skipped.fetch_add(1, Ordering::Relaxed);
+                }
                 Ok(written) => {
                     exported.fetch_add(1, Ordering::Relaxed);
                     source_bytes.fetch_add(size(item), Ordering::Relaxed);
-                    output_bytes.fetch_add(written, Ordering::Relaxed);
+                    output_bytes.fetch_add(written.bytes, Ordering::Relaxed);
+                    if written.over_limit {
+                        over_limit.fetch_add(1, Ordering::Relaxed);
+                    }
                 }
                 Err(ExportError::Cancelled) => {}
                 Err(e) => {
@@ -715,6 +833,8 @@ fn run<T: Sync>(
         source_bytes: source_bytes.into_inner() as f64,
         #[allow(clippy::cast_precision_loss)]
         output_bytes: output_bytes.into_inner() as f64,
+        skipped: skipped.into_inner(),
+        over_limit: over_limit.into_inner(),
     }
 }
 

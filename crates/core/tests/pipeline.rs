@@ -142,6 +142,7 @@ fn fr_009_export_by_date_never_overwrites() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let summary = run_export(
         &records(&lib),
@@ -206,6 +207,7 @@ fn fr_009_export_into_one_folder_puts_every_day_together() {
             group_for: &|_| None,
             by_day: false,
             postcard_font: None,
+            files: &fotollection_core::export::ExportFiles::default(),
         };
         run_export(
             &records(&lib),
@@ -263,6 +265,7 @@ fn fr_035_sheets_export_one_file_per_pair_in_the_first_photos_day() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let summary = fotollection_core::export::run_export_sheets(
         &sheets,
@@ -325,6 +328,7 @@ fn fr_073_postcards_export_one_file_per_photo() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let summary = fotollection_core::export::run_export_sheets(
         &sheets,
@@ -380,6 +384,7 @@ fn fr_056_folders_exported_separately_get_their_own_subfolder() {
         group_for: &group,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let summary = run_export(
         &records(&lib),
@@ -423,6 +428,7 @@ fn fr_053_the_estimate_is_exact_when_every_photo_is_sampled() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let all = records(&lib);
     let estimate = estimate_export(&all, &options, &PureRustCodec, 10);
@@ -482,6 +488,7 @@ fn fr_092_the_estimate_follows_the_quality() {
                 group_for: &|_| None,
                 by_day: false,
                 postcard_font: None,
+                files: &fotollection_core::export::ExportFiles::default(),
             };
             estimate_export(&all, &options, &PureRustCodec, 2).estimated_bytes
         };
@@ -519,6 +526,7 @@ fn fr_010_prints_keep_the_camera_details_but_never_gps() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let summary = run_export(
         &records(&lib),
@@ -582,6 +590,7 @@ fn fr_001_png_and_jpeg_export_together() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let summary = run_export(
         &all,
@@ -652,6 +661,7 @@ fn fr_022_export_uses_only_the_filtered_set() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let summary = run_export(
         &kept,
@@ -702,6 +712,7 @@ fn fr_011_bad_file_does_not_fail_batch() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let summary = run_export(
         &records(&lib),
@@ -741,6 +752,7 @@ fn fr_011_cancel_stops_and_removes_partials() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let cancel = CancellationToken::new();
     let summary = run_export(
@@ -929,6 +941,7 @@ fn fr_001_heic_imports_and_exports() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let summary = run_export(
         &all,
@@ -992,6 +1005,7 @@ fn fr_016_rw2_imports_and_exports() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let summary = run_export(
         &all,
@@ -1040,6 +1054,7 @@ fn fr_067_share_exports_have_no_border() {
         group_for: &|_| None,
         by_day: true,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let summary = run_export(
         &records(&lib),
@@ -1093,6 +1108,7 @@ fn fr_075_a_portrait_shared_with_a_square_fill_is_whole_and_square() {
         group_for: &|_| None,
         by_day: false,
         postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
     };
     let summary = run_export(
         &records(&lib),
@@ -1148,6 +1164,7 @@ fn fr_053_share_export_resizes_keeps_ratio_and_writes_safe_exif() {
             group_for: &|_| None,
             by_day: true,
             postcard_font: None,
+            files: &fotollection_core::export::ExportFiles::default(),
         };
         let summary = run_export(
             &records(&lib),
@@ -1182,4 +1199,200 @@ fn fr_053_share_export_resizes_keeps_ratio_and_writes_safe_exif() {
     let out = std::fs::read(dest.path().join("Share/2026-07-14/IMG_1_1.jpg")).unwrap();
     let image = PureRustCodec.decode(&out).unwrap().image;
     assert_eq!((image.width, image.height), (3000, 2000));
+}
+
+/// The export's file rules (FR-009, FR-104): a subfolder, Lightroom's text and sequence
+/// names in the export's order, an existing file skipped and then replaced, never a `_1`
+/// while replacing.
+#[test]
+fn fr_104_names_subfolder_and_existing_files() {
+    use fotollection_core::export::ExportFiles;
+    use fotollection_core::naming::{ExportNaming, NameTemplate};
+    use fotollection_core::settings::ExistingFiles;
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    for (name, date) in [
+        ("A.jpg", "2026:07:14 10:00:00"),
+        ("B.jpg", "2026:07:14 11:00:00"),
+        ("C.jpg", "2026:07:15 09:00:00"),
+    ] {
+        let f = Fixture {
+            width: 300,
+            height: 200,
+            date: Some(date),
+            ..Fixture::default()
+        };
+        write(src.path(), name, &jpeg(&f));
+    }
+    let folder = dest.path().join("Prague in");
+    write(&folder, "Prague-001.jpg", b"keep me");
+    let lib = import(src.path());
+    let mut all = records(&lib);
+    all.sort_by_key(|r| r.capture);
+    let settings = RenderSettings::default();
+    let run = |existing| {
+        let files = ExportFiles {
+            subfolder: Some("Prague in".into()),
+            naming: ExportNaming {
+                template: NameTemplate::TextSequence,
+                text: "Prague".into(),
+                start: 1,
+            },
+            existing,
+            ..ExportFiles::default()
+        };
+        let options = ExportOptions {
+            destination: dest.path(),
+            settings: &settings,
+            quality: 90,
+            max_inflight: 3,
+            place_for: &|_| None,
+            frame_for: &|_| None,
+            group_for: &|_| None,
+            by_day: false,
+            postcard_font: None,
+            files: &files,
+        };
+        run_export(
+            &all,
+            &options,
+            &PureRustCodec,
+            &CancellationToken::new(),
+            &|_, _| {},
+        )
+    };
+    let summary = run(ExistingFiles::Skip);
+    assert_eq!((summary.exported, summary.skipped), (2, 1));
+    assert_eq!(
+        std::fs::read(folder.join("Prague-001.jpg")).unwrap(),
+        b"keep me"
+    );
+    // The sequence follows the export's order, whichever thread finished first.
+    let second = std::fs::read(folder.join("Prague-002.jpg")).unwrap();
+    assert!(PureRustCodec.decode(&second).is_ok());
+    assert!(folder.join("Prague-003.jpg").exists());
+
+    let summary = run(ExistingFiles::Replace);
+    assert_eq!((summary.exported, summary.skipped), (3, 0));
+    let replaced = std::fs::read(folder.join("Prague-001.jpg")).unwrap();
+    assert!(
+        PureRustCodec.decode(&replaced).is_ok(),
+        "replaced by the new file"
+    );
+    let names: Vec<_> = walk(dest.path())
+        .iter()
+        .filter_map(|p| p.file_name().map(|n| n.to_string_lossy().into_owned()))
+        .collect();
+    assert!(!names.iter().any(|n| n.contains("_1")), "{names:?}");
+}
+
+/// What a file says about its photo (FR-010): the date only, or nothing; GPS never.
+#[test]
+fn fr_010_metadata_date_only_or_nothing() {
+    use fotollection_core::export::ExportFiles;
+    use fotollection_core::settings::ExportMetadata;
+    for (metadata, date_kept) in [
+        (ExportMetadata::DateOnly, true),
+        (ExportMetadata::Nothing, false),
+    ] {
+        let src = tempfile::tempdir().unwrap();
+        let dest = tempfile::tempdir().unwrap();
+        let f = Fixture {
+            width: 300,
+            height: 200,
+            date: Some("2026:07:14 10:22:31"),
+            gps: Some((47.4979, 19.0402)),
+            lens: Some("LUMIX G 20/F1.7 II"),
+            exposure: Some((20, 1.7, (1, 250), 200)),
+            ..Fixture::default()
+        };
+        write(src.path(), "IMG_1.jpg", &jpeg(&f));
+        let lib = import(src.path());
+        let settings = RenderSettings::default();
+        let files = ExportFiles {
+            metadata,
+            ..ExportFiles::default()
+        };
+        let options = ExportOptions {
+            destination: dest.path(),
+            settings: &settings,
+            quality: 90,
+            max_inflight: 1,
+            place_for: &|_| None,
+            frame_for: &|_| None,
+            group_for: &|_| None,
+            by_day: false,
+            postcard_font: None,
+            files: &files,
+        };
+        let summary = run_export(
+            &records(&lib),
+            &options,
+            &PureRustCodec,
+            &CancellationToken::new(),
+            &|_, _| {},
+        );
+        assert_eq!(summary.exported, 1);
+        let out = std::fs::read(dest.path().join("IMG_1.jpg")).unwrap();
+        let meta = metadata::read_bytes(&out);
+        assert_eq!(meta.gps, None, "{metadata:?}");
+        assert_eq!(meta.lens, None, "{metadata:?}");
+        assert_eq!(meta.iso, None, "{metadata:?}");
+        assert_eq!(meta.capture.is_some(), date_kept, "{metadata:?}");
+        assert!(PureRustCodec.decode(&out).is_ok());
+    }
+}
+
+/// A file too large even at the lowest quality is still written, and counted (FR-105);
+/// sheets take the template's names (FR-104).
+#[test]
+fn fr_105_a_limit_out_of_reach_is_counted_and_sheets_take_the_names() {
+    use fotollection_core::export::ExportFiles;
+    use fotollection_core::naming::{ExportNaming, NameTemplate};
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    let portrait = Fixture {
+        width: 400,
+        height: 600,
+        date: Some("2026:07:14 10:00:00"),
+        ..Fixture::default()
+    };
+    write(src.path(), "P1.jpg", &jpeg(&portrait));
+    write(src.path(), "P2.jpg", &jpeg(&portrait));
+    let lib = import(src.path());
+    let mut all = records(&lib);
+    all.sort_by(|a, b| a.file_name.cmp(&b.file_name));
+    let sheets: Vec<fotollection_core::export::SheetRecords> =
+        vec![(all[0].clone(), Some(all[1].clone()))];
+    let settings = RenderSettings::default();
+    let files = ExportFiles {
+        naming: ExportNaming {
+            template: NameTemplate::DateSequence,
+            text: String::new(),
+            start: 7,
+        },
+        limit: Some(1),
+        ..ExportFiles::default()
+    };
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 1,
+        place_for: &|_| None,
+        frame_for: &|_| None,
+        group_for: &|_| None,
+        by_day: false,
+        postcard_font: None,
+        files: &files,
+    };
+    let summary = fotollection_core::export::run_export_sheets(
+        &sheets,
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert_eq!((summary.exported, summary.over_limit), (1, 1));
+    assert!(dest.path().join("2026-07-14-007.jpg").exists());
 }

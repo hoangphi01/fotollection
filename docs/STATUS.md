@@ -130,7 +130,7 @@ The audit of 2026-11-02 read the RAW path, the JPEG and colour path and the docs
 | FR-007 | Live preview | 1 | In Progress | Preview dialog with inspector (*This photo* with the camera, exposure, place, size and file facts; print DPI, stamp controls, capture date and place). Rust-rendered, warm p95 18 ms (p50 17 ms) |
 | FR-008 | Original-quality export | 1 | In Progress | Full resolution, q95 4:4:4, ICC copied. Lossless crop-only path pending |
 | FR-009 | Export by date | 1 | Done | `YYYY-MM-DD/` folders, never overwrites (`_1`, `_2`…). Since v0.9.6 (2026-11-04, a user's feedback) a **One folder / By day** switch in the export card, one folder by default, remembered per machine (`ui.exportFolders`, settings v12). `fr_009_*` passes |
-| FR-010 | Metadata privacy on export | 1 | In Progress | Every export writes an allowlisted EXIF block (camera, lens, exposure, date, `Software`), never GPS, read back in tests (`fr_010_prints_keep_the_camera_details_but_never_gps`, `fr_053_*`). Options to keep more or less for prints pending |
+| FR-010 | Metadata privacy on export | 1 | Done | v0.12.1: the three choices (camera, date only, nothing) in the export dialog, `fr_010_metadata_date_only_or_nothing`. Every export writes an allowlisted EXIF block (camera, lens, exposure, date, `Software`), never GPS, read back in tests (`fr_010_prints_keep_the_camera_details_but_never_gps`, `fr_053_*`). Options to keep more or less for prints pending |
 | FR-011 | Batch progress, cancel and recovery | 1 | Done | Progress events, cancel removes partials, per-photo failures. `fr_011_*` pass |
 | FR-012 | Trip auto-grouping | 2 | Not Started | |
 | FR-013 | Face-aware smart crop | 2 | Not Started | |
@@ -220,8 +220,8 @@ The audit of 2026-11-02 read the RAW path, the JPEG and colour path and the docs
 | FR-101 | Healing | 2 | Not Started | Owner's request (2026-11-06): spot removal as Lightroom's Remove tool, `Q`; its tab's place kept, hidden until built; about v0.15 |
 | FR-102 | Masking | 2 | Not Started | Owner's request (2026-11-06): linear, radial, brush, later on-device subject and sky, `⇧W`; a local layer beside the look's table; about v0.15 |
 | FR-103 | Check for updates at start | 2 | Not Started | Owner's request (2026-11-06): on by default, off in Settings → Updates; check only, never download unasked; a red warning below the minimum safe version published in `update.json`; version to be chosen |
-| FR-104 | File names as Lightroom's templates | 2 | In Progress | Owner's request (2026-11-06): templates, custom text, start number, a live example from Rust; v0.12.1 |
-| FR-105 | Limit the file size | 2 | In Progress | Owner's choice (2026-11-06): measured first (RESULT §31: free until it binds, then 2.1× an export at 2 MB), `export::encode_within`; v0.12.1 |
+| FR-104 | File names as Lightroom's templates | 2 | Done | Owner's request (2026-11-06): five templates, custom text, start number, a live example from Rust (`export_name_example`), the sequence fixed before the parallel export (`naming.rs`, `fr_104_*`); with a subfolder and the existing-files rule (FR-009); v0.12.1 |
+| FR-105 | Limit the file size | 2 | Done | Owner's choice (2026-11-06): measured first (RESULT §31: free until it binds, then 2.1× an export at 2 MB), `export::encode_within` on prints, shares and sheets, the result counting files still over it; v0.12.1 |
 | FR-106 | Output sharpening | 2 | Not Started | Owner (2026-11-06): written down, done later, measured first |
 | FR-068 | HEIC on Linux through the system's libheif | 2 | Not Started | v0.8.2 skips HEIC on Linux with its own reason (`HeicNotOnLinux`); after v0.9.0 ([ADR-0034](adr/0034-linux-lean.md)) |
 | FR-059 | Quick-preview | 1 | In Progress | ✓ Hold Space in select mode over a photo: thumbnail at once, then the render with the gallery's settings; ← → and Enter while held (`use-quick-preview.ts`). Left: check by hand in the app |

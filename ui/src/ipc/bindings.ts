@@ -93,6 +93,13 @@ export const commands = {
 	 */
 	startExport: (filter: CullFilter, only: number | null, ticked: PhotoId[], separate: boolean, sheets: boolean) => typedError<number, IpcError>(__TAURI_INVOKE("start_export", { filter, only, ticked, separate, sheets })),
 	/**
+	 *  The first file name an export with `naming` writes, for the export dialog's example
+	 *  (FR-104): the library's first photo through the same code the export uses, so the example
+	 *  is the real name; a sample photo when the library is empty. `count` is how many files the
+	 *  export writes, for the sequence's width.
+	 */
+	exportNameExample: (naming: ExportNaming, count: number) => typedError<string, IpcError>(__TAURI_INVOKE("export_name_example", { naming, count })),
+	/**
 	 *  What the export will weigh, before it runs (FR-053): the originals' total and an estimate
 	 *  from a few photos encoded in memory with the current settings. Nothing is written.
 	 */
@@ -938,6 +945,18 @@ export type EffectivePlace = {
 };
 
 /**
+ *  What an export does when a file of the same name is already there (FR-009, Lightroom's
+ *  *Existing files*).
+ */
+export type ExistingFiles = 
+/**  `name_1.jpg`, `name_2.jpg`: nothing is overwritten. */
+"addNumber" | 
+/**  The existing file stays and the photo is not written. */
+"skip" | 
+/**  The existing file is replaced, once the new one is complete. */
+"replace";
+
+/**
  *  What an export will weigh, before it runs (FR-053): the originals' total and an estimate
  *  of the files, from a few photos encoded in memory with the same settings.
  */
@@ -968,6 +987,24 @@ export type ExportFinished = {
  */
 export type ExportFolders = "oneFolder" | "byDay";
 
+/**  What an exported file says about the photo (FR-010). GPS is never written. */
+export type ExportMetadata = 
+/**  Camera, lens, exposure, capture time and Fotollection's name (`exif_out`'s allowlist). */
+"camera" | 
+/**  The capture time and Fotollection's name only. */
+"dateOnly" | 
+/**  No EXIF at all. */
+"nothing";
+
+/**  The export's naming, kept per machine (settings v16, FR-104). */
+export type ExportNaming = {
+	template?: NameTemplate,
+	/**  The custom text of the `Text…` templates, cleaned (`sanitize_component`). */
+	text?: string,
+	/**  The first sequence number. */
+	start?: number,
+};
+
 export type ExportProgress = {
 	jobId: number,
 	done: number,
@@ -985,6 +1022,13 @@ export type ExportSummary = {
 	 */
 	sourceBytes: number | null,
 	outputBytes: number | null,
+	/**
+	 *  Photos not written because a file of their name was there and the rule is *Skip*
+	 *  (FR-009).
+	 */
+	skipped?: number,
+	/**  Files still over the size limit at the lowest quality (FR-105). */
+	overLimit?: number,
 };
 
 /**  What an export makes. */
@@ -1247,6 +1291,19 @@ export type MissingFolder = {
  *  filter effect): yellow darkens blue skies a little, red a lot, green lightens leaves.
  */
 export type Mono = "off" | "neutral" | "yellow" | "orange" | "red" | "green";
+
+/**  How exported files are named, as Lightroom's templates (FR-104). */
+export type NameTemplate = 
+/**  `P1057694.jpg`, the photo's own name. */
+"original" | 
+/**  `2026-07-14_P1057694.jpg`. */
+"dateOriginal" | 
+/**  `Prague-001.jpg`. */
+"textSequence" | 
+/**  `Prague-2026-07-14-001.jpg`. */
+"textDateSequence" | 
+/**  `2026-07-14-001.jpg`. */
+"dateSequence";
 
 /**
  *  A photo to show: its id and the folder tab it belongs to. Kept until the UI takes it, so a
@@ -1864,6 +1921,34 @@ export type UiSettings = {
 	 *  Absent before settings v16.
 	 */
 	exportDestination?: string | null,
+	/**
+	 *  A subfolder of the destination the export goes into (FR-009, Lightroom's *Put in
+	 *  subfolder*), one level, cleaned; `None` writes into the destination. Absent before
+	 *  settings v16.
+	 */
+	exportSubfolder?: string | null,
+	/**  How exported files are named (FR-104). Absent before settings v16: the photo's name. */
+	exportNaming?: ExportNaming,
+	/**
+	 *  What an export does with a file of the same name (FR-009). Absent before settings
+	 *  v16: add a number, as exports always did.
+	 */
+	exportExisting?: ExistingFiles,
+	/**
+	 *  What the exported files say about the photo (FR-010); GPS never. Absent before
+	 *  settings v16: the camera details, as exports always wrote.
+	 */
+	exportMetadata?: ExportMetadata,
+	/**
+	 *  The largest file an export writes, in KB of 1,000 bytes (FR-105); `None` for no limit.
+	 *  Absent before settings v16.
+	 */
+	exportLimitKb?: number | null,
+	/**
+	 *  Whether the app looks for a newer version when it starts (FR-103). Absent before
+	 *  settings v16: on, as the owner asked (2026-11-06), until the user turns it off.
+	 */
+	checkUpdatesAtStart?: boolean,
 };
 
 /**  The result shown under the button. */

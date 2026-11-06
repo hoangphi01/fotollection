@@ -185,15 +185,16 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 - **One folder or by day** (a user's feedback, owner 2026-11-04): a switch in the export card, **One folder** (the default, every file straight into the destination, as a kiosk USB stick wants) or **By day** (the `YYYY-MM-DD/` subfolders, `undated/` without a date). Remembered per machine (`ui.exportFolders`, settings v12). It applies to prints, share exports (inside `Share/`), collage sheets and postcards, and inside each subfolder of a separate export ([FR-056](#fr-056--folders-as-tabs)).
 
-- Existing files are never overwritten silently. The user picks a rule: skip, rename, or overwrite after confirmation.
+- Existing files are never overwritten silently. The user picks a rule in the export dialog (v0.12.1, kept per machine as `ui.exportExisting`): **add a number** (`_1`, `_2`, the default), **skip** the photo (the result counts them), or **replace** the file, with a red warning under the choice as its confirmation; a replaced file is swapped in whole, and two photos of one export never write over each other.
+- **Put in a subfolder** (v0.12.1, Lightroom's *Export location*): a switch and a name, kept per machine (`ui.exportSubfolder`); the subfolder sits in the destination (and in a source folder's own subfolder, FR-056), before `Share/` and the day folders. The name is cleaned in Rust: no separators, no reserved Windows names, at most 100 characters.
 
 ### FR-010 — Metadata privacy on export
 
 **P0.** Control which metadata is written into exported files.
 
-- GPS is stripped by default.
-- Options: keep everything (minus GPS), keep the date only, or strip everything.
-- Before export, a banner warns when photos with GPS are about to be exported with GPS kept.
+- GPS is never written, whatever is chosen.
+- **Options** (v0.12.1, the export dialog's *Metadata* card, kept per machine as `ui.exportMetadata`): **camera** (the allowlist below, the default), **date only** (the capture time and `Software`), or **nothing** (no EXIF block; the colour profile stays). Prints, share exports and collage sheets alike.
+- No banner for GPS kept is needed: GPS is never kept.
 - **Every export writes a small EXIF block from a fixed allowlist** (camera, lens, exposure, capture time and `Software = Fotollection <version>`), and **never GPS**: prints and share exports alike (since 2026-10-25; prints carried no metadata before). It weighs about 0.3 KB; the camera's own maker notes and embedded thumbnail (about 18 KB) are never copied.
 
 ### FR-011 — Batch progress, cancel and recovery

@@ -32,7 +32,7 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v14 (FR-079): `render.look`.
 /// v15 (FR-086, FR-091): `ui.previewMemoryPercent` (25), `ui.cacheLimitGb` (5) and
 /// `ui.preparePreviews` (on), each absent before.
-/// v16 (FR-092, FR-093): `ui.exportQuality` (90), `ui.exportAsk` (on), `ui.exportSeparate`
+/// v16 (FR-092, FR-093): `ui.exportQuality` (90), `ui.exportSubfolder`, `ui.exportNaming`, `ui.exportExisting`, `ui.exportMetadata`, `ui.exportLimitKb` (FR-009, FR-010, FR-104, FR-105), `ui.checkUpdatesAtStart` (FR-103, on), `ui.exportAsk` (on), `ui.exportSeparate`
 /// (off) and `ui.exportDestination` (none), each absent before.
 pub const SCHEMA_VERSION: u32 = 16;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
@@ -572,6 +572,25 @@ mod tests {
             ),
             (90, true, false, None)
         );
+        // FR-009, FR-010, FR-104, FR-105, FR-103: as exports always were, and the check on.
+        assert_eq!(
+            (
+                old.ui.export_subfolder.clone(),
+                old.ui.export_naming.clone(),
+                old.ui.export_existing,
+                old.ui.export_metadata,
+                old.ui.export_limit_kb,
+                old.ui.check_updates_at_start
+            ),
+            (
+                None,
+                crate::naming::ExportNaming::default(),
+                crate::settings::ExistingFiles::AddNumber,
+                crate::settings::ExportMetadata::Camera,
+                None,
+                true
+            )
+        );
         std::fs::write(&path, include_str!("../tests/fixtures/settings/v16.json"))?;
         let loaded = load(&path);
         let Loaded::Ok(s) = loaded else {
@@ -585,6 +604,23 @@ mod tests {
             s.ui.export_destination.as_deref(),
             Some("/Volumes/Prints/Prague")
         );
+        // A path in a name is cleaned, the start and the limit clamped (SECURITY.md §2).
+        assert_eq!(s.ui.export_subfolder.as_deref(), Some("etc"));
+        assert_eq!(
+            s.ui.export_naming,
+            crate::naming::ExportNaming {
+                template: crate::naming::NameTemplate::TextSequence,
+                text: "Praguein".into(),
+                start: 1,
+            }
+        );
+        assert_eq!(s.ui.export_existing, crate::settings::ExistingFiles::Skip);
+        assert_eq!(
+            s.ui.export_metadata,
+            crate::settings::ExportMetadata::DateOnly
+        );
+        assert_eq!(s.ui.export_limit_kb, Some(100));
+        assert!(!s.ui.check_updates_at_start);
         save(&path, &s)?;
         let Loaded::Ok(back) = load(&path) else {
             panic!("v16 should load again");

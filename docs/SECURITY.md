@@ -120,7 +120,7 @@ Layer 4: SAFE RENDERING (UI)
 ## 4. File system safety
 
 - Source files are opened **read-only** and never modified.
-- Export paths are built only from `dest_root` (chosen by the user through the OS dialog) plus **sanitized** segments: date, trip name and original stem. Segments are restricted to a safe character set, reserved Windows names (`CON`, `NUL`…) are rejected, and segments are length-capped.
+- Export paths are built only from `dest_root` (chosen by the user through the OS dialog) plus **sanitized** segments: the source folder's name, the subfolder, the date and the file name. Anything the user types (the subfolder, a file name's custom text, v0.12.1) goes through `naming::sanitize_component` in Rust, when the settings are loaded and whenever the webview sends them: path separators, `: * ? " < > |` and control characters are dropped, leading and trailing dots and spaces trimmed, `.`, `..` and reserved Windows names (`CON`, `NUL`, `COM1`…) refused, 100 characters at most (tests `fr_104_a_name_part_never_leaves_the_destination` and the v16 fixture's `../etc`). *Replace existing files* writes a `.part` file and renames it over the old one, so a file is never left half written.
 - After the path is joined, it is canonicalized and the app verifies that it is still under `dest_root`. Otherwise the photo is rejected.
 - Files are written to a temporary file and then atomically renamed. Files are never overwritten unless the user chose that rule ([FR-009](PRD.md#fr-009--export-by-date)).
 

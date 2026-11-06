@@ -932,6 +932,45 @@ pub async fn pick_export_folder(app: AppHandle) -> Result<Option<String>, IpcErr
     .map_err(|e| IpcError::internal(e.to_string()))?
 }
 
+/// The first file name an export with `naming` writes, for the export dialog's example
+/// (FR-104): the library's first photo through the same code the export uses, so the example
+/// is the real name; a sample photo when the library is empty. `count` is how many files the
+/// export writes, for the sequence's width.
+#[tauri::command]
+#[specta::specta]
+pub fn export_name_example(
+    state: State<'_, AppState>,
+    naming: fotollection_core::naming::ExportNaming,
+    count: u32,
+) -> Result<String, IpcError> {
+    let files = fotollection_core::export::ExportFiles {
+        naming: naming.sanitized(),
+        ..Default::default()
+    };
+    let total = usize::try_from(count.max(1)).unwrap_or(usize::MAX);
+    let library = state
+        .library
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?;
+    let first = library
+        .sorted_ids()
+        .first()
+        .and_then(|id| library.record(*id));
+    let stem = match &first {
+        Some(record) => fotollection_core::export::export_name(
+            &files,
+            &fotollection_core::naming::original_stem(record),
+            record,
+            0,
+            total,
+        ),
+        None => {
+            fotollection_core::naming::file_name(&files.naming, "IMG_0001", "2026-07-14", 0, total)
+        }
+    };
+    Ok(format!("{stem}.jpg"))
+}
+
 /// Starts exporting the photos kept by `filter` to the chosen destination
 /// (FR-008, FR-009, FR-011, FR-022), or only the photo `only` when it is set: the one open
 /// in the preview (FR-055), or only the photos `ticked` in select mode when there are some
@@ -973,6 +1012,8 @@ pub fn start_export(
     }
     let by_day = ui.export_folders == fotollection_core::settings::ExportFolders::ByDay;
     let quality = ui.export_quality;
+    // Subfolder, names, existing files, metadata, size limit (FR-009, FR-010, FR-104, FR-105).
+    let files = fotollection_core::export::ExportFiles::from_ui(&ui);
     let scope = sheets.then(|| crate::collage::postcards(&state));
     let (records, pairs, groups) = {
         let library = state
@@ -1038,6 +1079,7 @@ pub fn start_export(
             group_for: &group_for,
             by_day,
             postcard_font: postcard_font_of(&frames, &settings).map(|f| f.font),
+            files: &files,
         };
         let throttle = Throttle::default();
         let on_progress = |done: u32, total: u32| {
@@ -1216,6 +1258,12 @@ pub async fn estimate_export(
         let frame_for = |record: &fotollection_core::library::PhotoRecord| {
             frames.request(record, place_for(record).as_deref())
         };
+        // The size limit changes what is written (FR-105); names and folders do not.
+        let files = state
+            .ui
+            .read()
+            .map(|ui| fotollection_core::export::ExportFiles::from_ui(&ui))
+            .unwrap_or_default();
         let options = ExportOptions {
             // Nothing is written; the folder only completes the options.
             destination: std::path::Path::new(""),
@@ -1227,6 +1275,7 @@ pub async fn estimate_export(
             group_for: &|_| None,
             by_day: false,
             postcard_font: postcard_font_of(&frames, &settings).map(|f| f.font),
+            files: &files,
         };
         let samples = fotollection_core::export::ESTIMATE_SAMPLES;
         Ok(if sheets {

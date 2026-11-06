@@ -153,7 +153,17 @@
     "exportQuality": 150,
     "exportAsk": false,
     "exportSeparate": true,
-    "exportDestination": "/Volumes/Prints/Prague"
+    "exportDestination": "/Volumes/Prints/Prague",
+    "exportSubfolder": "../etc",
+    "exportNaming": {
+      "template": "textSequence",
+      "text": "Prague/in",
+      "start": 0
+    },
+    "exportExisting": "skip",
+    "exportMetadata": "dateOnly",
+    "exportLimitKb": 10,
+    "checkUpdatesAtStart": false
   },
   "recent_addresses": [
     "Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1"

@@ -328,7 +328,9 @@
     },
     "buttonThisSheet": "Xuất tấm này",
     "changeChoices": "Đổi lựa chọn xuất ảnh",
-    "qualityLine": "chất lượng {{quality}}"
+    "qualityLine": "chất lượng {{quality}}",
+    "skipped_other": "bỏ qua {{count}} (đã có sẵn)",
+    "overLimit_other": "{{count}} ảnh vẫn quá giới hạn dung lượng"
   },
   "crop": {
     "zoom": "Thu phóng",
@@ -1054,13 +1056,48 @@
     "fileShare": "JPEG theo sRGB (4:2:0), đúng cách mạng xã hội hiển thị.",
     "size": "Kích thước",
     "sizePrint": "Mỗi ảnh theo khổ in và vùng cắt đã chọn trong bảng, ở độ phân giải đầy đủ.",
-    "names": "Tên tệp và thông tin",
-    "naming": "Mỗi tệp giữ tên ảnh gốc; trùng tên thì thêm _1, _2… không ghi đè tệp nào.",
-    "metadata": "Giữ máy ảnh, ống kính, thông số và ngày chụp; không bao giờ giữ vị trí GPS.",
     "dontAsk": "Không hỏi lại",
     "askTitle": "Trước mỗi lần xuất",
     "askEveryTime": "Lần nào cũng hỏi",
     "askEveryTimeHint": "Hiện hộp thoại xuất ảnh mỗi lần bấm Xuất. Tắt: xuất ngay với các lựa chọn này.",
-    "dontAskHint": "Lần sau xuất ngay với các lựa chọn này; đổi lại trong Cài đặt → Xuất ảnh."
+    "dontAskHint": "Lần sau xuất ngay với các lựa chọn này; đổi lại trong Cài đặt → Xuất ảnh.",
+    "subfolder": "Đặt vào thư mục con",
+    "subfolderHint": "Nằm trong thư mục đã chọn, trước các thư mục ngày.",
+    "subfolderDefault": "Ảnh in",
+    "existing": "Nếu đã có tệp trùng tên",
+    "existingRule": {
+      "addNumber": "Thêm số (_1, _2)",
+      "skip": "Bỏ qua ảnh đó",
+      "replace": "Ghi đè tệp cũ"
+    },
+    "replaceWarning": "Tệp cũ sẽ bị thay và không lấy lại được.",
+    "fileName": "Tên tệp",
+    "template": "Cách đặt tên",
+    "templates": {
+      "original": "Tên gốc",
+      "dateOriginal": "Ngày - tên gốc",
+      "textSequence": "Tên tự đặt - số",
+      "textDateSequence": "Tên tự đặt - ngày - số",
+      "dateSequence": "Ngày - số"
+    },
+    "customText": "Tên tự đặt",
+    "customTextPlaceholder": "VD: Praha",
+    "startAt": "Bắt đầu từ số",
+    "example": "Ví dụ",
+    "limit": "Giới hạn dung lượng tệp",
+    "limitHint": "Mỗi tệp giữ chất lượng đã chọn nếu vừa, nếu không thì lấy mức cao nhất còn vừa (không dưới 60).",
+    "limitKb": "Tệp lớn nhất (KB)",
+    "metadataTitle": "Siêu dữ liệu",
+    "metadataKeep": "Giữ lại trong tệp",
+    "metadataChoice": {
+      "camera": "Máy ảnh",
+      "dateOnly": "Chỉ ngày",
+      "nothing": "Không gì"
+    },
+    "metadataHint": {
+      "camera": "Máy ảnh, ống kính, thông số và ngày chụp. Vị trí GPS luôn bị xoá.",
+      "dateOnly": "Chỉ giữ ngày chụp. Vị trí GPS luôn bị xoá.",
+      "nothing": "Không giữ thông tin nào; tệp chỉ còn hồ sơ màu."
+    }
   }
 }

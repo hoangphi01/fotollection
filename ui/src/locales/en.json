@@ -346,7 +346,11 @@
     },
     "buttonThisSheet": "Export this sheet",
     "changeChoices": "Change the export's choices",
-    "qualityLine": "quality {{quality}}"
+    "qualityLine": "quality {{quality}}",
+    "skipped_one": "{{count}} skipped (already there)",
+    "skipped_other": "{{count}} skipped (already there)",
+    "overLimit_one": "{{count}} still over the size limit",
+    "overLimit_other": "{{count}} still over the size limit"
   },
   "crop": {
     "zoom": "Zoom",
@@ -1089,13 +1093,48 @@
     "fileShare": "JPEG in sRGB (4:2:0), as the platforms show it.",
     "size": "Size",
     "sizePrint": "Each photo at the print size and crop chosen in the panel, at full resolution.",
-    "names": "Names and details",
-    "naming": "Each file keeps its photo's name; a name already there gets _1, _2… nothing is overwritten.",
-    "metadata": "Camera, lens, exposure and date are kept; the GPS location never is.",
     "dontAsk": "Don't ask again",
     "askTitle": "Before each export",
     "askEveryTime": "Ask every time",
     "askEveryTimeHint": "Show the export dialog each time Export is pressed. Off: export at once with these choices.",
-    "dontAskHint": "Export at once with these choices next time; change them in Settings → Export."
+    "dontAskHint": "Export at once with these choices next time; change them in Settings → Export.",
+    "subfolder": "Put in a subfolder",
+    "subfolderHint": "Inside the chosen folder, before the day folders.",
+    "subfolderDefault": "Prints",
+    "existing": "If a file of that name is there",
+    "existingRule": {
+      "addNumber": "Add a number (_1, _2)",
+      "skip": "Skip the photo",
+      "replace": "Replace the file"
+    },
+    "replaceWarning": "The old file is replaced and cannot be brought back.",
+    "fileName": "File name",
+    "template": "Name",
+    "templates": {
+      "original": "Original name",
+      "dateOriginal": "Date - original name",
+      "textSequence": "Custom text - number",
+      "textDateSequence": "Custom text - date - number",
+      "dateSequence": "Date - number"
+    },
+    "customText": "Custom text",
+    "customTextPlaceholder": "e.g. Prague",
+    "startAt": "Start at",
+    "example": "Example",
+    "limit": "Limit the file size",
+    "limitHint": "Each file at the chosen quality if it fits, else at the highest quality that does (not below 60).",
+    "limitKb": "Largest file (KB)",
+    "metadataTitle": "Metadata",
+    "metadataKeep": "Keep in the files",
+    "metadataChoice": {
+      "camera": "Camera",
+      "dateOnly": "Date only",
+      "nothing": "Nothing"
+    },
+    "metadataHint": {
+      "camera": "Camera, lens, exposure and capture date. The GPS position is always removed.",
+      "dateOnly": "Only the capture date. The GPS position is always removed.",
+      "nothing": "No details at all; the files keep only their colour profile."
+    }
   }
 }

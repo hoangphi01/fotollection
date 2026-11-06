@@ -158,6 +158,7 @@ export function ExportDialog({ exporter, settings, onSettingsChange }: ExportDia
         quality={quality}
         onQuality={setQualityLive}
         folderCount={request && request.only === null && !request.collage ? request.folderCount : 1}
+        count={request?.count ?? 1}
         onChooseDestination={() => void exporter.chooseDestination()}
         estimate={
           estimate && estimate.sourceBytes && estimate.estimatedBytes ? (

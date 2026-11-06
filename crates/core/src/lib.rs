@@ -28,6 +28,7 @@ pub mod logo;
 pub mod looks;
 pub mod machine;
 pub mod metadata;
+pub mod naming;
 pub mod places;
 pub mod plan;
 pub mod postcard;
