@@ -1044,7 +1044,7 @@
     "choose": "Chọn…",
     "file": "Tệp",
     "quality": "Chất lượng",
-    "qualityHint": "Chất lượng JPEG: càng cao càng giữ chi tiết và tệp càng nặng. 95 in không thấy khác biệt mà chỉ nặng bằng nửa 100.",
+    "qualityHint": "Chất lượng JPEG: càng cao càng giữ chi tiết và tệp càng nặng. 90 in không thấy khác biệt mà chỉ nặng bằng một phần ba 100.",
     "verdict": {
       "beautiful": "In rất đẹp",
       "good": "In được",

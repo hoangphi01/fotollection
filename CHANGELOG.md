@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **New project asks for its name** (FR-023): a small dialog, *Create* or *Cancel*.
 - **An export dialog, as Lightroom's** (FR-093): *Export* opens it, with presets on the left (prints, Facebook, Instagram, original size, custom) and every choice on the right: where the photos go, by day or in one folder, the quality, the size and the names. Tick *Don't ask again* and *Export* exports at once; Settings → *Export* holds the same choices and *Ask every time*. The folder, the quality and the rest are kept for next time.
-- **Export quality on a slider** (FR-092), from 60 to 100: the size estimate follows it, and a badge says what it is good for, measured on real prints: *Prints beautifully* from 90, *Prints well* from 75, below that *Screens only*.
+- **Export quality on a slider** (FR-092), from 60 to 100, prints at **90** by default (95 before: a third larger for a difference no one sees on paper, so a print could weigh more than the camera's own JPEG): the size estimate follows it, and a badge says what it is good for, measured on real prints: *Prints beautifully* from 90, *Prints well* from 75, below that *Screens only*.
 
 ### Fixed
 

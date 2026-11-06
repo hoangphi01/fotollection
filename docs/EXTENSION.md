@@ -65,7 +65,7 @@ Exports are plain JPEG files that any lab accepts. They are not a Fotollection f
 |----------|-------|
 | Path | `<destination>/<source stem>.jpg` (one folder, the default), or `<destination>/YYYY-MM-DD/<source stem>.jpg` by day, `undated/` when there is no capture date ([FR-009](PRD.md#fr-009--export-by-date)) |
 | Name collisions | `_1`, `_2`, … appended; an existing file is never overwritten |
-| Encoding | Baseline JPEG, quality 95, 4:4:4 chroma, the standard Huffman tables (optimized ones until 2026-11-04: 0.9 % smaller, a third slower, OPTIMIZATION §5) |
+| Encoding | Baseline JPEG, quality 90 by default (FR-092, 60–100), 4:4:4 chroma, the standard Huffman tables (optimized ones until 2026-11-04: 0.9 % smaller, a third slower, OPTIMIZATION §5) |
 | Colour | The source ICC profile is copied unchanged (sRGB conversion: [FR-027](PRD.md#fr-027--srgb-conversion-for-labs)) |
 | Metadata | No EXIF is written, so GPS is always stripped ([FR-010](PRD.md#fr-010--metadata-privacy-on-export)) |
 | Write | Temp file, then rename; a cancelled export removes its partial files |

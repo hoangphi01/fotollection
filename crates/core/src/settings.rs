@@ -73,7 +73,8 @@ pub struct UiSettings {
     #[serde(default)]
     pub preview_layout: PreviewLayout,
     /// The JPEG quality of an export, 60–100 (FR-092, FR-008). Absent before settings v16:
-    /// 95, what prints always had.
+    /// 90, below a visible difference on a print at a third less than 95 (RESULT §30, owner
+    /// 2026-11-06).
     #[serde(default = "default_export_quality")]
     pub export_quality: u8,
     /// Whether *Export* opens the export dialog first (FR-093); false once *Don't ask again*
@@ -128,7 +129,7 @@ const fn default_filmstrip() -> bool {
     true
 }
 const fn default_export_quality() -> u8 {
-    95
+    crate::export::EXPORT_QUALITY
 }
 const fn default_export_ask() -> bool {
     true

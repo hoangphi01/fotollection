@@ -118,7 +118,7 @@ export function ExportOptionsCards({
           value={quality}
           min={60}
           max={100}
-          reset={share ? 88 : 95}
+          reset={share ? 88 : 90}
           gpu={false}
           format={(v) => String(v)}
           hint={t('exportDialog.qualityHint')}

@@ -18,7 +18,7 @@ let current: Required<UiSettings> = {
   // The develop view's layout (FR-095): the dialog unless the user chose the whole window.
   previewLayout: 'dialog',
   // The export dialog's choices (FR-092, FR-093), as Rust's defaults.
-  exportQuality: 95,
+  exportQuality: 90,
   exportAsk: true,
   exportSeparate: false,
   exportDestination: null,

@@ -27,7 +27,10 @@ const SHARE_SHARPEN: f32 = 0.2;
 /// Shared photos go here, beside the dated print folders.
 const SHARE_FOLDER: &str = "Share";
 
-pub const EXPORT_QUALITY: u8 = 95;
+/// The default JPEG quality of a print (FR-008, FR-092): 90, a mean ΔE of 0.94 against
+/// quality 100 on a 20 × 30 cm print, under a visible step, at a third less than 95
+/// (RESULT §30; owner, 2026-11-06).
+pub const EXPORT_QUALITY: u8 = 90;
 /// Folder for photos without any capture date.
 pub const UNDATED_FOLDER: &str = "undated";
 

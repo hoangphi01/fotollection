@@ -175,7 +175,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P0.** Export at full resolution.
 
-- JPEG quality is configurable in the export dialog (60–100, kept per machine as `ui.exportQuality`, v0.12.1, FR-092), with a default of 95 and 4:4:4 chroma subsampling for prints (share exports, [FR-053](#fr-053--export-for-social-media), are 4:2:0 and start at their preset's quality, 88 or 80).
+- JPEG quality is configurable in the export dialog (60–100, kept per machine as `ui.exportQuality`, v0.12.1, FR-092), with a default of 90 (95 until 2026-11-06: a third larger for a difference under a visible step, RESULT §30) and 4:4:4 chroma subsampling for prints (share exports, [FR-053](#fr-053--export-for-social-media), are 4:2:0 and start at their preset's quality, 88 or 80).
 - The embedded ICC profile is preserved.
 - Photos that are crop-only with no stamp use a lossless DCT-domain crop when possible (planned; today every export is re-encoded).
 
@@ -987,10 +987,10 @@ Next to the batch settings, any other setting will later be overridable for one 
 - the quality slider with its live estimate and print badges ([FR-092](#fr-092--export-quality-on-a-slider-with-a-live-estimate-and-a-print-verdict));
 - the destination folder.
 
-- **Its buttons:** *Export* (saves the choices and exports) and *Cancel*, with a *Don't ask again* tick. Without the tick, every press on *Export* opens the dialog again, filled with the last choices. Once ticked, a press on *Export* in the panel exports at once with the saved choices; the panel says which ones in one line (for example *Print · by day · quality 95*).
+- **Its buttons:** *Export* (saves the choices and exports) and *Cancel*, with a *Don't ask again* tick. Without the tick, every press on *Export* opens the dialog again, filled with the last choices. Once ticked, a press on *Export* in the panel exports at once with the saved choices; the panel says which ones in one line (for example *Print · by day · quality 90*).
 - **Changing them later:** in the Settings window ([FR-086](#fr-086--one-settings-window)), which holds the same options (the same block) and the tick to ask again.
 - **One dialog everywhere:** the gallery, Simple mode, Collage, the photo's and the sheet's previews open the same dialog, built once ([STYLE_RULE](STYLE_RULE.md) §4); progress, the result and errors stay in the panel where the export started.
-- **As Lightroom's, the Settings window's size** (owner, 2026-11-06: "the size of Settings is fine, look at Lightroom's export"): presets on the left (*Prints, original size* at quality 95, *Facebook*, *Instagram* at 88, *Share, original size* at 80, *Custom*), the options in cards on the right (*Where*, *File*, *Size*, *Names & details*), *Don't ask again*, *Cancel* and *Export N photos* at the foot; `Esc` cancels. A preset sets the target and its quality; the user's own presets come with the Looks.
+- **As Lightroom's, the Settings window's size** (owner, 2026-11-06: "the size of Settings is fine, look at Lightroom's export"): presets on the left (*Prints, original size* at quality 90, *Facebook*, *Instagram* at 88, *Share, original size* at 80, *Custom*), the options in cards on the right (*Where*, *File*, *Size*, *Names & details*), *Don't ask again*, *Cancel* and *Export N photos* at the foot; `Esc` cancels. A preset sets the target and its quality; the user's own presets come with the Looks.
 - **Kept per machine** (settings v16): the quality, *ask every time*, together or apart, and the destination, which is checked when an export starts ([ERR-EXP-0004](ERROR_CONTROL.md) if the folder is gone). The target and the fill stay the project's print settings, so the Settings window's *Export* section holds the machine's part only.
 
 ### FR-094 — Project history, without nagging

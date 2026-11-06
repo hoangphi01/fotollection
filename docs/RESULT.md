@@ -605,6 +605,8 @@ Twelve of the owner's Prague photos (GX9, 20 MP), each sized for a 20 × 30 cm p
 | 95 | 0.58 | 6.72 | 3.8 MB |
 | 100 | 0 | 0 | 7.7 MB |
 
+**The default (owner, 2026-11-06):** prints were exported at 95, the camera's JPEG often weighed less; the default became **90**, a mean ΔE of 0.94 (under a visible step) at 2.6 MB instead of 3.8 MB, a third less, still *Prints beautifully*; 95 and 100 stay a slide away.
+
 The export dialog's badges follow from it:
 
 - **90 and above, *Prints beautifully*:** the mean stays under 1, half a just-noticeable step.

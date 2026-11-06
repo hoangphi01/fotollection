@@ -32,7 +32,7 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v14 (FR-079): `render.look`.
 /// v15 (FR-086, FR-091): `ui.previewMemoryPercent` (25), `ui.cacheLimitGb` (5) and
 /// `ui.preparePreviews` (on), each absent before.
-/// v16 (FR-092, FR-093): `ui.exportQuality` (95), `ui.exportAsk` (on), `ui.exportSeparate`
+/// v16 (FR-092, FR-093): `ui.exportQuality` (90), `ui.exportAsk` (on), `ui.exportSeparate`
 /// (off) and `ui.exportDestination` (none), each absent before.
 pub const SCHEMA_VERSION: u32 = 16;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
@@ -552,7 +552,7 @@ mod tests {
 
     /// FR-086, FR-091: a v14 file has no memory settings: 25 % of RAM, a 5 GB cache and
     /// previews prepared. A v15 file keeps its own, snapped: 99 % becomes 40, 7 GB the
-    /// FR-092, FR-093: a v15 file has no export settings: quality 95, asked each time,
+    /// FR-092, FR-093: a v15 file has no export settings: quality 90, asked each time,
     /// together, no folder. A v16 file keeps its own, the quality clamped to 60–100, and
     /// they round-trip.
     #[test]
@@ -570,7 +570,7 @@ mod tests {
                 old.ui.export_separate,
                 old.ui.export_destination
             ),
-            (95, true, false, None)
+            (90, true, false, None)
         );
         std::fs::write(&path, include_str!("../tests/fixtures/settings/v16.json"))?;
         let loaded = load(&path);

@@ -1079,7 +1079,7 @@
     "choose": "Choose…",
     "file": "File",
     "quality": "Quality",
-    "qualityHint": "JPEG quality: higher keeps more detail and makes larger files. 95 prints with no visible loss at half the size of 100.",
+    "qualityHint": "JPEG quality: higher keeps more detail and makes larger files. 90 prints with no visible loss at a third of the size of 100.",
     "verdict": {
       "beautiful": "Prints beautifully",
       "good": "Prints well",

@@ -16,9 +16,9 @@ import { ListRow } from '@/components/forms/list-row'
 import { Button } from '@/components/ui/button'
 
 /** Lightroom's export presets, ours: what each sets and its quality (share defaults from
- * RESULT §10, prints at 95, RESULT §30). */
+ * RESULT §10, prints at 90, RESULT §30). */
 const PRESETS = [
-  { key: 'print', icon: Printer, target: { kind: 'print' }, quality: 95 },
+  { key: 'print', icon: Printer, target: { kind: 'print' }, quality: 90 },
   {
     key: 'facebook',
     icon: MonitorSmartphone,
