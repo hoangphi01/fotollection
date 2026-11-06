@@ -588,3 +588,27 @@ Each photo of the owner's Prague trip (396 JPEG and 26 RW2 from a GX9, 20 MP) op
 - **Disk:** 0.66 MB a photo (JPEG q90), about 280 MB for this trip; the cache limit is now 5 GB.
 - **Pixels:** a preview made from the disk copy differs from a fresh one by 1.35 levels of 255 on average (20 photos).
 - **Memory:** the run peaked at 3.3 GB with a 4 GB budget, the quarter of a 16 GB machine the app gives the preview.
+
+## 30. Export quality on a print (v0.12.1, FR-092)
+
+Twelve of the owner's Prague photos (GX9, 20 MP), each sized for a 20 × 30 cm print at 300 DPI (3,543 px), encoded as prints are (4:4:4) at each quality, decoded, and compared with the quality-100 encode: ΔE as the OKLab distance × 100 (a just noticeable difference is about 2), on the M3 (`cargo run --release -p fotollection-core --example measure_quality -- <folder> 12`, 2026-11-06).
+
+| Quality | Mean ΔE | Worst 99th percentile ΔE | Mean size |
+|---|---|---|---|
+| 60 | 1.71 | 12.21 | 1.0 MB |
+| 65 | 1.65 | 11.49 | 1.1 MB |
+| 70 | 1.56 | 11.49 | 1.3 MB |
+| 75 | 1.48 | 11.49 | 1.4 MB |
+| 80 | 1.35 | 10.67 | 1.7 MB |
+| 85 | 1.18 | 10.67 | 2.0 MB |
+| 90 | 0.94 | 9.69 | 2.6 MB |
+| 95 | 0.58 | 6.72 | 3.8 MB |
+| 100 | 0 | 0 | 7.7 MB |
+
+The export dialog's badges follow from it:
+
+- **90 and above, *Prints beautifully*:** the mean stays under 1, half a just-noticeable step.
+- **75 to 89, *Prints well*:** the mean is still under 1.5, the worst pixels (fine texture, edges) start to show at a close look.
+- **Below 75, *Screens only*:** the size falls slowly while the difference keeps growing.
+
+95, the default, keeps half the size of 100 at a difference no eye sees on paper.
