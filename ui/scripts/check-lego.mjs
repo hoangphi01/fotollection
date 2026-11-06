@@ -143,6 +143,28 @@ for (const path of allTsx) {
   }
 }
 
+// Raised unless it belongs to something (owner, 2026-11-06: "Select all is still the old
+// style"): a standalone button is never `ghost`. Flat stays only for a row of a list
+// (ListRow), a button inside a raised ButtonGroup, a dismiss inside a note and an on/off
+// choice (`aria-pressed`).
+const GHOST_OK = {
+  'components/forms/list-row.tsx': 'the rows of lists and menus',
+  'features/library/library-sidebar.tsx': 'its icon buttons sit inside a raised ButtonGroup',
+  'features/capture/connect-camera-button.tsx': "it sits inside the Library row's ButtonGroup",
+}
+for (const path of allTsx) {
+  const rel = relative(join(root, 'src'), path).split(sep).join('/')
+  if (rel.startsWith('components/ui/') || rel in GHOST_OK) continue
+  const text = readFileSync(path, 'utf8')
+  for (const m of text.matchAll(/<Button\b[\s\S]*?(<\/Button>|\/>)/g)) {
+    const block = m[0]
+    if (block.includes('variant="ghost"') && !block.includes("'common.dismiss'") && !block.includes('aria-pressed')) {
+      const line = text.slice(0, m.index).split('\n').length
+      problems.push(`${rel}:${line}: a standalone button is raised (outline, secondary or default), never ghost`)
+    }
+  }
+}
+
 // Where each card shows (STYLE_RULE §4): its file says `@shown both`, `gallery`, `preview` or
 // `settings` (the Settings window, FR-086), and the places below may only hold the cards their
 // flag allows.

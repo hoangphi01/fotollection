@@ -110,7 +110,7 @@ export function ClockMatchDialog({ photoId, clockId, open, onClose }: ClockMatch
         )}
         {error && <p className="text-sm text-destructive">{error}</p>}
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="outline" onClick={onClose}>
             {t('common.cancel')}
           </Button>
           <Button disabled={offset === null || !clock} onClick={() => void apply()}>

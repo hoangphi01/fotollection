@@ -53,7 +53,7 @@ export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, 
         <Button size="sm" variant="outline" disabled={none} onClick={onDatePlace}>
           <MapPin data-icon="inline-start" /> {t('places.set')}
         </Button>
-        <Button size="sm" variant="ghost" onClick={onSelectAll}>
+        <Button size="sm" onClick={onSelectAll}>
           <CheckCheck data-icon="inline-start" /> {t('select.all')}
         </Button>
         <RemoveButton kind="clear" disabled={none} label={t('select.clear')} onClick={onClear} />

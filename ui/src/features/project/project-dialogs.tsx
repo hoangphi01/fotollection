@@ -42,7 +42,7 @@ export function UnsavedDialog({ name, onChoose }: UnsavedDialogProps) {
           <AlertDialogDescription>{t('project.unsavedBody')}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <Button variant="ghost" className="sm:mr-auto" onClick={() => onChoose?.('discard')}>
+          <Button variant="outline" className="sm:mr-auto" onClick={() => onChoose?.('discard')}>
             {t('project.dontSave')}
           </Button>
           <AlertDialogCancel onClick={() => onChoose?.('cancel')}>{t('common.cancel')}</AlertDialogCancel>
@@ -128,7 +128,7 @@ export function RelinkDialog({ missing, open, onLocate, onClose }: RelinkDialogP
           ))}
         </ul>
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="outline" onClick={onClose}>
             {t('project.later')}
           </Button>
         </DialogFooter>

@@ -13,7 +13,7 @@ export function KeysInfo({ lines }: { lines: string[] }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon-sm" aria-label={t('app.keysInfo')} data-hint={t('app.keysInfo')}>
+        <Button variant="outline" size="icon-sm" aria-label={t('app.keysInfo')} data-hint={t('app.keysInfo')}>
           <Info />
         </Button>
       </PopoverTrigger>

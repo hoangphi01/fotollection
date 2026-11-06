@@ -119,7 +119,7 @@ export function DatePlaceDialog({ ids, current, onClose }: DatePlaceDialogProps)
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="outline" onClick={onClose}>
             {t('common.cancel')}
           </Button>
           <Button disabled={date.kind === 'keep' && place.kind === 'keep'} onClick={() => void apply()}>

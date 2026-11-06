@@ -107,7 +107,7 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
         )}
       </div>
       <div className="flex items-center justify-center gap-3 border-t p-3">
-        <Button variant="ghost" size="icon" onClick={() => go(-1)} disabled={index === 0} aria-label={t('simple.previous')} data-hint={t('simple.previous')}>
+        <Button variant="outline" size="icon" onClick={() => go(-1)} disabled={index === 0} aria-label={t('simple.previous')} data-hint={t('simple.previous')}>
           <ChevronLeft />
         </Button>
         <Button variant="outline" size="lg" className="min-w-36" onClick={() => send('aside')}>
@@ -117,7 +117,7 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
           <ArrowUp data-icon="inline-start" /> {t('simple.keep')}
         </Button>
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
           onClick={() => go(1)}
           disabled={index >= photos.length - 1}

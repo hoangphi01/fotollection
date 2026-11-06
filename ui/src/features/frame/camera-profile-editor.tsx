@@ -116,7 +116,7 @@ export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps
             <RemoveButton iconOnly label={t('camera.removeLogo')} onClick={() => void frame.clearLogo(p.id)} />
           ) : (
             <Button
-              variant="ghost"
+              variant="outline"
               size="icon-sm"
               aria-label={t('camera.chooseLogo')}
               data-hint={t('camera.chooseLogo')}

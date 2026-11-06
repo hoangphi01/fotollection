@@ -9,6 +9,7 @@ import { DatePlaceDialog } from '@/features/places/date-place-dialog'
 import { CullControls } from '@/features/culling/cull-controls'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
+import { ResetButton } from '@/components/forms/danger-button'
 import { ExportSection } from '@/features/export/export-section'
 import { showExportDialog } from '@/features/export/use-export-dialog'
 import type { ExportApi } from '@/features/export/use-export'
@@ -542,12 +543,10 @@ export function PreviewDialog({
                   ? t('viewer.cropCustom', { zoom: formatNumber(shownGeometry.crop.zoom ?? 1, 1, 1) })
                   : t('viewer.cropCentred')}
                 {shownGeometry?.crop && photo && (
-                  <Button variant="ghost" size="xs" onClick={() => void commands.setPhotoCrop(photo.id, null, 0, false)}>
-                    {t('common.reset')}
-                  </Button>
+                  <ResetButton small label={t('common.reset')} onClick={() => void commands.setPhotoCrop(photo.id, null, 0, false)} />
                 )}
                 {!shownGeometry?.crop && (
-                  <Button variant="ghost" size="xs" disabled={!shownGeometry || shownGeometry.cropDisabled} onClick={startCrop}>
+                  <Button variant="outline" size="xs" disabled={!shownGeometry || shownGeometry.cropDisabled} onClick={startCrop}>
                     {t('viewer.adjust')}
                   </Button>
                 )}

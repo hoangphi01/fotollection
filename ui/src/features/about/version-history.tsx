@@ -80,7 +80,7 @@ function Release({ release: r, current, open, onToggle }: ReleaseProps) {
             </Badge>
           )}
           {r.notes.length > 0 && (
-            <Button variant="ghost" size="xs" className="ml-auto" aria-expanded={open} onClick={onToggle}>
+            <Button variant="outline" size="xs" className="ml-auto" aria-expanded={open} onClick={onToggle}>
               <ChevronDown data-icon="inline-start" className={cn('transition-transform', open && 'rotate-180')} />
               {t(open ? 'about.showLess' : 'about.showAll')}
             </Button>

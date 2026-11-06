@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **No flat buttons left on their own** (FR-099): *Select all* (in the theme's colour), dialogs' *Cancel*, *More*, *Show all*, the keys ⓘ and the rest are raised like every button.
 - **The smallest text has room for Vietnamese marks** (FR-099): the folder list's tip and other 11 px text no longer crowd on two lines.
 - **A seamless title bar on macOS** (FR-052): the traffic lights sit on the app's own colours, as in VS Code, with the project's name in the middle.
 - **One height for every control** (FR-099): buttons, toggles and the toolbar are as tall as a text field or a dropdown (32 px), so a row of mixed controls lines up; the Settings gear is a real button, and the author's name sits under the app's, a size smaller; the logo beside them is as tall as the gear and opens fotollection.org. The project's and the library's buttons sit in one raised bar each. A card's header keeps its height when a reset button appears, and sliders read better in the dark theme. A card opened at the foot of a panel scrolls into view. Reset buttons are red as the remove buttons; menus and dropdowns mark the chosen item as the folder list does; the size estimate is a badge beside the print verdict. Every column's head is 64 px, so the lines under them meet as one line across the window in the gallery, Simple, Collage, the Settings window, the export dialog and the photo preview.

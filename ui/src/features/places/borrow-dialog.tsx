@@ -140,7 +140,7 @@ export function BorrowDialog({ onClose }: BorrowDialogProps) {
         )}
         {error && <p className="text-sm text-destructive">{error}</p>}
         <DialogFooter>
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="outline" onClick={onClose}>
             {t('common.done')}
           </Button>
           <Button disabled={!report || report.suggestions.length === 0 || accepted.size === 0} onClick={() => void apply()}>

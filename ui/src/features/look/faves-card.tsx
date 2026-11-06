@@ -62,7 +62,7 @@ export function FavesCard({ look, onChange, footer, raw = false }: FavesCardProp
         {FAVES_MORE.map(slider)}
       </Collapse>
       <Button
-        variant="ghost"
+        variant="outline"
         size="sm"
         className="w-full"
         aria-expanded={more}

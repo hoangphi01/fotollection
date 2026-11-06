@@ -47,7 +47,7 @@ export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomI
       {button(buttons[0])}
       {inline ? (
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
           aria-live="polite"
           data-hint={loading ? t('viewer.zoomSharpening') : t('viewer.zoomToggle')}
