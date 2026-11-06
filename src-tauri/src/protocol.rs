@@ -34,8 +34,9 @@ enum Route {
     Mask(PhotoId),
     /// The photo's colour look as a 33³ RGBA8 table, for the look on the GPU (ADR-0039).
     Look(PhotoId),
-    /// A full-resolution region of the preview, for zoom.
-    Region(PhotoId, Region),
+    /// A full-resolution region of the preview, for zoom; `true` without the colour look, for
+    /// the *Before* side of a compare view (FR-096).
+    Region(PhotoId, Region, bool),
     /// Upright, uncropped T2 image for the crop editor; `true` turns it as the photo sits
     /// in its collage cell (FR-035).
     Source(PhotoId, bool),
@@ -103,7 +104,7 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
         "preview" if flag("mask=1") => Some(Route::Mask(id)),
         "look" => Some(Route::Look(id)),
         "preview" => Some(match region(query).ok()? {
-            Some(region) => Route::Region(id, region),
+            Some(region) => Route::Region(id, region, flag("plain=1")),
             None => Route::Preview(
                 id,
                 if flag("plain=1") {
@@ -197,9 +198,10 @@ pub fn handle<R: Runtime>(
 /// first; thumbnails, small sheets of the grid and look tables wait behind them.
 fn priority_of(route: &Route) -> Priority {
     match route {
-        Route::Preview(id, _) | Route::Region(id, _) | Route::Mask(id) | Route::Source(id, _) => {
-            Priority::Interactive(Some(u64::from(id.0)))
-        }
+        Route::Preview(id, _)
+        | Route::Region(id, _, _)
+        | Route::Mask(id)
+        | Route::Source(id, _) => Priority::Interactive(Some(u64::from(id.0))),
         Route::Sheet(_, false) => Priority::Interactive(None),
         Route::Thumb(_) | Route::Sheet(_, true) | Route::Look(_) | Route::CameraLive => {
             Priority::Background
@@ -221,7 +223,7 @@ fn answer(state: &AppState, route: Route, responder: UriSchemeResponder) {
             Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
             Err(error) => fail(responder, &error),
         },
-        Route::Region(id, region) => match region_bytes(state, id, region) {
+        Route::Region(id, region, plain) => match region_bytes(state, id, region, plain) {
             Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
             Err(error) => fail(responder, &error),
         },
@@ -325,7 +327,15 @@ mod tests {
                 "/preview/2",
                 Some("rev=1&region=0.25,0.5,0.25,0.25&px=1600")
             ),
-            Some(Route::Region(PhotoId(2), _))
+            Some(Route::Region(PhotoId(2), _, false))
+        ));
+        // The Before side of a compare view, sharp at 1:1 too (FR-096).
+        assert!(matches!(
+            route(
+                "/preview/2",
+                Some("rev=1&plain=1&region=0.25,0.5,0.25,0.25&px=1600")
+            ),
+            Some(Route::Region(PhotoId(2), _, true))
         ));
         for bad in [
             "region=0.25,0.5,0.25&px=1600",

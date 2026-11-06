@@ -414,7 +414,7 @@
     "oneToOne": "fit ↔ 1:1",
     "beforeKey": "before / after",
     "everyKey": "every key",
-    "keys": "← →  browse · ↑ to the print basket · ↓ set aside\n0–5 stars · P pick · X reject · U clear the flag\nR or C crop · [ ] or {{mod}} [ ] rotate\nZ, or a click on the photo: fit ↔ 1:1 · {{mod}} + − 0 zoom · drag to move the zoomed photo\n\\ before / after\n{{mod}} Z undo · ⇧ {{mod}} Z redo\nF fill the app window or back · Tab hide the side panels (from the photo)\n⇧ {{mod}} E export this photo · Esc close",
+    "keys": "← →  browse · ↑ to the print basket · ↓ set aside\n0–5 stars · P pick · X reject · U clear the flag\nR or C crop · [ ] or {{mod}} [ ] rotate\nZ, or a click on the photo: fit ↔ 1:1 · {{mod}} + − 0 zoom · drag to move the zoomed photo\n\\ before / after · Y side by side · ⇧Y split · ⌥/Alt Y top and bottom\n{{mod}} Z undo · ⇧ {{mod}} Z redo\nF fill the app window or back · Tab hide the side panels (from the photo)\n⇧ {{mod}} E export this photo · Esc close",
     "layoutWindow": "Fill the app window (F)",
     "layoutDialog": "Back to a window (F)"
   },
@@ -1033,5 +1033,16 @@
     "rotate": "Rotate",
     "stamp": "Date stamp",
     "caption": "Line under the date"
+  },
+  "compare": {
+    "before": "Before",
+    "after": "After",
+    "line": "Drag to move the line between before and after",
+    "views": "Before and after views",
+    "beforeOnly": "Before only",
+    "sideBySide": "Side by side",
+    "split": "Split, left and right",
+    "topBottom": "Top and bottom",
+    "splitTopBottom": "Split, top and bottom"
   }
 }

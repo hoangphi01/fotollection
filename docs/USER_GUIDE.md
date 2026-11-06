@@ -481,7 +481,7 @@ Two cards change a photo's colour, under **Print / export size**, in the preview
 - **Faves** shows four sliders: **Brightness**, **Contrast**, **Warm / cool** and **Saturation**. **More** adds **Highlights**, **Shadows**, **Tint** and **Vibrance**. Hover a slider to read what it does; double-click it to put it back to 0. A press just above or below the bar still takes it, and a click on a slider's name lets the ← and → keys move it (by 1, by 10 with Shift).
 - **Tools** is folded at first; click its title to open it. **Fade** lifts the blacks, **Tint the shadows** and **Tint the highlights** lay a colour over the dark and the bright parts (with **Balance** between them), and **Black and white** turns the photo grey through a filter: red darkens a blue sky the most, green lightens leaves.
 - A folded card says how many of its sliders are set ("Tools · 2 changed"); the ↺ on its title resets the card.
-- In the preview, **Before** (or the **\\** key) shows the photo without its look; press it again to come back.
+- In the preview, **Before** (or the **\\** key) shows the photo without its look; press it again to come back. The arrow beside it opens Lightroom's other views ([FR-096](PRD.md#fr-096--before-and-after-side-by-side)): **Side by side** (**Y**), **Split, left and right** (**⇧Y**: one photo, before on the left of a line you drag, after on the right), **Top and bottom** (**⌥/Alt Y**) and **Split, top and bottom**. Both sides zoom and move together and stay sharp at 1:1; the same key again, or **Esc**, goes back to the photo alone.
 - The date stamp, the info frame and the border are never tinted, and a photo with nothing set prints exactly as before.
 - **In Collage mode**, open a sheet's preview and click a photo on it to change its colour; the cards show only while a photo is picked. Click beside the photos, or press **Esc**, to let go.
 
@@ -511,6 +511,7 @@ Two cards change a photo's colour, under **Print / export size**, in the preview
 | Sheet preview | **↑** / **↓** | Put the chosen photo in the print basket / set it aside |
 | Preview | **R** or **C** | Open the crop editor (chapter 6) |
 | Preview | **\\** | Before / After: the photo without its look, and back (§21) |
+| Preview | **Y**, **⇧Y**, **⌥/Alt Y** | Before and after side by side, split, top and bottom (§21) |
 | Preview | **Z**, a click on the photo | Fit ↔ 1:1 (§7) |
 | Preview | **[ ]**, **Cmd/Ctrl [ ]** | Rotate left / right |
 | Preview | **⇧ Cmd/Ctrl E** | Export this photo |

@@ -1362,10 +1362,7 @@ pub fn preview_bytes(
     let (mut record, mut settings, place, frame) = preview_inputs(state, id)?;
     match part {
         PreviewPart::All => {}
-        PreviewPart::Plain => {
-            record.edits.look = None;
-            settings.look = LookSettings::default();
-        }
+        PreviewPart::Plain => without_look(&mut record, &mut settings),
         PreviewPart::Base => {
             let look = record.edits.look.as_ref().unwrap_or(&settings.look);
             let base = if fotollection_core::raw::is_raw_name(&record.file_name) {
@@ -1408,13 +1405,27 @@ pub fn shown_error(
     IpcError::for_photo(e.code(), e.to_string(), &record.facts)
 }
 
-/// One full-resolution region of the preview, for zoom (FR-057).
+/// The photo with no colour look, its own or the settings': *Before* (FR-079, FR-096).
+fn without_look(
+    record: &mut fotollection_core::library::PhotoRecord,
+    settings: &mut fotollection_core::settings::RenderSettings,
+) {
+    record.edits.look = None;
+    settings.look = LookSettings::default();
+}
+
+/// One full-resolution region of the preview, for zoom (FR-057); `plain` without the colour
+/// look, for the *Before* side of a compare view (FR-096).
 pub fn region_bytes(
     state: &AppState,
     id: PhotoId,
     region: fotollection_core::preview::Region,
+    plain: bool,
 ) -> Result<Vec<u8>, IpcError> {
-    let (record, settings, place, frame) = preview_inputs(state, id)?;
+    let (mut record, mut settings, place, frame) = preview_inputs(state, id)?;
+    if plain {
+        without_look(&mut record, &mut settings);
+    }
     state
         .previews
         .render_region_jpeg(

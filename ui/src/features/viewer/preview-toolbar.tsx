@@ -1,13 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview
-import { Crop, Download, Eye, Maximize2, Minimize2, PanelBottomClose, PanelBottomOpen, Redo2, RotateCcw, RotateCw, ShoppingBasket, Undo2 } from 'lucide-react'
+import { ChevronDown, Columns2, Crop, Download, Eye, Maximize2, Minimize2, PanelBottomClose, PanelBottomOpen, Redo2, RotateCcw, RotateCw, Rows2, ShoppingBasket, SquareSplitHorizontal, SquareSplitVertical, Undo2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { KeysInfo } from '@/components/layout/keys-info'
+import { Button } from '@/components/ui/button'
+import { Kbd } from '@/components/ui/kbd'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { commands, type PhotoSummary } from '@/ipc/bindings'
-import { MOD } from '@/lib/platform'
+import { MOD, isMac } from '@/lib/platform'
+import { cn } from '@/lib/utils'
+import type { Compare, CompareMode } from './compare-stage'
 
 type PreviewToolbarProps = {
   photo: PhotoSummary | undefined
@@ -16,6 +21,9 @@ type PreviewToolbarProps = {
   onCrop: () => void
   before: boolean
   onBefore: () => void
+  /** Lightroom's before / after views (FR-096). */
+  compare: Compare
+  onCompare: (mode: CompareMode) => void
   canUndo: boolean
   canRedo: boolean
   onExport: () => void
@@ -41,6 +49,8 @@ export function PreviewToolbar({
   onCrop,
   before,
   onBefore,
+  compare,
+  onCompare,
   canUndo,
   canRedo,
   onExport,
@@ -101,12 +111,13 @@ export function PreviewToolbar({
       <ToolbarButton
         icon={<Eye />}
         label={t('look.before')}
-        variant={before ? 'default' : 'outline'}
+        variant={before || compare !== 'off' ? 'default' : 'outline'}
         aria-pressed={before}
         data-hint={t('look.beforeHint')}
         disabled={!photo}
         onClick={onBefore}
       />
+      <CompareMenu compare={compare} before={before} onBefore={onBefore} onCompare={onCompare} disabled={!photo} />
       <Separator orientation="vertical" className="mx-1 h-5!" />
       <ToolbarButton
         icon={<Undo2 />}
@@ -158,5 +169,56 @@ export function PreviewToolbar({
         <KeysInfo lines={t('viewer.keys', { mod: MOD }).split('\n')} />
       </div>
     </div>
+  )
+}
+
+const ALT = isMac ? '⌥' : 'Alt'
+
+/** The views of *Before*, as Lightroom's menu beside its [Y|Y] button (FR-096). */
+function CompareMenu({
+  compare,
+  before,
+  onBefore,
+  onCompare,
+  disabled,
+}: {
+  compare: Compare
+  before: boolean
+  onBefore: () => void
+  onCompare: (mode: CompareMode) => void
+  disabled: boolean
+}) {
+  const { t } = useTranslation()
+  const views = [
+    { key: 'beforeOnly', icon: <Eye />, keys: ['\\'], on: before, pick: onBefore },
+    { key: 'sideBySide', icon: <Columns2 />, keys: ['Y'], on: compare === 'sideBySide', pick: () => onCompare('sideBySide') },
+    { key: 'split', icon: <SquareSplitHorizontal />, keys: ['⇧', 'Y'], on: compare === 'split', pick: () => onCompare('split') },
+    { key: 'topBottom', icon: <Rows2 />, keys: [ALT, 'Y'], on: compare === 'topBottom', pick: () => onCompare('topBottom') },
+    { key: 'splitTopBottom', icon: <SquareSplitVertical />, keys: [], on: compare === 'splitTopBottom', pick: () => onCompare('splitTopBottom') },
+  ] as const
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <ToolbarButton icon={<ChevronDown />} label={t('compare.views')} data-hint={t('compare.views')} iconOnly disabled={disabled} />
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-64 p-1">
+        {views.map((v) => (
+          <Button
+            key={v.key}
+            variant="ghost"
+            size="sm"
+            aria-pressed={v.on}
+            className={cn('w-full justify-start font-normal', v.on && 'bg-accent font-medium')}
+            onClick={v.pick}
+          >
+            {v.icon}
+            <span className="flex-1 truncate text-left">{t(`compare.${v.key}`)}</span>
+            {v.keys.map((k) => (
+              <Kbd key={k}>{k}</Kbd>
+            ))}
+          </Button>
+        ))}
+      </PopoverContent>
+    </Popover>
   )
 }

@@ -106,6 +106,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
   | Between cards | 12 px, 12 px inset | `SidePanel`, `ViewerFrame` |
   | The photo preview's row of tools (FR-095): above the stage, never over the photo; the photo's actions, the view, undo and redo, export, then zoom, the count, the filmstrip and every key | 44 px tall, `ToolbarButton`s (icon-only ones with `iconOnly`), separators between groups | `PreviewToolbar` in `ViewerFrame`'s `toolbar` slot |
   | The photo preview filling the app window (FR-095): Navigator and History in a left column | the column 18 rem (`w-panel`), cards 12 px apart as the inspector's; the whole window under the Windows title bar (`--titlebar`) | `ViewerFrame` `layout="window"`, `side` |
+  | Before and after on the stage (FR-096): two halves 4 px apart, or one photo split by a line | a "Before" / "After" label in each side's top corner (`text-xs` on black 60 %); the line 1 px `primary` with a 16 px handle to drag | `CompareStage` |
   | A strip of thumbnails under a viewer's stage (the capture screen's shots, Pro mode's filmstrip, FR-090) | 112 px tall; 80 px square cells 8 px apart, the one shown in a `primary` ring | `Filmstrip` |
   | Between a card's blocks | 12 px | `SectionCard`, `Stack` (a panel footer), `Collapse stack="card"` |
   | Within one field: label, control, options, hint | 6 px | `Field`, `SwitchField`, `Collapse stack="field"` |

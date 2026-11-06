@@ -37,8 +37,10 @@ export function regionUrl(
   revision: number,
   rect: { x: number; y: number; w: number; h: number },
   px: number,
+  /** Without the colour look: a compare view's *Before* side (FR-096). */
+  plain = false,
 ): string {
-  return `${previewUrl(id, revision)}&region=${rect.x},${rect.y},${rect.w},${rect.h}&px=${px}`
+  return `${previewUrl(id, revision)}${plain ? '&plain=1' : ''}&region=${rect.x},${rect.y},${rect.w},${rect.h}&px=${px}`
 }
 
 /**

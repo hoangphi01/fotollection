@@ -24,6 +24,7 @@ import { PhotoFilmstrip } from './photo-filmstrip'
 import { PreviewToolbar } from './preview-toolbar'
 import { NavigatorCard } from './navigator-card'
 import { HistoryCard } from './history-card'
+import { CompareStage, type Compare, type CompareMode } from './compare-stage'
 import { oneToOneScale } from './one-to-one'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { useGpuLook } from './use-gpu-look'
@@ -133,7 +134,17 @@ export function PreviewDialog({
   // off, as in Lightroom; another photo starts with its look.
   const [beforeOf, setBeforeOf] = useState<number | null>(null)
   const before = photo !== undefined && beforeOf === photo.id
-  const toggleBefore = () => setBeforeOf(before || !photo ? null : photo.id)
+  const toggleBefore = () => {
+    setCompare('off')
+    setBeforeOf(before || !photo ? null : photo.id)
+  }
+  // Lightroom's before / after views (FR-096), kept from photo to photo; the same key again
+  // goes back to the photo alone.
+  const [compare, setCompare] = useState<Compare>('off')
+  const toggleCompare = (mode: CompareMode) => {
+    setBeforeOf(null)
+    setCompare((c) => (c === mode ? 'off' : mode))
+  }
   const src = photo ? `${previewUrl(photo.id, revision)}${before ? '&plain=1' : ''}` : ''
   const { src: shownSrc, error: shownError } = useShownSrc(photo?.id, src)
   // The next photos load while this one is looked at (FR-091).
@@ -153,8 +164,12 @@ export function PreviewDialog({
   const zoom = useZoom(stage, `${photo?.id}:${cropping}`, oneToOneScale(geometry, previewImg))
   const sharp = useSharpRegion(previewImg, stage, zoom.view, photo?.id, revision, shownSrc === src && !before ? shownSrc : null)
   // Without zoom, dragging the photo moves the crop (Crop to fill, or no frame).
-  const cropDrag = useCropDrag(photo?.id, geometry, !cropping && !zoom.zoomed && !!geometry && !geometry.cropDisabled)
-  const canDrag = !zoom.zoomed && !!geometry && !geometry.cropDisabled
+  const cropDrag = useCropDrag(photo?.id, geometry, !cropping && compare === 'off' && !zoom.zoomed && !!geometry && !geometry.cropDisabled)
+  const canDrag = compare === 'off' && !zoom.zoomed && !!geometry && !geometry.cropDisabled
+  const startCrop = () => {
+    setCompare('off')
+    setCropping(true)
+  }
 
   const go = (delta: number) => {
     setCropping(false)
@@ -214,7 +229,13 @@ export function PreviewDialog({
       event.preventDefault()
       send(event.key === 'ArrowUp' ? 'print' : 'aside')
     } else if (event.key === '\\' && !mod) toggleBefore()
-    else if ((key === 'r' || key === 'c') && !mod && !event.altKey && canCrop) setCropping(true)
+    else if ((key === 'r' || key === 'c') && !mod && !event.altKey && canCrop) startCrop()
+    // Y side by side, ⇧Y split, ⌥Y one above the other; by the key's place, as ⌥Y types a
+    // letter of its own on a Mac.
+    else if (event.code === 'KeyY' && !mod) {
+      event.preventDefault()
+      toggleCompare(event.altKey ? 'topBottom' : event.shiftKey ? 'split' : 'sideBySide')
+    }
   }
 
   const view = filter.queue ?? 'gallery'
@@ -229,10 +250,13 @@ export function PreviewDialog({
       contentRef={contentRef}
       onKeyDown={onKeyDown}
       onEscapeKeyDown={(e) => {
-        // Esc leaves crop mode first, then closes the dialog.
+        // Esc leaves crop mode or a compare view first, then closes the dialog.
         if (cropping) {
           e.preventDefault()
           setCropping(false)
+        } else if (compare !== 'off') {
+          e.preventDefault()
+          setCompare('off')
         }
       }}
       stageRef={setStage}
@@ -252,7 +276,9 @@ export function PreviewDialog({
         <PreviewToolbar
           photo={photo}
           cropBlocked={shownGeometry?.cropDisabled ? t('viewer.cropFitMode') : null}
-          onCrop={() => setCropping(true)}
+          onCrop={startCrop}
+          compare={compare}
+          onCompare={toggleCompare}
           before={before}
           onBefore={toggleBefore}
           canUndo={canUndo}
@@ -334,6 +360,20 @@ export function PreviewDialog({
             />
           ) : (
             <>
+              {compare !== 'off' && photo && shownSrc ? (
+                <CompareStage
+                  mode={compare}
+                  photoId={photo.id}
+                  revision={revision}
+                  after={src}
+                  before={`${previewUrl(photo.id, revision)}&plain=1`}
+                  view={zoom.view}
+                  transform={zoom.transform}
+                  pointer={zoom.pointer}
+                  onAfterImage={setPreviewImg}
+                />
+              ) : (
+              <>
               {photo && shownSrc && (
                 <img
                   ref={setPreviewImg}
@@ -368,6 +408,8 @@ export function PreviewDialog({
                   style={sharp.layer.style}
                   className="pointer-events-none absolute top-1/2 left-1/2 max-w-none"
                 />
+              )}
+              </>
               )}
               {!shownSrc && <StageSpinner error={shownError} />}
               {/* Browse buttons for the mouse; they show while the pointer is over the stage. */}
@@ -432,7 +474,7 @@ export function PreviewDialog({
                   </Button>
                 )}
                 {!shownGeometry?.crop && (
-                  <Button variant="ghost" size="xs" disabled={!shownGeometry || shownGeometry.cropDisabled} onClick={() => setCropping(true)}>
+                  <Button variant="ghost" size="xs" disabled={!shownGeometry || shownGeometry.cropDisabled} onClick={startCrop}>
                     {t('viewer.adjust')}
                   </Button>
                 )}

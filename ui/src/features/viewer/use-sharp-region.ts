@@ -19,7 +19,8 @@ type Loaded = { src: string; photoId: number; rect: Rect }
  * the full-resolution render only, once the view has settled. The zoomed preview stays on
  * screen meanwhile, so the photo is never blank.
  *
- * `img` is the preview element and `base` its source; `stage` the element that clips it.
+ * `img` is the preview element and `base` its source; `stage` the element that clips it (a
+ * half of a compare view, FR-096); `plain` asks for the part without the colour look.
  */
 export function useSharpRegion(
   img: HTMLImageElement | null,
@@ -28,6 +29,7 @@ export function useSharpRegion(
   photoId: number | undefined,
   revision: number,
   base: string | null,
+  plain = false,
 ) {
   const [size, setSize] = useState<{ w: number; h: number } | null>(null)
   const [loaded, setLoaded] = useState<Loaded | null>(null)
@@ -50,7 +52,7 @@ export function useSharpRegion(
       const dpr = window.devicePixelRatio || 1
       if (!rect || size.w * view.scale * dpr <= img.naturalWidth * SHARP_ENOUGH) return
       const px = Math.ceil(rect.w * size.w * view.scale * dpr)
-      const src = regionUrl(photoId, revision, rect, px)
+      const src = regionUrl(photoId, revision, rect, px, plain)
       setWanted(src)
       const next = new Image()
       next.onload = () => live && setLoaded({ src, photoId, rect })
@@ -62,7 +64,7 @@ export function useSharpRegion(
       live = false
       window.clearTimeout(timer)
     }
-  }, [zoomed, img, stage, size, view, photoId, revision, base])
+  }, [zoomed, img, stage, size, view, photoId, revision, base, plain])
 
   // The last sharp part of this photo stays until the next has loaded, as the preview
   // under it does (useShownSrc): a change of setting never turns the zoomed photo soft.
