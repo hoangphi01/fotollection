@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { CircleCheck, Download, FolderOpen, HardDrive, OctagonX, TriangleAlert, X } from 'lucide-react'
+import { CircleCheck, Download, FolderOpen, HardDrive, OctagonX, TriangleAlert } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -132,15 +132,7 @@ export function ExportSection({
               </p>
             ))}
           </AlertDescription>
-          <Button
-            variant="ghost"
-            size="icon-xs"
-            aria-label={t('common.dismiss')}
-            className="absolute top-2 right-2"
-            onClick={dismiss}
-          >
-            <X />
-          </Button>
+          <RemoveButton iconOnly small label={t('common.dismiss')} onClick={dismiss} className="absolute top-2 right-2" />
         </Alert>
       )}
 

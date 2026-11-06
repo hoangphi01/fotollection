@@ -116,8 +116,8 @@ for (const path of files) {
 // §4 "Red"): a button that removes, deletes, clears, stops or resets is `RemoveButton` or
 // `ResetButton` (components/forms/danger-button.tsx), never a hand-made <Button>: no
 // `variant="destructive"` and no ✕, bin, cleared filter or ↺ icon inside a <Button>. A ↺ that
-// is a choice (`aria-pressed`) and a dismiss that hides a note (`common.dismiss`) are not
-// removals; the title bar's close is a plain <button> the system styles.
+// is a choice (`aria-pressed`) is not a removal; a dismiss that hides a note is one (owner,
+// 2026-11-06: "this ✕ forgot its red"); the title bar's close is a plain <button> the system styles.
 const REMOVE_ICON = /<(X|XIcon|Trash2|FilterX|Eraser|CircleX|RotateCcw)\b/
 const OWN_LOOK = new Set(['components/forms/danger-button.tsx'])
 const allTsx = []
@@ -135,7 +135,7 @@ for (const path of allTsx) {
   const text = readFileSync(path, 'utf8')
   for (const m of text.matchAll(/<Button\b[\s\S]*?(<\/Button>|\/>)/g)) {
     const block = m[0]
-    const removal = REMOVE_ICON.test(block) && !block.includes("'common.dismiss'") && !block.includes('aria-pressed')
+    const removal = REMOVE_ICON.test(block) && !block.includes('aria-pressed')
     if (removal || block.includes('variant="destructive"')) {
       const line = text.slice(0, m.index).split('\n').length
       problems.push(`${rel}:${line}: a button that removes or resets is RemoveButton or ResetButton (components/forms/danger-button.tsx), never a hand-made one`)
@@ -158,7 +158,7 @@ for (const path of allTsx) {
   const text = readFileSync(path, 'utf8')
   for (const m of text.matchAll(/<Button\b[\s\S]*?(<\/Button>|\/>)/g)) {
     const block = m[0]
-    if (block.includes('variant="ghost"') && !block.includes("'common.dismiss'") && !block.includes('aria-pressed')) {
+    if (block.includes('variant="ghost"') && !block.includes('aria-pressed')) {
       const line = text.slice(0, m.index).split('\n').length
       problems.push(`${rel}:${line}: a standalone button is raised (outline, secondary or default), never ghost`)
     }

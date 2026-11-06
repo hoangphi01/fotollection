@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Children, type ReactNode } from 'react'
-import { OctagonX, X } from 'lucide-react'
+import { OctagonX } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertAction, AlertDescription } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 /**
  * The notices over the main view (an error, a camera session, a task's progress), stacked
@@ -31,9 +31,7 @@ export function ErrorNotice({ message, onDismiss }: { message: string; onDismiss
       <OctagonX />
       <AlertDescription>{message}</AlertDescription>
       <AlertAction>
-        <Button variant="ghost" size="icon-sm" aria-label={t('common.dismiss')} onClick={onDismiss}>
-          <X />
-        </Button>
+        <RemoveButton iconOnly label={t('common.dismiss')} onClick={onDismiss} />
       </AlertAction>
     </Alert>
   )
