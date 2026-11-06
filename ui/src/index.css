@@ -146,6 +146,11 @@
     --success-solid: oklch(0.52 0.12 155);
     --warning-solid: oklch(0.58 0.13 62);
     --danger-solid: oklch(0.54 0.18 27);
+    /* Each badge's lip is its own colour, deeper (owner, 2026-11-06): dark green, a deep
+       amber brown, burgundy; never mixed with the theme's shade. */
+    --success-lip: oklch(0.36 0.09 155);
+    --warning-lip: oklch(0.41 0.1 52);
+    --danger-lip: oklch(0.36 0.13 12);
     /* The stage stays neutral in both themes. */
     --stage: oklch(0.145 0 0);
     --stage-raised: oklch(0.27 0 0);
@@ -293,9 +298,9 @@
 /* A badge: raised like a button but a step smaller, a 1.5 px lip and a small shadow, and it never
    reacts to the pointer, so what is read is not taken for what is pressed (owner, 2026-11-06). */
 @utility chip-raised {
-  --tw-shadow: inset 0 1px 0 var(--highlight),
-    inset 0 -1.5px 0 color-mix(in oklch, var(--face, var(--card)), var(--shade) var(--lip-mix)),
-    0 1px 2px color-mix(in oklch, var(--shade), transparent 70%);
+  --tw-shadow: inset 0 1px 0 oklch(1 0 0 / 0.18),
+    inset 0 -2px 0 var(--lip-color, color-mix(in oklch, var(--face, var(--card)), var(--shade) var(--lip-mix))),
+    0 1px 2px color-mix(in oklch, var(--lip-color, var(--shade)), transparent 60%);
   box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
