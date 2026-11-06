@@ -5,14 +5,13 @@ import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { KeysInfo } from '@/components/layout/keys-info'
-import { Button } from '@/components/ui/button'
 import { Kbd } from '@/components/ui/kbd'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { commands, type PhotoSummary } from '@/ipc/bindings'
 import { MOD, isMac } from '@/lib/platform'
-import { cn } from '@/lib/utils'
 import type { Compare, CompareMode } from './compare-stage'
+import { ListRow } from '@/components/forms/list-row'
 
 type PreviewToolbarProps = {
   photo: PhotoSummary | undefined
@@ -187,20 +186,17 @@ function CompareMenu({
       </PopoverTrigger>
       <PopoverContent align="start" className="w-64 p-1">
         {views.map((v) => (
-          <Button
+          <ListRow
             key={v.key}
-            variant="ghost"
-            size="sm"
-            aria-pressed={v.on}
-            className={cn('w-full justify-start font-normal', v.on && 'bg-accent font-medium')}
-            onClick={v.pick}
-          >
-            {v.icon}
-            <span className="flex-1 truncate text-left">{t(`compare.${v.key}`)}</span>
-            {v.keys.map((k) => (
+            icon={v.icon}
+            chosen={v.on}
+            trailing={v.keys.map((k) => (
               <Kbd key={k}>{k}</Kbd>
             ))}
-          </Button>
+            onClick={v.pick}
+          >
+            {t(`compare.${v.key}`)}
+          </ListRow>
         ))}
       </PopoverContent>
     </Popover>

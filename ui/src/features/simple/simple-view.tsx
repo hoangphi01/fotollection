@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, RotateCcw, ShoppingBasket } from 'lucide-react'
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Repeat, ShoppingBasket } from 'lucide-react'
 import { useEffect, useEffectEvent, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
@@ -71,7 +71,7 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
         </p>
         {photo && (
           <Button variant="outline" size="sm" className="mt-2" onClick={() => setReviewing(true)}>
-            <RotateCcw data-icon="inline-start" /> {t('simple.review')}
+            <Repeat data-icon="inline-start" /> {t('simple.review')}
           </Button>
         )}
       </div>

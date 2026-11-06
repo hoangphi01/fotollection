@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ListFilter, Star, X } from 'lucide-react'
+import { ListFilter, Star } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Field, Stack } from '@/components/forms/field'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select'
 import type { CullFilter, FlagFilter, KindFilter } from '@/ipc/bindings'
 import { cn } from '@/lib/utils'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 const FLAGS: FlagFilter[] = ['all', 'picks', 'unflagged', 'rejects', 'unusual']
 const KINDS: KindFilter[] = ['all', 'raw', 'notRaw']
@@ -90,14 +91,7 @@ export function CullFilterBar({ filter, onChange }: CullFilterBarProps) {
             />
           </Field>
           {active > 0 && (
-            <Button
-              variant="destructive"
-              size="sm"
-              className="w-full"
-              onClick={() => onChange({ ...filter, flag: 'all', minRating: 0, kind: 'all' })}
-            >
-              <X data-icon="inline-start" /> {t('culling.clearFilters')}
-            </Button>
+            <RemoveButton kind="clear" wide label={t('culling.clearFilters')} onClick={() => onChange({ ...filter, flag: 'all', minRating: 0, kind: 'all' })} />
           )}
         </Stack>
       </PopoverContent>

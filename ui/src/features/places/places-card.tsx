@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown gallery: in the gallery panels only (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { MapPin, MapPinCheck, RotateCcw } from 'lucide-react'
+import { MapPin, MapPinCheck } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
@@ -9,6 +9,7 @@ import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
 import { BorrowDialog } from './borrow-dialog'
 import { usePlaces } from './use-places'
+import { ResetButton } from '@/components/forms/danger-button'
 
 /**
  * Places (FR-005): every place on the library's photos, with the name printed for it. Type
@@ -49,16 +50,7 @@ export function PlacesCard() {
               </Hint>
               </Field>
             </div>
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              disabled={!place.renamed}
-              aria-label={t('places.resetName')}
-              data-hint={t('places.resetName')}
-              onClick={() => void rename(place, null)}
-            >
-              <RotateCcw />
-            </Button>
+            <ResetButton iconOnly disabled={!place.renamed} label={t('places.resetName')} onClick={() => void rename(place, null)} />
           </li>
         ))}
       </RowList>

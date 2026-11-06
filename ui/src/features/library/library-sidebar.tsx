@@ -14,7 +14,6 @@ import {
   Save,
   Settings,
   TriangleAlert,
-  X,
 } from 'lucide-react'
 import { useState, type MouseEvent, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -31,6 +30,8 @@ import { errorText } from '@/lib/errors'
 import { cn } from '@/lib/utils'
 import { ModeSwitch } from '@/features/modes/mode-switch'
 import { showSettings } from '@/features/settings-window/use-settings-window'
+import { RemoveButton } from '@/components/forms/danger-button'
+import { CHOSEN_ROW } from '@/components/forms/list-row'
 
 type LibrarySidebarProps = {
   /** Every source folder with its own count (FR-056). */
@@ -85,7 +86,7 @@ export function LibrarySidebar({
     cn(
       'flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-sidebar-accent',
       // The chosen row: an accent outline inside, as Sentry's selected project (FR-099).
-      active && 'bg-sidebar-accent font-medium text-sidebar-accent-foreground row-chosen',
+      active && CHOSEN_ROW,
     )
 
   return (
@@ -286,16 +287,15 @@ export function LibrarySidebar({
                     </span>
                   </button>
                   {/* Like closing a browser tab: shown on hover, the files stay on disk. */}
-                  <Button
-                    variant="destructive"
-                    size="icon-xs"
-                    aria-label={t('library.removeFolder', { name })}
-                    data-hint={t('library.removeFolderHint')}
+                  <RemoveButton
+                    iconOnly
+                    small
+                    round
+                    label={t('library.removeFolder', { name })}
+                    hint={t('library.removeFolderHint')}
                     onClick={() => onRemoveFolder(id)}
-                    className="absolute right-1.5 hidden size-5 rounded-full [--lip:2px] group-focus-within:inline-flex group-hover:inline-flex"
-                  >
-                    <X className="size-3.5" />
-                  </Button>
+                    className="absolute right-1.5 hidden group-focus-within:inline-flex group-hover:inline-flex"
+                  />
                 </li>
               )
             })}

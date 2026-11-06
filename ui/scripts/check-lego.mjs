@@ -77,6 +77,12 @@ const RULES = [
     },
   },
   {
+    // One chosen style for every list, menu and dropdown (owner, 2026-11-06).
+    test: /\brow-chosen\b/,
+    everywhere: true,
+    say: 'a chosen row comes from ListRow or CHOSEN_ROW (components/forms/list-row.tsx), never by hand',
+  },
+  {
     test: /<Switch\b[^>]*size=/,
     say: 'a switch of its own size: switches in a panel are the default size (SwitchField)',
   },
@@ -108,12 +114,14 @@ for (const path of files) {
     })
 }
 
-// Red for removing (owner, 2026-11-06; STYLE_RULE §4 "Red"): a Button whose icon deletes,
-// clears, removes or stops (✕, a bin, a cleared filter) is `destructive`: deep red, white
-// ink, icon-only ones too. A dismiss (`common.dismiss`) only hides
-// a note, so it stays neutral; the title bar's close is a plain <button> the system styles.
-const REMOVE_ICON = /<(X|XIcon|Trash2|FilterX|Eraser|CircleX)\b/
-const RED = /variant="destructive"/
+// Red for removing, one block (owner, 2026-11-06: "every button reused, one class"; STYLE_RULE
+// §4 "Red"): a button that removes, deletes, clears, stops or resets is `RemoveButton` or
+// `ResetButton` (components/forms/danger-button.tsx), never a hand-made <Button>: no
+// `variant="destructive"` and no ✕, bin, cleared filter or ↺ icon inside a <Button>. A ↺ that
+// is a choice (`aria-pressed`) and a dismiss that hides a note (`common.dismiss`) are not
+// removals; the title bar's close is a plain <button> the system styles.
+const REMOVE_ICON = /<(X|XIcon|Trash2|FilterX|Eraser|CircleX|RotateCcw)\b/
+const OWN_LOOK = new Set(['components/forms/danger-button.tsx'])
 const allTsx = []
 const walkAll = (dir) => {
   for (const name of readdirSync(dir)) {
@@ -125,12 +133,14 @@ const walkAll = (dir) => {
 walkAll(join(root, 'src'))
 for (const path of allTsx) {
   const rel = relative(join(root, 'src'), path).split(sep).join('/')
+  if (rel.startsWith('components/ui/') || OWN_LOOK.has(rel)) continue
   const text = readFileSync(path, 'utf8')
-  for (const m of text.matchAll(/<Button\b[\s\S]*?<\/Button>/g)) {
+  for (const m of text.matchAll(/<Button\b[\s\S]*?(<\/Button>|\/>)/g)) {
     const block = m[0]
-    if (REMOVE_ICON.test(block) && !RED.test(block) && !block.includes("'common.dismiss'")) {
+    const removal = REMOVE_ICON.test(block) && !block.includes("'common.dismiss'") && !block.includes('aria-pressed')
+    if (removal || block.includes('variant="destructive"')) {
       const line = text.slice(0, m.index).split('\n').length
-      problems.push(`${rel}:${line}: a button that removes is red: variant="destructive"`)
+      problems.push(`${rel}:${line}: a button that removes or resets is RemoveButton or ResetButton (components/forms/danger-button.tsx), never a hand-made one`)
     }
   }
 }

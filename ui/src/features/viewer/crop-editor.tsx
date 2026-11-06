@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Check, RotateCcw, Ruler, X, ZoomIn, ZoomOut } from 'lucide-react'
+import { Check, Ruler, ZoomIn, ZoomOut } from 'lucide-react'
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -17,6 +17,7 @@ import {
 import { formatNumber } from '@/lib/format'
 import { ownsArrowKeys } from '@/lib/keyboard'
 import { cn } from '@/lib/utils'
+import { RemoveButton, ResetButton } from '@/components/forms/danger-button'
 
 type CropEditorProps = {
   geometry: CropGeometry
@@ -306,12 +307,8 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
           className="w-40 accent-white"
         />
         <span className="w-12 text-xs text-stage-ink tabular-nums">{formatNumber(angle, 1, 1)}°</span>
-        <Button variant="ghost" size="sm" className="text-stage-ink" onClick={() => onCommit(null, 0)}>
-          <RotateCcw data-icon="inline-start" /> {t('common.reset')}
-        </Button>
-        <Button variant="destructive" size="sm" onClick={onCancel}>
-          <X data-icon="inline-start" /> {t('common.cancel')}
-        </Button>
+        <ResetButton label={t('common.reset')} onClick={() => onCommit(null, 0)} />
+        <RemoveButton kind="stop" label={t('common.cancel')} onClick={onCancel} />
         <Button size="sm" onClick={() => onCommit(frame, angle)}>
           <Check data-icon="inline-start" /> {t('common.done')}
         </Button>

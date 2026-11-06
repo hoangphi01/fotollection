@@ -3,17 +3,17 @@ import { Download, Image, MonitorSmartphone, Printer, Ruler, Smartphone, type Lu
 import { useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SettingsFrame } from '@/components/layout/settings-frame'
-import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import type { ExportTarget, RenderSettings, SharePreset } from '@/ipc/bindings'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
-import { cn } from '@/lib/utils'
 import { ExportOptionsCards } from './export-options'
 import { SizeChange } from './export-section'
 import { useExportDialog, showExportDialog } from './use-export-dialog'
 import { useExportEstimate } from './use-export-estimate'
 import type { ExportApi } from './use-export'
+import { ListRow } from '@/components/forms/list-row'
+import { Button } from '@/components/ui/button'
 
 /** Lightroom's export presets, ours: what each sets and its quality (share defaults from
  * RESULT §10, prints at 95, RESULT §30). */
@@ -129,17 +129,9 @@ export function ExportDialog({ exporter, settings, onSettingsChange }: ExportDia
       onClose={close}
       title={t('exportDialog.title')}
       nav={PRESETS.map((p) => (
-        <Button
-          key={p.key}
-          variant="ghost"
-          size="sm"
-          aria-current={p.key === current ? 'true' : undefined}
-          className={cn('justify-start [&_svg]:text-primary', p.key === current && 'bg-accent text-accent-foreground row-chosen')}
-          onClick={() => choosePreset(p)}
-        >
-          <p.icon />
+        <ListRow key={p.key} icon={<p.icon />} chosen={p.key === current} onClick={() => choosePreset(p)}>
           {t(`exportDialog.preset.${p.key}`)}
-        </Button>
+        </ListRow>
       ))}
       heading={t(`exportDialog.preset.${current}`)}
       description={label}

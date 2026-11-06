@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Plus, Trash2, Type } from 'lucide-react'
+import { Plus, Type } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Field } from '@/components/forms/field'
-import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -14,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { FontsApi } from './use-fonts'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 const BUILT_IN = 'builtin'
 const IMPORT = 'import'
@@ -83,15 +83,13 @@ export function FontSelect({ fonts, value, onChange, label, builtIns, builtIn }:
           </SelectContent>
         </Select>
         {current && (
-          <Button
-            variant="destructive"
-            size="icon-sm"
-            aria-label={t('fonts.removeNamed', { name: current.name })}
-            data-hint={t('fonts.removeTitle')}
+          <RemoveButton
+            kind="delete"
+            iconOnly
+            label={t('fonts.removeNamed', { name: current.name })}
+            hint={t('fonts.removeTitle')}
             onClick={() => void fonts.removeFont(current.id)}
-          >
-            <Trash2 />
-          </Button>
+          />
         )}
       </div>
     </Field>

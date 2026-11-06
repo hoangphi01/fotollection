@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { CalendarDays, MapPin, RotateCcw } from 'lucide-react'
+import { CalendarDays, MapPin } from 'lucide-react'
 import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Hint } from '@/components/forms/field'
@@ -13,6 +12,7 @@ import { SectionCard } from '@/components/layout/section-card'
 import { commands, type PhotoId, type PlaceFormat, type RenderSettings, type StampSettings } from '@/ipc/bindings'
 import { CaptionField } from './caption-field'
 import { StampStyleFields } from './stamp-style-fields'
+import { ResetButton } from '@/components/forms/danger-button'
 
 const PLACE_FORMATS: PlaceFormat[] = ['city', 'cityCountryCode', 'cityCountry']
 
@@ -50,10 +50,7 @@ export function DateStampCard({ settings, onChange, customStamps, photos, revisi
       open={stamp?.enabled ?? false}
       footer={
         customStamps > 0 && (
-          <Button variant="outline" size="sm" className="w-full" onClick={() => void commands.resetPhotoStamps()}>
-            <RotateCcw data-icon="inline-start" />
-            {t('settings.resetCustomStamps', { count: customStamps })}
-          </Button>
+          <ResetButton wide label={t('settings.resetCustomStamps', { count: customStamps })} onClick={() => void commands.resetPhotoStamps()} />
         )
       }
     >

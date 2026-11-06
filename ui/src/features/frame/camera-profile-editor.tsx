@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ImageUp, X } from 'lucide-react'
+import { ImageUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
 import { Button } from '@/components/ui/button'
@@ -7,6 +7,7 @@ import { Field, Hint } from '@/components/forms/field'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import type { CameraProfile, LogoKind, PhotoDetails } from '@/ipc/bindings'
 import type { FrameConfigApi } from './use-frame-config'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 type CameraProfileEditorProps = {
   frame: FrameConfigApi
@@ -112,15 +113,7 @@ export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps
             ariaLabel={t('camera.logo')}
           />
           {view.hasLogoImage ? (
-            <Button
-              variant="destructive"
-              size="icon-sm"
-              aria-label={t('camera.removeLogo')}
-              data-hint={t('camera.removeLogo')}
-              onClick={() => void frame.clearLogo(p.id)}
-            >
-              <X />
-            </Button>
+            <RemoveButton iconOnly label={t('camera.removeLogo')} onClick={() => void frame.clearLogo(p.id)} />
           ) : (
             <Button
               variant="ghost"

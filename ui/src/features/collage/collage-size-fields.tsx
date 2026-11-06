@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Lock, LockOpen, RotateCcw } from 'lucide-react'
+import { Lock, LockOpen } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
 import { Field, Hint } from '@/components/forms/field'
-import { Button } from '@/components/ui/button'
 import { Toggle } from '@/components/ui/toggle'
 import type { CellInfo, RenderSettings } from '@/ipc/bindings'
 import { dimsLabel, displayUnit, lengthIn, parseLength } from '@/lib/print-size'
+import { ResetButton } from '@/components/forms/danger-button'
 
 type CollageSizeFieldsProps = {
   settings: RenderSettings | null
@@ -82,14 +82,7 @@ export function CollageSizeFields({ settings, onChange, cell }: CollageSizeField
             })}
         </Hint>
         {typed && (
-          <Button
-            variant="ghost"
-            size="xs"
-            onClick={() => onChange((s) => ({ ...s, collage: { ...s.collage, size: null } }))}
-          >
-            <RotateCcw data-icon="inline-start" />
-            {t('collage.useSuggested')}
-          </Button>
+          <ResetButton small label={t('collage.useSuggested')} onClick={() => onChange((s) => ({ ...s, collage: { ...s.collage, size: null } }))} />
         )}
       </div>
     </Field>

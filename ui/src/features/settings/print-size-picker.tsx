@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -20,6 +20,7 @@ import type { CustomPrintSize, LengthUnit, PrintAdvice, PrintSize, RenderSetting
 import { VerdictBadge } from '@/features/print-advice/verdict-badge'
 import { ratioLabel } from '@/lib/crop-geometry'
 import { MM_PER_IN, sizeLabel } from '@/lib/print-size'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 const ADD = '__add__'
 /** Keeps each photo's own ratio, no crop (FR-045). Matches `PrintSize::ORIGINAL_ID`. */
@@ -143,15 +144,13 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
           </SelectContent>
         </Select>
         {selectedCustom && (
-          <Button
-            variant="destructive"
-            size="icon-sm"
-            aria-label={t('print.deleteNamed', { name: selectedCustom.name })}
-            data-hint={t('print.deleteTitle')}
+          <RemoveButton
+            kind="delete"
+            iconOnly
+            label={t('print.deleteNamed', { name: selectedCustom.name })}
+            hint={t('print.deleteTitle')}
             onClick={() => remove(selectedCustom.id)}
-          >
-            <Trash2 />
-          </Button>
+          />
         )}
       </div>
 

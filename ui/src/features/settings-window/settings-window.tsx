@@ -3,17 +3,16 @@ import { Cpu, FolderOutput, MessageSquareWarning, RefreshCw, SlidersHorizontal, 
 import { useTranslation } from 'react-i18next'
 import { SettingsFrame } from '@/components/layout/settings-frame'
 import { SectionCard } from '@/components/layout/section-card'
-import { Button } from '@/components/ui/button'
 import { ReportIssue } from '@/features/about/report-issue'
 import { UpdateCheck } from '@/features/about/update-check'
 import { ReleaseList } from '@/features/about/version-history'
 import { useIpcQuery } from '@/features/settings/use-ipc-query'
 import { commands } from '@/ipc/bindings'
-import { cn } from '@/lib/utils'
 import { ExportSettingsSection } from './export-section'
 import { GeneralSection } from './general-section'
 import { MemorySection } from './memory-section'
 import { SECTIONS, showSettings, useSettingsWindow, type Section } from './use-settings-window'
+import { ListRow } from '@/components/forms/list-row'
 
 const ICONS: Record<Section, LucideIcon> = {
   general: SlidersHorizontal,
@@ -74,17 +73,9 @@ export function SettingsWindow() {
       nav={SECTIONS.map((s) => {
         const Icon = ICONS[s]
         return (
-          <Button
-            key={s}
-            variant="ghost"
-            size="sm"
-            aria-current={s === shown ? 'page' : undefined}
-            className={cn('justify-start [&_svg]:text-primary', s === shown && 'bg-accent text-accent-foreground row-chosen')}
-            onClick={() => showSettings(s)}
-          >
-            <Icon />
+          <ListRow key={s} icon={<Icon />} chosen={s === shown} current="page" onClick={() => showSettings(s)}>
             {t(`settingsWindow.sections.${s}`)}
-          </Button>
+          </ListRow>
         )
       })}
       navFooter={appInfo ? t('settingsWindow.version', { version: appInfo.appVersion }) : undefined}

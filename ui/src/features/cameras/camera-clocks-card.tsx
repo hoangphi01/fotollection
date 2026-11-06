@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown gallery: in the gallery panels only (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { Clock, RotateCcw } from 'lucide-react'
+import { Clock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
 import { Hint, RowList } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
-import { Button } from '@/components/ui/button'
 import type { CameraClock } from '@/ipc/bindings'
 import { formatOffset, parseOffset } from './clock-offset'
 import { useCameraClocks } from './use-camera-clocks'
+import { ResetButton } from '@/components/forms/danger-button'
 
 /** A body's name, with the end of its serial when two bodies share a model. */
 function bodyName(clock: CameraClock, clocks: CameraClock[], unknown: string): string {
@@ -51,16 +51,7 @@ export function CameraClocksCard() {
                   }}
                 />
               </div>
-              <Button
-                size="icon-sm"
-                variant="ghost"
-                disabled={offset === 0}
-                aria-label={t('cameras.reset')}
-                data-hint={t('cameras.reset')}
-                onClick={() => void setOffset(clock, 0)}
-              >
-                <RotateCcw />
-              </Button>
+              <ResetButton iconOnly disabled={offset === 0} label={t('cameras.reset')} onClick={() => void setOffset(clock, 0)} />
             </li>
           )
         })}

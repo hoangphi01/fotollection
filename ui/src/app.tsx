@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { FilterX, Sparkles, Square } from 'lucide-react'
+import { Sparkles, Square } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { KeysInfo } from '@/components/layout/keys-info'
 import { ErrorNotice, NoticeStack } from '@/components/layout/notice-stack'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
-import { Button } from '@/components/ui/button'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { GroupsView } from '@/features/best-shot/groups-view'
 import { useBestShots } from '@/features/best-shot/use-best-shots'
@@ -53,6 +52,7 @@ import { tickedSheets } from '@/features/collage/sheet-cells'
 import { useCollage } from '@/features/collage/use-collage'
 import { SimplePanel } from '@/features/simple/simple-panel'
 import { SimpleView } from '@/features/simple/simple-view'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 export function App() {
   const { t } = useTranslation()
@@ -357,9 +357,7 @@ export function App() {
             ) : photos.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
                 <p>{t('app.noMatch')}</p>
-                <Button variant="destructive" size="sm" onClick={() => setFilter({ ...ALL_PHOTOS, folders: filter.folders })}>
-                  <FilterX data-icon="inline-start" /> {t('app.showAll')}
-                </Button>
+                <RemoveButton kind="clear" label={t('app.showAll')} onClick={() => setFilter({ ...ALL_PHOTOS, folders: filter.folders })} />
               </div>
             ) : (
               <LibraryGrid

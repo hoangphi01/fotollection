@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CopyCheck, History, X } from 'lucide-react'
+import { CopyCheck, History } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Field, Hint, RowList } from '@/components/forms/field'
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { commands, type CullFilter, type PhotoId, type PostcardPart } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 type Subject = { filter: CullFilter; photo: PhotoId; part: PostcardPart; ticked: readonly PhotoId[] }
 
@@ -108,15 +109,7 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
             >
               <span className="truncate">{address.replaceAll('\n', ', ')}</span>
             </Button>
-            <Button
-              variant="destructive"
-              size="icon-sm"
-              aria-label={t('postcard.reuse.forget')}
-              data-hint={t('postcard.reuse.forget')}
-              onClick={() => void forget(address)}
-            >
-              <X />
-            </Button>
+            <RemoveButton iconOnly label={t('postcard.reuse.forget')} onClick={() => void forget(address)} />
           </li>
         ))}
       </RowList>

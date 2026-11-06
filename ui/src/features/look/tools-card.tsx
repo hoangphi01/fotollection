@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview: in the preview only (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { ChevronDown, RotateCcw, Wand2 } from 'lucide-react'
+import { ChevronDown, Wand2 } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Field } from '@/components/forms/field'
 import { SliderField } from '@/components/forms/slider-field'
 import { Collapse } from '@/components/layout/collapse'
 import { SectionCard } from '@/components/layout/section-card'
-import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { LookSettings, Mono } from '@/ipc/bindings'
 import { cn } from '@/lib/utils'
 import { fullLook, hueSwatch, resetTools, toolsChanged, type FullAdjust, type LookChange } from './look-fields'
 import { LookCardTitle } from './look-card-title'
+import { ResetButton } from '@/components/forms/danger-button'
 
 /** Whether Tools is unfolded, kept while the app runs; folded at first (FR-079). */
 let remembered = false
@@ -88,15 +88,7 @@ export function ToolsCard({ look, onChange, footer }: ToolsCardProps) {
       }
       action={
         changed > 0 && (
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label={t('look.reset')}
-            data-hint={t('look.reset')}
-            onClick={() => onChange((l) => ({ ...l, adjust: resetTools(l.adjust) }), true)}
-          >
-            <RotateCcw />
-          </Button>
+          <ResetButton iconOnly label={t('look.reset')} onClick={() => onChange((l) => ({ ...l, adjust: resetTools(l.adjust) }), true)} />
         )
       }
       footer={footer}

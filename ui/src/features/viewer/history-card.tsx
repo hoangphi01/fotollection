@@ -5,9 +5,8 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Hint, RowList } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
-import { Button } from '@/components/ui/button'
 import { commands, type HistoryEdit, type HistoryStep, type PhotoId } from '@/ipc/bindings'
-import { cn } from '@/lib/utils'
+import { ListRow } from '@/components/forms/list-row'
 
 type HistoryCardProps = {
   photoId: PhotoId
@@ -49,24 +48,21 @@ export function HistoryCard({ photoId, revision }: HistoryCardProps) {
         <RowList>
           {(steps ?? []).map((step, i) => (
             <li key={step.serial}>
-              <Button
-                variant="ghost"
-                size="sm"
-                aria-current={i === 0 ? 'step' : undefined}
-                className={cn('w-full justify-start font-normal', i === 0 && 'bg-accent font-medium row-chosen')}
+              <ListRow
+                icon={i === 0 ? <Check /> : undefined}
+                chosen={i === 0}
+                current="step"
                 onClick={() => i > 0 && restore(step.serial)}
               >
-                {i === 0 ? <Check data-icon="inline-start" /> : <span className="size-4" aria-hidden />}
-                <span className="truncate">{step.edits.map(name).join(' · ')}</span>
-              </Button>
+                {step.edits.map(name).join(' · ')}
+              </ListRow>
             </li>
           ))}
           {steps && steps.length > 0 && (
             <li>
-              <Button variant="ghost" size="sm" className="w-full justify-start font-normal text-muted-foreground" onClick={() => restore(null)}>
-                <span className="size-4" aria-hidden />
+              <ListRow muted onClick={() => restore(null)}>
                 {t('history.start')}
-              </Button>
+              </ListRow>
             </li>
           )}
         </RowList>

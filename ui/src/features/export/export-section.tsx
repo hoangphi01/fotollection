@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { CircleCheck, Download, OctagonX, TriangleAlert, X } from 'lucide-react'
+import { CircleCheck, Download, HardDrive, OctagonX, TriangleAlert, X } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ import { cn } from '@/lib/utils'
 import type { ExportApi } from './use-export'
 import { useExportEstimate } from './use-export-estimate'
 import { showExportDialog } from './use-export-dialog'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 type ExportSectionProps = {
   exporter: ExportApi
@@ -169,10 +171,7 @@ export function ExportSection({
       ) : null}
 
       {running ? (
-        <Button variant="destructive" className="w-full" onClick={() => void cancel()}>
-          <X data-icon="inline-start" />
-          {t('common.cancel')}
-        </Button>
+        <RemoveButton kind="stop" wide label={t('common.cancel')} onClick={() => void cancel()} />
       ) : (
         <Button
           className="w-full"
@@ -233,18 +232,23 @@ export function SizeChange({
     : lighter
       ? 'export.smaller'
       : 'export.larger'
+  // A badge as the print verdict beside it (FR-092, owner 2026-11-06): the figures only, the
+  // sentence as its hint, so it fits one line in an 18 rem panel in Vietnamese.
+  const short = lighter ? 'estimate.short' : 'estimate.shortLarger'
   return (
-    <p
+    <Badge
+      variant={lighter ? 'default' : 'secondary'}
+      data-hint={t(key, values)}
       className={cn(
-        'rounded-md px-2 py-1 text-xs tabular-nums transition-opacity',
+        'tabular-nums transition-opacity',
         before ? '' : 'mt-1.5',
-        lighter ? 'bg-primary/10 font-medium text-primary' : 'bg-muted text-muted-foreground',
         // Dimmed only when the new figure is slow to come: a quick refresh while typing
         // never blinks (STYLE_RULE §4).
         stale && 'opacity-50 delay-700',
       )}
     >
-      {t(key, values)}
-    </p>
+      <HardDrive data-icon="inline-start" aria-hidden />
+      {t(short, values)}
+    </Badge>
   )
 }

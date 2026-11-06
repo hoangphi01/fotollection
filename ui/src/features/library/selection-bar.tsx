@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Archive, CheckCheck, MapPin, ShoppingBasket, Undo2, X } from 'lucide-react'
+import { Archive, CheckCheck, MapPin, ShoppingBasket, Undo2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import type { Queue, QueueView } from '@/ipc/bindings'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 type SelectionBarProps = {
   count: number
@@ -55,9 +56,7 @@ export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, 
         <Button size="sm" variant="ghost" onClick={onSelectAll}>
           <CheckCheck data-icon="inline-start" /> {t('select.all')}
         </Button>
-        <Button size="sm" variant="destructive" disabled={none} onClick={onClear}>
-          <X data-icon="inline-start" /> {t('select.clear')}
-        </Button>
+        <RemoveButton kind="clear" disabled={none} label={t('select.clear')} onClick={onClear} />
       </div>
     </div>
   )

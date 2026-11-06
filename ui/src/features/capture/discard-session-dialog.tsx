@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 export type SessionChoice = 'save' | 'discard' | 'cancel'
 
@@ -36,9 +36,7 @@ export function DiscardSessionDialog({ count, reason = 'tab', onChoose }: Discar
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <Button variant="destructive" className="sm:mr-auto" onClick={() => onChoose('discard')}>
-            {t('capture.discard')}
-          </Button>
+          <RemoveButton kind="delete" label={t('capture.discard')} onClick={() => onChoose('discard')} className="sm:mr-auto" />
           <AlertDialogCancel onClick={() => onChoose('cancel')}>{t('common.cancel')}</AlertDialogCancel>
           <AlertDialogAction onClick={() => onChoose('save')}>{t('capture.saveAll')}</AlertDialogAction>
         </AlertDialogFooter>

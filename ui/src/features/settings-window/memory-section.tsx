@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown settings: in the Settings window only (STYLE_RULE §4, checked by check-lego).
-import { Cpu, HardDrive, RotateCcw, Sparkles, Trash2, Wand2 } from 'lucide-react'
+import { Cpu, HardDrive, Sparkles, Wand2 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Field, Hint, ValueRow } from '@/components/forms/field'
@@ -12,6 +12,7 @@ import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { GpuLook } from '@/features/viewer/gpu-look'
 import { commands, type CacheUsage, type MachineInfo, type MemoryInfo } from '@/ipc/bindings'
 import { formatBytes, formatMemory } from '@/lib/format'
+import { RemoveButton, ResetButton } from '@/components/forms/danger-button'
 
 /** The shares of memory offered (Rust's `PREVIEW_MEMORY_CHOICES`) and the cache limits. */
 const MEMORY = ['15', '25', '40'] as const
@@ -132,16 +133,14 @@ export function MemorySection() {
           hint={t('cache.prepareHint')}
         />
         <Field hint={t('cache.note')}>
-          <Button
-            size="sm"
-            variant="destructive"
-            className="w-full"
+          <RemoveButton
+            kind="delete"
+            wide
             disabled={!cache || cache.files === 0 || clearing}
+            label={t('cache.clear')}
+            hint={t('cache.clearHint')}
             onClick={() => void clear()}
-            data-hint={t('cache.clearHint')}
-          >
-            <Trash2 data-icon="inline-start" /> {t('cache.clear')}
-          </Button>
+          />
         </Field>
       </SectionCard>
 
@@ -168,9 +167,7 @@ export function MemorySection() {
           })}
         >
           <div className="grid grid-cols-2 gap-2">
-            <Button size="sm" variant="outline" onClick={() => void suggest(false)} data-hint={t('memory.defaultHint')}>
-              <RotateCcw data-icon="inline-start" /> {t('memory.default')}
-            </Button>
+            <ResetButton label={t('memory.default')} hint={t('memory.defaultHint')} onClick={() => void suggest(false)} />
             <Button size="sm" onClick={() => void suggest(true)} data-hint={t('memory.autoHint')}>
               <Wand2 data-icon="inline-start" /> {t('memory.auto')}
             </Button>

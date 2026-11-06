@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview: in the preview only (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { ChevronDown, RotateCcw, SunMedium } from 'lucide-react'
+import { ChevronDown, SunMedium } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SliderField } from '@/components/forms/slider-field'
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import type { LookSettings } from '@/ipc/bindings'
 import { FAVES_FIRST, FAVES_MORE, favesChanged, fullLook, resetFaves, type LookChange, type SignedKey } from './look-fields'
 import { LookCardTitle } from './look-card-title'
+import { ResetButton } from '@/components/forms/danger-button'
 
 /** Whether *More* is open, kept while the app runs, in every panel alike. */
 let moreOpen = false
@@ -51,15 +52,7 @@ export function FavesCard({ look, onChange, footer, raw = false }: FavesCardProp
       title={<LookCardTitle title={t('look.faves')} changed={changed} />}
       action={
         changed > 0 && (
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label={t('look.reset')}
-            data-hint={t('look.reset')}
-            onClick={() => onChange((l) => ({ ...l, adjust: resetFaves(l.adjust) }), true)}
-          >
-            <RotateCcw />
-          </Button>
+          <ResetButton iconOnly label={t('look.reset')} onClick={() => onChange((l) => ({ ...l, adjust: resetFaves(l.adjust) }), true)} />
         )
       }
       footer={footer}

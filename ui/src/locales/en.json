@@ -620,6 +620,8 @@
     "totalValue": "{{size}} of {{limit}}"
   },
   "estimate": {
+    "short": "{{from}} → {{to}} · −{{percent}} %",
+    "shortLarger": "{{from}} → {{to}}",
     "smaller": "Estimated: {{from}} → {{to}} ({{percent}} % lighter)",
     "larger": "Estimated: {{from}} → {{to}}; print files keep every detail, so they can be larger"
   },

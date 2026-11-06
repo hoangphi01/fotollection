@@ -14,6 +14,13 @@
 
 ## 2026-11-06
 
+### One style change took a sweep of twenty files: buttons and rows written by hand (FR-099, UI)
+
+- **Seen:** making remove buttons red, then reset buttons, then the chosen rows of menus and dropdowns meant editing the same classes in about twenty files each time, and some were missed (the compare menu, the dropdown's checked item, the estimate pill); the owner: "too many buttons are fragmented, debugging and refactoring is painful; that is why I said every button must be reused, one class".
+- **Why:** each place wrote `<Button variant=… className=…>` with its icon and its chosen state itself, so a meaning (remove, reset, chosen) had no single home.
+- **Fix:** `RemoveButton` and `ResetButton` (`components/forms/danger-button.tsx`) and `ListRow` with `CHOSEN_ROW` (`components/forms/list-row.tsx`) hold the look; `check-lego` refuses a hand-made red button, a remove or reset icon in a plain `<Button>`, and `row-chosen` outside the block.
+- **Rule:** a button or row with a meaning is a block before its second use, and a check keeps hand-made copies out; a style change is then one edit.
+
 ### A card's header grew when a slider moved: a primitive made taller, its containers not measured again (FR-099, UI)
 
 - **Seen:** moving a slider in *Basic* made the card's header jump taller, as its reset button and *edited 1* appeared (owner: "no one adjusts a slider that blinks, this is not a DJ desk").
