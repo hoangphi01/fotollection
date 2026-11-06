@@ -972,6 +972,21 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Whether it prints well, as badges:** beside the value, a badge in the style of the resolution warning ([FR-026](#fr-026--resolution-warning)) says what the setting is good for, for example *Print, excellent*, *Print, good*, *Screen only*, with a hint explaining it. The thresholds are measured on real photos before they are fixed (the difference from quality 100 at print size), never guessed; 4:4:4 chroma stays for prints.
 - **Lego:** the shared slider and badge blocks, measured in both themes and languages; Collage and postcard exports use the same card.
 
+### FR-093 — The export's options in one small dialog
+
+**P1 (planned, v0.12.0; owner's request 2026-11-06: "gather every export option in one small pop-up instead of spilling down the right-hand panel; a press on Export shows it, with a save button and *don't ask again*, after which Export just exports; to change, go to Settings").** The panels keep only the *Export* button with its count (ticked photos, sheets) and the size estimate. A press on *Export* opens a small dialog that holds every option that today stacks in the panel's footer:
+
+- for print or to share (preset, long edge) and the share fill (ratio, width and height, colour);
+- folders together or apart, one folder or by day;
+- the quality slider with its live estimate and print badges ([FR-092](#fr-092--export-quality-on-a-slider-with-a-live-estimate-and-a-print-verdict));
+- the destination folder.
+
+- **Its buttons:** *Export* (saves the choices and exports) and *Cancel*, with a *Don't ask again* tick. Without the tick, every press on *Export* opens the dialog again, filled with the last choices. Once ticked, a press on *Export* in the panel exports at once with the saved choices; the panel says which ones in one line (for example *Print · by day · quality 95*).
+- **Changing them later:** in the Settings window ([FR-086](#fr-086--one-settings-window)), which holds the same options (the same block) and the tick to ask again.
+- **One dialog everywhere:** the gallery, Simple mode, Collage, the photo's and the sheet's previews open the same dialog, built once ([STYLE_RULE](STYLE_RULE.md) §4); progress, the result and errors stay in the panel where the export started.
+- **Small:** sized to its content, not a full window; `Esc` cancels.
+- **Before building:** the layout is shown to the owner as a sketch first (LESSONS, "Ask before building a layout the user described in words").
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
