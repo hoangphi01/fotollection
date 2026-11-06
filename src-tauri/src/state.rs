@@ -105,7 +105,6 @@ pub struct AppState {
     /// Addresses last typed on postcards, newest first (FR-077); this machine's only.
     pub recent_addresses: Mutex<Vec<String>>,
     /// Chosen through the Rust-side dialog only, never sent by the webview (SECURITY.md §2).
-    pub export_destination: Mutex<Option<PathBuf>>,
     pub jobs: Mutex<HashMap<u32, CancellationToken>>,
     pub next_job: AtomicU32,
     /// Bumped when another library replaces this one: background preview work for the old
@@ -227,9 +226,8 @@ impl AppState {
                 fonts: stored.fonts,
                 loaded_fonts,
             }),
-            ui: RwLock::new(stored.ui),
+            ui: RwLock::new(stored.ui.clone()),
             recent_addresses: Mutex::new(stored.recent_addresses),
-            export_destination: Mutex::new(None),
             jobs: Mutex::new(HashMap::new()),
             next_job: AtomicU32::new(1),
             library_generation: AtomicU64::new(0),
@@ -323,7 +321,7 @@ impl AppState {
             frame: frame.settings.clone(),
             cameras: frame.cameras.clone(),
             fonts: frame.fonts.clone(),
-            ui: *ui,
+            ui: ui.clone(),
             recent_addresses,
         };
         drop((render, frame, ui));

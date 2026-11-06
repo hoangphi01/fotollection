@@ -37,7 +37,10 @@ pub enum AppMode {
 }
 
 /// Per-machine interface preferences (FR-020, FR-052). Never part of a project file.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Type)]
+// The per-machine switches of settings.json, each its own key as the file stores it: not a
+// state machine that an enum would describe better.
+#[allow(clippy::struct_excessive_bools)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct UiSettings {
     pub language: Language,
@@ -69,7 +72,28 @@ pub struct UiSettings {
     /// How Pro mode's photo preview opens (FR-095). Absent before it: a dialog.
     #[serde(default)]
     pub preview_layout: PreviewLayout,
+    /// The JPEG quality of an export, 60–100 (FR-092, FR-008). Absent before settings v16:
+    /// 95, what prints always had.
+    #[serde(default = "default_export_quality")]
+    pub export_quality: u8,
+    /// Whether *Export* opens the export dialog first (FR-093); false once *Don't ask again*
+    /// is ticked. Absent before settings v16: ask.
+    #[serde(default = "default_export_ask")]
+    pub export_ask: bool,
+    /// Several source folders exported each to a subfolder of its own (FR-056). Absent
+    /// before settings v16: together.
+    #[serde(default)]
+    pub export_separate: bool,
+    /// The folder exports go to, kept from one launch to the next (FR-093); `None` asks.
+    /// Absent before settings v16.
+    #[serde(default)]
+    pub export_destination: Option<String>,
 }
+
+/// Export qualities one can choose (FR-092).
+pub const EXPORT_QUALITY_RANGE: std::ops::RangeInclusive<u8> = 60..=100;
+/// The longest destination path kept, in bytes; a longer one is dropped (asked again).
+const MAX_DESTINATION: usize = 4096;
 
 /// How the photo preview opens (FR-095): as a dialog over the gallery, or filling the app
 /// window with the Navigator and History on the left.
@@ -103,6 +127,12 @@ const fn default_prepare_previews() -> bool {
 const fn default_filmstrip() -> bool {
     true
 }
+const fn default_export_quality() -> u8 {
+    95
+}
+const fn default_export_ask() -> bool {
+    true
+}
 
 impl Default for UiSettings {
     fn default() -> Self {
@@ -116,6 +146,10 @@ impl Default for UiSettings {
             prepare_previews: default_prepare_previews(),
             filmstrip: default_filmstrip(),
             preview_layout: PreviewLayout::default(),
+            export_quality: default_export_quality(),
+            export_ask: default_export_ask(),
+            export_separate: false,
+            export_destination: None,
         }
     }
 }
@@ -133,6 +167,17 @@ impl UiSettings {
             .into_iter()
             .min_by_key(|g| g.abs_diff(self.cache_limit_gb))
             .unwrap_or(5);
+        self.export_quality = self
+            .export_quality
+            .clamp(*EXPORT_QUALITY_RANGE.start(), *EXPORT_QUALITY_RANGE.end());
+        // A path with a NUL or longer than any system's is not a folder: asked again.
+        if self
+            .export_destination
+            .as_ref()
+            .is_some_and(|d| d.is_empty() || d.len() > MAX_DESTINATION || d.contains('\0'))
+        {
+            self.export_destination = None;
+        }
         self
     }
 
@@ -887,7 +932,7 @@ mod tests {
             ..UiSettings::default()
         };
         let pick = |ram, disk| {
-            let a = base.auto_for(ram, disk);
+            let a = base.clone().auto_for(ram, disk);
             (
                 a.preview_memory_percent,
                 a.cache_limit_gb,
@@ -900,7 +945,7 @@ mod tests {
         assert_eq!(pick(16 * GB, 120 * GB), (25, 10, true, Language::Vi));
         assert_eq!(pick(32 * GB, 500 * GB), (40, 20, true, Language::Vi));
         assert_eq!(pick(12 * GB, 4 * GB), (25, 2, false, Language::Vi));
-        let d = base.auto_for(32 * GB, 500 * GB).memory_defaults();
+        let d = base.clone().auto_for(32 * GB, 500 * GB).memory_defaults();
         assert_eq!(
             (
                 d.preview_memory_percent,

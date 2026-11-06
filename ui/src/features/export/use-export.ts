@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useCallback, useEffect, useState } from 'react'
 import { commands, events, type CullFilter, type ExportSummary, type PhotoId } from '@/ipc/bindings'
+import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { errorText } from '@/lib/errors'
 
 export type ExportState =
@@ -15,7 +16,10 @@ export type ExportState =
  */
 export function useExport() {
   const [state, setState] = useState<ExportState>({ kind: 'idle' })
-  const [destination, setDestination] = useState<string | null>(null)
+  // Kept in the per-machine settings, so it survives a restart (FR-093).
+  const { ui, update } = useUiSettings()
+  const destination = ui.exportDestination
+  const setDestination = useCallback((d: string) => void update({ exportDestination: d }), [update])
 
   useEffect(() => {
     const unlisteners = [
@@ -43,7 +47,7 @@ export function useExport() {
     }
     setState({ kind: 'error', message: errorText(result.error) })
     return null
-  }, [])
+  }, [setDestination])
 
   const start = useCallback(
     async (

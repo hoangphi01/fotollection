@@ -91,7 +91,7 @@ export const commands = {
 	 *  What the export will weigh, before it runs (FR-053): the originals' total and an estimate
 	 *  from a few photos encoded in memory with the current settings. Nothing is written.
 	 */
-	estimateExport: (filter: CullFilter, only: number | null, ticked: PhotoId[], sheets: boolean) => typedError<ExportEstimate, IpcError>(__TAURI_INVOKE("estimate_export", { filter, only, ticked, sheets })),
+	estimateExport: (filter: CullFilter, only: number | null, ticked: PhotoId[], sheets: boolean, quality: number | null) => typedError<ExportEstimate, IpcError>(__TAURI_INVOKE("estimate_export", { filter, only, ticked, sheets, quality })),
 	/**
 	 *  Loads the photos about to be shown into memory, from their standard previews (FR-091):
 	 *  the preview asks for the next ones in the direction of travel once its photo is on
@@ -1838,6 +1838,26 @@ export type UiSettings = {
 	filmstrip?: boolean,
 	/**  How Pro mode's photo preview opens (FR-095). Absent before it: a dialog. */
 	previewLayout?: PreviewLayout,
+	/**
+	 *  The JPEG quality of an export, 60–100 (FR-092, FR-008). Absent before settings v16:
+	 *  95, what prints always had.
+	 */
+	exportQuality?: number,
+	/**
+	 *  Whether *Export* opens the export dialog first (FR-093); false once *Don't ask again*
+	 *  is ticked. Absent before settings v16: ask.
+	 */
+	exportAsk?: boolean,
+	/**
+	 *  Several source folders exported each to a subfolder of its own (FR-056). Absent
+	 *  before settings v16: together.
+	 */
+	exportSeparate?: boolean,
+	/**
+	 *  The folder exports go to, kept from one launch to the next (FR-093); `None` asks.
+	 *  Absent before settings v16.
+	 */
+	exportDestination?: string | null,
 };
 
 /**  The result shown under the button. */

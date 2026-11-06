@@ -444,6 +444,55 @@ fn fr_053_the_estimate_is_exact_when_every_photo_is_sampled() {
     assert!(rough.estimated_bytes > 0.0);
 }
 
+/// FR-092: the chosen quality reaches the encoder, for prints and for sharing (a share
+/// preset no longer forces its own), so the estimate follows the slider.
+#[test]
+fn fr_092_the_estimate_follows_the_quality() {
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    for i in 1..=2 {
+        let f = Fixture {
+            width: 800,
+            height: 600,
+            date: Some("2026:07:14 10:00:00"),
+            ..Fixture::default()
+        };
+        write(src.path(), &format!("IMG_{i}.jpg"), &jpeg(&f));
+    }
+    let lib = import(src.path());
+    let all = records(&lib);
+    for target in [
+        fotollection_core::share::ExportTarget::Print,
+        fotollection_core::share::ExportTarget::Share(
+            fotollection_core::share::SharePreset::Original,
+        ),
+    ] {
+        let settings = RenderSettings {
+            export_target: target,
+            ..RenderSettings::default()
+        };
+        let at = |quality| {
+            let options = ExportOptions {
+                destination: dest.path(),
+                settings: &settings,
+                quality,
+                max_inflight: 2,
+                place_for: &|_| None,
+                frame_for: &|_| None,
+                group_for: &|_| None,
+                by_day: false,
+                postcard_font: None,
+            };
+            estimate_export(&all, &options, &PureRustCodec, 2).estimated_bytes
+        };
+        let (low, high) = (at(60), at(100));
+        assert!(
+            low < high * 0.8,
+            "{target:?}: {low} at 60 against {high} at 100"
+        );
+    }
+}
+
 #[test]
 fn fr_010_prints_keep_the_camera_details_but_never_gps() {
     let src = tempfile::tempdir().unwrap();

@@ -365,6 +365,7 @@ fn encode_photo(
         share_jpeg(
             &mut image,
             preset,
+            options.quality,
             downscaled,
             decoded.icc.as_deref(),
             record,
@@ -421,9 +422,11 @@ fn write_photo(
 
 /// A shared photo's JPEG (FR-053): sRGB, lightly sharpened after a downscale, the share
 /// quality, and EXIF with the camera and Fotollection's name but never GPS.
+#[allow(clippy::too_many_arguments)]
 fn share_jpeg(
     image: &mut crate::image::RgbImage,
     preset: SharePreset,
+    quality: u8,
     downscaled: bool,
     icc: Option<&[u8]>,
     record: &PhotoRecord,
@@ -438,7 +441,16 @@ fn share_jpeg(
     let keep = (conversion == colour::Conversion::Unreadable)
         .then_some(icc)
         .flatten();
-    let jpeg = codec.encode(image, preset.encode_options(), keep)?;
+    // The preset's settings, at the quality chosen for this export (FR-092; a share preset
+    // sets its own default, 88 or 80, when chosen).
+    let jpeg = codec.encode(
+        image,
+        EncodeOptions {
+            quality,
+            ..preset.encode_options()
+        },
+        keep,
+    )?;
     Ok(with_exif(jpeg, record, capture))
 }
 

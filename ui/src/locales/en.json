@@ -462,7 +462,8 @@
       "cancelled": "Export cancelled",
       "empty": "There are no photos to export",
       "no_destination": "Choose a destination first",
-      "write_failed": "The file could not be written"
+      "write_failed": "The file could not be written",
+      "destination_gone": "The export folder is no longer there: choose it again"
     },
     "font": {
       "invalid": "This is not a valid font",

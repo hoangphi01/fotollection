@@ -47,7 +47,7 @@ fn dirs(state: &AppState) -> [&Path; 2] {
 }
 
 fn ui(state: &AppState) -> UiSettings {
-    state.ui.read().map(|u| *u).unwrap_or_default()
+    state.ui.read().map(|u| u.clone()).unwrap_or_default()
 }
 
 #[allow(clippy::cast_precision_loss)]

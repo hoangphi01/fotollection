@@ -175,7 +175,7 @@ fn prepare_window(app: &tauri::AppHandle) {
         .state::<state::AppState>()
         .ui
         .read()
-        .map(|u| *u)
+        .map(|u| u.clone())
         .unwrap_or_default();
     menu::refresh(app, ui.language);
     commands::apply_window_theme(app, ui.theme);

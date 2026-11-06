@@ -32,7 +32,9 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v14 (FR-079): `render.look`.
 /// v15 (FR-086, FR-091): `ui.previewMemoryPercent` (25), `ui.cacheLimitGb` (5) and
 /// `ui.preparePreviews` (on), each absent before.
-pub const SCHEMA_VERSION: u32 = 15;
+/// v16 (FR-092, FR-093): `ui.exportQuality` (95), `ui.exportAsk` (on), `ui.exportSeparate`
+/// (off) and `ui.exportDestination` (none), each absent before.
+pub const SCHEMA_VERSION: u32 = 16;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -202,7 +204,7 @@ pub fn to_bytes(settings: &StoredSettings) -> std::io::Result<Vec<u8>> {
         frame: settings.frame.clone(),
         cameras: settings.cameras.clone(),
         fonts: settings.fonts.clone(),
-        ui: settings.ui,
+        ui: settings.ui.clone(),
         recent_addresses: settings.recent_addresses.clone(),
     };
     serde_json::to_vec_pretty(&file).map_err(std::io::Error::other)
@@ -550,6 +552,47 @@ mod tests {
 
     /// FR-086, FR-091: a v14 file has no memory settings: 25 % of RAM, a 5 GB cache and
     /// previews prepared. A v15 file keeps its own, snapped: 99 % becomes 40, 7 GB the
+    /// FR-092, FR-093: a v15 file has no export settings: quality 95, asked each time,
+    /// together, no folder. A v16 file keeps its own, the quality clamped to 60–100, and
+    /// they round-trip.
+    #[test]
+    fn fr_093_export_settings_default_clamp_and_round_trip() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v15.json"))?;
+        let Loaded::Ok(old) = load(&path) else {
+            panic!("v15 should load");
+        };
+        assert_eq!(
+            (
+                old.ui.export_quality,
+                old.ui.export_ask,
+                old.ui.export_separate,
+                old.ui.export_destination
+            ),
+            (95, true, false, None)
+        );
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v16.json"))?;
+        let loaded = load(&path);
+        let Loaded::Ok(s) = loaded else {
+            panic!("v16 should load: {loaded:?}");
+        };
+        assert_eq!(
+            (s.ui.export_quality, s.ui.export_ask, s.ui.export_separate),
+            (100, false, true)
+        );
+        assert_eq!(
+            s.ui.export_destination.as_deref(),
+            Some("/Volumes/Prints/Prague")
+        );
+        save(&path, &s)?;
+        let Loaded::Ok(back) = load(&path) else {
+            panic!("v16 should load again");
+        };
+        assert_eq!(back.ui, s.ui);
+        Ok(())
+    }
+
     /// nearest limit offered (5), and they round-trip.
     #[test]
     fn fr_086_memory_settings_default_clamp_and_round_trip() -> std::io::Result<()> {

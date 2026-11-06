@@ -331,7 +331,7 @@ fn install_settings(state: &AppState, bundle: &Bundle) -> Result<(), IpcError> {
     // Settings and ui are read before `frame` is taken: `save_settings` holds them while it
     // takes `frame`, and two locks taken in both orders can hang the app (LESSONS 2026-11-05).
     let render = state.settings.read().map_err(poisoned)?.0.clone();
-    let ui = state.ui.read().map(|u| *u).unwrap_or_default();
+    let ui = state.ui.read().map(|u| u.clone()).unwrap_or_default();
     let mut frame = state.frame.write().map_err(poisoned)?;
     let mut local = StoredSettings {
         render,

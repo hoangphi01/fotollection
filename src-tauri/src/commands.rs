@@ -850,7 +850,7 @@ pub fn get_ui_settings(state: State<'_, AppState>) -> Result<UiSettings, IpcErro
     state
         .ui
         .read()
-        .map(|ui| *ui)
+        .map(|ui| ui.clone())
         .map_err(|e| IpcError::internal(e.to_string()))
 }
 
@@ -869,7 +869,7 @@ pub fn set_ui_settings(
             .ui
             .write()
             .map_err(|e| IpcError::internal(e.to_string()))?,
-        ui,
+        ui.clone(),
     );
     // The previews' memory and the cache's limit follow at once (FR-086).
     if before.preview_memory_percent != ui.preview_memory_percent {
@@ -919,11 +919,13 @@ pub async fn pick_export_folder(app: AppHandle) -> Result<Option<String>, IpcErr
         };
         let display = path.display().to_string();
         let state = app.state::<AppState>();
-        let mut dest = state
-            .export_destination
-            .lock()
-            .map_err(|e| IpcError::internal(e.to_string()))?;
-        *dest = Some(path);
+        // Kept in the per-machine settings, so the next launch exports there too (FR-093).
+        state
+            .ui
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .export_destination = Some(display.clone());
+        state.save_settings();
         Ok(Some(display))
     })
     .await
@@ -951,19 +953,26 @@ pub fn start_export(
     sheets: bool,
 ) -> Result<u32, IpcError> {
     check_ticked(&ticked)?;
-    let destination = state
-        .export_destination
-        .lock()
-        .map_err(|e| IpcError::internal(e.to_string()))?
-        .clone()
-        .ok_or_else(|| IpcError::new("export.no_destination", "Choose a destination first"))?;
-    // Into one folder, or a folder per day (FR-009): a per-machine choice.
-    let by_day = state
+    // Where, how and how well (FR-009, FR-092, FR-093): per-machine choices.
+    let ui = state
         .ui
         .read()
         .map_err(|e| IpcError::internal(e.to_string()))?
-        .export_folders
-        == fotollection_core::settings::ExportFolders::ByDay;
+        .clone();
+    let destination = std::path::PathBuf::from(
+        ui.export_destination
+            .clone()
+            .ok_or_else(|| IpcError::new("export.no_destination", "Choose a destination first"))?,
+    );
+    // A folder kept from an earlier launch may be gone (a drive unplugged): ask again.
+    if !destination.is_dir() {
+        return Err(IpcError::new(
+            "export.destination_gone",
+            "The export folder is no longer there",
+        ));
+    }
+    let by_day = ui.export_folders == fotollection_core::settings::ExportFolders::ByDay;
+    let quality = ui.export_quality;
     let scope = sheets.then(|| crate::collage::postcards(&state));
     let (records, pairs, groups) = {
         let library = state
@@ -1021,7 +1030,7 @@ pub fn start_export(
         let options = ExportOptions {
             destination: &destination,
             settings: &settings,
-            quality: EXPORT_QUALITY,
+            quality,
             // Fewer at once for very large photos, so the export keeps NFR-004.
             max_inflight: fotollection_core::export::inflight_for(records.iter()),
             place_for: &place_for,
@@ -1168,10 +1177,18 @@ pub async fn estimate_export(
     only: Option<PhotoId>,
     ticked: Vec<PhotoId>,
     sheets: bool,
+    quality: Option<u8>,
 ) -> Result<fotollection_core::export::ExportEstimate, IpcError> {
     check_ticked(&ticked)?;
     tauri::async_runtime::spawn_blocking(move || {
         let state = app.state::<AppState>();
+        // The value under the export dialog's slider while it moves (FR-092), else the saved one.
+        let quality = quality
+            .unwrap_or_else(|| state.ui.read().map_or(EXPORT_QUALITY, |u| u.export_quality))
+            .clamp(
+                *fotollection_core::settings::EXPORT_QUALITY_RANGE.start(),
+                *fotollection_core::settings::EXPORT_QUALITY_RANGE.end(),
+            );
         let scope = sheets.then(|| crate::collage::postcards(&state));
         let (records, pairs) = {
             let library = state
@@ -1203,7 +1220,7 @@ pub async fn estimate_export(
             // Nothing is written; the folder only completes the options.
             destination: std::path::Path::new(""),
             settings: &settings,
-            quality: EXPORT_QUALITY,
+            quality,
             max_inflight: default_inflight(),
             place_for: &place_for,
             frame_for: &frame_for,

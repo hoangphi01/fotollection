@@ -444,7 +444,8 @@
       "cancelled": "Đã hủy xuất ảnh",
       "empty": "Không có ảnh nào để xuất",
       "no_destination": "Hãy chọn nơi lưu trước",
-      "write_failed": "Không ghi được tệp"
+      "write_failed": "Không ghi được tệp",
+      "destination_gone": "Thư mục xuất không còn nữa: hãy chọn lại"
     },
     "font": {
       "invalid": "Đây không phải phông chữ hợp lệ",

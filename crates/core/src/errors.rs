@@ -24,6 +24,7 @@ pub const CODES: &[(&str, &str)] = &[
     ("export.cancelled", "ERR-EXP-0001"),
     ("export.empty", "ERR-EXP-0002"),
     ("export.no_destination", "ERR-EXP-0003"),
+    ("export.destination_gone", "ERR-EXP-0004"),
     ("import.heic_codec_missing", "ERR-EXT-0001"),
     ("import.heic_linux", "ERR-EXT-0002"),
     ("import.raw_codec_missing", "ERR-EXT-0003"),

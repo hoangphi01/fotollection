@@ -175,7 +175,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P0.** Export at full resolution.
 
-- JPEG quality is configurable, with a default of 95 and 4:4:4 chroma subsampling for prints (share exports, [FR-053](#fr-053--export-for-social-media), are 4:2:0).
+- JPEG quality is configurable in the export dialog (60–100, kept per machine as `ui.exportQuality`, v0.12.1, FR-092), with a default of 95 and 4:4:4 chroma subsampling for prints (share exports, [FR-053](#fr-053--export-for-social-media), are 4:2:0 and start at their preset's quality, 88 or 80).
 - The embedded ICC profile is preserved.
 - Photos that are crop-only with no stamp use a lossless DCT-domain crop when possible (planned; today every export is re-encoded).
 

@@ -17,6 +17,11 @@ let current: Required<UiSettings> = {
   filmstrip: true,
   // The develop view's layout (FR-095): the dialog unless the user chose the whole window.
   previewLayout: 'dialog',
+  // The export dialog's choices (FR-092, FR-093), as Rust's defaults.
+  exportQuality: 95,
+  exportAsk: true,
+  exportSeparate: false,
+  exportDestination: null,
 }
 let requested = false
 const listeners = new Set<() => void>()
