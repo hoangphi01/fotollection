@@ -14,6 +14,13 @@
 
 ## 2026-11-06
 
+### The v0.13.0 release stopped on its AppStream check: a validator older than the spec we wrote to (FR-099, release)
+
+- **Seen:** the push of `chore(release): v0.13.0` failed CI on `ubuntu-22.04` in *AppStream metadata*: `appstreamcli validate` found `<developer>` unknown and the `vcs-browser` and `contribute` URL types invalid. Nothing was published; the Pages build went out on its own.
+- **Why:** the metainfo followed today's AppStream spec (1.0), but the runner's `appstream` is 0.15.2, Ubuntu 22.04's, and it fails on warnings. The file was checked with `xmllint` only, because `appstreamcli` is not on the Mac, so the validator first ran on the release push.
+- **Fix:** `<developer_name>` and only the URL types 0.15 knows (homepage, bugtracker); the workflow started again by hand, the version unchanged.
+- **Rule:** metainfo uses the tags of the oldest AppStream we support (0.15, Ubuntu 22.04). A file only CI can validate is pushed and checked green before the release commit, never first with it.
+
 ### Words in shared rows spilled into their padding: measured by the box, not by the text (FR-099, UI)
 
 - **Seen:** the owner saw *Không RAW* touch its segment's edges; the new `MEASURE=1` overflow check found the same in 15 places across both languages (*Thành phố*, *+ tên nước*, *One colour*, *City, country*, the date formats, *Retro orange*), yet a first version of the check reported only two, and changing the padding seemed to change nothing.

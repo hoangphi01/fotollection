@@ -6,9 +6,8 @@
   <name>Fotollection</name>
   <summary>Look through a trip's photos and prepare them for printing</summary>
   <summary xml:lang="vi">Xem lại ảnh của chuyến đi và chuẩn bị để in</summary>
-  <developer id="io.github.hoangphi01">
-    <name>hoangphi01</name>
-  </developer>
+  <!-- Tags that appstream 0.15 (Ubuntu 22.04, the CI runner and the oldest system we support) knows: no <developer>, no vcs-browser or contribute URLs (LESSONS). -->
+  <developer_name>hoangphi01</developer_name>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-only</project_license>
   <description>
@@ -26,8 +25,6 @@
   <launchable type="desktop-id">Fotollection.desktop</launchable>
   <url type="homepage">https://fotollection.org/</url>
   <url type="bugtracker">https://github.com/hoangphi01/fotollection/issues</url>
-  <url type="vcs-browser">https://github.com/hoangphi01/fotollection</url>
-  <url type="contribute">https://apps.vietnamlinuxfamily.net/app/fotollection</url>
   <screenshots>
     <screenshot type="default">
       <caption>Look through a whole trip</caption>
