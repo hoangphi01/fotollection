@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Select mode's tick** is a raised circle in the theme's colour, as large as a folder tab's ✕.
 - **No flat buttons left on their own** (FR-099): *Select all* (in the theme's colour), dialogs' *Cancel*, *More*, *Show all*, the keys ⓘ and the rest are raised like every button.
 - **The smallest text has room for Vietnamese marks** (FR-099): the folder list's tip and other 11 px text no longer crowd on two lines.
 - **A seamless title bar on macOS** (FR-052): the traffic lights sit on the app's own colours, as in VS Code, with the project's name in the middle.
