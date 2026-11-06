@@ -104,6 +104,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
   | Width of the folder list and the tools panel | 18 rem (`w-panel`), overlay scroll bars on both | `LibrarySidebar`, `SidePanel` |
   | The Settings window (FR-086) | the preview's dialog size; a 16 rem list of sections on the left, as on an iPad; the open section's cards on the right, at most 36 rem wide (controls keep their 32 px and do not stretch across a wide window), 12 px apart | `SettingsFrame` |
   | Between cards | 12 px, 12 px inset | `SidePanel`, `ViewerFrame` |
+  | The photo preview's row of tools (FR-095): above the stage, never over the photo; the photo's actions, the view, undo and redo, export, then zoom, the count, the filmstrip and every key | 44 px tall, `ToolbarButton`s (icon-only ones with `iconOnly`), separators between groups | `PreviewToolbar` in `ViewerFrame`'s `toolbar` slot |
   | A strip of thumbnails under a viewer's stage (the capture screen's shots, Pro mode's filmstrip, FR-090) | 112 px tall; 80 px square cells 8 px apart, the one shown in a `primary` ring | `Filmstrip` |
   | Between a card's blocks | 12 px | `SectionCard`, `Stack` (a panel footer), `Collapse stack="card"` |
   | Within one field: label, control, options, hint | 6 px | `Field`, `SwitchField`, `Collapse stack="field"` |

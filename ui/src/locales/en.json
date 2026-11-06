@@ -360,7 +360,7 @@
     "rendering": "Rendering print preview…",
     "crop": "Crop",
     "cropFitMode": "The frame is in Fit mode: the whole photo is shown",
-    "adjustCrop": "Adjust the crop (C)",
+    "adjustCrop": "Adjust the crop (R)",
     "previous": "Previous photo",
     "next": "Next photo",
     "hideFilmstrip": "Hide the filmstrip",
@@ -385,8 +385,8 @@
     "close": "close",
     "thisPhoto": "This photo",
     "applyToAll": "Apply to all photos",
-    "rotateLeft": "Rotate left ( [ )",
-    "rotateRight": "Rotate right ( ] )",
+    "rotateLeft": "Rotate left ( [ or {{mod}} [ )",
+    "rotateRight": "Rotate right ( ] or {{mod}} ] )",
     "level": "level 1° (⌥ 0.1°)",
     "leaveCrop": "cancel crop",
     "zoom": "zoom",
@@ -401,7 +401,20 @@
     "cameraTime": "Camera clock said {{time}}",
     "clockShifted": "Clock corrected",
     "syncClock": "Set this camera's clock from a photo…",
-    "dateManual": "Set by hand"
+    "dateManual": "Set by hand",
+    "cropHint": "Crop (R)",
+    "rotateLeftShort": "Rotate left",
+    "rotateRightShort": "Rotate right",
+    "undo": "Undo",
+    "undoHint": "Undo ({{mod}} Z)",
+    "redo": "Redo",
+    "redoHint": "Redo (⇧ {{mod}} Z)",
+    "exportHint": "Export this photo: its card at the foot of the panel (⇧ {{mod}} E)",
+    "fit": "Fit",
+    "oneToOne": "fit ↔ 1:1",
+    "beforeKey": "before / after",
+    "everyKey": "every key",
+    "keys": "← →  browse · ↑ to the print basket · ↓ set aside\n0–5 stars · P pick · X reject · U clear the flag\nR or C crop · [ ] or {{mod}} [ ] rotate\nZ, or a click on the photo: fit ↔ 1:1 · {{mod}} + − 0 zoom · drag to move the zoomed photo\n\\ before / after\n{{mod}} Z undo · ⇧ {{mod}} Z redo\n⇧ {{mod}} E export this photo · Esc close"
   },
   "errors": {
     "internal": "Something went wrong",
@@ -619,7 +632,8 @@
   "preview": {
     "toBasket": "Print basket",
     "inBasket": "In the basket",
-    "basketHint": "Add to or remove from the print basket (↑)"
+    "basketHint": "Add to or remove from the print basket (↑)",
+    "toGalleryHint": "Bring this photo back to the gallery"
   },
   "cameras": {
     "title": "Camera clocks",
@@ -921,7 +935,7 @@
     },
     "applyToAll": "Apply this look to all photos",
     "before": "Before",
-    "beforeHint": "Hold to see the photo without its look (\\)",
+    "beforeHint": "The photo without its colour, and back (\\)",
     "hints": {
       "brightness": "The midtones lighter or darker; black and white stay.",
       "contrast": "More or less difference between light and dark.",

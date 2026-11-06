@@ -27,7 +27,7 @@ type ToolsCardProps = {
 
 /**
  * Everything else (FR-079, Tools): fade, a tint for the shadows and one for the highlights,
- * black and white through a filter. Folded at first, so a newcomer meets Looks and Faves;
+ * black and white through a filter. Folded at first, so a newcomer meets Faves first;
  * its title opens it, and the app remembers.
  */
 export function ToolsCard({ look, onChange, footer }: ToolsCardProps) {

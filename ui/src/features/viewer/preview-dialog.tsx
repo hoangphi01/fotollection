@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Crop, Download, Eye, MapPin, PanelBottomClose, PanelBottomOpen, RotateCcw, RotateCw, ShoppingBasket, Star, Undo2 } from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, Crop, Download, MapPin, Star } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
@@ -21,6 +21,8 @@ import { sendTo } from './send-to'
 import { useShownSrc } from './use-shown-src'
 import { usePrefetch } from './use-prefetch'
 import { PhotoFilmstrip } from './photo-filmstrip'
+import { PreviewToolbar } from './preview-toolbar'
+import { oneToOneScale } from './one-to-one'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { useGpuLook } from './use-gpu-look'
 import { FrameSection } from '@/features/frame/frame-section'
@@ -71,6 +73,9 @@ type PreviewDialogProps = {
   /** For the filmstrip's thumbnails (FR-090), as the gallery has them. */
   thumbVersions: { [id: number]: number }
   generation: number
+  /** Whether ⌘Z and ⇧⌘Z can act, for the toolbar's buttons (FR-095). */
+  canUndo: boolean
+  canRedo: boolean
 }
 
 
@@ -104,6 +109,8 @@ export function PreviewDialog({
   onClose,
   thumbVersions,
   generation,
+  canUndo,
+  canRedo,
 }: PreviewDialogProps) {
   const { t } = useTranslation()
   // The filmstrip under the photo (FR-090), shown unless the user hid it.
@@ -117,8 +124,11 @@ export function PreviewDialog({
   const printSizes = useIpcQuery(commands.listPrintSizes)
   // The same sharp / acceptable / pixelated advice as the settings panel (FR-026).
   const advice = usePrintAdvice(photo?.id, settings)
-  // Held down, the photo without its colour look (FR-079): the button or the \ key.
-  const [before, setBefore] = useState(false)
+  // The photo without its colour look (FR-079, FR-096): the button or the \ key turn it on and
+  // off, as in Lightroom; another photo starts with its look.
+  const [beforeOf, setBeforeOf] = useState<number | null>(null)
+  const before = photo !== undefined && beforeOf === photo.id
+  const toggleBefore = () => setBeforeOf(before || !photo ? null : photo.id)
   const src = photo ? `${previewUrl(photo.id, revision)}${before ? '&plain=1' : ''}` : ''
   const { src: shownSrc, error: shownError } = useShownSrc(photo?.id, src)
   // The next photos load while this one is looked at (FR-091).
@@ -132,9 +142,10 @@ export function PreviewDialog({
   const [cropping, setCropping] = useState(false)
   // The stage mounts only when the preview opens, so it is kept in state, not a ref.
   const [stage, setStage] = useState<HTMLDivElement | null>(null)
-  const zoom = useZoom(stage, `${photo?.id}:${cropping}`)
   // Zoomed past the preview's pixels, the visible part comes again at full resolution.
   const [previewImg, setPreviewImg] = useState<HTMLImageElement | null>(null)
+  // Percentages of the photo's own pixels, 100 % being 1:1 (FR-095).
+  const zoom = useZoom(stage, `${photo?.id}:${cropping}`, oneToOneScale(geometry, previewImg))
   const sharp = useSharpRegion(previewImg, stage, zoom.view, photo?.id, revision, shownSrc === src && !before ? shownSrc : null)
   // Without zoom, dragging the photo moves the crop (Crop to fill, or no frame).
   const cropDrag = useCropDrag(photo?.id, geometry, !cropping && !zoom.zoomed && !!geometry && !geometry.cropDisabled)
@@ -150,26 +161,30 @@ export function PreviewDialog({
     setCropping(false)
     onIndexChange(next)
   }
-  const stripLabel = t(ui.filmstrip ? 'viewer.hideFilmstrip' : 'viewer.showFilmstrip')
   // Leaving the crop editor hands the keyboard back, so ← → move between photos again.
   const contentRef = useRef<HTMLDivElement>(null)
   const exportRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (!cropping) contentRef.current?.focus()
   }, [cropping])
-  useEffect(() => {
-    const up = (event: globalThis.KeyboardEvent) => event.key === '\\' && setBefore(false)
-    const away = () => setBefore(false)
-    window.addEventListener('keyup', up)
-    window.addEventListener('blur', away)
-    return () => {
-      window.removeEventListener('keyup', up)
-      window.removeEventListener('blur', away)
-    }
-  }, [])
+  const canCrop = !!geometry && !geometry.cropDisabled
+  const toExport = () => exportRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   const onKeyDown = (event: KeyboardEvent) => {
     // A focused slider or field keeps its own arrow keys (the logo size, the caption…).
     if (cropping || ownsArrowKeys(event.target)) return
+    const mod = event.metaKey || event.ctrlKey
+    const key = event.key.toLowerCase()
+    // Lightroom's ⌘[ ⌘] rotate and ⇧⌘E export (FR-095).
+    if (mod && (event.key === '[' || event.key === ']')) {
+      event.preventDefault()
+      if (photo) void commands.rotatePhotos([photo.id], event.key === ']')
+      return
+    }
+    if (mod && event.shiftKey && key === 'e') {
+      event.preventDefault()
+      toExport()
+      return
+    }
     if (zoom.onKey(event)) return
     if (handleCullKey(event, photo?.id)) event.preventDefault()
     else if (event.key === 'ArrowRight') go(1)
@@ -177,8 +192,8 @@ export function PreviewDialog({
     else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
       event.preventDefault()
       send(event.key === 'ArrowUp' ? 'print' : 'aside')
-    } else if (event.key === '\\') setBefore(true)
-    else if (event.key.toLowerCase() === 'c' && geometry && !geometry.cropDisabled) setCropping(true)
+    } else if (event.key === '\\' && !mod) toggleBefore()
+    else if ((key === 'r' || key === 'c') && !mod && !event.altKey && canCrop) setCropping(true)
   }
 
   const view = filter.queue ?? 'gallery'
@@ -212,23 +227,55 @@ export function PreviewDialog({
           <PhotoFilmstrip photos={photos} index={index} thumbVersions={thumbVersions} generation={generation} onPick={pick} />
         ) : undefined
       }
+      toolbar={
+        <PreviewToolbar
+          photo={photo}
+          cropBlocked={shownGeometry?.cropDisabled ? t('viewer.cropFitMode') : null}
+          onCrop={() => setCropping(true)}
+          before={before}
+          onBefore={toggleBefore}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          onExport={toExport}
+          zoom={
+            <ZoomControls
+              inline
+              percent={zoom.percent}
+              zoomed={zoom.zoomed}
+              canZoomIn={zoom.canZoomIn && !cropping}
+              loading={sharp.loading}
+              mod={MOD}
+              onZoomIn={zoom.zoomIn}
+              onZoomOut={zoom.zoomOut}
+              onFit={zoom.reset}
+            />
+          }
+          index={index ?? 0}
+          count={photos.length}
+          filmstrip={ui.filmstrip}
+          onFilmstrip={() => void updateUi({ filmstrip: !ui.filmstrip })}
+        />
+      }
       title={photo?.fileName}
       description={details?.folderPath ?? photo?.folderName}
       descriptionHint={details?.folderPath}
       footer={
         <KeyHints
-          hints={[
-            { keys: ['←', '→'], label: t(cropping ? 'viewer.level' : 'viewer.browse') },
-            ...(cropping
-              ? []
+          hints={
+            cropping
+              ? [
+                  { keys: ['←', '→'], label: t('viewer.level') },
+                  { keys: ['Esc'], label: t('viewer.leaveCrop') },
+                ]
               : [
-                  { keys: [`${MOD} + −`], label: t('viewer.zoom') },
+                  { keys: ['←', '→'], label: t('viewer.browse') },
+                  { keys: ['Z'], label: t('viewer.oneToOne') },
+                  { keys: ['\\'], label: t('viewer.beforeKey') },
                   ...(canDrag ? [{ label: t('viewer.dragToFrame') }] : []),
-                  { keys: ['↑'], label: t('viewer.upBasket') },
-                  { keys: ['↓'], label: t('viewer.downAside') },
-                ]),
-            { keys: ['Esc'], label: t(cropping ? 'viewer.leaveCrop' : 'viewer.close') },
-          ]}
+                  { keys: ['Esc'], label: t('viewer.close') },
+                  { keys: ['ⓘ'], label: t('viewer.everyKey') },
+                ]
+          }
         />
       }
       stage={
@@ -255,7 +302,7 @@ export function PreviewDialog({
                   onPointerDown={zoom.pointer.onPointerDown}
                   onPointerMove={zoom.pointer.onPointerMove}
                   onPointerUp={zoom.pointer.onPointerUp}
-                  onDoubleClick={zoom.pointer.onDoubleClick}
+                  onClick={zoom.pointer.onClick}
                   style={{ transform: zoom.transform }}
                   className={cn(
                     'max-h-full max-w-full animate-in object-contain stage-photo fade-in-0',
@@ -282,84 +329,13 @@ export function PreviewDialog({
                 />
               )}
               {!shownSrc && <StageSpinner error={shownError} />}
-              <div className="absolute top-3 left-3 flex gap-1.5">
-                {/* The hint sits on the wrapper, as a disabled button gets no pointer events. */}
-                <span data-hint={shownGeometry?.cropDisabled ? t('viewer.cropFitMode') : t('viewer.adjustCrop')}>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    disabled={!shownGeometry || shownGeometry.cropDisabled}
-                    onClick={() => setCropping(true)}
-                  >
-                    <Crop data-icon="inline-start" /> {t('viewer.crop')}
-                  </Button>
-                </span>
-                {/* Lossless quarter turns (FR-006); the crop turns with the photo. */}
-                {(
-                  [
-                    [false, RotateCcw, 'viewer.rotateLeft'],
-                    [true, RotateCw, 'viewer.rotateRight'],
-                  ] as const
-                ).map(([clockwise, Icon, label]) => (
-                  <Button
-                    key={label}
-                    variant="secondary"
-                    size="icon-sm"
-                    aria-label={t(label)}
-                    data-hint={t(label)}
-                    disabled={!photo}
-                    onClick={() => photo && void commands.rotatePhotos([photo.id], clockwise)}
-                  >
-                    <Icon />
-                  </Button>
-                ))}
-                {/* The print basket (FR-050): the same as ↑; a photo set aside can come back. */}
-                {photo && (
-                  <Button
-                    variant={photo.queue === 'print' ? 'default' : 'secondary'}
-                    size="sm"
-                    aria-pressed={photo.queue === 'print'}
-                    data-hint={t('preview.basketHint')}
-                    onClick={() => photo && void commands.setPhotoQueue([photo.id], photo.queue === 'print' ? null : 'print')}
-                  >
-                    <ShoppingBasket data-icon="inline-start" /> {t(photo.queue === 'print' ? 'preview.inBasket' : 'preview.toBasket')}
-                  </Button>
-                )}
-                {photo?.queue === 'aside' && (
-                  <Button variant="secondary" size="sm" onClick={() => photo && void commands.setPhotoQueue([photo.id], null)}>
-                    <Undo2 data-icon="inline-start" /> {t('select.toGallery')}
-                  </Button>
-                )}
-                {/* Before / After (FR-079): the photo without its look while held. */}
-                {photo && (
-                  <Button
-                    variant={before ? 'default' : 'secondary'}
-                    size="sm"
-                    aria-pressed={before}
-                    data-hint={t('look.beforeHint')}
-                    onPointerDown={() => setBefore(true)}
-                    onPointerUp={() => setBefore(false)}
-                    onPointerLeave={() => setBefore(false)}
-                  >
-                    <Eye data-icon="inline-start" /> {t('look.before')}
-                  </Button>
-                )}
-                {/* Like what you see? Jump to the export card for this photo (FR-055). */}
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  disabled={!photo}
-                  onClick={() => exportRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })}
-                >
-                  <Download data-icon="inline-start" /> {t('export.title')}
-                </Button>
-              </div>
+              {/* Browse buttons for the mouse; they show while the pointer is over the stage. */}
               <Button
                 variant="secondary"
                 size="icon"
                 aria-label={t('viewer.previous')}
                 data-hint={t('viewer.previous')}
-                className="absolute left-3 opacity-80 hover:opacity-100"
+                className="absolute left-3 opacity-0 transition-opacity group-hover/stage:opacity-80 hover:opacity-100 focus-visible:opacity-100"
                 disabled={index === 0}
                 onClick={() => go(-1)}
               >
@@ -370,45 +346,25 @@ export function PreviewDialog({
                 size="icon"
                 aria-label={t('viewer.next')}
                 data-hint={t('viewer.next')}
-                className="absolute right-3 opacity-80 hover:opacity-100"
+                className="absolute right-3 opacity-0 transition-opacity group-hover/stage:opacity-80 hover:opacity-100 focus-visible:opacity-100"
                 disabled={index === null || index >= photos.length - 1}
                 onClick={() => go(1)}
               >
                 <ChevronRight />
               </Button>
-              <span className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-black/60 py-0.5 pr-0.5 pl-3 text-xs text-white/80 tabular-nums">
-                {(index ?? 0) + 1} / {photos.length}
-                <Button
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label={stripLabel}
-                  aria-pressed={ui.filmstrip}
-                  data-hint={stripLabel}
-                  className="rounded-full text-white/80 hover:bg-white/15 hover:text-white"
-                  onClick={() => void updateUi({ filmstrip: !ui.filmstrip })}
-                >
-                  {ui.filmstrip ? <PanelBottomClose /> : <PanelBottomOpen />}
-                </Button>
-              </span>
-              <ZoomControls
-                percent={zoom.percent}
-                zoomed={zoom.zoomed}
-                canZoomIn={zoom.canZoomIn}
-                loading={sharp.loading}
-                mod={MOD}
-                onZoomIn={zoom.zoomIn}
-                onZoomOut={zoom.zoomOut}
-                onFit={zoom.reset}
-              />
             </>
           )}
         </>
       }
     >
-            {/* What the photo is at a glance (FR-078), then the same tools in the same order as
-                the settings panel: print size, date stamp, info frame, export (STYLE_RULE §4).
+            {/* What the photo is at a glance (FR-078), then its colour, then the print tools in the
+                settings panel's order: print size, date stamp, info frame, export (STYLE_RULE §4).
                 The photo's own facts follow, to change them. */}
             {photo && <PhotoSummaryCard photo={photo} details={details} />}
+            {/* Develop first, as Lightroom's right panel (FR-095): RAW, Basic, Tools. */}
+            {photo && (
+              <PhotoLookCards photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
+            )}
             {/* A card of controls, spaced as in the settings panel; InspectorSection's tighter
                 rows are for the photo's facts below (STYLE_RULE §4). */}
             <PrintSizeCard
@@ -442,9 +398,6 @@ export function PreviewDialog({
               </ValueRow>
             </PrintSizeCard>
 
-            {photo && (
-              <PhotoLookCards photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
-            )}
             {photo && (
               <PhotoStampControls photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
             )}

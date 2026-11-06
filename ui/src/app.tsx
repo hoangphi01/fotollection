@@ -405,6 +405,8 @@ export function App() {
         onClose={() => setViewing(false)}
         thumbVersions={thumbVersions}
         generation={project.document.generation}
+        canUndo={history.canUndo}
+        canRedo={history.canRedo}
       />
       <CaptureDialog
         capture={capture}

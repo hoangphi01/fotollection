@@ -19,10 +19,10 @@ type PhotoLookCardsProps = {
 }
 
 /**
- * The open photo's own look in the preview (FR-079): the same Faves and Tools cards as the
- * panel, changing this photo only, as its date stamp does (FR-044); *Apply to all* makes
- * its look the setting for every photo. A camera RAW first gets how it is finished
- * (FR-072, `RawLookCard`).
+ * The open photo's own look, in the photo and sheet previews only (FR-079): the Faves and
+ * Tools cards change this photo only, as its date stamp does (FR-044); *Apply to all*, offered
+ * once the photo has its own look, makes it the setting for every photo. A camera RAW first
+ * gets how it is finished (FR-072, `RawLookCard`).
  */
 export function PhotoLookCards({ photoId, revision, onAppliedToAll }: PhotoLookCardsProps) {
   const { t } = useTranslation()
@@ -70,7 +70,10 @@ export function PhotoLookCards({ photoId, revision, onAppliedToAll }: PhotoLookC
         <RawLookCard
           value={current.raw}
           onChange={setRaw}
-          onApplyToAll={() => current.raw != null && void commands.applyRawLookToAll(current.raw)}
+          onApplyToAll={() =>
+            current.raw != null &&
+            void commands.applyRawLookToAll(current.raw).then((r) => r.status === 'ok' && onAppliedToAll())
+          }
         />
       )}
       <FavesCard look={current.look} onChange={change} footer={applyToAll} raw={current.raw != null} />

@@ -2,6 +2,7 @@
 import { LoaderCircle, Scan, ZoomIn, ZoomOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 type ZoomControlsProps = {
   percent: number
@@ -14,13 +15,16 @@ type ZoomControlsProps = {
   onZoomIn: () => void
   onZoomOut: () => void
   onFit: () => void
+  /** In a toolbar row (the photo preview, FR-095) rather than over the stage; it reads *Fit*
+   * at fit, as Lightroom does. */
+  inline?: boolean
 }
 
 /**
  * Zoom buttons for the preview (FR-057), so zoom can be found without knowing the
  * shortcuts or the trackpad pinch; each tooltip teaches its shortcut.
  */
-export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomIn, onZoomOut, onFit }: ZoomControlsProps) {
+export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomIn, onZoomOut, onFit, inline = false }: ZoomControlsProps) {
   const { t } = useTranslation()
   const buttons = [
     { key: 'out', Icon: ZoomOut, label: t('viewer.zoomOut', { mod }), disabled: !zoomed, onClick: onZoomOut },
@@ -30,21 +34,21 @@ export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomI
   const button = ({ key, Icon, label, disabled, onClick }: (typeof buttons)[number]) => (
     // On the wrapper: a disabled button gets no pointer events.
     <span key={key} data-hint={key === 'in' ? `${label}\n${t('viewer.zoomPinch')}` : label}>
-      <Button variant="secondary" size="icon-sm" aria-label={label} disabled={disabled} onClick={onClick}>
+      <Button variant={inline ? 'ghost' : 'secondary'} size="icon-sm" aria-label={label} disabled={disabled} onClick={onClick}>
         <Icon />
       </Button>
     </span>
   )
   return (
-    <div className="absolute right-3 bottom-3 flex items-center gap-1 rounded-lg bg-black/60 p-1">
+    <div className={cn('flex items-center gap-1', !inline && 'absolute right-3 bottom-3 rounded-lg bg-black/60 p-1')}>
       {button(buttons[0])}
       <span
-        className="flex min-w-14 items-center justify-center gap-1 px-1 text-xs text-white/80 tabular-nums"
+        className={cn('flex min-w-14 items-center justify-center gap-1 px-1 text-xs tabular-nums', inline ? 'text-muted-foreground' : 'text-white/80')}
         aria-live="polite"
         data-hint={loading ? t('viewer.zoomSharpening') : undefined}
       >
         {loading && <LoaderCircle className="size-3 animate-spin" aria-label={t('viewer.zoomSharpening')} />}
-        {percent} %
+        {inline && !zoomed ? t('viewer.fit') : `${percent} %`}
       </span>
       {buttons.slice(1).map(button)}
     </div>

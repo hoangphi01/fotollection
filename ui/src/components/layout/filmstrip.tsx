@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils'
 /** A cell's side and the gap between cells, in px (STYLE_RULE §4). */
 const CELL = 80
 const GAP = 8
-/** Room for the current cell's ring at either end of the strip. */
-const EDGE = 4
+/** Room for the current cell's ring (2 px) and its offset (2 px) at either end, with 2 to spare. */
+const EDGE = 6
 
 type FilmstripProps<T> = {
   /** What the strip holds, in order. */

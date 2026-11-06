@@ -92,9 +92,11 @@ Both areas are saved in the project (`.fotollection`) and in the session, so the
 
 <!-- shot: swipe | A photo in the print basket, with the keys to keep going -->
 
-The **Print basket** button on the photo (next to *Crop*, the turn buttons and *Export*) does the same as ↑, and shows *In the basket* when the photo is already in it; click it again to take the photo out. A photo that was set aside shows **Back to the gallery** instead.
+**The row above the photo** holds its tools, so nothing covers the photo ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)): *Crop*, the turn buttons, *Print basket*, *Before*, undo and redo, *Export*, then the zoom, where you are in the set (*25 / 422*), the filmstrip button and **ⓘ**, which lists every key. Each button's hint names its key. If you come from Lightroom, its keys work here: **R** crops, **\\** shows the photo before its colour and back, **Z** goes between fit and 1:1, **⌘[ ⌘]** rotate, **⇧⌘E** exports.
 
-**The filmstrip** under the photo shows the photos of the view, in the gallery's order, with their stars, basket and RAW marks ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): click one to open it, however far it is. The button beside the photo count (*3 / 48*) hides it and shows it again; the app remembers your choice.
+The **Print basket** button does the same as ↑, and shows *In the basket* when the photo is already in it; click it again to take the photo out. A photo that was set aside shows **Back to the gallery** instead.
+
+**The filmstrip** under the photo shows the photos of the view, in the gallery's order, with their stars, basket and RAW marks ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): click one to open it, however far it is. The filmstrip button in the row above the photo hides it and shows it again; the app remembers your choice.
 
 When you open the preview from the *Print basket* or *Set aside* view, ↑ and ↓ move the photo to the other area; a photo that stays where it is moves on to the next one.
 
@@ -190,10 +192,10 @@ In the preview's size card, *Crop* says **Centred**, with **Adjust**, or **Custo
 
 ## 7. Looking closely: zoom
 
-In the preview, the **zoom buttons** at the bottom right of the photo show the zoom level between **−** and **+**; the last button goes back to fit ([FR-057](PRD.md#fr-057--zoom-in-the-preview)). The same with the keyboard and the trackpad:
+In the preview, the **zoom buttons** in the row above the photo show the zoom between **−** and **+**: *Fit*, or the photo's own pixels, **100 % being 1:1**, one pixel of the photo on one pixel of the screen ([FR-057](PRD.md#fr-057--zoom-in-the-preview), [FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)); the last button goes back to fit. The same with the keyboard and the trackpad:
 
-- **Scroll up or down with two fingers** (or the mouse wheel), **pinch** on the trackpad, or press **Cmd/Ctrl +** and **Cmd/Ctrl −**: the photo zooms about the pointer, up to 800 %. Fingers up zoom in.
-- **Double-click** the photo to go between fit and 200 %.
+- **Click** the photo, or press **Z**, to go between fit and 1:1, where you clicked, as in Lightroom.
+- **Scroll up or down with two fingers** (or the mouse wheel), **pinch** on the trackpad, or press **Cmd/Ctrl +** and **Cmd/Ctrl −**: the photo zooms about the pointer, up to 2:1. Fingers up zoom in.
 - Zoomed in, **drag** the photo, or scroll sideways with two fingers, to move around it.
 - **Cmd/Ctrl 0** or the fit button goes back to the whole photo.
 
@@ -472,7 +474,7 @@ Two cards change a photo's colour, under **Print / export size**, in the preview
 - **Faves** shows four sliders: **Brightness**, **Contrast**, **Warm / cool** and **Saturation**. **More** adds **Highlights**, **Shadows**, **Tint** and **Vibrance**. Hover a slider to read what it does; double-click it to put it back to 0. A press just above or below the bar still takes it, and a click on a slider's name lets the ← and → keys move it (by 1, by 10 with Shift).
 - **Tools** is folded at first; click its title to open it. **Fade** lifts the blacks, **Tint the shadows** and **Tint the highlights** lay a colour over the dark and the bright parts (with **Balance** between them), and **Black and white** turns the photo grey through a filter: red darkens a blue sky the most, green lightens leaves.
 - A folded card says how many of its sliders are set ("Tools · 2 changed"); the ↺ on its title resets the card.
-- In the preview, hold **Before** (or the **\\** key) to see the photo without its look.
+- In the preview, **Before** (or the **\\** key) shows the photo without its look; press it again to come back.
 - The date stamp, the info frame and the border are never tinted, and a photo with nothing set prints exactly as before.
 - **In Collage mode**, open a sheet's preview and click a photo on it to change its colour; the cards show only while a photo is picked. Click beside the photos, or press **Esc**, to let go.
 
@@ -500,11 +502,13 @@ Two cards change a photo's colour, under **Print / export size**, in the preview
 | Sheet preview | **← →** / **1**, **2** | Other sheets / choose a photo |
 | Sheet preview | **C** / **R** | Crop the chosen photo / turn the sheet |
 | Sheet preview | **↑** / **↓** | Put the chosen photo in the print basket / set it aside |
-| Preview | **C** | Open the crop editor (chapter 6) |
-| Preview | Hold **\\** | Before / After: the photo without its look (§21) |
+| Preview | **R** or **C** | Open the crop editor (chapter 6) |
+| Preview | **\\** | Before / After: the photo without its look, and back (§21) |
+| Preview | **Z**, a click on the photo | Fit ↔ 1:1 (§7) |
+| Preview | **[ ]**, **Cmd/Ctrl [ ]** | Rotate left / right |
+| Preview | **⇧ Cmd/Ctrl E** | Export this photo |
 | Preview | **Cmd/Ctrl + / −**, two-finger scroll, trackpad pinch, the zoom buttons | Zoom in / out (§7) |
 | Preview | **Cmd/Ctrl 0**, the fit button | Back to fit |
-| Preview | double-click the photo | Toggle fit and 200 % |
 | Preview | drag the photo (not zoomed) | Choose what the print keeps (*Crop to fill*) |
 | Preview | **Esc** | Leave the crop editor, then close |
 | Anywhere | **⌘,** / **Ctrl+,** | Open Settings (chapter 23) |

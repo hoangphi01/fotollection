@@ -68,17 +68,20 @@ export function PhotoStampControls({ photoId, revision, onAppliedToAll }: PhotoS
         </>
       }
       open={stamp.enabled}
+      // As the look's: offered once this photo has its own stamp (audit 2026-11-06).
       footer={
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full"
-          onClick={() =>
-            void commands.applyStampToAll(photoId).then((r) => r.status === 'ok' && onAppliedToAll())
-          }
-        >
-          <CopyCheck data-icon="inline-start" /> {t('viewer.applyToAll')}
-        </Button>
+        current.custom && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full"
+            onClick={() =>
+              void commands.applyStampToAll(photoId).then((r) => r.status === 'ok' && onAppliedToAll())
+            }
+          >
+            <CopyCheck data-icon="inline-start" /> {t('viewer.applyToAll')}
+          </Button>
+        )
       }
     >
       <StampStyleFields stamp={stamp} onChange={set} />

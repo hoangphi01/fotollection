@@ -92,7 +92,9 @@ Cả hai khu vực được lưu trong dự án (`.fotollection`) và trong phi�
 
 Nút **Giỏ in** trên ảnh (cạnh *Cắt ảnh*, các nút xoay và *Xuất ảnh*) làm giống phím ↑, và hiện *Đã trong giỏ* khi ảnh đã nằm trong giỏ; nhấp lần nữa để lấy ảnh ra. Ảnh đã để riêng thì hiện **Trả về gallery**.
 
-**Dải ảnh** dưới tấm ảnh hiện các ảnh của chế độ xem đang mở, theo thứ tự của gallery, kèm sao, giỏ in và nhãn RAW ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): nhấp vào tấm nào là mở tấm đó, dù xa đến đâu. Nút cạnh số thứ tự ảnh (*3 / 48*) ẩn dải ảnh và hiện lại; ứng dụng nhớ lựa chọn của bạn.
+**Hàng công cụ phía trên ảnh** chứa các công cụ của ảnh, nên không gì che ảnh ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)): *Cắt ảnh*, các nút xoay, *Giỏ in*, *Trước*, hoàn tác và làm lại, *Xuất ảnh*, rồi phóng to, vị trí trong bộ ảnh (*25 / 422*), nút dải ảnh và **ⓘ** liệt kê mọi phím. Gợi ý của mỗi nút ghi phím tắt của nó. Nếu bạn quen Lightroom, các phím của Lightroom dùng được ở đây: **R** cắt ảnh, **\\** xem ảnh trước khi chỉnh màu và trở lại, **Z** chuyển giữa vừa khung và 1:1, **⌘[ ⌘]** xoay, **⇧⌘E** xuất ảnh.
+
+**Dải ảnh** dưới tấm ảnh hiện các ảnh của chế độ xem đang mở, theo thứ tự của gallery, kèm sao, giỏ in và nhãn RAW ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): nhấp vào tấm nào là mở tấm đó, dù xa đến đâu. Nút dải ảnh ở hàng công cụ phía trên ảnh ẩn dải ảnh và hiện lại; ứng dụng nhớ lựa chọn của bạn.
 
 Khi bạn mở bản xem trước từ *Giỏ in* hoặc *Để riêng*, ↑ và ↓ chuyển ảnh sang khu vực còn lại; ảnh ở nguyên chỗ cũ thì chuyển sang tấm tiếp theo.
 
@@ -188,10 +190,10 @@ Trong thẻ khổ của bản xem trước, dòng *Cắt ảnh* ghi **Ở giữa
 
 ## 7. Xem kỹ: phóng to
 
-Trong bản xem trước, **các nút phóng to** ở góc dưới bên phải ảnh hiện mức phóng giữa **−** và **+**; nút cuối cùng đưa ảnh về vừa khung ([FR-057](PRD.md#fr-057--zoom-in-the-preview)). Bàn phím và trackpad cũng làm được như vậy:
+Trong bản xem trước, **các nút phóng to** ở hàng công cụ phía trên ảnh hiện mức phóng giữa **−** và **+**: *Vừa khung*, hoặc theo điểm ảnh của chính tấm ảnh, **100 % là 1:1**, một điểm ảnh của ảnh trên một điểm ảnh của màn hình ([FR-057](PRD.md#fr-057--zoom-in-the-preview), [FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)); nút cuối cùng đưa ảnh về vừa khung. Bàn phím và trackpad cũng làm được như vậy:
 
-- **Vuốt hai ngón lên hoặc xuống** (hoặc lăn chuột), **chụm hai ngón** trên trackpad, hoặc bấm **Cmd/Ctrl +** và **Cmd/Ctrl −**: ảnh phóng quanh con trỏ, tới 800 %. Vuốt lên là phóng to.
-- **Nhấp đúp** vào ảnh để chuyển giữa vừa khung và 200 %.
+- **Nhấp** vào ảnh, hoặc bấm **Z**, để chuyển giữa vừa khung và 1:1 ngay chỗ bạn nhấp, như Lightroom.
+- **Vuốt hai ngón lên hoặc xuống** (hoặc lăn chuột), **chụm hai ngón** trên trackpad, hoặc bấm **Cmd/Ctrl +** và **Cmd/Ctrl −**: ảnh phóng quanh con trỏ, tới 2:1. Vuốt lên là phóng to.
 - Khi đã phóng to, **kéo** ảnh, hoặc vuốt ngang bằng hai ngón, để di chuyển trong ảnh.
 - **Cmd/Ctrl 0** hoặc nút vừa khung đưa về toàn bộ ảnh.
 
@@ -470,7 +472,7 @@ Hai thẻ chỉnh màu ảnh, nằm dưới **Khổ in / xuất**, chỉ có tro
 - **Cơ bản** hiện bốn thanh: **Sáng**, **Tương phản**, **Ấm / lạnh** và **Bão hoà**. **Thêm** mở thêm **Vùng sáng**, **Vùng tối**, **Tint** và **Rực màu**. Rê chuột lên một thanh để đọc nó làm gì; nhấp đúp để đưa về 0. Bấm hơi lệch lên trên hay xuống dưới thanh vẫn kéo được, và nhấp vào tên thanh thì phím ← → chỉnh nó (mỗi lần 1, giữ Shift thì 10).
 - **Công cụ** gập sẵn; nhấp vào tiêu đề để mở. **Fade** nâng điểm đen, **Nhuộm vùng tối** và **Nhuộm vùng sáng** phủ một màu lên phần tối và phần sáng (có **Cân bằng** giữa hai vùng), còn **Trắng đen** chuyển ảnh sang xám qua một kính lọc: lọc đỏ làm trời xanh tối nhất, lọc xanh làm lá sáng lên.
 - Thẻ đang gập vẫn báo có bao nhiêu thanh đã chỉnh ("Công cụ · đã chỉnh 2"); nút ↺ trên tiêu đề đặt lại cả thẻ.
-- Trong bản xem trước, giữ nút **Trước** (hoặc phím **\\**) để xem ảnh khi chưa có look.
+- Trong bản xem trước, nút **Trước** (hoặc phím **\\**) hiện ảnh khi chưa có look; bấm lần nữa để trở lại.
 - Dấu ngày, khung thông tin và viền không bao giờ bị nhuộm màu, và ảnh chưa chỉnh gì in ra y như trước.
 - **Trong chế độ Ghép ảnh**, mở bản xem trước của tấm ghép rồi nhấp vào một ảnh trên tấm để chỉnh màu ảnh đó; hai thẻ chỉ hiện khi có ảnh đang được chọn. Nhấp ra ngoài ảnh, hoặc nhấn **Esc**, để bỏ chọn.
 
@@ -498,11 +500,13 @@ Hai thẻ chỉnh màu ảnh, nằm dưới **Khổ in / xuất**, chỉ có tro
 | Xem trước tấm | **← →** / **1**, **2** | Tấm khác / chọn ảnh |
 | Xem trước tấm | **C** / **R** | Cắt ảnh đang chọn / xoay tấm |
 | Xem trước tấm | **↑** / **↓** | Cho ảnh đang chọn vào giỏ in / để riêng |
-| Xem trước | **C** | Mở màn cắt ảnh (chương 6) |
-| Xem trước | Giữ **\\** | Trước / Sau: ảnh khi chưa có look (§21) |
+| Xem trước | **R** hoặc **C** | Mở màn cắt ảnh (chương 6) |
+| Xem trước | **\\** | Trước / Sau: ảnh khi chưa có look, và trở lại (§21) |
+| Xem trước | **Z**, nhấp vào ảnh | Vừa khung ↔ 1:1 (§7) |
+| Xem trước | **[ ]**, **Cmd/Ctrl [ ]** | Xoay trái / phải |
+| Xem trước | **⇧ Cmd/Ctrl E** | Xuất ảnh này |
 | Xem trước | **Cmd/Ctrl + / −**, vuốt hai ngón, chụm trên trackpad, các nút phóng | Phóng to / thu nhỏ (§7) |
 | Xem trước | **Cmd/Ctrl 0**, nút vừa khung | Về vừa khung |
-| Xem trước | nhấp đúp vào ảnh | Chuyển giữa vừa khung và 200 % |
 | Xem trước | kéo ảnh (khi chưa phóng) | Chọn phần được in (*Cắt cho đầy*) |
 | Xem trước | **Esc** | Rời màn cắt ảnh, rồi đóng |
 | Mọi nơi | **⌘,** / **Ctrl+,** | Mở Cài đặt (chương 23) |

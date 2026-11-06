@@ -342,7 +342,7 @@
     "rendering": "Đang dựng bản xem trước…",
     "crop": "Cắt ảnh",
     "cropFitMode": "Khung đang ở chế độ Giữ trọn ảnh: cả tấm ảnh được hiển thị",
-    "adjustCrop": "Chỉnh vùng cắt (C)",
+    "adjustCrop": "Chỉnh vùng cắt (R)",
     "previous": "Ảnh trước",
     "next": "Ảnh sau",
     "hideFilmstrip": "Ẩn dải ảnh",
@@ -367,8 +367,8 @@
     "close": "đóng",
     "thisPhoto": "Riêng ảnh này",
     "applyToAll": "Áp dụng cho tất cả",
-    "rotateLeft": "Xoay trái ( [ )",
-    "rotateRight": "Xoay phải ( ] )",
+    "rotateLeft": "Xoay trái ( [ hoặc {{mod}} [ )",
+    "rotateRight": "Xoay phải ( ] hoặc {{mod}} ] )",
     "level": "cân ngang 1° (⌥ 0,1°)",
     "leaveCrop": "thoát cắt ảnh",
     "zoom": "phóng to",
@@ -383,7 +383,20 @@
     "cameraTime": "Đồng hồ máy ghi {{time}}",
     "clockShifted": "Đã chỉnh giờ",
     "syncClock": "Chỉnh giờ máy này theo một ảnh…",
-    "dateManual": "Đặt tay"
+    "dateManual": "Đặt tay",
+    "cropHint": "Cắt ảnh (R)",
+    "rotateLeftShort": "Xoay trái",
+    "rotateRightShort": "Xoay phải",
+    "undo": "Hoàn tác",
+    "undoHint": "Hoàn tác ({{mod}} Z)",
+    "redo": "Làm lại",
+    "redoHint": "Làm lại (⇧ {{mod}} Z)",
+    "exportHint": "Xuất ảnh này: thẻ Xuất ảnh ở cuối bảng bên phải (⇧ {{mod}} E)",
+    "fit": "Vừa khung",
+    "oneToOne": "vừa khung ↔ 1:1",
+    "beforeKey": "trước / sau",
+    "everyKey": "mọi phím",
+    "keys": "← →  chuyển ảnh · ↑ vào giỏ in · ↓ để riêng\n0–5 số sao · P chọn · X loại · U bỏ cờ\nR hoặc C cắt ảnh · [ ] hoặc {{mod}} [ ] xoay\nZ, hoặc nhấp vào ảnh: vừa khung ↔ 1:1 · {{mod}} + − 0 phóng to · kéo để di chuyển ảnh đang phóng\n\\ trước / sau\n{{mod}} Z hoàn tác · ⇧ {{mod}} Z làm lại\n⇧ {{mod}} E xuất ảnh này · Esc đóng"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",
@@ -596,7 +609,8 @@
   "preview": {
     "toBasket": "Giỏ in",
     "inBasket": "Đã trong giỏ",
-    "basketHint": "Cho vào hoặc bỏ khỏi giỏ in (↑)"
+    "basketHint": "Cho vào hoặc bỏ khỏi giỏ in (↑)",
+    "toGalleryHint": "Đưa ảnh này trở lại gallery"
   },
   "cameras": {
     "title": "Đồng hồ máy ảnh",
@@ -886,7 +900,7 @@
     },
     "applyToAll": "Dùng look này cho mọi ảnh",
     "before": "Trước",
-    "beforeHint": "Giữ để xem ảnh khi chưa có look (\\)",
+    "beforeHint": "Ảnh khi chưa chỉnh màu, và trở lại (\\)",
     "hints": {
       "brightness": "Vùng trung tính sáng lên hoặc tối đi; đen và trắng giữ nguyên.",
       "contrast": "Chênh lệch giữa sáng và tối nhiều hơn hoặc ít hơn.",

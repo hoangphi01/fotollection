@@ -9,6 +9,8 @@ type ToolbarButtonProps = Omit<ComponentProps<typeof Button>, 'children' | 'size
   label: string
   /** The work it started is running: a spinner in the icon's place, and no second click. */
   busy?: boolean
+  /** Always the icon alone (undo, rotate): its label is for the hint and screen readers. */
+  iconOnly?: boolean
 }
 
 /**
@@ -20,6 +22,7 @@ export function ToolbarButton({
   icon,
   label,
   busy = false,
+  iconOnly = false,
   variant = 'outline',
   className,
   disabled,
@@ -32,11 +35,11 @@ export function ToolbarButton({
       aria-label={label}
       aria-busy={busy || undefined}
       disabled={disabled || busy}
-      className={cn('w-7 px-0 @3xl:w-auto @3xl:pr-2.5 @3xl:pl-1.5', className)}
+      className={cn('w-7 px-0', !iconOnly && '@3xl:w-auto @3xl:pr-2.5 @3xl:pl-1.5', className)}
       {...props}
     >
       {busy ? <LoaderCircle className="animate-spin" /> : icon}
-      <span className="hidden @3xl:inline">{label}</span>
+      {!iconOnly && <span className="hidden @3xl:inline">{label}</span>}
     </Button>
   )
 }

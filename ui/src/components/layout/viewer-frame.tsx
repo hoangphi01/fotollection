@@ -23,6 +23,8 @@ type ViewerFrameProps = {
   onStageGroundClick?: () => void
   /** What the stage shows, on neutral black (STYLE_RULE §4). */
   stage: ReactNode
+  /** A row of tools above the stage, so nothing sits over the photo (the photo preview, FR-095). */
+  toolbar?: ReactNode
   /** A strip under the stage (the capture screen's shots). */
   below?: ReactNode
   title: ReactNode
@@ -51,6 +53,7 @@ export function ViewerFrame({
   onStagePointerUp,
   onStageGroundClick,
   stage,
+  toolbar,
   below,
   title,
   description,
@@ -67,10 +70,11 @@ export function ViewerFrame({
         className="flex h-[90vh] w-[95vw] max-w-none gap-0 overflow-hidden p-0 sm:max-w-[min(1400px,95vw)]"
       >
         <div className="flex min-w-0 flex-1 flex-col">
+          {toolbar}
           {/* Stage */}
           <div
             ref={stageRef}
-            className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-neutral-950 p-8"
+            className="group/stage relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-neutral-950 p-8"
             onPointerDown={onStagePointerDown}
             onPointerMove={onStagePointerMove}
             onPointerUp={onStagePointerUp}
