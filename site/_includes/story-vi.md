@@ -76,6 +76,6 @@ Vì thế từ bản v0.11.0, làm xong ảnh nhỏ là Fotollection chuẩn b�
 
 ## XII. Còn bao xa nữa {#how-far}
 
-Mười bốn ngày, hơn bốn trăm ba mươi bản vá, hai mươi bốn bản phát hành. Tính theo cuộc marathon thì tôi mới qua những cây số đầu tiên. Phía trước là bản v0.12.0, một cửa sổ cho mọi cài đặt và một dải ảnh dưới bản xem trước để lướt cả chuyến đi, rồi v0.13.0 "Looks", với những tông màu của riêng mỗi người, và xa hơn nữa là phiên bản 1.0.
+Mười bốn ngày, hơn bốn trăm ba mươi bản vá, hai mươi bốn bản phát hành. Tính theo cuộc marathon thì tôi mới qua những cây số đầu tiên. Phía trước là bản v0.12.0, một cửa sổ cho mọi cài đặt và một dải ảnh dưới bản xem trước để lướt cả chuyến đi, rồi v0.14.0 "Looks", với những tông màu của riêng mỗi người, và xa hơn nữa là phiên bản 1.0.
 
 Tôi hay tự hỏi mình có thể đưa Fotollection đi xa đến đâu. Liệu một ngày nó có thể giống những dự án mã nguồn mở mà cả cộng đồng đều biết, những kho mã có hàng chục nghìn người tin dùng mỗi ngày? Tôi chưa biết. Điều tôi biết là mỗi tấm ảnh được in ra là một kỷ niệm không còn nằm sau tấm kính, như những cuốn album của ông bà ngày trước. Nếu bạn đã đọc tới đây, cảm ơn bạn đã chạy cùng tôi một đoạn. Con đường vẫn còn dài, và tôi vẫn đang chạy.

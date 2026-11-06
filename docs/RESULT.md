@@ -589,7 +589,7 @@ Each photo of the owner's Prague trip (396 JPEG and 26 RW2 from a GX9, 20 MP) op
 - **Pixels:** a preview made from the disk copy differs from a fresh one by 1.35 levels of 255 on average (20 photos).
 - **Memory:** the run peaked at 3.3 GB with a 4 GB budget, the quarter of a 16 GB machine the app gives the preview.
 
-## 30. Export quality on a print (v0.12.1, FR-092)
+## 30. Export quality on a print (v0.13.0, FR-092)
 
 Twelve of the owner's Prague photos (GX9, 20 MP), each sized for a 20 × 30 cm print at 300 DPI (3,543 px), encoded as prints are (4:4:4) at each quality, decoded, and compared with the quality-100 encode: ΔE as the OKLab distance × 100 (a just noticeable difference is about 2), on the M3 (`cargo run --release -p fotollection-core --example measure_quality -- <folder> 12`, 2026-11-06).
 
@@ -615,7 +615,7 @@ The export dialog's badges follow from it:
 
 90, the default since 2026-11-06 (95 before), keeps a third of the size of 100 at a difference no eye sees on paper.
 
-## 31. A file-size limit on a print (v0.12.1, FR-105)
+## 31. A file-size limit on a print (v0.13.0, FR-105)
 
 The same twelve photos at the same print size, at the default quality 90, through `export::encode_within`, the code the export uses: under the limit, one encode; over it, the highest quality from 60 up that fits, by bisection (`measure_quality -- <folder> 12 --limit`, the core optimized in the dev profile, 2026-11-06). "An export" is reading, decoding and sizing the photo plus its encodes.
 

@@ -76,6 +76,6 @@ So since v0.11.0 Fotollection prepares a preview of every photo in the backgroun
 
 ## XII. How far still {#how-far}
 
-Fourteen days, more than four hundred and thirty commits, twenty-four releases. Counted as a marathon, I have only passed the first kilometres. Ahead are v0.12.0, one window for every setting and a strip of photos under the preview to skim a trip, then v0.13.0 "Looks", with looks of one's own, and further on, version 1.0.
+Fourteen days, more than four hundred and thirty commits, twenty-four releases. Counted as a marathon, I have only passed the first kilometres. Ahead are v0.12.0, one window for every setting and a strip of photos under the preview to skim a trip, then v0.14.0 "Looks", with looks of one's own, and further on, version 1.0.
 
 I often ask myself how far I can take Fotollection. Could it one day be like the open-source projects a whole community knows, the repositories tens of thousands of people trust every day? I do not know yet. What I know is that each photo printed is a memory no longer behind glass, like my grandparents' albums once were. If you have read this far, thank you for running a stretch of the road with me. The road is still long, and I am still running.

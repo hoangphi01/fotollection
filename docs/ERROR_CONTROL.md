@@ -145,7 +145,7 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 | `ERR-EXP-0001` | v0.9.1 | `export.cancelled` | `crates/core/src/export.rs:52` | Export cancelled | The user cancelled the export (not a fault). | Nothing to do. |
 | `ERR-EXP-0002` | v0.9.1 | `export.empty` | `src-tauri/src/commands.rs:666` | There are no photos to export | The view, or the ticked photos, hold nothing to export. | Show some photos, or tick some, then export. |
 | `ERR-EXP-0003` | v0.9.1 | `export.no_destination` | `src-tauri/src/commands.rs` (`start_export`) | Choose a destination first | Export started before a destination was chosen. | Choose a destination. |
-| `ERR-EXP-0004` | v0.12.1 | `export.destination_gone` | `src-tauri/src/commands.rs` (`start_export`) | The export folder is no longer there | The folder kept from an earlier launch (FR-093) is gone: a drive unplugged, the folder moved or deleted. | Choose the folder again in the export dialog. |
+| `ERR-EXP-0004` | v0.13.0 | `export.destination_gone` | `src-tauri/src/commands.rs` (`start_export`) | The export folder is no longer there | The folder kept from an earlier launch (FR-093) is gone: a drive unplugged, the folder moved or deleted. | Choose the folder again in the export dialog. |
 
 ### NET: Network (Check for updates only)
 

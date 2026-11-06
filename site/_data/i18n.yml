@@ -247,7 +247,7 @@ en:
   p1_title: No upload, no cloud
   p1_text: Photos are read and written on your own disk. There is no server to send them to.
   p2_title: No account, no tracking
-  p2_text: No sign-up, and the app has no analytics or telemetry. From v0.12.1 it asks GitHub once at start whether a newer version is out, which Settings can turn off.
+  p2_text: No sign-up, and the app has no analytics or telemetry. From v0.13.0 it asks GitHub once at start whether a newer version is out, which Settings can turn off.
   p6_title: No ads
   p6_text: Nothing to sell you and no one paying to reach you. No adverts, no sponsored suggestions, no in-app purchases, not now and not later.
   p3_title: Places without a map service
@@ -299,7 +299,7 @@ en:
         - title: Works offline
           text: "Photos, folders, projects and settings never leave your computer. There is no account, no telemetry and no crash upload."
         - title: Check for updates
-          text: "The only network request: when you click, and from v0.12.1 once at start unless turned off in Settings, it asks GitHub (api.github.com) for this project's latest release. Nothing is downloaded by itself. GitHub's privacy statement applies to it."
+          text: "The only network request: when you click, and from v0.13.0 once at start unless turned off in Settings, it asks GitHub (api.github.com) for this project's latest release. Nothing is downloaded by itself. GitHub's privacy statement applies to it."
         - title: No location in exports
           text: GPS coordinates are removed from exported photos by default.
         - title: This website
@@ -346,7 +346,7 @@ en:
   perf_memory_title: "Memory: 5,035 photos, and it stays flat"
   perf_memory_text: "A trip can mean thousands of photos. Fotollection keeps only a few bytes per photo in memory, writes thumbnails to a disk cache and works on only as many full-size images at a time as fit its memory budget. With 53 times more photos, peak memory grows by 0.1 GB: 1.35 GB for 95 photos, 1.45 GB for 5,035, under the 2 GB ceiling. Larger photos need more: a real folder of 20 MP files peaks at 1.31 GB (above)."
   perf_print_title: "Print quality: the print looks like the photo"
-  perf_print_text: "Prints made through a web editor often look flat. We measured why: the editor drops the colour profile (13 % of the saturation of iPhone photos lost), shrinks the photo to 2,000 px and lets the lab blow it up again (87 % of the fine detail lost), and saves at quality 80 with halved colour resolution. Fotollection keeps the profile, exports at full resolution in 4:4:4 (measured at quality 95; 90 by default since v0.12.1), and its colour error stays at 0.19, far below the 1 where an eye starts to notice."
+  perf_print_text: "Prints made through a web editor often look flat. We measured why: the editor drops the colour profile (13 % of the saturation of iPhone photos lost), shrinks the photo to 2,000 px and lets the lab blow it up again (87 % of the fine detail lost), and saves at quality 80 with halved colour resolution. Fotollection keeps the profile, exports at full resolution in 4:4:4 (measured at quality 95; 90 by default since v0.13.0), and its colour error stays at 0.19, far below the 1 where an eye starts to notice."
   perf_share_title: "Photos for Facebook and Instagram: light, and still the photo"
   perf_share_text: "Facebook shrinks every photo to 2,048 px and recompresses it, and it ignores colour profiles. The Share export does that work properly first: the photo is converted to sRGB, resized with a high-quality filter, lightly sharpened and saved at a size Facebook does not touch again. After Facebook's own recompression, the result stays closer to the photo than the usual way, and iPhone-style Display P3 photos keep 99.6 % of their colour instead of 86 %. The Original size option keeps every pixel at half the file, with a colour error under 1."
   chart_raw: "Camera RAW: from the file to the screen, per camera and against Adobe DNG Converter"
@@ -709,7 +709,7 @@ vi:
   p1_title: Không tải lên, không lưu trữ đám mây
   p1_text: Ảnh được đọc và ghi ngay trên ổ đĩa của bạn. Không có máy chủ nào để gửi ảnh tới.
   p2_title: Không tài khoản, không theo dõi
-  p2_text: Không cần đăng ký, và ứng dụng không đo lường hay gửi đi bất kỳ dữ liệu sử dụng nào. Từ v0.12.1, ứng dụng hỏi GitHub một lần khi mở xem có bản mới chưa, và bạn tắt được trong Cài đặt.
+  p2_text: Không cần đăng ký, và ứng dụng không đo lường hay gửi đi bất kỳ dữ liệu sử dụng nào. Từ v0.13.0, ứng dụng hỏi GitHub một lần khi mở xem có bản mới chưa, và bạn tắt được trong Cài đặt.
   p6_title: Không quảng cáo
   p6_text: Không bán gì cho bạn và không ai trả tiền để tiếp cận bạn. Không quảng cáo, không gợi ý được tài trợ, không mua thêm trong ứng dụng, bây giờ và cả sau này.
   p3_title: Địa điểm không cần dịch vụ bản đồ
@@ -761,7 +761,7 @@ vi:
         - title: Chạy offline
           text: "Ảnh, thư mục, dự án và cài đặt không bao giờ rời khỏi máy của bạn. Không tài khoản, không thu thập dữ liệu sử dụng, không gửi báo lỗi."
         - title: Kiểm tra cập nhật
-          text: "Lần lên mạng duy nhất: khi bạn bấm, và từ v0.12.1 một lần khi mở app trừ khi bạn tắt trong Cài đặt, ứng dụng hỏi GitHub (api.github.com) bản phát hành mới nhất của dự án. Không tự tải gì về. Chính sách riêng tư của GitHub áp dụng cho lần hỏi đó."
+          text: "Lần lên mạng duy nhất: khi bạn bấm, và từ v0.13.0 một lần khi mở app trừ khi bạn tắt trong Cài đặt, ứng dụng hỏi GitHub (api.github.com) bản phát hành mới nhất của dự án. Không tự tải gì về. Chính sách riêng tư của GitHub áp dụng cho lần hỏi đó."
         - title: Ảnh xuất không có vị trí
           text: Toạ độ GPS được xoá khỏi ảnh xuất theo mặc định.
         - title: Trang web này
@@ -808,7 +808,7 @@ vi:
   perf_memory_title: "RAM: 5.035 ảnh vẫn không tăng"
   perf_memory_text: "Một chuyến đi có thể có hàng nghìn ảnh. Fotollection chỉ giữ vài byte cho mỗi ảnh trong RAM, ghi ảnh thu nhỏ ra ổ đĩa và chỉ xử lý cùng lúc số ảnh cỡ lớn vừa với hạn mức RAM. Với số ảnh gấp 53 lần, RAM dùng nhiều nhất chỉ tăng 0,1 GB: 1,35 GB với 95 ảnh, 1,45 GB với 5.035 ảnh, dưới mức trần 2 GB. Ảnh lớn hơn thì cần nhiều hơn: một thư mục thật gồm ảnh 20 MP dùng nhiều nhất 1,31 GB (xem ở trên)."
   perf_print_title: "Chất lượng in: ảnh in giống ảnh gốc"
-  perf_print_text: "Ảnh in qua trình chỉnh sửa ảnh trên web thường trông nông màu. Chúng tôi đã đo xem vì sao: trình chỉnh sửa đó bỏ mất hồ sơ màu (ảnh iPhone mất 13 % độ bão hoà màu), thu ảnh xuống 2.000 px rồi để tiệm in phóng to lại (mất 87 % chi tiết nhỏ), và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên hồ sơ màu, xuất ở độ phân giải đầy đủ, 4:4:4 (đo ở chất lượng 95; từ v0.12.1 mặc định 90), và sai lệch màu chỉ 0,19, thấp hơn rất xa mức 1 mà mắt người bắt đầu nhận ra."
+  perf_print_text: "Ảnh in qua trình chỉnh sửa ảnh trên web thường trông nông màu. Chúng tôi đã đo xem vì sao: trình chỉnh sửa đó bỏ mất hồ sơ màu (ảnh iPhone mất 13 % độ bão hoà màu), thu ảnh xuống 2.000 px rồi để tiệm in phóng to lại (mất 87 % chi tiết nhỏ), và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên hồ sơ màu, xuất ở độ phân giải đầy đủ, 4:4:4 (đo ở chất lượng 95; từ v0.13.0 mặc định 90), và sai lệch màu chỉ 0,19, thấp hơn rất xa mức 1 mà mắt người bắt đầu nhận ra."
   perf_share_title: "Ảnh cho Facebook và Instagram: nhẹ mà vẫn đúng là ảnh của bạn"
   perf_share_text: "Facebook thu mọi ảnh về 2.048 px, nén lại và bỏ qua hồ sơ màu. Kiểu xuất Mạng xã hội làm trước những việc đó cho đúng: chuyển ảnh sang sRGB, thu nhỏ bằng bộ lọc chất lượng cao, làm nét nhẹ và lưu đúng cỡ để Facebook không phải thu nhỏ thêm. Sau khi Facebook nén lại, ảnh vẫn giống ảnh gốc hơn cách làm thông thường, và ảnh Display P3 kiểu iPhone giữ được 99,6 % màu thay vì 86 %. Lựa chọn Giữ cỡ gốc giữ nguyên từng điểm ảnh mà tệp chỉ còn khoảng một nửa, sai lệch màu dưới 1."
   chart_raw: "Ảnh RAW: từ tệp đến màn hình, theo từng máy và so với Adobe DNG Converter"

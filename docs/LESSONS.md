@@ -46,7 +46,7 @@
 
 - **Seen:** the export dialog had Lightroom's layout, but no subfolder, no file naming, no choice for existing files or metadata; the owner: "I told you to look at Lightroom's export, did you forget?"
 - **Why:** the reference was read for its layout; its sections were not listed one by one, so the missing ones were never decided.
-- **Fix:** the plan lists every Lightroom section with built, later or never; the missing ones are built in v0.12.1, output sharpening later.
+- **Fix:** the plan lists every Lightroom section with built, later or never; the missing ones are built in v0.13.0, output sharpening later.
 - **Rule:** when the owner says "like X", list every section of X in the plan, each marked built, later or never, before building.
 
 ### *New project* dropped every folder without asking: an untitled session lost its unsaved flag on restart (FR-023)
@@ -75,7 +75,7 @@
 
 - **Seen:** in the full-window layout the preview's toolbar lost its last buttons past the inspector, and the zoom read *Vừa khung* on two lines, off centre (owner's screenshots, v0.12.0 development).
 - **Why:** the left column (18 rem) was added beside the 24 rem inspector, leaving the stage column about 508 px at the 1180 px minimum; the toolbar needs about 660. The row was measured once, in the dialog layout, before the column existed. The zoom showed a word (*Fit*, *Vừa khung*) in a 56 px box.
-- **Fix:** v0.12.1 brings the inspector to 18 rem as every panel, shows zoom as a percentage only, moves the count to the filmstrip's label and makes the row a container that drops the zoom buttons when narrow; `MEASURE=1` gains a check for any row or label wider than its box.
+- **Fix:** v0.13.0 brings the inspector to 18 rem as every panel, shows zoom as a percentage only, moves the count to the filmstrip's label and makes the row a container that drops the zoom buttons when narrow; `MEASURE=1` gains a check for any row or label wider than its box.
 - **Rule:** a new column or control re-measures every row it shares, at 1180 px and in Vietnamese, before it is kept; a fixed box never holds a word (STYLE_RULE §4, "Icons first").
 
 ### Zoom showed a portrait photo sideways: two ways to the full image, one forgot to turn it (FR-057, v0.11.2)

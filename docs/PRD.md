@@ -175,7 +175,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 **P0.** Export at full resolution.
 
-- JPEG quality is configurable in the export dialog (60–100, kept per machine as `ui.exportQuality`, v0.12.1, FR-092), with a default of 90 (95 until 2026-11-06: a third larger for a difference under a visible step, RESULT §30) and 4:4:4 chroma subsampling for prints (share exports, [FR-053](#fr-053--export-for-social-media), are 4:2:0 and start at their preset's quality, 88 or 80).
+- JPEG quality is configurable in the export dialog (60–100, kept per machine as `ui.exportQuality`, v0.13.0, FR-092), with a default of 90 (95 until 2026-11-06: a third larger for a difference under a visible step, RESULT §30) and 4:4:4 chroma subsampling for prints (share exports, [FR-053](#fr-053--export-for-social-media), are 4:2:0 and start at their preset's quality, 88 or 80).
 - The embedded ICC profile is preserved.
 - Photos that are crop-only with no stamp use a lossless DCT-domain crop when possible (planned; today every export is re-encoded).
 
@@ -185,15 +185,15 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 - **One folder or by day** (a user's feedback, owner 2026-11-04): a switch in the export card, **One folder** (the default, every file straight into the destination, as a kiosk USB stick wants) or **By day** (the `YYYY-MM-DD/` subfolders, `undated/` without a date). Remembered per machine (`ui.exportFolders`, settings v12). It applies to prints, share exports (inside `Share/`), collage sheets and postcards, and inside each subfolder of a separate export ([FR-056](#fr-056--folders-as-tabs)).
 
-- Existing files are never overwritten silently. The user picks a rule in the export dialog (v0.12.1, kept per machine as `ui.exportExisting`): **add a number** (`_1`, `_2`, the default), **skip** the photo (the result counts them), or **replace** the file, with a red warning under the choice as its confirmation; a replaced file is swapped in whole, and two photos of one export never write over each other.
-- **Put in a subfolder** (v0.12.1, Lightroom's *Export location*): a switch and a name, kept per machine (`ui.exportSubfolder`); the subfolder sits in the destination (and in a source folder's own subfolder, FR-056), before `Share/` and the day folders. The name is cleaned in Rust: no separators, no reserved Windows names, at most 100 characters.
+- Existing files are never overwritten silently. The user picks a rule in the export dialog (v0.13.0, kept per machine as `ui.exportExisting`): **add a number** (`_1`, `_2`, the default), **skip** the photo (the result counts them), or **replace** the file, with a red warning under the choice as its confirmation; a replaced file is swapped in whole, and two photos of one export never write over each other.
+- **Put in a subfolder** (v0.13.0, Lightroom's *Export location*): a switch and a name, kept per machine (`ui.exportSubfolder`); the subfolder sits in the destination (and in a source folder's own subfolder, FR-056), before `Share/` and the day folders. The name is cleaned in Rust: no separators, no reserved Windows names, at most 100 characters.
 
 ### FR-010 — Metadata privacy on export
 
 **P0.** Control which metadata is written into exported files.
 
 - GPS is never written, whatever is chosen.
-- **Options** (v0.12.1, the export dialog's *Metadata* card, kept per machine as `ui.exportMetadata`): **camera** (the allowlist below, the default), **date only** (the capture time and `Software`), or **nothing** (no EXIF block; the colour profile stays). Prints, share exports and collage sheets alike.
+- **Options** (v0.13.0, the export dialog's *Metadata* card, kept per machine as `ui.exportMetadata`): **camera** (the allowlist below, the default), **date only** (the capture time and `Software`), or **nothing** (no EXIF block; the colour profile stays). Prints, share exports and collage sheets alike.
 - No banner for GPS kept is needed: GPS is never kept.
 - **Every export writes a small EXIF block from a fixed allowlist** (camera, lens, exposure, capture time and `Software = Fotollection <version>`), and **never GPS**: prints and share exports alike (since 2026-10-25; prints carried no metadata before). It weighs about 0.3 KB; the camera's own maker notes and embedded thumbnail (about 18 KB) are never copied.
 
@@ -764,7 +764,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-070 — Looks from LUT files
 
-**P1 (planned, v0.13.0 since the owner's re-ordering of 2026-11-05; owner's request 2026-11-02; moved before the develop core on 2026-11-05, as a LUT works on the photo's encoded values, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** Colour looks as in LUMIX Lab: choose a look, set its strength, print ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)). The sliders of [FR-079](#fr-079--colour-adjustments) bake into the same table, so an imported LUT and the sliders make one look.
+**P1 (planned, v0.14.0 since the owner's re-ordering of 2026-11-05; owner's request 2026-11-02; moved before the develop core on 2026-11-05, as a LUT works on the photo's encoded values, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** Colour looks as in LUMIX Lab: choose a look, set its strength, print ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)). The sliders of [FR-079](#fr-079--colour-adjustments) bake into the same table, so an imported LUT and the sliders make one look.
 
 - **Import** a `.cube` file (1D or 3D, 2–65 points a side, `DOMAIN_MIN`/`DOMAIN_MAX`) or a HaldCLUT PNG: from LUMIX Lab, the user's own, or downloaded. A LUMIX LUT tagged `#LUMIXPHOTOSTYLE VLOG` is written for V-Log footage and gets a warning: on a JPEG it comes out far too strong. It is copied into the app's `looks/` folder by content hash, so the original can move. Panasonic's `.vlt` is a candidate once its format is checked.
 - **Built-in looks** made by our own code, under our own names (no copied LUT files, no trademarked names, as [FR-047](#fr-047--film-looks)), including one for *C200 Natural*.
@@ -787,7 +787,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-072 — Our own develop core
 
-**P1 (the Bayer develop, neutral colour and FR-088 shipped in v0.10.0, 2026-11-05; X-Trans, the GPU develop and the DNG kinds planned for v0.14.0; owner's request 2026-11-02).** From the sensor's raw samples to the screen and the print, every step is ours, written from the published methods and measured ([ADR-0037](adr/0037-our-own-develop-core.md)). Maker formats are still unpacked by our DNG reader or by rawler; the system codecs become a last fallback.
+**P1 (the Bayer develop, neutral colour and FR-088 shipped in v0.10.0, 2026-11-05; X-Trans, the GPU develop and the DNG kinds planned for v0.15.0; owner's request 2026-11-02).** From the sensor's raw samples to the screen and the print, every step is ours, written from the published methods and measured ([ADR-0037](adr/0037-our-own-develop-core.md)). Maker formats are still unpacked by our DNG reader or by rawler; the system codecs become a last fallback.
 
 - **The sensor kind decides the path:** Bayer, X-Trans, four-colour, linear and monochrome each have their own branch; an unknown kind is a clean "not supported" error, never a panic or a guess.
 - **Before demosaicing:** per-site black levels from the ActiveArea origin, white level, **green equilibration (Gr/Gb)** against maze and worm patterns, hot-pixel removal, the as-shot white balance.
@@ -848,7 +848,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-079 — Colour adjustments
 
-**P1 (Faves and Tools shipped in v0.9.9, the Looks card planned for v0.13.0 "Looks"; owner's request 2026-11-05, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** A **moderate** colour editor, in the spirit of Snapseed's *Tune Image* and LUMIX Lab's looks, far short of Lightroom: global adjustments only, one card, the same result on screen and on paper.
+**P1 (Faves and Tools shipped in v0.9.9, the Looks card planned for v0.14.0 "Looks"; owner's request 2026-11-05, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** A **moderate** colour editor, in the spirit of Snapseed's *Tune Image* and LUMIX Lab's looks, far short of Lightroom: global adjustments only, one card, the same result on screen and on paper.
 
 - **Three cards, as Snapseed 3 splits Looks, Faves and Tools** (owner, 2026-11-05), each a lego card of its own, in the photo and sheet previews only (owner, 2026-11-05: colour is chosen while the photo is seen large, not in the gallery's panel), after *Print / export size*; the look shared by every photo is set with *Apply this look to all photos*; Simple mode shows only **Looks**:
   - **Looks:** the list of looks, the built-in ones, the user's own and the LUTs imported from LUMIX Lab or elsewhere ([FR-070](#fr-070--looks-from-lut-files)), each shown as the chosen photo through it, small; the **amount**; *Import LUT…* and *Save as look*.
@@ -859,7 +859,7 @@ Next to the batch settings, any other setting will later be overridable for one 
   2. **Faves**, open with four sliders: brightness, contrast, warmth, saturation; *More* shows highlights, shadows, tint and vibrance.
   3. **Tools**, folded at first; its title opens it, and the app remembers which cards are open.
   - A folded card still says what it holds ("Tools · 2 changed"); each card's title has a reset, and a double-click resets one slider; a visible *Before / After* button above the photo, besides the `\` key, both turning it on and off (FR-096). Labels are plain words; what a slider does shows on hover, so the cards stay short.
-- **Later, not in v0.13.0:** *Selective*, Snapseed's local control points (brightness, contrast, saturation around a point), as an FR of its own: it cannot bake into the table and needs its own measurement.
+- **Later, not in v0.14.0:** *Selective*, Snapseed's local control points (brightness, contrast, saturation around a point), as an FR of its own: it cannot bake into the table and needs its own measurement.
 - **Sliders:** each from −100 to +100 (amounts and grain 0–100), 0 by default; a double-click resets one. The preview follows while dragging; one undo step per release. Press `\` to compare with the original, and again to come back (FR-096).
 - **Looks:** a look is the sliders' values, an optional imported LUT ([FR-070](#fr-070--looks-from-lut-files)) with its strength, and an **amount** of 0–100 % that scales all of them together. Built-in looks are slider recipes made by the project under its own names (no third-party LUTs, no trademarked film or camera names), among them *C200 Natural* ([FR-039](#fr-039--photo-style-looks)) and film-inspired looks ([FR-047](#fr-047--film-looks)). *Save as look* keeps the current values under a name of the user's.
 - **For every photo, or one photo as an override,** as the date stamp ([FR-044](#fr-044--per-photo-overrides)), with *Apply to all*; a collage sheet uses each photo's own look.
@@ -912,7 +912,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-085 — Lens distortion correction
 
-**P1 (planned for v0.14.0 unless the owner moves it; found 2026-11-05).** Our own develop corrects the lens's distortion, as the camera's JPEG and macOS's ImageIO do, so Fotollection's develop can take over every format on every system.
+**P1 (planned for v0.15.0 unless the owner moves it; found 2026-11-05).** Our own develop corrects the lens's distortion, as the camera's JPEG and macOS's ImageIO do, so Fotollection's develop can take over every format on every system.
 
 - **From the file, never from a guessed lens profile:** the correction the camera itself records (Panasonic and Olympus maker data, which Micro Four Thirds lenses rely on), DNG's `WarpRectilinear` opcode.
 - **Until then:** on macOS, Panasonic and Olympus RAW go to ImageIO first ([FR-016](#fr-016--raw-input)); elsewhere they are developed without the correction, as rawler did.
@@ -925,7 +925,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **The cache, to manage** (owner, 2026-11-05): how much the thumbnails, the standard previews ([FR-091](#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) and the analyses take on disk against the limit, and how much memory the previews may use, with *Clear cache*.
 - **In it:** the language, the theme, `.fotosettings` export and import ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)), language packs ([FR-084](#fr-084--language-packs-anyone-can-add)), the cache, updates, *Report a problem*, the version and the changelog, and every other app-wide setting now spread over the panels and the version popover.
 - **RAM & cache, each control saying what it does to speed** (owner, 2026-11-05): the share of the computer's memory for previews (15 / 25 / 40 %, default 25), the disk cache's limit (2 / 5 / 10 / 20 GB, default 5) with its content by kind, *Prepare previews in the background* (on), *Clear cache*; **Default** and **Auto** (chosen from the machine's RAM and free disk: 40 % from 32 GB, 25 % from 12 GB, else 15 %; the largest cache within a tenth of the free disk; previews off under 5 GB free). Stored per machine in `settings.json` v15, clamped in Rust.
-- **This computer, shown** (owner, 2026-11-05, as Photoshop's Performance preferences): *For this computer* lists the processor and its cores, the graphics card and whether it draws the colour sliders (ADR-0039), the memory and the cache disk's free space, so *Auto*'s choice can be read. A share of the graphics card's memory to set, as Photoshop's VRAM, comes with the develop on the GPU (`wgpu`, v0.14.0 "Core 2"); until then the GPU only draws a slider's step and needs no budget.
+- **This computer, shown** (owner, 2026-11-05, as Photoshop's Performance preferences): *For this computer* lists the processor and its cores, the graphics card and whether it draws the colour sliders (ADR-0039), the memory and the cache disk's free space, so *Auto*'s choice can be read. A share of the graphics card's memory to set, as Photoshop's VRAM, comes with the develop on the GPU (`wgpu`, v0.15.0 "Core 2"); until then the GPU only draws a slider's step and needs no budget.
 - **Memory given back** when the machine runs short (under a tenth available, checked every 5 s): the previews keep a tenth of their budget until memory comes back, then their whole share again ([ADR-0041](adr/0041-instant-previews-disk-and-memory.md)).
 - **Built from the lego blocks** (STYLE_RULE §4), measured with `MEASURE=1`, in both themes and languages. Sections as on an iPad: *General* (language, theme), *RAM & cache*, *Updates*, *Report a problem*, *What's new*; opened by the gear, the version badge (*What's new*) and ⌘, / Ctrl+,. The version popover is gone; `.fotosettings` and language packs follow in their own versions.
 
@@ -940,7 +940,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-089 — Lightroom presets
 
-**P2 (planned with the Looks, after v0.13.0's LUT import; owner's request 2026-11-05, researched the same day).** *Import preset…* reads a user's own Lightroom® preset, an `.xmp` (`crs:PresetType="Normal"`) or a legacy Develop `.lrtemplate`, into a look of their own.
+**P2 (planned with the Looks, after v0.14.0's LUT import; owner's request 2026-11-05, researched the same day).** *Import preset…* reads a user's own Lightroom® preset, an `.xmp` (`crs:PresetType="Normal"`) or a legacy Develop `.lrtemplate`, into a look of their own.
 
 - **Parsed safely:** XML without DOCTYPE or entities, size- and depth-capped; an `.lrtemplate` read by a small parser of Lua's table constructors only, never run as Lua; every number clamped, NaN refused; each failure with its `ERR-` code. Fuzzed.
 - **Mapped honestly:** the 2012-process sliders that match ours (contrast, highlights, shadows, vibrance, saturation, incremental warmth and tint, split toning, vignette, grain, black and white by its nearest filter) are applied; exposure is approximated; what has no counterpart yet (Whites and Blacks, tone curves, HSL, colour grading, clarity, texture, dehaze, sharpening, absolute white balance, Adobe's camera profiles, older process versions) is listed after the import as *not applied*, with its reason, and kept in the look so a later engine can use it. Next steps in the table, without new UI: an imported tone curve, then HSL and colour grading.
@@ -973,15 +973,15 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-092 — Export quality on a slider, with a live estimate and a print verdict
 
-**P1 (v0.12.1; owner's request 2026-11-06: "a slider like Lightroom's, but better").** The export dialog ([FR-093](#fr-093--the-exports-options-in-one-small-dialog)) and the Settings window's *Export* section get a *Quality* slider (JPEG quality, 60–100, default 95 as [FR-008](#fr-008--original-quality-export) says), as Lightroom's export dialog has, and goes further:
+**P1 (v0.13.0; owner's request 2026-11-06: "a slider like Lightroom's, but better").** The export dialog ([FR-093](#fr-093--the-exports-options-in-one-small-dialog)) and the Settings window's *Export* section get a *Quality* slider (JPEG quality, 60–100, default 95 as [FR-008](#fr-008--original-quality-export) says), as Lightroom's export dialog has, and goes further:
 
 - **The estimate follows the slider:** while it moves, the export's size estimate ([FR-053](#fr-053--export-for-social-media)) updates for the value under the thumb, not only after release; the last answer stays while the next is computed, and a newer value replaces an older one in flight (never a queue of encodes).
-- **Whether it prints well, as badges:** beside the value, a badge in the style of the resolution warning ([FR-026](#fr-026--resolution-warning)) says what the setting is good for, for example *Print, excellent*, *Print, good*, *Screen only*, with a hint explaining it. Measured on the owner's photos at print size ([RESULT §30](RESULT.md#30-export-quality-on-a-print-v0121-fr-092)): 90 and above *Prints beautifully*, 75 to 89 *Prints well*, below 75 *Screens only*; 4:4:4 chroma stays for prints.
+- **Whether it prints well, as badges:** beside the value, a badge in the style of the resolution warning ([FR-026](#fr-026--resolution-warning)) says what the setting is good for, for example *Print, excellent*, *Print, good*, *Screen only*, with a hint explaining it. Measured on the owner's photos at print size ([RESULT §30](RESULT.md#30-export-quality-on-a-print-v0130-fr-092)): 90 and above *Prints beautifully*, 75 to 89 *Prints well*, below 75 *Screens only*; 4:4:4 chroma stays for prints.
 - **Lego:** the shared slider and badge blocks, measured in both themes and languages; Collage and postcard exports use the same card.
 
 ### FR-093 — The export's options in one small dialog
 
-**P1 (v0.12.1; owner's request 2026-11-06: "gather every export option in one small pop-up instead of spilling down the right-hand panel; a press on Export shows it, with a save button and *don't ask again*, after which Export just exports; to change, go to Settings").** The panels keep only the *Export* button with its count (ticked photos, sheets) and the size estimate. A press on *Export* opens a small dialog that holds every option that today stacks in the panel's footer:
+**P1 (v0.13.0; owner's request 2026-11-06: "gather every export option in one small pop-up instead of spilling down the right-hand panel; a press on Export shows it, with a save button and *don't ask again*, after which Export just exports; to change, go to Settings").** The panels keep only the *Export* button with its count (ticked photos, sheets) and the size estimate. A press on *Export* opens a small dialog that holds every option that today stacks in the panel's footer:
 
 - for print or to share (preset, long edge) and the share fill (ratio, width and height, colour);
 - folders together or apart, one folder or by day;
@@ -1007,7 +1007,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 **P1 (done, v0.12.0; owner's request 2026-11-06: "complete and professional, done well, not rushed; a Lightroom user should feel at home fast, with our own character").** Pro mode's photo preview becomes a develop view.
 
 - **Two layouts, chosen in Settings → General** (`ui.previewLayout`): *In a window*, the dialog as before, and *Fill the app window*, edge to edge under the Windows title bar (FR-052). `F` switches between them and the choice is kept.
-- **A left column in the full layout** (18 rem, as the side panels): *Navigator*, the photo small with a frame for the zoomed area (click or drag to move it; Fit, Fill, 1:1, 2:1), and *History*, this photo's steps newest first, named by what changed (*Warmth +8*, *Crop*, *Paste settings*); a click brings the photo back to that state as a new step, so it can be undone. v0.13.0 adds *Presets & LUTs* at its top (FR-079, FR-070). `Tab`, pressed with the photo itself focused (so it still moves between the inspector's controls), hides both side columns.
+- **A left column in the full layout** (18 rem, as the side panels): *Navigator*, the photo small with a frame for the zoomed area (click or drag to move it; Fit, Fill, 1:1, 2:1), and *History*, this photo's steps newest first, named by what changed (*Warmth +8*, *Crop*, *Paste settings*); a click brings the photo back to that state as a new step, so it can be undone. v0.14.0 adds *Presets & LUTs* at its top (FR-079, FR-070). `Tab`, pressed with the photo itself focused (so it still moves between the inspector's controls), hides both side columns.
 - **One toolbar row above the photo**, never over it: Crop, rotate, basket, Before/After and compare, undo and redo, copy and paste settings, Reset, Export; every button the same shape, each hint naming its key.
 - **Lightroom's keys:** `R` crop (`C` kept), `\` before/after, `Y` compare, `Z` fit ↔ 1:1, `F` layout, `Tab` panels, `J` clipping, `W` white-balance picker, ⌘Z / ⇧⌘Z, ⇧⌘C / ⇧⌘V copy and paste settings, ⇧⌘R reset, ⇧⌘E export, ⌘[ ⌘] rotate; the ratings, flags and arrows as before. The keys popover lists them all.
 - **Zoom in real pixels:** *Fit*, then percentages of the photo's own pixels, 100 % being 1:1.
@@ -1019,19 +1019,19 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-097 — Settings from one photo to others, and Reset
 
-**P1 (planned, v0.12.2; owner's request 2026-11-06).** *Copy settings* (⇧⌘C) asks what to copy, in a short list (look, RAW look, crop position, stamp), as Lightroom's dialog; *Paste* (⇧⌘V) gives them to the photo shown or to every ticked photo (Lightroom's *Sync*), as one step to undo. *Reset* (⇧⌘R) gives the photo back to the shared settings: its look, RAW look, crop and own stamp, as one step. Undo and redo are buttons as well as keys.
+**P1 (planned, v0.13.1; owner's request 2026-11-06).** *Copy settings* (⇧⌘C) asks what to copy, in a short list (look, RAW look, crop position, stamp), as Lightroom's dialog; *Paste* (⇧⌘V) gives them to the photo shown or to every ticked photo (Lightroom's *Sync*), as one step to undo. *Reset* (⇧⌘R) gives the photo back to the shared settings: its look, RAW look, crop and own stamp, as one step. Undo and redo are buttons as well as keys.
 
 ### FR-098 — Reading the photo: histogram, clipping, white balance
 
-**P1 (planned, v0.12.2; owner's request 2026-11-06).** A histogram (red, green, blue and light) sits at the top of the develop view's left column, above the Navigator (owner, 2026-11-06; it heads the inspector in the dialog layout, which has no left column), made in Rust from the preview just drawn (≤ 3 ms, OPTIMIZATION §3) and following a slider while it is dragged. `J` shows blown highlights in red and blocked shadows in blue over the photo. `W` picks white balance: a click on what should be neutral grey sets warmth and tint, as one step.
+**P1 (planned, v0.13.1; owner's request 2026-11-06).** A histogram (red, green, blue and light) sits at the top of the develop view's left column, above the Navigator (owner, 2026-11-06; it heads the inspector in the dialog layout, which has no left column), made in Rust from the preview just drawn (≤ 3 ms, OPTIMIZATION §3) and following a slider while it is dragged. `J` shows blown highlights in red and blocked shadows in blue over the photo. `W` picks white balance: a click on what should be neutral grey sets warmth and tint, as one step.
 
 ### FR-099 — Controls with depth
 
-**P1 (planned, v0.12.1, the new look; owner's request 2026-11-06, pointing at Sentry's interface, then moved forward from v0.13.0 the same day: "to transform the app").** Buttons and controls stand out from the surface: a raised button has a darker lip under it in a shade of its own colour and a faint highlight on top, and goes down by its lip when pressed; inputs and segmented groups sit slightly into the surface; cards carry a faint border and a lifted shadow; a selected row has an accent outline. Done once in the shared primitives and theme tokens (`button`, `toggle`, inputs, `SectionCard`), so every panel follows; measured with `MEASURE=1` in both themes; the photo stage stays neutral.
+**P1 (planned, v0.13.0, the new look; owner's request 2026-11-06, pointing at Sentry's interface, then moved forward from v0.14.0 the same day: "to transform the app").** Buttons and controls stand out from the surface: a raised button has a darker lip under it in a shade of its own colour and a faint highlight on top, and goes down by its lip when pressed; inputs and segmented groups sit slightly into the surface; cards carry a faint border and a lifted shadow; a selected row has an accent outline. Done once in the shared primitives and theme tokens (`button`, `toggle`, inputs, `SectionCard`), so every panel follows; measured with `MEASURE=1` in both themes; the photo stage stays neutral.
 
 ### FR-100 — Motion that feels like one app
 
-**P2 (planned, after v0.13.0; owner's request 2026-11-06: "the app's animation is local, not in step and not smooth yet; transitions should be smoother").** Today each piece animates on its own: a dialog zooms in, a card folds, a photo fades, with different timings and some changes that simply jump. One motion system, set once:
+**P2 (planned, after v0.14.0; owner's request 2026-11-06: "the app's animation is local, not in step and not smooth yet; transitions should be smoother").** Today each piece animates on its own: a dialog zooms in, a card folds, a photo fades, with different timings and some changes that simply jump. One motion system, set once:
 
 - **Shared timings and curves** as theme tokens (a short one for controls, a longer one for panels and views), used by every block, so the whole app moves at one pace.
 - **Transitions between views:** the gallery to the preview and back (the photo growing from its tile), the dialog and the full-window layout (FR-095), the modes, the Settings window's sections; panels and the filmstrip slide rather than appear.
@@ -1040,15 +1040,15 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-101 — Healing: spot removal
 
-**P2 (planned, about v0.15, after v0.14.0 "Core 2"; owner's request 2026-11-06, as Lightroom's Remove tool).** A tool tab in the develop view's inspector (FR-095), shown only once built: a click or a drag on the photo marks a spot (dust, a blemish, a wire), and the app fills it from a nearby source it picks, which the user can move; *Heal* blends the tone, *Clone* copies. `Q` as in Lightroom Classic. Kept per photo, undoable, in the project; done on the full-resolution photo for the export, on the preview's pixels while working. Later, a content-aware fill made on the machine, never online.
+**P2 (planned, about v0.16, after v0.15.0 "Core 2"; owner's request 2026-11-06, as Lightroom's Remove tool).** A tool tab in the develop view's inspector (FR-095), shown only once built: a click or a drag on the photo marks a spot (dust, a blemish, a wire), and the app fills it from a nearby source it picks, which the user can move; *Heal* blends the tone, *Clone* copies. `Q` as in Lightroom Classic. Kept per photo, undoable, in the project; done on the full-resolution photo for the export, on the preview's pixels while working. Later, a content-aware fill made on the machine, never online.
 
 ### FR-102 — Masking: local adjustments
 
-**P2 (planned, about v0.15, with FR-101; owner's request 2026-11-06, as Lightroom's Masking).** A tool tab in the develop view's inspector (FR-095), shown only once built: linear and radial gradients and a brush, each a mask with its own Basic sliders (brightness, contrast, warmth, tint, saturation…), several per photo, listed, hidden or deleted one by one. `⇧W` as in Lightroom Classic. Later, subject and sky found on the machine by a small model of a permissive licence (never a network call). Needs a local layer in the render pipeline beside the look's global table (ADR-0038, amended), on the GPU of v0.14.0 for a live preview.
+**P2 (planned, about v0.16, with FR-101; owner's request 2026-11-06, as Lightroom's Masking).** A tool tab in the develop view's inspector (FR-095), shown only once built: linear and radial gradients and a brush, each a mask with its own Basic sliders (brightness, contrast, warmth, tint, saturation…), several per photo, listed, hidden or deleted one by one. `⇧W` as in Lightroom Classic. Later, subject and sky found on the machine by a small model of a permissive licence (never a network call). Needs a local layer in the render pipeline beside the look's global table (ADR-0038, amended), on the GPU of v0.15.0 for a live preview.
 
 ### FR-103 — Check for updates at start, never download unasked
 
-**P2 (v0.12.1; owner's request 2026-11-06: "check only, the user decides to download; on from the install, off only when the user turns it off in Settings, since the app still has bugs"; "a popup, and a red warning below 0.10").** A switch in Settings → Updates, *Check for updates when the app starts*, **on by default**; turned off, it stays off.
+**P2 (v0.13.0; owner's request 2026-11-06: "check only, the user decides to download; on from the install, off only when the user turns it off in Settings, since the app still has bugs"; "a popup, and a red warning below 0.10").** A switch in Settings → Updates, *Check for updates when the app starts*, **on by default**; turned off, it stays off.
 
 - **The check:** once at start, in the background, from the app's shell, never the core. It reads the latest release and a small `update.json` published with it: the version, and the *minimum safe version* with its reason. Nothing about the user or the machine goes in the request beyond what any HTTPS request carries. Offline, nothing is shown.
 - **A newer version** opens a small window with *What's new* (the release page), *Download* (the installer for this system, in the browser) and *Later* (until the next launch). Nothing is downloaded or installed by itself.
@@ -1059,11 +1059,11 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-104 — File names as Lightroom's templates
 
-**P1 (v0.12.1; owner's request 2026-11-06: "custom names, date and file name, like Lightroom").** The export dialog's *File name* card ([FR-093](#fr-093--the-exports-options-in-one-small-dialog)) offers templates, kept per machine: the original name (`P1057694.jpg`, the default), date and original name (`2026-07-14_P1057694.jpg`), custom text and a sequence (`Prague-001.jpg`), custom text, date and sequence, and date and sequence. The sequence starts where the user says and is padded to the width of the last number; it follows the export's order (capture time) whatever thread finishes first. A live example shows the first name the export will write, computed by the same code. Custom text is cleaned in Rust (no path separators or reserved names). Collage sheets keep `<first>+<second>` under the original-name template and take the template otherwise.
+**P1 (v0.13.0; owner's request 2026-11-06: "custom names, date and file name, like Lightroom").** The export dialog's *File name* card ([FR-093](#fr-093--the-exports-options-in-one-small-dialog)) offers templates, kept per machine: the original name (`P1057694.jpg`, the default), date and original name (`2026-07-14_P1057694.jpg`), custom text and a sequence (`Prague-001.jpg`), custom text, date and sequence, and date and sequence. The sequence starts where the user says and is padded to the width of the last number; it follows the export's order (capture time) whatever thread finishes first. A live example shows the first name the export will write, computed by the same code. Custom text is cleaned in Rust (no path separators or reserved names). Collage sheets keep `<first>+<second>` under the original-name template and take the template otherwise.
 
 ### FR-105 — Limit the file size
 
-**P2 (v0.12.1; owner's choice 2026-11-06, Lightroom's *Limit file size*).** A switch and a size in the *File* card: each file is written at the chosen quality when it fits, else at the highest quality from 60 up that does, by bisection; a photo too large even at 60 is written at 60 and counted in the result. Measured first ([RESULT §31](RESULT.md#31-a-file-size-limit-on-a-print-v0121-fr-105)): free until it binds, then about twice an export's time. Off by default.
+**P2 (v0.13.0; owner's choice 2026-11-06, Lightroom's *Limit file size*).** A switch and a size in the *File* card: each file is written at the chosen quality when it fits, else at the highest quality from 60 up that does, by bisection; a photo too large even at 60 is written at 60 and counted in the result. Measured first ([RESULT §31](RESULT.md#31-a-file-size-limit-on-a-print-v0130-fr-105)): free until it binds, then about twice an export's time. Off by default.
 
 ### FR-106 — Output sharpening
 
@@ -1071,7 +1071,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-107 — Folder tabs in the order the user drags them
 
-**P2 (v0.12.1; owner's request 2026-11-06: "press and hold, or press and drag a folder, to sort them, as Chrome orders its tabs").** The folders of the library column ([FR-056](#fr-056--folders-as-tabs)) can be reordered: a press that moves or is held lifts the row, the others slide aside, and it drops where it is let go; *Escape* puts it back; **Alt+↑ / Alt+↓** moves the focused folder one place. A click still opens the folder. The order is the project's, saved with it and with the session (the `folders` rows are written in that order), so it survives a restart; the folders' ids do not change, so the chosen tabs stay chosen. Not an undo step, as a tab's move is not.
+**P2 (v0.13.0; owner's request 2026-11-06: "press and hold, or press and drag a folder, to sort them, as Chrome orders its tabs").** The folders of the library column ([FR-056](#fr-056--folders-as-tabs)) can be reordered: a press that moves or is held lifts the row, the others slide aside, and it drops where it is let go; *Escape* puts it back; **Alt+↑ / Alt+↓** moves the focused folder one place. A click still opens the folder. The order is the project's, saved with it and with the session (the `folders` rows are written in that order), so it survives a restart; the folders' ids do not change, so the chosen tabs stay chosen. Not an undo step, as a tab's move is not.
 
 ## 7. Non-functional requirements
 
@@ -1099,7 +1099,7 @@ Heavy work never runs on the UI thread. Input-to-feedback latency is **under 100
 
 ### NFR-006 — Offline and zero telemetry
 
-The app works with no network connection. It makes no telemetry or crash-reporting requests, ever. The only request it can make is the update check: when the user clicks *Check for updates* ([FR-061](#fr-061--check-for-updates)), and, from v0.12.1, once at start unless *Check for updates when the app starts* is turned off ([FR-103](#fr-103--check-for-updates-at-start-never-download-unasked); on by default, the owner's decision of 2026-11-06 while the app still has faults). It reads GitHub's latest release and downloads nothing by itself. Offline, nothing is shown and nothing fails.
+The app works with no network connection. It makes no telemetry or crash-reporting requests, ever. The only request it can make is the update check: when the user clicks *Check for updates* ([FR-061](#fr-061--check-for-updates)), and, from v0.13.0, once at start unless *Check for updates when the app starts* is turned off ([FR-103](#fr-103--check-for-updates-at-start-never-download-unasked); on by default, the owner's decision of 2026-11-06 while the app still has faults). It reads GitHub's latest release and downloads nothing by itself. Offline, nothing is shown and nothing fails.
 
 ### NFR-007 — Platforms
 

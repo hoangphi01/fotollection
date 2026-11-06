@@ -65,7 +65,7 @@
 | FR-067 | 3 mm border on every print: every mode and frame style, inside the print size (extends FR-065) |
 | FR-069 | Report a problem: a red button in the app's versions popover and the website's footer, to the GitHub issue forms (v0.8.3) |
 | FR-071 | Image facts at import and in the inspector: chroma subsampling, colour space, sensor kind; shipped in v0.9.3, [ADR-0037](adr/0037-our-own-develop-core.md) |
-| FR-072 | Our own develop core: sensor kind first, RCD and Markesteijn, Gr/Gb, false colour, highlights, linear working space, colour management everywhere; Bayer develop, neutral colour and the RAW sliders shipped in v0.10.0, X-Trans, GPU and DNG kinds in v0.14.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
+| FR-072 | Our own develop core: sensor kind first, RCD and Markesteijn, Gr/Gb, false colour, highlights, linear working space, colour management everywhere; Bayer develop, neutral colour and the RAW sliders shipped in v0.10.0, X-Trans, GPU and DNG kinds in v0.15.0, [ADR-0037](adr/0037-our-own-develop-core.md) |
 | FR-073 | Postcard sheets in Collage mode: one photo and a postcard back (stamp box, writing lines, typed text); v0.9.4 |
 
 **Exit criteria:** all P0 FRs are Done; NFR-001 through NFR-013 are within budget on `REF-MAC` and `REF-WIN`; v1.0.0 is released. Until then, each work stage ships as a 0.y.0 preview release, starting with v0.1.0 ([RELEASE.md](RELEASE.md#1-versioning)).
@@ -127,11 +127,11 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | v0.11.0 | Instant previews (shipped 2026-11-05) | FR-091 (standard previews on disk after the thumbnails, a quarter of the RAM for the preview, prefetch, the photo on screen develops first: any photo opens in 27 ms, was 274–531 ms); colour cards in the previews only, every card flagged where it shows (FR-079); sliders take a near press and the arrow keys; RAW hangs fixed | The owner's request after v0.10.0 ("like Lightroom") |
 | v0.11.1 | Memory, made safe (2026-11-06) | FR-091's audit: nothing kept across a project switch, the photo on screen never pushed out by a prefetch, one prefetch worker, no photo made twice, the disk limit during the previews' pass, a version for standard previews, background unless marked | The owner's choice: fix before v0.12.0 |
 | v0.12.0 | Settings & Develop (shipped 2026-11-06) | FR-086 (one Settings window, two columns as on an iPad, the memory and the cache to manage, Default and Auto, memory given back when short), FR-087 (a collage sheet's pixels against its print size), FR-090 (a filmstrip in the photo's preview), FR-095 (a develop view a Lightroom user can read: one toolbar above the photo, Lightroom's keys, zoom in real pixels, a full-window layout with Navigator and History), FR-096 (before and after, Lightroom's four views); zoom of a turned photo fixed | The owner's requests of 2026-11-05 and 2026-11-06 |
-| v0.12.1 | The new look (planned) | FR-099 (controls with depth, as Sentry's, bold; the light theme's shadows in dark teal), FR-092 and FR-093 (the export dialog as Lightroom's, the quality slider with measured badges), FR-104 and FR-105 (file names as Lightroom's templates, a file-size limit), FR-107 (folder tabs reordered by dragging), FR-103 (checking for updates at start), the Be Vietnam Pro font, one panel width, a toolbar that fits, `MEASURE` checks for text and rows that overflow | The owner's choice on the style board, 2026-11-06 |
-| v0.12.2 | Develop, part 2 (planned) | FR-097 (copy and paste settings, Reset), FR-098 (histogram above the Navigator, clipping, white balance) | Moved from v0.12.0 when the owner released it as it stood; FR-092 and FR-093 moved on to v0.12.1 |
-| v0.13.0 | Looks (planned, 2026-11-05) | FR-079 (the Looks card, built-in looks of our own), FR-070 (looks from `.cube` and HaldCLUT LUTs, the highlight of Simple mode: look, choose a colour, print), FR-089 (Lightroom presets), grain and vignette, *Presets & LUTs* in the develop view's left column, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export whatever is set (`measure_look`) |
-| v0.14.0 | Core 2 (planned) | FR-072 (X-Trans with Markesteijn, the develop on the GPU with `wgpu`, the DNG kinds of `raw/dng.md`, highlight reconstruction by colour, a linear Rec.2020 working space), FR-085 (lens distortion correction) | Markesteijn ≤ 700 ms on 26 MP; GPU develop ≤ 80 ms on 24 MP, ΔE ≤ 1 to the CPU |
-| After v0.14.0 | Film looks as built-in recipes on the looks engine | FR-047 (FR-039 merged into FR-079) | — |
+| v0.13.0 | The new look (planned) | FR-099 (controls with depth, as Sentry's, bold; the light theme's shadows in dark teal), FR-092 and FR-093 (the export dialog as Lightroom's, the quality slider with measured badges), FR-104 and FR-105 (file names as Lightroom's templates, a file-size limit), FR-107 (folder tabs reordered by dragging), FR-103 (checking for updates at start), the Be Vietnam Pro font, one panel width, a toolbar that fits, `MEASURE` checks for text and rows that overflow | The owner's choice on the style board, 2026-11-06 |
+| v0.13.1 | Develop, part 2 (planned) | FR-097 (copy and paste settings, Reset), FR-098 (histogram above the Navigator, clipping, white balance) | Moved from v0.12.0 when the owner released it as it stood; FR-092 and FR-093 moved on to v0.13.0 |
+| v0.14.0 | Looks (planned, 2026-11-05) | FR-079 (the Looks card, built-in looks of our own), FR-070 (looks from `.cube` and HaldCLUT LUTs, the highlight of Simple mode: look, choose a colour, print), FR-089 (Lightroom presets), grain and vignette, *Presets & LUTs* in the develop view's left column, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) | Budgets: ≤ 5 ms preview, ≤ 60 ms 24 MP export whatever is set (`measure_look`) |
+| v0.15.0 | Core 2 (planned) | FR-072 (X-Trans with Markesteijn, the develop on the GPU with `wgpu`, the DNG kinds of `raw/dng.md`, highlight reconstruction by colour, a linear Rec.2020 working space), FR-085 (lens distortion correction) | Markesteijn ≤ 700 ms on 26 MP; GPU develop ≤ 80 ms on 24 MP, ΔE ≤ 1 to the CPU |
+| After v0.15.0 | Film looks as built-in recipes on the looks engine | FR-047 (FR-039 merged into FR-079) | — |
 | Later | Presets, trips, journal | FR-038, FR-012, FR-014, FR-049, FR-015, FR-051 | — |
 
 ## Phase 2 — Smart features
@@ -160,13 +160,13 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-063 | Tethered capture over USB: Capture in the app, the full-resolution photo opens at once; own PTP drivers per maker, no install ([ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)) |
 | FR-064 | Watch a folder: a photo written into it by a maker's tether app opens at once |
 | FR-066 | Borrow places from a GPX track: interpolate each photo's time along the track (split out of FR-031) |
-| FR-070 | Looks from LUT files (`.cube`, HaldCLUT, strength, per photo), LUMIX Lab style; v0.13.0, the highlight of Simple mode, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
+| FR-070 | Looks from LUT files (`.cube`, HaldCLUT, strength, per photo), LUMIX Lab style; v0.14.0, the highlight of Simple mode, [ADR-0036](adr/0036-colour-looks-cube-luts-first.md) |
 | FR-074 | Postcard backs: a background colour or a pattern (airmail stripes, a grid, a texture) behind the lines; planned, not scheduled |
 | FR-075 | Share exports fitted whole into a ratio (1:1, 4:5, 3:2… or custom), the rest filled with white, black or a colour of one's own; v0.9.6 |
 | FR-076 | A bundled handwriting face for postcards (Patrick Hand), strokes as thick as the print test asks; v0.9.7 |
 | FR-077 | One address for many postcards: Use for N postcards, and the recent addresses of this machine; v0.9.7 |
 | FR-078 | The photo at a glance at the top of the preview: camera, lens, exposure, place, date, size; v0.9.7 |
-| FR-079 | Colour adjustments, moderate: Looks, Faves and Tools cards (tone, colour, style, effects), looks with an amount, per photo; Faves and Tools shipped in v0.9.9, the Looks card in v0.13.0, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) |
+| FR-079 | Colour adjustments, moderate: Looks, Faves and Tools cards (tone, colour, style, effects), looks with an amount, per photo; Faves and Tools shipped in v0.9.9, the Looks card in v0.14.0, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) |
 | FR-080 | The panel's cards in an order of one's own, the same in the gallery and the previews, with *Reset order*; later, not scheduled |
 | FR-081 | A welcome screen on the first launch: pick the cards one likes, Pinterest style, they come first (with FR-080); *Skip*; later, not scheduled |
 | FR-082 | The app's brain in one file: *Export / Import settings* as `.fotosettings` (every setting, the card order, looks and LUTs, fonts, logos, postcard addresses), to move to another computer; later, not scheduled |
@@ -179,22 +179,22 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-089 | Lightroom presets: a user's own `.xmp` or `.lrtemplate` imported into a look, parsed safely, unsupported settings listed; with the Looks |
 | FR-090 | A filmstrip in the photo's preview (Pro mode), as Lightroom's: the view's thumbnails under the photo, skim and pick with one click |
 | FR-091 | Instant previews like Lightroom: standard previews on disk after the thumbnails, a quarter of the machine's RAM for the preview, prefetch around the photo on screen, which always develops first |
-| FR-092 | Export quality on a slider, as Lightroom's: the size estimate follows the thumb, and badges say whether the setting prints well; v0.12.1 |
-| FR-093 | The export's options in one small dialog: a press on *Export* opens it, with *Don't ask again* after which *Export* exports at once with the saved choices, changed later in Settings; the same dialog in every mode and preview, the Settings window's size with Lightroom's presets; v0.12.1 |
+| FR-092 | Export quality on a slider, as Lightroom's: the size estimate follows the thumb, and badges say whether the setting prints well; v0.13.0 |
+| FR-093 | The export's options in one small dialog: a press on *Export* opens it, with *Don't ask again* after which *Export* exports at once with the saved choices, changed later in Settings; the same dialog in every mode and preview, the Settings window's size with Lightroom's presets; v0.13.0 |
 | FR-094 | Project history without nagging: dated copies of each project and of the settings kept automatically (seven days, four weeks), restored from the Settings window as a new document; version to be chosen |
 | FR-095 | A develop view a Lightroom user can read: a full-window layout chosen in Settings (`F`), Navigator and History on the left, one toolbar above the photo, Lightroom's keys, zoom in real pixels, the inspector develop first; shipped in v0.12.0 |
 | FR-096 | Before and after: `\` toggles, `Y` side by side, `⇧Y` split, zoomed together; shipped in v0.12.0 |
-| FR-097 | Copy and paste settings (⇧⌘C / ⇧⌘V) to the photo shown or every ticked photo, Reset (⇧⌘R), undo and redo buttons; v0.12.2 |
-| FR-098 | Histogram, clipping warnings (`J`) and a white-balance picker (`W`); v0.12.2 |
-| FR-099 | Controls with depth, as Sentry's: raised buttons with a lip, inputs set in, lifted cards; v0.12.1 (owner moved it forward, 2026-11-06) |
-| FR-100 | Motion that feels like one app: shared timings, smooth transitions between views and layouts, lists that move instead of jumping, *Reduce motion* respected, 60 fps; after v0.13.0 |
-| FR-101 | Healing: spot removal, heal and clone, as Lightroom's Remove tool; a hidden tab of the inspector until built; about v0.15 |
-| FR-102 | Masking: linear, radial and brush masks with their own sliders, later on-device subject and sky; needs a local layer beside the look's table (ADR-0038 amended); about v0.15 |
-| FR-103 | Check for updates at start, on by default and turned off in Settings; check only, the user downloads; a popup, with a red warning below the minimum safe version carried in the release notes (`.github/update.json`); v0.12.1 |
-| FR-104 | File names as Lightroom's templates (original, date, custom text and sequence) with a live example; v0.12.1 |
-| FR-105 | Limit the file size, by bisection of the quality, measured first; v0.12.1 |
+| FR-097 | Copy and paste settings (⇧⌘C / ⇧⌘V) to the photo shown or every ticked photo, Reset (⇧⌘R), undo and redo buttons; v0.13.1 |
+| FR-098 | Histogram, clipping warnings (`J`) and a white-balance picker (`W`); v0.13.1 |
+| FR-099 | Controls with depth, as Sentry's: raised buttons with a lip, inputs set in, lifted cards; v0.13.0 (owner moved it forward, 2026-11-06) |
+| FR-100 | Motion that feels like one app: shared timings, smooth transitions between views and layouts, lists that move instead of jumping, *Reduce motion* respected, 60 fps; after v0.14.0 |
+| FR-101 | Healing: spot removal, heal and clone, as Lightroom's Remove tool; a hidden tab of the inspector until built; about v0.16 |
+| FR-102 | Masking: linear, radial and brush masks with their own sliders, later on-device subject and sky; needs a local layer beside the look's table (ADR-0038 amended); about v0.16 |
+| FR-103 | Check for updates at start, on by default and turned off in Settings; check only, the user downloads; a popup, with a red warning below the minimum safe version carried in the release notes (`.github/update.json`); v0.13.0 |
+| FR-104 | File names as Lightroom's templates (original, date, custom text and sequence) with a live example; v0.13.0 |
+| FR-105 | Limit the file size, by bisection of the quality, measured first; v0.13.0 |
 | FR-106 | Output sharpening for screen, matte or glossy paper, measured first; later |
-| FR-107 | Folder tabs reordered by dragging, as Chrome's tabs, kept with the project; v0.12.1 |
+| FR-107 | Folder tabs reordered by dragging, as Chrome's tabs, kept with the project; v0.13.0 |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 
