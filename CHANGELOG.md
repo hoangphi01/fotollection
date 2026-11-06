@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Linux software centres show Fotollection** with its description in English and Vietnamese and its screenshots (AppStream metadata in the `.deb` and the AppImage), as on the VNLF App Explorer and CaramOS's App Center.
 - **Open folder** after an export (FR-093): the finished export is a green box with a button that opens the folder the photos went into.
 - **Reorder the folders by dragging** (FR-107), as browser tabs: press and drag, or hold and drag; **Alt+↑ ↓** from the keyboard. The order is saved with the project.
 - **Check for updates at start** (FR-103): once when the app opens, a small window tells you a newer version is out, with *What's new* and *Download*; nothing is downloaded by itself. Below a version the release marks as no longer safe, a red warning says why. Turn it off in Settings → Updates.

@@ -70,7 +70,7 @@ today=$(date +%Y-%m-%d)
 echo "v$current → v$version ($today)"
 if [ "$dry_run" = true ]; then
   echo "dry run: would set the version in Cargo.toml, Cargo.lock, ui/package.json, package-lock.json"
-  echo "dry run: would add '## [$version] - $today' to CHANGELOG.md and commit 'chore(release): v$version'"
+  echo "dry run: would add '## [$version] - $today' to CHANGELOG.md and the AppStream releases, and commit 'chore(release): v$version'"
   exit 0
 fi
 
@@ -81,8 +81,14 @@ awk -v v="$version" -v d="$today" '
   /^## \[Unreleased\]/ && !done { print; print ""; print "## [" v "] - " d; done=1; next }
   { print }
 ' CHANGELOG.md >CHANGELOG.md.tmp && mv CHANGELOG.md.tmp CHANGELOG.md
+# The AppStream metadata lists each release, newest first (software centres show it).
+metainfo=src-tauri/linux/com.hoangphi01.fotollection.metainfo.xml
+awk -v v="$version" -v d="$today" '
+  /<releases>/ && !done { print; print "    <release version=\"" v "\" date=\"" d "\" />"; done=1; next }
+  { print }
+' "$metainfo" >"$metainfo.tmp" && mv "$metainfo.tmp" "$metainfo"
 
 scripts/check-docs.sh >/dev/null
-git add Cargo.toml Cargo.lock ui/package.json package-lock.json CHANGELOG.md
+git add Cargo.toml Cargo.lock ui/package.json package-lock.json CHANGELOG.md "$metainfo"
 git commit -q -m "chore(release): v$version"
 echo "Committed chore(release): v$version. Push to main to build and publish it."

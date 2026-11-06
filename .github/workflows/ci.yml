@@ -71,6 +71,14 @@ jobs:
           sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev \
             libayatana-appindicator3-dev libxdo-dev libssl-dev patchelf
 
+      # The AppStream metadata software centres read (Flathub, GNOME Software, the VNLF App
+      # Explorer); screenshots are URLs, so they are not fetched here.
+      - name: AppStream metadata
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y appstream
+          appstreamcli validate --no-net --explain src-tauri/linux/com.hoangphi01.fotollection.metainfo.xml
+
       - name: Install JS dependencies
         run: npm ci
 

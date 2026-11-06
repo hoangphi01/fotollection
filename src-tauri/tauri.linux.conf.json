@@ -106,11 +106,15 @@
         ],
         "section": "graphics",
         "files": {
-          "/usr/share/mime/packages/fotollection.xml": "linux/fotollection-mime.xml"
+          "/usr/share/mime/packages/fotollection.xml": "linux/fotollection-mime.xml",
+          "/usr/share/metainfo/com.hoangphi01.fotollection.metainfo.xml": "linux/com.hoangphi01.fotollection.metainfo.xml"
         }
       },
       "appimage": {
-        "bundleMediaFramework": false
+        "bundleMediaFramework": false,
+        "files": {
+          "/usr/share/metainfo/com.hoangphi01.fotollection.metainfo.xml": "linux/com.hoangphi01.fotollection.metainfo.xml"
+        }
       }
     }
   }
