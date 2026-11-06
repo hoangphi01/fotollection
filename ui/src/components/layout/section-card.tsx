@@ -28,12 +28,13 @@ export function SectionCard({ icon, title, action, open = true, footer, children
     <section className={cn('overflow-hidden rounded-xl [--stack-gap:0px] border-[1.5px] bg-card text-card-foreground lifted', className)}>
       <header
         className={cn(
-          'flex min-h-11 items-center gap-2 bg-muted/70 px-3 py-2 text-sm font-semibold shadow-[inset_0_1px_0_var(--highlight)]',
+          'flex h-11 items-center gap-2 bg-muted/70 px-3 text-sm font-semibold shadow-[inset_0_1px_0_var(--highlight)]',
           ((hasBody && open) || footer) && 'border-b',
         )}
       >
         <span className="flex text-primary [&_svg]:size-4">{icon}</span>
         <div className="min-w-0 flex-1 truncate">{title}</div>
+        {/* A fixed 44 px header: an action that comes and goes (a 32 px reset) never resizes it. */}
         {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
       </header>
       {hasBody && (
