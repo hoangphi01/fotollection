@@ -1025,7 +1025,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-099 — Controls with depth
 
-**P2 (planned, v0.13.0; owner's request 2026-11-06, pointing at Sentry's interface).** Buttons and controls stand out from the surface: a raised button has a darker lip under it in a shade of its own colour and a faint highlight on top, and goes down by its lip when pressed; inputs and segmented groups sit slightly into the surface; cards carry a faint border and a lifted shadow; a selected row has an accent outline. Done once in the shared primitives and theme tokens (`button`, `toggle`, inputs, `SectionCard`), so every panel follows; measured with `MEASURE=1` in both themes; the photo stage stays neutral.
+**P1 (v0.12.0, right after the compare views; owner's request 2026-11-06, pointing at Sentry's interface, then moved forward from v0.13.0 the same day: "to transform the app").** Buttons and controls stand out from the surface: a raised button has a darker lip under it in a shade of its own colour and a faint highlight on top, and goes down by its lip when pressed; inputs and segmented groups sit slightly into the surface; cards carry a faint border and a lifted shadow; a selected row has an accent outline. Done once in the shared primitives and theme tokens (`button`, `toggle`, inputs, `SectionCard`), so every panel follows; measured with `MEASURE=1` in both themes; the photo stage stays neutral.
 
 ### FR-100 — Motion that feels like one app
 

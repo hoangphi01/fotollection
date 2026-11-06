@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview
-import { Compass } from 'lucide-react'
+import { Compass, Expand, Scan } from 'lucide-react'
 import { useRef, type PointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
@@ -98,8 +98,9 @@ export function NavigatorCard({ src, view, fit, stage, oneToOne, onZoomTo, onPan
         dense
         ariaLabel={t('navigator.zoom')}
         options={[
-          { value: 'fit', label: t('viewer.fit') },
-          { value: 'fill', label: t('navigator.fill') },
+          // Icons with a hint, so no label can outgrow its segment (STYLE_RULE §4).
+          { value: 'fit', label: <Scan aria-hidden />, ariaLabel: t('viewer.fit'), hint: t('viewer.fit') },
+          { value: 'fill', label: <Expand aria-hidden />, ariaLabel: t('navigator.fill'), hint: t('navigator.fill') },
           { value: 'one', label: '1:1' },
           { value: 'two', label: '2:1' },
         ]}

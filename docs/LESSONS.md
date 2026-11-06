@@ -21,6 +21,13 @@
 - **Fix:** `full_source` turns the decoded image as `decode_source` does. A test zooms a turned photo with nothing kept and fails without the fix.
 - **Rule:** when a value can be made in two places, make it in one function; when a new path (a cache, a file on disk) skips the old one, test every consumer with the cache empty, not only after the old path has filled it.
 
+### "Vừa khung" outgrew its segment in the Navigator: words where an icon belonged (FR-095, UI)
+
+- **Seen:** the Navigator's four zoom choices in an 18 rem column: *Vừa khung* ran past both edges of its segment in Vietnamese, while English *Fit* fitted. The same kind of fault as the toolbar's third filter, the label hidden by `@3xl` and the settings buttons too long.
+- **Why:** a segment's width is the column's quarter, fixed; the label was chosen in English and never measured in the longer language, and `MEASURE=1` does not yet look for text wider than its box.
+- **Fix:** *Fit* and *Fill* are icons (`Scan`, as the zoom buttons', and `Expand`) with their words as the hint; *1:1* and *2:1* stay, short in any language.
+- **Rule:** icons first, words as the hint, in any control whose room is fixed (STYLE_RULE §4, "Icons first"); a label that stays is measured in Vietnamese. `MEASURE=1` gains a check for a control whose text is wider than its box (session 7 of v0.12.0).
+
 ### Memory state needs one owner, an epoch and one way in: the audit of FR-091 (v0.11.1)
 
 - **Seen:** an audit of v0.11.0's preview memory, read line by line, found no crash but eleven ways it could keep the wrong thing: a develop that ends after *Open* stored its pixels under an id the new library gives another photo; a prefetch became "the newest" and pushed out the photo on screen; every prefetch started a thread of its own, and old ones kept developing RAWs; the background pass and the photo on screen could make the same photo at once into one shared `.part`; the disk limit held only after a whole pass, and then dropped new thumbnails before old previews; a develop with no priority set went first by default.
