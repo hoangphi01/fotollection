@@ -1802,6 +1802,11 @@ export type UiSettings = {
 	 *  Absent before settings v15: on.
 	 */
 	preparePreviews?: boolean,
+	/**
+	 *  Whether Pro mode's preview shows the filmstrip under the photo (FR-090). Absent
+	 *  before it: shown.
+	 */
+	filmstrip?: boolean,
 };
 
 /**  The result shown under the button. */

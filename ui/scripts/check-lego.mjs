@@ -29,6 +29,7 @@ const EXEMPT = {
   'features/appearance/theme-switch.tsx': 'icon buttons at the foot of the folder list',
   'features/best-shot/compare-dialog.tsx': 'a dialog, its own layout',
   'features/best-shot/group-strip.tsx': 'a strip of thumbnails, its badges sized to them',
+  'features/library/raw-badge.tsx': 'a badge, sized to sit on a thumbnail',
   'features/best-shot/groups-view.tsx': 'the stage listing the groups, not a panel',
 }
 

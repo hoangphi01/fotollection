@@ -363,6 +363,8 @@
     "adjustCrop": "Adjust the crop (C)",
     "previous": "Previous photo",
     "next": "Next photo",
+    "hideFilmstrip": "Hide the filmstrip",
+    "showFilmstrip": "Show the filmstrip",
     "ratingFlag": "Rating & flag",
     "captured": "Captured",
     "noExifDate": "No EXIF date · using file time",

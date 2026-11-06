@@ -13,11 +13,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - New: one Settings window, as on an iPad: the gear beside the author's name, or ⌘,
 - New: memory and cache to manage, with Default and Auto for your computer; memory given back when it runs short
 - New: a collage sheet says its pixels and how sharp it prints
+- New: a filmstrip under the photo in the preview, as in Lightroom
 
 ### Added
 
 - **Settings window:** every setting of this computer in one place, opened by the gear at the top of the sidebar, **⌘,** (Mac) or **Ctrl+,** (Windows, Linux), or the version number (*What's new*): *General* (language, theme), *RAM & cache*, *Updates*, *Report a problem* and *What's new*, where **Show all** opens a version's whole entry. The version's popover is gone.
 - **RAM & cache:** the share of the computer's memory for previews (15, 25 or 40 %), the disk cache's limit (2, 5, 10 or 20 GB) and what it holds, *Prepare previews in the background*, *Clear cache*; **Default**, and **Auto**, which chooses from the computer's memory and free disk; *For this computer* shows the processor, the graphics card, the memory and the free disk it goes by. Each control says what it does to speed. Sizes of a gigabyte and more read in GB.
+- **Filmstrip:** in Pro mode, the photo's preview shows the view's photos in a strip under the photo, with their rating, basket and RAW marks: one click opens any of them. The button beside the photo count hides it, for low screens; the capture screen's shots use the same strip.
 - **Collage:** the *Sheet size* card shows the sheet's pixels and the DPI and quality it prints at, as sharp as its less sharp photo.
 
 ### Changed

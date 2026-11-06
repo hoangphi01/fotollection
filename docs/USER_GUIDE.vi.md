@@ -92,6 +92,8 @@ Cả hai khu vực được lưu trong dự án (`.fotollection`) và trong phi�
 
 Nút **Giỏ in** trên ảnh (cạnh *Cắt ảnh*, các nút xoay và *Xuất ảnh*) làm giống phím ↑, và hiện *Đã trong giỏ* khi ảnh đã nằm trong giỏ; nhấp lần nữa để lấy ảnh ra. Ảnh đã để riêng thì hiện **Trả về gallery**.
 
+**Dải ảnh** dưới tấm ảnh hiện các ảnh của chế độ xem đang mở, theo thứ tự của gallery, kèm sao, giỏ in và nhãn RAW ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): nhấp vào tấm nào là mở tấm đó, dù xa đến đâu. Nút cạnh số thứ tự ảnh (*3 / 48*) ẩn dải ảnh và hiện lại; ứng dụng nhớ lựa chọn của bạn.
+
 Khi bạn mở bản xem trước từ *Giỏ in* hoặc *Để riêng*, ↑ và ↓ chuyển ảnh sang khu vực còn lại; ảnh ở nguyên chỗ cũ thì chuyển sang tấm tiếp theo.
 
 **Xem nhanh ảnh:** thẻ đầu tiên bên phải, **Ảnh này**, cho biết bạn đang xem gì ([FR-078](PRD.md#fr-078--the-photo-at-a-glance-in-the-preview)): máy ảnh và ống kính (theo tên bạn đặt cho khung thông tin, chương 9), thông số phơi sáng đúng như khung in ra (*20mm · F1.7 · 1/60s · ISO800*), chụp ở đâu và khi nào, kích thước theo điểm ảnh, megapixel và megabyte, và tệp đó là gì (chương 2). Bấm vào tiêu đề để thu gọn thẻ, bấm lần nữa để mở; thẻ giữ nguyên như bạn để cho những ảnh tiếp theo. Các thẻ bên dưới dùng để sửa ngày và nơi chụp.

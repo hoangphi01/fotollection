@@ -403,6 +403,8 @@ export function App() {
         filter={filter}
         onIndexChange={setSelected}
         onClose={() => setViewing(false)}
+        thumbVersions={thumbVersions}
+        generation={project.document.generation}
       />
       <CaptureDialog
         capture={capture}

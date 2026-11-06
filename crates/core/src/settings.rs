@@ -62,6 +62,10 @@ pub struct UiSettings {
     /// Absent before settings v15: on.
     #[serde(default = "default_prepare_previews")]
     pub prepare_previews: bool,
+    /// Whether Pro mode's preview shows the filmstrip under the photo (FR-090). Absent
+    /// before it: shown.
+    #[serde(default = "default_filmstrip")]
+    pub filmstrip: bool,
 }
 
 /// The cache limits one can choose, in GB (FR-086).
@@ -83,6 +87,9 @@ const fn default_cache_limit_gb() -> u8 {
 const fn default_prepare_previews() -> bool {
     true
 }
+const fn default_filmstrip() -> bool {
+    true
+}
 
 impl Default for UiSettings {
     fn default() -> Self {
@@ -94,6 +101,7 @@ impl Default for UiSettings {
             preview_memory_percent: default_preview_memory_percent(),
             cache_limit_gb: default_cache_limit_gb(),
             prepare_previews: default_prepare_previews(),
+            filmstrip: default_filmstrip(),
         }
     }
 }

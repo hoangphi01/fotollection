@@ -13,6 +13,8 @@ let current: Required<UiSettings> = {
   previewMemoryPercent: 25,
   cacheLimitGb: 5,
   preparePreviews: true,
+  // The filmstrip under the photo in Pro mode's preview (FR-090).
+  filmstrip: true,
 }
 let requested = false
 const listeners = new Set<() => void>()

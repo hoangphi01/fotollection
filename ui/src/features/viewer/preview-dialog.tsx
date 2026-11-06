@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Crop, Download, Eye, MapPin, RotateCcw, RotateCw, ShoppingBasket, Star, Undo2 } from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, Crop, Download, Eye, MapPin, PanelBottomClose, PanelBottomOpen, RotateCcw, RotateCw, ShoppingBasket, Star, Undo2 } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
@@ -20,6 +20,8 @@ import { StageSpinner } from '@/components/layout/stage-spinner'
 import { sendTo } from './send-to'
 import { useShownSrc } from './use-shown-src'
 import { usePrefetch } from './use-prefetch'
+import { PhotoFilmstrip } from './photo-filmstrip'
+import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { useGpuLook } from './use-gpu-look'
 import { FrameSection } from '@/features/frame/frame-section'
 import type { FontsApi } from '@/features/fonts/use-fonts'
@@ -66,6 +68,9 @@ type PreviewDialogProps = {
   filter: CullFilter
   onIndexChange: (index: number) => void
   onClose: () => void
+  /** For the filmstrip's thumbnails (FR-090), as the gallery has them. */
+  thumbVersions: { [id: number]: number }
+  generation: number
 }
 
 
@@ -97,8 +102,12 @@ export function PreviewDialog({
   filter,
   onIndexChange,
   onClose,
+  thumbVersions,
+  generation,
 }: PreviewDialogProps) {
   const { t } = useTranslation()
+  // The filmstrip under the photo (FR-090), shown unless the user hid it.
+  const { ui, update: updateUi } = useUiSettings()
   const photo = index === null ? undefined : photos[index]
   // The last photo's facts hold their place while the next one's load, so ← → never make
   // the inspector jump (STYLE_RULE §4); actions use the photo itself.
@@ -136,6 +145,12 @@ export function PreviewDialog({
     if (index === null) return
     onIndexChange(Math.min(photos.length - 1, Math.max(0, index + delta)))
   }
+  // A filmstrip click goes the way ← → go.
+  const pick = (next: number) => {
+    setCropping(false)
+    onIndexChange(next)
+  }
+  const stripLabel = t(ui.filmstrip ? 'viewer.hideFilmstrip' : 'viewer.showFilmstrip')
   // Leaving the crop editor hands the keyboard back, so ← → move between photos again.
   const contentRef = useRef<HTMLDivElement>(null)
   const exportRef = useRef<HTMLDivElement>(null)
@@ -192,6 +207,11 @@ export function PreviewDialog({
       }}
       onStagePointerMove={cropDrag.onPointerMove}
       onStagePointerUp={cropDrag.onPointerUp}
+      below={
+        ui.filmstrip && !cropping ? (
+          <PhotoFilmstrip photos={photos} index={index} thumbVersions={thumbVersions} generation={generation} onPick={pick} />
+        ) : undefined
+      }
       title={photo?.fileName}
       description={details?.folderPath ?? photo?.folderName}
       descriptionHint={details?.folderPath}
@@ -356,8 +376,19 @@ export function PreviewDialog({
               >
                 <ChevronRight />
               </Button>
-              <span className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full bg-black/60 px-3 py-1 text-xs text-white/80 tabular-nums">
+              <span className="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-black/60 py-0.5 pr-0.5 pl-3 text-xs text-white/80 tabular-nums">
                 {(index ?? 0) + 1} / {photos.length}
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  aria-label={stripLabel}
+                  aria-pressed={ui.filmstrip}
+                  data-hint={stripLabel}
+                  className="rounded-full text-white/80 hover:bg-white/15 hover:text-white"
+                  onClick={() => void updateUi({ filmstrip: !ui.filmstrip })}
+                >
+                  {ui.filmstrip ? <PanelBottomClose /> : <PanelBottomOpen />}
+                </Button>
               </span>
               <ZoomControls
                 percent={zoom.percent}

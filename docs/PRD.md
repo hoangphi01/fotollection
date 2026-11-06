@@ -951,11 +951,13 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-090 — A filmstrip in the photo's preview
 
-**P1 (planned, v0.12.0; owner's request 2026-11-05).** In Pro mode, the photo's preview shows a strip of thumbnails under the photo, as Lightroom's filmstrip: the photos of the current view in their order, the one shown marked and kept in sight, so a user skims the set and picks a photo with one click instead of ← → one at a time.
+**P1 (v0.12.0; owner's request 2026-11-05).** In Pro mode, the photo's preview shows a strip of thumbnails under the photo, as Lightroom's filmstrip: the photos of the current view in their order, the one shown marked and kept in sight, so a user skims the set and picks a photo with one click instead of ← → one at a time.
 
 - **Fast:** the strip uses the gallery's T1 thumbnails (no new decode), virtualized so a 500-photo set scrolls smoothly; moving to a far photo starts its preview at once and never waits for the last one's (LESSONS 2026-11-05).
 - **The same order and filter as the gallery**, with the RAW, rating and print-basket badges of the grid tiles; select mode and the cull keys keep working.
-- **Lego:** one block, shown in the preview only (`@shown preview`), at a fixed height measured in both themes and languages; it hides with the inspector in full screen.
+- **Under the photo, not beside it (owner's choice, 2026-11-06):** most camera photos are landscape, and the stage is wider than 3:2 on most screens, so a 112 px strip below costs a landscape photo nothing from 900 px of screen height (−9 % at 768 px), where a strip on the left would cost 12–13 % everywhere. It fills `ViewerFrame`'s `below` slot, the one the capture screen's shots already use; Simple mode's quick preview and Collage's sheet preview do not show it.
+- **Hidden with one button** beside the photo's counter (*3 / 48*), for low screens and portrait sets; the choice is kept (`ui.filmstrip`). It also steps aside while a crop is being edited.
+- **Lego:** one block, `Filmstrip` (`ui/src/components/layout/filmstrip.tsx`), for the capture screen's shots and this strip, at a fixed height (STYLE_RULE §4).
 
 ### FR-091 — Instant previews: standard previews on disk and memory used well
 

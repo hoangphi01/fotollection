@@ -94,6 +94,8 @@ Both areas are saved in the project (`.fotollection`) and in the session, so the
 
 The **Print basket** button on the photo (next to *Crop*, the turn buttons and *Export*) does the same as ↑, and shows *In the basket* when the photo is already in it; click it again to take the photo out. A photo that was set aside shows **Back to the gallery** instead.
 
+**The filmstrip** under the photo shows the photos of the view, in the gallery's order, with their stars, basket and RAW marks ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): click one to open it, however far it is. The button beside the photo count (*3 / 48*) hides it and shows it again; the app remembers your choice.
+
 When you open the preview from the *Print basket* or *Set aside* view, ↑ and ↓ move the photo to the other area; a photo that stays where it is moves on to the next one.
 
 **The photo at a glance:** the first card on the right, **This photo**, says what you are looking at ([FR-078](PRD.md#fr-078--the-photo-at-a-glance-in-the-preview)): the camera and lens (with the names you gave them for the info frame, chapter 9), the exposure as the frame prints it (*20mm · F1.7 · 1/60s · ISO800*), where and when it was taken, its size in pixels, megapixels and megabytes, and what the file is (chapter 2). Click its title to fold it away, and again to open it; it stays as you left it for the next photos. The cards further down change the date and the place.

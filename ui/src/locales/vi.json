@@ -345,6 +345,8 @@
     "adjustCrop": "Chỉnh vùng cắt (C)",
     "previous": "Ảnh trước",
     "next": "Ảnh sau",
+    "hideFilmstrip": "Ẩn dải ảnh",
+    "showFilmstrip": "Hiện dải ảnh",
     "ratingFlag": "Sao & cờ",
     "captured": "Ngày chụp",
     "noExifDate": "Không có ngày EXIF · dùng thời gian của tệp",
