@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-11-06 — The new look
+
 ### Highlights
 
 - New: an export dialog as Lightroom's: presets, a quality slider that says what prints well, subfolders, file names, a size limit and metadata choices
