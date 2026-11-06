@@ -376,7 +376,7 @@ async function iconOffsets(page) {
 }
 
 /** STYLE_RULE §4: each column holds this one value, in every view that has it. */
-const MEASURES = { cardGap: '12', blockGap: '12', fieldGap: '6', select: '32', toggle: '32', input: '32', iconBtn: '28' }
+const MEASURES = { cardGap: '12', blockGap: '12', fieldGap: '6', select: '32', toggle: '32', input: '32', iconBtn: '32' }
 
 async function measurePanels() {
   const rows = []

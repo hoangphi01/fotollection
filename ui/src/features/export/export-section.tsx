@@ -144,7 +144,7 @@ export function ExportSection({
         type="button"
         disabled={running}
         onClick={ask}
-        className="truncate text-left text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
+        className="w-full min-w-0 truncate text-left text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
         data-hint={t('export.changeChoices')}
       >
         {[

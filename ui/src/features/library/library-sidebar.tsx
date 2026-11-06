@@ -105,7 +105,7 @@ export function LibrarySidebar({
         </div>
         {/* Every setting of this computer in one window (FR-086). */}
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon-sm"
           className="ml-auto shrink-0"
           aria-label={t('settingsWindow.title')}

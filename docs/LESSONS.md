@@ -14,6 +14,13 @@
 
 ## 2026-11-06
 
+### The export line pushed the whole panel past the window: `truncate` without a width (FR-093, UI)
+
+- **Seen:** the panel's new one-line export summary (*In ảnh · Một thư mục · chất lượng 95 · Chọn nơi lưu*) ran past the window's right edge, and took the estimate and the *Export* button with it (owner's screenshot).
+- **Why:** `truncate` sets `white-space: nowrap` and an ellipsis, but a `<button>` sizes to its content; with no width of its own the long line widened its column instead of being cut.
+- **Fix:** `w-full min-w-0` on the line, so it takes the panel's width and the ellipsis shows.
+- **Rule:** `truncate` always comes with a width it can be cut to (`w-full min-w-0`, or `min-w-0 flex-1` in a row); a new one-line summary is looked at in Vietnamese with the longest folder name before it is kept.
+
 ### Vietnamese marks touched the line above: a new face, the old line heights (FR-099, UI)
 
 - **Seen:** with Be Vietnam Pro, the owner found small Vietnamese text crowded: stacked marks (*ấ*, *ộ*) touched the line above and each other.
