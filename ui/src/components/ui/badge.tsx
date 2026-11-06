@@ -14,9 +14,10 @@ const badgeVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground [--face:var(--secondary)] chip-raised",
         destructive:
-          "bg-destructive text-destructive-foreground [--face:var(--destructive)] chip-raised focus-visible:ring-destructive/20",
-        success: "bg-success text-success-foreground [--face:var(--success)] chip-raised",
-        warning: "bg-warning text-warning-foreground [--face:var(--warning)] chip-raised",
+          "bg-danger-solid text-white [--face:var(--danger-solid)] chip-raised focus-visible:ring-destructive/20",
+        // Deep colours with white text, the same in both themes (owner, 2026-11-06).
+        success: "bg-success-solid text-white [--face:var(--success-solid)] chip-raised",
+        warning: "bg-warning-solid text-white [--face:var(--warning-solid)] chip-raised",
         outline:
           "border-border bg-card text-foreground [--face:var(--card)] chip-raised",
         ghost:

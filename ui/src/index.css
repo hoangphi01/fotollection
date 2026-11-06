@@ -72,6 +72,9 @@
     --color-success: var(--success);
     --color-success-foreground: var(--success-foreground);
     --color-destructive-foreground: var(--destructive-foreground);
+    --color-success-solid: var(--success-solid);
+    --color-warning-solid: var(--warning-solid);
+    --color-danger-solid: var(--danger-solid);
     /* The smallest type, for badges on thumbnails: one size instead of 10 and 11 px. */
     --text-2xs: 0.6875rem;
     --text-2xs--line-height: 1;
@@ -138,6 +141,11 @@
     --success: oklch(0.55 0.13 155);
     --success-foreground: oklch(0.99 0 0);
     --destructive-foreground: oklch(0.99 0 0);
+    /* Solid state colours for badges: deep, with white text, in both themes (owner,
+       2026-11-06). `--warning` and `--success` above stay for text and icons. */
+    --success-solid: oklch(0.52 0.12 155);
+    --warning-solid: oklch(0.58 0.13 62);
+    --danger-solid: oklch(0.54 0.18 27);
     /* The stage stays neutral in both themes. */
     --stage: oklch(0.145 0 0);
     --stage-raised: oklch(0.27 0 0);
