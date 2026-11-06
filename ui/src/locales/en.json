@@ -554,7 +554,17 @@
     "report": "Report a problem or an idea",
     "reportHint": "Opens the project's page on GitHub in your browser. Paste the diagnostics there: the version, the system and the last error codes, without paths or photos. The app sends nothing itself.",
     "diagnostics": "Copy diagnostics",
-    "copied": "Copied"
+    "copied": "Copied",
+    "showAll": "Show all",
+    "showLess": "Show less",
+    "kinds": {
+      "added": "Added",
+      "changed": "Changed",
+      "fixed": "Fixed",
+      "removed": "Removed",
+      "security": "Security",
+      "deprecated": "Deprecated"
+    }
   },
   "update": {
     "check": "Check for updates",
@@ -566,11 +576,20 @@
     "privacy": "The app goes online only when you click this button."
   },
   "cache": {
-    "usage": "Cache: {{size}} of {{limit}}",
     "measuring": "Measuring the cache…",
     "clear": "Clear cache",
     "clearHint": "Deletes thumbnails, previews and best-shot analyses; they are made again when needed",
-    "note": "Thumbnails, previews and analyses only. The oldest go by themselves past the limit; your photos and projects are never touched."
+    "note": "Thumbnails, previews and analyses only. The oldest go by themselves past the limit; your photos and projects are never touched.",
+    "title": "Cache on disk",
+    "limit": "Limit",
+    "limitHint": "A larger cache keeps the previews of more folders, so they open at once next time too, at about 0.7 MB a photo. Past the limit, the oldest go first.",
+    "thumbnails": "Thumbnails",
+    "previews": "Previews",
+    "analyses": "Best-shot analyses",
+    "total": "In all",
+    "prepare": "Prepare previews in the background",
+    "prepareHint": "Any photo then opens in about 30 ms instead of 0.3 to 0.5 s. Off saves disk space: previews are made when a photo is opened.",
+    "totalValue": "{{size}} of {{limit}}"
   },
   "estimate": {
     "smaller": "Estimated: {{from}} → {{to}} ({{percent}} % lighter)",
@@ -776,7 +795,12 @@
     "by": "×",
     "fill": "Fill each half",
     "fillHint": "No white: the two photos meet edge to edge, each filling its half. Crop each one to choose what it keeps.",
-    "marginHint": "A white margin stays round each photo; choose its ratio and size below."
+    "marginHint": "A white margin stays round each photo; choose its ratio and size below.",
+    "sheetPixels": "Sheet",
+    "sheetPixelsValue": "{{w}} × {{h}} px ({{mp}} MP)",
+    "sheetSharpness": "Prints at",
+    "sheetSharpnessValue": "{{dpi}} DPI · {{quality}}",
+    "sheetPixelsHint": "The two photos make one picture of this size, as sharp as the less sharp of them, so neither is enlarged."
   },
   "facts": {
     "grey": "Greyscale",
@@ -919,5 +943,53 @@
     "neutralHint": "The sensor's colours with the camera's exposure and a gentle curve: a calm starting point for your own look.",
     "cameraHint": "Fitted to the JPEG the camera made inside the file: its contrast and colours, as on the camera's screen.",
     "applyToAll": "Apply to all RAW photos"
+  },
+  "settingsWindow": {
+    "title": "Settings",
+    "open": "Settings: language, memory and cache, updates",
+    "interface": "Interface",
+    "version": "Fotollection v{{version}}",
+    "footer": "These settings belong to this computer; projects never carry them.",
+    "sections": {
+      "general": "General",
+      "memory": "RAM & cache",
+      "updates": "Updates",
+      "report": "Report a problem",
+      "whatsNew": "What's new"
+    },
+    "about": {
+      "general": "The language and the look of the app",
+      "memory": "How much RAM and disk Fotollection uses to open photos at once",
+      "updates": "A newer version, when you ask",
+      "report": "Tell the author what went wrong",
+      "whatsNew": "Every version and what it brought"
+    }
+  },
+  "memory": {
+    "title": "RAM for previews",
+    "share": "Share of this computer's RAM",
+    "hint": "More RAM keeps more photos ready, so → ← and photos opened again show at once; less leaves more room for other apps. When the computer runs short of RAM, the previews give theirs back by themselves.",
+    "held": "Held now",
+    "heldValue": "{{held}} of {{budget}} ({{total}} in this computer)",
+    "forThisComputer": "For this computer",
+    "now": "Now: {{percent}} % of RAM, a {{limit}} GB cache, previews {{previews}}.",
+    "prepared": "prepared in the background",
+    "notPrepared": "made when opened",
+    "default": "Default",
+    "defaultHint": "25 % of RAM, a 5 GB cache, previews prepared",
+    "auto": "Auto",
+    "autoHint": "Chooses for this computer's RAM and free disk",
+    "autoExplain": "Auto gives 40 % of RAM from 32 GB, 25 % from 12 GB and 15 % below; the largest cache that fits in a tenth of the free disk; and prepares previews unless less than 5 GB is free."
+  },
+  "machine": {
+    "cpu": "Processor",
+    "cpuValue": "{{name}} · {{cores}} cores",
+    "gpu": "Graphics",
+    "gpuUsed": "{{name}} · draws the colour sliders",
+    "gpuNotUsed": "{{name}} · not used: the processor draws",
+    "memory": "RAM",
+    "disk": "Cache disk",
+    "diskValue": "{{free}} free",
+    "unknown": "not known"
   }
 }

@@ -298,7 +298,7 @@ export function SheetPreviewDialog({
     >
       {/* The same cards in the same order as the Collage panel (STYLE_RULE §4); the sheet's
           own photos follow, as a photo's facts follow in its preview. */}
-      <SheetSizeCard settings={settings} onChange={onSettingsChange} />
+      <SheetSizeCard settings={settings} onChange={onSettingsChange} info={info ?? undefined} />
       <PostcardCard settings={settings} onChange={onSettingsChange} />
       <PostcardTextCard
         settings={settings}

@@ -27,10 +27,12 @@ pub enum Action {
     ModeProfessional,
     /// The OS handed over a `.fotollection` file (not a menu item).
     OpenRequested,
+    /// The Settings window (FR-086), Cmd+, on macOS.
+    Settings,
 }
 
 impl Action {
-    const ALL: [(Self, &'static str); 7] = [
+    const ALL: [(Self, &'static str); 8] = [
         (Self::New, "new"),
         (Self::Open, "open"),
         (Self::Save, "save"),
@@ -38,6 +40,7 @@ impl Action {
         (Self::ModeSimple, "mode_simple"),
         (Self::ModeCollage, "mode_collage"),
         (Self::ModeProfessional, "mode_professional"),
+        (Self::Settings, "settings"),
     ];
 }
 
@@ -81,6 +84,8 @@ pub fn build<R: Runtime>(app: &AppHandle<R>, language: Language) -> tauri::Resul
         .build()?;
     let app_menu = SubmenuBuilder::new(app, "Fotollection")
         .about_with_text(t.about, None)
+        .separator()
+        .item(&item("settings", t.settings, "CmdOrCtrl+,")?)
         .separator()
         .services()
         .separator()

@@ -44,6 +44,8 @@ import { SelectModeButton } from '@/features/library/select-mode-button'
 import { useSelectMode } from '@/features/library/use-select-mode'
 import { useAppMode } from '@/features/modes/use-app-mode'
 import { useModeShortcuts } from '@/features/modes/use-mode-shortcuts'
+import { SettingsWindow } from '@/features/settings-window/settings-window'
+import { useSettingsShortcut } from '@/features/settings-window/use-settings-window'
 import { CollagePanel } from '@/features/collage/collage-panel'
 import { CollageView } from '@/features/collage/collage-view'
 import { tickedSheets } from '@/features/collage/sheet-cells'
@@ -59,6 +61,7 @@ export function App() {
   // Simple mode shows one photo at a time and few settings (FR-048).
   const { mode, setMode } = useAppMode()
   useModeShortcuts(setMode)
+  useSettingsShortcut()
   const simple = mode === 'simple'
   const collageMode = mode === 'collage'
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
@@ -385,6 +388,8 @@ export function App() {
           onClose={quick.close}
         />
       )}
+      {/* Every setting of this computer, from any mode (FR-086). */}
+      <SettingsWindow />
       <PreviewDialog
         photos={photos}
         index={viewing && mode === 'professional' && photos.length > 0 ? current : null}
@@ -441,6 +446,7 @@ export function App() {
           ticked={selectMode ? select.ordered : undefined}
           tickedSheets={selectMode ? tickedSheets(collage.sheets, select.checked) : 0}
           cell={collage.cell}
+          sheetInfo={collage.info ?? undefined}
           customStamps={customStamps}
           revision={revision}
         />

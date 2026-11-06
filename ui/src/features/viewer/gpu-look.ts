@@ -97,6 +97,24 @@ export class GpuLook {
   }
 
   /**
+   * The graphics card's name as the webview sees it, for the Settings window (FR-086), or
+   * `null` without WebGL2.
+   */
+  static renderer(): string | null {
+    try {
+      const gl = document.createElement('canvas').getContext('webgl2')
+      if (!gl) return null
+      const info = gl.getExtension('WEBGL_debug_renderer_info')
+      const name = String(gl.getParameter(info ? info.UNMASKED_RENDERER_WEBGL : gl.RENDERER))
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      // "ANGLE (Apple, ANGLE Metal Renderer: Apple M3, Unspecified Version)": the card's name.
+      return /:\s*([^,]+)/.exec(name)?.[1]?.trim() ?? name
+    } catch {
+      return null
+    }
+  }
+
+  /**
    * Whether this machine's GPU is worth it, decided once, without asking the user
    * (ADR-0039, owner 2026-11-05: no switch). Not when the renderer is a software one
    * (SwiftShader, llvmpipe, WARP), and not when a test step at the preview's size is slower

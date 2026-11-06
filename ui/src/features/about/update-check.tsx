@@ -2,6 +2,7 @@
 import { CircleCheck, Download, LoaderCircle, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Field, Hint } from '@/components/forms/field'
 import { Button } from '@/components/ui/button'
 import { commands, type UpdateCheck as Check } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
@@ -13,7 +14,8 @@ type State =
   | { kind: 'error'; message: string }
 
 /**
- * "Check for updates" (FR-061): the app goes online only when this button is clicked. A newer
+ * "Check for updates" (FR-061), in the Settings window (FR-086): the app goes online only when
+ * this button is clicked. A newer
  * version opens its installer in the browser; installing it replaces this one and keeps
  * settings and projects.
  */
@@ -28,15 +30,15 @@ export function UpdateCheck() {
   }
 
   return (
-    <div className="space-y-2 border-t px-4 py-3">
+    <Field>
       {state.kind === 'done' && state.check.newer ? (
-        <div className="space-y-2">
+        <>
           <p className="text-sm font-medium">{t('update.available', { version: state.check.latest })}</p>
           <Button size="sm" className="w-full" onClick={() => void commands.openUpdateDownload()}>
             <Download data-icon="inline-start" /> {t('update.download')}
           </Button>
-          <p className="text-xs text-muted-foreground">{t('update.replaces')}</p>
-        </div>
+          <Hint>{t('update.replaces')}</Hint>
+        </>
       ) : (
         <>
           <Button size="sm" variant="outline" className="w-full" disabled={state.kind === 'checking'} onClick={() => void check()}>
@@ -49,11 +51,9 @@ export function UpdateCheck() {
             </p>
           )}
           {state.kind === 'error' && <p className="text-xs text-destructive">{state.message}</p>}
-          {state.kind !== 'done' && state.kind !== 'error' && (
-            <p className="text-xs text-muted-foreground">{t('update.privacy')}</p>
-          )}
+          {state.kind !== 'done' && state.kind !== 'error' && <Hint>{t('update.privacy')}</Hint>}
         </>
       )}
-    </div>
+    </Field>
   )
 }

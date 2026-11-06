@@ -918,11 +918,14 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-086 — One Settings window
 
-**P1 (planned, owner's request 2026-11-05).** Every setting of the app in one window instead of a corner of each panel: a gear button beside "by @hoangphi01" opens it, laid out as the preview window is, in two columns as on an iPad, the narrow one a list of tabs and the wide one that tab's settings.
+**P1 (in progress, v0.12.0; owner's request 2026-11-05).** Every setting of the app in one window instead of a corner of each panel: a gear button beside "by @hoangphi01" opens it, laid out as the preview window is, in two columns as on an iPad, the narrow one a list of tabs and the wide one that tab's settings.
 
 - **The cache, to manage** (owner, 2026-11-05): how much the thumbnails, the standard previews ([FR-091](#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) and the analyses take on disk against the limit, and how much memory the previews may use, with *Clear cache*.
 - **In it:** the language, the theme, `.fotosettings` export and import ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)), language packs ([FR-084](#fr-084--language-packs-anyone-can-add)), the cache, updates, *Report a problem*, the version and the changelog, and every other app-wide setting now spread over the panels and the version popover.
-- **Built from the lego blocks** (STYLE_RULE §4), measured with `MEASURE=1`, in both themes and languages.
+- **RAM & cache, each control saying what it does to speed** (owner, 2026-11-05): the share of the computer's memory for previews (15 / 25 / 40 %, default 25), the disk cache's limit (2 / 5 / 10 / 20 GB, default 5) with its content by kind, *Prepare previews in the background* (on), *Clear cache*; **Default** and **Auto** (chosen from the machine's RAM and free disk: 40 % from 32 GB, 25 % from 12 GB, else 15 %; the largest cache within a tenth of the free disk; previews off under 5 GB free). Stored per machine in `settings.json` v15, clamped in Rust.
+- **This computer, shown** (owner, 2026-11-05, as Photoshop's Performance preferences): *For this computer* lists the processor and its cores, the graphics card and whether it draws the colour sliders (ADR-0039), the memory and the cache disk's free space, so *Auto*'s choice can be read. A share of the graphics card's memory to set, as Photoshop's VRAM, comes with the develop on the GPU (`wgpu`, v0.14.0 "Core 2"); until then the GPU only draws a slider's step and needs no budget.
+- **Memory given back** when the machine runs short (under a tenth available, checked every 5 s): the previews keep only the photo on screen ([ADR-0041](adr/0041-instant-previews-disk-and-memory.md)).
+- **Built from the lego blocks** (STYLE_RULE §4), measured with `MEASURE=1`, in both themes and languages. Sections as on an iPad: *General* (language, theme), *RAM & cache*, *Updates*, *Report a problem*, *What's new*; opened by the gear, the version badge (*What's new*) and ⌘, / Ctrl+,. The version popover is gone; `.fotosettings` and language packs follow in their own versions.
 
 ### FR-088 — RAW edited in linear light
 
@@ -944,7 +947,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-087 — How large a collage sheet prints
 
-**P1 (planned, owner's request 2026-11-05).** In Collage mode, the *Print size* card says how many pixels a sheet of two photos side by side or one above the other has (two 16 MP photos make a sheet of about W × H px), and whether that is sharp, acceptable or soft for the chosen size, as the resolution warning does for one photo ([FR-026](#fr-026--resolution-warning)).
+**P1 (in progress, v0.12.0; owner's request 2026-11-05).** In Collage mode, the *Print size* card says how many pixels a sheet of two photos side by side or one above the other has (two 16 MP photos make a sheet of about W × H px), and whether that is sharp, acceptable or soft for the chosen size, as the resolution warning does for one photo ([FR-026](#fr-026--resolution-warning)). The pixels are the export's: the sheet at the less sharp photo's density, at most 600 DPI ([ADR-0032](adr/0032-collage-sheets-from-two-cell-plans.md)), shown as *Sheet* and *Prints at* in the card, in the panel and the sheet's preview.
 
 ### FR-090 — A filmstrip in the photo's preview
 
@@ -986,6 +989,14 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **One dialog everywhere:** the gallery, Simple mode, Collage, the photo's and the sheet's previews open the same dialog, built once ([STYLE_RULE](STYLE_RULE.md) §4); progress, the result and errors stay in the panel where the export started.
 - **Small:** sized to its content, not a full window; `Esc` cancels.
 - **Before building:** the layout is shown to the owner as a sketch first (LESSONS, "Ask before building a layout the user described in words").
+
+### FR-094 — Project history, without nagging
+
+**P2 (planned, version to be chosen; owner's question 2026-11-06: "Lightroom kept asking to back up its catalog; does ours need it?").** Fotollection already never touches the photos, writes every project and `settings.json` atomically (a temporary file, fsync, then a rename) and keeps one `.bak` of the last save ([DATABASE §4.4](DATABASE.md#44-write-protocol)), so a crash or a full disk cannot leave a broken project, which is what Lightroom's backups guard its one large catalog against. What it lacks is **history**: the single `.bak` is replaced at every save, so a mistake saved a few times over (a hundred photos rejected by accident) cannot be undone after the app is closed.
+
+- **Kept automatically, never asked:** a dated copy of each project and of `settings.json` on the first save of each day, the last seven days and the last four weeks kept, in the app's data folder; a project is small (kilobytes of JSON in its bundle), so this costs little.
+- **Restored from the Settings window** ([FR-086](#fr-086--one-settings-window)): *Project history* lists the copies by date with their photo counts, and opens one as a new document, never over the current one.
+- **Measured and tested:** the write stays off the interactive path; a test makes a week of saves and checks which copies are kept.
 
 ## 7. Non-functional requirements
 

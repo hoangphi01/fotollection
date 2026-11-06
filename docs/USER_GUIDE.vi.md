@@ -23,7 +23,7 @@ Fotollection làm việc trên các thư mục ảnh bạn đã có. Nó đọc 
 
 **Ba chế độ:** các nút ở đầu thanh bên chuyển giữa **Đơn giản** (từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất: chương 18), **Ghép ảnh** (hai ảnh trên một tấm in: chương 19, hoặc bưu thiếp: chương 20) và **Pro**, phần app mà hướng dẫn này mô tả. Ảnh, giỏ in và thiết lập của bạn giống nhau ở mọi chế độ, và chế độ được nhớ trên máy này. **Cmd/Ctrl+1**, **2** và **3** chuyển giữa chúng, kể cả khi đang xem trước (bản xem trước sẽ đóng; trừ lúc đang cắt ảnh) ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
 
-**Ngôn ngữ và giao diện:** bấm số phiên bản ở chân bảng bất kỳ, rồi chọn *English* hoặc *Tiếng Việt* ở mục **Ngôn ngữ**; ở chế độ nào cũng giống nhau. Ba nút ở cuối thanh bên đổi giao diện: **Theo hệ thống**, **Sáng** hoặc **Tối** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
+**Ngôn ngữ và giao diện:** mở **Cài đặt** (bánh răng cạnh *by @hoangphi01* ở đầu thanh bên, hoặc **⌘,** / **Ctrl+,**), rồi chọn *English* hoặc *Tiếng Việt* ở mục **Ngôn ngữ** trong *Chung* (chương 23); ở chế độ nào cũng giống nhau. Ba nút ở cuối thanh bên đổi giao diện: **Theo hệ thống**, **Sáng** hoặc **Tối** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
 
 <!-- chapter: cull -->
 
@@ -366,7 +366,7 @@ Khi máy ảnh cắm cáp, Fotollection hiện những gì máy thấy và chụ
 
 Fotollection không bao giờ tự lên mạng ([FR-021](PRD.md#fr-021--manual-updates), [FR-061](PRD.md#fr-061--check-for-updates)).
 
-1. Nhấp vào số phiên bản ở cuối bảng cài đặt, rồi **Kiểm tra cập nhật**. Đây là lúc duy nhất app lên mạng.
+1. Mở **Cài đặt** (bánh răng ở đầu thanh bên, hoặc số phiên bản ở chân bảng bất kỳ), rồi **Cập nhật** và **Kiểm tra cập nhật**. Đây là lúc duy nhất app lên mạng.
 2. Nếu có bản mới hơn, nhấp **Tải bộ cài**: trình duyệt sẽ tải đúng bộ cài cho máy của bạn.
 3. Cài đè lên bản đang dùng. Cài đặt, hồ sơ máy ảnh và dự án của bạn vẫn giữ nguyên.
    - **Mac:** mở tệp đĩa và kéo Fotollection vào Applications, rồi chọn **Thay thế**.
@@ -374,11 +374,9 @@ Fotollection không bao giờ tự lên mạng ([FR-021](PRD.md#fr-021--manual-u
    - **Linux AppImage:** nút này tải AppImage mới; cho phép chạy (`chmod +x`) rồi dùng nó thay cho tệp cũ.
    - **Linux `.deb`:** nút này mở trang phát hành; tải `.deb` mới rồi chạy `sudo apt install ./Fotollection_*_amd64.deb` (`_arm64.deb` trên ARM).
 
-Cùng ô đó có mục **Ngôn ngữ** (chương 1) và hiện **cache**: ảnh nhỏ, bản xem trước và kết quả phân tích ảnh đẹp nhất mà Fotollection giữ để mở thư mục và ảnh nhanh, kèm dung lượng so với giới hạn 5 GB. Vượt giới hạn, các mục cũ nhất tự bị xoá. **Xoá cache** làm trống nó bất kỳ lúc nào; không mất gì của bạn, và ảnh nhỏ sẽ được tạo lại khi bạn duyệt.
+**Cache**, bộ nhớ dành cho bản xem trước và *bản xem trước tức thì* nằm ở **Cài đặt → Bộ nhớ RAM & cache** (chương 23).
 
-**Bản xem trước tức thì.** Sau khi có ảnh nhỏ của một thư mục, Fotollection chuẩn bị sẵn bản xem trước của mọi ảnh ở chế độ nền (*Đang chuẩn bị bản xem trước* trên thanh của gallery) và giữ trong cache, nên mở ảnh nào cũng hiện ngay, kể cả ảnh RAW, và → ← hiện ảnh kế tiếp không phải chờ. Việc này dùng tối đa một phần tư bộ nhớ máy, và giới hạn cache là 5 GB (trước đây 2 GB).
-
-**Gặp lỗi, hay có ý tưởng?** Bấm số phiên bản ở chân bảng, rồi nút đỏ **Báo lỗi / góp ý**: nút này mở trang báo lỗi và góp ý của dự án trên GitHub, trong trình duyệt ([FR-069](PRD.md#fr-069--report-a-problem)). Hãy ghi bạn đã làm gì và thấy gì, rồi bấm **Sao chép thông tin chẩn đoán** và dán vào: phần này có phiên bản, hệ điều hành và các mã lỗi gần nhất.
+**Gặp lỗi, hay có ý tưởng?** Mở **Cài đặt → Báo lỗi**, rồi nút đỏ **Báo lỗi / góp ý**: nút này mở trang báo lỗi và góp ý của dự án trên GitHub, trong trình duyệt ([FR-069](PRD.md#fr-069--report-a-problem)). Hãy ghi bạn đã làm gì và thấy gì, rồi bấm **Sao chép thông tin chẩn đoán** và dán vào: phần này có phiên bản, hệ điều hành và các mã lỗi gần nhất.
 
 **Khi gặp mã lỗi.** Mỗi thông báo lỗi kết thúc bằng một mã, ví dụ `ERR-IMG-0006`. Mấy chữ đầu cho biết loại lỗi: `IMG` do chính file ảnh, `FS` một file hay thư mục không đọc hoặc ghi được, `EXT` hệ điều hành thiếu codec, `DRV` kết nối với máy ảnh, `CFG` thiết lập, font hay logo, `EXP` khi xuất ảnh, `NET` khi *Kiểm tra cập nhật*, `RUS` lỗi của chính ứng dụng. Nút × trên thông báo lỗi để ẩn nó; thông báo chỉ hiện lại nếu lần thử sau lại gặp đúng lỗi đó. Mỗi mã được giải thích, kèm cách xử lý, trong [ERROR_CONTROL.md](ERROR_CONTROL.md). Ứng dụng giữ một nhật ký nhỏ các lỗi này trên máy (không có ảnh, địa điểm hay tên file) chỉ để *Sao chép thông tin chẩn đoán* dùng; ứng dụng không gửi gì đi.
 
@@ -408,7 +406,7 @@ Cùng ô đó có mục **Ngôn ngữ** (chương 1) và hiện **cache**: ảnh
 
 1. Nhấp **Ghép ảnh** ở đầu thanh bên. Chọn ảnh để ghép ở thanh bên, thường là **Giỏ in**.
 2. Các ảnh được ghép theo thứ tự, 1 + 2, 3 + 4…, và mỗi tấm hiện đúng như khi in. Ảnh lẻ cuối cùng để nửa kia trắng.
-3. **Khổ tấm in**: khổ in, ví dụ 10 × 15; khổ Gốc không có ở đây, vì tấm ghép cần một khổ cố định. Tấm được chia đôi theo cạnh dài và xoay theo ảnh đầu tiên: hai ảnh ngang thì trên dưới, hai ảnh dọc thì cạnh nhau. Nút **xoay** trên mỗi tấm, hoặc phím **R**, xoay tấm sang hướng kia. **Trắng** hoặc **Đen** dưới *Viền 3 mm* tô cả phần giấy quanh các ảnh lẫn viền.
+3. **Khổ tấm in**: khổ in, ví dụ 10 × 15; khổ Gốc không có ở đây, vì tấm ghép cần một khổ cố định. Tấm được chia đôi theo cạnh dài và xoay theo ảnh đầu tiên: hai ảnh ngang thì trên dưới, hai ảnh dọc thì cạnh nhau. Nút **xoay** trên mỗi tấm, hoặc phím **R**, xoay tấm sang hướng kia. **Trắng** hoặc **Đen** dưới *Viền 3 mm* tô cả phần giấy quanh các ảnh lẫn viền. Dưới khổ in, **Tấm ghép** cho biết hai ảnh ghép lại được bao nhiêu pixel và **Độ nét khi in** cho biết tấm in nét đến đâu: số DPI và *Rất tốt*, *Tốt*, *Tạm được* hoặc *Quá thấp*, nét bằng ảnh kém nét hơn để không ảnh nào bị phóng to ([FR-087](PRD.md#fr-087--how-large-a-collage-sheet-prints)).
 4. **Hai ảnh mỗi tấm**:
    - **Lấp đầy mỗi nửa**: không lề trắng. Mỗi ảnh phủ kín nửa tấm (7,5 × 10 với tấm 10 × 15) và hai ảnh giáp cạnh nhau; cắt từng ảnh (bước 7) để chọn phần được giữ, bằng cách kéo và phóng to. Các thiết lập bên dưới, cả đường cắt, khi đó được ẩn.
    - **Tỷ lệ ảnh**: tỷ lệ gốc của từng ảnh (**Ảnh**), tỷ lệ của tấm (**Tấm**, 2:3 với 10 × 15), **4:3** hoặc **1:1**. Phần còn lại của nửa tấm để trắng.
@@ -505,6 +503,7 @@ Hai thẻ chỉnh màu ảnh, nằm dưới **Khổ in / xuất**, chỉ có tro
 | Xem trước | nhấp đúp vào ảnh | Chuyển giữa vừa khung và 200 % |
 | Xem trước | kéo ảnh (khi chưa phóng) | Chọn phần được in (*Cắt cho đầy*) |
 | Xem trước | **Esc** | Rời màn cắt ảnh, rồi đóng |
+| Mọi nơi | **⌘,** / **Ctrl+,** | Mở Cài đặt (chương 23) |
 | Màn cắt ảnh | **← →**, **⌥ ← →** | Cân ảnh từng độ, từng 0,1 độ |
 | Màn cắt ảnh | **↑ ↓** (kèm **Shift**, xa hơn) | Dịch vùng cắt lên hoặc xuống |
 | Màn cắt ảnh | **+** / **−** | Phóng to / thu nhỏ |
@@ -522,3 +521,22 @@ Hai thẻ chỉnh màu ảnh, nằm dưới **Khổ in / xuất**, chỉ có tro
 | Mọi nơi | **Cmd/Ctrl+N**, **Cmd/Ctrl+O**, **Cmd/Ctrl+S**, **Shift+Cmd/Ctrl+S** | Dự án mới, mở, lưu, lưu thành (chương 13) |
 
 Ô nhập hay thanh trượt đang được chọn giữ các phím mũi tên cho riêng nó: nhấp vào ảnh để trả chúng về việc duyệt ảnh.
+
+<!-- chapter: settings -->
+
+## 23. Cài đặt
+
+Mọi cài đặt của máy này nằm trong một cửa sổ ([FR-086](PRD.md#fr-086--one-settings-window)): bấm bánh răng cạnh *by @hoangphi01* ở đầu thanh bên, nhấn **⌘,** (Mac) hoặc **Ctrl+,** (Windows, Linux), hoặc bấm số phiên bản ở chân bảng để xem *Có gì mới*. Các mục xếp ở bên trái như trên iPad; dự án không bao giờ mang các cài đặt này theo.
+
+- **Chung:** ngôn ngữ và giao diện (chương 1).
+- **Bộ nhớ RAM & cache** ([FR-091](PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)):
+  - **Phần bộ nhớ RAM của máy** dành cho bản xem trước: 15, 25 (mặc định) hoặc 40 %. Nhiều hơn thì giữ sẵn nhiều ảnh hơn, nên → ← và ảnh mở lại hiện ngay; ít hơn thì chừa chỗ cho ứng dụng khác. *Đang giữ* cho biết bản xem trước đang giữ bao nhiêu. Khi máy thiếu bộ nhớ, chúng tự trả lại.
+  - **Cache trên ổ đĩa:** giới hạn (2, 5, 10 hoặc 20 GB), những gì đang giữ (ảnh nhỏ, bản xem trước, phân tích ảnh đẹp nhất) và **Xoá cache**. Không mất gì của bạn: mọi thứ được tạo lại khi cần. Cache lớn hơn giữ bản xem trước của nhiều thư mục hơn, khoảng 0,7 MB mỗi ảnh.
+  - **Chuẩn bị sẵn bản xem trước ở chế độ nền:** sau khi có ảnh nhỏ của một thư mục, bản xem trước của mọi ảnh được dựng sẵn (*Đang chuẩn bị bản xem trước* trên thanh của gallery), nên mở ảnh nào cũng chỉ khoảng 30 ms thay vì 0,3 đến 0,5 giây, kể cả ảnh RAW. Tắt đi để tiết kiệm ổ đĩa; bản xem trước sẽ được dựng khi mở ảnh.
+  - **Cho máy tính này** cho biết *Tự động* dựa vào đâu: bộ xử lý và số nhân, card đồ hoạ (và có vẽ khi kéo thanh màu không), bộ nhớ và dung lượng còn trống trên ổ đĩa của cache.
+  - **Mặc định** đặt lại 25 %, 5 GB và bật chuẩn bị sẵn. **Tự động** chọn theo máy này: 40 % bộ nhớ khi máy có từ 32 GB, 25 % từ 12 GB, 15 % nếu ít hơn; cache lớn nhất vừa trong một phần mười dung lượng trống; bật chuẩn bị sẵn trừ khi còn trống dưới 5 GB.
+- **Cập nhật:** *Kiểm tra cập nhật* (chương 17).
+- **Báo lỗi:** trang báo lỗi và *Sao chép thông tin chẩn đoán* (chương 17).
+- **Có gì mới:** mọi phiên bản, mỗi bản hai dòng tóm tắt; **Xem tất cả** mở toàn bộ ghi chú của bản đó (thêm mới, thay đổi, sửa lỗi). Bản bạn đang dùng mở sẵn.
+
+<!-- shot: settings | Cửa sổ Cài đặt ở mục Bộ nhớ RAM & cache: bộ nhớ cho bản xem trước, cache trên ổ đĩa, Mặc định và Tự động -->

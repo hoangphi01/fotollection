@@ -2,11 +2,11 @@
 import { useTranslation } from 'react-i18next'
 import { useIpcQuery } from '@/features/settings/use-ipc-query'
 import { commands } from '@/ipc/bindings'
-import { VersionHistory } from './version-history'
+import { VersionBadge } from './version-history'
 
 /**
- * The foot of every mode's panel: the privacy line and the version, whose popover holds the
- * versions, "Check for updates" and "Report a problem" (FR-061, FR-069).
+ * The foot of every mode's panel: the privacy line and the version, which opens the Settings
+ * window at *What's new* (FR-086).
  */
 export function PanelFooter() {
   const { t } = useTranslation()
@@ -14,7 +14,7 @@ export function PanelFooter() {
   return (
     <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
       <span>{t('settings.footer')}</span>
-      {appInfo && <VersionHistory version={appInfo.appVersion} />}
+      {appInfo && <VersionBadge version={appInfo.appVersion} />}
     </div>
   )
 }

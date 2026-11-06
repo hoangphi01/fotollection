@@ -11,7 +11,7 @@ use walkdir::WalkDir;
 
 /// The cache stays under this (DATABASE.md §8): thumbnails at about 27 KB and standard
 /// previews at about 1 MB a photo, some 4,500 photos with both (owner, 2026-11-05, FR-091).
-pub const LIMIT_BYTES: u64 = 5 * 1024 * 1024 * 1024;
+pub const LIMIT_BYTES: u64 = 5_000_000_000;
 /// A prune goes down to this share of the limit, so it does not run again at once.
 const AFTER_PRUNE: f64 = 0.9;
 /// A `.part` file older than this is a write that never finished.
@@ -54,6 +54,38 @@ fn entries(dirs: &[&Path]) -> Vec<Entry> {
             })
         })
         .collect()
+}
+
+/// What the cache holds by kind, for the Settings window (FR-086): T1 thumbnails, T2
+/// standard previews (FR-091) and best-shot analyses, told apart by their names.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct Kinds {
+    pub thumbnails: Usage,
+    pub previews: Usage,
+    pub analyses: Usage,
+}
+
+/// The size of everything in `dirs`, by kind.
+pub fn usage_by_kind(dirs: &[&Path]) -> Kinds {
+    let add = |u: Usage, bytes: u64| Usage {
+        bytes: u.bytes + bytes,
+        files: u.files + 1,
+    };
+    entries(dirs).iter().fold(Kinds::default(), |mut k, e| {
+        let name = e
+            .path
+            .file_name()
+            .map(|n| n.to_string_lossy())
+            .unwrap_or_default();
+        if name.contains(".t2-") {
+            k.previews = add(k.previews, e.bytes);
+        } else if name.ends_with(".json") {
+            k.analyses = add(k.analyses, e.bytes);
+        } else {
+            k.thumbnails = add(k.thumbnails, e.bytes);
+        }
+        k
+    })
 }
 
 /// The size of everything in `dirs`.
@@ -156,6 +188,26 @@ pub fn touch(path: &Path) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// FR-086: the cache's size by kind, told apart by the file names `thumbs` and
+    /// `analysis` write.
+    #[test]
+    fn fr_086_usage_by_kind_tells_thumbnails_previews_and_analyses_apart() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let thumbs = dir.path().join("thumbs/ab");
+        let analysis = dir.path().join("analysis/ab");
+        std::fs::create_dir_all(&thumbs)?;
+        std::fs::create_dir_all(&analysis)?;
+        std::fs::write(thumbs.join("abc.t1.jpg"), [0u8; 10])?;
+        std::fs::write(thumbs.join("abc.t2-o1-neutral.jpg"), [0u8; 100])?;
+        std::fs::write(thumbs.join("abd.t2-o6-camera.jpg"), [0u8; 50])?;
+        std::fs::write(analysis.join("abc.json"), [0u8; 7])?;
+        let k = usage_by_kind(&[&dir.path().join("thumbs"), &dir.path().join("analysis")]);
+        assert_eq!((k.thumbnails.bytes, k.thumbnails.files), (10, 1));
+        assert_eq!((k.previews.bytes, k.previews.files), (150, 2));
+        assert_eq!((k.analyses.bytes, k.analyses.files), (7, 1));
+        Ok(())
+    }
 
     fn file(dir: &Path, name: &str, bytes: usize, age_s: u64) -> std::io::Result<PathBuf> {
         let path = dir.join(name);

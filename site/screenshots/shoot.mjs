@@ -71,6 +71,24 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode }) {
     list_print_sizes: () => common.list_print_sizes,
     list_fonts: () => common.list_fonts,
     get_ui_settings: () => ({ ...common.get_ui_settings, language, mode }),
+    // The Settings window's memory and cache (FR-086): a 16 GB Mac at 25 %, a trip's cache.
+    memory_info: () => ({ total: 16 * 2 ** 30, budget: 4 * 2 ** 30, held: 1.3 * 2 ** 30 }),
+    machine_info: () => ({ cpu: 'Apple M3', cores: 8, memory: 16 * 2 ** 30, freeDisk: 31e9 }),
+    cache_usage: () => ({
+      bytes: 0.44 * 2 ** 30,
+      files: 1290,
+      limitBytes: 5e9,
+      thumbnailsBytes: 0.012 * 2 ** 30,
+      previewsBytes: 0.42 * 2 ** 30,
+      analysesBytes: 0.004 * 2 ** 30,
+    }),
+    suggest_memory_settings: (a) => ({
+      ...common.get_ui_settings,
+      language,
+      mode,
+      ...(a?.auto ? { previewMemoryPercent: 25, cacheLimitGb: 10 } : { previewMemoryPercent: 25, cacheLimitGb: 5 }),
+      preparePreviews: true,
+    }),
     list_sheets: () => collage.list_sheets,
     get_postcard_text: (a) => collage.get_postcard_text?.[String(a?.id)] ?? null,
     // The demo's texts all fit: no card is marked as cut.
@@ -231,6 +249,15 @@ async function settle(page) {
 }
 
 /** A zoomed-in part of the window, 16:10 like the full screenshots. */
+/** Opens the Settings window by its gear (FR-086) at the section named `section`. */
+async function openSettings(page, section) {
+  if (!(await page.locator('[data-slot="settings-body"]').count())) {
+    await page.getByRole('button', { name: /^(Settings|Cài đặt)$/ }).click()
+  }
+  await page.getByRole('button', { name: section }).click()
+  await settle(page)
+}
+
 async function zoomed(page, name, clip) {
   const file = path.join(outDir, `${name}.png`)
   await page.screenshot({ path: file, clip })
@@ -385,6 +412,13 @@ async function measurePanels() {
   await sheet.dblclick(); await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]'); await settle(page)
   rows.push(['postcard preview', await measure(page, '[role="dialog"] aside')])
   await page.screenshot({ path: path.join(outDir, 'measure-postcard-preview.png') })
+  await context.close()
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
+  for (const name of [/^(General|Chung)$/, /^(RAM & cache|Bộ nhớ RAM & cache)$/]) {
+    await openSettings(page, name)
+    rows.push([`settings: ${name.source.slice(2, 9).toLowerCase()}`, await measure(page, '[data-slot="settings-body"]')])
+  }
+  await page.screenshot({ path: path.join(outDir, 'measure-settings.png') })
   await context.close()
   // Icon-only buttons at the narrowest window and a wide one, in the gallery and Collage mode.
   const offCentre = []
@@ -597,6 +631,12 @@ for (const language of ['en', 'vi']) {
     ;({ context, page } = await open({ scenario: 'stamp', language, theme, mode: 'simple' }))
     await settle(page)
     await save(page, `simple-${suffix}`)
+    await context.close()
+
+    // 9b. The Settings window (FR-086): the gear beside the byline, at *RAM & cache*.
+    ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
+    await openSettings(page, /^(RAM & cache|Bộ nhớ RAM & cache)$/)
+    await save(page, `settings-${suffix}`)
     await context.close()
 
     // 10. Collage mode (FR-035): two photos on one print, the panel with its size and cut line.

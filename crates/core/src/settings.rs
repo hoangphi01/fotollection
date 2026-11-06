@@ -37,7 +37,7 @@ pub enum AppMode {
 }
 
 /// Per-machine interface preferences (FR-020, FR-052). Never part of a project file.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct UiSettings {
     pub language: Language,
@@ -50,6 +50,110 @@ pub struct UiSettings {
     /// Where an export puts its files (FR-009). Absent before settings v12: one folder.
     #[serde(default)]
     pub export_folders: ExportFolders,
+    /// The share of the machine's RAM the previews may keep, in percent (FR-091, FR-086).
+    /// Absent before settings v15: 25.
+    #[serde(default = "default_preview_memory_percent")]
+    pub preview_memory_percent: u8,
+    /// The disk cache's limit in GB, one of [`CACHE_LIMITS_GB`] (FR-091, FR-086). Absent
+    /// before settings v15: 5.
+    #[serde(default = "default_cache_limit_gb")]
+    pub cache_limit_gb: u8,
+    /// Whether every photo's standard preview is made in the background (FR-091, FR-086).
+    /// Absent before settings v15: on.
+    #[serde(default = "default_prepare_previews")]
+    pub prepare_previews: bool,
+}
+
+/// The cache limits one can choose, in GB (FR-086).
+pub const CACHE_LIMITS_GB: [u8; 4] = [2, 5, 10, 20];
+/// The memory shares one can choose for previews, in percent (FR-086); any value in
+/// `PREVIEW_MEMORY_RANGE` is kept as it is.
+pub const PREVIEW_MEMORY_CHOICES: [u8; 3] = [15, 25, 40];
+const PREVIEW_MEMORY_RANGE: std::ops::RangeInclusive<u8> = 10..=50;
+
+const fn default_preview_memory_percent() -> u8 {
+    25
+}
+const fn default_cache_limit_gb() -> u8 {
+    5
+}
+const fn default_prepare_previews() -> bool {
+    true
+}
+
+impl Default for UiSettings {
+    fn default() -> Self {
+        Self {
+            language: Language::default(),
+            theme: ThemePreference::default(),
+            mode: AppMode::default(),
+            export_folders: ExportFolders::default(),
+            preview_memory_percent: default_preview_memory_percent(),
+            cache_limit_gb: default_cache_limit_gb(),
+            prepare_previews: default_prepare_previews(),
+        }
+    }
+}
+
+impl UiSettings {
+    /// Every value within what the app allows, from a file or over IPC: the memory share
+    /// clamped to 10–50 %, the cache limit the nearest one offered.
+    #[must_use]
+    pub fn sanitized(mut self) -> Self {
+        self.preview_memory_percent = self
+            .preview_memory_percent
+            .clamp(*PREVIEW_MEMORY_RANGE.start(), *PREVIEW_MEMORY_RANGE.end());
+        self.cache_limit_gb = CACHE_LIMITS_GB
+            .into_iter()
+            .min_by_key(|g| g.abs_diff(self.cache_limit_gb))
+            .unwrap_or(5);
+        self
+    }
+
+    /// The disk cache's limit in bytes, in GB of 10⁹ bytes as disks are sold and Finder and
+    /// Explorer show them, so "5 GB" reads 5.0 GB in the window.
+    pub fn cache_limit_bytes(&self) -> u64 {
+        u64::from(self.cache_limit_gb) * 1_000_000_000
+    }
+
+    /// The memory and cache settings that suit a machine with `total_ram` bytes of RAM and
+    /// `free_disk` bytes free on the cache's disk (FR-086, the *Auto* button): 40 % of RAM
+    /// from 32 GB, 25 % from 12 GB, else 15 %; the largest cache limit within a tenth of the
+    /// free disk, at least 2 GB; previews prepared unless under 5 GB are free.
+    #[must_use]
+    pub fn auto_for(self, total_ram: u64, free_disk: u64) -> Self {
+        const GB: u64 = 1024 * 1024 * 1024;
+        let percent = if total_ram >= 32 * GB {
+            40
+        } else if total_ram >= 12 * GB {
+            25
+        } else {
+            15
+        };
+        let limit = CACHE_LIMITS_GB
+            .into_iter()
+            .filter(|g| u64::from(*g) * GB <= free_disk / 10)
+            .max()
+            .unwrap_or(2);
+        Self {
+            preview_memory_percent: percent,
+            cache_limit_gb: limit,
+            prepare_previews: free_disk >= 5 * GB,
+            ..self
+        }
+    }
+
+    /// The memory and cache settings as they come (FR-086, the *Default* button).
+    #[must_use]
+    pub fn memory_defaults(self) -> Self {
+        let d = Self::default();
+        Self {
+            preview_memory_percent: d.preview_memory_percent,
+            cache_limit_gb: d.cache_limit_gb,
+            prepare_previews: d.prepare_previews,
+            ..self
+        }
+    }
 }
 
 /// Where an export puts its files (FR-009): all in the chosen folder, or a `YYYY-MM-DD`
@@ -745,6 +849,41 @@ impl RenderSettings {
 
 #[cfg(test)]
 mod tests {
+
+    /// FR-086, the *Auto* button: the memory share by RAM (40 % from 32 GB, 25 % from
+    /// 12 GB, else 15 %), the largest cache within a tenth of the free disk, previews off
+    /// under 5 GB free; other settings untouched.
+    #[test]
+    fn fr_086_auto_follows_the_machine() {
+        const GB: u64 = 1024 * 1024 * 1024;
+        let base = UiSettings {
+            language: Language::Vi,
+            ..UiSettings::default()
+        };
+        let pick = |ram, disk| {
+            let a = base.auto_for(ram, disk);
+            (
+                a.preview_memory_percent,
+                a.cache_limit_gb,
+                a.prepare_previews,
+                a.language,
+            )
+        };
+        assert_eq!(pick(8 * GB, 30 * GB), (15, 2, true, Language::Vi));
+        assert_eq!(pick(16 * GB, 60 * GB), (25, 5, true, Language::Vi));
+        assert_eq!(pick(16 * GB, 120 * GB), (25, 10, true, Language::Vi));
+        assert_eq!(pick(32 * GB, 500 * GB), (40, 20, true, Language::Vi));
+        assert_eq!(pick(12 * GB, 4 * GB), (25, 2, false, Language::Vi));
+        let d = base.auto_for(32 * GB, 500 * GB).memory_defaults();
+        assert_eq!(
+            (
+                d.preview_memory_percent,
+                d.cache_limit_gb,
+                d.prepare_previews
+            ),
+            (25, 5, true)
+        );
+    }
     use super::*;
 
     #[test]

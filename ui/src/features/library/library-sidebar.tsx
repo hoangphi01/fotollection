@@ -12,6 +12,7 @@ import {
   ShoppingBasket,
   RefreshCw,
   Save,
+  Settings,
   TriangleAlert,
   X,
 } from 'lucide-react'
@@ -28,6 +29,7 @@ import type { ProjectApi } from '@/features/project/use-project'
 import { errorText } from '@/lib/errors'
 import { cn } from '@/lib/utils'
 import { ModeSwitch } from '@/features/modes/mode-switch'
+import { showSettings } from '@/features/settings-window/use-settings-window'
 
 type LibrarySidebarProps = {
   /** Every source folder with its own count (FR-056). */
@@ -100,6 +102,17 @@ export function LibrarySidebar({
           <span className="font-heading text-sm font-semibold tracking-tight">Fotollection</span>
           <span className="truncate text-xs text-muted-foreground">{t('app.byline')}</span>
         </div>
+        {/* Every setting of this computer in one window (FR-086). */}
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          className="ml-auto shrink-0"
+          aria-label={t('settingsWindow.title')}
+          data-hint={t('settingsWindow.open')}
+          onClick={() => showSettings('general')}
+        >
+          <Settings />
+        </Button>
       </div>
       <Separator />
       <div className="px-4 pt-3">

@@ -35,6 +35,19 @@
 - FFI wrappers live in a dedicated module, expose a safe API, and have fuzz targets ([TESTING.md §4](TESTING.md#4-fuzzing)).
 - The workspace forbids `unsafe` (`unsafe_code = "forbid"`). The two exceptions are the OS FFI crates `fotollection-oscodec` (codecs, [ADR-0017](adr/0017-heic-through-os-codecs.md)) and `fotollection-oscamera` (cameras over USB, [ADR-0026](adr/0026-cameras-through-the-os-usb-stack.md)): each uses `deny` plus an allow on its FFI module only, so any new `unsafe` elsewhere still fails to compile.
 
+### State kept in memory (2026-11-06)
+
+Rust frees memory when its owner goes, not when nobody looks: a cache, a kept image or a queue lives as long as the struct that holds it. Every piece of state the app keeps between requests (a cache, a pool of work, a generation counter) therefore has, written in its doc comment:
+
+- **one owner** (a field of `AppState` or of a cache struct), never a `static` that outlives a project;
+- **a bound in bytes**, from the budget, with what is kept when it is over (the photo on screen, not merely the newest insert);
+- **how it is emptied**: on a project switch (`reset_library` bumps an epoch; an insert that started before it is dropped), when the machine runs short (`PreviewCache::trim`), and by *Clear cache*;
+- **a line in `usage()`**, so the Settings window shows what is really held;
+- **one way in**: work that makes the same key twice at once waits for the first (an in-flight map), and files are written to a unique `.part`, then renamed;
+- **a test** for each of the above, that fails on code without it.
+
+Threads that wait (for a job, for memory, for a turn) are plain threads, never jobs of a rayon pool (LESSONS 2026-11-06); a thread spawned per request is a queue of one worker instead.
+
 ### API and design
 
 - Keep core functions **pure** where possible. In particular, `RenderPlan` construction does no I/O.
@@ -89,6 +102,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
   | Level | Measure | Block |
   |---|---|---|
   | Width of the folder list and the tools panel | 18 rem (`w-panel`), overlay scroll bars on both | `LibrarySidebar`, `SidePanel` |
+  | The Settings window (FR-086) | the preview's dialog size; a 16 rem list of sections on the left, as on an iPad; the open section's cards on the right, at most 36 rem wide (controls keep their 32 px and do not stretch across a wide window), 12 px apart | `SettingsFrame` |
   | Between cards | 12 px, 12 px inset | `SidePanel`, `ViewerFrame` |
   | Between a card's blocks | 12 px | `SectionCard`, `Stack` (a panel footer), `Collapse stack="card"` |
   | Within one field: label, control, options, hint | 6 px | `Field`, `SwitchField`, `Collapse stack="field"` |
@@ -104,13 +118,14 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
   The blocks live in `ui/src/components/forms/` (`field.tsx`, `switch-field.tsx`, `segmented-toggle.tsx`, `swatch-toggle.tsx`, `slider-field.tsx`). A choice of more than four short options is a `Select`, not a row of buttons. A folded `Collapse` gives back its stack's gap (`--stack-gap`), so a switched-off option leaves no gap. `ui/scripts/check-lego.mjs`, part of `npm run lint`, fails on what bypasses them in `src/features`: a hand-made `ToggleGroup`, a `SelectTrigger` or `Switch` of its own size, `space-y-*`, a vertical margin, an odd gap, `text-[10/11/12px]`, a hard-coded `id`. Its short exception list names each file outside the panels (grid, dialogs, popovers, the title bar) with its reason. A change to the panels is checked by measuring them side by side, not by eye alone: `MEASURE=1 node site/screenshots/shoot.mjs` prints every panel's measures and fails on one off the table. The `style-audit` skill (`.claude/skills/style-audit/SKILL.md`) is the whole procedure for any UI change: the blocks, the gates, the measures, both themes and languages.
 - **Notices are blocks in one stack (2026-11-02).** Whatever appears over the main view (an error, a camera session to save, a task's progress) is a block of `NoticeStack` (`ui/src/components/layout/notice-stack.tsx`): the stack owns every space, 12 px around and 8 px between; a block owns no margin and wears the `Alert` shell or `NoticeCard`, so a new one only joins the list and nothing ever touches. Draw a block only when it has something to say (a hook gives `null` otherwise, as `useTaskProgress`), so an empty stack takes no room. An error notice has a dismiss button and ends with its `ERR-` code; a dismissed error comes back only from a new attempt. The same rule holds for panels: `SidePanel` and `ViewerFrame` space their cards, the cards never do.
 - **Same tools, same order.** The settings panel and the preview inspector show the shared cards in one order: *Print / export size*, *Date stamp*, *Info frame*, *Export*; the photo's colour cards (*RAW colour*, *Faves*, *Tools*, FR-079) follow *Print / export size* in the previews. The preview opens with **This photo**, the photo at a glance (FR-078), above the shared cards, and then lists the photo's own facts to change them (rating and flag, capture date, location); the camera and the image are in **This photo**, which folds from its title. A new shared card takes the same place in both. When the user may set their own order (FR-080, later), it is one order for the panel and the previews.
-- **Where each card shows (owner, 2026-11-05).** Every card of a panel is flagged in its file, `// @shown both`, `gallery` or `preview`, and `check-lego` fails when a gallery panel (Pro, Simple, Collage) or a preview (a photo's, a sheet's) holds a card its flag does not allow, or a card without a flag. A card that works on one photo belongs in the preview, where the photo is seen large; a card about the whole library stays in the gallery.
+- **Where each card shows (owner, 2026-11-05).** Every card of a panel is flagged in its file, `// @shown both`, `gallery`, `preview` or `settings`, and `check-lego` fails when a gallery panel (Pro, Simple, Collage), a preview (a photo's, a sheet's) or the Settings window (FR-086) holds a card its flag does not allow, or a card without a flag. A card that works on one photo belongs in the preview, where the photo is seen large; a card about the whole library stays in the gallery; a setting of this computer (language, theme, memory and cache, updates) belongs in the Settings window, and nowhere else.
 
   | Shown | Cards |
   |---|---|
   | Both | *Print / export size*, *Date stamp*, *Info frame*, *Export*; Collage's *Sheet size*, *Postcard*, *Postcard text*, *Photos on the sheet* |
   | Gallery only | *Camera clocks*, *Places* |
   | Preview only | *This photo*, the colour cards (*RAW colour*, *Faves*, *Tools*) |
+  | Settings window only | *General* (language, theme), *RAM & cache* (memory for previews, cache on disk, *For this computer*) |
 
 - **Nothing blinks, nothing jumps (2026-11-01).** A change of setting or a keystroke never blanks what is on screen: the last answer stays until the next has loaded. Ask Rust about a photo or a sheet with `useLiveQuery` (`features/settings/use-ipc-query.ts`), which keeps the last answer and says when it is stale; show a render with `useShownSrc`; a spinner only before the first image, never over one already shown. Settings sent to Rust apply on screen at once, and only the answer to the latest change replaces them (`useRenderSettings`, `useFrameConfig`). A text field never takes a value from outside while it has focus (`CommitInput`). Reserve the room a note takes when it can come and go under the pointer.
 - **Shared pieces, not copies.** Before writing a control a second time, use the shared one: `SidePanel` (every mode's right-hand panel), `InspectorSection` (a preview's cards of facts, with tighter rows; a card of controls, such as *Print / export size*, is a `SectionCard` in the preview too, spaced as in the panel), `PrintSizeCard` (print size in Pro, Simple and the preview), `DateStampCard` (the date stamp in every mode), `KeyHints` with shadcn's `Kbd` (every keyboard hint line), `StageSpinner` (the stage's loading state), `TickCircle` and `BasketBadge` (gallery tiles and sheets), `useSelectMode` with `SelectModeButton` (select mode wherever it appears). A card used in two places lives in its feature folder and is mounted by both.

@@ -5,6 +5,8 @@ export type ReleaseSummary = {
   date: string | null
   /** The first two Highlights, or the first two entries when a version has none. */
   lines: string[]
+  /** Everything the version brought, by kind (Added, Changed, Fixed…), as plain text. */
+  notes: { kind: string; entries: string[] }[]
 }
 
 /** Strips Markdown emphasis, code and links, so a line reads as plain text. */
@@ -36,7 +38,18 @@ export function releaseSummaries(markdown: string): ReleaseSummary[] {
     const lines = (bullets.length > 0 ? bullets.map((l) => l.slice(2)) : prose ? [prose] : [])
       .slice(0, 2)
       .map(plain)
-    releases.push({ version: heading[1], date: heading[2] ?? null, lines })
+    // The whole entry, for "Show all" in the Settings window (FR-086): each sub-heading but
+    // Highlights, which the two lines above already give, with its bullets as plain text.
+    const notes = section
+      .split(/^### /m)
+      .slice(1)
+      .map((part) => {
+        const [kind = '', ...rest] = part.split('\n')
+        const entries = rest.filter((l) => l.startsWith('- ')).map((l) => plain(l.slice(2)))
+        return { kind: kind.trim(), entries }
+      })
+      .filter((n) => n.kind !== 'Highlights' && n.entries.length > 0)
+    releases.push({ version: heading[1], date: heading[2] ?? null, lines, notes })
   }
   return releases
 }

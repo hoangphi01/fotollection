@@ -26,6 +26,7 @@ pub mod jpeg_layout;
 pub mod library;
 pub mod logo;
 pub mod looks;
+pub mod machine;
 pub mod metadata;
 pub mod places;
 pub mod plan;

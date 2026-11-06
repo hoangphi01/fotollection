@@ -1,6 +1,6 @@
 # Docs Guide — Fotollection
 
-> **Last reviewed:** 2026-11-05
+> **Last reviewed:** 2026-11-06
 >
 > The checklist for keeping docs, the website and the code in step ([ADR-0006](adr/0006-docs-as-code.md)). Before you commit, find every row below that matches your change and do all of it, in the same commit. Where a fact lives is mapped in [README.md](README.md); this page says **what to update when something changes**.
 
@@ -29,6 +29,7 @@
 | **A file type** (extension, MIME/UTI, container, limits) | [EXTENSION.md](EXTENSION.md) | `src-tauri/tauri.conf.json` file associations |
 | **Permissions or untrusted input** | [SECURITY.md](SECURITY.md), `src-tauri/capabilities/` | Validate IPC input in Rust |
 | **Performance** | A row in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log); the benchmark is a `crates/core/examples/measure_*` example, named in its §3 budget row | [RESULT.md](RESULT.md), `bench/results/`, then `node bench/chart.mjs` (README charts and the website charts) A comparison with an earlier Fotollection is measured on that version built from its tag, on the same files and machine, never taken from an old log; judge a speed seen in the dev app against a release measurement first (LESSONS 2026-11-05) |
+| **State kept in memory** (a cache, a queue, a counter kept between requests) | Its doc comment: owner, bound in bytes, how it is emptied (project switch, memory short, *Clear cache*), its line in `usage()` ([STYLE_RULE.md](STYLE_RULE.md) §2, State kept in memory); a test for each | [OPTIMIZATION.md](OPTIMIZATION.md) §4.1 for a preview cache; ADR-0041's budget split; [ARCHITECTURE.md](ARCHITECTURE.md) when a thread or a pool is added |
 | **A significant decision** | A new ADR from [the template](adr/0000-template.md), a row in [adr/README.md](adr/README.md) | The status line of any ADR it supersedes |
 | **Dependencies or bundled assets** (crates, npm packages, Python packages through uv in `pyproject.toml` / `uv.lock`, fonts, logos, models, map data) | Permissive licences only (`cargo deny`, [ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md)); the asset's licence file and checksum note (`crates/core/assets/**/*.md`, `site/assets/fonts/OFL.txt`) | README "Third-party notices" (both languages) A new workspace crate with hot loops gets its own `[profile.dev.package.<name>]` line in `Cargo.toml` (the `"*"` line skips workspace members) |
 | **README.md** | [README.vi.md](../README.vi.md) in the same commit: same sections, same charts | `scripts/check-docs.sh` compares them |

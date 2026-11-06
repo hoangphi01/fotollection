@@ -29,7 +29,10 @@ pub const FORMAT: &str = "fotollection-settings";
 /// absent before (off).
 /// v13 (FR-076, FR-077): `render.collage.postcard.face`, absent before (the typewriter);
 /// `recentAddresses`, absent before (none).
-pub const SCHEMA_VERSION: u32 = 14;
+/// v14 (FR-079): `render.look`.
+/// v15 (FR-086, FR-091): `ui.previewMemoryPercent` (25), `ui.cacheLimitGb` (5) and
+/// `ui.preparePreviews` (on), each absent before.
+pub const SCHEMA_VERSION: u32 = 15;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -174,7 +177,7 @@ fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
         frame,
         cameras,
         fonts: file.fonts,
-        ui: file.ui,
+        ui: file.ui.sanitized(),
         recent_addresses: crate::settings::sanitized_addresses(&file.recent_addresses),
     })
 }
@@ -542,6 +545,46 @@ mod tests {
             panic!("v14 should load again");
         };
         assert_eq!(back.render.look, s.render.look);
+        Ok(())
+    }
+
+    /// FR-086, FR-091: a v14 file has no memory settings: 25 % of RAM, a 5 GB cache and
+    /// previews prepared. A v15 file keeps its own, clamped: 99 % becomes 50, 7 GB the
+    /// nearest limit offered (5), and they round-trip.
+    #[test]
+    fn fr_086_memory_settings_default_clamp_and_round_trip() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v14.json"))?;
+        let Loaded::Ok(old) = load(&path) else {
+            panic!("v14 should load");
+        };
+        assert_eq!(
+            (
+                old.ui.preview_memory_percent,
+                old.ui.cache_limit_gb,
+                old.ui.prepare_previews
+            ),
+            (25, 5, true)
+        );
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v15.json"))?;
+        let loaded = load(&path);
+        let Loaded::Ok(s) = loaded else {
+            panic!("v15 should load: {loaded:?}");
+        };
+        assert_eq!(
+            (
+                s.ui.preview_memory_percent,
+                s.ui.cache_limit_gb,
+                s.ui.prepare_previews
+            ),
+            (50, 5, false)
+        );
+        save(&path, &s)?;
+        let Loaded::Ok(back) = load(&path) else {
+            panic!("v15 should load again");
+        };
+        assert_eq!(back.ui, s.ui);
         Ok(())
     }
 

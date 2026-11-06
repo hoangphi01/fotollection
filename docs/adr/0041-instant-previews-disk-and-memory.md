@@ -37,7 +37,7 @@ Option 2, with memory sized by the machine (the owner's choices of 2026-11-05):
 ## Consequences
 
 - Any photo opens in about 27 ms p50 from its standard preview or from memory, JPEG and RAW alike (RESULT §29). NFR-012 is met for any photo, not only the neighbours.
-- The process may hold more memory while browsing (up to a quarter of RAM plus the app). Docs that promised "under 2 GB" now say that this is the export's ceiling. A later step may give memory back when the OS warns of pressure.
+- The process may hold more memory while browsing (up to a quarter of RAM plus the app). Docs that promised "under 2 GB" now say that this is the export's ceiling. Since v0.12.0 the previews give their memory back when the machine runs short, and the share, the cache limit and the preparation are the user's to set (FR-086).
 - A disk preview differs from a fresh one by about 1.35 levels in 255 on average (JPEG q90). A decoder fix that changes pixels still bumps `thumbs::CACHE_VERSION`, which remakes them too.
 - The Settings window (FR-086) shows the cache and the memory budget, so the user can manage them.
 - DATABASE §8, OPTIMIZATION §3 and §4.1, ARCHITECTURE, the user guide and the README's requirements row change with this.

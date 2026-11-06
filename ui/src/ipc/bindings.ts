@@ -39,8 +39,20 @@ export const commands = {
 	diagnostics: () => __TAURI_INVOKE<string>("diagnostics"),
 	/**  How much the cache holds; about 0.2 s for 70,000 files (OPTIMIZATION.md §5). */
 	cacheUsage: () => __TAURI_INVOKE<CacheUsage>("cache_usage"),
-	/**  *Clear cache*: deletes every thumbnail and analysis; returns what is left (nothing). */
+	/**
+	 *  *Clear cache*: deletes every thumbnail, standard preview and analysis; returns what is
+	 *  left (nothing).
+	 */
 	clearCache: () => __TAURI_INVOKE<CacheUsage>("clear_cache"),
+	/**  What the previews keep in memory against their budget (FR-086). */
+	memoryInfo: () => __TAURI_INVOKE<MemoryInfo>("memory_info"),
+	/**  What this computer has, for *Auto* to explain its choice (FR-086); about 10 ms. */
+	machineInfo: () => __TAURI_INVOKE<MachineInfo>("machine_info"),
+	/**
+	 *  The memory and cache settings the Settings window's *Default* (`auto` false) or *Auto*
+	 *  button would set, with every other setting as it is; nothing is saved (FR-086).
+	 */
+	suggestMemorySettings: (auto: boolean) => __TAURI_INVOKE<UiSettings>("suggest_memory_settings", { auto }),
 	/**  Supported print sizes for the settings panel (FR-006). */
 	listPrintSizes: () => __TAURI_INVOKE<PrintSize[]>("list_print_sizes"),
 	/**  Opens a folder dialog and imports the chosen folder. `None` if the user cancelled. */
@@ -494,7 +506,9 @@ export type Action = "new" | "open" | "save" | "saveAs" |
 /**  Simple, Collage or Pro (FR-048). */
 "modeSimple" | "modeCollage" | "modeProfessional" | 
 /**  The OS handed over a `.fotollection` file (not a menu item). */
-"openRequested";
+"openRequested" | 
+/**  The Settings window (FR-086), Cmd+, on macOS. */
+"settings";
 
 /**  The sliders, each 0 when unset (FR-079). Signed ones run −100…100, the others 0…100. */
 export type Adjust = {
@@ -573,13 +587,16 @@ export type BorrowReport = {
 	suggestions: Borrow[],
 };
 
-/**  The cache's size, shown under *Clear cache*. */
+/**  The cache's size, shown in the Settings window (FR-086): in all and by kind. */
 export type CacheUsage = {
 	/**  Bytes (as f64: TypeScript has no u64). */
 	bytes: number | null,
 	files: number,
-	/**  The limit the cache is kept under, in bytes. */
+	/**  The limit the cache is kept under, in bytes (the user's choice, FR-086). */
 	limitBytes: number | null,
+	thumbnailsBytes: number | null,
+	previewsBytes: number | null,
+	analysesBytes: number | null,
 };
 
 /**  A camera body and its clock, as listed in the settings (FR-030). */
@@ -1161,6 +1178,27 @@ export type LookSettings = {
 	amount?: number,
 };
 
+/**  This computer, as the Settings window's *For this computer* shows it (FR-086). */
+export type MachineInfo = {
+	/**  The processor's name, or `None` when the system does not say. */
+	cpu: string | null,
+	cores: number,
+	/**  The RAM, in bytes. */
+	memory: number | null,
+	/**  Bytes free on the cache's disk, or `None` when the system does not say. */
+	freeDisk: number | null,
+};
+
+/**  What the previews keep in memory, for the Settings window (FR-086, FR-091). */
+export type MemoryInfo = {
+	/**  The machine's RAM, in bytes. */
+	total: number | null,
+	/**  What the previews may keep, in bytes: the chosen share of it. */
+	budget: number | null,
+	/**  What they keep now, in bytes. */
+	held: number | null,
+};
+
 /**
  *  A native menu item was chosen. The UI runs the same flow as its own buttons, including
  *  the unsaved-changes question (FR-023).
@@ -1622,6 +1660,15 @@ export type SheetInfo = {
 	heightMm: number | null,
 	sideBySide: boolean,
 	cells: CellInfo[],
+	/**
+	 *  The sheet as the export writes it (FR-087, ADR-0032): at the density of its less
+	 *  sharp photo, at most 600 DPI, so neither is enlarged.
+	 */
+	widthPx: number,
+	heightPx: number,
+	/**  That density in DPI, and its band: how sharp the whole sheet prints. */
+	dpi: number,
+	quality: DpiBand,
 };
 
 /**  Two photos on one print: the first and, unless the last photo was odd, the second. */
@@ -1740,6 +1787,21 @@ export type UiSettings = {
 	mode?: AppMode,
 	/**  Where an export puts its files (FR-009). Absent before settings v12: one folder. */
 	exportFolders?: ExportFolders,
+	/**
+	 *  The share of the machine's RAM the previews may keep, in percent (FR-091, FR-086).
+	 *  Absent before settings v15: 25.
+	 */
+	previewMemoryPercent?: number,
+	/**
+	 *  The disk cache's limit in GB, one of [`CACHE_LIMITS_GB`] (FR-091, FR-086). Absent
+	 *  before settings v15: 5.
+	 */
+	cacheLimitGb?: number,
+	/**
+	 *  Whether every photo's standard preview is made in the background (FR-091, FR-086).
+	 *  Absent before settings v15: on.
+	 */
+	preparePreviews?: boolean,
 };
 
 /**  The result shown under the button. */

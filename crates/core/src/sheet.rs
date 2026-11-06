@@ -362,6 +362,13 @@ pub struct SheetInfo {
     pub height_mm: f32,
     pub side_by_side: bool,
     pub cells: Vec<CellInfo>,
+    /// The sheet as the export writes it (FR-087, ADR-0032): at the density of its less
+    /// sharp photo, at most 600 DPI, so neither is enlarged.
+    pub width_px: u32,
+    pub height_px: u32,
+    /// That density in DPI, and its band: how sharp the whole sheet prints.
+    pub dpi: u32,
+    pub quality: DpiBand,
 }
 
 /// A photo as `info` needs it: its id, upright pixel size, its crop on the sheet and its
@@ -404,6 +411,8 @@ pub fn info(
         &settings.collage,
     );
     let inset = border_inset(settings);
+    // Pixels a millimetre on the print, the export's density (`render_sheet`).
+    let mut density = MAX_SHEET_DPI / MM_PER_IN;
     let cells = sheet
         .cells
         .iter()
@@ -436,6 +445,10 @@ pub fn info(
                 clippy::cast_sign_loss
             )]
             let dpi = (crop.width.max(crop.height) as f32 / pw.max(ph) * MM_PER_IN).round() as u32;
+            #[allow(clippy::cast_precision_loss)]
+            {
+                density = density.min(crop.width.max(crop.height) as f32 / pw.max(ph));
+            }
             Some(CellInfo {
                 id,
                 area_width_mm: cell.area.0,
@@ -449,11 +462,20 @@ pub fn info(
             })
         })
         .collect();
+    let density = density.max(1.0 / MM_PER_IN);
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    let px = |mm: f32| (mm * density).round().max(1.0) as u32;
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    let dpi = (density * MM_PER_IN).round() as u32;
     SheetInfo {
         width_mm: sheet.width,
         height_mm: sheet.height,
         side_by_side: sheet.side_by_side,
         cells,
+        width_px: px(sheet.width),
+        height_px: px(sheet.height),
+        dpi,
+        quality: crate::plan::dpi_band(dpi),
     }
 }
 
@@ -884,6 +906,75 @@ mod tests {
         let scale = stamp_scale(print(), (60, 90));
         let mm = crate::settings::StampSize::Medium.of_short_edge() * 60.0 * scale;
         assert!((mm - 1.8).abs() < 1e-4, "{mm}");
+    }
+
+    /// FR-087: the sheet's pixels the card shows are the ones the export writes, at the less
+    /// sharp photo's density; two 16 MP photos on a 10 × 15 sheet stay under 600 DPI, a
+    /// small one pulls the whole sheet down to its own.
+    #[test]
+    fn fr_087_the_sheets_pixels_are_the_exports() -> Result<(), RenderError> {
+        let mut settings = RenderSettings::default();
+        settings.stamp.enabled = false;
+        let big = filled(900, 600, [200, 30, 30]);
+        let small = filled(450, 300, [30, 30, 200]);
+        let source = |image| CellSource {
+            image,
+            capture: None,
+            crop: None,
+            straighten: 0.0,
+            place: None,
+            stamp: None,
+            caption: None,
+            look: None,
+            postcard: None,
+        };
+        for (a, b) in [(&big, &big), (&big, &small)] {
+            let out = render_sheet(
+                &settings,
+                print(),
+                [Some(source(a)), Some(source(b))],
+                false,
+                None,
+                None,
+            )?;
+            let sheet = info(
+                print(),
+                [
+                    Some((PhotoId(1), (a.width, a.height), None, 0.0)),
+                    Some((PhotoId(2), (b.width, b.height), None, 0.0)),
+                ],
+                false,
+                &settings,
+            );
+            assert!(
+                sheet.width_px.abs_diff(out.width) <= 1
+                    && sheet.height_px.abs_diff(out.height) <= 1,
+                "info {}×{} against the export's {}×{}",
+                sheet.width_px,
+                sheet.height_px,
+                out.width,
+                out.height
+            );
+            let lowest = sheet.cells.iter().map(|c| c.dpi).min().unwrap_or(0);
+            assert!(
+                sheet.dpi.abs_diff(lowest) <= 1,
+                "{} against {lowest}",
+                sheet.dpi
+            );
+        }
+        // Two 16 MP photos side by side: 4,896 px a side at most, 600 DPI at most.
+        let sheet = info(
+            print(),
+            [
+                Some((PhotoId(1), (4896, 3264), None, 0.0)),
+                Some((PhotoId(2), (4896, 3264), None, 0.0)),
+            ],
+            false,
+            &settings,
+        );
+        assert!(sheet.dpi <= 600 && sheet.width_px > 2000, "{sheet:?}");
+        assert_eq!(sheet.quality, DpiBand::Excellent);
+        Ok(())
     }
 
     #[test]

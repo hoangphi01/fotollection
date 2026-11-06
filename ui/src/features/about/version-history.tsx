@@ -1,63 +1,91 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { useMemo } from 'react'
+import { ChevronDown } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import changelog from '../../../../CHANGELOG.md?raw'
+import { FactLines, Field, Hint, RowList } from '@/components/forms/field'
+import { Collapse } from '@/components/layout/collapse'
+import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { releaseSummaries } from '@/lib/changelog'
+import { showSettings } from '@/features/settings-window/use-settings-window'
+import { releaseSummaries, type ReleaseSummary } from '@/lib/changelog'
 import { cn } from '@/lib/utils'
-import { CacheUsage } from './cache-usage'
-import { LanguageSetting } from './language-setting'
-import { ReportIssue } from './report-issue'
-import { UpdateCheck } from './update-check'
 
 /**
- * The app's version; clicking it lists every release with two lines on what it brought.
- * The CHANGELOG is bundled at build time, so this works offline (FR-021); checking for a newer
- * version is a button, the only time the app goes online (FR-061); "Report a problem" opens
- * the project's issue page in the browser (FR-069). The interface language is chosen here too
- * (FR-020).
+ * The app's version at the foot of every panel; clicking it opens the Settings window at
+ * *What's new* (FR-086), where the versions, "Check for updates" and "Report a problem" live.
  */
-export function VersionHistory({ version }: { version: string }) {
+export function VersionBadge({ version }: { version: string }) {
   const { t } = useTranslation()
-  const releases = useMemo(() => releaseSummaries(changelog), [])
-
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button type="button" className="rounded-full" aria-label={t('about.versions')} data-hint={t('about.versions')}>
-          <Badge variant="outline" className="cursor-pointer hover:border-primary hover:text-primary">
-            v{version}
-          </Badge>
-        </button>
-      </PopoverTrigger>
-      <PopoverContent side="top" align="end" className="w-80 p-0">
-        <p className="border-b px-4 py-2.5 text-sm font-semibold">{t('about.versions')}</p>
-        <ol className="max-h-80 space-y-0 overflow-y-auto overscroll-contain">
-          {releases.map((r) => (
-            <li key={r.version} className={cn('border-b px-4 py-2.5 last:border-b-0', r.version === version && 'bg-muted/60')}>
-              <div className="flex items-baseline gap-2">
-                <span className="text-sm font-semibold tabular-nums">v{r.version}</span>
-                {r.date && <span className="text-xs text-muted-foreground tabular-nums">{r.date}</span>}
-                {r.version === version && (
-                  <Badge variant="outline" className="ml-auto border-primary text-primary">
-                    {t('about.current')}
-                  </Badge>
-                )}
-              </div>
-              {r.lines.map((line) => (
-                <p key={line} className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
-                  {line}
-                </p>
-              ))}
-            </li>
+    <button
+      type="button"
+      className="rounded-full"
+      aria-label={t('about.versions')}
+      data-hint={t('about.versions')}
+      onClick={() => showSettings('whatsNew')}
+    >
+      <Badge variant="outline" className="cursor-pointer hover:border-primary hover:text-primary">
+        v{version}
+      </Badge>
+    </button>
+  )
+}
+
+/**
+ * Every release with two lines on what it brought (FR-021), and *Show all* for its whole
+ * entry, by kind (FR-086). The CHANGELOG is bundled at build time, so this works offline; the
+ * version running is marked and opens unfolded. Entries are shown as text, never as HTML.
+ */
+export function ReleaseList({ version }: { version: string | undefined }) {
+  const releases = useMemo(() => releaseSummaries(changelog), [])
+  return (
+    <RowList>
+      {releases.map((r) => (
+        <Release key={r.version} release={r} current={r.version === version} />
+      ))}
+    </RowList>
+  )
+}
+
+function Release({ release: r, current }: { release: ReleaseSummary; current: boolean }) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(current)
+  return (
+    <li>
+      <Field>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold tabular-nums">v{r.version}</span>
+          {r.date && <span className="text-xs text-muted-foreground tabular-nums">{r.date}</span>}
+          {current && (
+            <Badge variant="outline" className="border-primary text-primary">
+              {t('about.current')}
+            </Badge>
+          )}
+          {r.notes.length > 0 && (
+            <Button variant="ghost" size="xs" className="ml-auto" aria-expanded={open} onClick={() => setOpen(!open)}>
+              <ChevronDown data-icon="inline-start" className={cn('transition-transform', open && 'rotate-180')} />
+              {t(open ? 'about.showLess' : 'about.showAll')}
+            </Button>
+          )}
+        </div>
+        {r.lines.map((line) => (
+          <Hint key={line}>{line}</Hint>
+        ))}
+        <Collapse open={open} stack="field">
+          {r.notes.map((n) => (
+            <Field key={n.kind} label={t(`about.kinds.${n.kind.toLowerCase()}`, { defaultValue: n.kind })}>
+              <FactLines>
+                {n.entries.map((entry) => (
+                  <p key={entry} className="text-xs">
+                    {entry}
+                  </p>
+                ))}
+              </FactLines>
+            </Field>
           ))}
-        </ol>
-        <UpdateCheck />
-        <ReportIssue />
-        <LanguageSetting />
-        <CacheUsage />
-      </PopoverContent>
-    </Popover>
+        </Collapse>
+      </Field>
+    </li>
   )
 }

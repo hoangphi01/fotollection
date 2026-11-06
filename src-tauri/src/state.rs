@@ -242,7 +242,7 @@ impl AppState {
             ),
             analyses: Mutex::new(Analyses::default()),
             previews: PreviewCache::with(
-                fotollection_core::preview::machine_budget(),
+                fotollection_core::preview::machine_budget(stored.ui.preview_memory_percent),
                 Some(thumb_dir.clone()),
             ),
             thumbs: ThumbCache::new(thumb_dir),

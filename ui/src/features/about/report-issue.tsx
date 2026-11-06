@@ -2,12 +2,13 @@
 import { useState } from 'react'
 import { Check, ClipboardCopy, MessageSquareWarning } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Field } from '@/components/forms/field'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { commands } from '@/ipc/bindings'
 
 /**
- * "Report a problem" (FR-069), in the versions popover next to "Check for updates": opens the
+ * "Report a problem" (FR-069), in the Settings window (FR-086): opens the
  * project's issue forms in the browser. The address is fixed in Rust; the app sends nothing.
  * "Copy diagnostics" puts the version, the system and the last error codes on the clipboard
  * for the issue (ERROR_CONTROL.md §3); where the clipboard is refused, the text is shown to
@@ -31,7 +32,7 @@ export function ReportIssue() {
   }
 
   return (
-    <div className="space-y-2 border-t px-4 py-3">
+    <Field>
       <Button
         size="sm"
         className="w-full bg-destructive text-white hover:bg-destructive/90"
@@ -55,6 +56,6 @@ export function ReportIssue() {
         />
       )}
       <p className="text-xs text-muted-foreground">{t('about.reportHint')}</p>
-    </div>
+    </Field>
   )
 }

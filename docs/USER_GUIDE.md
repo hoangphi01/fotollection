@@ -25,7 +25,7 @@ Fotollection works on the folders of photos you already have. It reads them wher
 
 **Three modes:** the buttons at the top of the sidebar switch between **Simple** (one photo at a time, ↑ keep, ↓ drop, then export: chapter 18), **Collage** (two photos on one print: chapter 19, or postcards: chapter 20) and **Pro**, the app this guide describes. Your photos, basket and settings are the same in every mode, and the mode is remembered on this computer. **Cmd/Ctrl+1**, **2** and **3** switch between them, also from a preview, which closes (not while a crop is being edited) ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
 
-**Language and look:** click the version number at the foot of any panel, then choose *English* or *Tiếng Việt* under **Language**; it is the same in every mode. The three buttons at the foot of the sidebar set the look: **Follow the system**, **Light** or **Dark** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
+**Language and look:** open **Settings** (the gear beside *by @hoangphi01* at the top of the sidebar, or **⌘,** / **Ctrl+,**), then choose *English* or *Tiếng Việt* under **Language** in *General* (chapter 23); it is the same in every mode. The three buttons at the foot of the sidebar set the look: **Follow the system**, **Light** or **Dark** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
 
 <!-- chapter: cull -->
 
@@ -368,7 +368,7 @@ With a camera plugged in by cable, Fotollection shows what it sees and takes the
 
 Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates), [FR-061](PRD.md#fr-061--check-for-updates)).
 
-1. Click the version number at the foot of the settings panel, then **Check for updates**. This is the only time the app goes online.
+1. Open **Settings** (the gear at the top of the sidebar, or the version number at the foot of any panel), then **Updates** and **Check for updates**. This is the only time the app goes online.
 2. If a newer version exists, click **Download the installer**: your browser downloads the right one for your computer.
 3. Install it over the current version. Your settings, camera profiles and projects stay.
    - **Mac:** open the disk image and drag Fotollection into Applications, then choose **Replace**.
@@ -376,11 +376,9 @@ Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates
    - **Linux AppImage:** the button downloads the new AppImage; make it executable (`chmod +x`) and use it in place of the old file.
    - **Linux `.deb`:** the button opens the release page; download the new `.deb` and run `sudo apt install ./Fotollection_*_amd64.deb` (`_arm64.deb` on ARM).
 
-The same popover holds the **Language** choice (chapter 1) and shows the **cache**: the thumbnails, previews and best-shot analyses Fotollection keeps so folders and photos open fast, with its size against its 5 GB limit. Past the limit, the oldest go by themselves. **Clear cache** empties it at any time; nothing of yours is lost, and thumbnails come back as you browse.
+The **cache**, the memory the previews use and *Instant previews* are in **Settings → RAM & cache** (chapter 23).
 
-**Instant previews.** After a folder's thumbnails, Fotollection prepares a preview of every photo in the background (*Preparing previews* in the gallery's bar) and keeps it in the cache, so any photo you open shows at once, RAW photos too, and → and ← show the next ones without waiting. It uses up to a quarter of your computer's memory for this, and the cache's limit is 5 GB (it was 2 GB).
-
-**Something wrong, or an idea?** Click the version number at the foot of the panel, then the red **Report a problem or an idea**: it opens the project's page for problems and ideas on GitHub, in your browser ([FR-069](PRD.md#fr-069--report-a-problem)). Say what you did and what you saw, then click **Copy diagnostics** and paste it into the report: it holds your version, your system and the last error codes.
+**Something wrong, or an idea?** Open **Settings → Report a problem**, then the red **Report a problem or an idea**: it opens the project's page for problems and ideas on GitHub, in your browser ([FR-069](PRD.md#fr-069--report-a-problem)). Say what you did and what you saw, then click **Copy diagnostics** and paste it into the report: it holds your version, your system and the last error codes.
 
 **An error code.** Every error message ends with a code such as `ERR-IMG-0006`. The first letters say what kind of problem it is: `IMG` the photo file itself, `FS` a file or folder the app could not read or write, `EXT` a codec missing from the system, `DRV` the camera's connection, `CFG` a setting, font or logo, `EXP` the export, `NET` *Check for updates*, `RUS` the app itself. The × on an error hides it; it comes back only if the same thing goes wrong again on a new try. Each code is explained, with what to do, in [ERROR_CONTROL.md](ERROR_CONTROL.md). The app keeps a small log of these errors on your computer (no photos, places or file names) only so *Copy diagnostics* can quote them; it sends nothing.
 
@@ -410,7 +408,7 @@ A photo kept in Simple mode is in the print basket in Pro too, so you can switch
 
 1. Click **Collage** at the top of the sidebar. Choose what to put on sheets in the sidebar, usually the **Print basket**.
 2. The photos are paired in order, 1 + 2, 3 + 4…, and each sheet shows as it will print. An odd last photo leaves the other half white.
-3. **Sheet size**: the print size, 10 × 15 for example; Original is not offered, as a sheet needs a fixed size. The sheet is split in half across its long edge and turns to suit its first photo: two landscape photos one above the other, or two portrait photos side by side. The **turn** button on a sheet, or **R**, turns it the other way. **White** or **Black** under *3 mm border* colours the paper round the photos as well as the border.
+3. **Sheet size**: the print size, 10 × 15 for example; Original is not offered, as a sheet needs a fixed size. The sheet is split in half across its long edge and turns to suit its first photo: two landscape photos one above the other, or two portrait photos side by side. The **turn** button on a sheet, or **R**, turns it the other way. **White** or **Black** under *3 mm border* colours the paper round the photos as well as the border. Under the size, **Sheet** says how many pixels the two photos make together and **Prints at** how sharp the sheet prints: its DPI and *Excellent*, *Good*, *Fair* or *Too low*, as sharp as the less sharp photo, so neither is enlarged ([FR-087](PRD.md#fr-087--how-large-a-collage-sheet-prints)).
 4. **Two photos per sheet**:
    - **Fill each half**: no white at all. Each photo fills its half (7.5 × 10 on a 10 × 15) and the two meet edge to edge; crop each photo (step 7) to choose what stays, by dragging and zooming. The settings below, the cut line included, are then hidden.
    - **Photo ratio**: each photo's own (**Photo**), the sheet's (**Sheet**, 2:3 on a 10 × 15), **4:3** or **1:1**. The rest of the half stays white.
@@ -507,6 +505,7 @@ Two cards change a photo's colour, under **Print / export size**, in the preview
 | Preview | double-click the photo | Toggle fit and 200 % |
 | Preview | drag the photo (not zoomed) | Choose what the print keeps (*Crop to fill*) |
 | Preview | **Esc** | Leave the crop editor, then close |
+| Anywhere | **⌘,** / **Ctrl+,** | Open Settings (chapter 23) |
 | Crop editor | **← →**, **⌥ ← →** | Straighten by one degree, by a tenth |
 | Crop editor | **↑ ↓** (with **Shift**, further) | Move the crop up or down |
 | Crop editor | **+** / **−** | Zoom in / out |
@@ -524,3 +523,22 @@ Two cards change a photo's colour, under **Print / export size**, in the preview
 | Everywhere | **Cmd/Ctrl+N**, **Cmd/Ctrl+O**, **Cmd/Ctrl+S**, **Shift+Cmd/Ctrl+S** | New project, open, save, save as (chapter 13) |
 
 A focused field or slider keeps its own arrow keys: click the photo to give them back to browsing.
+
+<!-- chapter: settings -->
+
+## 23. Settings
+
+Every setting of this computer is in one window ([FR-086](PRD.md#fr-086--one-settings-window)): click the gear beside *by @hoangphi01* at the top of the sidebar, press **⌘,** (Mac) or **Ctrl+,** (Windows, Linux), or click the version number at the foot of a panel for *What's new*. The sections are listed on the left, as on an iPad; projects never carry these settings.
+
+- **General:** the language and the look (chapter 1).
+- **RAM & cache** ([FR-091](PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)):
+  - **Share of this computer's RAM** for previews: 15, 25 (the default) or 40 %. More keeps more photos ready, so → ← and photos opened again show at once; less leaves room for other apps. *Held now* shows what the previews keep. When the computer runs short of memory, they give it back by themselves.
+  - **Cache on disk:** its limit (2, 5, 10 or 20 GB), what it holds (thumbnails, previews, best-shot analyses) and **Clear cache**. Nothing of yours is lost: everything comes back when needed. A larger cache keeps the previews of more folders, about 0.7 MB a photo.
+  - **Prepare previews in the background:** after a folder's thumbnails, a preview of every photo is made (*Preparing previews* in the gallery's bar), so any photo opens in about 30 ms instead of 0.3 to 0.5 s, RAW photos too. Off saves disk space; previews are then made when a photo is opened.
+  - **For this computer** shows what *Auto* goes by: the processor and its cores, the graphics card (and whether it draws the colour sliders), the memory and the free space on the cache's disk.
+  - **Default** puts back 25 %, 5 GB and previews on. **Auto** chooses for this computer: 40 % of memory from 32 GB, 25 % from 12 GB, 15 % below; the largest cache that fits in a tenth of the free disk; previews on unless less than 5 GB is free.
+- **Updates:** *Check for updates* (chapter 17).
+- **Report a problem:** the report page and *Copy diagnostics* (chapter 17).
+- **What's new:** every version with two lines on what it brought; **Show all** opens its whole entry (added, changed, fixed). The version you run opens unfolded.
+
+<!-- shot: settings | The Settings window at RAM & cache: the memory for previews, the cache on disk, Default and Auto -->

@@ -113,11 +113,35 @@ fn write_standard_later(path: std::path::PathBuf, image: Arc<RgbImage>) {
     }
 }
 
-/// The share of the machine's RAM the preview may keep (owner, 2026-11-05: use the memory
-/// for instant previews, ADR-0041): a quarter, of 8 GB when the system does not say.
-pub fn machine_budget() -> Budget {
+/// Under this share of memory available, the preview gives back what it keeps (FR-091).
+pub const SHORT_OF_MEMORY_PERCENT: u8 = 10;
+
+/// Whether the machine is short of memory, from the share still available: the watcher
+/// trims the preview's caches then, once until memory comes back (ADR-0041).
+pub fn short_of_memory(available_percent: Option<u8>) -> bool {
+    available_percent.is_some_and(|p| p < SHORT_OF_MEMORY_PERCENT)
+}
+
+/// Bytes free on the disk that holds `path` (FR-086's *Auto*).
+pub fn free_disk(path: &std::path::Path) -> Option<u64> {
+    fotollection_oscodec::free_disk(path)
+}
+
+/// The share of the machine's memory still available, in percent (FR-091).
+pub fn available_memory_percent() -> Option<u8> {
+    fotollection_oscodec::available_memory_percent()
+}
+
+/// The machine's RAM in bytes, 8 GB when the system does not say.
+pub fn machine_memory() -> u64 {
     const UNKNOWN: u64 = 8 * 1024 * 1024 * 1024;
-    Budget::of(fotollection_oscodec::total_memory().unwrap_or(UNKNOWN) / 4)
+    fotollection_oscodec::total_memory().unwrap_or(UNKNOWN)
+}
+
+/// `percent` of the machine's RAM for the preview (owner, 2026-11-05: use the memory for
+/// instant previews, ADR-0041; 25 by default, set in the Settings window, FR-086).
+pub fn machine_budget(percent: u8) -> Budget {
+    Budget::of(machine_memory() / 100 * u64::from(percent))
 }
 
 impl Default for Budget {
@@ -141,6 +165,30 @@ enum Keep {
     Behind,
     /// As the newest: the photo on screen.
     Shown,
+}
+
+/// The bytes the preview holds, by kind (FR-086).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct Usage {
+    pub sources: usize,
+    pub prepared: usize,
+    pub full: usize,
+}
+
+impl Usage {
+    pub fn total(&self) -> usize {
+        self.sources + self.prepared + self.full
+    }
+}
+
+/// Lets the oldest of `entries` go until the rest fit in `budget` bytes; the newest stays.
+fn shrink_to<K, V>(entries: &Mutex<Vec<(K, V)>>, bytes: impl Fn(&V) -> usize, budget: usize) {
+    if let Ok(mut entries) = entries.lock() {
+        let mut total: usize = entries.iter().map(|(_, v)| bytes(v)).sum();
+        while total > budget && entries.len() > 1 {
+            total -= bytes(&entries.remove(0).1);
+        }
+    }
 }
 
 /// Keeps `value` under `key` (as the newest, or just below it when `place` is `Behind`),
@@ -171,12 +219,10 @@ fn keep_bounded<K: PartialEq, V>(
         } else {
             entries.push((key, value));
         }
-        let mut total: usize = entries.iter().map(|(_, v)| bytes(v)).sum();
-        while total > budget && entries.len() > 1 {
-            total -= bytes(&entries.remove(0).1);
-        }
     }
+    shrink_to(entries, bytes, budget);
 }
+
 /// Small sources kept for the collage grid: about 0.3 MB each, so 64 photos (32 sheets, more
 /// than a grid shows) cost about 20 MB (FR-035, NFR-021).
 const SMALL_CAPACITY: usize = 64;
@@ -309,7 +355,8 @@ pub struct PreviewCache {
     /// RAW develops at 2048 px with their fits, so a RAW slider's step only re-finishes
     /// (FR-088).
     prepared: Mutex<Vec<(PhotoId, Arc<Prepared>)>>,
-    budget: Budget,
+    /// Changed live from the Settings window (FR-086); read, never held across work.
+    budget: Mutex<Budget>,
     /// The thumbnail cache's folder, where standard previews are kept on disk (FR-091).
     disk: Option<std::path::PathBuf>,
     /// Bumped by [`Self::clear`]: an image asked for before it is not kept after it, so a
@@ -382,11 +429,69 @@ impl PreviewCache {
         Self::default()
     }
 
+    /// What the cache may keep now.
+    fn budget(&self) -> Budget {
+        self.budget
+            .lock()
+            .map_or_else(|_| Budget::default(), |b| *b)
+    }
+
+    /// A new memory budget from the Settings window (FR-086): what is over it goes at once,
+    /// the oldest first.
+    pub fn set_budget(&self, budget: Budget) {
+        if let Ok(mut b) = self.budget.lock() {
+            *b = budget;
+        }
+        shrink_to(&self.entries, |i| i.data.len(), budget.sources);
+        shrink_to(
+            &self.prepared,
+            |p| p.raw.bytes() + p.icc.as_ref().map_or(0, Vec::len),
+            budget.prepared,
+        );
+        shrink_to(&self.full, |f| f.image.data.len(), budget.full);
+    }
+
+    /// Lets everything go but the newest of each kind, the photo on screen: the machine is
+    /// short of memory (FR-091, ADR-0041). Returns the bytes let go.
+    pub fn trim(&self) -> usize {
+        let before = self.usage().total();
+        shrink_to(&self.entries, |i| i.data.len(), 0);
+        shrink_to(
+            &self.prepared,
+            |p| p.raw.bytes() + p.icc.as_ref().map_or(0, Vec::len),
+            0,
+        );
+        shrink_to(&self.full, |f| f.image.data.len(), 0);
+        if let Ok(mut small) = self.small.lock() {
+            small.clear();
+        }
+        before.saturating_sub(self.usage().total())
+    }
+
+    /// The bytes held now, by kind (FR-086).
+    pub fn usage(&self) -> Usage {
+        Usage {
+            sources: self
+                .entries
+                .lock()
+                .map_or(0, |e| e.iter().map(|(_, i)| i.data.len()).sum()),
+            prepared: self.prepared.lock().map_or(0, |e| {
+                e.iter()
+                    .map(|(_, p)| p.raw.bytes() + p.icc.as_ref().map_or(0, Vec::len))
+                    .sum()
+            }),
+            full: self
+                .full
+                .lock()
+                .map_or(0, |e| e.iter().map(|(_, f)| f.image.data.len()).sum()),
+        }
+    }
+
     /// A cache keeping up to `budget` in memory and its standard previews in `disk`, the
     /// thumbnail cache's folder (FR-091).
     pub fn with(budget: Budget, disk: Option<std::path::PathBuf>) -> Self {
         Self {
-            budget,
+            budget: Mutex::new(budget),
             disk,
             ..Self::default()
         }
@@ -481,7 +586,7 @@ impl PreviewCache {
             record.id,
             Arc::clone(&prepared),
             |p| p.raw.bytes() + p.icc.as_ref().map_or(0, Vec::len),
-            self.budget.prepared,
+            self.budget().prepared,
             keep,
             || self.epoch.load(Ordering::SeqCst) == epoch,
         );
@@ -807,7 +912,7 @@ impl PreviewCache {
             key,
             image,
             |f| f.image.data.len(),
-            self.budget.full,
+            self.budget().full,
             Keep::Shown,
             || self.epoch.load(Ordering::SeqCst) == epoch,
         );
@@ -821,7 +926,7 @@ impl PreviewCache {
             key,
             Arc::clone(image),
             |i| i.data.len(),
-            self.budget.sources,
+            self.budget().sources,
             keep,
             || self.epoch.load(Ordering::SeqCst) == epoch,
         );
@@ -1571,6 +1676,53 @@ mod tests {
         let shown = cache.render_rgb(&record, &settings, None, None, codec.as_ref())?;
         let ratio = |w: u32, h: u32| f64::from(w) / f64::from(h);
         assert!((ratio(part.width, part.height) - ratio(shown.width, shown.height)).abs() < 0.02);
+        Ok(())
+    }
+
+    /// FR-091, ADR-0041: short of memory under a tenth available, never when the system
+    /// does not say; a trim keeps only the photo on screen and says what it let go; a lower
+    /// budget lets the oldest go at once.
+    #[test]
+    fn fr_091_memory_is_given_back_when_short_or_lowered() -> TestResult {
+        assert!(short_of_memory(Some(9)) && !short_of_memory(Some(10)) && !short_of_memory(None));
+        let dir = tempfile::tempdir()?;
+        let codec = default_codec();
+        let cache = PreviewCache::with(Budget::default(), None);
+        let settings = RenderSettings::default();
+        let mut records = Vec::new();
+        for i in 0..3 {
+            let sub = dir.path().join(i.to_string());
+            std::fs::create_dir(&sub)?;
+            let mut record = photo(&sub, 1200, 800)?;
+            record.id = PhotoId(i);
+            cache.render_jpeg(&record, &settings, None, None, codec.as_ref())?;
+            records.push(record);
+        }
+        let held = cache.usage();
+        assert_eq!(cache.entries.lock().map_err(|_| "lock")?.len(), 3);
+        let one = held.sources / 3;
+        cache.set_budget(Budget {
+            sources: one * 2,
+            ..Budget::default()
+        });
+        let left: Vec<u32> = cache
+            .entries
+            .lock()
+            .map_err(|_| "lock")?
+            .iter()
+            .map(|(k, _)| k.0.0)
+            .collect();
+        assert_eq!(left, [1, 2]);
+        let freed = cache.trim();
+        assert!(freed > 0);
+        let left: Vec<u32> = cache
+            .entries
+            .lock()
+            .map_err(|_| "lock")?
+            .iter()
+            .map(|(k, _)| k.0.0)
+            .collect();
+        assert_eq!(left, [2]);
         Ok(())
     }
 

@@ -43,6 +43,9 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             updates::diagnostics,
             cache::cache_usage,
             cache::clear_cache,
+            cache::memory_info,
+            cache::machine_info,
+            cache::suggest_memory_settings,
             commands::list_print_sizes,
             commands::pick_and_import_folder,
             commands::refresh_library,
@@ -300,6 +303,8 @@ pub fn run() {
                 commands::restore_session(&handle);
                 commands::finish_startup(&handle);
                 cache::prune_in_background(&handle);
+                // The previews give their memory back when the machine runs short (FR-091).
+                cache::watch_memory(&handle);
                 // Command-line paths, then those macOS handed over before setup ran.
                 for path in requested.into_iter().chain(open_with::take_early()) {
                     open_with::route(&handle, path);

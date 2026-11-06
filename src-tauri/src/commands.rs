@@ -330,9 +330,12 @@ fn warm_standard_previews(app: &AppHandle, ids: &[PhotoId]) {
         if !current() {
             return;
         }
+        // Turned off in the Settings window (FR-086): the rest waits for next time.
+        let enabled = state.ui.read().is_ok_and(|u| u.prepare_previews);
         let record = state.library.read().ok().and_then(|l| l.record(id));
         let settings = state.settings.read().ok().map(|s| s.0.clone());
-        if let (Some(record), Some(settings)) = (record, settings)
+        if enabled
+            && let (Some(record), Some(settings)) = (record, settings)
             && background(|| {
                 state
                     .previews
@@ -859,10 +862,26 @@ pub fn set_ui_settings(
     state: State<'_, AppState>,
     ui: UiSettings,
 ) -> Result<UiSettings, IpcError> {
-    *state
-        .ui
-        .write()
-        .map_err(|e| IpcError::internal(e.to_string()))? = ui;
+    // Validated here, whatever the webview sent (SECURITY.md §2).
+    let ui = ui.sanitized();
+    let before = std::mem::replace(
+        &mut *state
+            .ui
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?,
+        ui,
+    );
+    // The previews' memory and the cache's limit follow at once (FR-086).
+    if before.preview_memory_percent != ui.preview_memory_percent {
+        state
+            .previews
+            .set_budget(fotollection_core::preview::machine_budget(
+                ui.preview_memory_percent,
+            ));
+    }
+    if before.cache_limit_gb > ui.cache_limit_gb {
+        crate::cache::prune_in_background(&app);
+    }
     // A per-machine preference: not an edit of the document.
     state.save_settings();
     apply_window_theme(&app, ui.theme);

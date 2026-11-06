@@ -28,6 +28,13 @@
 - **Fix:** `clear` bumps an epoch checked under the lock before every insert; `Keep::{No, Behind, Shown}` says where a caller's image goes; one prefetch worker with a queue the latest request replaces; an in-flight set that background work skips (the photo on screen never waits: it runs on a rayon pool); a still-wanted check once a develop's turn comes; previews pruned first, every 100 during the pass; a version in the preview's file name; `Background` unless marked. Each fix has a test that fails without it (checked by removing the fix).
 - **Rule:** state kept in memory names its owner, its bound in bytes, what empties it and who may evict whom, in its doc comment, and every cache reachable from more than one caller gets a test per caller. From a pool thread, never wait for work in flight: skip it, or re-check after the wait you already have.
 
+### The measurement caught what the type checker could not (FR-086, UI)
+
+- **Seen:** the Settings window looked right in the dev app, the type check and `check-lego` passed, yet `MEASURE=1` stopped on a page error in its *Memory & cache* section ("maximumFractionDigits value is out of range") and reported a field gap of −2 px in the Pro panel and the photo preview.
+- **Why:** `formatMemory` passed `formatNumber` its two digit counts the wrong way round (0, 1): legal types, a range error only when `Intl.NumberFormat` runs. And the slider's wider press area (FR-079, 2026-11-05) was made with `-my-2 py-2`, a negative margin that moved its box over the label above it: nothing moved on screen, but the block owned a margin, which the lego rule forbids.
+- **Fix:** the arguments in order; the press area is a `::before` reaching 8 px above and below the track, so the slider's box is what it was.
+- **Rule:** run `MEASURE=1` on every UI change before calling it done, in both languages and themes (the `style-audit` skill): it renders every place for real and fails on page errors and on any measure off the table. A wider hit area is a pseudo-element, never a margin.
+
 ### A wait inside a pool's job: the preview pass and the best-shot analysis hung each other (FR-091, FR-041)
 
 - **Seen:** the screenshot build's best-shot recording stopped for 20 minutes at 0 % CPU, on the v0.11.0 candidate. `sample` showed a background-pool thread inside the analysis's `par_iter`, which had taken up a photo of the standard-preview pass, asleep in its "wait while a job runs" loop.

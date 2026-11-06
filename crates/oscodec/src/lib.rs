@@ -48,6 +48,83 @@ pub fn total_memory() -> Option<u64> {
     }
 }
 
+/// Bytes free on the disk that holds `path`, or `None` when the system does not say: the
+/// Settings window's *Auto* sizes the cache from it (FR-086).
+pub fn free_disk(path: &std::path::Path) -> Option<u64> {
+    #[cfg(target_os = "windows")]
+    {
+        use windows::Win32::Storage::FileSystem::GetDiskFreeSpaceExW;
+        let wide = windows::core::HSTRING::from(path.as_os_str());
+        let mut free = 0u64;
+        // SAFETY: `wide` is a valid, NUL-terminated path for the whole call, and `free` a
+        // valid place for the one value asked for; the others are optional and null.
+        unsafe { GetDiskFreeSpaceExW(&wide, Some(&raw mut free), None, None) }.ok()?;
+        Some(free)
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        // `df -Pk`: one header line, then the filesystem's line; the fourth field is the
+        // space available to the user, in KiB.
+        let out = std::process::Command::new("df")
+            .arg("-Pk")
+            .arg(path)
+            .output()
+            .ok()?;
+        let text = String::from_utf8(out.stdout).ok()?;
+        let kib: u64 = text
+            .lines()
+            .nth(1)?
+            .split_whitespace()
+            .nth(3)?
+            .parse()
+            .ok()?;
+        kib.checked_mul(1024)
+    }
+}
+
+/// The share of the machine's memory still available, in percent, or `None` when the
+/// system does not say: under a tenth, the preview gives its memory back (FR-091, ADR-0041).
+/// macOS reports its own pressure level (`kern.memorystatus_level`); Windows its memory
+/// load; Linux `MemAvailable`.
+pub fn available_memory_percent() -> Option<u8> {
+    #[cfg(target_os = "macos")]
+    {
+        let out = std::process::Command::new("/usr/sbin/sysctl")
+            .args(["-n", "kern.memorystatus_level"])
+            .output()
+            .ok()?;
+        let level: u32 = String::from_utf8(out.stdout).ok()?.trim().parse().ok()?;
+        u8::try_from(level.min(100)).ok()
+    }
+    #[cfg(target_os = "windows")]
+    {
+        use windows::Win32::System::SystemInformation::{GlobalMemoryStatusEx, MEMORYSTATUSEX};
+        let mut status = MEMORYSTATUSEX {
+            dwLength: u32::try_from(std::mem::size_of::<MEMORYSTATUSEX>()).ok()?,
+            ..Default::default()
+        };
+        // SAFETY: `status` is a MEMORYSTATUSEX with its length set, as the call requires, and
+        // lives for the whole call.
+        unsafe { GlobalMemoryStatusEx(&raw mut status) }.ok()?;
+        u8::try_from(100u32.saturating_sub(status.dwMemoryLoad).min(100)).ok()
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    {
+        let info = std::fs::read_to_string("/proc/meminfo").ok()?;
+        let field = |name: &str| -> Option<u64> {
+            info.lines()
+                .find_map(|l| l.strip_prefix(name))?
+                .trim()
+                .trim_end_matches("kB")
+                .trim()
+                .parse()
+                .ok()
+        };
+        let (avail, total) = (field("MemAvailable:")?, field("MemTotal:")?);
+        u8::try_from((avail * 100 / total.max(1)).min(100)).ok()
+    }
+}
+
 /// A decoded image: 8-bit RGB, upright as stored (EXIF orientation is applied by the caller),
 /// transparency flattened onto white, plus the embedded ICC profile when there is one.
 #[derive(Debug, Clone, PartialEq, Eq)]

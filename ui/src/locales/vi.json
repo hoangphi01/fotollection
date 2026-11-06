@@ -534,7 +534,17 @@
     "report": "Báo lỗi / góp ý",
     "reportHint": "Mở trang của dự án trên GitHub trong trình duyệt. Dán thông tin chẩn đoán vào đó: phiên bản, hệ điều hành và các mã lỗi gần nhất, không có đường dẫn hay ảnh. Ứng dụng không tự gửi gì đi.",
     "diagnostics": "Sao chép thông tin chẩn đoán",
-    "copied": "Đã sao chép"
+    "copied": "Đã sao chép",
+    "showAll": "Xem tất cả",
+    "showLess": "Thu gọn",
+    "kinds": {
+      "added": "Thêm mới",
+      "changed": "Thay đổi",
+      "fixed": "Sửa lỗi",
+      "removed": "Bỏ đi",
+      "security": "Bảo mật",
+      "deprecated": "Sắp bỏ"
+    }
   },
   "update": {
     "check": "Kiểm tra cập nhật",
@@ -546,11 +556,20 @@
     "privacy": "Ứng dụng chỉ lên mạng khi bạn bấm nút này."
   },
   "cache": {
-    "usage": "Cache: {{size}} / {{limit}}",
     "measuring": "Đang đo cache…",
     "clear": "Xoá cache",
     "clearHint": "Xoá ảnh thu nhỏ, bản xem trước và kết quả phân tích ảnh đẹp nhất; chúng sẽ được tạo lại khi cần",
-    "note": "Chỉ gồm ảnh thu nhỏ, bản xem trước và kết quả phân tích. Vượt giới hạn thì phần cũ nhất tự được xoá; ảnh và dự án của bạn không bao giờ bị đụng tới."
+    "note": "Chỉ gồm ảnh thu nhỏ, bản xem trước và kết quả phân tích. Vượt giới hạn thì phần cũ nhất tự được xoá; ảnh và dự án của bạn không bao giờ bị đụng tới.",
+    "title": "Cache trên ổ đĩa",
+    "limit": "Giới hạn",
+    "limitHint": "Cache lớn hơn giữ bản xem trước của nhiều thư mục hơn, nên lần sau mở vẫn hiện ngay, khoảng 0,7 MB mỗi ảnh. Vượt giới hạn thì phần cũ nhất bị xoá trước.",
+    "thumbnails": "Ảnh nhỏ",
+    "previews": "Bản xem trước",
+    "analyses": "Phân tích ảnh đẹp nhất",
+    "total": "Tổng cộng",
+    "prepare": "Chuẩn bị sẵn bản xem trước ở chế độ nền",
+    "prepareHint": "Khi đó mở ảnh nào cũng chỉ khoảng 30 ms thay vì 0,3 đến 0,5 giây. Tắt đi để tiết kiệm ổ đĩa: bản xem trước sẽ được dựng khi mở ảnh.",
+    "totalValue": "{{size}} trên {{limit}}"
   },
   "estimate": {
     "smaller": "Ước tính: {{from}} → {{to}} (nhẹ hơn {{percent}} %)",
@@ -747,7 +766,12 @@
     "by": "×",
     "fill": "Lấp đầy mỗi nửa",
     "fillHint": "Không lề trắng: hai ảnh giáp cạnh nhau, mỗi ảnh phủ kín nửa tấm. Cắt từng ảnh để chọn phần được giữ.",
-    "marginHint": "Mỗi ảnh có lề trắng quanh nó; chọn tỷ lệ và cỡ ảnh bên dưới."
+    "marginHint": "Mỗi ảnh có lề trắng quanh nó; chọn tỷ lệ và cỡ ảnh bên dưới.",
+    "sheetPixels": "Tấm ghép",
+    "sheetPixelsValue": "{{w}} × {{h}} px ({{mp}} MP)",
+    "sheetSharpness": "Độ nét khi in",
+    "sheetSharpnessValue": "{{dpi}} DPI · {{quality}}",
+    "sheetPixelsHint": "Hai ảnh ghép thành một ảnh cỡ này, nét bằng ảnh kém nét hơn, để không ảnh nào bị phóng to."
   },
   "facts": {
     "grey": "Ảnh xám",
@@ -884,5 +908,53 @@
     "neutralHint": "Màu của cảm biến với độ sáng của máy và một đường cong nhẹ: điểm xuất phát dịu để bạn tự chỉnh màu.",
     "cameraHint": "Khớp theo ảnh JPEG máy ảnh lưu trong tệp: độ tương phản và màu của máy, như trên màn hình máy ảnh.",
     "applyToAll": "Áp dụng cho mọi ảnh RAW"
+  },
+  "settingsWindow": {
+    "title": "Cài đặt",
+    "open": "Cài đặt: ngôn ngữ, bộ nhớ và cache, cập nhật",
+    "interface": "Giao diện",
+    "version": "Fotollection v{{version}}",
+    "footer": "Các cài đặt này thuộc về máy tính này; dự án không bao giờ mang chúng theo.",
+    "sections": {
+      "general": "Chung",
+      "memory": "Bộ nhớ RAM & cache",
+      "updates": "Cập nhật",
+      "report": "Báo lỗi",
+      "whatsNew": "Có gì mới"
+    },
+    "about": {
+      "general": "Ngôn ngữ và giao diện của ứng dụng",
+      "memory": "Fotollection dùng bao nhiêu bộ nhớ RAM và ổ đĩa để mở ảnh ngay lập tức",
+      "updates": "Phiên bản mới hơn, khi bạn hỏi",
+      "report": "Báo cho tác giả biết điều gì không ổn",
+      "whatsNew": "Mọi phiên bản và những gì chúng mang lại"
+    }
+  },
+  "memory": {
+    "title": "Bộ nhớ RAM cho bản xem trước",
+    "share": "Phần bộ nhớ RAM của máy",
+    "hint": "Nhiều RAM hơn giữ sẵn nhiều ảnh hơn, nên → ← và ảnh mở lại hiện ngay; ít hơn thì chừa chỗ cho ứng dụng khác. Khi máy thiếu RAM, bản xem trước tự trả lại phần của mình.",
+    "held": "Đang giữ",
+    "heldValue": "{{held}} trên {{budget}} (máy có {{total}})",
+    "forThisComputer": "Cho máy tính này",
+    "now": "Hiện tại: {{percent}} % bộ nhớ RAM, cache {{limit}} GB, bản xem trước {{previews}}.",
+    "prepared": "chuẩn bị sẵn ở chế độ nền",
+    "notPrepared": "dựng khi mở ảnh",
+    "default": "Mặc định",
+    "defaultHint": "25 % bộ nhớ RAM, cache 5 GB, chuẩn bị sẵn bản xem trước",
+    "auto": "Tự động",
+    "autoHint": "Chọn theo bộ nhớ RAM và dung lượng trống của máy này",
+    "autoExplain": "Tự động dành 40 % bộ nhớ RAM khi máy có từ 32 GB, 25 % từ 12 GB và 15 % nếu ít hơn; chọn cache lớn nhất vừa trong một phần mười dung lượng trống; và chuẩn bị sẵn bản xem trước trừ khi còn trống dưới 5 GB."
+  },
+  "machine": {
+    "cpu": "Bộ xử lý",
+    "cpuValue": "{{name}} · {{cores}} nhân",
+    "gpu": "Đồ hoạ",
+    "gpuUsed": "{{name}} · vẽ khi kéo thanh màu",
+    "gpuNotUsed": "{{name}} · không dùng: bộ xử lý tự vẽ",
+    "memory": "Bộ nhớ RAM",
+    "disk": "Ổ đĩa của cache",
+    "diskValue": "còn trống {{free}}",
+    "unknown": "không rõ"
   }
 }

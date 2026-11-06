@@ -16,11 +16,7 @@ const EXEMPT = {
   'features/library/library-grid.tsx': 'the photo grid, laid out by its own virtual rows',
   'features/library/library-sidebar.tsx': 'the folder list, a list of rows, not cards',
   'features/library/library-empty-state.tsx': 'the empty window, centred text',
-  'features/about/version-history.tsx': 'a popover list of releases',
   'features/about/version-popover.tsx': 'a popover, not a panel',
-  'features/about/report-issue.tsx': 'a popover section',
-  'features/about/cache-usage.tsx': 'a popover section',
-  'features/about/update-check.tsx': 'a popover section',
   'features/capture/camera-controls.tsx': 'the capture dialog, its own layout',
   'features/places/date-place-dialog.tsx': 'a dialog, its own layout',
   'features/project/project-dialogs.tsx': 'dialogs, their own layout',
@@ -30,8 +26,7 @@ const EXEMPT = {
   'features/viewer/crop-editor.tsx': 'the crop overlay on the photo, not a panel',
   'features/places/borrow-dialog.tsx': 'a dialog, its own layout',
   'features/modes/mode-switch.tsx': 'the window title bar, not a panel',
-  'features/about/language-setting.tsx': 'a compact row in the version popover',
-  'features/appearance/theme-switch.tsx': 'icon buttons in the version popover',
+  'features/appearance/theme-switch.tsx': 'icon buttons at the foot of the folder list',
   'features/best-shot/compare-dialog.tsx': 'a dialog, its own layout',
   'features/best-shot/group-strip.tsx': 'a strip of thumbnails, its badges sized to them',
   'features/best-shot/groups-view.tsx': 'the stage listing the groups, not a panel',
@@ -88,20 +83,22 @@ for (const path of files) {
     })
 }
 
-// Where each card shows (STYLE_RULE §4, where each card shows): its file says `@shown both`, `@shown gallery` or
-// `@shown preview`, and the panels below may only hold the cards their place allows.
+// Where each card shows (STYLE_RULE §4): its file says `@shown both`, `gallery`, `preview` or
+// `settings` (the Settings window, FR-086), and the places below may only hold the cards their
+// flag allows.
 const PLACES = {
   'features/settings/settings-panel.tsx': 'gallery',
   'features/simple/simple-panel.tsx': 'gallery',
   'features/collage/collage-panel.tsx': 'gallery',
   'features/viewer/preview-dialog.tsx': 'preview',
   'features/collage/sheet-preview-dialog.tsx': 'preview',
+  'features/settings-window/settings-window.tsx': 'settings',
 }
 const shownIn = new Map()
 for (const [panel, place] of Object.entries(PLACES)) {
   const text = readFileSync(join(root, 'src', panel), 'utf8')
   const imports = new Map()
-  for (const m of text.matchAll(/import \{([^}]*)\} from '(?:@\/|\.\/)([^']+)'/g)) {
+  for (const m of text.matchAll(/import \{([^}]*)\} from ['"](?:@\/|\.\/)([^'"]+)['"]/g)) {
     const from = m[2].startsWith('features/') || m[2].startsWith('components/') ? m[2] : `${panel.replace(/[^/]+$/, '')}${m[2]}`
     for (const name of m[1].split(',').map((n) => n.trim()))
       if (name) imports.set(name, from)
@@ -111,8 +108,8 @@ for (const [panel, place] of Object.entries(PLACES)) {
     // The shared pieces (SectionCard…) live in components and show anywhere.
     if (!from || !from.startsWith('features/')) continue
     const source = readFileSync(join(root, 'src', `${from}.tsx`), 'utf8')
-    const flag = /@shown (both|gallery|preview)\b/.exec(source)?.[1]
-    if (!flag) problems.push(`${from}.tsx: no @shown flag (both, gallery or preview), and ${panel} shows it`)
+    const flag = /@shown (both|gallery|preview|settings)\b/.exec(source)?.[1]
+    if (!flag) problems.push(`${from}.tsx: no @shown flag (both, gallery, preview or settings), and ${panel} shows it`)
     else if (flag !== 'both' && flag !== place)
       problems.push(`${panel}: shows ${m}, flagged @shown ${flag}, in the ${place}`)
     shownIn.set(m, flag)

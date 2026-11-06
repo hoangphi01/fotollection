@@ -2,7 +2,7 @@
 import { useTranslation } from 'react-i18next'
 import { PanelFooter } from '@/features/about/panel-footer'
 import { SidePanel } from '@/components/layout/side-panel'
-import type { CellInfo, CullFilter, PhotoId, RenderSettings } from '@/ipc/bindings'
+import type { CellInfo, CullFilter, PhotoId, RenderSettings, SheetInfo } from '@/ipc/bindings'
 import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
@@ -23,6 +23,8 @@ type CollagePanelProps = {
   tickedSheets?: number
   /** The photo chosen on the selected sheet, for the size fields and the advice. */
   cell: CellInfo | undefined
+  /** The chosen sheet's pixels and how sharp it prints (FR-087). */
+  sheetInfo?: SheetInfo
   /** Photos with their own stamp from the preview (FR-044). */
   customStamps: number
   revision: number
@@ -43,6 +45,7 @@ export function CollagePanel({
   ticked,
   tickedSheets = 0,
   cell,
+  sheetInfo,
   customStamps,
   revision,
 }: CollagePanelProps) {
@@ -57,7 +60,7 @@ export function CollagePanel({
         </>
       }
     >
-      <SheetSizeCard settings={settings} onChange={onChange} />
+      <SheetSizeCard settings={settings} onChange={onChange} info={sheetInfo} />
       <PostcardCard settings={settings} onChange={onChange} />
       <PostcardTextCard
         settings={settings}

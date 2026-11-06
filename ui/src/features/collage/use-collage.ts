@@ -27,6 +27,8 @@ export function useCollage(filter: CullFilter, revision: number, enabled: boolea
     cellIndex,
     sheet,
     cell,
+    /** What Rust says about the chosen sheet: its cells and its pixels (FR-087). */
+    info,
     picked,
     select: (sheet: number, cell: 0 | 1) => {
       setChosen({ sheet, cell })

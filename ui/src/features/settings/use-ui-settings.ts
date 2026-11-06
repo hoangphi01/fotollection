@@ -9,6 +9,10 @@ let current: Required<UiSettings> = {
   theme: 'system',
   mode: 'professional',
   exportFolders: 'oneFolder',
+  // The memory and cache settings (FR-086), as Rust's defaults.
+  previewMemoryPercent: 25,
+  cacheLimitGb: 5,
+  preparePreviews: true,
 }
 let requested = false
 const listeners = new Set<() => void>()
@@ -36,7 +40,12 @@ export function useUiSettings() {
   const update = useCallback(async (change: Partial<UiSettings>) => {
     current = { ...current, ...change }
     emit()
-    await commands.setUiSettings(current)
+    // Rust keeps every value within what the app allows: its answer is the truth.
+    const result = await commands.setUiSettings(current)
+    if (result.status === 'ok') {
+      current = { ...current, ...result.data }
+      emit()
+    }
   }, [])
   return { ui, update }
 }
