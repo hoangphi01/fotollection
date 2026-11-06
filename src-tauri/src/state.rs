@@ -152,6 +152,9 @@ pub struct AppState {
     pub requested_photo: Mutex<Option<crate::open_with::OpenPhoto>>,
     /// The installer link found by the last "Check for updates" (FR-061).
     pub update_download: crate::updates::PendingDownload,
+    /// The folder the last export wrote into (FR-093), for *Open folder*: kept in Rust, so the
+    /// webview never names a path to open. One path; replaced by the next export.
+    pub last_export: Mutex<Option<PathBuf>>,
 }
 
 /// The current document: none until the first Save As or Open.
@@ -269,6 +272,7 @@ impl AppState {
             requested_open: Mutex::new(None),
             requested_photo: Mutex::new(None),
             update_download: crate::updates::PendingDownload::default(),
+            last_export: Mutex::new(None),
         })
     }
 

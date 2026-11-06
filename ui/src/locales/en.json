@@ -350,7 +350,8 @@
     "skipped_one": "{{count}} skipped (already there)",
     "skipped_other": "{{count}} skipped (already there)",
     "overLimit_one": "{{count}} still over the size limit",
-    "overLimit_other": "{{count}} still over the size limit"
+    "overLimit_other": "{{count}} still over the size limit",
+    "openFolder": "Open folder"
   },
   "crop": {
     "zoom": "Zoom",

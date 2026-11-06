@@ -307,7 +307,7 @@ Xuất ảnh ghi ra các tệp mới để đem đi in hoặc chia sẻ; ảnh g
    - **Tên tệp** ([FR-104](PRD.md#fr-104--file-names-as-lightrooms-templates)): **Tên gốc** (mặc định), **Ngày - tên gốc**, **Tên tự đặt - số**, **Tên tự đặt - ngày - số** hoặc **Ngày - số**, kèm tên tự đặt và số bắt đầu khi cách đặt tên dùng đến. **Ví dụ** cho thấy tên tệp đầu tiên sẽ được ghi.
    - **Kích thước**, như ở trên.
    - **Siêu dữ liệu:** những gì tệp giữ lại: **Máy ảnh** (máy ảnh, ống kính, thông số và ngày chụp, mặc định), **Chỉ ngày**, hoặc **Không gì**. Vị trí GPS luôn bị xoá.
-4. Nhấp **Xuất n ảnh** trong hộp thoại. Một thanh trong bảng bên hiện tiến độ, và **Hủy** dừng lại: các ảnh đã xuất xong vẫn giữ, tệp đang ghi dở bị xoá. Ảnh nào không xuất được sẽ bị bỏ qua, và phần tổng kết cho biết bao nhiêu ảnh lỗi.
+4. Nhấp **Xuất n ảnh** trong hộp thoại. Một thanh trong bảng bên hiện tiến độ, và **Hủy** dừng lại; xong thì một khung xanh lá cho biết đã xuất bao nhiêu ảnh vào đâu, kèm nút **Mở thư mục**. Khi hủy: các ảnh đã xuất xong vẫn giữ, tệp đang ghi dở bị xoá. Ảnh nào không xuất được sẽ bị bỏ qua, và phần tổng kết cho biết bao nhiêu ảnh lỗi.
 5. **Không hỏi lại:** đánh dấu ô này trong hộp thoại, từ đó **Xuất** sẽ xuất ngay với đúng các lựa chọn ấy; bảng bên ghi chúng trên một dòng (ví dụ *In ảnh · theo ngày · chất lượng 90*), và nhấp vào dòng đó sẽ mở lại hộp thoại. **Cài đặt → Xuất ảnh** có cùng các lựa chọn và **Lần nào cũng hỏi**, để bật lại hộp thoại. Thư mục, chất lượng và các lựa chọn khác được nhớ trên máy này; nếu thư mục không còn (thẻ nhớ hay ổ đĩa đã rút ra), việc xuất dừng lại và báo cho bạn.
 
 <!-- shot: estimate | Ô ước tính dung lượng ngay trên nút xuất ảnh, khi xuất cho Facebook -->

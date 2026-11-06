@@ -8,6 +8,10 @@ const alertVariants = cva(
     variants: {
       variant: {
         default: "bg-card text-card-foreground",
+        // A job that ended well (an export, FR-093): the green of the success badges, white ink,
+        // its lip a deeper green (owner, 2026-11-06).
+        success:
+          "border-transparent bg-success-solid text-white [--face:var(--success-solid)] *:data-[slot=alert-description]:text-white/90 *:[svg]:text-white",
         destructive:
           "bg-card text-destructive *:data-[slot=alert-description]:text-destructive/90 *:[svg]:text-current",
       },

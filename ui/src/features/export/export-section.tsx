@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { CircleCheck, Download, HardDrive, OctagonX, TriangleAlert, X } from 'lucide-react'
+import { CircleCheck, Download, FolderOpen, HardDrive, OctagonX, TriangleAlert, X } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Field, Hint, Stack } from '@/components/forms/field'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
-import type { CullFilter, PhotoId } from '@/ipc/bindings'
+import { commands, type CullFilter, type PhotoId } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { formatBytes } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -93,7 +93,7 @@ export function ExportSection({
       )}
 
       {state.kind === 'finished' && (
-        <Alert variant={state.summary.failed.length ? 'destructive' : 'default'}>
+        <Alert variant={state.summary.failed.length ? 'destructive' : state.summary.cancelled ? 'default' : 'success'}>
           {state.summary.cancelled ? (
             <TriangleAlert />
           ) : state.summary.failed.length ? (
@@ -114,9 +114,18 @@ export function ExportSection({
               →{' '}
               {folderName(state.summary.destination)}
             </p>
-            {state.summary.sourceBytes && state.summary.outputBytes ? (
-              <SizeChange from={state.summary.sourceBytes} to={state.summary.outputBytes} />
-            ) : null}
+            {/* The figures and *Open folder*, 8 px apart (STYLE_RULE §4, three spacings). */}
+            <div className="flex flex-wrap items-center gap-2">
+              {state.summary.sourceBytes && state.summary.outputBytes ? (
+                <SizeChange from={state.summary.sourceBytes} to={state.summary.outputBytes} />
+              ) : null}
+              {state.summary.exported > 0 && (
+                <Button size="sm" variant="secondary" onClick={() => void commands.openExportFolder()}>
+                  <FolderOpen data-icon="inline-start" />
+                  {t('export.openFolder')}
+                </Button>
+              )}
+            </div>
             {state.summary.failed.slice(0, 3).map((f) => (
               <p key={f.id} className="truncate text-xs" data-hint={f.message}>
                 {f.fileName}: {errorText(f)}
@@ -247,7 +256,6 @@ export function SizeChange({
       data-hint={t(key, values)}
       className={cn(
         'tabular-nums transition-opacity',
-        before ? '' : 'mt-1.5',
         // Dimmed only when the new figure is slow to come: a quick refresh while typing
         // never blinks (STYLE_RULE §4).
         stale && 'opacity-50 delay-700',

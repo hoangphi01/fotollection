@@ -932,6 +932,29 @@ pub async fn pick_export_folder(app: AppHandle) -> Result<Option<String>, IpcErr
     .map_err(|e| IpcError::internal(e.to_string()))?
 }
 
+/// Opens the folder the last export wrote into, in Finder or Explorer (FR-093, the result's
+/// *Open folder*). The path is the one Rust kept, never one from the webview.
+#[tauri::command]
+#[specta::specta]
+pub fn open_export_folder(app: AppHandle, state: State<'_, AppState>) -> Result<(), IpcError> {
+    use tauri_plugin_opener::OpenerExt;
+    let folder = state
+        .last_export
+        .lock()
+        .ok()
+        .and_then(|last| last.clone())
+        .filter(|f| f.is_dir())
+        .ok_or_else(|| {
+            IpcError::new(
+                "export.destination_gone",
+                "The export folder is no longer there",
+            )
+        })?;
+    app.opener()
+        .open_path(folder.to_string_lossy(), None::<&str>)
+        .map_err(|e| IpcError::internal(e.to_string()))
+}
+
 /// The first file name an export with `naming` writes, for the export dialog's example
 /// (FR-104): the library's first photo through the same code the export uses, so the example
 /// is the real name; a sample photo when the library is empty. `count` is how many files the
@@ -1111,6 +1134,13 @@ pub fn start_export(
         };
         if let Ok(mut jobs) = state.jobs.lock() {
             jobs.remove(&job_id);
+        }
+        // Where *Open folder* goes: the subfolder when there is one (FR-093, FR-009).
+        if let Ok(mut last) = state.last_export.lock() {
+            *last = Some(match &files.subfolder {
+                Some(sub) => destination.join(sub),
+                None => destination.clone(),
+            });
         }
         let _ = ExportFinished { job_id, summary }.emit(&app);
     });

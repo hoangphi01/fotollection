@@ -130,6 +130,11 @@ export const commands = {
 	 */
 	exportNameExample: (naming: ExportNaming, count: number) => typedError<string, IpcError>(__TAURI_INVOKE("export_name_example", { naming, count })),
 	/**
+	 *  Opens the folder the last export wrote into, in Finder or Explorer (FR-093, the result's
+	 *  *Open folder*). The path is the one Rust kept, never one from the webview.
+	 */
+	openExportFolder: () => typedError<null, IpcError>(__TAURI_INVOKE("open_export_folder")),
+	/**
 	 *  What the export will weigh, before it runs (FR-053): the originals' total and an estimate
 	 *  from a few photos encoded in memory with the current settings. Nothing is written.
 	 */

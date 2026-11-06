@@ -330,7 +330,8 @@
     "changeChoices": "Đổi lựa chọn xuất ảnh",
     "qualityLine": "chất lượng {{quality}}",
     "skipped_other": "bỏ qua {{count}} (đã có sẵn)",
-    "overLimit_other": "{{count}} ảnh vẫn quá giới hạn dung lượng"
+    "overLimit_other": "{{count}} ảnh vẫn quá giới hạn dung lượng",
+    "openFolder": "Mở thư mục"
   },
   "crop": {
     "zoom": "Thu phóng",
