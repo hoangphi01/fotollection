@@ -257,6 +257,9 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 /* Performance page: a heading, then one section per measurement and the explanations. */
 .kicker { margin: 0 0 10px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
 .section.perf-head { padding-bottom: 24px; } /* also on wide screens, where .section gets 96px */
+/* The page's glow (body::before) fades out over the first section; a tinted one right under the
+   head would cut it with a hard edge, so its tint fades in as the glow fades out (owner, 2026-11-06). */
+.perf-head + .section.tint { background: linear-gradient(transparent, var(--tint) 360px); }
 .perf-part { display: grid; grid-template-columns: 1fr; gap: 8px; }
 .perf-part .charts { margin: 12px 0 0; }
 .qa { max-width: 860px; margin-top: 24px; }
