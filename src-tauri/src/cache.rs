@@ -58,21 +58,22 @@ pub fn clear_cache(state: State<'_, AppState>) -> CacheUsage {
     to_ipc(cache_limit::usage(&dirs(&state)))
 }
 
-/// Keeps the cache under its limit, on the background pool so nothing waits for it.
+/// Keeps the cache under its limit, on a thread of its own so nothing waits for it.
 pub fn prune_in_background(app: &AppHandle) {
     let app = app.clone();
-    std::thread::spawn(move || {
-        let state = app.state::<AppState>();
-        state.background_pool.install(|| {
-            let pruned = cache_limit::prune(&dirs(&state), cache_limit::LIMIT_BYTES);
-            if pruned.removed > 0 {
-                eprintln!(
-                    "cache: removed {} files ({} MB), {} MB left",
-                    pruned.removed,
-                    pruned.freed_bytes / 1_000_000,
-                    pruned.left.bytes / 1_000_000
-                );
-            }
-        });
-    });
+    std::thread::spawn(move || prune(&app.state::<AppState>()));
+}
+
+/// Keeps the cache under its limit now, on the caller's thread (a plain one: it reads every
+/// file's time, about 0.2 s for 70,000 files).
+pub fn prune(state: &AppState) {
+    let pruned = cache_limit::prune(&dirs(state), cache_limit::LIMIT_BYTES);
+    if pruned.removed > 0 {
+        eprintln!(
+            "cache: removed {} files ({} MB), {} MB left",
+            pruned.removed,
+            pruned.freed_bytes / 1_000_000,
+            pruned.left.bytes / 1_000_000
+        );
+    }
 }

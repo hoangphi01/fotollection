@@ -83,7 +83,8 @@ export const commands = {
 	/**
 	 *  Loads the photos about to be shown into memory, from their standard previews (FR-091):
 	 *  the preview asks for the next ones in the direction of travel once its photo is on
-	 *  screen. A newer request stops an older one; it runs behind the photo on screen.
+	 *  screen. A newer request replaces an older one; one worker runs them behind the photo on
+	 *  screen (`prefetch.rs`).
 	 */
 	prefetchPreviews: (ids: PhotoId[]) => __TAURI_INVOKE<void>("prefetch_previews", { ids }),
 	cancelJob: (jobId: number) => typedError<null, IpcError>(__TAURI_INVOKE("cancel_job", { jobId })),

@@ -64,8 +64,20 @@ pub fn usage(dirs: &[&Path]) -> Usage {
     })
 }
 
-/// Deletes unfinished `.part` writes, then, while the total is over `limit`, the files used
-/// longest ago, down to 90 % of `limit`.
+/// What goes first when the cache is over its limit: standard previews (`<key>.t2…`, about
+/// 0.7 MB each, remade in about 0.4 s) before thumbnails and analyses (about 27 KB, and the
+/// grid needs them first): a prune never drops new thumbnails to keep old previews (audit
+/// 2026-11-06, FR-091).
+fn tier(path: &Path) -> u8 {
+    let preview = path
+        .file_name()
+        .and_then(|n| n.to_str())
+        .is_some_and(|n| n.contains(".t2"));
+    u8::from(!preview)
+}
+
+/// Deletes unfinished `.part` writes, then, while the total is over `limit`, the standard
+/// previews used longest ago, then the other files used longest ago, down to 90 % of `limit`.
 pub fn prune(dirs: &[&Path], limit: u64) -> Pruned {
     let now = SystemTime::now();
     let mut pruned = Pruned::default();
@@ -88,7 +100,7 @@ pub fn prune(dirs: &[&Path], limit: u64) -> Pruned {
     )]
     let target = (limit as f64 * AFTER_PRUNE) as u64;
     if total > limit {
-        kept.sort_by_key(|e| e.used);
+        kept.sort_by_key(|e| (tier(&e.path), e.used));
         kept.retain(|entry| {
             if total <= target || std::fs::remove_file(&entry.path).is_err() {
                 return true;
@@ -191,6 +203,26 @@ mod tests {
                 files: 2
             }
         );
+        Ok(())
+    }
+
+    /// Audit 2026-11-06: over the limit, standard previews go before thumbnails, even newer
+    /// ones: a full pass of previews never pushes out the grid's thumbnails.
+    #[test]
+    fn fr_091_prune_drops_standard_previews_before_thumbnails() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let thumbs = [
+            file(dir.path(), "aa/a.t1.jpg", 100, 3 * 86_400)?,
+            file(dir.path(), "bb/b.t1.jpg", 100, 2 * 86_400)?,
+        ];
+        let previews = [
+            file(dir.path(), "aa/a.t2v2-o1-neutral.jpg", 400, 60)?,
+            file(dir.path(), "bb/b.t2v2-o1-neutral.jpg", 400, 30)?,
+        ];
+        let pruned = prune(&[dir.path()], 600);
+        assert_eq!(pruned.removed, 2);
+        assert!(thumbs.iter().all(|p| p.exists()));
+        assert!(previews.iter().all(|p| !p.exists()));
         Ok(())
     }
 

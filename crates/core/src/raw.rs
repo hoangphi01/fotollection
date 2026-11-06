@@ -137,25 +137,24 @@ fn decoded(image: fotollection_oscodec::OsImage) -> Result<Decoded, CodecError> 
 /// One develop at a time across the app: a single develop can hold more than 1 GB
 /// (RESULT.md §12), so a batch export of RAW stays within the 2 GB ceiling (NFR-004). The
 /// photo on screen goes first (FR-091): a background develop waits while any interactive one
-/// waits.
-static DEVELOP: Gate = Gate {
-    state: std::sync::Mutex::new(GateState {
-        busy: false,
-        interactive_waiting: 0,
-    }),
-    turn: std::sync::Condvar::new(),
-};
+/// for the photo on screen waits.
+static DEVELOP: Gate = Gate::new();
 
-/// Who is waiting for a develop: the photo on screen, or work the user does not wait for
-/// (standard previews, prefetch, the export's estimate, an export) (FR-091).
+/// Who is waiting for a develop (FR-091): the photo on screen, or work the user does not wait
+/// for (standard previews, prefetch, the export's estimate, an export, an analysis).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Priority {
-    Interactive,
+    /// Something the user waits for now. `Some(photo)` goes first only while that photo is
+    /// the one [`show`] last named: a render left behind by fast browsing then waits like
+    /// background work. `None` for a view of no single photo (a collage sheet).
+    Interactive(Option<u64>),
     Background,
 }
 
 thread_local! {
-    static PRIORITY: std::cell::Cell<Priority> = const { std::cell::Cell::new(Priority::Interactive) };
+    /// Background unless the caller says otherwise: only what the user waits for claims the
+    /// front of the queue (audit 2026-11-06).
+    static PRIORITY: std::cell::Cell<Priority> = const { std::cell::Cell::new(Priority::Background) };
 }
 
 /// Runs `work` with `priority` for every develop it asks for on this thread. Work for many
@@ -171,9 +170,23 @@ pub fn with_priority<T>(priority: Priority, work: impl FnOnce() -> T) -> T {
     work()
 }
 
+/// `photo` is now the one on screen (FR-091): develops asked for another photo stop going
+/// first. Called when the preview asks for a photo, before its work is queued.
+pub fn show(photo: u64) {
+    DEVELOP.show(photo);
+}
+
+/// No photo shown yet.
+const NONE_SHOWN: u64 = u64::MAX;
+
 struct GateState {
     busy: bool,
+    /// Waiters that go first now: interactive, for the photo on screen.
     interactive_waiting: usize,
+    /// The photo on screen ([`show`]).
+    shown: u64,
+    /// Every develop waiting for a turn.
+    waiting: usize,
 }
 
 struct Gate {
@@ -185,37 +198,81 @@ struct Gate {
 struct Turn<'a>(&'a Gate);
 
 impl Gate {
-    fn enter(&self, priority: Priority) -> Turn<'_> {
-        // A poisoned lock only means a develop panicked; the state is two plain fields.
-        let mut s = self
-            .state
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner);
-        let interactive = priority == Priority::Interactive;
-        if interactive {
-            s.interactive_waiting += 1;
+    const fn new() -> Self {
+        Self {
+            state: std::sync::Mutex::new(GateState {
+                busy: false,
+                interactive_waiting: 0,
+                shown: NONE_SHOWN,
+                waiting: 0,
+            }),
+            turn: std::sync::Condvar::new(),
         }
-        while s.busy || (!interactive && s.interactive_waiting > 0) {
+    }
+
+    fn lock(&self) -> std::sync::MutexGuard<'_, GateState> {
+        // A poisoned lock only means a develop panicked; the state is plain fields.
+        self.state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+    }
+
+    fn show(&self, photo: u64) {
+        let mut s = self.lock();
+        if s.shown != photo {
+            s.shown = photo;
+            drop(s);
+            // Waiters for the photo left behind count themselves out.
+            self.turn.notify_all();
+        }
+    }
+
+    fn enter(&self, priority: Priority) -> Turn<'_> {
+        let mut s = self.lock();
+        s.waiting += 1;
+        // Whether this waiter is counted in `interactive_waiting`: only while its photo is
+        // still the one on screen, so a render left behind stops holding back the others.
+        let mut counted = false;
+        loop {
+            let urgent = match priority {
+                Priority::Interactive(None) => true,
+                Priority::Interactive(Some(photo)) => s.shown == photo,
+                Priority::Background => false,
+            };
+            if urgent != counted {
+                if urgent {
+                    s.interactive_waiting += 1;
+                } else {
+                    s.interactive_waiting -= 1;
+                }
+                counted = urgent;
+            }
+            if !s.busy && (urgent || s.interactive_waiting == 0) {
+                break;
+            }
             s = self
                 .turn
                 .wait(s)
                 .unwrap_or_else(std::sync::PoisonError::into_inner);
         }
-        if interactive {
+        if counted {
             s.interactive_waiting -= 1;
         }
+        s.waiting -= 1;
         s.busy = true;
         Turn(self)
+    }
+
+    /// How many develops wait for a turn right now, for the tests.
+    #[cfg(test)]
+    fn waiting(&self) -> usize {
+        self.lock().waiting
     }
 }
 
 impl Drop for Turn<'_> {
     fn drop(&mut self) {
-        let mut s = self
-            .0
-            .state
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut s = self.0.lock();
         s.busy = false;
         drop(s);
         self.0.turn.notify_all();
@@ -615,14 +672,26 @@ pub fn decode(
 
 /// The develop the preview keeps (FR-088): at most `raw_finish::FIT_EDGE` across, with its
 /// fits, so each step of a RAW slider re-finishes only this copy.
-pub fn prepare(
+pub fn prepare(bytes: &[u8], kind: RawKind) -> Result<Kept, CodecError> {
+    prepare_while(bytes, kind, &|| true)?
+        .ok_or_else(|| CodecError::Decode("the RAW develop failed".into()))
+}
+
+/// A develop the preview keeps, and the profile it finishes to.
+pub type Kept = (crate::raw_finish::Prepared, Option<Vec<u8>>);
+
+/// [`prepare`], unless `wanted` says no once the develop's turn comes: `Ok(None)` then, and
+/// nothing developed (FR-091). A prefetch the user has browsed past, or a photo whose standard
+/// preview another thread wrote while this one waited, costs no develop.
+pub fn prepare_while(
     bytes: &[u8],
     kind: RawKind,
-) -> Result<(crate::raw_finish::Prepared, Option<Vec<u8>>), CodecError> {
+    wanted: &(dyn Fn() -> bool + Sync),
+) -> Result<Option<Kept>, CodecError> {
     if fotollection_rawcore::cut_short(bytes) {
         return Err(CodecError::Decode("the RAW file is cut short".into()));
     }
-    one_at_a_time(|| {
+    let developed = one_at_a_time_on(&DEVELOP, wanted, || {
         first(kind, |d| {
             let developed = d.develop(bytes, kind)?;
             Ok((
@@ -634,8 +703,12 @@ pub fn prepare(
                 developed.icc,
             ))
         })
-    })
-    .unwrap_or_else(|| Err(CodecError::Decode("the RAW develop failed".into())))
+    });
+    match developed {
+        Turned::Done(result) => result.map(Some),
+        Turned::NotWanted => Ok(None),
+        Turned::Failed => Err(CodecError::Decode("the RAW develop failed".into())),
+    }
 }
 
 /// The pool a develop's parallel work runs on, used by nobody else: whoever holds `DEVELOP`
@@ -664,19 +737,43 @@ fn develop_pool() -> Option<&'static rayon::ThreadPool> {
 /// every one of its threads waits for `DEVELOP`, the develop holding it finds none left for
 /// its parallel work and never ends (LESSONS 2026-11-05: the export estimate's samples).
 fn one_at_a_time<T: Send>(develop: impl FnOnce() -> T + Send) -> Option<T> {
+    match one_at_a_time_on(&DEVELOP, &|| true, develop) {
+        Turned::Done(value) => Some(value),
+        Turned::NotWanted | Turned::Failed => None,
+    }
+}
+
+/// What a develop asked of a gate came to.
+enum Turned<T> {
+    Done(T),
+    /// `wanted` said no once the turn came: nothing ran.
+    NotWanted,
+    /// The develop panicked.
+    Failed,
+}
+
+/// [`one_at_a_time`] on `gate`, asking `wanted` once the turn is taken.
+fn one_at_a_time_on<T: Send>(
+    gate: &Gate,
+    wanted: &(dyn Fn() -> bool + Sync),
+    develop: impl FnOnce() -> T + Send,
+) -> Turned<T> {
     // Read on the caller's thread, where the work set it.
     let priority = PRIORITY.with(std::cell::Cell::get);
     std::thread::scope(|scope| {
         scope
             .spawn(|| {
-                let _turn = DEVELOP.enter(priority);
-                match develop_pool() {
+                let _turn = gate.enter(priority);
+                if !wanted() {
+                    return Turned::NotWanted;
+                }
+                Turned::Done(match develop_pool() {
                     Some(pool) => pool.install(develop),
                     None => develop(),
-                }
+                })
             })
             .join()
-            .ok()
+            .unwrap_or(Turned::Failed)
     })
 }
 
@@ -750,35 +847,134 @@ mod tests {
         assert_eq!(answer, Ok(asked), "the develops never finished");
     }
 
+    /// Polls `ready` until it holds (10 s at most): the tests wait for threads to be queued
+    /// at the gate by counting them, never by guessing a time.
+    fn until(ready: impl Fn() -> bool) {
+        let start = std::time::Instant::now();
+        while !ready() {
+            assert!(
+                start.elapsed() < std::time::Duration::from_secs(10),
+                "timed out"
+            );
+            std::thread::yield_now();
+        }
+    }
+
+    /// A develop on `gate` that records `name` in `order` once it runs, then holds the turn
+    /// until `release` is sent (or dropped).
+    fn queued(
+        gate: &'static Gate,
+        order: &std::sync::Arc<std::sync::Mutex<Vec<&'static str>>>,
+        name: &'static str,
+        priority: Priority,
+        release: std::sync::mpsc::Receiver<()>,
+    ) -> std::thread::JoinHandle<()> {
+        let order = std::sync::Arc::clone(order);
+        std::thread::spawn(move || {
+            with_priority(priority, || {
+                one_at_a_time_on(gate, &|| true, move || {
+                    order.lock().map(|mut o| o.push(name)).ok();
+                    let _ = release.recv();
+                })
+            });
+        })
+    }
+
+    fn order_of(order: &std::sync::Arc<std::sync::Mutex<Vec<&'static str>>>) -> Vec<&'static str> {
+        order.lock().map(|o| o.clone()).unwrap_or_default()
+    }
+
     /// FR-091: the photo on screen goes before work the user does not wait for. While one
     /// develop runs, a background develop asks, then an interactive one: the interactive one
-    /// runs next.
+    /// runs next. Queued by counting the waiters, not by sleeping (audit 2026-11-06).
     #[test]
     fn fr_091_an_interactive_develop_goes_before_a_background_one() {
-        use std::sync::{Arc, Mutex};
-        use std::time::Duration;
-        let order = Arc::new(Mutex::new(Vec::new()));
-        let run = |name: &'static str, priority: Priority, hold: u64| {
-            let order = Arc::clone(&order);
-            std::thread::spawn(move || {
-                with_priority(priority, || {
-                    one_at_a_time(|| {
-                        order.lock().map(|mut o| o.push(name)).ok();
-                        std::thread::sleep(Duration::from_millis(hold));
-                    })
-                });
-            })
-        };
-        let first = run("first", Priority::Background, 300);
-        std::thread::sleep(Duration::from_millis(50));
-        let background = run("background", Priority::Background, 10);
-        std::thread::sleep(Duration::from_millis(50));
-        let interactive = run("interactive", Priority::Interactive, 10);
+        static GATE: Gate = Gate::new();
+        let order = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let (hold, release) = std::sync::mpsc::channel();
+        let first = queued(&GATE, &order, "first", Priority::Background, release);
+        until(|| order_of(&order).len() == 1);
+        let (_, free) = std::sync::mpsc::channel();
+        let background = queued(&GATE, &order, "background", Priority::Background, free);
+        until(|| GATE.waiting() == 1);
+        let (_, free) = std::sync::mpsc::channel();
+        let interactive = queued(
+            &GATE,
+            &order,
+            "interactive",
+            Priority::Interactive(None),
+            free,
+        );
+        until(|| GATE.waiting() == 2);
+        drop(hold);
         for t in [first, background, interactive] {
             assert!(t.join().is_ok());
         }
-        let order = order.lock().map(|o| o.clone()).unwrap_or_default();
-        assert_eq!(order, ["first", "interactive", "background"]);
+        assert_eq!(order_of(&order), ["first", "interactive", "background"]);
+    }
+
+    /// FR-091, audit 2026-11-06: a render left behind by fast browsing no longer goes first.
+    /// Photo 1's develop waits; the user moves on to photo 2: photo 1's stops counting as
+    /// interactive, and photo 2's, asked after it, runs before it.
+    #[test]
+    fn fr_091_a_render_for_a_photo_left_behind_waits_like_background_work() {
+        static GATE: Gate = Gate::new();
+        let order = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let (hold, release) = std::sync::mpsc::channel();
+        let first = queued(&GATE, &order, "first", Priority::Background, release);
+        until(|| order_of(&order).len() == 1);
+        GATE.show(1);
+        let (_, free) = std::sync::mpsc::channel();
+        let left = queued(
+            &GATE,
+            &order,
+            "left behind",
+            Priority::Interactive(Some(1)),
+            free,
+        );
+        until(|| GATE.lock().interactive_waiting == 1);
+        GATE.show(2);
+        until(|| GATE.lock().interactive_waiting == 0);
+        let (_, free) = std::sync::mpsc::channel();
+        let shown = queued(&GATE, &order, "shown", Priority::Interactive(Some(2)), free);
+        until(|| GATE.waiting() == 2 && GATE.lock().interactive_waiting == 1);
+        drop(hold);
+        for t in [first, left, shown] {
+            assert!(t.join().is_ok());
+        }
+        assert_eq!(order_of(&order), ["first", "shown", "left behind"]);
+    }
+
+    /// FR-091, audit 2026-11-06: a develop no longer wanted when its turn comes (a prefetch
+    /// browsed past) does not run.
+    #[test]
+    fn fr_091_a_develop_no_longer_wanted_at_its_turn_does_not_run() {
+        static GATE: Gate = Gate::new();
+        let order = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let (hold, release) = std::sync::mpsc::channel();
+        let first = queued(&GATE, &order, "first", Priority::Background, release);
+        until(|| order_of(&order).len() == 1);
+        let wanted = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(true));
+        let asked = {
+            let wanted = std::sync::Arc::clone(&wanted);
+            std::thread::spawn(move || {
+                let check = move || wanted.load(std::sync::atomic::Ordering::SeqCst);
+                matches!(one_at_a_time_on(&GATE, &check, || ()), Turned::NotWanted)
+            })
+        };
+        until(|| GATE.waiting() == 1);
+        wanted.store(false, std::sync::atomic::Ordering::SeqCst);
+        drop(hold);
+        assert!(first.join().is_ok());
+        assert!(asked.join().unwrap_or(false), "the develop ran");
+    }
+
+    /// Audit 2026-11-06: a develop asked by code that set no priority waits behind the photo
+    /// on screen; only the preview claims the front.
+    #[test]
+    fn fr_091_a_develop_is_background_unless_marked() {
+        let priority = std::thread::spawn(|| PRIORITY.with(std::cell::Cell::get)).join();
+        assert_eq!(priority.ok(), Some(Priority::Background));
     }
 
     /// `first` with the decoders answering `answers` in turn.

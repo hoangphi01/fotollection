@@ -20,11 +20,19 @@ Until now the preview decoded each photo when it was asked for. Its memory was c
 
 Option 2, with memory sized by the machine (the owner's choices of 2026-11-05):
 
-- **Standard previews on disk:** `thumbs/<aa>/<key>.t2-o<orientation>-<raw look>.jpg`, the upright sRGB source before any look, JPEG q90. For a RAW, finished with its RAW colour and no linear slider. A RAW with linear sliders set uses its kept develop instead (FR-088). They are made after the T1 pass, one photo at a time per background thread, paused during an export or an analysis.
-- **The cache limit is 5 GB** (was 2 GB): thumbnails, standard previews and analyses together, oldest first.
+- **Standard previews on disk:** `thumbs/<aa>/<key>.t2-o<orientation>-<raw look>.jpg`, the upright sRGB source before any look, JPEG q90. For a RAW, finished with its RAW colour and no linear slider. A RAW with linear sliders set uses its kept develop instead (FR-088). They are made after the T1 pass, one photo at a time on a plain thread, paused while an export or an analysis runs (the prefetch is not paused: it is small and the user is browsing).
+- **The cache limit is 5 GiB** (was 2 GiB): thumbnails, standard previews and analyses together, oldest first.
 - **Memory:** the preview keeps up to **a quarter of the machine's RAM**, split 60 / 25 / 15 between sources, RAW develops and zoom images, by bytes, the oldest first. The image on screen always stays. NFR-004's 2 GB stays the export's ceiling.
 - **Prefetch:** the next two photos in the direction of travel and the one behind, once the photo on screen has landed.
 - **The photo on screen first:** the one-develop-at-a-time lock becomes a gate with two priorities. Work the user does not wait for (standard previews, prefetch, the export's estimate, an export) marks itself `Background` (`raw::with_priority`) and waits while any `Interactive` develop waits.
+
+### Amended in v0.11.1 (audit of 2026-11-06)
+
+- **One owner, one way in:** a `clear` (another project) bumps an epoch, and an image asked for before it is never kept after it.
+- **The photo on screen stays:** a prefetch is kept just below the newest and keeps no full image for zoom; it runs on one worker thread whose queue the latest request replaces, and a photo no longer wanted when its develop's turn comes is dropped.
+- **Made once:** background work skips a photo another thread is making; the photo on screen never waits for it, but reads the standard preview if it appeared while it waited for the develop. Each writer has its own `.part`.
+- **Priority:** a develop is `Background` unless marked; the photo on screen's claim lasts while it is on screen (`raw::show`).
+- **The disk:** standard previews carry their own version in the name; over the limit, previews go before thumbnails, and the limit is checked every 100 previews during the pass.
 
 ## Consequences
 

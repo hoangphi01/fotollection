@@ -8,6 +8,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- Fixes: instant previews keep the photo on screen, and never mix up photos after another project is opened
+- Fixes: fast browsing through RAW photos no longer queues up work for photos already left behind
+
+### Fixed
+
+- **Previews:** a project opened while a photo was still loading could show the previous project's photo in place of one of its own.
+- **Previews:** loading the next photos ahead could push the photo on screen out of memory, so zooming into it or moving a slider decoded it again.
+- **Speed:** browsing quickly through RAW photos left a develop running for each photo passed; now only the photo on screen goes first, and photos browsed past are dropped before they develop. Work that does not say otherwise (an analysis, the collage grid) no longer jumps ahead of the photo on screen.
+- **Speed:** a photo being prepared in the background and opened at the same moment is no longer made twice; two writes of one preview no longer clash.
+- **Cache:** the 5 GB limit now holds while previews are being prepared, not only after, and previews go before thumbnails, so the gallery keeps its thumbnails.
+- **Cache:** previews made by v0.11.0 are made again once, under a new name that a later change to the RAW develop can retire.
+- **Sliders:** the wider press area of v0.11.0 no longer moves the label above a slider by 2 px.
+
 ## [0.11.0] - 2026-11-05
 
 ### Highlights

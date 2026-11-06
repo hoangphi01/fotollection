@@ -15,6 +15,7 @@ mod i18n;
 mod menu;
 mod open_with;
 mod places;
+mod prefetch;
 mod protocol;
 mod state;
 mod timing;

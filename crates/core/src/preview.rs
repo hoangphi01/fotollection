@@ -8,6 +8,7 @@
 //! first region needs no second decode; it is rendered exactly as export renders it, and
 //! only the visible part is encoded.
 
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 
 use crate::codec::{EncodeOptions, JpegCodec, decode_image, decode_photo};
@@ -48,22 +49,67 @@ impl Budget {
 }
 
 /// Quality of a standard preview on disk: the screen's 85 would add its own loss to the
-/// preview's, so a little higher (about 1 MB at 2048 px).
+/// preview's, so a little higher (about 0.7 MB at 2048 px, RESULT §29).
 const STANDARD_QUALITY: u8 = 90;
 
-/// Writes a standard preview atomically (`.part`, then a rename), as T1 is written; a failed
-/// write only means it is made again next time.
-fn write_standard(path: &std::path::Path, image: &RgbImage, codec: &dyn JpegCodec) {
+/// The standard previews' own version, in their file name (DATABASE.md §8). Bump it when the
+/// pixels of a 2048 px source change without `thumbs::CACHE_VERSION` changing: a RAW develop
+/// or finish (`raw`, `raw_finish`), the colour conversion, the resize. Files of an older
+/// version are never read again and go with the cache limit. v0.11.0 wrote version 1
+/// without a number (`.t2-o…`).
+pub const STANDARD_VERSION: u8 = 2;
+
+/// Writes a standard preview atomically (a `.part` of its own, then a rename), as T1 is
+/// written; a failed write only means it is made again next time. Two writers of one photo
+/// never share a `.part` (audit 2026-11-06): the last rename wins, whole.
+fn write_standard(path: &std::path::Path, image: &RgbImage, codec: &dyn JpegCodec) -> bool {
+    static PART: AtomicU64 = AtomicU64::new(0);
     let Ok(bytes) = codec.encode(image, EncodeOptions::screen(STANDARD_QUALITY), None) else {
-        return;
+        return false;
     };
-    let Some(dir) = path.parent() else { return };
-    let part = path.with_extension("part");
+    let Some(dir) = path.parent() else {
+        return false;
+    };
+    let part = path.with_extension(format!(
+        "{}-{}.part",
+        std::process::id(),
+        PART.fetch_add(1, Ordering::Relaxed)
+    ));
     let written = std::fs::create_dir_all(dir)
         .and_then(|()| std::fs::write(&part, &bytes))
         .and_then(|()| std::fs::rename(&part, path));
     if written.is_err() {
         let _ = std::fs::remove_file(&part);
+    }
+    written.is_ok()
+}
+
+/// Standard previews of photos on screen waiting to be written: a few, at about 12.5 MB each.
+const WRITES_WAITING: usize = 4;
+
+/// Writes a standard preview of the photo on screen on a writer thread of its own, so its
+/// first view does not wait for the encode and the write (about 15 ms of 290 for a JPEG,
+/// OPTIMIZATION §5). When the writer is behind, the write is dropped: the background pass makes
+/// it later. The writer encodes with the default codec, the one the app uses.
+fn write_standard_later(path: std::path::PathBuf, image: Arc<RgbImage>) {
+    type Job = (std::path::PathBuf, Arc<RgbImage>);
+    static WRITER: std::sync::OnceLock<Option<std::sync::mpsc::SyncSender<Job>>> =
+        std::sync::OnceLock::new();
+    let writer = WRITER.get_or_init(|| {
+        let (send, jobs) = std::sync::mpsc::sync_channel::<Job>(WRITES_WAITING);
+        std::thread::Builder::new()
+            .name("fotollection-standard-writer".into())
+            .spawn(move || {
+                let codec = crate::codec::default_codec();
+                for (path, image) in jobs {
+                    write_standard(&path, &image, codec.as_ref());
+                }
+            })
+            .ok()
+            .map(|_| send)
+    });
+    if let Some(writer) = writer {
+        let _ = writer.try_send((path, image));
     }
 }
 
@@ -85,18 +131,46 @@ impl Default for Budget {
     }
 }
 
-/// Keeps `value` under `key` as the most recently used, then lets the oldest go until the
-/// rest fit in `budget` bytes; the newest always stays.
+/// Whether, and where, an image just read or made stays in memory (FR-091).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Keep {
+    /// Not at all: the background builder, so it never pushes out what the user looked at.
+    No,
+    /// Just below the newest: a prefetch, so the photo on screen stays the one always kept
+    /// (audit 2026-11-06). Its full image is not kept for zoom either.
+    Behind,
+    /// As the newest: the photo on screen.
+    Shown,
+}
+
+/// Keeps `value` under `key` (as the newest, or just below it when `place` is `Behind`),
+/// then lets the oldest go until the rest fit in `budget` bytes; the newest always stays.
+/// Nothing is kept when `still` says the cache was cleared since the value was asked for:
+/// checked under the lock `clear` takes, so a photo of the old library never lands in the
+/// new one (audit 2026-11-06).
 fn keep_bounded<K: PartialEq, V>(
     entries: &Mutex<Vec<(K, V)>>,
     key: K,
     value: V,
     bytes: impl Fn(&V) -> usize,
     budget: usize,
+    place: Keep,
+    still: impl Fn() -> bool,
 ) {
+    if place == Keep::No {
+        return;
+    }
     if let Ok(mut entries) = entries.lock() {
+        if !still() {
+            return;
+        }
         entries.retain(|(k, _)| *k != key);
-        entries.push((key, value));
+        if place == Keep::Behind && !entries.is_empty() {
+            let below_newest = entries.len() - 1;
+            entries.insert(below_newest, (key, value));
+        } else {
+            entries.push((key, value));
+        }
         let mut total: usize = entries.iter().map(|(_, v)| bytes(v)).sum();
         while total > budget && entries.len() > 1 {
             total -= bytes(&entries.remove(0).1);
@@ -197,6 +271,19 @@ fn take_cached(
     Some(image)
 }
 
+/// The image kept under `key` without marking it used: a prefetch or the background builder
+/// must not move a neighbour above the photo on screen.
+fn peek_cached(
+    entries: &Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
+    key: SourceKey,
+) -> Option<Arc<RgbImage>> {
+    let entries = entries.lock().ok()?;
+    entries
+        .iter()
+        .find(|(k, _)| *k == key)
+        .map(|(_, image)| Arc::clone(image))
+}
+
 /// A full-resolution upright image, and the profile its pixels are still in: converting a
 /// 24 MP photo to sRGB costs about 20 ms, so it waits until a zoom needs the full pixels;
 /// the preview converts its 2048 px copy instead (FR-072, OPTIMIZATION §5).
@@ -225,6 +312,42 @@ pub struct PreviewCache {
     budget: Budget,
     /// The thumbnail cache's folder, where standard previews are kept on disk (FR-091).
     disk: Option<std::path::PathBuf>,
+    /// Bumped by [`Self::clear`]: an image asked for before it is not kept after it, so a
+    /// develop that ends after a project switch does not land under an id the new library
+    /// reuses (audit 2026-11-06).
+    epoch: AtomicU64,
+    /// The sources being made right now. Background work skips them, so a photo is not made
+    /// twice at once; the photo on screen never waits for them (it may run on a pool, where a
+    /// wait can hang the pool, LESSONS 2026-11-06).
+    making: Mutex<Vec<SourceKey>>,
+}
+
+/// A source marked as being made, until dropped.
+struct Making<'a> {
+    cache: &'a PreviewCache,
+    key: SourceKey,
+}
+
+impl Drop for Making<'_> {
+    fn drop(&mut self) {
+        let mut making = self
+            .cache
+            .making
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        if let Some(i) = making.iter().position(|k| *k == self.key) {
+            making.swap_remove(i);
+        }
+    }
+}
+
+/// What asking for a RAW's kept develop came to.
+enum Prep {
+    /// Not a RAW after all (a JPEG renamed).
+    NotRaw,
+    /// The caller no longer wanted it when the develop's turn came.
+    NotWanted,
+    Made(Arc<Prepared>),
 }
 
 /// A kept RAW develop and the profile of what it finishes to.
@@ -272,6 +395,8 @@ impl PreviewCache {
     /// Forgets every cached image, e.g. when another project replaces the library and
     /// photo ids start again from 0.
     pub fn clear(&self) {
+        // First, so anything asked before this is refused under the locks below.
+        self.epoch.fetch_add(1, Ordering::SeqCst);
         if let Ok(mut entries) = self.entries.lock() {
             entries.clear();
         }
@@ -300,6 +425,7 @@ impl PreviewCache {
         thumbnail: &Thumbnail<'_>,
         codec: &dyn JpegCodec,
     ) -> Result<Arc<RgbImage>, ThumbError> {
+        let epoch = self.epoch.load(Ordering::SeqCst);
         let key = source_key(record, raw);
         if let Some(image) = take_cached(&self.small, key) {
             return Ok(image);
@@ -313,7 +439,9 @@ impl PreviewCache {
             None => fit_long_edge(self.source(record, raw, codec)?.as_ref(), SMALL_LONG_EDGE)?,
         };
         let image = Arc::new(image);
-        if let Ok(mut small) = self.small.lock() {
+        if let Ok(mut small) = self.small.lock()
+            && self.epoch.load(Ordering::SeqCst) == epoch
+        {
             if small.len() >= SMALL_CAPACITY {
                 small.remove(0);
             }
@@ -322,37 +450,42 @@ impl PreviewCache {
         Ok(image)
     }
 
-    /// The kept develop of a RAW (FR-088), made once per photo and kept within the budget
-    /// when `keep`; `None` when the file is not a RAW after all (a JPEG renamed).
+    /// The kept develop of a RAW (FR-088), made once per photo and kept as `keep` says.
     fn prepared(
         &self,
         record: &PhotoRecord,
-        keep: bool,
-    ) -> Result<Option<Arc<Prepared>>, ThumbError> {
+        keep: Keep,
+        epoch: u64,
+        wanted: &(dyn Fn() -> bool + Sync),
+    ) -> Result<Prep, ThumbError> {
         if let Ok(mut kept) = self.prepared.lock()
             && let Some(i) = kept.iter().position(|(id, _)| *id == record.id)
         {
-            let entry = kept.remove(i);
-            let found = Arc::clone(&entry.1);
-            kept.push(entry);
-            return Ok(Some(found));
+            let found = Arc::clone(&kept[i].1);
+            if keep == Keep::Shown {
+                let entry = kept.remove(i);
+                kept.push(entry);
+            }
+            return Ok(Prep::Made(found));
         }
         let bytes = std::fs::read(&record.path)?;
         let Some(kind) = crate::raw::kind(&bytes[..bytes.len().min(crate::raw::HEAD_BYTES)]) else {
-            return Ok(None);
+            return Ok(Prep::NotRaw);
         };
-        let (raw, icc) = crate::raw::prepare(&bytes, kind)?;
+        let Some((raw, icc)) = crate::raw::prepare_while(&bytes, kind, wanted)? else {
+            return Ok(Prep::NotWanted);
+        };
         let prepared = Arc::new(Prepared { raw, icc });
-        if keep {
-            keep_bounded(
-                &self.prepared,
-                record.id,
-                Arc::clone(&prepared),
-                |p| p.raw.bytes() + p.icc.as_ref().map_or(0, Vec::len),
-                self.budget.prepared,
-            );
-        }
-        Ok(Some(prepared))
+        keep_bounded(
+            &self.prepared,
+            record.id,
+            Arc::clone(&prepared),
+            |p| p.raw.bytes() + p.icc.as_ref().map_or(0, Vec::len),
+            self.budget.prepared,
+            keep,
+            || self.epoch.load(Ordering::SeqCst) == epoch,
+        );
+        Ok(Prep::Made(prepared))
     }
 
     /// Where `record`'s standard preview for `key` is kept on disk (FR-091), or `None` without
@@ -368,85 +501,166 @@ impl PreviewCache {
             crate::raw::RawLook::Camera => "camera",
         };
         let name = crate::thumbs::content_key(record);
-        Some(
-            dir.join(&name[..2])
-                .join(format!("{name}.t2-o{}-{look}.jpg", key.1)),
-        )
+        Some(dir.join(&name[..2]).join(format!(
+            "{name}.t2v{STANDARD_VERSION}-o{}-{look}.jpg",
+            key.1
+        )))
+    }
+
+    /// The standard preview at `path`, read and decoded, when there is one.
+    fn read_standard(
+        path: Option<&std::path::Path>,
+        codec: &dyn JpegCodec,
+    ) -> Option<Arc<RgbImage>> {
+        let path = path?;
+        let bytes = std::fs::read(path).ok()?;
+        let decoded = decode_image(codec, &bytes).ok()?;
+        crate::cache_limit::touch(path);
+        Some(Arc::new(decoded.image))
+    }
+
+    /// Marks `key` as being made; `None` when another thread already makes it.
+    fn begin(&self, key: SourceKey) -> Option<Making<'_>> {
+        let mut making = self
+            .making
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        if making.contains(&key) {
+            return None;
+        }
+        making.push(key);
+        Some(Making { cache: self, key })
     }
 
     /// The 2048 px upright sRGB source of `record`: from memory, from its standard preview on
-    /// disk, or made from the file, in that order (FR-091). With `keep`, what was read or made
-    /// stays in memory (the photo on screen, a prefetch); the background builder keeps
-    /// nothing, so it never pushes out what the user looked at.
+    /// disk, or made from the file, in that order (FR-091), and kept as `keep` says.
+    ///
+    /// `None` only for background work (`keep` not `Shown`): when another thread is making the
+    /// same source, or when `wanted` says no once a RAW's develop turn comes. The photo on
+    /// screen never waits for another thread's make; when its develop turn comes and the
+    /// standard preview has appeared meanwhile, it reads that instead of developing again.
     fn source_kept(
         &self,
         record: &PhotoRecord,
         raw: RawSliders,
         codec: &dyn JpegCodec,
-        keep: bool,
-    ) -> Result<Arc<RgbImage>, ThumbError> {
+        keep: Keep,
+        wanted: &(dyn Fn() -> bool + Sync),
+    ) -> Result<Option<Arc<RgbImage>>, ThumbError> {
+        let epoch = self.epoch.load(Ordering::SeqCst);
         let key = source_key(record, raw);
-        if let Some(image) = take_cached(&self.entries, key) {
-            return Ok(image);
+        let cached = if keep == Keep::Shown {
+            take_cached(&self.entries, key)
+        } else {
+            peek_cached(&self.entries, key)
+        };
+        if let Some(image) = cached {
+            return Ok(Some(image));
         }
         let standard = self.standard_path(record, key);
-        if let Some(path) = &standard
-            && let Ok(bytes) = std::fs::read(path)
-            && let Ok(decoded) = decode_image(codec, &bytes)
-        {
-            crate::cache_limit::touch(path);
-            let image = Arc::new(decoded.image);
-            if keep {
-                self.keep_source(key, &image);
+        if let Some(image) = Self::read_standard(standard.as_deref(), codec) {
+            self.keep_source(key, &image, keep, epoch);
+            return Ok(Some(image));
+        }
+        let background = keep != Keep::Shown;
+        let making = self.begin(key);
+        if background && making.is_none() {
+            return Ok(None);
+        }
+        let not_on_disk = || standard.as_ref().is_none_or(|p| !p.exists());
+        let check = || wanted() && not_on_disk();
+        let mut made = self.make_source(record, raw, key, codec, keep, epoch, &check)?;
+        if made.is_none() {
+            if let Some(image) = Self::read_standard(standard.as_deref(), codec) {
+                self.keep_source(key, &image, keep, epoch);
+                return Ok(Some(image));
             }
-            return Ok(image);
+            if background {
+                return Ok(None);
+            }
+            // The file appeared but could not be read: make it after all.
+            made = self.make_source(record, raw, key, codec, keep, epoch, &|| true)?;
         }
-        let mut image = self.make_source(record, raw, key, codec, keep)?;
+        let Some(mut image) = made else {
+            return Err(crate::codec::CodecError::Decode("the RAW develop failed".into()).into());
+        };
         image.data.shrink_to_fit();
-        if let Some(path) = &standard {
-            write_standard(path, &image, codec);
-        }
         let image = Arc::new(image);
-        if keep {
-            self.keep_source(key, &image);
+        if let Some(path) = standard {
+            if keep == Keep::Shown {
+                write_standard_later(path, Arc::clone(&image));
+            } else {
+                write_standard(&path, &image, codec);
+            }
         }
-        Ok(image)
+        drop(making);
+        self.keep_source(key, &image, keep, epoch);
+        Ok(Some(image))
     }
 
+    /// The source of the photo on screen (or another view the user waits for): kept as the
+    /// newest.
     fn source(
         &self,
         record: &PhotoRecord,
         raw: RawSliders,
         codec: &dyn JpegCodec,
     ) -> Result<Arc<RgbImage>, ThumbError> {
-        self.source_kept(record, raw, codec, true)
+        self.source_kept(record, raw, codec, Keep::Shown, &|| true)?
+            .ok_or_else(|| {
+                crate::codec::CodecError::Decode("the preview was not made".into()).into()
+            })
     }
 
-    /// Decodes or develops `record` into its 2048 px source.
+    /// Decodes or develops `record` into its 2048 px source; `None` when `wanted` said no at
+    /// a RAW's develop turn.
+    #[allow(clippy::too_many_arguments)]
     fn make_source(
         &self,
         record: &PhotoRecord,
         raw: RawSliders,
         key: SourceKey,
         codec: &dyn JpegCodec,
-        keep: bool,
-    ) -> Result<RgbImage, ThumbError> {
+        keep: Keep,
+        epoch: u64,
+        wanted: &(dyn Fn() -> bool + Sync),
+    ) -> Result<Option<RgbImage>, ThumbError> {
         let prepared = if crate::raw::is_raw_name(&record.file_name) {
-            self.prepared(record, keep)?
+            self.prepared(record, keep, epoch, wanted)?
         } else {
-            None
+            Prep::NotRaw
         };
         // A RAW: its kept develop finished with the sliders made in linear light, so a step of
         // one costs a finish at 2048 px, not a develop (FR-088).
-        if let Some(prepared) = prepared {
-            let finished = prepared
-                .raw
-                .finish(key.2, &raw.adjust())
-                .ok_or(crate::render::RenderError::BadCrop)?;
-            let mut image = fit_long_edge(&apply_orientation(finished, key.1), T2_LONG_EDGE)?;
-            crate::colour::to_srgb(&mut image, prepared.icc.as_deref());
-            return Ok(image);
-        }
+        let prepared = match prepared {
+            Prep::NotWanted => return Ok(None),
+            Prep::Made(prepared) => prepared,
+            Prep::NotRaw => {
+                return self
+                    .decode_source(record, raw, key, codec, keep, epoch)
+                    .map(Some);
+            }
+        };
+        let finished = prepared
+            .raw
+            .finish(key.2, &raw.adjust())
+            .ok_or(crate::render::RenderError::BadCrop)?;
+        let mut image = fit_long_edge(&apply_orientation(finished, key.1), T2_LONG_EDGE)?;
+        crate::colour::to_srgb(&mut image, prepared.icc.as_deref());
+        Ok(Some(image))
+    }
+
+    /// Any file but a RAW decoded into its 2048 px source; its full image kept for zoom when
+    /// it is the photo on screen.
+    fn decode_source(
+        &self,
+        record: &PhotoRecord,
+        raw: RawSliders,
+        key: SourceKey,
+        codec: &dyn JpegCodec,
+        keep: Keep,
+        epoch: u64,
+    ) -> Result<RgbImage, ThumbError> {
         // Zoomed before: the full image is already here.
         let full = if let Some(full) = self.take_full(key) {
             full
@@ -457,9 +671,10 @@ impl PreviewCache {
                 image: Arc::new(apply_orientation(decoded.image, key.1)),
                 icc: decoded.icc.map(Arc::from),
             };
-            // Kept for zoom, so its first sharp region does not decode it again.
-            if keep {
-                self.keep_full(key, full.clone());
+            // Kept for zoom, so its first sharp region does not decode it again; a prefetch
+            // keeps none, so it never pushes out the zoom of the photo on screen.
+            if keep == Keep::Shown {
+                self.keep_full(key, full.clone(), epoch);
             }
             full
         };
@@ -470,34 +685,45 @@ impl PreviewCache {
     }
 
     /// Makes `record`'s standard preview on disk if it has none, keeping nothing in memory
-    /// (FR-091); `true` when one was made. A RAW with linear sliders set has none to make.
+    /// (FR-091); `true` when one was made. A RAW with linear sliders set has none to make; a
+    /// photo another thread is making, or one `wanted` drops at its develop turn, is skipped.
     pub fn ensure_standard(
         &self,
         record: &PhotoRecord,
         settings: &RenderSettings,
         codec: &dyn JpegCodec,
+        wanted: &(dyn Fn() -> bool + Sync),
     ) -> Result<bool, ThumbError> {
         let raw = split_look(record, settings).0;
         let Some(path) = self.standard_path(record, source_key(record, raw)) else {
             return Ok(false);
         };
-        if path.exists() || take_cached(&self.entries, source_key(record, raw)).is_some() {
+        if path.exists() || peek_cached(&self.entries, source_key(record, raw)).is_some() {
             return Ok(false);
         }
-        self.source_kept(record, raw, codec, false)?;
-        Ok(true)
+        Ok(self
+            .source_kept(record, raw, codec, Keep::No, wanted)?
+            .is_some())
     }
 
     /// Loads `record`'s source into memory before it is clicked (FR-091): from its standard
-    /// preview when there is one.
+    /// preview when there is one. Kept just below the newest, so it never pushes out the photo
+    /// on screen; skipped when another thread makes it, or `wanted` drops it at its develop turn.
     pub fn prefetch(
         &self,
         record: &PhotoRecord,
         settings: &RenderSettings,
         codec: &dyn JpegCodec,
+        wanted: &(dyn Fn() -> bool + Sync),
     ) -> Result<(), ThumbError> {
-        self.source(record, split_look(record, settings).0, codec)
-            .map(|_| ())
+        self.source_kept(
+            record,
+            split_look(record, settings).0,
+            codec,
+            Keep::Behind,
+            wanted,
+        )
+        .map(|_| ())
     }
 
     /// The upright, uncropped T2 image as JPEG: the background of the crop editor. With
@@ -523,6 +749,7 @@ impl PreviewCache {
         raw: RawSliders,
         codec: &dyn JpegCodec,
     ) -> Result<Arc<RgbImage>, ThumbError> {
+        let epoch = self.epoch.load(Ordering::SeqCst);
         let key = source_key(record, raw);
         let cached = match self.take_full(key) {
             Some(Full { image, icc: None }) => return Ok(image),
@@ -553,6 +780,7 @@ impl PreviewCache {
                 image: Arc::clone(&image),
                 icc: None,
             },
+            epoch,
         );
         Ok(image)
     }
@@ -573,25 +801,31 @@ impl PreviewCache {
         Some(full.remove(pos).1)
     }
 
-    /// Keeps a full-resolution image within `budget.full`, the newest always.
-    fn keep_full(&self, key: SourceKey, image: Full) {
+    /// Keeps a full-resolution image of the photo on screen within `budget.full`, the newest
+    /// always, unless the cache was cleared since `epoch`.
+    fn keep_full(&self, key: SourceKey, image: Full, epoch: u64) {
         keep_bounded(
             &self.full,
             key,
             image,
             |f| f.image.data.len(),
             self.budget.full,
+            Keep::Shown,
+            || self.epoch.load(Ordering::SeqCst) == epoch,
         );
     }
 
-    /// Keeps a 2048 px source within `budget.sources`, the newest always.
-    fn keep_source(&self, key: SourceKey, image: &Arc<RgbImage>) {
+    /// Keeps a 2048 px source within `budget.sources` as `keep` says, unless the cache was
+    /// cleared since `epoch`.
+    fn keep_source(&self, key: SourceKey, image: &Arc<RgbImage>, keep: Keep, epoch: u64) {
         keep_bounded(
             &self.entries,
             key,
             Arc::clone(image),
             |i| i.data.len(),
             self.budget.sources,
+            keep,
+            || self.epoch.load(Ordering::SeqCst) == epoch,
         );
     }
 
@@ -898,28 +1132,257 @@ mod tests {
     type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
     /// A `width`×`height` JPEG with a gradient, as a library record.
-    #[allow(clippy::cast_possible_truncation)]
     fn photo(dir: &std::path::Path, width: u32, height: u32) -> TestResult<PhotoRecord> {
-        let mut image = RgbImage::new(width, height);
-        for (i, px) in image.data.as_chunks_mut::<3>().0.iter_mut().enumerate() {
-            let (x, y) = (i as u32 % width, i as u32 / width);
-            *px = [(x % 256) as u8, (y % 256) as u8, ((x + y) % 256) as u8];
-        }
+        photos(dir, &[(width, height)])?
+            .pop()
+            .ok_or_else(|| "photo".into())
+    }
+
+    /// JPEGs of these sizes with a gradient, as records of one library (ids 0, 1, 2…).
+    #[allow(clippy::cast_possible_truncation)]
+    fn photos(dir: &std::path::Path, sizes: &[(u32, u32)]) -> TestResult<Vec<PhotoRecord>> {
         let codec = default_codec();
-        let path = dir.join(format!("{width}x{height}.jpg"));
-        let bytes = codec.encode(&image, EncodeOptions::print(95), None)?;
-        std::fs::write(&path, &bytes)?;
         let mut lib = Library::new();
         let folder = lib.add_folder(dir);
-        let file = ImportedFile {
-            path,
-            size: bytes.len() as u64,
-            mtime: 0,
+        let mut out = Vec::new();
+        for &(width, height) in sizes {
+            let mut image = RgbImage::new(width, height);
+            for (i, px) in image.data.as_chunks_mut::<3>().0.iter_mut().enumerate() {
+                let (x, y) = (i as u32 % width, i as u32 / width);
+                *px = [(x % 256) as u8, (y % 256) as u8, ((x + y) % 256) as u8];
+            }
+            let path = dir.join(format!("{width}x{height}.jpg"));
+            let bytes = codec.encode(&image, EncodeOptions::print(95), None)?;
+            std::fs::write(&path, &bytes)?;
+            let file = ImportedFile {
+                path,
+                size: bytes.len() as u64,
+                mtime: 0,
+            };
+            let id = lib
+                .push(folder, &file, &PhotoMeta::default())
+                .ok_or("photo")?;
+            out.push(lib.record(id).ok_or("record")?);
+        }
+        Ok(out)
+    }
+
+    /// A codec that stops in `decode` until told to go, so a test can act while a photo is
+    /// being made.
+    struct Held {
+        started: Mutex<std::sync::mpsc::Sender<()>>,
+        go: Mutex<std::sync::mpsc::Receiver<()>>,
+    }
+
+    impl JpegCodec for Held {
+        fn dimensions(&self, bytes: &[u8]) -> Result<(u32, u32), crate::codec::CodecError> {
+            default_codec().dimensions(bytes)
+        }
+        fn decode(&self, bytes: &[u8]) -> Result<crate::codec::Decoded, crate::codec::CodecError> {
+            if let Ok(started) = self.started.lock() {
+                let _ = started.send(());
+            }
+            if let Ok(go) = self.go.lock() {
+                let _ = go.recv();
+            }
+            default_codec().decode(bytes)
+        }
+        fn encode(
+            &self,
+            image: &RgbImage,
+            options: EncodeOptions,
+            icc: Option<&[u8]>,
+        ) -> Result<Vec<u8>, crate::codec::CodecError> {
+            default_codec().encode(image, options, icc)
+        }
+    }
+
+    /// Audit 2026-11-06: a photo still being made when the project changes (`clear`) is not
+    /// kept: its id belongs to another photo in the new library.
+    #[test]
+    fn fr_091_a_photo_made_across_a_clear_is_not_kept() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let record = photo(dir.path(), 600, 400)?;
+        let (started_tx, started) = std::sync::mpsc::channel();
+        let (go, go_rx) = std::sync::mpsc::channel();
+        let codec = Arc::new(Held {
+            started: Mutex::new(started_tx),
+            go: Mutex::new(go_rx),
+        });
+        let cache = Arc::new(PreviewCache::new());
+        let making = {
+            let (cache, codec, record) = (Arc::clone(&cache), Arc::clone(&codec), record.clone());
+            std::thread::spawn(move || {
+                cache
+                    .render_rgb(
+                        &record,
+                        &RenderSettings::default(),
+                        None,
+                        None,
+                        codec.as_ref(),
+                    )
+                    .is_ok()
+            })
         };
-        let id = lib
-            .push(folder, &file, &PhotoMeta::default())
-            .ok_or("photo")?;
-        Ok(lib.record(id).ok_or("record")?)
+        started.recv_timeout(std::time::Duration::from_secs(10))?;
+        cache.clear();
+        go.send(())?;
+        assert!(making.join().unwrap_or(false));
+        assert!(
+            cache.entries.lock().map_err(|_| "lock")?.is_empty(),
+            "source kept"
+        );
+        assert!(
+            cache.full.lock().map_err(|_| "lock")?.is_empty(),
+            "full image kept"
+        );
+        Ok(())
+    }
+
+    /// Audit 2026-11-06: prefetching the neighbours never pushes out the photo on screen,
+    /// even when the budget holds only two, and keeps no full image for zoom.
+    #[test]
+    fn fr_091_a_prefetch_never_pushes_out_the_photo_on_screen() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let records = photos(dir.path(), &[(300, 200), (301, 200), (302, 200)])?;
+        let codec = default_codec();
+        let settings = RenderSettings::default();
+        let budget = Budget {
+            sources: 2 * 302 * 200 * 3,
+            ..Budget::default()
+        };
+        let cache = PreviewCache::with(budget, None);
+        cache.render_rgb(&records[0], &settings, None, None, codec.as_ref())?;
+        for record in &records[1..] {
+            cache.prefetch(record, &settings, codec.as_ref(), &|| true)?;
+        }
+        let kept: Vec<PhotoId> = cache
+            .entries
+            .lock()
+            .map_err(|_| "lock")?
+            .iter()
+            .map(|(k, _)| k.0)
+            .collect();
+        assert!(
+            kept.contains(&records[0].id),
+            "the photo on screen went: {kept:?}"
+        );
+        assert_eq!(kept.last(), Some(&records[0].id), "it stays the newest");
+        let full: Vec<PhotoId> = cache
+            .full
+            .lock()
+            .map_err(|_| "lock")?
+            .iter()
+            .map(|(k, _)| k.0)
+            .collect();
+        assert_eq!(
+            full,
+            [records[0].id],
+            "only the photo on screen keeps its full image"
+        );
+        Ok(())
+    }
+
+    /// Audit 2026-11-06: background work skips a photo another thread is making, so it is
+    /// not made twice at once.
+    #[test]
+    fn fr_091_background_work_skips_a_photo_being_made() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let cache_dir = tempfile::tempdir()?;
+        let record = photo(dir.path(), 600, 400)?;
+        let codec = default_codec();
+        let settings = RenderSettings::default();
+        let cache = PreviewCache::with(Budget::default(), Some(cache_dir.path().to_path_buf()));
+        let key = source_key(&record, RawSliders::default());
+        let held = cache.begin(key).ok_or("free")?;
+        assert!(!cache.ensure_standard(&record, &settings, codec.as_ref(), &|| true)?);
+        cache.prefetch(&record, &settings, codec.as_ref(), &|| true)?;
+        assert!(cache.entries.lock().map_err(|_| "lock")?.is_empty());
+        drop(held);
+        assert!(cache.ensure_standard(&record, &settings, codec.as_ref(), &|| true)?);
+        Ok(())
+    }
+
+    /// Audit 2026-11-06: writers of one standard preview at once never share a `.part`; the
+    /// file left is whole and no `.part` stays behind.
+    #[test]
+    fn fr_091_standard_previews_written_at_once_stay_whole() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("ab").join("x.t2v2-o1-neutral.jpg");
+        let codec = default_codec();
+        let image = crate::codec::decode_image(
+            codec.as_ref(),
+            &std::fs::read(&photo(dir.path(), 2048, 1365)?.path)?,
+        )?
+        .image;
+        let written = std::thread::scope(|scope| {
+            let writers: Vec<_> = (0..32)
+                .map(|_| scope.spawn(|| write_standard(&path, &image, codec.as_ref())))
+                .collect();
+            writers
+                .into_iter()
+                .filter_map(|w| w.join().ok())
+                .filter(|ok| *ok)
+                .count()
+        });
+        assert_eq!(written, 32, "a writer lost its file");
+        let back = crate::codec::decode_image(codec.as_ref(), &std::fs::read(&path)?)?.image;
+        assert_eq!((back.width, back.height), (2048, 1365));
+        let left: Vec<_> = std::fs::read_dir(dir.path().join("ab"))?
+            .filter_map(Result::ok)
+            .map(|e| e.file_name())
+            .collect();
+        assert_eq!(left.len(), 1, "{left:?}");
+        Ok(())
+    }
+
+    /// Audit 2026-11-06: the photo on screen gets its standard preview too, written off its
+    /// own path by the writer thread.
+    #[test]
+    fn fr_091_the_photo_on_screen_writes_its_standard_preview_later() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let cache_dir = tempfile::tempdir()?;
+        let record = photo(dir.path(), 640, 480)?;
+        let codec = default_codec();
+        let cache = PreviewCache::with(Budget::default(), Some(cache_dir.path().to_path_buf()));
+        cache.render_rgb(
+            &record,
+            &RenderSettings::default(),
+            None,
+            None,
+            codec.as_ref(),
+        )?;
+        let path = cache
+            .standard_path(&record, source_key(&record, RawSliders::default()))
+            .ok_or("path")?;
+        let start = std::time::Instant::now();
+        while !path.exists() {
+            assert!(start.elapsed().as_secs() < 10, "never written");
+            std::thread::sleep(std::time::Duration::from_millis(5));
+        }
+        Ok(())
+    }
+
+    /// Audit 2026-11-06: standard previews carry their own version: one written under
+    /// v0.11.0's name is not read, and is made again.
+    #[test]
+    fn fr_091_standard_previews_of_an_older_version_are_made_again() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let cache_dir = tempfile::tempdir()?;
+        let record = photo(dir.path(), 600, 400)?;
+        let codec = default_codec();
+        let settings = RenderSettings::default();
+        let cache = PreviewCache::with(Budget::default(), Some(cache_dir.path().to_path_buf()));
+        let key = source_key(&record, RawSliders::default());
+        let path = cache.standard_path(&record, key).ok_or("path")?;
+        let name = path.file_name().and_then(|n| n.to_str()).ok_or("name")?;
+        assert!(name.contains(&format!(".t2v{STANDARD_VERSION}-")), "{name}");
+        let old = path.with_file_name(name.replace(&format!(".t2v{STANDARD_VERSION}-"), ".t2-"));
+        std::fs::create_dir_all(old.parent().ok_or("dir")?)?;
+        std::fs::copy(&record.path, &old)?;
+        assert!(cache.ensure_standard(&record, &settings, codec.as_ref(), &|| true)?);
+        assert!(path.exists());
+        Ok(())
     }
 
     /// ADR-0039: the mask is the photo itself, 255, and 0 where the 3 mm border or the date
@@ -1053,8 +1516,8 @@ mod tests {
             PreviewCache::new().render_rgb(&record, &settings, None, None, codec.as_ref())?;
 
         let builder = PreviewCache::with(Budget::default(), Some(cache_dir.path().to_path_buf()));
-        assert!(builder.ensure_standard(&record, &settings, codec.as_ref())?);
-        assert!(!builder.ensure_standard(&record, &settings, codec.as_ref())?);
+        assert!(builder.ensure_standard(&record, &settings, codec.as_ref(), &|| true)?);
+        assert!(!builder.ensure_standard(&record, &settings, codec.as_ref(), &|| true)?);
         assert!(builder.entries.lock().map_err(|_| "lock")?.is_empty());
 
         std::fs::remove_file(&record.path)?;
@@ -1080,7 +1543,7 @@ mod tests {
     fn fr_091_byte_budgets_let_the_oldest_go_and_keep_the_newest() -> TestResult {
         let kept: Mutex<Vec<(u32, usize)>> = Mutex::new(Vec::new());
         for (key, bytes) in [(1, 40), (2, 40), (3, 40), (2, 40)] {
-            keep_bounded(&kept, key, bytes, |b| *b, 100);
+            keep_bounded(&kept, key, bytes, |b| *b, 100, Keep::Shown, || true);
         }
         let keys: Vec<u32> = kept
             .lock()
@@ -1089,7 +1552,7 @@ mod tests {
             .map(|(k, _)| *k)
             .collect();
         assert_eq!(keys, [3, 2]);
-        keep_bounded(&kept, 9, 500, |b| *b, 100);
+        keep_bounded(&kept, 9, 500, |b| *b, 100, Keep::Shown, || true);
         let keys: Vec<u32> = kept
             .lock()
             .map_err(|_| "lock")?

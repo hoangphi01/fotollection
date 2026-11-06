@@ -960,9 +960,9 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 - **Standard previews on disk:** after a folder's thumbnails, every photo's 2048 px upright sRGB source (for a RAW, finished with its RAW colour and no linear slider) is made in the background and kept in the cache folder; a click on any photo, far or near, opens from it instead of decoding or developing (measured 27 ms against 278 ms for a JPEG and 440 ms for a RAW, [RESULT §29](RESULT.md#29-instant-previews-v0110-fr-091)). Made one photo at a time behind the photo on screen, paused during an export or an analysis, with its progress in the gallery's bar.
 - **Memory used well:** the preview keeps up to a quarter of the machine's RAM (on a 16 GB Mac about 190 sources, 20 RAW develops and 600 MB for zoom), the oldest let go first, the photo on screen always kept.
-- **Prefetch:** once a photo is on screen, the next two in the direction of travel and the one behind are loaded into memory, so ← and → show at once ([NFR-012](#nfr-012--culling-navigation)).
-- **The photo on screen first:** every RAW develop for work the user does not wait for (standard previews, prefetch, the export's estimate, an export) waits while the photo on screen needs one.
-- **The cache:** its limit is 5 GB (was 2 GB), the oldest files go first; *Clear cache* empties the standard previews too. The Settings window shows it ([FR-086](#fr-086--one-settings-window)).
+- **Prefetch:** once a photo is on screen, the next two in the direction of travel and the one behind are loaded into memory, so ← and → show at once ([NFR-012](#nfr-012--culling-navigation)). A prefetch never pushes the photo on screen out of memory, and a newer one replaces what is left of an older one (v0.11.1).
+- **The photo on screen first:** every RAW develop for work the user does not wait for (standard previews, prefetch, the export's estimate, an export, an analysis) waits while the photo on screen needs one; a photo the user has browsed past no longer goes first (v0.11.1).
+- **The cache:** its limit is 5 GB (was 2 GB), the oldest files go first, standard previews before thumbnails, and it holds during the previews' pass too (v0.11.1); *Clear cache* empties the standard previews too. The Settings window shows it ([FR-086](#fr-086--one-settings-window)).
 
 ## 7. Non-functional requirements
 

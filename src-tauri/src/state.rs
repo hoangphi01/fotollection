@@ -111,8 +111,8 @@ pub struct AppState {
     /// Bumped when another library replaces this one: background preview work for the old
     /// one stops (FR-091).
     pub library_generation: AtomicU64,
-    /// Bumped by each prefetch request: an older one still running stops (FR-091).
-    pub prefetch_generation: AtomicU64,
+    /// The photos left to prefetch and its one worker (FR-091, `prefetch.rs`).
+    pub prefetch: crate::prefetch::Prefetch,
     pub codec: Arc<dyn JpegCodec>,
     pub thumbs: ThumbCache,
     /// `analysis/` next to `thumbs/` in the cache dir (DATABASE.md §8).
@@ -233,7 +233,7 @@ impl AppState {
             jobs: Mutex::new(HashMap::new()),
             next_job: AtomicU32::new(1),
             library_generation: AtomicU64::new(0),
-            prefetch_generation: AtomicU64::new(0),
+            prefetch: crate::prefetch::Prefetch::default(),
             codec: default_codec(),
             analysis_cache: AnalysisCache::new(
                 thumb_dir

@@ -321,6 +321,7 @@ fn warm_standard_previews(app: &AppHandle, ids: &[PhotoId]) {
     let current = || state.library_generation.load(Ordering::SeqCst) == generation;
     let total = u32::try_from(ids.len()).unwrap_or(u32::MAX);
     let tick = progress_reporter(app, TaskKind::Previews, total);
+    let mut made = 0;
     for &id in ids {
         // An export or an analysis first: a preview made now would only slow it.
         while current() && state.jobs.lock().is_ok_and(|j| !j.is_empty()) {
@@ -331,47 +332,35 @@ fn warm_standard_previews(app: &AppHandle, ids: &[PhotoId]) {
         }
         let record = state.library.read().ok().and_then(|l| l.record(id));
         let settings = state.settings.read().ok().map(|s| s.0.clone());
-        if let (Some(record), Some(settings)) = (record, settings) {
-            let _ = background(|| {
+        if let (Some(record), Some(settings)) = (record, settings)
+            && background(|| {
                 state
                     .previews
-                    .ensure_standard(&record, &settings, state.codec.as_ref())
-            });
+                    .ensure_standard(&record, &settings, state.codec.as_ref(), &current)
+            })
+            .unwrap_or(false)
+        {
+            made += 1;
+            // The limit holds during a long pass too, not only after it (audit 2026-11-06).
+            if made % PRUNE_EVERY == 0 {
+                crate::cache::prune(&state);
+            }
         }
         tick();
     }
 }
 
-/// Photos a prefetch takes at most; more would only push out what is near.
-const MAX_PREFETCH: usize = 8;
+/// Standard previews made between two checks of the cache limit: about 70 MB.
+const PRUNE_EVERY: usize = 100;
 
 /// Loads the photos about to be shown into memory, from their standard previews (FR-091):
 /// the preview asks for the next ones in the direction of travel once its photo is on
-/// screen. A newer request stops an older one; it runs behind the photo on screen.
+/// screen. A newer request replaces an older one; one worker runs them behind the photo on
+/// screen (`prefetch.rs`).
 #[tauri::command]
 #[specta::specta]
 pub fn prefetch_previews(app: AppHandle, ids: Vec<PhotoId>) {
-    let state = app.state::<AppState>();
-    let generation = state.prefetch_generation.fetch_add(1, Ordering::SeqCst) + 1;
-    let mut ids = ids;
-    ids.truncate(MAX_PREFETCH);
-    std::thread::spawn(move || {
-        let state = app.state::<AppState>();
-        for id in ids {
-            if state.prefetch_generation.load(Ordering::SeqCst) != generation {
-                return;
-            }
-            let record = state.library.read().ok().and_then(|l| l.record(id));
-            let settings = state.settings.read().ok().map(|s| s.0.clone());
-            if let (Some(record), Some(settings)) = (record, settings) {
-                let _ = background(|| {
-                    state
-                        .previews
-                        .prefetch(&record, &settings, state.codec.as_ref())
-                });
-            }
-        }
-    });
+    crate::prefetch::request(&app, ids);
 }
 
 /// Scans the library's folders again and adds photos that appeared since (FR-001). Photos

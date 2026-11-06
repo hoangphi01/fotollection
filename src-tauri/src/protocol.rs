@@ -22,6 +22,7 @@ use tauri::{Manager, Runtime, UriSchemeContext, UriSchemeResponder};
 
 use crate::commands::{preview_bytes, region_bytes, source_bytes, thumbnail_bytes};
 use crate::state::AppState;
+use fotollection_core::raw::Priority;
 
 pub const SCHEME: &str = "fotothumb";
 
@@ -176,55 +177,80 @@ pub fn handle<R: Runtime>(
         }
         return;
     }
+    // The photo the preview asks for is the one on screen from now: a RAW develop still
+    // waiting for the photo before it stops going first (FR-091).
+    let priority = priority_of(&route);
+    if let Priority::Interactive(Some(photo)) = priority {
+        fotollection_core::raw::show(photo);
+    }
     // Decode work happens off the webview thread, on the interactive pool, so visible
     // thumbnails and previews never wait behind background thumbnail generation.
     let worker = app.clone();
     app.state::<AppState>().interactive_pool.spawn(move || {
         let app = worker;
         let state = app.state::<AppState>();
-        match route {
-            Route::Thumb(id) => match thumbnail_bytes(&state, id) {
-                Some(bytes) => {
-                    crate::timing::mark(&crate::timing::FIRST_THUMB, "first thumbnail");
-                    respond(responder, StatusCode::OK, bytes, true);
-                }
-                None => respond(responder, StatusCode::NOT_FOUND, Vec::new(), false),
-            },
-            Route::Source(id, sheet) => match source_bytes(&state, id, sheet) {
-                Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
-                Err(error) => fail(responder, &error),
-            },
-            Route::Region(id, region) => match region_bytes(&state, id, region) {
-                Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
-                Err(error) => fail(responder, &error),
-            },
-            Route::CameraLive => {}
-            Route::Sheet(sheet, small) => match crate::collage::sheet_bytes(&state, sheet, small) {
-                Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
-                Err(error) => fail(responder, &error),
-            },
-            Route::Mask(id) => match crate::commands::preview_mask_bytes(&state, id) {
-                Ok(bytes) => respond_as(responder, StatusCode::OK, bytes, Some("image/png")),
-                Err(error) => fail(responder, &error),
-            },
-            Route::Look(id) => match crate::commands::look_table_bytes(&state, id) {
-                Ok(bytes) => respond_as(
-                    responder,
-                    StatusCode::OK,
-                    bytes,
-                    Some("application/octet-stream"),
-                ),
-                Err(error) => fail(responder, &error),
-            },
-            Route::Preview(id, plain) => match preview_bytes(&state, id, plain) {
-                Ok(bytes) => {
-                    crate::timing::mark(&crate::timing::FIRST_PREVIEW, "first preview");
-                    respond(responder, StatusCode::OK, bytes, true);
-                }
-                Err(error) => fail(responder, &error),
-            },
-        }
+        fotollection_core::raw::with_priority(priority, || answer(&state, route, responder));
     });
+}
+
+/// Who waits for a route's RAW develops (FR-091): the photo on screen and the sheet shown go
+/// first; thumbnails, small sheets of the grid and look tables wait behind them.
+fn priority_of(route: &Route) -> Priority {
+    match route {
+        Route::Preview(id, _) | Route::Region(id, _) | Route::Mask(id) | Route::Source(id, _) => {
+            Priority::Interactive(Some(u64::from(id.0)))
+        }
+        Route::Sheet(_, false) => Priority::Interactive(None),
+        Route::Thumb(_) | Route::Sheet(_, true) | Route::Look(_) | Route::CameraLive => {
+            Priority::Background
+        }
+    }
+}
+
+/// Answers `route` on a thread of the interactive pool.
+fn answer(state: &AppState, route: Route, responder: UriSchemeResponder) {
+    match route {
+        Route::Thumb(id) => match thumbnail_bytes(state, id) {
+            Some(bytes) => {
+                crate::timing::mark(&crate::timing::FIRST_THUMB, "first thumbnail");
+                respond(responder, StatusCode::OK, bytes, true);
+            }
+            None => respond(responder, StatusCode::NOT_FOUND, Vec::new(), false),
+        },
+        Route::Source(id, sheet) => match source_bytes(state, id, sheet) {
+            Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
+            Err(error) => fail(responder, &error),
+        },
+        Route::Region(id, region) => match region_bytes(state, id, region) {
+            Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
+            Err(error) => fail(responder, &error),
+        },
+        Route::CameraLive => {}
+        Route::Sheet(sheet, small) => match crate::collage::sheet_bytes(state, sheet, small) {
+            Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
+            Err(error) => fail(responder, &error),
+        },
+        Route::Mask(id) => match crate::commands::preview_mask_bytes(state, id) {
+            Ok(bytes) => respond_as(responder, StatusCode::OK, bytes, Some("image/png")),
+            Err(error) => fail(responder, &error),
+        },
+        Route::Look(id) => match crate::commands::look_table_bytes(state, id) {
+            Ok(bytes) => respond_as(
+                responder,
+                StatusCode::OK,
+                bytes,
+                Some("application/octet-stream"),
+            ),
+            Err(error) => fail(responder, &error),
+        },
+        Route::Preview(id, plain) => match preview_bytes(state, id, plain) {
+            Ok(bytes) => {
+                crate::timing::mark(&crate::timing::FIRST_PREVIEW, "first preview");
+                respond(responder, StatusCode::OK, bytes, true);
+            }
+            Err(error) => fail(responder, &error),
+        },
+    }
 }
 
 #[cfg(test)]

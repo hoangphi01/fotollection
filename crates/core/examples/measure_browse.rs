@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //! What browsing a folder in the preview costs (FR-091, NFR-012), JPEG and RAW apart, p50 and
-//! p95: each photo opened from nothing (a click on a photo far away, before FR-091); its
+//! p95: each photo opened from nothing (a click on a photo far away, before FR-091), without
+//! and with the disk cache (which then also writes its standard preview); its
 //! standard preview made on disk, as the app does after the thumbnails; each photo opened
 //! from that disk copy in a new session; and opened again from memory. Also the disk bytes
 //! a photo and the mean difference of a disk-made preview from a fresh one. Files are only
@@ -15,7 +16,8 @@
     clippy::expect_used,
     clippy::cast_precision_loss,
     clippy::cast_possible_truncation,
-    clippy::cast_sign_loss
+    clippy::cast_sign_loss,
+    clippy::too_many_lines
 )]
 
 use std::path::PathBuf;
@@ -120,6 +122,20 @@ fn main() {
     let (mut raw, mut other) = timed(&PreviewCache::new(), true);
     report("Open a photo, nothing kept", &mut raw, &mut other);
 
+    // The same first view with the disk cache on, as in the app: it also makes the photo's
+    // standard preview on disk (audit 2026-11-06, item 8).
+    let first = tempfile::tempdir().unwrap();
+    let (mut raw, mut other) = timed(
+        &PreviewCache::with(Budget::default(), Some(first.path().to_path_buf())),
+        true,
+    );
+    report(
+        "Open a photo, nothing kept, disk cache on",
+        &mut raw,
+        &mut other,
+    );
+    drop(first);
+
     // The background builder: each photo's standard preview made on disk.
     let disk = tempfile::tempdir().unwrap();
     let builder = PreviewCache::with(Budget::default(), Some(disk.path().to_path_buf()));
@@ -127,7 +143,7 @@ fn main() {
     for record in &records {
         let t = Instant::now();
         let made = builder
-            .ensure_standard(record, &settings, codec.as_ref())
+            .ensure_standard(record, &settings, codec.as_ref(), &|| true)
             .is_ok();
         let ms = t.elapsed().as_secs_f64() * 1e3;
         if made {

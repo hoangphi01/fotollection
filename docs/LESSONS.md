@@ -1,6 +1,6 @@
 # Lessons — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-05
+> **Status:** Living · **Last reviewed:** 2026-11-06
 >
 > What each debugging session taught us, so the same mistake is not made twice. Every bug that took more than one look to find gets an entry here in the same commit as its fix ([DOCS_GUIDE.md](DOCS_GUIDE.md) §2). Newest first. Each entry says what we saw, why it happened, the fix, and the rule to follow from now on. Performance-only lessons stay in [OPTIMIZATION.md](OPTIMIZATION.md) (for example §4.3.1, interactive work off background queues).
 
@@ -13,6 +13,13 @@
 5. **Write the lesson here** before moving on.
 
 ## 2026-11-06
+
+### Memory state needs one owner, an epoch and one way in: the audit of FR-091 (v0.11.1)
+
+- **Seen:** an audit of v0.11.0's preview memory, read line by line, found no crash but eleven ways it could keep the wrong thing: a develop that ends after *Open* stored its pixels under an id the new library gives another photo; a prefetch became "the newest" and pushed out the photo on screen; every prefetch started a thread of its own, and old ones kept developing RAWs; the background pass and the photo on screen could make the same photo at once into one shared `.part`; the disk limit held only after a whole pass, and then dropped new thumbnails before old previews; a develop with no priority set went first by default.
+- **Why:** each cache was written for one caller (the photo on screen) and then reached by three more (the pass, the prefetch, the collage grid), and nothing said who owns an entry, when it stops being valid, or which caller may evict which.
+- **Fix:** `clear` bumps an epoch checked under the lock before every insert; `Keep::{No, Behind, Shown}` says where a caller's image goes; one prefetch worker with a queue the latest request replaces; an in-flight set that background work skips (the photo on screen never waits: it runs on a rayon pool); a still-wanted check once a develop's turn comes; previews pruned first, every 100 during the pass; a version in the preview's file name; `Background` unless marked. Each fix has a test that fails without it (checked by removing the fix).
+- **Rule:** state kept in memory names its owner, its bound in bytes, what empties it and who may evict whom, in its doc comment, and every cache reachable from more than one caller gets a test per caller. From a pool thread, never wait for work in flight: skip it, or re-check after the wait you already have.
 
 ### A wait inside a pool's job: the preview pass and the best-shot analysis hung each other (FR-091, FR-041)
 
