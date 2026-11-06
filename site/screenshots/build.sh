@@ -57,4 +57,6 @@ for png in "$work"/png/*.png; do
 done
 # The link previews of every page, from the WebP screenshots just written (og.mjs).
 node site/screenshots/og.mjs
+# The landing page's showcase tiles and the catalog images, from the same screenshots.
+node site/screenshots/showcase.mjs "$work/dump"
 du -sh "$out"

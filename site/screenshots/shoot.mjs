@@ -73,6 +73,8 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     get_ui_settings: () => ({ ...common.get_ui_settings, language, mode, ...ui }),
     // The update window at start (FR-103), shown when a shot asks for it.
     check_for_update_at_start: () => update,
+    // The preview's colour cards (FR-079): the scenario's look, shared by every photo.
+    get_photo_look: () => ({ look: current.settings.look, custom: false, raw: null }),
     // The export dialog's example name (FR-104): the first photo's own name.
     export_name_example: () => 'P1067823.jpg',
     // The Settings window's memory and cache (FR-086): a 16 GB Mac at 25 %, a trip's cache.
@@ -220,7 +222,9 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
         if (!existsSync(sheet)) return route.fulfill({ status: 404 })
         return route.fulfill({ body: await readFile(sheet), contentType: 'image/jpeg' })
       }
-      const file = kind === 'preview' ? path.join(dump, 'img/preview', scenario, `${id}.jpg`) : path.join(dump, 'img', kind, `${id}.jpg`)
+      // The look scenario's *Before* is its plain preview, recorded beside it (demo.rs).
+      const shown = kind === 'preview' && scenario === 'look' && url.searchParams.get('plain') ? 'look-plain' : scenario
+      const file = kind === 'preview' ? path.join(dump, 'img/preview', shown, `${id}.jpg`) : path.join(dump, 'img', kind, `${id}.jpg`)
       if (!existsSync(file)) return route.fulfill({ status: 404 })
       return route.fulfill({ body: await readFile(file), contentType: 'image/jpeg' })
     }
@@ -288,6 +292,8 @@ const SHOW = {
   // The Lumix frame on the owner's tram, the Fujifilm one otherwise.
   frame: idOf(has('P1067865') ? 'P1067865' : 'erdmaennchen-in-der-wilhelma-1'),
   crop: idOf('bir-hakeim-bridge'),
+  // The view over Prague for the before and after, when the set has it.
+  compare: idOf(has('P1067950') ? 'P1067950' : 'charles-bridge-at-sunset'),
   // A tram by night on a postcard filled to the edge (demo.rs FULL), when the set has it.
   night: has('P1068073') ? idOf('P1068073') : null,
   // A collage sheet by night: a tram and the National Museum, two photos on one print.
@@ -680,6 +686,29 @@ for (const language of ['en', 'vi']) {
     await page.keyboard.press('ArrowRight')
     await settle(page)
     await save(page, `crop-${suffix}`)
+    await context.close()
+
+    // 4b. For the showcase (showcase.mjs): before and after side by side (FR-096), the
+    // full-window develop view (FR-095), and the export dialog (FR-093).
+    ;({ context, page } = await open({ scenario: 'look', language, theme }))
+    await (await reach(page, SHOW.compare)).dblclick()
+    await page.waitForSelector(`img[src*="/preview/${SHOW.compare}"]`)
+    await page.keyboard.press('y')
+    await page.waitForTimeout(400)
+    await settle(page)
+    await save(page, `compare-${suffix}`)
+    await context.close()
+    ;({ context, page } = await open({ scenario: 'look', language, theme, ui: { previewLayout: 'window' } }))
+    await (await reach(page, SHOW.compare)).dblclick()
+    await page.waitForSelector(`img[src*="/preview/${SHOW.compare}"]`)
+    await settle(page)
+    await save(page, `window-${suffix}`)
+    await context.close()
+    ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
+    await page.getByRole('button', { name: /^(Export|Xuất) \d+/ }).first().click()
+    await page.waitForSelector('[data-slot="settings-body"]')
+    await settle(page)
+    await save(page, `export-dialog-${suffix}`)
     await context.close()
 
     // 5. Best-shot groups, on the cat burst.

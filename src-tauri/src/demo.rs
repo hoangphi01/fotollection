@@ -13,6 +13,7 @@ use std::time::Duration;
 
 use fotollection_core::frame::FrameSettings;
 use fotollection_core::library::{CullFilter, Flag, PhotoId};
+use fotollection_core::looks::{Adjust, LookSettings};
 use fotollection_core::settings::StampSettings;
 use serde_json::{Value, json};
 use tauri::{AppHandle, Manager};
@@ -200,12 +201,19 @@ fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, 
     to_json(common)
 }
 
-/// Two looks: the retro date stamp, and the "Shot on" info frame, with their previews.
+/// Three looks: the retro date stamp, the "Shot on" info frame, and a colour look with its
+/// plain preview beside it (the site's before-and-after, FR-096), each with its previews.
 fn record_scenarios(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, String> {
     let state = app.state::<AppState>();
     let mut scenarios = BTreeMap::new();
-    for scenario in ["stamp", "frame"] {
+    for scenario in ["stamp", "frame", "look"] {
         let mut settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
+        // A colour look of Faves' sliders for the before and after; none in the others.
+        settings.look = if scenario == "look" {
+            demo_look()
+        } else {
+            LookSettings::default()
+        };
         settings.stamp = StampSettings {
             enabled: scenario == "stamp",
             place: true,
@@ -232,6 +240,13 @@ fn record_scenarios(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Valu
                 &preview_bytes(&state, id, crate::commands::PreviewPart::All)
                     .map_err(|e| e.message)?,
             )?;
+            if scenario == "look" {
+                write(
+                    &out.join(format!("img/preview/look-plain/{key}.jpg")),
+                    &preview_bytes(&state, id, crate::commands::PreviewPart::Plain)
+                        .map_err(|e| e.message)?,
+                )?;
+            }
         }
         scenarios.insert(
             scenario,
@@ -242,7 +257,30 @@ fn record_scenarios(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Valu
             }),
         );
     }
+    // What follows is recorded without the look.
+    let mut settings = state.settings.read().map_err(|e| e.to_string())?.0.clone();
+    settings.look = LookSettings::default();
+    ok(commands::set_settings(app.clone(), app.state(), settings))?;
     to_json(scenarios)
+}
+
+/// A warm, clear look for the before and after: Faves' sliders as the owner set them on a
+/// Prague RAW (2026-11-06).
+fn demo_look() -> LookSettings {
+    LookSettings {
+        adjust: Adjust {
+            brightness: 9,
+            contrast: 44,
+            highlights: -36,
+            shadows: -48,
+            warmth: 22,
+            tint: 10,
+            saturation: 19,
+            vibrance: 3,
+            ..Adjust::default()
+        },
+        ..LookSettings::default()
+    }
 }
 
 /// Collage mode (FR-035): the gallery's sheets with the date stamp and the 3 mm border, each

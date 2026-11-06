@@ -1,0 +1,144 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<!-- The showcase tiles, the wide image and the catalog images, rendered by showcase.mjs from the real app's screenshots in site/assets/img, with the site's own fonts. Never a mock-up. -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face { font-family: 'Bitter'; font-weight: 100 900; src: url('/fonts/bitter-latin-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+2000-206F; }
+      @font-face { font-family: 'Bitter'; font-weight: 100 900; src: url('/fonts/bitter-vietnamese-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+      @font-face { font-family: 'Be Vietnam Pro'; font-weight: 400; src: url('/fonts/be-vietnam-pro-latin-400-normal.woff2') format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+      @font-face { font-family: 'Be Vietnam Pro'; font-weight: 400; src: url('/fonts/be-vietnam-pro-vietnamese-400-normal.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+      @font-face { font-family: 'Be Vietnam Pro'; font-weight: 600; src: url('/fonts/be-vietnam-pro-latin-600-normal.woff2') format('woff2'); unicode-range: U+0000-00FF, U+2000-206F; }
+      @font-face { font-family: 'Be Vietnam Pro'; font-weight: 600; src: url('/fonts/be-vietnam-pro-vietnamese-600-normal.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+      * { box-sizing: border-box; margin: 0; }
+      html, body { width: 100%; height: 100%; overflow: hidden; }
+      body { font-family: 'Be Vietnam Pro', sans-serif; color: #fffaee; position: relative; }
+      /* The two grounds of the site: the logo's teal, and the wood of the dark theme. */
+      body.teal { background: #2c836d radial-gradient(circle at 85% 110%, #4aada4 0, transparent 60%); }
+      body.wood { background-color: #1e1712; background-image: radial-gradient(circle at 15% -10%, #6b4426 0, transparent 55%), radial-gradient(circle at 100% 100%, #3b2a1c 0, transparent 60%); }
+      .text { position: absolute; left: 64px; top: 56px; right: 64px; z-index: 2; }
+      .brand { display: flex; align-items: center; gap: 10px; font: 700 22px 'Bitter', serif; }
+      .brand img { width: 36px; height: 36px; border-radius: 8px; }
+      h1 { margin-top: 18px; font: 800 54px/1.08 'Bitter', serif; letter-spacing: -0.01em; max-width: 900px; }
+      h1 em { font-style: normal; color: #f6c98b; }
+      p.sub { margin-top: 14px; font-size: 24px; line-height: 1.45; color: #e9dfcf; max-width: 880px; }
+      body.teal p.sub { color: #e3f1ea; }
+      .win { position: absolute; border-radius: 14px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08); }
+      .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+      .chip { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 18px; border-radius: 12px; font-weight: 600; font-size: 22px; background: #fffaee; color: #2b2017; box-shadow: inset 0 -4px 0 #c9b9a2, 0 6px 16px rgba(0, 0, 0, 0.3); }
+      .chip kbd { font: 600 22px 'Be Vietnam Pro', sans-serif; padding: 2px 10px; border-radius: 8px; background: #2c836d; color: #fffaee; box-shadow: inset 0 -3px 0 #1b5c4c; }
+      .chip.green { background: #2f7d4a; color: #fff; box-shadow: inset 0 -4px 0 #1d5531, 0 6px 16px rgba(0, 0, 0, 0.3); }
+      .bg { position: absolute; inset: -40px; background-size: cover; background-position: center; filter: blur(18px) brightness(0.55) saturate(1.1); }
+      .caption { position: absolute; left: 0; right: 0; bottom: 0; height: 120px; display: flex; align-items: center; gap: 16px; padding: 0 56px; background: #1e1712; font: 700 40px 'Bitter', serif; }
+      .caption img { width: 52px; height: 52px; border-radius: 10px; }
+      .plain { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    </style>
+  </head>
+  <body>
+    <script>
+      // ?lang=en|vi&tile=<name>&w=…&h=… (showcase.mjs). Each tile: its ground, its words, and
+      // where the real screenshots of site/assets/img sit on it.
+      const params = new URLSearchParams(location.search)
+      const lang = params.get('lang') === 'vi' ? 'vi' : 'en'
+      const tile = params.get('tile')
+      const W = Number(params.get('w'))
+      const H = Number(params.get('h'))
+      const shot = (name, theme) => `/img/${name}-${lang}-${theme}.webp`
+      const WORDS = {
+        yours: { en: ['Make it ', 'yours', 'Light or dark, English or Vietnamese: the look you like.'], vi: ['Theo ', 'ý bạn', 'Sáng hay tối, tiếng Anh hay tiếng Việt: giao diện bạn thích.'] },
+        desktops: { en: ['Every ', 'desktop', 'The same app on Windows, macOS and Linux, offline.'], vi: ['Mọi ', 'máy tính', 'Cùng một app trên Windows, macOS và Linux, không cần mạng.'] },
+        keys: { en: ["Lightroom's ", 'keys', 'Your hands already know the way.'], vi: ['Phím tắt ', 'như Lightroom', 'Tay bạn đã quen sẵn rồi.'] },
+        compare: { en: ['Before ', 'and after', 'Side by side or split, both sharp at 1:1.'], vi: ['Trước ', 'và sau', 'Cạnh nhau hay chia đôi, hai bên đều nét ở 1:1.'] },
+        prints: { en: ['Prints that come out ', 'right', 'Date stamp, info frame, and the sharpness of every size, measured.'], vi: ['Ảnh in ra ', 'đúng như ý', 'Dấu ngày, khung thông tin, và độ nét của từng khổ in, đều đo được.'] },
+        export: { en: ['Export as ', 'Lightroom does', 'Presets, file names, and a quality slider that says what prints well.'], vi: ['Xuất ảnh ', 'như Lightroom', 'Preset, tên tệp, và thanh chất lượng cho biết mức nào in đẹp.'] },
+        wide: { en: ['Your trip, ', 'ready to print', 'Free, offline, open source. Windows, macOS and Linux.'], vi: ['Chuyến đi của bạn, ', 'sẵn sàng để in', 'Miễn phí, không cần mạng, mã nguồn mở. Windows, macOS và Linux.'] },
+      }
+      const CAPTIONS = {
+        gallery: { en: 'Look through a whole trip', vi: 'Xem lại cả chuyến đi' },
+        window: { en: 'Develop as in Lightroom', vi: 'Chỉnh ảnh như Lightroom' },
+        compare: { en: 'Before and after', vi: 'Trước và sau' },
+        export: { en: 'Export with every choice', vi: 'Xuất ảnh đủ mọi tuỳ chọn' },
+        collage: { en: 'Two photos on one print', vi: 'Hai ảnh trên một tấm in' },
+      }
+      const CATALOG = { gallery: ['grid', 'light'], window: ['window', 'dark'], compare: ['compare', 'dark'], export: ['export-dialog', 'light'], collage: ['collage', 'dark'] }
+      const el = (tag, attrs = {}, kids = []) => {
+        const e = document.createElement(tag)
+        for (const [k, v] of Object.entries(attrs)) k === 'text' ? (e.textContent = v) : e.setAttribute(k, v)
+        for (const k of kids) e.append(k)
+        return e
+      }
+      const words = (key) => {
+        const [lead, accent, sub] = WORDS[key][lang]
+        const h1 = el('h1', {}, [lead, el('em', { text: accent })])
+        return el('div', { class: 'text' }, [el('div', { class: 'brand' }, [el('img', { src: '/mark.png', alt: '' }), 'Fotollection']), h1, el('p', { class: 'sub', text: sub })])
+      }
+      // A window: a screenshot at `width`, placed and turned.
+      const win = (src, style) => el('img', { class: 'win', src, alt: '', style })
+      const body = document.body
+      if (tile?.startsWith('catalog-')) {
+        // The catalogs: a window, plain (AppStream) or with a caption (VNLF, README).
+        const [, name, kind] = tile.split('-')
+        const [file, theme] = CATALOG[name]
+        if (kind === 'plain') body.append(el('img', { class: 'plain', src: shot(file, theme), alt: '' }))
+        else {
+          body.className = 'wood'
+          body.append(el('img', { class: 'plain', src: shot(file, theme), alt: '', style: `height: ${H - 120}px` }))
+          body.append(el('div', { class: 'caption' }, [el('img', { src: '/mark.png', alt: '' }), CAPTIONS[name][lang]]))
+        }
+      } else {
+        const layout = {
+          yours: () => {
+            body.className = 'teal'
+            body.append(words('yours'))
+            body.append(win(shot('grid', 'light'), `width: ${W * 0.62}px; left: ${W * 0.06}px; top: ${H * 0.42}px; transform: rotate(-4deg)`))
+            body.append(win(shot('grid', 'dark'), `width: ${W * 0.62}px; left: ${W * 0.36}px; top: ${H * 0.36}px; transform: rotate(3deg)`))
+          },
+          desktops: () => {
+            body.className = 'wood'
+            const t = words('desktops')
+            t.append(el('div', { class: 'chips' }, ['Windows', 'macOS', 'Linux'].map((n) => el('span', { class: 'chip', text: n }))))
+            body.append(t)
+            body.append(win(shot('collage', 'dark'), `width: ${W * 0.8}px; left: ${W * 0.1}px; top: ${H * 0.48}px`))
+          },
+          keys: () => {
+            body.className = 'wood'
+            const t = words('keys')
+            t.append(el('div', { class: 'chips' }, [['R', lang === 'vi' ? 'cắt' : 'crop'], ['Z', '1:1'], ['\\', lang === 'vi' ? 'ảnh gốc' : 'before'], ['Y', lang === 'vi' ? 'so sánh' : 'compare'], ['F', lang === 'vi' ? 'toàn cửa sổ' : 'full window']].map(([k, w]) => el('span', { class: 'chip' }, [el('kbd', { text: k }), w]))))
+            body.append(t)
+            body.append(win(shot('window', 'dark'), `width: ${W * 0.84}px; left: ${W * 0.08}px; top: ${H * 0.5}px`))
+          },
+          compare: () => {
+            body.className = 'teal'
+            body.append(words('compare'))
+            body.append(win(shot('compare', 'dark'), `width: ${W * 0.84}px; left: ${W * 0.08}px; top: ${H * 0.42}px`))
+          },
+          prints: () => {
+            body.className = 'wood'
+            const t = words('prints')
+            t.append(el('div', { class: 'chips' }, [el('span', { class: 'chip green', text: lang === 'vi' ? '✓ In rất đẹp' : '✓ Prints beautifully' })]))
+            body.append(t)
+            body.append(win(shot('stamp', 'dark'), `width: ${W * 0.56}px; left: ${W * 0.05}px; top: ${H * 0.5}px; transform: rotate(-3deg)`))
+            body.append(win(shot('frame', 'light'), `width: ${W * 0.56}px; left: ${W * 0.4}px; top: ${H * 0.46}px; transform: rotate(3deg)`))
+          },
+          export: () => {
+            body.className = 'teal'
+            body.append(words('export'))
+            body.append(win(shot('export-dialog', 'light'), `width: ${W * 0.84}px; left: ${W * 0.08}px; top: ${H * 0.42}px`))
+          },
+          wide: () => {
+            // The owner's view over Prague, blurred, under the app (as Mechvibes shows themes).
+            body.className = 'wood'
+            body.append(el('div', { class: 'bg', style: "background-image: url('/backdrop.jpg')" }))
+            const t = words('wide')
+            t.style.right = `${W * 0.52}px`
+            t.style.top = `${H * 0.3}px`
+            body.append(t)
+            body.append(win(shot('grid', 'dark'), `width: ${W * 0.5}px; right: ${W * 0.05}px; top: ${H * 0.12}px; transform: perspective(2400px) rotateY(-8deg)`))
+          },
+        }
+        layout[tile]()
+      }
+    </script>
+  </body>
+</html>
