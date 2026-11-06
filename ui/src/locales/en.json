@@ -9,6 +9,7 @@
   "app": {
     "keysInfo": "Keys and mouse",
     "byline": "by @hoangphi01",
+    "website": "Fotollection’s website",
     "photos_one": "{{count}} photo",
     "photos_other": "{{count}} photos",
     "filtered_one": "{{shown}} / {{count}} photo",

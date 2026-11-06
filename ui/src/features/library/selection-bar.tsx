@@ -55,7 +55,7 @@ export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, 
         <Button size="sm" variant="ghost" onClick={onSelectAll}>
           <CheckCheck data-icon="inline-start" /> {t('select.all')}
         </Button>
-        <Button size="sm" variant="ghost-destructive" disabled={none} onClick={onClear}>
+        <Button size="sm" variant="destructive" disabled={none} onClick={onClear}>
           <X data-icon="inline-start" /> {t('select.clear')}
         </Button>
       </div>

@@ -32,6 +32,11 @@ export const commands = {
 	 */
 	openIssuePage: () => typedError<null, IpcError>(__TAURI_INVOKE("open_issue_page")),
 	/**
+	 *  Opens the project's home page in the browser, from a click on the app's mark (FR-099). The
+	 *  address is fixed here, as `open_issue_page`'s; the app itself sends nothing.
+	 */
+	openWebsite: () => typedError<null, IpcError>(__TAURI_INVOKE("open_website")),
+	/**
 	 *  What *Copy diagnostics* copies: the version, the system and the last lines of the error
 	 *  log, already free of paths (`error_log`). The user pastes it into an issue; the app sends
 	 *  nothing.

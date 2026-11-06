@@ -9,6 +9,7 @@
   "app": {
     "keysInfo": "Phím tắt và chuột",
     "byline": "by @hoangphi01",
+    "website": "Trang web Fotollection",
     "photos_other": "{{count}} ảnh",
     "filtered_other": "{{shown}} / {{count}} ảnh",
     "enterToPreview": "Enter để xem trước",

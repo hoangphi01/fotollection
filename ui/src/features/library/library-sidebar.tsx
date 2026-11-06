@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import type { FolderSummary, ImportSummary, QueueView } from '@/ipc/bindings'
+import { commands, type FolderSummary, type ImportSummary, type QueueView } from '@/ipc/bindings'
 import { ThemeSwitch } from '@/features/appearance/theme-switch'
 import { ProjectName } from '@/features/project/project-name'
 import type { ProjectApi } from '@/features/project/use-project'
@@ -91,14 +91,23 @@ export function LibrarySidebar({
     <aside className="flex w-panel shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground">
       <div className="flex h-12 items-center gap-2 px-4">
         {/* Simplified mark (no wordmark) pre-rendered per density, so WebKit never downscales */}
-        <img
-          src="/brand/mark-28.png"
-          srcSet="/brand/mark-28.png 1x, /brand/mark-56.png 2x, /brand/mark-84.png 3x"
-          width={28}
-          height={28}
-          alt=""
-          className="rounded-md"
-        />
+        {/* The mark, as tall as the gear (32 px); a click opens fotollection.org in the browser. */}
+        <button
+          type="button"
+          className="shrink-0 rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          aria-label={t('app.website')}
+          data-hint={t('app.website')}
+          onClick={() => void commands.openWebsite()}
+        >
+          <img
+            src="/brand/mark-32.png"
+            srcSet="/brand/mark-32.png 1x, /brand/mark-64.png 2x, /brand/mark-96.png 3x"
+            width={32}
+            height={32}
+            alt=""
+            className="rounded-md"
+          />
+        </button>
         {/* The name above, the author a size smaller below it (owner, 2026-11-06). */}
         <div className="flex min-w-0 flex-col">
           <span className="font-heading text-sm leading-tight font-semibold tracking-tight">Fotollection</span>
@@ -277,12 +286,12 @@ export function LibrarySidebar({
                   </button>
                   {/* Like closing a browser tab: shown on hover, the files stay on disk. */}
                   <Button
-                    variant="ghost-destructive"
+                    variant="destructive"
                     size="icon-xs"
                     aria-label={t('library.removeFolder', { name })}
                     data-hint={t('library.removeFolderHint')}
                     onClick={() => onRemoveFolder(id)}
-                    className="absolute right-1.5 hidden size-5 rounded-full group-focus-within:inline-flex group-hover:inline-flex"
+                    className="absolute right-1.5 hidden size-5 rounded-full [--lip:2px] group-focus-within:inline-flex group-hover:inline-flex"
                   >
                     <X className="size-3.5" />
                   </Button>

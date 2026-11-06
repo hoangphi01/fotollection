@@ -15,8 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- **One height for every control** (FR-099): buttons, toggles and the toolbar are as tall as a text field or a dropdown (32 px), so a row of mixed controls lines up; the Settings gear is a real button, and the author's name sits under the app's, a size smaller.
-- **Every remove button is red** (FR-099): clearing the filters, the cache or a selection, discarding a camera session, removing a folder, a font, a print size or the logo, stopping an export: solid red when it stands alone, red ink when it is a small icon, everywhere including Settings.
+- **One height for every control** (FR-099): buttons, toggles and the toolbar are as tall as a text field or a dropdown (32 px), so a row of mixed controls lines up; the Settings gear is a real button, and the author's name sits under the app's, a size smaller; the logo beside them is as tall as the gear and opens fotollection.org.
+- **Every remove button is red** (FR-099): clearing the filters, the cache or a selection, discarding a camera session, removing a folder, a font, a print size or the logo, stopping an export: deep red with white ink, small icons and a folder tab's round ✕ included, everywhere including Settings.
 - **The preview's panel in tabs** (FR-095), as Lightroom's tools: *Edit* (**E**), *Crop* (**R**), *Print and export*, *Info* (**I**), one at a time, so the panel stays short. In a window under 1400 px the left column steps aside and **Tab** lays it over the photo.
 - **A new look begins** (FR-099): the interface is set in Be Vietnam Pro, drawn for Vietnamese, on Windows, macOS and Linux alike.
 

@@ -30,7 +30,7 @@ def main() -> None:
         return src.resize((n, n), Image.LANCZOS)
 
     # UI: the sidebar mark at 1x/2x/3x, and the webview favicon.
-    for n in (28, 56, 84):
+    for n in (28, 56, 84, 32, 64, 96):
         sized(n).save(ROOT / "ui" / "public" / "brand" / f"mark-{n}.png", optimize=True)
     sized(64).save(ROOT / "ui" / "public" / "favicon.png", optimize=True)
 

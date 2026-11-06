@@ -297,6 +297,7 @@ Commands marked † are implemented.
 | `startup_finished() -> bool` † | Whether the last session is back, for a page that loaded after `startup-finished`; the start-up screen waits for it | FR-060 |
 | `check_for_update() -> UpdateCheck` † / `open_update_download()` † | On click only: asks GitHub for the latest release (`{ current, latest, newer, pageUrl }`) and keeps the installer link for this system in Rust; the second opens it in the browser. Errors: `update.offline`, `update.unreadable`, `update.none` | FR-061 |
 | `open_issue_page()` † | Report a problem: opens the project's issue page in the browser; the address is fixed in Rust, so the webview cannot open another, and the app sends nothing | FR-069 |
+| `open_website()` † | A click on the app's mark beside its name: opens fotollection.org in the browser; the address is fixed in Rust, as `open_issue_page`'s, and the app sends nothing | FR-099 |
 | `diagnostics() -> string` † | Copy diagnostics: the version, the system and the last 20 lines of the error log, without paths ([ERROR_CONTROL.md §3](ERROR_CONTROL.md#3-status-of-the-plan-v091)) | FR-069 |
 | `quit_app()` † | Closes the app after the user answered the closing question: the camera is let go and the app waits (at most 10 s) for the last shot to be written | FR-063, ADR-0028 |
 | `cache_usage() -> CacheUsage` † / `clear_cache() -> CacheUsage` † | The cache's size against the limit chosen in Settings (`{ bytes, files, limitBytes, thumbnailsBytes, previewsBytes, analysesBytes }`), and emptying it | DATABASE §8, FR-086 |

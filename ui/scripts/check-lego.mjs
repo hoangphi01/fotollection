@@ -109,11 +109,11 @@ for (const path of files) {
 }
 
 // Red for removing (owner, 2026-11-06; STYLE_RULE §4 "Red"): a Button whose icon deletes,
-// clears, removes or stops (✕, a bin, a cleared filter) is `destructive`, or
-// `ghost-destructive` when it is icon-only or inline. A dismiss (`common.dismiss`) only hides
+// clears, removes or stops (✕, a bin, a cleared filter) is `destructive`: deep red, white
+// ink, icon-only ones too. A dismiss (`common.dismiss`) only hides
 // a note, so it stays neutral; the title bar's close is a plain <button> the system styles.
 const REMOVE_ICON = /<(X|XIcon|Trash2|FilterX|Eraser|CircleX)\b/
-const RED = /variant="(ghost-)?destructive"/
+const RED = /variant="destructive"/
 const allTsx = []
 const walkAll = (dir) => {
   for (const name of readdirSync(dir)) {
@@ -130,7 +130,7 @@ for (const path of allTsx) {
     const block = m[0]
     if (REMOVE_ICON.test(block) && !RED.test(block) && !block.includes("'common.dismiss'")) {
       const line = text.slice(0, m.index).split('\n').length
-      problems.push(`${rel}:${line}: a button that removes is red: variant="destructive", or "ghost-destructive" when icon-only or inline`)
+      problems.push(`${rel}:${line}: a button that removes is red: variant="destructive"`)
     }
   }
 }

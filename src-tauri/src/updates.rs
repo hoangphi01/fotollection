@@ -23,6 +23,8 @@ const LATEST: &str = "https://api.github.com/repos/hoangphi01/fotollection/relea
 const RELEASES: &str = "https://github.com/hoangphi01/fotollection/releases/";
 /// Where "Report a problem" leads: the project's issue forms, bug or idea (FR-069).
 const ISSUES: &str = "https://github.com/hoangphi01/fotollection/issues/new/choose";
+/// Where the app's mark leads: the project's home page (owner, 2026-11-06).
+const WEBSITE: &str = "https://fotollection.org/";
 /// GitHub's answer is a few kilobytes; anything far larger is refused.
 const MAX_BYTES: u64 = 1024 * 1024;
 const TIMEOUT: Duration = Duration::from_secs(10);
@@ -211,6 +213,16 @@ pub fn open_update_download(app: AppHandle, state: State<'_, AppState>) -> Resul
 pub fn open_issue_page(app: AppHandle) -> Result<(), IpcError> {
     app.opener()
         .open_url(ISSUES, None::<&str>)
+        .map_err(|e| IpcError::internal(e.to_string()))
+}
+
+/// Opens the project's home page in the browser, from a click on the app's mark (FR-099). The
+/// address is fixed here, as `open_issue_page`'s; the app itself sends nothing.
+#[tauri::command]
+#[specta::specta]
+pub fn open_website(app: AppHandle) -> Result<(), IpcError> {
+    app.opener()
+        .open_url(WEBSITE, None::<&str>)
         .map_err(|e| IpcError::internal(e.to_string()))
 }
 
