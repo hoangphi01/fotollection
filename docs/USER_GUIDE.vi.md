@@ -130,6 +130,8 @@ Khi bạn mở bản xem trước từ *Giỏ in* hoặc *Để riêng*, ↑ và
 
 **Nhiều thư mục:** dấu tích đi theo bạn từ tab thư mục này sang tab khác ([FR-056](PRD.md#fr-056--folders-as-tabs)). Tích vài tấm ở một thư mục, nhấp sang thư mục khác ở thanh bên rồi tích tiếp; thanh chọn hiện tổng số và số ảnh ở các thư mục khác, và *Giỏ in* chuyển tất cả cùng lúc.
 
+**Sắp xếp thư mục** như tab trình duyệt ([FR-107](PRD.md#fr-107--folder-tabs-in-the-order-the-user-drags-them)): nhấn vào một thư mục rồi kéo lên hay xuống (hoặc giữ một chút rồi kéo); các thư mục khác tự nhường chỗ, và **Esc** để trả về chỗ cũ. Khi một thư mục đang được chọn bằng bàn phím, **Alt+↑** và **Alt+↓** chuyển nó lên hay xuống một bậc. Thứ tự được lưu cùng dự án.
+
 <!-- shot: tabs | Ba thư mục là ba tab: ảnh đã tích ở hai thư mục, và nút đóng trên một tab -->
 
 Trong chế độ Chọn, nhấp đúp không mở bản xem trước, và **phím Space làm việc khác** (§4.3).

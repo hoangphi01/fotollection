@@ -172,6 +172,8 @@ These tables are `project.json` inside the project bundle ([ADR-0016](adr/0016-s
 }
 ```
 
+The `folders` rows are written in the order the folder list shows (FR-107, v0.12.1), and a project opens its folders in that order; ids do not follow it, and photo rows point to a folder by its id. Older files open in their own order, so no version change was needed.
+
 Photo 18 stores only its flag. Every other value comes from `settings` (rule N5). If 300 photos are in Sintra, `places` still has **one** row (rule N3).
 
 ### 4.2 Field rules

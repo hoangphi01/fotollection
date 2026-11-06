@@ -132,6 +132,8 @@ When you open the preview from the *Print basket* or *Set aside* view, ↑ and �
 
 **Several folders:** ticks follow you from one folder tab to another ([FR-056](PRD.md#fr-056--folders-as-tabs)). Tick a few photos in one folder, click another folder in the sidebar and keep ticking; the bar shows the total and how many are in other folders, and *Print basket* moves them all at once.
 
+**Reorder the folders** as browser tabs ([FR-107](PRD.md#fr-107--folder-tabs-in-the-order-the-user-drags-them)): press a folder and drag it up or down (or hold it a moment, then drag); the others make room, and **Esc** puts it back. With a folder focused, **Alt+↑** and **Alt+↓** move it one place. The order is saved with the project.
+
 <!-- shot: tabs | Three folders as tabs: photos ticked in two of them, and the close button on a tab -->
 
 In select mode, a double-click does not open the preview, and **Space works differently** (§4.3).

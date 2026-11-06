@@ -1069,6 +1069,10 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P3 (later; owner, 2026-11-06: "note it in the docs, do it later").** Lightroom's *Output sharpening* for screen, matte or glossy paper, at low, standard or high: measured first on prints at their size before any default is chosen. Share exports already sharpen lightly after a downscale (FR-053).
 
+### FR-107 — Folder tabs in the order the user drags them
+
+**P2 (v0.12.1; owner's request 2026-11-06: "press and hold, or press and drag a folder, to sort them, as Chrome orders its tabs").** The folders of the library column ([FR-056](#fr-056--folders-as-tabs)) can be reordered: a press that moves or is held lifts the row, the others slide aside, and it drops where it is let go; *Escape* puts it back; **Alt+↑ / Alt+↓** moves the focused folder one place. A click still opens the folder. The order is the project's, saved with it and with the session (the `folders` rows are written in that order), so it survives a restart; the folders' ids do not change, so the chosen tabs stay chosen. Not an undo step, as a tab's move is not.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

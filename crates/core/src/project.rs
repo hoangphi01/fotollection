@@ -199,12 +199,13 @@ pub enum Loaded {
 
 /// Builds the file content from the library: every folder, and rows for edited photos.
 pub fn snapshot(library: &Library) -> ProjectFile {
+    // In the list's order (FR-107): a project opens its folders in the order of these rows;
+    // each row keeps its folder's id, which the photo rows point to.
     let folders = library
-        .folders()
-        .iter()
-        .enumerate()
+        .folders_in_order()
+        .into_iter()
         .map(|(i, p)| FolderRow {
-            id: u32::try_from(i + 1).unwrap_or(u32::MAX),
+            id: u32::from(i) + 1,
             path: p.display().to_string(),
             path_kind: PathKind::Absolute,
             absolute: None,
@@ -702,6 +703,39 @@ mod tests {
             .map(|id| fresh.edits(id).straighten);
         assert_eq!(level, Some(-3.5), "the straightening is kept (FR-006)");
         Ok(())
+    }
+
+    #[test]
+    fn fr_107_the_folder_order_is_the_project_rows_order() {
+        let mut lib = Library::new();
+        let a = lib.add_folder(Path::new("/photos/A"));
+        let b = lib.add_folder(Path::new("/photos/B"));
+        assert!(lib.move_folder(b, 0));
+        let file = snapshot(&lib);
+        // Rows in the list's order, each keeping its folder's id (photo rows point to it).
+        let rows: Vec<(u32, &str)> = file
+            .folders
+            .iter()
+            .map(|f| (f.id, f.path.as_str()))
+            .collect();
+        assert_eq!(
+            rows,
+            vec![
+                (u32::from(b) + 1, "/photos/B"),
+                (u32::from(a) + 1, "/photos/A")
+            ]
+        );
+        // Reopened, folders are added in the rows' order, so the list comes back as it was.
+        let mut again = Library::new();
+        for path in folder_paths(&file) {
+            again.add_folder(&path);
+        }
+        let shown: Vec<_> = again
+            .folder_summaries()
+            .into_iter()
+            .map(|f| f.name)
+            .collect();
+        assert_eq!(shown, vec!["B".to_owned(), "A".to_owned()]);
     }
 
     #[test]

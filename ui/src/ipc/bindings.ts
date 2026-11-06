@@ -212,6 +212,12 @@ export const commands = {
 	 *  library is rebuilt from the remaining folders, so photo ids and the undo history reset.
 	 */
 	removeFolder: (folder: number) => typedError<DocumentState, IpcError>(__TAURI_INVOKE("remove_folder", { folder })),
+	/**
+	 *  Moves folder `folder` to place `to` of the folder list (FR-107), as a tab is dragged in
+	 *  Chrome: the order is the project's, saved with it and with the session; ids do not change,
+	 *  so the gallery's chosen tabs stay chosen. Not an undo step, as a tab's move is not.
+	 */
+	moveFolder: (folder: number, to: number) => typedError<DocumentState, IpcError>(__TAURI_INVOKE("move_folder", { folder, to })),
 	openDocument: () => typedError<{
 	/**  The file name without its extension; `None` for an untitled session. */
 	name: string | null,

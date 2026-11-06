@@ -35,7 +35,7 @@
     "removeFolder": "Remove {{name}} from the library",
     "removeFolderHint": "Remove from the library (the files stay on disk)",
     "allPhotos": "All photos",
-    "folderHint": "Show only this folder",
+    "folderHint": "Show only this folder; drag to reorder (Alt+↑ ↓)",
     "allHint": "Every photo from every folder",
     "select": "Select folders",
     "selectHint": "Select several folders to show or export together (or Ctrl/⌘-click)",

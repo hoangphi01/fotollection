@@ -78,6 +78,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             document::get_document,
             document::new_document,
             document::remove_folder,
+            document::move_folder,
             document::open_document,
             document::open_requested_document,
             document::save_document,

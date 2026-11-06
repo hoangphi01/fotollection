@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Reorder the folders by dragging** (FR-107), as browser tabs: press and drag, or hold and drag; **Alt+↑ ↓** from the keyboard. The order is saved with the project.
 - **Check for updates at start** (FR-103): once when the app opens, a small window tells you a newer version is out, with *What's new* and *Download*; nothing is downloaded by itself. Below a version the release marks as no longer safe, a red warning says why. Turn it off in Settings → Updates.
 - **New project asks for its name** (FR-023): a small dialog, *Create* or *Cancel*.
 - **An export dialog, as Lightroom's** (FR-093): *Export* opens it, with presets on the left (prints, Facebook, Instagram, original size, custom) and every choice on the right: where the photos go, by day or in one folder, the quality, the size and the names. Tick *Don't ask again* and *Export* exports at once; Settings → *Export* holds the same choices and *Ask every time*. The folder, the quality and the rest are kept for next time.

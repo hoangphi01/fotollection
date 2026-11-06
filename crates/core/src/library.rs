@@ -425,6 +425,10 @@ pub struct PhotoSummary {
 #[derive(Default)]
 pub struct Library {
     folders: Vec<PathBuf>,
+    /// The folder ids in the order the folder list shows them (FR-107), as the user dragged
+    /// them; display only: ids stay the folders' indexes. Grows with `add_folder`, goes with
+    /// the library (a new project, a rebuild).
+    order: Vec<u16>,
     strings: StrArena,
     /// Distinct `(make, model)` pairs; photos reference them by index (N2/N3).
     cameras: Vec<(Option<String>, Option<String>)>,
@@ -543,7 +547,29 @@ impl Library {
             return u16::try_from(i).unwrap_or(u16::MAX);
         }
         self.folders.push(root.to_path_buf());
-        u16::try_from(self.folders.len() - 1).unwrap_or(u16::MAX)
+        let id = u16::try_from(self.folders.len() - 1).unwrap_or(u16::MAX);
+        self.order.push(id);
+        id
+    }
+
+    /// The source folders as the folder list shows them, `(id, path)` (FR-107).
+    pub fn folders_in_order(&self) -> Vec<(u16, &PathBuf)> {
+        self.order
+            .iter()
+            .filter_map(|&id| Some((id, self.folders.get(usize::from(id))?)))
+            .collect()
+    }
+
+    /// Moves folder `id` to place `to` of the folder list (FR-107, dragged as Chrome's tabs);
+    /// `to` past the end means last. False when there is no such folder.
+    pub fn move_folder(&mut self, id: u16, to: u16) -> bool {
+        let Some(from) = self.order.iter().position(|&f| f == id) else {
+            return false;
+        };
+        self.order.remove(from);
+        let to = usize::from(to).min(self.order.len());
+        self.order.insert(to, id);
+        true
     }
 
     fn camera_index(&mut self, meta: &PhotoMeta) -> u16 {
@@ -1019,7 +1045,7 @@ impl Library {
         ))
     }
 
-    /// Every source folder with its photo count, in import order (FR-056).
+    /// Every source folder with its photo count, in the list's order (FR-056, FR-107).
     pub fn folder_summaries(&self) -> Vec<FolderSummary> {
         let mut counts = vec![0u32; self.folders.len()];
         for &f in &self.folder {
@@ -1027,13 +1053,13 @@ impl Library {
                 *c += 1;
             }
         }
-        (0..self.folders.len())
-            .filter_map(|i| {
-                let id = u16::try_from(i).ok()?;
+        self.order
+            .iter()
+            .filter_map(|&id| {
                 Some(FolderSummary {
                     id,
                     name: self.folder_name(id)?,
-                    count: counts[i],
+                    count: *counts.get(usize::from(id))?,
                 })
             })
             .collect()
@@ -1467,6 +1493,30 @@ mod tests {
         assert_eq!(lib.filtered_ids(&CullFilter::default()), [a, b]);
         history.redo(&mut lib);
         assert_eq!(lib.filtered_ids(&picks), [a]);
+    }
+
+    #[test]
+    fn fr_107_folders_reorder_as_tabs_and_keep_their_ids() {
+        let mut lib = Library::new();
+        let a = lib.add_folder(Path::new("/photos/A"));
+        let b = lib.add_folder(Path::new("/photos/B"));
+        let c = lib.add_folder(Path::new("/photos/C"));
+        let names =
+            |lib: &Library| -> Vec<u16> { lib.folder_summaries().iter().map(|f| f.id).collect() };
+        assert_eq!(names(&lib), vec![a, b, c]);
+        // C dragged to the top, then A to the end; ids never change.
+        assert!(lib.move_folder(c, 0));
+        assert_eq!(names(&lib), vec![c, a, b]);
+        assert!(lib.move_folder(a, 99));
+        assert_eq!(names(&lib), vec![c, b, a]);
+        assert_eq!(lib.folders_in_order()[0].1, Path::new("/photos/C"));
+        // An unknown folder is refused, and a folder added later goes last.
+        assert!(!lib.move_folder(42, 0));
+        let d = lib.add_folder(Path::new("/photos/D"));
+        assert_eq!(names(&lib), vec![c, b, a, d]);
+        // Adding a folder already there changes nothing.
+        assert_eq!(lib.add_folder(Path::new("/photos/A")), a);
+        assert_eq!(names(&lib), vec![c, b, a, d]);
     }
 
     #[test]

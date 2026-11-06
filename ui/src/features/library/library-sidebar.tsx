@@ -29,6 +29,7 @@ import type { ProjectApi } from '@/features/project/use-project'
 import { errorText } from '@/lib/errors'
 import { cn } from '@/lib/utils'
 import { ModeSwitch } from '@/features/modes/mode-switch'
+import { useFolderDrag } from './use-folder-drag'
 import { showSettings } from '@/features/settings-window/use-settings-window'
 import { RemoveButton } from '@/components/forms/danger-button'
 import { CHOSEN_ROW } from '@/components/forms/list-row'
@@ -82,6 +83,12 @@ export function LibrarySidebar({
     onSelect(next)
   }
   const inGallery = queue === 'gallery'
+  // Folder tabs in the order the user drags them, as Chrome's (FR-107); Rust keeps the order.
+  const folderById = new Map(folders.map((f) => [f.id, f]))
+  const folderDrag = useFolderDrag(
+    folders.map((f) => f.id),
+    (id, to) => void commands.moveFolder(id, to),
+  )
   const rowClass = (active: boolean) =>
     cn(
       'flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-sidebar-accent',
@@ -134,9 +141,7 @@ export function LibrarySidebar({
       {/* The .fotollection document (FR-023). */}
       <div className="space-y-1.5 px-4 pt-4 pb-3">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-muted-foreground uppercase">
-            {t('project.title')}
-          </span>
+          <span className="text-xs font-medium text-muted-foreground uppercase">{t('project.title')}</span>
           <ButtonGroup ariaLabel={t('project.title')}>
             {(
               [
@@ -172,11 +177,7 @@ export function LibrarySidebar({
           )}
         </p>
         {project.document.missing.length > 0 && (
-          <button
-            type="button"
-            onClick={onShowRelink}
-            className="flex items-center gap-1.5 text-xs text-warning hover:underline"
-          >
+          <button type="button" onClick={onShowRelink} className="flex items-center gap-1.5 text-xs text-warning hover:underline">
             <TriangleAlert className="size-3.5" />
             {t('project.missing', { count: project.document.missing.length })}
           </button>
@@ -185,9 +186,7 @@ export function LibrarySidebar({
       </div>
       <Separator />
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
-        <span className="text-xs font-medium text-muted-foreground uppercase">
-          {t('library.title')}
-        </span>
+        <span className="text-xs font-medium text-muted-foreground uppercase">{t('library.title')}</span>
         <ButtonGroup ariaLabel={t('library.title')}>
           {folders.length > 1 && (
             <Button
@@ -265,16 +264,30 @@ export function LibrarySidebar({
                 </button>
               </li>
             ))}
-            {folders.map(({ id, name, count }) => {
+            {folderDrag.order.map((id) => {
+              const folder = folderById.get(id)
+              if (!folder) return null
+              const { name, count } = folder
               const active = inGallery && selected.includes(id)
+              const lifted = folderDrag.dragging === id
               return (
-                <li key={id} className="group relative flex items-center">
+                <li
+                  key={id}
+                  {...folderDrag.rowProps(id)}
+                  className={cn(
+                    'group relative flex items-center rounded-md transition-transform duration-150 motion-reduce:transition-none',
+                    lifted && 'bg-sidebar lifted transition-none',
+                  )}
+                >
                   <button
                     type="button"
-                    className={rowClass(active)}
+                    className={cn(rowClass(active), folderDrag.dragging === null ? 'cursor-grab' : 'cursor-grabbing')}
                     aria-pressed={active}
-                    data-hint={selecting ? undefined : t('library.folderHint')}
-                    onClick={(e) => pick(e, id)}
+                    data-hint={selecting || folderDrag.dragging !== null ? undefined : t('library.folderHint')}
+                    {...folderDrag.handleProps(id)}
+                    onClick={(e) => {
+                      if (!folderDrag.takeSuppressedClick()) pick(e, id)
+                    }}
                   >
                     {selecting ? (
                       <Checkbox checked={active} tabIndex={-1} className="pointer-events-none" aria-hidden />
@@ -287,15 +300,17 @@ export function LibrarySidebar({
                     </span>
                   </button>
                   {/* Like closing a browser tab: shown on hover, the files stay on disk. */}
-                  <RemoveButton
-                    iconOnly
-                    small
-                    round
-                    label={t('library.removeFolder', { name })}
-                    hint={t('library.removeFolderHint')}
-                    onClick={() => onRemoveFolder(id)}
-                    className="absolute right-1.5 hidden group-focus-within:inline-flex group-hover:inline-flex"
-                  />
+                  {folderDrag.dragging === null && (
+                    <RemoveButton
+                      iconOnly
+                      small
+                      round
+                      label={t('library.removeFolder', { name })}
+                      hint={t('library.removeFolderHint')}
+                      onClick={() => onRemoveFolder(id)}
+                      className="absolute right-1.5 hidden group-focus-within:inline-flex group-hover:inline-flex"
+                    />
+                  )}
                 </li>
               )
             })}
@@ -303,9 +318,7 @@ export function LibrarySidebar({
         )}
       </ScrollArea>
       {lastImport && lastImport.fromXmp > 0 && (
-        <p className="border-t px-4 py-2 text-xs text-muted-foreground">
-          {t('library.fromXmp', { count: lastImport.fromXmp })}
-        </p>
+        <p className="border-t px-4 py-2 text-xs text-muted-foreground">{t('library.fromXmp', { count: lastImport.fromXmp })}</p>
       )}
       {lastImport && lastImport.rejectedTotal > 0 && (
         <p

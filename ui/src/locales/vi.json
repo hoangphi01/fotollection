@@ -32,7 +32,7 @@
     "removeFolder": "Gỡ {{name}} khỏi thư viện",
     "removeFolderHint": "Gỡ khỏi thư viện (tệp vẫn còn nguyên trên máy)",
     "allPhotos": "Tất cả ảnh",
-    "folderHint": "Chỉ hiện thư mục này",
+    "folderHint": "Chỉ hiện thư mục này; kéo để sắp xếp (Alt+↑ ↓)",
     "allHint": "Toàn bộ ảnh của mọi thư mục",
     "select": "Chọn thư mục",
     "selectHint": "Chọn nhiều thư mục để xem hoặc xuất ảnh cùng lúc (hoặc Ctrl/⌘-click)",

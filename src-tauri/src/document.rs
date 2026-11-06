@@ -441,14 +441,14 @@ pub async fn remove_folder(app: AppHandle, folder: u16) -> Result<DocumentState,
         let _guard = state.document_lock.lock().map_err(poisoned)?;
         let (snapshot, keep) = {
             let library = state.library.read().map_err(poisoned)?;
-            let folders = library.folders();
-            if usize::from(folder) >= folders.len() {
+            if usize::from(folder) >= library.folders().len() {
                 return Err(IpcError::new("folder.unknown", "Unknown folder"));
             }
-            let keep: Vec<_> = folders
-                .iter()
-                .enumerate()
-                .filter(|(i, _)| *i != usize::from(folder))
+            // The others keep the order the list shows (FR-107).
+            let keep: Vec<_> = library
+                .folders_in_order()
+                .into_iter()
+                .filter(|(id, _)| *id != folder)
                 .map(|(_, p)| p.clone())
                 .collect();
             (project::snapshot(&library), keep)
@@ -457,6 +457,32 @@ pub async fn remove_folder(app: AppHandle, folder: u16) -> Result<DocumentState,
     })
     .await
     .map_err(poisoned)?
+}
+
+/// Moves folder `folder` to place `to` of the folder list (FR-107), as a tab is dragged in
+/// Chrome: the order is the project's, saved with it and with the session; ids do not change,
+/// so the gallery's chosen tabs stay chosen. Not an undo step, as a tab's move is not.
+#[tauri::command]
+#[specta::specta]
+pub fn move_folder(app: AppHandle, folder: u16, to: u16) -> Result<DocumentState, IpcError> {
+    let state = app.state::<AppState>();
+    let moved = state
+        .library
+        .write()
+        .map_err(poisoned)?
+        .move_folder(folder, to);
+    if !moved {
+        return Err(IpcError::new("folder.unknown", "Unknown folder"));
+    }
+    state.project_dirty.store(true, Ordering::Relaxed);
+    state.mark_edited();
+    let count = state
+        .library
+        .read()
+        .map_or(0, |l| u32::try_from(l.len()).unwrap_or(u32::MAX));
+    let _ = crate::events::LibraryChanged { count }.emit(&app);
+    emit(&app);
+    Ok(current(&state))
 }
 
 /// Rebuilds the library from `folders` and re-applies the edits in `snapshot`, matched by
