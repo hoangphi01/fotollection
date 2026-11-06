@@ -4,13 +4,13 @@ import { cn } from "cn"
 import { Toggle as TogglePrimitive } from "radix-ui"
 
 const toggleVariants = cva(
-  "group/toggle inline-flex items-center justify-center gap-1 rounded-lg text-sm font-medium whitespace-nowrap transition-all outline-none hover:bg-muted hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-pressed:bg-pressed aria-pressed:text-primary-foreground aria-pressed:[--face:var(--primary)] aria-pressed:pressed-in data-[state=on]:border-transparent data-[state=on]:bg-pressed data-[state=on]:text-primary-foreground data-[state=on]:[--face:var(--primary)] data-[state=on]:pressed-in data-[state=on]:hover:bg-pressed dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/toggle inline-flex items-center justify-center gap-1 rounded-lg text-sm font-medium whitespace-nowrap transition-all outline-none hover:bg-muted hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-pressed:bg-pressed aria-pressed:text-primary-foreground aria-pressed:[--face:var(--primary)] aria-pressed:pressed-in aria-pressed:hover:bg-primary data-[state=on]:border-transparent data-[state=on]:bg-pressed data-[state=on]:text-primary-foreground data-[state=on]:[--face:var(--primary)] data-[state=on]:pressed-in data-[state=on]:hover:bg-primary dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default: "bg-transparent",
         // Raised while off, pressed in while on (FR-099, owner: like a console's buttons).
-        outline: "border border-input bg-card [--face:var(--card)] raised hover:bg-muted dark:bg-secondary dark:[--face:var(--secondary)]",
+        outline: "border border-input bg-card [--face:var(--card)] raised hover:bg-muted",
       },
       size: {
         default:

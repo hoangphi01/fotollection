@@ -10,7 +10,7 @@ const buttonVariants = cva(
       variant: {
         // Raised (FR-099, STYLE_RULE §4 "Depth"): a lip in a shade of the button's own colour,
         // down by a pixel when pressed. Ghost and link stay flat.
-        default: "bg-primary text-primary-foreground [--face:var(--primary)] raised hover:bg-primary/90 active:not-aria-[haspopup]:raised-pressed aria-pressed:bg-pressed aria-pressed:pressed-in aria-pressed:hover:bg-pressed",
+        default: "bg-primary text-primary-foreground [--face:var(--primary)] raised hover:bg-primary/90 active:not-aria-[haspopup]:raised-pressed aria-pressed:bg-pressed aria-pressed:pressed-in aria-pressed:hover:bg-primary",
         outline:
           "border-border bg-card [--face:var(--card)] raised hover:bg-muted hover:text-foreground active:not-aria-[haspopup]:raised-pressed aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-secondary dark:[--face:var(--secondary)] dark:hover:bg-muted",
         secondary:
