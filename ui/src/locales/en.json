@@ -1045,5 +1045,12 @@
     "split": "Split, left and right",
     "topBottom": "Top and bottom",
     "splitTopBottom": "Split, top and bottom"
+  },
+  "inspector": {
+    "tabs": "Inspector",
+    "edit": "Edit (E)",
+    "crop": "Crop (R)",
+    "print": "Print and export",
+    "info": "Info (I)"
   }
 }

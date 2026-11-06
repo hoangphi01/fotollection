@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Crop, Download, MapPin, Star } from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, Crop, Download, Info, MapPin, Printer, SlidersHorizontal, Star } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { ClockMatchDialog } from '@/features/cameras/clock-match-dialog'
 import { DatePlaceDialog } from '@/features/places/date-place-dialog'
 import { CullControls } from '@/features/culling/cull-controls'
@@ -52,6 +51,7 @@ import { ZoomControls } from './zoom-controls'
 import { ownsArrowKeys } from '@/lib/keyboard'
 import { cn } from '@/lib/utils'
 import { ViewerFrame } from '@/components/layout/viewer-frame'
+import { InspectorTabs } from '@/components/layout/inspector-tabs'
 import { usePrintAdvice } from '@/features/print-advice/use-print-advice'
 import { verdictOf } from '@/features/print-advice/verdict'
 import { VerdictBadge } from '@/features/print-advice/verdict-badge'
@@ -81,6 +81,13 @@ type PreviewDialogProps = {
   canRedo: boolean
 }
 
+
+/** The inspector's tabs (FR-095); Heal and Mask join beside Crop once built (FR-101, FR-102). */
+type PanelTab = 'edit' | 'print' | 'info'
+type InspectorTabValue = PanelTab | 'crop'
+
+/** The narrowest window that keeps the develop view's left column beside the stage (FR-095). */
+const WIDE_WINDOW = 1400
 
 /** The stage's padding on both sides, in px (`p-8`, `viewer-frame.tsx`). */
 const STAGE_PADDING = 64
@@ -170,6 +177,17 @@ export function PreviewDialog({
     setCompare('off')
     setCropping(true)
   }
+  // The inspector's tab (FR-095): Crop is the crop editor itself, so it follows `cropping`.
+  const [panelTab, setPanelTab] = useState<PanelTab>('edit')
+  const inspectorTab: InspectorTabValue = cropping ? 'crop' : panelTab
+  const openTab = (next: InspectorTabValue) => {
+    if (next === 'crop') {
+      if (geometry && !geometry.cropDisabled) startCrop()
+      return
+    }
+    setCropping(false)
+    setPanelTab(next)
+  }
 
   const go = (delta: number) => {
     setCropping(false)
@@ -193,7 +211,21 @@ export function PreviewDialog({
   const windowed = ui.previewLayout === 'window'
   const toggleLayout = () => void updateUi({ previewLayout: windowed ? 'dialog' : 'window' })
   const [panels, setPanels] = useState(true)
-  const toExport = () => exportRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  // Under 1400 px of window, three columns leave the photo too small: the left column hides,
+  // and Tab brings it over the stage instead of beside it (FR-095).
+  const [wide, setWide] = useState(() => window.innerWidth >= WIDE_WINDOW)
+  const [sideOpen, setSideOpen] = useState(false)
+  useEffect(() => {
+    const onResize = () => setWide(window.innerWidth >= WIDE_WINDOW)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  const showSide = windowed && panels && (wide || sideOpen)
+  // Export lives in the Print tab: open it, then bring the card into view once drawn.
+  const toExport = () => {
+    openTab('print')
+    requestAnimationFrame(() => exportRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }))
+  }
   const onKeyDown = (event: KeyboardEvent) => {
     // A focused slider or field keeps its own arrow keys (the logo size, the caption…).
     if (cropping || ownsArrowKeys(event.target)) return
@@ -213,7 +245,14 @@ export function PreviewDialog({
     // Tab only from the photo itself, so it still moves between the inspector's controls.
     if (event.key === 'Tab' && !mod && event.target === contentRef.current) {
       event.preventDefault()
-      setPanels((p) => !p)
+      if (windowed && !wide) setSideOpen((o) => !o)
+      else setPanels((p) => !p)
+      return
+    }
+    // Lightroom's E for the edit panel; I for the photo's facts.
+    if ((key === 'e' || key === 'i') && !mod && !event.altKey && !event.shiftKey) {
+      event.preventDefault()
+      openTab(key === 'e' ? 'edit' : 'info')
       return
     }
     if (key === 'f' && !mod && !event.altKey) {
@@ -282,8 +321,6 @@ export function PreviewDialog({
       toolbar={
         <PreviewToolbar
           photo={photo}
-          cropBlocked={shownGeometry?.cropDisabled ? t('viewer.cropFitMode') : null}
-          onCrop={startCrop}
           compare={compare}
           onCompare={toggleCompare}
           before={before}
@@ -311,10 +348,28 @@ export function PreviewDialog({
           onLayout={toggleLayout}
         />
       }
+      tabs={
+        <InspectorTabs<InspectorTabValue>
+          ariaLabel={t('inspector.tabs')}
+          value={inspectorTab}
+          onChange={openTab}
+          groups={[
+            [
+              { value: 'edit', icon: <SlidersHorizontal aria-hidden />, label: t('inspector.edit') },
+              { value: 'crop', icon: <Crop aria-hidden />, label: t('inspector.crop') },
+            ],
+            [
+              { value: 'print', icon: <Printer aria-hidden />, label: t('inspector.print') },
+              { value: 'info', icon: <Info aria-hidden />, label: t('inspector.info') },
+            ],
+          ]}
+        />
+      }
       layout={windowed ? 'window' : 'dialog'}
       panels={panels}
+      sideOver={!wide}
       side={
-        windowed && photo ? (
+        showSide && photo ? (
           <>
             <NavigatorCard
               src={shownSrc}
@@ -446,14 +501,20 @@ export function PreviewDialog({
         </>
       }
     >
-            {/* What the photo is at a glance (FR-078), then its colour, then the print tools in the
-                settings panel's order: print size, date stamp, info frame, export (STYLE_RULE §4).
-                The photo's own facts follow, to change them. */}
+            {/* The inspector in tabs (FR-095), as Lightroom's tool strip and Capture One's tool
+                tabs: Edit (what the photo is, its colour), Crop, Print (print size, date stamp,
+                info frame, export, in the settings panel's order, STYLE_RULE §4), Info (its facts). */}
+            {inspectorTab === 'edit' && (
+              <>
             {photo && <PhotoSummaryCard photo={photo} details={details} />}
             {/* Develop first, as Lightroom's right panel (FR-095): RAW, Basic, Tools. */}
             {photo && (
               <PhotoLookCards photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
             )}
+              </>
+            )}
+            {(inspectorTab === 'print' || inspectorTab === 'crop') && (
+              <>
             {/* A card of controls, spaced as in the settings panel; InspectorSection's tighter
                 rows are for the photo's facts below (STYLE_RULE §4). */}
             <PrintSizeCard
@@ -486,6 +547,10 @@ export function PreviewDialog({
                 )}
               </ValueRow>
             </PrintSizeCard>
+              </>
+            )}
+            {inspectorTab === 'print' && (
+              <>
 
             {photo && (
               <PhotoStampControls photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
@@ -510,8 +575,10 @@ export function PreviewDialog({
               </SectionCard>
               </div>
             )}
-
-            <Separator />
+              </>
+            )}
+            {inspectorTab === 'info' && (
+              <>
 
             {photo && (
               <InspectorSection icon={<Star className="size-4" />} title={t('viewer.ratingFlag')}>
@@ -579,6 +646,8 @@ export function PreviewDialog({
                 />
               )}
             </InspectorSection>
+              </>
+            )}
     </ViewerFrame>
   )
 }

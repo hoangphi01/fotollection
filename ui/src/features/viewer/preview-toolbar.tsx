@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview
-import { ChevronDown, Columns2, Crop, Download, Eye, Maximize2, Minimize2, PanelBottomClose, PanelBottomOpen, Redo2, RotateCcw, RotateCw, Rows2, ShoppingBasket, SquareSplitHorizontal, SquareSplitVertical, Undo2 } from 'lucide-react'
+import { ChevronDown, Columns2, Download, Eye, Maximize2, Minimize2, PanelBottomClose, PanelBottomOpen, Redo2, RotateCcw, RotateCw, Rows2, ShoppingBasket, SquareSplitHorizontal, SquareSplitVertical, Undo2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
@@ -16,9 +16,6 @@ import type { Compare, CompareMode } from './compare-stage'
 
 type PreviewToolbarProps = {
   photo: PhotoSummary | undefined
-  /** Why the crop cannot be changed (the frame's Fit mode), or null when it can. */
-  cropBlocked: string | null
-  onCrop: () => void
   before: boolean
   onBefore: () => void
   /** Lightroom's before / after views (FR-096). */
@@ -43,8 +40,6 @@ type PreviewToolbarProps = {
  */
 export function PreviewToolbar({
   photo,
-  cropBlocked,
-  onCrop,
   before,
   onBefore,
   compare,
@@ -64,10 +59,6 @@ export function PreviewToolbar({
   const stripLabel = t(filmstrip ? 'viewer.hideFilmstrip' : 'viewer.showFilmstrip')
   return (
     <div className="@container flex h-11 items-center gap-1.5 px-3">
-      {/* The hint sits on the wrapper, as a disabled button gets no pointer events. */}
-      <span data-hint={cropBlocked ?? t('viewer.cropHint')}>
-        <ToolbarButton icon={<Crop />} label={t('viewer.crop')} disabled={!photo || cropBlocked !== null} onClick={onCrop} />
-      </span>
       <ToolbarButton
         icon={<RotateCcw />}
         label={t('viewer.rotateLeftShort')}

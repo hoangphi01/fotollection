@@ -92,7 +92,9 @@ Cả hai khu vực được lưu trong dự án (`.fotollection`) và trong phi�
 
 Nút **Giỏ in** trên ảnh (cạnh *Cắt ảnh*, các nút xoay và *Xuất ảnh*) làm giống phím ↑, và hiện *Đã trong giỏ* khi ảnh đã nằm trong giỏ; nhấp lần nữa để lấy ảnh ra. Ảnh đã để riêng thì hiện **Trả về gallery**.
 
-**Hàng công cụ phía trên ảnh** chứa các công cụ của ảnh, nên không gì che ảnh ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)): *Cắt ảnh*, các nút xoay, *Giỏ in*, *Trước*, hoàn tác và làm lại, *Xuất ảnh*, rồi phóng to, nút dải ảnh, nút cửa sổ và **ⓘ** liệt kê mọi phím. Gợi ý của mỗi nút ghi phím tắt của nó. Nếu bạn quen Lightroom, các phím của Lightroom dùng được ở đây: **R** cắt ảnh, **\\** xem ảnh trước khi chỉnh màu và trở lại, **Z** chuyển giữa vừa khung và 1:1, **⌘[ ⌘]** xoay, **⇧⌘E** xuất ảnh.
+**Bảng bên phải có bốn tab** ở đầu, như các công cụ của Lightroom: **Chỉnh màu** (**E**: ảnh này, màu RAW, Cơ bản, Công cụ), **Cắt ảnh** (**R**: màn cắt ảnh), **In và xuất ảnh** (khổ in, dấu ngày, khung thông tin, xuất ảnh) và **Thông tin** (**I**: sao, ngày, nơi chụp). Mỗi lúc hiện một tab nên bảng luôn gọn.
+
+**Hàng công cụ phía trên ảnh** chứa các công cụ của ảnh, nên không gì che ảnh ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)): *Cắt ảnh*, các nút xoay, *Giỏ in*, *Trước*, hoàn tác và làm lại, *Xuất ảnh*, rồi phóng to, nút dải ảnh, nút cửa sổ và **ⓘ** (*Cắt ảnh* giờ là một tab của bảng bên phải) liệt kê mọi phím. Gợi ý của mỗi nút ghi phím tắt của nó. Nếu bạn quen Lightroom, các phím của Lightroom dùng được ở đây: **R** cắt ảnh, **\\** xem ảnh trước khi chỉnh màu và trở lại, **Z** chuyển giữa vừa khung và 1:1, **⌘[ ⌘]** xoay, **⇧⌘E** xuất ảnh.
 
 **Dải ảnh** dưới tấm ảnh hiện các ảnh của chế độ xem đang mở, theo thứ tự của gallery, bên dưới một dòng ghi vị trí và tên ảnh (*25 / 422 · P1067823.JPG*) như Lightroom; kèm sao, giỏ in và nhãn RAW ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): nhấp vào tấm nào là mở tấm đó, dù xa đến đâu. Nút dải ảnh ở hàng công cụ phía trên ảnh ẩn dải ảnh (chỉ giữ lại dòng đó) và hiện lại; ứng dụng nhớ lựa chọn của bạn.
 
@@ -101,7 +103,7 @@ Nút **Giỏ in** trên ảnh (cạnh *Cắt ảnh*, các nút xoay và *Xuất 
 - **Điều hướng:** ảnh thu nhỏ, có khung viền phần đang hiện khi phóng to; nhấp hoặc kéo trong đó để xem chỗ khác. Các nút trên tiêu đề, *Vừa khung*, *Lấp đầy*, *1:1* và *2:1*, phóng ngay.
 - **Lịch sử:** các thay đổi của ảnh này, mới nhất ở trên, mỗi dòng ghi rõ (*Ấm / lạnh +8*, *Cắt ảnh*, *Dấu ngày*). Nhấp một dòng để đưa ảnh về đúng lúc đó; việc này cũng là một thay đổi, nên **Cmd/Ctrl+Z** hoàn tác được. Sao, cờ và giỏ in không nằm trong đó và không đổi khi bạn quay lại.
 
-**Tab**, bấm sau khi nhấp vào ảnh, ẩn các bảng hai bên để ảnh to hơn, bấm lần nữa để hiện lại.
+**Tab**, bấm sau khi nhấp vào ảnh, ẩn các bảng hai bên để ảnh to hơn, bấm lần nữa để hiện lại. Khi cửa sổ hẹp hơn 1400 px, cột trái được ẩn sẵn để ảnh đủ chỗ; **Tab** sẽ hiện nó đè lên ảnh.
 
 Khi bạn mở bản xem trước từ *Giỏ in* hoặc *Để riêng*, ↑ và ↓ chuyển ảnh sang khu vực còn lại; ảnh ở nguyên chỗ cũ thì chuyển sang tấm tiếp theo.
 
@@ -513,6 +515,7 @@ Hai thẻ chỉnh màu ảnh, nằm dưới **Khổ in / xuất**, chỉ có tro
 | Xem trước | **Z**, nhấp vào ảnh | Vừa khung ↔ 1:1 (§7) |
 | Xem trước | **[ ]**, **Cmd/Ctrl [ ]** | Xoay trái / phải |
 | Xem trước | **⇧ Cmd/Ctrl E** | Xuất ảnh này |
+| Xem trước | **E**, **I** | Tab *Chỉnh màu* hoặc *Thông tin* của bảng bên phải |
 | Xem trước | **F** | Phủ kín cửa sổ app, hoặc trở về dạng cửa sổ (§4.1) |
 | Xem trước | **Tab** (sau khi nhấp vào ảnh) | Ẩn hoặc hiện các bảng hai bên |
 | Xem trước | **Cmd/Ctrl + / −**, vuốt hai ngón, chụm trên trackpad, các nút phóng | Phóng to / thu nhỏ (§7) |

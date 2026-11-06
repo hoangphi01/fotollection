@@ -1010,5 +1010,12 @@
     "split": "Chia đôi trái phải",
     "topBottom": "Trên và dưới",
     "splitTopBottom": "Chia đôi trên dưới"
+  },
+  "inspector": {
+    "tabs": "Bảng công cụ",
+    "edit": "Chỉnh màu (E)",
+    "crop": "Cắt ảnh (R)",
+    "print": "In và xuất ảnh",
+    "info": "Thông tin (I)"
   }
 }

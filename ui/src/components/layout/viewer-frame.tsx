@@ -42,6 +42,11 @@ type ViewerFrameProps = {
   side?: ReactNode
   /** False hides the side column and the inspector, as Lightroom's Tab does. */
   panels?: boolean
+  /** The inspector's tabs, under its title (the photo preview's Edit, Crop, Print, Info). */
+  tabs?: ReactNode
+  /** The side column over the stage rather than beside it: a narrow window, where three
+   * columns would leave the photo too small (FR-095). */
+  sideOver?: boolean
 }
 
 /**
@@ -71,6 +76,8 @@ export function ViewerFrame({
   layout = 'dialog',
   side,
   panels = true,
+  tabs,
+  sideOver = false,
 }: ViewerFrameProps) {
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
@@ -88,7 +95,12 @@ export function ViewerFrame({
       >
         {side && panels && (
           // Cards spaced as the inspector's, 12 px (STYLE_RULE §4).
-          <aside className="flex w-panel shrink-0 flex-col border-r bg-background">
+          <aside
+            className={cn(
+              'flex w-panel shrink-0 flex-col border-r bg-background',
+              sideOver && 'absolute inset-y-0 left-0 z-20 lifted-strong',
+            )}
+          >
             <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
               <div className="space-y-3 p-3">{side}</div>
             </ScrollArea>
@@ -119,6 +131,7 @@ export function ViewerFrame({
               {description}
             </DialogDescription>
           </div>
+          {tabs}
           <Separator />
 
           {/* Cards spaced as in the side panel, 12 px (STYLE_RULE §4, the lego rule). */}

@@ -92,7 +92,9 @@ Both areas are saved in the project (`.fotollection`) and in the session, so the
 
 <!-- shot: swipe | A photo in the print basket, with the keys to keep going -->
 
-**The row above the photo** holds its tools, so nothing covers the photo ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)): *Crop*, the turn buttons, *Print basket*, *Before*, undo and redo, *Export*, then the zoom, the filmstrip button, the window button and **ⓘ**, which lists every key. Each button's hint names its key. If you come from Lightroom, its keys work here: **R** crops, **\\** shows the photo before its colour and back, **Z** goes between fit and 1:1, **⌘[ ⌘]** rotate, **⇧⌘E** exports.
+**The panel on the right has four tabs** at its head, as Lightroom's tools: **Edit** (**E**: what the photo is, RAW colour, Basic, Tools), **Crop** (**R**: the crop editor), **Print and export** (print size, date stamp, info frame, export) and **Info** (**I**: stars, date, place). One tab is shown at a time, so the panel stays short.
+
+**The row above the photo** holds its tools, so nothing covers the photo ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)): *Crop*, the turn buttons, *Print basket*, *Before*, undo and redo, *Export*, then the zoom, the filmstrip button, the window button and **ⓘ** (*Crop* is now a tab of the panel), which lists every key. Each button's hint names its key. If you come from Lightroom, its keys work here: **R** crops, **\\** shows the photo before its colour and back, **Z** goes between fit and 1:1, **⌘[ ⌘]** rotate, **⇧⌘E** exports.
 
 The **Print basket** button does the same as ↑, and shows *In the basket* when the photo is already in it; click it again to take the photo out. A photo that was set aside shows **Back to the gallery** instead.
 
@@ -103,7 +105,7 @@ The **Print basket** button does the same as ↑, and shows *In the basket* when
 - **Navigator:** the photo small, with the part on screen outlined while zoomed; click or drag in it to look elsewhere. The buttons in its title, *Fit*, *Fill*, *1:1* and *2:1*, zoom at once.
 - **History:** this photo's changes, newest first, each named (*Warm / cool +8*, *Crop*, *Date stamp*). Click one to bring the photo back to how it was then; that is a change too, so **Cmd/Ctrl+Z** undoes it. Stars, flags and the basket are not part of it and never change when you go back.
 
-**Tab**, pressed after clicking the photo, hides the side panels for a bigger photo, and brings them back.
+**Tab**, pressed after clicking the photo, hides the side panels for a bigger photo, and brings them back. In a window narrower than 1400 px the left column starts hidden, so the photo keeps its room; **Tab** then shows it over the photo.
 
 When you open the preview from the *Print basket* or *Set aside* view, ↑ and ↓ move the photo to the other area; a photo that stays where it is moves on to the next one.
 
@@ -515,6 +517,7 @@ Two cards change a photo's colour, under **Print / export size**, in the preview
 | Preview | **Z**, a click on the photo | Fit ↔ 1:1 (§7) |
 | Preview | **[ ]**, **Cmd/Ctrl [ ]** | Rotate left / right |
 | Preview | **⇧ Cmd/Ctrl E** | Export this photo |
+| Preview | **E**, **I** | The panel's *Edit* or *Info* tab |
 | Preview | **F** | Fill the app window, or back to a window (§4.1) |
 | Preview | **Tab** (after a click on the photo) | Hide or show the side panels |
 | Preview | **Cmd/Ctrl + / −**, two-finger scroll, trackpad pinch, the zoom buttons | Zoom in / out (§7) |

@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **The preview's panel in tabs** (FR-095), as Lightroom's tools: *Edit* (**E**), *Crop* (**R**), *Print and export*, *Info* (**I**), one at a time, so the panel stays short. In a window under 1400 px the left column steps aside and **Tab** lays it over the photo.
 - **A new look begins** (FR-099): the interface is set in Be Vietnam Pro, drawn for Vietnamese, on Windows, macOS and Linux alike.
 
 ## [0.12.0] - 2026-11-06 — Settings & Develop

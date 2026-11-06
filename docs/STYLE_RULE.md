@@ -117,6 +117,8 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
   | A list of rows (camera bodies, places, addresses) | 8 px | `RowList` |
   | Select, input, segmented choice, swatch choice | 32 px tall, choices in `text-xs` | default `Select`, `CommitInput`, `SegmentedToggle`, `SwatchToggle` |
   | Icon button in a row | 28 px | `size="icon-sm"`, `Toggle size="sm"` |
+  | The inspector's tabs (FR-095): icons at the head of a preview's inspector, tools (Edit, Crop; later Heal, Mask) apart from panels (Print, Info) | `SegmentedToggle small` groups with a separator, 12 px inset; the open tab pressed in; one tab's cards shown at a time | `InspectorTabs` in `ViewerFrame`'s `tabs` slot |
+  | The develop view's left column in a window under 1400 px | hidden; `Tab` lays it over the stage (`lifted-strong`) instead of narrowing the photo | `ViewerFrame sideOver` |
   | Choices in a card's header (the Navigator's Fit, Fill, 1:1, 2:1) | 28 px, flat, the chosen one pressed in; icons with hints for words | `SegmentedToggle small` |
   | The mode switch at the top of the folder list (FR-048): Simple and Collage on one row, Pro the whole width below (owner, 2026-11-06) | 28 px rows, 4 px apart | `ModeSwitch` |
   | Toolbar button: icon alone when the toolbar is narrow, icon and label from `@3xl`; the icon in the centre (≤ 0.5 px off, `MEASURE=1`); a spinner in its place while the work it started runs | 28 px | `ToolbarButton` |
