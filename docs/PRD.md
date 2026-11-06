@@ -1000,6 +1000,33 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Restored from the Settings window** ([FR-086](#fr-086--one-settings-window)): *Project history* lists the copies by date with their photo counts, and opens one as a new document, never over the current one.
 - **Measured and tested:** the write stays off the interactive path; a test makes a week of saves and checks which copies are kept.
 
+### FR-095 — A develop view a Lightroom user can read
+
+**P1 (v0.12.0; owner's request 2026-11-06: "complete and professional, done well, not rushed; a Lightroom user should feel at home fast, with our own character").** Pro mode's photo preview becomes a develop view.
+
+- **Two layouts, chosen in Settings → General** (`ui.previewLayout`): *In a window*, the dialog as before, and *Fill the app window*, edge to edge under the Windows title bar (FR-052). `F` switches between them and the choice is kept.
+- **A left column in the full layout** (18 rem, as the side panels): *Navigator*, the photo small with a frame for the zoomed area (click or drag to move it; Fit, Fill, 1:1, 2:1), and *History*, this photo's steps newest first, named by what changed (*Warmth +8*, *Crop*, *Paste settings*); a click brings the photo back to that state as a new step, so it can be undone. v0.13.0 adds *Presets & LUTs* at its top (FR-079, FR-070). `Tab` hides both side columns.
+- **One toolbar row above the photo**, never over it: Crop, rotate, basket, Before/After and compare, undo and redo, copy and paste settings, Reset, Export; every button the same shape, each hint naming its key.
+- **Lightroom's keys:** `R` crop (`C` kept), `\` before/after, `Y` compare, `Z` fit ↔ 1:1, `F` layout, `Tab` panels, `J` clipping, `W` white-balance picker, ⌘Z / ⇧⌘Z, ⇧⌘C / ⇧⌘V copy and paste settings, ⇧⌘R reset, ⇧⌘E export, ⌘[ ⌘] rotate; the ratings, flags and arrows as before. The keys popover lists them all.
+- **Zoom in real pixels:** *Fit*, then percentages of the photo's own pixels, 100 % being 1:1.
+- **The inspector develop first**, as Lightroom's right panel: histogram, this photo, RAW, Basic, Tools, then print size and crop, stamp, frame, rating and facts; the same order in both layouts.
+
+### FR-096 — Before and after, side by side
+
+**P1 (v0.12.0; owner's request 2026-11-06).** `\` and the *Before* button switch between the photo with and without its colour (keyboard and mouse alike); `Y` shows them side by side and `⇧Y` split by a line one drags across the photo. Both halves zoom and pan together and stay sharp at 1:1. *Before* keeps the crop and the frame: what changes is the colour.
+
+### FR-097 — Settings from one photo to others, and Reset
+
+**P1 (v0.12.0; owner's request 2026-11-06).** *Copy settings* (⇧⌘C) asks what to copy, in a short list (look, RAW look, crop position, stamp), as Lightroom's dialog; *Paste* (⇧⌘V) gives them to the photo shown or to every ticked photo (Lightroom's *Sync*), as one step to undo. *Reset* (⇧⌘R) gives the photo back to the shared settings: its look, RAW look, crop and own stamp, as one step. Undo and redo are buttons as well as keys.
+
+### FR-098 — Reading the photo: histogram, clipping, white balance
+
+**P1 (v0.12.0; owner's request 2026-11-06).** A histogram (red, green, blue and light) heads the inspector, made in Rust from the preview just drawn (≤ 3 ms, OPTIMIZATION §3) and following a slider while it is dragged. `J` shows blown highlights in red and blocked shadows in blue over the photo. `W` picks white balance: a click on what should be neutral grey sets warmth and tint, as one step.
+
+### FR-099 — Controls with depth
+
+**P2 (planned, v0.13.0; owner's request 2026-11-06, pointing at Sentry's interface).** Buttons and controls stand out from the surface: a raised button has a darker lip under it in a shade of its own colour and a faint highlight on top, and goes down by its lip when pressed; inputs and segmented groups sit slightly into the surface; cards carry a faint border and a lifted shadow; a selected row has an accent outline. Done once in the shared primitives and theme tokens (`button`, `toggle`, inputs, `SectionCard`), so every panel follows; measured with `MEASURE=1` in both themes; the photo stage stays neutral.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
