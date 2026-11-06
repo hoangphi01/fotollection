@@ -22,6 +22,11 @@ const buttonVariants = cva(
         // deeper under the pointer; icon-only ones too (a tab's ✕ is a round one).
         destructive:
           "bg-danger-solid text-white [--face:var(--danger-solid)] [--lip-color:var(--danger-lip)] raised-lip active:not-aria-[haspopup]:raised-lip-pressed hover:bg-[color-mix(in_oklch,var(--danger-solid),black_25%)] focus-visible:border-destructive/40 focus-visible:ring-destructive/30",
+        // An action on a coloured surface (a green or red notice): the theme's accent in dark,
+        // where the wood stands out on green; the card's cream in light, where the teal accent
+        // would sink into the green (owner, 2026-11-06). Raised as every button.
+        "on-colour":
+          "bg-card text-foreground [--face:var(--card)] raised hover:bg-muted active:not-aria-[haspopup]:raised-pressed dark:bg-primary dark:text-primary-foreground dark:[--face:var(--primary)] dark:hover:bg-primary/90",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

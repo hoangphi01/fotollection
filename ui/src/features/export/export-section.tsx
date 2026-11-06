@@ -120,7 +120,7 @@ export function ExportSection({
                 <SizeChange from={state.summary.sourceBytes} to={state.summary.outputBytes} />
               ) : null}
               {state.summary.exported > 0 && (
-                <Button size="sm" variant="secondary" onClick={() => void commands.openExportFolder()}>
+                <Button size="sm" variant="on-colour" onClick={() => void commands.openExportFolder()}>
                   <FolderOpen data-icon="inline-start" />
                   {t('export.openFolder')}
                 </Button>
