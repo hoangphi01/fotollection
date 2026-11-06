@@ -83,7 +83,8 @@ export function LibrarySidebar({
   const rowClass = (active: boolean) =>
     cn(
       'flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-sidebar-accent',
-      active && 'bg-sidebar-accent font-medium text-sidebar-accent-foreground',
+      // The chosen row: an accent outline inside, as Sentry's selected project (FR-099).
+      active && 'bg-sidebar-accent font-medium text-sidebar-accent-foreground ring-[1.5px] ring-primary ring-inset',
     )
 
   return (

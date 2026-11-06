@@ -27,7 +27,8 @@ type SegmentedToggleProps<T extends string> = {
 
 /**
  * One choice among a few, as a row of buttons the card's width, each the same width, 32 px
- * tall like every control in a panel (STYLE_RULE §4, the lego rule).
+ * tall like every control in a panel (STYLE_RULE §4, the lego rule): the choices raised, the
+ * chosen one pressed in, in a darker accent, as a console's buttons (FR-099, "Depth").
  */
 export function SegmentedToggle<T extends string>({
   value,
@@ -43,6 +44,7 @@ export function SegmentedToggle<T extends string>({
     <ToggleGroup
       type="single"
       variant="outline"
+      spacing={1}
       className={fit ? 'shrink-0' : 'w-full'}
       aria-label={ariaLabel}
       disabled={disabled}

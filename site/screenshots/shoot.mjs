@@ -336,7 +336,8 @@ async function measure(page, rootSel) {
       cardWidth: set(sections.map((s) => r(s.getBoundingClientRect().width))),
       cardGap, blockGap, fieldGap, odd: odd.join(' / '),
       select: ctl('[role="combobox"]'),
-      toggle: ctl('[data-slot="toggle-group-item"]'),
+      // The whole control, the set-in track (FR-099), not one segment inside it.
+      toggle: ctl('[data-slot="toggle-group"]'),
       input: ctl('input:not([type="checkbox"]):not([role="switch"])'),
       iconBtn: ctl('button[data-size="icon-sm"]'),
     }

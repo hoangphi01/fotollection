@@ -222,23 +222,54 @@
     }
 }
 /* Depth (FR-099, STYLE_RULE §4 "Depth"): box-shadow only, so no control changes size. `--face`
-   is the control's own colour, set by the control; the lip is a shade of it. */
+   is the control's own colour, set by the control; the lip is a shade of it. Each sets
+   `--tw-shadow` and Tailwind's composite box-shadow, so a focus ring (`ring-*`) still shows on
+   top of the depth instead of replacing it (keyboard users keep their outline). */
 @utility raised {
-  box-shadow: inset 0 1px 0 var(--highlight),
+  --tw-shadow: inset 0 1px 0 var(--highlight),
     inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--face, var(--card)), var(--shade) var(--lip-mix)),
     var(--lift);
+  box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
-/* Pressed: down by a pixel, the lip thinner, no lift. */
+/* Pressed: down by a pixel (the control adds the translate), the lip thinner, no lift. */
 @utility raised-pressed {
-  box-shadow: inset 0 1px 0 var(--highlight),
+  --tw-shadow: inset 0 1px 0 var(--highlight),
     inset 0 -1px 0 color-mix(in oklch, var(--face, var(--card)), var(--shade) var(--lip-mix));
+  box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 @utility sunken {
-  box-shadow: var(--sink);
+  --tw-shadow: var(--sink);
+  box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 @utility lifted {
-  box-shadow: var(--lift);
+  --tw-shadow: var(--lift);
+  box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 @utility lifted-strong {
-  box-shadow: var(--lift-strong);
+  --tw-shadow: var(--lift-strong);
+  box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+/* A thumb that sits on a track (switch, slider): raised a little, its own small shadow. */
+@utility thumb-raised {
+  --tw-shadow: 0 1px 2px oklch(0 0 0 / 0.35), inset 0 -1px 0 oklch(0 0 0 / 0.12);
+  box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+/* Switched on (a toggle, the chosen segment, the basket while the photo is in it): pressed in
+   like a console's button, owner 2026-11-06. No lip, the shade inside, the colour a darker
+   accent, so on and off differ by more than colour. The control sets the background with
+   `bg-pressed` (below) and `--face`. */
+@utility pressed-in {
+  --tw-shadow: inset 0 2px 4px color-mix(in oklch, var(--face, var(--primary)), var(--shade) 55%),
+    inset 0 0 0 1px color-mix(in oklch, var(--face, var(--primary)), var(--shade) 30%);
+  box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+@utility bg-pressed {
+  background-color: color-mix(in oklch, var(--primary), var(--shade) 22%);
 }
