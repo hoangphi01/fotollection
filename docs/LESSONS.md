@@ -14,6 +14,13 @@
 
 ## 2026-11-06
 
+### Zoom showed a portrait photo sideways: two ways to the full image, one forgot to turn it (FR-057, v0.11.2)
+
+- **Seen:** the owner zoomed into a portrait GX9 photo in the compare view: both halves showed the sharp part turned a quarter and stretched. The same happens in the single view; it shipped in v0.11.0 and v0.11.1.
+- **Why:** the full-resolution image reaches the zoom by two paths. `decode_source` decodes the file and turns it upright (`apply_orientation`) before keeping it for zoom; `full_source`, used when nothing is kept, decoded it and did not turn it. Before v0.11.0 every preview went through `decode_source`, so the second path never ran for the photo on screen. Instant previews (FR-091) open a photo from its standard preview on disk, which keeps no full image, so zoom took the path that had never been right. No test zoomed a turned photo with an empty cache.
+- **Fix:** `full_source` turns the decoded image as `decode_source` does. A test zooms a turned photo with nothing kept and fails without the fix.
+- **Rule:** when a value can be made in two places, make it in one function; when a new path (a cache, a file on disk) skips the old one, test every consumer with the cache empty, not only after the old path has filled it.
+
 ### Memory state needs one owner, an epoch and one way in: the audit of FR-091 (v0.11.1)
 
 - **Seen:** an audit of v0.11.0's preview memory, read line by line, found no crash but eleven ways it could keep the wrong thing: a develop that ends after *Open* stored its pixels under an id the new library gives another photo; a prefetch became "the newest" and pushed out the photo on screen; every prefetch started a thread of its own, and old ones kept developing RAWs; the background pass and the photo on screen could make the same photo at once into one shared `.part`; the disk limit held only after a whole pass, and then dropped new thumbnails before old previews; a develop with no priority set went first by default.

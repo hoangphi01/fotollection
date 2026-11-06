@@ -665,10 +665,9 @@ impl PreviewCache {
         let full = if let Some(full) = self.take_full(key) {
             full
         } else {
-            let bytes = std::fs::read(&record.path)?;
-            let decoded = decode_photo(codec, &bytes, key.2, &raw.adjust())?;
+            let decoded = decode_upright(record, key, raw, codec)?;
             let full = Full {
-                image: Arc::new(apply_orientation(decoded.image, key.1)),
+                image: Arc::new(decoded.image),
                 icc: decoded.icc.map(Arc::from),
             };
             // Kept for zoom, so its first sharp region does not decode it again; a prefetch
@@ -768,10 +767,9 @@ impl PreviewCache {
                 crate::colour::to_srgb(&mut image, Some(&icc));
                 image
             }
-            None => {
-                let bytes = std::fs::read(&record.path)?;
-                crate::colour::screen(decode_photo(codec, &bytes, key.2, &raw.adjust())?)
-            }
+            // Since v0.11.0 the photo on screen often comes from its standard preview, so zoom
+            // decodes here; `decode_upright` turns it as the preview's own decode does.
+            None => crate::colour::screen(decode_upright(record, key, raw, codec)?),
         };
         let image = Arc::new(image);
         self.keep_full(
@@ -1107,6 +1105,24 @@ impl PreviewCache {
         let image = self.render_region(record, settings, frame, place, region, codec)?;
         Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
     }
+}
+
+/// `record`'s file decoded at full size and turned upright (its EXIF orientation and the
+/// user's turns, `key`): the one way to the full image, for the preview's source and for
+/// zoom alike. Two ways, one of which forgot the turn, showed zoomed portraits sideways
+/// (LESSONS 2026-11-06, v0.11.2).
+fn decode_upright(
+    record: &PhotoRecord,
+    key: SourceKey,
+    raw: RawSliders,
+    codec: &dyn JpegCodec,
+) -> Result<crate::codec::Decoded, ThumbError> {
+    let bytes = std::fs::read(&record.path)?;
+    let decoded = decode_photo(codec, &bytes, key.2, &raw.adjust())?;
+    Ok(crate::codec::Decoded {
+        image: apply_orientation(decoded.image, key.1),
+        icc: decoded.icc,
+    })
 }
 
 /// The upright image turned as the photo sits in its collage cell (FR-035); the cached image
@@ -1534,6 +1550,27 @@ mod tests {
         // This test pattern is all hard edges, JPEG's worst case (2.4 levels at q90); real
         // photos differ by 1.35 (RESULT §29).
         assert!(error < 3.0, "mean error {error}");
+        Ok(())
+    }
+
+    /// Zoom on a photo turned upright (EXIF or the user's turns), with nothing kept in
+    /// memory, as when the photo opened from its standard preview: the full-resolution region
+    /// is cut from the upright photo, so a portrait print stays portrait (v0.11.2; before,
+    /// it came out sideways and stretched).
+    #[test]
+    fn fr_057_zoom_turns_the_photo_upright_when_nothing_is_kept() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let codec = default_codec();
+        let mut record = photo(dir.path(), 1200, 800)?;
+        record.edits.rotation = 1;
+        let settings = RenderSettings::default();
+        let cache = PreviewCache::new();
+        let whole = Region::new(0.0, 0.0, 1.0, 1.0, 4096).ok_or("region")?;
+        let part = cache.render_region(&record, &settings, None, None, whole, codec.as_ref())?;
+        assert!(part.height > part.width, "{}×{}", part.width, part.height);
+        let shown = cache.render_rgb(&record, &settings, None, None, codec.as_ref())?;
+        let ratio = |w: u32, h: u32| f64::from(w) / f64::from(h);
+        assert!((ratio(part.width, part.height) - ratio(shown.width, shown.height)).abs() < 0.02);
         Ok(())
     }
 

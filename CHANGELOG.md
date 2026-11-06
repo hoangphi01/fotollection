@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- Fixes: zooming into a portrait or turned photo shows it the right way up again
+
+### Fixed
+
+- **Zoom:** since v0.11.0, zooming into a photo taken upright, or turned in the app, showed its sharp part sideways and stretched once the photo had opened from its prepared preview. It now shows the photo as it is.
+
 ## [0.11.1] - 2026-11-06
 
 ### Highlights
