@@ -6,7 +6,7 @@
  */
 export function RawBadge() {
   return (
-    <span className="inline-flex h-4 items-center rounded bg-primary px-1 pt-px text-[10px] leading-none font-semibold tracking-wide text-primary-foreground">
+    <span className="inline-flex h-4 items-center rounded bg-primary px-1 pt-px text-2xs leading-none font-semibold tracking-wide text-primary-foreground [--face:var(--primary)] chip-raised">
       RAW
     </span>
   )

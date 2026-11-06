@@ -1,23 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useTranslation } from 'react-i18next'
+import { Badge } from '@/components/ui/badge'
 import type { PrintVerdict } from '@/ipc/bindings'
 import { cn } from '@/lib/utils'
 
-/** Green prints sharp, yellow is still acceptable, red will look pixelated (FR-026). */
-const STYLE: Record<PrintVerdict, string> = {
-  sharp: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-  acceptable: 'bg-amber-500/15 text-amber-700 dark:text-amber-400',
-  pixelated: 'bg-red-500/15 text-red-700 dark:text-red-400',
-}
+/** Green prints sharp, amber is still acceptable, red will look pixelated (FR-026): solid,
+ * raised badges of the shared kind (FR-099), small enough to sit in a line of text. */
+const VARIANT = { sharp: 'success', acceptable: 'warning', pixelated: 'destructive' } as const
 
 export function VerdictBadge({ verdict, dpi, className }: { verdict: PrintVerdict; dpi: number; className?: string }) {
   const { t } = useTranslation()
   return (
-    <span
-      data-hint={t('advice.dpi', { dpi })}
-      className={cn('rounded px-1.5 py-px text-[10px] font-medium whitespace-nowrap', STYLE[verdict], className)}
-    >
+    <Badge variant={VARIANT[verdict]} data-hint={t('advice.dpi', { dpi })} className={cn('h-4 rounded-md px-1.5 text-2xs', className)}>
       {t(`advice.verdict.${verdict}`)}
-    </span>
+    </Badge>
   )
 }
