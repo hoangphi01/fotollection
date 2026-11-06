@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - **Website:** the Vietnam Linux Family listing is a badge in VNLF's green beside the download buttons, and the Community card links to the project on VNLF Social too; the badges at the top have the app's depth.
+- **Website:** the Performance page's *Why Fotollection is fast* sets each choice beside what it measures, and its text names Fotollection throughout.
 - **Website:** the soft glow at the top of the Performance, Manual and Story pages no longer stops at a hard edge under the title.
 
 ## [0.13.0] - 2026-11-06 — The new look

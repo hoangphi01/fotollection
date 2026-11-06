@@ -1,6 +1,6 @@
 ### What happens when you open a folder
 
-A folder of photos is not read whole. For each file, Fotollection reads its EXIF data (date, camera, place) and the small thumbnail every camera stores inside the file, and nothing else: 1,000 photos take 0.12 s, against a budget of 1 s set before the code was written. Sharper 400 px thumbnails are then made in the background, on two threads so the app stays quick, and kept in a cache on disk, so a folder opened again is instant. For 5,035 photos, the import took 383 ms and the embedded thumbnails 236 ms.
+A folder of photos is not read whole. For each file, Fotollection reads its EXIF data (date, camera, place) and the small thumbnail every camera stores inside the file, and nothing else: 1,000 photos take 0.12 s, against a budget of 1 s set before the code was written. Sharper 400 px thumbnails are then made in the background, on two threads so Fotollection stays quick, and kept in a cache on disk, so a folder opened again is instant. For 5,035 photos, the import took 383 ms and the embedded thumbnails 236 ms.
 
 ### Where a preview's 17 ms go
 

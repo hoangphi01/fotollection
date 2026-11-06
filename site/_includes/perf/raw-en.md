@@ -32,7 +32,7 @@ A JPEG is a finished picture: the camera has already made every decision. A RAW 
 
 Each maker has its own format, mostly built on TIFF and partly undocumented: CR2 and CR3 (Canon), NEF (Nikon), ARW (Sony), RW2 (Panasonic), ORF (Olympus), RAF (Fujifilm). **DNG** is the format Adobe publishes openly (version 1.7), used by Ricoh, Leica, Pentax and many phones, and the one whose rules this page follows.
 
-Fotollection reads DNG with its own reader, written from the specification, and the other formats are unpacked by rawler, an LGPL library built into the app. The thumbnails in the grid never touch the sensor data at all: they come from the preview inside the file, in 9 to 32 ms, which is why a folder of RAW files opens as fast as a folder of JPEGs.
+Fotollection reads DNG with its own reader, written from the specification, and the other formats are unpacked by rawler, an LGPL library built into Fotollection. The thumbnails in the grid never touch the sensor data at all: they come from the preview inside the file, in 9 to 32 ms, which is why a folder of RAW files opens as fast as a folder of JPEGs.
 
 ### Demosaicing: working out the two missing colours
 
@@ -98,7 +98,7 @@ For a full develop, the one behind the print preview, zoom and export:
 6. **Tone and look**, fitted to the camera's preview, with its lens shading.
 7. From here a RAW photo is like any other: crop, date stamp, frame, print size and colour profile, exported at full resolution in 4:4:4 at quality 95.
 
-A few rules hold throughout. Only one develop runs at a time, spread over every processor core, and never on the window's own thread, so the app keeps answering while a 30 MP photo develops. Exports always run on the processor, so a print comes out the same on every computer; the graphics card only speeds up what you see while editing. And the code is our own, written from the published specifications and papers, not copied from other projects, then checked: on the synthetic charts above, on nine RAW files from nine cameras (CC0, from raw.pixls.us), and by cutting and corrupting files on purpose so a bad file is an error, never a crash.
+A few rules hold throughout. Only one develop runs at a time, spread over every processor core, and never on the window's own thread, so Fotollection keeps answering while a 30 MP photo develops. Exports always run on the processor, so a print comes out the same on every computer; the graphics card only speeds up what you see while editing. And the code is our own, written from the published specifications and papers, not copied from other projects, then checked: on the synthetic charts above, on nine RAW files from nine cameras (CC0, from raw.pixls.us), and by cutting and corrupting files on purpose so a bad file is an error, never a crash.
 
 **Since v0.10.0: our own develop for every Bayer camera.** rawler only unpacks the files, and the rest is Fotollection's. Full develop of the nine sample files, median of 3, on the same laptop: our develop with its cleaner demosaic, against rawler's simpler one and macOS's:
 

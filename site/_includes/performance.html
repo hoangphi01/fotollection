@@ -14,9 +14,10 @@
   <div class="wrap">
     <h2>{{ t.perf_how_title }}</h2>
     <p class="lead narrow">{{ t.perf_how_lead }}</p>
+    {%- comment %} Each choice beside what it measures, as Apple lays out a spec (owner, 2026-11-06). {% endcomment %}
     <ol class="how-list">
       {%- for item in t.perf_how_items %}
-      <li><strong>{{ item.t }}.</strong> {{ item.d }}</li>
+      <li><div class="how-text"><h3>{{ item.t }}</h3><p>{{ item.d }}</p></div><p class="how-figure"><strong>{{ item.v }}</strong><span>{{ item.l }}</span></p></li>
       {%- endfor %}
     </ol>
     {%- include perf-diagram.html name="layers" %}

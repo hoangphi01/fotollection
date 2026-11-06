@@ -1,6 +1,6 @@
 ### Khi bạn mở một thư mục
 
-Một thư mục ảnh không bị đọc hết. Với mỗi tệp, Fotollection chỉ đọc dữ liệu EXIF (ngày, máy ảnh, nơi chụp) và ảnh thu nhỏ mà máy ảnh nào cũng lưu sẵn trong tệp, ngoài ra không gì khác: 1.000 ảnh mất 0,12 giây, trong khi ngân sách đặt ra trước khi viết mã là 1 giây. Sau đó các ảnh nhỏ 400 px nét hơn được làm ở chế độ nền, trên hai luồng để app vẫn nhanh, và lưu vào bộ nhớ đệm trên ổ đĩa, nên mở lại thư mục là có ngay. Với 5.035 ảnh, việc nhập mất 383 ms và ảnh nhỏ có sẵn mất 236 ms.
+Một thư mục ảnh không bị đọc hết. Với mỗi tệp, Fotollection chỉ đọc dữ liệu EXIF (ngày, máy ảnh, nơi chụp) và ảnh thu nhỏ mà máy ảnh nào cũng lưu sẵn trong tệp, ngoài ra không gì khác: 1.000 ảnh mất 0,12 giây, trong khi ngân sách đặt ra trước khi viết mã là 1 giây. Sau đó các ảnh nhỏ 400 px nét hơn được làm ở chế độ nền, trên hai luồng để Fotollection vẫn nhanh, và lưu vào bộ nhớ đệm trên ổ đĩa, nên mở lại thư mục là có ngay. Với 5.035 ảnh, việc nhập mất 383 ms và ảnh nhỏ có sẵn mất 236 ms.
 
 ### 17 ms của một lần xem trước đi đâu
 

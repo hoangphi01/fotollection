@@ -324,9 +324,17 @@ h3.with-logo .logo-os { height: 0.95em; }
 .sizes .small .icon { color: var(--leaf); }
 .kiosk-steps ol, .steps { margin: 14px 0 18px; padding-left: 1.3em; color: var(--ink-2); }
 /* Performance: how it is fast, one short paragraph per choice. */
-.how-list { max-width: 680px; margin: 18px 0 0; padding-left: 1.3em; color: var(--ink-2); }
-.how-list li + li { margin-top: 10px; }
-.how-list strong { color: var(--ink); }
+/* Why it is fast: each choice with its measure beside it, rows split by a hairline. */
+.how-list { list-style: none; margin: 32px 0 0; padding: 0; border-top: 1px solid var(--line); }
+.how-list li { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 24px 0; border-bottom: 1px solid var(--line); }
+.how-text h3 { font-size: 1.15rem; }
+.how-text p { margin-top: 6px; color: var(--ink-2); max-width: 640px; }
+.how-figure { display: flex; flex-direction: column; gap: 4px; margin: 0; }
+.how-figure strong { font-family: 'Bitter', Georgia, serif; font-size: clamp(2rem, 4.5vw, 2.6rem); line-height: 1; letter-spacing: -0.01em; color: var(--brand); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.how-figure span { font-size: 0.92rem; color: var(--muted); }
+@media (min-width: 720px) {
+  .how-list li { grid-template-columns: 1fr 260px; gap: 48px; align-items: center; }
+}
 .kiosk-steps li + li, .steps li + li { margin-top: 8px; }
 .kiosk-steps li::marker, .steps li::marker { color: var(--accent); font-weight: 700; }
 /* Support: the owner's VietQR code next to a short thank-you. The QR card keeps its own white. */

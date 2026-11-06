@@ -362,19 +362,19 @@ en:
   perf_description: "Every measurement behind Fotollection, explained in plain words: speed, memory, print quality, photos for social media and best-shot suggestions, with what ΔE, SSIM, JPEG and colour profiles mean."
   perf_kicker: "Measured, not promised"
   perf_lead: "Every number on this page comes from real photos on an ordinary laptop (Apple M3, 16 GB), and the scripts that produced them are in the repository, so anyone can run them again. Below each chart is what it means for your prints, and at the end, the words behind the numbers."
-  perf_how_title: "How it is fast"
-  perf_how_lead: "No magic: a few choices made before the code was written, each one measured."
+  perf_how_title: "Why Fotollection is fast"
+  perf_how_lead: "No magic. A few decisions made before the first line of code, each one measured."
   perf_how_items:
-    - { t: "Native code on every core", d: "The work runs in Rust, compiled for your processor, spread over all its cores, with the vector instructions (SIMD) processors have for pixels." }
-    - { t: "Only what is needed", d: "Opening a folder reads each file's EXIF and its small embedded thumbnail, not the whole photo, and thumbnails are kept in a cache on disk." }
-    - { t: "Never more pixels than the screen", d: "A preview is at most 1600 px, made from a 2048 px copy kept in memory; the full photo is read only when you zoom in, a part at a time." }
-    - { t: "Ready before you click", d: "Once the thumbnails are done, a preview of every photo is prepared in the background and kept on disk, and a quarter of the memory holds the photos around the one on screen: any photo opens in about 27 ms." }
-    - { t: "Nothing done twice", d: "While you drag a colour slider, the photo is not resized again, only its colour changes. Every colour slider is folded into one table of 33 × 33 × 33 colours, so ten sliders cost what one does: about 2 ms on a preview." }
-    - { t: "Memory kept in budget", d: "Export works on as many full-size photos at once as fit the memory budget, set by the largest photo of the export." }
-    - { t: "Encoders tuned by measurement", d: "Print files skip a table optimisation that made them less than 1 % smaller and cost a third of the encoding time." }
-    - { t: "The graphics card while you edit", d: "Dragging a colour slider is drawn by the graphics card, from the table the core builds; exports stay on the processor, so a print comes out the same on every computer (below)." }
+    - { t: "Native code on every core", d: "Fotollection's work runs in Rust, compiled for your processor and spread across all of its cores, with the vector instructions (SIMD) processors provide for pixels.", v: "23.5 / s", l: "photos exported at 16 MP" }
+    - { t: "Only what is needed", d: "Opening a folder reads each file's EXIF and its small embedded thumbnail, never the whole photo. Thumbnails are kept in a cache on disk.", v: "0.12 s", l: "to open 1,000 photos" }
+    - { t: "Never more pixels than the screen", d: "A preview is at most 1,600 px, made from a 2,048 px copy held in memory. The full photo is read only when you zoom in, one part at a time.", v: "17 ms", l: "to redraw a preview" }
+    - { t: "Ready before you click", d: "Once the thumbnails are done, a preview of every photo is prepared in the background and kept on disk, while a quarter of memory holds the photos around the one on screen.", v: "27 ms", l: "to open any photo" }
+    - { t: "Nothing done twice", d: "A colour slider changes only the colour, never the size. Every colour slider is folded into one table of 33 × 33 × 33 colours, so ten sliders cost what one does.", v: "2 ms", l: "for ten colour sliders on a preview" }
+    - { t: "Memory within budget", d: "Fotollection works on only as many full-size photos at once as its memory budget allows, set by the largest photo in the export.", v: "1.45 GB", l: "peak memory with 5,035 photos" }
+    - { t: "Encoders tuned by measurement", d: "Print files skip a table optimisation that made them less than 1 % smaller and cost a third of the encoding time.", v: "−33 %", l: "encoding time for print files" }
+    - { t: "The graphics card while you edit", d: "While a colour slider moves, the graphics card draws from the table the core builds. Exports stay on the processor, so a print is identical on every computer.", v: "1–2 ms", l: "per slider step, down from 26 ms" }
   perf_gpu_title: "The graphics card while editing, every core for exports"
-  perf_gpu_text: "While you drag a colour slider, the graphics card draws the look from the same table the app's core builds, so a step takes 1 to 2 ms instead of about 26, and the photo follows your hand. The date stamp, the frame and the border are left out, and the exact render takes over when you let go: the two differ by 0.13 on average in ΔE2000, far below what an eye sees. A computer without a capable graphics card keeps the processor; the app decides by itself. Exports stay on the processor, so a print comes out the same on every computer, and six photos are worked on at once where memory allows: 10.8 a second for 26 MP photos, a fifth faster than before."
+  perf_gpu_text: "While you drag a colour slider, the graphics card draws the look from the same table Fotollection's core builds, so a step takes 1 to 2 ms instead of about 26, and the photo follows your hand. The date stamp, the frame and the border are left out, and the exact render takes over when you let go: the two differ by 0.13 on average in ΔE2000, far below what an eye sees. A computer without a capable graphics card keeps the processor; Fotollection decides by itself. Exports stay on the processor, so a print comes out the same on every computer, and six photos are worked on at once where memory allows: 10.8 a second for 26 MP photos, a fifth faster than before."
   chart_gpu: "One step of a colour slider: the processor against the graphics card"
   chart_inflight: "Export speed by photos worked on at once"
   dl_warn_title: "Update to v0.11.0 or later."
@@ -869,19 +869,19 @@ vi:
   perf_description: "Mọi số đo phía sau Fotollection, giải thích bằng lời dễ hiểu: tốc độ, RAM, chất lượng in, ảnh đăng mạng xã hội, gợi ý ảnh đẹp nhất, kèm ý nghĩa của ΔE, SSIM, JPEG và hồ sơ màu."
   perf_kicker: "Đo thật, không hứa suông"
   perf_lead: "Mọi con số trên trang này đều đo trên ảnh thật, bằng một chiếc máy tính xách tay bình thường (Apple M3, 16 GB). Chương trình đo nằm ngay trong kho mã nguồn, ai cũng có thể chạy lại. Dưới mỗi biểu đồ là ý nghĩa của nó với ảnh in của bạn, và cuối trang là giải thích cho các thuật ngữ đứng sau con số."
-  perf_how_title: "Vì sao app nhanh"
-  perf_how_lead: "Không có phép màu nào: chỉ là vài lựa chọn từ trước khi viết mã, và lựa chọn nào cũng được đo."
+  perf_how_title: "Vì sao Fotollection nhanh"
+  perf_how_lead: "Không có phép màu. Chỉ là một vài quyết định được đưa ra trước dòng mã đầu tiên, và mỗi quyết định đều được đo đạc."
   perf_how_items:
-    - { t: "Mã gốc, chạy trên mọi nhân", d: "Mọi việc chạy bằng Rust, biên dịch cho đúng bộ xử lý của bạn, chia đều cho tất cả các nhân, có dùng lệnh vector (SIMD) mà bộ xử lý dành cho điểm ảnh." }
-    - { t: "Chỉ đọc những gì cần", d: "Mở một thư mục chỉ đọc EXIF và ảnh thu nhỏ có sẵn trong mỗi tệp, không đọc cả ảnh; ảnh thu nhỏ được giữ lại trong bộ nhớ đệm trên ổ đĩa." }
-    - { t: "Không bao giờ nhiều điểm ảnh hơn màn hình", d: "Bản xem trước tối đa 1600 px, dựng từ một bản 2048 px giữ trong RAM; ảnh gốc chỉ được đọc khi bạn phóng to, từng phần một." }
-    - { t: "Sẵn sàng trước khi bạn bấm", d: "Làm xong ảnh nhỏ là bản xem trước của mọi ảnh được chuẩn bị ở chế độ nền và giữ trên đĩa, còn một phần tư bộ nhớ giữ các ảnh quanh ảnh đang xem: mở ảnh nào cũng chỉ khoảng 27 ms." }
-    - { t: "Không làm một việc hai lần", d: "Khi bạn kéo một thanh chỉnh màu, ảnh không bị thu nhỏ lại từ đầu, chỉ màu thay đổi. Mọi thanh chỉnh màu được gộp vào một bảng 33 × 33 × 33 màu, nên mười thanh tốn ngang một thanh: khoảng 2 ms trên bản xem trước." }
-    - { t: "RAM luôn trong hạn mức", d: "Khi xuất, app chỉ xử lý cùng lúc số ảnh cỡ lớn vừa với hạn mức RAM, tính theo ảnh lớn nhất trong lượt xuất." }
-    - { t: "Bộ mã hoá chỉnh theo số đo", d: "Ảnh in bỏ qua một bước tối ưu bảng mã chỉ làm tệp nhỏ đi chưa tới 1 % mà tốn một phần ba thời gian mã hoá." }
-    - { t: "Card đồ hoạ khi bạn chỉnh ảnh", d: "Khi kéo thanh chỉnh màu, card đồ hoạ vẽ từ bảng màu do phần lõi dựng; xuất ảnh vẫn chạy trên bộ xử lý, để ảnh in giống hệt nhau trên mọi máy (xem bên dưới)." }
+    - { t: "Mã gốc trên mọi nhân xử lý", d: "Toàn bộ công việc của Fotollection chạy bằng Rust, được biên dịch cho đúng bộ xử lý của bạn và chia đều cho mọi nhân, tận dụng các lệnh vector (SIMD) dành riêng cho điểm ảnh.", v: "23,5 / s", l: "ảnh 16 MP được xuất" }
+    - { t: "Chỉ đọc những gì cần thiết", d: "Khi mở một thư mục, Fotollection chỉ đọc EXIF và ảnh thu nhỏ có sẵn trong mỗi tệp, không bao giờ đọc toàn bộ ảnh. Ảnh thu nhỏ được lưu trong bộ nhớ đệm trên ổ đĩa.", v: "0,12 s", l: "để mở 1.000 ảnh" }
+    - { t: "Không nhiều điểm ảnh hơn màn hình", d: "Bản xem trước tối đa 1.600 px, được dựng từ một bản 2.048 px lưu trong bộ nhớ. Ảnh gốc chỉ được đọc khi bạn phóng to, từng phần một.", v: "17 ms", l: "để dựng lại bản xem trước" }
+    - { t: "Sẵn sàng trước khi bạn chọn", d: "Ngay khi ảnh thu nhỏ hoàn tất, bản xem trước của mọi ảnh được chuẩn bị ở chế độ nền và lưu trên ổ đĩa, đồng thời một phần tư bộ nhớ giữ sẵn các ảnh quanh ảnh đang xem.", v: "27 ms", l: "để mở bất kỳ ảnh nào" }
+    - { t: "Không làm một việc hai lần", d: "Thanh chỉnh màu chỉ thay đổi màu sắc, không dựng lại kích thước ảnh. Mọi thanh chỉnh màu được gộp vào một bảng 33 × 33 × 33 màu, nên mười thanh cũng chỉ tốn như một.", v: "2 ms", l: "cho mười thanh chỉnh màu trên bản xem trước" }
+    - { t: "Bộ nhớ luôn trong hạn mức", d: "Fotollection chỉ xử lý cùng lúc số ảnh cỡ lớn vừa với hạn mức bộ nhớ, được tính theo ảnh lớn nhất trong lượt xuất.", v: "1,45 GB", l: "bộ nhớ tối đa với 5.035 ảnh" }
+    - { t: "Bộ mã hoá tinh chỉnh theo số đo", d: "Tệp in bỏ qua một bước tối ưu bảng mã vốn chỉ giảm dung lượng chưa tới 1 % nhưng tốn một phần ba thời gian mã hoá.", v: "−33 %", l: "thời gian mã hoá tệp in" }
+    - { t: "Card đồ hoạ khi chỉnh ảnh", d: "Khi bạn kéo thanh chỉnh màu, card đồ hoạ vẽ từ bảng màu do phần lõi dựng. Việc xuất ảnh vẫn chạy trên bộ xử lý, để bản in giống hệt nhau trên mọi máy tính.", v: "1–2 ms", l: "mỗi nhịp kéo, thay vì 26 ms" }
   perf_gpu_title: "Card đồ hoạ khi chỉnh, mọi nhân khi xuất"
-  perf_gpu_text: "Khi bạn kéo một thanh chỉnh màu, card đồ hoạ vẽ look từ đúng bảng màu mà phần lõi của app dựng, nên mỗi nhịp chỉ mất 1 đến 2 ms thay vì khoảng 26 ms, và ảnh chạy theo tay bạn. Dấu ngày, khung và viền được giữ nguyên, rồi bản dựng chính xác thay vào khi bạn thả tay: hai bản chỉ khác nhau trung bình 0,13 theo ΔE2000, thấp hơn nhiều so với ngưỡng mắt thấy được. Máy không có card đồ hoạ đủ mạnh vẫn dùng bộ xử lý; app tự quyết. Xuất ảnh vẫn chạy trên bộ xử lý, để ảnh in giống hệt nhau trên mọi máy, và xử lý cùng lúc sáu ảnh khi RAM cho phép: 10,8 ảnh mỗi giây với ảnh 26 MP, nhanh hơn trước một phần năm."
+  perf_gpu_text: "Khi bạn kéo một thanh chỉnh màu, card đồ hoạ vẽ look từ đúng bảng màu mà phần lõi của Fotollection dựng, nên mỗi nhịp chỉ mất 1 đến 2 ms thay vì khoảng 26 ms, và ảnh chạy theo tay bạn. Dấu ngày, khung và viền được giữ nguyên, rồi bản dựng chính xác thay vào khi bạn thả tay: hai bản chỉ khác nhau trung bình 0,13 theo ΔE2000, thấp hơn nhiều so với ngưỡng mắt thấy được. Máy không có card đồ hoạ đủ mạnh vẫn dùng bộ xử lý; Fotollection tự quyết định. Xuất ảnh vẫn chạy trên bộ xử lý, để ảnh in giống hệt nhau trên mọi máy, và xử lý cùng lúc sáu ảnh khi RAM cho phép: 10,8 ảnh mỗi giây với ảnh 26 MP, nhanh hơn trước một phần năm."
   chart_gpu: "Một nhịp kéo thanh màu: bộ xử lý so với card đồ hoạ"
   chart_inflight: "Tốc độ xuất theo số ảnh xử lý cùng lúc"
   dl_warn_title: "Hãy cập nhật lên v0.11.0 trở lên."

@@ -8,7 +8,7 @@ Since v0.11.0, the work the user waits for is done before they ask. Once a folde
 
 ### Memory used well, not as little as possible
 
-A preview app that keeps eight photos in memory on a 16 GB laptop wastes the laptop. Fotollection now gives the preview a quarter of the machine's memory (on a 16 GB Mac, about 190 photos at 2,048 px, 20 RAW develops kept for their sliders and 600 MB for zoom), counted in bytes and freed oldest first. When a photo is on screen, the next two in the direction you are moving and the one behind are loaded too, so the arrow keys never wait. The 2 GB ceiling still holds for exports.
+A photo viewer that keeps eight photos in memory on a 16 GB laptop wastes the laptop. Fotollection now gives the preview a quarter of the machine's memory (on a 16 GB Mac, about 190 photos at 2,048 px, 20 RAW develops kept for their sliders and 600 MB for zoom), counted in bytes and freed oldest first. When a photo is on screen, the next two in the direction you are moving and the one behind are loaded too, so the arrow keys never wait. The 2 GB ceiling still holds for exports.
 
 ### The photo on screen goes first
 

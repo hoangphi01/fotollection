@@ -32,7 +32,7 @@ JPEG là một bức ảnh đã hoàn thiện: máy ảnh đã quyết định m
 
 Mỗi hãng có định dạng riêng, phần lớn dựa trên TIFF và một phần không công bố: CR2 và CR3 (Canon), NEF (Nikon), ARW (Sony), RW2 (Panasonic), ORF (Olympus), RAF (Fujifilm). **DNG** là định dạng Adobe công bố công khai (phiên bản 1.7), được Ricoh, Leica, Pentax và nhiều điện thoại dùng, và cũng là định dạng mà các quy tắc trên trang này dựa theo.
 
-Fotollection đọc DNG bằng bộ đọc của riêng mình, viết theo bản đặc tả, còn các định dạng khác được giải nén bằng rawler, một thư viện LGPL có sẵn trong app. Ảnh nhỏ trong lưới không bao giờ đụng tới dữ liệu cảm biến: chúng lấy từ bản xem trước trong tệp, mất 9 đến 32 ms, vì thế một thư mục RAW mở nhanh như một thư mục JPEG.
+Fotollection đọc DNG bằng bộ đọc của riêng mình, viết theo bản đặc tả, còn các định dạng khác được giải nén bằng rawler, một thư viện LGPL có sẵn trong Fotollection. Ảnh nhỏ trong lưới không bao giờ đụng tới dữ liệu cảm biến: chúng lấy từ bản xem trước trong tệp, mất 9 đến 32 ms, vì thế một thư mục RAW mở nhanh như một thư mục JPEG.
 
 ### Demosaic: tính ra hai màu còn thiếu
 
@@ -98,7 +98,7 @@ Cho một lần xử lý đầy đủ, thứ đứng sau bản xem trước đ�
 6. **Tông và màu riêng**, khớp theo bản xem trước của máy, kèm độ tối góc.
 7. Từ đây ảnh RAW giống mọi ảnh khác: cắt khung, dấu ngày, khung viền, cỡ in và hồ sơ màu, xuất ở độ phân giải đầy đủ, 4:4:4, chất lượng 95.
 
-Vài nguyên tắc luôn giữ. Mỗi lần chỉ xử lý một ảnh, chia ra mọi nhân của bộ xử lý, và không bao giờ trên luồng của cửa sổ, nên app vẫn phản hồi trong lúc một ảnh 30 MP đang được xử lý. Xuất ảnh luôn chạy trên bộ xử lý, để ảnh in ra giống hệt nhau trên mọi máy; card đồ hoạ chỉ tăng tốc những gì bạn thấy khi chỉnh. Và mã nguồn là của chúng tôi, viết theo các bản đặc tả và bài báo đã công bố, không chép từ dự án khác, rồi được kiểm tra: trên các ảnh chuẩn tổng hợp ở trên, trên chín tệp RAW từ chín dòng máy (CC0, từ raw.pixls.us), và bằng cách cố tình cắt cụt, làm hỏng tệp để tệp lỗi chỉ báo lỗi, không bao giờ làm app sập.
+Vài nguyên tắc luôn giữ. Mỗi lần chỉ xử lý một ảnh, chia ra mọi nhân của bộ xử lý, và không bao giờ trên luồng của cửa sổ, nên Fotollection vẫn phản hồi trong lúc một ảnh 30 MP đang được xử lý. Xuất ảnh luôn chạy trên bộ xử lý, để ảnh in ra giống hệt nhau trên mọi máy; card đồ hoạ chỉ tăng tốc những gì bạn thấy khi chỉnh. Và mã nguồn là của chúng tôi, viết theo các bản đặc tả và bài báo đã công bố, không chép từ dự án khác, rồi được kiểm tra: trên các ảnh chuẩn tổng hợp ở trên, trên chín tệp RAW từ chín dòng máy (CC0, từ raw.pixls.us), và bằng cách cố tình cắt cụt, làm hỏng tệp để tệp lỗi chỉ báo lỗi, không bao giờ làm Fotollection dừng đột ngột.
 
 **Từ v0.10.0: bộ xử lý của riêng Fotollection cho mọi máy Bayer.** rawler chỉ còn giải nén tệp, phần còn lại là của Fotollection. Thời gian xử lý đầy đủ chín tệp mẫu, trung vị của 3 lần, trên cùng một máy: bộ xử lý của mình với cách demosaic sạch hơn, so với cách đơn giản hơn của rawler và với macOS:
 
