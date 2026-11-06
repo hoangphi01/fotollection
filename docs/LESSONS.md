@@ -14,6 +14,13 @@
 
 ## 2026-11-06
 
+### Vietnamese marks touched the line above: a new face, the old line heights (FR-099, UI)
+
+- **Seen:** with Be Vietnam Pro, the owner found small Vietnamese text crowded: stacked marks (*ấ*, *ộ*) touched the line above and each other.
+- **Why:** labels (`Label`) and dialog titles kept shadcn's `leading-none`, and `text-xs` had Tailwind's 1.33 lines; Geist hid it with its lower marks, Be Vietnam Pro's taller ones need about half a line above the letter.
+- **Fix:** `text-xs` and `text-sm` at 1.5 lines in the theme, `leading-snug` for labels and dialog titles, no `leading-none` on text that can hold marks.
+- **Rule:** a change of face is checked on Vietnamese at its smallest size, two lines deep, before it is kept (STYLE_RULE §4, "Room for Vietnamese marks").
+
 ### The toolbar was cut off in the full-window layout: a column added, the row not measured again (FR-095, UI)
 
 - **Seen:** in the full-window layout the preview's toolbar lost its last buttons past the inspector, and the zoom read *Vừa khung* on two lines, off centre (owner's screenshots, v0.12.0 development).
