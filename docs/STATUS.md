@@ -215,6 +215,7 @@ The audit of 2026-11-02 read the RAW path, the JPEG and colour path and the docs
 | FR-097 | Copy, paste, Reset | 2 | Not Started | Owner's request (2026-11-06): settings to ticked photos as one undo step, Reset to the shared settings; v0.12.0 |
 | FR-098 | Histogram, clipping, white balance | 2 | Not Started | Owner's request (2026-11-06): histogram in ≤ 3 ms from the preview, `J`, `W`; v0.12.0 |
 | FR-099 | Controls with depth | 2 | Not Started | Owner's request (2026-11-06), Sentry as the reference: raised buttons, inputs set in, lifted cards, in the shared primitives; v0.13.0 |
+| FR-100 | Motion that feels like one app | 2 | Not Started | Owner's request (2026-11-06): animation today is local, out of step and not smooth; one motion system with shared timings, view transitions, no jumps, *Reduce motion*; after v0.13.0 |
 | FR-068 | HEIC on Linux through the system's libheif | 2 | Not Started | v0.8.2 skips HEIC on Linux with its own reason (`HeicNotOnLinux`); after v0.9.0 ([ADR-0034](adr/0034-linux-lean.md)) |
 | FR-059 | Quick-preview | 1 | In Progress | ✓ Hold Space in select mode over a photo: thumbnail at once, then the render with the gallery's settings; ← → and Enter while held (`use-quick-preview.ts`). Left: check by hand in the app |
 | FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print; every editing session adds a journal entry (instax-style) |

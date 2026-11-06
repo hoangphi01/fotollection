@@ -1027,6 +1027,15 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P2 (planned, v0.13.0; owner's request 2026-11-06, pointing at Sentry's interface).** Buttons and controls stand out from the surface: a raised button has a darker lip under it in a shade of its own colour and a faint highlight on top, and goes down by its lip when pressed; inputs and segmented groups sit slightly into the surface; cards carry a faint border and a lifted shadow; a selected row has an accent outline. Done once in the shared primitives and theme tokens (`button`, `toggle`, inputs, `SectionCard`), so every panel follows; measured with `MEASURE=1` in both themes; the photo stage stays neutral.
 
+### FR-100 — Motion that feels like one app
+
+**P2 (planned, after v0.13.0; owner's request 2026-11-06: "the app's animation is local, not in step and not smooth yet; transitions should be smoother").** Today each piece animates on its own: a dialog zooms in, a card folds, a photo fades, with different timings and some changes that simply jump. One motion system, set once:
+
+- **Shared timings and curves** as theme tokens (a short one for controls, a longer one for panels and views), used by every block, so the whole app moves at one pace.
+- **Transitions between views:** the gallery to the preview and back (the photo growing from its tile), the dialog and the full-window layout (FR-095), the modes, the Settings window's sections; panels and the filmstrip slide rather than appear.
+- **No jump left:** a list that changes (the filmstrip, History, notices, the gallery after a filter) moves its rows to their new place; a card that folds or a badge that comes keeps the rest still until it moves smoothly.
+- **Never in the way:** nothing waits for an animation; a photo shows as soon as it is ready; *Reduce motion* in the system turns it all down to fades. Measured: 60 fps on the reference machines (OPTIMIZATION §3), checked in both themes.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
