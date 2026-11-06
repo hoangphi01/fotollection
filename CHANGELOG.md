@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **An export dialog, as Lightroom's** (FR-093): *Export* opens it, with presets on the left (prints, Facebook, Instagram, original size, custom) and every choice on the right: where the photos go, by day or in one folder, the quality, the size and the names. Tick *Don't ask again* and *Export* exports at once; Settings → *Export* holds the same choices and *Ask every time*. The folder, the quality and the rest are kept for next time.
 - **Export quality on a slider** (FR-092), from 60 to 100: the size estimate follows it, and a badge says what it is good for, measured on real prints: *Prints beautifully* from 90, *Prints well* from 75, below that *Screens only*.
 
+### Fixed
+
+- **New project no longer drops unsaved work** (FR-023): an untitled project with photos always asks *Save changes?* first. After a restart it was taken as saved, so *New project* removed its folders without asking.
+
 ### Changed
 
 - **One height for every control** (FR-099): buttons, toggles and the toolbar are as tall as a text field or a dropdown (32 px), so a row of mixed controls lines up; the Settings gear is a real button, and the author's name sits under the app's, a size smaller; the logo beside them is as tall as the gear and opens fotollection.org. The project's and the library's buttons sit in one raised bar each.
