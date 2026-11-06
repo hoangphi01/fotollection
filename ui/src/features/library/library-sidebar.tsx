@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
+import { ButtonGroup } from '@/components/forms/button-group'
 import { commands, type FolderSummary, type ImportSummary, type QueueView } from '@/ipc/bindings'
 import { ThemeSwitch } from '@/features/appearance/theme-switch'
 import { ProjectName } from '@/features/project/project-name'
@@ -135,7 +136,7 @@ export function LibrarySidebar({
           <span className="text-xs font-medium text-muted-foreground uppercase">
             {t('project.title')}
           </span>
-          <div className="flex">
+          <ButtonGroup ariaLabel={t('project.title')}>
             {(
               [
                 ['new', FilePlus, project.newProject],
@@ -155,7 +156,7 @@ export function LibrarySidebar({
                 <Icon />
               </Button>
             ))}
-          </div>
+          </ButtonGroup>
         </div>
         <p className="flex min-w-0 items-center gap-2 text-sm">
           <FileImage className="size-4 shrink-0 text-muted-foreground" />
@@ -186,7 +187,7 @@ export function LibrarySidebar({
         <span className="text-xs font-medium text-muted-foreground uppercase">
           {t('library.title')}
         </span>
-        <div className="flex">
+        <ButtonGroup ariaLabel={t('library.title')}>
           {folders.length > 1 && (
             <Button
               variant="ghost"
@@ -194,7 +195,7 @@ export function LibrarySidebar({
               aria-label={t('library.select')}
               aria-pressed={selecting}
               data-hint={t('library.selectHint')}
-              className={cn(selecting && 'bg-sidebar-accent text-primary')}
+              className={cn(selecting && 'bg-pressed text-primary-foreground pressed-in [--face:var(--primary)]')}
               onClick={() => setSelecting((on) => !on)}
             >
               <ListChecks />
@@ -221,7 +222,7 @@ export function LibrarySidebar({
           >
             <FolderOpen />
           </Button>
-        </div>
+        </ButtonGroup>
       </div>
       <ScrollArea className="flex-1 px-2">
         {folders.length === 0 ? (
