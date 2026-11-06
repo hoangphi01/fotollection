@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 type CollapseProps = {
@@ -14,13 +14,34 @@ type CollapseProps = {
   stack?: 'field' | 'card'
 }
 
+/** The fold's transition (`duration-200`) and a frame, so the scroll sees the full height. */
+const GROW_MS = 220
+
 /**
  * Options that only matter while a feature is on: they fold away when it is switched off,
  * so the panel stays short. Folded content is `inert`, so Tab never lands in it.
  */
 export function Collapse({ open, children, className, stack }: CollapseProps) {
+  const ref = useRef<HTMLDivElement>(null)
+  const was = useRef(open)
+  // What was just opened comes into view once it has grown (owner, 2026-11-06): a card or
+  // an option opened at the foot of a panel scrolls up just enough, never when already seen.
+  useEffect(() => {
+    const opened = open && !was.current
+    was.current = open
+    if (!opened) return
+    const timer = window.setTimeout(() => {
+      const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      // A card's body brings its whole card, header included (`SectionCard`'s <section>).
+      const parent = ref.current?.parentElement
+      const target = parent?.tagName === 'SECTION' ? parent : ref.current
+      target?.scrollIntoView({ block: 'nearest', behavior: still ? 'auto' : 'smooth' })
+    }, GROW_MS)
+    return () => window.clearTimeout(timer)
+  }, [open])
   return (
     <div
+      ref={ref}
       className={cn(
         'grid transition-[grid-template-rows,opacity,margin] duration-200 ease-out motion-reduce:transition-none',
         open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
