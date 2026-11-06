@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- **Website:** the Vietnam Linux Family listing is a badge in VNLF's green beside the download buttons, and the Community card links to the project on VNLF Social too; the badges at the top have the app's depth.
+
 ## [0.13.0] - 2026-11-06 — The new look
 
 ### Highlights

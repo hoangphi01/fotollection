@@ -8,11 +8,10 @@
       <p class="badges">
         <span class="badge">{{ t.badge }}<sup class="fn-ref"><a href="#fn-1" id="fnref-1" aria-label="{{ t.fn_label }} 1">1</a></sup></span>
         <a class="badge shield" href="#privacy">{% include icons/shield-check.svg %}{{ t.shield }}</a>
-        <a class="badge vnlf" href="https://apps.vietnamlinuxfamily.net/app/fotollection">{% include icons/users.svg %}{{ t.vnlf_badge }}</a>
       </p>
       <h1>{{ t.hero_title_1 }} <em>{{ t.hero_accent }}</em>{{ t.hero_title_2 }}</h1>
       <p class="lead">{{ t.hero_lead }}</p>
-      {% include download-buttons.html id="download" %}
+      {% include download-buttons.html id="download" vnlf=true %}
       <p class="small muted">
         {{ t.works_on }} · {% if release.tag_name %}{{ t.latest }}: <a href="{{ release.html_url }}">{{ release.tag_name }}</a> · {% else %}<a href="{{ site.repo_url }}/releases">{{ t.no_release }}</a> · {% endif %}{{ t.download_note }}
       </p>
@@ -355,7 +354,7 @@
     <h2>{{ t.community_title }}</h2>
     <p class="lead narrow">{{ t.community_lead }}</p>
     <div class="cards community-cards">
-      <article class="card">{% include icons/users.svg %}<h3>{{ t.vnlf_title }}</h3><p>{{ t.vnlf_text }}</p><p><a class="more" href="https://apps.vietnamlinuxfamily.net/app/fotollection">{{ t.vnlf_link }} {% include icons/arrow-right.svg %}</a></p></article>
+      <article class="card">{% include icons/users.svg %}<h3>{{ t.vnlf_title }}</h3><p>{{ t.vnlf_text }}</p><p><a class="more" href="https://apps.vietnamlinuxfamily.net/app/fotollection">{{ t.vnlf_link }} {% include icons/arrow-right.svg %}</a></p><p><a class="more" href="https://vietnamlinuxfamily.net/projects/fotollection">{{ t.vnlf_social_link }} {% include icons/arrow-right.svg %}</a></p></article>
       <article class="card">{% include icons/monitor.svg %}<h3>{{ t.caramos_title }}</h3><p>{{ t.caramos_text }}</p><p><a class="more" href="https://github.com/VN-Linux-Family/CaramOS">{{ t.caramos_link }} {% include icons/arrow-right.svg %}</a></p></article>
       <article class="card">{% include icons/star.svg %}<h3>{{ t.github_title }}</h3><p>{{ t.github_text }}</p><p><a class="more" href="{{ site.repo_url }}">{{ t.github_link }} {% include icons/arrow-right.svg %}</a></p></article>
     </div>
@@ -366,7 +365,7 @@
   <div class="wrap final-wrap">
     <h2>{{ t.final_title }}</h2>
     <p class="lead">{{ t.final_lead }}</p>
-    {% include download-buttons.html id="get-download" %}
+    {% include download-buttons.html id="get-download" vnlf=true %}
     <p><a class="more" href="{% if page.lang == 'vi' %}{{ '/vi/manual/' | relative_url }}{% else %}{{ '/manual/' | relative_url }}{% endif %}">{{ t.final_manual }} {% include icons/arrow-right.svg %}</a></p>
   </div>
 </section>

@@ -4,6 +4,10 @@
   <a class="button primary" href="{{ mac | default: releases }}"{% if mac %} data-download="mac"{% endif %}>{% include icons/download.svg %}{{ t.download_mac }}</a>
   <a class="button" href="{{ win | default: releases }}"{% if win %} data-download="win"{% endif %}>{% include icons/download.svg %}{{ t.download_win }}</a>
   <a class="button" href="{{ path_download }}#install-linux">{% include icons/download.svg %}{{ t.download_linux }}</a>
+  {%- if include.vnlf %}
+  {%- comment %} The VNLF listing, beside the buttons as a "featured on" badge in VNLF's own green (owner, 2026-11-06). {% endcomment %}
+  <a class="vnlf-badge" href="https://apps.vietnamlinuxfamily.net/app/fotollection" aria-label="{{ t.vnlf_badge }}"><img src="{{ '/assets/img/logos/vnlf.png' | relative_url }}" width="30" height="30" alt="" /><span><small>{{ t.vnlf_badge_top }}</small><strong>VNLF App Explorer</strong></span></a>
+  {%- endif %}
   {%- if site.data.downloads %}
   {%- comment %} How often the installers were downloaded (scripts/download-stats.mjs), beside the buttons. {% endcomment %}
   <span class="cta-count" title="{{ t.footer_downloads_hint }}">{% include icons/download.svg %}{{ t.cta_downloads | replace: "[n]", site.data.downloads[page.lang] }}</span>

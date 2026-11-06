@@ -583,9 +583,25 @@ h2.with-icon .icon { width: 0.85em; height: 0.85em; flex: none; color: var(--bra
 .button:active, .pill:active { transform: translateY(1px); box-shadow: inset 0 1px 0 var(--highlight), inset 0 -1px 0 color-mix(in oklch, var(--face), var(--shade) var(--lip-mix)); }
 .card { --face: var(--surface); box-shadow: inset 0 1px 0 var(--highlight), inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--face), var(--shade) var(--lip-mix)), var(--lift); }
 .stat { box-shadow: inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--brand), var(--shade) var(--lip-mix)), var(--lift); }
-.badge.vnlf { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; background: var(--surface); color: var(--ink); border-color: var(--line); }
-.badge.vnlf .icon { width: 1.1em; height: 1.1em; color: var(--brand); }
-.badge.vnlf:hover { border-color: var(--ink-2); }
+/* The hero's badges as the app's badges (owner, 2026-11-06): one 32 px height, the lip in a shade of their own colour. */
+.badges .badge { --face: var(--leaf-soft); display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; box-shadow: inset 0 1px 0 var(--highlight), inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--face), var(--shade) var(--lip-mix)), var(--lift); }
+.badges .badge.shield { --face: var(--brand); }
+/* The VNLF listing beside the download buttons, a "featured on" badge in VNLF's own greens
+   (apps.vietnamlinuxfamily.net: --green-700 #3D6145 in light, --green-900 #1a3a22 with
+   --green-400 #7aaa83 in dark), with the app's lip. Its logo belongs to VNLF (README). */
+.vnlf-badge { --face: #3d6145; display: inline-flex; align-items: center; justify-content: center; gap: 10px; height: 44px; padding: 0 16px 0 8px; border-radius: 10px; border: 1px solid #3d6145; background: var(--face); color: #f3f9f4; text-decoration: none; flex: 1 1 100%; box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.15), inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--face), var(--shade) var(--lip-mix)), var(--lift); }
+.vnlf-badge img { width: 30px; height: 30px; border-radius: 50%; background: #fff; padding: 1px; }
+.vnlf-badge span { display: flex; flex-direction: column; line-height: 1.1; text-align: left; }
+.vnlf-badge small { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #c5dfc9; }
+.vnlf-badge strong { font-size: 0.95rem; font-weight: 700; }
+.vnlf-badge:hover { filter: brightness(1.08); }
+.vnlf-badge:active { transform: translateY(1px); box-shadow: inset 0 -1px 0 color-mix(in oklch, var(--face), var(--shade) var(--lip-mix)); }
+.vnlf-badge:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+@media (min-width: 640px) { .vnlf-badge { flex: 0 0 auto; } }
+@media (prefers-color-scheme: dark) {
+  .vnlf-badge { --face: #1a3a22; border-color: #4a7552; color: #e8f2ea; }
+  .vnlf-badge small { color: #7aaa83; }
+}
 
 /* The makeover (owner, 2026-11-06): v0.12's gallery under v0.13's, wiped in once, then a
    handle to compare. Without script, or with reduced motion, the new one stands. */

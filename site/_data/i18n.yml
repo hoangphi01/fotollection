@@ -24,6 +24,7 @@ en:
   hero_title_2: " home?"
   hero_lead: No internet up there, and still no idea which ones to keep. Take one real look back with Fotollection - it finds the best shots, stamps the date and gets them ready to print. Automatic, free and fully offline.
   vnlf_badge: "Listed on VNLF App Explorer"
+  vnlf_badge_top: "Listed on"
   works_on: "Works on Windows, macOS and Linux"
   makeover_old: "v0.12"
   makeover_new: "v0.13"
@@ -57,6 +58,7 @@ en:
   vnlf_title: "VNLF App Explorer"
   vnlf_text: "Vietnam Linux Family’s catalogue of free projects lists Fotollection, with its screenshots and one command to install it."
   vnlf_link: "Open the listing"
+  vnlf_social_link: "The project on VNLF Social"
   caramos_title: "CaramOS"
   caramos_text: "The Linux distribution made for Vietnamese users offers Fotollection in its App Center: one click, in Vietnamese."
   caramos_link: "About CaramOS"
@@ -529,6 +531,7 @@ vi:
   hero_title_2: "?"
   hero_lead: Không có internet, và vẫn chưa biết giữ tấm nào. Hãy thử một lần nhìn lại cùng Fotollection - tự tìm ảnh đẹp nhất, in ngày chụp và chuẩn bị sẵn để in. Tự động, miễn phí và không cần internet.
   vnlf_badge: "Có trên VNLF App Explorer"
+  vnlf_badge_top: "Có trên"
   works_on: "Chạy trên Windows, macOS và Linux"
   makeover_old: "v0.12"
   makeover_new: "v0.13"
@@ -561,7 +564,8 @@ vi:
   community_lead: "Fotollection miễn phí và mã nguồn mở, và có mặt ở nơi người dùng Linux Việt tìm ứng dụng."
   vnlf_title: "VNLF App Explorer"
   vnlf_text: "Danh mục dự án tự do của Vietnam Linux Family có Fotollection, kèm ảnh chụp màn hình và một lệnh để cài."
-  vnlf_link: "Mở trang dự án"
+  vnlf_link: "Mở trang ứng dụng"
+  vnlf_social_link: "Dự án trên VNLF Social"
   caramos_title: "CaramOS"
   caramos_text: "Bản phân phối Linux làm cho người Việt có Fotollection trong App Center: một cú nhấp, bằng tiếng Việt."
   caramos_link: "Về CaramOS"
