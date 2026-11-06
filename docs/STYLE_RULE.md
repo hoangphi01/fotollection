@@ -41,7 +41,7 @@ Rust frees memory when its owner goes, not when nobody looks: a cache, a kept im
 
 - **one owner** (a field of `AppState` or of a cache struct), never a `static` that outlives a project;
 - **a bound in bytes**, from the budget, with what is kept when it is over (the photo on screen, not merely the newest insert);
-- **how it is emptied**: on a project switch (`reset_library` bumps an epoch; an insert that started before it is dropped), when the machine runs short (`PreviewCache::trim`), and by *Clear cache*;
+- **how it is emptied**: on a project switch (`reset_library` bumps an epoch; an insert that started before it is dropped), while the machine runs short (`PreviewCache::follow_memory` lowers the budget to a tenth, then restores it), and by *Clear cache*;
 - **a line in `usage()`**, so the Settings window shows what is really held;
 - **one way in**: work that makes the same key twice at once waits for the first (an in-flight map), and files are written to a unique `.part`, then renamed;
 - **a test** for each of the above, that fails on code without it.

@@ -9,9 +9,6 @@ use std::time::{Duration, SystemTime};
 
 use walkdir::WalkDir;
 
-/// The cache stays under this (DATABASE.md §8): thumbnails at about 27 KB and standard
-/// previews at about 1 MB a photo, some 4,500 photos with both (owner, 2026-11-05, FR-091).
-pub const LIMIT_BYTES: u64 = 5_000_000_000;
 /// A prune goes down to this share of the limit, so it does not run again at once.
 const AFTER_PRUNE: f64 = 0.9;
 /// A `.part` file older than this is a write that never finished.

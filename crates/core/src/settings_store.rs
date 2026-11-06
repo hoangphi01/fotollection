@@ -549,7 +549,7 @@ mod tests {
     }
 
     /// FR-086, FR-091: a v14 file has no memory settings: 25 % of RAM, a 5 GB cache and
-    /// previews prepared. A v15 file keeps its own, clamped: 99 % becomes 50, 7 GB the
+    /// previews prepared. A v15 file keeps its own, snapped: 99 % becomes 40, 7 GB the
     /// nearest limit offered (5), and they round-trip.
     #[test]
     fn fr_086_memory_settings_default_clamp_and_round_trip() -> std::io::Result<()> {
@@ -578,7 +578,7 @@ mod tests {
                 s.ui.cache_limit_gb,
                 s.ui.prepare_previews
             ),
-            (50, 5, false)
+            (40, 5, false)
         );
         save(&path, &s)?;
         let Loaded::Ok(back) = load(&path) else {

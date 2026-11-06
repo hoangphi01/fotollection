@@ -22,7 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- **Memory:** when the computer runs short of memory, the previews give theirs back by themselves, keeping only the photo on screen.
+- **Memory:** when the computer runs short of memory, the previews give most of theirs back by themselves, and take it again only once memory is free.
 
 ### Fixed
 

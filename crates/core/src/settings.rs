@@ -66,10 +66,13 @@ pub struct UiSettings {
 
 /// The cache limits one can choose, in GB (FR-086).
 pub const CACHE_LIMITS_GB: [u8; 4] = [2, 5, 10, 20];
-/// The memory shares one can choose for previews, in percent (FR-086); any value in
-/// `PREVIEW_MEMORY_RANGE` is kept as it is.
+/// The memory shares one can choose for previews, in percent (FR-086); a saved value
+/// between them goes to the nearest, so the window always shows one selected (audit
+/// 2026-11-06).
 pub const PREVIEW_MEMORY_CHOICES: [u8; 3] = [15, 25, 40];
-const PREVIEW_MEMORY_RANGE: std::ops::RangeInclusive<u8> = 10..=50;
+/// One GB as the window shows it and disks are sold: 10⁹ bytes. The limit, *Auto* and the
+/// window use it alike (audit 2026-11-06: *Auto* compared in GiB).
+const GB: u64 = 1_000_000_000;
 
 const fn default_preview_memory_percent() -> u8 {
     25
@@ -97,12 +100,13 @@ impl Default for UiSettings {
 
 impl UiSettings {
     /// Every value within what the app allows, from a file or over IPC: the memory share
-    /// clamped to 10–50 %, the cache limit the nearest one offered.
+    /// and the cache limit each the nearest one offered.
     #[must_use]
     pub fn sanitized(mut self) -> Self {
-        self.preview_memory_percent = self
-            .preview_memory_percent
-            .clamp(*PREVIEW_MEMORY_RANGE.start(), *PREVIEW_MEMORY_RANGE.end());
+        self.preview_memory_percent = PREVIEW_MEMORY_CHOICES
+            .into_iter()
+            .min_by_key(|p| p.abs_diff(self.preview_memory_percent))
+            .unwrap_or(25);
         self.cache_limit_gb = CACHE_LIMITS_GB
             .into_iter()
             .min_by_key(|g| g.abs_diff(self.cache_limit_gb))
@@ -113,16 +117,16 @@ impl UiSettings {
     /// The disk cache's limit in bytes, in GB of 10⁹ bytes as disks are sold and Finder and
     /// Explorer show them, so "5 GB" reads 5.0 GB in the window.
     pub fn cache_limit_bytes(&self) -> u64 {
-        u64::from(self.cache_limit_gb) * 1_000_000_000
+        u64::from(self.cache_limit_gb) * GB
     }
 
     /// The memory and cache settings that suit a machine with `total_ram` bytes of RAM and
     /// `free_disk` bytes free on the cache's disk (FR-086, the *Auto* button): 40 % of RAM
     /// from 32 GB, 25 % from 12 GB, else 15 %; the largest cache limit within a tenth of the
-    /// free disk, at least 2 GB; previews prepared unless under 5 GB are free.
+    /// free disk, at least 2 GB; previews prepared unless under 5 GB are free. In GB of 10⁹
+    /// bytes, as the limit is.
     #[must_use]
     pub fn auto_for(self, total_ram: u64, free_disk: u64) -> Self {
-        const GB: u64 = 1024 * 1024 * 1024;
         let percent = if total_ram >= 32 * GB {
             40
         } else if total_ram >= 12 * GB {
@@ -883,6 +887,44 @@ mod tests {
             ),
             (25, 5, true)
         );
+    }
+
+    /// Audit 2026-11-06: *Auto* counts in GB of 10⁹ bytes, the unit of the limit and the
+    /// window, so its thresholds sit where the window says (in GiB, 50 GB free gave 2 GB, not
+    /// 5, and 12 GB of RAM gave 15 %).
+    #[test]
+    fn fr_086_auto_counts_in_the_windows_gb() {
+        const GB: u64 = 1_000_000_000;
+        let auto = |ram, disk| {
+            let a = UiSettings::default().auto_for(ram, disk);
+            (
+                a.preview_memory_percent,
+                a.cache_limit_gb,
+                a.prepare_previews,
+            )
+        };
+        assert_eq!(auto(12 * GB, 50 * GB), (25, 5, true));
+        assert_eq!(auto(12 * GB - 1, 50 * GB - 1), (15, 2, true));
+        assert_eq!(auto(32 * GB, 200 * GB), (40, 20, true));
+        assert_eq!(auto(32 * GB - 1, 100 * GB), (25, 10, true));
+        assert_eq!(auto(8 * GB, 5 * GB), (15, 2, true));
+        assert_eq!(auto(8 * GB, 5 * GB - 1), (15, 2, false));
+    }
+
+    /// Audit 2026-11-06: a memory share saved outside the window's choices goes to the
+    /// nearest, so one segment is always selected.
+    #[test]
+    fn fr_086_a_memory_share_snaps_to_a_choice() {
+        let share = |p| {
+            UiSettings {
+                preview_memory_percent: p,
+                ..UiSettings::default()
+            }
+            .sanitized()
+            .preview_memory_percent
+        };
+        let got: Vec<u8> = [0, 15, 19, 21, 30, 33, 40, 50, 255].map(share).to_vec();
+        assert_eq!(got, vec![15, 15, 15, 25, 25, 40, 40, 40, 40]);
     }
     use super::*;
 

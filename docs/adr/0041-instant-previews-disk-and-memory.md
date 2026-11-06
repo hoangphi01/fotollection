@@ -21,7 +21,7 @@ Until now the preview decoded each photo when it was asked for. Its memory was c
 Option 2, with memory sized by the machine (the owner's choices of 2026-11-05):
 
 - **Standard previews on disk:** `thumbs/<aa>/<key>.t2-o<orientation>-<raw look>.jpg`, the upright sRGB source before any look, JPEG q90. For a RAW, finished with its RAW colour and no linear slider. A RAW with linear sliders set uses its kept develop instead (FR-088). They are made after the T1 pass, one photo at a time on a plain thread, paused while an export or an analysis runs (the prefetch is not paused: it is small and the user is browsing).
-- **The cache limit is 5 GiB** (was 2 GiB): thumbnails, standard previews and analyses together, oldest first.
+- **The cache limit is 5 GiB** (was 2 GiB): thumbnails, standard previews and analyses together, oldest first. Since v0.12.0 it is the user's choice in GB of 10⁹ bytes, 5 GB by default (FR-086).
 - **Memory:** the preview keeps up to **a quarter of the machine's RAM**, split 60 / 25 / 15 between sources, RAW develops and zoom images, by bytes, the oldest first. The image on screen always stays. NFR-004's 2 GB stays the export's ceiling.
 - **Prefetch:** the next two photos in the direction of travel and the one behind, once the photo on screen has landed.
 - **The photo on screen first:** the one-develop-at-a-time lock becomes a gate with two priorities. Work the user does not wait for (standard previews, prefetch, the export's estimate, an export) marks itself `Background` (`raw::with_priority`) and waits while any `Interactive` develop waits.
@@ -37,7 +37,7 @@ Option 2, with memory sized by the machine (the owner's choices of 2026-11-05):
 ## Consequences
 
 - Any photo opens in about 27 ms p50 from its standard preview or from memory, JPEG and RAW alike (RESULT §29). NFR-012 is met for any photo, not only the neighbours.
-- The process may hold more memory while browsing (up to a quarter of RAM plus the app). Docs that promised "under 2 GB" now say that this is the export's ceiling. Since v0.12.0 the previews give their memory back when the machine runs short, and the share, the cache limit and the preparation are the user's to set (FR-086).
+- The process may hold more memory while browsing (up to a quarter of RAM plus the app). Docs that promised "under 2 GB" now say that this is the export's ceiling. Since v0.12.0 the previews give their memory back when the machine runs short (they keep a tenth of their budget for as long as it lasts), and the share, the cache limit and the preparation are the user's to set (FR-086).
 - A disk preview differs from a fresh one by about 1.35 levels in 255 on average (JPEG q90). A decoder fix that changes pixels still bumps `thumbs::CACHE_VERSION`, which remakes them too.
 - The Settings window (FR-086) shows the cache and the memory budget, so the user can manage them.
 - DATABASE §8, OPTIMIZATION §3 and §4.1, ARCHITECTURE, the user guide and the README's requirements row change with this.

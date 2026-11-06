@@ -46,6 +46,16 @@ impl Budget {
             full: total / 100 * 15,
         }
     }
+
+    /// A tenth of each part: what the preview keeps while the machine is short of memory.
+    #[must_use]
+    pub const fn lowered(self) -> Self {
+        Self {
+            sources: self.sources / 10,
+            prepared: self.prepared / 10,
+            full: self.full / 10,
+        }
+    }
 }
 
 /// Quality of a standard preview on disk: the screen's 85 would add its own loss to the
@@ -117,7 +127,7 @@ fn write_standard_later(path: std::path::PathBuf, image: Arc<RgbImage>) {
 pub const SHORT_OF_MEMORY_PERCENT: u8 = 10;
 
 /// Whether the machine is short of memory, from the share still available: the watcher
-/// trims the preview's caches then, once until memory comes back (ADR-0041).
+/// lowers the preview's budget then, for as long as it lasts (ADR-0041).
 pub fn short_of_memory(available_percent: Option<u8>) -> bool {
     available_percent.is_some_and(|p| p < SHORT_OF_MEMORY_PERCENT)
 }
@@ -132,10 +142,12 @@ pub fn available_memory_percent() -> Option<u8> {
     fotollection_oscodec::available_memory_percent()
 }
 
-/// The machine's RAM in bytes, 8 GB when the system does not say.
+/// The machine's RAM in bytes, 8 GB when the system does not say. Asked once: it does not
+/// change while the app runs, and on macOS each ask starts `sysctl` (audit 2026-11-06).
 pub fn machine_memory() -> u64 {
     const UNKNOWN: u64 = 8 * 1024 * 1024 * 1024;
-    fotollection_oscodec::total_memory().unwrap_or(UNKNOWN)
+    static TOTAL: std::sync::OnceLock<u64> = std::sync::OnceLock::new();
+    *TOTAL.get_or_init(|| fotollection_oscodec::total_memory().unwrap_or(UNKNOWN))
 }
 
 /// `percent` of the machine's RAM for the preview (owner, 2026-11-05: use the memory for
@@ -173,11 +185,13 @@ pub struct Usage {
     pub sources: usize,
     pub prepared: usize,
     pub full: usize,
+    /// The collage grid's small sources and the last resized preview, outside the budget.
+    pub others: usize,
 }
 
 impl Usage {
     pub fn total(&self) -> usize {
-        self.sources + self.prepared + self.full
+        self.sources + self.prepared + self.full + self.others
     }
 }
 
@@ -430,7 +444,7 @@ impl PreviewCache {
     }
 
     /// What the cache may keep now.
-    fn budget(&self) -> Budget {
+    pub fn budget(&self) -> Budget {
         self.budget
             .lock()
             .map_or_else(|_| Budget::default(), |b| *b)
@@ -451,18 +465,20 @@ impl PreviewCache {
         shrink_to(&self.full, |f| f.image.data.len(), budget.full);
     }
 
-    /// Lets everything go but the newest of each kind, the photo on screen: the machine is
-    /// short of memory (FR-091, ADR-0041). Returns the bytes let go.
-    pub fn trim(&self) -> usize {
+    /// Follows the machine's memory (FR-091, ADR-0041), from the share still available:
+    /// while it is short, the preview keeps a tenth of `full`, the user's budget, so it cannot
+    /// fill up again until memory comes back; then `full` again. Called by the watcher every
+    /// few seconds; returns the bytes let go (audit 2026-11-06: one trim, then a refill to
+    /// the whole budget).
+    pub fn follow_memory(&self, full: Budget, available_percent: Option<u8>) -> usize {
+        let short = short_of_memory(available_percent);
+        let wanted = if short { full.lowered() } else { full };
+        if self.budget() == wanted {
+            return 0;
+        }
         let before = self.usage().total();
-        shrink_to(&self.entries, |i| i.data.len(), 0);
-        shrink_to(
-            &self.prepared,
-            |p| p.raw.bytes() + p.icc.as_ref().map_or(0, Vec::len),
-            0,
-        );
-        shrink_to(&self.full, |f| f.image.data.len(), 0);
-        if let Ok(mut small) = self.small.lock() {
+        self.set_budget(wanted);
+        if short && let Ok(mut small) = self.small.lock() {
             small.clear();
         }
         before.saturating_sub(self.usage().total())
@@ -484,6 +500,14 @@ impl PreviewCache {
                 .full
                 .lock()
                 .map_or(0, |e| e.iter().map(|(_, f)| f.image.data.len()).sum()),
+            others: self
+                .small
+                .lock()
+                .map_or(0, |e| e.iter().map(|(_, i)| i.data.len()).sum::<usize>())
+                + self
+                    .resized
+                    .lock()
+                    .map_or(0, |r| r.as_ref().map_or(0, |r| r.photo.data.len())),
         }
     }
 
@@ -1713,7 +1737,8 @@ mod tests {
             .map(|(k, _)| k.0.0)
             .collect();
         assert_eq!(left, [1, 2]);
-        let freed = cache.trim();
+        let full = cache.budget();
+        let freed = cache.follow_memory(full, Some(5));
         assert!(freed > 0);
         let left: Vec<u32> = cache
             .entries
@@ -1723,6 +1748,70 @@ mod tests {
             .map(|(k, _)| k.0.0)
             .collect();
         assert_eq!(left, [2]);
+        Ok(())
+    }
+
+    /// Audit 2026-11-06: while the machine stays short, photos opened after the first
+    /// warning do not fill the preview back to its whole budget (v0.12.0's watcher trimmed
+    /// once, then the cache refilled); when memory comes back, the budget is the user's again.
+    #[test]
+    fn fr_091_memory_stays_low_while_short_and_comes_back_after() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let codec = default_codec();
+        let settings = RenderSettings::default();
+        let one = 1200 * 800 * 3;
+        let full = Budget {
+            sources: one * 3,
+            ..Budget::default()
+        };
+        let cache = PreviewCache::with(full, None);
+        let open = |i: u32| -> TestResult {
+            let sub = dir.path().join(i.to_string());
+            std::fs::create_dir(&sub)?;
+            let mut record = photo(&sub, 1200, 800)?;
+            record.id = PhotoId(i);
+            cache.render_jpeg(&record, &settings, None, None, codec.as_ref())?;
+            Ok(())
+        };
+        let kept = || cache.entries.lock().map_or(usize::MAX, |e| e.len());
+        for i in 0..3 {
+            open(i)?;
+        }
+        assert_eq!(kept(), 3);
+        assert!(cache.follow_memory(full, Some(5)) > 0);
+        for i in 3..6 {
+            open(i)?;
+            // Each watcher tick while short changes nothing more.
+            assert_eq!(cache.follow_memory(full, Some(5)), 0);
+            assert_eq!(kept(), 1, "photo {i} opened while short");
+        }
+        assert_eq!(cache.follow_memory(full, Some(40)), 0);
+        assert_eq!(cache.budget(), full);
+        for i in 6..9 {
+            open(i)?;
+        }
+        assert_eq!(kept(), 3);
+        Ok(())
+    }
+
+    /// Audit 2026-11-06: what the preview holds counts the collage grid's small sources
+    /// and the last resized photo too.
+    #[test]
+    fn fr_086_usage_counts_every_cache() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let cache = PreviewCache::new();
+        let record = photo(dir.path(), 600, 400)?;
+        let before = cache.usage();
+        cache.small.lock().map_err(|_| "lock")?.push((
+            source_key(&record, RawSliders::default()),
+            Arc::new(RgbImage::new(60, 40)),
+        ));
+        let after = cache.usage();
+        assert!(after.others > before.others, "{after:?}");
+        assert_eq!(
+            after.total(),
+            after.sources + after.prepared + after.full + after.others
+        );
         Ok(())
     }
 

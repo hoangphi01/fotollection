@@ -167,26 +167,28 @@ pub fn suggest_memory_settings(state: State<'_, AppState>, auto: bool) -> UiSett
     }
 }
 
-/// Watches the machine's memory and gives the previews' back when it runs short (FR-091,
-/// ADR-0041): every 5 s, under a tenth available, the caches keep only the photo on screen,
-/// once until memory comes back.
+/// Watches the machine's memory and gives the previews' back while it runs short (FR-091,
+/// ADR-0041): every 5 s, under a tenth available, the previews keep a tenth of their budget
+/// until memory comes back, then the user's share again (audit 2026-11-06: a single trim
+/// let them fill up again at once). A plain thread for the app's life; it holds no lock
+/// while it sleeps.
 pub fn watch_memory(app: &AppHandle) {
     let app = app.clone();
     std::thread::spawn(move || {
-        let mut trimmed = false;
         loop {
             std::thread::sleep(std::time::Duration::from_secs(5));
-            let short = fotollection_core::preview::short_of_memory(
-                fotollection_core::preview::available_memory_percent(),
-            );
-            if short && !trimmed {
-                let freed = app.state::<AppState>().previews.trim();
+            let state = app.state::<AppState>();
+            let full =
+                fotollection_core::preview::machine_budget(ui(&state).preview_memory_percent);
+            let freed = state
+                .previews
+                .follow_memory(full, fotollection_core::preview::available_memory_percent());
+            if freed > 0 {
                 eprintln!(
                     "memory: short, the previews gave back {} MB",
                     freed / 1_000_000
                 );
             }
-            trimmed = short;
         }
     });
 }
