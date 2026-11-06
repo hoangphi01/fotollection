@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-11-06 — Settings & Develop
+
 ### Highlights
 
 - New: one Settings window, as on an iPad: the gear beside the author's name, or ⌘,
