@@ -38,9 +38,15 @@ Stamp the date and place on your photos, crop them to real print sizes, and get 
 > **Fotollection is in active development (0.x), with a new version every few days.** It works end to end on macOS, Windows and Linux, for **JPEG, PNG, HEIC and camera RAW**, in three modes: **Simple** (keep or drop, then print), **Collage** (two photos on one print, or postcards) and **Pro** (stars, flags, best shot, crop, date stamp, info frame). Projects save as one `.fotollection` file that opens the same on another machine. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md); the [manual](https://fotollection.org/manual/) shows every step.
 
 <p align="center">
+  <img src="site/assets/img/showcase/wide-en.webp" alt="Fotollection over a photo of Prague: your trip, ready to print" width="100%" />
+</p>
+
+<p align="center">
   <img src="site/assets/img/grid-en-light.webp" alt="Fotollection main window (light theme)" width="49%" />
   <img src="site/assets/img/grid-en-dark.webp" alt="Fotollection main window (dark theme)" width="49%" />
 </p>
+
+Listed on the [VNLF App Explorer](https://apps.vietnamlinuxfamily.net/app/fotollection) and in the App Center of [CaramOS](https://github.com/VN-Linux-Family/CaramOS), the Linux distribution made for Vietnamese users.
 
 ## Why Fotollection?
 

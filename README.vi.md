@@ -39,9 +39,15 @@ In ngày và nơi chụp lên ảnh, crop đúng khổ in thật, rồi gửi đ
 > **Fotollection đang được phát triển tích cực (0.x), vài ngày lại có bản mới.** Ứng dụng đã chạy trọn vẹn trên macOS, Windows và Linux, với **JPEG, PNG, HEIC và ảnh RAW**, ở ba chế độ: **Đơn giản** (giữ hay bỏ, rồi in), **Ghép ảnh** (hai ảnh trên một tấm in, hoặc bưu thiếp) và **Pro** (sao, cờ, ảnh tốt nhất, crop, dấu ngày, khung thông tin). Dự án được lưu thành một file `.fotollection`, mở trên máy khác vẫn y như cũ. Theo dõi tiến độ ở [docs/STATUS.md](docs/STATUS.md) và [docs/ROADMAP.md](docs/ROADMAP.md) (tiếng Anh); [trang hướng dẫn](https://fotollection.org/vi/manual/) chỉ từng bước.
 
 <p align="center">
+  <img src="site/assets/img/showcase/wide-vi.webp" alt="Fotollection trên nền ảnh Praha: chuyến đi của bạn, sẵn sàng để in" width="100%" />
+</p>
+
+<p align="center">
   <img src="site/assets/img/grid-vi-light.webp" alt="Cửa sổ chính của Fotollection (giao diện sáng)" width="49%" />
   <img src="site/assets/img/grid-vi-dark.webp" alt="Cửa sổ chính của Fotollection (giao diện tối)" width="49%" />
 </p>
+
+Có trên [VNLF App Explorer](https://apps.vietnamlinuxfamily.net/app/fotollection) và trong App Center của [CaramOS](https://github.com/VN-Linux-Family/CaramOS), bản phân phối Linux dành cho người Việt.
 
 ## Vì sao có Fotollection?
 
