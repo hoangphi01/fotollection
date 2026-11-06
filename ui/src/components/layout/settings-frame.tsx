@@ -20,6 +20,9 @@ type SettingsFrameProps = {
   children: ReactNode
   /** Under the cards: one line for the whole window. */
   footer?: ReactNode
+  /** Under the cards, in place of the line: the window's own buttons (the export dialog's
+   * *Don't ask again*, *Cancel* and *Export*, FR-093). */
+  actions?: ReactNode
 }
 
 /**
@@ -27,7 +30,7 @@ type SettingsFrameProps = {
  * with the columns as on an iPad: a narrow list of sections on the left, the open section's
  * cards on the right, spaced 12 px as in every panel (STYLE_RULE §4, the lego rule).
  */
-export function SettingsFrame({ open, onClose, title, nav, navFooter, heading, description, children, footer }: SettingsFrameProps) {
+export function SettingsFrame({ open, onClose, title, nav, navFooter, heading, description, children, footer, actions }: SettingsFrameProps) {
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="flex h-[90vh] w-[95vw] max-w-none gap-0 overflow-hidden p-0 sm:max-w-[min(1100px,95vw)]">
@@ -56,12 +59,17 @@ export function SettingsFrame({ open, onClose, title, nav, navFooter, heading, d
           <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
             <div className="mx-auto max-w-xl space-y-3 p-3">{children}</div>
           </ScrollArea>
-          {footer && (
+          {actions ? (
+            <>
+              <Separator />
+              <div className="flex items-center gap-2 px-4 py-3">{actions}</div>
+            </>
+          ) : footer ? (
             <>
               <Separator />
               <p className="px-4 py-3 text-xs text-muted-foreground">{footer}</p>
             </>
-          )}
+          ) : null}
         </div>
       </DialogContent>
     </Dialog>

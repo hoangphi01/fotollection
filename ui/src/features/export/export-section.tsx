@@ -1,20 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { CircleCheck, Download, FolderOutput, OctagonX, TriangleAlert, X } from 'lucide-react'
-import { useState } from 'react'
+import { CircleCheck, Download, OctagonX, TriangleAlert, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Field, Hint, Stack } from '@/components/forms/field'
-import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
-import type { CullFilter, ExportFolders, PhotoId } from '@/ipc/bindings'
+import type { CullFilter, PhotoId } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { formatBytes } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { ExportApi } from './use-export'
 import { useExportEstimate } from './use-export-estimate'
+import { showExportDialog } from './use-export-dialog'
 
 type ExportSectionProps = {
   exporter: ExportApi
@@ -27,6 +26,8 @@ type ExportSectionProps = {
   folderCount?: number
   /** Settings revision, so the size estimate follows every change. */
   revision: number
+  /** The export goes out for sharing rather than printing (FR-053), for the summary line. */
+  share?: boolean
   /** Collage sheets the photos make, when they go out two to a print (FR-035). */
   sheets?: number
   /** Photos ticked in select mode: when there are some, only they go out (FR-050); in
@@ -50,19 +51,22 @@ export function ExportSection({
   revision,
   sheets,
   ticked = NO_TICKS,
+  share = false,
 }: ExportSectionProps) {
   const { t } = useTranslation()
-  const { state, destination, chooseDestination, exportPhotos, cancel, dismiss } = exporter
+  const { state, exportPhotos, cancel, dismiss } = exporter
   const single = only !== undefined
-  const [separate, setSeparate] = useState(false)
-  // Into one folder or a folder per day (FR-009), remembered on this computer.
-  const { ui, update } = useUiSettings()
+  // The export's choices, kept on this computer (FR-009, FR-092, FR-093).
+  const { ui } = useUiSettings()
   const byDay = ui.exportFolders === 'byDay'
   const collage = sheets !== undefined
   const picked = single ? NO_TICKS : ticked
   const count = picked.length > 0 ? picked.length : photoCount
   const canSplit = !single && !collage && folderCount > 1
   const running = state.kind === 'running'
+  // *Export* opens the export dialog unless *Don't ask again* was ticked (FR-093).
+  const ask = () =>
+    showExportDialog({ filter, count: sheets ?? count, only: only ?? null, ticked: picked, collage, folderCount })
   const { estimate, stale } = useExportEstimate(
     filter,
     only ?? null,
@@ -135,47 +139,20 @@ export function ExportSection({
         </Alert>
       )}
 
-      {canSplit && (
-        <Field
-          hint={t(separate ? 'export.folders.separateHint' : 'export.folders.togetherHint', { count: folderCount })}
-        >
-          <SegmentedToggle
-            disabled={running}
-            value={separate ? 'separate' : 'together'}
-            options={[
-              { value: 'together', label: t('export.folders.together') },
-              { value: 'separate', label: t('export.folders.separate') },
-            ]}
-            onChange={(v) => setSeparate(v === 'separate')}
-            ariaLabel={t('export.folders.label')}
-          />
-        </Field>
-      )}
-
-      <Field hint={t(byDay ? 'export.days.byDayHint' : 'export.days.oneFolderHint')}>
-        <SegmentedToggle<ExportFolders>
-          disabled={running}
-          value={ui.exportFolders}
-          options={[
-            { value: 'oneFolder', label: t('export.days.oneFolder') },
-            { value: 'byDay', label: t('export.days.byDay') },
-          ]}
-          onChange={(exportFolders) => void update({ exportFolders })}
-          ariaLabel={t('export.days.label')}
-        />
-      </Field>
-
+      {/* The choices live in the export dialog (FR-093); here, what they are, in one line. */}
       <button
         type="button"
-        onClick={() => void chooseDestination()}
         disabled={running}
-        className="flex w-full items-center gap-2 rounded-md text-left text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
-        data-hint={destination ?? undefined}
+        onClick={ask}
+        className="truncate text-left text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
+        data-hint={t('export.changeChoices')}
       >
-        <FolderOutput className="size-3.5 shrink-0" />
-        <span className="truncate">
-          {destination ? folderName(destination) : t('export.chooseDestination')}
-        </span>
+        {[
+          t(share ? 'export.target.share' : 'export.target.print'),
+          t(byDay ? 'export.days.byDay' : 'export.days.oneFolder'),
+          t('export.qualityLine', { quality: ui.exportQuality }),
+          ui.exportDestination ? folderName(ui.exportDestination) : t('export.chooseDestination'),
+        ].join(' · ')}
       </button>
 
       {!running && estimate && estimate.photos > 0 && estimate.sourceBytes && estimate.estimatedBytes ? (
@@ -201,7 +178,9 @@ export function ExportSection({
           className="w-full"
           disabled={!single && count === 0}
           onClick={() =>
-            void exportPhotos(filter, sheets ?? count, only ?? null, canSplit && separate, collage, picked)
+            ui.exportAsk || !ui.exportDestination
+              ? ask()
+              : void exportPhotos(filter, sheets ?? count, only ?? null, canSplit && ui.exportSeparate, collage, picked)
           }
         >
           <Download data-icon="inline-start" />
@@ -227,7 +206,7 @@ export function ExportSection({
  * How much lighter the export is than the originals (FR-053), before it runs (`before`,
  * an estimate unless every photo was sampled) or after; print files can be larger.
  */
-function SizeChange({
+export function SizeChange({
   from,
   to,
   before = false,

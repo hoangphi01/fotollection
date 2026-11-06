@@ -299,15 +299,18 @@ Xuất ảnh ghi ra các tệp mới để đem đi in hoặc chia sẻ; ảnh g
    Tệp chia sẻ ở hệ màu sRGB, nên trông giống nhau trên mọi màn hình.
 
    **Giữ trọn ảnh trong khung**, ngay dưới cỡ chia sẻ, giữ nguyên vẹn mọi ảnh khi đăng lên một lưới ảnh cùng khuôn ([FR-075](PRD.md#fr-075--fit-a-shared-photo-whole-into-a-ratio)): chọn tỷ lệ (**Vuông · 1:1**, **Dọc · 4:5**, **3:4** hoặc **2:3**, **Ngang · 3:2** hoặc **16:9**, **Story · 9:16**, hoặc **Tỷ lệ tùy chỉnh…** với hai con số của nó), rồi chọn nền: **Trắng**, **Đen** hoặc **Tùy chọn**, với bảng chọn màu và mã màu. Mỗi ảnh nằm giữa khung và không bị cắt mất phần nào; trên Instagram khung rộng 1080 px. Ảnh in không dùng tính năng này: chúng vẫn theo khổ in.
-3. **Lưu vào đâu:** nhấp **Chọn nơi lưu…** ở cuối bảng bên, rồi chọn một thư mục. Ngay phía trên, chọn **Một thư mục** (mọi tệp vào thẳng thư mục đó) hoặc **Theo ngày** (mỗi ngày một thư mục, ví dụ `2026-07-14`); app nhớ lựa chọn này trên máy.
-4. **Bao nhiêu thư mục:** khi đang hiện nhiều thư mục, chọn **Chung** (gộp chung) hoặc **Riêng** (mỗi thư mục một thư mục con mang tên nó).
-5. Phía trên nút, phần **ước tính** cho biết các tệp sẽ nặng bao nhiêu. Nhấp **Xuất n ảnh**. Một thanh hiện tiến độ, và **Hủy** dừng lại: các ảnh đã xuất xong vẫn giữ, tệp đang ghi dở bị xoá. Ảnh nào không xuất được sẽ bị bỏ qua, và phần tổng kết cho biết bao nhiêu ảnh lỗi.
+3. **Hộp thoại xuất ảnh** ([FR-093](PRD.md#fr-093--the-exports-options-in-one-small-dialog)): nhấp **Xuất n ảnh** ở cuối bảng bên. Một hộp thoại mở ra, bố cục như của Lightroom: các preset bên trái (**In ảnh · cỡ gốc**, **Facebook**, **Instagram**, **Chia sẻ · cỡ gốc**, **Chia sẻ · cỡ tùy chỉnh**), mọi lựa chọn bên phải:
+   - **Nơi lưu:** thư mục (**Chọn…**), **Một thư mục** (mọi tệp vào thẳng thư mục đó) hoặc **Theo ngày** (mỗi ngày một thư mục, ví dụ `2026-07-14`), và khi đang hiện nhiều thư mục, **Chung** hoặc **Riêng** (mỗi thư mục một thư mục con mang tên nó);
+   - **Tệp:** **Chất lượng**, từ 60 đến 100 ([FR-092](PRD.md#fr-092--export-quality-on-a-slider-with-a-live-estimate-and-a-print-verdict)). Phần ước tính dung lượng chạy theo thanh trượt, và một nhãn cho biết mức chất lượng hợp với việc gì, đo trên ảnh in thật: **In rất đẹp** từ 90, **In được** từ 75, dưới đó **Chỉ xem màn hình**. Mỗi preset có chất lượng riêng (95 cho ảnh in, 88 cho Facebook và Instagram);
+   - **Kích thước** và **Tên tệp và thông tin**, như ở trên và ở dưới.
+4. Nhấp **Xuất n ảnh** trong hộp thoại. Một thanh trong bảng bên hiện tiến độ, và **Hủy** dừng lại: các ảnh đã xuất xong vẫn giữ, tệp đang ghi dở bị xoá. Ảnh nào không xuất được sẽ bị bỏ qua, và phần tổng kết cho biết bao nhiêu ảnh lỗi.
+5. **Không hỏi lại:** đánh dấu ô này trong hộp thoại, từ đó **Xuất** sẽ xuất ngay với đúng các lựa chọn ấy; bảng bên ghi chúng trên một dòng (ví dụ *In ảnh · theo ngày · chất lượng 95*), và nhấp vào dòng đó sẽ mở lại hộp thoại. **Cài đặt → Xuất ảnh** có cùng các lựa chọn và **Lần nào cũng hỏi**, để bật lại hộp thoại. Thư mục, chất lượng và các lựa chọn khác được nhớ trên máy này; nếu thư mục không còn (thẻ nhớ hay ổ đĩa đã rút ra), việc xuất dừng lại và báo cho bạn.
 
 <!-- shot: estimate | Ô ước tính dung lượng ngay trên nút xuất ảnh, khi xuất cho Facebook -->
 
 Với **Theo ngày**, tệp được xếp vào mỗi ngày một thư mục, đặt tên theo ngày (`2026-07-14`), và `undated` cho ảnh không có ngày. Tệp chia sẻ luôn nằm trong thư mục `Share`. Không tệp nào ghi đè tệp khác: bản thứ hai mang thêm `_1`, `_2`. Thông số máy ảnh được giữ, còn **vị trí GPS luôn bị xoá**, để ảnh chia sẻ không làm lộ nơi bạn ở.
 
-**Một tấm:** trong bản xem trước, nút **Xuất ảnh** phía trên ảnh dẫn tới nút **Xuất ảnh này**, cùng nơi lưu.
+**Một tấm:** trong bản xem trước, nút **Xuất ảnh** phía trên ảnh (**⇧⌘E**) mở cùng hộp thoại cho tấm đó, và thẻ *In và xuất ảnh* hiện tiến độ.
 
 <!-- chapter: projects -->
 

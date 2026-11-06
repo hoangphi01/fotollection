@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **An export dialog, as Lightroom's** (FR-093): *Export* opens it, with presets on the left (prints, Facebook, Instagram, original size, custom) and every choice on the right: where the photos go, by day or in one folder, the quality, the size and the names. Tick *Don't ask again* and *Export* exports at once; Settings → *Export* holds the same choices and *Ask every time*. The folder, the quality and the rest are kept for next time.
+- **Export quality on a slider** (FR-092), from 60 to 100: the size estimate follows it, and a badge says what it is good for, measured on real prints: *Prints beautifully* from 90, *Prints well* from 75, below that *Screens only*.
+
 ### Changed
 
 - **The preview's panel in tabs** (FR-095), as Lightroom's tools: *Edit* (**E**), *Crop* (**R**), *Print and export*, *Info* (**I**), one at a time, so the panel stays short. In a window under 1400 px the left column steps aside and **Tab** lays it over the photo.

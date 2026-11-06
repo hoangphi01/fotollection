@@ -325,7 +325,9 @@
       "oneFolderHint": "Mọi ảnh vào thẳng thư mục bạn chọn",
       "byDayHint": "Mỗi ngày một thư mục, ví dụ 2026-07-14"
     },
-    "buttonThisSheet": "Xuất tấm này"
+    "buttonThisSheet": "Xuất tấm này",
+    "changeChoices": "Đổi lựa chọn xuất ảnh",
+    "qualityLine": "chất lượng {{quality}}"
   },
   "crop": {
     "zoom": "Thu phóng",
@@ -940,6 +942,7 @@
     "footer": "Các cài đặt này thuộc về máy tính này; dự án không bao giờ mang chúng theo.",
     "sections": {
       "general": "Chung",
+      "export": "Xuất ảnh",
       "memory": "Bộ nhớ RAM & cache",
       "updates": "Cập nhật",
       "report": "Báo lỗi",
@@ -947,6 +950,7 @@
     },
     "about": {
       "general": "Ngôn ngữ và giao diện của ứng dụng",
+      "export": "Nơi lưu ảnh xuất, chất lượng, và có hỏi trước không",
       "memory": "Fotollection dùng bao nhiêu bộ nhớ RAM và ổ đĩa để mở ảnh ngay lập tức",
       "updates": "Phiên bản mới hơn, khi bạn hỏi",
       "report": "Báo cho tác giả biết điều gì không ổn",
@@ -1018,5 +1022,39 @@
     "crop": "Cắt ảnh (R)",
     "print": "In và xuất ảnh",
     "info": "Thông tin (I)"
+  },
+  "exportDialog": {
+    "title": "Xuất ảnh",
+    "preset": {
+      "print": "In ảnh · cỡ gốc",
+      "facebook": "Facebook · 2048 px",
+      "instagram": "Instagram · 1080 px",
+      "original": "Chia sẻ · cỡ gốc",
+      "custom": "Chia sẻ · cỡ tùy chỉnh"
+    },
+    "where": "Nơi lưu",
+    "folder": "Thư mục",
+    "noFolder": "Chưa chọn",
+    "choose": "Chọn…",
+    "file": "Tệp",
+    "quality": "Chất lượng",
+    "qualityHint": "Chất lượng JPEG: càng cao càng giữ chi tiết và tệp càng nặng. 95 in không thấy khác biệt mà chỉ nặng bằng nửa 100.",
+    "verdict": {
+      "beautiful": "In rất đẹp",
+      "good": "In được",
+      "screen": "Chỉ xem màn hình"
+    },
+    "filePrint": "JPEG giữ trọn chi tiết màu (4:4:4) và hồ sơ màu của ảnh.",
+    "fileShare": "JPEG theo sRGB (4:2:0), đúng cách mạng xã hội hiển thị.",
+    "size": "Kích thước",
+    "sizePrint": "Mỗi ảnh theo khổ in và vùng cắt đã chọn trong bảng, ở độ phân giải đầy đủ.",
+    "names": "Tên tệp và thông tin",
+    "naming": "Mỗi tệp giữ tên ảnh gốc; trùng tên thì thêm _1, _2… không ghi đè tệp nào.",
+    "metadata": "Giữ máy ảnh, ống kính, thông số và ngày chụp; không bao giờ giữ vị trí GPS.",
+    "dontAsk": "Không hỏi lại",
+    "askTitle": "Trước mỗi lần xuất",
+    "askEveryTime": "Lần nào cũng hỏi",
+    "askEveryTimeHint": "Hiện hộp thoại xuất ảnh mỗi lần bấm Xuất. Tắt: xuất ngay với các lựa chọn này.",
+    "dontAskHint": "Lần sau xuất ngay với các lựa chọn này; đổi lại trong Cài đặt → Xuất ảnh."
   }
 }

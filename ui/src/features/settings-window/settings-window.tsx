@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Cpu, MessageSquareWarning, RefreshCw, SlidersHorizontal, Sparkles, type LucideIcon } from 'lucide-react'
+import { Cpu, FolderOutput, MessageSquareWarning, RefreshCw, SlidersHorizontal, Sparkles, type LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { SettingsFrame } from '@/components/layout/settings-frame'
 import { SectionCard } from '@/components/layout/section-card'
@@ -10,12 +10,14 @@ import { ReleaseList } from '@/features/about/version-history'
 import { useIpcQuery } from '@/features/settings/use-ipc-query'
 import { commands } from '@/ipc/bindings'
 import { cn } from '@/lib/utils'
+import { ExportSettingsSection } from './export-section'
 import { GeneralSection } from './general-section'
 import { MemorySection } from './memory-section'
 import { SECTIONS, showSettings, useSettingsWindow, type Section } from './use-settings-window'
 
 const ICONS: Record<Section, LucideIcon> = {
   general: SlidersHorizontal,
+  export: FolderOutput,
   memory: Cpu,
   updates: RefreshCw,
   report: MessageSquareWarning,
@@ -29,6 +31,8 @@ function Body({ section, version }: { section: Section; version: string | undefi
   switch (section) {
     case 'general':
       return <GeneralSection />
+    case 'export':
+      return <ExportSettingsSection />
     case 'memory':
       return <MemorySection />
     case 'updates':

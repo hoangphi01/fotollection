@@ -68,7 +68,7 @@ export function SettingsPanel({
       title={t('settings.title')}
       footer={
         <>
-          <ExportSection exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} revision={revision} ticked={ticked} />
+          <ExportSection share={settings?.exportTarget?.kind === 'share'} exporter={exporter} photoCount={photoCount} folderCount={folderCount} filter={filter} revision={revision} ticked={ticked} />
           <PanelFooter />
         </>
       }

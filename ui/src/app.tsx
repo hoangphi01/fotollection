@@ -25,6 +25,7 @@ import { useRenderSettings } from '@/features/settings/use-render-settings'
 import { useLanguage } from '@/features/settings/use-language'
 import { useFrameConfig } from '@/features/frame/use-frame-config'
 import { useFonts } from '@/features/fonts/use-fonts'
+import { ExportDialog } from '@/features/export/export-dialog'
 import { useExport } from '@/features/export/use-export'
 import { useHistory } from '@/features/history/use-history'
 import { PreviewDialog } from '@/features/viewer/preview-dialog'
@@ -390,6 +391,8 @@ export function App() {
       )}
       {/* Every setting of this computer, from any mode (FR-086). */}
       <SettingsWindow />
+      {/* One export dialog for every panel and preview (FR-093). */}
+      <ExportDialog exporter={exporter} settings={settings} onSettingsChange={(c) => void update(c)} />
       <PreviewDialog
         photos={photos}
         index={viewing && mode === 'professional' && photos.length > 0 ? current : null}

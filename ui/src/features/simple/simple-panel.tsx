@@ -39,7 +39,7 @@ export function SimplePanel({ settings, onChange, exporter, basketCount, customS
       title={t('simple.title')}
       footer={
         <>
-          <ExportSection exporter={exporter} photoCount={basketCount} filter={BASKET} revision={revision} />
+          <ExportSection share={settings?.exportTarget?.kind === 'share'} exporter={exporter} photoCount={basketCount} filter={BASKET} revision={revision} />
           <PanelFooter />
         </>
       }

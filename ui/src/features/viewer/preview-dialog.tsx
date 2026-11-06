@@ -10,6 +10,7 @@ import { CullControls } from '@/features/culling/cull-controls'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
 import { ExportSection } from '@/features/export/export-section'
+import { showExportDialog } from '@/features/export/use-export-dialog'
 import type { ExportApi } from '@/features/export/use-export'
 import { MOD } from '@/lib/platform'
 import { SectionCard } from '@/components/layout/section-card'
@@ -221,10 +222,15 @@ export function PreviewDialog({
     return () => window.removeEventListener('resize', onResize)
   }, [])
   const showSide = windowed && panels && (wide || sideOpen)
-  // Export lives in the Print tab: open it, then bring the card into view once drawn.
+  // Export as the card's button does (FR-093): the dialog, or at once after *Don't ask again*.
+  // The progress shows in the Print tab's card, so it opens and comes into view.
   const toExport = () => {
     openTab('print')
     requestAnimationFrame(() => exportRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }))
+    if (!photo) return
+    if (ui.exportAsk || !ui.exportDestination)
+      showExportDialog({ filter, count: 1, only: photo.id, ticked: [], collage: false, folderCount: 1 })
+    else void exporter.exportPhotos(filter, 1, photo.id, false, false, [])
   }
   const onKeyDown = (event: KeyboardEvent) => {
     // A focused slider or field keeps its own arrow keys (the logo size, the caption…).
@@ -566,6 +572,7 @@ export function PreviewDialog({
               <div ref={exportRef}>
               <SectionCard icon={<Download />} title={t('export.title')}>
                 <ExportSection
+                  share={settings?.exportTarget?.kind === 'share'}
                   exporter={exporter}
                   photoCount={1}
                   filter={filter}

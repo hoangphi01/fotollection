@@ -343,7 +343,9 @@
       "oneFolderHint": "Every photo straight into the folder you choose",
       "byDayHint": "A folder for each day, such as 2026-07-14"
     },
-    "buttonThisSheet": "Export this sheet"
+    "buttonThisSheet": "Export this sheet",
+    "changeChoices": "Change the export's choices",
+    "qualityLine": "quality {{quality}}"
   },
   "crop": {
     "zoom": "Zoom",
@@ -975,6 +977,7 @@
     "footer": "These settings belong to this computer; projects never carry them.",
     "sections": {
       "general": "General",
+      "export": "Export",
       "memory": "RAM & cache",
       "updates": "Updates",
       "report": "Report a problem",
@@ -982,6 +985,7 @@
     },
     "about": {
       "general": "The language and the look of the app",
+      "export": "Where exports go, their quality, and whether to ask first",
       "memory": "How much RAM and disk Fotollection uses to open photos at once",
       "updates": "A newer version, when you ask",
       "report": "Tell the author what went wrong",
@@ -1053,5 +1057,39 @@
     "crop": "Crop (R)",
     "print": "Print and export",
     "info": "Info (I)"
+  },
+  "exportDialog": {
+    "title": "Export",
+    "preset": {
+      "print": "Prints · original size",
+      "facebook": "Facebook · 2048 px",
+      "instagram": "Instagram · 1080 px",
+      "original": "Share · original size",
+      "custom": "Share · custom size"
+    },
+    "where": "Where",
+    "folder": "Folder",
+    "noFolder": "Not chosen yet",
+    "choose": "Choose…",
+    "file": "File",
+    "quality": "Quality",
+    "qualityHint": "JPEG quality: higher keeps more detail and makes larger files. 95 prints with no visible loss at half the size of 100.",
+    "verdict": {
+      "beautiful": "Prints beautifully",
+      "good": "Prints well",
+      "screen": "Screens only"
+    },
+    "filePrint": "JPEG with full colour detail (4:4:4), the photo's own colour profile kept.",
+    "fileShare": "JPEG in sRGB (4:2:0), as the platforms show it.",
+    "size": "Size",
+    "sizePrint": "Each photo at the print size and crop chosen in the panel, at full resolution.",
+    "names": "Names and details",
+    "naming": "Each file keeps its photo's name; a name already there gets _1, _2… nothing is overwritten.",
+    "metadata": "Camera, lens, exposure and date are kept; the GPS location never is.",
+    "dontAsk": "Don't ask again",
+    "askTitle": "Before each export",
+    "askEveryTime": "Ask every time",
+    "askEveryTimeHint": "Show the export dialog each time Export is pressed. Off: export at once with these choices.",
+    "dontAskHint": "Export at once with these choices next time; change them in Settings → Export."
   }
 }

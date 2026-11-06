@@ -971,7 +971,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-092 — Export quality on a slider, with a live estimate and a print verdict
 
-**P1 (v0.12.1; owner's request 2026-11-06: "a slider like Lightroom's, but better").** The export card gets a *Quality* slider (JPEG quality, 60–100, default 95 as [FR-008](#fr-008--original-quality-export) says), as Lightroom's export dialog has, and goes further:
+**P1 (v0.12.1; owner's request 2026-11-06: "a slider like Lightroom's, but better").** The export dialog ([FR-093](#fr-093--the-exports-options-in-one-small-dialog)) and the Settings window's *Export* section get a *Quality* slider (JPEG quality, 60–100, default 95 as [FR-008](#fr-008--original-quality-export) says), as Lightroom's export dialog has, and goes further:
 
 - **The estimate follows the slider:** while it moves, the export's size estimate ([FR-053](#fr-053--export-for-social-media)) updates for the value under the thumb, not only after release; the last answer stays while the next is computed, and a newer value replaces an older one in flight (never a queue of encodes).
 - **Whether it prints well, as badges:** beside the value, a badge in the style of the resolution warning ([FR-026](#fr-026--resolution-warning)) says what the setting is good for, for example *Print, excellent*, *Print, good*, *Screen only*, with a hint explaining it. Measured on the owner's photos at print size ([RESULT §30](RESULT.md#30-export-quality-on-a-print-v0121-fr-092)): 90 and above *Prints beautifully*, 75 to 89 *Prints well*, below 75 *Screens only*; 4:4:4 chroma stays for prints.
@@ -979,7 +979,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-093 — The export's options in one small dialog
 
-**P1 (planned, v0.12.2; owner's request 2026-11-06: "gather every export option in one small pop-up instead of spilling down the right-hand panel; a press on Export shows it, with a save button and *don't ask again*, after which Export just exports; to change, go to Settings").** The panels keep only the *Export* button with its count (ticked photos, sheets) and the size estimate. A press on *Export* opens a small dialog that holds every option that today stacks in the panel's footer:
+**P1 (v0.12.1; owner's request 2026-11-06: "gather every export option in one small pop-up instead of spilling down the right-hand panel; a press on Export shows it, with a save button and *don't ask again*, after which Export just exports; to change, go to Settings").** The panels keep only the *Export* button with its count (ticked photos, sheets) and the size estimate. A press on *Export* opens a small dialog that holds every option that today stacks in the panel's footer:
 
 - for print or to share (preset, long edge) and the share fill (ratio, width and height, colour);
 - folders together or apart, one folder or by day;
@@ -989,8 +989,8 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Its buttons:** *Export* (saves the choices and exports) and *Cancel*, with a *Don't ask again* tick. Without the tick, every press on *Export* opens the dialog again, filled with the last choices. Once ticked, a press on *Export* in the panel exports at once with the saved choices; the panel says which ones in one line (for example *Print · by day · quality 95*).
 - **Changing them later:** in the Settings window ([FR-086](#fr-086--one-settings-window)), which holds the same options (the same block) and the tick to ask again.
 - **One dialog everywhere:** the gallery, Simple mode, Collage, the photo's and the sheet's previews open the same dialog, built once ([STYLE_RULE](STYLE_RULE.md) §4); progress, the result and errors stay in the panel where the export started.
-- **Small:** sized to its content, not a full window; `Esc` cancels.
-- **Before building:** the layout is shown to the owner as a sketch first (LESSONS, "Ask before building a layout the user described in words").
+- **As Lightroom's, the Settings window's size** (owner, 2026-11-06: "the size of Settings is fine, look at Lightroom's export"): presets on the left (*Prints, original size* at quality 95, *Facebook*, *Instagram* at 88, *Share, original size* at 80, *Custom*), the options in cards on the right (*Where*, *File*, *Size*, *Names & details*), *Don't ask again*, *Cancel* and *Export N photos* at the foot; `Esc` cancels. A preset sets the target and its quality; the user's own presets come with the Looks.
+- **Kept per machine** (settings v16): the quality, *ask every time*, together or apart, and the destination, which is checked when an export starts ([ERR-EXP-0004](ERROR_CONTROL.md) if the folder is gone). The target and the fill stay the project's print settings, so the Settings window's *Export* section holds the machine's part only.
 
 ### FR-094 — Project history, without nagging
 
