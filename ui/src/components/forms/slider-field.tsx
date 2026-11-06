@@ -72,8 +72,10 @@ export function SliderField({
 
   return (
     <Field>
-      <div data-hint={hint} onClick={focusThumb}>
-        <ValueRow label={label}>{format(shown)}</ValueRow>
+      {/* What a slider does shows on its name only, never over the track or the value: a hint
+          shown while dragging hid the number being set (owner, 2026-11-06). */}
+      <div onClick={focusThumb}>
+        <ValueRow label={<span data-hint={hint}>{label}</span>}>{format(shown)}</ValueRow>
       </div>
       <Slider
         ref={root}
@@ -107,7 +109,6 @@ export function SliderField({
           setDraft(null)
         }}
         onDoubleClick={() => onChange(reset, true)}
-        data-hint={hint}
       />
     </Field>
   )
