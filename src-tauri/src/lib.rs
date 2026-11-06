@@ -118,6 +118,8 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::reset_photo_stamps,
             commands::undo,
             commands::redo,
+            commands::photo_history,
+            commands::restore_photo_state,
             commands::list_fonts,
             commands::import_font,
             commands::remove_font,

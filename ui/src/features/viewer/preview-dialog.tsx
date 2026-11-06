@@ -22,6 +22,8 @@ import { useShownSrc } from './use-shown-src'
 import { usePrefetch } from './use-prefetch'
 import { PhotoFilmstrip } from './photo-filmstrip'
 import { PreviewToolbar } from './preview-toolbar'
+import { NavigatorCard } from './navigator-card'
+import { HistoryCard } from './history-card'
 import { oneToOneScale } from './one-to-one'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { useGpuLook } from './use-gpu-look'
@@ -78,6 +80,9 @@ type PreviewDialogProps = {
   canRedo: boolean
 }
 
+
+/** The stage's padding on both sides, in px (`p-8`, `viewer-frame.tsx`). */
+const STAGE_PADDING = 64
 
 const loadDetails = async (subject: string) => {
   const result = await commands.photoDetails(Number(subject))
@@ -168,6 +173,11 @@ export function PreviewDialog({
     if (!cropping) contentRef.current?.focus()
   }, [cropping])
   const canCrop = !!geometry && !geometry.cropDisabled
+  // The develop view's layouts (FR-095): F fills the app window or goes back to the dialog,
+  // and is kept; Tab hides the side columns for now, as in Lightroom.
+  const windowed = ui.previewLayout === 'window'
+  const toggleLayout = () => void updateUi({ previewLayout: windowed ? 'dialog' : 'window' })
+  const [panels, setPanels] = useState(true)
   const toExport = () => exportRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   const onKeyDown = (event: KeyboardEvent) => {
     // A focused slider or field keeps its own arrow keys (the logo size, the caption…).
@@ -183,6 +193,17 @@ export function PreviewDialog({
     if (mod && event.shiftKey && key === 'e') {
       event.preventDefault()
       toExport()
+      return
+    }
+    // Tab only from the photo itself, so it still moves between the inspector's controls.
+    if (event.key === 'Tab' && !mod && event.target === contentRef.current) {
+      event.preventDefault()
+      setPanels((p) => !p)
+      return
+    }
+    if (key === 'f' && !mod && !event.altKey) {
+      event.preventDefault()
+      toggleLayout()
       return
     }
     if (zoom.onKey(event)) return
@@ -254,7 +275,27 @@ export function PreviewDialog({
           count={photos.length}
           filmstrip={ui.filmstrip}
           onFilmstrip={() => void updateUi({ filmstrip: !ui.filmstrip })}
+          windowed={windowed}
+          onLayout={toggleLayout}
         />
+      }
+      layout={windowed ? 'window' : 'dialog'}
+      panels={panels}
+      side={
+        windowed && photo ? (
+          <>
+            <NavigatorCard
+              src={shownSrc}
+              view={zoom.view}
+              fit={previewImg ? { w: previewImg.offsetWidth, h: previewImg.offsetHeight } : null}
+              stage={stage ? { w: stage.clientWidth - STAGE_PADDING, h: stage.clientHeight - STAGE_PADDING } : null}
+              oneToOne={oneToOneScale(geometry, previewImg)}
+              onZoomTo={zoom.zoomTo}
+              onPanTo={zoom.panTo}
+            />
+            <HistoryCard photoId={photo.id} revision={revision} />
+          </>
+        ) : undefined
       }
       title={photo?.fileName}
       description={details?.folderPath ?? photo?.folderName}

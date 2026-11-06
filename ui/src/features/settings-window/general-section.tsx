@@ -7,7 +7,7 @@ import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { SectionCard } from '@/components/layout/section-card'
 import { LanguageSetting } from '@/features/about/language-setting'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
-import type { ThemePreference } from '@/ipc/bindings'
+import type { PreviewLayout, ThemePreference } from '@/ipc/bindings'
 
 /** The Settings window's *General* section (FR-086): the interface's language and theme. */
 export function GeneralSection() {
@@ -42,6 +42,18 @@ export function GeneralSection() {
           options={themes}
           onChange={(theme) => void update({ theme })}
           ariaLabel={t('theme.label')}
+        />
+      </Field>
+      {/* The develop view's layout (FR-095); F switches it in the preview too. */}
+      <Field label={t('settingsWindow.previewLayout')} hint={t('settingsWindow.previewLayoutHint')}>
+        <SegmentedToggle<PreviewLayout>
+          value={ui.previewLayout}
+          options={[
+            { value: 'dialog', label: t('settingsWindow.previewDialog') },
+            { value: 'window', label: t('settingsWindow.previewWindow') },
+          ]}
+          onChange={(previewLayout) => void update({ previewLayout })}
+          ariaLabel={t('settingsWindow.previewLayout')}
         />
       </Field>
     </SectionCard>

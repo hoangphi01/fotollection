@@ -3,6 +3,7 @@ import type { KeyboardEventHandler, MouseEvent, PointerEventHandler, ReactNode, 
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
+import { cn } from '@/lib/utils'
 
 type DivRef = Ref<HTMLDivElement>
 type StagePointer = PointerEventHandler<HTMLDivElement>
@@ -34,6 +35,13 @@ type ViewerFrameProps = {
   children: ReactNode
   /** The keyboard hint line at the foot of the inspector. */
   footer: ReactNode
+  /** `window` fills the app window, below the Windows title bar, instead of a dialog (the
+   * photo preview, FR-095). */
+  layout?: 'dialog' | 'window'
+  /** A column left of the stage (the photo preview's Navigator and History, FR-095). */
+  side?: ReactNode
+  /** False hides the side column and the inspector, as Lightroom's Tab does. */
+  panels?: boolean
 }
 
 /**
@@ -60,6 +68,9 @@ export function ViewerFrame({
   descriptionHint,
   children,
   footer,
+  layout = 'dialog',
+  side,
+  panels = true,
 }: ViewerFrameProps) {
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
@@ -67,10 +78,25 @@ export function ViewerFrame({
         ref={contentRef}
         onKeyDown={onKeyDown}
         onEscapeKeyDown={onEscapeKeyDown}
-        className="flex h-[90vh] w-[95vw] max-w-none gap-0 overflow-hidden p-0 sm:max-w-[min(1400px,95vw)]"
+        className={cn(
+          'flex max-w-none gap-0 overflow-hidden p-0',
+          layout === 'window'
+            ? // The whole window under the Windows title bar (`--titlebar`, FR-052), square.
+              'top-(--titlebar,0px) left-0 h-[calc(100vh-var(--titlebar,0px))] w-screen translate-x-0 translate-y-0 rounded-none ring-0 sm:max-w-none data-open:zoom-in-100 data-closed:zoom-out-100'
+            : 'h-[90vh] w-[95vw] sm:max-w-[min(1400px,95vw)]',
+        )}
       >
+        {side && panels && (
+          // Cards spaced as the inspector's, 12 px (STYLE_RULE §4).
+          <aside className="flex w-panel shrink-0 flex-col border-r bg-background">
+            <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
+              <div className="space-y-3 p-3">{side}</div>
+            </ScrollArea>
+          </aside>
+        )}
         <div className="flex min-w-0 flex-1 flex-col">
-          {toolbar}
+          {/* The row owns no border; with the inspector hidden, the close button sits at its end. */}
+          {toolbar && <div className={cn('shrink-0 border-b bg-background', !panels && 'pr-10')}>{toolbar}</div>}
           {/* Stage */}
           <div
             ref={stageRef}
@@ -86,7 +112,7 @@ export function ViewerFrame({
         </div>
 
         {/* Inspector */}
-        <aside className="flex w-96 shrink-0 flex-col border-l bg-background">
+        <aside className={cn('flex w-96 shrink-0 flex-col border-l bg-background', !panels && 'hidden')}>
           <div className="space-y-0.5 px-4 pt-4 pb-3 pr-12">
             <DialogTitle className="truncate text-base">{title}</DialogTitle>
             <DialogDescription className="truncate text-xs" data-hint={descriptionHint}>

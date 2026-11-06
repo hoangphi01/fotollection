@@ -66,6 +66,19 @@ pub struct UiSettings {
     /// before it: shown.
     #[serde(default = "default_filmstrip")]
     pub filmstrip: bool,
+    /// How Pro mode's photo preview opens (FR-095). Absent before it: a dialog.
+    #[serde(default)]
+    pub preview_layout: PreviewLayout,
+}
+
+/// How the photo preview opens (FR-095): as a dialog over the gallery, or filling the app
+/// window with the Navigator and History on the left.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum PreviewLayout {
+    #[default]
+    Dialog,
+    Window,
 }
 
 /// The cache limits one can choose, in GB (FR-086).
@@ -102,6 +115,7 @@ impl Default for UiSettings {
             cache_limit_gb: default_cache_limit_gb(),
             prepare_previews: default_prepare_previews(),
             filmstrip: default_filmstrip(),
+            preview_layout: PreviewLayout::default(),
         }
     }
 }

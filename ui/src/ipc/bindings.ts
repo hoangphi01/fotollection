@@ -406,6 +406,14 @@ export const commands = {
 	resetPhotoStamps: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("reset_photo_stamps")),
 	undo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("undo")),
 	redo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("redo")),
+	/**  A photo's develop steps, newest first; the first is where the photo is now. */
+	photoHistory: (id: PhotoId) => typedError<HistoryStep[], IpcError>(__TAURI_INVOKE("photo_history", { id })),
+	/**
+	 *  Brings a photo back to how it was right after step `serial` of its History, or before
+	 *  its oldest listed step (`None`), as a new undoable step (FR-095). Only what the develop
+	 *  view shows goes back; the rating, flag, basket, date and place stay as they are now.
+	 */
+	restorePhotoState: (id: PhotoId, serial: number | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("restore_photo_state", { id, serial })),
 	/**  User fonts (FR-042). */
 	listFonts: () => typedError<UserFont[], IpcError>(__TAURI_INVOKE("list_fonts")),
 	/**
@@ -1090,10 +1098,25 @@ export type GroupResult = {
 	tooClose: boolean,
 };
 
+/**  What a step changed, to name it in the History list as Lightroom does (*Warmth +8*). */
+export type HistoryEdit = 
+/**
+ *  The colour look: one slider (`field`, as the look cards name it, and its new value),
+ *  or several at once (`field` none: *Apply to all*, a reset, a paste).
+ */
+{ kind: "look"; field: string | null; value: number | null } | { kind: "rawLook" } | { kind: "crop" } | { kind: "straighten" } | { kind: "rotate" } | { kind: "stamp" } | { kind: "caption" };
+
 export type HistoryState = {
 	revision: number,
 	canUndo: boolean,
 	canRedo: boolean,
+};
+
+/**  One step of a photo's History (FR-095): its serial number and what it changed. */
+export type HistoryStep = {
+	/**  The step's serial number; a u32 is enough for four billion edits in one session. */
+	serial: number,
+	edits: HistoryEdit[],
 };
 
 /**  Everything FR-071 shows about one file. Small and `Copy`: one per photo in RAM. */
@@ -1482,6 +1505,12 @@ export type PostcardText = {
 	address?: string,
 };
 
+/**
+ *  How the photo preview opens (FR-095): as a dialog over the gallery, or filling the app
+ *  window with the Navigator and History on the left.
+ */
+export type PreviewLayout = "dialog" | "window";
+
 /**  How large one photo prints well, and the verdict for each size. */
 export type PrintAdvice = {
 	/**  Upright pixel size of the whole photo. */
@@ -1807,6 +1836,8 @@ export type UiSettings = {
 	 *  before it: shown.
 	 */
 	filmstrip?: boolean,
+	/**  How Pro mode's photo preview opens (FR-095). Absent before it: a dialog. */
+	previewLayout?: PreviewLayout,
 };
 
 /**  The result shown under the button. */

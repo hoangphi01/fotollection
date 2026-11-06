@@ -15,6 +15,8 @@ let current: Required<UiSettings> = {
   preparePreviews: true,
   // The filmstrip under the photo in Pro mode's preview (FR-090).
   filmstrip: true,
+  // The develop view's layout (FR-095): the dialog unless the user chose the whole window.
+  previewLayout: 'dialog',
 }
 let requested = false
 const listeners = new Set<() => void>()

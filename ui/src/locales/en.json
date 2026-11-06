@@ -414,7 +414,9 @@
     "oneToOne": "fit ↔ 1:1",
     "beforeKey": "before / after",
     "everyKey": "every key",
-    "keys": "← →  browse · ↑ to the print basket · ↓ set aside\n0–5 stars · P pick · X reject · U clear the flag\nR or C crop · [ ] or {{mod}} [ ] rotate\nZ, or a click on the photo: fit ↔ 1:1 · {{mod}} + − 0 zoom · drag to move the zoomed photo\n\\ before / after\n{{mod}} Z undo · ⇧ {{mod}} Z redo\n⇧ {{mod}} E export this photo · Esc close"
+    "keys": "← →  browse · ↑ to the print basket · ↓ set aside\n0–5 stars · P pick · X reject · U clear the flag\nR or C crop · [ ] or {{mod}} [ ] rotate\nZ, or a click on the photo: fit ↔ 1:1 · {{mod}} + − 0 zoom · drag to move the zoomed photo\n\\ before / after\n{{mod}} Z undo · ⇧ {{mod}} Z redo\nF fill the app window or back · Tab hide the side panels (from the photo)\n⇧ {{mod}} E export this photo · Esc close",
+    "layoutWindow": "Fill the app window (F)",
+    "layoutDialog": "Back to a window (F)"
   },
   "errors": {
     "internal": "Something went wrong",
@@ -519,6 +521,9 @@
       "offline": "Could not reach GitHub. Check your internet connection and try again.",
       "unreadable": "GitHub's answer could not be read. Try again later.",
       "none": "No newer version was found."
+    },
+    "history": {
+      "unknown_step": "This step is no longer in the photo's history"
     }
   },
   "project": {
@@ -979,7 +984,11 @@
       "updates": "A newer version, when you ask",
       "report": "Tell the author what went wrong",
       "whatsNew": "Every version and what it brought"
-    }
+    },
+    "previewLayout": "Photo preview",
+    "previewDialog": "In a window",
+    "previewWindow": "Fill the app window",
+    "previewLayoutHint": "Filling the window adds the Navigator and History on the left. F switches in the preview."
   },
   "memory": {
     "title": "RAM for previews",
@@ -1007,5 +1016,22 @@
     "disk": "Cache disk",
     "diskValue": "{{free}} free",
     "unknown": "not known"
+  },
+  "navigator": {
+    "title": "Navigator",
+    "zoom": "Zoom",
+    "fill": "Fill"
+  },
+  "history": {
+    "title": "History",
+    "empty": "No changes to this photo yet.",
+    "start": "Before these changes",
+    "look": "Colour",
+    "rawLook": "RAW colour",
+    "crop": "Crop",
+    "straighten": "Straighten",
+    "rotate": "Rotate",
+    "stamp": "Date stamp",
+    "caption": "Line under the date"
   }
 }

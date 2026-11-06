@@ -23,6 +23,15 @@ export function TitleBar({ name }: TitleBarProps) {
   const windows = info?.os === 'windows'
   const [maximized, setMaximized] = useState(false)
 
+  // Its height, for what fills the window under it (the preview's full-window layout, FR-095).
+  useEffect(() => {
+    if (!windows) return
+    document.documentElement.style.setProperty('--titlebar', '2rem')
+    return () => {
+      document.documentElement.style.removeProperty('--titlebar')
+    }
+  }, [windows])
+
   useEffect(() => {
     if (!windows) return
     const win = getCurrentWindow()

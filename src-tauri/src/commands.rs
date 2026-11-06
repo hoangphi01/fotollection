@@ -2313,6 +2313,79 @@ pub fn set_photo_flag(
     edit_photos(&app, &state, &ids, |_, e| e.flag = flag)
 }
 
+/// One step of a photo's History (FR-095): its serial number and what it changed.
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct HistoryStep {
+    /// The step's serial number; a u32 is enough for four billion edits in one session.
+    pub serial: u32,
+    pub edits: Vec<fotollection_core::history::HistoryEdit>,
+}
+
+/// A photo's develop steps, newest first; the first is where the photo is now.
+#[tauri::command]
+#[specta::specta]
+pub fn photo_history(
+    state: State<'_, AppState>,
+    id: PhotoId,
+) -> Result<Vec<HistoryStep>, IpcError> {
+    if state
+        .library
+        .read()
+        .ok()
+        .and_then(|l| l.record(id))
+        .is_none()
+    {
+        return Err(IpcError::new("photo.unknown", "Unknown photo"));
+    }
+    let history = state
+        .history
+        .lock()
+        .map_err(|e| IpcError::internal(e.to_string()))?;
+    Ok(history
+        .photo_steps(id)
+        .into_iter()
+        .map(|s| HistoryStep {
+            serial: u32::try_from(s.serial).unwrap_or(u32::MAX),
+            edits: fotollection_core::history::describe(&s.before, &s.after),
+        })
+        .collect())
+}
+
+/// Brings a photo back to how it was right after step `serial` of its History, or before
+/// its oldest listed step (`None`), as a new undoable step (FR-095). Only what the develop
+/// view shows goes back; the rating, flag, basket, date and place stay as they are now.
+#[tauri::command]
+#[specta::specta]
+pub fn restore_photo_state(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: PhotoId,
+    serial: Option<u32>,
+) -> Result<HistoryState, IpcError> {
+    let target = {
+        let history = state
+            .history
+            .lock()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        let steps = history.photo_steps(id);
+        match serial {
+            Some(serial) => steps
+                .into_iter()
+                .find(|s| s.serial == u64::from(serial))
+                .map(|s| s.after),
+            None => steps.into_iter().last().map(|s| s.before),
+        }
+    };
+    let Some(target) = target else {
+        return Err(IpcError::new(
+            "history.unknown_step",
+            "This step is no longer in the photo's history",
+        ));
+    };
+    edit_photos(&app, &state, &[id], |_, e| *e = e.with_develop_of(&target))
+}
+
 /// Puts photos in the print basket, sets them aside, or (`None`) back into the gallery
 /// (FR-050). One undoable step; set-aside photos are never deleted.
 #[tauri::command]

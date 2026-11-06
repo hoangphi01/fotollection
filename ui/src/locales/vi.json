@@ -396,7 +396,9 @@
     "oneToOne": "vừa khung ↔ 1:1",
     "beforeKey": "trước / sau",
     "everyKey": "mọi phím",
-    "keys": "← →  chuyển ảnh · ↑ vào giỏ in · ↓ để riêng\n0–5 số sao · P chọn · X loại · U bỏ cờ\nR hoặc C cắt ảnh · [ ] hoặc {{mod}} [ ] xoay\nZ, hoặc nhấp vào ảnh: vừa khung ↔ 1:1 · {{mod}} + − 0 phóng to · kéo để di chuyển ảnh đang phóng\n\\ trước / sau\n{{mod}} Z hoàn tác · ⇧ {{mod}} Z làm lại\n⇧ {{mod}} E xuất ảnh này · Esc đóng"
+    "keys": "← →  chuyển ảnh · ↑ vào giỏ in · ↓ để riêng\n0–5 số sao · P chọn · X loại · U bỏ cờ\nR hoặc C cắt ảnh · [ ] hoặc {{mod}} [ ] xoay\nZ, hoặc nhấp vào ảnh: vừa khung ↔ 1:1 · {{mod}} + − 0 phóng to · kéo để di chuyển ảnh đang phóng\n\\ trước / sau\n{{mod}} Z hoàn tác · ⇧ {{mod}} Z làm lại\nF phủ kín cửa sổ hoặc trở lại · Tab ẩn các bảng hai bên (khi đang ở ảnh)\n⇧ {{mod}} E xuất ảnh này · Esc đóng",
+    "layoutWindow": "Phủ kín cửa sổ (F)",
+    "layoutDialog": "Về dạng cửa sổ (F)"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",
@@ -501,6 +503,9 @@
       "offline": "Không kết nối được GitHub. Hãy kiểm tra internet rồi thử lại.",
       "unreadable": "Không đọc được câu trả lời của GitHub. Hãy thử lại sau.",
       "none": "Chưa tìm thấy bản mới hơn."
+    },
+    "history": {
+      "unknown_step": "Bước này không còn trong lịch sử của ảnh"
     }
   },
   "project": {
@@ -944,7 +949,11 @@
       "updates": "Phiên bản mới hơn, khi bạn hỏi",
       "report": "Báo cho tác giả biết điều gì không ổn",
       "whatsNew": "Mọi phiên bản và những gì chúng mang lại"
-    }
+    },
+    "previewLayout": "Xem ảnh",
+    "previewDialog": "Trong cửa sổ",
+    "previewWindow": "Phủ kín cửa sổ app",
+    "previewLayoutHint": "Khi phủ kín cửa sổ, bên trái có thêm Điều hướng và Lịch sử. Trong bản xem trước, phím F chuyển qua lại."
   },
   "memory": {
     "title": "Bộ nhớ RAM cho bản xem trước",
@@ -972,5 +981,22 @@
     "disk": "Ổ đĩa của cache",
     "diskValue": "còn trống {{free}}",
     "unknown": "không rõ"
+  },
+  "navigator": {
+    "title": "Điều hướng",
+    "zoom": "Phóng to",
+    "fill": "Lấp đầy"
+  },
+  "history": {
+    "title": "Lịch sử",
+    "empty": "Ảnh này chưa có thay đổi nào.",
+    "start": "Trước các thay đổi này",
+    "look": "Màu",
+    "rawLook": "Màu RAW",
+    "crop": "Cắt ảnh",
+    "straighten": "Cân ngang",
+    "rotate": "Xoay",
+    "stamp": "Dấu ngày",
+    "caption": "Dòng dưới ngày"
   }
 }

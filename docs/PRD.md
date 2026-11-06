@@ -1005,7 +1005,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 **P1 (v0.12.0; owner's request 2026-11-06: "complete and professional, done well, not rushed; a Lightroom user should feel at home fast, with our own character").** Pro mode's photo preview becomes a develop view.
 
 - **Two layouts, chosen in Settings → General** (`ui.previewLayout`): *In a window*, the dialog as before, and *Fill the app window*, edge to edge under the Windows title bar (FR-052). `F` switches between them and the choice is kept.
-- **A left column in the full layout** (18 rem, as the side panels): *Navigator*, the photo small with a frame for the zoomed area (click or drag to move it; Fit, Fill, 1:1, 2:1), and *History*, this photo's steps newest first, named by what changed (*Warmth +8*, *Crop*, *Paste settings*); a click brings the photo back to that state as a new step, so it can be undone. v0.13.0 adds *Presets & LUTs* at its top (FR-079, FR-070). `Tab` hides both side columns.
+- **A left column in the full layout** (18 rem, as the side panels): *Navigator*, the photo small with a frame for the zoomed area (click or drag to move it; Fit, Fill, 1:1, 2:1), and *History*, this photo's steps newest first, named by what changed (*Warmth +8*, *Crop*, *Paste settings*); a click brings the photo back to that state as a new step, so it can be undone. v0.13.0 adds *Presets & LUTs* at its top (FR-079, FR-070). `Tab`, pressed with the photo itself focused (so it still moves between the inspector's controls), hides both side columns.
 - **One toolbar row above the photo**, never over it: Crop, rotate, basket, Before/After and compare, undo and redo, copy and paste settings, Reset, Export; every button the same shape, each hint naming its key.
 - **Lightroom's keys:** `R` crop (`C` kept), `\` before/after, `Y` compare, `Z` fit ↔ 1:1, `F` layout, `Tab` panels, `J` clipping, `W` white-balance picker, ⌘Z / ⇧⌘Z, ⇧⌘C / ⇧⌘V copy and paste settings, ⇧⌘R reset, ⇧⌘E export, ⌘[ ⌘] rotate; the ratings, flags and arrows as before. The keys popover lists them all.
 - **Zoom in real pixels:** *Fit*, then percentages of the photo's own pixels, 100 % being 1:1.
@@ -1013,7 +1013,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-096 — Before and after, side by side
 
-**P1 (v0.12.0; owner's request 2026-11-06).** `\` and the *Before* button switch between the photo with and without its colour (keyboard and mouse alike); `Y` shows them side by side and `⇧Y` split by a line one drags across the photo. Both halves zoom and pan together and stay sharp at 1:1. *Before* keeps the crop and the frame: what changes is the colour.
+**P1 (v0.12.0; owner's request 2026-11-06).** `\` and the *Before* button switch between the photo with and without its colour (keyboard and mouse alike); `Y` shows them side by side, `⇧Y` split by a line one drags across the photo, `⌥Y` one above the other, and the menu beside the button also splits them top and bottom, as Lightroom's views (owner, 2026-11-06). Both halves zoom and pan together and stay sharp at 1:1. *Before* keeps the crop and the frame: what changes is the colour.
 
 ### FR-097 — Settings from one photo to others, and Reset
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview
-import { Crop, Download, Eye, PanelBottomClose, PanelBottomOpen, Redo2, RotateCcw, RotateCw, ShoppingBasket, Undo2 } from 'lucide-react'
+import { Crop, Download, Eye, Maximize2, Minimize2, PanelBottomClose, PanelBottomOpen, Redo2, RotateCcw, RotateCw, ShoppingBasket, Undo2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
@@ -25,6 +25,9 @@ type PreviewToolbarProps = {
   count: number
   filmstrip: boolean
   onFilmstrip: () => void
+  /** The preview fills the app window (FR-095). */
+  windowed: boolean
+  onLayout: () => void
 }
 
 /**
@@ -46,13 +49,15 @@ export function PreviewToolbar({
   count,
   filmstrip,
   onFilmstrip,
+  windowed,
+  onLayout,
 }: PreviewToolbarProps) {
   const { t } = useTranslation()
   const inBasket = photo?.queue === 'print'
   const rotate = (clockwise: boolean) => photo && void commands.rotatePhotos([photo.id], clockwise)
   const stripLabel = t(filmstrip ? 'viewer.hideFilmstrip' : 'viewer.showFilmstrip')
   return (
-    <div className="@container flex h-11 shrink-0 items-center gap-1.5 border-b bg-background px-3">
+    <div className="@container flex h-11 items-center gap-1.5 px-3">
       {/* The hint sits on the wrapper, as a disabled button gets no pointer events. */}
       <span data-hint={cropBlocked ?? t('viewer.cropHint')}>
         <ToolbarButton icon={<Crop />} label={t('viewer.crop')} disabled={!photo || cropBlocked !== null} onClick={onCrop} />
@@ -140,6 +145,15 @@ export function PreviewToolbar({
           data-hint={stripLabel}
           iconOnly
           onClick={onFilmstrip}
+        />
+        <ToolbarButton
+          icon={windowed ? <Minimize2 /> : <Maximize2 />}
+          label={t(windowed ? 'viewer.layoutDialog' : 'viewer.layoutWindow')}
+          variant={windowed ? 'default' : 'outline'}
+          aria-pressed={windowed}
+          data-hint={t(windowed ? 'viewer.layoutDialog' : 'viewer.layoutWindow')}
+          iconOnly
+          onClick={onLayout}
         />
         <KeysInfo lines={t('viewer.keys', { mod: MOD }).split('\n')} />
       </div>

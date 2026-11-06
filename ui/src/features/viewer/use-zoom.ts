@@ -147,6 +147,10 @@ export function useZoom(stage: HTMLElement | null, resetKey: string, oneToOne: n
     percent: Math.round((oneToOne ? view.scale / oneToOne : view.scale) * 100),
     canZoomIn: view.scale < max,
     toggleCloseUp: () => toggleCloseUp(),
+    /** Zooms to `scale` times the fit, about the stage centre (the Navigator's choices). */
+    zoomTo: (scale: number) => zoomAt(scale / view.scale),
+    /** Moves the zoomed photo so its offset from the stage centre is (`x`, `y`) in px. */
+    panTo: (x: number, y: number) => setView((v) => (v.scale > MIN ? { ...v, x, y } : v)),
     zoomIn: () => zoomAt(STEP),
     zoomOut: () => zoomAt(1 / STEP),
     transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})`,

@@ -259,6 +259,24 @@ impl PhotoEdits {
         *self == Self::default()
     }
 
+    /// These edits with `other`'s develop fields, the ones the develop view's History names
+    /// (FR-095): the look, the RAW look, the crop and straightening, the turns, the stamp and
+    /// its line. The rating, flag, basket, date, place and collage edits stay as they are, so
+    /// going back in History never brings back an old rating.
+    #[must_use]
+    pub fn with_develop_of(&self, other: &Self) -> Self {
+        Self {
+            look: other.look.clone(),
+            raw_look: other.raw_look,
+            crop: other.crop,
+            straighten: other.straighten,
+            rotation: other.rotation,
+            stamp: other.stamp.clone(),
+            caption: other.caption.clone(),
+            ..self.clone()
+        }
+    }
+
     /// How the photo is finished if it is a camera RAW (absent: neutral).
     pub fn raw_look(&self) -> crate::raw_finish::RawLook {
         self.raw_look.unwrap_or_default()

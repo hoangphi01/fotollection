@@ -93,7 +93,7 @@ crates/
       project.rs         † # project tables v11: snapshot/restore by folder+path, FK validation, relocate/resolve folders
       bundle.rs          † # .fotollection ZIP bundle: manifest + BLAKE3, allowlisted parts, zip-bomb limits (ADR-0016)
       cache_limit.rs     † # the disk cache's 2 GB limit: usage, LRU prune by modification time, clear, touch on hit (DATABASE.md §8)
-      history.rs         † # undo/redo stack of inverse edits (FR-023)
+      history.rs         † # undo/redo stack of inverse edits (FR-023); each step's serial, a photo's develop steps and what each changed (FR-095)
       atomic.rs          † # tmp + fsync + .bak + rename
       presets.rs           # preset library: partial/stackable, linked, .fotopreset I/O (FR-033/034/038)
       looks.rs           † # colour looks (FR-079, FR-070, ADR-0038): the 33³ table, integer tetrahedral interpolation on rayon, a cache of the last 8 tables; the sliders and `.cube` LUTs bake into it
@@ -269,6 +269,7 @@ Commands marked † are implemented.
 | `auto_turn_collage(filter, revert) -> u32` † | Auto turn: every sheet shown lies landscape, each photo turned to stand if it lies; with `revert`, every sheet and photo back to its own orientation. One undoable step; returns how many photos changed | FR-035 |
 | `sheet_info(sheet) -> SheetInfo` † | A sheet's size and, per photo, its area, the suggested size, the photo left inside the 3 mm border and its DPI band, from the photos' header sizes | FR-035, FR-026 |
 | `get_photo_stamp(id)` / `set_photo_stamp(id, stamp?)` † | One photo's own date stamp from the preview (FR-044); `null` follows the settings again. Undoable; the caption is validated in Rust | FR-044 |
+| `photo_history(id) -> HistoryStep[]` †, `restore_photo_state(id, serial?)` † | The develop view's History (FR-095): a photo's steps that changed its look, crop, turns or stamp, newest first, each with what it changed; a restore brings back those fields as they were after a step (`null`: before the oldest), keeping the rating, flag and basket, as one undo step. An unknown step is `ERR-IPC-0024` | FR-095 |
 | `set_photo_caption(ids, caption?)` † | Photos' own line under the date (FR-036), from a collage sheet's preview; `null` uses the stamp's again. One undo step; validated in Rust like the stamp's caption | FR-036 |
 | `set_postcard_text(id, part, text?)` †, `get_postcard_text(id)` † | One part of a photo's postcard (FR-073), `message` or `address`; `null` or blanks leave its lines blank. At most 400 characters and 8 lines for the message, 200 and 4 for the address, no control character but line breaks, checked in Rust (`ERR-IPC-0022`). One undo step | FR-073 |
 | `postcard_cuts()` † | The postcards whose message or address does not all fit its lines as the print sets them (`postcard::fit`), for the red warning on the card, its preview and the part's field; empty while postcards are off. Read only | FR-073 |

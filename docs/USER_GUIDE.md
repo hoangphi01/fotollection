@@ -98,6 +98,13 @@ The **Print basket** button does the same as ↑, and shows *In the basket* when
 
 **The filmstrip** under the photo shows the photos of the view, in the gallery's order, with their stars, basket and RAW marks ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): click one to open it, however far it is. The filmstrip button in the row above the photo hides it and shows it again; the app remembers your choice.
 
+**Fill the app window:** press **F**, or the window button in the row above the photo, to let the preview fill the whole window instead of a dialog; press it again to come back. The app remembers it, and Settings → General → *Photo preview* sets it too. Filled, a column on the left adds what Lightroom has there ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)):
+
+- **Navigator:** the photo small, with the part on screen outlined while zoomed; click or drag in it to look elsewhere. *Fit*, *Fill*, *1:1* and *2:1* zoom at once.
+- **History:** this photo's changes, newest first, each named (*Warm / cool +8*, *Crop*, *Date stamp*). Click one to bring the photo back to how it was then; that is a change too, so **Cmd/Ctrl+Z** undoes it. Stars, flags and the basket are not part of it and never change when you go back.
+
+**Tab**, pressed after clicking the photo, hides the side panels for a bigger photo, and brings them back.
+
 When you open the preview from the *Print basket* or *Set aside* view, ↑ and ↓ move the photo to the other area; a photo that stays where it is moves on to the next one.
 
 **The photo at a glance:** the first card on the right, **This photo**, says what you are looking at ([FR-078](PRD.md#fr-078--the-photo-at-a-glance-in-the-preview)): the camera and lens (with the names you gave them for the info frame, chapter 9), the exposure as the frame prints it (*20mm · F1.7 · 1/60s · ISO800*), where and when it was taken, its size in pixels, megapixels and megabytes, and what the file is (chapter 2). Click its title to fold it away, and again to open it; it stays as you left it for the next photos. The cards further down change the date and the place.
@@ -507,6 +514,8 @@ Two cards change a photo's colour, under **Print / export size**, in the preview
 | Preview | **Z**, a click on the photo | Fit ↔ 1:1 (§7) |
 | Preview | **[ ]**, **Cmd/Ctrl [ ]** | Rotate left / right |
 | Preview | **⇧ Cmd/Ctrl E** | Export this photo |
+| Preview | **F** | Fill the app window, or back to a window (§4.1) |
+| Preview | **Tab** (after a click on the photo) | Hide or show the side panels |
 | Preview | **Cmd/Ctrl + / −**, two-finger scroll, trackpad pinch, the zoom buttons | Zoom in / out (§7) |
 | Preview | **Cmd/Ctrl 0**, the fit button | Back to fit |
 | Preview | drag the photo (not zoomed) | Choose what the print keeps (*Crop to fill*) |
@@ -536,7 +545,7 @@ A focused field or slider keeps its own arrow keys: click the photo to give them
 
 Every setting of this computer is in one window ([FR-086](PRD.md#fr-086--one-settings-window)): click the gear beside *by @hoangphi01* at the top of the sidebar, press **⌘,** (Mac) or **Ctrl+,** (Windows, Linux), or click the version number at the foot of a panel for *What's new*. The sections are listed on the left, as on an iPad; projects never carry these settings.
 
-- **General:** the language and the look (chapter 1).
+- **General:** the language, the look (chapter 1), and *Photo preview*: in a window, or filling the app window with the Navigator and History (chapter 4).
 - **RAM & cache** ([FR-091](PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)):
   - **Share of this computer's RAM** for previews: 15, 25 (the default) or 40 %. More keeps more photos ready, so → ← and photos opened again show at once; less leaves room for other apps. *Held now* shows what the previews keep. When the computer runs short of memory, they give it back by themselves.
   - **Cache on disk:** its limit (2, 5, 10 or 20 GB), what it holds (thumbnails, previews, best-shot analyses) and **Clear cache**. Nothing of yours is lost: everything comes back when needed. A larger cache keeps the previews of more folders, about 0.7 MB a photo.

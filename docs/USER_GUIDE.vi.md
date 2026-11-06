@@ -96,6 +96,13 @@ Nút **Giỏ in** trên ảnh (cạnh *Cắt ảnh*, các nút xoay và *Xuất 
 
 **Dải ảnh** dưới tấm ảnh hiện các ảnh của chế độ xem đang mở, theo thứ tự của gallery, kèm sao, giỏ in và nhãn RAW ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): nhấp vào tấm nào là mở tấm đó, dù xa đến đâu. Nút dải ảnh ở hàng công cụ phía trên ảnh ẩn dải ảnh và hiện lại; ứng dụng nhớ lựa chọn của bạn.
 
+**Phủ kín cửa sổ:** bấm **F**, hoặc nút cửa sổ ở hàng công cụ phía trên ảnh, để bản xem trước phủ kín cả cửa sổ thay vì là một hộp thoại; bấm lần nữa để trở lại. Ứng dụng nhớ lựa chọn này, và Cài đặt → Chung → *Xem ảnh* cũng chỉnh được. Khi phủ kín, bên trái có thêm một cột giống Lightroom ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)):
+
+- **Điều hướng:** ảnh thu nhỏ, có khung viền phần đang hiện khi phóng to; nhấp hoặc kéo trong đó để xem chỗ khác. *Vừa khung*, *Lấp đầy*, *1:1* và *2:1* phóng ngay.
+- **Lịch sử:** các thay đổi của ảnh này, mới nhất ở trên, mỗi dòng ghi rõ (*Ấm / lạnh +8*, *Cắt ảnh*, *Dấu ngày*). Nhấp một dòng để đưa ảnh về đúng lúc đó; việc này cũng là một thay đổi, nên **Cmd/Ctrl+Z** hoàn tác được. Sao, cờ và giỏ in không nằm trong đó và không đổi khi bạn quay lại.
+
+**Tab**, bấm sau khi nhấp vào ảnh, ẩn các bảng hai bên để ảnh to hơn, bấm lần nữa để hiện lại.
+
 Khi bạn mở bản xem trước từ *Giỏ in* hoặc *Để riêng*, ↑ và ↓ chuyển ảnh sang khu vực còn lại; ảnh ở nguyên chỗ cũ thì chuyển sang tấm tiếp theo.
 
 **Xem nhanh ảnh:** thẻ đầu tiên bên phải, **Ảnh này**, cho biết bạn đang xem gì ([FR-078](PRD.md#fr-078--the-photo-at-a-glance-in-the-preview)): máy ảnh và ống kính (theo tên bạn đặt cho khung thông tin, chương 9), thông số phơi sáng đúng như khung in ra (*20mm · F1.7 · 1/60s · ISO800*), chụp ở đâu và khi nào, kích thước theo điểm ảnh, megapixel và megabyte, và tệp đó là gì (chương 2). Bấm vào tiêu đề để thu gọn thẻ, bấm lần nữa để mở; thẻ giữ nguyên như bạn để cho những ảnh tiếp theo. Các thẻ bên dưới dùng để sửa ngày và nơi chụp.
@@ -505,6 +512,8 @@ Hai thẻ chỉnh màu ảnh, nằm dưới **Khổ in / xuất**, chỉ có tro
 | Xem trước | **Z**, nhấp vào ảnh | Vừa khung ↔ 1:1 (§7) |
 | Xem trước | **[ ]**, **Cmd/Ctrl [ ]** | Xoay trái / phải |
 | Xem trước | **⇧ Cmd/Ctrl E** | Xuất ảnh này |
+| Xem trước | **F** | Phủ kín cửa sổ app, hoặc trở về dạng cửa sổ (§4.1) |
+| Xem trước | **Tab** (sau khi nhấp vào ảnh) | Ẩn hoặc hiện các bảng hai bên |
 | Xem trước | **Cmd/Ctrl + / −**, vuốt hai ngón, chụm trên trackpad, các nút phóng | Phóng to / thu nhỏ (§7) |
 | Xem trước | **Cmd/Ctrl 0**, nút vừa khung | Về vừa khung |
 | Xem trước | kéo ảnh (khi chưa phóng) | Chọn phần được in (*Cắt cho đầy*) |
@@ -534,7 +543,7 @@ Hai thẻ chỉnh màu ảnh, nằm dưới **Khổ in / xuất**, chỉ có tro
 
 Mọi cài đặt của máy này nằm trong một cửa sổ ([FR-086](PRD.md#fr-086--one-settings-window)): bấm bánh răng cạnh *by @hoangphi01* ở đầu thanh bên, nhấn **⌘,** (Mac) hoặc **Ctrl+,** (Windows, Linux), hoặc bấm số phiên bản ở chân bảng để xem *Có gì mới*. Các mục xếp ở bên trái như trên iPad; dự án không bao giờ mang các cài đặt này theo.
 
-- **Chung:** ngôn ngữ và giao diện (chương 1).
+- **Chung:** ngôn ngữ, giao diện (chương 1), và *Xem ảnh*: trong cửa sổ, hoặc phủ kín cửa sổ app với Điều hướng và Lịch sử (chương 4).
 - **Bộ nhớ RAM & cache** ([FR-091](PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)):
   - **Phần bộ nhớ RAM của máy** dành cho bản xem trước: 15, 25 (mặc định) hoặc 40 %. Nhiều hơn thì giữ sẵn nhiều ảnh hơn, nên → ← và ảnh mở lại hiện ngay; ít hơn thì chừa chỗ cho ứng dụng khác. *Đang giữ* cho biết bản xem trước đang giữ bao nhiêu. Khi máy thiếu bộ nhớ, chúng tự trả lại.
   - **Cache trên ổ đĩa:** giới hạn (2, 5, 10 hoặc 20 GB), những gì đang giữ (ảnh nhỏ, bản xem trước, phân tích ảnh đẹp nhất) và **Xoá cache**. Không mất gì của bạn: mọi thứ được tạo lại khi cần. Cache lớn hơn giữ bản xem trước của nhiều thư mục hơn, khoảng 0,7 MB mỗi ảnh.
