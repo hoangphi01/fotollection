@@ -473,7 +473,8 @@ for (const language of ['en', 'vi']) {
     await zoomed(page, `manual-project-${suffix}`, { x: 0, y: 0, width: 576, height: 360 })
 
     // 1b. Print-size advice for the manual: the picker open, a badge per size (FR-026).
-    await page.locator('#print-size').click()
+    // By its name: the panel's ids come from useId (STYLE_RULE §4, no hard-coded id).
+    await page.getByRole('combobox', { name: /^(Print \/ export size|Khổ in \/ xuất ảnh)$/ }).first().click()
     await page.waitForSelector('[role="option"]')
     await page.waitForTimeout(300)
     await save(page, `manual-size-${suffix}`)
