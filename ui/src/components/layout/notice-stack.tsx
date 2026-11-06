@@ -20,7 +20,7 @@ export function NoticeStack({ children }: { children: ReactNode }) {
 
 /** The shell every notice that is not an `Alert` wears, so all of them line up. */
 export function NoticeCard({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('rounded-lg border bg-card px-2.5 py-2 text-sm', className)} {...props} />
+  return <div className={cn('rounded-lg border bg-card px-2.5 py-2 text-sm lifted', className)} {...props} />
 }
 
 /** An error in the stack, with its `ERR-` code in the text and a button that hides it. */

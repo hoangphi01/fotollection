@@ -288,13 +288,20 @@
   box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
+/* Surfaces (cards, dialogs, popovers, menus) stand as the buttons do (owner, 2026-11-06:
+   "cards and dialogs with depth like the buttons"): the top light, a lip in a shade of their
+   own colour, then their lift. */
 @utility lifted {
-  --tw-shadow: var(--lift);
+  --tw-shadow: inset 0 1px 0 var(--highlight),
+    inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--face, var(--card)), var(--shade) var(--lip-mix)),
+    var(--lift);
   box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 @utility lifted-strong {
-  --tw-shadow: var(--lift-strong);
+  --tw-shadow: inset 0 1px 0 var(--highlight),
+    inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--face, var(--popover)), var(--shade) var(--lip-mix)),
+    var(--lift-strong);
   box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }

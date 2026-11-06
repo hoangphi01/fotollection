@@ -33,7 +33,7 @@ export const GroupStrip = memo(function GroupStrip({
   const { t } = useTranslation()
   const { photos, reasons, tooClose } = group.result
   return (
-    <section className="rounded-lg border bg-card p-3">
+    <section className="rounded-lg border bg-card p-3 lifted">
       <div className="mb-2 flex flex-wrap items-center gap-2">
         <Badge className="gap-1">
           <Sparkles data-icon="inline-start" />
