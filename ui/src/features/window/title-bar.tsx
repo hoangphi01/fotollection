@@ -7,30 +7,36 @@ import { commands } from '@/ipc/bindings'
 import { useIpcQuery } from '@/features/settings/use-ipc-query'
 import { cn } from '@/lib/utils'
 
+/** The macOS strip: the traffic lights' own height, so they sit centred in it. */
+const MAC_BAR = '1.75rem'
+
 type TitleBarProps = {
   /** The open document's name, shown after the app's name. */
   name: string
 }
 
 /**
- * The Windows title bar, drawn in the app's own colours like VS Code's, instead of the
- * system's white strip (FR-052). macOS keeps its native title bar. It sits above dialog
- * overlays, so the window can always be moved, resized or closed.
+ * The title bar in the app's own colours, as VS Code's (FR-052): on Windows instead of the
+ * system's white strip, with its own buttons; on macOS a strip under the system's traffic
+ * lights, the window's title bar being transparent (`titleBarStyle: Overlay`,
+ * `tauri.macos.conf.json`; owner, 2026-11-06), so the bar and the app are one surface. It sits
+ * above dialog overlays, so the window can always be moved, resized or closed.
  */
 export function TitleBar({ name }: TitleBarProps) {
   const { t } = useTranslation()
   const info = useIpcQuery(commands.appInfo)
   const windows = info?.os === 'windows'
+  const mac = info?.os === 'macos'
   const [maximized, setMaximized] = useState(false)
 
   // Its height, for what fills the window under it (the preview's full-window layout, FR-095).
   useEffect(() => {
-    if (!windows) return
-    document.documentElement.style.setProperty('--titlebar', '2rem')
+    if (!windows && !mac) return
+    document.documentElement.style.setProperty('--titlebar', mac ? MAC_BAR : '2rem')
     return () => {
       document.documentElement.style.removeProperty('--titlebar')
     }
-  }, [windows])
+  }, [windows, mac])
 
   useEffect(() => {
     if (!windows) return
@@ -41,6 +47,17 @@ export function TitleBar({ name }: TitleBarProps) {
     return () => void unlisten.then((stop) => stop())
   }, [windows])
 
+  if (mac)
+    return (
+      <div
+        data-tauri-drag-region
+        className="relative z-[60] flex h-(--titlebar) shrink-0 items-center justify-center border-b bg-sidebar text-sidebar-foreground select-none"
+      >
+        <span data-tauri-drag-region className="truncate px-24 text-xs text-muted-foreground">
+          Fotollection — {name}
+        </span>
+      </div>
+    )
   if (!windows) return null
   const win = getCurrentWindow()
   const control = 'inline-flex h-full w-[46px] items-center justify-center text-sidebar-foreground/80 transition-colors'
