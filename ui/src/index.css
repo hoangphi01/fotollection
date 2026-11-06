@@ -261,9 +261,8 @@
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 /* Switched on (a toggle, the chosen segment, the basket while the photo is in it): pressed in
-   like a console's button, owner 2026-11-06. No lip, the shade inside, the theme's own accent
-   made darker (the wood brown in dark, the teal in light), the accent itself under the pointer;
-   so on and off differ by more than colour. The control sets the background with `bg-pressed`
+   like a console's button, owner 2026-11-06. No lip, the shade inside, in the theme's own accent
+   (a darker accent was tried and looked muddy, owner): on and off differ by depth. The control sets the background with `bg-pressed`
    (below) and `--face`. */
 @utility pressed-in {
   --tw-shadow: inset 0 2px 3px color-mix(in oklch, var(--face, var(--primary)), var(--shade) 40%),
@@ -272,5 +271,5 @@
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 @utility bg-pressed {
-  background-color: color-mix(in oklch, var(--primary), var(--shade) 22%);
+  background-color: var(--primary);
 }

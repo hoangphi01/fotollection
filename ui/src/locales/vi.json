@@ -108,7 +108,7 @@
     "keepThis": "Giữ ảnh này",
     "closedEyes_other": "{{count}} khuôn mặt nhắm mắt",
     "reason": {
-      "sharper": "Nét hơn {{percent}} %",
+      "sharper": "Nét hơn {{percent}} %",
       "steadierShot": "Ít rung tay hơn",
       "eyesOpen": "Mắt mở",
       "betterExposure": "Phơi sáng tốt hơn",
@@ -258,7 +258,7 @@
     "exported_other": "Đã xuất {{count}} ảnh",
     "failed_other": "{{count}} ảnh lỗi",
     "error": "Không xuất được ảnh",
-    "smaller": "Đã giảm từ {{from}} xuống {{to}} (nhẹ hơn {{percent}} %)",
+    "smaller": "Đã giảm từ {{from}} xuống {{to}} (nhẹ hơn {{percent}} %)",
     "larger": "{{from}} → {{to}}: ảnh in giữ trọn chi tiết nên có thể nặng hơn ảnh gốc",
     "chooseDestination": "Chọn nơi lưu…",
     "title": "Xuất ảnh",
@@ -592,7 +592,7 @@
     "totalValue": "{{size}} trên {{limit}}"
   },
   "estimate": {
-    "smaller": "Ước tính: {{from}} → {{to}} (nhẹ hơn {{percent}} %)",
+    "smaller": "Ước tính: {{from}} → {{to}} (nhẹ hơn {{percent}} %)",
     "larger": "Ước tính: {{from}} → {{to}}; ảnh in giữ trọn chi tiết nên có thể nặng hơn ảnh gốc"
   },
   "select": {
@@ -962,7 +962,7 @@
     "held": "Đang giữ",
     "heldValue": "{{held}} trên {{budget}} (máy có {{total}})",
     "forThisComputer": "Cho máy tính này",
-    "now": "Hiện tại: {{percent}} % bộ nhớ RAM, cache {{limit}} GB, bản xem trước {{previews}}.",
+    "now": "Hiện tại: {{percent}} % bộ nhớ RAM, cache {{limit}} GB, bản xem trước {{previews}}.",
     "prepared": "chuẩn bị sẵn ở chế độ nền",
     "notPrepared": "dựng khi mở ảnh",
     "default": "Mặc định",

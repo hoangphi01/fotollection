@@ -117,7 +117,7 @@
     "closedEyes_one": "{{count}} face with closed eyes",
     "closedEyes_other": "{{count}} faces with closed eyes",
     "reason": {
-      "sharper": "{{percent}} % sharper",
+      "sharper": "{{percent}} % sharper",
       "steadierShot": "Less camera shake",
       "eyesOpen": "Eyes open",
       "betterExposure": "Better exposure",
@@ -270,7 +270,7 @@
     "failed_one": "{{count}} failed",
     "failed_other": "{{count}} failed",
     "error": "Couldn't export",
-    "smaller": "Reduced from {{from}} to {{to}} ({{percent}} % lighter)",
+    "smaller": "Reduced from {{from}} to {{to}} ({{percent}} % lighter)",
     "larger": "{{from}} → {{to}}: print files keep every detail, so they can be larger than the originals",
     "chooseDestination": "Choose destination…",
     "title": "Export",
@@ -612,7 +612,7 @@
     "totalValue": "{{size}} of {{limit}}"
   },
   "estimate": {
-    "smaller": "Estimated: {{from}} → {{to}} ({{percent}} % lighter)",
+    "smaller": "Estimated: {{from}} → {{to}} ({{percent}} % lighter)",
     "larger": "Estimated: {{from}} → {{to}}; print files keep every detail, so they can be larger"
   },
   "select": {
@@ -997,7 +997,7 @@
     "held": "Held now",
     "heldValue": "{{held}} of {{budget}} ({{total}} in this computer)",
     "forThisComputer": "For this computer",
-    "now": "Now: {{percent}} % of RAM, a {{limit}} GB cache, previews {{previews}}.",
+    "now": "Now: {{percent}} % of RAM, a {{limit}} GB cache, previews {{previews}}.",
     "prepared": "prepared in the background",
     "notPrepared": "made when opened",
     "default": "Default",
