@@ -99,9 +99,10 @@ export function LibrarySidebar({
           alt=""
           className="rounded-md"
         />
-        <div className="flex min-w-0 items-baseline gap-1.5">
-          <span className="font-heading text-sm font-semibold tracking-tight">Fotollection</span>
-          <span className="truncate text-xs text-muted-foreground">{t('app.byline')}</span>
+        {/* The name above, the author a size smaller below it (owner, 2026-11-06). */}
+        <div className="flex min-w-0 flex-col">
+          <span className="font-heading text-sm leading-tight font-semibold tracking-tight">Fotollection</span>
+          <span className="truncate text-2xs leading-snug text-muted-foreground">{t('app.byline')}</span>
         </div>
         {/* Every setting of this computer in one window (FR-086). */}
         <Button
