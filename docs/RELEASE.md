@@ -86,7 +86,9 @@ Pull requests use the same filters. After pushing, check that every workflow tha
 
 ## 5. Updates
 
-There is **no in-app updater** ([FR-021](PRD.md#fr-021--manual-updates), [ADR-0021](adr/0021-versioning-and-automated-releases.md)). The app never checks for new versions by itself ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)): the version popover at the foot of the settings panel has a **Check for updates** button that asks GitHub once and opens the newer installer in the browser ([FR-061](PRD.md#fr-061--check-for-updates), [ADR-0025](adr/0025-update-check-on-click.md)). New versions are also announced on the Releases page and the website.
+There is **no in-app updater** ([FR-021](PRD.md#fr-021--manual-updates), [ADR-0021](adr/0021-versioning-and-automated-releases.md)). Settings → Updates has a **Check for updates** button, and from v0.12.1 the app also checks once at start unless that is turned off ([FR-061](PRD.md#fr-061--check-for-updates), [FR-103](PRD.md#fr-103--check-for-updates-at-start-never-download-unasked), [ADR-0025](adr/0025-update-check-on-click.md)); a newer installer opens in the browser. New versions are also announced on the Releases page and the website.
+
+**The minimum safe version.** When a release fixes a fault serious enough that older versions should not be used (a lost project, a crash, wrong prints), raise `minSafe` in `.github/update.json` in that release's commit and write the reason in both languages, one plain sentence each, without `-->`. `release.yml` appends the file to the release notes as a hidden comment; every app from v0.12.1 that starts below it shows a red warning with the reason. Never lower it, and never set it above the version being released.
 
 Installing a new version over an old one **replaces it** and keeps settings, profiles and projects, which are migrated on first open ([DATABASE.md](DATABASE.md)):
 

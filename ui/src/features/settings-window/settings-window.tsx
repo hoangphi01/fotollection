@@ -2,7 +2,9 @@
 import { Cpu, FolderOutput, MessageSquareWarning, RefreshCw, SlidersHorizontal, Sparkles, type LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { SettingsFrame } from '@/components/layout/settings-frame'
+import { SwitchField } from '@/components/forms/switch-field'
 import { SectionCard } from '@/components/layout/section-card'
+import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { ReportIssue } from '@/features/about/report-issue'
 import { UpdateCheck } from '@/features/about/update-check'
 import { ReleaseList } from '@/features/about/version-history'
@@ -23,6 +25,21 @@ const ICONS: Record<Section, LucideIcon> = {
   whatsNew: Sparkles,
 }
 
+/** *Check for updates when the app starts* (FR-103): on from the install, off only when the
+ * user turns it off here. */
+function UpdatesAtStart() {
+  const { t } = useTranslation()
+  const { ui, update } = useUiSettings()
+  return (
+    <SwitchField
+      label={t('update.atStart')}
+      hint={t('update.atStartHint')}
+      checked={ui.checkUpdatesAtStart}
+      onChange={(checkUpdatesAtStart) => void update({ checkUpdatesAtStart })}
+    />
+  )
+}
+
 /** The cards of `section`. */
 function Body({ section, version }: { section: Section; version: string | undefined }) {
   const { t } = useTranslation()
@@ -37,6 +54,7 @@ function Body({ section, version }: { section: Section; version: string | undefi
     case 'updates':
       return (
         <SectionCard icon={<Icon />} title={t('settingsWindow.sections.updates')}>
+          <UpdatesAtStart />
           <UpdateCheck />
         </SectionCard>
       )

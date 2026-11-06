@@ -45,6 +45,7 @@ import { useSelectMode } from '@/features/library/use-select-mode'
 import { useAppMode } from '@/features/modes/use-app-mode'
 import { useModeShortcuts } from '@/features/modes/use-mode-shortcuts'
 import { SettingsWindow } from '@/features/settings-window/settings-window'
+import { UpdatePopup } from '@/features/about/update-popup'
 import { useSettingsShortcut } from '@/features/settings-window/use-settings-window'
 import { CollagePanel } from '@/features/collage/collage-panel'
 import { CollageView } from '@/features/collage/collage-view'
@@ -389,6 +390,8 @@ export function App() {
       )}
       {/* Every setting of this computer, from any mode (FR-086). */}
       <SettingsWindow />
+      {/* A newer version, once per launch, unless turned off (FR-103). */}
+      <UpdatePopup />
       {/* One export dialog for every panel and preview (FR-093). */}
       <ExportDialog exporter={exporter} settings={settings} onSettingsChange={(c) => void update(c)} />
       <PreviewDialog

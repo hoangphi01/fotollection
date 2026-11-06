@@ -41,11 +41,59 @@ pub struct UpdateCheck {
     pub newer: bool,
     /// The release page, for "What's new".
     pub page_url: String,
+    /// The oldest version still safe to use, published with the release (FR-103); `None`
+    /// when the release says none.
+    pub min_safe: Option<String>,
+    /// True when this version is older than `min_safe`: the notice turns into a red warning.
+    pub below_min_safe: bool,
+    /// Why, in English and Vietnamese, plain text (never HTML); empty when not said.
+    pub reason_en: String,
+    pub reason_vi: String,
+}
+
+/// What a release says about older versions (`.github/update.json`, carried in the release
+/// notes as `<!-- fotollection-update {…} -->`, FR-103): one request still answers both.
+#[derive(Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+struct UpdateNote {
+    min_safe: String,
+    #[serde(default)]
+    reason: Reason,
+}
+
+#[derive(Deserialize, Default)]
+struct Reason {
+    #[serde(default)]
+    en: String,
+    #[serde(default)]
+    vi: String,
+}
+
+const NOTE_START: &str = "<!-- fotollection-update ";
+/// The longest reason kept, in characters.
+const MAX_REASON: usize = 400;
+
+/// The note in a release's `body`, if it is there and reads as one; anything else is ignored.
+fn update_note(body: &str) -> Option<UpdateNote> {
+    let start = body.find(NOTE_START)? + NOTE_START.len();
+    let end = body[start..].find("-->")? + start;
+    serde_json::from_str(body[start..end].trim()).ok()
+}
+
+/// A reason as plain, short text: control characters dropped, at most [`MAX_REASON`].
+fn plain(text: &str) -> String {
+    text.chars()
+        .filter(|c| !c.is_control())
+        .take(MAX_REASON)
+        .collect::<String>()
+        .trim()
+        .to_owned()
 }
 
 /// The installer to open after a check found a newer version, never supplied by the webview.
+/// The installer and the release page found by the last check: (download, page).
 #[derive(Default)]
-pub struct PendingDownload(Mutex<Option<String>>);
+pub struct PendingDownload(Mutex<Option<(String, String)>>);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Platform {
@@ -96,6 +144,9 @@ struct Release {
     prerelease: bool,
     #[serde(default)]
     assets: Vec<Asset>,
+    /// The release notes, which may carry the minimum safe version (FR-103).
+    #[serde(default)]
+    body: String,
 }
 
 #[derive(Deserialize)]
@@ -126,19 +177,32 @@ fn evaluate(
         .map(|a| a.browser_download_url.clone())
         .filter(|url| url.starts_with(RELEASES))
         .unwrap_or_else(|| release.html_url.clone());
+    // A minimum above the latest release is a mistake in the note: ignored, never trusted.
+    let note = update_note(&release.body).and_then(|n| {
+        let min = parse(&n.min_safe).ok()?;
+        (min <= latest).then_some((min, n.reason))
+    });
+    let (min_safe, below, reason) = match note {
+        Some((min, reason)) => (Some(min.to_string()), mine < min, reason),
+        None => (None, false, Reason::default()),
+    };
     Ok((
         UpdateCheck {
             current: mine.to_string(),
             latest: latest.to_string(),
             newer: latest > mine && latest.pre.is_empty(),
             page_url: release.html_url,
+            min_safe,
+            below_min_safe: below,
+            reason_en: plain(&reason.en),
+            reason_vi: plain(&reason.vi),
         },
         download,
     ))
 }
 
 /// This build's version. A debug build can pretend to be older (`FOTOLLECTION_FAKE_VERSION`),
-/// to try the "newer version" path.
+/// to try the "newer version" path and the red warning (FR-103).
 fn current_version() -> String {
     #[cfg(debug_assertions)]
     if let Ok(fake) = std::env::var("FOTOLLECTION_FAKE_VERSION") {
@@ -147,7 +211,18 @@ fn current_version() -> String {
     env!("CARGO_PKG_VERSION").to_owned()
 }
 
+/// GitHub's latest release, or, in a debug build only, a file named by
+/// `FOTOLLECTION_UPDATE_FEED` (FR-103), so the notice and the red warning can be tried with
+/// no newer release out (`src-tauri/tests/fixtures/update/`). A release build never reads it.
 fn fetch() -> Result<Vec<u8>, IpcError> {
+    #[cfg(debug_assertions)]
+    if let Some(feed) = std::env::var_os("FOTOLLECTION_UPDATE_FEED") {
+        return std::fs::read(feed).map_err(|e| IpcError::new("update.offline", e.to_string()));
+    }
+    fetch_github()
+}
+
+fn fetch_github() -> Result<Vec<u8>, IpcError> {
     let offline = |e: ureq::Error| IpcError::new("update.offline", e.to_string());
     let agent = ureq::Agent::new_with_config(
         ureq::Agent::config_builder()
@@ -172,22 +247,60 @@ fn fetch() -> Result<Vec<u8>, IpcError> {
         .map_err(offline)
 }
 
+/// One check: GitHub's latest release read, and its installer and page kept for the buttons.
+fn check_now(app: &AppHandle) -> Result<UpdateCheck, IpcError> {
+    let json = fetch()?;
+    let (check, download) = evaluate(&json, &current_version(), Platform::this())
+        .map_err(|why| IpcError::new("update.unreadable", why))?;
+    let pending = tauri::Manager::state::<AppState>(app);
+    if let Ok(mut slot) = pending.update_download.0.lock() {
+        *slot = check.newer.then(|| (download, check.page_url.clone()));
+    }
+    Ok(check)
+}
+
 /// Asks GitHub for the latest version, once, because the user clicked "Check for updates".
 #[tauri::command]
 #[specta::specta]
 pub async fn check_for_update(app: AppHandle) -> Result<UpdateCheck, IpcError> {
-    tauri::async_runtime::spawn_blocking(move || {
-        let json = fetch()?;
-        let (check, download) = evaluate(&json, &current_version(), Platform::this())
-            .map_err(|why| IpcError::new("update.unreadable", why))?;
-        let pending = tauri::Manager::state::<AppState>(&app);
-        if let Ok(mut slot) = pending.update_download.0.lock() {
-            *slot = check.newer.then_some(download);
-        }
-        Ok(check)
-    })
-    .await
-    .map_err(|e| IpcError::internal(e.to_string()))?
+    tauri::async_runtime::spawn_blocking(move || check_now(&app))
+        .await
+        .map_err(|e| IpcError::internal(e.to_string()))?
+}
+
+/// The check at start (FR-103), once, when `ui.checkUpdatesAtStart` is on (the default): a
+/// newer version, or `None` when there is none, the check is off, or the network or GitHub
+/// does not answer, so an offline start shows nothing. It only reads; nothing is downloaded.
+#[tauri::command]
+#[specta::specta]
+pub async fn check_for_update_at_start(app: AppHandle) -> Result<Option<UpdateCheck>, IpcError> {
+    let on = tauri::Manager::state::<AppState>(&app)
+        .ui
+        .read()
+        .is_ok_and(|ui| ui.check_updates_at_start);
+    if !on {
+        return Ok(None);
+    }
+    tauri::async_runtime::spawn_blocking(move || check_now(&app).ok().filter(|c| c.newer))
+        .await
+        .map_err(|e| IpcError::internal(e.to_string()))
+}
+
+/// Opens the release page found by the last check (*What's new*), never a page the webview
+/// names.
+#[tauri::command]
+#[specta::specta]
+pub fn open_update_page(app: AppHandle, state: State<'_, AppState>) -> Result<(), IpcError> {
+    let url = state
+        .update_download
+        .0
+        .lock()
+        .ok()
+        .and_then(|slot| slot.as_ref().map(|(_, page)| page.clone()))
+        .ok_or_else(|| IpcError::new("update.none", "no newer version was found"))?;
+    app.opener()
+        .open_url(url, None::<&str>)
+        .map_err(|e| IpcError::internal(e.to_string()))
 }
 
 /// Opens the installer found by the last check in the browser.
@@ -199,7 +312,7 @@ pub fn open_update_download(app: AppHandle, state: State<'_, AppState>) -> Resul
         .0
         .lock()
         .ok()
-        .and_then(|slot| slot.clone())
+        .and_then(|slot| slot.as_ref().map(|(download, _)| download.clone()))
         .ok_or_else(|| IpcError::new("update.none", "no newer version was found"))?;
     app.opener()
         .open_url(url, None::<&str>)
@@ -252,6 +365,46 @@ mod tests {
             v = tag.trim_start_matches('v'),
         )
         .into_bytes()
+    }
+
+    /// FR-103: the minimum safe version travels in the release notes; below it, a warning;
+    /// a missing, broken or impossible note is ignored.
+    #[test]
+    fn fr_103_the_minimum_safe_version_from_the_release_notes() -> Result<(), String> {
+        let with_body = |body: &str| {
+            let mut json: serde_json::Value =
+                serde_json::from_slice(&release("v0.13.0", false)).map_err(|e| e.to_string())?;
+            json["body"] = serde_json::Value::String(body.to_owned());
+            serde_json::to_vec(&json).map_err(|e| e.to_string())
+        };
+        let note = r#"Highlights…
+
+<!-- fotollection-update {"minSafe":"0.10.0","reason":{"en":"A fault that could stop the app.","vi":"Một lỗi có thể làm app dừng."}} -->"#;
+        let (check, _) = evaluate(&with_body(note)?, "0.9.2", Platform::Mac)?;
+        assert!(check.newer && check.below_min_safe);
+        assert_eq!(check.min_safe.as_deref(), Some("0.10.0"));
+        assert_eq!(check.reason_vi, "Một lỗi có thể làm app dừng.");
+        // At or above the minimum: a quiet note only.
+        let (check, _) = evaluate(&with_body(note)?, "0.10.0", Platform::Mac)?;
+        assert!(check.newer && !check.below_min_safe);
+        // No note, a broken one, or a minimum above the latest release: no warning.
+        for body in [
+            "no note",
+            "<!-- fotollection-update {not json} -->",
+            r#"<!-- fotollection-update {"minSafe":"9.0.0"} -->"#,
+        ] {
+            let (check, _) = evaluate(&with_body(body)?, "0.9.2", Platform::Mac)?;
+            assert!(!check.below_min_safe && check.min_safe.is_none(), "{body}");
+        }
+        // The test feeds the dev app can read parse as releases.
+        for feed in [
+            include_str!("../tests/fixtures/update/newer.json"),
+            include_str!("../tests/fixtures/update/below-min-safe.json"),
+        ] {
+            let (check, _) = evaluate(feed.as_bytes(), "0.12.1", Platform::Mac)?;
+            assert!(check.newer);
+        }
+        Ok(())
     }
 
     #[test]

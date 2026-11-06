@@ -383,11 +383,12 @@ Khi máy ảnh cắm cáp, Fotollection hiện những gì máy thấy và chụ
 
 ## 17. Cập nhật lên phiên bản mới
 
-Fotollection không bao giờ tự lên mạng ([FR-021](PRD.md#fr-021--manual-updates), [FR-061](PRD.md#fr-061--check-for-updates)).
+Fotollection tìm bản mới một lần khi mở app, và khi bạn yêu cầu ([FR-021](PRD.md#fr-021--manual-updates), [FR-061](PRD.md#fr-061--check-for-updates), [FR-103](PRD.md#fr-103--check-for-updates-at-start-never-download-unasked)). Không có gì được tải về cho tới khi bạn chọn; khi không có mạng thì không có gì xảy ra.
 
-1. Mở **Cài đặt** (bánh răng ở đầu thanh bên, hoặc số phiên bản ở chân bảng bất kỳ), rồi **Cập nhật** và **Kiểm tra cập nhật**. Đây là lúc duy nhất app lên mạng.
-2. Nếu có bản mới hơn, nhấp **Tải bộ cài**: trình duyệt sẽ tải đúng bộ cài cho máy của bạn.
-3. Cài đè lên bản đang dùng. Cài đặt, hồ sơ máy ảnh và dự án của bạn vẫn giữ nguyên.
+1. **Khi mở app:** nếu đã có bản mới, một cửa sổ nhỏ báo cho bạn, với **Có gì mới**, **Tải bộ cài** và **Để sau**. Khung đỏ trong đó nghĩa là phiên bản của bạn có lỗi nghiêm trọng đã được sửa: hãy cập nhật. Muốn thôi kiểm tra, tắt **Kiểm tra cập nhật khi mở app** trong **Cài đặt → Cập nhật**.
+2. **Bất cứ lúc nào:** mở **Cài đặt** (bánh răng ở đầu thanh bên, hoặc số phiên bản ở chân bảng bất kỳ), rồi **Cập nhật** và **Kiểm tra cập nhật**.
+3. Nếu có bản mới hơn, nhấp **Tải bộ cài**: trình duyệt sẽ tải đúng bộ cài cho máy của bạn.
+4. Cài đè lên bản đang dùng. Cài đặt, hồ sơ máy ảnh và dự án của bạn vẫn giữ nguyên.
    - **Mac:** mở tệp đĩa và kéo Fotollection vào Applications, rồi chọn **Thay thế**.
    - **Windows:** chạy tệp `-setup.exe`; giữ lựa chọn đầu tiên, *Gỡ cài đặt trước khi cài*. Nếu bạn đã cài bằng `.msi`, hãy cập nhật bằng `.msi`: trộn hai loại sẽ để lại hai bản.
    - **Linux AppImage:** nút này tải AppImage mới; cho phép chạy (`chmod +x`) rồi dùng nó thay cho tệp cũ.

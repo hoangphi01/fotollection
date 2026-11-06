@@ -247,7 +247,7 @@ en:
   p1_title: No upload, no cloud
   p1_text: Photos are read and written on your own disk. There is no server to send them to.
   p2_title: No account, no tracking
-  p2_text: No sign-up, and the app has no analytics or telemetry. It never goes online by itself, not even to check for updates.
+  p2_text: No sign-up, and the app has no analytics or telemetry. From v0.12.1 it asks GitHub once at start whether a newer version is out, which Settings can turn off.
   p6_title: No ads
   p6_text: Nothing to sell you and no one paying to reach you. No adverts, no sponsored suggestions, no in-app purchases, not now and not later.
   p3_title: Places without a map service
@@ -298,8 +298,8 @@ en:
       items:
         - title: Works offline
           text: "Photos, folders, projects and settings never leave your computer. There is no account, no telemetry and no crash upload."
-        - title: Check for updates, only on click
-          text: "The only network request: it asks GitHub (api.github.com) for this project's latest release. GitHub's privacy statement applies to it."
+        - title: Check for updates
+          text: "The only network request: when you click, and from v0.12.1 once at start unless turned off in Settings, it asks GitHub (api.github.com) for this project's latest release. Nothing is downloaded by itself. GitHub's privacy statement applies to it."
         - title: No location in exports
           text: GPS coordinates are removed from exported photos by default.
         - title: This website
@@ -709,7 +709,7 @@ vi:
   p1_title: Không tải lên, không lưu trữ đám mây
   p1_text: Ảnh được đọc và ghi ngay trên ổ đĩa của bạn. Không có máy chủ nào để gửi ảnh tới.
   p2_title: Không tài khoản, không theo dõi
-  p2_text: Không cần đăng ký, và ứng dụng không đo lường hay gửi đi bất kỳ dữ liệu sử dụng nào. Ứng dụng không bao giờ tự lên mạng, kể cả để kiểm tra cập nhật.
+  p2_text: Không cần đăng ký, và ứng dụng không đo lường hay gửi đi bất kỳ dữ liệu sử dụng nào. Từ v0.12.1, ứng dụng hỏi GitHub một lần khi mở xem có bản mới chưa, và bạn tắt được trong Cài đặt.
   p6_title: Không quảng cáo
   p6_text: Không bán gì cho bạn và không ai trả tiền để tiếp cận bạn. Không quảng cáo, không gợi ý được tài trợ, không mua thêm trong ứng dụng, bây giờ và cả sau này.
   p3_title: Địa điểm không cần dịch vụ bản đồ
@@ -760,8 +760,8 @@ vi:
       items:
         - title: Chạy offline
           text: "Ảnh, thư mục, dự án và cài đặt không bao giờ rời khỏi máy của bạn. Không tài khoản, không thu thập dữ liệu sử dụng, không gửi báo lỗi."
-        - title: Kiểm tra cập nhật, chỉ khi bạn bấm
-          text: "Lần lên mạng duy nhất: ứng dụng hỏi GitHub (api.github.com) bản phát hành mới nhất của dự án. Chính sách riêng tư của GitHub áp dụng cho lần hỏi đó."
+        - title: Kiểm tra cập nhật
+          text: "Lần lên mạng duy nhất: khi bạn bấm, và từ v0.12.1 một lần khi mở app trừ khi bạn tắt trong Cài đặt, ứng dụng hỏi GitHub (api.github.com) bản phát hành mới nhất của dự án. Không tự tải gì về. Chính sách riêng tư của GitHub áp dụng cho lần hỏi đó."
         - title: Ảnh xuất không có vị trí
           text: Toạ độ GPS được xoá khỏi ảnh xuất theo mặc định.
         - title: Trang web này

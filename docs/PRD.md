@@ -1048,11 +1048,13 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-103 — Check for updates at start, never download unasked
 
-**P2 (planned; owner's request 2026-11-06: "check only, the user decides to download; on from the install, off only when the user turns it off in Settings, since the app still has bugs").** A switch in Settings → Updates, *Check for updates when the app starts*, **on by default**; turned off, it stays off.
+**P2 (v0.12.1; owner's request 2026-11-06: "check only, the user decides to download; on from the install, off only when the user turns it off in Settings, since the app still has bugs"; "a popup, and a red warning below 0.10").** A switch in Settings → Updates, *Check for updates when the app starts*, **on by default**; turned off, it stays off.
 
 - **The check:** once at start, in the background, from the app's shell, never the core. It reads the latest release and a small `update.json` published with it: the version, and the *minimum safe version* with its reason. Nothing about the user or the machine goes in the request beyond what any HTTPS request carries. Offline, nothing is shown.
-- **A newer version** shows a quiet note with *What's new* and *Download*, which opens the release page. Nothing is downloaded or installed by itself.
-- **Below the minimum safe version** (a release that fixes a serious fault, for example a version that showed zoomed portraits sideways), the note becomes a red warning that names the fault and asks to update. Only versions that carry this feature can show it, so it ships as soon as it can.
+- **A newer version** opens a small window with *What's new* (the release page), *Download* (the installer for this system, in the browser) and *Later* (until the next launch). Nothing is downloaded or installed by itself.
+- **How the minimum travels:** `.github/update.json` (`minSafe`, and a reason in English and Vietnamese) is appended by `release.yml` to the release notes as a hidden comment, so the one request carries it (RELEASE.md §5). The first one says 0.10.0. A note that does not parse, or a minimum above the latest release, is ignored.
+- **Tried without a release:** a debug build reads a release from a file (`FOTOLLECTION_UPDATE_FEED`, the fixtures in `src-tauri/tests/fixtures/update/`) and can pretend to be older (`FOTOLLECTION_FAKE_VERSION`); a release build never reads either.
+- **Below the minimum safe version** (a release that fixes a serious fault, for example a version that showed zoomed portraits sideways), the window carries a red warning that names the fault and asks to update. Only versions that carry this feature can show it, so it ships as soon as it can.
 - SECURITY.md and README's privacy lines say so: one request at start, which can be turned off. The manual *Check for updates* stays as it is (FR-021).
 
 ### FR-104 — File names as Lightroom's templates
@@ -1093,7 +1095,7 @@ Heavy work never runs on the UI thread. Input-to-feedback latency is **under 100
 
 ### NFR-006 — Offline and zero telemetry
 
-The app works with no network connection. By default it makes **zero** network requests: no telemetry, no crash reporting and no update checks unless the user opts in. The only request the app can make is the update check, and only when the user clicks *Check for updates* ([FR-061](#fr-061--check-for-updates)).
+The app works with no network connection. It makes no telemetry or crash-reporting requests, ever. The only request it can make is the update check: when the user clicks *Check for updates* ([FR-061](#fr-061--check-for-updates)), and, from v0.12.1, once at start unless *Check for updates when the app starts* is turned off ([FR-103](#fr-103--check-for-updates-at-start-never-download-unasked); on by default, the owner's decision of 2026-11-06 while the app still has faults). It reads GitHub's latest release and downloads nothing by itself. Offline, nothing is shown and nothing fails.
 
 ### NFR-007 — Platforms
 

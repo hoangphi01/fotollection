@@ -1,6 +1,6 @@
 # ADR-0025: Check for updates only when the user clicks, never install
 
-- **Status:** Accepted. Supersedes [ADR-0021](0021-versioning-and-automated-releases.md) in part (its "no update check" rule); its releases, versioning and "no in-app updater" stay
+- **Status:** Accepted, amended 2026-11-06 (FR-103: a check at start, on by default). Supersedes [ADR-0021](0021-versioning-and-automated-releases.md) in part (its "no update check" rule); its releases, versioning and "no in-app updater" stay
 - **Date:** 2026-10-25
 - **Related:** FR-021, FR-061, NFR-006, ADR-0009, ADR-0021
 
@@ -32,3 +32,9 @@ What remained was telling the user that a newer version exists.
 - No secret to keep; integrity still rests on GitHub's HTTPS and the published checksums.
 - Users install the new version themselves, which replaces the old one and keeps settings and projects. Mixing the NSIS and MSI installers installs two copies, so the site and guides recommend `-setup.exe`.
 - A debug build can pretend to be older with `FOTOLLECTION_FAKE_VERSION`, to test the "newer version" path.
+
+## Amendment, 2026-11-06: a check at start (FR-103)
+
+The owner chose option 2 after all, on by default: the app still has faults, and a user should learn of a fix without thinking to click. *Check for updates when the app starts* (Settings → Updates) sends the same single GET once per launch, through the same code and limits; turned off, it stays off. Offline, nothing is shown. A newer version opens a small window with *What's new* and *Download*; still nothing is downloaded or run by the app.
+
+The release also says which versions are no longer safe: `.github/update.json` (`minSafe` and a reason in English and Vietnamese) is appended to the release notes by `release.yml` as an HTML comment, so the one request carries it. Below `minSafe`, the window carries a red warning with the reason, shown as plain text. A note that does not parse, or a `minSafe` above the latest release, is ignored. A debug build reads a release from a file instead (`FOTOLLECTION_UPDATE_FEED`, with `FOTOLLECTION_FAKE_VERSION`), to try both windows; a release build never does.

@@ -126,7 +126,7 @@ Layer 4: SAFE RENDERING (UI)
 
 ## 5. Privacy
 
-- **Zero network by default** ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)). No telemetry, no crash upload. The only request is *Check for updates*, on click; *Report a problem* only opens a fixed page in the browser ([§2](#2-tauri-hardening)). CI asserts that no networking crate is linked into the core.
+- **Zero network by default** ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)). No telemetry, no crash upload. The only request is the update check: on a click on *Check for updates*, and once at start unless *Check for updates when the app starts* is off in Settings → Updates (FR-103, on by default from v0.12.1, the owner's decision while the app still has faults): one GET of GitHub's latest release, nothing about the user or the photos, nothing downloaded by itself; the minimum safe version it reads is plain text shown as text, never HTML; *Report a problem* only opens a fixed page in the browser ([§2](#2-tauri-hardening)). CI asserts that no networking crate is linked into the core.
 - **The public privacy policy** is on the website's [code signing policy page](https://fotollection.org/code-signing/#privacy) (`site/_includes/code-signing.html`), as SignPath Foundation requires. It must match this section and [FR-061](PRD.md#fr-061--check-for-updates): change both together.
 - Reverse geocoding uses a bundled dataset, so coordinates never leave the device ([ADR-0003](adr/0003-offline-geocoding-geonames.md)).
 - GPS is stripped from exported files by default ([FR-010](PRD.md#fr-010--metadata-privacy-on-export)).

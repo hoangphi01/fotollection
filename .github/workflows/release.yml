@@ -204,6 +204,10 @@ jobs:
             echo "Full changelog: https://github.com/$GITHUB_REPOSITORY/blob/v$VERSION/CHANGELOG.md"
             echo
             cat .github/release-notes.md
+            # The oldest version still safe to use (FR-103), read by the app's check at start;
+            # an HTML comment, so the release page does not show it.
+            echo
+            echo "<!-- fotollection-update $(jq -c . .github/update.json) -->"
           } >> notes.md
 
       - name: Tag and publish

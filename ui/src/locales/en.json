@@ -605,7 +605,14 @@
     "available": "Fotollection {{version}} is available",
     "download": "Download the installer",
     "replaces": "Install it over this version: it replaces the app and keeps your settings and projects.",
-    "privacy": "The app goes online only when you click this button."
+    "privacy": "Click to look now; the app also looks once at start unless that is turned off above.",
+    "popupTitle": "Fotollection {{version}} is out",
+    "popupBody": "You have {{current}}. Nothing is downloaded until you choose.",
+    "belowMinSafe": "Versions before {{version}} should be updated.",
+    "later": "Later",
+    "whatsNew": "What's new",
+    "atStart": "Check for updates when the app starts",
+    "atStartHint": "One request to GitHub at start; nothing about you or your photos is sent, and nothing is downloaded by itself."
   },
   "cache": {
     "measuring": "Measuring the cache…",

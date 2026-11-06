@@ -39,6 +39,8 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             document::document_requested,
             updates::check_for_update,
             updates::open_update_download,
+            updates::check_for_update_at_start,
+            updates::open_update_page,
             updates::open_issue_page,
             updates::open_website,
             updates::diagnostics,

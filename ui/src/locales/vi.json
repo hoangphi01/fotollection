@@ -583,7 +583,14 @@
     "available": "Đã có Fotollection {{version}}",
     "download": "Tải bộ cài",
     "replaces": "Cài đè lên bản này: bộ cài thay ứng dụng và giữ nguyên cài đặt, dự án của bạn.",
-    "privacy": "Ứng dụng chỉ lên mạng khi bạn bấm nút này."
+    "privacy": "Nhấp để kiểm tra ngay; app cũng kiểm tra một lần khi mở, trừ khi bạn tắt ở trên.",
+    "popupTitle": "Đã có Fotollection {{version}}",
+    "popupBody": "Bạn đang dùng {{current}}. Không có gì được tải về cho tới khi bạn chọn.",
+    "belowMinSafe": "Các phiên bản trước {{version}} nên được cập nhật.",
+    "later": "Để sau",
+    "whatsNew": "Có gì mới",
+    "atStart": "Kiểm tra cập nhật khi mở app",
+    "atStartHint": "Một yêu cầu tới GitHub khi mở app; không gửi gì về bạn hay ảnh của bạn, và không tự tải gì về."
   },
   "cache": {
     "measuring": "Đang đo cache…",

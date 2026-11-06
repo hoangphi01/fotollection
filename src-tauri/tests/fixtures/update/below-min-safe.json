@@ -1,0 +1,17 @@
+{
+  "tag_name": "v0.13.0",
+  "html_url": "https://github.com/hoangphi01/fotollection/releases/tag/v0.13.0",
+  "draft": false,
+  "prerelease": false,
+  "body": "- New: a test release for the dev app (FR-103)\n\n<!-- fotollection-update {\"minSafe\":\"0.12.2\",\"reason\":{\"en\":\"This version has a fault that can lose a project's edits.\",\"vi\":\"Phiên bản này có lỗi có thể làm mất chỉnh sửa của dự án.\"}} -->",
+  "assets": [
+    {
+      "name": "Fotollection_0.13.0_universal.dmg",
+      "browser_download_url": "https://github.com/hoangphi01/fotollection/releases/download/v0.13.0/Fotollection_0.13.0_universal.dmg"
+    },
+    {
+      "name": "Fotollection_0.13.0_x64-setup.exe",
+      "browser_download_url": "https://github.com/hoangphi01/fotollection/releases/download/v0.13.0/Fotollection_0.13.0_x64-setup.exe"
+    }
+  ]
+}

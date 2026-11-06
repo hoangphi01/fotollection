@@ -14,10 +14,10 @@ type State =
   | { kind: 'error'; message: string }
 
 /**
- * "Check for updates" (FR-061), in the Settings window (FR-086): the app goes online only when
- * this button is clicked. A newer
- * version opens its installer in the browser; installing it replaces this one and keeps
- * settings and projects.
+ * "Check for updates" (FR-061), in the Settings window (FR-086), beside the check at start
+ * (FR-103): the app goes online when this button is clicked, and once at start unless that is
+ * turned off. A newer version opens its installer in the browser; installing it replaces this
+ * one and keeps settings and projects.
  */
 export function UpdateCheck() {
   const { t } = useTranslation()

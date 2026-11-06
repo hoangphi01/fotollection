@@ -385,11 +385,12 @@ With a camera plugged in by cable, Fotollection shows what it sees and takes the
 
 ## 17. Updating to a new version
 
-Fotollection never goes online by itself ([FR-021](PRD.md#fr-021--manual-updates), [FR-061](PRD.md#fr-061--check-for-updates)).
+Fotollection looks for a newer version once when it starts, and when you ask ([FR-021](PRD.md#fr-021--manual-updates), [FR-061](PRD.md#fr-061--check-for-updates), [FR-103](PRD.md#fr-103--check-for-updates-at-start-never-download-unasked)). Nothing is downloaded until you choose; offline, nothing happens.
 
-1. Open **Settings** (the gear at the top of the sidebar, or the version number at the foot of any panel), then **Updates** and **Check for updates**. This is the only time the app goes online.
-2. If a newer version exists, click **Download the installer**: your browser downloads the right one for your computer.
-3. Install it over the current version. Your settings, camera profiles and projects stay.
+1. **At start:** if a newer version is out, a small window says so, with **What's new**, **Download** and **Later**. A red box inside it means your version has a serious fault fixed since: please update. To stop the check, turn off **Check for updates when the app starts** in **Settings → Updates**.
+2. **Any time:** open **Settings** (the gear at the top of the sidebar, or the version number at the foot of any panel), then **Updates** and **Check for updates**.
+3. If a newer version exists, click **Download the installer**: your browser downloads the right one for your computer.
+4. Install it over the current version. Your settings, camera profiles and projects stay.
    - **Mac:** open the disk image and drag Fotollection into Applications, then choose **Replace**.
    - **Windows:** run the `-setup.exe`; keep the first choice, *Uninstall before installing*. If you installed with the `.msi`, update with the `.msi`: mixing the two leaves two copies.
    - **Linux AppImage:** the button downloads the new AppImage; make it executable (`chmod +x`) and use it in place of the old file.
