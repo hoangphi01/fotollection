@@ -14,6 +14,13 @@
 
 ## 2026-11-06
 
+### The toolbar was cut off in the full-window layout: a column added, the row not measured again (FR-095, UI)
+
+- **Seen:** in the full-window layout the preview's toolbar lost its last buttons past the inspector, and the zoom read *Vừa khung* on two lines, off centre (owner's screenshots, v0.12.0 development).
+- **Why:** the left column (18 rem) was added beside the 24 rem inspector, leaving the stage column about 508 px at the 1180 px minimum; the toolbar needs about 660. The row was measured once, in the dialog layout, before the column existed. The zoom showed a word (*Fit*, *Vừa khung*) in a 56 px box.
+- **Fix:** v0.12.1 brings the inspector to 18 rem as every panel, shows zoom as a percentage only, moves the count to the filmstrip's label and makes the row a container that drops the zoom buttons when narrow; `MEASURE=1` gains a check for any row or label wider than its box.
+- **Rule:** a new column or control re-measures every row it shares, at 1180 px and in Vietnamese, before it is kept; a fixed box never holds a word (STYLE_RULE §4, "Icons first").
+
 ### Zoom showed a portrait photo sideways: two ways to the full image, one forgot to turn it (FR-057, v0.11.2)
 
 - **Seen:** the owner zoomed into a portrait GX9 photo in the compare view: both halves showed the sharp part turned a quarter and stretched. The same happens in the single view; it shipped in v0.11.0 and v0.11.1.

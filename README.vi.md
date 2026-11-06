@@ -63,7 +63,7 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | ✉️ | **Bưu thiếp** (mới trong v0.9.4): trong chế độ Ghép ảnh, mỗi tấm 10 × 15 có một ảnh và mặt sau bưu thiếp, ô dán tem nét đứt và dòng kẻ, chữ gõ bằng font máy đánh chữ hoặc font viết tay, hay tự viết tay, một địa chỉ cho cả bộ | 1 |
 | 🎨 | **Chỉnh màu** (mới trong v0.9.9): **Cơ bản** (sáng, tương phản, ấm / lạnh, bão hoà, thêm vùng sáng, vùng tối, tint, rực màu) và **Công cụ** (fade, nhuộm vùng tối và vùng sáng, trắng đen qua kính lọc), cho mọi ảnh hoặc từng ảnh; dấu ngày và viền không bao giờ bị nhuộm, ảnh chưa chỉnh gì in ra như trước | 2 |
 | 🔲 | **Viền 3 mm** nằm trong khổ in cho mọi tấm in, có hay không có khung thông tin (mới trong v0.9.0) | 2 |
-| ⭐ | **Lọc ảnh**: chấm sao, cờ chọn/loại và bộ lọc (cờ, sao, RAW hay không), ảnh RAW có badge trong gallery, dải ảnh dưới tấm ảnh trong preview; export đúng tập ảnh đang lọc | 1 |
+| ⭐ | **Lọc ảnh**: chấm sao, cờ chọn/loại và bộ lọc (cờ, sao, RAW hay không), ảnh RAW có badge trong gallery, dải ảnh dưới tấm ảnh trong preview, và chế độ chỉnh ảnh quen thuộc với người dùng Lightroom (phím tắt, so sánh trước/sau cạnh nhau hoặc chia đôi, Điều hướng và Lịch sử, phủ kín cửa sổ); export đúng tập ảnh đang lọc | 1 |
 | ✨ | **Gợi ý ảnh đẹp nhất**: gom các ảnh chụp liên tiếp và gần giống nhau, gợi ý ảnh đẹp nhất mỗi nhóm (nét nhất, mắt mở, không rung) kèm lý do. Chạy hoàn toàn offline | 1 |
 | 🏷️ | **Khung thông tin "Shot on …"** với máy ảnh, ống kính và thông số phơi sáng, kiểu LUMIX Lab, đúng tỉ lệ khổ in | 1 |
 | 🖼️ | **Giữ nguyên chất lượng**: export ở độ phân giải đầy đủ, giữ ICC profile, JPEG 4:4:4 cho ảnh in | 1 |

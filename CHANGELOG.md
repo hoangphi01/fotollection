@@ -13,7 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - New: one Settings window, as on an iPad: the gear beside the author's name, or ⌘,
 - New: memory and cache to manage, with Default and Auto for your computer; memory given back when it runs short
 - New: a collage sheet says its pixels and how sharp it prints
-- New: a filmstrip under the photo in the preview, as in Lightroom
+- New: a develop view a Lightroom user can read: its keys, a filmstrip, the whole window with Navigator and History
+- New: before and after side by side, split or one above the other
+- Fixes: zooming into a portrait or turned photo shows it the right way up again
 
 ### Added
 

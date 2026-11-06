@@ -918,7 +918,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-086 — One Settings window
 
-**P1 (in progress, v0.12.0; owner's request 2026-11-05).** Every setting of the app in one window instead of a corner of each panel: a gear button beside "by @hoangphi01" opens it, laid out as the preview window is, in two columns as on an iPad, the narrow one a list of tabs and the wide one that tab's settings.
+**P1 (done, v0.12.0; owner's request 2026-11-05).** Every setting of the app in one window instead of a corner of each panel: a gear button beside "by @hoangphi01" opens it, laid out as the preview window is, in two columns as on an iPad, the narrow one a list of tabs and the wide one that tab's settings.
 
 - **The cache, to manage** (owner, 2026-11-05): how much the thumbnails, the standard previews ([FR-091](#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)) and the analyses take on disk against the limit, and how much memory the previews may use, with *Clear cache*.
 - **In it:** the language, the theme, `.fotosettings` export and import ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)), language packs ([FR-084](#fr-084--language-packs-anyone-can-add)), the cache, updates, *Report a problem*, the version and the changelog, and every other app-wide setting now spread over the panels and the version popover.
@@ -947,11 +947,11 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-087 — How large a collage sheet prints
 
-**P1 (in progress, v0.12.0; owner's request 2026-11-05).** In Collage mode, the *Print size* card says how many pixels a sheet of two photos side by side or one above the other has (two 16 MP photos make a sheet of about W × H px), and whether that is sharp, acceptable or soft for the chosen size, as the resolution warning does for one photo ([FR-026](#fr-026--resolution-warning)). The pixels are the export's: the sheet at the less sharp photo's density, at most 600 DPI ([ADR-0032](adr/0032-collage-sheets-from-two-cell-plans.md)), shown as *Sheet* and *Prints at* in the card, in the panel and the sheet's preview.
+**P1 (done, v0.12.0; owner's request 2026-11-05).** In Collage mode, the *Print size* card says how many pixels a sheet of two photos side by side or one above the other has (two 16 MP photos make a sheet of about W × H px), and whether that is sharp, acceptable or soft for the chosen size, as the resolution warning does for one photo ([FR-026](#fr-026--resolution-warning)). The pixels are the export's: the sheet at the less sharp photo's density, at most 600 DPI ([ADR-0032](adr/0032-collage-sheets-from-two-cell-plans.md)), shown as *Sheet* and *Prints at* in the card, in the panel and the sheet's preview.
 
 ### FR-090 — A filmstrip in the photo's preview
 
-**P1 (v0.12.0; owner's request 2026-11-05).** In Pro mode, the photo's preview shows a strip of thumbnails under the photo, as Lightroom's filmstrip: the photos of the current view in their order, the one shown marked and kept in sight, so a user skims the set and picks a photo with one click instead of ← → one at a time.
+**P1 (done, v0.12.0; owner's request 2026-11-05).** In Pro mode, the photo's preview shows a strip of thumbnails under the photo, as Lightroom's filmstrip: the photos of the current view in their order, the one shown marked and kept in sight, so a user skims the set and picks a photo with one click instead of ← → one at a time.
 
 - **Fast:** the strip uses the gallery's T1 thumbnails (no new decode), virtualized so a 500-photo set scrolls smoothly; moving to a far photo starts its preview at once and never waits for the last one's (LESSONS 2026-11-05).
 - **The same order and filter as the gallery**, with the RAW, rating and print-basket badges of the grid tiles; select mode and the cull keys keep working.
@@ -971,7 +971,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-092 — Export quality on a slider, with a live estimate and a print verdict
 
-**P1 (planned, v0.12.0; owner's request 2026-11-06: "a slider like Lightroom's, but better").** The export card gets a *Quality* slider (JPEG quality, 60–100, default 95 as [FR-008](#fr-008--original-quality-export) says), as Lightroom's export dialog has, and goes further:
+**P1 (planned, v0.12.2; owner's request 2026-11-06: "a slider like Lightroom's, but better").** The export card gets a *Quality* slider (JPEG quality, 60–100, default 95 as [FR-008](#fr-008--original-quality-export) says), as Lightroom's export dialog has, and goes further:
 
 - **The estimate follows the slider:** while it moves, the export's size estimate ([FR-053](#fr-053--export-for-social-media)) updates for the value under the thumb, not only after release; the last answer stays while the next is computed, and a newer value replaces an older one in flight (never a queue of encodes).
 - **Whether it prints well, as badges:** beside the value, a badge in the style of the resolution warning ([FR-026](#fr-026--resolution-warning)) says what the setting is good for, for example *Print, excellent*, *Print, good*, *Screen only*, with a hint explaining it. The thresholds are measured on real photos before they are fixed (the difference from quality 100 at print size), never guessed; 4:4:4 chroma stays for prints.
@@ -979,7 +979,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-093 — The export's options in one small dialog
 
-**P1 (planned, v0.12.0; owner's request 2026-11-06: "gather every export option in one small pop-up instead of spilling down the right-hand panel; a press on Export shows it, with a save button and *don't ask again*, after which Export just exports; to change, go to Settings").** The panels keep only the *Export* button with its count (ticked photos, sheets) and the size estimate. A press on *Export* opens a small dialog that holds every option that today stacks in the panel's footer:
+**P1 (planned, v0.12.2; owner's request 2026-11-06: "gather every export option in one small pop-up instead of spilling down the right-hand panel; a press on Export shows it, with a save button and *don't ask again*, after which Export just exports; to change, go to Settings").** The panels keep only the *Export* button with its count (ticked photos, sheets) and the size estimate. A press on *Export* opens a small dialog that holds every option that today stacks in the panel's footer:
 
 - for print or to share (preset, long edge) and the share fill (ratio, width and height, colour);
 - folders together or apart, one folder or by day;
@@ -1002,7 +1002,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-095 — A develop view a Lightroom user can read
 
-**P1 (v0.12.0; owner's request 2026-11-06: "complete and professional, done well, not rushed; a Lightroom user should feel at home fast, with our own character").** Pro mode's photo preview becomes a develop view.
+**P1 (done, v0.12.0; owner's request 2026-11-06: "complete and professional, done well, not rushed; a Lightroom user should feel at home fast, with our own character").** Pro mode's photo preview becomes a develop view.
 
 - **Two layouts, chosen in Settings → General** (`ui.previewLayout`): *In a window*, the dialog as before, and *Fill the app window*, edge to edge under the Windows title bar (FR-052). `F` switches between them and the choice is kept.
 - **A left column in the full layout** (18 rem, as the side panels): *Navigator*, the photo small with a frame for the zoomed area (click or drag to move it; Fit, Fill, 1:1, 2:1), and *History*, this photo's steps newest first, named by what changed (*Warmth +8*, *Crop*, *Paste settings*); a click brings the photo back to that state as a new step, so it can be undone. v0.13.0 adds *Presets & LUTs* at its top (FR-079, FR-070). `Tab`, pressed with the photo itself focused (so it still moves between the inspector's controls), hides both side columns.
@@ -1013,19 +1013,19 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-096 — Before and after, side by side
 
-**P1 (v0.12.0; owner's request 2026-11-06).** `\` and the *Before* button switch between the photo with and without its colour (keyboard and mouse alike); `Y` shows them side by side, `⇧Y` split by a line one drags across the photo, `⌥Y` one above the other, and the menu beside the button also splits them top and bottom, as Lightroom's views (owner, 2026-11-06). Both halves zoom and pan together and stay sharp at 1:1. *Before* keeps the crop and the frame: what changes is the colour.
+**P1 (done, v0.12.0; owner's request 2026-11-06).** `\` and the *Before* button switch between the photo with and without its colour (keyboard and mouse alike); `Y` shows them side by side, `⇧Y` split by a line one drags across the photo, `⌥Y` one above the other, and the menu beside the button also splits them top and bottom, as Lightroom's views (owner, 2026-11-06). Both halves zoom and pan together and stay sharp at 1:1. *Before* keeps the crop and the frame: what changes is the colour.
 
 ### FR-097 — Settings from one photo to others, and Reset
 
-**P1 (v0.12.0; owner's request 2026-11-06).** *Copy settings* (⇧⌘C) asks what to copy, in a short list (look, RAW look, crop position, stamp), as Lightroom's dialog; *Paste* (⇧⌘V) gives them to the photo shown or to every ticked photo (Lightroom's *Sync*), as one step to undo. *Reset* (⇧⌘R) gives the photo back to the shared settings: its look, RAW look, crop and own stamp, as one step. Undo and redo are buttons as well as keys.
+**P1 (planned, v0.12.2; owner's request 2026-11-06).** *Copy settings* (⇧⌘C) asks what to copy, in a short list (look, RAW look, crop position, stamp), as Lightroom's dialog; *Paste* (⇧⌘V) gives them to the photo shown or to every ticked photo (Lightroom's *Sync*), as one step to undo. *Reset* (⇧⌘R) gives the photo back to the shared settings: its look, RAW look, crop and own stamp, as one step. Undo and redo are buttons as well as keys.
 
 ### FR-098 — Reading the photo: histogram, clipping, white balance
 
-**P1 (v0.12.0; owner's request 2026-11-06).** A histogram (red, green, blue and light) heads the inspector, made in Rust from the preview just drawn (≤ 3 ms, OPTIMIZATION §3) and following a slider while it is dragged. `J` shows blown highlights in red and blocked shadows in blue over the photo. `W` picks white balance: a click on what should be neutral grey sets warmth and tint, as one step.
+**P1 (planned, v0.12.2; owner's request 2026-11-06).** A histogram (red, green, blue and light) sits at the top of the develop view's left column, above the Navigator (owner, 2026-11-06; it heads the inspector in the dialog layout, which has no left column), made in Rust from the preview just drawn (≤ 3 ms, OPTIMIZATION §3) and following a slider while it is dragged. `J` shows blown highlights in red and blocked shadows in blue over the photo. `W` picks white balance: a click on what should be neutral grey sets warmth and tint, as one step.
 
 ### FR-099 — Controls with depth
 
-**P1 (v0.12.0, right after the compare views; owner's request 2026-11-06, pointing at Sentry's interface, then moved forward from v0.13.0 the same day: "to transform the app").** Buttons and controls stand out from the surface: a raised button has a darker lip under it in a shade of its own colour and a faint highlight on top, and goes down by its lip when pressed; inputs and segmented groups sit slightly into the surface; cards carry a faint border and a lifted shadow; a selected row has an accent outline. Done once in the shared primitives and theme tokens (`button`, `toggle`, inputs, `SectionCard`), so every panel follows; measured with `MEASURE=1` in both themes; the photo stage stays neutral.
+**P1 (planned, v0.12.1, the new look; owner's request 2026-11-06, pointing at Sentry's interface, then moved forward from v0.13.0 the same day: "to transform the app").** Buttons and controls stand out from the surface: a raised button has a darker lip under it in a shade of its own colour and a faint highlight on top, and goes down by its lip when pressed; inputs and segmented groups sit slightly into the surface; cards carry a faint border and a lifted shadow; a selected row has an accent outline. Done once in the shared primitives and theme tokens (`button`, `toggle`, inputs, `SectionCard`), so every panel follows; measured with `MEASURE=1` in both themes; the photo stage stays neutral.
 
 ### FR-100 — Motion that feels like one app
 
