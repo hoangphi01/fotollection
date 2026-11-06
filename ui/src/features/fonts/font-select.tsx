@@ -84,7 +84,7 @@ export function FontSelect({ fonts, value, onChange, label, builtIns, builtIn }:
         </Select>
         {current && (
           <Button
-            variant="ghost"
+            variant="ghost-destructive"
             size="icon-sm"
             aria-label={t('fonts.removeNamed', { name: current.name })}
             data-hint={t('fonts.removeTitle')}

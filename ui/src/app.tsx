@@ -357,7 +357,7 @@ export function App() {
             ) : photos.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
                 <p>{t('app.noMatch')}</p>
-                <Button variant="outline" size="sm" onClick={() => setFilter({ ...ALL_PHOTOS, folders: filter.folders })}>
+                <Button variant="destructive" size="sm" onClick={() => setFilter({ ...ALL_PHOTOS, folders: filter.folders })}>
                   <FilterX data-icon="inline-start" /> {t('app.showAll')}
                 </Button>
               </div>

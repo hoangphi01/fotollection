@@ -17,8 +17,13 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground [--face:var(--secondary)] raised hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] active:not-aria-[haspopup]:raised-pressed aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost:
           "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+        // Red for anything that deletes, clears, removes or stops (owner, 2026-11-06; STYLE_RULE
+        // §4 "Red"): solid, with a burgundy lip as the red badges, deeper under the pointer.
         destructive:
-          "[--face:var(--destructive)] raised active:not-aria-[haspopup]:raised-pressed bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+          "bg-destructive text-white [--face:var(--destructive)] [--lip-color:var(--danger-lip)] raised-lip active:not-aria-[haspopup]:raised-lip-pressed hover:bg-[color-mix(in_oklch,var(--destructive),black_30%)] focus-visible:border-destructive/40 focus-visible:ring-destructive/30",
+        // The same meaning, inline or icon-only (a tab's ✕, a row's bin): red ink, a red wash on hover.
+        "ghost-destructive":
+          "text-destructive hover:bg-destructive/10 hover:text-destructive aria-expanded:bg-destructive/10 dark:hover:bg-destructive/20",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

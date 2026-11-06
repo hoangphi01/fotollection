@@ -71,7 +71,7 @@ function DialogContent({
                 deepens to burgundy under the pointer, in both themes. */}
             <Button
               variant="destructive"
-              className="absolute top-2.5 right-2.5 size-7 rounded-md bg-destructive text-white [--face:var(--destructive)] [--lip-color:var(--danger-lip)] [--lip:3px] raised-lip active:translate-y-px active:raised-lip-pressed transition-colors hover:bg-[color-mix(in_oklch,var(--destructive),black_30%)] dark:bg-destructive dark:hover:bg-[color-mix(in_oklch,var(--destructive),black_30%)]"
+              className="absolute top-2.5 right-2.5 size-7 rounded-md [--lip:3px]"
               size="icon-sm"
             >
               <XIcon

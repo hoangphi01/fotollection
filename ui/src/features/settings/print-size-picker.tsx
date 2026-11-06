@@ -144,7 +144,7 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
         </Select>
         {selectedCustom && (
           <Button
-            variant="ghost"
+            variant="ghost-destructive"
             size="icon-sm"
             aria-label={t('print.deleteNamed', { name: selectedCustom.name })}
             data-hint={t('print.deleteTitle')}

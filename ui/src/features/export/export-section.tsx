@@ -169,7 +169,7 @@ export function ExportSection({
       ) : null}
 
       {running ? (
-        <Button variant="outline" className="w-full" onClick={() => void cancel()}>
+        <Button variant="destructive" className="w-full" onClick={() => void cancel()}>
           <X data-icon="inline-start" />
           {t('common.cancel')}
         </Button>

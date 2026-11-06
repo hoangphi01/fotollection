@@ -113,7 +113,7 @@ export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps
           />
           {view.hasLogoImage ? (
             <Button
-              variant="ghost"
+              variant="ghost-destructive"
               size="icon-sm"
               aria-label={t('camera.removeLogo')}
               data-hint={t('camera.removeLogo')}

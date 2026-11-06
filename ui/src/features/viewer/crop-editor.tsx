@@ -309,7 +309,7 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
         <Button variant="ghost" size="sm" className="text-stage-ink" onClick={() => onCommit(null, 0)}>
           <RotateCcw data-icon="inline-start" /> {t('common.reset')}
         </Button>
-        <Button variant="secondary" size="sm" onClick={onCancel}>
+        <Button variant="destructive" size="sm" onClick={onCancel}>
           <X data-icon="inline-start" /> {t('common.cancel')}
         </Button>
         <Button size="sm" onClick={() => onCommit(frame, angle)}>

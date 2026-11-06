@@ -134,7 +134,7 @@ export function MemorySection() {
         <Field hint={t('cache.note')}>
           <Button
             size="sm"
-            variant="outline"
+            variant="destructive"
             className="w-full"
             disabled={!cache || cache.files === 0 || clearing}
             onClick={() => void clear()}

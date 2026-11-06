@@ -276,7 +276,7 @@ export function LibrarySidebar({
                   </button>
                   {/* Like closing a browser tab: shown on hover, the files stay on disk. */}
                   <Button
-                    variant="ghost"
+                    variant="ghost-destructive"
                     size="icon-xs"
                     aria-label={t('library.removeFolder', { name })}
                     data-hint={t('library.removeFolderHint')}

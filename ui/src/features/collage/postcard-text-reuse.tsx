@@ -109,7 +109,7 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
               <span className="truncate">{address.replaceAll('\n', ', ')}</span>
             </Button>
             <Button
-              variant="ghost"
+              variant="ghost-destructive"
               size="icon-sm"
               aria-label={t('postcard.reuse.forget')}
               data-hint={t('postcard.reuse.forget')}

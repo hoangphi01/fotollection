@@ -50,7 +50,7 @@ export function CullFilterBar({ filter, onChange }: CullFilterBarProps) {
           {active > 0 ? t('culling.filtersOn', { count: active }) : t('culling.filters')}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-64">
+      <PopoverContent align="end" className="w-panel">
         <Stack>
           <Field label={t('culling.filterByFlag')}>
             <Select value={filter.flag} onValueChange={(flag) => onChange({ ...filter, flag: flag as FlagFilter })}>
@@ -91,7 +91,7 @@ export function CullFilterBar({ filter, onChange }: CullFilterBarProps) {
           </Field>
           {active > 0 && (
             <Button
-              variant="ghost"
+              variant="destructive"
               size="sm"
               className="w-full"
               onClick={() => onChange({ ...filter, flag: 'all', minRating: 0, kind: 'all' })}

@@ -19,7 +19,7 @@ export function CameraSessionBanner({ count, onSave, onDiscard }: CameraSessionB
       <AlertDescription className="flex flex-wrap items-center gap-3">
         <span className="min-w-0 flex-1">{t('capture.sessionBanner', { count })}</span>
         <span className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={onDiscard}>
+          <Button variant="destructive" size="sm" onClick={onDiscard}>
             <Trash2 data-icon="inline-start" /> {t('capture.discard')}
           </Button>
           <Button size="sm" onClick={onSave}>
