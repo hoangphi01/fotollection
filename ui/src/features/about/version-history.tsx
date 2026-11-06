@@ -35,22 +35,39 @@ export function VersionBadge({ version }: { version: string }) {
 /**
  * Every release with two lines on what it brought (FR-021), and *Show all* for its whole
  * entry, by kind (FR-086). The CHANGELOG is bundled at build time, so this works offline; the
- * version running is marked and opens unfolded. Entries are shown as text, never as HTML.
+ * version running is marked and opens unfolded. One entry is open at a time: opening another
+ * folds the last (owner, 2026-11-06), so the list stays short. Entries are shown as text,
+ * never as HTML.
  */
 export function ReleaseList({ version }: { version: string | undefined }) {
   const releases = useMemo(() => releaseSummaries(changelog), [])
+  // The version open, or none; the running one until the user picks another.
+  const [chosen, setChosen] = useState<string | null | undefined>(undefined)
+  const openVersion = chosen === undefined ? version : chosen
   return (
     <RowList>
       {releases.map((r) => (
-        <Release key={r.version} release={r} current={r.version === version} />
+        <Release
+          key={r.version}
+          release={r}
+          current={r.version === version}
+          open={r.version === openVersion}
+          onToggle={() => setChosen(r.version === openVersion ? null : r.version)}
+        />
       ))}
     </RowList>
   )
 }
 
-function Release({ release: r, current }: { release: ReleaseSummary; current: boolean }) {
+type ReleaseProps = {
+  release: ReleaseSummary
+  current: boolean
+  open: boolean
+  onToggle: () => void
+}
+
+function Release({ release: r, current, open, onToggle }: ReleaseProps) {
   const { t } = useTranslation()
-  const [open, setOpen] = useState(current)
   return (
     <li>
       <Field>
@@ -63,7 +80,7 @@ function Release({ release: r, current }: { release: ReleaseSummary; current: bo
             </Badge>
           )}
           {r.notes.length > 0 && (
-            <Button variant="ghost" size="xs" className="ml-auto" aria-expanded={open} onClick={() => setOpen(!open)}>
+            <Button variant="ghost" size="xs" className="ml-auto" aria-expanded={open} onClick={onToggle}>
               <ChevronDown data-icon="inline-start" className={cn('transition-transform', open && 'rotate-180')} />
               {t(open ? 'about.showLess' : 'about.showAll')}
             </Button>

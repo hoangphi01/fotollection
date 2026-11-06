@@ -541,6 +541,6 @@ Every setting of this computer is in one window ([FR-086](PRD.md#fr-086--one-set
   - **Default** puts back 25 %, 5 GB and previews on. **Auto** chooses for this computer: 40 % of memory from 32 GB, 25 % from 12 GB, 15 % below; the largest cache that fits in a tenth of the free disk; previews on unless less than 5 GB is free.
 - **Updates:** *Check for updates* (chapter 17).
 - **Report a problem:** the report page and *Copy diagnostics* (chapter 17).
-- **What's new:** every version with two lines on what it brought; **Show all** opens its whole entry (added, changed, fixed). The version you run opens unfolded.
+- **What's new:** every version with two lines on what it brought; **Show all** opens its whole entry (added, changed, fixed). The version you run opens unfolded; opening another folds the one open, so one is open at a time.
 
 <!-- shot: settings | The Settings window at RAM & cache: the memory for previews, the cache on disk, Default and Auto -->

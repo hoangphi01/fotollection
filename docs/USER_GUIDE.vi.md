@@ -539,6 +539,6 @@ Mọi cài đặt của máy này nằm trong một cửa sổ ([FR-086](PRD.md#
   - **Mặc định** đặt lại 25 %, 5 GB và bật chuẩn bị sẵn. **Tự động** chọn theo máy này: 40 % bộ nhớ khi máy có từ 32 GB, 25 % từ 12 GB, 15 % nếu ít hơn; cache lớn nhất vừa trong một phần mười dung lượng trống; bật chuẩn bị sẵn trừ khi còn trống dưới 5 GB.
 - **Cập nhật:** *Kiểm tra cập nhật* (chương 17).
 - **Báo lỗi:** trang báo lỗi và *Sao chép thông tin chẩn đoán* (chương 17).
-- **Có gì mới:** mọi phiên bản, mỗi bản hai dòng tóm tắt; **Xem tất cả** mở toàn bộ ghi chú của bản đó (thêm mới, thay đổi, sửa lỗi). Bản bạn đang dùng mở sẵn.
+- **Có gì mới:** mọi phiên bản, mỗi bản hai dòng tóm tắt; **Xem tất cả** mở toàn bộ ghi chú của bản đó (thêm mới, thay đổi, sửa lỗi). Bản bạn đang dùng mở sẵn; mở bản khác thì bản đang mở tự gập lại, nên mỗi lúc chỉ mở một bản.
 
 <!-- shot: settings | Cửa sổ Cài đặt ở mục Bộ nhớ RAM & cache: bộ nhớ cho bản xem trước, cache trên ổ đĩa, Mặc định và Tự động -->
