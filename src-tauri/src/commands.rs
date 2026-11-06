@@ -2524,8 +2524,12 @@ pub fn restore_session(app: &AppHandle) {
         .read()
         .map_or(0, |l| u32::try_from(l.len()).unwrap_or(u32::MAX));
     let _ = LibraryChanged { count }.emit(app);
-    // Restoring is not an edit: keep the unsaved flag the session had.
-    let edited = file.document.as_ref().is_some_and(|d| d.edited);
+    // Restoring is not an edit: keep the unsaved flag the session had; an untitled session
+    // with photos is unsaved, as the session is its only copy.
+    let edited = crate::document::restored_edited(
+        file.document.as_ref(),
+        usize::try_from(count).unwrap_or(usize::MAX),
+    );
     changed(app, &state);
     if let Ok(mut doc) = state.document.lock() {
         doc.edited = edited;

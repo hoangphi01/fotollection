@@ -14,6 +14,14 @@
 
 ## 2026-11-06
 
+### *New project* dropped every folder without asking: an untitled session lost its unsaved flag on restart (FR-023)
+
+- **Seen:** the owner pressed *New project* on an untitled project with two folders (518 photos, edits on 42) and everything went, with no *Save changes?* question.
+- **Why:** the session file records the document block (path and unsaved flag) only for a saved document (`save_project` maps `path` to `DocumentRef`); an untitled one is written with none. At launch, `restore_session` read the missing block as "not edited", so after any restart the untitled work looked saved, and *New* replaced it at once. The dev app restarts often, so the owner hit it the first day.
+- **Recovery:** the atomic write keeps the previous session as `session.fotollection.bak`; copying it back over `session.fotollection` with the app closed brought the folders and edits back. Copy the `.bak` aside first: the next autosave overwrites it.
+- **Fix:** `document::restored_edited`: an untitled session with photos is unsaved after a restore, a saved document keeps its flag; a test fails on the old rule. *New* also asks for a name first.
+- **Rule:** a flag that guards against losing work is derived from what would be lost (an untitled project holding photos), not only from a flag that a restart may drop; anything that replaces the library is tried after a restart, not only in one run.
+
 ### The export line pushed the whole panel past the window: `truncate` without a width (FR-093, UI)
 
 - **Seen:** the panel's new one-line export summary (*In ảnh · Một thư mục · chất lượng 95 · Chọn nơi lưu*) ran past the window's right edge, and took the estimate and the *Export* button with it (owner's screenshot).

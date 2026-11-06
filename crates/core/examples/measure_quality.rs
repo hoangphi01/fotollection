@@ -13,7 +13,8 @@
     clippy::expect_used,
     clippy::cast_precision_loss,
     clippy::cast_possible_truncation,
-    clippy::cast_sign_loss
+    clippy::cast_sign_loss,
+    clippy::doc_markdown
 )]
 
 use fotollection_core::codec::{EncodeOptions, decode_image, default_codec};
@@ -49,8 +50,10 @@ fn oklab(px: &[u8]) -> [f32; 3] {
 fn difference(a: &RgbImage, b: &RgbImage) -> (f64, f64) {
     let mut d: Vec<f32> = a
         .data
-        .chunks_exact(3)
-        .zip(b.data.chunks_exact(3))
+        .as_chunks::<3>()
+        .0
+        .iter()
+        .zip(b.data.as_chunks::<3>().0)
         .step_by(4)
         .map(|(p, q)| {
             let (x, y) = (oklab(p), oklab(q));

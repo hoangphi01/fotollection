@@ -24,6 +24,8 @@ export function useProject() {
   })
   const [error, setError] = useState<string | null>(null)
   const [question, setQuestion] = useState<((choice: UnsavedChoice) => void) | null>(null)
+  // The *New project* dialog's answer: a name, or null for Cancel.
+  const [naming, setNaming] = useState<((name: string | null) => void) | null>(null)
   const edited = useRef(false)
 
   useEffect(() => {
@@ -68,8 +70,13 @@ export function useProject() {
     return true
   }, [save])
 
+  // New asks for the name first (owner, 2026-11-06), then about unsaved changes, so Cancel in
+  // either leaves the project as it was.
   const newProject = useCallback(async () => {
-    if (await settleUnsaved()) await run(commands.newDocument())
+    const name = await new Promise<string | null>((resolve) => setNaming(() => resolve))
+    setNaming(null)
+    if (name === null || !(await settleUnsaved())) return
+    if ((await run(commands.newDocument())) && name.trim()) await run(commands.renameDocument(name))
   }, [run, settleUnsaved])
   const open = useCallback(async () => {
     if (await settleUnsaved()) await run(commands.openDocument())
@@ -125,6 +132,7 @@ export function useProject() {
     error,
     dismissError: () => setError(null),
     question,
+    naming,
     newProject,
     open,
     save,

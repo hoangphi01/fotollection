@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { FolderSearch } from 'lucide-react'
+import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Field } from '@/components/forms/field'
+import { Input } from '@/components/ui/input'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,6 +50,48 @@ export function UnsavedDialog({ name, onChoose }: UnsavedDialogProps) {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+  )
+}
+
+type NewProjectDialogProps = {
+  onAnswer: ((name: string | null) => void) | null
+}
+
+/** *New project*: its name, then *Create* or *Cancel* (owner, 2026-11-06). Rust checks the
+ * name (`rename_document`); an empty one keeps *Untitled* until the first Save. */
+export function NewProjectDialog({ onAnswer }: NewProjectDialogProps) {
+  const { t } = useTranslation()
+  const [name, setName] = useState('')
+  const id = useId()
+  const answer = (value: string | null) => {
+    setName('')
+    onAnswer?.(value)
+  }
+  return (
+    <Dialog open={onAnswer !== null} onOpenChange={(open) => !open && answer(null)}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle>{t('project.new')}</DialogTitle>
+          <DialogDescription>{t('project.newBody')}</DialogDescription>
+        </DialogHeader>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            answer(name)
+          }}
+        >
+          <Field label={t('project.rename')} htmlFor={id}>
+            <Input id={id} autoFocus value={name} maxLength={120} placeholder={t('project.newPlaceholder')} onChange={(e) => setName(e.target.value)} />
+          </Field>
+          <DialogFooter className="mt-4">
+            <Button type="button" variant="outline" onClick={() => answer(null)}>
+              {t('common.cancel')}
+            </Button>
+            <Button type="submit">{t('project.create')}</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   )
 }
 

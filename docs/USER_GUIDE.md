@@ -323,7 +323,8 @@ Everything you do (stars, flags, the basket, crops, stamps, dates and places, ca
 1. The **Project** block at the top of the sidebar shows the project's name; a dot means *Edited*. Double-click the name to rename it.
 2. Its four buttons: **New project**, **Open project…**, **Save** and **Save as…**. The same are in the *File* menu on a Mac, and on **Cmd/Ctrl+N**, **Cmd/Ctrl+O**, **Cmd/Ctrl+S** and **Shift+Cmd/Ctrl+S**.
 3. A project is a `.fotollection` file. It holds your edits and settings, with the fonts and logos it uses, but not the photos: it points to their folders, so a project copied together with its photos opens the same on another computer. When its folders were moved or renamed, **n folders could not be found** offers **Locate…** for each, or **Later**.
-4. Leaving a project with changes asks **Save changes to "…"?**: **Save**, **Don't save** or **Cancel**.
+4. **New project** first asks for its name (**Create** or **Cancel**; left empty, it stays *Untitled* until you save it).
+5. Leaving a project with changes asks **Save changes to "…"?**: **Save**, **Don't save** or **Cancel**. An untitled project that holds photos always asks, since it is kept nowhere else.
 
 <!-- shot: manual-project | The Project block: the name, and the buttons to start, open and save a project -->
 

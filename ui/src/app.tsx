@@ -32,7 +32,7 @@ import { PreviewDialog } from '@/features/viewer/preview-dialog'
 import { QuickPreview } from '@/features/viewer/quick-preview'
 import { useQuickPreview } from '@/features/viewer/use-quick-preview'
 import { TitleBar } from '@/features/window/title-bar'
-import { RelinkDialog, UnsavedDialog } from '@/features/project/project-dialogs'
+import { NewProjectDialog, RelinkDialog, UnsavedDialog } from '@/features/project/project-dialogs'
 import { useProject } from '@/features/project/use-project'
 import { useStartupScreen } from '@/features/startup/use-startup-screen'
 import { useOpenWith } from '@/features/open-with/use-open-with'
@@ -432,6 +432,7 @@ export function App() {
         }
         onChoose={(choice) => void chooseForQuit(choice)}
       />
+      <NewProjectDialog onAnswer={project.naming} />
       <UnsavedDialog
         name={project.document.name ?? t('project.untitled')}
         onChoose={project.question}

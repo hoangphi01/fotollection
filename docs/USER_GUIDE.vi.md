@@ -321,7 +321,8 @@ Mọi việc bạn làm (sao, cờ, giỏ in, khung cắt, dấu ngày, ngày v�
 1. Khối **Dự án** ở đầu thanh bên hiện tên dự án; một chấm tròn nghĩa là *Đã sửa*. Nhấp đúp vào tên để đổi tên.
 2. Bốn nút của nó: **Dự án mới**, **Mở dự án…**, **Lưu** và **Lưu thành…**. Trên Mac, các lệnh này cũng có trong menu *Tệp*, và trên phím **Cmd/Ctrl+N**, **Cmd/Ctrl+O**, **Cmd/Ctrl+S** và **Shift+Cmd/Ctrl+S**.
 3. Dự án là một tệp `.fotollection`. Nó chứa các chỉnh sửa và thiết lập, cùng phông chữ và logo đang dùng, nhưng không chứa ảnh: nó trỏ tới các thư mục ảnh, nên một dự án được chép cùng với ảnh sẽ mở y hệt trên máy khác. Khi thư mục đã bị chuyển hoặc đổi tên, **Không tìm thấy n thư mục** cho bạn **Tìm…** từng thư mục, hoặc **Để sau**.
-4. Rời một dự án còn thay đổi chưa lưu, app hỏi **Lưu thay đổi của "…"?**: **Lưu**, **Không lưu** hoặc **Hủy**.
+4. **Dự án mới** hỏi tên trước (**Tạo** hoặc **Hủy**; để trống thì dự án là *Chưa đặt tên* cho tới khi bạn lưu).
+5. Rời một dự án còn thay đổi chưa lưu, app hỏi **Lưu thay đổi của "…"?**: **Lưu**, **Không lưu** hoặc **Hủy**. Dự án chưa đặt tên mà có ảnh thì luôn hỏi, vì nó không được lưu ở đâu khác.
 
 <!-- shot: manual-project | Khối Dự án: tên dự án, và các nút để tạo, mở và lưu dự án -->
 

@@ -718,9 +718,30 @@ pub fn restore_reference(state: &AppState, file: &ProjectFile) {
     }
 }
 
+/// Whether a session restored at launch holds unsaved work (FR-023). A saved document keeps
+/// the flag it had; an untitled one with photos is unsaved by nature, since the session is its
+/// only copy: the session file has no document block for it, so its flag was lost, and *New*
+/// then dropped every folder without asking (LESSONS 2026-11-06).
+pub fn restored_edited(document: Option<&project::DocumentRef>, photos: usize) -> bool {
+    document.map_or(photos > 0, |d| d.edited)
+}
+
 #[cfg(test)]
 mod tests {
-    use super::valid_name;
+    use super::{restored_edited, valid_name};
+    use fotollection_core::project::DocumentRef;
+
+    #[test]
+    fn fr_023_an_untitled_session_with_photos_is_unsaved_after_a_restart() {
+        assert!(restored_edited(None, 518));
+        assert!(!restored_edited(None, 0));
+        let saved = |edited| DocumentRef {
+            path: "/trip.fotollection".into(),
+            edited,
+        };
+        assert!(!restored_edited(Some(&saved(false)), 518));
+        assert!(restored_edited(Some(&saved(true)), 518));
+    }
 
     #[test]
     fn fr_023_project_names_are_safe_file_names() {
