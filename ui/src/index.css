@@ -1,8 +1,21 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
-/* Bundled with the app so Windows renders exactly as macOS (OFL; FR-052). */
+/* Be Vietnam Pro for every word of the interface (owner, 2026-11-06; OFL 1.1): its Latin and
+   Vietnamese subsets, the four weights the UI uses. Bundled with the app, so Windows, macOS and
+   Linux render it alike and nothing is fetched (FR-052). Geist Mono stays for figures set mono. */
+@import "@fontsource/be-vietnam-pro/latin-400.css";
+@import "@fontsource/be-vietnam-pro/latin-500.css";
+@import "@fontsource/be-vietnam-pro/latin-600.css";
+@import "@fontsource/be-vietnam-pro/latin-700.css";
+@import "@fontsource/be-vietnam-pro/latin-ext-400.css";
+@import "@fontsource/be-vietnam-pro/latin-ext-500.css";
+@import "@fontsource/be-vietnam-pro/latin-ext-600.css";
+@import "@fontsource/be-vietnam-pro/latin-ext-700.css";
+@import "@fontsource/be-vietnam-pro/vietnamese-400.css";
+@import "@fontsource/be-vietnam-pro/vietnamese-500.css";
+@import "@fontsource/be-vietnam-pro/vietnamese-600.css";
+@import "@fontsource/be-vietnam-pro/vietnamese-700.css";
 @import "@fontsource-variable/geist-mono";
 
 @custom-variant dark (&:is(.dark *));
@@ -11,7 +24,7 @@
     /* The folder list and the tools panel, the same width (STYLE_RULE §4). */
     --spacing-panel: 18rem;
     --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif;
+    --font-sans: 'Be Vietnam Pro', system-ui, sans-serif;
     --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
@@ -46,6 +59,19 @@
     --color-background: var(--background);
     --color-wood: var(--wood);
     --color-wood-foreground: var(--wood-foreground);
+    /* The black stage and what sits on it (STYLE_RULE §4, photos on neutral ground). */
+    --color-stage: var(--stage);
+    --color-stage-raised: var(--stage-raised);
+    --color-stage-chip: var(--stage-chip);
+    --color-stage-ink: var(--stage-ink);
+    --color-stage-ink-muted: var(--stage-ink-muted);
+    --color-stage-line: var(--stage-line);
+    /* States: a warning (a date from the file, a soft print) and a success (a pick). */
+    --color-warning: var(--warning);
+    --color-success: var(--success);
+    /* The smallest type, for badges on thumbnails: one size instead of 10 and 11 px. */
+    --text-2xs: 0.6875rem;
+    --text-2xs--line-height: 1;
     --radius-sm: calc(var(--radius) * 0.6);
     --radius-md: calc(var(--radius) * 0.8);
     --radius-lg: var(--radius);
@@ -94,6 +120,25 @@
     --sidebar-accent-foreground: oklch(0.28 0.03 60);
     --sidebar-border: oklch(0.88 0.04 172);
     --sidebar-ring: oklch(0.687 0.093 187.1);
+    /* Depth (FR-099, the owner's "bold" choice): a lip under raised controls in a shade of their
+       own colour, a top highlight, lifted cards, set-in fields. In light the shade is a dark
+       teal from the logo, never brown (owner, 2026-11-06). */
+    --shade: oklch(0.32 0.06 175);
+    --highlight: oklch(1 0 0 / 0.7);
+    --lip: 3px;
+    --lip-mix: 38%;
+    --lift: 0 4px 12px -4px oklch(0.32 0.06 175 / 0.35), 0 1px 2px oklch(0.32 0.06 175 / 0.2);
+    --lift-strong: 0 12px 32px -8px oklch(0.32 0.06 175 / 0.35), 0 2px 6px oklch(0.32 0.06 175 / 0.18);
+    --sink: inset 0 2px 3px oklch(0.32 0.06 175 / 0.18);
+    --warning: oklch(0.6 0.13 70);
+    --success: oklch(0.55 0.13 155);
+    /* The stage stays neutral in both themes. */
+    --stage: oklch(0.145 0 0);
+    --stage-raised: oklch(0.27 0 0);
+    --stage-chip: oklch(0 0 0 / 0.6);
+    --stage-ink: oklch(1 0 0 / 0.88);
+    --stage-ink-muted: oklch(1 0 0 / 0.6);
+    --stage-line: oklch(1 0 0 / 0.12);
 }
 
 .dark {
@@ -130,6 +175,13 @@
     --sidebar-accent-foreground: oklch(0.95 0.015 85);
     --sidebar-border: oklch(0.685 0.106 61.2 / 28%);
     --sidebar-ring: oklch(0.685 0.106 61.2);
+    --shade: oklch(0 0 0);
+    --highlight: oklch(1 0 0 / 0.08);
+    --lift: 0 6px 16px -6px oklch(0 0 0 / 0.8), inset 0 1px 0 oklch(1 0 0 / 0.04);
+    --lift-strong: 0 16px 40px -10px oklch(0 0 0 / 0.85), inset 0 1px 0 oklch(1 0 0 / 0.05);
+    --sink: inset 0 2px 4px oklch(0 0 0 / 0.6);
+    --warning: oklch(0.8 0.13 75);
+    --success: oklch(0.78 0.14 155);
 }
 
 /* A photo or sheet on the black stage: a faint neutral outline shows its edge even when the
@@ -168,4 +220,25 @@
   ::-webkit-scrollbar-thumb:hover {
     background-color: var(--primary);
     }
+}
+/* Depth (FR-099, STYLE_RULE §4 "Depth"): box-shadow only, so no control changes size. `--face`
+   is the control's own colour, set by the control; the lip is a shade of it. */
+@utility raised {
+  box-shadow: inset 0 1px 0 var(--highlight),
+    inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--face, var(--card)), var(--shade) var(--lip-mix)),
+    var(--lift);
+}
+/* Pressed: down by a pixel, the lip thinner, no lift. */
+@utility raised-pressed {
+  box-shadow: inset 0 1px 0 var(--highlight),
+    inset 0 -1px 0 color-mix(in oklch, var(--face, var(--card)), var(--shade) var(--lip-mix));
+}
+@utility sunken {
+  box-shadow: var(--sink);
+}
+@utility lifted {
+  box-shadow: var(--lift);
+}
+@utility lifted-strong {
+  box-shadow: var(--lift-strong);
 }

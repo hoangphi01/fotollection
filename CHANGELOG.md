@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- **A new look begins** (FR-099): the interface is set in Be Vietnam Pro, drawn for Vietnamese, on Windows, macOS and Linux alike.
+
 ## [0.12.0] - 2026-11-06 — Settings & Develop
 
 ### Highlights
