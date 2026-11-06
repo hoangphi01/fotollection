@@ -1,6 +1,6 @@
 # ADR-0038: A moderate colour editor on one LUT engine, before the develop core
 
-- **Status:** Accepted (planned for v0.10.0); amended by FR-088 (2026-11-05): on a camera RAW, brightness, highlights, shadows, warmth and tint act in linear light before the finish, the rest of the look stays in the table
+- **Status:** Accepted (planned for v0.10.0); amended by FR-101 and FR-102 (2026-11-06): the moderate editor grows to healing and masks, as local layers beside the one global table, still no layers to stack or compositing; amended by FR-088 (2026-11-05): on a camera RAW, brightness, highlights, shadows, warmth and tint act in linear light before the finish, the rest of the look stays in the table
 - **Date:** 2026-11-05
 - **Related:** FR-079, FR-070, FR-039, FR-047, FR-044, FR-040, NFR-002, NFR-003, ADR-0011, ADR-0016, ADR-0036, ADR-0037
 - **Amends:** [ADR-0011](0011-photo-style-looks.md) (global curves, split toning and vibrance are now in scope), [ADR-0036](0036-colour-looks-cube-luts-first.md) (looks ship in v0.10.0, on encoded values), [ADR-0037](0037-our-own-develop-core.md) (the develop core moves to v0.11.0)

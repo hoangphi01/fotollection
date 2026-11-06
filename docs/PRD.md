@@ -1009,7 +1009,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **One toolbar row above the photo**, never over it: Crop, rotate, basket, Before/After and compare, undo and redo, copy and paste settings, Reset, Export; every button the same shape, each hint naming its key.
 - **Lightroom's keys:** `R` crop (`C` kept), `\` before/after, `Y` compare, `Z` fit ↔ 1:1, `F` layout, `Tab` panels, `J` clipping, `W` white-balance picker, ⌘Z / ⇧⌘Z, ⇧⌘C / ⇧⌘V copy and paste settings, ⇧⌘R reset, ⇧⌘E export, ⌘[ ⌘] rotate; the ratings, flags and arrows as before. The keys popover lists them all.
 - **Zoom in real pixels:** *Fit*, then percentages of the photo's own pixels, 100 % being 1:1.
-- **The inspector develop first**, as Lightroom's right panel: histogram, this photo, RAW, Basic, Tools, then print size and crop, stamp, frame, rating and facts; the same order in both layouts.
+- **The inspector in tabs** (owner, 2026-11-06, after a survey of Lightroom's tool strip and Capture One's tool tabs): a row of icon tabs at its head, the inspector staying 18 rem: *Edit* (this photo, RAW, Basic, Tools; `E`), *Crop* (the crop and straighten mode; `R`), then *Print* (print size, stamp, frame, export) and *Info* (rating, captured, place; `I`). *Heal* (FR-101) and *Mask* (FR-102) take their places beside *Crop* once built, hidden until then. One card open at a time in a tab (Lightroom's solo mode); the tab is kept for the session.
 
 ### FR-096 — Before and after, side by side
 
@@ -1035,6 +1035,14 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Transitions between views:** the gallery to the preview and back (the photo growing from its tile), the dialog and the full-window layout (FR-095), the modes, the Settings window's sections; panels and the filmstrip slide rather than appear.
 - **No jump left:** a list that changes (the filmstrip, History, notices, the gallery after a filter) moves its rows to their new place; a card that folds or a badge that comes keeps the rest still until it moves smoothly.
 - **Never in the way:** nothing waits for an animation; a photo shows as soon as it is ready; *Reduce motion* in the system turns it all down to fades. Measured: 60 fps on the reference machines (OPTIMIZATION §3), checked in both themes.
+
+### FR-101 — Healing: spot removal
+
+**P2 (planned, about v0.15, after v0.14.0 "Core 2"; owner's request 2026-11-06, as Lightroom's Remove tool).** A tool tab in the develop view's inspector (FR-095), shown only once built: a click or a drag on the photo marks a spot (dust, a blemish, a wire), and the app fills it from a nearby source it picks, which the user can move; *Heal* blends the tone, *Clone* copies. `Q` as in Lightroom Classic. Kept per photo, undoable, in the project; done on the full-resolution photo for the export, on the preview's pixels while working. Later, a content-aware fill made on the machine, never online.
+
+### FR-102 — Masking: local adjustments
+
+**P2 (planned, about v0.15, with FR-101; owner's request 2026-11-06, as Lightroom's Masking).** A tool tab in the develop view's inspector (FR-095), shown only once built: linear and radial gradients and a brush, each a mask with its own Basic sliders (brightness, contrast, warmth, tint, saturation…), several per photo, listed, hidden or deleted one by one. `⇧W` as in Lightroom Classic. Later, subject and sky found on the machine by a small model of a permissive licence (never a network call). Needs a local layer in the render pipeline beside the look's global table (ADR-0038, amended), on the GPU of v0.14.0 for a live preview.
 
 ## 7. Non-functional requirements
 
