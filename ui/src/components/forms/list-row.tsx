@@ -47,3 +47,11 @@ export function ListRow({ icon, children, trailing, chosen = false, current = 't
     </Button>
   )
 }
+
+/**
+ * The rows of one list or menu, 4 px apart (STYLE_RULE §4, one spacing for every list: the
+ * folder list, Settings' sections, the export presets, History, the compare menu).
+ */
+export function ListRows({ children, as: Tag = 'div' }: { children: ReactNode; as?: 'div' | 'ul' | 'nav' }) {
+  return <Tag className="flex flex-col gap-1">{children}</Tag>
+}

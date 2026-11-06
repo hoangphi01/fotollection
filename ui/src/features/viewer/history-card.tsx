@@ -3,10 +3,10 @@
 import { Check, History } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Hint, RowList } from '@/components/forms/field'
+import { Hint } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
 import { commands, type HistoryEdit, type HistoryStep, type PhotoId } from '@/ipc/bindings'
-import { ListRow } from '@/components/forms/list-row'
+import { ListRow, ListRows } from '@/components/forms/list-row'
 
 type HistoryCardProps = {
   photoId: PhotoId
@@ -45,7 +45,7 @@ export function HistoryCard({ photoId, revision }: HistoryCardProps) {
       {steps && steps.length === 0 ? (
         <Hint>{t('history.empty')}</Hint>
       ) : (
-        <RowList>
+        <ListRows as="ul">
           {(steps ?? []).map((step, i) => (
             <li key={step.serial}>
               <ListRow
@@ -65,7 +65,7 @@ export function HistoryCard({ photoId, revision }: HistoryCardProps) {
               </ListRow>
             </li>
           )}
-        </RowList>
+        </ListRows>
       )}
     </SectionCard>
   )

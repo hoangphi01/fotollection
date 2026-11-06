@@ -80,7 +80,7 @@ export function useFolderDrag(ids: readonly number[], onMove: (id: number, to: n
     const i = order.indexOf(id)
     if (id === drag.id) return { transform: `translateY(${drag.dy}px)`, zIndex: 10, position: 'relative' }
     const to = target(drag)
-    const step = (drag.rows[drag.from]?.height ?? 0) + 2
+    const step = (drag.rows[drag.from]?.height ?? 0) + 4 // a row and the list's 4 px gap
     if (drag.from < to && i > drag.from && i <= to) return { transform: `translateY(${-step}px)` }
     if (drag.from > to && i >= to && i < drag.from) return { transform: `translateY(${step}px)` }
     return undefined

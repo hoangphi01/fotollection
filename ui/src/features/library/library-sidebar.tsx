@@ -228,7 +228,7 @@ export function LibrarySidebar({
         {folders.length === 0 ? (
           <p className="px-2 py-1 text-xs text-muted-foreground">{t('library.noFolders')}</p>
         ) : (
-          <ul className="space-y-0.5">
+          <ul className="flex flex-col gap-1">
             <li>
               <button
                 type="button"

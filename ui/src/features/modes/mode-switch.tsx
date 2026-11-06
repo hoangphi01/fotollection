@@ -28,7 +28,8 @@ export function ModeSwitch() {
       onValueChange={(v) => v && setMode(v as AppMode)}
       aria-label={t('mode.label')}
       spacing={1}
-      className="grid w-full grid-cols-2"
+      // Two buttons a row 8 px apart, its rows 12 px apart as every row of controls (STYLE_RULE §4).
+      className="grid w-full grid-cols-2 gap-x-2 gap-y-3"
     >
       {MODES.map(({ mode: m, icon: Icon, key }) => (
         <ToggleGroupItem

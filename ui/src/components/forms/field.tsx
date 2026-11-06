@@ -57,9 +57,10 @@ export function ValueRow({ label, icon, children }: { label: ReactNode; icon?: R
   )
 }
 
-/** A card's list of rows (camera bodies, places, addresses), 8 px apart. */
+/** Rows that each hold a control (a camera's clock, a place's name, an address), 12 px apart as
+ * every row of controls (STYLE_RULE §4). */
 export function RowList({ children }: { children: ReactNode }) {
-  return <ul className="space-y-2">{children}</ul>
+  return <ul className="space-y-3">{children}</ul>
 }
 
 /** Lines of facts about a photo, 4 px apart, as an info card shows them. */

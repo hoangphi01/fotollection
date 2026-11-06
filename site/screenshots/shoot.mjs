@@ -344,6 +344,12 @@ async function measure(page, rootSel) {
       toggle: ctl('[data-slot="toggle-group"]'),
       input: ctl('input:not([type="checkbox"]):not([role="switch"])'),
       iconBtn: ctl('button[data-size="icon-sm"]'),
+      // The three spacings (STYLE_RULE §4): a list's rows 4 px, the mode switch's rows 12 px.
+      listGap: set([...root.querySelectorAll('ul.flex-col.gap-1, nav.flex-col.gap-1, div.flex-col.gap-1')].filter(vis).flatMap(gaps)),
+      modeGap: set([...root.querySelectorAll('.grid.gap-y-3')].filter(vis).map((g) => {
+        const items = [...g.children].filter(vis)
+        return items.length > 2 ? r(items[2].getBoundingClientRect().top - items[0].getBoundingClientRect().bottom) : null
+      }).filter((v) => v !== null)),
     }
   }, rootSel)
 }
@@ -485,7 +491,7 @@ async function overflowViews({ language, theme, width }) {
 }
 
 /** STYLE_RULE §4: each column holds this one value, in every view that has it. */
-const MEASURES = { cardGap: '12', blockGap: '12', fieldGap: '6', select: '32', toggle: '32', input: '32', iconBtn: '32' }
+const MEASURES = { cardGap: '12', blockGap: '12', fieldGap: '6', select: '32', toggle: '32', input: '32', iconBtn: '32', listGap: '4', modeGap: '12' }
 
 async function measurePanels() {
   const rows = []

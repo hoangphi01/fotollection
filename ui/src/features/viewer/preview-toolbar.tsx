@@ -11,7 +11,7 @@ import { Separator } from '@/components/ui/separator'
 import { commands, type PhotoSummary } from '@/ipc/bindings'
 import { MOD, isMac } from '@/lib/platform'
 import type { Compare, CompareMode } from './compare-stage'
-import { ListRow } from '@/components/forms/list-row'
+import { ListRow, ListRows } from '@/components/forms/list-row'
 
 type PreviewToolbarProps = {
   photo: PhotoSummary | undefined
@@ -185,6 +185,7 @@ function CompareMenu({
         <ToolbarButton icon={<ChevronDown />} label={t('compare.views')} data-hint={t('compare.views')} iconOnly disabled={disabled} />
       </PopoverTrigger>
       <PopoverContent align="start" className="w-64 p-1">
+        <ListRows>
         {views.map((v) => (
           <ListRow
             key={v.key}
@@ -198,6 +199,7 @@ function CompareMenu({
             {t(`compare.${v.key}`)}
           </ListRow>
         ))}
+        </ListRows>
       </PopoverContent>
     </Popover>
   )
