@@ -23,9 +23,9 @@ export function CullControls({ photo }: { photo: PhotoSummary }) {
               aria-label={t('culling.stars', { count: n })}
               data-hint={t(n === photo.rating ? 'culling.starClear' : 'culling.starKey', { count: n })}
               onClick={() => rate(n)}
-              className="rounded p-0.5 text-muted-foreground hover:text-amber-500"
+              className="rounded p-0.5 text-muted-foreground hover:text-warning"
             >
-              <Star className={cn('size-4', n <= photo.rating && 'fill-amber-400 text-amber-500')} />
+              <Star className={cn('size-4', n <= photo.rating && 'fill-warning text-warning')} />
             </button>
           ))}
         </div>

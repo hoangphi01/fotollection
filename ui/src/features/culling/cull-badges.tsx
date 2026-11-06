@@ -17,18 +17,18 @@ export function CullBadges({ rating, flag, className }: CullBadgesProps) {
   return (
     <div className={cn('flex items-center gap-1', className)}>
       {flag === 'pick' && (
-        <span className="rounded bg-black/60 p-0.5 text-emerald-300" aria-label={t('culling.pick')}>
+        <span className="rounded bg-stage-chip p-0.5 text-stage-pick" aria-label={t('culling.pick')}>
           <FlagIcon className="size-3 fill-current" />
         </span>
       )}
       {flag === 'reject' && (
-        <span className="rounded bg-black/60 p-0.5 text-red-300" aria-label={t('culling.rejected')}>
+        <span className="rounded bg-stage-chip p-0.5 text-stage-reject" aria-label={t('culling.rejected')}>
           <FlagOff className="size-3" />
         </span>
       )}
       {rating > 0 && (
         <span
-          className="flex items-center gap-px rounded bg-black/60 px-1 py-0.5 text-amber-300"
+          className="flex items-center gap-px rounded bg-stage-chip px-1 py-0.5 text-stage-warn"
           aria-label={t('culling.stars', { count: rating })}
         >
           {Array.from({ length: rating }, (_, i) => (

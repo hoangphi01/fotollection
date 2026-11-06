@@ -272,7 +272,7 @@ export function SheetPreviewDialog({
             >
               <ChevronRight />
             </Button>
-            <span className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-black/60 px-3 py-1 text-xs text-white/80 tabular-nums">
+            <span className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-stage-chip px-3 py-1 text-xs text-stage-ink tabular-nums">
               {/* The new render after a change of setting is on its way; the spinner keeps
                   its place when hidden, so the text never shifts. */}
               <LoaderCircle

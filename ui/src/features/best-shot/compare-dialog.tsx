@@ -100,13 +100,13 @@ export function CompareDialog({
                   <span className="truncate font-medium">{photo?.fileName ?? `#${score.id}`}</span>
                   {rank === 0 && !group?.result.tooClose && <Badge>{t('bestShot.best')}</Badge>}
                   {score.closedEyes > 0 && (
-                    <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400">
+                    <span className="flex items-center gap-1 text-warning">
                       <EyeOff className="size-3.5" />
                       {t('bestShot.closedEyes', { count: score.closedEyes })}
                     </span>
                   )}
                 </figcaption>
-                <dl className="grid grid-cols-[5.5rem_1fr] items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+                <dl className="grid grid-cols-[5.5rem_1fr] items-center gap-x-2 gap-y-1 text-2xs text-muted-foreground">
                   {METRICS.filter((m) => m !== 'eyes' || score.faces > 0).map((m) => (
                     <div key={m} className="contents">
                       <dt>{t(`bestShot.metric.${m}`)}</dt>

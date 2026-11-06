@@ -596,7 +596,7 @@ export function PreviewDialog({
               {details?.dateManual ? (
                 <Badge variant="outline">{t('viewer.dateManual')}</Badge>
               ) : photo?.dateFromFile ? (
-                <Badge variant="outline" className="text-amber-600 dark:text-amber-400">
+                <Badge variant="outline" className="text-warning">
                   {t('viewer.noExifDate')}
                 </Badge>
               ) : photo?.timeShifted ? (

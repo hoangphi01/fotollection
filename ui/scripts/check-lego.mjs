@@ -55,6 +55,28 @@ const RULES = [
   },
   { test: /\bid="[^"{]+"/, say: 'a hard-coded id: two panels can show the same card, use useId()' },
   {
+    // FR-099: colours come from the theme and stage tokens (STYLE_RULE §4, "The stage's own
+    // colours"); a print's own colour, named in a `swatch`, is the exception.
+    test: /^(?!.*swatch).*\b(text|bg|border|ring|fill|stroke|from|via|to|outline)-(red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone|white|black)(-\d+)?(\/\d+)?\b/,
+    everywhere: true,
+    say: 'a raw palette colour: use a theme token (primary, muted-foreground, warning, success, destructive) or a stage token (bg-stage-chip, text-stage-ink…)',
+    except: {
+      'features/about/report-issue.tsx': 'white on the destructive red of its button',
+      'features/window/title-bar.tsx': 'white on red under the close button, as the system draws it',
+    },
+  },
+  {
+    test: /\b(min-|max-)?[hw]-\[\d+(\.\d+)?px\]|\btext-\[\d+(\.\d+)?(px|rem)\]/,
+    everywhere: true,
+    say: 'an arbitrary size: use the spacing scale or a token (text-2xs, w-panel)',
+    except: {
+      'features/window/title-bar.tsx': "the Windows caption buttons' own 46 px width",
+      'features/simple/simple-view.tsx': "its bar matches the gallery toolbar's 49 px",
+      'features/collage/collage-view.tsx': "its bar matches the gallery toolbar's 49 px",
+      'features/library/selection-bar.tsx': 'its bar sits in the gallery toolbar, 45 px inside its border',
+    },
+  },
+  {
     test: /<Switch\b[^>]*size=/,
     say: 'a switch of its own size: switches in a panel are the default size (SwitchField)',
   },
@@ -74,12 +96,14 @@ const problems = []
 for (const path of files) {
   // Forward slashes on every system, as the exception list writes them.
   const rel = relative(join(root, 'src'), path).split(sep).join('/')
-  if (rel in EXEMPT) continue
+  // An exempt file may space itself, but colours and sizes hold everywhere (`everywhere`).
+  const exempt = rel in EXEMPT
   readFileSync(path, 'utf8')
     .split('\n')
     .forEach((line, i) => {
       for (const rule of RULES) {
-        if (rule.test.test(line)) problems.push(`${rel}:${i + 1}: ${rule.say}`)
+        if (exempt && !rule.everywhere) continue
+        if (rule.test.test(line) && !(rule.except && rel in rule.except)) problems.push(`${rel}:${i + 1}: ${rule.say}`)
       }
     })
 }

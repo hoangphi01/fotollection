@@ -89,7 +89,7 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
         </span>
         <span className="ml-auto truncate text-xs text-muted-foreground">{photo.fileName}</span>
       </div>
-      <div className="relative flex min-h-0 flex-1 items-center justify-center bg-neutral-950 p-6">
+      <div className="relative flex min-h-0 flex-1 items-center justify-center bg-stage p-6">
         {shownSrc ? (
           <img
             src={shownSrc}

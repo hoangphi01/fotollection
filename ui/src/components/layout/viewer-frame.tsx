@@ -112,7 +112,7 @@ export function ViewerFrame({
           {/* Stage */}
           <div
             ref={stageRef}
-            className="group/stage relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-neutral-950 p-8"
+            className="group/stage relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-stage p-8"
             onPointerDown={onStagePointerDown}
             onPointerMove={onStagePointerMove}
             onPointerUp={onStagePointerUp}

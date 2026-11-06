@@ -85,7 +85,7 @@ export function NavigatorCard({ src, view, fit, stage, oneToOne, onZoomTo, onPan
         />
       }
     >
-      <div className="flex justify-center rounded-md bg-neutral-950 p-2">
+      <div className="flex justify-center rounded-md bg-stage p-2">
         <div
           className="relative cursor-crosshair touch-none overflow-hidden"
           onPointerDown={(e) => {

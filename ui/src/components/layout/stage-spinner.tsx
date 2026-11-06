@@ -10,14 +10,14 @@ export function StageSpinner({ error }: { error?: string | null }) {
   const { t } = useTranslation()
   if (error) {
     return (
-      <div role="alert" className="absolute flex max-w-sm flex-col items-center gap-2 px-6 text-center text-white/80">
+      <div role="alert" className="absolute flex max-w-sm flex-col items-center gap-2 px-6 text-center text-stage-ink">
         <OctagonX className="size-7 text-destructive" />
         <span className="text-sm">{error}</span>
       </div>
     )
   }
   return (
-    <div className="absolute flex flex-col items-center gap-2 text-white/60">
+    <div className="absolute flex flex-col items-center gap-2 text-stage-ink-muted">
       <LoaderCircle className="size-7 animate-spin" />
       <span className="text-xs">{t('viewer.rendering')}</span>
     </div>

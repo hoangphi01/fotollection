@@ -163,7 +163,7 @@ function SharpLayer({ src, style }: { src: string; style: CSSProperties }) {
 /** "Before" or "After" in a corner of its side, on the neutral stage (STYLE_RULE §4). */
 function CornerLabel({ children, end = false }: { children: ReactNode; end?: boolean }) {
   return (
-    <span className={cn('pointer-events-none absolute top-2 rounded bg-black/60 px-1.5 py-0.5 text-xs text-white/85', end ? 'right-2' : 'left-2')}>
+    <span className={cn('pointer-events-none absolute top-2 rounded bg-stage-chip px-1.5 py-0.5 text-xs text-stage-ink', end ? 'right-2' : 'left-2')}>
       {children}
     </span>
   )

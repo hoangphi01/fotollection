@@ -152,7 +152,7 @@ export function LibrarySidebar({
           <ProjectName name={project.document.name} onRename={project.rename} />
           {project.document.edited && (
             <span
-              className="size-1.5 shrink-0 rounded-full bg-amber-500"
+              className="size-1.5 shrink-0 rounded-full bg-warning"
               data-hint={t('project.edited')}
               role="img"
               aria-label={t('project.edited')}
@@ -163,7 +163,7 @@ export function LibrarySidebar({
           <button
             type="button"
             onClick={onShowRelink}
-            className="flex items-center gap-1.5 text-xs text-amber-600 hover:underline dark:text-amber-400"
+            className="flex items-center gap-1.5 text-xs text-warning hover:underline"
           >
             <TriangleAlert className="size-3.5" />
             {t('project.missing', { count: project.document.missing.length })}
@@ -307,7 +307,7 @@ export function LibrarySidebar({
         </p>
       )}
       <div className="flex items-center justify-between gap-2 px-4 pb-3">
-        <p className="text-[11px] text-muted-foreground">{t('library.dropTip')}</p>
+        <p className="text-2xs text-muted-foreground">{t('library.dropTip')}</p>
         <ThemeSwitch />
       </div>
     </aside>

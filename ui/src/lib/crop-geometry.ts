@@ -124,8 +124,8 @@ export function dpiBand(dpi: number): DpiBand {
 
 /** Badge colours per band; the words come from the `dpi.*` translations (FR-020). */
 export const DPI_STYLE: Record<DpiBand, { className: string }> = {
-  excellent: { className: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' },
-  good: { className: 'bg-sky-500/15 text-sky-600 dark:text-sky-400' },
-  fair: { className: 'bg-amber-500/15 text-amber-600 dark:text-amber-400' },
-  poor: { className: 'bg-red-500/15 text-red-600 dark:text-red-400' },
+  excellent: { className: 'bg-success-solid text-white [--face:var(--success-solid)] [--lip-color:var(--success-lip)] chip-raised' },
+  good: { className: 'bg-success-solid text-white [--face:var(--success-solid)] [--lip-color:var(--success-lip)] chip-raised' },
+  fair: { className: 'bg-warning-solid text-white [--face:var(--warning-solid)] [--lip-color:var(--warning-lip)] chip-raised' },
+  poor: { className: 'bg-danger-solid text-white [--face:var(--danger-solid)] [--lip-color:var(--danger-lip)] chip-raised' },
 }

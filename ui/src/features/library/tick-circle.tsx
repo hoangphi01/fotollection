@@ -13,7 +13,7 @@ export function TickCircle({ checked, className }: TickCircleProps) {
     <span
       className={cn(
         'flex size-5 items-center justify-center rounded-full border-2 shadow',
-        checked ? 'border-primary bg-primary text-primary-foreground' : 'border-white bg-black/30',
+        checked ? 'border-primary bg-primary text-primary-foreground' : 'border-stage-edge bg-stage-chip',
         className,
       )}
       aria-hidden

@@ -66,6 +66,12 @@
     --color-stage-ink: var(--stage-ink);
     --color-stage-ink-muted: var(--stage-ink-muted);
     --color-stage-line: var(--stage-line);
+    --color-stage-guide: var(--stage-guide);
+    --color-stage-edge: var(--stage-edge);
+    --color-stage-scrim: var(--stage-scrim);
+    --color-stage-pick: var(--stage-pick);
+    --color-stage-reject: var(--stage-reject);
+    --color-stage-warn: var(--stage-warn);
     /* States: a warning (a date from the file, a soft print) and a success (a pick). */
     --color-warning: var(--warning);
     --color-warning-foreground: var(--warning-foreground);
@@ -163,6 +169,14 @@
     --stage-ink: oklch(1 0 0 / 0.88);
     --stage-ink-muted: oklch(1 0 0 / 0.6);
     --stage-line: oklch(1 0 0 / 0.12);
+    /* On the black stage, the same in both themes: the crop's thirds, its frame, a scrim, and
+       the states' colours light enough to read on black (a pick, a reject, a warning). */
+    --stage-guide: oklch(1 0 0 / 0.35);
+    --stage-edge: oklch(1 0 0 / 0.9);
+    --stage-scrim: oklch(0 0 0 / 0.85);
+    --stage-pick: oklch(0.85 0.13 160);
+    --stage-reject: oklch(0.78 0.13 25);
+    --stage-warn: oklch(0.85 0.13 85);
 }
 
 .dark {

@@ -80,7 +80,7 @@ export const ThumbTile = memo(function ThumbTile({
         )}
       />
       <CullBadges rating={photo.rating} flag={photo.flag} className="absolute top-1 left-1" />
-      <div className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-gradient-to-t from-black/60 to-transparent px-1.5 pt-4 pb-1 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-gradient-to-t from-stage-chip to-transparent px-1.5 pt-4 pb-1 text-2xs text-stage-ink opacity-0 transition-opacity group-hover:opacity-100">
         <span className="truncate">{formatCapture(photo.capture)}</span>
       </div>
       {selectMode && (
@@ -91,7 +91,7 @@ export const ThumbTile = memo(function ThumbTile({
         {photo.raw && <RawBadge />}
         {photo.unusual && (
           <span
-            className="rounded bg-black/60 p-0.5 text-white/80"
+            className="rounded bg-stage-chip p-0.5 text-stage-ink"
             aria-label={t('library.unusual')}
             data-hint={t('library.unusual')}
           >
@@ -99,17 +99,17 @@ export const ThumbTile = memo(function ThumbTile({
           </span>
         )}
         {photo.dateFromFile && (
-          <span className="rounded bg-black/60 p-0.5 text-amber-300" aria-label={t('library.noCaptureDate')}>
+          <span className="rounded bg-stage-chip p-0.5 text-stage-warn" aria-label={t('library.noCaptureDate')}>
             <CalendarX2 className="size-3" />
           </span>
         )}
         {photo.placeSource === 'borrowed' ? (
-          <span className="rounded bg-black/60 p-0.5 text-white/80" aria-label={t('library.placeBorrowed')}>
+          <span className="rounded bg-stage-chip p-0.5 text-stage-ink" aria-label={t('library.placeBorrowed')}>
             <MapPinCheck className="size-3" />
           </span>
         ) : (
           photo.placeSource === null && (
-            <span className="rounded bg-black/60 p-0.5 text-white/80" aria-label={t('library.noLocation')}>
+            <span className="rounded bg-stage-chip p-0.5 text-stage-ink" aria-label={t('library.noLocation')}>
               <MapPinOff className="size-3" />
             </span>
           )

@@ -21,7 +21,7 @@ export function KeyHints({ hints }: KeyHintsProps) {
           {i > 0 && ' · '}
           {hint.keys?.map((key) => (
             <Fragment key={key}>
-              <Kbd className="h-4 min-w-4 bg-transparent px-0.5 font-mono text-[11px]">{key}</Kbd>{' '}
+              <Kbd className="h-4 min-w-4 bg-transparent px-0.5 font-mono text-2xs">{key}</Kbd>{' '}
             </Fragment>
           ))}
           {hint.label}

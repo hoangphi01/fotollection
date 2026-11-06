@@ -27,7 +27,7 @@ export function QuickPreview({ photo, revision, thumbVersion, generation, checke
 
   return (
     <div
-      className="fixed inset-0 z-50 flex animate-in flex-col items-center justify-center gap-3 bg-black/85 p-10 fade-in-0"
+      className="fixed inset-0 z-50 flex animate-in flex-col items-center justify-center gap-3 bg-stage-scrim p-10 fade-in-0"
       onClick={onClose}
       role="presentation"
       data-quick-preview
@@ -45,17 +45,17 @@ export function QuickPreview({ photo, revision, thumbVersion, generation, checke
         )}
         {error && <StageSpinner error={error} />}
       </div>
-      <p className="flex items-center gap-2 text-sm text-white/80">
+      <p className="flex items-center gap-2 text-sm text-stage-ink">
         <span className="truncate">{photo.fileName}</span>
         <span
           className={cn(
             'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs',
-            checked ? 'bg-primary text-primary-foreground' : 'bg-white/15',
+            checked ? 'bg-primary text-primary-foreground' : 'bg-stage-line',
           )}
         >
           <CircleCheck className="size-3.5" /> {t(checked ? 'select.checked' : 'select.notChecked')}
         </span>
-        <span className="text-xs text-white/50">{t('select.quickHint')}</span>
+        <span className="text-xs text-stage-ink-muted">{t('select.quickHint')}</span>
       </p>
     </div>
   )

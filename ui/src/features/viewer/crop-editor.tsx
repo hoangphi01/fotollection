@@ -214,10 +214,10 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
             },
           ].map((band, i) => (
             // oxlint-disable-next-line react/no-array-index-key -- fixed set of four bands
-            <div key={i} className="pointer-events-none absolute bg-black/60" style={band} />
+            <div key={i} className="pointer-events-none absolute bg-stage-chip" style={band} />
           ))}
           <div
-            className="pointer-events-none absolute border border-white/90 shadow-[0_0_0_1px_rgba(0,0,0,0.4)]"
+            className="pointer-events-none absolute border border-stage-edge shadow-[0_0_0_1px_rgba(0,0,0,0.4)]"
             style={{
               left: pct(rect.x, g.width),
               top: pct(rect.y, g.height),
@@ -229,43 +229,43 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
             {(leveling || angle !== 0) &&
               [1, 2, 3, 4, 5, 6, 7].map((i) => (
                 <div key={i} className="contents">
-                  <div className="absolute inset-y-0 border-l border-white/15" style={{ left: `${(i * 100) / 8}%` }} />
-                  <div className="absolute inset-x-0 border-t border-white/15" style={{ top: `${(i * 100) / 8}%` }} />
+                  <div className="absolute inset-y-0 border-l border-stage-line" style={{ left: `${(i * 100) / 8}%` }} />
+                  <div className="absolute inset-x-0 border-t border-stage-line" style={{ top: `${(i * 100) / 8}%` }} />
                 </div>
               ))}
             {/* Rule of thirds */}
-            <div className="absolute inset-y-0 left-1/3 border-l border-white/35" />
-            <div className="absolute inset-y-0 left-2/3 border-l border-white/35" />
-            <div className="absolute inset-x-0 top-1/3 border-t border-white/35" />
-            <div className="absolute inset-x-0 top-2/3 border-t border-white/35" />
+            <div className="absolute inset-y-0 left-1/3 border-l border-stage-guide" />
+            <div className="absolute inset-y-0 left-2/3 border-l border-stage-guide" />
+            <div className="absolute inset-x-0 top-1/3 border-t border-stage-guide" />
+            <div className="absolute inset-x-0 top-2/3 border-t border-stage-guide" />
             {/* Corner handles */}
             {['-top-1 -left-1', '-top-1 -right-1', '-bottom-1 -left-1', '-bottom-1 -right-1'].map((c) => (
-              <span key={c} className={cn('absolute size-3 border-white', c, c.includes('top') ? 'border-t-2' : 'border-b-2', c.includes('left') ? 'border-l-2' : 'border-r-2')} />
+              <span key={c} className={cn('absolute size-3 border-stage-edge', c, c.includes('top') ? 'border-t-2' : 'border-b-2', c.includes('left') ? 'border-l-2' : 'border-r-2')} />
             ))}
             {/* Width along the top edge, height along the left edge (inside when at the photo's edge). */}
             <div
               className={cn(
-                'absolute left-1/2 -translate-x-1/2 rounded bg-black/75 px-2 py-0.5 text-[11px] whitespace-nowrap text-white tabular-nums',
+                'absolute left-1/2 -translate-x-1/2 rounded bg-stage-chip px-2 py-0.5 text-2xs whitespace-nowrap text-stage-ink tabular-nums',
                 atTop ? 'top-1.5' : '-top-6',
               )}
             >
               <span className="font-medium">{fmtLen(lenW)}</span>
-              <span className="text-white/60"> · {rect.width} px</span>
+              <span className="text-stage-ink-muted"> · {rect.width} px</span>
             </div>
             <div
               className={cn(
-                'absolute top-1/2 origin-center -translate-y-1/2 -rotate-90 rounded bg-black/75 px-2 py-0.5 text-[11px] whitespace-nowrap text-white tabular-nums',
+                'absolute top-1/2 origin-center -translate-y-1/2 -rotate-90 rounded bg-stage-chip px-2 py-0.5 text-2xs whitespace-nowrap text-stage-ink tabular-nums',
                 atLeft ? 'left-0 translate-x-[-30%]' : '-left-2 -translate-x-full',
               )}
               style={{ transformOrigin: 'center' }}
             >
               <span className="font-medium">{fmtLen(lenH)}</span>
-              <span className="text-white/60"> · {rect.height} px</span>
+              <span className="text-stage-ink-muted"> · {rect.height} px</span>
             </div>
             {/* Ratio and print quality in the middle of the crop. */}
-            <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-black/70 px-3 py-1 text-xs whitespace-nowrap text-white tabular-nums">
+            <div className="absolute top-1/2 left-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-stage-chip px-3 py-1 text-xs whitespace-nowrap text-stage-ink tabular-nums">
               <span className="font-semibold">{ratio}</span>
-              <span className="text-white/60">
+              <span className="text-stage-ink-muted">
                 {fmtLen(lenW, false)} × {fmtLen(lenH)}
               </span>
               <span className={cn('rounded px-1.5 py-0.5 font-medium', DPI_STYLE[band].className)}>
@@ -277,7 +277,7 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
       </div>
 
       <div className="flex items-center justify-center gap-3 pb-1">
-        <ZoomOut className="size-4 text-white/60" />
+        <ZoomOut className="size-4 text-stage-ink-muted" />
         <input
           type="range"
           min={1}
@@ -288,9 +288,9 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
           onChange={(e) => setClamped({ ...frame, zoom: Number(e.target.value) })}
           className="w-56 accent-white"
         />
-        <ZoomIn className="size-4 text-white/60" />
-        <span className="w-12 text-xs text-white/70 tabular-nums">{formatNumber(frame.zoom, 2, 2)}×</span>
-        <Ruler className="size-4 text-white/60" aria-hidden />
+        <ZoomIn className="size-4 text-stage-ink-muted" />
+        <span className="w-12 text-xs text-stage-ink tabular-nums">{formatNumber(frame.zoom, 2, 2)}×</span>
+        <Ruler className="size-4 text-stage-ink-muted" aria-hidden />
         <input
           type="range"
           min={-MAX_STRAIGHTEN}
@@ -305,8 +305,8 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
           onDoubleClick={() => setStraighten(0)}
           className="w-40 accent-white"
         />
-        <span className="w-12 text-xs text-white/70 tabular-nums">{formatNumber(angle, 1, 1)}°</span>
-        <Button variant="ghost" size="sm" className="text-white/80" onClick={() => onCommit(null, 0)}>
+        <span className="w-12 text-xs text-stage-ink tabular-nums">{formatNumber(angle, 1, 1)}°</span>
+        <Button variant="ghost" size="sm" className="text-stage-ink" onClick={() => onCommit(null, 0)}>
           <RotateCcw data-icon="inline-start" /> {t('common.reset')}
         </Button>
         <Button variant="secondary" size="sm" onClick={onCancel}>
