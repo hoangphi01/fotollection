@@ -18,7 +18,7 @@ type SidePanelProps = {
 export function SidePanel({ title, children, footer }: SidePanelProps) {
   return (
     <aside className="flex w-panel shrink-0 flex-col border-l bg-sidebar text-sidebar-foreground">
-      <div className="flex h-12 items-center px-4">
+      <div className="flex h-header shrink-0 items-center px-4">
         <span className="text-sm font-semibold">{title}</span>
       </div>
       <Separator />

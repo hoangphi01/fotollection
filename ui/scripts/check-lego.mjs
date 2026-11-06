@@ -71,8 +71,6 @@ const RULES = [
     say: 'an arbitrary size: use the spacing scale or a token (text-2xs, w-panel)',
     except: {
       'features/window/title-bar.tsx': "the Windows caption buttons' own 46 px width",
-      'features/simple/simple-view.tsx': "its bar matches the gallery toolbar's 49 px",
-      'features/collage/collage-view.tsx': "its bar matches the gallery toolbar's 49 px",
       'features/library/selection-bar.tsx': 'its bar sits in the gallery toolbar, 45 px inside its border',
     },
   },

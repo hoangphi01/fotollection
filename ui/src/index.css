@@ -23,6 +23,9 @@
 @theme inline {
     /* The folder list and the tools panel, the same width (STYLE_RULE §4). */
     --spacing-panel: 18rem;
+    /* Every column's head, 64 px, so the lines under them meet across the window (owner,
+       2026-11-06); a head with its own border line adds it below (`box-content`). */
+    --spacing-header: 4rem;
     --font-heading: var(--font-sans);
     --font-sans: 'Be Vietnam Pro', system-ui, sans-serif;
     --font-mono: 'Geist Mono Variable', ui-monospace, monospace;

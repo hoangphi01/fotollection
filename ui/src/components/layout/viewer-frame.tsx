@@ -127,8 +127,8 @@ export function ViewerFrame({
         <aside className={cn('flex w-panel shrink-0 flex-col border-l bg-background', !panels && 'hidden')}>
           {/* As tall as the toolbar row beside it, its line meeting the toolbar's (owner,
               2026-11-06: one line across the columns). */}
-          <div className="flex h-11 shrink-0 flex-col justify-center border-b px-4 pr-12">
-            <DialogTitle className="truncate text-sm leading-tight">{title}</DialogTitle>
+          <div className="box-content flex h-header shrink-0 flex-col justify-center gap-0.5 border-b px-4 pr-12">
+            <DialogTitle className="truncate text-base">{title}</DialogTitle>
             <DialogDescription className="truncate text-xs" data-hint={descriptionHint}>
               {description}
             </DialogDescription>

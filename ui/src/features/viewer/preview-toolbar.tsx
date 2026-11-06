@@ -57,7 +57,7 @@ export function PreviewToolbar({
   const rotate = (clockwise: boolean) => photo && void commands.rotatePhotos([photo.id], clockwise)
   const stripLabel = t(filmstrip ? 'viewer.hideFilmstrip' : 'viewer.showFilmstrip')
   return (
-    <div className="@container flex h-11 items-center gap-1.5 px-3">
+    <div className="@container flex h-header items-center gap-1.5 px-3">
       <ToolbarButton
         icon={<RotateCcw />}
         label={t('viewer.rotateLeftShort')}

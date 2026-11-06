@@ -70,7 +70,7 @@ export function CollageView({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="@container flex min-h-[49px] items-center gap-3 border-b px-4 py-1.5 text-sm">
+      <div className="@container box-content flex h-header shrink-0 items-center gap-3 border-b px-4 text-sm">
         <span className="shrink-0 font-medium tabular-nums">
           {t('collage.count', { count: sheets.length, sheets: formatNumber(sheets.length), photos: formatNumber(photos.length) })}
         </span>

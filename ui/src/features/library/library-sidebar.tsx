@@ -91,7 +91,7 @@ export function LibrarySidebar({
 
   return (
     <aside className="flex w-panel shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground">
-      <div className="flex h-12 items-center gap-2 px-4">
+      <div className="flex h-header shrink-0 items-center gap-2 px-4">
         {/* Simplified mark (no wordmark) pre-rendered per density, so WebKit never downscales */}
         {/* The mark, as tall as the gear (32 px); a click opens fotollection.org in the browser. */}
         <button

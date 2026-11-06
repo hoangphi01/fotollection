@@ -71,7 +71,7 @@ function DialogContent({
                 deepens to burgundy under the pointer, in both themes. */}
             <Button
               variant="destructive"
-              className="absolute top-2 right-2 size-8 rounded-md [--lip:3px]"
+              className="absolute top-4 right-4 size-8 rounded-md [--lip:3px]"
               size="icon-sm"
             >
               <XIcon

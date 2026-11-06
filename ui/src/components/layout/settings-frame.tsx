@@ -37,7 +37,7 @@ export function SettingsFrame({ open, onClose, title, nav, navFooter, heading, d
         <aside className="flex w-64 shrink-0 flex-col border-r bg-muted/40">
           {/* Both columns' heads and feet share one height, so their lines meet as one line
               across the window (owner, 2026-11-06), as the gallery's do. */}
-          <div className="flex h-16 shrink-0 items-center px-4">
+          <div className="flex h-header shrink-0 items-center px-4">
             <p className="truncate text-base font-semibold">{title}</p>
           </div>
           <Separator />
@@ -53,7 +53,7 @@ export function SettingsFrame({ open, onClose, title, nav, navFooter, heading, d
         </aside>
 
         <div data-slot="settings-body" className="flex min-w-0 flex-1 flex-col bg-background">
-          <div className="flex h-16 shrink-0 flex-col justify-center gap-0.5 px-4 pr-12">
+          <div className="flex h-header shrink-0 flex-col justify-center gap-0.5 px-4 pr-12">
             <DialogTitle className="truncate text-base">{heading}</DialogTitle>
             <DialogDescription className="truncate text-xs">{description}</DialogDescription>
           </div>
