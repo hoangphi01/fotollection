@@ -75,7 +75,7 @@ export function SettingsWindow() {
             variant="ghost"
             size="sm"
             aria-current={s === shown ? 'page' : undefined}
-            className={cn('justify-start [&_svg]:text-primary', s === shown && 'bg-accent text-accent-foreground')}
+            className={cn('justify-start [&_svg]:text-primary', s === shown && 'bg-accent text-accent-foreground row-chosen')}
             onClick={() => showSettings(s)}
           >
             <Icon />

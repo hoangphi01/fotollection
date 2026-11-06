@@ -53,7 +53,7 @@ export function HistoryCard({ photoId, revision }: HistoryCardProps) {
                 variant="ghost"
                 size="sm"
                 aria-current={i === 0 ? 'step' : undefined}
-                className={cn('w-full justify-start font-normal', i === 0 && 'bg-accent font-medium ring-[1.5px] ring-primary ring-inset shadow-[inset_0_-3px_0_color-mix(in_oklch,var(--primary),var(--shade)_45%)]')}
+                className={cn('w-full justify-start font-normal', i === 0 && 'bg-accent font-medium row-chosen')}
                 onClick={() => i > 0 && restore(step.serial)}
               >
                 {i === 0 ? <Check data-icon="inline-start" /> : <span className="size-4" aria-hidden />}

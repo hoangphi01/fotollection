@@ -335,3 +335,12 @@
   box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
+/* The chosen row of a list (a folder, a History step, a Settings section): an accent outline
+   inside and a deep accent lip at its foot, as Sentry's chosen project (owner, 2026-11-06).
+   One utility, so every list chooses alike. */
+@utility row-chosen {
+  --tw-shadow: inset 0 0 0 1.5px var(--primary),
+    inset 0 -3px 0 color-mix(in oklch, var(--primary), var(--shade) 45%);
+  box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
+    var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
