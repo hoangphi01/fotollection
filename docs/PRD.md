@@ -1046,7 +1046,12 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-103 — Check for updates at start, never download unasked
 
-**P2 (planned; owner's request 2026-11-06: "check only, the user decides to download, a setting to check at start as other offline apps do").** A switch in Settings → Updates, *Check for updates when the app starts*, **off by default** (privacy, SECURITY.md: no call the user did not ask for). When on, the app asks GitHub for the latest release's tag once at start, in the background, with nothing about the user or the machine in the request but what any HTTPS request carries; a newer version shows a quiet note with *What's new* and *Download*, which opens the release page. Nothing is downloaded or installed by itself; offline, nothing is shown. The manual *Check for updates* stays as it is (FR-021).
+**P2 (planned; owner's request 2026-11-06: "check only, the user decides to download; on from the install, off only when the user turns it off in Settings, since the app still has bugs").** A switch in Settings → Updates, *Check for updates when the app starts*, **on by default**; turned off, it stays off.
+
+- **The check:** once at start, in the background, from the app's shell, never the core. It reads the latest release and a small `update.json` published with it: the version, and the *minimum safe version* with its reason. Nothing about the user or the machine goes in the request beyond what any HTTPS request carries. Offline, nothing is shown.
+- **A newer version** shows a quiet note with *What's new* and *Download*, which opens the release page. Nothing is downloaded or installed by itself.
+- **Below the minimum safe version** (a release that fixes a serious fault, for example a version that showed zoomed portraits sideways), the note becomes a red warning that names the fault and asks to update. Only versions that carry this feature can show it, so it ships as soon as it can.
+- SECURITY.md and README's privacy lines say so: one request at start, which can be turned off. The manual *Check for updates* stays as it is (FR-021).
 
 ## 7. Non-functional requirements
 

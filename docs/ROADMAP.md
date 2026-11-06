@@ -190,7 +190,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-100 | Motion that feels like one app: shared timings, smooth transitions between views and layouts, lists that move instead of jumping, *Reduce motion* respected, 60 fps; after v0.13.0 |
 | FR-101 | Healing: spot removal, heal and clone, as Lightroom's Remove tool; a hidden tab of the inspector until built; about v0.15 |
 | FR-102 | Masking: linear, radial and brush masks with their own sliders, later on-device subject and sky; needs a local layer beside the look's table (ADR-0038 amended); about v0.15 |
-| FR-103 | Check for updates at start, a switch in Settings, off by default; check only, the user downloads; no data sent; version to be chosen |
+| FR-103 | Check for updates at start, on by default and turned off in Settings; check only, the user downloads; a red warning below the minimum safe version (`update.json`); version to be chosen |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 
