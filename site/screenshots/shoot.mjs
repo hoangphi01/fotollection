@@ -40,7 +40,7 @@ const fixtures = trip.fixtures
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.json': 'application/json' }
 
 /** Runs in the page before the app: a stand-in for Tauri's IPC bridge. */
-function bridge({ fixtures, scenario, language, os, tabs, queues, mode }) {
+function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, update }) {
   const { common, scenarios } = fixtures
   // Collage mode (FR-035) has its own recording; older dumps have none.
   // Postcards (FR-073) are recorded after the collage, as its own sheets; older dumps have none.
@@ -70,7 +70,11 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode }) {
     startup_finished: () => true,
     list_print_sizes: () => common.list_print_sizes,
     list_fonts: () => common.list_fonts,
-    get_ui_settings: () => ({ ...common.get_ui_settings, language, mode }),
+    get_ui_settings: () => ({ ...common.get_ui_settings, language, mode, ...ui }),
+    // The update window at start (FR-103), shown when a shot asks for it.
+    check_for_update_at_start: () => update,
+    // The export dialog's example name (FR-104): the first photo's own name.
+    export_name_example: () => 'P1067823.jpg',
     // The Settings window's memory and cache (FR-086): a 16 GB Mac at 25 %, a trip's cache.
     memory_info: () => ({ total: 16 * 2 ** 30, budget: 4 * 2 ** 30, held: 1.3 * 2 ** 30 }),
     machine_info: () => ({ cpu: 'Apple M3', cores: 8, memory: 16 * 2 ** 30, freeDisk: 31e9 }),
@@ -189,7 +193,7 @@ const shots = []
 const TRIP_QUEUES = { print: [1, 4, 6], aside: [7, 13] } // not the shown photos (SHOW)
 const NO_QUEUES = { print: [], aside: [] }
 
-async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional' }) {
+async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional', ui = {}, update = null }) {
   const { dump } = source
   // DEMO_WIDTH=1000 checks narrow windows (the screenshots for the site stay at 1440).
   const context = await browser.newContext({
@@ -223,7 +227,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
     return route.abort()
   })
   // DEMO_OS=windows shows the Windows title bar, for checking it on a Mac.
-  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode })
+  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
   await page.goto('http://app.localhost/')
@@ -375,6 +379,111 @@ async function iconOffsets(page) {
   })
 }
 
+/**
+ * What overflows on screen (FR-099, step 5; LESSONS: the owner found them by eye): a
+ * control's text wider or taller than its box, unless it is meant to end in an ellipsis; a
+ * head, toolbar or button group whose last child passes its right edge; a segment's text off
+ * its box's centre by more than 0.5 px. Each as a line naming the place.
+ */
+async function overflows(page, where) {
+  const found = await page.evaluate(() => {
+    const out = []
+    const vis = (el) => {
+      const b = el.getBoundingClientRect()
+      return b.width > 0.5 && b.height > 0.5 && getComputedStyle(el).visibility !== 'hidden'
+    }
+    const name = (el) => (el.getAttribute('aria-label') || el.textContent || el.tagName).trim().slice(0, 40)
+    const controls = '[data-slot="button"], [data-slot="toggle-group-item"], [data-slot="badge"], [data-slot="select-trigger"], label'
+    for (const el of document.querySelectorAll(controls)) {
+      if (!vis(el)) continue
+      const cs = getComputedStyle(el)
+      const cut = cs.textOverflow === 'ellipsis' || el.querySelector('.truncate')
+      // The content's own width against the room inside the padding: centred text spills on
+      // both sides, which scrollWidth counts only on one.
+      const range = document.createRange()
+      range.selectNodeContents(el)
+      const used = range.getBoundingClientRect().width
+      const room = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)
+      if (!cut && used > room + 1) out.push(`text wider than its room (${Math.round(used)} > ${Math.round(room)}): ${el.dataset.slot ?? el.tagName.toLowerCase()} "${name(el)}"`)
+      if (el.tagName !== 'LABEL' && el.scrollHeight > el.clientHeight + 1) out.push(`text taller than its box (${el.scrollHeight} > ${el.clientHeight}): "${name(el)}"`)
+    }
+    const rows = '.h-header, [data-slot="button-group"], [role="toolbar"], [data-slot="dialog-footer"]'
+    for (const row of document.querySelectorAll(rows)) {
+      if (!vis(row)) continue
+      const right = row.getBoundingClientRect().right
+      for (const kid of row.children) {
+        if (vis(kid) && kid.getBoundingClientRect().right > right + 0.5) {
+          out.push(`a row's child past its edge by ${Math.round(kid.getBoundingClientRect().right - right)} px: "${name(kid)}" in "${name(row)}"`)
+        }
+      }
+    }
+    for (const seg of document.querySelectorAll('[data-slot="toggle-group-item"]')) {
+      if (!vis(seg)) continue
+      const walker = document.createTreeWalker(seg, NodeFilter.SHOW_TEXT)
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        if (!n.textContent.trim()) continue
+        const range = document.createRange()
+        range.selectNodeContents(n)
+        const t = range.getBoundingClientRect()
+        const b = seg.getBoundingClientRect()
+        const off = Math.abs(t.left + t.width / 2 - (b.left + b.width / 2))
+        // A segment with an icon or a colour swatch before its words is not centred on them.
+        const marked = seg.children.length > 0
+        if (t.width > 0 && off > 0.5 && !marked) out.push(`segment text ${Math.round(off * 10) / 10} px off centre: "${name(seg)}"`)
+        break
+      }
+    }
+    return out
+  })
+  return [...new Set(found)].map((f) => `${where}: ${f}`)
+}
+
+/** Every view the overflow checks walk, at one window width (step 5). */
+async function overflowViews({ language, theme, width }) {
+  const out = []
+  let { context, page } = await open({ scenario: 'stamp', language, theme, width, queues: NO_QUEUES })
+  await settle(page)
+  out.push(...(await overflows(page, `gallery at ${width}`)))
+  await page.getByRole('button', { name: /^(Filters|Bộ lọc|\d+ (filter|filters|bộ lọc))$/ }).first().click()
+  await page.waitForTimeout(400)
+  out.push(...(await overflows(page, `filters at ${width}`)))
+  await page.keyboard.press('Escape')
+  await page.getByRole('button', { name: /^(Export|Xuất) \d+/ }).first().click()
+  await page.waitForSelector('[data-slot="settings-body"]')
+  await settle(page)
+  out.push(...(await overflows(page, `export dialog at ${width}`)))
+  await page.screenshot({ path: path.join(outDir, `measure-export-${width}.png`) })
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(300)
+  for (const section of [/^(General|Chung)$/, /^(Export|Xuất ảnh)$/, /^(Updates|Cập nhật)$/]) {
+    await openSettings(page, section)
+    out.push(...(await overflows(page, `settings ${section.source.slice(2, 8)} at ${width}`)))
+  }
+  await context.close()
+  for (const mode of ['simple', 'collage']) {
+    ;({ context, page } = await open({ scenario: mode === 'collage' ? 'collage' : 'stamp', language, theme, width, mode, queues: NO_QUEUES }))
+    await settle(page)
+    out.push(...(await overflows(page, `${mode} at ${width}`)))
+    await context.close()
+  }
+  for (const layout of ['dialog', 'window']) {
+    ;({ context, page } = await open({ scenario: 'stamp', language, theme, width, ui: { previewLayout: layout } }))
+    await (await reach(page, SHOW.crop)).dblclick()
+    await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
+    await settle(page)
+    out.push(...(await overflows(page, `preview (${layout}) at ${width}`)))
+    if (width === 1180) await page.screenshot({ path: path.join(outDir, `measure-preview-${layout}-1180.png`) })
+    await context.close()
+  }
+  const update = { current: '0.12.0', latest: '0.13.0', newer: true, pageUrl: '', minSafe: '0.13.0', belowMinSafe: true, reasonEn: 'This version has a fault that can lose a project’s edits.', reasonVi: 'Phiên bản này có lỗi có thể làm mất chỉnh sửa của dự án.' }
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme, width, update }))
+  await page.waitForSelector('[role="dialog"]')
+  await settle(page)
+  out.push(...(await overflows(page, `update window at ${width}`)))
+  await context.close()
+  return out
+}
+
 /** STYLE_RULE §4: each column holds this one value, in every view that has it. */
 const MEASURES = { cardGap: '12', blockGap: '12', fieldGap: '6', select: '32', toggle: '32', input: '32', iconBtn: '32' }
 
@@ -441,6 +550,11 @@ async function measurePanels() {
   if (widths.size > 1) off.push(`the folder list and the panels differ in width: ${[...widths].join(', ')}`)
   off.push(...offCentre)
   console.log(offCentre.length ? '' : 'icons: every icon-only button has its icon centred (≤ 0.5 px)')
+  // Text and rows that overflow, at the narrowest window, a middle one and a wide one (step 5).
+  const spilled = []
+  for (const width of [1180, 1400, 1600]) spilled.push(...(await overflowViews({ language, theme, width })))
+  off.push(...spilled)
+  console.log(spilled.length ? '' : 'overflow: no text, row or segment overflows at 1180, 1400 or 1600 px')
   if (off.length) {
     console.error(off.join('\n'))
     process.exitCode = 1

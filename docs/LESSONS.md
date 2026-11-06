@@ -14,6 +14,13 @@
 
 ## 2026-11-06
 
+### Words in shared rows spilled into their padding: measured by the box, not by the text (FR-099, UI)
+
+- **Seen:** the owner saw *Không RAW* touch its segment's edges; the new `MEASURE=1` overflow check found the same in 15 places across both languages (*Thành phố*, *+ tên nước*, *One colour*, *City, country*, the date formats, *Retro orange*), yet a first version of the check reported only two, and changing the padding seemed to change nothing.
+- **Why:** a segment shares its row (`flex-1`, 74 px of an 18 rem panel for three choices) and centres its words; with 10 px of padding a side it had 54 px for text that was 56 to 65 px wide. Centred text spills over both sides, but `scrollWidth` counts only one, so a check built on it saw a 2 px fault where the words had lost 11.
+- **Fix:** the check measures the content's own width (a `Range` over it) against the room inside the padding; shared segments keep 4 px a side (`SegmentedToggle`, `SwatchToggle` 6 px beside its swatch), dates set mono a size smaller, and the English place formats say *+ code* and *+ country* as the Vietnamese do.
+- **Rule:** an overflow check compares what is drawn (a range's rect) with the room inside the padding, never `scrollWidth` alone; a fixed-width row of words is measured in both languages at the narrowest panel before it is kept.
+
 ### One style change took a sweep of twenty files: buttons and rows written by hand (FR-099, UI)
 
 - **Seen:** making remove buttons red, then reset buttons, then the chosen rows of menus and dropdowns meant editing the same classes in about twenty files each time, and some were missed (the compare menu, the dropdown's checked item, the estimate pill); the owner: "too many buttons are fragmented, debugging and refactoring is painful; that is why I said every button must be reused, one class".

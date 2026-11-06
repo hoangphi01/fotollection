@@ -47,7 +47,7 @@ export function SwatchToggle<T extends string>({
       {options.map((o) => {
         const css = o.swatch.startsWith('#') || o.swatch.startsWith('rgb')
         return (
-          <ToggleGroupItem key={o.value} value={o.value} className={cn('min-w-0 flex-1 gap-1.5 text-xs', dense && 'px-1')}>
+          <ToggleGroupItem key={o.value} value={o.value} className={cn('min-w-0 flex-1 gap-1.5 px-1.5 text-xs', dense && 'px-1')}>
             <span
               className={cn('size-3 shrink-0 rounded-full border', !css && o.swatch)}
               style={css ? { backgroundColor: o.swatch } : undefined}

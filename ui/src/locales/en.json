@@ -168,8 +168,8 @@
     "locationHint": "From the photo's GPS, at town level, offline.",
     "placeFormat": {
       "city": "City",
-      "cityCountryCode": "City, HU",
-      "cityCountry": "City, country"
+      "cityCountryCode": "+ code",
+      "cityCountry": "+ country"
     },
     "caption": "Line under the date",
     "captionPlaceholder": "e.g. KY NIEM BUDAPEST",
@@ -235,7 +235,7 @@
     "logoStyle": "Logo colours",
     "logoStyles": {
       "classic": "Classic",
-      "original": "Brand colours",
+      "original": "Brand",
       "mono": "One colour"
     },
     "logoSize": "Logo size",

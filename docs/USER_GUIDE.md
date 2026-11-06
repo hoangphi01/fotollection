@@ -224,7 +224,7 @@ A date in the corner of the print, like a film camera's, taken from when the pho
    - the **corner**: *Bottom right*, *Bottom left*, *Top right* or *Top left*;
    - the **colour**: **White** or **Retro orange**;
    - the **size**: **Small**, **Medium** or **Large**, the same three in every mode. The size follows the print: larger on a larger print, and on a collage sheet each photo's stamp is half the sheet's, as two share it.
-3. **Place on the date line** adds the town where the photo was taken, from its GPS, offline: as **City**, **City, HU** (with the country code) or **City, country**. A photo without GPS can get a place by hand (chapter 10).
+3. **Place on the date line** adds the town where the photo was taken, from its GPS, offline: as **City**, **+ code** (with the country code, *Prague, CZ*) or **+ country** (*Prague, Czechia*). A photo without GPS can get a place by hand (chapter 10).
 4. **Line under the date**: a short text across the photo, up to 80 characters, printed in capitals without accents (for example *KY NIEM BUDAPEST*).
 
 <!-- shot: stamp | Date stamp with the town from the photo's GPS -->
@@ -245,7 +245,7 @@ A white or black bar under the photo with the camera's logo and settings, like t
    - **Fit whole photo**: the whole photo at the print size, framed like an instax print with a 5 mm border on three sides and the bar below, so the print comes out larger than the size chosen. A note says how large, so you can pick a paper that fits at the shop. With **3 mm border** on, the whole photo is fitted inside the size chosen instead, and the print does not grow.
 3. Choose **White** or **Black**, the date format, and the font: *Inter (built-in)*, or **Import OTF/TTF…** to use your own ([FR-042](PRD.md#fr-042--custom-fonts)).
 4. Under **Show**, tick what the bar holds: *Logo*, *Camera*, *Lens*, *Focal length*, *Aperture*, *Shutter*, *ISO*, *Photo style*, *Date*, *Place*.
-5. With the logo shown, choose its **Logo colours** (*Classic*, *Brand colours* or *One colour*) and its **Logo size** (double-click the slider for 100 %).
+5. With the logo shown, choose its **Logo colours** (*Classic*, *Brand* or *One colour*) and its **Logo size** (double-click the slider for 100 %).
 
 <!-- shot: frame | The “Shot on” info frame with the camera's logo -->
 
