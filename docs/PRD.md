@@ -964,6 +964,14 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **The photo on screen first:** every RAW develop for work the user does not wait for (standard previews, prefetch, the export's estimate, an export, an analysis) waits while the photo on screen needs one; a photo the user has browsed past no longer goes first (v0.11.1).
 - **The cache:** its limit is 5 GB (was 2 GB), the oldest files go first, standard previews before thumbnails, and it holds during the previews' pass too (v0.11.1); *Clear cache* empties the standard previews too. The Settings window shows it ([FR-086](#fr-086--one-settings-window)).
 
+### FR-092 — Export quality on a slider, with a live estimate and a print verdict
+
+**P1 (planned, v0.12.0; owner's request 2026-11-06: "a slider like Lightroom's, but better").** The export card gets a *Quality* slider (JPEG quality, 60–100, default 95 as [FR-008](#fr-008--original-quality-export) says), as Lightroom's export dialog has, and goes further:
+
+- **The estimate follows the slider:** while it moves, the export's size estimate ([FR-053](#fr-053--export-for-social-media)) updates for the value under the thumb, not only after release; the last answer stays while the next is computed, and a newer value replaces an older one in flight (never a queue of encodes).
+- **Whether it prints well, as badges:** beside the value, a badge in the style of the resolution warning ([FR-026](#fr-026--resolution-warning)) says what the setting is good for, for example *Print, excellent*, *Print, good*, *Screen only*, with a hint explaining it. The thresholds are measured on real photos before they are fixed (the difference from quality 100 at print size), never guessed; 4:4:4 chroma stays for prints.
+- **Lego:** the shared slider and badge blocks, measured in both themes and languages; Collage and postcard exports use the same card.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
