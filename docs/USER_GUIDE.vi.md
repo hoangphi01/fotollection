@@ -92,13 +92,13 @@ Cả hai khu vực được lưu trong dự án (`.fotollection`) và trong phi�
 
 Nút **Giỏ in** trên ảnh (cạnh *Cắt ảnh*, các nút xoay và *Xuất ảnh*) làm giống phím ↑, và hiện *Đã trong giỏ* khi ảnh đã nằm trong giỏ; nhấp lần nữa để lấy ảnh ra. Ảnh đã để riêng thì hiện **Trả về gallery**.
 
-**Hàng công cụ phía trên ảnh** chứa các công cụ của ảnh, nên không gì che ảnh ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)): *Cắt ảnh*, các nút xoay, *Giỏ in*, *Trước*, hoàn tác và làm lại, *Xuất ảnh*, rồi phóng to, vị trí trong bộ ảnh (*25 / 422*), nút dải ảnh và **ⓘ** liệt kê mọi phím. Gợi ý của mỗi nút ghi phím tắt của nó. Nếu bạn quen Lightroom, các phím của Lightroom dùng được ở đây: **R** cắt ảnh, **\\** xem ảnh trước khi chỉnh màu và trở lại, **Z** chuyển giữa vừa khung và 1:1, **⌘[ ⌘]** xoay, **⇧⌘E** xuất ảnh.
+**Hàng công cụ phía trên ảnh** chứa các công cụ của ảnh, nên không gì che ảnh ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)): *Cắt ảnh*, các nút xoay, *Giỏ in*, *Trước*, hoàn tác và làm lại, *Xuất ảnh*, rồi phóng to, nút dải ảnh, nút cửa sổ và **ⓘ** liệt kê mọi phím. Gợi ý của mỗi nút ghi phím tắt của nó. Nếu bạn quen Lightroom, các phím của Lightroom dùng được ở đây: **R** cắt ảnh, **\\** xem ảnh trước khi chỉnh màu và trở lại, **Z** chuyển giữa vừa khung và 1:1, **⌘[ ⌘]** xoay, **⇧⌘E** xuất ảnh.
 
-**Dải ảnh** dưới tấm ảnh hiện các ảnh của chế độ xem đang mở, theo thứ tự của gallery, kèm sao, giỏ in và nhãn RAW ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): nhấp vào tấm nào là mở tấm đó, dù xa đến đâu. Nút dải ảnh ở hàng công cụ phía trên ảnh ẩn dải ảnh và hiện lại; ứng dụng nhớ lựa chọn của bạn.
+**Dải ảnh** dưới tấm ảnh hiện các ảnh của chế độ xem đang mở, theo thứ tự của gallery, bên dưới một dòng ghi vị trí và tên ảnh (*25 / 422 · P1067823.JPG*) như Lightroom; kèm sao, giỏ in và nhãn RAW ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): nhấp vào tấm nào là mở tấm đó, dù xa đến đâu. Nút dải ảnh ở hàng công cụ phía trên ảnh ẩn dải ảnh (chỉ giữ lại dòng đó) và hiện lại; ứng dụng nhớ lựa chọn của bạn.
 
 **Phủ kín cửa sổ:** bấm **F**, hoặc nút cửa sổ ở hàng công cụ phía trên ảnh, để bản xem trước phủ kín cả cửa sổ thay vì là một hộp thoại; bấm lần nữa để trở lại. Ứng dụng nhớ lựa chọn này, và Cài đặt → Chung → *Xem ảnh* cũng chỉnh được. Khi phủ kín, bên trái có thêm một cột giống Lightroom ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)):
 
-- **Điều hướng:** ảnh thu nhỏ, có khung viền phần đang hiện khi phóng to; nhấp hoặc kéo trong đó để xem chỗ khác. *Vừa khung*, *Lấp đầy*, *1:1* và *2:1* phóng ngay.
+- **Điều hướng:** ảnh thu nhỏ, có khung viền phần đang hiện khi phóng to; nhấp hoặc kéo trong đó để xem chỗ khác. Các nút trên tiêu đề, *Vừa khung*, *Lấp đầy*, *1:1* và *2:1*, phóng ngay.
 - **Lịch sử:** các thay đổi của ảnh này, mới nhất ở trên, mỗi dòng ghi rõ (*Ấm / lạnh +8*, *Cắt ảnh*, *Dấu ngày*). Nhấp một dòng để đưa ảnh về đúng lúc đó; việc này cũng là một thay đổi, nên **Cmd/Ctrl+Z** hoàn tác được. Sao, cờ và giỏ in không nằm trong đó và không đổi khi bạn quay lại.
 
 **Tab**, bấm sau khi nhấp vào ảnh, ẩn các bảng hai bên để ảnh to hơn, bấm lần nữa để hiện lại.
@@ -197,7 +197,7 @@ Trong thẻ khổ của bản xem trước, dòng *Cắt ảnh* ghi **Ở giữa
 
 ## 7. Xem kỹ: phóng to
 
-Trong bản xem trước, **các nút phóng to** ở hàng công cụ phía trên ảnh hiện mức phóng giữa **−** và **+**: *Vừa khung*, hoặc theo điểm ảnh của chính tấm ảnh, **100 % là 1:1**, một điểm ảnh của ảnh trên một điểm ảnh của màn hình ([FR-057](PRD.md#fr-057--zoom-in-the-preview), [FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)); nút cuối cùng đưa ảnh về vừa khung. Bàn phím và trackpad cũng làm được như vậy:
+Trong bản xem trước, **các nút phóng to** ở hàng công cụ phía trên ảnh hiện mức phóng giữa **−** và **+** theo điểm ảnh của chính tấm ảnh, **100 % là 1:1** (khi vừa khung, số này cho biết bạn đang thấy bao nhiêu phần kích thước ảnh, ví dụ 23 %); nhấp vào số phần trăm để chuyển giữa vừa khung và 1:1; một điểm ảnh của ảnh trên một điểm ảnh của màn hình ([FR-057](PRD.md#fr-057--zoom-in-the-preview), [FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)); nút cuối cùng đưa ảnh về vừa khung. Bàn phím và trackpad cũng làm được như vậy:
 
 - **Nhấp** vào ảnh, hoặc bấm **Z**, để chuyển giữa vừa khung và 1:1 ngay chỗ bạn nhấp, như Lightroom.
 - **Vuốt hai ngón lên hoặc xuống** (hoặc lăn chuột), **chụm hai ngón** trên trackpad, hoặc bấm **Cmd/Ctrl +** và **Cmd/Ctrl −**: ảnh phóng quanh con trỏ, tới 2:1. Vuốt lên là phóng to.

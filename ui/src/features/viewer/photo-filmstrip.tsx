@@ -15,6 +15,8 @@ type PhotoFilmstripProps = {
   thumbVersions: Record<number, number>
   generation: number
   onPick: (index: number) => void
+  /** Only the header line: the strip hidden (FR-090). */
+  collapsed?: boolean
 }
 
 /**
@@ -22,9 +24,20 @@ type PhotoFilmstripProps = {
  * thumbnails (no new decode), with the tiles' rating, basket and RAW marks. A click goes the
  * way ← → go, so the photo picked develops first and the one left stops (FR-091).
  */
-export function PhotoFilmstrip({ photos, index, thumbVersions, generation, onPick }: PhotoFilmstripProps) {
+export function PhotoFilmstrip({ photos, index, thumbVersions, generation, onPick, collapsed = false }: PhotoFilmstripProps) {
+  const shown = index === null ? undefined : photos[index]
   return (
     <Filmstrip
+      collapsed={collapsed}
+      // Where the photo is in the set, and its name, as Lightroom's strip says it (FR-095).
+      header={
+        <>
+          <span>
+            {(index ?? 0) + 1} / {photos.length}
+          </span>
+          {shown && <span className="truncate text-stage-ink">· {shown.fileName}</span>}
+        </>
+      }
       items={photos}
       current={index}
       onPick={(_, i) => onPick(i)}

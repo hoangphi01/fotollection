@@ -416,7 +416,8 @@
     "everyKey": "every key",
     "keys": "← →  browse · ↑ to the print basket · ↓ set aside\n0–5 stars · P pick · X reject · U clear the flag\nR or C crop · [ ] or {{mod}} [ ] rotate\nZ, or a click on the photo: fit ↔ 1:1 · {{mod}} + − 0 zoom · drag to move the zoomed photo\n\\ before / after · Y side by side · ⇧Y split · ⌥/Alt Y top and bottom\n{{mod}} Z undo · ⇧ {{mod}} Z redo\nF fill the app window or back · Tab hide the side panels (from the photo)\n⇧ {{mod}} E export this photo · Esc close",
     "layoutWindow": "Fill the app window (F)",
-    "layoutDialog": "Back to a window (F)"
+    "layoutDialog": "Back to a window (F)",
+    "zoomToggle": "Fit ↔ 1:1 (Z)"
   },
   "errors": {
     "internal": "Something went wrong",

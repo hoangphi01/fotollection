@@ -23,6 +23,9 @@ type SegmentedToggleProps<T extends string> = {
   dense?: boolean
   /** As wide as its items, beside other controls in a row (a unit next to two numbers). */
   fit?: boolean
+  /** In a card's header (the Navigator's zoom, FR-095): 28 px, flat choices, the chosen one
+   * pressed in; always as wide as its items. */
+  small?: boolean
 }
 
 /**
@@ -39,13 +42,15 @@ export function SegmentedToggle<T extends string>({
   mono = false,
   dense = false,
   fit = false,
+  small = false,
 }: SegmentedToggleProps<T>) {
   return (
     <ToggleGroup
       type="single"
-      variant="outline"
-      spacing={1}
-      className={fit ? 'shrink-0' : 'w-full'}
+      variant={small ? 'default' : 'outline'}
+      size={small ? 'sm' : 'default'}
+      spacing={small ? 0.5 : 1}
+      className={fit || small ? 'shrink-0' : 'w-full'}
       aria-label={ariaLabel}
       disabled={disabled}
       value={value ?? ''}
@@ -57,7 +62,7 @@ export function SegmentedToggle<T extends string>({
           value={o.value}
           aria-label={o.ariaLabel}
           data-hint={o.hint}
-          className={cn('text-xs', !fit && 'min-w-0 flex-1', (dense || mono) && 'px-1', mono && 'font-mono tracking-tight')}
+          className={cn('text-xs', small && 'px-1.5', !fit && !small && 'min-w-0 flex-1', (dense || mono) && 'px-1', mono && 'font-mono tracking-tight')}
         >
           {o.label}
         </ToggleGroupItem>

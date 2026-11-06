@@ -92,15 +92,15 @@ Both areas are saved in the project (`.fotollection`) and in the session, so the
 
 <!-- shot: swipe | A photo in the print basket, with the keys to keep going -->
 
-**The row above the photo** holds its tools, so nothing covers the photo ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)): *Crop*, the turn buttons, *Print basket*, *Before*, undo and redo, *Export*, then the zoom, where you are in the set (*25 / 422*), the filmstrip button and **ⓘ**, which lists every key. Each button's hint names its key. If you come from Lightroom, its keys work here: **R** crops, **\\** shows the photo before its colour and back, **Z** goes between fit and 1:1, **⌘[ ⌘]** rotate, **⇧⌘E** exports.
+**The row above the photo** holds its tools, so nothing covers the photo ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)): *Crop*, the turn buttons, *Print basket*, *Before*, undo and redo, *Export*, then the zoom, the filmstrip button, the window button and **ⓘ**, which lists every key. Each button's hint names its key. If you come from Lightroom, its keys work here: **R** crops, **\\** shows the photo before its colour and back, **Z** goes between fit and 1:1, **⌘[ ⌘]** rotate, **⇧⌘E** exports.
 
 The **Print basket** button does the same as ↑, and shows *In the basket* when the photo is already in it; click it again to take the photo out. A photo that was set aside shows **Back to the gallery** instead.
 
-**The filmstrip** under the photo shows the photos of the view, in the gallery's order, with their stars, basket and RAW marks ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): click one to open it, however far it is. The filmstrip button in the row above the photo hides it and shows it again; the app remembers your choice.
+**The filmstrip** under the photo shows the photos of the view, in the gallery's order, under a line that says where you are and the photo's name (*25 / 422 · P1067823.JPG*), as Lightroom's does; with their stars, basket and RAW marks ([FR-090](PRD.md#fr-090--a-filmstrip-in-the-photos-preview)): click one to open it, however far it is. The filmstrip button in the row above the photo hides it, keeping only that line, and shows it again; the app remembers your choice.
 
 **Fill the app window:** press **F**, or the window button in the row above the photo, to let the preview fill the whole window instead of a dialog; press it again to come back. The app remembers it, and Settings → General → *Photo preview* sets it too. Filled, a column on the left adds what Lightroom has there ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)):
 
-- **Navigator:** the photo small, with the part on screen outlined while zoomed; click or drag in it to look elsewhere. *Fit*, *Fill*, *1:1* and *2:1* zoom at once.
+- **Navigator:** the photo small, with the part on screen outlined while zoomed; click or drag in it to look elsewhere. The buttons in its title, *Fit*, *Fill*, *1:1* and *2:1*, zoom at once.
 - **History:** this photo's changes, newest first, each named (*Warm / cool +8*, *Crop*, *Date stamp*). Click one to bring the photo back to how it was then; that is a change too, so **Cmd/Ctrl+Z** undoes it. Stars, flags and the basket are not part of it and never change when you go back.
 
 **Tab**, pressed after clicking the photo, hides the side panels for a bigger photo, and brings them back.
@@ -199,7 +199,7 @@ In the preview's size card, *Crop* says **Centred**, with **Adjust**, or **Custo
 
 ## 7. Looking closely: zoom
 
-In the preview, the **zoom buttons** in the row above the photo show the zoom between **−** and **+**: *Fit*, or the photo's own pixels, **100 % being 1:1**, one pixel of the photo on one pixel of the screen ([FR-057](PRD.md#fr-057--zoom-in-the-preview), [FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)); the last button goes back to fit. The same with the keyboard and the trackpad:
+In the preview, the **zoom buttons** in the row above the photo show the zoom between **−** and **+** in the photo's own pixels, **100 % being 1:1** (at fit it reads how much of the photo's size you see, say 23 %); click the percentage to go between fit and 1:1; one pixel of the photo on one pixel of the screen ([FR-057](PRD.md#fr-057--zoom-in-the-preview), [FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)); the last button goes back to fit. The same with the keyboard and the trackpad:
 
 - **Click** the photo, or press **Z**, to go between fit and 1:1, where you clicked, as in Lightroom.
 - **Scroll up or down with two fingers** (or the mouse wheel), **pinch** on the trackpad, or press **Cmd/Ctrl +** and **Cmd/Ctrl −**: the photo zooms about the pointer, up to 2:1. Fingers up zoom in.

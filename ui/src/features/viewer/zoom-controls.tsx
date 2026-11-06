@@ -15,16 +15,19 @@ type ZoomControlsProps = {
   onZoomIn: () => void
   onZoomOut: () => void
   onFit: () => void
-  /** In a toolbar row (the photo preview, FR-095) rather than over the stage; it reads *Fit*
-   * at fit, as Lightroom does. */
+  /** In a toolbar row (the photo preview, FR-095) rather than over the stage: the percentage
+   * alone, the photo's own (1:1 is 100 %), a click on it going fit ↔ 1:1; the buttons hide when
+   * the row is narrow (`@xl`), never a word that could outgrow its box (LESSONS 2026-11-06). */
   inline?: boolean
+  /** Fit ↔ 1:1, for a click on the percentage in a toolbar row. */
+  onToggle?: () => void
 }
 
 /**
  * Zoom buttons for the preview (FR-057), so zoom can be found without knowing the
  * shortcuts or the trackpad pinch; each tooltip teaches its shortcut.
  */
-export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomIn, onZoomOut, onFit, inline = false }: ZoomControlsProps) {
+export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomIn, onZoomOut, onFit, inline = false, onToggle }: ZoomControlsProps) {
   const { t } = useTranslation()
   const buttons = [
     { key: 'out', Icon: ZoomOut, label: t('viewer.zoomOut', { mod }), disabled: !zoomed, onClick: onZoomOut },
@@ -33,23 +36,37 @@ export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomI
   ] as const
   const button = ({ key, Icon, label, disabled, onClick }: (typeof buttons)[number]) => (
     // On the wrapper: a disabled button gets no pointer events.
-    <span key={key} data-hint={key === 'in' ? `${label}\n${t('viewer.zoomPinch')}` : label}>
+    <span key={key} className={inline ? 'hidden @xl:block' : undefined} data-hint={key === 'in' ? `${label}\n${t('viewer.zoomPinch')}` : label}>
       <Button variant={inline ? 'ghost' : 'secondary'} size="icon-sm" aria-label={label} disabled={disabled} onClick={onClick}>
         <Icon />
       </Button>
     </span>
   )
   return (
-    <div className={cn('flex items-center gap-1', !inline && 'absolute right-3 bottom-3 rounded-lg bg-black/60 p-1')}>
+    <div className={cn('flex items-center gap-1', !inline && 'absolute right-3 bottom-3 rounded-lg bg-stage-chip p-1')}>
       {button(buttons[0])}
-      <span
-        className={cn('flex min-w-14 items-center justify-center gap-1 px-1 text-xs tabular-nums', inline ? 'text-muted-foreground' : 'text-white/80')}
-        aria-live="polite"
-        data-hint={loading ? t('viewer.zoomSharpening') : undefined}
-      >
-        {loading && <LoaderCircle className="size-3 animate-spin" aria-label={t('viewer.zoomSharpening')} />}
-        {inline && !zoomed ? t('viewer.fit') : `${percent} %`}
-      </span>
+      {inline ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          aria-live="polite"
+          data-hint={loading ? t('viewer.zoomSharpening') : t('viewer.zoomToggle')}
+          className="min-w-14 justify-center px-1 text-xs font-normal text-muted-foreground tabular-nums"
+          onClick={onToggle}
+        >
+          {loading && <LoaderCircle className="size-3 animate-spin" aria-label={t('viewer.zoomSharpening')} />}
+          {percent}&nbsp;%
+        </Button>
+      ) : (
+        <span
+          className="flex min-w-14 items-center justify-center gap-1 px-1 text-xs text-stage-ink tabular-nums"
+          aria-live="polite"
+          data-hint={loading ? t('viewer.zoomSharpening') : undefined}
+        >
+          {loading && <LoaderCircle className="size-3 animate-spin" aria-label={t('viewer.zoomSharpening')} />}
+          {percent}&nbsp;%
+        </span>
+      )}
       {buttons.slice(1).map(button)}
     </div>
   )

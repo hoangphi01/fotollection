@@ -29,8 +29,6 @@ type PreviewToolbarProps = {
   onExport: () => void
   /** The zoom buttons, in the row (`ZoomControls inline`). */
   zoom: ReactNode
-  index: number
-  count: number
   filmstrip: boolean
   onFilmstrip: () => void
   /** The preview fills the app window (FR-095). */
@@ -55,8 +53,6 @@ export function PreviewToolbar({
   canRedo,
   onExport,
   zoom,
-  index,
-  count,
   filmstrip,
   onFilmstrip,
   windowed,
@@ -145,9 +141,6 @@ export function PreviewToolbar({
       />
       <div className="ml-auto flex items-center gap-1.5">
         {zoom}
-        <span className="min-w-16 text-center text-xs text-muted-foreground tabular-nums">
-          {index + 1} / {count}
-        </span>
         <ToolbarButton
           icon={filmstrip ? <PanelBottomClose /> : <PanelBottomOpen />}
           label={stripLabel}

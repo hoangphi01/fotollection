@@ -23,6 +23,10 @@ type FilmstripProps<T> = {
   label?: ReactNode
   /** Shown in place of the cells when there are none. */
   empty?: ReactNode
+  /** A line above the cells, as Lightroom's: where the shown one is in the set, its name. */
+  header?: ReactNode
+  /** Only the header line, the cells folded away (the strip hidden, FR-090). */
+  collapsed?: boolean
 }
 
 /**
@@ -31,7 +35,7 @@ type FilmstripProps<T> = {
  * 112 px (STYLE_RULE §4); only the cells in sight are drawn, so a set of 500 scrolls as
  * smoothly as one of 5.
  */
-export function Filmstrip<T>({ items, current = null, onPick, cell, hint, label, empty }: FilmstripProps<T>) {
+export function Filmstrip<T>({ items, current = null, onPick, cell, hint, label, empty, header, collapsed = false }: FilmstripProps<T>) {
   const count = items.length
   const scrollRef = useRef<HTMLDivElement>(null)
   // As the gallery's grid does: the virtualizer's own functions stay fresh by design.
@@ -53,36 +57,43 @@ export function Filmstrip<T>({ items, current = null, onPick, cell, hint, label,
   }, [current, count, strip])
 
   return (
-    <div className="flex h-28 shrink-0 items-center gap-3 border-t border-white/10 bg-neutral-950 px-4">
-      {label !== undefined && <span className="w-16 shrink-0 text-xs text-white/60 tabular-nums">{label}</span>}
-      {count === 0 ? (
-        <p className="min-w-0 flex-1 text-xs text-white/40">{empty}</p>
-      ) : (
-        <div ref={scrollRef} className="min-w-0 flex-1 overflow-x-auto py-2">
-          <div className="relative" style={{ width: strip.getTotalSize(), height: CELL }}>
-            {strip.getVirtualItems().map((item) => {
-              const it = items[item.index]
-              if (it === undefined) return null
-              return (
-                <button
-                  key={item.key}
-                  type="button"
-                  aria-label={hint(it)}
-                  aria-current={item.index === current ? 'true' : undefined}
-                  data-hint={hint(it)}
-                  onClick={() => onPick(it, item.index)}
-                  className={cn(
-                    'absolute top-0 overflow-hidden rounded-sm bg-neutral-800 ring-offset-2 ring-offset-neutral-950 transition outline-none hover:ring-2 hover:ring-primary/60 focus-visible:ring-2 focus-visible:ring-primary',
-                    item.index === current && 'ring-2 ring-primary hover:ring-primary',
-                  )}
-                  style={{ left: item.start, width: CELL, height: CELL }}
-                >
-                  {cell(it)}
-                </button>
-              )
-            })}
+    <div className="flex shrink-0 flex-col border-t border-stage-line bg-stage">
+      {header !== undefined && (
+        <div className="flex h-7 items-center gap-2 truncate px-4 text-xs text-stage-ink-muted tabular-nums">{header}</div>
+      )}
+      {!collapsed && (
+      <div className={cn('flex shrink-0 items-center gap-3 px-4', header === undefined ? 'h-28' : 'h-24 pb-2')}>
+        {label !== undefined && <span className="w-16 shrink-0 text-xs text-stage-ink-muted tabular-nums">{label}</span>}
+        {count === 0 ? (
+          <p className="min-w-0 flex-1 text-xs text-stage-ink-muted">{empty}</p>
+        ) : (
+          <div ref={scrollRef} className="min-w-0 flex-1 overflow-x-auto py-2">
+            <div className="relative" style={{ width: strip.getTotalSize(), height: CELL }}>
+              {strip.getVirtualItems().map((item) => {
+                const it = items[item.index]
+                if (it === undefined) return null
+                return (
+                  <button
+                    key={item.key}
+                    type="button"
+                    aria-label={hint(it)}
+                    aria-current={item.index === current ? 'true' : undefined}
+                    data-hint={hint(it)}
+                    onClick={() => onPick(it, item.index)}
+                    className={cn(
+                      'absolute top-0 overflow-hidden rounded-sm bg-stage-raised ring-offset-2 ring-offset-stage transition outline-none hover:ring-2 hover:ring-primary/60 focus-visible:ring-2 focus-visible:ring-primary',
+                      item.index === current && 'ring-2 ring-primary hover:ring-primary',
+                    )}
+                    style={{ left: item.start, width: CELL, height: CELL }}
+                  >
+                    {cell(it)}
+                  </button>
+                )
+              })}
+            </div>
           </div>
-        </div>
+        )}
+      </div>
       )}
     </div>
   )

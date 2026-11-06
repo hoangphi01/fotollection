@@ -26,7 +26,8 @@ type NavigatorCardProps = {
 
 /**
  * The develop view's Navigator (FR-095), as Lightroom's: the photo small, the part the stage
- * shows outlined; a click or a drag moves the zoomed photo there; Fit, Fill, 1:1 and 2:1.
+ * shows outlined; a click or a drag moves the zoomed photo there; Fit, Fill, 1:1 and 2:1 in the
+ * card's header, small, as Lightroom has them, so the card holds only the photo.
  */
 export function NavigatorCard({ src, view, fit, stage, oneToOne, onZoomTo, onPanTo }: NavigatorCardProps) {
   const { t } = useTranslation()
@@ -62,7 +63,28 @@ export function NavigatorCard({ src, view, fit, stage, oneToOne, onZoomTo, onPan
   }
 
   return (
-    <SectionCard icon={<Compass />} title={t('navigator.title')}>
+    <SectionCard
+      icon={<Compass />}
+      title={t('navigator.title')}
+      action={
+        <SegmentedToggle<Choice>
+          small
+          value={current}
+          ariaLabel={t('navigator.zoom')}
+          // Icons with a hint for the words (STYLE_RULE §4, icons first); the ratios are short.
+          options={[
+            { value: 'fit', label: <Scan aria-hidden />, ariaLabel: t('viewer.fit'), hint: t('viewer.fit') },
+            { value: 'fill', label: <Expand aria-hidden />, ariaLabel: t('navigator.fill'), hint: t('navigator.fill') },
+            { value: 'one', label: '1:1', hint: '1:1' },
+            { value: 'two', label: '2:1', hint: '2:1' },
+          ]}
+          onChange={(c) => {
+            const scale = scales[c]
+            if (scale !== null) onZoomTo(scale)
+          }}
+        />
+      }
+    >
       <div className="flex justify-center rounded-md bg-neutral-950 p-2">
         <div
           className="relative cursor-crosshair touch-none overflow-hidden"
@@ -93,22 +115,6 @@ export function NavigatorCard({ src, view, fit, stage, oneToOne, onZoomTo, onPan
           )}
         </div>
       </div>
-      <SegmentedToggle<Choice>
-        value={current}
-        dense
-        ariaLabel={t('navigator.zoom')}
-        options={[
-          // Icons with a hint, so no label can outgrow its segment (STYLE_RULE §4).
-          { value: 'fit', label: <Scan aria-hidden />, ariaLabel: t('viewer.fit'), hint: t('viewer.fit') },
-          { value: 'fill', label: <Expand aria-hidden />, ariaLabel: t('navigator.fill'), hint: t('navigator.fill') },
-          { value: 'one', label: '1:1' },
-          { value: 'two', label: '2:1' },
-        ]}
-        onChange={(c) => {
-          const scale = scales[c]
-          if (scale !== null) onZoomTo(scale)
-        }}
-      />
     </SectionCard>
   )
 }

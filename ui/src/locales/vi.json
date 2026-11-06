@@ -398,7 +398,8 @@
     "everyKey": "mọi phím",
     "keys": "← →  chuyển ảnh · ↑ vào giỏ in · ↓ để riêng\n0–5 số sao · P chọn · X loại · U bỏ cờ\nR hoặc C cắt ảnh · [ ] hoặc {{mod}} [ ] xoay\nZ, hoặc nhấp vào ảnh: vừa khung ↔ 1:1 · {{mod}} + − 0 phóng to · kéo để di chuyển ảnh đang phóng\n\\ trước / sau · Y cạnh nhau · ⇧Y chia đôi · ⌥/Alt Y trên và dưới\n{{mod}} Z hoàn tác · ⇧ {{mod}} Z làm lại\nF phủ kín cửa sổ hoặc trở lại · Tab ẩn các bảng hai bên (khi đang ở ảnh)\n⇧ {{mod}} E xuất ảnh này · Esc đóng",
     "layoutWindow": "Phủ kín cửa sổ (F)",
-    "layoutDialog": "Về dạng cửa sổ (F)"
+    "layoutDialog": "Về dạng cửa sổ (F)",
+    "zoomToggle": "Vừa khung ↔ 1:1 (Z)"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",

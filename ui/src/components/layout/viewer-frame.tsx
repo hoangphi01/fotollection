@@ -112,7 +112,7 @@ export function ViewerFrame({
         </div>
 
         {/* Inspector */}
-        <aside className={cn('flex w-96 shrink-0 flex-col border-l bg-background', !panels && 'hidden')}>
+        <aside className={cn('flex w-panel shrink-0 flex-col border-l bg-background', !panels && 'hidden')}>
           <div className="space-y-0.5 px-4 pt-4 pb-3 pr-12">
             <DialogTitle className="truncate text-base">{title}</DialogTitle>
             <DialogDescription className="truncate text-xs" data-hint={descriptionHint}>

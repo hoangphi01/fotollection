@@ -268,9 +268,16 @@ export function PreviewDialog({
       onStagePointerMove={cropDrag.onPointerMove}
       onStagePointerUp={cropDrag.onPointerUp}
       below={
-        ui.filmstrip && !cropping ? (
-          <PhotoFilmstrip photos={photos} index={index} thumbVersions={thumbVersions} generation={generation} onPick={pick} />
-        ) : undefined
+        cropping ? undefined : (
+          <PhotoFilmstrip
+            photos={photos}
+            index={index}
+            thumbVersions={thumbVersions}
+            generation={generation}
+            onPick={pick}
+            collapsed={!ui.filmstrip}
+          />
+        )
       }
       toolbar={
         <PreviewToolbar
@@ -287,6 +294,7 @@ export function PreviewDialog({
           zoom={
             <ZoomControls
               inline
+              onToggle={zoom.toggleCloseUp}
               percent={zoom.percent}
               zoomed={zoom.zoomed}
               canZoomIn={zoom.canZoomIn && !cropping}
@@ -297,8 +305,6 @@ export function PreviewDialog({
               onFit={zoom.reset}
             />
           }
-          index={index ?? 0}
-          count={photos.length}
           filmstrip={ui.filmstrip}
           onFilmstrip={() => void updateUi({ filmstrip: !ui.filmstrip })}
           windowed={windowed}
