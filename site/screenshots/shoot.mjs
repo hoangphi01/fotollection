@@ -604,7 +604,6 @@ for (const language of ['en', 'vi']) {
     await (await reach(page, SHOW.stamp)).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.stamp}"]`)
     await settle(page)
-    await save(page, `stamp-${suffix}`)
     // 2a. For the manual: the photo at a glance, at the top of the inspector (FR-078).
     const summary = await page
       .locator('[role="dialog"] section', { hasText: /^(This photo|Ảnh này)/ })
@@ -613,9 +612,16 @@ for (const language of ['en', 'vi']) {
     if (summary) {
       await zoomed(page, `manual-summary-${suffix}`, { x: summary.x - 16, y: summary.y - 16, width: summary.width + 32, height: summary.height + 32 })
     }
+    // The stamp's card is in the inspector's Print tab (FR-095's tabs): the shot shows it.
+    await page.locator('[role="dialog"]').getByRole('radio', { name: /^(Print and export|In và xuất ảnh)$/ }).click()
+    await settle(page)
+    await save(page, `stamp-${suffix}`)
     // 2b. The place in the Location card (for checking only), and the place picker for the
     // manual (FR-032).
     const inspector = page.locator('[role="dialog"]')
+    // The place lives in the inspector's Info tab (FR-095's tabs).
+    await inspector.getByRole('radio', { name: /^(Info|Thông tin)/ }).click()
+    await page.waitForTimeout(300)
     await inspector.getByRole('button', { name: /Set the place|Đặt nơi chụp/ }).scrollIntoViewIfNeeded()
     await page.waitForTimeout(300)
     await save(page, `check-place-${suffix}`)
@@ -644,12 +650,16 @@ for (const language of ['en', 'vi']) {
     await save(page, `manual-places-${suffix}`)
     await (await reach(page, SHOW.frame)).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.frame}"]`)
+    await page.locator('[role="dialog"]').getByRole('radio', { name: /^(Print and export|In và xuất ảnh)$/ }).click()
     await settle(page)
     await save(page, `frame-${suffix}`)
     // The export card at the bottom of the inspector: this photo only (FR-055).
     await page.locator('[role="dialog"]').getByRole('button', { name: /^(Export|Xuất ảnh)$/ }).click()
     await page.waitForTimeout(600)
     await save(page, `check-export-${suffix}`)
+    // Export opens the export dialog over the preview (FR-093): Esc closes it, then the preview.
+    await page.keyboard.press('Escape')
+    await page.waitForTimeout(300)
     await page.keyboard.press('Escape')
     await page.waitForTimeout(300)
     await (await reach(page, SHOW.crop)).dblclick()
@@ -704,7 +714,8 @@ for (const language of ['en', 'vi']) {
     ;({ context, page } = await open({ scenario: 'frame', language, theme, scale: 5 }))
     await page.getByRole('radio', { name: /^(Share online|Mạng xã hội)$/ }).first().click()
     await page.waitForTimeout(900)
-    const note = await page.getByText(/^(Estimated|Ước tính):/).boundingBox()
+    // The estimate is a badge of figures beside the button (FR-053, FR-099).
+    const note = await page.locator('[data-slot="badge"]', { hasText: /→/ }).last().boundingBox()
     const button = await page.getByRole('button', { name: /^(Export|Xuất) \d+/ }).boundingBox()
     if (note && button) {
       const top = note.y - 56
