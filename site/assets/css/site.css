@@ -83,6 +83,13 @@
   --radius: 18px;
   --gutter: 16px;
   --glow: 22%;
+  /* The app's depth (ui/src/index.css, FR-099): the same values, so the site and the app read
+     as one product; scripts/check-docs.sh compares them. */
+  --shade: oklch(0.32 0.06 175);
+  --highlight: oklch(1 0 0 / 0.7);
+  --lip: 3px;
+  --lip-mix: 38%;
+  --lift: 0 4px 12px -4px oklch(0.32 0.06 175 / 0.35), 0 1px 2px oklch(0.32 0.06 175 / 0.2);
   color-scheme: light;
 }
 
@@ -108,6 +115,9 @@
     --flower-soft: #33253d;
     --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 16px 40px rgb(0 0 0 / 45%);
     --glow: 18%;
+    --shade: oklch(0 0 0);
+    --highlight: oklch(1 0 0 / 0.08);
+    --lift: 0 6px 16px -6px oklch(0 0 0 / 0.8), inset 0 1px 0 oklch(1 0 0 / 0.04);
     color-scheme: dark;
   }
 }
@@ -220,6 +230,8 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .card p { margin-top: 8px; color: var(--ink-2); font-size: 0.97rem; }
 /* Screenshots in alternating rows: a large shot, its words beside it, sides swapping. */
 .showcase { display: grid; grid-template-columns: 1fr; gap: 56px; }
+/* A section's lead and its rows: the gap belongs to the container, as the app's lego rule. */
+.wrap + .showcase { margin-top: 48px; }
 .showcase-row { display: grid; grid-template-columns: 1fr; gap: 20px; align-items: center; }
 .showcase-text h3 { font-size: clamp(1.35rem, 3vw, 1.75rem); }
 .showcase-text p { margin-top: 10px; color: var(--ink-2); }
@@ -240,6 +252,7 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .shot.keys { position: relative; }
 .key-chips { position: absolute; right: 14px; bottom: 14px; margin: 0; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 .key-chips span { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 92%, transparent); box-shadow: var(--shadow); font-weight: 650; font-size: 0.92rem; }
+.key-chips.inline { position: static; justify-content: flex-start; margin-top: 14px; }
 .key-chips kbd { font: 700 1rem/1 ui-monospace, monospace; color: var(--brand); }
 /* Performance page: a heading, then one section per measurement and the explanations. */
 .kicker { margin: 0 0 10px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
@@ -562,3 +575,59 @@ h2.with-icon .icon { width: 0.85em; height: 0.85em; flex: none; color: var(--bra
 .alert-danger svg { flex: none; width: 22px; height: 22px; margin-top: 1px; color: var(--danger); }
 .alert-danger p { margin: 0; }
 .alert-danger strong { color: var(--danger); }
+
+/* Depth, as the app draws it (FR-099): raised buttons and pills with a lip in a shade of their
+   own colour, pressed down by it; cards lifted with the same lip. */
+.button, .pill { --face: var(--surface); box-shadow: inset 0 1px 0 var(--highlight), inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--face), var(--shade) var(--lip-mix)), var(--lift); }
+.button.primary, .pill-primary { --face: var(--brand); }
+.button:active, .pill:active { transform: translateY(1px); box-shadow: inset 0 1px 0 var(--highlight), inset 0 -1px 0 color-mix(in oklch, var(--face), var(--shade) var(--lip-mix)); }
+.card { --face: var(--surface); box-shadow: inset 0 1px 0 var(--highlight), inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--face), var(--shade) var(--lip-mix)), var(--lift); }
+.stat { box-shadow: inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--brand), var(--shade) var(--lip-mix)), var(--lift); }
+.badge.vnlf { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; background: var(--surface); color: var(--ink); border-color: var(--line); }
+.badge.vnlf .icon { width: 1.1em; height: 1.1em; color: var(--brand); }
+.badge.vnlf:hover { border-color: var(--ink-2); }
+
+/* The makeover (owner, 2026-11-06): v0.12's gallery under v0.13's, wiped in once, then a
+   handle to compare. Without script, or with reduced motion, the new one stands. */
+.makeover-stage { position: relative; }
+.makeover-old, .makeover-new { display: block; }
+.makeover-old { position: absolute; inset: 0; }
+.makeover-new { position: relative; clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
+.makeover-old img, .makeover-new img { width: 100%; }
+.makeover.wiping .makeover-new { transition: clip-path 1.2s cubic-bezier(0.65, 0, 0.35, 1); }
+.makeover-tag { position: absolute; top: -13px; padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; background: var(--surface); color: var(--ink); box-shadow: var(--lift); opacity: var(--handle, 0); transition: opacity 0.3s; z-index: 1; }
+.makeover-tag.old { right: 28px; }
+.makeover-tag.new { left: 28px; background: var(--brand); color: var(--brand-ink); }
+.makeover-range { position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: ew-resize; }
+.makeover-range:focus-visible { opacity: 0.001; }
+.makeover-stage:has(.makeover-range:focus-visible) { outline: 3px solid var(--brand); outline-offset: 6px; border-radius: 8px; }
+.makeover-stage::after { content: ''; position: absolute; top: 10px; bottom: 10px; left: calc(var(--pos)); width: 3px; margin-left: -1.5px; background: var(--brand); border-radius: 2px; pointer-events: none; opacity: var(--handle, 0); transition: opacity 0.3s; z-index: 1; }
+.makeover figcaption { text-align: center; margin-top: 14px; }
+@media (prefers-reduced-motion: reduce) { .makeover.wiping .makeover-new { transition: none; } }
+
+/* What is new, as a bento of the showcase tiles (screenshots/showcase.mjs). */
+.bento { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 36px; }
+.bento-tile { margin: 0; border-radius: var(--radius); overflow: hidden; box-shadow: inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--surface), var(--shade) var(--lip-mix)), var(--lift); }
+.bento-tile img { width: 100%; height: 100%; object-fit: cover; }
+.wide-banner { margin: 40px 0 0; border-radius: var(--radius); overflow: hidden; box-shadow: var(--lift); }
+.wide-banner img { width: 100%; }
+
+/* Make it yours: the four looks of the app as cards. */
+.themes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 32px; }
+.theme-card { margin: 0; }
+.theme-card img { border-radius: 12px; border: 1px solid var(--line); box-shadow: var(--lift); }
+.theme-card figcaption { margin-top: 8px; font-size: 0.92rem; font-weight: 600; color: var(--ink-2); text-align: center; }
+
+/* The final call: centred, the download buttons once more. */
+.final-wrap { text-align: center; }
+.final-wrap .lead { margin-left: auto; margin-right: auto; max-width: 640px; }
+.final-wrap .cta { justify-content: center; }
+
+@media (min-width: 720px) {
+  .bento { grid-template-columns: repeat(2, 1fr); }
+  .themes { grid-template-columns: repeat(4, 1fr); }
+  .community-cards { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 960px) {
+  .bento { grid-template-columns: repeat(3, 1fr); }
+}

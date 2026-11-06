@@ -1,60 +1,60 @@
 {%- assign t = site.data.i18n[page.lang] -%}
 {%- include release-assets.html -%}
 
+{%- comment -%} The landing page in mechvibes.com's order (owner, 2026-11-06), in Fotollection's own look: the hero with the makeover, what is new as a bento, the modes, the features in pairs, the themes, the develop view, the numbers, privacy, the community, the final call. {%- endcomment -%}
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-text">
       <p class="badges">
         <span class="badge">{{ t.badge }}<sup class="fn-ref"><a href="#fn-1" id="fnref-1" aria-label="{{ t.fn_label }} 1">1</a></sup></span>
         <a class="badge shield" href="#privacy">{% include icons/shield-check.svg %}{{ t.shield }}</a>
+        <a class="badge vnlf" href="https://apps.vietnamlinuxfamily.net/app/fotollection">{% include icons/users.svg %}{{ t.vnlf_badge }}</a>
       </p>
       <h1>{{ t.hero_title_1 }} <em>{{ t.hero_accent }}</em>{{ t.hero_title_2 }}</h1>
       <p class="lead">{{ t.hero_lead }}</p>
       {% include download-buttons.html id="download" %}
       <p class="small muted">
-        {% if release.tag_name %}{{ t.latest }}: <a href="{{ release.html_url }}">{{ release.tag_name }}</a> · {% else %}<a href="{{ site.repo_url }}/releases">{{ t.no_release }}</a> · {% endif %}{{ t.download_note }}
+        {{ t.works_on }} · {% if release.tag_name %}{{ t.latest }}: <a href="{{ release.html_url }}">{{ release.tag_name }}</a> · {% else %}<a href="{{ site.repo_url }}/releases">{{ t.no_release }}</a> · {% endif %}{{ t.download_note }}
       </p>
     </div>
   </div>
   <div class="wrap">
-    <figure class="shot hero-shot">
-      {% include shot.html name="grid" alt=t.shot_grid eager=true %}
+    {%- comment -%} The makeover: v0.12's gallery wiped into v0.13's once, then a handle to compare (assets/js/makeover.js; without script, the new one). {%- endcomment -%}
+    {%- assign old = '/assets/img/legacy/grid-' | append: page.lang -%}
+    <figure class="shot hero-shot makeover" data-makeover style="--pos: 100%">
+      <div class="makeover-stage">
+      <picture class="makeover-old">
+        <source srcset="{{ old | append: '-dark.webp' | relative_url }}" media="(prefers-color-scheme: dark)" />
+        <img src="{{ old | append: '-light.webp' | relative_url }}" width="1600" height="1000" alt="" decoding="async" />
+      </picture>
+      <div class="makeover-new">{% include shot.html name="grid" alt=t.shot_grid eager=true %}</div>
+      <span class="makeover-tag old">{{ t.makeover_old }}</span>
+      <span class="makeover-tag new">{{ t.makeover_new }}</span>
+      <input class="makeover-range" type="range" min="0" max="100" value="100" aria-label="{{ t.makeover_label }}" hidden />
+      </div>
+      <figcaption class="small muted">{{ t.makeover_hint }}</figcaption>
     </figure>
   </div>
+  <script src="{{ '/assets/js/makeover.js' | relative_url }}" defer></script>
 </section>
 
-<section class="section tint" id="postcard">
+<section class="section" id="new">
   <div class="wrap">
-    <h2>{{ t.pc_title }} <span class="soon">{{ t.postcard_coming }}</span></h2>
-    <p class="lead narrow">{{ t.pc_lead }}</p>
+    <h2>{{ t.bento_title }}</h2>
+    <p class="lead narrow">{{ t.bento_lead }}</p>
+    <div class="bento">
+      {%- assign tiles = "yours,desktops,keys,compare,prints,export" | split: "," -%}
+      {%- for tile in tiles -%}
+      {%- capture alt_key %}tile_{{ tile }}{% endcapture %}
+      <figure class="bento-tile"><img src="{{ '/assets/img/showcase/' | append: tile | append: '-' | append: page.lang | append: '.webp' | relative_url }}" width="1200" height="900" alt="{{ t[alt_key] }}" loading="lazy" decoding="async" /></figure>
+      {%- endfor %}
+    </div>
   </div>
-  <div class="wrap showcase">
-    <div class="showcase-row">
-      <figure class="shot">{% include shot.html name="postcard" alt=t.show_postcard %}</figure>
-      <div class="showcase-text">
-        <h3>{{ t.postcard_title }}</h3>
-        <p>{{ t.postcard_text }}</p>
-        <ol class="steps">
-          <li>{{ t.pc_s1 }}</li>
-          <li>{{ t.pc_s2 }}</li>
-          <li>{{ t.pc_s3 }}</li>
-        </ol>
-        <p class="small muted">{{ t.show_postcard }}</p>
-      </div>
-    </div>
-    <div class="showcase-row flip">
-      <figure class="shot">{% include shot.html name="postcard-night" alt=t.show_postcard_text %}</figure>
-      <div class="showcase-text">
-        <h3>{{ t.pc_type_title }}</h3>
-        <p>{{ t.pc_type_text }}</p>
-        <p>{{ t.pc_pens }}</p>
-        <p class="small muted">{{ t.show_postcard_text }}</p>
-      </div>
-    </div>
+  <div class="wrap">
+    <figure class="wide-banner"><img src="{{ '/assets/img/showcase/wide-' | append: page.lang | append: '.webp' | relative_url }}" width="2000" height="860" alt="{{ t.wide_alt }}" loading="lazy" decoding="async" /></figure>
   </div>
 </section>
-
-<section class="section" id="modes">
+<section class="section tint" id="modes">
   <div class="wrap">
     <h2>{{ t.modes_title }}</h2>
     <p class="lead narrow">{{ t.modes_lead }}</p>
@@ -98,40 +98,34 @@
   </div>
 </section>
 
-<section class="section" id="features">
+<section class="section" id="postcard">
   <div class="wrap">
-    <h2>{{ t.features_title }}</h2>
-    <p class="lead narrow">{{ t.features_lead }}</p>
-    <div class="cards">
-      <article class="card">{% include icons/mail.svg %}<h3>{{ t.f_postcard_title }}</h3><p>{{ t.f_postcard_text }}</p></article>
-      <article class="card">{% include icons/calendar-days.svg %}<h3>{{ t.f_stamp_title }}</h3><p>{{ t.f_stamp_text }}</p></article>
-      <article class="card">{% include icons/frame.svg %}<h3>{{ t.f_frame_title }}</h3><p>{{ t.f_frame_text }}</p></article>
-      <article class="card">{% include icons/sparkles.svg %}<h3>{{ t.f_best_title }}</h3><p>{{ t.f_best_text }}</p></article>
-      <article class="card">{% include icons/crop.svg %}<h3>{{ t.f_crop_title }}</h3><p>{{ t.f_crop_text }}</p></article>
-      <article class="card">{% include icons/gem.svg %}<h3>{{ t.f_quality_title }}</h3><p>{{ t.f_quality_text }}</p></article>
-      <article class="card">{% include icons/gauge.svg %}<h3>{{ t.f_speed_title }}</h3><p>{{ t.f_speed_text }}</p></article>
-      <article class="card">{% include icons/camera.svg %}<h3>{{ t.f_raw_title }}</h3><p>{{ t.f_raw_text }}<sup class="fn-ref"><a href="#fn-14" id="fnref-14" aria-label="{{ t.fn_label }} 14">14</a></sup></p></article>
-      <article class="card">{% include icons/mouse-pointer-click.svg %}<h3>{{ t.f_open_title }}</h3><p>{{ t.f_open_text }}</p></article>
-    </div>
-    <p class="systems-link"><a class="more" href="{{ path_download }}#systems">{{ t.pf_title }} {% include icons/arrow-right.svg %}</a></p>
+    <h2>{{ t.pc_title }} <span class="soon">{{ t.postcard_coming }}</span></h2>
+    <p class="lead narrow">{{ t.pc_lead }}</p>
   </div>
-</section>
-
-<section class="section privacy" id="privacy">
-  <div class="wrap privacy-grid">
-    <div>
-      <div class="privacy-mark">{% include icons/shield-check.svg %}</div>
-      <h2>{{ t.privacy_title }}</h2>
-      <p class="lead">{{ t.privacy_lead }}</p>
+  <div class="wrap showcase">
+    <div class="showcase-row">
+      <figure class="shot">{% include shot.html name="postcard" alt=t.show_postcard %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.postcard_title }}</h3>
+        <p>{{ t.postcard_text }}</p>
+        <ol class="steps">
+          <li>{{ t.pc_s1 }}</li>
+          <li>{{ t.pc_s2 }}</li>
+          <li>{{ t.pc_s3 }}</li>
+        </ol>
+        <p class="small muted">{{ t.show_postcard }}</p>
+      </div>
     </div>
-    <ul class="privacy-list">
-      <li><h3>{{ t.p1_title }}</h3><p>{{ t.p1_text }}</p></li>
-      <li><h3>{{ t.p2_title }}</h3><p>{{ t.p2_text }}</p></li>
-      <li><h3>{{ t.p6_title }}</h3><p>{{ t.p6_text }}</p></li>
-      <li><h3>{{ t.p3_title }}</h3><p>{{ t.p3_text }}</p></li>
-      <li><h3>{{ t.p4_title }}</h3><p>{{ t.p4_text }}</p></li>
-      <li><h3>{{ t.p5_title }}</h3><p>{{ t.p5_text }}</p></li>
-    </ul>
+    <div class="showcase-row flip">
+      <figure class="shot">{% include shot.html name="postcard-night" alt=t.show_postcard_text %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.pc_type_title }}</h3>
+        <p>{{ t.pc_type_text }}</p>
+        <p>{{ t.pc_pens }}</p>
+        <p class="small muted">{{ t.show_postcard_text }}</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -246,7 +240,47 @@
   </div>
 </section>
 
-<section class="section" id="quality">
+<section class="section tint" id="yours">
+  <div class="wrap">
+    <h2>{{ t.yours_title }}</h2>
+    <p class="lead narrow">{{ t.yours_lead }}</p>
+    <div class="themes">
+      {%- assign looks = "en-light,en-dark,vi-light,vi-dark" | split: "," -%}
+      {%- for look in looks -%}
+      {%- capture label_key %}yours_{{ look | replace: "-", "_" }}{% endcapture %}
+      <figure class="theme-card"><img src="{{ '/assets/img/grid-' | append: look | append: '.webp' | relative_url }}" width="1600" height="1000" alt="{{ t[label_key] }}" loading="lazy" decoding="async" /><figcaption>{{ t[label_key] }}</figcaption></figure>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="develop">
+  <div class="wrap">
+    <h2>{{ t.develop_title }}</h2>
+    <p class="lead narrow">{{ t.develop_lead }}</p>
+  </div>
+  <div class="wrap showcase">
+    <div class="showcase-row">
+      <figure class="shot">{% include shot.html name="window" alt=t.show_window %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.develop_window_title }}</h3>
+        <p>{{ t.develop_window_text }}</p>
+        <p class="key-chips inline" aria-hidden="true"><span><kbd>R</kbd></span><span><kbd>Z</kbd></span><span><kbd>\</kbd></span><span><kbd>Y</kbd></span><span><kbd>F</kbd></span></p>
+        <p class="small muted">{{ t.show_window }}</p>
+      </div>
+    </div>
+    <div class="showcase-row flip">
+      <figure class="shot">{% include shot.html name="export-dialog" alt=t.show_export_dialog %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.develop_export_title }}</h3>
+        <p>{{ t.develop_export_text }}</p>
+        <p class="small muted">{{ t.show_export_dialog }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section tint" id="quality">
   <div class="wrap">
     <h2>{{ t.quality_title }}</h2>
     <p class="lead narrow">{{ t.quality_lead }}</p>
@@ -259,7 +293,7 @@
   </div>
 </section>
 
-<section class="section tint" id="numbers">
+<section class="section" id="numbers">
   <div class="wrap">
     <h2>{{ t.charts_title }}</h2>
     <p class="lead narrow">{{ t.charts_lead }}</p>
@@ -279,7 +313,65 @@
   </div>
 </section>
 
-<section class="section" id="support">
+<section class="section tint" id="features">
+  <div class="wrap">
+    <h2>{{ t.features_title }}</h2>
+    <p class="lead narrow">{{ t.features_lead }}</p>
+    <div class="cards">
+      <article class="card">{% include icons/mail.svg %}<h3>{{ t.f_postcard_title }}</h3><p>{{ t.f_postcard_text }}</p></article>
+      <article class="card">{% include icons/calendar-days.svg %}<h3>{{ t.f_stamp_title }}</h3><p>{{ t.f_stamp_text }}</p></article>
+      <article class="card">{% include icons/frame.svg %}<h3>{{ t.f_frame_title }}</h3><p>{{ t.f_frame_text }}</p></article>
+      <article class="card">{% include icons/sparkles.svg %}<h3>{{ t.f_best_title }}</h3><p>{{ t.f_best_text }}</p></article>
+      <article class="card">{% include icons/crop.svg %}<h3>{{ t.f_crop_title }}</h3><p>{{ t.f_crop_text }}</p></article>
+      <article class="card">{% include icons/gem.svg %}<h3>{{ t.f_quality_title }}</h3><p>{{ t.f_quality_text }}</p></article>
+      <article class="card">{% include icons/gauge.svg %}<h3>{{ t.f_speed_title }}</h3><p>{{ t.f_speed_text }}</p></article>
+      <article class="card">{% include icons/camera.svg %}<h3>{{ t.f_raw_title }}</h3><p>{{ t.f_raw_text }}<sup class="fn-ref"><a href="#fn-14" id="fnref-14" aria-label="{{ t.fn_label }} 14">14</a></sup></p></article>
+      <article class="card">{% include icons/mouse-pointer-click.svg %}<h3>{{ t.f_open_title }}</h3><p>{{ t.f_open_text }}</p></article>
+    </div>
+    <p class="systems-link"><a class="more" href="{{ path_download }}#systems">{{ t.pf_title }} {% include icons/arrow-right.svg %}</a></p>
+  </div>
+</section>
+
+<section class="section privacy" id="privacy">
+  <div class="wrap privacy-grid">
+    <div>
+      <div class="privacy-mark">{% include icons/shield-check.svg %}</div>
+      <h2>{{ t.privacy_title }}</h2>
+      <p class="lead">{{ t.privacy_lead }}</p>
+    </div>
+    <ul class="privacy-list">
+      <li><h3>{{ t.p1_title }}</h3><p>{{ t.p1_text }}</p></li>
+      <li><h3>{{ t.p2_title }}</h3><p>{{ t.p2_text }}</p></li>
+      <li><h3>{{ t.p6_title }}</h3><p>{{ t.p6_text }}</p></li>
+      <li><h3>{{ t.p3_title }}</h3><p>{{ t.p3_text }}</p></li>
+      <li><h3>{{ t.p4_title }}</h3><p>{{ t.p4_text }}</p></li>
+      <li><h3>{{ t.p5_title }}</h3><p>{{ t.p5_text }}</p></li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" id="community">
+  <div class="wrap">
+    <h2>{{ t.community_title }}</h2>
+    <p class="lead narrow">{{ t.community_lead }}</p>
+    <div class="cards community-cards">
+      <article class="card">{% include icons/users.svg %}<h3>{{ t.vnlf_title }}</h3><p>{{ t.vnlf_text }}</p><p><a class="more" href="https://apps.vietnamlinuxfamily.net/app/fotollection">{{ t.vnlf_link }} {% include icons/arrow-right.svg %}</a></p></article>
+      <article class="card">{% include icons/monitor.svg %}<h3>{{ t.caramos_title }}</h3><p>{{ t.caramos_text }}</p><p><a class="more" href="https://github.com/VN-Linux-Family/CaramOS">{{ t.caramos_link }} {% include icons/arrow-right.svg %}</a></p></article>
+      <article class="card">{% include icons/star.svg %}<h3>{{ t.github_title }}</h3><p>{{ t.github_text }}</p><p><a class="more" href="{{ site.repo_url }}">{{ t.github_link }} {% include icons/arrow-right.svg %}</a></p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section final" id="get">
+  <div class="wrap final-wrap">
+    <h2>{{ t.final_title }}</h2>
+    <p class="lead">{{ t.final_lead }}</p>
+    {% include download-buttons.html id="get-download" %}
+    <p><a class="more" href="{% if page.lang == 'vi' %}{{ '/vi/manual/' | relative_url }}{% else %}{{ '/manual/' | relative_url }}{% endif %}">{{ t.final_manual }} {% include icons/arrow-right.svg %}</a></p>
+  </div>
+</section>
+
+<section class="section tint" id="support">
   <div class="wrap">
     {%- assign treat = site.data.support %}
     <div class="card support" data-treat data-bin="{{ treat.bin }}" data-account="{{ treat.account }}" data-qr-label="{{ t.support_alt }}" data-own-hint="{{ t.treat_own_hint }}">

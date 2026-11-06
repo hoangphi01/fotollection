@@ -118,6 +118,13 @@ grep -q '"version"' src-tauri/tauri.conf.json && fail "tauri.conf.json must not 
 
 # Markdown style, the same rules and version as CI (docs.yml), so a passing check-docs.sh
 # means a green docs workflow. Skipped only where npx is missing.
+echo "• The website's depth tokens match the app's (site.css and ui/src/index.css)"
+for token in --shade --highlight --lip --lip-mix; do
+  app=$(grep -E "^\s*$token:" ui/src/index.css | sed 's/^ *//' | sort -u)
+  web=$(grep -E "^\s*$token:" site/assets/css/site.css | sed 's/^ *//' | sort -u)
+  [ "$app" = "$web" ] || fail "$token differs between ui/src/index.css and site/assets/css/site.css"
+done
+
 echo "• ROADMAP and STATUS give every FR the same phase"
 awk '
   FNR == 1 { file++ }
