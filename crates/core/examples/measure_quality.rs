@@ -26,7 +26,11 @@ const QUALITIES: [u8; 9] = [60, 65, 70, 75, 80, 85, 90, 95, 100];
 
 fn linear(v: u8) -> f32 {
     let c = f32::from(v) / 255.0;
-    if c <= 0.04045 { c / 12.92 } else { ((c + 0.055) / 1.055).powf(2.4) }
+    if c <= 0.04045 {
+        c / 12.92
+    } else {
+        ((c + 0.055) / 1.055).powf(2.4)
+    }
 }
 
 fn oklab(px: &[u8]) -> [f32; 3] {
@@ -60,7 +64,9 @@ fn difference(a: &RgbImage, b: &RgbImage) -> (f64, f64) {
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
-    let folder = args.first().expect("usage: measure_quality <folder> [photos]");
+    let folder = args
+        .first()
+        .expect("usage: measure_quality <folder> [photos]");
     let count: usize = args.get(1).and_then(|n| n.parse().ok()).unwrap_or(12);
     let codec = default_codec();
     let mut paths: Vec<_> = std::fs::read_dir(folder)
@@ -77,8 +83,14 @@ fn main() {
         let bytes = std::fs::read(path).expect("read");
         let photo = decode_image(codec.as_ref(), &bytes).expect("decode").image;
         let print = fit_long_edge(&photo, PRINT_LONG_EDGE).expect("resize");
-        let encode = |q| codec.encode(&print, EncodeOptions::print(q), None).expect("encode");
-        let reference = decode_image(codec.as_ref(), &encode(100)).expect("decode").image;
+        let encode = |q| {
+            codec
+                .encode(&print, EncodeOptions::print(q), None)
+                .expect("encode")
+        };
+        let reference = decode_image(codec.as_ref(), &encode(100))
+            .expect("decode")
+            .image;
         for (i, &q) in QUALITIES.iter().enumerate() {
             let jpeg = encode(q);
             let shown = decode_image(codec.as_ref(), &jpeg).expect("decode").image;
@@ -89,11 +101,19 @@ fn main() {
         }
     }
     let n = paths.len() as f64;
-    println!("{} photos at {PRINT_LONG_EDGE} px (20 × 30 cm, 300 DPI), 4:4:4, against quality 100", paths.len());
+    println!(
+        "{} photos at {PRINT_LONG_EDGE} px (20 × 30 cm, 300 DPI), 4:4:4, against quality 100",
+        paths.len()
+    );
     println!("| Quality | Mean ΔE | Worst p99 ΔE | Mean size |");
     println!("|---|---|---|---|");
     for (i, q) in QUALITIES.iter().enumerate() {
         let (mean, p99, bytes) = rows[i];
-        println!("| {q} | {:.2} | {:.2} | {:.1} MB |", mean / n, p99, bytes / n / 1e6);
+        println!(
+            "| {q} | {:.2} | {:.2} | {:.1} MB |",
+            mean / n,
+            p99,
+            bytes / n / 1e6
+        );
     }
 }
