@@ -6,7 +6,8 @@ type PanelNoteProps = {
   /** A Lucide icon, sized and coloured here. */
   icon?: ReactNode
   children: ReactNode
-  /** A warning that something will be lost (Replace existing files): red text and icon. */
+  /** A warning that something will be lost (Replace existing files, a version no longer
+   * safe): solid deep red with white text, as the red badges. */
   danger?: boolean
 }
 
@@ -19,7 +20,10 @@ export function PanelNote({ icon, children, danger = false }: PanelNoteProps) {
     <p
       className={cn(
         'flex gap-1.5 rounded-md px-2.5 py-2 text-xs [&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0',
-        danger ? 'bg-destructive/10 text-destructive [&>svg]:text-destructive' : 'bg-muted/60 text-muted-foreground [&>svg]:text-primary',
+        // The red badges' look (owner, 2026-11-06: "no faint text"): deep red, white ink, its lip.
+        danger
+          ? 'bg-danger-solid font-medium text-white [--lip-color:var(--danger-lip)] chip-raised [&>svg]:text-white'
+          : 'bg-muted/60 text-muted-foreground [&>svg]:text-primary',
       )}
     >
       {icon}
