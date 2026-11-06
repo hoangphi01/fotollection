@@ -317,7 +317,7 @@ export function LibrarySidebar({
           {t('library.skipped', { count: lastImport.rejectedTotal })}
         </p>
       )}
-      <div className="flex items-center justify-between gap-2 px-4 pb-3">
+      <div className="flex items-center justify-between gap-3 px-4 py-3">
         <p className="text-2xs text-muted-foreground">{t('library.dropTip')}</p>
         <ThemeSwitch />
       </div>
