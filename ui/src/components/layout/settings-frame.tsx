@@ -35,7 +35,9 @@ export function SettingsFrame({ open, onClose, title, nav, navFooter, heading, d
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="flex h-[90vh] w-[95vw] max-w-none gap-0 overflow-hidden p-0 sm:max-w-[min(1100px,95vw)]">
         <aside className="flex w-64 shrink-0 flex-col border-r bg-muted/40">
-          <div className="px-4 pt-4 pb-3">
+          {/* Both columns' heads and feet share one height, so their lines meet as one line
+              across the window (owner, 2026-11-06), as the gallery's do. */}
+          <div className="flex h-16 shrink-0 items-center px-4">
             <p className="truncate text-base font-semibold">{title}</p>
           </div>
           <Separator />
@@ -45,13 +47,13 @@ export function SettingsFrame({ open, onClose, title, nav, navFooter, heading, d
           {navFooter && (
             <>
               <Separator />
-              <div className="px-4 py-3 text-xs text-muted-foreground">{navFooter}</div>
+              <div className="flex h-14 shrink-0 items-center px-4 text-xs text-muted-foreground">{navFooter}</div>
             </>
           )}
         </aside>
 
         <div data-slot="settings-body" className="flex min-w-0 flex-1 flex-col bg-background">
-          <div className="space-y-0.5 px-4 pt-4 pb-3 pr-12">
+          <div className="flex h-16 shrink-0 flex-col justify-center gap-0.5 px-4 pr-12">
             <DialogTitle className="truncate text-base">{heading}</DialogTitle>
             <DialogDescription className="truncate text-xs">{description}</DialogDescription>
           </div>
@@ -62,12 +64,12 @@ export function SettingsFrame({ open, onClose, title, nav, navFooter, heading, d
           {actions ? (
             <>
               <Separator />
-              <div className="flex items-center gap-2 px-4 py-3">{actions}</div>
+              <div className="flex h-14 shrink-0 items-center gap-2 px-4">{actions}</div>
             </>
           ) : footer ? (
             <>
               <Separator />
-              <p className="px-4 py-3 text-xs text-muted-foreground">{footer}</p>
+              <p className="flex h-14 shrink-0 items-center px-4 text-xs text-muted-foreground">{footer}</p>
             </>
           ) : null}
         </div>

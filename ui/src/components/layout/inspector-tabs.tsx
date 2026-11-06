@@ -23,7 +23,7 @@ type InspectorTabsProps<T extends string> = {
  */
 export function InspectorTabs<T extends string>({ groups, value, onChange, ariaLabel }: InspectorTabsProps<T>) {
   return (
-    <div role="tablist" aria-label={ariaLabel} className="flex items-center gap-2 px-3 pb-3">
+    <div role="tablist" aria-label={ariaLabel} className="flex items-center gap-2 p-3">
       {groups.map((tabs, i) => (
         <Fragment key={tabs[0]?.value ?? i}>
           {i > 0 && <Separator orientation="vertical" className="h-5!" />}

@@ -125,14 +125,20 @@ export function ViewerFrame({
 
         {/* Inspector */}
         <aside className={cn('flex w-panel shrink-0 flex-col border-l bg-background', !panels && 'hidden')}>
-          <div className="space-y-0.5 px-4 pt-4 pb-3 pr-12">
-            <DialogTitle className="truncate text-base">{title}</DialogTitle>
+          {/* As tall as the toolbar row beside it, its line meeting the toolbar's (owner,
+              2026-11-06: one line across the columns). */}
+          <div className="flex h-11 shrink-0 flex-col justify-center border-b px-4 pr-12">
+            <DialogTitle className="truncate text-sm leading-tight">{title}</DialogTitle>
             <DialogDescription className="truncate text-xs" data-hint={descriptionHint}>
               {description}
             </DialogDescription>
           </div>
-          {tabs}
-          <Separator />
+          {tabs && (
+            <>
+              {tabs}
+              <Separator />
+            </>
+          )}
 
           {/* Cards spaced as in the side panel, 12 px (STYLE_RULE §4, the lego rule). */}
           <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
