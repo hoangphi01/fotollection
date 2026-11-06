@@ -14,6 +14,34 @@
 
 ## 2026-11-06
 
+### A card's header grew when a slider moved: a primitive made taller, its containers not measured again (FR-099, UI)
+
+- **Seen:** moving a slider in *Basic* made the card's header jump taller, as its reset button and *edited 1* appeared (owner: "no one adjusts a slider that blinks, this is not a DJ desk").
+- **Why:** the header was `min-h-11` with 8 px padding. While icon buttons were 28 px it held them inside 44 px; the same afternoon every button became 32 px (one height for all controls), so a header with a reset needed 48 px, and the reset only shows after the first change.
+- **Fix:** the header is a fixed `h-11` without vertical padding; what its action slot holds never resizes it.
+- **Rule:** a box that holds something that comes and goes (a reset, a note, a badge) has a fixed size, never `min-h` plus padding; a change to a primitive's size is followed by a look at every container that holds it, in its shown and hidden states.
+
+### Sliders all but vanished in the dark theme: a set-in track checked only in light (FR-099, UI)
+
+- **Seen:** in dark, the sliders' tracks were nearly black on the dark card; only the white thumbs showed where a slider was (owner's screenshot).
+- **Why:** the track was `bg-muted` with the `sunken` shadow, tuned on the light board; in dark, `muted` is a few steps from `card` and the inner shadow darkens it further.
+- **Fix:** in dark the track is a light brown, the accent mixed into the card.
+- **Rule:** every set-in control (track, field, switch) is looked at in both themes beside its card, and is told apart from the card by its colour, not by its shadow alone.
+
+### Remove buttons in four styles: a meaning with no rule of its own (FR-099, UI)
+
+- **Seen:** *Clear all filters* was a plain ghost button, *Clear cache* an outline one, a folder tab's ✕ a faint red one: the owner asked twice for one red style everywhere, Settings included.
+- **Why:** each button took the variant of its neighbours, since nothing said that removing has its own look.
+- **Fix:** one `destructive` variant (deep red, white ink, burgundy lip) for every button that deletes, clears, removes or stops, and a `check-lego` rule that fails on a ✕ or bin button that is not red.
+- **Rule:** a meaning that recurs (remove, pressed, chosen) gets one variant and a check, written when the second case appears, not after the owner finds the third.
+
+### "Like Lightroom's export" built as Lightroom's frame only (FR-093)
+
+- **Seen:** the export dialog had Lightroom's layout, but no subfolder, no file naming, no choice for existing files or metadata; the owner: "I told you to look at Lightroom's export, did you forget?"
+- **Why:** the reference was read for its layout; its sections were not listed one by one, so the missing ones were never decided.
+- **Fix:** the plan lists every Lightroom section with built, later or never; the missing ones are built in v0.12.1, output sharpening later.
+- **Rule:** when the owner says "like X", list every section of X in the plan, each marked built, later or never, before building.
+
 ### *New project* dropped every folder without asking: an untitled session lost its unsaved flag on restart (FR-023)
 
 - **Seen:** the owner pressed *New project* on an untitled project with two folders (518 photos, edits on 42) and everything went, with no *Save changes?* question.
