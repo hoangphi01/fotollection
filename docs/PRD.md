@@ -1044,6 +1044,10 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P2 (planned, about v0.15, with FR-101; owner's request 2026-11-06, as Lightroom's Masking).** A tool tab in the develop view's inspector (FR-095), shown only once built: linear and radial gradients and a brush, each a mask with its own Basic sliders (brightness, contrast, warmth, tint, saturation…), several per photo, listed, hidden or deleted one by one. `⇧W` as in Lightroom Classic. Later, subject and sky found on the machine by a small model of a permissive licence (never a network call). Needs a local layer in the render pipeline beside the look's global table (ADR-0038, amended), on the GPU of v0.14.0 for a live preview.
 
+### FR-103 — Check for updates at start, never download unasked
+
+**P2 (planned; owner's request 2026-11-06: "check only, the user decides to download, a setting to check at start as other offline apps do").** A switch in Settings → Updates, *Check for updates when the app starts*, **off by default** (privacy, SECURITY.md: no call the user did not ask for). When on, the app asks GitHub for the latest release's tag once at start, in the background, with nothing about the user or the machine in the request but what any HTTPS request carries; a newer version shows a quiet note with *What's new* and *Download*, which opens the release page. Nothing is downloaded or installed by itself; offline, nothing is shown. The manual *Check for updates* stays as it is (FR-021).
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
