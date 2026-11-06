@@ -6,7 +6,11 @@
 //! (OKLab distance × 100, about 1 for a just noticeable step), and the file size. Photos are
 //! only read; nothing is written. Only aggregate numbers are printed.
 //!
-//! `cargo run --release -p fotollection-core --example measure_quality -- <folder> [photos]`
+//! With `--limit`, it measures Lightroom's *Limit file size* instead (FR-105): at the default
+//! quality, how many encodes `export::encode_within` needs for limits of 1, 2 and 5 MB, its
+//! time against one encode, and how many photos stay over the limit even at quality 60.
+//!
+//! `cargo run --release -p fotollection-core --example measure_quality -- <folder> [photos] [--limit]`
 
 #![allow(
     clippy::unwrap_used,
@@ -18,6 +22,7 @@
 )]
 
 use fotollection_core::codec::{EncodeOptions, decode_image, default_codec};
+use fotollection_core::export::{EXPORT_QUALITY, encode_within};
 use fotollection_core::image::RgbImage;
 use fotollection_core::render::fit_long_edge;
 
@@ -65,8 +70,52 @@ fn difference(a: &RgbImage, b: &RgbImage) -> (f64, f64) {
     (mean, f64::from(d[(d.len() * 99) / 100]))
 }
 
+/// Per limit: encodes, the limited time, the plain time, photos over the limit at 60.
+fn measure_limits(prints: &[RgbImage], prep: std::time::Duration) {
+    let codec = default_codec();
+    println!(
+        "{} photos at {PRINT_LONG_EDGE} px, 4:4:4, quality {EXPORT_QUALITY}, file-size limit (FR-105)",
+        prints.len()
+    );
+    println!(
+        "| Limit | Encodes per photo | Time against one encode | Time against an export | Over the limit at 60 |"
+    );
+    println!("|---|---|---|---|---|");
+    let plain: std::time::Duration = prints
+        .iter()
+        .map(|p| {
+            let t = std::time::Instant::now();
+            codec
+                .encode(p, EncodeOptions::print(EXPORT_QUALITY), None)
+                .expect("encode");
+            t.elapsed()
+        })
+        .sum();
+    for limit_mb in [5u64, 2, 1] {
+        let (mut encodes, mut over) = (0usize, 0usize);
+        let t = std::time::Instant::now();
+        for p in prints {
+            let (_, fits) = encode_within(Some(limit_mb * 1_000_000), EXPORT_QUALITY, |q| {
+                encodes += 1;
+                codec.encode(p, EncodeOptions::print(q), None)
+            })
+            .expect("encode");
+            over += usize::from(!fits);
+        }
+        let limited = t.elapsed();
+        println!(
+            "| {limit_mb} MB | {:.1} | {:.2}× | {:.2}× | {over} |",
+            encodes as f64 / prints.len() as f64,
+            limited.as_secs_f64() / plain.as_secs_f64(),
+            (prep + limited).as_secs_f64() / (prep + plain).as_secs_f64()
+        );
+    }
+}
+
 fn main() {
-    let args: Vec<String> = std::env::args().skip(1).collect();
+    let mut args: Vec<String> = std::env::args().skip(1).collect();
+    let limits = args.iter().any(|a| a == "--limit");
+    args.retain(|a| a != "--limit");
     let folder = args
         .first()
         .expect("usage: measure_quality <folder> [photos]");
@@ -81,6 +130,20 @@ fn main() {
     paths.sort();
     paths.truncate(count);
     // Per quality: summed mean ΔE, the worst p99, summed bytes.
+    if limits {
+        // Reading, decoding and sizing for print: the rest of an export's time per photo.
+        let started = std::time::Instant::now();
+        let prints: Vec<RgbImage> = paths
+            .iter()
+            .map(|path| {
+                let bytes = std::fs::read(path).expect("read");
+                let photo = decode_image(codec.as_ref(), &bytes).expect("decode").image;
+                fit_long_edge(&photo, PRINT_LONG_EDGE).expect("resize")
+            })
+            .collect();
+        measure_limits(&prints, started.elapsed());
+        return;
+    }
     let mut rows = vec![(0.0_f64, 0.0_f64, 0.0_f64); QUALITIES.len()];
     for path in &paths {
         let bytes = std::fs::read(path).expect("read");

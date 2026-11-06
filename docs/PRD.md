@@ -1054,6 +1054,18 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Below the minimum safe version** (a release that fixes a serious fault, for example a version that showed zoomed portraits sideways), the note becomes a red warning that names the fault and asks to update. Only versions that carry this feature can show it, so it ships as soon as it can.
 - SECURITY.md and README's privacy lines say so: one request at start, which can be turned off. The manual *Check for updates* stays as it is (FR-021).
 
+### FR-104 — File names as Lightroom's templates
+
+**P1 (v0.12.1; owner's request 2026-11-06: "custom names, date and file name, like Lightroom").** The export dialog's *File name* card ([FR-093](#fr-093--the-exports-options-in-one-small-dialog)) offers templates, kept per machine: the original name (`P1057694.jpg`, the default), date and original name (`2026-07-14_P1057694.jpg`), custom text and a sequence (`Prague-001.jpg`), custom text, date and sequence, and date and sequence. The sequence starts where the user says and is padded to the width of the last number; it follows the export's order (capture time) whatever thread finishes first. A live example shows the first name the export will write, computed by the same code. Custom text is cleaned in Rust (no path separators or reserved names). Collage sheets keep `<first>+<second>` under the original-name template and take the template otherwise.
+
+### FR-105 — Limit the file size
+
+**P2 (v0.12.1; owner's choice 2026-11-06, Lightroom's *Limit file size*).** A switch and a size in the *File* card: each file is written at the chosen quality when it fits, else at the highest quality from 60 up that does, by bisection; a photo too large even at 60 is written at 60 and counted in the result. Measured first ([RESULT §31](RESULT.md#31-a-file-size-limit-on-a-print-v0121-fr-105)): free until it binds, then about twice an export's time. Off by default.
+
+### FR-106 — Output sharpening
+
+**P3 (later; owner, 2026-11-06: "note it in the docs, do it later").** Lightroom's *Output sharpening* for screen, matte or glossy paper, at low, standard or high: measured first on prints at their size before any default is chosen. Share exports already sharpen lightly after a downscale (FR-053).
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

@@ -388,6 +388,47 @@ fn encode_photo(
     Ok((jpeg, share.is_some()))
 }
 
+/// The lowest quality a size limit may go down to (FR-105): the slider's own floor.
+pub const LIMIT_FLOOR: u8 = 60;
+
+/// A JPEG within `limit` bytes, when one is asked (FR-105, Lightroom's *Limit file size*):
+/// `encode` at `quality` first; over the limit, the highest quality between [`LIMIT_FLOOR`]
+/// and `quality` that fits, by bisection (RESULT §31: 3.9 encodes at 2 MB). Returns the
+/// JPEG and whether it fits; one that cannot fit even at the floor is the floor's.
+pub fn encode_within<E>(
+    limit: Option<u64>,
+    quality: u8,
+    mut encode: impl FnMut(u8) -> Result<Vec<u8>, E>,
+) -> Result<(Vec<u8>, bool), E> {
+    let first = encode(quality)?;
+    let Some(limit) = limit else {
+        return Ok((first, true));
+    };
+    if first.len() as u64 <= limit || quality <= LIMIT_FLOOR {
+        let fits = first.len() as u64 <= limit;
+        return Ok((first, fits));
+    }
+    // `best` fits; the answer lies in (best, high).
+    let floor = encode(LIMIT_FLOOR)?;
+    if floor.len() as u64 > limit {
+        return Ok((floor, false));
+    }
+    // Bisection: interpolating from the sizes either side took more encodes (4.3 against
+    // 3.9 at 2 MB, RESULT §31), as a file grows fastest near the top of the scale.
+    let (mut best, mut best_q, mut high) = (floor, LIMIT_FLOOR, quality);
+    while high - best_q > 1 {
+        let mid = best_q + (high - best_q) / 2;
+        let jpeg = encode(mid)?;
+        if jpeg.len() as u64 <= limit {
+            best = jpeg;
+            best_q = mid;
+        } else {
+            high = mid;
+        }
+    }
+    Ok((best, true))
+}
+
 /// Writes one exported JPEG into the destination, under its day's folder when exported by
 /// day; returns its size.
 fn write_photo(
@@ -679,6 +720,34 @@ fn run<T: Sync>(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn fr_105_a_limit_finds_the_highest_quality_that_fits() -> Result<(), ()> {
+        // A file of `q * 10` bytes: the limit 700 fits quality 70 at most.
+        let mut asked = Vec::new();
+        let encode = |q: u8| -> Result<Vec<u8>, ()> { Ok(vec![0; usize::from(q) * 10]) };
+        let (jpeg, fits) = super::encode_within(Some(700), 90, |q| {
+            asked.push(q);
+            encode(q)
+        })?;
+        assert!(fits);
+        assert_eq!(jpeg.len(), 700);
+        assert!(asked.len() <= 8, "{asked:?}");
+        // No limit, or already under it: one encode.
+        let (_, fits) = super::encode_within(None, 90, encode)?;
+        assert!(fits);
+        let mut once = 0;
+        super::encode_within(Some(10_000), 90, |q| {
+            once += 1;
+            encode(q)
+        })?;
+        assert_eq!(once, 1);
+        // Too big even at the floor: the floor's file, marked as not fitting.
+        let (jpeg, fits) = super::encode_within(Some(100), 90, encode)?;
+        assert!(!fits);
+        assert_eq!(jpeg.len(), 600);
+        Ok(())
+    }
+
     use super::*;
 
     /// NFR-003, NFR-004: 20 MP camera JPEGs (11 MB) run one per core up to 6; 60 MP ones

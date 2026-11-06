@@ -613,4 +613,18 @@ The export dialog's badges follow from it:
 - **75 to 89, *Prints well*:** the mean is still under 1.5, the worst pixels (fine texture, edges) start to show at a close look.
 - **Below 75, *Screens only*:** the size falls slowly while the difference keeps growing.
 
-95, the default, keeps half the size of 100 at a difference no eye sees on paper.
+90, the default since 2026-11-06 (95 before), keeps a third of the size of 100 at a difference no eye sees on paper.
+
+## 31. A file-size limit on a print (v0.12.1, FR-105)
+
+The same twelve photos at the same print size, at the default quality 90, through `export::encode_within`, the code the export uses: under the limit, one encode; over it, the highest quality from 60 up that fits, by bisection (`measure_quality -- <folder> 12 --limit`, the core optimized in the dev profile, 2026-11-06). "An export" is reading, decoding and sizing the photo plus its encodes.
+
+| Limit | Encodes per photo | Time against one encode | Time against an export | Over the limit at 60 |
+|---|---|---|---|---|
+| 5 MB | 1.0 | 1.0× | 1.0× | 0 |
+| 2 MB | 3.9 | 3.8× | 2.1× | 0 |
+| 1 MB | 4.5 | 4.3× | 2.3× | 6 of 12 |
+
+- **A limit costs nothing until it binds,** and then about twice the export's time, under the 3× the plan allowed; it is off by default.
+- **Guessing the quality from the sizes either side** (interpolation) took more encodes, 4.3 at 2 MB, since a file grows fastest near the top of the scale: bisection stays.
+- **A 20 × 30 cm print rarely fits 1 MB:** half the photos stay over it even at 60, and the result says how many.

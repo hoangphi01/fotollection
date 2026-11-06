@@ -220,6 +220,9 @@ The audit of 2026-11-02 read the RAW path, the JPEG and colour path and the docs
 | FR-101 | Healing | 2 | Not Started | Owner's request (2026-11-06): spot removal as Lightroom's Remove tool, `Q`; its tab's place kept, hidden until built; about v0.15 |
 | FR-102 | Masking | 2 | Not Started | Owner's request (2026-11-06): linear, radial, brush, later on-device subject and sky, `⇧W`; a local layer beside the look's table; about v0.15 |
 | FR-103 | Check for updates at start | 2 | Not Started | Owner's request (2026-11-06): on by default, off in Settings → Updates; check only, never download unasked; a red warning below the minimum safe version published in `update.json`; version to be chosen |
+| FR-104 | File names as Lightroom's templates | 2 | In Progress | Owner's request (2026-11-06): templates, custom text, start number, a live example from Rust; v0.12.1 |
+| FR-105 | Limit the file size | 2 | In Progress | Owner's choice (2026-11-06): measured first (RESULT §31: free until it binds, then 2.1× an export at 2 MB), `export::encode_within`; v0.12.1 |
+| FR-106 | Output sharpening | 2 | Not Started | Owner (2026-11-06): written down, done later, measured first |
 | FR-068 | HEIC on Linux through the system's libheif | 2 | Not Started | v0.8.2 skips HEIC on Linux with its own reason (`HeicNotOnLinux`); after v0.9.0 ([ADR-0034](adr/0034-linux-lean.md)) |
 | FR-059 | Quick-preview | 1 | In Progress | ✓ Hold Space in select mode over a photo: thumbnail at once, then the render with the gallery's settings; ← → and Enter while held (`use-quick-preview.ts`). Left: check by hand in the app |
 | FR-049 | Trip journal | 2 | Not Started | Future: offline report drafted from the album (days, places, counts, cameras, focal-length range, best shots per day), templates in EN/VI, editable, export HTML/PDF or a journal print; every editing session adds a journal entry (instax-style) |
