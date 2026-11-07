@@ -2919,4 +2919,35 @@ mod tests {
         );
         assert!(check_ticked(&vec![PhotoId(1); MAX_EDIT_IDS + 1]).is_err());
     }
+
+    /// FR-055: *Export* in the photo preview writes that photo alone: the view is never even
+    /// asked for its photos, and the ticks are left out; from a sheet's preview, only the sheet
+    /// that holds the photo, whichever half it is in.
+    #[test]
+    fn fr_055_export_from_the_preview_writes_only_that_photo() {
+        let asked = std::cell::Cell::new(false);
+        let shown = || {
+            asked.set(true);
+            vec![PhotoId(1), PhotoId(2)]
+        };
+        assert_eq!(
+            export_ids(Some(PhotoId(7)), &[PhotoId(1), PhotoId(2)], shown),
+            vec![PhotoId(7)]
+        );
+        assert!(!asked.get(), "the view's photos are never listed");
+        let pair = |first, second: Option<_>| crate::collage::SheetPair {
+            first: PhotoId(first),
+            second: second.map(PhotoId),
+        };
+        let sheets = || vec![pair(1, Some(2)), pair(3, Some(4)), pair(5, None)];
+        assert_eq!(
+            crate::collage::only_sheet(sheets(), Some(PhotoId(4))),
+            vec![pair(3, Some(4))]
+        );
+        assert_eq!(
+            crate::collage::only_sheet(sheets(), Some(PhotoId(5))),
+            vec![pair(5, None)]
+        );
+        assert_eq!(crate::collage::only_sheet(sheets(), None).len(), 3);
+    }
 }

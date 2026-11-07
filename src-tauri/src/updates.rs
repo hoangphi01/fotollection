@@ -367,6 +367,18 @@ mod tests {
         .into_bytes()
     }
 
+    /// FR-069: *Report a problem* opens the project's own issue page and nothing else: the
+    /// address is fixed in Rust, on GitHub, over https, with no query the app could fill.
+    #[test]
+    fn fr_069_the_report_page_is_the_fixed_issues_address() {
+        assert_eq!(
+            ISSUES,
+            "https://github.com/hoangphi01/fotollection/issues/new/choose"
+        );
+        assert!(!ISSUES.contains('?') && !ISSUES.contains('#'));
+        assert_eq!(WEBSITE, "https://fotollection.org/");
+    }
+
     /// FR-103: the minimum safe version travels in the release notes; below it, a warning;
     /// a missing, broken or impossible note is ignored.
     #[test]
