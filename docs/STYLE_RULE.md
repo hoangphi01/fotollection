@@ -167,7 +167,8 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
   |---|---|
   | Both | *Print / export size*, *Date stamp*, *Info frame*, *Export*; Collage's *Sheet size*, *Postcard*, *Postcard text*, *Photos on the sheet* |
   | Gallery only | *Camera clocks*, *Places* |
-  | Preview only | *This photo*, the colour cards (*RAW colour*, *Faves*, *Tools*) |
+  | Preview only | *This photo*, the colour cards (*RAW colour*, *Faves*, *Tools*), except as below |
+  | Previews and Simple mode's panel | The photo's colour cards as a whole (`PhotoLookCards`); in Simple mode only *Looks* (the reset and *Amount*) and *Faves*, for the photo on the stage (owner, 2026-11-07) |
   | Settings window only | *General* (language, theme), *RAM & cache* (memory for previews, cache on disk, *For this computer*) |
 
 - **Nothing blinks, nothing jumps (2026-11-01).** A change of setting or a keystroke never blanks what is on screen: the last answer stays until the next has loaded. Ask Rust about a photo or a sheet with `useLiveQuery` (`features/settings/use-ipc-query.ts`), which keeps the last answer and says when it is stale; show a render with `useShownSrc`; a spinner only before the first image, never over one already shown. Settings sent to Rust apply on screen at once, and only the answer to the latest change replaces them (`useRenderSettings`, `useFrameConfig`). A text field never takes a value from outside while it has focus (`CommitInput`). Reserve the room a note takes when it can come and go under the pointer.

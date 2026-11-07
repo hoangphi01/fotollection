@@ -15,6 +15,8 @@ import { SaveLookDialog } from './save-look-dialog'
 import { useLooks } from './use-looks'
 
 type LooksCardProps = {
+  /** Simple mode: the amount and the reset only (owner, 2026-11-07). */
+  simple?: boolean
   look: LookSettings | undefined
   onChange: LookChange
 }
@@ -27,7 +29,7 @@ const percent = (v: number) => `${v} %`
  * machine, listed here to pick or forget; ↺ gives the original back. A pick copies the look's values into the
  * photo, so the sliders below show them and a later change of the library changes no photo.
  */
-export function LooksCard({ look, onChange }: LooksCardProps) {
+export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
   const { t } = useTranslation()
   const { looks, setLooks, reload } = useLooks()
   const [saving, setSaving] = useState(false)
@@ -45,7 +47,7 @@ export function LooksCard({ look, onChange }: LooksCardProps) {
     >
       {/* The user's own looks, to pick or forget (the strip under the photo lists them all),
           as the recent addresses are listed (owner, 2026-11-07). */}
-      {looks.some((e) => e.kind === 'user') && (
+      {!simple && looks.some((e) => e.kind === 'user') && (
         <Field label={t('look.yours')}>
           <ListRows>
             {looks
@@ -81,6 +83,8 @@ export function LooksCard({ look, onChange }: LooksCardProps) {
         format={percent}
         onChange={(v, first) => onChange((l) => ({ ...l, amount: v }), first)}
       />
+      {!simple && (
+        <>
       <Button variant="outline" size="sm" className="w-full" onClick={() => setSaving(true)}>
         <BookmarkPlus data-icon="inline-start" /> {t('look.saveAs')}
       </Button>
@@ -96,6 +100,8 @@ export function LooksCard({ look, onChange }: LooksCardProps) {
           })
         }}
       />
+        </>
+      )}
     </SectionCard>
   )
 }

@@ -480,6 +480,8 @@ export function App() {
           basketCount={queueCounts.print}
           customStamps={customStamps}
           revision={revision}
+          photoId={photos[current]?.id}
+          onSettingsReload={reload}
         />
       ) : (
       <SettingsPanel

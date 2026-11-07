@@ -418,7 +418,7 @@ Fotollection tìm bản mới một lần khi mở app, và khi bạn yêu cầu
 3. Nhấn **↑** hoặc nhấp **Giữ**: ảnh vào giỏ in, và ảnh kế tiếp hiện ra.
 4. Nhấn **↓** hoặc nhấp **Bỏ**: ảnh được để riêng, không bao giờ bị xoá, và ảnh kế tiếp hiện ra.
 5. **← →** đi lùi, đi tới mà không quyết định. **Cmd/Ctrl+Z** hoàn tác lần giữ hoặc bỏ vừa rồi. Như ở bản xem trước, **P** / **X** / **U** gắn cờ, **[** / **]** xoay một phần tư.
-   - **Look** (sắp có ở v0.14.0): dải dưới ảnh cho thấy ảnh qua từng look, mỗi look một số. Nhấn **0**–**9** (0 là Gốc) hoặc nhấp một ô để chọn màu, rồi **↑** giữ: chọn màu và lọc ảnh chỉ bằng hai phím. Ở chế độ này phím số chọn look, không chấm sao.
+   - **Look** (sắp có ở v0.14.0): dải dưới ảnh cho thấy ảnh qua từng look, mỗi look một số. Nhấn **0**–**9** (0 là Gốc) hoặc nhấp một ô để chọn màu, rồi **↑** giữ: chọn màu và lọc ảnh chỉ bằng hai phím. Ở bảng bên phải, **Mức độ** làm look nhẹ đi (mặc định 100 %) và thẻ **Cơ bản** có bốn thanh chỉnh hằng ngày. Ở chế độ này phím số chọn look, không chấm sao.
 6. Thanh phía trên ảnh cho biết bạn đang ở ảnh nào, đã giữ và đã bỏ bao nhiêu.
 7. Ở bảng bên phải, chọn **In ảnh** hoặc **Mạng xã hội**, **khổ in**, **viền 3 mm** và **dấu ngày** (định dạng, góc, màu, cỡ, địa điểm và dòng chữ riêng, như ở Chuyên nghiệp), rồi **Chọn nơi lưu…** và **Xuất**: app lưu những ảnh bạn đã giữ.
 

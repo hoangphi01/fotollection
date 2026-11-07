@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// @shown preview: in the preview only (STYLE_RULE §4, where each card shows, checked by check-lego).
+// @shown both: in the previews, and Simple mode's panel for the photo shown (owner, 2026-11-07).
 import { CopyCheck, Images } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -21,6 +21,9 @@ type PhotoLookCardsProps = {
   sheet?: PhotoId[]
   /** Bumps on every edit and undo, so the cards follow the photo's look. */
   revision: number
+  /** Simple mode's panel (owner, 2026-11-07): the amount and Faves only; no saved looks, no
+   * Tools, no RAW finish. */
+  simple?: boolean
   /** After "Apply to all" changed the shared settings. */
   onAppliedToAll(): void
 }
@@ -49,7 +52,7 @@ const keep = (key: string, value: { look: PhotoLook; differ: boolean }) => {
   }
 }
 
-export function PhotoLookCards({ photoId, sheet, revision, onAppliedToAll }: PhotoLookCardsProps) {
+export function PhotoLookCards({ photoId, sheet, simple = false, revision, onAppliedToAll }: PhotoLookCardsProps) {
   const { t } = useTranslation()
   const sheetKey = sheet?.join(',') ?? ''
   const cacheKey = sheetKey || String(photoId)
@@ -122,7 +125,7 @@ export function PhotoLookCards({ photoId, sheet, revision, onAppliedToAll }: Pho
       {sheet && (
         <PanelNote icon={<Images />}>{t(differ ? 'look.sheetDiffers' : 'look.sheetWhole')}</PanelNote>
       )}
-      {current.raw != null && !sheet && (
+      {current.raw != null && !sheet && !simple && (
         <RawLookCard
           value={current.raw}
           onChange={setRaw}
@@ -132,9 +135,9 @@ export function PhotoLookCards({ photoId, sheet, revision, onAppliedToAll }: Pho
           }
         />
       )}
-      <LooksCard look={current.look} onChange={change} />
+      <LooksCard look={current.look} onChange={change} simple={simple} />
       <FavesCard look={current.look} onChange={change} footer={applyToAll} raw={current.raw != null} />
-      <ToolsCard look={current.look} onChange={change} />
+{!simple &&       <ToolsCard look={current.look} onChange={change} />}
     </>
   )
 }

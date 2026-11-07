@@ -420,7 +420,7 @@ The **cache**, the memory the previews use and *Instant previews* are in **Setti
 3. Press **↑** or click **Keep**: the photo goes into the print basket, and the next one comes.
 4. Press **↓** or click **Drop**: the photo is set aside, never deleted, and the next one comes.
 5. **← →** step back and forward without deciding. **Cmd/Ctrl+Z** undoes the last keep or drop. **P** / **X** / **U** flags and **[** / **]** quarter turns work as in the preview.
-   - **Looks** (coming in v0.14.0): the strip under the photo shows it through each look, each with its number. Press **0**–**9** (0 is Original) or click a tile to choose its colour, then **↑** to keep it: colour and choice in two keys. Here the number keys choose a look; they do not rate.
+   - **Looks** (coming in v0.14.0): the strip under the photo shows it through each look, each with its number. Press **0**–**9** (0 is Original) or click a tile to choose its colour, then **↑** to keep it: colour and choice in two keys. In the panel, **Amount** makes the look lighter (100 % by default) and **Faves** has the four everyday sliders. Here the number keys choose a look; they do not rate.
 6. The bar above the photo counts where you are, and how many you kept and dropped.
 7. In the panel on the right, choose **Print** or **Share online**, the **print size**, the **3 mm border** and the **date stamp** (format, corner, colour, size, place and your own line, as in Pro), then **Choose destination…** and **Export**: it saves the photos you kept.
 
