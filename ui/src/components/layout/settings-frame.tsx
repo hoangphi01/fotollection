@@ -29,6 +29,8 @@ type SettingsFrameProps = {
   /** False: no ✕, and neither Esc nor a click outside closes it; only its own buttons do
    * (the first launch's welcome, read through once; owner, 2026-11-07). */
   closable?: boolean
+  /** A new key starts the cards' scroll at the top (the manual's next chapter, FR-110). */
+  scrollKey?: string
 }
 
 /**
@@ -49,6 +51,7 @@ export function SettingsFrame({
   actions,
   full = false,
   closable = true,
+  scrollKey,
 }: SettingsFrameProps) {
   return (
     <Dialog open={open} onOpenChange={(next) => !next && closable && onClose()}>
@@ -65,7 +68,9 @@ export function SettingsFrame({
             <p className="truncate text-base font-semibold">{title}</p>
           </div>
           <Separator />
-          <ScrollArea className="min-h-0 flex-1">
+          {/* Radix's viewport lays its content out as a table, which grows to its widest row:
+              block keeps long rows (a manual's chapter) inside the column, truncated. */}
+          <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
             <nav className="flex flex-col gap-1 p-3">{nav}</nav>
           </ScrollArea>
           {navFooter && (
@@ -85,7 +90,7 @@ export function SettingsFrame({
           {full ? (
             <div className="flex min-h-0 flex-1 flex-col gap-3 p-3">{children}</div>
           ) : (
-            <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
+            <ScrollArea key={scrollKey} className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
               <div className="mx-auto max-w-xl space-y-3 p-3">{children}</div>
             </ScrollArea>
           )}

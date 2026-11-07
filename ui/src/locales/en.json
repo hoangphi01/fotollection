@@ -1195,6 +1195,7 @@
     "pickHint": "Then click something in the photo that should be neutral grey: warmth and tint follow, as one step."
   },
   "manual": {
+    "overview": "Overview",
     "title": "Manual",
     "chapters": "Chapters",
     "search": "Search the manual",

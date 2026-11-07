@@ -637,3 +637,10 @@
 
 - **Seen:** *Fit* was built twice the wrong way before the owner explained it with real sizes.
 - **Rule:** for a visual rule, restate it with numbers (10 × 15 cm keeps 10 × 15; *Fit* adds 5 mm on three sides plus the bar) and get a yes before coding.
+
+### Content from a document takes the app's layout, not the document's (FR-110)
+
+- **Seen:** the first manual inside the app showed each chapter as one long page of prose on the window's ground, as the website does, and the chapter list ran past its column's edge (owner, 2026-11-07: "style broken; every context follows the style rule").
+- **Why:** the Markdown was rendered as a page, with its own spacing and widths, beside an app built from cards; and Radix's `ScrollArea` lays its viewport's content out as a table, which grows to its widest row, so `truncate` never took effect in the list.
+- **Fix:** `cardsOf` cuts a chapter into the app's own `SectionCard`s (its opening, each section, each bold-led paragraph and step) in the Settings window's 36 rem column; keys show as `Kbd`, captions as `Hint`. The list's viewport is `block`, as the cards' already was.
+- **Rule:** text or pictures brought into the app from a document (the guide, the CHANGELOG) give only their words; the layout is the app's blocks (STYLE_RULE §4). A list in a `ScrollArea` that must truncate sets its viewport's child to `block`.
