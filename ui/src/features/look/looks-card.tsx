@@ -7,6 +7,7 @@ import { RemoveButton, ResetButton } from '@/components/forms/danger-button'
 import { ListRow, ListRows } from '@/components/forms/list-row'
 import { Field } from '@/components/forms/field'
 import { SliderField } from '@/components/forms/slider-field'
+import { Collapse } from '@/components/layout/collapse'
 import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
 import { commands, type LookSettings } from '@/ipc/bindings'
@@ -34,16 +35,19 @@ export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
   const { looks, setLooks, reload } = useLooks()
   const [saving, setSaving] = useState(false)
   const current = fullLook(look)
-  // Anything set, a look of the library or a slider: the reset gives the photo (or the whole
-  // sheet, when none is picked) the original back, one undo step (owner, 2026-11-07).
-  const { name: _name, base: _base, ...colours } = current
-  const { name: _n, base: _b, ...none } = NO_LOOK
-  const set = current.base !== null || JSON.stringify(colours) !== JSON.stringify(none)
+  // Coloured: a look or a slider changes the photo (Original changes nothing). Only then is
+  // there an amount to set and a reset to show, in every mode (owner, 2026-11-07); the reset
+  // gives the photo (or the whole sheet, none picked) the original back, one undo step.
+  const { name: _name, base: _base, amount: _amount, ...colours } = current
+  const { name: _n, base: _b, amount: _a, ...none } = NO_LOOK
+  const coloured = JSON.stringify(colours) !== JSON.stringify(none)
   return (
     <SectionCard
       icon={<Palette />}
       title={t('look.looks')}
-      action={set && <ResetButton iconOnly label={t('look.resetLook')} onClick={() => onChange(() => NO_LOOK, true)} />}
+      // Simple mode has nothing but the amount: with the original, the card is its title alone.
+      open={coloured || !simple}
+      action={coloured && <ResetButton iconOnly label={t('look.resetLook')} onClick={() => onChange(() => NO_LOOK, true)} />}
     >
       {/* The user's own looks, to pick or forget (the strip under the photo lists them all),
           as the recent addresses are listed (owner, 2026-11-07). */}
@@ -73,6 +77,7 @@ export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
           </ListRows>
         </Field>
       )}
+      <Collapse open={coloured} stack="card">
       <SliderField
         label={t('look.amount')}
         hint={t('look.hints.amount')}
@@ -83,6 +88,7 @@ export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
         format={percent}
         onChange={(v, first) => onChange((l) => ({ ...l, amount: v }), first)}
       />
+      </Collapse>
       {!simple && (
         <>
       <Button variant="outline" size="sm" className="w-full" onClick={() => setSaving(true)}>
