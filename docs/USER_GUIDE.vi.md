@@ -417,7 +417,8 @@ Fotollection tìm bản mới một lần khi mở app, và khi bạn yêu cầu
 2. Ảnh đầu tiên hiện ở giữa, **đúng như khi in**, với khổ in, dấu ngày và viền của bạn.
 3. Nhấn **↑** hoặc nhấp **Giữ**: ảnh vào giỏ in, và ảnh kế tiếp hiện ra.
 4. Nhấn **↓** hoặc nhấp **Bỏ**: ảnh được để riêng, không bao giờ bị xoá, và ảnh kế tiếp hiện ra.
-5. **← →** đi lùi, đi tới mà không quyết định. **Cmd/Ctrl+Z** hoàn tác lần giữ hoặc bỏ vừa rồi. Các phím lọc ảnh của bản xem trước cũng dùng được: **0**–**5** chấm sao, **P** / **X** / **U** gắn cờ, **[** / **]** xoay một phần tư.
+5. **← →** đi lùi, đi tới mà không quyết định. **Cmd/Ctrl+Z** hoàn tác lần giữ hoặc bỏ vừa rồi. Như ở bản xem trước, **P** / **X** / **U** gắn cờ, **[** / **]** xoay một phần tư.
+   - **Look** (sắp có ở v0.14.0): dải dưới ảnh cho thấy ảnh qua từng look, mỗi look một số. Nhấn **0**–**9** (0 là Gốc) hoặc nhấp một ô để chọn màu, rồi **↑** giữ: chọn màu và lọc ảnh chỉ bằng hai phím. Ở chế độ này phím số chọn look, không chấm sao.
 6. Thanh phía trên ảnh cho biết bạn đang ở ảnh nào, đã giữ và đã bỏ bao nhiêu.
 7. Ở bảng bên phải, chọn **In ảnh** hoặc **Mạng xã hội**, **khổ in**, **viền 3 mm** và **dấu ngày** (định dạng, góc, màu, cỡ, địa điểm và dòng chữ riêng, như ở Chuyên nghiệp), rồi **Chọn nơi lưu…** và **Xuất**: app lưu những ảnh bạn đã giữ.
 
@@ -519,6 +520,7 @@ Hai thẻ chỉnh màu ảnh theo từng thanh trượt, nằm dưới **Khổ i
 | Xem trước | **↑** | Cho vào giỏ in, sang tấm sau |
 | Xem trước | **↓** | Để riêng, sang tấm sau |
 | Chế độ Đơn giản | **↑** / **↓** | Giữ (giỏ in) / bỏ (để riêng), sang tấm sau |
+| Chế độ Đơn giản | **0**–**9** | Chọn look thứ 0–9 của dải (0 là Gốc), v0.14.0 |
 | Chế độ Đơn giản | **← →** | Ảnh trước / sau, không quyết định |
 | Chế độ Ghép ảnh | **← →**, **↑ ↓** | Chọn ảnh, tấm ở trên hoặc dưới |
 | Chế độ Ghép ảnh | **⌥/Alt ← →** | Dời ảnh đang chọn đi một chỗ |

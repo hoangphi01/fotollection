@@ -792,7 +792,8 @@
     "doneHint_other": "{{kept}} photos are in the print basket. Export them from the panel on the right.",
     "exportHint_one": "Export sends the {{count}} photo you kept (the print basket).",
     "exportHint_other": "Export sends the {{count}} photos you kept (the print basket).",
-    "review": "Look through them again"
+    "review": "Look through them again",
+    "look": "Look"
   },
   "collage": {
     "autoTurn": "Auto turn",

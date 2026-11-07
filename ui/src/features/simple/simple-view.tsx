@@ -9,10 +9,11 @@ import { StageSpinner } from '@/components/layout/stage-spinner'
 import type { PhotoSummary, Queue, QueueView } from '@/ipc/bindings'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { LookStrip } from '@/features/look/look-strip'
+import { LOOK_KEYS, useLookPicker } from '@/features/look/use-looks'
 import { sendTo } from '@/features/viewer/send-to'
 import { useShownSrc } from '@/features/viewer/use-shown-src'
 import { usePrefetch } from '@/features/viewer/use-prefetch'
-import { ownsArrowKeys } from '@/lib/keyboard'
+import { isTyping, ownsArrowKeys } from '@/lib/keyboard'
 import { formatNumber } from '@/lib/format'
 import { previewUrl } from '@/lib/photo-url'
 
@@ -35,6 +36,9 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
   const { src: shownSrc, error: shownError } = useShownSrc(photo?.id, photo ? previewUrl(photo.id, revision) : '')
   // The next photos load while this one is looked at (FR-091).
   usePrefetch(photos, index, !!photo && shownSrc === previewUrl(photo.id, revision))
+  // Simple mode's number keys pick a look (FR-079): 0 Original, 1–9 the next; Simple mode
+  // keeps or drops, it shows no stars, so its digits are not ratings.
+  const looks = useLookPicker(photo?.id, revision)
   const go = (delta: number) => onIndexChange(Math.min(photos.length - 1, Math.max(0, index + delta)))
   const send = (queue: Queue) => {
     if (photo) sendTo(photo.id, queue, view, () => go(1))
@@ -43,7 +47,11 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
   // The keys of the preview (FR-050) and its culling keys (FR-022): 0–5, P / X / U, [ ].
   const onKey = useEffectEvent((event: KeyboardEvent) => {
     if (ownsArrowKeys(event.target) || document.querySelector('[role="dialog"]')) return
-    if (handleCullKey(event, photo?.id)) event.preventDefault()
+    const digit = /^[0-9]$/.test(event.key) && !event.metaKey && !event.ctrlKey && !event.altKey && !isTyping(event.target)
+    if (digit && Number(event.key) < LOOK_KEYS) {
+      event.preventDefault()
+      looks.pick(Number(event.key))
+    } else if (handleCullKey(event, photo?.id)) event.preventDefault()
     else if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
       event.preventDefault()
       go(event.key === 'ArrowRight' ? 1 : -1)
@@ -107,7 +115,7 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
           </Badge>
         )}
       </div>
-      <LookStrip photoId={photo.id} revision={revision} />
+      <LookStrip photoId={photo.id} picker={looks} />
       <div className="flex items-center justify-center gap-2 border-t p-3">
         {/* The hints on wrappers: a disabled button gets no pointer events (STYLE_RULE §4). */}
         <span data-hint={t('simple.previous')}>
@@ -130,6 +138,7 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
       <p className="pb-3 text-center text-xs text-muted-foreground">
         <KeyHints
           hints={[
+            { keys: ['0–9'], label: t('simple.look') },
             { keys: ['↑'], label: t('simple.keep') },
             { keys: ['↓'], label: t('simple.drop') },
             { keys: ['←', '→'], label: t('viewer.browse') },

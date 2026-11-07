@@ -762,7 +762,8 @@
     "done": "Đã xem hết ảnh",
     "doneHint_other": "Có {{kept}} ảnh trong giỏ in. Xuất ảnh ở bảng bên phải.",
     "exportHint_other": "Xuất sẽ lưu {{count}} ảnh bạn đã giữ (giỏ in).",
-    "review": "Xem lại các ảnh"
+    "review": "Xem lại các ảnh",
+    "look": "Chọn look"
   },
   "collage": {
     "autoTurn": "Tự xoay",

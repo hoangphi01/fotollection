@@ -419,7 +419,8 @@ The **cache**, the memory the previews use and *Instant previews* are in **Setti
 2. The first photo fills the middle, **as it will print**, with your print size, date stamp and border.
 3. Press **↑** or click **Keep**: the photo goes into the print basket, and the next one comes.
 4. Press **↓** or click **Drop**: the photo is set aside, never deleted, and the next one comes.
-5. **← →** step back and forward without deciding. **Cmd/Ctrl+Z** undoes the last keep or drop. The culling keys of the preview work too: **0**–**5** stars, **P** / **X** / **U** flags, **[** / **]** quarter turns.
+5. **← →** step back and forward without deciding. **Cmd/Ctrl+Z** undoes the last keep or drop. **P** / **X** / **U** flags and **[** / **]** quarter turns work as in the preview.
+   - **Looks** (coming in v0.14.0): the strip under the photo shows it through each look, each with its number. Press **0**–**9** (0 is Original) or click a tile to choose its colour, then **↑** to keep it: colour and choice in two keys. Here the number keys choose a look; they do not rate.
 6. The bar above the photo counts where you are, and how many you kept and dropped.
 7. In the panel on the right, choose **Print** or **Share online**, the **print size**, the **3 mm border** and the **date stamp** (format, corner, colour, size, place and your own line, as in Pro), then **Choose destination…** and **Export**: it saves the photos you kept.
 
@@ -521,6 +522,7 @@ Two cards change a photo's colour slider by slider, under **Print / export size*
 | Preview | **↑** | Put in the print basket, next photo |
 | Preview | **↓** | Set aside, next photo |
 | Simple mode | **↑** / **↓** | Keep (print basket) / drop (set aside), next photo |
+| Simple mode | **0**–**9** | The strip's look of that number (0 is Original), v0.14.0 |
 | Simple mode | **← →** | Previous / next photo, without deciding |
 | Collage mode | **← →**, **↑ ↓** | Choose a photo, a sheet above or below |
 | Collage mode | **⌥/Alt ← →** | Move the chosen photo one place |
