@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Aperture, FileImage, Gauge, LoaderCircle, Timer } from 'lucide-react'
+import { Aperture, FileImage, Gauge, Timer } from 'lucide-react'
 import { useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import { StageSpinner } from '@/components/layout/stage-spinner'
 import { KeyHints } from '@/components/layout/key-hints'
 import { ViewerFrame } from '@/components/layout/viewer-frame'
 import { useIpcQuery } from '@/features/settings/use-ipc-query'
@@ -81,17 +82,14 @@ export function CaptureDialog({ capture, settings, thumbVersions, generation, on
             {overlay && (
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                 <div
-                  className="h-full max-w-full shadow-[0_0_0_9999px_rgb(0_0_0/0.45)] ring-1 ring-stage-ink-muted"
+                  className="h-full max-w-full outside-dim ring-1 ring-stage-ink-muted"
                   style={{ aspectRatio: overlay }}
                 />
               </div>
             )}
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-2 text-stage-ink-muted">
-            <LoaderCircle className="size-7 animate-spin" />
-            <span className="text-xs">{t('capture.waitingLiveView')}</span>
-          </div>
+          <StageSpinner label={t('capture.waitingLiveView')} />
         )}
         {/* What the camera is set to, at a glance: the same pill as the preview's counter. */}
         <span className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-3 rounded-full bg-stage-chip px-4 py-1.5 text-xs whitespace-nowrap text-stage-ink tabular-nums">

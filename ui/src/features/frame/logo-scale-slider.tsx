@@ -23,7 +23,8 @@ export function LogoScaleSlider({ value, onCommit }: LogoScaleSliderProps) {
 
   return (
     <Field>
-      <ValueRow label={t('frame.logoSize')}>{formatNumber(shown * 100, 0)} %</ValueRow>
+      {/* What it does, on hover of its name only, never over the track (STYLE_RULE §4). */}
+      <ValueRow label={<span data-hint={t('frame.logoSizeHint')}>{t('frame.logoSize')}</span>}>{formatNumber(shown * 100, 0)} %</ValueRow>
       <Slider
         min={MIN}
         max={MAX}
@@ -36,7 +37,6 @@ export function LogoScaleSlider({ value, onCommit }: LogoScaleSliderProps) {
           setDraft(null)
         }}
         onDoubleClick={() => onCommit(1)}
-        data-hint={t('frame.logoSizeHint')}
       />
     </Field>
   )

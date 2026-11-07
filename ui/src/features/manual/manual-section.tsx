@@ -2,6 +2,7 @@
 import { ArrowLeft, ArrowRight, BookOpen, Bookmark, ChevronDown, ListOrdered, type LucideIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useDarkTheme } from '@/lib/theme'
 import { ManualText } from '@/components/layout/manual-text'
 import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
@@ -84,9 +85,9 @@ function ChapterPicker({ list, chapter }: { list: Chapter[]; chapter: Chapter })
 export function ManualSection() {
   const { t, i18n } = useTranslation()
   const { list, chapter } = useShownChapter()
+  const theme = useDarkTheme() ? 'dark' : 'light'
   if (!chapter) return null
   const lang = i18n.language.startsWith('vi') ? 'vi' : 'en'
-  const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light'
   return (
     <>
       <ChapterPicker list={list} chapter={chapter} />

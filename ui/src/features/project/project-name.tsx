@@ -38,7 +38,7 @@ export function ProjectName({ name, onRename }: ProjectNameProps) {
       value={draft}
       maxLength={120}
       aria-label={t('project.rename')}
-      className="h-7 px-1.5 text-sm"
+      className="px-1.5 text-sm"
       onFocus={(e) => e.currentTarget.select()}
       onChange={(e) => setDraft(e.target.value)}
       onBlur={() => void commit()}

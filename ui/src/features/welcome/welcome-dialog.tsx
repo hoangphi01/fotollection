@@ -2,6 +2,7 @@
 import { ArrowLeft, ArrowRight, FolderOpen, Layers, Printer, SlidersHorizontal, Sparkles } from 'lucide-react'
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useDarkTheme } from '@/lib/theme'
 import { ListRow } from '@/components/forms/list-row'
 import { SettingsFrame } from '@/components/layout/settings-frame'
 import { Button } from '@/components/ui/button'
@@ -46,7 +47,7 @@ export function WelcomeDialog() {
   const current = PAGES[page] ?? PAGES[0]
   const last = page === PAGES.length - 1
   const lang = i18n.language.startsWith('vi') ? 'vi' : 'en'
-  const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+  const theme = useDarkTheme() ? 'dark' : 'light'
 
   return (
     <SettingsFrame

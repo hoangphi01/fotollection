@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next'
 
 /**
  * "Rendering print preview…" on the neutral stage, while the first render loads; with
- * `error`, why it failed (its `ERR-` code included), so the stage never spins for good.
+ * `error`, why it failed (its `ERR-` code included), so the stage never spins for good;
+ * `label` says what else it waits for (the camera's live view).
  */
-export function StageSpinner({ error }: { error?: string | null }) {
+export function StageSpinner({ error, label }: { error?: string | null; label?: string }) {
   const { t } = useTranslation()
   if (error) {
     return (
@@ -19,7 +20,7 @@ export function StageSpinner({ error }: { error?: string | null }) {
   return (
     <div className="absolute flex flex-col items-center gap-2 text-stage-ink-muted">
       <LoaderCircle className="size-7 animate-spin" />
-      <span className="text-xs">{t('viewer.rendering')}</span>
+      <span className="text-xs">{label ?? t('viewer.rendering')}</span>
     </div>
   )
 }

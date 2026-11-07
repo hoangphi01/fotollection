@@ -7,7 +7,7 @@ import type { BorderColor, RenderSettings } from '@/ipc/bindings'
 
 const COLORS: { value: BorderColor; swatch: string }[] = [
   { value: 'white', swatch: 'bg-white' },
-  { value: 'black', swatch: 'bg-neutral-950' },
+  { value: 'black', swatch: 'bg-black' },
 ]
 
 type BorderSwitchProps = {

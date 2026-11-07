@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { LoaderCircle, Scan, ZoomIn, ZoomOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -34,16 +35,23 @@ export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomI
     { key: 'in', Icon: ZoomIn, label: t('viewer.zoomIn', { mod }), disabled: !canZoomIn, onClick: onZoomIn },
     { key: 'fit', Icon: Scan, label: t('viewer.zoomFit', { mod }), disabled: !zoomed, onClick: onFit },
   ] as const
-  const button = ({ key, Icon, label, disabled, onClick }: (typeof buttons)[number]) => (
-    // On the wrapper: a disabled button gets no pointer events.
-    <span key={key} className={inline ? 'hidden @xl:block' : undefined} data-hint={key === 'in' ? `${label}\n${t('viewer.zoomPinch')}` : label}>
-      <Button variant={inline ? 'ghost' : 'secondary'} size="icon-sm" aria-label={label} disabled={disabled} onClick={onClick}>
-        <Icon />
-      </Button>
-    </span>
-  )
+  const hint = (key: string, label: string) => (key === 'in' ? `${label}\n${t('viewer.zoomPinch')}` : label)
+  const button = ({ key, Icon, label, disabled, onClick }: (typeof buttons)[number]) =>
+    inline ? (
+      // In a toolbar, its buttons are the toolbar's own (STYLE_RULE §4), hidden when narrow.
+      <span key={key} className="hidden @xl:block">
+        <ToolbarButton icon={<Icon />} label={label} data-hint={hint(key, label)} iconOnly disabled={disabled} onClick={onClick} />
+      </span>
+    ) : (
+      // On the stage's chip; the hint on a wrapper, as a disabled button gets no pointer events.
+      <span key={key} data-hint={hint(key, label)}>
+        <Button variant="secondary" size="icon-sm" aria-label={label} disabled={disabled} onClick={onClick}>
+          <Icon />
+        </Button>
+      </span>
+    )
   return (
-    <div className={cn('flex items-center gap-1', !inline && 'absolute right-3 bottom-3 rounded-lg bg-stage-chip p-1')}>
+    <div className={cn('flex items-center', inline ? 'gap-2' : 'absolute right-3 bottom-3 gap-1 rounded-lg bg-stage-chip p-1')}>
       {button(buttons[0])}
       {inline ? (
         <Button
@@ -54,7 +62,7 @@ export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomI
           className="min-w-14 justify-center px-1 text-xs font-normal text-muted-foreground tabular-nums"
           onClick={onToggle}
         >
-          {loading && <LoaderCircle className="size-3 animate-spin" aria-label={t('viewer.zoomSharpening')} />}
+          {loading && <LoaderCircle className="animate-spin" aria-label={t('viewer.zoomSharpening')} />}
           {percent}&nbsp;%
         </Button>
       ) : (

@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { SectionCard } from '@/components/layout/section-card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Field } from '@/components/forms/field'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import type { CaptureFormat, ExposureSetting } from '@/ipc/bindings'
 import { apertureText, isoText, shutterText } from './settings-text'
 import type { CaptureApi } from './use-capture'
@@ -26,10 +27,10 @@ function StepRow({ label, value, setting, capture }: StepRowProps) {
   return (
     <div className="flex items-center justify-between gap-2">
       <span className="text-xs text-muted-foreground">{label}</span>
-      <span className="flex items-center gap-1">
+      <span className="flex items-center gap-2">
         <Button
           variant="outline"
-          size="icon-xs"
+          size="icon-sm"
           aria-label={t('capture.stepDown', { name: label })}
           data-hint={t('capture.stepDown', { name: label })}
           onClick={() => void capture.step(setting, -1)}
@@ -39,7 +40,7 @@ function StepRow({ label, value, setting, capture }: StepRowProps) {
         <span className="w-16 text-center text-sm tabular-nums">{value}</span>
         <Button
           variant="outline"
-          size="icon-xs"
+          size="icon-sm"
           aria-label={t('capture.stepUp', { name: label })}
           data-hint={t('capture.stepUp', { name: label })}
           onClick={() => void capture.step(setting, 1)}
@@ -71,12 +72,13 @@ export function CameraControls({ capture }: CameraControlsProps) {
       )}
 
       <SectionCard icon={<SunMedium />} title={t('capture.exposure')}>
-        <div className="space-y-2">
+        {/* Rows that each hold a control, 12 px apart (STYLE_RULE §4). */}
+        <div className="space-y-3">
           <StepRow label={t('capture.iso')} value={iso} setting="iso" capture={capture} />
           <StepRow label={t('capture.shutter')} value={shutterText(settings)} setting="shutter" capture={capture} />
           <div className="flex items-center justify-between gap-2">
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Aperture className="size-3.5" /> {t('capture.aperture')}
+              <Aperture className="size-4" /> {t('capture.aperture')}
             </span>
             <span className="w-16 text-center text-sm tabular-nums" data-hint={t('capture.apertureHint')}>
               {apertureText(settings)}
@@ -86,24 +88,17 @@ export function CameraControls({ capture }: CameraControlsProps) {
       </SectionCard>
 
       <SectionCard icon={<FileImage />} title={t('capture.format')}>
-        <div className="space-y-2">
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            size="sm"
-            value={settings?.format === 'jpeg' || settings?.format === 'raw' ? settings.format : ''}
-            onValueChange={(v) => v && void capture.setFormat(v as CaptureFormat)}
-            aria-label={t('capture.format')}
-          >
-            <ToggleGroupItem value="jpeg" className="px-3 text-xs">
-              JPEG
-            </ToggleGroupItem>
-            <ToggleGroupItem value="raw" className="px-3 text-xs">
-              RAW
-            </ToggleGroupItem>
-          </ToggleGroup>
-          <p className="text-xs text-muted-foreground">{t('capture.formatHint')}</p>
-        </div>
+        <Field hint={t('capture.formatHint')}>
+          <SegmentedToggle<CaptureFormat>
+            value={settings?.format === 'jpeg' || settings?.format === 'raw' ? settings.format : undefined}
+            onChange={(v) => void capture.setFormat(v)}
+            ariaLabel={t('capture.format')}
+            options={[
+              { value: 'jpeg', label: 'JPEG' },
+              { value: 'raw', label: 'RAW' },
+            ]}
+          />
+        </Field>
       </SectionCard>
     </>
   )

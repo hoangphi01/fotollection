@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Check } from 'lucide-react'
+
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { TickCircle } from '@/features/library/tick-circle'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -91,7 +92,7 @@ export function ClockMatchDialog({ photoId, clockId, open, onClose }: ClockMatch
                   >
                     <img src={thumbUrl(c.id)} alt="" className="aspect-[4/3] w-full bg-muted object-cover" />
                     {picked === c.id && (
-                      <Check className="absolute top-1 right-1 size-4 rounded-full bg-primary p-0.5 text-primary-foreground" />
+                      <TickCircle checked className="absolute top-1 right-1" />
                     )}
                     <span className="block truncate px-1.5 py-1 text-xs">
                       {formatCapture(c.capture)}

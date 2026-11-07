@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Crop, Download, Images, LoaderCircle, Pipette, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
+import { Crop, Download, Images, LoaderCircle, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -10,7 +10,6 @@ import { StageNav } from '@/components/layout/stage-nav'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { Separator } from '@/components/ui/separator'
 import { HistoryButtons } from '@/features/history/history-buttons'
-import { PanelNote } from '@/components/layout/panel-note'
 import { StageSpinner } from '@/components/layout/stage-spinner'
 import { ViewerFrame } from '@/components/layout/viewer-frame'
 import { commands, type CullFilter, type PhotoId, type PhotoSummary, type Queue, type RenderSettings } from '@/ipc/bindings'
@@ -402,18 +401,14 @@ export function SheetPreviewDialog({
         <>
           {/* The picked photo's histogram (FR-098), then its settings (FR-097); W armed, what
               the next click does instead. The curves are the photo's own preview's. */}
-          {picking ? (
-            <PanelNote icon={<Pipette />}>{t('viewer.pickWhite')}</PanelNote>
-          ) : (
-            <HistogramCard
-              photoId={photo}
-              revision={revision}
-              clipping={clipping}
-              onClipping={setClipping}
-              picking={picking}
-              onPicking={setPicking}
-            />
-          )}
+          <HistogramCard
+            photoId={photo}
+            revision={revision}
+            clipping={clipping}
+            onClipping={setClipping}
+            picking={picking}
+            onPicking={setPicking}
+          />
           <PhotoLookCards photoId={photo} revision={revision} onAppliedToAll={onSettingsReload} />
         </>
       )}

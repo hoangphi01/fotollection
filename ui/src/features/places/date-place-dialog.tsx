@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { RotateCcw } from 'lucide-react'
-import { useState } from 'react'
+import { RotateCcw, TriangleAlert } from 'lucide-react'
+import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,7 +12,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Field } from '@/components/forms/field'
+import { PanelNote } from '@/components/layout/panel-note'
 import { commands, type EffectivePlace } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { PlacePicker } from './place-picker'
@@ -41,6 +42,7 @@ type Change<T> = { kind: 'keep' } | { kind: 'set'; value: T } | { kind: 'clear' 
  */
 export function DatePlaceDialog({ ids, current, onClose }: DatePlaceDialogProps) {
   const { t } = useTranslation()
+  const dateId = useId()
   const [date, setDate] = useState<Change<string>>({ kind: 'keep' })
   const [place, setPlace] = useState<Change<{ id: number; label: string }>>({ kind: 'keep' })
   const [error, setError] = useState<string | null>(null)
@@ -69,11 +71,10 @@ export function DatePlaceDialog({ ids, current, onClose }: DatePlaceDialogProps)
           <DialogTitle>{ids.length === 1 ? t('places.dialogTitleOne') : t('places.dialogTitle', { count: ids.length })}</DialogTitle>
           <DialogDescription>{t('places.dialogBody')}</DialogDescription>
         </DialogHeader>
-        <div className="space-y-2">
-          <Label htmlFor="manual-date">{t('places.date')}</Label>
+        <Field label={t('places.date')} htmlFor={dateId} hint={date.kind === 'clear' ? t('places.cameraDateNote') : undefined}>
           <div className="flex gap-2">
             <Input
-              id="manual-date"
+              id={dateId}
               type="datetime-local"
               min="1826-01-01T00:00"
               max="2100-12-31T23:59"
@@ -93,10 +94,8 @@ export function DatePlaceDialog({ ids, current, onClose }: DatePlaceDialogProps)
               </Button>
             )}
           </div>
-          {date.kind === 'clear' && <p className="text-xs text-muted-foreground">{t('places.cameraDateNote')}</p>}
-        </div>
-        <div className="space-y-2">
-          <Label>{t('places.place')}</Label>
+        </Field>
+        <Field label={t('places.place')} hint={place.kind === 'clear' ? t('places.ownPlaceNote') : undefined}>
           <div className="flex gap-2">
             <PlacePicker
               label={placeLabel}
@@ -115,9 +114,12 @@ export function DatePlaceDialog({ ids, current, onClose }: DatePlaceDialogProps)
               </Button>
             )}
           </div>
-          {place.kind === 'clear' && <p className="text-xs text-muted-foreground">{t('places.ownPlaceNote')}</p>}
-        </div>
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        </Field>
+        {error && (
+          <PanelNote danger icon={<TriangleAlert />}>
+            {error}
+          </PanelNote>
+        )}
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             {t('common.cancel')}

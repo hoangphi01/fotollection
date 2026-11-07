@@ -110,7 +110,7 @@ export function ShareFillFields({ settings, onChange, disabled = false }: ShareF
             </SelectContent>
           </Select>
           {ratioValue === 'custom' && (
-            <div className="flex w-28 items-center gap-1">
+            <div className="flex w-28 items-center gap-2">
               <CommitInput
                 value={String(fill.ratio[0])}
                 placeholder="4"

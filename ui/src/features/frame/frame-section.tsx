@@ -90,7 +90,7 @@ export function FrameSection({ frame, fonts, compact = false, children }: FrameS
         value={settings?.color}
         options={[
           { value: 'white', swatch: 'bg-white', label: t('frame.white') },
-          { value: 'black', swatch: 'bg-neutral-900', label: t('frame.black') },
+          { value: 'black', swatch: 'bg-black', label: t('frame.black') },
         ]}
         onChange={(color) => void frame.setSettings((s) => ({ ...s, color }))}
       />
@@ -115,7 +115,7 @@ export function FrameSection({ frame, fonts, compact = false, children }: FrameS
         />
 
       <Field label={t('frame.show')}>
-        <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-3">
           {FIELDS.map(({ key }) => (
             <label key={key} className="flex items-center gap-2 text-sm">
               <Checkbox

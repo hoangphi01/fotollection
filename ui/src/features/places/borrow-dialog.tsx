@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Check, LoaderCircle, MapPinCheck } from 'lucide-react'
+import { LoaderCircle, MapPinCheck } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -12,7 +12,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
+import { TickCircle } from '@/features/library/tick-circle'
 import { commands, type Borrow, type BorrowReport } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { thumbUrl } from '@/lib/photo-url'
@@ -75,19 +76,13 @@ export function BorrowDialog({ onClose }: BorrowDialogProps) {
         </DialogHeader>
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="text-muted-foreground">{t('places.window')}</span>
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            size="sm"
+          <SegmentedToggle
+            fit
             value={String(minutes)}
-            onValueChange={(v) => v && setMinutes(Number(v))}
-          >
-            {WINDOWS.map((w) => (
-              <ToggleGroupItem key={w} value={String(w)}>
-                {t('places.minutes', { count: w })}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
+            onChange={(v) => setMinutes(Number(v))}
+            ariaLabel={t('places.window')}
+            options={WINDOWS.map((w) => ({ value: String(w), label: t('places.minutes', { count: w }) }))}
+          />
           <Button size="sm" className="ml-auto" disabled={busy} onClick={() => void search()}>
             {busy ? <LoaderCircle className="animate-spin" data-icon="inline-start" /> : <MapPinCheck data-icon="inline-start" />}
             {t('places.borrowSearch')}
@@ -121,11 +116,9 @@ export function BorrowDialog({ onClose }: BorrowDialogProps) {
                           <img src={thumbUrl(s.photo)} alt="" className="aspect-[4/3] w-full bg-muted object-cover" />
                           <img src={thumbUrl(s.donor)} alt="" className="aspect-[4/3] w-full bg-muted object-cover" />
                         </span>
-                        {on && (
-                          <Check className="absolute top-1 right-1 size-4 rounded-full bg-primary p-0.5 text-primary-foreground" />
-                        )}
-                        <span className="block truncate px-1.5 py-1 text-xs">
-                          {s.name}
+                        <TickCircle checked={on} className="absolute top-1 right-1" />
+                        <span className="block px-1.5 py-1 text-xs">
+                          <span className="block truncate">{s.name}</span>
                           <span className="block text-muted-foreground">
                             {t('places.minutesApart', { count: Math.max(1, Math.round((s.gapS ?? 0) / 60)) })}
                           </span>

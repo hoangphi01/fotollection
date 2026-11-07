@@ -2,9 +2,8 @@
 // @shown preview
 import { ChartArea, Pipette, TriangleAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Hint } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
-import { ToolbarButton } from '@/components/forms/toolbar-button'
+import { Toggle } from '@/components/ui/toggle'
 import { commands, type HistogramView, type PhotoId } from '@/ipc/bindings'
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
 import { formatNumber } from '@/lib/format'
@@ -52,30 +51,20 @@ export function HistogramCard({
     <SectionCard
       icon={<ChartArea />}
       title={t('histogram.title')}
+      // Choices in a card's header: flat, the one on pressed in (STYLE_RULE §4), as the
+      // Navigator's; each is on or off by itself.
       action={
         onClipping && (
-          <>
+          <div className="flex gap-1">
             {onPicking && (
-              <ToolbarButton
-                icon={<Pipette />}
-                label={t('histogram.pick')}
-                variant={picking ? 'default' : 'outline'}
-                aria-pressed={picking}
-                data-hint={t('histogram.pickHint')}
-                iconOnly
-                onClick={() => onPicking(!picking)}
-              />
+              <Toggle size="sm" pressed={picking} onPressedChange={onPicking} aria-label={t('histogram.pick')} data-hint={t('histogram.pickHint')}>
+                <Pipette />
+              </Toggle>
             )}
-            <ToolbarButton
-              icon={<TriangleAlert />}
-              label={t('histogram.clipping')}
-              variant={clipping ? 'default' : 'outline'}
-              aria-pressed={clipping}
-              data-hint={t('histogram.clippingHint')}
-              iconOnly
-              onClick={() => onClipping(!clipping)}
-            />
-          </>
+            <Toggle size="sm" pressed={clipping} onPressedChange={onClipping} aria-label={t('histogram.clipping')} data-hint={t('histogram.clippingHint')}>
+              <TriangleAlert />
+            </Toggle>
+          </div>
         )
       }
     >
@@ -88,10 +77,10 @@ export function HistogramCard({
       >
         {histogram && (
           <>
-            {/* The channels in their own colours, as a swatch of what prints is (STYLE_RULE §4). */}
-            <path d={area(histogram.r)} fill="oklch(0.63 0.22 27 / 0.7)" />
-            <path d={area(histogram.g)} fill="oklch(0.7 0.18 145 / 0.7)" />
-            <path d={area(histogram.b)} fill="oklch(0.6 0.18 255 / 0.7)" />
+            {/* The channels in their own colours, from the theme's tokens (`--hist-*`). */}
+            <path d={area(histogram.r)} fill="var(--hist-r)" />
+            <path d={area(histogram.g)} fill="var(--hist-g)" />
+            <path d={area(histogram.b)} fill="var(--hist-b)" />
             <polyline
               points={histogram.l.map((v, i) => `${i},${1000 - v}`).join(' ')}
               fill="none"
@@ -103,9 +92,23 @@ export function HistogramCard({
           </>
         )}
       </svg>
-      {histogram && (histogram.highPermille > 0 || histogram.lowPermille > 0) && (
-        <Hint>{t('histogram.clipped', { high: percent(histogram.highPermille), low: percent(histogram.lowPermille) })}</Hint>
-      )}
+      {/* One line of a fixed room under the curves (nothing jumps): W's words while it is
+          armed, else how much is blown and blocked, else empty. */}
+      <p className="flex h-8 items-start gap-1.5 text-xs leading-4 text-muted-foreground [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-primary">
+        {picking ? (
+          <>
+            <Pipette aria-hidden />
+            <span className="line-clamp-2">{t('histogram.pickNow')}</span>
+          </>
+        ) : (
+          histogram &&
+          (histogram.highPermille > 0 || histogram.lowPermille > 0) && (
+            <span className="line-clamp-2">
+              {t('histogram.clipped', { high: percent(histogram.highPermille), low: percent(histogram.lowPermille) })}
+            </span>
+          )
+        )}
+      </p>
     </SectionCard>
   )
 }

@@ -1156,7 +1156,8 @@
     "clipping": "Hiện vùng mất chi tiết (J)",
     "clippingHint": "Đánh dấu trên ảnh phần cháy sáng (đỏ) và phần mất chi tiết tối (xanh dương), như phím J của Lightroom.",
     "pick": "Cân bằng trắng từ một điểm xám (W)",
-    "pickHint": "Sau đó nhấp vào một chỗ trong ảnh lẽ ra có màu xám trung tính: Ấm/lạnh và Tint chỉnh theo, trong một bước."
+    "pickHint": "Sau đó nhấp vào một chỗ trong ảnh lẽ ra có màu xám trung tính: Ấm/lạnh và Tint chỉnh theo, trong một bước.",
+    "pickNow": "Nhấp vào một chỗ xám trong ảnh · Esc để huỷ"
   },
   "manual": {
     "overview": "Tổng quan",

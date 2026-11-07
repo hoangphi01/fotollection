@@ -44,7 +44,7 @@ export function PlacesCard() {
                 ariaLabel={t('places.renameLabel', { place: place.original })}
                 onCommit={(text) => void rename(place, text.trim() === '' ? null : text)}
               />
-              <Hint className="truncate">
+              <Hint>
                 {place.renamed ? `${place.original}, ${place.country}` : place.country} ·{' '}
                 {t('cameras.photos', { count: place.photos })}
               </Hint>

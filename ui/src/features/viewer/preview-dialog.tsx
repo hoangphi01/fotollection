@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, Clock, Crop, Download, Info, MapPin, PanelLeftClose, PanelLeftOpen, Pipette, Printer, SlidersHorizontal, Star } from 'lucide-react'
+import { CalendarDays, CircleAlert, Clock, Crop, Download, Info, MapPin, PanelLeftClose, PanelLeftOpen, Pipette, Printer, SlidersHorizontal, Star } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
@@ -437,11 +437,12 @@ export function PreviewDialog({
       // dialog layout, which has no left column, puts it at the head of the inspector (FR-098).
       inspectorTop={
         photo ? (
-          picking ? (
-            // W armed (FR-098): what the next click does, and how to leave.
-            <PanelNote icon={<Pipette />}>{t('viewer.pickWhite')}</PanelNote>
-          ) : !windowed ? (
+          !windowed ? (
+            // W armed shows its words inside the card, which keeps its place (nothing jumps).
             <HistogramCard photoId={photo.id} revision={revision} clipping={clipping} onClipping={setClipping} picking={picking} onPicking={setPicking} />
+          ) : picking && !showSide ? (
+            // W armed while the left column, and its histogram, are folded away (FR-098).
+            <PanelNote icon={<Pipette />}>{t('viewer.pickWhite')}</PanelNote>
           ) : !showSide && panels ? (
             // A narrow window shows one side column (owner, 2026-11-07): say where the other is.
             <PanelNote
@@ -670,7 +671,8 @@ export function PreviewDialog({
               {details?.dateManual ? (
                 <Badge variant="outline">{t('viewer.dateManual')}</Badge>
               ) : photo?.dateFromFile ? (
-                <Badge variant="outline" className="text-warning">
+                <Badge variant="warning">
+                  <CircleAlert aria-hidden />
                   {t('viewer.noExifDate')}
                 </Badge>
               ) : photo?.timeShifted ? (

@@ -104,7 +104,7 @@ export function NavigatorCard({ src, view, fit, stage, oneToOne, onZoomTo, onPan
           {box && view.scale > 1 && (
             <div
               aria-hidden
-              className="pointer-events-none absolute rounded-xs ring-2 ring-primary shadow-[0_0_0_9999px_rgb(0_0_0/0.45)]"
+              className="pointer-events-none absolute rounded-xs ring-2 ring-primary outside-dim"
               style={{
                 left: `${box.left * 100}%`,
                 top: `${box.top * 100}%`,

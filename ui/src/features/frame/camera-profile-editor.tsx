@@ -96,7 +96,7 @@ export function CameraProfileEditor({ frame, details }: CameraProfileEditorProps
         />
       </Field>
       <Field label={t('camera.logo')}>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <SegmentedToggle<LogoKind>
             dense
             value={p.logo}

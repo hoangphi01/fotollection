@@ -72,6 +72,7 @@
     --color-stage-guide: var(--stage-guide);
     --color-stage-edge: var(--stage-edge);
     --color-stage-scrim: var(--stage-scrim);
+    --color-stage-dim: var(--stage-dim);
     --color-stage-pick: var(--stage-pick);
     --color-stage-reject: var(--stage-reject);
     --color-stage-warn: var(--stage-warn);
@@ -177,6 +178,13 @@
     --stage-guide: oklch(1 0 0 / 0.35);
     --stage-edge: oklch(1 0 0 / 0.9);
     --stage-scrim: oklch(0 0 0 / 0.85);
+    /* What lies outside a frame drawn on a picture (the Navigator's view, the live view's
+       print shape): dimmed, not hidden. */
+    --stage-dim: oklch(0 0 0 / 0.45);
+    /* The histogram's channels (FR-098), blended where they overlap. */
+    --hist-r: oklch(0.63 0.22 27 / 0.7);
+    --hist-g: oklch(0.7 0.18 145 / 0.7);
+    --hist-b: oklch(0.6 0.18 255 / 0.7);
     --stage-pick: oklch(0.85 0.13 160);
     --stage-reject: oklch(0.78 0.13 25);
     --stage-warn: oklch(0.85 0.13 85);
@@ -291,6 +299,11 @@
 /* Surfaces (cards, dialogs, popovers, menus) stand as the buttons do (owner, 2026-11-06:
    "cards and dialogs with depth like the buttons"): the top light, a lip in a shade of their
    own colour, then their lift. */
+/* Dims everything around the element, as a crop or a view frame does (`--stage-dim`). */
+@utility outside-dim {
+  box-shadow: 0 0 0 9999px var(--stage-dim);
+}
+
 @utility lifted {
   --tw-shadow: inset 0 1px 0 var(--highlight),
     inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--face, var(--card)), var(--shade) var(--lip-mix)),

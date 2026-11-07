@@ -68,13 +68,15 @@ export function PhotoStampControls({ photoId, revision, onAppliedToAll }: PhotoS
         </>
       }
       open={stamp.enabled}
-      // As the look's: offered once this photo has its own stamp (audit 2026-11-06).
+      // As the look's: always there, off until this photo has its own stamp, so its first
+      // change never grows the card (STYLE_RULE §4: nothing jumps).
       footer={
-        current.custom && (
+        (
           <Button
             variant="outline"
             size="sm"
             className="w-full"
+            disabled={!current.custom}
             onClick={() =>
               void commands.applyStampToAll(photoId).then((r) => r.status === 'ok' && onAppliedToAll())
             }

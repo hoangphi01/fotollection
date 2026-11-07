@@ -277,7 +277,7 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-3 pb-1">
+      <div className="flex items-center justify-center gap-2 pb-1">
         <ZoomOut className="size-4 text-stage-ink-muted" />
         <input
           type="range"
@@ -287,11 +287,14 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
           value={frame.zoom}
           aria-label={t('crop.zoom')}
           onChange={(e) => setClamped({ ...frame, zoom: Number(e.target.value) })}
-          className="w-56 accent-white"
+          className="w-56 accent-stage-ink"
         />
         <ZoomIn className="size-4 text-stage-ink-muted" />
         <span className="w-12 text-xs text-stage-ink tabular-nums">{formatNumber(frame.zoom, 2, 2)}×</span>
-        <Ruler className="size-4 text-stage-ink-muted" aria-hidden />
+        {/* What it does, on hover of its sign, never over the track (STYLE_RULE §4). */}
+        <span className="flex" data-hint={t('crop.straightenHint')}>
+          <Ruler className="size-4 text-stage-ink-muted" aria-hidden />
+        </span>
         <input
           type="range"
           min={-MAX_STRAIGHTEN}
@@ -299,12 +302,11 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
           step={0.1}
           value={angle}
           aria-label={t('crop.straighten')}
-          data-hint={t('crop.straightenHint')}
           onChange={(e) => setStraighten(Number(e.target.value))}
           onPointerDown={() => setLeveling(true)}
           onPointerUp={() => setLeveling(false)}
           onDoubleClick={() => setStraighten(0)}
-          className="w-40 accent-white"
+          className="w-40 accent-stage-ink"
         />
         <span className="w-12 text-xs text-stage-ink tabular-nums">{formatNumber(angle, 1, 1)}°</span>
         <ResetButton label={t('common.reset')} onClick={() => onCommit(null, 0)} />

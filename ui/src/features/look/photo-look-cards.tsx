@@ -49,11 +49,14 @@ export function PhotoLookCards({ photoId, revision, onAppliedToAll }: PhotoLookC
     // The first value of a gesture starts an undo step, the rest amend it (FR-023).
     void commands.setPhotoLook(photoId, next, !first)
   }
-  const applyToAll = current.custom && (
+  // Always there, off until this photo has its own look, so the first slider step never
+  // grows the card (STYLE_RULE §4: nothing jumps while the user works).
+  const applyToAll = (
     <Button
       variant="outline"
       size="sm"
       className="w-full"
+      disabled={!current.custom}
       onClick={() => void commands.applyLookToAll(photoId).then((r) => r.status === 'ok' && onAppliedToAll())}
     >
       <CopyCheck data-icon="inline-start" /> {t('look.applyToAll')}

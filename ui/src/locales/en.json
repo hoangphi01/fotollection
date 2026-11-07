@@ -1195,7 +1195,8 @@
     "clipping": "Show clipping (J)",
     "clippingHint": "Marks on the photo what is blown (red) and blocked (black detail lost, blue), as Lightroom's J does.",
     "pick": "White balance from a grey spot (W)",
-    "pickHint": "Then click something in the photo that should be neutral grey: warmth and tint follow, as one step."
+    "pickHint": "Then click something in the photo that should be neutral grey: warmth and tint follow, as one step.",
+    "pickNow": "Click something grey in the photo · Esc cancels"
   },
   "manual": {
     "overview": "Overview",

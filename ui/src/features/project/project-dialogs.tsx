@@ -2,7 +2,8 @@
 import { FolderSearch } from 'lucide-react'
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Field } from '@/components/forms/field'
+import { RemoveButton } from '@/components/forms/danger-button'
+import { Field, RowList } from '@/components/forms/field'
 import { Input } from '@/components/ui/input'
 import {
   AlertDialog,
@@ -42,9 +43,8 @@ export function UnsavedDialog({ name, onChoose }: UnsavedDialogProps) {
           <AlertDialogDescription>{t('project.unsavedBody')}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <Button variant="outline" className="sm:mr-auto" onClick={() => onChoose?.('discard')}>
-            {t('project.dontSave')}
-          </Button>
+          {/* Discards the changes: the red block (STYLE_RULE §4), as the capture's discard. */}
+          <RemoveButton kind="delete" label={t('project.dontSave')} onClick={() => onChoose?.('discard')} className="sm:mr-auto" />
           <AlertDialogCancel onClick={() => onChoose?.('cancel')}>{t('common.cancel')}</AlertDialogCancel>
           <AlertDialogAction onClick={() => onChoose?.('save')}>{t('project.save')}</AlertDialogAction>
         </AlertDialogFooter>
@@ -83,7 +83,7 @@ export function NewProjectDialog({ onAnswer }: NewProjectDialogProps) {
           <Field label={t('project.rename')} htmlFor={id}>
             <Input id={id} autoFocus value={name} maxLength={120} placeholder={t('project.newPlaceholder')} onChange={(e) => setName(e.target.value)} />
           </Field>
-          <DialogFooter className="mt-4">
+          <DialogFooter className="pt-3">
             <Button type="button" variant="outline" onClick={() => answer(null)}>
               {t('common.cancel')}
             </Button>
@@ -112,9 +112,10 @@ export function RelinkDialog({ missing, open, onLocate, onClose }: RelinkDialogP
           <DialogTitle>{t('project.relinkTitle', { count: missing.length })}</DialogTitle>
           <DialogDescription>{t('project.relinkBody')}</DialogDescription>
         </DialogHeader>
-        <ul className="space-y-2">
+        {/* Rows that each hold a button, 12 px apart (STYLE_RULE §4, RowList). */}
+        <RowList>
           {missing.map((m) => (
-            <li key={m.id} className="flex items-center gap-3 rounded-md border px-3 py-2">
+            <li key={m.id} className="flex items-center gap-2 rounded-md border px-3 py-2">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{m.name}</p>
                 <p className="truncate text-xs text-muted-foreground" data-hint={m.path}>
@@ -126,7 +127,7 @@ export function RelinkDialog({ missing, open, onLocate, onClose }: RelinkDialogP
               </Button>
             </li>
           ))}
-        </ul>
+        </RowList>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
             {t('project.later')}
