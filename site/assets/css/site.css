@@ -360,7 +360,12 @@ h3.with-logo .logo-os { height: 0.95em; }
 .treat .icon { width: 18px; height: 18px; color: var(--accent); }
 .treat-name { font-weight: 600; }
 .treat-price { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.treat:has(input[type="radio"]:checked) { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent); }
+/* As the app's choices (FR-099, owner 2026-11-07): raised with a lip while off; the chosen
+   treat in the theme's colour, pressed in, as a toggle that is on. */
+.treat { --face: var(--surface); box-shadow: inset 0 1px 0 var(--highlight), inset 0 calc(-1 * var(--lip)) 0 color-mix(in oklch, var(--face), var(--shade) var(--lip-mix)), var(--lift); }
+.treat:has(input[type="radio"]:checked) { --face: var(--brand); background: var(--brand); border-color: color-mix(in oklch, var(--brand), var(--shade) 25%); color: var(--brand-ink); box-shadow: inset 0 2px 3px color-mix(in oklch, var(--face), var(--shade) 40%), inset 0 0 0 1px color-mix(in oklch, var(--face), var(--shade) 25%); }
+.treat:has(input[type="radio"]:checked) .icon, .treat:has(input[type="radio"]:checked) .treat-price { color: var(--brand-ink); }
+.treat:has(input[type="radio"]:focus-visible) { outline: 2px solid var(--brand); outline-offset: 2px; }
 .treat:has(input[type="radio"]:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
 .treat-amount { width: 8.5em; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; font-variant-numeric: tabular-nums; }
 .support > * { min-width: 0; margin: 0; }
