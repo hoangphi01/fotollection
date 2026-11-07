@@ -100,7 +100,7 @@ Nút **Giỏ in** trên ảnh (cạnh *Cắt ảnh*, các nút xoay và *Xuất 
 
 **Phủ kín cửa sổ:** bấm **F**, hoặc nút cửa sổ ở hàng công cụ phía trên ảnh, để bản xem trước phủ kín cả cửa sổ thay vì là một hộp thoại; bấm lần nữa để trở lại. Ứng dụng nhớ lựa chọn này, và Cài đặt → Chung → *Xem ảnh* cũng chỉnh được. Khi phủ kín, bên trái có thêm một cột giống Lightroom ([FR-095](PRD.md#fr-095--a-develop-view-a-lightroom-user-can-read)):
 
-- **Biểu đồ màu** ([FR-098](PRD.md#fr-098--reading-the-photo-histogram-clipping-white-balance)): cho thấy các kênh đỏ, xanh lá và xanh dương của ảnh (hoà vào nhau ở chỗ chồng lên) và độ sáng (đường kẻ) trải từ đen bên trái tới trắng bên phải, đúng như ảnh đang hiện với màu đã chỉnh, không tính dấu ngày hay khung. Biểu đồ thay đổi theo thanh trượt khi bạn kéo. Dòng chữ bên dưới cho biết bao nhiêu phần ảnh bị cháy sáng (trắng hẳn) và mất chi tiết tối (đen hẳn) khi có. Ở bố cục phủ kín cửa sổ (**F**) biểu đồ nằm đầu cột bên trái; ở cửa sổ nhỏ nó nằm đầu bảng bên phải ở mọi thẻ, và ở chế độ Ghép ảnh nó nằm đầu các thẻ của ảnh đang chọn.
+- **Biểu đồ màu** ([FR-098](PRD.md#fr-098--reading-the-photo-histogram-clipping-white-balance)): cho thấy các kênh đỏ, xanh lá và xanh dương của ảnh (hoà vào nhau ở chỗ chồng lên) và độ sáng (đường kẻ) trải từ đen bên trái tới trắng bên phải, đúng như ảnh đang hiện với màu đã chỉnh, không tính dấu ngày hay khung. Biểu đồ thay đổi theo thanh trượt khi bạn kéo. Dòng chữ bên dưới cho biết bao nhiêu phần ảnh bị cháy sáng (trắng hẳn) và mất chi tiết tối (đen hẳn) khi có; nút ⚠ trên tiêu đề, hoặc phím **J**, đánh dấu chúng ngay trên ảnh, cháy sáng màu đỏ và mất chi tiết tối màu xanh dương, và vết đánh dấu thay đổi theo thanh trượt. Ở bố cục phủ kín cửa sổ (**F**) biểu đồ nằm đầu cột bên trái; ở cửa sổ nhỏ nó nằm đầu bảng bên phải ở mọi thẻ, và ở chế độ Ghép ảnh nó nằm đầu các thẻ của ảnh đang chọn.
 - **Điều hướng:** ảnh thu nhỏ, có khung viền phần đang hiện khi phóng to; nhấp hoặc kéo trong đó để xem chỗ khác. Các nút trên tiêu đề, *Vừa khung*, *Lấp đầy*, *1:1* và *2:1*, phóng ngay.
 - **Lịch sử:** các thay đổi của ảnh này, mới nhất ở trên, mỗi dòng ghi rõ (*Ấm / lạnh +8*, *Cắt ảnh*, *Dấu ngày*). Nhấp một dòng để đưa ảnh về đúng lúc đó; việc này cũng là một thay đổi, nên **Cmd/Ctrl+Z** hoàn tác được. Sao, cờ và giỏ in không nằm trong đó và không đổi khi bạn quay lại.
 
@@ -523,6 +523,7 @@ Hai thẻ chỉnh màu ảnh, nằm dưới **Khổ in / xuất**, chỉ có tro
 | Xem trước | **R** hoặc **C** | Mở màn cắt ảnh (chương 6) |
 | Xem trước | **\\** | Trước / Sau: ảnh khi chưa có look, và trở lại (§21) |
 | Xem trước | **Y**, **⇧Y**, **⌥/Alt Y** | Trước và sau: cạnh nhau, chia đôi, trên và dưới (§21) |
+| Xem trước | **J** | Hiện vùng mất chi tiết: cháy sáng màu đỏ, mất chi tiết tối màu xanh dương (chương 4) |
 | Xem trước | **Z**, nhấp vào ảnh | Vừa khung ↔ 1:1 (§7) |
 | Xem trước | **[ ]**, **Cmd/Ctrl [ ]** | Xoay trái / phải |
 | Xem trước | **⇧ Cmd/Ctrl E** | Xuất ảnh này |

@@ -52,10 +52,20 @@ pub fn render(source: &RgbImage, plan: &RenderPlan) -> Result<RgbImage, RenderEr
 /// What [`render`] does after the crop and resize: the look, the stamp, the frame, the
 /// border and the fill. A preview that only changes its look reuses the resized photo and
 /// starts here (FR-079, OPTIMIZATION §5).
-pub fn finish(mut photo: RgbImage, plan: &RenderPlan) -> RgbImage {
+pub fn finish(photo: RgbImage, plan: &RenderPlan) -> RgbImage {
+    finish_marked(photo, plan, false)
+}
+
+/// [`finish`], with the photo's clipped pixels marked when `clipping` (FR-098, `J`): red
+/// where a channel is blown, blue where one is blocked, after the look and before the stamp,
+/// so only the photo is marked.
+pub fn finish_marked(mut photo: RgbImage, plan: &RenderPlan, clipping: bool) -> RgbImage {
     // The look before anything drawn on the print, so the stamp keeps its colour (FR-079).
     if let Some(table) = &plan.look {
         crate::looks::apply(&mut photo, table);
+    }
+    if clipping {
+        crate::histogram::mark_clipping(&mut photo);
     }
     if let Some(stamp) = &plan.stamp {
         crate::stamp::draw(&mut photo, stamp);

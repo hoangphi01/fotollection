@@ -168,12 +168,15 @@ export function PreviewDialog({
     setBeforeOf(null)
     setCompare((c) => (c === mode ? 'off' : mode))
   }
-  const src = photo ? `${previewUrl(photo.id, revision)}${before ? '&plain=1' : ''}` : ''
+  // J: the photo's clipped pixels marked, blown red and blocked blue (FR-098), from Rust.
+  const [clipping, setClipping] = useState(false)
+  const src = photo ? `${previewUrl(photo.id, revision)}${before ? '&plain=1' : clipping ? '&clip=1' : ''}` : ''
   const { src: shownSrc, error: shownError } = useShownSrc(photo?.id, src)
   // The next photos load while this one is looked at (FR-091).
   usePrefetch(photos, index, !!photo && shownSrc === src)
   // While a colour slider is dragged, the look is drawn on the GPU (ADR-0039).
-  const { attach: attachGpu, active: onGpu } = useGpuLook(photo?.id, revision, shownSrc === src)
+  // With the clipping marked, every step is Rust's own render, so the marks follow a slider.
+  const { attach: attachGpu, active: onGpu } = useGpuLook(clipping ? undefined : photo?.id, revision, shownSrc === src)
   // The crop editor and the drag need this photo's geometry; the crop row only shows it.
   const geometryQuery = useLiveQuery(photo ? String(photo.id) : null, revision, loadGeometry)
   const geometry = geometryQuery.current
@@ -292,7 +295,10 @@ export function PreviewDialog({
     else if ((key === 'r' || key === 'c') && !mod && !event.altKey && canCrop) startCrop()
     // Y side by side, ⇧Y split, ⌥Y one above the other; by the key's place, as ⌥Y types a
     // letter of its own on a Mac.
-    else if (event.code === 'KeyY' && !mod) {
+    else if (event.code === 'KeyJ' && !mod && !event.altKey) {
+      event.preventDefault()
+      setClipping((on) => !on)
+    } else if (event.code === 'KeyY' && !mod) {
       event.preventDefault()
       toggleCompare(event.altKey ? 'topBottom' : event.shiftKey ? 'split' : 'sideBySide')
     }
@@ -392,12 +398,12 @@ export function PreviewDialog({
       sideOver={!wide}
       // With no side column (the dialog layout, a narrow window), the histogram heads the
       // inspector on every tab instead (FR-098).
-      inspectorTop={!showSide && photo ? <HistogramCard photoId={photo.id} revision={revision} /> : undefined}
+      inspectorTop={!showSide && photo ? <HistogramCard photoId={photo.id} revision={revision} clipping={clipping} onClipping={setClipping} /> : undefined}
       side={
         showSide && photo ? (
           <>
             {/* The histogram above the Navigator, as Lightroom's (FR-098, owner, 2026-11-06). */}
-            <HistogramCard photoId={photo.id} revision={revision} />
+            <HistogramCard photoId={photo.id} revision={revision} clipping={clipping} onClipping={setClipping} />
             <NavigatorCard
               src={shownSrc}
               view={zoom.view}

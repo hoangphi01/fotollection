@@ -1108,6 +1108,30 @@ impl PreviewCache {
         Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
     }
 
+    /// The preview JPEG with the photo's clipped pixels marked (FR-098, `J`): blown in red,
+    /// blocked in blue, the stamp, frame and border drawn as usual over them.
+    pub fn render_clipping_jpeg(
+        &self,
+        record: &PhotoRecord,
+        settings: &RenderSettings,
+        frame: Option<&FrameRequest>,
+        place: Option<&str>,
+        codec: &dyn JpegCodec,
+    ) -> Result<Vec<u8>, ThumbError> {
+        let source = self.source(record, split_look(record, settings).0, codec)?;
+        let p = Self::plan_from(
+            &source,
+            record,
+            settings,
+            frame,
+            place,
+            Some(PREVIEW_LONG_EDGE),
+        );
+        let image =
+            crate::render::finish_marked(self.resized(&source, &p)?.as_ref().clone(), &p, true);
+        Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
+    }
+
     /// The preview's pixels, before the JPEG: what [`Self::render_jpeg`] encodes.
     pub fn render_rgb(
         &self,

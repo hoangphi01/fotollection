@@ -1447,6 +1447,8 @@ pub enum PreviewPart {
     /// What the look's table does, kept out for the webview to draw while a slider is
     /// dragged (ADR-0039); a RAW keeps its sliders made in linear light (FR-088).
     Base,
+    /// As it prints, with the photo's clipped pixels marked (FR-098, `J`).
+    Clipping,
 }
 
 /// The preview JPEG, with the part of its look `part` asks for.
@@ -1456,8 +1458,20 @@ pub fn preview_bytes(
     part: PreviewPart,
 ) -> Result<Vec<u8>, IpcError> {
     let (mut record, mut settings, place, frame) = preview_inputs(state, id)?;
+    if part == PreviewPart::Clipping {
+        return state
+            .previews
+            .render_clipping_jpeg(
+                &record,
+                &settings,
+                frame.as_ref(),
+                place.as_deref(),
+                state.codec.as_ref(),
+            )
+            .map_err(|e| shown_error(&e, &record));
+    }
     match part {
-        PreviewPart::All => {}
+        PreviewPart::All | PreviewPart::Clipping => {}
         PreviewPart::Plain => without_look(&mut record, &mut settings),
         PreviewPart::Base => {
             let look = record.edits.look.as_ref().unwrap_or(&settings.look);

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview
-import { ChartArea } from 'lucide-react'
+import { ChartArea, TriangleAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Hint } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
+import { Button } from '@/components/ui/button'
 import { commands, type HistogramView, type PhotoId } from '@/ipc/bindings'
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
 import { formatNumber } from '@/lib/format'
@@ -28,11 +29,39 @@ const percent = (perMille: number) => `${formatNumber(perMille / 10, 1)} %`
  * Rust from the preview's own photo and look, never the stamp or frame; it follows a slider as
  * the preview does, and the last one stays while the next loads, so nothing blinks.
  */
-export function HistogramCard({ photoId, revision }: { photoId: PhotoId | null; revision: number }) {
+export function HistogramCard({
+  photoId,
+  revision,
+  clipping,
+  onClipping,
+}: {
+  photoId: PhotoId | null
+  revision: number
+  /** The clipped pixels marked on the photo (FR-098, `J`); absent where it cannot be shown. */
+  clipping?: boolean
+  onClipping?: (on: boolean) => void
+}) {
   const { t } = useTranslation()
   const histogram = useLiveQuery(photoId === null ? null : String(photoId), revision, loadHistogram).data
   return (
-    <SectionCard icon={<ChartArea />} title={t('histogram.title')}>
+    <SectionCard
+      icon={<ChartArea />}
+      title={t('histogram.title')}
+      action={
+        onClipping && (
+          <Button
+            variant={clipping ? 'default' : 'outline'}
+            size="icon-sm"
+            aria-pressed={clipping}
+            aria-label={t('histogram.clipping')}
+            data-hint={t('histogram.clippingHint')}
+            onClick={() => onClipping(!clipping)}
+          >
+            <TriangleAlert />
+          </Button>
+        )
+      }
+    >
       <svg
         viewBox="0 0 255 1000"
         preserveAspectRatio="none"

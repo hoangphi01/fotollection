@@ -109,6 +109,8 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
                 id,
                 if flag("plain=1") {
                     crate::commands::PreviewPart::Plain
+                } else if flag("clip=1") {
+                    crate::commands::PreviewPart::Clipping
                 } else if flag("base=1") {
                     crate::commands::PreviewPart::Base
                 } else {

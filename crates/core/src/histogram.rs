@@ -83,6 +83,24 @@ impl Histogram {
     }
 }
 
+/// Red where a pixel is blown (a channel at or above [`HIGH`]), blue where it is blocked (one
+/// at or below [`LOW`]), as Lightroom's `J` shows them (FR-098); blown wins where both.
+pub fn mark_clipping(image: &mut RgbImage) {
+    let row = image.width as usize * 3;
+    if row == 0 {
+        return;
+    }
+    image.data.par_chunks_mut(row).for_each(|line| {
+        for px in line.as_chunks_mut::<3>().0 {
+            if px.iter().any(|&c| c >= HIGH) {
+                *px = [255, 0, 0];
+            } else if px.iter().any(|&c| c <= LOW) {
+                *px = [0, 64, 255];
+            }
+        }
+    });
+}
+
 /// The histogram of `image` seen through `look` (none: as it is), counting every `step`th
 /// pixel of every `step`th row (`step` at least 1).
 pub fn measure(image: &RgbImage, look: Option<&Table>, step: u32) -> Histogram {
@@ -145,6 +163,17 @@ mod tests {
         })?;
         let h = measure(&img, None, 1);
         assert_eq!((h.high, h.low), (1, 1));
+        Ok(())
+    }
+
+    /// FR-098: `J` marks blown pixels red and blocked ones blue, and leaves the rest alone.
+    #[test]
+    fn fr_098_clip_marks_only_clipped_pixels() -> TestResult {
+        let mut img = image(3, 1, |x, _| {
+            [[255, 200, 180], [0, 30, 40], [128, 128, 128]][x as usize]
+        })?;
+        mark_clipping(&mut img);
+        assert_eq!(img.data, vec![255, 0, 0, 0, 64, 255, 128, 128, 128]);
         Ok(())
     }
 
