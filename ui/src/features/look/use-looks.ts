@@ -40,6 +40,12 @@ export type LookPicker = {
   current: number | null
   /** Gives the photo the look at `index`; nothing when there is none. */
   pick(index: number): void
+  /** Gives the photo (or the whole sheet) `entry`'s look: one just imported or saved. */
+  apply(entry: LookEntry): void
+  /** Lists the library again, after an import or a save. */
+  reload(): void
+  /** Forgets a look of the user's (`user:<id>`), the photos that use it unchanged. */
+  remove(id: string): void
 }
 
 /**
@@ -48,7 +54,7 @@ export type LookPicker = {
  * which one it has, and a pick that gives it another.
  */
 export function useLookPicker(photoId: PhotoId | undefined, revision: number, sheet?: PhotoId[]): LookPicker {
-  const { looks } = useLooks()
+  const { looks, setLooks, reload } = useLooks()
   const [base, setBase] = useState<string | null>(null)
   const picks = useRef(0)
   useEffect(() => {
@@ -63,18 +69,24 @@ export function useLookPicker(photoId: PhotoId | undefined, revision: number, sh
     }
   }, [photoId, revision])
   const at = looks.findIndex((l) => l.id === base)
+  const apply = (entry: LookEntry) => {
+    if (photoId === undefined) return
+    picks.current += 1
+    setBase(entry.id)
+    const look = { ...entry.look, name: lookName(entry) }
+    // A whole collage sheet when none of its photos is picked (owner, 2026-11-07).
+    if (sheet) void commands.setSheetLook(sheet, look, false)
+    else void commands.setPhotoLook(photoId, look, false)
+  }
   return {
     looks,
     current: at < 0 ? null : at,
     pick: (index) => {
       const entry = looks[index]
-      if (photoId === undefined || entry === undefined) return
-      picks.current += 1
-      setBase(entry.id)
-      const look = { ...entry.look, name: lookName(entry) }
-      // A whole collage sheet when none of its photos is picked (owner, 2026-11-07).
-      if (sheet) void commands.setSheetLook(sheet, look, false)
-      else void commands.setPhotoLook(photoId, look, false)
+      if (entry !== undefined) apply(entry)
     },
+    apply,
+    reload,
+    remove: (id) => void commands.deleteLook(id).then((r) => r.status === 'ok' && setLooks(r.data)),
   }
 }

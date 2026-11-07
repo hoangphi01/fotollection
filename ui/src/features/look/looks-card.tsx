@@ -1,24 +1,18 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview: in the preview only (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { Bookmark, BookmarkPlus, FileInput, Palette, TriangleAlert } from 'lucide-react'
-import { useState } from 'react'
+import { Palette, TriangleAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { RemoveButton, ResetButton } from '@/components/forms/danger-button'
-import { ListRow, ListRows } from '@/components/forms/list-row'
-import { Field } from '@/components/forms/field'
+import { ResetButton } from '@/components/forms/danger-button'
 import { SliderField } from '@/components/forms/slider-field'
 import { Collapse } from '@/components/layout/collapse'
 import { PanelNote } from '@/components/layout/panel-note'
 import { SectionCard } from '@/components/layout/section-card'
-import { errorText } from '@/lib/errors'
-import { Button } from '@/components/ui/button'
-import { commands, type LookSettings } from '@/ipc/bindings'
+import type { LookSettings } from '@/ipc/bindings'
 import { NO_LOOK, fullLook, type LookChange } from './look-fields'
-import { SaveLookDialog } from './save-look-dialog'
 import { useLooks } from './use-looks'
 
 type LooksCardProps = {
-  /** Simple mode: the amount and the reset only (owner, 2026-11-07). */
+  /** Simple mode: with the original, the card is its title alone (owner, 2026-11-07). */
   simple?: boolean
   look: LookSettings | undefined
   onChange: LookChange
@@ -28,15 +22,14 @@ const percent = (v: number) => `${v} %`
 
 /**
  * The first level of the colour cards (FR-079, "drive first"), beside the strip of looks under
- * the photo: the amount of the whole look; *Save as look* keeps the photo's look on this
- * machine, listed here to pick or forget; ↺ gives the original back. A pick copies the look's values into the
- * photo, so the sliders below show them and a later change of the library changes no photo.
+ * the photo and *Presets & LUTs* on the left: once the photo has a colour, the amount of the
+ * whole look and of its LUT, the V-Log note, and ↺ for the original. A pick copies the look's
+ * values into the photo, so the sliders below show them and a later change of the library
+ * changes no photo.
  */
 export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
   const { t } = useTranslation()
-  const { looks, setLooks, reload } = useLooks()
-  const [saving, setSaving] = useState(false)
-  const [importError, setImportError] = useState<string | null>(null)
+  const { looks } = useLooks()
   const current = fullLook(look)
   // Coloured: a look or a slider changes the photo (Original changes nothing). Only then is
   // there an amount to set and a reset to show, in every mode (owner, 2026-11-07); the reset
@@ -53,34 +46,6 @@ export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
       open={coloured || !simple}
       action={coloured && <ResetButton iconOnly label={t('look.resetLook')} onClick={() => onChange(() => NO_LOOK, true)} />}
     >
-      {/* The user's own looks, to pick or forget (the strip under the photo lists them all),
-          as the recent addresses are listed (owner, 2026-11-07). */}
-      {!simple && looks.some((e) => e.kind === 'user') && (
-        <Field label={t('look.yours')}>
-          <ListRows>
-            {looks
-              .filter((e) => e.kind === 'user')
-              .map((entry) => (
-                <div key={entry.id} className="flex items-center gap-2">
-                  <div className="min-w-0 flex-1" data-hint={entry.name}>
-                    <ListRow
-                      icon={<Bookmark />}
-                      chosen={current.base === entry.id}
-                      onClick={() => onChange(() => fullLook({ ...entry.look, name: entry.name }), true)}
-                    >
-                      {entry.name}
-                    </ListRow>
-                  </div>
-                  <RemoveButton
-                    iconOnly
-                    label={t('look.remove')}
-                    onClick={() => void commands.deleteLook(entry.id).then((r) => r.status === 'ok' && setLooks(r.data))}
-                  />
-                </div>
-              ))}
-          </ListRows>
-        </Field>
-      )}
       <Collapse open={coloured} stack="card">
       <SliderField
         label={t('look.amount')}
@@ -107,46 +72,6 @@ export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
       />
       </Collapse>
       {chosenEntry?.vlog && <PanelNote icon={<TriangleAlert />}>{t('look.vlogWarning')}</PanelNote>}
-      {importError && <PanelNote danger icon={<TriangleAlert />}>{importError}</PanelNote>}
-      {!simple && (
-        <>
-      <Button variant="outline" size="sm" className="w-full" onClick={() => setSaving(true)}>
-        <BookmarkPlus data-icon="inline-start" /> {t('look.saveAs')}
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        className="w-full"
-        onClick={() =>
-          void commands.importLut().then((r) => {
-            if (r.status !== 'ok') {
-              setImportError(errorText(r.error))
-              return
-            }
-            setImportError(null)
-            if (r.data === null) return
-            const entry = r.data
-            reload()
-            onChange(() => fullLook({ ...entry.look, name: entry.name }), true)
-          })
-        }
-      >
-        <FileInput data-icon="inline-start" /> {t('look.importLut')}
-      </Button>
-      <SaveLookDialog
-        open={saving}
-        onAnswer={(name) => {
-          setSaving(false)
-          if (name === null) return
-          void commands.saveLook(name, look ?? current).then((r) => {
-            if (r.status !== 'ok') return
-            reload()
-            onChange((l) => ({ ...l, name: r.data.name, base: r.data.id }), true)
-          })
-        }}
-      />
-        </>
-      )}
     </SectionCard>
   )
 }

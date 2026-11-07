@@ -990,7 +990,9 @@
     "yours": "Look của bạn",
     "importLut": "Nhập LUT…",
     "lutStrength": "Độ mạnh LUT",
-    "vlogWarning": "LUT này dành cho video V-Log: áp lên ảnh sẽ quá đậm. Giảm độ mạnh, hoặc chọn LUT dành cho ảnh."
+    "vlogWarning": "LUT này dành cho video V-Log: áp lên ảnh sẽ quá đậm. Giảm độ mạnh, hoặc chọn LUT dành cho ảnh.",
+    "presets": "Preset & LUT",
+    "presetsEmpty": "Look, LUT và preset của bạn hiện ở đây: lưu look của ảnh, hoặc nhập một LUT."
   },
   "rawLook": {
     "title": "Màu RAW",

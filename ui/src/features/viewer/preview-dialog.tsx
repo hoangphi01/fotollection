@@ -31,6 +31,7 @@ import { PreviewToolbar } from './preview-toolbar'
 import { setSettingsTarget } from '@/features/develop/settings-copy'
 import { NavigatorCard } from './navigator-card'
 import { HistoryCard } from './history-card'
+import { PresetsCard } from '@/features/look/presets-card'
 import { HistogramCard } from './histogram-card'
 import { CompareStage, type Compare, type CompareMode } from './compare-stage'
 import { oneToOneScale } from './one-to-one'
@@ -480,6 +481,8 @@ export function PreviewDialog({
               onZoomTo={zoom.zoomTo}
               onPanTo={zoom.panTo}
             />
+            {/* Presets as Lightroom's, between the Navigator and History (owner, 2026-11-07). */}
+            <PresetsCard photoId={photo.id} revision={revision} />
             <HistoryCard photoId={photo.id} revision={revision} />
           </>
         ) : undefined

@@ -1028,7 +1028,9 @@
     "yours": "Your looks",
     "importLut": "Import LUT…",
     "lutStrength": "LUT strength",
-    "vlogWarning": "This LUT is made for V-Log video: on a photo it comes out far too strong. Lower its strength, or choose the matching photo LUT."
+    "vlogWarning": "This LUT is made for V-Log video: on a photo it comes out far too strong. Lower its strength, or choose the matching photo LUT.",
+    "presets": "Presets & LUTs",
+    "presetsEmpty": "Your looks, LUTs and presets show here: save the photo's look, or import a LUT."
   },
   "rawLook": {
     "title": "RAW colour",
