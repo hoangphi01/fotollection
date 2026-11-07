@@ -1008,6 +1008,7 @@
       "export": "Export",
       "memory": "RAM & cache",
       "updates": "Updates",
+      "manual": "Manual",
       "report": "Report a problem",
       "whatsNew": "What's new"
     },
@@ -1016,6 +1017,7 @@
       "export": "Where exports go, their quality, and whether to ask first",
       "memory": "How much RAM and disk Fotollection uses to open photos at once",
       "updates": "A newer version, when you ask",
+      "manual": "The whole user guide, readable with no internet",
       "report": "Tell the author what went wrong",
       "whatsNew": "Every version and what it brought"
     },
@@ -1191,6 +1193,16 @@
     "clippingHint": "Marks on the photo what is blown (red) and blocked (black detail lost, blue), as Lightroom's J does.",
     "pick": "White balance from a grey spot (W)",
     "pickHint": "Then click something in the photo that should be neutral grey: warmth and tint follow, as one step."
+  },
+  "manual": {
+    "title": "Manual",
+    "chapters": "Chapters",
+    "search": "Search the manual",
+    "none": "No chapter holds these words",
+    "offline": "Works with no internet",
+    "chapterOf": "Chapter {{n}} of {{count}}",
+    "back": "Back",
+    "next": "Next"
   },
   "welcome": {
     "title": "Welcome",

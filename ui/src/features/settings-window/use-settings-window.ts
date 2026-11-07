@@ -4,7 +4,7 @@ import { events } from '@/ipc/bindings'
 import { isMac } from '@/lib/platform'
 
 /** The sections of the Settings window, in the order of its list (FR-086). */
-export const SECTIONS = ['general', 'export', 'memory', 'updates', 'report', 'whatsNew'] as const
+export const SECTIONS = ['general', 'export', 'memory', 'updates', 'manual', 'report', 'whatsNew'] as const
 export type Section = (typeof SECTIONS)[number]
 
 // Which section is open, or none: one copy for the app, so the gear, the version badge and

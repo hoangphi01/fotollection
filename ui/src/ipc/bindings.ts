@@ -615,7 +615,9 @@ export type Action = "new" | "open" | "save" | "saveAs" |
  *  Copy, paste and reset a photo's develop settings (FR-097), ⇧⌘C, ⇧⌘V, ⌥⇧⌘V (to the
  *  ticked photos) and ⇧⌘R.
  */
-"copySettings" | "pasteSettings" | "pasteSettingsTicked" | "resetSettings";
+"copySettings" | "pasteSettings" | "pasteSettingsTicked" | "resetSettings" | 
+/**  The manual inside the app (FR-110), from the Help menu. */
+"manual";
 
 /**  The sliders, each 0 when unset (FR-079). Signed ones run −100…100, the others 0…100. */
 export type Adjust = {

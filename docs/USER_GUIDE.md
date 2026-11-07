@@ -14,6 +14,8 @@ Fotollection works on the folders of photos you already have. It reads them wher
 
 **The welcome** ([FR-109](PRD.md#fr-109--a-welcome-screen-on-the-first-launch)): the first time Fotollection opens after it is installed or updated, five short pages show the basics, each over a picture of the app: opening photos, the three modes, choosing the best, making them yours and printing. **Next** and **Back** move between them, the list on the left jumps to one, and the last page has **Show at every start** and **Start**, the only way out, so it is read through once. Settings → General → *Show the welcome again* brings it back.
 
+**This manual, in the app** ([FR-110](PRD.md#fr-110--the-manual-inside-the-app-offline)): Settings → **Manual**, or *Help → Fotollection Manual* on a Mac, opens this whole guide inside Fotollection, with its pictures, in the app's language, also with no internet. The chapters are listed on the left, with a search over their words; **Back** and **Next** turn the chapters.
+
 1. **Open a folder:** click **Open folder** (the folder icon next to *Library* in the sidebar), or drop a folder anywhere on the window. Its subfolders come too. JPEG, PNG, HEIC and camera RAW are read (chapter 14).
 2. **The sidebar** lists, under *Library*:
    - **Workspace**: every photo from every folder still in play, all but those set aside (chapter 4); after *Keep best* it holds the best shot of each group, from every folder together, ready to edit and print;
@@ -575,6 +577,7 @@ Every setting of this computer is in one window ([FR-086](PRD.md#fr-086--one-set
   - **For this computer** shows what *Auto* goes by: the processor and its cores, the graphics card (and whether it draws the colour sliders), the memory and the free space on the cache's disk.
   - **Default** puts back 25 %, 5 GB and previews on. **Auto** chooses for this computer: 40 % of memory from 32 GB, 25 % from 12 GB, 15 % below; the largest cache that fits in a tenth of the free disk; previews on unless less than 5 GB is free.
 - **Updates:** *Check for updates* (chapter 17).
+- **Manual:** this guide's chapters; a click opens the manual at that chapter, offline (chapter 1).
 - **Report a problem:** the report page and *Copy diagnostics* (chapter 17).
 - **What's new:** every version with two lines on what it brought; **Show all** opens its whole entry (added, changed, fixed). The version you run opens unfolded; opening another folds the one open, so one is open at a time.
 

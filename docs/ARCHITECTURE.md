@@ -120,7 +120,7 @@ src-tauri/               † # app shell: commands, protocol, capabilities
   src/collage.rs         † # Collage mode: sheets, their order, turning, Auto turn and Revert, sheet facts, the `sheet` preview (FR-035)
   src/places.rs          † # place search, dates and places set by hand, renamed places (FR-005, FR-032); every input checked here
   src/document.rs        † # New / Open / Save / Save As / Relink of .fotollection documents (FR-023)
-  src/menu.rs            † # native File/Edit/View/Window menu (macOS), rebuilt on language change
+  src/menu.rs            † # native File/Edit/View/Window/Help menu (macOS), rebuilt on language change; Help → the manual (FR-110, `Action::Manual`)
   src/camera.rs          † # tethered capture (FR-062, FR-063, ADR-0028): connect, a session thread that owns the camera (live view, settings every 300 ms, queued jobs), shots written atomically into a session folder that becomes a tab, Save all and Delete photos, `quit_app` after the closing question; the Sony logic is written against a `CameraLink` trait and tested with a scripted camera
   src/open_with.rs       † # "Open with" (FR-054, ADR-0024): one route for macOS Opened events, command-line paths and second launches; the photo's folder as a tab
   src/timing.rs          † # start-up milestones printed only with FOTOLLECTION_TIMING (NFR-010, scripts/measure-startup.sh)
@@ -138,11 +138,11 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
     components/ui/       † # shadcn/ui components (copied in via the shadcn CLI, owned by us)
     components/layout/   † # shared layout pieces (STYLE_RULE §4): side-panel, section-card, inspector-section, panel-note, collapse, viewer-frame (with a `toolbar` slot above the stage and a `below` slot under it), filmstrip (the strip of thumbnails under a viewer's stage, FR-090), stage-spinner, hint-layer, key-hints, keys-info (the keys popover behind the info button), notice-stack (the main view's notices: an error with its dismiss button, a camera session, a task's progress)
     components/forms/    † # the lego blocks (STYLE_RULE §4): commit-input, field (Field, FieldLabel, Hint, Inset, ValueRow, RowList, FactLines, Stack), switch-field, segmented-toggle, swatch-toggle
-    features/            † # one folder per feature (components + hooks): library/, culling/, best-shot/, viewer/, settings/, settings-window/ (FR-086), stamp/, frame/, fonts/, export/, places/, cameras/, capture/, project/, history/, open-with/, startup/, appearance/, about/, print-advice/, modes/, simple/, collage/, develop/ (copy, paste and reset settings, FR-097), welcome/ (the first launch's welcome, FR-109). Among them: about/panel-footer.tsx (the panel's version line and its popover), about/report-issue.tsx (Report a problem, FR-069), collage/auto-turn-buttons.tsx (Auto turn and Revert, FR-035)
+    features/            † # one folder per feature (components + hooks): library/, culling/, best-shot/, viewer/, settings/, settings-window/ (FR-086), stamp/, frame/, fonts/, export/, places/, cameras/, capture/, project/, history/, open-with/, startup/, appearance/, about/, print-advice/, modes/, simple/, collage/, develop/ (copy, paste and reset settings, FR-097), welcome/ (the first launch's welcome, FR-109), manual/ (the manual inside the app, FR-110: `ManualDialog`, Settings → *Manual*). Among them: about/panel-footer.tsx (the panel's version line and its popover), about/report-issue.tsx (Report a problem, FR-069), collage/auto-turn-buttons.tsx (Auto turn and Revert, FR-035)
     i18n/                † # i18next setup + typed keys (FR-020, ADR-0015)
     locales/             † # en.json (default), vi.json — bundled, never fetched
     ipc/bindings.ts      † # GENERATED from Rust types — do not edit
-    lib/                 † # small UI utilities (theme sync, shadcn's cn re-export)
+    lib/                 † # small UI utilities (theme sync, shadcn's cn re-export; manual.ts splits the bundled USER_GUIDE into chapters, FR-110)
     index.css            † # Tailwind layers + shadcn theme tokens (CSS variables)
 scripts/                 † # bootstrap, clean, check-docs, release.sh (RELEASE.md §4), small-icons.py (≤ 64 px icons from assets/logo-small.png)
 site/                    † # the website (Jekyll, GitHub Pages, EN + VI); screenshots/ makes its images from the real app on CC0 demo photos (site/README.md)
@@ -157,6 +157,7 @@ bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batc
 | App shell | Tauri 2 | OS webview, small binary, capability-based permissions |
 | UI framework | Vite + React 19 + TypeScript | Required by shadcn/ui ([ADR-0007](adr/0007-ui-react-shadcn-lucide.md)) |
 | UI components | shadcn/ui (Radix primitives) + Tailwind CSS v4 | Components are copied into the repo, so we own and audit them |
+| The manual inside the app | `react-markdown` + `remark-gfm` (MIT), the USER_GUIDE bundled with `?raw`, its screenshots in `ui/public/manual/` | Markdown to React elements, raw HTML skipped, never `innerHTML`; offline (FR-110); its own chunk, loaded on first open (`React.lazy`, OPTIMIZATION §5) |
 | UI localization | `i18next` + `react-i18next` (MIT), bundled JSON locales | Typed keys, CLDR plurals, no runtime fetch ([ADR-0015](adr/0015-ui-localization-i18next.md)) |
 | Project bundle | `zip` (MIT), deflate only via `flate2` + pure-Rust `miniz_oxide` | One-file `.fotollection` like `.docx`, readable by any unzip tool ([ADR-0016](adr/0016-self-contained-project-bundle.md)) |
 | Icons | Lucide (`lucide-react`) | Tree-shaken: import individual icons only |

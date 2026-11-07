@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Sparkles, Square } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { KeysInfo } from '@/components/layout/keys-info'
 import { ErrorNotice, NoticeStack } from '@/components/layout/notice-stack'
@@ -47,6 +47,7 @@ import { useModeShortcuts } from '@/features/modes/use-mode-shortcuts'
 import { SettingsWindow } from '@/features/settings-window/settings-window'
 import { UpdatePopup } from '@/features/about/update-popup'
 import { CopySettingsDialog } from '@/features/develop/copy-settings-dialog'
+import { useManualChapter, useManualMenu } from '@/features/manual/manual-store'
 import { WelcomeDialog } from '@/features/welcome/welcome-dialog'
 import { pasteSettings, useSettingsCopy } from '@/features/develop/settings-copy'
 import { useSettingsKeys } from '@/features/develop/use-settings-keys'
@@ -59,6 +60,9 @@ import { SimplePanel } from '@/features/simple/simple-panel'
 import { SimpleView } from '@/features/simple/simple-view'
 import { RemoveButton } from '@/components/forms/danger-button'
 
+// The manual inside the app (FR-110): the guide and its Markdown reader load on first use.
+const ManualDialog = lazy(() => import('@/features/manual/manual-dialog').then((m) => ({ default: m.ManualDialog })))
+
 export function App() {
   const { t } = useTranslation()
   useStartupScreen()
@@ -68,6 +72,8 @@ export function App() {
   const { mode, setMode } = useAppMode()
   useModeShortcuts(setMode)
   useSettingsShortcut()
+  useManualMenu()
+  const manualChapter = useManualChapter()
   const simple = mode === 'simple'
   const collageMode = mode === 'collage'
   const [filter, setFilterState] = useState<CullFilter>(ALL_PHOTOS)
@@ -405,6 +411,12 @@ export function App() {
       <CopySettingsDialog />
       {/* The first launch's welcome (FR-109). */}
       <WelcomeDialog />
+      {/* The manual (FR-110), its own chunk, loaded when first opened (NFR-010). */}
+      {manualChapter !== null && (
+        <Suspense fallback={null}>
+          <ManualDialog />
+        </Suspense>
+      )}
       {/* One export dialog for every panel and preview (FR-093). */}
       <ExportDialog exporter={exporter} settings={settings} onSettingsChange={(c) => void update(c)} />
       <PreviewDialog

@@ -94,6 +94,9 @@ Layer 4: SAFE RENDERING (UI)
   - Values are rendered only as React JSX text (auto-escaped) — never
     dangerouslySetInnerHTML or innerHTML (STYLE_RULE §3)
   - Stamps are rasterized in Rust, so no metadata reaches HTML in order to be printed
+  - The manual inside the app (FR-110) is the bundled USER_GUIDE, turned into React
+    elements by react-markdown with raw HTML skipped; its links show as words, so it
+    opens no address
   - CSP is the last safety net
 ```
 

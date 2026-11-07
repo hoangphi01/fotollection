@@ -12,6 +12,8 @@ Fotollection làm việc trên các thư mục ảnh bạn đã có. Nó đọc 
 
 **Màn chào mừng** ([FR-109](PRD.md#fr-109--a-welcome-screen-on-the-first-launch)): lần đầu Fotollection mở sau khi cài hoặc cập nhật, năm trang ngắn giới thiệu những điều cơ bản, mỗi trang trên một ảnh chụp của app: mở ảnh, ba chế độ, chọn tấm đẹp nhất, chỉnh theo ý bạn và in ảnh. **Tiếp** và **Quay lại** để chuyển trang, danh sách bên trái để nhảy tới một trang, và trang cuối có ô **Hiện mỗi lần khởi động** cùng nút **Bắt đầu**, cách duy nhất để đóng, để ai cũng đọc qua một lần. Cài đặt → Chung → *Xem lại màn chào mừng* để mở lại.
 
+**Hướng dẫn này, ngay trong app** ([FR-110](PRD.md#fr-110--the-manual-inside-the-app-offline)): **Cài đặt → Hướng dẫn sử dụng**, hoặc *Trợ giúp → Hướng dẫn sử dụng Fotollection* trên máy Mac, mở toàn bộ hướng dẫn này ngay trong Fotollection, kèm hình ảnh, theo ngôn ngữ của app, kể cả khi không có mạng. Các chương nằm bên trái, có ô tìm theo từ; **Quay lại** và **Tiếp** để chuyển chương.
+
 1. **Mở một thư mục:** nhấp **Mở thư mục** (biểu tượng thư mục cạnh *Thư viện* ở thanh bên), hoặc thả một thư mục vào bất kỳ đâu trên cửa sổ. Các thư mục con cũng được mở theo. App đọc JPEG, PNG, HEIC và ảnh RAW (chương 14).
 2. **Thanh bên** liệt kê, dưới *Thư viện*:
    - **Không gian làm việc**: mọi ảnh của mọi thư mục còn đang dùng, tức tất cả trừ những tấm để riêng (chương 4); sau *Giữ ảnh tốt nhất*, nơi này chứa tấm đẹp nhất của mỗi nhóm, của mọi thư mục, sẵn sàng để chỉnh và in;
@@ -573,6 +575,7 @@ Mọi cài đặt của máy này nằm trong một cửa sổ ([FR-086](PRD.md#
   - **Cho máy tính này** cho biết *Tự động* dựa vào đâu: bộ xử lý và số nhân, card đồ hoạ (và có vẽ khi kéo thanh màu không), bộ nhớ và dung lượng còn trống trên ổ đĩa của cache.
   - **Mặc định** đặt lại 25 %, 5 GB và bật chuẩn bị sẵn. **Tự động** chọn theo máy này: 40 % bộ nhớ khi máy có từ 32 GB, 25 % từ 12 GB, 15 % nếu ít hơn; cache lớn nhất vừa trong một phần mười dung lượng trống; bật chuẩn bị sẵn trừ khi còn trống dưới 5 GB.
 - **Cập nhật:** *Kiểm tra cập nhật* (chương 17).
+- **Hướng dẫn sử dụng:** các chương của hướng dẫn này; nhấp vào một chương để mở hướng dẫn ở chương đó, không cần mạng (chương 1).
 - **Báo lỗi:** trang báo lỗi và *Sao chép thông tin chẩn đoán* (chương 17).
 - **Có gì mới:** mọi phiên bản, mỗi bản hai dòng tóm tắt; **Xem tất cả** mở toàn bộ ghi chú của bản đó (thêm mới, thay đổi, sửa lỗi). Bản bạn đang dùng mở sẵn; mở bản khác thì bản đang mở tự gập lại, nên mỗi lúc chỉ mở một bản.
 

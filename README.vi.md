@@ -338,7 +338,7 @@ Mọi phiên bản công cụ đều được ghim: `rust-toolchain.toml`, `.nod
 |-------|------------|
 | Lõi (Rust) | Codec thuần Rust: zune-jpeg kèm jpeg-decoder cho các cấu trúc JPEG hiếm, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md), [ADR-0033](docs/adr/0033-reference-jpeg-decoder.md)); HEIC qua hệ điều hành (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md)); ảnh RAW qua bộ đọc riêng của Fotollection và rawler, trên macOS dùng codec của hệ thống trước ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md), [ADR-0030](docs/adr/0030-our-own-raw-decoder.md)); quản lý màu bằng qcms ([FR-027](docs/PRD.md#fr-027--srgb-conversion-for-labs)); fast_image_resize, ab_glyph, rayon; GeoNames cho địa điểm offline ([ADR-0003](docs/adr/0003-offline-geocoding-geonames.md)) |
 | Vỏ app | [Tauri 2](https://v2.tauri.app/): dùng webview của hệ điều hành, không kèm Chromium |
-| Giao diện | React 19, TypeScript, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/), [Lucide](https://lucide.dev/) |
+| Giao diện | React 19, TypeScript, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/), [Lucide](https://lucide.dev/), [react-markdown](https://github.com/remarkjs/react-markdown) cho hướng dẫn trong app |
 | IPC có kiểu | [tauri-specta](https://github.com/specta-rs/tauri-specta): binding TypeScript sinh ra từ Rust |
 
 Thiết kế: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Các quyết định: [docs/adr/](docs/adr/README.md) (tiếng Anh).

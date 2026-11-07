@@ -337,7 +337,7 @@ Every tool version is pinned: `rust-toolchain.toml`, `.node-version`, `Cargo.loc
 |-------|------------|
 | Core (Rust) | Pure-Rust codecs: zune-jpeg with jpeg-decoder for rare layouts, jpeg-encoder, png ([ADR-0012](docs/adr/0012-pure-rust-codecs-first.md), [ADR-0033](docs/adr/0033-reference-jpeg-decoder.md)); HEIC through the OS (ImageIO / WIC, [ADR-0017](docs/adr/0017-heic-through-os-codecs.md)); camera RAW through Fotollection's own reader and rawler, the system's codec first on macOS ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md), [ADR-0030](docs/adr/0030-our-own-raw-decoder.md)); colour management with qcms ([FR-027](docs/PRD.md#fr-027--srgb-conversion-for-labs)); fast_image_resize, ab_glyph, rayon; GeoNames for offline places ([ADR-0003](docs/adr/0003-offline-geocoding-geonames.md)) |
 | Shell | [Tauri 2](https://v2.tauri.app/): the system webview, no bundled Chromium |
-| UI | React 19, TypeScript, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/), [Lucide](https://lucide.dev/) |
+| UI | React 19, TypeScript, Tailwind CSS 4, [shadcn/ui](https://ui.shadcn.com/), [Lucide](https://lucide.dev/), [react-markdown](https://github.com/remarkjs/react-markdown) for the manual inside the app |
 | Typed IPC | [tauri-specta](https://github.com/specta-rs/tauri-specta): TypeScript bindings generated from Rust |
 
 Design: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Decisions: [docs/adr/](docs/adr/README.md).

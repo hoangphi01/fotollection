@@ -59,4 +59,6 @@ done
 node site/screenshots/og.mjs
 # The landing page's showcase tiles and the catalog images, from the same screenshots.
 node site/screenshots/showcase.mjs "$work/dump"
+# The manual inside the app (FR-110): the guide's screenshots, smaller, in ui/public/manual/.
+scripts/app-pictures.sh
 du -sh "$out"

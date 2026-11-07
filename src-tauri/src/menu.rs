@@ -35,10 +35,12 @@ pub enum Action {
     PasteSettings,
     PasteSettingsTicked,
     ResetSettings,
+    /// The manual inside the app (FR-110), from the Help menu.
+    Manual,
 }
 
 impl Action {
-    const ALL: [(Self, &'static str); 12] = [
+    const ALL: [(Self, &'static str); 13] = [
         (Self::New, "new"),
         (Self::Open, "open"),
         (Self::Save, "save"),
@@ -51,6 +53,7 @@ impl Action {
         (Self::PasteSettings, "paste_settings"),
         (Self::PasteSettingsTicked, "paste_settings_ticked"),
         (Self::ResetSettings, "reset_settings"),
+        (Self::Manual, "manual"),
     ];
 }
 
@@ -113,6 +116,10 @@ pub fn build<R: Runtime>(app: &AppHandle<R>, language: Language) -> tauri::Resul
         .minimize_with_text(t.minimize)
         .close_window_with_text(t.close_window)
         .build()?;
+    // The Help menu (FR-110): the manual, offline, in the app's language.
+    let help = SubmenuBuilder::new(app, t.help)
+        .item(&item("manual", t.manual, "CmdOrCtrl+?")?)
+        .build()?;
     let app_menu = SubmenuBuilder::new(app, "Fotollection")
         .about_with_text(t.about, None)
         .separator()
@@ -127,7 +134,7 @@ pub fn build<R: Runtime>(app: &AppHandle<R>, language: Language) -> tauri::Resul
         .quit_with_text(t.quit)
         .build()?;
     MenuBuilder::new(app)
-        .items(&[&app_menu, &file, &edit, &view, &window])
+        .items(&[&app_menu, &file, &edit, &view, &window, &help])
         .build()
 }
 
@@ -147,5 +154,21 @@ pub fn refresh<R: Runtime>(app: &AppHandle<R>, language: Language) {
 pub fn on_event<R: Runtime>(app: &AppHandle<R>, event: &MenuEvent) {
     if let Some((action, _)) = Action::ALL.iter().find(|(_, id)| event.id() == *id) {
         let _ = MenuAction { action: *action }.emit(app);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Action;
+
+    /// FR-110: the Help menu's *Fotollection Manual* reaches the UI as `manual`, and every
+    /// menu id names one action.
+    #[test]
+    fn fr_110_the_help_menu_opens_the_manual() {
+        assert!(Action::ALL.contains(&(Action::Manual, "manual")));
+        let mut ids: Vec<_> = Action::ALL.iter().map(|(_, id)| *id).collect();
+        ids.sort_unstable();
+        ids.dedup();
+        assert_eq!(ids.len(), Action::ALL.len());
     }
 }

@@ -971,6 +971,7 @@
       "export": "Xuất ảnh",
       "memory": "Bộ nhớ RAM & cache",
       "updates": "Cập nhật",
+      "manual": "Hướng dẫn sử dụng",
       "report": "Báo lỗi",
       "whatsNew": "Có gì mới"
     },
@@ -979,6 +980,7 @@
       "export": "Nơi lưu ảnh xuất, chất lượng, và có hỏi trước không",
       "memory": "Fotollection dùng bao nhiêu bộ nhớ RAM và ổ đĩa để mở ảnh ngay lập tức",
       "updates": "Phiên bản mới hơn, khi bạn hỏi",
+      "manual": "Toàn bộ hướng dẫn sử dụng, đọc được khi không có mạng",
       "report": "Báo cho tác giả biết điều gì không ổn",
       "whatsNew": "Mọi phiên bản và những gì chúng mang lại"
     },
@@ -1153,6 +1155,16 @@
     "clippingHint": "Đánh dấu trên ảnh phần cháy sáng (đỏ) và phần mất chi tiết tối (xanh dương), như phím J của Lightroom.",
     "pick": "Cân bằng trắng từ một điểm xám (W)",
     "pickHint": "Sau đó nhấp vào một chỗ trong ảnh lẽ ra có màu xám trung tính: Ấm/lạnh và Tint chỉnh theo, trong một bước."
+  },
+  "manual": {
+    "title": "Hướng dẫn sử dụng",
+    "chapters": "Các chương",
+    "search": "Tìm trong hướng dẫn",
+    "none": "Không chương nào có các từ này",
+    "offline": "Đọc được khi không có mạng",
+    "chapterOf": "Chương {{n}} trên {{count}}",
+    "back": "Quay lại",
+    "next": "Tiếp"
   },
   "welcome": {
     "title": "Chào mừng",

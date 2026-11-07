@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Cpu, FolderOutput, MessageSquareWarning, RefreshCw, SlidersHorizontal, Sparkles, type LucideIcon } from 'lucide-react'
+import { BookOpen, Cpu, FolderOutput, MessageSquareWarning, RefreshCw, SlidersHorizontal, Sparkles, type LucideIcon } from 'lucide-react'
+import { lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SettingsFrame } from '@/components/layout/settings-frame'
 import { SwitchField } from '@/components/forms/switch-field'
@@ -16,11 +17,17 @@ import { MemorySection } from './memory-section'
 import { SECTIONS, showSettings, useSettingsWindow, type Section } from './use-settings-window'
 import { ListRow } from '@/components/forms/list-row'
 
+// Settings → Manual lists the guide's chapters: the guide loads with it, never at start (FR-110).
+const ManualChapterList = lazy(() =>
+  import('@/features/manual/manual-dialog').then((m) => ({ default: m.ManualChapterList })),
+)
+
 const ICONS: Record<Section, LucideIcon> = {
   general: SlidersHorizontal,
   export: FolderOutput,
   memory: Cpu,
   updates: RefreshCw,
+  manual: BookOpen,
   report: MessageSquareWarning,
   whatsNew: Sparkles,
 }
@@ -56,6 +63,17 @@ function Body({ section, version }: { section: Section; version: string | undefi
         <SectionCard icon={<Icon />} title={t('settingsWindow.sections.updates')}>
           <UpdatesAtStart />
           <UpdateCheck />
+        </SectionCard>
+      )
+    case 'manual':
+      // Each chapter opens the manual's own window there (FR-110), in place of this one.
+      return (
+        <SectionCard icon={<Icon />} title={t('manual.chapters')}>
+          <div className="flex flex-col gap-1">
+            <Suspense fallback={null}>
+              <ManualChapterList onOpen={() => showSettings(null)} />
+            </Suspense>
+          </div>
         </SectionCard>
       )
     case 'report':

@@ -32,6 +32,9 @@ pub struct Strings {
     pub about: &'static str,
     /// The Settings window (FR-086).
     pub settings: &'static str,
+    /// The Help menu and the manual inside the app (FR-110).
+    pub help: &'static str,
+    pub manual: &'static str,
     pub hide: &'static str,
     pub hide_others: &'static str,
     pub show_all: &'static str,
@@ -72,6 +75,8 @@ const EN: Strings = Strings {
     close_window: "Close Window",
     about: "About Fotollection",
     settings: "Settings…",
+    help: "Help",
+    manual: "Fotollection Manual",
     hide: "Hide Fotollection",
     hide_others: "Hide Others",
     show_all: "Show All",
@@ -111,6 +116,8 @@ const VI: Strings = Strings {
     close_window: "Đóng cửa sổ",
     about: "Giới thiệu Fotollection",
     settings: "Cài đặt…",
+    help: "Trợ giúp",
+    manual: "Hướng dẫn sử dụng Fotollection",
     hide: "Ẩn Fotollection",
     hide_others: "Ẩn ứng dụng khác",
     show_all: "Hiện tất cả",
