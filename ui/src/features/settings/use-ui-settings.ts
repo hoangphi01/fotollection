@@ -30,8 +30,13 @@ let current: Required<UiSettings> = {
   exportLimitKb: null,
   // The update check at start (FR-103): on until the user turns it off.
   checkUpdatesAtStart: true,
+  // The welcome screen (FR-109): not seen yet, not at every start, as Rust's defaults.
+  welcomeSeen: false,
+  welcomeEveryStart: false,
 }
 let requested = false
+// The file's values have arrived: what depends on them (the welcome screen) waits for this.
+let loaded = false
 const listeners = new Set<() => void>()
 const emit = () => listeners.forEach((listener) => listener())
 const subscribe = (listener: () => void) => {
@@ -45,6 +50,7 @@ function load() {
   void commands.getUiSettings().then((result) => {
     if (result.status === 'ok') {
       current = { ...current, ...result.data }
+      loaded = true
       emit()
     }
   })
@@ -64,5 +70,5 @@ export function useUiSettings() {
       emit()
     }
   }, [])
-  return { ui, update }
+  return { ui, update, loaded }
 }

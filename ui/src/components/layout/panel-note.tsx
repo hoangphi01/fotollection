@@ -9,13 +9,27 @@ type PanelNoteProps = {
   /** A warning that something will be lost (Replace existing files, a version no longer
    * safe): solid deep red with white text, as the red badges. */
   danger?: boolean
+  /** One button that acts on what the note says, in the theme's colour, under the words
+   * (owner, 2026-11-07: "the Show now button inside the note"). */
+  action?: ReactNode
 }
 
 /**
  * A short note inside a panel card: muted text on a tinted block, with an icon in the theme
  * colour (STYLE_RULE §4, shared pieces). It owns no margin; the card spaces it.
  */
-export function PanelNote({ icon, children, danger = false }: PanelNoteProps) {
+export function PanelNote({ icon, children, danger = false, action }: PanelNoteProps) {
+  if (action) {
+    return (
+      <div className="flex flex-col items-start gap-2 rounded-md bg-muted/60 px-2.5 py-2 text-xs text-muted-foreground">
+        <p className="flex gap-1.5 [&>svg]:mt-0.5 [&>svg]:size-3.5 [&>svg]:shrink-0 [&>svg]:text-primary">
+          {icon}
+          <span>{children}</span>
+        </p>
+        {action}
+      </div>
+    )
+  }
   return (
     <p
       className={cn(

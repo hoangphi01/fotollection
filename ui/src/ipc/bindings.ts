@@ -2064,6 +2064,16 @@ export type UiSettings = {
 	 *  settings v16: on, as the owner asked (2026-11-06), until the user turns it off.
 	 */
 	checkUpdatesAtStart?: boolean,
+	/**
+	 *  The welcome screen was seen on this machine (FR-109). Absent before settings v17: not
+	 *  yet, so it shows once, after the install or the update.
+	 */
+	welcomeSeen?: boolean,
+	/**
+	 *  The welcome screen shows at every start, its last page's tick (FR-109). Absent before
+	 *  settings v17: off.
+	 */
+	welcomeEveryStart?: boolean,
 };
 
 /**  The result shown under the button. */

@@ -10,6 +10,8 @@
 
 Fotollection làm việc trên các thư mục ảnh bạn đã có. Nó đọc ảnh ngay tại chỗ, không bao giờ di chuyển, đổi tên hay sửa một tệp nào ([FR-001](PRD.md#fr-001--import-photos)).
 
+**Màn chào mừng** ([FR-109](PRD.md#fr-109--a-welcome-screen-on-the-first-launch)): lần đầu Fotollection mở sau khi cài hoặc cập nhật, năm trang ngắn giới thiệu những điều cơ bản, mỗi trang trên một ảnh chụp của app: mở ảnh, ba chế độ, chọn tấm đẹp nhất, chỉnh theo ý bạn và in ảnh. **Tiếp** và **Quay lại** để chuyển trang, danh sách bên trái để nhảy tới một trang, và trang cuối có ô **Hiện mỗi lần khởi động** cùng nút **Bắt đầu**. Cài đặt → Chung → *Xem lại màn chào mừng* để mở lại.
+
 1. **Mở một thư mục:** nhấp **Mở thư mục** (biểu tượng thư mục cạnh *Thư viện* ở thanh bên), hoặc thả một thư mục vào bất kỳ đâu trên cửa sổ. Các thư mục con cũng được mở theo. App đọc JPEG, PNG, HEIC và ảnh RAW (chương 14).
 2. **Thanh bên** liệt kê, dưới *Thư viện*:
    - **Không gian làm việc**: mọi ảnh của mọi thư mục còn đang dùng, tức tất cả trừ những tấm để riêng (chương 4); sau *Giữ ảnh tốt nhất*, nơi này chứa tấm đẹp nhất của mỗi nhóm, của mọi thư mục, sẵn sàng để chỉnh và in;
@@ -561,7 +563,7 @@ Hai thẻ chỉnh màu ảnh, nằm dưới **Khổ in / xuất**, chỉ có tro
 
 Mọi cài đặt của máy này nằm trong một cửa sổ ([FR-086](PRD.md#fr-086--one-settings-window)): bấm bánh răng cạnh *by @hoangphi01* ở đầu thanh bên, nhấn **⌘,** (Mac) hoặc **Ctrl+,** (Windows, Linux), hoặc bấm số phiên bản ở chân bảng để xem *Có gì mới*. Các mục xếp ở bên trái như trên iPad; dự án không bao giờ mang các cài đặt này theo.
 
-- **Chung:** ngôn ngữ, giao diện (chương 1), và *Xem ảnh*: trong cửa sổ, hoặc phủ kín cửa sổ app với Điều hướng và Lịch sử (chương 4).
+- **Chung:** ngôn ngữ, giao diện (chương 1), và *Xem ảnh*: trong cửa sổ, hoặc phủ kín cửa sổ app với Điều hướng và Lịch sử (chương 4); và *Xem lại màn chào mừng* (ở trên).
 - **Bộ nhớ RAM & cache** ([FR-091](PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)):
   - **Phần bộ nhớ RAM của máy** dành cho bản xem trước: 15, 25 (mặc định) hoặc 40 %. Nhiều hơn thì giữ sẵn nhiều ảnh hơn, nên → ← và ảnh mở lại hiện ngay; ít hơn thì chừa chỗ cho ứng dụng khác. *Đang giữ* cho biết bản xem trước đang giữ bao nhiêu. Khi máy thiếu bộ nhớ, chúng tự trả lại.
   - **Cache trên ổ đĩa:** giới hạn (2, 5, 10 hoặc 20 GB), những gì đang giữ (ảnh nhỏ, bản xem trước, phân tích ảnh đẹp nhất) và **Xoá cache**. Không mất gì của bạn: mọi thứ được tạo lại khi cần. Cache lớn hơn giữ bản xem trước của nhiều thư mục hơn, khoảng 0,7 MB mỗi ảnh.

@@ -47,6 +47,7 @@ import { useModeShortcuts } from '@/features/modes/use-mode-shortcuts'
 import { SettingsWindow } from '@/features/settings-window/settings-window'
 import { UpdatePopup } from '@/features/about/update-popup'
 import { CopySettingsDialog } from '@/features/develop/copy-settings-dialog'
+import { WelcomeDialog } from '@/features/welcome/welcome-dialog'
 import { pasteSettings, useSettingsCopy } from '@/features/develop/settings-copy'
 import { useSettingsKeys } from '@/features/develop/use-settings-keys'
 import { useSettingsShortcut } from '@/features/settings-window/use-settings-window'
@@ -402,6 +403,8 @@ export function App() {
       {/* A newer version, once per launch, unless turned off (FR-103). */}
       <UpdatePopup />
       <CopySettingsDialog />
+      {/* The first launch's welcome (FR-109). */}
+      <WelcomeDialog />
       {/* One export dialog for every panel and preview (FR-093). */}
       <ExportDialog exporter={exporter} settings={settings} onSettingsChange={(c) => void update(c)} />
       <PreviewDialog

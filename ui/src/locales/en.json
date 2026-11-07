@@ -429,11 +429,11 @@
     "layoutDialog": "Back to a window (F)",
     "zoomToggle": "Fit ↔ 1:1 (Z)",
     "sideFolded": "A narrow window shows one side column: widen it to see the histogram, the Navigator and History on the left too.",
-    "sideOpen": "Show it now (Tab)",
     "pickWhite": "Click something in the photo that should be neutral grey: its warmth and tint follow. Esc cancels.",
     "sideShow": "Show the left column: histogram, Navigator, History (Tab)",
     "sideHide": "Hide the left column (Tab)",
-    "sideTitle": "Overview"
+    "sideTitle": "Overview",
+    "sideOpen": "Show it now (Tab)"
   },
   "errors": {
     "internal": "Something went wrong",
@@ -1189,5 +1189,40 @@
     "clippingHint": "Marks on the photo what is blown (red) and blocked (black detail lost, blue), as Lightroom's J does.",
     "pick": "White balance from a grey spot (W)",
     "pickHint": "Then click something in the photo that should be neutral grey: warmth and tint follow, as one step."
+  },
+  "welcome": {
+    "title": "Welcome",
+    "step": "Step {{n}} of {{count}}",
+    "next": "Next",
+    "back": "Back",
+    "start": "Start",
+    "everyStart": "Show at every start",
+    "again": "Show the welcome again",
+    "againHint": "The five pages of the basics, as on the first launch.",
+    "welcome": {
+      "title": "Open your photos",
+      "text": "Open a folder of photos from a trip, or drop one on the window. Fotollection works on them where they are: nothing is copied, moved or uploaded.",
+      "alt": "The gallery of a trip's photos"
+    },
+    "modes": {
+      "title": "Three modes",
+      "text": "Simple to keep or drop and print at once, Collage for two photos to a print or postcards, Pro for stars, best shots, crop and colour. Cmd/Ctrl+1, 2 and 3 switch between them.",
+      "alt": "Simple mode"
+    },
+    "choose": {
+      "title": "Choose the best",
+      "text": "Find best shots groups the bursts and keeps the best of each in the Workspace; the others go to Set aside, ready to come back. Press ↑ to put a photo in the print basket.",
+      "alt": "Best-shot groups"
+    },
+    "develop": {
+      "title": "Make it yours",
+      "text": "Open a photo to set its colour, crop it to the print size and stamp the date and town as film cameras did; the info frame adds the camera and lens.",
+      "alt": "The develop view"
+    },
+    "print": {
+      "title": "Print",
+      "text": "Export writes the photos at the shop's sizes, ready for a self-service kiosk or an online lab. Settings → Export keeps your choices for next time.",
+      "alt": "The export dialog"
+    }
   }
 }

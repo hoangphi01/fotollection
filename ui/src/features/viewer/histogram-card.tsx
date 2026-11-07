@@ -4,7 +4,7 @@ import { ChartArea, Pipette, TriangleAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Hint } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
-import { Button } from '@/components/ui/button'
+import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { commands, type HistogramView, type PhotoId } from '@/ipc/bindings'
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
 import { formatNumber } from '@/lib/format'
@@ -56,27 +56,25 @@ export function HistogramCard({
         onClipping && (
           <>
             {onPicking && (
-              <Button
+              <ToolbarButton
+                icon={<Pipette />}
+                label={t('histogram.pick')}
                 variant={picking ? 'default' : 'outline'}
-                size="icon-sm"
                 aria-pressed={picking}
-                aria-label={t('histogram.pick')}
                 data-hint={t('histogram.pickHint')}
+                iconOnly
                 onClick={() => onPicking(!picking)}
-              >
-                <Pipette />
-              </Button>
+              />
             )}
-            <Button
+            <ToolbarButton
+              icon={<TriangleAlert />}
+              label={t('histogram.clipping')}
               variant={clipping ? 'default' : 'outline'}
-              size="icon-sm"
               aria-pressed={clipping}
-              aria-label={t('histogram.clipping')}
               data-hint={t('histogram.clippingHint')}
+              iconOnly
               onClick={() => onClipping(!clipping)}
-            >
-              <TriangleAlert />
-            </Button>
+            />
           </>
         )
       }

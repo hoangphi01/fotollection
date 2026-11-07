@@ -113,6 +113,14 @@ pub struct UiSettings {
     /// settings v16: on, as the owner asked (2026-11-06), until the user turns it off.
     #[serde(default = "default_check_updates")]
     pub check_updates_at_start: bool,
+    /// The welcome screen was seen on this machine (FR-109). Absent before settings v17: not
+    /// yet, so it shows once, after the install or the update.
+    #[serde(default)]
+    pub welcome_seen: bool,
+    /// The welcome screen shows at every start, its last page's tick (FR-109). Absent before
+    /// settings v17: off.
+    #[serde(default)]
+    pub welcome_every_start: bool,
 }
 
 /// What an export does when a file of the same name is already there (FR-009, Lightroom's
@@ -214,6 +222,8 @@ impl Default for UiSettings {
             export_metadata: ExportMetadata::default(),
             export_limit_kb: None,
             check_updates_at_start: default_check_updates(),
+            welcome_seen: false,
+            welcome_every_start: false,
         }
     }
 }

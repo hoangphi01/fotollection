@@ -409,11 +409,11 @@
     "layoutDialog": "Về dạng cửa sổ (F)",
     "zoomToggle": "Vừa khung ↔ 1:1 (Z)",
     "sideFolded": "Cửa sổ hẹp chỉ hiện một cột bên: kéo cửa sổ rộng ra để thấy cả biểu đồ màu, Điều hướng và Lịch sử ở cột trái.",
-    "sideOpen": "Hiện ngay (Tab)",
     "pickWhite": "Nhấp vào một chỗ trong ảnh lẽ ra phải có màu xám trung tính: Ấm/lạnh và Tint sẽ chỉnh theo. Esc để huỷ.",
     "sideShow": "Hiện cột trái: biểu đồ màu, Điều hướng, Lịch sử (Tab)",
     "sideHide": "Ẩn cột trái (Tab)",
-    "sideTitle": "Tổng quan"
+    "sideTitle": "Tổng quan",
+    "sideOpen": "Hiện ngay (Tab)"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",
@@ -1151,5 +1151,40 @@
     "clippingHint": "Đánh dấu trên ảnh phần cháy sáng (đỏ) và phần mất chi tiết tối (xanh dương), như phím J của Lightroom.",
     "pick": "Cân bằng trắng từ một điểm xám (W)",
     "pickHint": "Sau đó nhấp vào một chỗ trong ảnh lẽ ra có màu xám trung tính: Ấm/lạnh và Tint chỉnh theo, trong một bước."
+  },
+  "welcome": {
+    "title": "Chào mừng",
+    "step": "Bước {{n}} / {{count}}",
+    "next": "Tiếp",
+    "back": "Quay lại",
+    "start": "Bắt đầu",
+    "everyStart": "Hiện mỗi lần khởi động",
+    "again": "Xem lại màn chào mừng",
+    "againHint": "Năm trang hướng dẫn cơ bản, như lần mở đầu tiên.",
+    "welcome": {
+      "title": "Mở ảnh của bạn",
+      "text": "Mở một thư mục ảnh của chuyến đi, hoặc kéo thả thư mục vào cửa sổ. Fotollection làm việc ngay trên ảnh tại chỗ: không sao chép, không di chuyển, không tải lên đâu cả.",
+      "alt": "Thư viện ảnh của một chuyến đi"
+    },
+    "modes": {
+      "title": "Ba chế độ",
+      "text": "Đơn giản để giữ hay bỏ rồi in ngay, Ghép ảnh cho hai ảnh trên một tấm in hoặc bưu thiếp, Pro cho số sao, ảnh đẹp nhất, cắt ảnh và chỉnh màu. Cmd/Ctrl+1, 2 và 3 để chuyển qua lại.",
+      "alt": "Chế độ Đơn giản"
+    },
+    "choose": {
+      "title": "Chọn tấm đẹp nhất",
+      "text": "Tìm ảnh đẹp nhất gom các loạt chụp và giữ tấm đẹp nhất của mỗi nhóm trong Không gian làm việc; các tấm khác chuyển sang Để riêng, đưa về được bất cứ lúc nào. Nhấn ↑ để đưa một tấm vào giỏ in.",
+      "alt": "Các nhóm ảnh đẹp nhất"
+    },
+    "develop": {
+      "title": "Theo ý bạn",
+      "text": "Mở một tấm ảnh để chỉnh màu, cắt đúng khổ in và in ngày cùng tên thành phố như máy ảnh phim; khung thông tin thêm tên máy và ống kính.",
+      "alt": "Chế độ chỉnh ảnh"
+    },
+    "print": {
+      "title": "In ảnh",
+      "text": "Xuất ảnh ghi các tấm đúng khổ của tiệm, sẵn sàng cho máy in tự phục vụ hay dịch vụ in trực tuyến. Cài đặt → Xuất ảnh giữ lựa chọn của bạn cho lần sau.",
+      "alt": "Hộp thoại xuất ảnh"
+    }
   }
 }

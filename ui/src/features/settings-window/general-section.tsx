@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown settings: in the Settings window only (STYLE_RULE §4, checked by check-lego).
-import { Monitor, Moon, Sun, SlidersHorizontal } from 'lucide-react'
+import { Monitor, Moon, Sparkles, Sun, SlidersHorizontal } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Field } from '@/components/forms/field'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { SectionCard } from '@/components/layout/section-card'
+import { Button } from '@/components/ui/button'
+import { showWelcome } from '@/features/welcome/welcome-store'
 import { LanguageSetting } from '@/features/about/language-setting'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import type { PreviewLayout, ThemePreference } from '@/ipc/bindings'
@@ -55,6 +57,12 @@ export function GeneralSection() {
           onChange={(previewLayout) => void update({ previewLayout })}
           ariaLabel={t('settingsWindow.previewLayout')}
         />
+      </Field>
+      {/* The welcome's five pages, again (FR-109). */}
+      <Field label={t('welcome.title')} hint={t('welcome.againHint')}>
+        <Button variant="outline" size="sm" onClick={showWelcome}>
+          <Sparkles data-icon="inline-start" /> {t('welcome.again')}
+        </Button>
       </Field>
     </SectionCard>
   )

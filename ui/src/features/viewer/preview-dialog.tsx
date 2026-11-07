@@ -443,11 +443,15 @@ export function PreviewDialog({
             <HistogramCard photoId={photo.id} revision={revision} clipping={clipping} onClipping={setClipping} picking={picking} onPicking={setPicking} />
           ) : !showSide && panels ? (
             // A narrow window shows one side column (owner, 2026-11-07): say where the other is.
-            <PanelNote icon={<PanelLeftOpen />}>
-              {t('viewer.sideFolded')}{' '}
-              <Button variant="link" size="sm" className="h-auto p-0" onClick={() => setSideOpen(true)}>
-                {t('viewer.sideOpen')}
-              </Button>
+            <PanelNote
+              icon={<PanelLeftOpen />}
+              action={
+                <Button size="sm" onClick={() => setSideOpen(true)}>
+                  <PanelLeftOpen data-icon="inline-start" /> {t('viewer.sideOpen')}
+                </Button>
+              }
+            >
+              {t('viewer.sideFolded')}
             </PanelNote>
           ) : undefined
         ) : undefined

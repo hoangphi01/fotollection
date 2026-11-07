@@ -23,6 +23,9 @@ type SettingsFrameProps = {
   /** Under the cards, in place of the line: the window's own buttons (the export dialog's
    * *Don't ask again*, *Cancel* and *Export*, FR-093). */
   actions?: ReactNode
+  /** The body fills the window's right side with no scroll and no column width: one big
+   * picture (the welcome screen, FR-109; owner, 2026-11-07: "the picture bigger"). */
+  full?: boolean
 }
 
 /**
@@ -30,7 +33,7 @@ type SettingsFrameProps = {
  * with the columns as on an iPad: a narrow list of sections on the left, the open section's
  * cards on the right, spaced 12 px as in every panel (STYLE_RULE §4, the lego rule).
  */
-export function SettingsFrame({ open, onClose, title, nav, navFooter, heading, description, children, footer, actions }: SettingsFrameProps) {
+export function SettingsFrame({ open, onClose, title, nav, navFooter, heading, description, children, footer, actions, full = false }: SettingsFrameProps) {
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="flex h-[90vh] w-[95vw] max-w-none gap-0 overflow-hidden p-0 sm:max-w-[min(1100px,95vw)]">
@@ -58,9 +61,13 @@ export function SettingsFrame({ open, onClose, title, nav, navFooter, heading, d
             <DialogDescription className="truncate text-xs">{description}</DialogDescription>
           </div>
           <Separator />
-          <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
-            <div className="mx-auto max-w-xl space-y-3 p-3">{children}</div>
-          </ScrollArea>
+          {full ? (
+            <div className="flex min-h-0 flex-1 flex-col gap-3 p-3">{children}</div>
+          ) : (
+            <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
+              <div className="mx-auto max-w-xl space-y-3 p-3">{children}</div>
+            </ScrollArea>
+          )}
           {actions ? (
             <>
               <Separator />

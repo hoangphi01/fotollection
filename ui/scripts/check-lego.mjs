@@ -75,6 +75,15 @@ const RULES = [
     },
   },
   {
+    // One look per meaning (owner, 2026-11-07: "no button in a style of its own"): a link
+    // styled as a button is no block of ours; an action is a Button or a ToolbarButton.
+    test: /variant="link"/,
+    say: 'a link-styled button: use a Button (outline, sm) or a ToolbarButton',
+    except: {
+      'features/collage/postcard-text-reuse.tsx': 'its two inline choices predate the rule; to move to Buttons with the next change there',
+    },
+  },
+  {
     // One chosen style for every list, menu and dropdown (owner, 2026-11-06).
     test: /\brow-chosen\b/,
     everywhere: true,

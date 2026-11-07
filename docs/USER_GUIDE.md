@@ -12,6 +12,8 @@
 
 Fotollection works on the folders of photos you already have. It reads them where they are, and never moves, renames or changes a file ([FR-001](PRD.md#fr-001--import-photos)).
 
+**The welcome** ([FR-109](PRD.md#fr-109--a-welcome-screen-on-the-first-launch)): the first time Fotollection opens after it is installed or updated, five short pages show the basics, each over a picture of the app: opening photos, the three modes, choosing the best, making them yours and printing. **Next** and **Back** move between them, the list on the left jumps to one, and the last page has **Show at every start** and **Start**. Settings → General → *Show the welcome again* brings it back.
+
 1. **Open a folder:** click **Open folder** (the folder icon next to *Library* in the sidebar), or drop a folder anywhere on the window. Its subfolders come too. JPEG, PNG, HEIC and camera RAW are read (chapter 14).
 2. **The sidebar** lists, under *Library*:
    - **Workspace**: every photo from every folder still in play, all but those set aside (chapter 4); after *Keep best* it holds the best shot of each group, from every folder together, ready to edit and print;
@@ -563,7 +565,7 @@ A focused field or slider keeps its own arrow keys: click the photo to give them
 
 Every setting of this computer is in one window ([FR-086](PRD.md#fr-086--one-settings-window)): click the gear beside *by @hoangphi01* at the top of the sidebar, press **⌘,** (Mac) or **Ctrl+,** (Windows, Linux), or click the version number at the foot of a panel for *What's new*. The sections are listed on the left, as on an iPad; projects never carry these settings.
 
-- **General:** the language, the look (chapter 1), and *Photo preview*: in a window, or filling the app window with the Navigator and History (chapter 4).
+- **General:** the language, the look (chapter 1), and *Photo preview*: in a window, or filling the app window with the Navigator and History (chapter 4); and *Show the welcome again* (above).
 - **RAM & cache** ([FR-091](PRD.md#fr-091--instant-previews-standard-previews-on-disk-and-memory-used-well)):
   - **Share of this computer's RAM** for previews: 15, 25 (the default) or 40 %. More keeps more photos ready, so → ← and photos opened again show at once; less leaves room for other apps. *Held now* shows what the previews keep. When the computer runs short of memory, they give it back by themselves.
   - **Cache on disk:** its limit (2, 5, 10 or 20 GB), what it holds (thumbnails, previews, best-shot analyses) and **Clear cache**. Nothing of yours is lost: everything comes back when needed. A larger cache keeps the previews of more folders, about 0.7 MB a photo.

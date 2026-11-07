@@ -34,7 +34,7 @@ pub const FORMAT: &str = "fotollection-settings";
 /// `ui.preparePreviews` (on), each absent before.
 /// v16 (FR-092, FR-093): `ui.exportQuality` (90), `ui.exportSubfolder`, `ui.exportNaming`, `ui.exportExisting`, `ui.exportMetadata`, `ui.exportLimitKb` (FR-009, FR-010, FR-104, FR-105), `ui.checkUpdatesAtStart` (FR-103, on), `ui.exportAsk` (on), `ui.exportSeparate`
 /// (off) and `ui.exportDestination` (none), each absent before.
-pub const SCHEMA_VERSION: u32 = 16;
+pub const SCHEMA_VERSION: u32 = 17;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -552,6 +552,39 @@ mod tests {
 
     /// FR-086, FR-091: a v14 file has no memory settings: 25 % of RAM, a 5 GB cache and
     /// previews prepared. A v15 file keeps its own, snapped: 99 % becomes 40, 7 GB the
+    /// FR-109: a v16 file has never shown the welcome screen, so it shows once and not at
+    /// every start; a v17 file keeps both, and they round-trip.
+    #[test]
+    fn fr_109_the_welcome_shows_once_unless_asked_every_start() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v16.json"))?;
+        let Loaded::Ok(old) = load(&path) else {
+            panic!("v16 should load");
+        };
+        assert_eq!(
+            (old.ui.welcome_seen, old.ui.welcome_every_start),
+            (false, false)
+        );
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v17.json"))?;
+        let Loaded::Ok(new) = load(&path) else {
+            panic!("v17 should load");
+        };
+        assert_eq!(
+            (new.ui.welcome_seen, new.ui.welcome_every_start),
+            (true, true)
+        );
+        save(&path, &new)?;
+        let Loaded::Ok(again) = load(&path) else {
+            panic!("a saved v17 should load");
+        };
+        assert_eq!(
+            (again.ui.welcome_seen, again.ui.welcome_every_start),
+            (true, true)
+        );
+        Ok(())
+    }
+
     /// FR-092, FR-093: a v15 file has no export settings: quality 90, asked each time,
     /// together, no folder. A v16 file keeps its own, the quality clamped to 60–100, and
     /// they round-trip.
