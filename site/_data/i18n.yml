@@ -387,6 +387,8 @@ en:
           fn: [fn_gps]
         - title: This website
           text: "The website, not the app, counts visits and clicks on its download links with Google Analytics; Google's privacy policy applies to it. The download count comes from GitHub."
+        - title: Support payments
+          text: "Ko-fi, GitHub Sponsors and the bank behind a VietQR code process the payments made to support Fotollection, each under its own privacy policy. The website only links to them and loads nothing from them, and a payment has nothing to do with the app or your data in Fotollection."
     - id: system
       title: Changes to your system
       lead: Installing adds only what the app needs, and uninstalling removes it.
@@ -964,6 +966,8 @@ vi:
           fn: [fn_gps]
         - title: Trang web này
           text: "Trang web, không phải ứng dụng, đếm lượt truy cập và lượt bấm vào các liên kết tải về bằng Google Analytics; chính sách riêng tư của Google áp dụng cho việc đó. Số lượt tải lấy từ GitHub."
+        - title: Thanh toán ủng hộ
+          text: "Ko-fi, GitHub Sponsors và ngân hàng đứng sau mã VietQR là các bên xử lý khoản ủng hộ Fotollection, mỗi bên theo chính sách riêng tư của mình. Trang web chỉ dẫn link tới họ, không tải gì từ họ, và việc thanh toán không liên quan gì tới ứng dụng hay dữ liệu của bạn trong Fotollection."
     - id: system
       title: Thay đổi trên máy của bạn
       lead: Cài đặt chỉ thêm những gì ứng dụng cần, và gỡ cài đặt sẽ xoá chúng.
