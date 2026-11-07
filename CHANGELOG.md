@@ -8,18 +8,67 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-### Changed
+### Highlights
 
-- Accessibility: every slider's handle is named, the version badge's name says what it shows, and a filled button gets darker under the pointer in both themes while its words stay readable (WCAG 2.2 AA).
-- A long custom print size no longer pushes its delete button out of the card; the size's whole name shows on hover. Four colours in a row (the postcard's ink) show as dots, each name on hover, so none is cut.
-
-- One look everywhere, after a style audit of all three modes: toolbar buttons are 32 px squares that show their hint even when off; the sheet preview's tools sit in a row above the sheet, with undo, redo, copy, paste and reset, as the photo preview's; Pick and Reject are pressed buttons in the theme's colour, never red; the gallery's selection bar stays on one line; the export's choices sit under a *Change* button; nothing moves when a slider first changes or the white-balance picker is armed.
+- New: the whole manual inside the app, in Settings, also with no internet
+- New: clipping (J) and white balance from a grey spot (W) on collage sheets too
+- A careful style pass over all three modes: one size, one spacing and one look for every control, checked by a machine on every view, in both languages and themes
 
 ### Added
 
-- The manual inside the app (FR-110): Settings → *Manual*, or *Help → Fotollection Manual* on a Mac, shows the whole user guide inside the Settings window, with its pictures, in the app's language, also with no internet; a chapter picker with a search, *Back* and *Next* to turn the chapters.
-- The website's Performance page is more visual: every part opens with three numbers as tiles and a two-sentence lead, and two new diagrams show where a photo's preview comes from and how the photo on screen goes first.
-- `J` and `W` in Collage mode (FR-098): in a sheet's preview, `J` (or ⚠ on the histogram) marks both photos' blown and blocked pixels, never the paper or the postcard card; with a photo picked, `W` (or the pipette) and a click on something grey in it set that photo's warmth and tint, as one step. A click on the other photo or the paper is refused.
+- **The manual inside the app** (FR-110): Settings → *Manual*, or *Help → Fotollection Manual* on a Mac, shows the whole user guide inside the Settings window, with its pictures, in the app's language, also with no internet; a chapter picker with a search, *Back* and *Next* to turn the chapters.
+- **`J` and `W` in Collage mode** (FR-098): in a sheet's preview, `J` (or ⚠ on the histogram) marks both photos' blown and blocked pixels, never the paper or the postcard card; with a photo picked, `W` (or the pipette) and a click on something grey in it set that photo's warmth and tint, as one step. A click on the other photo or the paper is refused.
+- **Website:** the Performance page is more visual: every part opens with three numbers as tiles and a two-sentence lead, and two new diagrams show where a photo's preview comes from and how the photo on screen goes first.
+
+### Changed: a careful style pass
+
+Every screen of Simple, Collage and Pro was checked against the app's style rules (STYLE_RULE §4), and what differed was rebuilt from the same shared pieces, so one meaning has one look everywhere. A new set of UI tests now checks this on every view, in English and Vietnamese, light and dark, at the smallest and larger window sizes, so these faults cannot quietly come back.
+
+- **Everywhere**
+  - Toolbar buttons are all 32 px squares with 16 px icons, the same height as every field and menu.
+  - A button that is switched off still says why when you point at it (undo with nothing to undo, *Paste* with nothing copied); before, its hint never showed.
+  - Small buttons use one text size; every list (folders, Settings' sections, export presets, History, menus) has the same row: icon, 8 px, words; the row under the pointer and the chosen row look the same in every list.
+  - A filled button gets darker under the pointer, never lighter, and its words stay readable in both themes.
+  - The arrows to the previous and next photo or sheet are the same in the photo preview and the sheet preview, drawn on the black stage's colours and shown while the pointer is over it.
+  - Names cut short (a file name, a card's title, a long custom size) show in full when you point at them.
+- **Gallery and folder list**
+  - *Photos / Groups* and the light/dark buttons are the same switch as in Settings.
+  - The folder list's blocks line up on one 12 px edge; *Project* and *Library* are headed like every label.
+  - A missing folder is a note with a *Locate…* button, and a project error a red note, instead of link-like lines.
+  - The selection bar stays on one line, its buttons showing only their icons in a narrow window instead of wrapping.
+  - *Filters* is a toolbar button like *Select* beside it, and both look "on" the same way.
+  - The small marks on thumbnails (no date, place borrowed, flags, stars, closed eyes) say what they mean when you point at them.
+- **Photo preview**
+  - Stars, *Pick* and *Reject* are 32 px buttons that press in when on; *Reject* is no longer red, as red is kept for removing things.
+  - The zoom buttons are part of the toolbar.
+  - The histogram's ⚠ and pipette are flat, as the Navigator's choices; arming **W** shows its instruction inside the histogram card, so nothing below moves.
+  - *Apply to all* under Faves and the date stamp is always there, greyed out until the photo has its own setting, so the first slider step never makes the card grow.
+  - *No EXIF date* is a warning badge with its icon.
+- **Collage mode**
+  - The sheet preview has a toolbar above the sheet, as the photo preview does: undo and redo, copy, paste and reset for the chosen photo, *Crop*, *Turn the sheet*, *Rotate photo* and zoom, never over the sheet.
+  - Its cards follow the photo preview's order: the sheet's photos, its size, the chosen photo's colour, then the Collage cards; the chosen photo is marked as every chosen row is.
+  - *Revert* (turns) is the red reset button, as every reset is; the turn button on a sheet is the full 32 px.
+- **Postcards**
+  - Bold, Italic and Underline sit under the text field with the character count, so the label is never squeezed.
+  - Text that will not fit on the print is a red note.
+  - The fonts are named shortly (*Typewriter*, *Handwriting*), the typeface on hover.
+  - Under the address, the other cards' state is a note with *Use for them* and *Use for all N*, whose words wrap instead of being cut.
+  - *Recent addresses* stay listed on every card, the card's own marked.
+  - The ink colours show as dots, each name on hover.
+- **Settings, export and dialogs**
+  - The export's choices sit under a *Change the export's choices* button, as words that wrap.
+  - *Report a problem* keeps its red, from the same block as every red button; *Up to date* is green; facts in *RAM & cache* sit closer.
+  - *Don't save* is red, as every discard; the date and place dialog, the place borrowing and the camera screen use the same fields, switches and ticks as the panels.
+- **Accessibility (WCAG 2.2 AA)**
+  - Every slider's handle has its name for screen readers; the version badge's name says what it shows; the preview's tabs are announced as a group of buttons.
+
+### Fixed
+
+- **A long custom print size** no longer pushes its delete button out of the card.
+- **Recent addresses** no longer list the same address several times (each pause while typing was saved as one); an address is remembered once its field is left.
+- **Recent addresses** no longer disappear after one is picked.
+- **The postcard's "Use for N postcards" lines** are no longer cut at the panel's edge.
+- **The postcard ink names** (*Black*, *Sepia*) are no longer cut in Vietnamese and narrow panels.
 
 ## [0.13.1] - 2026-11-07 — Develop, part 2
 
