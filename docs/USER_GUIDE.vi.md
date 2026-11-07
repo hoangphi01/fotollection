@@ -493,7 +493,7 @@ Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên t�
 
 ## 21. Màu: Looks, Cơ bản và Công cụ
 
-- **Looks** (sắp có ở v0.14.0) đứng đầu: mỗi look là một ô ảnh của bạn qua look đó, nên bạn thấy màu trước khi chọn. Nhấp một ô để ảnh mang look đó; **Mức độ** chỉnh look mạnh hay nhẹ. **Lưu thành look** giữ look của ảnh dưới tên bạn đặt, để dùng cho ảnh khác; look của bạn có nút xoá trên ô của nó. Ở chế độ Đơn giản, các look là một dải dưới ảnh: mỗi look một cú nhấp.
+- **Looks** (sắp có ở v0.14.0) đứng đầu: mỗi look là một ô ảnh của bạn qua look đó, nên bạn thấy màu trước khi chọn. Nhấp một ô để ảnh mang look đó; **Mức độ** chỉnh look mạnh hay nhẹ. **Lưu thành look** giữ look của ảnh dưới tên bạn đặt, để dùng cho ảnh khác; look của bạn có nút xoá trên ô của nó. Nút ↺ trên tiêu đề thẻ đưa ảnh về màu gốc; ở tấm ghép khi chưa chọn ảnh nào, cả hai ảnh về màu gốc. Ở chế độ Đơn giản, các look là một dải dưới ảnh: mỗi look một cú nhấp.
 
 Hai thẻ chỉnh màu ảnh theo từng thanh trượt, nằm dưới **Khổ in / xuất**, chỉ có trong bản xem trước: mở một ảnh (hoặc một tấm ghép) để chỉnh màu. Chúng chỉ đổi riêng ảnh đó, như dấu ngày, và **Dùng look này cho mọi ảnh** biến look của ảnh đó thành look chung.
 

@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- **Looks** (FR-079): a **Looks** card first among the colour cards of the photo and sheet previews, each look a raised tile of the photo through it, the chosen one in the theme's colour and pressed in; the black and white looks named *B&W* for short; **Amount** sets how much of the whole look; **Save as look** keeps the photo's look under a name on this machine, removable from its tile. A pick copies the look into the photo, so its sliders show it and editing the list later changes no photo. In Simple mode the looks are a strip under the photo, each numbered: **0**–**9** chooses one (0 is Original), then **↑** keeps the photo; there the number keys choose a look instead of rating, as Simple mode shows no stars.
+- **Looks** (FR-079): a **Looks** card first among the colour cards of the photo and sheet previews, each look a raised tile of the photo through it, the chosen one in the theme's colour and pressed in; the black and white looks named *B&W* for short; **Amount** sets how much of the whole look; **Save as look** keeps the photo's look under a name on this machine, removable from its tile; the ↺ on the card's title gives the photo its original colour back (on a collage sheet with none picked, both photos). A pick copies the look into the photo, so its sliders show it and editing the list later changes no photo. In Simple mode the looks are a strip under the photo, each numbered: **0**–**9** chooses one (0 is Original), then **↑** keeps the photo; there the number keys choose a look instead of rating, as Simple mode shows no stars.
 
 ### Fixed
 

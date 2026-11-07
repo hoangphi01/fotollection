@@ -1019,7 +1019,8 @@
       "mono-soft": "Soft B&W"
     },
     "sheetWhole": "With no photo picked, the colour goes to both photos of the sheet.",
-    "sheetDiffers": "The two photos have different colours: a change here gives both the same one."
+    "sheetDiffers": "The two photos have different colours: a change here gives both the same one.",
+    "resetLook": "Back to the original colour"
   },
   "rawLook": {
     "title": "RAW colour",

@@ -3,14 +3,14 @@
 import { BookmarkPlus, Palette } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { RemoveButton } from '@/components/forms/danger-button'
+import { RemoveButton, ResetButton } from '@/components/forms/danger-button'
 import { LookGrid, LookTile } from '@/components/forms/look-tile'
 import { SliderField } from '@/components/forms/slider-field'
 import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
 import { commands, type LookSettings, type PhotoId } from '@/ipc/bindings'
 import { lookTileUrl } from '@/lib/photo-url'
-import { fullLook, type LookChange } from './look-fields'
+import { NO_LOOK, fullLook, type LookChange } from './look-fields'
 import { SaveLookDialog } from './save-look-dialog'
 import { lookName, useLooks } from './use-looks'
 
@@ -35,8 +35,17 @@ export function LooksCard({ photoId, look, onChange, grid = true }: LooksCardPro
   const { looks, setLooks, reload } = useLooks()
   const [saving, setSaving] = useState(false)
   const current = fullLook(look)
+  // Anything set, a look of the library or a slider: the reset gives the photo (or the whole
+  // sheet, when none is picked) the original back, one undo step (owner, 2026-11-07).
+  const { name: _name, base: _base, ...colours } = current
+  const { name: _n, base: _b, ...none } = NO_LOOK
+  const set = current.base !== null || JSON.stringify(colours) !== JSON.stringify(none)
   return (
-    <SectionCard icon={<Palette />} title={t('look.looks')}>
+    <SectionCard
+      icon={<Palette />}
+      title={t('look.looks')}
+      action={set && <ResetButton iconOnly label={t('look.resetLook')} onClick={() => onChange(() => NO_LOOK, true)} />}
+    >
       {grid && (
       <LookGrid>
         {looks.map((entry) => (

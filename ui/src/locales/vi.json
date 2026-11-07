@@ -981,7 +981,8 @@
       "mono-soft": "B&W mềm"
     },
     "sheetWhole": "Chưa chọn ảnh nào: màu được áp cho cả hai ảnh trên tấm.",
-    "sheetDiffers": "Hai ảnh đang khác màu: chỉnh ở đây sẽ đặt cùng một màu cho cả hai."
+    "sheetDiffers": "Hai ảnh đang khác màu: chỉnh ở đây sẽ đặt cùng một màu cho cả hai.",
+    "resetLook": "Về màu gốc"
   },
   "rawLook": {
     "title": "Màu RAW",
