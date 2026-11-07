@@ -188,6 +188,22 @@ for (const path of allTsx) {
   }
 }
 
+// SECURITY.md §7, as CI's security job greps it (LESSONS: v0.13.2's release stopped on a comment
+// that named one): no HTML-writing DOM API, not even in a comment, in any .ts or .tsx but ipc/.
+const DANGEROUS = /dangerouslySetInnerHTML|innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\(|new Function/
+const walkCode = (dir, out = []) => {
+  for (const name of readdirSync(dir)) {
+    const p = join(dir, name)
+    if (statSync(p).isDirectory()) { if (name !== 'ipc') walkCode(p, out) } else if (/\.tsx?$/.test(name)) out.push(p)
+  }
+  return out
+}
+for (const path of walkCode(join(root, 'src'))) {
+  readFileSync(path, 'utf8').split('\n').forEach((line, i) => {
+    if (DANGEROUS.test(line)) problems.push(`${relative(join(root, 'src'), path)}:${i + 1}: a dangerous DOM API named (SECURITY.md §7; CI refuses it, even in a comment)`)
+  })
+}
+
 // Raised unless it belongs to something (owner, 2026-11-06: "Select all is still the old
 // style"): a standalone button is never `ghost`. Flat stays only for a row of a list
 // (ListRow), a button inside a raised ButtonGroup, a dismiss inside a note and an on/off

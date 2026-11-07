@@ -21,7 +21,7 @@ function textOf(children: unknown): string {
 
 /**
  * A card's words from the manual (FR-110), as React elements: raw HTML in them is skipped,
- * never rendered (SECURITY: no `innerHTML`). The guide gives the words and the pictures; the
+ * never rendered (SECURITY.md §7: no HTML from text). The guide gives the words and the pictures; the
  * look is the app's (owner, 2026-11-07): each block a child of its `SectionCard`, which spaces
  * them 12 px, text at the card's size, lists 4 px apart as every list (STYLE_RULE §4), keys as
  * `Kbd`, a picture framed as the welcome's with its words under it as a `Hint`. Links show as

@@ -707,3 +707,10 @@
 - **Why:** overlaps counted controls under an open dialog or scrolled out of their panel; `settle` waited for lazy pictures WebKit never starts; WebKit lays out in fractions of a pixel; the panel's scroll position differed between runs.
 - **Fix:** a control counts only where a click reaches it (on top at its centre, inside every box that clips it), within one layer; lazy pictures out of view are not waited for; measures are whole pixels; every scrolling box is at its top before a picture is taken; and an approved set is compared with a second run before it is trusted.
 - **Rule:** a new detector is run twice on an unchanged build and every report of it is read before it is believed; a check that cannot fail proves nothing, and one that fails on nothing is as useless.
+
+### A check that runs only in CI is met only at release (SECURITY.md §7)
+
+- **Seen:** v0.13.2's release stopped in CI's security job: "dangerous DOM API found" in `manual-text.tsx`, a comment that said the manual uses no `innerHTML`.
+- **Why:** the job greps the words themselves in every `.ts`/`.tsx` of `ui/src`, comments included, and nothing local ran the same grep, so the first run of it was the release.
+- **Fix:** the comment says "no HTML from text"; `check-lego` (`npm run lint`) runs CI's grep on every file before each commit.
+- **Rule:** every check CI runs on the code also runs in a local command before a push; when one fails only in CI, its twin goes into the local checks in the fix's commit.

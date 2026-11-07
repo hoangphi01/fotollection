@@ -158,7 +158,7 @@ Fotollection is licensed under **GPL-3.0-only** ([ADR-0008](adr/0008-license-gpl
 |------|------|
 | Vulnerable dependencies | `cargo audit`, `npm audit` |
 | License / banned crates | `cargo deny` |
-| Dangerous DOM APIs | `grep -rE "dangerouslySetInnerHTML\|innerHTML\|outerHTML\|insertAdjacentHTML\|document\.write\|eval\(\|new Function" ui/src` must be empty |
+| Dangerous DOM APIs | `grep -rE "dangerouslySetInnerHTML\|innerHTML\|outerHTML\|insertAdjacentHTML\|document\.write\|eval\(\|new Function" ui/src` must be empty (also run locally by `ui/scripts/check-lego.mjs`, comments included) |
 | Network-free core | `cargo tree -p fotollection-core` contains no `reqwest`/`hyper`/`ureq` |
 | Fuzzing | Mutation testing of the RAW decoder on stable Rust; `cargo-fuzz` targets planned ([TESTING.md §4](TESTING.md#4-fuzzing)) |
 
