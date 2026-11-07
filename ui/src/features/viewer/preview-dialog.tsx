@@ -26,6 +26,7 @@ import { PreviewToolbar } from './preview-toolbar'
 import { setSettingsTarget } from '@/features/develop/settings-copy'
 import { NavigatorCard } from './navigator-card'
 import { HistoryCard } from './history-card'
+import { HistogramCard } from './histogram-card'
 import { CompareStage, type Compare, type CompareMode } from './compare-stage'
 import { oneToOneScale } from './one-to-one'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
@@ -389,9 +390,14 @@ export function PreviewDialog({
       layout={windowed ? 'window' : 'dialog'}
       panels={panels}
       sideOver={!wide}
+      // With no side column (the dialog layout, a narrow window), the histogram heads the
+      // inspector on every tab instead (FR-098).
+      inspectorTop={!showSide && photo ? <HistogramCard photoId={photo.id} revision={revision} /> : undefined}
       side={
         showSide && photo ? (
           <>
+            {/* The histogram above the Navigator, as Lightroom's (FR-098, owner, 2026-11-06). */}
+            <HistogramCard photoId={photo.id} revision={revision} />
             <NavigatorCard
               src={shownSrc}
               view={zoom.view}

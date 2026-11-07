@@ -11,10 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Highlights
 
 - New: copy, paste and reset a photo's settings, to one photo or every ticked one, as in Lightroom
+- New: a histogram above the Navigator, as in Lightroom, that follows your sliders and tells what is blown or blocked
 
 ### Added
 
 - **Copy, paste and reset settings**, as in Lightroom: copy a photo's colour, RAW look, crop position or date stamp (**⇧⌘C**), paste them to another photo (**⇧⌘V**) or to every ticked photo at once (**⌥⇧⌘V**, or *Paste settings* in the selection bar), and reset a photo to the shared settings (**⇧⌘R**). Each is one step of Undo, named in History. The buttons sit after undo and redo above the photo, and in Collage mode in the picked photo's *Settings* card.
+- **A histogram** of red, green, blue and light, as Lightroom's: at the top of the left column in the window layout, heading the panel in the smaller window, and in Collage mode for the picked photo. It shows the photo with its colour, never the date stamp or frame, follows a slider as you drag, and says how much is blown or blocked.
 
 ### Changed
 

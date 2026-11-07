@@ -1023,7 +1023,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-098 — Reading the photo: histogram, clipping, white balance
 
-**P1 (planned, v0.13.1; owner's request 2026-11-06).** A histogram (red, green, blue and light) sits at the top of the develop view's left column, above the Navigator (owner, 2026-11-06; it heads the inspector in the dialog layout, which has no left column), made in Rust from the preview just drawn (≤ 3 ms, OPTIMIZATION §3) and following a slider while it is dragged. `J` shows blown highlights in red and blocked shadows in blue over the photo. `W` picks white balance: a click on what should be neutral grey sets warmth and tint, as one step.
+**P1 (v0.13.1; owner's request 2026-11-06; the histogram built 2026-11-07, `J` and `W` planned).** A histogram (red, green, blue and light) sits at the top of the develop view's left column, above the Navigator (owner, 2026-11-06; it heads the inspector in the dialog layout, which has no left column), made in Rust from the preview just drawn (≤ 3 ms, OPTIMIZATION §3) and following a slider while it is dragged. `J` shows blown highlights in red and blocked shadows in blue over the photo. `W` picks white balance: a click on what should be neutral grey sets warmth and tint, as one step. As built: the histogram counts every second pixel of every second row of the preview's resized photo through its look (1.0 ms p95, RESULT §32), never the stamp, frame or border; it says how much is blown and blocked when any is; in Collage mode it heads the picked photo's cards in the sheet preview.
 
 ### FR-099 — Controls with depth
 

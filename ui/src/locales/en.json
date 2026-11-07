@@ -1171,5 +1171,10 @@
       "crop": "Crop position",
       "stamp": "Date stamp and its line"
     }
+  },
+  "histogram": {
+    "title": "Histogram",
+    "label": "Histogram of the photo: red, green and blue, and the light as a line",
+    "clipped": "Blown {{high}} · Blocked {{low}}"
   }
 }

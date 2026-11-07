@@ -44,6 +44,9 @@ type ViewerFrameProps = {
   panels?: boolean
   /** The inspector's tabs, under its title (the photo preview's Edit, Crop, Print, Info). */
   tabs?: ReactNode
+  /** A card heading the inspector on every tab, above the scrolling sections (the histogram
+   * in the dialog layout, which has no side column, FR-098). */
+  inspectorTop?: ReactNode
   /** The side column over the stage rather than beside it: a narrow window, where three
    * columns would leave the photo too small (FR-095). */
   sideOver?: boolean
@@ -77,6 +80,7 @@ export function ViewerFrame({
   side,
   panels = true,
   tabs,
+  inspectorTop,
   sideOver = false,
 }: ViewerFrameProps) {
   return (
@@ -140,6 +144,12 @@ export function ViewerFrame({
             </>
           )}
 
+          {inspectorTop && (
+            <>
+              <div className="p-3">{inspectorTop}</div>
+              <Separator />
+            </>
+          )}
           {/* Cards spaced as in the side panel, 12 px (STYLE_RULE §4, the lego rule). */}
           <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
             <div className="space-y-3 p-3">{children}</div>

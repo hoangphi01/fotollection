@@ -13,6 +13,7 @@ import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
 import { PhotoLookCards } from '@/features/look/photo-look-cards'
 import { SettingsButtons } from '@/features/develop/settings-buttons'
+import { HistogramCard } from '@/features/viewer/histogram-card'
 import { setSettingsTarget } from '@/features/develop/settings-copy'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
 import { CropEditor } from '@/features/viewer/crop-editor'
@@ -323,6 +324,8 @@ export function SheetPreviewDialog({
       {/* The picked photo's colour, as in the panel; none picked, no colour cards (FR-079). */}
       {photo !== null && (
         <>
+          {/* The picked photo's histogram (FR-098), then its settings (FR-097). */}
+          <HistogramCard photoId={photo} revision={revision} />
           {/* Copy, paste and reset this photo's settings (FR-097), its crop the collage crop. */}
           <SectionCard icon={<Copy />} title={t('develop.title')}>
             <div className="flex items-center gap-1.5">

@@ -1133,5 +1133,10 @@
       "crop": "Vị trí vùng cắt",
       "stamp": "Dấu ngày và dòng chữ"
     }
+  },
+  "histogram": {
+    "title": "Biểu đồ màu",
+    "label": "Biểu đồ màu của ảnh: đỏ, xanh lá, xanh dương, và độ sáng là đường kẻ",
+    "clipped": "Cháy sáng {{high}} · Mất chi tiết tối {{low}}"
   }
 }

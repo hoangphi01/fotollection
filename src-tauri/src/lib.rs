@@ -125,6 +125,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::reset_photo_stamps,
             commands::undo,
             commands::redo,
+            commands::photo_histogram,
             commands::photo_history,
             commands::restore_photo_state,
             settings_copy::copy_photo_settings,

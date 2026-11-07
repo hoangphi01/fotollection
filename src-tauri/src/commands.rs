@@ -1481,6 +1481,71 @@ pub fn preview_bytes(
         .map_err(|e| shown_error(&e, &record))
 }
 
+/// The develop view's histogram (FR-098): levels 0–255 of red, green, blue and light, each
+/// scaled so the fullest level of the four is 1000, and the blown and blocked pixels in per
+/// mille. Small (2 KB) and from the preview's own photo and look.
+#[derive(Debug, Clone, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct HistogramView {
+    pub r: Vec<u16>,
+    pub g: Vec<u16>,
+    pub b: Vec<u16>,
+    pub l: Vec<u16>,
+    pub high_permille: u16,
+    pub low_permille: u16,
+}
+
+impl HistogramView {
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)] // 0–1000 by construction
+    fn from(h: &fotollection_core::histogram::Histogram) -> Self {
+        let peak = [&h.r, &h.g, &h.b, &h.l]
+            .iter()
+            .flat_map(|c| c.iter())
+            .copied()
+            .max()
+            .unwrap_or(0)
+            .max(1);
+        let scale = |c: &[u32]| {
+            c.iter()
+                .map(|&n| (u64::from(n) * 1000 / u64::from(peak)) as u16)
+                .collect()
+        };
+        let per_mille = |n: u32| (u64::from(n) * 1000 / u64::from(h.samples.max(1))) as u16;
+        Self {
+            r: scale(&h.r),
+            g: scale(&h.g),
+            b: scale(&h.b),
+            l: scale(&h.l),
+            high_permille: per_mille(h.high),
+            low_permille: per_mille(h.low),
+        }
+    }
+}
+
+/// The histogram of the photo's preview as it is now (FR-098), off the main thread: the first
+/// time it may decode the photo, then it reuses the preview's resized photo (≤ 3 ms).
+#[tauri::command]
+#[specta::specta]
+pub async fn photo_histogram(app: AppHandle, id: PhotoId) -> Result<HistogramView, IpcError> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let (record, settings, place, frame) = preview_inputs(&state, id)?;
+        state
+            .previews
+            .histogram(
+                &record,
+                &settings,
+                frame.as_ref(),
+                place.as_deref(),
+                state.codec.as_ref(),
+            )
+            .map(|h| HistogramView::from(&h))
+            .map_err(|e| shown_error(&e, &record))
+    })
+    .await
+    .map_err(|e| IpcError::internal(e.to_string()))?
+}
+
 /// The user's font for postcard text (FR-073, FR-042), when the postcard is on and one is
 /// chosen and loaded.
 pub fn postcard_font_of(

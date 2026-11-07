@@ -24,6 +24,10 @@ use crate::thumbs::ThumbError;
 pub const T2_LONG_EDGE: u32 = 2048;
 /// Long edge of the preview sent to the UI.
 pub const PREVIEW_LONG_EDGE: u32 = 1600;
+/// The histogram counts every second pixel of every second row: 1.0 ms p95 on a 1600 px
+/// preview against 3.7 ms for every pixel, its curves within 0.9 per mille of the full count
+/// (`examples/measure_histogram.rs`, OPTIMIZATION §5, 2026-11-07).
+pub const HISTOGRAM_STEP: u32 = 2;
 const PREVIEW_QUALITY: u8 = 85;
 /// What the preview may keep in memory, in bytes (FR-091, ADR-0041): the app gives it a
 /// quarter of the machine's RAM, split between the 2048 px sources (about 12.5 MB each), the
@@ -1125,6 +1129,34 @@ impl PreviewCache {
         Ok(finish(self.resized(&source, &p)?.as_ref().clone(), &p))
     }
 
+    /// The histogram of `record`'s preview (FR-098): the cropped, resized photo kept from the
+    /// last preview, seen through its look on every [`HISTOGRAM_STEP`]th pixel; the stamp,
+    /// frame and border are drawn later and never counted. Within 3 ms (OPTIMIZATION §3).
+    pub fn histogram(
+        &self,
+        record: &PhotoRecord,
+        settings: &RenderSettings,
+        frame: Option<&FrameRequest>,
+        place: Option<&str>,
+        codec: &dyn JpegCodec,
+    ) -> Result<crate::histogram::Histogram, ThumbError> {
+        let source = self.source(record, split_look(record, settings).0, codec)?;
+        let p = Self::plan_from(
+            &source,
+            record,
+            settings,
+            frame,
+            place,
+            Some(PREVIEW_LONG_EDGE),
+        );
+        let photo = self.resized(&source, &p)?;
+        Ok(crate::histogram::measure(
+            &photo,
+            p.look.as_deref(),
+            HISTOGRAM_STEP,
+        ))
+    }
+
     /// A collage sheet's preview JPEG (FR-035): both photos from their cached sources,
     /// the sheet's long edge at most `long_edge`. Each photo comes with its place. With
     /// `thumbnail`, for the grid's small sheets, the photos come from their thumbnails.
@@ -1558,6 +1590,40 @@ mod tests {
             .filter(|&(x, y)| at(x, y) == 0)
             .count();
         assert!(corner > 50, "the stamp is left out: {corner}");
+        Ok(())
+    }
+
+    /// FR-098: the histogram counts the photo only: the same with the stamp drawn as without
+    /// it, the border's colour never counted (the photo inside it is smaller, so fewer samples,
+    /// none of them white border), and a look moves it.
+    #[test]
+    fn fr_098_the_histogram_counts_the_photo_not_the_stamp_or_border() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let record = photo(dir.path(), 3000, 2000)?;
+        let codec = default_codec();
+        let mut plain = RenderSettings::default();
+        plain.stamp.enabled = false;
+        let mut stamped = plain.clone();
+        stamped.stamp.enabled = true;
+        let cache = PreviewCache::new();
+        let a = cache.histogram(&record, &plain, None, None, codec.as_ref())?;
+        let b = cache.histogram(&record, &stamped, None, None, codec.as_ref())?;
+        assert!(a.samples > 0);
+        assert_eq!(a, b, "the stamp is never counted");
+        let mut bordered = plain.clone();
+        bordered.border = true;
+        let c = cache.histogram(&record, &bordered, None, None, codec.as_ref())?;
+        assert!(
+            c.samples < a.samples,
+            "the photo is smaller inside its border"
+        );
+        let mut warm = plain.clone();
+        warm.look.adjust.brightness = 60;
+        assert_ne!(
+            cache.histogram(&record, &warm, None, None, codec.as_ref())?,
+            a,
+            "the look is counted"
+        );
         Ok(())
     }
 

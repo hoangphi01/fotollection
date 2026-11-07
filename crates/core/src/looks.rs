@@ -129,7 +129,7 @@ static STEPS: Steps = steps();
 /// the far corner, and the two between them on the path the fractions' order picks.
 #[allow(clippy::cast_possible_truncation)] // the weighted sum is at most 65535 · 256
 #[inline]
-fn lookup(table: &Table, px: [u8; 3]) -> [u8; 3] {
+pub(crate) fn lookup(table: &Table, px: [u8; 3]) -> [u8; 3] {
     let s = &STEPS;
     let (r0, g0, b0) = (
         usize::from(s.cell[usize::from(px[0])]),

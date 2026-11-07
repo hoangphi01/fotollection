@@ -19,6 +19,7 @@ pub mod facts;
 pub mod fonts;
 pub mod frame;
 pub mod geocode;
+pub mod histogram;
 pub mod history;
 pub mod image;
 pub mod import;

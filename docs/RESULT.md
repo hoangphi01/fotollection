@@ -628,3 +628,17 @@ The same twelve photos at the same print size, at the default quality 90, throug
 - **A limit costs nothing until it binds,** and then about twice the export's time, under the 3× the plan allowed; it is off by default.
 - **Guessing the quality from the sizes either side** (interpolation) took more encodes, 4.3 at 2 MB, since a file grows fastest near the top of the scale: bisection stays.
 - **A 20 × 30 cm print rarely fits 1 MB:** half the photos stay over it even at 60, and the result says how many.
+
+## 32. The histogram's cost (v0.13.1, FR-098)
+
+The develop view's histogram is counted from the preview's resized photo (1,600 px on its long edge) through its look, on every pixel or on a grid of them (`measure_histogram -- "PRAGUE 11.26" 24`, release build, 24 of the trip's JPEGs, a look of eight sliders, 20 runs each, 2026-11-07, REF-MAC with 9.6 GB of swap in use). The gap is the largest difference, over the 256 levels of red, green, blue and light, between a level's share in the sampled count and in the full one.
+
+| Pixels counted | p50 | p95 | Largest gap of a level's share |
+|---|---|---|---|
+| Every pixel | 3.32 ms | 3.66 ms | 0 |
+| Every second of every second row | 0.89 ms | 1.03 ms | 0.88 ‰ |
+| Every third of every third row | 0.44 ms | 0.52 ms | 1.31 ‰ |
+
+- **Every second pixel of every second row** is kept (`preview::HISTOGRAM_STEP`): a third of the 3 ms budget, and a curve 64 px high cannot show a gap under one per mille (a pixel of its height is 16 ‰).
+- **Counting every pixel would cross the budget,** with the look's table run on each one; the look runs on the sampled pixels only, never on a copy of the photo.
+- The stamp, frame and border are drawn after the photo is counted, so they never enter it (`fr_098_the_histogram_counts_the_photo_not_the_stamp_or_border`).

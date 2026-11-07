@@ -459,6 +459,11 @@ export const commands = {
 	resetPhotoStamps: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("reset_photo_stamps")),
 	undo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("undo")),
 	redo: () => typedError<HistoryState, IpcError>(__TAURI_INVOKE("redo")),
+	/**
+	 *  The histogram of the photo's preview as it is now (FR-098), off the main thread: the first
+	 *  time it may decode the photo, then it reuses the preview's resized photo (≤ 3 ms).
+	 */
+	photoHistogram: (id: PhotoId) => typedError<HistogramView, IpcError>(__TAURI_INVOKE("photo_histogram", { id })),
 	/**  A photo's develop steps, newest first; the first is where the photo is now. */
 	photoHistory: (id: PhotoId) => typedError<HistoryStep[], IpcError>(__TAURI_INVOKE("photo_history", { id })),
 	/**
@@ -1213,6 +1218,20 @@ export type GroupResult = {
 	reasons: Reason[],
 	/**  The top two are within half a sigma of sharpness: the user should look. */
 	tooClose: boolean,
+};
+
+/**
+ *  The develop view's histogram (FR-098): levels 0–255 of red, green, blue and light, each
+ *  scaled so the fullest level of the four is 1000, and the blown and blocked pixels in per
+ *  mille. Small (2 KB) and from the preview's own photo and look.
+ */
+export type HistogramView = {
+	r: number[],
+	g: number[],
+	b: number[],
+	l: number[],
+	highPermille: number,
+	lowPermille: number,
 };
 
 /**  What a step changed, to name it in the History list as Lightroom does (*Warmth +8*). */
