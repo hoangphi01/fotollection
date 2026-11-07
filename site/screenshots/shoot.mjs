@@ -12,7 +12,7 @@ import { readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { chromium } from 'playwright'
+import { chromium, webkit } from 'playwright'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const outDir = path.resolve(process.argv[3] ?? path.join(root, 'site/assets/img'))
@@ -188,7 +188,8 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
   }
 }
 
-const browser = await chromium.launch()
+// MEASURE_ENGINE=webkit measures in WebKit, the engine of the app's window on macOS and Linux.
+const browser = await (process.env.MEASURE_ENGINE === 'webkit' ? webkit : chromium).launch()
 const shots = []
 
 // Demo culling state for the print basket (FR-050), by position: the trip's, or none.
@@ -320,6 +321,21 @@ const scrollTo = async (page, t) => {
 // MEASURE=1: instead of the screenshots, a table of every panel's spacing and control sizes,
 // failing when one differs from STYLE_RULE §4's measures (the lego rule; the style-audit skill).
 /** Spacing and control sizes inside one panel, as sets of distinct values. */
+/** Folded cards taller than their header (owner, 2026-11-07: a band under a folded card's
+ * title): every `SectionCard` whose body is folded and that has no footer must be its header. */
+async function foldedBands(page, where) {
+  const bands = await page.evaluate(() =>
+    [...document.querySelectorAll('section.rounded-xl > header')].flatMap((header) => {
+      const card = header.parentElement
+      const body = card.querySelector(':scope > [aria-hidden="true"]')
+      if (!body || card.children.length !== 2) return []
+      const extra = card.clientHeight - header.offsetHeight
+      return extra > 0.5 ? [`"${header.textContent.trim()}" ${Math.round(extra * 10) / 10} px under its header`] : []
+    }),
+  )
+  return bands.map((b) => `${where}: folded card ${b}`)
+}
+
 async function measure(page, rootSel) {
   return page.evaluate((rootSel) => {
     const roots = [...document.querySelectorAll(rootSel)]
@@ -506,10 +522,18 @@ async function measurePanels() {
   let { context, page } = await open({ scenario: 'stamp', language, theme })
   rows.push(['folder list', await measure(page, 'aside.border-r')])
   rows.push(['Pro panel', await measure(page, 'aside.border-l')])
+  const panelBands = await foldedBands(page, 'Pro panel')
   await (await reach(page, SHOW.crop)).dblclick()
   await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
   await settle(page)
   rows.push(['photo preview', await measure(page, '[role="dialog"] aside')])
+  const bands = await foldedBands(page, 'photo preview')
+  // The inspector's tabs: Edit, Crop | Print, Info; the Print and Info tabs hold folded cards.
+  for (const [index, tab] of [[2, 'Print'], [3, 'Info']]) {
+    await page.locator('[role="tablist"] button').nth(index).click()
+    await settle(page)
+    bands.push(...(await foldedBands(page, `photo preview, ${tab}`)))
+  }
   await page.screenshot({ path: path.join(outDir, 'measure-preview.png') })
   await context.close()
   ;({ context, page } = await open({ scenario: 'stamp', language, theme, mode: 'simple' }))
@@ -560,7 +584,8 @@ async function measurePanels() {
   )
   const widths = new Set(rows.filter(([name]) => /panel|folder/.test(name)).map(([, m]) => m.width))
   if (widths.size > 1) off.push(`the folder list and the panels differ in width: ${[...widths].join(', ')}`)
-  off.push(...offCentre)
+  off.push(...offCentre, ...panelBands, ...bands)
+  console.log(panelBands.length + bands.length ? '' : 'folded cards: every folded card is its header alone')
   console.log(offCentre.length ? '' : 'icons: every icon-only button has its icon centred (≤ 0.5 px)')
   // Text and rows that overflow, at the narrowest window, a middle one and a wide one (step 5).
   const spilled = []
