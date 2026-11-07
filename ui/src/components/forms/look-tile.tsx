@@ -15,8 +15,8 @@ type LookTileProps = {
 
 /**
  * One look as a tile (FR-079, STYLE_RULE §4): the photo through it, square, its name under it
- * on two lines at most (the whole name in the hint), the chosen one ringed in the theme's colour with
- * the tick of select mode. The Looks card's grid and Simple mode's strip both use it.
+ * on two lines at most (the whole name in the hint), raised as a button, the chosen one in the theme's colour,
+ * pressed in, with the tick of select mode. The Looks card's grid and Simple mode's strip both use it.
  */
 export function LookTile({ src, name, chosen, onPick, corner }: LookTileProps) {
   return (
@@ -27,16 +27,20 @@ export function LookTile({ src, name, chosen, onPick, corner }: LookTileProps) {
         aria-pressed={chosen}
         data-hint={name}
         className={cn(
-          'block w-full min-w-0 overflow-hidden rounded-md border text-left outline-none focus-visible:ring-2 focus-visible:ring-primary',
-          chosen && 'ring-2 ring-primary',
+          // Raised as an outline button (FR-099, STYLE_RULE §4 "Depth"); the chosen one in the
+          // theme's colour and pressed in, as every chosen choice (owner, 2026-11-07).
+          'block w-full min-w-0 overflow-hidden rounded-lg border p-1 text-left transition-all outline-none focus-visible:ring-3 focus-visible:ring-ring/50',
+          chosen
+            ? 'border-transparent bg-primary text-primary-foreground [--face:var(--primary)] pressed-in'
+            : 'border-border bg-card [--face:var(--card)] raised hover:bg-muted active:raised-pressed dark:border-input dark:bg-secondary dark:[--face:var(--secondary)] dark:hover:bg-muted',
         )}
       >
-        <img src={src} alt="" loading="lazy" className="aspect-square w-full bg-muted object-cover" />
+        <img src={src} alt="" loading="lazy" className="aspect-square w-full rounded-md bg-muted object-cover" />
         {/* Two lines at most, always two high, so every row of tiles lines up. */}
-        <span className="line-clamp-2 h-9 px-1.5 pt-0.5 text-xs leading-normal break-words">{name}</span>
+        <span className="line-clamp-2 h-9 px-1 pt-1 text-xs leading-normal break-words">{name}</span>
       </button>
-      {chosen && <TickCircle checked className="pointer-events-none absolute top-1 right-1" />}
-      {corner && <span className="absolute top-1 left-1 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">{corner}</span>}
+      {chosen && <TickCircle checked className="pointer-events-none absolute top-2 right-2" />}
+      {corner && <span className="absolute top-2 left-2 opacity-0 group-focus-within:opacity-100 group-hover:opacity-100">{corner}</span>}
     </div>
   )
 }
