@@ -3,6 +3,10 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
+/** An open strip with its header line, less its own line: 28 px of header, 96 px of cells. The
+ * viewer's footer beside it keeps this height, open or folded (owner, 2026-11-07). */
+export const STRIP_OPEN = 124
+
 /** A cell's side and the gap between cells, in px (STYLE_RULE §4). */
 const CELL = 80
 const GAP = 8

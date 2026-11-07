@@ -220,7 +220,7 @@ export function SheetPreviewDialog({
         }
       }}
       stageRef={setStage}
-      below={sheet && !cropping ? <LookStrip photoId={photo ?? sheet.first} picker={looks} numbered={false} /> : undefined}
+      below={sheet && !cropping ? <LookStrip photoId={photo ?? sheet.first} picker={looks} numbered={false} folding /> : undefined}
       tabs={
         <InspectorTabs<SheetTab>
           ariaLabel={t('inspector.tabs')}
@@ -336,9 +336,9 @@ export function SheetPreviewDialog({
                   onClick={picking ? pickAt : undefined}
                   className={cn(
                     // The dialog's 90vh less the stage's padding (2 × 2rem), the toolbar row above
-                    // it (`--spacing-header`) and its line, and the strip of looks below (7rem, the
-                    // `Filmstrip`'s 112 px, and its line): the whole sheet fits, any shape.
-                    'block max-h-[calc(90vh-4rem-var(--spacing-header)-1px-7rem-1px)] max-w-full animate-in object-contain stage-photo fade-in-0',
+                    // it (`--spacing-header`) and its line, and the strip of looks below (7.75rem,
+                    // `STRIP_OPEN`, and its line): the whole sheet fits, any shape.
+                    'block max-h-[calc(90vh-4rem-var(--spacing-header)-1px-7.75rem-1px)] max-w-full animate-in object-contain stage-photo fade-in-0',
                     picking && 'cursor-crosshair',
                   )}
                 />

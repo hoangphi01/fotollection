@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { useEffect, useState, type KeyboardEventHandler, type MouseEvent, type PointerEventHandler, type ReactNode, type Ref } from 'react'
+import type { KeyboardEventHandler, MouseEvent, PointerEventHandler, ReactNode, Ref } from 'react'
+import { STRIP_OPEN } from '@/components/layout/filmstrip'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
@@ -89,20 +90,9 @@ export function ViewerFrame({
   inspectorTop,
   sideOver = false,
 }: ViewerFrameProps) {
-  // The lowest strip under the stage and the inspector's footer share one line across the
-  // columns (owner, 2026-11-07): the footer is as tall as that strip (the photo preview's
-  // filmstrip, under its strip of looks), whatever it shows.
-  const [belowBox, setBelowBox] = useState<HTMLDivElement | null>(null)
-  const [belowHeight, setBelowHeight] = useState(0)
-  useEffect(() => {
-    if (!belowBox) return
-    const lowest = () => (belowBox.lastElementChild instanceof HTMLElement ? belowBox.lastElementChild : belowBox)
-    const observer = new ResizeObserver(() => setBelowHeight(lowest().offsetHeight))
-    observer.observe(belowBox)
-    observer.observe(lowest())
-    return () => observer.disconnect()
-  }, [belowBox])
-  const lined = below !== undefined && below !== null && below !== false && belowHeight > 0
+  // The inspector's footer as tall as an open strip under the stage, whether the strip is open
+  // or folded, so the footer never moves (owner, 2026-11-07).
+  const lined = below !== undefined && below !== null && below !== false
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent
@@ -150,11 +140,7 @@ export function ViewerFrame({
           >
             {stage}
           </div>
-          {below !== undefined && below !== null && below !== false && (
-            <div ref={setBelowBox} className="shrink-0">
-              {below}
-            </div>
-          )}
+          {below}
         </div>
 
         {/* Inspector */}
@@ -190,7 +176,7 @@ export function ViewerFrame({
               folded strip (its header alone) leaves the hints their own height. */}
           <p
             className={cn('px-4 py-3 text-xs text-muted-foreground', lined && 'box-border flex shrink-0 items-center')}
-            style={lined ? { minHeight: belowHeight - 1 } : undefined}
+            style={lined ? { minHeight: STRIP_OPEN } : undefined}
           >
             <span className="block">{footer}</span>
           </p>

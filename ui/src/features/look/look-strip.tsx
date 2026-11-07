@@ -15,12 +15,12 @@ type LookStripProps = {
   picker: LookPicker
   /** Each tile with its key, 0–9 (Simple mode); the previews' digits rate or pick photos. */
   numbered?: boolean
-  /** A header that folds it (the photo preview, two strips under its photo: owner 2026-11-07,
-   * a Pro user mostly works from presets); Simple mode's and a sheet's stay open. */
+  /** A header that folds it (the photo and sheet previews, owner 2026-11-07: a Pro user mostly
+   * works from presets); Simple mode's stays open under its photo. */
   folding?: boolean
 }
 
-/** Whether the photo preview's strip of looks is open, kept while the app runs. */
+/** Whether the previews' strip of looks is open, kept while the app runs. */
 let stripOpen = true
 
 /**
