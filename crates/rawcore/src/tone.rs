@@ -98,6 +98,26 @@ fn cdf(hist: &[u64]) -> Vec<f64> {
 /// A tone curve: output linear luminance for each input bin.
 pub struct Curve(Vec<f32>);
 
+impl Curve {
+    /// The curve at `y`, interpolated between its two nearest bins. One bin spans about
+    /// three 8-bit levels near black, so reading the bin alone leaves steps in the shadows.
+    #[allow(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss
+    )]
+    fn at(&self, y: f32) -> f32 {
+        let n = self.0.len();
+        if n < 2 {
+            return self.0.first().copied().unwrap_or(y);
+        }
+        let t = (y / RANGE).clamp(0.0, 1.0) * (n - 1) as f32;
+        let i = (t as usize).min(n - 2);
+        let f = t - i as f32;
+        self.0[i] + (self.0[i + 1] - self.0[i]) * f
+    }
+}
+
 /// The camera's look: the lens shading it corrected, its tone curve, and a 3×3 matrix on
 /// display-linear sRGB for its colour rendering (saturation and hue shifts), with rows
 /// summing to one so grey stays grey.
@@ -215,7 +235,7 @@ pub fn match_look(linear: &Linear, reference: &Reference<'_>) -> Option<Look> {
             let p = &linear.rgb[i..i + 3];
             let g = shading.gain(x, y, linear.width, linear.height);
             let yv = (luminance(p) * g).max(1e-6);
-            let k = curve.0[bin(yv)] / yv * g;
+            let k = curve.at(yv) / yv * g;
             [p[0] * k, p[1] * k, p[2] * k]
         })
     };
@@ -619,7 +639,7 @@ fn finish_with(
                     table[(r2 * SHADING_STEPS as f32) as usize]
                 };
                 let y = (luminance(p) * g).max(1e-6);
-                let target = curve.0[bin(y)];
+                let target = curve.at(y);
                 let k = target / y * g;
                 let t = [p[0] * k, p[1] * k, p[2] * k];
                 let mut c = [0, 1, 2].map(|i| {
@@ -691,5 +711,44 @@ mod tests {
                 .iter()
                 .all(|p| p[0] == p[1] && p[1] == p[2])
         );
+    }
+
+    /// A dark ramp, finer than one curve bin per pixel, must come out without steps: no
+    /// two neighbours more than one 8-bit level apart (the 4,096 bins span 0–4 in linear
+    /// light, so one bin is about three levels near black unless the curve is interpolated).
+    #[test]
+    #[allow(clippy::cast_precision_loss)]
+    fn fr_088_a_dark_ramp_has_no_steps() {
+        // 2,000 dark pixels, then as many at white so the default curve's white is 1.
+        let (dark, width) = (2000, 4000);
+        let rgb: Vec<f32> = (0..width)
+            .flat_map(|x| {
+                let v = if x < dark {
+                    x as f32 / dark as f32 * 0.02
+                } else {
+                    1.0
+                };
+                [v, v, v]
+            })
+            .collect();
+        let linear = Linear {
+            width,
+            height: 1,
+            rgb,
+        };
+        let identity = Curve(
+            (0..BINS)
+                .map(|b| b as f32 / (BINS - 1) as f32 * RANGE)
+                .collect(),
+        );
+        for curve in [identity, default_curve(&linear)] {
+            let out = finish(&linear, &curve);
+            let worst = out.rgb.as_chunks::<3>().0[..dark]
+                .windows(2)
+                .map(|w| w[1][1].abs_diff(w[0][1]))
+                .max()
+                .unwrap_or(0);
+            assert!(worst <= 1, "a step of {worst} levels in the shadows");
+        }
     }
 }

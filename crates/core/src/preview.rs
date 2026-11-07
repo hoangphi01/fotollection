@@ -70,8 +70,9 @@ const STANDARD_QUALITY: u8 = 90;
 /// pixels of a 2048 px source change without `thumbs::CACHE_VERSION` changing: a RAW develop
 /// or finish (`raw`, `raw_finish`), the colour conversion, the resize. Files of an older
 /// version are never read again and go with the cache limit. v0.11.0 wrote version 1
-/// without a number (`.t2-o…`).
-pub const STANDARD_VERSION: u8 = 2;
+/// without a number (`.t2-o…`). 3: v0.14.0, the RAW tone curve interpolated, shadows
+/// without steps (RESULT §33).
+pub const STANDARD_VERSION: u8 = 3;
 
 /// Writes a standard preview atomically (a `.part` of its own, then a rename), as T1 is
 /// written; a failed write only means it is made again next time. Two writers of one photo
