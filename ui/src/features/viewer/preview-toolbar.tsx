@@ -64,7 +64,9 @@ export function PreviewToolbar({
   const rotate = (clockwise: boolean) => photo && void commands.rotatePhotos([photo.id], clockwise)
   const stripLabel = t(filmstrip ? 'viewer.hideFilmstrip' : 'viewer.showFilmstrip')
   return (
-    <div className="@container flex h-header items-center gap-1.5 px-3">
+    // Too narrow for every button (a narrow window with both columns open), the row scrolls
+    // sideways rather than cut its last buttons (owner, 2026-11-07).
+    <div className="@container flex h-header items-center gap-1.5 overflow-x-auto overflow-y-hidden px-3 [scrollbar-width:thin] [&>*]:shrink-0">
       {side && (
         <>
           <ToolbarButton

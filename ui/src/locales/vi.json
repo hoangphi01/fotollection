@@ -412,7 +412,8 @@
     "sideOpen": "Hiện ngay (Tab)",
     "pickWhite": "Nhấp vào một chỗ trong ảnh lẽ ra phải có màu xám trung tính: Ấm/lạnh và Tint sẽ chỉnh theo. Esc để huỷ.",
     "sideShow": "Hiện cột trái: biểu đồ màu, Điều hướng, Lịch sử (Tab)",
-    "sideHide": "Ẩn cột trái (Tab)"
+    "sideHide": "Ẩn cột trái (Tab)",
+    "sideTitle": "Tổng quan"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",

@@ -40,6 +40,10 @@ type ViewerFrameProps = {
   layout?: 'dialog' | 'window'
   /** A column left of the stage (the photo preview's Navigator and History, FR-095). */
   side?: ReactNode
+  /** The side column's title and its action, in a head as tall as the inspector's, so the
+   * lines meet across the columns (owner, 2026-11-07). */
+  sideTitle?: ReactNode
+  sideAction?: ReactNode
   /** False hides the side column and the inspector, as Lightroom's Tab does. */
   panels?: boolean
   /** The inspector's tabs, under its title (the photo preview's Edit, Crop, Print, Info). */
@@ -78,6 +82,8 @@ export function ViewerFrame({
   footer,
   layout = 'dialog',
   side,
+  sideTitle,
+  sideAction,
   panels = true,
   tabs,
   inspectorTop,
@@ -105,6 +111,12 @@ export function ViewerFrame({
               sideOver && 'absolute inset-y-0 left-0 z-20 lifted-strong',
             )}
           >
+            {sideTitle && (
+              <div className="box-content flex h-header shrink-0 items-center gap-2 border-b px-4">
+                <p className="min-w-0 flex-1 truncate text-base font-semibold">{sideTitle}</p>
+                {sideAction}
+              </div>
+            )}
             <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
               <div className="space-y-3 p-3">{side}</div>
             </ScrollArea>

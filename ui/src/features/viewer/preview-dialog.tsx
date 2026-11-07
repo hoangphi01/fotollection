@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Crop, Download, Info, MapPin, PanelLeftOpen, Pipette, Printer, SlidersHorizontal, Star } from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, Crop, Download, Info, MapPin, PanelLeftClose, PanelLeftOpen, Pipette, Printer, SlidersHorizontal, Star } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
@@ -10,6 +10,7 @@ import { CullControls } from '@/features/culling/cull-controls'
 import { handleCullKey } from '@/features/culling/cull-keys'
 import { CameraProfileEditor } from '@/features/frame/camera-profile-editor'
 import { ResetButton } from '@/components/forms/danger-button'
+import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { ExportSection } from '@/features/export/export-section'
 import { showExportDialog } from '@/features/export/use-export-dialog'
 import type { ExportApi } from '@/features/export/use-export'
@@ -390,7 +391,9 @@ export function PreviewDialog({
           filmstrip={ui.filmstrip}
           onFilmstrip={() => void updateUi({ filmstrip: !ui.filmstrip })}
           windowed={windowed}
-          side={windowed && !wide ? { open: sideOpen, onToggle: () => setSideOpen((o) => !o) } : undefined}
+          // Folded in a narrow window, the left column's button waits at the start of the row;
+          // opened, it moves to the column's own head (owner, 2026-11-07).
+          side={windowed && !wide && !sideOpen ? { open: false, onToggle: () => setSideOpen(true) } : undefined}
           onLayout={toggleLayout}
         />
       }
@@ -416,6 +419,18 @@ export function PreviewDialog({
       // Opened in a narrow window, the left column takes its room and the photo fits between
       // the two columns, never under one (owner, 2026-11-07).
       sideOver={false}
+      sideTitle={t('viewer.sideTitle')}
+      sideAction={
+        windowed && !wide ? (
+          <ToolbarButton
+            icon={<PanelLeftClose />}
+            label={t('viewer.sideHide')}
+            data-hint={t('viewer.sideHide')}
+            iconOnly
+            onClick={() => setSideOpen(false)}
+          />
+        ) : undefined
+      }
       // The histogram lives in the window layout's left column, above the Navigator, also when
       // a narrow window keeps that column folded (Tab opens it; owner, 2026-11-07); only the
       // dialog layout, which has no left column, puts it at the head of the inspector (FR-098).

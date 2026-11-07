@@ -432,7 +432,8 @@
     "sideOpen": "Show it now (Tab)",
     "pickWhite": "Click something in the photo that should be neutral grey: its warmth and tint follow. Esc cancels.",
     "sideShow": "Show the left column: histogram, Navigator, History (Tab)",
-    "sideHide": "Hide the left column (Tab)"
+    "sideHide": "Hide the left column (Tab)",
+    "sideTitle": "Overview"
   },
   "errors": {
     "internal": "Something went wrong",

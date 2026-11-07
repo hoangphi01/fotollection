@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Copy, paste and reset settings**, as in Lightroom: copy a photo's colour, RAW look, crop position or date stamp (**⇧⌘C**), paste them to another photo (**⇧⌘V**) or to every ticked photo at once (**⌥⇧⌘V**, or *Paste settings* in the selection bar), and reset a photo to the shared settings (**⇧⌘R**). Each is one step of Undo, named in History. The buttons sit after undo and redo above the photo, and in Collage mode in the picked photo's *Settings* card.
 - **White balance from a grey spot** (**W**, or the pipette on the histogram): click something that should be neutral and warmth and tint follow, as one step.
-- **The left column in a narrow window** now makes room for itself, so the photo fits between the two columns; a button at the start of the toolbar shows and hides it.
+- **The left column in a narrow window** now makes room for itself, so the photo fits between the two columns; a button at the start of the toolbar shows it and one on its head, *Overview*, hides it; the toolbar scrolls sideways when its buttons no longer fit.
 - **Clipping shown on the photo** (**J**, or the ⚠ on the histogram): blown parts in red, blocked shadows in blue, following your sliders.
 - **A histogram** of red, green, blue and light, as Lightroom's: at the top of the left column in the window layout, heading the panel in the smaller window, and in Collage mode for the picked photo. It shows the photo with its colour, never the date stamp or frame, follows a slider as you drag, and says how much is blown or blocked.
 
