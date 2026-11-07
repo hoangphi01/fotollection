@@ -17,9 +17,11 @@ type ToolbarButtonProps = Omit<ComponentProps<typeof Button>, 'children' | 'size
 }
 
 /**
- * A toolbar's button (STYLE_RULE §4): the icon alone in a narrow toolbar, as a square with
- * the icon in its centre, and the icon with its label from the `@3xl` container width. The
- * padding follows what is shown, so the icon is never off centre when the label hides.
+ * A toolbar's button (STYLE_RULE §4): the icon alone in a narrow toolbar, as a 32 px square
+ * with its 16 px icon in the centre, and the icon with its label from the `@3xl` container
+ * width. The padding follows what is shown, so the icon is never off centre when the label
+ * hides. Its hint sits on a wrapper: a disabled button gets no pointer events, and its hint
+ * (undo's key, why Paste is off) must still show.
  */
 export function ToolbarButton({
   icon,
@@ -30,24 +32,27 @@ export function ToolbarButton({
   variant = 'outline',
   className,
   disabled,
+  'data-hint': hint,
   ...props
-}: ToolbarButtonProps) {
+}: ToolbarButtonProps & { 'data-hint'?: string }) {
   return (
-    <Button
-      variant={variant}
-      size="sm"
-      aria-label={label}
-      aria-busy={busy || undefined}
-      disabled={disabled || busy}
-      className={cn(
-        'w-7 px-0',
-        !iconOnly && (labelFrom === '5xl' ? '@5xl:w-auto @5xl:pr-2.5 @5xl:pl-1.5' : '@3xl:w-auto @3xl:pr-2.5 @3xl:pl-1.5'),
-        className,
-      )}
-      {...props}
-    >
-      {busy ? <LoaderCircle className="animate-spin" /> : icon}
-      {!iconOnly && <span className={labelFrom === '5xl' ? 'hidden @5xl:inline' : 'hidden @3xl:inline'}>{label}</span>}
-    </Button>
+    <span data-hint={hint} className="inline-flex shrink-0">
+      <Button
+        variant={variant}
+        size="sm"
+        aria-label={label}
+        aria-busy={busy || undefined}
+        disabled={disabled || busy}
+        className={cn(
+          'w-8 px-0',
+          !iconOnly && (labelFrom === '5xl' ? '@5xl:w-auto @5xl:pr-2.5 @5xl:pl-1.5' : '@3xl:w-auto @3xl:pr-2.5 @3xl:pl-1.5'),
+          className,
+        )}
+        {...props}
+      >
+        {busy ? <LoaderCircle className="animate-spin" /> : icon}
+        {!iconOnly && <span className={labelFrom === '5xl' ? 'hidden @5xl:inline' : 'hidden @3xl:inline'}>{label}</span>}
+      </Button>
+    </span>
   )
 }

@@ -9,8 +9,9 @@ type PanelNoteProps = {
   /** A warning that something will be lost (Replace existing files, a version no longer
    * safe): solid deep red with white text, as the red badges. */
   danger?: boolean
-  /** One button that acts on what the note says, in the theme's colour, under the words
-   * (owner, 2026-11-07: "the Show now button inside the note"). */
+  /** What acts on what the note says, under the words: one button in the theme's colour
+   * (owner, 2026-11-07: "the Show now button inside the note"), or that and one outline
+   * button beside it (owner, 2026-11-07: a postcard's *Use for them* and *Use for all*). */
   action?: ReactNode
 }
 
@@ -26,7 +27,7 @@ export function PanelNote({ icon, children, danger = false, action }: PanelNoteP
           {icon}
           <span>{children}</span>
         </p>
-        {action}
+        <div className="flex flex-wrap gap-2">{action}</div>
       </div>
     )
   }

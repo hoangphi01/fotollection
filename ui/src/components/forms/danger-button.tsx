@@ -45,19 +45,21 @@ type DangerButtonProps = {
 function DangerButton({ kind, label, hint, iconOnly, small, round, wide, disabled, onClick, className }: DangerButtonProps) {
   const Icon = ICONS[kind]
   const iconSize = iconOnly ? (small ? 'icon-xs' : 'icon-sm') : small ? 'xs' : 'sm'
+  // The hint on a wrapper, so a disabled button still shows it (no pointer events on it).
   return (
-    <Button
-      variant="destructive"
-      size={iconSize}
-      disabled={disabled}
-      aria-label={iconOnly ? label : undefined}
-      data-hint={iconOnly ? (hint ?? label) : hint}
-      onClick={onClick}
-      className={cn(wide && 'w-full', round && 'size-5 rounded-full [--lip:2px] [&_svg]:size-3.5', className)}
-    >
-      <Icon data-icon={iconOnly ? undefined : 'inline-start'} aria-hidden />
-      {!iconOnly && label}
-    </Button>
+    <span data-hint={iconOnly ? (hint ?? label) : hint} className={cn('inline-flex shrink-0', wide && 'w-full', className)}>
+      <Button
+        variant="destructive"
+        size={iconSize}
+        disabled={disabled}
+        aria-label={iconOnly ? label : undefined}
+        onClick={onClick}
+        className={cn(wide && 'w-full', round && 'size-5 rounded-full [--lip:2px] [&_svg]:size-3.5')}
+      >
+        <Icon data-icon={iconOnly ? undefined : 'inline-start'} aria-hidden />
+        {!iconOnly && label}
+      </Button>
+    </span>
   )
 }
 

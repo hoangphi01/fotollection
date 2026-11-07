@@ -16,8 +16,11 @@ export const CHOSEN_ROW = 'bg-accent font-medium text-accent-foreground row-chos
  * in `text-sm`; the icon muted, in the accent on the chosen row. `ListRow` and the folder
  * list's own rows both take it from here.
  */
-export const ROW_LAYOUT = 'gap-2 px-2 text-sm [&_svg]:size-4! [&_svg]:shrink-0'
-export const ROW_ICON = (chosen: boolean) => (chosen ? '[&_svg]:text-primary' : '[&_svg]:text-muted-foreground')
+// Only the row's own icon (a direct child): never a checkbox's tick or a button inside it.
+export const ROW_LAYOUT = 'gap-2 px-2 text-sm [&>svg]:size-4! [&>svg]:shrink-0'
+export const ROW_ICON = (chosen: boolean) => (chosen ? '[&>svg]:text-primary' : '[&>svg]:text-muted-foreground')
+/** The row under the pointer: the ghost button's wash, so every list reacts the same. */
+export const ROW_HOVER = 'hover:bg-muted dark:hover:bg-muted/50'
 
 type ListRowProps = {
   /** A Lucide icon before the words; rows without one keep its room, so words line up. */

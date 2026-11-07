@@ -32,7 +32,7 @@ import { ModeSwitch } from '@/features/modes/mode-switch'
 import { useFolderDrag } from './use-folder-drag'
 import { showSettings } from '@/features/settings-window/use-settings-window'
 import { RemoveButton } from '@/components/forms/danger-button'
-import { CHOSEN_ROW, ROW_LAYOUT } from '@/components/forms/list-row'
+import { CHOSEN_ROW, ROW_HOVER, ROW_ICON, ROW_LAYOUT } from '@/components/forms/list-row'
 
 type LibrarySidebarProps = {
   /** Every source folder with its own count (FR-056). */
@@ -91,8 +91,10 @@ export function LibrarySidebar({
   )
   const rowClass = (active: boolean) =>
     cn(
-      'flex h-8 w-full min-w-0 items-center rounded-md text-left hover:bg-sidebar-accent',
+      'flex h-8 w-full min-w-0 items-center rounded-md text-left',
       ROW_LAYOUT,
+      ROW_HOVER,
+      ROW_ICON(active),
       // The chosen row: an accent outline inside, as Sentry's selected project (FR-099).
       active && CHOSEN_ROW,
     )
@@ -238,7 +240,7 @@ export function LibrarySidebar({
                 data-hint={t('library.allHint')}
                 onClick={() => onSelect([])}
               >
-                <Images className={cn('size-4 shrink-0', inGallery && selected.length === 0 ? 'text-primary' : 'text-muted-foreground')} />
+                <Images />
                 <span className="truncate">{t('library.allPhotos')}</span>
                 <span className="ml-auto text-xs text-muted-foreground tabular-nums">{total - queueCounts.aside}</span>
               </button>
@@ -259,7 +261,7 @@ export function LibrarySidebar({
                   data-hint={t(hint)}
                   onClick={() => onQueue(view)}
                 >
-                  <Icon className={cn('size-4 shrink-0', queue === view ? 'text-primary' : 'text-muted-foreground')} />
+                  <Icon />
                   <span className="truncate">{t(label)}</span>
                   <span className="ml-auto text-xs text-muted-foreground tabular-nums">{count}</span>
                 </button>
@@ -293,7 +295,7 @@ export function LibrarySidebar({
                     {selecting ? (
                       <Checkbox checked={active} tabIndex={-1} className="pointer-events-none" aria-hidden />
                     ) : (
-                      <Folder className={cn('size-4 shrink-0', active ? 'text-primary' : 'text-muted-foreground')} />
+                      <Folder />
                     )}
                     <span className="truncate">{name}</span>
                     <span className="ml-auto text-xs text-muted-foreground tabular-nums group-focus-within:invisible group-hover:invisible">

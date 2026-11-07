@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Crop, Download, Info, MapPin, PanelLeftClose, PanelLeftOpen, Pipette, Printer, SlidersHorizontal, Star } from 'lucide-react'
+import { CalendarDays, Clock, Crop, Download, Info, MapPin, PanelLeftClose, PanelLeftOpen, Pipette, Printer, SlidersHorizontal, Star } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
@@ -19,6 +19,7 @@ import { SectionCard } from '@/components/layout/section-card'
 import { PanelNote } from '@/components/layout/panel-note'
 import { InspectorSection } from '@/components/layout/inspector-section'
 import { KeyHints } from '@/components/layout/key-hints'
+import { StageNav } from '@/components/layout/stage-nav'
 import { StageSpinner } from '@/components/layout/stage-spinner'
 import { sendTo } from './send-to'
 import { useShownSrc } from './use-shown-src'
@@ -568,28 +569,8 @@ export function PreviewDialog({
               )}
               {!shownSrc && <StageSpinner error={shownError} />}
               {/* Browse buttons for the mouse; they show while the pointer is over the stage. */}
-              <Button
-                variant="secondary"
-                size="icon"
-                aria-label={t('viewer.previous')}
-                data-hint={t('viewer.previous')}
-                className="absolute left-3 opacity-0 transition-opacity group-hover/stage:opacity-80 hover:opacity-100 focus-visible:opacity-100"
-                disabled={index === 0}
-                onClick={() => go(-1)}
-              >
-                <ChevronLeft />
-              </Button>
-              <Button
-                variant="secondary"
-                size="icon"
-                aria-label={t('viewer.next')}
-                data-hint={t('viewer.next')}
-                className="absolute right-3 opacity-0 transition-opacity group-hover/stage:opacity-80 hover:opacity-100 focus-visible:opacity-100"
-                disabled={index === null || index >= photos.length - 1}
-                onClick={() => go(1)}
-              >
-                <ChevronRight />
-              </Button>
+              <StageNav to="previous" label={t('viewer.previous')} disabled={index === 0} onClick={() => go(-1)} />
+              <StageNav to="next" label={t('viewer.next')} disabled={index === null || index >= photos.length - 1} onClick={() => go(1)} />
             </>
           )}
         </>

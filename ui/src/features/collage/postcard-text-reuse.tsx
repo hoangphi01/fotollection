@@ -75,7 +75,7 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
     <PanelNote
       icon={<CopyCheck />}
       action={
-        <div className="flex flex-wrap gap-2">
+        <>
           {blank > 0 && (
             <Button size="sm" onClick={() => void apply(false)}>
               {t('postcard.reuse.fill')}
@@ -86,7 +86,7 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
               {t('postcard.reuse.replace', { count: blank + differ })}
             </Button>
           )}
-        </div>
+        </>
       }
     >
       {blank > 0 ? t(`postcard.reuse.blank${scope}`, { count: blank }) : t(`postcard.reuse.differ${scope}`, { count: differ })}

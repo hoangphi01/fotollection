@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview: in the preview only (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { ChevronDown, Info } from 'lucide-react'
+import { Info } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FactLines } from '@/components/forms/field'
@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge'
 import type { PhotoDetails, PhotoSummary } from '@/ipc/bindings'
 import { factsParts } from '@/lib/facts'
 import { formatBytes, formatCaptureLong, formatMegapixels } from '@/lib/format'
-import { cn } from '@/lib/utils'
 
 /** Whether the card is unfolded, kept while the app runs, so ← → and the next preview keep it. */
 let remembered = true
@@ -59,19 +58,8 @@ export function PhotoSummaryCard({ photo, details }: PhotoSummaryCardProps) {
           </Badge>
         )
       }
-      title={
-        <button
-          type="button"
-          className="flex w-full items-center gap-1.5 text-left"
-          aria-expanded={open}
-          onClick={toggle}
-        >
-          {t('viewer.summary')}
-          <ChevronDown
-            className={cn('size-4 text-muted-foreground transition-transform', !open && '-rotate-90')}
-          />
-        </button>
-      }
+      title={t('viewer.summary')}
+      onToggle={toggle}
     >
       <FactLines>
         {lines.map((line, i) => (

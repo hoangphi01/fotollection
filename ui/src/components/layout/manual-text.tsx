@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
+import { Info } from 'lucide-react'
 import Markdown, { type Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Hint } from '@/components/forms/field'
+import { PanelNote } from '@/components/layout/panel-note'
 import { Kbd } from '@/components/ui/kbd'
 import { SHOT_PREFIX } from '@/lib/manual'
 
@@ -33,16 +35,16 @@ export function ManualText({ markdown, picture }: { markdown: string; picture: (
     p: ({ node, children }) => {
       const only = node?.children.length === 1 ? node.children[0] : undefined
       if (only?.type === 'element' && only.tagName === 'img') return <>{children}</>
-      return <p className="leading-relaxed">{children}</p>
+      return <p className="leading-normal">{children}</p>
     },
-    ul: ({ children }) => <ul className="flex list-disc flex-col gap-1 pl-5 leading-relaxed marker:text-primary">{children}</ul>,
-    ol: ({ children }) => <ol className="flex list-decimal flex-col gap-1 pl-5 leading-relaxed marker:text-primary">{children}</ol>,
+    ul: ({ children }) => <ul className="flex list-disc flex-col gap-1 pl-5 leading-normal marker:text-primary">{children}</ul>,
+    ol: ({ children }) => <ol className="flex list-decimal flex-col gap-1 pl-5 leading-normal marker:text-primary">{children}</ol>,
     li: ({ children }) => <li className="pl-1 [&>ol]:pt-1 [&>ul]:pt-1">{children}</li>,
     strong: ({ children }) => {
       if (KEYS.test(textOf(children).trim())) return <Kbd>{children}</Kbd>
       return <strong className="font-semibold">{children}</strong>
     },
-    blockquote: ({ children }) => <div className="rounded-md bg-muted/60 px-2.5 py-2 text-muted-foreground">{children}</div>,
+    blockquote: ({ children }) => <PanelNote icon={<Info />}>{children}</PanelNote>,
     code: ({ children }) => <code className="rounded-sm bg-muted px-1 font-mono text-xs">{children}</code>,
     a: ({ children }) => <span>{children}</span>,
     hr: () => null,
@@ -51,8 +53,8 @@ export function ManualText({ markdown, picture }: { markdown: string; picture: (
         <table className="w-full text-xs">{children}</table>
       </div>
     ),
-    th: ({ children }) => <th className="bg-muted/70 px-2.5 py-1.5 text-left font-semibold">{children}</th>,
-    td: ({ children }) => <td className="border-t px-2.5 py-1.5 align-top">{children}</td>,
+    th: ({ children }) => <th className="bg-muted/70 px-2 py-1 text-left font-semibold">{children}</th>,
+    td: ({ children }) => <td className="border-t px-2 py-1 align-top">{children}</td>,
     img: ({ src, alt }) => {
       if (typeof src !== 'string' || !src.startsWith(SHOT_PREFIX)) return null
       // A lazy picture keeps its room before it loads (LESSONS), 1100 × 700 as most shots are.

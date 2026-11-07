@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview: in the preview only (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { ChevronDown, Wand2 } from 'lucide-react'
+import { Wand2 } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Field } from '@/components/forms/field'
@@ -9,7 +9,6 @@ import { Collapse } from '@/components/layout/collapse'
 import { SectionCard } from '@/components/layout/section-card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { LookSettings, Mono } from '@/ipc/bindings'
-import { cn } from '@/lib/utils'
 import { fullLook, hueSwatch, resetTools, toolsChanged, type FullAdjust, type LookChange } from './look-fields'
 import { LookCardTitle } from './look-card-title'
 import { ResetButton } from '@/components/forms/danger-button'
@@ -72,20 +71,11 @@ export function ToolsCard({ look, onChange, footer }: ToolsCardProps) {
     <SectionCard
       icon={<Wand2 />}
       open={open}
-      title={
-        <button
-          type="button"
-          className="flex w-full items-center gap-1.5 text-left"
-          aria-expanded={open}
-          onClick={() => {
-            remembered = !open
-            setOpen(!open)
-          }}
-        >
-          <LookCardTitle title={t('look.tools')} changed={changed} />
-          <ChevronDown className={cn('size-4 text-muted-foreground transition-transform', !open && '-rotate-90')} />
-        </button>
-      }
+      title={<LookCardTitle title={t('look.tools')} changed={changed} />}
+      onToggle={() => {
+        remembered = !open
+        setOpen(!open)
+      }}
       action={
         changed > 0 && (
           <ResetButton iconOnly label={t('look.reset')} onClick={() => onChange((l) => ({ ...l, adjust: resetTools(l.adjust) }), true)} />

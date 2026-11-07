@@ -97,7 +97,7 @@ export function SettingsFrame({
           {actions ? (
             <>
               <Separator />
-              <div className="flex h-14 shrink-0 items-center gap-2 px-4">{actions}</div>
+              <div className="flex h-14 shrink-0 items-center gap-2 px-3">{actions}</div>
             </>
           ) : footer ? (
             <>

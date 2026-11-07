@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+import { ChevronDown } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Collapse } from '@/components/layout/collapse'
 import { cn } from '@/lib/utils'
@@ -15,6 +16,9 @@ type SectionCardProps = {
   footer?: ReactNode
   children?: ReactNode
   className?: string
+  /** The title folds and unfolds the body, with a chevron (*This photo*, *Tools*): one
+   * block for a card the user folds by its name. */
+  onToggle?: () => void
 }
 
 /**
@@ -22,7 +26,7 @@ type SectionCardProps = {
  * same strip, so sections read apart at a glance (STYLE_RULE §4). Used by the settings
  * panel and the preview inspector alike.
  */
-export function SectionCard({ icon, title, action, open = true, footer, children, className }: SectionCardProps) {
+export function SectionCard({ icon, title, action, open = true, footer, children, className, onToggle }: SectionCardProps) {
   const hasBody = children !== undefined && children !== null && children !== false
   return (
     <section className={cn('overflow-hidden rounded-xl [--stack-gap:0px] border-[1.5px] bg-card text-card-foreground lifted', className)}>
@@ -33,7 +37,14 @@ export function SectionCard({ icon, title, action, open = true, footer, children
         )}
       >
         <span className="flex text-primary [&_svg]:size-4">{icon}</span>
-        <div className="min-w-0 flex-1 truncate">{title}</div>
+        {onToggle ? (
+          <button type="button" className="flex min-w-0 flex-1 items-center gap-2 text-left" aria-expanded={open} onClick={onToggle}>
+            <span className="min-w-0 truncate">{title}</span>
+            <ChevronDown className={cn('size-4 shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
+          </button>
+        ) : (
+          <div className="min-w-0 flex-1 truncate">{title}</div>
+        )}
         {/* A fixed 44 px header: an action that comes and goes (a 32 px reset) never resizes it. */}
         {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
       </header>
