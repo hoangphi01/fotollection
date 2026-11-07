@@ -829,7 +829,8 @@
     "sheetSharpness": "Độ nét khi in",
     "sheetSharpnessValue": "{{dpi}} DPI · {{quality}}",
     "sheetPixelsHint": "Hai ảnh ghép thành một ảnh cỡ này, nét bằng ảnh kém nét hơn, để không ảnh nào bị phóng to.",
-    "wholeSheet": "Cả tấm"
+    "wholeSheet": "Cả tấm",
+    "sheetKeys": "← →  tấm khác · ↑ vào giỏ in · ↓ để riêng\n1 2  chọn ảnh · 0  cả tấm · Esc  bỏ chọn, rồi đóng\nC  cắt ảnh đang chọn · R  xoay tấm · ⇧R  xoay ảnh đang chọn\n{{mod}} + −  phóng to · J  vùng mất chi tiết · W  cân bằng trắng từ một điểm xám\nE  tab Chỉnh màu"
   },
   "facts": {
     "grey": "Ảnh xám",

@@ -7,6 +7,7 @@ import { SectionCard } from '@/components/layout/section-card'
 import { InspectorSection } from '@/components/layout/inspector-section'
 import { InspectorTabs } from '@/components/layout/inspector-tabs'
 import { KeyHints } from '@/components/layout/key-hints'
+import { KeysInfo } from '@/components/layout/keys-info'
 import { StageNav } from '@/components/layout/stage-nav'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { Kbd } from '@/components/ui/kbd'
@@ -276,6 +277,9 @@ export function SheetPreviewDialog({
               onZoomOut={zoom.zoomOut}
               onFit={zoom.reset}
             />
+            {/* Every key behind ⓘ, as the photo preview's (owner, 2026-11-07: a paragraph of
+                keys is hard to read); the footer keeps the few used most. */}
+            <KeysInfo lines={t('collage.sheetKeys', { mod: MOD }).split('\n')} />
           </div>
         </div>
       }
@@ -294,17 +298,10 @@ export function SheetPreviewDialog({
                 ]
               : [
                   { keys: ['←', '→'], label: t('collage.browse') },
-                  { keys: [`${MOD} + −`], label: t('viewer.zoom') },
                   { keys: ['1', '2'], label: t('collage.choose') },
                   { keys: ['0'], label: t('collage.wholeSheet') },
-                  { keys: ['↑'], label: t('viewer.upBasket') },
-                  { keys: ['↓'], label: t('viewer.downAside') },
-                  { keys: ['C'], label: t('viewer.crop') },
-                  { keys: ['J'], label: t('histogram.clippingShort') },
-                  { keys: ['W'], label: t('histogram.pickShort') },
-                  ...(postcard ? [] : [{ keys: ['R'], label: t('collage.turn') }]),
-                  { keys: ['⇧R'], label: t('collage.rotatePhoto') },
                   { keys: ['Esc'], label: t('viewer.close') },
+                  { keys: ['ⓘ'], label: t('viewer.everyKey') },
                 ]
           }
         />

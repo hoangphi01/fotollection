@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import type { KeyboardEventHandler, MouseEvent, PointerEventHandler, ReactNode, Ref } from 'react'
+import { useEffect, useState, type KeyboardEventHandler, type MouseEvent, type PointerEventHandler, type ReactNode, type Ref } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
@@ -89,6 +89,17 @@ export function ViewerFrame({
   inspectorTop,
   sideOver = false,
 }: ViewerFrameProps) {
+  // The strip under the stage and the inspector's footer share one line across the columns
+  // (owner, 2026-11-07): the footer is as tall as the strip, whatever the strip shows.
+  const [belowBox, setBelowBox] = useState<HTMLDivElement | null>(null)
+  const [belowHeight, setBelowHeight] = useState(0)
+  useEffect(() => {
+    if (!belowBox) return
+    const observer = new ResizeObserver(() => setBelowHeight(belowBox.offsetHeight))
+    observer.observe(belowBox)
+    return () => observer.disconnect()
+  }, [belowBox])
+  const lined = below !== undefined && below !== null && below !== false && belowHeight > 0
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent
@@ -136,7 +147,11 @@ export function ViewerFrame({
           >
             {stage}
           </div>
-          {below}
+          {below !== undefined && below !== null && below !== false && (
+            <div ref={setBelowBox} className="shrink-0">
+              {below}
+            </div>
+          )}
         </div>
 
         {/* Inspector */}
@@ -168,7 +183,14 @@ export function ViewerFrame({
           </ScrollArea>
 
           <Separator />
-          <p className="px-4 py-3 text-xs text-muted-foreground">{footer}</p>
+          {/* Its line meets the strip's: at least as tall as the strip, less this line (1 px); a
+              folded strip (its header alone) leaves the hints their own height. */}
+          <p
+            className={cn('px-4 py-3 text-xs text-muted-foreground', lined && 'box-border flex shrink-0 items-center')}
+            style={lined ? { minHeight: belowHeight - 1 } : undefined}
+          >
+            <span className="block">{footer}</span>
+          </p>
         </aside>
       </DialogContent>
     </Dialog>

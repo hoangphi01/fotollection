@@ -860,7 +860,8 @@
     "sheetSharpness": "Prints at",
     "sheetSharpnessValue": "{{dpi}} DPI · {{quality}}",
     "sheetPixelsHint": "The two photos make one picture of this size, as sharp as the less sharp of them, so neither is enlarged.",
-    "wholeSheet": "Whole sheet"
+    "wholeSheet": "Whole sheet",
+    "sheetKeys": "← →  other sheets · ↑ print basket · ↓ set aside\n1 2  pick a photo · 0  the whole sheet · Esc  let go, then close\nC  crop the picked photo · R  turn the sheet · ⇧R  turn the picked photo\n{{mod}} + −  zoom · J  clipping · W  white balance from a grey point\nE  the Edit tab"
   },
   "facts": {
     "grey": "Greyscale",
