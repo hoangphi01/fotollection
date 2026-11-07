@@ -9,6 +9,8 @@ import { LOOK_KEYS, lookName, type LookPicker } from './use-looks'
 type LookStripProps = {
   photoId: PhotoId
   picker: LookPicker
+  /** Each tile with its key, 0–9 (Simple mode); a collage sheet's digits pick its photos. */
+  numbered?: boolean
 }
 
 /**
@@ -17,14 +19,14 @@ type LookStripProps = {
  * (0–9); one tap or one key gives this photo that look, the chosen one outlined, as the
  * filmstrip's photo is.
  */
-export function LookStrip({ photoId, picker }: LookStripProps) {
+export function LookStrip({ photoId, picker, numbered = true }: LookStripProps) {
   return (
     <Filmstrip
       items={picker.looks}
       current={picker.current}
       hint={(entry) => {
         const i = picker.looks.indexOf(entry)
-        return i < LOOK_KEYS ? `${lookName(entry)} (${i})` : lookName(entry)
+        return numbered && i < LOOK_KEYS ? `${lookName(entry)} (${i})` : lookName(entry)
       }}
       onPick={(_, index) => picker.pick(index)}
       cell={(entry) => {
@@ -32,7 +34,7 @@ export function LookStrip({ photoId, picker }: LookStripProps) {
         return (
           <>
             <img src={lookTileUrl(photoId, entry.id)} alt="" loading="lazy" decoding="async" draggable={false} className="size-full object-cover" />
-            {i < LOOK_KEYS && <Kbd className="absolute top-1 left-1 bg-stage-chip text-stage-ink">{i}</Kbd>}
+            {numbered && i < LOOK_KEYS && <Kbd className="absolute top-1 left-1 bg-stage-chip text-stage-ink">{i}</Kbd>}
             <span className="absolute inset-x-0 bottom-0 truncate bg-stage-chip px-1 text-xs text-stage-ink">{lookName(entry)}</span>
           </>
         )

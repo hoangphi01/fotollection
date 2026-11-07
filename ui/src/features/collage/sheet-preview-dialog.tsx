@@ -17,7 +17,9 @@ import { ViewerFrame } from '@/components/layout/viewer-frame'
 import { commands, type CullFilter, type PhotoId, type PhotoSummary, type Queue, type RenderSettings } from '@/ipc/bindings'
 import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
+import { LookStrip } from '@/features/look/look-strip'
 import { PhotoLookCards } from '@/features/look/photo-look-cards'
+import { useLookPicker } from '@/features/look/use-looks'
 import { SettingsButtons } from '@/features/develop/settings-buttons'
 import { HistogramCard } from '@/features/viewer/histogram-card'
 import { setSettingsTarget } from '@/features/develop/settings-copy'
@@ -140,6 +142,10 @@ export function SheetPreviewDialog({
     setSettingsTarget(target)
     return () => setSettingsTarget(null, target)
   }, [open, photo])
+  // The strip of looks under the sheet (owner, 2026-11-07): the picked photo's, or the whole
+  // sheet's when none is picked; the first photo's look marks the chosen tile.
+  const sheetIds = sheet ? (sheet.second === null ? [sheet.first] : [sheet.first, sheet.second]) : undefined
+  const looks = useLookPicker(photo ?? sheet?.first, revision, photo === null ? sheetIds : undefined)
   const info = useSheetInfo(open ? sheet : undefined, revision)
   const cell = info?.cells.find((c) => c.id === photo) ?? info?.cells[0]
   const geometry = useCellGeometry(cropping ? photo : null, sheet, revision)
@@ -213,6 +219,7 @@ export function SheetPreviewDialog({
         }
       }}
       stageRef={setStage}
+      below={sheet && !cropping ? <LookStrip photoId={photo ?? sheet.first} picker={looks} numbered={false} /> : undefined}
       tabs={
         <InspectorTabs<SheetTab>
           ariaLabel={t('inspector.tabs')}
@@ -332,8 +339,9 @@ export function SheetPreviewDialog({
                   onClick={picking ? pickAt : undefined}
                   className={cn(
                     // The dialog's 90vh less the stage's padding (2 × 2rem), the toolbar row above
-                    // it (`--spacing-header`) and its line: the whole sheet fits, any shape.
-                    'block max-h-[calc(90vh-4rem-var(--spacing-header)-1px)] max-w-full animate-in object-contain stage-photo fade-in-0',
+                    // it (`--spacing-header`) and its line, and the strip of looks below (7rem, the
+                    // `Filmstrip`'s 112 px, and its line): the whole sheet fits, any shape.
+                    'block max-h-[calc(90vh-4rem-var(--spacing-header)-1px-7rem-1px)] max-w-full animate-in object-contain stage-photo fade-in-0',
                     picking && 'cursor-crosshair',
                   )}
                 />
@@ -441,13 +449,14 @@ export function SheetPreviewDialog({
             picking={picking}
             onPicking={setPicking}
           />
-          <PhotoLookCards photoId={photo} revision={revision} onAppliedToAll={onSettingsReload} />
+          <PhotoLookCards photoId={photo} grid={false} revision={revision} onAppliedToAll={onSettingsReload} />
         </>
       ) : (
         sheet && (
           <PhotoLookCards
             photoId={sheet.first}
-            sheet={sheet.second === null ? [sheet.first] : [sheet.first, sheet.second]}
+            sheet={sheetIds}
+            grid={false}
             revision={revision}
             onAppliedToAll={onSettingsReload}
           />

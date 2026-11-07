@@ -35,10 +35,11 @@ export type LookPicker = {
 }
 
 /**
- * The photo's look among the library's (FR-079), for Simple mode's strip and its number keys:
+ * The photo's look among the library's (FR-079), for the strips of looks (Simple mode, with
+ * its number keys; a collage sheet, its photo or the whole sheet `sheet`):
  * which one it has, and a pick that gives it another.
  */
-export function useLookPicker(photoId: PhotoId | undefined, revision: number): LookPicker {
+export function useLookPicker(photoId: PhotoId | undefined, revision: number, sheet?: PhotoId[]): LookPicker {
   const { looks } = useLooks()
   const [base, setBase] = useState<string | null>(null)
   const picks = useRef(0)
@@ -62,7 +63,10 @@ export function useLookPicker(photoId: PhotoId | undefined, revision: number): L
       if (photoId === undefined || entry === undefined) return
       picks.current += 1
       setBase(entry.id)
-      void commands.setPhotoLook(photoId, { ...entry.look, name: lookName(entry) }, false)
+      const look = { ...entry.look, name: lookName(entry) }
+      // A whole collage sheet when none of its photos is picked (owner, 2026-11-07).
+      if (sheet) void commands.setSheetLook(sheet, look, false)
+      else void commands.setPhotoLook(photoId, look, false)
     },
   }
 }

@@ -121,7 +121,7 @@ Every view below runs the A cases of §3 at each width (`overflowViews`, `measur
 |---|---|---|
 | UI-MODE-001 | Gallery, Pro panel, filters | the demo; a long custom size |
 | UI-MODE-002 | Simple mode | the demo; the strip of looks under the photo (FR-079) |
-| UI-MODE-003 | Collage panel and sheet preview | a sheet chosen; its Edit and Print tabs, a photo picked and *Whole sheet*; landscape, square, tall; a long custom size |
+| UI-MODE-003 | Collage panel and sheet preview | a sheet chosen; its Edit and Print tabs, a photo picked and *Whole sheet*; the strip of looks under landscape, square and tall sheets (the sheet's four edges in sight); landscape, square, tall; a long custom size |
 | UI-MODE-004 | Postcards | panel and preview |
 | UI-MODE-005 | Photo preview | both layouts; W and J; the Looks card in the Edit tab |
 | UI-MODE-006 | Settings | every section, the manual among them |

@@ -21,6 +21,8 @@ type PhotoLookCardsProps = {
   sheet?: PhotoId[]
   /** Bumps on every edit and undo, so the cards follow the photo's look. */
   revision: number
+  /** `false` where a strip of looks under the stage lists them (a collage sheet's preview). */
+  grid?: boolean
   /** After "Apply to all" changed the shared settings. */
   onAppliedToAll(): void
 }
@@ -31,7 +33,7 @@ type PhotoLookCardsProps = {
  * once the photo has its own look, makes it the setting for every photo. A camera RAW first
  * gets how it is finished (FR-072, `RawLookCard`).
  */
-export function PhotoLookCards({ photoId, sheet, revision, onAppliedToAll }: PhotoLookCardsProps) {
+export function PhotoLookCards({ photoId, sheet, grid = true, revision, onAppliedToAll }: PhotoLookCardsProps) {
   const { t } = useTranslation()
   const [current, setCurrent] = useState<PhotoLook | null>(null)
   // On a whole sheet: whether its photos' looks differ now, so the note can say one is coming.
@@ -101,7 +103,7 @@ export function PhotoLookCards({ photoId, sheet, revision, onAppliedToAll }: Pho
           }
         />
       )}
-      <LooksCard photoId={photoId} look={current.look} onChange={change} />
+      <LooksCard photoId={photoId} look={current.look} onChange={change} grid={grid} />
       <FavesCard look={current.look} onChange={change} footer={applyToAll} raw={current.raw != null} />
       <ToolsCard look={current.look} onChange={change} />
     </>

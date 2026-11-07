@@ -18,6 +18,8 @@ type LooksCardProps = {
   photoId: PhotoId
   look: LookSettings | undefined
   onChange: LookChange
+  /** `false` where a strip of looks under the stage lists them (a collage sheet's preview). */
+  grid?: boolean
 }
 
 const percent = (v: number) => `${v} %`
@@ -28,13 +30,14 @@ const percent = (v: number) => `${v} %`
  * as look* keeps the photo's look on this machine. A pick copies the look's values into the
  * photo, so the sliders below show them and a later change of the library changes no photo.
  */
-export function LooksCard({ photoId, look, onChange }: LooksCardProps) {
+export function LooksCard({ photoId, look, onChange, grid = true }: LooksCardProps) {
   const { t } = useTranslation()
   const { looks, setLooks, reload } = useLooks()
   const [saving, setSaving] = useState(false)
   const current = fullLook(look)
   return (
     <SectionCard icon={<Palette />} title={t('look.looks')}>
+      {grid && (
       <LookGrid>
         {looks.map((entry) => (
           <LookTile
@@ -56,6 +59,7 @@ export function LooksCard({ photoId, look, onChange }: LooksCardProps) {
           />
         ))}
       </LookGrid>
+      )}
       <SliderField
         label={t('look.amount')}
         hint={t('look.hints.amount')}
