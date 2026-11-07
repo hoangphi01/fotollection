@@ -170,7 +170,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-078 | The photo at a glance at the top of the preview: camera, lens, exposure, place, date, size; v0.9.7 |
 | FR-079 | Colour adjustments, moderate: Looks, Faves and Tools cards (tone, colour, style, effects), looks with an amount, per photo; Faves and Tools shipped in v0.9.9, the Looks card in v0.14.0, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md) |
 | FR-080 | The panel's cards in an order of one's own, the same in the gallery and the previews, with *Reset order*; later, not scheduled |
-| FR-081 | A welcome screen on the first launch: pick the cards one likes, Pinterest style, they come first (with FR-080); *Skip*; later, not scheduled |
+| FR-081 | A welcome screen on the first launch: the welcome shipped as FR-109 (v0.13.1); left, a page to pick the cards one likes, Pinterest style, they come first (with FR-080); *Skip*; later, not scheduled |
 | FR-082 | The app's brain in one file: *Export / Import settings* as `.fotosettings` (every setting, the card order, looks and LUTs, fonts, logos, postcard addresses), to move to another computer; later, not scheduled |
 | FR-083 | A personal photo calendar: a built-in calendar engine for any year, important days marked, a photo a month, PDF or PNG pages; later, not scheduled |
 | FR-084 | Language packs anyone can add: a `.fotolang` file in the app's i18next layout, checked in Rust and by `check-i18n`, loaded from the version popover or shipped through a pull request; carried by `.fotosettings`; later, not scheduled |

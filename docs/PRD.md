@@ -875,7 +875,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-081 — A welcome screen on the first launch
 
-**P2 (later, not scheduled; owner's request 2026-11-05).** The very first launch opens a short welcome before the library, made together with [FR-080](#fr-080--card-order-of-ones-own), and never shown again unless asked for.
+**P2 (partly done; owner's request 2026-11-05).** The very first launch opens a short welcome before the library, made together with [FR-080](#fr-080--card-order-of-ones-own), and never shown again unless asked for. *The welcome itself shipped in v0.13.1 as [FR-109](#fr-109--a-welcome-screen-on-the-first-launch) (five pages, Show at every start); picking the cards below is still to do, with FR-080, as a page of that welcome.*
 
 - **Pick what you use**, as Pinterest asks for one's tastes when an account is made: the panel's cards shown as tiles (Looks, Faves, Tools, Print / export size, Date stamp, Info frame, Places…), each with a small picture of what it does; the ones the user taps come first in the panel and the previews, the rest follow in the app's order (`ui.cardOrder`).
 - **Never in the way:** *Skip* keeps the app's order; every choice can be changed later, by dragging the cards or with *Reset order* (FR-080). It does not delay the first window ([NFR-010](#nfr-010--cold-start)): the library loads behind it.
