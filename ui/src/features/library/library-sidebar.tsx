@@ -32,7 +32,7 @@ import { ModeSwitch } from '@/features/modes/mode-switch'
 import { useFolderDrag } from './use-folder-drag'
 import { showSettings } from '@/features/settings-window/use-settings-window'
 import { RemoveButton } from '@/components/forms/danger-button'
-import { CHOSEN_ROW } from '@/components/forms/list-row'
+import { CHOSEN_ROW, ROW_LAYOUT } from '@/components/forms/list-row'
 
 type LibrarySidebarProps = {
   /** Every source folder with its own count (FR-056). */
@@ -91,7 +91,8 @@ export function LibrarySidebar({
   )
   const rowClass = (active: boolean) =>
     cn(
-      'flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-sidebar-accent',
+      'flex h-8 w-full min-w-0 items-center rounded-md text-left hover:bg-sidebar-accent',
+      ROW_LAYOUT,
       // The chosen row: an accent outline inside, as Sentry's selected project (FR-099).
       active && CHOSEN_ROW,
     )

@@ -658,3 +658,10 @@
 - **Why:** with `;` (and through a pipe), the next command runs whatever the check returned; reading the last line afterwards is too late.
 - **Fix:** the extra blank line fixed in the next commit.
 - **Rule:** a commit follows its checks with `&&`, never `;` or a pipe: `scripts/check-docs.sh && git commit …` (DOCS_GUIDE §3).
+
+### Two lists drew their rows with two measures (STYLE_RULE §4)
+
+- **Seen:** the folder list put 8 px between a row's icon and its words, Settings' sections 4 px, with a 14 px icon and smaller words (owner, 2026-11-07: "the room between icon and words is not the same").
+- **Why:** the folder list's rows are its own (they drag), and `ListRow` took its gap, icon and text size from the small `Button`; the table in §4 fixed only the room between rows.
+- **Fix:** one measure, `ROW_LAYOUT` and `ROW_ICON` in `list-row.tsx`, taken by `ListRow` and by the folder list's rows; the §4 table now gives the row's inside as well.
+- **Rule:** a block written twice shares its classes from one constant, and the §4 table states every measure a reader would compare, inside the row as well as between rows.

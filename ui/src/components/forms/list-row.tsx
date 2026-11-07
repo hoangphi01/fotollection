@@ -10,6 +10,15 @@ import { cn } from '@/lib/utils'
  */
 export const CHOSEN_ROW = 'bg-accent font-medium text-accent-foreground row-chosen'
 
+/**
+ * One measure for every row of a list (owner, 2026-11-07: "the room between icon and words
+ * is not the same"): 32 px, 8 px in from the side, the icon 16 px and 8 px before the words
+ * in `text-sm`; the icon muted, in the accent on the chosen row. `ListRow` and the folder
+ * list's own rows both take it from here.
+ */
+export const ROW_LAYOUT = 'gap-2 px-2 text-sm [&_svg]:size-4! [&_svg]:shrink-0'
+export const ROW_ICON = (chosen: boolean) => (chosen ? '[&_svg]:text-primary' : '[&_svg]:text-muted-foreground')
+
 type ListRowProps = {
   /** A Lucide icon before the words; rows without one keep its room, so words line up. */
   icon?: ReactNode
@@ -35,13 +44,15 @@ export function ListRow({ icon, children, trailing, chosen = false, current = 't
       size="sm"
       aria-current={chosen ? current : undefined}
       className={cn(
-        'w-full justify-start font-normal [&_svg]:text-primary',
+        'w-full justify-start font-normal',
+        ROW_LAYOUT,
+        ROW_ICON(chosen),
         muted && 'text-muted-foreground',
         chosen && CHOSEN_ROW,
       )}
       onClick={onClick}
     >
-      {icon ?? <span className="size-3.5 shrink-0" aria-hidden />}
+      {icon ?? <span className="size-4 shrink-0" aria-hidden />}
       <span className="min-w-0 flex-1 truncate text-left">{children}</span>
       {trailing}
     </Button>
