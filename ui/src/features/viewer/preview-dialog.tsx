@@ -396,9 +396,10 @@ export function PreviewDialog({
       layout={windowed ? 'window' : 'dialog'}
       panels={panels}
       sideOver={!wide}
-      // With no side column (the dialog layout, a narrow window), the histogram heads the
-      // inspector on every tab instead (FR-098).
-      inspectorTop={!showSide && photo ? <HistogramCard photoId={photo.id} revision={revision} clipping={clipping} onClipping={setClipping} /> : undefined}
+      // The histogram lives in the window layout's left column, above the Navigator, also when
+      // a narrow window keeps that column folded (Tab opens it; owner, 2026-11-07); only the
+      // dialog layout, which has no left column, puts it at the head of the inspector (FR-098).
+      inspectorTop={!windowed && photo ? <HistogramCard photoId={photo.id} revision={revision} clipping={clipping} onClipping={setClipping} /> : undefined}
       side={
         showSide && photo ? (
           <>
