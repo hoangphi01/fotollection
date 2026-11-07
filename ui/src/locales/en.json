@@ -519,7 +519,10 @@
     "look": {
       "no_name": "Give the look a name",
       "full": "You already keep 200 looks: remove one first",
-      "unknown": "This look is no longer in your list"
+      "unknown": "This look is no longer in your list",
+      "lut_too_large": "The LUT is larger than 8 MB",
+      "lut_invalid": "This LUT file cannot be read",
+      "lut_unreadable": "The LUT file could not be opened or kept"
     },
     "settings": {
       "invalid": "These settings are not valid"
@@ -998,7 +1001,8 @@
       "highlightTint": "A colour over the bright parts.",
       "balance": "Where the shadows end and the highlights begin.",
       "mono": "Black and white through a colour filter, as on film: red darkens a blue sky the most.",
-      "amount": "How much of the whole look: every slider and its LUT together"
+      "amount": "How much of the whole look: every slider and its LUT together",
+      "lutStrength": "How much of the imported LUT, before the sliders"
     },
     "looks": "Looks",
     "amount": "Amount",
@@ -1021,7 +1025,10 @@
     "sheetWhole": "With no photo picked, the colour goes to both photos of the sheet.",
     "sheetDiffers": "The two photos have different colours: a change here gives both the same one.",
     "resetLook": "Back to the original colour",
-    "yours": "Your looks"
+    "yours": "Your looks",
+    "importLut": "Import LUT…",
+    "lutStrength": "LUT strength",
+    "vlogWarning": "This LUT is made for V-Log video: on a photo it comes out far too strong. Lower its strength, or choose the matching photo LUT."
   },
   "rawLook": {
     "title": "RAW colour",

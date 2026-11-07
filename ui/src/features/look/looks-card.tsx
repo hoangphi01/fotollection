@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview: in the preview only (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { Bookmark, BookmarkPlus, Palette } from 'lucide-react'
+import { Bookmark, BookmarkPlus, FileInput, Palette, TriangleAlert } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RemoveButton, ResetButton } from '@/components/forms/danger-button'
@@ -8,7 +8,9 @@ import { ListRow, ListRows } from '@/components/forms/list-row'
 import { Field } from '@/components/forms/field'
 import { SliderField } from '@/components/forms/slider-field'
 import { Collapse } from '@/components/layout/collapse'
+import { PanelNote } from '@/components/layout/panel-note'
 import { SectionCard } from '@/components/layout/section-card'
+import { errorText } from '@/lib/errors'
 import { Button } from '@/components/ui/button'
 import { commands, type LookSettings } from '@/ipc/bindings'
 import { NO_LOOK, fullLook, type LookChange } from './look-fields'
@@ -34,6 +36,7 @@ export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
   const { t } = useTranslation()
   const { looks, setLooks, reload } = useLooks()
   const [saving, setSaving] = useState(false)
+  const [importError, setImportError] = useState<string | null>(null)
   const current = fullLook(look)
   // Coloured: a look or a slider changes the photo (Original changes nothing). Only then is
   // there an amount to set and a reset to show, in every mode (owner, 2026-11-07); the reset
@@ -41,6 +44,7 @@ export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
   const { name: _name, base: _base, amount: _amount, ...colours } = current
   const { name: _n, base: _b, amount: _a, ...none } = NO_LOOK
   const coloured = JSON.stringify(colours) !== JSON.stringify(none)
+  const chosenEntry = looks.find((e) => e.id === current.base)
   return (
     <SectionCard
       icon={<Palette />}
@@ -89,10 +93,45 @@ export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
         onChange={(v, first) => onChange((l) => ({ ...l, amount: v }), first)}
       />
       </Collapse>
+      {/* A look with a LUT (FR-070): how much of the LUT, under the sliders' amount. */}
+      <Collapse open={current.lut !== null} stack="card">
+      <SliderField
+        label={t('look.lutStrength')}
+        hint={t('look.hints.lutStrength')}
+        value={current.lutStrength}
+        min={0}
+        max={100}
+        reset={100}
+        format={percent}
+        onChange={(v, first) => onChange((l) => ({ ...l, lutStrength: v }), first)}
+      />
+      </Collapse>
+      {chosenEntry?.vlog && <PanelNote icon={<TriangleAlert />}>{t('look.vlogWarning')}</PanelNote>}
+      {importError && <PanelNote danger icon={<TriangleAlert />}>{importError}</PanelNote>}
       {!simple && (
         <>
       <Button variant="outline" size="sm" className="w-full" onClick={() => setSaving(true)}>
         <BookmarkPlus data-icon="inline-start" /> {t('look.saveAs')}
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        className="w-full"
+        onClick={() =>
+          void commands.importLut().then((r) => {
+            if (r.status !== 'ok') {
+              setImportError(errorText(r.error))
+              return
+            }
+            setImportError(null)
+            if (r.data === null) return
+            const entry = r.data
+            reload()
+            onChange(() => fullLook({ ...entry.look, name: entry.name }), true)
+          })
+        }
+      >
+        <FileInput data-icon="inline-start" /> {t('look.importLut')}
       </Button>
       <SaveLookDialog
         open={saving}

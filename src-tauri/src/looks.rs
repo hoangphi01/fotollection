@@ -87,3 +87,63 @@ pub fn look_tile_bytes(state: &AppState, id: PhotoId, look: &str) -> Result<Vec<
         .look_tile_jpeg(&record, &entry.look, &thumbnail, state.codec.as_ref())
         .map_err(|e| crate::commands::shown_error(&e, &record))
 }
+
+/// Imports a LUT (FR-070): a `.cube` or a `HaldCLUT` PNG chosen in a Rust-side dialog, parsed
+/// and kept by its content hash, then saved as a look of the user's named by its title or file
+/// name. `None` when the dialog is cancelled; a refused file says why (`look.lut_*`).
+#[tauri::command]
+#[specta::specta]
+pub async fn import_lut(app: tauri::AppHandle) -> Result<Option<LookEntry>, IpcError> {
+    use tauri::Manager;
+    use tauri_plugin_dialog::DialogExt;
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let picked = app
+            .dialog()
+            .file()
+            .set_title("Choose a LUT (.cube or HaldCLUT PNG)")
+            .add_filter("LUT", &["cube", "png"])
+            .blocking_pick_file();
+        let Some(path) = picked.and_then(|p| p.into_path().ok()) else {
+            return Ok(None);
+        };
+        let size = std::fs::metadata(&path)
+            .map_err(|e| IpcError::new("look.lut_unreadable", e.to_string()))?
+            .len();
+        if size > fotollection_core::lut::MAX_BYTES as u64 {
+            return Err(IpcError::new(
+                "look.lut_too_large",
+                "the LUT is larger than 8 MB",
+            ));
+        }
+        let bytes = std::fs::read(&path)
+            .map_err(|e| IpcError::new("look.lut_unreadable", e.to_string()))?;
+        let (hash, lut) = fotollection_core::lut::import(&bytes)
+            .map_err(|e| IpcError::new(e.code(), e.to_string()))?;
+        let name = lut
+            .title
+            .clone()
+            .filter(|t| !t.trim().is_empty())
+            .or_else(|| path.file_stem().map(|s| s.to_string_lossy().into_owned()))
+            .unwrap_or_else(|| "LUT".to_owned());
+        let look = LookSettings {
+            lut: Some(hash),
+            ..LookSettings::default()
+        };
+        let entry = {
+            let mut saved = state.saved_looks.lock().map_err(poisoned)?;
+            let new = look_library::new_saved(&name, &look, &saved).map_err(|e| match e {
+                SaveLookError::NoName => IpcError::new("look.no_name", e.to_string()),
+                SaveLookError::Full => IpcError::new("look.full", e.to_string()),
+            })?;
+            saved.push(new);
+            look_library::entries(&saved).pop()
+        };
+        state.save_settings();
+        entry
+            .map(Some)
+            .ok_or_else(|| IpcError::internal("the imported look is missing"))
+    })
+    .await
+    .map_err(|e| IpcError::internal(e.to_string()))?
+}

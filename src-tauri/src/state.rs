@@ -203,6 +203,8 @@ impl AppState {
         let store_path = config_dir.join("settings.json");
         let logo_dir = config_dir.join("logos");
         let font_dir = config_dir.join("fonts");
+        // Imported LUTs, by content hash (FR-070).
+        fotollection_core::lut::set_dir(config_dir.join("looks"));
         let (stored, writable) = match settings_store::load(&store_path) {
             Loaded::Ok(stored) => (stored, true),
             Loaded::Missing => (StoredSettings::default(), true),

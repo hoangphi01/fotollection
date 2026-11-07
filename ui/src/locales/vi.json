@@ -499,7 +499,10 @@
     "look": {
       "no_name": "Hãy đặt tên cho look",
       "full": "Bạn đã lưu 200 look: hãy xoá bớt một look trước",
-      "unknown": "Look này không còn trong danh sách của bạn"
+      "unknown": "Look này không còn trong danh sách của bạn",
+      "lut_too_large": "LUT lớn hơn 8 MB",
+      "lut_invalid": "Không đọc được tệp LUT này",
+      "lut_unreadable": "Không mở hoặc lưu được tệp LUT"
     },
     "settings": {
       "invalid": "Thiết lập không hợp lệ"
@@ -960,7 +963,8 @@
       "highlightTint": "Phủ một màu lên phần sáng.",
       "balance": "Ranh giới giữa vùng tối và vùng sáng.",
       "mono": "Trắng đen qua kính lọc màu như phim: lọc đỏ làm trời xanh tối nhất.",
-      "amount": "Mức độ của cả look: mọi thanh trượt và LUT cùng lúc"
+      "amount": "Mức độ của cả look: mọi thanh trượt và LUT cùng lúc",
+      "lutStrength": "Áp bao nhiêu phần LUT đã nhập, trước các thanh trượt"
     },
     "looks": "Looks",
     "amount": "Mức độ",
@@ -983,7 +987,10 @@
     "sheetWhole": "Chưa chọn ảnh nào: màu được áp cho cả hai ảnh trên tấm.",
     "sheetDiffers": "Hai ảnh đang khác màu: chỉnh ở đây sẽ đặt cùng một màu cho cả hai.",
     "resetLook": "Về màu gốc",
-    "yours": "Look của bạn"
+    "yours": "Look của bạn",
+    "importLut": "Nhập LUT…",
+    "lutStrength": "Độ mạnh LUT",
+    "vlogWarning": "LUT này dành cho video V-Log: áp lên ảnh sẽ quá đậm. Giảm độ mạnh, hoặc chọn LUT dành cho ảnh."
   },
   "rawLook": {
     "title": "Màu RAW",

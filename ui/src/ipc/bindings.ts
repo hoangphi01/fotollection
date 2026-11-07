@@ -479,6 +479,25 @@ export const commands = {
 	 */
 	deleteLook: (id: string) => typedError<LookEntry[], IpcError>(__TAURI_INVOKE("delete_look", { id })),
 	/**
+	 *  Imports a LUT (FR-070): a `.cube` or a `HaldCLUT` PNG chosen in a Rust-side dialog, parsed
+	 *  and kept by its content hash, then saved as a look of the user's named by its title or file
+	 *  name. `None` when the dialog is cancelled; a refused file says why (`look.lut_*`).
+	 */
+	importLut: () => typedError<{
+	/**  `builtin:<slug>` or `user:<id>`, the value a photo's look keeps in `base`. */
+	id: string,
+	/**
+	 *  The English name; the interface shows a built-in look under its own translation
+	 *  (`look.builtin.<slug>`) and a user's look as typed.
+	 */
+	name: string,
+	kind: LookKind,
+	/**  The values a pick copies into the photo, `name` and `base` filled. */
+	look: LookSettings,
+	/**  Its LUT is tagged by LUMIX Lab as made for V-Log footage: far too strong on a photo. */
+	vlog: boolean,
+} | null, IpcError>(__TAURI_INVOKE("import_lut")),
+	/**
 	 *  How a camera RAW photo is finished (FR-072, ADR-0040): neutral or like the camera's JPEG.
 	 *  One undoable step; the preview, the sheets and the export follow from the new revision.
 	 */
@@ -1387,6 +1406,8 @@ export type LookEntry = {
 	kind: LookKind,
 	/**  The values a pick copies into the photo, `name` and `base` filled. */
 	look: LookSettings,
+	/**  Its LUT is tagged by LUMIX Lab as made for V-Log footage: far too strong on a photo. */
+	vlog: boolean,
 };
 
 /**  Where a look of the library comes from. */

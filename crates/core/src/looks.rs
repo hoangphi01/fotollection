@@ -606,7 +606,20 @@ fn mono_weights(mono: Mono) -> Option<[f32; 3]> {
 /// tints, so a black-and-white photo can still be toned.
 pub fn bake(look: &LookSettings) -> Table {
     let p = Params::new(look);
-    Table::from_fn(|c| pixel(c, &p))
+    // The imported LUT first (FR-070, ADR-0038), mixed by its strength and the look's amount,
+    // then the sliders on what it gave. A LUT whose file is missing is left out.
+    let lut = look.lut.as_deref().and_then(crate::lut::get);
+    let mix = f32::from(look.lut_strength) / 100.0 * f32::from(look.amount) / 100.0;
+    Table::from_fn(|c| {
+        let c = match &lut {
+            Some(lut) => {
+                let l = lut.apply(c);
+                [0, 1, 2].map(|i| (c[i] + (l[i] - c[i]) * mix).clamp(0.0, 1.0))
+            }
+            None => c,
+        };
+        pixel(c, &p)
+    })
 }
 
 fn pixel(c: [f32; 3], p: &Params) -> [f32; 3] {

@@ -126,6 +126,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             looks::list_looks,
             looks::save_look,
             looks::delete_look,
+            looks::import_lut,
             commands::set_raw_look,
             commands::apply_raw_look_to_all,
             commands::reset_photo_stamps,

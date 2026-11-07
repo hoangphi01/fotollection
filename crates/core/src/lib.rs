@@ -28,6 +28,7 @@ pub mod library;
 pub mod logo;
 pub mod look_library;
 pub mod looks;
+pub mod lut;
 pub mod machine;
 pub mod metadata;
 pub mod naming;

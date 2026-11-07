@@ -33,6 +33,8 @@ pub struct LookEntry {
     pub kind: LookKind,
     /// The values a pick copies into the photo, `name` and `base` filled.
     pub look: LookSettings,
+    /// Its LUT is tagged by LUMIX Lab as made for V-Log footage: far too strong on a photo.
+    pub vlog: bool,
 }
 
 /// A look the user saved: its own id (lowercase hex), its name, its values.
@@ -56,6 +58,7 @@ fn recipe(slug: &str, name: &str, adjust: Adjust) -> LookEntry {
         id,
         name: name.to_owned(),
         kind: LookKind::BuiltIn,
+        vlog: false,
     }
 }
 
@@ -236,11 +239,19 @@ pub fn new_saved(
 #[must_use]
 pub fn entries(saved: &[SavedLook]) -> Vec<LookEntry> {
     let mut all = built_in();
-    all.extend(saved.iter().map(|s| LookEntry {
-        id: format!("user:{}", s.id),
-        name: s.name.clone(),
-        kind: LookKind::User,
-        look: s.look.clone(),
+    all.extend(saved.iter().map(|s| {
+        LookEntry {
+            id: format!("user:{}", s.id),
+            name: s.name.clone(),
+            kind: LookKind::User,
+            look: s.look.clone(),
+            vlog: s
+                .look
+                .lut
+                .as_deref()
+                .and_then(crate::lut::get)
+                .is_some_and(|l| l.vlog),
+        }
     }));
     all
 }
