@@ -195,6 +195,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-105 | Limit the file size, by bisection of the quality, measured first; v0.13.0 |
 | FR-106 | Output sharpening for screen, matte or glossy paper, measured first; later |
 | FR-107 | Folder tabs reordered by dragging, as Chrome's tabs, kept with the project; v0.13.0 |
+| FR-108 | Photobooth with the computer's own camera (the Mac's webcam): countdown, a strip or sheet to print, offline; later |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
 | FR-049 | Trip journal: an offline report of the trip drafted from the album (days, places, photo counts, cameras, focal-length range), with a journal entry written by every editing session (like the instax app) |
 

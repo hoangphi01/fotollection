@@ -17,6 +17,7 @@ mod open_with;
 mod places;
 mod prefetch;
 mod protocol;
+mod settings_copy;
 mod state;
 mod timing;
 mod updates;
@@ -126,6 +127,10 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::redo,
             commands::photo_history,
             commands::restore_photo_state,
+            settings_copy::copy_photo_settings,
+            settings_copy::copied_settings,
+            settings_copy::paste_photo_settings,
+            settings_copy::reset_photo_settings,
             commands::list_fonts,
             commands::import_font,
             commands::remove_font,

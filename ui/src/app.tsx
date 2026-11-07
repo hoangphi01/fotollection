@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Sparkles, Square } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { KeysInfo } from '@/components/layout/keys-info'
 import { ErrorNotice, NoticeStack } from '@/components/layout/notice-stack'
@@ -46,6 +46,9 @@ import { useAppMode } from '@/features/modes/use-app-mode'
 import { useModeShortcuts } from '@/features/modes/use-mode-shortcuts'
 import { SettingsWindow } from '@/features/settings-window/settings-window'
 import { UpdatePopup } from '@/features/about/update-popup'
+import { CopySettingsDialog } from '@/features/develop/copy-settings-dialog'
+import { pasteSettings, useSettingsCopy } from '@/features/develop/settings-copy'
+import { useSettingsKeys } from '@/features/develop/use-settings-keys'
 import { useSettingsShortcut } from '@/features/settings-window/use-settings-window'
 import { CollagePanel } from '@/features/collage/collage-panel'
 import { CollageView } from '@/features/collage/collage-view'
@@ -103,6 +106,11 @@ export function App() {
   // Esc closes Quick-preview first, and only then leaves select mode.
   const select = useSelectMode(photos, () => document.querySelector('[data-quick-preview]') !== null)
   const selectMode = select.active
+  // Copy, paste and reset of develop settings (FR-097): one set of keys and menu items, the
+  // ticked photos for a paste to many.
+  const ticked = useMemo(() => [...select.checked], [select.checked])
+  useSettingsKeys(ticked, mode === 'collage')
+  const { copied } = useSettingsCopy()
   /** The ticked photos whose date and place are being set (FR-032). */
   const [datePlaceIds, setDatePlaceIds] = useState<number[] | null>(null)
   // Ticks follow the user across folder tabs (FR-056), so photos from several folders can be
@@ -343,6 +351,7 @@ export function App() {
                 view={filter.queue ?? 'gallery'}
                 onMove={select.move}
                 onDatePlace={() => setDatePlaceIds([...select.checked])}
+                onPasteSettings={copied ? () => pasteSettings(ticked, false) : undefined}
                 onSelectAll={select.tickAll}
                 onClear={select.clear}
               />
@@ -392,6 +401,7 @@ export function App() {
       <SettingsWindow />
       {/* A newer version, once per launch, unless turned off (FR-103). */}
       <UpdatePopup />
+      <CopySettingsDialog />
       {/* One export dialog for every panel and preview (FR-093). */}
       <ExportDialog exporter={exporter} settings={settings} onSettingsChange={(c) => void update(c)} />
       <PreviewDialog
@@ -411,6 +421,7 @@ export function App() {
         generation={project.document.generation}
         canUndo={history.canUndo}
         canRedo={history.canRedo}
+        ticked={ticked}
       />
       <CaptureDialog
         capture={capture}

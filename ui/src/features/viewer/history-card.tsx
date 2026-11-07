@@ -54,7 +54,7 @@ export function HistoryCard({ photoId, revision }: HistoryCardProps) {
                 current="step"
                 onClick={() => i > 0 && restore(step.serial)}
               >
-                {step.edits.map(name).join(' · ')}
+                {step.kind ? t(`history.${step.kind}`) : step.edits.map(name).join(' · ')}
               </ListRow>
             </li>
           ))}

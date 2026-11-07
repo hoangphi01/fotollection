@@ -187,6 +187,27 @@ pub struct PhotoEdits {
     pub raw_look: Option<crate::raw_finish::RawLook>,
 }
 
+/// Which develop settings *Copy settings* takes from a photo (FR-097), as Lightroom's
+/// dialog asks: the look, the RAW look, the crop (with its straightening) and the stamp
+/// (with its line).
+// Four independent ticks of one dialog, as the IPC sends them; not a state machine.
+#[allow(clippy::struct_excessive_bools)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct SettingsParts {
+    pub look: bool,
+    pub raw_look: bool,
+    pub crop: bool,
+    pub stamp: bool,
+}
+
+impl SettingsParts {
+    /// Whether anything is chosen.
+    pub fn any(self) -> bool {
+        self.look || self.raw_look || self.crop || self.stamp
+    }
+}
+
 /// A postcard's own text (FR-073): the message on its top lines, the address on its bottom
 /// ones. An empty part leaves its lines blank.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -275,6 +296,57 @@ impl PhotoEdits {
             caption: other.caption.clone(),
             ..self.clone()
         }
+    }
+
+    /// These edits with `source`'s chosen develop settings (FR-097, *Paste settings*): its
+    /// look, its RAW look, its crop with its straightening, its stamp with its line. On a
+    /// collage sheet (`collage`) the crop is the photo's collage crop and straightening.
+    /// Everything not chosen stays this photo's own.
+    #[must_use]
+    pub fn with_parts_of(&self, source: &Self, parts: SettingsParts, collage: bool) -> Self {
+        let mut out = self.clone();
+        if parts.look {
+            out.look.clone_from(&source.look);
+        }
+        if parts.raw_look {
+            out.raw_look = source.raw_look;
+        }
+        if parts.crop {
+            if collage {
+                out.collage_crop = source.collage_crop;
+                out.collage_straighten = source.collage_straighten;
+            } else {
+                out.crop = source.crop;
+                out.straighten = source.straighten;
+            }
+        }
+        if parts.stamp {
+            out.stamp.clone_from(&source.stamp);
+            out.caption.clone_from(&source.caption);
+        }
+        out
+    }
+
+    /// These edits given back to the shared settings (FR-097, *Reset*): no look, RAW look,
+    /// crop, straightening, stamp or line of their own; on a collage sheet (`collage`) the
+    /// collage crop and straightening too. The turns, rating, flag, basket, date and place
+    /// stay, as Lightroom's Reset keeps the metadata.
+    #[must_use]
+    pub fn reset_develop(&self, collage: bool) -> Self {
+        let mut out = Self {
+            look: None,
+            raw_look: None,
+            crop: None,
+            straighten: 0.0,
+            stamp: None,
+            caption: None,
+            ..self.clone()
+        };
+        if collage {
+            out.collage_crop = None;
+            out.collage_straighten = None;
+        }
+        out
     }
 
     /// How the photo is finished if it is a camera RAW (absent: neutral).

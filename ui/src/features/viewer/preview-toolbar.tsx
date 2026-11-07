@@ -8,10 +8,11 @@ import { KeysInfo } from '@/components/layout/keys-info'
 import { Kbd } from '@/components/ui/kbd'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
-import { commands, type PhotoSummary } from '@/ipc/bindings'
+import { commands, type PhotoId, type PhotoSummary } from '@/ipc/bindings'
 import { MOD, isMac } from '@/lib/platform'
 import type { Compare, CompareMode } from './compare-stage'
 import { ListRow, ListRows } from '@/components/forms/list-row'
+import { SettingsButtons } from '@/features/develop/settings-buttons'
 
 type PreviewToolbarProps = {
   photo: PhotoSummary | undefined
@@ -22,6 +23,8 @@ type PreviewToolbarProps = {
   onCompare: (mode: CompareMode) => void
   canUndo: boolean
   canRedo: boolean
+  /** Photos ticked in the gallery: *Paste settings* offers them (FR-097). */
+  ticked: readonly PhotoId[]
   onExport: () => void
   /** The zoom buttons, in the row (`ZoomControls inline`). */
   zoom: ReactNode
@@ -45,6 +48,7 @@ export function PreviewToolbar({
   onCompare,
   canUndo,
   canRedo,
+  ticked,
   onExport,
   zoom,
   filmstrip,
@@ -121,6 +125,8 @@ export function PreviewToolbar({
         disabled={!canRedo}
         onClick={() => void commands.redo()}
       />
+      {/* Copy, paste and reset the photo's settings (FR-097), beside undo (owner, 2026-11-07). */}
+      <SettingsButtons photo={photo?.id} ticked={ticked} />
       <Separator orientation="vertical" className="mx-1 h-5!" />
       <ToolbarButton
         icon={<Download />}

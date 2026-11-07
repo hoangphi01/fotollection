@@ -1019,7 +1019,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-097 — Settings from one photo to others, and Reset
 
-**P1 (planned, v0.13.1; owner's request 2026-11-06).** *Copy settings* (⇧⌘C) asks what to copy, in a short list (look, RAW look, crop position, stamp), as Lightroom's dialog; *Paste* (⇧⌘V) gives them to the photo shown or to every ticked photo (Lightroom's *Sync*), as one step to undo. *Reset* (⇧⌘R) gives the photo back to the shared settings: its look, RAW look, crop and own stamp, as one step. Undo and redo are buttons as well as keys.
+**P1 (built for v0.13.1, 2026-11-07; owner's request 2026-11-06).** *Copy settings* (⇧⌘C) asks what to copy, in a short list (look, RAW look, crop position, stamp), as Lightroom's dialog; *Paste* (⇧⌘V) gives them to the photo shown or to every ticked photo (Lightroom's *Sync*), as one step to undo. *Reset* (⇧⌘R) gives the photo back to the shared settings: its look, RAW look, crop and own stamp, as one step. Undo and redo are buttons as well as keys. As built (owner's choices, 2026-11-07): Copy, Paste and Reset sit in the toolbar right after undo and redo; with photos ticked, Paste asks *This photo* or *N ticked photos* (⌥⇧⌘V pastes to the ticked ones), and the selection bar of the gallery and Collage has *Paste settings*. A paste never carries the rating, flag or turns; Reset keeps them. On a collage sheet the crop copied and pasted is the photo's collage crop.
 
 ### FR-098 — Reading the photo: histogram, clipping, white balance
 
@@ -1072,6 +1072,10 @@ Next to the batch settings, any other setting will later be overridable for one 
 ### FR-107 — Folder tabs in the order the user drags them
 
 **P2 (v0.13.0; owner's request 2026-11-06: "press and hold, or press and drag a folder, to sort them, as Chrome orders its tabs").** The folders of the library column ([FR-056](#fr-056--folders-as-tabs)) can be reordered: a press that moves or is held lifts the row, the others slide aside, and it drops where it is let go; *Escape* puts it back; **Alt+↑ / Alt+↓** moves the focused folder one place. A click still opens the folder. The order is the project's, saved with it and with the session (the `folders` rows are written in that order), so it survives a restart; the folders' ids do not change, so the chosen tabs stay chosen. Not an undo step, as a tab's move is not.
+
+### FR-108 — Photobooth with the computer's own camera
+
+**P3 (later; owner, 2026-11-07: "a photobooth feature later: shoot with the computer's webcam, as in a shop's booth; the Mac's webcam is quite pretty").** A booth screen that shoots with the camera built into or plugged into the computer, as a photo booth in a shop does: a live mirror view with the print's ratio drawn over it, a countdown, a flash of the screen, then a few shots in a row laid out as a strip or a sheet ready to print (the strip and square sizes of the self-service kiosks, or a size of its own, [FR-043](#fr-043--custom-print-sizes)) or kept as single photos in a session's folder tab, as tethered shots are ([FR-063](#fr-063--tethered-capture-over-usb)). Fully offline: the frames never leave the computer, nothing is uploaded, and the camera is asked for only while the booth is open, through the system's own permission (macOS camera access, Windows' camera privacy setting, Linux's V4L2 device). To be designed when its turn comes, starting from the capture screen of FR-063.
 
 ## 7. Non-functional requirements
 

@@ -23,6 +23,7 @@ import { useShownSrc } from './use-shown-src'
 import { usePrefetch } from './use-prefetch'
 import { PhotoFilmstrip } from './photo-filmstrip'
 import { PreviewToolbar } from './preview-toolbar'
+import { setSettingsTarget } from '@/features/develop/settings-copy'
 import { NavigatorCard } from './navigator-card'
 import { HistoryCard } from './history-card'
 import { CompareStage, type Compare, type CompareMode } from './compare-stage'
@@ -36,6 +37,7 @@ import { useIpcQuery, useLiveQuery } from '@/features/settings/use-ipc-query'
 import {
   commands,
   type CullFilter,
+  type PhotoId,
   type Queue,
   type PhotoSummary,
   type RenderSettings,
@@ -81,6 +83,8 @@ type PreviewDialogProps = {
   /** Whether ⌘Z and ⇧⌘Z can act, for the toolbar's buttons (FR-095). */
   canUndo: boolean
   canRedo: boolean
+  /** Photos ticked in the gallery, for *Paste settings* (FR-097). */
+  ticked: readonly PhotoId[]
 }
 
 
@@ -126,11 +130,20 @@ export function PreviewDialog({
   generation,
   canUndo,
   canRedo,
+  ticked,
 }: PreviewDialogProps) {
   const { t } = useTranslation()
   // The filmstrip under the photo (FR-090), shown unless the user hid it.
   const { ui, update: updateUi } = useUiSettings()
   const photo = index === null ? undefined : photos[index]
+  // The photo copy, paste and reset act on (FR-097), while the develop view is open.
+  const shownId = photo?.id
+  useEffect(() => {
+    if (shownId === undefined) return
+    const target = { photo: shownId, collage: false }
+    setSettingsTarget(target)
+    return () => setSettingsTarget(null, target)
+  }, [shownId])
   // The last photo's facts hold their place while the next one's load, so ← → never make
   // the inspector jump (STYLE_RULE §4); actions use the photo itself.
   const details = useLiveQuery(photo ? String(photo.id) : null, revision, loadDetails).data
@@ -334,6 +347,7 @@ export function PreviewDialog({
           onBefore={toggleBefore}
           canUndo={canUndo}
           canRedo={canRedo}
+          ticked={ticked}
           onExport={toExport}
           zoom={
             <ZoomControls

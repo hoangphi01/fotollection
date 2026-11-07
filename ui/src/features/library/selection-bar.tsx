@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Archive, CheckCheck, MapPin, ShoppingBasket, Undo2 } from 'lucide-react'
+import { Archive, CheckCheck, ClipboardPaste, MapPin, ShoppingBasket, Undo2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import type { Queue, QueueView } from '@/ipc/bindings'
@@ -16,6 +16,8 @@ type SelectionBarProps = {
   onMove: (queue: Queue | null) => void
   /** Set the date and place of the ticked photos by hand (FR-032). */
   onDatePlace: () => void
+  /** Paste the copied develop settings to the ticked photos (FR-097); absent with nothing copied. */
+  onPasteSettings?: () => void
   onSelectAll: () => void
   onClear: () => void
 }
@@ -25,7 +27,7 @@ type SelectionBarProps = {
  * in the print basket, set them aside, or bring them back to the gallery, and set their date
  * and place by hand (FR-032). Each action is undoable; nothing is ever deleted.
  */
-export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, onDatePlace, onSelectAll, onClear }: SelectionBarProps) {
+export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, onDatePlace, onPasteSettings, onSelectAll, onClear }: SelectionBarProps) {
   const { t } = useTranslation()
   const none = count === 0
   return (
@@ -53,6 +55,11 @@ export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, 
         <Button size="sm" variant="outline" disabled={none} onClick={onDatePlace}>
           <MapPin data-icon="inline-start" /> {t('places.set')}
         </Button>
+        {onPasteSettings && (
+          <Button size="sm" variant="outline" disabled={none} onClick={onPasteSettings}>
+            <ClipboardPaste data-icon="inline-start" /> {t('develop.pasteToTicked')}
+          </Button>
+        )}
         <Button size="sm" onClick={onSelectAll}>
           <CheckCheck data-icon="inline-start" /> {t('select.all')}
         </Button>

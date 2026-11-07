@@ -495,6 +495,7 @@ Two cards change a photo's colour, under **Print / export size**, in the preview
 - In the preview, **Before** (or the **\\** key) shows the photo without its look; press it again to come back. The arrow beside it opens Lightroom's other views ([FR-096](PRD.md#fr-096--before-and-after-side-by-side)): **Side by side** (**Y**), **Split, left and right** (**⇧Y**: one photo, before on the left of a line you drag, after on the right), **Top and bottom** (**⌥/Alt Y**) and **Split, top and bottom**. Both sides zoom and move together and stay sharp at 1:1; the same key again, or **Esc**, goes back to the photo alone.
 - The date stamp, the info frame and the border are never tinted, and a photo with nothing set prints exactly as before.
 - **In Collage mode**, open a sheet's preview and click a photo on it to change its colour; the cards show only while a photo is picked. Click beside the photos, or press **Esc**, to let go.
+- **Copy, paste and reset** ([FR-097](PRD.md#fr-097--settings-from-one-photo-to-others-and-reset)), as in Lightroom: the three buttons after undo and redo above the photo. **Copy settings** (**⇧⌘C**) asks what to take: the colour look, the RAW look, the crop position (with its straightening) and the date stamp (with its line). **Paste settings** (**⇧⌘V**) gives them to the photo shown; with photos ticked in the gallery, it asks *This photo* or *N ticked photos* (**⌥⇧⌘V**, Lightroom's *Sync*), and the selection bar has **Paste settings** too. **Reset settings** (**⇧⌘R**) gives the photo back the shared look and stamp, with no crop of its own; its stars, flag and turns stay. A paste or reset over many photos is one step: one **Cmd/Ctrl+Z** brings them all back, and History names it. In Collage mode the buttons are in the picked photo's **Settings** card, and the crop is the photo's crop on the sheet. On Windows and Linux the keys are **Ctrl+Shift** instead of **⇧⌘**; on a Mac they are in the *Edit* menu too.
 
 <!-- chapter: shortcuts -->
 
@@ -547,6 +548,7 @@ Two cards change a photo's colour, under **Print / export size**, in the preview
 | Select mode (Pro) | hold **Space** | Quick-preview; **← →** next, **Enter** tick, release to close |
 | Select mode | **Esc** | Leave select mode |
 | Everywhere | **Cmd/Ctrl+Z**, **Shift+Cmd/Ctrl+Z** or **Cmd/Ctrl+Y** | Undo, redo (chapter 13) |
+| Preview, gallery | **Shift+Cmd/Ctrl+C**, **Shift+Cmd/Ctrl+V**, **Alt+Shift+Cmd/Ctrl+V**, **Shift+Cmd/Ctrl+R** | Copy settings, paste them, paste to the ticked photos, reset (chapter 21) |
 | Everywhere | **Cmd/Ctrl+1**, **2**, **3** | Simple, Collage, Pro (chapter 1) |
 | Everywhere | **Cmd/Ctrl+N**, **Cmd/Ctrl+O**, **Cmd/Ctrl+S**, **Shift+Cmd/Ctrl+S** | New project, open, save, save as (chapter 13) |
 

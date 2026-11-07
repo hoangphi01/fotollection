@@ -2346,6 +2346,18 @@ pub(crate) fn edit_photos(
     ids: &[PhotoId],
     edit: impl Fn(PhotoId, &mut PhotoEdits),
 ) -> Result<HistoryState, IpcError> {
+    edit_photos_as(app, state, ids, None, edit)
+}
+
+/// Like [`edit_photos`], recording what the step was (FR-097: a paste, a reset), for the
+/// develop view's History.
+pub(crate) fn edit_photos_as(
+    app: &AppHandle,
+    state: &AppState,
+    ids: &[PhotoId],
+    kind: Option<fotollection_core::history::StepKind>,
+    edit: impl Fn(PhotoId, &mut PhotoEdits),
+) -> Result<HistoryState, IpcError> {
     if ids.is_empty() || ids.len() > MAX_EDIT_IDS {
         return Err(IpcError::new(
             "photo.invalid_selection",
@@ -2370,7 +2382,7 @@ pub(crate) fn edit_photos(
             .history
             .lock()
             .map_err(|e| IpcError::internal(e.to_string()))?
-            .apply(&mut library, &changes);
+            .apply_as(&mut library, &changes, kind);
     }
     Ok(changed(app, state))
 }
@@ -2427,6 +2439,8 @@ pub struct HistoryStep {
     /// The step's serial number; a u32 is enough for four billion edits in one session.
     pub serial: u32,
     pub edits: Vec<fotollection_core::history::HistoryEdit>,
+    /// A paste of copied settings or a reset (FR-097), named so in the list.
+    pub kind: Option<fotollection_core::history::StepKind>,
 }
 
 /// A photo's develop steps, newest first; the first is where the photo is now.
@@ -2455,6 +2469,7 @@ pub fn photo_history(
         .map(|s| HistoryStep {
             serial: u32::try_from(s.serial).unwrap_or(u32::MAX),
             edits: fotollection_core::history::describe(&s.before, &s.after),
+            kind: s.kind,
         })
         .collect())
 }

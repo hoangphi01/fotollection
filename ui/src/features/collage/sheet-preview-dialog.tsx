@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ChevronLeft, ChevronRight, Crop, Download, Images, LoaderCircle, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Copy, Crop, Download, Images, LoaderCircle, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,8 @@ import { commands, type CullFilter, type PhotoId, type PhotoSummary, type Queue,
 import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
 import { PhotoLookCards } from '@/features/look/photo-look-cards'
+import { SettingsButtons } from '@/features/develop/settings-buttons'
+import { setSettingsTarget } from '@/features/develop/settings-copy'
 import { DateStampCard } from '@/features/stamp/date-stamp-card'
 import { CropEditor } from '@/features/viewer/crop-editor'
 import { sendTo } from '@/features/viewer/send-to'
@@ -51,6 +53,8 @@ type SheetPreviewDialogProps = {
   customStamps: number
   revision: number
   generation: number
+  /** Photos ticked in Collage, for *Paste settings* (FR-097). */
+  ticked: readonly PhotoId[]
   onClose: () => void
 }
 
@@ -72,6 +76,7 @@ export function SheetPreviewDialog({
   customStamps,
   revision,
   generation,
+  ticked,
   onClose,
 }: SheetPreviewDialogProps) {
   const { t } = useTranslation()
@@ -89,6 +94,13 @@ export function SheetPreviewDialog({
   const chosen = picked && picked.key === key ? picked.cell : null
   const choose = (cell: 0 | 1 | null) => setPicked(cell === null ? null : { key, cell })
   const photo = sheet && chosen !== null ? (chosen === 0 ? sheet.first : sheet.second) : null
+  // The picked photo is the one copy, paste and reset act on, its crop the collage crop (FR-097).
+  useEffect(() => {
+    if (!open || photo === null) return
+    const target = { photo, collage: true }
+    setSettingsTarget(target)
+    return () => setSettingsTarget(null, target)
+  }, [open, photo])
   const info = useSheetInfo(open ? sheet : undefined, revision)
   const cell = info?.cells.find((c) => c.id === photo) ?? info?.cells[0]
   const geometry = useCellGeometry(cropping ? photo : null, sheet, revision)
@@ -310,7 +322,15 @@ export function SheetPreviewDialog({
       <CollageCellsCard settings={settings} onChange={onSettingsChange} cell={cell} />
       {/* The picked photo's colour, as in the panel; none picked, no colour cards (FR-079). */}
       {photo !== null && (
-        <PhotoLookCards photoId={photo} revision={revision} onAppliedToAll={onSettingsReload} />
+        <>
+          {/* Copy, paste and reset this photo's settings (FR-097), its crop the collage crop. */}
+          <SectionCard icon={<Copy />} title={t('develop.title')}>
+            <div className="flex items-center gap-1.5">
+              <SettingsButtons photo={photo} ticked={ticked} collage />
+            </div>
+          </SectionCard>
+          <PhotoLookCards photoId={photo} revision={revision} onAppliedToAll={onSettingsReload} />
+        </>
       )}
       <DateStampCard
         settings={settings}

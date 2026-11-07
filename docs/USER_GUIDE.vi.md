@@ -493,6 +493,7 @@ Hai thẻ chỉnh màu ảnh, nằm dưới **Khổ in / xuất**, chỉ có tro
 - Trong bản xem trước, nút **Trước** (hoặc phím **\\**) hiện ảnh khi chưa có look; bấm lần nữa để trở lại. Mũi tên bên cạnh mở các kiểu xem khác như Lightroom ([FR-096](PRD.md#fr-096--before-and-after-side-by-side)): **Cạnh nhau** (**Y**), **Chia đôi trái phải** (**⇧Y**: một tấm ảnh, bên trái đường chia là ảnh trước, bên phải là ảnh sau, kéo được đường chia), **Trên và dưới** (**⌥/Alt Y**) và **Chia đôi trên dưới**. Hai bên phóng to và di chuyển cùng nhau, vẫn nét ở 1:1; bấm lại đúng phím đó, hoặc **Esc**, để về xem một ảnh.
 - Dấu ngày, khung thông tin và viền không bao giờ bị nhuộm màu, và ảnh chưa chỉnh gì in ra y như trước.
 - **Trong chế độ Ghép ảnh**, mở bản xem trước của tấm ghép rồi nhấp vào một ảnh trên tấm để chỉnh màu ảnh đó; hai thẻ chỉ hiện khi có ảnh đang được chọn. Nhấp ra ngoài ảnh, hoặc nhấn **Esc**, để bỏ chọn.
+- **Sao chép, dán và đặt lại** ([FR-097](PRD.md#fr-097--settings-from-one-photo-to-others-and-reset)), như Lightroom: ba nút ngay sau hoàn tác và làm lại phía trên ảnh. **Sao chép thiết lập** (**⇧⌘C**) hỏi lấy những gì: màu, màu RAW, vị trí vùng cắt (kèm góc xoay thẳng) và dấu ngày (kèm dòng chữ). **Dán thiết lập** (**⇧⌘V**) áp dụng cho ảnh đang xem; khi có ảnh đã chọn trong thư viện, nút này hỏi *Ảnh này* hay *N ảnh đã chọn* (**⌥⇧⌘V**, tức *Sync* của Lightroom), và thanh chọn ảnh cũng có nút **Dán thiết lập**. **Đặt lại thiết lập** (**⇧⌘R**) đưa ảnh về màu và dấu ngày chung, bỏ vùng cắt riêng; số sao, cờ và hướng xoay vẫn giữ nguyên. Dán hay đặt lại cho nhiều ảnh chỉ là một bước: một lần **Cmd/Ctrl+Z** đưa tất cả trở lại, và Lịch sử ghi tên bước đó. Ở chế độ Ghép ảnh, ba nút nằm trong thẻ **Thiết lập** của ảnh đang chọn, và vùng cắt là vùng cắt của ảnh trên tấm ghép. Trên Windows và Linux, phím tắt là **Ctrl+Shift** thay cho **⇧⌘**; trên Mac chúng có cả trong menu *Sửa*.
 
 <!-- chapter: shortcuts -->
 
@@ -545,6 +546,7 @@ Hai thẻ chỉnh màu ảnh, nằm dưới **Khổ in / xuất**, chỉ có tro
 | Chế độ Chọn (Pro) | giữ **Space** | Xem nhanh; **← →** tấm sau, **Enter** tích, thả ra để đóng |
 | Chế độ Chọn | **Esc** | Rời chế độ Chọn |
 | Mọi nơi | **Cmd/Ctrl+Z**, **Shift+Cmd/Ctrl+Z** hoặc **Cmd/Ctrl+Y** | Hoàn tác, làm lại (chương 13) |
+| Bản xem trước, thư viện | **Shift+Cmd/Ctrl+C**, **Shift+Cmd/Ctrl+V**, **Alt+Shift+Cmd/Ctrl+V**, **Shift+Cmd/Ctrl+R** | Sao chép thiết lập, dán, dán cho các ảnh đã chọn, đặt lại (chương 21) |
 | Mọi nơi | **Cmd/Ctrl+1**, **2**, **3** | Đơn giản, Ghép ảnh, Pro (chương 1) |
 | Mọi nơi | **Cmd/Ctrl+N**, **Cmd/Ctrl+O**, **Cmd/Ctrl+S**, **Shift+Cmd/Ctrl+S** | Dự án mới, mở, lưu, lưu thành (chương 13) |
 

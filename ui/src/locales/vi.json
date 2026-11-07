@@ -402,7 +402,7 @@
     "oneToOne": "vừa khung ↔ 1:1",
     "beforeKey": "trước / sau",
     "everyKey": "mọi phím",
-    "keys": "← →  chuyển ảnh · ↑ vào giỏ in · ↓ để riêng\n0–5 số sao · P chọn · X loại · U bỏ cờ\nR hoặc C cắt ảnh · [ ] hoặc {{mod}} [ ] xoay\nZ, hoặc nhấp vào ảnh: vừa khung ↔ 1:1 · {{mod}} + − 0 phóng to · kéo để di chuyển ảnh đang phóng\n\\ trước / sau · Y cạnh nhau · ⇧Y chia đôi · ⌥/Alt Y trên và dưới\n{{mod}} Z hoàn tác · ⇧ {{mod}} Z làm lại\nF phủ kín cửa sổ hoặc trở lại · Tab ẩn các bảng hai bên (khi đang ở ảnh)\n⇧ {{mod}} E xuất ảnh này · Esc đóng",
+    "keys": "← →  chuyển ảnh · ↑ vào giỏ in · ↓ để riêng\n0–5 số sao · P chọn · X loại · U bỏ cờ\nR hoặc C cắt ảnh · [ ] hoặc {{mod}} [ ] xoay\nZ, hoặc nhấp vào ảnh: vừa khung ↔ 1:1 · {{mod}} + − 0 phóng to · kéo để di chuyển ảnh đang phóng\n\\ trước / sau · Y cạnh nhau · ⇧Y chia đôi · ⌥/Alt Y trên và dưới\n{{mod}} Z hoàn tác · ⇧ {{mod}} Z làm lại\n⇧ {{mod}} C sao chép thiết lập · ⇧ {{mod}} V dán · ⌥ ⇧ {{mod}} V dán cho các ảnh đã chọn · ⇧ {{mod}} R đặt lại\nF phủ kín cửa sổ hoặc trở lại · Tab ẩn các bảng hai bên (khi đang ở ảnh)\n⇧ {{mod}} E xuất ảnh này · Esc đóng",
     "layoutWindow": "Phủ kín cửa sổ (F)",
     "layoutDialog": "Về dạng cửa sổ (F)",
     "zoomToggle": "Vừa khung ↔ 1:1 (Z)"
@@ -484,7 +484,8 @@
     "photo": {
       "invalid_rating": "Đánh giá từ 0 đến 5 sao",
       "invalid_selection": "Hãy chọn từ 1 đến 10.000 ảnh",
-      "unknown": "Không tìm thấy ảnh"
+      "unknown": "Không tìm thấy ảnh",
+      "nothing_copied": "Hãy sao chép thiết lập từ một ảnh trước"
     },
     "settings": {
       "invalid": "Thiết lập không hợp lệ"
@@ -1019,7 +1020,9 @@
     "straighten": "Cân ngang",
     "rotate": "Xoay",
     "stamp": "Dấu ngày",
-    "caption": "Dòng dưới ngày"
+    "caption": "Dòng dưới ngày",
+    "paste": "Dán thiết lập",
+    "reset": "Đặt lại"
   },
   "compare": {
     "before": "Trước",
@@ -1106,6 +1109,29 @@
       "camera": "Máy ảnh, ống kính, thông số và ngày chụp. Vị trí GPS luôn bị xoá.",
       "dateOnly": "Chỉ giữ ngày chụp. Vị trí GPS luôn bị xoá.",
       "nothing": "Không giữ thông tin nào; tệp chỉ còn hồ sơ màu."
+    }
+  },
+  "develop": {
+    "title": "Thiết lập",
+    "copy": "Sao chép thiết lập",
+    "copyKeyHint": "Sao chép thiết lập của ảnh này ({{keys}})",
+    "copyTitle": "Sao chép thiết lập",
+    "copyBody": "Chọn những gì lấy từ ảnh này. Lệnh Dán sẽ áp dụng cho một ảnh khác, hoặc cho mọi ảnh đã chọn.",
+    "copyHint": "Vùng cắt đi kèm góc xoay thẳng, dấu ngày đi kèm dòng chữ của nó.",
+    "copyCollageHint": "Trên tấm ghép, vùng cắt là vùng cắt trong ô ghép; dấu ngày đi kèm dòng chữ của nó.",
+    "paste": "Dán thiết lập",
+    "pasteHint": "Dán thiết lập đã sao chép ({{keys}})",
+    "pasteNothing": "Hãy sao chép thiết lập từ một ảnh trước",
+    "pasteHere": "Ảnh này",
+    "pasteTicked_other": "{{count}} ảnh đã chọn",
+    "pasteToTicked": "Dán thiết lập",
+    "reset": "Đặt lại thiết lập",
+    "resetHint": "Trở về thiết lập chung: bỏ màu, vùng cắt và dấu ngày riêng ({{keys}})",
+    "part": {
+      "look": "Màu",
+      "rawLook": "Màu RAW",
+      "crop": "Vị trí vùng cắt",
+      "stamp": "Dấu ngày và dòng chữ"
     }
   }
 }

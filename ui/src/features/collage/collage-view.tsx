@@ -6,6 +6,7 @@ import type { ExportApi } from '@/features/export/use-export'
 import { KeysInfo } from '@/components/layout/keys-info'
 import { formatNumber } from '@/lib/format'
 import { SelectModeButton } from '@/features/library/select-mode-button'
+import { pasteSettings, useSettingsCopy } from '@/features/develop/settings-copy'
 import { SelectionBar } from '@/features/library/selection-bar'
 import type { SelectModeApi } from '@/features/library/use-select-mode'
 import { DatePlaceDialog } from '@/features/places/date-place-dialog'
@@ -53,6 +54,7 @@ export function CollageView({
 }: CollageViewProps) {
   const { t } = useTranslation()
   const [viewing, setViewing] = useState(false)
+  const { copied } = useSettingsCopy()
   const cuts = usePostcardCuts(settings, revision)
   const [datePlaceIds, setDatePlaceIds] = useState<PhotoId[] | null>(null)
   const { sheets, index } = collage
@@ -92,6 +94,7 @@ export function CollageView({
           view={view}
           onMove={select.move}
           onDatePlace={() => setDatePlaceIds([...select.checked])}
+          onPasteSettings={copied ? () => pasteSettings([...select.checked], true) : undefined}
           onSelectAll={select.tickAll}
           onClear={select.clear}
         />
@@ -131,6 +134,7 @@ export function CollageView({
         customStamps={customStamps}
         revision={revision}
         generation={generation}
+        ticked={[...select.checked]}
         onClose={() => setViewing(false)}
       />
     </div>

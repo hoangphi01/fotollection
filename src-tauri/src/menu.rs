@@ -29,10 +29,16 @@ pub enum Action {
     OpenRequested,
     /// The Settings window (FR-086), Cmd+, on macOS.
     Settings,
+    /// Copy, paste and reset a photo's develop settings (FR-097), ⇧⌘C, ⇧⌘V, ⌥⇧⌘V (to the
+    /// ticked photos) and ⇧⌘R.
+    CopySettings,
+    PasteSettings,
+    PasteSettingsTicked,
+    ResetSettings,
 }
 
 impl Action {
-    const ALL: [(Self, &'static str); 8] = [
+    const ALL: [(Self, &'static str); 12] = [
         (Self::New, "new"),
         (Self::Open, "open"),
         (Self::Save, "save"),
@@ -41,6 +47,10 @@ impl Action {
         (Self::ModeCollage, "mode_collage"),
         (Self::ModeProfessional, "mode_professional"),
         (Self::Settings, "settings"),
+        (Self::CopySettings, "copy_settings"),
+        (Self::PasteSettings, "paste_settings"),
+        (Self::PasteSettingsTicked, "paste_settings_ticked"),
+        (Self::ResetSettings, "reset_settings"),
     ];
 }
 
@@ -68,6 +78,27 @@ pub fn build<R: Runtime>(app: &AppHandle<R>, language: Language) -> tauri::Resul
         .copy_with_text(t.copy)
         .paste_with_text(t.paste)
         .select_all_with_text(t.select_all)
+        .separator()
+        .item(&item(
+            "copy_settings",
+            t.copy_settings,
+            "CmdOrCtrl+Shift+C",
+        )?)
+        .item(&item(
+            "paste_settings",
+            t.paste_settings,
+            "CmdOrCtrl+Shift+V",
+        )?)
+        .item(&item(
+            "paste_settings_ticked",
+            t.paste_settings_ticked,
+            "CmdOrCtrl+Alt+Shift+V",
+        )?)
+        .item(&item(
+            "reset_settings",
+            t.reset_settings,
+            "CmdOrCtrl+Shift+R",
+        )?)
         .build()?;
     let view = SubmenuBuilder::new(app, t.view)
         .item(&item("mode_simple", t.mode_simple, "CmdOrCtrl+1")?)

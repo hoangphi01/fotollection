@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: copy, paste and reset a photo's settings, to one photo or every ticked one, as in Lightroom
+
+### Added
+
+- **Copy, paste and reset settings**, as in Lightroom: copy a photo's colour, RAW look, crop position or date stamp (**⇧⌘C**), paste them to another photo (**⇧⌘V**) or to every ticked photo at once (**⌥⇧⌘V**, or *Paste settings* in the selection bar), and reset a photo to the shared settings (**⇧⌘R**). Each is one step of Undo, named in History. The buttons sit after undo and redo above the photo, and in Collage mode in the picked photo's *Settings* card.
+
 ### Changed
 
 - **Website:** the Vietnam Linux Family listing is a badge in VNLF's green beside the download buttons, and the Community card links to the project on VNLF Social too; the badges at the top have the app's depth.

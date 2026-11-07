@@ -422,7 +422,7 @@
     "oneToOne": "fit ↔ 1:1",
     "beforeKey": "before / after",
     "everyKey": "every key",
-    "keys": "← →  browse · ↑ to the print basket · ↓ set aside\n0–5 stars · P pick · X reject · U clear the flag\nR or C crop · [ ] or {{mod}} [ ] rotate\nZ, or a click on the photo: fit ↔ 1:1 · {{mod}} + − 0 zoom · drag to move the zoomed photo\n\\ before / after · Y side by side · ⇧Y split · ⌥/Alt Y top and bottom\n{{mod}} Z undo · ⇧ {{mod}} Z redo\nF fill the app window or back · Tab hide the side panels (from the photo)\n⇧ {{mod}} E export this photo · Esc close",
+    "keys": "← →  browse · ↑ to the print basket · ↓ set aside\n0–5 stars · P pick · X reject · U clear the flag\nR or C crop · [ ] or {{mod}} [ ] rotate\nZ, or a click on the photo: fit ↔ 1:1 · {{mod}} + − 0 zoom · drag to move the zoomed photo\n\\ before / after · Y side by side · ⇧Y split · ⌥/Alt Y top and bottom\n{{mod}} Z undo · ⇧ {{mod}} Z redo\n⇧ {{mod}} C copy settings · ⇧ {{mod}} V paste · ⌥ ⇧ {{mod}} V paste to the ticked photos · ⇧ {{mod}} R reset\nF fill the app window or back · Tab hide the side panels (from the photo)\n⇧ {{mod}} E export this photo · Esc close",
     "layoutWindow": "Fill the app window (F)",
     "layoutDialog": "Back to a window (F)",
     "zoomToggle": "Fit ↔ 1:1 (Z)"
@@ -504,7 +504,8 @@
     "photo": {
       "invalid_rating": "Ratings are 0 to 5 stars",
       "invalid_selection": "Select between 1 and 10,000 photos",
-      "unknown": "Unknown photo"
+      "unknown": "Unknown photo",
+      "nothing_copied": "Copy settings from a photo first"
     },
     "settings": {
       "invalid": "These settings are not valid"
@@ -1056,7 +1057,9 @@
     "straighten": "Straighten",
     "rotate": "Rotate",
     "stamp": "Date stamp",
-    "caption": "Line under the date"
+    "caption": "Line under the date",
+    "paste": "Paste settings",
+    "reset": "Reset"
   },
   "compare": {
     "before": "Before",
@@ -1143,6 +1146,30 @@
       "camera": "Camera, lens, exposure and capture date. The GPS position is always removed.",
       "dateOnly": "Only the capture date. The GPS position is always removed.",
       "nothing": "No details at all; the files keep only their colour profile."
+    }
+  },
+  "develop": {
+    "title": "Settings",
+    "copy": "Copy settings",
+    "copyKeyHint": "Copy this photo's settings ({{keys}})",
+    "copyTitle": "Copy settings",
+    "copyBody": "Choose what to take from this photo. Paste gives it to another photo, or to every ticked one.",
+    "copyHint": "The crop takes its straightening with it, the stamp its line.",
+    "copyCollageHint": "On a sheet the crop is the photo's collage crop; the stamp takes its line with it.",
+    "paste": "Paste settings",
+    "pasteHint": "Paste the copied settings ({{keys}})",
+    "pasteNothing": "Copy settings from a photo first",
+    "pasteHere": "This photo",
+    "pasteTicked_one": "{{count}} ticked photo",
+    "pasteTicked_other": "{{count}} ticked photos",
+    "pasteToTicked": "Paste settings",
+    "reset": "Reset settings",
+    "resetHint": "Back to the shared settings: no look, crop or stamp of its own ({{keys}})",
+    "part": {
+      "look": "Colour look",
+      "rawLook": "RAW look",
+      "crop": "Crop position",
+      "stamp": "Date stamp and its line"
     }
   }
 }

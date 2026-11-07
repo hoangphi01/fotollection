@@ -21,11 +21,21 @@ pub struct Change {
     pub after: PhotoEdits,
 }
 
-/// One step: the photos it changed, and its serial number.
+/// What a step was, when it was more than its changes say (FR-097): a paste of copied
+/// settings or a reset, named so in the History list.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum StepKind {
+    Paste,
+    Reset,
+}
+
+/// One step: the photos it changed, its serial number and, for a paste or reset, its kind.
 #[derive(Debug)]
 struct Step {
     serial: u64,
     changes: Vec<Change>,
+    kind: Option<StepKind>,
 }
 
 #[derive(Debug, Default)]
@@ -43,6 +53,7 @@ pub struct PhotoStep {
     pub serial: u64,
     pub before: PhotoEdits,
     pub after: PhotoEdits,
+    pub kind: Option<StepKind>,
 }
 
 /// What a step changed, to name it in the History list as Lightroom does (*Warmth +8*).
@@ -147,6 +158,16 @@ impl History {
         library: &mut Library,
         edits: &[(PhotoId, PhotoEdits)],
     ) -> Vec<PhotoId> {
+        self.apply_as(library, edits, None)
+    }
+
+    /// Like [`apply`](Self::apply), recording what the step was (FR-097: a paste, a reset).
+    pub fn apply_as(
+        &mut self,
+        library: &mut Library,
+        edits: &[(PhotoId, PhotoEdits)],
+        kind: Option<StepKind>,
+    ) -> Vec<PhotoId> {
         let step: Vec<Change> = edits
             .iter()
             .map(|(id, after)| Change {
@@ -161,6 +182,7 @@ impl History {
             self.undo.push(Step {
                 serial: self.next,
                 changes: step,
+                kind,
             });
             self.next += 1;
             if self.undo.len() > MAX_STEPS {
@@ -229,6 +251,7 @@ impl History {
                     serial: step.serial,
                     before: c.before.clone(),
                     after: c.after.clone(),
+                    kind: step.kind,
                 })
             })
             .collect()
@@ -471,5 +494,149 @@ mod tests {
             (5, Some(crate::library::Flag::Pick))
         );
         assert_eq!((back.look, back.rotation), (then.look, 0));
+    }
+
+    /// FR-097: settings pasted to many photos are one step, named a paste, and one undo
+    /// brings every photo back; only the chosen parts travel.
+    #[test]
+    fn fr_097_paste_is_one_step_for_every_ticked_photo() {
+        use crate::library::SettingsParts;
+        let (mut lib, ids) = library_with(4);
+        let mut history = History::default();
+        let source = PhotoEdits {
+            look: look(|a| a.warmth = 30),
+            crop: Some(crate::plan::CropFrame {
+                cx: 0.4,
+                cy: 0.5,
+                zoom: 1.5,
+            }),
+            straighten: 2.5,
+            rating: 5,
+            ..PhotoEdits::default()
+        };
+        let parts = SettingsParts {
+            look: true,
+            crop: true,
+            ..SettingsParts::default()
+        };
+        let targets = &ids[1..];
+        let edits: Vec<_> = targets
+            .iter()
+            .map(|&id| (id, lib.edits(id).with_parts_of(&source, parts, false)))
+            .collect();
+        history.apply_as(&mut lib, &edits, Some(StepKind::Paste));
+        for &id in targets {
+            let e = lib.edits(id);
+            assert_eq!(e.look, source.look);
+            assert_eq!(
+                (e.crop, e.straighten.to_bits()),
+                (source.crop, 2.5f32.to_bits())
+            );
+            assert_eq!(e.rating, 0, "a paste never carries the rating");
+        }
+        assert_eq!(history.photo_steps(ids[1])[0].kind, Some(StepKind::Paste));
+        assert!(history.undo(&mut lib).is_some());
+        for &id in targets {
+            assert_eq!(lib.edits(id), PhotoEdits::default());
+        }
+        assert!(!history.can_undo(), "one step for the whole paste");
+    }
+
+    /// FR-097: the stamp travels with its line; parts not chosen stay the photo's own.
+    #[test]
+    fn fr_097_paste_copies_only_the_chosen_parts() {
+        use crate::library::SettingsParts;
+        let own = PhotoEdits {
+            look: look(|a| a.contrast = -20),
+            raw_look: Some(crate::raw_finish::RawLook::Camera),
+            ..PhotoEdits::default()
+        };
+        let source = PhotoEdits {
+            look: look(|a| a.contrast = 40),
+            stamp: Some(crate::settings::RenderSettings::default().stamp),
+            caption: Some("PRAHA".into()),
+            ..PhotoEdits::default()
+        };
+        let stamp_only = SettingsParts {
+            stamp: true,
+            ..SettingsParts::default()
+        };
+        let pasted = own.with_parts_of(&source, stamp_only, false);
+        assert_eq!(pasted.look, own.look);
+        assert_eq!(pasted.raw_look, own.raw_look);
+        assert_eq!(
+            (pasted.stamp, pasted.caption),
+            (source.stamp, source.caption)
+        );
+        assert!(!SettingsParts::default().any());
+    }
+
+    /// FR-097: on a collage sheet the crop pasted is the collage crop, and the print crop
+    /// is left alone.
+    #[test]
+    fn fr_097_a_collage_paste_moves_the_collage_crop() {
+        use crate::library::SettingsParts;
+        let frame = crate::plan::CropFrame {
+            cx: 0.3,
+            cy: 0.6,
+            zoom: 2.0,
+        };
+        let source = PhotoEdits {
+            collage_crop: Some(frame),
+            collage_straighten: Some(-3.0),
+            ..PhotoEdits::default()
+        };
+        let crop = SettingsParts {
+            crop: true,
+            ..SettingsParts::default()
+        };
+        let pasted = PhotoEdits::default().with_parts_of(&source, crop, true);
+        assert_eq!(
+            (pasted.collage_crop, pasted.collage_straighten),
+            (Some(frame), Some(-3.0))
+        );
+        assert_eq!(pasted.crop, None);
+    }
+
+    /// FR-097: Reset gives the photo back to the shared look and stamp, with no crop of its
+    /// own, as one step named a reset; its stars, flag and turns stay.
+    #[test]
+    fn fr_097_reset_returns_the_shared_look_and_stamp() {
+        let (mut lib, ids) = library_with(1);
+        let mut history = History::default();
+        let edited = PhotoEdits {
+            look: look(|a| a.saturation = 25),
+            raw_look: Some(crate::raw_finish::RawLook::Camera),
+            crop: Some(crate::plan::CropFrame {
+                cx: 0.5,
+                cy: 0.5,
+                zoom: 1.2,
+            }),
+            straighten: 4.0,
+            stamp: Some(crate::settings::RenderSettings::default().stamp),
+            caption: Some("HA NOI".into()),
+            rating: 4,
+            rotation: 1,
+            ..PhotoEdits::default()
+        };
+        history.apply(&mut lib, &[(ids[0], edited.clone())]);
+        let reset = lib.edits(ids[0]).reset_develop(false);
+        history.apply_as(&mut lib, &[(ids[0], reset)], Some(StepKind::Reset));
+        let back = lib.edits(ids[0]);
+        assert_eq!(
+            (
+                back.look,
+                back.raw_look,
+                back.crop,
+                back.stamp,
+                back.caption
+            ),
+            (None, None, None, None, None)
+        );
+        assert_eq!(back.straighten.to_bits(), 0f32.to_bits());
+        assert_eq!((back.rating, back.rotation), (4, 1));
+        assert_eq!(history.photo_steps(ids[0])[0].kind, Some(StepKind::Reset));
+        assert!(history.undo(&mut lib).is_some());
+        assert_eq!(lib.edits(ids[0]), edited);
     }
 }

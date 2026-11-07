@@ -155,6 +155,9 @@ pub struct AppState {
     /// The folder the last export wrote into (FR-093), for *Open folder*: kept in Rust, so the
     /// webview never names a path to open. One path; replaced by the next export.
     pub last_export: Mutex<Option<PathBuf>>,
+    /// The settings *Copy settings* took (FR-097), until the next copy or another project;
+    /// one photo's develop edits, a few hundred bytes.
+    pub copied: Mutex<Option<crate::settings_copy::Copied>>,
 }
 
 /// The current document: none until the first Save As or Open.
@@ -273,6 +276,7 @@ impl AppState {
             requested_photo: Mutex::new(None),
             update_download: crate::updates::PendingDownload::default(),
             last_export: Mutex::new(None),
+            copied: Mutex::new(None),
         })
     }
 

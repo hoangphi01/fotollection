@@ -467,6 +467,28 @@ export const commands = {
 	 *  view shows goes back; the rating, flag, basket, date and place stay as they are now.
 	 */
 	restorePhotoState: (id: PhotoId, serial: number | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("restore_photo_state", { id, serial })),
+	/**
+	 *  Takes `parts` of photo `id`'s develop settings for a later paste (FR-097). On a collage
+	 *  sheet (`collage`) the crop taken is the photo's collage crop. Returns the parts taken.
+	 */
+	copyPhotoSettings: (id: PhotoId, parts: SettingsParts, collage: boolean) => typedError<SettingsParts, IpcError>(__TAURI_INVOKE("copy_photo_settings", { id, parts, collage })),
+	/**  The parts last copied, if any: the UI shows *Paste* only then. */
+	copiedSettings: () => typedError<{
+	look: boolean,
+	rawLook: boolean,
+	crop: boolean,
+	stamp: boolean,
+} | null, IpcError>(__TAURI_INVOKE("copied_settings")),
+	/**
+	 *  Gives the copied settings to every photo in `ids`, as one step (FR-097). On a collage
+	 *  sheet (`collage`) the crop lands as the collage crop.
+	 */
+	pastePhotoSettings: (ids: PhotoId[], collage: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("paste_photo_settings", { ids, collage })),
+	/**
+	 *  Gives every photo in `ids` back to the shared settings, as one step (FR-097, *Reset*):
+	 *  no look, RAW look, crop or stamp of its own; on a collage sheet its collage crop too.
+	 */
+	resetPhotoSettings: (ids: PhotoId[], collage: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("reset_photo_settings", { ids, collage })),
 	/**  User fonts (FR-042). */
 	listFonts: () => typedError<UserFont[], IpcError>(__TAURI_INVOKE("list_fonts")),
 	/**
@@ -569,7 +591,12 @@ export type Action = "new" | "open" | "save" | "saveAs" |
 /**  The OS handed over a `.fotollection` file (not a menu item). */
 "openRequested" | 
 /**  The Settings window (FR-086), Cmd+, on macOS. */
-"settings";
+"settings" | 
+/**
+ *  Copy, paste and reset a photo's develop settings (FR-097), ⇧⌘C, ⇧⌘V, ⌥⇧⌘V (to the
+ *  ticked photos) and ⇧⌘R.
+ */
+"copySettings" | "pasteSettings" | "pasteSettingsTicked" | "resetSettings";
 
 /**  The sliders, each 0 when unset (FR-079). Signed ones run −100…100, the others 0…100. */
 export type Adjust = {
@@ -1207,6 +1234,8 @@ export type HistoryStep = {
 	/**  The step's serial number; a u32 is enough for four billion edits in one session. */
 	serial: number,
 	edits: HistoryEdit[],
+	/**  A paste of copied settings or a reset (FR-097), named so in the list. */
+	kind: StepKind | null,
 };
 
 /**  Everything FR-071 shows about one file. Small and `Copy`: one per photo in RAM. */
@@ -1761,6 +1790,18 @@ export type Sensor = "bayer" | "xTrans" |
 /**  Already demosaiced (a linear DNG, `ProRAW`). */
 "linear" | "monochrome";
 
+/**
+ *  Which develop settings *Copy settings* takes from a photo (FR-097), as Lightroom's
+ *  dialog asks: the look, the RAW look, the crop (with its straightening) and the stamp
+ *  (with its line).
+ */
+export type SettingsParts = {
+	look: boolean,
+	rawLook: boolean,
+	crop: boolean,
+	stamp: boolean,
+};
+
 export type SettingsState = {
 	settings: RenderSettings,
 	/**  Bumps on every change; previews use it to refresh. */
@@ -1860,6 +1901,12 @@ export type StampSize = "small" | "medium" | "large";
 
 /**  Start-up is over: the last session is back, or there was none (FR-060). */
 export type StartupFinished = null;
+
+/**
+ *  What a step was, when it was more than its changes say (FR-097): a paste of copied
+ *  settings or a reset, named so in the History list.
+ */
+export type StepKind = "paste" | "reset";
 
 export type TaskKind = 
 /**  Reading files and EXIF during import. */

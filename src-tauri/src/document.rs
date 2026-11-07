@@ -311,6 +311,8 @@ pub async fn save_document_as(app: AppHandle) -> Result<Option<DocumentState>, I
 fn reset_library(state: &AppState) -> Result<(), IpcError> {
     *state.library.write().map_err(poisoned)? = Library::new();
     state.history.lock().map_err(poisoned)?.clear();
+    // Settings copied from a photo of the old project would land on unrelated photos (FR-097).
+    *state.copied.lock().map_err(poisoned)? = None;
     state
         .library_generation
         .fetch_add(1, std::sync::atomic::Ordering::SeqCst);

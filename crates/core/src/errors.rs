@@ -79,6 +79,7 @@ pub const CODES: &[(&str, &str)] = &[
     ("postcard.text_invalid", "ERR-IPC-0022"),
     ("postcard.no_text", "ERR-IPC-0023"),
     ("history.unknown_step", "ERR-IPC-0024"),
+    ("photo.nothing_copied", "ERR-IPC-0025"),
     ("update.none", "ERR-NET-0001"),
     ("update.offline", "ERR-NET-0002"),
     ("update.unreadable", "ERR-NET-0003"),
