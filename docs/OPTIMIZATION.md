@@ -233,6 +233,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-11-06 | FR-091 (v0.11.1) | REF-MAC (M3), swap 6.9 GB used | `measure_browse` on the Prague trip, with a new row: a first view with the disk cache on, which also writes the standard preview | Before: JPEG 290 / 313 ms with the write, 275 / 296 without (the encode and write cost 15 ms on the first view). After (written by a writer thread for the photo on screen): **276 / 296 ms**, the same as without. From the standard preview and from memory unchanged (27 ms). RAW too noisy to compare on 26 photos (446–664 ms p50 across runs on a loaded machine) | The write left the interactive path; the background pass still writes inline |
 | 2026-11-07 | FR-088, NFR-002 | REF-MAC (M3), loaded, 9.6 GB swap | `raw_depth` on the nine CC0 samples, the RAW tone curve interpolated, before and after | Shadow gaps after *Shadows +100* 35 → 1 across the nine; a slider step 4.3–12.9 ms (before 4.3–11.2) | RESULT §33 |
 | 2026-11-07 | FR-079 | REF-MAC (M3), loaded, 10 GB swap | `measure_look_tiles` on 24 of the Prague JPEGs, the eight built-in looks, 20 runs | A tile 0.68 ms p50, 0.72 p95 (the first, its table built, 1.64 p95); the card of eight 5.4 ms | RESULT §34 |
+| 2026-11-07 | FR-079 | REF-MAC (M3) | `measure_raw_tiles` on the nine CC0 samples: a RAW's tile from its thumbnail against one from our develop | ΔE2000 2.06–4.23, the X-T3 9.02; a develop 0.3–1.2 s, so tiles come from the standard preview once it exists | RESULT §34 |
 
 ### 5.1 Planned measurements
 

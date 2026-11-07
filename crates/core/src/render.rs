@@ -624,7 +624,7 @@ mod tests {
             ..FrameSettings::default()
         };
         let request = FrameRequest {
-            text: build_text(&shot, None, &frame_settings, capture(), None),
+            text: build_text(&shot, None, &frame_settings, capture(), None, None),
             settings: frame_settings,
             logo: None,
             font: None,
@@ -691,7 +691,7 @@ mod tests {
         )
         .ok();
         let request = FrameRequest {
-            text: build_text(&shot, None, &settings, capture(), None),
+            text: build_text(&shot, None, &settings, capture(), None, None),
             settings,
             logo,
             font: None,

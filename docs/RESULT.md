@@ -672,4 +672,22 @@ Each look is shown as the photo through it: the photo's small source (its thumbn
 | The card's eight tiles | 5.39 ms | 5.54 ms |
 
 - **Well inside the budget** (≤ 3 ms a tile, ≤ 40 ms the card): no tile is kept on disk, and the webview keeps each one, since a tile's address changes only with the photo or the look.
-- **Not yet measured:** a camera RAW's tile is cut from its thumbnail, which is the camera's own JPEG, while its preview is our develop (FR-072); how far the two are apart, and whether a tile from the develop is worth its cost, is measured before release.
+- **A camera RAW's tile:** its thumbnail is the camera's own JPEG, its preview our neutral develop (FR-072). `measure_raw_tiles` on the nine CC0 samples, both cut the tile's way, mean ΔE2000 apart (*Original* / *Warm old film*): 5D IV 3.18 / 3.23, R10 3.99 / 3.81, X-T3 **9.02** / 8.29, D750 3.95 / 3.86, E-M10 III 2.63 / 2.36, GX9 4.23 / 3.81, S5 2.74 / 2.60, GR III 2.06 / 2.06, A7 III 2.26 / 2.06; a develop to make one costs 0.3–1.2 s. So a RAW's tile is cut from its standard preview (our develop, in memory or on disk, made in the background, FR-091) once it exists, never from a develop of its own; the thumbnail only until then (`fr_079_a_raw_tile_comes_from_the_develop_once_there_is_one`).
+
+## 35. The built-in looks, checked by measurement (v0.14.0, FR-079)
+
+Before the owner's eye, three checks with numbers (`measure_looks` on 24 of the Prague trip's JPEGs at 400 px, release build, 2026-11-07): the cast a look lays on a grey ramp (mean ΔE2000 against the same ramp made grey; under 2 unless the look is meant to tint), the pixels it pushes to 255 beyond those already there (at most 0.5 %), and the closest other look on the photos (mean ΔE2000; at least 3, so no two tiles look alike). Three rounds, the first proposal then two of stronger sliders:
+
+| Look | Grey cast | New clipping | Closest look, first proposal | Closest look, kept |
+|---|---|---|---|---|
+| Original | 0 | 0 | Clear 0.68 | C200 Natural 1.79 |
+| C200 Natural | 1.60 | 0.16 % | Clear 1.46 | Original 1.79 |
+| Warm old film | 4.18 (meant) | 0.16 % | Faded 2.64 | Original 3.12 |
+| Clear | 0 | 0.47 % | Original 0.68 | C200 Natural 2.85 |
+| Cool | 5.18 (meant) | 0 | Original 1.19 | Original 2.98 |
+| Faded | 0 | 0 | Warm old film 2.64 | Warm old film 4.84 |
+| B&W red filter | 0 | 0 | B&W soft 3.40 | B&W soft 3.40 |
+| B&W soft | 0 | 0 | B&W red filter 3.40 | B&W red filter 3.40 |
+
+- **The first proposal was too timid:** *Clear* was 0.68 from *Original*, invisible on a tile. Clear, Cool, Warm old film and Faded were made stronger until each passed or met another limit: *Clear* stops at 2.85, its new clipping at 0.47 % of the 0.5 % allowed; *Cool* at 2.98.
+- **C200 Natural is the owner's GX9 recipe** (FR-039), each camera step taken as 10 on our sliders, a guess: 1.79 from *Original*. Whether a step is worth more is the owner's call when he looks at them.

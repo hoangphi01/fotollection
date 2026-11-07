@@ -85,10 +85,10 @@ pub fn built_in() -> Vec<LookEntry> {
             "warm-film",
             "Warm old film",
             Adjust {
-                warmth: 25,
+                warmth: 35,
                 contrast: -10,
                 saturation: -10,
-                fade: 15,
+                fade: 20,
                 highlight_tint: Tint {
                     hue: 40,
                     amount: 15,
@@ -104,10 +104,11 @@ pub fn built_in() -> Vec<LookEntry> {
             "clear",
             "Clear",
             Adjust {
-                contrast: 15,
-                vibrance: 20,
-                highlights: -15,
-                shadows: 10,
+                contrast: 45,
+                vibrance: 75,
+                saturation: 10,
+                highlights: -40,
+                shadows: 40,
                 ..Adjust::default()
             },
         ),
@@ -115,8 +116,8 @@ pub fn built_in() -> Vec<LookEntry> {
             "cool",
             "Cool",
             Adjust {
-                warmth: -20,
-                tint: -5,
+                warmth: -75,
+                tint: -15,
                 contrast: 5,
                 saturation: -5,
                 ..Adjust::default()
@@ -126,9 +127,9 @@ pub fn built_in() -> Vec<LookEntry> {
             "faded",
             "Faded",
             Adjust {
-                fade: 30,
-                contrast: -20,
-                saturation: -20,
+                fade: 45,
+                contrast: -25,
+                saturation: -40,
                 ..Adjust::default()
             },
         ),

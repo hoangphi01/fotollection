@@ -350,11 +350,17 @@ pub fn build_text(
     settings: &FrameSettings,
     capture: Option<NaiveDateTime>,
     place: Option<&str>,
+    look: Option<&str>,
 ) -> FrameText {
     let f = settings.fields;
     let fallback = CameraProfile::new(0, shot.make.clone(), shot.model.clone());
     let p = profile.unwrap_or(&fallback);
-    let summary = shot_summary(shot, Some(p));
+    let mut summary = shot_summary(shot, Some(p));
+    // The photo-style line: what the camera profile says, else the name of the photo's look
+    // (FR-040, FR-079).
+    if summary.photo_style.is_none() {
+        summary.photo_style = look.map(str::to_owned);
+    }
 
     let mut lines = Vec::new();
     if f.camera
@@ -778,6 +784,7 @@ mod tests {
             &FrameSettings::default(),
             at(18),
             Some("Budapest"),
+            None,
         );
         assert_eq!(text.logo, FrameLogo::Text("LUMIX".into()));
         assert_eq!(
@@ -798,14 +805,14 @@ mod tests {
         settings.fields.shutter = false;
         settings.fields.logo = false;
         // No profile: defaults from EXIF; no lens/focal/aperture in EXIF; no style.
-        let text = build_text(&shot(), None, &settings, at(18), None);
+        let text = build_text(&shot(), None, &settings, at(18), None, None);
         assert_eq!(text.logo, FrameLogo::None);
         assert_eq!(text.lines, ["Shot on  Panasonic DC-GX9", "2026/10/18"]);
     }
 
     #[test]
     fn fr_040_crop_keeps_the_print_and_fit_adds_the_bar_below() {
-        let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None);
+        let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None, None);
         for print in PrintSize::ALL {
             for (sw, sh) in [(4608, 3456), (3456, 4608), (6000, 4000)] {
                 for fit in [FrameFit::Crop, FrameFit::Fit] {
@@ -882,7 +889,7 @@ mod tests {
     fn fr_065_crop_border_sits_inside_the_print_size() {
         let print = PrintSize::ALL[1];
         let (cw, ch) = canvas_size(6000, 4000, print, 6000, FrameFit::Crop, true);
-        let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None);
+        let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None, None);
         let settings = FrameSettings::default();
         let plain = layout(cw, ch, 6000, 4000, &settings, &text, print, false);
         let l = layout(cw, ch, 6000, 4000, &settings, &text, print, true);
@@ -903,7 +910,7 @@ mod tests {
     #[test]
     fn fr_067_fit_with_the_border_keeps_the_print_size_and_the_whole_photo() {
         let print = PrintSize::ALL[1];
-        let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None);
+        let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None, None);
         let fit = FrameSettings {
             fit: FrameFit::Fit,
             ..FrameSettings::default()
@@ -951,6 +958,7 @@ mod tests {
             &FrameSettings::default(),
             at(18),
             Some("Budapest"),
+            None,
         );
         let (cw, ch) = canvas_size(4608, 3456, print, 4608, FrameFit::Crop, false);
         let l = layout(
@@ -978,7 +986,7 @@ mod tests {
     #[test]
     fn fr_040_logo_scale_resizes_the_logo_for_every_photo() {
         let print = PrintSize::ALL[1];
-        let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None);
+        let text = build_text(&shot(), None, &FrameSettings::default(), at(18), None, None);
         let (cw, ch) = canvas_size(4608, 3456, print, 4608, FrameFit::Crop, false);
         let at_scale = |logo_scale| {
             let settings = FrameSettings {
@@ -995,5 +1003,40 @@ mod tests {
         assert!((at_scale(9.0).logo_height - big.logo_height).abs() < 0.01);
         assert!((at_scale(f32::NAN).logo_height - normal.logo_height).abs() < 0.01);
         assert!((at_scale(0.1).logo_height - 0.5 * normal.logo_height).abs() < 0.01);
+    }
+
+    /// FR-040, FR-079: the photo-style line names the photo's look when the camera profile
+    /// says nothing; a profile's own photo style wins.
+    #[test]
+    fn fr_079_the_photo_style_line_names_the_look() {
+        let text = build_text(
+            &shot(),
+            None,
+            &FrameSettings::default(),
+            at(18),
+            None,
+            Some("Warm old film"),
+        );
+        assert!(
+            text.lines.iter().any(|l| l == "Warm old film"),
+            "{:?}",
+            text.lines
+        );
+        let mut profile = CameraProfile::new(1, Some("Panasonic".into()), Some("DC-GX9".into()));
+        profile.photo_style = Some("L. Monochrome D".into());
+        let text = build_text(
+            &shot(),
+            Some(&profile),
+            &FrameSettings::default(),
+            at(18),
+            None,
+            Some("Warm old film"),
+        );
+        assert!(
+            text.lines.iter().any(|l| l == "L. Monochrome D"),
+            "{:?}",
+            text.lines
+        );
+        assert!(!text.lines.iter().any(|l| l == "Warm old film"));
     }
 }

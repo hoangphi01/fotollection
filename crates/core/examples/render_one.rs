@@ -75,6 +75,7 @@ fn main() {
                 &frame,
                 Some(record.capture),
                 None,
+                None,
             ),
             // The bundled brand logo, as the app uses by default (ADR-0020).
             logo: profile

@@ -245,6 +245,9 @@ fn keep_bounded<K: PartialEq, V>(
 /// Small sources kept for the collage grid: about 0.3 MB each, so 64 photos (32 sheets, more
 /// than a grid shows) cost about 20 MB (FR-035, NFR-021).
 const SMALL_CAPACITY: usize = 64;
+/// RAW tile sources kept, about 0.3 MB each (FR-079): a Looks card and Simple mode's strip
+/// show one photo at a time.
+const TILE_CAPACITY: usize = 16;
 /// The long edge of a small source made from the full photo when it has no thumbnail yet.
 const SMALL_LONG_EDGE: u32 = crate::thumbs::T1_LONG_EDGE;
 /// A look tile's side in pixels (FR-079): the Looks card draws tiles about 80 px wide, so
@@ -407,6 +410,11 @@ pub struct PreviewCache {
     small: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
     /// The last preview photo cropped and resized, before its look and stamp.
     resized: Mutex<Option<Resized>>,
+    /// Small sources of camera RAWs' look tiles (FR-079), cut from their standard previews (our
+    /// develop) rather than their thumbnails (the camera's JPEG, ΔE2000 2–9 apart, RESULT §34).
+    /// At most `TILE_CAPACITY` (about 0.3 MB each, outside the budget); emptied with the small
+    /// sources (project switch, memory short, *Clear cache*).
+    tiles: Mutex<Vec<(SourceKey, Arc<RgbImage>)>>,
     /// RAW develops at 2048 px with their fits, so a RAW slider's step only re-finishes
     /// (FR-088).
     prepared: Mutex<Vec<(PhotoId, Arc<Prepared>)>>,
@@ -519,6 +527,9 @@ impl PreviewCache {
         }
         let before = self.usage().total();
         self.set_budget(wanted);
+        if short && let Ok(mut tiles) = self.tiles.lock() {
+            tiles.clear();
+        }
         if short && let Ok(mut small) = self.small.lock() {
             small.clear();
         }
@@ -545,6 +556,10 @@ impl PreviewCache {
                 .small
                 .lock()
                 .map_or(0, |e| e.iter().map(|(_, i)| i.data.len()).sum::<usize>())
+                + self
+                    .tiles
+                    .lock()
+                    .map_or(0, |e| e.iter().map(|(_, i)| i.data.len()).sum::<usize>())
                 + self
                     .resized
                     .lock()
@@ -575,6 +590,9 @@ impl PreviewCache {
         }
         if let Ok(mut small) = self.small.lock() {
             small.clear();
+        }
+        if let Ok(mut tiles) = self.tiles.lock() {
+            tiles.clear();
         }
         if let Ok(mut resized) = self.resized.lock() {
             *resized = None;
@@ -1143,9 +1161,42 @@ impl PreviewCache {
         thumbnail: &Thumbnail<'_>,
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
-        let small = self.small_source(record, RawSliders::default(), thumbnail, codec)?;
+        let raw = crate::raw::is_raw_name(&record.path.to_string_lossy())
+            || record.facts.sensor.is_some();
+        let small = match raw.then(|| self.raw_tile_source(record, codec)).flatten() {
+            Some(developed) => developed,
+            None => self.small_source(record, RawSliders::default(), thumbnail, codec)?,
+        };
         let tile = look_tile(&small, look)?;
         Ok(codec.encode(&tile, EncodeOptions::screen(LOOK_TILE_QUALITY), None)?)
+    }
+
+    /// A camera RAW's tile source from our develop, without developing: its standard preview
+    /// from memory or from disk, made small; `None` until one exists (the thumbnail is used).
+    fn raw_tile_source(
+        &self,
+        record: &PhotoRecord,
+        codec: &dyn JpegCodec,
+    ) -> Option<Arc<RgbImage>> {
+        let epoch = self.epoch.load(Ordering::SeqCst);
+        let key = source_key(record, RawSliders::default());
+        if let Some(kept) = take_cached(&self.tiles, key) {
+            return Some(kept);
+        }
+        let source = match take_cached(&self.entries, key) {
+            Some(source) => source,
+            None => Self::read_standard(self.standard_path(record, key).as_deref(), codec)?,
+        };
+        let small = Arc::new(fit_long_edge(&source, SMALL_LONG_EDGE).ok()?);
+        if let Ok(mut tiles) = self.tiles.lock()
+            && self.epoch.load(Ordering::SeqCst) == epoch
+        {
+            if tiles.len() >= TILE_CAPACITY {
+                tiles.remove(0);
+            }
+            tiles.push((key, Arc::clone(&small)));
+        }
+        Some(small)
     }
 
     /// Renders the preview JPEG for `record` with the current settings.
@@ -2160,6 +2211,56 @@ mod tests {
         // This test pattern is all hard edges, JPEG's worst case (2.4 levels at q90); real
         // photos differ by 1.35 (RESULT §29).
         assert!(error < 3.0, "mean error {error}");
+        Ok(())
+    }
+
+    /// FR-079: a camera RAW's look tile comes from its standard preview (our develop) once it
+    /// exists, never from the thumbnail (the camera's JPEG, RESULT §34); before, the thumbnail.
+    #[test]
+    fn fr_079_a_raw_tile_comes_from_the_develop_once_there_is_one() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let cache_dir = tempfile::tempdir()?;
+        let codec = default_codec();
+        let mut record = photo(dir.path(), 600, 400)?;
+        // A RAW by its name; the bytes stay a JPEG, which the decoders read by content.
+        let raw_path = record.path.with_extension("rw2");
+        std::fs::rename(&record.path, &raw_path)?;
+        record.path = raw_path;
+        let mut blue = RgbImage::new(64, 64);
+        for p in blue.data.as_chunks_mut::<3>().0 {
+            *p = [20, 40, 230];
+        }
+        let thumb = codec.encode(&blue, EncodeOptions::screen(90), None)?;
+        let thumbnail = |_: &PhotoRecord| Some(thumb.clone());
+        let mean_blue = |jpeg: &[u8]| -> TestResult<f64> {
+            let img = decode_image(codec.as_ref(), jpeg)?.image;
+            let sum: f64 = img
+                .data
+                .as_chunks::<3>()
+                .0
+                .iter()
+                .map(|p| f64::from(p[2]) - f64::from(p[0]))
+                .sum();
+            Ok(sum / f64::from(img.width * img.height))
+        };
+        let cache = PreviewCache::with(Budget::default(), Some(cache_dir.path().to_path_buf()));
+        let look = crate::looks::LookSettings::default();
+        let before =
+            mean_blue(&cache.look_tile_jpeg(&record, &look, &thumbnail, codec.as_ref())?)?;
+        assert!(
+            before > 150.0,
+            "no standard preview yet: the thumbnail ({before})"
+        );
+        assert!(cache.ensure_standard(
+            &record,
+            &RenderSettings::default(),
+            codec.as_ref(),
+            &|| true
+        )?);
+        let fresh = PreviewCache::with(Budget::default(), Some(cache_dir.path().to_path_buf()));
+        let after =
+            mean_blue(&fresh.look_tile_jpeg(&record, &look, &thumbnail, codec.as_ref())?)?;
+        assert!(after < 100.0, "the develop, not the thumbnail ({after})");
         Ok(())
     }
 

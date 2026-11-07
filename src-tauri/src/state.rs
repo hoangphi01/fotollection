@@ -56,15 +56,27 @@ impl FrameState {
         self.cameras.iter().find(|c| c.matches(make, model))
     }
 
-    /// The frame for one photo, or `None` when frames are off.
-    pub fn request(&self, record: &PhotoRecord, place: Option<&str>) -> Option<FrameRequest> {
+    /// The frame for one photo, or `None` when frames are off. `shared` is the look every
+    /// photo without its own has: its name, or the photo's own look's, fills the photo-style
+    /// line (FR-040, FR-079), never *Original*'s.
+    pub fn request(
+        &self,
+        record: &PhotoRecord,
+        place: Option<&str>,
+        shared: &fotollection_core::looks::LookSettings,
+    ) -> Option<FrameRequest> {
         if !self.settings.enabled {
             return None;
         }
         let shot = &record.shot;
         let profile = self.profile_for(shot.make.as_deref(), shot.model.as_deref());
         let capture = record.stamp_date();
-        let text = frame::build_text(shot, profile, &self.settings, capture, place);
+        let look = record.edits.look.as_ref().unwrap_or(shared);
+        let look_name = look
+            .name
+            .as_deref()
+            .filter(|_| look.base.as_deref() != Some("builtin:original") && look.table().is_some());
+        let text = frame::build_text(shot, profile, &self.settings, capture, place, look_name);
         let dark = self.settings.color == frame::FrameColor::Black;
         let logo = profile.and_then(|p| match p.logo {
             LogoKind::Image => self.logos.get(&p.id).cloned(),

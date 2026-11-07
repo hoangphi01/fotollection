@@ -1131,7 +1131,7 @@ pub fn start_export(
             crate::state::place_for(record, &names, format)
         };
         let frame_for = |record: &fotollection_core::library::PhotoRecord| {
-            frames.request(record, place_for(record).as_deref())
+            frames.request(record, place_for(record).as_deref(), &settings.look)
         };
         let group_for =
             |record: &fotollection_core::library::PhotoRecord| groups.get(&record.id).cloned();
@@ -1330,7 +1330,7 @@ pub async fn estimate_export(
             crate::state::place_for(record, &names, format)
         };
         let frame_for = |record: &fotollection_core::library::PhotoRecord| {
-            frames.request(record, place_for(record).as_deref())
+            frames.request(record, place_for(record).as_deref(), &settings.look)
         };
         // The size limit changes what is written (FR-105); names and folders do not.
         let files = state
@@ -1450,7 +1450,7 @@ fn preview_inputs(
     let place = crate::state::place_for(&record, &place_names(state), settings.place_format);
     let frame = {
         let f = state.frame.read().map_err(crate::document::poisoned)?;
-        f.request(&record, place.as_deref())
+        f.request(&record, place.as_deref(), &settings.look)
     };
     Ok((record, settings, place, frame))
 }
@@ -2434,7 +2434,7 @@ pub async fn get_crop_geometry(
             .frame
             .read()
             .map_err(|e| IpcError::internal(e.to_string()))?
-            .request(&record, place.as_deref());
+            .request(&record, place.as_deref(), &settings.look);
         let p = plan(&PlanInput {
             width,
             height,

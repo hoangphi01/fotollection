@@ -232,6 +232,13 @@ fn de2000(a: [f32; 3], b: [f32; 3]) -> f32 {
         .sqrt()
 }
 
+/// Mean ΔE2000 between two pictures of one size, pixel by pixel (for measurements such as
+/// `measure_raw_tiles`); `None` when their sizes differ.
+pub fn mean_de2000(a: &RgbImage, b: &RgbImage) -> Option<f32> {
+    ((a.width, a.height) == (b.width, b.height))
+        .then(|| error_against(a.width as usize, a.height as usize, &a.data, b))
+}
+
 /// Mean ΔE2000, pixel by pixel, between a small rendering and the camera's JPEG averaged
 /// down to the same size: per pixel, not per block, since a fit can match block averages and
 /// still miss the colours in them (RESULT §27).
