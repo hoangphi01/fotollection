@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ArrowLeft, ArrowRight, BookOpen, Bookmark, ChevronsUpDown, ListOrdered, type LucideIcon } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, Bookmark, ChevronDown, ListOrdered, Search, type LucideIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ManualText } from '@/components/layout/manual-text'
 import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import { ListRow, ListRows } from '@/components/forms/list-row'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { findChapters, type Chapter, type ManualCard } from '@/lib/manual'
 import { useManualChapters } from './manual-content'
@@ -21,42 +22,57 @@ function useShownChapter(): { list: Chapter[]; index: number; chapter: Chapter |
   return { list, index, chapter: list[index] }
 }
 
-/** Every chapter, found by its title or its words, case and accents aside (FR-110). */
+/**
+ * Every chapter, found by its title or its words, case and accents aside (FR-110): a popover
+ * as the compare views' menu, the search on top (32 px, as every field), the chapters as
+ * `ListRow`s 4 px apart, the one open marked as every chosen row is (STYLE_RULE §4).
+ */
 function ChapterPicker({ list, chapter }: { list: Chapter[]; chapter: Chapter }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const found = useMemo(() => findChapters(list, query), [list, query])
+  const pick = (id: string) => {
+    showManual(id)
+    setOpen(false)
+    setQuery('')
+  }
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-start font-normal">
+        <Button variant="outline" aria-expanded={open} className="w-full justify-start font-normal">
           <BookOpen data-icon="inline-start" />
           <span className="min-w-0 flex-1 truncate text-left">{`${chapter.number}. ${chapter.title}`}</span>
-          <ChevronsUpDown data-icon="inline-end" />
+          <ChevronDown data-icon="inline-end" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
-        {/* The search reads the chapters' words too, so cmdk's own filtering is off. */}
-        <Command shouldFilter={false}>
-          <CommandInput value={query} onValueChange={setQuery} placeholder={t('manual.search')} />
-          <CommandList>
-            <CommandEmpty>{t('manual.none')}</CommandEmpty>
+      <PopoverContent align="start" className="flex w-(--radix-popover-trigger-width) flex-col gap-1 p-1">
+        <InputGroup>
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+          <InputGroupInput
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              const first = found[0]
+              if (e.key === 'Enter' && first) pick(first.id)
+            }}
+            placeholder={t('manual.search')}
+            aria-label={t('manual.search')}
+          />
+        </InputGroup>
+        {/* A native scroll, in the theme's thin bar (index.css): Radix's needs a fixed height. */}
+        <div className="max-h-80 overflow-y-auto overscroll-contain">
+          <ListRows>
             {found.map((c) => (
-              <CommandItem
-                key={c.id}
-                value={c.id}
-                onSelect={() => {
-                  showManual(c.id)
-                  setOpen(false)
-                  setQuery('')
-                }}
-              >
-                <span className="min-w-0 flex-1 truncate">{`${c.number}. ${c.title}`}</span>
-              </CommandItem>
+              <ListRow key={c.id} chosen={c.id === chapter.id} current="page" onClick={() => pick(c.id)}>
+                <span className="min-w-0 flex-1 truncate text-left">{`${c.number}. ${c.title}`}</span>
+              </ListRow>
             ))}
-          </CommandList>
-        </Command>
+          </ListRows>
+          {found.length === 0 && <p className="px-2 py-1.5 text-xs text-muted-foreground">{t('manual.none')}</p>}
+        </div>
       </PopoverContent>
     </Popover>
   )
