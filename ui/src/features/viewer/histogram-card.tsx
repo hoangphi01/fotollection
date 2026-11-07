@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview
-import { ChartArea, TriangleAlert } from 'lucide-react'
+import { ChartArea, Pipette, TriangleAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Hint } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
@@ -34,12 +34,17 @@ export function HistogramCard({
   revision,
   clipping,
   onClipping,
+  picking,
+  onPicking,
 }: {
   photoId: PhotoId | null
   revision: number
   /** The clipped pixels marked on the photo (FR-098, `J`); absent where it cannot be shown. */
   clipping?: boolean
   onClipping?: (on: boolean) => void
+  /** The white-balance picker armed (FR-098, `W`); absent where it cannot be used. */
+  picking?: boolean
+  onPicking?: (on: boolean) => void
 }) {
   const { t } = useTranslation()
   const histogram = useLiveQuery(photoId === null ? null : String(photoId), revision, loadHistogram).data
@@ -49,16 +54,30 @@ export function HistogramCard({
       title={t('histogram.title')}
       action={
         onClipping && (
-          <Button
-            variant={clipping ? 'default' : 'outline'}
-            size="icon-sm"
-            aria-pressed={clipping}
-            aria-label={t('histogram.clipping')}
-            data-hint={t('histogram.clippingHint')}
-            onClick={() => onClipping(!clipping)}
-          >
-            <TriangleAlert />
-          </Button>
+          <>
+            {onPicking && (
+              <Button
+                variant={picking ? 'default' : 'outline'}
+                size="icon-sm"
+                aria-pressed={picking}
+                aria-label={t('histogram.pick')}
+                data-hint={t('histogram.pickHint')}
+                onClick={() => onPicking(!picking)}
+              >
+                <Pipette />
+              </Button>
+            )}
+            <Button
+              variant={clipping ? 'default' : 'outline'}
+              size="icon-sm"
+              aria-pressed={clipping}
+              aria-label={t('histogram.clipping')}
+              data-hint={t('histogram.clippingHint')}
+              onClick={() => onClipping(!clipping)}
+            >
+              <TriangleAlert />
+            </Button>
+          </>
         )
       }
     >
@@ -87,9 +106,7 @@ export function HistogramCard({
         )}
       </svg>
       {histogram && (histogram.highPermille > 0 || histogram.lowPermille > 0) && (
-        <Hint>
-          {t('histogram.clipped', { high: percent(histogram.highPermille), low: percent(histogram.lowPermille) })}
-        </Hint>
+        <Hint>{t('histogram.clipped', { high: percent(histogram.highPermille), low: percent(histogram.lowPermille) })}</Hint>
       )}
     </SectionCard>
   )

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarDays, ChevronLeft, ChevronRight, Clock, Crop, Download, Info, MapPin, Printer, SlidersHorizontal, Star } from 'lucide-react'
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { CalendarDays, ChevronLeft, ChevronRight, Clock, Crop, Download, Info, MapPin, PanelLeftOpen, Pipette, Printer, SlidersHorizontal, Star } from 'lucide-react'
+import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,7 @@ import { showExportDialog } from '@/features/export/use-export-dialog'
 import type { ExportApi } from '@/features/export/use-export'
 import { MOD } from '@/lib/platform'
 import { SectionCard } from '@/components/layout/section-card'
+import { PanelNote } from '@/components/layout/panel-note'
 import { InspectorSection } from '@/components/layout/inspector-section'
 import { KeyHints } from '@/components/layout/key-hints'
 import { StageSpinner } from '@/components/layout/stage-spinner'
@@ -170,6 +171,16 @@ export function PreviewDialog({
   }
   // J: the photo's clipped pixels marked, blown red and blocked blue (FR-098), from Rust.
   const [clipping, setClipping] = useState(false)
+  // W: the white-balance picker armed; the next click on the photo sets warmth and tint.
+  const [picking, setPicking] = useState(false)
+  const pickAt = (event: MouseEvent<HTMLImageElement>) => {
+    const box = event.currentTarget.getBoundingClientRect()
+    if (!photo || box.width === 0 || box.height === 0) return
+    const fx = (event.clientX - box.left) / box.width
+    const fy = (event.clientY - box.top) / box.height
+    setPicking(false)
+    void commands.pickWhiteBalance(photo.id, fx, fy)
+  }
   const src = photo ? `${previewUrl(photo.id, revision)}${before ? '&plain=1' : clipping ? '&clip=1' : ''}` : ''
   const { src: shownSrc, error: shownError } = useShownSrc(photo?.id, src)
   // The next photos load while this one is looked at (FR-091).
@@ -298,6 +309,9 @@ export function PreviewDialog({
     else if (event.code === 'KeyJ' && !mod && !event.altKey) {
       event.preventDefault()
       setClipping((on) => !on)
+    } else if (event.code === 'KeyW' && !mod && !event.altKey) {
+      event.preventDefault()
+      setPicking((on) => !on)
     } else if (event.code === 'KeyY' && !mod) {
       event.preventDefault()
       toggleCompare(event.altKey ? 'topBottom' : event.shiftKey ? 'split' : 'sideBySide')
@@ -316,8 +330,11 @@ export function PreviewDialog({
       contentRef={contentRef}
       onKeyDown={onKeyDown}
       onEscapeKeyDown={(e) => {
-        // Esc leaves crop mode or a compare view first, then closes the dialog.
-        if (cropping) {
+        // Esc leaves the picker, crop mode or a compare view first, then closes the dialog.
+        if (picking) {
+          e.preventDefault()
+          setPicking(false)
+        } else if (cropping) {
           e.preventDefault()
           setCropping(false)
         } else if (compare !== 'off') {
@@ -373,6 +390,7 @@ export function PreviewDialog({
           filmstrip={ui.filmstrip}
           onFilmstrip={() => void updateUi({ filmstrip: !ui.filmstrip })}
           windowed={windowed}
+          side={windowed && !wide ? { open: sideOpen, onToggle: () => setSideOpen((o) => !o) } : undefined}
           onLayout={toggleLayout}
         />
       }
@@ -395,16 +413,35 @@ export function PreviewDialog({
       }
       layout={windowed ? 'window' : 'dialog'}
       panels={panels}
-      sideOver={!wide}
+      // Opened in a narrow window, the left column takes its room and the photo fits between
+      // the two columns, never under one (owner, 2026-11-07).
+      sideOver={false}
       // The histogram lives in the window layout's left column, above the Navigator, also when
       // a narrow window keeps that column folded (Tab opens it; owner, 2026-11-07); only the
       // dialog layout, which has no left column, puts it at the head of the inspector (FR-098).
-      inspectorTop={!windowed && photo ? <HistogramCard photoId={photo.id} revision={revision} clipping={clipping} onClipping={setClipping} /> : undefined}
+      inspectorTop={
+        photo ? (
+          picking ? (
+            // W armed (FR-098): what the next click does, and how to leave.
+            <PanelNote icon={<Pipette />}>{t('viewer.pickWhite')}</PanelNote>
+          ) : !windowed ? (
+            <HistogramCard photoId={photo.id} revision={revision} clipping={clipping} onClipping={setClipping} picking={picking} onPicking={setPicking} />
+          ) : !showSide && panels ? (
+            // A narrow window shows one side column (owner, 2026-11-07): say where the other is.
+            <PanelNote icon={<PanelLeftOpen />}>
+              {t('viewer.sideFolded')}{' '}
+              <Button variant="link" size="sm" className="h-auto p-0" onClick={() => setSideOpen(true)}>
+                {t('viewer.sideOpen')}
+              </Button>
+            </PanelNote>
+          ) : undefined
+        ) : undefined
+      }
       side={
         showSide && photo ? (
           <>
             {/* The histogram above the Navigator, as Lightroom's (FR-098, owner, 2026-11-06). */}
-            <HistogramCard photoId={photo.id} revision={revision} clipping={clipping} onClipping={setClipping} />
+            <HistogramCard photoId={photo.id} revision={revision} clipping={clipping} onClipping={setClipping} picking={picking} onPicking={setPicking} />
             <NavigatorCard
               src={shownSrc}
               view={zoom.view}
@@ -475,14 +512,18 @@ export function PreviewDialog({
                   src={shownSrc}
                   alt={photo.fileName}
                   draggable={false}
-                  onPointerDown={zoom.pointer.onPointerDown}
-                  onPointerMove={zoom.pointer.onPointerMove}
-                  onPointerUp={zoom.pointer.onPointerUp}
-                  onClick={zoom.pointer.onClick}
+                  onPointerDown={picking ? undefined : zoom.pointer.onPointerDown}
+                  onPointerMove={picking ? undefined : zoom.pointer.onPointerMove}
+                  onPointerUp={picking ? undefined : zoom.pointer.onPointerUp}
+                  onClick={picking ? pickAt : zoom.pointer.onClick}
                   style={{ transform: zoom.transform }}
                   className={cn(
                     'max-h-full max-w-full animate-in object-contain stage-photo fade-in-0',
-                    zoom.zoomed || canDrag ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in',
+                    picking
+                      ? 'cursor-crosshair'
+                      : zoom.zoomed || canDrag
+                        ? 'cursor-grab active:cursor-grabbing'
+                        : 'cursor-zoom-in',
                     onGpu && 'hidden',
                   )}
                 />

@@ -1108,6 +1108,71 @@ impl PreviewCache {
         Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
     }
 
+    /// The photo's colour before its look around the point (`fx`, `fy`) of its preview, as
+    /// fractions of the preview's width and height, for the white-balance picker (FR-098, `W`):
+    /// the mean of the photo's own pixels in the 5 × 5 around it, or `None` when the point
+    /// falls on the border, the frame, the stamp or outside. A RAW's colour carries the warmth
+    /// and tint it was developed with (FR-088); the caller adds them back.
+    pub fn neutral_sample(
+        &self,
+        record: &PhotoRecord,
+        settings: &RenderSettings,
+        frame: Option<&FrameRequest>,
+        place: Option<&str>,
+        (fx, fy): (f32, f32),
+        codec: &dyn JpegCodec,
+    ) -> Result<Option<[f32; 3]>, ThumbError> {
+        let source = self.source(record, split_look(record, settings).0, codec)?;
+        let mut plain = record.clone();
+        plain.edits.look = None;
+        let mut settings = settings.clone();
+        settings.look = crate::looks::LookSettings::default();
+        let p = Self::plan_from(
+            &source,
+            &plain,
+            &settings,
+            frame,
+            place,
+            Some(PREVIEW_LONG_EDGE),
+        );
+        let photo = self.resized(&source, &p)?;
+        let mut inverted = photo.as_ref().clone();
+        inverted.data.iter_mut().for_each(|v| *v = 255 - *v);
+        // The same test as the webview's mask: a pixel of the photo is the exact inverse in
+        // the inverted run; anything drawn over it is not.
+        let (a, b) = (finish(photo.as_ref().clone(), &p), finish(inverted, &p));
+        let (w, h) = (a.width as usize, a.height as usize);
+        #[allow(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            clippy::cast_precision_loss
+        )]
+        let (cx, cy) = (
+            (fx.clamp(0.0, 1.0) * w as f32) as usize,
+            (fy.clamp(0.0, 1.0) * h as f32) as usize,
+        );
+        let at = |x: usize, y: usize| -> Option<[u8; 3]> {
+            let i = (y * w + x) * 3;
+            let (pa, pb) = (a.data.get(i..i + 3)?, b.data.get(i..i + 3)?);
+            (pa.iter().zip(pb).all(|(x, y)| *y == 255 - *x)).then(|| [pa[0], pa[1], pa[2]])
+        };
+        if cx >= w || cy >= h || at(cx, cy).is_none() {
+            return Ok(None);
+        }
+        let (mut sum, mut n) = ([0f32; 3], 0f32);
+        for y in cy.saturating_sub(2)..(cy + 3).min(h) {
+            for x in cx.saturating_sub(2)..(cx + 3).min(w) {
+                if let Some(px) = at(x, y) {
+                    for c in 0..3 {
+                        sum[c] += f32::from(px[c]);
+                    }
+                    n += 1.0;
+                }
+            }
+        }
+        Ok(Some(sum.map(|s| s / n)))
+    }
+
     /// The preview JPEG with the photo's clipped pixels marked (FR-098, `J`): blown in red,
     /// blocked in blue, the stamp, frame and border drawn as usual over them.
     pub fn render_clipping_jpeg(

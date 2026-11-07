@@ -424,10 +424,15 @@
     "oneToOne": "fit ↔ 1:1",
     "beforeKey": "before / after",
     "everyKey": "every key",
-    "keys": "← →  browse · ↑ to the print basket · ↓ set aside\n0–5 stars · P pick · X reject · U clear the flag\nR or C crop · [ ] or {{mod}} [ ] rotate\nZ, or a click on the photo: fit ↔ 1:1 · {{mod}} + − 0 zoom · drag to move the zoomed photo\nJ clipping · \\ before / after · Y side by side · ⇧Y split · ⌥/Alt Y top and bottom\n{{mod}} Z undo · ⇧ {{mod}} Z redo\n⇧ {{mod}} C copy settings · ⇧ {{mod}} V paste · ⌥ ⇧ {{mod}} V paste to the ticked photos · ⇧ {{mod}} R reset\nF fill the app window or back · Tab hide the side panels (from the photo)\n⇧ {{mod}} E export this photo · Esc close",
+    "keys": "← →  browse · ↑ to the print basket · ↓ set aside\n0–5 stars · P pick · X reject · U clear the flag\nR or C crop · [ ] or {{mod}} [ ] rotate\nZ, or a click on the photo: fit ↔ 1:1 · {{mod}} + − 0 zoom · drag to move the zoomed photo\nJ clipping · W white balance from a grey spot · \\ before / after · Y side by side · ⇧Y split · ⌥/Alt Y top and bottom\n{{mod}} Z undo · ⇧ {{mod}} Z redo\n⇧ {{mod}} C copy settings · ⇧ {{mod}} V paste · ⌥ ⇧ {{mod}} V paste to the ticked photos · ⇧ {{mod}} R reset\nF fill the app window or back · Tab hide the side panels (from the photo)\n⇧ {{mod}} E export this photo · Esc close",
     "layoutWindow": "Fill the app window (F)",
     "layoutDialog": "Back to a window (F)",
-    "zoomToggle": "Fit ↔ 1:1 (Z)"
+    "zoomToggle": "Fit ↔ 1:1 (Z)",
+    "sideFolded": "A narrow window shows one side column: widen it to see the histogram, the Navigator and History on the left too.",
+    "sideOpen": "Show it now (Tab)",
+    "pickWhite": "Click something in the photo that should be neutral grey: its warmth and tint follow. Esc cancels.",
+    "sideShow": "Show the left column: histogram, Navigator, History (Tab)",
+    "sideHide": "Hide the left column (Tab)"
   },
   "errors": {
     "internal": "Something went wrong",
@@ -507,7 +512,8 @@
       "invalid_rating": "Ratings are 0 to 5 stars",
       "invalid_selection": "Select between 1 and 10,000 photos",
       "unknown": "Unknown photo",
-      "nothing_copied": "Copy settings from a photo first"
+      "nothing_copied": "Copy settings from a photo first",
+      "not_on_photo": "Click on the photo itself"
     },
     "settings": {
       "invalid": "These settings are not valid"
@@ -1179,6 +1185,8 @@
     "label": "Histogram of the photo: red, green and blue, and the light as a line",
     "clipped": "Blown {{high}} · Blocked {{low}}",
     "clipping": "Show clipping (J)",
-    "clippingHint": "Marks on the photo what is blown (red) and blocked (black detail lost, blue), as Lightroom's J does."
+    "clippingHint": "Marks on the photo what is blown (red) and blocked (black detail lost, blue), as Lightroom's J does.",
+    "pick": "White balance from a grey spot (W)",
+    "pickHint": "Then click something in the photo that should be neutral grey: warmth and tint follow, as one step."
   }
 }

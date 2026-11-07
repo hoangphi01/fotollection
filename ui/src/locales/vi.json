@@ -404,10 +404,15 @@
     "oneToOne": "vừa khung ↔ 1:1",
     "beforeKey": "trước / sau",
     "everyKey": "mọi phím",
-    "keys": "← →  chuyển ảnh · ↑ vào giỏ in · ↓ để riêng\n0–5 số sao · P chọn · X loại · U bỏ cờ\nR hoặc C cắt ảnh · [ ] hoặc {{mod}} [ ] xoay\nZ, hoặc nhấp vào ảnh: vừa khung ↔ 1:1 · {{mod}} + − 0 phóng to · kéo để di chuyển ảnh đang phóng\nJ vùng mất chi tiết · \\ trước / sau · Y cạnh nhau · ⇧Y chia đôi · ⌥/Alt Y trên và dưới\n{{mod}} Z hoàn tác · ⇧ {{mod}} Z làm lại\n⇧ {{mod}} C sao chép thiết lập · ⇧ {{mod}} V dán · ⌥ ⇧ {{mod}} V dán cho các ảnh đã chọn · ⇧ {{mod}} R đặt lại\nF phủ kín cửa sổ hoặc trở lại · Tab ẩn các bảng hai bên (khi đang ở ảnh)\n⇧ {{mod}} E xuất ảnh này · Esc đóng",
+    "keys": "← →  chuyển ảnh · ↑ vào giỏ in · ↓ để riêng\n0–5 số sao · P chọn · X loại · U bỏ cờ\nR hoặc C cắt ảnh · [ ] hoặc {{mod}} [ ] xoay\nZ, hoặc nhấp vào ảnh: vừa khung ↔ 1:1 · {{mod}} + − 0 phóng to · kéo để di chuyển ảnh đang phóng\nJ vùng mất chi tiết · W cân bằng trắng từ một điểm xám · \\ trước / sau · Y cạnh nhau · ⇧Y chia đôi · ⌥/Alt Y trên và dưới\n{{mod}} Z hoàn tác · ⇧ {{mod}} Z làm lại\n⇧ {{mod}} C sao chép thiết lập · ⇧ {{mod}} V dán · ⌥ ⇧ {{mod}} V dán cho các ảnh đã chọn · ⇧ {{mod}} R đặt lại\nF phủ kín cửa sổ hoặc trở lại · Tab ẩn các bảng hai bên (khi đang ở ảnh)\n⇧ {{mod}} E xuất ảnh này · Esc đóng",
     "layoutWindow": "Phủ kín cửa sổ (F)",
     "layoutDialog": "Về dạng cửa sổ (F)",
-    "zoomToggle": "Vừa khung ↔ 1:1 (Z)"
+    "zoomToggle": "Vừa khung ↔ 1:1 (Z)",
+    "sideFolded": "Cửa sổ hẹp chỉ hiện một cột bên: kéo cửa sổ rộng ra để thấy cả biểu đồ màu, Điều hướng và Lịch sử ở cột trái.",
+    "sideOpen": "Hiện ngay (Tab)",
+    "pickWhite": "Nhấp vào một chỗ trong ảnh lẽ ra phải có màu xám trung tính: Ấm/lạnh và Tint sẽ chỉnh theo. Esc để huỷ.",
+    "sideShow": "Hiện cột trái: biểu đồ màu, Điều hướng, Lịch sử (Tab)",
+    "sideHide": "Ẩn cột trái (Tab)"
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",
@@ -487,7 +492,8 @@
       "invalid_rating": "Đánh giá từ 0 đến 5 sao",
       "invalid_selection": "Hãy chọn từ 1 đến 10.000 ảnh",
       "unknown": "Không tìm thấy ảnh",
-      "nothing_copied": "Hãy sao chép thiết lập từ một ảnh trước"
+      "nothing_copied": "Hãy sao chép thiết lập từ một ảnh trước",
+      "not_on_photo": "Hãy nhấp vào chính tấm ảnh"
     },
     "settings": {
       "invalid": "Thiết lập không hợp lệ"
@@ -1141,6 +1147,8 @@
     "label": "Biểu đồ màu của ảnh: đỏ, xanh lá, xanh dương, và độ sáng là đường kẻ",
     "clipped": "Cháy sáng {{high}} · Mất chi tiết tối {{low}}",
     "clipping": "Hiện vùng mất chi tiết (J)",
-    "clippingHint": "Đánh dấu trên ảnh phần cháy sáng (đỏ) và phần mất chi tiết tối (xanh dương), như phím J của Lightroom."
+    "clippingHint": "Đánh dấu trên ảnh phần cháy sáng (đỏ) và phần mất chi tiết tối (xanh dương), như phím J của Lightroom.",
+    "pick": "Cân bằng trắng từ một điểm xám (W)",
+    "pickHint": "Sau đó nhấp vào một chỗ trong ảnh lẽ ra có màu xám trung tính: Ấm/lạnh và Tint chỉnh theo, trong một bước."
   }
 }

@@ -464,6 +464,12 @@ export const commands = {
 	 *  time it may decode the photo, then it reuses the preview's resized photo (≤ 3 ms).
 	 */
 	photoHistogram: (id: PhotoId) => typedError<HistogramView, IpcError>(__TAURI_INVOKE("photo_histogram", { id })),
+	/**
+	 *  Sets the photo's warmth and tint so the spot clicked at (`fx`, `fy`) of its preview turns
+	 *  neutral grey (FR-098, `W`), as one undo step; the rest of its look stays. A point on the
+	 *  border, the frame, the stamp or outside the photo is `ERR-IPC-0026`.
+	 */
+	pickWhiteBalance: (id: PhotoId, fx: number | null, fy: number | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("pick_white_balance", { id, fx, fy })),
 	/**  A photo's develop steps, newest first; the first is where the photo is now. */
 	photoHistory: (id: PhotoId) => typedError<HistoryStep[], IpcError>(__TAURI_INVOKE("photo_history", { id })),
 	/**

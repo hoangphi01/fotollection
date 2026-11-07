@@ -531,6 +531,18 @@ impl Params {
     }
 }
 
+/// The warmth and tint, in slider steps at full amount, that turn the encoded colour `rgb`
+/// (0–255, as the photo is before its look) into a neutral grey (FR-098, `W`): the exact inverse
+/// of [`Params::new`]'s gains, `2^(0.3·w)` on red, `2^(−0.45·t)` on green, `2^(−0.3·w)` on blue,
+/// whose ratios the luminance normalisation leaves alone. Not clamped: the caller adds what the
+/// photo already has and keeps the result within the sliders' range.
+pub fn white_balance_from(rgb: [f32; 3]) -> (f32, f32) {
+    let [r, g, b] = rgb.map(|v| to_linear((v / 255.0).clamp(0.0, 1.0)).max(1e-4));
+    let warmth = 100.0 * (b / r).log2() / 0.6;
+    let tint = 100.0 * (g / (r * b).sqrt()).log2() / 0.45;
+    (warmth, tint)
+}
+
 /// Linear-light channel weights of a black-and-white filter; they sum to 1, so white stays.
 fn mono_weights(mono: Mono) -> Option<[f32; 3]> {
     match mono {
@@ -748,6 +760,25 @@ mod tests {
                 (0.2 + 0.6 * b + 0.2 * r * g).min(1.0),
             ]
         })
+    }
+
+    /// FR-098: a grey patch tinted by known warmth and tint is picked back to them, so the
+    /// picker's correction cancels the cast to within a step.
+    #[test]
+    fn fr_098_white_balance_round_trips() {
+        for (w, t) in [(30i8, 0i8), (-40, 20), (0, -35), (55, 45)] {
+            let mut look = LookSettings::default();
+            (look.adjust.warmth, look.adjust.tint) = (w, t);
+            let p = Params::new(&look);
+            // A mid grey seen through the cast, as a camera with the wrong white balance would.
+            let lin = [0.2f32; 3];
+            let cast = [0, 1, 2].map(|i| to_encoded(lin[i] / p.gains[i]) * 255.0);
+            let (pw, pt) = white_balance_from(cast);
+            assert!((pw - f32::from(w)).abs() < 1.0, "warmth {w}: picked {pw}");
+            assert!((pt - f32::from(t)).abs() < 1.0, "tint {t}: picked {pt}");
+        }
+        let (w, t) = white_balance_from([128.0; 3]);
+        assert!(w.abs() < 0.01 && t.abs() < 0.01, "a grey needs nothing");
     }
 
     #[test]

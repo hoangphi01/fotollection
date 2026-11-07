@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview
-import { ChevronDown, Columns2, Download, Eye, Maximize2, Minimize2, PanelBottomClose, PanelBottomOpen, Redo2, RotateCcw, RotateCw, Rows2, ShoppingBasket, SquareSplitHorizontal, SquareSplitVertical, Undo2 } from 'lucide-react'
+import { ChevronDown, Columns2, Download, Eye, Maximize2, Minimize2, PanelBottomClose, PanelBottomOpen, PanelLeftClose, PanelLeftOpen, Redo2, RotateCcw, RotateCw, Rows2, ShoppingBasket, SquareSplitHorizontal, SquareSplitVertical, Undo2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
@@ -33,6 +33,8 @@ type PreviewToolbarProps = {
   /** The preview fills the app window (FR-095). */
   windowed: boolean
   onLayout: () => void
+  /** The left column a narrow window folds (FR-095): shown or hidden from here, as Tab does. */
+  side?: { open: boolean; onToggle: () => void }
 }
 
 /**
@@ -55,6 +57,7 @@ export function PreviewToolbar({
   onFilmstrip,
   windowed,
   onLayout,
+  side,
 }: PreviewToolbarProps) {
   const { t } = useTranslation()
   const inBasket = photo?.queue === 'print'
@@ -62,6 +65,20 @@ export function PreviewToolbar({
   const stripLabel = t(filmstrip ? 'viewer.hideFilmstrip' : 'viewer.showFilmstrip')
   return (
     <div className="@container flex h-header items-center gap-1.5 px-3">
+      {side && (
+        <>
+          <ToolbarButton
+            icon={side.open ? <PanelLeftClose /> : <PanelLeftOpen />}
+            label={t(side.open ? 'viewer.sideHide' : 'viewer.sideShow')}
+            variant={side.open ? 'default' : 'outline'}
+            aria-pressed={side.open}
+            data-hint={t(side.open ? 'viewer.sideHide' : 'viewer.sideShow')}
+            iconOnly
+            onClick={side.onToggle}
+          />
+          <Separator orientation="vertical" className="mx-1 h-5!" />
+        </>
+      )}
       <ToolbarButton
         icon={<RotateCcw />}
         label={t('viewer.rotateLeftShort')}
