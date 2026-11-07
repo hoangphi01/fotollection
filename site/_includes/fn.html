@@ -1,0 +1,19 @@
+{%- comment -%}
+  Footnote marks, numbered per page as Apple does (owner, 2026-11-07): {% include fn.html keys="fn_simd,fn_units" %}
+  or keys=item.fn (a list). A note's number is its place in this page's list, in its language, in _data/footnotes.yml
+  (the page is its title_key, the home page "home"); only a note's first mark gets the id its back
+  link returns to. scripts/check-footnotes.mjs checks the lists against the keys and both languages.
+{%- endcomment -%}
+{%- assign fn_page = page.title_key | default: "home" -%}
+{%- assign fn_list = site.data.footnotes[fn_page][page.lang] -%}
+{%- assign fn_keys = include.keys | join: "," | split: "," -%}
+<sup class="fn-ref">
+{%- for fn_key in fn_keys -%}
+{%- assign fn_n = 0 -%}
+{%- for fn_listed in fn_list -%}{%- if fn_listed == fn_key -%}{%- assign fn_n = forloop.index -%}{%- endif -%}{%- endfor -%}
+{%- capture fn_mark %}|{{ fn_key }}|{% endcapture -%}
+{%- unless forloop.first %},{% endunless -%}
+<a href="#fn-{{ fn_n }}" data-fn="{{ fn_key }}"{% unless fn_seen contains fn_mark %} id="fnref-{{ fn_n }}"{% endunless %} aria-label="{{ t.fn_label }} {{ fn_n }}">{{ fn_n }}</a>
+{%- assign fn_seen = fn_seen | append: fn_mark -%}
+{%- endfor -%}
+</sup>

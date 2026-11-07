@@ -17,7 +17,7 @@
     {%- comment %} Each choice beside what it measures, as Apple lays out a spec (owner, 2026-11-06). {% endcomment %}
     <ol class="how-list">
       {%- for item in t.perf_how_items %}
-      <li><div class="how-text"><h3>{{ item.t }}</h3><p>{{ item.d }}</p></div><p class="how-figure"><strong>{{ item.v }}</strong><span>{{ item.l }}</span></p></li>
+      <li><div class="how-text"><h3>{{ item.t }}</h3><p>{{ item.d }}{% if item.fn %}{% include fn.html keys=item.fn %}{% endif %}</p></div><p class="how-figure"><strong>{{ item.v }}</strong><span>{{ item.l }}</span></p></li>
       {%- endfor %}
     </ol>
     {%- include perf-diagram.html name="layers" %}
@@ -36,7 +36,7 @@
     <div>
       <h2>{{ t[title_key] }}</h2>
       {%- capture fn_key %}perf_{{ key }}_fn{% endcapture %}
-      <p class="lead">{{ t[text_key] }}{% if t[fn_key] %}<sup class="fn-ref">{% for n in t[fn_key] %}{% unless forloop.first %},{% endunless %}<a href="#fn-{{ n }}" id="fnref-{{ n }}" aria-label="{{ t.fn_label }} {{ n }}">{{ n }}</a>{% endfor %}</sup>{% endif %}</p>
+      <p class="lead">{{ t[text_key] }}{% assign part_fn = t[fn_key] %}{% if part_fn %}{% include fn.html keys=part_fn %}{% endif %}</p>
     </div>
     <div class="charts">
       {%- for c in charts -%}
@@ -62,7 +62,7 @@
       <figure class="card chart">
         {%- assign size = site.data.charts[file] %}
         <img src="{{ chart_base }}{{ file }}-{{ page.lang }}.svg" width="{{ size.width | default: 752 }}" height="{{ size.height | default: 400 }}" alt="{{ cap }}" loading="lazy" decoding="async" />
-        <figcaption>{{ cap }}<sup class="fn-ref"><a href="#fn-12" aria-label="{{ t.fn_label }} 12">12</a></sup></figcaption>
+        <figcaption>{{ cap }}{% include fn.html keys="fn_charts" %}</figcaption>
       </figure>
       {%- endfor -%}
     </div>
@@ -87,7 +87,7 @@
     <div class="faq">
       {%- for item in t.perf_faq %}
       <details class="card">
-        <summary><span>{{ item.q }}{% if item.fn %}<sup class="fn-ref">{% for n in item.fn %}{% unless forloop.first %},{% endunless %}<a href="#fn-{{ n }}" id="fnref-{{ n }}" aria-label="{{ t.fn_label }} {{ n }}">{{ n }}</a>{% endfor %}</sup>{% endif %}</span></summary>
+        <summary><span>{{ item.q }}{% if item.fn %}{% include fn.html keys=item.fn %}{% endif %}</span></summary>
         <p>{{ item.a }}</p>
       </details>
       {%- endfor %}

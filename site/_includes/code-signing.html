@@ -4,7 +4,7 @@
   <div class="wrap">
     <p class="kicker">{{ t.cs_kicker }}</p>
     <h1>{{ t.cs_title }}</h1>
-    <p class="lead narrow">{{ t.cs_lead }}</p>
+    <p class="lead narrow">{{ t.cs_lead }}{% include fn.html keys="fn_linux_pkg,fn_sha,fn_gpg" %}</p>
   </div>
 </section>
 
@@ -19,7 +19,7 @@
       {%- for item in part.items %}
       <article class="card">
         <h3>{{ item.title }}</h3>
-        <p>{% if item.author %}<a href="https://github.com/{{ site.author }}">@{{ site.author }}</a> · {% endif %}{{ item.text }}</p>
+        <p>{% if item.author %}<a href="https://github.com/{{ site.author }}">@{{ site.author }}</a> · {% endif %}{{ item.text }}{% if item.fn %}{% include fn.html keys=item.fn %}{% endif %}</p>
       </article>
       {%- endfor %}
     </div>

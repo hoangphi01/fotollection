@@ -6,7 +6,7 @@
   <div class="wrap hero-grid">
     <div class="hero-text">
       <p class="badges">
-        <span class="badge">{{ t.badge }}<sup class="fn-ref"><a href="#fn-1" id="fnref-1" aria-label="{{ t.fn_label }} 1">1</a></sup></span>
+        <span class="badge">{{ t.badge }}{% include fn.html keys="fn_open" %}</span>
         <a class="badge shield" href="#privacy">{% include icons/shield-check.svg %}{{ t.shield }}</a>
       </p>
       <h1>{{ t.hero_title_1 }} <em>{{ t.hero_accent }}</em>{{ t.hero_title_2 }}</h1>
@@ -134,15 +134,15 @@
       <figure class="shot">{% include shot.html name="stamp" alt=t.show_stamp %}</figure>
       <div class="showcase-text">
         <h3>{{ t.f_stamp_title }}</h3>
-        <p>{{ t.f_stamp_text }}</p>
-        <p class="small muted">{{ t.show_stamp }}</p>
+        <p>{{ t.f_stamp_text }}{% include fn.html keys="fn_led" %}</p>
+        <p class="small muted">{{ t.show_stamp }}{% include fn.html keys="fn_gps" %}</p>
       </div>
     </div>
     <div class="showcase-row flip">
       <figure class="shot">{% include shot.html name="frame" alt=t.show_frame %}</figure>
       <div class="showcase-text">
         <h3>{{ t.f_frame_title }}</h3>
-        <p>{{ t.f_frame_text }}</p>
+        <p>{{ t.f_frame_text }}{% include fn.html keys="fn_exif,fn_iso" %}</p>
         <p class="small muted">{{ t.show_frame }}</p>
       </div>
     </div>
@@ -150,7 +150,7 @@
       <figure class="shot">{% include shot.html name="crop" alt=t.show_crop %}</figure>
       <div class="showcase-text">
         <h3>{{ t.f_crop_title }}</h3>
-        <p>{{ t.f_crop_text }}</p>
+        <p>{{ t.f_crop_text }}{% include fn.html keys="fn_dpi" %}</p>
         <p class="small muted">{{ t.show_crop }}</p>
       </div>
     </div>
@@ -216,7 +216,7 @@
 <section class="section" id="kiosk">
   <div class="wrap kiosk-grid">
     <div>
-      <h2>{{ t.kiosk_title }} {% include logos/dm.svg %}<sup class="fn-ref"><a href="#fn-2" id="fnref-2" aria-label="{{ t.fn_label }} 2">2</a></sup> {{ t.kiosk_and }}&nbsp;{% include logos/rossmann.svg %}<sup class="fn-ref"><a href="#fn-3" id="fnref-3" aria-label="{{ t.fn_label }} 3">3</a></sup></h2>
+      <h2>{{ t.kiosk_title }} {% include logos/dm.svg %}{% include fn.html keys="fn_dm" %} {{ t.kiosk_and }}&nbsp;{% include logos/rossmann.svg %}{% include fn.html keys="fn_rossmann" %}</h2>
       <p class="lead">{{ t.kiosk_lead }}</p>
       <div class="sizes">
         <p class="sizes-label">{{ t.kiosk_standard }}</p>
@@ -232,7 +232,7 @@
       <h3>{{ t.kiosk_steps_title }}</h3>
       <ol>
         <li>{{ t.kiosk_s1 }}</li>
-        <li>{{ t.kiosk_s2 }}</li>
+        <li>{{ t.kiosk_s2 }}{% include fn.html keys="fn_usb" %}</li>
         <li>{{ t.kiosk_s3 }}</li>
       </ol>
     </div>
@@ -263,7 +263,7 @@
       <figure class="shot">{% include shot.html name="window" alt=t.show_window %}</figure>
       <div class="showcase-text">
         <h3>{{ t.develop_window_title }}</h3>
-        <p>{{ t.develop_window_text }}</p>
+        <p>{{ t.develop_window_text }}{% include fn.html keys="fn_raw" %}</p>
         <p class="key-chips inline" aria-hidden="true"><span><kbd>R</kbd></span><span><kbd>Z</kbd></span><span><kbd>\</kbd></span><span><kbd>Y</kbd></span><span><kbd>F</kbd></span></p>
         <p class="small muted">{{ t.show_window }}</p>
       </div>
@@ -303,7 +303,7 @@
       <figure class="card chart">
         {%- capture chart %}bench-{{ c }}{% endcapture %}{%- assign size = site.data.charts[chart] %}
         <img src="{{ '/assets/img/charts/bench-' | append: c | append: '-' | append: page.lang | append: '.svg' | relative_url }}" width="{{ size.width | default: 752 }}" height="{{ size.height | default: 400 }}" alt="{{ t[key] }}" loading="lazy" decoding="async" />
-        <figcaption>{{ t[key] }}<sup class="fn-ref"><a href="#fn-12" aria-label="{{ t.fn_label }} 12">12</a></sup></figcaption>
+        <figcaption>{{ t[key] }}{% include fn.html keys="fn_charts" %}</figcaption>
       </figure>
       {%- endfor -%}
     </div>
@@ -322,9 +322,9 @@
       <article class="card">{% include icons/frame.svg %}<h3>{{ t.f_frame_title }}</h3><p>{{ t.f_frame_text }}</p></article>
       <article class="card">{% include icons/sparkles.svg %}<h3>{{ t.f_best_title }}</h3><p>{{ t.f_best_text }}</p></article>
       <article class="card">{% include icons/crop.svg %}<h3>{{ t.f_crop_title }}</h3><p>{{ t.f_crop_text }}</p></article>
-      <article class="card">{% include icons/gem.svg %}<h3>{{ t.f_quality_title }}</h3><p>{{ t.f_quality_text }}</p></article>
-      <article class="card">{% include icons/gauge.svg %}<h3>{{ t.f_speed_title }}</h3><p>{{ t.f_speed_text }}</p></article>
-      <article class="card">{% include icons/camera.svg %}<h3>{{ t.f_raw_title }}</h3><p>{{ t.f_raw_text }}<sup class="fn-ref"><a href="#fn-14" id="fnref-14" aria-label="{{ t.fn_label }} 14">14</a></sup></p></article>
+      <article class="card">{% include icons/gem.svg %}<h3>{{ t.f_quality_title }}</h3><p>{{ t.f_quality_text }}{% include fn.html keys="fn_jpeg,fn_444" %}</p></article>
+      <article class="card">{% include icons/gauge.svg %}<h3>{{ t.f_speed_title }}</h3><p>{{ t.f_speed_text }}{% include fn.html keys="fn_units" %}</p></article>
+      <article class="card">{% include icons/camera.svg %}<h3>{{ t.f_raw_title }}</h3><p>{{ t.f_raw_text }}{% include fn.html keys="fn_pf_raw" %}</p></article>
       <article class="card">{% include icons/mouse-pointer-click.svg %}<h3>{{ t.f_open_title }}</h3><p>{{ t.f_open_text }}</p></article>
     </div>
     <p class="systems-link"><a class="more" href="{{ path_download }}#systems">{{ t.pf_title }} {% include icons/arrow-right.svg %}</a></p>
@@ -344,7 +344,7 @@
       <li><h3>{{ t.p6_title }}</h3><p>{{ t.p6_text }}</p></li>
       <li><h3>{{ t.p3_title }}</h3><p>{{ t.p3_text }}</p></li>
       <li><h3>{{ t.p4_title }}</h3><p>{{ t.p4_text }}</p></li>
-      <li><h3>{{ t.p5_title }}</h3><p>{{ t.p5_text }}</p></li>
+      <li><h3>{{ t.p5_title }}</h3><p>{{ t.p5_text }}{% include fn.html keys="fn_gpl" %}</p></li>
     </ul>
   </div>
 </section>
@@ -354,7 +354,7 @@
     <h2>{{ t.community_title }}</h2>
     <p class="lead narrow">{{ t.community_lead }}</p>
     <div class="cards community-cards">
-      <article class="card">{% include icons/users.svg %}<h3>{{ t.vnlf_title }}</h3><p>{{ t.vnlf_text }}</p><p><a class="more" href="https://apps.vietnamlinuxfamily.net/app/fotollection">{{ t.vnlf_link }} {% include icons/arrow-right.svg %}</a></p><p><a class="more" href="https://vietnamlinuxfamily.net/projects/fotollection">{{ t.vnlf_social_link }} {% include icons/arrow-right.svg %}</a></p></article>
+      <article class="card">{% include icons/users.svg %}<h3>{{ t.vnlf_title }}</h3><p>{{ t.vnlf_text }}{% include fn.html keys="fn_vnlf" %}</p><p><a class="more" href="https://apps.vietnamlinuxfamily.net/app/fotollection">{{ t.vnlf_link }} {% include icons/arrow-right.svg %}</a></p><p><a class="more" href="https://vietnamlinuxfamily.net/projects/fotollection">{{ t.vnlf_social_link }} {% include icons/arrow-right.svg %}</a></p></article>
       <article class="card">{% include icons/monitor.svg %}<h3>{{ t.caramos_title }}</h3><p>{{ t.caramos_text }}</p><p><a class="more" href="https://github.com/VN-Linux-Family/CaramOS">{{ t.caramos_link }} {% include icons/arrow-right.svg %}</a></p></article>
       <article class="card">{% include icons/star.svg %}<h3>{{ t.github_title }}</h3><p>{{ t.github_text }}</p><p><a class="more" href="{{ site.repo_url }}">{{ t.github_link }} {% include icons/arrow-right.svg %}</a></p></article>
     </div>
@@ -392,7 +392,7 @@
         <div data-treat-qr><img src="{{ '/assets/img/vietqr.png' | relative_url }}" width="260" height="350" alt="{{ t.support_alt }}" loading="lazy" decoding="async" /></div>
         <template data-treat-error>{% include icons/circle-alert.svg %}</template>
         <figcaption class="small muted" data-treat-amount>{{ treat.bank }} · Napas 247</figcaption>
-        <p class="treat-marks"><img class="mark-vietqr" src="{{ '/assets/img/logos/vietqr.png' | relative_url }}" width="61" height="34" alt="VietQR" loading="lazy" decoding="async" /><img class="mark-napas" src="{{ '/assets/img/logos/napas247.png' | relative_url }}" width="110" height="26" alt="NAPAS 247" loading="lazy" decoding="async" /><sup class="fn-ref"><a href="#fn-24" id="fnref-24" aria-label="{{ t.fn_label }} 24">24</a></sup></p>
+        <p class="treat-marks"><img class="mark-vietqr" src="{{ '/assets/img/logos/vietqr.png' | relative_url }}" width="61" height="34" alt="VietQR" loading="lazy" decoding="async" /><img class="mark-napas" src="{{ '/assets/img/logos/napas247.png' | relative_url }}" width="110" height="26" alt="NAPAS 247" loading="lazy" decoding="async" />{% include fn.html keys="fn_payment" %}</p>
       </figure>
       <div class="cta"><a class="button sponsor" href="https://github.com/sponsors/hoangphi01?frequency=one-time">{% include icons/heart.svg %}{{ t.support_sponsor }}</a></div>
       <p class="small muted support-note">{{ t.support_note }}</p>
@@ -412,7 +412,7 @@
       {%- for item in group.items %}
       <details>
         <summary>{{ item.q }}</summary>
-        <p>{{ item.a }}</p>
+        <p>{{ item.a }}{% if item.fn %}{% include fn.html keys=item.fn %}{% endif %}</p>
       </details>
       {%- endfor %}
       {%- endfor %}

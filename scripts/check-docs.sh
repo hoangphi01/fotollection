@@ -125,6 +125,9 @@ for token in --shade --highlight --lip --lip-mix; do
   [ "$app" = "$web" ] || fail "$token differs between ui/src/index.css and site/assets/css/site.css"
 done
 
+echo "• The website's footnotes: each page's list, cited and written in both languages"
+node scripts/check-footnotes.mjs || fail "site footnotes: fix site/_data/footnotes.yml or the notes in site/_data/i18n.yml (site/README.md)"
+
 echo "• ROADMAP and STATUS give every FR the same phase"
 awk '
   FNR == 1 { file++ }

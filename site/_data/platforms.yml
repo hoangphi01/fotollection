@@ -29,32 +29,35 @@ rows:
     win: ok
     linux: ok
   - key: jpeg
+    label_fn: [fn_png]
     mac: ok
     win: ok
     linux: ok
   - key: raw
     mac: ok
-    mac_fn: 14
+    mac_fn: [fn_pf_raw]
     win: ok
     linux: ok
   - key: heic
+    label_fn: [fn_heic]
     mac: ok
     win: ok
-    win_fn: 15
+    win_fn: [fn_pf_heic_win]
     linux: soon
-    linux_fn: 16
+    linux_fn: [fn_pf_heic_linux]
   - key: tether
+    label_fn: [fn_usb]
     mac: soon
     win: ok
-    win_fn: 17
+    win_fn: [fn_pf_tether]
     linux: none
   - key: openwith
     mac: ok
     win: ok
     linux: ok
-    linux_fn: 18
+    linux_fn: [fn_pf_openwith]
   - key: update
     mac: ok
     win: ok
     linux: ok
-    linux_fn: 19
+    linux_fn: [fn_pf_update]

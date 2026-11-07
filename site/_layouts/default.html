@@ -200,20 +200,16 @@
          every trademark the site shows (names, logos, the cameras in the screenshots). {%- endcomment %}
     <section class="footnotes" aria-label="{{ t.fn_title }}">
       <div class="wrap">
-        {%- comment -%} One list on every page; the back link only where this page carries the mark. {%- endcomment %}
-        {%- if page.title_key == 'perf_title' %}{% assign first = 4 %}{% assign last = 11 %}{% elsif page.title_key == nil %}{% assign first = 1 %}{% assign last = 3 %}{% else %}{% assign first = 0 %}{% assign last = 0 %}{% endif %}
+        {%- comment -%} This page's own notes, numbered as its marks are (_includes/fn.html, _data/footnotes.yml; owner, 2026-11-07). {%- endcomment %}
+        {%- assign fn_page = page.title_key | default: "home" %}
+        {%- assign fn_list = site.data.footnotes[fn_page][page.lang] %}
+        {%- if fn_list %}
         <ol>
-          {%- assign notes = "fn_open,fn_dm,fn_rossmann,fn_rust,fn_webview,fn_de,fn_ssim,fn_jpeg,fn_srgb,fn_p3,fn_adobe,fn_charts,fn_dng,fn_pf_raw,fn_pf_heic_win,fn_pf_heic_linux,fn_pf_tether,fn_pf_openwith,fn_pf_update,fn_glibc,fn_nvidia,fn_trip,fn_downloads,fn_payment" | split: "," %}
-          {%- for key in notes %}
-          {%- assign n = forloop.index %}
-          {%- assign back = false %}{% if n >= first and n <= last %}{% assign back = true %}{% endif %}
-          {%- if page.title_key == 'perf_title' and n == 13 or page.title_key == 'perf_title' and n == 22 %}{% assign back = true %}{% endif %}
-          {%- comment -%} 14–19: the table by system; 20–21: the distributions; both on the Download page. 22: the real trip, on the Performance page. 23: the download count, on the Download page. 24: the payment marks, on the home page. 14 is also on the home page's RAW card. {%- endcomment %}
-          {%- if page.title_key == nil and n == 14 or page.title_key == nil and n == 24 %}{% assign back = true %}{% endif %}
-          {%- if page.title_key == 'dl_title' and n >= 14 and n <= 21 or page.title_key == 'dl_title' and n == 23 %}{% assign back = true %}{% endif %}
-          <li id="fn-{{ n }}"><span class="fn-num">{{ n }}.</span> {{ t[key] }}{% if back %} <a class="fn-back" href="#fnref-{{ n }}" aria-label="{{ t.fn_back }}">{% include icons/corner-left-up.svg %}</a>{% endif %}</li>
+          {%- for key in fn_list %}
+          <li id="fn-{{ forloop.index }}"><span class="fn-num">{{ forloop.index }}.</span> {{ t[key] }} <a class="fn-back" href="#fnref-{{ forloop.index }}" aria-label="{{ t.fn_back }}">{% include icons/corner-left-up.svg %}</a></li>
           {%- endfor %}
         </ol>
+        {%- endif %}
         <p>{{ t.fn_cewe }}</p>
         <p>{{ t.fn_photos }} <a href="{{ site.repo_url }}/blob/main/site/screenshots/README.md">{{ t.fn_photos_link }}</a></p>
         <p>{{ t.fn_rawsamples }}</p>

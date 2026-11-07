@@ -136,6 +136,7 @@ en:
       items:
         - q: "Does it work on Mac, Windows and Linux, and is it really free?"
           a: "Yes. One download for macOS 11 or later, on Apple silicon and Intel alike, one for Windows 10 and 11, and for 64-bit Linux an AppImage or a .deb, on Intel/AMD or ARM, for any distribution with glibc 2.35 or later. Linux gets the lean build: no HEIC (iPhone) photos yet, no shooting with a camera over USB, and RAW without the lens corrections macOS adds; the table under Features shows every difference. It is free with no ads, no account and no in-app purchases, and the source code is public under GPL-3.0, so anyone can check what it does."
+          fn: [fn_heic, fn_arch, fn_linux_pkg]
   tabs_title: "Work like browsing the web"
   tabs_lead: "Every folder you open becomes a tab in the same workspace, so a trip spread over several memory cards and phones stays in one place."
   tabs_row_title: "Folders as tabs, ticks that follow you"
@@ -241,8 +242,8 @@ en:
   fn_label: Note
   fn_back: Back to the text
   fn_open: Free means no price, no ads and no in-app purchases; buying the author a coffee is your choice, and it helps the author keep improving Fotollection. Open source means the full source code is public on GitHub under the GPL-3.0 licence, so anyone can read, build and check what the app does. No account means the app never asks who you are and has nothing to sign in to.
-  perf_speed_fn: [4, 5]
-  perf_trip_fn: [22]
+  perf_speed_fn: [fn_webview]
+  perf_trip_fn: [fn_trip, fn_pct]
   perf_trip_title: "A real trip: 422 files from Prague"
   perf_trip_text: "Test sets can flatter, so here is one folder exactly as it came off a Lumix GX9 after a weekend in Prague: 396 JPEGs at 20 MP, about 11 MB each, and 26 RAW files beside them, 4.7 GB in all. Opening it reads every file's EXIF in 0.23 seconds. The preview re-renders in 19 ms, a RAW develops in 0.35 seconds and ten postcards redraw in 21 ms. On 2026-11-03 two numbers missed their budget on these large files: export ran at 7.6 photos a second and memory peaked at 2.14 GB. The cause was found and fixed in v0.9.7: the JPEGs now export at 10.1 a second, and the whole run stays under 1.31 GB."
   trip_stats:
@@ -255,6 +256,29 @@ en:
   fn_trip: "The Prague folder is the author's own and is not published (© @hoangphi01, all rights reserved). Medians of 3 runs of bench/trip.sh and of measure_folder on its JPEGs, on an Apple M3 with 16 GB, with other apps open, on 2026-11-04, with the export of v0.9.7; run them on a folder of your own to compare."
   fn_downloads: "Counted by GitHub."
   fn_payment: "VietQR and NAPAS 247 and their logos are trademarks of the National Payment Corporation of Vietnam (NAPAS); Techcombank of Vietnam Technological and Commercial Joint Stock Bank. Shown as the marks of the payment the code uses; Fotollection is not connected with them."
+  fn_simd: "SIMD (single instruction, multiple data) lets a processor work on many values at once: one instruction acts on several numbers held side by side in a wide vector register, such as the red, green and blue of many pixels. Intel and AMD processors provide it as SSE and AVX; Apple silicon and other Arm processors as NEON. Intel, AMD and Arm are trademarks of their owners."
+  fn_exif: "EXIF (Exchangeable Image File Format) is the standard, maintained by Japan's JEITA and CIPA, for the information a camera writes into each photo: the camera and lens, the date and time, the exposure, often the GPS position, and a small embedded thumbnail."
+  fn_units: "Units: px is a pixel, one dot of an image; MP (megapixel) is a million pixels, so a 20 MP photo is about 5,472 × 3,648 px; ms is a millisecond, a thousandth of a second; MB and GB are megabytes and gigabytes; RAM (random-access memory) is the computer's working memory."
+  fn_raw: "A RAW file holds what the camera's sensor recorded before the camera turned it into a picture, so colour, brightness and detail can still be decided later, much as a negative is developed. Each maker has its own format (CR3 for Canon, NEF for Nikon, ARW for Sony, RW2 for Panasonic and others); DNG (Digital Negative) is the open RAW format published by Adobe."
+  fn_heic: "HEIF (High Efficiency Image File Format) is the image format of ISO/IEC 23008-12; HEIC is its variant compressed with HEVC (H.265), in which iPhones save photos by default. A HEIC photo is about half the size of a JPEG of similar quality."
+  fn_png: "PNG (Portable Network Graphics) is a lossless image format, published as ISO/IEC 15948: every pixel is kept exactly, which suits graphics and screenshots, while a photo comes out several times larger than as a JPEG."
+  fn_dpi: "DPI (dots per inch) is how many of the photo's pixels fall on each inch (2.54 cm) of the print. Around 300 DPI looks sharp in the hand; less still looks fine on a larger print seen from further away."
+  fn_pct: "p50 and p95 are percentiles: p50, the median, is the time half of the runs stayed under; p95 is the time 95 runs in 100 stayed under, so it shows the slow cases an average hides."
+  fn_psnr: "PSNR (peak signal-to-noise ratio) compares two images pixel by pixel and gives their difference in decibels: the higher, the closer. Above about 40 dB the difference is hard to see."
+  fn_sensor: "CMOS and CCD are the two kinds of image sensor, a grid of light-sensitive cells that turns light into an electric charge. Almost every camera and phone today uses CMOS (complementary metal-oxide-semiconductor); CCD (charge-coupled device) was common in earlier cameras."
+  fn_tiff: "TIFF (Tagged Image File Format) is a flexible image format now maintained by Adobe; many RAW formats, DNG among them, are built on its structure."
+  fn_444: "4:4:4 and 4:2:0 describe chroma subsampling, how much of a JPEG's colour detail is kept beside its brightness. 4:4:4 keeps the colour of every pixel; 4:2:0 keeps one colour for each block of four pixels, which makes the file smaller but softens fine colour edges such as red text or a sharp horizon."
+  fn_usb: "USB (Universal Serial Bus) is the USB Implementers Forum's standard for connecting devices. An SD card is a memory card of the SD Association's Secure Digital standard, the kind most cameras use."
+  fn_gps: "GPS (Global Positioning System) is the United States' satellite navigation system. Phones and many cameras use it, often with Galileo, GLONASS or BeiDou, to record where a photo was taken."
+  fn_iso: "ISO is the camera's sensitivity to light, defined by the ISO 12232 standard: each doubling, from ISO 100 to 200, needs half the light, at the cost of more noise."
+  fn_gpl: "GPL-3.0 is version 3 of the GNU General Public License, published by the Free Software Foundation: anyone may use, study, share and change the program, and whoever shares it, changed or not, shares its source code under the same terms."
+  fn_vnlf: "VNLF (Vietnam Linux Family) is a Vietnamese community for free software and Linux. Its App Explorer lists free applications for Vietnamese users, and CaramOS is its Linux distribution."
+  fn_led: "LED (light-emitting diode): film cameras of the 1980s and 1990s printed the date onto the film with small orange LED digits, the look the date stamp recreates."
+  fn_arch: "x86_64, also called amd64, is the processor architecture of most Windows and Linux PCs; ARM64, also aarch64 or arm64, is that of Apple silicon, many laptops and small boards such as the Raspberry Pi. Each needs its own build."
+  fn_linux_pkg: "A .deb is a Debian package, the installer format of Debian, Ubuntu, Linux Mint and their relatives; APT (Advanced Package Tool) installs and updates such packages from a repository. An AppImage is a single file holding an application and what it needs, which runs on most distributions without being installed."
+  fn_fuse: "FUSE (Filesystem in Userspace) lets a program provide a file system without changing the kernel. An AppImage uses it to open itself, and Ubuntu 24.04 no longer installs its version 2 by default."
+  fn_sha: "SHA-256 is a cryptographic hash function of the SHA-2 family, standardised by the US NIST in FIPS 180-4. It turns a file into a 64-character fingerprint; change a single bit of the file and the fingerprint changes."
+  fn_gpg: "GPG (GNU Privacy Guard) is a free implementation of the OpenPGP standard. The APT repository is signed with a GPG key, so your system can check that every package comes from it unchanged."
   fn_rust: "Rust and the Rust logo are trademarks of the Rust Foundation. Fotollection's core is written in Rust and runs directly on your computer."
   fn_webview: "The app's window is built with Tauri and drawn by the system's own web view: WebKit (WKWebView) on macOS, Microsoft Edge WebView2 on Windows and WebKitGTK, the GTK port of WebKit, on Linux. Tauri is a project of the Tauri Programme within the Commons Conservancy; WebKit is a trademark of Apple Inc.; GTK is a project of the GNOME Foundation; Microsoft Edge and WebView2 are trademarks of Microsoft Corporation. The browser comparison ran the same job in headless Chromium 156, the open-source project behind Google Chrome, with one Web Worker per processor core."
   fn_de: "ΔE2000 (CIEDE2000) is the colour-difference formula of the International Commission on Illumination (CIE), standardised as ISO/CIE 11664-6; the CIELAB colour space it works in is ISO/CIE 11664-4."
@@ -347,6 +371,7 @@ en:
           text: "The only network request: when you click, and from v0.13.0 once at start unless turned off in Settings, it asks GitHub (api.github.com) for this project's latest release. Nothing is downloaded by itself. GitHub's privacy statement applies to it."
         - title: No location in exports
           text: GPS coordinates are removed from exported photos by default.
+          fn: [fn_gps]
         - title: This website
           text: "The website, not the app, counts visits and clicks on its download links with Google Analytics; Google's privacy policy applies to it. The download count comes from GitHub."
     - id: system
@@ -365,8 +390,8 @@ en:
   perf_how_title: "Why Fotollection is fast"
   perf_how_lead: "No magic. A few decisions made before the first line of code, each one measured."
   perf_how_items:
-    - { t: "Native code on every core", d: "Fotollection's work runs in Rust, compiled for your processor and spread across all of its cores, with the vector instructions (SIMD) processors provide for pixels.", v: "23.5 / s", l: "photos exported at 16 MP" }
-    - { t: "Only what is needed", d: "Opening a folder reads each file's EXIF and its small embedded thumbnail, never the whole photo. Thumbnails are kept in a cache on disk.", v: "0.12 s", l: "to open 1,000 photos" }
+    - { t: "Native code on every core", d: "Fotollection's work runs in Rust, compiled for your processor and spread across all of its cores, with the vector instructions (SIMD) processors provide for pixels.", v: "23.5 / s", l: "photos exported at 16 MP", fn: [fn_simd, fn_units, fn_rust] }
+    - { t: "Only what is needed", d: "Opening a folder reads each file's EXIF and its small embedded thumbnail, never the whole photo. Thumbnails are kept in a cache on disk.", v: "0.12 s", l: "to open 1,000 photos", fn: [fn_exif] }
     - { t: "Never more pixels than the screen", d: "A preview is at most 1,600 px, made from a 2,048 px copy held in memory. The full photo is read only when you zoom in, one part at a time.", v: "17 ms", l: "to redraw a preview" }
     - { t: "Ready before you click", d: "Once the thumbnails are done, a preview of every photo is prepared in the background and kept on disk, while a quarter of memory holds the photos around the one on screen.", v: "27 ms", l: "to open any photo" }
     - { t: "Nothing done twice", d: "A colour slider changes only the colour, never the size. Every colour slider is folded into one table of 33 × 33 × 33 colours, so ten sliders cost what one does.", v: "2 ms", l: "for ten colour sliders on a preview" }
@@ -382,6 +407,7 @@ en:
   chart_open: "Opening a photo: v0.9.0 and v0.10.0 against v0.11.0, on one trip's 422 photos"
   perf_open_title: "Up to 20× faster. A new way to use memory."
   perf_open_text: "v0.11.0 rethinks how Fotollection keeps your photos. Every photo's preview is prepared in the background once its thumbnail is done and kept on disk, a quarter of your computer's memory holds the photos around the one you see, and the photo on screen always goes first. The result: any photo, near or far, JPEG or RAW, opens in 27 milliseconds. Opening a RAW is up to 20 times faster than v0.9.0, a JPEG 10 times faster, measured on the same 422 photos of one trip."
+  perf_open_fn: [fn_raw, fn_jpeg]
   open_stats:
     - { v: "20×", l: "faster to open a RAW photo than v0.9.0 (531 → 27 ms)" }
     - { v: "10×", l: "faster to open a JPEG than v0.9.0 (274 → 27 ms)" }
@@ -397,7 +423,7 @@ en:
   chart_raw: "Camera RAW: from the file to the screen, per camera and against Adobe DNG Converter"
   perf_raw_title: "Camera RAW: open it as it is"
   perf_raw_text: "Fotollection opens RAW files from nine common cameras without converting them first. The thumbnail comes from the preview the camera stores in the file, in 9 to 32 ms. Since v0.10.0 the full picture for the print preview and the export is Fotollection's own develop for every camera with a Bayer sensor, 0.3 to 0.7 s a photo: a cleaner demosaic, neutral colour or the camera's look in one click, and brightness, highlights, shadows and white balance made on the camera's own data, as in a RAW editor. Adobe DNG Converter, by comparison, takes about 1.2 to 1.8 s per file only to turn one RAW file into another. On Windows and Linux, RAW opens with nothing to install."
-  perf_raw_fn: [13]
+  perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
   perf_best_title: "Best-shot suggestions: checked against a person's choice"
   perf_best_text: "We sorted 95 real photos by hand into 22 moments, and picked the best photo where there was a clear one. Fotollection finds 15 of those moments without ever grouping two different ones, and its suggestion is acceptable in all six moments with a clear best. Each photo takes 17 ms to analyse, 28 ms when it has faces."
   perf_toc: "On this page"
@@ -408,20 +434,20 @@ en:
   perf_explain_lead: "Photo and print jargon, explained the way we would explain it to a friend."
   perf_faq:
     - q: "What is ΔE (Delta E)?"
-      fn: [6]
+      fn: [fn_de]
       a: "ΔE measures how far apart two colours look to a human eye, computed in a colour space built to match how we see (CIELAB, with the 2000 formula). 0 means identical. Around 1 is the smallest difference a trained eye can spot side by side; 2 to 3 is visible to most people; above 5 the colours look different. Fotollection's print export averages 0.19."
     - q: "What is SSIM?"
-      fn: [7]
+      fn: [fn_ssim]
       a: "SSIM, the structural similarity index, compares the shapes and textures of two images rather than single pixels, which is closer to how we notice blur or blocky compression. 1 means identical. Above about 0.98, most people cannot tell the two apart without zooming in."
     - q: "How many colours can a JPEG hold?"
-      fn: [8]
+      fn: [fn_jpeg, fn_heic]
       a: "A JPEG stores 8 bits for each of red, green and blue: 256 levels each, about 16.7 million colours. That is also what photo labs print from. Camera RAW files hold 12 to 14 bits and recent iPhones can save 10-bit HEIC, which helps when editing; for a finished print, a well-made 8-bit JPEG shows no steps between tones."
     - q: "JPG or JPEG? And should I use PNG?"
       a: "JPG and JPEG are the same format: old Windows only allowed three-letter extensions. PNG is lossless, so nothing is ever thrown away, but a photo saved as PNG is often three to five times larger, and most kiosks and labs expect JPEG. A JPEG at quality 90 or more with full colour resolution (4:4:4), as Fotollection exports for print, is indistinguishable from the original on paper."
     - q: "What do 4:4:4 and 4:2:0 mean?"
       a: "Our eyes see detail mostly in brightness, less in colour, so JPEG can store colour at lower resolution. 4:4:4 keeps full colour resolution; 4:2:0 keeps a quarter of it, which makes files smaller but softens coloured edges, such as red text or a blue sky behind leaves. Prints deserve 4:4:4; social media recompresses everything to 4:2:0 anyway."
     - q: "sRGB, Display P3, Adobe RGB and colour profiles"
-      fn: [9, 10, 11]
+      fn: [fn_srgb, fn_p3, fn_adobe]
       a: "A colour profile tells software what the numbers in a file mean. sRGB is the classic range of colours used on the web. Display P3, used by iPhones and recent cameras, reaches about 25 % more colours, especially reds and greens. If a P3 photo loses its profile, its numbers are read as sRGB and it looks washed out: that is the 13 % saturation loss we measured. Adobe RGB, which some cameras offer for print work, is wider than sRGB too, mostly in greens and cyans. Fotollection keeps whichever profile a photo has for prints and converts properly to sRGB for social media."
     - q: "What DPI does a print need?"
       a: "DPI is how many pixels land on each inch of paper. At 300 DPI a print looks sharp even up close; 150 to 200 DPI is fine at arm's length. A 10 × 15 cm print at 300 DPI needs 1,800 × 1,200 pixels, so any phone or camera photo is enough; the size advice in the app tells you how large each photo can go."
@@ -466,6 +492,7 @@ en:
       items:
         - text: "Ubuntu 24.04 and newer: the AppImage needs FUSE 2 once,"
           code: sudo apt install libfuse2t64
+          fn: [fn_fuse]
           after: ", or run it with"
           code2: "--appimage-extract-and-run"
           after2: ". The .deb needs nothing."
@@ -473,7 +500,7 @@ en:
           code: appimage-run
         - text: "Fedora Silverblue and other immutable systems: use the AppImage."
         - text: "NVIDIA graphics: nothing to do, the app avoids WebKit's blank-window issue by itself."
-          fn: 21
+          fn: [fn_nvidia]
     - title: Does not run
       items:
         - text: "glibc older than 2.35: Ubuntu 20.04, Debian 11, RHEL, CentOS, Rocky or Alma 8, openSUSE Leap 15."
@@ -483,10 +510,10 @@ en:
     - title: Limits on every distribution
       items:
         - text: "No HEIC (iPhone) photos yet: convert them to JPEG first."
-          fn: 16
+          fn: [fn_pf_heic_linux]
         - text: "No shooting with a camera over USB."
         - text: "RAW opens without the lens corrections macOS adds."
-          fn: 14
+          fn: [fn_pf_raw]
   checksums: Every release lists SHA-256 checksums next to the downloads.
   updates: There is no auto-update, so the app never goes online. New versions are announced here and on GitHub.
   footer_tagline: Photos ready to print, fully offline.
@@ -643,6 +670,7 @@ vi:
       items:
         - q: "Có chạy trên Mac, Windows và Linux không, có thật sự miễn phí không?"
           a: "Có. Một bản tải cho macOS 11 trở lên, chạy được cả trên chip Apple lẫn Intel, một bản cho Windows 10 và 11, và với Linux 64-bit thì có AppImage hoặc .deb, cho máy Intel/AMD lẫn ARM, chạy trên mọi distro có glibc 2.35 trở lên. Bản Linux là bản gọn: chưa mở được ảnh HEIC (ảnh iPhone), chưa chụp qua cáp USB từ máy ảnh, và ảnh RAW không có phần hiệu chỉnh ống kính như trên macOS; bảng ở mục Tính năng liệt kê đủ mọi khác biệt. Ứng dụng miễn phí, không quảng cáo, không cần tài khoản, không mua thêm trong ứng dụng, và mã nguồn công khai theo giấy phép GPL-3.0, ai cũng có thể kiểm tra ứng dụng làm gì."
+          fn: [fn_heic, fn_arch, fn_linux_pkg]
   tabs_title: "Chỉnh ảnh như lướt web"
   tabs_lead: "Mỗi thư mục bạn mở trở thành một tab trong cùng một không gian làm việc, nên một chuyến đi nằm rải trên nhiều thẻ nhớ và điện thoại vẫn gọn ở một chỗ."
   tabs_row_title: "Thư mục là tab, ô tích đi theo bạn"
@@ -748,8 +776,8 @@ vi:
   fn_label: Chú thích
   fn_back: Quay lại đoạn văn
   fn_open: Miễn phí là không thu tiền, không quảng cáo, không mua thêm trong ứng dụng; mời tác giả một ly cà phê là lựa chọn của bạn, để tác giả có thêm động lực phát triển và hoàn thiện Fotollection. Mã nguồn mở là toàn bộ mã nguồn được công khai trên GitHub theo giấy phép GPL-3.0, ai cũng có thể đọc, tự xây dựng và kiểm tra ứng dụng làm gì. Không cần tài khoản là ứng dụng không bao giờ hỏi bạn là ai và không có gì để đăng nhập.
-  perf_speed_fn: [4, 5]
-  perf_trip_fn: [22]
+  perf_speed_fn: [fn_webview]
+  perf_trip_fn: [fn_trip, fn_pct]
   perf_trip_title: "Một chuyến đi thật: 422 tệp từ Praha"
   perf_trip_text: "Bộ ảnh thử dễ cho số đẹp, nên đây là một thư mục đúng như khi chép ra từ Lumix GX9 sau một cuối tuần ở Praha: 396 ảnh JPEG 20 MP, mỗi tấm khoảng 11 MB, cùng 26 tệp RAW bên cạnh, tổng cộng 4,7 GB. Mở thư mục đọc EXIF của mọi tệp trong 0,23 giây. Xem trước dựng lại trong 19 ms, một ảnh RAW được xử lý trong 0,35 giây và mười tấm bưu thiếp vẽ lại trong 21 ms. Ngày 3/11/2026, với những tệp lớn này có hai con số chưa đạt mục tiêu: xuất ảnh chỉ 7,6 ảnh mỗi giây và RAM lên tới 2,14 GB. Nguyên nhân đã được tìm ra và sửa trong v0.9.7: phần JPEG giờ xuất 10,1 ảnh mỗi giây, và cả lượt chạy dùng không quá 1,31 GB."
   trip_stats:
@@ -762,6 +790,29 @@ vi:
   fn_trip: "Thư mục ảnh Praha là của tác giả và không công khai (© @hoangphi01, giữ mọi quyền). Trung vị của 3 lần chạy bench/trip.sh và measure_folder trên phần JPEG, trên Apple M3 16 GB, khi các ứng dụng khác vẫn mở, ngày 4/11/2026, với phần xuất ảnh của v0.9.7; hãy chạy trên thư mục ảnh của bạn để so sánh."
   fn_downloads: "Do GitHub đếm."
   fn_payment: "VietQR, NAPAS 247 và logo của chúng là nhãn hiệu của Công ty Cổ phần Thanh toán Quốc gia Việt Nam (NAPAS); Techcombank là của Ngân hàng TMCP Kỹ thương Việt Nam. Hiển thị để cho biết hình thức thanh toán mà mã sử dụng; Fotollection không liên quan tới các đơn vị này."
+  fn_simd: "SIMD (single instruction, multiple data, tức một lệnh, nhiều dữ liệu) cho phép bộ xử lý làm việc trên nhiều giá trị cùng lúc: một lệnh duy nhất tác động lên nhiều con số đặt cạnh nhau trong một thanh ghi vector rộng, chẳng hạn các kênh đỏ, xanh lá và xanh dương của nhiều điểm ảnh. Bộ xử lý Intel và AMD cung cấp tập lệnh này dưới tên SSE và AVX; Apple silicon và các bộ xử lý Arm khác dưới tên NEON. Intel, AMD và Arm là nhãn hiệu của các chủ sở hữu tương ứng."
+  fn_exif: "EXIF (Exchangeable Image File Format) là tiêu chuẩn do JEITA và CIPA của Nhật Bản duy trì, quy định những thông tin máy ảnh ghi vào mỗi tấm ảnh: máy và ống kính, ngày giờ chụp, thông số phơi sáng, thường cả vị trí GPS, cùng một ảnh thu nhỏ đi kèm."
+  fn_units: "Đơn vị: px (pixel) là một điểm ảnh; MP (megapixel) là một triệu điểm ảnh, nên ảnh 20 MP có khoảng 5.472 × 3.648 px; ms là mili giây, một phần nghìn giây; MB và GB là megabyte và gigabyte; RAM (random-access memory) là bộ nhớ làm việc của máy tính."
+  fn_raw: "Tệp RAW chứa những gì cảm biến của máy ảnh ghi lại trước khi máy biến chúng thành một tấm ảnh, nên màu sắc, độ sáng và chi tiết vẫn có thể được quyết định về sau, giống như tráng một tấm phim âm bản. Mỗi hãng có định dạng riêng (CR3 của Canon, NEF của Nikon, ARW của Sony, RW2 của Panasonic và nhiều định dạng khác); DNG (Digital Negative) là định dạng RAW mở do Adobe công bố."
+  fn_heic: "HEIF (High Efficiency Image File Format) là định dạng ảnh theo tiêu chuẩn ISO/IEC 23008-12; HEIC là biến thể nén bằng HEVC (H.265), định dạng iPhone dùng để lưu ảnh theo mặc định. Một ảnh HEIC chỉ nặng khoảng một nửa ảnh JPEG có chất lượng tương đương."
+  fn_png: "PNG (Portable Network Graphics) là định dạng ảnh không mất dữ liệu, theo tiêu chuẩn ISO/IEC 15948: mọi điểm ảnh được giữ nguyên vẹn, phù hợp với đồ hoạ và ảnh chụp màn hình, nhưng một tấm ảnh chụp lưu dưới dạng PNG sẽ lớn hơn JPEG nhiều lần."
+  fn_dpi: "DPI (dots per inch, số điểm trên mỗi inch) là số điểm ảnh của tấm ảnh nằm trên mỗi inch (2,54 cm) bản in. Khoảng 300 DPI trông sắc nét khi cầm trên tay; ít hơn vẫn đẹp với bản in lớn được ngắm từ xa."
+  fn_pct: "p50 và p95 là các phân vị: p50, tức trung vị, là thời gian mà một nửa số lần chạy nằm dưới; p95 là thời gian mà 95 trên 100 lần chạy nằm dưới, nên nó cho thấy những lần chậm mà con số trung bình che đi."
+  fn_psnr: "PSNR (peak signal-to-noise ratio, tỷ số tín hiệu đỉnh trên nhiễu) so sánh hai ảnh từng điểm một và cho biết mức khác biệt tính bằng decibel: càng cao càng giống nhau. Trên khoảng 40 dB thì mắt khó nhận ra khác biệt."
+  fn_sensor: "CMOS và CCD là hai loại cảm biến ảnh, một lưới các ô nhạy sáng biến ánh sáng thành điện tích. Gần như mọi máy ảnh và điện thoại ngày nay dùng CMOS (complementary metal-oxide-semiconductor); CCD (charge-coupled device) phổ biến ở các máy ảnh đời trước."
+  fn_tiff: "TIFF (Tagged Image File Format) là định dạng ảnh linh hoạt, nay do Adobe duy trì; nhiều định dạng RAW, trong đó có DNG, được xây dựng trên cấu trúc của nó."
+  fn_444: "4:4:4 và 4:2:0 mô tả cách lấy mẫu màu (chroma subsampling), tức JPEG giữ lại bao nhiêu chi tiết màu bên cạnh độ sáng. 4:4:4 giữ màu của từng điểm ảnh; 4:2:0 chỉ giữ một màu cho mỗi khối bốn điểm ảnh, nhờ đó tệp nhỏ hơn nhưng các đường màu mảnh, như chữ đỏ hay đường chân trời sắc nét, bị nhoè đi."
+  fn_usb: "USB (Universal Serial Bus) là chuẩn kết nối thiết bị của USB Implementers Forum. Thẻ SD là thẻ nhớ theo chuẩn Secure Digital của SD Association, loại thẻ mà phần lớn máy ảnh sử dụng."
+  fn_gps: "GPS (Global Positioning System) là hệ thống định vị vệ tinh của Hoa Kỳ. Điện thoại và nhiều máy ảnh dùng hệ thống này, thường cùng với Galileo, GLONASS hoặc BeiDou, để ghi lại nơi chụp ảnh."
+  fn_iso: "ISO là độ nhạy sáng của máy ảnh, được định nghĩa trong tiêu chuẩn ISO 12232: mỗi lần tăng gấp đôi, từ ISO 100 lên 200, chỉ cần một nửa lượng ánh sáng, đổi lại ảnh nhiều nhiễu hơn."
+  fn_gpl: "GPL-3.0 là phiên bản 3 của Giấy phép Công cộng GNU (GNU General Public License) do Free Software Foundation công bố: ai cũng có quyền sử dụng, tìm hiểu, chia sẻ và sửa đổi chương trình, và người chia sẻ lại, dù có sửa đổi hay không, đều chia sẻ mã nguồn theo cùng các điều khoản đó."
+  fn_vnlf: "VNLF (Vietnam Linux Family) là cộng đồng phần mềm tự do và Linux của người Việt. App Explorer của cộng đồng giới thiệu các ứng dụng tự do cho người dùng Việt Nam, và CaramOS là bản phân phối Linux của cộng đồng."
+  fn_led: "LED (light-emitting diode, đi-ốt phát quang): các máy ảnh phim những năm 1980 và 1990 in ngày chụp lên phim bằng những chữ số LED nhỏ màu cam, nét đặc trưng mà dấu ngày tái hiện."
+  fn_arch: "x86_64, còn gọi là amd64, là kiến trúc bộ xử lý của phần lớn máy tính Windows và Linux; ARM64, còn gọi là aarch64 hay arm64, là kiến trúc của Apple silicon, nhiều máy tính xách tay và các bo mạch nhỏ như Raspberry Pi. Mỗi kiến trúc cần một bản dựng riêng."
+  fn_linux_pkg: ".deb là gói Debian, định dạng cài đặt của Debian, Ubuntu, Linux Mint và các bản phân phối cùng họ; APT (Advanced Package Tool) cài đặt và cập nhật các gói đó từ một kho phần mềm. AppImage là một tệp duy nhất chứa ứng dụng cùng mọi thứ nó cần, chạy được trên hầu hết các bản phân phối mà không cần cài đặt."
+  fn_fuse: "FUSE (Filesystem in Userspace) cho phép một chương trình tạo ra hệ thống tệp mà không cần thay đổi nhân hệ điều hành. AppImage dùng FUSE để tự mở, và Ubuntu 24.04 không còn cài sẵn phiên bản 2 của nó."
+  fn_sha: "SHA-256 là hàm băm mật mã thuộc họ SHA-2, được NIST (Hoa Kỳ) chuẩn hoá trong FIPS 180-4. Hàm này biến một tệp thành một dấu vân tay dài 64 ký tự; chỉ cần tệp thay đổi một bit, dấu vân tay cũng thay đổi."
+  fn_gpg: "GPG (GNU Privacy Guard) là bản hiện thực tự do của chuẩn OpenPGP. Kho APT được ký bằng một khoá GPG, nhờ đó hệ thống của bạn kiểm tra được mọi gói đều đến từ kho và không bị thay đổi."
   fn_rust: "Rust và logo Rust là nhãn hiệu của Rust Foundation. Phần lõi của Fotollection viết bằng Rust và chạy trực tiếp trên máy của bạn."
   fn_webview: "Cửa sổ ứng dụng được làm bằng Tauri và hiển thị bằng trình hiển thị web (web view) có sẵn của hệ điều hành: WebKit (WKWebView) trên macOS, Microsoft Edge WebView2 trên Windows và WebKitGTK, bản WebKit cho GTK, trên Linux. Tauri là dự án của Tauri Programme thuộc Commons Conservancy; WebKit là nhãn hiệu của Apple Inc.; GTK là dự án của GNOME Foundation; Microsoft Edge và WebView2 là nhãn hiệu của Microsoft Corporation. Phép so sánh với trình duyệt chạy cùng một việc trong Chromium 156 không giao diện, dự án mã nguồn mở phía sau Google Chrome, mỗi nhân xử lý một Web Worker."
   fn_de: "ΔE2000 (CIEDE2000) là công thức tính sai lệch màu của Uỷ ban Quốc tế về Chiếu sáng (CIE), được chuẩn hoá thành ISO/CIE 11664-6; không gian màu CIELAB mà công thức dùng là ISO/CIE 11664-4."
@@ -854,6 +905,7 @@ vi:
           text: "Lần lên mạng duy nhất: khi bạn bấm, và từ v0.13.0 một lần khi mở app trừ khi bạn tắt trong Cài đặt, ứng dụng hỏi GitHub (api.github.com) bản phát hành mới nhất của dự án. Không tự tải gì về. Chính sách riêng tư của GitHub áp dụng cho lần hỏi đó."
         - title: Ảnh xuất không có vị trí
           text: Toạ độ GPS được xoá khỏi ảnh xuất theo mặc định.
+          fn: [fn_gps]
         - title: Trang web này
           text: "Trang web, không phải ứng dụng, đếm lượt truy cập và lượt bấm vào các liên kết tải về bằng Google Analytics; chính sách riêng tư của Google áp dụng cho việc đó. Số lượt tải lấy từ GitHub."
     - id: system
@@ -872,8 +924,8 @@ vi:
   perf_how_title: "Vì sao Fotollection nhanh"
   perf_how_lead: "Không có phép màu. Chỉ là một vài quyết định được đưa ra trước dòng mã đầu tiên, và mỗi quyết định đều được đo đạc."
   perf_how_items:
-    - { t: "Mã gốc trên mọi nhân xử lý", d: "Toàn bộ công việc của Fotollection chạy bằng Rust, được biên dịch cho đúng bộ xử lý của bạn và chia đều cho mọi nhân, tận dụng các lệnh vector (SIMD) dành riêng cho điểm ảnh.", v: "23,5 / s", l: "ảnh 16 MP được xuất" }
-    - { t: "Chỉ đọc những gì cần thiết", d: "Khi mở một thư mục, Fotollection chỉ đọc EXIF và ảnh thu nhỏ có sẵn trong mỗi tệp, không bao giờ đọc toàn bộ ảnh. Ảnh thu nhỏ được lưu trong bộ nhớ đệm trên ổ đĩa.", v: "0,12 s", l: "để mở 1.000 ảnh" }
+    - { t: "Mã gốc trên mọi nhân xử lý", d: "Toàn bộ công việc của Fotollection chạy bằng Rust, được biên dịch cho đúng bộ xử lý của bạn và chia đều cho mọi nhân, tận dụng các lệnh vector (SIMD) dành riêng cho điểm ảnh.", v: "23,5 / s", l: "ảnh 16 MP được xuất", fn: [fn_simd, fn_units, fn_rust] }
+    - { t: "Chỉ đọc những gì cần thiết", d: "Khi mở một thư mục, Fotollection chỉ đọc EXIF và ảnh thu nhỏ có sẵn trong mỗi tệp, không bao giờ đọc toàn bộ ảnh. Ảnh thu nhỏ được lưu trong bộ nhớ đệm trên ổ đĩa.", v: "0,12 s", l: "để mở 1.000 ảnh", fn: [fn_exif] }
     - { t: "Không nhiều điểm ảnh hơn màn hình", d: "Bản xem trước tối đa 1.600 px, được dựng từ một bản 2.048 px lưu trong bộ nhớ. Ảnh gốc chỉ được đọc khi bạn phóng to, từng phần một.", v: "17 ms", l: "để dựng lại bản xem trước" }
     - { t: "Sẵn sàng trước khi bạn chọn", d: "Ngay khi ảnh thu nhỏ hoàn tất, bản xem trước của mọi ảnh được chuẩn bị ở chế độ nền và lưu trên ổ đĩa, đồng thời một phần tư bộ nhớ giữ sẵn các ảnh quanh ảnh đang xem.", v: "27 ms", l: "để mở bất kỳ ảnh nào" }
     - { t: "Không làm một việc hai lần", d: "Thanh chỉnh màu chỉ thay đổi màu sắc, không dựng lại kích thước ảnh. Mọi thanh chỉnh màu được gộp vào một bảng 33 × 33 × 33 màu, nên mười thanh cũng chỉ tốn như một.", v: "2 ms", l: "cho mười thanh chỉnh màu trên bản xem trước" }
@@ -889,6 +941,7 @@ vi:
   chart_open: "Mở một tấm ảnh: v0.9.0 và v0.10.0 so với v0.11.0, trên 422 ảnh của một chuyến đi"
   perf_open_title: "Nhanh hơn tới 20 lần. Một cách dùng bộ nhớ hoàn toàn mới."
   perf_open_text: "Bản v0.11.0 nghĩ lại từ đầu cách Fotollection giữ ảnh của bạn. Làm xong ảnh nhỏ là bản xem trước của mọi ảnh được chuẩn bị ở chế độ nền và giữ trên đĩa, một phần tư bộ nhớ máy giữ những ảnh quanh ảnh bạn đang xem, và ảnh trên màn hình luôn được làm trước. Kết quả: mở ảnh nào, gần hay xa, JPEG hay RAW, cũng chỉ 27 mili giây. Mở một ảnh RAW nhanh gấp tới 20 lần so với v0.9.0, ảnh JPEG gấp 10 lần, đo trên cùng 422 ảnh của một chuyến đi."
+  perf_open_fn: [fn_raw, fn_jpeg]
   open_stats:
     - { v: "20×", l: "nhanh hơn khi mở ảnh RAW so với v0.9.0 (531 → 27 ms)" }
     - { v: "10×", l: "nhanh hơn khi mở ảnh JPEG so với v0.9.0 (274 → 27 ms)" }
@@ -904,7 +957,7 @@ vi:
   chart_raw: "Ảnh RAW: từ tệp đến màn hình, theo từng máy và so với Adobe DNG Converter"
   perf_raw_title: "Ảnh RAW: mở thẳng, không cần chuyển đổi"
   perf_raw_text: "Fotollection mở tệp RAW của chín dòng máy ảnh phổ biến mà không cần chuyển đổi trước. Ảnh thu nhỏ lấy từ bản xem trước máy ảnh lưu sẵn trong tệp, mất 9 đến 32 ms. Từ v0.10.0, ảnh đầy đủ cho bản xem trước để in và cho bản xuất là bộ xử lý của riêng Fotollection cho mọi máy ảnh có cảm biến Bayer, 0,3 đến 0,7 giây mỗi ảnh: demosaic sạch hơn, màu trung tính hoặc màu của máy chỉ với một cú nhấp, và độ sáng, vùng sáng, vùng tối, cân bằng trắng được chỉnh trên chính dữ liệu của máy ảnh, như một trình sửa RAW. Để so sánh, Adobe DNG Converter mất khoảng 1,2 đến 1,8 giây mỗi tệp chỉ để đổi từ RAW này sang RAW khác. Trên Windows và Linux, RAW mở được mà không cần cài thêm gì."
-  perf_raw_fn: [13]
+  perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
   perf_best_title: "Gợi ý ảnh đẹp nhất: đối chiếu với lựa chọn của người thật"
   perf_best_text: "Chúng tôi tự tay chia 95 ảnh thật thành 22 khoảnh khắc, và chọn ảnh đẹp nhất ở những khoảnh khắc có ảnh đẹp rõ ràng. Fotollection tìm ra 15 khoảnh khắc mà không bao giờ gộp nhầm hai khoảnh khắc khác nhau, và ảnh được gợi ý đều chấp nhận được ở cả sáu khoảnh khắc có ảnh đẹp nhất rõ ràng. Mỗi ảnh được phân tích trong 17 ms, 28 ms nếu có khuôn mặt."
   perf_toc: "Trên trang này"
@@ -915,20 +968,20 @@ vi:
   perf_explain_lead: "Những từ chuyên môn về ảnh và in ảnh, giải thích như kể cho một người bạn."
   perf_faq:
     - q: "ΔE (Delta E) là gì?"
-      fn: [6]
+      fn: [fn_de]
       a: "ΔE đo hai màu trông khác nhau bao nhiêu với mắt người, tính trong một không gian màu được dựng theo cách mắt người cảm nhận (CIELAB, theo công thức năm 2000). 0 là giống hệt. Khoảng 1 là mức khác biệt nhỏ nhất mà một người có mắt tinh nhận ra khi đặt hai màu cạnh nhau; 2 đến 3 thì phần lớn mọi người đều thấy; trên 5 là hai màu khác hẳn. Bản xuất để in của Fotollection có ΔE trung bình 0,19."
     - q: "SSIM là gì?"
-      fn: [7]
+      fn: [fn_ssim]
       a: "SSIM (chỉ số tương đồng cấu trúc) so hình dạng và kết cấu của hai ảnh thay vì từng điểm ảnh riêng lẻ, gần với cách mắt ta nhận ra ảnh bị mờ hay bị nén vỡ khối. 1 là giống hệt. Từ khoảng 0,98 trở lên, đa số người không phân biệt được hai ảnh nếu không phóng to."
     - q: "Một tệp JPEG chứa được bao nhiêu màu?"
-      fn: [8]
+      fn: [fn_jpeg, fn_heic]
       a: "JPEG lưu 8 bit cho mỗi kênh đỏ, xanh lá và xanh dương: mỗi kênh 256 mức, tổng cộng khoảng 16,7 triệu màu. Đó cũng là thứ máy in ảnh dùng để in. Tệp RAW của máy ảnh có 12 đến 14 bit, iPhone đời mới có thể lưu HEIC 10 bit, rất có ích khi chỉnh sửa; còn với ảnh in hoàn chỉnh, một tệp JPEG 8 bit làm tốt không lộ vệt chuyển màu."
     - q: "JPG hay JPEG? Có nên dùng PNG không?"
       a: "JPG và JPEG là cùng một định dạng: Windows ngày xưa chỉ cho phép đuôi tệp ba chữ. PNG nén không mất dữ liệu nên không bỏ đi chút nào, nhưng ảnh chụp lưu dạng PNG thường nặng gấp ba đến năm lần, và đa số máy in ảnh, tiệm in đều yêu cầu JPEG. Một tệp JPEG chất lượng từ 90, đủ độ phân giải màu (4:4:4) như Fotollection xuất để in, in ra không phân biệt được với ảnh gốc."
     - q: "4:4:4 và 4:2:0 nghĩa là gì?"
       a: "Mắt ta nhìn chi tiết chủ yếu qua độ sáng, ít qua màu, nên JPEG có thể lưu màu ở độ phân giải thấp hơn. 4:4:4 giữ đủ độ phân giải màu; 4:2:0 chỉ giữ một phần tư, tệp nhẹ hơn nhưng các viền có màu bị mềm đi, như chữ đỏ hay bầu trời xanh sau tán lá. Ảnh in nên dùng 4:4:4; còn mạng xã hội thì đằng nào cũng nén mọi ảnh về 4:2:0."
     - q: "sRGB, Display P3, Adobe RGB và hồ sơ màu (colour profile)"
-      fn: [9, 10, 11]
+      fn: [fn_srgb, fn_p3, fn_adobe]
       a: "Hồ sơ màu (colour profile) cho phần mềm biết các con số trong tệp nghĩa là màu nào. sRGB là dải màu cổ điển dùng trên web. Display P3, dùng trên iPhone và các máy ảnh mới, rộng hơn khoảng 25 %, nhất là màu đỏ và xanh lá. Nếu ảnh P3 bị mất hồ sơ màu, các con số bị đọc như sRGB và ảnh trông nhạt: đó chính là 13 % độ bão hoà bị mất mà chúng tôi đo được. Adobe RGB, có trên một số máy ảnh dành cho in ấn, cũng rộng hơn sRGB, chủ yếu ở màu xanh lá và xanh lơ. Fotollection giữ nguyên hồ sơ màu của ảnh khi xuất để in, và chuyển đúng sang sRGB khi xuất cho mạng xã hội."
     - q: "Ảnh in cần bao nhiêu DPI?"
       a: "DPI là số điểm ảnh trên mỗi inch giấy. Ở 300 DPI, ảnh in trông nét kể cả khi nhìn sát; 150 đến 200 DPI vẫn ổn khi cầm xem. Một ảnh 10 × 15 cm ở 300 DPI cần 1.800 × 1.200 điểm ảnh, nên ảnh từ điện thoại hay máy ảnh nào cũng đủ; phần gợi ý khổ in trong ứng dụng cho biết mỗi ảnh in được to tới đâu."
@@ -973,6 +1026,7 @@ vi:
       items:
         - text: "Ubuntu 24.04 trở lên: AppImage cần FUSE 2, cài một lần"
           code: sudo apt install libfuse2t64
+          fn: [fn_fuse]
           after: ", hoặc chạy với"
           code2: "--appimage-extract-and-run"
           after2: ". Bản .deb thì không cần gì thêm."
@@ -980,7 +1034,7 @@ vi:
           code: appimage-run
         - text: "Fedora Silverblue và các hệ bất biến khác: dùng AppImage."
         - text: "Card đồ hoạ NVIDIA: không cần làm gì, ứng dụng tự tránh lỗi cửa sổ trắng của WebKit."
-          fn: 21
+          fn: [fn_nvidia]
     - title: Không chạy
       items:
         - text: "glibc cũ hơn 2.35: Ubuntu 20.04, Debian 11, RHEL, CentOS, Rocky hoặc Alma 8, openSUSE Leap 15."
@@ -990,10 +1044,10 @@ vi:
     - title: Giới hạn trên mọi distro
       items:
         - text: "Chưa mở được ảnh HEIC (ảnh iPhone): hãy chuyển sang JPEG trước."
-          fn: 16
+          fn: [fn_pf_heic_linux]
         - text: "Chưa chụp được qua cáp USB từ máy ảnh."
         - text: "Ảnh RAW không có phần hiệu chỉnh ống kính như trên macOS."
-          fn: 14
+          fn: [fn_pf_raw]
   checksums: Mỗi bản phát hành có mã SHA-256 bên cạnh tệp tải về.
   updates: Ứng dụng không tự cập nhật, nên không bao giờ tự lên mạng. Phiên bản mới được thông báo ở đây và trên GitHub.
   footer_tagline: Ảnh sẵn sàng để in, không cần internet.
