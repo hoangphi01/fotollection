@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.13.1] - 2026-11-07 — Develop, part 2
+
 ### Highlights
 
 - New: copy, paste and reset a photo's settings, to one photo or every ticked one, as in Lightroom
