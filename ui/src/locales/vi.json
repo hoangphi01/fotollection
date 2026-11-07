@@ -1158,11 +1158,8 @@
   },
   "manual": {
     "overview": "Tổng quan",
-    "title": "Hướng dẫn sử dụng",
-    "chapters": "Các chương",
     "search": "Tìm trong hướng dẫn",
     "none": "Không chương nào có các từ này",
-    "offline": "Đọc được khi không có mạng",
     "chapterOf": "Chương {{n}} trên {{count}}",
     "back": "Quay lại",
     "next": "Tiếp"

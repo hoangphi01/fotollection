@@ -14,13 +14,14 @@ import { commands } from '@/ipc/bindings'
 import { ExportSettingsSection } from './export-section'
 import { GeneralSection } from './general-section'
 import { MemorySection } from './memory-section'
+import { useManualChapter } from '@/features/manual/manual-store'
 import { SECTIONS, showSettings, useSettingsWindow, type Section } from './use-settings-window'
 import { ListRow } from '@/components/forms/list-row'
 
-// Settings → Manual lists the guide's chapters: the guide loads with it, never at start (FR-110).
-const ManualChapterList = lazy(() =>
-  import('@/features/manual/manual-dialog').then((m) => ({ default: m.ManualChapterList })),
-)
+// Settings → Manual, the guide inside the window: it loads with the section, never at start
+// (FR-110, NFR-010).
+const ManualSection = lazy(() => import('@/features/manual/manual-section').then((m) => ({ default: m.ManualSection })))
+const ManualSteps = lazy(() => import('@/features/manual/manual-section').then((m) => ({ default: m.ManualSteps })))
 
 const ICONS: Record<Section, LucideIcon> = {
   general: SlidersHorizontal,
@@ -66,15 +67,11 @@ function Body({ section, version }: { section: Section; version: string | undefi
         </SectionCard>
       )
     case 'manual':
-      // Each chapter opens the manual's own window there (FR-110), in place of this one.
+      // The manual inside this window (owner, 2026-11-07: "no other window").
       return (
-        <SectionCard icon={<Icon />} title={t('manual.chapters')}>
-          <div className="flex flex-col gap-1">
-            <Suspense fallback={null}>
-              <ManualChapterList onOpen={() => showSettings(null)} />
-            </Suspense>
-          </div>
-        </SectionCard>
+        <Suspense fallback={null}>
+          <ManualSection />
+        </Suspense>
       )
     case 'report':
       return (
@@ -101,6 +98,7 @@ export function SettingsWindow() {
   const section = useSettingsWindow()
   const appInfo = useIpcQuery(commands.appInfo)
   const shown = section ?? 'general'
+  const chapter = useManualChapter()
   return (
     <SettingsFrame
       open={section !== null}
@@ -118,6 +116,14 @@ export function SettingsWindow() {
       heading={t(`settingsWindow.sections.${shown}`)}
       description={t(`settingsWindow.about.${shown}`)}
       footer={t('settingsWindow.footer')}
+      actions={
+        shown === 'manual' ? (
+          <Suspense fallback={null}>
+            <ManualSteps />
+          </Suspense>
+        ) : undefined
+      }
+      scrollKey={shown === 'manual' ? `manual:${chapter ?? ''}` : shown}
     >
       <Body section={shown} version={appInfo?.appVersion} />
     </SettingsFrame>

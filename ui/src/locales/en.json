@@ -1196,11 +1196,8 @@
   },
   "manual": {
     "overview": "Overview",
-    "title": "Manual",
-    "chapters": "Chapters",
     "search": "Search the manual",
     "none": "No chapter holds these words",
-    "offline": "Works with no internet",
     "chapterOf": "Chapter {{n}} of {{count}}",
     "back": "Back",
     "next": "Next"

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useEffect, useSyncExternalStore } from 'react'
 import { events } from '@/ipc/bindings'
+import { showSettings } from '@/features/settings-window/use-settings-window'
 
-// The chapter the manual (FR-110) is open at, or none: one copy for the app, so Settings →
-// Manual and the Help menu open the same window.
+// The chapter the manual (FR-110) shows in Settings → Manual: one copy for the app, so the
+// Help menu and the section open the same chapter; `null` until one is asked for (the first).
 let open: string | null = null
 const listeners = new Set<() => void>()
 const subscribe = (listener: () => void) => {
@@ -11,18 +12,19 @@ const subscribe = (listener: () => void) => {
   return () => listeners.delete(listener)
 }
 
-/** Opens the manual at chapter `id` (the first with `''`), or closes it with `null`. */
-export function showManual(id: string | null) {
+/** Shows chapter `id` (the first with `''`) in Settings → Manual, opening the window there. */
+export function showManual(id: string) {
   open = id
   listeners.forEach((listener) => listener())
+  showSettings('manual')
 }
 
-/** The chapter the manual shows, `''` for the first, or `null` while it is closed. */
+/** The chapter asked for, `''` or `null` for the first. */
 export function useManualChapter(): string | null {
   return useSyncExternalStore(subscribe, () => open)
 }
 
-/** The Help menu's *Fotollection Manual* (macOS) opens the manual at its first chapter. */
+/** The Help menu's *Fotollection Manual* (macOS) opens Settings → Manual at its first chapter. */
 export function useManualMenu() {
   useEffect(() => {
     const unlisten = events.menuAction.listen(({ payload }) => {
