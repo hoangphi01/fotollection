@@ -785,13 +785,13 @@ pub const MAX_RECENT_ADDRESSES: usize = 8;
 
 /// Puts `address` first in `recent`, once, and keeps the newest few: the addresses typed on
 /// this machine's postcards, offered on the next card (FR-077). Blank or invalid ones are
-/// not kept.
+/// not kept, nor the start of it already kept: a draft saved while it was typed.
 pub fn remember_address(recent: &mut Vec<String>, address: &str) {
     let address = address.trim();
     if address.is_empty() || !validate_postcard(PostcardPart::Address, address) {
         return;
     }
-    recent.retain(|a| a != address);
+    recent.retain(|a| a != address && !address.starts_with(a.as_str()));
     recent.insert(0, address.to_owned());
     recent.truncate(MAX_RECENT_ADDRESSES);
 }
@@ -1167,5 +1167,21 @@ mod tests {
         let from_file =
             sanitized_addresses(&["A".into(), "A".into(), "bad\u{7}".into(), "B".into()]);
         assert_eq!(from_file, ["A", "B"]);
+    }
+
+    /// FR-077 (owner, 2026-11-07: the list held the same address five times): the start of an
+    /// address, a draft saved while it was typed, gives way to the whole one, and a list read
+    /// from a file loses such drafts too.
+    #[test]
+    fn fr_077_a_draft_of_an_address_gives_way_to_the_whole_one() {
+        let mut recent = Vec::new();
+        for draft in ["THAI", "THAI DUONG", "THAI DUONG PHAM\nUnit 2"] {
+            remember_address(&mut recent, draft);
+        }
+        assert_eq!(recent, ["THAI DUONG PHAM\nUnit 2"]);
+        remember_address(&mut recent, "Other\nPraha");
+        assert_eq!(recent.len(), 2, "a different address stays");
+        let from_file = sanitized_addresses(&["A\nB\nC".into(), "A\nB".into(), "A".into()]);
+        assert_eq!(from_file, ["A\nB\nC"]);
     }
 }

@@ -102,6 +102,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             collage::postcard_text_gaps,
             collage::apply_postcard_text,
             collage::recent_addresses,
+            collage::remember_postcard_address,
             collage::forget_address,
             places::search_places,
             places::set_photo_date,

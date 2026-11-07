@@ -567,10 +567,8 @@ pub fn set_postcard_text(
     let history = edit_photos(&app, &state, &[id], |_, e| {
         crate::collage::set_part(e, part, &text);
     })?;
-    // An address typed is offered on the next cards (FR-077).
-    if part == fotollection_core::settings::PostcardPart::Address {
-        crate::collage::remember_address(&state, &text);
-    }
+    // Not remembered here: the field saves while it is typed, so this sees drafts; the UI
+    // asks `remember_postcard_address` once the field is left (FR-077).
     Ok(history)
 }
 

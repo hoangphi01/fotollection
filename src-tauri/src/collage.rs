@@ -259,6 +259,27 @@ pub fn remember_address(state: &AppState, address: &str) {
     }
 }
 
+/// Remembers an address once its field is left (FR-077), so the drafts saved while it was
+/// typed never join the list. An invalid one is refused as a typed address is.
+#[tauri::command]
+#[specta::specta]
+pub fn remember_postcard_address(
+    state: State<'_, AppState>,
+    address: String,
+) -> Result<(), IpcError> {
+    if !fotollection_core::settings::validate_postcard(
+        fotollection_core::settings::PostcardPart::Address,
+        &address,
+    ) {
+        return Err(IpcError::new(
+            "postcard.text_invalid",
+            "the address has too many characters or lines, or a control character",
+        ));
+    }
+    remember_address(&state, &address);
+    Ok(())
+}
+
 /// The addresses typed on this machine's last postcards, newest first (FR-077).
 #[tauri::command]
 #[specta::specta]

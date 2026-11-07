@@ -16,6 +16,8 @@ type CommitInputProps = {
   /** Keeps a draft within limits as it is typed (e.g. a line count). */
   limit?: (value: string) => string
   onCommit(value: string): void
+  /** The field was left: typing is done (a postcard's address is remembered then, FR-077). */
+  onDone?(value: string): void
 }
 
 /**
@@ -32,6 +34,7 @@ export function CommitInput({
   multiline,
   limit = (v) => v,
   onCommit,
+  onDone,
 }: CommitInputProps) {
   const [draft, setDraft] = useState(value)
   const committed = useRef(value)
@@ -63,6 +66,7 @@ export function CommitInput({
     },
     onBlur: () => {
       focused.current = false
+      onDone?.(draft)
       if (draft !== committed.current) commit(draft)
       else if (value !== committed.current) {
         // Nothing typed, but the value changed meanwhile (an undo): show it now.

@@ -348,6 +348,11 @@ export const commands = {
 	applyPostcardText: (filter: CullFilter, source: PhotoId, part: PostcardPart, overwrite: boolean, ticked: PhotoId[]) => typedError<number, IpcError>(__TAURI_INVOKE("apply_postcard_text", { filter, source, part, overwrite, ticked })),
 	/**  The addresses typed on this machine's last postcards, newest first (FR-077). */
 	recentAddresses: () => typedError<string[], IpcError>(__TAURI_INVOKE("recent_addresses")),
+	/**
+	 *  Remembers an address once its field is left (FR-077), so the drafts saved while it was
+	 *  typed never join the list. An invalid one is refused as a typed address is.
+	 */
+	rememberPostcardAddress: (address: string) => typedError<null, IpcError>(__TAURI_INVOKE("remember_postcard_address", { address })),
 	/**  Forgets one remembered address (FR-077); returns the list left. */
 	forgetAddress: (address: string) => typedError<string[], IpcError>(__TAURI_INVOKE("forget_address", { address })),
 	/**  Places whose name starts with `query`, largest first, from the bundled data (FR-032). */

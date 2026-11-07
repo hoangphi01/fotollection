@@ -672,3 +672,10 @@
 - **Why:** the list was drawn only while the address was empty, so picking from it hid it; the choices were link buttons, which never wrap, and `check-lego` still let this one file use them.
 - **Fix:** the addresses are listed on every card as `ListRow`s, the card's own marked; the choices are a `PanelNote` with two buttons, *Use for them* and *Use for all N*, its words wrapping in the panel; the file's `check-lego` exception is gone.
 - **Rule:** a list to pick from stays while its pick is shown, marking it, so the user can change it. An exception in `check-lego` is closed the next time its file changes, as its reason promised.
+
+### A field that saves while it is typed hands its drafts to everything that listens (FR-077)
+
+- **Seen:** *Recent addresses* held one address five times, each cut at a different place (owner, 2026-11-07).
+- **Why:** the address field saves 600 ms after the last key, so the preview follows the text, and the save also remembered the address: every pause in typing added a draft.
+- **Fix:** saving no longer remembers; the field calls `remember_postcard_address` when it is left (`CommitInput onDone`), and the start of an address already kept gives way to the whole one, also in a list read from the file (`fr_077_a_draft_of_an_address_gives_way_to_the_whole_one`).
+- **Rule:** a live save is a draft. Anything that keeps a history of what was typed (recent items, an undo step's name, a log) listens for the end of typing, not for the save.

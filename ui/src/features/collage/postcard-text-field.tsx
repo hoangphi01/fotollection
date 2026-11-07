@@ -96,6 +96,8 @@ export function PostcardTextField({
         limit={(v) => v.split('\n').slice(0, lines).join('\n')}
         liveMs={600}
         onCommit={(next) => void commands.setPostcardText(photo, part, next.trim() === '' ? null : next)}
+        // The address is offered on the next cards once it is typed, never its drafts (FR-077).
+        onDone={part === 'address' ? (done) => done.trim() !== '' && void commands.rememberPostcardAddress(done) : undefined}
       />
       {cut && <Hint className="text-destructive">{t('postcard.cutHint')}</Hint>}
       {part === 'address' && filter && (
