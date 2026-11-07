@@ -1104,7 +1104,8 @@
     "stamp": "Date stamp",
     "caption": "Line under the date",
     "paste": "Paste settings",
-    "reset": "Reset"
+    "reset": "Reset",
+    "lookPicked": "Look · {{name}}"
   },
   "compare": {
     "before": "Before",

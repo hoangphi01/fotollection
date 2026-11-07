@@ -1066,7 +1066,8 @@
     "stamp": "Dấu ngày",
     "caption": "Dòng dưới ngày",
     "paste": "Dán thiết lập",
-    "reset": "Đặt lại"
+    "reset": "Đặt lại",
+    "lookPicked": "Look · {{name}}"
   },
   "compare": {
     "before": "Trước",

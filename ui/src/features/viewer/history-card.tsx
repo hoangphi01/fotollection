@@ -4,6 +4,7 @@ import { Check, History } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Hint } from '@/components/forms/field'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { SectionCard } from '@/components/layout/section-card'
 import { commands, type HistoryEdit, type HistoryStep, type PhotoId } from '@/ipc/bindings'
 import { ListRow, ListRows } from '@/components/forms/list-row'
@@ -34,7 +35,10 @@ export function HistoryCard({ photoId, revision }: HistoryCardProps) {
 
   const name = (edit: HistoryEdit): string => {
     if (edit.kind !== 'look') return t(`history.${edit.kind}`)
+    // A look of the library picked names it (FR-079); the amount and the sliders their value.
+    if (edit.name) return t('history.lookPicked', { name: edit.name })
     if (!edit.field || edit.value === null) return t('history.look')
+    if (edit.field === 'amount') return `${t('look.amount')} ${edit.value} %`
     const value = edit.value > 0 ? `+${edit.value}` : String(edit.value)
     return `${t(`look.${edit.field}`, { defaultValue: t('history.look') })} ${value}`
   }
@@ -45,6 +49,9 @@ export function HistoryCard({ photoId, revision }: HistoryCardProps) {
       {steps && steps.length === 0 ? (
         <Hint>{t('history.empty')}</Hint>
       ) : (
+        // About six rows, the rest scrolled inside, so a long History never pushes the
+        // column (owner, 2026-11-07: "not as long as a scroll of paper").
+        <ScrollArea className="max-h-52 [&>[data-slot=scroll-area-viewport]>div]:block!">
         <ListRows as="ul">
           {(steps ?? []).map((step, i) => (
             <li key={step.serial}>
@@ -66,6 +73,7 @@ export function HistoryCard({ photoId, revision }: HistoryCardProps) {
             </li>
           )}
         </ListRows>
+        </ScrollArea>
       )}
     </SectionCard>
   )

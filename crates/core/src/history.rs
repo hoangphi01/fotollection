@@ -60,11 +60,13 @@ pub struct PhotoStep {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
 #[serde(tag = "kind", rename_all = "camelCase")]
 pub enum HistoryEdit {
-    /// The colour look: one slider (`field`, as the look cards name it, and its new value),
-    /// or several at once (`field` none: *Apply to all*, a reset, a paste).
+    /// The colour look: one slider (`field`, as the look cards name it, `amount` among them,
+    /// and its new value), a look of the library picked (`name`, FR-079), or several at once
+    /// (all none: *Apply to all*, a reset, a paste).
     Look {
         field: Option<String>,
         value: Option<i32>,
+        name: Option<String>,
     },
     RawLook,
     Crop,
@@ -122,14 +124,33 @@ pub fn describe(before: &PhotoEdits, after: &PhotoEdits) -> Vec<HistoryEdit> {
             same.adjust = a.adjust;
             moved.len() == 1 && same == *a && before.look.is_some() == after.look.is_some()
         };
+        // A pick from the library names its look; the amount alone is a slider of its own.
+        let picked = a.base.is_some() && a.base != b.base;
+        let amount_only = {
+            let mut same = b.clone();
+            same.amount = a.amount;
+            b.amount != a.amount && same == *a && before.look.is_some() == after.look.is_some()
+        };
         edits.push(match moved.first() {
+            _ if picked => HistoryEdit::Look {
+                field: None,
+                value: None,
+                name: a.name.clone(),
+            },
+            _ if amount_only => HistoryEdit::Look {
+                field: Some("amount".to_owned()),
+                value: Some(a.amount.into()),
+                name: None,
+            },
             Some((field, value)) if only_one_slider => HistoryEdit::Look {
                 field: Some((*field).to_owned()),
                 value: Some(*value),
+                name: None,
             },
             _ => HistoryEdit::Look {
                 field: None,
                 value: None,
+                name: None,
             },
         });
     }
@@ -384,10 +405,12 @@ mod tests {
         let one = |field: &str, value| HistoryEdit::Look {
             field: Some(field.to_owned()),
             value: Some(value),
+            name: None,
         };
         let many = HistoryEdit::Look {
             field: None,
             value: None,
+            name: None,
         };
         let warmer = PhotoEdits {
             look: look(|a| a.warmth = 20),
@@ -403,6 +426,31 @@ mod tests {
             ..PhotoEdits::default()
         };
         assert_eq!(describe(&warm, &both), vec![many]);
+        // FR-079: a look picked says its name; the amount alone is a slider of its own.
+        let picked = PhotoEdits {
+            look: look(|a| a.warmth = 25).map(|l| LookSettings {
+                name: Some("Warm old film".into()),
+                base: Some("builtin:warm-film".into()),
+                ..l
+            }),
+            ..PhotoEdits::default()
+        };
+        assert_eq!(
+            describe(&warm, &picked),
+            vec![HistoryEdit::Look {
+                field: None,
+                value: None,
+                name: Some("Warm old film".into()),
+            }]
+        );
+        let softer = PhotoEdits {
+            look: picked
+                .look
+                .clone()
+                .map(|l| LookSettings { amount: 60, ..l }),
+            ..PhotoEdits::default()
+        };
+        assert_eq!(describe(&picked, &softer), vec![one("amount", 60)]);
         let mut all = warm.clone();
         all.raw_look = Some(crate::raw_finish::RawLook::Camera);
         all.crop = Some(crate::plan::CropFrame {

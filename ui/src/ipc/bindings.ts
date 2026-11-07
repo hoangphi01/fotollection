@@ -1286,10 +1286,11 @@ export type HistogramView = {
 /**  What a step changed, to name it in the History list as Lightroom does (*Warmth +8*). */
 export type HistoryEdit = 
 /**
- *  The colour look: one slider (`field`, as the look cards name it, and its new value),
- *  or several at once (`field` none: *Apply to all*, a reset, a paste).
+ *  The colour look: one slider (`field`, as the look cards name it, `amount` among them,
+ *  and its new value), a look of the library picked (`name`, FR-079), or several at once
+ *  (all none: *Apply to all*, a reset, a paste).
  */
-{ kind: "look"; field: string | null; value: number | null } | { kind: "rawLook" } | { kind: "crop" } | { kind: "straighten" } | { kind: "rotate" } | { kind: "stamp" } | { kind: "caption" };
+{ kind: "look"; field: string | null; value: number | null; name: string | null } | { kind: "rawLook" } | { kind: "crop" } | { kind: "straighten" } | { kind: "rotate" } | { kind: "stamp" } | { kind: "caption" };
 
 export type HistoryState = {
 	revision: number,

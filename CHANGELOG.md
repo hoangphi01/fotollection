@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **History** (FR-095) is about six rows high and scrolls inside, so a long one never pushes the column; a look picked says its name (*Look · Warm old film*), the amount its value.
 - **The colour cards no longer jump** when a tab is switched or a sheet's photo picked: the list of looks and each photo's look are drawn at once from the last answer.
 - **RAW shadows without steps:** the RAW tone curve is read between its bins, so dark gradients no longer show bands of three or four levels (35 gaps in the lifted shadows of the nine test cameras, now 1); RAW previews are made again once.
 
