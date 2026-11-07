@@ -10,7 +10,7 @@
 
 Fotollection làm việc trên các thư mục ảnh bạn đã có. Nó đọc ảnh ngay tại chỗ, không bao giờ di chuyển, đổi tên hay sửa một tệp nào ([FR-001](PRD.md#fr-001--import-photos)).
 
-**Màn chào mừng** ([FR-109](PRD.md#fr-109--a-welcome-screen-on-the-first-launch)): lần đầu Fotollection mở sau khi cài hoặc cập nhật, năm trang ngắn giới thiệu những điều cơ bản, mỗi trang trên một ảnh chụp của app: mở ảnh, ba chế độ, chọn tấm đẹp nhất, chỉnh theo ý bạn và in ảnh. **Tiếp** và **Quay lại** để chuyển trang, danh sách bên trái để nhảy tới một trang, và trang cuối có ô **Hiện mỗi lần khởi động** cùng nút **Bắt đầu**. Cài đặt → Chung → *Xem lại màn chào mừng* để mở lại.
+**Màn chào mừng** ([FR-109](PRD.md#fr-109--a-welcome-screen-on-the-first-launch)): lần đầu Fotollection mở sau khi cài hoặc cập nhật, năm trang ngắn giới thiệu những điều cơ bản, mỗi trang trên một ảnh chụp của app: mở ảnh, ba chế độ, chọn tấm đẹp nhất, chỉnh theo ý bạn và in ảnh. **Tiếp** và **Quay lại** để chuyển trang, danh sách bên trái để nhảy tới một trang, và trang cuối có ô **Hiện mỗi lần khởi động** cùng nút **Bắt đầu**, cách duy nhất để đóng, để ai cũng đọc qua một lần. Cài đặt → Chung → *Xem lại màn chào mừng* để mở lại.
 
 1. **Mở một thư mục:** nhấp **Mở thư mục** (biểu tượng thư mục cạnh *Thư viện* ở thanh bên), hoặc thả một thư mục vào bất kỳ đâu trên cửa sổ. Các thư mục con cũng được mở theo. App đọc JPEG, PNG, HEIC và ảnh RAW (chương 14).
 2. **Thanh bên** liệt kê, dưới *Thư viện*:

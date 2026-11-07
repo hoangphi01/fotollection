@@ -54,6 +54,7 @@ export function WelcomeDialog() {
       onClose={close}
       title={t('welcome.title')}
       full
+      closable={false}
       nav={PAGES.map((p, i) => (
         <ListRow key={p.key} icon={<p.icon />} chosen={i === page} current="step" onClick={() => setPage(i)}>
           {t(`welcome.${p.key}.title`)}
@@ -98,9 +99,12 @@ export function WelcomeDialog() {
           height={1000}
           className="absolute inset-0 size-full object-cover object-left-top"
         />
-        <p className="absolute inset-x-4 bottom-4 max-w-xl rounded-xl border bg-background/60 p-4 text-sm backdrop-blur-xl lifted">
-          {t(`welcome.${current.key}.text`)}
-        </p>
+        {/* A welcome reads large (owner, 2026-11-07): the page's name as a title, its words at
+            the size of a lead. */}
+        <div className="absolute inset-x-6 bottom-6 flex max-w-2xl flex-col gap-2 rounded-2xl border bg-background/65 p-6 backdrop-blur-xl lifted">
+          <h2 className="text-2xl font-semibold">{t(`welcome.${current.key}.title`)}</h2>
+          <p className="text-lg leading-relaxed">{t(`welcome.${current.key}.text`)}</p>
+        </div>
       </div>
     </SettingsFrame>
   )

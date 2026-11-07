@@ -12,7 +12,7 @@
 
 Fotollection works on the folders of photos you already have. It reads them where they are, and never moves, renames or changes a file ([FR-001](PRD.md#fr-001--import-photos)).
 
-**The welcome** ([FR-109](PRD.md#fr-109--a-welcome-screen-on-the-first-launch)): the first time Fotollection opens after it is installed or updated, five short pages show the basics, each over a picture of the app: opening photos, the three modes, choosing the best, making them yours and printing. **Next** and **Back** move between them, the list on the left jumps to one, and the last page has **Show at every start** and **Start**. Settings → General → *Show the welcome again* brings it back.
+**The welcome** ([FR-109](PRD.md#fr-109--a-welcome-screen-on-the-first-launch)): the first time Fotollection opens after it is installed or updated, five short pages show the basics, each over a picture of the app: opening photos, the three modes, choosing the best, making them yours and printing. **Next** and **Back** move between them, the list on the left jumps to one, and the last page has **Show at every start** and **Start**, the only way out, so it is read through once. Settings → General → *Show the welcome again* brings it back.
 
 1. **Open a folder:** click **Open folder** (the folder icon next to *Library* in the sidebar), or drop a folder anywhere on the window. Its subfolders come too. JPEG, PNG, HEIC and camera RAW are read (chapter 14).
 2. **The sidebar** lists, under *Library*:

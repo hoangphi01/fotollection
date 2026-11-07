@@ -26,6 +26,9 @@ type SettingsFrameProps = {
   /** The body fills the window's right side with no scroll and no column width: one big
    * picture (the welcome screen, FR-109; owner, 2026-11-07: "the picture bigger"). */
   full?: boolean
+  /** False: no ✕, and neither Esc nor a click outside closes it; only its own buttons do
+   * (the first launch's welcome, read through once; owner, 2026-11-07). */
+  closable?: boolean
 }
 
 /**
@@ -33,10 +36,28 @@ type SettingsFrameProps = {
  * with the columns as on an iPad: a narrow list of sections on the left, the open section's
  * cards on the right, spaced 12 px as in every panel (STYLE_RULE §4, the lego rule).
  */
-export function SettingsFrame({ open, onClose, title, nav, navFooter, heading, description, children, footer, actions, full = false }: SettingsFrameProps) {
+export function SettingsFrame({
+  open,
+  onClose,
+  title,
+  nav,
+  navFooter,
+  heading,
+  description,
+  children,
+  footer,
+  actions,
+  full = false,
+  closable = true,
+}: SettingsFrameProps) {
   return (
-    <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="flex h-[90vh] w-[95vw] max-w-none gap-0 overflow-hidden p-0 sm:max-w-[min(1100px,95vw)]">
+    <Dialog open={open} onOpenChange={(next) => !next && closable && onClose()}>
+      <DialogContent
+        showCloseButton={closable}
+        onEscapeKeyDown={(e) => !closable && e.preventDefault()}
+        onPointerDownOutside={(e) => !closable && e.preventDefault()}
+        className="flex h-[90vh] w-[95vw] max-w-none gap-0 overflow-hidden p-0 sm:max-w-[min(1100px,95vw)]"
+      >
         <aside className="flex w-64 shrink-0 flex-col border-r bg-muted/40">
           {/* Both columns' heads and feet share one height, so their lines meet as one line
               across the window (owner, 2026-11-06), as the gallery's do. */}
