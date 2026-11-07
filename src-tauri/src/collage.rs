@@ -638,9 +638,16 @@ pub fn cell_geometry(
     })
 }
 
-/// Bytes for `fotothumb://localhost/sheet/{first}/{second}`: the sheet with the current
-/// settings, `SMALL_SHEET` or `LARGE_SHEET` pixels on its long edge.
-pub fn sheet_bytes(state: &AppState, sheet: SheetPair, small: bool) -> Result<Vec<u8>, IpcError> {
+/// What a sheet is drawn from: its photos, the settings, their places and the card's font.
+struct SheetInputs {
+    first: fotollection_core::library::PhotoRecord,
+    second: Option<fotollection_core::library::PhotoRecord>,
+    settings: fotollection_core::settings::RenderSettings,
+    places: [Option<String>; 2],
+    card_font: Option<fotollection_core::fonts::LoadedFont>,
+}
+
+fn sheet_inputs(state: &AppState, sheet: SheetPair) -> Result<SheetInputs, IpcError> {
     let unknown = || IpcError::new("photo.unknown", "unknown photo");
     let (first, second) = {
         let library = state.library.read().map_err(crate::document::poisoned)?;
@@ -661,29 +668,110 @@ pub fn sheet_bytes(state: &AppState, sheet: SheetPair, small: bool) -> Result<Ve
     let place = |r: &fotollection_core::library::PhotoRecord| {
         crate::state::place_for(r, &names, settings.place_format)
     };
-    let (place_a, place_b) = (place(&first), second.as_ref().and_then(place));
-    // The grid's sheets come from the photos' thumbnails: no photo is decoded again when a
-    // setting changes (FR-035, OPTIMIZATION §5).
-    let thumbnail = |r: &fotollection_core::library::PhotoRecord| state.thumbs.cached_t1(r);
+    let places = [place(&first), second.as_ref().and_then(place)];
     let card_font = state
         .frame
         .read()
         .ok()
         .and_then(|f| crate::commands::postcard_font_of(&f, &settings));
+    Ok(SheetInputs {
+        first,
+        second,
+        settings,
+        places,
+        card_font,
+    })
+}
+
+/// Bytes for `fotothumb://localhost/sheet/{first}/{second}`: the sheet with the current
+/// settings, `SMALL_SHEET` or `LARGE_SHEET` pixels on its long edge, its photos' clipping
+/// marked when `clip` (FR-098, `J`).
+pub fn sheet_bytes(
+    state: &AppState,
+    sheet: SheetPair,
+    small: bool,
+    clip: bool,
+) -> Result<Vec<u8>, IpcError> {
+    let SheetInputs {
+        first,
+        second,
+        settings,
+        places,
+        card_font,
+    } = sheet_inputs(state, sheet)?;
+    // The grid's sheets come from the photos' thumbnails: no photo is decoded again when a
+    // setting changes (FR-035, OPTIMIZATION §5).
+    let thumbnail = |r: &fotollection_core::library::PhotoRecord| state.thumbs.cached_t1(r);
     state
         .previews
         .render_sheet_jpeg(
             [
-                Some((&first, place_a.as_deref())),
-                second.as_ref().map(|r| (r, place_b.as_deref())),
+                Some((&first, places[0].as_deref())),
+                second.as_ref().map(|r| (r, places[1].as_deref())),
             ],
             &settings,
             if small { SMALL_SHEET } else { LARGE_SHEET },
             small.then_some(&thumbnail as &dyn Fn(&_) -> _),
             card_font.as_ref().map(|f| &f.font),
+            clip,
             state.codec.as_ref(),
         )
         .map_err(|e| crate::commands::shown_error(&e, &first))
+}
+
+/// Sets the warmth and tint of the photo `id` on a sheet so the spot clicked at (`fx`, `fy`)
+/// of the sheet's preview turns neutral grey (FR-098, `W` in Collage mode), as one undo step;
+/// a point off that photo (the other photo, the card, the paper, the stamp) is `ERR-IPC-0026`.
+#[tauri::command]
+#[specta::specta]
+pub async fn pick_white_balance_on_sheet(
+    app: AppHandle,
+    sheet: SheetPair,
+    id: PhotoId,
+    fx: f32,
+    fy: f32,
+) -> Result<crate::commands::HistoryState, IpcError> {
+    crate::commands::check_pick_point(fx, fy)?;
+    let cell = if sheet.first == id {
+        0
+    } else if sheet.second == Some(id) {
+        1
+    } else {
+        return Err(IpcError::new("photo.unknown", "unknown photo"));
+    };
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let SheetInputs {
+            first,
+            second,
+            settings,
+            places,
+            card_font,
+        } = sheet_inputs(&state, sheet)?;
+        let picked = if cell == 0 {
+            first.clone()
+        } else {
+            second.clone().unwrap_or_else(|| first.clone())
+        };
+        let sample = state
+            .previews
+            .neutral_sample_on_sheet(
+                [
+                    Some((&first, places[0].as_deref())),
+                    second.as_ref().map(|r| (r, places[1].as_deref())),
+                ],
+                &settings,
+                card_font.as_ref().map(|f| &f.font),
+                cell,
+                (fx, fy),
+                state.codec.as_ref(),
+            )
+            .map_err(|e| crate::commands::shown_error(&e, &picked))?
+            .ok_or_else(crate::commands::not_on_photo)?;
+        crate::commands::set_white_balance_from(&app, &state, &picked, &settings, sample)
+    })
+    .await
+    .map_err(|e| IpcError::internal(e.to_string()))?
 }
 
 #[cfg(test)]

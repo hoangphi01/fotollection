@@ -1141,36 +1141,7 @@ impl PreviewCache {
         // The same test as the webview's mask: a pixel of the photo is the exact inverse in
         // the inverted run; anything drawn over it is not.
         let (a, b) = (finish(photo.as_ref().clone(), &p), finish(inverted, &p));
-        let (w, h) = (a.width as usize, a.height as usize);
-        #[allow(
-            clippy::cast_possible_truncation,
-            clippy::cast_sign_loss,
-            clippy::cast_precision_loss
-        )]
-        let (cx, cy) = (
-            (fx.clamp(0.0, 1.0) * w as f32) as usize,
-            (fy.clamp(0.0, 1.0) * h as f32) as usize,
-        );
-        let at = |x: usize, y: usize| -> Option<[u8; 3]> {
-            let i = (y * w + x) * 3;
-            let (pa, pb) = (a.data.get(i..i + 3)?, b.data.get(i..i + 3)?);
-            (pa.iter().zip(pb).all(|(x, y)| *y == 255 - *x)).then(|| [pa[0], pa[1], pa[2]])
-        };
-        if cx >= w || cy >= h || at(cx, cy).is_none() {
-            return Ok(None);
-        }
-        let (mut sum, mut n) = ([0f32; 3], 0f32);
-        for y in cy.saturating_sub(2)..(cy + 3).min(h) {
-            for x in cx.saturating_sub(2)..(cx + 3).min(w) {
-                if let Some(px) = at(x, y) {
-                    for c in 0..3 {
-                        sum[c] += f32::from(px[c]);
-                    }
-                    n += 1.0;
-                }
-            }
-        }
-        Ok(Some(sum.map(|s| s / n)))
+        Ok(sample_where_inverse(&a, &b, (fx, fy)))
     }
 
     /// The preview JPEG with the photo's clipped pixels marked (FR-098, `J`): blown in red,
@@ -1249,6 +1220,7 @@ impl PreviewCache {
     /// A collage sheet's preview JPEG (FR-035): both photos from their cached sources,
     /// the sheet's long edge at most `long_edge`. Each photo comes with its place. With
     /// `thumbnail`, for the grid's small sheets, the photos come from their thumbnails.
+    #[allow(clippy::too_many_arguments)]
     pub fn render_sheet_jpeg(
         &self,
         photos: [Option<(&PhotoRecord, Option<&str>)>; 2],
@@ -1256,8 +1228,35 @@ impl PreviewCache {
         long_edge: u32,
         thumbnail: Option<&Thumbnail<'_>>,
         card_font: Option<&ab_glyph::FontArc>,
+        clipping: bool,
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
+        let mark = if clipping {
+            crate::sheet::CellMark::Clipping
+        } else {
+            crate::sheet::CellMark::Normal
+        };
+        let image = self.render_sheet_rgb(
+            photos, settings, long_edge, thumbnail, card_font, [mark; 2], None, codec,
+        )?;
+        Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
+    }
+
+    /// A sheet's pixels, each cell drawn as `marks` asks; the cell `plain`, if any, without
+    /// its look (FR-098: the white-balance picker reads the photo before its look).
+    #[allow(clippy::too_many_arguments)]
+    fn render_sheet_rgb(
+        &self,
+        photos: [Option<(&PhotoRecord, Option<&str>)>; 2],
+        settings: &RenderSettings,
+        long_edge: u32,
+        thumbnail: Option<&Thumbnail<'_>>,
+        card_font: Option<&ab_glyph::FontArc>,
+        marks: [crate::sheet::CellMark; 2],
+        plain: Option<usize>,
+        codec: &dyn JpegCodec,
+    ) -> Result<RgbImage, ThumbError> {
+        let none = crate::looks::LookSettings::default();
         let mut images = [None, None];
         // Each RAW cell's five linear sliders go to its source, the rest to the table (FR-088).
         let looks = photos.map(|p| p.map(|(record, _)| split_look(record, settings)));
@@ -1271,8 +1270,12 @@ impl PreviewCache {
             }
         }
         let mut sources = [None, None];
-        for (((slot, image), photo), look) in
-            sources.iter_mut().zip(&images).zip(&photos).zip(&looks)
+        for (cell, (((slot, image), photo), look)) in sources
+            .iter_mut()
+            .zip(&images)
+            .zip(&photos)
+            .zip(&looks)
+            .enumerate()
         {
             if let (Some(image), Some((record, place)), Some((_, table_look))) =
                 (image, photo, look)
@@ -1285,7 +1288,11 @@ impl PreviewCache {
                     place: *place,
                     stamp: record.edits.stamp.as_ref(),
                     caption: record.edits.caption.as_deref(),
-                    look: Some(table_look),
+                    look: Some(if plain == Some(cell) {
+                        &none
+                    } else {
+                        table_look
+                    }),
                     postcard: record.edits.postcard.as_ref(),
                 });
             }
@@ -1299,15 +1306,58 @@ impl PreviewCache {
             ),
             _ => false,
         };
-        let image = crate::sheet::render_sheet(
+        Ok(crate::sheet::render_sheet_with(
             settings,
             print,
             sources,
             turned,
             Some(long_edge),
             card_font,
+            marks,
+        )?)
+    }
+
+    /// The colour before its look around (`fx`, `fy`) of a sheet's preview, as fractions of
+    /// the sheet, read only from the photo in `cell` (FR-098, `W` on a sheet): the sheet drawn
+    /// twice, that photo plain and then inverted before its stamp; a pixel that is the exact
+    /// inverse is the photo's own. The other photo, the card, the paper, the stamp and the
+    /// cut line are the same in both runs, so they never count: `None` there.
+    #[allow(clippy::too_many_arguments)]
+    pub fn neutral_sample_on_sheet(
+        &self,
+        photos: [Option<(&PhotoRecord, Option<&str>)>; 2],
+        settings: &RenderSettings,
+        card_font: Option<&ab_glyph::FontArc>,
+        cell: usize,
+        (fx, fy): (f32, f32),
+        codec: &dyn JpegCodec,
+    ) -> Result<Option<[f32; 3]>, ThumbError> {
+        use crate::sheet::CellMark;
+        let mut inverted = [CellMark::Normal; 2];
+        if let Some(slot) = inverted.get_mut(cell) {
+            *slot = CellMark::Inverted;
+        }
+        let a = self.render_sheet_rgb(
+            photos,
+            settings,
+            PREVIEW_LONG_EDGE,
+            None,
+            card_font,
+            [CellMark::Normal; 2],
+            Some(cell),
+            codec,
         )?;
-        Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
+        let b = self.render_sheet_rgb(
+            photos,
+            settings,
+            PREVIEW_LONG_EDGE,
+            None,
+            card_font,
+            inverted,
+            Some(cell),
+            codec,
+        )?;
+        Ok(sample_where_inverse(&a, &b, (fx, fy)))
     }
 
     /// One region of the full-resolution render (FR-057): the pixels export would write,
@@ -1385,6 +1435,43 @@ fn turned_in_cell(upright: Arc<RgbImage>, record: &PhotoRecord) -> Arc<RgbImage>
             crate::image::compose_orientation(1, turns),
         )),
     }
+}
+
+/// The mean colour of `a`'s pixels in the 5 × 5 around (`fx`, `fy`), fractions of its size,
+/// counting only those whose pixel in `b` is their exact inverse: the photo's own, in a render
+/// where only the photo was inverted (FR-098, the white-balance picker). `None` when the point
+/// itself is not one of them.
+fn sample_where_inverse(a: &RgbImage, b: &RgbImage, (fx, fy): (f32, f32)) -> Option<[f32; 3]> {
+    let (w, h) = (a.width as usize, a.height as usize);
+    #[allow(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        clippy::cast_precision_loss
+    )]
+    let (cx, cy) = (
+        (fx.clamp(0.0, 1.0) * w as f32) as usize,
+        (fy.clamp(0.0, 1.0) * h as f32) as usize,
+    );
+    let at = |x: usize, y: usize| -> Option<[u8; 3]> {
+        let i = (y * w + x) * 3;
+        let (pa, pb) = (a.data.get(i..i + 3)?, b.data.get(i..i + 3)?);
+        (pa.iter().zip(pb).all(|(x, y)| *y == 255 - *x)).then(|| [pa[0], pa[1], pa[2]])
+    };
+    if cx >= w || cy >= h || at(cx, cy).is_none() {
+        return None;
+    }
+    let (mut sum, mut n) = ([0f32; 3], 0f32);
+    for y in cy.saturating_sub(2)..(cy + 3).min(h) {
+        for x in cx.saturating_sub(2)..(cx + 3).min(w) {
+            if let Some(px) = at(x, y) {
+                for c in 0..3 {
+                    sum[c] += f32::from(px[c]);
+                }
+                n += 1.0;
+            }
+        }
+    }
+    Some(sum.map(|s| s / n))
 }
 
 #[cfg(test)]
@@ -1713,6 +1800,143 @@ mod tests {
             a,
             "the look is counted"
         );
+        Ok(())
+    }
+
+    /// A flat-coloured JPEG per colour, as records of one library (ids 0, 1…).
+    fn flat_photos(dir: &std::path::Path, colours: &[[u8; 3]]) -> TestResult<Vec<PhotoRecord>> {
+        let codec = default_codec();
+        let mut lib = Library::new();
+        let folder = lib.add_folder(dir);
+        let mut out = Vec::new();
+        for (i, colour) in colours.iter().enumerate() {
+            let mut image = RgbImage::new(600, 400);
+            for px in image.data.as_chunks_mut::<3>().0 {
+                *px = *colour;
+            }
+            let path = dir.join(format!("flat{i}.jpg"));
+            let bytes = codec.encode(&image, EncodeOptions::print(100), None)?;
+            std::fs::write(&path, &bytes)?;
+            let file = ImportedFile {
+                path,
+                size: bytes.len() as u64,
+                mtime: 0,
+            };
+            let id = lib
+                .push(folder, &file, &PhotoMeta::default())
+                .ok_or("photo")?;
+            out.push(lib.record(id).ok_or("record")?);
+        }
+        Ok(out)
+    }
+
+    /// FR-098 (`J` on a sheet): only the photos' clipped pixels turn red or blue; the paper
+    /// round them is left alone.
+    #[test]
+    fn fr_098_a_sheet_marks_clipping_only_in_the_photos() -> TestResult {
+        use crate::sheet::CellMark;
+        let dir = tempfile::tempdir()?;
+        let records = photos(dir.path(), &[(600, 400), (601, 400)])?;
+        let codec = default_codec();
+        let settings = RenderSettings {
+            border: true,
+            ..RenderSettings::default()
+        };
+        let cache = PreviewCache::new();
+        let pair = [Some((&records[0], None)), Some((&records[1], None))];
+        let draw = |mark| {
+            cache.render_sheet_rgb(
+                pair,
+                &settings,
+                800,
+                None,
+                None,
+                [mark; 2],
+                None,
+                codec.as_ref(),
+            )
+        };
+        let (plain, marked) = (draw(CellMark::Normal)?, draw(CellMark::Clipping)?);
+        // The paper's own colour, from the sheet's corner (an off-white, not 255).
+        let paper = *plain.data.as_chunks::<3>().0.first().ok_or("empty")?;
+        let (mut changed, mut kept) = (0, 0);
+        for (a, b) in plain
+            .data
+            .as_chunks::<3>()
+            .0
+            .iter()
+            .zip(marked.data.as_chunks::<3>().0)
+        {
+            if a == b {
+                kept += usize::from(*a == paper);
+            } else {
+                changed += 1;
+                assert!(
+                    *b == [255, 0, 0] || *b == [0, 64, 255],
+                    "only marks change: {a:?} -> {b:?}"
+                );
+            }
+        }
+        assert!(changed > 0, "the gradients have clipped pixels");
+        assert!(kept > 1000, "the paper is never marked: {kept}");
+        Ok(())
+    }
+
+    /// FR-098 (`W` on a sheet): the picker reads the picked photo only, before its look; the
+    /// other photo and the border give nothing.
+    #[test]
+    #[allow(clippy::cast_precision_loss)]
+    fn fr_098_a_sheet_pick_reads_only_the_picked_photo() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let (warm, grey) = ([150, 128, 110], [100, 100, 100]);
+        let mut records = flat_photos(dir.path(), &[warm, grey])?;
+        records[0].edits.look = Some(crate::looks::LookSettings {
+            adjust: crate::looks::Adjust {
+                brightness: 50,
+                ..crate::looks::Adjust::default()
+            },
+            ..crate::looks::LookSettings::default()
+        });
+        let codec = default_codec();
+        let settings = RenderSettings {
+            border: true,
+            ..RenderSettings::default()
+        };
+        let cache = PreviewCache::new();
+        let pair = [Some((&records[0], None)), Some((&records[1], None))];
+        let near =
+            |s: [f32; 3], c: [u8; 3]| s.iter().zip(c).all(|(s, c)| (s - f32::from(c)).abs() < 4.0);
+        for (cell, colour, other) in [(0, warm, grey), (1, grey, warm)] {
+            let mut found = 0;
+            for i in 1..20 {
+                for j in 1..20 {
+                    let at = (i as f32 / 20.0, j as f32 / 20.0);
+                    let sample = cache.neutral_sample_on_sheet(
+                        pair,
+                        &settings,
+                        None,
+                        cell,
+                        at,
+                        codec.as_ref(),
+                    )?;
+                    if let Some(s) = sample {
+                        assert!(near(s, colour), "cell {cell} read {s:?}, not {colour:?}");
+                        assert!(!near(s, other), "never the other photo");
+                        found += 1;
+                    }
+                }
+            }
+            assert!(found > 20, "cell {cell} is found: {found}");
+            let edge = cache.neutral_sample_on_sheet(
+                pair,
+                &settings,
+                None,
+                cell,
+                (0.001, 0.001),
+                codec.as_ref(),
+            )?;
+            assert_eq!(edge, None, "the border is no photo");
+        }
         Ok(())
     }
 

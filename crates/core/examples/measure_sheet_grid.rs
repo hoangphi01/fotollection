@@ -64,7 +64,15 @@ fn main() {
                 let photos = [Some((&pair[0], None)), pair.get(1).map(|r| (r, None))];
                 let small = from_thumbnails.then_some(&thumbnail as &dyn Fn(&_) -> _);
                 cache
-                    .render_sheet_jpeg(photos, settings, SMALL_SHEET, small, None, codec.as_ref())
+                    .render_sheet_jpeg(
+                        photos,
+                        settings,
+                        SMALL_SHEET,
+                        small,
+                        None,
+                        false,
+                        codec.as_ref(),
+                    )
                     .unwrap();
             }
             t.elapsed().as_secs_f64() * 1e3

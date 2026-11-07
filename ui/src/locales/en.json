@@ -1185,6 +1185,8 @@
     "title": "Histogram",
     "label": "Histogram of the photo: red, green and blue, and the light as a line",
     "clipped": "Blown {{high}} · Blocked {{low}}",
+    "clippingShort": "Clipping",
+    "pickShort": "White balance",
     "clipping": "Show clipping (J)",
     "clippingHint": "Marks on the photo what is blown (red) and blocked (black detail lost, blue), as Lightroom's J does.",
     "pick": "White balance from a grey spot (W)",

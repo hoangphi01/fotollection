@@ -84,6 +84,7 @@ fn main() {
                 PREVIEW_LONG_EDGE,
                 None,
                 None,
+                false,
                 codec.as_ref(),
             )
             .unwrap()

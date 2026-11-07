@@ -127,6 +127,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::redo,
             commands::photo_histogram,
             commands::pick_white_balance,
+            collage::pick_white_balance_on_sheet,
             commands::photo_history,
             commands::restore_photo_state,
             settings_copy::copy_photo_settings,

@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ChevronLeft, ChevronRight, Copy, Crop, Download, Images, LoaderCircle, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
-import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { ChevronLeft, ChevronRight, Copy, Crop, Download, Images, LoaderCircle, Pipette, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
+import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { SectionCard } from '@/components/layout/section-card'
 import { InspectorSection } from '@/components/layout/inspector-section'
 import { KeyHints } from '@/components/layout/key-hints'
+import { PanelNote } from '@/components/layout/panel-note'
 import { StageSpinner } from '@/components/layout/stage-spinner'
 import { ViewerFrame } from '@/components/layout/viewer-frame'
 import { commands, type CullFilter, type PhotoId, type PhotoSummary, type Queue, type RenderSettings } from '@/ipc/bindings'
@@ -83,7 +84,12 @@ export function SheetPreviewDialog({
   const { t } = useTranslation()
   const { sheets, index, sheet } = collage
   const key = sheet ? `${sheet.first}:${sheet.second}` : undefined
-  const src = sheet ? sheetUrl(sheet.first, sheet.second, revision) : ''
+  // J: the sheet's photos with their clipped pixels marked (FR-098), never the card or paper.
+  const [clipping, setClipping] = useState(false)
+  // W: the white-balance picker armed for the picked photo; the next click on it sets its
+  // warmth and tint, a click elsewhere on the sheet is refused (ERR-IPC-0026).
+  const [picking, setPicking] = useState(false)
+  const src = sheet ? sheetUrl(sheet.first, sheet.second, revision, false, clipping) : ''
   const { src: shownSrc, error: shownError } = useShownSrc(key, src)
   const shape = useSheetShape(shownSrc ?? '')
   const [stage, setStage] = useState<HTMLDivElement | null>(null)
@@ -93,8 +99,19 @@ export function SheetPreviewDialog({
   // No photo is chosen until the user picks one, so the sheet shows as it prints.
   const [picked, setPicked] = useState<{ key: string | undefined; cell: 0 | 1 } | null>(null)
   const chosen = picked && picked.key === key ? picked.cell : null
-  const choose = (cell: 0 | 1 | null) => setPicked(cell === null ? null : { key, cell })
+  const choose = (cell: 0 | 1 | null) => {
+    if (cell !== chosen) setPicking(false)
+    setPicked(cell === null ? null : { key, cell })
+  }
   const photo = sheet && chosen !== null ? (chosen === 0 ? sheet.first : sheet.second) : null
+  const pickAt = (event: MouseEvent<HTMLImageElement>) => {
+    const box = event.currentTarget.getBoundingClientRect()
+    if (!sheet || photo === null || box.width === 0 || box.height === 0) return
+    const fx = (event.clientX - box.left) / box.width
+    const fy = (event.clientY - box.top) / box.height
+    setPicking(false)
+    void commands.pickWhiteBalanceOnSheet({ first: sheet.first, second: sheet.second }, photo, fx, fy)
+  }
   // The picked photo is the one copy, paste and reset act on, its crop the collage crop (FR-097).
   useEffect(() => {
     if (!open || photo === null) return
@@ -123,6 +140,7 @@ export function SheetPreviewDialog({
   }
   const go = (delta: number) => {
     setCropping(false)
+    setPicking(false)
     choose(null)
     collage.select(Math.min(sheets.length - 1, Math.max(0, index + delta)), 0)
   }
@@ -140,6 +158,9 @@ export function SheetPreviewDialog({
     else if (event.key === 'ArrowDown') send('aside')
     else if (pressed === '1' || pressed === '2') choose(pressed === '1' ? 0 : 1)
     else if (pressed === 'c' && photo !== null) setCropping(true)
+    // J and W by the key's place, as in the photo preview (FR-098); W needs a picked photo.
+    else if (event.code === 'KeyJ' && !event.metaKey && !event.ctrlKey && !event.altKey) setClipping((on) => !on)
+    else if (event.code === 'KeyW' && photo !== null && !event.metaKey && !event.ctrlKey && !event.altKey) setPicking((on) => !on)
     // ⇧R turns the chosen photo in its cell; R alone turns the sheet.
     else if (pressed === 'r' && event.shiftKey && photo !== null) rotatePhoto(photo)
     else if (pressed === 'r' && sheet && !postcard && !event.metaKey && !event.ctrlKey) collage.turn(sheet.first)
@@ -155,8 +176,11 @@ export function SheetPreviewDialog({
       contentRef={contentRef}
       onKeyDown={onKeyDown}
       onEscapeKeyDown={(e) => {
-        // Esc leaves the crop editor first, then lets go of the chosen photo, then closes.
-        if (cropping) {
+        // Esc leaves the picker, then the crop editor, then lets go of the chosen photo, then closes.
+        if (picking) {
+          e.preventDefault()
+          setPicking(false)
+        } else if (cropping) {
           e.preventDefault()
           setCropping(false)
         } else if (chosen !== null) {
@@ -166,7 +190,7 @@ export function SheetPreviewDialog({
       }}
       stageRef={setStage}
       // A click on the ground around the sheet lets go of the chosen photo, like Esc.
-      onStageGroundClick={() => !cropping && choose(null)}
+      onStageGroundClick={() => !cropping && !picking && choose(null)}
       title={t('collage.sheetOf', { index: formatNumber(index + 1), count: formatNumber(sheets.length) })}
       description={names.length === 2 ? t('collage.pairNames', { first: names[0], second: names[1] }) : names[0]}
       footer={
@@ -185,6 +209,8 @@ export function SheetPreviewDialog({
                   { keys: ['↑'], label: t('viewer.upBasket') },
                   { keys: ['↓'], label: t('viewer.downAside') },
                   { keys: ['C'], label: t('viewer.crop') },
+                  { keys: ['J'], label: t('histogram.clippingShort') },
+                  { keys: ['W'], label: t('histogram.pickShort') },
                   ...(postcard ? [] : [{ keys: ['R'], label: t('collage.turn') }]),
                   { keys: ['⇧R'], label: t('collage.rotatePhoto') },
                   { keys: ['Esc'], label: t('viewer.close') },
@@ -214,12 +240,18 @@ export function SheetPreviewDialog({
                   alt={t('collage.sheetLabel')}
                   draggable={false}
                   onLoad={shape.onLoad}
-                  onPointerDown={zoom.pointer.onPointerDown}
-                  onPointerMove={zoom.pointer.onPointerMove}
-                  onPointerUp={zoom.pointer.onPointerUp}
-                  className="block max-h-[calc(90vh-4rem)] max-w-full animate-in object-contain stage-photo fade-in-0"
+                  // While W is armed, a click picks: no zoom drag, no cell overlay (LESSONS: two
+                  // gestures on one surface turn each other off).
+                  onPointerDown={picking ? undefined : zoom.pointer.onPointerDown}
+                  onPointerMove={picking ? undefined : zoom.pointer.onPointerMove}
+                  onPointerUp={picking ? undefined : zoom.pointer.onPointerUp}
+                  onClick={picking ? pickAt : undefined}
+                  className={cn(
+                    'block max-h-[calc(90vh-4rem)] max-w-full animate-in object-contain stage-photo fade-in-0',
+                    picking && 'cursor-crosshair',
+                  )}
                 />
-                {!zoom.zoomed && (
+                {!zoom.zoomed && !picking && (
                   <SheetCellsOverlay sheet={sheet} sideBySide={shape.sideBySide} postcard={postcard}>
                     {(id, c) => (
                       <button
@@ -324,8 +356,20 @@ export function SheetPreviewDialog({
       {/* The picked photo's colour, as in the panel; none picked, no colour cards (FR-079). */}
       {photo !== null && (
         <>
-          {/* The picked photo's histogram (FR-098), then its settings (FR-097). */}
-          <HistogramCard photoId={photo} revision={revision} />
+          {/* The picked photo's histogram (FR-098), then its settings (FR-097); W armed, what
+              the next click does instead. The curves are the photo's own preview's. */}
+          {picking ? (
+            <PanelNote icon={<Pipette />}>{t('viewer.pickWhite')}</PanelNote>
+          ) : (
+            <HistogramCard
+              photoId={photo}
+              revision={revision}
+              clipping={clipping}
+              onClipping={setClipping}
+              picking={picking}
+              onPicking={setPicking}
+            />
+          )}
           {/* Copy, paste and reset this photo's settings (FR-097), its crop the collage crop. */}
           <SectionCard icon={<Copy />} title={t('develop.title')}>
             <div className="flex items-center gap-1.5">

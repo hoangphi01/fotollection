@@ -320,7 +320,7 @@ fn record_collage(app: &AppHandle, out: &Path) -> Result<Value, String> {
         for (small, suffix) in [(true, "-small"), (false, "")] {
             write(
                 &out.join(format!("img/sheet/{key}{suffix}.jpg")),
-                &crate::collage::sheet_bytes(&state, sheet, small).map_err(|e| e.message)?,
+                &crate::collage::sheet_bytes(&state, sheet, small, false).map_err(|e| e.message)?,
             )?;
         }
     }
@@ -435,7 +435,7 @@ fn record_postcard(app: &AppHandle, out: &Path, demo: &PostcardDemo) -> Result<V
         for (small, suffix) in [(true, "-small"), (false, "")] {
             write(
                 &out.join(format!("img/{}/{key}{suffix}.jpg", demo.key)),
-                &crate::collage::sheet_bytes(&state, sheet, small).map_err(|e| e.message)?,
+                &crate::collage::sheet_bytes(&state, sheet, small, false).map_err(|e| e.message)?,
             )?;
         }
     }

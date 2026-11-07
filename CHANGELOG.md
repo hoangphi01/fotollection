@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- `J` and `W` in Collage mode (FR-098): in a sheet's preview, `J` (or ⚠ on the histogram) marks both photos' blown and blocked pixels, never the paper or the postcard card; with a photo picked, `W` (or the pipette) and a click on something grey in it set that photo's warmth and tint, as one step. A click on the other photo or the paper is refused.
+
 ## [0.13.1] - 2026-11-07 — Develop, part 2
 
 ### Highlights

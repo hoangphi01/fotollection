@@ -45,11 +45,11 @@ export function regionUrl(
 
 /**
  * A collage sheet (FR-035), with the current settings: 640 px for the sheet grid with
- * `small`, 1600 px otherwise.
+ * `small`, 1600 px otherwise; with `clip`, its photos' clipped pixels marked (FR-098, `J`).
  */
-export function sheetUrl(first: number, second: number | null, revision: number, small = false): string {
+export function sheetUrl(first: number, second: number | null, revision: number, small = false, clip = false): string {
   const path = second === null ? `${first}` : `${first}/${second}`
-  return `${base}/sheet/${path}?rev=${revision}${small ? '&small=1' : ''}`
+  return `${base}/sheet/${path}?rev=${revision}${small ? '&small=1' : ''}${clip ? '&clip=1' : ''}`
 }
 
 /** Where the preview shows the photo itself, a grey PNG, for the look on the GPU (ADR-0039). */

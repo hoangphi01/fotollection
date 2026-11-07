@@ -42,8 +42,9 @@ enum Route {
     Source(PhotoId, bool),
     /// The latest live-view frame of the connected camera, from memory (FR-062).
     CameraLive,
-    /// A collage sheet, small for the grid (FR-035).
-    Sheet(crate::collage::SheetPair, bool),
+    /// A collage sheet, small for the grid (FR-035), its photos' clipping marked (`clip=1`,
+    /// FR-098, `J`).
+    Sheet(crate::collage::SheetPair, bool, bool),
 }
 
 /// `region=x,y,w,h&px=n` from the query: `Ok(None)` without one, `Err` when it is malformed
@@ -89,9 +90,11 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
             return None;
         }
         let small = query.unwrap_or_default().split('&').any(|p| p == "small=1");
+        let clip = query.unwrap_or_default().split('&').any(|p| p == "clip=1");
         return Some(Route::Sheet(
             crate::collage::SheetPair { first, second },
             small,
+            clip,
         ));
     }
     let id = PhotoId(parts.next()?.parse().ok()?);
@@ -204,8 +207,8 @@ fn priority_of(route: &Route) -> Priority {
         | Route::Region(id, _, _)
         | Route::Mask(id)
         | Route::Source(id, _) => Priority::Interactive(Some(u64::from(id.0))),
-        Route::Sheet(_, false) => Priority::Interactive(None),
-        Route::Thumb(_) | Route::Sheet(_, true) | Route::Look(_) | Route::CameraLive => {
+        Route::Sheet(_, false, _) => Priority::Interactive(None),
+        Route::Thumb(_) | Route::Sheet(_, true, _) | Route::Look(_) | Route::CameraLive => {
             Priority::Background
         }
     }
@@ -230,10 +233,12 @@ fn answer(state: &AppState, route: Route, responder: UriSchemeResponder) {
             Err(error) => fail(responder, &error),
         },
         Route::CameraLive => {}
-        Route::Sheet(sheet, small) => match crate::collage::sheet_bytes(state, sheet, small) {
-            Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
-            Err(error) => fail(responder, &error),
-        },
+        Route::Sheet(sheet, small, clip) => {
+            match crate::collage::sheet_bytes(state, sheet, small, clip) {
+                Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
+                Err(error) => fail(responder, &error),
+            }
+        }
         Route::Mask(id) => match crate::commands::preview_mask_bytes(state, id) {
             Ok(bytes) => respond_as(responder, StatusCode::OK, bytes, Some("image/png")),
             Err(error) => fail(responder, &error),
@@ -304,7 +309,8 @@ mod tests {
                     first: PhotoId(3),
                     second: Some(PhotoId(4))
                 },
-                true
+                true,
+                false
             ))
         ));
         assert!(matches!(
@@ -314,8 +320,14 @@ mod tests {
                     first: PhotoId(3),
                     second: None
                 },
+                false,
                 false
             ))
+        ));
+        // FR-098: `J` on a sheet asks for its clipping.
+        assert!(matches!(
+            route("/sheet/3/4", Some("rev=2&clip=1")),
+            Some(Route::Sheet(_, false, true))
         ));
         assert!(route("/sheet/3/3", None).is_none());
         assert!(route("/sheet/3/4/5", None).is_none());

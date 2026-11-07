@@ -470,6 +470,12 @@ export const commands = {
 	 *  border, the frame, the stamp or outside the photo is `ERR-IPC-0026`.
 	 */
 	pickWhiteBalance: (id: PhotoId, fx: number | null, fy: number | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("pick_white_balance", { id, fx, fy })),
+	/**
+	 *  Sets the warmth and tint of the photo `id` on a sheet so the spot clicked at (`fx`, `fy`)
+	 *  of the sheet's preview turns neutral grey (FR-098, `W` in Collage mode), as one undo step;
+	 *  a point off that photo (the other photo, the card, the paper, the stamp) is `ERR-IPC-0026`.
+	 */
+	pickWhiteBalanceOnSheet: (sheet: SheetPair, id: PhotoId, fx: number | null, fy: number | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("pick_white_balance_on_sheet", { sheet, id, fx, fy })),
 	/**  A photo's develop steps, newest first; the first is where the photo is now. */
 	photoHistory: (id: PhotoId) => typedError<HistoryStep[], IpcError>(__TAURI_INVOKE("photo_history", { id })),
 	/**

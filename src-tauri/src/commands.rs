@@ -1560,6 +1560,51 @@ pub async fn photo_histogram(app: AppHandle, id: PhotoId) -> Result<HistogramVie
     .map_err(|e| IpcError::internal(e.to_string()))?
 }
 
+/// A picker's point (FR-098, `W`): fractions of the preview, each within 0–1.
+pub(crate) fn check_pick_point(fx: f32, fy: f32) -> Result<(), IpcError> {
+    if fx.is_finite() && fy.is_finite() && (0.0..=1.0).contains(&fx) && (0.0..=1.0).contains(&fy) {
+        Ok(())
+    } else {
+        Err(not_on_photo())
+    }
+}
+
+/// `ERR-IPC-0026`: the picker was clicked off the photo itself.
+pub(crate) fn not_on_photo() -> IpcError {
+    IpcError::new("photo.not_on_photo", "Click on the photo itself")
+}
+
+/// Sets `record`'s warmth and tint from `sample`, its colour before the look, so that colour
+/// turns neutral (FR-098, `W`), as one undo step; the rest of its look stays. A RAW is sampled
+/// with the warmth and tint it was developed with (FR-088): the correction adds to them. A
+/// JPEG is sampled before its look: the correction is all.
+pub(crate) fn set_white_balance_from(
+    app: &AppHandle,
+    state: &AppState,
+    record: &PhotoRecord,
+    settings: &RenderSettings,
+    sample: [f32; 3],
+) -> Result<HistoryState, IpcError> {
+    let mut look = record
+        .edits
+        .look
+        .clone()
+        .unwrap_or_else(|| settings.look.clone());
+    let (dw, dt) = fotollection_core::looks::white_balance_from(sample);
+    let raw = fotollection_core::raw::is_raw_name(&record.file_name);
+    let (bw, bt) = if raw {
+        (f32::from(look.adjust.warmth), f32::from(look.adjust.tint))
+    } else {
+        (0.0, 0.0)
+    };
+    let k = f32::from(look.amount.max(1)) / 100.0;
+    #[allow(clippy::cast_possible_truncation)] // clamped to the sliders' ±100
+    let step = |base: f32, delta: f32| (base + delta / k).round().clamp(-100.0, 100.0) as i8;
+    (look.adjust.warmth, look.adjust.tint) = (step(bw, dw), step(bt, dt));
+    let look = look.sanitized();
+    edit_photos(app, state, &[record.id], |_, e| e.look = Some(look.clone()))
+}
+
 /// Sets the photo's warmth and tint so the spot clicked at (`fx`, `fy`) of its preview turns
 /// neutral grey (FR-098, `W`), as one undo step; the rest of its look stays. A point on the
 /// border, the frame, the stamp or outside the photo is `ERR-IPC-0026`.
@@ -1571,13 +1616,7 @@ pub async fn pick_white_balance(
     fx: f32,
     fy: f32,
 ) -> Result<HistoryState, IpcError> {
-    if !(fx.is_finite() && fy.is_finite() && (0.0..=1.0).contains(&fx) && (0.0..=1.0).contains(&fy))
-    {
-        return Err(IpcError::new(
-            "photo.not_on_photo",
-            "Click on the photo itself",
-        ));
-    }
+    check_pick_point(fx, fy)?;
     tauri::async_runtime::spawn_blocking(move || {
         let state = app.state::<AppState>();
         let (record, settings, place, frame) = preview_inputs(&state, id)?;
@@ -1592,27 +1631,8 @@ pub async fn pick_white_balance(
                 state.codec.as_ref(),
             )
             .map_err(|e| shown_error(&e, &record))?
-            .ok_or_else(|| IpcError::new("photo.not_on_photo", "Click on the photo itself"))?;
-        let mut look = record
-            .edits
-            .look
-            .clone()
-            .unwrap_or_else(|| settings.look.clone());
-        let (dw, dt) = fotollection_core::looks::white_balance_from(sample);
-        // A RAW is sampled with the warmth and tint it was developed with (FR-088): the
-        // correction adds to them. A JPEG is sampled before its look: the correction is all.
-        let raw = fotollection_core::raw::is_raw_name(&record.file_name);
-        let (bw, bt) = if raw {
-            (f32::from(look.adjust.warmth), f32::from(look.adjust.tint))
-        } else {
-            (0.0, 0.0)
-        };
-        let k = f32::from(look.amount.max(1)) / 100.0;
-        #[allow(clippy::cast_possible_truncation)] // clamped to the sliders' ±100
-        let step = |base: f32, delta: f32| (base + delta / k).round().clamp(-100.0, 100.0) as i8;
-        (look.adjust.warmth, look.adjust.tint) = (step(bw, dw), step(bt, dt));
-        let look = look.sanitized();
-        edit_photos(&app, &state, &[id], |_, e| e.look = Some(look.clone()))
+            .ok_or_else(not_on_photo)?;
+        set_white_balance_from(&app, &state, &record, &settings, sample)
     })
     .await
     .map_err(|e| IpcError::internal(e.to_string()))?

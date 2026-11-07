@@ -497,6 +497,17 @@ pub struct CellSource<'a> {
     pub postcard: Option<&'a crate::library::PostcardText>,
 }
 
+/// How one cell of a sheet is drawn (FR-098): as it prints, with its clipped pixels marked
+/// (`J`), or inverted before its stamp, for the white-balance picker's test of which pixels
+/// are the photo's own (the look must be off for that cell).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum CellMark {
+    #[default]
+    Normal,
+    Clipping,
+    Inverted,
+}
+
 /// Renders a sheet. `max_long_edge` bounds the sheet's long edge for previews; `None`
 /// keeps the density of the less sharp photo, at most 600 DPI (ADR-0032). A postcard
 /// sheet (FR-073) draws its writing half after the photo, its text in `card_font` (the
@@ -513,6 +524,54 @@ pub fn render_sheet(
     turned: bool,
     max_long_edge: Option<u32>,
     card_font: Option<&ab_glyph::FontArc>,
+) -> Result<RgbImage, RenderError> {
+    render_sheet_with(
+        settings,
+        print,
+        sources,
+        turned,
+        max_long_edge,
+        card_font,
+        [CellMark::Normal; 2],
+    )
+}
+
+/// One cell's photo drawn as `mark` asks (FR-098): as it prints, its clipped pixels marked, or
+/// inverted before its stamp, for the picker to tell the photo from what is drawn on it.
+fn cell_image(
+    source: &RgbImage,
+    p: &crate::plan::RenderPlan,
+    mark: CellMark,
+) -> Result<RgbImage, RenderError> {
+    Ok(match mark {
+        CellMark::Normal => render(source, p)?,
+        CellMark::Clipping => {
+            crate::render::finish_marked(crate::render::crop_and_resize(source, p)?, p, true)
+        }
+        CellMark::Inverted => {
+            let mut photo = crate::render::crop_and_resize(source, p)?;
+            photo.data.iter_mut().for_each(|v| *v = 255 - *v);
+            crate::render::finish(photo, p)
+        }
+    })
+}
+
+/// [`render_sheet`], each cell drawn as `marks` asks (FR-098: `J` on a sheet, and the
+/// white-balance picker's test).
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::too_many_arguments
+)]
+pub fn render_sheet_with(
+    settings: &RenderSettings,
+    print: PrintSize,
+    sources: [Option<CellSource<'_>>; 2],
+    turned: bool,
+    max_long_edge: Option<u32>,
+    card_font: Option<&ab_glyph::FontArc>,
+    marks: [CellMark; 2],
 ) -> Result<RgbImage, RenderError> {
     let sizes = sources.map(|s| s.map(|s| (s.image.width, s.image.height)));
     let sheet = layout(print, sizes, turned, &settings.collage);
@@ -569,7 +628,7 @@ pub fn render_sheet(
         px(sheet.height),
         settings.border_color.rgb(),
     );
-    for ((source, cell), own) in sources.iter().zip(&sheet.cells).zip(&owns) {
+    for (((source, cell), own), mark) in sources.iter().zip(&sheet.cells).zip(&owns).zip(marks) {
         let (Some(source), Some(cell), Some(own)) = (source, cell, own) else {
             continue;
         };
@@ -581,7 +640,7 @@ pub fn render_sheet(
             stamp.font_px *= stamp_scale(print, cell.area);
             stamp.margin_px /= 2.0;
         }
-        let image = render(source.image, &p)?;
+        let image = cell_image(source.image, &p, mark)?;
         // Centred on the area's centre, so pixel rounding never shifts it.
         let cx = (cell.x + cell.area.0 as f32 / 2.0) * density - image.width as f32 / 2.0;
         let cy = (cell.y + cell.area.1 as f32 / 2.0) * density - image.height as f32 / 2.0;
