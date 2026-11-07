@@ -202,7 +202,7 @@ export function PreviewDialog({
   const zoom = useZoom(stage, `${photo?.id}:${cropping}`, oneToOneScale(geometry, previewImg))
   const sharp = useSharpRegion(previewImg, stage, zoom.view, photo?.id, revision, shownSrc === src && !before ? shownSrc : null)
   // Without zoom, dragging the photo moves the crop (Crop to fill, or no frame).
-  const cropDrag = useCropDrag(photo?.id, geometry, !cropping && compare === 'off' && !zoom.zoomed && !!geometry && !geometry.cropDisabled)
+  const cropDrag = useCropDrag(photo?.id, geometry, !picking && !cropping && compare === 'off' && !zoom.zoomed && !!geometry && !geometry.cropDisabled)
   const canDrag = compare === 'off' && !zoom.zoomed && !!geometry && !geometry.cropDisabled
   const startCrop = () => {
     setCompare('off')

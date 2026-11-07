@@ -11,7 +11,7 @@ import { frameOf, straightenedRect, type Frame } from '@/lib/crop-geometry'
  */
 export function useCropDrag(photoId: number | undefined, geometry: CropGeometry | null, enabled: boolean) {
   const [dragging, setDragging] = useState(false)
-  const drag = useRef<{ x: number; y: number; start: Frame; scale: number; amend: boolean } | null>(null)
+  const drag = useRef<{ x: number; y: number; start: Frame; scale: number; amend: boolean; moved: boolean } | null>(null)
   const pending = useRef<{ frame: Frame; amend: boolean } | null>(null)
   const busy = useRef(false)
 
@@ -63,16 +63,21 @@ export function useCropDrag(photoId: number | undefined, geometry: CropGeometry 
       const [photoCm, printCm] = [g.printWidthCm ?? 0, g.outputWidthCm ?? 0]
       const share = printCm > 0 && photoCm > 0 ? Math.min(1, photoCm / printCm) : 1
       const scale = crop.width / Math.max(1, e.target.getBoundingClientRect().width * share)
-      drag.current = { x: e.clientX, y: e.clientY, start, scale, amend: false }
+      drag.current = { x: e.clientX, y: e.clientY, start, scale, amend: false, moved: false }
       e.currentTarget.setPointerCapture(e.pointerId)
       setDragging(true)
     },
     onPointerMove: (e: PointerEvent) => {
+      const d = drag.current
+      // A press is a drag only once it moves 3 px: a click must never save a crop, nor make
+      // an undo step named *Crop* (owner, 2026-11-07, LESSONS).
+      if (d && !d.moved && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 3) return
+      if (d) d.moved = true
       const frame = moveTo(e)
       if (frame) send(frame)
     },
     onPointerUp: (e: PointerEvent) => {
-      const frame = moveTo(e)
+      const frame = drag.current?.moved ? moveTo(e) : null
       if (frame) send(frame)
       drag.current = null
       setDragging(false)

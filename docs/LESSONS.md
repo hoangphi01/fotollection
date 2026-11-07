@@ -12,6 +12,15 @@
 4. **When the app hangs, look at every thread before guessing:** `sample <pid> 3` on macOS names what each thread waits for. Rust threads all idle with a spinner on screen means the UI never asked; threads waiting on each other is a deadlock (2026-11-05).
 5. **Write the lesson here** before moving on.
 
+## 2026-11-07
+
+### A click on the photo made an undo step named *Crop*, and the white-balance picker never got its click (FR-098, FR-006)
+
+- **Seen:** after using the picker (`W`), History showed *Crop*, the picker stayed armed and the white balance did not change.
+- **Why:** the drag that moves a photo in its print crop listens on the stage and captures the pointer on any press; it saved the crop on release even when the pointer had not moved, so a plain click wrote the crop (from none to the centre: a step named *Crop*), and the capture kept the click from reaching the picture, where the picker listens.
+- **Fix:** a press becomes a crop drag only after 3 px of movement, and only a drag saves; while the picker is armed the crop drag is off (`use-crop-drag.ts`, `preview-dialog.tsx`).
+- **Rule:** a gesture that writes (a drag, a click that picks) starts only past a slop and never on a bare click; two gestures on the same surface must turn each other off, not race for the pointer.
+
 ## 2026-11-06
 
 ### The v0.13.0 release stopped on its AppStream check: a validator older than the spec we wrote to (FR-099, release)

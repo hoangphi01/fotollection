@@ -23,6 +23,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **A welcome** the first time Fotollection opens after it is installed or updated: five pages of the basics, each over a picture of the app, with *Show at every start* and *Start*; Settings → General shows it again.
 - **A histogram** of red, green, blue and light, as Lightroom's: at the top of the left column in the window layout, heading the panel in the smaller window, and in Collage mode for the picked photo. It shows the photo with its colour, never the date stamp or frame, follows a slider as you drag, and says how much is blown or blocked.
 
+### Fixed
+
+- **A click on the photo** no longer adds a *Crop* step to History when the photo was not dragged.
+
 ### Changed
 
 - **Website:** two new sections on the home page: what Fotollection is made for, in four moments (after a trip, a family album, postcards and themed sets, sharing without losing colour), and how it compares with Lightroom Classic, darktable and RawTherapee.
