@@ -192,7 +192,7 @@ jobs:
         run: |
           awk -v v="$VERSION" '
             $0 ~ "^## \\[" v "\\]" { on=1; next }
-            on && /^## \[/ { exit }
+            on && (/^## \[/ || /^---$/) { exit }
             on { print }
           ' CHANGELOG.md > section.md
           test -s section.md || { echo "CHANGELOG.md has no section for $VERSION"; exit 1; }

@@ -54,10 +54,10 @@ echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-(alpha|beta|rc)\.[0-9]+)?$'
 git rev-parse -q --verify "refs/tags/v$version" >/dev/null && { echo "tag v$version already exists" >&2; exit 1; }
 grep -q '^## \[Unreleased\]' CHANGELOG.md || { echo "CHANGELOG.md has no [Unreleased] section" >&2; exit 1; }
 # The Unreleased section must say something.
-awk '/^## \[Unreleased\]/{on=1; next} /^## \[/{on=0} on && /^- /{found=1} END{exit !found}' CHANGELOG.md \
+awk '/^## \[Unreleased\]/{on=1; next} /^## \[/ || /^---$/{on=0} on && /^- /{found=1} END{exit !found}' CHANGELOG.md \
   || { echo "CHANGELOG.md [Unreleased] is empty" >&2; exit 1; }
 # The release page shows only the Highlights (RELEASE.md §4), so they must be there.
-awk '/^## \[Unreleased\]/{on=1; next} /^## \[/{on=0} on && /^### Highlights/{found=1} END{exit !found}' CHANGELOG.md \
+awk '/^## \[Unreleased\]/{on=1; next} /^## \[/ || /^---$/{on=0} on && /^### Highlights/{found=1} END{exit !found}' CHANGELOG.md \
   || { echo "CHANGELOG.md [Unreleased] has no ### Highlights" >&2; exit 1; }
 
 if [ "$dry_run" = false ]; then
@@ -77,8 +77,21 @@ fi
 sed -i.bak -E "s/^version = \"$current\"$/version = \"$version\"/" Cargo.toml && rm Cargo.toml.bak
 cargo update --workspace --quiet
 npm version "$version" --workspace ui --no-git-tag-version --allow-same-version >/dev/null
-awk -v v="$version" -v d="$today" '
-  /^## \[Unreleased\]/ && !done { print; print ""; print "## [" v "] - " d; done=1; next }
+# A MINOR release (X.Y.0) opens its series with a rule and the title ROADMAP gives it.
+series=""
+case "$version" in
+  *.*.0)
+    minor="${version%.0}"
+    name=$(awk -F' [|] ' -v v="| v$version" 'index($0, v " |") == 1 { sub(/ [(].*/, "", $2); print $2; exit }' docs/ROADMAP.md)
+    grep -q "^## v$minor " CHANGELOG.md || series="v$minor — ${name:-?}"
+    ;;
+esac
+awk -v v="$version" -v d="$today" -v s="$series" '
+  /^## \[Unreleased\]/ && !done {
+    print; print ""
+    if (s != "") { print "---"; print ""; print "## " s; print "" }
+    print "## [" v "] - " d; done=1; next
+  }
   { print }
 ' CHANGELOG.md >CHANGELOG.md.tmp && mv CHANGELOG.md.tmp CHANGELOG.md
 # The AppStream metadata lists each release, newest first (software centres show it).

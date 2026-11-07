@@ -19,6 +19,7 @@
 - **Commits suggest the bump.** With no argument, `scripts/release.sh` proposes the next version from the [Conventional Commits](https://www.conventionalcommits.org/) since the last tag: a `feat` gives MINOR, otherwise PATCH. The owner decides.
 - **File formats are versioned separately.** Each persisted format has its own `schema_version` ([DATABASE.md](DATABASE.md), [EXTENSION.md](EXTENSION.md)). Release notes name the schemas that changed.
 - Every release has a section in [CHANGELOG.md](../CHANGELOG.md).
+- **Each MINOR series has a title (owner, 2026-11-07).** Above its first version, the CHANGELOG has a rule (`---`) and `## vX.Y — <title>` (v0.13 — The interface); `release.sh` writes it for an `X.Y.0` from that version's name in [ROADMAP.md](ROADMAP.md). The website's *What's new* shows it as a larger title under a line in the brand colour; the release notes stop at it.
 
 ## 2. Artifacts
 
@@ -102,7 +103,7 @@ Installing a new version over an old one **replaces it** and keeps settings, pro
 
 ## 6. Release checklist
 
-- [ ] CHANGELOG `Unreleased` describes the release in user terms
+- [ ] CHANGELOG `Unreleased` describes the release in user terms; an `X.Y.0` gets its series' rule and title (`release.sh` writes it from ROADMAP)
 - [ ] `scripts/ui-check.sh` passes the whole matrix ([UI_TESTS.md](UI_TESTS.md)); changed pictures approved on purpose
 - [ ] Benchmarks are within budget, and the results are logged in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log)
 - [ ] `scripts/release.sh` run, commit pushed

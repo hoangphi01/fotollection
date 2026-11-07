@@ -375,6 +375,10 @@ h3.with-logo .logo-os { height: 0.95em; }
 .changelog { margin: 24px 0 18px; max-height: 460px; overflow-y: auto; padding: 8px 28px 24px; font-size: 0.95rem; }
 .changelog h2 { font-size: 1.3rem; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line); }
 .changelog h2:first-child { border-top: 0; }
+/* A MINOR series' title ("v0.13 — The interface"): a rule in the brand colour, then a larger heading. */
+.changelog hr { border: 0; border-top: 2px solid var(--brand); margin: 32px 0 0; }
+.changelog hr:first-child { margin-top: 12px; }
+.changelog hr + h2 { font-size: 1.7rem; color: var(--brand); border-top: 0; margin-top: 10px; padding-top: 0; }
 .changelog h3 { font-size: 0.82rem; margin-top: 16px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
 .changelog ul { margin: 8px 0 0; padding-left: 1.2em; color: var(--ink-2); }
 .changelog li + li { margin-top: 6px; }
