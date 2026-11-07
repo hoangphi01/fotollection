@@ -79,6 +79,8 @@ export function PresetsCard({ photoId, revision, sheet }: PresetsCardProps) {
       >
         <FileInput data-icon="inline-start" /> {t('look.importLut')}
       </Button>
+      {/* What a LUT may be, before the dialog, so no one picks a file it refuses. */}
+      <Hint>{t('look.lutFormats')}</Hint>
       <SaveLookDialog
         open={saving}
         onAnswer={(name) => {

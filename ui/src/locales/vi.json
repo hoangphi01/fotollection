@@ -992,7 +992,8 @@
     "lutStrength": "Độ mạnh LUT",
     "vlogWarning": "LUT này dành cho video V-Log: áp lên ảnh sẽ quá đậm. Giảm độ mạnh, hoặc chọn LUT dành cho ảnh.",
     "presets": "Preset & LUT",
-    "presetsEmpty": "Look, LUT và preset của bạn hiện ở đây: lưu look của ảnh, hoặc nhập một LUT."
+    "presetsEmpty": "Look, LUT và preset của bạn hiện ở đây: lưu look của ảnh, hoặc nhập một LUT.",
+    "lutFormats": "Tệp .cube (LUMIX Lab, DaVinci Resolve, Photoshop và hầu hết phần mềm khác; 1D hoặc 3D tới 65 điểm) hoặc HaldCLUT .png, tối đa 8 MB."
   },
   "rawLook": {
     "title": "Màu RAW",

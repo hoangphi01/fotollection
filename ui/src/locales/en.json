@@ -1030,7 +1030,8 @@
     "lutStrength": "LUT strength",
     "vlogWarning": "This LUT is made for V-Log video: on a photo it comes out far too strong. Lower its strength, or choose the matching photo LUT.",
     "presets": "Presets & LUTs",
-    "presetsEmpty": "Your looks, LUTs and presets show here: save the photo's look, or import a LUT."
+    "presetsEmpty": "Your looks, LUTs and presets show here: save the photo's look, or import a LUT.",
+    "lutFormats": ".cube files (LUMIX Lab, DaVinci Resolve, Photoshop and most others; 1D or 3D up to 65 points) or a HaldCLUT .png, at most 8 MB."
   },
   "rawLook": {
     "title": "RAW colour",
