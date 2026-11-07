@@ -46,6 +46,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0040](0040-neutral-raw-colour-and-gpu-develop.md) | Neutral RAW colour by default, the camera's look as the built-in look "Like the camera's JPEG"; the RAW develop on the GPU with `wgpu` in v0.11.0 (preview, zoom, thumbnails; exports on the CPU), a CPU twin per kernel, no switch, a larger installer budget. Amends ADR-0037 and ADR-0039 | Accepted | 2026-11-05 |
 | [0041](0041-instant-previews-disk-and-memory.md) | Instant previews like Lightroom: standard previews (2048 px) on disk after the thumbnails, a cache of 5 GB, a quarter of the machine's RAM for the preview, prefetch, and a develop gate where the photo on screen goes first | Accepted | 2026-11-05 |
 | [0042](0042-axe-core-for-ui-tests-only.md) | axe-core (MPL-2.0) for the UI tests only, a development tool never bundled into the app, its installers or the website | Accepted | 2026-11-07 |
+| [0043](0043-lossless-export-f32-path-tiff.md) | Lossless export (Pro): a 32-bit float path to TIFF 16-bit or 32-bit float, learned from RawTherapee and darktable without their code; image methods chosen by measurement | Accepted | 2026-11-07 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 
