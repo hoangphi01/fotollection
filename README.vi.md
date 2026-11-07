@@ -377,7 +377,7 @@ Báo lỗi bảo mật qua [GitHub security advisory](https://github.com/hoangph
 
 ## Ủng hộ
 
-Fotollection miễn phí, do một sinh viên làm giữa giờ học và giờ làm thêm. Nếu ứng dụng giúp bạn đỡ thời gian, bạn có thể [tài trợ qua GitHub](https://github.com/sponsors/hoangphi01), hằng tháng hoặc một lần, hoặc quét mã VietQR trên [trang web](https://fotollection.org/vi/#support).
+Fotollection miễn phí, do một sinh viên làm giữa giờ học và giờ làm thêm. Nếu ứng dụng giúp bạn đỡ thời gian, bạn có thể [tài trợ qua GitHub](https://github.com/sponsors/hoangphi01) hoặc [mời cà phê qua Ko-fi](https://ko-fi.com/hoangphi01), hằng tháng hoặc một lần, hoặc quét mã VietQR trên [trang web](https://fotollection.org/vi/#support).
 
 ## Giấy phép
 

@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - **Website:** the treats of *Buy me a coffee* look like the app's choices: raised while off, the chosen one in the theme's colour and pressed in.
+- **Website and README:** support also through Ko-fi, beside GitHub Sponsors, and in GitHub's *Sponsor* button; a plain link, nothing loaded from Ko-fi.
 
 ## [0.13.2] - 2026-11-07 — Develop, part 3
 

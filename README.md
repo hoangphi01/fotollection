@@ -376,7 +376,7 @@ Report security issues through a private [GitHub security advisory](https://gith
 
 ## Support
 
-Fotollection is free, made by a student between classes and a part-time job. If it saves you time, you can [sponsor it on GitHub](https://github.com/sponsors/hoangphi01), monthly or once, or, from Vietnam, scan the VietQR code on the [website](https://fotollection.org/#support).
+Fotollection is free, made by a student between classes and a part-time job. If it saves you time, you can [sponsor it on GitHub](https://github.com/sponsors/hoangphi01) or [buy me a coffee on Ko-fi](https://ko-fi.com/hoangphi01), monthly or once, or, from Vietnam, scan the VietQR code on the [website](https://fotollection.org/#support).
 
 ## License
 
