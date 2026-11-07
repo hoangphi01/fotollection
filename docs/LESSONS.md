@@ -721,3 +721,10 @@
 - **Why:** the tone curve's 4,096 bins are even in linear light over 0–4, so one bin near black spans about three output levels, and each pixel read its bin alone.
 - **Fix:** read the curve between its two nearest bins (`Curve::at`); a dark ramp in a test failed with steps of 4 on the old code first.
 - **Rule:** a lookup table indexed in linear light is interpolated, or indexed in an encoded domain; work out how many output levels one bin spans near black before trusting it, and measure the gaps before and after.
+
+### A new block copied from an old dialog missed the depth every control has (FR-079, FR-099)
+
+- **Seen:** the Looks card's tiles were flat bordered boxes with a ring when chosen, beside raised buttons and cards (owner, 2026-11-07: "did the list of looks forget the raised style?").
+- **Why:** `LookTile` was written from the clock-match dialog's thumbnail grid, made before FR-099 gave every control its depth; the measurement checks sizes and gaps, not depth.
+- **Fix:** the tile takes the outline button's classes (`raised`, the lip, darker under the pointer), the chosen one `primary` and `pressed-in`, as every chosen choice.
+- **Rule:** a new block that the user presses copies a current button's look (STYLE_RULE §4 "Depth"), never an older component's; a chosen choice is the theme's colour pressed in, everywhere.
