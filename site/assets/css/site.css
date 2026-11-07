@@ -658,3 +658,10 @@ h2.with-icon .icon { width: 0.85em; height: 0.85em; flex: none; color: var(--bra
 @media (min-width: 960px) {
   .bento { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* How it compares (owner, 2026-11-07): Fotollection's column marked in the brand's colour. */
+.compare { margin-top: 32px; }
+.compare-table td.ours, .compare-table thead th:nth-child(2) { color: var(--brand); font-weight: 650; }
+.compare-table td, .compare-table th[scope="row"] { min-width: 150px; vertical-align: top; }
+#compare .small { margin-top: 14px; }
+@media (min-width: 640px) { .uses-cards { grid-template-columns: repeat(2, 1fr); } }

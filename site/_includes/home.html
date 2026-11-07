@@ -331,6 +331,45 @@
   </div>
 </section>
 
+{%- comment %} What it is for, in four moments, then how it compares with the tools people know (a reviewer's suggestions, owner 2026-11-07). {% endcomment %}
+<section class="section" id="uses">
+  <div class="wrap">
+    <h2>{{ t.uses_title }}</h2>
+    <p class="lead narrow">{{ t.uses_lead }}</p>
+    <div class="cards uses-cards">
+      {%- for item in t.uses_items %}
+      {%- capture icon %}icons/{{ item.icon }}.svg{% endcapture %}
+      <article class="card">{% include {{ icon }} %}<h3>{{ item.t }}</h3><p>{{ item.d }}</p></article>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section tint" id="compare">
+  <div class="wrap">
+    <h2>{{ t.compare_title }}</h2>
+    <p class="lead narrow">{{ t.compare_lead }}</p>
+    <div class="table-scroll card compare">
+      <table class="table compare-table">
+        <caption class="sr-only">{{ t.compare_caption }}</caption>
+        <thead>
+          <tr>{% for col in t.compare_cols %}<th scope="col">{{ col }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {%- for row in t.compare_rows %}
+          <tr>
+            {%- for cell in row %}
+            {%- if forloop.first %}<th scope="row">{{ cell }}</th>{% elsif forloop.index == 2 %}<td class="ours">{{ cell }}</td>{% else %}<td>{{ cell }}</td>{% endif %}
+            {%- endfor %}
+          </tr>
+          {%- endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">{{ t.compare_note }}{% include fn.html keys="fn_compare,fn_gpl" %}</p>
+  </div>
+</section>
+
 <section class="section privacy" id="privacy">
   <div class="wrap privacy-grid">
     <div>

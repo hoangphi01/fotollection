@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Website:** two new sections on the home page: what Fotollection is made for, in four moments (after a trip, a family album, postcards and themed sets, sharing without losing colour), and how it compares with Lightroom Classic, darktable and RawTherapee.
 - **Keep best** now also sets the other shots of each group aside, so the gallery keeps only the shots worth working on, from every folder; *Set aside* holds the others, ready to come back.
 - **All photos is now the Workspace:** the photos of every folder still in play, all but those set aside, which is where the best shots of several folders are edited together.
 - **The progress strip** while photos are imported or the best shots are looked for is as tall as the heads of the two side columns, its line level with theirs.
