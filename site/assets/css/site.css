@@ -545,6 +545,9 @@ h2 .fn-ref { font-size: 0.4em; }
 /* The blog is a pill as the nav's Star and Coffee, with their lip (owner, 2026-11-07). */
 .footer-links .pill { color: var(--ink); }
 .footer-links .pill:hover { text-decoration: none; }
+.footer-licence { display: inline-flex; align-items: center; gap: 12px; }
+.footer-licence img { display: block; flex: 0 0 auto; }
+.footer-licence a { white-space: nowrap; }
 .footer-base { display: flex; flex-direction: column; gap: 6px; margin-top: 28px; font-size: 0.85rem; }
 .footer-base a { color: inherit; }
 

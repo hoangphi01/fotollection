@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Website:** the footer shows the GPLv3 mark with "Fotollection is released under the GPL 3.0", as other free software does; the mark is served from the site.
+
 - **Website:** the treats of *Buy me a coffee* look like the app's choices: raised while off, the chosen one in the theme's colour and pressed in.
 - **Website and README:** support also through Ko-fi, a filled button in the theme's colour beside GitHub Sponsors, and in GitHub's *Sponsor* button; a plain link, nothing loaded from Ko-fi. The site's filled buttons now get darker under the pointer, as the app's do. The privacy policy names Ko-fi, GitHub Sponsors and the bank behind VietQR as the processors of support payments, unrelated to the app or your data.
 

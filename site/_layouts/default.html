@@ -258,7 +258,8 @@
         </ul>
       </div>
       <div class="wrap footer-base muted">
-        <span>© {{ site.time | date: '%Y' }} Fotollection · {{ t.by }} <a href="https://github.com/{{ site.author }}">@{{ site.author }}</a></span>
+        {%- comment -%} The licence's own mark, as darktable shows it (owner, 2026-11-07): the FSF's GPLv3 logo, served from this site. {%- endcomment %}
+        <span class="footer-licence"><a href="{{ site.repo_url }}/blob/main/LICENSE" title="GPLv3"><img src="{{ '/assets/img/logos/gplv3.png' | relative_url }}" width="85" height="34" alt="GPLv3" loading="lazy" decoding="async" /></a><span>{{ t.footer_released }} <a href="{{ site.repo_url }}/blob/main/LICENSE">GPL 3.0</a><br />© {{ site.time | date: '%Y' }} Fotollection · {{ t.by }} <a href="https://github.com/{{ site.author }}">@{{ site.author }}</a></span></span>
         <span>{{ t.footer_analytics }}</span>
       </div>
     </footer>

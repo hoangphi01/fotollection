@@ -565,6 +565,7 @@ en:
   footer_made: Made by a user, for users. Only someone who looks through their own photos every day knows what an ordinary person needs from a photo viewer.
   footer_report: Report a problem
   footer_license: GPL-3.0 licence
+  footer_released: Fotollection is released under the
   footer_changelog: What's new
   footer_source: Source code
   footer_blog: The author's blog
@@ -1144,6 +1145,7 @@ vi:
   footer_made: Làm bởi người dùng, cho người dùng. Chỉ người ngày nào cũng xem ảnh của chính mình mới biết người dùng bình thường cần gì từ một trình xem ảnh.
   footer_report: Báo lỗi / góp ý
   footer_license: Giấy phép GPL-3.0
+  footer_released: Fotollection được phát hành theo giấy phép
   footer_changelog: Có gì mới
   footer_source: Mã nguồn
   footer_blog: Blog của mình
