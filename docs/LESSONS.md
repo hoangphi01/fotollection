@@ -714,3 +714,10 @@
 - **Why:** the job greps the words themselves in every `.ts`/`.tsx` of `ui/src`, comments included, and nothing local ran the same grep, so the first run of it was the release.
 - **Fix:** the comment says "no HTML from text"; `check-lego` (`npm run lint`) runs CI's grep on every file before each commit.
 - **Rule:** every check CI runs on the code also runs in a local command before a push; when one fails only in CI, its twin goes into the local checks in the fix's commit.
+
+### A table in linear light is coarse where the eye is fine (FR-088)
+
+- **Seen:** RAW shadows had bands of three or four 8-bit levels (RESULT §28's "gaps"), lifted or not.
+- **Why:** the tone curve's 4,096 bins are even in linear light over 0–4, so one bin near black spans about three output levels, and each pixel read its bin alone.
+- **Fix:** read the curve between its two nearest bins (`Curve::at`); a dark ramp in a test failed with steps of 4 on the old code first.
+- **Rule:** a lookup table indexed in linear light is interpolated, or indexed in an encoded domain; work out how many output levels one bin spans near black before trusting it, and measure the gaps before and after.

@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **RAW shadows without steps:** the RAW tone curve is read between its bins, so dark gradients no longer show bands of three or four levels (35 gaps in the lifted shadows of the nine test cameras, now 1); RAW previews are made again once.
+
 ## [0.13.2] - 2026-11-07 — Develop, part 3
 
 ### Highlights

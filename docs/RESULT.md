@@ -1,6 +1,6 @@
 # Measured Results — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-05
+> **Status:** Living · **Last reviewed:** 2026-11-07
 >
 > The **latest measured numbers** for speed and memory, in one readable page. Each number links to the run that produced it.
 > This page is a summary. The append-only history of every measurement is the benchmark log in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log), and the budgets are defined in [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets). When a new run changes a number, update this page and add the row to §5 in the same commit.
@@ -642,3 +642,21 @@ The develop view's histogram is counted from the preview's resized photo (1,600 
 - **Every second pixel of every second row** is kept (`preview::HISTOGRAM_STEP`): a third of the 3 ms budget, and a curve 64 px high cannot show a gap under one per mille (a pixel of its height is 16 ‰).
 - **Counting every pixel would cross the budget,** with the look's table run on each one; the look runs on the sampled pixels only, never on a copy of the photo.
 - The stamp, frame and border are drawn after the photo is counted, so they never enter it (`fr_098_the_histogram_counts_the_photo_not_the_stamp_or_border`).
+
+## 33. RAW shadows without steps (v0.14.0, FR-088)
+
+The RAW tone curve is a table of 4,096 bins over 0–4 in linear light, so one bin spans about three 8-bit levels near black; a pixel read its bin alone, which left steps in the shadows. It is now read between its two nearest bins (`Curve::at`, `fr_088_a_dark_ramp_has_no_steps`: a dark ramp had steps of 4 levels, now 1 at most). Same run as §28 (`raw_depth` on the nine CC0 samples, release build, REF-MAC loaded with 9.6 GB of swap in use, 2026-11-07), before and after the change; the dark pixels' distinct levels / standard deviation / empty bins after *Shadows +100*, made the two ways of §28:
+
+| Sample | By the look's table, before | after | In linear light, before | after |
+|---|---|---|---|---|
+| Canon 5D Mark IV | 38 / 11.8 / 11 | **49 / 10.8 / 0** | 58 / 10.8 / 4 | **60 / 10.3 / 0** |
+| Canon R10 | 52 / 14.4 / 0 | 53 / 13.9 / 0 | 67 / 12.0 / 0 | 65 / 11.7 / 0 |
+| Nikon D750 | 53 / 14.3 / 0 | 53 / 13.9 / 0 | 67 / 14.4 / 0 | 67 / 14.1 / 0 |
+| Ricoh GR III | 43 / 9.7 / 9 | **49 / 9.1 / 0** | 62 / 8.1 / 5 | **64 / 7.9 / 1** |
+| Sony A7 III | 17 / 4.4 / 6 | **21 / 3.7 / 0** | 15 / 2.8 / 0 | 14 / 2.5 / 0 |
+
+- **The gaps are gone** where there were any (35 across the nine, now 1: 26 → 0 by the look's table, 9 → 1 in linear light); the X-T3, E-M10 III, GX9 and S5 had none and are unchanged within one level.
+- **The highlights are unchanged** (the same levels and spread as §28): interpolation only matters where one bin spans more than a level.
+- **The cost:** one slider step 4.3–12.9 ms (before 4.3–11.2 in the same run), within NFR-002's 50 ms.
+- **Not changed:** the encode table (65,536 steps, a twentieth of a level near black; the identity curve in the test shows no gap) and `raw_finish`'s curves, whose 4,096 bins are in the encoded domain (a sixteenth of a level each).
+- The standard previews' version went to 3 so RAW previews are made again (`preview::STANDARD_VERSION`).
