@@ -728,3 +728,10 @@
 - **Why:** `LookTile` was written from the clock-match dialog's thumbnail grid, made before FR-099 gave every control its depth; the measurement checks sizes and gaps, not depth.
 - **Fix:** the tile takes the outline button's classes (`raised`, the lip, darker under the pointer), the chosen one `primary` and `pressed-in`, as every chosen choice.
 - **Rule:** a new block that the user presses copies a current button's look (STYLE_RULE §4 "Depth"), never an older component's; a chosen choice is the theme's colour pressed in, everywhere.
+
+### The colour cards jumped on their own: a list and a look loaded after every mount (FR-079)
+
+- **Seen:** the colour cards under the Looks card (Faves, the folded Tools) sometimes jumped with nothing touched (owner, 2026-11-07).
+- **Why:** two loads after each mount. The Looks grid started empty and grew three rows once `list_looks` answered, pushing every card below it; and `PhotoLookCards` drew nothing until `get_photo_look` answered, so the whole column below it went up and came back. Both ran again whenever the cards mounted again: a tab switched (Edit ↔ Print), a sheet's photo picked or let go (two branches of the tree), a preview reopened. `useLiveQuery` keeps the last answer within one mount, not across mounts.
+- **Fix:** the last list of looks and the last look of each photo or sheet are kept by their modules (bounded, 256 looks), the first frame of a new mount drawn from them, Rust's answer replacing it.
+- **Rule:** a card whose height depends on an answer from Rust starts from the last answer it had, also after a remount; check every way it can mount again (tabs, picks, branches, reopening), not only the first opening.

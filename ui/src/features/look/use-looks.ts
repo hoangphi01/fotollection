@@ -5,13 +5,21 @@ import { commands, type LookEntry, type PhotoId } from '@/ipc/bindings'
 
 /**
  * The library of looks (FR-079): the built-in ones, then this machine's saved ones. The last
- * list stays while a new one loads, so the grid never empties (STYLE_RULE §4).
+ * list stays while a new one loads, also across mounts (a tab switched, a photo picked), so
+ * the grid never empties and the cards under it never jump (STYLE_RULE §4).
  */
+/** The last list, so a card mounted again draws at once, its height already right. */
+let lastLooks: LookEntry[] = []
+
 export function useLooks() {
-  const [looks, setLooks] = useState<LookEntry[]>([])
+  const [looks, setLooksState] = useState<LookEntry[]>(lastLooks)
+  const setLooks = useCallback((next: LookEntry[]) => {
+    lastLooks = next
+    setLooksState(next)
+  }, [])
   const reload = useCallback(() => {
     void commands.listLooks().then((r) => r.status === 'ok' && setLooks(r.data))
-  }, [])
+  }, [setLooks])
   useEffect(reload, [reload])
   return { looks, setLooks, reload }
 }

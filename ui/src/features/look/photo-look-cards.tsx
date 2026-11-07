@@ -33,12 +33,41 @@ type PhotoLookCardsProps = {
  * once the photo has its own look, makes it the setting for every photo. A camera RAW first
  * gets how it is finished (FR-072, `RawLookCard`).
  */
+/**
+ * The last look read for each photo (or sheet), so cards mounted again draw at once instead of
+ * vanishing until Rust answers, which moved every card below them (owner, 2026-11-07). Owned by
+ * this module, at most `KEPT` entries (a few KB), the oldest dropped first; only a first frame
+ * is drawn from it, Rust's answer always replaces it, so an id another project reuses is right
+ * a moment later. Emptied with the webview.
+ */
+const lastLook = new Map<string, { look: PhotoLook; differ: boolean }>()
+const KEPT = 256
+const keep = (key: string, value: { look: PhotoLook; differ: boolean }) => {
+  lastLook.delete(key)
+  lastLook.set(key, value)
+  if (lastLook.size > KEPT) {
+    const oldest = lastLook.keys().next().value
+    if (oldest !== undefined) lastLook.delete(oldest)
+  }
+}
+
 export function PhotoLookCards({ photoId, sheet, grid = true, revision, onAppliedToAll }: PhotoLookCardsProps) {
   const { t } = useTranslation()
-  const [current, setCurrent] = useState<PhotoLook | null>(null)
-  // On a whole sheet: whether its photos' looks differ now, so the note can say one is coming.
-  const [differ, setDiffer] = useState(false)
   const sheetKey = sheet?.join(',') ?? ''
+  const cacheKey = sheetKey || String(photoId)
+  const [current, setCurrent] = useState<PhotoLook | null>(lastLook.get(cacheKey)?.look ?? null)
+  // On a whole sheet: whether its photos' looks differ now, so the note can say one is coming.
+  const [differ, setDiffer] = useState(lastLook.get(cacheKey)?.differ ?? false)
+  // Another photo or sheet: its kept look at once, while Rust's answer is on its way.
+  const [shownKey, setShownKey] = useState(cacheKey)
+  if (shownKey !== cacheKey) {
+    setShownKey(cacheKey)
+    const kept = lastLook.get(cacheKey)
+    if (kept) {
+      setCurrent(kept.look)
+      setDiffer(kept.differ)
+    }
+  }
   // Local changes so far: an older answer must not put an older look back (STYLE_RULE §4).
   const changes = useRef(0)
 
@@ -53,7 +82,9 @@ export function PhotoLookCards({ photoId, sheet, grid = true, revision, onApplie
       if (first === undefined) return
       setCurrent(first)
       const key = (l: PhotoLook) => JSON.stringify(fullLook(l.look))
-      setDiffer(looks.some((l) => key(l) !== key(first)))
+      const apart = looks.some((l) => key(l) !== key(first))
+      setDiffer(apart)
+      keep(sheetKey || String(photoId), { look: first, differ: apart })
     })
     return () => {
       live = false
