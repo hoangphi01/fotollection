@@ -907,11 +907,11 @@ for (const language of ['en', 'vi']) {
       await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
       await settle(page)
       await save(page, `postcard-night-${suffix}`)
-      // 11c. For the manual (FR-077): the typed address, "Use for N postcards" under it; then
-      // a card without an address, and the recent addresses offered on it.
+      // 11c. For the manual (FR-077): the typed address, the note with "Use for them" under it;
+      // then the recent addresses, listed on every card (v0.13.2).
       const textCard = (pattern) =>
         page.locator('[role="dialog"] section', { has: page.getByText(pattern) }).first()
-      const apply = textCard(/^(Use for|Dùng cho) \d+/)
+      const apply = textCard(/^(Use for them|Dùng cho các tấm đó)$/)
       if (await apply.count()) {
         await apply.scrollIntoViewIfNeeded()
         await settle(page)

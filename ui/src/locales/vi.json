@@ -854,13 +854,15 @@
   },
   "postcard": {
     "reuse": {
-      "blankAll_other": "Dùng cho {{count}} bưu thiếp chưa có địa chỉ",
-      "blankTicked_other": "Dùng cho {{count}} bưu thiếp đang chọn chưa có địa chỉ",
-      "overwriteAll_other": "· hoặc cho cả {{count}} tấm khác, thay địa chỉ của chúng",
-      "overwriteTicked_other": "· hoặc cho cả {{count}} tấm đang chọn, thay địa chỉ của chúng",
+      "blankAll_other": "{{count}} bưu thiếp chưa có địa chỉ.",
+      "blankTicked_other": "{{count}} bưu thiếp đang chọn chưa có địa chỉ.",
       "done_other": "Đã dùng cho {{count}} bưu thiếp · Cmd/Ctrl+Z để hoàn tác",
       "recent": "Địa chỉ gần đây",
-      "forget": "Quên địa chỉ này"
+      "forget": "Quên địa chỉ này",
+      "fill": "Dùng cho các tấm đó",
+      "replace_other": "Dùng cho cả {{count}} tấm",
+      "differAll_other": "{{count}} bưu thiếp khác đã có địa chỉ riêng.",
+      "differTicked_other": "{{count}} bưu thiếp đang chọn đã có địa chỉ riêng."
     },
     "cut": "Chữ không in hết",
     "cutHint": "Chữ dài hơn các dòng kẻ, phần thừa sẽ không được in: rút ngắn lại, hoặc chọn cỡ chữ nhỏ hơn.",

@@ -838,8 +838,8 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P1 (owner's request 2026-11-04).** A set of postcards often goes to one person, and typing the same address on every card is the slow part. In the *Postcard text* card, in the panel and in a postcard's preview:
 
-- **Use for N postcards without an address**, under the address once it is typed: it goes onto every other postcard shown that has no address, one undoable step. **Or for all N other postcards** replaces theirs too. With postcards ticked in select mode, only the ticked ones get it. The counts come from Rust (`postcard_text_gaps`) and follow every edit.
-- **Recent addresses** on a card with none: the last 8 addresses typed on this machine, newest first, each a click to put it on the card and × to forget it. Kept in `settings.json` (`recentAddresses`, settings v13), checked like a typed address when saved and loaded, never in a project file or a bundle, never in the error log.
+- **Use for them** (v0.13.2: a note with two buttons, so the words wrap in the panel; before, two link-styled lines that were cut), under the address once it is typed: it goes onto every other postcard shown that has no address, one undoable step. **Or for all N other postcards** replaces theirs too. With postcards ticked in select mode, only the ticked ones get it. The counts come from Rust (`postcard_text_gaps`) and follow every edit.
+- **Recent addresses** on every card (since v0.13.2, owner 2026-11-07: before, they showed only while the card had none, so the list went after one pick), the one on the card marked: the last 8 addresses typed on this machine, newest first, each a click to put it on the card and × to forget it. Kept in `settings.json` (`recentAddresses`, settings v13), checked like a typed address when saved and loaded, never in a project file or a bundle, never in the error log.
 - An address put on a card keeps the card's message.
 
 ### FR-078 — The photo at a glance in the preview

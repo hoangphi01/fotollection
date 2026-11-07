@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CopyCheck, History } from 'lucide-react'
+import { CopyCheck, History, MapPin } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Field, Hint, RowList } from '@/components/forms/field'
+import { Field, Hint } from '@/components/forms/field'
+import { ListRow, ListRows } from '@/components/forms/list-row'
+import { PanelNote } from '@/components/layout/panel-note'
 import { Button } from '@/components/ui/button'
 import { commands, type CullFilter, type PhotoId, type PostcardPart } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
@@ -36,15 +38,18 @@ type PostcardTextReuseProps = {
 }
 
 /**
- * Typing a card's address once for a whole set (FR-077): under the field, "Use for N
- * postcards without an address" once it is typed, one undo step; and while a card has none,
- * the addresses typed on this machine's last cards, to pick from as the cards are flipped.
+ * Typing a card's address once for a whole set (FR-077): under the field, once it is typed, a
+ * note on the other cards with *Use for them* (those without one) and *Use for all N*
+ * (replacing theirs), one undo step; and always, the addresses typed on this machine's last
+ * cards, the one on this card marked, to pick from as the cards are flipped.
  */
 export function PostcardTextReuse({ filter, photo, part, text, ticked, revision, onPick }: PostcardTextReuseProps) {
   const { t } = useTranslation()
   const subject = JSON.stringify({ filter, photo, part, ticked } satisfies Subject)
   const gaps = useLiveQuery(text ? subject : null, revision, loadGaps).current
-  const remembered = useLiveQuery(text ? null : 'recent', revision, loadRecent).data ?? []
+  // The addresses stay listed whatever this card holds (owner, 2026-11-07: "the list showed
+  // once, then went"): the one on this card is marked, another is one click away.
+  const remembered = useLiveQuery(part === 'address' ? 'recent' : null, revision, loadRecent).data ?? []
   const [forgotten, setForgotten] = useState<readonly string[]>([])
   const [done, setDone] = useState<{ photo: PhotoId; count: number } | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -62,57 +67,60 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
     await commands.forgetAddress(address)
   }
 
-  if (text) {
-    const blank = gaps?.blank ?? 0
-    const differ = gaps?.differ ?? 0
-    return (
-      <>
-        {(blank > 0 || differ > 0) && (
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
-            {blank > 0 && (
-              <Button variant="link" size="xs" className="px-0" onClick={() => void apply(false)}>
-                <CopyCheck />
-                {t(`postcard.reuse.blank${scope}`, { count: blank })}
-              </Button>
-            )}
-            {differ > 0 && (
-              <Button
-                variant="link"
-                size="xs"
-                className="px-0 text-muted-foreground"
-                onClick={() => void apply(true)}
-              >
-                {t(`postcard.reuse.overwrite${scope}`, { count: blank + differ })}
-              </Button>
-            )}
-          </div>
-        )}
-        {done?.photo === photo && done.count > 0 && (
-          <Hint>{t('postcard.reuse.done', { count: done.count })}</Hint>
-        )}
-        {error && <Hint className="text-destructive">{error}</Hint>}
-      </>
-    )
-  }
-  if (part !== 'address' || recent.length === 0) return null
-  return (
-    <Field label={<span className="flex items-center gap-1.5"><History className="size-3.5" />{t('postcard.reuse.recent')}</span>}>
-      <RowList>
-        {recent.map((address) => (
-          <li key={address} className="flex items-center gap-1">
-            <Button
-              variant="outline"
-              size="sm"
-              className="min-w-0 flex-1 justify-start font-normal"
-              data-hint={address}
-              onClick={() => onPick(address)}
-            >
-              <span className="truncate">{address.replaceAll('\n', ', ')}</span>
+  const blank = text ? (gaps?.blank ?? 0) : 0
+  const differ = text ? (gaps?.differ ?? 0) : 0
+  // The other cards, as a note with its two choices as buttons (STYLE_RULE §4: a note that
+  // offers an action), so the words wrap in an 18 rem panel instead of being cut.
+  const reuse = (blank > 0 || differ > 0) && (
+    <PanelNote
+      icon={<CopyCheck />}
+      action={
+        <div className="flex flex-wrap gap-2">
+          {blank > 0 && (
+            <Button size="sm" onClick={() => void apply(false)}>
+              {t('postcard.reuse.fill')}
             </Button>
+          )}
+          {differ > 0 && (
+            <Button variant="outline" size="sm" onClick={() => void apply(true)}>
+              {t('postcard.reuse.replace', { count: blank + differ })}
+            </Button>
+          )}
+        </div>
+      }
+    >
+      {blank > 0 ? t(`postcard.reuse.blank${scope}`, { count: blank }) : t(`postcard.reuse.differ${scope}`, { count: differ })}
+    </PanelNote>
+  )
+  const list = part === 'address' && recent.length > 0 && (
+    <Field
+      label={
+        <span className="flex items-center gap-1.5">
+          <History className="size-3.5" />
+          {t('postcard.reuse.recent')}
+        </span>
+      }
+    >
+      <ListRows>
+        {recent.map((address) => (
+          <div key={address} className="flex items-center gap-1">
+            <div className="min-w-0 flex-1">
+              <ListRow icon={<MapPin />} chosen={address === text.trim()} onClick={() => onPick(address)}>
+                {address.replaceAll('\n', ', ')}
+              </ListRow>
+            </div>
             <RemoveButton iconOnly label={t('postcard.reuse.forget')} onClick={() => void forget(address)} />
-          </li>
+          </div>
         ))}
-      </RowList>
+      </ListRows>
     </Field>
+  )
+  return (
+    <>
+      {reuse}
+      {done?.photo === photo && done.count > 0 && <Hint>{t('postcard.reuse.done', { count: done.count })}</Hint>}
+      {error && <Hint className="text-destructive">{error}</Hint>}
+      {list}
+    </>
   )
 }

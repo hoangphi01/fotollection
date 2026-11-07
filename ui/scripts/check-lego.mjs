@@ -84,7 +84,6 @@ const RULES = [
     test: /variant="link"/,
     say: 'a link-styled button: use a Button (outline, sm) or a ToolbarButton',
     except: {
-      'features/collage/postcard-text-reuse.tsx': 'its two inline choices predate the rule; to move to Buttons with the next change there',
     },
   },
   {

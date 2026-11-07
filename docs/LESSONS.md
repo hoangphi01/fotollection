@@ -665,3 +665,10 @@
 - **Why:** the folder list's rows are its own (they drag), and `ListRow` took its gap, icon and text size from the small `Button`; the table in §4 fixed only the room between rows.
 - **Fix:** one measure, `ROW_LAYOUT` and `ROW_ICON` in `list-row.tsx`, taken by `ListRow` and by the folder list's rows; the §4 table now gives the row's inside as well.
 - **Rule:** a block written twice shares its classes from one constant, and the §4 table states every measure a reader would compare, inside the row as well as between rows.
+
+### A list shown only while a field is empty vanishes after its first use (FR-077)
+
+- **Seen:** on a postcard, *Recent addresses* showed once: a click put the address on the card, and the list was gone; on a card that had an address it never showed. Under the address, the two link-styled choices ("Use for 515 postcards without an address", "or for all 517 other postcards…") were cut at the panel's edge (owner, 2026-11-07).
+- **Why:** the list was drawn only while the address was empty, so picking from it hid it; the choices were link buttons, which never wrap, and `check-lego` still let this one file use them.
+- **Fix:** the addresses are listed on every card as `ListRow`s, the card's own marked; the choices are a `PanelNote` with two buttons, *Use for them* and *Use for all N*, its words wrapping in the panel; the file's `check-lego` exception is gone.
+- **Rule:** a list to pick from stays while its pick is shown, marking it, so the user can change it. An exception in `check-lego` is closed the next time its file changes, as its reason promised.
