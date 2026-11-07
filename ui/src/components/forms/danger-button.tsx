@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { FilterX, RotateCcw, Trash2, X, type LucideIcon } from 'lucide-react'
+import { FilterX, MessageSquareWarning, RotateCcw, Trash2, X, type LucideIcon } from 'lucide-react'
 import type { MouseEventHandler } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -71,4 +71,18 @@ export function RemoveButton(props: Omit<DangerButtonProps, 'kind'> & { kind?: E
 /** Brings a default back. */
 export function ResetButton(props: Omit<DangerButtonProps, 'kind'>) {
   return <DangerButton {...props} kind="reset" />
+}
+
+/**
+ * *Report a problem* (FR-069): the one red button that removes nothing, by the owner's choice
+ * (2026-11-06, as on the website): the same red, lip and deeper hover as the others, the
+ * width of its column, from here so its look is never written twice.
+ */
+export function ReportButton({ label, onClick }: { label: string; onClick: MouseEventHandler<HTMLButtonElement> }) {
+  return (
+    <Button variant="destructive" size="sm" className="w-full" onClick={onClick}>
+      <MessageSquareWarning data-icon="inline-start" aria-hidden />
+      {label}
+    </Button>
+  )
 }

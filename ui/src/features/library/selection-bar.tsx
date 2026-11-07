@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Archive, CheckCheck, ClipboardPaste, MapPin, ShoppingBasket, Undo2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '@/components/ui/button'
+import { ToolbarButton } from '@/components/forms/toolbar-button'
 import type { Queue, QueueView } from '@/ipc/bindings'
 import { RemoveButton } from '@/components/forms/danger-button'
 
@@ -30,39 +30,29 @@ type SelectionBarProps = {
 export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, onDatePlace, onPasteSettings, onSelectAll, onClear }: SelectionBarProps) {
   const { t } = useTranslation()
   const none = count === 0
+  // One line of a fixed height (STYLE_RULE §4: a toolbar never wraps, nothing jumps): the
+  // actions are toolbar buttons that keep only their icons in a narrow window.
   return (
-    <div className="flex min-h-[45px] flex-wrap items-center gap-2 border-b bg-primary/5 px-4 py-1.5 text-sm">
-      <span className="font-medium tabular-nums">{t(unit === 'sheets' ? 'select.countSheets' : 'select.count', { count })}</span>
+    <div className="@container flex h-12 shrink-0 items-center gap-2 overflow-x-auto overflow-y-hidden border-b bg-primary/5 px-4 text-sm [scrollbar-width:thin] [&>*]:shrink-0">
+      <span className="font-medium whitespace-nowrap tabular-nums">{t(unit === 'sheets' ? 'select.countSheets' : 'select.count', { count })}</span>
       {elsewhere > 0 && (
-        <span className="text-xs text-muted-foreground tabular-nums">{t('select.elsewhere', { count: elsewhere })}</span>
+        <span className="text-xs whitespace-nowrap text-muted-foreground tabular-nums">{t('select.elsewhere', { count: elsewhere })}</span>
       )}
-      <div className="ml-auto flex flex-wrap gap-1.5">
+      <div className="ml-auto flex items-center gap-2">
         {view !== 'print' && (
-          <Button size="sm" disabled={none} onClick={() => onMove('print')}>
-            <ShoppingBasket data-icon="inline-start" /> {t('select.toBasket')}
-          </Button>
+          <ToolbarButton icon={<ShoppingBasket />} label={t('select.toBasket')} labelFrom="5xl" variant="default" data-hint={t('select.toBasket')} disabled={none} onClick={() => onMove('print')} />
         )}
         {view !== 'aside' && (
-          <Button size="sm" variant="outline" disabled={none} onClick={() => onMove('aside')}>
-            <Archive data-icon="inline-start" /> {t('select.toAside')}
-          </Button>
+          <ToolbarButton icon={<Archive />} label={t('select.toAside')} labelFrom="5xl" data-hint={t('select.toAside')} disabled={none} onClick={() => onMove('aside')} />
         )}
         {view !== 'gallery' && (
-          <Button size="sm" variant="outline" disabled={none} onClick={() => onMove(null)}>
-            <Undo2 data-icon="inline-start" /> {t('select.toGallery')}
-          </Button>
+          <ToolbarButton icon={<Undo2 />} label={t('select.toGallery')} labelFrom="5xl" data-hint={t('select.toGallery')} disabled={none} onClick={() => onMove(null)} />
         )}
-        <Button size="sm" variant="outline" disabled={none} onClick={onDatePlace}>
-          <MapPin data-icon="inline-start" /> {t('places.set')}
-        </Button>
+        <ToolbarButton icon={<MapPin />} label={t('places.set')} labelFrom="5xl" data-hint={t('places.set')} disabled={none} onClick={onDatePlace} />
         {onPasteSettings && (
-          <Button size="sm" variant="outline" disabled={none} onClick={onPasteSettings}>
-            <ClipboardPaste data-icon="inline-start" /> {t('develop.pasteToTicked')}
-          </Button>
+          <ToolbarButton icon={<ClipboardPaste />} label={t('develop.pasteToTicked')} labelFrom="5xl" data-hint={t('develop.pasteToTicked')} disabled={none} onClick={onPasteSettings} />
         )}
-        <Button size="sm" onClick={onSelectAll}>
-          <CheckCheck data-icon="inline-start" /> {t('select.all')}
-        </Button>
+        <ToolbarButton icon={<CheckCheck />} label={t('select.all')} labelFrom="5xl" variant="default" data-hint={t('select.all')} onClick={onSelectAll} />
         <RemoveButton kind="clear" disabled={none} label={t('select.clear')} onClick={onClear} />
       </div>
     </div>

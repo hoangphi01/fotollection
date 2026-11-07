@@ -60,11 +60,15 @@ export function GroupsView({ bestShots, thumbVersions, generation, revision }: G
             {t('bestShot.failed', { count: finished.failed })}
           </span>
         )}
-        {/* Where the photos go (owner, 2026-11-07): said before the button, not after. */}
-        <span className="ml-auto truncate">{t('bestShot.where')}</span>
+        {/* Where the photos go (owner, 2026-11-07): said before the button, not after; in a
+            narrow window it is cut, never pushing the button out, and the hint says it whole. */}
+        <span className="ml-auto min-w-0 truncate" data-hint={t('bestShot.where')}>
+          {t('bestShot.where')}
+        </span>
         <Button
           size="sm"
           variant="outline"
+          className="shrink-0"
           data-hint={t('bestShot.keepAllHint')}
           disabled={clear.length === 0}
           onClick={() => void keepBest(clear.map((g) => g.id))}

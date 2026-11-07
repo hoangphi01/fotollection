@@ -25,7 +25,8 @@ export function VersionBadge({ version }: { version: string }) {
       data-hint={t('about.versions')}
       onClick={() => showSettings('whatsNew')}
     >
-      <Badge variant="outline" className="cursor-pointer hover:border-primary hover:text-primary">
+      {/* A badge never reacts to the pointer (STYLE_RULE §4, Badges): the button around it does. */}
+      <Badge variant="outline">
         v{version}
       </Badge>
     </button>
@@ -75,9 +76,7 @@ function Release({ release: r, current, open, onToggle }: ReleaseProps) {
           <span className="text-sm font-semibold tabular-nums">v{r.version}</span>
           {r.date && <span className="text-xs text-muted-foreground tabular-nums">{r.date}</span>}
           {current && (
-            <Badge variant="outline" className="border-primary text-primary">
-              {t('about.current')}
-            </Badge>
+            <Badge>{t('about.current')}</Badge>
           )}
           {r.notes.length > 0 && (
             <Button variant="outline" size="xs" className="ml-auto" aria-expanded={open} onClick={onToggle}>

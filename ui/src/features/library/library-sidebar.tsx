@@ -32,6 +32,8 @@ import { ModeSwitch } from '@/features/modes/mode-switch'
 import { useFolderDrag } from './use-folder-drag'
 import { showSettings } from '@/features/settings-window/use-settings-window'
 import { RemoveButton } from '@/components/forms/danger-button'
+import { FieldLabel } from '@/components/forms/field'
+import { PanelNote } from '@/components/layout/panel-note'
 import { CHOSEN_ROW, ROW_HOVER, ROW_ICON, ROW_LAYOUT } from '@/components/forms/list-row'
 
 type LibrarySidebarProps = {
@@ -138,13 +140,15 @@ export function LibrarySidebar({
         </Button>
       </div>
       <Separator />
-      <div className="px-4 pt-3">
+      {/* Every block 12 px in from the edge and 12 px apart, so the mode switch, the button
+          groups and the chosen row's outline line up (STYLE_RULE §4, three spacings). */}
+      <div className="px-3 pt-3">
         <ModeSwitch />
       </div>
       {/* The .fotollection document (FR-023). */}
-      <div className="space-y-1.5 px-4 pt-4 pb-3">
+      <div className="space-y-1.5 px-3 pt-3 pb-3">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-muted-foreground uppercase">{t('project.title')}</span>
+          <FieldLabel>{t('project.title')}</FieldLabel>
           <ButtonGroup ariaLabel={t('project.title')}>
             {(
               [
@@ -179,17 +183,28 @@ export function LibrarySidebar({
             />
           )}
         </p>
+        {/* A note with its action, never a link-styled line (STYLE_RULE §4). */}
         {project.document.missing.length > 0 && (
-          <button type="button" onClick={onShowRelink} className="flex items-center gap-1.5 text-xs text-warning hover:underline">
-            <TriangleAlert className="size-3.5" />
+          <PanelNote
+            icon={<TriangleAlert />}
+            action={
+              <Button size="sm" onClick={onShowRelink}>
+                {t('project.locate')}
+              </Button>
+            }
+          >
             {t('project.missing', { count: project.document.missing.length })}
-          </button>
+          </PanelNote>
         )}
-        {project.error && <p className="text-xs text-destructive">{project.error}</p>}
+        {project.error && (
+          <PanelNote danger icon={<TriangleAlert />}>
+            {project.error}
+          </PanelNote>
+        )}
       </div>
       <Separator />
-      <div className="flex items-center justify-between px-4 pt-4 pb-2">
-        <span className="text-xs font-medium text-muted-foreground uppercase">{t('library.title')}</span>
+      <div className="flex items-center justify-between px-3 pt-3 pb-2">
+        <FieldLabel>{t('library.title')}</FieldLabel>
         <ButtonGroup ariaLabel={t('library.title')}>
           {folders.length > 1 && (
             <Button
@@ -227,7 +242,7 @@ export function LibrarySidebar({
           </Button>
         </ButtonGroup>
       </div>
-      <ScrollArea className="flex-1 px-2">
+      <ScrollArea className="flex-1 px-3">
         {folders.length === 0 ? (
           <p className="px-2 py-1 text-xs text-muted-foreground">{t('library.noFolders')}</p>
         ) : (
@@ -321,11 +336,11 @@ export function LibrarySidebar({
         )}
       </ScrollArea>
       {lastImport && lastImport.fromXmp > 0 && (
-        <p className="border-t px-4 py-2 text-xs text-muted-foreground">{t('library.fromXmp', { count: lastImport.fromXmp })}</p>
+        <p className="border-t px-3 py-2 text-xs text-muted-foreground">{t('library.fromXmp', { count: lastImport.fromXmp })}</p>
       )}
       {lastImport && lastImport.rejectedTotal > 0 && (
         <p
-          className="border-t px-4 py-2 text-xs text-muted-foreground"
+          className="border-t px-3 py-2 text-xs text-muted-foreground"
           data-hint={lastImport.rejected
             .map((r) => `${r.fileName}: ${errorText({ code: r.code, message: r.code, err: r.err })}`)
             .join('\n')}
@@ -333,8 +348,8 @@ export function LibrarySidebar({
           {t('library.skipped', { count: lastImport.rejectedTotal })}
         </p>
       )}
-      <div className="flex items-center justify-between gap-3 px-4 py-3">
-        <p className="text-2xs text-muted-foreground">{t('library.dropTip')}</p>
+      <div className="flex items-center justify-between gap-2 px-3 py-3">
+        <p className="text-xs text-muted-foreground">{t('library.dropTip')}</p>
         <ThemeSwitch />
       </div>
     </aside>

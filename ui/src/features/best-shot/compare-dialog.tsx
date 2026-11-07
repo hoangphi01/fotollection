@@ -106,7 +106,7 @@ export function CompareDialog({
                     </span>
                   )}
                 </figcaption>
-                <dl className="grid grid-cols-[5.5rem_1fr] items-center gap-x-2 gap-y-1 text-2xs text-muted-foreground">
+                <dl className="grid grid-cols-[5.5rem_1fr] items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                   {METRICS.filter((m) => m !== 'eyes' || score.faces > 0).map((m) => (
                     <div key={m} className="contents">
                       <dt>{t(`bestShot.metric.${m}`)}</dt>

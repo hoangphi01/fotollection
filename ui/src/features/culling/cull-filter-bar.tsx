@@ -3,7 +3,7 @@ import { ListFilter, Star } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Field, Stack } from '@/components/forms/field'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
-import { Button } from '@/components/ui/button'
+import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
@@ -13,7 +13,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { CullFilter, FlagFilter, KindFilter } from '@/ipc/bindings'
-import { cn } from '@/lib/utils'
 import { RemoveButton } from '@/components/forms/danger-button'
 
 const FLAGS: FlagFilter[] = ['all', 'picks', 'unflagged', 'rejects', 'unusual']
@@ -41,15 +40,14 @@ export function CullFilterBar({ filter, onChange }: CullFilterBarProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className={cn(active > 0 && 'border-primary text-primary')}
+        {/* A toolbar button as Select beside it, "on" the same way: filled (STYLE_RULE §4). */}
+        <ToolbarButton
+          icon={<ListFilter />}
+          label={active > 0 ? t('culling.filtersOn', { count: active }) : t('culling.filters')}
+          variant={active > 0 ? 'default' : 'outline'}
+          aria-pressed={active > 0}
           data-hint={t('culling.filtersHint')}
-        >
-          <ListFilter data-icon="inline-start" />
-          {active > 0 ? t('culling.filtersOn', { count: active }) : t('culling.filters')}
-        </Button>
+        />
       </PopoverTrigger>
       <PopoverContent align="end" className="w-panel">
         <Stack>

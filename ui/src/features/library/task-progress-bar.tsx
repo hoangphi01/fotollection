@@ -11,7 +11,7 @@ export function TaskProgressBar({ progress }: { progress: TaskProgress }) {
   const percent = Math.round((progress.done / progress.total) * 100)
 
   return (
-    <NoticeCard className="flex items-center gap-3" role="status">
+    <NoticeCard className="flex items-center gap-2" role="status">
       <LoaderCircle className="size-3.5 shrink-0 animate-spin text-muted-foreground" />
       <span className="shrink-0 text-xs font-medium">{t(`task.${progress.task}` as const)}</span>
       <Progress value={percent} className="h-1.5 flex-1" />

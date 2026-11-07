@@ -93,14 +93,12 @@ export const GroupStrip = memo(function GroupStrip({
                 />
               )}
               {rank === 0 && !tooClose && (
-                <span className="absolute right-1 bottom-1 rounded bg-primary px-1.5 py-0.5 text-2xs font-medium text-primary-foreground">
-                  {t('bestShot.best')}
-                </span>
+                <Badge className="absolute right-1 bottom-1 text-2xs">{t('bestShot.best')}</Badge>
               )}
               {score.closedEyes > 0 && (
                 <span
                   className="absolute top-1 right-1 rounded bg-stage-chip p-0.5 text-stage-warn"
-                  aria-label={t('bestShot.closedEyes', { count: score.closedEyes })}
+                  role="img" aria-label={t('bestShot.closedEyes', { count: score.closedEyes })} data-hint={t('bestShot.closedEyes', { count: score.closedEyes })}
                 >
                   <EyeOff className="size-3" />
                 </span>

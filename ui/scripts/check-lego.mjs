@@ -65,7 +65,6 @@ const RULES = [
     everywhere: true,
     say: 'a raw palette colour: use a theme token (primary, muted-foreground, warning, success, destructive) or a stage token (bg-stage-chip, text-stage-ink…)',
     except: {
-      'features/about/report-issue.tsx': 'white on the destructive red of its button',
       'features/window/title-bar.tsx': 'white on red under the close button, as the system draws it',
     },
   },

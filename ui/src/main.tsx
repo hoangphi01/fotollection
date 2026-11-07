@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { TooltipProvider } from '@/components/ui/tooltip'
 import { HintLayer } from '@/components/layout/hint-layer'
 import { followSystemTheme } from '@/lib/theme'
 import { App } from './app'
@@ -29,9 +28,8 @@ if (!root) throw new Error('missing #root element')
 
 createRoot(root).render(
   <StrictMode>
-    <TooltipProvider>
-      <App />
-      <HintLayer />
-    </TooltipProvider>
+    {/* Hints are `data-hint` and the HintLayer only (STYLE_RULE §4: one kind of tooltip). */}
+    <App />
+    <HintLayer />
   </StrictMode>,
 )

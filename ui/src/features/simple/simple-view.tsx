@@ -64,13 +64,13 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
   if (reviewing && !sorted) setReviewing(false)
   if (!photo || (sorted && !reviewing)) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center">
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 p-3 text-center">
         <p className="font-medium">{t('simple.done')}</p>
         <p className="max-w-sm text-sm text-muted-foreground">
           {t('simple.doneHint', { count: queueCounts.print, kept: formatNumber(queueCounts.print) })}
         </p>
         {photo && (
-          <Button variant="outline" size="sm" className="mt-2" onClick={() => setReviewing(true)}>
+          <Button variant="outline" size="sm" onClick={() => setReviewing(true)}>
             <Repeat data-icon="inline-start" /> {t('simple.review')}
           </Button>
         )}
@@ -80,14 +80,14 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="box-content flex h-header shrink-0 items-center gap-3 border-b px-4 text-sm">
+      <div className="box-content flex h-header shrink-0 items-center gap-2 border-b px-4 text-sm">
         <span className="font-medium tabular-nums">
           {t('simple.progress', { index: formatNumber(index + 1), count: formatNumber(photos.length) })}
         </span>
         <span className="text-xs text-muted-foreground tabular-nums">
           {t('simple.counts', { kept: formatNumber(queueCounts.print), dropped: formatNumber(queueCounts.aside) })}
         </span>
-        <span className="ml-auto truncate text-xs text-muted-foreground">{photo.fileName}</span>
+        <span className="min-w-0 flex-1 truncate text-right text-xs text-muted-foreground">{photo.fileName}</span>
       </div>
       <div className="relative flex min-h-0 flex-1 items-center justify-center bg-stage p-6">
         {shownSrc ? (
@@ -106,7 +106,7 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
           </Badge>
         )}
       </div>
-      <div className="flex items-center justify-center gap-3 border-t p-3">
+      <div className="flex items-center justify-center gap-2 border-t p-3">
         <Button variant="outline" size="icon" onClick={() => go(-1)} disabled={index === 0} aria-label={t('simple.previous')} data-hint={t('simple.previous')}>
           <ChevronLeft />
         </Button>

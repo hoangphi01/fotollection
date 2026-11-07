@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useState } from 'react'
-import { Check, ClipboardCopy, MessageSquareWarning } from 'lucide-react'
+import { Check, ClipboardCopy } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Field } from '@/components/forms/field'
+import { Field, Hint } from '@/components/forms/field'
+import { ReportButton } from '@/components/forms/danger-button'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { commands } from '@/ipc/bindings'
@@ -33,14 +34,7 @@ export function ReportIssue() {
 
   return (
     <Field>
-      <Button
-        size="sm"
-        className="w-full bg-destructive text-white hover:bg-destructive/90"
-        onClick={() => void commands.openIssuePage()}
-      >
-        <MessageSquareWarning data-icon="inline-start" />
-        {t('about.report')}
-      </Button>
+      <ReportButton label={t('about.report')} onClick={() => void commands.openIssuePage()} />
       <Button size="sm" variant="outline" className="w-full" onClick={() => void copy()}>
         {copied ? <Check data-icon="inline-start" /> : <ClipboardCopy data-icon="inline-start" />}
         {copied ? t('about.copied') : t('about.diagnostics')}
@@ -55,7 +49,7 @@ export function ReportIssue() {
           autoFocus
         />
       )}
-      <p className="text-xs text-muted-foreground">{t('about.reportHint')}</p>
+      <Hint>{t('about.reportHint')}</Hint>
     </Field>
   )
 }

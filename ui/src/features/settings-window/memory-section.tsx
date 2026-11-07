@@ -3,7 +3,7 @@
 import { Cpu, HardDrive, Sparkles, Wand2 } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Field, Hint, ValueRow } from '@/components/forms/field'
+import { FactLines, Field, Hint, ValueRow } from '@/components/forms/field'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { SwitchField } from '@/components/forms/switch-field'
 import { SectionCard } from '@/components/layout/section-card'
@@ -112,7 +112,7 @@ export function MemorySection() {
             ariaLabel={t('cache.limit')}
           />
         </Field>
-        <Field>
+        <FactLines>
           <ValueRow label={t('cache.thumbnails')}>{cache ? formatBytes(cache.thumbnailsBytes ?? 0) : t('cache.measuring')}</ValueRow>
           <ValueRow label={t('cache.previews')}>{cache ? formatBytes(cache.previewsBytes ?? 0) : ''}</ValueRow>
           <ValueRow label={t('cache.analyses')}>{cache ? formatBytes(cache.analysesBytes ?? 0) : ''}</ValueRow>
@@ -124,7 +124,7 @@ export function MemorySection() {
                 })
               : ''}
           </ValueRow>
-        </Field>
+        </FactLines>
         <SwitchField
           icon={<Sparkles />}
           label={t('cache.prepare')}
@@ -146,7 +146,7 @@ export function MemorySection() {
 
       <SectionCard icon={<Wand2 />} title={t('memory.forThisComputer')}>
         {machine && (
-          <Field>
+          <FactLines>
             <ValueRow label={t('machine.cpu')}>
               {t('machine.cpuValue', { name: machine.cpu ?? t('machine.unknown'), cores: machine.cores })}
             </ValueRow>
@@ -157,7 +157,7 @@ export function MemorySection() {
             <ValueRow label={t('machine.disk')}>
               {machine.freeDisk == null ? t('machine.unknown') : t('machine.diskValue', { free: formatBytes(machine.freeDisk) })}
             </ValueRow>
-          </Field>
+          </FactLines>
         )}
         <Field
           hint={t('memory.now', {

@@ -99,17 +99,17 @@ export const ThumbTile = memo(function ThumbTile({
           </span>
         )}
         {photo.dateFromFile && (
-          <span className="rounded bg-stage-chip p-0.5 text-stage-warn" aria-label={t('library.noCaptureDate')}>
+          <span className="rounded bg-stage-chip p-0.5 text-stage-warn" role="img" aria-label={t('library.noCaptureDate')} data-hint={t('library.noCaptureDate')}>
             <CalendarX2 className="size-3" />
           </span>
         )}
         {photo.placeSource === 'borrowed' ? (
-          <span className="rounded bg-stage-chip p-0.5 text-stage-ink" aria-label={t('library.placeBorrowed')}>
+          <span className="rounded bg-stage-chip p-0.5 text-stage-ink" role="img" aria-label={t('library.placeBorrowed')} data-hint={t('library.placeBorrowed')}>
             <MapPinCheck className="size-3" />
           </span>
         ) : (
           photo.placeSource === null && (
-            <span className="rounded bg-stage-chip p-0.5 text-stage-ink" aria-label={t('library.noLocation')}>
+            <span className="rounded bg-stage-chip p-0.5 text-stage-ink" role="img" aria-label={t('library.noLocation')} data-hint={t('library.noLocation')}>
               <MapPinOff className="size-3" />
             </span>
           )

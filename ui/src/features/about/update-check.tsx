@@ -46,8 +46,8 @@ export function UpdateCheck() {
             {t(state.kind === 'checking' ? 'update.checking' : 'update.check')}
           </Button>
           {state.kind === 'done' && (
-            <p className="flex items-center gap-1.5 text-xs text-primary">
-              <CircleCheck className="size-3.5" /> {t('update.latest')}
+            <p className="flex items-center gap-1.5 text-xs text-success">
+              <CircleCheck className="size-4" /> {t('update.latest')}
             </p>
           )}
           {state.kind === 'error' && <p className="text-xs text-destructive">{state.message}</p>}

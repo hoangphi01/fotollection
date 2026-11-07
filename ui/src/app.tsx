@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { KeysInfo } from '@/components/layout/keys-info'
 import { ErrorNotice, NoticeStack } from '@/components/layout/notice-stack'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { GroupsView } from '@/features/best-shot/groups-view'
 import { useBestShots } from '@/features/best-shot/use-best-shots'
 import { CullFilterBar } from '@/features/culling/cull-filter-bar'
@@ -295,22 +295,17 @@ export function App() {
             {/* Sized by the space between the sidebars, not the window: labels collapse to
                 icons first, then the filters wrap to a second row. */}
             {/* Always one line (STYLE_RULE §4): filters are dropdowns, hints hide when narrow. */}
-            <div className="@container box-content flex h-header shrink-0 flex-nowrap items-center gap-3 overflow-hidden border-b px-4 text-sm">
-              <ToggleGroup
-                type="single"
-                variant="outline"
-                size="sm"
+            <div className="@container box-content flex h-header shrink-0 flex-nowrap items-center gap-2 overflow-hidden border-b px-4 text-sm">
+              <SegmentedToggle<'photos' | 'groups'>
+                fit
                 value={view}
-                onValueChange={(v) => v && setView(v as 'photos' | 'groups')}
-                aria-label={t('bestShot.view')}
-              >
-                <ToggleGroupItem value="photos" className="px-2.5 text-xs">
-                  {t('bestShot.viewPhotos')}
-                </ToggleGroupItem>
-                <ToggleGroupItem value="groups" className="px-2.5 text-xs">
-                  {t('bestShot.viewGroups', { count: scopedShots.groups.length })}
-                </ToggleGroupItem>
-              </ToggleGroup>
+                onChange={setView}
+                ariaLabel={t('bestShot.view')}
+                options={[
+                  { value: 'photos', label: t('bestShot.viewPhotos') },
+                  { value: 'groups', label: t('bestShot.viewGroups', { count: scopedShots.groups.length }) },
+                ]}
+              />
                 {bestShots.running ? (
                   <ToolbarButton
                     icon={<Square />}

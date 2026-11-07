@@ -2,7 +2,7 @@
 import { Monitor, Moon, Sun } from 'lucide-react'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import type { ThemePreference } from '@/ipc/bindings'
 import { setThemePreference } from '@/lib/theme'
@@ -20,27 +20,20 @@ export function ThemeSwitch() {
 
   useEffect(() => setThemePreference(ui.theme), [ui.theme])
 
+  // The same block as Settings → General's (STYLE_RULE §4: one control, one look), icons
+  // with their names as hints, as wide as its items at the foot of the folder list.
   return (
-    <ToggleGroup
-      type="single"
-      size="sm"
-      variant="outline"
+    <SegmentedToggle<ThemePreference>
+      fit
       value={ui.theme}
-      onValueChange={(v) => v && void update({ theme: v as ThemePreference })}
-      aria-label={t('theme.label')}
-    >
-      {OPTIONS.map(({ value, Icon }) => (
-        // A Radix tooltip trigger would overwrite the item's data-state, hiding which one is on.
-        <ToggleGroupItem
-          key={value}
-          value={value}
-          aria-label={t(`theme.${value}`)}
-          data-hint={t(`theme.${value}`)}
-          className="px-2"
-        >
-          <Icon className="size-3.5" />
-        </ToggleGroupItem>
-      ))}
-    </ToggleGroup>
+      ariaLabel={t('theme.label')}
+      onChange={(theme) => void update({ theme })}
+      options={OPTIONS.map(({ value, Icon }) => ({
+        value,
+        label: <Icon aria-hidden />,
+        ariaLabel: t(`theme.${value}`),
+        hint: t(`theme.${value}`),
+      }))}
+    />
   )
 }
