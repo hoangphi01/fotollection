@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- **Looks** (FR-079): a strip of looks under the photo in every mode (in the photo preview a second row over the filmstrip, folding by its header; under a collage sheet; under Simple mode's photo), each look a tile of the photo through it; a **Looks** card first among the colour cards, the chosen one in the theme's colour and pressed in; the black and white looks named *B&W* for short; **Amount** sets how much of the whole look; **Save as look** keeps the photo's look under a name on this machine, removable from its tile; the ↺ on the card's title gives the photo its original colour back (on a collage sheet with none picked, both photos). A pick copies the look into the photo, so its sliders show it and editing the list later changes no photo. In Simple mode the looks are a strip under the photo, each numbered: **0**–**9** chooses one (0 is Original), then **↑** keeps the photo; there the number keys choose a look instead of rating, as Simple mode shows no stars.
+- **Looks** (FR-079): a strip of looks under the photo in every mode (in the photo preview a second row over the filmstrip, folding by its header; under a collage sheet; under Simple mode's photo), each look a tile of the photo through it; the black and white looks named *B&W* for short; a **Looks** card first among the colour cards: **Amount** sets how much of the whole look; **Save as look** keeps the photo's look under a name on this machine, listed in the card under *Your looks* to pick again or remove; the ↺ on the card's title gives the photo its original colour back (on a collage sheet with none picked, both photos). A pick copies the look into the photo, so its sliders show it and editing the list later changes no photo. In Simple mode the looks are a strip under the photo, each numbered: **0**–**9** chooses one (0 is Original), then **↑** keeps the photo; there the number keys choose a look instead of rating, as Simple mode shows no stars.
 
 ### Fixed
 
@@ -28,7 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- **Collage sheet preview in two tabs** (FR-079, FR-095), as the photo preview: **Edit** (the photos on the sheet, then the colour cards) and **Print and export** (size, postcards, cells, date stamp, export). The looks are a strip under the sheet, its line meeting the keys' beside it; the keys are the few used most, every key behind ⓘ in the toolbar. With no photo picked, **Whole sheet** (key **0**) is the first row of the photos, and the colour cards change both photos together: the same look for both, one undo step, a note when their colours differed.
+- **Collage sheet preview in two tabs** (FR-079, FR-095), as the photo preview: **Edit** (the photos on the sheet, then the colour cards) and **Print and export** (size, postcards, cells, date stamp, export). The looks are a strip under the sheet, the keys' footer beside it as tall as the lowest strip; the keys are the few used most, every key behind ⓘ in the toolbar. With no photo picked, **Whole sheet** (key **0**) is the first row of the photos, and the colour cards change both photos together: the same look for both, one undo step, a note when their colours differed.
 
 - **Website:** the footer shows the GPLv3 mark with "Fotollection is released under the GPL 3.0", as other free software does; the mark is served from the site.
 
