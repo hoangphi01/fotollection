@@ -686,3 +686,10 @@
 - **Why:** it read only `src/features`, so `app.tsx` and the blocks went unchecked; whole files were exempt for reasons that no longer held (a file gone, a switch no longer in the title bar); its patterns matched literal text only (`variant="ghost"`, not `variant={on ? 'ghost' : …}`), and one used `\b` before `rgb(`, which never matches after `_` in a Tailwind class (`shadow-[…_rgb(…)]`): the probe proved it before it was trusted.
 - **Fix:** the shared blocks fixed once (ToolbarButton 32 × 32 with its hint on a wrapper, `text-xs` and 16 px icons in small buttons, `ROW_HOVER`, `StageNav`, `SectionCard onToggle`, `ReportButton`, `HistoryButtons`, `outside-dim`), each mode moved onto them, and `check-lego` reads `app.tsx` and the blocks, drops the stale exemptions and refuses hand-written colours, icon buttons under 32 px, hard-coded `htmlFor` and ghost or link by expression; each new rule shown to fail on a probe file first.
 - **Rule:** a check is listed with what it reads. When a fault passes it, widen what it reads before adding a pattern, and prove every pattern fails on the old code.
+
+### A row added above a stage takes its height from whatever sized the picture (FR-035)
+
+- **Seen:** after the sheet preview's tools moved into a toolbar row above the stage, a square 10 × 10 sheet ran past the stage's foot: its bottom and the chosen photo's outline were cut (owner, 2026-11-07: "you did not check the bug when choosing a size").
+- **Why:** the sheet's image is capped by a height written for the dialog without a toolbar (`90vh − 4rem`, the stage's padding only); the new 64 px row and its line came out of the stage, not out of that number. A landscape sheet still fit, so only a tall or square one showed it.
+- **Fix:** the cap takes the toolbar row too (`calc(90vh − 4rem − var(--spacing-header) − 1px)`).
+- **Rule:** after changing what surrounds a stage (a toolbar, a header, a strip), open it with every shape it shows (landscape, portrait, square, a postcard) and check the picture's four edges; a size written as a calc names every part it subtracts.

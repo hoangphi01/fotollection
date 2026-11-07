@@ -304,7 +304,9 @@ export function SheetPreviewDialog({
                   onPointerUp={picking ? undefined : zoom.pointer.onPointerUp}
                   onClick={picking ? pickAt : undefined}
                   className={cn(
-                    'block max-h-[calc(90vh-4rem)] max-w-full animate-in object-contain stage-photo fade-in-0',
+                    // The dialog's 90vh less the stage's padding (2 × 2rem), the toolbar row above
+                    // it (`--spacing-header`) and its line: the whole sheet fits, any shape.
+                    'block max-h-[calc(90vh-4rem-var(--spacing-header)-1px)] max-w-full animate-in object-contain stage-photo fade-in-0',
                     picking && 'cursor-crosshair',
                   )}
                 />
