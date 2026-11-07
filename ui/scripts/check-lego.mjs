@@ -38,6 +38,10 @@ const RULES = [
     test: /<ToggleGroup\b|import \{[^}]*\bToggleGroup\b/,
     say: 'a hand-made toggle group: use SegmentedToggle or SwatchToggle (components/forms)',
   },
+  {
+    test: /<InputGroup\b/,
+    say: 'a field with its own frame: every text field is an Input (the manual\'s search, FR-110: InputGroup drew a second box)',
+  },
   { test: /<SelectTrigger[^>]*\bsize=/, say: 'a select of its own size: every select in a panel is 32 px, the default' },
   {
     test: /\bspace-y-[0-9.]+/,

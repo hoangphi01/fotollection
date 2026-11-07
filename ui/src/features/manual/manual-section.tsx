@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ArrowLeft, ArrowRight, BookOpen, Bookmark, ChevronDown, ListOrdered, Search, type LucideIcon } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, Bookmark, ChevronDown, ListOrdered, type LucideIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ManualText } from '@/components/layout/manual-text'
 import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
+import { Input } from '@/components/ui/input'
 import { ListRow, ListRows } from '@/components/forms/list-row'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { findChapters, type Chapter, type ManualCard } from '@/lib/manual'
@@ -24,7 +24,7 @@ function useShownChapter(): { list: Chapter[]; index: number; chapter: Chapter |
 
 /**
  * Every chapter, found by its title or its words, case and accents aside (FR-110): a popover
- * as the compare views' menu, the search on top (32 px, as every field), the chapters as
+ * as the compare views' menu, the search on top (an `Input`, as every field), the chapters as
  * `ListRow`s 4 px apart, the one open marked as every chosen row is (STYLE_RULE §4).
  */
 function ChapterPicker({ list, chapter }: { list: Chapter[]; chapter: Chapter }) {
@@ -47,21 +47,17 @@ function ChapterPicker({ list, chapter }: { list: Chapter[]; chapter: Chapter })
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="flex w-(--radix-popover-trigger-width) flex-col gap-1 p-1">
-        <InputGroup>
-          <InputGroupAddon>
-            <Search />
-          </InputGroupAddon>
-          <InputGroupInput
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              const first = found[0]
-              if (e.key === 'Enter' && first) pick(first.id)
-            }}
-            placeholder={t('manual.search')}
-            aria-label={t('manual.search')}
-          />
-        </InputGroup>
+        {/* The same text field as every other in the app (STYLE_RULE §4: 32 px, set in). */}
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            const first = found[0]
+            if (e.key === 'Enter' && first) pick(first.id)
+          }}
+          placeholder={t('manual.search')}
+          aria-label={t('manual.search')}
+        />
         {/* A native scroll, in the theme's thin bar (index.css): Radix's needs a fixed height. */}
         <div className="max-h-80 overflow-y-auto overscroll-contain">
           <ListRows>

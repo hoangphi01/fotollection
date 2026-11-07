@@ -644,3 +644,11 @@
 - **Why:** the Markdown was rendered as a page, with its own spacing and widths, beside an app built from cards; and Radix's `ScrollArea` lays its viewport's content out as a table, which grows to its widest row, so `truncate` never took effect in the list.
 - **Fix:** `cardsOf` cuts a chapter into the app's own `SectionCard`s (its opening, each section, each bold-led paragraph and step) in the Settings window's 36 rem column; keys show as `Kbd`, captions as `Hint`. The list's viewport is `block`, as the cards' already was.
 - **Rule:** text or pictures brought into the app from a document (the guide, the CHANGELOG) give only their words; the layout is the app's blocks (STYLE_RULE §4). A list in a `ScrollArea` that must truncate sets its viewport's child to `block`.
+
+### A shadcn primitive the app never used brings its own look (FR-110)
+
+- **Seen:** the manual's search was an `InputGroup` with an icon; it showed two boxes, the group's frame and the set-in `Input` inside it, with a seam after the icon (owner, 2026-11-07: "the text field is broken; see how the other fields do it").
+- **Why:** every text field in the app is a plain `Input`, which carries the set-in depth (FR-099). `InputGroup` came from shadcn untouched, so its own frame and the inner field's both drew.
+- **Fix:** a plain `Input`, as every other field; `check-lego` now refuses `InputGroup` in the features.
+- **Rule:** before a new kind of control, find how the app already does that job (grep the features) and use the same block; a primitive no feature uses yet is unstyled for this app until it is checked in both themes.
+
