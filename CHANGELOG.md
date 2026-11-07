@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **The develop view's toolbar** starts with undo and redo, apart from the turn buttons, which now show an arrow on a square so they are never taken for undo; *Back to the gallery* has its own icon too.
 - **Website:** two new sections on the home page: what Fotollection is made for, in four moments (after a trip, a family album, postcards and themed sets, sharing without losing colour), and how it compares with Lightroom Classic, darktable and RawTherapee.
 - **Keep best** now also sets the other shots of each group aside, so the gallery keeps only the shots worth working on, from every folder; *Set aside* holds the others, ready to come back.
 - **All photos is now the Workspace:** the photos of every folder still in play, all but those set aside, which is where the best shots of several folders are edited together.

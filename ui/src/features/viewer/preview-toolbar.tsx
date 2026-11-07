@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview
-import { ChevronDown, Columns2, Download, Eye, Maximize2, Minimize2, PanelBottomClose, PanelBottomOpen, PanelLeftClose, PanelLeftOpen, Redo2, RotateCcw, RotateCw, Rows2, ShoppingBasket, SquareSplitHorizontal, SquareSplitVertical, Undo2 } from 'lucide-react'
+import { ArchiveRestore, ChevronDown, Columns2, Download, Eye, Maximize2, Minimize2, PanelBottomClose, PanelBottomOpen, PanelLeftClose, PanelLeftOpen, Redo2, RotateCcwSquare, RotateCwSquare, Rows2, ShoppingBasket, SquareSplitHorizontal, SquareSplitVertical, Undo2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
@@ -81,8 +81,29 @@ export function PreviewToolbar({
           <Separator orientation="vertical" className="mx-1 h-5!" />
         </>
       )}
+      {/* Undo and redo first, apart from the photo's own actions (owner, 2026-11-07: they were
+          taken for the turn buttons), then copy, paste and reset beside them. */}
       <ToolbarButton
-        icon={<RotateCcw />}
+        icon={<Undo2 />}
+        label={t('viewer.undo')}
+        data-hint={t('viewer.undoHint', { mod: MOD })}
+        iconOnly
+        disabled={!canUndo}
+        onClick={() => void commands.undo()}
+      />
+      <ToolbarButton
+        icon={<Redo2 />}
+        label={t('viewer.redo')}
+        data-hint={t('viewer.redoHint', { mod: MOD })}
+        iconOnly
+        disabled={!canRedo}
+        onClick={() => void commands.redo()}
+      />
+      {/* Copy, paste and reset the photo's settings (FR-097), beside undo (owner, 2026-11-07). */}
+      <SettingsButtons photo={photo?.id} ticked={ticked} />
+      <Separator orientation="vertical" className="mx-1 h-5!" />
+      <ToolbarButton
+        icon={<RotateCcwSquare />}
         label={t('viewer.rotateLeftShort')}
         data-hint={t('viewer.rotateLeft', { mod: MOD })}
         iconOnly
@@ -90,7 +111,7 @@ export function PreviewToolbar({
         onClick={() => rotate(false)}
       />
       <ToolbarButton
-        icon={<RotateCw />}
+        icon={<RotateCwSquare />}
         label={t('viewer.rotateRightShort')}
         data-hint={t('viewer.rotateRight', { mod: MOD })}
         iconOnly
@@ -99,7 +120,7 @@ export function PreviewToolbar({
       />
       {photo?.queue === 'aside' ? (
         <ToolbarButton
-          icon={<Undo2 />}
+          icon={<ArchiveRestore />}
           label={t('select.toGallery')}
           data-hint={t('preview.toGalleryHint')}
           onClick={() => void commands.setPhotoQueue([photo.id], null)}
@@ -127,25 +148,6 @@ export function PreviewToolbar({
         onClick={onBefore}
       />
       <CompareMenu compare={compare} before={before} onBefore={onBefore} onCompare={onCompare} disabled={!photo} />
-      <Separator orientation="vertical" className="mx-1 h-5!" />
-      <ToolbarButton
-        icon={<Undo2 />}
-        label={t('viewer.undo')}
-        data-hint={t('viewer.undoHint', { mod: MOD })}
-        iconOnly
-        disabled={!canUndo}
-        onClick={() => void commands.undo()}
-      />
-      <ToolbarButton
-        icon={<Redo2 />}
-        label={t('viewer.redo')}
-        data-hint={t('viewer.redoHint', { mod: MOD })}
-        iconOnly
-        disabled={!canRedo}
-        onClick={() => void commands.redo()}
-      />
-      {/* Copy, paste and reset the photo's settings (FR-097), beside undo (owner, 2026-11-07). */}
-      <SettingsButtons photo={photo?.id} ticked={ticked} />
       <Separator orientation="vertical" className="mx-1 h-5!" />
       <ToolbarButton
         icon={<Download />}
