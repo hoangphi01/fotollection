@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.13.2] - 2026-11-07 — Develop, part 3
+
 ### Highlights
 
 - New: the whole manual inside the app, in Settings, also with no internet
