@@ -4,7 +4,7 @@ Up to v0.10.0, a preview was made when you asked for it: the file read, the phot
 
 ### Standard previews, as Lightroom keeps them
 
-Since v0.11.0, the work the user waits for is done before they ask. Once a folder's thumbnails are ready, Fotollection makes each photo's 2,048 px copy in the background, one photo at a time per thread, and keeps it on disk next to the thumbnails, as a JPEG of about 0.66 MB (about 280 MB for the whole trip). A click on any photo, near or far, in this session or the next, starts from that copy: 27 ms for a JPEG and for a RAW alike. What is left is the preview's own work (crop, resize, colour, date stamp and encode), the same 27 ms as from memory. A preview made from the disk copy differs from a fresh one by 1.35 levels of 255 on average, too little to see.
+Since v0.11.0, the work the user waits for is done before they ask. Once a folder's thumbnails are ready, Fotollection makes each photo's 2,048 px copy in the background, one photo at a time per thread, and keeps it on disk next to the thumbnails, as a JPEG of about 0.66 MB (about 280 MB for the whole trip). A click on any photo, near or far, in this session or the next, starts from that copy: 27 ms for a JPEG and for a RAW alike. What is left is the preview's own work (crop, resize, colour, date stamp and encode), the same 27 ms as from memory. A preview made from the disk copy differs from a fresh one by 1.35 levels of 255 on average, too little to see.{% include fn.html keys="fn_lightroom" %}
 
 ### Memory used well, not as little as possible
 

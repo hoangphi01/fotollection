@@ -11,6 +11,9 @@ type ToolbarButtonProps = Omit<ComponentProps<typeof Button>, 'children' | 'size
   busy?: boolean
   /** Always the icon alone (undo, rotate): its label is for the hint and screen readers. */
   iconOnly?: boolean
+  /** The label shows only from a wider row (`5xl`, 64 rem): a crowded toolbar, as the
+   * develop view's with copy, paste and reset (owner, 2026-11-07; MEASURE at 1180 px). */
+  labelFrom?: '3xl' | '5xl'
 }
 
 /**
@@ -23,6 +26,7 @@ export function ToolbarButton({
   label,
   busy = false,
   iconOnly = false,
+  labelFrom = '3xl',
   variant = 'outline',
   className,
   disabled,
@@ -35,11 +39,15 @@ export function ToolbarButton({
       aria-label={label}
       aria-busy={busy || undefined}
       disabled={disabled || busy}
-      className={cn('w-7 px-0', !iconOnly && '@3xl:w-auto @3xl:pr-2.5 @3xl:pl-1.5', className)}
+      className={cn(
+        'w-7 px-0',
+        !iconOnly && (labelFrom === '5xl' ? '@5xl:w-auto @5xl:pr-2.5 @5xl:pl-1.5' : '@3xl:w-auto @3xl:pr-2.5 @3xl:pl-1.5'),
+        className,
+      )}
       {...props}
     >
       {busy ? <LoaderCircle className="animate-spin" /> : icon}
-      {!iconOnly && <span className="hidden @3xl:inline">{label}</span>}
+      {!iconOnly && <span className={labelFrom === '5xl' ? 'hidden @5xl:inline' : 'hidden @3xl:inline'}>{label}</span>}
     </Button>
   )
 }

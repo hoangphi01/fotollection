@@ -11,7 +11,7 @@
       </p>
       <h1>{{ t.hero_title_1 }} <em>{{ t.hero_accent }}</em>{{ t.hero_title_2 }}</h1>
       <p class="lead">{{ t.hero_lead }}</p>
-      {% include download-buttons.html id="download" vnlf=true %}
+      {% include download-buttons.html id="download" listed=true %}
       <p class="small muted">
         {{ t.works_on }} · {% if release.tag_name %}{{ t.latest }}: <a href="{{ release.html_url }}">{{ release.tag_name }}</a> · {% else %}<a href="{{ site.repo_url }}/releases">{{ t.no_release }}</a> · {% endif %}{{ t.download_note }}
       </p>
@@ -39,7 +39,7 @@
 
 <section class="section" id="new">
   <div class="wrap">
-    <h2>{{ t.bento_title }}</h2>
+    <h2>{{ t.bento_title }}{% include fn.html keys="fn_lightroom" %}</h2>
     <p class="lead narrow">{{ t.bento_lead }}</p>
     <div class="bento">
       {%- assign tiles = "yours,desktops,keys,compare,prints,export" | split: "," -%}
@@ -404,7 +404,7 @@
   <div class="wrap final-wrap">
     <h2>{{ t.final_title }}</h2>
     <p class="lead">{{ t.final_lead }}</p>
-    {% include download-buttons.html id="get-download" vnlf=true %}
+    {% include download-buttons.html id="get-download" listed=true %}
     <p><a class="more" href="{% if page.lang == 'vi' %}{{ '/vi/manual/' | relative_url }}{% else %}{{ '/manual/' | relative_url }}{% endif %}">{{ t.final_manual }} {% include icons/arrow-right.svg %}</a></p>
   </div>
 </section>

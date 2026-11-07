@@ -4,9 +4,10 @@
   <a class="button primary" href="{{ mac | default: releases }}"{% if mac %} data-download="mac"{% endif %}>{% include icons/download.svg %}{{ t.download_mac }}</a>
   <a class="button" href="{{ win | default: releases }}"{% if win %} data-download="win"{% endif %}>{% include icons/download.svg %}{{ t.download_win }}</a>
   <a class="button" href="{{ path_download }}#install-linux">{% include icons/download.svg %}{{ t.download_linux }}</a>
-  {%- if include.vnlf %}
-  {%- comment %} The VNLF listing, beside the buttons as a "featured on" badge in VNLF's own green (owner, 2026-11-06). {% endcomment %}
-  <a class="vnlf-badge" href="https://apps.vietnamlinuxfamily.net/app/fotollection" aria-label="{{ t.vnlf_badge }}"><img src="{{ '/assets/img/logos/vnlf.png' | relative_url }}" width="30" height="30" alt="" /><span><small>{{ t.vnlf_badge_top }}</small><strong>VNLF App Explorer</strong></span></a>
+  {%- if include.listed %}
+  {%- comment %} Where Fotollection is listed, beside the buttons as "listed on" badges, one block in the page's style and each listing's colours (owner, 2026-11-06, 2026-11-07). {% endcomment %}
+  <a class="listed vnlf" href="https://apps.vietnamlinuxfamily.net/app/fotollection" aria-label="{{ t.vnlf_badge }}"><img src="{{ '/assets/img/logos/vnlf.png' | relative_url }}" width="30" height="30" alt="" /><span><small>{{ t.vnlf_badge_top }}</small><strong>VNLF App Explorer</strong></span></a>
+  <a class="listed unikorn" href="https://unikorn.vn/p/fotollection" aria-label="{{ t.unikorn_badge }}"><img src="{{ '/assets/img/logos/unikorn.png' | relative_url }}" width="30" height="30" alt="" /><span><small>{{ t.vnlf_badge_top }}</small><strong>Unikorn.vn</strong></span></a>
   {%- endif %}
   {%- if site.data.downloads %}
   {%- comment %} How often the installers were downloaded (scripts/download-stats.mjs), beside the buttons. {% endcomment %}

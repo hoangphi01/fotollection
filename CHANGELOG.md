@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Website:** a *Listed on Unikorn.vn* badge beside VNLF's, both in the page's style; the footer's blog link and *Report a problem* take the site's depth (the red button with a burgundy lip, as the app's); Lightroom and Adobe get their trademark note where Lightroom is first named; the before-and-after picture follows the mouse as it passes, and no longer starts dragging the picture.
 - **The develop view's toolbar** starts with undo and redo, apart from the turn buttons, which now show an arrow on a square so they are never taken for undo; *Back to the gallery* has its own icon too.
 - **Website:** two new sections on the home page: what Fotollection is made for, in four moments (after a trip, a family album, postcards and themed sets, sharing without losing colour), and how it compares with Lightroom Classic, darktable and RawTherapee.
 - **Keep best** now also sets the other shots of each group aside, so the gallery keeps only the shots worth working on, from every folder; *Set aside* holds the others, ready to come back.

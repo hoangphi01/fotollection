@@ -1,6 +1,26 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview
-import { ArchiveRestore, ChevronDown, Columns2, Download, Eye, Maximize2, Minimize2, PanelBottomClose, PanelBottomOpen, PanelLeftClose, PanelLeftOpen, Redo2, RotateCcwSquare, RotateCwSquare, Rows2, ShoppingBasket, SquareSplitHorizontal, SquareSplitVertical, Undo2 } from 'lucide-react'
+import {
+  ArchiveRestore,
+  ChevronDown,
+  Columns2,
+  Download,
+  Eye,
+  Maximize2,
+  Minimize2,
+  PanelBottomClose,
+  PanelBottomOpen,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Redo2,
+  RotateCcwSquare,
+  RotateCwSquare,
+  Rows2,
+  ShoppingBasket,
+  SquareSplitHorizontal,
+  SquareSplitVertical,
+  Undo2,
+} from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
@@ -122,6 +142,7 @@ export function PreviewToolbar({
         <ToolbarButton
           icon={<ArchiveRestore />}
           label={t('select.toGallery')}
+          labelFrom="5xl"
           data-hint={t('preview.toGalleryHint')}
           onClick={() => void commands.setPhotoQueue([photo.id], null)}
         />
@@ -129,6 +150,7 @@ export function PreviewToolbar({
         <ToolbarButton
           icon={<ShoppingBasket />}
           label={t(inBasket ? 'preview.inBasket' : 'preview.toBasket')}
+          labelFrom="5xl"
           variant={inBasket ? 'default' : 'outline'}
           aria-pressed={inBasket}
           data-hint={t('preview.basketHint')}
@@ -141,6 +163,7 @@ export function PreviewToolbar({
       <ToolbarButton
         icon={<Eye />}
         label={t('look.before')}
+        labelFrom="5xl"
         variant={before || compare !== 'off' ? 'default' : 'outline'}
         aria-pressed={before}
         data-hint={t('look.beforeHint')}
@@ -152,6 +175,7 @@ export function PreviewToolbar({
       <ToolbarButton
         icon={<Download />}
         label={t('export.title')}
+        labelFrom="5xl"
         data-hint={t('viewer.exportHint', { mod: MOD })}
         disabled={!photo}
         onClick={onExport}
@@ -204,7 +228,13 @@ function CompareMenu({
     { key: 'sideBySide', icon: <Columns2 />, keys: ['Y'], on: compare === 'sideBySide', pick: () => onCompare('sideBySide') },
     { key: 'split', icon: <SquareSplitHorizontal />, keys: ['⇧', 'Y'], on: compare === 'split', pick: () => onCompare('split') },
     { key: 'topBottom', icon: <Rows2 />, keys: [ALT, 'Y'], on: compare === 'topBottom', pick: () => onCompare('topBottom') },
-    { key: 'splitTopBottom', icon: <SquareSplitVertical />, keys: [], on: compare === 'splitTopBottom', pick: () => onCompare('splitTopBottom') },
+    {
+      key: 'splitTopBottom',
+      icon: <SquareSplitVertical />,
+      keys: [],
+      on: compare === 'splitTopBottom',
+      pick: () => onCompare('splitTopBottom'),
+    },
   ] as const
   return (
     <Popover>
@@ -213,19 +243,19 @@ function CompareMenu({
       </PopoverTrigger>
       <PopoverContent align="start" className="w-64 p-1">
         <ListRows>
-        {views.map((v) => (
-          <ListRow
-            key={v.key}
-            icon={v.icon}
-            chosen={v.on}
-            trailing={v.keys.map((k) => (
-              <Kbd key={k}>{k}</Kbd>
-            ))}
-            onClick={v.pick}
-          >
-            {t(`compare.${v.key}`)}
-          </ListRow>
-        ))}
+          {views.map((v) => (
+            <ListRow
+              key={v.key}
+              icon={v.icon}
+              chosen={v.on}
+              trailing={v.keys.map((k) => (
+                <Kbd key={k}>{k}</Kbd>
+              ))}
+              onClick={v.pick}
+            >
+              {t(`compare.${v.key}`)}
+            </ListRow>
+          ))}
         </ListRows>
       </PopoverContent>
     </Popover>

@@ -4,7 +4,7 @@ Tới bản v0.10.0, bản xem trước chỉ được dựng khi bạn cần: �
 
 ### Bản xem trước chuẩn, như Lightroom giữ
 
-Từ bản v0.11.0, việc người dùng phải chờ được làm trước khi họ cần. Ngay khi ảnh nhỏ của một thư mục đã xong, Fotollection dựng bản 2.048 px của từng ảnh ở chế độ nền, mỗi luồng một ảnh, và giữ trên đĩa cạnh ảnh nhỏ, dưới dạng JPEG khoảng 0,66 MB (cả chuyến đi khoảng 280 MB). Bấm vào ảnh nào, gần hay xa, trong lần mở này hay lần sau, đều bắt đầu từ bản đó: 27 ms, JPEG hay RAW như nhau. Phần còn lại là việc riêng của bản xem trước (cắt, thu nhỏ, chỉnh màu, đóng dấu ngày và nén), cũng 27 ms như khi lấy từ bộ nhớ. Bản xem trước dựng từ bản trên đĩa chỉ lệch trung bình 1,35 mức trên 255 so với bản dựng mới, quá nhỏ để mắt thấy.
+Từ bản v0.11.0, việc người dùng phải chờ được làm trước khi họ cần. Ngay khi ảnh nhỏ của một thư mục đã xong, Fotollection dựng bản 2.048 px của từng ảnh ở chế độ nền, mỗi luồng một ảnh, và giữ trên đĩa cạnh ảnh nhỏ, dưới dạng JPEG khoảng 0,66 MB (cả chuyến đi khoảng 280 MB). Bấm vào ảnh nào, gần hay xa, trong lần mở này hay lần sau, đều bắt đầu từ bản đó: 27 ms, JPEG hay RAW như nhau. Phần còn lại là việc riêng của bản xem trước (cắt, thu nhỏ, chỉnh màu, đóng dấu ngày và nén), cũng 27 ms như khi lấy từ bộ nhớ. Bản xem trước dựng từ bản trên đĩa chỉ lệch trung bình 1,35 mức trên 255 so với bản dựng mới, quá nhỏ để mắt thấy.{% include fn.html keys="fn_lightroom" %}
 
 ### Dùng bộ nhớ cho hiệu quả, không phải dùng càng ít càng tốt
 

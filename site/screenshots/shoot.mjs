@@ -70,11 +70,54 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     startup_finished: () => true,
     list_print_sizes: () => common.list_print_sizes,
     list_fonts: () => common.list_fonts,
-    get_ui_settings: () => ({ ...common.get_ui_settings, language, mode, ...ui }),
+    // The welcome (FR-109) seen, so it covers no shot; a shot of it sets `ui.welcomeSeen: false`.
+    get_ui_settings: () => ({ ...common.get_ui_settings, welcomeSeen: true, language, mode, ...ui }),
     // The update window at start (FR-103), shown when a shot asks for it.
     check_for_update_at_start: () => update,
     // The preview's colour cards (FR-079): the scenario's look, shared by every photo.
     get_photo_look: () => ({ look: current.settings.look, custom: false, raw: null }),
+    // The histogram (FR-098): counted here from the preview the shot shows, as Rust counts it.
+    photo_histogram: async (args) => {
+      for (let i = 0; i < 60; i++) {
+        const shown = document.querySelector(`img[src*="/preview/${args?.id}"]`)
+        if (shown?.complete && shown.naturalWidth) {
+          const img = new Image()
+          img.crossOrigin = 'anonymous'
+          img.src = shown.src
+          try {
+            await img.decode()
+          } catch {
+            return null
+          }
+          const w = Math.max(1, Math.round(img.naturalWidth / 4))
+          const h = Math.max(1, Math.round(img.naturalHeight / 4))
+          const canvas = Object.assign(document.createElement('canvas'), { width: w, height: h })
+          const g = canvas.getContext('2d')
+          g.drawImage(img, 0, 0, w, h)
+          let data
+          try {
+            data = g.getImageData(0, 0, w, h).data
+          } catch {
+            return null // a picture from another origin cannot be read
+          }
+          const bins = [0, 1, 2, 3].map(() => new Array(256).fill(0))
+          let high = 0
+          let low = 0
+          for (let k = 0; k < data.length; k += 4) {
+            const [r, gr, b] = [data[k], data[k + 1], data[k + 2]]
+            bins[0][r]++, bins[1][gr]++, bins[2][b]++, bins[3][(54 * r + 183 * gr + 19 * b) >> 8]++
+            if (r >= 254 || gr >= 254 || b >= 254) high++
+            if (r <= 1 || gr <= 1 || b <= 1) low++
+          }
+          const peak = Math.max(1, ...bins.flat())
+          const scale = (c) => c.map((n) => Math.floor((n * 1000) / peak))
+          const n = data.length / 4
+          return { r: scale(bins[0]), g: scale(bins[1]), b: scale(bins[2]), l: scale(bins[3]), highPermille: Math.floor((high * 1000) / n), lowPermille: Math.floor((low * 1000) / n) }
+        }
+        await new Promise((r) => setTimeout(r, 100))
+      }
+      return null
+    },
     // The export dialog's example name (FR-104): the first photo's own name.
     export_name_example: () => 'P1067823.jpg',
     // The Settings window's memory and cache (FR-086): a 16 GB Mac at 25 %, a trip's cache.
@@ -227,7 +270,8 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
       const shown = kind === 'preview' && scenario === 'look' && url.searchParams.get('plain') ? 'look-plain' : scenario
       const file = kind === 'preview' ? path.join(dump, 'img/preview', shown, `${id}.jpg`) : path.join(dump, 'img', kind, `${id}.jpg`)
       if (!existsSync(file)) return route.fulfill({ status: 404 })
-      return route.fulfill({ body: await readFile(file), contentType: 'image/jpeg' })
+      // Readable from the page (the histogram's canvas), as Tauri's protocol is to the app.
+      return route.fulfill({ body: await readFile(file), contentType: 'image/jpeg', headers: { 'Access-Control-Allow-Origin': '*' } })
     }
     return route.abort()
   })
