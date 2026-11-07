@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Accessibility: every slider's handle is named, the version badge's name says what it shows, and a filled button gets darker under the pointer in both themes while its words stay readable (WCAG 2.2 AA).
+- A long custom print size no longer pushes its delete button out of the card; the size's whole name shows on hover. Four colours in a row (the postcard's ink) show as dots, each name on hover, so none is cut.
+
 - One look everywhere, after a style audit of all three modes: toolbar buttons are 32 px squares that show their hint even when off; the sheet preview's tools sit in a row above the sheet, with undo, redo, copy, paste and reset, as the photo preview's; Pick and Reject are pressed buttons in the theme's colour, never red; the gallery's selection bar stays on one line; the export's choices sit under a *Change* button; nothing moves when a slider first changes or the white-balance picker is armed.
 
 ### Added

@@ -1,0 +1,206 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// The UI test cases that a machine can judge (docs/UI_TESTS.md): each detector runs in the
+// page and returns failures that start with their test ID, so a failure leads to its row and
+// its rule. shoot.mjs runs them in every view it opens under MEASURE=1.
+import { readFile, writeFile, mkdir } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
+import path from 'node:path'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
+
+/**
+ * The layout, text, state and target-size cases (UI-LAYOUT-001/002, UI-TEXT-001,
+ * UI-STATE-001, UI-A11Y-001), in one pass over the page.
+ */
+export async function layoutChecks(page, where) {
+  const found = await page.evaluate(() => {
+    const out = []
+    const vis = (el) => {
+      const b = el.getBoundingClientRect()
+      if (b.width < 0.5 || b.height < 0.5) return false
+      for (let e = el; e; e = e.parentElement) {
+        const cs = getComputedStyle(e)
+        if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) === 0) return false
+      }
+      return true
+    }
+    const name = (el) => {
+      const words = (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 40)
+      if (words) return words
+      // No words: say what it is and where, so the failure can be found.
+      const slot = el.dataset.slot ?? el.getAttribute('role') ?? el.className.toString().split(' ')[0]
+      const near = el.closest('[aria-label], section')?.getAttribute('aria-label') ?? el.closest('section')?.querySelector('header')?.textContent?.trim()
+      return `${el.tagName.toLowerCase()}[${slot}] in ${near ?? 'the page'}`.slice(0, 80)
+    }
+    // Inside a box that scrolls sideways on purpose (a toolbar row), a control may pass its card.
+    const scrollsSideways = (el, stop) => {
+      for (let e = el.parentElement; e && e !== stop; e = e.parentElement) {
+        const x = getComputedStyle(e).overflowX
+        if (x === 'auto' || x === 'scroll') return true
+      }
+      return false
+    }
+    const CONTROLS =
+      'button, [role="button"], [role="combobox"], [role="slider"], [role="switch"], [role="checkbox"], input:not([type="hidden"]), textarea, a[href], [data-slot="badge"], label'
+
+    // UI-LAYOUT-001: every control inside its card, panel or dialog, left and right.
+    for (const el of document.querySelectorAll(CONTROLS)) {
+      if (!vis(el) || el.closest('[data-overlap-ok]')) continue
+      const box = el.closest('section, aside, [role="dialog"]')
+      if (!box || scrollsSideways(el, box)) continue
+      const b = el.getBoundingClientRect()
+      const c = box.getBoundingClientRect()
+      const past = Math.max(c.left - b.left, b.right - c.right)
+      if (past > 0.5) out.push(`UI-LAYOUT-001 a control ${Math.round(past)} px outside its ${box.tagName.toLowerCase()}: "${name(el)}"`)
+    }
+
+    // UI-LAYOUT-002: no two controls on top of each other (nested ones aside).
+    // A target counts where a click would reach it: on top at its centre (not under an open
+    // dialog) and inside every box that clips it (not scrolled out of its panel).
+    const reachable = (el) => {
+      const r = el.getBoundingClientRect()
+      const [x, y] = [r.left + r.width / 2, r.top + r.height / 2]
+      if (x < 0 || y < 0 || x > innerWidth || y > innerHeight) return false
+      for (let e = el.parentElement; e; e = e.parentElement) {
+        const cs = getComputedStyle(e)
+        if (cs.overflowX !== 'visible' || cs.overflowY !== 'visible') {
+          const c = e.getBoundingClientRect()
+          if (x < c.left || x > c.right || y < c.top || y > c.bottom) return false
+        }
+      }
+      const hit = document.elementFromPoint(x, y)
+      return !!hit && (hit === el || el.contains(hit) || hit.contains(el))
+    }
+    const targets = [...document.querySelectorAll('button, [role="button"], [role="combobox"], [role="slider"], [role="switch"], [role="checkbox"], input:not([type="hidden"]), textarea, a[href]')]
+      .filter((el) => vis(el) && !el.closest('[data-overlap-ok]') && reachable(el))
+    const rects = targets.map((el) => el.getBoundingClientRect())
+    for (let i = 0; i < targets.length; i++) {
+      for (let j = i + 1; j < targets.length; j++) {
+        const [a, b] = [targets[i], targets[j]]
+        if (a.contains(b) || b.contains(a)) continue
+        // A popover or a dialog lies over the page by design: compare within one layer only.
+        const layer = (el) => el.closest('[data-radix-popper-content-wrapper], [role="dialog"]')
+        if (layer(a) !== layer(b)) continue
+        const [p, q] = [rects[i], rects[j]]
+        const w = Math.min(p.right, q.right) - Math.max(p.left, q.left)
+        const h = Math.min(p.bottom, q.bottom) - Math.max(p.top, q.top)
+        if (w > 1 && h > 1) out.push(`UI-LAYOUT-002 two controls overlap (${Math.round(w)}×${Math.round(h)} px): "${name(a)}" and "${name(b)}"`)
+      }
+    }
+
+    // UI-TEXT-001: text cut short (ellipsis or line clamp) carries its whole in a hint.
+    for (const el of document.querySelectorAll('*')) {
+      if (el.children.length > 0 && !el.textContent.trim()) continue
+      const cs = getComputedStyle(el)
+      const clamps = cs.textOverflow === 'ellipsis' || (cs.webkitLineClamp && cs.webkitLineClamp !== 'none')
+      if (!clamps || !vis(el)) continue
+      const cut = el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1
+      if (!cut || el.closest('[data-truncate-ok]')) continue
+      let hinted = false
+      for (let e = el, i = 0; e && i < 4; e = e.parentElement, i++) if (e.dataset.hint || e.title) hinted = true
+      if (!hinted) out.push(`UI-TEXT-001 text cut with no hint giving it whole: "${name(el)}"`)
+    }
+
+    // UI-STATE-001: a disabled button's own hint never shows (no pointer events): on a wrapper.
+    for (const el of document.querySelectorAll('button:disabled[data-hint]')) {
+      if (vis(el)) out.push(`UI-STATE-001 a disabled button holds its own hint, which cannot show: "${name(el)}"`)
+    }
+
+    // UI-A11Y-001: a target at least 24 px, or its 24 px circle clear of every other target
+    // (WCAG 2.2, 2.5.8).
+    const centre = (r) => [r.left + r.width / 2, r.top + r.height / 2]
+    targets.forEach((el, i) => {
+      const r = rects[i]
+      if (r.width >= 24 && r.height >= 24) return
+      const [cx, cy] = centre(r)
+      const clash = targets.some((other, j) => {
+        if (j === i || other.contains(el) || el.contains(other)) return false
+        const q = rects[j]
+        const nx = Math.max(q.left, Math.min(cx, q.right))
+        const ny = Math.max(q.top, Math.min(cy, q.bottom))
+        return Math.hypot(cx - nx, cy - ny) < 12
+      })
+      if (clash) out.push(`UI-A11Y-001 a target under 24 px too close to another (${Math.round(r.width)}×${Math.round(r.height)}): "${name(el)}"`)
+    })
+
+    // UI-LAYOUT-011: the page never scrolls sideways.
+    if (document.documentElement.scrollWidth > window.innerWidth + 1) out.push(`UI-LAYOUT-011 the page scrolls sideways (${document.documentElement.scrollWidth} > ${window.innerWidth})`)
+    return out
+  })
+  return [...new Set(found)].map((f) => `${where}: ${f}`)
+}
+
+/**
+ * Contrasts the owner kept on purpose (docs/UI_TESTS.md §4): the logo's teal under the cream
+ * text of a filled button in the light theme, 4.41:1 (owner, 2026-11-07: "keep #2d836d").
+ */
+const ALLOWED_CONTRAST = [['#fffaee', '#2d836d']]
+
+/**
+ * WCAG 2.2 A and AA by axe-core (UI-A11Y-002; ADR-0042: a test-only tool). Each place that
+ * breaks a rule is one line.
+ */
+export async function axeChecks(page, where) {
+  const { AxeBuilder } = require('@axe-core/playwright')
+  const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze()
+  // Each place on its own line, with axe's reason (a contrast's colours and ratio), less the
+  // exceptions the owner decided (docs/UI_TESTS.md §4).
+  return result.violations.flatMap((v) =>
+    v.nodes
+      .map((n) => ({ n, why: (n.any[0] ?? n.all[0] ?? n.none[0])?.message ?? v.help }))
+      .filter(({ why }) => !(v.id === 'color-contrast' && ALLOWED_CONTRAST.some(([fg, bg]) => why.includes(`foreground color: ${fg}`) && why.includes(`background color: ${bg}`))))
+      .map(({ n, why }) => `${where}: UI-A11Y-002 axe ${v.id} (${v.impact}): ${n.target.join(' ')} — ${why}`),
+  )
+}
+
+/**
+ * Nothing jumps (UI-STABLE-001): the boxes named by `selector` keep their place while
+ * `act` runs, as STYLE_RULE §4 asks of a first slider step, W, J or a note that comes.
+ */
+export async function stableChecks(page, where, selector, act, label) {
+  const boxes = () =>
+    page.evaluate((sel) => [...document.querySelectorAll(sel)].map((e) => {
+      const b = e.getBoundingClientRect()
+      return [Math.round(b.top), Math.round(b.height)]
+    }), selector)
+  const before = await boxes()
+  await act()
+  await page.waitForTimeout(400)
+  const after = await boxes()
+  const moved = before.findIndex((b, i) => !after[i] || Math.abs(after[i][0] - b[0]) > 1)
+  return moved >= 0 ? [`${where}: UI-STABLE-001 "${label}" moved box ${moved + 1} of ${selector} by ${after[moved] ? after[moved][0] - before[moved][0] : '?'} px`] : []
+}
+
+/**
+ * Pixel baselines (UI-VISUAL-001): an element's picture against the one approved before, per
+ * engine, language, theme and width. `UPDATE_BASELINES=1` approves the current pictures; a
+ * difference writes `<name>-diff.png` beside the output for review.
+ */
+export async function baseline(page, locator, name, { dir, outDir, tolerance = 0.002 }) {
+  const { PNG } = require('pngjs')
+  const pixelmatch = (await import('pixelmatch')).default
+  const file = path.join(dir, `${name}.png`)
+  // The same picture each run: every scrolling box inside at its top, the pointer away.
+  await locator.evaluate((root) => {
+    for (const el of [root, ...root.querySelectorAll('*')]) if (el.scrollTop) el.scrollTop = 0
+  })
+  await page.mouse.move(0, 0)
+  await page.waitForTimeout(200)
+  const shot = await locator.screenshot({ animations: 'disabled', caret: 'hide', scale: 'css' })
+  if (process.env.UPDATE_BASELINES || !existsSync(file)) {
+    await mkdir(dir, { recursive: true })
+    await writeFile(file, shot)
+    return []
+  }
+  const a = PNG.sync.read(await readFile(file))
+  const b = PNG.sync.read(shot)
+  if (a.width !== b.width || a.height !== b.height) {
+    return [`UI-VISUAL-001 ${name}: size ${b.width}×${b.height}, approved ${a.width}×${a.height}`]
+  }
+  const diff = new PNG({ width: a.width, height: a.height })
+  const changed = pixelmatch(a.data, b.data, diff.data, a.width, a.height, { threshold: 0.1 })
+  if (changed / (a.width * a.height) <= tolerance) return []
+  await writeFile(path.join(outDir, `${name}-diff.png`), PNG.sync.write(diff))
+  return [`UI-VISUAL-001 ${name}: ${changed} px changed (${((changed / (a.width * a.height)) * 100).toFixed(2)} %), see ${name}-diff.png`]
+}

@@ -364,7 +364,7 @@ export function SheetPreviewDialog({
                     <img src={thumbUrl(p.id, 0, generation)} alt="" className="size-10 rounded object-cover" />
                   </button>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm">{p.fileName}</p>
+                    <p className="truncate text-sm" data-hint={p.fileName}>{p.fileName}</p>
                     <p className="text-xs text-muted-foreground">{formatCapture(p.capture)}</p>
                   </div>
                   <Button

@@ -56,6 +56,8 @@ would accept (not a panel: grid, dialog, popover, title bar).
 
 ## 4. Measure, don't eyeball
 
+The whole set of machine-judged cases is [docs/UI_TESTS.md](../../../docs/UI_TESTS.md), run in one command: `scripts/ui-check.sh <demo-photo-folder>` (`QUICK=1` for English, light, Chromium). A fault found by eye gets its row there and, where a machine can judge it, its detector in `site/screenshots/checks.mjs`. Below, the steps it runs.
+
 The measures are checked on the real interface with the recorded demo
 (`site/screenshots/README.md`):
 

@@ -16,6 +16,7 @@
 | Fuzz | RAW decoder: mutation testing on stable Rust (§4) | `crates/rawcore/examples/mutate.rs` | By hand, before a RAW format moves to our own decoder |
 | Benchmark | Budgets from [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets) | `crates/core/examples/measure_*`, `bench/run.sh`, `bench/batch.sh`, `scripts/measure-startup.sh` | By hand, logged in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log) |
 | Release smoke test | The installed Linux packages (`.deb` file types, the AppImage runs 20 s, also on Debian 12) | [release.yml](../.github/workflows/release.yml) | Every release |
+| UI test cases | Every UI and UX case of [UI_TESTS.md](UI_TESTS.md): inside its card, no overlap, cut text with its hint, target size, WCAG 2.2 AA by axe-core, nothing jumping, the lego measures, approved pictures, in English and Vietnamese, light and dark, Chromium and WebKit, at 1180 to 1600 px | `scripts/ui-check.sh` (`MEASURE=1` of `site/screenshots/shoot.mjs`, `checks.mjs`) | Before each release, and after any UI change |
 | Manual | §7 checklist | By hand | Before each release |
 
 **Planned** (none of these exists yet):

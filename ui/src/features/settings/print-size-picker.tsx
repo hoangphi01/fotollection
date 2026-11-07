@@ -93,7 +93,7 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
             else onChange((s) => ({ ...s, printSize: v }))
           }}
         >
-          <SelectTrigger id={id} className="w-full" aria-label={t('settings.printSize')}>
+          <SelectTrigger id={id} className="w-full" aria-label={t('settings.printSize')} data-hint={selectedCustom?.name}>
             <SelectValue placeholder={t('common.loading')} />
           </SelectTrigger>
           <SelectContent>

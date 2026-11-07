@@ -20,8 +20,10 @@ type StageNavProps = {
 export function StageNav({ to, label, disabled = false, onClick }: StageNavProps) {
   const Icon = to === 'previous' ? ChevronLeft : ChevronRight
   return (
+    // Over the stage on purpose, as a viewer's arrows are (docs/UI_TESTS.md §4).
     <span
       data-hint={label}
+      data-overlap-ok
       className={cn(
         'absolute opacity-0 transition-opacity group-hover/stage:opacity-100 focus-within:opacity-100',
         to === 'previous' ? 'left-3' : 'right-3',

@@ -23,7 +23,8 @@ type InspectorTabsProps<T extends string> = {
  */
 export function InspectorTabs<T extends string>({ groups, value, onChange, ariaLabel }: InspectorTabsProps<T>) {
   return (
-    <div role="tablist" aria-label={ariaLabel} className="flex items-center gap-2 p-3">
+    // A group of toggles, not ARIA tabs (WCAG 4.1.2: a tablist holds only tabs).
+    <div role="group" data-slot="inspector-tabs" aria-label={ariaLabel} className="flex items-center gap-2 p-3">
       {groups.map((tabs, i) => (
         <Fragment key={tabs[0]?.value ?? i}>
           {i > 0 && <Separator orientation="vertical" className="h-5!" />}

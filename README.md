@@ -384,6 +384,7 @@ Fotollection is free, made by a student between classes and a part-time job. If 
 
 ### Third-party notices
 
+- The UI tests (`scripts/ui-check.sh`, never shipped) use [axe-core](https://github.com/dequelabs/axe-core) by Deque Systems under the Mozilla Public License 2.0, a development tool only ([ADR-0042](docs/adr/0042-axe-core-for-ui-tests-only.md)).
 - JPEG encoding uses [`jpeg-encoder`](https://github.com/vstroebel/jpeg-encoder), which is based in part on the work of the Independent JPEG Group.
 - The text inside the photo uses [DSEG14 Classic](https://github.com/keshikan/DSEG) Italic by keshikan, and the info frame uses [Inter](https://rsms.me/inter/); both under the SIL Open Font License 1.1 (`crates/core/assets/fonts/`). The interface uses [Be Vietnam Pro](https://github.com/bettergui/BeVietnamPro) and, for figures set mono, [Geist Mono](https://vercel.com/font) (both OFL 1.1), bundled so it looks the same on Windows, macOS and Linux.
 - The website's support section draws its VietQR code with [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) by Kazuhiko Arase, MIT licence (`site/assets/js/qrcode.js`, kept as published). QR Code is a registered trademark of DENSO WAVE INCORPORATED.

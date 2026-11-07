@@ -21,7 +21,8 @@ export function VersionBadge({ version }: { version: string }) {
     <button
       type="button"
       className="rounded-full"
-      aria-label={t('about.versions')}
+      // Its name holds the words it shows (WCAG 2.5.3), then what it opens.
+      aria-label={`v${version} · ${t('about.versions')}`}
       data-hint={t('about.versions')}
       onClick={() => showSettings('whatsNew')}
     >

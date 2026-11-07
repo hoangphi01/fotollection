@@ -385,6 +385,7 @@ Fotollection miễn phí, do một sinh viên làm giữa giờ học và giờ 
 
 ### Ghi nhận bên thứ ba
 
+- Phần kiểm thử giao diện (`scripts/ui-check.sh`, không bao giờ đi kèm bản cài) dùng [axe-core](https://github.com/dequelabs/axe-core) của Deque Systems theo Mozilla Public License 2.0, chỉ là công cụ khi phát triển ([ADR-0042](docs/adr/0042-axe-core-for-ui-tests-only.md)).
 - Mã hóa JPEG dùng [`jpeg-encoder`](https://github.com/vstroebel/jpeg-encoder), một phần dựa trên công trình của Independent JPEG Group.
 - Chữ in trong ảnh dùng font [DSEG14 Classic](https://github.com/keshikan/DSEG) Italic của keshikan, khung thông tin dùng [Inter](https://rsms.me/inter/); cả hai theo giấy phép SIL Open Font License 1.1 (`crates/core/assets/fonts/`). Giao diện dùng [Be Vietnam Pro](https://github.com/bettergui/BeVietnamPro) và, cho các con số dạng mono, [Geist Mono](https://vercel.com/font) (cả hai theo OFL 1.1), đóng gói sẵn để hiển thị giống nhau trên Windows, macOS và Linux.
 - Mục ủng hộ trên trang web vẽ mã VietQR bằng [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) của Kazuhiko Arase, giấy phép MIT (`site/assets/js/qrcode.js`, giữ nguyên bản phát hành). QR Code là nhãn hiệu đã đăng ký của DENSO WAVE INCORPORATED.

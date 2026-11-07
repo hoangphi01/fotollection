@@ -97,7 +97,7 @@ export function CompareDialog({
                   )}
                 </div>
                 <figcaption className="flex items-center gap-2 text-xs">
-                  <span className="truncate font-medium">{photo?.fileName ?? `#${score.id}`}</span>
+                  <span className="truncate font-medium" data-hint={photo?.fileName}>{photo?.fileName ?? `#${score.id}`}</span>
                   {rank === 0 && !group?.result.tooClose && <Badge>{t('bestShot.best')}</Badge>}
                   {score.closedEyes > 0 && (
                     <span className="flex items-center gap-1 text-warning">

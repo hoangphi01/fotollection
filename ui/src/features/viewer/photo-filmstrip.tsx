@@ -35,7 +35,7 @@ export function PhotoFilmstrip({ photos, index, thumbVersions, generation, onPic
           <span>
             {(index ?? 0) + 1} / {photos.length}
           </span>
-          {shown && <span className="truncate text-stage-ink">· {shown.fileName}</span>}
+          {shown && <span className="truncate text-stage-ink" data-hint={shown.fileName}>· {shown.fileName}</span>}
         </>
       }
       items={photos}

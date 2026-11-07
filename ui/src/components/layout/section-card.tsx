@@ -38,12 +38,12 @@ export function SectionCard({ icon, title, action, open = true, footer, children
       >
         <span className="flex text-primary [&_svg]:size-4">{icon}</span>
         {onToggle ? (
-          <button type="button" className="flex min-w-0 flex-1 items-center gap-2 text-left" aria-expanded={open} onClick={onToggle}>
-            <span className="min-w-0 truncate">{title}</span>
+          <button type="button" className="flex h-8 min-w-0 flex-1 items-center gap-2 text-left" aria-expanded={open} onClick={onToggle}>
+            <span className="min-w-0 truncate" data-hint={typeof title === 'string' ? title : undefined}>{title}</span>
             <ChevronDown className={cn('size-4 shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
           </button>
         ) : (
-          <div className="min-w-0 flex-1 truncate">{title}</div>
+          <div className="min-w-0 flex-1 truncate" data-hint={typeof title === 'string' ? title : undefined}>{title}</div>
         )}
         {/* A fixed 44 px header: an action that comes and goes (a 32 px reset) never resizes it. */}
         {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}

@@ -84,7 +84,7 @@ export function SettingsFrame({
         <div data-slot="settings-body" className="flex min-w-0 flex-1 flex-col bg-background">
           <div className="flex h-header shrink-0 flex-col justify-center gap-0.5 px-4 pr-12">
             <DialogTitle className="truncate text-base">{heading}</DialogTitle>
-            <DialogDescription className="truncate text-xs">{description}</DialogDescription>
+            <DialogDescription className="truncate text-xs" data-hint={description}>{description}</DialogDescription>
           </div>
           <Separator />
           {full ? (

@@ -693,3 +693,17 @@
 - **Why:** the sheet's image is capped by a height written for the dialog without a toolbar (`90vh − 4rem`, the stage's padding only); the new 64 px row and its line came out of the stage, not out of that number. A landscape sheet still fit, so only a tall or square one showed it.
 - **Fix:** the cap takes the toolbar row too (`calc(90vh − 4rem − var(--spacing-header) − 1px)`).
 - **Rule:** after changing what surrounds a stage (a toolbar, a header, a strip), open it with every shape it shows (landscape, portrait, square, a postcard) and check the picture's four edges; a size written as a calc names every part it subtracts.
+
+### A flex child that holds a sentence needs `min-w-0` (FR-043)
+
+- **Seen:** with a long custom print size chosen ("Demo · 100 × 100 cm · 1:1"), the red delete button beside the size was pushed 27 px out of the "Khổ tấm in" card (owner, 2026-11-07).
+- **Why:** shadcn's `SelectTrigger` is `whitespace-nowrap` with no `min-w-0`: a flex item's minimum width is its content, so the trigger would not shrink, and its `line-clamp` never cut anything. The demo recording had no custom size, so no check ever drew that row.
+- **Fix:** `SelectTrigger` and its value are `min-w-0`, the chosen custom size's name is the trigger's hint, and a stress fixture (a long custom size chosen) opens the row in every run; `UI-LAYOUT-001` caught it before the fix.
+- **Rule:** an element that holds words in a flex row gets `min-w-0`, or it pushes its neighbours out. A state the recording lacks gets a fixture, or no check sees it.
+
+### A checker's own faults look like the app's (UI_TESTS)
+
+- **Seen:** the first run of the UI tests reported 1,361 overlaps, a WebKit timeout in the manual, 11.9 px gaps and a pixel difference of 7 % between two runs of the same build.
+- **Why:** overlaps counted controls under an open dialog or scrolled out of their panel; `settle` waited for lazy pictures WebKit never starts; WebKit lays out in fractions of a pixel; the panel's scroll position differed between runs.
+- **Fix:** a control counts only where a click reaches it (on top at its centre, inside every box that clips it), within one layer; lazy pictures out of view are not waited for; measures are whole pixels; every scrolling box is at its top before a picture is taken; and an approved set is compared with a second run before it is trusted.
+- **Rule:** a new detector is run twice on an unchanged build and every report of it is read before it is believed; a check that cannot fail proves nothing, and one that fails on nothing is as useless.

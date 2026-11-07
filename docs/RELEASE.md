@@ -103,6 +103,7 @@ Installing a new version over an old one **replaces it** and keeps settings, pro
 ## 6. Release checklist
 
 - [ ] CHANGELOG `Unreleased` describes the release in user terms
+- [ ] `scripts/ui-check.sh` passes the whole matrix ([UI_TESTS.md](UI_TESTS.md)); changed pictures approved on purpose
 - [ ] Benchmarks are within budget, and the results are logged in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log)
 - [ ] `scripts/release.sh` run, commit pushed
 - [ ] Workflow green, Linux smoke tests included; the release has the `.dmg`, `.msi`, `-setup.exe`, the two AppImages, the two `.deb` and `SHA256SUMS.txt`

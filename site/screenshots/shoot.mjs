@@ -8,6 +8,7 @@
 // (src-tauri/src/demo.rs), and serves the recorded thumbnails and previews. No Tauri, no
 // network: every request outside the two local hosts is refused.
 
+import { axeChecks, baseline, layoutChecks, stableChecks } from './checks.mjs'
 import { readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
@@ -40,7 +41,7 @@ const fixtures = trip.fixtures
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.json': 'application/json' }
 
 /** Runs in the page before the app: a stand-in for Tauri's IPC bridge. */
-function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, update }) {
+function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, update, settingsPatch }) {
   const { common, scenarios } = fixtures
   // Collage mode (FR-035) has its own recording; older dumps have none.
   // Postcards (FR-073) are recorded after the collage, as its own sheets; older dumps have none.
@@ -49,6 +50,8 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
   const look = scenarios[scenario] ?? scenarios.stamp
   const byId = (table, args) => table[String(args?.id)]
   let current = ['collage', 'postcard', 'postcard-full'].includes(scenario) ? collage.get_settings : look.get_settings
+  // A state the recording lacks (docs/UI_TESTS.md, the stress fixtures): a long custom size…
+  if (settingsPatch) current = { ...current, settings: { ...current.settings, ...settingsPatch } }
   // The print basket and set-aside photos (FR-050), by position (TRIP_QUEUES).
   const withQueues = (photos) =>
     photos.map((p, i) => ({ ...p, queue: queues.print.includes(i) ? 'print' : queues.aside.includes(i) ? 'aside' : null }))
@@ -239,7 +242,7 @@ const shots = []
 const TRIP_QUEUES = { print: [1, 4, 6], aside: [7, 13] } // not the shown photos (SHOW)
 const NO_QUEUES = { print: [], aside: [] }
 
-async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional', ui = {}, update = null }) {
+async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional', ui = {}, update = null, settingsPatch = null }) {
   const { dump } = source
   // DEMO_WIDTH=1000 checks narrow windows (the screenshots for the site stay at 1440).
   const context = await browser.newContext({
@@ -276,7 +279,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
     return route.abort()
   })
   // DEMO_OS=windows shows the Windows title bar, for checking it on a Mac.
-  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update })
+  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update, settingsPatch })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
   await page.goto('http://app.localhost/')
@@ -297,7 +300,8 @@ async function settle(page) {
     document.querySelector('[role="dialog"]')?.focus()
   })
   await page.waitForTimeout(400)
-  await page.waitForFunction(() => [...document.images].every((i) => i.complete && i.naturalWidth > 0))
+  // A lazy picture out of view (the manual's) loads only when scrolled to: WebKit never starts it.
+  await page.waitForFunction(() => [...document.images].every((i) => (i.complete && i.naturalWidth > 0) || (i.loading === 'lazy' && !i.complete)))
   await page.waitForTimeout(300)
 }
 
@@ -377,14 +381,15 @@ async function foldedBands(page, where) {
       return extra > 0.5 ? [`"${header.textContent.trim()}" ${Math.round(extra * 10) / 10} px under its header`] : []
     }),
   )
-  return bands.map((b) => `${where}: folded card ${b}`)
+  return bands.map((b) => `${where}: UI-LAYOUT-006 folded card ${b}`)
 }
 
 async function measure(page, rootSel) {
   return page.evaluate((rootSel) => {
     const roots = [...document.querySelectorAll(rootSel)]
     const root = roots[roots.length - 1]
-    const r = (n) => Math.round(n * 10) / 10
+    // Whole pixels: WebKit lays out in fractions (11.9 for a 12 px gap).
+    const r = (n) => Math.round(n)
     const vis = (el) => { const b = el.getBoundingClientRect(); return b.height > 0.5 && b.width > 0.5 }
     const gaps = (parent) => {
       const kids = [...parent.children].filter(vis)
@@ -469,15 +474,16 @@ async function overflows(page, where) {
     for (const el of document.querySelectorAll(controls)) {
       if (!vis(el)) continue
       const cs = getComputedStyle(el)
-      const cut = cs.textOverflow === 'ellipsis' || el.querySelector('.truncate')
+      // Meant to end in an ellipsis: its own, a `.truncate` inside, or a select's value (clamped).
+      const cut = cs.textOverflow === 'ellipsis' || el.querySelector('.truncate, [data-slot="select-value"]')
       // The content's own width against the room inside the padding: centred text spills on
       // both sides, which scrollWidth counts only on one.
       const range = document.createRange()
       range.selectNodeContents(el)
       const used = range.getBoundingClientRect().width
       const room = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)
-      if (!cut && used > room + 1) out.push(`text wider than its room (${Math.round(used)} > ${Math.round(room)}): ${el.dataset.slot ?? el.tagName.toLowerCase()} "${name(el)}"`)
-      if (el.tagName !== 'LABEL' && el.scrollHeight > el.clientHeight + 1) out.push(`text taller than its box (${el.scrollHeight} > ${el.clientHeight}): "${name(el)}"`)
+      if (!cut && used > room + 1) out.push(`UI-LAYOUT-008 text wider than its room (${Math.round(used)} > ${Math.round(room)}): ${el.dataset.slot ?? el.tagName.toLowerCase()} "${name(el)}"`)
+      if (el.tagName !== 'LABEL' && el.scrollHeight > el.clientHeight + 1) out.push(`UI-LAYOUT-009 text taller than its box (${el.scrollHeight} > ${el.clientHeight}): "${name(el)}"`)
     }
     const rows = '.h-header, [data-slot="button-group"], [role="toolbar"], [data-slot="dialog-footer"]'
     for (const row of document.querySelectorAll(rows)) {
@@ -485,7 +491,7 @@ async function overflows(page, where) {
       const right = row.getBoundingClientRect().right
       for (const kid of row.children) {
         if (vis(kid) && kid.getBoundingClientRect().right > right + 0.5) {
-          out.push(`a row's child past its edge by ${Math.round(kid.getBoundingClientRect().right - right)} px: "${name(kid)}" in "${name(row)}"`)
+          out.push(`UI-LAYOUT-010 a row's child past its edge by ${Math.round(kid.getBoundingClientRect().right - right)} px: "${name(kid)}" in "${name(row)}"`)
         }
       }
     }
@@ -501,7 +507,7 @@ async function overflows(page, where) {
         const off = Math.abs(t.left + t.width / 2 - (b.left + b.width / 2))
         // A segment with an icon or a colour swatch before its words is not centred on them.
         const marked = seg.children.length > 0
-        if (t.width > 0 && off > 0.5 && !marked) out.push(`segment text ${Math.round(off * 10) / 10} px off centre: "${name(seg)}"`)
+        if (t.width > 0 && off > 0.5 && !marked) out.push(`UI-LAYOUT-013 segment text ${Math.round(off * 10) / 10} px off centre: "${name(seg)}"`)
         break
       }
     }
@@ -510,32 +516,37 @@ async function overflows(page, where) {
   return [...new Set(found)].map((f) => `${where}: ${f}`)
 }
 
+/** Every machine-judged UI test case on the page as it is (docs/UI_TESTS.md). */
+async function allChecks(page, where) {
+  return [...(await overflows(page, where)), ...(await layoutChecks(page, where)), ...(await axeChecks(page, where))]
+}
+
 /** Every view the overflow checks walk, at one window width (step 5). */
 async function overflowViews({ language, theme, width }) {
   const out = []
   let { context, page } = await open({ scenario: 'stamp', language, theme, width, queues: NO_QUEUES })
   await settle(page)
-  out.push(...(await overflows(page, `gallery at ${width}`)))
+  out.push(...(await allChecks(page, `gallery at ${width}`)))
   await page.getByRole('button', { name: /^(Filters|Bộ lọc|\d+ (filter|filters|bộ lọc))$/ }).first().click()
   await page.waitForTimeout(400)
-  out.push(...(await overflows(page, `filters at ${width}`)))
+  out.push(...(await allChecks(page, `filters at ${width}`)))
   await page.keyboard.press('Escape')
   await page.getByRole('button', { name: /^(Export|Xuất) \d+/ }).first().click()
   await page.waitForSelector('[data-slot="settings-body"]')
   await settle(page)
-  out.push(...(await overflows(page, `export dialog at ${width}`)))
+  out.push(...(await allChecks(page, `export dialog at ${width}`)))
   await page.screenshot({ path: path.join(outDir, `measure-export-${width}.png`) })
   await page.keyboard.press('Escape')
   await page.waitForTimeout(300)
   for (const section of [/^(General|Chung)$/, /^(Export|Xuất ảnh)$/, /^(Updates|Cập nhật)$/]) {
     await openSettings(page, section)
-    out.push(...(await overflows(page, `settings ${section.source.slice(2, 8)} at ${width}`)))
+    out.push(...(await allChecks(page, `settings ${section.source.slice(2, 8)} at ${width}`)))
   }
   await context.close()
   for (const mode of ['simple', 'collage']) {
     ;({ context, page } = await open({ scenario: mode === 'collage' ? 'collage' : 'stamp', language, theme, width, mode, queues: NO_QUEUES }))
     await settle(page)
-    out.push(...(await overflows(page, `${mode} at ${width}`)))
+    out.push(...(await allChecks(page, `${mode} at ${width}`)))
     await context.close()
   }
   for (const layout of ['dialog', 'window']) {
@@ -543,7 +554,7 @@ async function overflowViews({ language, theme, width }) {
     await (await reach(page, SHOW.crop)).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
     await settle(page)
-    out.push(...(await overflows(page, `preview (${layout}) at ${width}`)))
+    out.push(...(await allChecks(page, `preview (${layout}) at ${width}`)))
     if (width === 1180) await page.screenshot({ path: path.join(outDir, `measure-preview-${layout}-1180.png`) })
     await context.close()
   }
@@ -551,7 +562,7 @@ async function overflowViews({ language, theme, width }) {
   ;({ context, page } = await open({ scenario: 'stamp', language, theme, width, update }))
   await page.waitForSelector('[role="dialog"]')
   await settle(page)
-  out.push(...(await overflows(page, `update window at ${width}`)))
+  out.push(...(await allChecks(page, `update window at ${width}`)))
   await context.close()
   return out
 }
@@ -559,8 +570,80 @@ async function overflowViews({ language, theme, width }) {
 /** STYLE_RULE §4: each column holds this one value, in every view that has it. */
 const MEASURES = { cardGap: '12', blockGap: '12', fieldGap: '6', select: '32', toggle: '32', input: '32', iconBtn: '32', listGap: '4', modeGap: '12' }
 
+/**
+ * The stress fixtures and the dynamic cases of docs/UI_TESTS.md: states the demo recording
+ * never shows (a long custom size chosen, every Settings section, the welcome), the sheet
+ * preview in every shape, nothing jumping when W or J is pressed, and the pixel baselines.
+ */
+async function stressViews({ language, theme }) {
+  const out = []
+  const engine = process.env.MEASURE_ENGINE === 'webkit' ? 'webkit' : 'chromium'
+  const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'baselines')
+  const shot = (page, locator, name) => baseline(page, locator, `${engine}-${language}-${theme}-${name}`, { dir, outDir })
+  // UI-FIX-001: a long custom print size chosen, its delete button beside the size's name.
+  const longSize = { customSizes: [{ id: 'custom-1', name: 'Demo very long custom print size', shortMm: 1000, longMm: 1000, unit: 'cm' }], printSize: 'custom-1' }
+  let { context, page } = await open({ scenario: 'stamp', language, theme, settingsPatch: longSize })
+  await settle(page)
+  out.push(...(await allChecks(page, 'Pro panel, a long custom size')))
+  out.push(...(await shot(page, page.locator('aside.border-l'), 'pro-panel')))
+  out.push(...(await shot(page, page.locator('aside.border-r'), 'folder-list')))
+  await context.close()
+  ;({ context, page } = await open({ scenario: 'collage', language, theme, mode: 'collage', queues: NO_QUEUES, settingsPatch: longSize }))
+  await settle(page)
+  out.push(...(await allChecks(page, 'Collage panel, a long custom size')))
+  out.push(...(await shot(page, page.locator('aside.border-l'), 'collage-panel')))
+  await context.close()
+  // The sheet preview in every shape (LESSONS: a row above a stage): landscape, square, tall.
+  for (const [size, label] of [['10x15', 'landscape'], ['10x10', 'square'], ['13x18', 'tall']]) {
+    ;({ context, page } = await open({ scenario: 'collage', language, theme, mode: 'collage', queues: NO_QUEUES, settingsPatch: { printSize: size } }))
+    const sheet = page.locator('[data-cell]').nth(2)
+    await sheet.dblclick()
+    await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
+    await settle(page)
+    out.push(...(await allChecks(page, `sheet preview, ${label}`)))
+    const fits = await page.evaluate(() => {
+      const img = document.querySelector('[role="dialog"] img[src*="/sheet/"]')
+      const stage = img?.closest('.group\\/stage')
+      if (!img || !stage) return null
+      const a = img.getBoundingClientRect()
+      const b = stage.getBoundingClientRect()
+      return a.top >= b.top - 0.5 && a.bottom <= b.bottom + 0.5 && a.left >= b.left - 0.5 && a.right <= b.right + 0.5
+    })
+    if (fits === false) out.push(`sheet preview, ${label}: UI-LAYOUT-012 the sheet passes its stage`)
+    await context.close()
+  }
+  // Nothing jumps (UI-STABLE-001): W and J in the photo preview leave its cards in place.
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
+  await (await reach(page, SHOW.crop)).dblclick()
+  await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
+  await settle(page)
+  out.push(...(await shot(page, page.locator('[role="dialog"] aside'), 'preview-inspector')))
+  for (const key of ['w', 'j']) {
+    out.push(...(await stableChecks(page, 'photo preview', '[role="dialog"] aside section', () => page.keyboard.press(key), key.toUpperCase())))
+    await page.keyboard.press(key === 'w' ? 'Escape' : key)
+  }
+  await context.close()
+  // Every Settings section, the manual among them, and the welcome.
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
+  const sections = [/^(General|Chung)$/, /^(Export|Xuất ảnh)$/, /^(RAM & cache|Bộ nhớ RAM & cache)$/, /^(Updates|Cập nhật)$/, /^(Manual|Hướng dẫn sử dụng)$/, /^(Report a problem|Báo lỗi)$/, /^(What's new|Có gì mới)$/]
+  for (const name of sections) {
+    await openSettings(page, name)
+    await page.waitForTimeout(300)
+    out.push(...(await allChecks(page, `settings ${name.source.slice(2, 12)}`)))
+    out.push(...(await shot(page, page.locator('[data-slot="settings-body"]'), `settings-${name.source.slice(2, 8).replace(/\W/g, '')}`)))
+  }
+  await context.close()
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme, ui: { welcomeSeen: false } }))
+  await page.waitForSelector('[role="dialog"]')
+  await settle(page)
+  out.push(...(await allChecks(page, 'welcome')))
+  await context.close()
+  return out
+}
+
 async function measurePanels() {
   const rows = []
+  const extra = []
   const theme = process.env.MEASURE_THEME ?? 'light'
     const language = process.env.MEASURE_LANG ?? 'en'
   let { context, page } = await open({ scenario: 'stamp', language, theme })
@@ -574,7 +657,7 @@ async function measurePanels() {
   const bands = await foldedBands(page, 'photo preview')
   // The inspector's tabs: Edit, Crop | Print, Info; the Print and Info tabs hold folded cards.
   for (const [index, tab] of [[2, 'Print'], [3, 'Info']]) {
-    await page.locator('[role="tablist"] button').nth(index).click()
+    await page.locator('[data-slot="inspector-tabs"] button').nth(index).click()
     await settle(page)
     bands.push(...(await foldedBands(page, `photo preview, ${tab}`)))
   }
@@ -589,18 +672,22 @@ async function measurePanels() {
   let sheet = page.locator('[data-cell]').nth(2)
   await sheet.click(); await settle(page)
   rows.push(['Collage panel', await measure(page, 'aside.border-l')])
+  extra.push(...(await allChecks(page, 'Collage panel, a sheet chosen')))
   await page.screenshot({ path: path.join(outDir, 'measure-collage.png') })
   await sheet.dblclick(); await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]'); await settle(page)
   rows.push(['sheet preview', await measure(page, '[role="dialog"] aside')])
+  extra.push(...(await allChecks(page, 'sheet preview')))
   await page.screenshot({ path: path.join(outDir, 'measure-sheet.png') })
   await context.close()
   ;({ context, page } = await open({ scenario: 'postcard', language, theme, mode: 'collage', queues: NO_QUEUES }))
   sheet = await cell(page, SHOW.frame)
   await sheet.click(); await settle(page)
   rows.push(['Postcard panel', await measure(page, 'aside.border-l')])
+  extra.push(...(await allChecks(page, 'Postcard panel')))
   await page.screenshot({ path: path.join(outDir, 'measure-postcard.png') })
   await sheet.dblclick(); await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]'); await settle(page)
   rows.push(['postcard preview', await measure(page, '[role="dialog"] aside')])
+  extra.push(...(await allChecks(page, 'postcard preview')))
   await page.screenshot({ path: path.join(outDir, 'measure-postcard-preview.png') })
   await context.close()
   ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
@@ -616,7 +703,7 @@ async function measurePanels() {
     for (const mode of ['professional', 'collage']) {
       ;({ context, page } = await open({ scenario: mode === 'collage' ? 'collage' : 'stamp', language, theme, mode, width, queues: NO_QUEUES }))
       await settle(page)
-      for (const b of await iconOffsets(page)) if (b.off > 0.5) offCentre.push(`${mode} at ${width} px: "${b.label}" icon ${b.off} px off centre`)
+      for (const b of await iconOffsets(page)) if (b.off > 0.5) offCentre.push(`${mode} at ${width} px: UI-LAYOUT-007 "${b.label}" icon ${b.off} px off centre`)
       await context.close()
     }
   }
@@ -624,10 +711,10 @@ async function measurePanels() {
   console.log(['view', ...keys].join(' | '))
   for (const [name, m] of rows) console.log([name, ...keys.map((k) => m[k] || '–')].join(' | '))
   const off = rows.flatMap(([name, m]) =>
-    Object.entries(MEASURES).filter(([k, v]) => m[k] && m[k] !== v).map(([k, v]) => `${name}: ${k} is ${m[k]}, not ${v}`),
+    Object.entries(MEASURES).filter(([k, v]) => m[k] && m[k] !== v).map(([k, v]) => `${name}: ${/Gap$/.test(k) ? 'UI-LAYOUT-003' : 'UI-LAYOUT-004'} ${k} is ${m[k]}, not ${v}`),
   )
   const widths = new Set(rows.filter(([name]) => /panel|folder/.test(name)).map(([, m]) => m.width))
-  if (widths.size > 1) off.push(`the folder list and the panels differ in width: ${[...widths].join(', ')}`)
+  if (widths.size > 1) off.push(`UI-LAYOUT-005 the folder list and the panels differ in width: ${[...widths].join(', ')}`)
   off.push(...offCentre, ...panelBands, ...bands)
   console.log(panelBands.length + bands.length ? '' : 'folded cards: every folded card is its header alone')
   console.log(offCentre.length ? '' : 'icons: every icon-only button has its icon centred (≤ 0.5 px)')
@@ -636,6 +723,10 @@ async function measurePanels() {
   for (const width of [1180, 1400, 1600]) spilled.push(...(await overflowViews({ language, theme, width })))
   off.push(...spilled)
   console.log(spilled.length ? '' : 'overflow: no text, row or segment overflows at 1180, 1400 or 1600 px')
+  // The states the recording lacks, nothing jumping, and the approved pictures (docs/UI_TESTS.md).
+  extra.push(...(await stressViews({ language, theme })))
+  off.push(...extra)
+  console.log(extra.length ? '' : 'ui tests: every view and state passes layout, text, target, axe, stability and baselines')
   if (off.length) {
     console.error(off.join('\n'))
     process.exitCode = 1

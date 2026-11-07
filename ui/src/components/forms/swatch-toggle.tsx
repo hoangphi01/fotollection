@@ -15,7 +15,7 @@ type SwatchToggleProps<T extends string> = {
   onChange: (value: T) => void
   ariaLabel?: string
   disabled?: boolean
-  /** Tighter items, for four colours in one row. */
+  /** Four or more colours in one row: the dots alone, each name as its hint. */
   dense?: boolean
   className?: string
 }
@@ -47,12 +47,20 @@ export function SwatchToggle<T extends string>({
       {options.map((o) => {
         const css = o.swatch.startsWith('#') || o.swatch.startsWith('rgb')
         return (
-          <ToggleGroupItem key={o.value} value={o.value} className={cn('min-w-0 flex-1 gap-1.5 px-1.5 text-xs', dense && 'px-1')}>
+          // Four colours in an 18 rem panel: the dot alone, its name as the hint and for screen
+          // readers (STYLE_RULE §4, icons first: a label is never cut).
+          <ToggleGroupItem
+            key={o.value}
+            value={o.value}
+            aria-label={dense ? o.label : undefined}
+            data-hint={dense ? o.label : undefined}
+            className={cn('min-w-0 flex-1 gap-1.5 px-1.5 text-xs')}
+          >
             <span
-              className={cn('size-3 shrink-0 rounded-full border', !css && o.swatch)}
+              className={cn('shrink-0 rounded-full border', dense ? 'size-4' : 'size-3', !css && o.swatch)}
               style={css ? { backgroundColor: o.swatch } : undefined}
             />
-            {o.label}
+            {!dense && o.label}
           </ToggleGroupItem>
         )
       })}

@@ -145,6 +145,8 @@
        own colour, a top highlight, lifted cards, set-in fields. In light the shade is a dark
        teal from the logo, never brown (owner, 2026-11-06). */
     --shade: oklch(0.32 0.06 175);
+    /* How much darker a filled button gets under the pointer: its words keep 4.5:1. */
+    --deep: 18%;
     --highlight: oklch(1 0 0 / 0.7);
     --lip: 3px;
     --lip-mix: 38%;
@@ -225,6 +227,8 @@
     --sidebar-border: oklch(0.685 0.106 61.2 / 28%);
     --sidebar-ring: oklch(0.685 0.106 61.2);
     --shade: oklch(0 0 0);
+    /* Dark words on the orange accent: a smaller step keeps them at 4.5:1 (5.1). */
+    --deep: 8%;
     --highlight: oklch(1 0 0 / 0.08);
     --lift: 0 6px 16px -6px oklch(0 0 0 / 0.8), inset 0 1px 0 oklch(1 0 0 / 0.04);
     --lift-strong: 0 16px 40px -10px oklch(0 0 0 / 0.85), inset 0 1px 0 oklch(1 0 0 / 0.05);
@@ -334,6 +338,11 @@
   box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
+/* Under the pointer a filled button gets darker, never lighter (STYLE_RULE §4: hover deepens). */
+@utility bg-primary-deep {
+  background-color: color-mix(in oklch, var(--primary), var(--shade) var(--deep));
+}
+
 @utility bg-pressed {
   background-color: var(--primary);
 }

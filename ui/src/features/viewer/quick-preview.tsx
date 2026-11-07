@@ -46,7 +46,7 @@ export function QuickPreview({ photo, revision, thumbVersion, generation, checke
         {error && <StageSpinner error={error} />}
       </div>
       <p className="flex items-center gap-2 text-sm text-stage-ink">
-        <span className="truncate">{photo.fileName}</span>
+        <span className="truncate" data-hint={photo.fileName}>{photo.fileName}</span>
         <span
           className={cn(
             'flex items-center gap-1 rounded-full px-2 py-0.5 text-xs',
