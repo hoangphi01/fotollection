@@ -735,3 +735,10 @@
 - **Why:** two loads after each mount. The Looks grid started empty and grew three rows once `list_looks` answered, pushing every card below it; and `PhotoLookCards` drew nothing until `get_photo_look` answered, so the whole column below it went up and came back. Both ran again whenever the cards mounted again: a tab switched (Edit ↔ Print), a sheet's photo picked or let go (two branches of the tree), a preview reopened. `useLiveQuery` keeps the last answer within one mount, not across mounts.
 - **Fix:** the last list of looks and the last look of each photo or sheet are kept by their modules (bounded, 256 looks), the first frame of a new mount drawn from them, Rust's answer replacing it.
 - **Rule:** a card whose height depends on an answer from Rust starts from the last answer it had, also after a remount; check every way it can mount again (tabs, picks, branches, reopening), not only the first opening.
+
+### A new requirement shipped while an older one for the same thing stayed "Not Started" (FR-081, FR-109)
+
+- **Seen:** STATUS still said FR-081 "A welcome screen on the first launch: Not Started" after the welcome had shipped in v0.13.1 as FR-109 (owner, 2026-11-07: "this is done, why not updated?").
+- **Why:** FR-109 was written as a new requirement from the owner's new words, and nobody searched the PRD for one that already covered the same screen; the two rows never met.
+- **Fix:** FR-081 is *In Progress*, its welcome pointed at FR-109, its own part (picking the cards, with FR-080) left to do; both IDs kept.
+- **Rule:** before writing a new FR, and again when one is done, search the PRD and STATUS for the same feature in other words (`grep -n -i` on its main nouns); an older FR it covers gets its row changed in the same commit.
