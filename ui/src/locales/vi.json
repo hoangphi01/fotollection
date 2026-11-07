@@ -828,7 +828,8 @@
     "sheetPixelsValue": "{{w}} × {{h}} px ({{mp}} MP)",
     "sheetSharpness": "Độ nét khi in",
     "sheetSharpnessValue": "{{dpi}} DPI · {{quality}}",
-    "sheetPixelsHint": "Hai ảnh ghép thành một ảnh cỡ này, nét bằng ảnh kém nét hơn, để không ảnh nào bị phóng to."
+    "sheetPixelsHint": "Hai ảnh ghép thành một ảnh cỡ này, nét bằng ảnh kém nét hơn, để không ảnh nào bị phóng to.",
+    "wholeSheet": "Cả tấm"
   },
   "facts": {
     "grey": "Ảnh xám",
@@ -977,7 +978,9 @@
       "faded": "Phai màu",
       "mono-red": "Đen trắng, lọc đỏ",
       "mono-soft": "Đen trắng mềm"
-    }
+    },
+    "sheetWhole": "Chưa chọn ảnh nào: màu được áp cho cả hai ảnh trên tấm.",
+    "sheetDiffers": "Hai ảnh đang khác màu: chỉnh ở đây sẽ đặt cùng một màu cho cả hai."
   },
   "rawLook": {
     "title": "Màu RAW",

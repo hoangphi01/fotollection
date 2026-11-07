@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Crop, Download, Images, LoaderCircle, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
+import { Crop, Download, Images, LoaderCircle, Printer, RotateCw, RotateCwSquare, ShoppingBasket, SlidersHorizontal } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { SectionCard } from '@/components/layout/section-card'
 import { InspectorSection } from '@/components/layout/inspector-section'
+import { InspectorTabs } from '@/components/layout/inspector-tabs'
 import { KeyHints } from '@/components/layout/key-hints'
 import { StageNav } from '@/components/layout/stage-nav'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
+import { Kbd } from '@/components/ui/kbd'
 import { Separator } from '@/components/ui/separator'
 import { HistoryButtons } from '@/features/history/history-buttons'
 import { StageSpinner } from '@/components/layout/stage-spinner'
@@ -30,7 +32,7 @@ import { ownsArrowKeys } from '@/lib/keyboard'
 import { sheetUrl, sourceUrl, thumbUrl } from '@/lib/photo-url'
 import { MOD } from '@/lib/platform'
 import { cn } from '@/lib/utils'
-import { CHOSEN_ROW } from '@/components/forms/list-row'
+import { CHOSEN_ROW, ListRow } from '@/components/forms/list-row'
 import { CollageCellsCard } from './collage-cells-card'
 import { PostcardCard } from './postcard-card'
 import { PostcardCutBadge } from './postcard-cut-badge'
@@ -73,6 +75,11 @@ type SheetPreviewDialogProps = {
  * the sheet's two photos with their basket and crop. A photo's crop here is its crop on
  * sheets, apart from its print crop.
  */
+/** The inspector's tabs, as the photo preview's (FR-095, owner 2026-11-07): the colour of
+ * the sheet or of a photo on it, then its print. Kept while the app runs. */
+type SheetTab = 'edit' | 'print'
+let lastTab: SheetTab = 'edit'
+
 export function SheetPreviewDialog({
   collage,
   open,
@@ -98,6 +105,11 @@ export function SheetPreviewDialog({
   // W: the white-balance picker armed for the picked photo; the next click on it sets its
   // warmth and tint, a click elsewhere on the sheet is refused (ERR-IPC-0026).
   const [picking, setPicking] = useState(false)
+  const [tab, setTabState] = useState<SheetTab>(lastTab)
+  const setTab = (next: SheetTab) => {
+    lastTab = next
+    setTabState(next)
+  }
   const src = sheet ? sheetUrl(sheet.first, sheet.second, revision, false, clipping) : ''
   const { src: shownSrc, error: shownError } = useShownSrc(key, src)
   const shape = useSheetShape(shownSrc ?? '')
@@ -166,6 +178,9 @@ export function SheetPreviewDialog({
     else if (event.key === 'ArrowUp') send('print')
     else if (event.key === 'ArrowDown') send('aside')
     else if (pressed === '1' || pressed === '2') choose(pressed === '1' ? 0 : 1)
+    // 0 lets go of the photo: the colour cards then edit the whole sheet (owner, 2026-11-07).
+    else if (pressed === '0') choose(null)
+    else if (pressed === 'e' && !event.metaKey && !event.ctrlKey) setTab('edit')
     else if (pressed === 'c' && photo !== null) setCropping(true)
     // J and W by the key's place, as in the photo preview (FR-098); W needs a picked photo.
     else if (event.code === 'KeyJ' && !event.metaKey && !event.ctrlKey && !event.altKey) setClipping((on) => !on)
@@ -198,6 +213,17 @@ export function SheetPreviewDialog({
         }
       }}
       stageRef={setStage}
+      tabs={
+        <InspectorTabs<SheetTab>
+          ariaLabel={t('inspector.tabs')}
+          value={tab}
+          onChange={setTab}
+          groups={[
+            [{ value: 'edit', icon: <SlidersHorizontal aria-hidden />, label: t('inspector.edit') }],
+            [{ value: 'print', icon: <Printer aria-hidden />, label: t('inspector.print') }],
+          ]}
+        />
+      }
       // The sheet's tools in a row above the stage, never over the sheet, in the photo
       // preview's order (owner, 2026-11-07; STYLE_RULE §4): undo and redo, the chosen photo's
       // settings, then crop and turns, then zoom.
@@ -263,6 +289,7 @@ export function SheetPreviewDialog({
                   { keys: ['←', '→'], label: t('collage.browse') },
                   { keys: [`${MOD} + −`], label: t('viewer.zoom') },
                   { keys: ['1', '2'], label: t('collage.choose') },
+                  { keys: ['0'], label: t('collage.wholeSheet') },
                   { keys: ['↑'], label: t('viewer.upBasket') },
                   { keys: ['↓'], label: t('viewer.downAside') },
                   { keys: ['C'], label: t('viewer.crop') },
@@ -350,10 +377,15 @@ export function SheetPreviewDialog({
         )
       }
     >
-      {/* The order of the photo preview (STYLE_RULE §4, same tools, same order): the sheet's
-          own photos first, as *This photo* there, then its size, then the chosen photo's
-          colour, then the cards the Collage panel shows, in its order. */}
+      {/* Two tabs as the photo preview's (owner, 2026-11-07): Edit, the sheet's photos to pick
+          from (none picked: the whole sheet), then the colour, in the photo preview's order;
+          Print, the cards the Collage panel shows, in its order (STYLE_RULE §4). */}
+      {tab === 'edit' && (
+        <>
       <InspectorSection icon={<Images className="size-4" />} title={t('collage.photosOnSheet')}>
+        <ListRow icon={<Images />} chosen={chosen === null} onClick={() => choose(null)} trailing={<Kbd>0</Kbd>}>
+          {t('collage.wholeSheet')}
+        </ListRow>
         {cells.map(([id, c]) => {
           const p = summary(id)
           return (
@@ -397,9 +429,7 @@ export function SheetPreviewDialog({
           )
         })}
       </InspectorSection>
-      <SheetSizeCard settings={settings} onChange={onSettingsChange} info={info ?? undefined} />
-      {/* The picked photo's colour, as in the panel; none picked, no colour cards (FR-079). */}
-      {photo !== null && (
+      {photo !== null ? (
         <>
           {/* The picked photo's histogram (FR-098), then its settings (FR-097); W armed, what
               the next click does instead. The curves are the photo's own preview's. */}
@@ -413,7 +443,21 @@ export function SheetPreviewDialog({
           />
           <PhotoLookCards photoId={photo} revision={revision} onAppliedToAll={onSettingsReload} />
         </>
+      ) : (
+        sheet && (
+          <PhotoLookCards
+            photoId={sheet.first}
+            sheet={sheet.second === null ? [sheet.first] : [sheet.first, sheet.second]}
+            revision={revision}
+            onAppliedToAll={onSettingsReload}
+          />
+        )
       )}
+        </>
+      )}
+      {tab === 'print' && (
+        <>
+      <SheetSizeCard settings={settings} onChange={onSettingsChange} info={info ?? undefined} />
       <PostcardCard settings={settings} onChange={onSettingsChange} />
       <PostcardTextCard
         settings={settings}
@@ -442,6 +486,8 @@ export function SheetPreviewDialog({
             sheets={1}
           />
         </SectionCard>
+      )}
+        </>
       )}
     </ViewerFrame>
   )

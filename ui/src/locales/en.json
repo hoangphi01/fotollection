@@ -859,7 +859,8 @@
     "sheetPixelsValue": "{{w}} × {{h}} px ({{mp}} MP)",
     "sheetSharpness": "Prints at",
     "sheetSharpnessValue": "{{dpi}} DPI · {{quality}}",
-    "sheetPixelsHint": "The two photos make one picture of this size, as sharp as the less sharp of them, so neither is enlarged."
+    "sheetPixelsHint": "The two photos make one picture of this size, as sharp as the less sharp of them, so neither is enlarged.",
+    "wholeSheet": "Whole sheet"
   },
   "facts": {
     "grey": "Greyscale",
@@ -1015,7 +1016,9 @@
       "faded": "Faded",
       "mono-red": "B&W, red filter",
       "mono-soft": "Soft B&W"
-    }
+    },
+    "sheetWhole": "With no photo picked, the colour goes to both photos of the sheet.",
+    "sheetDiffers": "The two photos have different colours: a change here gives both the same one."
   },
   "rawLook": {
     "title": "RAW colour",

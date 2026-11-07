@@ -460,6 +460,12 @@ export const commands = {
 	 *  and no photo keeps its own any more (the photo edits are one undoable step).
 	 */
 	applyLookToAll: (id: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("apply_look_to_all", { id })),
+	/**
+	 *  One look for both photos of a collage sheet (FR-079, owner 2026-11-07: with no photo
+	 *  picked, the colour cards edit the whole sheet): each photo gets the same look, its own,
+	 *  in one undo step; `amend` folds a slider's drag into it. One or two distinct photos.
+	 */
+	setSheetLook: (ids: PhotoId[], look: LookSettings, amend: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_sheet_look", { ids, look, amend })),
 	/**  Every look the card lists: the built-in ones, then this machine's, oldest first. */
 	listLooks: () => typedError<LookEntry[], IpcError>(__TAURI_INVOKE("list_looks")),
 	/**

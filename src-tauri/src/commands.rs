@@ -698,6 +698,52 @@ pub fn set_photo_look(
     Ok(changed(&app, &state))
 }
 
+/// One look for both photos of a collage sheet (FR-079, owner 2026-11-07: with no photo
+/// picked, the colour cards edit the whole sheet): each photo gets the same look, its own,
+/// in one undo step; `amend` folds a slider's drag into it. One or two distinct photos.
+#[tauri::command]
+#[specta::specta]
+pub fn set_sheet_look(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    ids: Vec<PhotoId>,
+    look: LookSettings,
+    amend: bool,
+) -> Result<HistoryState, IpcError> {
+    if ids.is_empty() || ids.len() > 2 || ids.first() == ids.get(1) {
+        return Err(IpcError::new(
+            "photo.invalid_selection",
+            "a sheet holds one or two photos",
+        ));
+    }
+    let look = look.sanitized();
+    {
+        let mut library = state
+            .library
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        let mut changes = Vec::with_capacity(ids.len());
+        for &id in &ids {
+            if library.record(id).is_none() {
+                return Err(IpcError::new("photo.unknown", "Unknown photo"));
+            }
+            let mut edits = library.edits(id);
+            edits.look = Some(look.clone());
+            changes.push((id, edits));
+        }
+        let mut history = state
+            .history
+            .lock()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        if amend {
+            history.amend(&mut library, &changes);
+        } else {
+            history.apply(&mut library, &changes);
+        }
+    }
+    Ok(changed(&app, &state))
+}
+
 /// How a camera RAW photo is finished (FR-072, ADR-0040): neutral or like the camera's JPEG.
 /// One undoable step; the preview, the sheets and the export follow from the new revision.
 #[tauri::command]

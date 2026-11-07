@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - New: **Looks**, one tap gives a photo a colour: eight looks of our own (C200 Natural, Warm old film, Clear, Cool, Faded and three black and white), each shown as your photo, with an **Amount**; **Save as look** keeps your own.
 - New: Simple mode shows the looks as a numbered strip under the photo: a number key, then ↑, and the photo is coloured and kept.
+- UI update: a collage sheet's preview has Edit and Print tabs, and colours the whole sheet when no photo is picked.
 - Fixes: RAW shadows without steps.
 
 ### Added
@@ -25,6 +26,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **RAW shadows without steps:** the RAW tone curve is read between its bins, so dark gradients no longer show bands of three or four levels (35 gaps in the lifted shadows of the nine test cameras, now 1); RAW previews are made again once.
 
 ### Changed
+
+- **Collage sheet preview in two tabs** (FR-079, FR-095), as the photo preview: **Edit** (the photos on the sheet, then the colour cards) and **Print and export** (size, postcards, cells, date stamp, export). With no photo picked, **Whole sheet** (key **0**) is the first row of the photos, and the colour cards change both photos together: the same look for both, one undo step, a note when their colours differed.
 
 - **Website:** the footer shows the GPLv3 mark with "Fotollection is released under the GPL 3.0", as other free software does; the mark is served from the site.
 
