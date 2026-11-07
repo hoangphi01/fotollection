@@ -1,8 +1,10 @@
 # Docs Guide — Fotollection
 
-> **Last reviewed:** 2026-11-06
+> **Last reviewed:** 2026-11-07
 >
 > The checklist for keeping docs, the website and the code in step ([ADR-0006](adr/0006-docs-as-code.md)). Before you commit, find every row below that matches your change and do all of it, in the same commit. Where a fact lives is mapped in [README.md](README.md); this page says **what to update when something changes**.
+
+**The compass ([ADR-0044](adr/0044-rust-first-our-edge.md)): Rust first.** Every design and doc says where its work runs (Rust, never the webview, for pixels and files), how it runs in parallel, how its input is bounded, and what was measured.
 
 ## 1. How to use it
 

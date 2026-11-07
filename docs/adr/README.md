@@ -47,6 +47,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0041](0041-instant-previews-disk-and-memory.md) | Instant previews like Lightroom: standard previews (2048 px) on disk after the thumbnails, a cache of 5 GB, a quarter of the machine's RAM for the preview, prefetch, and a develop gate where the photo on screen goes first | Accepted | 2026-11-05 |
 | [0042](0042-axe-core-for-ui-tests-only.md) | axe-core (MPL-2.0) for the UI tests only, a development tool never bundled into the app, its installers or the website | Accepted | 2026-11-07 |
 | [0043](0043-lossless-export-f32-path-tiff.md) | Lossless export (Pro): a 32-bit float path to TIFF 16-bit or 32-bit float, learned from RawTherapee and darktable without their code; image methods chosen by measurement | Accepted | 2026-11-07 |
+| [0044](0044-rust-first-our-edge.md) | Rust first: every pixel and file in Rust, parallel by default, safe parsers, small and lean, typed IPC, measured; the guiding principle for every design and doc | Accepted | 2026-11-07 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

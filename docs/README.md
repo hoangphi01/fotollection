@@ -2,6 +2,8 @@
 
 > Start here. Every document has one job. If you are looking for a fact, the table below tells you where it lives.
 
+**Guiding principle ([ADR-0044](adr/0044-rust-first-our-edge.md), owner, 2026-11-07): Rust first.** Our edge is a Rust core behind a thin shell: every pixel and every file is Rust's, parallel by default and safely, parsers bounded and without `unsafe`, no bundled browser, typed IPC, and every claim measured. Every design and every doc is checked against it.
+
 ## Reading order
 
 | If you are… | Read |

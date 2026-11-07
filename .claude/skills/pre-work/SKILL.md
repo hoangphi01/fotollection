@@ -10,6 +10,10 @@ doing anything.** Most mistakes in this project were made before, and their rule
 already written down. This skill makes reading them the first step, not an afterthought
 at commit time.
 
+## 0. The compass
+
+**Rust first ([ADR-0044](../../../docs/adr/0044-rust-first-our-edge.md), owner, 2026-11-07).** Our edge is the Rust core: every pixel and file in Rust, parallel by default and safely, bounded parsers without `unsafe`, no bundled browser, typed IPC, every claim measured. Say how the task uses it.
+
 ## 1. Read, in this order
 
 1. **`docs/DOCS_GUIDE.md`, the whole page** (it is short). Pick the §2 rows that match
