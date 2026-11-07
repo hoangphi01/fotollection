@@ -167,7 +167,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
   |---|---|
   | Both | *Print / export size*, *Date stamp*, *Info frame*, *Export*; Collage's *Sheet size*, *Postcard*, *Postcard text*, *Photos on the sheet* |
   | Gallery only | *Camera clocks*, *Places* |
-  | Preview only | *This photo*, the colour cards (*RAW colour*, *Faves*, *Tools*), except as below; *Presets & LUTs*, in the photo preview's left column between the Navigator and History as Lightroom's Presets, and at the head of a sheet preview's Edit tab, which has no left column (owner, 2026-11-07) |
+  | Preview only | *This photo*, the colour cards (*RAW colour*, *Faves*, *Tools*), except as below; *Presets & LUTs*, in Pro mode's photo preview only, its left column between the Navigator and History as Lightroom's Presets (owner, 2026-11-07: LUTs and presets are Pro mode's) |
   | Previews and Simple mode's panel | The photo's colour cards as a whole (`PhotoLookCards`); in Simple mode only *Looks* (the reset and *Amount*) and *Faves*, for the photo on the stage (owner, 2026-11-07) |
   | Settings window only | *General* (language, theme), *RAM & cache* (memory for previews, cache on disk, *For this computer*) |
 

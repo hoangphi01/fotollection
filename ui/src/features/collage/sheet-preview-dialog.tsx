@@ -20,7 +20,6 @@ import { ExportSection } from '@/features/export/export-section'
 import type { ExportApi } from '@/features/export/use-export'
 import { LookStrip } from '@/features/look/look-strip'
 import { PhotoLookCards } from '@/features/look/photo-look-cards'
-import { PresetsCard } from '@/features/look/presets-card'
 import { useLookPicker } from '@/features/look/use-looks'
 import { SettingsButtons } from '@/features/develop/settings-buttons'
 import { HistogramCard } from '@/features/viewer/histogram-card'
@@ -435,8 +434,6 @@ export function SheetPreviewDialog({
           )
         })}
       </InspectorSection>
-      {/* No left column here: the presets head the colour, for the photo picked or the sheet. */}
-      {sheet && <PresetsCard photoId={photo ?? sheet.first} revision={revision} sheet={photo === null ? sheetIds : undefined} />}
       {photo !== null ? (
         <>
           {/* The picked photo's histogram (FR-098), then its settings (FR-097); W armed, what

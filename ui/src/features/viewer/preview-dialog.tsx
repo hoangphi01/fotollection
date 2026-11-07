@@ -145,7 +145,7 @@ export function PreviewDialog({
   const photo = index === null ? undefined : photos[index]
   // The looks as a strip over the filmstrip, folding (FR-079, owner 2026-11-07); the card keeps
   // the amount and *Save as look*.
-  const looks = useLookPicker(photo?.id, revision)
+  const looks = useLookPicker(photo?.id, revision, undefined, true)
   // The photo copy, paste and reset act on (FR-097), while the develop view is open.
   const shownId = photo?.id
   useEffect(() => {
@@ -596,7 +596,7 @@ export function PreviewDialog({
             {photo && <PhotoSummaryCard photo={photo} details={details} />}
             {/* Develop first, as Lightroom's right panel (FR-095): RAW, Basic, Tools. */}
             {photo && (
-              <PhotoLookCards photoId={photo.id} revision={revision} onAppliedToAll={onSettingsReload} />
+              <PhotoLookCards photoId={photo.id} pro revision={revision} onAppliedToAll={onSettingsReload} />
             )}
               </>
             )}

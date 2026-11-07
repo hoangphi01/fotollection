@@ -14,6 +14,8 @@ import { useLooks } from './use-looks'
 type LooksCardProps = {
   /** Simple mode: with the original, the card is its title alone (owner, 2026-11-07). */
   simple?: boolean
+  /** Pro mode: the LUT's strength and the V-Log note show here only (owner, 2026-11-07). */
+  pro?: boolean
   look: LookSettings | undefined
   onChange: LookChange
 }
@@ -27,7 +29,7 @@ const percent = (v: number) => `${v} %`
  * values into the photo, so the sliders below show them and a later change of the library
  * changes no photo.
  */
-export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
+export function LooksCard({ look, onChange, simple = false, pro = false }: LooksCardProps) {
   const { t } = useTranslation()
   const { looks } = useLooks()
   const current = fullLook(look)
@@ -59,7 +61,7 @@ export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
       />
       </Collapse>
       {/* A look with a LUT (FR-070): how much of the LUT, under the sliders' amount. */}
-      <Collapse open={current.lut !== null} stack="card">
+      <Collapse open={pro && current.lut !== null} stack="card">
       <SliderField
         label={t('look.lutStrength')}
         hint={t('look.hints.lutStrength')}
@@ -71,7 +73,7 @@ export function LooksCard({ look, onChange, simple = false }: LooksCardProps) {
         onChange={(v, first) => onChange((l) => ({ ...l, lutStrength: v }), first)}
       />
       </Collapse>
-      {chosenEntry?.vlog && <PanelNote icon={<TriangleAlert />}>{t('look.vlogWarning')}</PanelNote>}
+      {pro && chosenEntry?.vlog && <PanelNote icon={<TriangleAlert />}>{t('look.vlogWarning')}</PanelNote>}
     </SectionCard>
   )
 }

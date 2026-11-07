@@ -29,7 +29,7 @@ type PresetsCardProps = {
  */
 export function PresetsCard({ photoId, revision, sheet }: PresetsCardProps) {
   const { t } = useTranslation()
-  const picker = useLookPicker(photoId, revision, sheet)
+  const picker = useLookPicker(photoId, revision, sheet, true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const own = picker.looks.filter((e) => e.kind === 'user')

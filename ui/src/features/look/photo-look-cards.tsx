@@ -24,6 +24,8 @@ type PhotoLookCardsProps = {
   /** Simple mode's panel (owner, 2026-11-07): the amount and Faves only; no saved looks, no
    * Tools, no RAW finish. */
   simple?: boolean
+  /** Pro mode's photo preview: LUTs belong to it alone (owner, 2026-11-07). */
+  pro?: boolean
   /** After "Apply to all" changed the shared settings. */
   onAppliedToAll(): void
 }
@@ -52,7 +54,7 @@ const keep = (key: string, value: { look: PhotoLook; differ: boolean }) => {
   }
 }
 
-export function PhotoLookCards({ photoId, sheet, simple = false, revision, onAppliedToAll }: PhotoLookCardsProps) {
+export function PhotoLookCards({ photoId, sheet, simple = false, pro = false, revision, onAppliedToAll }: PhotoLookCardsProps) {
   const { t } = useTranslation()
   const sheetKey = sheet?.join(',') ?? ''
   const cacheKey = sheetKey || String(photoId)
@@ -135,7 +137,7 @@ export function PhotoLookCards({ photoId, sheet, simple = false, revision, onApp
           }
         />
       )}
-      <LooksCard look={current.look} onChange={change} simple={simple} />
+      <LooksCard look={current.look} onChange={change} simple={simple} pro={pro} />
       <FavesCard look={current.look} onChange={change} footer={applyToAll} raw={current.raw != null} />
 {!simple &&       <ToolsCard look={current.look} onChange={change} />}
     </>

@@ -53,8 +53,16 @@ export type LookPicker = {
  * its number keys; a collage sheet, its photo or the whole sheet `sheet`):
  * which one it has, and a pick that gives it another.
  */
-export function useLookPicker(photoId: PhotoId | undefined, revision: number, sheet?: PhotoId[]): LookPicker {
-  const { looks, setLooks, reload } = useLooks()
+export function useLookPicker(
+  photoId: PhotoId | undefined,
+  revision: number,
+  sheet?: PhotoId[],
+  /** LUTs and presets are Pro mode's only (owner, 2026-11-07): elsewhere they are not listed. */
+  luts = false,
+): LookPicker {
+  const library = useLooks()
+  const { setLooks, reload } = library
+  const looks = luts ? library.looks : library.looks.filter((e) => !e.look.lut)
   const [base, setBase] = useState<string | null>(null)
   const picks = useRef(0)
   useEffect(() => {
