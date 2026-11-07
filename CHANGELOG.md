@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **The progress strip** while photos are imported or the best shots are looked for is as tall as the heads of the two side columns, its line level with theirs.
 - **Website:** the Vietnam Linux Family listing is a badge in VNLF's green beside the download buttons, and the Community card links to the project on VNLF Social too; the badges at the top have the app's depth.
 - **Website:** every page has its own notes, numbered from 1 as Apple's are, and every abbreviation (SIMD, EXIF, RAW, MP, p95, HEIC, DPI, GPS, SHA-256, APT…) is explained in a note at its first use.
 - **Website:** the before-and-after picture at the top follows a finger on a phone or tablet, and long badges wrap inside their box on a phone.

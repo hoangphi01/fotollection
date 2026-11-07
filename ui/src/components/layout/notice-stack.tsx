@@ -15,7 +15,9 @@ import { RemoveButton } from '@/components/forms/danger-button'
 export function NoticeStack({ children }: { children: ReactNode }) {
   const notices = Children.toArray(children)
   if (notices.length === 0) return null
-  return <div className="flex flex-col gap-2 border-b p-3">{notices}</div>
+  // At least as tall as the side columns' heads with their line (64 + 1 px), one notice in
+  // its middle, so a task's progress lines up with them (owner, 2026-11-07).
+  return <div className="flex min-h-[calc(var(--spacing-header)+1px)] flex-col justify-center gap-2 border-b p-3">{notices}</div>
 }
 
 /** The shell every notice that is not an `Alert` wears, so all of them line up. */
