@@ -47,7 +47,7 @@ export function CollageSizeFields({ settings, onChange, cell }: CollageSizeField
 
   return (
     <Field label={t('collage.size')}>
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-2">
         <CommitInput
           value={length(width)}
           placeholder={t('collage.width')}

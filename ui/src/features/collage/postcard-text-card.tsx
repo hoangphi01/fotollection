@@ -80,8 +80,8 @@ export function PostcardTextCard({ settings, onChange, photo, revision, filter, 
           }
           label={t('postcard.font')}
           builtIns={[
-            { key: 'typewriter', label: t('postcard.typewriter') },
-            { key: 'handwriting', label: t('postcard.handwriting') },
+            { key: 'typewriter', label: t('postcard.typewriter'), hint: 'Xanh Mono' },
+            { key: 'handwriting', label: t('postcard.handwriting'), hint: 'Patrick Hand' },
           ]}
           builtIn={postcard.face ?? 'typewriter'}
         />

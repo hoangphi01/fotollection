@@ -2,10 +2,9 @@
 // @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
 import { Crop, Grid2x2, TriangleAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Label } from '@/components/ui/label'
 import { PanelNote } from '@/components/layout/panel-note'
 import { SectionCard } from '@/components/layout/section-card'
-import { Field, ValueRow } from '@/components/forms/field'
+import { Field, Hint, ValueRow } from '@/components/forms/field'
 import { commands, type RenderSettings, type SheetInfo } from '@/ipc/bindings'
 import { formatNumber } from '@/lib/format'
 import { BorderSwitch } from '@/features/settings/border-switch'
@@ -30,20 +29,14 @@ export function SheetSizeCard({ settings, onChange, info }: SheetSizeCardProps) 
   return (
     <SectionCard
       icon={<Crop />}
-      title={
-        <Label htmlFor="print-size" className="text-sm font-semibold">
-          {t('collage.sheetSize')}
-        </Label>
-      }
+      title={t('collage.sheetSize')}
     >
       <PrintSizePicker settings={settings} builtIn={printSizes} onChange={onChange} allowOriginal={false} />
       {/* Original has no size until a photo gives it one: sheets use 10 × 15 (FR-035). */}
       {settings?.printSize === 'original' && (
         <PanelNote icon={<TriangleAlert />}>{t('collage.originalNote')}</PanelNote>
       )}
-      <p className="text-xs text-muted-foreground">
-        {t(settings?.collage?.postcard?.enabled ? 'postcard.sheetSizeHint' : 'collage.sheetSizeHint')}
-      </p>
+      <Hint>{t(settings?.collage?.postcard?.enabled ? 'postcard.sheetSizeHint' : 'collage.sheetSizeHint')}</Hint>
       {/* The two photos make one picture: its pixels, at the less sharp photo's density (FR-087). */}
       {info && info.widthPx > 0 && (
         <Field hint={t('collage.sheetPixelsHint')}>

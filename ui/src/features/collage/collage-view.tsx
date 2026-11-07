@@ -33,6 +33,9 @@ type CollageViewProps = {
   select: SelectModeApi
   /** After a photo's look became everyone's (FR-079). */
   onSettingsReload: () => void
+  /** Undo and redo in the sheet preview's toolbar (FR-023). */
+  canUndo: boolean
+  canRedo: boolean
 }
 
 /**
@@ -40,7 +43,6 @@ type CollageViewProps = {
  * print basket as in the gallery (FR-050), and a sheet's preview, opened like a photo's.
  */
 export function CollageView({
-  onSettingsReload,
   collage,
   photos,
   settings,
@@ -51,6 +53,9 @@ export function CollageView({
   revision,
   generation,
   select,
+  onSettingsReload,
+  canUndo,
+  canRedo,
 }: CollageViewProps) {
   const { t } = useTranslation()
   const [viewing, setViewing] = useState(false)
@@ -72,7 +77,7 @@ export function CollageView({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="@container box-content flex h-header shrink-0 items-center gap-3 border-b px-4 text-sm">
+      <div className="@container box-content flex h-header shrink-0 items-center gap-2 border-b px-4 text-sm">
         <span className="shrink-0 font-medium tabular-nums">
           {t('collage.count', { count: sheets.length, sheets: formatNumber(sheets.length), photos: formatNumber(photos.length) })}
         </span>
@@ -135,6 +140,8 @@ export function CollageView({
         revision={revision}
         generation={generation}
         ticked={[...select.checked]}
+        canUndo={canUndo}
+        canRedo={canRedo}
         onClose={() => setViewing(false)}
       />
     </div>

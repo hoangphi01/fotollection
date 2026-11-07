@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Plus, Type } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Field } from '@/components/forms/field'
 import {
@@ -19,7 +19,8 @@ const BUILT_IN = 'builtin'
 const IMPORT = 'import'
 
 /** A face bundled with the app, by its own key (a postcard's typewriter or handwriting). */
-export type BuiltInFace = { key: string; label: string }
+/** `hint`: the typeface's own name (Xanh Mono), shown on hover. */
+export type BuiltInFace = { key: string; label: string; hint?: string }
 
 type FontSelectProps = {
   fonts: FontsApi
@@ -56,13 +57,14 @@ export function FontSelect({ fonts, value, onChange, label, builtIns, builtIn }:
             }
           }}
         >
-          <SelectTrigger className="w-full" aria-label={label}>
-            <Type className="size-3.5 text-muted-foreground" />
+          {/* The face's short name alone, so it fits an 18 rem panel (STYLE_RULE §4: icons
+              first, a label never cut); the typeface's own name is the hint. */}
+          <SelectTrigger className="w-full" aria-label={label} data-hint={faces.find((f) => builtInValue(f.key) === selected)?.hint}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {faces.map((face) => (
-              <SelectItem key={face.key} value={builtInValue(face.key)}>
+              <SelectItem key={face.key} value={builtInValue(face.key)} data-hint={face.hint}>
                 {face.label}
               </SelectItem>
             ))}
@@ -78,7 +80,7 @@ export function FontSelect({ fonts, value, onChange, label, builtIns, builtIn }:
             )}
             <SelectSeparator />
             <SelectItem value={IMPORT}>
-              <Plus className="size-3.5" /> {t('fonts.import')}
+              <Plus /> {t('fonts.import')}
             </SelectItem>
           </SelectContent>
         </Select>

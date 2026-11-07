@@ -1,11 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ChevronLeft, ChevronRight, Copy, Crop, Download, Images, LoaderCircle, Pipette, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
+import { Crop, Download, Images, LoaderCircle, Pipette, RotateCw, RotateCwSquare, ShoppingBasket } from 'lucide-react'
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { SectionCard } from '@/components/layout/section-card'
 import { InspectorSection } from '@/components/layout/inspector-section'
 import { KeyHints } from '@/components/layout/key-hints'
+import { StageNav } from '@/components/layout/stage-nav'
+import { ToolbarButton } from '@/components/forms/toolbar-button'
+import { Separator } from '@/components/ui/separator'
+import { HistoryButtons } from '@/features/history/history-buttons'
 import { PanelNote } from '@/components/layout/panel-note'
 import { StageSpinner } from '@/components/layout/stage-spinner'
 import { ViewerFrame } from '@/components/layout/viewer-frame'
@@ -27,6 +31,7 @@ import { ownsArrowKeys } from '@/lib/keyboard'
 import { sheetUrl, sourceUrl, thumbUrl } from '@/lib/photo-url'
 import { MOD } from '@/lib/platform'
 import { cn } from '@/lib/utils'
+import { CHOSEN_ROW } from '@/components/forms/list-row'
 import { CollageCellsCard } from './collage-cells-card'
 import { PostcardCard } from './postcard-card'
 import { PostcardCutBadge } from './postcard-cut-badge'
@@ -57,6 +62,9 @@ type SheetPreviewDialogProps = {
   generation: number
   /** Photos ticked in Collage, for *Paste settings* (FR-097). */
   ticked: readonly PhotoId[]
+  /** Undo and redo in its toolbar, as the photo preview's. */
+  canUndo: boolean
+  canRedo: boolean
   onClose: () => void
 }
 
@@ -79,6 +87,8 @@ export function SheetPreviewDialog({
   revision,
   generation,
   ticked,
+  canUndo,
+  canRedo,
   onClose,
 }: SheetPreviewDialogProps) {
   const { t } = useTranslation()
@@ -189,6 +199,54 @@ export function SheetPreviewDialog({
         }
       }}
       stageRef={setStage}
+      // The sheet's tools in a row above the stage, never over the sheet, in the photo
+      // preview's order (owner, 2026-11-07; STYLE_RULE §4): undo and redo, the chosen photo's
+      // settings, then crop and turns, then zoom.
+      toolbar={
+        <div className="@container flex h-header items-center gap-2 overflow-x-auto overflow-y-hidden px-3 [scrollbar-width:thin] [&>*]:shrink-0">
+          <HistoryButtons canUndo={canUndo} canRedo={canRedo} />
+          <SettingsButtons photo={photo ?? undefined} ticked={ticked} collage />
+          <Separator orientation="vertical" className="h-5!" />
+          <ToolbarButton
+            icon={<Crop />}
+            label={t('viewer.crop')}
+            data-hint={photo === null ? t('collage.pickToCrop') : t('viewer.crop')}
+            disabled={photo === null || cropping}
+            onClick={() => setCropping(true)}
+          />
+          {/* A postcard is held the way the panel says: only the photo turns. */}
+          {!postcard && (
+            <ToolbarButton
+              icon={<RotateCw />}
+              label={t('collage.turn')}
+              data-hint={t('collage.turnHint')}
+              disabled={!sheet || cropping}
+              onClick={() => sheet && collage.turn(sheet.first)}
+            />
+          )}
+          {/* Turns the chosen photo in its cell, so a landscape photo fills a standing cell. */}
+          <ToolbarButton
+            icon={<RotateCwSquare />}
+            label={t('collage.rotatePhoto')}
+            data-hint={photo === null ? t('collage.pickToRotate') : t('collage.rotatePhotoHint')}
+            disabled={photo === null || cropping}
+            onClick={() => photo !== null && rotatePhoto(photo)}
+          />
+          <div className="ml-auto flex items-center gap-2">
+            <ZoomControls
+              inline
+              percent={zoom.percent}
+              zoomed={zoom.zoomed}
+              canZoomIn={zoom.canZoomIn && !cropping}
+              loading={false}
+              mod={MOD}
+              onZoomIn={zoom.zoomIn}
+              onZoomOut={zoom.zoomOut}
+              onFit={zoom.reset}
+            />
+          </div>
+        </div>
+      }
       // A click on the ground around the sheet lets go of the chosen photo, like Esc.
       onStageGroundClick={() => !cropping && !picking && choose(null)}
       title={t('collage.sheetOf', { index: formatNumber(index + 1), count: formatNumber(sheets.length) })}
@@ -275,48 +333,8 @@ export function SheetPreviewDialog({
             ) : (
               <StageSpinner error={shownError} />
             )}
-            <div className="absolute top-3 left-3 flex gap-1.5">
-              {/* A disabled button gets no pointer events: its hint sits on a wrapper. */}
-              <span data-hint={photo === null ? t('collage.pickToCrop') : undefined}>
-                <Button variant="secondary" size="sm" disabled={photo === null} onClick={() => setCropping(true)}>
-                  <Crop data-icon="inline-start" /> {t('viewer.crop')}
-                </Button>
-              </span>
-              {/* A postcard is held the way the panel says: only the photo turns. */}
-              {!postcard && (
-                <Button variant="secondary" size="sm" disabled={!sheet} onClick={() => sheet && collage.turn(sheet.first)}>
-                  <RotateCw data-icon="inline-start" /> {t('collage.turn')}
-                </Button>
-              )}
-              {/* Turns the chosen photo in its cell, so a landscape photo fills a standing cell. */}
-              <span data-hint={photo === null ? t('collage.pickToRotate') : t('collage.rotatePhotoHint')}>
-                <Button variant="secondary" size="sm" disabled={photo === null} onClick={() => photo !== null && rotatePhoto(photo)}>
-                  <RotateCwSquare data-icon="inline-start" /> {t('collage.rotatePhoto')}
-                </Button>
-              </span>
-            </div>
-            <Button
-              variant="secondary"
-              size="icon"
-              aria-label={t('collage.previous')}
-              data-hint={t('collage.previous')}
-              className="absolute left-3 opacity-80 hover:opacity-100"
-              disabled={index === 0}
-              onClick={() => go(-1)}
-            >
-              <ChevronLeft />
-            </Button>
-            <Button
-              variant="secondary"
-              size="icon"
-              aria-label={t('collage.next')}
-              data-hint={t('collage.next')}
-              className="absolute right-3 opacity-80 hover:opacity-100"
-              disabled={index >= sheets.length - 1}
-              onClick={() => go(1)}
-            >
-              <ChevronRight />
-            </Button>
+            <StageNav to="previous" label={t('collage.previous')} disabled={index === 0} onClick={() => go(-1)} />
+            <StageNav to="next" label={t('collage.next')} disabled={index >= sheets.length - 1} onClick={() => go(1)} />
             <span className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-stage-chip px-3 py-1 text-xs text-stage-ink tabular-nums">
               {/* The new render after a change of setting is on its way; the spinner keeps
                   its place when hidden, so the text never shifts. */}
@@ -327,82 +345,18 @@ export function SheetPreviewDialog({
               />
               {t('collage.position', { index: formatNumber(index + 1), count: formatNumber(sheets.length) })}
             </span>
-            <ZoomControls
-              percent={zoom.percent}
-              zoomed={zoom.zoomed}
-              canZoomIn={zoom.canZoomIn}
-              loading={false}
-              mod={MOD}
-              onZoomIn={zoom.zoomIn}
-              onZoomOut={zoom.zoomOut}
-              onFit={zoom.reset}
-            />
           </>
         )
       }
     >
-      {/* The same cards in the same order as the Collage panel (STYLE_RULE §4); the sheet's
-          own photos follow, as a photo's facts follow in its preview. */}
-      <SheetSizeCard settings={settings} onChange={onSettingsChange} info={info ?? undefined} />
-      <PostcardCard settings={settings} onChange={onSettingsChange} />
-      <PostcardTextCard
-        settings={settings}
-        onChange={onSettingsChange}
-        photo={sheet?.first}
-        revision={revision}
-        filter={filter}
-      />
-      <CollageCellsCard settings={settings} onChange={onSettingsChange} cell={cell} />
-      {/* The picked photo's colour, as in the panel; none picked, no colour cards (FR-079). */}
-      {photo !== null && (
-        <>
-          {/* The picked photo's histogram (FR-098), then its settings (FR-097); W armed, what
-              the next click does instead. The curves are the photo's own preview's. */}
-          {picking ? (
-            <PanelNote icon={<Pipette />}>{t('viewer.pickWhite')}</PanelNote>
-          ) : (
-            <HistogramCard
-              photoId={photo}
-              revision={revision}
-              clipping={clipping}
-              onClipping={setClipping}
-              picking={picking}
-              onPicking={setPicking}
-            />
-          )}
-          {/* Copy, paste and reset this photo's settings (FR-097), its crop the collage crop. */}
-          <SectionCard icon={<Copy />} title={t('develop.title')}>
-            <div className="flex items-center gap-1.5">
-              <SettingsButtons photo={photo} ticked={ticked} collage />
-            </div>
-          </SectionCard>
-          <PhotoLookCards photoId={photo} revision={revision} onAppliedToAll={onSettingsReload} />
-        </>
-      )}
-      <DateStampCard
-        settings={settings}
-        onChange={onSettingsChange}
-        customStamps={customStamps}
-        photos={cells.flatMap(([id]) => (id === null ? [] : [{ id, name: summary(id)?.fileName ?? '' }]))}
-        revision={revision}
-      />
-      {sheet && (
-        <SectionCard icon={<Download />} title={t('export.title')}>
-          <ExportSection
-            exporter={exporter}
-            photoCount={sheet.second === null ? 1 : 2}
-            filter={filter}
-            only={sheet.first}
-            revision={revision}
-            sheets={1}
-          />
-        </SectionCard>
-      )}
+      {/* The order of the photo preview (STYLE_RULE §4, same tools, same order): the sheet's
+          own photos first, as *This photo* there, then its size, then the chosen photo's
+          colour, then the cards the Collage panel shows, in its order. */}
       <InspectorSection icon={<Images className="size-4" />} title={t('collage.photosOnSheet')}>
         {cells.map(([id, c]) => {
           const p = summary(id)
           return (
-            <div key={c} className={cn('flex items-center gap-2 rounded-md p-1.5', chosen === c && p && 'bg-primary/10')}>
+            <div key={c} className={cn('flex items-center gap-2 rounded-md p-1', chosen === c && p && CHOSEN_ROW)}>
               {p ? (
                 <>
                   <button type="button" className="shrink-0" onClick={() => choose(chosen === c ? null : c)} aria-label={p.fileName}>
@@ -442,6 +396,56 @@ export function SheetPreviewDialog({
           )
         })}
       </InspectorSection>
+      <SheetSizeCard settings={settings} onChange={onSettingsChange} info={info ?? undefined} />
+      {/* The picked photo's colour, as in the panel; none picked, no colour cards (FR-079). */}
+      {photo !== null && (
+        <>
+          {/* The picked photo's histogram (FR-098), then its settings (FR-097); W armed, what
+              the next click does instead. The curves are the photo's own preview's. */}
+          {picking ? (
+            <PanelNote icon={<Pipette />}>{t('viewer.pickWhite')}</PanelNote>
+          ) : (
+            <HistogramCard
+              photoId={photo}
+              revision={revision}
+              clipping={clipping}
+              onClipping={setClipping}
+              picking={picking}
+              onPicking={setPicking}
+            />
+          )}
+          <PhotoLookCards photoId={photo} revision={revision} onAppliedToAll={onSettingsReload} />
+        </>
+      )}
+      <PostcardCard settings={settings} onChange={onSettingsChange} />
+      <PostcardTextCard
+        settings={settings}
+        onChange={onSettingsChange}
+        photo={sheet?.first}
+        revision={revision}
+        filter={filter}
+        ticked={ticked}
+      />
+      <CollageCellsCard settings={settings} onChange={onSettingsChange} cell={cell} />
+      <DateStampCard
+        settings={settings}
+        onChange={onSettingsChange}
+        customStamps={customStamps}
+        photos={cells.flatMap(([id]) => (id === null ? [] : [{ id, name: summary(id)?.fileName ?? '' }]))}
+        revision={revision}
+      />
+      {sheet && (
+        <SectionCard icon={<Download />} title={t('export.title')}>
+          <ExportSection
+            exporter={exporter}
+            photoCount={sheet.second === null ? 1 : 2}
+            filter={filter}
+            only={sheet.first}
+            revision={revision}
+            sheets={1}
+          />
+        </SectionCard>
+      )}
     </ViewerFrame>
   )
 }

@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Bold, Italic, Underline } from 'lucide-react'
+import { Bold, Italic, Scissors, Underline } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
-import { Field, FieldLabel, Hint } from '@/components/forms/field'
+import { Field, FieldLabel } from '@/components/forms/field'
+import { PanelNote } from '@/components/layout/panel-note'
 import { Toggle } from '@/components/ui/toggle'
 import { commands, type CullFilter, type PhotoId, type PostcardPart, type TextStyle } from '@/ipc/bindings'
 import { useLiveQuery } from '@/features/settings/use-ipc-query'
@@ -63,12 +64,25 @@ export function PostcardTextField({
   const text = useLiveQuery(String(photo), revision, load).data?.[part] ?? ''
   return (
     <Field>
-      <div className="flex items-center justify-between gap-2">
+      {/* The label alone on its line, never squeezed (STYLE_RULE §4: a label is never cut). */}
+      <div className="flex items-center gap-2">
         <FieldLabel>{t(`postcard.${part}`)}</FieldLabel>
         {cut && <PostcardCutBadge />}
-        <span className="flex-1 text-right text-xs text-muted-foreground tabular-nums">
-          {t('postcard.chars', { count: text.length, max: chars })}
-        </span>
+      </div>
+      <CommitInput
+        multiline
+        value={text}
+        placeholder={t(`postcard.${part}Placeholder`)}
+        ariaLabel={t(`postcard.${part}`)}
+        maxLength={chars}
+        limit={(v) => v.split('\n').slice(0, lines).join('\n')}
+        liveMs={600}
+        onCommit={(next) => void commands.setPostcardText(photo, part, next.trim() === '' ? null : next)}
+        // The address is offered on the next cards once it is typed, never its drafts (FR-077).
+        onDone={part === 'address' ? (done) => done.trim() !== '' && void commands.rememberPostcardAddress(done) : undefined}
+      />
+      {/* Under the field: its look for every card, then how much is typed. */}
+      <div className="flex items-center gap-2">
         <div className="flex gap-1" role="group" aria-label={t('postcard.style')}>
           {STYLES.map(({ key, icon: Icon }) => (
             <Toggle
@@ -86,20 +100,16 @@ export function PostcardTextField({
             </Toggle>
           ))}
         </div>
+        <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+          {t('postcard.chars', { count: text.length, max: chars })}
+        </span>
       </div>
-      <CommitInput
-        multiline
-        value={text}
-        placeholder={t(`postcard.${part}Placeholder`)}
-        ariaLabel={t(`postcard.${part}`)}
-        maxLength={chars}
-        limit={(v) => v.split('\n').slice(0, lines).join('\n')}
-        liveMs={600}
-        onCommit={(next) => void commands.setPostcardText(photo, part, next.trim() === '' ? null : next)}
-        // The address is offered on the next cards once it is typed, never its drafts (FR-077).
-        onDone={part === 'address' ? (done) => done.trim() !== '' && void commands.rememberPostcardAddress(done) : undefined}
-      />
-      {cut && <Hint className="text-destructive">{t('postcard.cutHint')}</Hint>}
+      {/* Text left off the print is lost: the red note, never faint red (STYLE_RULE §4). */}
+      {cut && (
+        <PanelNote danger icon={<Scissors />}>
+          {t('postcard.cutHint')}
+        </PanelNote>
+      )}
       {part === 'address' && filter && (
         <PostcardTextReuse
           filter={filter}

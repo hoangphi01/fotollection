@@ -12,14 +12,12 @@ import {
   PanelBottomOpen,
   PanelLeftClose,
   PanelLeftOpen,
-  Redo2,
   RotateCcwSquare,
   RotateCwSquare,
   Rows2,
   ShoppingBasket,
   SquareSplitHorizontal,
   SquareSplitVertical,
-  Undo2,
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -33,6 +31,7 @@ import { MOD, isMac } from '@/lib/platform'
 import type { Compare, CompareMode } from './compare-stage'
 import { ListRow, ListRows } from '@/components/forms/list-row'
 import { SettingsButtons } from '@/features/develop/settings-buttons'
+import { HistoryButtons } from '@/features/history/history-buttons'
 
 type PreviewToolbarProps = {
   photo: PhotoSummary | undefined
@@ -86,7 +85,7 @@ export function PreviewToolbar({
   return (
     // Too narrow for every button (a narrow window with both columns open), the row scrolls
     // sideways rather than cut its last buttons (owner, 2026-11-07).
-    <div className="@container flex h-header items-center gap-1.5 overflow-x-auto overflow-y-hidden px-3 [scrollbar-width:thin] [&>*]:shrink-0">
+    <div className="@container flex h-header items-center gap-2 overflow-x-auto overflow-y-hidden px-3 [scrollbar-width:thin] [&>*]:shrink-0">
       {side && (
         <>
           <ToolbarButton
@@ -103,22 +102,7 @@ export function PreviewToolbar({
       )}
       {/* Undo and redo first, apart from the photo's own actions (owner, 2026-11-07: they were
           taken for the turn buttons), then copy, paste and reset beside them. */}
-      <ToolbarButton
-        icon={<Undo2 />}
-        label={t('viewer.undo')}
-        data-hint={t('viewer.undoHint', { mod: MOD })}
-        iconOnly
-        disabled={!canUndo}
-        onClick={() => void commands.undo()}
-      />
-      <ToolbarButton
-        icon={<Redo2 />}
-        label={t('viewer.redo')}
-        data-hint={t('viewer.redoHint', { mod: MOD })}
-        iconOnly
-        disabled={!canRedo}
-        onClick={() => void commands.redo()}
-      />
+      <HistoryButtons canUndo={canUndo} canRedo={canRedo} />
       {/* Copy, paste and reset the photo's settings (FR-097), beside undo (owner, 2026-11-07). */}
       <SettingsButtons photo={photo?.id} ticked={ticked} />
       <Separator orientation="vertical" className="mx-1 h-5!" />
@@ -180,7 +164,7 @@ export function PreviewToolbar({
         disabled={!photo}
         onClick={onExport}
       />
-      <div className="ml-auto flex items-center gap-1.5">
+      <div className="ml-auto flex items-center gap-2">
         {zoom}
         <ToolbarButton
           icon={filmstrip ? <PanelBottomClose /> : <PanelBottomOpen />}

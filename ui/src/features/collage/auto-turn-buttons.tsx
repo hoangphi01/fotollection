@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { RotateCcw, WandSparkles } from 'lucide-react'
+import { WandSparkles } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ResetButton } from '@/components/forms/danger-button'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { commands, type CullFilter } from '@/ipc/bindings'
 
@@ -28,11 +29,11 @@ export function AutoTurnButtons({ filter }: { filter: CullFilter }) {
         disabled={running !== null}
         onClick={() => run('turn')}
       />
-      <ToolbarButton
-        icon={<RotateCcw />}
+      {/* Brings each photo's own orientation back: a reset, the red ↺ block (STYLE_RULE §4). */}
+      <ResetButton
+        iconOnly
         label={t('collage.revertTurns')}
-        data-hint={t('collage.revertTurnsHint')}
-        busy={running === 'revert'}
+        hint={t('collage.revertTurnsHint')}
         disabled={running !== null}
         onClick={() => run('revert')}
       />

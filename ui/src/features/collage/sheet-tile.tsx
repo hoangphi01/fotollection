@@ -124,7 +124,7 @@ export function SheetTile({
       {!selectMode && onTurn && (
         <Button
           variant="secondary"
-          size="icon-xs"
+          size="icon-sm"
           className={cn('absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100', selected && 'opacity-100')}
           aria-label={t('collage.turn')}
           data-hint={t('collage.turnHint')}

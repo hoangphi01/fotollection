@@ -280,6 +280,8 @@ export function App() {
             generation={project.document.generation}
             select={select}
             onSettingsReload={reload}
+            canUndo={history.canUndo}
+            canRedo={history.canRedo}
           />
         ) : simple ? (
           <SimpleView

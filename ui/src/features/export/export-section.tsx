@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { CircleCheck, Download, FolderOpen, HardDrive, OctagonX, TriangleAlert } from 'lucide-react'
+import { CircleCheck, Download, FolderOpen, HardDrive, OctagonX, SlidersHorizontal, TriangleAlert } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { useTranslation } from 'react-i18next'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -144,15 +144,10 @@ export function ExportSection({
         </Alert>
       )}
 
-      {/* The choices live in the export dialog (FR-093); here, what they are, in one line. */}
-      <button
-        type="button"
-        disabled={running}
-        onClick={ask}
-        className="w-full min-w-0 truncate text-left text-xs text-muted-foreground hover:text-foreground disabled:opacity-50"
-        data-hint={t('export.changeChoices')}
-      >
-        {[
+      {/* The choices live in the export dialog (FR-093): what they are, as words that wrap,
+          under a real button that opens it (STYLE_RULE §4: never a link-styled line). */}
+      <Field
+        hint={[
           t(share ? 'export.target.share' : 'export.target.print'),
           ...(ui.exportSubfolder ? [ui.exportSubfolder] : []),
           t(byDay ? 'export.days.byDay' : 'export.days.oneFolder'),
@@ -162,7 +157,12 @@ export function ExportSection({
           t('export.qualityLine', { quality: ui.exportQuality }),
           ui.exportDestination ? folderName(ui.exportDestination) : t('export.chooseDestination'),
         ].join(' · ')}
-      </button>
+      >
+        <Button variant="outline" size="sm" className="w-full" disabled={running} onClick={ask}>
+          <SlidersHorizontal data-icon="inline-start" />
+          {t('export.changeChoices')}
+        </Button>
+      </Field>
 
       {!running && estimate && estimate.photos > 0 && estimate.sourceBytes && estimate.estimatedBytes ? (
         <SizeChange

@@ -96,15 +96,16 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
     <Field
       label={
         <span className="flex items-center gap-1.5">
-          <History className="size-3.5" />
+          <History className="size-4" />
           {t('postcard.reuse.recent')}
         </span>
       }
     >
       <ListRows>
         {recent.map((address) => (
-          <div key={address} className="flex items-center gap-1">
-            <div className="min-w-0 flex-1">
+          <div key={address} className="flex items-center gap-2">
+            {/* The row shows the address on one line; its hint, the whole of it. */}
+            <div className="min-w-0 flex-1" data-hint={address}>
               <ListRow icon={<MapPin />} chosen={address === text.trim()} onClick={() => onPick(address)}>
                 {address.replaceAll('\n', ', ')}
               </ListRow>
