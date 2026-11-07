@@ -1095,6 +1095,16 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 **P2 (v0.14.0 "Looks", planned; owner's request 2026-11-07: "learn how to rescue blown highlights instead of fading to white").** Where a RAW's channels clipped, the develop rebuilds their colour from the unclipped channels and the edge of the clipped area, and keeps brightness above white, so lowering exposure or *Highlights* brings back the sky, a lamp or a cloud instead of a flat white patch. It replaces today's fade to neutral (`highlights_to_white`), which stays as the fallback where nothing can be rebuilt. **Chosen and tuned only by measurement** (owner, 2026-11-07: "always through experiments and numbers, never assumed good"): a harness with known truth (synthetic clipped skies, coloured lights, two colours meeting, and the owner's bracketed 0 / −2 EV pairs) runs the current fade and several candidate methods (an average of the edge's colour, edge colour ratios filled smoothly, and variants), each parameter swept, the winner and its numbers kept in RESULT. Methods learned from published papers and manuals only (ADR-0043).
 
+### FR-113 — ID photos on one print
+
+**P2 (planned; owner's request 2026-11-07: "for a visa, a CV or a passport in the EU, quick and cheap").** One photo, cut to a document's size, repeated on one print with cut lines, so a 10 × 15 from any kiosk gives a sheet of ID photos for a few cents.
+
+- **Sizes:** presets in millimetres, each with its name and where it is used: 35 × 45 (passports and Schengen visas in the EU and many other countries), 30 × 40 and 40 × 60 (Vietnamese documents), 20 × 30, 51 × 51 (2 × 2 in, the United States), and a size of the user's own.
+- **The crop:** the photo's crop editor at that ratio, with guide lines for the head from the size's own rules where it has them (for 35 × 45, chin to crown 32–36 mm, eyes level, centred), drawn on screen and never printed. Placing the face automatically, from the faces the best-shot analysis already finds (FR-041), is a later step, measured before it is offered.
+- **The sheet:** as many copies as fit the print size at their true size in millimetres (eight of 35 × 45 on 10 × 15, a 2 mm gap and thin grey cut marks between them), the count shown before export; or a number of copies the user asks for. Printed at exact scale, as every print (FR-007): the photo is never stretched to fill the paper.
+- **Honest about the rules:** a short note says that offices decide what they accept (background, light, expression, glasses), that some countries now take photos only from approved studios or at the office, and that the user should check before printing. No claim that a photo is compliant.
+- **Never touched:** no retouching, no background replacement; the date stamp, the info frame and the border are off on an ID sheet.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
