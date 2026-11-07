@@ -248,7 +248,7 @@ The audit of 2026-11-02 read the RAW path, the JPEG and colour path and the docs
 | NFR-005 | UI responsiveness | < 100 ms | — | Not Started |
 | NFR-006 | Offline and zero telemetry | 0 requests | — | Not Started |
 | NFR-007 | Platforms | macOS 11+, Win 10/11, Linux glibc 2.35+ (x86_64, ARM64) | macOS and Windows shipping; Linux from v0.8.2, smoke-tested in CI on Ubuntu 22.04 and Debian 12 | In Progress |
-| NFR-008 | Install size | ≤ 150 MB (25 MB until 2026-11-05, OPTIMIZATION §3) | v0.13.1 (10⁶-byte MB): `-setup.exe` 20.5 ✓, `.msi` 27.9 ✓, `.deb` amd64 27.8 and arm64 26.1 ✓, universal `.dmg` 53.3 ✓, AppImage 100.8–104.5 ✓. v0.13.2 adds the manual's pictures (7.6 MB, FR-110) | In Progress |
+| NFR-008 | Install size | ≤ 150 MB (25 MB until 2026-11-05, OPTIMIZATION §3) | v0.13.1 (10⁶-byte MB): `-setup.exe` 20.5 ✓, `.msi` 27.9 ✓, `.deb` amd64 27.8 and arm64 26.1 ✓, universal `.dmg` 53.3 ✓, AppImage 100.8–104.5 ✓. v0.13.2, with the manual's pictures (7.6 MB, FR-110): `-setup.exe` 25.9 ✓, `.msi` 33.2 ✓, `.deb` amd64 33.1 and arm64 31.4 ✓, universal `.dmg` 64.0 ✓, AppImage 106.1–109.8 ✓ | In Progress |
 | NFR-009 | Colour fidelity | ICC kept, Δ ≤ 1 | ICC kept 25/25, ΔE2000 mean 0.19 (sRGB) / 0.31 (Display P3), detail and saturation kept; web-editor export for reference 1.39 / 2.15 ([RESULT.md §9](RESULT.md#9-print-quality)) | In Progress |
 | NFR-010 | Cold start | < 1.5 s | page loaded 0.31–0.40 s, first thumbnail 0.50–0.58 s (release build, 4 runs); the very first launch after install 2.7 s, 2.1 s of it WebKit starting (`scripts/measure-startup.sh`) | In Progress |
 | NFR-011 | Robustness | 0 crashes | — | Not Started |
