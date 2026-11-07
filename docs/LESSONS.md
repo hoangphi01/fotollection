@@ -652,3 +652,9 @@
 - **Fix:** a plain `Input`, as every other field; `check-lego` now refuses `InputGroup` in the features.
 - **Rule:** before a new kind of control, find how the app already does that job (grep the features) and use the same block; a primitive no feature uses yet is unstyled for this app until it is checked in both themes.
 
+### A check that is printed is not a check that gates (docs)
+
+- **Seen:** `check-docs.sh` reported a Markdown problem, and the commit chained after it still went in (`scripts/check-docs.sh | tail -1; git commit …`).
+- **Why:** with `;` (and through a pipe), the next command runs whatever the check returned; reading the last line afterwards is too late.
+- **Fix:** the extra blank line fixed in the next commit.
+- **Rule:** a commit follows its checks with `&&`, never `;` or a pipe: `scripts/check-docs.sh && git commit …` (DOCS_GUIDE §3).
