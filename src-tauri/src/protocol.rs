@@ -34,6 +34,9 @@ enum Route {
     Mask(PhotoId),
     /// The photo's colour look as a 33³ RGBA8 table, for the look on the GPU (ADR-0039).
     Look(PhotoId),
+    /// The photo through one look of the library, small and square, for the Looks card
+    /// (FR-079): `looktile/<id>?look=<library id>`.
+    LookTile(PhotoId, String),
     /// A full-resolution region of the preview, for zoom; `true` without the colour look, for
     /// the *Before* side of a compare view (FR-096).
     Region(PhotoId, Region, bool),
@@ -106,6 +109,13 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
         "thumb" => Some(Route::Thumb(id)),
         "preview" if flag("mask=1") => Some(Route::Mask(id)),
         "look" => Some(Route::Look(id)),
+        "looktile" => {
+            let look = query
+                .unwrap_or_default()
+                .split('&')
+                .find_map(|p| p.strip_prefix("look="))?;
+            fotollection_core::looks::valid_base(look).then(|| Route::LookTile(id, look.to_owned()))
+        }
         "preview" => Some(match region(query).ok()? {
             Some(region) => Route::Region(id, region, flag("plain=1")),
             None => Route::Preview(
@@ -208,9 +218,11 @@ fn priority_of(route: &Route) -> Priority {
         | Route::Mask(id)
         | Route::Source(id, _) => Priority::Interactive(Some(u64::from(id.0))),
         Route::Sheet(_, false, _) => Priority::Interactive(None),
-        Route::Thumb(_) | Route::Sheet(_, true, _) | Route::Look(_) | Route::CameraLive => {
-            Priority::Background
-        }
+        Route::Thumb(_)
+        | Route::Sheet(_, true, _)
+        | Route::Look(_)
+        | Route::LookTile(..)
+        | Route::CameraLive => Priority::Background,
     }
 }
 
@@ -250,6 +262,10 @@ fn answer(state: &AppState, route: Route, responder: UriSchemeResponder) {
                 bytes,
                 Some("application/octet-stream"),
             ),
+            Err(error) => fail(responder, &error),
+        },
+        Route::LookTile(id, look) => match crate::looks::look_tile_bytes(state, id, &look) {
+            Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
             Err(error) => fail(responder, &error),
         },
         Route::Preview(id, plain) => match preview_bytes(state, id, plain) {
@@ -294,6 +310,12 @@ mod tests {
             route("/look/9", Some("rev=3")),
             Some(Route::Look(PhotoId(9)))
         ));
+        assert!(matches!(
+            route("/looktile/9", Some("look=builtin:clear&rev=2")),
+            Some(Route::LookTile(PhotoId(9), ref l)) if l == "builtin:clear"
+        ));
+        assert!(route("/looktile/9", Some("look=../etc")).is_none());
+        assert!(route("/looktile/9", None).is_none());
         assert!(route("/thumb/../etc", None).is_none());
         assert!(route("/thumb/7/extra", None).is_none());
         assert!(route("/other/1", None).is_none());

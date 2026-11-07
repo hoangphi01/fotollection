@@ -496,6 +496,11 @@
       "nothing_copied": "Hãy sao chép thiết lập từ một ảnh trước",
       "not_on_photo": "Hãy nhấp vào chính tấm ảnh"
     },
+    "look": {
+      "no_name": "Hãy đặt tên cho look",
+      "full": "Bạn đã lưu 200 look: hãy xoá bớt một look trước",
+      "unknown": "Look này không còn trong danh sách của bạn"
+    },
     "settings": {
       "invalid": "Thiết lập không hợp lệ"
     },
@@ -951,7 +956,26 @@
       "shadowTint": "Phủ một màu lên phần tối, như phim.",
       "highlightTint": "Phủ một màu lên phần sáng.",
       "balance": "Ranh giới giữa vùng tối và vùng sáng.",
-      "mono": "Trắng đen qua kính lọc màu như phim: lọc đỏ làm trời xanh tối nhất."
+      "mono": "Trắng đen qua kính lọc màu như phim: lọc đỏ làm trời xanh tối nhất.",
+      "amount": "Mức độ của cả look: mọi thanh trượt và LUT cùng lúc"
+    },
+    "looks": "Looks",
+    "amount": "Mức độ",
+    "saveAs": "Lưu thành look",
+    "saveAsBody": "Giữ look của ảnh này dưới một cái tên, để dùng cho ảnh khác.",
+    "name": "Tên",
+    "namePlaceholder": "Chiều hè",
+    "save": "Lưu",
+    "remove": "Xoá look này",
+    "builtin": {
+      "original": "Gốc",
+      "c200-natural": "C200 Natural",
+      "warm-film": "Phim cũ ấm",
+      "clear": "Trong trẻo",
+      "cool": "Mát",
+      "faded": "Phai màu",
+      "mono-red": "Đen trắng, lọc đỏ",
+      "mono-soft": "Đen trắng mềm"
     }
   },
   "rawLook": {

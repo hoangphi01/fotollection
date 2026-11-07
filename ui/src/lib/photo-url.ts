@@ -61,3 +61,12 @@ export function maskUrl(id: number, revision: number): string {
 export function lookTableUrl(id: number, revision: number): string {
   return `${base}/look/${id}?rev=${revision}`
 }
+
+/**
+ * The photo through one look of the library, small and square, for the Looks card (FR-079).
+ * Kept by the webview: a tile changes only with the photo or the look, never with a slider.
+ */
+export function lookTileUrl(id: number, look: string): string {
+  // Library ids are lowercase letters, digits, dashes and one colon: safe in a query as they are.
+  return `${base}/looktile/${id}?look=${look}`
+}

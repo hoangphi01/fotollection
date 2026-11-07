@@ -104,6 +104,8 @@ pub struct AppState {
     pub ui: RwLock<UiSettings>,
     /// Addresses last typed on postcards, newest first (FR-077); this machine's only.
     pub recent_addresses: Mutex<Vec<String>>,
+    /// The looks saved with *Save as look* (FR-079), oldest first; this machine's only.
+    pub saved_looks: Mutex<Vec<fotollection_core::look_library::SavedLook>>,
     /// Chosen through the Rust-side dialog only, never sent by the webview (SECURITY.md §2).
     pub jobs: Mutex<HashMap<u32, CancellationToken>>,
     pub next_job: AtomicU32,
@@ -234,6 +236,7 @@ impl AppState {
             }),
             ui: RwLock::new(stored.ui.clone()),
             recent_addresses: Mutex::new(stored.recent_addresses),
+            saved_looks: Mutex::new(stored.looks),
             jobs: Mutex::new(HashMap::new()),
             next_job: AtomicU32::new(1),
             library_generation: AtomicU64::new(0),
@@ -319,6 +322,9 @@ impl AppState {
         let Ok(recent_addresses) = self.recent_addresses.lock().map(|r| r.clone()) else {
             return;
         };
+        let Ok(looks) = self.saved_looks.lock().map(|l| l.clone()) else {
+            return;
+        };
         let (Ok(render), Ok(frame), Ok(ui)) =
             (self.settings.read(), self.frame.read(), self.ui.read())
         else {
@@ -331,6 +337,7 @@ impl AppState {
             fonts: frame.fonts.clone(),
             ui: ui.clone(),
             recent_addresses,
+            looks,
         };
         drop((render, frame, ui));
         let _guard = self.store_lock.lock();

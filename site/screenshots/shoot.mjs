@@ -79,6 +79,8 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     check_for_update_at_start: () => update,
     // The preview's colour cards (FR-079): the scenario's look, shared by every photo.
     get_photo_look: () => ({ look: current.settings.look, custom: false, raw: null }),
+    // The Looks card and Simple mode's strip (FR-079): the built-in looks, as recorded.
+    list_looks: () => common.list_looks ?? [],
     // The histogram (FR-098): counted here from the preview the shot shows, as Rust counts it.
     photo_histogram: async (args) => {
       for (let i = 0; i < 60; i++) {
@@ -268,6 +270,12 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
         const sheet = path.join(dump, scenario === 'postcard' ? 'img/sheet-postcard' : scenario === 'postcard-full' ? 'img/sheet-postcard-full' : 'img/sheet', `${name}.jpg`)
         if (!existsSync(sheet)) return route.fulfill({ status: 404 })
         return route.fulfill({ body: await readFile(sheet), contentType: 'image/jpeg' })
+      }
+      if (kind === 'looktile') {
+        // A look's tile (FR-079): `{photo}-{look id, ':' as '-'}`, recorded by demo.rs.
+        const tile = path.join(dump, 'img/looktile', `${id}-${(url.searchParams.get('look') ?? '').replace(':', '-')}.jpg`)
+        if (!existsSync(tile)) return route.fulfill({ status: 404 })
+        return route.fulfill({ body: await readFile(tile), contentType: 'image/jpeg' })
       }
       // The look scenario's *Before* is its plain preview, recorded beside it (demo.rs).
       const shown = kind === 'preview' && scenario === 'look' && url.searchParams.get('plain') ? 'look-plain' : scenario

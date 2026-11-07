@@ -848,7 +848,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-079 — Colour adjustments
 
-**P1 (Faves and Tools shipped in v0.9.9, the Looks card planned for v0.14.0 "Looks"; owner's request 2026-11-05, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** A **moderate** colour editor, in the spirit of Snapseed's *Tune Image* and LUMIX Lab's looks, far short of Lightroom: global adjustments only, one card, the same result on screen and on paper.
+**P1 (Faves and Tools shipped in v0.9.9; the Looks card, its eight built-in looks, *Save as look* and Simple mode's strip built for v0.14.0 "Looks", 2026-11-07; owner's request 2026-11-05, [ADR-0038](adr/0038-moderate-colour-editor-on-one-lut-engine.md)).** A **moderate** colour editor, in the spirit of Snapseed's *Tune Image* and LUMIX Lab's looks, far short of Lightroom: global adjustments only, one card, the same result on screen and on paper.
 
 - **Three cards, as Snapseed 3 splits Looks, Faves and Tools** (owner, 2026-11-05), each a lego card of its own, in the photo and sheet previews only (owner, 2026-11-05: colour is chosen while the photo is seen large, not in the gallery's panel), after *Print / export size*; the look shared by every photo is set with *Apply this look to all photos*; Simple mode shows only **Looks**:
   - **Looks:** the list of looks, the built-in ones, the user's own and the LUTs imported from LUMIX Lab or elsewhere ([FR-070](#fr-070--looks-from-lut-files)), each shown as the chosen photo through it, small; the **amount**; *Import LUT…* and *Save as look*.

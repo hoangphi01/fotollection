@@ -27,7 +27,9 @@ pub const FORMAT: &str = "fotollection-project";
 /// v11: `photos[].look`, a photo's own colour look set in the preview (FR-079), and
 /// `photos[].raw_look`, how a camera RAW is finished (FR-072, ADR-0040). A file from before
 /// v11 opens its RAW photos with the camera's look, as they printed then.
-pub const SCHEMA_VERSION: u32 = 11;
+/// v12: `photos[].look.name` and `photos[].look.base`, the look of the library it came
+/// from (FR-079); absent before, and never part of its colours.
+pub const SCHEMA_VERSION: u32 = 12;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -825,9 +827,9 @@ mod tests {
         let path = dir.path().join("p.fotollection");
         std::fs::write(
             &path,
-            br#"{"format":"fotollection-project","schema_version":12}"#,
+            br#"{"format":"fotollection-project","schema_version":99}"#,
         )?;
-        assert_eq!(load(&path), Loaded::NewerVersion(12));
+        assert_eq!(load(&path), Loaded::NewerVersion(99));
 
         let mut file = snapshot(&library_with(&["/trip/a.jpg"]));
         file.photos.push(PhotoRow {
@@ -943,6 +945,27 @@ mod tests {
             panic!("v10 project should load");
         };
         assert!(v10.photos.iter().all(|p| p.look.is_none()));
+    }
+
+    /// FR-079: a v12 file keeps the name and library reference of each photo's look; a bad
+    /// reference is dropped and the name cleaned, the colours unchanged.
+    #[test]
+    fn fr_079_v12_fixture_keeps_each_looks_name_and_base() {
+        let Loaded::Ok(v12) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v12.fotollection"))
+        else {
+            panic!("v12 project should load");
+        };
+        let looks: Vec<crate::looks::LookSettings> = v12
+            .photos
+            .iter()
+            .filter_map(|p| p.look.clone().map(crate::looks::LookSettings::sanitized))
+            .collect();
+        assert_eq!(looks[0].name.as_deref(), Some("Warm old film"));
+        assert_eq!(looks[0].base.as_deref(), Some("builtin:warm-film"));
+        assert_eq!(looks[0].adjust.warmth, 40);
+        assert_eq!(looks[1].name.as_deref(), Some("Bad base"));
+        assert_eq!(looks[1].base, None);
     }
 
     /// FR-072, ADR-0040: a RAW photo's finish is saved and read back (`raw_look`); a project

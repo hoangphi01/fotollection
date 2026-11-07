@@ -178,10 +178,12 @@ pub fn is_bundle(bytes: &[u8]) -> bool {
 /// same project always produces the same bytes.
 pub fn to_bytes(bundle: &Bundle) -> Result<Vec<u8>, BundleError> {
     let write_err = |e: &dyn std::fmt::Display| BundleError::Write(e.to_string());
-    // This machine's own: the interface and the addresses it remembers stay out (FR-077).
+    // This machine's own: the interface, the addresses it remembers (FR-077) and the looks
+    // saved on it (FR-079) stay out; each photo's look is in the project.
     let settings = StoredSettings {
         ui: UiSettings::default(),
         recent_addresses: Vec::new(),
+        looks: Vec::new(),
         ..bundle.settings.clone()
     };
     let project = ProjectFile {

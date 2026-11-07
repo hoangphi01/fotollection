@@ -34,7 +34,9 @@ pub const FORMAT: &str = "fotollection-settings";
 /// `ui.preparePreviews` (on), each absent before.
 /// v16 (FR-092, FR-093): `ui.exportQuality` (90), `ui.exportSubfolder`, `ui.exportNaming`, `ui.exportExisting`, `ui.exportMetadata`, `ui.exportLimitKb` (FR-009, FR-010, FR-104, FR-105), `ui.checkUpdatesAtStart` (FR-103, on), `ui.exportAsk` (on), `ui.exportSeparate`
 /// (off) and `ui.exportDestination` (none), each absent before.
-pub const SCHEMA_VERSION: u32 = 17;
+/// v17 (FR-109): `ui.welcomeSeen`, `ui.welcomeEveryStart`.
+/// v18 (FR-079): `looks`, the user's saved looks, absent before (none).
+pub const SCHEMA_VERSION: u32 = 18;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -52,6 +54,9 @@ pub struct StoredSettings {
     /// The addresses last typed on postcards, newest first, for the next cards (FR-077).
     /// This machine's only: never in a project bundle.
     pub recent_addresses: Vec<String>,
+    /// The looks saved with *Save as look* (FR-079), oldest first. This machine's own: a
+    /// project keeps each photo's values, never this list.
+    pub looks: Vec<crate::look_library::SavedLook>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -72,6 +77,9 @@ struct FileV4 {
     /// Absent before v13: none (FR-077).
     #[serde(default)]
     recent_addresses: Vec<String>,
+    /// Absent before v18: none (FR-079).
+    #[serde(default)]
+    looks: Vec<crate::look_library::SavedLook>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -181,6 +189,7 @@ fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
         fonts: file.fonts,
         ui: file.ui.sanitized(),
         recent_addresses: crate::settings::sanitized_addresses(&file.recent_addresses),
+        looks: crate::look_library::sanitized_saved(&file.looks),
     })
 }
 
@@ -206,6 +215,7 @@ pub fn to_bytes(settings: &StoredSettings) -> std::io::Result<Vec<u8>> {
         fonts: settings.fonts.clone(),
         ui: settings.ui.clone(),
         recent_addresses: settings.recent_addresses.clone(),
+        looks: settings.looks.clone(),
     };
     serde_json::to_vec_pretty(&file).map_err(std::io::Error::other)
 }
@@ -547,6 +557,44 @@ mod tests {
             panic!("v14 should load again");
         };
         assert_eq!(back.render.look, s.render.look);
+        Ok(())
+    }
+
+    /// FR-079: a v17 file has no saved looks; a v18 file keeps its own, cleaned (a twin id
+    /// and a bad one dropped, values clamped), and they round-trip.
+    #[test]
+    fn fr_079_v17_files_have_no_saved_looks_and_v18_keeps_them() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v17.json"))?;
+        let Loaded::Ok(old) = load(&path) else {
+            panic!("v17 should load");
+        };
+        assert_eq!(old.looks, []);
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v18.json"))?;
+        let Loaded::Ok(new) = load(&path) else {
+            panic!("v18 should load");
+        };
+        assert_eq!(new.looks.len(), 1);
+        let kept = &new.looks[0];
+        assert_eq!(
+            (kept.id.as_str(), kept.name.as_str()),
+            ("5e7a01c2b3d4", "My summer")
+        );
+        assert_eq!(
+            (
+                kept.look.adjust.warmth,
+                kept.look.adjust.contrast,
+                kept.look.amount
+            ),
+            (40, 100, 80)
+        );
+        assert_eq!(kept.look.base.as_deref(), Some("user:5e7a01c2b3d4"));
+        save(&path, &new)?;
+        let Loaded::Ok(again) = load(&path) else {
+            panic!("a saved v18 should load");
+        };
+        assert_eq!(again.looks, new.looks);
         Ok(())
     }
 

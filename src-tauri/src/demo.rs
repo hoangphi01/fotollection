@@ -190,12 +190,27 @@ fn record_common(app: &AppHandle, ids: &[PhotoId], out: &Path) -> Result<Value, 
         );
         let thumb = thumbnail_bytes(&state, id).ok_or("no thumbnail")?;
         write(&out.join(format!("img/thumb/{key}.jpg")), &thumb)?;
+        // The Looks card's tiles (FR-079): the photo through each built-in look.
+        for look in fotollection_core::look_library::built_in() {
+            write(
+                &out.join(format!(
+                    "img/looktile/{key}-{}.jpg",
+                    look.id.replace(':', "-")
+                )),
+                &crate::looks::look_tile_bytes(&state, id, &look.id).map_err(|e| e.message)?,
+            )?;
+        }
         write(
             &out.join(format!("img/source/{key}.jpg")),
             &source_bytes(&state, id, false).map_err(|e| e.message)?,
         )?;
     }
     common.insert("photo_details", Value::Object(details));
+    common.insert(
+        "list_looks",
+        serde_json::to_value(fotollection_core::look_library::built_in())
+            .map_err(|e| e.to_string())?,
+    );
     common.insert("get_crop_geometry", Value::Object(geometry));
     common.insert("print_advice", Value::Object(advice));
     to_json(common)

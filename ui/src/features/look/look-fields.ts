@@ -7,7 +7,15 @@ export type FullAdjust = Required<Omit<Adjust, 'shadowTint' | 'highlightTint' | 
   highlightTint: Required<Tint>
   grain: Required<Grain>
 }
-export type FullLook = { adjust: FullAdjust; lut: string | null; lutStrength: number; amount: number }
+export type FullLook = {
+  adjust: FullAdjust
+  lut: string | null
+  lutStrength: number
+  amount: number
+  /** The look of the library it came from, kept while its sliders move (FR-079). */
+  name: string | null
+  base: string | null
+}
 
 /** A look's change, as the cards send it: `first` starts a new undo step (FR-079). */
 export type LookChange = (change: (look: FullLook) => FullLook, first: boolean) => void
@@ -43,6 +51,8 @@ export const NO_LOOK: FullLook = {
   lut: null,
   lutStrength: 100,
   amount: 100,
+  name: null,
+  base: null,
 }
 
 /** `look` with Rust's defaults where it says nothing. */
@@ -59,6 +69,8 @@ export function fullLook(look: LookSettings | undefined): FullLook {
     lut: look?.lut ?? null,
     lutStrength: look?.lutStrength ?? 100,
     amount: look?.amount ?? 100,
+    name: look?.name ?? null,
+    base: look?.base ?? null,
   }
 }
 

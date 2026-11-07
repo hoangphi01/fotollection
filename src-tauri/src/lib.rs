@@ -12,6 +12,7 @@ mod demo;
 mod document;
 mod events;
 mod i18n;
+mod looks;
 mod menu;
 mod open_with;
 mod places;
@@ -121,6 +122,9 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::get_photo_look,
             commands::set_photo_look,
             commands::apply_look_to_all,
+            looks::list_looks,
+            looks::save_look,
+            looks::delete_look,
             commands::set_raw_look,
             commands::apply_raw_look_to_all,
             commands::reset_photo_stamps,

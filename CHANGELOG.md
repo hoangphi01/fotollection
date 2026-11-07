@@ -10,6 +10,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: **Looks**, one tap gives a photo a colour: eight looks of our own (C200 Natural, Warm old film, Clear, Cool, Faded and three black and white), each shown as your photo, with an **Amount**; **Save as look** keeps your own.
+- New: Simple mode shows the looks as a strip under the photo.
+- Fixes: RAW shadows without steps.
+
+### Added
+
+- **Looks** (FR-079): a **Looks** card first among the colour cards of the photo and sheet previews, each look a tile of the photo through it, the chosen one ringed; **Amount** sets how much of the whole look; **Save as look** keeps the photo's look under a name on this machine, removable from its tile. A pick copies the look into the photo, so its sliders show it and editing the list later changes no photo. In Simple mode the looks are a strip under the photo, one tap each.
+
 ### Fixed
 
 - **RAW shadows without steps:** the RAW tone curve is read between its bins, so dark gradients no longer show bands of three or four levels (35 gaps in the lifted shadows of the nine test cameras, now 1); RAW previews are made again once.

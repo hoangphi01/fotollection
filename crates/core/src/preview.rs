@@ -247,6 +247,42 @@ fn keep_bounded<K: PartialEq, V>(
 const SMALL_CAPACITY: usize = 64;
 /// The long edge of a small source made from the full photo when it has no thumbnail yet.
 const SMALL_LONG_EDGE: u32 = crate::thumbs::T1_LONG_EDGE;
+/// A look tile's side in pixels (FR-079): the Looks card draws tiles about 80 px wide, so
+/// twice that for sharp screens.
+pub const LOOK_TILE_EDGE: u32 = 192;
+/// A look tile's JPEG quality: small, seen small.
+const LOOK_TILE_QUALITY: u8 = 85;
+
+/// A look tile's pixels (FR-079): the centre square of `small`, [`LOOK_TILE_EDGE`] wide,
+/// through `look`'s table. `measure_look_tiles` times this.
+pub fn look_tile(
+    small: &RgbImage,
+    look: &crate::looks::LookSettings,
+) -> Result<RgbImage, crate::render::RenderError> {
+    let mut tile = fit_long_edge(&centre_square(small), LOOK_TILE_EDGE)?;
+    if let Some(table) = look.table() {
+        crate::looks::apply(&mut tile, &table);
+    }
+    Ok(tile)
+}
+
+/// The largest square at the centre of `image`.
+fn centre_square(image: &RgbImage) -> RgbImage {
+    let side = image.width.min(image.height);
+    let (x0, y0) = ((image.width - side) / 2, (image.height - side) / 2);
+    let row = image.width as usize * 3;
+    let mut data = Vec::with_capacity(side as usize * side as usize * 3);
+    for y in y0..y0 + side {
+        let start = y as usize * row + x0 as usize * 3;
+        data.extend_from_slice(&image.data[start..start + side as usize * 3]);
+    }
+    RgbImage {
+        width: side,
+        height: side,
+        data,
+    }
+}
+
 /// Widest region the UI may ask for, in pixels: a 4K screen at 1:1.
 pub const REGION_MAX_PX: u32 = 4096;
 
@@ -1096,6 +1132,22 @@ impl PreviewCache {
         split_look(record, settings).1.table().map(|t| t.to_rgba8())
     }
 
+    /// The photo through `look`, small and square, for a tile of the Looks card (FR-079):
+    /// the centre of its small source (its thumbnail, kept for the collage grid too), then
+    /// the whole look through its table. A RAW's tile shows its thumbnail through the table,
+    /// linear sliders included (RESULT §34 measures how close that is to its preview).
+    pub fn look_tile_jpeg(
+        &self,
+        record: &PhotoRecord,
+        look: &crate::looks::LookSettings,
+        thumbnail: &Thumbnail<'_>,
+        codec: &dyn JpegCodec,
+    ) -> Result<Vec<u8>, ThumbError> {
+        let small = self.small_source(record, RawSliders::default(), thumbnail, codec)?;
+        let tile = look_tile(&small, look)?;
+        Ok(codec.encode(&tile, EncodeOptions::screen(LOOK_TILE_QUALITY), None)?)
+    }
+
     /// Renders the preview JPEG for `record` with the current settings.
     pub fn render_jpeg(
         &self,
@@ -1938,6 +1990,55 @@ mod tests {
             )?;
             assert_eq!(edge, None, "the border is no photo");
         }
+        Ok(())
+    }
+
+    /// FR-079: a look tile is the centre of the photo, square and small, through the look;
+    /// Original leaves it as the photo is, a warm look makes it warmer.
+    #[test]
+    fn fr_079_a_look_tile_is_the_photo_through_that_look() -> TestResult {
+        let dir = tempfile::tempdir()?;
+        let record = photo(dir.path(), 600, 400)?;
+        let codec = default_codec();
+        let cache = PreviewCache::default();
+        let no_thumb = |_: &PhotoRecord| None;
+        let mean = |jpeg: &[u8]| -> TestResult<[f64; 3]> {
+            let img = decode_image(codec.as_ref(), jpeg)?.image;
+            assert_eq!((img.width, img.height), (LOOK_TILE_EDGE, LOOK_TILE_EDGE));
+            let mut sum = [0f64; 3];
+            for p in img.data.as_chunks::<3>().0 {
+                for c in 0..3 {
+                    sum[c] += f64::from(p[c]);
+                }
+            }
+            let n = f64::from(img.width * img.height);
+            Ok(sum.map(|v| v / n))
+        };
+        let plain = mean(&cache.look_tile_jpeg(
+            &record,
+            &crate::looks::LookSettings::default(),
+            &no_thumb,
+            codec.as_ref(),
+        )?)?;
+        let mut warm = crate::looks::LookSettings::default();
+        warm.adjust.warmth = 80;
+        let warm = mean(&cache.look_tile_jpeg(&record, &warm, &no_thumb, codec.as_ref())?)?;
+        assert!(
+            warm[0] - warm[2] > plain[0] - plain[2] + 5.0,
+            "warmer: {warm:?} against {plain:?}"
+        );
+        let wide = RgbImage {
+            width: 5,
+            height: 2,
+            data: (0..30).collect(),
+        };
+        let square = centre_square(&wide);
+        assert_eq!((square.width, square.height), (2, 2));
+        assert_eq!(
+            square.data[..6],
+            [3, 4, 5, 6, 7, 8],
+            "columns 1 and 2 of row 0"
+        );
         Ok(())
     }
 

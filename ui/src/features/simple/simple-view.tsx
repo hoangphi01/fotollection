@@ -8,6 +8,7 @@ import { KeyHints } from '@/components/layout/key-hints'
 import { StageSpinner } from '@/components/layout/stage-spinner'
 import type { PhotoSummary, Queue, QueueView } from '@/ipc/bindings'
 import { handleCullKey } from '@/features/culling/cull-keys'
+import { LookStrip } from '@/features/look/look-strip'
 import { sendTo } from '@/features/viewer/send-to'
 import { useShownSrc } from '@/features/viewer/use-shown-src'
 import { usePrefetch } from '@/features/viewer/use-prefetch'
@@ -106,6 +107,7 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
           </Badge>
         )}
       </div>
+      <LookStrip photoId={photo.id} revision={revision} />
       <div className="flex items-center justify-center gap-2 border-t p-3">
         {/* The hints on wrappers: a disabled button gets no pointer events (STYLE_RULE §4). */}
         <span data-hint={t('simple.previous')}>

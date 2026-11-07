@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { commands, type LookSettings, type PhotoId, type PhotoLook, type RawLook } from '@/ipc/bindings'
 import { FavesCard } from './faves-card'
+import { LooksCard } from './looks-card'
 import { RawLookCard } from './raw-look-card'
 import { ToolsCard } from './tools-card'
 import { fullLook, type LookChange } from './look-fields'
@@ -79,6 +80,7 @@ export function PhotoLookCards({ photoId, revision, onAppliedToAll }: PhotoLookC
           }
         />
       )}
+      <LooksCard photoId={photoId} look={current.look} onChange={change} />
       <FavesCard look={current.look} onChange={change} footer={applyToAll} raw={current.raw != null} />
       <ToolsCard look={current.look} onChange={change} />
     </>

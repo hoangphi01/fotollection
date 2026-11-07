@@ -660,3 +660,16 @@ The RAW tone curve is a table of 4,096 bins over 0–4 in linear light, so one b
 - **The cost:** one slider step 4.3–12.9 ms (before 4.3–11.2 in the same run), within NFR-002's 50 ms.
 - **Not changed:** the encode table (65,536 steps, a twentieth of a level near black; the identity curve in the test shows no gap) and `raw_finish`'s curves, whose 4,096 bins are in the encoded domain (a sixteenth of a level each).
 - The standard previews' version went to 3 so RAW previews are made again (`preview::STANDARD_VERSION`).
+
+## 34. The Looks card's tiles (v0.14.0, FR-079)
+
+Each look is shown as the photo through it: the photo's small source (its thumbnail, 400 px, kept per photo for the collage grid too), its centre square fitted to 192 px, the look's table applied, a JPEG at quality 85 (`preview::look_tile`). `measure_look_tiles` on 24 of the Prague trip's JPEGs, the eight built-in looks, 20 runs each, release build, REF-MAC with 10 GB of swap in use, 2026-11-07:
+
+| Step | p50 | p95 |
+|---|---|---|
+| One tile | 0.68 ms | 0.72 ms |
+| One tile, its look's table built first | 0.69 ms | 1.64 ms |
+| The card's eight tiles | 5.39 ms | 5.54 ms |
+
+- **Well inside the budget** (≤ 3 ms a tile, ≤ 40 ms the card): no tile is kept on disk, and the webview keeps each one, since a tile's address changes only with the photo or the look.
+- **Not yet measured:** a camera RAW's tile is cut from its thumbnail, which is the camera's own JPEG, while its preview is our develop (FR-072); how far the two are apart, and whether a tile from the develop is worth its cost, is measured before release.

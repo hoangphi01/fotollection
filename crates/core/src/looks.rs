@@ -249,6 +249,44 @@ pub struct LookSettings {
     pub lut_strength: u8,
     /// How much of the whole look, 0–100 %.
     pub amount: u8,
+    /// The name of the look it came from, shown in the info frame's photo-style line
+    /// (FR-040); never part of the table.
+    pub name: Option<String>,
+    /// Which look of the library it came from (`builtin:<slug>`, `user:<id>`, `lut:<hash>`),
+    /// so the Looks card marks it; never part of the table.
+    pub base: Option<String>,
+}
+
+/// The longest look name kept, in characters.
+pub const MAX_LOOK_NAME: usize = 60;
+
+/// A look's name as shown: no control characters, trimmed, at most [`MAX_LOOK_NAME`]
+/// characters; `None` when nothing is left.
+#[must_use]
+pub fn clean_name(name: &str) -> Option<String> {
+    let cleaned: String = name
+        .chars()
+        .filter(|c| !c.is_control())
+        .collect::<String>()
+        .trim()
+        .chars()
+        .take(MAX_LOOK_NAME)
+        .collect();
+    let cleaned = cleaned.trim_end().to_owned();
+    (!cleaned.is_empty()).then_some(cleaned)
+}
+
+/// A library reference: a known kind, then 1–64 lowercase letters, digits or dashes.
+#[must_use]
+pub fn valid_base(base: &str) -> bool {
+    let Some((kind, id)) = base.split_once(':') else {
+        return false;
+    };
+    matches!(kind, "builtin" | "user" | "lut")
+        && (1..=64).contains(&id.len())
+        && id
+            .bytes()
+            .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-')
 }
 
 impl Default for LookSettings {
@@ -258,6 +296,8 @@ impl Default for LookSettings {
             lut: None,
             lut_strength: 100,
             amount: 100,
+            name: None,
+            base: None,
         }
     }
 }
@@ -447,6 +487,10 @@ impl LookSettings {
         {
             self.lut = None;
         }
+        self.name = self.name.as_deref().and_then(clean_name);
+        if self.base.as_deref().is_some_and(|b| !valid_base(b)) {
+            self.base = None;
+        }
         self
     }
 
@@ -465,6 +509,8 @@ impl LookSettings {
                 vignette: 0,
                 ..self.adjust
             },
+            name: None,
+            base: None,
             ..self.clone()
         };
         if colour_only.is_identity() {
@@ -1066,6 +1112,7 @@ mod tests {
             lut: Some("../../etc/passwd".into()),
             lut_strength: 250,
             amount: 101,
+            ..LookSettings::default()
         }
         .sanitized();
         assert_eq!(
@@ -1096,5 +1143,46 @@ mod tests {
         };
         let (f, h) = (through(&full, [100; 3])[0], through(&half, [100; 3])[0]);
         assert!(h > 100 && h < f, "half {h}, full {f}");
+    }
+
+    #[test]
+    fn fr_079_a_looks_name_and_base_never_change_its_table() {
+        let plain = with(|a| a.warmth = 30);
+        let named = LookSettings {
+            name: Some("Warm old film".into()),
+            base: Some("builtin:warm-film".into()),
+            ..plain.clone()
+        };
+        let (Some(a), Some(b)) = (plain.table(), named.table()) else {
+            panic!("both looks warm the photo");
+        };
+        assert!(Arc::ptr_eq(&a, &b), "one cached table for both");
+        let bare = LookSettings {
+            name: Some("Nothing".into()),
+            ..LookSettings::default()
+        };
+        assert!(bare.table().is_none(), "a name alone changes no pixel");
+    }
+
+    #[test]
+    fn fr_079_a_looks_name_and_base_are_sanitized() {
+        let long = "x".repeat(MAX_LOOK_NAME + 10);
+        let look = LookSettings {
+            name: Some(format!("  Film\u{7}\n{long}")),
+            base: Some("builtin:../etc".into()),
+            ..LookSettings::default()
+        }
+        .sanitized();
+        let name = look.name.unwrap_or_default();
+        assert!(name.starts_with("Film") && name.chars().count() == MAX_LOOK_NAME);
+        assert!(!name.chars().any(char::is_control));
+        assert_eq!(look.base, None, "an unknown reference is dropped");
+        assert_eq!(clean_name(" \t "), None);
+        for ok in ["builtin:c200-natural", "user:3f9a", "lut:0a1b"] {
+            assert!(valid_base(ok), "{ok}");
+        }
+        for bad in ["c200", "other:x", "user:", "user:UPPER", "lut:a/b"] {
+            assert!(!valid_base(bad), "{bad}");
+        }
     }
 }

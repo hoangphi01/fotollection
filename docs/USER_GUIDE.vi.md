@@ -490,9 +490,11 @@ Mỗi thay đổi là một bước hoàn tác. Dấu ngày được in trên t�
 
 <!-- chapter: colour -->
 
-## 21. Màu: Cơ bản và Công cụ
+## 21. Màu: Looks, Cơ bản và Công cụ
 
-Hai thẻ chỉnh màu ảnh, nằm dưới **Khổ in / xuất**, chỉ có trong bản xem trước: mở một ảnh (hoặc một tấm ghép) để chỉnh màu. Chúng chỉ đổi riêng ảnh đó, như dấu ngày, và **Dùng look này cho mọi ảnh** biến look của ảnh đó thành look chung.
+- **Looks** (sắp có ở v0.14.0) đứng đầu: mỗi look là một ô ảnh của bạn qua look đó, nên bạn thấy màu trước khi chọn. Nhấp một ô để ảnh mang look đó; **Mức độ** chỉnh look mạnh hay nhẹ. **Lưu thành look** giữ look của ảnh dưới tên bạn đặt, để dùng cho ảnh khác; look của bạn có nút xoá trên ô của nó. Ở chế độ Đơn giản, các look là một dải dưới ảnh: mỗi look một cú nhấp.
+
+Hai thẻ chỉnh màu ảnh theo từng thanh trượt, nằm dưới **Khổ in / xuất**, chỉ có trong bản xem trước: mở một ảnh (hoặc một tấm ghép) để chỉnh màu. Chúng chỉ đổi riêng ảnh đó, như dấu ngày, và **Dùng look này cho mọi ảnh** biến look của ảnh đó thành look chung.
 
 - **Cơ bản** hiện bốn thanh: **Sáng**, **Tương phản**, **Ấm / lạnh** và **Bão hoà**. **Thêm** mở thêm **Vùng sáng**, **Vùng tối**, **Tint** và **Rực màu**. Rê chuột lên một thanh để đọc nó làm gì; nhấp đúp để đưa về 0. Bấm hơi lệch lên trên hay xuống dưới thanh vẫn kéo được, và nhấp vào tên thanh thì phím ← → chỉnh nó (mỗi lần 1, giữ Shift thì 10).
 - **Công cụ** gập sẵn; nhấp vào tiêu đề để mở. **Fade** nâng điểm đen, **Nhuộm vùng tối** và **Nhuộm vùng sáng** phủ một màu lên phần tối và phần sáng (có **Cân bằng** giữa hai vùng), còn **Trắng đen** chuyển ảnh sang xám qua một kính lọc: lọc đỏ làm trời xanh tối nhất, lọc xanh làm lá sáng lên.

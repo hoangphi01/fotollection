@@ -492,9 +492,11 @@ Every change is one undo step. The date stamp prints on each photo, with its pla
 
 <!-- chapter: colour -->
 
-## 21. Colour: Faves and Tools
+## 21. Colour: Looks, Faves and Tools
 
-Two cards change a photo's colour, under **Print / export size**, in the previews only: open a photo (or a collage sheet) to change its colour. They change that photo only, as its date stamp does, and **Apply this look to all photos** makes its look everyone's.
+- **Looks** (coming in v0.14.0) come first: each look is a tile of your photo through it, so you see the colour before you choose. Click one to give the photo that look; **Amount** sets how much of it. **Save as look** keeps the photo's look under a name of yours, to use on other photos; a look of yours has a remove button on its tile. In Simple mode the looks are a strip under the photo: one click each.
+
+Two cards change a photo's colour slider by slider, under **Print / export size**, in the previews only: open a photo (or a collage sheet) to change its colour. They change that photo only, as its date stamp does, and **Apply this look to all photos** makes its look everyone's.
 
 - **Faves** shows four sliders: **Brightness**, **Contrast**, **Warm / cool** and **Saturation**. **More** adds **Highlights**, **Shadows**, **Tint** and **Vibrance**. Hover a slider to read what it does; double-click it to put it back to 0. A press just above or below the bar still takes it, and a click on a slider's name lets the ← and → keys move it (by 1, by 10 with Shift).
 - **Tools** is folded at first; click its title to open it. **Fade** lifts the blacks, **Tint the shadows** and **Tint the highlights** lay a colour over the dark and the bright parts (with **Balance** between them), and **Black and white** turns the photo grey through a filter: red darkens a blue sky the most, green lightens leaves.

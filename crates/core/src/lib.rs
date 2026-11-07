@@ -26,6 +26,7 @@ pub mod import;
 pub mod jpeg_layout;
 pub mod library;
 pub mod logo;
+pub mod look_library;
 pub mod looks;
 pub mod machine;
 pub mod metadata;

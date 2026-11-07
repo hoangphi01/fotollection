@@ -516,6 +516,11 @@
       "nothing_copied": "Copy settings from a photo first",
       "not_on_photo": "Click on the photo itself"
     },
+    "look": {
+      "no_name": "Give the look a name",
+      "full": "You already keep 200 looks: remove one first",
+      "unknown": "This look is no longer in your list"
+    },
     "settings": {
       "invalid": "These settings are not valid"
     },
@@ -989,7 +994,26 @@
       "shadowTint": "A colour over the dark parts, as a film look.",
       "highlightTint": "A colour over the bright parts.",
       "balance": "Where the shadows end and the highlights begin.",
-      "mono": "Black and white through a colour filter, as on film: red darkens a blue sky the most."
+      "mono": "Black and white through a colour filter, as on film: red darkens a blue sky the most.",
+      "amount": "How much of the whole look: every slider and its LUT together"
+    },
+    "looks": "Looks",
+    "amount": "Amount",
+    "saveAs": "Save as look",
+    "saveAsBody": "Keep this photo's look under a name, to use it on other photos.",
+    "name": "Name",
+    "namePlaceholder": "Summer evening",
+    "save": "Save",
+    "remove": "Remove this look",
+    "builtin": {
+      "original": "Original",
+      "c200-natural": "C200 Natural",
+      "warm-film": "Warm old film",
+      "clear": "Clear",
+      "cool": "Cool",
+      "faded": "Faded",
+      "mono-red": "B&W, red filter",
+      "mono-soft": "Soft B&W"
     }
   },
   "rawLook": {

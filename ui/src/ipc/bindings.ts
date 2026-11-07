@@ -444,12 +444,34 @@ export const commands = {
 	lutStrength?: number,
 	/**  How much of the whole look, 0–100 %. */
 	amount?: number,
+	/**
+	 *  The name of the look it came from, shown in the info frame's photo-style line
+	 *  (FR-040); never part of the table.
+	 */
+	name?: string | null,
+	/**
+	 *  Which look of the library it came from (`builtin:<slug>`, `user:<id>`, `lut:<hash>`),
+	 *  so the Looks card marks it; never part of the table.
+	 */
+	base?: string | null,
 } | null, amend: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_photo_look", { id, look, amend })),
 	/**
 	 *  "Apply to all" in the preview: this photo's look becomes the setting for every photo,
 	 *  and no photo keeps its own any more (the photo edits are one undoable step).
 	 */
 	applyLookToAll: (id: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("apply_look_to_all", { id })),
+	/**  Every look the card lists: the built-in ones, then this machine's, oldest first. */
+	listLooks: () => typedError<LookEntry[], IpcError>(__TAURI_INVOKE("list_looks")),
+	/**
+	 *  Saves `look` under `name` (FR-079) and returns it as the card lists it. The name is
+	 *  cleaned and the values clamped in Rust, whatever the webview sent.
+	 */
+	saveLook: (name: string, look: LookSettings) => typedError<LookEntry, IpcError>(__TAURI_INVOKE("save_look", { name, look })),
+	/**
+	 *  Forgets a saved look (`user:<id>`) and returns the list left. Photos that used it keep
+	 *  their values: a look is copied into a photo, never linked.
+	 */
+	deleteLook: (id: string) => typedError<LookEntry[], IpcError>(__TAURI_INVOKE("delete_look", { id })),
 	/**
 	 *  How a camera RAW photo is finished (FR-072, ADR-0040): neutral or like the camera's JPEG.
 	 *  One undoable step; the preview, the sheets and the export follow from the new revision.
@@ -1346,6 +1368,23 @@ export type LogoStyle =
 /**  One colour like the frame text: black on white, white on black (badges kept). */
 "mono";
 
+/**  One look as the Looks card lists it. */
+export type LookEntry = {
+	/**  `builtin:<slug>` or `user:<id>`, the value a photo's look keeps in `base`. */
+	id: string,
+	/**
+	 *  The English name; the interface shows a built-in look under its own translation
+	 *  (`look.builtin.<slug>`) and a user's look as typed.
+	 */
+	name: string,
+	kind: LookKind,
+	/**  The values a pick copies into the photo, `name` and `base` filled. */
+	look: LookSettings,
+};
+
+/**  Where a look of the library comes from. */
+export type LookKind = "builtIn" | "user";
+
 /**
  *  A photo's colour look (FR-079): the sliders, an optional imported LUT (FR-070) with its
  *  strength, and an amount that scales all of them together, as a Lightroom preset's.
@@ -1358,6 +1397,16 @@ export type LookSettings = {
 	lutStrength?: number,
 	/**  How much of the whole look, 0–100 %. */
 	amount?: number,
+	/**
+	 *  The name of the look it came from, shown in the info frame's photo-style line
+	 *  (FR-040); never part of the table.
+	 */
+	name?: string | null,
+	/**
+	 *  Which look of the library it came from (`builtin:<slug>`, `user:<id>`, `lut:<hash>`),
+	 *  so the Looks card marks it; never part of the table.
+	 */
+	base?: string | null,
 };
 
 /**  This computer, as the Settings window's *For this computer* shows it (FR-086). */

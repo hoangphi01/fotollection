@@ -120,10 +120,10 @@ Every view below runs the A cases of §3 at each width (`overflowViews`, `measur
 | ID | View | States opened |
 |---|---|---|
 | UI-MODE-001 | Gallery, Pro panel, filters | the demo; a long custom size |
-| UI-MODE-002 | Simple mode | the demo |
+| UI-MODE-002 | Simple mode | the demo; the strip of looks under the photo (FR-079) |
 | UI-MODE-003 | Collage panel and sheet preview | a sheet chosen; landscape, square, tall; a long custom size |
 | UI-MODE-004 | Postcards | panel and preview |
-| UI-MODE-005 | Photo preview | both layouts; W and J |
+| UI-MODE-005 | Photo preview | both layouts; W and J; the Looks card in the Edit tab |
 | UI-MODE-006 | Settings | every section, the manual among them |
 | UI-MODE-007 | Export dialog, update window, welcome | as recorded |
 | UI-MODE-008 | Crop, compare, best-shot groups, select mode, capture, places and project dialogs | M until each has its fixture |
