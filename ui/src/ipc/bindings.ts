@@ -518,12 +518,14 @@ export const commands = {
 	listGroups: () => typedError<Group[], IpcError>(__TAURI_INVOKE("list_groups")),
 	/**
 	 *  Picks the best photo of each chosen group and rejects the others, as one undoable step
-	 *  (FR-041, FR-022). Nothing is deleted.
+	 *  (FR-041, FR-022): the others also go to *Set aside*, so the gallery keeps only the shot
+	 *  kept (owner, 2026-11-07). Nothing is deleted.
 	 */
 	keepBest: (groups: PhotoId[]) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("keep_best", { groups })),
 	/**
-	 *  Keeps the chosen photo of one group and rejects the others, as one undoable step: for
-	 *  groups where the suggestion is too close to call, or the user prefers another shot.
+	 *  Keeps the chosen photo of one group and rejects the others, setting them aside, as one
+	 *  undoable step: for groups where the suggestion is too close to call, or the user prefers
+	 *  another shot.
 	 */
 	keepOne: (group: PhotoId, photo: PhotoId) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("keep_one", { group, photo })),
 	/**  Finds a camera, runs its handshake and starts the session. */

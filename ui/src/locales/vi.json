@@ -31,7 +31,7 @@
     "refreshHint": "Tìm ảnh mới được thêm vào các thư mục này; các chỉnh sửa được giữ nguyên",
     "removeFolder": "Gỡ {{name}} khỏi thư viện",
     "removeFolderHint": "Gỡ khỏi thư viện (tệp vẫn còn nguyên trên máy)",
-    "allPhotos": "Tất cả ảnh",
+    "allPhotos": "Không gian làm việc",
     "folderHint": "Chỉ hiện thư mục này; kéo để sắp xếp (Alt+↑ ↓)",
     "allHint": "Toàn bộ ảnh của mọi thư mục",
     "select": "Chọn thư mục",
@@ -103,7 +103,7 @@
     "compare": "So sánh",
     "compareTitle": "So sánh {{count}} ảnh",
     "keepBest": "Giữ ảnh tốt nhất",
-    "keepBestHint": "Chọn ảnh tốt nhất và bỏ các ảnh còn lại. Không ảnh nào bị xóa; hoàn tác bằng Cmd/Ctrl+Z.",
+    "keepBestHint": "Gắn cờ chọn cho tấm đẹp nhất; tấm đó ở lại Không gian làm việc. Các tấm còn lại bị loại và chuyển sang Để riêng, đưa về được bất cứ lúc nào. Không ảnh nào bị xoá; hoàn tác bằng Cmd/Ctrl+Z.",
     "chooseHint": "Khó phân định: hãy so sánh và chọn một ảnh.",
     "keepAll_other": "Giữ ảnh tốt nhất ở {{count}} nhóm rõ ràng",
     "keepThis": "Giữ ảnh này",
@@ -123,7 +123,9 @@
       "exposure": "Phơi sáng",
       "highlights": "Cháy sáng",
       "noise": "Nhiễu"
-    }
+    },
+    "keepAllHint": "Giữ ảnh tốt nhất ở mọi nhóm không quá khó phân định: tấm đẹp nhất của mỗi nhóm ở lại Không gian làm việc, các tấm khác chuyển sang Để riêng.",
+    "where": "Giữ ảnh tốt nhất: tấm đẹp nhất ở lại Không gian làm việc, các tấm khác chuyển sang Để riêng."
   },
   "settings": {
     "title": "Thiết lập in",

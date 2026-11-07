@@ -34,7 +34,7 @@
     "refreshHint": "Look for photos added to these folders since; your edits are kept",
     "removeFolder": "Remove {{name}} from the library",
     "removeFolderHint": "Remove from the library (the files stay on disk)",
-    "allPhotos": "All photos",
+    "allPhotos": "Workspace",
     "folderHint": "Show only this folder; drag to reorder (Alt+↑ ↓)",
     "allHint": "Every photo from every folder",
     "select": "Select folders",
@@ -110,7 +110,7 @@
     "compare": "Compare",
     "compareTitle": "Compare {{count}} shots",
     "keepBest": "Keep best",
-    "keepBestHint": "Pick the best photo and reject the others. Nothing is deleted; undo with Cmd/Ctrl+Z.",
+    "keepBestHint": "Picks the best photo; it stays in the Workspace. The others are rejected and go to Set aside, ready to come back. Nothing is deleted; undo with Cmd/Ctrl+Z.",
     "chooseHint": "Too close to call: compare and choose one.",
     "keepAll_one": "Keep best in {{count}} clear group",
     "keepAll_other": "Keep best in {{count}} clear groups",
@@ -132,7 +132,9 @@
       "exposure": "Exposure",
       "highlights": "Highlights",
       "noise": "Noise"
-    }
+    },
+    "keepAllHint": "Does Keep best in every group that is not too close to call: each best shot stays in the Workspace, the others go to Set aside.",
+    "where": "Keep best: the best shot stays in the Workspace, the others go to Set aside."
   },
   "settings": {
     "title": "Print settings",

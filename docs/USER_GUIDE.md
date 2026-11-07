@@ -14,7 +14,7 @@ Fotollection works on the folders of photos you already have. It reads them wher
 
 1. **Open a folder:** click **Open folder** (the folder icon next to *Library* in the sidebar), or drop a folder anywhere on the window. Its subfolders come too. JPEG, PNG, HEIC and camera RAW are read (chapter 14).
 2. **The sidebar** lists, under *Library*:
-   - **All photos**: every photo from every folder;
+   - **Workspace**: every photo from every folder still in play, all but those set aside (chapter 4); after *Keep best* it holds the best shot of each group, from every folder together, ready to edit and print;
    - **Print basket** and **Set aside**: the two holding areas (chapter 4);
    - **each folder**, with its count. Click a folder to show only its photos. Ctrl/⌘-click, or the **Select folders** button, shows several together. The **×** that appears on a folder removes it from the library; the files stay on disk.
 3. **Refresh folders** (the circling arrows) picks up photos added to these folders since; your edits are kept.
@@ -58,8 +58,8 @@ Bursts and near-identical shots are grouped, and the best of each is suggested w
 
 1. Click **Find best shots** in the toolbar. The view switches to **Groups** while the photos are analysed on this computer; **Stop** ends it early. Photos already analysed are not looked at again.
 2. Each group shows its shots in a row. The suggested one is marked **Best**, and the group says **Best of n** with its reasons: *n % sharper*, *Less camera shake*, *Eyes open*, *Better exposure*, *Fewer clipped highlights*, *Less noise*. When the shots score almost the same, it says **Too close to call**.
-3. **Compare** shows the group's shots large, side by side, with a bar for each measure (*Sharpness*, *Eyes*, *Steadiness*, *Exposure*, *Highlights*, *Noise*) and how many faces have their eyes closed. **Keep this one** keeps the shot you prefer.
-4. **Keep best** keeps the suggested shot: it is picked and the others in the group are rejected. In a group that is too close to call, it opens *Compare* so you choose. **Keep best in n clear groups**, above the groups, does it for every group that is not too close to call.
+3. **Compare** shows the group's shots large, side by side, with a bar for each measure (*Sharpness*, *Eyes*, *Steadiness*, *Exposure*, *Highlights*, *Noise*) and how many faces have their eyes closed. **Keep this one** keeps the shot you prefer, and sets the others aside the same way.
+4. **Keep best** keeps the suggested shot: it is picked, and the others in the group are rejected and set aside, so the Workspace keeps only the shots worth working on, from every folder; *Set aside* holds the others, ready to come back. In a group that is too close to call, it opens *Compare* so you choose. **Keep best in n clear groups**, above the groups, does it for every group that is not too close to call.
 5. Back in **Photos**, show only the **Picks** (chapter 2). **Cmd/Ctrl+Z** takes any of this back.
 
 <!-- shot: manual-groups | A group of four shots of a cat: the sharpest is suggested as the best, 63 % sharper -->
@@ -74,10 +74,10 @@ A trip gives hundreds of photos; only a handful go to the lab. Fotollection keep
 
 | Area | What it holds | Where it is |
 |------|---------------|-------------|
-| **Print basket** | The photos you will print | Sidebar, under *All photos*, with its count |
+| **Print basket** | The photos you will print | Sidebar, under *Workspace*, with its count |
 | **Set aside** | Photos you put away for now. They leave the gallery but are **never deleted or moved on disk** | Sidebar, under *Print basket*, with its count |
 
-A photo is in the gallery, in the print basket, or set aside, never in two at once. Photos in the basket stay visible in the gallery, with a small basket badge in the top-right corner of their thumbnail; photos set aside do not appear in *All photos* or in the folders until you bring them back. Stars and pick/reject flags are separate: a pick does not have to be printed, and the basket is not a flag.
+A photo is in the gallery, in the print basket, or set aside, never in two at once. Photos in the basket stay visible in the gallery, with a small basket badge in the top-right corner of their thumbnail; photos set aside do not appear in *Workspace* or in the folders until you bring them back. Stars and pick/reject flags are separate: a pick does not have to be printed, and the basket is not a flag.
 
 Both areas are saved in the project (`.fotollection`) and in the session, so they are still there after you quit and reopen the app. Every move can be undone with **Cmd/Ctrl+Z**.
 
@@ -153,8 +153,8 @@ Outside select mode, Space keeps opening the normal preview.
 ### 4.4 Looking again and exporting
 
 - Click **Print basket** or **Set aside** in the sidebar to see only those photos. Change your mind with ↑ ↓ in the preview, or with select mode and **Back to the gallery**.
-- Click **All photos**, or a folder, to return to the gallery.
-- **Export follows the view** (chapter 12), unless photos are ticked: then only they go out (§4.2). From *Print basket*, *Export* writes exactly the basket, with the size estimate above the button ([FR-053](PRD.md#fr-053--export-for-social-media)). From *All photos* or a folder, photos set aside are never exported.
+- Click **Workspace**, or a folder, to return to the gallery.
+- **Export follows the view** (chapter 12), unless photos are ticked: then only they go out (§4.2). From *Print basket*, *Export* writes exactly the basket, with the size estimate above the button ([FR-053](PRD.md#fr-053--export-for-social-media)). From *Workspace* or a folder, photos set aside are never exported.
 
 <!-- shot: manual-share-fill | Share online with Whole photo in a frame on: Square 1:1 and a white fill -->
 

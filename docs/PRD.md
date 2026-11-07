@@ -488,7 +488,7 @@ Put several photos on one print to save cost. **P1 (v0.9.0) for 2-up**, the Coll
 - **UI.**
   - A **Groups** view shows one strip per group, with a **"Best of N"** badge and its reasons.
   - A compare view shows the group's photos side by side, with a bar for each metric and faces and eyes marked.
-  - **"Keep best"** picks the best photo and rejects the rest of the group, using [FR-022](#fr-022--culling-rate-flag-filter) flags. It can be undone.
+  - **"Keep best"** picks the best photo and rejects the rest of the group, using [FR-022](#fr-022--culling-rate-flag-filter) flags, and sets the rest aside ([FR-050](#fr-050--print-basket); owner, 2026-11-07: "the shots not kept leave for Set aside, so the workspace stays tidy"); a kept shot set aside before comes back, one in the print basket stays there. It can be undone.
 - **Models.** Models ship inside the app, are checksum-verified, and are never downloaded. Only permissive weights are allowed: YuNet (MIT) and MediaPipe FaceMesh V2 (Apache-2.0), both verified from their sources. InsightFace/SCRFD and pyiqa models are excluded because of their non-commercial licences. The runtime is pure-Rust `tract-onnx` ([ADR-0018](adr/0018-face-models-and-runtime.md)).
 - **Cache.** Analysis results are derived data, so they live in the cache keyed by fingerprint, never in the project file ([DATABASE.md](DATABASE.md), rule N4).
 - **Speed:** [NFR-014](#nfr-014--best-shot-analysis-speed).
@@ -573,8 +573,8 @@ Next to the batch settings, any other setting will later be overridable for one 
 **P1 (in progress, v0.5.0).** Two **holding areas** for the photos of a trip, separate from culling: the **print basket**, the photos that will really be printed, and **set aside**, the photos taken out of the gallery for now. A typical batch: 100 photos are edited together, filters keep 60, only 5–10 go to the lab. Step-by-step use: [USER_GUIDE.md §4](USER_GUIDE.md#4-choosing-the-photos-to-print).
 
 - **One place per photo:** the gallery, the print basket or set aside, never two. Independent of stars and pick/reject ([FR-022](#fr-022--culling-rate-flag-filter)): a pick does not have to be printed.
-- **Set aside is never deletion:** the photo leaves *All photos* and the folders, its file is never touched, and it can be brought back at any time.
-- **The sidebar lists both areas** under *All photos*, with their counts. Opening one shows only its photos; *Export* then follows the view, so the basket exports exactly the basket and photos set aside are never exported from the gallery.
+- **Set aside is never deletion:** the photo leaves *Workspace* and the folders, its file is never touched, and it can be brought back at any time.
+- **The sidebar lists both areas** under *Workspace*, with their counts. Opening one shows only its photos; *Export* then follows the view, so the basket exports exactly the basket and photos set aside are never exported from the gallery.
 - **Ticked photos export first (v0.8.3, user feedback 2026-11-01):** while photos are ticked in select mode, *Export* writes only them and says so (*Export 3 selected photos*), with the size estimate for them; with no tick it follows the view again. Ticks in other folder tabs count too (FR-056). Collage sheets keep following the view.
 - **In the preview:** **↑** puts the photo in the basket and moves to the next photo; **↓** sets it aside and the next photo takes its place. A *Print basket* button on the photo does the same as ↑, and a photo set aside offers *Back to the gallery*.
 - **In the gallery, select mode** (like the Select button on an iPhone): *Select* turns clicks into ticks (Shift+click for a range, Cmd/Ctrl+A for all), and a bar moves the ticked photos to the basket, aside, or back to the gallery. Ticks are temporary; the areas are saved.
@@ -640,11 +640,11 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 **P1.** With several folders imported, the library list works like browser tabs.
 
-- **All photos** sits above the folders, with the total count: the grid shows every photo of every folder.
+- **Workspace** (named *Workspace* until v0.13.1; owner, 2026-11-07) sits above the folders, with its count: the grid shows every photo of every folder still in play, all but those set aside. After *Keep best* it holds the best shot of each group of every folder, which is where they are edited; the folder tabs are views of it, never copies.
 - **Clicking a folder shows only that folder**: the grid, the best-shot groups and the export all work on it, like switching tabs. The folder counts never depend on the star or flag filter.
 - **Several folders:** the select button above the list (or Ctrl/⌘-click) turns the folders into tick boxes; the grid and the export then cover the ticked folders.
 - **Together or separately:** when the export covers two folders or more, the export card asks whether they go **together** (the usual folder, or date folders) or **separately** (one subfolder per source folder, named after it; two folders with the same name get " (2)").
-- **Ticks follow the tabs:** in select mode ([FR-050](#fr-050--print-basket)), photos ticked in one folder stay ticked when another folder or *All photos* is shown, so the best of several folders goes to the basket in one move. The selection bar counts every ticked photo and says how many are in other folders. Opening the basket or the set-aside view, or leaving select mode, clears the ticks.
+- **Ticks follow the tabs:** in select mode ([FR-050](#fr-050--print-basket)), photos ticked in one folder stay ticked when another folder or *Workspace* is shown, so the best of several folders goes to the basket in one move. The selection bar counts every ticked photo and says how many are in other folders. Opening the basket or the set-aside view, or leaving select mode, clears the ticks.
 - The choice of folders is view state, not saved in the project. Removing a folder shows all photos again, since folder ids are renumbered.
 
 ### FR-057 — Zoom in the preview

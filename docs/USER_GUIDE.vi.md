@@ -12,7 +12,7 @@ Fotollection làm việc trên các thư mục ảnh bạn đã có. Nó đọc 
 
 1. **Mở một thư mục:** nhấp **Mở thư mục** (biểu tượng thư mục cạnh *Thư viện* ở thanh bên), hoặc thả một thư mục vào bất kỳ đâu trên cửa sổ. Các thư mục con cũng được mở theo. App đọc JPEG, PNG, HEIC và ảnh RAW (chương 14).
 2. **Thanh bên** liệt kê, dưới *Thư viện*:
-   - **Tất cả ảnh**: mọi ảnh của mọi thư mục;
+   - **Không gian làm việc**: mọi ảnh của mọi thư mục còn đang dùng, tức tất cả trừ những tấm để riêng (chương 4); sau *Giữ ảnh tốt nhất*, nơi này chứa tấm đẹp nhất của mỗi nhóm, của mọi thư mục, sẵn sàng để chỉnh và in;
    - **Giỏ in** và **Để riêng**: hai khu vực giữ ảnh (chương 4);
    - **từng thư mục**, kèm số ảnh. Nhấp một thư mục để chỉ xem ảnh của nó. Ctrl/⌘-nhấp, hoặc nút **Chọn thư mục**, để xem nhiều thư mục cùng lúc. Dấu **×** hiện trên thư mục sẽ gỡ nó khỏi thư viện; tệp vẫn còn nguyên trên máy.
 3. **Làm mới thư mục** (hai mũi tên xoay vòng) tìm ảnh mới được thêm vào các thư mục này; các chỉnh sửa được giữ nguyên.
@@ -57,7 +57,7 @@ Các loạt ảnh chụp liên tiếp và ảnh gần giống nhau được gom 
 1. Nhấp **Tìm ảnh đẹp nhất** trên thanh công cụ. Màn hình chuyển sang **Nhóm** trong lúc ảnh được phân tích ngay trên máy này; **Dừng** để ngừng sớm. Ảnh đã phân tích sẽ không phải phân tích lại.
 2. Mỗi nhóm xếp các ảnh thành một hàng. Tấm được gợi ý mang nhãn **Đẹp nhất**, và nhóm ghi **Đẹp nhất trong n** kèm lý do: *Nét hơn n %*, *Ít rung tay hơn*, *Mắt mở*, *Phơi sáng tốt hơn*, *Ít vùng cháy sáng hơn*, *Ít nhiễu hơn*. Khi các ảnh gần như ngang điểm, nhóm ghi **Khó phân định**.
 3. **So sánh** hiện các ảnh trong nhóm thật lớn, cạnh nhau, mỗi tiêu chí một thanh (*Độ nét*, *Mắt*, *Độ vững*, *Phơi sáng*, *Cháy sáng*, *Nhiễu*), kèm số khuôn mặt nhắm mắt. **Giữ ảnh này** giữ tấm bạn thích.
-4. **Giữ ảnh tốt nhất** giữ tấm được gợi ý: nó được gắn cờ chọn, các tấm còn lại trong nhóm bị loại. Với nhóm khó phân định, nút này mở *So sánh* để bạn tự chọn. **Giữ ảnh tốt nhất ở n nhóm rõ ràng**, phía trên các nhóm, làm việc đó cho mọi nhóm không khó phân định.
+4. **Giữ ảnh tốt nhất** giữ tấm được gợi ý: nó được gắn cờ chọn, còn các tấm khác trong nhóm bị loại và chuyển sang để riêng, để Không gian làm việc chỉ còn những tấm đáng chỉnh, của mọi thư mục; *Để riêng* giữ các tấm kia, đưa về được bất cứ lúc nào. Với nhóm khó phân định, nút này mở *So sánh* để bạn tự chọn. **Giữ ảnh tốt nhất ở n nhóm rõ ràng**, phía trên các nhóm, làm việc đó cho mọi nhóm không khó phân định.
 5. Quay về **Ảnh**, chỉ hiện các ảnh **Đã chọn** (chương 2). **Cmd/Ctrl+Z** hoàn tác được mọi thao tác ở đây.
 
 <!-- shot: manual-groups | Một nhóm bốn tấm ảnh chú mèo: tấm nét nhất được gợi ý là đẹp nhất, nét hơn 63 % -->
@@ -72,10 +72,10 @@ Một chuyến đi cho ra hàng trăm tấm ảnh, nhưng chỉ vài tấm đư�
 
 | Khu vực | Chứa gì | Ở đâu |
 |---------|---------|-------|
-| **Giỏ in** | Những tấm bạn sẽ in | Thanh bên, dưới *Tất cả ảnh*, kèm số lượng |
+| **Giỏ in** | Những tấm bạn sẽ in | Thanh bên, dưới *Không gian làm việc*, kèm số lượng |
 | **Để riêng** | Những tấm bạn tạm cất đi. Chúng rời khỏi gallery nhưng **không bao giờ bị xoá hay di chuyển trên ổ đĩa** | Thanh bên, dưới *Giỏ in*, kèm số lượng |
 
-Mỗi tấm ảnh chỉ ở một nơi: trong gallery, trong giỏ in, hoặc để riêng. Ảnh trong giỏ vẫn hiện trong gallery, với một biểu tượng giỏ nhỏ ở góc trên bên phải; ảnh để riêng không hiện trong *Tất cả ảnh* hay trong các thư mục cho đến khi bạn đưa chúng trở lại. Sao và cờ chọn/loại là chuyện riêng: ảnh được chọn không nhất thiết phải in, và giỏ in không phải là một cờ.
+Mỗi tấm ảnh chỉ ở một nơi: trong gallery, trong giỏ in, hoặc để riêng. Ảnh trong giỏ vẫn hiện trong gallery, với một biểu tượng giỏ nhỏ ở góc trên bên phải; ảnh để riêng không hiện trong *Không gian làm việc* hay trong các thư mục cho đến khi bạn đưa chúng trở lại. Sao và cờ chọn/loại là chuyện riêng: ảnh được chọn không nhất thiết phải in, và giỏ in không phải là một cờ.
 
 Cả hai khu vực được lưu trong dự án (`.fotollection`) và trong phiên làm việc, nên vẫn còn sau khi bạn tắt rồi mở lại app. Mọi thao tác đều hoàn tác được bằng **Cmd/Ctrl+Z**.
 
@@ -151,8 +151,8 @@ Ngoài chế độ Chọn, Space vẫn mở bản xem trước thường.
 ### 4.4 Xem lại và xuất ảnh
 
 - Nhấp **Giỏ in** hoặc **Để riêng** ở thanh bên để chỉ xem những ảnh đó. Đổi ý bằng ↑ ↓ trong bản xem trước, hoặc bằng chế độ Chọn và **Trả về gallery**.
-- Nhấp **Tất cả ảnh**, hoặc một thư mục, để về gallery.
-- **Xuất ảnh theo đúng chỗ bạn đang xem** (chương 12), trừ khi đang có ảnh được tích: khi đó chỉ những ảnh đó được xuất (§4.2). Từ *Giỏ in*, *Xuất ảnh* ghi đúng những tấm trong giỏ, với ước tính dung lượng ngay trên nút ([FR-053](PRD.md#fr-053--export-for-social-media)). Từ *Tất cả ảnh* hay một thư mục, ảnh để riêng không bao giờ được xuất.
+- Nhấp **Không gian làm việc**, hoặc một thư mục, để về gallery.
+- **Xuất ảnh theo đúng chỗ bạn đang xem** (chương 12), trừ khi đang có ảnh được tích: khi đó chỉ những ảnh đó được xuất (§4.2). Từ *Giỏ in*, *Xuất ảnh* ghi đúng những tấm trong giỏ, với ước tính dung lượng ngay trên nút ([FR-053](PRD.md#fr-053--export-for-social-media)). Từ *Không gian làm việc* hay một thư mục, ảnh để riêng không bao giờ được xuất.
 
 <!-- shot: manual-share-fill | Mạng xã hội khi bật Giữ trọn ảnh trong khung: Vuông 1:1 và nền trắng -->
 

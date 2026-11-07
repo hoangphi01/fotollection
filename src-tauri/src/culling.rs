@@ -126,7 +126,8 @@ pub fn list_groups(state: State<'_, AppState>) -> Result<Vec<Group>, IpcError> {
 }
 
 /// Picks the best photo of each chosen group and rejects the others, as one undoable step
-/// (FR-041, FR-022). Nothing is deleted.
+/// (FR-041, FR-022): the others also go to *Set aside*, so the gallery keeps only the shot
+/// kept (owner, 2026-11-07). Nothing is deleted.
 #[tauri::command]
 #[specta::specta]
 pub fn keep_best(
@@ -156,11 +157,32 @@ pub fn keep_best(
         flags
     };
     let ids: Vec<PhotoId> = flags.keys().copied().collect();
-    edit_photos(&app, &state, &ids, |id, e| e.flag = flags.get(&id).copied())
+    edit_photos(&app, &state, &ids, |id, e| {
+        if let Some(&flag) = flags.get(&id) {
+            keep_or_set_aside(e, flag == Flag::Pick);
+        }
+    })
 }
 
-/// Keeps the chosen photo of one group and rejects the others, as one undoable step: for
-/// groups where the suggestion is too close to call, or the user prefers another shot.
+/// A group's shot kept or not (FR-041): the kept one is picked and back in the gallery if it
+/// was set aside (one in the print basket stays there); every other is rejected and set aside,
+/// so the gallery stays tidy and *Set aside* holds them, ready to come back.
+fn keep_or_set_aside(e: &mut fotollection_core::library::PhotoEdits, kept: bool) {
+    use fotollection_core::library::Queue;
+    if kept {
+        e.flag = Some(Flag::Pick);
+        if e.queue == Some(Queue::Aside) {
+            e.queue = None;
+        }
+    } else {
+        e.flag = Some(Flag::Reject);
+        e.queue = Some(Queue::Aside);
+    }
+}
+
+/// Keeps the chosen photo of one group and rejects the others, setting them aside, as one
+/// undoable step: for groups where the suggestion is too close to call, or the user prefers
+/// another shot.
 #[tauri::command]
 #[specta::specta]
 pub fn keep_one(
@@ -182,10 +204,36 @@ pub fn keep_one(
         return Err(IpcError::new("photo.unknown", "Unknown photo"));
     }
     edit_photos(&app, &state, &ids, |id, e| {
-        e.flag = Some(if id == photo {
-            Flag::Pick
-        } else {
-            Flag::Reject
-        });
+        keep_or_set_aside(e, id == photo);
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::keep_or_set_aside;
+    use fotollection_core::library::{Flag, PhotoEdits, Queue};
+
+    /// FR-041 (owner, 2026-11-07): the shot kept is picked and back from *Set aside*; the
+    /// others are rejected and set aside; a kept shot in the print basket stays there.
+    #[test]
+    fn fr_041_keeping_the_best_sets_the_others_aside() {
+        let mut other = PhotoEdits::default();
+        keep_or_set_aside(&mut other, false);
+        assert_eq!(
+            (other.flag, other.queue),
+            (Some(Flag::Reject), Some(Queue::Aside))
+        );
+        let mut was_aside = PhotoEdits {
+            queue: Some(Queue::Aside),
+            ..PhotoEdits::default()
+        };
+        keep_or_set_aside(&mut was_aside, true);
+        assert_eq!((was_aside.flag, was_aside.queue), (Some(Flag::Pick), None));
+        let mut in_basket = PhotoEdits {
+            queue: Some(Queue::Print),
+            ..PhotoEdits::default()
+        };
+        keep_or_set_aside(&mut in_basket, true);
+        assert_eq!(in_basket.queue, Some(Queue::Print));
+    }
 }
