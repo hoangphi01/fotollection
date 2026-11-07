@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { SectionCard } from '@/components/layout/section-card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Field } from '@/components/forms/field'
+import { Field, Stack } from '@/components/forms/field'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import type { CaptureFormat, ExposureSetting } from '@/ipc/bindings'
 import { apertureText, isoText, shutterText } from './settings-text'
@@ -73,7 +73,7 @@ export function CameraControls({ capture }: CameraControlsProps) {
 
       <SectionCard icon={<SunMedium />} title={t('capture.exposure')}>
         {/* Rows that each hold a control, 12 px apart (STYLE_RULE §4). */}
-        <div className="space-y-3">
+        <Stack>
           <StepRow label={t('capture.iso')} value={iso} setting="iso" capture={capture} />
           <StepRow label={t('capture.shutter')} value={shutterText(settings)} setting="shutter" capture={capture} />
           <div className="flex items-center justify-between gap-2">
@@ -84,7 +84,7 @@ export function CameraControls({ capture }: CameraControlsProps) {
               {apertureText(settings)}
             </span>
           </div>
-        </div>
+        </Stack>
       </SectionCard>
 
       <SectionCard icon={<FileImage />} title={t('capture.format')}>

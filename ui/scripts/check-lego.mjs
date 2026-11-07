@@ -16,17 +16,9 @@ const EXEMPT = {
   'features/library/library-grid.tsx': 'the photo grid, laid out by its own virtual rows',
   'features/library/library-sidebar.tsx': 'the folder list, a list of rows, not cards',
   'features/library/library-empty-state.tsx': 'the empty window, centred text',
-  'features/about/version-popover.tsx': 'a popover, not a panel',
-  'features/capture/camera-controls.tsx': 'the capture dialog, its own layout',
-  'features/places/date-place-dialog.tsx': 'a dialog, its own layout',
-  'features/project/project-dialogs.tsx': 'dialogs, their own layout',
-  'features/simple/simple-view.tsx': 'the stage and its big Keep and Drop buttons',
   'features/library/thumb-tile.tsx': 'a grid tile, its badges sized to the thumbnail',
-  'features/print-advice/verdict-badge.tsx': 'a badge, sized to sit inside a line of text',
   'features/viewer/crop-editor.tsx': 'the crop overlay on the photo, not a panel',
   'features/places/borrow-dialog.tsx': 'a dialog, its own layout',
-  'features/modes/mode-switch.tsx': 'the window title bar, not a panel',
-  'features/appearance/theme-switch.tsx': 'icon buttons at the foot of the folder list',
   'features/best-shot/compare-dialog.tsx': 'a dialog, its own layout',
   'features/best-shot/group-strip.tsx': 'a strip of thumbnails, its badges sized to them',
   'features/library/raw-badge.tsx': 'a badge, sized to sit on a thumbnail',
@@ -36,6 +28,10 @@ const EXEMPT = {
 const RULES = [
   {
     test: /<ToggleGroup\b|import \{[^}]*\bToggleGroup\b/,
+    except: {
+      'components/forms/segmented-toggle.tsx': 'the block itself',
+      'features/modes/mode-switch.tsx': "two rows, Simple and Collage then Pro the whole width (owner, 2026-11-06), which SegmentedToggle's one row cannot draw",
+    },
     say: 'a hand-made toggle group: use SegmentedToggle or SwatchToggle (components/forms)',
   },
   {
@@ -61,11 +57,12 @@ const RULES = [
   {
     // FR-099: colours come from the theme and stage tokens (STYLE_RULE §4, "The stage's own
     // colours"); a print's own colour, named in a `swatch`, is the exception.
-    test: /^(?!.*swatch).*\b(text|bg|border|ring|fill|stroke|from|via|to|outline)-(red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone|white|black)(-\d+)?(\/\d+)?\b/,
+    test: /^(?!.*swatch).*\b(text|bg|border|ring|fill|stroke|from|via|to|outline|accent)-(red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone|white|black)(-\d+)?(\/\d+)?\b/,
     everywhere: true,
     say: 'a raw palette colour: use a theme token (primary, muted-foreground, warning, success, destructive) or a stage token (bg-stage-chip, text-stage-ink…)',
     except: {
       'features/window/title-bar.tsx': 'white on red under the close button, as the system draws it',
+      'components/layout/panel-note.tsx': "a danger note's white on its deep red, as the red badges'",
     },
   },
   {
@@ -74,7 +71,6 @@ const RULES = [
     say: 'an arbitrary size: use the spacing scale or a token (text-2xs, w-panel)',
     except: {
       'features/window/title-bar.tsx': "the Windows caption buttons' own 46 px width",
-      'features/library/selection-bar.tsx': 'its bar sits in the gallery toolbar, 45 px inside its border',
     },
   },
   {
@@ -90,6 +86,36 @@ const RULES = [
     test: /\brow-chosen\b/,
     everywhere: true,
     say: 'a chosen row comes from ListRow or CHOSEN_ROW (components/forms/list-row.tsx), never by hand',
+    except: {
+      'components/forms/list-row.tsx': 'where CHOSEN_ROW is defined',
+    },
+  },
+  {
+    // Audit 2026-11-07: colours written by hand slipped past the palette rule.
+    test: /(rgb|rgba|hsl|oklch)\(/,
+    everywhere: true,
+    say: 'a colour written by hand: add a token in index.css (as --stage-dim, --hist-r) and use it',
+  },
+  {
+    // One height for every control (STYLE_RULE §4): a 24 px icon button only inside a line,
+    // which RemoveButton small is; a button with words in a row's value (*Choose…*) may be xs.
+    test: /size="icon-xs"/,
+    everywhere: true,
+    say: 'an icon button under 32 px: every control is 32 px (only RemoveButton small sits inside a line)',
+    except: {
+      'components/forms/danger-button.tsx': 'RemoveButton small, the ✕ inside a line or a tab',
+    },
+  },
+  {
+    test: /\bhtmlFor="[^"{]+"/,
+    everywhere: true,
+    say: 'a hard-coded htmlFor: two panels can show the same card, use useId()',
+  },
+  {
+    // Audit 2026-11-07: `variant={on ? 'ghost' : …}` escaped the literal checks below.
+    test: /variant=\{[^}]*'(ghost|link)'/,
+    everywhere: true,
+    say: 'a variant chosen by an expression that can be ghost or link: a standalone control is raised (ToolbarButton)',
   },
   {
     test: /<Switch\b[^>]*size=/,
@@ -106,13 +132,21 @@ const walk = (dir) => {
   }
 }
 walk(features)
+// Audit 2026-11-07: a check covers only what it reads. The app's shell is a panel like any
+// other; the blocks themselves set the spacing, so only the rules that hold everywhere apply.
+files.push(join(root, 'src/app.tsx'))
+const blocks = []
+for (const dir of ['components/forms', 'components/layout']) {
+  for (const name of readdirSync(join(root, 'src', dir))) if (name.endsWith('.tsx')) blocks.push(join(root, 'src', dir, name))
+}
+files.push(...blocks)
 
 const problems = []
 for (const path of files) {
   // Forward slashes on every system, as the exception list writes them.
   const rel = relative(join(root, 'src'), path).split(sep).join('/')
   // An exempt file may space itself, but colours and sizes hold everywhere (`everywhere`).
-  const exempt = rel in EXEMPT
+  const exempt = rel in EXEMPT || rel.startsWith('components/')
   readFileSync(path, 'utf8')
     .split('\n')
     .forEach((line, i) => {

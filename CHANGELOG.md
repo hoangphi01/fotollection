@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- One look everywhere, after a style audit of all three modes: toolbar buttons are 32 px squares that show their hint even when off; the sheet preview's tools sit in a row above the sheet, with undo, redo, copy, paste and reset, as the photo preview's; Pick and Reject are pressed buttons in the theme's colour, never red; the gallery's selection bar stays on one line; the export's choices sit under a *Change* button; nothing moves when a slider first changes or the white-balance picker is armed.
+
 ### Added
 
 - The manual inside the app (FR-110): Settings → *Manual*, or *Help → Fotollection Manual* on a Mac, shows the whole user guide inside the Settings window, with its pictures, in the app's language, also with no internet; a chapter picker with a search, *Back* and *Next* to turn the chapters.

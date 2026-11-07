@@ -218,7 +218,7 @@ export function CropEditor({ geometry, sourceSrc, onCommit, onCancel }: CropEdit
             <div key={i} className="pointer-events-none absolute bg-stage-chip" style={band} />
           ))}
           <div
-            className="pointer-events-none absolute border border-stage-edge shadow-[0_0_0_1px_rgba(0,0,0,0.4)]"
+            className="pointer-events-none absolute border border-stage-edge shadow-[0_0_0_1px_var(--stage-dim)]"
             style={{
               left: pct(rect.x, g.width),
               top: pct(rect.y, g.height),
