@@ -446,14 +446,14 @@ export function SheetPreviewDialog({
             picking={picking}
             onPicking={setPicking}
           />
-          <PhotoLookCards photoId={photo} grid={false} revision={revision} onAppliedToAll={onSettingsReload} />
+          <PhotoLookCards photoId={photo} revision={revision} onAppliedToAll={onSettingsReload} />
         </>
       ) : (
         sheet && (
           <PhotoLookCards
             photoId={sheet.first}
             sheet={sheetIds}
-            grid={false}
+           
             revision={revision}
             onAppliedToAll={onSettingsReload}
           />

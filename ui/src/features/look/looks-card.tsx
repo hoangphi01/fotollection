@@ -1,36 +1,33 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview: in the preview only (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { BookmarkPlus, Palette } from 'lucide-react'
+import { Bookmark, BookmarkPlus, Palette } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RemoveButton, ResetButton } from '@/components/forms/danger-button'
-import { LookGrid, LookTile } from '@/components/forms/look-tile'
+import { ListRow, ListRows } from '@/components/forms/list-row'
+import { Field } from '@/components/forms/field'
 import { SliderField } from '@/components/forms/slider-field'
 import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
-import { commands, type LookSettings, type PhotoId } from '@/ipc/bindings'
-import { lookTileUrl } from '@/lib/photo-url'
+import { commands, type LookSettings } from '@/ipc/bindings'
 import { NO_LOOK, fullLook, type LookChange } from './look-fields'
 import { SaveLookDialog } from './save-look-dialog'
-import { lookName, useLooks } from './use-looks'
+import { useLooks } from './use-looks'
 
 type LooksCardProps = {
-  photoId: PhotoId
   look: LookSettings | undefined
   onChange: LookChange
-  /** `false` where a strip of looks under the stage lists them (a collage sheet's preview). */
-  grid?: boolean
 }
 
 const percent = (v: number) => `${v} %`
 
 /**
- * The first level of the colour cards (FR-079, "drive first"): the looks of the library as
- * tiles of the photo through each, the chosen one marked; the amount of the whole look; *Save
- * as look* keeps the photo's look on this machine. A pick copies the look's values into the
+ * The first level of the colour cards (FR-079, "drive first"), beside the strip of looks under
+ * the photo: the amount of the whole look; *Save as look* keeps the photo's look on this
+ * machine, listed here to pick or forget; ↺ gives the original back. A pick copies the look's values into the
  * photo, so the sliders below show them and a later change of the library changes no photo.
  */
-export function LooksCard({ photoId, look, onChange, grid = true }: LooksCardProps) {
+export function LooksCard({ look, onChange }: LooksCardProps) {
   const { t } = useTranslation()
   const { looks, setLooks, reload } = useLooks()
   const [saving, setSaving] = useState(false)
@@ -46,28 +43,33 @@ export function LooksCard({ photoId, look, onChange, grid = true }: LooksCardPro
       title={t('look.looks')}
       action={set && <ResetButton iconOnly label={t('look.resetLook')} onClick={() => onChange(() => NO_LOOK, true)} />}
     >
-      {grid && (
-      <LookGrid>
-        {looks.map((entry) => (
-          <LookTile
-            key={entry.id}
-            src={lookTileUrl(photoId, entry.id)}
-            name={lookName(entry)}
-            chosen={current.base === entry.id}
-            onPick={() => onChange(() => fullLook({ ...entry.look, name: lookName(entry) }), true)}
-            corner={
-              entry.kind === 'user' && (
-                <RemoveButton
-                  iconOnly
-                  small
-                  label={t('look.remove')}
-                  onClick={() => void commands.deleteLook(entry.id).then((r) => r.status === 'ok' && setLooks(r.data))}
-                />
-              )
-            }
-          />
-        ))}
-      </LookGrid>
+      {/* The user's own looks, to pick or forget (the strip under the photo lists them all),
+          as the recent addresses are listed (owner, 2026-11-07). */}
+      {looks.some((e) => e.kind === 'user') && (
+        <Field label={t('look.yours')}>
+          <ListRows>
+            {looks
+              .filter((e) => e.kind === 'user')
+              .map((entry) => (
+                <div key={entry.id} className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1" data-hint={entry.name}>
+                    <ListRow
+                      icon={<Bookmark />}
+                      chosen={current.base === entry.id}
+                      onClick={() => onChange(() => fullLook({ ...entry.look, name: entry.name }), true)}
+                    >
+                      {entry.name}
+                    </ListRow>
+                  </div>
+                  <RemoveButton
+                    iconOnly
+                    label={t('look.remove')}
+                    onClick={() => void commands.deleteLook(entry.id).then((r) => r.status === 'ok' && setLooks(r.data))}
+                  />
+                </div>
+              ))}
+          </ListRows>
+        </Field>
       )}
       <SliderField
         label={t('look.amount')}

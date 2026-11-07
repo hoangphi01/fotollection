@@ -982,7 +982,8 @@
     },
     "sheetWhole": "Chưa chọn ảnh nào: màu được áp cho cả hai ảnh trên tấm.",
     "sheetDiffers": "Hai ảnh đang khác màu: chỉnh ở đây sẽ đặt cùng một màu cho cả hai.",
-    "resetLook": "Về màu gốc"
+    "resetLook": "Về màu gốc",
+    "yours": "Look của bạn"
   },
   "rawLook": {
     "title": "Màu RAW",

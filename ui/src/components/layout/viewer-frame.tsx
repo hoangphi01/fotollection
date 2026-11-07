@@ -89,14 +89,17 @@ export function ViewerFrame({
   inspectorTop,
   sideOver = false,
 }: ViewerFrameProps) {
-  // The strip under the stage and the inspector's footer share one line across the columns
-  // (owner, 2026-11-07): the footer is as tall as the strip, whatever the strip shows.
+  // The lowest strip under the stage and the inspector's footer share one line across the
+  // columns (owner, 2026-11-07): the footer is as tall as that strip (the photo preview's
+  // filmstrip, under its strip of looks), whatever it shows.
   const [belowBox, setBelowBox] = useState<HTMLDivElement | null>(null)
   const [belowHeight, setBelowHeight] = useState(0)
   useEffect(() => {
     if (!belowBox) return
-    const observer = new ResizeObserver(() => setBelowHeight(belowBox.offsetHeight))
+    const lowest = () => (belowBox.lastElementChild instanceof HTMLElement ? belowBox.lastElementChild : belowBox)
+    const observer = new ResizeObserver(() => setBelowHeight(lowest().offsetHeight))
     observer.observe(belowBox)
+    observer.observe(lowest())
     return () => observer.disconnect()
   }, [belowBox])
   const lined = below !== undefined && below !== null && below !== false && belowHeight > 0

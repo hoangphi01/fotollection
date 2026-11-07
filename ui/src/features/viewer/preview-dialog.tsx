@@ -25,6 +25,8 @@ import { sendTo } from './send-to'
 import { useShownSrc } from './use-shown-src'
 import { usePrefetch } from './use-prefetch'
 import { PhotoFilmstrip } from './photo-filmstrip'
+import { LookStrip } from '@/features/look/look-strip'
+import { useLookPicker } from '@/features/look/use-looks'
 import { PreviewToolbar } from './preview-toolbar'
 import { setSettingsTarget } from '@/features/develop/settings-copy'
 import { NavigatorCard } from './navigator-card'
@@ -140,6 +142,9 @@ export function PreviewDialog({
   // The filmstrip under the photo (FR-090), shown unless the user hid it.
   const { ui, update: updateUi } = useUiSettings()
   const photo = index === null ? undefined : photos[index]
+  // The looks as a strip over the filmstrip, folding (FR-079, owner 2026-11-07); the card keeps
+  // the amount and *Save as look*.
+  const looks = useLookPicker(photo?.id, revision)
   // The photo copy, paste and reset act on (FR-097), while the develop view is open.
   const shownId = photo?.id
   useEffect(() => {
@@ -354,6 +359,8 @@ export function PreviewDialog({
       onStagePointerUp={cropDrag.onPointerUp}
       below={
         cropping ? undefined : (
+          <>
+          {photo && <LookStrip photoId={photo.id} picker={looks} numbered={false} folding />}
           <PhotoFilmstrip
             photos={photos}
             index={index}
@@ -362,6 +369,7 @@ export function PreviewDialog({
             onPick={pick}
             collapsed={!ui.filmstrip}
           />
+          </>
         )
       }
       toolbar={

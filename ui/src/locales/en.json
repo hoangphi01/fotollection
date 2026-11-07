@@ -1020,7 +1020,8 @@
     },
     "sheetWhole": "With no photo picked, the colour goes to both photos of the sheet.",
     "sheetDiffers": "The two photos have different colours: a change here gives both the same one.",
-    "resetLook": "Back to the original colour"
+    "resetLook": "Back to the original colour",
+    "yours": "Your looks"
   },
   "rawLook": {
     "title": "RAW colour",
