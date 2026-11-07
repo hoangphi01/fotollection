@@ -1,4 +1,8 @@
 {
+  "develop-gate": {
+    "height": 430,
+    "width": 1090
+  },
   "gpu-cpu": {
     "height": 480,
     "width": 1050
@@ -6,6 +10,10 @@
   "layers": {
     "height": 610,
     "width": 1050
+  },
+  "preview-tiers": {
+    "height": 450,
+    "width": 1090
   },
   "raw-develop": {
     "height": 396,

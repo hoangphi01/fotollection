@@ -411,7 +411,11 @@ en:
     - { t: "Encoders tuned by measurement", d: "Print files skip a table optimisation that made them less than 1 % smaller and cost a third of the encoding time.", v: "−33 %", l: "encoding time for print files" }
     - { t: "The graphics card while you edit", d: "While a colour slider moves, the graphics card draws from the table the core builds. Exports stay on the processor, so a print is identical on every computer.", v: "1–2 ms", l: "per slider step, down from 26 ms" }
   perf_gpu_title: "The graphics card while editing, every core for exports"
-  perf_gpu_text: "While you drag a colour slider, the graphics card draws the look from the same table Fotollection's core builds, so a step takes 1 to 2 ms instead of about 26, and the photo follows your hand. The date stamp, the frame and the border are left out, and the exact render takes over when you let go: the two differ by 0.13 on average in ΔE2000, far below what an eye sees. A computer without a capable graphics card keeps the processor; Fotollection decides by itself. Exports stay on the processor, so a print comes out the same on every computer, and six photos are worked on at once where memory allows: 10.8 a second for 26 MP photos, a fifth faster than before."
+  perf_gpu_text: "While you drag a colour slider, the graphics card draws the look from the same table Fotollection's core builds, and the exact render takes over when you let go. Exports stay on the processor, so a print comes out the same on every computer."
+  gpu_stats:
+    - { v: "1–2 ms", l: "a slider step on the graphics card, against about 26 ms" }
+    - { v: "0.13", l: "ΔE2000 between the card's look and the exact render" }
+    - { v: "10.8", l: "26 MP photos exported a second, six at once" }
   chart_gpu: "One step of a colour slider: the processor against the graphics card"
   chart_inflight: "Export speed by photos worked on at once"
   dl_warn_title: "Update to v0.11.0 or later."
@@ -425,23 +429,49 @@ en:
     - { v: "10×", l: "faster to open a JPEG than v0.9.0 (274 → 27 ms)" }
     - { v: "27 ms", l: "to open any photo, near or far (budget 100 ms)" }
   perf_speed_title: "Speed: a thousand photos in a blink"
-  perf_speed_text: "Opening a folder reads each photo's EXIF and its small embedded thumbnail, not the whole image: 1,000 photos take 0.12 seconds, eight times under the budget we set before writing the code. Changing a setting re-renders the preview in 17 ms, faster than a screen refreshes twice. Export runs at 23.5 photos a second at full 16 MP quality since v0.9.7 (18 in the chart, measured before a faster print encoder). Native Rust also beats a web browser doing the same job: the same speed for export, a faster preview, and a quarter less memory. Camera RAW works the same way: thumbnails come from the preview stored in each RAW file in 9 to 32 ms, and only the print preview develops the full photo, in about a second."
+  perf_speed_text: "Opening a folder reads each photo's EXIF and its small embedded thumbnail, not the whole image, and a changed setting redraws only the preview. Native Rust also beats a web browser doing the same job: the same export speed, a faster preview and a quarter less memory."
+  speed_stats:
+    - { v: "0.12 s", l: "to read a folder of 1,000 photos, eight times under budget" }
+    - { v: "17 ms", l: "to redraw the preview after a change" }
+    - { v: "23.5", l: "16 MP photos exported a second" }
   perf_memory_title: "Memory: 5,035 photos, and it stays flat"
-  perf_memory_text: "A trip can mean thousands of photos. Fotollection keeps only a few bytes per photo in memory, writes thumbnails to a disk cache and works on only as many full-size images at a time as fit its memory budget. With 53 times more photos, peak memory grows by 0.1 GB: 1.35 GB for 95 photos, 1.45 GB for 5,035, under the 2 GB ceiling. Larger photos need more: a real folder of 20 MP files peaks at 1.31 GB (above)."
+  perf_memory_text: "Fotollection keeps only a few bytes per photo in memory, writes thumbnails to a disk cache and works on only as many full-size images at a time as fit its memory budget. So memory stays flat as a trip grows to thousands of photos."
+  memory_stats:
+    - { v: "1.45 GB", l: "peak memory for 5,035 photos" }
+    - { v: "1.35 GB", l: "peak memory for 95 photos" }
+    - { v: "53×", l: "more photos for 0.1 GB more" }
   perf_print_title: "Print quality: the print looks like the photo"
-  perf_print_text: "Prints made through a web editor often look flat. We measured why: the editor drops the colour profile (13 % of the saturation of iPhone photos lost), shrinks the photo to 2,000 px and lets the lab blow it up again (87 % of the fine detail lost), and saves at quality 80 with halved colour resolution. Fotollection keeps the profile, exports at full resolution in 4:4:4 (measured at quality 95; 90 by default since v0.13.0), and its colour error stays at 0.19, far below the 1 where an eye starts to notice."
+  perf_print_text: "Prints made through a web editor often look flat: it drops the colour profile, shrinks the photo to 2,000 px and saves at quality 80 with halved colour. Fotollection keeps the profile and exports at full resolution in 4:4:4."
+  print_stats:
+    - { v: "0.19", l: "colour error; an eye starts to notice at 1" }
+    - { v: "4:4:4", l: "full colour resolution; a web editor halves it" }
+    - { v: "87 %", l: "of the fine detail a web editor's 2,000 px loses" }
   perf_share_title: "Photos for Facebook and Instagram: light, and still the photo"
-  perf_share_text: "Facebook shrinks every photo to 2,048 px and recompresses it, and it ignores colour profiles. The Share export does that work properly first: the photo is converted to sRGB, resized with a high-quality filter, lightly sharpened and saved at a size Facebook does not touch again. After Facebook's own recompression, the result stays closer to the photo than the usual way, and iPhone-style Display P3 photos keep 99.6 % of their colour instead of 86 %. The Original size option keeps every pixel at half the file, with a colour error under 1."
+  perf_share_text: "Facebook shrinks every photo to 2,048 px, recompresses it and ignores colour profiles. The Share export does that work properly first, so after Facebook the photo stays closer to itself than the usual way."
+  share_stats:
+    - { v: "99.6 %", l: "of a Display P3 photo's colour kept after Facebook, against 86 %" }
+    - { v: "2,048 px", l: "the size Facebook leaves alone" }
+    - { v: "½", l: "the file of Original size, every pixel kept" }
   chart_raw: "Camera RAW: from the file to the screen, per camera and against Adobe DNG Converter"
   perf_raw_title: "Camera RAW: open it as it is"
-  perf_raw_text: "Fotollection opens RAW files from nine common cameras without converting them first. The thumbnail comes from the preview the camera stores in the file, in 9 to 32 ms. Since v0.10.0 the full picture for the print preview and the export is Fotollection's own develop for every camera with a Bayer sensor, 0.3 to 0.7 s a photo: a cleaner demosaic, neutral colour or the camera's look in one click, and brightness, highlights, shadows and white balance made on the camera's own data, as in a RAW editor. Adobe DNG Converter, by comparison, takes about 1.2 to 1.8 s per file only to turn one RAW file into another. On Windows and Linux, RAW opens with nothing to install."
+  perf_raw_text: "Fotollection opens RAW files from nine common cameras as they are, with nothing to convert and, on Windows and Linux, nothing to install. Since v0.10.0 the full picture is its own develop for every camera with a Bayer sensor, made on the camera's own data as in a RAW editor, while Adobe DNG Converter only turns one RAW file into another."
+  raw_stats:
+    - { v: "9–32 ms", l: "a RAW's thumbnail, from the preview inside the file" }
+    - { v: "0.3–0.7 s", l: "Fotollection's own develop of the full photo" }
+    - { v: "1.2–1.8 s", l: "Adobe DNG Converter per file, only to convert it" }
   perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
   perf_best_title: "Best-shot suggestions: checked against a person's choice"
-  perf_best_text: "We sorted 95 real photos by hand into 22 moments, and picked the best photo where there was a clear one. Fotollection finds 15 of those moments without ever grouping two different ones, and its suggestion is acceptable in all six moments with a clear best. Each photo takes 17 ms to analyse, 28 ms when it has faces."
+  perf_best_text: "We sorted 95 real photos by hand into 22 moments and picked the best photo where there was a clear one. Fotollection's groups and suggestions were then checked against that choice."
+  best_stats:
+    - { v: "6 of 6", l: "moments with a clear best: an acceptable suggestion" }
+    - { v: "15 of 22", l: "moments found, never two mixed up" }
+    - { v: "17 ms", l: "to analyse a photo, 28 ms with faces" }
   perf_toc: "On this page"
   diagram_layers: "Where the work happens: Fotollection on your computer, against a typical web editor"
   diagram_gpu_cpu: "Editing on the graphics card, exporting on every processor core"
   diagram_raw_develop: "A RAW photo, from the file to the print"
+  diagram_preview_tiers: "Where a photo's preview comes from: memory, then disk, then the file"
+  diagram_develop_gate: "The develop gate: the photo on screen goes first, background work waits"
   perf_explain_title: "The words behind the numbers"
   perf_explain_lead: "Photo and print jargon, explained the way we would explain it to a friend."
   perf_faq:
@@ -957,7 +987,11 @@ vi:
     - { t: "Bộ mã hoá tinh chỉnh theo số đo", d: "Tệp in bỏ qua một bước tối ưu bảng mã vốn chỉ giảm dung lượng chưa tới 1 % nhưng tốn một phần ba thời gian mã hoá.", v: "−33 %", l: "thời gian mã hoá tệp in" }
     - { t: "Card đồ hoạ khi chỉnh ảnh", d: "Khi bạn kéo thanh chỉnh màu, card đồ hoạ vẽ từ bảng màu do phần lõi dựng. Việc xuất ảnh vẫn chạy trên bộ xử lý, để bản in giống hệt nhau trên mọi máy tính.", v: "1–2 ms", l: "mỗi nhịp kéo, thay vì 26 ms" }
   perf_gpu_title: "Card đồ hoạ khi chỉnh, mọi nhân khi xuất"
-  perf_gpu_text: "Khi bạn kéo một thanh chỉnh màu, card đồ hoạ vẽ look từ đúng bảng màu mà phần lõi của Fotollection dựng, nên mỗi nhịp chỉ mất 1 đến 2 ms thay vì khoảng 26 ms, và ảnh chạy theo tay bạn. Dấu ngày, khung và viền được giữ nguyên, rồi bản dựng chính xác thay vào khi bạn thả tay: hai bản chỉ khác nhau trung bình 0,13 theo ΔE2000, thấp hơn nhiều so với ngưỡng mắt thấy được. Máy không có card đồ hoạ đủ mạnh vẫn dùng bộ xử lý; Fotollection tự quyết định. Xuất ảnh vẫn chạy trên bộ xử lý, để ảnh in giống hệt nhau trên mọi máy, và xử lý cùng lúc sáu ảnh khi RAM cho phép: 10,8 ảnh mỗi giây với ảnh 26 MP, nhanh hơn trước một phần năm."
+  perf_gpu_text: "Khi bạn kéo một thanh chỉnh màu, card đồ hoạ vẽ look từ đúng bảng màu mà phần lõi của Fotollection dựng, rồi bản dựng chính xác thay vào khi bạn thả tay. Xuất ảnh vẫn chạy trên bộ xử lý, để ảnh in giống hệt nhau trên mọi máy."
+  gpu_stats:
+    - { v: "1–2 ms", l: "mỗi nhịp kéo trên card đồ hoạ, thay vì khoảng 26 ms" }
+    - { v: "0,13", l: "ΔE2000 giữa look vẽ trên card và bản dựng chính xác" }
+    - { v: "10,8", l: "ảnh 26 MP xuất mỗi giây, sáu ảnh cùng lúc" }
   chart_gpu: "Một nhịp kéo thanh màu: bộ xử lý so với card đồ hoạ"
   chart_inflight: "Tốc độ xuất theo số ảnh xử lý cùng lúc"
   dl_warn_title: "Hãy cập nhật lên v0.11.0 trở lên."
@@ -971,23 +1005,49 @@ vi:
     - { v: "10×", l: "nhanh hơn khi mở ảnh JPEG so với v0.9.0 (274 → 27 ms)" }
     - { v: "27 ms", l: "để mở bất kỳ ảnh nào, gần hay xa (ngân sách 100 ms)" }
   perf_speed_title: "Tốc độ: một nghìn ảnh trong chớp mắt"
-  perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong tệp, chứ không đọc cả ảnh: 1.000 ảnh mất 0,12 giây, nhanh gấp tám lần mức ngân sách đặt ra trước khi viết mã nguồn. Đổi một thiết lập thì bản xem trước vẽ lại trong 17 ms, chưa bằng hai lần màn hình làm tươi. Từ v0.9.7, xuất ảnh đạt 23,5 ảnh mỗi giây ở chất lượng đầy đủ 16 MP (biểu đồ ghi 18, đo trước khi có bộ mã hoá ảnh in nhanh hơn). Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư RAM. Ảnh RAW cũng vậy: ảnh thu nhỏ lấy từ bản xem trước lưu sẵn trong mỗi tệp RAW, mất 9 đến 32 ms, và chỉ bản xem trước để in mới giải mã đầy đủ ảnh, mất khoảng một giây."
+  perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong tệp, chứ không đọc cả ảnh, và đổi một thiết lập thì chỉ vẽ lại bản xem trước. Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư RAM."
+  speed_stats:
+    - { v: "0,12 giây", l: "đọc một thư mục 1.000 ảnh, nhanh gấp tám lần mức ngân sách" }
+    - { v: "17 ms", l: "vẽ lại bản xem trước sau khi đổi thiết lập" }
+    - { v: "23,5", l: "ảnh 16 MP xuất mỗi giây" }
   perf_memory_title: "RAM: 5.035 ảnh vẫn không tăng"
-  perf_memory_text: "Một chuyến đi có thể có hàng nghìn ảnh. Fotollection chỉ giữ vài byte cho mỗi ảnh trong RAM, ghi ảnh thu nhỏ ra ổ đĩa và chỉ xử lý cùng lúc số ảnh cỡ lớn vừa với hạn mức RAM. Với số ảnh gấp 53 lần, RAM dùng nhiều nhất chỉ tăng 0,1 GB: 1,35 GB với 95 ảnh, 1,45 GB với 5.035 ảnh, dưới mức trần 2 GB. Ảnh lớn hơn thì cần nhiều hơn: một thư mục thật gồm ảnh 20 MP dùng nhiều nhất 1,31 GB (xem ở trên)."
+  perf_memory_text: "Fotollection chỉ giữ vài byte cho mỗi ảnh trong RAM, ghi ảnh thu nhỏ ra ổ đĩa và chỉ xử lý cùng lúc số ảnh cỡ lớn vừa với hạn mức RAM. Nhờ vậy RAM gần như không tăng khi chuyến đi lên tới hàng nghìn ảnh."
+  memory_stats:
+    - { v: "1,45 GB", l: "RAM nhiều nhất với 5.035 ảnh" }
+    - { v: "1,35 GB", l: "RAM nhiều nhất với 95 ảnh" }
+    - { v: "53×", l: "số ảnh, mà chỉ thêm 0,1 GB" }
   perf_print_title: "Chất lượng in: ảnh in giống ảnh gốc"
-  perf_print_text: "Ảnh in qua trình chỉnh sửa ảnh trên web thường trông nông màu. Chúng tôi đã đo xem vì sao: trình chỉnh sửa đó bỏ mất hồ sơ màu (ảnh iPhone mất 13 % độ bão hoà màu), thu ảnh xuống 2.000 px rồi để tiệm in phóng to lại (mất 87 % chi tiết nhỏ), và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên hồ sơ màu, xuất ở độ phân giải đầy đủ, 4:4:4 (đo ở chất lượng 95; từ v0.13.0 mặc định 90), và sai lệch màu chỉ 0,19, thấp hơn rất xa mức 1 mà mắt người bắt đầu nhận ra."
+  perf_print_text: "Ảnh in qua trình chỉnh sửa ảnh trên web thường trông nông màu: nó bỏ mất hồ sơ màu, thu ảnh xuống 2.000 px và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên hồ sơ màu và xuất ở độ phân giải đầy đủ, 4:4:4."
+  print_stats:
+    - { v: "0,19", l: "sai lệch màu; mắt người bắt đầu nhận ra ở mức 1" }
+    - { v: "4:4:4", l: "độ phân giải màu đầy đủ; trình sửa ảnh web giảm một nửa" }
+    - { v: "87 %", l: "chi tiết nhỏ mất đi khi trình sửa ảnh web thu về 2.000 px" }
   perf_share_title: "Ảnh cho Facebook và Instagram: nhẹ mà vẫn đúng là ảnh của bạn"
-  perf_share_text: "Facebook thu mọi ảnh về 2.048 px, nén lại và bỏ qua hồ sơ màu. Kiểu xuất Mạng xã hội làm trước những việc đó cho đúng: chuyển ảnh sang sRGB, thu nhỏ bằng bộ lọc chất lượng cao, làm nét nhẹ và lưu đúng cỡ để Facebook không phải thu nhỏ thêm. Sau khi Facebook nén lại, ảnh vẫn giống ảnh gốc hơn cách làm thông thường, và ảnh Display P3 kiểu iPhone giữ được 99,6 % màu thay vì 86 %. Lựa chọn Giữ cỡ gốc giữ nguyên từng điểm ảnh mà tệp chỉ còn khoảng một nửa, sai lệch màu dưới 1."
+  perf_share_text: "Facebook thu mọi ảnh về 2.048 px, nén lại và bỏ qua hồ sơ màu. Kiểu xuất Mạng xã hội làm trước những việc đó cho đúng, nên sau khi Facebook nén lại, ảnh vẫn giống ảnh gốc hơn cách làm thông thường."
+  share_stats:
+    - { v: "99,6 %", l: "màu của ảnh Display P3 còn giữ sau Facebook, thay vì 86 %" }
+    - { v: "2.048 px", l: "cỡ ảnh Facebook không thu nhỏ thêm" }
+    - { v: "½", l: "dung lượng tệp với Giữ cỡ gốc, đủ từng điểm ảnh" }
   chart_raw: "Ảnh RAW: từ tệp đến màn hình, theo từng máy và so với Adobe DNG Converter"
   perf_raw_title: "Ảnh RAW: mở thẳng, không cần chuyển đổi"
-  perf_raw_text: "Fotollection mở tệp RAW của chín dòng máy ảnh phổ biến mà không cần chuyển đổi trước. Ảnh thu nhỏ lấy từ bản xem trước máy ảnh lưu sẵn trong tệp, mất 9 đến 32 ms. Từ v0.10.0, ảnh đầy đủ cho bản xem trước để in và cho bản xuất là bộ xử lý của riêng Fotollection cho mọi máy ảnh có cảm biến Bayer, 0,3 đến 0,7 giây mỗi ảnh: demosaic sạch hơn, màu trung tính hoặc màu của máy chỉ với một cú nhấp, và độ sáng, vùng sáng, vùng tối, cân bằng trắng được chỉnh trên chính dữ liệu của máy ảnh, như một trình sửa RAW. Để so sánh, Adobe DNG Converter mất khoảng 1,2 đến 1,8 giây mỗi tệp chỉ để đổi từ RAW này sang RAW khác. Trên Windows và Linux, RAW mở được mà không cần cài thêm gì."
+  perf_raw_text: "Fotollection mở tệp RAW của chín dòng máy ảnh phổ biến đúng như tệp gốc, không cần chuyển đổi, và trên Windows và Linux không cần cài thêm gì. Từ v0.10.0, ảnh đầy đủ là bộ xử lý của riêng Fotollection cho mọi máy ảnh có cảm biến Bayer, làm trên chính dữ liệu của máy ảnh như một trình sửa RAW, còn Adobe DNG Converter chỉ đổi từ RAW này sang RAW khác."
+  raw_stats:
+    - { v: "9–32 ms", l: "ảnh thu nhỏ của tệp RAW, lấy từ bản xem trước trong tệp" }
+    - { v: "0,3–0,7 giây", l: "bộ xử lý của Fotollection dựng cả tấm ảnh" }
+    - { v: "1,2–1,8 giây", l: "Adobe DNG Converter mỗi tệp, chỉ để chuyển đổi" }
   perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
   perf_best_title: "Gợi ý ảnh đẹp nhất: đối chiếu với lựa chọn của người thật"
-  perf_best_text: "Chúng tôi tự tay chia 95 ảnh thật thành 22 khoảnh khắc, và chọn ảnh đẹp nhất ở những khoảnh khắc có ảnh đẹp rõ ràng. Fotollection tìm ra 15 khoảnh khắc mà không bao giờ gộp nhầm hai khoảnh khắc khác nhau, và ảnh được gợi ý đều chấp nhận được ở cả sáu khoảnh khắc có ảnh đẹp nhất rõ ràng. Mỗi ảnh được phân tích trong 17 ms, 28 ms nếu có khuôn mặt."
+  perf_best_text: "Chúng tôi tự tay chia 95 ảnh thật thành 22 khoảnh khắc, và chọn ảnh đẹp nhất ở những khoảnh khắc có ảnh đẹp rõ ràng. Sau đó các nhóm và gợi ý của Fotollection được đối chiếu với lựa chọn ấy."
+  best_stats:
+    - { v: "6 / 6", l: "khoảnh khắc có ảnh đẹp rõ ràng: gợi ý đều chấp nhận được" }
+    - { v: "15 / 22", l: "khoảnh khắc được tìm ra, không bao giờ gộp nhầm" }
+    - { v: "17 ms", l: "phân tích một ảnh, 28 ms nếu có khuôn mặt" }
   perf_toc: "Trên trang này"
   diagram_layers: "Công việc diễn ra ở đâu: Fotollection ngay trên máy của bạn, so với một trình sửa ảnh web thông thường"
   diagram_gpu_cpu: "Chỉnh trên card đồ hoạ, xuất ảnh trên mọi nhân bộ xử lý"
   diagram_raw_develop: "Một ảnh RAW, từ tệp tới ảnh in"
+  diagram_preview_tiers: "Bản xem trước của một ảnh đến từ đâu: RAM, rồi ổ đĩa, rồi tệp ảnh"
+  diagram_develop_gate: "Cổng xử lý RAW: ảnh trên màn hình đi trước, việc chạy nền chờ"
   perf_explain_title: "Giải thích các thuật ngữ"
   perf_explain_lead: "Những từ chuyên môn về ảnh và in ảnh, giải thích như kể cho một người bạn."
   perf_faq:

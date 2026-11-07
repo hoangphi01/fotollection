@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 
 - The manual inside the app (FR-110): Settings → *Manual*, or *Help → Fotollection Manual* on a Mac, opens the whole user guide with its pictures, in the app's language, also with no internet; the chapters on the left with a search, *Back* and *Next* to turn them.
+- The website's Performance page is more visual: every part opens with three numbers as tiles and a two-sentence lead, and two new diagrams show where a photo's preview comes from and how the photo on screen goes first.
 - `J` and `W` in Collage mode (FR-098): in a sheet's preview, `J` (or ⚠ on the histogram) marks both photos' blown and blocked pixels, never the paper or the postcard card; with a photo picked, `W` (or the pipette) and a click on something grey in it set that photo's warmth and tint, as one step. A click on the other photo or the paper is refused.
 
 ## [0.13.1] - 2026-11-07 — Develop, part 2
