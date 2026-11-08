@@ -39,10 +39,28 @@ export function useZoom(stage: HTMLElement | null, resetKey: string, oneToOne: n
   const max = Math.max(MAX, 2 * (oneToOne ?? 0))
   const closeUp = oneToOne !== null && oneToOne > MIN ? oneToOne : CLOSE_UP
 
+  /**
+   * The photo kept on the stage (owner, 2026-11-08: "a safe zone, never dragged out"): a photo
+   * wider or taller than the stage never shows the ground inside its edge, and one smaller
+   * stays centred on that axis. The photo's fit size is its laid-out size (the transform
+   * scales it), the stage's its own box.
+   */
+  const clamp = useCallback(
+    (v: View): View => {
+      const photo = stage?.querySelector('img')
+      if (!stage || !photo || v.scale <= MIN) return v
+      const bound = (fit: number, room: number) => Math.max(0, (v.scale * fit - room) / 2)
+      const bx = bound(photo.offsetWidth, stage.clientWidth)
+      const by = bound(photo.offsetHeight, stage.clientHeight)
+      return { ...v, x: Math.min(bx, Math.max(-bx, v.x)), y: Math.min(by, Math.max(-by, v.y)) }
+    },
+    [stage],
+  )
+
   const setView = useCallback(
     (next: (v: View) => View) =>
-      setState((s) => ({ key: resetKey, view: next(s.key === resetKey ? s.view : FIT) })),
-    [resetKey],
+      setState((s) => ({ key: resetKey, view: clamp(next(s.key === resetKey ? s.view : FIT)) })),
+    [resetKey, clamp],
   )
 
   /** Zooms by `factor`, keeping the point (`px`, `py`) from the stage centre in place. */
@@ -120,6 +138,9 @@ export function useZoom(stage: HTMLElement | null, resetKey: string, oneToOne: n
   const pointer = {
     onPointerDown: (e: PointerEvent) => {
       if (e.button !== 0) return
+      // A press on the photo never starts a text selection: a drag that leaves the stage
+      // would otherwise select the panels beside it (owner, 2026-11-08).
+      e.preventDefault()
       pressedAt.current = { x: e.clientX, y: e.clientY }
       if (view.scale === MIN) return
       setDrag({ x: e.clientX, y: e.clientY })
