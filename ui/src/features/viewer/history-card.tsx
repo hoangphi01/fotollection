@@ -51,7 +51,7 @@ export function HistoryCard({ photoId, revision }: HistoryCardProps) {
       ) : (
         // About six rows, the rest scrolled inside, so a long History never pushes the
         // column (owner, 2026-11-07: "not as long as a scroll of paper").
-        <ScrollArea className="max-h-52 [&>[data-slot=scroll-area-viewport]>div]:block!">
+        <ScrollArea gutter className="max-h-52 [&>[data-slot=scroll-area-viewport]>div]:block!">
         <ListRows as="ul">
           {(steps ?? []).map((step, i) => (
             <li key={step.serial}>

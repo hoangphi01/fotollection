@@ -819,3 +819,10 @@
 - **Why:** ADR-0036 decided thumbnails stay plain when a look was one photo's edit, seen in its preview. FR-114 was planned and built on that sentence (its PRD text even said "nothing is redrawn") without asking whether the gallery, now the place a batch is made, still worked without it. The T1's key and address carried nothing of the look.
 - **Fix:** ADR-0047: Rust colours the plain T1 when served (1.1 ms), keeps it in memory (32 MB), and the colour's key is part of the thumbnail's address; a batch colours its thumbnails with the import's progress bar.
 - **Rule:** when a feature moves an action to a new place (one photo to many, the preview to the gallery), re-read the old decisions that held because of the old place, and check the result where the user looks, not where the data changed.
+
+### An overlay scroll bar sat on a list's words, and each scroll bar had its own size (FR-114, UI-LAYOUT-018)
+
+- **Seen:** in the gallery's Colour tab the group's count "8" touched the list's scroll bar; the bars of lists were thicker than the gallery's (owner, 2026-11-08: "there will be many scrolls").
+- **Why:** Radix draws its bar over the content's right edge (overlay), so a list inside a card had no room kept for it; the bar was 10 px with its own padding while the gallery's native bar is 8 px with a 4 px thumb. The first check for it found nothing: Radix mounts the bar only under the pointer, and the threshold looked for overlap, not closeness.
+- **Fix:** one bar for every `ScrollArea`, 8 px with 2 px clear on each side as the gallery's; `gutter` keeps 12 px on the right of a list inside a card (History, the look library). UI-LAYOUT-018 checks every area that does scroll: its words end the bar's 8 px and 4 px more before its edge, measured at their clipping box when cut with an ellipsis. It failed on the old list first.
+- **Rule:** every new scrolling list inside a card uses `ScrollArea gutter`; never a scroll bar of its own size. A check for something drawn on hover is made on the condition that draws it (here: the area scrolls), not on the element itself.

@@ -223,7 +223,7 @@ export function useLookLibrary({ looks, reload, remove, chosenId, onPick, photoI
       {listed.length === 0 ? (
         <Hint>{t('look.presetsEmpty')}</Hint>
       ) : scroll ? (
-        <ScrollArea className="max-h-72 [&>[data-slot=scroll-area-viewport]>div]:block!">{rows}</ScrollArea>
+        <ScrollArea gutter className="max-h-72 [&>[data-slot=scroll-area-viewport]>div]:block!">{rows}</ScrollArea>
       ) : (
         rows
       )}

@@ -174,6 +174,33 @@ export async function layoutChecks(page, where) {
       if (spill > 0.5) out.push(`UI-LAYOUT-017 a scroll area spills ${Math.round(spill)} px out of its box: "${name(root)}"`)
     }
 
+    // UI-LAYOUT-018: an overlay scroll bar never sits on words (owner, 2026-11-08: a group's
+    // count against the bar). Radix draws the bar only under the pointer, so the room is
+    // checked wherever a list does scroll: its words end at least the bar's 8 px and 4 px more
+    // before the area's right edge.
+    for (const area of document.querySelectorAll('[data-slot="scroll-area"]')) {
+      const view = area.querySelector(':scope > [data-slot="scroll-area-viewport"]')
+      if (!view || !vis(area) || view.scrollHeight <= view.clientHeight + 1) continue
+      const edge = area.getBoundingClientRect().right - 12
+      const walker = document.createTreeWalker(view, NodeFilter.SHOW_TEXT)
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        if (!n.textContent?.trim() || !n.parentElement || !vis(n.parentElement)) continue
+        const range = document.createRange()
+        range.selectNodeContents(n)
+        const r = range.getBoundingClientRect()
+        // Words cut with an ellipsis end where their clipping box does, not where the whole
+        // string would.
+        let right = r.right
+        for (let e = n.parentElement; e && e !== view; e = e.parentElement) {
+          if (getComputedStyle(e).overflowX !== 'visible') right = Math.min(right, e.getBoundingClientRect().right)
+        }
+        if (r.width > 0 && right > edge + 0.5) {
+          out.push(`UI-LAYOUT-018 words ${Math.round(right - edge)} px into a scroll bar's room: "${n.textContent.trim().slice(0, 30)}"`)
+          break
+        }
+      }
+    }
+
     // UI-LAYOUT-011: the page never scrolls sideways.
     if (document.documentElement.scrollWidth > window.innerWidth + 1) out.push(`UI-LAYOUT-011 the page scrolls sideways (${document.documentElement.scrollWidth} > ${window.innerWidth})`)
     return out
