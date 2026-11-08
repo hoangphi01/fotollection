@@ -496,7 +496,38 @@ export const commands = {
 	look: LookSettings,
 	/**  Its LUT is tagged by LUMIX Lab as made for V-Log footage: far too strong on a photo. */
 	vlog: boolean,
+	/**
+	 *  The group *Presets & LUTs* lists it under: a preset's own, its pack's, "LUT"; none
+	 *  for a saved look or a built-in one.
+	 */
+	group: string | null,
+	source: LookSource,
+	/**  A preset's settings no look can hold, with their reasons (FR-089). */
+	unapplied: string[],
 } | null, IpcError>(__TAURI_INVOKE("import_lut")),
+	/**
+	 *  Imports Lightroom presets (FR-089, ADR-0045): `.xmp`, `.lrtemplate` or `.zip` files chosen
+	 *  in a Rust-side dialog, each read and compiled in Rust, its per-pixel part kept as a LUT,
+	 *  saved as looks of the user's under the preset's group (or its pack's name). `None` when the
+	 *  dialog is cancelled.
+	 */
+	importPresets: () => typedError<{
+	imported: LookEntry[],
+	skipped: Skipped[],
+	unapplied: Unapplied[],
+} | null, IpcError>(__TAURI_INVOKE("import_presets")),
+	/**  Renames a look of the user's (FR-079); the name is cleaned in Rust. */
+	renameLook: (id: string, name: string) => typedError<LookEntry[], IpcError>(__TAURI_INVOKE("rename_look", { id, name })),
+	/**
+	 *  *Update with current settings*, as Lightroom's: the look of the user's takes `look`'s
+	 *  values (the photo's look now), keeping its name and group.
+	 */
+	updateLook: (id: string, look: LookSettings) => typedError<LookEntry[], IpcError>(__TAURI_INVOKE("update_look", { id, look })),
+	/**
+	 *  Moves a look of the user's to another group of *Presets & LUTs*; `None` is no group (the
+	 *  user's own looks).
+	 */
+	moveLook: (id: string, group: string | null) => typedError<LookEntry[], IpcError>(__TAURI_INVOKE("move_look", { id, group })),
 	/**
 	 *  How a camera RAW photo is finished (FR-072, ADR-0040): neutral or like the camera's JPEG.
 	 *  One undoable step; the preview, the sheets and the export follow from the new revision.
@@ -1339,6 +1370,16 @@ export type ImageFacts = {
 	decoder: Decoder | null,
 };
 
+/**
+ *  What an import of presets did (FR-089): the looks it made, the files it skipped and why,
+ *  and how many presets had each setting no look can hold.
+ */
+export type ImportReport = {
+	imported: LookEntry[],
+	skipped: Skipped[],
+	unapplied: Unapplied[],
+};
+
 export type ImportSummary = {
 	added: number,
 	duplicates: number,
@@ -1408,6 +1449,14 @@ export type LookEntry = {
 	look: LookSettings,
 	/**  Its LUT is tagged by LUMIX Lab as made for V-Log footage: far too strong on a photo. */
 	vlog: boolean,
+	/**
+	 *  The group *Presets & LUTs* lists it under: a preset's own, its pack's, "LUT"; none
+	 *  for a saved look or a built-in one.
+	 */
+	group: string | null,
+	source: LookSource,
+	/**  A preset's settings no look can hold, with their reasons (FR-089). */
+	unapplied: string[],
 };
 
 /**  Where a look of the library comes from. */
@@ -1436,6 +1485,15 @@ export type LookSettings = {
 	 */
 	base?: string | null,
 };
+
+/**  What a look of the user's was made from (FR-079, FR-070, FR-089). */
+export type LookSource = 
+/**  *Save as look* from a photo. */
+"saved" | 
+/**  An imported LUT file. */
+"lut" | 
+/**  A Lightroom preset, compiled (ADR-0045). */
+"preset";
 
 /**  This computer, as the Settings window's *For this computer* shows it (FR-086). */
 export type MachineInfo = {
@@ -1981,6 +2039,13 @@ export type SizeAdvice = {
 	verdict: PrintVerdict,
 };
 
+/**  A file an import left out, with the stable code of the reason (`look.preset_*`). */
+export type Skipped = {
+	file: string,
+	code: string,
+	reason: string,
+};
+
 /**  The colour space a file states: by its ICC profile's name, its header or EXIF. */
 export type Space = "srgb" | "displayP3" | "adobeRgb" | "proPhoto" | "grey" | "cmyk" | 
 /**  A profile with another name. */
@@ -2164,6 +2229,12 @@ export type UiSettings = {
 	 *  settings v17: off.
 	 */
 	welcomeEveryStart?: boolean,
+};
+
+/**  A setting no look holds, as `Clarity2012: local contrast…`, and how many presets had it. */
+export type Unapplied = {
+	setting: string,
+	count: number,
 };
 
 /**  The result shown under the button. */

@@ -518,11 +518,14 @@
     },
     "look": {
       "no_name": "Give the look a name",
-      "full": "You already keep 200 looks: remove one first",
+      "full": "You already keep 1,000 looks: remove some first",
       "unknown": "This look is no longer in your list",
       "lut_too_large": "The LUT is larger than 8 MB",
       "lut_invalid": "This LUT file cannot be read",
-      "lut_unreadable": "The LUT file could not be opened or kept"
+      "lut_unreadable": "The LUT file could not be opened or kept",
+      "preset_too_large": "The preset file is too large",
+      "preset_invalid": "This preset cannot be read",
+      "preset_empty": "This preset changes nothing a look can hold"
     },
     "settings": {
       "invalid": "These settings are not valid"

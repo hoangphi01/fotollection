@@ -575,7 +575,20 @@ mod tests {
         let Loaded::Ok(new) = load(&path) else {
             panic!("v18 should load");
         };
-        assert_eq!(new.looks.len(), 1);
+        assert_eq!(new.looks.len(), 2);
+        let preset = &new.looks[1];
+        assert_eq!(
+            (
+                preset.group.as_deref(),
+                preset.source,
+                preset.unapplied.len()
+            ),
+            (
+                Some("Alternative Process"),
+                crate::look_library::LookSource::Preset,
+                1
+            )
+        );
         let kept = &new.looks[0];
         assert_eq!(
             (kept.id.as_str(), kept.name.as_str()),

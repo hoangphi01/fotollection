@@ -498,11 +498,14 @@
     },
     "look": {
       "no_name": "Hãy đặt tên cho look",
-      "full": "Bạn đã lưu 200 look: hãy xoá bớt một look trước",
+      "full": "Bạn đã lưu 1.000 look: hãy xoá bớt trước",
       "unknown": "Look này không còn trong danh sách của bạn",
       "lut_too_large": "LUT lớn hơn 8 MB",
       "lut_invalid": "Không đọc được tệp LUT này",
-      "lut_unreadable": "Không mở hoặc lưu được tệp LUT"
+      "lut_unreadable": "Không mở hoặc lưu được tệp LUT",
+      "preset_too_large": "Tệp preset quá lớn",
+      "preset_invalid": "Không đọc được preset này",
+      "preset_empty": "Preset này không có gì mà look giữ được"
     },
     "settings": {
       "invalid": "Thiết lập không hợp lệ"

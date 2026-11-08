@@ -5,7 +5,7 @@
 #![allow(clippy::needless_pass_by_value)]
 
 use fotollection_core::library::PhotoId;
-use fotollection_core::look_library::{self, LookEntry, SaveLookError};
+use fotollection_core::look_library::{self, LookEntry, LookSource, SaveLookError};
 use fotollection_core::looks::LookSettings;
 use tauri::State;
 
@@ -13,6 +13,74 @@ use crate::state::{AppState, IpcError};
 
 fn poisoned<E: std::fmt::Display>(e: E) -> IpcError {
     IpcError::internal(e.to_string())
+}
+fn save_error(e: SaveLookError) -> IpcError {
+    match e {
+        SaveLookError::NoName => IpcError::new("look.no_name", e.to_string()),
+        SaveLookError::Full => IpcError::new("look.full", e.to_string()),
+    }
+}
+
+/// Changes one saved look (`user:<id>`) and returns the library as the card lists it.
+fn edit_saved(
+    state: &AppState,
+    id: &str,
+    edit: impl FnOnce(&mut look_library::SavedLook),
+) -> Result<Vec<LookEntry>, IpcError> {
+    let list = {
+        let mut saved = state.saved_looks.lock().map_err(poisoned)?;
+        let own = id.strip_prefix("user:").unwrap_or_default();
+        let found = saved
+            .iter_mut()
+            .find(|s| s.id == own)
+            .ok_or_else(|| IpcError::new("look.unknown", "no saved look with this id"))?;
+        edit(found);
+        let clean = look_library::sanitized_saved(&saved);
+        *saved = clean;
+        look_library::entries(&saved)
+    };
+    state.save_settings();
+    Ok(list)
+}
+
+/// Renames a look of the user's (FR-079); the name is cleaned in Rust.
+#[tauri::command]
+#[specta::specta]
+pub fn rename_look(
+    state: State<'_, AppState>,
+    id: String,
+    name: String,
+) -> Result<Vec<LookEntry>, IpcError> {
+    let name = fotollection_core::looks::clean_name(&name)
+        .ok_or_else(|| IpcError::new("look.no_name", "a look needs a name"))?;
+    edit_saved(&state, &id, |s| s.name = name)
+}
+
+/// *Update with current settings*, as Lightroom's: the look of the user's takes `look`'s
+/// values (the photo's look now), keeping its name and group.
+#[tauri::command]
+#[specta::specta]
+pub fn update_look(
+    state: State<'_, AppState>,
+    id: String,
+    look: LookSettings,
+) -> Result<Vec<LookEntry>, IpcError> {
+    edit_saved(&state, &id, |s| s.look = look.sanitized())
+}
+
+/// Moves a look of the user's to another group of *Presets & LUTs*; `None` is no group (the
+/// user's own looks).
+#[tauri::command]
+#[specta::specta]
+pub fn move_look(
+    state: State<'_, AppState>,
+    id: String,
+    group: Option<String>,
+) -> Result<Vec<LookEntry>, IpcError> {
+    let group = group
+        .as_deref()
+        .and_then(fotollection_core::looks::clean_name);
+    edit_saved(&state, &id, |s| s.group = group)
 }
 
 /// Every look the card lists: the built-in ones, then this machine's, oldest first.
@@ -34,10 +102,7 @@ pub fn save_look(
 ) -> Result<LookEntry, IpcError> {
     let entry = {
         let mut saved = state.saved_looks.lock().map_err(poisoned)?;
-        let new = look_library::new_saved(&name, &look, &saved).map_err(|e| match e {
-            SaveLookError::NoName => IpcError::new("look.no_name", e.to_string()),
-            SaveLookError::Full => IpcError::new("look.full", e.to_string()),
-        })?;
+        let new = look_library::new_saved(&name, &look, &saved).map_err(save_error)?;
         saved.push(new);
         look_library::entries(&saved).pop()
     };
@@ -132,10 +197,9 @@ pub async fn import_lut(app: tauri::AppHandle) -> Result<Option<LookEntry>, IpcE
         };
         let entry = {
             let mut saved = state.saved_looks.lock().map_err(poisoned)?;
-            let new = look_library::new_saved(&name, &look, &saved).map_err(|e| match e {
-                SaveLookError::NoName => IpcError::new("look.no_name", e.to_string()),
-                SaveLookError::Full => IpcError::new("look.full", e.to_string()),
-            })?;
+            let mut new = look_library::new_saved(&name, &look, &saved).map_err(save_error)?;
+            new.group = Some("LUT".to_owned());
+            new.source = LookSource::Lut;
             saved.push(new);
             look_library::entries(&saved).pop()
         };
@@ -143,6 +207,181 @@ pub async fn import_lut(app: tauri::AppHandle) -> Result<Option<LookEntry>, IpcE
         entry
             .map(Some)
             .ok_or_else(|| IpcError::internal("the imported look is missing"))
+    })
+    .await
+    .map_err(|e| IpcError::internal(e.to_string()))?
+}
+
+/// What an import of presets did (FR-089): the looks it made, the files it skipped and why,
+/// and how many presets had each setting no look can hold.
+#[derive(Debug, Clone, serde::Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportReport {
+    pub imported: Vec<LookEntry>,
+    pub skipped: Vec<Skipped>,
+    pub unapplied: Vec<Unapplied>,
+}
+
+/// A file an import left out, with the stable code of the reason (`look.preset_*`).
+#[derive(Debug, Clone, serde::Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct Skipped {
+    pub file: String,
+    pub code: String,
+    pub reason: String,
+}
+
+/// A setting no look holds, as `Clarity2012: local contrast…`, and how many presets had it.
+#[derive(Debug, Clone, serde::Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct Unapplied {
+    pub setting: String,
+    pub count: u32,
+}
+
+type Found = (
+    String,
+    Option<String>,
+    Result<fotollection_core::preset::Preset, fotollection_core::preset::PresetError>,
+);
+
+/// Every preset in the chosen files: a `.zip`'s entries under the zip's name as their pack.
+fn read_presets(paths: Vec<std::path::PathBuf>) -> Vec<Found> {
+    use fotollection_core::preset::{self, PresetError};
+    let mut found = Vec::new();
+    for path in paths.into_iter().take(preset::MAX_ZIP_ENTRIES) {
+        let file = path
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default();
+        let stem = path.file_stem().map(|n| n.to_string_lossy().into_owned());
+        let zip = path
+            .extension()
+            .is_some_and(|e| e.eq_ignore_ascii_case("zip"));
+        let cap = if zip {
+            preset::MAX_ZIP_BYTES
+        } else {
+            preset::MAX_BYTES
+        } as u64;
+        let read = std::fs::metadata(&path)
+            .map_err(|e| PresetError::Invalid(e.to_string()))
+            .and_then(|m| {
+                if m.len() > cap {
+                    Err(PresetError::TooLarge)
+                } else {
+                    Ok(())
+                }
+            })
+            .and_then(|()| std::fs::read(&path).map_err(|e| PresetError::Invalid(e.to_string())));
+        match (zip, read) {
+            (_, Err(e)) => found.push((file, None, Err(e))),
+            (true, Ok(bytes)) => match preset::parse_zip(&bytes) {
+                Ok(entries) => found.extend(entries.into_iter().map(|(f, r)| (f, stem.clone(), r))),
+                Err(e) => found.push((file, None, Err(e))),
+            },
+            (false, Ok(bytes)) => found.push((file, None, preset::parse(&bytes))),
+        }
+    }
+    found
+}
+
+/// Imports Lightroom presets (FR-089, ADR-0045): `.xmp`, `.lrtemplate` or `.zip` files chosen
+/// in a Rust-side dialog, each read and compiled in Rust, its per-pixel part kept as a LUT,
+/// saved as looks of the user's under the preset's group (or its pack's name). `None` when the
+/// dialog is cancelled.
+#[tauri::command]
+#[specta::specta]
+pub async fn import_presets(app: tauri::AppHandle) -> Result<Option<ImportReport>, IpcError> {
+    use fotollection_core::preset::PresetError;
+    use tauri::Manager;
+    use tauri_plugin_dialog::DialogExt;
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let Some(paths) = app
+            .dialog()
+            .file()
+            .set_title("Choose Lightroom presets (.xmp, .lrtemplate or .zip)")
+            .add_filter("Lightroom presets", &["xmp", "lrtemplate", "zip"])
+            .blocking_pick_files()
+        else {
+            return Ok(None);
+        };
+        let found = read_presets(
+            paths
+                .into_iter()
+                .filter_map(|p| p.into_path().ok())
+                .collect(),
+        );
+        let mut report = ImportReport {
+            imported: Vec::new(),
+            skipped: Vec::new(),
+            unapplied: Vec::new(),
+        };
+        let mut counts: std::collections::BTreeMap<String, u32> = std::collections::BTreeMap::new();
+        let skip = |report: &mut ImportReport, file: String, code: &str, reason: String| {
+            report.skipped.push(Skipped {
+                file,
+                code: code.to_owned(),
+                reason,
+            });
+        };
+        for (file, pack, result) in found {
+            let preset = match result {
+                Ok(p) => p,
+                Err(e) => {
+                    skip(&mut report, file, e.code(), e.to_string());
+                    continue;
+                }
+            };
+            let compiled = fotollection_core::preset_look::compile(&preset);
+            let mut look = compiled.look;
+            if let Some(cube) = &compiled.lut {
+                match fotollection_core::lut::import(cube.as_bytes()) {
+                    Ok((hash, _)) => look.lut = Some(hash),
+                    Err(e) => {
+                        skip(&mut report, file, e.code(), e.to_string());
+                        continue;
+                    }
+                }
+            }
+            if look.lut.is_none() && look.adjust == fotollection_core::looks::Adjust::default() {
+                let e = PresetError::Empty;
+                skip(&mut report, file, e.code(), e.to_string());
+                continue;
+            }
+            let name = preset
+                .name
+                .clone()
+                .filter(|n| !n.trim().is_empty())
+                .unwrap_or_else(|| {
+                    file.rsplit_once('.')
+                        .map_or(file.clone(), |(stem, _)| stem.to_owned())
+                });
+            let mut saved = state.saved_looks.lock().map_err(poisoned)?;
+            let mut new = look_library::new_saved(&name, &look, &saved).map_err(save_error)?;
+            new.group = preset
+                .group
+                .clone()
+                .or(pack)
+                .or_else(|| Some("Presets".to_owned()));
+            new.source = LookSource::Preset;
+            new.unapplied.clone_from(&compiled.unapplied);
+            for u in &compiled.unapplied {
+                *counts.entry(u.clone()).or_default() += 1;
+            }
+            saved.push(new);
+            if let Some(entry) = look_library::entries(&saved).pop() {
+                report.imported.push(entry);
+            }
+        }
+        report.unapplied = counts
+            .into_iter()
+            .map(|(setting, count)| Unapplied { setting, count })
+            .collect();
+        if !report.imported.is_empty() {
+            state.save_settings();
+        }
+        Ok(Some(report))
     })
     .await
     .map_err(|e| IpcError::internal(e.to_string()))?

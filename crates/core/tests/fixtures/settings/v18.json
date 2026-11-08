@@ -191,6 +191,20 @@
       "id": "NOT-HEX",
       "name": "Bad id, dropped",
       "look": {}
+    },
+    {
+      "id": "0b2c3d4e5f60",
+      "name": "Cross process",
+      "look": {
+        "adjust": {
+          "contrast": 8
+        }
+      },
+      "group": "Alternative Process",
+      "source": "preset",
+      "unapplied": [
+        "Sharpness: sharpening, not a colour"
+      ]
     }
   ]
 }

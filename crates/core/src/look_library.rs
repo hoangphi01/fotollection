@@ -10,8 +10,25 @@ use specta::Type;
 
 use crate::looks::{Adjust, LookSettings, Mono, Tint, clean_name, valid_base};
 
-/// The most looks a user can keep.
-pub const MAX_SAVED: usize = 200;
+/// The most looks a user can keep: whole preset packs of a few hundred fit (about 0.6 MB of
+/// `settings.json` at most, of its 4 MB).
+pub const MAX_SAVED: usize = 1000;
+
+/// What a look of the user's was made from (FR-079, FR-070, FR-089).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum LookSource {
+    /// *Save as look* from a photo.
+    #[default]
+    Saved,
+    /// An imported LUT file.
+    Lut,
+    /// A Lightroom preset, compiled (ADR-0045).
+    Preset,
+}
+
+/// The longest group name kept, and the most "not applied" lines a look keeps.
+pub const MAX_UNAPPLIED: usize = 40;
 
 /// Where a look of the library comes from.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
@@ -35,6 +52,12 @@ pub struct LookEntry {
     pub look: LookSettings,
     /// Its LUT is tagged by LUMIX Lab as made for V-Log footage: far too strong on a photo.
     pub vlog: bool,
+    /// The group *Presets & LUTs* lists it under: a preset's own, its pack's, "LUT"; none
+    /// for a saved look or a built-in one.
+    pub group: Option<String>,
+    pub source: LookSource,
+    /// A preset's settings no look can hold, with their reasons (FR-089).
+    pub unapplied: Vec<String>,
 }
 
 /// A look the user saved: its own id (lowercase hex), its name, its values.
@@ -44,6 +67,13 @@ pub struct SavedLook {
     pub id: String,
     pub name: String,
     pub look: LookSettings,
+    /// Absent in a v18 file written before presets: none, a saved look, nothing unapplied.
+    #[serde(default)]
+    pub group: Option<String>,
+    #[serde(default)]
+    pub source: LookSource,
+    #[serde(default)]
+    pub unapplied: Vec<String>,
 }
 
 fn recipe(slug: &str, name: &str, adjust: Adjust) -> LookEntry {
@@ -59,6 +89,9 @@ fn recipe(slug: &str, name: &str, adjust: Adjust) -> LookEntry {
         name: name.to_owned(),
         kind: LookKind::BuiltIn,
         vlog: false,
+        group: None,
+        source: LookSource::Saved,
+        unapplied: Vec::new(),
     }
 }
 
@@ -184,6 +217,14 @@ pub fn sanitized_saved(list: &[SavedLook]) -> Vec<SavedLook> {
                     }
                     .sanitized(),
                     name,
+                    group: s.group.as_deref().and_then(clean_name),
+                    source: s.source,
+                    unapplied: s
+                        .unapplied
+                        .iter()
+                        .take(MAX_UNAPPLIED)
+                        .map(|u| u.chars().filter(|c| !c.is_control()).take(160).collect())
+                        .collect(),
                 }
             })
         })
@@ -232,6 +273,9 @@ pub fn new_saved(
         .sanitized(),
         id,
         name,
+        group: None,
+        source: LookSource::Saved,
+        unapplied: Vec::new(),
     })
 }
 
@@ -251,6 +295,9 @@ pub fn entries(saved: &[SavedLook]) -> Vec<LookEntry> {
                 .as_deref()
                 .and_then(crate::lut::get)
                 .is_some_and(|l| l.vlog),
+            group: s.group.clone(),
+            source: s.source,
+            unapplied: s.unapplied.clone(),
         }
     }));
     all
@@ -303,6 +350,9 @@ mod tests {
             id: "0a1b2c".into(),
             name: "Fine".into(),
             look: wild,
+            group: Some("  Film  ".into()),
+            source: LookSource::Preset,
+            unapplied: vec!["Clarity2012: local contrast".into()],
         };
         let list = vec![
             good.clone(),
@@ -325,5 +375,8 @@ mod tests {
         assert_eq!(clean[0].look.adjust.contrast, 100);
         assert_eq!(clean[0].look.base.as_deref(), Some("user:0a1b2c"));
         assert_eq!(clean[0].look.name.as_deref(), Some("Fine"));
+        assert_eq!(clean[0].group.as_deref(), Some("Film"), "the group trimmed");
+        assert_eq!(clean[0].source, LookSource::Preset);
+        assert_eq!(clean[0].unapplied, ["Clarity2012: local contrast"]);
     }
 }
