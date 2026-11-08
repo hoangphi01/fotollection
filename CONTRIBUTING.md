@@ -125,13 +125,24 @@ Read [docs/LESSONS.md](docs/LESSONS.md) first: its "How we debug" section and th
 
 ## 7. Issues
 
+**Issues are the inbox; the docs are the record** (owner, 2026-11-08). What users report or ask arrives as a GitHub issue; what the project decides lives in [docs/PRD.md](docs/PRD.md), [docs/STATUS.md](docs/STATUS.md) and the [CHANGELOG](CHANGELOG.md), checked by `scripts/check-docs.sh`. An issue never replaces a requirement or the plan: two lists of the same work drift apart.
+
+Every new issue is triaged, labelled `triaged`, and ends one of four ways:
+
+1. **A fault in what the app promises:** fixed in a commit that says `Fixes #n` (GitHub closes the issue), with its CHANGELOG line, and an `ERR-` row or a LESSONS entry when the rules ask for one.
+2. **A new or changed behaviour that is accepted:** a new `FR-` at the end of the PRD naming the issue (`… (#n)`), its rows in ROADMAP and STATUS, the issue put in that version's milestone and linked from the FR; it closes when the FR ships.
+3. **Not enough to act on:** labelled `needs info`, with the question asked; closed after 30 days without an answer.
+4. **Not taken:** closed with the reason (`duplicate`, `wontfix`, `invalid`) and, for a duplicate, the link.
+
+The order of work stays the "Next, in order" list of STATUS; milestones only tell people which version an accepted issue is planned for.
+
 Open one from the [issue templates](https://github.com/hoangphi01/fotollection/issues/new/choose). Users reach the same page from the app: the version number at the foot of any panel, then **Report a problem or an idea**.
 
 - **Bug report:** the version, the system, the photo's source and format, what you did, what you expected, what happened, and the **error code** with the **Copy diagnostics** text. Name the requirement if you know it (`FR-006`).
 - **Feature request:** the problem first, then the behaviour you propose, the acceptance criteria and any effect on performance or privacy. Say whether it extends an existing `FR-` or is new; a new one gets its ID at the end of the PRD when it is accepted.
 - **Photos:** attach a sample only if you are happy for it to be public, and strip GPS first. A file that fails is the best report, but never send one you would not post.
 - **Security problems** go to a private [security advisory](https://github.com/hoangphi01/fotollection/security/advisories/new), never a public issue ([SECURITY.md](docs/SECURITY.md)).
-- Labels: `bug`, `enhancement`, `documentation`, `question`, `accessibility`, `good first issue`, `help wanted`.
+- Labels: `bug`, `enhancement`, `documentation`, `question`, `accessibility`, `good first issue`, `help wanted`; `triaged` once decided, `needs info` while waiting for the reporter.
 
 ## 8. Branches, commits and pull requests
 
@@ -161,7 +172,7 @@ The full rules are in [docs/STYLE_RULE.md](docs/STYLE_RULE.md); these catch most
 
 Agents follow everything above. In addition:
 
-- **Start with [CLAUDE.md](CLAUDE.md)** (the rules for AI assistants), then [docs/README.md](docs/README.md) and the "Next, in order" list of [docs/STATUS.md](docs/STATUS.md).
+- **Start with [CLAUDE.md](CLAUDE.md)** (the rules for AI assistants), then [docs/README.md](docs/README.md) and the "Next, in order" list of [docs/STATUS.md](docs/STATUS.md), and list the issues not triaged yet (`gh issue list --search "-label:triaged"`) to bring them to the owner; never triage, label or close one without the owner's word.
 - **Look facts up, never invent them.** Versions, numbers, file names, labels and commands come from the repository. A number on a public page is measured or sourced.
 - **Use the app's own labels**, from `ui/src/locales`, when you write about the interface.
 - **Run `scripts/check-docs.sh` on its own**, not in a chain, and read its output.

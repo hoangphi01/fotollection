@@ -1,0 +1,10 @@
+# Issues are the inbox (CONTRIBUTING.md §7): a report or an idea from a template, triaged into
+# the PRD, STATUS or a fix. Security problems never go public.
+blank_issues_enabled: false
+contact_links:
+  - name: Security problem (private)
+    url: https://github.com/hoangphi01/fotollection/security/advisories/new
+    about: A weakness others could use; reported privately, never as a public issue.
+  - name: How to use Fotollection
+    url: https://fotollection.org/manual/
+    about: The manual, chapter by chapter, in English and Vietnamese.

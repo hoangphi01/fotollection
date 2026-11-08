@@ -22,7 +22,7 @@ at commit time.
 2. **`docs/LESSONS.md`, the whole page.** Note every entry whose area the task touches.
    Search it as well for the files, crates and words of the task
    (`grep -n -i "<word>" docs/LESSONS.md`).
-3. **`docs/STATUS.md`, "Next, in order"**: the session plan. Take the first open box
+3. **`docs/STATUS.md`, "Next, in order"**: the session plan. Then the issues not triaged yet (`gh issue list --search "-label:triaged"`, CONTRIBUTING §7): name them to the owner; triage only on the owner's word. Take the first open box
    unless the owner asked for something else.
 4. **Only what the task needs from [docs/README.md](../../../docs/README.md)'s map**:
    PRD for the FR, ARCHITECTURE for the module, STYLE_RULE §4 for any UI (then the
