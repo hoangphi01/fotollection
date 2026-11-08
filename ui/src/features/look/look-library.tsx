@@ -9,13 +9,14 @@ import { ListRow, ListRows } from '@/components/forms/list-row'
 import { PanelNote } from '@/components/layout/panel-note'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Popover, PopoverTrigger } from '@/components/ui/popover'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { commands, type LookEntry, type PhotoId } from '@/ipc/bindings'
 import { setHoverLook } from '@/lib/drag-state'
 import { errorText } from '@/lib/errors'
 import { SaveLookDialog } from './save-look-dialog'
 import { lookName } from './use-looks'
+import { MenuContent } from '@/components/forms/menu-content'
 
 /** A list this long gets its filter, as Lightroom's panel. */
 const FILTER_FROM = 8
@@ -152,8 +153,7 @@ export function useLookLibrary({ looks, reload, remove, chosenId, onPick, photoI
                 <MoreHorizontal />
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-64 p-1">
-              <ListRows>
+            <MenuContent align="end">
                 <ListRow icon={<Pencil />} onClick={() => (setMenuFor(null), setAsking({ kind: 'rename', entry }))}>
                   {t('look.rename')}
                 </ListRow>
@@ -173,9 +173,8 @@ export function useLookLibrary({ looks, reload, remove, chosenId, onPick, photoI
                 <ListRow icon={<FolderInput />} onClick={() => (setMenuFor(null), setAsking({ kind: 'move', entry }))}>
                   {t('look.move')}
                 </ListRow>
-                <RemoveButton wide small label={t('look.remove')} onClick={() => (setMenuFor(null), remove(entry.id))} />
-              </ListRows>
-            </PopoverContent>
+                <RemoveButton wide label={t('look.remove')} onClick={() => (setMenuFor(null), remove(entry.id))} />
+              </MenuContent>
           </Popover>
         )}
       </div>
@@ -189,8 +188,7 @@ export function useLookLibrary({ looks, reload, remove, chosenId, onPick, photoI
           <Plus />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-64 p-1">
-        <ListRows>
+      <MenuContent align="end">
           {photoId !== undefined && (
             <ListRow icon={<BookmarkPlus />} onClick={() => setAsking({ kind: 'save' })}>
               {t('look.saveAs')}
@@ -202,8 +200,7 @@ export function useLookLibrary({ looks, reload, remove, chosenId, onPick, photoI
           <ListRow icon={<Blend />} onClick={importLut}>
             {t('look.importLut')}
           </ListRow>
-        </ListRows>
-      </PopoverContent>
+        </MenuContent>
     </Popover>
   )
 

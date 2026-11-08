@@ -280,6 +280,21 @@ for (const path of allTsx) {
   }
 }
 
+// A menu is `MenuContent` (owner, 2026-11-08: "too long, too narrow, the buttons too low"): as
+// wide as its rows, every row 32 px; a red row is `RemoveButton wide`, never `small` too.
+const OWN_MENU = { 'features/manual/manual-section.tsx': "a chapter picker as wide as its button" }
+for (const path of allTsx) {
+  const rel = relative(join(root, 'src'), path).split(sep).join('/')
+  if (rel.startsWith('components/')) continue
+  const text = readFileSync(path, 'utf8')
+  const at = (i) => text.slice(0, i).split('\n').length
+  if (!(rel in OWN_MENU))
+    for (const m of text.matchAll(/<PopoverContent\b[^>]*\bp-1\b/g))
+      problems.push(`${rel}:${at(m.index)}: a menu sized by hand: MenuContent (components/forms/menu-content.tsx)`)
+  for (const m of text.matchAll(/<RemoveButton\b[^>]*\bwide\b[^>]*\bsmall\b|<RemoveButton\b[^>]*\bsmall\b[^>]*\bwide\b/g))
+    problems.push(`${rel}:${at(m.index)}: a wide button made small: a menu's or a footer's row is 32 px as every control`)
+}
+
 // Raised unless it belongs to something (owner, 2026-11-06: "Select all is still the old
 // style"): a standalone button is never `ghost`. Flat stays only for a row of a list
 // (ListRow), a button inside a raised ButtonGroup, a dismiss inside a note and an on/off

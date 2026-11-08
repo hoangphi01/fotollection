@@ -3,13 +3,14 @@
 import { ClipboardPaste, Copy, Image, Images } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ResetButton } from '@/components/forms/danger-button'
-import { ListRow, ListRows } from '@/components/forms/list-row'
+import { ListRow } from '@/components/forms/list-row'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { Kbd } from '@/components/ui/kbd'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Popover, PopoverTrigger } from '@/components/ui/popover'
 import type { PhotoId } from '@/ipc/bindings'
 import { MOD, isMac } from '@/lib/platform'
 import { openCopySettings, pasteSettings, resetSettings, useSettingsCopy } from './settings-copy'
+import { MenuContent } from '@/components/forms/menu-content'
 
 const SHIFT = isMac ? '⇧' : 'Shift'
 const ALT = isMac ? '⌥' : 'Alt'
@@ -48,8 +49,7 @@ export function SettingsButtons({ photo, ticked, collage = false }: SettingsButt
           <PopoverTrigger asChild>
             <ToolbarButton icon={<ClipboardPaste />} label={t('develop.paste')} data-hint={pasteHint} iconOnly />
           </PopoverTrigger>
-          <PopoverContent align="start" className="w-72 p-1">
-            <ListRows>
+          <MenuContent align="start">
               <ListRow
                 icon={<Image />}
                 trailing={[SHIFT, MOD, 'V'].map((k) => <Kbd key={k}>{k}</Kbd>)}
@@ -64,8 +64,7 @@ export function SettingsButtons({ photo, ticked, collage = false }: SettingsButt
               >
                 {t('develop.pasteTicked', { count: ticked.length })}
               </ListRow>
-            </ListRows>
-          </PopoverContent>
+            </MenuContent>
         </Popover>
       ) : (
         <ToolbarButton

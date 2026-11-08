@@ -24,14 +24,15 @@ import { useTranslation } from 'react-i18next'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { KeysInfo } from '@/components/layout/keys-info'
 import { Kbd } from '@/components/ui/kbd'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Popover, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
 import { commands, type PhotoId, type PhotoSummary } from '@/ipc/bindings'
 import { MOD, isMac } from '@/lib/platform'
 import type { Compare, CompareMode } from './compare-stage'
-import { ListRow, ListRows } from '@/components/forms/list-row'
+import { ListRow } from '@/components/forms/list-row'
 import { SettingsButtons } from '@/features/develop/settings-buttons'
 import { HistoryButtons } from '@/features/history/history-buttons'
+import { MenuContent } from '@/components/forms/menu-content'
 
 type PreviewToolbarProps = {
   photo: PhotoSummary | undefined
@@ -225,8 +226,7 @@ function CompareMenu({
       <PopoverTrigger asChild>
         <ToolbarButton icon={<ChevronDown />} label={t('compare.views')} data-hint={t('compare.views')} iconOnly disabled={disabled} />
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-64 p-1">
-        <ListRows>
+      <MenuContent align="start">
           {views.map((v) => (
             <ListRow
               key={v.key}
@@ -240,8 +240,7 @@ function CompareMenu({
               {t(`compare.${v.key}`)}
             </ListRow>
           ))}
-        </ListRows>
-      </PopoverContent>
+        </MenuContent>
     </Popover>
   )
 }

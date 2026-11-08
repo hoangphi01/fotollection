@@ -42,6 +42,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **One way of moving** (FR-100): every animation now takes one of three paces and three curves, so dialogs, menus, hints, cards that fold, the strips under the photo and notices move alike; hints and the quick preview fade out instead of vanishing, the strips and notices slide instead of jumping, and one spinner is used everywhere (a thumbnail still loading shows its grey shape only). **Settings → General → Motion** follows the system's *Reduce motion* or keeps it to short fades.
 - **Security:** the start-up screen's styles are a file, no longer inline in the page.
+- **Menus fit their rows:** every menu (a look's ⋯ and right click, Paste, the compare views) is as wide as its rows, and its red row as tall as the others.
 - **One size for pop-up dialogs:** every question and small dialog, the update window among them, is the same roomier width, and its buttons wrap instead of running out.
 - **The Looks card says which look is in use** (Original, a look's name, or *Custom* once a slider moves it) above its amount; **+** beside its ↺ keeps a custom colour as a look of your own. Your looks come right after Original on the strip, and a right click on one renames or removes it; Fotollection's own looks stay. A look saved, imported, renamed or removed shows at once everywhere.
 - **Cancel is red** in every dialog, as the crop's and the export's; a dialog whose own action is red keeps a plain Cancel, so one red is the danger.

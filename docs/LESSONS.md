@@ -847,3 +847,10 @@
 - **Why:** `useLooks` kept the library in each component's own state; a module variable only seeded new mounts. The card reloaded its own copy after saving; the strip, mounted with the old list, was never told. Any import, rename or removal had the same gap between cards.
 - **Fix:** the library is one store for the app (`useSyncExternalStore`, as `use-ui-settings`): asked once per run, and every change publishes the new list to every card.
 - **Rule:** data that more than one mounted component shows is a shared store, never state per component seeded from a module variable; after an action, check every place that shows the result, not only the one that did it.
+
+### The strip's right-click menu was too wide and its red row too low: a menu copied, not a menu block (UI)
+
+- **Seen:** right-clicking one of your looks opened a 256 px menu for two short rows, its *Remove* 24 px high under a 32 px *Rename* (owner, 2026-11-08: "ugly, too long and too narrow, the button too low, wrong against the style").
+- **Why:** the menu was copied from *Presets & LUTs*' ⋯ menu, which had the same faults: a width written by hand (`w-64`), and `RemoveButton wide small` where every row of a list is 32 px. Five menus each set their own width; no block owned what a menu is.
+- **Fix:** `MenuContent` (`components/forms/menu-content.tsx`): as wide as its rows (192–320 px), `ListRows` inside, every row 32 px; the five menus use it, and `check-lego` refuses a menu sized by hand and a wide button made small.
+- **Rule:** before copying a block from another card, check it against STYLE_RULE §4 first: a copy spreads its faults. A pattern used twice is a block in `components/`.

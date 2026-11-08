@@ -4,15 +4,16 @@ import { ChevronDown, Pencil } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RemoveButton } from '@/components/forms/danger-button'
-import { ListRow, ListRows } from '@/components/forms/list-row'
+import { ListRow } from '@/components/forms/list-row'
 import { Filmstrip } from '@/components/layout/filmstrip'
-import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
+import { Popover, PopoverAnchor } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { Kbd } from '@/components/ui/kbd'
 import { commands, type LookEntry, type PhotoId } from '@/ipc/bindings'
 import { lookTileUrl } from '@/lib/photo-url'
 import { SaveLookDialog } from './save-look-dialog'
 import { LOOK_KEYS, lookName, type LookPicker } from './use-looks'
+import { MenuContent } from '@/components/forms/menu-content'
 
 type LookStripProps = {
   photoId: PhotoId
@@ -48,22 +49,19 @@ export function LookStrip({ photoId, picker, numbered = true, folding = false }:
       <PopoverAnchor asChild>
         <span aria-hidden className="pointer-events-none fixed size-0" style={{ left: menu?.x ?? 0, top: menu?.y ?? 0 }} />
       </PopoverAnchor>
-      <PopoverContent align="start" className="w-64 p-1">
-        <ListRows>
+      <MenuContent align="start">
           <ListRow icon={<Pencil />} onClick={() => (setRenaming(menu?.entry ?? null), setMenu(null))}>
             {t('look.rename')}
           </ListRow>
           <RemoveButton
             wide
-            small
             label={t('look.remove')}
             onClick={() => {
               if (menu) picker.remove(menu.entry.id)
               setMenu(null)
             }}
           />
-        </ListRows>
-      </PopoverContent>
+        </MenuContent>
     </Popover>
     <SaveLookDialog
       open={renaming !== null}
