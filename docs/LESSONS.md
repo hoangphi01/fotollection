@@ -756,3 +756,10 @@
 - **Why:** the dev app loads the page from Vite and applies no CSP; only the built app does, so a CSP gap never shows while developing.
 - **Fix:** `connect-src` names `fotothumb:` and `http://fotothumb.localhost`; a test of the CSP and a release-build check before each release follow (the security checks).
 - **Rule:** anything the page loads or fetches is checked against the CSP when written, and the release build is opened before a release with an eye on CSP violations.
+
+### The histogram was soft on Windows only: a stretched, blended SVG is scaled as a picture (FR-098)
+
+- **Seen:** the histogram's curves looked blurred on Windows, sharp on a Mac (owner, 2026-11-08).
+- **Why:** the SVG was a 255 × 1000 `viewBox` stretched with `preserveAspectRatio="none"`, its channels blended with `mix-blend-mode`. Chromium (WebView2) draws a blended layer once as a bitmap and scales it; at Windows' 125 % or 150 % that scaling interpolates, while a Retina Mac at exactly 2× hides it.
+- **Fix:** `HistogramPlot` draws on a canvas sized in device pixels (`clientWidth × devicePixelRatio`), blending with the canvas's own `multiply`/`screen`, redrawn on resize, on a new display scale and on a theme change.
+- **Rule:** a picture drawn from numbers (curves, charts) is drawn at the device's pixels, never a stretched SVG with blend modes; check it at a fractional scale (125 %, 150 %), not only on a Retina screen.
