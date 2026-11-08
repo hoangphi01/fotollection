@@ -18,7 +18,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - New: **give a look, LUT or preset to many photos at once**, from a Colour tab in Pro mode's gallery, something Lightroom does only at import; the grid shows each photo's colour.
 - UI update: a collage sheet's preview has Edit and Print tabs, and colours the whole sheet when no photo is picked.
 - UI update: **one way of moving** everywhere: dialogs, menus, hints, folds and notices come and go at the same pace, and **Settings → Motion** can keep it to short fades.
-- Fixes: a sharp histogram on Windows; no flash at the foot of the inspector on the next photo.
 
 ### Added
 
@@ -35,8 +34,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **A RAW's look tiles** show its colour as the preview does, from its standard preview once it exists, not the camera's JPEG (2 to 9 ΔE apart, RESULT §34).
 - **The colour cards no longer jump** when a tab is switched or a sheet's photo picked: the list of looks and each photo's look are drawn at once from the last answer.
 - **Screen readers name each look tile by its words** (Simple mode, FR-079), its number key told apart, so the name matches what is seen.
-- **The histogram is sharp on Windows** (FR-098): its curves are drawn at the display's own scale, so at 125 % or 150 % they no longer look soft; it is a little taller (80 px).
-- **The next photo no longer flashes the inspector's foot** (FR-095): the key hints keep *Drag to frame* while the next photo's crop is read, and a postcard's *Use for the others* note stays while the next card is flipped to (FR-077).
 
 ### Changed
 
@@ -57,6 +54,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ---
 
 ## v0.13 — The interface
+
+## [0.13.4] - 2026-11-08 — Fixes
+
+### Highlights
+
+- Fixes: a sharp histogram on Windows; no flash at the foot of the inspector on the next photo.
+- Fixes: lists scroll inside their box, and dialog fields keep clear of their buttons.
+
+### Fixed
+
+- **The histogram is sharp on Windows** (FR-098): its curves are drawn at the display's own scale, so at 125 % or 150 % they no longer look soft, and a night photo's blue no longer draws a false straight slope; it is a little taller (80 px).
+- **The next photo no longer flashes the inspector's foot** (FR-095): the key hints keep *Drag to frame* while the next photo's crop is read, and a postcard's *Use for the others* note stays while the next card is flipped to (FR-077).
+- **Lists that should scroll now scroll** inside their box instead of spilling over what follows (the photos of *Borrow places* and *Match a camera's clock*).
+- **A dialog's field no longer touches its buttons' line** (*Copy settings*, *New project*).
 
 ## [0.13.3] - 2026-11-08 — Fixes and hardening
 
