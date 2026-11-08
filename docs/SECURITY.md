@@ -24,11 +24,7 @@ The app processes **untrusted image files** and displays **untrusted metadata** 
 
 ## 2. Tauri hardening
 
-- **Capabilities (least privilege):** the main window gets only the permissions it needs:
-  - Dialog open/save.
-  - Filesystem read limited to user-selected paths and the app cache and config directories.
-  - Filesystem write limited to the user-selected export destination and the app cache and config directories.
-  - **No** shell, **no** `http`, **no** global filesystem scope.
+- **Capabilities (least privilege, `src-tauri/capabilities/default.json`):** the main window gets only, named one by one (no `core:default`, since 2026-11-08): `core:event:allow-listen`, `allow-unlisten`, `allow-emit` (the IPC's typed events) and the title bar's window controls (`core:window:allow-is-maximized`, `allow-minimize`, `allow-toggle-maximize`, `allow-internal-toggle-maximize`, `allow-close`, `allow-start-dragging`, FR-052). **No** dialog, filesystem, shell, `http` or opener permission: dialogs open from Rust, files are read and written by Rust. `src-tauri/tests/security_config.rs` fails on any other permission, a second window, a remote URL, a CSP that allows remote sources, `unsafe-eval` or inline scripts, `withGlobalTauri`, devtools, the asset protocol or remote IPC.
 - **CSP** in `tauri.conf.json`:
 
   ```text

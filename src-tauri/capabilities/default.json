@@ -1,10 +1,15 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Least-privilege permissions for the main window (docs/SECURITY.md §2). Dialogs are opened from Rust, so the webview gets no dialog or filesystem permissions. Window controls (minimize, maximize, close, drag) serve the Windows title bar drawn by the UI (FR-052).",
-  "windows": ["main"],
+  "description": "Least-privilege permissions for the main window (docs/SECURITY.md §2), named one by one (no core:default): events for the IPC's typed events, and the window controls of the Windows title bar drawn by the UI (FR-052). Dialogs are opened from Rust, so the webview gets no dialog, filesystem, shell, http or opener permission. Checked by src-tauri/tests/security_config.rs.",
+  "windows": [
+    "main"
+  ],
   "permissions": [
-    "core:default",
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "core:event:allow-emit",
+    "core:window:allow-is-maximized",
     "core:window:allow-minimize",
     "core:window:allow-toggle-maximize",
     "core:window:allow-internal-toggle-maximize",
