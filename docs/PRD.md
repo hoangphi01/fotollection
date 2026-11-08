@@ -1045,7 +1045,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-102 — Masking: local adjustments
 
-**P2 (planned, about v0.16, with FR-101; owner's request 2026-11-06, as Lightroom's Masking).** A tool tab in the develop view's inspector (FR-095), shown only once built: linear and radial gradients and a brush, each a mask with its own Basic sliders (brightness, contrast, warmth, tint, saturation…), several per photo, listed, hidden or deleted one by one. `⇧W` as in Lightroom Classic. Later, subject and sky found on the machine by a small model of a permissive licence (never a network call). Needs a local layer in the render pipeline beside the look's global table (ADR-0038, amended), on the GPU of v0.15.0 for a live preview.
+**P2 (planned, about v0.16, with FR-101; owner's request 2026-11-06, as Lightroom's Masking).** A tool tab in the develop view's inspector (FR-095), shown only once built: linear and radial gradients and a brush, each a mask with its own Basic sliders (brightness, contrast, warmth, tint, saturation…), several per photo, listed, hidden or deleted one by one. `⇧W` as in Lightroom Classic. Later, subject and sky found on the machine by a small model of a permissive licence (never a network call). Needs a local layer in the render pipeline beside the look's global table (ADR-0038, amended), on the GPU of v0.15.0 for a live preview. After FR-115's local contrast; the linear gradient first (a darker sky), the radial and the brush next, subject and sky last (owner, 2026-11-08).
 
 ### FR-103 — Check for updates at start, never download unasked
 
@@ -1118,6 +1118,16 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 - **One undo step** for the whole batch; each photo's History names the look. The library is the preview's *Presets & LUTs* list, one block (`useLookLibrary`) with the built-in looks added, its **+** importing presets and LUTs here too.
 - **Rust first:** Rust picks the photos, counts the edited ones and builds the look from its library (the interface sends the filter, the ticked ids, the look's id, the amount and its shown name), under one write lock: 7.4 ms for 10,000 photos, its undo 3.4 ms (RESULT §36). The grid shows the new colour: Rust colours the batch's thumbnails in the background, 1.1 ms each, the import's progress bar showing it ([ADR-0047](adr/0047-thumbnails-show-the-look.md)).
 - **Later:** giving a look to the photos imported into a folder from then on, as Lightroom's import presets (FR-038), after v0.14.0.
+
+### FR-115 — Local contrast: clarity, texture and dehaze
+
+**P2 (planned before FR-102's masks, about v0.15–v0.16; owner's request 2026-11-08, from street photos graded in Lightroom: "this is where our Pro mode is heading").** The three spatial tools a colour table cannot hold (FR-089, ADR-0045), in the Tools card of Pro mode: **Clarity** (contrast of mid-sized detail), **Texture** (fine detail, skin and surfaces) and **Dehaze** (haze taken out by an estimate of the scene's veil), each −100 to +100 as Lightroom's.
+
+- **Why first:** the graded city photos the owner showed (Tokyo, Shinjuku, Brooklyn, Radio City, Park Avenue) owe most of their look to global colour, which looks and presets already hold, and to local contrast, which nothing in the app does yet; without it a preset that uses them lands flat, and they are listed today as *not applied*. Masks (FR-102) come after, a linear gradient first (a darker sky, the commonest local edit), the radial and the brush next, subject and sky found on the machine last.
+- **Rust first (ADR-0044):** in the render pipeline after the look's table, on the luminance only, so colours do not shift: clarity and texture as unsharp masks at two radii scaled to the photo (a guided or edge-aware filter, so halos stay off strong edges, chosen by measurement), dehaze from a dark-channel estimate; tiled and parallel on rayon, on the GPU of v0.15.0 for the live preview, the CPU for exports with the same result.
+- **Measured, never assumed:** the filters and their radii chosen against the owner's Lightroom renders of presets that use them (`preset_bench`, RESULT), halos scored at strong edges; budgets of a 1600 px preview and a 24 MP export set in OPTIMIZATION §3 before the code.
+- **Presets:** a Lightroom preset's `Clarity2012`, `Texture` and `Dehaze` map to them, leaving the *not applied* list.
+- **What it does not do:** no motion trails, reflections or composites: those belong to the shot.
 
 ## 7. Non-functional requirements
 

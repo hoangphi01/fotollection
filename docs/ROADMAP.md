@@ -191,7 +191,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-099 | Controls with depth, as Sentry's: raised buttons with a lip, inputs set in, lifted cards; v0.13.0 (owner moved it forward, 2026-11-06) |
 | FR-100 | Motion that feels like one app: shared timings, smooth transitions between views and layouts, lists that move instead of jumping, *Reduce motion* respected with a setting, 60 fps; v0.14.0 (owner, 2026-11-08, [ADR-0046](adr/0046-one-motion-system.md)) |
 | FR-101 | Healing: spot removal, heal and clone, as Lightroom's Remove tool; a hidden tab of the inspector until built; about v0.16 |
-| FR-102 | Masking: linear, radial and brush masks with their own sliders, later on-device subject and sky; needs a local layer beside the look's table (ADR-0038 amended); about v0.16 |
+| FR-102 | Masking: linear, radial and brush masks with their own sliders, later on-device subject and sky, after FR-115 and the linear gradient first; needs a local layer beside the look's table (ADR-0038 amended); about v0.16 |
 | FR-103 | Check for updates at start, on by default and turned off in Settings; check only, the user downloads; a popup, with a red warning below the minimum safe version carried in the release notes (`.github/update.json`); v0.13.0 |
 | FR-104 | File names as Lightroom's templates (original, date, custom text and sequence) with a live example; v0.13.0 |
 | FR-105 | Limit the file size, by bisection of the quality, measured first; v0.13.0 |
@@ -202,6 +202,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-112 | Highlight recovery for RAW, chosen and tuned by measurement against the current fade; v0.14.0 |
 | FR-113 | ID photos: one photo cut to a document's size (35 × 45, 30 × 40, 2 × 2 in…) and repeated on one print with cut marks, at true size; v0.16.x, after the colour engine (looks, LUTs, Lightroom presets) and v0.16.0's 32-bit export (owner, 2026-11-07) |
 | FR-114 | A look, LUT or preset given to many photos at once from Pro mode's gallery (a Colour tab beside Print): the ticked photos or every photo shown, an amount, photos with their own colour asked about once, one undo step; v0.14.0 (owner, 2026-11-08) |
+| FR-115 | Local contrast in Pro mode: clarity, texture and dehaze, the spatial tools a colour table cannot hold, before FR-102's masks (a linear gradient first); Rust after the table, GPU preview, chosen and tuned against Lightroom's renders; about v0.15–v0.16 (owner, 2026-11-08: where Pro mode is heading) |
 | FR-109 | A welcome screen on the first launch: five pages (welcome, modes, choose, make it yours, print), Next, a *Show at every start* tick and Start; v0.13.1 |
 | FR-108 | Photobooth with the computer's own camera (the Mac's webcam): countdown, a strip or sheet to print, offline; later |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
