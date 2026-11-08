@@ -44,3 +44,6 @@ site/_includes/story-toc-*.md
 *.pem
 *.p12
 *.key
+
+# The owner's reference material (RAW photos, Lightroom renders, presets): private, never committed.
+/Material Fotollection/

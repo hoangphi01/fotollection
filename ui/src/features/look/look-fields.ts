@@ -1,12 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import type { Adjust, Grain, LookSettings, Tint } from '@/ipc/bindings'
+import type { Adjust, Grain, LookSettings, Mixer, Tint } from '@/ipc/bindings'
 
 /** A look with every field filled: Rust's defaults stand for what a file leaves out. */
-export type FullAdjust = Required<Omit<Adjust, 'shadowTint' | 'highlightTint' | 'grain'>> & {
+export type FullAdjust = Required<Omit<Adjust, 'shadowTint' | 'highlightTint' | 'grain' | 'mixer'>> & {
   shadowTint: Required<Tint>
   highlightTint: Required<Tint>
   grain: Required<Grain>
+  mixer: Required<Mixer>
 }
+
+/** The eight hues of the colour mixer, as Rust's `colour_ops::BANDS` (FR-079). */
+export const MIXER_BANDS = ['red', 'orange', 'yellow', 'green', 'aqua', 'blue', 'purple', 'magenta'] as const
+const EIGHT = (): Required<Mixer>['hue'] => [0, 0, 0, 0, 0, 0, 0, 0]
 export type FullLook = {
   adjust: FullAdjust
   lut: string | null
@@ -47,6 +52,7 @@ export const NO_LOOK: FullLook = {
     mono: 'off',
     grain: { amount: 0, size: 0 },
     vignette: 0,
+    mixer: { hue: EIGHT(), sat: EIGHT(), lum: EIGHT() },
   },
   lut: null,
   lutStrength: 100,
@@ -65,6 +71,11 @@ export function fullLook(look: LookSettings | undefined): FullLook {
       shadowTint: { ...NO_LOOK.adjust.shadowTint, ...a?.shadowTint },
       highlightTint: { ...NO_LOOK.adjust.highlightTint, ...a?.highlightTint },
       grain: { ...NO_LOOK.adjust.grain, ...a?.grain },
+      mixer: {
+        hue: a?.mixer?.hue ?? EIGHT(),
+        sat: a?.mixer?.sat ?? EIGHT(),
+        lum: a?.mixer?.lum ?? EIGHT(),
+      },
     },
     lut: look?.lut ?? null,
     lutStrength: look?.lutStrength ?? 100,
@@ -100,3 +111,6 @@ export const resetTools = (a: FullAdjust): FullAdjust => ({
 
 /** A colour of the wheel as the shadow and highlight tints use it (OKLCh, as in Rust). */
 export const hueSwatch = (hue: number) => `oklch(0.72 0.12 ${hue})`
+
+/** How many of the mixer's 24 sliders are moved, for its "· N changed" (FR-079). */
+export const mixerChanged = (a: FullAdjust) => [...a.mixer.hue, ...a.mixer.sat, ...a.mixer.lum].filter((v) => v !== 0).length

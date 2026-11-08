@@ -239,6 +239,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-11-07 | FR-079 | REF-MAC (M3) | `measure_raw_tiles` on the nine CC0 samples: a RAW's tile from its thumbnail against one from our develop | ΔE2000 2.06–4.23, the X-T3 9.02; a develop 0.3–1.2 s, so tiles come from the standard preview once it exists | RESULT §34 |
 | 2026-11-08 | FR-114 | REF-MAC (M3), loaded, 10 GB swap | `measure_look_batch`, 1,000 and 10,000 synthetic photos, median of 10 | apply 0.44 / 7.35 ms, undo 0.22 / 3.36 ms | Within ≤ 50 ms; RESULT §36 |
 | 2026-11-08 | FR-114 | REF-MAC (M3) | `measure_look_thumbs`, 24 Prague JPEGs, C200 Natural, 10 runs | 1.08 ms p50, 1.19 ms p95; 500 on two threads 373 ms | Within ≤ 5 ms and ≤ 2 s; RESULT §37 |
+| 2026-11-08 | FR-079 | REF-MAC (M3), loaded | `measure_look`, the table with every slider and the colour mixer, median of 5 | 3.08 ms on 8 threads (2.73 without the mixer); 7.10 on 2 (7.47 without) | Within 5 ms on 8 threads; 2 threads to measure again idle; RESULT §38 |
 
 ### 5.1 Planned measurements
 

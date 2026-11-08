@@ -10,6 +10,7 @@ import { FavesCard } from './faves-card'
 import { LooksCard } from './looks-card'
 import { RawLookCard } from './raw-look-card'
 import { ToolsCard } from './tools-card'
+import { ColorMixerCard } from './color-mixer-card'
 import { fullLook, type LookChange } from './look-fields'
 
 type PhotoLookCardsProps = {
@@ -139,6 +140,8 @@ export function PhotoLookCards({ photoId, sheet, simple = false, pro = false, re
       )}
       <LooksCard look={current.look} onChange={change} simple={simple} pro={pro} />
       <FavesCard look={current.look} onChange={change} footer={applyToAll} raw={current.raw != null} />
+      {/* The colour mixer (FR-079): Pro mode and collage sheets, not Simple (owner, 2026-11-08). */}
+      {!simple && <ColorMixerCard look={current.look} onChange={change} />}
 {!simple &&       <ToolsCard look={current.look} onChange={change} />}
     </>
   )

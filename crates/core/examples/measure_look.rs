@@ -106,6 +106,16 @@ fn main() {
     let bake_sliders = time(|| {
         std::hint::black_box(bake(&sliders));
     });
+    // And the colour mixer, every hue moved (FR-079): the table a mixer drag builds.
+    let mut mixed = sliders.clone();
+    mixed.adjust.mixer = fotollection_core::colour_ops::Mixer {
+        hue: [10, -20, 15, 30, -10, 20, -15, 5],
+        sat: [-20, 30, -10, 25, 40, -30, 10, -5],
+        lum: [5, 15, -20, 10, -25, -40, 20, 10],
+    };
+    let bake_mixer = time(|| {
+        std::hint::black_box(bake(&mixed));
+    });
 
     let (preview, export) = match std::env::args().nth(1) {
         Some(path) => {
@@ -135,7 +145,9 @@ fn main() {
 
     let mp = |i: &RgbImage| f64::from(i.width) * f64::from(i.height) / 1e6;
     println!("threads {threads}, median of {RUNS}");
-    println!("build the 33³ table: {build:.2} ms; with every slider set: {bake_sliders:.2} ms");
+    println!(
+        "build the 33³ table: {build:.2} ms; with every slider set: {bake_sliders:.2} ms; and the colour mixer: {bake_mixer:.2} ms"
+    );
     println!(
         "apply, preview {}×{} ({:.1} MP): {:.2} ms (budget 5)",
         preview.width,

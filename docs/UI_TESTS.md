@@ -136,6 +136,7 @@ Every view below runs the A cases of §3 at each width (`overflowViews`, `measur
 | UI-MODE-008 | Crop, compare, best-shot groups, select mode, capture, places and project dialogs | M until each has its fixture |
 | UI-MODE-009 | Pro mode's gallery, Colour tab (FR-114) | a look picked, its tile, amount and button; measured as *Pro panel: Colour*; by hand: ticked photos, all photos shown, the question for photos with their own colour, ⌘Z |
 | UI-MODE-010 | The grid shows each photo's colour (FR-114, ADR-0047) | by hand: a look given to the ticked photos, the bar *Applying colour* over the grid, their tiles in the new colour; ⌘Z brings the old colour back; the filmstrip and the quick preview alike |
+| UI-MODE-011 | The Color mixer (FR-079) | by hand: a dot picked, its three sliders move only that colour, greys stay; ↺ resets; a preset with a mixer shows its values; in a collage sheet's preview, not in Simple mode |
 
 ### Pictures
 

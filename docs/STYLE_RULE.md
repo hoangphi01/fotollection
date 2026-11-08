@@ -160,6 +160,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
   | The export's choices under its panel (FR-093) | an outline button *Change the export's choices* the column's width, the choices as a `Hint` under it that wraps | `ExportSection` |
   | The histogram card (FR-098) | the curves 80 px high, drawn on a canvas at the display's scale (`HistogramPlot`); its *White balance* and *Clipping* in the header as flat toggles 4 px apart, pressed when on, as the Navigator's choices; under the curves one line of a fixed 32 px: W's words while armed, else how much is blown and blocked, so arming W or a slider moving the clipping never moves the cards below | `HistogramCard` |
   | A card's *Apply to all* footer (Faves, the preview's date stamp) | always there, disabled until the photo has its own setting, so the first change never grows the card | `PhotoLookCards`, `PhotoStampControls` |
+  | The Color mixer (FR-079) | eight colour dots in one `SwatchToggle dense` (each name its hint, "· changed" when moved), then *Hue*, *Saturation* and *Luminance* of the one picked as `SliderField`s; "· N changed" and ↺ in the title as Faves' | `ColorMixerCard` |
   | What lies outside a frame drawn on a picture (the Navigator's view, the live view's print shape) | dimmed by `--stage-dim` through the `outside-dim` utility, never a hand-written shadow colour | `outside-dim` |
   | A stage that waits (a render, the camera's live view) | the spinner and its words, `label` for what it waits for | `StageSpinner` |
   | A slider with its label and value; what it does on hover of its **name only** (never over the track or the value, which a hint hid while dragging, owner 2026-11-06) | label `text-xs`, value right, a signed slider shows no filled side; a double-click resets it; a press up to 8 px above or below the track takes it, and a click on its label focuses it for ← → (±1, Shift ±10) | `SliderField` |
@@ -177,7 +178,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
   |---|---|
   | Both | *Print / export size*, *Date stamp*, *Info frame*, *Export*; Collage's *Sheet size*, *Postcard*, *Postcard text*, *Photos on the sheet* |
   | Gallery only | *Camera clocks*, *Places* |
-  | Preview only | *This photo*, the colour cards (*RAW colour*, *Faves*, *Tools*), except as below; *Presets & LUTs*, in Pro mode's photo preview only, its left column between the Navigator and History as Lightroom's Presets (owner, 2026-11-07: LUTs and presets are Pro mode's) |
+  | Preview only | *This photo*, the colour cards (*RAW colour*, *Faves*, *Color mixer*, *Tools*; the mixer not in Simple mode), except as below; *Presets & LUTs*, in Pro mode's photo preview only, its left column between the Navigator and History as Lightroom's Presets (owner, 2026-11-07: LUTs and presets are Pro mode's) |
   | Previews and Simple mode's panel | The photo's colour cards as a whole (`PhotoLookCards`); in Simple mode only *Looks* (the reset and *Amount*) and *Faves*, for the photo on the stage (owner, 2026-11-07) |
   | Settings window only | *General* (language, theme), *RAM & cache* (memory for previews, cache on disk, *For this computer*) |
 

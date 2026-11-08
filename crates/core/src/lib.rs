@@ -10,6 +10,7 @@ pub mod cache_limit;
 pub mod cancel;
 pub mod codec;
 pub mod colour;
+pub mod colour_ops;
 pub mod culling;
 pub mod error_log;
 pub mod errors;

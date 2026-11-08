@@ -737,6 +737,11 @@ export type Adjust = {
 	grain?: Grain,
 	/**  Darker (−) or lighter (+) corners round the cropped photo. */
 	vignette?: number,
+	/**
+	 *  The eight-hue colour mixer (FR-079, Lightroom's Color Mixer): each hue turned,
+	 *  saturated and lightened. Absent before it: untouched.
+	 */
+	mixer?: Mixer,
 };
 
 /**  A best-shot analysis finished (or was cancelled); the UI refetches the groups. */
@@ -1573,6 +1578,17 @@ export type MissingFolder = {
 	/**  Where the folder was when the project was saved. */
 	path: string,
 	name: string,
+};
+
+/**
+ *  The colour mixer's sliders (FR-079): for each of the eight hues, its hue turned, its
+ *  saturation and its lightness, −100…100, 0 untouched. Stored with the look (project v12,
+ *  settings v18); absent means untouched.
+ */
+export type Mixer = {
+	hue?: [number, number, number, number, number, number, number, number],
+	sat?: [number, number, number, number, number, number, number, number],
+	lum?: [number, number, number, number, number, number, number, number],
 };
 
 /**

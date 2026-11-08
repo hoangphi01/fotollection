@@ -21,7 +21,7 @@
         "adjust": {
           "brightness": 15,
           "warmth": 40,
-          "mono": "red"
+          "mono": "red", "mixer": {"sat": [0, 0, 0, 0, 0, -30, 0, 0], "hue": [0, 120, 0, 0, 0, 0, 0, 0]}
         },
         "amount": 70,
         "name": "Warm old film",

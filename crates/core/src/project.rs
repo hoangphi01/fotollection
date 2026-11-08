@@ -28,7 +28,8 @@ pub const FORMAT: &str = "fotollection-project";
 /// `photos[].raw_look`, how a camera RAW is finished (FR-072, ADR-0040). A file from before
 /// v11 opens its RAW photos with the camera's look, as they printed then.
 /// v12: `photos[].look.name` and `photos[].look.base`, the look of the library it came
-/// from (FR-079); absent before, and never part of its colours.
+/// from (FR-079); absent before, and never part of its colours. `photos[].look.adjust.mixer`,
+/// the eight-hue colour mixer (FR-079), absent before (untouched).
 pub const SCHEMA_VERSION: u32 = 12;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
@@ -964,6 +965,10 @@ mod tests {
         assert_eq!(looks[0].name.as_deref(), Some("Warm old film"));
         assert_eq!(looks[0].base.as_deref(), Some("builtin:warm-film"));
         assert_eq!(looks[0].adjust.warmth, 40);
+        // The colour mixer (FR-079): kept, and an orange hue of 120 brought within ±100.
+        assert_eq!(looks[0].adjust.mixer.sat[5], -30);
+        assert_eq!(looks[0].adjust.mixer.hue[1], 100);
+        assert!(looks[1].adjust.mixer.is_identity());
         assert_eq!(looks[1].name.as_deref(), Some("Bad base"));
         assert_eq!(looks[1].base, None);
     }

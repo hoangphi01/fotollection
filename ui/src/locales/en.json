@@ -1081,7 +1081,30 @@
     "resetDone_other": "{{n}} photos back to their original colour. ⌘Z undoes it.",
     "inUse": "In use",
     "custom": "Custom",
-    "original": "Original"
+    "original": "Original",
+    "mixer": {
+      "title": "Color mixer",
+      "colour": "Colour to change",
+      "moved": "changed",
+      "hue": "Hue",
+      "sat": "Saturation",
+      "lum": "Luminance",
+      "band": {
+        "red": "Red",
+        "orange": "Orange",
+        "yellow": "Yellow",
+        "green": "Green",
+        "aqua": "Aqua",
+        "blue": "Blue",
+        "purple": "Purple",
+        "magenta": "Magenta"
+      },
+      "hints": {
+        "hue": "Turns this colour toward its neighbours on the colour wheel.",
+        "sat": "Makes this colour stronger or greyer; other colours stay.",
+        "lum": "Makes this colour lighter or darker; greys stay."
+      }
+    }
   },
   "rawLook": {
     "title": "RAW colour",

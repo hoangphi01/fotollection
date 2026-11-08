@@ -331,6 +331,9 @@ pub struct Adjust {
     pub grain: Grain,
     /// Darker (−) or lighter (+) corners round the cropped photo.
     pub vignette: i8,
+    /// The eight-hue colour mixer (FR-079, Lightroom's Color Mixer): each hue turned,
+    /// saturated and lightened. Absent before it: untouched.
+    pub mixer: crate::colour_ops::Mixer,
 }
 
 /// A colour laid over the shadows or the highlights (split toning).
@@ -477,6 +480,7 @@ impl LookSettings {
         ] {
             *v = (*v).min(100);
         }
+        a.mixer = a.mixer.sanitized();
         a.shadow_tint.hue %= 360;
         a.highlight_tint.hue %= 360;
         // A LUT is named by its hash: anything else is dropped rather than looked up.
@@ -557,6 +561,8 @@ struct Params {
     pivot: f32,
     /// A shadow or highlight tint is set.
     toned: bool,
+    /// The colour mixer at the look's amount; `None` when untouched.
+    mixer: Option<crate::colour_ops::MixerParams>,
 }
 
 impl Params {
@@ -591,6 +597,7 @@ impl Params {
             highlight_tint: tint(a.highlight_tint),
             pivot: 0.5 + 0.3 * s(a.balance),
             toned: k > 0.0 && (a.shadow_tint.amount > 0 || a.highlight_tint.amount > 0),
+            mixer: crate::colour_ops::MixerParams::from(&a.mixer, k),
         }
     }
 }
@@ -669,6 +676,13 @@ fn pixel(c: [f32; 3], p: &Params) -> [f32; 3] {
         lab[2] *= factor;
     }
     let mut lin = from_oklab(lab).map(|v| v.clamp(0.0, 1.0));
+    // The colour mixer, as Lightroom's after the tone and saturation, on encoded values as
+    // a preset's mixer is read (`colour_ops`, the same function the 32-bit path will call).
+    if let Some(m) = &p.mixer {
+        lin = m
+            .apply(lin.map(to_encoded))
+            .map(|v| to_linear(v.clamp(0.0, 1.0)));
+    }
     if let Some(w) = p.mono {
         let y = w[0] * lin[0] + w[1] * lin[1] + w[2] * lin[2];
         lin = [y; 3];

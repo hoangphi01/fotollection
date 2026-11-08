@@ -714,3 +714,14 @@ The grid's thumbnail made from the plain 400 px T1 when served: decoded, the loo
 | 500 thumbnails on two threads (the background pool) | 373 ms |
 
 - **Within the budget** (≤ 5 ms a thumbnail, ≤ 2 s for 500): a batch of 500 photos is coloured in under half a second after it is given, and a tile scrolled into view costs about a millisecond.
+
+## 38. The colour mixer in the look's table (v0.14.0, FR-079)
+
+The Color Mixer is one function of a pixel in `f32` (`colour_ops::MixerParams::apply`), called for each of the table's 33³ points, so a drag rebuilds the table as any slider does. `measure_look`, release build, REF-MAC (M3), median of 5, 2026-11-08:
+
+| Table | 8 threads | 2 threads |
+|---|---|---|
+| Every slider set | 2.73 ms | 7.47 ms |
+| Every slider and every hue of the mixer | 3.08 ms | 7.10 ms |
+
+- **The mixer costs about 0.35 ms on eight threads**, inside the 5 ms budget. On two threads both builds were slower than the earlier 5.0 ms (RESULT §21) with the machine loaded and swapping; the mixer adds nothing measurable there, and the two-thread figure is to measure again on an idle machine.

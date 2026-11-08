@@ -606,6 +606,8 @@ mod tests {
             ),
             (40, 100, 80)
         );
+        // The colour mixer of a saved look (FR-079): kept.
+        assert_eq!(kept.look.adjust.mixer.lum[5], -50);
         assert_eq!(kept.look.base.as_deref(), Some("user:5e7a01c2b3d4"));
         save(&path, &new)?;
         let Loaded::Ok(again) = load(&path) else {

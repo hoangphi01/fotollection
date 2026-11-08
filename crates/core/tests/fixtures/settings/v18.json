@@ -178,7 +178,7 @@
       "look": {
         "adjust": {
           "warmth": 40,
-          "contrast": 120
+          "contrast": 120, "mixer": {"lum": [0, 0, 0, 0, 0, -50, 0, 0]}
         },
         "amount": 80
       }

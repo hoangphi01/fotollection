@@ -12,21 +12,10 @@
 
 use std::fmt::Write as _;
 
+use crate::colour_ops::{BANDS, Mixer, band_weights, from_hsv, to_hsv};
 use crate::looks::{Adjust, Grain, LookSettings, Mono};
 use crate::lut::{Cube, Lut};
 use crate::preset::{Preset, Value};
-
-/// The eight hues of Lightroom's mixer, their centres on an HSV hue wheel (degrees).
-const BANDS: [(&str, f32); 8] = [
-    ("Red", 0.0),
-    ("Orange", 30.0),
-    ("Yellow", 60.0),
-    ("Green", 120.0),
-    ("Aqua", 180.0),
-    ("Blue", 240.0),
-    ("Purple", 270.0),
-    ("Magenta", 300.0),
-];
 
 /// Points a side of the baked table.
 const GRID: usize = 33;
@@ -117,63 +106,6 @@ fn monotone(pts: &[(f32, f32)], x: f32) -> f32 {
         + (t3 - t2) * m1
 }
 
-fn to_hsv(c: [f32; 3]) -> [f32; 3] {
-    let (max, min) = (c[0].max(c[1]).max(c[2]), c[0].min(c[1]).min(c[2]));
-    let d = max - min;
-    // The channel that is the largest, by index: red first, then green, as HSV defines it.
-    let top = if c[0] >= c[1] && c[0] >= c[2] {
-        0
-    } else if c[1] >= c[2] {
-        1
-    } else {
-        2
-    };
-    let h = if d < 1e-6 {
-        0.0
-    } else if top == 0 {
-        60.0 * ((c[1] - c[2]) / d).rem_euclid(6.0)
-    } else if top == 1 {
-        60.0 * ((c[2] - c[0]) / d + 2.0)
-    } else {
-        60.0 * ((c[0] - c[1]) / d + 4.0)
-    };
-    [h, if max > 0.0 { d / max } else { 0.0 }, max]
-}
-
-#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-fn from_hsv([h, s, v]: [f32; 3]) -> [f32; 3] {
-    let c = v * s;
-    let hp = h.rem_euclid(360.0) / 60.0;
-    let x = c * (1.0 - (hp % 2.0 - 1.0).abs());
-    let (r, g, b) = match hp as u32 {
-        0 => (c, x, 0.0),
-        1 => (x, c, 0.0),
-        2 => (0.0, c, x),
-        3 => (0.0, x, c),
-        4 => (x, 0.0, c),
-        _ => (c, 0.0, x),
-    };
-    let m = v - c;
-    [r + m, g + m, b + m]
-}
-
-/// How much of each of the eight hues a hue belongs to: a triangle between neighbours, so a
-/// colour between two bands takes some of both and the mixer has no seams.
-fn band_weights(h: f32) -> [f32; 8] {
-    let mut w = [0f32; 8];
-    for i in 0..8 {
-        let (c0, c1) = (BANDS[i].1, if i == 7 { 360.0 } else { BANDS[i + 1].1 });
-        let h = h.rem_euclid(360.0);
-        if h >= c0 && h <= c1 {
-            let t = (h - c0) / (c1 - c0);
-            w[i] += 1.0 - t;
-            w[(i + 1) % 8] += t;
-            break;
-        }
-    }
-    w
-}
-
 /// A hue and saturation (0–100) as an RGB offset around grey, for colour grading's tints.
 fn zero(t: &[f32; 3]) -> bool {
     t.iter().all(|v| *v == 0.0)
@@ -191,9 +123,6 @@ struct Baked {
     blacks: f32,
     master: Option<Vec<(f32, f32)>>,
     channels: [Option<Vec<(f32, f32)>>; 3],
-    hue: [f32; 8],
-    sat: [f32; 8],
-    lum: [f32; 8],
     grade: [([f32; 3], f32); 4],
     blending: f32,
     balance: f32,
@@ -239,9 +168,6 @@ impl Baked {
                 curve(p, "ToneCurvePV2012Green"),
                 curve(p, "ToneCurvePV2012Blue"),
             ],
-            hue: per_band("HueAdjustment"),
-            sat: per_band("SaturationAdjustment"),
-            lum: per_band("LuminanceAdjustment"),
             grade,
             blending: if p.values.contains_key("ColorGradeBlending") {
                 number(p, "ColorGradeBlending") / 100.0
@@ -260,9 +186,6 @@ impl Baked {
             && self.blacks == 0.0
             && self.master.is_none()
             && self.channels.iter().all(Option::is_none)
-            && [self.hue, self.sat, self.lum]
-                .iter()
-                .all(|b| b.iter().all(|v| *v == 0.0))
             && self.grade.iter().all(|(t, l)| zero(t) && *l == 0.0)
             && self.gray.is_none()
     }
@@ -283,22 +206,9 @@ impl Baked {
                 c[i] = monotone(k, c[i].clamp(0.0, 1.0));
             }
         }
-        // The eight-hue mixer, weighted by how saturated a colour is, so greys stay put.
-        let [h, s, v] = to_hsv(c.map(|x| x.clamp(0.0, 1.0)));
-        if s > 1e-4 {
-            let w = band_weights(h);
-            let dot = |b: &[f32; 8]| w.iter().zip(b).map(|(w, b)| w * b).sum::<f32>() / 100.0;
-            let (dh, ds, dl) = (dot(&self.hue) * 30.0, dot(&self.sat), dot(&self.lum));
-            if dh != 0.0 || ds != 0.0 || dl != 0.0 {
-                c = from_hsv([
-                    h + dh,
-                    (s * (1.0 + ds)).clamp(0.0, 1.0),
-                    (v * (1.0 + 0.5 * dl * s)).clamp(0.0, 1.0),
-                ]);
-            }
-        }
         // Black and white through the eight-hue mixer: luminance, each hue lighter or darker.
         if let Some(mix) = &self.gray {
+            let [h, s, _] = to_hsv(c.map(|x| x.clamp(0.0, 1.0)));
             let y = 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
             let w = band_weights(h);
             let k = w.iter().zip(mix).map(|(w, m)| w * m).sum::<f32>() / 100.0;
@@ -431,6 +341,13 @@ pub fn compile(p: &Preset) -> Compiled {
             size: amount(number(p, "GrainSize")),
         },
         vignette: slider(number(p, "PostCropVignetteAmount")),
+        // The eight-hue mixer goes to ours (FR-079), the same function as its sliders, so the
+        // photo shows the preset's values and they stay adjustable.
+        mixer: Mixer {
+            hue: BANDS.map(|(name, _)| slider(number(p, &format!("HueAdjustment{name}")))),
+            sat: BANDS.map(|(name, _)| slider(number(p, &format!("SaturationAdjustment{name}")))),
+            lum: BANDS.map(|(name, _)| slider(number(p, &format!("LuminanceAdjustment{name}")))),
+        },
         ..Adjust::default()
     };
     let baked = Baked::from(p);
@@ -538,7 +455,7 @@ mod tests {
     }
 
     #[test]
-    fn fr_089_a_curve_and_the_mixer_are_baked() {
+    fn fr_089_a_curve_is_baked_and_the_mixer_is_ours() {
         let s_curve = preset(&[(
             "ToneCurvePV2012",
             Value::Curve(vec![
@@ -557,17 +474,26 @@ mod tests {
             (mid[0] - mid[1]).abs() < 1e-3 && (mid[1] - mid[2]).abs() < 1e-3,
             "grey stays grey: {mid:?}"
         );
-        // Blue darker: a blue loses lightness, an orange none.
-        let mixer = preset(&[("LuminanceAdjustmentBlue", Value::Number(-80.0))]);
-        let lut = baked_lut(&mixer).unwrap_or_else(|| panic!("the mixer bakes"));
-        assert!(lut.apply([0.1, 0.2, 0.9])[2] < 0.85);
-        let orange = lut.apply([0.9, 0.5, 0.1]);
-        assert!((orange[0] - 0.9).abs() < 0.01, "{orange:?}");
         assert!(
-            compile(&mixer)
+            compile(&s_curve)
                 .lut
                 .is_some_and(|t| t.starts_with("TITLE") && t.lines().count() == 2 + 33 * 33 * 33)
         );
+        // The mixer goes to ours, no table: blue darker, an orange untouched (FR-079).
+        let mixer = compile(&preset(&[(
+            "LuminanceAdjustmentBlue",
+            Value::Number(-80.0),
+        )]));
+        assert!(mixer.lut.is_none());
+        assert_eq!(mixer.look.adjust.mixer.lum[5], -80);
+        let table = mixer
+            .look
+            .table()
+            .unwrap_or_else(|| panic!("the mixer makes a table"));
+        let blue = crate::looks::lookup(&table, [26, 51, 230]);
+        assert!(blue[2] < 217, "{blue:?}");
+        let orange = crate::looks::lookup(&table, [230, 128, 26]);
+        assert!((i32::from(orange[0]) - 230).abs() <= 3, "{orange:?}");
     }
 
     #[test]
