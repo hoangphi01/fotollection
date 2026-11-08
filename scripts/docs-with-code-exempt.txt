@@ -1,0 +1,5 @@
+# Commits already published that changed code without a doc in the same commit, each with the
+# commit that brought its doc (scripts/check-docs-with-code.sh skips them). Only for history that
+# can no longer be rewritten; anything not pushed is fixed in its own commit instead (LESSONS).
+# <full sha> <reason>
+c51c7bd54fe319cd12f9b80d406c957d489d2101 the cherry-pick of 1fe92a5 onto release/0.13 dropped its CHANGELOG line in a conflict; 38a5e8d (v0.13.3's changelog) wrote it

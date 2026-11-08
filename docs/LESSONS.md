@@ -791,3 +791,10 @@
 - **Why:** the canvas version traced each channel with `moveTo` at its first level after the area's foot `moveTo(0, h)`; the second `moveTo` began a new shape, which `closePath` closed back to the first level. A night photo's blue is mostly level 0 (334,541 of 480,000 samples here), so the closing edge ran from the bottom right up to the top left. Rust's counts were right (`histogram::measure`, checked on the photo).
 - **Fix:** an area's points are all `lineTo` after its foot; only the light's line starts with `moveTo` (`histogram-plot.tsx`).
 - **Rule:** when a picture of numbers looks odd, check the numbers first (a one-off example on the photo), then the drawing; in a canvas path, one `moveTo` per shape.
+
+### A cherry-pick dropped a commit's CHANGELOG line, and the push of `main` would have failed (release, ADR-0006)
+
+- **Seen:** after merging `release/0.13` into `main`, `check-docs-with-code.sh origin/main..HEAD` refused `c51c7bd`, the zoom fix cherry-picked for v0.13.3: code without a doc. The release branch's own CI had passed, as a new branch checks only its last commit.
+- **Why:** cherry-picking `1fe92a5` onto v0.13.2 met a conflict in CHANGELOG.md (the v0.14 lines it sat among), and the resolution kept the code and dropped the line; the changelog came later in `38a5e8d`. The branch was pushed and released from, so the commit cannot be rewritten.
+- **Fix:** `scripts/docs-with-code-exempt.txt` lists published commits whose doc came later, each with its reason; the range check skips only those.
+- **Rule:** after each cherry-pick, check the commit still holds its doc (`git show --stat`); run `check-docs-with-code.sh <base>..HEAD` on a release branch before pushing it, not only on `main`.

@@ -23,10 +23,14 @@ check() { # $1: a label, then the changed files on stdin
   return 1
 }
 
+# Published commits whose doc came in a later commit, each with its reason (never for new work).
+exempt=scripts/docs-with-code-exempt.txt
+
 status=0
 if [ $# -gt 0 ]; then
   for c in $(git rev-list --no-merges "$1"); do
     git log -1 --format=%B "$c" | grep -q '\[no-docs\]' && continue
+    [ -f "$exempt" ] && grep -q "^$c " "$exempt" && continue
     git diff-tree --no-commit-id --name-only -r "$c" | check "commit $(git log -1 --format='%h %s' "$c" | cut -c1-70)" || status=1
   done
 elif [ -n "$(git status --porcelain --untracked-files=no)" ]; then
