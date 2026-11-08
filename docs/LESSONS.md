@@ -763,3 +763,10 @@
 - **Why:** shadcn's `ScrollArea` puts the class on its root and gives the viewport `size-full`, 100 % of the root's height. A root with only `max-h-*` has an auto height, so the viewport grew with its rows, never scrolled, and spilled out of the root, which does not clip.
 - **Fix:** the root is a column and the viewport `min-h-0 flex-1` (`components/ui/scroll-area.tsx`), so a `max-h` on the root bounds the viewport.
 - **Rule:** a height limit is checked where the scrolling happens, not where the class is written.
+
+### A dialog's field touched its footer's line: a form left the dialog's spacing
+
+- **Seen:** a dialog's name field sat on the line above *Cancel* and *Save* (owner, 2026-11-08: "the dialog is stuck").
+- **Why:** a dialog spaces its blocks 16 px (`grid gap-4`), but the field and the footer were inside a `<form>`, one block to the dialog, with no spacing of its own; the footer's negative margins brought its line up to the field. `pt-3` on the footer only moved the buttons down.
+- **Fix:** `DialogForm` (`components/ui/dialog.tsx`) spaces a form as the dialog does; *Copy settings* and *New project* use it.
+- **Rule:** a wrapper added inside a block that spaces its children takes their spacing away; wrap with a block that spaces the same, never with a bare element.
