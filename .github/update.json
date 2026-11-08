@@ -1,7 +1,7 @@
 {
-  "minSafe": "0.10.0",
+  "minSafe": "0.13.3",
   "reason": {
-    "en": "This version has faults fixed since, among them RAW photos that could stop the app. Please update.",
-    "vi": "Phiên bản này có những lỗi đã được sửa, trong đó có ảnh RAW có thể làm app dừng. Hãy cập nhật."
+    "en": "Security patches. Please update.",
+    "vi": "Bản vá bảo mật. Hãy cập nhật."
   }
 }
