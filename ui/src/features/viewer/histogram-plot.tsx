@@ -4,13 +4,18 @@ import { useDarkTheme } from '@/lib/theme'
 
 export type Channels = { r: readonly number[]; g: readonly number[]; b: readonly number[]; l: readonly number[] }
 
-/** Levels 0–255 at 0–1000 high (Rust's scale) to device pixels of a w × h canvas. */
-function trace(ctx: CanvasRenderingContext2D, levels: readonly number[], w: number, h: number) {
+/**
+ * Levels 0–255 at 0–1000 high (Rust's scale) to device pixels of a w × h canvas. `open` starts
+ * a line at the first level; an area goes on from the point already set (its foot at 0), as a
+ * `moveTo` there would start a new shape and close it to the first level: a night photo's
+ * full first level drew a straight slope across the whole histogram (owner, 2026-11-08).
+ */
+function trace(ctx: CanvasRenderingContext2D, levels: readonly number[], w: number, h: number, open: boolean) {
   const last = levels.length - 1
   levels.forEach((v, i) => {
     const x = (i / last) * w
     const y = h - (v / 1000) * h
-    if (i === 0) ctx.moveTo(x, y)
+    if (i === 0 && open) ctx.moveTo(x, y)
     else ctx.lineTo(x, y)
   })
 }
@@ -48,7 +53,7 @@ export function HistogramPlot({ channels, label, className }: { channels: Channe
       ] as const) {
         ctx.beginPath()
         ctx.moveTo(0, h)
-        trace(ctx, levels, w, h)
+        trace(ctx, levels, w, h, false)
         ctx.lineTo(w, h)
         ctx.closePath()
         ctx.fillStyle = style.getPropertyValue(token).trim()
@@ -56,7 +61,7 @@ export function HistogramPlot({ channels, label, className }: { channels: Channe
       }
       ctx.globalCompositeOperation = 'source-over'
       ctx.beginPath()
-      trace(ctx, channels.l, w, h)
+      trace(ctx, channels.l, w, h, true)
       // The canvas's own `color` (text-foreground/70), so the line follows the theme.
       ctx.strokeStyle = style.color
       ctx.lineWidth = 1.5 * ratio

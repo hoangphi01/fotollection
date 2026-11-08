@@ -237,7 +237,11 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
 }
 
 // MEASURE_ENGINE=webkit measures in WebKit, the engine of the app's window on macOS and Linux.
-const browser = await (process.env.MEASURE_ENGINE === 'webkit' ? webkit : chromium).launch()
+// Scroll bars shown, as in the app (headless Chromium hides them by default): an 8 px bar takes
+// room inside a strip, and a ring cut by it only shows with it (LESSONS, UI-LAYOUT-016).
+const browser = await (process.env.MEASURE_ENGINE === 'webkit' ? webkit : chromium).launch(
+  process.env.MEASURE_ENGINE === 'webkit' ? {} : { ignoreDefaultArgs: ['--hide-scrollbars'] },
+)
 const shots = []
 
 // Demo culling state for the print basket (FR-050), by position: the trip's, or none.

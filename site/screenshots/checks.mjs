@@ -124,6 +124,44 @@ export async function layoutChecks(page, where) {
       if (clash) out.push(`UI-A11Y-001 a target under 24 px too close to another (${Math.round(r.width)}×${Math.round(r.height)}): "${name(el)}"`)
     })
 
+    // UI-LAYOUT-016: what a control draws outside its box is not cut by a box that clips: its
+    // ring (a crisp box-shadow, as `ring-*` and `ring-offset-*` draw) and its outline. Soft
+    // shadows are left out (a stage clips a photo's on purpose); a control scrolled partly out
+    // of its box is left out. (Owner, 2026-11-08: the filmstrip's chosen ring cut, again.)
+    const reach = (cs) => {
+      let r = 0
+      for (const s of cs.boxShadow === 'none' ? [] : cs.boxShadow.split(/,(?![^(]*\))/)) {
+        if (/inset/.test(s)) continue
+        const n = (s.replace(/(rgba?|oklch|oklab|color|lab|lch|hsla?)\([^)]*\)/g, '').match(/-?[\d.]+px/g) ?? []).map(parseFloat)
+        const [x = 0, y = 0, blur = 0, spread = 0] = n
+        if (x === 0 && y === 0 && blur === 0 && spread > 0) r = Math.max(r, spread)
+      }
+      if (cs.outlineStyle !== 'none') r = Math.max(r, parseFloat(cs.outlineWidth) + Math.max(0, parseFloat(cs.outlineOffset)))
+      return r
+    }
+    for (const el of document.querySelectorAll(`${CONTROLS}, [aria-current]`)) {
+      if (!vis(el)) continue
+      const r = reach(getComputedStyle(el))
+      if (r < 1) continue
+      const b = el.getBoundingClientRect()
+      for (let e = el.parentElement; e && e !== document.body; e = e.parentElement) {
+        const cs = getComputedStyle(e)
+        if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue
+        const c = e.getBoundingClientRect()
+        const top = c.top + e.clientTop
+        const left = c.left + e.clientLeft
+        const bottom = top + e.clientHeight
+        const right = left + e.clientWidth
+        // Scrolled partly out of this box: not a cut ring, a scroll.
+        if (b.left < left - 0.5 || b.right > right + 0.5 || b.top < top - 0.5 || b.bottom > bottom + 0.5) break
+        const cut = Math.max(top - (b.top - r), b.bottom + r - bottom, cs.overflowX === 'visible' ? 0 : left - (b.left - r), cs.overflowX === 'visible' ? 0 : b.right + r - right)
+        if (cut > 0.5) {
+          out.push(`UI-LAYOUT-016 a ring cut by ${Math.round(cut)} px by the ${e.tagName.toLowerCase()} that clips it: "${name(el)}"`)
+          break
+        }
+      }
+    }
+
     // UI-LAYOUT-011: the page never scrolls sideways.
     if (document.documentElement.scrollWidth > window.innerWidth + 1) out.push(`UI-LAYOUT-011 the page scrolls sideways (${document.documentElement.scrollWidth} > ${window.innerWidth})`)
     return out

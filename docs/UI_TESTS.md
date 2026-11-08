@@ -58,6 +58,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | UI-LAYOUT-013 | A segment's words are centred | Within 0.5 px | A `overflows` | release | STYLE_RULE §4 |
 | UI-LAYOUT-014 | Spacing only on the scale | Gaps 4, 8 or 12 px; no vertical margin; no `space-y` in the features | A `check-lego` | commit | STYLE_RULE §4 three spacings |
 | UI-LAYOUT-015 | Edges line up in a card | A card's labels and controls start on the same left edge | M, the measure pictures | release | Apple HIG, Layout |
+| UI-LAYOUT-016 | A ring is never cut | A control's ring or outline (a crisp box-shadow, as `ring-*` draws, or `outline`) lies inside every box that clips it, scroll bars shown as in the app | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 
 ### Text
 
@@ -166,3 +167,4 @@ The approved pictures live in `site/screenshots/baselines/`. After an intended c
 |---|---|---|
 | 2026-11-07 | first run, English, light, Chromium, before the fixes | 1,545 lines: the trash button 27 px out of its card (UI-LAYOUT-001) and its name cut (UI-LAYOUT-008); 50 contrast, 16 name/label, 13 unnamed sliders, 6 tab roles (UI-A11Y-002); 20 cut names with no hint (UI-TEXT-001); 3 disabled buttons holding their hint (UI-STATE-001); the ink names cut (UI-LAYOUT-008); overlap counted controls under a dialog (detector fixed) |
 | 2026-11-07 | the whole matrix, after the fixes | every case passes, English/light/Chromium and Vietnamese/dark/WebKit, 1180 to 1600 px; 213 s on the M3; 22 approved pictures, 1.9 MB; a second run against them passes too |
+| 2026-11-08 | the whole matrix, after the motion system, the 300 px columns and UI-LAYOUT-016 | every case passes, Chromium with scroll bars shown; UI-LAYOUT-016 found the filmstrip's chosen ring cut by 4 px before its fix; 8 pictures approved (the wider columns, *Motion* in Settings, *What's new*) |

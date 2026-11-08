@@ -74,12 +74,15 @@ export function Filmstrip<T>({ items, current = null, onPick, cell, hint, name, 
           kept drawn and `inert` while folded, so opening is one move, never a load. */}
       <div className={cn('grid motion-fold', collapsed ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr]')} inert={collapsed}>
       <div className="min-h-0 overflow-hidden">
-      <div className={cn('flex shrink-0 items-center gap-3 px-4', header === undefined ? 'h-28' : 'h-24 pb-2')}>
+      {/* Under a header the row is the strip's 96 px: the cells, 4 px for the chosen ring above
+          and below (2 px ring, 2 px offset), and the scroll bar's 8 px; the box that folds clips
+          anything more (LESSONS, UI-LAYOUT-016). */}
+      <div className={cn('flex shrink-0 items-center gap-3 px-4', header === undefined ? 'h-28' : 'h-24')}>
         {label !== undefined && <span className="w-16 shrink-0 text-xs text-stage-ink-muted tabular-nums">{label}</span>}
         {count === 0 ? (
           <p className="min-w-0 flex-1 text-xs text-stage-ink-muted">{empty}</p>
         ) : (
-          <div ref={scrollRef} className="min-w-0 flex-1 overflow-x-auto py-2">
+          <div ref={scrollRef} className={cn('min-w-0 flex-1 overflow-x-auto', header === undefined ? 'py-2' : 'py-1')}>
             <div className="relative" style={{ width: strip.getTotalSize(), height: CELL }}>
               {strip.getVirtualItems().map((item) => {
                 const it = items[item.index]

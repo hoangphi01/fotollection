@@ -777,3 +777,17 @@
 - **Why:** axe takes the *visible* text of the button, what is painted, whatever `aria-hidden` says, and asks that its words ("0", "original") appear in a row in the accessible name. The key `0` drawn as a text node before the name is visible text that "Original (0)" does not hold in that order.
 - **Fix:** the key is drawn by CSS (`after:content-[attr(data-key)]`), not a text node, and told to readers by `aria-keyshortcuts`; the tile is named by the words it shows (`Filmstrip`'s `name` and `keys`).
 - **Rule:** a label's visible words must be a run of words in the accessible name (WCAG 2.5.3); a decoration that is text (a key, a count) is drawn by CSS or put after the name in the same order. Read the checker's source before a third guess.
+
+### The filmstrip's chosen ring was cut, and the checks could not see it: headless Chromium hides scroll bars (FR-100, UI-LAYOUT-016)
+
+- **Seen:** the photo shown in the filmstrip lost the top of its ring once the strips folded with motion (owner, 2026-11-08: "how many times now").
+- **Why:** the fold wraps the cells in a box that clips (`overflow-hidden`, needed to fold). Under a header the row had 88 px of room (96 less `pb-2`) for 80 px cells, 16 px of padding and the 8 px scroll bar: 104 px. Before, the extra spilled out unseen; now it is cut. The screenshot checks never saw it: Playwright starts Chromium with `--hide-scrollbars`, so their strip was 96 px and the ring just fitted.
+- **Fix:** the row is the strip's 96 px with `py-1`: 80 + 8 + 8, the ring inside the padding (`filmstrip.tsx`). The harness shows scroll bars (`ignoreDefaultArgs: ['--hide-scrollbars']`), and `layoutChecks` gained UI-LAYOUT-016: a ring or an outline lies inside every box that clips it. It failed on the old strip first.
+- **Rule:** a box that starts to clip (a fold, a scroll) is sized for everything inside it, rings and the scroll bar included, never by luck of overflow; a check is run as the app runs (scroll bars, fonts, scale), or it proves nothing.
+
+### The histogram drew a straight slope: a `moveTo` started a new shape (FR-098)
+
+- **Seen:** on a night photo with a look, the blue channel was a straight line from its peak down to the right end (owner, 2026-11-08: "is this histogram abnormal with looks?").
+- **Why:** the canvas version traced each channel with `moveTo` at its first level after the area's foot `moveTo(0, h)`; the second `moveTo` began a new shape, which `closePath` closed back to the first level. A night photo's blue is mostly level 0 (334,541 of 480,000 samples here), so the closing edge ran from the bottom right up to the top left. Rust's counts were right (`histogram::measure`, checked on the photo).
+- **Fix:** an area's points are all `lineTo` after its foot; only the light's line starts with `moveTo` (`histogram-plot.tsx`).
+- **Rule:** when a picture of numbers looks odd, check the numbers first (a one-off example on the photo), then the drawing; in a canvas path, one `moveTo` per shape.
