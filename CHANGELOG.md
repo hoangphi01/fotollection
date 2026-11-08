@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.13.3] - 2026-11-08 — Fixes and hardening
+
 ### Highlights
 
 - Fixes: RAW shadows without bands; a zoomed photo stays on the stage.
