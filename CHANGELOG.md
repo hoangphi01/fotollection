@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- **The histogram is sharp on Windows** (FR-098): its curves are drawn at the display's own scale, so at 125 % or 150 % they no longer look soft, and a night photo's blue no longer draws a false straight slope; it is a little taller (80 px).
+
 ## [0.13.3] - 2026-11-08 — Fixes and hardening
 
 ### Highlights
