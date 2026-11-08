@@ -833,3 +833,10 @@
 - **Why:** shadcn's `AlertDialog` defaults to `max-w-sm` and every `Dialog` set its own `sm:max-w-*`; footers were one row that never wrapped, so words could only overflow.
 - **Fix:** one width (512 px) in `components/ui/dialog.tsx` and `alert-dialog.tsx`, footers that wrap; `check-lego` refuses a pop-up of its own size, three photo dialogs excepted by name.
 - **Rule:** a size a family of blocks shares is set once in the block, never at each use; a row of buttons always wraps.
+
+### A dialog's name field touched its footer's line: a form left the dialog's spacing (UI-LAYOUT-019)
+
+- **Seen:** *Save as look*'s name field sat on the line above *Cancel* and *Save* (owner, 2026-11-08: "the dialog is stuck").
+- **Why:** a dialog spaces its blocks 16 px (`grid gap-4`), but the field and the footer were inside a `<form>`, one block to the dialog, with no spacing of its own; the footer's negative margins brought its line up to the field. `pt-3` on the footer only moved the buttons down. Two other dialogs with forms had the same shape.
+- **Fix:** `DialogForm` (`components/ui/dialog.tsx`) spaces a form as the dialog does; *Save as look*, *Copy settings* and *New project* use it. `check-lego` refuses a hand-made `<form>` in a file with a dialog, and UI-LAYOUT-019 checks a footer is 12 px or more under what is above it.
+- **Rule:** a wrapper added inside a block that spaces its children (a form, a div for a ref) takes their spacing away; wrap with a block that spaces the same, never with a bare element.

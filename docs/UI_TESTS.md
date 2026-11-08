@@ -61,6 +61,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | UI-LAYOUT-016 | A ring is never cut | A control's ring or outline (a crisp box-shadow, as `ring-*` draws, or `outline`) lies inside every box that clips it, scroll bars shown as in the app | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 | UI-LAYOUT-017 | A scroll area scrolls inside its box | Its viewport never reaches past its root (> 0.5 px), so a list with a height of its own never spills over what follows | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 | UI-LAYOUT-018 | A scroll bar keeps clear of words | In every area that scrolls, words end at least 12 px (the 8 px bar and 4 px) before its right edge, measured at their clipping box | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
+| UI-LAYOUT-019 | A dialog's footer keeps clear | A footer's line is 12 px or more under the block above it | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 
 ### Text
 

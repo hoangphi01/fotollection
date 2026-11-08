@@ -201,6 +201,15 @@ export async function layoutChecks(page, where) {
       }
     }
 
+    // UI-LAYOUT-019: a dialog's footer keeps clear of what is above it, at least 12 px from
+    // its line (owner, 2026-11-08: a name field touched the footer's line).
+    for (const foot of document.querySelectorAll('[data-slot="dialog-footer"], [data-slot="alert-dialog-footer"]')) {
+      const above = foot.previousElementSibling
+      if (!above || !vis(foot) || !vis(above)) continue
+      const gap = foot.getBoundingClientRect().top - above.getBoundingClientRect().bottom
+      if (gap < 11.5) out.push(`UI-LAYOUT-019 a dialog's footer ${Math.round(gap)} px under what is above it: "${name(above)}"`)
+    }
+
     // UI-LAYOUT-011: the page never scrolls sideways.
     if (document.documentElement.scrollWidth > window.innerWidth + 1) out.push(`UI-LAYOUT-011 the page scrolls sideways (${document.documentElement.scrollWidth} > ${window.innerWidth})`)
     return out

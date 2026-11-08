@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { Hint } from '@/components/forms/field'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter,
+  DialogForm, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import type { SettingsParts } from '@/ipc/bindings'
 import { anyPart, closeCopySettings, copySettings, useSettingsCopy } from './settings-copy'
 import { RemoveButton } from '@/components/forms/danger-button'
@@ -37,8 +38,7 @@ function CopySettingsForm({ initial }: { initial: SettingsParts }) {
           <DialogTitle>{t('develop.copyTitle')}</DialogTitle>
           <DialogDescription>{t('develop.copyBody')}</DialogDescription>
         </DialogHeader>
-        <form
-          className="flex flex-col gap-3"
+        <DialogForm
           onSubmit={(e) => {
             e.preventDefault()
             if (dialog && anyPart(parts)) void copySettings(dialog, parts)
@@ -58,7 +58,7 @@ function CopySettingsForm({ initial }: { initial: SettingsParts }) {
               {t('develop.copy')}
             </Button>
           </DialogFooter>
-        </form>
+        </DialogForm>
       </DialogContent>
     </Dialog>
   )

@@ -122,6 +122,15 @@ function DialogFooter({
   )
 }
 
+/**
+ * A dialog's form: its fields and its footer spaced as the dialog's own blocks, 16 px, so a
+ * field never touches the footer's line (owner, 2026-11-08: "the dialog is stuck"). A `form`
+ * inside a dialog is this one (`check-lego`).
+ */
+function DialogForm({ className, ...props }: React.ComponentProps<"form">) {
+  return <form data-slot="dialog-form" className={cn("grid gap-4", className)} {...props} />
+}
+
 function DialogTitle({
   className,
   ...props
@@ -160,6 +169,7 @@ export {
   DialogContent,
   DialogDescription,
   DialogFooter,
+  DialogForm,
   DialogHeader,
   DialogOverlay,
   DialogPortal,

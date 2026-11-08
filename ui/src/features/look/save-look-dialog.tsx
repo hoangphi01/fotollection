@@ -3,7 +3,8 @@ import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Field } from '@/components/forms/field'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter,
+  DialogForm, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { RemoveButton } from '@/components/forms/danger-button'
 
@@ -43,7 +44,7 @@ export function SaveLookDialog({ open, onAnswer, title, body, label, initial = '
           <DialogTitle>{title ?? t('look.saveAs')}</DialogTitle>
           <DialogDescription>{body ?? t('look.saveAsBody')}</DialogDescription>
         </DialogHeader>
-        <form
+        <DialogForm
           onSubmit={(e) => {
             e.preventDefault()
             if (name.trim()) answer(name)
@@ -52,13 +53,13 @@ export function SaveLookDialog({ open, onAnswer, title, body, label, initial = '
           <Field label={label ?? t('look.name')} htmlFor={id}>
             <Input id={id} autoFocus value={name} maxLength={60} placeholder={t('look.namePlaceholder')} onChange={(e) => setName(e.target.value)} />
           </Field>
-          <DialogFooter className="pt-3">
+          <DialogFooter>
             <RemoveButton kind="stop" label={t('common.cancel')} onClick={() => answer(null)} />
             <Button type="submit" disabled={!name.trim()}>
               {okLabel ?? t('look.save')}
             </Button>
           </DialogFooter>
-        </form>
+        </DialogForm>
       </DialogContent>
     </Dialog>
   )

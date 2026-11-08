@@ -21,6 +21,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogFooter,
+  DialogForm,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -74,7 +75,7 @@ export function NewProjectDialog({ onAnswer }: NewProjectDialogProps) {
           <DialogTitle>{t('project.new')}</DialogTitle>
           <DialogDescription>{t('project.newBody')}</DialogDescription>
         </DialogHeader>
-        <form
+        <DialogForm
           onSubmit={(e) => {
             e.preventDefault()
             answer(name)
@@ -83,11 +84,11 @@ export function NewProjectDialog({ onAnswer }: NewProjectDialogProps) {
           <Field label={t('project.rename')} htmlFor={id}>
             <Input id={id} autoFocus value={name} maxLength={120} placeholder={t('project.newPlaceholder')} onChange={(e) => setName(e.target.value)} />
           </Field>
-          <DialogFooter className="pt-3">
+          <DialogFooter>
             <RemoveButton kind="stop" label={t('common.cancel')} onClick={() => answer(null)} />
             <Button type="submit">{t('project.create')}</Button>
           </DialogFooter>
-        </form>
+        </DialogForm>
       </DialogContent>
     </Dialog>
   )

@@ -267,6 +267,19 @@ for (const path of allTsx) {
   }
 }
 
+// A dialog's form is `DialogForm` (owner, 2026-11-08: "the dialog is stuck"): a hand-made
+// <form> takes its fields out of the dialog's 16 px spacing, and the footer's line meets them.
+for (const path of allTsx) {
+  const rel = relative(join(root, 'src'), path).split(sep).join('/')
+  if (rel.startsWith('components/ui/')) continue
+  const text = readFileSync(path, 'utf8')
+  if (!/DialogContent\b/.test(text)) continue
+  for (const m of text.matchAll(/<form\b/g)) {
+    const line = text.slice(0, m.index).split('\n').length
+    problems.push(`${rel}:${line}: a form in a dialog: DialogForm (components/ui/dialog.tsx) keeps its fields clear of the footer`)
+  }
+}
+
 // Raised unless it belongs to something (owner, 2026-11-06: "Select all is still the old
 // style"): a standalone button is never `ghost`. Flat stays only for a row of a list
 // (ListRow), a button inside a raised ButtonGroup, a dismiss inside a note and an on/off
