@@ -62,6 +62,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | UI-LAYOUT-017 | A scroll area scrolls inside its box | Its viewport never reaches past its root (> 0.5 px), so a list with a height of its own never spills over what follows | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 | UI-LAYOUT-018 | A scroll bar keeps clear of words | In every area that scrolls, words end at least 12 px (the 8 px bar and 4 px) before its right edge, measured at their clipping box | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 | UI-LAYOUT-019 | A dialog's footer keeps clear | A footer's line is 12 px or more under the block above it | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
+| UI-LAYOUT-020 | The window can be moved with a dialog open | The title bar (`data-window-chrome`) keeps `pointer-events` other than `none` while a dialog is open | A `layoutChecks` | release | FR-052; LESSONS |
 
 ### Text
 

@@ -210,6 +210,13 @@ export async function layoutChecks(page, where) {
       if (gap < 11.5) out.push(`UI-LAYOUT-019 a dialog's footer ${Math.round(gap)} px under what is above it: "${name(above)}"`)
     }
 
+    // UI-LAYOUT-020: the window's own bar takes the pointer while a dialog is open, so the
+    // window can be moved, resized or closed (owner, 2026-11-08: Radix sets pointer-events
+    // none on <body> for a modal, and the bar inherited it).
+    const chrome = document.querySelector('[data-window-chrome]')
+    if (chrome && document.querySelector('[role="dialog"], [role="alertdialog"]') && getComputedStyle(chrome).pointerEvents === 'none')
+      out.push('UI-LAYOUT-020 the window bar takes no pointer while a dialog is open: the window cannot be moved')
+
     // UI-LAYOUT-011: the page never scrolls sideways.
     if (document.documentElement.scrollWidth > window.innerWidth + 1) out.push(`UI-LAYOUT-011 the page scrolls sideways (${document.documentElement.scrollWidth} > ${window.innerWidth})`)
     return out

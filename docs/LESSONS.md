@@ -854,3 +854,10 @@
 - **Why:** the menu was copied from *Presets & LUTs*' ⋯ menu, which had the same faults: a width written by hand (`w-64`), and `RemoveButton wide small` where every row of a list is 32 px. Five menus each set their own width; no block owned what a menu is.
 - **Fix:** `MenuContent` (`components/forms/menu-content.tsx`): as wide as its rows (192–320 px), `ListRows` inside, every row 32 px; the five menus use it, and `check-lego` refuses a menu sized by hand and a wide button made small.
 - **Rule:** before copying a block from another card, check it against STYLE_RULE §4 first: a copy spreads its faults. A pattern used twice is a block in `components/`.
+
+### The app's window could not be moved while the photo preview was open: a modal turned the pointer off on <body> (FR-052, FR-095, UI-LAYOUT-020)
+
+- **Seen:** with the photo preview open, the window could not be dragged by its title bar (owner, 2026-11-08: "the preview is built on the app's window").
+- **Why:** the title bar sits above dialog overlays (`z-[60]`) for exactly this, but Radix's modal dialogs set `pointer-events: none` on `<body>`, leaving only the dialog's content live; the bar inherited `none`, so Tauri's drag region never got the press. On Windows its minimise, maximise and close buttons were dead behind any dialog too.
+- **Fix:** the bar takes the pointer back (`pointer-events-auto`) and is marked `data-window-chrome`; `DialogContent` lets a press on it through instead of taking it for a click outside, which would close the dialog. UI-LAYOUT-020 checks the bar takes the pointer while a dialog is open; it failed 34 times without the fix.
+- **Rule:** what must work above every overlay (the window's bar, a global hint) takes the pointer back explicitly and is let through by the overlay's outside-click handling; test it with a dialog open, not only on the main view.

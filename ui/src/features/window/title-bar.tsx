@@ -20,7 +20,9 @@ type TitleBarProps = {
  * system's white strip, with its own buttons; on macOS a strip under the system's traffic
  * lights, the window's title bar being transparent (`titleBarStyle: Overlay`,
  * `tauri.macos.conf.json`; owner, 2026-11-06), so the bar and the app are one surface. It sits
- * above dialog overlays, so the window can always be moved, resized or closed.
+ * above dialog overlays and takes the pointer back from a modal (`pointer-events-auto`: Radix
+ * sets `none` on <body>), and dialogs let a press on it through (`data-window-chrome`), so
+ * the window can always be moved, resized or closed (owner, 2026-11-08).
  */
 export function TitleBar({ name }: TitleBarProps) {
   const { t } = useTranslation()
@@ -51,7 +53,8 @@ export function TitleBar({ name }: TitleBarProps) {
     return (
       <div
         data-tauri-drag-region
-        className="relative z-[60] flex h-(--titlebar) shrink-0 items-center justify-center border-b bg-sidebar text-sidebar-foreground select-none"
+        data-window-chrome
+        className="pointer-events-auto relative z-[60] flex h-(--titlebar) shrink-0 items-center justify-center border-b bg-sidebar text-sidebar-foreground select-none"
       >
         <span data-tauri-drag-region className="truncate px-24 text-xs text-muted-foreground">
           Fotollection — {name}
@@ -65,7 +68,8 @@ export function TitleBar({ name }: TitleBarProps) {
   return (
     <div
       data-tauri-drag-region
-      className="relative z-[60] flex h-8 shrink-0 items-center border-b bg-sidebar text-sidebar-foreground select-none"
+      data-window-chrome
+      className="pointer-events-auto relative z-[60] flex h-8 shrink-0 items-center border-b bg-sidebar text-sidebar-foreground select-none"
     >
       <img
         src="/brand/mark-28.png"
