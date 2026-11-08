@@ -756,3 +756,10 @@
 - **Why:** `canDrag` read `useLiveQuery(…).current`, which is `null` from the moment the photo changes until Rust answers; the *Drag to frame* hint left and came back, and the centred lines moved. A postcard's reuse note read `current` the same way and blinked as cards were flipped.
 - **Fix:** what is only shown (the hint, the cursor, the note) reads `.data`, the last answer; what acts on the photo (the drag, the crop editor) still waits for `.current`.
 - **Rule:** in `useLiveQuery`, `.data` is for what the user sees, `.current` only for what changes the photo.
+
+### A list that should scroll spilled out of its box: `max-h` on a ScrollArea never reached its viewport
+
+- **Seen:** a scrolling list drew its last rows over what followed it (owner, 2026-11-08, on v0.14's look list; v0.13's place-borrowing and clock dialogs had the same shape).
+- **Why:** shadcn's `ScrollArea` puts the class on its root and gives the viewport `size-full`, 100 % of the root's height. A root with only `max-h-*` has an auto height, so the viewport grew with its rows, never scrolled, and spilled out of the root, which does not clip.
+- **Fix:** the root is a column and the viewport `min-h-0 flex-1` (`components/ui/scroll-area.tsx`), so a `max-h` on the root bounds the viewport.
+- **Rule:** a height limit is checked where the scrolling happens, not where the class is written.
