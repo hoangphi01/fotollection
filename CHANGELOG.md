@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **History** (FR-095) is about six rows high and scrolls inside, so a long one never pushes the column; a look picked says its name (*Look · Warm old film*), the amount its value.
 - **The info frame's photo-style line** names the photo's look when the camera profile gives none (FR-040).
 - **A RAW's look tiles** show its colour as the preview does, from its standard preview once it exists, not the camera's JPEG (2 to 9 ΔE apart, RESULT §34).
+- **An app, not a web page:** text no longer highlights when clicked or dragged, in dialogs too; only text fields, a photo's facts and error messages can be selected and copied. A right click shows no web menu (Look Up, Translate, Inspect Element…) outside them, and the web view's keys that reload, print or search do nothing.
 - **A zoomed photo stays on the stage** (FR-057): dragging, scrolling sideways or zooming about the pointer never moves it off the stage, and a drag that leaves the stage no longer selects the text of the panels beside it.
 - **The colour cards no longer jump** when a tab is switched or a sheet's photo picked: the list of looks and each photo's look are drawn at once from the last answer.
 - **RAW shadows without steps:** the RAW tone curve is read between its bins, so dark gradients no longer show bands of three or four levels (35 gaps in the lifted shadows of the nine test cameras, now 1); RAW previews are made again once.

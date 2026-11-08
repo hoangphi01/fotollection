@@ -3,7 +3,7 @@
 import { Info } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FactLines } from '@/components/forms/field'
+import { FactLines, Selectable } from '@/components/forms/field'
 import { SectionCard } from '@/components/layout/section-card'
 import { Badge } from '@/components/ui/badge'
 import type { PhotoDetails, PhotoSummary } from '@/ipc/bindings'
@@ -61,6 +61,8 @@ export function PhotoSummaryCard({ photo, details }: PhotoSummaryCardProps) {
       title={t('viewer.summary')}
       onToggle={toggle}
     >
+      {/* A photo's facts may be copied (owner, 2026-11-08), the rest of the app selects none. */}
+      <Selectable block>
       <FactLines>
         {lines.map((line, i) => (
           <p key={line} className={i === 0 ? 'font-medium' : 'text-xs text-muted-foreground tabular-nums'}>
@@ -80,6 +82,7 @@ export function PhotoSummaryCard({ photo, details }: PhotoSummaryCardProps) {
           </p>
         )}
       </FactLines>
+      </Selectable>
     </SectionCard>
   )
 }

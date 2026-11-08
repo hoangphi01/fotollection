@@ -742,3 +742,10 @@
 - **Why:** FR-109 was written as a new requirement from the owner's new words, and nobody searched the PRD for one that already covered the same screen; the two rows never met.
 - **Fix:** FR-081 is *In Progress*, its welcome pointed at FR-109, its own part (picking the cards, with FR-080) left to do; both IDs kept.
 - **Rule:** before writing a new FR, and again when one is done, search the PRD and STATUS for the same feature in other words (`grep -n -i` on its main nouns); an older FR it covers gets its row changed in the same commit.
+
+### `select-none` on the app's root left every dialog selectable (FR-099)
+
+- **Seen:** nearly any text could be highlighted, a card's title in the photo preview among them, and a right click opened the web view's menu with *Inspect Element* (owner, 2026-11-08: "this is an app, not a web page").
+- **Why:** `#root` was `select-none`, but Radix draws dialogs, popovers and menus into portals under `<body>`, outside `#root`, so the preview, Settings and every menu were selectable; nothing refused the web view's context menu or keys. *Inspect Element* itself was the dev build's (releases have no devtools).
+- **Fix:** selection off on `html` and `body`, back on for fields and `Selectable` (a photo's facts, error messages); `lib/no-web.ts` refuses the context menu, the browser keys and image drags; `check-lego` refuses selectable text by hand, `check-docs` refuses devtools in releases.
+- **Rule:** a rule meant for the whole app is set on `html`/`body`, never on `#root`: portals live outside it. Check a new global rule inside a dialog and a popover, not only on the main view.

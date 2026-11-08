@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { LoaderCircle, OctagonX } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Selectable } from '@/components/forms/field'
 
 /**
  * "Rendering print preview…" on the neutral stage, while the first render loads; with
@@ -13,7 +14,7 @@ export function StageSpinner({ error, label }: { error?: string | null; label?: 
     return (
       <div role="alert" className="absolute flex max-w-sm flex-col items-center gap-2 px-6 text-center text-stage-ink">
         <OctagonX className="size-7 text-destructive" />
-        <span className="text-sm">{error}</span>
+        <Selectable className="text-sm">{error}</Selectable>
       </div>
     )
   }

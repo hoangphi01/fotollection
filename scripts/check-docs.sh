@@ -118,6 +118,11 @@ grep -q '"version"' src-tauri/tauri.conf.json && fail "tauri.conf.json must not 
 # 0.0.1 is the pre-release placeholder; every real version has its CHANGELOG section.
 [ "$version" = "0.0.1" ] || grep -q "^## \[$version\]" CHANGELOG.md || fail "CHANGELOG.md has no section for $version"
 
+echo "• Releases carry no developer tools (SECURITY.md)"
+# Tauri opens the web inspector in debug builds only, unless its `devtools` feature is on.
+grep -E '^tauri = ' src-tauri/Cargo.toml | grep -q 'devtools' && fail "src-tauri/Cargo.toml turns on tauri's devtools feature: releases would have Inspect Element"
+grep -rn 'open_devtools' src-tauri/src | grep -v 'cfg(debug_assertions)' && fail "open_devtools called outside a debug-only block"
+
 # Markdown style, the same rules and version as CI (docs.yml), so a passing check-docs.sh
 # means a green docs workflow. Skipped only where npx is missing.
 echo "• The website's depth tokens match the app's (site.css and ui/src/index.css)"

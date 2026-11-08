@@ -198,9 +198,18 @@ const walkCode = (dir, out = []) => {
   }
   return out
 }
+// An app, not a page (owner, 2026-11-08): text is selectable only through `Selectable`
+// (components/forms/field.tsx) and fields; the web view's menu is refused in lib/no-web.ts only.
+const SELECT = /\bselect-(text|all)\b|user-select\s*:/
+const CONTEXT = /addEventListener\(\s*['"]contextmenu/
 for (const path of walkCode(join(root, 'src'))) {
+  const rel = relative(join(root, 'src'), path)
   readFileSync(path, 'utf8').split('\n').forEach((line, i) => {
-    if (DANGEROUS.test(line)) problems.push(`${relative(join(root, 'src'), path)}:${i + 1}: a dangerous DOM API named (SECURITY.md §7; CI refuses it, even in a comment)`)
+    if (DANGEROUS.test(line)) problems.push(`${rel}:${i + 1}: a dangerous DOM API named (SECURITY.md §7; CI refuses it, even in a comment)`)
+    if (SELECT.test(line) && rel !== 'components/forms/field.tsx')
+      problems.push(`${rel}:${i + 1}: selectable text by hand: use Selectable (an app selects only fields, facts and error codes)`)
+    if (CONTEXT.test(line) && rel !== 'lib/no-web.ts')
+      problems.push(`${rel}:${i + 1}: a context menu listener outside lib/no-web.ts (an element's own menu is onContextMenu)`)
   })
 }
 
