@@ -240,7 +240,7 @@ export function SizeChange({
       ? 'export.smaller'
       : 'export.larger'
   // A badge as the print verdict beside it (FR-092, owner 2026-11-06): the figures only, the
-  // sentence as its hint, so it fits one line in an 18 rem panel in Vietnamese.
+  // sentence as its hint, so it fits one line in an 18.75 rem panel in Vietnamese.
   const short = lighter ? 'estimate.short' : 'estimate.shortLarger'
   return (
     <Badge

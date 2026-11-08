@@ -21,8 +21,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    /* The folder list and the tools panel, the same width (STYLE_RULE §4). */
-    --spacing-panel: 18rem;
+    /* The folder list and the tools panel, the same width (STYLE_RULE §4); 300 px since the
+       controls gained depth (owner, 2026-11-08: 12 px more each side, taken from the stage). */
+    --spacing-panel: 18.75rem;
     /* Every column's head, 64 px, so the lines under them meet across the window (owner,
        2026-11-06); a head with its own border line adds it below (`box-content`). */
     --spacing-header: 4rem;

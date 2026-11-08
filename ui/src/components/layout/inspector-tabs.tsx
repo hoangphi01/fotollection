@@ -19,7 +19,7 @@ type InspectorTabsProps<T extends string> = {
 /**
  * The row of icon tabs at the head of a preview's inspector (FR-095): icons with their words
  * as the hint (STYLE_RULE §4, icons first), the open one pressed in (FR-099), the inspector
- * staying 18 rem.
+ * staying 18.75 rem.
  */
 export function InspectorTabs<T extends string>({ groups, value, onChange, ariaLabel }: InspectorTabsProps<T>) {
   return (

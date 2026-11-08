@@ -72,7 +72,7 @@ export function PostcardTextReuse({ filter, photo, part, text, ticked, revision,
   const blank = text ? (gaps?.blank ?? 0) : 0
   const differ = text ? (gaps?.differ ?? 0) : 0
   // The other cards, as a note with its two choices as buttons (STYLE_RULE §4: a note that
-  // offers an action), so the words wrap in an 18 rem panel instead of being cut.
+  // offers an action), so the words wrap in an 18.75 rem panel instead of being cut.
   const reuse = (blank > 0 || differ > 0) && (
     <PanelNote
       icon={<CopyCheck />}

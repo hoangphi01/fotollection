@@ -770,3 +770,10 @@
 - **Why:** `canDrag` read `useLiveQuery(…).current`, which is `null` from the moment the photo changes until Rust answers; the *Drag to frame* hint left and came back, and the centred lines moved. A postcard's reuse note read `current` the same way and blinked as cards were flipped.
 - **Fix:** what is only shown (the hint, the cursor, the note) reads `.data`, the last answer; what acts on the photo (the drag, the crop editor) still waits for `.current`.
 - **Rule:** in `useLiveQuery`, `.data` is for what the user sees, `.current` only for what changes the photo. A card that may come and go per photo keeps its room or its last state; never `return null` or a `key` per photo in an inspector card.
+
+### `aria-hidden` did not hide a visible key from axe's name check (UI-A11Y-002, FR-079)
+
+- **Seen:** `MEASURE=1` reported `label-content-name-mismatch` on every numbered look tile of Simple mode (23 times); hiding the key with `aria-hidden`, then naming the tile by its words alone, changed nothing.
+- **Why:** axe takes the *visible* text of the button, what is painted, whatever `aria-hidden` says, and asks that its words ("0", "original") appear in a row in the accessible name. The key `0` drawn as a text node before the name is visible text that "Original (0)" does not hold in that order.
+- **Fix:** the key is drawn by CSS (`after:content-[attr(data-key)]`), not a text node, and told to readers by `aria-keyshortcuts`; the tile is named by the words it shows (`Filmstrip`'s `name` and `keys`).
+- **Rule:** a label's visible words must be a run of words in the accessible name (WCAG 2.5.3); a decoration that is text (a key, a count) is drawn by CSS or put after the name in the same order. Read the checker's source before a third guess.

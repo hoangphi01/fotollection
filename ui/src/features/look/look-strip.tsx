@@ -62,13 +62,23 @@ export function LookStrip({ photoId, picker, numbered = true, folding = false }:
         const i = picker.looks.indexOf(entry)
         return numbered && i < LOOK_KEYS ? `${lookName(entry)} (${i})` : lookName(entry)
       }}
+      // Read as the words the tile shows, its key told apart (UI-A11Y-002: the name holds the label).
+      name={lookName}
+      keys={(entry) => {
+        const i = picker.looks.indexOf(entry)
+        return numbered && i < LOOK_KEYS ? String(i) : undefined
+      }}
       onPick={(_, index) => picker.pick(index)}
       cell={(entry) => {
         const i = picker.looks.indexOf(entry)
         return (
           <>
             <img src={lookTileUrl(photoId, entry.id)} alt="" loading="lazy" decoding="async" draggable={false} className="size-full object-cover" />
-            {numbered && i < LOOK_KEYS && <Kbd className="absolute top-1 left-1 bg-stage-chip text-stage-ink">{i}</Kbd>}
+            {/* The key drawn by CSS, not a text node: seen on the tile, told to readers by
+                `aria-keyshortcuts`, so the tile's name stays the words it shows (UI-A11Y-002). */}
+            {numbered && i < LOOK_KEYS && (
+              <Kbd aria-hidden data-key={i} className="absolute top-1 left-1 bg-stage-chip text-stage-ink after:content-[attr(data-key)]" />
+            )}
             <span className="absolute inset-x-0 bottom-0 truncate bg-stage-chip px-1 text-xs text-stage-ink">{lookName(entry)}</span>
           </>
         )

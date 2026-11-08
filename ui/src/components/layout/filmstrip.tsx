@@ -23,6 +23,11 @@ type FilmstripProps<T> = {
   cell: (item: T) => ReactNode
   /** A cell's name, for its hint and screen readers. */
   hint: (item: T) => string
+  /** What screen readers call a cell when it differs from its hint: the words it shows, so the
+   * name contains them (UI-A11Y-002). */
+  name?: (item: T) => string
+  /** A cell's own key (`aria-keyshortcuts`), told to screen readers instead of in its name. */
+  keys?: (item: T) => string | undefined
   /** A short label before the cells (the capture screen's shot count). */
   label?: ReactNode
   /** Shown in place of the cells when there are none. */
@@ -39,7 +44,7 @@ type FilmstripProps<T> = {
  * 112 px (STYLE_RULE §4); only the cells in sight are drawn, so a set of 500 scrolls as
  * smoothly as one of 5.
  */
-export function Filmstrip<T>({ items, current = null, onPick, cell, hint, label, empty, header, collapsed = false }: FilmstripProps<T>) {
+export function Filmstrip<T>({ items, current = null, onPick, cell, hint, name, keys, label, empty, header, collapsed = false }: FilmstripProps<T>) {
   const count = items.length
   const scrollRef = useRef<HTMLDivElement>(null)
   // As the gallery's grid does: the virtualizer's own functions stay fresh by design.
@@ -83,7 +88,8 @@ export function Filmstrip<T>({ items, current = null, onPick, cell, hint, label,
                   <button
                     key={item.key}
                     type="button"
-                    aria-label={hint(it)}
+                    aria-label={name ? name(it) : hint(it)}
+                    aria-keyshortcuts={keys?.(it)}
                     aria-current={item.index === current ? 'true' : undefined}
                     data-hint={hint(it)}
                     onClick={() => onPick(it, item.index)}

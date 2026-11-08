@@ -47,7 +47,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | UI-LAYOUT-002 | No two controls on top of each other | No two interactive elements intersect by more than 1 × 1 px, unless one holds the other | A `layoutChecks` | release | Nielsen 5; WCAG 2.5.8 |
 | UI-LAYOUT-003 | The lego measures | Between cards 12 px, a card's blocks 12, a field's parts 6, a list's rows 4, the mode switch's rows 12 | A `measure` | release | STYLE_RULE §4 table |
 | UI-LAYOUT-004 | One height for every control | Select, segmented toggle, input and icon button 32 px | A `measure` | release | STYLE_RULE §4 |
-| UI-LAYOUT-005 | One width for the side columns | The folder list and every panel 18 rem | A `measurePanels` | release | STYLE_RULE §4 |
+| UI-LAYOUT-005 | One width for the side columns | The folder list and every panel 18.75 rem (300 px) | A `measurePanels` | release | STYLE_RULE §4 |
 | UI-LAYOUT-006 | A folded card is its header alone | No band under a folded card's header (> 0.5 px) | A `foldedBands` | release | STYLE_RULE §4 |
 | UI-LAYOUT-007 | An icon-only button centres its icon | Icon centre within 0.5 px of the button's, at 1180 and 1600 px | A `iconOffsets` | release | STYLE_RULE §4 toolbar button |
 | UI-LAYOUT-008 | A control's words fit it | A button's, toggle's, badge's, select's or label's text no wider than its room, unless it ends in an ellipsis | A `overflows` | release | STYLE_RULE §4 "a label is never cut" |

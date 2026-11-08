@@ -63,7 +63,7 @@ export function SegmentedToggle<T extends string>({
           aria-label={o.ariaLabel}
           data-hint={o.hint}
           // Shared rows give each word all the room there is, 4 px a side (the words stay centred):
-          // three choices in an 18 rem panel have 66 px, and `MEASURE=1` found *Thành phố*,
+          // three choices in an 18 rem panel had 66 px (70 at 18.75 rem), and `MEASURE=1` found *Thành phố*,
           // *Không RAW* and *One colour* spilling into a 10 px padding. Dates set mono a size
           // smaller, so four fit.
           className={cn('text-xs', small && 'px-1.5', !fit && !small && 'min-w-0 flex-1 px-1', (dense || mono) && 'px-1', mono && 'font-mono text-2xs tracking-tight')}

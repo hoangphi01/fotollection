@@ -57,7 +57,7 @@ export function FontSelect({ fonts, value, onChange, label, builtIns, builtIn }:
             }
           }}
         >
-          {/* The face's short name alone, so it fits an 18 rem panel (STYLE_RULE §4: icons
+          {/* The face's short name alone, so it fits an 18.75 rem panel (STYLE_RULE §4: icons
               first, a label never cut); the typeface's own name is the hint. */}
           <SelectTrigger className="w-full" aria-label={label} data-hint={faces.find((f) => builtInValue(f.key) === selected)?.hint}>
             <SelectValue />

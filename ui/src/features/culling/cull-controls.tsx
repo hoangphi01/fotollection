@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
  * Clickable stars and pick/reject for one photo (FR-022), the same as the keys. Every one is
  * a 32 px toggle, pressed in the theme's colour when on (STYLE_RULE §4; owner, 2026-11-07:
  * a reject is a state, never the red kept for removing): the stars up to the rating, then
- * Pick and Reject on a row of their own, so both rows fit an 18 rem panel.
+ * Pick and Reject on a row of their own, so both rows fit an 18.75 rem panel.
  */
 export function CullControls({ photo }: { photo: PhotoSummary }) {
   const { t } = useTranslation()

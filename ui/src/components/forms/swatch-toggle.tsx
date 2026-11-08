@@ -47,7 +47,7 @@ export function SwatchToggle<T extends string>({
       {options.map((o) => {
         const css = o.swatch.startsWith('#') || o.swatch.startsWith('rgb')
         return (
-          // Four colours in an 18 rem panel: the dot alone, its name as the hint and for screen
+          // Four colours in an 18.75 rem panel: the dot alone, its name as the hint and for screen
           // readers (STYLE_RULE §4, icons first: a label is never cut).
           <ToggleGroupItem
             key={o.value}

@@ -15,7 +15,7 @@ const MODES: { mode: AppMode; icon: typeof Zap; key: string }[] = [
 
 /** The three modes at the top of the sidebar (FR-048): Simple and Collage side by side, Pro
  * on its own row below, the whole width, to set it apart (owner, 2026-11-06) and so no label
- * runs out of its button in an 18 rem column. */
+ * runs out of its button in an 18.75 rem column. */
 export function ModeSwitch() {
   const { t } = useTranslation()
   const { mode, setMode } = useAppMode()
