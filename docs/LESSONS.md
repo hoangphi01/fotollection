@@ -600,6 +600,7 @@
 - **Seen:** `scripts/check-docs.sh 2>&1 | tail -1 && git commit …` committed although the check had found two problems.
 - **Why:** a pipeline returns the exit code of its last command, here `tail`, which succeeds.
 - **Rule:** never chain on a piped check. Run the check on its own, or test its output (`grep -q "all checks passed"`), or use `set -o pipefail`.
+- **It happened again** (2026-11-08): `npm test --silent 2>&1 | tail -3` sat in a commit chain, and `ui` has no `test` script; `tail` hid the error. The UI's tests are `npm run lint` and `scripts/ui-check.sh`. Never pipe a gate inside a chain, and run a gate once on its own before chaining it, so a missing script shows.
 
 ### Editing code while a build runs produces a mixed build
 
