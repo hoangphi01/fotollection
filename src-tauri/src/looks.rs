@@ -386,3 +386,30 @@ pub async fn import_presets(app: tauri::AppHandle) -> Result<Option<ImportReport
     .await
     .map_err(|e| IpcError::internal(e.to_string()))?
 }
+
+/// Bytes for `fotothumb://localhost/looktable/{id}?look=<library id>`: that look's table for
+/// the photo, as the shader reads it (RGBA8, the route `/look/`'s format), for the hover
+/// preview of *Presets & LUTs* (FR-089). A RAW's linear sliders are left out as when a slider
+/// is dragged (FR-088); a look that changes nothing gives the identity, so the photo shows
+/// without its own.
+pub fn look_table_bytes(state: &AppState, id: PhotoId, look: &str) -> Result<Vec<u8>, IpcError> {
+    let entry = {
+        let saved = state.saved_looks.lock().map_err(poisoned)?;
+        look_library::entries(&saved)
+            .into_iter()
+            .find(|e| e.id == look)
+            .ok_or_else(|| IpcError::new("look.unknown", "no look with this id"))?
+    };
+    let mut record = state
+        .library
+        .read()
+        .map_err(poisoned)?
+        .record(id)
+        .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
+    record.edits.look = Some(entry.look);
+    let settings = state.settings.read().map_err(poisoned)?.0.clone();
+    Ok(
+        fotollection_core::preview::PreviewCache::look_table(&record, &settings)
+            .unwrap_or_else(|| fotollection_core::looks::Table::identity().to_rgba8()),
+    )
+}

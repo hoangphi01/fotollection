@@ -37,6 +37,9 @@ enum Route {
     /// The photo through one look of the library, small and square, for the Looks card
     /// (FR-079): `looktile/<id>?look=<library id>`.
     LookTile(PhotoId, String),
+    /// The table of one look of the library for this photo, for the hover preview of
+    /// *Presets & LUTs* on the GPU (FR-089): `looktable/<id>?look=<library id>`.
+    LookTable(PhotoId, String),
     /// A full-resolution region of the preview, for zoom; `true` without the colour look, for
     /// the *Before* side of a compare view (FR-096).
     Region(PhotoId, Region, bool),
@@ -109,6 +112,14 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
         "thumb" => Some(Route::Thumb(id)),
         "preview" if flag("mask=1") => Some(Route::Mask(id)),
         "look" => Some(Route::Look(id)),
+        "looktable" => {
+            let look = query
+                .unwrap_or_default()
+                .split('&')
+                .find_map(|p| p.strip_prefix("look="))?;
+            fotollection_core::looks::valid_base(look)
+                .then(|| Route::LookTable(id, look.to_owned()))
+        }
         "looktile" => {
             let look = query
                 .unwrap_or_default()
@@ -222,6 +233,7 @@ fn priority_of(route: &Route) -> Priority {
         | Route::Sheet(_, true, _)
         | Route::Look(_)
         | Route::LookTile(..)
+        | Route::LookTable(..)
         | Route::CameraLive => Priority::Background,
     }
 }
@@ -256,6 +268,15 @@ fn answer(state: &AppState, route: Route, responder: UriSchemeResponder) {
             Err(error) => fail(responder, &error),
         },
         Route::Look(id) => match crate::commands::look_table_bytes(state, id) {
+            Ok(bytes) => respond_as(
+                responder,
+                StatusCode::OK,
+                bytes,
+                Some("application/octet-stream"),
+            ),
+            Err(error) => fail(responder, &error),
+        },
+        Route::LookTable(id, look) => match crate::looks::look_table_bytes(state, id, &look) {
             Ok(bytes) => respond_as(
                 responder,
                 StatusCode::OK,
@@ -316,6 +337,10 @@ mod tests {
         ));
         assert!(route("/looktile/9", Some("look=../etc")).is_none());
         assert!(route("/looktile/9", None).is_none());
+        assert!(matches!(
+            route("/looktable/3", Some("look=user:0a1b")),
+            Some(Route::LookTable(PhotoId(3), ref l)) if l == "user:0a1b"
+        ));
         assert!(route("/thumb/../etc", None).is_none());
         assert!(route("/thumb/7/extra", None).is_none());
         assert!(route("/other/1", None).is_none());

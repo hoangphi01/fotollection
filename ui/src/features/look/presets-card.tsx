@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview: in the preview only (STYLE_RULE §4, where each card shows, checked by check-lego).
 import { Bookmark, BookmarkPlus, Blend, FileInput, FolderInput, Layers, MoreHorizontal, Pencil, Plus, RefreshCw, TriangleAlert } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RemoveButton } from '@/components/forms/danger-button'
 import { Hint } from '@/components/forms/field'
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { commands, type LookEntry, type PhotoId } from '@/ipc/bindings'
+import { setHoverLook } from '@/lib/drag-state'
 import { errorText } from '@/lib/errors'
 import { SaveLookDialog } from './save-look-dialog'
 import { useLookPicker } from './use-looks'
@@ -48,6 +49,8 @@ export function PresetsCard({ photoId, revision }: PresetsCardProps) {
   const [report, setReport] = useState<Report>(null)
   const [filter, setFilter] = useState('')
   const [menuFor, setMenuFor] = useState<string | null>(null)
+  // The hover preview never outlives the card (a tab switched, the preview closed).
+  useEffect(() => () => setHoverLook(null), [])
   const [, setClosedVersion] = useState(0)
   const own = picker.looks.filter((e) => e.kind === 'user')
   const chosen = picker.current === null ? undefined : picker.looks[picker.current]
@@ -96,6 +99,9 @@ export function PresetsCard({ photoId, revision }: PresetsCardProps) {
     <div
       key={entry.id}
       className="group/row flex items-center gap-1"
+      // As Lightroom shows a preset on the photo while it is hovered (owner, 2026-11-08).
+      onMouseEnter={() => menuFor === null && setHoverLook(entry.id)}
+      onMouseLeave={() => setHoverLook(null)}
       onContextMenu={(e) => {
         e.preventDefault()
         setMenuFor(entry.id)

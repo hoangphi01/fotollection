@@ -70,3 +70,8 @@ export function lookTileUrl(id: number, look: string): string {
   // Library ids are lowercase letters, digits, dashes and one colon: safe in a query as they are.
   return `${base}/looktile/${id}?look=${look}`
 }
+
+/** One look of the library's table for this photo, for the hover preview (FR-089). */
+export function lookPreviewTableUrl(id: number, look: string): string {
+  return `${base}/looktable/${id}?look=${look}`
+}

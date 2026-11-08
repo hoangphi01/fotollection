@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useEffect, useRef, useState } from 'react'
-import { useDrag, useDragOnGpu } from '@/lib/drag-state'
-import { lookTableUrl, maskUrl, previewUrl } from '@/lib/photo-url'
+import { useDrag, useDragOnGpu, useHoverLook } from '@/lib/drag-state'
+import { lookTableUrl, maskUrl, previewUrl, lookPreviewTableUrl } from '@/lib/photo-url'
 import { GpuLook } from './gpu-look'
 
 /** Off for the rest of the session after a failure: the CPU path then serves every drag. */
@@ -25,6 +25,8 @@ type GpuLookState = {
  */
 export function useGpuLook(photoId: number | undefined, revision: number, settled: boolean): GpuLookState {
   const drag = useDrag()
+  // A look hovered in Presets & LUTs is drawn as a drag's look is (FR-089).
+  const hoverLook = useHoverLook()
   // A RAW's linear sliders (FR-088) are not in the table: Rust renders each of their steps.
   const onGpu = useDragOnGpu()
   // The drag the photo was last loaded for, so a drag that ends keeps its canvas until
@@ -77,7 +79,7 @@ export function useGpuLook(photoId: number | undefined, revision: number, settle
   useEffect(() => {
     if (!want || ready !== key || photoId === undefined || !gpu.current) return
     const n = ++asked.current
-    void fetch(lookTableUrl(photoId, revision))
+    void fetch(hoverLook ? lookPreviewTableUrl(photoId, hoverLook) : lookTableUrl(photoId, revision))
       .then((r) => r.arrayBuffer())
       .then((buffer) => {
         if (n !== asked.current || !gpu.current) return
@@ -88,7 +90,7 @@ export function useGpuLook(photoId: number | undefined, revision: number, settle
       .catch(() => {
         broken = true
       })
-  }, [want, ready, key, photoId, revision])
+  }, [want, ready, key, photoId, revision, hoverLook])
 
   return { attach: setCanvas, active: want && ready !== null && ready === key && (dragging || !settled) }
 }
