@@ -54,7 +54,9 @@ export function SwatchToggle<T extends string>({
             value={o.value}
             aria-label={dense ? o.label : undefined}
             data-hint={dense ? o.label : undefined}
-            className={cn('min-w-0 flex-1 gap-1.5 px-1.5 text-xs')}
+            // A dot alone needs no side padding: eight of them fit a 300 px card (the colour
+            // mixer, UI-LAYOUT-008).
+            className={cn('min-w-0 flex-1 gap-1.5 px-1.5 text-xs', dense && 'px-0')}
           >
             <span
               className={cn('shrink-0 rounded-full border', dense ? 'size-4' : 'size-3', !css && o.swatch)}

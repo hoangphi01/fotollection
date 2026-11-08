@@ -861,3 +861,10 @@
 - **Why:** the title bar sits above dialog overlays (`z-[60]`) for exactly this, but Radix's modal dialogs set `pointer-events: none` on `<body>`, leaving only the dialog's content live; the bar inherited `none`, so Tauri's drag region never got the press. On Windows its minimise, maximise and close buttons were dead behind any dialog too.
 - **Fix:** the bar takes the pointer back (`pointer-events-auto`) and is marked `data-window-chrome`; `DialogContent` lets a press on it through instead of taking it for a click outside, which would close the dialog. UI-LAYOUT-020 checks the bar takes the pointer while a dialog is open; it failed 34 times without the fix.
 - **Rule:** what must work above every overlay (the window's bar, a global hint) takes the pointer back explicitly and is let through by the overlay's outside-click handling; test it with a dialog open, not only on the main view.
+
+### The colour mixer's eight dots overflowed their buttons: a swatch row's padding was sized for words (FR-079, UI-LAYOUT-008)
+
+- **Seen:** ui-check found 176 UI-LAYOUT-008 findings on the new Color Mixer card: each 16 px dot sat in a button with 10 px of room, in every preview, theme and language.
+- **Why:** `SwatchToggle`'s items keep 6 px of side padding for a dot beside its name; eight dot-only items in a 300 px column leave 22 px a button, and the padding ate 12 of it.
+- **Fix:** a `dense` swatch (a dot alone) has no side padding, so the dot gets the button's whole width; the matrix passes again.
+- **Rule:** a block's padding is sized for its widest use; when a block gets a new variant (more items, no label), run ui-check on the narrowest column before calling it done.
