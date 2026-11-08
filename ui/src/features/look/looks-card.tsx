@@ -3,13 +3,14 @@
 import { Palette, TriangleAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ResetButton } from '@/components/forms/danger-button'
+import { ValueRow } from '@/components/forms/field'
 import { SliderField } from '@/components/forms/slider-field'
 import { Collapse } from '@/components/layout/collapse'
 import { PanelNote } from '@/components/layout/panel-note'
 import { SectionCard } from '@/components/layout/section-card'
 import type { LookSettings } from '@/ipc/bindings'
 import { NO_LOOK, fullLook, type LookChange } from './look-fields'
-import { useLooks } from './use-looks'
+import { lookName, useLooks } from './use-looks'
 
 type LooksCardProps = {
   /** Simple mode: with the original, the card is its title alone (owner, 2026-11-07). */
@@ -40,6 +41,17 @@ export function LooksCard({ look, onChange, simple = false, pro = false }: Looks
   const { name: _n, base: _b, amount: _a, ...none } = NO_LOOK
   const coloured = JSON.stringify(colours) !== JSON.stringify(none)
   const chosenEntry = looks.find((e) => e.id === current.base)
+  // The look in use, always the card's first line (owner, 2026-11-08: "say the original is in
+  // use", "the look's name above, the amount below"): the library's name, else the look's own,
+  // else *Custom* for sliders alone, *Original* when nothing is set.
+  const original = looks.find((e) => e.id === 'builtin:original')
+  const inUse = coloured
+    ? chosenEntry
+      ? lookName(chosenEntry)
+      : (current.name ?? t('look.custom'))
+    : original
+      ? lookName(original)
+      : t('look.original')
   return (
     <SectionCard
       icon={<Palette />}
@@ -48,6 +60,11 @@ export function LooksCard({ look, onChange, simple = false, pro = false }: Looks
       open={coloured || !simple}
       action={coloured && <ResetButton iconOnly label={t('look.resetLook')} onClick={() => onChange(() => NO_LOOK, true)} />}
     >
+      <ValueRow label={t('look.inUse')}>
+        <span className="truncate font-medium" data-hint={inUse}>
+          {inUse}
+        </span>
+      </ValueRow>
       <Collapse open={coloured} stack="card">
       <SliderField
         label={t('look.amount')}

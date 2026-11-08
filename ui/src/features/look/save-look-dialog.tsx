@@ -38,7 +38,7 @@ export function SaveLookDialog({ open, onAnswer, title, body, label, initial = '
   }
   return (
     <Dialog open={open} onOpenChange={(next) => !next && answer(null)}>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{title ?? t('look.saveAs')}</DialogTitle>
           <DialogDescription>{body ?? t('look.saveAsBody')}</DialogDescription>

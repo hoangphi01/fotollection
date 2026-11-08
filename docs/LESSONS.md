@@ -826,3 +826,10 @@
 - **Why:** Radix draws its bar over the content's right edge (overlay), so a list inside a card had no room kept for it; the bar was 10 px with its own padding while the gallery's native bar is 8 px with a 4 px thumb. The first check for it found nothing: Radix mounts the bar only under the pointer, and the threshold looked for overlap, not closeness.
 - **Fix:** one bar for every `ScrollArea`, 8 px with 2 px clear on each side as the gallery's; `gutter` keeps 12 px on the right of a list inside a card (History, the look library). UI-LAYOUT-018 checks every area that does scroll: its words end the bar's 8 px and 4 px more before its edge, measured at their clipping box when cut with an ellipsis. It failed on the old list first.
 - **Rule:** every new scrolling list inside a card uses `ScrollArea gutter`; never a scroll bar of its own size. A check for something drawn on hover is made on the condition that draws it (here: the area scrolls), not on the element itself.
+
+### Each pop-up dialog had its own width, and a three-button footer ran out of the narrowest (UI)
+
+- **Seen:** the Colour tab's question, 384 px wide, held three buttons in Vietnamese edge to edge; the other pop-ups were 320, 384, 448 or 512 px each (owner, 2026-11-08: "roomy, one size for every pop-up").
+- **Why:** shadcn's `AlertDialog` defaults to `max-w-sm` and every `Dialog` set its own `sm:max-w-*`; footers were one row that never wrapped, so words could only overflow.
+- **Fix:** one width (512 px) in `components/ui/dialog.tsx` and `alert-dialog.tsx`, footers that wrap; `check-lego` refuses a pop-up of its own size, three photo dialogs excepted by name.
+- **Rule:** a size a family of blocks shares is set once in the block, never at each use; a row of buttons always wraps.

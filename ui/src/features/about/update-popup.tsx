@@ -31,7 +31,7 @@ export function UpdatePopup() {
   const reason = update ? (i18n.language.startsWith('vi') ? update.reasonVi : update.reasonEn) : ''
   return (
     <Dialog open={update !== null} onOpenChange={(open) => !open && setUpdate(null)}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('update.popupTitle', { version: update?.latest ?? '' })}</DialogTitle>
           <DialogDescription>{t('update.popupBody', { current: update?.current ?? '' })}</DialogDescription>

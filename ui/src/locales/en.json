@@ -1078,7 +1078,10 @@
     "resetAskBody": "Their look, LUT and colour sliders are taken away; crops, date stamps and RAW settings stay. ⌘Z brings the colour back.",
     "resetOk": "Back to original",
     "resetDone_one": "{{n}} photo back to its original colour. ⌘Z undoes it.",
-    "resetDone_other": "{{n}} photos back to their original colour. ⌘Z undoes it."
+    "resetDone_other": "{{n}} photos back to their original colour. ⌘Z undoes it.",
+    "inUse": "In use",
+    "custom": "Custom",
+    "original": "Original"
   },
   "rawLook": {
     "title": "RAW colour",

@@ -249,6 +249,24 @@ for (const path of allTsx) {
   }
 }
 
+// One size for every pop-up dialog (owner, 2026-11-08: "every pop-up one size, roomy"): 512 px,
+// set in components/ui/dialog.tsx and alert-dialog.tsx. Only a dialog that is a screen of
+// its own (photos side by side) sizes itself, here with its reason.
+const OWN_SIZE = {
+  'features/places/borrow-dialog.tsx': 'two photos side by side per place',
+  'features/cameras/clock-match-dialog.tsx': 'a grid of photos to match a clock',
+  'features/best-shot/compare-dialog.tsx': 'photos compared at full size',
+}
+for (const path of allTsx) {
+  const rel = relative(join(root, 'src'), path).split(sep).join('/')
+  if (rel.startsWith('components/') || rel in OWN_SIZE) continue
+  const text = readFileSync(path, 'utf8')
+  for (const m of text.matchAll(/<(Alert)?DialogContent\b[^>]*\bmax-w-/g)) {
+    const line = text.slice(0, m.index).split('\n').length
+    problems.push(`${rel}:${line}: a pop-up of its own size: every pop-up dialog is the one size of components/ui (512 px)`)
+  }
+}
+
 // Raised unless it belongs to something (owner, 2026-11-06: "Select all is still the old
 // style"): a standalone button is never `ghost`. Flat stays only for a row of a list
 // (ListRow), a button inside a raised ButtonGroup, a dismiss inside a note and an on/off

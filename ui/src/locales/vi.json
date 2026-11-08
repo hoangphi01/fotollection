@@ -1029,7 +1029,10 @@
     "resetAskTitle_other": "Đưa {{n}} ảnh về màu gốc?",
     "resetAskBody": "Look, LUT và các thanh trượt màu của các ảnh này sẽ bị bỏ; cắt ảnh, đóng dấu ngày và cài đặt RAW giữ nguyên. ⌘Z để lấy lại màu.",
     "resetOk": "Về màu gốc",
-    "resetDone_other": "Đã đưa {{n}} ảnh về màu gốc. ⌘Z để hoàn tác."
+    "resetDone_other": "Đã đưa {{n}} ảnh về màu gốc. ⌘Z để hoàn tác.",
+    "inUse": "Đang dùng",
+    "custom": "Tuỳ chỉnh",
+    "original": "Gốc"
   },
   "rawLook": {
     "title": "Màu RAW",

@@ -69,7 +69,7 @@ export function NewProjectDialog({ onAnswer }: NewProjectDialogProps) {
   }
   return (
     <Dialog open={onAnswer !== null} onOpenChange={(open) => !open && answer(null)}>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('project.new')}</DialogTitle>
           <DialogDescription>{t('project.newBody')}</DialogDescription>
@@ -105,7 +105,7 @@ export function RelinkDialog({ missing, open, onLocate, onClose }: RelinkDialogP
   const { t } = useTranslation()
   return (
     <Dialog open={open && missing.length > 0} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('project.relinkTitle', { count: missing.length })}</DialogTitle>
           <DialogDescription>{t('project.relinkBody')}</DialogDescription>

@@ -32,7 +32,7 @@ function CopySettingsForm({ initial }: { initial: SettingsParts }) {
   const [parts, setParts] = useState(initial)
   return (
     <Dialog open onOpenChange={(open) => !open && closeCopySettings()}>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('develop.copyTitle')}</DialogTitle>
           <DialogDescription>{t('develop.copyBody')}</DialogDescription>
