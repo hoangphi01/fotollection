@@ -91,7 +91,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 
 | ID | Check | Pass rule | How | When | Source |
 |---|---|---|---|---|---|
-| UI-STABLE-001 | Nothing jumps when W or J is pressed | The preview's cards keep their place (≤ 1 px) | A `stableChecks` | release | STYLE_RULE §4 "nothing jumps" |
+| UI-STABLE-001 | Nothing jumps when W or J is pressed, nor on a slider's first step | The preview's cards keep their place (≤ 1 px) after W, J, and the first step of a Faves and a Color mixer slider on a photo with the original look (owner, 2026-11-08) | A `stableChecks` | release | STYLE_RULE §4 "nothing jumps" |
 | UI-STABLE-002 | Nothing jumps on the first slider step or a note | The card's height is the same before and after | M (A planned) | release | STYLE_RULE §4 |
 
 ### Theme

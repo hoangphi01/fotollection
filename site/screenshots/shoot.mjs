@@ -647,6 +647,19 @@ async function stressViews({ language, theme }) {
     await page.keyboard.press(key === 'w' ? 'Escape' : key)
   }
   await context.close()
+  // Nor does the first step of a slider on a photo with the original look (owner, 2026-11-08:
+  // the Looks card unfolded its amount and every card below dropped under the pointer). One
+  // fresh photo per card: only the first step leaves the original.
+  for (const [card, title] of [['Faves', /^(Faves|Cơ bản)/], ['Color mixer', /^(Color mixer|Trộn màu)/]]) {
+    ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
+    await (await reach(page, SHOW.crop)).dblclick()
+    await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
+    await settle(page)
+    const thumb = page.locator('[role="dialog"] aside section', { hasText: title }).locator('[role="slider"]').first()
+    await thumb.focus()
+    out.push(...(await stableChecks(page, 'photo preview', '[role="dialog"] aside section', () => page.keyboard.press('ArrowRight'), `${card}: a first slider step`)))
+    await context.close()
+  }
   // Every Settings section, the manual among them, and the welcome.
   ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
   const sections = [/^(General|Chung)$/, /^(Export|Xuất ảnh)$/, /^(RAM & cache|Bộ nhớ RAM & cache)$/, /^(Updates|Cập nhật)$/, /^(Manual|Hướng dẫn sử dụng)$/, /^(Report a problem|Báo lỗi)$/, /^(What's new|Có gì mới)$/]

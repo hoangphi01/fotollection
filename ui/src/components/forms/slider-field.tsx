@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { cn } from 'cn'
 import { Slider } from '@/components/ui/slider'
 import { setDragging } from '@/lib/drag-state'
 import { Field, ValueRow } from './field'
@@ -19,6 +20,14 @@ type SliderFieldProps = {
   hint?: string
   /** `false` when its drag cannot be drawn on the GPU (a RAW's linear sliders, FR-088). */
   gpu?: boolean
+  /** Shown but not movable, keeping its room (a look's amount with the original: STYLE_RULE
+   * §4, nothing jumps while the user works). */
+  disabled?: boolean
+  /** The track drawn as a CSS image (the colour mixer's: the colours it moves between,
+   * FR-079); a print's colour, as a swatch. */
+  track?: string
+  /** The name read out, when the label alone repeats in the card (the mixer's *All*). */
+  ariaLabel?: string
 }
 
 /** The thumb Radix renders, the element that takes the arrow keys. */
@@ -44,6 +53,9 @@ export function SliderField({
   format = signed,
   hint,
   gpu = true,
+  disabled = false,
+  track,
+  ariaLabel,
 }: SliderFieldProps) {
   const [draft, setDraft] = useState<number | null>(null)
   const dragging = useRef(false)
@@ -80,12 +92,17 @@ export function SliderField({
       <Slider
         ref={root}
         // A signed slider has no "on" side: no filled range from its left end at 0.
-        className={min < 0 ? '[&_[data-slot=slider-range]]:bg-transparent' : undefined}
+        className={cn(
+          min < 0 && '[&_[data-slot=slider-range]]:bg-transparent',
+          track && '[&_[data-slot=slider-track]]:bg-(image:--track)',
+        )}
+        style={track ? ({ '--track': track } as CSSProperties) : undefined}
+        disabled={disabled}
         min={min}
         max={max}
         step={1}
         value={[shown]}
-        aria-label={label}
+        aria-label={ariaLabel ?? label}
         onValueChange={([v]) => {
           if (v === undefined) return
           setDraft(v)

@@ -1084,11 +1084,15 @@
     "original": "Original",
     "mixer": {
       "title": "Color mixer",
-      "colour": "Colour to change",
-      "moved": "changed",
       "hue": "Hue",
       "sat": "Saturation",
       "lum": "Luminance",
+      "all": "All",
+      "short": {
+        "hue": "Hue",
+        "sat": "Sat",
+        "lum": "Lum"
+      },
       "band": {
         "red": "Red",
         "orange": "Orange",
@@ -1103,7 +1107,8 @@
         "hue": "Turns this colour toward its neighbours on the colour wheel.",
         "sat": "Makes this colour stronger or greyer; other colours stay.",
         "lum": "Makes this colour lighter or darker; greys stay."
-      }
+      },
+      "part": "Part to change"
     }
   },
   "rawLook": {

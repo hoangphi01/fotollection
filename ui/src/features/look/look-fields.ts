@@ -11,6 +11,22 @@ export type FullAdjust = Required<Omit<Adjust, 'shadowTint' | 'highlightTint' | 
 
 /** The eight hues of the colour mixer, as Rust's `colour_ops::BANDS` (FR-079). */
 export const MIXER_BANDS = ['red', 'orange', 'yellow', 'green', 'aqua', 'blue', 'purple', 'magenta'] as const
+/** Each hue's centre on the HSV wheel, degrees, as `BANDS` in Rust. */
+const MIXER_HUES = [0, 30, 60, 120, 180, 240, 270, 300] as const
+export type MixerPart = 'hue' | 'sat' | 'lum'
+
+/**
+ * A mixer slider's track, as Lightroom draws it (owner, 2026-11-08): hue from the colour the
+ * slider turns it toward on the left to the one on the right, saturation from grey to the full
+ * colour, luminance from dark to light. A swatch of what prints (STYLE_RULE §4).
+ */
+export function mixerTrack(part: MixerPart, band: number): string {
+  const h = MIXER_HUES[band] ?? 0
+  const c = (hue: number, s: number, l: number) => `hsl(${hue} ${s}% ${l}%)`
+  if (part === 'hue') return `linear-gradient(to right, ${c(h - 30, 75, 55)}, ${c(h, 75, 55)}, ${c(h + 30, 75, 55)})`
+  if (part === 'sat') return `linear-gradient(to right, ${c(h, 0, 55)}, ${c(h, 85, 55)})`
+  return `linear-gradient(to right, ${c(h, 70, 18)}, ${c(h, 70, 55)}, ${c(h, 70, 88)})`
+}
 const EIGHT = (): Required<Mixer>['hue'] => [0, 0, 0, 0, 0, 0, 0, 0]
 export type FullLook = {
   adjust: FullAdjust

@@ -89,7 +89,8 @@ export function LooksCard({ look, onChange, simple = false, pro = false }: Looks
           {inUse}
         </span>
       </ValueRow>
-      <Collapse open={coloured} stack="card">
+      {/* Always there, off with the original: unfolding it on the first slider moved every card
+          below under the pointer (owner, 2026-11-08: "the block drops while I drag the HSL"). */}
       <SliderField
         label={t('look.amount')}
         hint={t('look.hints.amount')}
@@ -98,9 +99,9 @@ export function LooksCard({ look, onChange, simple = false, pro = false }: Looks
         max={100}
         reset={100}
         format={percent}
+        disabled={!coloured}
         onChange={(v, first) => onChange((l) => ({ ...l, amount: v }), first)}
       />
-      </Collapse>
       {/* A look with a LUT (FR-070): how much of the LUT, under the sliders' amount. */}
       <Collapse open={pro && current.lut !== null} stack="card">
       <SliderField

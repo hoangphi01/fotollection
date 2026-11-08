@@ -4,53 +4,52 @@ import { Palette } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ResetButton } from '@/components/forms/danger-button'
+import { FieldLabel } from '@/components/forms/field'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { SliderField } from '@/components/forms/slider-field'
-import { SwatchToggle } from '@/components/forms/swatch-toggle'
 import { SectionCard } from '@/components/layout/section-card'
 import type { LookSettings } from '@/ipc/bindings'
 import { LookCardTitle } from './look-card-title'
-import { MIXER_BANDS, fullLook, mixerChanged, type LookChange } from './look-fields'
+import { MIXER_BANDS, fullLook, mixerChanged, mixerTrack, type LookChange, type MixerPart } from './look-fields'
 
-type Band = (typeof MIXER_BANDS)[number]
-type Part = 'hue' | 'sat' | 'lum'
+type Shown = MixerPart | 'all'
 
-/** The hue picked, kept while the app runs, in every preview alike. */
-let lastBand: Band = 'red'
+/** The part shown, kept while the app runs, in every preview alike. */
+let lastShown: Shown = 'hue'
 
-/** Each hue's dot: the colour it changes, a print colour shown as it is (STYLE_RULE §4). */
-const DOTS: Record<Band, string> = {
-  red: 'bg-red-500', // swatch
-  orange: 'bg-orange-500', // swatch
-  yellow: 'bg-yellow-400', // swatch
-  green: 'bg-green-500', // swatch
-  aqua: 'bg-cyan-400', // swatch
-  blue: 'bg-blue-500', // swatch
-  purple: 'bg-violet-500', // swatch
-  magenta: 'bg-fuchsia-500', // swatch
-}
-
-const PARTS: readonly Part[] = ['hue', 'sat', 'lum']
+const PARTS: readonly MixerPart[] = ['hue', 'sat', 'lum']
 
 /**
- * The colour mixer (FR-079, as Lightroom's Color Mixer, one colour at a time): the eight hues
- * as dots, and for the one picked its hue, saturation and lightness. Rust lays them on with the
- * look's table (`colour_ops`, the function the 32-bit path will call), so the GPU preview, the
- * thumbnails and the export follow. A Lightroom preset's mixer lands here, adjustable. Pro mode
- * and collage sheets.
+ * The colour mixer (FR-079), as Lightroom's HSL panel (owner, 2026-11-08): *Hue*,
+ * *Saturation*, *Luminance* or *All* in a row of buttons, and for the part picked a slider for
+ * each of the eight colours, its track drawn in the colours it moves between. Rust lays them on
+ * with the look's table (`colour_ops`, the function the 32-bit path will call), so the GPU
+ * preview, the thumbnails and the export follow. A Lightroom preset's mixer lands here,
+ * adjustable. Pro mode and collage sheets.
  */
 export function ColorMixerCard({ look, onChange }: { look: LookSettings | undefined; onChange: LookChange }) {
   const { t } = useTranslation()
-  const [band, setBand] = useState<Band>(lastBand)
+  const [shown, setShown] = useState<Shown>(lastShown)
   const adjust = fullLook(look).adjust
   const changed = mixerChanged(adjust)
-  const at = MIXER_BANDS.indexOf(band)
-  const moved = (b: Band) => PARTS.some((p) => adjust.mixer[p][MIXER_BANDS.indexOf(b)] !== 0)
-  const set = (part: Part, value: number, first: boolean) =>
+  const set = (part: MixerPart, at: number, value: number, first: boolean) =>
     onChange((l) => {
       const row = [...l.adjust.mixer[part]] as typeof l.adjust.mixer.hue
       row[at] = value
       return { ...l, adjust: { ...l.adjust, mixer: { ...l.adjust.mixer, [part]: row } } }
     }, first)
+  const sliders = (part: MixerPart) =>
+    MIXER_BANDS.map((band, at) => (
+      <SliderField
+        key={`${part}-${band}`}
+        label={t(`look.mixer.band.${band}`)}
+        ariaLabel={`${t(`look.mixer.${part}`)} · ${t(`look.mixer.band.${band}`)}`}
+        hint={t(`look.mixer.hints.${part}`)}
+        track={mixerTrack(part, at)}
+        value={adjust.mixer[part][at] ?? 0}
+        onChange={(v, first) => set(part, at, v, first)}
+      />
+    ))
   return (
     <SectionCard
       icon={<Palette />}
@@ -65,30 +64,24 @@ export function ColorMixerCard({ look, onChange }: { look: LookSettings | undefi
         )
       }
     >
-      <SwatchToggle<Band>
+      <SegmentedToggle<Shown>
         dense
-        value={band}
-        ariaLabel={t('look.mixer.colour')}
-        onChange={(b) => {
-          lastBand = b
-          setBand(b)
+        value={shown}
+        ariaLabel={t('look.mixer.part')}
+        onChange={(s) => {
+          lastShown = s
+          setShown(s)
         }}
-        options={MIXER_BANDS.map((b) => ({
-          value: b,
-          // A moved hue says so in its name (its hint and for screen readers).
-          label: moved(b) ? `${t(`look.mixer.band.${b}`)} · ${t('look.mixer.moved')}` : t(`look.mixer.band.${b}`),
-          swatch: DOTS[b],
-        }))}
+        // Short words in a quarter of the card, the whole name as the hint (STYLE_RULE §4, a fixed
+        // box measured in Vietnamese: "Saturation" took 63 px of 49).
+        options={[
+          ...PARTS.map((p) => ({ value: p, label: t(`look.mixer.short.${p}`), hint: t(`look.mixer.${p}`) })),
+          { value: 'all' as const, label: t('look.mixer.all') },
+        ]}
       />
-      {PARTS.map((part) => (
-        <SliderField
-          key={part}
-          label={`${t(`look.mixer.${part}`)} · ${t(`look.mixer.band.${band}`)}`}
-          hint={t(`look.mixer.hints.${part}`)}
-          value={adjust.mixer[part][at] ?? 0}
-          onChange={(v, first) => set(part, v, first)}
-        />
-      ))}
+      {shown === 'all'
+        ? PARTS.flatMap((part) => [<FieldLabel key={part}>{t(`look.mixer.${part}`)}</FieldLabel>, ...sliders(part)])
+        : sliders(shown)}
     </SectionCard>
   )
 }

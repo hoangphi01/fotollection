@@ -1035,11 +1035,15 @@
     "original": "Gốc",
     "mixer": {
       "title": "Trộn màu",
-      "colour": "Màu cần chỉnh",
-      "moved": "đã chỉnh",
       "hue": "Sắc độ",
       "sat": "Bão hoà",
       "lum": "Độ sáng",
+      "all": "Tất cả",
+      "short": {
+        "hue": "Sắc",
+        "sat": "Bão hoà",
+        "lum": "Sáng"
+      },
       "band": {
         "red": "Đỏ",
         "orange": "Cam",
@@ -1054,7 +1058,8 @@
         "hue": "Xoay màu này sang các màu bên cạnh trên vòng màu.",
         "sat": "Làm màu này đậm hơn hoặc xám hơn; các màu khác giữ nguyên.",
         "lum": "Làm màu này sáng hơn hoặc tối hơn; màu xám giữ nguyên."
-      }
+      },
+      "part": "Phần cần chỉnh"
     }
   },
   "rawLook": {
