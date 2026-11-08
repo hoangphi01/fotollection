@@ -749,3 +749,10 @@
 - **Why:** the canvas traced each channel with `moveTo` at its first level after the area's foot `moveTo(0, h)`; the second `moveTo` began a new shape, which `closePath` closed back to the first level, a full one on a night photo. Rust's counts were right.
 - **Fix:** an area's points are all `lineTo` after its foot; only the light's line starts with `moveTo` (`histogram-plot.tsx`).
 - **Rule:** when a picture of numbers looks odd, check the numbers first, then the drawing; in a canvas path, one `moveTo` per shape.
+
+### The inspector's foot flashed on each next photo: a hint read `current`, not the last answer (FR-095)
+
+- **Seen:** pressing → in the photo preview, the key hints at the foot of the right column jumped once (owner, 2026-11-08).
+- **Why:** `canDrag` read `useLiveQuery(…).current`, which is `null` from the moment the photo changes until Rust answers; the *Drag to frame* hint left and came back, and the centred lines moved. A postcard's reuse note read `current` the same way and blinked as cards were flipped.
+- **Fix:** what is only shown (the hint, the cursor, the note) reads `.data`, the last answer; what acts on the photo (the drag, the crop editor) still waits for `.current`.
+- **Rule:** in `useLiveQuery`, `.data` is for what the user sees, `.current` only for what changes the photo.

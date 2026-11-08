@@ -46,7 +46,9 @@ type PostcardTextReuseProps = {
 export function PostcardTextReuse({ filter, photo, part, text, ticked, revision, onPick }: PostcardTextReuseProps) {
   const { t } = useTranslation()
   const subject = JSON.stringify({ filter, photo, part, ticked } satisfies Subject)
-  const gaps = useLiveQuery(text ? subject : null, revision, loadGaps).current
+  // The last answer stays while the next card's comes, so flipping cards never drops the note
+  // for a moment (STYLE_RULE §4: nothing blinks).
+  const gaps = useLiveQuery(text ? subject : null, revision, loadGaps).data
   // The addresses stay listed whatever this card holds (owner, 2026-11-07: "the list showed
   // once, then went"): the one on this card is marked, another is one click away.
   const remembered = useLiveQuery(part === 'address' ? 'recent' : null, revision, loadRecent).data ?? []

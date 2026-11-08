@@ -204,7 +204,10 @@ export function PreviewDialog({
   const sharp = useSharpRegion(previewImg, stage, zoom.view, photo?.id, revision, shownSrc === src && !before ? shownSrc : null)
   // Without zoom, dragging the photo moves the crop (Crop to fill, or no frame).
   const cropDrag = useCropDrag(photo?.id, geometry, !picking && !cropping && compare === 'off' && !zoom.zoomed && !!geometry && !geometry.cropDisabled)
-  const canDrag = compare === 'off' && !zoom.zoomed && !!geometry && !geometry.cropDisabled
+  // The hint and the cursor read the last answer, so the next photo never drops the *Drag to
+  // frame* hint for a moment and the footer's lines never jump (owner, 2026-11-08); the drag
+  // itself waits for this photo's geometry.
+  const canDrag = compare === 'off' && !zoom.zoomed && !!shownGeometry && !shownGeometry.cropDisabled
   const startCrop = () => {
     setCompare('off')
     setCropping(true)

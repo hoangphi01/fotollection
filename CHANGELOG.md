@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - **The histogram is sharp on Windows** (FR-098): its curves are drawn at the display's own scale, so at 125 % or 150 % they no longer look soft, and a night photo's blue no longer draws a false straight slope; it is a little taller (80 px).
+- **The next photo no longer flashes the inspector's foot** (FR-095): the key hints keep *Drag to frame* while the next photo's crop is read, and a postcard's *Use for the others* note stays while the next card is flipped to (FR-077).
 
 ## [0.13.3] - 2026-11-08 — Fixes and hardening
 
