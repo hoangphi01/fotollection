@@ -548,6 +548,8 @@ pub fn apply_look_to_photos(
         crate::commands::edit_photos_as(&app, &state, &give, None, |_, edits| {
             edits.look = Some(next.clone());
         })?;
+        // Their thumbnails coloured in the background, the import's bar showing it.
+        crate::commands::warm_look_thumbnails(&app, give);
     }
     Ok(report)
 }

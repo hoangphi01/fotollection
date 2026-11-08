@@ -53,7 +53,8 @@
     "import": "Reading photos",
     "thumbnails": "Preparing thumbnails",
     "previews": "Preparing previews",
-    "analyze": "Finding the best shots"
+    "analyze": "Finding the best shots",
+    "looks": "Applying colour"
   },
   "culling": {
     "keysHint": "0–5 stars · P pick · X reject · U unflag · [ ] rotate",

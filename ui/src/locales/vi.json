@@ -50,7 +50,8 @@
     "import": "Đang đọc ảnh",
     "thumbnails": "Đang tạo thumbnail",
     "previews": "Đang chuẩn bị bản xem trước",
-    "analyze": "Đang tìm ảnh đẹp nhất"
+    "analyze": "Đang tìm ảnh đẹp nhất",
+    "looks": "Đang áp dụng màu"
   },
   "culling": {
     "keysHint": "0–5 sao · P chọn · X loại · U bỏ cờ · [ ] xoay",

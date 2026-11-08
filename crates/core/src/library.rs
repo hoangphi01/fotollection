@@ -492,6 +492,10 @@ pub struct PhotoSummary {
     pub raw: bool,
     /// How a RAW is finished (FR-072, ADR-0040); neutral for any other file.
     pub raw_look: crate::raw_finish::RawLook,
+    /// A short key of the colour the photo is shown with (FR-114, ADR-0047), 0 for none:
+    /// its thumbnail's address carries it, so the grid fetches it again when it changes. Set by
+    /// `list_photos`, which knows the shared look a photo without its own follows.
+    pub look: u32,
 }
 
 #[derive(Default)]
@@ -1044,6 +1048,7 @@ impl Library {
             unusual: record.facts.unusual(),
             raw,
             raw_look: record.edits.raw_look(),
+            look: 0,
         })
     }
 

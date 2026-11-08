@@ -1752,6 +1752,12 @@ export type PhotoSummary = {
 	raw: boolean,
 	/**  How a RAW is finished (FR-072, ADR-0040); neutral for any other file. */
 	rawLook: RawLook,
+	/**
+	 *  A short key of the colour the photo is shown with (FR-114, ADR-0047), 0 for none:
+	 *  its thumbnail's address carries it, so the grid fetches it again when it changes. Set by
+	 *  `list_photos`, which knows the shared look a photo without its own follows.
+	 */
+	look: number,
 };
 
 /**  A town or city. */
@@ -2149,7 +2155,9 @@ export type TaskKind =
 /**  Best-shot analysis of the library (FR-041). */
 "analyze" | 
 /**  Standard previews made on disk, so any photo opens at once (FR-091). */
-"previews";
+"previews" | 
+/**  Thumbnails coloured after a look was given to many photos (FR-114). */
+"looks";
 
 /**  Progress of a background task, for the progress bar (coalesced to ≤ 30 per second). */
 export type TaskProgress = {

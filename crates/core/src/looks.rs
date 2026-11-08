@@ -503,7 +503,14 @@ impl LookSettings {
     /// The table of this look's per-pixel part, from the app-wide cache; `None` when it
     /// changes nothing.
     pub fn table(&self) -> Option<Arc<Table>> {
-        let colour_only = LookSettings {
+        let colour_only = self.colour_only();
+        let key = colour_only.colour_hash()?;
+        Some(TABLES.get(key, || bake(&colour_only)))
+    }
+
+    /// What the table holds: the colour, without grain, vignette, name or base.
+    fn colour_only(&self) -> LookSettings {
+        LookSettings {
             adjust: Adjust {
                 grain: Grain::default(),
                 vignette: 0,
@@ -512,12 +519,23 @@ impl LookSettings {
             name: None,
             base: None,
             ..self.clone()
-        };
-        if colour_only.is_identity() {
-            return None;
         }
-        let key = blake3::hash(&serde_json::to_vec(&colour_only).unwrap_or_default());
-        Some(TABLES.get(key, || bake(&colour_only)))
+    }
+
+    fn colour_hash(&self) -> Option<blake3::Hash> {
+        (!self.is_identity()).then(|| blake3::hash(&serde_json::to_vec(self).unwrap_or_default()))
+    }
+
+    /// A short key of this look's colour (FR-114, ADR-0047): the same for two looks that
+    /// colour a photo alike whatever their names, 0 for a look that changes nothing. A
+    /// thumbnail's address carries it, so the grid fetches a photo again when its colour
+    /// changes.
+    #[must_use]
+    pub fn colour_key(&self) -> u32 {
+        self.colour_only().colour_hash().map_or(0, |h| {
+            let b = h.as_bytes();
+            u32::from_le_bytes([b[0], b[1], b[2], b[3]]).max(1)
+        })
     }
 }
 

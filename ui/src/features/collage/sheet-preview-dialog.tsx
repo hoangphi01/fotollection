@@ -399,7 +399,7 @@ export function SheetPreviewDialog({
               {p ? (
                 <>
                   <button type="button" className="shrink-0" onClick={() => choose(chosen === c ? null : c)} aria-label={p.fileName}>
-                    <img src={thumbUrl(p.id, 0, generation)} alt="" className="size-10 rounded object-cover" />
+                    <img src={thumbUrl(p.id, 0, generation, p.look)} alt="" className="size-10 rounded object-cover" />
                   </button>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm" data-hint={p.fileName}>{p.fileName}</p>

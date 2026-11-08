@@ -20,7 +20,7 @@ use fotollection_core::preview::Region;
 use tauri::http::{Request, Response, StatusCode, header};
 use tauri::{Manager, Runtime, UriSchemeContext, UriSchemeResponder};
 
-use crate::commands::{preview_bytes, region_bytes, source_bytes, thumbnail_bytes};
+use crate::commands::{preview_bytes, region_bytes, shown_thumbnail_bytes, source_bytes};
 use crate::state::AppState;
 use fotollection_core::raw::Priority;
 
@@ -241,7 +241,7 @@ fn priority_of(route: &Route) -> Priority {
 /// Answers `route` on a thread of the interactive pool.
 fn answer(state: &AppState, route: Route, responder: UriSchemeResponder) {
     match route {
-        Route::Thumb(id) => match thumbnail_bytes(state, id) {
+        Route::Thumb(id) => match shown_thumbnail_bytes(state, id) {
             Some(bytes) => {
                 crate::timing::mark(&crate::timing::FIRST_THUMB, "first thumbnail");
                 respond(responder, StatusCode::OK, bytes, true);

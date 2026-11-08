@@ -701,4 +701,16 @@ What `apply_look_to_photos` does under the library's write lock: each photo's ed
 | 1,000 | 0.44 ms | 0.22 ms |
 | 10,000 (the most a batch takes) | 7.35 ms | 3.36 ms |
 
-- **Well inside the budget** (≤ 50 ms for 10,000): nothing is rendered, as thumbnails stay plain; the previews and sheets that show the photos draw again from the new revision, as after any edit.
+- **Well inside the budget** (≤ 50 ms for 10,000): the batch itself renders nothing; its thumbnails are coloured afterwards in the background (§37); the previews and sheets that show the photos draw again from the new revision, as after any edit.
+
+## 37. Thumbnails through their look (v0.14.0, FR-114, ADR-0047)
+
+The grid's thumbnail made from the plain 400 px T1 when served: decoded, the look's table applied, encoded at q82 (`look_thumbs::tint_jpeg`). `measure_look_thumbs` on 24 of the Prague trip's JPEGs, C200 Natural, release build, REF-MAC (M3), 10 runs, 2026-11-08:
+
+| Step | Time |
+|---|---|
+| One thumbnail, p50 | 1.08 ms |
+| One thumbnail, p95 | 1.19 ms |
+| 500 thumbnails on two threads (the background pool) | 373 ms |
+
+- **Within the budget** (≤ 5 ms a thumbnail, ≤ 2 s for 500): a batch of 500 photos is coloured in under half a second after it is given, and a tile scrolled into view costs about a millisecond.

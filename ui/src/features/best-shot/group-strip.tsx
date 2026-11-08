@@ -78,7 +78,7 @@ export const GroupStrip = memo(function GroupStrip({
               style={{ width: THUMB, height: THUMB }}
             >
               <img
-                src={thumbUrl(score.id, thumbVersions[score.id] ?? 0, generation)}
+                src={thumbUrl(score.id, thumbVersions[score.id] ?? 0, generation, photosById.get(score.id)?.look)}
                 alt=""
                 loading="lazy"
                 decoding="async"

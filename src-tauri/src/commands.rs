@@ -273,6 +273,48 @@ fn file_name(path: &std::path::Path) -> String {
         .unwrap_or_default()
 }
 
+/// A photo's thumbnail as the grid shows it (FR-114, ADR-0047): the plain T1 through the
+/// colour of its look (its own, or the shared one it follows; a RAW's linear sliders left out,
+/// as its preview's), from memory or made now. Without a look, the T1 as it is.
+pub fn shown_thumbnail_bytes(state: &AppState, id: PhotoId) -> Option<Vec<u8>> {
+    let plain = thumbnail_bytes(state, id)?;
+    let record = state.library.read().ok()?.record(id)?;
+    let settings = state.settings.read().ok()?.0.clone();
+    let look = fotollection_core::preview::split_look(&record, &settings).1;
+    match state
+        .look_thumbs
+        .get(id, &plain, &look, state.codec.as_ref())
+    {
+        Ok(bytes) => Some(bytes.as_ref().clone()),
+        // A thumbnail that cannot be coloured is still shown, plain.
+        Err(_) => Some(plain),
+    }
+}
+
+/// After a look was given to many photos (FR-114): their coloured thumbnails made on the
+/// background pool, the import's progress bar following (`TaskKind::Looks`); a newer batch
+/// stops this one. The grid asks for them as it scrolls, and finds them made.
+pub(crate) fn warm_look_thumbnails(app: &AppHandle, ids: Vec<PhotoId>) {
+    if ids.is_empty() {
+        return;
+    }
+    let app = app.clone();
+    std::thread::spawn(move || {
+        let state = app.state::<AppState>();
+        let batch = state.look_warm.fetch_add(1, Ordering::SeqCst) + 1;
+        let total = u32::try_from(ids.len()).unwrap_or(u32::MAX);
+        let tick = progress_reporter(&app, TaskKind::Looks, total);
+        state.background_pool.install(|| {
+            ids.par_iter().for_each(|&id| {
+                if state.look_warm.load(Ordering::SeqCst) == batch {
+                    let _ = shown_thumbnail_bytes(&state, id);
+                }
+                tick();
+            });
+        });
+    });
+}
+
 /// Generates T1 thumbnails in the background, low priority (OPTIMIZATION.md §4.1).
 fn warm_thumbnails(app: &AppHandle, ids: Vec<PhotoId>) {
     if ids.is_empty() {
@@ -436,8 +478,23 @@ pub fn list_photos(state: State<'_, AppState>, filter: CullFilter) -> Result<Pho
         .edited()
         .filter(|(_, e)| e.stamp.is_some() || e.caption.is_some())
         .count();
+    // Each photo's colour key (FR-114): its own look, or the shared one it follows.
+    let settings = state
+        .settings
+        .read()
+        .map_err(|e| IpcError::internal(e.to_string()))?
+        .0
+        .clone();
+    let mut photos = library.summaries(&filter);
+    for photo in &mut photos {
+        if let Some(record) = library.record(photo.id) {
+            photo.look = fotollection_core::preview::split_look(&record, &settings)
+                .1
+                .colour_key();
+        }
+    }
     Ok(PhotoList {
-        photos: library.summaries(&filter),
+        photos,
         total: u32::try_from(library.len()).unwrap_or(u32::MAX),
         custom_stamps: u32::try_from(custom_stamps).unwrap_or(u32::MAX),
         folders: library.folder_summaries(),
@@ -868,6 +925,9 @@ pub fn set_settings(
     // Postcards hold one photo a sheet (FR-073): switching them pairs the photos again, so
     // the sheet lists are told once the new setting is in place.
     let regrouped = guard.0.collage.postcard.enabled != settings.collage.postcard.enabled;
+    // The shared look colours the thumbnails of every photo without its own (FR-114): their
+    // keys change, so the grid is told too.
+    let recoloured = guard.0.look.colour_key() != settings.look.colour_key();
     guard.0 = settings;
     guard.1 = guard.1.wrapping_add(1);
     let result = SettingsState {
@@ -876,7 +936,7 @@ pub fn set_settings(
     };
     drop(guard);
     state.persist();
-    if regrouped {
+    if regrouped || recoloured {
         let count = state
             .library
             .read()

@@ -96,6 +96,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [FR-098](PRD.md#fr-098--reading-the-photo-histogram-clipping-white-balance) | The develop view's histogram, from the 1600 px preview through its look | ≤ 3 ms p95 on REF-MAC | `measure_histogram` (1.03 ms at every second pixel of every second row), RESULT §32 |
 | [FR-100](PRD.md#fr-100--motion-that-feels-like-one-app) (v0.14.0, [ADR-0046](adr/0046-one-motion-system.md)) | Frames while a transition runs (a dialog, a fold, the strips, a photo from its tile, the next photo, a zoom by key) | ≥ 58 fps on average, no frame over 33 ms, on REF-MAC and Windows | Planned: `MOTION=1 node site/screenshots/shoot.mjs` logs `requestAnimationFrame` gaps per transition; WKWebView once with Web Inspector's timeline ([TRANS_ANIMATION.md §7](TRANS_ANIMATION.md#7-measuring)) |
 | [FR-114](PRD.md#fr-114--a-look-lut-or-preset-given-to-many-photos-at-once) (v0.14.0) | A look given to 10,000 photos: their edits set and one History step, under the library's write lock | ≤ 50 ms on REF-MAC | `measure_look_batch` (synthetic library, median of 10) |
+| [FR-114](PRD.md#fr-114--a-look-lut-or-preset-given-to-many-photos-at-once), [ADR-0047](adr/0047-thumbnails-show-the-look.md) | A thumbnail through its photo's look (decode the T1, the table, encode); a batch's 500 on the background pool | ≤ 5 ms p95; ≤ 2 s | `measure_look_thumbs` (a folder of JPEGs, 10 runs) |
 | [FR-079](PRD.md#fr-079--colour-adjustments), [ADR-0039](adr/0039-gpu-for-editing-cpu-for-exports.md) | A slider step drawn on the GPU while dragging | ≤ 4 ms a step on REF-MAC; ΔE2000 to Rust's render mean and p99 ≤ 1 on the photo | `bench/gpu/run.mjs` (1–2 ms), `look_parity` + `bench/gpu/parity.mjs` + `bench/quality/look_parity.py` (0.13 / 0.77), RESULT §22 |
 | [FR-072](PRD.md#fr-072--our-own-develop-core) (planned v0.11.0, [ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md)) | Demosaic on the CPU: the Bayer chain (hot pixels, green balance, directional, false colour) on 24 MP; Markesteijn, one pass, on 26 MP; each better than the one it replaces on the charts | ≤ 400 ms (180 ms, RESULT §25); ≤ 700 ms; PSNR, false colour, edge error and maze no worse than Malvar / bilinear X-Trans, a regression stated | `raw_phases` on the nine CC0 samples; `crates/rawcore/examples/charts.rs` (`bench/results/raw-quality.json`) |
 | [FR-072](PRD.md#fr-072--our-own-develop-core), [ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md) | The RAW develop on the GPU (`wgpu`), 24 MP, upload and read-back included; parity to the CPU twin | ≤ 80 ms; ΔE2000 mean and p99 ≤ 1 on the nine samples | Planned with session 19: a GPU `raw_phases` and a parity example |
@@ -118,7 +119,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | Tier | Source | Size | Used for |
 |------|--------|------|----------|
 | T0 | EXIF-embedded thumbnail | ~160 px | Instant grid on first paint |
-| T1 | DCT-scaled decode (1/8) | ~400 px | Sharp grid thumbnails, disk-cached |
+| T1 | DCT-scaled decode (1/8) | ~400 px | Sharp grid thumbnails, disk-cached plain; served through the photo's look, kept in memory (32 MB, ADR-0047) |
 | T2 | Decode or RAW develop + resize to 2048 px, kept on disk as a standard preview (FR-091) | ~2 MP | Interactive preview of stamp and crop; opens any photo in ~27 ms once made |
 | T3 | Full decode | Original | Export only |
 
@@ -237,6 +238,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-11-07 | FR-079 | REF-MAC (M3), loaded, 10 GB swap | `measure_look_tiles` on 24 of the Prague JPEGs, the eight built-in looks, 20 runs | A tile 0.68 ms p50, 0.72 p95 (the first, its table built, 1.64 p95); the card of eight 5.4 ms | RESULT §34 |
 | 2026-11-07 | FR-079 | REF-MAC (M3) | `measure_raw_tiles` on the nine CC0 samples: a RAW's tile from its thumbnail against one from our develop | ΔE2000 2.06–4.23, the X-T3 9.02; a develop 0.3–1.2 s, so tiles come from the standard preview once it exists | RESULT §34 |
 | 2026-11-08 | FR-114 | REF-MAC (M3), loaded, 10 GB swap | `measure_look_batch`, 1,000 and 10,000 synthetic photos, median of 10 | apply 0.44 / 7.35 ms, undo 0.22 / 3.36 ms | Within ≤ 50 ms; RESULT §36 |
+| 2026-11-08 | FR-114 | REF-MAC (M3) | `measure_look_thumbs`, 24 Prague JPEGs, C200 Natural, 10 runs | 1.08 ms p50, 1.19 ms p95; 500 on two threads 373 ms | Within ≤ 5 ms and ≤ 2 s; RESULT §37 |
 
 ### 5.1 Planned measurements
 

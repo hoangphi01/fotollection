@@ -812,3 +812,10 @@
 - **Why:** shadcn's `ScrollArea` puts the class on its root and gives the viewport `size-full`, 100 % of the root's height. A root with only `max-h-*` has an auto height, so the 100 % resolved to the content's height: the viewport grew with its rows, never scrolled, and spilled out of the root, which does not clip. History's `max-h-52`, and two dialogs' `max-h-[50vh]`, had the same fault; no check looked for it.
 - **Fix:** the root is a column and the viewport `min-h-0 flex-1` (`components/ui/scroll-area.tsx`), so a `max-h` on the root bounds the viewport. `layoutChecks` gained UI-LAYOUT-017 (a viewport never past its root), which failed on the old block first.
 - **Rule:** a height limit is checked where the scrolling happens, not where the class is written; a block that sizes from a percentage needs a parent with a definite height or a flex column.
+
+### A batch of looks changed nothing in the grid: "thumbnails stay plain" outlived its reason (FR-114, ADR-0047)
+
+- **Seen:** the owner gave black and white to 96 photos from the new Colour tab; the grid stayed in colour (2026-11-08).
+- **Why:** ADR-0036 decided thumbnails stay plain when a look was one photo's edit, seen in its preview. FR-114 was planned and built on that sentence (its PRD text even said "nothing is redrawn") without asking whether the gallery, now the place a batch is made, still worked without it. The T1's key and address carried nothing of the look.
+- **Fix:** ADR-0047: Rust colours the plain T1 when served (1.1 ms), keeps it in memory (32 MB), and the colour's key is part of the thumbnail's address; a batch colours its thumbnails with the import's progress bar.
+- **Rule:** when a feature moves an action to a new place (one photo to many, the preview to the gallery), re-read the old decisions that held because of the old place, and check the result where the user looks, not where the data changed.

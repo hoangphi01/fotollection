@@ -66,7 +66,7 @@ export const ThumbTile = memo(function ThumbTile({
         <div className="absolute inset-0 animate-pulse bg-muted" />
       )}
       <img
-        src={thumbUrl(photo.id, version, generation)}
+        src={thumbUrl(photo.id, version, generation, photo.look)}
         alt=""
         loading="lazy"
         decoding="async"

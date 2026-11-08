@@ -318,6 +318,7 @@ fn reset_library(state: &AppState) -> Result<(), IpcError> {
         .library_generation
         .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
     state.previews.clear();
+    state.look_thumbs.clear();
     *state.pending.lock().map_err(poisoned)? = None;
     let mut analyses = state.analyses.lock().map_err(poisoned)?;
     *analyses = crate::state::Analyses {

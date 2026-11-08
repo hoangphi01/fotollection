@@ -132,6 +132,10 @@ pub struct AppState {
     pub analysis_cache: AnalysisCache,
     pub analyses: Mutex<Analyses>,
     pub previews: PreviewCache,
+    /// Thumbnails through each photo's colour, in memory (FR-114, ADR-0047), and the batch
+    /// whose thumbnails are being made: a newer batch stops an older one's.
+    pub look_thumbs: fotollection_core::look_thumbs::LookThumbs,
+    pub look_warm: AtomicU64,
     /// Serves what the user is looking at right now (protocol requests).
     pub interactive_pool: rayon::ThreadPool,
     /// Import metadata reads and background T1 generation.
@@ -267,6 +271,8 @@ impl AppState {
                 Some(thumb_dir.clone()),
             ),
             thumbs: ThumbCache::new(thumb_dir),
+            look_thumbs: fotollection_core::look_thumbs::LookThumbs::default(),
+            look_warm: AtomicU64::new(0),
             interactive_pool: rayon::ThreadPoolBuilder::new()
                 .num_threads(2)
                 .thread_name(|i| format!("fotollection-ui-{i}"))

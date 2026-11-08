@@ -45,7 +45,7 @@ export function PhotoFilmstrip({ photos, index, thumbVersions, generation, onPic
       cell={(photo) => (
         <>
           <img
-            src={thumbUrl(photo.id, thumbVersions[photo.id] ?? 0, generation)}
+            src={thumbUrl(photo.id, thumbVersions[photo.id] ?? 0, generation, photo.look)}
             alt=""
             loading="lazy"
             decoding="async"

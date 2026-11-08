@@ -56,6 +56,8 @@ pub enum TaskKind {
     Analyze,
     /// Standard previews made on disk, so any photo opens at once (FR-091).
     Previews,
+    /// Thumbnails coloured after a look was given to many photos (FR-114).
+    Looks,
 }
 
 /// Start-up is over: the last session is back, or there was none (FR-060).

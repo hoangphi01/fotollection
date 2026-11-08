@@ -87,6 +87,7 @@ pub async fn cache_usage(app: AppHandle) -> CacheUsage {
 #[specta::specta]
 pub fn clear_cache(state: State<'_, AppState>) -> CacheUsage {
     cache_limit::clear(&dirs(&state));
+    state.look_thumbs.clear();
     to_ipc(
         cache_limit::usage_by_kind(&dirs(&state)),
         ui(&state).cache_limit_bytes(),
@@ -149,7 +150,7 @@ pub fn memory_info(state: State<'_, AppState>) -> MemoryInfo {
     MemoryInfo {
         total: total as f64,
         budget: (total / 100 * u64::from(ui(&state).preview_memory_percent)) as f64,
-        held: state.previews.usage().total() as f64,
+        held: (state.previews.usage().total() + state.look_thumbs.bytes()) as f64,
     }
 }
 
@@ -183,7 +184,9 @@ pub fn watch_memory(app: &AppHandle) {
             let freed = state
                 .previews
                 .follow_memory(full, fotollection_core::preview::available_memory_percent());
+            // Coloured thumbnails are made again in a millisecond each: they go first.
             if freed > 0 {
+                state.look_thumbs.clear();
                 eprintln!(
                     "memory: short, the previews gave back {} MB",
                     freed / 1_000_000

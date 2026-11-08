@@ -21,7 +21,7 @@ The owner edits with **LUMIX Lab**, where a look is a LUT: a file that maps ever
 Option 3: FR-070 in v0.11.0 (on the linear working space of ADR-0037; since ADR-0038, v0.10.0 on encoded values), then FR-039, then the film looks of FR-047, all on one engine.
 
 - **One engine:** every look, imported or built in, is resampled once to a **33³ table** (u16), applied with tetrahedral interpolation and rayon, and blended with the original by a strength of 0–100 %. Sliders (FR-039) later bake into the same table.
-- **Order:** crop, then the look, then the date stamp, frame and border, so those are never tinted. Thumbnails stay plain, so a look never invalidates the cache.
+- **Order:** crop, then the look, then the date stamp, frame and border, so those are never tinted. Thumbnails stayed plain until [ADR-0047](0047-thumbnails-show-the-look.md) (2026-11-08), so a look never invalidated the cache.
 - **The input surface:** a `.cube` file is text from outside. It is read only in Rust, from a file the user chose in a Rust-side dialog, with a size cap of 8 MB, caps on lines and points (2–65 a side, 1D or 3D), `DOMAIN_MIN`/`DOMAIN_MAX` checked, and NaN or out-of-range values rejected. A fuzz target covers the parser. The file is copied by content hash into the app's `looks/` folder.
 - **Licences:** Fotollection ships only looks made by its own code, under its own names (no trademarked film or camera names, as FR-047). Users' LUTs stay theirs: they never leave the machine, except inside the user's own project, which embeds the LUTs it uses so it renders the same elsewhere ([ADR-0016](0016-self-contained-project-bundle.md)).
 - **Panasonic's `.vlt`** (LUMIX Real Time LUT) is a candidate, added only after its format is checked.

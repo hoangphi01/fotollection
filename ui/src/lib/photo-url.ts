@@ -8,9 +8,11 @@ const base = isWindows ? 'http://fotothumb.localhost' : 'fotothumb://localhost'
 /**
  * `version` changes when a sharper thumbnail becomes available, forcing a reload.
  * `generation` changes when another project replaces the library and ids are reused.
+ * `look` is the photo's colour key (`PhotoSummary.look`, FR-114): Rust serves the thumbnail
+ * through the photo's colour, and a new colour is a new address, so it is fetched again.
  */
-export function thumbUrl(id: number, version = 0, generation = 0): string {
-  return `${base}/thumb/${id}?v=${version}&g=${generation}`
+export function thumbUrl(id: number, version = 0, generation = 0, look = 0): string {
+  return `${base}/thumb/${id}?v=${version}&g=${generation}&l=${look}`
 }
 
 /** The upright, uncropped photo, for the crop editor; `sheet` turns it as it sits in its collage cell. */
