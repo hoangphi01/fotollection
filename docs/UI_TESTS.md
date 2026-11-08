@@ -130,6 +130,7 @@ Every view below runs the A cases of §3 at each width (`overflowViews`, `measur
 | UI-MODE-006 | Settings | every section, the manual among them |
 | UI-MODE-007 | Export dialog, update window, welcome | as recorded |
 | UI-MODE-008 | Crop, compare, best-shot groups, select mode, capture, places and project dialogs | M until each has its fixture |
+| UI-MODE-009 | Pro mode's gallery, Colour tab (FR-114) | a look picked, its tile, amount and button; measured as *Pro panel: Colour*; by hand: ticked photos, all photos shown, the question for photos with their own colour, ⌘Z |
 
 ### Pictures
 

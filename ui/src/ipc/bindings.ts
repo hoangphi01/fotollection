@@ -516,6 +516,18 @@ export const commands = {
 	skipped: Skipped[],
 	unapplied: Unapplied[],
 } | null, IpcError>(__TAURI_INVOKE("import_presets")),
+	/**
+	 *  How many photos a look given to the ticked ones (else to every photo shown) covers, and
+	 *  how many have a colour of their own (FR-114). Nothing changes.
+	 */
+	lookBatchPlan: (filter: CullFilter, ticked: PhotoId[], look: string) => typedError<LookBatchPlan, IpcError>(__TAURI_INVOKE("look_batch_plan", { filter, ticked, look })),
+	/**
+	 *  Gives a look of the library to the ticked photos, else to every photo shown (FR-114), as
+	 *  Lightroom applies a preset only at import: one undo step for all of them. A photo's crop,
+	 *  stamp and RAW look stay; with `keepEdited`, a photo with a colour of its own is left as it
+	 *  is. The look is built here from the library, never taken from the interface.
+	 */
+	applyLookToPhotos: (request: LookBatchRequest) => typedError<LookBatchReport, IpcError>(__TAURI_INVOKE("apply_look_to_photos", { request })),
 	/**  Renames a look of the user's (FR-079); the name is cleaned in Rust. */
 	renameLook: (id: string, name: string) => typedError<LookEntry[], IpcError>(__TAURI_INVOKE("rename_look", { id, name })),
 	/**
@@ -1434,6 +1446,38 @@ export type LogoStyle =
 "original" | 
 /**  One colour like the frame text: black on white, white on black (badges kept). */
 "mono";
+
+/**
+ *  What a look applied to many photos covers (FR-114): how many photos, and how many of them
+ *  have a colour of their own that it would replace, so the panel can ask once.
+ */
+export type LookBatchPlan = {
+	total: number,
+	edited: number,
+};
+
+/**
+ *  What a look applied to many photos did (FR-114): the photos it was given to, and those
+ *  kept as they were because they had a colour of their own and the user chose to keep it.
+ */
+export type LookBatchReport = {
+	applied: number,
+	kept: number,
+};
+
+/**
+ *  A look given to many photos (FR-114): which photos (the ticked ones, else every photo the
+ *  filter shows), which look of the library, at what amount and under what name, and whether
+ *  photos with a colour of their own keep it.
+ */
+export type LookBatchRequest = {
+	filter: CullFilter,
+	ticked: PhotoId[],
+	look: string,
+	amount: number,
+	name: string | null,
+	keepEdited: boolean,
+};
 
 /**  One look as the Looks card lists it. */
 export type LookEntry = {

@@ -413,3 +413,185 @@ pub fn look_table_bytes(state: &AppState, id: PhotoId, look: &str) -> Result<Vec
             .unwrap_or_else(|| fotollection_core::looks::Table::identity().to_rgba8()),
     )
 }
+
+/// What a look applied to many photos covers (FR-114): how many photos, and how many of them
+/// have a colour of their own that it would replace, so the panel can ask once.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct LookBatchPlan {
+    pub total: u32,
+    pub edited: u32,
+}
+
+/// What a look applied to many photos did (FR-114): the photos it was given to, and those
+/// kept as they were because they had a colour of their own and the user chose to keep it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct LookBatchReport {
+    pub applied: u32,
+    pub kept: u32,
+}
+
+/// A look given to many photos (FR-114): which photos (the ticked ones, else every photo the
+/// filter shows), which look of the library, at what amount and under what name, and whether
+/// photos with a colour of their own keep it.
+#[derive(Debug, Clone, serde::Deserialize, specta::Type)]
+#[serde(rename_all = "camelCase")]
+pub struct LookBatchRequest {
+    pub filter: fotollection_core::library::CullFilter,
+    pub ticked: Vec<PhotoId>,
+    pub look: String,
+    pub amount: u8,
+    pub name: Option<String>,
+    pub keep_edited: bool,
+}
+
+/// The look a batch gives each photo: the library's entry as it is, at `amount` (0–100) and
+/// under the name the interface shows (a built-in's translation), cleaned as any look is.
+fn batch_look(entry: &LookEntry, amount: u8, name: Option<String>) -> LookSettings {
+    LookSettings {
+        amount: amount.min(100),
+        name: name.or_else(|| Some(entry.name.clone())),
+        ..entry.look.clone()
+    }
+    .sanitized()
+}
+
+/// A colour of its own that a batch would replace: a look that does something and is not
+/// already the one being given (a photo that follows the shared look has none).
+fn has_own_colour(current: Option<&LookSettings>, next: &LookSettings) -> bool {
+    current.is_some_and(|l| !l.is_identity() && l != next)
+}
+
+fn library_entry(state: &AppState, look: &str) -> Result<LookEntry, IpcError> {
+    let saved = state.saved_looks.lock().map_err(poisoned)?;
+    look_library::entries(&saved)
+        .into_iter()
+        .find(|e| e.id == look)
+        .ok_or_else(|| IpcError::new("look.unknown", "no look with this id"))
+}
+
+/// The photos a batch covers, as an export's (FR-050): the ticked ones, else every photo the
+/// filter shows; at most 10,000.
+fn batch_ids(
+    state: &AppState,
+    filter: &fotollection_core::library::CullFilter,
+    ticked: &[PhotoId],
+) -> Result<Vec<PhotoId>, IpcError> {
+    crate::commands::check_ticked(ticked)?;
+    let library = state.library.read().map_err(poisoned)?;
+    let ids = crate::commands::export_ids(None, ticked, || library.filtered_ids(filter));
+    if ids.is_empty() || ids.len() > crate::commands::MAX_EDIT_IDS {
+        return Err(IpcError::new(
+            "photo.invalid_selection",
+            "Select between 1 and 10,000 photos",
+        ));
+    }
+    Ok(ids)
+}
+
+/// How many photos a look given to the ticked ones (else to every photo shown) covers, and
+/// how many have a colour of their own (FR-114). Nothing changes.
+#[tauri::command]
+#[specta::specta]
+pub fn look_batch_plan(
+    state: State<'_, AppState>,
+    filter: fotollection_core::library::CullFilter,
+    ticked: Vec<PhotoId>,
+    look: String,
+) -> Result<LookBatchPlan, IpcError> {
+    let next = batch_look(&library_entry(&state, &look)?, 100, None);
+    let ids = batch_ids(&state, &filter, &ticked)?;
+    let library = state.library.read().map_err(poisoned)?;
+    let edited = ids
+        .iter()
+        .filter(|&&id| has_own_colour(library.edits(id).look.as_ref(), &next))
+        .count();
+    Ok(LookBatchPlan {
+        total: u32::try_from(ids.len()).unwrap_or(u32::MAX),
+        edited: u32::try_from(edited).unwrap_or(u32::MAX),
+    })
+}
+
+/// Gives a look of the library to the ticked photos, else to every photo shown (FR-114), as
+/// Lightroom applies a preset only at import: one undo step for all of them. A photo's crop,
+/// stamp and RAW look stay; with `keepEdited`, a photo with a colour of its own is left as it
+/// is. The look is built here from the library, never taken from the interface.
+#[tauri::command]
+#[specta::specta]
+pub fn apply_look_to_photos(
+    app: tauri::AppHandle,
+    state: State<'_, AppState>,
+    request: LookBatchRequest,
+) -> Result<LookBatchReport, IpcError> {
+    let LookBatchRequest {
+        filter,
+        ticked,
+        look,
+        amount,
+        name,
+        keep_edited,
+    } = request;
+    let next = batch_look(&library_entry(&state, &look)?, amount, name);
+    let ids = batch_ids(&state, &filter, &ticked)?;
+    let (give, keep): (Vec<PhotoId>, Vec<PhotoId>) = {
+        let library = state.library.read().map_err(poisoned)?;
+        ids.iter().partition(|&&id| {
+            !keep_edited || !has_own_colour(library.edits(id).look.as_ref(), &next)
+        })
+    };
+    let report = LookBatchReport {
+        applied: u32::try_from(give.len()).unwrap_or(u32::MAX),
+        kept: u32::try_from(keep.len()).unwrap_or(u32::MAX),
+    };
+    if !give.is_empty() {
+        crate::commands::edit_photos_as(&app, &state, &give, None, |_, edits| {
+            edits.look = Some(next.clone());
+        })?;
+    }
+    Ok(report)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use fotollection_core::look_library::built_in;
+
+    fn entry(id: &str) -> LookEntry {
+        let Some(e) = built_in().into_iter().find(|e| e.id == id) else {
+            panic!("no built-in look {id}");
+        };
+        e
+    }
+
+    /// FR-114: the look a batch gives is the library's, at the amount asked (at most 100),
+    /// under the name the interface shows, its base kept so the Looks card marks it.
+    #[test]
+    fn fr_114_a_batch_gives_the_librarys_look() {
+        let c200 = entry("builtin:c200-natural");
+        let look = batch_look(&c200, 250, Some("C200 Tự nhiên".into()));
+        assert_eq!(look.amount, 100);
+        assert_eq!(look.adjust, c200.look.adjust);
+        assert_eq!(look.base.as_deref(), Some("builtin:c200-natural"));
+        assert_eq!(look.name.as_deref(), Some("C200 Tự nhiên"));
+        assert_eq!(
+            batch_look(&c200, 40, None).name.as_deref(),
+            Some("C200 Natural")
+        );
+    }
+
+    /// FR-114: only a look that does something and is not the one given counts as a photo's
+    /// own colour; the same look with its sliders moved does.
+    #[test]
+    fn fr_114_a_colour_of_its_own() {
+        let next = batch_look(&entry("builtin:c200-natural"), 100, None);
+        assert!(!has_own_colour(None, &next));
+        assert!(!has_own_colour(Some(&LookSettings::default()), &next));
+        assert!(!has_own_colour(Some(&next), &next));
+        let warm = batch_look(&entry("builtin:warm-film"), 100, None);
+        assert!(has_own_colour(Some(&warm), &next));
+        let mut moved = next.clone();
+        moved.adjust.contrast += 20;
+        assert!(has_own_colour(Some(&moved), &next));
+    }
+}

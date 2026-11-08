@@ -1106,6 +1106,17 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 - **Honest about the rules:** a short note says that offices decide what they accept (background, light, expression, glasses), that some countries now take photos only from approved studios or at the office, and that the user should check before printing. No claim that a photo is compliant.
 - **Never touched:** no retouching, no background replacement; the date stamp, the info frame and the border are off on an ID sheet.
 
+### FR-114 — A look, LUT or preset given to many photos at once
+
+**P2 (v0.14.0; owner's request 2026-11-08: "Lightroom is poor at applying a preset to the photos already in a folder, it only applies one at import").** Pro mode's gallery panel has two tabs, as the photo preview's inspector (FR-095): **Colour** and **Print** (the cards it always had; it opens on Print). The Colour tab gives one look of the library (a built-in look, one's own, an imported LUT or a Lightroom preset, FR-079, FR-070, FR-089) to many photos:
+
+- **Which photos:** the ticked ones (select mode, FR-050), else every photo the gallery shows (its folder and filter), as an export; at most 10,000. The button says how many: *Apply to 12 ticked photos*, *Apply to 422 photos*.
+- **Seen first:** the chosen look on the photo picked in the grid, Rust's small tile; an **Amount** (100 by default) as a preset's.
+- **Photos with a colour of their own** (a look that does something and is not the one given) are asked about once: **Apply to all** or **Keep theirs**. Crops, date stamps and RAW settings stay either way.
+- **One undo step** for the whole batch; each photo's History names the look. The library is the preview's *Presets & LUTs* list, one block (`useLookLibrary`) with the built-in looks added, its **+** importing presets and LUTs here too.
+- **Rust first:** Rust picks the photos, counts the edited ones and builds the look from its library (the interface sends the filter, the ticked ids, the look's id, the amount and its shown name), under one write lock: 7.4 ms for 10,000 photos, its undo 3.4 ms (RESULT §36). Thumbnails stay plain, so nothing is redrawn.
+- **Later:** giving a look to the photos imported into a folder from then on, as Lightroom's import presets (FR-038), after v0.14.0.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

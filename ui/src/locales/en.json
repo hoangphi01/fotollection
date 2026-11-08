@@ -1049,7 +1049,25 @@
     "importedPresets_other": "Imported {{count}} presets.",
     "notAppliedLine": "Not applied: {{setting}} ({{count}})",
     "importFormats": "Presets: Lightroom .xmp, .lrtemplate or a .zip of them. LUTs: .cube (1D or 3D up to 65 points) or HaldCLUT .png, at most 8 MB.",
-    "lutGroup": "LUT"
+    "lutGroup": "LUT",
+    "builtins": "Fotollection looks",
+    "applyTitle": "Colour for many photos",
+    "applyPreviewOn": "On the photo picked in the grid",
+    "applyPick": "Pick a look, LUT or preset below, then give it to the ticked photos or to every photo shown.",
+    "applyTicked_one": "Apply to {{n}} ticked photo",
+    "applyTicked_other": "Apply to {{n}} ticked photos",
+    "applyShown_one": "Apply to {{n}} photo",
+    "applyShown_other": "Apply to {{n}} photos",
+    "applyDone_one": "{{name}} given to {{n}} photo. ⌘Z undoes it.",
+    "applyDone_other": "{{name}} given to {{n}} photos. ⌘Z undoes it.",
+    "applyKept_one": "{{n}} photo kept its own colour.",
+    "applyKept_other": "{{n}} photos kept their own colour.",
+    "applyAskTitle_one": "{{n}} photo has a colour of its own",
+    "applyAskTitle_other": "{{n}} photos have a colour of their own",
+    "applyAskBody": "Give {{name}} to them too, or keep their colour and give it only to the others? Crops, date stamps and RAW settings stay either way.",
+    "applyKeepEdited": "Keep theirs",
+    "applyOverwrite_one": "Apply to all {{n}}",
+    "applyOverwrite_other": "Apply to all {{n}}"
   },
   "rawLook": {
     "title": "RAW colour",
@@ -1151,7 +1169,8 @@
     "edit": "Edit (E)",
     "crop": "Crop (R)",
     "print": "Print and export",
-    "info": "Info (I)"
+    "info": "Info (I)",
+    "colour": "Colour"
   },
   "exportDialog": {
     "title": "Export",

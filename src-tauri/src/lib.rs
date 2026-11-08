@@ -128,6 +128,8 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             looks::delete_look,
             looks::import_lut,
             looks::import_presets,
+            looks::look_batch_plan,
+            looks::apply_look_to_photos,
             looks::rename_look,
             looks::update_look,
             looks::move_look,

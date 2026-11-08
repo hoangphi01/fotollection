@@ -1010,7 +1010,19 @@
     "importedPresets_other": "Đã nhập {{count}} preset.",
     "notAppliedLine": "Không áp dụng: {{setting}} ({{count}})",
     "importFormats": "Preset: Lightroom .xmp, .lrtemplate hoặc tệp .zip chứa chúng. LUT: .cube (1D hoặc 3D tới 65 điểm) hoặc HaldCLUT .png, tối đa 8 MB.",
-    "lutGroup": "LUT"
+    "lutGroup": "LUT",
+    "builtins": "Look của Fotollection",
+    "applyTitle": "Màu cho nhiều ảnh",
+    "applyPreviewOn": "Trên ảnh đang chọn trong lưới",
+    "applyPick": "Chọn một look, LUT hoặc preset ở dưới, rồi áp cho các ảnh đã tick hoặc mọi ảnh đang hiện.",
+    "applyTicked_other": "Áp cho {{n}} ảnh đã tick",
+    "applyShown_other": "Áp cho {{n}} ảnh",
+    "applyDone_other": "Đã áp {{name}} cho {{n}} ảnh. ⌘Z để hoàn tác.",
+    "applyKept_other": "{{n}} ảnh giữ màu riêng.",
+    "applyAskTitle_other": "{{n}} ảnh đã có màu riêng",
+    "applyAskBody": "Áp {{name}} cho cả những ảnh này, hay giữ màu của chúng và chỉ áp cho ảnh còn lại? Cắt ảnh, đóng dấu ngày và cài đặt RAW đều giữ nguyên.",
+    "applyKeepEdited": "Giữ màu riêng",
+    "applyOverwrite_other": "Áp cho cả {{n}} ảnh"
   },
   "rawLook": {
     "title": "Màu RAW",
@@ -1112,7 +1124,8 @@
     "edit": "Chỉnh màu (E)",
     "crop": "Cắt ảnh (R)",
     "print": "In và xuất ảnh",
-    "info": "Thông tin (I)"
+    "info": "Thông tin (I)",
+    "colour": "Màu"
   },
   "exportDialog": {
     "title": "Xuất ảnh",

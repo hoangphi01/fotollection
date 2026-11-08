@@ -691,3 +691,14 @@ Before the owner's eye, three checks with numbers (`measure_looks` on 24 of the 
 
 - **The first proposal was too timid:** *Clear* was 0.68 from *Original*, invisible on a tile. Clear, Cool, Warm old film and Faded were made stronger until each passed or met another limit: *Clear* stops at 2.85, its new clipping at 0.47 % of the 0.5 % allowed; *Cool* at 2.98.
 - **C200 Natural is the owner's GX9 recipe** (FR-039), each camera step taken as 10 on our sliders, a guess: 1.79 from *Original*. Whether a step is worth more is the owner's call when he looks at them.
+
+## 36. A look given to many photos (v0.14.0, FR-114)
+
+What `apply_look_to_photos` does under the library's write lock: each photo's edits read, its look set, one History step; then its undo. `measure_look_batch` on a synthetic library (half the photos cropped, a third with a look of their own), release build, REF-MAC (M3) loaded with 10 GB of swap, median of 10, 2026-11-08:
+
+| Photos | Apply | Undo |
+|---|---|---|
+| 1,000 | 0.44 ms | 0.22 ms |
+| 10,000 (the most a batch takes) | 7.35 ms | 3.36 ms |
+
+- **Well inside the budget** (≤ 50 ms for 10,000): nothing is rendered, as thumbnails stay plain; the previews and sheets that show the photos draw again from the new revision, as after any edit.

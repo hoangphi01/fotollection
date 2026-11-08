@@ -1194,7 +1194,7 @@ pub fn start_export(
 /// The photos an export covers: only the photo `only` (the preview), else the photos ticked
 /// in select mode, once each and in the order given (FR-050), else exactly the photos the
 /// grid shows (FR-022). Unknown ids export nothing.
-fn export_ids(
+pub(crate) fn export_ids(
     only: Option<PhotoId>,
     ticked: &[PhotoId],
     shown: impl FnOnce() -> Vec<PhotoId>,
@@ -2538,7 +2538,7 @@ pub(crate) fn place_names(state: &AppState) -> HashMap<u32, String> {
 }
 
 /// Most photos one culling command may change (IPC input bound, SECURITY.md §2).
-const MAX_EDIT_IDS: usize = 10_000;
+pub(crate) const MAX_EDIT_IDS: usize = 10_000;
 
 /// Applies `edit` to each photo as one undoable step (FR-022, FR-023).
 pub(crate) fn edit_photos(
