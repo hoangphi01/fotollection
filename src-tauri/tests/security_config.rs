@@ -30,8 +30,7 @@ fn directive(name: &str) -> Vec<String> {
     csp()
         .into_iter()
         .find(|(n, _)| n == name)
-        .map(|(_, v)| v)
-        .unwrap_or_else(|| panic!("CSP has {name}"))
+        .map_or_else(|| panic!("CSP has {name}"), |(_, v)| v)
 }
 
 /// C2: the CSP allows the app's own page, its IPC and its photo protocol, nothing remote,

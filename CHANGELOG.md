@@ -8,9 +8,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- Fixes: RAW shadows without bands; a zoomed photo stays on the stage.
+- UI update: an app, not a web page: no stray text highlighting, no web menu or browser keys.
+- Security: a tighter content security policy and fewer webview permissions, checked on every build.
+
 ### Fixed
 
+- **A zoomed photo stays on the stage** (FR-057): dragging, scrolling sideways or zooming about the pointer never moves it off the stage, and a drag that leaves the stage no longer selects the text of the panels beside it.
+- **An app, not a web page:** text no longer highlights when clicked or dragged, in dialogs too; only text fields, a photo's facts and error messages can be selected and copied. A right click shows no web menu (Look Up, Translate, Inspect Element…) outside them, and the web view's keys that reload, print or search do nothing.
 - **RAW shadows without steps:** the RAW tone curve is read between its bins, so dark gradients no longer show bands of three or four levels (35 gaps in the lifted shadows of the nine test cameras, now 1); RAW previews are made again once.
+
+### Security
+
+- **The release build's content security policy** now lets the interface read its own photo protocol (`connect-src`), which the GPU look needs and only release builds enforce.
+- **The webview's permissions are named one by one** (events and the title bar's window controls) instead of Tauri's default set; the policy, the app's configuration and these permissions are checked by the tests on every build.
+- **Secret files** (service-account keys, private keys) can no longer be added to the repository by mistake.
 
 ## [0.13.2] - 2026-11-07 — Develop, part 3
 
