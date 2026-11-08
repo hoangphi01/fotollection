@@ -132,6 +132,18 @@ for token in --shade --highlight --lip --lip-mix; do
   [ "$app" = "$web" ] || fail "$token differs between ui/src/index.css and site/assets/css/site.css"
 done
 
+echo "• The motion tokens match: the app, the splash, the website and TRANS_ANIMATION.md (FR-100)"
+for token in --motion-fast --motion-base --motion-slow --motion-base-out --motion-slow-out --delay-hint --delay-stale --ease-enter --ease-exit --ease-move; do
+  # The value as declared, not the reduced mode's `var(...)` aliases.
+  value=$({ grep -E "^\s*$token: [^v]" ui/src/index.css || true; } | sed -E "s/^ *$token: *//; s/;.*//" | sort -u)
+  [ -n "$value" ] || { fail "$token is not declared in ui/src/index.css"; continue; }
+  web=$({ grep -E "^\s*$token: [^v]" site/assets/css/site.css || true; } | sed -E "s/^ *$token: *//; s/;.*//" | sort -u)
+  [ "$value" = "$web" ] || fail "$token is '$value' in ui/src/index.css but '$web' in site/assets/css/site.css"
+  splash=$({ grep -E "^\s*$token: [^v]" ui/public/splash.css || true; } | sed -E "s/^ *$token: *//; s/;.*//" | sort -u)
+  [ -z "$splash" ] || [ "$value" = "$splash" ] || fail "$token is '$value' in ui/src/index.css but '$splash' in ui/public/splash.css"
+  grep -F "\`$token\`" docs/TRANS_ANIMATION.md | grep -qF "\`$value\`" || fail "$token: docs/TRANS_ANIMATION.md's table does not give '$value'"
+done
+
 echo "• The website's footnotes: each page's list, cited and written in both languages"
 node scripts/check-footnotes.mjs || fail "site footnotes: fix site/_data/footnotes.yml or the notes in site/_data/i18n.yml (site/README.md)"
 

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useEffect, useRef, type ReactNode } from 'react'
+import { motionMs, reducedMotion } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
 type CollapseProps = {
@@ -14,8 +15,6 @@ type CollapseProps = {
   stack?: 'field' | 'card'
 }
 
-/** The fold's transition (`duration-200`) and a frame, so the scroll sees the full height. */
-const GROW_MS = 220
 
 /**
  * Options that only matter while a feature is on: they fold away when it is switched off,
@@ -30,20 +29,21 @@ export function Collapse({ open, children, className, stack }: CollapseProps) {
     const opened = open && !was.current
     was.current = open
     if (!opened) return
+    // After the fold (`motion-fold`, the base pace) and a frame, so the scroll sees the full height.
     const timer = window.setTimeout(() => {
-      const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const still = reducedMotion()
       // A card's body brings its whole card, header included (`SectionCard`'s <section>).
       const parent = ref.current?.parentElement
       const target = parent?.tagName === 'SECTION' ? parent : ref.current
       target?.scrollIntoView({ block: 'nearest', behavior: still ? 'auto' : 'smooth' })
-    }, GROW_MS)
+    }, motionMs('motion-base') + 20)
     return () => window.clearTimeout(timer)
   }, [open])
   return (
     <div
       ref={ref}
       className={cn(
-        'grid transition-[grid-template-rows,opacity,margin] duration-200 ease-out motion-reduce:transition-none',
+        'grid motion-fold',
         open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0',
       )}
       // Folded, it would still take its stack's gap on both sides: it gives one back, so a

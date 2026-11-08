@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { LoaderCircle, Scan, ZoomIn, ZoomOut } from 'lucide-react'
+import { Scan, ZoomIn, ZoomOut } from 'lucide-react'
+import { Spinner } from '@/components/forms/spinner'
 import { useTranslation } from 'react-i18next'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { Button } from '@/components/ui/button'
@@ -62,7 +63,7 @@ export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomI
           className="min-w-14 justify-center px-1 text-xs font-normal text-muted-foreground tabular-nums"
           onClick={onToggle}
         >
-          {loading && <LoaderCircle className="animate-spin" aria-label={t('viewer.zoomSharpening')} />}
+          {loading && <Spinner aria-label={t('viewer.zoomSharpening')} />}
           {percent}&nbsp;%
         </Button>
       ) : (
@@ -71,7 +72,7 @@ export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomI
           aria-live="polite"
           data-hint={loading ? t('viewer.zoomSharpening') : undefined}
         >
-          {loading && <LoaderCircle className="size-3 animate-spin" aria-label={t('viewer.zoomSharpening')} />}
+          {loading && <Spinner className="size-3" aria-label={t('viewer.zoomSharpening')} />}
           {percent}&nbsp;%
         </span>
       )}

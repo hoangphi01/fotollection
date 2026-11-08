@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Camera, LoaderCircle } from 'lucide-react'
+import { Camera} from 'lucide-react'
+import { Spinner } from '@/components/forms/spinner'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { CAMERA_AVAILABLE, CAMERA_OFFERED, type CaptureApi } from './use-capture'
@@ -26,7 +27,7 @@ export function ConnectCameraButton({ capture }: ConnectCameraButtonProps) {
         disabled={!CAMERA_AVAILABLE || connecting || capture.phase === 'connected'}
         onClick={() => void capture.connect()}
       >
-        {connecting ? <LoaderCircle className="animate-spin" /> : <Camera />}
+        {connecting ? <Spinner /> : <Camera />}
       </Button>
     </span>
   )

@@ -1260,5 +1260,12 @@
       "text": "Xuất ảnh ghi các tấm đúng khổ của tiệm, sẵn sàng cho máy in tự phục vụ hay dịch vụ in trực tuyến. Cài đặt → Xuất ảnh giữ lựa chọn của bạn cho lần sau.",
       "alt": "Hộp thoại xuất ảnh"
     }
+  },
+  "motion": {
+    "label": "Chuyển động",
+    "system": "Theo hệ thống",
+    "reduce": "Giảm",
+    "systemHint": "Chuyển động theo cài đặt Giảm chuyển động của hệ thống.",
+    "reduceHint": "Trượt và phóng to chỉ còn là mờ dần ngắn."
   }
 }

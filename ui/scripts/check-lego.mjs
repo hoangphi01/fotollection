@@ -202,9 +202,32 @@ const walkCode = (dir, out = []) => {
 // (components/forms/field.tsx) and fields; the web view's menu is refused in lib/no-web.ts only.
 const SELECT = /\bselect-(text|all)\b|user-select\s*:/
 const CONTEXT = /addEventListener\(\s*['"]contextmenu/
+// One motion system (FR-100, docs/TRANS_ANIMATION.md): every pace and curve is a token of
+// index.css, taken through its utilities (`motion-control`, `motion-move`, `motion-fade`,
+// `motion-fold`, `motion-in`/`-out`) or as `duration-(--motion-*)`, `delay-(--delay-*)`. Refused:
+// a pace, delay or curve by number or keyword, `transition-*` (each sets the default 150 ms),
+// `motion-reduce:`/`motion-safe:` (reduced motion is the tokens' job), a smooth scroll that
+// ignores it, and the pulse outside the one skeleton.
+const MOTION = [
+  [/\b(duration|delay)-\d+\b/, 'a pace or delay by number: use a motion token (duration-(--motion-*), delay-(--delay-*))'],
+  [/\bease-(in|out|in-out|linear)\b/, 'a curve by keyword: the motion utilities carry ease-enter, ease-exit or ease-move'],
+  // `transition-none` stays: what follows the pointer (a dragged row) must not lag.
+  [/(^|[\s'"`])transition(-(?!none\b)[a-z[][^\s'"`]*)?(?=[\s'"`]|$)/, 'a transition by hand: use motion-control, motion-move, motion-fade or motion-fold'],
+  [/\bmotion-(reduce|safe):/, 'reduced motion by hand: the tokens shorten every pace and drop slides (index.css, lib/motion.ts)'],
+  [/behavior:\s*['"]smooth['"]/, "a smooth scroll that ignores reduced motion: reducedMotion() ? 'auto' : 'smooth' (lib/motion.ts)"],
+]
+const PULSE_OK = new Set(['features/library/thumb-tile.tsx'])
+const isComment = (line) => /^\s*(\/\/|\/\*|\*|\{\/\*)/.test(line)
 for (const path of walkCode(join(root, 'src'))) {
-  const rel = relative(join(root, 'src'), path)
+  const rel = relative(join(root, 'src'), path).split(sep).join('/')
   readFileSync(path, 'utf8').split('\n').forEach((line, i) => {
+    if (!isComment(line)) {
+      for (const [test, say] of MOTION) if (test.test(line)) problems.push(`${rel}:${i + 1}: ${say} (FR-100)`)
+      if (/\banimate-spin\b/.test(line) && rel !== 'components/forms/spinner.tsx')
+        problems.push(`${rel}:${i + 1}: a spinner by hand: use Spinner (components/forms/spinner.tsx) (FR-100)`)
+      if (/\banimate-pulse\b/.test(line) && !PULSE_OK.has(rel))
+        problems.push(`${rel}:${i + 1}: a pulse outside the thumbnail's skeleton: a wait shows a Spinner or a skeleton block (FR-100)`)
+    }
     if (DANGEROUS.test(line)) problems.push(`${rel}:${i + 1}: a dangerous DOM API named (SECURITY.md §7; CI refuses it, even in a comment)`)
     if (SELECT.test(line) && rel !== 'components/forms/field.tsx')
       problems.push(`${rel}:${i + 1}: selectable text by hand: use Selectable (an app selects only fields, facts and error codes)`)

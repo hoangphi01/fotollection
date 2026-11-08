@@ -60,6 +60,7 @@ import { useSharpRegion } from './use-sharp-region'
 import { useZoom } from './use-zoom'
 import { ZoomControls } from './zoom-controls'
 import { ownsArrowKeys } from '@/lib/keyboard'
+import { reducedMotion } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 import { ViewerFrame } from '@/components/layout/viewer-frame'
 import { InspectorTabs } from '@/components/layout/inspector-tabs'
@@ -266,7 +267,7 @@ export function PreviewDialog({
   // The progress shows in the Print tab's card, so it opens and comes into view.
   const toExport = () => {
     openTab('print')
-    requestAnimationFrame(() => exportRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }))
+    requestAnimationFrame(() => exportRef.current?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'end' }))
     if (!photo) return
     if (ui.exportAsk || !ui.exportDestination)
       showExportDialog({ filter, count: 1, only: photo.id, ticked: [], collage: false, folderCount: 1 })
@@ -553,7 +554,7 @@ export function PreviewDialog({
                   onClick={picking ? pickAt : zoom.pointer.onClick}
                   style={{ transform: zoom.transform }}
                   className={cn(
-                    'max-h-full max-w-full animate-in object-contain stage-photo fade-in-0',
+                    'max-h-full max-w-full animate-in object-contain stage-photo fade-in-0 motion-in',
                     picking
                       ? 'cursor-crosshair'
                       : zoom.zoomed || canDrag

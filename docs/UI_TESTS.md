@@ -113,6 +113,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | UI-HEUR-001 | The same thing looks the same everywhere | One block per meaning; the same card in the same order in panel and preview | A `check-lego` `@shown` + M | commit | Nielsen 4; STYLE_RULE §4 |
 | UI-HEUR-002 | Undo and Esc are always there | Every edit is one undo step; Esc leaves the current mode | M | release | Nielsen 3 |
 | UI-HEUR-003 | Hints teach the keys | Every toolbar button's hint names its key | M | release | Nielsen 6, 7 |
+| UI-HEUR-004 | One motion system | Every transition on the motion tokens: no pace, curve or `transition-*` by hand, no hand-made spinner (FR-100, TRANS_ANIMATION.md) | A `check-lego`, `check-docs` (tokens) | commit | TRANS_ANIMATION.md §6 |
 
 ### Views
 
@@ -145,6 +146,7 @@ The approved pictures live in `site/screenshots/baselines/`. After an intended c
 | UI-MANUAL-002 | The real app on Windows | The same, with the title bar and its hints |
 | UI-MANUAL-003 | The smallest window | 1180 px wide: every toolbar on one line, the left column folding |
 | UI-MANUAL-004 | Reading the words | A read of new strings in both languages against the [GLOSSARY](GLOSSARY.md) |
+| UI-MANUAL-005 | Motion (FR-100) | Open and close a dialog, a popover and a hint (each fades out too); fold a card and a strip under the stage; a notice comes and goes; hold Space for the quick preview and let go; then *Settings → Motion: Reduce* and the system's *Reduce motion*: only quick fades left, spinners turning; nothing waits for an animation |
 
 ## 4. Allowed exceptions
 

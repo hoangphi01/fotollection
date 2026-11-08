@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CheckCheck, LoaderCircle, Sparkles } from 'lucide-react'
+import { CheckCheck, Sparkles } from 'lucide-react'
+import { Spinner } from '@/components/forms/spinner'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -26,7 +27,7 @@ export function GroupsView({ bestShots, thumbVersions, generation, revision }: G
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center text-sm text-muted-foreground">
         {running ? (
-          <LoaderCircle className="size-6 animate-spin" />
+          <Spinner size="stage" />
         ) : (
           <Sparkles className="size-6" />
         )}

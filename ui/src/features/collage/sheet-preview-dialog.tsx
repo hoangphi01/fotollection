@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Crop, Download, Images, LoaderCircle, Printer, RotateCw, RotateCwSquare, ShoppingBasket, SlidersHorizontal } from 'lucide-react'
+import { Crop, Download, Images, Printer, RotateCw, RotateCwSquare, ShoppingBasket, SlidersHorizontal } from 'lucide-react'
+import { Spinner } from '@/components/forms/spinner'
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -338,7 +339,7 @@ export function SheetPreviewDialog({
                     // The dialog's 90vh less the stage's padding (2 × 2rem), the toolbar row above
                     // it (`--spacing-header`) and its line, and the strip of looks below (7.75rem,
                     // `STRIP_OPEN`, and its line): the whole sheet fits, any shape.
-                    'block max-h-[calc(90vh-4rem-var(--spacing-header)-1px-7.75rem-1px)] max-w-full animate-in object-contain stage-photo fade-in-0',
+                    'block max-h-[calc(90vh-4rem-var(--spacing-header)-1px-7.75rem-1px)] max-w-full animate-in object-contain stage-photo fade-in-0 motion-in',
                     picking && 'cursor-crosshair',
                   )}
                 />
@@ -371,8 +372,8 @@ export function SheetPreviewDialog({
             <span className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-stage-chip px-3 py-1 text-xs text-stage-ink tabular-nums">
               {/* The new render after a change of setting is on its way; the spinner keeps
                   its place when hidden, so the text never shifts. */}
-              <LoaderCircle
-                className={cn('size-3 animate-spin', (shownSrc === null || shownSrc === src) && 'invisible')}
+              <Spinner
+                className={cn('size-3', (shownSrc === null || shownSrc === src) && 'invisible')}
                 aria-label={shownSrc !== null && shownSrc !== src ? t('viewer.rendering') : undefined}
                 aria-hidden={shownSrc === null || shownSrc === src}
               />

@@ -22,6 +22,8 @@ import { useLibrary } from '@/features/library/use-library'
 import { SettingsPanel } from '@/features/settings/settings-panel'
 import { useRenderSettings } from '@/features/settings/use-render-settings'
 import { useLanguage } from '@/features/settings/use-language'
+import { useMotion } from '@/features/settings/use-motion'
+import { usePresence } from '@/lib/motion'
 import { useFrameConfig } from '@/features/frame/use-frame-config'
 import { useFonts } from '@/features/fonts/use-fonts'
 import { ExportDialog } from '@/features/export/export-dialog'
@@ -65,6 +67,7 @@ export function App() {
   useStartupScreen()
   // The language applies in every mode, not only where its picker is (FR-020).
   useLanguage()
+  useMotion()
   // Simple mode shows one photo at a time and few settings (FR-048).
   const { mode, setMode } = useAppMode()
   useModeShortcuts(setMode)
@@ -125,6 +128,8 @@ export function App() {
   }
   const quick = useQuickPreview(selectMode, photos.length, hovered, select.anchor ?? current, select.toggle)
   const quickPhoto = quick.index === null ? undefined : photos[quick.index]
+  // Drawn for its fade out once released (FR-100).
+  const quickShown = usePresence(quickPhoto ?? null)
   // Another mode starts clean: no select mode, no preview, no Quick-preview left over from
   // Pro (FR-048).
   const [shownMode, setShownMode] = useState(mode)
@@ -387,13 +392,14 @@ export function App() {
           </>
         )}
       </main>
-      {quickPhoto && (
+      {quickShown.shown && (
         <QuickPreview
-          photo={quickPhoto}
+          photo={quickShown.shown}
+          leaving={quickShown.leaving}
           revision={revision}
-          thumbVersion={thumbVersions[quickPhoto.id] ?? 0}
+          thumbVersion={thumbVersions[quickShown.shown.id] ?? 0}
           generation={project.document.generation}
-          checked={select.checked.has(quickPhoto.id)}
+          checked={select.checked.has(quickShown.shown.id)}
           onClose={quick.close}
         />
       )}

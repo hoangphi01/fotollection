@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Aperture, Camera, FileImage, LoaderCircle, Minus, OctagonX, Plus, SunMedium } from 'lucide-react'
+import { Aperture, Camera, FileImage, Minus, OctagonX, Plus, SunMedium } from 'lucide-react'
+import { Spinner } from '@/components/forms/spinner'
 import { useTranslation } from 'react-i18next'
 import { SectionCard } from '@/components/layout/section-card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -60,7 +61,7 @@ export function CameraControls({ capture }: CameraControlsProps) {
   return (
     <>
       <Button size="lg" className="w-full" onClick={() => void capture.capture()}>
-        {capture.pending > 0 ? <LoaderCircle className="animate-spin" data-icon="inline-start" /> : <Camera data-icon="inline-start" />}
+        {capture.pending > 0 ? <Spinner data-icon="inline-start" /> : <Camera data-icon="inline-start" />}
         {capture.pending > 0 ? t('capture.shooting', { count: capture.pending }) : t('capture.shoot')}
       </Button>
 

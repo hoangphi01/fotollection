@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { LoaderCircle } from 'lucide-react'
+import { Spinner } from '@/components/forms/spinner'
 import { useTranslation } from 'react-i18next'
 import { NoticeCard } from '@/components/layout/notice-stack'
 import { Progress } from '@/components/ui/progress'
@@ -12,7 +12,7 @@ export function TaskProgressBar({ progress }: { progress: TaskProgress }) {
 
   return (
     <NoticeCard className="flex items-center gap-2" role="status">
-      <LoaderCircle className="size-3.5 shrink-0 animate-spin text-muted-foreground" />
+      <Spinner className="size-3.5 shrink-0 text-muted-foreground" />
       <span className="shrink-0 text-xs font-medium">{t(`task.${progress.task}` as const)}</span>
       <Progress value={percent} className="h-1.5 flex-1" />
       <span className="shrink-0 text-xs text-muted-foreground tabular-nums">

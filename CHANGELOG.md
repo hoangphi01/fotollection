@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - New: **Lightroom presets** and **LUTs** in Pro mode, in a Presets & LUTs panel like Lightroom's.
 - New: Simple mode shows the looks as a numbered strip under the photo: a number key, then ↑, and the photo is coloured and kept.
 - UI update: a collage sheet's preview has Edit and Print tabs, and colours the whole sheet when no photo is picked.
+- UI update: **one way of moving** everywhere: dialogs, menus, hints, folds and notices come and go at the same pace, and **Settings → Motion** can keep it to short fades.
 - Fixes: RAW shadows without steps.
 
 ### Added
@@ -39,6 +40,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **One way of moving** (FR-100): every animation now takes one of three paces and three curves, so dialogs, menus, hints, cards that fold, the strips under the photo and notices move alike; hints and the quick preview fade out instead of vanishing, the strips and notices slide instead of jumping, and one spinner is used everywhere (a thumbnail still loading shows its grey shape only). **Settings → General → Motion** follows the system's *Reduce motion* or keeps it to short fades.
+- **Security:** the start-up screen's styles are a file, no longer inline in the page.
 - **Collage sheet preview in two tabs** (FR-079, FR-095), as the photo preview: **Edit** (the photos on the sheet, then the colour cards) and **Print and export** (size, postcards, cells, date stamp, export). The looks are a strip under the sheet, folding by its header as the photo preview's, the keys' footer beside it as tall as an open strip, open or folded; the keys are the few used most, every key behind ⓘ in the toolbar. With no photo picked, **Whole sheet** (key **0**) is the first row of the photos, and the colour cards change both photos together: the same look for both, one undo step, a note when their colours differed.
 
 - **Website:** the footer shows the GPLv3 mark with "Fotollection is released under the GPL 3.0", as other free software does; the mark is served from the site.

@@ -247,10 +247,10 @@ export function SizeChange({
       variant={lighter ? 'default' : 'secondary'}
       data-hint={t(key, values)}
       className={cn(
-        'tabular-nums transition-opacity',
+        'tabular-nums motion-fade',
         // Dimmed only when the new figure is slow to come: a quick refresh while typing
         // never blinks (STYLE_RULE §4).
-        stale && 'opacity-50 delay-700',
+        stale && 'opacity-50 delay-(--delay-stale)',
       )}
     >
       <HardDrive data-icon="inline-start" aria-hidden />

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CircleCheck, Download, LoaderCircle, RefreshCw } from 'lucide-react'
+import { CircleCheck, Download, RefreshCw } from 'lucide-react'
+import { Spinner } from '@/components/forms/spinner'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Field, Hint } from '@/components/forms/field'
@@ -42,7 +43,7 @@ export function UpdateCheck() {
       ) : (
         <>
           <Button size="sm" variant="outline" className="w-full" disabled={state.kind === 'checking'} onClick={() => void check()}>
-            {state.kind === 'checking' ? <LoaderCircle data-icon="inline-start" className="animate-spin" /> : <RefreshCw data-icon="inline-start" />}
+            {state.kind === 'checking' ? <Spinner data-icon="inline-start" /> : <RefreshCw data-icon="inline-start" />}
             {t(state.kind === 'checking' ? 'update.checking' : 'update.check')}
           </Button>
           {state.kind === 'done' && (

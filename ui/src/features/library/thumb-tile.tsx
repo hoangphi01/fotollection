@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { CalendarX2, Info, LoaderCircle, MapPinCheck, MapPinOff } from 'lucide-react'
+import { CalendarX2, Info, MapPinCheck, MapPinOff } from 'lucide-react'
 import { memo, useState, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { PhotoSummary } from '@/ipc/bindings'
@@ -62,9 +62,8 @@ export const ThumbTile = memo(function ThumbTile({
       style={{ width: size, height: size }}
     >
       {!loaded && (
-        <div className="absolute inset-0 flex animate-pulse items-center justify-center bg-muted">
-          <LoaderCircle className="size-5 animate-spin text-muted-foreground/60" />
-        </div>
+        // A skeleton only, the shape of what comes (FR-100): a spinner on it said the same twice.
+        <div className="absolute inset-0 animate-pulse bg-muted" />
       )}
       <img
         src={thumbUrl(photo.id, version, generation)}
@@ -75,12 +74,12 @@ export const ThumbTile = memo(function ThumbTile({
         onLoad={() => setLoaded(true)}
         style={photo.rotation ? { transform: `rotate(${photo.rotation * 90}deg)` } : undefined}
         className={cn(
-          'size-full object-cover transition-opacity duration-300',
+          'size-full object-cover motion-fade duration-(--motion-slow)',
           !loaded ? 'opacity-0' : photo.flag === 'reject' ? 'opacity-35' : 'opacity-100',
         )}
       />
       <CullBadges rating={photo.rating} flag={photo.flag} className="absolute top-1 left-1" />
-      <div className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-gradient-to-t from-stage-chip to-transparent px-1.5 pt-4 pb-1 text-2xs text-stage-ink opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="absolute inset-x-0 bottom-0 flex items-center gap-1 bg-gradient-to-t from-stage-chip to-transparent px-1.5 pt-4 pb-1 text-2xs text-stage-ink opacity-0 motion-fade group-hover:opacity-100">
         <span className="truncate">{formatCapture(photo.capture)}</span>
       </div>
       {selectMode && (

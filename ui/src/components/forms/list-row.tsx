@@ -20,7 +20,7 @@ export const CHOSEN_ROW = 'bg-accent font-medium text-accent-foreground row-chos
 export const ROW_LAYOUT = 'gap-2 px-2 text-sm [&>svg]:size-4! [&>svg]:shrink-0'
 export const ROW_ICON = (chosen: boolean) => (chosen ? '[&>svg]:text-primary' : '[&>svg]:text-muted-foreground')
 /** The row under the pointer: the ghost button's wash, so every list reacts the same. */
-export const ROW_HOVER = 'hover:bg-muted dark:hover:bg-muted/50'
+export const ROW_HOVER = 'motion-control hover:bg-muted dark:hover:bg-muted/50'
 
 type ListRowProps = {
   /** A Lucide icon before the words; rows without one keep its room, so words line up. */

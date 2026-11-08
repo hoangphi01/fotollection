@@ -13,6 +13,8 @@ type QuickPreviewProps = {
   thumbVersion: number
   generation: number
   checked: boolean
+  /** Released: it fades out (FR-100) and lets clicks through. */
+  leaving?: boolean
   onClose: () => void
 }
 
@@ -21,13 +23,16 @@ type QuickPreviewProps = {
  * stamp and frame, and nothing to edit. The thumbnail shows at once; the render replaces it
  * when it arrives, and stays while a newer one loads.
  */
-export function QuickPreview({ photo, revision, thumbVersion, generation, checked, onClose }: QuickPreviewProps) {
+export function QuickPreview({ photo, revision, thumbVersion, generation, checked, leaving = false, onClose }: QuickPreviewProps) {
   const { t } = useTranslation()
   const { src: shown, error } = useShownSrc(photo.id, previewUrl(photo.id, revision))
 
   return (
     <div
-      className="fixed inset-0 z-50 flex animate-in flex-col items-center justify-center gap-3 bg-stage-scrim p-10 fade-in-0"
+      className={cn(
+        'fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-stage-scrim p-10',
+        leaving ? 'pointer-events-none animate-out fill-mode-forwards fade-out-0 motion-out' : 'animate-in fade-in-0 motion-in',
+      )}
       onClick={onClose}
       role="presentation"
       data-quick-preview

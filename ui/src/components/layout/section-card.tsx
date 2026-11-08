@@ -33,14 +33,17 @@ export function SectionCard({ icon, title, action, open = true, footer, children
       <header
         className={cn(
           'flex h-11 items-center gap-2 bg-muted/70 px-3 text-sm font-semibold shadow-[inset_0_1px_0_var(--highlight)]',
-          ((hasBody && open) || footer) && 'border-b',
+          // The line under the head fades with the fold, never snaps mid-way (FR-100); always
+          // there when it can be, so the head never changes height.
+          (hasBody || footer) && 'border-b motion-control duration-(--motion-base)',
+          hasBody && !open && !footer && 'border-b-transparent',
         )}
       >
         <span className="flex text-primary [&_svg]:size-4">{icon}</span>
         {onToggle ? (
           <button type="button" className="flex h-8 min-w-0 flex-1 items-center gap-2 text-left" aria-expanded={open} onClick={onToggle}>
             <span className="min-w-0 truncate" data-hint={typeof title === 'string' ? title : undefined}>{title}</span>
-            <ChevronDown className={cn('size-4 shrink-0 text-muted-foreground transition-transform', !open && '-rotate-90')} />
+            <ChevronDown className={cn('size-4 shrink-0 text-muted-foreground motion-move', !open && '-rotate-90')} />
           </button>
         ) : (
           <div className="min-w-0 flex-1 truncate" data-hint={typeof title === 'string' ? title : undefined}>{title}</div>

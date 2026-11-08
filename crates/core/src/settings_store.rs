@@ -35,7 +35,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v16 (FR-092, FR-093): `ui.exportQuality` (90), `ui.exportSubfolder`, `ui.exportNaming`, `ui.exportExisting`, `ui.exportMetadata`, `ui.exportLimitKb` (FR-009, FR-010, FR-104, FR-105), `ui.checkUpdatesAtStart` (FR-103, on), `ui.exportAsk` (on), `ui.exportSeparate`
 /// (off) and `ui.exportDestination` (none), each absent before.
 /// v17 (FR-109): `ui.welcomeSeen`, `ui.welcomeEveryStart`.
-/// v18 (FR-079): `looks`, the user's saved looks, absent before (none).
+/// v18 (FR-079): `looks`, the user's saved looks, absent before (none); `ui.motion`
+/// (FR-100), absent before (follow the system).
 pub const SCHEMA_VERSION: u32 = 18;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
@@ -571,10 +572,13 @@ mod tests {
             panic!("v17 should load");
         };
         assert_eq!(old.looks, []);
+        // FR-100: a v17 file follows the system's *Reduce motion*.
+        assert_eq!(old.ui.motion, crate::settings::MotionPreference::System);
         std::fs::write(&path, include_str!("../tests/fixtures/settings/v18.json"))?;
         let Loaded::Ok(new) = load(&path) else {
             panic!("v18 should load");
         };
+        assert_eq!(new.ui.motion, crate::settings::MotionPreference::Reduce);
         assert_eq!(new.looks.len(), 2);
         let preset = &new.looks[1];
         assert_eq!(
@@ -608,6 +612,7 @@ mod tests {
             panic!("a saved v18 should load");
         };
         assert_eq!(again.looks, new.looks);
+        assert_eq!(again.ui.motion, new.ui.motion);
         Ok(())
     }
 

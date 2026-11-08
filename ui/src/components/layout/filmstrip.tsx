@@ -65,7 +65,10 @@ export function Filmstrip<T>({ items, current = null, onPick, cell, hint, label,
       {header !== undefined && (
         <div className="flex h-7 items-center gap-2 truncate px-4 text-xs text-stage-ink-muted tabular-nums">{header}</div>
       )}
-      {!collapsed && (
+      {/* The cells fold under the header (FR-100): their height, as Collapse's (`motion-fold`);
+          kept drawn and `inert` while folded, so opening is one move, never a load. */}
+      <div className={cn('grid motion-fold', collapsed ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr]')} inert={collapsed}>
+      <div className="min-h-0 overflow-hidden">
       <div className={cn('flex shrink-0 items-center gap-3 px-4', header === undefined ? 'h-28' : 'h-24 pb-2')}>
         {label !== undefined && <span className="w-16 shrink-0 text-xs text-stage-ink-muted tabular-nums">{label}</span>}
         {count === 0 ? (
@@ -85,7 +88,7 @@ export function Filmstrip<T>({ items, current = null, onPick, cell, hint, label,
                     data-hint={hint(it)}
                     onClick={() => onPick(it, item.index)}
                     className={cn(
-                      'absolute top-0 overflow-hidden rounded-sm bg-stage-raised ring-offset-2 ring-offset-stage transition outline-none hover:ring-2 hover:ring-primary/60 focus-visible:ring-2 focus-visible:ring-primary',
+                      'absolute top-0 overflow-hidden rounded-sm bg-stage-raised ring-offset-2 ring-offset-stage motion-control outline-none hover:ring-2 hover:ring-primary/60 focus-visible:ring-2 focus-visible:ring-primary',
                       item.index === current && 'ring-2 ring-primary hover:ring-primary',
                     )}
                     style={{ left: item.start, width: CELL, height: CELL }}
@@ -98,7 +101,8 @@ export function Filmstrip<T>({ items, current = null, onPick, cell, hint, label,
           </div>
         )}
       </div>
-      )}
+      </div>
+      </div>
     </div>
   )
 }

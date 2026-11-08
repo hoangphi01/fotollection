@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { LoaderCircle, MapPinCheck } from 'lucide-react'
+import { MapPinCheck } from 'lucide-react'
+import { Spinner } from '@/components/forms/spinner'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -84,7 +85,7 @@ export function BorrowDialog({ onClose }: BorrowDialogProps) {
             options={WINDOWS.map((w) => ({ value: String(w), label: t('places.minutes', { count: w }) }))}
           />
           <Button size="sm" className="ml-auto" disabled={busy} onClick={() => void search()}>
-            {busy ? <LoaderCircle className="animate-spin" data-icon="inline-start" /> : <MapPinCheck data-icon="inline-start" />}
+            {busy ? <Spinner data-icon="inline-start" /> : <MapPinCheck data-icon="inline-start" />}
             {t('places.borrowSearch')}
           </Button>
         </div>

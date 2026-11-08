@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { LoaderCircle, OctagonX } from 'lucide-react'
+import { OctagonX } from 'lucide-react'
+import { Spinner } from '@/components/forms/spinner'
 import { useTranslation } from 'react-i18next'
 import { Selectable } from '@/components/forms/field'
 
@@ -20,7 +21,7 @@ export function StageSpinner({ error, label }: { error?: string | null; label?: 
   }
   return (
     <div className="absolute flex flex-col items-center gap-2 text-stage-ink-muted">
-      <LoaderCircle className="size-7 animate-spin" />
+      <Spinner size="stage" />
       <span className="text-xs">{label ?? t('viewer.rendering')}</span>
     </div>
   )

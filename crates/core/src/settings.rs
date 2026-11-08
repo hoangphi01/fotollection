@@ -121,6 +121,9 @@ pub struct UiSettings {
     /// settings v17: off.
     #[serde(default)]
     pub welcome_every_start: bool,
+    /// How much the interface moves (FR-100). Absent before settings v18: follow the system.
+    #[serde(default)]
+    pub motion: MotionPreference,
 }
 
 /// What an export does when a file of the same name is already there (FR-009, Lightroom's
@@ -157,6 +160,17 @@ pub const EXPORT_LIMIT_KB_RANGE: std::ops::RangeInclusive<u32> = 100..=50_000;
 pub const EXPORT_QUALITY_RANGE: std::ops::RangeInclusive<u8> = 60..=100;
 /// The longest destination path kept, in bytes; a longer one is dropped (asked again).
 const MAX_DESTINATION: usize = 4096;
+
+/// How much the interface moves (FR-100, `docs/TRANS_ANIMATION.md`): `System` follows the
+/// operating system's *Reduce motion*; `Reduce` turns slides and zooms into short fades
+/// whatever the system says.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum MotionPreference {
+    #[default]
+    System,
+    Reduce,
+}
 
 /// How the photo preview opens (FR-095): as a dialog over the gallery, or filling the app
 /// window with the Navigator and History on the left.
@@ -224,6 +238,7 @@ impl Default for UiSettings {
             check_updates_at_start: default_check_updates(),
             welcome_seen: false,
             welcome_every_start: false,
+            motion: MotionPreference::default(),
         }
     }
 }

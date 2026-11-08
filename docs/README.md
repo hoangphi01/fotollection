@@ -9,7 +9,7 @@
 | If you are… | Read |
 |-------------|------|
 | New to the project | [PRD](PRD.md) → [ARCHITECTURE](ARCHITECTURE.md) → [ROADMAP](ROADMAP.md) → [STATUS](STATUS.md) |
-| About to write code | [DEVELOPMENT](DEVELOPMENT.md) → [STYLE_RULE](STYLE_RULE.md) → [TESTING](TESTING.md) → [UI_TESTS](UI_TESTS.md) → [LESSONS](LESSONS.md) → [CONTRIBUTING](../CONTRIBUTING.md) |
+| About to write code | [DEVELOPMENT](DEVELOPMENT.md) → [STYLE_RULE](STYLE_RULE.md) → [TRANS_ANIMATION](TRANS_ANIMATION.md) → [TESTING](TESTING.md) → [UI_TESTS](UI_TESTS.md) → [LESSONS](LESSONS.md) → [CONTRIBUTING](../CONTRIBUTING.md) |
 | Debugging something | [LESSONS](LESSONS.md) first: it may have happened before; a user's `ERR-…` code in [ERROR_CONTROL](ERROR_CONTROL.md) |
 | Working on performance | [RESULT](RESULT.md) → [OPTIMIZATION](OPTIMIZATION.md) |
 | Touching file input, IPC or the webview | [SECURITY](SECURITY.md) |
@@ -33,6 +33,7 @@
 | Performance methodology, design techniques, benchmark history | [OPTIMIZATION.md](OPTIMIZATION.md) |
 | Latest measured speed and memory, in one readable page | [RESULT.md](RESULT.md) |
 | Code, UI, git and docs conventions | [STYLE_RULE.md](STYLE_RULE.md) |
+| How the interface moves: motion tokens, which block uses which, reduced motion, transitions, the frame budget | [TRANS_ANIMATION.md](TRANS_ANIMATION.md) |
 | Toolchain setup, build commands, build disk cleanup | [DEVELOPMENT.md](DEVELOPMENT.md) |
 | Threat model and defenses | [SECURITY.md](SECURITY.md) |
 | **Every error code** (`ERR-<KIND>-<NNNN>`): meaning, cause, what to do, where it is raised | [ERROR_CONTROL.md](ERROR_CONTROL.md) |

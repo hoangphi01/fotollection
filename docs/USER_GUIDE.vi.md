@@ -27,7 +27,7 @@ Fotollection làm việc trên các thư mục ảnh bạn đã có. Nó đọc 
 
 **Ba chế độ:** các nút ở đầu thanh bên chuyển giữa **Đơn giản** (từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất: chương 18), **Ghép ảnh** (hai ảnh trên một tấm in: chương 19, hoặc bưu thiếp: chương 20) và **Pro**, phần app mà hướng dẫn này mô tả. Ảnh, giỏ in và thiết lập của bạn giống nhau ở mọi chế độ, và chế độ được nhớ trên máy này. **Cmd/Ctrl+1**, **2** và **3** chuyển giữa chúng, kể cả khi đang xem trước (bản xem trước sẽ đóng; trừ lúc đang cắt ảnh) ([FR-048](PRD.md#fr-048--simple-collage-and-professional-modes)).
 
-**Ngôn ngữ và giao diện:** mở **Cài đặt** (bánh răng cạnh *by @hoangphi01* ở đầu thanh bên, hoặc **⌘,** / **Ctrl+,**), rồi chọn *English* hoặc *Tiếng Việt* ở mục **Ngôn ngữ** trong *Chung* (chương 23); ở chế độ nào cũng giống nhau. Ba nút ở cuối thanh bên đổi giao diện: **Theo hệ thống**, **Sáng** hoặc **Tối** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)).
+**Ngôn ngữ và giao diện:** mở **Cài đặt** (bánh răng cạnh *by @hoangphi01* ở đầu thanh bên, hoặc **⌘,** / **Ctrl+,**), rồi chọn *English* hoặc *Tiếng Việt* ở mục **Ngôn ngữ** trong *Chung* (chương 23); ở chế độ nào cũng giống nhau. Ba nút ở cuối thanh bên đổi giao diện: **Theo hệ thống**, **Sáng** hoặc **Tối** ([FR-020](PRD.md#fr-020--localization), [FR-052](PRD.md#fr-052--appearance-theme-title-bar-and-hints)). **Chuyển động** trong *Chung* giữ giao diện ít chuyển động: *Theo hệ thống* làm theo cài đặt *Giảm chuyển động* của hệ thống, *Giảm* biến trượt và phóng to thành mờ dần ngắn ([FR-100](PRD.md#fr-100--motion-that-feels-like-one-app)).
 
 <!-- chapter: cull -->
 

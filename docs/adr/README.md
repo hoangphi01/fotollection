@@ -49,6 +49,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0043](0043-lossless-export-f32-path-tiff.md) | Lossless export (Pro): a 32-bit float path to TIFF 16-bit or 32-bit float, learned from RawTherapee and darktable without their code; image methods chosen by measurement | Accepted | 2026-11-07 |
 | [0044](0044-rust-first-our-edge.md) | Rust first: every pixel and file in Rust, parallel by default, safe parsers, small and lean, typed IPC, measured; the guiding principle for every design and doc | Accepted | 2026-11-07 |
 | [0045](0045-presets-compiled-into-the-look-table.md) | Lightroom presets compiled into the look table: sliders to ours, curves, whites/blacks, HSL, colour grading and B&W mixer baked into one 33³ LUT; spatial tools named, never dropped; strengths tuned against Lightroom's renders | Accepted | 2026-11-08 |
+| [0046](0046-one-motion-system.md) | One motion system: three paces and three curves as tokens in `index.css` (Fluent 2 scale, Material 3 curves), semantic utilities, a script mirror that reads the CSS, reduced motion by the system or a setting, no motion library; `check-lego` and `check-docs` enforce it | Accepted | 2026-11-08 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

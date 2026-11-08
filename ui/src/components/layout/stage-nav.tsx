@@ -25,7 +25,7 @@ export function StageNav({ to, label, disabled = false, onClick }: StageNavProps
       data-hint={label}
       data-overlap-ok
       className={cn(
-        'absolute opacity-0 transition-opacity group-hover/stage:opacity-100 focus-within:opacity-100',
+        'absolute opacity-0 motion-fade group-hover/stage:opacity-100 focus-within:opacity-100',
         to === 'previous' ? 'left-3' : 'right-3',
       )}
     >

@@ -1537,6 +1537,13 @@ export type MissingFolder = {
  */
 export type Mono = "off" | "neutral" | "yellow" | "orange" | "red" | "green";
 
+/**
+ *  How much the interface moves (FR-100, docs/TRANS_ANIMATION.md): `System` follows the
+ *  operating system's *Reduce motion*; `Reduce` turns slides and zooms into short fades
+ *  whatever the system says.
+ */
+export type MotionPreference = "system" | "reduce";
+
 /**  How exported files are named, as Lightroom's templates (FR-104). */
 export type NameTemplate = 
 /**  `P1057694.jpg`, the photo's own name. */
@@ -2229,6 +2236,8 @@ export type UiSettings = {
 	 *  settings v17: off.
 	 */
 	welcomeEveryStart?: boolean,
+	/**  How much the interface moves (FR-100). Absent before settings v18: follow the system. */
+	motion?: MotionPreference,
 };
 
 /**  A setting no look holds, as `Clarity2012: local contrast…`, and how many presets had it. */

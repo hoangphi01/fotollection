@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { showWelcome } from '@/features/welcome/welcome-store'
 import { LanguageSetting } from '@/features/about/language-setting'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
-import type { PreviewLayout, ThemePreference } from '@/ipc/bindings'
+import type { MotionPreference, PreviewLayout, ThemePreference } from '@/ipc/bindings'
 
 /** The Settings window's *General* section (FR-086): the interface's language and theme. */
 export function GeneralSection() {
@@ -44,6 +44,18 @@ export function GeneralSection() {
           options={themes}
           onChange={(theme) => void update({ theme })}
           ariaLabel={t('theme.label')}
+        />
+      </Field>
+      {/* Motion (FR-100, docs/TRANS_ANIMATION.md): the system's *Reduce motion*, or reduced here. */}
+      <Field label={t('motion.label')} hint={t(`motion.${ui.motion}Hint`)}>
+        <SegmentedToggle<MotionPreference>
+          value={ui.motion}
+          options={[
+            { value: 'system', label: t('motion.system') },
+            { value: 'reduce', label: t('motion.reduce') },
+          ]}
+          onChange={(motion) => void update({ motion })}
+          ariaLabel={t('motion.label')}
         />
       </Field>
       {/* The develop view's layout (FR-095); F switches it in the preview too. */}

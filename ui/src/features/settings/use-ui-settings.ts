@@ -33,6 +33,8 @@ let current: Required<UiSettings> = {
   // The welcome screen (FR-109): not seen yet, not at every start, as Rust's defaults.
   welcomeSeen: false,
   welcomeEveryStart: false,
+  // How much the interface moves (FR-100): the system's choice until the user picks one.
+  motion: 'system',
 }
 let requested = false
 // The file's values have arrived: what depends on them (the welcome screen) waits for this.

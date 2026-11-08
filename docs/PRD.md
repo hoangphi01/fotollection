@@ -121,7 +121,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 - Shows a badge for missing date, missing GPS and processing errors.
 - Supports multi-select (shift-click and cmd/ctrl-click) for per-photo overrides.
-- Tiles show a skeleton and spinner until their thumbnail arrives, then fade in. Long tasks (reading photos, preparing thumbnails) show a progress bar with a count and percentage.
+- Tiles show a skeleton until their thumbnail arrives, then fade in (FR-100: a skeleton says what comes, a spinner on it said it twice). Long tasks (reading photos, preparing thumbnails) show a progress bar with a count and percentage.
 
 ### FR-004 — Date stamp
 
@@ -1032,12 +1032,12 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-100 — Motion that feels like one app
 
-**P2 (planned, after v0.14.0; owner's request 2026-11-06: "the app's animation is local, not in step and not smooth yet; transitions should be smoother").** Today each piece animates on its own: a dialog zooms in, a card folds, a photo fades, with different timings and some changes that simply jump. One motion system, set once:
+**P2 (v0.14.0; owner's request 2026-11-06: "the app's animation is local, not in step and not smooth yet; transitions should be smoother"; moved into v0.14.0 on 2026-11-08 with all of it, a setting beside the system's *Reduce motion* and the website on the same tokens; [ADR-0046](adr/0046-one-motion-system.md), the details in [TRANS_ANIMATION.md](TRANS_ANIMATION.md)).** Today each piece animates on its own: a dialog zooms in, a card folds, a photo fades, with different timings and some changes that simply jump. One motion system, set once:
 
 - **Shared timings and curves** as theme tokens (a short one for controls, a longer one for panels and views), used by every block, so the whole app moves at one pace.
 - **Transitions between views:** the gallery to the preview and back (the photo growing from its tile), the dialog and the full-window layout (FR-095), the modes, the Settings window's sections; panels and the filmstrip slide rather than appear.
 - **No jump left:** a list that changes (the filmstrip, History, notices, the gallery after a filter) moves its rows to their new place; a card that folds or a badge that comes keeps the rest still until it moves smoothly.
-- **Never in the way:** nothing waits for an animation; a photo shows as soon as it is ready; *Reduce motion* in the system turns it all down to fades. Measured: 60 fps on the reference machines (OPTIMIZATION §3), checked in both themes.
+- **Never in the way:** nothing waits for an animation; a photo shows as soon as it is ready; *Reduce motion* in the system, or *Settings → General → Motion: Reduce*, turns it all down to quick fades (spinners keep turning). Measured: 60 fps on the reference machines (OPTIMIZATION §3), checked in both themes.
 
 ### FR-101 — Healing: spot removal
 

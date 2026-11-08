@@ -1300,5 +1300,12 @@
       "text": "Export writes the photos at the shop's sizes, ready for a self-service kiosk or an online lab. Settings → Export keeps your choices for next time.",
       "alt": "The export dialog"
     }
+  },
+  "motion": {
+    "label": "Motion",
+    "system": "Follow the system",
+    "reduce": "Reduce",
+    "systemHint": "Moves as the system's Reduce motion setting says.",
+    "reduceHint": "Slides and zooms become short fades."
   }
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { LoaderCircle } from 'lucide-react'
+import { Spinner } from '@/components/forms/spinner'
 import type { ComponentProps, ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -50,7 +50,7 @@ export function ToolbarButton({
         )}
         {...props}
       >
-        {busy ? <LoaderCircle className="animate-spin" /> : icon}
+        {busy ? <Spinner /> : icon}
         {!iconOnly && <span className={labelFrom === '5xl' ? 'hidden @5xl:inline' : 'hidden @3xl:inline'}>{label}</span>}
       </Button>
     </span>

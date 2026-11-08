@@ -293,7 +293,7 @@ export function LibrarySidebar({
                   key={id}
                   {...folderDrag.rowProps(id)}
                   className={cn(
-                    'group relative flex items-center rounded-md transition-transform duration-150 motion-reduce:transition-none',
+                    'group relative flex items-center rounded-md motion-move',
                     lifted && 'bg-sidebar lifted transition-none',
                   )}
                 >

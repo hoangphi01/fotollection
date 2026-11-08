@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ChevronRight } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Collapse } from '@/components/layout/collapse'
 import { cn } from '@/lib/utils'
@@ -21,7 +21,7 @@ export function GroupRows({ title, count, open, onToggle, children }: GroupRowsP
   return (
     <div>
       <ListRow
-        icon={<ChevronRight className={cn('transition-transform', open && 'rotate-90')} aria-hidden />}
+        icon={<ChevronDown className={cn('motion-move', !open && '-rotate-90')} aria-hidden />}
         trailing={<span className="text-xs text-muted-foreground tabular-nums">{count}</span>}
         onClick={onToggle}
       >

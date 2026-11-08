@@ -247,6 +247,95 @@
   box-shadow: 0 0 0 1px oklch(1 0 0 / 0.22), 0 25px 50px -12px oklch(0 0 0 / 0.25);
 }
 
+/* Motion (FR-100, docs/TRANS_ANIMATION.md, the one place its values live): three paces, an
+   exit one step shorter than its entry, three curves. Every block takes them through the
+   utilities below; `check-lego` refuses a duration, delay or curve set by hand, and
+   `check-docs` checks the website's copy (site.css). Values: Fluent 2's scale
+   (@fluentui/tokens) and Material 3's emphasized curves. */
+:root {
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 300ms;
+  --motion-base-out: 120ms;
+  --motion-slow-out: 200ms;
+  --delay-hint: 450ms;
+  --delay-stale: 700ms;
+}
+@theme static {
+  --ease-enter: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-move: cubic-bezier(0.2, 0, 0, 1);
+}
+/* Reduced (the system's *Reduce motion*, or Settings → Motion: Reduce, set on <html> by
+   `lib/motion.ts`): no slide, zoom or turn, every pace the short one, so what is left is a
+   quick fade (Apple HIG: make motion optional). Spinners keep turning: they say work runs. */
+:root[data-motion='reduce'] {
+  --motion-base: var(--motion-fast);
+  --motion-slow: var(--motion-fast);
+  --motion-base-out: var(--motion-fast);
+  --motion-slow-out: var(--motion-fast);
+}
+:root[data-motion='reduce'] *,
+:root[data-motion='reduce'] *::before,
+:root[data-motion='reduce'] *::after {
+  --tw-enter-scale: 1 !important;
+  --tw-exit-scale: 1 !important;
+  --tw-enter-translate-x: 0 !important;
+  --tw-enter-translate-y: 0 !important;
+  --tw-exit-translate-x: 0 !important;
+  --tw-exit-translate-y: 0 !important;
+  --tw-enter-rotate: 0 !important;
+  --tw-exit-rotate: 0 !important;
+  scroll-behavior: auto !important;
+}
+:root[data-motion='reduce']::view-transition-group(*) {
+  animation-duration: 0s;
+}
+
+/* A control under the pointer or pressed: its colours, depth and press, fast. Never `all`, so
+   a size or a place never animates by accident. */
+@utility motion-control {
+  transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, box-shadow, opacity, transform, translate, scale, rotate;
+  transition-duration: var(--motion-fast);
+  transition-timing-function: var(--ease-move);
+}
+/* Something on screen moving or turning to a new place (a chevron, a row, a zoom), base. */
+@utility motion-move {
+  transition-property: transform, translate, scale, rotate, opacity;
+  transition-duration: var(--motion-base);
+  transition-timing-function: var(--ease-move);
+}
+/* Something fading in place (a hover reveal, a stale value, a photo arriving), base. */
+@utility motion-fade {
+  transition-property: opacity;
+  transition-duration: var(--motion-base);
+  transition-timing-function: var(--ease-move);
+}
+/* A fold: its height (grid rows), its gap and its fade together, base (Collapse, the strips). */
+@utility motion-fold {
+  transition-property: grid-template-rows, margin, opacity;
+  transition-duration: var(--motion-base);
+  transition-timing-function: var(--ease-move);
+}
+/* A surface coming or going (tw-animate's `animate-in` / `animate-out`): a popover, a menu, a
+   hint at base; a dialog or a view at slow. Exits are one step shorter and accelerate. */
+@utility motion-in {
+  --tw-animation-duration: var(--motion-base);
+  --tw-ease: var(--ease-enter);
+}
+@utility motion-out {
+  --tw-animation-duration: var(--motion-base-out);
+  --tw-ease: var(--ease-exit);
+}
+@utility motion-in-slow {
+  --tw-animation-duration: var(--motion-slow);
+  --tw-ease: var(--ease-enter);
+}
+@utility motion-out-slow {
+  --tw-animation-duration: var(--motion-slow-out);
+  --tw-ease: var(--ease-exit);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

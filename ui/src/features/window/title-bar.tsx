@@ -60,7 +60,7 @@ export function TitleBar({ name }: TitleBarProps) {
     )
   if (!windows) return null
   const win = getCurrentWindow()
-  const control = 'inline-flex h-full w-[46px] items-center justify-center text-sidebar-foreground/80 transition-colors'
+  const control = 'inline-flex h-full w-[46px] items-center justify-center text-sidebar-foreground/80 motion-control'
 
   return (
     <div

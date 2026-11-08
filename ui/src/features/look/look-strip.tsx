@@ -48,7 +48,7 @@ export function LookStrip({ photoId, picker, numbered = true, folding = false }:
               setOpen(!open)
             }}
           >
-            <ChevronDown className={cn('size-3.5 shrink-0 transition-transform', !open && '-rotate-90')} aria-hidden />
+            <ChevronDown className={cn('size-3.5 shrink-0 motion-move', !open && '-rotate-90')} aria-hidden />
             <span className="truncate">
               {t('look.looks')}
               {chosen && <span className="text-stage-ink-muted"> · {lookName(chosen)}</span>}

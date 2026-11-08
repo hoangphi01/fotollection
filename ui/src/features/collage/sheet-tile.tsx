@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { LoaderCircle, RotateCw } from 'lucide-react'
+import { RotateCw } from 'lucide-react'
+import { Spinner } from '@/components/forms/spinner'
 import type { PointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -82,7 +83,7 @@ export function SheetTile({
       {/* Centred in the tile, not in the image, which has no size until it loads (a sheet
           made new by a reorder). */}
       {!shape.loaded && (
-        <LoaderCircle className="absolute inset-0 m-auto size-5 animate-spin text-muted-foreground" />
+        <Spinner size="tile" className="absolute inset-0 m-auto text-muted-foreground" />
       )}
       <div className="relative">
         <img
@@ -100,7 +101,7 @@ export function SheetTile({
               data-cell
               data-photo={photo ?? undefined}
               className={cn(
-                'relative flex-1 rounded-sm transition-colors',
+                'relative flex-1 rounded-sm motion-control',
                 selectMode ? 'cursor-pointer' : 'cursor-grab active:cursor-grabbing',
                 !selectMode && selected && selectedCell === cell && 'ring-2 ring-primary ring-inset',
                 dragging !== null && over !== undefined && over === photo && dragging !== photo && 'bg-primary/25',

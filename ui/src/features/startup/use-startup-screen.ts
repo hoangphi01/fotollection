@@ -4,8 +4,6 @@ import { commands, events } from '@/ipc/bindings'
 
 /** Never keep the workspace hidden longer than this, whatever happens. */
 const SAFETY_MS = 15_000
-/** Matches the fade in index.html. */
-const FADE_MS = 200
 
 /**
  * The start-up screen (FR-060): the logo and a loading bar, painted by index.html before
@@ -22,12 +20,14 @@ export function useStartupScreen() {
       if (finished) return
       finished = true
       splash.classList.add('done')
-      window.setTimeout(() => splash.remove(), FADE_MS + 50)
+      // Removed once its fade is over: the time is the splash's own (public/splash.css).
+      const fade = Number.parseFloat(getComputedStyle(splash).transitionDuration) * 1000 || 0
+      window.setTimeout(() => splash.remove(), fade + 50)
     }
     const progress = events.taskProgress.listen(({ payload }) => {
       if (payload.total === 0) return
       splash.dataset.progress = ''
-      splash.style.setProperty('--splash-progress', `${Math.round((payload.done / payload.total) * 100)}%`)
+      splash.style.setProperty('--splash-progress', String(Math.min(1, payload.done / payload.total)))
     })
     // Listen first, then ask, so a start-up that ends in between is not missed.
     const started = events.startupFinished.listen(finish)
