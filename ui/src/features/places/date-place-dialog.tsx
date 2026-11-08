@@ -17,6 +17,7 @@ import { PanelNote } from '@/components/layout/panel-note'
 import { commands, type EffectivePlace } from '@/ipc/bindings'
 import { errorText } from '@/lib/errors'
 import { PlacePicker } from './place-picker'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 /** What one photo has now, when the dialog is opened from the preview. */
 export type DatePlaceCurrent = {
@@ -121,9 +122,7 @@ export function DatePlaceDialog({ ids, current, onClose }: DatePlaceDialogProps)
           </PanelNote>
         )}
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            {t('common.cancel')}
-          </Button>
+          <RemoveButton kind="stop" label={t('common.cancel')} onClick={onClose} />
           <Button disabled={date.kind === 'keep' && place.kind === 'keep'} onClick={() => void apply()}>
             {t('places.apply')}
           </Button>

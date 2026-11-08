@@ -8,6 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import type { SettingsParts } from '@/ipc/bindings'
 import { anyPart, closeCopySettings, copySettings, useSettingsCopy } from './settings-copy'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 const PARTS: { key: keyof SettingsParts; icon: ReactNode }[] = [
   { key: 'look', icon: <Palette /> },
@@ -52,9 +53,7 @@ function CopySettingsForm({ initial }: { initial: SettingsParts }) {
           ))}
           <Hint>{t(dialog?.collage ? 'develop.copyCollageHint' : 'develop.copyHint')}</Hint>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={closeCopySettings}>
-              {t('common.cancel')}
-            </Button>
+            <RemoveButton kind="stop" label={t('common.cancel')} onClick={closeCopySettings} />
             <Button type="submit" disabled={!anyPart(parts)}>
               {t('develop.copy')}
             </Button>

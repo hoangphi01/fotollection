@@ -5,6 +5,7 @@ import { Field } from '@/components/forms/field'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 type SaveLookDialogProps = {
   open: boolean
@@ -52,9 +53,7 @@ export function SaveLookDialog({ open, onAnswer, title, body, label, initial = '
             <Input id={id} autoFocus value={name} maxLength={60} placeholder={t('look.namePlaceholder')} onChange={(e) => setName(e.target.value)} />
           </Field>
           <DialogFooter className="pt-3">
-            <Button type="button" variant="outline" onClick={() => answer(null)}>
-              {t('common.cancel')}
-            </Button>
+            <RemoveButton kind="stop" label={t('common.cancel')} onClick={() => answer(null)} />
             <Button type="submit" disabled={!name.trim()}>
               {okLabel ?? t('look.save')}
             </Button>

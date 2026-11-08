@@ -805,3 +805,10 @@
 - **Why:** raising `minSafe` was a sentence in RELEASE.md §5, not a box of the release checklist, and v0.13.3 was released by hand from a branch, where `release.sh`'s prompts never ran.
 - **Fix:** `.github/update.json` at `0.13.3` on `main` and `release/0.13`, the published notes' marker replaced with `gh release edit`; a checklist box in RELEASE.md §6; a test that the repository's note reads and is never above the version.
 - **Rule:** every release asks "does an older version need to be warned off?" before it is tagged; the reason is one plain sentence ("Security patches"), the details are the CHANGELOG's.
+
+### A list that should scroll spilled over the card's hint: `max-h` on a ScrollArea never reached its viewport (FR-114, FR-095, UI-LAYOUT-017)
+
+- **Seen:** the gallery's Colour tab drew its last look over the import hint under it (owner, 2026-11-08: "the dropdown eats into the text").
+- **Why:** shadcn's `ScrollArea` puts the class on its root and gives the viewport `size-full`, 100 % of the root's height. A root with only `max-h-*` has an auto height, so the 100 % resolved to the content's height: the viewport grew with its rows, never scrolled, and spilled out of the root, which does not clip. History's `max-h-52`, and two dialogs' `max-h-[50vh]`, had the same fault; no check looked for it.
+- **Fix:** the root is a column and the viewport `min-h-0 flex-1` (`components/ui/scroll-area.tsx`), so a `max-h` on the root bounds the viewport. `layoutChecks` gained UI-LAYOUT-017 (a viewport never past its root), which failed on the old block first.
+- **Rule:** a height limit is checked where the scrolling happens, not where the class is written; a block that sizes from a percentage needs a parent with a definite height or a flex column.

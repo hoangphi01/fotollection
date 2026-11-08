@@ -185,9 +185,7 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
           </div>
           {formError && <p className="text-xs text-destructive">{formError}</p>}
           <div className="flex justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={() => setAdding(false)}>
-              {t('common.cancel')}
-            </Button>
+            <RemoveButton kind="stop" label={t('common.cancel')} onClick={() => setAdding(false)} />
             <Button size="sm" onClick={save}>
               {t('print.save')}
             </Button>

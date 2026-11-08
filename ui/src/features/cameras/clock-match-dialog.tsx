@@ -20,6 +20,7 @@ import { thumbUrl } from '@/lib/photo-url'
 import { cn } from '@/lib/utils'
 import { formatOffset } from './clock-offset'
 import { useCameraClocks } from './use-camera-clocks'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 type ClockMatchDialogProps = {
   /** The photo whose camera clock is corrected. */
@@ -111,9 +112,7 @@ export function ClockMatchDialog({ photoId, clockId, open, onClose }: ClockMatch
         )}
         {error && <p className="text-sm text-destructive">{error}</p>}
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            {t('common.cancel')}
-          </Button>
+          <RemoveButton kind="stop" label={t('common.cancel')} onClick={onClose} />
           <Button disabled={offset === null || !clock} onClick={() => void apply()}>
             {t('cameras.matchApply')}
           </Button>

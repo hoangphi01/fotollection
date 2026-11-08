@@ -236,6 +236,19 @@ for (const path of walkCode(join(root, 'src'))) {
   })
 }
 
+// Cancel is red, the stop block (owner, 2026-11-08: "Cancel should be red"): `RemoveButton
+// kind="stop"`, as the crop's and the export's. A dialog whose own action is red (*Don't save*,
+// *Discard*) keeps a neutral `AlertDialogCancel`, so one red stays the danger.
+for (const path of allTsx) {
+  const rel = relative(join(root, 'src'), path).split(sep).join('/')
+  if (rel.startsWith('components/ui/')) continue
+  const text = readFileSync(path, 'utf8')
+  for (const m of text.matchAll(/<Button\b[^<]*?>\s*\{t\('common\.cancel'\)\}/g)) {
+    const line = text.slice(0, m.index).split('\n').length
+    problems.push(`${rel}:${line}: a Cancel by hand: RemoveButton kind="stop" (components/forms/danger-button.tsx)`)
+  }
+}
+
 // Raised unless it belongs to something (owner, 2026-11-06: "Select all is still the old
 // style"): a standalone button is never `ghost`. Flat stays only for a row of a list
 // (ListRow), a button inside a raised ButtonGroup, a dismiss inside a note and an on/off

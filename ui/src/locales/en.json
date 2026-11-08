@@ -1067,7 +1067,17 @@
     "applyAskBody": "Give {{name}} to them too, or keep their colour and give it only to the others? Crops, date stamps and RAW settings stay either way.",
     "applyKeepEdited": "Keep theirs",
     "applyOverwrite_one": "Apply to all {{n}}",
-    "applyOverwrite_other": "Apply to all {{n}}"
+    "applyOverwrite_other": "Apply to all {{n}}",
+    "resetTicked_one": "Back to the original colour: {{n}} ticked photo",
+    "resetTicked_other": "Back to the original colour: {{n}} ticked photos",
+    "resetShown_one": "Back to the original colour: {{n}} photo",
+    "resetShown_other": "Back to the original colour: {{n}} photos",
+    "resetAskTitle_one": "Bring {{n}} photo back to its original colour?",
+    "resetAskTitle_other": "Bring {{n}} photos back to their original colour?",
+    "resetAskBody": "Their look, LUT and colour sliders are taken away; crops, date stamps and RAW settings stay. ⌘Z brings the colour back.",
+    "resetOk": "Back to original",
+    "resetDone_one": "{{n}} photo back to its original colour. ⌘Z undoes it.",
+    "resetDone_other": "{{n}} photos back to their original colour. ⌘Z undoes it."
   },
   "rawLook": {
     "title": "RAW colour",

@@ -12,12 +12,15 @@ function ScrollArea({
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
-      className={cn("relative", className)}
+      // A column, so a `max-h-*` on the root reaches the viewport (`min-h-0 flex-1`): with
+      // `size-full` alone its 100 % of an auto height grew with the rows and spilled over what
+      // follows (LESSONS, UI-LAYOUT-017).
+      className={cn("relative flex flex-col", className)}
       {...props}
     >
       <ScrollAreaPrimitive.Viewport
         data-slot="scroll-area-viewport"
-        className="size-full rounded-[inherit] motion-control outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1"
+        className="min-h-0 w-full flex-1 rounded-[inherit] motion-control outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1"
       >
         {children}
       </ScrollAreaPrimitive.Viewport>

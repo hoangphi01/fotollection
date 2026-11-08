@@ -84,9 +84,7 @@ export function NewProjectDialog({ onAnswer }: NewProjectDialogProps) {
             <Input id={id} autoFocus value={name} maxLength={120} placeholder={t('project.newPlaceholder')} onChange={(e) => setName(e.target.value)} />
           </Field>
           <DialogFooter className="pt-3">
-            <Button type="button" variant="outline" onClick={() => answer(null)}>
-              {t('common.cancel')}
-            </Button>
+            <RemoveButton kind="stop" label={t('common.cancel')} onClick={() => answer(null)} />
             <Button type="submit">{t('project.create')}</Button>
           </DialogFooter>
         </form>

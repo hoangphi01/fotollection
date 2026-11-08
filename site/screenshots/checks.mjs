@@ -162,6 +162,18 @@ export async function layoutChecks(page, where) {
       }
     }
 
+    // UI-LAYOUT-017: a scroll area scrolls inside its own box, never spills out of it over what
+    // follows (owner, 2026-11-08: the look list under the hint; a `max-h` on the root did not
+    // reach the viewport, which grew with its rows).
+    for (const root of document.querySelectorAll('[data-slot="scroll-area"]')) {
+      const view = root.querySelector(':scope > [data-slot="scroll-area-viewport"]')
+      if (!view || !vis(root)) continue
+      const r = root.getBoundingClientRect()
+      const v = view.getBoundingClientRect()
+      const spill = Math.max(v.bottom - r.bottom, v.right - r.right)
+      if (spill > 0.5) out.push(`UI-LAYOUT-017 a scroll area spills ${Math.round(spill)} px out of its box: "${name(root)}"`)
+    }
+
     // UI-LAYOUT-011: the page never scrolls sideways.
     if (document.documentElement.scrollWidth > window.innerWidth + 1) out.push(`UI-LAYOUT-011 the page scrolls sideways (${document.documentElement.scrollWidth} > ${window.innerWidth})`)
     return out

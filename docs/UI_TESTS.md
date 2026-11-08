@@ -59,6 +59,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | UI-LAYOUT-014 | Spacing only on the scale | Gaps 4, 8 or 12 px; no vertical margin; no `space-y` in the features | A `check-lego` | commit | STYLE_RULE §4 three spacings |
 | UI-LAYOUT-015 | Edges line up in a card | A card's labels and controls start on the same left edge | M, the measure pictures | release | Apple HIG, Layout |
 | UI-LAYOUT-016 | A ring is never cut | A control's ring or outline (a crisp box-shadow, as `ring-*` draws, or `outline`) lies inside every box that clips it, scroll bars shown as in the app | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
+| UI-LAYOUT-017 | A scroll area scrolls inside its box | Its viewport never reaches past its root (> 0.5 px), so a list with a height of its own never spills over what follows | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 
 ### Text
 

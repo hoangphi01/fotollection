@@ -14,6 +14,7 @@ import { useExportEstimate } from './use-export-estimate'
 import type { ExportApi } from './use-export'
 import { ListRow } from '@/components/forms/list-row'
 import { Button } from '@/components/ui/button'
+import { RemoveButton } from '@/components/forms/danger-button'
 
 /** Lightroom's export presets, ours: what each sets and its quality (share defaults from
  * RESULT §10, prints at 90, RESULT §30). */
@@ -142,9 +143,7 @@ export function ExportDialog({ exporter, settings, onSettingsChange }: ExportDia
             {t('exportDialog.dontAsk')}
           </Label>
           <span className="flex-1" />
-          <Button variant="outline" onClick={close}>
-            {t('common.cancel')}
-          </Button>
+          <RemoveButton kind="stop" label={t('common.cancel')} onClick={close} />
           <Button onClick={() => void run()} disabled={!request}>
             <Download data-icon="inline-start" />
             {label}
