@@ -47,7 +47,7 @@ export function lookName(entry: LookEntry): string {
   return i18n.exists(key) ? i18n.t(key as never) : entry.name
 }
 
-/** The looks a key picks: 0–9 the first ten of the strip, your own looks first. */
+/** The looks a key picks: 0–9 the first ten of the strip, 0 Original, then your own looks. */
 export const LOOK_KEYS = 10
 
 export type LookPicker = {
@@ -78,10 +78,15 @@ export function useLookPicker(
 ): LookPicker {
   const library = useLooks()
   const { setLooks, reload } = library
-  // Your own looks first, then Fotollection's (owner, 2026-11-08); the strips and Simple
-  // mode's keys follow this order.
+  // Original, then your own looks, then Fotollection's (owner, 2026-11-08); the strips and
+  // Simple mode's keys follow this order, so 0 is always Original.
   const listed = luts ? library.looks : library.looks.filter((e) => !e.look.lut)
-  const looks = [...listed.filter((e) => e.kind === 'user'), ...listed.filter((e) => e.kind !== 'user')]
+  const isOriginal = (e: LookEntry) => e.id === 'builtin:original'
+  const looks = [
+    ...listed.filter(isOriginal),
+    ...listed.filter((e) => e.kind === 'user'),
+    ...listed.filter((e) => e.kind !== 'user' && !isOriginal(e)),
+  ]
   const [base, setBase] = useState<string | null>(null)
   const picks = useRef(0)
   useEffect(() => {
