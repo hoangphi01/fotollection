@@ -70,6 +70,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **The release build's content security policy** now lets the interface read its own photo protocol (`connect-src`), which the GPU look needs and only release builds enforce.
 - **The webview's permissions are named one by one** (events and the title bar's window controls) instead of Tauri's default set; the policy, the app's configuration and these permissions are checked by the tests on every build.
 - **Secret files** (service-account keys, private keys) can no longer be added to the repository by mistake.
+- **Older versions are asked to update:** from v0.13.0, an app older than 0.13.3 shows a red *Security patches* notice when it starts.
 
 ## [0.13.2] - 2026-11-07 — Develop, part 3
 

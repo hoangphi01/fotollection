@@ -419,6 +419,41 @@ mod tests {
         Ok(())
     }
 
+    /// FR-103: the repository's own note (`.github/update.json`, appended to every release by
+    /// `release.yml`) reads as a release note: a version below its minimum is warned with its
+    /// reason, the minimum is not, and the minimum is never above the version being released
+    /// (RELEASE.md §5).
+    #[test]
+    fn fr_103_the_repository_note_warns_below_it() -> Result<(), String> {
+        let file: serde_json::Value =
+            serde_json::from_str(include_str!("../../.github/update.json"))
+                .map_err(|e| e.to_string())?;
+        let min = file["minSafe"]
+            .as_str()
+            .ok_or("update.json has no minSafe")?
+            .to_owned();
+        let version = env!("CARGO_PKG_VERSION");
+        let parse = |v: &str| semver::Version::parse(v).map_err(|e| e.to_string());
+        assert!(
+            parse(&min)? <= parse(version)?,
+            "minSafe {min} above the version {version}"
+        );
+        let mut json: serde_json::Value =
+            serde_json::from_slice(&release(&format!("v{version}"), false))
+                .map_err(|e| e.to_string())?;
+        json["body"] = serde_json::Value::String(format!(
+            "Highlights…\n\n<!-- fotollection-update {file} -->"
+        ));
+        let feed = serde_json::to_vec(&json).map_err(|e| e.to_string())?;
+        let (check, _) = evaluate(&feed, "0.0.1", Platform::Mac)?;
+        assert!(check.below_min_safe);
+        assert_eq!(check.min_safe.as_deref(), Some(min.as_str()));
+        assert!(!check.reason_en.is_empty() && !check.reason_vi.is_empty());
+        let (check, _) = evaluate(&feed, &min, Platform::Mac)?;
+        assert!(!check.below_min_safe);
+        Ok(())
+    }
+
     #[test]
     fn fr_061_newer_versions_and_the_right_installer() -> Result<(), String> {
         let (check, download) = evaluate(&release("v0.8.0", false), "0.7.0", Platform::Mac)?;

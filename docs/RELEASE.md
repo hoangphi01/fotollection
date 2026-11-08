@@ -91,7 +91,7 @@ Pull requests use the same filters. After pushing, check that every workflow tha
 
 There is **no in-app updater** ([FR-021](PRD.md#fr-021--manual-updates), [ADR-0021](adr/0021-versioning-and-automated-releases.md)). Settings → Updates has a **Check for updates** button, and from v0.13.0 the app also checks once at start unless that is turned off ([FR-061](PRD.md#fr-061--check-for-updates), [FR-103](PRD.md#fr-103--check-for-updates-at-start-never-download-unasked), [ADR-0025](adr/0025-update-check-on-click.md)); a newer installer opens in the browser. New versions are also announced on the Releases page and the website.
 
-**The minimum safe version.** When a release fixes a fault serious enough that older versions should not be used (a lost project, a crash, wrong prints), raise `minSafe` in `.github/update.json` in that release's commit and write the reason in both languages, one plain sentence each, without `-->`. `release.yml` appends the file to the release notes as a hidden comment; every app from v0.13.0 that starts below it shows a red warning with the reason. Never lower it, and never set it above the version being released.
+**The minimum safe version.** When a release fixes a fault serious enough that older versions should not be used (a lost project, a crash, wrong prints), raise `minSafe` in `.github/update.json` in that release's commit and write the reason in both languages, one plain sentence each, without `-->`. `release.yml` appends the file to the release notes as a hidden comment; every app from v0.13.0 that starts below it shows a red warning with the reason. Never lower it, and never set it above the version being released (a test, `fr_103_the_repository_note_warns_below_it`, checks it). The reason is short and plain, for people who are not technical: *Security patches. Please update.* (owner, 2026-11-08); the details belong in the CHANGELOG. **Forgotten at release:** set it in `.github/update.json` on `main` and on the release's branch, then replace only the `<!-- fotollection-update … -->` line of the published release's notes (`gh release edit vX.Y.Z --notes-file`); apps read the latest release, so the warning shows at their next start.
 
 Installing a new version over an old one **replaces it** and keeps settings, profiles and projects, which are migrated on first open ([DATABASE.md](DATABASE.md)):
 
@@ -104,6 +104,7 @@ Installing a new version over an old one **replaces it** and keeps settings, pro
 ## 6. Release checklist
 
 - [ ] CHANGELOG `Unreleased` describes the release in user terms; an `X.Y.0` gets its series' rule and title (`release.sh` writes it from ROADMAP)
+- [ ] A security fix or a serious fault (lost work, a crash, wrong prints): `minSafe` raised to this version in `.github/update.json`, with a one-line plain reason in both languages (§5)
 - [ ] `scripts/ui-check.sh` passes the whole matrix ([UI_TESTS.md](UI_TESTS.md)); changed pictures approved on purpose
 - [ ] Benchmarks are within budget, and the results are logged in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log)
 - [ ] `scripts/release.sh` run, commit pushed

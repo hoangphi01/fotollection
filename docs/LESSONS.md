@@ -798,3 +798,10 @@
 - **Why:** cherry-picking `1fe92a5` onto v0.13.2 met a conflict in CHANGELOG.md (the v0.14 lines it sat among), and the resolution kept the code and dropped the line; the changelog came later in `38a5e8d`. The branch was pushed and released from, so the commit cannot be rewritten.
 - **Fix:** `scripts/docs-with-code-exempt.txt` lists published commits whose doc came later, each with its reason; the range check skips only those.
 - **Rule:** after each cherry-pick, check the commit still holds its doc (`git show --stat`); run `check-docs-with-code.sh <base>..HEAD` on a release branch before pushing it, not only on `main`.
+
+### A security release went out without raising the minimum safe version (FR-103, release)
+
+- **Seen:** v0.13.3 shipped security fixes, but its notes still carried `minSafe 0.10.0`, so the apps that most needed it showed only the quiet "a newer version" notice (owner, 2026-11-08).
+- **Why:** raising `minSafe` was a sentence in RELEASE.md §5, not a box of the release checklist, and v0.13.3 was released by hand from a branch, where `release.sh`'s prompts never ran.
+- **Fix:** `.github/update.json` at `0.13.3` on `main` and `release/0.13`, the published notes' marker replaced with `gh release edit`; a checklist box in RELEASE.md §6; a test that the repository's note reads and is never above the version.
+- **Rule:** every release asks "does an older version need to be warned off?" before it is tagged; the reason is one plain sentence ("Security patches"), the details are the CHANGELOG's.
