@@ -728,3 +728,10 @@
 - **Why:** `#root` was `select-none`, but Radix draws dialogs, popovers and menus into portals under `<body>`, outside `#root`, so the preview, Settings and every menu were selectable; nothing refused the web view's context menu or keys. *Inspect Element* itself was the dev build's (releases have no devtools).
 - **Fix:** selection off on `html` and `body`, back on for fields and `Selectable` (a photo's facts, error messages); `lib/no-web.ts` refuses the context menu, the browser keys and image drags; `check-lego` refuses selectable text by hand, `check-docs` refuses devtools in releases.
 - **Rule:** a rule meant for the whole app is set on `html`/`body`, never on `#root`: portals live outside it. Check a new global rule inside a dialog and a popover, not only on the main view.
+
+### A content security policy breaks only the release build (SECURITY.md §2)
+
+- **Seen:** a security review (2026-11-08) found `connect-src` without the app's own `fotothumb:` protocol, while the interface `fetch()`es looks' tables and errors from it; the GPU look and the hover preview would fall back or fail in releases, silently, and every dev session looked fine.
+- **Why:** the dev app loads the page from Vite and applies no CSP; only the built app does, so a CSP gap never shows while developing.
+- **Fix:** `connect-src` names `fotothumb:` and `http://fotothumb.localhost`; a test of the CSP and a release-build check before each release follow (the security checks).
+- **Rule:** anything the page loads or fetches is checked against the CSP when written, and the release build is opened before a release with an eye on CSP violations.

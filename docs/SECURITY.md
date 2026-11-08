@@ -36,7 +36,7 @@ The app processes **untrusted image files** and displays **untrusted metadata** 
   script-src 'self';
   style-src 'self' 'unsafe-inline';
   img-src 'self' fotothumb: http://fotothumb.localhost data:;
-  connect-src ipc: http://ipc.localhost;
+  connect-src ipc: http://ipc.localhost fotothumb: http://fotothumb.localhost;
   font-src 'self';
   object-src 'none';
   base-uri 'none';
