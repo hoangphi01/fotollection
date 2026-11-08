@@ -1,0 +1,21 @@
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Fotollection bench">
+ <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="" xmlns:crs="http://ns.adobe.com/camera-raw-settings/1.0/"
+   crs:PresetType="Normal" crs:UUID="37DD596D0F3278343D6F647B37087D06" crs:SupportsAmount="True" crs:SupportsColor="True" crs:SupportsMonochrome="True"
+   crs:SupportsHighDynamicRange="True" crs:SupportsNormalDynamicRange="True" crs:SupportsSceneReferred="True" crs:SupportsOutputReferred="True"
+   crs:Version="15.4" crs:ProcessVersion="15.4" crs:HasSettings="True" crs:ToneCurveName2012="Custom"
+   crs:Contrast2012="+15"
+   crs:Highlights2012="-30"
+   crs:Shadows2012="+25"
+   crs:Vibrance="-10"
+   crs:IncrementalTemperature="+12"
+   crs:ColorGradeShadowHue="200"
+   crs:ColorGradeShadowSat="15"
+   crs:ColorGradeHighlightHue="40"
+   crs:ColorGradeHighlightSat="20">
+   <crs:Name><rdf:Alt><rdf:li xml:lang="x-default">FB 13 Combined film</rdf:li></rdf:Alt></crs:Name>
+   <crs:Group><rdf:Alt><rdf:li xml:lang="x-default">Fotollection bench</rdf:li></rdf:Alt></crs:Group>
+   <crs:ToneCurvePV2012><rdf:Seq><rdf:li>0, 20</rdf:li><rdf:li>128, 132</rdf:li><rdf:li>255, 245</rdf:li></rdf:Seq></crs:ToneCurvePV2012>
+  </rdf:Description>
+ </rdf:RDF>
+</x:xmpmeta>

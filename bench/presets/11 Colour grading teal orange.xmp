@@ -1,0 +1,17 @@
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Fotollection bench">
+ <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="" xmlns:crs="http://ns.adobe.com/camera-raw-settings/1.0/"
+   crs:PresetType="Normal" crs:UUID="E6A7830B9C972420FDDEBE6B727752AF" crs:SupportsAmount="True" crs:SupportsColor="True" crs:SupportsMonochrome="True"
+   crs:SupportsHighDynamicRange="True" crs:SupportsNormalDynamicRange="True" crs:SupportsSceneReferred="True" crs:SupportsOutputReferred="True"
+   crs:Version="15.4" crs:ProcessVersion="15.4" crs:HasSettings="True"
+   crs:ColorGradeShadowHue="190"
+   crs:ColorGradeShadowSat="40"
+   crs:ColorGradeHighlightHue="35"
+   crs:ColorGradeHighlightSat="30"
+   crs:ColorGradeBlending="50"
+   crs:ColorGradeBalance="0">
+   <crs:Name><rdf:Alt><rdf:li xml:lang="x-default">FB 11 Colour grading teal orange</rdf:li></rdf:Alt></crs:Name>
+   <crs:Group><rdf:Alt><rdf:li xml:lang="x-default">Fotollection bench</rdf:li></rdf:Alt></crs:Group>
+  </rdf:Description>
+ </rdf:RDF>
+</x:xmpmeta>

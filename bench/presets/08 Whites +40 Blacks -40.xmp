@@ -1,0 +1,13 @@
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Fotollection bench">
+ <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="" xmlns:crs="http://ns.adobe.com/camera-raw-settings/1.0/"
+   crs:PresetType="Normal" crs:UUID="1E3750508246FFED7E89B7AF037B4C9B" crs:SupportsAmount="True" crs:SupportsColor="True" crs:SupportsMonochrome="True"
+   crs:SupportsHighDynamicRange="True" crs:SupportsNormalDynamicRange="True" crs:SupportsSceneReferred="True" crs:SupportsOutputReferred="True"
+   crs:Version="15.4" crs:ProcessVersion="15.4" crs:HasSettings="True"
+   crs:Whites2012="+40"
+   crs:Blacks2012="-40">
+   <crs:Name><rdf:Alt><rdf:li xml:lang="x-default">FB 08 Whites +40 Blacks -40</rdf:li></rdf:Alt></crs:Name>
+   <crs:Group><rdf:Alt><rdf:li xml:lang="x-default">Fotollection bench</rdf:li></rdf:Alt></crs:Group>
+  </rdf:Description>
+ </rdf:RDF>
+</x:xmpmeta>
