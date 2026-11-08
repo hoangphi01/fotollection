@@ -233,6 +233,8 @@ import → metadata → adjust → geocode → (cluster) → cull/select → pla
 
 All types are defined in Rust and exported to `ui/src/ipc/bindings.ts` through `tauri-specta`. CI fails if the bindings are stale.
 
+The web view is made to behave as an app before React renders (`ui/src/lib/no-web.ts`, SECURITY.md §2): no text selection outside fields and `Selectable`, no web context menu, no browser keys, nothing dragged out.
+
 Every command fails with an `IpcError { code, err, message }`: `code` is the stable key the interface translates (`errors.<code>` in the locales), `err` its permanent `ERR-<KIND>-<NNNN>` code from [ERROR_CONTROL.md](ERROR_CONTROL.md), shown after the message (`ui/src/lib/errors.ts`), and `message` the English detail. Camera problems carry the same pair (`CameraIssue`).
 
 ### Commands (UI → core)

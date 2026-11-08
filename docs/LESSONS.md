@@ -721,3 +721,10 @@
 - **Why:** the tone curve's 4,096 bins are even in linear light over 0–4, so one bin near black spans about three output levels, and each pixel read its bin alone.
 - **Fix:** read the curve between its two nearest bins (`Curve::at`); a dark ramp in a test failed with steps of 4 on the old code first.
 - **Rule:** a lookup table indexed in linear light is interpolated, or indexed in an encoded domain; work out how many output levels one bin spans near black before trusting it, and measure the gaps before and after.
+
+### `select-none` on the app's root left every dialog selectable (FR-099)
+
+- **Seen:** nearly any text could be highlighted, a card's title in the photo preview among them, and a right click opened the web view's menu with *Inspect Element* (owner, 2026-11-08: "this is an app, not a web page").
+- **Why:** `#root` was `select-none`, but Radix draws dialogs, popovers and menus into portals under `<body>`, outside `#root`, so the preview, Settings and every menu were selectable; nothing refused the web view's context menu or keys. *Inspect Element* itself was the dev build's (releases have no devtools).
+- **Fix:** selection off on `html` and `body`, back on for fields and `Selectable` (a photo's facts, error messages); `lib/no-web.ts` refuses the context menu, the browser keys and image drags; `check-lego` refuses selectable text by hand, `check-docs` refuses devtools in releases.
+- **Rule:** a rule meant for the whole app is set on `html`/`body`, never on `#root`: portals live outside it. Check a new global rule inside a dialog and a popover, not only on the main view.

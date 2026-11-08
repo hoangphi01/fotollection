@@ -79,6 +79,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | UI-STATE-005 | Every wait shows progress | Work over 1 s shows progress, over 10 s a count and Cancel | M | release | Nielsen 1; FR-099 |
 | UI-STATE-006 | Every error says what to do | Its words, its `ERR-` code and what to do next | M + `ERROR_CONTROL.md` | release | Nielsen 9 |
 | UI-STATE-007 | Empty views explain | No photos, no groups, a filter with no match: a sentence and the next step | M | release | Nielsen 10 |
+| UI-STATE-008 | An app, not a page | A drag across a card's title in a dialog selects nothing; a photo's facts and an error message select and copy; a right click on bare ground shows no menu, on a field shows Cut, Copy and Paste; F5, ⌘R / Ctrl+R, ⌘P / Ctrl+P and ⌘F / Ctrl+F do nothing, ⇧⌘R and ⇧⌘C still work | M (until a detector) + `check-lego` | release | Owner, 2026-11-08 |
 
 ### Stability
 

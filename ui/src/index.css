@@ -254,6 +254,27 @@
   body {
     @apply bg-background text-foreground;
     }
+  /* An app, not a page (owner, 2026-11-08): no text is selected or dragged out, the portals
+     of dialogs and menus included (they sit under <body>, outside #root). What may be copied
+     says so: text fields, and `Selectable` (a photo's facts, an error's code). */
+  html,
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    cursor: default;
+    }
+  img,
+  a {
+    -webkit-user-drag: none;
+    }
+  input,
+  textarea,
+  [contenteditable='true'],
+  .selectable {
+    -webkit-user-select: text;
+    user-select: text;
+    }
   html {
     @apply font-sans;
     }

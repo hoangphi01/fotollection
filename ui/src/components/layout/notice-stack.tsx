@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { Alert, AlertAction, AlertDescription } from '@/components/ui/alert'
 import { cn } from '@/lib/utils'
 import { RemoveButton } from '@/components/forms/danger-button'
+import { Selectable } from '@/components/forms/field'
 
 /**
  * The notices over the main view (an error, a camera session, a task's progress), stacked
@@ -31,7 +32,9 @@ export function ErrorNotice({ message, onDismiss }: { message: string; onDismiss
   return (
     <Alert variant="destructive">
       <OctagonX />
-      <AlertDescription>{message}</AlertDescription>
+      <AlertDescription>
+        <Selectable>{message}</Selectable>
+      </AlertDescription>
       <AlertAction>
         <RemoveButton iconOnly label={t('common.dismiss')} onClick={onDismiss} />
       </AlertAction>

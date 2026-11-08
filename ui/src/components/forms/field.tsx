@@ -72,3 +72,11 @@ export function FactLines({ children }: { children: ReactNode }) {
 export function Stack({ children }: { children: ReactNode }) {
   return <div className="space-y-3 [--stack-gap:--spacing(3)]">{children}</div>
 }
+
+/**
+ * Text a user may select and copy in an app that otherwise selects none (owner, 2026-11-08):
+ * a photo's facts, an error's `ERR-` code. A right click on it keeps the system's Copy.
+ */
+export function Selectable({ children, className, block = false }: { children: ReactNode; className?: string; block?: boolean }) {
+  return block ? <div className={cn('selectable', className)}>{children}</div> : <span className={cn('selectable', className)}>{children}</span>
+}
