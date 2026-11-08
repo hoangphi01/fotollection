@@ -990,7 +990,7 @@
     },
     "applyToAll": "Apply this look to all photos",
     "before": "Before",
-    "beforeHint": "The photo without its colour, and back (\\)",
+    "beforeHint": "The photo without its colour, and back (\\); or press and hold the photo",
     "hints": {
       "brightness": "The midtones lighter or darker; black and white stay.",
       "contrast": "More or less difference between light and dark.",

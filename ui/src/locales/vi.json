@@ -952,7 +952,7 @@
     },
     "applyToAll": "Dùng look này cho mọi ảnh",
     "before": "Trước",
-    "beforeHint": "Ảnh khi chưa chỉnh màu, và trở lại (\\)",
+    "beforeHint": "Ảnh khi chưa chỉnh màu, và trở lại (\\); hoặc ấn giữ trên ảnh",
     "hints": {
       "brightness": "Vùng trung tính sáng lên hoặc tối đi; đen và trắng giữ nguyên.",
       "contrast": "Chênh lệch giữa sáng và tối nhiều hơn hoặc ít hơn.",

@@ -1017,7 +1017,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-096 — Before and after, side by side
 
-**P1 (done, v0.12.0; owner's request 2026-11-06).** `\` and the *Before* button switch between the photo with and without its colour (keyboard and mouse alike); `Y` shows them side by side, `⇧Y` split by a line one drags across the photo, `⌥Y` one above the other, and the menu beside the button also splits them top and bottom, as Lightroom's views (owner, 2026-11-06). Both halves zoom and pan together and stay sharp at 1:1. *Before* keeps the crop and the frame: what changes is the colour.
+**P1 (done, v0.12.0; owner's request 2026-11-06).** `\` and the *Before* button switch between the photo with and without its colour (keyboard and mouse alike); `Y` shows them side by side, `⇧Y` split by a line one drags across the photo, `⌥Y` one above the other, and the menu beside the button also splits them top and bottom, as Lightroom's views (owner, 2026-11-06). Both halves zoom and pan together and stay sharp at 1:1. *Before* keeps the crop and the frame: what changes is the colour. Press and hold the photo (owner, 2026-11-08, as the iPhone's editor): a still press of 250 ms shows it without its colour until released; a click still zooms and a press that moves still drags.
 
 ### FR-097 — Settings from one photo to others, and Reset
 

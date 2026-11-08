@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Press and hold the photo to see its original** (FR-096), as on an iPhone: let go and your colour comes back; a click still zooms.
 - **Color mixer** (FR-079), in the photo preview and a collage sheet's: as Lightroom's HSL panel: *Hue*, *Sat*, *Lum* or *All*, then a slider for each of eight colours, its track drawn in the colours it moves between; a Lightroom preset's colour settings show there and stay adjustable.
 - **Colour for many photos** (FR-114): Pro mode's gallery panel has two tabs, **Colour** and **Print**. In Colour, pick a look, LUT or Lightroom preset, see it on the photo picked in the grid, set its amount, and give it to the ticked photos or to every photo shown, in one step that ⌘Z undoes; photos that already have their own colour are asked about once, and crops, date stamps and RAW settings stay. The red ↺ on the card brings the same photos back to their original colour, after a question.
 - **Thumbnails show each photo's colour** (ADR-0047): the grid, the filmstrip and the quick preview show a photo with its look, as the preview does; after a look is given to many photos, the progress bar shows their thumbnails being coloured.

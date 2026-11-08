@@ -37,6 +37,7 @@ import { CompareStage, type Compare, type CompareMode } from './compare-stage'
 import { oneToOneScale } from './one-to-one'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { useGpuLook } from './use-gpu-look'
+import { useHoldBefore } from './use-hold-before'
 import { FrameSection } from '@/features/frame/frame-section'
 import type { FontsApi } from '@/features/fonts/use-fonts'
 import type { FrameConfigApi } from '@/features/frame/use-frame-config'
@@ -190,7 +191,19 @@ export function PreviewDialog({
     setPicking(false)
     void commands.pickWhiteBalance(photo.id, fx, fy)
   }
-  const src = photo ? `${previewUrl(photo.id, revision)}${before ? '&plain=1' : clipping ? '&clip=1' : ''}` : ''
+  // The crop editor has the photo: no hold, no drag (declared here, before both).
+  const [cropping, setCropping] = useState(false)
+  // Press and hold the photo: the original while held (owner, 2026-11-08, as the iPhone's
+  // editor). Its preview starts loading at the press, kept here so it is not collected.
+  const warmed = useRef<HTMLImageElement | null>(null)
+  const hold = useHoldBefore(!!photo && !picking && !cropping && compare === 'off', () => {
+    if (!photo) return
+    const img = new Image()
+    img.src = `${previewUrl(photo.id, revision)}&plain=1`
+    warmed.current = img
+  })
+  const plain = before || hold.held
+  const src = photo ? `${previewUrl(photo.id, revision)}${plain ? '&plain=1' : clipping ? '&clip=1' : ''}` : ''
   const { src: shownSrc, error: shownError } = useShownSrc(photo?.id, src)
   // The next photos load while this one is looked at (FR-091).
   usePrefetch(photos, index, !!photo && shownSrc === src)
@@ -201,14 +214,13 @@ export function PreviewDialog({
   const geometryQuery = useLiveQuery(photo ? String(photo.id) : null, revision, loadGeometry)
   const geometry = geometryQuery.current
   const shownGeometry = geometryQuery.data
-  const [cropping, setCropping] = useState(false)
   // The stage mounts only when the preview opens, so it is kept in state, not a ref.
   const [stage, setStage] = useState<HTMLDivElement | null>(null)
   // Zoomed past the preview's pixels, the visible part comes again at full resolution.
   const [previewImg, setPreviewImg] = useState<HTMLImageElement | null>(null)
   // Percentages of the photo's own pixels, 100 % being 1:1 (FR-095).
   const zoom = useZoom(stage, `${photo?.id}:${cropping}`, oneToOneScale(geometry, previewImg))
-  const sharp = useSharpRegion(previewImg, stage, zoom.view, photo?.id, revision, shownSrc === src && !before ? shownSrc : null)
+  const sharp = useSharpRegion(previewImg, stage, zoom.view, photo?.id, revision, shownSrc === src && !plain ? shownSrc : null)
   // Without zoom, dragging the photo moves the crop (Crop to fill, or no frame).
   const cropDrag = useCropDrag(photo?.id, geometry, !picking && !cropping && compare === 'off' && !zoom.zoomed && !!geometry && !geometry.cropDisabled)
   // The hint and the cursor read the last answer, so the next photo never drops the *Drag to
@@ -359,8 +371,12 @@ export function PreviewDialog({
       onStagePointerDown={(e) => {
         if (!cropping && ownsArrowKeys(document.activeElement)) contentRef.current?.focus()
         cropDrag.onPointerDown(e)
+        hold.onPointerDown(e)
       }}
-      onStagePointerMove={cropDrag.onPointerMove}
+      onStagePointerMove={(e) => {
+        cropDrag.onPointerMove(e)
+        hold.onPointerMove(e)
+      }}
       onStagePointerUp={cropDrag.onPointerUp}
       below={
         cropping ? undefined : (
@@ -551,7 +567,7 @@ export function PreviewDialog({
                   onPointerDown={picking ? undefined : zoom.pointer.onPointerDown}
                   onPointerMove={picking ? undefined : zoom.pointer.onPointerMove}
                   onPointerUp={picking ? undefined : zoom.pointer.onPointerUp}
-                  onClick={picking ? pickAt : zoom.pointer.onClick}
+                  onClick={picking ? pickAt : (e) => !hold.swallowClick() && zoom.pointer.onClick(e)}
                   style={{ transform: zoom.transform }}
                   className={cn(
                     'max-h-full max-w-full animate-in object-contain stage-photo fade-in-0 motion-in',
