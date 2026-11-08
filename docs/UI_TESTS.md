@@ -64,6 +64,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | UI-LAYOUT-019 | A dialog's footer keeps clear | A footer's line is 12 px or more under the block above it | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 | UI-LAYOUT-020 | The window can be moved with a dialog open | The title bar (`data-window-chrome`) keeps `pointer-events` other than `none` while a dialog is open | A `layoutChecks` | release | FR-052; LESSONS |
 | UI-LAYOUT-021 | An open dropdown sits whole in the window, beside its button | An open `select-content` or `popover-content` lies inside the window and under its bar, and never covers its own open button; the print size list is opened with the last size chosen | A `layoutChecks` | release | FR-052; LESSONS |
+| UI-LAYOUT-022 | A dialog's words clear its close button | No word of a dialog, cut where its ellipsis cuts it, comes within 8 px of its close button; *Copy settings* opened in every run | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 
 ### Text
 
@@ -86,6 +87,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | UI-STATE-006 | Every error says what to do | Its words, its `ERR-` code and what to do next | M + `ERROR_CONTROL.md` | release | Nielsen 9 |
 | UI-STATE-007 | Empty views explain | No photos, no groups, a filter with no match: a sentence and the next step | M | release | Nielsen 10 |
 | UI-STATE-008 | An app, not a page | A drag across a card's title in a dialog selects nothing; a photo's facts and an error message select and copy; a right click on bare ground shows no menu, on a field shows Cut, Copy and Paste; F5, ⌘R / Ctrl+R, ⌘P / Ctrl+P and ⌘F / Ctrl+F do nothing, ⇧⌘R and ⇧⌘C still work | M (until a detector) + `check-lego` | release | Owner, 2026-11-08 |
+| UI-STATE-009 | A press is seen | A button held down has the theme's colour as its background, in both themes (the photo preview's *Rotate left*) | A `shoot.mjs` | release | STYLE_RULE §4; TRANS_ANIMATION |
 
 ### Stability
 

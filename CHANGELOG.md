@@ -31,6 +31,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - **The window can be moved, and on Windows minimised or closed, while the photo preview or any dialog is open** (FR-052).
+- **A dialog's title and words keep clear of its close button** (FR-099), in every dialog and both previews.
+- **A button shows it was pressed** (FR-099): held down, it takes the theme's colour pressed in and rises again on release, in both themes.
 - **The cards no longer drop under the pointer on the first slider step** (FR-079): the Looks card's amount stays in place, greyed with the original look.
 - **Every dropdown opens under its button and stays inside the window** (FR-052): the print size list no longer loses its top when a size low in the list is chosen, and the place and manual chapter pickers look like every other dropdown.
 - **History** (FR-095) is about six rows high and scrolls inside, so a long one never pushes the column; a look picked says its name (*Look · Warm old film*), the amount its value.
@@ -41,6 +43,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Related buttons are joined into one bar** (FR-099): every row of choices, and in the toolbars undo and redo, copy and paste, the two turns, the zoom, the filmstrip and layout, a sheet's tools, and where ticked photos go and what they get.
 - **One way of moving** (FR-100): every animation now takes one of three paces and three curves, so dialogs, menus, hints, cards that fold, the strips under the photo and notices move alike; hints and the quick preview fade out instead of vanishing, the strips and notices slide instead of jumping, and one spinner is used everywhere (a thumbnail still loading shows its grey shape only). **Settings → General → Motion** follows the system's *Reduce motion* or keeps it to short fades.
 - **Security:** the start-up screen's styles are a file, no longer inline in the page.
 - **Menus fit their rows:** every menu (a look's ⋯ and right click, Paste, the compare views) is as wide as its rows, and its red row as tall as the others.

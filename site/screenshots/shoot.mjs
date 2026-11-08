@@ -660,6 +660,44 @@ async function stressViews({ language, theme }) {
     out.push(...(await stableChecks(page, 'photo preview', '[role="dialog"] aside section', () => page.keyboard.press('ArrowRight'), `${card}: a first slider step`)))
     await context.close()
   }
+  // UI-STATE-009: a button held down is the theme's colour, pressed in, in both themes (owner,
+  // 2026-11-08: "a press shows nothing"; in dark, dark:bg-secondary outweighed the press).
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
+  await (await reach(page, SHOW.crop)).dblclick()
+  await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
+  await settle(page)
+  {
+    const held = page.getByRole('button', { name: /^(Rotate left|Xoay trái)$/ })
+    const box = await held.boundingBox()
+    if (box) {
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+      await page.mouse.down()
+      // Past the press's fast pace (120 ms), so the colour has fully come.
+      await page.waitForTimeout(250)
+      const [bg, primary] = await held.evaluate((el) => {
+        const probe = document.createElement('i')
+        probe.style.color = 'var(--primary)'
+        el.append(probe)
+        const want = getComputedStyle(probe).color
+        probe.remove()
+        return [getComputedStyle(el).backgroundColor, want]
+      })
+      if (bg !== primary) out.push(`photo preview: UI-STATE-009 a held button is ${bg}, not the theme's colour ${primary}`)
+      await page.mouse.up()
+    } else out.push('photo preview: UI-STATE-009 no Rotate left button to press')
+  }
+  await context.close()
+  // UI-LAYOUT-022: a dialog with a long header (Copy settings, two lines in Vietnamese) keeps
+  // its words clear of the close button.
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
+  await (await reach(page, SHOW.crop)).dblclick()
+  await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
+  await settle(page)
+  await page.getByRole('button', { name: /^(Copy settings|Sao chép thiết lập)$/ }).first().click()
+  await page.waitForSelector('[data-slot="dialog-form"]')
+  await page.waitForTimeout(400)
+  out.push(...(await allChecks(page, 'Copy settings dialog')))
+  await context.close()
   // Every Settings section, the manual among them, and the welcome.
   ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
   const sections = [/^(General|Chung)$/, /^(Export|Xuất ảnh)$/, /^(RAM & cache|Bộ nhớ RAM & cache)$/, /^(Updates|Cập nhật)$/, /^(Manual|Hướng dẫn sử dụng)$/, /^(Report a problem|Báo lỗi)$/, /^(What's new|Có gì mới)$/]

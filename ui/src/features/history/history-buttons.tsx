@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Redo2, Undo2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { ButtonGroup } from '@/components/forms/button-group'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { commands } from '@/ipc/bindings'
 import { MOD } from '@/lib/platform'
@@ -12,7 +13,7 @@ import { MOD } from '@/lib/platform'
 export function HistoryButtons({ canUndo, canRedo }: { canUndo: boolean; canRedo: boolean }) {
   const { t } = useTranslation()
   return (
-    <>
+    <ButtonGroup ariaLabel={t('toolbar.history')}>
       <ToolbarButton
         icon={<Undo2 />}
         label={t('viewer.undo')}
@@ -29,6 +30,6 @@ export function HistoryButtons({ canUndo, canRedo }: { canUndo: boolean; canRedo
         disabled={!canRedo}
         onClick={() => void commands.redo()}
       />
-    </>
+    </ButtonGroup>
   )
 }

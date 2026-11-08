@@ -10,6 +10,7 @@ import { InspectorTabs } from '@/components/layout/inspector-tabs'
 import { KeyHints } from '@/components/layout/key-hints'
 import { KeysInfo } from '@/components/layout/keys-info'
 import { StageNav } from '@/components/layout/stage-nav'
+import { ButtonGroup } from '@/components/forms/button-group'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { Kbd } from '@/components/ui/kbd'
 import { Separator } from '@/components/ui/separator'
@@ -240,7 +241,9 @@ export function SheetPreviewDialog({
         <div className="@container flex h-header items-center gap-2 overflow-x-auto overflow-y-hidden px-3 [scrollbar-width:thin] [&>*]:shrink-0">
           <HistoryButtons canUndo={canUndo} canRedo={canRedo} />
           <SettingsButtons photo={photo ?? undefined} ticked={ticked} collage />
-          <Separator orientation="vertical" className="h-5!" />
+          <Separator orientation="vertical" className="mx-1 h-5!" />
+          {/* The sheet's own tools joined (owner, 2026-11-08). */}
+          <ButtonGroup ariaLabel={t('toolbar.sheetTools')}>
           <ToolbarButton
             icon={<Crop />}
             label={t('viewer.crop')}
@@ -266,6 +269,7 @@ export function SheetPreviewDialog({
             disabled={photo === null || cropping}
             onClick={() => photo !== null && rotatePhoto(photo)}
           />
+          </ButtonGroup>
           <div className="ml-auto flex items-center gap-2">
             <ZoomControls
               inline

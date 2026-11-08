@@ -1368,5 +1368,15 @@
     "reduce": "Reduce",
     "systemHint": "Moves as the system's Reduce motion setting says.",
     "reduceHint": "Slides and zooms become short fades."
+  },
+  "toolbar": {
+    "history": "Undo and redo",
+    "copyPaste": "Copy and paste settings",
+    "rotate": "Rotate",
+    "zoom": "Zoom",
+    "panels": "Filmstrip and layout",
+    "sheetTools": "Sheet tools",
+    "move": "Move the ticked photos",
+    "apply": "Place and settings"
   }
 }

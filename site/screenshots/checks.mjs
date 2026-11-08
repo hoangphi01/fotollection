@@ -232,6 +232,34 @@ export async function layoutChecks(page, where) {
         out.push(`UI-LAYOUT-021 an open dropdown covers its own button: "${name(button)}"`)
     }
 
+    // UI-LAYOUT-022: a dialog's words keep 8 px clear of its close button (owner, 2026-11-08:
+    // "the words nearly touch the ✕"; the header spanned the width under the button).
+    for (const close of document.querySelectorAll('[data-slot="dialog-close"]')) {
+      if (!vis(close)) continue
+      const c = close.getBoundingClientRect()
+      const dialog = close.closest('[role="dialog"], [role="alertdialog"]')
+      if (!dialog) continue
+      const walker = document.createTreeWalker(dialog, NodeFilter.SHOW_TEXT)
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        if (!n.textContent?.trim() || !n.parentElement || close.contains(n) || !vis(n.parentElement)) continue
+        const range = document.createRange()
+        range.selectNodeContents(n)
+        // Words cut with an ellipsis end where their clipping box does (as UI-LAYOUT-018).
+        let clip = Infinity
+        for (let e = n.parentElement; e && e !== dialog; e = e.parentElement) {
+          if (getComputedStyle(e).overflowX !== 'visible') clip = Math.min(clip, e.getBoundingClientRect().right)
+        }
+        for (const r of range.getClientRects()) {
+          const right = Math.min(r.right, clip)
+          if (right - r.left < 1) continue
+          if (right > c.left - 8 && r.left < c.right + 8 && r.bottom > c.top - 8 && r.top < c.bottom + 8) {
+            out.push(`UI-LAYOUT-022 words within 8 px of a dialog's close button: "${n.textContent.trim().slice(0, 30)}"`)
+            break
+          }
+        }
+      }
+    }
+
     // UI-LAYOUT-011: the page never scrolls sideways.
     if (document.documentElement.scrollWidth > window.innerWidth + 1) out.push(`UI-LAYOUT-011 the page scrolls sideways (${document.documentElement.scrollWidth} > ${window.innerWidth})`)
     return out

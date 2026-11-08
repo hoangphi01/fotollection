@@ -8,15 +8,20 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Raised (FR-099, STYLE_RULE §4 "Depth"): a lip in a shade of the button's own colour,
-        // down by a pixel when pressed. Ghost and link stay flat.
-        default: "bg-primary text-primary-foreground [--face:var(--primary)] raised hover:bg-primary-deep active:not-aria-[haspopup]:raised-pressed aria-pressed:bg-pressed aria-pressed:pressed-in aria-pressed:hover:bg-primary",
+        // Raised (FR-099, STYLE_RULE §4 "Depth"): a lip in a shade of the button's own colour.
+        // While held, every button but a red one or a link is the theme's colour pressed in, and
+        // rises again on release, so a press is always seen (owner, 2026-11-08). The press keeps the
+        // fast pace on `ease-enter` (most of the colour in the first 40 ms, so a quick click shows it;
+        // a cut with no motion felt jerky) and the release `ease-move`, as every control. Marked important: in dark,
+        // `dark:bg-secondary` and `dark:hover:bg-muted` weigh as much or more and come later. Ghost and link
+        // stay flat at rest.
+        default: "bg-primary text-primary-foreground [--face:var(--primary)] raised hover:bg-primary-deep active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter aria-pressed:bg-pressed aria-pressed:pressed-in aria-pressed:hover:bg-primary",
         outline:
-          "border-border bg-card [--face:var(--card)] raised hover:bg-muted hover:text-foreground active:not-aria-[haspopup]:raised-pressed aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-secondary dark:[--face:var(--secondary)] dark:hover:bg-muted",
+          "border-border bg-card [--face:var(--card)] raised hover:bg-muted hover:text-foreground active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-secondary dark:[--face:var(--secondary)] dark:hover:bg-muted",
         secondary:
-          "bg-secondary text-secondary-foreground [--face:var(--secondary)] raised hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] active:not-aria-[haspopup]:raised-pressed aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-secondary text-secondary-foreground [--face:var(--secondary)] raised hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+          "hover:bg-muted hover:text-foreground active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         // Red for anything that deletes, clears, removes or stops (owner, 2026-11-06; STYLE_RULE
         // §4 "Red"): the red badges' deep red in both themes, white ink, their burgundy lip,
         // deeper under the pointer; icon-only ones too (a tab's ✕ is a round one).
@@ -26,7 +31,7 @@ const buttonVariants = cva(
         // where the wood stands out on green; the card's cream in light, where the teal accent
         // would sink into the green (owner, 2026-11-06). Raised as every button.
         "on-colour":
-          "bg-card text-foreground [--face:var(--card)] raised hover:bg-muted active:not-aria-[haspopup]:raised-pressed dark:bg-primary dark:text-primary-foreground dark:[--face:var(--primary)] dark:hover:bg-primary/90",
+          "bg-card text-foreground [--face:var(--card)] raised hover:bg-muted active:bg-pressed! active:text-primary-foreground! active:[--face:var(--primary)]! active:pressed-in! active:ease-enter dark:bg-primary dark:text-primary-foreground dark:[--face:var(--primary)] dark:hover:bg-primary/90",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

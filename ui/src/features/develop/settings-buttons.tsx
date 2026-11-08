@@ -4,6 +4,7 @@ import { ClipboardPaste, Copy, Image, Images } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ResetButton } from '@/components/forms/danger-button'
 import { ListRow } from '@/components/forms/list-row'
+import { ButtonGroup } from '@/components/forms/button-group'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { Kbd } from '@/components/ui/kbd'
 import { Popover, PopoverTrigger } from '@/components/ui/popover'
@@ -36,6 +37,8 @@ export function SettingsButtons({ photo, ticked, collage = false }: SettingsButt
   const pasteHint = t('develop.pasteHint', { keys: `${SHIFT}${MOD}V` })
   return (
     <>
+      {/* Copy and paste joined; the red reset stands apart (owner, 2026-11-08). */}
+      <ButtonGroup ariaLabel={t('toolbar.copyPaste')}>
       <ToolbarButton
         icon={<Copy />}
         label={t('develop.copy')}
@@ -76,6 +79,7 @@ export function SettingsButtons({ photo, ticked, collage = false }: SettingsButt
           onClick={() => photo !== undefined && pasteSettings([photo], collage)}
         />
       )}
+      </ButtonGroup>
       <ResetButton
         iconOnly
         label={t('develop.reset')}

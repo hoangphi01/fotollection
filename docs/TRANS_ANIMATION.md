@@ -62,7 +62,7 @@ Classes, never numbers. Each utility sets what moves, its pace and its curve:
 | A fold | the height in grid rows, the gap given back, the content fading; the chevron (down when open, −90° when folded) and the head's line move with it | `Collapse`, `SectionCard`, `GroupRows`, the strips, *Version history* |
 | A list grows or shrinks | the stack folds to its new height; a leaving item keeps its place until it has folded | `NoticeStack` |
 | A row is dragged | the dragged row follows the pointer with no transition (`transition-none`), the others slide by one row | the folder list |
-| Hover and press | colours and depth change fast; a hover deepens, never fades (STYLE_RULE §4) | every control |
+| Hover and press | colours and depth change fast; a hover deepens, never fades (STYLE_RULE §4); a button held down is the theme's colour pressed in, coming on `ease-enter` (most of it in the first 40 ms, so a quick click shows it) and rising again on `ease-move` (owner, 2026-11-08) | every control |
 
 **Planned in v0.14.0** (FR-100, the rest of [ADR-0046](adr/0046-one-motion-system.md)), each added to the table above when built:
 

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Archive, CheckCheck, ClipboardPaste, MapPin, ShoppingBasket, Undo2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { ButtonGroup } from '@/components/forms/button-group'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import type { Queue, QueueView } from '@/ipc/bindings'
 import { RemoveButton } from '@/components/forms/danger-button'
@@ -39,6 +40,9 @@ export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, 
         <span className="text-xs whitespace-nowrap text-muted-foreground tabular-nums">{t('select.elsewhere', { count: elsewhere })}</span>
       )}
       <div className="ml-auto flex items-center gap-2">
+        {/* Where the ticked photos go, then what they get, each joined (owner, 2026-11-08);
+            the red clear stands apart. */}
+        <ButtonGroup ariaLabel={t('toolbar.move')}>
         {view !== 'print' && (
           <ToolbarButton icon={<ShoppingBasket />} label={t('select.toBasket')} labelFrom="5xl" variant="default" data-hint={t('select.toBasket')} disabled={none} onClick={() => onMove('print')} />
         )}
@@ -48,10 +52,13 @@ export function SelectionBar({ count, unit = 'photos', elsewhere, view, onMove, 
         {view !== 'gallery' && (
           <ToolbarButton icon={<Undo2 />} label={t('select.toGallery')} labelFrom="5xl" data-hint={t('select.toGallery')} disabled={none} onClick={() => onMove(null)} />
         )}
+        </ButtonGroup>
+        <ButtonGroup ariaLabel={t('toolbar.apply')}>
         <ToolbarButton icon={<MapPin />} label={t('places.set')} labelFrom="5xl" data-hint={t('places.set')} disabled={none} onClick={onDatePlace} />
         {onPasteSettings && (
           <ToolbarButton icon={<ClipboardPaste />} label={t('develop.pasteToTicked')} labelFrom="5xl" data-hint={t('develop.pasteToTicked')} disabled={none} onClick={onPasteSettings} />
         )}
+        </ButtonGroup>
         <ToolbarButton icon={<CheckCheck />} label={t('select.all')} labelFrom="5xl" variant="default" data-hint={t('select.all')} onClick={onSelectAll} />
         <RemoveButton kind="clear" disabled={none} label={t('select.clear')} onClick={onClear} />
       </div>

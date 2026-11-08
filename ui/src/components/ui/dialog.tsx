@@ -107,7 +107,9 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-2", className)}
+      // Clear of the close button (32 px at 16 px from the edge) by 8 px, so a long title or
+      // description never runs under it (owner, 2026-11-08; UI-LAYOUT-022).
+      className={cn("flex flex-col gap-2 pr-10", className)}
       {...props}
     />
   )

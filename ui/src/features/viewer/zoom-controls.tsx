@@ -2,9 +2,9 @@
 import { Scan, ZoomIn, ZoomOut } from 'lucide-react'
 import { Spinner } from '@/components/forms/spinner'
 import { useTranslation } from 'react-i18next'
+import { ButtonGroup } from '@/components/forms/button-group'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 
 type ZoomControlsProps = {
   percent: number
@@ -51,10 +51,11 @@ export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomI
         </Button>
       </span>
     )
-  return (
-    <div className={cn('flex items-center', inline ? 'gap-2' : 'absolute right-3 bottom-3 gap-1 rounded-lg bg-stage-chip p-1')}>
-      {button(buttons[0])}
-      {inline ? (
+  if (inline)
+    // In a toolbar, one joined group (owner, 2026-11-08): out, the percentage, in, fit.
+    return (
+      <ButtonGroup ariaLabel={t('toolbar.zoom')}>
+        {button(buttons[0])}
         <Button
           variant="outline"
           size="sm"
@@ -66,16 +67,20 @@ export function ZoomControls({ percent, zoomed, canZoomIn, loading, mod, onZoomI
           {loading && <Spinner aria-label={t('viewer.zoomSharpening')} />}
           {percent}&nbsp;%
         </Button>
-      ) : (
-        <span
-          className="flex min-w-14 items-center justify-center gap-1 px-1 text-xs text-stage-ink tabular-nums"
-          aria-live="polite"
-          data-hint={loading ? t('viewer.zoomSharpening') : undefined}
-        >
-          {loading && <Spinner className="size-3" aria-label={t('viewer.zoomSharpening')} />}
-          {percent}&nbsp;%
-        </span>
-      )}
+        {buttons.slice(1).map(button)}
+      </ButtonGroup>
+    )
+  return (
+    <div className="absolute right-3 bottom-3 flex items-center gap-1 rounded-lg bg-stage-chip p-1">
+      {button(buttons[0])}
+      <span
+        className="flex min-w-14 items-center justify-center gap-1 px-1 text-xs text-stage-ink tabular-nums"
+        aria-live="polite"
+        data-hint={loading ? t('viewer.zoomSharpening') : undefined}
+      >
+        {loading && <Spinner className="size-3" aria-label={t('viewer.zoomSharpening')} />}
+        {percent}&nbsp;%
+      </span>
       {buttons.slice(1).map(button)}
     </div>
   )

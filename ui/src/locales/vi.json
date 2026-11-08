@@ -1318,5 +1318,15 @@
     "reduce": "Giảm",
     "systemHint": "Chuyển động theo cài đặt Giảm chuyển động của hệ thống.",
     "reduceHint": "Trượt và phóng to chỉ còn là mờ dần ngắn."
+  },
+  "toolbar": {
+    "history": "Hoàn tác và làm lại",
+    "copyPaste": "Chép và dán thiết lập",
+    "rotate": "Xoay",
+    "zoom": "Thu phóng",
+    "panels": "Dải ảnh và bố cục",
+    "sheetTools": "Công cụ trang",
+    "move": "Chuyển các ảnh đã chọn",
+    "apply": "Địa điểm và thiết lập"
   }
 }

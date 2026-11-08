@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ButtonGroup } from '@/components/forms/button-group'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { KeysInfo } from '@/components/layout/keys-info'
 import { Kbd } from '@/components/ui/kbd'
@@ -107,6 +108,7 @@ export function PreviewToolbar({
       {/* Copy, paste and reset the photo's settings (FR-097), beside undo (owner, 2026-11-07). */}
       <SettingsButtons photo={photo?.id} ticked={ticked} />
       <Separator orientation="vertical" className="mx-1 h-5!" />
+      <ButtonGroup ariaLabel={t('toolbar.rotate')}>
       <ToolbarButton
         icon={<RotateCcwSquare />}
         label={t('viewer.rotateLeftShort')}
@@ -123,6 +125,7 @@ export function PreviewToolbar({
         disabled={!photo}
         onClick={() => rotate(true)}
       />
+      </ButtonGroup>
       {photo?.queue === 'aside' ? (
         <ToolbarButton
           icon={<ArchiveRestore />}
@@ -144,7 +147,8 @@ export function PreviewToolbar({
         />
       )}
       <Separator orientation="vertical" className="mx-1 h-5!" />
-      {/* Before / After (FR-079, FR-096): the photo without its colour, on or off. */}
+      {/* Before / After (FR-079, FR-096): the photo without its colour, on or off; its views
+          beside it, two buttons apart (owner, 2026-11-08: joined, they looked clumsy). */}
       <ToolbarButton
         icon={<Eye />}
         label={t('look.before')}
@@ -167,6 +171,7 @@ export function PreviewToolbar({
       />
       <div className="ml-auto flex items-center gap-2">
         {zoom}
+        <ButtonGroup ariaLabel={t('toolbar.panels')}>
         <ToolbarButton
           icon={filmstrip ? <PanelBottomClose /> : <PanelBottomOpen />}
           label={stripLabel}
@@ -185,6 +190,7 @@ export function PreviewToolbar({
           iconOnly
           onClick={onLayout}
         />
+        </ButtonGroup>
         <KeysInfo lines={t('viewer.keys', { mod: MOD }).split('\n')} />
       </div>
     </div>
