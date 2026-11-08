@@ -48,6 +48,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0042](0042-axe-core-for-ui-tests-only.md) | axe-core (MPL-2.0) for the UI tests only, a development tool never bundled into the app, its installers or the website | Accepted | 2026-11-07 |
 | [0043](0043-lossless-export-f32-path-tiff.md) | Lossless export (Pro): a 32-bit float path to TIFF 16-bit or 32-bit float, learned from RawTherapee and darktable without their code; image methods chosen by measurement | Accepted | 2026-11-07 |
 | [0044](0044-rust-first-our-edge.md) | Rust first: every pixel and file in Rust, parallel by default, safe parsers, small and lean, typed IPC, measured; the guiding principle for every design and doc | Accepted | 2026-11-07 |
+| [0045](0045-presets-compiled-into-the-look-table.md) | Lightroom presets compiled into the look table: sliders to ours, curves, whites/blacks, HSL, colour grading and B&W mixer baked into one 33³ LUT; spatial tools named, never dropped; strengths tuned against Lightroom's renders | Accepted | 2026-11-08 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

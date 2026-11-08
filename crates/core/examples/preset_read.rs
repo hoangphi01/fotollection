@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 //! What a Lightroom preset file holds as Fotollection reads it (FR-089): its name, group,
-//! process and settings, or why it is refused. Files are only read.
+//! process and settings, the look it compiles to, or why it is refused. Files are only read.
 //!
 //! `cargo run -p fotollection-core --example preset_read -- <file.xmp|file.lrtemplate|file.zip>…`
 
@@ -19,6 +19,15 @@ fn show(
             );
             for (k, v) in &p.values {
                 println!("  {k} = {v:?}");
+            }
+            let c = fotollection_core::preset_look::compile(&p);
+            println!("  → sliders {:?}", c.look.adjust);
+            println!(
+                "  → baked table: {}",
+                if c.lut.is_some() { "yes" } else { "no" }
+            );
+            for u in &c.unapplied {
+                println!("  → not applied: {u}");
             }
         }
         Err(e) => println!("{name}: refused ({e})"),
