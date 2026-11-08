@@ -868,3 +868,10 @@
 - **Why:** `SwatchToggle`'s items keep 6 px of side padding for a dot beside its name; eight dot-only items in a 300 px column leave 22 px a button, and the padding ate 12 of it.
 - **Fix:** a `dense` swatch (a dot alone) has no side padding, so the dot gets the button's whole width; the matrix passes again.
 - **Rule:** a block's padding is sized for its widest use; when a block gets a new variant (more items, no label), run ui-check on the narrowest column before calling it done.
+
+### The print size list lost its top: Radix's item-aligned lists open over their button (FR-052, UI-LAYOUT-021)
+
+- **Seen:** choosing a size low in the print size list, then opening it again, drew the list over the window's top, its first sizes cut off (owner, 2026-11-08), and "every dropdown in the app is coded its own way": the place picker was an outline button, the manual's a third kind.
+- **Why:** shadcn's `SelectContent` defaulted to Radix's `item-aligned`, which puts the chosen row over the button and grows up from there; with the last row chosen the list starts above the window, behind the title bar. Popover pickers had no block, so each copied a `Button` its own way.
+- **Fix:** `SelectContent` defaults to `popper`, aligned to its start: the list opens under its button, or above it, within the room the window has. `PickerTrigger` draws a popover picker's button as a Select's. UI-LAYOUT-021 opens the list with the last size chosen; it failed twice on the old code (out of the window, over its button). `check-lego` refuses `position=` on a `SelectContent` and `role="combobox"`, both proven on the old code.
+- **Rule:** a shadcn primitive's default is a design choice too: check it against the app's rule before using it twelve times. Test a list with its last item chosen, at the window's edge. Also: a grep for findings must match every test ID (`UI-[A-Z0-9]+-`): `UI-A11Y` hid behind `UI-[A-Z]+-`.

@@ -2,7 +2,7 @@
 import { MapPin } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '@/components/ui/button'
+import { PickerTrigger } from '@/components/forms/picker-trigger'
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import type { Place } from '@/ipc/bindings'
@@ -26,10 +26,7 @@ export function PlacePicker({ label, onPick }: PlacePickerProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-start font-normal">
-          <MapPin data-icon="inline-start" />
-          <span className="truncate">{label ?? t('places.pick')}</span>
-        </Button>
+        <PickerTrigger icon={<MapPin />}>{label ?? t('places.pick')}</PickerTrigger>
       </PopoverTrigger>
       <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
         {/* The search is done in Rust, so cmdk's own filtering is off. */}

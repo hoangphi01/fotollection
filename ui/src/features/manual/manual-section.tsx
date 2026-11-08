@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ArrowLeft, ArrowRight, BookOpen, Bookmark, ChevronDown, ListOrdered, type LucideIcon } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, Bookmark, ListOrdered, type LucideIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDarkTheme } from '@/lib/theme'
@@ -8,6 +8,7 @@ import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ListRow, ListRows } from '@/components/forms/list-row'
+import { PickerTrigger } from '@/components/forms/picker-trigger'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { findChapters, type Chapter, type ManualCard } from '@/lib/manual'
 import { useManualChapters } from './manual-content'
@@ -41,11 +42,7 @@ function ChapterPicker({ list, chapter }: { list: Chapter[]; chapter: Chapter })
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" aria-expanded={open} className="w-full justify-start font-normal">
-          <BookOpen data-icon="inline-start" />
-          <span className="min-w-0 flex-1 truncate text-left">{`${chapter.number}. ${chapter.title}`}</span>
-          <ChevronDown data-icon="inline-end" />
-        </Button>
+        <PickerTrigger icon={<BookOpen />}>{`${chapter.number}. ${chapter.title}`}</PickerTrigger>
       </PopoverTrigger>
       <PopoverContent align="start" className="flex w-(--radix-popover-trigger-width) flex-col gap-1 p-1">
         {/* The same text field as every other in the app (STYLE_RULE §4: 32 px, set in). */}

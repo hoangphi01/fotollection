@@ -217,6 +217,21 @@ export async function layoutChecks(page, where) {
     if (chrome && document.querySelector('[role="dialog"], [role="alertdialog"]') && getComputedStyle(chrome).pointerEvents === 'none')
       out.push('UI-LAYOUT-020 the window bar takes no pointer while a dialog is open: the window cannot be moved')
 
+    // UI-LAYOUT-021: an open dropdown sits whole inside the window, under its bar, and beside
+    // its button, never over it (owner, 2026-11-08: the print size list lost its top when a
+    // size low in the list was chosen; Radix's item-aligned lists open over their button).
+    const bar = document.querySelector('[data-window-chrome]')?.getBoundingClientRect().bottom ?? 0
+    for (const list of document.querySelectorAll('[data-slot="select-content"], [data-slot="popover-content"]')) {
+      if (!vis(list)) continue
+      const b = list.getBoundingClientRect()
+      if (b.top < bar - 0.5 || b.bottom > window.innerHeight + 0.5 || b.left < -0.5 || b.right > window.innerWidth + 0.5)
+        out.push(`UI-LAYOUT-021 an open dropdown runs out of the window (${Math.round(b.top)}–${Math.round(b.bottom)} of ${window.innerHeight}, bar ${Math.round(bar)})`)
+      const button = document.querySelector('[data-slot="select-trigger"][data-state="open"], [data-slot="popover-trigger"][data-state="open"]')
+      const t = button?.getBoundingClientRect()
+      if (t && b.top < t.bottom - 0.5 && b.bottom > t.top + 0.5 && b.left < t.right && b.right > t.left)
+        out.push(`UI-LAYOUT-021 an open dropdown covers its own button: "${name(button)}"`)
+    }
+
     // UI-LAYOUT-011: the page never scrolls sideways.
     if (document.documentElement.scrollWidth > window.innerWidth + 1) out.push(`UI-LAYOUT-011 the page scrolls sideways (${document.documentElement.scrollWidth} > ${window.innerWidth})`)
     return out

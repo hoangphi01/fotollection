@@ -38,6 +38,18 @@ const RULES = [
     test: /<InputGroup\b/,
     say: 'a field with its own frame: every text field is an Input (the manual\'s search, FR-110: InputGroup drew a second box)',
   },
+  {
+    // Owner, 2026-11-08: "every dropdown is coded its own way"; an item-aligned list covered its
+    // button and ran over the window's top (UI-LAYOUT-021).
+    test: /<SelectContent\b[^>]*\bposition=/,
+    everywhere: true,
+    say: 'a list placed by hand: every SelectContent opens under its button, the default',
+  },
+  {
+    test: /role="combobox"/,
+    everywhere: true,
+    say: 'a hand-made dropdown button: a picker in a popover is a PickerTrigger (components/forms), drawn as a Select',
+  },
   { test: /<SelectTrigger[^>]*\bsize=/, say: 'a select of its own size: every select in a panel is 32 px, the default' },
   {
     test: /\bspace-y-[0-9.]+/,

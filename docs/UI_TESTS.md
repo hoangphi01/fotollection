@@ -63,6 +63,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | UI-LAYOUT-018 | A scroll bar keeps clear of words | In every area that scrolls, words end at least 12 px (the 8 px bar and 4 px) before its right edge, measured at their clipping box | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 | UI-LAYOUT-019 | A dialog's footer keeps clear | A footer's line is 12 px or more under the block above it | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 | UI-LAYOUT-020 | The window can be moved with a dialog open | The title bar (`data-window-chrome`) keeps `pointer-events` other than `none` while a dialog is open | A `layoutChecks` | release | FR-052; LESSONS |
+| UI-LAYOUT-021 | An open dropdown sits whole in the window, beside its button | An open `select-content` or `popover-content` lies inside the window and under its bar, and never covers its own open button; the print size list is opened with the last size chosen | A `layoutChecks` | release | FR-052; LESSONS |
 
 ### Text
 

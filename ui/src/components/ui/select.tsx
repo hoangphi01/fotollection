@@ -28,6 +28,10 @@ function SelectValue({
   return <SelectPrimitive.Value data-slot="select-value" {...props} />
 }
 
+/** The look of every dropdown's button: a Select's and a popover picker's (`PickerTrigger`). */
+const triggerClass =
+  "flex w-fit min-w-0 items-center justify-between gap-1.5 rounded-lg border border-input bg-[color-mix(in_oklch,var(--background),var(--shade)_3%)] sunken py-2 pr-2 pl-2.5 text-sm whitespace-nowrap motion-control outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-placeholder:text-muted-foreground data-[size=default]:h-8 data-[size=sm]:h-8 data-[size=sm]:rounded-[min(var(--radius-md),10px)] *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:min-w-0 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+
 function SelectTrigger({
   className,
   size = "default",
@@ -41,7 +45,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex w-fit min-w-0 items-center justify-between gap-1.5 rounded-lg border border-input bg-[color-mix(in_oklch,var(--background),var(--shade)_3%)] sunken py-2 pr-2 pl-2.5 text-sm whitespace-nowrap motion-control outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-placeholder:text-muted-foreground data-[size=default]:h-8 data-[size=sm]:h-8 data-[size=sm]:rounded-[min(var(--radius-md),10px)] *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:min-w-0 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        triggerClass,
         className
       )}
       {...props}
@@ -57,10 +61,13 @@ function SelectTrigger({
 function SelectContent({
   className,
   children,
-  position = "item-aligned",
-  align = "center",
+  position = "popper",
+  align = "start",
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
+  // Every list opens under its button (above it when there is no room), inside the window,
+  // never over the button: Radix's item-aligned lists covered it and, with a choice low in a
+  // long list, ran over the window's top (owner, 2026-11-08; UI-LAYOUT-021, check-lego).
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
@@ -176,6 +183,7 @@ function SelectScrollDownButton({
 }
 
 export {
+  triggerClass,
   Select,
   SelectContent,
   SelectGroup,

@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - **The window can be moved, and on Windows minimised or closed, while the photo preview or any dialog is open** (FR-052).
+- **Every dropdown opens under its button and stays inside the window** (FR-052): the print size list no longer loses its top when a size low in the list is chosen, and the place and manual chapter pickers look like every other dropdown.
 - **History** (FR-095) is about six rows high and scrolls inside, so a long one never pushes the column; a look picked says its name (*Look · Warm old film*), the amount its value.
 - **The info frame's photo-style line** names the photo's look when the camera profile gives none (FR-040).
 - **A RAW's look tiles** show its colour as the preview does, from its standard preview once it exists, not the camera's JPEG (2 to 9 ΔE apart, RESULT §34).

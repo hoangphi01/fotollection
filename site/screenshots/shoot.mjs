@@ -605,6 +605,18 @@ async function stressViews({ language, theme }) {
   out.push(...(await allChecks(page, 'Collage panel, a long custom size')))
   out.push(...(await shot(page, page.locator('aside.border-l'), 'collage-panel')))
   await context.close()
+  // UI-LAYOUT-021: the print size list open with the last size chosen, where an item-aligned
+  // list ran over the window's top (owner, 2026-11-08).
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme, settingsPatch: { printSize: '5x15' } }))
+  await settle(page)
+  await page.getByRole('combobox', { name: /^(Print \/ export size|Khổ in \/ xuất ảnh)$/ }).first().click()
+  await page.waitForSelector('[role="option"]')
+  await page.waitForTimeout(400)
+  // Layout only: an open list is modal (Radix hides the rest from readers and keeps the focus
+  // in the list), which axe's aria-hidden-focus takes for a fault; the closed views run axe.
+  const where = 'the print size list open, the last size chosen'
+  out.push(...(await overflows(page, where)), ...(await layoutChecks(page, where)))
+  await context.close()
   // The sheet preview in every shape (LESSONS: a row above a stage): landscape, square, tall.
   for (const [size, label] of [['10x15', 'landscape'], ['10x10', 'square'], ['13x18', 'tall']]) {
     ;({ context, page } = await open({ scenario: 'collage', language, theme, mode: 'collage', queues: NO_QUEUES, settingsPatch: { printSize: size } }))
