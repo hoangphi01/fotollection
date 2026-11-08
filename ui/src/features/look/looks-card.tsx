@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown preview: in the preview only (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { Palette, TriangleAlert } from 'lucide-react'
+import { BookmarkPlus, Palette, TriangleAlert } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ResetButton } from '@/components/forms/danger-button'
 import { ValueRow } from '@/components/forms/field'
@@ -8,7 +9,10 @@ import { SliderField } from '@/components/forms/slider-field'
 import { Collapse } from '@/components/layout/collapse'
 import { PanelNote } from '@/components/layout/panel-note'
 import { SectionCard } from '@/components/layout/section-card'
+import { Button } from '@/components/ui/button'
+import { commands } from '@/ipc/bindings'
 import type { LookSettings } from '@/ipc/bindings'
+import { SaveLookDialog } from './save-look-dialog'
 import { NO_LOOK, fullLook, type LookChange } from './look-fields'
 import { lookName, useLooks } from './use-looks'
 
@@ -32,7 +36,8 @@ const percent = (v: number) => `${v} %`
  */
 export function LooksCard({ look, onChange, simple = false, pro = false }: LooksCardProps) {
   const { t } = useTranslation()
-  const { looks } = useLooks()
+  const { looks, reload } = useLooks()
+  const [saving, setSaving] = useState(false)
   const current = fullLook(look)
   // Coloured: a look or a slider changes the photo (Original changes nothing). Only then is
   // there an amount to set and a reset to show, in every mode (owner, 2026-11-07); the reset
@@ -45,10 +50,17 @@ export function LooksCard({ look, onChange, simple = false, pro = false }: Looks
   // use", "the look's name above, the amount below"): the library's name, else the look's own,
   // else *Custom* for sliders alone, *Original* when nothing is set.
   const original = looks.find((e) => e.id === 'builtin:original')
+  // A slider moved from the look it came from (Original included) makes it *Custom* (owner,
+  // 2026-11-08): the name says what is on the photo, not where it started.
+  const colourOf = (l: LookSettings) => {
+    const { name: _x, base: _y, amount: _z, ...rest } = fullLook(l)
+    return JSON.stringify(rest)
+  }
+  const asPicked = chosenEntry !== undefined && colourOf(chosenEntry.look) === JSON.stringify(colours)
   const inUse = coloured
-    ? chosenEntry
+    ? asPicked && chosenEntry
       ? lookName(chosenEntry)
-      : (current.name ?? t('look.custom'))
+      : t('look.custom')
     : original
       ? lookName(original)
       : t('look.original')
@@ -58,7 +70,19 @@ export function LooksCard({ look, onChange, simple = false, pro = false }: Looks
       title={t('look.looks')}
       // Simple mode has nothing but the amount: with the original, the card is its title alone.
       open={coloured || !simple}
-      action={coloured && <ResetButton iconOnly label={t('look.resetLook')} onClick={() => onChange(() => NO_LOOK, true)} />}
+      action={
+        coloured && (
+          <div className="flex gap-1">
+            {/* A colour of its own kept as a look of yours, beside the reset (owner, 2026-11-08). */}
+            {!asPicked && (
+              <Button variant="outline" size="icon-sm" aria-label={t('look.saveAs')} data-hint={t('look.saveAs')} onClick={() => setSaving(true)}>
+                <BookmarkPlus />
+              </Button>
+            )}
+            <ResetButton iconOnly label={t('look.resetLook')} onClick={() => onChange(() => NO_LOOK, true)} />
+          </div>
+        )
+      }
     >
       <ValueRow label={t('look.inUse')}>
         <span className="truncate font-medium" data-hint={inUse}>
@@ -91,6 +115,19 @@ export function LooksCard({ look, onChange, simple = false, pro = false }: Looks
       />
       </Collapse>
       {pro && chosenEntry?.vlog && <PanelNote icon={<TriangleAlert />}>{t('look.vlogWarning')}</PanelNote>}
+      <SaveLookDialog
+        open={saving}
+        onAnswer={(name) => {
+          setSaving(false)
+          if (name === null) return
+          void commands.saveLook(name, current).then((r) => {
+            if (r.status !== 'ok') return
+            reload()
+            // The photo now wears the look just kept, under its name.
+            onChange((l) => ({ ...l, base: r.data.id, name: r.data.name }), true)
+          })
+        }}
+      />
     </SectionCard>
   )
 }

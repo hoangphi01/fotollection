@@ -28,6 +28,8 @@ type FilmstripProps<T> = {
   name?: (item: T) => string
   /** A cell's own key (`aria-keyshortcuts`), told to screen readers instead of in its name. */
   keys?: (item: T) => string | undefined
+  /** A right click on a cell (its menu, as a list row's ⋯, STYLE_RULE §4). */
+  onMenu?: (item: T, at: { x: number; y: number }) => void
   /** A short label before the cells (the capture screen's shot count). */
   label?: ReactNode
   /** Shown in place of the cells when there are none. */
@@ -44,7 +46,7 @@ type FilmstripProps<T> = {
  * 112 px (STYLE_RULE §4); only the cells in sight are drawn, so a set of 500 scrolls as
  * smoothly as one of 5.
  */
-export function Filmstrip<T>({ items, current = null, onPick, cell, hint, name, keys, label, empty, header, collapsed = false }: FilmstripProps<T>) {
+export function Filmstrip<T>({ items, current = null, onPick, cell, hint, name, keys, onMenu, label, empty, header, collapsed = false }: FilmstripProps<T>) {
   const count = items.length
   const scrollRef = useRef<HTMLDivElement>(null)
   // As the gallery's grid does: the virtualizer's own functions stay fresh by design.
@@ -96,6 +98,10 @@ export function Filmstrip<T>({ items, current = null, onPick, cell, hint, name, 
                     aria-current={item.index === current ? 'true' : undefined}
                     data-hint={hint(it)}
                     onClick={() => onPick(it, item.index)}
+                    onContextMenu={(e) => {
+                      e.preventDefault()
+                      onMenu?.(it, { x: e.clientX, y: e.clientY })
+                    }}
                     className={cn(
                       'absolute top-0 overflow-hidden rounded-sm bg-stage-raised ring-offset-2 ring-offset-stage motion-control outline-none hover:ring-2 hover:ring-primary/60 focus-visible:ring-2 focus-visible:ring-primary',
                       item.index === current && 'ring-2 ring-primary hover:ring-primary',
