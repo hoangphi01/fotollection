@@ -763,3 +763,10 @@
 - **Why:** the SVG was a 255 × 1000 `viewBox` stretched with `preserveAspectRatio="none"`, its channels blended with `mix-blend-mode`. Chromium (WebView2) draws a blended layer once as a bitmap and scales it; at Windows' 125 % or 150 % that scaling interpolates, while a Retina Mac at exactly 2× hides it.
 - **Fix:** `HistogramPlot` draws on a canvas sized in device pixels (`clientWidth × devicePixelRatio`), blending with the canvas's own `multiply`/`screen`, redrawn on resize, on a new display scale and on a theme change.
 - **Rule:** a picture drawn from numbers (curves, charts) is drawn at the device's pixels, never a stretched SVG with blend modes; check it at a fractional scale (125 %, 150 %), not only on a Retina screen.
+
+### The inspector's foot flashed on each next photo: a hint read `current`, not the last answer (FR-095)
+
+- **Seen:** pressing → in the photo preview, the key hints at the foot of the right column jumped once (owner, 2026-11-08).
+- **Why:** `canDrag` read `useLiveQuery(…).current`, which is `null` from the moment the photo changes until Rust answers; the *Drag to frame* hint left and came back, and the centred lines moved. A postcard's reuse note read `current` the same way and blinked as cards were flipped.
+- **Fix:** what is only shown (the hint, the cursor, the note) reads `.data`, the last answer; what acts on the photo (the drag, the crop editor) still waits for `.current`.
+- **Rule:** in `useLiveQuery`, `.data` is for what the user sees, `.current` only for what changes the photo. A card that may come and go per photo keeps its room or its last state; never `return null` or a `key` per photo in an inspector card.

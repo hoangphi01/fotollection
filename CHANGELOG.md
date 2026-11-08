@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **A zoomed photo stays on the stage** (FR-057): dragging, scrolling sideways or zooming about the pointer never moves it off the stage, and a drag that leaves the stage no longer selects the text of the panels beside it.
 - **The colour cards no longer jump** when a tab is switched or a sheet's photo picked: the list of looks and each photo's look are drawn at once from the last answer.
 - **The histogram is sharp on Windows** (FR-098): its curves are drawn at the display's own scale, so at 125 % or 150 % they no longer look soft; it is a little taller (80 px).
+- **The next photo no longer flashes the inspector's foot** (FR-095): the key hints keep *Drag to frame* while the next photo's crop is read, and a postcard's *Use for the others* note stays while the next card is flipped to (FR-077).
 - **RAW shadows without steps:** the RAW tone curve is read between its bins, so dark gradients no longer show bands of three or four levels (35 gaps in the lifted shadows of the nine test cameras, now 1); RAW previews are made again once.
 
 ### Changed
