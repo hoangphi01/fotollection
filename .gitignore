@@ -37,3 +37,10 @@ captures/
 *.pcap
 site/_includes/manual-*.md
 site/_includes/story-toc-*.md
+
+# Secrets never enter the repo (SECURITY.md §6): service-account keys, private keys, certificates.
+/fotollection-*.json
+*service-account*.json
+*.pem
+*.p12
+*.key
