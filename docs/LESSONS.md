@@ -840,3 +840,10 @@
 - **Why:** a dialog spaces its blocks 16 px (`grid gap-4`), but the field and the footer were inside a `<form>`, one block to the dialog, with no spacing of its own; the footer's negative margins brought its line up to the field. `pt-3` on the footer only moved the buttons down. Two other dialogs with forms had the same shape.
 - **Fix:** `DialogForm` (`components/ui/dialog.tsx`) spaces a form as the dialog does; *Save as look*, *Copy settings* and *New project* use it. `check-lego` refuses a hand-made `<form>` in a file with a dialog, and UI-LAYOUT-019 checks a footer is 12 px or more under what is above it.
 - **Rule:** a wrapper added inside a block that spaces its children (a form, a div for a ref) takes their spacing away; wrap with a block that spaces the same, never with a bare element.
+
+### A look saved from the Looks card did not appear on the strip: each card held its own copy of the library (FR-079)
+
+- **Seen:** *Save as look* named the photo's look "Sáng nhẹ" in the Looks card, but the strip under the photo did not list it (owner, 2026-11-08).
+- **Why:** `useLooks` kept the library in each component's own state; a module variable only seeded new mounts. The card reloaded its own copy after saving; the strip, mounted with the old list, was never told. Any import, rename or removal had the same gap between cards.
+- **Fix:** the library is one store for the app (`useSyncExternalStore`, as `use-ui-settings`): asked once per run, and every change publishes the new list to every card.
+- **Rule:** data that more than one mounted component shows is a shared store, never state per component seeded from a module variable; after an action, check every place that shows the result, not only the one that did it.

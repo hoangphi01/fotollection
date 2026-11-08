@@ -1,27 +1,43 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import i18n from '@/i18n'
 import { commands, type LookEntry, type PhotoId } from '@/ipc/bindings'
 
 /**
- * The library of looks (FR-079): the built-in ones, then this machine's saved ones. The last
- * list stays while a new one loads, also across mounts (a tab switched, a photo picked), so
- * the grid never empties and the cards under it never jump (STYLE_RULE §4).
+ * The library of looks (FR-079): the built-in ones, then this machine's saved ones. One list
+ * for the whole app, so a look saved, imported, renamed or removed in one card shows at once
+ * in every other (the strips, the Looks card, *Presets & LUTs*, the gallery's Colour tab;
+ * owner, 2026-11-08: "saved, but not on the strip"). The last list stays while a new one
+ * loads, also across mounts, so the grid never empties and the cards never jump.
  */
-/** The last list, so a card mounted again draws at once, its height already right. */
 let lastLooks: LookEntry[] = []
+let asked = false
+const listeners = new Set<() => void>()
+
+function publish(next: LookEntry[]) {
+  lastLooks = next
+  listeners.forEach((listener) => listener())
+}
+
+function reloadLooks() {
+  void commands.listLooks().then((r) => r.status === 'ok' && publish(r.data))
+}
 
 export function useLooks() {
-  const [looks, setLooksState] = useState<LookEntry[]>(lastLooks)
-  const setLooks = useCallback((next: LookEntry[]) => {
-    lastLooks = next
-    setLooksState(next)
+  const looks = useSyncExternalStore(
+    (listener) => {
+      listeners.add(listener)
+      return () => listeners.delete(listener)
+    },
+    () => lastLooks,
+  )
+  // Asked once per run; every change after that publishes the new list itself.
+  useEffect(() => {
+    if (asked) return
+    asked = true
+    reloadLooks()
   }, [])
-  const reload = useCallback(() => {
-    void commands.listLooks().then((r) => r.status === 'ok' && setLooks(r.data))
-  }, [setLooks])
-  useEffect(reload, [reload])
-  return { looks, setLooks, reload }
+  return { looks, setLooks: publish, reload: reloadLooks }
 }
 
 /** A look's name as shown: a built-in one in the interface's language, a user's as typed. */
