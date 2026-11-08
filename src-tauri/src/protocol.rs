@@ -16,7 +16,7 @@
 #![allow(clippy::needless_pass_by_value)]
 
 use fotollection_core::library::PhotoId;
-use fotollection_core::preview::Region;
+use fotollection_core::preview::{Region, SheetView};
 use tauri::http::{Request, Response, StatusCode, header};
 use tauri::{Manager, Runtime, UriSchemeContext, UriSchemeResponder};
 
@@ -50,7 +50,7 @@ enum Route {
     CameraLive,
     /// A collage sheet, small for the grid (FR-035), its photos' clipping marked (`clip=1`,
     /// FR-098, `J`).
-    Sheet(crate::collage::SheetPair, bool, bool),
+    Sheet(crate::collage::SheetPair, bool, SheetView),
 }
 
 /// `region=x,y,w,h&px=n` from the query: `Ok(None)` without one, `Err` when it is malformed
@@ -95,12 +95,25 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
         if parts.next().is_some() || second == Some(first) {
             return None;
         }
-        let small = query.unwrap_or_default().split('&').any(|p| p == "small=1");
-        let clip = query.unwrap_or_default().split('&').any(|p| p == "clip=1");
+        let has = |name: &str| query.unwrap_or_default().split('&').any(|p| p == name);
+        let small = has("small=1");
+        // Held (FR-096) wins over the clipping marks, as on the photo preview: `plain=both`, or
+        // the chosen photo's cell alone.
+        let view = if has("plain=both") {
+            SheetView::Plain([true, true])
+        } else if has("plain=first") {
+            SheetView::Plain([true, false])
+        } else if has("plain=second") {
+            SheetView::Plain([false, true])
+        } else if has("clip=1") {
+            SheetView::Clipping
+        } else {
+            SheetView::Normal
+        };
         return Some(Route::Sheet(
             crate::collage::SheetPair { first, second },
             small,
-            clip,
+            view,
         ));
     }
     let id = PhotoId(parts.next()?.parse().ok()?);
@@ -257,8 +270,8 @@ fn answer(state: &AppState, route: Route, responder: UriSchemeResponder) {
             Err(error) => fail(responder, &error),
         },
         Route::CameraLive => {}
-        Route::Sheet(sheet, small, clip) => {
-            match crate::collage::sheet_bytes(state, sheet, small, clip) {
+        Route::Sheet(sheet, small, view) => {
+            match crate::collage::sheet_bytes(state, sheet, small, view) {
                 Ok(bytes) => respond(responder, StatusCode::OK, bytes, true),
                 Err(error) => fail(responder, &error),
             }
@@ -357,7 +370,7 @@ mod tests {
                     second: Some(PhotoId(4))
                 },
                 true,
-                false
+                SheetView::Normal
             ))
         ));
         assert!(matches!(
@@ -368,13 +381,23 @@ mod tests {
                     second: None
                 },
                 false,
-                false
+                SheetView::Normal
             ))
         ));
         // FR-098: `J` on a sheet asks for its clipping.
         assert!(matches!(
             route("/sheet/3/4", Some("rev=2&clip=1")),
-            Some(Route::Sheet(_, false, true))
+            Some(Route::Sheet(_, false, SheetView::Clipping))
+        ));
+        // FR-096: a held sheet asks for it without its looks, over the clipping marks; one
+        // cell or both.
+        assert!(matches!(
+            route("/sheet/3/4", Some("rev=2&clip=1&plain=both")),
+            Some(Route::Sheet(_, false, SheetView::Plain([true, true])))
+        ));
+        assert!(matches!(
+            route("/sheet/3/4", Some("rev=2&plain=second")),
+            Some(Route::Sheet(_, false, SheetView::Plain([false, true])))
         ));
         assert!(route("/sheet/3/3", None).is_none());
         assert!(route("/sheet/3/4/5", None).is_none());

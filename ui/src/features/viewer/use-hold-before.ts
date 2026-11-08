@@ -17,6 +17,9 @@ export function useHoldBefore(enabled: boolean, warm: () => void) {
   const [held, setHeld] = useState(false)
   const heldRef = useRef(false)
   const press = useRef<{ x: number; y: number; timer: number } | null>(null)
+  // This press became a hold: set when the hold begins, not on release, so the click that
+  // follows is refused whatever order the release and the click come in (owner, 2026-11-08:
+  // a hold on a sheet picked its photo).
   const swallow = useRef(false)
 
   const end = useCallback(() => {
@@ -24,7 +27,6 @@ export function useHoldBefore(enabled: boolean, warm: () => void) {
     press.current = null
     if (heldRef.current) {
       heldRef.current = false
-      swallow.current = true
       setHeld(false)
     }
   }, [])
@@ -52,6 +54,7 @@ export function useHoldBefore(enabled: boolean, warm: () => void) {
       warm()
       const timer = window.setTimeout(() => {
         heldRef.current = true
+        swallow.current = true
         setHeld(true)
       }, HOLD_MS)
       press.current = { x: e.clientX, y: e.clientY, timer }

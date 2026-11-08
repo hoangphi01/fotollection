@@ -21,7 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- **Press and hold the photo to see its original** (FR-096), as on an iPhone: let go and your colour comes back; a click still zooms.
+- **Press and hold the photo to see its original** (FR-096), as on an iPhone: let go and your colour comes back; a click still zooms. In a collage sheet's preview, hold **Before** in the toolbar.
 - **Color mixer** (FR-079), in the photo preview and a collage sheet's: as Lightroom's HSL panel: *Hue*, *Sat*, *Lum* or *All*, then a slider for each of eight colours, its track drawn in the colours it moves between; a Lightroom preset's colour settings show there and stay adjustable.
 - **Colour for many photos** (FR-114): Pro mode's gallery panel has two tabs, **Colour** and **Print**. In Colour, pick a look, LUT or Lightroom preset, see it on the photo picked in the grid, set its amount, and give it to the ticked photos or to every photo shown, in one step that ⌘Z undoes; photos that already have their own colour are asked about once, and crops, date stamps and RAW settings stay. The red ↺ on the card brings the same photos back to their original colour, after a question.
 - **Thumbnails show each photo's colour** (ADR-0047): the grid, the filmstrip and the quick preview show a photo with its look, as the preview does; after a look is given to many photos, the progress bar shows their thumbnails being coloured.
@@ -34,7 +34,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **The window can be moved, and on Windows minimised or closed, while the photo preview or any dialog is open** (FR-052).
 - **A dialog's title and words keep clear of its close button** (FR-099), in every dialog and both previews.
 - **A button shows it was pressed** (FR-099): held down, it takes the theme's colour pressed in and rises again on release, in both themes.
-- **The cards no longer drop under the pointer on the first slider step** (FR-079): the Looks card's amount stays in place, greyed with the original look.
+- **The cards no longer drop under the pointer on the first slider step** (FR-079), in Pro and Simple mode: the Looks card and its amount stay in place, greyed with the original look.
+- **The collage sheet's toolbar matches the photo preview's**: undo, copy and paste, the turns and *Before* in the same places.
 - **Every dropdown opens under its button and stays inside the window** (FR-052): the print size list no longer loses its top when a size low in the list is chosen, and the place and manual chapter pickers look like every other dropdown.
 - **History** (FR-095) is about six rows high and scrolls inside, so a long one never pushes the column; a look picked says its name (*Look · Warm old film*), the amount its value.
 - **The info frame's photo-style line** names the photo's look when the camera profile gives none (FR-040).

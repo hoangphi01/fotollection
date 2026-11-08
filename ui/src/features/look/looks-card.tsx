@@ -17,8 +17,6 @@ import { NO_LOOK, fullLook, type LookChange } from './look-fields'
 import { lookName, useLooks } from './use-looks'
 
 type LooksCardProps = {
-  /** Simple mode: with the original, the card is its title alone (owner, 2026-11-07). */
-  simple?: boolean
   /** Pro mode: the LUT's strength and the V-Log note show here only (owner, 2026-11-07). */
   pro?: boolean
   look: LookSettings | undefined
@@ -34,7 +32,7 @@ const percent = (v: number) => `${v} %`
  * values into the photo, so the sliders below show them and a later change of the library
  * changes no photo.
  */
-export function LooksCard({ look, onChange, simple = false, pro = false }: LooksCardProps) {
+export function LooksCard({ look, onChange, pro = false }: LooksCardProps) {
   const { t } = useTranslation()
   const { looks, reload } = useLooks()
   const [saving, setSaving] = useState(false)
@@ -68,8 +66,8 @@ export function LooksCard({ look, onChange, simple = false, pro = false }: Looks
     <SectionCard
       icon={<Palette />}
       title={t('look.looks')}
-      // Simple mode has nothing but the amount: with the original, the card is its title alone.
-      open={coloured || !simple}
+      // Open in every mode, the amount greyed with the original: folded in Simple until the first
+      // slider step, it dropped Faves under the pointer (owner, 2026-11-08: "Simple must not jump").
       action={
         coloured && (
           <div className="flex gap-1">

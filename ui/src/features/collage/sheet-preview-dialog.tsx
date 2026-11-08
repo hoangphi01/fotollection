@@ -12,6 +12,7 @@ import { KeysInfo } from '@/components/layout/keys-info'
 import { StageNav } from '@/components/layout/stage-nav'
 import { ButtonGroup } from '@/components/forms/button-group'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
+import { HoldOriginalButton } from './hold-original-button'
 import { Kbd } from '@/components/ui/kbd'
 import { Separator } from '@/components/ui/separator'
 import { HistoryButtons } from '@/features/history/history-buttons'
@@ -34,7 +35,7 @@ import { useZoom } from '@/features/viewer/use-zoom'
 import { ZoomControls } from '@/features/viewer/zoom-controls'
 import { formatCapture, formatNumber } from '@/lib/format'
 import { ownsArrowKeys } from '@/lib/keyboard'
-import { sheetUrl, sourceUrl, thumbUrl } from '@/lib/photo-url'
+import { sheetUrl, sourceUrl, thumbUrl, type SheetPlain } from '@/lib/photo-url'
 import { MOD } from '@/lib/platform'
 import { cn } from '@/lib/utils'
 import { CHOSEN_ROW, ListRow } from '@/components/forms/list-row'
@@ -115,16 +116,28 @@ export function SheetPreviewDialog({
     lastTab = next
     setTabState(next)
   }
-  const src = sheet ? sheetUrl(sheet.first, sheet.second, revision, false, clipping) : ''
-  const { src: shownSrc, error: shownError } = useShownSrc(key, src)
-  const shape = useSheetShape(shownSrc ?? '')
-  const [stage, setStage] = useState<HTMLDivElement | null>(null)
   const [cropping, setCropping] = useState(false)
-  const zoom = useZoom(stage, `${key}:${cropping}`)
-  const contentRef = useRef<HTMLDivElement>(null)
   // No photo is chosen until the user picks one, so the sheet shows as it prints.
   const [picked, setPicked] = useState<{ key: string | undefined; cell: 0 | 1 } | null>(null)
   const chosen = picked && picked.key === key ? picked.cell : null
+  // *Hold for the original* in the toolbar (FR-096, owner, 2026-11-08: a hold on the sheet
+  // itself picked its photo): while held, the chosen photo, or the whole sheet with none chosen,
+  // without its look. The stage keeps its clicks for picking.
+  const [heldPlain, setHeldPlain] = useState(false)
+  const plainCells: SheetPlain = chosen === null ? 'both' : chosen === 0 ? 'first' : 'second'
+  const warmed = useRef<HTMLImageElement | null>(null)
+  const warmPlain = () => {
+    if (!sheet) return
+    const img = new Image()
+    img.src = sheetUrl(sheet.first, sheet.second, revision, false, false, plainCells)
+    warmed.current = img
+  }
+  const src = sheet ? sheetUrl(sheet.first, sheet.second, revision, false, clipping, heldPlain ? plainCells : null) : ''
+  const { src: shownSrc, error: shownError } = useShownSrc(key, src)
+  const shape = useSheetShape(shownSrc ?? '')
+  const [stage, setStage] = useState<HTMLDivElement | null>(null)
+  const zoom = useZoom(stage, `${key}:${cropping}`)
+  const contentRef = useRef<HTMLDivElement>(null)
   const choose = (cell: 0 | 1 | null) => {
     if (cell !== chosen) setPicking(false)
     setPicked(cell === null ? null : { key, cell })
@@ -242,21 +255,17 @@ export function SheetPreviewDialog({
           <HistoryButtons canUndo={canUndo} canRedo={canRedo} />
           <SettingsButtons photo={photo ?? undefined} ticked={ticked} collage />
           <Separator orientation="vertical" className="mx-1 h-5!" />
-          {/* The sheet's own tools joined (owner, 2026-11-08). */}
-          <ButtonGroup ariaLabel={t('toolbar.sheetTools')}>
-          <ToolbarButton
-            icon={<Crop />}
-            label={t('viewer.crop')}
-            data-hint={photo === null ? t('collage.pickToCrop') : t('viewer.crop')}
-            disabled={photo === null || cropping}
-            onClick={() => setCropping(true)}
-          />
+          {/* The photo preview's order, place for place (owner, 2026-11-08: "the same buttons in
+              the same places"): the turns joined and icons only where it has its turns, Crop
+              where it has the basket, *Before* after the line. */}
+          <ButtonGroup ariaLabel={t('toolbar.rotate')}>
           {/* A postcard is held the way the panel says: only the photo turns. */}
           {!postcard && (
             <ToolbarButton
               icon={<RotateCw />}
               label={t('collage.turn')}
               data-hint={t('collage.turnHint')}
+              iconOnly
               disabled={!sheet || cropping}
               onClick={() => sheet && collage.turn(sheet.first)}
             />
@@ -266,10 +275,26 @@ export function SheetPreviewDialog({
             icon={<RotateCwSquare />}
             label={t('collage.rotatePhoto')}
             data-hint={photo === null ? t('collage.pickToRotate') : t('collage.rotatePhotoHint')}
+            iconOnly
             disabled={photo === null || cropping}
             onClick={() => photo !== null && rotatePhoto(photo)}
           />
           </ButtonGroup>
+          <ToolbarButton
+            icon={<Crop />}
+            label={t('viewer.crop')}
+            labelFrom="5xl"
+            data-hint={photo === null ? t('collage.pickToCrop') : t('viewer.crop')}
+            disabled={photo === null || cropping}
+            onClick={() => setCropping(true)}
+          />
+          <Separator orientation="vertical" className="mx-1 h-5!" />
+          <HoldOriginalButton
+            hint={t(chosen === null ? 'collage.holdOriginal' : 'collage.holdOriginalPhoto')}
+            disabled={!sheet || cropping}
+            onWarm={warmPlain}
+            onHold={setHeldPlain}
+          />
           <div className="ml-auto flex items-center gap-2">
             <ZoomControls
               inline

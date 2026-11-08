@@ -138,7 +138,7 @@ export function PhotoLookCards({ photoId, sheet, simple = false, pro = false, re
           }
         />
       )}
-      <LooksCard look={current.look} onChange={change} simple={simple} pro={pro} />
+      <LooksCard look={current.look} onChange={change} pro={pro} />
       <FavesCard look={current.look} onChange={change} footer={applyToAll} raw={current.raw != null} />
       {/* The colour mixer (FR-079): Pro mode and collage sheets, not Simple (owner, 2026-11-08). */}
       {!simple && <ColorMixerCard look={current.look} onChange={change} />}

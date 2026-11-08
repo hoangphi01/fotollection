@@ -617,6 +617,15 @@ async function stressViews({ language, theme }) {
   const where = 'the print size list open, the last size chosen'
   out.push(...(await overflows(page, where)), ...(await layoutChecks(page, where)))
   await context.close()
+  // UI-LAYOUT-023: the buttons both previews share sit in the same order (owner, 2026-11-08:
+  // "the same buttons in the same places"): each toolbar's groups and its *Before*, by name.
+  const barOrder = (page) =>
+    page.evaluate(() =>
+      [...document.querySelectorAll('[role="dialog"] [data-slot="button-group"], [role="dialog"] button[aria-label="Before"], [role="dialog"] button[aria-label="Trước"]')]
+        .filter((el) => !el.closest('aside'))
+        .map((el) => el.getAttribute('aria-label')),
+    )
+  let sheetBar = null
   // The sheet preview in every shape (LESSONS: a row above a stage): landscape, square, tall.
   for (const [size, label] of [['10x15', 'landscape'], ['10x10', 'square'], ['13x18', 'tall']]) {
     ;({ context, page } = await open({ scenario: 'collage', language, theme, mode: 'collage', queues: NO_QUEUES, settingsPatch: { printSize: size } }))
@@ -625,6 +634,7 @@ async function stressViews({ language, theme }) {
     await page.waitForSelector('[role="dialog"] img[src*="/sheet/"]')
     await settle(page)
     out.push(...(await allChecks(page, `sheet preview, ${label}`)))
+    sheetBar ??= await barOrder(page)
     const fits = await page.evaluate(() => {
       const img = document.querySelector('[role="dialog"] img[src*="/sheet/"]')
       const stage = img?.closest('.group\\/stage')
@@ -683,6 +693,12 @@ async function stressViews({ language, theme }) {
         return [getComputedStyle(el).backgroundColor, want]
       })
       if (bg !== primary) out.push(`photo preview: UI-STATE-009 a held button is ${bg}, not the theme's colour ${primary}`)
+      // UI-LAYOUT-023: the sheet's toolbar is the photo's, less what a sheet has not.
+      const photoBar = await barOrder(page)
+      const common = (sheetBar ?? []).filter((n) => photoBar.includes(n))
+      const inPhoto = photoBar.filter((n) => common.includes(n))
+      if (!sheetBar || common.length !== sheetBar.length || common.join('|') !== inPhoto.join('|'))
+        out.push(`sheet preview: UI-LAYOUT-023 its toolbar [${(sheetBar ?? []).join(', ')}] is not the photo preview's order [${photoBar.join(', ')}]`)
       await page.mouse.up()
     } else out.push('photo preview: UI-STATE-009 no Rotate left button to press')
   }

@@ -487,6 +487,16 @@ impl Resized {
     }
 }
 
+/// How a sheet's preview is drawn: as it prints, its clipped pixels marked (FR-098, `J`), or
+/// the cells marked `true` without their look, while *Hold for the original* is held (FR-096).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum SheetView {
+    #[default]
+    Normal,
+    Clipping,
+    Plain([bool; 2]),
+}
+
 impl PreviewCache {
     pub fn new() -> Self {
         Self::default()
@@ -1323,7 +1333,8 @@ impl PreviewCache {
 
     /// A collage sheet's preview JPEG (FR-035): both photos from their cached sources,
     /// the sheet's long edge at most `long_edge`. Each photo comes with its place. With
-    /// `thumbnail`, for the grid's small sheets, the photos come from their thumbnails.
+    /// `thumbnail`, for the grid's small sheets, the photos come from their thumbnails;
+    /// `view` marks the clipping or leaves the looks off.
     #[allow(clippy::too_many_arguments)]
     pub fn render_sheet_jpeg(
         &self,
@@ -1332,22 +1343,27 @@ impl PreviewCache {
         long_edge: u32,
         thumbnail: Option<&Thumbnail<'_>>,
         card_font: Option<&ab_glyph::FontArc>,
-        clipping: bool,
+        view: SheetView,
         codec: &dyn JpegCodec,
     ) -> Result<Vec<u8>, ThumbError> {
-        let mark = if clipping {
+        let mark = if view == SheetView::Clipping {
             crate::sheet::CellMark::Clipping
         } else {
             crate::sheet::CellMark::Normal
         };
+        let plain = match view {
+            SheetView::Plain(cells) => cells,
+            SheetView::Normal | SheetView::Clipping => [false; 2],
+        };
         let image = self.render_sheet_rgb(
-            photos, settings, long_edge, thumbnail, card_font, [mark; 2], None, codec,
+            photos, settings, long_edge, thumbnail, card_font, [mark; 2], plain, codec,
         )?;
         Ok(codec.encode(&image, EncodeOptions::screen(PREVIEW_QUALITY), None)?)
     }
 
-    /// A sheet's pixels, each cell drawn as `marks` asks; the cell `plain`, if any, without
-    /// its look (FR-098: the white-balance picker reads the photo before its look).
+    /// A sheet's pixels, each cell drawn as `marks` asks; the cells marked `plain` without
+    /// their look (FR-098: the white-balance picker reads the photo before its look; FR-096:
+    /// both, while the sheet is held).
     #[allow(clippy::too_many_arguments)]
     fn render_sheet_rgb(
         &self,
@@ -1357,7 +1373,7 @@ impl PreviewCache {
         thumbnail: Option<&Thumbnail<'_>>,
         card_font: Option<&ab_glyph::FontArc>,
         marks: [crate::sheet::CellMark; 2],
-        plain: Option<usize>,
+        plain: [bool; 2],
         codec: &dyn JpegCodec,
     ) -> Result<RgbImage, ThumbError> {
         let none = crate::looks::LookSettings::default();
@@ -1392,7 +1408,7 @@ impl PreviewCache {
                     place: *place,
                     stamp: record.edits.stamp.as_ref(),
                     caption: record.edits.caption.as_deref(),
-                    look: Some(if plain == Some(cell) {
+                    look: Some(if plain.get(cell).copied().unwrap_or(false) {
                         &none
                     } else {
                         table_look
@@ -1441,6 +1457,10 @@ impl PreviewCache {
         if let Some(slot) = inverted.get_mut(cell) {
             *slot = CellMark::Inverted;
         }
+        let mut only = [false; 2];
+        if let Some(slot) = only.get_mut(cell) {
+            *slot = true;
+        }
         let a = self.render_sheet_rgb(
             photos,
             settings,
@@ -1448,7 +1468,7 @@ impl PreviewCache {
             None,
             card_font,
             [CellMark::Normal; 2],
-            Some(cell),
+            only,
             codec,
         )?;
         let b = self.render_sheet_rgb(
@@ -1458,7 +1478,7 @@ impl PreviewCache {
             None,
             card_font,
             inverted,
-            Some(cell),
+            only,
             codec,
         )?;
         Ok(sample_where_inverse(&a, &b, (fx, fy)))
@@ -1934,6 +1954,42 @@ mod tests {
         Ok(out)
     }
 
+    /// FR-096 (press and hold a sheet): a plain sheet is the sheet with no look at all, every
+    /// cell; with a look set it differs from the sheet as shown.
+    #[test]
+    fn fr_096_a_plain_sheet_drops_every_cells_look() -> TestResult {
+        use crate::sheet::CellMark;
+        let dir = tempfile::tempdir()?;
+        let records = photos(dir.path(), &[(600, 400), (601, 400)])?;
+        let codec = default_codec();
+        let mut looked = RenderSettings::default();
+        looked.look.adjust.saturation = -100;
+        let bare = RenderSettings::default();
+        let cache = PreviewCache::new();
+        let pair = [Some((&records[0], None)), Some((&records[1], None))];
+        let draw = |settings: &RenderSettings, plain| {
+            cache.render_sheet_rgb(
+                pair,
+                settings,
+                600,
+                None,
+                None,
+                [CellMark::Normal; 2],
+                plain,
+                codec.as_ref(),
+            )
+        };
+        let shown = draw(&looked, [false; 2])?;
+        let held = draw(&looked, [true; 2])?;
+        let none = draw(&bare, [false; 2])?;
+        assert!(held.data == none.data, "held: no look in any cell");
+        assert!(
+            held.data != shown.data,
+            "the look changes the sheet as shown"
+        );
+        Ok(())
+    }
+
     /// FR-098 (`J` on a sheet): only the photos' clipped pixels turn red or blue; the paper
     /// round them is left alone.
     #[test]
@@ -1956,7 +2012,7 @@ mod tests {
                 None,
                 None,
                 [mark; 2],
-                None,
+                [false; 2],
                 codec.as_ref(),
             )
         };

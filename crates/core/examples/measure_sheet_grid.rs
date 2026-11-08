@@ -70,7 +70,7 @@ fn main() {
                         SMALL_SHEET,
                         small,
                         None,
-                        false,
+                        fotollection_core::preview::SheetView::Normal,
                         codec.as_ref(),
                     )
                     .unwrap();

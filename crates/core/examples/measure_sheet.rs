@@ -84,7 +84,7 @@ fn main() {
                 PREVIEW_LONG_EDGE,
                 None,
                 None,
-                false,
+                fotollection_core::preview::SheetView::Normal,
                 codec.as_ref(),
             )
             .unwrap()

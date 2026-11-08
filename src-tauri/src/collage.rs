@@ -711,7 +711,7 @@ pub fn sheet_bytes(
     state: &AppState,
     sheet: SheetPair,
     small: bool,
-    clip: bool,
+    view: fotollection_core::preview::SheetView,
 ) -> Result<Vec<u8>, IpcError> {
     let SheetInputs {
         first,
@@ -734,7 +734,7 @@ pub fn sheet_bytes(
             if small { SMALL_SHEET } else { LARGE_SHEET },
             small.then_some(&thumbnail as &dyn Fn(&_) -> _),
             card_font.as_ref().map(|f| &f.font),
-            clip,
+            view,
             state.codec.as_ref(),
         )
         .map_err(|e| crate::commands::shown_error(&e, &first))
