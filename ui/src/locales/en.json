@@ -1034,7 +1034,22 @@
     "vlogWarning": "This LUT is made for V-Log video: on a photo it comes out far too strong. Lower its strength, or choose the matching photo LUT.",
     "presets": "Presets & LUTs",
     "presetsEmpty": "Your looks, LUTs and presets show here: save the photo's look, or import a LUT.",
-    "lutFormats": ".cube files (LUMIX Lab, DaVinci Resolve, Photoshop and most others; 1D or 3D up to 65 points) or a HaldCLUT .png, at most 8 MB."
+    "add": "Add a look, a preset or a LUT",
+    "importPresets": "Import presets…",
+    "actions": "More actions",
+    "rename": "Rename",
+    "renameBody": "The name this look is listed under.",
+    "update": "Update with current settings",
+    "move": "Move to group…",
+    "moveBody": "The group Presets & LUTs lists it under; empty for your own looks.",
+    "moveOk": "Move",
+    "group": "Group",
+    "filter": "Filter by name",
+    "importedPresets_one": "Imported {{count}} preset.",
+    "importedPresets_other": "Imported {{count}} presets.",
+    "notAppliedLine": "Not applied: {{setting}} ({{count}})",
+    "importFormats": "Presets: Lightroom .xmp, .lrtemplate or a .zip of them. LUTs: .cube (1D or 3D up to 65 points) or HaldCLUT .png, at most 8 MB.",
+    "lutGroup": "LUT"
   },
   "rawLook": {
     "title": "RAW colour",

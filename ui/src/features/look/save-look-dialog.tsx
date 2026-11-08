@@ -8,25 +8,39 @@ import { Input } from '@/components/ui/input'
 
 type SaveLookDialogProps = {
   open: boolean
+  /** The dialog's own words, for a rename or a move (the default: *Save as look*). */
+  title?: string
+  body?: string
+  label?: string
+  /** The name typed already: the current one, for a rename. */
+  initial?: string
+  okLabel?: string
   /** The name typed, or `null` when cancelled. */
   onAnswer(name: string | null): void
 }
 
 /** *Save as look* (FR-079): the name the photo's look is kept under on this machine. */
-export function SaveLookDialog({ open, onAnswer }: SaveLookDialogProps) {
+export function SaveLookDialog({ open, onAnswer, title, body, label, initial = '', okLabel }: SaveLookDialogProps) {
   const { t } = useTranslation()
-  const [name, setName] = useState('')
+  const [name, setName] = useState(initial)
+  // Opened again for another look: its name, not the last one typed.
+  const [shownFor, setShownFor] = useState<string | null>(null)
+  if (open && shownFor !== initial) {
+    setShownFor(initial)
+    setName(initial)
+  }
   const id = useId()
   const answer = (value: string | null) => {
     setName('')
+    setShownFor(null)
     onAnswer(value)
   }
   return (
     <Dialog open={open} onOpenChange={(next) => !next && answer(null)}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>{t('look.saveAs')}</DialogTitle>
-          <DialogDescription>{t('look.saveAsBody')}</DialogDescription>
+          <DialogTitle>{title ?? t('look.saveAs')}</DialogTitle>
+          <DialogDescription>{body ?? t('look.saveAsBody')}</DialogDescription>
         </DialogHeader>
         <form
           onSubmit={(e) => {
@@ -34,7 +48,7 @@ export function SaveLookDialog({ open, onAnswer }: SaveLookDialogProps) {
             if (name.trim()) answer(name)
           }}
         >
-          <Field label={t('look.name')} htmlFor={id}>
+          <Field label={label ?? t('look.name')} htmlFor={id}>
             <Input id={id} autoFocus value={name} maxLength={60} placeholder={t('look.namePlaceholder')} onChange={(e) => setName(e.target.value)} />
           </Field>
           <DialogFooter className="pt-3">
@@ -42,7 +56,7 @@ export function SaveLookDialog({ open, onAnswer }: SaveLookDialogProps) {
               {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={!name.trim()}>
-              {t('look.save')}
+              {okLabel ?? t('look.save')}
             </Button>
           </DialogFooter>
         </form>

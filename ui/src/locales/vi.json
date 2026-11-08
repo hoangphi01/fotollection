@@ -996,7 +996,21 @@
     "vlogWarning": "LUT này dành cho video V-Log: áp lên ảnh sẽ quá đậm. Giảm độ mạnh, hoặc chọn LUT dành cho ảnh.",
     "presets": "Preset & LUT",
     "presetsEmpty": "Look, LUT và preset của bạn hiện ở đây: lưu look của ảnh, hoặc nhập một LUT.",
-    "lutFormats": "Tệp .cube (LUMIX Lab, DaVinci Resolve, Photoshop và hầu hết phần mềm khác; 1D hoặc 3D tới 65 điểm) hoặc HaldCLUT .png, tối đa 8 MB."
+    "add": "Thêm look, preset hoặc LUT",
+    "importPresets": "Nhập preset…",
+    "actions": "Thao tác khác",
+    "rename": "Đổi tên",
+    "renameBody": "Tên mà look này hiện trong danh sách.",
+    "update": "Cập nhật theo màu hiện tại",
+    "move": "Chuyển sang nhóm…",
+    "moveBody": "Nhóm mà Preset & LUT liệt kê nó; để trống là look của bạn.",
+    "moveOk": "Chuyển",
+    "group": "Nhóm",
+    "filter": "Lọc theo tên",
+    "importedPresets_other": "Đã nhập {{count}} preset.",
+    "notAppliedLine": "Không áp dụng: {{setting}} ({{count}})",
+    "importFormats": "Preset: Lightroom .xmp, .lrtemplate hoặc tệp .zip chứa chúng. LUT: .cube (1D hoặc 3D tới 65 điểm) hoặc HaldCLUT .png, tối đa 8 MB.",
+    "lutGroup": "LUT"
   },
   "rawLook": {
     "title": "Màu RAW",
