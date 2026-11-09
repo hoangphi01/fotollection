@@ -449,6 +449,21 @@ h3.with-logo .logo-os { height: 0.95em; }
   .looks-choices { flex-wrap: wrap; overflow: visible; padding: 0; }
 }
 
+/* Compatibility with Lightroom and LUMIX Lab (site/_includes/compat.html): two cards with the
+   files each reads, then what a preset brings; the names as words, the logos being theirs. */
+.compat-cards { display: grid; gap: 16px; margin-top: 32px; }
+.compat-card h3 { margin: 4px 0 12px; font-size: clamp(1.3rem, 2.6vw, 1.6rem); }
+.compat-brand { margin: 0; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+.compat-files { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; padding: 0; }
+.compat-files li { padding: 4px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.88rem; }
+.compat-card p:last-child { margin: 0; color: var(--ink-2); }
+.compat-table-card { margin-top: 16px; padding: 0; }
+.compat-table caption { padding: 16px 20px 4px; text-align: left; font-weight: 700; }
+.compat-table td.ours { color: var(--brand); font-weight: 700; }
+.compat-table td.later { color: var(--muted); font-weight: 600; white-space: nowrap; }
+.compat-table td:last-child { color: var(--ink-2); }
+@media (min-width: 760px) { .compat-cards { grid-template-columns: 1fr 1fr; } }
+
 /* The Wiki's timeline (site/_includes/wiki.html): a line down the left, a dot per version, each
    version a card with its points and the app as it shipped. */
 .timeline { list-style: none; margin: 0; padding: 0 0 0 32px; position: relative; }

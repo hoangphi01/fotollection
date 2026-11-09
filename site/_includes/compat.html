@@ -1,0 +1,29 @@
+{%- comment %} The landing page's compatibility with Lightroom and LUMIX Lab (owner, 2026-11-09): two cards, the files each reads, and what a preset brings, as RESULT §39 and FR-118 say, never more. The names are written as words: Adobe's and Panasonic's logos are theirs (notes fn_lightroom, fn_lut). {% endcomment -%}
+{%- assign t = site.data.i18n[page.lang] -%}
+<section class="section tint" id="compat">
+  <div class="wrap">
+    <h2>{{ t.compat_title }}</h2>
+    <p class="lead narrow">{{ t.compat_lead }}</p>
+    <div class="compat-cards">
+      {%- for c in t.compat_cards %}
+      <article class="card compat-card">
+        <p class="compat-brand">{{ c.brand }}{% include fn.html keys=c.fn %}</p>
+        <h3>{{ c.title }}</h3>
+        <ul class="compat-files">{% for f in c.files %}<li>{{ f }}</li>{% endfor %}</ul>
+        <p>{{ c.text }}</p>
+      </article>
+      {%- endfor %}
+    </div>
+    <div class="table-scroll card compat-table-card">
+      <table class="table compat-table">
+        <caption>{{ t.compat_caption }}</caption>
+        <thead><tr>{% for col in t.compat_cols %}<th scope="col">{{ col }}</th>{% endfor %}</tr></thead>
+        <tbody>
+          {%- for row in t.compat_rows %}
+          <tr><th scope="row">{{ row[0] }}</th><td class="{% if row[1] == '✓' %}ours{% else %}later{% endif %}">{{ row[1] }}</td><td>{{ row[2] }}</td></tr>
+          {%- endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

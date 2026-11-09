@@ -31,6 +31,29 @@ en:
   makeover_new: "v0.14"
   makeover_label: "Before and after: drag to compare v0.12 and v0.14"
   makeover_hint: "v0.14 today: drag to see v0.12"
+  compat_title: "Your colours come with you."
+  compat_lead: "Bring the presets you made in Lightroom and the LUTs you made in LUMIX Lab. Fotollection reads them in its Rust core, never runs their code, and says what it could not apply."
+  compat_cards:
+    - brand: "Lightroom Classic · Lightroom"
+      fn: [fn_lightroom]
+      title: "Your Lightroom presets"
+      files: [".xmp", ".lrtemplate", ".zip"]
+      text: "Curves, the colour mixer, colour grading and Dehaze come in, and each preset stays adjustable slider by slider."
+    - brand: "LUMIX Lab"
+      fn: [fn_lut]
+      title: "Your LUMIX Lab LUTs"
+      files: [".cube", "HaldCLUT .png"]
+      text: "Up to 65 points a side, with a strength of its own; a LUT made for V-Log video says so, as it is far too strong on a photo."
+  compat_caption: "What a Lightroom preset brings"
+  compat_cols: ["Setting", "In Fotollection", ""]
+  compat_rows:
+    - ["Point curves, whites and blacks", "✓", "baked into the look's table"]
+    - ["Colour mixer (HSL)", "✓", "on the Color Mixer, adjustable"]
+    - ["Colour grading, split toning, black and white mix", "✓", "baked into the look's table"]
+    - ["Contrast, shadows, vibrance, saturation, exposure", "✓", "on the look's own sliders"]
+    - ["Dehaze", "✓", "new in v0.14"]
+    - ["White balance in kelvins", "v0.14.x", "it depends on each photo's own; named after the import"]
+    - ["Highlights, clarity, texture", "v0.14.x", "local tools; named after the import"]
   looks_kicker: "New in v0.14"
   looks_title: "One tap. Your colour."
   looks_lead_1: "Fotollection gives a photo "
@@ -637,6 +660,29 @@ vi:
   makeover_new: "v0.14"
   makeover_label: "Trước và sau: kéo để so v0.12 và v0.14"
   makeover_hint: "v0.14 hôm nay: kéo để xem v0.12"
+  compat_title: "Màu của bạn đi theo bạn."
+  compat_lead: "Mang theo preset bạn làm trong Lightroom và LUT bạn làm trong LUMIX Lab. Fotollection đọc chúng bằng lõi Rust, không bao giờ chạy code trong đó, và nói rõ điều gì chưa áp dụng được."
+  compat_cards:
+    - brand: "Lightroom Classic · Lightroom"
+      fn: [fn_lightroom]
+      title: "Preset Lightroom của bạn"
+      files: [".xmp", ".lrtemplate", ".zip"]
+      text: "Đường cong, trộn màu, color grading và Khử sương đều vào, và mỗi preset vẫn chỉnh được từng thanh trượt."
+    - brand: "LUMIX Lab"
+      fn: [fn_lut]
+      title: "LUT LUMIX Lab của bạn"
+      files: [".cube", "HaldCLUT .png"]
+      text: "Tới 65 điểm mỗi chiều, có độ mạnh riêng; LUT làm cho video V-Log sẽ có cảnh báo, vì nó quá mạnh với ảnh chụp."
+  compat_caption: "Preset Lightroom mang theo những gì"
+  compat_cols: ["Thiết lập", "Trong Fotollection", ""]
+  compat_rows:
+    - ["Đường cong điểm, điểm trắng và điểm đen", "✓", "gộp vào bảng màu của look"]
+    - ["Trộn màu (HSL)", "✓", "vào Color Mixer, chỉnh được"]
+    - ["Color grading, split toning, trộn trắng đen", "✓", "gộp vào bảng màu của look"]
+    - ["Tương phản, vùng tối, vibrance, bão hoà, phơi sáng", "✓", "vào các thanh trượt của look"]
+    - ["Khử sương (Dehaze)", "✓", "mới ở v0.14"]
+    - ["Cân bằng trắng theo độ K", "v0.14.x", "tùy từng ảnh; được ghi rõ sau khi nhập"]
+    - ["Highlights, clarity, texture", "v0.14.x", "công cụ theo vùng; được ghi rõ sau khi nhập"]
   looks_kicker: "Mới ở v0.14"
   looks_title: "Một chạm. Màu của bạn."
   looks_lead_1: "Fotollection cho ảnh "
