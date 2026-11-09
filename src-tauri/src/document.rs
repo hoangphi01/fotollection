@@ -398,13 +398,17 @@ fn install_settings(state: &AppState, bundle: &Bundle) -> Result<(), IpcError> {
         .map_err(|e| IpcError::new("logo.write_failed", e.to_string()))?;
         frame.logos.insert(camera, Arc::new(image));
     }
-    frame.settings = local.frame;
     frame.cameras = local.cameras;
     frame.fonts = local.fonts;
     drop(frame);
-    state.settings.write().map_err(poisoned)?.0 = local.render;
+    // The project's print settings are the open document's; the machine's defaults stay
+    // (owner, 2026-11-09: opening a project never overwrites this machine's settings).
+    state.install_document_settings(fotollection_core::project::DocumentSettings {
+        render: local.render,
+        frame: local.frame,
+    });
     state.ensure_camera_profiles();
-    // The app's settings follow the opened project, but opening is not an edit.
+    // Fonts, logos and cameras it added are the machine's: saved; opening is not an edit.
     state.save_settings();
     Ok(())
 }
@@ -612,6 +616,8 @@ pub fn request_open(app: &AppHandle, path: PathBuf) {
 pub fn new_document(app: AppHandle, state: State<'_, AppState>) -> Result<DocumentState, IpcError> {
     let _guard = state.document_lock.lock().map_err(poisoned)?;
     reset_library(&state)?;
+    // A new project starts from the machine's defaults, not the last project's settings.
+    state.apply_defaults();
     {
         let mut doc = state.document.lock().map_err(poisoned)?;
         doc.path = None;
@@ -620,6 +626,14 @@ pub fn new_document(app: AppHandle, state: State<'_, AppState>) -> Result<Docume
     }
     finish_without_edit(&app, &state);
     Ok(current(&state))
+}
+
+/// *Use as defaults for new projects* (owner, 2026-11-09): the open document's print and
+/// frame settings become what a new project starts from.
+#[tauri::command]
+#[specta::specta]
+pub fn use_settings_as_defaults(state: State<'_, AppState>) {
+    state.use_as_defaults();
 }
 
 // ---------------------------------------------------------------------------------------

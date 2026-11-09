@@ -284,7 +284,8 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 - Autosave is continuous ([NFR-013](#nfr-013--project-safety)). Reopening the app restores the last project.
 - Undo and redo cover every user edit (ratings, flags, crop, overrides, settings), with at least 200 steps.
-- If source files have moved, the user can relink the folder. Missing photos are marked, not dropped.
+- If source files have moved, the user can relink the folder. Missing photos are marked, not dropped; the session keeps a missing folder's edits too (v0.14.0).
+- **A project keeps its own settings** (owner, 2026-11-09): its print size, stamp, look, postcards and frame are the document's, kept in the bundle and in the session; opening a project never changes this machine's settings (only fonts, logos and camera profiles it lacks are added, custom sizes joined). A new project starts from the machine's defaults, set by *Settings → General → New projects → Use this project's settings*.
 - **A document, like `.docx`:** the `.fotollection` file is saved with **Save** (Cmd/Ctrl+S) and **Save As** (Shift+Cmd/Ctrl+S) and opened with **Open** (Cmd/Ctrl+O). It is self-contained ([ADR-0016](adr/0016-self-contained-project-bundle.md)): the edits, the print settings, the info frame, the camera profiles and copies of the fonts and logos in use. Opening it on another machine installs those fonts and logos and gives the same prints. Photos are referenced, not embedded.
 - **Unsaved changes:** the window title and the sidebar show them (`Trip — Edited`). New and Open ask *Save changes?* first (Save / Don't save / Cancel). An untitled project with photos counts as unsaved, after a restart too, since the session is its only copy.
 - **New asks for a name** (owner, 2026-11-06): a small dialog with the name, *Create* and *Cancel*, before the unsaved-changes question; an empty name keeps *Untitled*.

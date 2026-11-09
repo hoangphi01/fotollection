@@ -2950,6 +2950,11 @@ pub fn restore_session(app: &AppHandle) {
         return;
     }
     crate::document::restore_reference(&state, &file);
+    // The session's own print settings (schema v12); a session from before has none and
+    // keeps the machine's defaults.
+    if let Some(settings) = file.settings.clone() {
+        state.install_document_settings(settings);
+    }
     import_paths(app, folders);
     if let Ok(mut library) = state.library.write() {
         let summary = project::restore(&mut library, &file);

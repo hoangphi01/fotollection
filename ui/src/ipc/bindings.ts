@@ -221,6 +221,11 @@ export const commands = {
 	getDocument: () => __TAURI_INVOKE<DocumentState>("get_document"),
 	newDocument: () => typedError<DocumentState, IpcError>(__TAURI_INVOKE("new_document")),
 	/**
+	 *  *Use as defaults for new projects* (owner, 2026-11-09): the open document's print and
+	 *  frame settings become what a new project starts from.
+	 */
+	useSettingsAsDefaults: () => __TAURI_INVOKE<void>("use_settings_as_defaults"),
+	/**
 	 *  Takes a source folder out of the library, like closing a tab (FR-001): its photos leave
 	 *  the grid, the files stay untouched on disk, and the other folders keep every edit. The
 	 *  library is rebuilt from the remaining folders, so photo ids and the undo history reset.

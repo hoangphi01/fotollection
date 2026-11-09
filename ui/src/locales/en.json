@@ -1153,7 +1153,12 @@
     "previewLayout": "Photo preview",
     "previewDialog": "In a window",
     "previewWindow": "Fill the app window",
-    "previewLayoutHint": "Filling the window adds the Navigator and History on the left. F switches in the preview."
+    "previewLayoutHint": "Filling the window adds the Navigator and History on the left. F switches in the preview.",
+    "newProjects": "New projects",
+    "defaultsFromThis": "Print settings for new projects",
+    "defaultsFromThisHint": "Each project keeps its own print size, date stamp, look and frame; opening one never changes this computer's. A new project starts from these defaults.",
+    "defaultsUse": "Use this project's settings",
+    "defaultsSet": "Done: new projects start from them"
   },
   "memory": {
     "title": "RAM for previews",

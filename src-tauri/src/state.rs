@@ -112,8 +112,13 @@ pub struct Analyses {
 
 pub struct AppState {
     pub library: RwLock<Library>,
-    /// Current settings and a revision that bumps on every change (for preview URLs).
+    /// Current settings and a revision that bumps on every change (for preview URLs): the
+    /// open document's (owner, 2026-11-09: "a project keeps its own settings").
     pub settings: RwLock<(RenderSettings, u32)>,
+    /// The machine's defaults for a new project, what `settings.json` holds: the render and
+    /// info-frame settings a new document starts from, changed only by *Use as defaults for
+    /// new projects*. Opening a project never touches them.
+    pub defaults: RwLock<(RenderSettings, FrameSettings)>,
     pub frame: RwLock<FrameState>,
     /// Interface language and other per-machine UI preferences (FR-020).
     pub ui: RwLock<UiSettings>,
@@ -201,6 +206,16 @@ pub struct Document {
 pub struct PendingRelink {
     pub file: project::ProjectFile,
     pub missing: Vec<project::ResolvedFolder>,
+}
+
+/// `into` gets every custom print size of `from` it lacks (by id): sizes are the user's own,
+/// kept across projects (FR-043).
+fn merge_sizes(into: &mut RenderSettings, from: &RenderSettings) {
+    for size in &from.custom_sizes {
+        if !into.custom_sizes.iter().any(|s| s.id == size.id) {
+            into.custom_sizes.push(size.clone());
+        }
+    }
 }
 
 /// The machine's settings, whether they may be saved, and what the user is told once the
@@ -292,6 +307,7 @@ impl AppState {
 
         Ok(Self {
             library: RwLock::new(Library::new()),
+            defaults: RwLock::new((stored.render.clone(), stored.frame.clone())),
             settings: RwLock::new((stored.render, 1)),
             frame: RwLock::new(FrameState {
                 settings: stored.frame,
@@ -360,7 +376,52 @@ impl AppState {
     /// here, on the main thread, cost an fsync (about 4 ms) on every step of a drag.
     pub fn persist(&self) {
         self.mark_edited();
+        // The print settings are the document's now: the session autosave keeps them.
+        self.project_dirty.store(true, Ordering::Relaxed);
         self.settings_dirty.store(true, Ordering::Relaxed);
+    }
+
+    /// *Use as defaults for new projects*: the open document's print and frame settings
+    /// become the machine's, what a new project starts from.
+    pub fn use_as_defaults(&self) {
+        let render = self.settings.read().map(|s| s.0.clone());
+        let frame = self.frame.read().map(|f| f.settings.clone());
+        if let (Ok(render), Ok(frame)) = (render, frame)
+            && let Ok(mut defaults) = self.defaults.write()
+        {
+            *defaults = (render, frame);
+        }
+        self.settings_dirty.store(true, Ordering::Relaxed);
+    }
+
+    /// A new document starts from the machine's defaults.
+    pub fn apply_defaults(&self) {
+        let Ok((render, frame)) = self.defaults.read().map(|d| d.clone()) else {
+            return;
+        };
+        self.install_document_settings(project::DocumentSettings { render, frame });
+    }
+
+    /// The open document's print settings become `settings`: its custom sizes beside this
+    /// machine's (a size is never lost), a font this machine lacks back to the built-in one.
+    pub fn install_document_settings(&self, settings: project::DocumentSettings) {
+        let project::DocumentSettings {
+            mut render,
+            mut frame,
+        } = settings;
+        if let Ok(defaults) = self.defaults.read() {
+            merge_sizes(&mut render, &defaults.0);
+        }
+        if let Ok(mut state) = self.frame.write() {
+            let known = |id: Option<u32>| id.filter(|id| state.fonts.iter().any(|f| f.id == *id));
+            frame.font = known(frame.font);
+            render.collage.postcard.font = known(render.collage.postcard.font);
+            state.settings = frame;
+        }
+        if let Ok(mut current) = self.settings.write() {
+            current.0 = render;
+            current.1 = current.1.wrapping_add(1);
+        }
     }
 
     /// Writes `settings.json` when a change is waiting.
@@ -389,14 +450,21 @@ impl AppState {
         let Ok(looks) = self.saved_looks.lock().map(|l| l.clone()) else {
             return;
         };
+        // The machine's defaults, never the open document's; its custom sizes join them, so
+        // a size made in a project is offered in the next one too.
+        let Ok((mut default_render, default_frame)) = self.defaults.read().map(|d| d.clone())
+        else {
+            return;
+        };
         let (Ok(render), Ok(frame), Ok(ui)) =
             (self.settings.read(), self.frame.read(), self.ui.read())
         else {
             return;
         };
+        merge_sizes(&mut default_render, &render.0);
         let stored = StoredSettings {
-            render: render.0.clone(),
-            frame: frame.settings.clone(),
+            render: default_render,
+            frame: default_frame,
             cameras: frame.cameras.clone(),
             fonts: frame.fonts.clone(),
             ui: ui.clone(),
@@ -423,6 +491,12 @@ impl AppState {
             && let Some(pending) = pending.as_ref()
         {
             crate::document::keep_missing_rows(&mut file, pending);
+        }
+        // The document's own print settings (schema v12): restored with the session.
+        let render = self.settings.read().map(|s| s.0.clone());
+        let frame = self.frame.read().map(|f| f.settings.clone());
+        if let (Ok(render), Ok(frame)) = (render, frame) {
+            file.settings = Some(project::DocumentSettings { render, frame });
         }
         file.document = self.document.lock().ok().and_then(|d| {
             d.path.as_ref().map(|p| project::DocumentRef {

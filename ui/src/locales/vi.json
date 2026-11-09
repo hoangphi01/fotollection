@@ -1104,7 +1104,12 @@
     "previewLayout": "Xem ảnh",
     "previewDialog": "Trong cửa sổ",
     "previewWindow": "Phủ kín cửa sổ app",
-    "previewLayoutHint": "Khi phủ kín cửa sổ, bên trái có thêm Điều hướng và Lịch sử. Trong bản xem trước, phím F chuyển qua lại."
+    "previewLayoutHint": "Khi phủ kín cửa sổ, bên trái có thêm Điều hướng và Lịch sử. Trong bản xem trước, phím F chuyển qua lại.",
+    "newProjects": "Project mới",
+    "defaultsFromThis": "Thiết lập in cho project mới",
+    "defaultsFromThisHint": "Mỗi project giữ khổ in, dấu ngày, look và khung của riêng nó; mở một project không bao giờ đổi thiết lập của máy này. Project mới bắt đầu từ thiết lập mặc định này.",
+    "defaultsUse": "Dùng thiết lập của project này",
+    "defaultsSet": "Xong: project mới sẽ bắt đầu từ đây"
   },
   "memory": {
     "title": "Bộ nhớ RAM cho bản xem trước",

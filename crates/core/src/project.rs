@@ -174,6 +174,20 @@ pub struct ProjectFile {
     /// Session autosave only (schema v2); never inside a bundle.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub document: Option<DocumentRef>,
+    /// The document's own print settings (schema v12, v0.14.0; owner, 2026-11-09: "a project
+    /// keeps its own settings"), session autosave only: a bundle carries them in its
+    /// `settings.json` part. Absent before: the machine's defaults.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub settings: Option<DocumentSettings>,
+}
+
+/// What a document decides for its prints: the render settings (size, stamp, look, postcards,
+/// export target) and the info frame's. Cameras, fonts and the interface stay the machine's.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct DocumentSettings {
+    pub render: crate::settings::RenderSettings,
+    pub frame: crate::frame::FrameSettings,
 }
 
 /// One corrected camera clock (FR-030), matched to a body by make, model and serial.
@@ -192,6 +206,7 @@ pub struct CameraRow {
 }
 
 #[derive(Debug, PartialEq)]
+#[allow(clippy::large_enum_variant)] // read once at a time, never stored in bulk
 pub enum Loaded {
     Ok(ProjectFile),
     Missing,
@@ -284,6 +299,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
             .collect(),
         places,
         document: None,
+        settings: None,
     }
 }
 
@@ -1300,5 +1316,39 @@ mod tests {
         assert_eq!(found[0].path, None);
         assert_eq!(Some(found[0].saved.as_str()), photos.to_str());
         Ok(())
+    }
+
+    /// v12 (v0.14.0; owner, 2026-11-09: "a project keeps its own settings"): the session keeps
+    /// the document's print and frame settings and reads them back; a v11 session has none and
+    /// keeps the machine's defaults.
+    #[test]
+    fn a_session_keeps_its_documents_settings() {
+        let Loaded::Ok(old) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v11.fotollection"))
+        else {
+            panic!("the v11 fixture reads");
+        };
+        assert_eq!(old.settings, None);
+        let defaults = crate::settings::RenderSettings::default();
+        let render = crate::settings::RenderSettings {
+            print_size: "13x18".into(),
+            stamp: crate::settings::StampSettings {
+                caption: "Sapa 2026".into(),
+                ..defaults.stamp.clone()
+            },
+            ..defaults
+        };
+        let mut file = old;
+        file.settings = Some(DocumentSettings {
+            render,
+            frame: crate::frame::FrameSettings::default(),
+        });
+        let Ok(bytes) = to_bytes(&file) else {
+            panic!("writes");
+        };
+        let Loaded::Ok(back) = from_bytes(&bytes) else {
+            panic!("reads back");
+        };
+        assert_eq!(back.settings, file.settings);
     }
 }

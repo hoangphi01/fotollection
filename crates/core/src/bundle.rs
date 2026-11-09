@@ -204,8 +204,10 @@ pub fn to_bytes(bundle: &Bundle) -> Result<Vec<u8>, BundleError> {
         looks: Vec::new(),
         ..bundle.settings.clone()
     };
+    // The settings travel in their own part; the session's copy is not the bundle's.
     let project = ProjectFile {
         document: None,
+        settings: None,
         ..bundle.project.clone()
     };
     let mut parts: Vec<(String, Vec<u8>)> = vec![
@@ -556,15 +558,15 @@ pub fn merge_settings(
         } else {
             local.cameras.iter().map(|c| c.id).max().unwrap_or(0) + 1
         };
-        let profile = crate::frame::CameraProfile {
-            id,
-            ..incoming.clone()
-        };
-        match found {
-            Some(i) => local.cameras[i] = profile,
-            None => local.cameras.push(profile),
+        // A camera this machine knows keeps its own profile and logo (owner, 2026-11-09:
+        // opening a project adds what is missing, never overwrites); a new one is added.
+        if found.is_none() {
+            local.cameras.push(crate::frame::CameraProfile {
+                id,
+                ..incoming.clone()
+            });
+            camera_ids.insert(incoming.id, id);
         }
-        camera_ids.insert(incoming.id, id);
     }
     for (incoming, bytes) in &bundle.logos {
         if let Some(&id) = camera_ids.get(incoming) {
@@ -677,6 +679,7 @@ mod tests {
             }],
             places: Vec::new(),
             document: None,
+            settings: None,
         }
     }
 
@@ -1046,18 +1049,12 @@ mod tests {
         assert_eq!(installed.new_fonts.len(), 1);
         assert_eq!(installed.new_fonts[0].0.id, 3);
         assert_eq!(local.frame.font, Some(3));
-        // The camera matched by make + model keeps its local id, takes the project's values.
+        // The camera matched by make + model keeps this machine's profile and logo (owner,
+        // 2026-11-09: opening adds what is missing, never overwrites).
         assert_eq!(local.cameras.len(), 1);
         assert_eq!(local.cameras[0].id, 9);
-        assert_eq!(local.cameras[0].lens.as_deref(), Some("Industar-50-2"));
-        assert_eq!(
-            installed
-                .logos
-                .iter()
-                .map(|(id, _)| *id)
-                .collect::<Vec<_>>(),
-            [9]
-        );
+        assert_eq!(local.cameras[0].lens, None);
+        assert_eq!(installed.logos.len(), 0);
         assert_eq!(local.render.print_size, "original");
         assert_eq!(
             local.ui.language,
