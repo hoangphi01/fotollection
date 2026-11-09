@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { BookOpen, Cpu, FolderOutput, MessageSquareWarning, RefreshCw, SlidersHorizontal, Sparkles, type LucideIcon } from 'lucide-react'
+import { BookOpen, Cpu, FolderOutput, MessageSquareWarning, RefreshCw, SlidersHorizontal, Sparkles, type LucideIcon, Database } from 'lucide-react'
 import { lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SettingsFrame } from '@/components/layout/settings-frame'
@@ -13,6 +13,7 @@ import { useIpcQuery } from '@/features/settings/use-ipc-query'
 import { commands } from '@/ipc/bindings'
 import { ExportSettingsSection } from './export-section'
 import { GeneralSection } from './general-section'
+import { DataSection } from './data-section'
 import { MemorySection } from './memory-section'
 import { useManualChapter } from '@/features/manual/manual-store'
 import { SECTIONS, showSettings, useSettingsWindow, type Section } from './use-settings-window'
@@ -27,6 +28,7 @@ const ICONS: Record<Section, LucideIcon> = {
   general: SlidersHorizontal,
   export: FolderOutput,
   memory: Cpu,
+  data: Database,
   updates: RefreshCw,
   manual: BookOpen,
   report: MessageSquareWarning,
@@ -59,6 +61,8 @@ function Body({ section, version }: { section: Section; version: string | undefi
       return <ExportSettingsSection />
     case 'memory':
       return <MemorySection />
+    case 'data':
+      return <DataSection />
     case 'updates':
       return (
         <SectionCard icon={<Icon />} title={t('settingsWindow.sections.updates')}>

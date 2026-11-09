@@ -130,6 +130,13 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     // The Settings window's memory and cache (FR-086): a 16 GB Mac at 25 %, a trip's cache.
     memory_info: () => ({ total: 16 * 2 ** 30, budget: 4 * 2 ** 30, held: 1.3 * 2 ** 30 }),
     machine_info: () => ({ cpu: 'Apple M3', cores: 8, memory: 16 * 2 ** 30, freeDisk: 31e9 }),
+    // Settings → Data (FR-116): each store with a plausible size, two unused LUTs.
+    data_usage: () =>
+      [
+        ['settings', 18_400, 1, 0], ['looks', 0, 6, 0], ['luts', 2_310_000, 9, 2], ['fonts', 412_000, 2, 0],
+        ['logos', 38_000, 1, 0], ['addresses', 0, 3, 0], ['cameraSessions', 0, 0, 0], ['cache', 1_840_000_000, 5210, 0],
+        ['logs', 96_000, 2, 0],
+      ].map(([kind, bytes, count, unused]) => ({ kind, bytes, count, unused })),
     cache_usage: () => ({
       bytes: 0.44 * 2 ** 30,
       files: 1290,
@@ -748,7 +755,7 @@ async function stressViews({ language, theme }) {
   }
   // Every Settings section, the manual among them, and the welcome.
   ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
-  const sections = [/^(General|Chung)$/, /^(Export|Xuất ảnh)$/, /^(RAM & cache|Bộ nhớ RAM & cache)$/, /^(Updates|Cập nhật)$/, /^(Manual|Hướng dẫn sử dụng)$/, /^(Report a problem|Báo lỗi)$/, /^(What's new|Có gì mới)$/]
+  const sections = [/^(General|Chung)$/, /^(Export|Xuất ảnh)$/, /^(RAM & cache|Bộ nhớ RAM & cache)$/, /^(Data|Dữ liệu)$/, /^(Updates|Cập nhật)$/, /^(Manual|Hướng dẫn sử dụng)$/, /^(Report a problem|Báo lỗi)$/, /^(What's new|Có gì mới)$/]
   for (const name of sections) {
     await openSettings(page, name)
     await page.waitForTimeout(300)
@@ -824,7 +831,7 @@ async function measurePanels() {
   await page.screenshot({ path: path.join(outDir, 'measure-postcard-preview.png') })
   await context.close()
   ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
-  for (const name of [/^(General|Chung)$/, /^(RAM & cache|Bộ nhớ RAM & cache)$/]) {
+  for (const name of [/^(General|Chung)$/, /^(RAM & cache|Bộ nhớ RAM & cache)$/, /^(Data|Dữ liệu)$/]) {
     await openSettings(page, name)
     rows.push([`settings: ${name.source.slice(2, 9).toLowerCase()}`, await measure(page, '[data-slot="settings-body"]')])
   }

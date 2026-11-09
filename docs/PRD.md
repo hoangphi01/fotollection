@@ -886,7 +886,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-082 — The app's brain in one file (`.fotosettings`)
 
-**P2 (scheduled after v0.14.0 with FR-116's Data section, owner 2026-11-09; owner's request 2026-11-05).** Recent postcard addresses travel only when *Include recent addresses* is ticked at export, off by default, with a line on privacy (owner, 2026-11-09). Everything Fotollection has learnt on one computer goes to another in one file, "the app's brain": *Export settings…* writes a `.fotosettings` file, *Import settings…* reads one ([EXTENSION.md §2.3](EXTENSION.md#23-settings-bundle-fotosettings)).
+**P2 (built for v0.14.0 with FR-116's Data section, 2026-11-09; owner's request 2026-11-05).** Recent postcard addresses travel only when *Include recent addresses* is ticked at export, off by default, with a line on privacy (owner, 2026-11-09). Everything Fotollection has learnt on one computer goes to another in one file, "the app's brain": *Export settings…* writes a `.fotosettings` file, *Import settings…* reads one ([EXTENSION.md §2.3](EXTENSION.md#23-settings-bundle-fotosettings)).
 
 - **What it holds:** all of `settings.json`: the interface (language, theme, mode, export folders, the card order and the welcome's choices of [FR-080](#fr-080--card-order-of-ones-own) and [FR-081](#fr-081--a-welcome-screen-on-the-first-launch)), every print and stamp setting, custom print sizes, camera profiles and clocks, the postcard settings and the **recent postcard addresses**, the user's looks with the LUT files they use ([FR-079](#fr-079--colour-adjustments)), fonts and camera logos.
 - **What it never holds:** photos, folder paths, projects or the caches. Albums travel as `.fotollection` projects ([FR-023](#fr-023--projects-autosave-and-undo)), which keep leaving the interface group and the addresses out, so opening someone's album never changes one's own app.
@@ -1133,7 +1133,7 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 ### FR-116 — Data on this computer, in Settings
 
-**P2 (after v0.14.0; owner's request 2026-11-09: "build a data menu in Settings: how does a user move to another computer?").** Settings gets a **Data** section, built from the lego blocks:
+**P2 (built for v0.14.0; owner's request 2026-11-09: "build a data menu in Settings: how does a user move to another computer?").** Owner's choices (2026-11-09): an import **merges** (the default) or **replaces**; two buttons to start afresh, *Reset settings* (the user's data kept) and *Erase data*; only *unused LUTs* and *recent addresses* can be cleared from the list (the cache from *RAM & cache*). Settings gets a **Data** section, built from the lego blocks:
 
 - **Move to another computer:** *Export settings…* and *Import settings…* ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)); the import shows what the file holds (looks, LUTs, fonts, logos, print sizes, addresses) and asks to merge or replace.
 - **What Fotollection keeps here:** one row per store (settings, looks and LUTs, fonts, logos, recent addresses, camera sessions, cache, logs) with its size, count and *Open folder*; *Clear* (red, asked first) only where clearing loses nothing that cannot be made again.

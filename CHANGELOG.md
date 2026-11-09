@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - **The window can be moved, and on Windows minimised or closed, while the photo preview or any dialog is open** (FR-052).
+- **Settings → Data** (FR-116, FR-082): move to another computer with one `.fotosettings` file (*Export settings*, *Import settings* to merge or replace), see what Fotollection keeps here and open each folder, remove unused LUTs, forget recent addresses, reset settings or erase data.
 - **Each project keeps its own settings** (FR-023): its print size, date stamp, look and frame stay with it, and opening a project no longer changes this computer's settings. A new project starts from the defaults set in *Settings → General → New projects*.
 - **A project carries the LUTs and the postcard font its looks use** (FR-023): opened on another computer, its photos keep their colour and its postcards their font.
 - **Edits of a folder that is not plugged in at launch are kept** (FR-023): the folder waits to be found again, as in a project, instead of losing its photos' edits at the next autosave.

@@ -1149,7 +1149,8 @@
       "updates": "Updates",
       "manual": "Manual",
       "report": "Report a problem",
-      "whatsNew": "What's new"
+      "whatsNew": "What's new",
+      "data": "Data"
     },
     "about": {
       "general": "The language and the look of the app",
@@ -1158,7 +1159,8 @@
       "updates": "A newer version, when you ask",
       "manual": "The whole user guide, readable with no internet",
       "report": "Tell the author what went wrong",
-      "whatsNew": "Every version and what it brought"
+      "whatsNew": "Every version and what it brought",
+      "data": "Moving to another computer, what is kept here, starting afresh"
     },
     "previewLayout": "Photo preview",
     "previewDialog": "In a window",
@@ -1405,5 +1407,92 @@
     "retry": "Try again",
     "appFailed": "Fotollection hit an error it could not get past (ERR-UI-0001).",
     "reload": "Reload"
+  },
+  "data": {
+    "move": {
+      "title": "Move to another computer",
+      "how": "On this computer, export your settings and copy your .fotollection projects. On the other, import the settings, open each project and relink its photo folders.",
+      "addresses": "Include recent addresses",
+      "addressesHint": "The postcard addresses you typed are other people's: off unless you need them there.",
+      "export": "Export settings…",
+      "exportHint": "Your settings, saved looks, LUTs, fonts and logos in one .fotosettings file; never photos or projects.",
+      "exported": "Saved: {{path}}",
+      "import": "Import settings…",
+      "importHint": "Shows what the file holds before anything changes."
+    },
+    "stores": {
+      "title": "What Fotollection keeps here",
+      "settings": "Settings",
+      "looks": "Saved looks",
+      "luts": "LUTs",
+      "fonts": "Fonts",
+      "logos": "Camera logos",
+      "addresses": "Recent addresses",
+      "cameraSessions": "Camera sessions",
+      "cache": "Thumbnails and previews",
+      "logs": "Error log",
+      "size_one": "{{size}} · {{count}} item",
+      "size_other": "{{size}} · {{count}} items",
+      "open": "Open folder",
+      "removeUnused_one": "Remove {{count}} unused LUT",
+      "removeUnused_other": "Remove {{count}} unused LUTs",
+      "unusedHint": "LUTs no saved look, photo or setting uses. A project saved before v0.14.0 may still need them.",
+      "forgetAddresses": "Forget recent addresses",
+      "items_one": "{{count}} item",
+      "items_other": "{{count}} items"
+    },
+    "reset": {
+      "title": "Start afresh",
+      "settings": "Reset settings",
+      "settingsHint": "The interface, export choices, defaults for new projects and cameras' typed names go back to their defaults; your looks, LUTs, fonts, logos and addresses stay.",
+      "erase": "Erase data",
+      "eraseHint": "Your saved looks, LUTs, fonts, logos and addresses go, as on a new install. Projects and photos are never touched."
+    },
+    "ask": {
+      "luts": {
+        "title": "Remove unused LUTs?",
+        "body": "LUT files no look, photo or setting uses are deleted. A project saved before v0.14.0 that used one opens without it.",
+        "do": "Remove"
+      },
+      "addresses": {
+        "title": "Forget recent addresses?",
+        "body": "The postcard addresses this computer remembers are forgotten. Postcards already written keep theirs.",
+        "do": "Forget"
+      },
+      "reset": {
+        "title": "Reset settings?",
+        "body": "The settings go back to their defaults; your looks, LUTs, fonts, logos and addresses stay. The old settings are kept as settings.json.bak.",
+        "do": "Reset"
+      },
+      "erase": {
+        "title": "Erase data?",
+        "body": "Your saved looks, LUTs, fonts, logos and addresses are deleted from this computer. Projects and photos are not touched. The old settings are kept as settings.json.bak.",
+        "do": "Erase"
+      }
+    },
+    "import": {
+      "title": "Import settings",
+      "body": "This file holds:",
+      "looks_one": "{{count}} saved look",
+      "looks_other": "{{count}} saved looks",
+      "luts_one": "{{count}} LUT",
+      "luts_other": "{{count}} LUTs",
+      "fonts_one": "{{count}} font",
+      "fonts_other": "{{count}} fonts",
+      "logos_one": "{{count}} camera logo",
+      "logos_other": "{{count}} camera logos",
+      "cameras_one": "{{count}} camera",
+      "cameras_other": "{{count}} cameras",
+      "sizes_one": "{{count}} custom print size",
+      "sizes_other": "{{count}} custom print sizes",
+      "addresses_one": "{{count}} recent address",
+      "addresses_other": "{{count}} recent addresses",
+      "mode": "How to import",
+      "merge": "Merge",
+      "replace": "Replace",
+      "mergeHint": "Adds what this computer lacks; its interface and defaults stay.",
+      "replaceHint": "Uses the file's settings whole; this computer's are kept as settings.json.bak.",
+      "do": "Import"
+    }
   }
 }

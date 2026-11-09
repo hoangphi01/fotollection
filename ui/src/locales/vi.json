@@ -1100,7 +1100,8 @@
       "updates": "Cập nhật",
       "manual": "Hướng dẫn sử dụng",
       "report": "Báo lỗi",
-      "whatsNew": "Có gì mới"
+      "whatsNew": "Có gì mới",
+      "data": "Dữ liệu"
     },
     "about": {
       "general": "Ngôn ngữ và giao diện của ứng dụng",
@@ -1109,7 +1110,8 @@
       "updates": "Phiên bản mới hơn, khi bạn hỏi",
       "manual": "Toàn bộ hướng dẫn sử dụng, đọc được khi không có mạng",
       "report": "Báo cho tác giả biết điều gì không ổn",
-      "whatsNew": "Mọi phiên bản và những gì chúng mang lại"
+      "whatsNew": "Mọi phiên bản và những gì chúng mang lại",
+      "data": "Chuyển sang máy khác, những gì được giữ ở đây, bắt đầu lại"
     },
     "previewLayout": "Xem ảnh",
     "previewDialog": "Trong cửa sổ",
@@ -1355,5 +1357,82 @@
     "retry": "Thử lại",
     "appFailed": "Fotollection gặp lỗi không vượt qua được (ERR-UI-0001).",
     "reload": "Tải lại"
+  },
+  "data": {
+    "move": {
+      "title": "Chuyển sang máy khác",
+      "how": "Trên máy này, xuất thiết lập và chép các dự án .fotollection. Trên máy kia, nhập thiết lập, mở từng dự án và chỉ lại thư mục ảnh.",
+      "addresses": "Kèm địa chỉ gần đây",
+      "addressesHint": "Địa chỉ bưu thiếp bạn đã gõ là của người khác: chỉ bật khi cần dùng ở máy kia.",
+      "export": "Xuất thiết lập…",
+      "exportHint": "Thiết lập, look đã lưu, LUT, font và logo trong một tệp .fotosettings; không bao giờ có ảnh hay dự án.",
+      "exported": "Đã lưu: {{path}}",
+      "import": "Nhập thiết lập…",
+      "importHint": "Cho xem tệp có gì trước khi đổi bất cứ thứ gì."
+    },
+    "stores": {
+      "title": "Fotollection giữ gì trên máy này",
+      "settings": "Thiết lập",
+      "looks": "Look đã lưu",
+      "luts": "LUT",
+      "fonts": "Font",
+      "logos": "Logo máy ảnh",
+      "addresses": "Địa chỉ gần đây",
+      "cameraSessions": "Phiên chụp máy ảnh",
+      "cache": "Ảnh nhỏ và bản xem trước",
+      "logs": "Nhật ký lỗi",
+      "size_other": "{{size}} · {{count}} mục",
+      "open": "Mở thư mục",
+      "removeUnused_other": "Xoá {{count}} LUT không dùng",
+      "unusedHint": "LUT không look, ảnh hay thiết lập nào dùng. Dự án lưu trước v0.14.0 có thể vẫn cần chúng.",
+      "forgetAddresses": "Quên các địa chỉ gần đây",
+      "items_other": "{{count}} mục"
+    },
+    "reset": {
+      "title": "Bắt đầu lại",
+      "settings": "Đặt lại thiết lập",
+      "settingsHint": "Giao diện, lựa chọn xuất, mặc định cho dự án mới và tên máy ảnh bạn gõ về mặc định; look, LUT, font, logo và địa chỉ vẫn giữ.",
+      "erase": "Xoá dữ liệu",
+      "eraseHint": "Look đã lưu, LUT, font, logo và địa chỉ bị xoá, như khi mới cài. Dự án và ảnh không bao giờ bị đụng tới."
+    },
+    "ask": {
+      "luts": {
+        "title": "Xoá LUT không dùng?",
+        "body": "Các tệp LUT không look, ảnh hay thiết lập nào dùng sẽ bị xoá. Dự án lưu trước v0.14.0 từng dùng chúng sẽ mở mà không có LUT.",
+        "do": "Xoá"
+      },
+      "addresses": {
+        "title": "Quên các địa chỉ gần đây?",
+        "body": "Các địa chỉ bưu thiếp máy này nhớ sẽ bị quên. Bưu thiếp đã viết vẫn giữ địa chỉ của chúng.",
+        "do": "Quên"
+      },
+      "reset": {
+        "title": "Đặt lại thiết lập?",
+        "body": "Thiết lập về mặc định; look, LUT, font, logo và địa chỉ vẫn giữ. Thiết lập cũ được giữ thành settings.json.bak.",
+        "do": "Đặt lại"
+      },
+      "erase": {
+        "title": "Xoá dữ liệu?",
+        "body": "Look đã lưu, LUT, font, logo và địa chỉ bị xoá khỏi máy này. Dự án và ảnh không bị đụng tới. Thiết lập cũ được giữ thành settings.json.bak.",
+        "do": "Xoá"
+      }
+    },
+    "import": {
+      "title": "Nhập thiết lập",
+      "body": "Tệp này có:",
+      "looks_other": "{{count}} look đã lưu",
+      "luts_other": "{{count}} LUT",
+      "fonts_other": "{{count}} font",
+      "logos_other": "{{count}} logo máy ảnh",
+      "cameras_other": "{{count}} máy ảnh",
+      "sizes_other": "{{count}} khổ in tự tạo",
+      "addresses_other": "{{count}} địa chỉ gần đây",
+      "mode": "Cách nhập",
+      "merge": "Gộp",
+      "replace": "Thay",
+      "mergeHint": "Thêm những gì máy này chưa có; giao diện và mặc định của máy vẫn giữ.",
+      "replaceHint": "Dùng trọn thiết lập trong tệp; thiết lập của máy này được giữ thành settings.json.bak.",
+      "do": "Nhập"
+    }
   }
 }
