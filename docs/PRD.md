@@ -1166,6 +1166,17 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 - **Rust first (ADR-0044):** each tool in the core, on rayon, within OPTIMIZATION §3's budgets set before its code; the spatial ones before or after the look's table as Dehaze is, chosen so the GPU preview keeps Rust's order.
 - **Learn from RawTherapee and darktable first** (owner, 2026-11-09: "what is too hard, see how RawTherapee handles it; Fotollection is a marathon"): before each hard tool (local highlights and shadows, clarity and texture, noise reduction, grain, older presets' conversion), read how RawTherapee and darktable solve it: their manuals (RawPedia, darktable's user manual), their discussions and the papers they cite. Write what was learnt, the candidates and why, in RESULT before the code, then build our own in Rust and measure it against theirs and Lightroom's. **Their code is never copied or translated:** both are GPL, and a copy would close the relicensing option of [ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md); methods and published papers are free to learn from.
 
+### FR-119 — Smooth on ARM, and RISC-V tried
+
+**P2 (planned, Windows on ARM first in v0.15.x, RISC-V later and experimental; owner's request 2026-11-09: "how does Fotollection run smoothly on ARM? think about RISC-V too").** Every pixel of Fotollection is portable Rust on rayon (ADR-0044), with no code written for one processor, so it already builds for ARM64 (Apple Silicon in the universal `.dmg`, Linux ARM64 AppImage and `.deb`). Smooth means the budgets of OPTIMIZATION §3 met on each, measured, never assumed:
+
+- **Windows on ARM (Snapdragon X), first:** today only an x86_64 build exists, so those machines run it through Windows' emulation. Add `aarch64-pc-windows-msvc` to `release.yml` (WebView2 has an ARM64 runtime; `oscodec`'s WIC calls and the `-setup.exe`/`.msi` checked on ARM64), a smoke test, and the update check's asset names (`updates.rs` knows the architecture already).
+- **Measured on each ARM machine:** a Raspberry Pi 5 (Linux ARM64, 4–8 GB) as the low end, an M-series Mac, a Snapdragon laptop. The budgets of opening a photo, a slider step, a 24 MP export and a RAW develop, with `measure_*`; the GPU look (`GpuLook.worthIt`) on each GPU, the CPU path where it is not worth it.
+- **What a measurement may lead to, never before:** the hot loops (the look's table, the demosaic, Dehaze, the resize) checked for NEON in the generated code, and given portable SIMD (`std::simd` once stable, or a permissive crate) only where a benchmark shows the gain; rayon pools sized by performance and efficiency cores on big.LITTLE chips if the efficiency cores are measured to slow a batch; memory budgets (ADR-0041) checked on a 4 GB Pi.
+- **The dependencies' own processor code** (`fast_image_resize`, `zune-jpeg`, `jpeg-encoder`, `tract-linalg`, `ring`) listed with what each does on ARM64 and RISC-V, from their source, before relying on it.
+- **RISC-V (riscv64gc Linux), experimental:** Rust builds it (tier 2), `ring` and the pure-Rust decoders support it, WebKitGTK ships on Debian and Ubuntu riscv64. No hosted runner exists, so a cross build (`cross` or a riscv64 container) and a smoke test under emulation; then one real board (a SpacemiT K1 with RVV 1.0, or a VisionFive 2) to measure. Its vector extension is not in the baseline, so the first build is scalar; vectors only by measured runtime detection. Shipped only as "experimental" until a real board meets the budgets.
+- **Docs when built:** NFR-007, RELEASE.md §2 and §6, the website's systems table and download buttons, an ADR for each new platform (DOCS_GUIDE, "A new platform").
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
@@ -1196,7 +1207,7 @@ The app works with no network connection. It makes no telemetry or crash-reporti
 
 ### NFR-007 — Platforms
 
-The app supports macOS 11 or later (Apple Silicon and Intel, shipped as a universal binary), Windows 10/11 x64, and, since v0.8.2, 64-bit Linux with glibc 2.35 or later on x86_64 and ARM64, as an AppImage and a `.deb` ([ADR-0034](adr/0034-linux-lean.md)). Linux is the lean build: no camera capture ([FR-063](#fr-063--tethered-capture-over-usb)) and no HEIC yet ([FR-068](#fr-068--heic-on-linux-through-the-systems-libheif)). Every release proves the Linux packages start, on Ubuntu 22.04 and Debian 12, since the owner has no Linux machine.
+The app supports macOS 11 or later (Apple Silicon and Intel, shipped as a universal binary), Windows 10/11 x64 (on ARM through Windows' emulation until [FR-119](#fr-119--smooth-on-arm-and-risc-v-tried) builds ARM64), and, since v0.8.2, 64-bit Linux with glibc 2.35 or later on x86_64 and ARM64, as an AppImage and a `.deb` ([ADR-0034](adr/0034-linux-lean.md)). Linux is the lean build: no camera capture ([FR-063](#fr-063--tethered-capture-over-usb)) and no HEIC yet ([FR-068](#fr-068--heic-on-linux-through-the-systems-libheif)). Every release proves the Linux packages start, on Ubuntu 22.04 and Debian 12, since the owner has no Linux machine.
 
 ### NFR-008 — Install size
 
