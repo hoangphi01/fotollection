@@ -150,7 +150,7 @@ In the first slice, protocol requests shared one pool with background T1 generat
 ### 4.4 SIMD and codecs
 
 - libjpeg-turbo and `fast_image_resize` use NEON on Apple Silicon and AVX2 on x86-64.
-- Release builds use `lto = "fat"`, `codegen-units = 1` and `panic = "abort"` for the app binary.
+- Release builds use `lto = "fat"`, `codegen-units = 1` and `panic = "unwind"` (ADR-0029): a panic must stay where it happened, never take the app down (ADR-0048), so every pool has a panic handler (`pool::contained`), image routes answer a panic with 500 and commands with an error.
 - Do **not** enable `target-cpu=native` for distributed builds. Use runtime feature detection instead.
 
 ### 4.5 Deferred until measured

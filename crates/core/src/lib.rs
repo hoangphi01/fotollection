@@ -36,6 +36,7 @@ pub mod metadata;
 pub mod naming;
 pub mod places;
 pub mod plan;
+pub mod pool;
 pub mod postcard;
 pub mod preset;
 pub mod preset_look;

@@ -438,6 +438,7 @@
   },
   "errors": {
     "internal": "Something went wrong",
+    "panic": "This part hit an error; the rest of the app goes on",
     "camera": {
       "unknown": "Unknown camera",
       "offset_too_large": "A camera clock is corrected by at most a month",

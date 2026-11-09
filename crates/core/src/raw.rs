@@ -715,13 +715,8 @@ pub fn prepare_while(
 /// always has its threads (`None` if the system refused to start them).
 fn develop_pool() -> Option<&'static rayon::ThreadPool> {
     static POOL: std::sync::OnceLock<Option<rayon::ThreadPool>> = std::sync::OnceLock::new();
-    POOL.get_or_init(|| {
-        rayon::ThreadPoolBuilder::new()
-            .thread_name(|i| format!("fotollection-develop-{i}"))
-            .build()
-            .ok()
-    })
-    .as_ref()
+    POOL.get_or_init(|| crate::pool::contained(None, "develop").ok())
+        .as_ref()
 }
 
 /// Runs `develop` holding `DEVELOP`, on a thread of its own, its parallel work on the

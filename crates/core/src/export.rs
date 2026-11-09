@@ -816,10 +816,7 @@ fn run<T: Sync>(
             on_progress(done.fetch_add(1, Ordering::Relaxed) + 1, total);
         });
     };
-    match rayon::ThreadPoolBuilder::new()
-        .num_threads(options.max_inflight.max(1))
-        .build()
-    {
+    match crate::pool::contained(Some(options.max_inflight), "export") {
         Ok(pool) => pool.install(work),
         Err(_) => work(),
     }

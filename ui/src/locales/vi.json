@@ -418,6 +418,7 @@
   },
   "errors": {
     "internal": "Đã có lỗi xảy ra",
+    "panic": "Phần này gặp lỗi; phần còn lại của app vẫn chạy",
     "camera": {
       "unknown": "Không rõ máy ảnh",
       "offset_too_large": "Đồng hồ máy ảnh chỉ chỉnh được tối đa một tháng",

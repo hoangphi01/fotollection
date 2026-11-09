@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - **The window can be moved, and on Windows minimised or closed, while the photo preview or any dialog is open** (FR-052).
+- **A part that fails no longer takes the app down** (NFR-011): a photo whose decoding fails in an unexpected way, or an action that hits a bug, shows an error on that photo or action and the app goes on; before, the whole app could close.
 - **A dialog's title and words keep clear of its close button** (FR-099), in every dialog and both previews.
 - **A button shows it was pressed** (FR-099): held down, it takes the theme's colour pressed in and rises again on release, in both themes.
 - **The cards no longer drop under the pointer on the first slider step** (FR-079), in Pro and Simple mode: the Looks card and its amount stay in place, greyed with the original look.

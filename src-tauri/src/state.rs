@@ -273,14 +273,9 @@ impl AppState {
             thumbs: ThumbCache::new(thumb_dir),
             look_thumbs: fotollection_core::look_thumbs::LookThumbs::default(),
             look_warm: AtomicU64::new(0),
-            interactive_pool: rayon::ThreadPoolBuilder::new()
-                .num_threads(2)
-                .thread_name(|i| format!("fotollection-ui-{i}"))
-                .build()?,
-            background_pool: rayon::ThreadPoolBuilder::new()
-                .num_threads(2)
-                .thread_name(|i| format!("fotollection-bg-{i}"))
-                .build()?,
+            // A panic in a job stops there, never the app (ADR-0048, `pool::contained`).
+            interactive_pool: fotollection_core::pool::contained(Some(2), "ui")?,
+            background_pool: fotollection_core::pool::contained(Some(2), "bg")?,
             store_path,
             logo_dir,
             font_dir,

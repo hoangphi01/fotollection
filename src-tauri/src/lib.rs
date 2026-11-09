@@ -283,7 +283,20 @@ pub fn run() {
         // Opens the update installer in the browser, from Rust only (FR-061); the webview gets
         // no opener permission.
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(builder.invoke_handler())
+        // Every command inside `catch_unwind` (ADR-0048): a panic in one, many run on the main
+        // thread, answers that call with `ERR-RUS-0005` instead of quitting the app. The panic
+        // hook has already logged it.
+        .invoke_handler({
+            let handler = builder.invoke_handler();
+            move |invoke| {
+                let resolver = invoke.resolver.clone();
+                std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| handler(invoke)))
+                    .unwrap_or_else(|_| {
+                        resolver.reject(crate::state::IpcError::new("panic", "the command failed"));
+                        true
+                    })
+            }
+        })
         .register_asynchronous_uri_scheme_protocol(protocol::SCHEME, protocol::handle)
         .setup(move |app| {
             builder.mount_events(app);

@@ -164,29 +164,52 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
     }
 }
 
+/// A request's answer, sent once (ADR-0048). Dropped unanswered, as when its route panicked,
+/// it answers 500 with `ERR-RUS-0005`, so the image says why instead of waiting for good.
+struct Reply(Option<UriSchemeResponder>);
+
+impl Reply {
+    fn send(mut self, response: Response<Vec<u8>>) {
+        if let Some(responder) = self.0.take() {
+            responder.respond(response);
+        }
+    }
+}
+
+impl Drop for Reply {
+    fn drop(&mut self) {
+        if let Some(responder) = self.0.take() {
+            let error = crate::state::IpcError::new("panic", "the image could not be made");
+            let body = serde_json::to_vec(&error).unwrap_or_default();
+            let builder = Response::builder()
+                .status(StatusCode::INTERNAL_SERVER_ERROR)
+                .header(header::CACHE_CONTROL, "no-cache")
+                .header(header::CONTENT_TYPE, "application/json");
+            if let Ok(response) = builder.body(body) {
+                responder.respond(response);
+            }
+        }
+    }
+}
+
 /// A photo that could not be shown: its `IpcError` as JSON, so the UI can say why with
 /// the `ERR-` code instead of waiting for an image that never comes.
-fn fail(responder: UriSchemeResponder, error: &crate::state::IpcError) {
+fn fail(responder: Reply, error: &crate::state::IpcError) {
     let body = serde_json::to_vec(error).unwrap_or_default();
     let builder = Response::builder()
         .status(StatusCode::INTERNAL_SERVER_ERROR)
         .header(header::CACHE_CONTROL, "no-cache")
         .header(header::CONTENT_TYPE, "application/json");
     if let Ok(response) = builder.body(body) {
-        responder.respond(response);
+        responder.send(response);
     }
 }
 
-fn respond(responder: UriSchemeResponder, status: StatusCode, body: Vec<u8>, jpeg: bool) {
+fn respond(responder: Reply, status: StatusCode, body: Vec<u8>, jpeg: bool) {
     respond_as(responder, status, body, jpeg.then_some("image/jpeg"));
 }
 
-fn respond_as(
-    responder: UriSchemeResponder,
-    status: StatusCode,
-    body: Vec<u8>,
-    kind: Option<&str>,
-) {
+fn respond_as(responder: Reply, status: StatusCode, body: Vec<u8>, kind: Option<&str>) {
     let mut builder = Response::builder()
         .status(status)
         .header(header::CACHE_CONTROL, "no-cache");
@@ -194,7 +217,7 @@ fn respond_as(
         builder = builder.header(header::CONTENT_TYPE, kind);
     }
     if let Ok(response) = builder.body(body) {
-        responder.respond(response);
+        responder.send(response);
     }
 }
 
@@ -203,6 +226,7 @@ pub fn handle<R: Runtime>(
     request: Request<Vec<u8>>,
     responder: UriSchemeResponder,
 ) {
+    let responder = Reply(Some(responder));
     let app = ctx.app_handle().clone();
     let Some(route) = route(request.uri().path(), request.uri().query()) else {
         respond(responder, StatusCode::NOT_FOUND, Vec::new(), false);
@@ -252,7 +276,7 @@ fn priority_of(route: &Route) -> Priority {
 }
 
 /// Answers `route` on a thread of the interactive pool.
-fn answer(state: &AppState, route: Route, responder: UriSchemeResponder) {
+fn answer(state: &AppState, route: Route, responder: Reply) {
     match route {
         Route::Thumb(id) => match shown_thumbnail_bytes(state, id) {
             Some(bytes) => {
