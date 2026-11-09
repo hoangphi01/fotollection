@@ -1,3 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # Proper names that clippy::doc_markdown would otherwise want in backticks.
 doc-valid-idents = ["YuNet", "FaceMesh", "MediaPipe", "GeoNames", "..", "TFLite"]
+# ADR-0048: a thread or pool that panics must never take the app down nor leave it waiting.
+# Threads start through `fotollection_core::supervise`, pools through `pool::contained`.
+disallowed-methods = [
+    { path = "std::thread::spawn", reason = "start a thread with fotollection_core::supervise::spawn or ::forever (ADR-0048)" },
+    { path = "std::thread::Builder::spawn", reason = "start a thread with fotollection_core::supervise::spawn or ::forever (ADR-0048)" },
+    { path = "rayon::ThreadPoolBuilder::build", reason = "build a pool with fotollection_core::pool::contained (ADR-0048)" },
+]

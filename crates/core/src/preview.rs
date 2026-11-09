@@ -106,6 +106,7 @@ const WRITES_WAITING: usize = 4;
 /// first view does not wait for the encode and the write (about 15 ms of 290 for a JPEG,
 /// OPTIMIZATION §5). When the writer is behind, the write is dropped: the background pass makes
 /// it later. The writer encodes with the default codec, the one the app uses.
+#[allow(clippy::disallowed_methods)] // Each write is inside `catch_unwind` (ADR-0048).
 fn write_standard_later(path: std::path::PathBuf, image: Arc<RgbImage>) {
     type Job = (std::path::PathBuf, Arc<RgbImage>);
     static WRITER: std::sync::OnceLock<Option<std::sync::mpsc::SyncSender<Job>>> =
@@ -116,8 +117,11 @@ fn write_standard_later(path: std::path::PathBuf, image: Arc<RgbImage>) {
             .name("fotollection-standard-writer".into())
             .spawn(move || {
                 let codec = crate::codec::default_codec();
+                // One write that panics loses that file, never the writer (ADR-0048).
                 for (path, image) in jobs {
-                    write_standard(&path, &image, codec.as_ref());
+                    let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                        write_standard(&path, &image, codec.as_ref());
+                    }));
                 }
             })
             .ok()
@@ -1599,6 +1603,7 @@ fn sample_where_inverse(a: &RgbImage, b: &RgbImage, (fx, fy): (f32, f32)) -> Opt
 }
 
 #[cfg(test)]
+#[allow(clippy::disallowed_methods)] // Tests start bare threads to race the code.
 mod tests {
     use super::*;
     use crate::codec::default_codec;

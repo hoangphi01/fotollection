@@ -70,7 +70,7 @@ pub fn route(app: &AppHandle, path: PathBuf) {
         crate::document::request_open(app, path);
     } else {
         let app = app.clone();
-        std::thread::spawn(move || open_photo(&app, &path));
+        fotollection_core::supervise::spawn("open-with", move || open_photo(&app, &path), || {});
     }
 }
 

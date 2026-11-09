@@ -790,6 +790,7 @@ pub fn available() -> bool {
 }
 
 #[cfg(test)]
+#[allow(clippy::disallowed_methods)] // Tests start bare threads to race the code.
 mod tests {
     use super::*;
 

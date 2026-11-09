@@ -14,7 +14,8 @@
 //! As in the app, T1 thumbnails run on two threads (the app's background pool), and what the
 //! measurements before the export hold is let go before it starts; the export's own peak is
 //! sampled every 100 ms (`peakExportRssMb`), beside the whole run's from `/usr/bin/time`.
-
+// A benchmark, not the app: it starts its own threads and pools (ADR-0048 binds the app).
+#![allow(clippy::disallowed_methods)]
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,

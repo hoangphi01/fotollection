@@ -61,61 +61,92 @@ pub fn analyze_library(app: AppHandle, state: State<'_, AppState>) -> Result<u32
     let generation = analyses.generation;
     drop(analyses);
 
-    std::thread::spawn(move || {
+    // A panic ends the analysis (ADR-0048): before, `running` kept the dead job for good.
+    let total = u32::try_from(records.len()).unwrap_or(u32::MAX);
+    let ended = analysis_ended(&app, job_id, total);
+    fotollection_core::supervise::spawn(
+        "analysis",
+        move || {
+            let state = app.state::<AppState>();
+            let tick = progress_reporter(&app, TaskKind::Analyze, total);
+            let failed = AtomicU32::new(0);
+            let results: HashMap<_, _> = state.background_pool.install(|| {
+                records
+                    .par_iter()
+                    .filter_map(|record| {
+                        if cancel.is_cancelled() {
+                            return None;
+                        }
+                        let result = state
+                            .analysis_cache
+                            .analyze(record, state.codec.as_ref())
+                            .inspect_err(|_| {
+                                failed.fetch_add(1, Ordering::Relaxed);
+                            })
+                            .ok();
+                        tick();
+                        Some((record.id, result?))
+                    })
+                    .collect()
+            });
+            let cancelled = cancel.is_cancelled();
+            let analyzed = u32::try_from(results.len()).unwrap_or(u32::MAX);
+            let mut groups = 0;
+            if let Ok(mut analyses) = state.analyses.lock() {
+                analyses.running = None;
+                // Keep what finished even when cancelled: it is cached on disk anyway.
+                if analyses.generation == generation {
+                    analyses.by_photo.extend(results);
+                    analyses.groups = suggest(&records, &analyses.by_photo);
+                    groups = u32::try_from(analyses.groups.len()).unwrap_or(u32::MAX);
+                }
+            }
+            if let Ok(mut jobs) = state.jobs.lock() {
+                jobs.remove(&job_id);
+            }
+            // Every signature is known now: photos of the same scene lend each other a place,
+            // the sure ones at once (FR-031).
+            if !cancelled {
+                let _ = crate::places::borrow_and_apply(
+                    &app,
+                    fotollection_core::places::BORROW_WINDOW_S,
+                );
+            }
+            let _ = AnalysisFinished {
+                job_id,
+                analyzed,
+                failed: failed.load(Ordering::Relaxed),
+                groups,
+                cancelled,
+            }
+            .emit(&app);
+        },
+        ended,
+    );
+    Ok(job_id)
+}
+
+/// The analysis's end when its thread dies: nothing running, the job gone, every photo
+/// counted as failed, so the next *Find best shots* starts afresh.
+fn analysis_ended(app: &AppHandle, job_id: u32, total: u32) -> impl FnOnce() + Send + 'static {
+    let app = app.clone();
+    move || {
         let state = app.state::<AppState>();
-        let total = u32::try_from(records.len()).unwrap_or(u32::MAX);
-        let tick = progress_reporter(&app, TaskKind::Analyze, total);
-        let failed = AtomicU32::new(0);
-        let results: HashMap<_, _> = state.background_pool.install(|| {
-            records
-                .par_iter()
-                .filter_map(|record| {
-                    if cancel.is_cancelled() {
-                        return None;
-                    }
-                    let result = state
-                        .analysis_cache
-                        .analyze(record, state.codec.as_ref())
-                        .inspect_err(|_| {
-                            failed.fetch_add(1, Ordering::Relaxed);
-                        })
-                        .ok();
-                    tick();
-                    Some((record.id, result?))
-                })
-                .collect()
-        });
-        let cancelled = cancel.is_cancelled();
-        let analyzed = u32::try_from(results.len()).unwrap_or(u32::MAX);
-        let mut groups = 0;
         if let Ok(mut analyses) = state.analyses.lock() {
             analyses.running = None;
-            // Keep what finished even when cancelled: it is cached on disk anyway.
-            if analyses.generation == generation {
-                analyses.by_photo.extend(results);
-                analyses.groups = suggest(&records, &analyses.by_photo);
-                groups = u32::try_from(analyses.groups.len()).unwrap_or(u32::MAX);
-            }
         }
         if let Ok(mut jobs) = state.jobs.lock() {
             jobs.remove(&job_id);
         }
-        // Every signature is known now: photos of the same scene lend each other a place,
-        // the sure ones at once (FR-031).
-        if !cancelled {
-            let _ =
-                crate::places::borrow_and_apply(&app, fotollection_core::places::BORROW_WINDOW_S);
-        }
         let _ = AnalysisFinished {
             job_id,
-            analyzed,
-            failed: failed.load(Ordering::Relaxed),
-            groups,
-            cancelled,
+            analyzed: 0,
+            failed: total,
+            groups: 0,
+            cancelled: false,
         }
         .emit(&app);
-    });
-    Ok(job_id)
+    }
 }
 
 /// Groups of similar shots from the last analysis, in capture order, best photo first.

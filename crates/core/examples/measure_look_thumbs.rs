@@ -6,7 +6,8 @@
 //! numbers are printed.
 //!
 //! `cargo run --release -p fotollection-core --example measure_look_thumbs -- <folder> [photos]`
-
+// A benchmark, not the app: it starts its own threads and pools (ADR-0048 binds the app).
+#![allow(clippy::disallowed_methods)]
 #![allow(
     clippy::unwrap_used,
     clippy::expect_used,

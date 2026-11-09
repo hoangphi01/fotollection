@@ -175,7 +175,8 @@ pub fn suggest_memory_settings(state: State<'_, AppState>, auto: bool) -> UiSett
 /// while it sleeps.
 pub fn watch_memory(app: &AppHandle) {
     let app = app.clone();
-    std::thread::spawn(move || {
+    // Started again if it panics (ADR-0048): a dead watcher left the previews' memory alone.
+    fotollection_core::supervise::forever("memory", move || {
         loop {
             std::thread::sleep(std::time::Duration::from_secs(5));
             let state = app.state::<AppState>();
@@ -199,7 +200,7 @@ pub fn watch_memory(app: &AppHandle) {
 /// Keeps the cache under its limit, on a thread of its own so nothing waits for it.
 pub fn prune_in_background(app: &AppHandle) {
     let app = app.clone();
-    std::thread::spawn(move || prune(&app.state::<AppState>()));
+    fotollection_core::supervise::spawn("prune", move || prune(&app.state::<AppState>()), || {});
 }
 
 /// Keeps the cache under its limit now, on the caller's thread (a plain one: it reads every

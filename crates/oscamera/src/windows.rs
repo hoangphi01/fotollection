@@ -304,6 +304,9 @@ impl Camera {
     }
 
     /// Opens the device on its own thread and starts collecting events.
+    // A panic in the device thread closes its channels, and the caller's next call fails with
+    // an error (ADR-0048); this crate has no `supervise`.
+    #[allow(clippy::disallowed_methods)]
     pub fn open(&mut self, timeout: Duration) -> Result<(), CameraError> {
         let (jobs, inbox) = mpsc::channel::<Job>();
         let (ready, started) = mpsc::channel::<Result<(), CameraError>>();

@@ -4,7 +4,8 @@
 //! photo's preview after them. One run each, in that order, as a user meets them.
 //!
 //! `cargo run --release -p fotollection-core --example measure_zoom -- <photo>…`
-
+// A benchmark, not the app: it starts its own threads and pools (ADR-0048 binds the app).
+#![allow(clippy::disallowed_methods)]
 #![allow(clippy::unwrap_used, clippy::expect_used, clippy::cast_precision_loss)]
 
 use std::time::Instant;

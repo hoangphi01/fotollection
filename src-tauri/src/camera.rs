@@ -755,6 +755,7 @@ fn connect(_app: &AppHandle) -> Result<CameraInfo, IpcError> {
 }
 
 #[cfg(windows)]
+#[allow(clippy::disallowed_methods)] // The camera's thread catches its own panic (ADR-0048).
 fn connect(app: &AppHandle) -> Result<CameraInfo, IpcError> {
     let camera = app.state::<CameraState>();
     let already = || IpcError::new("camera.already_connected", "A camera is already connected");
@@ -789,11 +790,17 @@ fn connect(app: &AppHandle) -> Result<CameraInfo, IpcError> {
     };
     let handle = app.clone();
     let session_dir = dir.clone();
+    // Released even when the camera's thread panics (ADR-0048): before, the camera stayed
+    // busy until the app quit.
+    let (released, released_dir) = (handle.clone(), session_dir.clone());
     let spawned = std::thread::Builder::new()
         .name("camera".into())
         .spawn(move || {
-            wpd::run(&handle, &session_dir, &inbox, &ready, &session);
-            handle.state::<CameraState>().release(id, &session_dir);
+            let run = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                wpd::run(&handle, &session_dir, &inbox, &ready, &session);
+            }));
+            let _ = run;
+            released.state::<CameraState>().release(id, &released_dir);
         });
     if let Err(e) = spawned {
         camera.release(id, &dir);

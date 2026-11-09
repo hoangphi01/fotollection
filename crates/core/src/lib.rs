@@ -54,6 +54,7 @@ pub mod sharpen;
 pub mod sheet;
 pub mod stamp;
 pub mod straighten;
+pub mod supervise;
 pub mod text;
 pub mod thumbs;
 pub mod xmp;

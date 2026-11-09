@@ -911,3 +911,10 @@
 - **Why:** rayon catches a panic in `install` and hands it to the caller, but a panic in a `spawn`ed job with no handler calls `abort()`: the process dies, whatever `panic = "unwind"` says. Only rawler was inside `catch_unwind`; JPEG, PNG, EXIF and RAW previews were not, so one corrupt file reaching an unforeseen path was enough.
 - **Fix:** every pool through `pool::contained` (a panic handler; the panic hook already logs it); a request's responder wrapped in `Reply`, which answers 500 with `ERR-RUS-0005` when dropped unanswered; the invoke handler runs each command inside `catch_unwind` and rejects the call with `ERR-RUS-0005`. The test spawns a panicking job: it died with SIGABRT before the handler, it passes after.
 - **Rule:** `panic = "unwind"` is not containment: every thread, pool and handler that runs our code says what happens to a panic in it (ADR-0048's table), and a new pool is `pool::contained`.
+
+### A job thread that died left its UI running for good: nothing sent its end (NFR-011, ADR-0048)
+
+- **Seen:** the same audit traced each `std::thread::spawn`: a panic in the export thread left the dialog "exporting" and its job in `jobs`, which made every later preview pass sleep; in the analysis, `running` kept the dead job, so *Find best shots* returned it forever; a dead thumbnail pass left its progress bar; autosave, the memory watcher and the prefetch (`Once`) simply stopped.
+- **Why:** each job sent its end event as its last line, so a panic before it skipped it, and nothing ever restarted a worker of the app's life.
+- **Fix:** `supervise::spawn(name, work, ended)`: on a panic `ended` sends the end and clears the job; `supervise::forever` restarts a worker with a 1–60 s back-off; every thread goes through them, and `clippy.toml` refuses bare threads and pools. The test of a panicking job failed on a bare thread (no end) and passes now.
+- **Rule:** a job's end is guaranteed by its starter, not by its last line; a worker of the app's life is restarted, not trusted. A rule that a helper exists is enforced by the compiler (clippy's `disallowed-methods`), not by memory.

@@ -7,6 +7,7 @@ use rayon::{ThreadPool, ThreadPoolBuildError, ThreadPoolBuilder};
 
 /// A pool of `threads` (rayon's choice when `None`), its threads named `fotollection-<name>-N`,
 /// that survives a panicking job.
+#[allow(clippy::disallowed_methods)] // The one place pools are built.
 pub fn contained(
     threads: Option<usize>,
     name: &'static str,

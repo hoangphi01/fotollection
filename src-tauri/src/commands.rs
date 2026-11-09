@@ -69,7 +69,11 @@ pub fn finish_startup(app: &AppHandle) {
     let _ = StartupFinished.emit(app);
     // Shots left by a run that ended without saving them come back as tabs (ADR-0028).
     let app = app.clone();
-    std::thread::spawn(move || crate::camera::reopen_sessions(&app));
+    fotollection_core::supervise::spawn(
+        "reopen-sessions",
+        move || crate::camera::reopen_sessions(&app),
+        || {},
+    );
 }
 
 /// Versions shown in the About section.
@@ -299,20 +303,39 @@ pub(crate) fn warm_look_thumbnails(app: &AppHandle, ids: Vec<PhotoId>) {
         return;
     }
     let app = app.clone();
-    std::thread::spawn(move || {
-        let state = app.state::<AppState>();
-        let batch = state.look_warm.fetch_add(1, Ordering::SeqCst) + 1;
-        let total = u32::try_from(ids.len()).unwrap_or(u32::MAX);
-        let tick = progress_reporter(&app, TaskKind::Looks, total);
-        state.background_pool.install(|| {
-            ids.par_iter().for_each(|&id| {
-                if state.look_warm.load(Ordering::SeqCst) == batch {
-                    let _ = shown_thumbnail_bytes(&state, id);
-                }
-                tick();
+    let total = u32::try_from(ids.len()).unwrap_or(u32::MAX);
+    let ended = task_ended(&app, TaskKind::Looks, total);
+    fotollection_core::supervise::spawn(
+        "look-thumbs",
+        move || {
+            let state = app.state::<AppState>();
+            let batch = state.look_warm.fetch_add(1, Ordering::SeqCst) + 1;
+            let tick = progress_reporter(&app, TaskKind::Looks, total);
+            state.background_pool.install(|| {
+                ids.par_iter().for_each(|&id| {
+                    if state.look_warm.load(Ordering::SeqCst) == batch {
+                        let _ = shown_thumbnail_bytes(&state, id);
+                    }
+                    tick();
+                });
             });
-        });
-    });
+        },
+        ended,
+    );
+}
+
+/// The end of a task's progress, sent when its thread dies (ADR-0048), so its bar never
+/// stays on screen.
+fn task_ended(app: &AppHandle, task: TaskKind, total: u32) -> impl FnOnce() + Send + 'static {
+    let app = app.clone();
+    move || {
+        let _ = TaskProgress {
+            task,
+            done: total,
+            total,
+        }
+        .emit(&app);
+    }
 }
 
 /// Generates T1 thumbnails in the background, low priority (OPTIMIZATION.md §4.1).
@@ -321,26 +344,32 @@ fn warm_thumbnails(app: &AppHandle, ids: Vec<PhotoId>) {
         return;
     }
     let app = app.clone();
-    std::thread::spawn(move || {
-        let state = app.state::<AppState>();
-        let total = u32::try_from(ids.len()).unwrap_or(u32::MAX);
-        let tick = progress_reporter(&app, TaskKind::Thumbnails, total);
-        state.background_pool.install(|| {
-            ids.par_iter().for_each(|&id| {
-                let record = state.library.read().ok().and_then(|l| l.record(id));
-                if let Some(record) = record
-                    && state.thumbs.cached_t1(&record).is_none()
-                    && background(|| state.thumbs.make_t1(&record, state.codec.as_ref())).is_ok()
-                {
-                    let _ = ThumbReady { id }.emit(&app);
-                }
-                tick();
+    let total = u32::try_from(ids.len()).unwrap_or(u32::MAX);
+    let ended = task_ended(&app, TaskKind::Thumbnails, total);
+    fotollection_core::supervise::spawn(
+        "thumbnails",
+        move || {
+            let state = app.state::<AppState>();
+            let tick = progress_reporter(&app, TaskKind::Thumbnails, total);
+            state.background_pool.install(|| {
+                ids.par_iter().for_each(|&id| {
+                    let record = state.library.read().ok().and_then(|l| l.record(id));
+                    if let Some(record) = record
+                        && state.thumbs.cached_t1(&record).is_none()
+                        && background(|| state.thumbs.make_t1(&record, state.codec.as_ref()))
+                            .is_ok()
+                    {
+                        let _ = ThumbReady { id }.emit(&app);
+                    }
+                    tick();
+                });
             });
-        });
-        warm_standard_previews(&app, &ids);
-        // New thumbnails and previews may push the cache past its limit (DATABASE.md §8).
-        crate::cache::prune_in_background(&app);
-    });
+            warm_standard_previews(&app, &ids);
+            // New thumbnails and previews may push the cache past its limit (DATABASE.md §8).
+            crate::cache::prune_in_background(&app);
+        },
+        ended,
+    );
 }
 
 /// Runs `work` behind anything the user is waiting for: its RAW develops wait while the
@@ -1183,71 +1212,104 @@ pub fn start_export(
         .map_err(|e| IpcError::internal(e.to_string()))?
         .clone();
 
-    std::thread::spawn(move || {
-        let state = app.state::<AppState>();
-        let format = settings.place_format;
-        let names = place_names(&state);
-        let place_for = |record: &fotollection_core::library::PhotoRecord| {
-            crate::state::place_for(record, &names, format)
-        };
-        let frame_for = |record: &fotollection_core::library::PhotoRecord| {
-            frames.request(record, place_for(record).as_deref(), &settings.look)
-        };
-        let group_for =
-            |record: &fotollection_core::library::PhotoRecord| groups.get(&record.id).cloned();
-        let options = ExportOptions {
-            destination: &destination,
-            settings: &settings,
-            quality,
-            // Fewer at once for very large photos, so the export keeps NFR-004.
-            max_inflight: fotollection_core::export::inflight_for(records.iter()),
-            place_for: &place_for,
-            frame_for: &frame_for,
-            group_for: &group_for,
-            by_day,
-            postcard_font: postcard_font_of(&frames, &settings).map(|f| f.font),
-            files: &files,
-        };
-        let throttle = Throttle::default();
-        let on_progress = |done: u32, total: u32| {
-            if throttle.due(done, total) {
-                let _ = ExportProgress {
-                    job_id,
-                    done,
-                    total,
-                }
-                .emit(&app);
+    // A panic ends the job with an error (ADR-0048): before, the dialog stayed "exporting"
+    // and the leftover job held every preview pass back.
+    let ended = {
+        let app = app.clone();
+        let destination = destination.display().to_string();
+        move || {
+            let state = app.state::<AppState>();
+            if let Ok(mut jobs) = state.jobs.lock() {
+                jobs.remove(&job_id);
             }
-        };
-        let summary = if sheets {
-            fotollection_core::export::run_export_sheets(
-                &pairs,
-                &options,
-                state.codec.as_ref(),
-                &cancel,
-                &on_progress,
-            )
-        } else {
-            run_export(
-                &records,
-                &options,
-                state.codec.as_ref(),
-                &cancel,
-                &on_progress,
-            )
-        };
-        if let Ok(mut jobs) = state.jobs.lock() {
-            jobs.remove(&job_id);
+            let error = IpcError::new("panic", "the export stopped");
+            let summary = fotollection_core::export::ExportSummary {
+                exported: 0,
+                failed: vec![fotollection_core::export::ExportFailure {
+                    id: PhotoId(0),
+                    file_name: String::new(),
+                    code: error.code,
+                    message: error.message,
+                }],
+                cancelled: false,
+                destination,
+                source_bytes: 0.0,
+                output_bytes: 0.0,
+                skipped: 0,
+                over_limit: 0,
+            };
+            let _ = ExportFinished { job_id, summary }.emit(&app);
         }
-        // Where *Open folder* goes: the subfolder when there is one (FR-093, FR-009).
-        if let Ok(mut last) = state.last_export.lock() {
-            *last = Some(match &files.subfolder {
-                Some(sub) => destination.join(sub),
-                None => destination.clone(),
-            });
-        }
-        let _ = ExportFinished { job_id, summary }.emit(&app);
-    });
+    };
+    fotollection_core::supervise::spawn(
+        "export",
+        move || {
+            let state = app.state::<AppState>();
+            let format = settings.place_format;
+            let names = place_names(&state);
+            let place_for = |record: &fotollection_core::library::PhotoRecord| {
+                crate::state::place_for(record, &names, format)
+            };
+            let frame_for = |record: &fotollection_core::library::PhotoRecord| {
+                frames.request(record, place_for(record).as_deref(), &settings.look)
+            };
+            let group_for =
+                |record: &fotollection_core::library::PhotoRecord| groups.get(&record.id).cloned();
+            let options = ExportOptions {
+                destination: &destination,
+                settings: &settings,
+                quality,
+                // Fewer at once for very large photos, so the export keeps NFR-004.
+                max_inflight: fotollection_core::export::inflight_for(records.iter()),
+                place_for: &place_for,
+                frame_for: &frame_for,
+                group_for: &group_for,
+                by_day,
+                postcard_font: postcard_font_of(&frames, &settings).map(|f| f.font),
+                files: &files,
+            };
+            let throttle = Throttle::default();
+            let on_progress = |done: u32, total: u32| {
+                if throttle.due(done, total) {
+                    let _ = ExportProgress {
+                        job_id,
+                        done,
+                        total,
+                    }
+                    .emit(&app);
+                }
+            };
+            let summary = if sheets {
+                fotollection_core::export::run_export_sheets(
+                    &pairs,
+                    &options,
+                    state.codec.as_ref(),
+                    &cancel,
+                    &on_progress,
+                )
+            } else {
+                run_export(
+                    &records,
+                    &options,
+                    state.codec.as_ref(),
+                    &cancel,
+                    &on_progress,
+                )
+            };
+            if let Ok(mut jobs) = state.jobs.lock() {
+                jobs.remove(&job_id);
+            }
+            // Where *Open folder* goes: the subfolder when there is one (FR-093, FR-009).
+            if let Ok(mut last) = state.last_export.lock() {
+                *last = Some(match &files.subfolder {
+                    Some(sub) => destination.join(sub),
+                    None => destination.clone(),
+                });
+            }
+            let _ = ExportFinished { job_id, summary }.emit(&app);
+        },
+        ended,
+    );
     Ok(job_id)
 }
 

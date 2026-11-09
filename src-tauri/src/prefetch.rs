@@ -107,13 +107,9 @@ pub fn request(app: &AppHandle, ids: Vec<PhotoId>) {
     let library = state.library_generation.load(Ordering::SeqCst);
     state.prefetch.replace(ids, library);
     let worker = app.clone();
+    // Started again if it panics (ADR-0048): before, a dead worker stayed dead (`Once`).
     state.prefetch.worker.call_once(move || {
-        let started = std::thread::Builder::new()
-            .name("fotollection-prefetch".into())
-            .spawn(move || work(&worker));
-        if let Err(e) = started {
-            eprintln!("prefetch: no worker thread ({e}); photos load when shown");
-        }
+        fotollection_core::supervise::forever("prefetch", move || work(&worker));
     });
 }
 
@@ -142,6 +138,7 @@ fn work(app: &AppHandle) {
 }
 
 #[cfg(test)]
+#[allow(clippy::disallowed_methods)] // Tests start bare threads to race the code.
 mod tests {
     use super::*;
 
