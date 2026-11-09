@@ -26,7 +26,7 @@ export function PlacePicker({ label, onPick }: PlacePickerProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <PickerTrigger icon={<MapPin />}>{label ?? t('places.pick')}</PickerTrigger>
+        <PickerTrigger icon={<MapPin />} label={label ?? t('places.pick')} />
       </PopoverTrigger>
       <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
         {/* The search is done in Rust, so cmdk's own filtering is off. */}

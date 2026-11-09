@@ -42,7 +42,7 @@ function ChapterPicker({ list, chapter }: { list: Chapter[]; chapter: Chapter })
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <PickerTrigger icon={<BookOpen />}>{`${chapter.number}. ${chapter.title}`}</PickerTrigger>
+        <PickerTrigger icon={<BookOpen />} label={`${chapter.number}. ${chapter.title}`} />
       </PopoverTrigger>
       <PopoverContent align="start" className="flex w-(--radix-popover-trigger-width) flex-col gap-1 p-1">
         {/* The same text field as every other in the app (STYLE_RULE §4: 32 px, set in). */}

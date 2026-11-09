@@ -986,5 +986,5 @@
 
 - **Seen:** `site/screenshots/build.sh` timed out waiting for the place picker's combobox, the day after every popover picker became `PickerTrigger`.
 - **Why:** the old place button carried `role="combobox"` by hand; the new block was a plain `<button>`, so assistive technology no longer heard a picker, and the shot that opens it by that role found none. `ui-check` passed, as none of its views opens that picker.
-- **Fix:** `PickerTrigger` is a `combobox` itself, for every picker that uses it.
-- **Rule:** when a hand-made control becomes a shared block, carry its roles and ARIA into the block, and run the screenshot build as well as `ui-check` before a release: it walks paths the checks do not.
+- **Fix:** `PickerTrigger` is a `combobox` itself, for every picker that uses it. That alone failed UI-A11Y-002 on the manual's chapter picker: a combobox takes no name from its words, so the block now takes a `label` that is both what it shows and its `aria-label`.
+- **Rule:** when a hand-made control becomes a shared block, carry its roles and ARIA into the block (a role changes how its name is computed: check the name too), and run the screenshot build as well as `ui-check` before a release: it walks paths the checks do not.
