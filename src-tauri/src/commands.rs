@@ -996,14 +996,19 @@ pub fn set_ui_settings(
     ui: UiSettings,
 ) -> Result<UiSettings, IpcError> {
     // Validated here, whatever the webview sent (SECURITY.md §2).
-    let ui = ui.sanitized();
-    let before = std::mem::replace(
-        &mut *state
-            .ui
-            .write()
-            .map_err(|e| IpcError::internal(e.to_string()))?,
-        ui.clone(),
-    );
+    let mut ui = ui.sanitized();
+    let mut current = state
+        .ui
+        .write()
+        .map_err(|e| IpcError::internal(e.to_string()))?;
+    // A folder to export into comes only from Rust's own dialog (`pick_export_folder`): the
+    // webview may clear it or send it back unchanged, never name another path (SECURITY §2).
+    if ui.export_destination.is_some() && ui.export_destination != current.export_destination {
+        ui.export_destination
+            .clone_from(&current.export_destination);
+    }
+    let before = std::mem::replace(&mut *current, ui.clone());
+    drop(current);
     // The previews' memory and the cache's limit follow at once (FR-086).
     if before.preview_memory_percent != ui.preview_memory_percent {
         state
@@ -2164,11 +2169,19 @@ pub fn set_frame_settings(
 ) -> Result<FrameConfig, IpcError> {
     // The webview's number is clamped here, so the stored value is always usable (FR-040).
     settings.logo_scale = fotollection_core::frame::sanitize_logo_scale(settings.logo_scale);
-    state
+    let mut frame = state
         .frame
         .write()
-        .map_err(|e| IpcError::internal(e.to_string()))?
-        .settings = settings;
+        .map_err(|e| IpcError::internal(e.to_string()))?;
+    // A font that is not in the table falls back to the built-in one, as on load (N7).
+    if settings
+        .font
+        .is_some_and(|id| !frame.fonts.iter().any(|f| f.id == id))
+    {
+        settings.font = None;
+    }
+    frame.settings = settings;
+    drop(frame);
     state.bump_revision();
     state.persist();
     frame_config(&state)
@@ -2244,7 +2257,7 @@ pub async fn pick_camera_logo(
         let image = logo::decode_png(&bytes).map_err(|e| IpcError::new(e.code(), e.to_string()))?;
         std::fs::create_dir_all(&state.logo_dir)
             .map_err(|e| IpcError::new("logo.write_failed", e.to_string()))?;
-        fotollection_core::thumbs::write_atomic(
+        fotollection_core::atomic::write_durable(
             &state.logo_dir.join(format!("{camera_id}.png")),
             &bytes,
         )
@@ -2918,11 +2931,22 @@ pub fn restore_session(app: &AppHandle) {
             return;
         }
     };
-    let folders: Vec<_> = project::folder_paths(&file)
-        .into_iter()
-        .filter(|p| p.is_dir())
-        .collect();
+    // A folder not here now (a drive not plugged in) keeps its rows, as a project's does:
+    // they wait for a relink and every autosave writes them back (ADR-0048). Before, the
+    // next autosave dropped its photos' edits.
+    let resolved = project::resolve_folders(&file, None);
+    let folders: Vec<_> = resolved.iter().filter_map(|r| r.path.clone()).collect();
+    let missing: Vec<_> = resolved.into_iter().filter(|r| r.path.is_none()).collect();
+    if !missing.is_empty()
+        && let Ok(mut pending) = state.pending.lock()
+    {
+        *pending = Some(crate::state::PendingRelink {
+            file: file.clone(),
+            missing,
+        });
+    }
     if folders.is_empty() {
+        crate::document::emit(app);
         return;
     }
     crate::document::restore_reference(&state, &file);
@@ -3022,7 +3046,7 @@ pub async fn import_font(
             let id = frame.fonts.iter().map(|f| f.id).max().unwrap_or(0) + 1;
             std::fs::create_dir_all(&state.font_dir)
                 .map_err(|e| IpcError::new("font.write_failed", e.to_string()))?;
-            fotollection_core::thumbs::write_atomic(
+            fotollection_core::atomic::write_durable(
                 &state.font_dir.join(format!("{id}.{}", format.extension())),
                 &copy,
             )
@@ -3043,6 +3067,17 @@ pub async fn import_font(
 #[tauri::command]
 #[specta::specta]
 pub fn remove_font(app: AppHandle, state: State<'_, AppState>, id: u32) -> Result<(), IpcError> {
+    // The postcards' font goes too (settings before frame, the lock order): a font id can be
+    // given again later, and a reference left behind would name the new font.
+    {
+        let mut settings = state
+            .settings
+            .write()
+            .map_err(|e| IpcError::internal(e.to_string()))?;
+        if settings.0.collage.postcard.font == Some(id) {
+            settings.0.collage.postcard.font = None;
+        }
+    }
     let format = {
         let mut frame = state
             .frame

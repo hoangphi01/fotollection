@@ -23,11 +23,14 @@ use crate::settings::UiSettings;
 use crate::settings_store::{self, StoredSettings};
 
 pub const FORMAT: &str = "fotollection-bundle";
-pub const SCHEMA_VERSION: u32 = 1;
+/// v2 (v0.14.0): `looks/<hash>.cube|png` parts, the LUTs its looks use. An older app refuses
+/// a v2 bundle as newer (update), never as damaged.
+pub const SCHEMA_VERSION: u32 = 2;
 
 /// Limits checked before reading (zip-bomb guard). A bundle holds at most two fonts and one
 /// logo per camera, so these are generous.
-pub const MAX_ENTRIES: usize = 128;
+// Room for the LUTs a project's looks use (one entry each), beside its fonts and logos.
+pub const MAX_ENTRIES: usize = 256;
 pub const MAX_TOTAL_BYTES: u64 = 160 * 1024 * 1024;
 pub const MAX_RATIO: u64 = 100;
 const MAX_MANIFEST_BYTES: u64 = 1024 * 1024;
@@ -66,6 +69,9 @@ pub struct Bundle {
     pub fonts: BTreeMap<u32, Vec<u8>>,
     /// Logo PNGs by camera profile id; only cameras with `logo: "image"`.
     pub logos: BTreeMap<u32, Vec<u8>>,
+    /// The LUT files the project's looks use, by content hash (FR-023, FR-070): opened on
+    /// another machine, its photos keep their colour. Absent in bundles before v0.14.0.
+    pub luts: BTreeMap<String, Vec<u8>>,
 }
 
 #[derive(Debug, thiserror::Error, PartialEq, Eq)]
@@ -113,6 +119,8 @@ enum Part {
     Settings,
     Font(u32, FontFormat),
     Logo(u32),
+    /// `looks/<64 hex>.cube|png`, its name the BLAKE3 of its bytes.
+    Lut,
 }
 
 impl Part {
@@ -140,6 +148,15 @@ impl Part {
                         .or_else(|| {
                             numbered(rest, ".otf").map(|id| Self::Font(id, FontFormat::Otf))
                         })
+                } else if let Some(rest) = name.strip_prefix("looks/") {
+                    let hash = rest
+                        .strip_suffix(".cube")
+                        .or_else(|| rest.strip_suffix(".png"))?;
+                    let canonical = hash.len() == 64
+                        && hash
+                            .bytes()
+                            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b));
+                    canonical.then_some(Self::Lut)
                 } else {
                     name.strip_prefix("logos/")
                         .and_then(|rest| numbered(rest, ".png"))
@@ -156,6 +173,7 @@ impl Part {
             Self::Settings => settings_store::MAX_BYTES,
             Self::Font(..) => fonts::MAX_FONT_BYTES as u64,
             Self::Logo(_) => logo::MAX_LOGO_BYTES as u64,
+            Self::Lut => crate::lut::MAX_BYTES as u64,
         }
     }
 }
@@ -213,6 +231,10 @@ pub fn to_bytes(bundle: &Bundle) -> Result<Vec<u8>, BundleError> {
     for (id, bytes) in &bundle.logos {
         parts.push((format!("logos/{id}.png"), bytes.clone()));
     }
+    for (hash, bytes) in &bundle.luts {
+        let ext = crate::lut::check(bytes).map_err(|e| write_err(&e))?;
+        parts.push((format!("looks/{hash}.{ext}"), bytes.clone()));
+    }
     let manifest = Manifest {
         format: FORMAT.into(),
         schema_version: SCHEMA_VERSION,
@@ -236,7 +258,10 @@ pub fn to_bytes(bundle: &Bundle) -> Result<Vec<u8>, BundleError> {
         .map_err(|e| write_err(&e))?;
     zip.write_all(&manifest).map_err(|e| write_err(&e))?;
     for (path, bytes) in &parts {
-        let options = if path == PROJECT || path == SETTINGS {
+        let cube = Path::new(path)
+            .extension()
+            .is_some_and(|e| e.eq_ignore_ascii_case("cube"));
+        let options = if path == PROJECT || path == SETTINGS || cube {
             deflated
         } else {
             stored
@@ -287,6 +312,7 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Bundle, BundleError> {
 
     let mut font_files = BTreeMap::new();
     let mut logos = BTreeMap::new();
+    let mut luts = BTreeMap::new();
     for (name, (part, bytes)) in data {
         match part {
             Part::Font(id, format) => {
@@ -310,6 +336,23 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Bundle, BundleError> {
                 logo::decode_png(&bytes).map_err(|e| corrupt(format!("{name:?}: {e}")))?;
                 logos.insert(id, bytes);
             }
+            Part::Lut => {
+                // Its name is its content's hash, and it reads as a LUT, as an import would.
+                let hash = name
+                    .strip_prefix("looks/")
+                    .and_then(|r| r.split('.').next())
+                    .unwrap_or_default()
+                    .to_owned();
+                if blake3::hash(&bytes).to_hex().as_str() != hash {
+                    return Err(corrupt(format!("{name:?} is not named by its content")));
+                }
+                let ext =
+                    crate::lut::check(&bytes).map_err(|e| corrupt(format!("{name:?}: {e}")))?;
+                if !name.ends_with(ext) {
+                    return Err(corrupt(format!("{name:?} has the wrong extension")));
+                }
+                luts.insert(hash, bytes);
+            }
             Part::Manifest | Part::Project | Part::Settings => {}
         }
     }
@@ -325,6 +368,7 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Bundle, BundleError> {
         settings,
         fonts: font_files,
         logos,
+        luts,
     })
 }
 
@@ -531,12 +575,27 @@ pub fn merge_settings(
     local.render = bundle.settings.render.clone();
     local.frame = bundle.settings.frame.clone();
     local.frame.font = remap(bundle.settings.frame.font);
+    // The postcards' font too: before, it kept the project's id, which here could name
+    // another font or none.
+    local.render.collage.postcard.font = remap(bundle.settings.render.collage.postcard.font);
     Ok(installed)
 }
 
 /// The fonts a project actually uses: the frame's (FR-042; the stamp has its own font).
+/// The LUTs a project's looks use, by hash: the shared look's and every photo's.
+pub fn used_luts(
+    settings: &StoredSettings,
+    project: &ProjectFile,
+) -> std::collections::BTreeSet<String> {
+    std::iter::once(&settings.render.look)
+        .chain(project.photos.iter().filter_map(|p| p.look.as_ref()))
+        .filter_map(|look| look.lut.clone())
+        .collect()
+}
+
 pub fn used_fonts(settings: &StoredSettings) -> Vec<UserFont> {
-    let used = [settings.frame.font];
+    // The info frame's font and the postcards' (FR-076): both travel with the project.
+    let used = [settings.frame.font, settings.render.collage.postcard.font];
     settings
         .fonts
         .iter()
@@ -644,7 +703,50 @@ mod tests {
             settings,
             fonts,
             logos: BTreeMap::from([(3, png(8, 4))]),
+            luts: BTreeMap::new(),
         }
+    }
+
+    /// The smallest `.cube` the import reads: a 2³ identity.
+    const CUBE: &[u8] = b"LUT_3D_SIZE 2\n0 0 0\n1 0 0\n0 1 0\n1 1 0\n0 0 1\n1 0 1\n0 1 1\n1 1 1\n";
+
+    /// FR-023: the LUT a project's look uses travels in the bundle and reads back whole, so
+    /// its photos keep their colour on another machine; before, no LUT part existed.
+    #[test]
+    fn fr_023_a_project_carries_its_luts() {
+        let mut bundle = sample(false);
+        let hash = blake3::hash(CUBE).to_hex().to_string();
+        bundle.settings.render.look.lut = Some(hash.clone());
+        bundle.luts.insert(hash.clone(), CUBE.to_vec());
+        assert_eq!(
+            used_luts(&bundle.settings, &bundle.project)
+                .into_iter()
+                .collect::<Vec<_>>(),
+            vec![hash.clone()]
+        );
+        let back = to_bytes(&bundle).map(|b| from_bytes(&b));
+        let Ok(Ok(back)) = back else {
+            panic!("the bundle reads back: {back:?}");
+        };
+        assert_eq!(back.luts.get(&hash).map(Vec::as_slice), Some(CUBE));
+    }
+
+    /// A LUT part whose name is not its content's hash is refused: untrusted input.
+    #[test]
+    fn fr_023_a_lut_not_named_by_its_content_is_refused() {
+        let wrong = "0".repeat(64);
+        let entries = vec![
+            (PROJECT, project::to_bytes(&project()).unwrap_or_default()),
+            (
+                SETTINGS,
+                settings_store::to_bytes(&StoredSettings::default()).unwrap_or_default(),
+            ),
+        ];
+        let name = format!("looks/{wrong}.cube");
+        let mut all: Vec<(&str, Vec<u8>)> = entries;
+        all.push((name.as_str(), CUBE.to_vec()));
+        let bytes = zip_with(&all, CompressionMethod::Stored);
+        assert!(matches!(from_bytes(&bytes), Err(BundleError::Corrupt(_))));
     }
 
     /// A ZIP with exactly these entries, plus a manifest that lists them correctly.
@@ -833,19 +935,63 @@ mod tests {
         assert_eq!(used_fonts(&s).iter().map(|f| f.id).collect::<Vec<_>>(), [7]);
     }
 
+    /// FR-076: the postcards' font travels with the project and gets this machine's id;
+    /// before, it was not bundled and kept the project's id.
+    #[test]
+    fn fr_076_the_postcard_font_travels_and_is_remapped() {
+        let mut incoming = sample(true);
+        incoming.settings.frame.font = None;
+        incoming.settings.render.collage.postcard.font = Some(7);
+        assert_eq!(
+            used_fonts(&incoming.settings)
+                .iter()
+                .map(|f| f.id)
+                .collect::<Vec<_>>(),
+            [7]
+        );
+        let mut local = StoredSettings::default();
+        local.fonts.push(UserFont {
+            id: 1,
+            name: "mine".into(),
+            format: FontFormat::Ttf,
+        });
+        let installed = merge_settings(&mut local, &incoming, &|_| None);
+        let Ok(installed) = installed else {
+            panic!("merged: {installed:?}");
+        };
+        let new_id = installed.new_fonts.first().map(|(f, _)| f.id);
+        assert_eq!(new_id, Some(2));
+        assert_eq!(local.render.collage.postcard.font, new_id);
+    }
+
     /// `cargo test -p fotollection-core regenerate_bundle_fixture -- --ignored` rewrites the
     /// committed fixture. Only do that when the format version changes (DATABASE.md §9).
     #[test]
     #[ignore = "writes the committed fixture"]
     fn regenerate_bundle_fixture() -> std::io::Result<()> {
-        let bytes = to_bytes(&sample(false)).map_err(std::io::Error::other)?;
+        let mut bundle = sample(false);
+        let hash = blake3::hash(CUBE).to_hex().to_string();
+        bundle.settings.render.look.lut = Some(hash.clone());
+        bundle.luts.insert(hash, CUBE.to_vec());
+        let bytes = to_bytes(&bundle).map_err(std::io::Error::other)?;
         std::fs::write(
-            concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/tests/fixtures/bundle/v1.fotollection"
+            format!(
+                "{}/tests/fixtures/bundle/v{SCHEMA_VERSION}.fotollection",
+                env!("CARGO_MANIFEST_DIR")
             ),
             bytes,
         )
+    }
+
+    /// v2 (v0.14.0): the fixture's LUT reads back by its hash; v1 above still opens.
+    #[test]
+    fn fr_023_the_v2_bundle_fixture_carries_its_lut() {
+        let Ok(b) = from_bytes(include_bytes!("../tests/fixtures/bundle/v2.fotollection")) else {
+            panic!("the v2 bundle fixture must open");
+        };
+        let hash = blake3::hash(CUBE).to_hex().to_string();
+        assert_eq!(b.settings.render.look.lut.as_deref(), Some(hash.as_str()));
+        assert_eq!(b.luts.get(&hash).map(Vec::as_slice), Some(CUBE));
     }
 
     /// FR-077: the addresses a machine remembers never travel in a project.

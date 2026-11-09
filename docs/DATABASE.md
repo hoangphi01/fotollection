@@ -11,7 +11,7 @@
 
 | Store | Format | Location | Owner (core module) | Lifetime | Personal data? |
 |-------|--------|----------|---------------------|----------|----------------|
-| **Project document** `*.fotollection` † | ZIP bundle: `project.json` (the tables, [§4](#4-project-file-schema)) + `settings.json` + used fonts and logos ([ADR-0016](adr/0016-self-contained-project-bundle.md), [EXTENSION.md §2.1](EXTENSION.md#21-project-fotollection)) | Chosen by the user with Save As (default: next to the photos) | `bundle.rs`, `project.rs` | Until the user deletes it | **Yes**: folder paths, places, coordinates |
+| **Project document** `*.fotollection` † | ZIP bundle: `project.json` (the tables, [§4](#4-project-file-schema)) + `settings.json` + used fonts, logos and, since manifest v2 (v0.14.0), the LUTs its looks use ([ADR-0016](adr/0016-self-contained-project-bundle.md), [EXTENSION.md §2.1](EXTENSION.md#21-project-fotollection)) | Chosen by the user with Save As (default: next to the photos) | `bundle.rs`, `project.rs` | Until the user deletes it | **Yes**: folder paths, places, coordinates |
 | Session autosave † `<app data>/projects/session.fotollection` | JSON project tables ([§4](#4-project-file-schema)) | App data dir | `project.rs` | Overwritten while working; crash safety only | Yes: folder paths |
 | Project backup `*.fotollection.bak` | Same as the project | Next to the project file | `project.rs` | Replaced on each successful save | Yes |
 | App settings `settings.json` † | JSON, versioned ([§6](#6-app-settings)) | App config dir | `settings_store.rs` | Until uninstall or reset | Camera names/lenses only |
@@ -237,10 +237,16 @@ Parsing is strict: `serde` with `deny_unknown_fields`, typed enums, and range ch
 1. The in-memory state changes. A dirty flag is set and the autosave timer starts (debounce 1 s, at most 5 s after the first change).
 2. Take a snapshot under the project lock, then serialize **outside** the lock. Tables are written sorted by `id`, so diffs between versions stay small and readable.
 3. Write `name.fotollection.tmp` in the **same directory**, then `fsync` it.
-4. Rename the current file to `.bak`, then rename `.tmp` to the final name. Both renames are atomic on the same volume.
+4. Copy the current file to `.bak`, then rename `.tmp` to the final name (atomic on the same volume), then `fsync` the folder so the rename survives a power cut (v0.14.0; best effort on Windows, where NTFS journals it).
 5. Emit `project://saved`.
 
-If any step fails, the previous file remains intact and the UI shows the error with a retry. On launch, a leftover `.tmp` is ignored and deleted.
+If any step fails, the previous file remains intact and the UI shows the error with a retry. On launch, leftover `.tmp` and `.part` files are deleted before anything writes (`atomic::sweep_leftovers`: the config folder, `logos/`, `fonts/`, `looks/` and the session's `projects/`).
+
+**Files the user made** (a font, a logo, a LUT) are written by `atomic::write_durable` (v0.14.0, ADR-0048): a `.part`, fsynced, renamed, the folder fsynced; never changed once written under their name, so no `.bak`. Thumbnails and the analysis cache keep their plain `.part` + rename: they can be made again.
+
+**The session keeps missing folders** (v0.14.0): a folder of the session not on this machine at launch (a drive not plugged in) waits for a relink, as in a project, and every autosave writes its rows back (`keep_missing_rows`); before, the next autosave dropped its photos' edits.
+
+**LUT files are never deleted automatically** (owner's plan, 2026-11-09): a project saved before v0.14.0 carries none, and undo may still name one, so removing a look leaves its LUT; FR-116's Data section shows their size and offers to remove the unused ones with a warning.
 
 ### 4.5 Size and performance
 

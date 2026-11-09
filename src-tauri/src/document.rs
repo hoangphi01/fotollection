@@ -169,16 +169,22 @@ fn build_bundle(state: &AppState, base: &Path) -> Result<Bundle, IpcError> {
             }
         }
     }
+    // The LUT files its looks use travel with it (FR-023); one missing here is left out.
+    let luts = bundle::used_luts(&settings, &file)
+        .into_iter()
+        .filter_map(|hash| fotollection_core::lut::file_of(&hash).map(|bytes| (hash, bytes)))
+        .collect();
     Ok(Bundle {
         project: file,
         settings,
         fonts: font_files,
         logos,
+        luts,
     })
 }
 
 /// Appends the folders still waiting for a relink, and their photo rows, to `file`.
-fn keep_missing_rows(file: &mut ProjectFile, pending: &PendingRelink) {
+pub(crate) fn keep_missing_rows(file: &mut ProjectFile, pending: &PendingRelink) {
     let first_folder = file.folders.iter().map(|f| f.id).max().unwrap_or(0) + 1;
     let mut next_photo = file.photos.iter().map(|p| p.id).max().unwrap_or(0);
     for (next_folder, missing) in (first_folder..).zip(&pending.missing) {
@@ -332,6 +338,13 @@ fn reset_library(state: &AppState) -> Result<(), IpcError> {
 /// ([`bundle::merge_settings`]): fonts already here with the same content are reused and
 /// ids are remapped. The interface language stays this machine's.
 fn install_settings(state: &AppState, bundle: &Bundle) -> Result<(), IpcError> {
+    // The project's LUTs, each already checked by its hash and parser (`bundle::from_bytes`),
+    // kept here unless this machine has them: its photos keep their colour (FR-023).
+    for bytes in bundle.luts.values() {
+        if let Err(e) = fotollection_core::lut::import(bytes) {
+            fotollection_core::error_log::record("look.lut_invalid", &e.to_string());
+        }
+    }
     // Settings and ui are read before `frame` is taken: `save_settings` holds them while it
     // takes `frame`, and two locks taken in both orders can hang the app (LESSONS 2026-11-05).
     let render = state.settings.read().map_err(poisoned)?.0.clone();
@@ -364,7 +377,7 @@ fn install_settings(state: &AppState, bundle: &Bundle) -> Result<(), IpcError> {
             fonts::load(bytes.clone()).map_err(|e| IpcError::new(e.code(), e.to_string()))?;
         std::fs::create_dir_all(&state.font_dir)
             .map_err(|e| IpcError::new("font.write_failed", e.to_string()))?;
-        fotollection_core::thumbs::write_atomic(&font_path(&font), &bytes)
+        fotollection_core::atomic::write_durable(&font_path(&font), &bytes)
             .map_err(|e| IpcError::new("font.write_failed", e.to_string()))?;
         frame.loaded_fonts.insert(
             font.id,
@@ -378,7 +391,7 @@ fn install_settings(state: &AppState, bundle: &Bundle) -> Result<(), IpcError> {
         let image = logo::decode_png(&bytes).map_err(|e| IpcError::new(e.code(), e.to_string()))?;
         std::fs::create_dir_all(&state.logo_dir)
             .map_err(|e| IpcError::new("logo.write_failed", e.to_string()))?;
-        fotollection_core::thumbs::write_atomic(
+        fotollection_core::atomic::write_durable(
             &state.logo_dir.join(format!("{camera}.png")),
             &bytes,
         )
@@ -759,8 +772,39 @@ pub fn restored_edited(document: Option<&project::DocumentRef>, photos: usize) -
 
 #[cfg(test)]
 mod tests {
-    use super::{restored_edited, valid_name};
-    use fotollection_core::project::DocumentRef;
+    use super::{keep_missing_rows, restored_edited, valid_name};
+    use crate::state::PendingRelink;
+    use fotollection_core::project::{self, DocumentRef};
+
+    /// ADR-0048: a session whose folders are not here (a drive not plugged in) keeps their
+    /// photos' rows when it is saved again, waiting for a relink; before, the next autosave
+    /// of the empty library dropped them.
+    #[test]
+    fn a_session_keeps_the_rows_of_missing_folders() {
+        let path = concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../crates/core/tests/fixtures/project/v12.fotollection"
+        );
+        let Ok(bytes) = std::fs::read(path) else {
+            panic!("the v12 fixture is there");
+        };
+        let project::Loaded::Ok(file) = project::from_bytes(&bytes) else {
+            panic!("the v12 fixture reads");
+        };
+        let missing: Vec<_> = project::resolve_folders(&file, None)
+            .into_iter()
+            .filter(|r| r.path.is_none())
+            .collect();
+        assert!(!missing.is_empty(), "its folders are not on this machine");
+        let pending = PendingRelink {
+            file: file.clone(),
+            missing,
+        };
+        let mut saved_now = project::snapshot(&fotollection_core::library::Library::new());
+        keep_missing_rows(&mut saved_now, &pending);
+        assert_eq!(saved_now.photos.len(), file.photos.len());
+        assert_ne!(saved_now.photos.len(), 0);
+    }
 
     #[test]
     fn fr_023_an_untitled_session_with_photos_is_unsaved_after_a_restart() {

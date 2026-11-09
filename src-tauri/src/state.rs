@@ -256,6 +256,13 @@ impl AppState {
         let store_path = config_dir.join("settings.json");
         let logo_dir = config_dir.join("logos");
         let font_dir = config_dir.join("fonts");
+        // What a write cut short left (`.tmp`, `.part`), before anything writes here.
+        for dir in [config_dir, &logo_dir, &font_dir, &config_dir.join("looks")] {
+            fotollection_core::atomic::sweep_leftovers(dir);
+        }
+        if let Some(projects) = project_path.parent() {
+            fotollection_core::atomic::sweep_leftovers(projects);
+        }
         // Imported LUTs, by content hash (FR-070).
         fotollection_core::lut::set_dir(config_dir.join("looks"));
         let (stored, writable, notices) = load_settings(&store_path);
@@ -411,6 +418,12 @@ impl AppState {
         let Some(mut file) = self.library.read().ok().map(|l| project::snapshot(&l)) else {
             return;
         };
+        // Folders waiting for a relink keep their rows (library → pending, the lock order).
+        if let Ok(pending) = self.pending.lock()
+            && let Some(pending) = pending.as_ref()
+        {
+            crate::document::keep_missing_rows(&mut file, pending);
+        }
         file.document = self.document.lock().ok().and_then(|d| {
             d.path.as_ref().map(|p| project::DocumentRef {
                 path: p.display().to_string(),

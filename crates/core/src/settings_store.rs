@@ -283,9 +283,19 @@ fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
         render.border = true;
     }
     frame.border = false;
+    // The scale the webview can send is clamped on the way in; a file edited by hand too.
+    frame.logo_scale = crate::frame::sanitize_logo_scale(frame.logo_scale);
     // References to fonts that no longer exist fall back to the built-in font (N7).
     if frame.font.is_some_and(|id| !font_ids.contains(&id)) {
         frame.font = None;
+    }
+    if render
+        .collage
+        .postcard
+        .font
+        .is_some_and(|id| !font_ids.contains(&id))
+    {
+        render.collage.postcard.font = None;
     }
     Ok(StoredSettings {
         render,
@@ -565,6 +575,12 @@ mod tests {
             panic!("v10 should load");
         };
         assert_eq!(s.render.collage.postcard, PostcardSettings::default());
+        // The font it names is in the table: a dangling one falls back on load (N7).
+        s.fonts.push(crate::fonts::UserFont {
+            id: 7,
+            name: "Hand".into(),
+            format: crate::fonts::FontFormat::Ttf,
+        });
         s.render.collage.postcard = PostcardSettings {
             enabled: true,
             orientation: PostcardOrientation::Portrait,
@@ -1024,6 +1040,18 @@ mod tests {
         let path = dir.path().join("settings.json");
         std::fs::write(&path, b"{ not json")?;
         assert!(matches!(load_machine(&path), Loaded::Corrupt(_)));
+        Ok(())
+    }
+
+    /// FR-076: a postcard font that names no font goes back to the built-in one on load.
+    #[test]
+    fn fr_076_a_dangling_postcard_font_is_dropped() -> Result<(), Box<dyn std::error::Error>> {
+        let mut stored = StoredSettings::default();
+        stored.render.collage.postcard.font = Some(9);
+        let Loaded::Ok(back) = from_bytes(&to_bytes(&stored)?) else {
+            panic!("reads back");
+        };
+        assert_eq!(back.render.collage.postcard.font, None);
         Ok(())
     }
 }

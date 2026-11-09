@@ -10,7 +10,7 @@
 | Type | Extension | MIME type | UTI | Recognized by | Container | Current version | Status |
 |------|-----------|-----------|-----|---------------|-----------|-----------------|--------|
 | Project (legacy, and the session autosave) | `.fotollection` | `application/vnd.fotollection.project+json` | `com.hoangphi01.fotollection.project` | `"format": "fotollection-project"` | JSON, UTF-8 | `schema_version` 11 | Implemented: read always, written only for the session autosave |
-| Project bundle | `.fotollection` | `application/vnd.fotollection.project+zip` | `com.hoangphi01.fotollection.project` | ZIP magic `PK\x03\x04` + `manifest.json` with `"format": "fotollection-bundle"` | ZIP (deflate) | manifest `schema_version` 1 | Implemented ([ADR-0016](adr/0016-self-contained-project-bundle.md)): what Save / Save As write |
+| Project bundle | `.fotollection` | `application/vnd.fotollection.project+zip` | `com.hoangphi01.fotollection.project` | ZIP magic `PK\x03\x04` + `manifest.json` with `"format": "fotollection-bundle"` | ZIP (deflate) | manifest `schema_version` 2 (v0.14.0: LUT parts; 1 still opens) | Implemented ([ADR-0016](adr/0016-self-contained-project-bundle.md)): what Save / Save As write |
 | Preset | `.fotopreset` | `application/vnd.fotollection.preset+json` | `com.hoangphi01.fotollection.preset` | `"format": "fotollection-preset"` | JSON, UTF-8 | `schema_version` 1 (draft) | Planned ([FR-038](PRD.md#fr-038--print-presets)) |
 | App settings | `settings.json` | `application/json` | — (internal) | `"format": "fotollection-settings"` | JSON, UTF-8 | `schema_version` 14 | Implemented |
 | Settings bundle, "the app's brain" | `.fotosettings` | `application/vnd.fotollection.settings+zip` | `com.hoangphi01.fotollection.settings` | ZIP magic + `manifest.json` with `"format": "fotollection-settings-bundle"` | ZIP (deflate) | manifest `schema_version` 1 (draft) | Planned ([FR-082](PRD.md#fr-082--the-apps-brain-in-one-file-fotosettings)) |
@@ -39,13 +39,14 @@ These files leave the app. Users copy, email and open them on other machines, so
   | `settings.json` | Render (print size, custom sizes, stamp), frame, camera profiles and the fonts table, in the `settings.json` format without the per-machine `ui` block ([DATABASE.md §6](DATABASE.md#6-app-settings)) | 4 MB |
   | `fonts/<id>.ttf\|otf` | The fonts the project uses (date stamp and frame), stored uncompressed | 20 MB each |
   | `logos/<id>.png` | Logos of camera profiles set to an image logo, by profile id | 2 MB each |
+  | `looks/<hash>.cube\|png` | Since manifest v2 (v0.14.0): the LUT files the project's looks use (the shared look's and every photo's), named by the BLAKE3 of their bytes; checked on opening by that hash and by the LUT import's own parsers, then kept in this machine's `looks/` | 8 MB each |
 
-  Presets are not part of version 1; adding them means a new allowlisted part and a manifest version bump.
+  The fonts part carries the info frame's font and the postcards' (v0.14.0), each given this machine's id on opening. Presets are compiled into looks and LUTs, so they travel as LUTs; a new kind of part means a new allowlisted name and a manifest version bump. An older app refuses a newer manifest as "newer", never as damaged.
 - **Writing:** parts in a fixed order with the ZIP epoch (1980-01-01) as their time, so the same project gives the same bytes. The file is written atomically with a `.bak` copy.
-- **Opening:** the whole bundle is validated before anything is applied. Then fonts and logos are installed (a font already present with the same content is reused), the print settings are applied, and folders are found relative to the bundle first, then by absolute path. A folder that is still missing is relinked by the user. Test fixture: `crates/core/tests/fixtures/bundle/v1.fotollection`.
+- **Opening:** the whole bundle is validated before anything is applied. Then fonts and logos are installed (a font already present with the same content is reused), the print settings are applied, and folders are found relative to the bundle first, then by absolute path. A folder that is still missing is relinked by the user. Test fixtures: `crates/core/tests/fixtures/bundle/v1.fotollection` (still opens) and `v2.fotollection` (with a LUT).
 - **JSON (legacy, schema v1–v2):** folders and sparse per-photo edits (crop, rating, flag), atomic with a `.bak`. It is still opened, but only the tables are read. The session autosave uses this format in the app data folder. Fixture: `crates/core/tests/fixtures/project/v1.fotollection`.
 - **Limits:**
-  - Bundle: at most 160 MB, 128 entries and a 100:1 compression ratio, checked before decompression; part names from a strict allowlist, so `..`, absolute paths, drive letters and unknown files are rejected ([SECURITY.md §3](SECURITY.md#other-untrusted-inputs)).
+  - Bundle: at most 160 MB, 256 entries (128 before v0.14.0, raised for the LUT parts) and a 100:1 compression ratio, checked before decompression; part names from a strict allowlist, so `..`, absolute paths, drive letters and unknown files are rejected ([SECURITY.md §3](SECURITY.md#other-untrusted-inputs)).
   - JSON: 64 MB per file.
 - **Personal data:** the file contains folder paths, and later places and coordinates. Treat it like the photos.
 

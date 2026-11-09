@@ -844,6 +844,7 @@ fn fr_023_save_open_roundtrip_on_another_machine() {
         settings: fotollection_core::settings_store::StoredSettings::default(),
         fonts: std::collections::BTreeMap::default(),
         logos: std::collections::BTreeMap::default(),
+        luts: std::collections::BTreeMap::default(),
     };
     bundle::save(&trip.join("Trip.fotollection"), &saved).unwrap();
 

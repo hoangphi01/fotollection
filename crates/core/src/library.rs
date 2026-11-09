@@ -1065,8 +1065,15 @@ impl Library {
     /// Renames a place everywhere (FR-005); `None` or an empty name goes back to the
     /// dataset's. The name is trimmed and cut to `MAX_PLACE_NAME` characters.
     pub fn rename_place(&mut self, geonames_id: u32, name: Option<&str>) {
+        // No control characters, as every other name the user types (SECURITY §2).
         let name = name
-            .map(|n| n.trim().chars().take(MAX_PLACE_NAME).collect::<String>())
+            .map(|n| {
+                n.trim()
+                    .chars()
+                    .filter(|c| !c.is_control())
+                    .take(MAX_PLACE_NAME)
+                    .collect::<String>()
+            })
             .filter(|n| !n.is_empty());
         match name {
             Some(n) => {

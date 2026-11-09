@@ -426,17 +426,34 @@ pub fn import(bytes: &[u8]) -> Result<(String, std::sync::Arc<Lut>), LutError> {
     if let Some(dir) = DIR.get() {
         let path = dir.join(format!("{hash}.{ext}"));
         if !path.exists() {
-            let _ = std::fs::create_dir_all(dir);
-            // Through a part of its own, then a rename: a file under a hash is whole or absent.
-            let part = path.with_extension(format!("{ext}.part"));
-            std::fs::write(&part, bytes)
-                .and_then(|()| std::fs::rename(&part, &path))
-                .map_err(|e| LutError::Io(e.to_string()))?;
+            // Whole or absent under its hash, and on the disk before the look refers to it.
+            crate::atomic::write_durable(&path, bytes).map_err(|e| LutError::Io(e.to_string()))?;
         }
     }
     let lut = std::sync::Arc::new(lut);
     keep(&hash, std::sync::Arc::clone(&lut));
     Ok((hash, lut))
+}
+
+/// The original file kept under `hash`, as imported, for a project bundle to carry (FR-023);
+/// `None` when no file holds it.
+pub fn file_of(hash: &str) -> Option<Vec<u8>> {
+    if hash.len() != 64 || !hash.bytes().all(|b| b.is_ascii_hexdigit()) {
+        return None;
+    }
+    let dir = DIR.get()?;
+    ["cube", "png"]
+        .iter()
+        .find_map(|ext| std::fs::read(dir.join(format!("{hash}.{ext}"))).ok())
+}
+
+/// Whether `bytes` is a LUT this app reads (the import's own parsers and limits), and its
+/// file extension: for a LUT that arrives in a project bundle, untrusted input.
+pub fn check(bytes: &[u8]) -> Result<&'static str, LutError> {
+    if bytes.len() > MAX_BYTES {
+        return Err(LutError::Io("the LUT is too large".into()));
+    }
+    parse(bytes).map(|(_, ext)| ext)
 }
 
 /// The LUT kept under `hash`, read from its file when not in memory; `None` when the hash is

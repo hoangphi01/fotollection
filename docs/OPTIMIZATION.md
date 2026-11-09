@@ -153,6 +153,20 @@ In the first slice, protocol requests shared one pool with background T1 generat
 - Release builds use `lto = "fat"`, `codegen-units = 1` and `panic = "unwind"` (ADR-0029): a panic must stay where it happened, never take the app down (ADR-0048), so every pool has a panic handler (`pool::contained`), image routes answer a panic with 500 and commands with an error.
 - Do **not** enable `target-cpu=native` for distributed builds. Use runtime feature detection instead.
 
+### 4.4.1 Services and what each may spend (ADR-0048)
+
+Each service has one owner and one bound; a failure costs that service's work only.
+
+| Service | Runs on | Bound | When it fails |
+|---|---|---|---|
+| Image server (`protocol.rs`) | interactive pool, 2 threads (`pool::contained`) | one request a thread; previews in memory within a quarter of RAM (§4.1) | that image answers 500 with its code |
+| Thumbnails, standard previews, look thumbnails | background pool, 2 threads; one supervised thread a batch | the cache limit (`ui.cacheLimitGb`), look thumbnails 32 MB | the batch's progress ends; a miss is made again |
+| Export | its own pool, `inflight_for` photos at once (NFR-004) | memory of the largest photos in flight | the job ends with an error; the dialog never stays "exporting" |
+| Analysis (best shots) | background pool, one supervised thread | its cache on disk | the job ends, *Find best shots* starts afresh |
+| RAW develop | its own pool, one develop at a time (`raw::DEVELOP`) | one full image | that photo's decode error |
+| Autosave, memory watcher, prefetch | one supervised thread each, restarted with a back-off | — | started again after 1–60 s |
+| Interface parts | webview | — | that part shows `PartFailed`; the rest goes on |
+
 ### 4.5 Deferred until measured
 
 These ideas are recorded here and **not** implemented until a benchmark shows they are needed:
