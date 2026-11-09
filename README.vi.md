@@ -36,7 +36,7 @@ In ngày và nơi chụp lên ảnh, crop đúng khổ in thật, rồi gửi đ
 ---
 
 > [!NOTE]
-> **Fotollection đang được phát triển tích cực (0.x), vài ngày lại có bản mới.** Ứng dụng đã chạy trọn vẹn trên macOS, Windows và Linux, với **JPEG, PNG, HEIC và ảnh RAW**, ở ba chế độ: **Đơn giản** (giữ hay bỏ, rồi in), **Ghép ảnh** (hai ảnh trên một tấm in, hoặc bưu thiếp) và **Pro** (sao, cờ, ảnh tốt nhất, crop, dấu ngày, khung thông tin). Dự án được lưu thành một file `.fotollection`, mở trên máy khác vẫn y như cũ. Theo dõi tiến độ ở [docs/STATUS.md](docs/STATUS.md) và [docs/ROADMAP.md](docs/ROADMAP.md) (tiếng Anh); [trang hướng dẫn](https://fotollection.org/vi/manual/) chỉ từng bước.
+> **Fotollection đang được phát triển tích cực (0.x), vài ngày lại có bản mới.** Ứng dụng đã chạy trọn vẹn trên macOS, Windows và Linux, với **JPEG, PNG, HEIC và ảnh RAW**, ở ba chế độ: **Đơn giản** (giữ hay bỏ, rồi in), **Ghép ảnh** (hai ảnh trên một tấm in, hoặc bưu thiếp) và **Pro** (sao, cờ, ảnh tốt nhất, crop, dấu ngày, khung thông tin), chế độ nào cũng có **look** một chạm. Dự án được lưu thành một file `.fotollection`, mở trên máy khác vẫn y như cũ, và một file `.fotosettings` mang thiết lập của bạn sang máy khác. Theo dõi tiến độ ở [docs/STATUS.md](docs/STATUS.md) và [docs/ROADMAP.md](docs/ROADMAP.md) (tiếng Anh); [trang hướng dẫn](https://fotollection.org/vi/manual/) chỉ từng bước.
 
 <p align="center">
   <img src="site/assets/img/showcase/wide-vi.webp" alt="Fotollection trên nền ảnh Praha: chuyến đi của bạn, sẵn sàng để in" width="100%" />
@@ -67,6 +67,9 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | ✂️ | **Crop hàng loạt** theo 11 khổ in châu Âu (9×13 … 20×30, vuông, dải), khổ của riêng bạn (ví dụ 4 × 6 in) hoặc giữ **tỉ lệ gốc** của ảnh, chỉnh được khung crop từng ảnh | 1 |
 | 🎚️ | **Ba chế độ** (mới trong v0.9.0): **Đơn giản**, từng ảnh một, ↑ giữ, ↓ bỏ, rồi xuất; **Ghép ảnh**, hai ảnh trên một tấm in như máy half-frame (một tấm 10 × 15 chứa hai ảnh 10 × 7,5), có cỡ gợi ý, đường cắt và kéo-thả để đổi thứ tự; **Pro**, đủ mọi điều khiển | 1 |
 | ✉️ | **Bưu thiếp** (mới trong v0.9.4): trong chế độ Ghép ảnh, mỗi tấm 10 × 15 có một ảnh và mặt sau bưu thiếp, ô dán tem nét đứt và dòng kẻ, chữ gõ bằng font máy đánh chữ hoặc font viết tay, hay tự viết tay, một địa chỉ cho cả bộ | 1 |
+| 🌈 | **Look** (mới trong v0.14.0): một chạm là ảnh có màu, tám look của Fotollection hiện ngay trên ảnh của bạn, có chỉnh **Mức độ**; **Lưu thành look** giữ màu của riêng bạn; dải look dưới ảnh ở mọi chế độ, và ở chế độ Đơn giản một phím số chọn một look | 2 |
+| 🎛️ | **Preset Lightroom và LUT** (mới trong v0.14.0): preset `.xmp`, `.lrtemplate`, `.zip` và LUT `.cube`, HaldCLUT hay LUMIX Lab của bạn thành look, đọc bằng Rust; **Color Mixer** như bảng HSL của Lightroom, **Khử sương**, và áp một look cho nhiều ảnh cùng lúc từ lưới ảnh | 2 |
+| 💾 | **Cài đặt → Dữ liệu** (mới trong v0.14.0): chuyển sang máy khác bằng một file `.fotosettings`, xem Fotollection giữ gì trên máy này, đặt lại cài đặt hoặc xóa dữ liệu | 2 |
 | 🎨 | **Chỉnh màu** (mới trong v0.9.9): **Cơ bản** (sáng, tương phản, ấm / lạnh, bão hoà, thêm vùng sáng, vùng tối, tint, rực màu) và **Công cụ** (fade, nhuộm vùng tối và vùng sáng, trắng đen qua kính lọc), cho mọi ảnh hoặc từng ảnh; dấu ngày và viền không bao giờ bị nhuộm, ảnh chưa chỉnh gì in ra như trước | 2 |
 | 📊 | **Đọc ảnh** (mới trong v0.13.1): biểu đồ màu phía trên Điều hướng, thay đổi theo thanh trượt, **J** để thấy vùng mất chi tiết trên ảnh, **W** để cân bằng trắng từ một điểm xám; và **sao chép, dán, đặt lại thiết lập** cho một ảnh hay mọi ảnh đã chọn, mỗi lần là một bước hoàn tác | 1 |
 | 🔲 | **Viền 3 mm** nằm trong khổ in cho mọi tấm in, có hay không có khung thông tin (mới trong v0.9.0) | 2 |
@@ -231,7 +234,7 @@ Phân tích vẫn nằm trong ngân sách: 17,4 ms mỗi ảnh, 27,6 ms khi có 
 
 ## Tải về
 
-Tải phiên bản mới nhất ở [trang Tải về](https://fotollection.org/vi/download/) hoặc trang [Releases](https://github.com/hoangphi01/fotollection/releases/latest): file `.dmg` cho macOS 11+ (Apple Silicon và Intel), file `-setup.exe` hoặc `.msi` cho Windows 10/11, và AppImage hoặc `.deb` cho Linux 64-bit ([những distro nào](#linux)). Số phiên bản theo [Semantic Versioning](docs/RELEASE.md#1-versioning); các bản 0.x là bản xem trước cho tới khi xong MVP. App không tự kiểm tra cập nhật: nút **Kiểm tra cập nhật**, trong ô mở ra khi bấm số phiên bản ở chân bảng bất kỳ, chỉ hỏi GitHub khi bạn bấm. Cài đè lên bản cũ vẫn giữ nguyên thiết lập và dự án của bạn.
+Tải phiên bản mới nhất ở [trang Tải về](https://fotollection.org/vi/download/) hoặc trang [Releases](https://github.com/hoangphi01/fotollection/releases/latest): file `.dmg` cho macOS 11+ (Apple Silicon và Intel), file `-setup.exe` hoặc `.msi` cho Windows 10/11, và AppImage hoặc `.deb` cho Linux 64-bit ([những distro nào](#linux)). Số phiên bản theo [Semantic Versioning](docs/RELEASE.md#1-versioning); các bản 0.x là bản xem trước cho tới khi xong MVP. Lúc khởi động, app hỏi GitHub một lần xem có bản mới không (tắt được trong Cài đặt → Cập nhật, FR-103) và không bao giờ tự tải gì về. Cài đè lên bản cũ vẫn giữ nguyên thiết lập và dự án của bạn.
 
 > [!IMPORTANT]
 > Các bản build hiện **chưa được ký số** ([ADR-0009](docs/adr/0009-unsigned-distribution.md)). Lần mở đầu tiên:
@@ -252,6 +255,7 @@ Cùng một app trên mọi hệ điều hành, với các khác biệt sau ([AD
 | Khổ in, cắt, cân ngang, phóng to, dấu ngày, khung thông tin | ✓ | ✓ | ✓ |
 | Địa điểm offline, ngày và nơi chụp đặt tay, đồng hồ máy ảnh | ✓ | ✓ | ✓ |
 | Xuất để in và để đăng mạng xã hội | ✓ | ✓ | ✓ |
+| Look, preset Lightroom và LUT | ✓ | ✓ | ✓ |
 | JPEG và PNG | ✓ | ✓ | ✓ |
 | Ảnh RAW | ✓ ¹ | ✓ | ✓ |
 | HEIC (ảnh iPhone) | ✓ | ✓ ² | chưa có ³ |
@@ -353,7 +357,7 @@ Toàn bộ tài liệu nằm trong [`docs/`](docs/README.md), viết bằng ti�
 | [Architecture](docs/ARCHITECTURE.md) | Crate, pipeline, hợp đồng IPC |
 | [Results](docs/RESULT.md) | Số đo tốc độ và RAM mới nhất |
 | [Optimization](docs/OPTIMIZATION.md) | Ngân sách, phương pháp đo, nhật ký benchmark |
-| [File formats](docs/EXTENSION.md) | `.fotollection`, `.fotopreset` và mọi loại file khác |
+| [File formats](docs/EXTENSION.md) | `.fotollection`, `.fotosettings`, `.fotopreset` và mọi loại file khác |
 | [Style rules](docs/STYLE_RULE.md) | Quy ước Rust, TypeScript, UI, git và tài liệu |
 | [Security](docs/SECURITY.md) | Mô hình mối đe dọa, quyền riêng tư, chuỗi cung ứng |
 | [Roadmap](docs/ROADMAP.md) / [Status](docs/STATUS.md) | Các giai đoạn và tiến độ |
@@ -391,6 +395,6 @@ Fotollection miễn phí, do một sinh viên làm giữa giờ học và giờ 
 - Mục ủng hộ trên trang web vẽ mã VietQR bằng [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) của Kazuhiko Arase, giấy phép MIT (`site/assets/js/qrcode.js`, giữ nguyên bản phát hành). QR Code là nhãn hiệu đã đăng ký của DENSO WAVE INCORPORATED.
 - Chữ trên bưu thiếp dùng font [Xanh Mono](https://github.com/yellow-type-foundry/xanhmono) Regular và Italic của Yellow Type Foundry, và [Patrick Hand](https://github.com/google/fonts/tree/main/ofl/patrickhand) của Patrick Wagesreiter, cả hai theo giấy phép SIL Open Font License 1.1 (`crates/core/assets/fonts/`, nguồn và mã kiểm tra trong `FONTS.md`).
 - Tên địa điểm lấy từ [GeoNames](https://www.geonames.org/) (CC BY 4.0), đóng gói sẵn để tra offline: các thị trấn và thành phố từ 1.000 dân, bản chụp ngày 24/10/2026 (`crates/core/assets/geo/`).
-- **Nhãn hiệu.** Logo các hãng máy ảnh trong khung thông tin (Apple, Canon, Fujifilm, Hasselblad, Leica, Lumix, Nikon, Noritsu, Phase One, Ricoh, Samsung, Sony) là nhãn hiệu của chủ sở hữu. Đây là các bản public domain trên Wikimedia Commons ([danh sách và nguồn](crates/core/assets/brands/BRANDS.md)), chỉ dùng để cho biết ảnh được chụp (hoặc scan phim) bằng máy nào. Fotollection không liên kết, không được tài trợ hay bảo trợ bởi các công ty này, và sẽ gỡ logo khi được yêu cầu.
+- **Nhãn hiệu.** Logo các hãng máy ảnh trong khung thông tin (Apple, Canon, Fujifilm, Hasselblad, Leica, Lumix, Nikon, Noritsu, Phase One, Ricoh, Samsung, Sony) là nhãn hiệu của chủ sở hữu. Đây là các bản public domain trên Wikimedia Commons ([danh sách và nguồn](crates/core/assets/brands/BRANDS.md)), chỉ dùng để cho biết ảnh được chụp (hoặc scan phim) bằng máy nào. Fotollection không liên kết, không được tài trợ hay bảo trợ bởi các công ty này, và sẽ gỡ logo khi được yêu cầu. Adobe và Lightroom là nhãn hiệu của Adobe Inc.; LUMIX là nhãn hiệu của Panasonic Holdings Corporation. Fotollection đọc preset và LUT làm bằng phần mềm của họ nhưng không liên quan tới và không được hai công ty này bảo trợ.
 - Ảnh RAW trên Windows (và trên macOS với những tệp ImageIO không đọc được), trừ các định dạng đã chuyển sang trình đọc riêng của Fotollection (hiện là DNG, [ADR-0030](docs/adr/0030-our-own-raw-decoder.md)), được giải mã bằng [rawler](https://github.com/dnglab/dnglab) của Daniel Vogelbacher và cộng sự, theo giấy phép GNU Lesser General Public License 2.1 ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md)). Toàn bộ mã nguồn Fotollection được công bố, nên có thể xây dựng lại với một bản rawler đã sửa.
 - Gợi ý ảnh tốt nhất đóng gói model phát hiện khuôn mặt [YuNet](https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet) (MIT, © 2020 Shiqi Yu) và model điểm mốc MediaPipe FaceMesh V2 của Google (Apache License 2.0), đã chuyển sang ONNX. License và checksum: `crates/core/assets/models/`.

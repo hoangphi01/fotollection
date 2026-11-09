@@ -99,7 +99,7 @@
 
 <section class="section" id="postcard">
   <div class="wrap">
-    <h2>{{ t.pc_title }} <span class="soon">{{ t.postcard_coming }}</span></h2>
+    <h2>{{ t.pc_title }}</h2>
     <p class="lead narrow">{{ t.pc_lead }}</p>
   </div>
   <div class="wrap showcase">
@@ -317,6 +317,7 @@
     <h2>{{ t.features_title }}</h2>
     <p class="lead narrow">{{ t.features_lead }}</p>
     <div class="cards">
+      <article class="card">{% include icons/palette.svg %}<h3>{{ t.f_looks_title }}{% include fn.html keys="fn_lut" %}</h3><p>{{ t.f_looks_text }}</p></article>
       <article class="card">{% include icons/mail.svg %}<h3>{{ t.f_postcard_title }}</h3><p>{{ t.f_postcard_text }}</p></article>
       <article class="card">{% include icons/calendar-days.svg %}<h3>{{ t.f_stamp_title }}</h3><p>{{ t.f_stamp_text }}</p></article>
       <article class="card">{% include icons/frame.svg %}<h3>{{ t.f_frame_title }}</h3><p>{{ t.f_frame_text }}</p></article>

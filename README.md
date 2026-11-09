@@ -35,7 +35,7 @@ Stamp the date and place on your photos, crop them to real print sizes, and get 
 ---
 
 > [!NOTE]
-> **Fotollection is in active development (0.x), with a new version every few days.** It works end to end on macOS, Windows and Linux, for **JPEG, PNG, HEIC and camera RAW**, in three modes: **Simple** (keep or drop, then print), **Collage** (two photos on one print, or postcards) and **Pro** (stars, flags, best shot, crop, date stamp, info frame). Projects save as one `.fotollection` file that opens the same on another machine. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md); the [manual](https://fotollection.org/manual/) shows every step.
+> **Fotollection is in active development (0.x), with a new version every few days.** It works end to end on macOS, Windows and Linux, for **JPEG, PNG, HEIC and camera RAW**, in three modes: **Simple** (keep or drop, then print), **Collage** (two photos on one print, or postcards) and **Pro** (stars, flags, best shot, crop, date stamp, info frame), each with **looks** in one tap. Projects save as one `.fotollection` file that opens the same on another machine, and one `.fotosettings` file moves your settings to another computer. Follow progress in [docs/STATUS.md](docs/STATUS.md) and [docs/ROADMAP.md](docs/ROADMAP.md); the [manual](https://fotollection.org/manual/) shows every step.
 
 <p align="center">
   <img src="site/assets/img/showcase/wide-en.webp" alt="Fotollection over a photo of Prague: your trip, ready to print" width="100%" />
@@ -66,6 +66,9 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | ✂️ | **Batch crop** to 11 EU print sizes (9×13 … 20×30, square, strip), your own sizes (e.g. 4 × 6 in) or the photo's **original** ratio, with an adjustable crop per photo | 1 |
 | 🎚️ | **Three modes** (new in v0.9.0): **Simple**, one photo at a time, ↑ keep, ↓ drop, then export; **Collage**, two photos on one print like a half-frame camera (a 10 × 15 holds two 10 × 7.5), with a suggested size, a cut line and drag to reorder; **Pro**, every control | 1 |
 | ✉️ | **Postcards** (new in v0.9.4): in Collage mode, one photo and a postcard back on each 10 × 15 print, a dashed stamp box and writing lines, the text typed in a typewriter or a handwriting face or written by hand, one address for the whole set | 1 |
+| 🌈 | **Looks** (new in v0.14.0): one tap gives a photo a colour, eight looks of our own shown as your photo, with an **Amount**; **Save as look** keeps your own; a strip of looks under the photo in every mode, and in Simple mode a number key picks one | 2 |
+| 🎛️ | **Lightroom presets and LUTs** (new in v0.14.0): your own `.xmp`, `.lrtemplate` and `.zip` presets and `.cube`, HaldCLUT or LUMIX Lab LUTs become looks, read in Rust; a **Color Mixer** as Lightroom's HSL panel, **Dehaze**, and one look given to many photos at once from the gallery | 2 |
+| 💾 | **Settings → Data** (new in v0.14.0): move to another computer with one `.fotosettings` file, see what Fotollection keeps on this one, reset settings or erase data | 2 |
 | 🎨 | **Colour** (new in v0.9.9): **Faves** (brightness, contrast, warm / cool, saturation, then highlights, shadows, tint, vibrance) and **Tools** (fade, toned shadows and highlights, black and white through a filter), for every photo or one; the stamp and the border are never tinted, and a photo with nothing set prints as before | 2 |
 | 📊 | **Reading the photo** (new in v0.13.1): a histogram above the Navigator that follows your sliders, **J** for the clipping on the photo, **W** for white balance from a grey spot; and **copy, paste and reset settings** to one photo or every ticked one, each one step of Undo | 1 |
 | 🔲 | **3 mm border** inside the print size on every print, with or without the info frame (new in v0.9.0) | 2 |
@@ -230,7 +233,7 @@ Reproduce everything with `bench/run.sh <photo-folder>` and `bench/batch.sh <pho
 
 ## Download
 
-Get the latest version from the [Download page](https://fotollection.org/download/) or the [Releases](https://github.com/hoangphi01/fotollection/releases/latest) page: a `.dmg` for macOS 11+ (Apple Silicon and Intel), a `-setup.exe` or `.msi` for Windows 10/11, and an AppImage or `.deb` for 64-bit Linux ([which distributions](#linux)). Versions follow [Semantic Versioning](docs/RELEASE.md#1-versioning); 0.x releases are previews until the MVP is complete. The app never checks for updates on its own: **Check for updates**, in the popover of the version number at the foot of any panel, asks GitHub when you click it. Installing over an older one keeps your settings and projects.
+Get the latest version from the [Download page](https://fotollection.org/download/) or the [Releases](https://github.com/hoangphi01/fotollection/releases/latest) page: a `.dmg` for macOS 11+ (Apple Silicon and Intel), a `-setup.exe` or `.msi` for Windows 10/11, and an AppImage or `.deb` for 64-bit Linux ([which distributions](#linux)). Versions follow [Semantic Versioning](docs/RELEASE.md#1-versioning); 0.x releases are previews until the MVP is complete. The app asks GitHub once at start whether a newer version exists (Settings → Updates turns it off, FR-103) and never downloads anything by itself. Installing over an older one keeps your settings and projects.
 
 > [!IMPORTANT]
 > Builds are **unsigned** for now ([ADR-0009](docs/adr/0009-unsigned-distribution.md)). On first launch:
@@ -251,6 +254,7 @@ The same app on every system, with these differences ([ADR-0034](docs/adr/0034-l
 | Print sizes, crop, straighten, zoom, date stamp, info frame | ✓ | ✓ | ✓ |
 | Offline places, dates and places by hand, camera clocks | ✓ | ✓ | ✓ |
 | Export for print and for social media | ✓ | ✓ | ✓ |
+| Looks, Lightroom presets and LUTs | ✓ | ✓ | ✓ |
 | JPEG and PNG | ✓ | ✓ | ✓ |
 | Camera RAW | ✓ ¹ | ✓ | ✓ |
 | HEIC (iPhone photos) | ✓ | ✓ ² | not yet ³ |
@@ -352,7 +356,7 @@ All docs live in [`docs/`](docs/README.md) and change together with the code ([A
 | [Architecture](docs/ARCHITECTURE.md) | Crates, pipeline, IPC contract |
 | [Results](docs/RESULT.md) | Latest measured speed and memory |
 | [Optimization](docs/OPTIMIZATION.md) | Budgets, methodology, benchmark log |
-| [File formats](docs/EXTENSION.md) | `.fotollection`, `.fotopreset` and every other file type |
+| [File formats](docs/EXTENSION.md) | `.fotollection`, `.fotosettings`, `.fotopreset` and every other file type |
 | [Style rules](docs/STYLE_RULE.md) | Rust, TypeScript, UI, git and docs conventions |
 | [Security](docs/SECURITY.md) | Threat model, privacy, supply chain |
 | [Roadmap](docs/ROADMAP.md) / [Status](docs/STATUS.md) | Phases and progress |
@@ -390,6 +394,6 @@ Fotollection is free, made by a student between classes and a part-time job. If 
 - The website's support section draws its VietQR code with [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) by Kazuhiko Arase, MIT licence (`site/assets/js/qrcode.js`, kept as published). QR Code is a registered trademark of DENSO WAVE INCORPORATED.
 - Postcard text uses [Xanh Mono](https://github.com/yellow-type-foundry/xanhmono) Regular and Italic by Yellow Type Foundry, and [Patrick Hand](https://github.com/google/fonts/tree/main/ofl/patrickhand) by Patrick Wagesreiter, both under the SIL Open Font License 1.1 (`crates/core/assets/fonts/`, sources and checksums in `FONTS.md`).
 - Place names come from [GeoNames](https://www.geonames.org/) (CC BY 4.0), bundled for offline geocoding: towns and cities with at least 1,000 people, snapshot 2026-10-24 (`crates/core/assets/geo/`).
-- **Trademarks.** The camera-brand logos in the info frame (Apple, Canon, Fujifilm, Hasselblad, Leica, Lumix, Nikon, Noritsu, Phase One, Ricoh, Samsung, Sony) are trademarks of their owners. They are public-domain renderings from Wikimedia Commons ([list and sources](crates/core/assets/brands/BRANDS.md)), used only to show which camera (or film scanner) took a photo. Fotollection is not affiliated with, sponsored or endorsed by any of these companies, and a logo is removed on request.
+- **Trademarks.** The camera-brand logos in the info frame (Apple, Canon, Fujifilm, Hasselblad, Leica, Lumix, Nikon, Noritsu, Phase One, Ricoh, Samsung, Sony) are trademarks of their owners. They are public-domain renderings from Wikimedia Commons ([list and sources](crates/core/assets/brands/BRANDS.md)), used only to show which camera (or film scanner) took a photo. Fotollection is not affiliated with, sponsored or endorsed by any of these companies, and a logo is removed on request. Adobe and Lightroom are trademarks of Adobe Inc.; LUMIX is a trademark of Panasonic Holdings Corporation. Fotollection reads presets and LUTs made with their software but is not connected with or endorsed by either.
 - Camera RAW on Windows (and on macOS for what ImageIO cannot read), except the formats Fotollection's own reader has taken over (DNG for now, [ADR-0030](docs/adr/0030-our-own-raw-decoder.md)), is decoded by [rawler](https://github.com/dnglab/dnglab) by Daniel Vogelbacher and contributors, under the GNU Lesser General Public License 2.1 ([ADR-0029](docs/adr/0029-raw-through-rawler-then-our-own-decoder.md)). Fotollection's complete source is published, so it can be rebuilt with a modified rawler.
 - Best-shot suggestions bundle the [YuNet](https://github.com/opencv/opencv_zoo/tree/main/models/face_detection_yunet) face detector (MIT, © 2020 Shiqi Yu) and Google's MediaPipe FaceMesh V2 landmark model (Apache License 2.0), converted to ONNX. Licences and checksums: `crates/core/assets/models/`.

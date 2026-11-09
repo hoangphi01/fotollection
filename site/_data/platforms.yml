@@ -24,6 +24,10 @@ rows:
     mac: ok
     win: ok
     linux: ok
+  - key: looks
+    mac: ok
+    win: ok
+    linux: ok
   - key: modes
     mac: ok
     win: ok

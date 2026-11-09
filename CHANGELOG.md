@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## v0.14 — Looks
 
-## [0.14.0] - 2026-11-09
+## [0.14.0] - 2026-11-09 — Looks
 
 ### Highlights
 
@@ -58,6 +58,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Security:** Lightroom presets, LUTs and `.fotosettings` files are read only in Fotollection's Rust core, each with limits on size and content; a preset's code is never run.
+- **Files:** projects are saved as version 12 and settings as version 18, a project bundle carries its LUTs (bundle version 2), and `.fotosettings` is new (version 1). Earlier versions of Fotollection cannot open a project saved by 0.14.0; 0.14.0 opens every earlier one.
 - **Related buttons are joined into one bar** (FR-099): every row of choices, and in the toolbars undo and redo, copy and paste, the two turns, the zoom, the filmstrip and layout, a sheet's tools, and where ticked photos go and what they get.
 - **One way of moving** (FR-100): every animation now takes one of three paces and three curves, so dialogs, menus, hints, cards that fold, the strips under the photo and notices move alike; hints and the quick preview fade out instead of vanishing, the strips and notices slide instead of jumping, and one spinner is used everywhere (a thumbnail still loading shows its grey shape only). **Settings → General → Motion** follows the system's *Reduce motion* or keeps it to short fades.
 - **Security:** the start-up screen's styles are a file, no longer inline in the page.
@@ -67,10 +69,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Cancel is red** in every dialog, as the crop's and the export's; a dialog whose own action is red keeps a plain Cancel, so one red is the danger.
 - **Wider side columns** (FR-099): the folder list, the panels and the preview's columns are 300 px (were 288), the room the raised controls need, taken from the photo's stage.
 - **Collage sheet preview in two tabs** (FR-079, FR-095), as the photo preview: **Edit** (the photos on the sheet, then the colour cards) and **Print and export** (size, postcards, cells, date stamp, export). The looks are a strip under the sheet, folding by its header as the photo preview's, the keys' footer beside it as tall as an open strip, open or folded; the keys are the few used most, every key behind ⓘ in the toolbar. With no photo picked, **Whole sheet** (key **0**) is the first row of the photos, and the colour cards change both photos together: the same look for both, one undo step, a note when their colours differed.
-
 - **Website:** a **Wiki** page, from the footer: Fotollection's timeline from its first screen, each version with what it brought and the app as it shipped.
 - **Website:** the footer shows the GPLv3 mark with "Fotollection is released under the GPL 3.0", as other free software does; the mark is served from the site.
-
 - **Website:** the treats of *Buy me a coffee* look like the app's choices: raised while off, the chosen one in the theme's colour and pressed in.
 - **Website and README:** support also through Ko-fi, a filled button in the theme's colour beside GitHub Sponsors, and in GitHub's *Sponsor* button; a plain link, nothing loaded from Ko-fi. The site's filled buttons now get darker under the pointer, as the app's do. The privacy policy names Ko-fi, GitHub Sponsors and the bank behind VietQR as the processors of support payments, unrelated to the app or your data.
 

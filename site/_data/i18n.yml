@@ -5,7 +5,7 @@ en:
   other: vi
   other_label: Tiếng Việt
   title: Fotollection - photos ready to print, fully offline
-  description: Free, open-source desktop app that prepares photos for printing on your own computer. Retro date stamp, camera info frame, best-shot suggestions, print-size crops and original-quality export, with no account and no upload.
+  description: Free, open-source desktop app that prepares photos for printing on your own computer. Looks in one tap (your Lightroom presets and LUTs too), retro date stamp, camera info frame, best-shot suggestions, print-size crops and original-quality export, with no account and no upload.
   nav_features: Features
   nav_quality: Quality
   nav_download: Download
@@ -28,9 +28,9 @@ en:
   vnlf_badge_top: "Listed on"
   works_on: "Works on Windows, macOS and Linux"
   makeover_old: "v0.12"
-  makeover_new: "v0.13"
-  makeover_label: "Before and after the new look: drag to compare v0.12 and v0.13"
-  makeover_hint: "v0.13, a new look: drag to see the old one"
+  makeover_new: "v0.14"
+  makeover_label: "Before and after: drag to compare v0.12 and v0.14"
+  makeover_hint: "v0.14 today: drag to see v0.12"
   bento_title: "New in v0.14: Looks"
   bento_lead: "One tap gives a photo a colour. Underneath, a look works as a preset or a LUT does, so your own Lightroom presets and LUMIX Lab LUTs keep working."
   tile_looks: "Looks under the photo, Presets & LUTs on the left, the Color Mixer on the right"
@@ -96,6 +96,8 @@ en:
   f_speed_title: Fast on any computer
   f_speed_text: A thousand photos open in 0.12 s, a new setting redraws the preview in 17 ms, and from the second launch the app starts in about 0.4 s. A 32 MP photo previews as fast as a small one.
   f_open_text: Right-click a photo in Finder, Explorer or your Linux file manager and choose Fotollection. It opens at once, and its folder becomes a tab.
+  f_looks_title: Looks in one tap
+  f_looks_text: "Eight looks of our own, each shown as your photo, with an amount. Your Lightroom presets and LUMIX Lab LUTs become looks too, and one look goes to many photos at once."
   f_postcard_title: Postcards from your photos
   f_postcard_text: "One switch in Collage mode: your photo on half of a 10 × 15 print, a stamp box and writing lines on the other. Type the message and address, or write them by hand."
   pf_title: "By system"
@@ -109,6 +111,7 @@ en:
   pf_print: Print sizes, crop, straighten, zoom, date stamp, info frame
   pf_places: Offline places, dates and places by hand, camera clocks
   pf_export: Export for print and for social media
+  pf_looks: "Looks, Lightroom presets and LUTs"
   pf_modes: "Three modes: Simple, Collage, Pro"
   pf_jpeg: JPEG and PNG
   pf_raw: Camera RAW
@@ -126,7 +129,7 @@ en:
     - label: "Why Fotollection"
       items:
         - q: "Why not just use Lightroom?"
-          a: "Lightroom, the built-in Photos apps and IrfanView are made for editing and viewing; none of them is designed for a photo printer. To print with them, you crop every photo to the paper's ratio yourself, or hand the files over and let the shop's machine or staff crop them, which often cuts off a head or the edge of a sign. Fotollection starts from the print: it knows the sizes at dm and Rossmann, crops each photo to them so what you see is exactly what comes out, warns when a photo is too small, stamps the date like a film camera and exports files the kiosk takes. It is light and fast, free, and works next to Lightroom: your originals are never changed."
+          a: "Lightroom, the built-in Photos apps and IrfanView are made for editing and viewing; none of them is designed for a photo printer. To print with them, you crop every photo to the paper's ratio yourself, or hand the files over and let the shop's machine or staff crop them, which often cuts off a head or the edge of a sign. Fotollection starts from the print: it knows the sizes at dm and Rossmann, crops each photo to them so what you see is exactly what comes out, warns when a photo is too small, stamps the date like a film camera and exports files the kiosk takes. It is light and fast, free, and works next to Lightroom: your originals are never changed, and your Lightroom presets work in it as looks."
         - q: "My computer already has Photos, or I use IrfanView. Why another app?"
           a: "The built-in Photos apps and IrfanView are great viewers, each on its own system. None of them knows the size of a 10 × 15 print at dm or Rossmann, warns you when a photo is too small for it, stamps the date like a film camera, or sends the best shots of five folders to one print basket. Fotollection does, it looks and works the same on a Mac, on Windows and on Linux, and it can be the viewer you open photos with: right-click a photo, Open with, Fotollection, camera RAW included."
     - label: "Speed and weight"
@@ -150,7 +153,7 @@ en:
   mode_simple: "Simple"
   mode_simple_for: "Back from a trip, and you want prints fast."
   mode_simple_s1: "Drop a folder of photos onto the app."
-  mode_simple_s2: "Up keeps a photo, down sets it aside."
+  mode_simple_s2: "A number key gives it a look; up keeps it, down sets it aside."
   mode_simple_s3: "Pick the print size and the date stamp, then Export."
   mode_collage: "Collage"
   mode_collage_for: "Two photos on one print for half the cost, or postcards."
@@ -166,7 +169,6 @@ en:
   postcard_title: "A postcard from your own photo"
   postcard_text: "In Collage mode, one switch turns each print into a postcard: your photo on one half, and on the other a dashed stamp box and lines for a message or an address. Type the text, set in a typewriter face, or write it by hand with a fine permanent marker. A 10 × 15 print is within the postcard sizes Deutsche Post takes."
   show_postcard: "Collage mode with Postcard on: one photo and a postcard back on each print"
-  postcard_coming: New in v0.9.4
   pc_title: "Send home a postcard of your own trip"
   pc_lead: "Not the shop's postcard of the bridge, but the tram you waited for. Fotollection turns any kiosk print into a postcard you can post."
   pc_s1: "Turn on Postcard in Collage mode: every photo becomes its own card, held landscape or portrait."
@@ -183,7 +185,7 @@ en:
   collage_preview_text: "Open a sheet as you open a photo: the print large, exactly as the kiosk will make it, two photos side by side with the date stamp and the border. Choose either photo with 1 or 2 to crop it or turn it, and flip through the other sheets with the arrow keys."
   show_collage_preview: "A sheet's preview: a tram by night and the National Museum in Prague on one 10 × 15 print"
   simple_title: "Simple: keep or drop, then print"
-  simple_text: "One photo at a time, as it will print. Up keeps it, down drops it, and the next one comes at once. Pick a size and the date stamp, then export what you kept."
+  simple_text: "One photo at a time, as it will print. A number key gives it a look, up keeps it, down drops it, and the next one comes at once. Pick a size and the date stamp, then export what you kept."
   show_simple: "Simple mode: the photo as it will print, Keep and Drop, and Export of the kept photos"
   basket_title: "Choose your prints with one key"
   basket_lead: "A trip leaves hundreds of photos, and only a handful should be printed. Fotollection turns that choice into a game of thumbs up and thumbs down."
@@ -367,7 +369,7 @@ en:
   footer_wiki: Wiki
   man_title: Manual
   man_kicker: Help
-  man_description: "How to use Fotollection, step by step, with a screenshot of each step: choosing the photos to print, zoom, RAW, camera clocks, dates and places, shooting with a camera connected, and every shortcut."
+  man_description: "How to use Fotollection, step by step, with a screenshot of each step: choosing the photos to print, looks and colour, zoom, RAW, camera clocks, dates and places, shooting with a camera connected, and every shortcut."
   man_lead: "Every step, as the app shows it. The manual follows the app: when a version changes something you can see, this page changes with it."
   man_toc: Chapters
   man_source: This manual on GitHub
@@ -433,8 +435,8 @@ en:
     - { v: "10.8", l: "26 MP photos exported a second, six at once" }
   chart_gpu: "One step of a colour slider: the processor against the graphics card"
   chart_inflight: "Export speed by photos worked on at once"
-  dl_warn_title: "Update to v0.11.0 or later."
-  dl_warn_text: "Versions up to v0.10.0 can freeze while opening RAW photos: the preview's spinner turns for good, and every RAW opened after it waits too. v0.11.0 fixes it, and opens any photo about ten times faster."
+  dl_warn_title: "Update to v0.14.0 or later."
+  dl_warn_text: "Earlier versions could lose the edits of a folder on a drive not plugged in at start, and one fault could close the whole app. v0.14.0 fixes both; your settings and projects carry over."
   chart_open: "Opening a photo: v0.9.0 and v0.10.0 against v0.11.0, on one trip's 422 photos"
   perf_open_title: "Up to 20× faster. A new way to use memory."
   perf_open_text: "v0.11.0 rethinks how Fotollection keeps your photos. Every photo's preview is prepared in the background once its thumbnail is done and kept on disk, a quarter of your computer's memory holds the photos around the one you see, and the photo on screen always goes first. The result: any photo, near or far, JPEG or RAW, opens in 27 milliseconds. Opening a RAW is up to 20 times faster than v0.9.0, a JPEG 10 times faster, measured on the same 422 photos of one trip."
@@ -572,7 +574,7 @@ en:
         - text: "RAW opens without the lens corrections macOS adds."
           fn: [fn_pf_raw]
   checksums: Every release lists SHA-256 checksums next to the downloads.
-  updates: There is no auto-update, so the app never goes online. New versions are announced here and on GitHub.
+  updates: "It asks GitHub once at start whether a newer version exists (Settings → Updates turns it off) and never downloads anything by itself. New versions are announced here and on GitHub."
   footer_tagline: Photos ready to print, fully offline.
   footer_made: Made by a user, for users. Only someone who looks through their own photos every day knows what an ordinary person needs from a photo viewer.
   footer_report: Report a problem
@@ -597,7 +599,7 @@ vi:
   other: en
   other_label: English
   title: Fotollection - ảnh sẵn sàng để in, không cần internet
-  description: Ứng dụng máy tính miễn phí, mã nguồn mở, chuẩn bị ảnh để in ngay trên máy của bạn. Dấu ngày kiểu máy film, khung thông tin máy ảnh, gợi ý ảnh đẹp nhất, cắt đúng khổ in và xuất giữ nguyên chất lượng gốc, không cần tài khoản, không tải ảnh lên đâu cả.
+  description: Ứng dụng máy tính miễn phí, mã nguồn mở, chuẩn bị ảnh để in ngay trên máy của bạn. Look một chạm (cả preset Lightroom và LUT của bạn), dấu ngày kiểu máy film, khung thông tin máy ảnh, gợi ý ảnh đẹp nhất, cắt đúng khổ in và xuất giữ nguyên chất lượng gốc, không cần tài khoản, không tải ảnh lên đâu cả.
   nav_features: Tính năng
   nav_quality: Chất lượng
   nav_download: Tải về
@@ -620,9 +622,9 @@ vi:
   vnlf_badge_top: "Có trên"
   works_on: "Chạy trên Windows, macOS và Linux"
   makeover_old: "v0.12"
-  makeover_new: "v0.13"
-  makeover_label: "Trước và sau giao diện mới: kéo để so v0.12 và v0.13"
-  makeover_hint: "v0.13, giao diện mới: kéo để xem giao diện cũ"
+  makeover_new: "v0.14"
+  makeover_label: "Trước và sau: kéo để so v0.12 và v0.14"
+  makeover_hint: "v0.14 hôm nay: kéo để xem v0.12"
   bento_title: "Mới ở v0.14: Looks"
   bento_lead: "Một chạm là ảnh có màu. Bên dưới, một look hoạt động như preset hay LUT, nên preset Lightroom và LUT LUMIX Lab của bạn vẫn dùng được."
   tile_looks: "Looks dưới ảnh, Presets & LUTs bên trái, Color Mixer bên phải"
@@ -688,6 +690,8 @@ vi:
   f_speed_title: Nhanh trên mọi máy
   f_speed_text: Một nghìn ảnh mở trong 0,12 giây, đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, và từ lần mở thứ hai ứng dụng khởi động trong khoảng 0,4 giây. Ảnh 32 MP xem trước nhanh như ảnh nhỏ.
   f_open_text: Bấm chuột phải vào một ảnh trong Finder, Explorer hay trình quản lý file trên Linux và chọn Fotollection. Ảnh mở ngay, và thư mục của ảnh thành một tab.
+  f_looks_title: Look chỉ một chạm
+  f_looks_text: "Tám look của Fotollection, mỗi look hiện ngay trên ảnh của bạn, có chỉnh mức độ. Preset Lightroom và LUT LUMIX Lab của bạn cũng thành look, và một look áp được cho nhiều ảnh cùng lúc."
   f_postcard_title: Bưu thiếp từ ảnh của bạn
   f_postcard_text: "Một công tắc trong chế độ Ghép ảnh: ảnh của bạn ở nửa tấm in 10 × 15, nửa kia là ô dán tem và dòng kẻ. Gõ lời nhắn và địa chỉ, hoặc viết tay."
   pf_title: "Theo hệ điều hành"
@@ -701,6 +705,7 @@ vi:
   pf_print: Khổ in, cắt, cân ngang, phóng to, dấu ngày, khung thông tin
   pf_places: Địa điểm offline, tự đặt ngày và nơi chụp, chỉnh đồng hồ máy ảnh
   pf_export: Xuất để in và để đăng mạng xã hội
+  pf_looks: "Look, preset Lightroom và LUT"
   pf_modes: "Ba chế độ: Đơn giản, Ghép ảnh, Pro"
   pf_jpeg: JPEG và PNG
   pf_raw: Ảnh RAW
@@ -718,7 +723,7 @@ vi:
     - label: "Vì sao chọn Fotollection"
       items:
         - q: "Sao không dùng luôn Lightroom?"
-          a: "Lightroom, ứng dụng Ảnh có sẵn và IrfanView được làm ra để chỉnh sửa và xem ảnh; chưa có ứng dụng nào được thiết kế cho máy in ảnh. Muốn in, bạn phải tự cắt từng ảnh theo tỉ lệ khổ giấy, hoặc giao tệp cho tiệm để máy hay nhân viên ở đó tự căn, và thường bị cắt mất đầu người hay mép tấm biển. Fotollection bắt đầu từ chính bản in: biết sẵn các khổ in ở dm và Rossmann, cắt từng ảnh đúng khổ để ảnh bạn thấy chính là ảnh in ra, báo khi ảnh quá nhỏ, in ngày chụp như máy phim và xuất tệp đúng chuẩn máy in ở tiệm. Ứng dụng nhẹ, nhanh, miễn phí và dùng song song với Lightroom được: ảnh gốc không bao giờ bị thay đổi."
+          a: "Lightroom, ứng dụng Ảnh có sẵn và IrfanView được làm ra để chỉnh sửa và xem ảnh; chưa có ứng dụng nào được thiết kế cho máy in ảnh. Muốn in, bạn phải tự cắt từng ảnh theo tỉ lệ khổ giấy, hoặc giao tệp cho tiệm để máy hay nhân viên ở đó tự căn, và thường bị cắt mất đầu người hay mép tấm biển. Fotollection bắt đầu từ chính bản in: biết sẵn các khổ in ở dm và Rossmann, cắt từng ảnh đúng khổ để ảnh bạn thấy chính là ảnh in ra, báo khi ảnh quá nhỏ, in ngày chụp như máy phim và xuất tệp đúng chuẩn máy in ở tiệm. Ứng dụng nhẹ, nhanh, miễn phí và dùng song song với Lightroom được: ảnh gốc không bao giờ bị thay đổi, và preset Lightroom của bạn dùng được trong đó như các look."
         - q: "Máy tôi đã có sẵn Ảnh (Photos), hoặc tôi dùng IrfanView. Sao phải thêm ứng dụng?"
           a: "Ứng dụng Ảnh có sẵn và IrfanView đều là trình xem ảnh tốt, mỗi cái trên một hệ điều hành. Không cái nào biết khổ ảnh 10 × 15 ở dm hay Rossmann, báo khi ảnh quá nhỏ để in khổ đó, in ngày chụp như máy phim, hay gom ảnh đẹp nhất của năm thư mục vào một giỏ in. Fotollection làm được, dùng giống hệt nhau trên Mac, Windows lẫn Linux, và còn có thể là trình xem ảnh của bạn: bấm chuột phải vào ảnh, chọn Mở bằng, Fotollection, kể cả ảnh RAW."
     - label: "Tốc độ và độ nhẹ"
@@ -742,7 +747,7 @@ vi:
   mode_simple: "Đơn giản"
   mode_simple_for: "Đi chơi về và muốn in ảnh thật nhanh."
   mode_simple_s1: "Thả thư mục ảnh vào app."
-  mode_simple_s2: "Phím lên giữ ảnh, phím xuống bỏ ảnh sang Để riêng."
+  mode_simple_s2: "Một phím số cho ảnh một look; phím lên giữ ảnh, phím xuống bỏ sang Để riêng."
   mode_simple_s3: "Chọn khổ in và dấu ngày, rồi bấm Xuất."
   mode_collage: "Ghép ảnh"
   mode_collage_for: "Hai ảnh trên một tấm in cho rẻ một nửa, hoặc làm bưu thiếp."
@@ -758,7 +763,6 @@ vi:
   postcard_title: "Bưu thiếp từ chính ảnh của bạn"
   postcard_text: "Trong chế độ Ghép ảnh, một công tắc biến mỗi tấm in thành bưu thiếp: ảnh của bạn ở một nửa, nửa kia là ô dán tem nét đứt và dòng kẻ để viết lời nhắn hoặc địa chỉ. Gõ chữ, in bằng font máy đánh chữ, hoặc viết tay bằng bút dạ dầu nét mảnh. Tấm 10 × 15 nằm trong khổ bưu thiếp mà Deutsche Post nhận."
   show_postcard: "Chế độ Ghép ảnh khi bật Bưu thiếp: mỗi tấm in có một ảnh và mặt sau bưu thiếp"
-  postcard_coming: Mới trong v0.9.4
   pc_title: "Gửi về nhà một tấm bưu thiếp từ chính chuyến đi"
   pc_lead: "Không phải tấm bưu thiếp cây cầu bán ở tiệm, mà là chuyến tram bạn đã đứng chờ. Fotollection biến bất kỳ tấm ảnh in nào ở máy in ảnh thành bưu thiếp gửi được qua bưu điện."
   pc_s1: "Bật Bưu thiếp trong chế độ Ghép ảnh: mỗi ảnh thành một tấm riêng, cầm ngang hoặc dọc."
@@ -775,7 +779,7 @@ vi:
   collage_preview_text: "Mở một tấm như mở một ảnh: tấm in hiện lớn, đúng như máy in ở kiosk sẽ làm ra, hai ảnh cạnh nhau cùng dấu ngày và viền. Chọn ảnh nào bằng phím 1 hoặc 2 để cắt hoặc xoay, và dùng phím mũi tên để xem các tấm khác."
   show_collage_preview: "Xem trước một tấm ghép: chuyến tram đêm và Bảo tàng Quốc gia Praha trên một tấm in 10 × 15"
   simple_title: "Đơn giản: giữ hay bỏ, rồi in"
-  simple_text: "Từng ảnh một, đúng như khi in. Phím lên để giữ, phím xuống để bỏ, và ảnh kế tiếp hiện ra ngay. Chọn khổ và dấu ngày, rồi xuất những ảnh đã giữ."
+  simple_text: "Từng ảnh một, đúng như khi in. Một phím số cho ảnh một look, phím lên để giữ, phím xuống để bỏ, và ảnh kế tiếp hiện ra ngay. Chọn khổ và dấu ngày, rồi xuất những ảnh đã giữ."
   show_simple: "Chế độ Đơn giản: ảnh đúng như khi in, nút Giữ và Bỏ, và Xuất những ảnh đã giữ"
   basket_title: "Chọn ảnh để in chỉ với một phím"
   basket_lead: "Một chuyến đi để lại hàng trăm tấm ảnh, nhưng chỉ vài tấm đáng đem in. Fotollection biến việc chọn ấy thành trò chơi thích hay bỏ qua."
@@ -959,7 +963,7 @@ vi:
   footer_wiki: Wiki
   man_title: Hướng dẫn
   man_kicker: Trợ giúp
-  man_description: "Cách dùng Fotollection từng bước, mỗi bước kèm ảnh chụp màn hình: chọn ảnh để in, phóng to, ảnh RAW, đồng hồ máy ảnh, ngày và nơi chụp, chụp với máy ảnh cắm vào máy tính, và mọi phím tắt."
+  man_description: "Cách dùng Fotollection từng bước, mỗi bước kèm ảnh chụp màn hình: chọn ảnh để in, look và màu, phóng to, ảnh RAW, đồng hồ máy ảnh, ngày và nơi chụp, chụp với máy ảnh cắm vào máy tính, và mọi phím tắt."
   man_lead: "Từng bước, đúng như app hiển thị. Hướng dẫn đi theo app: khi một phiên bản đổi điều bạn nhìn thấy, trang này đổi theo."
   man_toc: Các chương
   man_source: Bản hướng dẫn này trên GitHub
@@ -1025,8 +1029,8 @@ vi:
     - { v: "10,8", l: "ảnh 26 MP xuất mỗi giây, sáu ảnh cùng lúc" }
   chart_gpu: "Một nhịp kéo thanh màu: bộ xử lý so với card đồ hoạ"
   chart_inflight: "Tốc độ xuất theo số ảnh xử lý cùng lúc"
-  dl_warn_title: "Hãy cập nhật lên v0.11.0 trở lên."
-  dl_warn_text: "Các bản từ v0.10.0 trở về trước có thể bị treo khi mở ảnh RAW: vòng xoay của bản xem trước quay mãi, và mọi ảnh RAW mở sau đó cũng phải chờ theo. Bản v0.11.0 đã sửa lỗi này, và mở ảnh nào cũng nhanh gấp khoảng mười lần."
+  dl_warn_title: "Hãy cập nhật lên v0.14.0 trở lên."
+  dl_warn_text: "Các bản trước có thể mất chỉnh sửa của một thư mục nằm trên ổ chưa cắm lúc mở app, và một lỗi có thể làm tắt cả app. Bản v0.14.0 sửa cả hai; cài đặt và dự án của bạn được giữ nguyên."
   chart_open: "Mở một tấm ảnh: v0.9.0 và v0.10.0 so với v0.11.0, trên 422 ảnh của một chuyến đi"
   perf_open_title: "Nhanh hơn tới 20 lần. Một cách dùng bộ nhớ hoàn toàn mới."
   perf_open_text: "Bản v0.11.0 nghĩ lại từ đầu cách Fotollection giữ ảnh của bạn. Làm xong ảnh nhỏ là bản xem trước của mọi ảnh được chuẩn bị ở chế độ nền và giữ trên đĩa, một phần tư bộ nhớ máy giữ những ảnh quanh ảnh bạn đang xem, và ảnh trên màn hình luôn được làm trước. Kết quả: mở ảnh nào, gần hay xa, JPEG hay RAW, cũng chỉ 27 mili giây. Mở một ảnh RAW nhanh gấp tới 20 lần so với v0.9.0, ảnh JPEG gấp 10 lần, đo trên cùng 422 ảnh của một chuyến đi."
@@ -1164,7 +1168,7 @@ vi:
         - text: "Ảnh RAW không có phần hiệu chỉnh ống kính như trên macOS."
           fn: [fn_pf_raw]
   checksums: Mỗi bản phát hành có mã SHA-256 bên cạnh tệp tải về.
-  updates: Ứng dụng không tự cập nhật, nên không bao giờ tự lên mạng. Phiên bản mới được thông báo ở đây và trên GitHub.
+  updates: "Lúc khởi động, ứng dụng hỏi GitHub một lần xem có bản mới không (tắt được trong Cài đặt → Cập nhật) và không bao giờ tự tải gì về. Phiên bản mới được thông báo ở đây và trên GitHub."
   footer_tagline: Ảnh sẵn sàng để in, không cần internet.
   footer_made: Làm bởi người dùng, cho người dùng. Chỉ người ngày nào cũng xem ảnh của chính mình mới biết người dùng bình thường cần gì từ một trình xem ảnh.
   footer_report: Báo lỗi / góp ý
