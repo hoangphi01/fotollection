@@ -8,7 +8,7 @@
 // Tauri commands take `State` by value.
 #![allow(clippy::needless_pass_by_value)]
 
-use std::sync::Mutex;
+use fotollection_core::lock::Mutex;
 use std::time::Duration;
 
 use serde::{Deserialize, Serialize};

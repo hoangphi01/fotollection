@@ -389,9 +389,9 @@ static DIR: std::sync::OnceLock<std::path::PathBuf> = std::sync::OnceLock::new()
 /// Parsed LUTs by hash, most recent last. Owned by this module, at most `KEPT` (a 65³ table is
 /// about 3.3 MB), read again from `DIR` when dropped; never emptied otherwise, since a hash
 /// always names the same file.
-type Kept = std::sync::Mutex<Vec<(String, std::sync::Arc<Lut>)>>;
+type Kept = crate::lock::Mutex<Vec<(String, std::sync::Arc<Lut>)>>;
 static PARSED: std::sync::LazyLock<Kept> =
-    std::sync::LazyLock::new(|| std::sync::Mutex::new(Vec::new()));
+    std::sync::LazyLock::new(|| crate::lock::Mutex::new(Vec::new()));
 const KEPT: usize = 8;
 
 /// Sets the folder imported LUTs live in; the first call wins.

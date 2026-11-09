@@ -3,7 +3,8 @@
 //! 33³ table and applied with tetrahedral interpolation, so a look costs the same per pixel
 //! whatever is set. The table maps the photo's encoded values (ADR-0038), never linear light.
 
-use std::sync::{Arc, LazyLock, Mutex};
+use crate::lock::Mutex;
+use std::sync::{Arc, LazyLock};
 
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};

@@ -918,3 +918,10 @@
 - **Why:** each job sent its end event as its last line, so a panic before it skipped it, and nothing ever restarted a worker of the app's life.
 - **Fix:** `supervise::spawn(name, work, ended)`: on a panic `ended` sends the end and clears the job; `supervise::forever` restarts a worker with a 1–60 s back-off; every thread goes through them, and `clippy.toml` refuses bare threads and pools. The test of a panicking job failed on a bare thread (no end) and passes now.
 - **Rule:** a job's end is guaranteed by its starter, not by its last line; a worker of the app's life is restarted, not trusted. A rule that a helper exists is enforced by the compiler (clippy's `disallowed-methods`), not by memory.
+
+### One panic holding the library lock would fail every later command: std's locks stay poisoned (NFR-011, ADR-0048)
+
+- **Seen:** the audit counted about 200 lock sites in the Tauri layer, all turning a poisoned lock into an error or a silent skip, and none healing: a panic while `library.write()` was held would make every later command answer `internal` and autosave return early, for the rest of the run.
+- **Why:** `std::sync::Mutex` stays poisoned for good once a holder panics; each site handled the `Err` as a failure, which is right for one call and wrong for a whole session.
+- **Fix:** `fotollection_core::lock::{Mutex, RwLock}` keep std's API (`lock()` still returns a `Result`, so no call site changed) but recover the data, clear the poison and log once; the Tauri layer and the core's caches use them. The test poisons a lock in a panicking thread and reads it back; without the clearing it failed.
+- **Rule:** fix a pattern at its type, not at its 200 uses: a wrapper with the same API changes behaviour everywhere at once, and the compiler finds the few places it does not fit.

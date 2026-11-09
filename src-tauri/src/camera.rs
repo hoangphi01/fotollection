@@ -19,10 +19,11 @@
 // exercised by the tests until the ImageCaptureCore link lands (ADR-0028, STATUS).
 #![cfg_attr(not(windows), allow(dead_code))]
 
+use fotollection_core::lock::Mutex;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::mpsc::{self, Sender};
-use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
 use fotollection_core::library::PhotoId;

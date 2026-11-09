@@ -44,7 +44,8 @@ where
 
 /// Paths handed over before the app state exists: on a cold launch from Finder, macOS sends
 /// `Opened` before `setup` has run. They are routed once start-up is over ([`take_early`]).
-static EARLY: std::sync::Mutex<Vec<PathBuf>> = std::sync::Mutex::new(Vec::new());
+static EARLY: fotollection_core::lock::Mutex<Vec<PathBuf>> =
+    fotollection_core::lock::Mutex::new(Vec::new());
 
 /// The paths that arrived before the app state existed, once.
 pub fn take_early() -> Vec<PathBuf> {

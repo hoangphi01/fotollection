@@ -26,6 +26,7 @@ pub mod image;
 pub mod import;
 pub mod jpeg_layout;
 pub mod library;
+pub mod lock;
 pub mod logo;
 pub mod look_library;
 pub mod look_thumbs;

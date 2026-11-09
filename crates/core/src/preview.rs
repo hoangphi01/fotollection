@@ -8,8 +8,9 @@
 //! first region needs no second decode; it is rendered exactly as export renders it, and
 //! only the visible part is encoded.
 
+use crate::lock::Mutex;
+use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::{Arc, Mutex};
 
 use crate::codec::{EncodeOptions, JpegCodec, decode_image, decode_photo};
 use crate::image::{RgbImage, apply_orientation};
@@ -444,11 +445,7 @@ struct Making<'a> {
 
 impl Drop for Making<'_> {
     fn drop(&mut self) {
-        let mut making = self
-            .cache
-            .making
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut making = self.cache.making.locked();
         if let Some(i) = making.iter().position(|k| *k == self.key) {
             making.swap_remove(i);
         }
@@ -723,10 +720,7 @@ impl PreviewCache {
 
     /// Marks `key` as being made; `None` when another thread already makes it.
     fn begin(&self, key: SourceKey) -> Option<Making<'_>> {
-        let mut making = self
-            .making
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut making = self.making.locked();
         if making.contains(&key) {
             return None;
         }

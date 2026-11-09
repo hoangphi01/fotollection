@@ -7,8 +7,8 @@
 // Tauri injects `State`, `AppHandle` and arguments by value.
 #![allow(clippy::needless_pass_by_value)]
 
+use fotollection_core::lock::Mutex;
 use std::path::PathBuf;
-use std::sync::Mutex;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::{Duration, Instant};
 

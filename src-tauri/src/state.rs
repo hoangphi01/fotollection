@@ -3,8 +3,11 @@
 
 use std::collections::HashMap;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, Ordering};
-use std::sync::{Arc, Mutex, RwLock};
+
+// Locks that heal after a panic (ADR-0048).
+use fotollection_core::lock::{Mutex, RwLock};
 
 use fotollection_core::brands;
 use fotollection_core::cancel::CancellationToken;

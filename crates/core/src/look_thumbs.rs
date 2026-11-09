@@ -6,8 +6,8 @@
 //! are kept in memory, at most [`CAPACITY_BYTES`], oldest first out, so a grid scrolled back
 //! costs nothing; a look changed gives a new key and the old bytes age out.
 
+use crate::lock::Mutex;
 use std::collections::VecDeque;
-use std::sync::Mutex;
 
 use crate::codec::{CodecError, EncodeOptions, JpegCodec, decode_image};
 use crate::library::PhotoId;
