@@ -94,7 +94,7 @@ fn corrupt(why: impl Into<String>) -> BundleError {
 
 /// The kind of a part, from its name. Anything else is rejected (allowlist).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Part {
+pub(crate) enum Part {
     Project,
     Settings,
     Font(u32, FontFormat),
@@ -263,6 +263,29 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Bundle, BundleError> {
     };
     settings.ui = UiSettings::default();
 
+    let (font_files, logos, luts) = check_assets(data, &settings)?;
+    Ok(Bundle {
+        project,
+        settings,
+        fonts: font_files,
+        logos,
+        luts,
+    })
+}
+
+/// The asset parts of a bundle (fonts, logos, LUTs), each checked as a manual import would
+/// check it, against the `settings` that refer to them: shared by `.fotollection` and
+/// `.fotosettings` (FR-023, FR-082). Untrusted input: any mismatch refuses the whole bundle.
+pub(crate) type Assets = (
+    BTreeMap<u32, Vec<u8>>,
+    BTreeMap<u32, Vec<u8>>,
+    BTreeMap<String, Vec<u8>>,
+);
+
+pub(crate) fn check_assets(
+    data: zip_parts::Parts<Part>,
+    settings: &StoredSettings,
+) -> Result<Assets, BundleError> {
     let mut font_files = BTreeMap::new();
     let mut logos = BTreeMap::new();
     let mut luts = BTreeMap::new();
@@ -316,16 +339,10 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Bundle, BundleError> {
     {
         return Err(corrupt(format!("font {} is listed but missing", font.id)));
     }
-    Ok(Bundle {
-        project,
-        settings,
-        fonts: font_files,
-        logos,
-        luts,
-    })
+    Ok((font_files, logos, luts))
 }
 
-fn from_zip(e: ZipError) -> BundleError {
+pub(crate) fn from_zip(e: ZipError) -> BundleError {
     match e {
         ZipError::WrongFormat => BundleError::NotAProject,
         ZipError::Newer(v) => BundleError::NewerVersion(v),
@@ -385,6 +402,34 @@ pub fn merge_settings(
     bundle: &Bundle,
     local_font: &dyn Fn(&UserFont) -> Option<Vec<u8>>,
 ) -> Result<Installed, BundleError> {
+    let (installed, font_ids) = merge_library(
+        local,
+        &bundle.settings,
+        &bundle.fonts,
+        &bundle.logos,
+        local_font,
+    )?;
+    let remap = |id: Option<u32>| id.and_then(|id| font_ids.get(&id).copied());
+    local.render = bundle.settings.render.clone();
+    local.frame = bundle.settings.frame.clone();
+    local.frame.font = remap(bundle.settings.frame.font);
+    // The postcards' font too: before, it kept the project's id, which here could name
+    // another font or none.
+    local.render.collage.postcard.font = remap(bundle.settings.render.collage.postcard.font);
+    Ok(installed)
+}
+
+/// What a bundle's fonts and cameras add to this machine, shared by a project and a settings
+/// bundle (FR-023, FR-082): a font with the same content as one here is reused, the others
+/// get new ids; a camera this machine knows (make and model) keeps its own profile and logo,
+/// a new one is added with its logo. Returns what to write and the font ids, theirs to ours.
+pub(crate) fn merge_library(
+    local: &mut StoredSettings,
+    incoming: &StoredSettings,
+    fonts: &BTreeMap<u32, Vec<u8>>,
+    logos: &BTreeMap<u32, Vec<u8>>,
+    local_font: &dyn Fn(&UserFont) -> Option<Vec<u8>>,
+) -> Result<(Installed, BTreeMap<u32, u32>), BundleError> {
     let mut installed = Installed::default();
     let fingerprints: Vec<(u32, String)> = local
         .fonts
@@ -392,8 +437,8 @@ pub fn merge_settings(
         .filter_map(|f| local_font(f).map(|b| (f.id, hash(&b))))
         .collect();
     let mut font_ids = BTreeMap::new();
-    for font in &bundle.settings.fonts {
-        let Some(bytes) = bundle.fonts.get(&font.id) else {
+    for font in &incoming.fonts {
+        let Some(bytes) = fonts.get(&font.id) else {
             continue;
         };
         let sum = hash(bytes);
@@ -411,42 +456,29 @@ pub fn merge_settings(
         };
         font_ids.insert(font.id, id);
     }
-    let remap = |id: Option<u32>| id.and_then(|id| font_ids.get(&id).copied());
-
     let mut camera_ids = BTreeMap::new();
-    for incoming in &bundle.settings.cameras {
-        let found = local
+    for camera in &incoming.cameras {
+        let known = local
             .cameras
             .iter()
-            .position(|c| c.make == incoming.make && c.model == incoming.model);
-        let id = if let Some(i) = found {
-            local.cameras[i].id
-        } else {
-            local.cameras.iter().map(|c| c.id).max().unwrap_or(0) + 1
-        };
+            .any(|c| c.make == camera.make && c.model == camera.model);
         // A camera this machine knows keeps its own profile and logo (owner, 2026-11-09:
-        // opening a project adds what is missing, never overwrites); a new one is added.
-        if found.is_none() {
+        // opening adds what is missing, never overwrites); a new one is added.
+        if !known {
+            let id = local.cameras.iter().map(|c| c.id).max().unwrap_or(0) + 1;
             local.cameras.push(crate::frame::CameraProfile {
                 id,
-                ..incoming.clone()
+                ..camera.clone()
             });
-            camera_ids.insert(incoming.id, id);
+            camera_ids.insert(camera.id, id);
         }
     }
-    for (incoming, bytes) in &bundle.logos {
-        if let Some(&id) = camera_ids.get(incoming) {
+    for (theirs, bytes) in logos {
+        if let Some(&id) = camera_ids.get(theirs) {
             installed.logos.push((id, bytes.clone()));
         }
     }
-
-    local.render = bundle.settings.render.clone();
-    local.frame = bundle.settings.frame.clone();
-    local.frame.font = remap(bundle.settings.frame.font);
-    // The postcards' font too: before, it kept the project's id, which here could name
-    // another font or none.
-    local.render.collage.postcard.font = remap(bundle.settings.render.collage.postcard.font);
-    Ok(installed)
+    Ok((installed, font_ids))
 }
 
 /// The fonts a project actually uses: the frame's (FR-042; the stamp has its own font).

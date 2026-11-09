@@ -49,6 +49,7 @@ pub mod raw;
 pub mod raw_finish;
 pub mod render;
 pub mod settings;
+pub mod settings_bundle;
 pub mod settings_store;
 pub mod share;
 pub mod sharpen;

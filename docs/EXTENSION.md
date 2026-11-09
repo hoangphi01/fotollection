@@ -13,7 +13,7 @@
 | Project bundle | `.fotollection` | `application/vnd.fotollection.project+zip` | `com.hoangphi01.fotollection.project` | ZIP magic `PK\x03\x04` + `manifest.json` with `"format": "fotollection-bundle"` | ZIP (deflate) | manifest `schema_version` 2 (v0.14.0: LUT parts; 1 still opens) | Implemented ([ADR-0016](adr/0016-self-contained-project-bundle.md)): what Save / Save As write |
 | Preset | `.fotopreset` | `application/vnd.fotollection.preset+json` | `com.hoangphi01.fotollection.preset` | `"format": "fotollection-preset"` | JSON, UTF-8 | `schema_version` 1 (draft) | Planned ([FR-038](PRD.md#fr-038--print-presets)) |
 | App settings | `settings.json` | `application/json` | — (internal) | `"format": "fotollection-settings"` | JSON, UTF-8 | `schema_version` 14 | Implemented |
-| Settings bundle, "the app's brain" | `.fotosettings` | `application/vnd.fotollection.settings+zip` | `com.hoangphi01.fotollection.settings` | ZIP magic + `manifest.json` with `"format": "fotollection-settings-bundle"` | ZIP (deflate) | manifest `schema_version` 1 (draft) | Planned ([FR-082](PRD.md#fr-082--the-apps-brain-in-one-file-fotosettings)) |
+| Settings bundle, "the app's brain" | `.fotosettings` | `application/vnd.fotollection.settings+zip` | `com.hoangphi01.fotollection.settings` | ZIP magic + `manifest.json` with `"format": "fotollection-settings-bundle"` | ZIP (deflate) | manifest `schema_version` 1 | Implemented in v0.14.0 ([FR-082](PRD.md#fr-082--the-apps-brain-in-one-file-fotosettings)), the Data section of Settings (FR-116) |
 | Language pack | `.fotolang` | `application/vnd.fotollection.language+json` | `com.hoangphi01.fotollection.language` | `"format": "fotollection-language"` | JSON, UTF-8 | `schema_version` 1 (draft) | Planned ([FR-084](PRD.md#fr-084--language-packs-anyone-can-add)) |
 | User font | `fonts/<id>.ttf`, `fonts/<id>.otf` | `font/ttf`, `font/otf` | — (internal copy) | Magic `00 01 00 00` / `true` (TTF), `OTTO` (OTF) | sfnt | — | Implemented ([FR-042](PRD.md#fr-042--custom-fonts)) |
 | Camera logo | `logos/<id>.png` | `image/png` | — (internal copy) | PNG magic | PNG | — | Implemented ([FR-040](PRD.md#fr-040--exif-info-frame)) |
@@ -57,6 +57,18 @@ A partial, stackable set of print or Photo Style settings ([DATABASE.md §7.1](D
 ### 2.3 Settings bundle `.fotosettings`
 
 Everything the app has learnt on one machine, to carry to another ([FR-082](PRD.md#fr-082--the-apps-brain-in-one-file-fotosettings)): `settings.json` whole, its `ui` group included (unlike a project bundle), with the user's looks and imported LUTs, fonts and camera logos beside it. Never a photo or a project. Import is untrusted input, read by the same validators as the files it holds.
+
+Since v0.14.0 (`crates/core/src/settings_bundle.rs`, the project bundle's container `zip_parts.rs`):
+
+| Part | Content | Cap |
+|------|---------|----:|
+| `manifest.json` | `"format": "fotollection-settings-bundle"`, `schema_version` 1, every other part with its byte count and BLAKE3 | 1 MB |
+| `settings.json` | This machine's `settings.json` whole: the interface, the defaults for new projects, cameras, the fonts table, saved looks, custom sizes; `recent_addresses` only when *Include recent addresses* was ticked at export (off by default) | 4 MB |
+| `fonts/<id>.ttf\|otf` | Every font in the table | 20 MB each |
+| `logos/<id>.png` | Logos of cameras set to an image logo | 2 MB each |
+| `looks/<hash>.cube\|png` | The LUTs the saved looks and the default look use, named by the BLAKE3 of their bytes | 8 MB each |
+
+The same limits as a project bundle (160 MB, 256 entries, 100:1), the same readers for each part (`bundle::check_assets`); a project's `project.json` is refused, a newer manifest is refused as newer. **Importing** either merges (the default: looks, LUTs, fonts, logos, cameras, custom sizes and addresses this machine lacks are added; its interface and defaults stay) or replaces (the file's settings whole, its fonts given this machine's ids, a known camera's logo and this machine's export folder kept).
 
 ### 2.4 Exported prints
 
