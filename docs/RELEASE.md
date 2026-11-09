@@ -34,6 +34,8 @@
 
 The WebView2 runtime is bootstrapped by the Windows installer when it is missing. Installer size is budgeted by [NFR-008](PRD.md#nfr-008--install-size).
 
+**Not on crates.io** (owner, 2026-11-09). The names `fotollection` and `fotollection-core` were free that day, but crates.io's usage policy removes a crate that "exists only to reserve a name … without any genuine functionality", and the app itself does not install through `cargo install` (a Tauri app with its built interface). The name is to be protected by a registered trademark instead, a decision still open with the owner (with relicensing, ADR-0008). Publishing the real core library later means publishing its local crates first (`fotollection-oscodec`, the RAW crates, `geodata`), each with a version and under crates.io's 10 MB per package, and moving the large data out of the package; the owner runs `cargo login` and approves the last `cargo publish`.
+
 ## 3. Code signing
 
 **Current policy: ship unsigned, without paid certificates** ([ADR-0009](adr/0009-unsigned-distribution.md)).
