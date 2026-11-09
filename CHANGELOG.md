@@ -40,6 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **A button shows it was pressed** (FR-099): held down, it takes the theme's colour pressed in and rises again on release, in both themes.
 - **The cards no longer drop under the pointer on the first slider step** (FR-079), in Pro and Simple mode: the Looks card and its amount stay in place, greyed with the original look.
 - **The collage sheet's toolbar matches the photo preview's**: undo, copy and paste, the turns and *Before* in the same places.
+- **The print size's verdict is never cut off** (FR-026): it shows on its own line under the size, which had too little room for it on Windows; the *acceptable* badge is a shade darker so its white text is readable (WCAG AA), and the frame's *Brand* logo choice fits in Vietnamese.
 - **Every dropdown opens under its button and stays inside the window** (FR-052): the print size list no longer loses its top when a size low in the list is chosen, and the place and manual chapter pickers look like every other dropdown.
 - **History** (FR-095) is about six rows high and scrolls inside, so a long one never pushes the column; a look picked says its name (*Look · Warm old film*), the amount its value.
 - **The info frame's photo-style line** names the photo's look when the camera profile gives none (FR-040).

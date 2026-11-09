@@ -41,7 +41,7 @@ const fixtures = trip.fixtures
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.json': 'application/json' }
 
 /** Runs in the page before the app: a stand-in for Tauri's IPC bridge. */
-function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, update, settingsPatch }) {
+function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, update, settingsPatch, verdict }) {
   const { common, scenarios } = fixtures
   // Collage mode (FR-035) has its own recording; older dumps have none.
   // Postcards (FR-073) are recorded after the collage, as its own sheets; older dumps have none.
@@ -200,7 +200,11 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     camera_sessions: () => [],
     search_places: () => common.search_places ?? [],
     get_crop_geometry: (a) => byId(a?.sheet ? collage.get_crop_geometry : common.get_crop_geometry, a),
-    print_advice: (a) => byId(common.print_advice ?? {}, a),
+    // A stress state (UI-LAYOUT-024): every size at one verdict, as a small photo gets.
+    print_advice: (a) => {
+      const advice = byId(common.print_advice ?? {}, a)
+      return verdict && advice ? { ...advice, sizes: advice.sizes.map((s) => ({ ...s, verdict, dpi: 271 })) } : advice
+    },
     get_settings: () => current,
     // Keep a change, as Rust does, so a click in a screenshot shows its result.
     set_settings: (a) => (current = { settings: a.settings, revision: (current.revision ?? 0) + 1 }),
@@ -250,7 +254,7 @@ const shots = []
 const TRIP_QUEUES = { print: [1, 4, 6], aside: [7, 13] } // not the shown photos (SHOW)
 const NO_QUEUES = { print: [], aside: [] }
 
-async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional', ui = {}, update = null, settingsPatch = null, fault = null }) {
+async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional', ui = {}, update = null, settingsPatch = null, fault = null, verdict = null }) {
   const { dump } = source
   // DEMO_WIDTH=1000 checks narrow windows (the screenshots for the site stay at 1440).
   const context = await browser.newContext({
@@ -295,7 +299,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
   // DEMO_OS=windows shows the Windows title bar, for checking it on a Mac.
   // UI-STATE-010: a part told to fail (`lib/fault.ts`, in builds made with VITE_FAULTS=1).
   if (fault) await context.addInitScript((part) => { window.__fotollectionFault = part }, fault)
-  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update, settingsPatch })
+  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update, settingsPatch, verdict })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
   await page.goto('http://app.localhost/')
@@ -609,6 +613,15 @@ async function stressViews({ language, theme }) {
   await settle(page)
   out.push(...(await allChecks(page, 'Collage panel, a long custom size')))
   out.push(...(await shot(page, page.locator('aside.border-l'), 'collage-panel')))
+  await context.close()
+  // UI-LAYOUT-024: the chosen size's verdict whole, as a small photo gets "acceptable"
+  // (owner, 2026-11-09: "Tạm được" cut off in the button on Windows).
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme, verdict: 'acceptable' }))
+  await (await reach(page, SHOW.crop)).dblclick()
+  await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
+  await page.locator('[role="dialog"]').getByRole('radio', { name: /^(Print and export|In và xuất ảnh)$/ }).click()
+  await settle(page)
+  out.push(...(await allChecks(page, 'photo preview, Print, every size acceptable')))
   await context.close()
   // UI-LAYOUT-021: the print size list open with the last size chosen, where an item-aligned
   // list ran over the window's top (owner, 2026-11-08).

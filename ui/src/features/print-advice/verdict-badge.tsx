@@ -17,7 +17,7 @@ export function VerdictBadge({ verdict, dpi, className }: { verdict: PrintVerdic
   const { t } = useTranslation()
   const { variant, Icon } = VERDICT[verdict]
   return (
-    <Badge variant={variant} data-hint={t('advice.dpi', { dpi })} className={className}>
+    <Badge variant={variant} data-verdict data-hint={t('advice.dpi', { dpi })} className={className}>
       <Icon data-icon="inline-start" aria-hidden />
       {t(`advice.verdict.${verdict}`)}
     </Badge>

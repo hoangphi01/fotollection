@@ -162,7 +162,9 @@
     /* Solid state colours for badges: deep, with white text, in both themes (owner,
        2026-11-06). `--warning` and `--success` above stay for text and icons. */
     --success-solid: oklch(0.52 0.12 155);
-    --warning-solid: oklch(0.58 0.13 62);
+    /* White on it reaches WCAG AA, 4.7:1 (0.58 gave 4.4, owner's tone kept; UI-A11Y-002,
+       2026-11-09: never checked until a small photo's "acceptable" badge was shown). */
+    --warning-solid: oklch(0.565 0.13 62);
     --danger-solid: oklch(0.54 0.18 27);
     /* Each badge's lip is its own colour, deeper (owner, 2026-11-06): dark green, a deep
        amber brown, burgundy; never mixed with the theme's shade. */

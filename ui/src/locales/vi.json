@@ -253,7 +253,7 @@
     "brandText": "Chữ thương hiệu",
     "brandPlaceholder": "BRAND",
     "fromExif": "Từ EXIF: {{shutter}} · {{iso}}. Để trống một ô để dùng giá trị EXIF. Được lưu cho mọi ảnh của máy này.",
-    "logoBrand": "Logo hãng"
+    "logoBrand": "Hãng"
   },
   "export": {
     "running": "Đang xuất ảnh…",

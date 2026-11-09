@@ -52,6 +52,10 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
     const size = advice?.sizes.find((s) => s.id === id)
     return size && <VerdictBadge verdict={size.verdict} dpi={size.dpi} className="ml-auto" />
   }
+  const chosenBadge = (id: string) => {
+    const size = advice?.sizes.find((s) => s.id === id)
+    return size && <VerdictBadge verdict={size.verdict} dpi={size.dpi} />
+  }
 
   const save = () => {
     const parse = (s: string) => Number.parseFloat(s.replace(',', '.'))
@@ -93,7 +97,14 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
             else onChange((s) => ({ ...s, printSize: v }))
           }}
         >
-          <SelectTrigger id={id} className="w-full" aria-label={t('settings.printSize')} data-hint={selectedCustom?.name}>
+          {/* The chosen size's verdict goes on its own line below (owner, 2026-11-09: cut off
+              in the button on Windows); the open list keeps one beside each size. */}
+          <SelectTrigger
+            id={id}
+            className="w-full [&_[data-verdict]]:hidden"
+            aria-label={t('settings.printSize')}
+            data-hint={selectedCustom?.name}
+          >
             <SelectValue placeholder={t('common.loading')} />
           </SelectTrigger>
           <SelectContent>
@@ -153,6 +164,9 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
           />
         )}
       </div>
+      {settings && advice?.sizes.some((s) => s.id === settings.printSize) && (
+        <div className="flex">{chosenBadge(settings.printSize)}</div>
+      )}
 
       {adding && (
         <Inset>

@@ -260,6 +260,22 @@ export async function layoutChecks(page, where) {
       }
     }
 
+    // UI-LAYOUT-024: a badge is seen whole, never cut by a box that clips it (owner,
+    // 2026-11-09: the print size's verdict cut off inside its button on Windows).
+    for (const badge of document.querySelectorAll('[data-slot="badge"]')) {
+      if (!vis(badge)) continue
+      const b = badge.getBoundingClientRect()
+      for (let e = badge.parentElement; e; e = e.parentElement) {
+        const cs = getComputedStyle(e)
+        if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue
+        const c = e.getBoundingClientRect()
+        if (b.right > c.right + 0.5 || b.left < c.left - 0.5) {
+          out.push(`UI-LAYOUT-024 a badge cut off by its box: "${name(badge)}"`)
+        }
+        break
+      }
+    }
+
     // UI-LAYOUT-011: the page never scrolls sideways.
     if (document.documentElement.scrollWidth > window.innerWidth + 1) out.push(`UI-LAYOUT-011 the page scrolls sideways (${document.documentElement.scrollWidth} > ${window.innerWidth})`)
     return out

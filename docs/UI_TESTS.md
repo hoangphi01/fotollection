@@ -66,6 +66,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | UI-LAYOUT-021 | An open dropdown sits whole in the window, beside its button | An open `select-content` or `popover-content` lies inside the window and under its bar, and never covers its own open button; the print size list is opened with the last size chosen | A `layoutChecks` | release | FR-052; LESSONS |
 | UI-LAYOUT-022 | A dialog's words clear its close button | No word of a dialog, cut where its ellipsis cuts it, comes within 8 px of its close button; *Copy settings* opened in every run | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 | UI-LAYOUT-023 | The previews' toolbars agree | The groups and *Before* the sheet preview's toolbar shares with the photo preview's come in the same order, and it has none the photo's lacks | A `shoot.mjs` | release | STYLE_RULE §4; LESSONS |
+| UI-LAYOUT-024 | A badge is seen whole | No badge passes the box that clips it; the photo preview's Print tab is opened with every size *acceptable* (the bridge's `verdict`), the longest verdict in both languages | A `layoutChecks` | release | STYLE_RULE §4; LESSONS |
 
 ### Text
 
