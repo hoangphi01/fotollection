@@ -1,24 +1,32 @@
-{%- comment %} The interactive Looks section of the landing page (owner, 2026-11-09, after Apple's aperture picker): one photo through each built-in look (site/_data/looks.yml, rendered by the app's engine), a row of looks to pick, a sentence for the one picked, and press and hold the photo for its original, as in the app. Without script: the original and the list. assets/js/looks.js. {% endcomment -%}
+{%- comment %} The interactive Looks section of the landing page (owner, 2026-11-09, after Apple's aperture picker): "Meet Looks", what a look is (Lightroom's preset, LUMIX's LUT and Fotollection's own colours, one thing here), then one photo through each built-in look (site/_data/looks.yml, rendered by the app's engine), a row of looks to pick and a sentence for the one picked; press and hold the photo for its original, as in the app. The pictures are stacked and cross-fade, so a pick never flashes; every sentence sits in one cell, so a pick never moves the row. Without script: the original and the list. assets/js/looks.js. {% endcomment -%}
 {%- assign t = site.data.i18n[page.lang] -%}
 {%- assign lang = page.lang -%}
-{%- assign first = site.data.looks | first -%}
 <section class="section looks-section" id="looks">
   <div class="wrap">
     <p class="kicker">{{ t.looks_kicker }}</p>
     <h2 class="looks-title">{{ t.looks_title }}</h2>
+    <p class="looks-sub">{{ t.looks_sub }}</p>
     <p class="lead narrow looks-lead">{{ t.looks_lead_1 }}<strong>{{ t.looks_lead_2 }}</strong>{{ t.looks_lead_3 }}<strong>{{ t.looks_lead_4 }}</strong>{{ t.looks_lead_5 }}</p>
     <div class="looks" data-looks>
       <figure class="looks-photo">
-        <img src="{{ '/assets/img/looks/' | append: first.slug | append: '.webp' | relative_url }}" width="1200" height="1600" alt="{{ t.looks_alt }}" loading="lazy" decoding="async" data-looks-photo data-original="{{ '/assets/img/looks/original.webp' | relative_url }}" />
+        <div class="looks-stack" data-looks-stack>
+          {%- for l in site.data.looks %}
+          <img src="{{ '/assets/img/looks/' | append: l.slug | append: '.webp' | relative_url }}" width="1200" height="1600" alt="{% if forloop.first %}{{ t.looks_alt }}{% endif %}"{% unless forloop.first %} aria-hidden="true"{% endunless %} loading="lazy" decoding="async" data-slug="{{ l.slug }}"{% if forloop.first %} class="on"{% endif %} />
+          {%- endfor %}
+        </div>
         <figcaption class="small muted">{{ t.looks_hold }}{% include fn.html keys="fn_photo" %}</figcaption>
       </figure>
       <div class="looks-side">
         <div class="looks-choices" role="group" aria-label="{{ t.looks_pick }}">
           {%- for l in site.data.looks %}
-          <button type="button" class="look-choice" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" data-look="{{ '/assets/img/looks/' | append: l.slug | append: '.webp' | relative_url }}" data-say="{{ l.say[lang] | escape }}">{{ l.name[lang] }}</button>
+          <button type="button" class="look-choice" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" data-slug="{{ l.slug }}">{{ l.name[lang] }}</button>
           {%- endfor %}
         </div>
-        <p class="looks-say" aria-live="polite"><strong data-looks-name>{{ first.name[lang] }}.</strong> <span data-looks-text>{{ first.say[lang] }}</span></p>
+        <div class="looks-says" aria-live="polite">
+          {%- for l in site.data.looks %}
+          <p class="looks-say{% if forloop.first %} on{% endif %}" data-slug="{{ l.slug }}"><strong>{{ l.name[lang] }}.</strong> {{ l.say[lang] }}</p>
+          {%- endfor %}
+        </div>
         <p class="small muted">{{ t.looks_engine }}</p>
       </div>
     </div>

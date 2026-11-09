@@ -1,19 +1,22 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// The landing page's Looks section (site/_includes/looks.html): a look picked shows the photo
-// through it and its sentence; press and hold the photo for its original, as in the app.
-// Text is set with textContent only, never as HTML.
+// The landing page's Looks section (site/_includes/looks.html): a look picked fades its picture
+// in over the others (all stacked, so nothing flashes while one decodes) and shows its sentence
+// (all in one cell, so the row never moves); press and hold the photo for its original, as in
+// the app. Only classes and attributes change: no HTML is written.
 for (const root of document.querySelectorAll('[data-looks]')) {
-  const photo = root.querySelector('[data-looks-photo]')
-  const name = root.querySelector('[data-looks-name]')
-  const text = root.querySelector('[data-looks-text]')
+  const stack = root.querySelector('[data-looks-stack]')
+  const pictures = [...stack.querySelectorAll('img')]
+  const says = [...root.querySelectorAll('.looks-say')]
   const choices = [...root.querySelectorAll('.look-choice')]
-  let current = photo.getAttribute('src')
+  let current = choices[0].dataset.slug
+  const show = (slug) => {
+    for (const img of pictures) img.classList.toggle('on', img.dataset.slug === slug)
+  }
   const pick = (button) => {
+    current = button.dataset.slug
     for (const b of choices) b.setAttribute('aria-pressed', String(b === button))
-    current = button.dataset.look
-    photo.src = current
-    name.textContent = `${button.textContent}.`
-    text.textContent = button.dataset.say
+    for (const p of says) p.classList.toggle('on', p.dataset.slug === current)
+    show(current)
   }
   for (const b of choices) b.addEventListener('click', () => pick(b))
   // Arrow keys move between the looks, as in a toolbar.
@@ -26,12 +29,9 @@ for (const root of document.querySelectorAll('[data-looks]')) {
     pick(next)
   })
   // Press and hold for the original; let go and the look comes back.
-  const hold = () => { photo.src = photo.dataset.original }
-  const release = () => { photo.src = current }
-  photo.addEventListener('pointerdown', hold)
-  for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) photo.addEventListener(ev, release)
-  photo.addEventListener('contextmenu', (e) => e.preventDefault())
-  // The other looks load once the page is idle, so a pick shows at once.
-  const warm = () => choices.forEach((b) => { new Image().src = b.dataset.look })
-  ;(window.requestIdleCallback ?? setTimeout)(warm)
+  stack.addEventListener('pointerdown', () => show(choices[0].dataset.slug))
+  for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) stack.addEventListener(ev, () => show(current))
+  stack.addEventListener('contextmenu', (e) => e.preventDefault())
+  // Every picture loads once the section is near, so the first pick is already there.
+  for (const img of pictures) img.loading = 'eager'
 }
