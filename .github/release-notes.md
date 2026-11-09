@@ -9,4 +9,4 @@ Fotollection is free and works offline. The installers are not signed with a pai
   - **`.deb`**, Ubuntu, Debian and Mint: `sudo apt install ./Fotollection_*_amd64.deb` (`_arm64.deb` on ARM).
   - Not on Linux yet: HEIC photos and camera capture over USB.
 
-Installing over an older version keeps your settings, camera profiles and projects. Check a download against `SHA256SUMS.txt` with `shasum -a 256 <file>` (macOS) `certutil -hashfile <file> SHA256` (Windows) or `sha256sum -c SHA256SUMS.txt --ignore-missing` (Linux).
+Installing over an older version keeps your settings, camera profiles and projects; to move to another computer, use Settings → Data → Export settings. Check a download against `SHA256SUMS.txt` with `shasum -a 256 <file>` (macOS), `certutil -hashfile <file> SHA256` (Windows) or `sha256sum -c SHA256SUMS.txt --ignore-missing` (Linux).

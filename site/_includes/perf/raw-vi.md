@@ -93,7 +93,7 @@ Cho một lần xử lý đầy đủ, thứ đứng sau bản xem trước đ�
 1. **Nhận biết** định dạng từ những byte đầu tiên của tệp, không bao giờ dựa vào tên, để tệp bị đổi tên hay tệp RAW trông như TIFF thường vẫn được đọc đúng.
 2. **Đọc** các con số của cảm biến: DNG bằng bộ đọc của riêng mình, các định dạng khác do rawler giải nén. Tệp quá lớn hoặc hỏng bị từ chối trước khi giải mã bất kỳ điểm ảnh nào, kèm một mã lỗi.
 3. **Mức:** đưa đen về 0 và trắng về 1, cho từng vị trí của tấm lọc màu, tính từ góc của vùng hoạt động.
-4. **Cân bằng trắng**, rồi **demosaic**: sửa điểm chết và cân xanh lá trước, demosaic theo hướng, trung vị chống màu giả (Markesteijn cho X-Trans là bước tiếp theo).
+4. **Cân bằng trắng**, rồi **demosaic**: sửa điểm chết và cân xanh lá trước, demosaic theo hướng, trung vị chống màu giả (Markesteijn cho X-Trans có ở v0.15.0).
 5. **Màu:** các ma trận của máy ảnh, pha theo ánh sáng lúc chụp, trong ánh sáng tuyến tính.
 6. **Tông và màu riêng**, khớp theo bản xem trước của máy, kèm độ tối góc.
 7. Từ đây ảnh RAW giống mọi ảnh khác: cắt khung, dấu ngày, khung viền, cỡ in và hồ sơ màu, xuất ở độ phân giải đầy đủ, 4:4:4, chất lượng 95.

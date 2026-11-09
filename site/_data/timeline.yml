@@ -210,6 +210,6 @@
       - "Áp một look cho nhiều ảnh cùng lúc; ảnh thu nhỏ hiện màu của từng ảnh."
       - "Chuyển sang máy khác bằng một tệp; một phần lỗi không còn làm sập app."
   shots:
-    - { file: 0.14-looks, w: 1600, h: 1000, from: "HEAD (v0.14.0):site/assets/img/window-en-dark.webp", alt: { en: "v0.14.0: looks under the photo, Presets & LUTs on the left", vi: "v0.14.0: looks dưới ảnh, Presets & LUTs bên trái" } }
-    - { file: 0.14-simple, w: 1600, h: 1000, from: "HEAD (v0.14.0):site/assets/img/simple-en-light.webp", alt: { en: "v0.14.0: Simple mode's numbered looks", vi: "v0.14.0: dải look đánh số ở chế độ Đơn giản" } }
-    - { file: 0.14-gallery, w: 1600, h: 1000, from: "HEAD (v0.14.0):site/assets/img/grid-en-dark.webp", alt: { en: "v0.14.0: thumbnails in their colours", vi: "v0.14.0: ảnh thu nhỏ theo màu của từng ảnh" } }
+    - { file: 0.14-looks, w: 1600, h: 1000, from: "v0.14.0:site/assets/img/window-en-dark.webp", alt: { en: "v0.14.0: looks under the photo, Presets & LUTs on the left", vi: "v0.14.0: looks dưới ảnh, Presets & LUTs bên trái" } }
+    - { file: 0.14-simple, w: 1600, h: 1000, from: "v0.14.0:site/assets/img/simple-en-light.webp", alt: { en: "v0.14.0: Simple mode's numbered looks", vi: "v0.14.0: dải look đánh số ở chế độ Đơn giản" } }
+    - { file: 0.14-gallery, w: 1600, h: 1000, from: "v0.14.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.14.0: thumbnails in their colours", vi: "v0.14.0: ảnh thu nhỏ theo màu của từng ảnh" } }

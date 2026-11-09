@@ -93,7 +93,7 @@ For a full develop, the one behind the print preview, zoom and export:
 1. **Recognise** the format from the file's first bytes, never its name, so a renamed file or a RAW that looks like a plain TIFF is still read right.
 2. **Read** the sensor's numbers: DNG with our own reader, the other formats unpacked by rawler. A file too large or damaged is refused before any pixel is decoded, with an error code.
 3. **Levels:** black to 0 and white to 1, for each position of the colour filter, counted from the corner of the active area.
-4. **White balance**, then **demosaic**: stuck pixels and the green balance first, the directional demosaic, the false-colour median (Markesteijn for X-Trans comes next).
+4. **White balance**, then **demosaic**: stuck pixels and the green balance first, the directional demosaic, the false-colour median (Markesteijn for X-Trans comes in v0.15.0).
 5. **Colour:** the camera's matrices, blended for the light of the shot, in linear light.
 6. **Tone and look**, fitted to the camera's preview, with its lens shading.
 7. From here a RAW photo is like any other: crop, date stamp, frame, print size and colour profile, exported at full resolution in 4:4:4 at quality 95.
