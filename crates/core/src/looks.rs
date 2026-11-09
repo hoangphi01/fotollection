@@ -332,6 +332,8 @@ pub struct Adjust {
     pub grain: Grain,
     /// Darker (−) or lighter (+) corners round the cropped photo.
     pub vignette: i8,
+    /// Haze taken out (+) or laid on (−), before the table (FR-115, `dehaze`).
+    pub dehaze: i8,
     /// The eight-hue colour mixer (FR-079, Lightroom's Color Mixer): each hue turned,
     /// saturated and lightened. Absent before it: untouched.
     pub mixer: crate::colour_ops::Mixer,
@@ -467,6 +469,7 @@ impl LookSettings {
             &mut a.vibrance,
             &mut a.balance,
             &mut a.vignette,
+            &mut a.dehaze,
         ] {
             *v = (*v).clamp(-100, 100);
         }
@@ -513,12 +516,30 @@ impl LookSettings {
         Some(TABLES.get(key, || bake(&colour_only)))
     }
 
-    /// What the table holds: the colour, without grain, vignette, name or base.
+    /// The dehaze this look gives a photo, scaled by its amount (FR-115): it is drawn
+    /// before the table, never in it.
+    #[must_use]
+    pub fn dehaze(&self) -> i8 {
+        let d =
+            i16::from(self.adjust.dehaze.clamp(-100, 100)) * i16::from(self.amount.min(100)) / 100;
+        i8::try_from(d).unwrap_or(0)
+    }
+
+    /// The look on `image` as every path draws it: the dehaze, then the table.
+    pub fn draw(&self, image: &mut RgbImage) {
+        crate::dehaze::apply(image, self.dehaze());
+        if let Some(table) = self.table() {
+            apply(image, &table);
+        }
+    }
+
+    /// What the table holds: the colour, without grain, vignette, dehaze, name or base.
     fn colour_only(&self) -> LookSettings {
         LookSettings {
             adjust: Adjust {
                 grain: Grain::default(),
                 vignette: 0,
+                dehaze: 0,
                 ..self.adjust
             },
             name: None,
@@ -537,7 +558,18 @@ impl LookSettings {
     /// changes.
     #[must_use]
     pub fn colour_key(&self) -> u32 {
-        self.colour_only().colour_hash().map_or(0, |h| {
+        let colour = self.colour_only().colour_hash();
+        let hash = match (colour, self.dehaze()) {
+            (colour, 0) => colour,
+            // The dehaze changes the thumbnail too, so it changes the key.
+            (colour, d) => {
+                let mut h = blake3::Hasher::new();
+                h.update(colour.as_ref().map_or(&[0u8; 32], |c| c.as_bytes()));
+                h.update(&d.to_le_bytes());
+                Some(h.finalize())
+            }
+        };
+        hash.map_or(0, |h| {
             let b = h.as_bytes();
             u32::from_le_bytes([b[0], b[1], b[2], b[3]]).max(1)
         })
@@ -1136,6 +1168,28 @@ mod tests {
         let light = through(&look, [210; 3]);
         assert!(dark[2] > dark[0], "shadows bluer {dark:?}");
         assert!(light[0] > light[2], "highlights warmer {light:?}");
+    }
+
+    /// FR-115: a look from before Dehaze has none; one out of range is brought within; it
+    /// never enters the table, it changes the thumbnail's key, and the amount scales it.
+    #[test]
+    fn fr_115_a_looks_dehaze_is_read_clamped_and_kept_out_of_the_table()
+    -> Result<(), serde_json::Error> {
+        let old: LookSettings = serde_json::from_str(r#"{"adjust":{"saturation":10}}"#)?;
+        assert_eq!(old.adjust.dehaze, 0);
+        let wild: LookSettings = serde_json::from_str(r#"{"adjust":{"dehaze":-128}}"#)?;
+        assert_eq!(wild.sanitized().adjust.dehaze, -100);
+        let hazy = LookSettings {
+            adjust: Adjust {
+                dehaze: 40,
+                ..Adjust::default()
+            },
+            ..LookSettings::default()
+        };
+        assert!(hazy.table().is_none(), "no table for a dehaze alone");
+        assert_ne!(hazy.colour_key(), 0, "a thumbnail is fetched again");
+        assert_eq!(LookSettings { amount: 50, ..hazy }.dehaze(), 20);
+        Ok(())
     }
 
     #[test]

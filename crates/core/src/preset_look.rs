@@ -2,13 +2,14 @@
 //! A Lightroom® preset compiled into a look (FR-089, ADR-0045): the settings our sliders have
 //! go to them; the per-pixel ones they lack (point curves, whites and blacks, the eight-hue
 //! mixer, colour grading, split toning, the black-and-white mixer) are baked into one 33³ LUT
-//! saved as an imported LUT is, so a preset is one table as every look. What a table cannot
-//! hold (clarity, texture, dehaze, sharpening, noise reduction, lens corrections) and what it
-//! cannot know (an absolute white balance, Adobe's profiles) is named, never dropped silently.
+//! saved as an imported LUT is, so a preset is one table as every look; its dehaze is ours
+//! (FR-115). What a look cannot hold yet (clarity, texture, sharpening, noise reduction, lens
+//! corrections) and what it cannot know (an absolute white balance, Adobe's profiles) is
+//! named, never dropped silently.
 //!
 //! The mappings are written from what each setting is documented to do, not from Adobe's
-//! code; their strengths are first guesses, 1:1, until `preset_bench` tunes them against
-//! Lightroom's own renders (RESULT §36).
+//! code; their strengths are first guesses, 1:1, measured by `preset_bench` against
+//! Lightroom's own renders (RESULT §39).
 
 use std::fmt::Write as _;
 
@@ -235,33 +236,27 @@ impl Baked {
     }
 }
 
-/// A Kelvin temperature taken against daylight (5,500 K) when a preset gives only an
-/// absolute white balance, as the legacy "Warm It Up" kind do: a guess, 100 for each 5,500 K
-/// above, to be tuned with `preset_bench` (an absolute balance needs the photo's own).
-const DAYLIGHT_K: f32 = 5500.0;
-
+/// A preset that gives only an absolute white balance (a Kelvin temperature and a tint, as
+/// the legacy "Warm It Up" kind do) says where to set it, not how far to move it: how far
+/// depends on each photo's own as shot. Taken against daylight it moved the photo the wrong
+/// way (RESULT §39: 4,950 K on a photo shot at 4,650 K came out cooler, ΔE 7.29 → 7.56), so
+/// it is left out and named, until the photo's own as shot is known (v0.14.x).
 fn absolute_only(p: &Preset) -> bool {
     p.values.contains_key("Temperature") && !p.values.contains_key("IncrementalTemperature")
 }
 
 fn warmth(p: &Preset) -> f32 {
-    if absolute_only(p) {
-        (number(p, "Temperature") - DAYLIGHT_K) / DAYLIGHT_K * 100.0
-    } else {
-        number(p, "IncrementalTemperature")
-    }
+    number(p, "IncrementalTemperature")
 }
 
-/// Lightroom's absolute tint runs −150…150, ours −100…100.
 fn tint_of(p: &Preset) -> f32 {
     if absolute_only(p) {
-        number(p, "Tint") * 100.0 / 150.0
+        0.0
     } else {
         number(p, "IncrementalTint")
     }
 }
 
-/// The settings a look cannot take, each named once with its reason, in the order read.
 fn unapplied(p: &Preset) -> Vec<String> {
     let mut out = Vec::new();
     let set = |k: &str| match p.values.get(k) {
@@ -272,7 +267,10 @@ fn unapplied(p: &Preset) -> Vec<String> {
     for (key, reason) in [
         ("Clarity2012", "local contrast, not a colour of each pixel"),
         ("Texture", "local detail, not a colour of each pixel"),
-        ("Dehaze", "local contrast, not a colour of each pixel"),
+        (
+            "Highlights2012",
+            "Lightroom's is local; ours, the same on every pixel, moved the photo away from Lightroom's",
+        ),
         ("Sharpness", "sharpening, not a colour"),
         ("LuminanceSmoothing", "noise reduction, not a colour"),
         ("ColorNoiseReduction", "noise reduction, not a colour"),
@@ -288,7 +286,7 @@ fn unapplied(p: &Preset) -> Vec<String> {
     }
     if absolute_only(p) {
         out.push(
-            "Temperature: an absolute white balance, taken against daylight (5,500 K), approximate"
+            "Temperature and Tint: an absolute white balance, which depends on each photo's own as shot; not applied"
                 .into(),
         );
     }
@@ -330,7 +328,8 @@ pub fn compile(p: &Preset) -> Compiled {
     let mut adjust = Adjust {
         brightness: slider(number(p, "Exposure2012") * 25.0),
         contrast: slider(number(p, "Contrast2012")),
-        highlights: slider(number(p, "Highlights2012")),
+        // Lightroom's Highlights is local; ours, on every pixel alike, moved both measured
+        // photos away from Lightroom's render at any strength (RESULT §39), so it waits.
         shadows: slider(number(p, "Shadows2012")),
         saturation: slider(number(p, "Saturation")),
         vibrance: slider(number(p, "Vibrance")),
@@ -341,6 +340,7 @@ pub fn compile(p: &Preset) -> Compiled {
             size: amount(number(p, "GrainSize")),
         },
         vignette: slider(number(p, "PostCropVignetteAmount")),
+        dehaze: slider(number(p, "Dehaze")),
         // The eight-hue mixer goes to ours (FR-079), the same function as its sliders, so the
         // photo shows the preset's values and they stay adjustable.
         mixer: Mixer {
@@ -529,18 +529,46 @@ mod tests {
         );
     }
 
+    /// RESULT §39: an absolute balance taken against daylight moved the photo the wrong way;
+    /// it is left out and named, a relative one kept.
     #[test]
-    fn fr_089_an_absolute_white_balance_is_taken_against_daylight() {
+    fn fr_089_an_absolute_white_balance_is_named_not_guessed() {
         let warm = compile(&preset(&[
             ("Temperature", Value::Number(6375.0)),
             ("Tint", Value::Number(-3.0)),
         ]));
-        assert_eq!((warm.look.adjust.warmth, warm.look.adjust.tint), (16, -2));
+        assert_eq!((warm.look.adjust.warmth, warm.look.adjust.tint), (0, 0));
+        assert!(
+            warm.unapplied
+                .iter()
+                .any(|u| u.starts_with("Temperature and Tint"))
+        );
         let relative = compile(&preset(&[
             ("Temperature", Value::Number(6375.0)),
             ("IncrementalTemperature", Value::Number(5.0)),
+            ("IncrementalTint", Value::Number(-4.0)),
         ]));
-        assert_eq!(relative.look.adjust.warmth, 5, "a relative one wins");
+        assert_eq!(
+            (relative.look.adjust.warmth, relative.look.adjust.tint),
+            (5, -4),
+            "a relative one wins"
+        );
+    }
+
+    /// RESULT §39: a preset's Highlights is named, not drawn with ours.
+    #[test]
+    fn fr_089_a_presets_highlights_is_named() {
+        let c = compile(&preset(&[("Highlights2012", Value::Number(-51.0))]));
+        assert_eq!(c.look.adjust.highlights, 0);
+        assert!(c.unapplied.iter().any(|u| u.starts_with("Highlights2012")));
+    }
+
+    /// FR-115: a preset's Dehaze is ours, one for one, and leaves the *not applied* list.
+    #[test]
+    fn fr_115_a_presets_dehaze_is_applied() {
+        let c = compile(&preset(&[("Dehaze", Value::Number(35.0))]));
+        assert_eq!(c.look.adjust.dehaze, 35);
+        assert!(!c.unapplied.join("\n").contains("Dehaze"));
     }
 
     #[test]
@@ -549,7 +577,7 @@ mod tests {
             process: Some("5.0".into()),
             ..preset(&[
                 ("Clarity2012", Value::Number(30.0)),
-                ("Dehaze", Value::Number(0.0)),
+                ("Dehaze", Value::Number(20.0)),
                 ("Temperature", Value::Number(6375.0)),
                 ("GrainAmount", Value::Number(20.0)),
             ])

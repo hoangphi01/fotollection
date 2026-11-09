@@ -1646,11 +1646,16 @@ pub fn preview_bytes(
         PreviewPart::Plain => without_look(&mut record, &mut settings),
         PreviewPart::Base => {
             let look = record.edits.look.as_ref().unwrap_or(&settings.look);
-            let base = if fotollection_core::raw::is_raw_name(&record.file_name) {
+            let mut base = if fotollection_core::raw::is_raw_name(&record.file_name) {
                 look.raw_only()
             } else {
-                LookSettings::default()
+                LookSettings {
+                    amount: look.amount,
+                    ..LookSettings::default()
+                }
             };
+            // The dehaze is drawn before the table, so the shader's base has it (FR-115).
+            base.adjust.dehaze = look.adjust.dehaze;
             record.edits.look = Some(base);
         }
     }

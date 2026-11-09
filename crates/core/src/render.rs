@@ -60,7 +60,9 @@ pub fn finish(photo: RgbImage, plan: &RenderPlan) -> RgbImage {
 /// where a channel is blown, blue where one is blocked, after the look and before the stamp,
 /// so only the photo is marked.
 pub fn finish_marked(mut photo: RgbImage, plan: &RenderPlan, clipping: bool) -> RgbImage {
-    // The look before anything drawn on the print, so the stamp keeps its colour (FR-079).
+    // The look before anything drawn on the print, so the stamp keeps its colour (FR-079):
+    // its dehaze first, then its table, as `LookSettings::draw` and the GPU preview do.
+    crate::dehaze::apply(&mut photo, plan.dehaze);
     if let Some(table) = &plan.look {
         crate::looks::apply(&mut photo, table);
     }
@@ -183,6 +185,7 @@ pub fn fit_long_edge(source: &RgbImage, long_edge: u32) -> Result<RgbImage, Rend
         straighten: 0.0,
         linear_light: false,
         look: None,
+        dehaze: 0,
     };
     crop_and_resize(source, &plan)
 }
@@ -441,6 +444,7 @@ mod tests {
                 straighten: 0.0,
                 linear_light,
                 look: None,
+                dehaze: 0,
             };
             let out = crop_and_resize(&source, &plan).unwrap_or_else(|_| RgbImage::new(1, 1));
             // The middle, away from the edges' ringing.

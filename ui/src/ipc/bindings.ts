@@ -801,6 +801,8 @@ export type Adjust = {
 	grain?: Grain,
 	/**  Darker (−) or lighter (+) corners round the cropped photo. */
 	vignette?: number,
+	/**  Haze taken out (+) or laid on (−), before the table (FR-115, `dehaze`). */
+	dehaze?: number,
 	/**
 	 *  The eight-hue colour mixer (FR-079, Lightroom's Color Mixer): each hue turned,
 	 *  saturated and lightened. Absent before it: untouched.

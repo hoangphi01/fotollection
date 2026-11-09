@@ -3,7 +3,7 @@
 These 14 presets are Fotollection's own (written for the bench, not copied from Adobe or
 anyone), each moving one group of sliders, the last two several. Rendered by Lightroom on
 the same photos, they are the ground truth `preset_bench` tunes the preset mappings against
-(ADR-0045, RESULT §36).
+(ADR-0045, RESULT §39).
 
 ## What to export
 

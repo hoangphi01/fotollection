@@ -46,7 +46,7 @@ export const FAVES_FIRST = ['brightness', 'contrast', 'warmth', 'saturation'] as
 export const FAVES_MORE = ['highlights', 'shadows', 'tint', 'vibrance'] as const
 
 /** What Tools holds, for its "· N changed" and its reset. */
-const TOOLS = ['fade', 'shadowTint', 'highlightTint', 'balance', 'mono'] as const
+const TOOLS = ['dehaze', 'fade', 'shadowTint', 'highlightTint', 'balance', 'mono'] as const
 
 export type SignedKey = (typeof FAVES_FIRST)[number] | (typeof FAVES_MORE)[number]
 
@@ -68,6 +68,7 @@ export const NO_LOOK: FullLook = {
     mono: 'off',
     grain: { amount: 0, size: 0 },
     vignette: 0,
+    dehaze: 0,
     mixer: { hue: EIGHT(), sat: EIGHT(), lum: EIGHT() },
   },
   lut: null,
@@ -118,6 +119,7 @@ export const resetFaves = (a: FullAdjust): FullAdjust => ({
 
 export const resetTools = (a: FullAdjust): FullAdjust => ({
   ...a,
+  dehaze: 0,
   fade: 0,
   shadowTint: NO_LOOK.adjust.shadowTint,
   highlightTint: NO_LOOK.adjust.highlightTint,

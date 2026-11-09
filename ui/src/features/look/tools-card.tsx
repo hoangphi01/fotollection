@@ -25,8 +25,8 @@ type ToolsCardProps = {
 }
 
 /**
- * Everything else (FR-079, Tools): fade, a tint for the shadows and one for the highlights,
- * black and white through a filter. Folded at first, so a newcomer meets Faves first;
+ * Everything else (FR-079, Tools): dehaze (FR-115), fade, a tint for the shadows and one for
+ * the highlights, black and white through a filter. Folded at first, so a newcomer meets Faves first;
  * its title opens it, and the app remembers.
  */
 export function ToolsCard({ look, onChange, footer }: ToolsCardProps) {
@@ -83,6 +83,14 @@ export function ToolsCard({ look, onChange, footer }: ToolsCardProps) {
       }
       footer={footer}
     >
+      {/* Not in the look's table: Rust draws each step of it (FR-115). */}
+      <SliderField
+        label={t('look.dehaze')}
+        hint={t('look.hints.dehaze')}
+        value={adjust.dehaze}
+        gpu={false}
+        onChange={(dehaze, first) => set({ dehaze }, first)}
+      />
       <SliderField
         label={t('look.fade')}
         hint={t('look.hints.fade')}

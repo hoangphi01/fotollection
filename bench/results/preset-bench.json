@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-09",
+  "machine": "REF-MAC (M3)",
+  "metric": "dE2000 mean / p95 at 1000 px",
+  "trackA": {
+    "S1": { "baseline": [8.21, 14.25], "before": [7.56, 13.10], "noAbsoluteWb": [7.30, 13.36], "shipped": [6.57, 11.72] },
+    "C1": { "baseline": [14.04, 21.43], "noAbsoluteWb": [14.81, 20.99], "shipped": [13.83, 19.85] }
+  },
+  "trackB": { "S1": { "developVsPlain": [3.66, 5.82], "developAndLookVsPreset": [5.16, 9.81] } },
+  "dehaze": {
+    "ms": { "preview1600": 6.2, "export24mp": 30.0 },
+    "knownVeil": { "beta0.5": [9.57, 7.16, 4.59, 2.23, 2.54], "beta1.2": [20.34, 17.12, 13.04, 7.70, 1.65], "beta2.0": [28.38, 25.49, 21.43, 15.06, 3.34] }
+  }
+}

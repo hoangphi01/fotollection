@@ -84,7 +84,7 @@ fn develops(before: &PhotoEdits, after: &PhotoEdits) -> bool {
 }
 
 /// The look sliders that hold a number, by the name the look cards give them.
-fn sliders(a: &Adjust) -> [(&'static str, i32); 11] {
+fn sliders(a: &Adjust) -> [(&'static str, i32); 12] {
     [
         ("brightness", a.brightness.into()),
         ("contrast", a.contrast.into()),
@@ -97,6 +97,7 @@ fn sliders(a: &Adjust) -> [(&'static str, i32); 11] {
         ("fade", a.fade.into()),
         ("balance", a.balance.into()),
         ("vignette", a.vignette.into()),
+        ("dehaze", a.dehaze.into()),
     ]
 }
 

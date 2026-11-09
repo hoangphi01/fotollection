@@ -100,6 +100,7 @@ crates/
       presets.rs           # preset library: partial/stackable, linked, .fotopreset I/O (FR-033/034/038)
       colour_ops.rs        # colour operations as functions of one pixel in f32 (FR-079, ADR-0043): the eight-hue Color Mixer and its hue wheel; the look's table calls them for its points today, the 32-bit path will call them on every pixel
       looks.rs           † # colour looks (FR-079, FR-070, ADR-0038): the 33³ table, integer tetrahedral interpolation on rayon, a cache of the last 8 tables; the sliders and `.cube` LUTs bake into it
+      dehaze.rs          † # dehaze (FR-115): the dark channel prior, the veil estimated at 512 px with a fast guided filter, drawn before the look's table on rayon
       render.rs          † # crop/resize (in linear light for share exports, `RenderPlan::linear_light`), border, a shared photo's fill (`compose_mat` for both) and the drawing of stamp and frame; the stamp, colour and sharpening live in stamp.rs, colour.rs and sharpen.rs. 4-up sheets and the contact sheet (FR-035, FR-037) will extend sheet.rs
       export.rs          † # bounded parallel export, cancel, per-photo errors, existing-file rule, size limit by bisection (FR-008/009/011/105)
       naming.rs          † # Lightroom's file-name templates, the sequence, name parts cleaned (FR-104, SECURITY)

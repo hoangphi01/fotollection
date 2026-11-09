@@ -232,6 +232,63 @@ fn de2000(a: [f32; 3], b: [f32; 3]) -> f32 {
         .sqrt()
 }
 
+/// ΔE2000 between two pictures of one size, pixel by pixel: the mean, the 95th percentile and
+/// the mean in the shadows, mid-tones and highlights of `reference` (CIELAB L < 33, < 66,
+/// above), for measurements against a reference render (`preset_bench`, FR-089).
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct DeStats {
+    pub mean: f32,
+    pub p95: f32,
+    pub zones: [f32; 3],
+}
+
+/// [`DeStats`] of `ours` against `reference`; `None` when their sizes differ.
+#[allow(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
+pub fn de2000_stats(ours: &RgbImage, reference: &RgbImage) -> Option<DeStats> {
+    if (ours.width, ours.height) != (reference.width, reference.height) {
+        return None;
+    }
+    let pairs: Vec<(f32, usize)> = ours
+        .data
+        .as_chunks::<3>()
+        .0
+        .par_iter()
+        .zip(reference.data.as_chunks::<3>().0)
+        .map(|(a, b)| {
+            let lb = lab(*b);
+            let zone = if lb[0] < 33.0 {
+                0
+            } else if lb[0] < 66.0 {
+                1
+            } else {
+                2
+            };
+            (de2000(lab(*a), lb), zone)
+        })
+        .collect();
+    let mut all: Vec<f32> = pairs.iter().map(|p| p.0).collect();
+    let mean = all.iter().map(|&v| f64::from(v)).sum::<f64>() / all.len().max(1) as f64;
+    all.sort_by(f32::total_cmp);
+    let p95 = all.get(all.len() * 95 / 100).copied().unwrap_or(0.0);
+    let mut zones = [0f32; 3];
+    for (z, zone) in zones.iter_mut().enumerate() {
+        let (sum, n) = pairs
+            .iter()
+            .filter(|p| p.1 == z)
+            .fold((0f64, 0usize), |(s, n), p| (s + f64::from(p.0), n + 1));
+        *zone = if n == 0 { 0.0 } else { (sum / n as f64) as f32 };
+    }
+    Some(DeStats {
+        mean: mean as f32,
+        p95,
+        zones,
+    })
+}
+
 /// Mean ΔE2000 between two pictures of one size, pixel by pixel (for measurements such as
 /// `measure_raw_tiles`); `None` when their sizes differ.
 pub fn mean_de2000(a: &RgbImage, b: &RgbImage) -> Option<f32> {

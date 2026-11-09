@@ -98,7 +98,7 @@ impl LookThumbs {
     }
 }
 
-/// A JPEG through `look`'s colour (its table: no grain or vignette on a thumbnail), encoded
+/// A JPEG through `look`'s colour (its dehaze and table: no grain or vignette on a thumbnail), encoded
 /// again for the screen.
 pub fn tint_jpeg(
     plain: &[u8],
@@ -106,9 +106,7 @@ pub fn tint_jpeg(
     codec: &dyn JpegCodec,
 ) -> Result<Vec<u8>, CodecError> {
     let mut image = decode_image(codec, plain)?.image;
-    if let Some(table) = look.table() {
-        crate::looks::apply(&mut image, &table);
-    }
+    look.draw(&mut image);
     codec.encode(&image, EncodeOptions::screen(QUALITY), None)
 }
 

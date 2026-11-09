@@ -20,7 +20,7 @@ The owner wants Fotollection to export lossless images beside its print JPEGs, w
 - **One 32-bit float path from decode to encode** for that export, quantised only when the file is written, so a RAW keeps what lies above white (FR-112) and colours outside sRGB survive to the output profile. Previews, thumbnails and the GPU look stay 8-bit (ADR-0039).
 - **TIFF 16-bit by default, TIFF 32-bit float as a choice**, Deflate with a predictor, the ICC profile and the EXIF allowlist embedded, never GPS. Writer: the `tiff` crate (MIT); 16-bit and float colour transforms: `moxcms` (BSD-3/Apache-2.0), since qcms is 8-bit only.
 - **A fixed order with one good default per step**, as both teach, and none of darktable's movable order or parallel modules; edits stay readable, versioned serde data.
-- **A linear Rec.2020 working space for the RAW develop** (v0.15.0) before FR-111 lands (v0.16.0), with the gamut clip moved to the output conversion.
+- **A linear Rec.2020 working space for the RAW develop** (v0.15.0) with FR-111 (v0.15.0, owner 2026-11-09), with the gamut clip moved to the output conversion.
 - **Learn, never copy.** RawTherapee and darktable are GPL, and Fotollection keeps the option to relicense (ADR-0008): their manuals, release notes and the papers they cite are read; their code is not read for implementation, ported or copied.
 - **Image methods are chosen by measurement** (owner, 2026-11-07): a harness with known truth first, candidates compared with the current method, parameters swept, results in RESULT, before any method lands (FR-112 first).
 

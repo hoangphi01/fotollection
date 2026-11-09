@@ -98,6 +98,8 @@ pub struct RenderPlan {
     /// The colour look's table (FR-079), applied after the crop and before the stamp, the
     /// frame and the border, which are never tinted. `None` when the look changes nothing.
     pub look: Option<std::sync::Arc<crate::looks::Table>>,
+    /// The look's dehaze (FR-115), drawn just before its table; 0 draws nothing.
+    pub dehaze: i8,
 }
 
 impl RenderPlan {
@@ -464,6 +466,7 @@ fn plan_content(input: &PlanInput<'_>) -> RenderPlan {
         straighten: crate::straighten::sanitize(input.straighten),
         linear_light: false,
         look: input.settings.look.table(),
+        dehaze: input.settings.look.dehaze(),
     }
 }
 
@@ -574,6 +577,7 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
         straighten: crate::straighten::sanitize(input.straighten),
         linear_light: false,
         look: input.settings.look.table(),
+        dehaze: input.settings.look.dehaze(),
     }
 }
 

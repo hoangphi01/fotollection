@@ -268,9 +268,7 @@ pub fn look_tile(
     look: &crate::looks::LookSettings,
 ) -> Result<RgbImage, crate::render::RenderError> {
     let mut tile = fit_long_edge(&centre_square(small), LOOK_TILE_EDGE)?;
-    if let Some(table) = look.table() {
-        crate::looks::apply(&mut tile, &table);
-    }
+    look.draw(&mut tile);
     Ok(tile)
 }
 

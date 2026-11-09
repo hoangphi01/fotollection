@@ -725,3 +725,36 @@ The Color Mixer is one function of a pixel in `f32` (`colour_ops::MixerParams::a
 | Every slider and every hue of the mixer | 3.08 ms | 7.10 ms |
 
 - **The mixer costs about 0.35 ms on eight threads**, inside the 5 ms budget. On two threads both builds were slower than the earlier 5.0 ms (RESULT §21) with the machine loaded and swapping; the mixer adds nothing measurable there, and the two-thread figure is to measure again on an idle machine.
+
+## 39. Lightroom presets against Lightroom's renders, and Dehaze (v0.14.0, FR-089, FR-115)
+
+`preset_bench` (`crates/core/examples/preset_bench.rs`) puts a preset read by Fotollection next to Lightroom's own render. The owner's reference material is private and never committed (`Material Fotollection/`, gitignored); only numbers and generic labels are written here. The measurement is ΔE2000 per pixel at 1000 px, its mean, p95, and the mean in the dark, middle and light thirds (by the reference's L). Release build, REF-MAC (M3), 2026-11-09.
+
+**Pairs.** A pair counts only when the preset's settings in the edited export's XMP equal the preset file's (checked key by key): **S1**, a Sony ARW, and **C1**, a Canon CR2 (80/80 and 86/86 settings equal). The other Canon exports were left out: two carried no preset (their XMP all zero, their pixels identical to the plain export), one had the preset plus hand edits. Pairing by the lowest ΔE picked the wrong preset for C1, so pairs come from the XMP, never from ΔE.
+
+**Track A**, the preset alone: the compiled look applied to Lightroom's plain export (Adobe Color, as shot), against Lightroom's export with the preset. The baseline is the plain export as it is.
+
+| | S1 mean | S1 p95 | C1 mean | C1 p95 |
+|---|---|---|---|---|
+| No look (baseline) | 8.21 | 14.25 | 14.04 | 21.43 |
+| Before: white balance against 5,500 K, Highlights 1:1 | 7.56 | 13.10 | — | — |
+| White balance left out | 7.30 | 13.36 | 14.81 | 20.99 |
+| **Shipped:** white balance and Highlights left out, Dehaze 1:1 | **6.57** | 11.72 | **13.83** | 19.85 |
+
+- **White balance.** Both presets give only an absolute balance (Custom 4,950 K and 5,028 K). Taken against daylight it became warmth −10, but the photos were shot at 4,650 K and 4,600 K, so Lightroom made them *warmer*: the sign was wrong. Against each photo's own as shot both get closer (S1 6.74 at 1 per 10–15 K; C1 13.78 at 1 per 5 K), but the two disagree on the scale, so an absolute balance is now named as *not applied* until the photo's as shot is known (v0.14.x).
+- **Highlights.** Every step towards 0 brought both photos closer (S1 7.30 → 6.57, C1 14.81 → 13.83, the light third most). Lightroom's Highlights is local; ours, the same curve on every pixel, cannot follow it at any strength, so a preset's Highlights is named as *not applied* (FR-115's local tools are its place).
+- **Left in both:** a group left out at a time, exposure, shadows and the mixer each help on both; the baked table (curve, grading) helps S1 (8.76 without) and hurts C1 (12.13 without); contrast and saturation are within 0.4. The middle third stays the largest error (S1 9.3, C1 17.0), where clarity, which no look holds yet, works.
+- **Dehaze** of S1's preset is +2: 0.07 apart with or without, within noise. Its strength against Lightroom's waits for one-slider exports (Dehaze ±50, +100).
+
+**Track B**, the app's whole path on S1: our develop of the ARW (`RawLook::Camera`) against Lightroom's plain export, **3.66** mean (p95 5.82); with the look, against the preset render, **5.16**.
+
+**Dehaze** (`dehaze.rs`, the dark channel prior of He, Sun and Tang, 2009, with He's fast guided filter, 2015): the veil estimated on a copy at most 512 px across (a mean of square blocks on rayon), its coefficients read over the full photo row by row. Before the look's table, so the GPU preview, which draws the table over a base that has it, keeps Rust's order. `measure_dehaze`, a synthetic scene behind a known veil (t = e^(−β·depth), the truth known), ΔE2000 below its sky against the clear scene:
+
+| β | Veiled | +25 | +50 | +75 | +100 |
+|---|---|---|---|---|---|
+| 0.5 | 9.57 | 7.16 | 4.59 | 2.23 | 2.54 |
+| 1.2 | 20.34 | 17.12 | 13.04 | 7.70 | 1.65 |
+| 2.0 | 28.38 | 25.49 | 21.43 | 15.06 | 3.34 |
+
+- **Time**, amount 60, median of 10: **6.2 ms** on a 1600 × 1067 preview, **30 ms** on 6000 × 4000, within the budgets (8 ms, 80 ms). The first version took 21.9 and 97.7 ms: a 512 px copy made by `fit_long_edge` (28 ms at 24 MP) and filters on one thread; a parallel block mean, filters on rayon by rows and columns, and the coefficients read once per row brought it in.
+- **The same at any size** (`fr_115_dehaze_is_the_same_at_any_size`): a 3200 px photo's result made small is within 1.5 ΔE of the 800 px photo's own.
