@@ -109,6 +109,7 @@ Installing a new version over an old one **replaces it** and keeps settings, pro
 - [ ] A security fix or a serious fault (lost work, a crash, wrong prints): `minSafe` raised to this version in `.github/update.json`, with a one-line plain reason in both languages (§5)
 - [ ] `scripts/ui-check.sh` passes the whole matrix ([UI_TESTS.md](UI_TESTS.md)); changed pictures approved on purpose
 - [ ] Benchmarks are within budget, and the results are logged in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log)
+- [ ] An `X.Y.0`: its milestone in the website's Wiki (`site/_data/timeline.yml` and `scripts/timeline-shot.sh`, DOCS_GUIDE "A release")
 - [ ] `scripts/release.sh` run, commit pushed
 - [ ] Workflow green, Linux smoke tests included; the release has the `.dmg`, `.msi`, `-setup.exe`, the two AppImages, the two `.deb` and `SHA256SUMS.txt`
 - [ ] Smoke test of the published installer on macOS ([TESTING.md §7](TESTING.md#7-manual-release-checklist)); a broken release is fixed by a PATCH release, never by replacing assets

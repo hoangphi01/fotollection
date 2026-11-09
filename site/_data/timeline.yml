@@ -1,0 +1,214 @@
+# The Wiki page's timeline (site/_includes/wiki.html): Fotollection from its first screen to
+# now, one milestone per MINOR version, oldest first (owner, 2026-11-09). Every picture is the
+# app as that version shipped, taken from the git history by scripts/timeline-shot.sh, never
+# made again; its tag and path are in `from`. A MINOR release adds its milestone here with one
+# to three of its new screenshots (docs/DOCS_GUIDE.md, "A release"; check-docs checks it).
+# A milestone without screenshots says why in `note` (its look did not change). `fn` lists the
+# notes its words need (site/_data/footnotes.yml, the page's list in the same order).
+- version: "0.1.0-beta.1"
+  date: 2026-10-24
+  title: { en: "The first screen", vi: "Màn hình đầu tiên" }
+  points:
+    en:
+      - "One window: a library on the left, print settings on the right, and Open folder."
+      - "A day later the first beta found best shots, stamped the date and exported to print."
+    vi:
+      - "Một cửa sổ: thư viện bên trái, cài đặt in bên phải, và nút Mở thư mục."
+      - "Một ngày sau, bản beta đầu tiên đã chọn ảnh đẹp nhất, đóng dấu ngày và xuất ảnh để in."
+  shots:
+    - { file: 0.1.0-beta.1-first, w: 1280, h: 820, from: "v0.1.0-beta.1:docs/images/screenshot-dark.png", alt: { en: "The very first screen: an empty library and Open folder", vi: "Màn hình đầu tiên: thư viện trống và nút Mở thư mục" } }
+    - { file: 0.1.0-beta.1-gallery, w: 1600, h: 1000, from: "v0.1.0-beta.1:site/assets/img/grid-en-dark.webp", alt: { en: "The first beta's gallery with its print settings", vi: "Lưới ảnh của bản beta đầu tiên cùng cài đặt in" } }
+- version: "0.1"
+  date: 2026-10-24
+  title: { en: "First public preview", vi: "Bản xem trước công khai đầu tiên" }
+  points:
+    en:
+      - "For macOS and Windows, in English and Vietnamese."
+      - "Best-shot suggestions, a film-style date stamp with offline place names, a camera info frame."
+      - "Crop to print sizes with rotate and straighten; export at the original quality."
+    vi:
+      - "Cho macOS và Windows, bằng tiếng Anh và tiếng Việt."
+      - "Gợi ý ảnh đẹp nhất, dấu ngày kiểu máy phim với tên nơi chụp không cần mạng, khung thông tin máy ảnh."
+      - "Cắt theo khổ in, xoay và chỉnh thẳng; xuất ảnh giữ nguyên chất lượng."
+  shots:
+    - { file: 0.1-gallery, w: 1600, h: 1000, from: "v0.1.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.1.0: the gallery and the print settings", vi: "v0.1.0: lưới ảnh và cài đặt in" } }
+- version: "0.2"
+  date: 2026-10-24
+  title: { en: "Light and dark", vi: "Sáng và tối" }
+  points:
+    en:
+      - "A System, Light or Dark theme, one accent each: teal in light, wood in dark."
+      - "The Windows title bar in the app's colours; a folder closes like a tab."
+    vi:
+      - "Giao diện Hệ thống, Sáng hoặc Tối, mỗi giao diện một màu nhấn: xanh ngọc khi sáng, màu gỗ khi tối."
+      - "Thanh tiêu đề Windows theo màu của app; thư mục đóng lại như một tab."
+  shots:
+    - { file: 0.2-light, w: 1600, h: 1000, from: "v0.2.0:site/assets/img/grid-en-light.webp", alt: { en: "v0.2.0 in the light theme", vi: "v0.2.0 ở giao diện sáng" } }
+    - { file: 0.2-dark, w: 1600, h: 1000, from: "v0.2.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.2.0 in the dark theme", vi: "v0.2.0 ở giao diện tối" } }
+- version: "0.3"
+  date: 2026-10-25
+  title: { en: "Settings as cards", vi: "Cài đặt thành từng thẻ" }
+  points:
+    en:
+      - "The settings in cards, lines in the theme's colour, the same fonts on Windows as on macOS."
+      - "A logo size for the info frame, the same for every photo."
+    vi:
+      - "Cài đặt chia thành từng thẻ, đường kẻ theo màu giao diện, cùng phông chữ trên Windows và macOS."
+      - "Chỉnh cỡ logo cho khung thông tin, giống nhau ở mọi ảnh."
+  shots:
+    - { file: 0.3-gallery, w: 1600, h: 1000, from: "v0.3.1:site/assets/img/grid-en-dark.webp", alt: { en: "v0.3.1: the settings as cards", vi: "v0.3.1: cài đặt thành từng thẻ" } }
+- version: "0.4"
+  date: 2026-10-25
+  fn: [fn_srgb, fn_gps]
+  title: { en: "Sharing and folders", vi: "Chia sẻ và thư mục" }
+  points:
+    en:
+      - "Export for social media in sRGB, never with GPS."
+      - "Folders work like tabs; zoom with a pinch; drag the photo to reframe it, or fit it whole like an instax print."
+    vi:
+      - "Xuất ảnh cho mạng xã hội theo sRGB, không bao giờ kèm GPS."
+      - "Thư mục hoạt động như tab; chụm hai ngón để phóng to; kéo ảnh để chọn lại khung, hoặc để vừa cả ảnh như ảnh instax."
+  shots:
+    - { file: 0.4-gallery, w: 1600, h: 1000, from: "v0.4.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.4.0: the library with All photos and folders", vi: "v0.4.0: thư viện với Tất cả ảnh và các thư mục" } }
+- version: "0.5"
+  date: 2026-10-25
+  title: { en: "The print basket", vi: "Giỏ in" }
+  points:
+    en:
+      - "A print basket and a place to set photos aside: ↑ and ↓ in the preview, or Select in the gallery."
+      - "Hold Space for a quick preview; the export says its size before it starts."
+    vi:
+      - "Giỏ in và chỗ để riêng ảnh: ↑ và ↓ trong màn xem ảnh, hoặc Chọn trong lưới ảnh."
+      - "Giữ phím cách để xem nhanh; phần xuất ảnh báo trước dung lượng."
+  shots:
+    - { file: 0.5-gallery, w: 1600, h: 1000, from: "v0.5.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.5.0: the print basket and Set aside in the library", vi: "v0.5.0: giỏ in và Để riêng trong thư viện" } }
+    - { file: 0.5-basket, w: 1600, h: 1000, from: "v0.5.0:site/assets/img/swipe-en-dark.webp", alt: { en: "v0.5.0: a photo going into the print basket", vi: "v0.5.0: một ảnh được cho vào giỏ in" } }
+- version: "0.6"
+  date: 2026-10-25
+  fn: [fn_units]
+  title: { en: "The photo viewer", vi: "Trình xem ảnh" }
+  points:
+    en:
+      - "Zoom buttons and full detail when you zoom in; a start-up screen with the logo."
+      - "Measured: the app opens in about 0.4 s; a 32 MP photo zooms in about 0.1 s."
+    vi:
+      - "Nút phóng to và đủ chi tiết khi phóng; màn hình khởi động có logo."
+      - "Đã đo: app mở trong khoảng 0,4 giây; ảnh 32 MP phóng to trong khoảng 0,1 giây."
+  shots:
+    - { file: 0.6-gallery, w: 1600, h: 1000, from: "v0.6.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.6.0: the gallery", vi: "v0.6.0: lưới ảnh" } }
+- version: "0.7"
+  date: 2026-10-25
+  fn: [fn_raw, fn_rawformats]
+  title: { en: "Open with, and RAW", vi: "Mở bằng, và RAW" }
+  points:
+    en:
+      - "Camera RAW opens as it is: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG."
+      - "Open photos from Finder or Explorer with Fotollection; ticks follow you across folder tabs."
+    vi:
+      - "Mở thẳng ảnh RAW của máy ảnh: RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG."
+      - "Mở ảnh từ Finder hay Explorer bằng Fotollection; ảnh đã tick vẫn giữ khi chuyển tab thư mục."
+  shots:
+    - { file: 0.7-gallery, w: 1600, h: 1000, from: "v0.7.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.7.0: the gallery", vi: "v0.7.0: lưới ảnh" } }
+    - { file: 0.7-tabs, w: 1600, h: 1000, from: "v0.7.0:site/assets/img/tabs-en-dark.webp", alt: { en: "v0.7.0: folders as tabs", vi: "v0.7.0: thư mục thành các tab" } }
+- version: "0.8"
+  date: 2026-10-27
+  fn: [fn_lightroom, fn_compare]
+  title: { en: "Places and Lightroom", vi: "Nơi chụp và Lightroom" }
+  points:
+    en:
+      - "Dates and places by hand, or borrowed from your phone's photos of the same scene."
+      - "Stars and rejects come in from Lightroom, Bridge, Capture One and darktable."
+      - "RAW built into the app; Linux joins Windows and macOS."
+    vi:
+      - "Sửa ngày và nơi chụp bằng tay, hoặc lấy từ ảnh điện thoại chụp cùng cảnh."
+      - "Nhận sao và ảnh loại từ Lightroom, Bridge, Capture One và darktable."
+      - "RAW được đọc ngay trong app; Linux có mặt cùng Windows và macOS."
+  shots:
+    - { file: 0.8-gallery, w: 1600, h: 1000, from: "v0.8.3:site/assets/img/grid-en-dark.webp", alt: { en: "v0.8.3: the gallery", vi: "v0.8.3: lưới ảnh" } }
+    - { file: 0.8-groups, w: 1600, h: 1000, from: "v0.8.3:site/assets/img/groups-en-dark.webp", alt: { en: "v0.8.3: best shots grouped", vi: "v0.8.3: các nhóm ảnh đẹp nhất" } }
+- version: "0.9"
+  date: 2026-11-02
+  title: { en: "Three modes", vi: "Ba chế độ" }
+  points:
+    en:
+      - "Simple, Collage and Pro: one photo full screen, two photos on one print, or every tool."
+      - "Postcards: a photo on one side, the back with a stamp box and your words."
+      - "The first colour cards, Faves and Tools, with Before and After."
+    vi:
+      - "Đơn giản, Ghép ảnh và Pro: một ảnh toàn màn hình, hai ảnh trên một tấm in, hoặc đủ mọi công cụ."
+      - "Bưu thiếp: một mặt là ảnh, mặt sau có ô tem và lời của bạn."
+      - "Những thẻ màu đầu tiên, Cơ bản và Công cụ, có Trước và Sau."
+  shots:
+    - { file: 0.9-gallery, w: 1600, h: 1000, from: "v0.9.9:site/assets/img/grid-en-dark.webp", alt: { en: "v0.9.9: the three modes above the library", vi: "v0.9.9: ba chế độ phía trên thư viện" } }
+    - { file: 0.9-collage, w: 1600, h: 1000, from: "v0.9.9:site/assets/img/collage-en-dark.webp", alt: { en: "v0.9.9: two photos on one print in Collage mode", vi: "v0.9.9: hai ảnh trên một tấm in ở chế độ Ghép ảnh" } }
+    - { file: 0.9-postcard, w: 1600, h: 1000, from: "v0.9.9:site/assets/img/postcard-en-dark.webp", alt: { en: "v0.9.9: a postcard and its back", vi: "v0.9.9: một bưu thiếp và mặt sau" } }
+- version: "0.10"
+  date: 2026-11-05
+  title: { en: "Core", vi: "Lõi" }
+  points:
+    en:
+      - "Our own RAW develop for every Bayer camera, written in Rust: neutral colour by default, the camera's look in one click."
+      - "Sliders work in linear light on RAW, with headroom above white."
+    vi:
+      - "Bộ develop RAW riêng cho mọi máy ảnh Bayer, viết bằng Rust: màu trung tính mặc định, màu của máy ảnh chỉ một cú bấm."
+      - "Các thanh trượt làm việc trong ánh sáng tuyến tính với RAW, còn dư khoảng trên điểm trắng."
+  note: { en: "The look stayed as in 0.9; what changed is inside, drawn here.", vi: "Giao diện giữ như 0.9; thay đổi nằm bên trong, như sơ đồ này." }
+  diagram: raw-develop
+- version: "0.11"
+  date: 2026-11-06
+  title: { en: "Instant previews", vi: "Xem ảnh tức thì" }
+  points:
+    en:
+      - "Standard previews kept on disk and a quarter of the memory for the photo on screen."
+      - "Any photo opens in 27 ms, where it took 274 to 531 ms."
+    vi:
+      - "Ảnh xem trước chuẩn lưu trên đĩa, một phần tư bộ nhớ dành cho ảnh đang xem."
+      - "Mọi ảnh mở trong 27 ms, trước đây mất 274 đến 531 ms."
+  note: { en: "The look stayed as in 0.9; what changed is inside, drawn here.", vi: "Giao diện giữ như 0.9; thay đổi nằm bên trong, như sơ đồ này." }
+  diagram: preview-tiers
+- version: "0.12"
+  date: 2026-11-06
+  title: { en: "Settings and Develop", vi: "Cài đặt và chỉnh ảnh" }
+  points:
+    en:
+      - "One Settings window in two columns, as on an iPad, with the memory and the cache to manage."
+      - "A develop view a Lightroom user can read: one toolbar above the photo, Lightroom's keys, Before and After."
+    vi:
+      - "Một cửa sổ Cài đặt hai cột như trên iPad, quản lý được bộ nhớ và bộ đệm."
+      - "Màn chỉnh ảnh người dùng Lightroom đọc được ngay: một thanh công cụ trên ảnh, phím tắt của Lightroom, Trước và Sau."
+  shots:
+    - { file: 0.12-gallery, w: 1600, h: 1000, from: "v0.12.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.12.0: the gallery", vi: "v0.12.0: lưới ảnh" } }
+    - { file: 0.12-settings, w: 1600, h: 1000, from: "v0.12.0:site/assets/img/settings-en-dark.webp", alt: { en: "v0.12.0: the new Settings window", vi: "v0.12.0: cửa sổ Cài đặt mới" } }
+- version: "0.13"
+  date: 2026-11-06
+  title: { en: "The interface", vi: "Giao diện mới" }
+  points:
+    en:
+      - "Controls with depth, the Be Vietnam Pro font, one panel width."
+      - "An export dialog as Lightroom's; a full-window develop view with the Navigator, History and a histogram."
+      - "A welcome on the first launch, and the manual inside the app."
+    vi:
+      - "Nút bấm có chiều sâu, phông Be Vietnam Pro, các cột cùng một độ rộng."
+      - "Hộp thoại xuất ảnh như Lightroom; màn chỉnh ảnh toàn cửa sổ với Navigator, History và biểu đồ màu."
+      - "Màn chào mừng lần đầu mở app, và sách hướng dẫn ngay trong app."
+  shots:
+    - { file: 0.13-gallery, w: 1600, h: 1000, from: "v0.13.4:site/assets/img/grid-en-dark.webp", alt: { en: "v0.13.4: the new look", vi: "v0.13.4: giao diện mới" } }
+    - { file: 0.13-window, w: 1600, h: 1000, from: "v0.13.4:site/assets/img/window-en-dark.webp", alt: { en: "v0.13.4: the full-window develop view", vi: "v0.13.4: màn chỉnh ảnh toàn cửa sổ" } }
+    - { file: 0.13-export, w: 1600, h: 1000, from: "v0.13.4:site/assets/img/export-dialog-en-light.webp", alt: { en: "v0.13.4: the export dialog", vi: "v0.13.4: hộp thoại xuất ảnh" } }
+- version: "0.14"
+  date: 2026-11-09
+  fn: [fn_lut]
+  title: { en: "Looks", vi: "Looks" }
+  points:
+    en:
+      - "One tap gives a photo a colour: looks of our own, your Lightroom presets and LUTs, a Color Mixer and Dehaze."
+      - "A look for many photos at once; thumbnails show each photo's colour."
+      - "Move to another computer with one file; a part that fails no longer takes the app down."
+    vi:
+      - "Một chạm là ảnh có màu: look của Fotollection, preset Lightroom và LUT của bạn, Color Mixer và Khử sương."
+      - "Áp một look cho nhiều ảnh cùng lúc; ảnh thu nhỏ hiện màu của từng ảnh."
+      - "Chuyển sang máy khác bằng một tệp; một phần lỗi không còn làm sập app."
+  shots:
+    - { file: 0.14-looks, w: 1600, h: 1000, from: "HEAD (v0.14.0):site/assets/img/window-en-dark.webp", alt: { en: "v0.14.0: looks under the photo, Presets & LUTs on the left", vi: "v0.14.0: looks dưới ảnh, Presets & LUTs bên trái" } }
+    - { file: 0.14-simple, w: 1600, h: 1000, from: "HEAD (v0.14.0):site/assets/img/simple-en-light.webp", alt: { en: "v0.14.0: Simple mode's numbered looks", vi: "v0.14.0: dải look đánh số ở chế độ Đơn giản" } }
+    - { file: 0.14-gallery, w: 1600, h: 1000, from: "HEAD (v0.14.0):site/assets/img/grid-en-dark.webp", alt: { en: "v0.14.0: thumbnails in their colours", vi: "v0.14.0: ảnh thu nhỏ theo màu của từng ảnh" } }

@@ -118,6 +118,16 @@ grep -q '"version"' src-tauri/tauri.conf.json && fail "tauri.conf.json must not 
 # 0.0.1 is the pre-release placeholder; every real version has its CHANGELOG section.
 [ "$version" = "0.0.1" ] || grep -q "^## \[$version\]" CHANGELOG.md || fail "CHANGELOG.md has no section for $version"
 
+echo "• The Wiki's timeline has this MINOR version, and every picture it names (site/_data/timeline.yml)"
+# Each MINOR release adds its milestone (DOCS_GUIDE.md, "A release"); a patch adds none.
+if [ "$version" != "0.0.1" ]; then
+  minor=${version%.*}
+  grep -q "^- version: \"$minor\"" site/_data/timeline.yml || fail "site/_data/timeline.yml has no milestone for v$minor: add it with scripts/timeline-shot.sh"
+fi
+for shot in $(sed -nE 's/.*file: ([a-z0-9.-]+),.*/\1/p' site/_data/timeline.yml); do
+  [ -f "site/assets/img/timeline/$shot.webp" ] || fail "site/_data/timeline.yml names $shot, missing in site/assets/img/timeline/"
+done
+
 echo "• Releases carry no developer tools (SECURITY.md)"
 # Tauri opens the web inspector in debug builds only, unless its `devtools` feature is on.
 grep -E '^tauri = ' src-tauri/Cargo.toml | grep -q 'devtools' && fail "src-tauri/Cargo.toml turns on tauri's devtools feature: releases would have Inspect Element"

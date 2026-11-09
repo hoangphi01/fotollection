@@ -14,7 +14,7 @@ import { chromium } from 'playwright'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const img = path.join(root, 'site/assets/img')
-const PAGES = ['home', 'download', 'performance', 'manual', 'code-signing', 'story']
+const PAGES = ['home', 'download', 'performance', 'manual', 'code-signing', 'story', 'wiki']
 const TYPES = { '.html': 'text/html', '.woff2': 'font/woff2', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml' }
 
 const browser = await chromium.launch()

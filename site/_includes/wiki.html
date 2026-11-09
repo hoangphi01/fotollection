@@ -1,0 +1,55 @@
+{%- comment %} The Wiki (site/README.md): Fotollection's timeline, one milestone per MINOR version from its first screen, oldest first, each with what changed and the app as it shipped (site/_data/timeline.yml, pictures from the git history by scripts/timeline-shot.sh). Laid out like the story: the same header, then the timeline; the round button opens the list of versions. {% endcomment -%}
+{%- assign t = site.data.i18n[page.lang] -%}
+{%- assign lang = page.lang -%}
+{%- capture toc -%}
+{%- for m in site.data.timeline %}
+- [v{{ m.version }} · {{ m.title[lang] }}](#v{{ m.version | replace: '.', '-' }})
+{%- endfor %}
+{%- endcapture -%}
+{%- assign latest = site.data.timeline | last -%}
+<section class="section perf-head story-head">
+  <div class="wrap">
+    <p class="kicker">{{ t.wiki_kicker }}</p>
+    <h1>{{ t.wiki_title }}</h1>
+    <p class="lead narrow">{{ t.wiki_lead }}</p>
+    <p><a class="pill" href="#v{{ latest.version | replace: '.', '-' }}">{{ t.wiki_latest }} · v{{ latest.version }}</a></p>
+  </div>
+</section>
+
+<section class="section tint">
+  <div class="wrap">
+    <ol class="timeline">
+      {%- for m in site.data.timeline %}
+      <li class="timeline-item" id="v{{ m.version | replace: '.', '-' }}">
+        <p class="timeline-when"><span class="timeline-version">v{{ m.version }}</span> <time datetime="{{ m.date }}">{% if lang == 'vi' %}{{ m.date | date: "%d/%m/%Y" }}{% else %}{{ m.date | date: "%-d %b %Y" }}{% endif %}</time></p>
+        <div class="card timeline-card">
+          <h2>{{ m.title[lang] }}{% if m.fn %}{% include fn.html keys=m.fn %}{% endif %}</h2>
+          <ul class="timeline-points">
+            {%- for p in m.points[lang] %}
+            <li>{{ p }}</li>
+            {%- endfor %}
+          </ul>
+          {%- if m.shots %}
+          <div class="timeline-shots">
+            {%- for s in m.shots %}
+            {%- capture src %}{{ '/assets/img/timeline/' | relative_url }}{{ s.file }}.webp{% endcapture %}
+            <figure class="shot">
+              <a href="{{ src }}"><img src="{{ src }}" width="{{ s.w }}" height="{{ s.h }}" alt="{{ s.alt[lang] }}" loading="lazy" decoding="async" /></a>
+              <figcaption>{{ s.alt[lang] }}</figcaption>
+            </figure>
+            {%- endfor %}
+          </div>
+          {%- endif %}
+          {%- if m.diagram %}
+          <p class="small muted">{{ m.note[lang] }}</p>
+          {% include perf-diagram.html name=m.diagram %}
+          {%- endif %}
+        </div>
+      </li>
+      {%- endfor %}
+    </ol>
+    <p class="small muted timeline-foot">{{ t.wiki_foot }}</p>
+  </div>
+</section>
+
+{% include chapter-list.html toc=toc label=t.wiki_toc selector=".timeline-item[id]" %}

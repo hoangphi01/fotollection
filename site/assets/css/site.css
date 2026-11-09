@@ -429,6 +429,24 @@ h3.with-logo .logo-os { height: 0.95em; }
    serif text at a book's measure, centred so both margins stay equal; paragraphs indented, not
    spaced; each chapter opens on a centred title and a two-line initial, chapters part with an
    ornament, and the last one ends on it too. */
+/* The Wiki's timeline (site/_includes/wiki.html): a line down the left, a dot per version, each
+   version a card with its points and the app as it shipped. */
+.timeline { list-style: none; margin: 0; padding: 0 0 0 32px; position: relative; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 2px; background: var(--line); }
+.timeline-item { position: relative; margin: 0 0 48px; scroll-margin-top: 96px; }
+.timeline-item:last-child { margin-bottom: 0; }
+.timeline-item::before { content: ''; position: absolute; left: -32px; top: 5px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--tint); }
+.timeline-when { margin: 0 0 12px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; color: var(--muted); font-variant-numeric: tabular-nums; }
+.timeline-version { font-size: 1.15rem; font-weight: 700; color: var(--ink); }
+.timeline-card h2 { margin: 0 0 12px; font-size: clamp(1.4rem, 1.1rem + 1vw, 1.8rem); }
+.timeline-points { margin: 0 0 20px; padding-left: 1.2em; }
+.timeline-points li + li { margin-top: 6px; }
+.timeline-points:last-child { margin-bottom: 0; }
+.timeline-shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.timeline-shots img { display: block; width: 100%; height: auto; }
+.timeline-shots figcaption { font-size: 0.88rem; }
+.timeline-card .diagram { margin: 12px 0 0; }
+.timeline-foot { margin: 40px 0 0; text-align: center; }
 .story-head { text-align: center; }
 .story-head .lead { margin-inline: auto; }
 .story {

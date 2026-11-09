@@ -12,6 +12,7 @@
 {%- if page.lang == 'vi' %}{% assign path_download = '/vi/download/' | relative_url %}{% else %}{% assign path_download = '/download/' | relative_url %}{% endif -%}
 {%- if page.lang == 'vi' %}{% assign path_signing = '/vi/code-signing/' | relative_url %}{% else %}{% assign path_signing = '/code-signing/' | relative_url %}{% endif -%}
 {%- if page.lang == 'vi' %}{% assign path_story = '/vi/story/' | relative_url %}{% else %}{% assign path_story = '/story/' | relative_url %}{% endif -%}
+{%- if page.lang == 'vi' %}{% assign path_wiki = '/vi/wiki/' | relative_url %}{% else %}{% assign path_wiki = '/wiki/' | relative_url %}{% endif -%}
 {%- if page.title_key %}{% assign page_title = t[page.title_key] | append: ' · Fotollection' %}{% else %}{% assign page_title = t.title %}{% endif -%}
 {%- if page.description_key %}{% assign page_description = t[page.description_key] %}{% else %}{% assign page_description = t.description %}{% endif -%}
 {%- assign canonical = page.url | absolute_url -%}
@@ -254,6 +255,7 @@
           <li><a href="{{ path_perf }}">{{ t.nav_numbers }}</a></li>
           <li><a href="{{ path_signing }}">{{ t.footer_signing }}</a></li>
           <li><a href="{{ path_story }}">{{ t.footer_story }}</a></li>
+          <li><a href="{{ path_wiki }}">{{ t.footer_wiki }}</a></li>
           <li><a class="pill" href="https://hoangphi01.github.io/blog/">{{ t.footer_blog }} {% include icons/arrow-right.svg %}</a></li>
         </ul>
       </div>

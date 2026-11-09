@@ -17,3 +17,6 @@ story_title:
 cs_title:
   en: [fn_linux_pkg, fn_sha, fn_gpg, fn_gps]
   vi: [fn_linux_pkg, fn_sha, fn_gpg, fn_gps]
+wiki_title:
+  en: [fn_srgb, fn_gps, fn_units, fn_raw, fn_rawformats, fn_lightroom, fn_compare, fn_lut]
+  vi: [fn_srgb, fn_gps, fn_units, fn_raw, fn_rawformats, fn_lightroom, fn_compare, fn_lut]

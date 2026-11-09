@@ -68,6 +68,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Wider side columns** (FR-099): the folder list, the panels and the preview's columns are 300 px (were 288), the room the raised controls need, taken from the photo's stage.
 - **Collage sheet preview in two tabs** (FR-079, FR-095), as the photo preview: **Edit** (the photos on the sheet, then the colour cards) and **Print and export** (size, postcards, cells, date stamp, export). The looks are a strip under the sheet, folding by its header as the photo preview's, the keys' footer beside it as tall as an open strip, open or folded; the keys are the few used most, every key behind ⓘ in the toolbar. With no photo picked, **Whole sheet** (key **0**) is the first row of the photos, and the colour cards change both photos together: the same look for both, one undo step, a note when their colours differed.
 
+- **Website:** a **Wiki** page, from the footer: Fotollection's timeline from its first screen, each version with what it brought and the app as it shipped.
 - **Website:** the footer shows the GPLv3 mark with "Fotollection is released under the GPL 3.0", as other free software does; the mark is served from the site.
 
 - **Website:** the treats of *Buy me a coffee* look like the app's choices: raised while off, the chosen one in the theme's colour and pressed in.

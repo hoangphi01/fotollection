@@ -355,7 +355,16 @@ en:
   story_kicker: A diary
   story_description: "The story behind Fotollection: twenty years of photos never looked at again, a winter of looking back, and the first kilometres of a marathon to turn memories back into prints."
   story_lead: "Why Fotollection exists, and how it found its own way: a diary of the first kilometres, told from the project's notes and the history of its code."
+  story_wiki: "See the app at every version, in the Wiki"
   footer_story: The story
+  wiki_title: Wiki
+  wiki_kicker: From the first screen
+  wiki_description: "How Fotollection grew from its first screen, version by version: what each one brought, with the app as it shipped."
+  wiki_lead: "Every version, from the first empty window to today: what it brought, and the app as it shipped, taken from the project's history."
+  wiki_latest: Go to the latest
+  wiki_toc: Versions
+  wiki_foot: "Each picture is the app as that version shipped, taken from the project's history; the earliest are in English only. A new version adds its own here."
+  footer_wiki: Wiki
   man_title: Manual
   man_kicker: Help
   man_description: "How to use Fotollection, step by step, with a screenshot of each step: choosing the photos to print, zoom, RAW, camera clocks, dates and places, shooting with a camera connected, and every shortcut."
@@ -938,7 +947,16 @@ vi:
   story_kicker: Nhật ký
   story_description: "Câu chuyện phía sau Fotollection: hai mươi năm ảnh chưa xem lại, một mùa đông nhìn về những năm cũ, và những cây số đầu của một cuộc marathon để kỷ niệm trở lại thành ảnh in."
   story_lead: "Vì sao có Fotollection, và nó đã tìm ra con đường riêng thế nào: nhật ký của những cây số đầu tiên, kể lại từ những ghi chép và lịch sử mã nguồn của dự án."
+  story_wiki: "Xem app qua từng phiên bản, trong Wiki"
   footer_story: Câu chuyện
+  wiki_title: Wiki
+  wiki_kicker: Từ màn hình đầu tiên
+  wiki_description: "Fotollection đã lớn lên từ màn hình đầu tiên thế nào, qua từng phiên bản: mỗi bản mang đến gì, kèm giao diện lúc phát hành."
+  wiki_lead: "Mọi phiên bản, từ cửa sổ trống đầu tiên đến hôm nay: mỗi bản mang đến gì, và giao diện của app lúc phát hành, lấy từ lịch sử của dự án."
+  wiki_latest: Tới bản mới nhất
+  wiki_toc: Các phiên bản
+  wiki_foot: "Mỗi ảnh là giao diện của app đúng lúc phiên bản đó phát hành, lấy từ lịch sử của dự án; những ảnh đầu tiên chỉ có tiếng Anh. Mỗi bản mới sẽ có thêm mốc của mình ở đây."
+  footer_wiki: Wiki
   man_title: Hướng dẫn
   man_kicker: Trợ giúp
   man_description: "Cách dùng Fotollection từng bước, mỗi bước kèm ảnh chụp màn hình: chọn ảnh để in, phóng to, ảnh RAW, đồng hồ máy ảnh, ngày và nơi chụp, chụp với máy ảnh cắm vào máy tính, và mọi phím tắt."
