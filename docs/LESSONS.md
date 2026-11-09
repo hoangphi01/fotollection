@@ -988,3 +988,10 @@
 - **Why:** the old place button carried `role="combobox"` by hand; the new block was a plain `<button>`, so assistive technology no longer heard a picker, and the shot that opens it by that role found none. `ui-check` passed, as none of its views opens that picker.
 - **Fix:** `PickerTrigger` is a `combobox` itself, for every picker that uses it. That alone failed UI-A11Y-002 on the manual's chapter picker: a combobox takes no name from its words, so the block now takes a `label` that is both what it shows and its `aria-label`.
 - **Rule:** when a hand-made control becomes a shared block, carry its roles and ARIA into the block (a role changes how its name is computed: check the name too), and run the screenshot build as well as `ui-check` before a release: it walks paths the checks do not.
+
+### A link to a renamed ADR passed every local check and failed the docs workflow after the push (docs, ADR-0006)
+
+- **Seen:** the v0.14.0 push failed CI's *Internal links and anchors*: DATABASE.md linked `adr/0028-camera-sessions-temporary-folder-in-app-data.md`, a name the ADR no longer has (`0028-camera-sessions-saved-on-demand.md`).
+- **Why:** the link was written from memory of an old title in the 2026-11-09 docs pass; `check-docs.sh` checked IDs and the ADR index but not where links point, which only CI's lychee did.
+- **Fix:** the link corrected; `check-docs.sh` now checks that every relative `.md` link in the docs, READMEs, CHANGELOG and CONTRIBUTING reaches a file, proven failing on the broken link before the fix.
+- **Rule:** copy a doc's link from its file name, never from memory; a check that only CI runs is also run by `check-docs.sh` when it can be.

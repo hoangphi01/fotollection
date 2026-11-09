@@ -17,7 +17,7 @@
 | App settings `settings.json` † | JSON, versioned ([§6](#6-app-settings)) | App config dir | `settings_store.rs` | Until uninstall or reset | Camera names/lenses only |
 | Settings copies `settings.json.bak`, `.json.corrupt`, `.json.corrupt-<time>` | The previous good file; a file that could not be read; a damaged file kept before its recovered settings replaced it (ADR-0048) | App config dir | `atomic.rs`, `settings_store.rs` | Replaced on each save (`.bak`); until removed | Yes, as `settings.json` |
 | Error log `logs/errors.log` … `errors.4.log` † | Text, one line per error or panic ([ERROR_CONTROL.md §3](ERROR_CONTROL.md#3-status-of-the-plan-v091)) | App data dir | `error_log.rs` | Rotated at 1 MB, 5 files at most | No: paths and file names are cut to their extension |
-| Camera sessions `<app data>/camera/<date time>/` † | The shots of a tethered camera not yet saved ([ADR-0028](adr/0028-camera-sessions-temporary-folder-in-app-data.md)) | App data dir | `camera.rs` | Until saved or discarded | Yes: the photos |
+| Camera sessions `<app data>/camera/<date time>/` † | The shots of a tethered camera not yet saved ([ADR-0028](adr/0028-camera-sessions-saved-on-demand.md)) | App data dir | `camera.rs` | Until saved or discarded | Yes: the photos |
 | Best-shot analysis `analysis/` † | JSON per photo ([§8](#8-thumbnail-cache)) | App cache dir | `culling/cache.rs` | Until *Clear cache* or the limit | No |
 | Camera logos `logos/<id>.png` † | PNG, validated copy | App config dir | `logo.rs` | Until removed | No |
 | User fonts `fonts/<id>.ttf\|otf` † | TTF/OTF, validated copy | App config dir | `fonts.rs` | Until removed | No |

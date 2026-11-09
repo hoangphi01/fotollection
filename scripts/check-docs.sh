@@ -128,6 +128,25 @@ for shot in $(sed -nE 's/.*file: ([a-z0-9.-]+),.*/\1/p' site/_data/timeline.yml)
   [ -f "site/assets/img/timeline/$shot.webp" ] || fail "site/_data/timeline.yml names $shot, missing in site/assets/img/timeline/"
 done
 
+echo "• Every relative link between the docs reaches a file (CI's link check, run here too)"
+# CI checks links and anchors with lychee; this catches a renamed file before the push.
+python3 -I - <<'PY' || fail "a relative link points at a file that does not exist (above)"
+import pathlib, re, sys
+bad = 0
+files = [pathlib.Path(p) for p in ("README.md", "README.vi.md", "CHANGELOG.md", "CONTRIBUTING.md")] + sorted(pathlib.Path("docs").rglob("*.md"))
+for f in files:
+    if not f.exists():
+        continue
+    for m in re.finditer(r"\]\(([^)#\s]+\.md)(?:#[^)]*)?\)", f.read_text(encoding="utf-8")):
+        target = m.group(1)
+        if "://" in target:
+            continue
+        if not (f.parent / target).exists():
+            print(f"  {f}: {target}")
+            bad += 1
+sys.exit(1 if bad else 0)
+PY
+
 echo "• Releases carry no developer tools (SECURITY.md)"
 # Tauri opens the web inspector in debug builds only, unless its `devtools` feature is on.
 grep -E '^tauri = ' src-tauri/Cargo.toml | grep -q 'devtools' && fail "src-tauri/Cargo.toml turns on tauri's devtools feature: releases would have Inspect Element"
