@@ -1164,6 +1164,7 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 - **Older presets** (process before 2012): their sliders converted as Lightroom converts them, measured.
 - **Not in v0.14.x:** lens corrections stay with [FR-085](#fr-085--lens-distortion-correction) in v0.15.0 (owner, 2026-11-09): Adobe's lens profiles cannot be bundled and lensfun's library and data are not permissively licensed, so they come from the corrections cameras write into their RAW files.
 - **Rust first (ADR-0044):** each tool in the core, on rayon, within OPTIMIZATION §3's budgets set before its code; the spatial ones before or after the look's table as Dehaze is, chosen so the GPU preview keeps Rust's order.
+- **Learn from RawTherapee and darktable first** (owner, 2026-11-09: "what is too hard, see how RawTherapee handles it; Fotollection is a marathon"): before each hard tool (local highlights and shadows, clarity and texture, noise reduction, grain, older presets' conversion), read how RawTherapee and darktable solve it: their manuals (RawPedia, darktable's user manual), their discussions and the papers they cite. Write what was learnt, the candidates and why, in RESULT before the code, then build our own in Rust and measure it against theirs and Lightroom's. **Their code is never copied or translated:** both are GPL, and a copy would close the relicensing option of [ADR-0008](adr/0008-license-gpl3-with-relicensing-option.md); methods and published papers are free to learn from.
 
 ## 7. Non-functional requirements
 
