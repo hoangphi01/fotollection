@@ -51,6 +51,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0045](0045-presets-compiled-into-the-look-table.md) | Lightroom presets compiled into the look table: sliders to ours, curves, whites/blacks, HSL, colour grading and B&W mixer baked into one 33³ LUT; spatial tools named, never dropped; strengths tuned against Lightroom's renders | Accepted | 2026-11-08 |
 | [0046](0046-one-motion-system.md) | One motion system: three paces and three curves as tokens in `index.css` (Fluent 2 scale, Material 3 curves), semantic utilities, a script mirror that reads the CSS, reduced motion by the system or a setting, no motion library; `check-lego` and `check-docs` enforce it | Accepted | 2026-11-08 |
 | [0047](0047-thumbnails-show-the-look.md) | Thumbnails show the look: the plain T1 coloured by Rust when served (1.1 ms), kept in memory (32 MB), its key in the thumbnail's address; a batch colours its thumbnails with the import's progress bar | Accepted | 2026-11-08 |
+| [0048](0048-one-owner-per-service-failures-stay-local.md) | One owner per service; a failing part degrades, never takes the app down: panic handlers on every pool, `catch_unwind` on image routes and commands, `Locked`, `supervise`, guarded decoders, error boundaries per part | Accepted | 2026-11-09 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

@@ -885,7 +885,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-082 — The app's brain in one file (`.fotosettings`)
 
-**P2 (later, not scheduled; owner's request 2026-11-05).** Everything Fotollection has learnt on one computer goes to another in one file, "the app's brain": *Export settings…* writes a `.fotosettings` file, *Import settings…* reads one ([EXTENSION.md §2.3](EXTENSION.md#23-settings-bundle-fotosettings)).
+**P2 (scheduled after v0.14.0 with FR-116's Data section, owner 2026-11-09; owner's request 2026-11-05).** Recent postcard addresses travel only when *Include recent addresses* is ticked at export, off by default, with a line on privacy (owner, 2026-11-09). Everything Fotollection has learnt on one computer goes to another in one file, "the app's brain": *Export settings…* writes a `.fotosettings` file, *Import settings…* reads one ([EXTENSION.md §2.3](EXTENSION.md#23-settings-bundle-fotosettings)).
 
 - **What it holds:** all of `settings.json`: the interface (language, theme, mode, export folders, the card order and the welcome's choices of [FR-080](#fr-080--card-order-of-ones-own) and [FR-081](#fr-081--a-welcome-screen-on-the-first-launch)), every print and stamp setting, custom print sizes, camera profiles and clocks, the postcard settings and the **recent postcard addresses**, the user's looks with the LUT files they use ([FR-079](#fr-079--colour-adjustments)), fonts and camera logos.
 - **What it never holds:** photos, folder paths, projects or the caches. Albums travel as `.fotollection` projects ([FR-023](#fr-023--projects-autosave-and-undo)), which keep leaving the interface group and the addresses out, so opening someone's album never changes one's own app.
@@ -1130,6 +1130,16 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 - **Presets:** a Lightroom preset's `Clarity2012`, `Texture` and `Dehaze` map to them, leaving the *not applied* list.
 - **What it does not do:** no motion trails, reflections or composites: those belong to the shot.
 
+### FR-116 — Data on this computer, in Settings
+
+**P2 (after v0.14.0; owner's request 2026-11-09: "build a data menu in Settings: how does a user move to another computer?").** Settings gets a **Data** section, built from the lego blocks:
+
+- **Move to another computer:** *Export settings…* and *Import settings…* ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)); the import shows what the file holds (looks, LUTs, fonts, logos, print sizes, addresses) and asks to merge or replace.
+- **What Fotollection keeps here:** one row per store (settings, looks and LUTs, fonts, logos, recent addresses, camera sessions, cache, logs) with its size, count and *Open folder*; *Clear* (red, asked first) only where clearing loses nothing that cannot be made again.
+- **Reset settings:** back to the defaults, the old file kept as `.bak`, asked first.
+- **Moving:** export settings on the old computer and copy the `.fotollection` projects; on the new one, import, open each project and relink its photo folders. Projects carry the LUTs and fonts they use (S3 of the 2026-11-09 plan).
+- **Owners ([ADR-0048](adr/0048-one-owner-per-service-failures-stay-local.md)):** each row asks its store's owner for its size and its clearing; the section owns no data.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
@@ -1176,7 +1186,7 @@ The app goes from launch to an interactive window in **under 1.5 s**. Measured 2
 
 ### NFR-011 — Robustness
 
-No input file, however malformed, can crash the app or hang the batch. A bad file only fails that one photo.
+No input file, however malformed, can crash the app or hang the batch. A bad file only fails that one photo. Beyond input files (owner, 2026-11-09, [ADR-0048](adr/0048-one-owner-per-service-failures-stay-local.md)): no failing part, a decoder, a command, a background job, a lock or a card of the interface, takes the app down or leaves it stuck; it degrades alone, tells the user, and is logged with its `ERR-` code.
 
 ### NFR-012 — Culling navigation
 
