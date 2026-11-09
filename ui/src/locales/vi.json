@@ -541,6 +541,16 @@
     },
     "history": {
       "unknown_step": "Bước này không còn trong lịch sử của ảnh"
+    },
+    "settings_bundle": {
+      "not_settings": "Đây không phải tệp thiết lập của Fotollection",
+      "corrupt": "Tệp thiết lập bị hỏng; chưa nhập gì",
+      "newer": "Thiết lập này đến từ bản Fotollection mới hơn; hãy cập nhật để nhập",
+      "too_large": "Tệp thiết lập quá lớn",
+      "write_failed": "Không ghi được tệp thiết lập"
+    },
+    "data": {
+      "folder_missing": "Không mở được thư mục"
     }
   },
   "project": {

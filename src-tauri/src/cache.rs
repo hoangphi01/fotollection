@@ -42,7 +42,7 @@ pub struct MemoryInfo {
     pub held: f64,
 }
 
-fn dirs(state: &AppState) -> [&Path; 2] {
+pub(crate) fn dirs(state: &AppState) -> [&Path; 2] {
     [state.thumbs.dir(), state.analysis_cache.dir()]
 }
 

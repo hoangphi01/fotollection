@@ -81,6 +81,56 @@ export const commands = {
 	 *  at most 500 characters, so the log stays one line per error.
 	 */
 	reportUiError: (kind: string, message: string) => __TAURI_INVOKE<void>("report_ui_error", { kind, message }),
+	/**  What each store holds now (FR-116), asked of its owner. */
+	dataUsage: () => typedError<StoreUsage[], IpcError>(__TAURI_INVOKE("data_usage")),
+	/**
+	 *  Shows a store's folder in Finder or Explorer; the folder is Rust's own, never a path the
+	 *  webview sent.
+	 */
+	openDataFolder: (kind: DataKind) => typedError<null, IpcError>(__TAURI_INVOKE("open_data_folder", { kind })),
+	/**
+	 *  *Export settings…* (FR-082): this machine's settings, fonts, logos and LUTs in a
+	 *  `.fotosettings` where the user chooses; the addresses only when `include_addresses`.
+	 */
+	exportSettings: (includeAddresses: boolean) => typedError<string | null, IpcError>(__TAURI_INVOKE("export_settings", { includeAddresses })),
+	/**
+	 *  *Import settings…*, first step (FR-082): a `.fotosettings` the user picks, checked whole,
+	 *  kept until they choose how to import it; what it holds, or `None` if cancelled.
+	 */
+	inspectSettingsImport: () => typedError<{
+	looks: number,
+	luts: number,
+	fonts: number,
+	logos: number,
+	cameras: number,
+	sizes: number,
+	addresses: number,
+} | null, IpcError>(__TAURI_INVOKE("inspect_settings_import")),
+	/**
+	 *  *Import settings…*, second step: the file checked by [`inspect_settings_import`], merged
+	 *  or replacing (owner, 2026-11-09). The old `settings.json` stays as `.bak`; the interface
+	 *  reloads afterwards.
+	 */
+	applySettingsImport: (mode: ImportMode) => typedError<null, IpcError>(__TAURI_INVOKE("apply_settings_import", { mode })),
+	/**
+	 *  Removes the LUT files nothing refers to (FR-116), asked first in the interface: a project
+	 *  saved before v0.14.0 carries none and may need them. Returns how many went.
+	 */
+	removeUnusedLuts: () => __TAURI_INVOKE<number>("remove_unused_luts"),
+	/**  Forgets every postcard address this machine remembers (FR-077, FR-116). */
+	forgetAllAddresses: () => __TAURI_INVOKE<void>("forget_all_addresses"),
+	/**
+	 *  *Reset settings* (owner, 2026-11-09): the interface, the export choices, the defaults for
+	 *  new projects and the cameras' typed names back to their defaults; the user's data (saved
+	 *  looks, LUTs, fonts, logos, addresses, custom sizes) stays. The old file stays as `.bak`.
+	 */
+	resetSettings: () => typedError<null, IpcError>(__TAURI_INVOKE("reset_settings")),
+	/**
+	 *  *Erase data* (owner, 2026-11-09): the saved looks, LUTs, fonts, logos and addresses go, as
+	 *  on a new install; projects and photos on disk are never touched. The old file stays as
+	 *  `.bak`.
+	 */
+	eraseData: () => typedError<null, IpcError>(__TAURI_INVOKE("erase_data")),
 	/**  How much the cache holds; about 0.2 s for 70,000 files (OPTIMIZATION.md §5). */
 	cacheUsage: () => __TAURI_INVOKE<CacheUsage>("cache_usage"),
 	/**
@@ -1073,6 +1123,9 @@ export type CustomPrintSize = {
 	unit?: LengthUnit,
 };
 
+/**  One store Fotollection keeps on this computer. */
+export type DataKind = "settings" | "looks" | "luts" | "fonts" | "logos" | "addresses" | "cameraSessions" | "cache" | "logs";
+
 /**  Date stamp formats (FR-004). */
 export type DateFormat = 
 /**  `2026-10-23` */
@@ -1400,6 +1453,16 @@ export type ImageFacts = {
 	dng: DngKind | null,
 	decoder: Decoder | null,
 };
+
+/**  How an import meets this machine's settings (owner, 2026-11-09). */
+export type ImportMode = 
+/**
+ *  Adds what this machine lacks (looks, LUTs, fonts, logos, cameras, sizes, addresses);
+ *  its interface and its defaults for new projects stay.
+ */
+"merge" | 
+/**  The file's settings whole, its fonts given this machine's ids. */
+"replace";
 
 /**
  *  What an import of presets did (FR-089): the looks it made, the files it skipped and why,
@@ -2052,6 +2115,17 @@ export type Sensor = "bayer" | "xTrans" |
 /**  Already demosaiced (a linear DNG, `ProRAW`). */
 "linear" | "monochrome";
 
+/**  What an import would bring, shown before anything changes (FR-116). */
+export type SettingsImportSummary = {
+	looks: number,
+	luts: number,
+	fonts: number,
+	logos: number,
+	cameras: number,
+	sizes: number,
+	addresses: number,
+};
+
 /**
  *  Which develop settings *Copy settings* takes from a photo (FR-097), as Lightroom's
  *  dialog asks: the look, the RAW look, the crop (with its straightening) and the stamp
@@ -2176,6 +2250,17 @@ export type StartupFinished = null;
  *  settings or a reset, named so in the History list.
  */
 export type StepKind = "paste" | "reset";
+
+/**
+ *  A store's size: bytes on disk (f64: TypeScript has no u64), how many items, and for the
+ *  LUTs how many no look uses.
+ */
+export type StoreUsage = {
+	kind: DataKind,
+	bytes: number | null,
+	count: number,
+	unused: number,
+};
 
 export type TaskKind = 
 /**  Reading files and EXIF during import. */

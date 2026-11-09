@@ -561,6 +561,16 @@
     },
     "history": {
       "unknown_step": "This step is no longer in the photo's history"
+    },
+    "settings_bundle": {
+      "not_settings": "This is not a Fotollection settings file",
+      "corrupt": "The settings file is damaged; nothing was imported",
+      "newer": "These settings come from a newer Fotollection; update it to import them",
+      "too_large": "The settings file is too large",
+      "write_failed": "The settings file could not be written"
+    },
+    "data": {
+      "folder_missing": "The folder could not be opened"
     }
   },
   "project": {

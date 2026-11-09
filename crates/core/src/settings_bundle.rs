@@ -54,7 +54,7 @@ pub struct SettingsBundle {
 /// What an import would bring, shown before anything changes (FR-116).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
-pub struct ImportSummary {
+pub struct SettingsImportSummary {
     pub looks: u32,
     pub luts: u32,
     pub fonts: u32,
@@ -80,9 +80,9 @@ fn count(n: usize) -> u32 {
 }
 
 impl SettingsBundle {
-    pub fn summary(&self) -> ImportSummary {
+    pub fn summary(&self) -> SettingsImportSummary {
         let s = &self.settings;
-        ImportSummary {
+        SettingsImportSummary {
             looks: count(s.looks.len()),
             luts: count(self.luts.len()),
             fonts: count(s.fonts.len()),

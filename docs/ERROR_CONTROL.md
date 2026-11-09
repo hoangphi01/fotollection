@@ -113,6 +113,8 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 | `ERR-FS-0010` | v0.9.1 | `logo.write_failed` | `src-tauri/src/commands.rs:1337` | The logo could not be saved | The logo could not be copied into the app's logos folder. | Check free disk space and permissions of the app data folder. |
 | `ERR-FS-0011` | v0.9.1 | `project.rename_failed` | `src-tauri/src/document.rs:636` | The project could not be renamed | The project file could not be renamed. | Check the folder is writable and the file not open elsewhere. |
 | `ERR-FS-0012` | v0.9.1 | `project.write_failed` | `crates/core/src/bundle.rs:98` | The project could not be saved | The project could not be written (atomic save failed). | Save to another folder; the previous save and its .bak are untouched. |
+| `ERR-FS-0013` | v0.14.0 | `settings_bundle.write_failed` | `src-tauri/src/data.rs` (`export_settings`) | The settings file could not be written | The chosen folder cannot be written to, or the disk is full. | Choose another folder. |
+| `ERR-FS-0014` | v0.14.0 | `data.folder_missing` | `src-tauri/src/data.rs` (`open_data_folder`) | The folder could not be opened | The store's folder could not be made or shown. | Check the disk; report it with the diagnostics. |
 
 ### PRJ: Project files (.fotollection)
 
@@ -142,6 +144,10 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 | `ERR-CFG-0011` | v0.14.0 | `settings.restored` | `src-tauri/src/state.rs` (`load_settings`) | The settings file was damaged; the last good copy was used | `settings.json` was invalid; `settings.json.bak` read and was used; the damaged file kept as `.corrupt-<time>`. | Nothing; the last change before the damage may be missing. |
 | `ERR-CFG-0012` | v0.14.0 | `settings.newer` | `src-tauri/src/state.rs` (`load_settings`) | These settings come from a newer Fotollection: defaults are used and the file is left alone | `settings.json` has a newer `schema_version`; defaults are used and the file is never written. | Update Fotollection. |
 | `ERR-CFG-0013` | v0.14.0 | `settings.corrupt` | `src-tauri/src/state.rs` (`load_settings`) | The settings file could not be read; defaults are used and the file was kept as settings.json.corrupt | Not a settings file at all (not JSON, another format) and no readable `.bak`: moved aside, defaults used. | Report it with the `.corrupt` file. |
+| `ERR-CFG-0014` | v0.14.0 | `settings_bundle.not_settings` | `src-tauri/src/data.rs` (`settings_error`) | This is not a Fotollection settings file | The file picked for *Import settings* is not a `.fotosettings` (another ZIP, a project). | Pick a file made by *Export settings*. |
+| `ERR-CFG-0015` | v0.14.0 | `settings_bundle.corrupt` | `data.rs`, `settings_bundle::from_bytes` | The settings file is damaged | A part fails its check (manifest, BLAKE3, the settings, a font, logo or LUT). Nothing was imported. | Export it again on the other computer. |
+| `ERR-CFG-0016` | v0.14.0 | `settings_bundle.newer` | `data.rs` | These settings come from a newer Fotollection | The file's manifest or settings are newer than this app reads. Nothing was imported. | Update Fotollection. |
+| `ERR-CFG-0017` | v0.14.0 | `settings_bundle.too_large` | `data.rs` | The settings file is too large | Over 160 MB, or a part over its own limit. | Export it again without unused fonts or LUTs. |
 
 ### EXP: Export
 

@@ -653,6 +653,11 @@ pub struct CameraState {
 }
 
 impl CameraState {
+    /// Where camera sessions are kept (FR-116's *Open folder*).
+    pub(crate) fn root(&self) -> &Path {
+        &self.root
+    }
+
     pub fn new(root: PathBuf) -> Self {
         Self {
             root,

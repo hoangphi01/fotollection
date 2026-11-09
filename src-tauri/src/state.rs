@@ -176,6 +176,8 @@ pub struct AppState {
     pub requested_open: Mutex<Option<PathBuf>>,
     /// A photo the OS asked to show ("Open with", FR-054), until the UI takes it.
     pub requested_photo: Mutex<Option<crate::open_with::OpenPhoto>>,
+    /// A `.fotosettings` checked and waiting for *Import* (FR-082), taken by the import.
+    pub pending_import: Mutex<Option<fotollection_core::settings_bundle::SettingsBundle>>,
     /// What start-up has to tell the user (a damaged settings file), taken once by the UI.
     pub startup_notices: Mutex<Vec<IpcError>>,
     /// The installer link found by the last "Check for updates" (FR-061).
@@ -357,6 +359,7 @@ impl AppState {
             requested_open: Mutex::new(None),
             requested_photo: Mutex::new(None),
             startup_notices: Mutex::new(notices),
+            pending_import: Mutex::new(None),
             update_download: crate::updates::PendingDownload::default(),
             last_export: Mutex::new(None),
             copied: Mutex::new(None),
@@ -443,23 +446,35 @@ impl AppState {
         if !self.store_writable.load(Ordering::Relaxed) {
             return;
         }
-        // Read on its own first: no lock is held while another is taken.
-        let Ok(recent_addresses) = self.recent_addresses.lock().map(|r| r.clone()) else {
+        let Some(stored) = self.stored_settings() else {
             return;
         };
+        let _guard = self.store_lock.lock();
+        if let Err(e) = settings_store::save(&self.store_path, &stored) {
+            eprintln!("could not save settings: {e}");
+        }
+    }
+
+    /// What `settings.json` holds now (the machine's, never the open document's), for a save
+    /// and for *Export settings* (FR-082).
+    pub fn stored_settings(&self) -> Option<StoredSettings> {
+        // Read on its own first: no lock is held while another is taken.
+        let Ok(recent_addresses) = self.recent_addresses.lock().map(|r| r.clone()) else {
+            return None;
+        };
         let Ok(looks) = self.saved_looks.lock().map(|l| l.clone()) else {
-            return;
+            return None;
         };
         // The machine's defaults, never the open document's; its custom sizes join them, so
         // a size made in a project is offered in the next one too.
         let Ok((mut default_render, default_frame)) = self.defaults.read().map(|d| d.clone())
         else {
-            return;
+            return None;
         };
         let (Ok(render), Ok(frame), Ok(ui)) =
             (self.settings.read(), self.frame.read(), self.ui.read())
         else {
-            return;
+            return None;
         };
         merge_sizes(&mut default_render, &render.0);
         let stored = StoredSettings {
@@ -472,10 +487,7 @@ impl AppState {
             looks,
         };
         drop((render, frame, ui));
-        let _guard = self.store_lock.lock();
-        if let Err(e) = settings_store::save(&self.store_path, &stored) {
-            eprintln!("could not save settings: {e}");
-        }
+        Some(stored)
     }
 
     /// Writes the session project now (atomic, DATABASE.md §4.4).

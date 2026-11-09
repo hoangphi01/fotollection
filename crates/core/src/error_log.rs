@@ -40,6 +40,11 @@ pub fn init(dir: PathBuf, version: &str) {
     });
 }
 
+/// The folder the log is kept in, once `init` named it (for *Open folder*, FR-116).
+pub fn dir() -> Option<PathBuf> {
+    LOG.get().map(|log| log.dir.clone())
+}
+
 /// Writes one line for the error `code` (its `ERR-` code from [`crate::errors`]), unless
 /// it repeats the previous one. Logging never fails the caller: a log that cannot be
 /// written is skipped.

@@ -7,6 +7,7 @@ mod camera;
 mod collage;
 mod commands;
 mod culling;
+mod data;
 #[cfg(debug_assertions)]
 mod demo;
 mod document;
@@ -48,6 +49,15 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             updates::open_website,
             updates::diagnostics,
             updates::report_ui_error,
+            data::data_usage,
+            data::open_data_folder,
+            data::export_settings,
+            data::inspect_settings_import,
+            data::apply_settings_import,
+            data::remove_unused_luts,
+            data::forget_all_addresses,
+            data::reset_settings,
+            data::erase_data,
             cache::cache_usage,
             cache::clear_cache,
             cache::memory_info,

@@ -128,6 +128,7 @@ src-tauri/               † # app shell: commands, protocol, capabilities
   src/timing.rs          † # start-up milestones printed only with FOTOLLECTION_TIMING (NFR-010, scripts/measure-startup.sh)
   src/updates.rs         † # "Check for updates" (FR-061, ADR-0025): one GitHub request on click, the installer opened in the browser from Rust; "Report a problem" opens the fixed issue page (FR-069); "Copy diagnostics" reads the error log
   src/cache.rs           † # the disk cache's size, Clear cache, and the background prune under 2 GB (DATABASE.md §8)
+  src/data.rs            † # Settings → Data (FR-116, FR-082): each store's size, Open folder, export and import a .fotosettings, unused LUTs, reset settings, erase data
   src/i18n.rs            † # the shell's own strings: menu, window title, dialogs (FR-020)
   src/demo.rs            † # debug builds only: records IPC answers for demo photos, for the website screenshots
   capabilities/          † # Tauri 2 permission sets (see SECURITY.md)
