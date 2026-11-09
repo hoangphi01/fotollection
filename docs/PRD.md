@@ -1123,7 +1123,7 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 ### FR-115 — Local contrast: clarity, texture and dehaze
 
-**P2 (Dehaze built for v0.14.0, 2026-11-09, owner: "do dehaze now"; clarity and texture planned before FR-102's masks, about v0.15–v0.16; owner's request 2026-11-08, from street photos graded in Lightroom: "this is where our Pro mode is heading").** The three spatial tools a colour table cannot hold (FR-089, ADR-0045), in the Tools card of Pro mode: **Clarity** (contrast of mid-sized detail), **Texture** (fine detail, skin and surfaces) and **Dehaze** (haze taken out by an estimate of the scene's veil), each −100 to +100 as Lightroom's.
+**P2 (Dehaze built for v0.14.0, 2026-11-09, owner: "do dehaze now"; clarity and texture in v0.14.x with FR-118 (owner, 2026-11-09), before FR-102's masks; owner's request 2026-11-08, from street photos graded in Lightroom: "this is where our Pro mode is heading").** The three spatial tools a colour table cannot hold (FR-089, ADR-0045), in the Tools card of Pro mode: **Clarity** (contrast of mid-sized detail), **Texture** (fine detail, skin and surfaces) and **Dehaze** (haze taken out by an estimate of the scene's veil), each −100 to +100 as Lightroom's.
 
 - **Why first:** the graded city photos the owner showed (Tokyo, Shinjuku, Brooklyn, Radio City, Park Avenue) owe most of their look to global colour, which looks and presets already hold, and to local contrast, which nothing in the app does yet; without it a preset that uses them lands flat, and they are listed today as *not applied*. Masks (FR-102) come after, a linear gradient first (a darker sky, the commonest local edit), the radial and the brush next, subject and sky found on the machine last.
 - **Rust first (ADR-0044):** in the render pipeline after the look's table, on the luminance only, so colours do not shift: clarity and texture as unsharp masks at two radii scaled to the photo (a guided or edge-aware filter, so halos stay off strong edges, chosen by measurement), dehaze from a dark-channel estimate; tiled and parallel on rayon, on the GPU of v0.15.0 for the live preview, the CPU for exports with the same result.
@@ -1150,6 +1150,20 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 - **What a menu holds:** only actions the panel or a shortcut also offers, so nothing is hidden in a menu alone; groups of related actions split by a hairline, as Lightroom's; an action that opens a dialog ends with "…"; a submenu (an arrow) only where a choice has many values (a colour label); the remove last, red.
 - **Style ([STYLE_RULE.md §4](STYLE_RULE.md#4-uiux)):** every menu is `MenuContent`, its rows `ListRow`s 32 px high with their Lucide icon, the red row `RemoveButton wide`, both themes and languages, measured; the web view's own menu stays off (`lib/no-web.ts`). Keys: the context-menu key and Shift+F10 open it on the focused item.
 - **Then:** with the menus in, the panels may drop buttons used rarely, one at a time, each by the owner's word.
+
+### FR-118 — Every preset setting applied
+
+**P2 (v0.14.x, "Looks, part 2"; owner's request 2026-11-09: "v0.14.x covers and completes what the app reports missing from presets").** After v0.14.0 a preset's import names what no look applies (FR-089). v0.14.x applies each of them, so the list empties, every one chosen and tuned against the owner's Lightroom exports (`preset_bench`, one slider at a time, RESULT), never guessed (ADR-0044, the owner's rule on image methods):
+
+- **Clarity and texture** ([FR-115](#fr-115--local-contrast-clarity-texture-and-dehaze)), and Dehaze's strength tuned against Lightroom's.
+- **Highlights, local:** Lightroom's Highlights (and Shadows, Whites, Blacks where they differ) as a local tone map, so a preset's −51 means what it means there; today's global slider stays for the look's own sliders unless the measurement says one tool serves both.
+- **The parametric curve** (`ParametricShadows`, `Darks`, `Lights`, `Highlights` and their split points), baked into the look's table with the point curves.
+- **White balance in kelvins**, against each photo's own as shot (a RAW's from its white balance, a JPEG's from its XMP when it has one; otherwise named, as today).
+- **Grain and vignette** (session 13), in millimetres on the print.
+- **Sharpening and noise reduction** from a preset, through the export's sharpening (`sharpen.rs`) and a noise reduction measured first.
+- **Older presets** (process before 2012): their sliders converted as Lightroom converts them, measured.
+- **Not in v0.14.x:** lens corrections stay with [FR-085](#fr-085--lens-distortion-correction) in v0.15.0 (owner, 2026-11-09): Adobe's lens profiles cannot be bundled and lensfun's library and data are not permissively licensed, so they come from the corrections cameras write into their RAW files.
+- **Rust first (ADR-0044):** each tool in the core, on rayon, within OPTIMIZATION §3's budgets set before its code; the spatial ones before or after the look's table as Dehaze is, chosen so the GPU preview keeps Rust's order.
 
 ## 7. Non-functional requirements
 
