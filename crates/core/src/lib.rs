@@ -59,6 +59,7 @@ pub mod supervise;
 pub mod text;
 pub mod thumbs;
 pub mod xmp;
+pub mod zip_parts;
 
 pub use print_size::PrintSize;
 

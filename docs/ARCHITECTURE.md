@@ -91,7 +91,8 @@ crates/
       cluster.rs           # trip DBSCAN (Phase 2)
       library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag, date set by hand); the effective time with each body's clock offset (FR-030, ADR-0027)
       project.rs         † # project tables v11: snapshot/restore by folder+path, FK validation, relocate/resolve folders
-      bundle.rs          † # .fotollection ZIP bundle: manifest + BLAKE3, allowlisted parts, zip-bomb limits (ADR-0016)
+      bundle.rs          † # .fotollection ZIP bundle: its allowlist and parts' readers (ADR-0016), on zip_parts.rs
+      zip_parts.rs       † # the ZIP both bundles share: manifest + BLAKE3, two-pass read under each part's limit, zip-bomb caps, deterministic write
       cache_limit.rs     † # the disk cache's 2 GB limit: usage, LRU prune by modification time, clear, touch on hit (DATABASE.md §8)
       histogram.rs       † # the develop view's histogram (FR-098): 256 levels of red, green, blue and light and the clipped pixels, counted on a grid of the preview's resized photo through its look
       history.rs         † # undo/redo stack of inverse edits (FR-023); each step's serial, a photo's develop steps and what each changed (FR-095)

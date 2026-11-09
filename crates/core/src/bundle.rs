@@ -7,13 +7,11 @@
 //! sizes and the compression ratio are capped before anything is read, every part is
 //! checked against the BLAKE3 sum in the manifest and parsed by its typed reader.
 
-use std::collections::{BTreeMap, HashSet};
-use std::io::{Cursor, Read, Write};
+use std::collections::BTreeMap;
 use std::path::Path;
 
-use serde::{Deserialize, Serialize};
-use zip::write::SimpleFileOptions;
-use zip::{CompressionMethod, ZipArchive, ZipWriter};
+use crate::zip_parts::{self, Limits, PartKind, ZipError};
+pub use crate::zip_parts::{Manifest, PartEntry};
 
 use crate::fonts::{self, FontFormat, UserFont};
 use crate::frame::LogoKind;
@@ -33,31 +31,14 @@ pub const SCHEMA_VERSION: u32 = 2;
 pub const MAX_ENTRIES: usize = 256;
 pub const MAX_TOTAL_BYTES: u64 = 160 * 1024 * 1024;
 pub const MAX_RATIO: u64 = 100;
-const MAX_MANIFEST_BYTES: u64 = 1024 * 1024;
-const ZIP_MAGIC: &[u8] = b"PK\x03\x04";
+const LIMITS: Limits = Limits {
+    entries: MAX_ENTRIES,
+    total: MAX_TOTAL_BYTES,
+    ratio: MAX_RATIO,
+};
 
-const MANIFEST: &str = "manifest.json";
 const PROJECT: &str = "project.json";
 const SETTINGS: &str = "settings.json";
-
-/// One part listed in `manifest.json`.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct PartEntry {
-    pub path: String,
-    pub bytes: u64,
-    /// Lowercase hex BLAKE3 of the part.
-    pub blake3: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct Manifest {
-    pub format: String,
-    pub schema_version: u32,
-    pub app_version: String,
-    pub parts: Vec<PartEntry>,
-}
 
 /// Everything a bundle carries. `settings.ui` is never stored: the interface language is
 /// a choice of each machine (FR-020).
@@ -114,7 +95,6 @@ fn corrupt(why: impl Into<String>) -> BundleError {
 /// The kind of a part, from its name. Anything else is rejected (allowlist).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Part {
-    Manifest,
     Project,
     Settings,
     Font(u32, FontFormat),
@@ -123,7 +103,7 @@ enum Part {
     Lut,
 }
 
-impl Part {
+impl PartKind for Part {
     fn parse(name: &str) -> Option<Self> {
         let numbered = |rest: &str, ext: &str| -> Option<u32> {
             let id = rest.strip_suffix(ext)?;
@@ -138,7 +118,6 @@ impl Part {
             id.parse().ok()
         };
         match name {
-            MANIFEST => Some(Self::Manifest),
             PROJECT => Some(Self::Project),
             SETTINGS => Some(Self::Settings),
             _ => {
@@ -168,7 +147,6 @@ impl Part {
 
     fn limit(self) -> u64 {
         match self {
-            Self::Manifest => MAX_MANIFEST_BYTES,
             Self::Project => project::MAX_BYTES,
             Self::Settings => settings_store::MAX_BYTES,
             Self::Font(..) => fonts::MAX_FONT_BYTES as u64,
@@ -179,7 +157,7 @@ impl Part {
 }
 
 fn hash(bytes: &[u8]) -> String {
-    blake3::hash(bytes).to_hex().to_string()
+    zip_parts::hash(bytes)
 }
 
 /// Content fingerprint used to recognise a font the user already has (same BLAKE3).
@@ -189,7 +167,7 @@ pub fn fingerprint(bytes: &[u8]) -> String {
 
 /// True when the bytes look like a bundle (as opposed to a v1 JSON project file).
 pub fn is_bundle(bytes: &[u8]) -> bool {
-    bytes.starts_with(ZIP_MAGIC)
+    bytes.starts_with(zip_parts::ZIP_MAGIC)
 }
 
 /// Serializes a bundle. Parts are written in a fixed order with the fixed ZIP epoch, so the
@@ -237,42 +215,15 @@ pub fn to_bytes(bundle: &Bundle) -> Result<Vec<u8>, BundleError> {
         let ext = crate::lut::check(bytes).map_err(|e| write_err(&e))?;
         parts.push((format!("looks/{hash}.{ext}"), bytes.clone()));
     }
-    let manifest = Manifest {
-        format: FORMAT.into(),
-        schema_version: SCHEMA_VERSION,
-        app_version: env!("CARGO_PKG_VERSION").into(),
-        parts: parts
-            .iter()
-            .map(|(path, bytes)| PartEntry {
-                path: path.clone(),
-                bytes: bytes.len() as u64,
-                blake3: hash(bytes),
-            })
-            .collect(),
+    // Text is compressed; font and PNG data are already.
+    let deflate = |path: &str| {
+        path == PROJECT
+            || path == SETTINGS
+            || Path::new(path)
+                .extension()
+                .is_some_and(|e| e.eq_ignore_ascii_case("cube"))
     };
-    let manifest = serde_json::to_vec_pretty(&manifest).map_err(|e| write_err(&e))?;
-
-    let mut zip = ZipWriter::new(Cursor::new(Vec::new()));
-    let deflated = SimpleFileOptions::default().compression_method(CompressionMethod::Deflated);
-    // Font and PNG data are already compressed.
-    let stored = SimpleFileOptions::default().compression_method(CompressionMethod::Stored);
-    zip.start_file(MANIFEST, deflated)
-        .map_err(|e| write_err(&e))?;
-    zip.write_all(&manifest).map_err(|e| write_err(&e))?;
-    for (path, bytes) in &parts {
-        let cube = Path::new(path)
-            .extension()
-            .is_some_and(|e| e.eq_ignore_ascii_case("cube"));
-        let options = if path == PROJECT || path == SETTINGS || cube {
-            deflated
-        } else {
-            stored
-        };
-        zip.start_file(path.as_str(), options)
-            .map_err(|e| write_err(&e))?;
-        zip.write_all(bytes).map_err(|e| write_err(&e))?;
-    }
-    Ok(zip.finish().map_err(|e| write_err(&e))?.into_inner())
+    zip_parts::write(FORMAT, SCHEMA_VERSION, &parts, deflate).map_err(BundleError::Write)
 }
 
 /// Writes atomically, keeping the previous file as `.bak` (DATABASE.md §4.4).
@@ -289,8 +240,8 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Bundle, BundleError> {
     if bytes.len() as u64 > MAX_TOTAL_BYTES {
         return Err(BundleError::TooLarge);
     }
-    let mut data = read_parts(bytes)?;
-    verify_manifest(&mut data)?;
+    let (_, mut data) =
+        zip_parts::read::<Part>(bytes, LIMITS, FORMAT, SCHEMA_VERSION).map_err(from_zip)?;
 
     let project = match data.remove(PROJECT).map(|(_, b)| project::from_bytes(&b)) {
         Some(project::Loaded::Ok(p)) => p,
@@ -355,7 +306,7 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Bundle, BundleError> {
                 }
                 luts.insert(hash, bytes);
             }
-            Part::Manifest | Part::Project | Part::Settings => {}
+            Part::Project | Part::Settings => {}
         }
     }
     if let Some(font) = settings
@@ -374,98 +325,13 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Bundle, BundleError> {
     })
 }
 
-type Parts = BTreeMap<String, (Part, Vec<u8>)>;
-
-/// Both passes over the archive: names and declared sizes first (no decompression), then
-/// each part read up to its own limit, whatever the header claims.
-fn read_parts(bytes: &[u8]) -> Result<Parts, BundleError> {
-    let mut zip = ZipArchive::new(Cursor::new(bytes)).map_err(|e| corrupt(e.to_string()))?;
-    if zip.len() > MAX_ENTRIES {
-        return Err(corrupt("too many parts"));
+fn from_zip(e: ZipError) -> BundleError {
+    match e {
+        ZipError::WrongFormat => BundleError::NotAProject,
+        ZipError::Newer(v) => BundleError::NewerVersion(v),
+        ZipError::TooLarge => BundleError::TooLarge,
+        ZipError::Corrupt(why) => BundleError::Corrupt(why),
     }
-
-    // Pass 1: names and declared sizes only, before any decompression.
-    let mut total = 0u64;
-    let mut seen = HashSet::new();
-    let mut kinds = Vec::with_capacity(zip.len());
-    for i in 0..zip.len() {
-        let entry = zip.by_index_raw(i).map_err(|e| corrupt(e.to_string()))?;
-        let name = entry
-            .name()
-            .map_err(|_| corrupt("a part name is not valid UTF-8"))?
-            .into_owned();
-        let part =
-            Part::parse(&name).ok_or_else(|| corrupt(format!("unexpected part {name:?}")))?;
-        if entry.encrypted() || !seen.insert(name.clone()) {
-            return Err(corrupt(format!("invalid part {name:?}")));
-        }
-        let (size, packed) = (entry.size(), entry.compressed_size());
-        if size > part.limit() {
-            return Err(BundleError::TooLarge);
-        }
-        if size > packed.max(1).saturating_mul(MAX_RATIO) {
-            return Err(corrupt(format!("{name:?} is compressed suspiciously well")));
-        }
-        total = total.saturating_add(size);
-        if total > MAX_TOTAL_BYTES {
-            return Err(BundleError::TooLarge);
-        }
-        kinds.push((i, name, part));
-    }
-
-    // Pass 2: read each part, never more than its limit, whatever the header claims.
-    let mut data = Parts::new();
-    for (i, name, part) in kinds {
-        let entry = zip.by_index(i).map_err(|e| corrupt(e.to_string()))?;
-        let mut buf = Vec::new();
-        entry
-            .take(part.limit() + 1)
-            .read_to_end(&mut buf)
-            .map_err(|e| corrupt(e.to_string()))?;
-        if buf.len() as u64 > part.limit() {
-            return Err(BundleError::TooLarge);
-        }
-        data.insert(name, (part, buf));
-    }
-    Ok(data)
-}
-
-/// The manifest lists exactly the other parts, each with the right size and BLAKE3 sum.
-/// Removes the manifest from `data`.
-fn verify_manifest(data: &mut Parts) -> Result<(), BundleError> {
-    let (_, manifest) = data
-        .remove(MANIFEST)
-        .ok_or_else(|| corrupt("no manifest"))?;
-    let manifest = parse_manifest(&manifest)?;
-    let listed: HashSet<&str> = manifest.parts.iter().map(|p| p.path.as_str()).collect();
-    if listed.len() != manifest.parts.len() || listed.len() != data.len() {
-        return Err(corrupt("the manifest does not match the parts"));
-    }
-    for entry in &manifest.parts {
-        let (_, bytes) = data
-            .get(&entry.path)
-            .ok_or_else(|| corrupt(format!("{:?} is listed but missing", entry.path)))?;
-        if bytes.len() as u64 != entry.bytes || hash(bytes) != entry.blake3 {
-            return Err(corrupt(format!("{:?} is damaged", entry.path)));
-        }
-    }
-    Ok(())
-}
-
-fn parse_manifest(bytes: &[u8]) -> Result<Manifest, BundleError> {
-    #[derive(Deserialize)]
-    struct Header {
-        format: String,
-        schema_version: u32,
-    }
-    let header: Header = serde_json::from_slice(bytes).map_err(|e| corrupt(e.to_string()))?;
-    if header.format != FORMAT {
-        return Err(BundleError::NotAProject);
-    }
-    if header.schema_version > SCHEMA_VERSION {
-        return Err(BundleError::NewerVersion(header.schema_version));
-    }
-    serde_json::from_slice(bytes).map_err(|e| corrupt(e.to_string()))
 }
 
 /// What a `.fotollection` file turned out to be.
@@ -613,6 +479,10 @@ mod tests {
     use crate::library::Flag;
     use crate::plan::CropFrame;
     use crate::project::{CameraRow, FolderRow, PathKind, PhotoRow};
+    use crate::zip_parts::MANIFEST;
+    use std::io::{Cursor, Write};
+    use zip::write::SimpleFileOptions;
+    use zip::{CompressionMethod, ZipWriter};
 
     static INTER: &[u8] = include_bytes!("../assets/fonts/Inter.ttf");
 
