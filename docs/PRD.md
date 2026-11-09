@@ -1141,6 +1141,15 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 - **Moving:** export settings on the old computer and copy the `.fotollection` projects; on the new one, import, open each project and relink its photo folders. Projects carry the LUTs and fonts they use (S3 of the 2026-11-09 plan).
 - **Owners ([ADR-0048](adr/0048-one-owner-per-service-failures-stay-local.md)):** each row asks its store's owner for its size and its clearing; the section owns no data.
 
+### FR-117 — Right-click menus in more places
+
+**P2 (planned for v0.15.0; owner's request 2026-11-09, shown with Lightroom's folder menu: "some features can be right-clicked but are laid out, so it costs scrolling").** A right click on what the user works on opens its actions where the pointer is, so a panel need not show every action as a button and the user scrolls less.
+
+- **Where:** a folder in the folder list (open, rename, remove, show in Finder or Explorer, export this folder), a photo in the gallery and the filmstrip (into or out of the basket, rotate, copy and paste its look, reset its colour, show in Finder or Explorer), a slot of a collage sheet (replace, take out), the rows of the export presets and of the looks (already: the looks strip, FR-079). The list of each is chosen with the owner before the code.
+- **What a menu holds:** only actions the panel or a shortcut also offers, so nothing is hidden in a menu alone; groups of related actions split by a hairline, as Lightroom's; an action that opens a dialog ends with "…"; a submenu (an arrow) only where a choice has many values (a colour label); the remove last, red.
+- **Style ([STYLE_RULE.md §4](STYLE_RULE.md#4-uiux)):** every menu is `MenuContent`, its rows `ListRow`s 32 px high with their Lucide icon, the red row `RemoveButton wide`, both themes and languages, measured; the web view's own menu stays off (`lib/no-web.ts`). Keys: the context-menu key and Shift+F10 open it on the focused item.
+- **Then:** with the menus in, the panels may drop buttons used rarely, one at a time, each by the owner's word.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
