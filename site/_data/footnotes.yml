@@ -3,8 +3,8 @@
 # home page; a note's number is its place here. _includes/fn.html draws the marks,
 # _layouts/default.html the list; scripts/check-footnotes.mjs checks it.
 home:
-  en: [fn_open, fn_photo, fn_lightroom, fn_lut, fn_led, fn_gps, fn_exif, fn_iso, fn_dpi, fn_dm, fn_rossmann, fn_usb, fn_raw, fn_charts, fn_jpeg, fn_444, fn_units, fn_pf_raw, fn_compare, fn_gpl, fn_vnlf, fn_payment, fn_heic, fn_arch, fn_linux_pkg]
-  vi: [fn_open, fn_photo, fn_lightroom, fn_lut, fn_led, fn_gps, fn_exif, fn_iso, fn_dpi, fn_dm, fn_rossmann, fn_usb, fn_raw, fn_charts, fn_jpeg, fn_444, fn_units, fn_pf_raw, fn_compare, fn_gpl, fn_vnlf, fn_payment, fn_heic, fn_arch, fn_linux_pkg]
+  en: [fn_open, fn_photo, fn_lightroom, fn_lut, fn_led, fn_gps, fn_exif, fn_iso, fn_dpi, fn_dm, fn_rossmann, fn_usb, fn_raw, fn_jpeg, fn_444, fn_units, fn_pf_raw, fn_compare, fn_gpl, fn_vnlf, fn_payment, fn_heic, fn_arch, fn_linux_pkg]
+  vi: [fn_open, fn_photo, fn_lightroom, fn_lut, fn_led, fn_gps, fn_exif, fn_iso, fn_dpi, fn_dm, fn_rossmann, fn_usb, fn_raw, fn_jpeg, fn_444, fn_units, fn_pf_raw, fn_compare, fn_gpl, fn_vnlf, fn_payment, fn_heic, fn_arch, fn_linux_pkg]
 perf_title:
   en: [fn_simd, fn_units, fn_rust, fn_exif, fn_raw, fn_jpeg, fn_charts, fn_lightroom, fn_webview, fn_trip, fn_pct, fn_dng, fn_sensor, fn_psnr, fn_tiff, fn_de, fn_ssim, fn_heic, fn_srgb, fn_p3, fn_adobe]
   vi: [fn_simd, fn_units, fn_rust, fn_exif, fn_raw, fn_jpeg, fn_charts, fn_lightroom, fn_webview, fn_trip, fn_pct, fn_dng, fn_sensor, fn_psnr, fn_tiff, fn_de, fn_ssim, fn_heic, fn_srgb, fn_p3, fn_adobe]

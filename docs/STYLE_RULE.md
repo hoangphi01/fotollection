@@ -217,6 +217,7 @@ The stack is React + TypeScript + Tailwind + shadcn/ui + Lucide ([ADR-0007](adr/
 - **A list that opens over the page is a native `popover`**, opened by `popovertarget`, with no library. Picking an item closes it, and it marks where the reader is (`aria-current`).
 - **Tables never break their first column.** A table sits in a sideways scroller (`.table-scroll`) on a phone; its first column does not wrap.
 - **Icons are Lucide SVGs** in `site/_includes/icons/`, `currentColor`, one file each. Every string is in `site/_data/i18n.yml` in both languages.
+- **The landing page shows, it does not list** (owner, 2026-11-09, after Apple): a feature with a picture is a card of a **carousel** (`carousel.html`, data in `_data/carousels.yml`): a screenshot of the app, then one sentence led by the feature's name in bold, cards scrolling sideways from the content's edge to the window's, ‹ › under them on the right, no library; something to try is **interactive** (the Looks, `looks.html`): one large picture, a row of choices raised as the app's (the chosen one pressed in, `aria-pressed`), one sentence for the one chosen. No grid of tiles or wall of cards; charts and measures live on the Performance page.
 - **Check before pushing,** at 1280–1440 px and 390 px, light and dark, in both languages, with no sideways scroll on the page.
 
 ## 5. Git

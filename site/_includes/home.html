@@ -41,22 +41,9 @@
 
 {% include compat.html %}
 
-<section class="section" id="new">
-  <div class="wrap">
-    <h2>{{ t.bento_title }}{% include fn.html keys="fn_lightroom" %}</h2>
-    <p class="lead narrow">{{ t.bento_lead }}{% include fn.html keys="fn_lut" %}</p>
-    <div class="bento">
-      {%- assign tiles = "looks,simple,compare,prints,yours,desktops" | split: "," -%}
-      {%- for tile in tiles -%}
-      {%- capture alt_key %}tile_{{ tile }}{% endcapture %}
-      <figure class="bento-tile"><img src="{{ '/assets/img/showcase/' | append: tile | append: '-' | append: page.lang | append: '.webp' | relative_url }}" width="1200" height="900" alt="{{ t[alt_key] }}" loading="lazy" decoding="async" /></figure>
-      {%- endfor %}
-    </div>
-  </div>
-  <div class="wrap">
-    <figure class="wide-banner"><img src="{{ '/assets/img/showcase/wide-' | append: page.lang | append: '.webp' | relative_url }}" width="2000" height="860" alt="{{ t.wide_alt }}" loading="lazy" decoding="async" /></figure>
-  </div>
-</section>
+{% include carousel.html cards=site.data.carousels.new title=t.car_new_title id="new" %}
+<script src="{{ '/assets/js/carousel.js' | relative_url }}" defer></script>
+
 <section class="section tint" id="modes">
   <div class="wrap">
     <h2>{{ t.modes_title }}</h2>
@@ -101,121 +88,7 @@
   </div>
 </section>
 
-<section class="section" id="postcard">
-  <div class="wrap">
-    <h2>{{ t.pc_title }}</h2>
-    <p class="lead narrow">{{ t.pc_lead }}</p>
-  </div>
-  <div class="wrap showcase">
-    <div class="showcase-row">
-      <figure class="shot">{% include shot.html name="postcard" alt=t.show_postcard %}</figure>
-      <div class="showcase-text">
-        <h3>{{ t.postcard_title }}</h3>
-        <p>{{ t.postcard_text }}</p>
-        <ol class="steps">
-          <li>{{ t.pc_s1 }}</li>
-          <li>{{ t.pc_s2 }}</li>
-          <li>{{ t.pc_s3 }}</li>
-        </ol>
-        <p class="small muted">{{ t.show_postcard }}</p>
-      </div>
-    </div>
-    <div class="showcase-row flip">
-      <figure class="shot">{% include shot.html name="postcard-night" alt=t.show_postcard_text %}</figure>
-      <div class="showcase-text">
-        <h3>{{ t.pc_type_title }}</h3>
-        <p>{{ t.pc_type_text }}</p>
-        <p>{{ t.pc_pens }}</p>
-        <p class="small muted">{{ t.show_postcard_text }}</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section tint">
-  <div class="wrap showcase">
-    <div class="showcase-row">
-      <figure class="shot">{% include shot.html name="stamp" alt=t.show_stamp %}</figure>
-      <div class="showcase-text">
-        <h3>{{ t.f_stamp_title }}</h3>
-        <p>{{ t.f_stamp_text }}{% include fn.html keys="fn_led" %}</p>
-        <p class="small muted">{{ t.show_stamp }}{% include fn.html keys="fn_gps" %}</p>
-      </div>
-    </div>
-    <div class="showcase-row flip">
-      <figure class="shot">{% include shot.html name="frame" alt=t.show_frame %}</figure>
-      <div class="showcase-text">
-        <h3>{{ t.f_frame_title }}</h3>
-        <p>{{ t.f_frame_text }}{% include fn.html keys="fn_exif,fn_iso" %}</p>
-        <p class="small muted">{{ t.show_frame }}</p>
-      </div>
-    </div>
-    <div class="showcase-row">
-      <figure class="shot">{% include shot.html name="crop" alt=t.show_crop %}</figure>
-      <div class="showcase-text">
-        <h3>{{ t.f_crop_title }}</h3>
-        <p>{{ t.f_crop_text }}{% include fn.html keys="fn_dpi" %}</p>
-        <p class="small muted">{{ t.show_crop }}</p>
-      </div>
-    </div>
-    <div class="showcase-row flip">
-      <figure class="shot">{% include shot.html name="groups" alt=t.show_groups %}</figure>
-      <div class="showcase-text">
-        <h3>{{ t.f_best_title }}</h3>
-        <p>{{ t.f_best_text }}</p>
-        <p class="small muted">{{ t.show_groups }}</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="basket">
-  <div class="wrap">
-    <h2>{{ t.basket_title }}</h2>
-    <p class="lead narrow">{{ t.basket_lead }}</p>
-  </div>
-  <div class="wrap showcase">
-    {%- assign rows = "swipe,select,estimate" | split: "," -%}
-    {%- for r in rows -%}
-    {%- capture title_key %}{{ r }}_title{% endcapture -%}
-    {%- capture text_key %}{{ r }}_text{% endcapture -%}
-    {%- capture show_key %}show_{{ r }}{% endcapture -%}
-    {%- assign show_alt = t[show_key] %}
-    <div class="showcase-row{% cycle '', ' flip' %}">
-      <figure class="shot{% if r == 'swipe' %} keys{% endif %}">
-        {% include shot.html name=r alt=show_alt %}
-        {%- if r == 'swipe' %}
-        <p class="key-chips" aria-hidden="true"><span><kbd>↑</kbd> {{ t.key_up }}</span><span><kbd>↓</kbd> {{ t.key_down }}</span></p>
-        {%- endif %}
-      </figure>
-      <div class="showcase-text">
-        <h3>{{ t[title_key] }}</h3>
-        <p>{{ t[text_key] }}</p>
-        <p class="small muted">{{ t[show_key] }}</p>
-      </div>
-    </div>
-    {%- endfor %}
-  </div>
-</section>
-
-<section class="section tint" id="tabs">
-  <div class="wrap">
-    <h2>{{ t.tabs_title }}</h2>
-    <p class="lead narrow">{{ t.tabs_lead }}</p>
-  </div>
-  <div class="wrap showcase">
-    <div class="showcase-row">
-      <figure class="shot">
-        {% include shot.html name="tabs" alt=t.show_tabs %}
-      </figure>
-      <div class="showcase-text">
-        <h3>{{ t.tabs_row_title }}</h3>
-        <p>{{ t.tabs_text }}</p>
-        <p class="small muted">{{ t.show_tabs }}</p>
-      </div>
-    </div>
-  </div>
-</section>
+{% include carousel.html cards=site.data.carousels.print title=t.car_print_title id="print" %}
 
 <section class="section" id="kiosk">
   <div class="wrap kiosk-grid">
@@ -283,56 +156,18 @@
   </div>
 </section>
 
-<section class="section tint" id="quality">
-  <div class="wrap">
-    <h2>{{ t.quality_title }}</h2>
-    <p class="lead narrow">{{ t.quality_lead }}</p>
-    <div class="stats">
-      <div class="stat"><strong>{{ t.q1_value }}</strong><span>{{ t.q1_label }}</span></div>
-      <div class="stat"><strong>{{ t.q2_value }}</strong><span>{{ t.q2_label }}</span></div>
-      <div class="stat"><strong>{{ t.q3_value }}</strong><span>{{ t.q3_label }}</span></div>
-    </div>
-    <p><a class="more" href="{{ site.repo_url }}/blob/main/docs/RESULT.md#9-print-quality">{{ t.quality_more }} {% include icons/arrow-right.svg %}</a></p>
-  </div>
-</section>
-
-<section class="section" id="numbers">
-  <div class="wrap">
-    <h2>{{ t.charts_title }}</h2>
-    <p class="lead narrow">{{ t.charts_lead }}</p>
-    <div class="charts">
-      {%- assign charts = "budgets,quality,share,bestshot" | split: "," -%}
-      {%- for c in charts -%}
-      {%- capture key %}chart_{{ c }}{% endcapture -%}
-      <figure class="card chart">
-        {%- capture chart %}bench-{{ c }}{% endcapture %}{%- assign size = site.data.charts[chart] %}
-        <img src="{{ '/assets/img/charts/bench-' | append: c | append: '-' | append: page.lang | append: '.svg' | relative_url }}" width="{{ size.width | default: 752 }}" height="{{ size.height | default: 400 }}" alt="{{ t[key] }}" loading="lazy" decoding="async" />
-        <figcaption>{{ t[key] }}{% include fn.html keys="fn_charts" %}</figcaption>
-      </figure>
-      {%- endfor -%}
-    </div>
-    <p><a class="more" href="{% if page.lang == 'vi' %}{{ '/vi/performance/#trip' | relative_url }}{% else %}{{ '/performance/#trip' | relative_url }}{% endif %}">{{ t.charts_trip }} {% include icons/arrow-right.svg %}</a></p>
-    <p><a class="pill pill-primary" href="{% if page.lang == 'vi' %}{{ '/vi/performance/' | relative_url }}{% else %}{{ '/performance/' | relative_url }}{% endif %}">{{ t.charts_more }} {% include icons/arrow-right.svg %}</a></p>
-  </div>
-</section>
-
 <section class="section tint" id="features">
   <div class="wrap">
     <h2>{{ t.features_title }}</h2>
     <p class="lead narrow">{{ t.features_lead }}</p>
     <div class="cards">
-      <article class="card">{% include icons/palette.svg %}<h3>{{ t.f_looks_title }}{% include fn.html keys="fn_lut" %}</h3><p>{{ t.f_looks_text }}</p></article>
-      <article class="card">{% include icons/mail.svg %}<h3>{{ t.f_postcard_title }}</h3><p>{{ t.f_postcard_text }}</p></article>
-      <article class="card">{% include icons/calendar-days.svg %}<h3>{{ t.f_stamp_title }}</h3><p>{{ t.f_stamp_text }}</p></article>
-      <article class="card">{% include icons/frame.svg %}<h3>{{ t.f_frame_title }}</h3><p>{{ t.f_frame_text }}</p></article>
-      <article class="card">{% include icons/sparkles.svg %}<h3>{{ t.f_best_title }}</h3><p>{{ t.f_best_text }}</p></article>
-      <article class="card">{% include icons/crop.svg %}<h3>{{ t.f_crop_title }}</h3><p>{{ t.f_crop_text }}</p></article>
       <article class="card">{% include icons/gem.svg %}<h3>{{ t.f_quality_title }}</h3><p>{{ t.f_quality_text }}{% include fn.html keys="fn_jpeg,fn_444" %}</p></article>
       <article class="card">{% include icons/gauge.svg %}<h3>{{ t.f_speed_title }}</h3><p>{{ t.f_speed_text }}{% include fn.html keys="fn_units" %}</p></article>
       <article class="card">{% include icons/camera.svg %}<h3>{{ t.f_raw_title }}</h3><p>{{ t.f_raw_text }}{% include fn.html keys="fn_pf_raw" %}</p></article>
       <article class="card">{% include icons/mouse-pointer-click.svg %}<h3>{{ t.f_open_title }}</h3><p>{{ t.f_open_text }}</p></article>
     </div>
     <p class="systems-link"><a class="more" href="{{ path_download }}#systems">{{ t.pf_title }} {% include icons/arrow-right.svg %}</a></p>
+    <p class="systems-link"><a class="more" href="{% if page.lang == 'vi' %}{{ '/vi/performance/' | relative_url }}{% else %}{{ '/performance/' | relative_url }}{% endif %}">{{ t.charts_more }} {% include icons/arrow-right.svg %}</a></p>
   </div>
 </section>
 

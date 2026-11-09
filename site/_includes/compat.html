@@ -1,4 +1,4 @@
-{%- comment %} The landing page's compatibility with Lightroom and LUMIX Lab (owner, 2026-11-09): two cards, the files each reads, and what a preset brings, as RESULT §39 and FR-118 say, never more. The names are written as words: Adobe's and Panasonic's logos are theirs (notes fn_lightroom, fn_lut). {% endcomment -%}
+{%- comment %} The landing page's compatibility with Lightroom and LUMIX Lab (owner, 2026-11-09): two cards, the files each reads, and what a preset brings, as RESULT §39 and FR-118 say, never more. Lightroom's text logo is the public-domain rendering on Wikimedia Commons (assets/img/logos/LOGOS.md); LUMIX Lab's app logo has none, so it is written as words (notes fn_lightroom, fn_lut). {% endcomment -%}
 {%- assign t = site.data.i18n[page.lang] -%}
 <section class="section tint" id="compat">
   <div class="wrap">
@@ -7,7 +7,7 @@
     <div class="compat-cards">
       {%- for c in t.compat_cards %}
       <article class="card compat-card">
-        <p class="compat-brand">{{ c.brand }}{% include fn.html keys=c.fn %}</p>
+        <p class="compat-brand">{% if c.logo %}<img class="compat-logo" src="{{ '/assets/img/logos/' | append: c.logo | append: '.svg' | relative_url }}" width="40" height="39" alt="" />{% endif %}{{ c.brand }}{% include fn.html keys=c.fn %}</p>
         <h3>{{ c.title }}</h3>
         <ul class="compat-files">{% for f in c.files %}<li>{{ f }}</li>{% endfor %}</ul>
         <p>{{ c.text }}</p>

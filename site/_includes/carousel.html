@@ -1,0 +1,22 @@
+{%- comment %} A carousel of the landing page (owner, 2026-11-09, after Apple's): a title, then cards that scroll sideways, each a screenshot of the app and a sentence led by its name in bold; ‹ › move by one card, and a swipe, the trackpad or the keyboard scroll it as well (scroll-snap, no library). Takes `cards` (site/_data/carousels.yml), `title`, `id` and `tint`. assets/js/carousel.js. {% endcomment -%}
+{%- assign t = site.data.i18n[page.lang] -%}
+<section class="section carousel-section{% if include.tint %} tint{% endif %}" id="{{ include.id }}">
+  <div class="wrap">
+    <h2 class="carousel-title">{{ include.title }}</h2>
+  </div>
+  <div class="carousel" data-carousel>
+    <ul class="carousel-track" tabindex="0" aria-label="{{ include.title }}">
+      {%- for c in include.cards %}
+      {%- assign title = t[c.title] %}
+      <li class="carousel-card">
+        <figure class="shot">{% include shot.html name=c.shot alt=title %}</figure>
+        <p class="carousel-text"><strong>{{ title }}.</strong> {{ t[c.text] }}{% if c.fn %}{% include fn.html keys=c.fn %}{% endif %}</p>
+      </li>
+      {%- endfor %}
+    </ul>
+    <div class="wrap carousel-controls">
+      <button type="button" class="pill carousel-button" data-carousel-prev aria-label="{{ t.car_prev }}">{% include icons/chevron-left.svg %}</button>
+      <button type="button" class="pill carousel-button" data-carousel-next aria-label="{{ t.car_next }}">{% include icons/chevron-right.svg %}</button>
+    </div>
+  </div>
+</section>

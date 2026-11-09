@@ -452,8 +452,9 @@ h3.with-logo .logo-os { height: 0.95em; }
 /* Compatibility with Lightroom and LUMIX Lab (site/_includes/compat.html): two cards with the
    files each reads, then what a preset brings; the names as words, the logos being theirs. */
 .compat-cards { display: grid; gap: 16px; margin-top: 32px; }
+.compat-logo { width: 40px; height: auto; flex: none; }
 .compat-card h3 { margin: 4px 0 12px; font-size: clamp(1.3rem, 2.6vw, 1.6rem); }
-.compat-brand { margin: 0; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+.compat-brand { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
 .compat-files { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; padding: 0; }
 .compat-files li { padding: 4px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.88rem; }
 .compat-card p:last-child { margin: 0; color: var(--ink-2); }
@@ -463,6 +464,22 @@ h3.with-logo .logo-os { height: 0.95em; }
 .compat-table td.later { color: var(--muted); font-weight: 600; white-space: nowrap; }
 .compat-table td:last-child { color: var(--ink-2); }
 @media (min-width: 760px) { .compat-cards { grid-template-columns: 1fr 1fr; } }
+
+/* The landing page's carousels (site/_includes/carousel.html, owner 2026-11-09, after Apple's):
+   cards that scroll sideways from the content's edge to the window's, a screenshot and a
+   sentence led by its name; ‹ › under them on the right. */
+.carousel-title { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 28px; }
+.carousel-track { --inset: max(var(--gutter), calc((100vw - 1180px) / 2 + var(--gutter))); list-style: none; margin: 0; display: grid; grid-auto-flow: column; grid-auto-columns: min(84vw, 760px); column-gap: 24px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--inset); padding: 4px var(--inset) 16px; scrollbar-width: none; }
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-track:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.carousel-card { scroll-snap-align: start; }
+.carousel-card .shot img { display: block; width: 100%; height: auto; border-radius: 20px; }
+.carousel-text { margin: 16px 4px 0; max-width: 48ch; color: var(--ink-2); font-size: 1.02rem; text-wrap: pretty; }
+.carousel-text strong { color: var(--ink); }
+.carousel-controls { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+.carousel-button { width: 44px; height: 44px; padding: 0; justify-content: center; cursor: pointer; }
+.carousel-button:disabled { opacity: 0.4; cursor: default; }
+.carousel-button .icon { width: 20px; height: 20px; }
 
 /* The Wiki's timeline (site/_includes/wiki.html): a line down the left, a dot per version, each
    version a card with its points and the app as it shipped. */

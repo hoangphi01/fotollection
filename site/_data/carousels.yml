@@ -1,0 +1,23 @@
+# The landing page's carousels (site/_includes/carousel.html, owner 2026-11-09, after Apple):
+# one card per feature, a screenshot of the app (`shot`, site/assets/img/<shot>-<lang>-<theme>.webp
+# through shot.html) and its words from i18n.yml (`title`, `text`), with the notes those words
+# need (`fn`, in the order the page shows them). The pictures are the website's screenshots
+# (site/screenshots/build.sh); a card whose screenshot changes needs nothing here.
+new:
+  - { shot: window, title: car_presets_title, text: car_presets_text }
+  - { shot: simple, title: car_simple_title, text: car_simple_text }
+  - { shot: grid, title: car_many_title, text: car_many_text }
+  - { shot: compare, title: car_compare_title, text: car_compare_text }
+  - { shot: settings, title: car_data_title, text: car_data_text }
+print:
+  - { shot: postcard, title: postcard_title, text: postcard_text }
+  - { shot: postcard-night, title: pc_type_title, text: pc_type_text }
+  - { shot: stamp, title: f_stamp_title, text: f_stamp_text, fn: [fn_led, fn_gps] }
+  - { shot: frame, title: f_frame_title, text: f_frame_text, fn: [fn_exif, fn_iso] }
+  - { shot: crop, title: f_crop_title, text: f_crop_text, fn: [fn_dpi] }
+  - { shot: collage, title: car_collage_title, text: car_collage_text }
+  - { shot: groups, title: f_best_title, text: f_best_text }
+  - { shot: swipe, title: swipe_title, text: swipe_text }
+  - { shot: select, title: select_title, text: select_text }
+  - { shot: estimate, title: estimate_title, text: estimate_text }
+  - { shot: tabs, title: tabs_row_title, text: tabs_text }
