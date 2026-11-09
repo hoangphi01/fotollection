@@ -1,5 +1,6 @@
 # The Wiki page's timeline (site/_includes/wiki.html): Fotollection from its first screen to
-# now, one milestone per MINOR version, oldest first (owner, 2026-11-09). Every picture is the
+# now, one milestone per MINOR version, kept oldest first here and shown newest first (owner,
+# 2026-11-09, as Apple lists its releases); a new one goes at the end. Every picture is the
 # app as that version shipped, taken from the git history by scripts/timeline-shot.sh, never
 # made again; its tag and path are in `from`. A MINOR release adds its milestone here with one
 # to three of its new screenshots (docs/DOCS_GUIDE.md, "A release"; check-docs checks it).

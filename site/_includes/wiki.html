@@ -1,25 +1,25 @@
-{%- comment %} The Wiki (site/README.md): Fotollection's timeline, one milestone per MINOR version from its first screen, oldest first, each with what changed and the app as it shipped (site/_data/timeline.yml, pictures from the git history by scripts/timeline-shot.sh). Laid out like the story: the same header, then the timeline; the round button opens the list of versions. {% endcomment -%}
+{%- comment %} The Wiki (site/README.md): Fotollection's timeline, one milestone per MINOR version, newest first down to its first screen (owner, 2026-11-09, as Apple lists its releases), each with what changed and the app as it shipped (site/_data/timeline.yml, pictures from the git history by scripts/timeline-shot.sh). Laid out like the story: the same header, then the timeline; the round button opens the list of versions. {% endcomment -%}
 {%- assign t = site.data.i18n[page.lang] -%}
 {%- assign lang = page.lang -%}
 {%- capture toc -%}
-{%- for m in site.data.timeline %}
+{%- for m in site.data.timeline reversed %}
 - [v{{ m.version }} · {{ m.title[lang] }}](#v{{ m.version | replace: '.', '-' }})
 {%- endfor %}
 {%- endcapture -%}
-{%- assign latest = site.data.timeline | last -%}
+{%- assign first = site.data.timeline | first -%}
 <section class="section perf-head story-head">
   <div class="wrap">
     <p class="kicker">{{ t.wiki_kicker }}</p>
     <h1>{{ t.wiki_title }}</h1>
     <p class="lead narrow">{{ t.wiki_lead }}</p>
-    <p><a class="pill" href="#v{{ latest.version | replace: '.', '-' }}">{{ t.wiki_latest }} · v{{ latest.version }}</a></p>
+    <p><a class="pill" href="#v{{ first.version | replace: '.', '-' }}">{{ t.wiki_first }} · v{{ first.version }}</a></p>
   </div>
 </section>
 
 <section class="section tint">
   <div class="wrap">
     <ol class="timeline">
-      {%- for m in site.data.timeline %}
+      {%- for m in site.data.timeline reversed %}
       <li class="timeline-item" id="v{{ m.version | replace: '.', '-' }}">
         <p class="timeline-when"><span class="timeline-version">v{{ m.version }}</span> <time datetime="{{ m.date }}">{% if lang == 'vi' %}{{ m.date | date: "%d/%m/%Y" }}{% else %}{{ m.date | date: "%-d %b %Y" }}{% endif %}</time></p>
         <div class="card timeline-card">
