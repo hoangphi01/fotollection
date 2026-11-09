@@ -28,6 +28,12 @@ pub fn spawn(
     }
 }
 
+/// `work`'s result, or `None` if it panicked (logged by the app's panic hook): for a call
+/// into a decoder or parser of an untrusted file, so a bug in one costs that file only.
+pub fn contained<R>(work: impl FnOnce() -> R) -> Option<R> {
+    catch_unwind(AssertUnwindSafe(work)).ok()
+}
+
 /// A worker for the app's life: `work` normally never returns; after a panic it starts again,
 /// waiting 1 s, then 2, 4… up to a minute, so a fault that repeats does not spin.
 pub fn forever(name: &'static str, work: impl Fn() + Send + 'static) {
@@ -61,6 +67,14 @@ mod tests {
         let out = f();
         std::panic::set_hook(hook);
         out
+    }
+
+    /// ADR-0048: a call that panics gives `None`, the caller goes on.
+    #[test]
+    fn a_call_that_panics_gives_none() {
+        let got = quiet(|| contained(|| -> u32 { panic!("a corrupt file") }));
+        assert_eq!(got, None);
+        assert_eq!(contained(|| 7), Some(7));
     }
 
     /// ADR-0048: a job that panics still sends its end, so nothing waits for it for good.

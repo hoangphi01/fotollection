@@ -71,6 +71,8 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     app_info: () => ({ ...common.app_info, ...(os ? { os } : {}) }),
     // Start-up is over at once, so the start-up screen fades out as in the app (FR-060).
     startup_finished: () => true,
+    // Nothing to tell at start-up (ADR-0048: a damaged settings file would be).
+    take_startup_notices: () => [],
     list_print_sizes: () => common.list_print_sizes,
     list_fonts: () => common.list_fonts,
     // The welcome (FR-109) seen, so it covers no shot; a shot of it sets `ui.welcomeSeen: false`.

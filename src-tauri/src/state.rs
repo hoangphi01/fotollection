@@ -2,7 +2,7 @@
 //! Shared app state. Heavy work never runs on the UI thread (NFR-005).
 
 use std::collections::HashMap;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, Ordering};
 
@@ -171,6 +171,8 @@ pub struct AppState {
     pub requested_open: Mutex<Option<PathBuf>>,
     /// A photo the OS asked to show ("Open with", FR-054), until the UI takes it.
     pub requested_photo: Mutex<Option<crate::open_with::OpenPhoto>>,
+    /// What start-up has to tell the user (a damaged settings file), taken once by the UI.
+    pub startup_notices: Mutex<Vec<IpcError>>,
     /// The installer link found by the last "Check for updates" (FR-061).
     pub update_download: crate::updates::PendingDownload,
     /// The folder the last export wrote into (FR-093), for *Open folder*: kept in Rust, so the
@@ -201,6 +203,50 @@ pub struct PendingRelink {
     pub missing: Vec<project::ResolvedFolder>,
 }
 
+/// The machine's settings, whether they may be saved, and what the user is told once the
+/// window is up (ADR-0048): a damaged file is recovered as far as it can be, never in silence.
+fn load_settings(store_path: &Path) -> (StoredSettings, bool, Vec<IpcError>) {
+    let mut notices = Vec::new();
+    let (stored, writable) = match settings_store::load_machine(store_path) {
+        Loaded::Ok(stored) => (stored, true),
+        Loaded::Missing => (StoredSettings::default(), true),
+        Loaded::Recovered(recovered) => {
+            let _ = settings_store::keep_damaged(store_path);
+            notices.push(if recovered.from_backup {
+                IpcError::new(
+                    "settings.restored",
+                    "settings restored from settings.json.bak",
+                )
+            } else {
+                IpcError::new(
+                    "settings.recovered",
+                    format!(
+                        "parts back to their defaults: {}",
+                        recovered.reset.join(", ")
+                    ),
+                )
+            });
+            (recovered.settings, true)
+        }
+        Loaded::NewerVersion(v) => {
+            notices.push(IpcError::new(
+                "settings.newer",
+                format!("settings.json has schema {v}; defaults used, the file left alone"),
+            ));
+            (StoredSettings::default(), false)
+        }
+        Loaded::Corrupt(reason) => {
+            let _ = settings_store::quarantine(store_path);
+            notices.push(IpcError::new(
+                "settings.corrupt",
+                format!("settings.json unreadable ({reason}); kept as settings.json.corrupt"),
+            ));
+            (StoredSettings::default(), true)
+        }
+    };
+    (stored, writable, notices)
+}
+
 impl AppState {
     pub fn new(
         thumb_dir: PathBuf,
@@ -212,26 +258,16 @@ impl AppState {
         let font_dir = config_dir.join("fonts");
         // Imported LUTs, by content hash (FR-070).
         fotollection_core::lut::set_dir(config_dir.join("looks"));
-        let (stored, writable) = match settings_store::load(&store_path) {
-            Loaded::Ok(stored) => (stored, true),
-            Loaded::Missing => (StoredSettings::default(), true),
-            Loaded::NewerVersion(v) => {
-                eprintln!("settings.json has schema {v}; using defaults without saving");
-                (StoredSettings::default(), false)
-            }
-            Loaded::Corrupt(reason) => {
-                eprintln!("settings.json is invalid ({reason}); moved aside, using defaults");
-                let _ = settings_store::quarantine(&store_path);
-                (StoredSettings::default(), true)
-            }
-        };
+        let (stored, writable, notices) = load_settings(&store_path);
         let logos = stored
             .cameras
             .iter()
             .filter(|c| c.logo == LogoKind::Image)
             .filter_map(|c| {
                 let bytes = std::fs::read(logo_dir.join(format!("{}.png", c.id))).ok()?;
-                Some((c.id, Arc::new(logo::decode_png(&bytes).ok()?)))
+                // A logo whose decoder panics is skipped, never the start (ADR-0048).
+                let image = fotollection_core::supervise::contained(|| logo::decode_png(&bytes))?;
+                Some((c.id, Arc::new(image.ok()?)))
             })
             .collect();
 
@@ -240,7 +276,9 @@ impl AppState {
             .iter()
             .filter_map(|f| {
                 let path = font_dir.join(format!("{}.{}", f.id, f.format.extension()));
-                let (_, font) = fonts::load(std::fs::read(path).ok()?).ok()?;
+                let bytes = std::fs::read(path).ok()?;
+                let (_, font) =
+                    fotollection_core::supervise::contained(|| fonts::load(bytes))?.ok()?;
                 Some((f.id, LoadedFont { id: f.id, font }))
             })
             .collect();
@@ -295,6 +333,7 @@ impl AppState {
             document_lock: Mutex::new(()),
             requested_open: Mutex::new(None),
             requested_photo: Mutex::new(None),
+            startup_notices: Mutex::new(notices),
             update_download: crate::updates::PendingDownload::default(),
             last_export: Mutex::new(None),
             copied: Mutex::new(None),

@@ -774,14 +774,27 @@ fn one_at_a_time_on<T: Send>(
 
 /// The developed size, the only one to use for geometry (crops are fractions of it).
 pub fn dimensions(bytes: &[u8], kind: RawKind) -> Result<(u32, u32), CodecError> {
-    first(kind, |d| d.dimensions(bytes, kind))
+    // Contained (ADR-0048): a reader that panics on this file is its error, not the app's.
+    crate::supervise::contained(|| first(kind, |d| d.dimensions(bytes, kind))).unwrap_or_else(
+        || {
+            Err(CodecError::Decode(
+                "the RAW reader failed on this file".into(),
+            ))
+        },
+    )
 }
 
 /// The preview the RAW carries, at most `max_px` on its long edge: 30 to 100 times faster
 /// than a develop (RESULT.md §12), for thumbnails and best-shot analysis. Its size can
 /// differ from `dimensions`.
 pub fn preview(bytes: &[u8], kind: RawKind, max_px: u32) -> Result<Decoded, CodecError> {
-    first(kind, |d| d.preview(bytes, kind, max_px))
+    crate::supervise::contained(|| first(kind, |d| d.preview(bytes, kind, max_px))).unwrap_or_else(
+        || {
+            Err(CodecError::Decode(
+                "the RAW reader failed on this file".into(),
+            ))
+        },
+    )
 }
 
 /// Whether this machine can develop RAW: always, since rawler is built in (ADR-0029).

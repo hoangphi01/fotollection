@@ -137,6 +137,10 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 | `ERR-CFG-0007` | v0.9.1 | `logo.not_png` | `crates/core/src/logo.rs:36` | The logo must be a PNG file | The logo is not a PNG. | Choose a PNG file. |
 | `ERR-CFG-0008` | v0.9.1 | `logo.too_large` | `crates/core/src/logo.rs:37` | The logo is larger than 2 MB or 4096 px | The logo is over 2 MB or 4096 px. | Use a smaller PNG. |
 | `ERR-CFG-0009` | v0.9.1 | `settings.invalid` | `src-tauri/src/commands.rs:436` | These settings are not valid | A setting from the UI was out of range or malformed (Rust validation). | Report it: the UI should never send it. |
+| `ERR-CFG-0010` | v0.14.0 | `settings.recovered` | `src-tauri/src/state.rs` (`load_settings`), `settings_store::load_machine` | Some settings could not be read and went back to their defaults; the rest are kept, and the damaged file was saved beside them | `settings.json` was invalid and its `.bak` too; each part that still read was kept, the bad ones reset (the log names them); a copy kept as `settings.json.corrupt-<time>` (ADR-0048). | Check the reset settings; send the `.corrupt-` file with a report if it repeats. |
+| `ERR-CFG-0011` | v0.14.0 | `settings.restored` | `src-tauri/src/state.rs` (`load_settings`) | The settings file was damaged; the last good copy was used | `settings.json` was invalid; `settings.json.bak` read and was used; the damaged file kept as `.corrupt-<time>`. | Nothing; the last change before the damage may be missing. |
+| `ERR-CFG-0012` | v0.14.0 | `settings.newer` | `src-tauri/src/state.rs` (`load_settings`) | These settings come from a newer Fotollection: defaults are used and the file is left alone | `settings.json` has a newer `schema_version`; defaults are used and the file is never written. | Update Fotollection. |
+| `ERR-CFG-0013` | v0.14.0 | `settings.corrupt` | `src-tauri/src/state.rs` (`load_settings`) | The settings file could not be read; defaults are used and the file was kept as settings.json.corrupt | Not a settings file at all (not JSON, another format) and no readable `.bak`: moved aside, defaults used. | Report it with the `.corrupt` file. |
 
 ### EXP: Export
 

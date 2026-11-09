@@ -3,6 +3,7 @@ import { Sparkles, Square } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { KeysInfo } from '@/components/layout/keys-info'
+import { useStartupNotice } from '@/features/startup/use-startup-notices'
 import { ErrorNotice, NoticeStack } from '@/components/layout/notice-stack'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
@@ -210,9 +211,11 @@ export function App() {
     onlyFolder !== undefined && (filter.queue ?? 'gallery') === 'gallery' && capture.sessions.includes(onlyFolder)
       ? onlyFolder
       : null
+  // A damaged settings file, said once (ADR-0048).
+  const startupNotice = useStartupNotice()
   // The main view's error. A dismissed one stays hidden while it lasts; once it clears, the
   // same error from a new attempt (another Connect) shows again.
-  const mainError = error ?? bestShots.error ?? (capture.phase === 'connected' ? null : capture.error)
+  const mainError = error ?? bestShots.error ?? (capture.phase === 'connected' ? null : capture.error) ?? startupNotice
   const [dismissedError, setDismissedError] = useState<string | null>(null)
   if (mainError === null && dismissedError !== null) setDismissedError(null)
   const shownError = mainError !== dismissedError ? mainError : null

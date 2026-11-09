@@ -925,3 +925,10 @@
 - **Why:** `std::sync::Mutex` stays poisoned for good once a holder panics; each site handled the `Err` as a failure, which is right for one call and wrong for a whole session.
 - **Fix:** `fotollection_core::lock::{Mutex, RwLock}` keep std's API (`lock()` still returns a `Result`, so no call site changed) but recover the data, clear the poison and log once; the Tauri layer and the core's caches use them. The test poisons a lock in a panicking thread and reads it back; without the clearing it failed.
 - **Rule:** fix a pattern at its type, not at its 200 uses: a wrapper with the same API changes behaviour everywhere at once, and the compiler finds the few places it does not fit.
+
+### One bad caption reset every setting and saved look, in silence (NFR-011, ADR-0048)
+
+- **Seen:** the audit of user data found that any field `validate` refused in `settings.json` (a caption with a control character, an unknown print size, a duplicate camera) quarantined the whole file: custom sizes, cameras, fonts, saved looks and addresses all went back to their defaults, the `.bak` beside it was never tried, and the only report was an `eprintln!` nobody sees.
+- **Why:** the loader had two answers, valid or corrupt, made for an untrusted bundle and reused for the machine's own file, where losing everything for one field is the worse failure.
+- **Fix:** `settings_store::load_machine`: the `.bak` first, else part by part (each top-level part read and checked alone, a bad one at its default), the damaged file copied aside by time; `ERR-CFG-0010`…`0013`, told once after start-up (`take_startup_notices`). The bundle's reader stays strict. A test breaks one caption and keeps the addresses; it failed strictly before.
+- **Rule:** a loader says what it costs when it fails, and the user's own data is kept part by part; strict all-or-nothing is for input from outside. A recovery is never silent.

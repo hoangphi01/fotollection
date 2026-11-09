@@ -173,6 +173,22 @@ pub fn decode_photo(
     look: crate::raw::RawLook,
     adjust: &crate::raw::RawAdjust,
 ) -> Result<Decoded, CodecError> {
+    contained(|| decode_photo_unguarded(codec, bytes, look, adjust))
+}
+
+/// A decoder that panicked on a file is that file's decode error (ADR-0048): the photo shows
+/// `ERR-IMG-0002`, the app goes on.
+fn contained(decode: impl FnOnce() -> Result<Decoded, CodecError>) -> Result<Decoded, CodecError> {
+    crate::supervise::contained(decode)
+        .unwrap_or_else(|| Err(CodecError::Decode("the decoder failed on this file".into())))
+}
+
+fn decode_photo_unguarded(
+    codec: &dyn JpegCodec,
+    bytes: &[u8],
+    look: crate::raw::RawLook,
+    adjust: &crate::raw::RawAdjust,
+) -> Result<Decoded, CodecError> {
     if bytes.starts_with(PNG_MAGIC) {
         decode_png(bytes)
     } else if let Some(kind) = crate::raw::kind(bytes) {
@@ -193,10 +209,10 @@ pub fn decode_for_screen(
     bytes: &[u8],
     max_px: u32,
 ) -> Result<Decoded, CodecError> {
-    match crate::raw::kind(bytes) {
+    contained(|| match crate::raw::kind(bytes) {
         Some(kind) => crate::raw::preview(bytes, kind, max_px),
         None => decode_image(codec, bytes),
-    }
+    })
 }
 
 /// Pixel dimensions of any supported input photo, from the header only.

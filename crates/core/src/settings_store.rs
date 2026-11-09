@@ -94,7 +94,31 @@ pub enum Loaded {
     NewerVersion(u32),
     /// Unreadable or invalid. Defaults are used; the bad file is kept as `.corrupt`.
     Corrupt(String),
+    /// The machine's file was invalid, but not all of it (ADR-0048): the last good copy
+    /// (`.bak`), or every part that still reads, the bad ones at their defaults.
+    Recovered(Recovered),
 }
+
+/// Settings saved from a damaged file, and how.
+#[derive(Debug, PartialEq)]
+pub struct Recovered {
+    pub settings: StoredSettings,
+    /// Read from the `.bak` beside the file.
+    pub from_backup: bool,
+    /// The parts that went back to their defaults (`render`, `looks`…).
+    pub reset: Vec<&'static str>,
+}
+
+/// The parts of the file, each read and checked on its own when the whole fails.
+const PARTS: [&str; 7] = [
+    "render",
+    "frame",
+    "cameras",
+    "fonts",
+    "ui",
+    "recent_addresses",
+    "looks",
+];
 
 /// Just enough of the file to check its format and version.
 #[derive(Deserialize)]
@@ -113,6 +137,86 @@ pub fn load(path: &Path) -> Loaded {
     match std::fs::read(path) {
         Ok(bytes) => from_bytes(&bytes),
         Err(e) => Loaded::Corrupt(e.to_string()),
+    }
+}
+
+/// The machine's settings, kept as far as they can be (ADR-0048): a damaged file gives way
+/// to its `.bak` if that reads, else each part that still reads is kept and only the bad
+/// ones go back to their defaults; before, one bad caption reset every setting and look.
+/// A project bundle's settings stay strict ([`from_bytes`]): they are untrusted input.
+pub fn load_machine(path: &Path) -> Loaded {
+    let first = load(path);
+    let Loaded::Corrupt(reason) = first else {
+        return first;
+    };
+    if let Loaded::Ok(settings) = load(&path.with_extension("json.bak")) {
+        return Loaded::Recovered(Recovered {
+            settings,
+            from_backup: true,
+            reset: Vec::new(),
+        });
+    }
+    match std::fs::read(path).ok().and_then(|bytes| salvage(&bytes)) {
+        Some(recovered) => Loaded::Recovered(recovered),
+        None => Loaded::Corrupt(reason),
+    }
+}
+
+/// Each part read and checked alone; a bad one at its default. `None` when the file is not
+/// a settings file at all (not JSON, another format, a newer version).
+fn salvage(bytes: &[u8]) -> Option<Recovered> {
+    let value: serde_json::Value = serde_json::from_slice(bytes).ok()?;
+    let header: Header = serde_json::from_value(value.clone()).ok()?;
+    if header.format != FORMAT || header.schema_version > SCHEMA_VERSION {
+        return None;
+    }
+    let mut kept = serde_json::Map::new();
+    kept.insert("format".into(), FORMAT.into());
+    kept.insert("schema_version".into(), header.schema_version.into());
+    let defaults = serde_json::to_value(empty_file()).ok()?;
+    let mut reset = Vec::new();
+    for part in PARTS {
+        let mut alone = defaults.as_object()?.clone();
+        alone.insert("schema_version".into(), header.schema_version.into());
+        if let Some(v) = value.get(part) {
+            alone.insert(part.into(), v.clone());
+        }
+        let good = serde_json::from_value::<FileV4>(serde_json::Value::Object(alone))
+            .is_ok_and(|file| validate(file, header.schema_version).is_ok());
+        match value.get(part) {
+            Some(v) if good => {
+                kept.insert(part.into(), v.clone());
+            }
+            _ => {
+                if value.get(part).is_some() {
+                    reset.push(part);
+                }
+                kept.insert(part.into(), defaults.get(part)?.clone());
+            }
+        }
+    }
+    let file: FileV4 = serde_json::from_value(serde_json::Value::Object(kept)).ok()?;
+    let settings = validate(file, header.schema_version).ok()?;
+    Some(Recovered {
+        settings,
+        from_backup: false,
+        reset,
+    })
+}
+
+/// A file of today's version holding the defaults.
+fn empty_file() -> FileV4 {
+    let d = StoredSettings::default();
+    FileV4 {
+        format: FORMAT.to_owned(),
+        schema_version: SCHEMA_VERSION,
+        render: d.render,
+        frame: d.frame,
+        cameras: d.cameras,
+        fonts: d.fonts,
+        ui: d.ui,
+        recent_addresses: d.recent_addresses,
+        looks: d.looks,
     }
 }
 
@@ -198,6 +302,17 @@ fn validate(file: FileV4, version: u32) -> Result<StoredSettings, String> {
 pub fn quarantine(path: &Path) -> std::io::Result<PathBuf> {
     let target = path.with_extension("json.corrupt");
     std::fs::rename(path, &target)?;
+    Ok(target)
+}
+
+/// Copies a damaged file aside before its recovered settings replace it, named by the time,
+/// so a second damage never overwrites the first copy.
+pub fn keep_damaged(path: &Path) -> std::io::Result<PathBuf> {
+    let at = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_or(0, |d| d.as_secs());
+    let target = path.with_extension(format!("json.corrupt-{at}"));
+    std::fs::copy(path, &target)?;
     Ok(target)
 }
 
@@ -855,6 +970,60 @@ mod tests {
         s.cameras.push(s.cameras[0].clone());
         save(&path, &s)?;
         assert!(matches!(load(&path), Loaded::Corrupt(_)));
+        Ok(())
+    }
+
+    /// ADR-0048: one bad part goes back to its default alone; the looks and addresses stay.
+    #[test]
+    fn a_bad_part_resets_alone() -> Result<(), Box<dyn std::error::Error>> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        let good = StoredSettings {
+            recent_addresses: vec!["12 Rue de Rivoli, Paris".into()],
+            ..StoredSettings::default()
+        };
+        let mut value: serde_json::Value = serde_json::from_slice(&to_bytes(&good)?)?;
+        value["render"]["stamp"]["caption"] = "bad\u{0007}caption".into();
+        std::fs::write(&path, serde_json::to_vec(&value)?)?;
+        assert!(
+            matches!(load(&path), Loaded::Corrupt(_)),
+            "the whole file fails strictly"
+        );
+        let Loaded::Recovered(r) = load_machine(&path) else {
+            panic!("recovered part by part");
+        };
+        assert!(!r.from_backup);
+        assert_eq!(r.reset, vec!["render"]);
+        assert_eq!(r.settings.recent_addresses, good.recent_addresses);
+        Ok(())
+    }
+
+    /// A damaged file gives way to its last good copy.
+    #[test]
+    fn a_damaged_file_gives_way_to_its_backup() -> Result<(), Box<dyn std::error::Error>> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        let good = StoredSettings {
+            recent_addresses: vec!["Váci utca 1, Budapest".into()],
+            ..StoredSettings::default()
+        };
+        std::fs::write(path.with_extension("json.bak"), to_bytes(&good)?)?;
+        std::fs::write(&path, b"{ not json")?;
+        let Loaded::Recovered(r) = load_machine(&path) else {
+            panic!("from the backup");
+        };
+        assert!(r.from_backup);
+        assert_eq!(r.settings, good);
+        Ok(())
+    }
+
+    /// Nothing to save: not JSON and no backup stays corrupt (defaults, quarantined).
+    #[test]
+    fn nothing_readable_stays_corrupt() -> Result<(), Box<dyn std::error::Error>> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, b"{ not json")?;
+        assert!(matches!(load_machine(&path), Loaded::Corrupt(_)));
         Ok(())
     }
 }

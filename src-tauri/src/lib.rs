@@ -38,6 +38,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             commands::app_info,
             commands::startup_finished,
             open_with::take_photo_request,
+            open_with::take_startup_notices,
             document::document_requested,
             updates::check_for_update,
             updates::open_update_download,

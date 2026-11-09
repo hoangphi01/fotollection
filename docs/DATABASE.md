@@ -318,7 +318,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 - **Load rules:**
   - A missing file means defaults.
   - A `schema_version` newer than the app understands means defaults, and the file is **never overwritten**.
-  - An invalid file (bad JSON, unknown fields, duplicate camera rows, unknown print size) is moved to `.json.corrupt`, and defaults are used.
+  - An invalid file (bad JSON, unknown fields, duplicate camera rows, unknown print size) is recovered as far as it can be (v0.14.0, ADR-0048, `settings_store::load_machine`): its `.json.bak` is used if that reads (`ERR-CFG-0011`); else each top-level part (`render`, `frame`, `cameras`, `fonts`, `ui`, `recent_addresses`, `looks`) is read and checked alone and only the bad ones go back to their defaults (`ERR-CFG-0010`); either way the damaged file is copied to `.json.corrupt-<unix time>` first. Only a file that is not a settings file at all, with no readable `.bak`, is moved to `.json.corrupt` with defaults (`ERR-CFG-0013`). A newer file is `ERR-CFG-0012`. The user is told once, after start-up (`take_startup_notices`). A project bundle's `settings.json` stays strict: it is untrusted input.
 - **Not here:** per-project choices (ratings, per-photo sizes and crops) belong in the project file ([§4](#4-project-file-schema)).
 
 | Version | App version | Change |

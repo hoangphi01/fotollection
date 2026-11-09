@@ -127,6 +127,17 @@ pub fn take_photo_request(state: State<'_, AppState>) -> Option<OpenPhoto> {
     state.requested_photo.lock().ok()?.take()
 }
 
+/// What start-up has to tell the user (a damaged settings file, ADR-0048), once.
+#[tauri::command]
+#[specta::specta]
+pub fn take_startup_notices(state: State<'_, AppState>) -> Vec<crate::state::IpcError> {
+    state
+        .startup_notices
+        .lock()
+        .map(|mut notices| std::mem::take(&mut *notices))
+        .unwrap_or_default()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

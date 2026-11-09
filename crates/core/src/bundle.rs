@@ -278,7 +278,10 @@ pub fn from_bytes(bytes: &[u8]) -> Result<Bundle, BundleError> {
         Some(settings_store::Loaded::Ok(s)) => s,
         Some(settings_store::Loaded::NewerVersion(v)) => return Err(BundleError::NewerVersion(v)),
         Some(settings_store::Loaded::Corrupt(why)) => return Err(corrupt(why)),
-        Some(settings_store::Loaded::Missing) | None => return Err(corrupt("no settings")),
+        // `from_bytes` is strict and never recovers; a bundle's settings are untrusted.
+        Some(settings_store::Loaded::Missing | settings_store::Loaded::Recovered(_)) | None => {
+            return Err(corrupt("no settings"));
+        }
     };
     settings.ui = UiSettings::default();
 

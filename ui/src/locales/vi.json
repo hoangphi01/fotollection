@@ -510,7 +510,11 @@
       "preset_empty": "Preset này không có gì mà look giữ được"
     },
     "settings": {
-      "invalid": "Thiết lập không hợp lệ"
+      "invalid": "Thiết lập không hợp lệ",
+      "recovered": "Một số thiết lập không đọc được nên đã về mặc định; phần còn lại vẫn giữ, và tệp hỏng đã được lưu riêng bên cạnh",
+      "restored": "Tệp thiết lập bị hỏng; đã dùng bản sao tốt gần nhất",
+      "newer": "Thiết lập này đến từ một bản Fotollection mới hơn: đang dùng mặc định và tệp được để nguyên. Hãy cập nhật Fotollection để dùng chúng",
+      "corrupt": "Không đọc được tệp thiết lập; đang dùng mặc định và tệp được giữ lại thành settings.json.corrupt"
     },
     "project": {
       "not_a_project": "Đây không phải dự án Fotollection",

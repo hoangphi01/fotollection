@@ -530,7 +530,11 @@
       "preset_empty": "This preset changes nothing a look can hold"
     },
     "settings": {
-      "invalid": "These settings are not valid"
+      "invalid": "These settings are not valid",
+      "recovered": "Some settings could not be read and went back to their defaults; the rest are kept, and the damaged file was saved beside them",
+      "restored": "The settings file was damaged; the last good copy was used",
+      "newer": "These settings come from a newer Fotollection: defaults are used and the file is left alone. Update Fotollection to use them",
+      "corrupt": "The settings file could not be read; defaults are used and the file was kept as settings.json.corrupt"
     },
     "project": {
       "not_a_project": "This is not a Fotollection project",

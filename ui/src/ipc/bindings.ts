@@ -17,6 +17,8 @@ export const commands = {
 	id: PhotoId,
 	folder: number,
 } | null>("take_photo_request"),
+	/**  What start-up has to tell the user (a damaged settings file, ADR-0048), once. */
+	takeStartupNotices: () => __TAURI_INVOKE<IpcError[]>("take_startup_notices"),
 	/**
 	 *  Whether the OS handed over a project the UI has not opened yet: a cold launch can deliver it
 	 *  before the page listens for `MenuAction`, so the UI asks once start-up is over.
