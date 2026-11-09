@@ -1,0 +1,27 @@
+{%- comment %} The interactive Looks section of the landing page (owner, 2026-11-09, after Apple's aperture picker): one photo through each built-in look (site/_data/looks.yml, rendered by the app's engine), a row of looks to pick, a sentence for the one picked, and press and hold the photo for its original, as in the app. Without script: the original and the list. assets/js/looks.js. {% endcomment -%}
+{%- assign t = site.data.i18n[page.lang] -%}
+{%- assign lang = page.lang -%}
+{%- assign first = site.data.looks | first -%}
+<section class="section looks-section" id="looks">
+  <div class="wrap">
+    <p class="kicker">{{ t.looks_kicker }}</p>
+    <h2 class="looks-title">{{ t.looks_title }}</h2>
+    <p class="lead narrow looks-lead">{{ t.looks_lead_1 }}<strong>{{ t.looks_lead_2 }}</strong>{{ t.looks_lead_3 }}<strong>{{ t.looks_lead_4 }}</strong>{{ t.looks_lead_5 }}</p>
+    <div class="looks" data-looks>
+      <figure class="looks-photo">
+        <img src="{{ '/assets/img/looks/' | append: first.slug | append: '.webp' | relative_url }}" width="1200" height="1600" alt="{{ t.looks_alt }}" loading="lazy" decoding="async" data-looks-photo data-original="{{ '/assets/img/looks/original.webp' | relative_url }}" />
+        <figcaption class="small muted">{{ t.looks_hold }}{% include fn.html keys="fn_photo" %}</figcaption>
+      </figure>
+      <div class="looks-side">
+        <div class="looks-choices" role="group" aria-label="{{ t.looks_pick }}">
+          {%- for l in site.data.looks %}
+          <button type="button" class="look-choice" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" data-look="{{ '/assets/img/looks/' | append: l.slug | append: '.webp' | relative_url }}" data-say="{{ l.say[lang] | escape }}">{{ l.name[lang] }}</button>
+          {%- endfor %}
+        </div>
+        <p class="looks-say" aria-live="polite"><strong data-looks-name>{{ first.name[lang] }}.</strong> <span data-looks-text>{{ first.say[lang] }}</span></p>
+        <p class="small muted">{{ t.looks_engine }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="{{ '/assets/js/looks.js' | relative_url }}" defer></script>

@@ -1,0 +1,28 @@
+# The landing page's interactive Looks section (site/_includes/looks.html): Fotollection's
+# eight built-in looks (crates/core/src/look_library.rs), named as the app names them
+# (ui/src/locales, look.builtin.*), each said in one sentence from its recipe. The pictures,
+# assets/img/looks/<slug>.webp, are rendered by the app's own engine (site/screenshots/looks.sh).
+- slug: original
+  name: { en: "Original", vi: "Gốc" }
+  say: { en: "The photo as the camera made it. Every look starts here, and you can always come back.", vi: "Ảnh đúng như máy chụp. Mọi look bắt đầu từ đây, và luôn quay lại được." }
+- slug: c200-natural
+  name: { en: "C200 Natural", vi: "C200 Natural" }
+  say: { en: "Softer contrast, a little more colour and a touch of warmth, the author's own camera recipe.", vi: "Tương phản dịu hơn, màu đậm hơn một chút và hơi ấm, công thức máy ảnh của chính tác giả." }
+- slug: warm-film
+  name: { en: "Warm old film", vi: "Phim cũ ấm" }
+  say: { en: "Warm light, lifted blacks and a golden glow in the highlights, like a print kept in a drawer.", vi: "Ánh ấm, điểm đen nâng lên và vùng sáng ánh vàng, như tấm ảnh in cất lâu trong ngăn kéo." }
+- slug: clear
+  name: { en: "Clear", vi: "Trong trẻo" }
+  say: { en: "Crisp contrast and vivid colour, with the bright and dark parts opened up.", vi: "Tương phản rõ, màu tươi, vùng sáng và vùng tối đều được mở ra." }
+- slug: cool
+  name: { en: "Cool", vi: "Mát" }
+  say: { en: "A blue, quiet light for winter streets and early mornings.", vi: "Ánh xanh lặng lẽ cho phố mùa đông và những buổi sáng sớm." }
+- slug: faded
+  name: { en: "Faded", vi: "Phai màu" }
+  say: { en: "Gentle, matte and muted, as if the colours had been in the sun.", vi: "Nhẹ, mờ và trầm, như màu đã phơi nắng lâu." }
+- slug: mono-red
+  name: { en: "B&W, red filter", vi: "B&W lọc đỏ" }
+  say: { en: "Black and white through a red filter: reds turn bright, blue skies dark, as on film.", vi: "Trắng đen qua kính lọc đỏ: màu đỏ sáng lên, trời xanh tối lại, như trên phim." }
+- slug: mono-soft
+  name: { en: "Soft B&W", vi: "B&W mềm" }
+  say: { en: "A soft black and white, low in contrast, for quiet scenes and faces.", vi: "Trắng đen mềm, tương phản thấp, cho cảnh lặng và chân dung." }

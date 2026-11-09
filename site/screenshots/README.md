@@ -49,3 +49,5 @@ All are CC0 on Wikimedia Commons. Camera EXIF is intact, so the info frame and t
 | `grevy-zebras-in-der-wilhelma-1.jpg` | [Grevy-Zebras in der Wilhelma 1.jpg](https://commons.wikimedia.org/wiki/File:Grevy-Zebras_in_der_Wilhelma_1.jpg) | CC0 | Dktue | `536b882c72f82494…` |
 | `grevy-zebras-in-der-wilhelma-2.jpg` | [Grevy-Zebras in der Wilhelma 2.jpg](https://commons.wikimedia.org/wiki/File:Grevy-Zebras_in_der_Wilhelma_2.jpg) | CC0 | Dktue | `40c0fe8fa4a6bce0…` |
 | `grevy-zebras-in-der-wilhelma-3.jpg` | [Grevy-Zebras in der Wilhelma 3.jpg](https://commons.wikimedia.org/wiki/File:Grevy-Zebras_in_der_Wilhelma_3.jpg) | CC0 | Dktue | `bbcffa37f62bf414…` |
+
+**The landing page's Looks** (`site/assets/img/looks/`) are not screenshots: `site/screenshots/looks.sh <owner-folder>` renders one of the owner's photos (P1067865, a Prague tram, with his consent) through each built-in look with the app's own engine (`crates/core/examples/render_looks.rs`) and writes 1200 × 1600 WebP. Run it again when a built-in look's recipe changes.
