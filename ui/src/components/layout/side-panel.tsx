@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+import { PartBoundary } from './part-boundary'
 import type { ReactNode } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
@@ -33,7 +34,9 @@ export function SidePanel({ title, children, footer, tabs }: SidePanelProps) {
       )}
       {/* An overlay scrollbar, as in the folder list, so the cards keep the panel's width. */}
       <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
-        <div className="space-y-3 p-3">{children}</div>
+        <div className="space-y-3 p-3">
+          <PartBoundary part="panel">{children}</PartBoundary>
+        </div>
       </ScrollArea>
       <Separator />
       <div className="space-y-3 p-3">{footer}</div>

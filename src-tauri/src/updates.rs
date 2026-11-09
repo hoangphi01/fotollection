@@ -348,6 +348,26 @@ pub fn diagnostics() -> String {
     fotollection_core::error_log::diagnostics(20)
 }
 
+/// What the interface reports when one of its parts fails (ADR-0048): `render` for a part an
+/// error boundary caught (`ERR-UI-0001`), `unhandled` for an error or a rejected promise no
+/// code handled (`ERR-UI-0002`). Untrusted text from the webview: control characters dropped,
+/// at most 500 characters, so the log stays one line per error.
+#[tauri::command]
+#[specta::specta]
+pub fn report_ui_error(kind: String, message: String) {
+    let code = if kind == "render" {
+        "ui.render_failed"
+    } else {
+        "ui.unhandled"
+    };
+    let clean: String = message
+        .chars()
+        .filter(|c| !c.is_control())
+        .take(500)
+        .collect();
+    fotollection_core::error_log::record(code, &clean);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

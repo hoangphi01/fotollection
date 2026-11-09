@@ -89,6 +89,7 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | UI-STATE-007 | Empty views explain | No photos, no groups, a filter with no match: a sentence and the next step | M | release | Nielsen 10 |
 | UI-STATE-008 | An app, not a page | A drag across a card's title in a dialog selects nothing; a photo's facts and an error message select and copy; a right click on bare ground shows no menu, on a field shows Cut, Copy and Paste; F5, ⌘R / Ctrl+R, ⌘P / Ctrl+P and ⌘F / Ctrl+F do nothing, ⇧⌘R and ⇧⌘C still work | M (until a detector) + `check-lego` | release | Owner, 2026-11-08 |
 | UI-STATE-009 | A press is seen | A button held down has the theme's colour as its background, in both themes (the photo preview's *Rotate left*) | A `shoot.mjs` | release | STYLE_RULE §4; TRANS_ANIMATION |
+| UI-STATE-010 | A part that fails fails alone | With every card broken on purpose, then the main view (`lib/fault.ts`, a build with `VITE_FAULTS=1`), each shows `PartFailed` in its place, the gallery or the side panel stays, and the window never fails as a whole | A `shoot.mjs` | release | ADR-0048; LESSONS |
 
 ### Stability
 

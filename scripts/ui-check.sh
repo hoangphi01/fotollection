@@ -39,7 +39,8 @@ if [ ! -f "$dump/fixtures.json" ]; then
   rm -rf "$dump"
   FOTOLLECTION_DEMO_FOLDER="$PWD/$folder" FOTOLLECTION_DEMO_DUMP="$PWD/$dump" target/debug/fotollection
 fi
-npm run ui:build >/dev/null
+# VITE_FAULTS=1: the parts the harness breaks on purpose (UI-STATE-010); releases never set it.
+VITE_FAULTS=1 npm run ui:build >/dev/null
 
 status=0
 run() {

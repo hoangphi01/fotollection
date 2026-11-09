@@ -1334,5 +1334,11 @@
     "panels": "Dải ảnh và bố cục",
     "move": "Chuyển các ảnh đã chọn",
     "apply": "Địa điểm và thiết lập"
+  },
+  "part": {
+    "failed": "Phần này gặp lỗi và đã dừng; phần còn lại của Fotollection vẫn chạy (ERR-UI-0001).",
+    "retry": "Thử lại",
+    "appFailed": "Fotollection gặp lỗi không vượt qua được (ERR-UI-0001).",
+    "reload": "Tải lại"
   }
 }

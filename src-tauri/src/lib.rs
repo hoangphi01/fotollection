@@ -47,6 +47,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             updates::open_issue_page,
             updates::open_website,
             updates::diagnostics,
+            updates::report_ui_error,
             cache::cache_usage,
             cache::clear_cache,
             cache::memory_info,

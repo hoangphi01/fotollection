@@ -26,6 +26,7 @@
 | **EXP** | Export | no destination, nothing to export, cancelled |
 | **NET** | The network: *Check for updates* only | offline, an answer that cannot be read |
 | **IPC** | Invalid input from the interface | a stale photo id, a selection over 10,000 photos |
+| **UI** | The interface itself (v0.14.0, ADR-0048) | a part that failed to render, an error or rejected promise no code handled |
 
 ## 2. What each row says
 
@@ -198,3 +199,10 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 | `ERR-IPC-0033` | v0.14.0 | `look.preset_too_large` | `crates/core/src/preset.rs`, `src-tauri/src/looks.rs` (`import_presets`) | The preset file is too large | A preset over 1 MB, or a `.zip` over 20 MB packed or unpacked (FR-089); listed in the import's report, the other files imported. | Lightroom's presets are a few kilobytes: the file is probably not a preset. |
 | `ERR-IPC-0034` | v0.14.0 | `look.preset_invalid` | `crates/core/src/preset.rs` (`parse_xmp`, `parse_lrtemplate`, `parse_zip`) | This preset cannot be read | Not well-formed XML, a DTD (refused), nesting deeper than 32, a profile or mask preset (`PresetType` other than `Normal`), an `.lrtemplate` holding code or an expression, or a broken `.zip`; listed in the import's report with its reason. | Export the preset again from Lightroom (*Export…* on the preset); profiles are not presets. |
 | `ERR-IPC-0035` | v0.14.0 | `look.preset_empty` | `crates/core/src/preset.rs`, `src-tauri/src/looks.rs` (`import_presets`) | This preset changes nothing a look can hold | The preset holds only settings no look can take (sharpening, lens corrections, noise reduction…), so no look is made. | Expected for presets of that kind; nothing to fix. |
+
+### UI: The interface itself
+
+| Code | Since | Rust code | Raised in | User sees | What it means | What to do |
+|------|-------|-----------|-----------|-----------|---------------|------------|
+| `ERR-UI-0001` | v0.14.0 | `ui.render_failed` | `src-tauri/src/updates.rs` (`report_ui_error`), from `ui/src/main.tsx` (`onCaughtError`) | "This part hit an error and stopped; the rest of Fotollection goes on (ERR-UI-0001)." with *Try again*, in that part's place (`PartBoundary`); the whole window only if no part caught it (`AppBoundary`, *Reload*) | A card, panel, dialog, stage or the main view threw while rendering; the log holds the error's name and message (ADR-0048). | *Try again*; report it with the diagnostics if it repeats. |
+| `ERR-UI-0002` | v0.14.0 | `ui.unhandled` | `report_ui_error`, from `window` `error` and `unhandledrejection` | Nothing (log only) | An error in an event handler or a promise no code handled; the part goes on. | Report it with the diagnostics. |

@@ -250,7 +250,7 @@ const shots = []
 const TRIP_QUEUES = { print: [1, 4, 6], aside: [7, 13] } // not the shown photos (SHOW)
 const NO_QUEUES = { print: [], aside: [] }
 
-async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional', ui = {}, update = null, settingsPatch = null }) {
+async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional', ui = {}, update = null, settingsPatch = null, fault = null }) {
   const { dump } = source
   // DEMO_WIDTH=1000 checks narrow windows (the screenshots for the site stay at 1440).
   const context = await browser.newContext({
@@ -293,15 +293,18 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
     return route.abort()
   })
   // DEMO_OS=windows shows the Windows title bar, for checking it on a Mac.
+  // UI-STATE-010: a part told to fail (`lib/fault.ts`, in builds made with VITE_FAULTS=1).
+  if (fault) await context.addInitScript((part) => { window.__fotollectionFault = part }, fault)
   await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update, settingsPatch })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
   await page.goto('http://app.localhost/')
   // The gallery shows thumbnails; Simple mode a preview, Collage mode sheets (FR-048).
-  await page.waitForSelector('img[src*="/thumb/"], img[src*="/preview/"], img[src*="/sheet/"]')
+  // A part broken on purpose may be the one with the photos (UI-STATE-010).
+  if (!fault) await page.waitForSelector('img[src*="/thumb/"], img[src*="/preview/"], img[src*="/sheet/"]')
   await page.waitForFunction(() => [...document.images].every((i) => i.complete))
   // The start-up screen (FR-060) fades out once start-up is over: never shoot it.
-  await page.waitForSelector('#splash', { state: 'detached' })
+  if (!fault) await page.waitForSelector('#splash', { state: 'detached' })
   return { context, page }
 }
 
@@ -716,6 +719,20 @@ async function stressViews({ language, theme }) {
   await page.waitForTimeout(400)
   out.push(...(await allChecks(page, 'Copy settings dialog')))
   await context.close()
+  // UI-STATE-010: a part that fails fails alone (ADR-0048): every card broken, then the main
+  // view; each shows "This part hit an error" in its place, the rest goes on, never a blank.
+  for (const [fault, rest, restName] of [['card', 'main img[src*="/thumb/"]', 'the gallery'], ['main', 'aside.border-l', 'the side panel']]) {
+    ;({ context, page } = await open({ scenario: 'stamp', language, theme, fault }))
+    await page.waitForTimeout(1500)
+    const seen = await page.evaluate((restSel) => ({
+      failed: document.querySelectorAll('[data-slot="part-failed"]').length,
+      blank: document.querySelector('[data-slot="app-failed"]') !== null,
+      rest: document.querySelector(restSel) !== null,
+    }), rest)
+    if (seen.blank || seen.failed === 0 || !seen.rest)
+      out.push(`UI-STATE-010 a broken ${fault} did not fail alone: ${seen.failed} part(s) failed, ${seen.blank ? 'the whole window failed' : 'the window stayed'}, ${restName} ${seen.rest ? 'stayed' : 'went'}`)
+    await context.close()
+  }
   // Every Settings section, the manual among them, and the welcome.
   ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
   const sections = [/^(General|Chung)$/, /^(Export|Xuất ảnh)$/, /^(RAM & cache|Bộ nhớ RAM & cache)$/, /^(Updates|Cập nhật)$/, /^(Manual|Hướng dẫn sử dụng)$/, /^(Report a problem|Báo lỗi)$/, /^(What's new|Có gì mới)$/]

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+import { PartBoundary } from './part-boundary'
 import type { ReactNode } from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -88,10 +89,14 @@ export function SettingsFrame({
           </div>
           <Separator />
           {full ? (
-            <div className="flex min-h-0 flex-1 flex-col gap-3 p-3">{children}</div>
+            <div className="flex min-h-0 flex-1 flex-col gap-3 p-3">
+              <PartBoundary part="settings">{children}</PartBoundary>
+            </div>
           ) : (
             <ScrollArea key={scrollKey} className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
-              <div className="mx-auto max-w-xl space-y-3 p-3">{children}</div>
+              <div className="mx-auto max-w-xl space-y-3 p-3">
+                <PartBoundary part="settings">{children}</PartBoundary>
+              </div>
             </ScrollArea>
           )}
           {actions ? (

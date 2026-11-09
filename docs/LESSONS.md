@@ -932,3 +932,10 @@
 - **Why:** the loader had two answers, valid or corrupt, made for an untrusted bundle and reused for the machine's own file, where losing everything for one field is the worse failure.
 - **Fix:** `settings_store::load_machine`: the `.bak` first, else part by part (each top-level part read and checked alone, a bad one at its default), the damaged file copied aside by time; `ERR-CFG-0010`…`0013`, told once after start-up (`take_startup_notices`). The bundle's reader stays strict. A test breaks one caption and keeps the addresses; it failed strictly before.
 - **Rule:** a loader says what it costs when it fails, and the user's own data is kept part by part; strict all-or-nothing is for input from outside. A recovery is never silent.
+
+### One component that threw blanked the whole window: the interface had no error boundary (NFR-011, UI-STATE-010)
+
+- **Seen:** the audit found no `ErrorBoundary` anywhere in `ui/src` and no root error options: a render error in any card, a dialog or the gallery would unmount the whole tree, leaving an empty window; errors in handlers and promises reached only the console.
+- **Why:** React keeps rendering only what a boundary protects; without one, the root is the boundary and the root unmounts.
+- **Fix:** `PartBoundary` inside the blocks that hold parts (cards, panels, dialogs, the viewer, Settings, the folder list, the main view) with `PartFailed` (*Try again*), an `AppBoundary` at the root with *Reload*, and every caught or unhandled error logged through Rust (`ERR-UI-0001`, `0002`). UI-STATE-010 breaks every card, then the main view, in a build with `VITE_FAULTS=1`: with a boundary that rethrows, the whole window failed; now only the part does. The fault hook is absent from a normal build.
+- **Rule:** a block that holds other parts owns their failure: it wraps them in a boundary, so a new card inherits it. A test hook lives behind a build flag that releases never set, and that is checked in the built files.

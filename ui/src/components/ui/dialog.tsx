@@ -1,4 +1,5 @@
 import * as React from "react"
+import { PartBoundary } from '@/components/layout/part-boundary'
 import { cn } from "cn"
 import { Dialog as DialogPrimitive } from "radix-ui"
 
@@ -82,7 +83,8 @@ function DialogContent({
         }}
         {...props}
       >
-        {children}
+        {/* A dialog's content fails alone; its close button stays (ADR-0048). */}
+        <PartBoundary part="dialog">{children}</PartBoundary>
         {showCloseButton && (
           <DialogPrimitive.Close data-slot="dialog-close" asChild>
             {/* A small red square with even corners, so closing is easy to find (FR-052); it

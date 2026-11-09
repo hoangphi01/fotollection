@@ -20,6 +20,8 @@ pub const CODES: &[(&str, &str)] = &[
     ("settings.restored", "ERR-CFG-0011"),
     ("settings.newer", "ERR-CFG-0012"),
     ("settings.corrupt", "ERR-CFG-0013"),
+    ("ui.render_failed", "ERR-UI-0001"),
+    ("ui.unhandled", "ERR-UI-0002"),
     ("camera.bad_answer", "ERR-DRV-0001"),
     ("camera.failed", "ERR-DRV-0002"),
     ("camera.refused", "ERR-DRV-0003"),

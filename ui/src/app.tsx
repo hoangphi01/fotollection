@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { KeysInfo } from '@/components/layout/keys-info'
 import { useStartupNotice } from '@/features/startup/use-startup-notices'
+import { PartBoundary } from '@/components/layout/part-boundary'
 import { ErrorNotice, NoticeStack } from '@/components/layout/notice-stack'
 import { ToolbarButton } from '@/components/forms/toolbar-button'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
@@ -237,6 +238,8 @@ export function App() {
     <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground select-none">
       <TitleBar name={project.document.name ?? t('project.untitled')} />
       <div className="flex min-h-0 flex-1">
+      {/* The folder list fails alone (ADR-0048). */}
+      <PartBoundary part="folders">
       <LibrarySidebar
         folders={folders}
         selected={filter.folders ?? []}
@@ -261,6 +264,7 @@ export function App() {
         onShowRelink={() => setRelinkHiddenFor(null)}
         cameraAction={<ConnectCameraButton capture={capture} />}
       />
+      </PartBoundary>
       <main className="flex min-w-0 flex-1 flex-col">
         <NoticeStack>
           {shownError && <ErrorNotice message={shownError} onDismiss={() => setDismissedError(shownError)} />}
@@ -273,6 +277,8 @@ export function App() {
           )}
           {taskProgress && <TaskProgressBar progress={taskProgress} />}
         </NoticeStack>
+        {/* The main view fails alone, its notices above it stay (ADR-0048). */}
+        <PartBoundary part="main">
         {total === 0 ? (
           <LibraryEmptyState onOpenFolder={() => void importFolder()} />
         ) : collageMode ? (
@@ -394,6 +400,7 @@ export function App() {
             )}
           </>
         )}
+        </PartBoundary>
       </main>
       {quickShown.shown && (
         <QuickPreview

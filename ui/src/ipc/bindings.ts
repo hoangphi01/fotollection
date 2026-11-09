@@ -74,6 +74,13 @@ export const commands = {
 	 *  nothing.
 	 */
 	diagnostics: () => __TAURI_INVOKE<string>("diagnostics"),
+	/**
+	 *  What the interface reports when one of its parts fails (ADR-0048): `render` for a part an
+	 *  error boundary caught (`ERR-UI-0001`), `unhandled` for an error or a rejected promise no
+	 *  code handled (`ERR-UI-0002`). Untrusted text from the webview: control characters dropped,
+	 *  at most 500 characters, so the log stays one line per error.
+	 */
+	reportUiError: (kind: string, message: string) => __TAURI_INVOKE<void>("report_ui_error", { kind, message }),
 	/**  How much the cache holds; about 0.2 s for 70,000 files (OPTIMIZATION.md §5). */
 	cacheUsage: () => __TAURI_INVOKE<CacheUsage>("cache_usage"),
 	/**

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+import { PartBoundary } from './part-boundary'
 import { ChevronDown } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Collapse } from '@/components/layout/collapse'
@@ -53,7 +54,10 @@ export function SectionCard({ icon, title, action, open = true, footer, children
       </header>
       {hasBody && (
         <Collapse open={open}>
-          <div className={cn('space-y-3 p-3 text-sm [--stack-gap:--spacing(3)]', footer && 'border-b')}>{children}</div>
+          <div className={cn('space-y-3 p-3 text-sm [--stack-gap:--spacing(3)]', footer && 'border-b')}>
+            {/* A card's body fails alone (ADR-0048). */}
+            <PartBoundary part="card">{children}</PartBoundary>
+          </div>
         </Collapse>
       )}
       {footer && <div className="p-3">{footer}</div>}

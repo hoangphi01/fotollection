@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+import { PartBoundary } from './part-boundary'
 import type { KeyboardEventHandler, MouseEvent, PointerEventHandler, ReactNode, Ref } from 'react'
 import { STRIP_OPEN } from '@/components/layout/filmstrip'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
@@ -122,13 +123,19 @@ export function ViewerFrame({
               </div>
             )}
             <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
-              <div className="space-y-3 p-3">{side}</div>
+              <div className="space-y-3 p-3">
+                <PartBoundary part="side">{side}</PartBoundary>
+              </div>
             </ScrollArea>
           </aside>
         )}
         <div className="flex min-w-0 flex-1 flex-col">
           {/* The row owns no border; with the inspector hidden, the close button sits at its end. */}
-          {toolbar && <div className={cn('shrink-0 border-b bg-background', !panels && 'pr-10')}>{toolbar}</div>}
+          {toolbar && (
+            <div className={cn('shrink-0 border-b bg-background', !panels && 'pr-10')}>
+              <PartBoundary part="toolbar">{toolbar}</PartBoundary>
+            </div>
+          )}
           {/* Stage */}
           <div
             ref={stageRef}
@@ -138,7 +145,7 @@ export function ViewerFrame({
             onPointerUp={onStagePointerUp}
             onClick={(e: MouseEvent<HTMLDivElement>) => e.target === e.currentTarget && onStageGroundClick?.()}
           >
-            {stage}
+            <PartBoundary part="stage">{stage}</PartBoundary>
           </div>
           {below}
         </div>
@@ -162,13 +169,17 @@ export function ViewerFrame({
 
           {inspectorTop && (
             <>
-              <div className="p-3">{inspectorTop}</div>
+              <div className="p-3">
+                <PartBoundary part="inspector-top">{inspectorTop}</PartBoundary>
+              </div>
               <Separator />
             </>
           )}
           {/* Cards spaced as in the side panel, 12 px (STYLE_RULE §4, the lego rule). */}
           <ScrollArea className="min-h-0 flex-1 [&>[data-slot=scroll-area-viewport]>div]:block!">
-            <div className="space-y-3 p-3">{children}</div>
+            <div className="space-y-3 p-3">
+              <PartBoundary part="inspector">{children}</PartBoundary>
+            </div>
           </ScrollArea>
 
           <Separator />

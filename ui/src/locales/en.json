@@ -1384,5 +1384,11 @@
     "panels": "Filmstrip and layout",
     "move": "Move the ticked photos",
     "apply": "Place and settings"
+  },
+  "part": {
+    "failed": "This part hit an error and stopped; the rest of Fotollection goes on (ERR-UI-0001).",
+    "retry": "Try again",
+    "appFailed": "Fotollection hit an error it could not get past (ERR-UI-0001).",
+    "reload": "Reload"
   }
 }
