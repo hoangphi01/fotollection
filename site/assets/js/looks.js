@@ -28,9 +28,15 @@ for (const root of document.querySelectorAll('[data-looks]')) {
     next.focus()
     pick(next)
   })
-  // Press and hold for the original; let go and the look comes back.
-  stack.addEventListener('pointerdown', () => show(choices[0].dataset.slug))
-  for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) stack.addEventListener(ev, () => show(current))
+  // Press and hold for the original; let go and the look comes back. The press is captured,
+  // and the browser's own image drag is off, or it would cancel the press at once.
+  stack.addEventListener('pointerdown', (e) => {
+    e.preventDefault()
+    stack.setPointerCapture?.(e.pointerId)
+    show(choices[0].dataset.slug)
+  })
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) stack.addEventListener(ev, () => show(current))
+  stack.addEventListener('dragstart', (e) => e.preventDefault())
   stack.addEventListener('contextmenu', (e) => e.preventDefault())
   // Every picture loads once the section is near, so the first pick is already there.
   for (const img of pictures) img.loading = 'eager'

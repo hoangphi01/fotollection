@@ -368,11 +368,11 @@ en:
   footer_story: The story
   wiki_title: Wiki
   wiki_kicker: From the first screen
-  wiki_description: "How Fotollection grew from its first screen, version by version: what each one brought, with the app as it shipped."
-  wiki_lead: "Every version, from today back to the first empty window: what it brought, and the app as it shipped, taken from the project's history."
+  wiki_description: "How Fotollection grew from its first screen, version by version: what each one brought, with Fotollection as it shipped."
+  wiki_lead: "Every version, from today back to the first empty window: what it brought, and Fotollection as it shipped, taken from the project's history."
   wiki_first: Go to the first screen
   wiki_toc: Versions
-  wiki_foot: "Each picture is the app as that version shipped, taken from the project's history; the earliest are in English only. A new version adds its own here."
+  wiki_foot: "Each picture is Fotollection as that version shipped, taken from the project's history; the earliest are in English only. A new version adds its own here."
   footer_wiki: Wiki
   man_title: Manual
   man_kicker: Help
@@ -970,10 +970,10 @@ vi:
   wiki_title: Wiki
   wiki_kicker: Từ màn hình đầu tiên
   wiki_description: "Fotollection đã lớn lên từ màn hình đầu tiên thế nào, qua từng phiên bản: mỗi bản mang đến gì, kèm giao diện lúc phát hành."
-  wiki_lead: "Mọi phiên bản, từ hôm nay ngược về cửa sổ trống đầu tiên: mỗi bản mang đến gì, và giao diện của app lúc phát hành, lấy từ lịch sử của dự án."
+  wiki_lead: "Mọi phiên bản, từ hôm nay ngược về cửa sổ trống đầu tiên: mỗi bản mang đến gì, và giao diện của Fotollection lúc phát hành, lấy từ lịch sử của dự án."
   wiki_first: Tới màn hình đầu tiên
   wiki_toc: Các phiên bản
-  wiki_foot: "Mỗi ảnh là giao diện của app đúng lúc phiên bản đó phát hành, lấy từ lịch sử của dự án; những ảnh đầu tiên chỉ có tiếng Anh. Mỗi bản mới sẽ có thêm mốc của mình ở đây."
+  wiki_foot: "Mỗi ảnh là giao diện của Fotollection đúng lúc phiên bản đó phát hành, lấy từ lịch sử của dự án; những ảnh đầu tiên chỉ có tiếng Anh. Mỗi bản mới sẽ có thêm mốc của mình ở đây."
   footer_wiki: Wiki
   man_title: Hướng dẫn
   man_kicker: Trợ giúp

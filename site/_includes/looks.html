@@ -11,7 +11,7 @@
       <figure class="looks-photo">
         <div class="looks-stack" data-looks-stack>
           {%- for l in site.data.looks %}
-          <img src="{{ '/assets/img/looks/' | append: l.slug | append: '.webp' | relative_url }}" width="1200" height="1600" alt="{% if forloop.first %}{{ t.looks_alt }}{% endif %}"{% unless forloop.first %} aria-hidden="true"{% endunless %} loading="lazy" decoding="async" data-slug="{{ l.slug }}"{% if forloop.first %} class="on"{% endif %} />
+          <img src="{{ '/assets/img/looks/' | append: l.slug | append: '.webp' | relative_url }}" width="1200" height="1600" alt="{% if forloop.first %}{{ t.looks_alt }}{% endif %}"{% unless forloop.first %} aria-hidden="true"{% endunless %} loading="lazy" decoding="async" draggable="false" data-slug="{{ l.slug }}"{% if forloop.first %} class="on"{% endif %} />
           {%- endfor %}
         </div>
         <figcaption class="small muted">{{ t.looks_hold }}{% include fn.html keys="fn_photo" %}</figcaption>

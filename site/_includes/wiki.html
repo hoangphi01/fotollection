@@ -1,4 +1,4 @@
-{%- comment %} The Wiki (site/README.md): Fotollection's timeline, one milestone per MINOR version, newest first down to its first screen (owner, 2026-11-09, as Apple lists its releases), each with what changed and the app as it shipped (site/_data/timeline.yml, pictures from the git history by scripts/timeline-shot.sh). Laid out like the story: the same header, then the timeline; the round button opens the list of versions. {% endcomment -%}
+{%- comment %} The Wiki (site/README.md): Fotollection's timeline, one milestone per MINOR version, newest first down to its first screen (owner, 2026-11-09, as Apple lists its releases), each with what changed and the app as it shipped (site/_data/timeline.yml, pictures from the git history by scripts/timeline-shot.sh). Laid out like the Performance page, left-aligned (only the story is centred, owner 2026-11-10): its header, then the timeline; the round button opens the list of versions. {% endcomment -%}
 {%- assign t = site.data.i18n[page.lang] -%}
 {%- assign lang = page.lang -%}
 {%- capture toc -%}
@@ -7,7 +7,7 @@
 {%- endfor %}
 {%- endcapture -%}
 {%- assign first = site.data.timeline | first -%}
-<section class="section perf-head story-head">
+<section class="section perf-head">
   <div class="wrap">
     <p class="kicker">{{ t.wiki_kicker }}</p>
     <h1>{{ t.wiki_title }}</h1>

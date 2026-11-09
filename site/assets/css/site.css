@@ -503,7 +503,8 @@ h3.with-logo .logo-os { height: 0.95em; }
 .timeline-shots img { display: block; width: 100%; height: auto; }
 .timeline-shots figcaption { font-size: 0.88rem; }
 .timeline-card .diagram { margin: 12px 0 0; }
-.timeline-foot { margin: 40px 0 0; text-align: center; }
+.timeline-foot { margin: 40px 0 0; }
+.story-wiki { margin: 40px 0 0; text-align: center; }
 .story-head { text-align: center; }
 .story-head .lead { margin-inline: auto; }
 .story {

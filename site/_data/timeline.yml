@@ -39,10 +39,10 @@
   points:
     en:
       - "A System, Light or Dark theme, one accent each: teal in light, wood in dark."
-      - "The Windows title bar in the app's colours; a folder closes like a tab."
+      - "The Windows title bar in Fotollection's colours; a folder closes like a tab."
     vi:
       - "Giao diện Hệ thống, Sáng hoặc Tối, mỗi giao diện một màu nhấn: xanh ngọc khi sáng, màu gỗ khi tối."
-      - "Thanh tiêu đề Windows theo màu của app; thư mục đóng lại như một tab."
+      - "Thanh tiêu đề Windows theo màu của Fotollection; thư mục đóng lại như một tab."
   shots:
     - { file: 0.2-light, w: 1600, h: 1000, from: "v0.2.0:site/assets/img/grid-en-light.webp", alt: { en: "v0.2.0 in the light theme", vi: "v0.2.0 ở giao diện sáng" } }
     - { file: 0.2-dark, w: 1600, h: 1000, from: "v0.2.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.2.0 in the dark theme", vi: "v0.2.0 ở giao diện tối" } }
@@ -91,10 +91,10 @@
   points:
     en:
       - "Zoom buttons and full detail when you zoom in; a start-up screen with the logo."
-      - "Measured: the app opens in about 0.4 s; a 32 MP photo zooms in about 0.1 s."
+      - "Measured: Fotollection opens in about 0.4 s; a 32 MP photo zooms in about 0.1 s."
     vi:
       - "Nút phóng to và đủ chi tiết khi phóng; màn hình khởi động có logo."
-      - "Đã đo: app mở trong khoảng 0,4 giây; ảnh 32 MP phóng to trong khoảng 0,1 giây."
+      - "Đã đo: Fotollection mở trong khoảng 0,4 giây; ảnh 32 MP phóng to trong khoảng 0,1 giây."
   shots:
     - { file: 0.6-gallery, w: 1600, h: 1000, from: "v0.6.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.6.0: the gallery", vi: "v0.6.0: lưới ảnh" } }
 - version: "0.7"
@@ -119,11 +119,11 @@
     en:
       - "Dates and places by hand, or borrowed from your phone's photos of the same scene."
       - "Stars and rejects come in from Lightroom, Bridge, Capture One and darktable."
-      - "RAW built into the app; Linux joins Windows and macOS."
+      - "RAW read by Fotollection itself; Linux joins Windows and macOS."
     vi:
       - "Sửa ngày và nơi chụp bằng tay, hoặc lấy từ ảnh điện thoại chụp cùng cảnh."
       - "Nhận sao và ảnh loại từ Lightroom, Bridge, Capture One và darktable."
-      - "RAW được đọc ngay trong app; Linux có mặt cùng Windows và macOS."
+      - "RAW được Fotollection tự đọc; Linux có mặt cùng Windows và macOS."
   shots:
     - { file: 0.8-gallery, w: 1600, h: 1000, from: "v0.8.3:site/assets/img/grid-en-dark.webp", alt: { en: "v0.8.3: the gallery", vi: "v0.8.3: lưới ảnh" } }
     - { file: 0.8-groups, w: 1600, h: 1000, from: "v0.8.3:site/assets/img/groups-en-dark.webp", alt: { en: "v0.8.3: best shots grouped", vi: "v0.8.3: các nhóm ảnh đẹp nhất" } }
@@ -187,11 +187,11 @@
     en:
       - "Controls with depth, the Be Vietnam Pro font, one panel width."
       - "An export dialog as Lightroom's; a full-window develop view with the Navigator, History and a histogram."
-      - "A welcome on the first launch, and the manual inside the app."
+      - "A welcome on the first launch, and the manual inside Fotollection."
     vi:
       - "Nút bấm có chiều sâu, phông Be Vietnam Pro, các cột cùng một độ rộng."
       - "Hộp thoại xuất ảnh như Lightroom; màn chỉnh ảnh toàn cửa sổ với Navigator, History và biểu đồ màu."
-      - "Màn chào mừng lần đầu mở app, và sách hướng dẫn ngay trong app."
+      - "Màn chào mừng lần đầu mở Fotollection, và sách hướng dẫn ngay bên trong."
   shots:
     - { file: 0.13-gallery, w: 1600, h: 1000, from: "v0.13.4:site/assets/img/grid-en-dark.webp", alt: { en: "v0.13.4: the new look", vi: "v0.13.4: giao diện mới" } }
     - { file: 0.13-window, w: 1600, h: 1000, from: "v0.13.4:site/assets/img/window-en-dark.webp", alt: { en: "v0.13.4: the full-window develop view", vi: "v0.13.4: màn chỉnh ảnh toàn cửa sổ" } }
@@ -204,11 +204,11 @@
     en:
       - "One tap gives a photo a colour: looks of our own, your Lightroom presets and LUTs, a Color Mixer and Dehaze."
       - "A look for many photos at once; thumbnails show each photo's colour."
-      - "Move to another computer with one file; a part that fails no longer takes the app down."
+      - "Move to another computer with one file; a part that fails no longer takes Fotollection down."
     vi:
       - "Một chạm là ảnh có màu: look của Fotollection, preset Lightroom và LUT của bạn, Color Mixer và Khử sương."
       - "Áp một look cho nhiều ảnh cùng lúc; ảnh thu nhỏ hiện màu của từng ảnh."
-      - "Chuyển sang máy khác bằng một tệp; một phần lỗi không còn làm sập app."
+      - "Chuyển sang máy khác bằng một tệp; một phần lỗi không còn làm sập Fotollection."
   shots:
     - { file: 0.14-looks, w: 1600, h: 1000, from: "v0.14.0:site/assets/img/window-en-dark.webp", alt: { en: "v0.14.0: looks under the photo, Presets & LUTs on the left", vi: "v0.14.0: looks dưới ảnh, Presets & LUTs bên trái" } }
     - { file: 0.14-simple, w: 1600, h: 1000, from: "v0.14.0:site/assets/img/simple-en-light.webp", alt: { en: "v0.14.0: Simple mode's numbered looks", vi: "v0.14.0: dải look đánh số ở chế độ Đơn giản" } }
