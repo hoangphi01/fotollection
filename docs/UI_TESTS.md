@@ -1,6 +1,6 @@
 # UI Tests — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-07
+> **Status:** Living · **Last reviewed:** 2026-11-09
 >
 > Every UI and UX test case of the app, with the rule each one guards and how it is run. Most are judged by a machine (`scripts/ui-check.sh`), so a person checks only what a machine cannot. The rules come from [STYLE_RULE.md](STYLE_RULE.md) §4, the single source of truth for the interface, and from public standards (WCAG 2.2, Nielsen's heuristics, Apple's and Google's guidelines). Test strategy as a whole: [TESTING.md](TESTING.md).
 
@@ -161,6 +161,8 @@ The approved pictures live in `site/screenshots/baselines/`. After an intended c
 | UI-MANUAL-003 | The smallest window | 1180 px wide: every toolbar on one line, the left column folding |
 | UI-MANUAL-004 | Reading the words | A read of new strings in both languages against the [GLOSSARY](GLOSSARY.md) |
 | UI-MANUAL-005 | Motion (FR-100) | Open and close a dialog, a popover and a hint (each fades out too); fold a card and a strip under the stage; a notice comes and goes; hold Space for the quick preview and let go; then *Settings → Motion: Reduce* and the system's *Reduce motion*: only quick fades left, spinners turning; nothing waits for an animation |
+| UI-MANUAL-006 | Hold for the original (FR-096) | Press and hold the photo in the preview: its original while held, its colour back on release, a click still zooms; on a collage sheet, hold *Before* in the toolbar and the picked photo shows its original, no photo picked by the press |
+| UI-MANUAL-007 | Settings → Data (FR-116) | Each store's size and *Open folder*; *Export settings* with and without addresses; *Import settings* showing what the file holds, then Merge and Replace; *Remove unused LUTs*, *Forget recent addresses*, *Reset settings* and *Erase data* each asked first, red, and the section's sizes updated after |
 
 ## 4. Allowed exceptions
 
@@ -181,3 +183,4 @@ The approved pictures live in `site/screenshots/baselines/`. After an intended c
 | 2026-11-07 | first run, English, light, Chromium, before the fixes | 1,545 lines: the trash button 27 px out of its card (UI-LAYOUT-001) and its name cut (UI-LAYOUT-008); 50 contrast, 16 name/label, 13 unnamed sliders, 6 tab roles (UI-A11Y-002); 20 cut names with no hint (UI-TEXT-001); 3 disabled buttons holding their hint (UI-STATE-001); the ink names cut (UI-LAYOUT-008); overlap counted controls under a dialog (detector fixed) |
 | 2026-11-07 | the whole matrix, after the fixes | every case passes, English/light/Chromium and Vietnamese/dark/WebKit, 1180 to 1600 px; 213 s on the M3; 22 approved pictures, 1.9 MB; a second run against them passes too |
 | 2026-11-08 | the whole matrix, after the motion system, the 300 px columns and UI-LAYOUT-016 | every case passes, Chromium with scroll bars shown; UI-LAYOUT-016 found the filmstrip's chosen ring cut by 4 px before its fix; 8 pictures approved (the wider columns, *Motion* in Settings, *What's new*) |
+| 2026-11-09 | the whole matrix, after the Data section, Dehaze and the joined bars | every case passes (Chromium and WebKit, both languages and themes); the Data section's pictures approved; the screenshot build found the place picker's lost `combobox` role, fixed in `PickerTrigger` (LESSONS) |

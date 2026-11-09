@@ -1,6 +1,6 @@
 # Release & Distribution — Fotollection
 
-> **Status:** Accepted v0.2 · **Last reviewed:** 2026-10-24
+> **Status:** Accepted v0.2 · **Last reviewed:** 2026-11-09
 >
 > How Fotollection is versioned, built and shipped. No servers are involved: releases are hosted on GitHub Releases, and the website on GitHub Pages ([ADR-0021](adr/0021-versioning-and-automated-releases.md)).
 
@@ -112,6 +112,6 @@ Installing a new version over an old one **replaces it** and keeps settings, pro
 - [ ] An `X.Y.0`: its milestone in the website's Wiki (`site/_data/timeline.yml` and `scripts/timeline-shot.sh`, DOCS_GUIDE "A release")
 - [ ] `scripts/release.sh` run, commit pushed
 - [ ] Workflow green, Linux smoke tests included; the release has the `.dmg`, `.msi`, `-setup.exe`, the two AppImages, the two `.deb` and `SHA256SUMS.txt`
-- [ ] Smoke test of the published installer on macOS ([TESTING.md §7](TESTING.md#7-manual-release-checklist)); a broken release is fixed by a PATCH release, never by replacing assets
+- [ ] Smoke test of the published installer on macOS, and on Windows too for an `X.Y.0` ([TESTING.md §7](TESTING.md#7-manual-release-checklist)); a broken release is fixed by a PATCH release, never by replacing assets
 
 The website shows GitHub's download counts as they are (`scripts/download-stats.mjs`): the smoke test and other checks of a release add a download or two to each file.

@@ -1,6 +1,6 @@
 # Security, Privacy & Resilience — Fotollection
 
-> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-04
+> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-09
 >
 > Threat model and defenses for an **offline desktop app** (Tauri 2 + Rust core).
 > v0.1 targeted a browser-based web app. Concerns that only applied to that architecture (Cloudflare headers, Nominatim rate limits, browser memory limits) were removed in v0.2. See [ADR-0001](adr/0001-desktop-tauri-over-web.md).
@@ -125,6 +125,7 @@ Layer 4: SAFE RENDERING (UI)
 - Export paths are built only from `dest_root` (chosen by the user through the OS dialog) plus **sanitized** segments: the source folder's name, the subfolder, the date and the file name. Anything the user types (the subfolder, a file name's custom text, v0.13.0) goes through `naming::sanitize_component` in Rust, when the settings are loaded and whenever the webview sends them: path separators, `: * ? " < > |` and control characters are dropped, leading and trailing dots and spaces trimmed, `.`, `..` and reserved Windows names (`CON`, `NUL`, `COM1`…) refused, 100 characters at most (tests `fr_104_a_name_part_never_leaves_the_destination` and the v16 fixture's `../etc`). *Replace existing files* writes a `.part` file and renames it over the old one, so a file is never left half written.
 - After the path is joined, it is canonicalized and the app verifies that it is still under `dest_root`. Otherwise the photo is rejected.
 - Files are written to a temporary file and then atomically renamed. Files are never overwritten unless the user chose that rule ([FR-009](PRD.md#fr-009--export-by-date)).
+- *Remove unused LUTs*, *Reset settings* and *Erase data* (FR-116) delete only files in folders Rust itself names (the app's config folder, `looks/`, `fonts/`, `logos/`), never a path from the webview; a project or photo on disk is never touched (`fr_116_erase_data_touches_only_the_apps_folders`).
 
 ## 5. Privacy
 
@@ -134,6 +135,7 @@ Layer 4: SAFE RENDERING (UI)
 - GPS is stripped from exported files by default ([FR-010](PRD.md#fr-010--metadata-privacy-on-export)).
 - The thumbnail cache contains image data. It lives in the OS cache directory, and the user can clear it from Settings.
 - Logs never contain GPS coordinates or full file paths beyond the file name.
+- A `.fotosettings` (FR-082) carries the recent postcard addresses only when *Include recent addresses* is ticked at export, off by default; *Erase data* removes the saved looks, LUTs, fonts, logos and addresses from this computer (FR-116).
 
 ## 6. Supply chain
 
@@ -210,3 +212,6 @@ Every error the app can show, its message, cause and what the user does, is in [
 | Export with GPS present, default settings | Output has no GPS tags |
 | App run with network disabled | All MVP features work; zero connection attempts |
 | CSP violations in release build | None |
+| A `.fotosettings` or `.fotollection` that is a ZIP bomb, has too many entries, or a part whose BLAKE3 differs | Refused whole before anything is written (`zip_parts`, `ERR-CFG-` / `ERR-PRJ-` codes) |
+| A `.cube` with NaN, a size over 65 or more points than it says | Refused (`lut.rs`, `ERR-IPC-0030`…`0032`) |
+| An `.lrtemplate` holding Lua code beyond a table | Read by a table parser only, never run; the code refused (`preset.rs`) |

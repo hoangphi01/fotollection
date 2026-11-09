@@ -1,6 +1,6 @@
 # Architecture — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-05
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-09
 >
 > This document describes **how** the system is built. Requirements live in [PRD.md](PRD.md).
 > Performance design rationale lives in [OPTIMIZATION.md](OPTIMIZATION.md).
@@ -97,8 +97,18 @@ crates/
       histogram.rs       † # the develop view's histogram (FR-098): 256 levels of red, green, blue and light and the clipped pixels, counted on a grid of the preview's resized photo through its look
       history.rs         † # undo/redo stack of inverse edits (FR-023); each step's serial, a photo's develop steps and what each changed (FR-095)
       atomic.rs          † # tmp + fsync + .bak + rename
+      settings_bundle.rs † # `.fotosettings` (FR-082): this machine's settings, fonts, logos and LUTs; merge or replace as pure functions
+      supervise.rs       † # threads that never take the app down (ADR-0048): `spawn` with its end, `forever` restarted, `contained` calls
+      lock.rs            † # healing Mutex and RwLock (ADR-0048): a panic never poisons a lock for every later caller
+      pool.rs            † # every rayon pool built `contained`, its jobs' panics caught (ADR-0048)
+      machine.rs         † # the machine's memory and cores, for the budgets of Settings → RAM & cache (FR-086)
       presets.rs           # preset library: partial/stackable, linked, .fotopreset I/O (FR-033/034/038)
       colour_ops.rs        # colour operations as functions of one pixel in f32 (FR-079, ADR-0043): the eight-hue Color Mixer and its hue wheel; the look's table calls them for its points today, the 32-bit path will call them on every pixel
+      lut.rs             † # LUT import (FR-070): `.cube` with its shaper and HaldCLUT PNG, capped, kept by content hash in `looks/`
+      look_library.rs    † # the looks of the library (FR-079): eight built-in recipes and the saved ones, names and references cleaned
+      look_thumbs.rs     † # thumbnails through their photo's look (ADR-0047), kept in memory
+      preset.rs          † # Lightroom presets (FR-089): `.xmp` and `.lrtemplate` read without running anything, bounded
+      preset_look.rs     † # a preset compiled into a look (ADR-0045): sliders to ours, the per-pixel rest into one table, the rest named
       looks.rs           † # colour looks (FR-079, FR-070, ADR-0038): the 33³ table, integer tetrahedral interpolation on rayon, a cache of the last 8 tables; the sliders and `.cube` LUTs bake into it
       dehaze.rs          † # dehaze (FR-115): the dark channel prior, the veil estimated at 512 px with a fast guided filter, drawn before the look's table on rayon
       render.rs          † # crop/resize (in linear light for share exports, `RenderPlan::linear_light`), border, a shared photo's fill (`compose_mat` for both) and the drawing of stamp and frame; the stamp, colour and sharpening live in stamp.rs, colour.rs and sharpen.rs. 4-up sheets and the contact sheet (FR-035, FR-037) will extend sheet.rs
@@ -298,6 +308,12 @@ Commands marked † are implemented.
 | `import_lut() -> LookEntry?` | A LUT (FR-070) from a Rust-side dialog (`.cube`, HaldCLUT PNG), parsed by `lut.rs`, kept by content hash in `looks/` and saved as a look of the user's named by its title or file name; `null` when cancelled; `look.lut_*` when refused. `LookEntry.vlog` marks a LUMIX V-Log LUT | FR-070 |
 | `list_looks() -> LookEntry[]`, `save_look(name, look) -> LookEntry`, `delete_look(id) -> LookEntry[]` | The library of looks (FR-079, `look_library.rs`, `src-tauri/src/looks.rs`): the built-in recipes then this machine's saved looks; save cleans the name and clamps the values in Rust (`look.no_name`, `look.full`); delete takes `user:<id>` only (`look.unknown`). A pick goes through `set_photo_look` | FR-079 |
 | `look_batch_plan(filter, ticked, look) -> LookBatchPlan`, `apply_look_to_photos(request) -> LookBatchReport` | A look of the library given to many photos (FR-114, `src-tauri/src/looks.rs`): the ticked photos, else every photo the filter shows (`export_ids`, at most 10,000); the plan counts those with a colour of their own, the batch builds the look from the library at the amount asked and gives it in one undo step (`edit_photos_as`), keeping crops, stamps and RAW looks, and photos with their own colour when `keepEdited` | FR-114 |
+| `data_usage() -> StoreUsage[]`, `open_data_folder(kind)` | Settings → *Data* (FR-116, `data.rs`): each store's bytes and count asked of its owner (settings, looks, LUTs with how many are unused, fonts, logos, addresses, camera sessions, cache, logs); a store's folder shown in Finder or Explorer, the path Rust's own | FR-116 |
+| `export_settings(includeAddresses) -> string?`, `inspect_settings_import() -> SettingsImportSummary?`, `apply_settings_import(mode)` | Moving to another computer (FR-082, `settings_bundle.rs` on `zip_parts.rs`): a `.fotosettings` written where a Rust dialog says, addresses only when asked; an import read from a Rust dialog, checked whole, kept until the user chooses **Merge** or **Replace** (`settings_bundle.*` errors) | FR-082 |
+| `remove_unused_luts() -> number`, `forget_all_addresses()`, `reset_settings()`, `erase_data()` | Starting afresh (FR-116): the LUTs nothing refers to; the postcard addresses; the settings back to their defaults with the user's data kept; the user's data erased, only in the app's own folders; each leaves `settings.json.bak` (`fr_116_*`) | FR-116 |
+| `use_settings_as_defaults()` | The open document's print and frame settings become the defaults of new projects (FR-023, ADR-0048, `document.rs`) | FR-023 |
+| `take_startup_notices() -> IpcError[]`, `report_ui_error(kind, message)` | Containment (NFR-011, ADR-0048): what start-up has to say once (a settings file recovered, `ERR-CFG-0010`…`0013`); an error an interface part caught, written to the log (`ERR-UI-0001`, `0002`), the text cleaned and capped in Rust | NFR-011 |
+| `machine_info() -> MachineInfo` | The machine's memory and cores for Settings → *RAM & cache* (FR-086, `cache.rs`) | FR-086 |
 | `set_sheet_look(ids, look, amend)` † | One look for both photos of a collage sheet when none is picked (FR-079): one or two distinct photos, the same sanitized look for each, one undo step (`amend` folds a drag) | FR-079 |
 | `get_photo_look(id) -> PhotoLook` †, `set_photo_look(id, look?, amend)` †, `apply_look_to_all(id)` † | A photo's own colour look in the preview (FR-079): its look and whether it is its own; set (sanitized in Rust) or `null` to follow the settings, `amend` folding a slider's drag into one undo step; *Apply to all* makes it the setting and clears every photo's own, one undo step | FR-079 |
 | `undo()` / `redo()` † | History (also Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z) | FR-023 |

@@ -1,6 +1,6 @@
 # Testing Strategy — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-04
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-09
 >
 > How we prove that Fotollection is correct, robust and fast. Performance benchmarks are specified in [OPTIMIZATION.md](OPTIMIZATION.md).
 
@@ -82,7 +82,7 @@ cargo run --release -p fotollection-core --example check_files -- path/to/folder
 | `fuzz_decode_jpeg` | Arbitrary bytes → JPEG decode at T1 scale |
 | `fuzz_decode_heic` | Arbitrary bytes → HEIC decode |
 | `fuzz_sanitize_path` | Arbitrary strings → export path builder; asserts the result stays under the root |
-| `fuzz_cube` (with FR-070) | Arbitrary bytes → `.cube` LUT parser; rejects without panicking ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
+| `fuzz_cube` (with FR-070, planned for v0.14.x) | Arbitrary bytes → `.cube` LUT parser; rejects without panicking ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
 
 Any crash found by fuzzing is added to `fixtures` as a regression test.
 
@@ -95,7 +95,7 @@ Any crash found by fuzzing is added to `fixtures` as a regression test.
 - Reference outputs live in `crates/core/tests/golden/`.
 - Comparison: exact match on stamp geometry. On pixels, a maximum per-channel difference of 1 and a PSNR of at least 50 dB, to tolerate codec version differences.
 - To regenerate, run `UPDATE_GOLDEN=1 cargo test`. The diff must be reviewed visually in the PR.
-- **Looks (FR-070, planned):** one golden image per built-in look, and an identity LUT must leave a photo unchanged.
+- **Looks (FR-070, planned for v0.14.x):** one golden image per built-in look, and an identity LUT must leave a photo unchanged.
 
 ## 6. CI matrix
 
@@ -121,3 +121,7 @@ Before tagging a release, on both `REF-MAC` and `REF-WIN`. Linux has no referenc
 7. Print one collage sheet at a shop, with and without the cut line, and one print with the 3 mm border: measure the photo areas and the border against the app's figures.
 8. Colour (FR-072): open an iPhone HEIC and a JPEG from a camera set to Adobe RGB, next to the system's photo viewer. Thumbnail, preview, zoom and crop view show the same colours as the viewer, not paler. On Windows this is the only check of WIC handing over the HEIC's profile (`oscodec` `profile`); the preview's *This photo* card says *Display P3* on its file line.
 9. Postcard (FR-073): print one landscape and one portrait postcard at a kiosk (dm or Rossmann). The stamp box measures 20 × 25 mm and a real stamp hides it; write in it with a fine permanent marker and with a ballpoint, and note which dries and which smears; post one glossy and, if the shop offers it, one matt card to yourself, and note whether the stamp held, how the postmark took on the coating and whether the photo arrived scuffed (RESULT). ✓ Partly done 2026-11-04: the owner's print test found Xanh Mono's regular at the medium size, about 0.25 mm of stroke, the thinnest still readable; every bundled postcard face is held to it at its smallest size (FR-076).
+10. Looks and presets (FR-079, FR-070, FR-089, v0.14.0): pick each built-in look and set its amount; *Import LUT…* a `.cube` from LUMIX Lab (its V-Log note) and a HaldCLUT; *Import presets…* an `.xmp`, an `.lrtemplate` and a `.zip` pack, and read the *not applied* lines in both languages; Dehaze and the Color Mixer; give a look to many photos from the gallery's Colour tab and undo it in one step.
+11. Hold to see the original (FR-096): press and hold the photo in the preview, and *Before* on a collage sheet; on Windows, the look drawn on the GPU while a slider moves (WebView2) and the photo exact when it stops.
+12. Moving computers (FR-082, FR-116): *Export settings* on one machine, *Import settings* on the other, once with **Merge** and once with **Replace** (macOS to Windows and back); a project with a LUT look opened there keeps its colour; *Remove unused LUTs*, *Forget recent addresses*, *Reset settings* and *Erase data* each do what they say and nothing more.
+13. Upgrade (DATABASE): install over the previous release with a project and settings of its own; settings v17 → v18 and project v11 → v12 load, nothing is lost, and the previous version refuses the newer project with its message.

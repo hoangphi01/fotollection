@@ -1,6 +1,6 @@
 # File Formats — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-04
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-09
 >
 > The registry of **every file type Fotollection reads or writes**. For each type it lists the extension, MIME type, Uniform Type Identifier (UTI), how the file is recognized, the container, the current version, its limits and where it lives.
 > **Field-level schemas live only in [DATABASE.md](DATABASE.md)**; this file links to them and never repeats them. Any change to a format updates this file and DATABASE.md in the same commit ([§6](#6-change-rules)).
@@ -70,6 +70,8 @@ Since v0.14.0 (`crates/core/src/settings_bundle.rs`, the project bundle's contai
 
 The same limits as a project bundle (160 MB, 256 entries, 100:1), the same readers for each part (`bundle::check_assets`); a project's `project.json` is refused, a newer manifest is refused as newer. **Importing** either merges (the default: looks, LUTs, fonts, logos, cameras, custom sizes and addresses this machine lacks are added; its interface and defaults stay) or replaces (the file's settings whole, its fonts given this machine's ids, a known camera's logo and this machine's export folder kept).
 
+A `.fotosettings` has no file association yet: it is opened from *Settings → Data → Import settings…*, not by a double-click (left for later, FR-082).
+
 ### 2.4 Exported prints
 
 Exports are plain JPEG files that any lab accepts. They are not a Fotollection format, but their conventions are fixed:
@@ -89,8 +91,9 @@ These files live in the app's config and cache directories ([DATABASE.md §1](DA
 
 | File | Rules | Schema |
 |------|-------|--------|
-| `settings.json` | At most 4 MB. Version 1 files are read with defaults for the new fields. A newer version is refused, and defaults are used without overwriting the file. A corrupt file is moved aside | [DATABASE.md §6](DATABASE.md#6-app-settings) |
+| `settings.json` | At most 4 MB. Version 1 files are read with defaults for the new fields. A newer version is refused, and defaults are used without overwriting the file. A damaged file is kept as `settings.damaged-<time>.json` and recovered from its `.bak`, or part by part with only the unreadable parts at their defaults (ADR-0048, `ERR-CFG-0010`…`0013`) | [DATABASE.md §6](DATABASE.md#6-app-settings) |
 | `fonts/<id>.ttf\|otf` | At most 20 MB each and 50 fonts. TrueType collections (`ttcf`) and WOFF are rejected. The font must contain the digits 0–9 | [DATABASE.md §6](DATABASE.md#6-app-settings) |
+| `looks/<hash>.cube\|png` | Imported LUTs (FR-070), named by the BLAKE3 of their bytes: a `.cube` of at most 8 MB and 65 points a side, or a HaldCLUT PNG; checked on import and on every read (`lut.rs`); removed only by *Remove unused LUTs* or *Erase data* | [DATABASE.md §1](DATABASE.md#1-storage-map) |
 | `logos/<id>.png` | At most 2 MB and 4096 px per edge. Decoded with a pure-Rust PNG decoder before it is copied | [DATABASE.md §6](DATABASE.md#6-app-settings) |
 | `thumbs/` | Derived data, rebuilt on demand. Safe to delete at any time | [DATABASE.md §8](DATABASE.md#8-thumbnail-cache) |
 | `analysis/` | At most 64 KB per file; another version, invalid JSON or out-of-range values are recomputed. Safe to delete at any time | [DATABASE.md §8.1](DATABASE.md#81-analysis-cache) |

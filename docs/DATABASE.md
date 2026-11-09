@@ -1,6 +1,6 @@
 # Data & Persistence — Fotollection
 
-> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-04
+> **Status:** Draft v0.2 · **Last reviewed:** 2026-11-09
 >
 > This document is the single source of truth for **everything Fotollection stores**: where it lives, the **normalized data model**, the schemas, versioning and migration, safe writes, the in-memory layout, and retention.
 > Fotollection has **no database server and no embedded SQL database** ([ADR-0010](adr/0010-project-file-format.md)). Persistent state is a small set of versioned files, modelled **as if they were relational tables** and normalized to 3NF ([§2](#2-normalization-rules)).
@@ -21,11 +21,22 @@
 | Best-shot analysis `analysis/` † | JSON per photo ([§8](#8-thumbnail-cache)) | App cache dir | `culling/cache.rs` | Until *Clear cache* or the limit | No |
 | Camera logos `logos/<id>.png` † | PNG, validated copy | App config dir | `logo.rs` | Until removed | No |
 | User fonts `fonts/<id>.ttf\|otf` † | TTF/OTF, validated copy | App config dir | `fonts.rs` | Until removed | No |
-| Looks `looks/<hash>.cube` or `.png`, since v0.14.0 ([FR-070](PRD.md#fr-070--looks-from-lut-files)) | `.cube` text, validated copy named by content hash; the settings gain `render.look` (the sliders of FR-079, an optional LUT and its strength, an amount) and the user's saved looks, photos a sparse `look` override (settings and project schema bumps); a project embeds the LUTs it uses | App config dir | `looks.rs` | Until removed | No |
+| Looks `looks/<hash>.cube` or `.png`, since v0.14.0 ([FR-070](PRD.md#fr-070--looks-from-lut-files)) | `.cube` text, validated copy named by content hash; the settings gain `render.look` (the sliders of FR-079, an optional LUT and its strength, an amount) and the user's saved looks, photos a sparse `look` override (settings and project schema bumps); a project embeds the LUTs it uses | App config dir | `lut.rs` (the files), `look_library.rs` (the saved looks), `looks.rs` (the table) | Until removed, *Remove unused LUTs* or *Erase data* | No |
 | Settings bundle `*.fotosettings` † (v0.14.0, [FR-082](PRD.md#fr-082--the-apps-brain-in-one-file-fotosettings)) | ZIP: `manifest.json`, `settings.json` whole (its `ui` group and the recent addresses included), the user's looks and LUTs, fonts and logos ([EXTENSION.md §2.3](EXTENSION.md#23-settings-bundle-fotosettings)) | Chosen by the user with *Export settings…* | `settings_bundle.rs`, `zip_parts.rs` | Until the user deletes it | **Yes**: postcard addresses |
 | Thumbnail cache `thumbs/` † | JPEG files, no index file ([§8](#8-thumbnail-cache)): T1 thumbnails and T2 standard previews | App cache dir | `thumbs.rs`, `preview.rs` | LRU, 5 GB cap, can be cleared at any time | **Yes**: image content |
 | Built-in data | Compiled into the binary ([§5](#5-built-in-datasets)) | — | `geocode.rs`, `presets.rs`, `print_size.rs` | Per release | No |
 | In-memory state | Columnar arenas ([§3.3](#33-in-memory-layout)) | RAM | `library.rs`, `history.rs` | Process lifetime | — |
+
+### What Settings → Data removes and keeps (FR-116)
+
+Each button is asked first, and each leaves the previous `settings.json` as `settings.json.bak` (`fr_116_*` in `src-tauri/src/data.rs`):
+
+| Button | Removes | Keeps |
+|---|---|---|
+| *Remove unused LUTs* | LUT files in `looks/` that no saved look, the defaults, the open document, its photos or a folder waiting for a relink refers to | every LUT in use; a project saved before v0.14.0 carries none, which is why it is asked first |
+| *Forget recent addresses* | `recent_addresses` | everything else |
+| *Reset settings* | the interface, the export choices, the defaults for new projects, the cameras' typed names, back to their defaults | the user's data: saved looks, LUTs, fonts, logos, addresses, custom print sizes |
+| *Erase data* | saved looks, LUT files, fonts, logos and addresses, as on a new install | projects and photos on disk, the cache (cleared from *RAM & cache*); only files in the app's own folders are touched |
 
 ### Directories per platform
 
