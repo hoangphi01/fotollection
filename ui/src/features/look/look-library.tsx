@@ -16,6 +16,7 @@ import { setHoverLook } from '@/lib/drag-state'
 import { errorText } from '@/lib/errors'
 import { SaveLookDialog } from './save-look-dialog'
 import { lookName } from './use-looks'
+import { unappliedLines } from './unapplied'
 import { MenuContent } from '@/components/forms/menu-content'
 
 /** A list this long gets its filter, as Lightroom's panel. */
@@ -103,7 +104,11 @@ export function useLookLibrary({ looks, reload, remove, chosenId, onPick, photoI
       setReport({
         lines: [
           t('look.importedPresets', { count: imported.length }),
-          ...unapplied.map((u) => t('look.notAppliedLine', { setting: u.setting, count: u.count })),
+          ...(unapplied.length ? [t('look.notApplied')] : []),
+          ...unappliedLines(
+            t,
+            unapplied.map((u) => ({ line: u.setting, count: imported.length > 1 ? u.count : 1 })),
+          ).map((l) => `· ${l}`),
         ],
         problems: skipped.map((s) => `${s.file}: ${t(`errors.${s.code}`, { defaultValue: s.reason })}`),
       })
@@ -131,7 +136,7 @@ export function useLookLibrary({ looks, reload, remove, chosenId, onPick, photoI
           if (own) setMenuFor(entry.id)
         }}
       >
-        <div className="min-w-0 flex-1" data-hint={entry.unapplied.length ? `${lookName(entry)}\n${entry.unapplied.join('\n')}` : lookName(entry)}>
+        <div className="min-w-0 flex-1" data-hint={entry.unapplied.length ? `${lookName(entry)}\n${t('look.notApplied')}\n${unappliedLines(t, entry.unapplied.map((line) => ({ line, count: 1 }))).join('\n')}` : lookName(entry)}>
           <ListRow
             icon={entry.kind === 'builtIn' ? <Palette /> : entry.source === 'lut' ? <Blend /> : <Bookmark />}
             chosen={chosenId === entry.id}
