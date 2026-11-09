@@ -1,6 +1,6 @@
 # Measured Results — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-07
+> **Status:** Living · **Last reviewed:** 2026-11-09
 >
 > The **latest measured numbers** for speed and memory, in one readable page. Each number links to the run that produced it.
 > This page is a summary. The append-only history of every measurement is the benchmark log in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log), and the budgets are defined in [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets). When a new run changes a number, update this page and add the row to §5 in the same commit.
@@ -643,7 +643,7 @@ The develop view's histogram is counted from the preview's resized photo (1,600 
 - **Counting every pixel would cross the budget,** with the look's table run on each one; the look runs on the sampled pixels only, never on a copy of the photo.
 - The stamp, frame and border are drawn after the photo is counted, so they never enter it (`fr_098_the_histogram_counts_the_photo_not_the_stamp_or_border`).
 
-## 33. RAW shadows without steps (v0.14.0, FR-088)
+## 33. RAW shadows without steps (v0.13.3, FR-088)
 
 The RAW tone curve is a table of 4,096 bins over 0–4 in linear light, so one bin spans about three 8-bit levels near black; a pixel read its bin alone, which left steps in the shadows. It is now read between its two nearest bins (`Curve::at`, `fr_088_a_dark_ramp_has_no_steps`: a dark ramp had steps of 4 levels, now 1 at most). Same run as §28 (`raw_depth` on the nine CC0 samples, release build, REF-MAC loaded with 9.6 GB of swap in use, 2026-11-07), before and after the change; the dark pixels' distinct levels / standard deviation / empty bins after *Shadows +100*, made the two ways of §28:
 

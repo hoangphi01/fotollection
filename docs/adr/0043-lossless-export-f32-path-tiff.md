@@ -27,6 +27,6 @@ The owner wants Fotollection to export lossless images beside its print JPEGs, w
 ## Consequences
 
 - A new pixel path through orientation, crop, straighten, resize, look, stamp, frame and the writers; budgets for time, file size and memory per photo are set in OPTIMIZATION §3 and measured before it is built.
-- The RAW tone curve's 4,096 bins are interpolated and the encode tables stop leaving gaps near black (v0.14.0), which helps today's JPEGs too.
+- The RAW tone curve's 4,096 bins are interpolated and the encode tables stop leaving gaps near black (v0.13.3), which helps today's JPEGs too.
 - More dependencies (`tiff`, a direct `moxcms`), both permissive; `cargo deny` checks them.
 - Export settings gain a format (settings migration) and the export dialog a Pro-only choice.
