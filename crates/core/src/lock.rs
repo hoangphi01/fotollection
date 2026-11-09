@@ -17,6 +17,10 @@ impl std::fmt::Display for Never {
     }
 }
 
+/// A lock another thread holds now (`Mutex::try_lock`).
+#[derive(Debug)]
+pub struct Busy(());
+
 impl From<Never> for String {
     fn from(never: Never) -> Self {
         never.to_string()
@@ -50,6 +54,21 @@ impl<T> Mutex<T> {
             self.0.clear_poison();
             poisoned.into_inner()
         })
+    }
+
+    /// The guard if the lock is free now, `Err` while another holds it; a poisoned lock heals
+    /// as in [`Mutex::lock`].
+    #[allow(clippy::missing_errors_doc)]
+    pub fn try_lock(&self) -> Result<MutexGuard<'_, T>, Busy> {
+        match self.0.try_lock() {
+            Ok(guard) => Ok(guard),
+            Err(std::sync::TryLockError::Poisoned(poisoned)) => {
+                healed("mutex");
+                self.0.clear_poison();
+                Ok(poisoned.into_inner())
+            }
+            Err(std::sync::TryLockError::WouldBlock) => Err(Busy(())),
+        }
     }
 
     pub fn into_inner(self) -> T {
