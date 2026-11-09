@@ -40,9 +40,9 @@
 <section class="section" id="new">
   <div class="wrap">
     <h2>{{ t.bento_title }}{% include fn.html keys="fn_lightroom" %}</h2>
-    <p class="lead narrow">{{ t.bento_lead }}</p>
+    <p class="lead narrow">{{ t.bento_lead }}{% include fn.html keys="fn_lut" %}</p>
     <div class="bento">
-      {%- assign tiles = "yours,desktops,keys,compare,prints,export" | split: "," -%}
+      {%- assign tiles = "looks,simple,compare,prints,yours,desktops" | split: "," -%}
       {%- for tile in tiles -%}
       {%- capture alt_key %}tile_{{ tile }}{% endcapture %}
       <figure class="bento-tile"><img src="{{ '/assets/img/showcase/' | append: tile | append: '-' | append: page.lang | append: '.webp' | relative_url }}" width="1200" height="900" alt="{{ t[alt_key] }}" loading="lazy" decoding="async" /></figure>

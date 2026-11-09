@@ -974,3 +974,17 @@
 - **Why:** each change updated the doc its DOCS_GUIDE row named, not the other docs that repeat the fact; numbers and places written twice drift.
 - **Fix:** all of them corrected in one pass, each to the code (S6 of the 2026-11-09 plan).
 - **Rule:** a fact lives in one doc and the others link to it; when a change moves a fact (a version, a limit, where a control lives), grep every doc for its old value before the commit, not only the row's doc.
+
+### A preset was paired with the wrong photo by its lowest ΔE, and a synthetic veil without sky said Dehaze was weak (FR-089, FR-115)
+
+- **Seen:** `preset_bench` paired each Lightroom export with the preset that brought it closest; for one Canon photo it picked the other preset, whose numbers then said "our look makes it worse". Separately, Dehaze took out only 37 % of a known synthetic veil, against the 50 % the test asked.
+- **Why:** pairing by ΔE assumes our mapping is already good, the very thing being measured; the export's own XMP names the preset's settings exactly (two other exports carried no preset at all, pixel for pixel the plain one). The synthetic scene had no sky, so the dark channel's brightest place was a lit wall under the veil, not air, and the air's colour came out too dark; a real photo with a sky does not do that.
+- **Fix:** pairs come from the XMP, key by key (RESULT §39 counts only those); the scene has a sky band and the veil is measured below it (`dehaze::clear_scene`, `below_sky`). Then 20.3 → 1.7 ΔE at +100.
+- **Rule:** never use the quantity being measured to choose what to measure it against; check that the ground truth is what it claims (metadata, identical pixels) first. A synthetic test scene holds what the method's prior expects of a real one (a sky for haze), or its failure says nothing about the method.
+
+### The place picker lost its role when it became a shared block, and the website's shots stopped (FR-052, a11y)
+
+- **Seen:** `site/screenshots/build.sh` timed out waiting for the place picker's combobox, the day after every popover picker became `PickerTrigger`.
+- **Why:** the old place button carried `role="combobox"` by hand; the new block was a plain `<button>`, so assistive technology no longer heard a picker, and the shot that opens it by that role found none. `ui-check` passed, as none of its views opens that picker.
+- **Fix:** `PickerTrigger` is a `combobox` itself, for every picker that uses it.
+- **Rule:** when a hand-made control becomes a shared block, carry its roles and ARIA into the block, and run the screenshot build as well as `ui-check` before a release: it walks paths the checks do not.

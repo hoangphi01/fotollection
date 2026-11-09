@@ -31,7 +31,7 @@ const view = photos.find((p) => p.fileName.startsWith('P1067950')) ?? photos.fin
 const backdrop = path.join(dump, 'img/preview/look', `${view.id}.jpg`)
 
 const TYPES = { '.html': 'text/html', '.woff2': 'font/woff2', '.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg' }
-const TILES = ['yours', 'desktops', 'keys', 'compare', 'prints', 'export']
+const TILES = ['looks', 'simple', 'compare', 'prints', 'yours', 'desktops']
 const CATALOG = ['gallery', 'window', 'compare', 'export', 'collage']
 await mkdir(path.join(img, 'showcase'), { recursive: true })
 await mkdir(path.join(img, 'catalog'), { recursive: true })

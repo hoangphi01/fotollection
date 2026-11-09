@@ -47,6 +47,8 @@
       const H = Number(params.get('h'))
       const shot = (name, theme) => `/img/${name}-${lang}-${theme}.webp`
       const WORDS = {
+        looks: { en: ['Your colours, ', 'one tap', 'Looks, your Lightroom presets and LUMIX LUTs, offline.'], vi: ['Màu của bạn, ', 'một chạm', 'Looks, preset Lightroom và LUT LUMIX của bạn, không cần mạng.'] },
+        simple: { en: ['Pick a look, ', 'then print', 'In Simple mode a number key chooses a look.'], vi: ['Chọn look, ', 'rồi in', 'Ở chế độ Đơn giản, một phím số chọn một look.'] },
         yours: { en: ['Make it ', 'yours', 'Light or dark, English or Vietnamese: the look you like.'], vi: ['Theo ', 'ý bạn', 'Sáng hay tối, tiếng Anh hay tiếng Việt: giao diện bạn thích.'] },
         desktops: { en: ['Every ', 'desktop', 'The same app on Windows, macOS and Linux, offline.'], vi: ['Mọi ', 'máy tính', 'Cùng một app trên Windows, macOS và Linux, không cần mạng.'] },
         keys: { en: ["Lightroom's ", 'keys', 'Your hands already know the way.'], vi: ['Phím tắt ', 'như Lightroom', 'Tay bạn đã quen sẵn rồi.'] },
@@ -89,6 +91,16 @@
         }
       } else {
         const layout = {
+          looks: () => {
+            body.className = 'wood'
+            body.append(words('looks'))
+            body.append(win(shot('window', 'dark'), `width: ${W * 0.84}px; left: ${W * 0.08}px; top: ${H * 0.42}px`))
+          },
+          simple: () => {
+            body.className = 'teal'
+            body.append(words('simple'))
+            body.append(win(shot('simple', 'light'), `width: ${W * 0.84}px; left: ${W * 0.08}px; top: ${H * 0.42}px`))
+          },
           yours: () => {
             body.className = 'teal'
             body.append(words('yours'))

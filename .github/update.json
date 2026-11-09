@@ -1,7 +1,7 @@
 {
-  "minSafe": "0.13.3",
+  "minSafe": "0.14.0",
   "reason": {
-    "en": "Security patches. Please update.",
-    "vi": "Bản vá bảo mật. Hãy cập nhật."
+    "en": "Fixes for lost edits and crashes. Please update.",
+    "vi": "Sửa lỗi mất chỉnh sửa và lỗi tự tắt. Hãy cập nhật."
   }
 }

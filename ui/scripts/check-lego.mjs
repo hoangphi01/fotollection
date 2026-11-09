@@ -48,6 +48,7 @@ const RULES = [
   {
     test: /role="combobox"/,
     everywhere: true,
+    except: { 'components/forms/picker-trigger.tsx': 'the block itself, a combobox to assistive technology' },
     say: 'a hand-made dropdown button: a picker in a popover is a PickerTrigger (components/forms), drawn as a Select',
   },
   { test: /<SelectTrigger[^>]*\bsize=/, say: 'a select of its own size: every select in a panel is 32 px, the default' },
