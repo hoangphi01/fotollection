@@ -10,6 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+---
+
+## v0.14 — Looks
+
+## [0.14.0] - 2026-11-09
+
 ### Highlights
 
 - New: **Looks**, one tap gives a photo a colour: eight looks of our own, each shown as your photo, with an **Amount**; **Save as look** keeps your own.
