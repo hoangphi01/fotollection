@@ -447,8 +447,12 @@ fn install(
 #[tauri::command]
 #[specta::specta]
 pub fn remove_unused_luts(state: State<'_, AppState>) -> u32 {
-    let used = luts_in_use(&state);
-    let gone = lut_files(&state)
+    remove_unused_luts_on(&state)
+}
+
+fn remove_unused_luts_on(state: &AppState) -> u32 {
+    let used = luts_in_use(state);
+    let gone = lut_files(state)
         .into_iter()
         .filter(|(hash, path)| !used.contains(hash) && std::fs::remove_file(path).is_ok())
         .count();
@@ -459,6 +463,10 @@ pub fn remove_unused_luts(state: State<'_, AppState>) -> u32 {
 #[tauri::command]
 #[specta::specta]
 pub fn forget_all_addresses(state: State<'_, AppState>) {
+    forget_all_addresses_on(&state);
+}
+
+fn forget_all_addresses_on(state: &AppState) {
     if let Ok(mut addresses) = state.recent_addresses.lock() {
         addresses.clear();
     }
@@ -471,6 +479,10 @@ pub fn forget_all_addresses(state: State<'_, AppState>) {
 #[tauri::command]
 #[specta::specta]
 pub fn reset_settings(state: State<'_, AppState>) -> Result<(), IpcError> {
+    reset_settings_on(&state)
+}
+
+fn reset_settings_on(state: &AppState) -> Result<(), IpcError> {
     let mut local = state
         .stored_settings()
         .ok_or_else(|| IpcError::internal("settings unavailable"))?;
@@ -488,7 +500,7 @@ pub fn reset_settings(state: State<'_, AppState>) -> Result<(), IpcError> {
             camera.logo = LogoKind::Image;
         }
     }
-    install(&state, local, Vec::new(), Vec::new());
+    install(state, local, Vec::new(), Vec::new());
     Ok(())
 }
 
@@ -498,10 +510,14 @@ pub fn reset_settings(state: State<'_, AppState>) -> Result<(), IpcError> {
 #[tauri::command]
 #[specta::specta]
 pub fn erase_data(state: State<'_, AppState>) -> Result<(), IpcError> {
+    erase_data_on(&state)
+}
+
+fn erase_data_on(state: &AppState) -> Result<(), IpcError> {
     let mut local = state
         .stored_settings()
         .ok_or_else(|| IpcError::internal("settings unavailable"))?;
-    for (_, path) in lut_files(&state) {
+    for (_, path) in lut_files(state) {
         let _ = std::fs::remove_file(path);
     }
     for font in &local.fonts {
@@ -530,6 +546,125 @@ pub fn erase_data(state: State<'_, AppState>) -> Result<(), IpcError> {
     if let Ok(mut render) = state.settings.write() {
         render.0.collage.postcard.font = None;
     }
-    install(&state, local, Vec::new(), Vec::new());
+    install(state, local, Vec::new(), Vec::new());
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const KEPT: &str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    const UNUSED: &str = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+
+    /// An app with its own folders under `dir`, as on a new install.
+    fn app(dir: &Path) -> AppState {
+        let config = dir.join("config");
+        std::fs::create_dir_all(config.join("looks")).unwrap_or_default();
+        AppState::new(
+            dir.join("thumbs"),
+            &config,
+            dir.join("projects/session.fotollection"),
+        )
+        .unwrap_or_else(|e| panic!("no app state: {e}"))
+    }
+
+    fn lut(state: &AppState, hash: &str) -> PathBuf {
+        let path = luts_dir(state).join(format!("{hash}.cube"));
+        std::fs::write(&path, "LUT_3D_SIZE 2\n").unwrap_or_default();
+        path
+    }
+
+    /// FR-116: only the LUTs nothing refers to go; the one the defaults' look uses stays.
+    #[test]
+    fn fr_116_remove_unused_luts_keeps_the_ones_in_use() -> Result<(), std::io::Error> {
+        let dir = tempfile::tempdir()?;
+        let state = app(dir.path());
+        let kept = lut(&state, KEPT);
+        let unused = lut(&state, UNUSED);
+        if let Ok(mut render) = state.settings.write() {
+            render.0.look.lut = Some(KEPT.to_owned());
+        }
+        assert_eq!(remove_unused_luts_on(&state), 1);
+        assert!(kept.exists(), "a LUT in use is kept");
+        assert!(!unused.exists(), "an unused LUT goes");
+        Ok(())
+    }
+
+    /// FR-116: *Forget recent addresses* empties the list, in memory and on disk.
+    #[test]
+    fn fr_116_forget_all_addresses_forgets_them_on_disk_too() -> Result<(), std::io::Error> {
+        let dir = tempfile::tempdir()?;
+        let state = app(dir.path());
+        if let Ok(mut a) = state.recent_addresses.lock() {
+            a.push("Národní muzeum\nPraha".to_owned());
+        }
+        state.save_settings();
+        forget_all_addresses_on(&state);
+        assert!(
+            state
+                .stored_settings()
+                .is_some_and(|s| s.recent_addresses.is_empty())
+        );
+        let again = app(dir.path());
+        assert!(
+            again
+                .stored_settings()
+                .is_some_and(|s| s.recent_addresses.is_empty())
+        );
+        Ok(())
+    }
+
+    /// FR-116: *Reset settings* brings the interface back to its defaults and keeps the
+    /// user's data (addresses, LUT files) and the old file as `.bak`.
+    #[test]
+    fn fr_116_reset_settings_keeps_the_users_data() -> Result<(), String> {
+        let dir = tempfile::tempdir().map_err(|e| e.to_string())?;
+        let state = app(dir.path());
+        let kept = lut(&state, KEPT);
+        if let Ok(mut ui) = state.ui.write() {
+            ui.language = fotollection_core::settings::Language::Vi;
+        }
+        if let Ok(mut a) = state.recent_addresses.lock() {
+            a.push("Letná, Praha".to_owned());
+        }
+        state.save_settings();
+        state.save_settings();
+        reset_settings_on(&state).map_err(|e| e.message)?;
+        let after = state.stored_settings().ok_or("no settings")?;
+        assert_eq!(after.ui.language, UiSettings::default().language);
+        assert_eq!(after.recent_addresses, vec!["Letná, Praha".to_owned()]);
+        assert!(kept.exists(), "a LUT is the user's data");
+        assert!(
+            state.store_path.with_extension("json.bak").exists(),
+            "the old file kept"
+        );
+        Ok(())
+    }
+
+    /// FR-116: *Erase data* removes the LUTs and the addresses, and nothing outside the
+    /// app's own folders.
+    #[test]
+    fn fr_116_erase_data_touches_only_the_apps_folders() -> Result<(), String> {
+        let dir = tempfile::tempdir().map_err(|e| e.to_string())?;
+        let state = app(dir.path());
+        let gone = lut(&state, KEPT);
+        let mine = dir.path().join("my-photo.jpg");
+        std::fs::write(&mine, b"not the app's").map_err(|e| e.to_string())?;
+        if let Ok(mut a) = state.recent_addresses.lock() {
+            a.push("Letná, Praha".to_owned());
+        }
+        erase_data_on(&state).map_err(|e| e.message)?;
+        assert!(!gone.exists(), "LUTs are erased");
+        assert!(
+            state
+                .stored_settings()
+                .is_some_and(|s| s.recent_addresses.is_empty() && s.looks.is_empty())
+        );
+        assert!(
+            mine.exists(),
+            "a file outside the app's folders is never touched"
+        );
+        Ok(())
+    }
 }
