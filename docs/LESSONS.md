@@ -967,3 +967,10 @@
 - **Why:** the verdict badge was part of the chosen item's text, which the button repeats; on Windows' wider text it did not fit. The harness never saw it: the demo photos are large, so every size was *sharp*, the short badge. Shown on purpose (every size *acceptable* in the Print tab), the old code failed two other checks the same badge had escaped: white on the warning orange was 4.41:1 (AA asks 4.5), and the frame's *Logo hãng* choice was 63 px in 44.
 - **Fix:** the button hides the badge (`[data-verdict]`), the chosen size's verdict has its own line below; `--warning-solid` lightness 0.58 → 0.565 (4.73:1); *Logo hãng* → *Hãng*. UI-LAYOUT-024 (no badge cut by its box) and the `verdict` stress view in the bridge.
 - **Rule:** a state the demo data never reaches (a small photo's verdict, an error badge) gets a stress view that forces it, or no check ever looks at it; a dropdown's button holds words only.
+
+### Sixteen places the docs disagreed with each other or with the code (docs, ADR-0006)
+
+- **Seen:** the 2026-11-09 audit read the docs on user data and errors side by side: OPTIMIZATION said `panic = "abort"`, the code unwinds; EXTENSION and ARCHITECTURE named settings v14 and project v5 or v11 (18 and 12); the storage map listed `recent.json`, `presets/` and a shell log no code writes, and none of the settings copies, camera sessions or analysis; the cache limit was 2 GB in one doc and 5 in another; the version popover, gone since v0.12.0, was still where the language, the theme and *Report a problem* live in four docs; SECURITY's polyglot list was not the code's; EXTENSION said unknown fields are ignored where the code refuses them.
+- **Why:** each change updated the doc its DOCS_GUIDE row named, not the other docs that repeat the fact; numbers and places written twice drift.
+- **Fix:** all of them corrected in one pass, each to the code (S6 of the 2026-11-09 plan).
+- **Rule:** a fact lives in one doc and the others link to it; when a change moves a fact (a version, a limit, where a control lives), grep every doc for its old value before the commit, not only the row's doc.

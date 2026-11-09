@@ -15,15 +15,15 @@
 | Session autosave † `<app data>/projects/session.fotollection` | JSON project tables ([§4](#4-project-file-schema)) | App data dir | `project.rs` | Overwritten while working; crash safety only | Yes: folder paths |
 | Project backup `*.fotollection.bak` | Same as the project | Next to the project file | `project.rs` | Replaced on each successful save | Yes |
 | App settings `settings.json` † | JSON, versioned ([§6](#6-app-settings)) | App config dir | `settings_store.rs` | Until uninstall or reset | Camera names/lenses only |
+| Settings copies `settings.json.bak`, `.json.corrupt`, `.json.corrupt-<time>` | The previous good file; a file that could not be read; a damaged file kept before its recovered settings replaced it (ADR-0048) | App config dir | `atomic.rs`, `settings_store.rs` | Replaced on each save (`.bak`); until removed | Yes, as `settings.json` |
 | Error log `logs/errors.log` … `errors.4.log` † | Text, one line per error or panic ([ERROR_CONTROL.md §3](ERROR_CONTROL.md#3-status-of-the-plan-v091)) | App data dir | `error_log.rs` | Rotated at 1 MB, 5 files at most | No: paths and file names are cut to their extension |
+| Camera sessions `<app data>/camera/<date time>/` † | The shots of a tethered camera not yet saved ([ADR-0028](adr/0028-camera-sessions-temporary-folder-in-app-data.md)) | App data dir | `camera.rs` | Until saved or discarded | Yes: the photos |
+| Best-shot analysis `analysis/` † | JSON per photo ([§8](#8-thumbnail-cache)) | App cache dir | `culling/cache.rs` | Until *Clear cache* or the limit | No |
 | Camera logos `logos/<id>.png` † | PNG, validated copy | App config dir | `logo.rs` | Until removed | No |
 | User fonts `fonts/<id>.ttf\|otf` † | TTF/OTF, validated copy | App config dir | `fonts.rs` | Until removed | No |
 | Looks `looks/<hash>.cube` or `.png`, since v0.14.0 ([FR-070](PRD.md#fr-070--looks-from-lut-files)) | `.cube` text, validated copy named by content hash; the settings gain `render.look` (the sliders of FR-079, an optional LUT and its strength, an amount) and the user's saved looks, photos a sparse `look` override (settings and project schema bumps); a project embeds the LUTs it uses | App config dir | `looks.rs` | Until removed | No |
-| Settings bundle `*.fotosettings`, planned ([FR-082](PRD.md#fr-082--the-apps-brain-in-one-file-fotosettings)) | ZIP: `manifest.json`, `settings.json` whole (its `ui` group and the recent addresses included), the user's looks and LUTs, fonts and logos ([EXTENSION.md §2.3](EXTENSION.md#23-settings-bundle-fotosettings)) | Chosen by the user with *Export settings…* | `settings_bundle.rs` | Until the user deletes it | **Yes**: postcard addresses |
-| Recent projects `recent.json` | JSON array of up to 10 paths | App config dir | `settings.rs` | Until cleared | Yes: paths |
-| Preset library `presets/*.fotopreset` | JSON, one file per preset ([§7](#7-presets)) | App config dir | `presets.rs` | Until the user deletes them | No |
+| Settings bundle `*.fotosettings` † (v0.14.0, [FR-082](PRD.md#fr-082--the-apps-brain-in-one-file-fotosettings)) | ZIP: `manifest.json`, `settings.json` whole (its `ui` group and the recent addresses included), the user's looks and LUTs, fonts and logos ([EXTENSION.md §2.3](EXTENSION.md#23-settings-bundle-fotosettings)) | Chosen by the user with *Export settings…* | `settings_bundle.rs`, `zip_parts.rs` | Until the user deletes it | **Yes**: postcard addresses |
 | Thumbnail cache `thumbs/` † | JPEG files, no index file ([§8](#8-thumbnail-cache)): T1 thumbnails and T2 standard previews | App cache dir | `thumbs.rs`, `preview.rs` | LRU, 5 GB cap, can be cleared at any time | **Yes**: image content |
-| Logs `logs/*.log` | Text, rotated (3 × 5 MB) | App log dir | shell | Rotated | File names only ([SECURITY.md §5](SECURITY.md#5-privacy)) |
 | Built-in data | Compiled into the binary ([§5](#5-built-in-datasets)) | — | `geocode.rs`, `presets.rs`, `print_size.rs` | Per release | No |
 | In-memory state | Columnar arenas ([§3.3](#33-in-memory-layout)) | RAM | `library.rs`, `history.rs` | Process lifetime | — |
 
@@ -34,8 +34,9 @@ These are resolved through Tauri's path API with the identifier `com.hoangphi01.
 | Directory | macOS | Windows | Linux |
 |-----------|-------|---------|-------|
 | Config | `~/Library/Application Support/com.hoangphi01.fotollection/` | `%APPDATA%\com.hoangphi01.fotollection\` | `~/.config/com.hoangphi01.fotollection/` |
+| App data (the session, camera sessions, the error log) | `~/Library/Application Support/com.hoangphi01.fotollection/` | `%APPDATA%\com.hoangphi01.fotollection\` | `~/.local/share/com.hoangphi01.fotollection/` |
 | Cache | `~/Library/Caches/com.hoangphi01.fotollection/` | `%LOCALAPPDATA%\com.hoangphi01.fotollection\` | `~/.cache/com.hoangphi01.fotollection/` |
-| Logs | `~/Library/Logs/com.hoangphi01.fotollection/` | `%LOCALAPPDATA%\com.hoangphi01.fotollection\logs\` | `~/.local/share/com.hoangphi01.fotollection/logs/` |
+| Logs (not used: the error log is in the app data folder's `logs/`) | `~/Library/Logs/com.hoangphi01.fotollection/` | `%LOCALAPPDATA%\com.hoangphi01.fotollection\logs\` | `~/.local/share/com.hoangphi01.fotollection/logs/` |
 
 **Sources are never written.** No store contains a copy of an original photo, and nothing is written into source folders, except a project file if the user saves it there.
 
@@ -214,7 +215,7 @@ Parsing is strict: `serde` with `deny_unknown_fields`, typed enums, and range ch
 
 - `schema_version` is a monotonically increasing integer. Every **released** version is frozen and never edited.
 - Migrations live in `crates/core/src/project.rs`: each version only adds optional fields, so an older file loads with their defaults when a project is opened. The migrated file is written back only on the next save, and the original stays as `.bak`.
-- An app that sees a `schema_version` newer than it knows **refuses to open the file read-write** and offers read-only viewing ([NFR-013](PRD.md#nfr-013--project-safety)).
+- An app that sees a `schema_version` newer than it knows never writes the file ([NFR-013](PRD.md#nfr-013--project-safety)): a newer session is not opened (and never overwritten), a newer bundle is refused with *Update Fotollection* (`ERR-PRJ-0004`), a newer `settings.json` gives the defaults without saving (`ERR-CFG-0012`). Read-only viewing is not built.
 - Every version has a fixture `crates/core/tests/fixtures/project/v{N}.fotollection`. Tests load each fixture, migrate it to the current version, and compare with a golden result ([TESTING.md §5](TESTING.md#5-golden-images)).
 
 | Version | App version | Change |
@@ -277,7 +278,7 @@ These are read-only and compiled into the binary or bundled as resources, so the
 ```json
 {
   "format": "fotollection-settings",
-  "schema_version": 16,
+  "schema_version": 18,
   "ui": { "language": "vi", "theme": "system", "mode": "professional", "exportFolders": "oneFolder",
           "previewMemoryPercent": 25, "cacheLimitGb": 5, "preparePreviews": true,
           "filmstrip": true, "previewLayout": "dialog",
@@ -383,7 +384,7 @@ Presets work like Lightroom presets, applied to *print* settings ([FR-038](PRD.m
 - **Recency:** no index file: each cache file's modification time is its last use. A hit refreshes it at most once a day (`cache_limit::touch`), so browsing does not write to disk.
 - **Eviction:** over `thumbs/` and `analysis/` together, when the total passes the user's limit (`ui.cacheLimitGb`, **5 GB** by default, in GB of 10⁹ bytes as the Settings window shows them, since v0.12.0; 5 GiB in v0.11.x, 2 GiB before FR-091), down to 90 % of it: the standard previews used longest ago first, then the thumbnails and analyses used longest ago, so a pass of previews never pushes out the grid's thumbnails (since v0.11.1). It runs on a plain thread after start-up, after each batch of thumbnails and every 100 standard previews during their pass (since v0.11.1); it also removes `.part` files older than an hour (writes that never finished). Measured: 0.22 s to walk 70,000 files; deleting 38,500 takes 7 s, in the background (OPTIMIZATION.md §5).
 - **Invalidation:** the key includes size and mtime, so a changed source automatically misses the cache. A decoder fix that changes the pixels of files already seen bumps `CACHE_VERSION`, which changes every key: thumbnails and analyses (§8.1, same key) are made again once ([ADR-0033](adr/0033-reference-jpeg-decoder.md)). Old entries age out through LRU.
-- **Clearing:** *Clear cache*, in the popover of the version number at the foot of the settings panel, empties `thumbs/` and `analysis/` and shows the size against the limit. This is safe at any time.
+- **Clearing:** *Clear cache*, in *Settings → RAM & cache*, empties `thumbs/` and `analysis/` and shows the size against the limit. This is safe at any time.
 - **Implementation status (2026-10-23):** T0 (served directly from EXIF, never cached) and T1 (cached as `thumbs/<aa>/<key>.t1.jpg`, written atomically through `.part` + rename) are live. Since FR-091 (v0.11.0, [ADR-0041](adr/0041-instant-previews-disk-and-memory.md)), **T2 standard previews** are kept on disk too, as `thumbs/<aa>/<key>.t2v<version>-o<orientation>-<neutral|camera>.jpg`: the 2048 px upright sRGB source before any look, JPEG q90, about 0.66 MB; for a RAW, finished with its RAW colour (the last part of the name) and no linear slider. The version (`preview::STANDARD_VERSION`, 3 since v0.14.0 for the RAW curve without steps, 2 since v0.11.1; v0.11.0 wrote `.t2-o…`, read as version 1 and never read again) is bumped when a RAW develop or finish changes its pixels without `thumbs::CACHE_VERSION` changing; older files go with the limit. They are made in the background after the thumbnails and written atomically through a `.part` of each writer's own (`<name>.<pid>-<n>.part`), so two writers of one photo never mix. In memory, the preview keeps up to a quarter of the machine's RAM by bytes. Since 2026-10-26 the limit, the LRU eviction and *Clear cache* are live (`crates/core/src/cache_limit.rs`, `src-tauri/src/cache.rs`).
 
 ### 8.1 Analysis cache

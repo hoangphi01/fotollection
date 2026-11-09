@@ -57,7 +57,7 @@ Every file passes through these four layers before any pixel or metadata value r
 Layer 1: FILE VALIDATION (before parsing)
   - Detect type by magic bytes (JPEG FF D8 FF, PNG 89 50 4E 47, HEIF 'ftyp' brands)
   - Reject files > 200 MB; reject declared dimensions > 200 MP (decompression-bomb guard)
-  - Polyglot scan of the first 4 KB: <html, <script, %PDF, PK, MZ → reject
+  - Polyglot scan of the first 4 KB: `<script`, `<html`, `<svg`, `<?php` → reject (`import.rs`, `SUSPICIOUS_MARKERS`)
   - JPEG: warn if significant data follows the EOI marker (FF D9)
   - JPEG: `jpeg_layout::read` walks the markers up to the first scan with bounds checks on
     every read, so a cut or forged header returns "unknown", never a panic (tested on every
@@ -78,7 +78,7 @@ Layer 2: CONTAINED PARSING
                LensMake, LensModel, FocalLength (range-checked; strings ≤ 100 chars)
       IGNORED: everything else (UserComment, ImageDescription, Artist, MakerNote,
                XP* fields, …) — never read, never displayed
-  - Each decode runs inside catch_unwind on a worker thread with a time limit (5 s for metadata, 30 s for full decode)
+  - Each decode of an untrusted file runs inside `catch_unwind` (`supervise::contained` in `codec::decode_photo`, `decode_for_screen`, `raw::preview` and `raw::dimensions`; rawler's own guard in `crates/rawlgpl`), a panic becoming that photo's decode error (ADR-0048). Time limits per decode are planned, not built
   - Failures mark the photo as failed and the batch continues
 
 Layer 3: VALUE VALIDATION (typed, in Rust)

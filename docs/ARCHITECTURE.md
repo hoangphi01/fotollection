@@ -69,7 +69,7 @@ crates/
       frame.rs           † # info frame: settings, camera profiles, text, ratio-safe layout (FR-040)
       logo.rs            † # user PNG logos: validation + decode (ADR-0014)
       fonts.rs           † # user OTF/TTF fonts: validation + FontArc (FR-042)
-      settings_store.rs  † # settings.json v14: load/validate/atomic save (DATABASE.md §6)
+      settings_store.rs  † # settings.json v18 (machine part by part, ADR-0048): load/validate/atomic save (DATABASE.md §6)
       preview.rs         † # T2 sources in memory (a quarter of the RAM, by bytes) and on disk as standard previews, prefetch, preview rendering (FR-007, FR-091)
       cancel.rs          † # CancellationToken
       stamp.rs           † # text inside the photo: DSEG14 Italic, date · place line + caption, LED glow (FR-004/005/033/036)
@@ -90,10 +90,10 @@ crates/
       places.rs          † # a photo's effective place (ADR-0027): set by hand → borrowed → GPS → none, with the user's names for renamed places; borrowing from another device's photo of the same scene (FR-005/031/032). GPX tracks are planned (FR-066)
       cluster.rs           # trip DBSCAN (Phase 2)
       library.rs         † # columnar in-memory library (DATABASE.md §3.3) + sparse per-photo edits (crop, rating, flag, date set by hand); the effective time with each body's clock offset (FR-030, ADR-0027)
-      project.rs         † # project tables v11: snapshot/restore by folder+path, FK validation, relocate/resolve folders
+      project.rs         † # project tables v12: snapshot/restore by folder+path, FK validation, relocate/resolve folders
       bundle.rs          † # .fotollection ZIP bundle: its allowlist and parts' readers (ADR-0016), on zip_parts.rs
       zip_parts.rs       † # the ZIP both bundles share: manifest + BLAKE3, two-pass read under each part's limit, zip-bomb caps, deterministic write
-      cache_limit.rs     † # the disk cache's 2 GB limit: usage, LRU prune by modification time, clear, touch on hit (DATABASE.md §8)
+      cache_limit.rs     † # the disk cache's limit (`ui.cacheLimitGb`, 5 GB by default): usage, LRU prune by modification time, clear, touch on hit (DATABASE.md §8)
       histogram.rs       † # the develop view's histogram (FR-098): 256 levels of red, green, blue and light and the clipped pixels, counted on a grid of the preview's resized photo through its look
       history.rs         † # undo/redo stack of inverse edits (FR-023); each step's serial, a photo's develop steps and what each changed (FR-095)
       atomic.rs          † # tmp + fsync + .bak + rename
@@ -127,7 +127,7 @@ src-tauri/               † # app shell: commands, protocol, capabilities
   src/open_with.rs       † # "Open with" (FR-054, ADR-0024): one route for macOS Opened events, command-line paths and second launches; the photo's folder as a tab
   src/timing.rs          † # start-up milestones printed only with FOTOLLECTION_TIMING (NFR-010, scripts/measure-startup.sh)
   src/updates.rs         † # "Check for updates" (FR-061, ADR-0025): one GitHub request on click, the installer opened in the browser from Rust; "Report a problem" opens the fixed issue page (FR-069); "Copy diagnostics" reads the error log
-  src/cache.rs           † # the disk cache's size, Clear cache, and the background prune under 2 GB (DATABASE.md §8)
+  src/cache.rs           † # the disk cache's size, Clear cache, and the background prune under the user's limit (DATABASE.md §8)
   src/data.rs            † # Settings → Data (FR-116, FR-082): each store's size, Open folder, export and import a .fotosettings, unused LUTs, reset settings, erase data
   src/i18n.rs            † # the shell's own strings: menu, window title, dialogs (FR-020)
   src/demo.rs            † # debug builds only: records IPC answers for demo photos, for the website screenshots

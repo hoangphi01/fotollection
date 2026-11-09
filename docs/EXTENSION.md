@@ -9,10 +9,10 @@
 
 | Type | Extension | MIME type | UTI | Recognized by | Container | Current version | Status |
 |------|-----------|-----------|-----|---------------|-----------|-----------------|--------|
-| Project (legacy, and the session autosave) | `.fotollection` | `application/vnd.fotollection.project+json` | `com.hoangphi01.fotollection.project` | `"format": "fotollection-project"` | JSON, UTF-8 | `schema_version` 11 | Implemented: read always, written only for the session autosave |
+| Project (legacy, and the session autosave) | `.fotollection` | `application/vnd.fotollection.project+json` | `com.hoangphi01.fotollection.project` | `"format": "fotollection-project"` | JSON, UTF-8 | `schema_version` 12 | Implemented: read always, written only for the session autosave |
 | Project bundle | `.fotollection` | `application/vnd.fotollection.project+zip` | `com.hoangphi01.fotollection.project` | ZIP magic `PK\x03\x04` + `manifest.json` with `"format": "fotollection-bundle"` | ZIP (deflate) | manifest `schema_version` 2 (v0.14.0: LUT parts; 1 still opens) | Implemented ([ADR-0016](adr/0016-self-contained-project-bundle.md)): what Save / Save As write |
 | Preset | `.fotopreset` | `application/vnd.fotollection.preset+json` | `com.hoangphi01.fotollection.preset` | `"format": "fotollection-preset"` | JSON, UTF-8 | `schema_version` 1 (draft) | Planned ([FR-038](PRD.md#fr-038--print-presets)) |
-| App settings | `settings.json` | `application/json` | — (internal) | `"format": "fotollection-settings"` | JSON, UTF-8 | `schema_version` 14 | Implemented |
+| App settings | `settings.json` | `application/json` | — (internal) | `"format": "fotollection-settings"` | JSON, UTF-8 | `schema_version` 18 | Implemented |
 | Settings bundle, "the app's brain" | `.fotosettings` | `application/vnd.fotollection.settings+zip` | `com.hoangphi01.fotollection.settings` | ZIP magic + `manifest.json` with `"format": "fotollection-settings-bundle"` | ZIP (deflate) | manifest `schema_version` 1 | Implemented in v0.14.0 ([FR-082](PRD.md#fr-082--the-apps-brain-in-one-file-fotosettings)), the Data section of Settings (FR-116) |
 | Language pack | `.fotolang` | `application/vnd.fotollection.language+json` | `com.hoangphi01.fotollection.language` | `"format": "fotollection-language"` | JSON, UTF-8 | `schema_version` 1 (draft) | Planned ([FR-084](PRD.md#fr-084--language-packs-anyone-can-add)) |
 | User font | `fonts/<id>.ttf`, `fonts/<id>.otf` | `font/ttf`, `font/otf` | — (internal copy) | Magic `00 01 00 00` / `true` (TTF), `OTTO` (OTF) | sfnt | — | Implemented ([FR-042](PRD.md#fr-042--custom-fonts)) |
@@ -35,7 +35,7 @@ These files leave the app. Users copy, email and open them on other machines, so
   | Part | Content | Cap |
   |------|---------|----:|
   | `manifest.json` | `format`, `schema_version`, `app_version`, and every other part with its byte count and BLAKE3 sum | 1 MB |
-  | `project.json` | The project tables, schema v5 ([DATABASE.md §4](DATABASE.md#4-project-file-schema)). Folders are stored relative to the bundle when possible, with the absolute path as a fallback | 64 MB |
+  | `project.json` | The project tables, schema v12 ([DATABASE.md §4](DATABASE.md#4-project-file-schema)). Folders are stored relative to the bundle when possible, with the absolute path as a fallback | 64 MB |
   | `settings.json` | Render (print size, custom sizes, stamp), frame, camera profiles and the fonts table, in the `settings.json` format without the per-machine `ui` block ([DATABASE.md §6](DATABASE.md#6-app-settings)) | 4 MB |
   | `fonts/<id>.ttf\|otf` | The fonts the project uses (date stamp and frame), stored uncompressed | 20 MB each |
   | `logos/<id>.png` | Logos of camera profiles set to an image logo, by profile id | 2 MB each |
@@ -117,7 +117,7 @@ These limits apply to every input format:
 1. **Version every user-facing and persisted format.** JSON formats carry a `format` string and an integer `schema_version`, and the planned bundle carries both in `manifest.json`.
 2. **Read old files, migrate forward.** Each version step is a pure migration function with a fixture test ([DATABASE.md §4.3](DATABASE.md#43-versioning-and-migration)). A file is rewritten in the new version only on the next save, and the old one stays as `.bak`.
 3. **Never open a newer file read-write.** An older app refuses a newer `schema_version` rather than damaging the file.
-4. **Ignore unknown fields** within a known version, so that additive changes stay readable.
+4. **Refuse unknown fields** within a known version (`serde(deny_unknown_fields)`): every addition is a new version, read with defaults by the next app; the version is read first, so a newer file is told apart from a damaged one.
 5. **Never reuse a `format` string or a `schema_version`.** Released versions are frozen.
 6. **Store lengths in millimetres and colours as `#rrggbb`.** Units entered by the user, such as inches, are kept only as a display hint.
 
