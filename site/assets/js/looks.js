@@ -28,15 +28,23 @@ for (const root of document.querySelectorAll('[data-looks]')) {
     next.focus()
     pick(next)
   })
-  // Press and hold for the original; let go and the look comes back. The press is captured,
-  // and the browser's own image drag is off, or it would cancel the press at once.
+  // Press and hold for the original; let go and the look comes back. The pictures take no
+  // pointer events (CSS), so no browser starts dragging one and cancels the press (Safari
+  // did, even with pointerdown prevented); the press is captured, and while it lasts the
+  // original shows at once, without the fade.
+  const release = () => {
+    stack.classList.remove('holding')
+    show(current)
+  }
   stack.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return
     e.preventDefault()
     stack.setPointerCapture?.(e.pointerId)
+    stack.classList.add('holding')
     show(choices[0].dataset.slug)
   })
-  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) stack.addEventListener(ev, () => show(current))
-  stack.addEventListener('dragstart', (e) => e.preventDefault())
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) stack.addEventListener(ev, release)
+  addEventListener('blur', release)
   stack.addEventListener('contextmenu', (e) => e.preventDefault())
   // Every picture loads once the section is near, so the first pick is already there.
   for (const img of pictures) img.loading = 'eager'
