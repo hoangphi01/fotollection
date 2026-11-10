@@ -995,3 +995,10 @@
 - **Why:** the link was written from memory of an old title in the 2026-11-09 docs pass; `check-docs.sh` checked IDs and the ADR index but not where links point, which only CI's lychee did.
 - **Fix:** the link corrected; `check-docs.sh` now checks that every relative `.md` link in the docs, READMEs, CHANGELOG and CONTRIBUTING reaches a file, proven failing on the broken link before the fix.
 - **Rule:** copy a doc's link from its file name, never from memory; a check that only CI runs is also run by `check-docs.sh` when it can be.
+
+### Holding the landing page's photo showed its original only now and then (site, FR-079)
+
+- **Seen:** on the landing page's Looks, press and hold the photo worked once, then not; the first fix (pointer capture, `draggable="false"`) passed a scripted test in Chromium, and the owner still saw it fail.
+- **Why:** the press landed on an `<img>`; Safari starts its own image drag on a mouse press even when `pointerdown` is prevented, and that drag cancels the press; a quick press also looked like nothing, as the original faded in over 200 ms. The test held one point, in one engine.
+- **Fix:** the pictures take no pointer events (`pointer-events: none`, `-webkit-user-drag: none`), the frame around them takes the press and captures it, and while held the original shows at once; tested 20 presses at random points, lengths and moves, in Chromium and WebKit, 20 of 20 each.
+- **Rule:** a gesture on a picture is listened for on its frame, never the `<img>`; test a gesture many times with random timing, in WebKit as well as Chromium.
