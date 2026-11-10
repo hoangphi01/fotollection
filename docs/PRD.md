@@ -1186,6 +1186,15 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 - **Collage mode** keeps its own *Auto turn* (FR-035); a sheet's size turns there as it does today.
 - **Rust first (ADR-0044):** the plan (`plan.rs`) owns the orientation, the interface only asks; tests `fr_120_*` that a turned 5 × 15 gives a 15 × 5 crop of a portrait photo at the same DPI rules.
 
+### FR-121 — A small "fotollection.org" on the print
+
+**P2 (planned for v0.14.x; owner's decision 2026-11-10: "from the next version a small Fotollection in a corner of the photo, turned off in Settings").** Each print carries a small, quiet credit, so a photo passed round or on a fridge tells where it was made: **on by default**, turned off with one switch.
+
+- **What and where:** the words `fotollection.org` (or the mark and the name), in a light grey at a small size measured in millimetres on the print so it reads the same at 10 × 15 and 20 × 30, in a corner of the white border or the info frame when there is one, on a postcard's back beside the stamp box; on the photo itself only as a last place, in the corner away from the date stamp, never over a face or the stamp.
+- **Off in one place:** *Settings → General* (or *Print*), a switch "Print a small fotollection.org", kept per machine; the export dialog says it is on, with a link to the switch; nothing else changes when it is off.
+- **Honest:** said on the welcome screen and in the manual; never on files exported for sharing online (only prints), never hidden metadata, never a tracker.
+- **Rust first (ADR-0044):** drawn in `render.rs` with the stamp's text path (`stamp.rs`, the bundled fonts), at the print's DPI; tests `fr_121_*` that it is drawn when on, not when off, at the same physical size on two print sizes, and never under the date stamp.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
