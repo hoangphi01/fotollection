@@ -1177,6 +1177,15 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 - **RISC-V (riscv64gc Linux), experimental:** Rust builds it (tier 2), `ring` and the pure-Rust decoders support it, WebKitGTK ships on Debian and Ubuntu riscv64. No hosted runner exists, so a cross build (`cross` or a riscv64 container) and a smoke test under emulation; then one real board (a SpacemiT K1 with RVV 1.0, or a VisionFive 2) to measure. Its vector extension is not in the baseline, so the first build is scalar; vectors only by measured runtime detection. Shipped only as "experimental" until a real board meets the budgets.
 - **Docs when built:** NFR-007, RELEASE.md §2 and §6, the website's systems table and download buttons, an ADR for each new platform (DOCS_GUIDE, "A new platform").
 
+### FR-120 — Turn the print size
+
+**P2 (planned for v0.14.x; owner's request 2026-11-10, a portrait night photo on a 5 × 15 strip).** Today a print size takes the photo's own orientation: a portrait photo prints on an upright 5 × 15, and nothing lays the strip flat. A **turn** button beside the print size (and a key) swaps it to landscape or back, so a portrait photo can be cropped across a 15 × 5 strip, a 15 × 10 or any size, and the crop editor opens on the turned frame.
+
+- **Per photo, as the crop is:** the turn is kept with the photo's print settings (project schema, migration from "follow the photo"), the default stays "follow the photo"; *Apply to all* as the other print settings.
+- **Everywhere the print size shows:** the preview's Print tab, the gallery's Print tab for the ticked photos, Simple mode, the size advice (DPI and the verdict read on the turned size) and the export.
+- **Collage mode** keeps its own *Auto turn* (FR-035); a sheet's size turns there as it does today.
+- **Rust first (ADR-0044):** the plan (`plan.rs`) owns the orientation, the interface only asks; tests `fr_120_*` that a turned 5 × 15 gives a 15 × 5 crop of a portrait photo at the same DPI rules.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.
