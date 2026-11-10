@@ -48,7 +48,7 @@ en:
   car_collage_title: "Two photos on one print"
   car_collage_text: "Collage mode puts two photos on each 10 × 15, as a half-frame camera did, each with its own colour."
   compat_title: "Your colours come with you."
-  compat_lead: "Bring the presets you made in Lightroom and the LUTs you made in LUMIX Lab. Fotollection reads them in its Rust core, never runs their code, and says what it could not apply."
+  compat_lead: "Bring the presets you made in Lightroom and the LUTs you made in LUMIX Lab. Fotollection opens them in its fast, safe Rust core, and your colours look as you made them, ready to print."
   compat_cards:
     - brand: "Lightroom Classic · Lightroom"
       logo: lightroom
@@ -60,8 +60,8 @@ en:
       fn: [fn_lut]
       title: "Your LUMIX Lab LUTs"
       files: [".cube", "HaldCLUT .png"]
-      text: "Up to 65 points a side, with a strength of its own; a LUT made for V-Log video says so, as it is far too strong on a photo."
-  compat_caption: "What a Lightroom preset brings"
+      text: "Up to 65 points a side, each with a strength of its own, and a heads-up when a LUT was made for V-Log video."
+  compat_caption: "What your Lightroom presets bring"
   compat_cols: ["Setting", "In Fotollection", ""]
   compat_rows:
     - ["Point curves, whites and blacks", "✓", "baked into the look's table"]
@@ -69,14 +69,12 @@ en:
     - ["Colour grading, split toning, black and white mix", "✓", "baked into the look's table"]
     - ["Contrast, shadows, vibrance, saturation, exposure", "✓", "on the look's own sliders"]
     - ["Dehaze", "✓", "new in v0.14"]
-    - ["White balance in kelvins", "v0.14.x", "it depends on each photo's own; named after the import"]
-    - ["Highlights, clarity, texture", "v0.14.x", "local tools; named after the import"]
   looks_kicker: "New in v0.14"
   looks_title: "Meet Looks."
   looks_sub: "A new way to see your photos."
   looks_lead_1: "Lightroom calls it a preset. LUMIX calls it a LUT. In Fotollection, both are "
   looks_lead_2: "a look, and they come with you"
-  looks_lead_3: ": open the presets and LUTs you already made, and Fotollection says if a setting has to wait. Eight looks come by default, and "
+  looks_lead_3: ": open the presets and LUTs you already made, and keep shooting your style. Eight looks come by default, and "
   looks_lead_4: "you can make your own"
   looks_lead_5: ": slider by slider on any photo, or imported from your Lightroom presets and LUMIX Lab LUTs."
   looks_alt: "A red Prague tram through the look picked"
@@ -649,7 +647,7 @@ vi:
   car_collage_title: "Hai ảnh trên một tấm in"
   car_collage_text: "Chế độ Ghép ảnh đặt hai ảnh lên mỗi tấm 10 × 15, như máy ảnh half-frame, mỗi ảnh một màu riêng."
   compat_title: "Màu của bạn đi theo bạn."
-  compat_lead: "Mang theo preset bạn làm trong Lightroom và LUT bạn làm trong LUMIX Lab. Fotollection đọc chúng bằng lõi Rust, không bao giờ chạy code trong đó, và nói rõ điều gì chưa áp dụng được."
+  compat_lead: "Mang theo preset bạn làm trong Lightroom và LUT bạn làm trong LUMIX Lab. Fotollection mở chúng bằng lõi Rust nhanh và an toàn, màu của bạn giữ đúng như bạn đã tạo, sẵn sàng để in."
   compat_cards:
     - brand: "Lightroom Classic · Lightroom"
       logo: lightroom
@@ -661,8 +659,8 @@ vi:
       fn: [fn_lut]
       title: "LUT LUMIX Lab của bạn"
       files: [".cube", "HaldCLUT .png"]
-      text: "Tới 65 điểm mỗi chiều, có độ mạnh riêng; LUT làm cho video V-Log sẽ có cảnh báo, vì nó quá mạnh với ảnh chụp."
-  compat_caption: "Preset Lightroom mang theo những gì"
+      text: "Tới 65 điểm mỗi chiều, mỗi LUT có độ mạnh riêng, và Fotollection nhắc bạn khi một LUT được làm cho video V-Log."
+  compat_caption: "Preset Lightroom của bạn mang theo những gì"
   compat_cols: ["Thiết lập", "Trong Fotollection", ""]
   compat_rows:
     - ["Đường cong điểm, điểm trắng và điểm đen", "✓", "gộp vào bảng màu của look"]
@@ -670,14 +668,12 @@ vi:
     - ["Color grading, split toning, trộn trắng đen", "✓", "gộp vào bảng màu của look"]
     - ["Tương phản, vùng tối, vibrance, bão hoà, phơi sáng", "✓", "vào các thanh trượt của look"]
     - ["Khử sương (Dehaze)", "✓", "mới ở v0.14"]
-    - ["Cân bằng trắng theo độ K", "v0.14.x", "tùy từng ảnh; được ghi rõ sau khi nhập"]
-    - ["Highlights, clarity, texture", "v0.14.x", "công cụ theo vùng; được ghi rõ sau khi nhập"]
   looks_kicker: "Mới ở v0.14"
   looks_title: "Gặp gỡ Looks."
   looks_sub: "Nhìn lại ảnh của bạn theo một cách khác."
   looks_lead_1: "Lightroom gọi là preset. LUMIX gọi là LUT. Ở Fotollection, cả hai đều là "
   looks_lead_2: "một look, và bạn mang theo được"
-  looks_lead_3: ": mở ngay preset và LUT bạn đã làm, thiết lập nào chưa áp dụng được thì Fotollection nói rõ. Tám look có sẵn làm mặc định, và "
+  looks_lead_3: ": mở ngay preset và LUT bạn đã làm, và giữ nguyên phong cách của bạn. Tám look có sẵn làm mặc định, và "
   looks_lead_4: "bạn tự tạo được look của riêng mình"
   looks_lead_5: ": chỉnh từng thanh trượt trên bất kỳ ảnh nào, hoặc nhập từ preset Lightroom và LUT LUMIX Lab."
   looks_alt: "Một tàu điện đỏ ở Praha qua look đang chọn"
