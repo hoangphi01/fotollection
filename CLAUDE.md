@@ -12,6 +12,7 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
 6. **License (GPL-3.0-only, relicensable).** Add only permissive-licensed dependencies (MIT, Apache-2.0, BSD…). **Never add GPL or AGPL dependencies.** New source files start with `// SPDX-License-Identifier: GPL-3.0-only` ([ADR-0008](docs/adr/0008-license-gpl3-with-relicensing-option.md)).
 7. **Style.** Follow [docs/STYLE_RULE.md](docs/STYLE_RULE.md): no `unwrap` in non-test code, `thiserror` in the core, shadcn/ui components, Lucide icons only.
 8. **Rust first ([ADR-0044](docs/adr/0044-rust-first-our-edge.md)), the compass for every design and doc.** Our edge over web-runtime apps and over RawTherapee and darktable is the Rust core: pixel and file work in Rust, never in the webview; rayon by default on pools no waiting caller holds; no `unsafe`, bounded and fuzzed parsers; small and lean; typed IPC; every claim measured.
+9. **Stay on the engineering goal (owner, 2026-11-10, hard rule).** We are engineers: performance and speed, UI/UX, SEO and running the project. Advise and build as a user and a developer would, never as a lawyer: no legal opinions, disclaimers or digressions that pull away from the main goal, and no notices or links that clutter Fotollection.
 
 ## Before starting a task
 
