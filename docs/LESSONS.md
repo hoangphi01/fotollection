@@ -1002,3 +1002,10 @@
 - **Why:** the press landed on an `<img>`; Safari starts its own image drag on a mouse press even when `pointerdown` is prevented, and that drag cancels the press; a quick press also looked like nothing, as the original faded in over 200 ms. The test held one point, in one engine.
 - **Fix:** the pictures take no pointer events (`pointer-events: none`, `-webkit-user-drag: none`), the frame around them takes the press and captures it, and while held the original shows at once; tested 20 presses at random points, lengths and moves, in Chromium and WebKit, 20 of 20 each.
 - **Rule:** a gesture on a picture is listened for on its frame, never the `<img>`; test a gesture many times with random timing, in WebKit as well as Chromium.
+
+### The website stopped deploying: the runner image lost a tool the APT step needs (site, ADR-0035)
+
+- **Seen:** the phone table fix was pushed but the site kept the old CSS; the *pages* workflow failed at *APT repository* with `apt-ftparchive: command not found`, two hours after the same step passed.
+- **Why:** `scripts/apt-repo.sh` relied on `apt-ftparchive` (apt-utils) being on GitHub's `ubuntu-latest` image; the image changed and dropped it. Nobody watched the pages run after a site push, so a broken deploy looked like a cache.
+- **Fix:** the step installs apt-utils when the command is missing (`pages.yml`).
+- **Rule:** a workflow installs every tool its scripts call instead of trusting the runner image; after a push that changes the site, check the *pages* run before saying it is live.
