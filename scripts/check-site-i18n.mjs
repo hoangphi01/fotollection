@@ -6,6 +6,7 @@
 //   - a words file is not a language of site/_data/languages.yml, or a published language has none;
 //   - a language has a key English lacks (a typo), or a text lost or gained a placeholder
 //     ([n], [tag]…) English has;
+//   - the languages are not in order (English first, then by their own names);
 //   - a published language lacks a page's link preview: its og_card_<page> words or the image.
 // With --build (the pages workflow, and check-docs.sh when the packages are installed) it also
 // builds the site with every borrowed English text marked (I18N_MARK=1, eleventy.config.mjs) and
@@ -49,17 +50,23 @@ const registry = path.join(site, '_data/languages.yml')
 const codes = []
 const published = []
 const pagesOf = {}
+const names = {}
 if (!existsSync(registry)) problems.push('site/_data/languages.yml is missing')
 else {
   let code = null
   for (const line of readFileSync(registry, 'utf8').split('\n')) {
     const c = line.match(/^- code: (\w+)/)
     if (c) codes.push((code = c[1]))
+    const n = line.match(/^ {2}name: (.+)$/)
+    if (n && code) names[code] = n[1].trim()
     const p = line.match(/^ {2}pages: \[(.*)\]/)
     if (p && code) pagesOf[code] = p[1].split(',').map((x) => x.trim())
     if (/^ {2}published: true\b/.test(line) && code) published.push(code)
   }
 }
+// The order (owner, 2026-11-11): English first, then by each language's own name.
+const sorted = [...codes.slice(1)].sort((a, b) => names[a].localeCompare(names[b], 'en'))
+if (codes[0] !== 'en' || codes.slice(1).join() !== sorted.join()) problems.push(`site/_data/languages.yml: English first, then by own name: en, ${sorted.join(', ')}`)
 // Each published language's link previews: its words (og_card_<page>) and the image og.mjs made.
 for (const c of published) {
   for (const id of pagesOf[c] ?? []) {

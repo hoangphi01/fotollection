@@ -10,7 +10,9 @@
 #   guide        the manual it shows (docs/, ADR-0031), for a language with the manual page
 #   published    false keeps it out of the build, the menu, hreflang and the sitemap until its
 #                words are done (scripts/check-site-i18n.mjs --build)
-# A new language: a block here and its words in i18n/<code>.yml.
+# Order (owner, 2026-11-11): English first, the international one, then by each language's own
+# name (Čeština, Deutsch, Magyar, Polski, Tiếng Việt); the menu, hreflang and sitemap follow it.
+# A new language: a block here, in that order, and its words in i18n/<code>.yml.
 - code: en
   date_format: "%-d %b %Y"
   name: English
@@ -22,23 +24,12 @@
   guide: USER_GUIDE.md
   support: card
   published: true
-- code: vi
-  date_format: "%d/%m/%Y"
-  name: Tiếng Việt
-  html_lang: vi
-  og_locale: vi_VN
-  prefix: /vi
-  assets: vi
-  pages: [home, download, performance, manual, story, wiki, code-signing]
-  guide: USER_GUIDE.vi.md
-  support: vietqr
-  published: true
-- code: hu
-  date_format: "%Y. %m. %d."
-  name: Magyar
-  html_lang: hu
-  og_locale: hu_HU
-  prefix: /hu
+- code: cs
+  date_format: "%-d. %-m. %Y"
+  name: Čeština
+  html_lang: cs
+  og_locale: cs_CZ
+  prefix: /cs
   assets: en
   pages: [home, download]
   support: card
@@ -53,6 +44,16 @@
   pages: [home, download]
   support: card
   published: true
+- code: hu
+  date_format: "%Y. %m. %d."
+  name: Magyar
+  html_lang: hu
+  og_locale: hu_HU
+  prefix: /hu
+  assets: en
+  pages: [home, download]
+  support: card
+  published: true
 - code: pl
   date_format: "%d.%m.%Y"
   name: Polski
@@ -63,13 +64,14 @@
   pages: [home, download]
   support: card
   published: true
-- code: cs
-  date_format: "%-d. %-m. %Y"
-  name: Čeština
-  html_lang: cs
-  og_locale: cs_CZ
-  prefix: /cs
-  assets: en
-  pages: [home, download]
-  support: card
+- code: vi
+  date_format: "%d/%m/%Y"
+  name: Tiếng Việt
+  html_lang: vi
+  og_locale: vi_VN
+  prefix: /vi
+  assets: vi
+  pages: [home, download, performance, manual, story, wiki, code-signing]
+  guide: USER_GUIDE.vi.md
+  support: vietqr
   published: true
