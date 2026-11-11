@@ -2445,7 +2445,7 @@ export type UpdateCheck = {
  *  Flatpak by itself; then the app never asks GitHub (Flathub forbids an app updating itself).
  */
 export type UpdateSource = 
-/**  The installers from the project's releases (`.dmg`, `.msi`, `.deb`, AppImage). */
+/**  The installers from the project's releases (`.dmg`, `.msi`, `.deb`, the `AppImage`). */
 "releases" | 
 /**  A Flatpak: its software centre (Flathub) brings each new version. */
 "softwareCentre";
