@@ -262,6 +262,9 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .button.primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); }
 .button.primary:hover { filter: brightness(0.92); background: var(--brand); }
 .shot.hero-shot { margin-top: 40px; }
+/* Under the keynote video (owner, 2026-11-11), the makeover's frame opens its own section. */
+.makeover-section .shot.hero-shot { margin-top: 0; }
+.makeover-section { padding-top: 8px; }
 
 /* Screenshots */
 .shot { margin: 0; }
