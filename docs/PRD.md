@@ -1197,6 +1197,13 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 - **Rust first (ADR-0044):** drawn in `render.rs` with the stamp's text path (`stamp.rs`, the bundled fonts), at the print's DPI; tests `fr_121_*` that it is drawn when on, not when off, at the same physical size on two print sizes, and never under the date stamp.
 - **As built (2026-11-11, `credit.rs`):** the words `fotollection.org` in Inter at an em of 1.6 mm on the print (letters about 1.2 mm tall). The plan places it (`RenderPlan::credit`), so the preview shows it as it prints: on the 3 mm border, centred under the photo and aligned to its right edge, in a grey from the paper's colour; in the info frame's bar under the logo; on a collage sheet once (never once a photo), under a postcard's stamp box or on the paper under the lower photo; otherwise in the photo's bottom corner away from the date stamp (then the other corners), half-clear white with a soft shadow, kept clear of the stamp and of any face the best-shot analysis found (when the photo was analysed and not turned since). Where nothing is free it is left out. The switch is *Settings → General → Prints*, kept per machine (settings v19).
 
+### FR-122 — A warm gradient behind the app's chrome
+
+**P2 (owner's request 2026-11-11, from the landing page's keynote: "a soft brown gradient looks richer than one flat brown").** The app's own surfaces (the sidebar, the side panels, the title bar), in the dark theme first, take a soft gradient of the logo's wood, as the keynote's dark stage does, instead of one flat brown.
+
+- **Photos stay on neutral ground** (STYLE_RULE §4, owner 2026-11-01): the stage, the grid and every surface right around a photo keep a chroma of 0.01 or less; only the chrome around them is warm.
+- **Shown first:** two or three variants on the style board for the owner to choose, both themes, before any code; the depth tokens (FR-099) and the measures unchanged.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

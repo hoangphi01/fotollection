@@ -210,6 +210,7 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-119 | Smooth on ARM, RISC-V tried: a Windows ARM64 build first (today emulated), every budget measured on a Raspberry Pi 5, an M-series Mac and a Snapdragon laptop, SIMD only where measured; riscv64 Linux cross-built and smoke-tested, experimental until a real board meets the budgets; v0.15.x, RISC-V later (owner, 2026-11-09) |
 | FR-120 | Turn the print size: a button and a key lay a print size flat or upright for a photo, so a portrait photo can be cropped across a 15 × 5 strip; kept per photo, in every place the size shows; v0.14.1 (owner, 2026-11-10) |
 | FR-121 | A small "fotollection.org" on each print, on by default, off with one switch in Settings; measured in millimetres, in the border, frame or a postcard's back first; never on shared exports; v0.14.1 (owner, 2026-11-10) |
+| FR-122 | A warm gradient of the logo's wood behind the app's chrome (sidebar, panels, title bar), dark theme first, photos kept on neutral ground; variants on the style board first; v0.14.1 (owner, 2026-11-11) |
 | FR-109 | A welcome screen on the first launch: five pages (welcome, modes, choose, make it yours, print), Next, a *Show at every start* tick and Start; v0.13.1 |
 | FR-108 | Photobooth with the computer's own camera (the Mac's webcam): countdown, a strip or sheet to print, offline; later |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
