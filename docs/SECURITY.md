@@ -129,6 +129,8 @@ Layer 4: SAFE RENDERING (UI)
 
 ## 5. Privacy
 
+**What privacy means here (owner, 2026-11-11):** never collecting a person's data, that is no name, address, nationality, photos, contacts or anything that identifies someone. Essential, anonymous services that make something work are not a breach: on the website, the visitor's country read from the IP (at the edge, not stored) to serve the right language, and anonymous visit counts. The rules below apply that to the app.
+
 - **Zero network by default** ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)). No telemetry, no crash upload. The only request is the update check: on a click on *Check for updates*, and once at start unless *Check for updates when the app starts* is off in Settings → Updates (FR-103, on by default from v0.13.0, the owner's decision while the app still has faults): one GET of GitHub's latest release, nothing about the user or the photos, nothing downloaded by itself; the minimum safe version it reads is plain text shown as text, never HTML; *Report a problem* only opens a fixed page in the browser ([§2](#2-tauri-hardening)). CI asserts that no networking crate is linked into the core.
 - **The public privacy policy** is on the website's [code signing policy page](https://fotollection.org/code-signing/#privacy) (`site/_includes/code-signing.html`), as SignPath Foundation requires. It must match this section and [FR-061](PRD.md#fr-061--check-for-updates): change both together.
 - Reverse geocoding uses a bundled dataset, so coordinates never leave the device ([ADR-0003](adr/0003-offline-geocoding-geonames.md)).
