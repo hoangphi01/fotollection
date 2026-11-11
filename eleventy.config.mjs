@@ -83,6 +83,15 @@ export default function (eleventyConfig) {
     if (code in value) return value[code]
     return process.env.I18N_MARK === '1' && typeof value.en === 'string' ? `\u2063data\u2062${value.en}\u2064` : value.en
   })
+  // `{{ t.kn_1 | keynote_line }}`: a keynote headline as HTML, built from our own words
+  // (site/_data/keynote.yml): the text escaped, *…* as the accent, {dm} and {rossmann} as the
+  // stores' marks inline (site/_includes/logos). Never applied to anything a visitor gives.
+  const escape = (v) => `${v}`.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
+  const logo = (name) => readFileSync(path.join(SITE, '_includes/logos', `${name}.svg`), 'utf8').trim()
+  eleventyConfig.addFilter('keynote_line', (value) =>
+    escape(value ?? '')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+      .replace(/\{(dm|rossmann)\}/g, (_, name) => `<span class="keynote-logo">${logo(name)}</span>`))
   // `{{ 'manual' | url_for: pg.lang }}`: a page's path in a language (eleventy.registry.mjs).
   eleventyConfig.addFilter('url_for', (id, code) => urlFor(id, code))
   // `markdownify` as Jekyll's kramdown did for these pages: raw HTML kept, `{#id}` after a

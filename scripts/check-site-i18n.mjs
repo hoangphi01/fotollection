@@ -111,7 +111,8 @@ const read = (code) => {
   }
   return keys
 }
-const marks = (text) => [...text.matchAll(/\[[a-z]+\]/g)].map((m) => m[0]).sort().join(' ')
+// A text's placeholders: `[n]`, and `{dm}` / `{rossmann}`, the stores' marks in the keynote's lines.
+const marks = (text) => [...text.matchAll(/\[[a-z]+\]|\{[a-z]+\}/g)].map((m) => m[0]).sort().join(' ')
 if (files.includes('en')) {
   const en = read('en')
   for (const c of published.filter((x) => x !== 'en' && files.includes(x))) {

@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# The landing page's keynote video (site/_includes/keynote.html, site/README.md): when each
+# headline shows, in seconds of the 20 s video. The words are the `kn_*` keys of each
+# language's i18n file: *…* is the accent, {dm} and {rossmann} the stores' marks. The video is
+# rendered without them (site/screenshots/keynote.mjs reads this same file), and the page lays
+# them over it in its own language, so the two never drift.
+- { from: 0.25, to: 2.5, key: kn_1 }
+- { from: 2.5, to: 5.5, key: kn_2 }
+- { from: 5.5, to: 7.6, key: kn_3 }
+- { from: 7.6, to: 9.5, key: kn_4, sub: kn_4_sub }
+- { from: 9.5, to: 13.5, key: kn_5, sub: kn_5_sub }
+- { from: 13.5, to: 15.5, key: kn_6 }
+- { from: 15.5, to: 17.5, key: kn_7 }
+- { from: 17.5, to: 19.6, key: kn_8 }

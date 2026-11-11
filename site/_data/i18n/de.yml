@@ -633,3 +633,17 @@ og_card_code_signing:
 
 man_short_note: "Das ist die Kurzanleitung. Das vollständige Handbuch, mit jedem Detail, gibt es auf Englisch:"
 man_short_link: "Zum vollständigen Handbuch"
+# The landing page's keynote video (site/_data/keynote.yml): *…* is the accent, {dm} and {rossmann} the stores' marks.
+kn_1: "Jedes Foto *von der Reise.*"
+kn_2: "Die besten. Mit Datum. *In Farbe.*"
+kn_3: "Zwei Fotos. *Ein Abzug.*"
+kn_4: "*Halber* Preis."
+kn_4_sub: "Ein 10 × 15-Abzug trägt zwei Fotos in 10 × 7,5."
+kn_5: "Dein Foto. *Deine Postkarte.*"
+kn_5_sub: "10 × 15, ein Format, das die Deutsche Post nimmt."
+kn_6: "Jedes Format bei {dm} und {rossmann}"
+kn_7: "Exportieren. Einstecken. *Drucken.*"
+kn_8: "Offline. *Kostenlos* auf jedem Computer."
+kn_label: "Fotollection in 20 Sekunden: jedes Foto der Reise, die besten mit Datum und in Farbe, zwei Fotos auf einem Abzug, dein Foto als Postkarte, jedes Format bei dm und Rossmann, dann exportieren und drucken. Kostenlos und offline auf macOS, Windows und Linux."
+kn_pause: "Video anhalten"
+kn_play: "Video abspielen"

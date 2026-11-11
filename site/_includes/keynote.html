@@ -1,0 +1,19 @@
+{%- comment %} The keynote video (owner, 2026-11-11, under the hero): 20 s of the real app, rendered frame by frame by site/screenshots/keynote.mjs, a desktop and a phone cut, no sound. The headlines are this page's own words laid over it (`kn_*`, times in _data/keynote.yml), so the video serves every language. assets/js/keynote.js loads one file (the cut for the screen, AV1 or else H.264) only once the video comes into view, plays it while it is seen, and keeps the words in time; with reduced motion it waits for the play button; without script the poster and the first line stand. {% endcomment -%}
+{%- assign video = '/assets/video/' | relative_url -%}
+<section class="section keynote-section" id="keynote">
+  <div class="wrap">
+    <figure class="keynote" data-keynote data-src="{{ video }}">
+      <div class="keynote-stage">
+        <video class="keynote-video" muted playsinline loop preload="none" aria-hidden="true" poster="{{ video }}keynote-desktop-poster.webp" data-poster-mobile="{{ video }}keynote-mobile-poster.webp"></video>
+        <div class="keynote-lines">
+          {%- for line in site.data.keynote %}
+          <p class="keynote-line" data-from="{{ line.from }}" data-to="{{ line.to }}"><span class="keynote-h">{{ t[line.key] | keynote_line }}</span>{% if line.sub %}<span class="keynote-sub">{{ t[line.sub] }}</span>{% endif %}</p>
+          {%- endfor %}
+        </div>
+        <button class="pill keynote-toggle" type="button" hidden aria-label="{{ t.kn_pause }}" data-pause="{{ t.kn_pause }}" data-play="{{ t.kn_play }}"><span class="keynote-pause">{% include icons/pause.svg %}</span><span class="keynote-play">{% include icons/play.svg %}</span></button>
+      </div>
+      <figcaption class="sr-only">{{ t.kn_label }}</figcaption>
+    </figure>
+  </div>
+  <script src="{{ '/assets/js/keynote.js' | relative_url }}" defer></script>
+</section>

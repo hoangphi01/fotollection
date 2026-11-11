@@ -12,6 +12,8 @@ import { readFile, mkdir, stat } from 'node:fs/promises'
 import { spawn } from 'node:child_process'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { readFileSync } from 'node:fs'
+import yaml from 'js-yaml'
 import { chromium } from 'playwright'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
@@ -36,6 +38,16 @@ const files = {
   '/brand/': path.join(root, 'ui/public/brand/'),
   '/logos/': path.join(root, 'site/_includes/logos/'),
 }
+
+// The headlines and their times, the same as the landing page lays over the video
+// (site/_data/keynote.yml), in English for review.
+const en = yaml.load(readFileSync(path.join(root, 'site/_data/i18n/en.yml'), 'utf8'))
+const LINES = yaml.load(readFileSync(path.join(root, 'site/_data/keynote.yml'), 'utf8')).map((l) => ({
+  from: l.from,
+  to: l.to,
+  text: en[l.key],
+  sub: l.sub ? en[l.sub] : undefined,
+}))
 
 const run = (cmd, argv, input) =>
   new Promise((resolve, reject) => {
@@ -63,6 +75,7 @@ for (const name of cuts.length ? cuts : ['desktop', 'mobile']) {
     if (file.endsWith('.svg')) body = Buffer.from(body.toString().replaceAll('var(--bg)', 'none').replaceAll('currentColor', '#fffaee'))
     return route.fulfill({ body, contentType: TYPES[path.extname(file)] ?? 'application/octet-stream' })
   })
+  await page.addInitScript((lines) => { window.KEYNOTE = lines }, LINES)
   await page.goto(`http://keynote.localhost/keynote.html?cut=${name}&text=${text ? 1 : 0}`)
   await page.evaluate(() => window.ready)
 

@@ -633,3 +633,17 @@ og_card_code_signing:
 
 man_short_note: "Toto je stručný průvodce. Celá příručka se všemi podrobnostmi je v angličtině:"
 man_short_link: "Přečíst celou příručku"
+# The landing page's keynote video (site/_data/keynote.yml): *…* is the accent, {dm} and {rossmann} the stores' marks.
+kn_1: "Každá fotka *z cesty.*"
+kn_2: "Ty nejlepší. S datem. *V barvách.*"
+kn_3: "Dvě fotky. *Jeden tisk.*"
+kn_4: "*Poloviční* cena."
+kn_4_sub: "Na jeden tisk 10 × 15 se vejdou dvě fotky 10 × 7,5."
+kn_5: "Tvoje fotka. *Tvoje pohlednice.*"
+kn_5_sub: "10 × 15, velikost pohlednice."
+kn_6: "Každý formát v {dm} a {rossmann}"
+kn_7: "Export. Zapojit. *Tisk.*"
+kn_8: "Offline. *Zdarma* na každém počítači."
+kn_label: "Fotollection za 20 sekund: každá fotka z cesty, ty nejlepší s datem a v barvách, dvě fotky na jednom tisku, tvoje fotka jako pohlednice, každý formát v dm a Rossmannu, pak export a tisk. Zdarma a offline na macOS, Windows a Linuxu."
+kn_pause: "Pozastavit video"
+kn_play: "Přehrát video"

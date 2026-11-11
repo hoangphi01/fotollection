@@ -207,19 +207,13 @@
         return item
       })
 
-      // The words, with their times. In the page they are HTML laid over the video, so the
-      // video ships with text=0 and the same timings drive the overlay.
-      // Parts: a plain string, { em } for the accent, { logo } for dm's and Rossmann's marks.
-      const LINES = [
-        { from: 0.25, to: 2.5, h1: ['Every photo ', { em: 'from the trip.' }] },
-        { from: 2.5, to: 5.5, h1: ['The best ones. Dated. ', { em: 'In colour.' }] },
-        { from: 5.5, to: 7.6, h1: ['Two photos. ', { em: 'One print.' }] },
-        { from: 7.6, to: 9.5, h1: [{ em: 'Half' }, ' the price.'], sub: 'A 10 × 15 print holds two 10 × 7.5 photos.' },
-        { from: 9.5, to: 13.5, h1: ['Your photo. ', { em: 'Your postcard.' }], sub: '10 × 15, a size Deutsche Post takes.' },
-        { from: 13.5, to: 15.5, h1: ['Every size at ', { logo: 'dm' }, ' and ', { logo: 'rossmann' }] },
-        { from: 15.5, to: 17.5, h1: ['Export. Plug in. ', { em: 'Print.' }] },
-        { from: 17.5, to: 19.6, h1: ['Offline. ', { em: 'Free' }, ' for every desktop.'] },
-      ].map((line) => {
+      // The words, with their times, from site/_data/keynote.yml through keynote.mjs (window.KEYNOTE):
+      // the page lays the same lines over the video in its own language, so the video ships with
+      // text=0 and both keep one timing. In a line, *…* is the accent and {dm}, {rossmann} the marks.
+      const parts = (text) =>
+        text.split(/(\*[^*]+\*|\{[a-z]+\})/).filter(Boolean).map((p) =>
+          p.startsWith('*') ? { em: p.slice(1, -1) } : p.startsWith('{') ? { logo: p.slice(1, -1) } : p)
+      const LINES = window.KEYNOTE.map((l) => ({ from: l.from, to: l.to, h1: parts(l.text), sub: l.sub })).map((line) => {
         const e = el('div', 'headline', { top: px(CUT === 'mobile' ? H * 0.06 : H * 0.05) }, document.body)
         const h1 = el('h1', '', {}, e)
         for (const part of line.h1) {

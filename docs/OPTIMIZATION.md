@@ -105,6 +105,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [FR-079](PRD.md#fr-079--colour-adjustments) (v0.14.0) | The Looks card's tiles: one look's tile of a photo, cut from its kept small source, table applied, JPEG encoded | ≤ 3 ms a tile, ≤ 40 ms the card | `measure_look_tiles` (0.68 ms p50, 0.72 p95; 5.4 ms the eight), RESULT §34 |
 | [FR-112](PRD.md#fr-112--highlight-recovery-for-raw) (planned v0.14.x) | Highlight recovery inside the RAW develop, 24 MP | Target, not yet measured: ≤ 5 ms when nothing is clipped, ≤ 60 ms at worst; ΔE2000 to the truth better than today's fade | `highlights_bench` (session 10c) and `raw_phases` |
 | [FR-111](PRD.md#fr-111--lossless-export-16-bit-or-32-bit-float-tiff-pro) (planned v0.15.0) | Lossless export of one 24 MP photo to TIFF 16-bit or 32-bit float | Target, not yet measured: set before the work starts, with the file size and memory per photo in flight | Planned with FR-111 |
+| Website (FR-079, 2026-11-11) | The landing page's keynote video: what a visit downloads for it | Nothing until it scrolls into view, then one file only (the cut for the screen, AV1 or else H.264), each ≤ 1.5 MB, the poster ≤ 150 KB | Measured 2026-11-11: desktop 960 KB AV1 / 1.2 MB H.264, phone 699 / 884 KB, posters 59 / 58 KB; Playwright on Chromium and WebKit: no video byte at load, one file once seen |
 
 ### Reference machines
 

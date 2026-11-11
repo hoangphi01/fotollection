@@ -307,6 +307,34 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .key-chips kbd { font: 700 1rem/1 ui-monospace, monospace; color: var(--brand); }
 /* Performance page: a heading, then one section per measurement and the explanations. */
 .kicker { margin: 0 0 10px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+/* The keynote video under the hero (keynote.html, keynote.js): the stage keeps the cut's shape
+   (16:9, a phone's 4:5), the headlines are this page's words in the band the video leaves at
+   its top, sized to the stage as keynote.html sizes them. The video is always on its dark wood,
+   so its words keep their own colours in both themes. */
+.keynote-section { padding-top: 8px; }
+.keynote { margin: 0; }
+.keynote-stage { position: relative; aspect-ratio: 16 / 9; container-type: inline-size; overflow: hidden; border-radius: 14px; border: 1px solid var(--line); box-shadow: var(--shadow); background: #1e1712; }
+.keynote-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.keynote-lines { position: absolute; inset: 0; pointer-events: none; }
+.keynote-line { position: absolute; left: 0; right: 0; top: 2.8cqw; margin: 0; padding: 0 6%; text-align: center; opacity: 0; color: #fffaee; }
+.keynote-line:first-child { opacity: 1; }
+.keynote-live .keynote-line { opacity: 0; }
+.keynote-h { display: block; font: 800 3.85cqw / 1.1 'Bitter', serif; letter-spacing: -0.01em; }
+.keynote-h em { font-style: normal; color: #f6c98b; }
+.keynote-sub { display: block; margin-top: 0.5em; font-size: 1.7cqw; color: #e9dfcf; }
+.keynote-logo { --bg: transparent; display: inline-block; height: 0.78em; vertical-align: -0.06em; margin: 0 0.12em; color: #fffaee; }
+/* The marks take the headline's cream, as in the video, not the page's brand colour. */
+.keynote-logo .inline-logo { height: 100%; width: auto; vertical-align: top; color: inherit; }
+.keynote-toggle { position: absolute; right: 14px; bottom: 14px; width: 40px; height: 40px; padding: 0; justify-content: center; }
+.keynote-toggle .keynote-pause { display: none; }
+.keynote-toggle.playing .keynote-pause { display: inline-flex; }
+.keynote-toggle.playing .keynote-play { display: none; }
+@media (max-width: 640px) {
+  .keynote-stage { aspect-ratio: 4 / 5; }
+  .keynote-line { top: 7.5cqw; }
+  .keynote-h { font-size: 7.2cqw; }
+  .keynote-sub { font-size: 3.6cqw; }
+}
 /* The short guide's line to the full manual in English (manual.html), under the lead. */
 .short-note { margin-top: 18px; color: var(--ink-2); }
 .section.perf-head { padding-bottom: 24px; } /* also on wide screens, where .section gets 96px */

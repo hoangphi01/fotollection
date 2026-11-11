@@ -633,3 +633,17 @@ og_card_code_signing:
 
 man_short_note: "To jest krótki przewodnik. Pełna instrukcja, z każdym szczegółem, jest po angielsku:"
 man_short_link: "Przeczytaj pełną instrukcję"
+# The landing page's keynote video (site/_data/keynote.yml): *…* is the accent, {dm} and {rossmann} the stores' marks.
+kn_1: "Każde zdjęcie *z podróży.*"
+kn_2: "Najlepsze. Z datą. *W kolorze.*"
+kn_3: "Dwa zdjęcia. *Jedna odbitka.*"
+kn_4: "*Połowa* ceny."
+kn_4_sub: "Na jednej odbitce 10 × 15 mieszczą się dwa zdjęcia 10 × 7,5."
+kn_5: "Twoje zdjęcie. *Twoja pocztówka.*"
+kn_5_sub: "10 × 15, rozmiar pocztówki."
+kn_6: "Każdy rozmiar w {dm} i {rossmann}"
+kn_7: "Eksport. Podłącz. *Drukuj.*"
+kn_8: "Offline. *Za darmo* na każdym komputerze."
+kn_label: "Fotollection w 20 sekund: każde zdjęcie z podróży, najlepsze z datą i w kolorze, dwa zdjęcia na jednej odbitce, twoje zdjęcie jako pocztówka, każdy rozmiar w dm i Rossmannie, potem eksport i druk. Za darmo i offline na macOS, Windows i Linuksie."
+kn_pause: "Zatrzymaj wideo"
+kn_play: "Odtwórz wideo"
