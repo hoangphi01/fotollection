@@ -1,0 +1,314 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<!-- The landing page's keynote video, rendered frame by frame by keynote.mjs from the real app's screenshots in site/assets/img. Never a mock-up: every picture is a crop of a screenshot; only the motion is added here. ?cut=desktop|mobile&text=0|1&t=<seconds> -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face { font-family: 'Bitter'; font-weight: 100 900; src: url('/fonts/bitter-latin-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+2000-206F; }
+      @font-face { font-family: 'Bitter'; font-weight: 100 900; src: url('/fonts/bitter-latin-ext-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0100-02AF, U+1E00-1EFF; }
+      @font-face { font-family: 'Be Vietnam Pro'; font-weight: 400; src: url('/fonts/be-vietnam-pro-latin-400-normal.woff2') format('woff2'); }
+      @font-face { font-family: 'Be Vietnam Pro'; font-weight: 600; src: url('/fonts/be-vietnam-pro-latin-600-normal.woff2') format('woff2'); }
+      * { box-sizing: border-box; margin: 0; }
+      :root { --bg: #1e1712; }
+      html, body { width: 100%; height: 100%; overflow: hidden; }
+      /* The wood of the site's dark theme (showcase.html). */
+      body { font-family: 'Be Vietnam Pro', sans-serif; color: #fffaee; position: relative; background-color: #1e1712; background-image: radial-gradient(circle at 15% -10%, #6b4426 0, transparent 55%), radial-gradient(circle at 100% 100%, #3b2a1c 0, transparent 60%); }
+      .layer { position: absolute; inset: 0; overflow: hidden; opacity: 0; }
+      .world { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+      .plate { position: absolute; left: 0; top: 0; border-radius: 14px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08); }
+      .crop { position: absolute; background-repeat: no-repeat; }
+      .paper { position: absolute; background: #fafbf8; border-radius: 4px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55); }
+      .mask { position: absolute; background: #fafbf8; }
+      .ring { position: absolute; border: 3px solid #f2ae6b; border-radius: 9px; box-shadow: 0 0 0 6px rgba(242, 174, 107, 0.22); }
+      .headline { position: absolute; left: 0; right: 0; text-align: center; opacity: 0; padding: 0 6%; }
+      .headline h1 { font: 800 var(--h1) / 1.1 'Bitter', serif; letter-spacing: -0.01em; }
+      .headline h1 em { font-style: normal; color: #f6c98b; }
+      .headline p { margin-top: 0.5em; font-size: var(--sub); color: #e9dfcf; }
+      .headline .logo { height: 0.78em; width: auto; vertical-align: -0.06em; margin: 0 0.12em; filter: brightness(0) invert(0.96); }
+      .end { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5em; }
+      .end img { border-radius: 22%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+      .end .name { font: 700 var(--name) 'Bitter', serif; }
+      .end .systems { display: flex; gap: 1.1em; margin-top: 0.4em; font-size: var(--sys); font-weight: 600; color: #e9dfcf; }
+      .end .system { display: inline-flex; align-items: center; gap: 0.4em; }
+      .end .system img { width: 1.15em; height: 1.15em; border-radius: 0; box-shadow: none; }
+      .blur { position: absolute; inset: -60px; background-size: cover; background-position: center; filter: blur(22px) brightness(0.4) saturate(1.1); }
+    </style>
+  </head>
+  <body>
+    <script>
+      const params = new URLSearchParams(location.search)
+      const CUT = params.get('cut') === 'mobile' ? 'mobile' : 'desktop'
+      const TEXT = params.get('text') !== '0'
+      const W = innerWidth
+      const H = innerHeight
+      const DURATION = 20
+      // Where the pictures go; the band above is the headline's, in the video or laid over it by the page.
+      const AREA = CUT === 'mobile' ? { x: W * 0.05, y: H * 0.24, w: W * 0.9, h: H * 0.72 } : { x: W * 0.06, y: H * 0.23, w: W * 0.88, h: H * 0.73 }
+      document.documentElement.style.setProperty('--h1', `${CUT === 'mobile' ? W * 0.072 : H * 0.068}px`)
+      document.documentElement.style.setProperty('--sub', `${CUT === 'mobile' ? W * 0.036 : H * 0.03}px`)
+      document.documentElement.style.setProperty('--name', `${H * 0.07}px`)
+      document.documentElement.style.setProperty('--sys', `${CUT === 'mobile' ? W * 0.045 : H * 0.038}px`)
+
+      // The site's curves (site.css --ease-enter, --ease-exit, --ease-move).
+      const bezier = (x1, y1, x2, y2) => (x) => {
+        if (x <= 0) return 0
+        if (x >= 1) return 1
+        let u = x
+        for (let i = 0; i < 8; i++) {
+          const cx = 3 * x1 * u * (1 - u) ** 2 + 3 * x2 * u * u * (1 - u) + u ** 3 - x
+          const d = 3 * x1 * (1 - u) ** 2 + 6 * (x2 - x1) * u * (1 - u) + 3 * (1 - x2) * u * u
+          if (Math.abs(d) < 1e-6) break
+          u = Math.min(1, Math.max(0, u - cx / d))
+        }
+        return 3 * y1 * u * (1 - u) ** 2 + 3 * y2 * u * u * (1 - u) + u ** 3
+      }
+      const enter = bezier(0.05, 0.7, 0.1, 1)
+      const exit = bezier(0.3, 0, 0.8, 0.15)
+      const move = bezier(0.2, 0, 0, 1)
+      const ramp = (t, a, b, ease = (x) => x) => ease(Math.min(1, Math.max(0, (t - a) / (b - a))))
+      const lerp = (a, b, k) => a + (b - a) * k
+      const lerpRect = (a, b, k) => ({ x: lerp(a.x, b.x, k), y: lerp(a.y, b.y, k), w: lerp(a.w, b.w, k), h: lerp(a.h, b.h, k) })
+      const grow = (r, f) => ({ x: r.x - r.w * f, y: r.y - r.h * f, w: r.w * (1 + 2 * f), h: r.h * (1 + 2 * f) })
+      // A layer seen from `a` to `b`, with a cross-fade of `f` seconds at each end.
+      const seen = (t, a, b, f = 0.3) => Math.min(ramp(t, a - f / 2, a + f / 2), 1 - ramp(t, b - f / 2, b + f / 2))
+
+      const el = (tag, cls, style = {}, parent) => {
+        const e = document.createElement(tag)
+        if (cls) e.className = cls
+        Object.assign(e.style, style)
+        parent?.append(e)
+        return e
+      }
+      const px = (n) => `${n}px`
+      const img = (name) => `/img/${name}.webp`
+      // A camera: shows `r` (in the screenshot's pixels) fitted to the area, never past 1.6×.
+      const camera = (world, r, edges = true) => {
+        const area = AREA
+        const s = Math.min(area.w / r.w, area.h / r.h, 1.6)
+        // A window: never past its edge while it is wider (taller) than the area. A sheet floats free.
+        const keep = (t, start, size, full) => (edges && s * full >= size ? Math.min(start, Math.max(start + size - s * full, t)) : t)
+        const tx = keep(area.x + area.w / 2 - s * (r.x + r.w / 2), area.x, area.w, world.offsetWidth)
+        const ty = keep(area.y + area.h / 2 - s * (r.y + r.h / 2), area.y, area.h, world.offsetHeight)
+        world.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`
+      }
+      const layer = () => el('div', 'layer', {}, document.body)
+      // A window seen up close stays inside the area, under the headline's band.
+      const CLIP = `inset(${AREA.y}px ${W - AREA.x - AREA.w}px ${H - AREA.y - AREA.h}px ${AREA.x}px round 16px)`
+      const clipped = () => {
+        const l = layer()
+        l.style.clipPath = CLIP
+        return l
+      }
+      const world = (parent, w = 1600, h = 1000) => el('div', 'world', { width: px(w), height: px(h) }, parent)
+      const plate = (parent, name) => {
+        const p = el('img', 'plate', { width: '1600px', height: '1000px' }, parent)
+        p.src = img(name)
+        return p
+      }
+      // A piece of a screenshot, at its own place.
+      const crop = (parent, name, r) =>
+        el('div', 'crop', { left: px(r.x), top: px(r.y), width: px(r.w), height: px(r.h), backgroundImage: `url(${img(name)})`, backgroundSize: '1600px 1000px', backgroundPosition: `${-r.x}px ${-r.y}px` }, parent)
+      const place = (e, x, y) => Object.assign(e.style, { left: px(x), top: px(y) })
+
+      // 1. Every photo of the trip: the gallery, pulled back.
+      const L1 = clipped()
+      const W1 = world(L1)
+      plate(W1, 'grid-en-dark')
+      const GRID_IN = { x: 340, y: 100, w: 800, h: 560 }
+      const FULL = { x: 0, y: 0, w: 1600, h: 1000 }
+
+      // 2. The quick cuts: best shot, the date stamp, a look.
+      const L2 = clipped()
+      const L2a = el('div', 'layer', {}, L2)
+      const W2a = world(L2a)
+      plate(W2a, 'groups-en-dark')
+      const L2b = el('div', 'layer', {}, L2)
+      const W2b = world(L2b)
+      plate(W2b, 'stamp-en-dark')
+      // The photo spans x 274–992, y 158–636 of the screenshot: both views stay inside it, at the
+      // area's shape, so no dark preview background shows beside it.
+      const STAMP_FROM = CUT === 'mobile' ? { x: 394, y: 158, w: 478, h: 478 } : { x: 274, y: 230, w: 718, h: 335 }
+      // The camera stops at 1.6×, so the last view is the photo's corner that holds the stamp at
+      // that scale: 704 × 329 on the desktop, 405 × 405 on a phone.
+      const STAMP_TO = CUT === 'mobile' ? { x: 587, y: 231, w: 405, h: 405 } : { x: 281, y: 308, w: 704, h: 329 }
+      const L2c = el('div', 'layer', {}, L2)
+      const W2c = world(L2c, 1200, 1600)
+      const LOOKS = ['original', 'warm-film', 'cool', 'mono-soft']
+      const lookImgs = LOOKS.map((name) => {
+        const i = el('img', 'plate', { width: '1200px', height: '1600px', borderRadius: '10px' }, W2c)
+        i.src = `/img/looks/${name}.webp`
+        return i
+      })
+
+      // 3–4. One sheet: two photos come together, then it turns into a postcard.
+      const SHEET = { x: 170, y: 157, w: 927, h: 618 }
+      const LEFT = { x: 232, y: 237, w: 339, h: 459 }
+      const RIGHT = { x: 696, y: 237, w: 339, h: 459 }
+      const CUT_LINE = { x: 632, y: 157, w: 3, h: 606 }
+      const L3 = layer()
+      const W3 = world(L3)
+      const flip = el('div', '', { position: 'absolute', inset: 0, transformOrigin: `${SHEET.x + SHEET.w / 2}px ${SHEET.y + SHEET.h / 2}px` }, W3)
+      const collage = el('div', '', { position: 'absolute', inset: 0 }, flip)
+      const paper = el('div', 'paper', { left: px(SHEET.x), top: px(SHEET.y), width: px(SHEET.w), height: px(SHEET.h) }, collage)
+      const cut = crop(collage, 'collage-preview-en-dark', CUT_LINE)
+      cut.style.transformOrigin = 'center top'
+      const left = crop(collage, 'collage-preview-en-dark', LEFT)
+      const right = crop(collage, 'collage-preview-en-dark', RIGHT)
+      const postcard = el('div', '', { position: 'absolute', inset: 0 }, flip)
+      const card = crop(postcard, 'postcard-night-en-dark', SHEET)
+      Object.assign(card.style, { borderRadius: '4px', boxShadow: '0 30px 80px rgba(0, 0, 0, 0.55)' })
+      // The preview's "22 / 35" sits on the sheet's foot: the photo's pixels just above it and the
+      // paper cover it, so only the sheet shows.
+      const patch = crop(postcard, 'postcard-night-en-dark', { x: 585, y: 752, w: 48, h: 12 })
+      place(patch, 585, 764)
+      Object.assign(patch.style, { height: '11px', borderBottomLeftRadius: '0' })
+      el('div', 'mask', { left: '633px', top: '764px', width: '50px', height: '11px' }, postcard)
+      // The message and the address, typed: each row is covered by paper that steps right, one letter at a time.
+      const ROWS = [
+        { top: 378, bottom: 405, end: 792, letters: 11, at: 0.9, dur: 0.6 },
+        { top: 426, bottom: 453, end: 878, letters: 19, at: 1.55, dur: 0.85 },
+        { top: 592, bottom: 618, end: 826, letters: 13, at: 2.5, dur: 0.35 },
+        { top: 639, bottom: 665, end: 892, letters: 21, at: 2.85, dur: 0.4 },
+        { top: 686, bottom: 713, end: 924, letters: 25, at: 3.25, dur: 0.4 },
+      ].map((r) => ({ ...r, mask: el('div', 'mask', { top: px(r.top), height: px(r.bottom - r.top) }, postcard) }))
+
+      // 5. Every size of dm and Rossmann's price list, then Export.
+      const L5 = clipped()
+      const W5 = world(L5)
+      plate(W5, 'manual-size-en-dark')
+      const LIST = { x: 1262, y: 292, w: 330, h: 530 }
+      const EXPORT_AREA = { x: 1250, y: 760, w: 345, h: 230 }
+      const BUTTON = { x: 1282, y: 912, w: 304, h: 34 }
+      const SIZE_ROWS = [437, 472, 543, 579, 614, 650, 792]
+      // The size line above Export ("363.0 MB → ≈ 363.0 MB") reads as noise in a glance: the
+      // panel's own colour covers it, so the button and "Offline · GPS stripped" stand alone.
+      el('div', '', { position: 'absolute', left: '1276px', top: '864px', width: '206px', height: '40px', background: 'rgb(24, 20, 16)', borderRadius: '10px' }, W5)
+      const ring = el('div', 'ring', { left: px(1266), width: px(320), height: px(36) }, W5)
+      const press = crop(W5, 'manual-size-en-dark', BUTTON)
+      press.style.borderRadius = '8px'
+      press.style.transformOrigin = 'center'
+
+      // 6. The end: the name, over the gallery blurred.
+      const L6 = layer()
+      el('div', 'blur', { backgroundImage: `url(${img('grid-en-dark')})` }, L6)
+      const end = el('div', 'end', {}, L6)
+      const mark = el('img', '', { width: px(H * 0.2), height: px(H * 0.2) }, end)
+      mark.src = '/brand/icon-256.png'
+      el('div', 'name', {}, end).textContent = 'Fotollection'
+      // Free on every desktop: the site's own system marks (site/_includes/logos), one after another.
+      const systems = el('div', 'systems', {}, end)
+      const SYSTEMS = [['apple', 'macOS'], ['windows', 'Windows'], ['linux', 'Linux']].map(([logo, name]) => {
+        const item = el('span', 'system', {}, systems)
+        const icon = el('img', '', {}, item)
+        icon.src = `/logos/${logo}.svg`
+        icon.alt = ''
+        item.append(name)
+        return item
+      })
+
+      // The words, with their times. In the page they are HTML laid over the video, so the
+      // video ships with text=0 and the same timings drive the overlay.
+      // Parts: a plain string, { em } for the accent, { logo } for dm's and Rossmann's marks.
+      const LINES = [
+        { from: 0.25, to: 2.5, h1: ['Every photo ', { em: 'from the trip.' }] },
+        { from: 2.5, to: 5.5, h1: ['The best ones. Dated. ', { em: 'In colour.' }] },
+        { from: 5.5, to: 7.6, h1: ['Two photos. ', { em: 'One print.' }] },
+        { from: 7.6, to: 9.5, h1: [{ em: 'Half' }, ' the price.'], sub: 'A 10 × 15 print holds two 10 × 7.5 photos.' },
+        { from: 9.5, to: 13.5, h1: ['Your photo. ', { em: 'Your postcard.' }], sub: '10 × 15, a size Deutsche Post takes.' },
+        { from: 13.5, to: 15.5, h1: ['Every size at ', { logo: 'dm' }, ' and ', { logo: 'rossmann' }] },
+        { from: 15.5, to: 17.5, h1: ['Export. Plug in. ', { em: 'Print.' }] },
+        { from: 17.5, to: 19.6, h1: ['Offline. ', { em: 'Free' }, ' for every desktop.'] },
+      ].map((line) => {
+        const e = el('div', 'headline', { top: px(CUT === 'mobile' ? H * 0.06 : H * 0.05) }, document.body)
+        const h1 = el('h1', '', {}, e)
+        for (const part of line.h1) {
+          if (typeof part === 'string') h1.append(part)
+          else if (part.em) el('em', '', {}, h1).textContent = part.em
+          else {
+            const logo = el('img', 'logo', {}, h1)
+            logo.src = `/logos/${part.logo}.svg`
+            logo.alt = part.logo
+          }
+        }
+        if (line.sub) el('p', '', {}, e).textContent = line.sub
+        if (!TEXT) e.style.display = 'none'
+        return { ...line, e }
+      })
+
+      window.seek = (t) => {
+        // The loop: the end fades back into the first frame, so t = 0 and t = 20 match.
+        L1.style.opacity = Math.max(seen(t, -1, 2.5), ramp(t, 19.4, 20))
+        // It comes back at the opening's view, so the last frame meets the first.
+        camera(W1, t >= 19 ? GRID_IN : lerpRect(GRID_IN, FULL, ramp(t, 0, 2.4, move)))
+
+        L2.style.opacity = seen(t, 2.5, 5.5)
+        L2a.style.opacity = seen(t, 1, 3.5, 0.16)
+        L2b.style.opacity = seen(t, 3.5, 4.5, 0.16)
+        L2c.style.opacity = seen(t, 4.5, 10, 0.16)
+        camera(W2a, lerpRect({ x: 40, y: 200, w: 1540, h: 600 }, { x: 50, y: 285, w: 385, h: 500 }, ramp(t, 2.4, 3.5, move)))
+        camera(W2b, lerpRect(STAMP_FROM, STAMP_TO, ramp(t, 3.4, 4.5, move)))
+        camera(W2c, grow({ x: 0, y: 0, w: 1200, h: 1600 }, ramp(t, 4.4, 5.6) * -0.04))
+        const k = Math.min(LOOKS.length - 1, Math.max(0, (t - 4.5) / 0.25))
+        lookImgs.forEach((i, n) => (i.style.opacity = n === 0 ? 1 : Math.min(1, Math.max(0, (k - n + 1) * 3 - 2))))
+
+        L3.style.opacity = seen(t, 5.5, 13.5)
+        camera(W3, grow(SHEET, lerp(0.07, 0.025, ramp(t, 5.3, 13.5, move))), false)
+        const u = t - 5.5
+        paper.style.opacity = ramp(u, 0, 0.3)
+        paper.style.transform = `scale(${lerp(0.96, 1, ramp(u, 0, 0.5, enter))})`
+        const a = ramp(u, 0.15, 1.15, enter)
+        const b = ramp(u, 0.4, 1.4, enter)
+        left.style.transform = `translate(${lerp(-900, 0, a)}px, ${lerp(60, 0, a)}px) rotate(${lerp(-8, 0, a)}deg)`
+        right.style.transform = `translate(${lerp(900, 0, b)}px, ${lerp(60, 0, b)}px) rotate(${lerp(8, 0, b)}deg)`
+        cut.style.transform = `scaleY(${ramp(u, 1.4, 1.9, move)})`
+        const f = t - 9.5
+        const turned = f >= 0.3
+        const angle = f < 0 ? 0 : turned ? lerp(-90, 0, ramp(f, 0.3, 0.65, enter)) : lerp(0, 90, ramp(f, 0, 0.3, exit))
+        flip.style.transform = `perspective(2400px) rotateY(${angle}deg)`
+        collage.style.display = turned ? 'none' : ''
+        postcard.style.display = turned ? '' : 'none'
+        for (const r of ROWS) {
+          const shown = Math.floor(ramp(f, r.at, r.at + r.dur) * r.letters) / r.letters
+          const x = lerp(666, r.end, shown)
+          Object.assign(r.mask.style, { left: px(x), width: px(Math.max(0, 1070 - x)) })
+        }
+
+        L5.style.opacity = seen(t, 13.5, 17.5)
+        camera(W5, lerpRect(LIST, EXPORT_AREA, ramp(t, 15.4, 16.2, move)))
+        const step = Math.min(SIZE_ROWS.length - 1, Math.max(0, Math.floor((t - 13.8) / 0.24)))
+        const glide = ramp((t - 13.8) % 0.24, 0, 0.14, move)
+        const y = lerp(SIZE_ROWS[Math.max(0, step - 1)], SIZE_ROWS[step], t < 13.8 ? 1 : glide)
+        ring.style.top = px(y - 18)
+        ring.style.opacity = ramp(t, 13.7, 13.9) * (1 - ramp(t, 15.3, 15.5))
+        const p = ramp(t, 16.35, 16.5) - ramp(t, 16.5, 16.75, enter)
+        press.style.transform = `scale(${1 - 0.04 * p})`
+        press.style.boxShadow = `0 0 0 ${lerp(0, 10, ramp(t, 16.4, 17.2))}px rgba(242, 174, 107, ${0.35 * (1 - ramp(t, 16.4, 17.2))})`
+
+        L6.style.opacity = seen(t, 17.5, 30) * (1 - ramp(t, 19.4, 20))
+        end.style.transform = `scale(${lerp(0.94, 1, ramp(t, 17.4, 18.4, enter))})`
+        SYSTEMS.forEach((item, n) => {
+          const k = ramp(t, 18 + n * 0.15, 18.5 + n * 0.15, enter)
+          item.style.opacity = k
+          item.style.transform = `translateY(${lerp(12, 0, k)}px)`
+        })
+
+        for (const line of LINES) {
+          const o = Math.min(ramp(t, line.from, line.from + 0.35), 1 - ramp(t, line.to - 0.25, line.to))
+          line.e.style.opacity = o
+          line.e.style.transform = `translateY(${lerp(14, 0, ramp(t, line.from, line.from + 0.5, enter))}px)`
+        }
+      }
+
+      // Ready once every picture and face is loaded and decoded.
+      window.ready = (async () => {
+        await document.fonts.ready
+        const urls = [...document.querySelectorAll('img')].map((i) => i.src)
+        for (const e of document.querySelectorAll('.crop, .blur')) urls.push(e.style.backgroundImage.slice(5, -2))
+        await Promise.all([...new Set(urls)].map((src) => { const i = new Image(); i.src = src; return i.decode() }))
+        seek(Number(params.get('t') ?? 0))
+        return true
+      })()
+    </script>
+  </body>
+</html>

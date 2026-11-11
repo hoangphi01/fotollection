@@ -53,3 +53,6 @@ site/_includes/story-toc-*.md
 
 # The website built by Eleventy (eleventy.config.mjs)
 /_site/
+
+# The keynote video's drafts (site/screenshots/keynote.mjs); only the final files go into site/assets.
+/keynote-draft/
