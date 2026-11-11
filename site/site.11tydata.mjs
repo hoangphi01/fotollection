@@ -21,6 +21,7 @@ export default {
       lang: data.language.code,
       // The screenshots a language shows: its own, or English's while the app lacks it (FR-084).
       assets: data.language.assets,
+      prefix: data.language.prefix,
       date_format: data.language.date_format,
       guide: data.language.guide,
       support: data.language.support,
@@ -35,6 +36,8 @@ export default {
       versions: languages
         .filter((l) => has(l, data.page_id))
         .map((l) => ({ ...l, url: urlFor(data.page_id, l.code) })),
+      // Each published language's home page by its code (the first-visit redirect).
+      homes: Object.fromEntries(published.map((l) => [l.code, urlFor('home', l.code)])),
       // The language menu: every published language, at this page if it has it, else at its home.
       menu: published.map((l) => ({
         ...l,
