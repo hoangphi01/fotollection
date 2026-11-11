@@ -306,6 +306,8 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .key-chips kbd { font: 700 1rem/1 ui-monospace, monospace; color: var(--brand); }
 /* Performance page: a heading, then one section per measurement and the explanations. */
 .kicker { margin: 0 0 10px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+/* The short guide's line to the full manual in English (manual.html), under the lead. */
+.short-note { margin-top: 18px; color: var(--ink-2); }
 .section.perf-head { padding-bottom: 24px; } /* also on wide screens, where .section gets 96px */
 /* The page's glow (body::before) fades out over the first section; a tinted one right under the
    head would cut it with a hard edge, so its tint fades in as the glow fades out (owner, 2026-11-06). */

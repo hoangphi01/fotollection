@@ -1,0 +1,11 @@
+### Was passiert, wenn du einen Ordner öffnest
+
+Ein Ordner mit Fotos wird nicht ganz gelesen. Von jeder Datei liest Fotollection die EXIF-Daten (Datum, Kamera, Ort) und das kleine Vorschaubild, das jede Kamera in der Datei ablegt, und sonst nichts: 1.000 Fotos brauchen 0,12 s, bei einem Budget von 1 s, das festgelegt wurde, bevor der Code geschrieben war. Schärfere Vorschaubilder mit 400 px entstehen danach im Hintergrund, auf zwei Threads, damit Fotollection flink bleibt, und kommen in einen Cache auf der Festplatte, so ist ein wieder geöffneter Ordner sofort da. Bei 5.035 Fotos dauerte der Import 383 ms und die eingebetteten Vorschaubilder 236 ms.
+
+### Wohin die 17 ms einer Vorschau gehen
+
+Eine geänderte Einstellung rendert die Vorschau aus einer Kopie des Fotos mit 2.048 px neu, die im Arbeitsspeicher liegt, nie aus der ganzen Datei. Von den 16,7 ms, die das dauert, entfallen 9,7 ms auf Zuschnitt und Verkleinern mit einem Lanczos-Filter, unter 0,1 ms auf den Datumsstempel und 7,0 ms auf das Kodieren der Vorschau als JPEG für den Bildschirm. Dieser Encoder wurde durch Messen abgestimmt: Mit den Einstellungen des Exports (volle Farbauflösung und optimierte Tabellen) brauchte er 16,2 ms; der Bildschirm braucht sie nicht, also nutzt die Vorschau halbierte Farbe und einfache Tabellen, während Exporte die volle Farbe (4:4:4) behalten. Ein günstigerer Verkleinerungsfilter wurde probiert und war auf diesem Prozessor langsamer (12,5 ms), also blieb es bei Lanczos.
+
+### Nativer Code gegen einen Browser
+
+Dieselbe Aufgabe (dekodieren, auf 2:3 zuschneiden, Datumsstempel, JPEG mit Qualität 95) lief mit denselben 95 Fotos in Fotollection und in Chromium mit einem Worker pro Kern. Das Exporttempo kam gleich heraus, 18,0 gegenüber 17,9 Fotos pro Sekunde, was unsere erste Vermutung widerlegte: Ein Browser ist nicht langsam. Die Gründe für nativen Code liegen woanders: Fotollection schreibt 4:4:4-Dateien in voller Farbauflösung, wo der Encoder des Browsers die Farbe halbiert, es behält das Farbprofil jedes Fotos, es schreibt Dateien direkt auf die Festplatte, und es brauchte ein Viertel weniger Speicher (1,35 GB gegenüber 1,78 GB). Seitdem wurde der Druck-Encoder noch schneller: 23,5 Fotos pro Sekunde bei 16 MP.

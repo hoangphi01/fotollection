@@ -1051,3 +1051,17 @@
 - **Why:** those texts render only when the workflow's data is there (the visit count from Google Analytics, the latest release's split of downloads); locally the branches stayed closed, so the check never saw them.
 - **Fix:** the check build stands in for the data only CI has (`visits`, `downloads`, `downloads.latest`) when it is absent, so every branch renders; proven by the same 12 failures locally before the words were added.
 - **Rule:** a check that reads rendered pages renders them with every optional data file present; a new file the workflow writes gets its stand-in in `siteData` in the same commit.
+
+### The short guides were ignored by git: `manual-*.md` meant the generated manuals (site, ADR-0049)
+
+- **Seen:** the four short guides, written by hand as `site/_includes/manual-short-<code>.md`, were matched by `.gitignore`'s `site/_includes/manual-*.md`, the rule for the manuals `site-manual.sh` generates; committed as they were, CI would have built the site without them.
+- **Why:** a name chosen beside generated files fell under their pattern; nothing checked that a source file the build needs is tracked.
+- **Fix:** `!site/_includes/manual-short-*.md` in `.gitignore`, and `scripts/check-site-i18n.mjs` fails when a language's short guide is ignored (proven with the old `.gitignore`).
+- **Rule:** a hand-written file beside generated ones gets a name no ignore pattern matches, or its own exception, and the check that needs it asks git, not the disk.
+
+### `check-footnotes` read `fn: ["fn_raw"]` as a note named `"fn_raw"` (site)
+
+- **Seen:** nine notes were reported cited but listed nowhere once the new languages' words came in.
+- **Why:** those files quote the names in their YAML lists, which YAML reads the same, but the check took the text between the commas as it was, quotes included.
+- **Fix:** the check strips the quotes; the build was right all along.
+- **Rule:** a check that reads YAML by pattern accepts every way YAML writes the same value, or reads it with the parser.

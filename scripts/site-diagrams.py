@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-3.0-only
 """Exports the Performance page's diagrams (docs/diagrams/*.drawio, one page per language:
-page 1 English, page 2 Vietnamese) to site/assets/img/diagrams/<name>-<lang>.svg with the
+page 1 English, page 2 Vietnamese, then the pages scripts/diagram-pages.py makes) to site/assets/img/diagrams/<name>-<lang>.svg with the
 draw.io desktop app's command line, then gives each SVG the website's dark palette.
 
     python3 -I scripts/site-diagrams.py
@@ -25,7 +25,9 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "docs" / "diagrams"
 OUT = ROOT / "site" / "assets" / "img" / "diagrams"
 APP = "/Applications/draw.io.app/Contents/MacOS/draw.io"
-LANGS = ("en", "vi")
+# The pages in each file: English and Vietnamese drawn by hand, then one per table of words
+# (docs/diagrams/labels/<code>.json) made by scripts/diagram-pages.py, in that order.
+LANGS = ("en", "vi") + tuple(sorted(p.stem for p in (SRC / "labels").glob("*.json")))
 
 # Light token -> dark token (site.css `:root` and its dark media query).
 DARK = {

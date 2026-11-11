@@ -1,0 +1,13 @@
+### Zehn Regler zum Preis von einem
+
+Jeder Farbregler (Helligkeit, Kontrast, Wärme, Sättigung, Verblassen, getönte Tiefen und Lichter, Schwarzweiß) wird in eine einzige Tabelle aus 33 × 33 × 33 Farben eingerechnet, 35.937 Punkte, die sagen, wohin jede Farbe geht. Sie auf ein Foto anzuwenden heißt, für jedes Pixel seine Zelle in der Tabelle zu finden und zwischen vier ihrer Ecken zu interpolieren (tetraedrische Interpolation), so kosten zehn Regler so viel wie einer. Die Tabelle mit allen gesetzten Reglern zu bauen dauert etwa 2,6 ms; sie auf eine Vorschau von 1.600 px anzuwenden unter 2,2 ms, auf einen Export mit 24 MP etwa 24 ms.
+
+### Warum sich ein Ziehen trotzdem langsam anfühlte und was die Grafikkarte änderte
+
+Schritt für Schritt gemessen kostete eine Bewegung eines Reglers etwa 26 ms, und die Farbe selbst war davon nur 2 ms: Der Rest war das Kodieren der Vorschau als JPEG (7 bis 11 ms) und das erneute Dekodieren im Fenster (9 bis 15 ms). Die Grafikkarte nimmt beides weg. Wenn ein Ziehen beginnt, gehen die einfache Vorschau und eine Maske, die zeigt, wo das Foto ist (nicht der Datumsstempel, der Rahmen oder der Rand), einmal an die Grafikkarte; bei jedem Schritt folgt nur die neue Tabelle, und ein kleines WebGL2-Programm interpoliert sie, genau wie der Kern: 1 ms pro Schritt im WebKit von macOS, 2 ms in Chromium. Lässt du los, ersetzt das exakte Rendering des Kerns das Bild. Beide wurden an einem kräftigen Look verglichen, bei dem jeder Regler bewegt war: Sie unterscheiden sich im Mittel um 0,13 in ΔE2000 und um 0,77 im 99. Perzentil, weit unter der 1, die ein Auge im direkten Vergleich sieht.
+
+Kein Schalter ist nötig. Beim ersten Ziehen prüft Fotollection selbst: Gibt es kein WebGL2, ist der Renderer ein Software-Renderer oder dauert ein Testschritt 8 ms oder länger, bleibt es für die Sitzung beim Weg über den Prozessor. Ein Software-Renderer brauchte im Test 16,5 ms pro Schritt, also ist es richtig, dort beim Prozessor zu bleiben.
+
+### Exporte auf jedem Kern
+
+Dekodieren und Kodieren eines Fotos laufen jeweils auf einem Kern, so ist ein Export schnell, wenn an mehreren Fotos gleichzeitig gearbeitet wird. Wie viele, hängt vom Arbeitsspeicher ab: Bei Fotos mit 24 bis 26 MP ergaben 2 gleichzeitig 4,9 Fotos pro Sekunde, 4 ergaben 9,4, 6 ergaben 11,5 und 8 ergaben 12,5, wobei der Speicher von 0,49 auf 1,21 GB stieg. Fotollection wählt die Zahl aus einem Speicherbudget von 1,6 GB und der Größe des größten Fotos und hört bei 6 auf, weil 8 gleichzeitig bei den Fotos einer echten Reise nicht schneller waren und 0,2 GB mehr brauchten. Exporte nutzen nie die Grafikkarte: Ein Abzug muss auf jedem Computer gleich herauskommen, und die Tests, die Exporte Byte für Byte vergleichen, hängen davon ab.

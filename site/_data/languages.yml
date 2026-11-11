@@ -7,7 +7,8 @@
 #   date_format  how it writes a date (strftime)
 #   support      how its readers buy the author a coffee: vietqr (a bank app's code, Vietnam's
 #                way) or card (Ko-fi first, then GitHub Sponsors), owner 2026-11-11
-#   guide        the manual it shows (docs/, ADR-0031), for a language with the manual page
+#   guide        the manual it shows (ADR-0031): the full one in docs/ (English, Vietnamese) or
+#                a short one, site/_includes/manual-short-<code>.md, that links the English one
 #   published    false keeps it out of the build, the menu, hreflang and the sitemap until its
 #                words are done (scripts/check-site-i18n.mjs --build)
 # Order (owner, 2026-11-11): English first, the international one, then by each language's own
@@ -21,7 +22,7 @@
   prefix: ""
   assets: en
   pages: [home, download, performance, manual, story, wiki, code-signing]
-  guide: USER_GUIDE.md
+  guide: docs/USER_GUIDE.md
   support: card
   published: true
 - code: cs
@@ -31,7 +32,8 @@
   og_locale: cs_CZ
   prefix: /cs
   assets: en
-  pages: [home, download]
+  pages: [home, download, performance, manual, wiki, code-signing]
+  guide: site/_includes/manual-short-cs.md
   support: card
   published: true
 - code: de
@@ -41,7 +43,8 @@
   og_locale: de_DE
   prefix: /de
   assets: en
-  pages: [home, download]
+  pages: [home, download, performance, manual, wiki, code-signing]
+  guide: site/_includes/manual-short-de.md
   support: card
   published: true
 - code: hu
@@ -51,7 +54,8 @@
   og_locale: hu_HU
   prefix: /hu
   assets: en
-  pages: [home, download]
+  pages: [home, download, performance, manual, wiki, code-signing]
+  guide: site/_includes/manual-short-hu.md
   support: card
   published: true
 - code: pl
@@ -61,7 +65,8 @@
   og_locale: pl_PL
   prefix: /pl
   assets: en
-  pages: [home, download]
+  pages: [home, download, performance, manual, wiki, code-signing]
+  guide: site/_includes/manual-short-pl.md
   support: card
   published: true
 - code: vi
@@ -72,6 +77,6 @@
   prefix: /vi
   assets: vi
   pages: [home, download, performance, manual, story, wiki, code-signing]
-  guide: USER_GUIDE.vi.md
+  guide: docs/USER_GUIDE.vi.md
   support: vietqr
   published: true

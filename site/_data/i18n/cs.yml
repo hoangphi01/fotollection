@@ -402,3 +402,234 @@ og_card_download:
   after: ""
   sub: "macOS, Windows a Linux. Na Ubuntu, Debianu a Mintu ho nastaví jediný příkaz."
   shield: "Zdarma a open source (GPL-3.0)"
+tile_keys: "Klávesy z Lightroomu v zobrazení úprav přes celé okno"
+tile_export: "Dialog exportu jako v Lightroomu"
+no_release: "Vydání jsou na GitHubu"
+pf_coming: "Přijde ve v0.9.0"
+quality_title: "Tisk vypadá jako fotka"
+nav_changelog: "Novinky"
+perf_speed_fn: [fn_webview]
+perf_trip_fn: [fn_trip, fn_pct]
+perf_trip_title: "Skutečná cesta: 422 souborů z Prahy"
+perf_trip_text: "Testovací sady mohou výsledky přikrášlit, proto tady je jedna složka přesně tak, jak vyšla z fotoaparátu Lumix GX9 po víkendu v Praze: 396 JPEGů s 20 MP, každý asi 11 MB, a vedle nich 26 souborů RAW, celkem 4,7 GB. Při otevření se EXIF všech souborů přečte za 0,23 sekundy. Náhled se překreslí za 19 ms, RAW se vyvolá za 0,35 sekundy a deset pohlednic se překreslí za 21 ms. Dne 2026-11-03 dvě čísla na těchto velkých souborech překročila svůj limit: export běžel rychlostí 7,6 fotky za sekundu a špička paměti dosáhla 2,14 GB. Příčina byla nalezena a opravena ve v0.9.7: JPEGy se teď exportují rychlostí 10,1 za sekundu a celý běh zůstane pod 1,31 GB."
+trip_stats:
+  - { v: "0,23 s", l: "na otevření všech 422 souborů včetně EXIF" }
+  - { v: "19 ms", l: "překreslení náhledu, p95 (limit 50 ms)" }
+  - { v: "0,35 s", l: "na vyvolání RAW s 20 MP (medián)" }
+  - { v: "21 ms", l: "na překreslení deseti pohlednic (limit 100 ms)" }
+  - { v: "10,1 / s", l: "exportovaných JPEGů (limit 8 / s)" }
+  - { v: "1,31 GB", l: "špička paměti, JPEG i RAW (strop 2 GB)" }
+fn_trip: "Pražská složka je autorova vlastní a není zveřejněná (© @hoangphi01, všechna práva vyhrazena). Mediány ze 3 běhů bench/trip.sh a measure_folder na jejích JPEGech, na Apple M3 s 16 GB, s otevřenými dalšími aplikacemi, dne 2026-11-04, s exportem z v0.9.7; pro srovnání je spusť na vlastní složce."
+fn_simd: "SIMD (single instruction, multiple data) umožňuje procesoru pracovat s mnoha hodnotami najednou: jedna instrukce působí na několik čísel uložených vedle sebe v širokém vektorovém registru, třeba na červenou, zelenou a modrou mnoha pixelů. Procesory Intel a AMD to nabízejí jako SSE a AVX; Apple silicon a další procesory Arm jako NEON. Intel, AMD a Arm jsou ochranné známky svých vlastníků."
+fn_pct: "p50 a p95 jsou percentily: p50, medián, je čas, pod kterým zůstala polovina běhů; p95 je čas, pod kterým zůstalo 95 běhů ze 100, takže ukazuje pomalé případy, které průměr skryje."
+fn_psnr: "PSNR (peak signal-to-noise ratio, špičkový poměr signálu k šumu) porovná dva obrázky pixel po pixelu a udá jejich rozdíl v decibelech: čím víc, tím jsou si bližší. Nad zhruba 40 dB je rozdíl těžko vidět."
+fn_sensor: "CMOS a CCD jsou dva druhy obrazového snímače, mřížky buněk citlivých na světlo, které mění světlo na elektrický náboj. Téměř každý dnešní fotoaparát a telefon používá CMOS (complementary metal-oxide-semiconductor); CCD (charge-coupled device) bylo běžné ve starších fotoaparátech."
+fn_tiff: "TIFF (Tagged Image File Format) je flexibilní obrazový formát, který dnes spravuje Adobe; mnoho formátů RAW, mezi nimi DNG, je postaveno na jeho struktuře."
+fn_gpg: "GPG (GNU Privacy Guard) je svobodná implementace standardu OpenPGP. Repozitář APT je podepsaný klíčem GPG, takže tvůj systém může ověřit, že každý balíček pochází z něj a je nezměněný."
+fn_rust: "Rust a logo Rustu jsou ochranné známky Rust Foundation. Jádro Fotollection je napsané v Rustu a běží přímo na tvém počítači."
+fn_webview: "Okno aplikace je postavené na Tauri a vykresluje ho webové zobrazení samotného systému: WebKit (WKWebView) na macOS, Microsoft Edge WebView2 na Windows a WebKitGTK, port WebKitu pro GTK, na Linuxu. Tauri je projekt Tauri Programme v rámci Commons Conservancy; WebKit je ochranná známka Apple Inc.; GTK je projekt GNOME Foundation; Microsoft Edge a WebView2 jsou ochranné známky Microsoft Corporation. Srovnání s prohlížečem spustilo stejnou úlohu v headless Chromiu 156, open-source projektu, na kterém stojí Google Chrome, s jedním Web Workerem na každé jádro procesoru."
+fn_de: "ΔE2000 (CIEDE2000) je vzorec barevného rozdílu Mezinárodní komise pro osvětlení (CIE), standardizovaný jako ISO/CIE 11664-6; barevný prostor CIELAB, ve kterém pracuje, je ISO/CIE 11664-4."
+fn_ssim: "SSIM představili Zhou Wang, Alan C. Bovik, Hamid R. Sheikh a Eero P. Simoncelli v článku Image quality assessment: from error visibility to structural similarity, IEEE Transactions on Image Processing, 13(4), 2004."
+fn_srgb: "sRGB vytvořily HP a Microsoft v roce 1996 a standardizováno bylo jako IEC 61966-2-1."
+fn_p3: "Display P3 je barevný prostor definovaný společností Apple Inc., založený na barevném prostoru DCI-P3 filmového průmyslu (SMPTE)."
+fn_adobe: "Adobe RGB (1998) je barevný prostor specifikovaný společností Adobe Inc.; Adobe je registrovaná ochranná známka Adobe Inc."
+fn_charts: "Všechny grafy: čísla jsou orientační, změřená na běžném notebooku (Apple M3, 16 GB); ta tvoje závisí na počítači, který používáš."
+fn_dng: "Adobe DNG Converter se pro tuto stránku nespouštěl. Údaj je odhad třetí strany (1 000 souborů CR3 za 20–30 minut na moderním hardwaru, stroj neuveden) z článku na blogu convertintomp4.com o hromadném převodu RAW do DNG. Adobe je registrovaná ochranná známka Adobe Inc."
+chart_budgets: "Rychlost a paměť proti limitům stanoveným dřív, než se napsal kód"
+chart_quality: "Co export zachová z originálu, proti běžnému webovému editoru"
+chart_bestshot: "Návrhy nejlepších snímků, hodnocené proti fotkám roztříděným ručně"
+chart_share: "Fotky pro Facebook: co uvidí diváci, když je Facebook znovu zkomprimuje"
+chart_memory: "Špička paměti, když dávka roste na 5 035 fotek"
+chart_browser: "Stejná úloha ve Fotollection a ve webovém prohlížeči"
+wiki_title: "Wiki"
+wiki_kicker: "Od první obrazovky"
+wiki_description: "Jak Fotollection rostl od své první obrazovky, verzi po verzi: co každá přinesla, s Fotollection tak, jak vyšel."
+wiki_lead: "Každá verze, od dneška zpět k prvnímu prázdnému oknu: co přinesla a Fotollection tak, jak vyšel, převzato z historie projektu."
+wiki_first: "Přejít na první obrazovku"
+wiki_toc: "Verze"
+wiki_foot: "Každý obrázek ukazuje Fotollection tak, jak ta verze vyšla, převzato z historie projektu; ty nejstarší jsou jen anglicky. Nová verze sem přidá svůj."
+man_title: "Příručka"
+man_kicker: "Nápověda"
+man_description: "Jak používat Fotollection, krok za krokem, se snímkem obrazovky ke každému kroku: výběr fotek k tisku, looky a barvy, zoom, RAW, hodiny fotoaparátů, data a místa, focení s připojeným fotoaparátem a všechny zkratky."
+man_lead: "Každý krok tak, jak ho aplikace ukazuje. Příručka jde s aplikací: když verze změní něco, co je vidět, změní se s ní i tato stránka."
+man_toc: "Kapitoly"
+man_source: "Tato příručka na GitHubu"
+cs_title: "Zásady podepisování kódu"
+cs_kicker: "Důvěra"
+cs_description: "Jak se instalátory Fotollection sestavují a zveřejňují, kdo schvaluje každé vydání a co aplikace po síti posílá a co ne."
+cs_lead: "Instalátory zatím nejsou podepsané certifikátem: Windows při prvním spuštění ukáže varování SmartScreen, sestavení pro macOS mají jen ad-hoc podpis a linuxový AppImage i .deb jsou také nepodepsané. Každé vydání uvádí kontrolní součty SHA-256 v SHA256SUMS.txt, takže si můžeš ověřit, že stažený soubor je ten, který byl zveřejněn tady. Repozitář APT na fotollection.org/apt je podepsaný klíčem GPG projektu, takže apt ověří každý balíček, který z něj instaluje."
+cs_parts:
+  - id: team
+    title: "Role v týmu"
+    lead: "Každý instalátor sestavuje GitHub Actions z veřejného repozitáře, z označeného vydání; nic sestaveného na osobním počítači se nezveřejňuje. Workflow sestavení je"
+    items:
+      - title: "Autoři a recenzenti změn"
+        author: true
+        text: "Píše a kontroluje každou změnu zdrojového kódu."
+      - title: "Schvalovatel vydání"
+        author: true
+        text: "Kontroluje a zveřejňuje každé vydání ručně."
+  - id: privacy
+    title: "Zásady ochrany soukromí"
+    lead: "Tento program nepředává žádné informace jiným síťovým systémům, pokud o to výslovně nepožádá uživatel nebo osoba, která ho instaluje či provozuje."
+    items:
+      - title: "Funguje offline"
+        text: "Fotky, složky, projekty a nastavení nikdy neopustí tvůj počítač. Není tu žádný účet, žádná telemetrie a žádné odesílání hlášení o pádech."
+      - title: "Kontrola aktualizací"
+        text: "Jediný síťový požadavek: když klikneš, a od v0.13.0 jednou při spuštění, pokud to nevypneš v Nastavení, se zeptá GitHubu (api.github.com) na nejnovější vydání tohoto projektu. Sám nic nestahuje. Platí pro něj prohlášení o ochraně soukromí GitHubu."
+      - title: "Žádná poloha v exportech"
+        text: "Souřadnice GPS se z exportovaných fotek ve výchozím stavu odstraní."
+        fn: [fn_gps]
+      - title: "Tento web"
+        text: "Web, ne aplikace, počítá návštěvy a kliknutí na své odkazy ke stažení pomocí Google Analytics; platí pro něj zásady ochrany soukromí Googlu. Počet stažení pochází z GitHubu."
+      - title: "Platby na podporu"
+        text: "Platby na podporu Fotollection zpracovávají Ko-fi, GitHub Sponsors a banka stojící za kódem VietQR, každý podle vlastních zásad ochrany soukromí. Web na ně jen odkazuje a nic z nich nenačítá a platba nemá nic společného s aplikací ani s tvými daty ve Fotollection."
+  - id: system
+    title: "Změny v tvém systému"
+    lead: "Instalace přidá jen to, co aplikace potřebuje, a odinstalace to odstraní."
+    items:
+      - title: "Otevřít v aplikaci"
+        text: "Instalátor, a na Linuxu balíček .deb, přidá Fotollection do nabídky Otevřít v aplikaci pro soubory fotek. Nikdy se sám nenastaví jako výchozí aplikace."
+      - title: "Odinstalace"
+        text: "Odeber ho v Nastavení Windows, nebo na macOS aplikaci smaž. Odinstalátor pro Windows odstraní i položky Otevřít v aplikaci. Na Linuxu spusť sudo apt remove fotollection, nebo smaž AppImage, nebo spusť instalační skript s --uninstall, který odstraní i repozitář APT a jeho klíč. Nastavení a projekty zůstanou ve tvé domovské složce."
+perf_title: "Výkon"
+perf_description: "Každé měření za Fotollection, vysvětlené srozumitelně: rychlost, paměť, kvalita tisku, fotky pro sociální sítě a návrhy nejlepších snímků, a k tomu co znamenají ΔE, SSIM, JPEG a barevné profily."
+perf_kicker: "Změřeno, ne slíbeno"
+perf_lead: "Každé číslo na této stránce pochází ze skutečných fotek na běžném notebooku (Apple M3, 16 GB) a skripty, které je vytvořily, jsou v repozitáři, takže je kdokoli může spustit znovu. Pod každým grafem je, co znamená pro tvoje tisky, a na konci slova, která stojí za čísly."
+perf_how_title: "Proč je Fotollection rychlý"
+perf_how_lead: "Žádná magie. Pár rozhodnutí udělaných před prvním řádkem kódu, každé z nich změřené."
+perf_how_items:
+  - { t: "Nativní kód na každém jádře", d: "Práce Fotollection běží v Rustu, zkompilovaném pro tvůj procesor a rozloženém na všechna jeho jádra, s vektorovými instrukcemi (SIMD), které procesory pro pixely nabízejí.", v: "23,5 / s", l: "exportovaných fotek s 16 MP", fn: [fn_simd, fn_units, fn_rust] }
+  - { t: "Jen to, co je potřeba", d: "Otevření složky přečte EXIF každého souboru a jeho malý vložený náhled, nikdy celou fotku. Náhledy se ukládají do mezipaměti na disku.", v: "0,12 s", l: "na otevření 1 000 fotek", fn: [fn_exif] }
+  - { t: "Nikdy víc pixelů než obrazovka", d: "Náhled má nejvýš 1 600 px a vzniká z kopie o 2 048 px držené v paměti. Celá fotka se čte, až když přiblížíš, a to po částech.", v: "17 ms", l: "na překreslení náhledu" }
+  - { t: "Připraveno dřív, než klikneš", d: "Jakmile jsou hotové miniatury, připraví se na pozadí náhled každé fotky a uloží se na disk, zatímco čtvrtina paměti drží fotky kolem té, která je na obrazovce.", v: "27 ms", l: "na otevření kterékoli fotky" }
+  - { t: "Nic dvakrát", d: "Barevný posuvník mění jen barvu, nikdy velikost. Všechny barevné posuvníky se složí do jedné tabulky 33 × 33 × 33 barev, takže deset posuvníků stojí tolik co jeden.", v: "2 ms", l: "pro deset barevných posuvníků na náhledu" }
+  - { t: "Paměť v rámci limitu", d: "Fotollection zpracovává najednou jen tolik fotek v plné velikosti, kolik dovolí jeho paměťový limit, určený podle největší fotky v exportu.", v: "1,45 GB", l: "špička paměti s 5 035 fotkami" }
+  - { t: "Kodéry vyladěné měřením", d: "Soubory pro tisk vynechávají optimalizaci tabulek, která je zmenšovala o méně než 1 % a stála třetinu času kódování.", v: "−33 %", l: "času kódování souborů pro tisk" }
+  - { t: "Grafická karta při úpravách", d: "Když se barevný posuvník hýbe, grafická karta kreslí z tabulky, kterou sestaví jádro. Exporty zůstávají na procesoru, takže tisk je na každém počítači stejný.", v: "1–2 ms", l: "na krok posuvníku, dřív 26 ms" }
+perf_gpu_title: "Grafická karta při úpravách, všechna jádra při exportu"
+perf_gpu_text: "Když táhneš barevným posuvníkem, grafická karta kreslí look ze stejné tabulky, kterou sestaví jádro Fotollection, a když pustíš, převezme to přesné vykreslení. Exporty zůstávají na procesoru, takže tisk vyjde na každém počítači stejně."
+gpu_stats:
+  - { v: "1–2 ms", l: "krok posuvníku na grafické kartě, proti asi 26 ms" }
+  - { v: "0,13", l: "ΔE2000 mezi lookem z karty a přesným vykreslením" }
+  - { v: "10,8", l: "exportovaných fotek s 26 MP za sekundu, šest najednou" }
+chart_gpu: "Jeden krok barevného posuvníku: procesor proti grafické kartě"
+chart_inflight: "Rychlost exportu podle počtu fotek zpracovávaných najednou"
+chart_open: "Otevření fotky: v0.9.0 a v0.10.0 proti v0.11.0, na 422 fotkách z jedné cesty"
+perf_open_title: "Až 20× rychlejší. Nový způsob, jak využít paměť."
+perf_open_text: "v0.11.0 nově promýšlí, jak Fotollection drží tvoje fotky. Náhled každé fotky se připraví na pozadí, jakmile je hotová její miniatura, a uloží se na disk, čtvrtina paměti tvého počítače drží fotky kolem té, kterou vidíš, a fotka na obrazovce má vždy přednost. Výsledek: kterákoli fotka, blízká nebo vzdálená, JPEG nebo RAW, se otevře za 27 milisekund. Otevření RAW je až 20krát rychlejší než ve v0.9.0, JPEGu 10krát rychlejší, změřeno na stejných 422 fotkách z jedné cesty."
+perf_open_fn: [fn_raw, fn_jpeg]
+open_stats:
+  - { v: "20×", l: "rychlejší otevření fotky RAW než ve v0.9.0 (531 → 27 ms)" }
+  - { v: "10×", l: "rychlejší otevření JPEGu než ve v0.9.0 (274 → 27 ms)" }
+  - { v: "27 ms", l: "na otevření kterékoli fotky, blízké i vzdálené (limit 100 ms)" }
+perf_speed_title: "Rychlost: tisíc fotek mrknutím oka"
+perf_speed_text: "Otevření složky přečte EXIF každé fotky a její malý vložený náhled, ne celý obrázek, a změněné nastavení překreslí jen náhled. Nativní Rust navíc porazí webový prohlížeč, který dělá stejnou práci: stejná rychlost exportu, rychlejší náhled a o čtvrtinu méně paměti."
+speed_stats:
+  - { v: "0,12 s", l: "na přečtení složky s 1 000 fotkami, osmkrát pod limitem" }
+  - { v: "17 ms", l: "na překreslení náhledu po změně" }
+  - { v: "23,5", l: "exportovaných fotek s 16 MP za sekundu" }
+perf_memory_title: "Paměť: 5 035 fotek a drží se na stejné úrovni"
+perf_memory_text: "Fotollection drží v paměti jen pár bajtů na fotku, zapisuje miniatury do mezipaměti na disku a zpracovává najednou jen tolik obrázků v plné velikosti, kolik se vejde do jeho paměťového limitu. Paměť se proto drží na stejné úrovni, i když cesta naroste na tisíce fotek."
+memory_stats:
+  - { v: "1,45 GB", l: "špička paměti pro 5 035 fotek" }
+  - { v: "1,35 GB", l: "špička paměti pro 95 fotek" }
+  - { v: "53×", l: "víc fotek za 0,1 GB navíc" }
+perf_print_title: "Kvalita tisku: tisk vypadá jako fotka"
+perf_print_text: "Tisky z webového editoru často vypadají ploše: zahodí barevný profil, zmenší fotku na 2 000 px a uloží ji v kvalitě 80 s polovičními barvami. Fotollection profil zachová a exportuje v plném rozlišení ve 4:4:4."
+print_stats:
+  - { v: "0,19", l: "barevná chyba; oko si začne všímat u 1" }
+  - { v: "4:4:4", l: "plné barevné rozlišení; webový editor ho zpolovičí" }
+  - { v: "87 %", l: "jemných detailů, které webový editor při 2 000 px ztratí" }
+perf_share_title: "Fotky pro Facebook a Instagram: lehké a pořád to je ta fotka"
+perf_share_text: "Facebook zmenší každou fotku na 2 048 px, znovu ji zkomprimuje a barevné profily ignoruje. Export Share tuhle práci nejdřív udělá pořádně, takže po Facebooku zůstane fotka víc sama sebou než obvyklým způsobem."
+share_stats:
+  - { v: "99,6 %", l: "barev fotky v Display P3 zachovaných po Facebooku, proti 86 %" }
+  - { v: "2 048 px", l: "velikost, kterou Facebook nechá být" }
+  - { v: "½", l: "souboru v Original size, každý pixel zachovaný" }
+chart_raw: "RAW z fotoaparátu: od souboru na obrazovku, podle fotoaparátu a proti Adobe DNG Converteru"
+perf_raw_title: "RAW z fotoaparátu: otevři ho tak, jak je"
+perf_raw_text: "Fotollection otevírá soubory RAW z devíti běžných fotoaparátů tak, jak jsou, bez převádění a na Windows a Linuxu i bez instalace čehokoli. Od v0.10.0 je celý obrázek vlastním vyvoláním Fotollection pro každý fotoaparát se snímačem Bayer, vytvořeným z vlastních dat fotoaparátu jako v RAW editoru, kdežto Adobe DNG Converter jen převede jeden soubor RAW na jiný."
+raw_stats:
+  - { v: "9–32 ms", l: "miniatura RAW z náhledu uvnitř souboru" }
+  - { v: "0,3–0,7 s", l: "vlastní vyvolání celé fotky ve Fotollection" }
+  - { v: "1,2–1,8 s", l: "Adobe DNG Converter na soubor, jen na převod" }
+perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
+perf_best_title: "Návrhy nejlepších snímků: ověřené proti volbě člověka"
+perf_best_text: "Ručně jsme roztřídili 95 skutečných fotek do 22 momentů a tam, kde byla jasně nejlepší fotka, jsme ji vybrali. Skupiny a návrhy Fotollection jsme pak ověřili proti této volbě."
+best_stats:
+  - { v: "6 z 6", l: "momentů s jasně nejlepší fotkou: přijatelný návrh" }
+  - { v: "15 z 22", l: "nalezených momentů, nikdy dva zaměněné" }
+  - { v: "17 ms", l: "na analýzu fotky, 28 ms s obličeji" }
+perf_toc: "Na této stránce"
+diagram_layers: "Kde se práce odehrává: Fotollection na tvém počítači proti běžnému webovému editoru"
+diagram_gpu_cpu: "Úpravy na grafické kartě, export na všech jádrech procesoru"
+diagram_raw_develop: "Fotka RAW od souboru k tisku"
+diagram_preview_tiers: "Odkud se bere náhled fotky: z paměti, pak z disku, pak ze souboru"
+diagram_develop_gate: "Brána vyvolávání: fotka na obrazovce má přednost, práce na pozadí čeká"
+perf_explain_title: "Slova, která stojí za čísly"
+perf_explain_lead: "Žargon fotek a tisku, vysvětlený tak, jak bychom ho vysvětlili kamarádovi."
+perf_faq:
+  - q: "Co je ΔE (Delta E)?"
+    fn: [fn_de]
+    a: "ΔE měří, jak daleko od sebe dvě barvy lidskému oku připadají, počítané v barevném prostoru vytvořeném tak, aby odpovídal tomu, jak vidíme (CIELAB, se vzorcem z roku 2000). 0 znamená shodné. Kolem 1 je nejmenší rozdíl, který cvičené oko pozná při porovnání vedle sebe; 2 až 3 vidí většina lidí; nad 5 vypadají barvy odlišně. Export Fotollection pro tisk má průměr 0,19."
+  - q: "Co je SSIM?"
+    fn: [fn_ssim]
+    a: "SSIM, index strukturní podobnosti, porovnává tvary a textury dvou obrázků místo jednotlivých pixelů, což je blíž tomu, jak si všímáme rozmazání nebo kostičkovité komprese. 1 znamená shodné. Nad zhruba 0,98 většina lidí ty dva obrázky bez přiblížení nerozezná."
+  - q: "Kolik barev pojme JPEG?"
+    fn: [fn_jpeg, fn_heic]
+    a: "JPEG ukládá 8 bitů pro každou z červené, zelené a modré: po 256 úrovních, asi 16,7 milionu barev. Z toho tisknou i fotolaby. Soubory RAW z fotoaparátu mají 12 až 14 bitů a novější iPhony umí ukládat 10bitový HEIC, což pomáhá při úpravách; pro hotový tisk neukáže dobře udělaný 8bitový JPEG mezi tóny žádné schody."
+  - q: "JPG, nebo JPEG? A mám použít PNG?"
+    a: "JPG a JPEG jsou stejný formát: staré Windows dovolovaly jen třípísmenné přípony. PNG je bezeztrátový, takže se nic nezahodí, ale fotka uložená jako PNG je často třikrát až pětkrát větší a většina kiosků a fotolabů čeká JPEG. JPEG v kvalitě 90 nebo vyšší s plným barevným rozlišením (4:4:4), jak ho Fotollection exportuje pro tisk, je na papíře od originálu k nerozeznání."
+  - q: "Co znamenají 4:4:4 a 4:2:0?"
+    a: "Naše oči vidí detaily hlavně v jasu, méně v barvě, takže JPEG může ukládat barvu v nižším rozlišení. 4:4:4 zachová plné barevné rozlišení; 4:2:0 zachová jeho čtvrtinu, což zmenší soubory, ale změkčí barevné hrany, třeba červený text nebo modré nebe za listím. Tisky si zaslouží 4:4:4; sociální sítě stejně všechno znovu zkomprimují na 4:2:0."
+  - q: "sRGB, Display P3, Adobe RGB a barevné profily"
+    fn: [fn_srgb, fn_p3, fn_adobe]
+    a: "Barevný profil říká softwaru, co znamenají čísla v souboru. sRGB je klasický rozsah barev používaný na webu. Display P3, který používají iPhony a novější fotoaparáty, obsáhne asi o 25 % víc barev, hlavně červených a zelených. Když fotka v P3 ztratí profil, její čísla se čtou jako sRGB a vypadá vybledle: to je ta ztráta 13 % sytosti, kterou jsme naměřili. Adobe RGB, které některé fotoaparáty nabízejí pro tisk, je také širší než sRGB, hlavně v zelených a azurových. Fotollection pro tisk zachová jakýkoli profil, který fotka má, a pro sociální sítě ji správně převede do sRGB."
+  - q: "Jaké DPI tisk potřebuje?"
+    a: "DPI udává, kolik pixelů připadá na každý palec papíru. Při 300 DPI vypadá tisk ostře i zblízka; 150 až 200 DPI stačí na vzdálenost natažené paže. Tisk 10 × 15 cm při 300 DPI potřebuje 1 800 × 1 200 pixelů, takže stačí jakákoli fotka z telefonu nebo fotoaparátu; rada k velikosti v aplikaci ti řekne, jak velká každá fotka může být."
+  - q: "Proč fotky na Facebooku vypadají hůř?"
+    a: "Facebook zmenší každou fotku nejvýš na 2 048 px, znovu ji zkomprimuje v nižší kvalitě s polovičním barevným rozlišením a zahodí barevné profily. Fotka, která přijde moc velká, se zmenšuje dvakrát, jednou tebou a jednou Facebookem. Když ji pošleš rovnou ve 2 048 px, v sRGB a lehce doostřenou, Facebook ji zkomprimuje jen jednou a barvy už jsou správně."
+perf_repro_title: "Spusť měření sám"
+perf_repro_text: "Všechno se dá zopakovat na tvých vlastních fotkách. Skripty nikdy žádnou fotku nenahrají ani nezkopírují; uchovávají se jen čísla. Celé tabulky se všemi běhy jsou v RESULT.md."
+perf_repro_link: "Přečíst RESULT.md na GitHubu"
+perf_back: "Zpět na domovskou stránku"
+linux_soon: "Pokud odkazy ke stažení chybí, stránka vydání má všechny soubory."
+og_card_performance:
+  kicker: "Výkon"
+  before: "Změřeno, "
+  accent: "ne slíbeno"
+  after: ""
+  sub: "Rychlost, paměť a kvalita tisku, změřené na běžném notebooku. Testy výkonu si může kdokoli spustit znovu."
+  shield: "Testy výkonu jsou ve zdrojovém kódu"
+og_card_manual:
+  kicker: "Příručka"
+  before: "Krok za krokem, "
+  accent: "se snímky obrazovky"
+  after: ""
+  sub: "Od výběru fotek až po tisk, anglicky a vietnamsky."
+  shield: "Soukromé: tvoje fotky nikdy neopustí tvůj počítač"
+og_card_story:
+  kicker: "Příběh"
+  before: "Maraton, "
+  accent: "jak uchovat"
+  after: " naše vzpomínky"
+  sub: "Dvacet let fotek, na které se už nikdo nepodíval, a první kilometry cesty, jak z nich zase udělat tisky."
+  shield: "Zdarma, open source, offline"
+og_card_wiki:
+  kicker: "Wiki"
+  before: "Od první obrazovky "
+  accent: "po dnešek"
+  after: ""
+  sub: "Každá verze Fotollection, s aplikací tak, jak vyšla."
+  shield: "Zdarma, open source, offline"
+og_card_code_signing:
+  kicker: "Důvěra"
+  before: "Jak vznikají "
+  accent: "instalátory"
+  after: ""
+  sub: "Sestavené z veřejného zdrojového kódu v GitHub Actions, s kontrolním součtem SHA-256 pro každý soubor."
+  shield: "Bez telemetrie, bez účtu"
+
+man_short_note: "Toto je stručný průvodce. Celá příručka se všemi podrobnostmi je v angličtině:"
+man_short_link: "Přečíst celou příručku"

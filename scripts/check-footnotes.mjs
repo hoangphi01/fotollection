@@ -47,7 +47,8 @@ const walk = (dir) => {
     } else if (/\.(html|md|yml)$/.test(name) && name !== 'footnotes.yml') {
       const text = readFileSync(file, 'utf8')
       for (const m of text.matchAll(/keys="([^"]+)"/g)) m[1].split(',').forEach((k) => cited.add(k.trim()))
-      for (const m of text.matchAll(/\b\w*fn: \[([^\]]+)\]/g)) m[1].split(',').forEach((k) => cited.add(k.trim()))
+      // YAML lets a list's names be quoted (`fn: ["fn_raw"]`); the name is the same.
+      for (const m of text.matchAll(/\b\w*fn: \[([^\]]+)\]/g)) m[1].split(',').forEach((k) => cited.add(k.trim().replace(/^["']|["']$/g, '')))
     }
   }
 }

@@ -5,7 +5,8 @@
 #
 #   scripts/site-manual.sh
 #
-# For each language, docs/USER_GUIDE[.vi].md becomes site/_includes/manual-<lang>.md (from
+# For each language, its guide (docs/USER_GUIDE[.vi].md, or site/_includes/manual-short-<lang>.md)
+# becomes site/_includes/manual-<lang>.md (from
 # the first chapter on) and manual-toc-<lang>.md (one link per chapter). Neither is committed.
 # The story page's chapter list, story-toc-<lang>.md, comes from its committed text the same way.
 #   <!-- chapter: raw --> + ## 4. Camera RAW  ->  ## 4. Camera RAW {#raw}
@@ -14,9 +15,13 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-for lang in en vi; do
-  src=docs/USER_GUIDE.md
-  [ "$lang" = vi ] && src=docs/USER_GUIDE.vi.md
+# Each published language with a manual page, its guide (`guide` in site/_data/languages.yml:
+# the full one in docs/ for English and Vietnamese, the short one in site/_includes/ for the
+# others) and whether it has a story page.
+node --input-type=module -e "
+  import { published } from './eleventy.registry.mjs'
+  for (const l of published) if (l.pages.includes('manual')) console.log(l.code, l.guide, l.pages.includes('story') ? 1 : 0)
+" | while read -r lang src story; do
   # A chapter marker names the next chapter title's anchor.
   awk '/^<!-- chapter: [a-z0-9-]+ -->$/ { id = $3; p = 1; next }
        /^## / && id != "" { print $0 " {#" id "}"; id = ""; next }
@@ -27,6 +32,8 @@ for lang in en vi; do
   grep -E '^## ' "site/_includes/manual-$lang.md" | sed -E 's/^## (.*) \{#([a-z0-9-]+)\}$/- [\1](#\2)/' \
     > "site/_includes/manual-toc-$lang.md"
   # The story page's chapter list, from its own text (site/_includes/story-<lang>.md).
-  grep -E '^## ' "site/_includes/story-$lang.md" | sed -E 's/^## (.*) \{#([a-z0-9-]+)\}$/- [\1](#\2)/' \
-    > "site/_includes/story-toc-$lang.md"
+  if [ "$story" = 1 ]; then
+    grep -E '^## ' "site/_includes/story-$lang.md" | sed -E 's/^## (.*) \{#([a-z0-9-]+)\}$/- [\1](#\2)/' \
+      > "site/_includes/story-toc-$lang.md"
+  fi
 done

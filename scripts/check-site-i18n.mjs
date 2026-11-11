@@ -6,12 +6,13 @@
 //   - a words file is not a language of site/_data/languages.yml, or a published language has none;
 //   - a language has a key English lacks (a typo), or a text lost or gained a placeholder
 //     ([n], [tag]…) English has;
+//   - a short guide lacks a chapter of docs/USER_GUIDE.md, or a Performance part has no text;
 //   - the languages are not in order (English first, then by their own names);
 //   - a published language lacks a page's link preview: its og_card_<page> words or the image.
 // With --build (the pages workflow, and check-docs.sh when the packages are installed) it also
 // builds the site with every borrowed English text marked (I18N_MARK=1, eleventy.config.mjs) and
 // fails when a published language's pages show any English, naming the keys and the pages.
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawnSync } from 'node:child_process'
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -51,6 +52,7 @@ const codes = []
 const published = []
 const pagesOf = {}
 const names = {}
+const guideOf = {}
 if (!existsSync(registry)) problems.push('site/_data/languages.yml is missing')
 else {
   let code = null
@@ -59,6 +61,8 @@ else {
     if (c) codes.push((code = c[1]))
     const n = line.match(/^ {2}name: (.+)$/)
     if (n && code) names[code] = n[1].trim()
+    const g = line.match(/^ {2}guide: (.+)$/)
+    if (g && code) guideOf[code] = g[1].trim()
     const p = line.match(/^ {2}pages: \[(.*)\]/)
     if (p && code) pagesOf[code] = p[1].split(',').map((x) => x.trim())
     if (/^ {2}published: true\b/.test(line) && code) published.push(code)
@@ -67,6 +71,23 @@ else {
 // The order (owner, 2026-11-11): English first, then by each language's own name.
 const sorted = [...codes.slice(1)].sort((a, b) => names[a].localeCompare(names[b], 'en'))
 if (codes[0] !== 'en' || codes.slice(1).join() !== sorted.join()) problems.push(`site/_data/languages.yml: English first, then by own name: en, ${sorted.join(', ')}`)
+// Each published language's own texts for its pages: a short guide with English's chapters,
+// in order (a chapter added to USER_GUIDE.md is added to every short guide), and the
+// Performance page's explanations, one per part.
+const chapters = (file) => [...readFileSync(file, 'utf8').matchAll(/^<!-- chapter: ([a-z0-9-]+) -->$/gm)].map((m) => m[1]).join(' ')
+const parts = readdirSync(path.join(site, '_includes/perf')).filter((f) => f.endsWith('-en.md'))
+for (const c of published) {
+  const g = guideOf[c]
+  if ((pagesOf[c] ?? []).includes('manual') && g && !g.startsWith('docs/')) {
+    const file = path.join(root, g)
+    if (!existsSync(file)) problems.push(`${c}: its short guide ${g} is missing`)
+    else if (spawnSync('git', ['check-ignore', '-q', g], { cwd: root }).status === 0) problems.push(`${g} is ignored by .gitignore, so it would never reach the repository`)
+    else if (chapters(file) !== chapters(path.join(root, 'docs/USER_GUIDE.md'))) problems.push(`${g}: its chapters must be docs/USER_GUIDE.md's, in order (${chapters(path.join(root, 'docs/USER_GUIDE.md'))})`)
+  }
+  if ((pagesOf[c] ?? []).includes('performance')) {
+    for (const f of parts) if (!existsSync(path.join(site, '_includes/perf', f.replace('-en.md', `-${c}.md`)))) problems.push(`${c}: no site/_includes/perf/${f.replace('-en.md', `-${c}.md`)}`)
+  }
+}
 // Each published language's link previews: its words (og_card_<page>) and the image og.mjs made.
 for (const c of published) {
   for (const id of pagesOf[c] ?? []) {

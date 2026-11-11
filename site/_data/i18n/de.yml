@@ -402,3 +402,234 @@ og_card_download:
   after: ""
   sub: "macOS, Windows und Linux. Unter Ubuntu, Debian und Mint richtet ein Befehl alles ein."
   shield: "Kostenlos und Open Source (GPL-3.0)"
+tile_keys: "Die Tasten von Lightroom in der Entwicklungsansicht im ganzen Fenster"
+tile_export: "Der Exportdialog, wie der von Lightroom"
+no_release: "Die Releases liegen auf GitHub"
+pf_coming: "Kommt in v0.9.0"
+quality_title: "Der Abzug sieht aus wie das Foto"
+nav_changelog: "Was ist neu"
+perf_speed_fn: ["fn_webview"]
+perf_trip_fn: ["fn_trip", "fn_pct"]
+perf_trip_title: "Eine echte Reise: 422 Dateien aus Prag"
+perf_trip_text: "Testsätze können schmeicheln, darum hier ein Ordner genau so, wie er nach einem Wochenende in Prag von einer Lumix GX9 kam: 396 JPEGs mit 20 MP, je etwa 11 MB, und 26 RAW-Dateien daneben, insgesamt 4,7 GB. Beim Öffnen werden die EXIF-Daten jeder Datei in 0,23 Sekunden gelesen. Die Vorschau wird in 19 ms neu berechnet, ein RAW in 0,35 Sekunden entwickelt, und zehn Postkarten werden in 21 ms neu gezeichnet. Am 2026-11-03 verfehlten zwei Werte bei diesen großen Dateien ihr Budget: Der Export schaffte 7,6 Fotos pro Sekunde, und der Speicher lag in der Spitze bei 2,14 GB. Die Ursache wurde gefunden und in v0.9.7 behoben: Die JPEGs werden jetzt mit 10,1 pro Sekunde exportiert, und der ganze Lauf bleibt unter 1,31 GB."
+trip_stats:
+  - { v: "0,23 s", l: "um alle 422 Dateien zu öffnen, samt EXIF" }
+  - { v: "19 ms", l: "Neuberechnung der Vorschau, p95 (Budget 50 ms)" }
+  - { v: "0,35 s", l: "um ein 20-MP-RAW zu entwickeln (Median)" }
+  - { v: "21 ms", l: "um zehn Postkarten neu zu zeichnen (Budget 100 ms)" }
+  - { v: "10,1 / s", l: "exportierte JPEGs (Budget 8 / s)" }
+  - { v: "1,31 GB", l: "Spitzenspeicher, JPEG und RAW (Obergrenze 2 GB)" }
+fn_trip: "Der Prager Ordner gehört dem Autor und ist nicht veröffentlicht (© @hoangphi01, alle Rechte vorbehalten). Mediane aus 3 Läufen von bench/trip.sh und von measure_folder auf seinen JPEGs, auf einem Apple M3 mit 16 GB, mit anderen geöffneten Apps, am 2026-11-04, mit dem Export von v0.9.7; führ sie zum Vergleich auf einem eigenen Ordner aus."
+fn_simd: "SIMD (single instruction, multiple data) lässt einen Prozessor an vielen Werten zugleich arbeiten: Ein Befehl wirkt auf mehrere Zahlen, die nebeneinander in einem breiten Vektorregister liegen, etwa das Rot, Grün und Blau vieler Pixel. Prozessoren von Intel und AMD bieten es als SSE und AVX; Apple Silicon und andere Arm-Prozessoren als NEON. Intel, AMD und Arm sind Marken ihrer Inhaber."
+fn_pct: "p50 und p95 sind Perzentile: p50, der Median, ist die Zeit, unter der die Hälfte der Läufe blieb; p95 ist die Zeit, unter der 95 von 100 Läufen blieben, so zeigt sie die langsamen Fälle, die ein Durchschnitt verdeckt."
+fn_psnr: "PSNR (peak signal-to-noise ratio, Spitzen-Signal-Rausch-Verhältnis) vergleicht zwei Bilder Pixel für Pixel und gibt ihren Unterschied in Dezibel an: je höher, desto näher. Über etwa 40 dB ist der Unterschied kaum zu sehen."
+fn_sensor: "CMOS und CCD sind die beiden Arten von Bildsensoren, ein Raster lichtempfindlicher Zellen, das Licht in elektrische Ladung umwandelt. Fast jede Kamera und jedes Smartphone nutzt heute CMOS (complementary metal-oxide-semiconductor); CCD (charge-coupled device) war in früheren Kameras verbreitet."
+fn_tiff: "TIFF (Tagged Image File Format) ist ein flexibles Bildformat, das heute Adobe pflegt; viele RAW-Formate, darunter DNG, bauen auf seiner Struktur auf."
+fn_gpg: "GPG (GNU Privacy Guard) ist eine freie Umsetzung des OpenPGP-Standards. Das APT-Repository ist mit einem GPG-Schlüssel signiert, so kann dein System prüfen, dass jedes Paket unverändert von dort kommt."
+fn_rust: "Rust und das Rust-Logo sind Marken der Rust Foundation. Der Kern von Fotollection ist in Rust geschrieben und läuft direkt auf deinem Computer."
+fn_webview: "Das Fenster der App ist mit Tauri gebaut und wird von der Web-Ansicht des Systems gezeichnet: WebKit (WKWebView) unter macOS, Microsoft Edge WebView2 unter Windows und WebKitGTK, die GTK-Portierung von WebKit, unter Linux. Tauri ist ein Projekt des Tauri Programme innerhalb der Commons Conservancy; WebKit ist eine Marke von Apple Inc.; GTK ist ein Projekt der GNOME Foundation; Microsoft Edge und WebView2 sind Marken der Microsoft Corporation. Der Browservergleich lief mit derselben Aufgabe in Headless Chromium 156, dem Open-Source-Projekt hinter Google Chrome, mit einem Web Worker pro Prozessorkern."
+fn_de: "ΔE2000 (CIEDE2000) ist die Farbabstandsformel der Internationalen Beleuchtungskommission (CIE), genormt als ISO/CIE 11664-6; der CIELAB-Farbraum, in dem sie arbeitet, ist ISO/CIE 11664-4."
+fn_ssim: "SSIM wurde von Zhou Wang, Alan C. Bovik, Hamid R. Sheikh und Eero P. Simoncelli eingeführt in Image quality assessment: from error visibility to structural similarity, IEEE Transactions on Image Processing, 13(4), 2004."
+fn_srgb: "sRGB wurde 1996 von HP und Microsoft geschaffen und als IEC 61966-2-1 genormt."
+fn_p3: "Display P3 ist ein von Apple Inc. definierter Farbraum, der auf dem Farbraum DCI-P3 der Kinoindustrie (SMPTE) beruht."
+fn_adobe: "Adobe RGB (1998) ist ein von Adobe Inc. spezifizierter Farbraum; Adobe ist eine eingetragene Marke von Adobe Inc."
+fn_charts: "Für jedes Diagramm gilt: Die Werte dienen zur Orientierung, gemessen auf einem gewöhnlichen Laptop (Apple M3, 16 GB); deine hängen von deinem Computer ab."
+fn_dng: "Adobe DNG Converter wurde für diese Seite nicht ausgeführt. Der Wert ist eine Schätzung Dritter (1.000 CR3-Dateien in 20–30 Minuten auf moderner Hardware, Rechner nicht angegeben), aus dem Blogbeitrag von convertintomp4.com zur Stapelumwandlung von RAW in DNG. Adobe ist eine eingetragene Marke von Adobe Inc."
+chart_budgets: "Tempo und Speicher, gemessen an den Budgets, die vor dem Code festgelegt wurden"
+chart_quality: "Was der Export vom Original behält, verglichen mit einem typischen Web-Editor"
+chart_bestshot: "Vorschläge für die besten Aufnahmen, bewertet an von Hand sortierten Fotos"
+chart_share: "Fotos für Facebook: was Betrachter sehen, nachdem Facebook sie neu komprimiert hat"
+chart_memory: "Spitzenspeicher, während der Stapel auf 5.035 Fotos wächst"
+chart_browser: "Dieselbe Aufgabe in Fotollection und in einem Webbrowser"
+wiki_title: "Wiki"
+wiki_kicker: "Vom ersten Bildschirm an"
+wiki_description: "Wie Fotollection seit seinem ersten Bildschirm gewachsen ist, Version für Version: was jede gebracht hat, mit Fotollection, wie es erschienen ist."
+wiki_lead: "Jede Version, von heute zurück bis zum ersten leeren Fenster: was sie gebracht hat, und Fotollection, wie es erschienen ist, aus der Geschichte des Projekts."
+wiki_first: "Zum ersten Bildschirm"
+wiki_toc: "Versionen"
+wiki_foot: "Jedes Bild zeigt Fotollection, wie diese Version erschienen ist, aus der Geschichte des Projekts; die frühesten gibt es nur auf Englisch. Jede neue Version fügt hier ihr eigenes hinzu."
+man_title: "Handbuch"
+man_kicker: "Hilfe"
+man_description: "So benutzt du Fotollection, Schritt für Schritt, mit einem Screenshot zu jedem Schritt: die Fotos zum Drucken auswählen, Looks und Farbe, Zoom, RAW, Kamerauhren, Datum und Ort, Fotografieren mit angeschlossener Kamera, und jedes Tastenkürzel."
+man_lead: "Jeder Schritt, wie die App ihn zeigt. Das Handbuch folgt der App: Wenn eine Version etwas Sichtbares ändert, ändert sich diese Seite mit."
+man_toc: "Kapitel"
+man_source: "Dieses Handbuch auf GitHub"
+cs_title: "Richtlinie zur Code-Signierung"
+cs_kicker: "Vertrauen"
+cs_description: "Wie die Installer von Fotollection gebaut und veröffentlicht werden, wer jedes Release freigibt und was die App über das Netzwerk sendet und was nicht."
+cs_lead: "Die Installer sind noch nicht mit einem Zertifikat signiert: Windows zeigt beim ersten Start eine SmartScreen-Warnung, die macOS-Builds tragen nur eine Ad-hoc-Signatur, und auch das Linux-AppImage und das .deb sind unsigniert. Jedes Release führt SHA-256-Prüfsummen in SHA256SUMS.txt auf, so kannst du prüfen, dass ein Download der hier veröffentlichte ist. Das APT-Repository unter fotollection.org/apt ist mit dem GPG-Schlüssel des Projekts signiert, so prüft apt jedes Paket, das es von dort installiert."
+cs_parts:
+  - id: team
+    title: "Rollen im Team"
+    lead: "Jeder Installer wird von GitHub Actions aus dem öffentlichen Repository gebaut, aus einem getaggten Release; nichts, was auf einem privaten Computer gebaut wurde, wird veröffentlicht. Der Build-Workflow ist"
+    items:
+      - title: "Committer und Reviewer"
+        author: true
+        text: "Schreibt und prüft jede Änderung am Quellcode."
+      - title: "Freigabe der Releases"
+        author: true
+        text: "Prüft und veröffentlicht jedes Release von Hand."
+  - id: privacy
+    title: "Datenschutzerklärung"
+    lead: "Dieses Programm überträgt keine Informationen an andere vernetzte Systeme, es sei denn, der Nutzer oder die Person, die es installiert oder betreibt, fordert dies ausdrücklich an."
+    items:
+      - title: "Arbeitet offline"
+        text: "Fotos, Ordner, Projekte und Einstellungen verlassen nie deinen Computer. Es gibt kein Konto, keine Telemetrie und kein Hochladen von Absturzberichten."
+      - title: "Nach Updates suchen"
+        text: "Die einzige Netzwerkanfrage: Wenn du klickst, und ab v0.13.0 einmal beim Start, sofern nicht in den Einstellungen ausgeschaltet, fragt sie GitHub (api.github.com) nach dem neuesten Release dieses Projekts. Nichts wird von selbst heruntergeladen. Dafür gilt die Datenschutzerklärung von GitHub."
+      - title: "Kein Standort in Exporten"
+        text: "GPS-Koordinaten werden standardmäßig aus exportierten Fotos entfernt."
+        fn: [fn_gps]
+      - title: "Diese Website"
+        text: "Die Website, nicht die App, zählt Besuche und Klicks auf ihre Download-Links mit Google Analytics; dafür gilt die Datenschutzerklärung von Google. Die Zahl der Downloads stammt von GitHub."
+      - title: "Unterstützungszahlungen"
+        text: "Ko-fi, GitHub Sponsors und die Bank hinter einem VietQR-Code wickeln die Zahlungen zur Unterstützung von Fotollection ab, jeweils nach ihrer eigenen Datenschutzerklärung. Die Website verlinkt sie nur und lädt nichts von ihnen, und eine Zahlung hat nichts mit der App oder deinen Daten in Fotollection zu tun."
+  - id: system
+    title: "Änderungen an deinem System"
+    lead: "Die Installation fügt nur hinzu, was die App braucht, und die Deinstallation entfernt es."
+    items:
+      - title: "Öffnen mit"
+        text: "Der Installer, unter Linux das .deb, trägt Fotollection in das Menü „Öffnen mit“ für Fotodateien ein. Es macht sich nie selbst zur Standard-App."
+      - title: "Deinstallieren"
+        text: "Entferne es in den Windows-Einstellungen, oder lösche die App unter macOS. Das Windows-Deinstallationsprogramm entfernt auch die Einträge unter „Öffnen mit“. Unter Linux führ sudo apt remove fotollection aus, lösche das AppImage, oder starte das Installationsskript mit --uninstall, das auch das APT-Repository und seinen Schlüssel entfernt. Einstellungen und Projekte bleiben in deinem Benutzerordner."
+perf_title: "Leistung"
+perf_description: "Jede Messung hinter Fotollection, in einfachen Worten erklärt: Tempo, Speicher, Druckqualität, Fotos für soziale Medien und Vorschläge für die besten Aufnahmen, dazu, was ΔE, SSIM, JPEG und Farbprofile bedeuten."
+perf_kicker: "Gemessen, nicht versprochen"
+perf_lead: "Jede Zahl auf dieser Seite stammt von echten Fotos auf einem gewöhnlichen Laptop (Apple M3, 16 GB), und die Skripte, die sie erzeugt haben, liegen im Repository, sodass jeder sie wiederholen kann. Unter jedem Diagramm steht, was es für deine Abzüge bedeutet, und am Ende die Begriffe hinter den Zahlen."
+perf_how_title: "Warum Fotollection schnell ist"
+perf_how_lead: "Keine Magie. Ein paar Entscheidungen, getroffen vor der ersten Zeile Code, jede gemessen."
+perf_how_items:
+  - { t: "Nativer Code auf jedem Kern", d: "Die Arbeit von Fotollection läuft in Rust, kompiliert für deinen Prozessor und verteilt auf alle seine Kerne, mit den Vektorbefehlen (SIMD), die Prozessoren für Pixel bieten.", v: "23,5 / s", l: "exportierte Fotos mit 16 MP", fn: [fn_simd, fn_units, fn_rust] }
+  - { t: "Nur, was nötig ist", d: "Beim Öffnen eines Ordners werden die EXIF-Daten jeder Datei und ihr kleines eingebettetes Vorschaubild gelesen, nie das ganze Foto. Die Vorschaubilder liegen in einem Cache auf der Festplatte.", v: "0,12 s", l: "um 1.000 Fotos zu öffnen", fn: [fn_exif] }
+  - { t: "Nie mehr Pixel als der Bildschirm", d: "Eine Vorschau hat höchstens 1.600 px und entsteht aus einer Kopie mit 2.048 px im Speicher. Das ganze Foto wird erst gelesen, wenn du hineinzoomst, und zwar Stück für Stück.", v: "17 ms", l: "um eine Vorschau neu zu zeichnen" }
+  - { t: "Bereit, bevor du klickst", d: "Sind die Vorschaubilder fertig, wird im Hintergrund für jedes Foto eine Vorschau vorbereitet und auf der Festplatte abgelegt, während ein Viertel des Speichers die Fotos rund um das auf dem Bildschirm hält.", v: "27 ms", l: "um ein beliebiges Foto zu öffnen" }
+  - { t: "Nichts doppelt", d: "Ein Farbregler ändert nur die Farbe, nie die Größe. Jeder Farbregler wird in eine einzige Tabelle mit 33 × 33 × 33 Farben eingerechnet, so kosten zehn Regler so viel wie einer.", v: "2 ms", l: "für zehn Farbregler auf einer Vorschau" }
+  - { t: "Speicher im Budget", d: "Fotollection bearbeitet nur so viele Fotos in voller Größe gleichzeitig, wie sein Speicherbudget erlaubt, festgelegt nach dem größten Foto im Export.", v: "1,45 GB", l: "Spitzenspeicher bei 5.035 Fotos" }
+  - { t: "Encoder, per Messung abgestimmt", d: "Druckdateien verzichten auf eine Tabellenoptimierung, die sie um weniger als 1 % kleiner machte und ein Drittel der Kodierzeit kostete.", v: "−33 %", l: "Kodierzeit für Druckdateien" }
+  - { t: "Die Grafikkarte beim Bearbeiten", d: "Während sich ein Farbregler bewegt, zeichnet die Grafikkarte aus der Tabelle, die der Kern erstellt. Exporte bleiben auf dem Prozessor, so ist ein Abzug auf jedem Computer identisch.", v: "1–2 ms", l: "pro Reglerschritt, statt 26 ms" }
+perf_gpu_title: "Die Grafikkarte beim Bearbeiten, jeder Kern für Exporte"
+perf_gpu_text: "Während du einen Farbregler ziehst, zeichnet die Grafikkarte den Look aus derselben Tabelle, die der Kern von Fotollection erstellt, und sobald du loslässt, übernimmt die exakte Berechnung. Exporte bleiben auf dem Prozessor, so wird ein Abzug auf jedem Computer gleich."
+gpu_stats:
+  - { v: "1–2 ms", l: "ein Reglerschritt auf der Grafikkarte, gegenüber etwa 26 ms" }
+  - { v: "0,13", l: "ΔE2000 zwischen dem Look der Karte und der exakten Berechnung" }
+  - { v: "10,8", l: "Fotos mit 26 MP pro Sekunde exportiert, sechs gleichzeitig" }
+chart_gpu: "Ein Schritt eines Farbreglers: der Prozessor gegen die Grafikkarte"
+chart_inflight: "Exporttempo nach Zahl der gleichzeitig bearbeiteten Fotos"
+chart_open: "Ein Foto öffnen: v0.9.0 und v0.10.0 gegen v0.11.0, mit den 422 Fotos einer Reise"
+perf_open_title: "Bis zu 20× schneller. Eine neue Art, den Speicher zu nutzen."
+perf_open_text: "v0.11.0 denkt neu, wie Fotollection deine Fotos bereithält. Die Vorschau jedes Fotos wird im Hintergrund vorbereitet, sobald sein Vorschaubild fertig ist, und auf der Festplatte abgelegt, ein Viertel des Speichers deines Computers hält die Fotos rund um das, das du siehst, und das Foto auf dem Bildschirm kommt immer zuerst. Das Ergebnis: Jedes Foto, nah oder fern, JPEG oder RAW, öffnet sich in 27 Millisekunden. Ein RAW öffnet sich bis zu 20-mal schneller als in v0.9.0, ein JPEG 10-mal schneller, gemessen an denselben 422 Fotos einer Reise."
+perf_open_fn: ["fn_raw", "fn_jpeg"]
+open_stats:
+  - { v: "20×", l: "schneller beim Öffnen eines RAW-Fotos als v0.9.0 (531 → 27 ms)" }
+  - { v: "10×", l: "schneller beim Öffnen eines JPEGs als v0.9.0 (274 → 27 ms)" }
+  - { v: "27 ms", l: "um ein beliebiges Foto zu öffnen, nah oder fern (Budget 100 ms)" }
+perf_speed_title: "Tempo: tausend Fotos im Handumdrehen"
+perf_speed_text: "Beim Öffnen eines Ordners werden die EXIF-Daten jedes Fotos und sein kleines eingebettetes Vorschaubild gelesen, nicht das ganze Bild, und eine geänderte Einstellung zeichnet nur die Vorschau neu. Natives Rust schlägt auch einen Webbrowser bei derselben Aufgabe: dasselbe Exporttempo, eine schnellere Vorschau und ein Viertel weniger Speicher."
+speed_stats:
+  - { v: "0,12 s", l: "um einen Ordner mit 1.000 Fotos zu lesen, achtmal unter dem Budget" }
+  - { v: "17 ms", l: "um die Vorschau nach einer Änderung neu zu zeichnen" }
+  - { v: "23,5", l: "Fotos mit 16 MP pro Sekunde exportiert" }
+perf_memory_title: "Speicher: 5.035 Fotos, und er bleibt flach"
+perf_memory_text: "Fotollection hält pro Foto nur wenige Bytes im Speicher, schreibt Vorschaubilder in einen Cache auf der Festplatte und bearbeitet nur so viele Bilder in voller Größe gleichzeitig, wie in sein Speicherbudget passen. So bleibt der Speicher flach, auch wenn eine Reise auf Tausende Fotos wächst."
+memory_stats:
+  - { v: "1,45 GB", l: "Spitzenspeicher bei 5.035 Fotos" }
+  - { v: "1,35 GB", l: "Spitzenspeicher bei 95 Fotos" }
+  - { v: "53×", l: "mehr Fotos für 0,1 GB mehr" }
+perf_print_title: "Druckqualität: Der Abzug sieht aus wie das Foto"
+perf_print_text: "Abzüge, die über einen Web-Editor entstehen, wirken oft flau: Er verwirft das Farbprofil, verkleinert das Foto auf 2.000 px und speichert mit Qualität 80 und halbierter Farbe. Fotollection behält das Profil und exportiert in voller Auflösung mit 4:4:4."
+print_stats:
+  - { v: "0,19", l: "Farbfehler; ein Auge bemerkt ihn ab 1" }
+  - { v: "4:4:4", l: "volle Farbauflösung; ein Web-Editor halbiert sie" }
+  - { v: "87 %", l: "der feinen Details, die die 2.000 px eines Web-Editors verlieren" }
+perf_share_title: "Fotos für Facebook und Instagram: leicht, und immer noch das Foto"
+perf_share_text: "Facebook verkleinert jedes Foto auf 2.048 px, komprimiert es neu und ignoriert Farbprofile. Der Share-Export erledigt diese Arbeit vorher richtig, so bleibt das Foto nach Facebook näher an sich selbst als auf dem üblichen Weg."
+share_stats:
+  - { v: "99,6 %", l: "der Farbe eines Display-P3-Fotos bleiben nach Facebook erhalten, gegenüber 86 %" }
+  - { v: "2.048 px", l: "die Größe, die Facebook in Ruhe lässt" }
+  - { v: "½", l: "der Datei in Originalgröße, jedes Pixel erhalten" }
+chart_raw: "Kamera-RAW: von der Datei auf den Bildschirm, pro Kamera und gegen Adobe DNG Converter"
+perf_raw_title: "Kamera-RAW: öffnen, wie es ist"
+perf_raw_text: "Fotollection öffnet RAW-Dateien von neun verbreiteten Kameras, wie sie sind, ohne Umwandeln und, unter Windows und Linux, ohne etwas zu installieren. Seit v0.10.0 ist das volle Bild für jede Kamera mit Bayer-Sensor seine eigene Entwicklung, erstellt aus den eigenen Daten der Kamera wie in einem RAW-Editor, während Adobe DNG Converter nur eine RAW-Datei in eine andere umwandelt."
+raw_stats:
+  - { v: "9–32 ms", l: "das Vorschaubild eines RAW, aus der Vorschau in der Datei" }
+  - { v: "0,3–0,7 s", l: "die eigene Entwicklung des ganzen Fotos durch Fotollection" }
+  - { v: "1,2–1,8 s", l: "Adobe DNG Converter pro Datei, nur zum Umwandeln" }
+perf_raw_fn: ["fn_dng", "fn_sensor", "fn_psnr", "fn_tiff"]
+perf_best_title: "Vorschläge für die besten Aufnahmen: geprüft an der Wahl eines Menschen"
+perf_best_text: "Wir haben 95 echte Fotos von Hand in 22 Momente sortiert und das beste Foto gewählt, wo es ein klares gab. Die Gruppen und Vorschläge von Fotollection wurden dann an dieser Wahl geprüft."
+best_stats:
+  - { v: "6 von 6", l: "Momente mit einem klaren besten: ein akzeptabler Vorschlag" }
+  - { v: "15 von 22", l: "Momente gefunden, nie zwei verwechselt" }
+  - { v: "17 ms", l: "um ein Foto zu analysieren, 28 ms mit Gesichtern" }
+perf_toc: "Auf dieser Seite"
+diagram_layers: "Wo die Arbeit geschieht: Fotollection auf deinem Computer, gegenüber einem typischen Web-Editor"
+diagram_gpu_cpu: "Bearbeiten auf der Grafikkarte, Exportieren auf jedem Prozessorkern"
+diagram_raw_develop: "Ein RAW-Foto, von der Datei bis zum Abzug"
+diagram_preview_tiers: "Woher die Vorschau eines Fotos kommt: Speicher, dann Festplatte, dann die Datei"
+diagram_develop_gate: "Das Entwicklungstor: Das Foto auf dem Bildschirm kommt zuerst, Hintergrundarbeit wartet"
+perf_explain_title: "Die Begriffe hinter den Zahlen"
+perf_explain_lead: "Foto- und Druckjargon, so erklärt, wie wir es einem Freund erklären würden."
+perf_faq:
+  - q: "Was ist ΔE (Delta E)?"
+    fn: [fn_de]
+    a: "ΔE misst, wie weit zwei Farben für ein menschliches Auge auseinanderliegen, berechnet in einem Farbraum, der unserem Sehen nachgebildet ist (CIELAB, mit der Formel von 2000). 0 heißt identisch. Um 1 liegt der kleinste Unterschied, den ein geschultes Auge im direkten Vergleich erkennt; 2 bis 3 sehen die meisten Menschen; über 5 wirken die Farben verschieden. Der Druckexport von Fotollection liegt im Mittel bei 0,19."
+  - q: "Was ist SSIM?"
+    fn: [fn_ssim]
+    a: "SSIM, der Index der strukturellen Ähnlichkeit, vergleicht die Formen und Texturen zweier Bilder statt einzelner Pixel, was näher daran ist, wie wir Unschärfe oder blockige Kompression bemerken. 1 heißt identisch. Über etwa 0,98 können die meisten Menschen die beiden ohne Hineinzoomen nicht unterscheiden."
+  - q: "Wie viele Farben fasst ein JPEG?"
+    fn: [fn_jpeg, fn_heic]
+    a: "Ein JPEG speichert 8 Bit für Rot, Grün und Blau: je 256 Stufen, etwa 16,7 Millionen Farben. Das ist auch das, wovon Fotolabore drucken. Kamera-RAW-Dateien fassen 12 bis 14 Bit, und neuere iPhones können 10-Bit-HEIC speichern, was beim Bearbeiten hilft; für einen fertigen Abzug zeigt ein gut gemachtes 8-Bit-JPEG keine Stufen zwischen den Tönen."
+  - q: "JPG oder JPEG? Und sollte ich PNG nehmen?"
+    a: "JPG und JPEG sind dasselbe Format: Das alte Windows erlaubte nur Endungen mit drei Buchstaben. PNG ist verlustfrei, es wird also nie etwas verworfen, aber ein als PNG gespeichertes Foto ist oft drei- bis fünfmal größer, und die meisten Automaten und Labore erwarten JPEG. Ein JPEG mit Qualität 90 oder mehr und voller Farbauflösung (4:4:4), wie Fotollection es für den Druck exportiert, ist auf Papier nicht vom Original zu unterscheiden."
+  - q: "Was bedeuten 4:4:4 und 4:2:0?"
+    a: "Unsere Augen sehen Details vor allem in der Helligkeit, weniger in der Farbe, deshalb kann JPEG die Farbe mit geringerer Auflösung speichern. 4:4:4 behält die volle Farbauflösung; 4:2:0 behält ein Viertel davon, was Dateien kleiner macht, aber farbige Kanten weicher werden lässt, etwa roten Text oder einen blauen Himmel hinter Blättern. Abzüge verdienen 4:4:4; soziale Medien komprimieren ohnehin alles neu in 4:2:0."
+  - q: "sRGB, Display P3, Adobe RGB und Farbprofile"
+    fn: [fn_srgb, fn_p3, fn_adobe]
+    a: "Ein Farbprofil sagt der Software, was die Zahlen in einer Datei bedeuten. sRGB ist der klassische Farbumfang des Webs. Display P3, genutzt von iPhones und neueren Kameras, erreicht etwa 25 % mehr Farben, besonders Rot- und Grüntöne. Verliert ein P3-Foto sein Profil, werden seine Zahlen als sRGB gelesen, und es wirkt ausgewaschen: Das ist der Sättigungsverlust von 13 %, den wir gemessen haben. Adobe RGB, das manche Kameras für die Druckarbeit anbieten, ist ebenfalls größer als sRGB, vor allem bei Grün- und Cyantönen. Fotollection behält für Abzüge das Profil, das ein Foto hat, und wandelt für soziale Medien sauber in sRGB um."
+  - q: "Welche DPI braucht ein Abzug?"
+    a: "DPI gibt an, wie viele Pixel auf jeden Zoll Papier fallen. Bei 300 DPI wirkt ein Abzug selbst aus der Nähe scharf; 150 bis 200 DPI genügen auf Armlänge. Ein 10 × 15-cm-Abzug mit 300 DPI braucht 1.800 × 1.200 Pixel, also reicht jedes Foto von Smartphone oder Kamera; die Größenempfehlung in der App sagt dir, wie groß jedes Foto werden kann."
+  - q: "Warum sehen Fotos auf Facebook schlechter aus?"
+    a: "Facebook verkleinert jedes Foto auf höchstens 2.048 px, komprimiert es mit geringerer Qualität und halbierter Farbauflösung neu und verwirft Farbprofile. Ein Foto, das zu groß ankommt, wird zweimal verkleinert, einmal von dir und einmal von Facebook. Schickst du es schon mit 2.048 px, in sRGB und leicht geschärft, komprimiert Facebook es nur einmal neu, und die Farben stimmen bereits."
+perf_repro_title: "Mach die Messungen selbst"
+perf_repro_text: "Alles lässt sich mit deinen eigenen Fotos wiederholen. Die Skripte laden nie ein Foto hoch und kopieren keins; nur Zahlen werden behalten. Die vollständigen Tabellen, mit jedem Lauf, stehen in RESULT.md."
+perf_repro_link: "RESULT.md auf GitHub lesen"
+perf_back: "Zurück zur Startseite"
+linux_soon: "Fehlen die Download-Links, hat die Release-Seite jede Datei."
+og_card_performance:
+  kicker: "Leistung"
+  before: "Gemessen, "
+  accent: "nicht versprochen"
+  after: ""
+  sub: "Tempo, Speicher und Druckqualität, gemessen auf einem gewöhnlichen Laptop. Jeder kann die Benchmarks wiederholen."
+  shield: "Die Benchmarks liegen im Quellcode"
+og_card_manual:
+  kicker: "Handbuch"
+  before: "Schritt für Schritt, "
+  accent: "mit Screenshots"
+  after: ""
+  sub: "Von der Auswahl der Fotos bis zum Abzug, auf Englisch und Vietnamesisch."
+  shield: "Privat: deine Fotos verlassen nie deinen Computer"
+og_card_story:
+  kicker: "Die Geschichte"
+  before: "Ein Marathon, "
+  accent: "um unsere Erinnerungen"
+  after: " zu bewahren"
+  sub: "Zwanzig Jahre Fotos, nie wieder angesehen, und die ersten Kilometer auf dem Weg, sie wieder zu Abzügen zu machen."
+  shield: "Kostenlos, Open Source, offline"
+og_card_wiki:
+  kicker: "Wiki"
+  before: "Vom ersten Bildschirm "
+  accent: "bis heute"
+  after: ""
+  sub: "Jede Version von Fotollection, mit der App, wie sie erschienen ist."
+  shield: "Kostenlos, Open Source, offline"
+og_card_code_signing:
+  kicker: "Vertrauen"
+  before: "Wie die Installer "
+  accent: "entstehen"
+  after: ""
+  sub: "Gebaut aus dem öffentlichen Quellcode auf GitHub Actions, mit einer SHA-256-Prüfsumme für jede Datei."
+  shield: "Keine Telemetrie, kein Konto"
+
+man_short_note: "Das ist die Kurzanleitung. Das vollständige Handbuch, mit jedem Detail, gibt es auf Englisch:"
+man_short_link: "Zum vollständigen Handbuch"

@@ -371,6 +371,8 @@ wiki_first: Go to the first screen
 wiki_toc: Versions
 wiki_foot: "Each picture is Fotollection as that version shipped, taken from the project's history; the earliest are in English only. A new version adds its own here."
 footer_wiki: Wiki
+man_short_note: "This is the short guide. The full manual, with every detail, is in English."
+man_short_link: "Read the full manual"
 man_title: Manual
 man_kicker: Help
 man_description: "How to use Fotollection, step by step, with a screenshot of each step: choosing the photos to print, looks and colour, zoom, RAW, camera clocks, dates and places, shooting with a camera connected, and every shortcut."

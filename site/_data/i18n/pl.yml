@@ -35,14 +35,14 @@ car_prev: "Wstecz"
 car_next: "Dalej"
 car_presets_title: "Presety i LUT-y"
 car_presets_text: "Twoje looki, LUT-y i presety Lightroom po lewej stronie zdjęcia, w grupach. Wskaż jeden, a zdjęcie pokaże go, zanim klikniesz."
-car_simple_title: "Looki w trybie Prostym"
+car_simple_title: "Looki w trybie Simple"
 car_simple_text: "Numerowany pasek pod zdjęciem: klawisz z cyfrą nadaje look, ↑ zatrzymuje zdjęcie, a następne pojawia się od razu."
 car_many_title: "Wiele zdjęć naraz"
 car_many_text: "Nadaj look zaznaczonym zdjęciom albo wszystkim widocznym jednym ruchem, który cofniesz ⌘Z. Siatka pokazuje każde zdjęcie w jego kolorach."
 car_compare_title: "Przed i po"
 car_compare_text: "Obok siebie, z podziałem albo – jak na iPhonie – przytrzymaj zdjęcie, by zobaczyć oryginał."
 car_data_title: "Ustawienia i twoje dane"
-car_data_text: "Jedno okno na wszystkie ustawienia. Ustawienia → Dane przenoszą wszystko na inny komputer w jednym pliku."
+car_data_text: "Jedno okno na wszystkie ustawienia. Settings → Data przenoszą wszystko na inny komputer w jednym pliku."
 car_collage_title: "Dwa zdjęcia na jednej odbitce"
 car_collage_text: "Tryb Kolażu kładzie dwa zdjęcia na każdej odbitce 10 × 15, jak aparat half-frame, każde z własnym kolorem."
 compat_title: "Twoje kolory idą z tobą."
@@ -143,7 +143,7 @@ pf_print: "Formaty odbitek, kadrowanie, prostowanie, zoom, data na zdjęciu, ram
 pf_places: "Miejsca offline, daty i miejsca ręcznie, zegary aparatów"
 pf_export: "Eksport do druku i do mediów społecznościowych"
 pf_looks: "Looki, presety Lightroom i LUT-y"
-pf_modes: "Trzy tryby: Prosty, Kolaż, Pro"
+pf_modes: "Trzy tryby: Simple, Collage, Pro"
 pf_jpeg: "JPEG i PNG"
 pf_raw: "RAW z aparatu"
 pf_heic: "HEIC (zdjęcia z iPhone'a)"
@@ -174,12 +174,12 @@ tabs_row_title: "Foldery jako karty, zaznaczenia, które idą za tobą"
 tabs_text: "Kliknij folder, by pracować tylko nad nim, albo Obszar roboczy, by mieć wszystkie foldery naraz. Zaznacz zdjęcia w jednym folderze, przejdź do innego i zaznaczaj dalej: pasek liczy wszystkie, więc najlepsze z każdego folderu trafiają do koszyka do druku jednym ruchem. Zaznacz kilka folderów, by wyeksportować je razem albo każdy do osobnego folderu, a gdy skończysz, zamknij kartę przyciskiem ×; zdjęcia zostają na dysku."
 modes_title: "Trzy tryby, trzy zadania"
 modes_lead: "Wybierz ten, który pasuje do tego, co chcesz zrobić – na górze paska bocznego lub skrótem Cmd/Ctrl+1, 2 i 3. Zdjęcia, koszyk do druku i ustawienia są takie same w każdym trybie."
-mode_simple: "Prosty"
+mode_simple: "Simple"
 mode_simple_for: "Wracasz z podróży i chcesz szybko mieć odbitki."
 mode_simple_s1: "Upuść folder ze zdjęciami na aplikację."
 mode_simple_s2: "Klawisz z cyfrą nadaje look; strzałka w górę zatrzymuje zdjęcie, w dół odkłada je na bok."
 mode_simple_s3: "Wybierz format odbitki i datę na zdjęciu, potem Eksportuj."
-mode_collage: "Kolaż"
+mode_collage: "Collage"
 mode_collage_for: "Dwa zdjęcia na jednej odbitce za pół ceny albo pocztówki."
 mode_collage_s1: "Włóż wybrane zdjęcia do koszyka do druku."
 mode_collage_s2: "Łączą się po dwa na odbitkę; przeciągnij jedno, by je zamienić."
@@ -191,9 +191,9 @@ mode_pro_s2: "Kadrowanie, prostowanie, data na zdjęciu i ramka z danymi."
 mode_pro_s3: "Eksport do kiosku albo lżejszy do udostępnienia w sieci."
 modes_manual: "Pełna instrukcja"
 postcard_title: "Pocztówka z twojego zdjęcia"
-postcard_text: "W trybie Kolażu jeden przełącznik zmienia każdą odbitkę w pocztówkę: twoje zdjęcie na jednej połowie, a na drugiej przerywane pole na znaczek i linie na wiadomość lub adres. Wpisz tekst czcionką maszynową albo napisz go ręcznie cienkim markerem permanentnym. Odbitka 10 × 15 mieści się w formatach pocztówek, które przyjmuje Deutsche Post."
+postcard_text: "W trybie Collage jeden przełącznik zmienia każdą odbitkę w pocztówkę: twoje zdjęcie na jednej połowie, a na drugiej przerywane pole na znaczek i linie na wiadomość lub adres. Wpisz tekst czcionką maszynową albo napisz go ręcznie cienkim markerem permanentnym. Odbitka 10 × 15 mieści się w formatach pocztówek, które przyjmuje Deutsche Post."
 pc_type_title: "Wpisane albo pisane ręcznie"
-pc_type_text: "Wiadomość i adres mają własne linie, z pogrubieniem, kursywą i podkreśleniem, czcionką maszynową albo twoją własną. Jest każda litera języków europejskich zapisywanych alfabetem łacińskim, więc adres w Pradze czy Krakowie wydrukuje się tak, jak go wpiszesz. Wybierz atrament – czarny, niebieski, sepię lub czerwony – i dodaj u dołu małą linijkę z podpisem. Połowa ze zdjęciem działa jak w trybie Kolażu: biała ramka wokół albo zdjęcie aż do krawędzi."
+pc_type_text: "Wiadomość i adres mają własne linie, z pogrubieniem, kursywą i podkreśleniem, czcionką maszynową albo twoją własną. Jest każda litera języków europejskich zapisywanych alfabetem łacińskim, więc adres w Pradze czy Krakowie wydrukuje się tak, jak go wpiszesz. Wybierz atrament – czarny, niebieski, sepię lub czerwony – i dodaj u dołu małą linijkę z podpisem. Połowa ze zdjęciem działa jak w trybie Collage: biała ramka wokół albo zdjęcie aż do krawędzi."
 collage_title: "Dwa zdjęcia na jednej odbitce"
 collage_text: "Inspirowane aparatami half-frame na kliszę: odbitka 10 × 15 mieści dwa zdjęcia 10 × 7,5, więc komplet kosztuje o połowę mniej. Zdjęcia łączą się w pary po kolei, przeciągnięcie je zamienia, a aplikacja podpowiada rozmiar z białym marginesem, 6 × 9 cm dla zdjęcia 2:3. Cienka linia cięcia dzieli odbitkę na pół – albo wyłącz ją, by mieć pasek half-frame."
 show_collage: "Tryb Kolażu: arkusze tak, jak się wydrukują, z proporcjami zdjęcia, podpowiadanym rozmiarem i linią cięcia"
@@ -241,7 +241,7 @@ fn_photo: "Zdjęcie tramwaju jest autorstwa twórcy aplikacji (© @hoangphi01, w
 fn_downloads: "Liczone przez GitHub."
 uses_title: "Dla zdjęć, które chcesz wydrukować"
 uses_lead: "Cztery chwile, wokół których powstało Fotollection."
-uses_items: [{"icon": "plane", "t": "Po podróży", "d": "Do domu wraca czterysta zdjęć. Znajdź najlepsze ujęcia zostawia najostrzejsze z każdej serii, koszyk do druku zbiera trzydzieści wartych wydruku, a każde wychodzi z datą i przycięte do formatów punktu."}, {"icon": "book-open", "t": "Rodzinny album", "d": "Odbitki do albumu, który rodzina zachowa, każda z datą i miejscowością w rogu, jak drukowały je aparaty na kliszę. Wystarczy tryb Prosty."}, {"icon": "mail", "t": "Pocztówki i tematyczne zestawy", "d": "Dwa zdjęcia na odbitce albo pocztówka z twoimi słowami obok zdjęcia: stare miasto, jedzenie, tramwaje, każdy zestaw w osobnej karcie folderu."}, {"icon": "share-2", "t": "Udostępnione bez utraty kolorów", "d": "Te same zdjęcia, w rozmiarze dla Facebooka i Instagrama, zachowują kolory po wysłaniu, zamiast robić się płaskie."}]
+uses_items: [{"icon": "plane", "t": "Po podróży", "d": "Do domu wraca czterysta zdjęć. Find best shots zostawia najostrzejsze z każdej serii, koszyk do druku zbiera trzydzieści wartych wydruku, a każde wychodzi z datą i przycięte do formatów punktu."}, {"icon": "book-open", "t": "Rodzinny album", "d": "Odbitki do albumu, który rodzina zachowa, każda z datą i miejscowością w rogu, jak drukowały je aparaty na kliszę. Wystarczy tryb Simple."}, {"icon": "mail", "t": "Pocztówki i tematyczne zestawy", "d": "Dwa zdjęcia na odbitce albo pocztówka z twoimi słowami obok zdjęcia: stare miasto, jedzenie, tramwaje, każdy zestaw w osobnej karcie folderu."}, {"icon": "share-2", "t": "Udostępnione bez utraty kolorów", "d": "Te same zdjęcia, w rozmiarze dla Facebooka i Instagrama, zachowują kolory po wysłaniu, zamiast robić się płaskie."}]
 compare_title: "Jak wypada na tle innych"
 compare_lead: "Fotollection nie próbuje zastąpić pełnego edytora RAW. Powstało do kroku, który tamte zostawiają tobie: od folderu z podróży do odbitek, które trzymasz w dłoni."
 compare_caption: "Fotollection obok Lightroom Classic, darktable i RawTherapee"
@@ -368,7 +368,7 @@ distro_groups:
       - text: "RAW otwiera się bez korekcji obiektywu, które dodaje macOS."
         fn: [fn_pf_raw]
 checksums: "Każde wydanie podaje sumy kontrolne SHA-256 obok plików do pobrania."
-updates: "Przy starcie raz pyta GitHub, czy jest nowsza wersja (Ustawienia → Aktualizacje to wyłączają), i nigdy niczego nie pobiera samo. Nowe wersje ogłaszamy tutaj i na GitHubie."
+updates: "Przy starcie raz pyta GitHub, czy jest nowsza wersja (Settings → Updates to wyłączają), i nigdy niczego nie pobiera samo. Nowe wersje ogłaszamy tutaj i na GitHubie."
 footer_tagline: "Zdjęcia gotowe do druku, w pełni offline."
 footer_made: "Stworzone przez użytkownika dla użytkowników. Tylko ktoś, kto codziennie przegląda własne zdjęcia, wie, czego zwykły człowiek potrzebuje od przeglądarki zdjęć."
 footer_report: "Zgłoś problem"
@@ -402,3 +402,234 @@ og_card_download:
   after: ""
   sub: "macOS, Windows i Linux. Na Ubuntu, Debianie i Mincie wystarczy jedno polecenie."
   shield: "Za darmo i open source (GPL-3.0)"
+tile_keys: "Skróty Lightrooma w widoku wywoływania na całe okno"
+tile_export: "Okno eksportu, jak w Lightroomie"
+no_release: "Wydania są na GitHubie"
+pf_coming: "Pojawi się w v0.9.0"
+quality_title: "Odbitka wygląda jak zdjęcie"
+nav_changelog: "Nowości"
+perf_speed_fn: [fn_webview]
+perf_trip_fn: [fn_trip, fn_pct]
+perf_trip_title: "Prawdziwa podróż: 422 pliki z Pragi"
+perf_trip_text: "Zestawy testowe potrafią schlebiać, więc oto jeden folder dokładnie taki, jaki zszedł z aparatu Lumix GX9 po weekendzie w Pradze: 396 JPEG-ów 20 MP, każdy około 11 MB, i 26 plików RAW obok nich, łącznie 4,7 GB. Otwarcie go odczytuje EXIF każdego pliku w 0,23 sekundy. Podgląd renderuje się ponownie w 19 ms, RAW wywołuje się w 0,35 sekundy, a dziesięć pocztówek odświeża się w 21 ms. 2026-11-03 dwie liczby przekroczyły budżet na tych dużych plikach: eksport szedł w tempie 7,6 zdjęcia na sekundę, a szczytowe zużycie pamięci sięgnęło 2,14 GB. Przyczynę znaleziono i usunięto w v0.9.7: JPEG-i eksportują się teraz w tempie 10,1 na sekundę, a cały przebieg mieści się poniżej 1,31 GB."
+trip_stats:
+  - { v: "0,23 s", l: "na otwarcie wszystkich 422 plików, razem z EXIF" }
+  - { v: "19 ms", l: "ponowny render podglądu, p95 (budżet 50 ms)" }
+  - { v: "0,35 s", l: "na wywołanie RAW-a 20 MP (mediana)" }
+  - { v: "21 ms", l: "na odświeżenie dziesięciu pocztówek (budżet 100 ms)" }
+  - { v: "10,1 / s", l: "eksportowanych JPEG-ów (budżet 8 / s)" }
+  - { v: "1,31 GB", l: "szczytowe zużycie pamięci, JPEG i RAW (pułap 2 GB)" }
+fn_trip: "Praski folder należy do autora i nie jest publikowany (© @hoangphi01, wszelkie prawa zastrzeżone). Mediany z 3 przebiegów bench/trip.sh oraz measure_folder na jego JPEG-ach, na Apple M3 z 16 GB, przy otwartych innych aplikacjach, 2026-11-04, z eksportem z v0.9.7; uruchom je na własnym folderze, by porównać."
+fn_simd: "SIMD (single instruction, multiple data – jedna instrukcja, wiele danych) pozwala procesorowi pracować na wielu wartościach naraz: jedna instrukcja działa na kilku liczbach ułożonych obok siebie w szerokim rejestrze wektorowym, na przykład na czerwieni, zieleni i błękicie wielu pikseli. Procesory Intel i AMD zapewniają je jako SSE i AVX, a Apple silicon i inne procesory Arm jako NEON. Intel, AMD i Arm są znakami towarowymi ich właścicieli."
+fn_pct: "p50 i p95 to percentyle: p50, czyli mediana, to czas, w którym zmieściła się połowa przebiegów; p95 to czas, w którym zmieściło się 95 przebiegów na 100, więc pokazuje wolne przypadki, które ukrywa średnia."
+fn_psnr: "PSNR (szczytowy stosunek sygnału do szumu, peak signal-to-noise ratio) porównuje dwa obrazy piksel po pikselu i podaje ich różnicę w decybelach: im wyżej, tym bliżej. Powyżej około 40 dB różnicę trudno zobaczyć."
+fn_sensor: "CMOS i CCD to dwa rodzaje matryc, czyli siatek światłoczułych komórek, które zamieniają światło w ładunek elektryczny. Prawie każdy dzisiejszy aparat i telefon używa CMOS (complementary metal-oxide-semiconductor); CCD (charge-coupled device) było powszechne we wcześniejszych aparatach."
+fn_tiff: "TIFF (Tagged Image File Format) to elastyczny format obrazu, dziś utrzymywany przez Adobe; wiele formatów RAW, w tym DNG, opiera się na jego strukturze."
+fn_gpg: "GPG (GNU Privacy Guard) to wolna implementacja standardu OpenPGP. Repozytorium APT jest podpisane kluczem GPG, więc twój system może sprawdzić, że każdy pakiet pochodzi właśnie z niego i nie został zmieniony."
+fn_rust: "Rust i logo Rust są znakami towarowymi Rust Foundation. Rdzeń Fotollection jest napisany w Ruście i działa bezpośrednio na twoim komputerze."
+fn_webview: "Okno aplikacji jest zbudowane w Tauri i rysowane przez własny widok WWW systemu: WebKit (WKWebView) na macOS, Microsoft Edge WebView2 na Windows i WebKitGTK, czyli port WebKit dla GTK, na Linuksie. Tauri to projekt Tauri Programme w ramach Commons Conservancy; WebKit jest znakiem towarowym Apple Inc.; GTK to projekt GNOME Foundation; Microsoft Edge i WebView2 są znakami towarowymi Microsoft Corporation. Porównanie z przeglądarką wykonało to samo zadanie w Chromium 156 bez interfejsu (headless), projekcie open source, na którym opiera się Google Chrome, z jednym Web Workerem na rdzeń procesora."
+fn_de: "ΔE2000 (CIEDE2000) to wzór na różnicę barw Międzynarodowej Komisji Oświetleniowej (CIE), ustandaryzowany jako ISO/CIE 11664-6; przestrzeń barw CIELAB, w której działa, to ISO/CIE 11664-4."
+fn_ssim: "SSIM wprowadzili Zhou Wang, Alan C. Bovik, Hamid R. Sheikh i Eero P. Simoncelli w pracy Image quality assessment: from error visibility to structural similarity, IEEE Transactions on Image Processing, 13(4), 2004."
+fn_srgb: "sRGB stworzyły HP i Microsoft w 1996 roku, a ustandaryzowano je jako IEC 61966-2-1."
+fn_p3: "Display P3 to przestrzeń barw zdefiniowana przez Apple Inc., oparta na przestrzeni DCI-P3 branży kinowej (SMPTE)."
+fn_adobe: "Adobe RGB (1998) to przestrzeń barw określona przez Adobe Inc.; Adobe jest zarejestrowanym znakiem towarowym Adobe Inc."
+fn_charts: "Każdy wykres: liczby są orientacyjne, zmierzone na zwykłym laptopie (Apple M3, 16 GB); twoje zależą od komputera, którego używasz."
+fn_dng: "Adobe DNG Converter nie był uruchamiany na potrzeby tej strony. Ta liczba to szacunek z zewnętrznego źródła (1000 plików CR3 w 20–30 minut na nowoczesnym sprzęcie, bez podania maszyny), z wpisu na blogu convertintomp4.com o wsadowej konwersji RAW do DNG. Adobe jest zarejestrowanym znakiem towarowym Adobe Inc."
+chart_budgets: "Szybkość i pamięć wobec budżetów ustalonych przed napisaniem kodu"
+chart_quality: "Co eksport zachowuje z oryginału, wobec typowego edytora internetowego"
+chart_bestshot: "Podpowiedzi najlepszych ujęć w porównaniu ze zdjęciami posortowanymi ręcznie"
+chart_share: "Zdjęcia na Facebooka: co widzą oglądający po ponownej kompresji przez Facebooka"
+chart_memory: "Szczytowe zużycie pamięci, gdy partia rośnie do 5035 zdjęć"
+chart_browser: "To samo zadanie w Fotollection i w przeglądarce internetowej"
+wiki_title: "Wiki"
+wiki_kicker: "Od pierwszego ekranu"
+wiki_description: "Jak Fotollection wyrosło z pierwszego ekranu, wersja po wersji: co przyniosła każda z nich, z Fotollection takim, jakie zostało wydane."
+wiki_lead: "Każda wersja, od dzisiejszej aż po pierwsze puste okno: co przyniosła i Fotollection takie, jakie zostało wydane, wzięte z historii projektu."
+wiki_first: "Przejdź do pierwszego ekranu"
+wiki_toc: "Wersje"
+wiki_foot: "Każdy obraz to Fotollection takie, jakie wydała ta wersja, wzięte z historii projektu; najwcześniejsze są tylko po angielsku. Każda nowa wersja dodaje tu własny."
+man_title: "Instrukcja"
+man_kicker: "Pomoc"
+man_description: "Jak używać Fotollection, krok po kroku, ze zrzutem ekranu do każdego kroku: wybór zdjęć do druku, looki i kolor, zoom, RAW, zegary aparatów, daty i miejsca, fotografowanie z podłączonym aparatem i każdy skrót."
+man_lead: "Każdy krok tak, jak pokazuje go aplikacja. Instrukcja podąża za aplikacją: gdy nowa wersja zmienia coś, co widać, ta strona zmienia się razem z nią."
+man_toc: "Rozdziały"
+man_source: "Ta instrukcja na GitHubie"
+cs_title: "Zasady podpisywania kodu"
+cs_kicker: "Zaufanie"
+cs_description: "Jak powstają i są publikowane instalatory Fotollection, kto zatwierdza każde wydanie i co aplikacja wysyła przez sieć, a czego nie."
+cs_lead: "Instalatory nie są jeszcze podpisane certyfikatem: Windows przy pierwszym uruchomieniu pokazuje ostrzeżenie SmartScreen, kompilacje na macOS mają tylko podpis ad hoc, a AppImage i .deb dla Linuksa też nie są podpisane. Każde wydanie podaje sumy kontrolne SHA-256 w pliku SHA256SUMS.txt, więc możesz sprawdzić, że pobrany plik jest tym opublikowanym tutaj. Repozytorium APT pod adresem fotollection.org/apt jest podpisane kluczem GPG projektu, więc apt sprawdza każdy pakiet, który z niego instaluje."
+cs_parts:
+  - id: team
+    title: "Role w zespole"
+    lead: "Każdy instalator buduje GitHub Actions z publicznego repozytorium, z otagowanego wydania; nic, co zbudowano na prywatnym komputerze, nie jest publikowane. Workflow budowania to"
+    items:
+      - title: "Autorzy zmian i recenzenci"
+        author: true
+        text: "Pisze i recenzuje każdą zmianę w kodzie źródłowym."
+      - title: "Zatwierdzający wydania"
+        author: true
+        text: "Ręcznie sprawdza i publikuje każde wydanie."
+  - id: privacy
+    title: "Polityka prywatności"
+    lead: "Ten program nie przekaże żadnych informacji innym systemom sieciowym, chyba że wyraźnie zażąda tego użytkownik albo osoba, która go instaluje lub obsługuje."
+    items:
+      - title: "Działa offline"
+        text: "Zdjęcia, foldery, projekty i ustawienia nigdy nie opuszczają twojego komputera. Nie ma konta, telemetrii ani wysyłania raportów o awariach."
+      - title: "Sprawdzanie aktualizacji"
+        text: "Jedyne zapytanie sieciowe: gdy klikniesz, a od v0.13.0 także raz przy starcie, chyba że wyłączysz to w Ustawieniach, aplikacja pyta GitHub (api.github.com) o najnowsze wydanie tego projektu. Nic nie jest pobierane samo. Dotyczy go oświadczenie o prywatności GitHuba."
+      - title: "Bez lokalizacji w eksportach"
+        text: "Współrzędne GPS są domyślnie usuwane z eksportowanych zdjęć."
+        fn: [fn_gps]
+      - title: "Ta strona"
+        text: "Strona internetowa, a nie aplikacja, liczy odwiedziny i kliknięcia w linki do pobrania za pomocą Google Analytics; dotyczy jej polityka prywatności Google. Liczba pobrań pochodzi z GitHuba."
+      - title: "Płatności na wsparcie"
+        text: "Ko-fi, GitHub Sponsors i bank stojący za kodem VietQR przetwarzają płatności na wsparcie Fotollection, każdy według własnej polityki prywatności. Strona tylko do nich linkuje i niczego z nich nie wczytuje, a płatność nie ma nic wspólnego z aplikacją ani z twoimi danymi w Fotollection."
+  - id: system
+    title: "Zmiany w twoim systemie"
+    lead: "Instalacja dodaje tylko to, czego aplikacja potrzebuje, a odinstalowanie to usuwa."
+    items:
+      - title: "Otwórz za pomocą"
+        text: "Instalator, a na Linuksie pakiet .deb, dodaje Fotollection do menu Otwórz za pomocą dla plików zdjęć. Nigdy nie ustawia się jako aplikacja domyślna."
+      - title: "Odinstalowanie"
+        text: "Usuń ją w Ustawieniach systemu Windows albo skasuj aplikację na macOS. Deinstalator na Windows usuwa też wpisy Otwórz za pomocą. Na Linuksie uruchom sudo apt remove fotollection, usuń AppImage albo uruchom skrypt instalacyjny z --uninstall, który usuwa też repozytorium APT i jego klucz. Ustawienia i projekty zostają w twoim folderze domowym."
+perf_title: "Wydajność"
+perf_description: "Każdy pomiar stojący za Fotollection, wyjaśniony prostymi słowami: szybkość, pamięć, jakość druku, zdjęcia do mediów społecznościowych i podpowiedzi najlepszych ujęć, wraz z tym, co znaczą ΔE, SSIM, JPEG i profile kolorów."
+perf_kicker: "Zmierzone, nie obiecane"
+perf_lead: "Każda liczba na tej stronie pochodzi z prawdziwych zdjęć na zwykłym laptopie (Apple M3, 16 GB), a skrypty, które ją dały, są w repozytorium, więc każdy może uruchomić je ponownie. Pod każdym wykresem jest wyjaśnienie, co oznacza on dla twoich odbitek, a na końcu – słowa stojące za liczbami."
+perf_how_title: "Dlaczego Fotollection jest szybkie"
+perf_how_lead: "Żadnej magii. Kilka decyzji podjętych przed pierwszą linijką kodu, każda zmierzona."
+perf_how_items:
+  - { t: "Kod natywny na każdym rdzeniu", d: "Praca Fotollection odbywa się w Ruście, skompilowanym dla twojego procesora i rozłożonym na wszystkie jego rdzenie, z instrukcjami wektorowymi (SIMD), które procesory oferują do pikseli.", v: "23,5 / s", l: "eksportowanych zdjęć 16 MP", fn: [fn_simd, fn_units, fn_rust] }
+  - { t: "Tylko to, co potrzebne", d: "Otwarcie folderu odczytuje EXIF każdego pliku i jego małą wbudowaną miniaturę, nigdy całe zdjęcie. Miniatury są trzymane w pamięci podręcznej na dysku.", v: "0,12 s", l: "na otwarcie 1000 zdjęć", fn: [fn_exif] }
+  - { t: "Nigdy więcej pikseli niż ekran", d: "Podgląd ma najwyżej 1600 px i powstaje z kopii 2048 px trzymanej w pamięci. Pełne zdjęcie jest wczytywane dopiero przy powiększeniu, fragment po fragmencie.", v: "17 ms", l: "na odświeżenie podglądu" }
+  - { t: "Gotowe, zanim klikniesz", d: "Gdy miniatury są gotowe, podgląd każdego zdjęcia jest przygotowywany w tle i trzymany na dysku, a jedna czwarta pamięci przechowuje zdjęcia wokół tego na ekranie.", v: "27 ms", l: "na otwarcie dowolnego zdjęcia" }
+  - { t: "Nic nie jest robione dwa razy", d: "Suwak koloru zmienia tylko kolor, nigdy rozmiar. Wszystkie suwaki koloru są składane w jedną tablicę 33 × 33 × 33 kolorów, więc dziesięć suwaków kosztuje tyle co jeden.", v: "2 ms", l: "dla dziesięciu suwaków koloru na podglądzie" }
+  - { t: "Pamięć w budżecie", d: "Fotollection pracuje naraz tylko na tylu pełnowymiarowych zdjęciach, na ile pozwala jego budżet pamięci, ustalany według największego zdjęcia w eksporcie.", v: "1,45 GB", l: "szczytowe zużycie pamięci przy 5035 zdjęciach" }
+  - { t: "Kodery dostrojone pomiarami", d: "Pliki do druku pomijają optymalizację tablic, która zmniejszała je o mniej niż 1 %, a kosztowała jedną trzecią czasu kodowania.", v: "−33 %", l: "czasu kodowania plików do druku" }
+  - { t: "Karta graficzna podczas edycji", d: "Gdy suwak koloru się przesuwa, karta graficzna rysuje z tablicy, którą buduje rdzeń. Eksporty zostają na procesorze, więc odbitka jest identyczna na każdym komputerze.", v: "1–2 ms", l: "na krok suwaka, zamiast 26 ms" }
+perf_gpu_title: "Karta graficzna przy edycji, każdy rdzeń przy eksporcie"
+perf_gpu_text: "Gdy przeciągasz suwak koloru, karta graficzna rysuje look z tej samej tablicy, którą buduje rdzeń Fotollection, a gdy go puścisz, przejmuje dokładny render. Eksporty zostają na procesorze, więc odbitka wychodzi taka sama na każdym komputerze."
+gpu_stats:
+  - { v: "1–2 ms", l: "krok suwaka na karcie graficznej, wobec około 26 ms" }
+  - { v: "0,13", l: "ΔE2000 między lookiem z karty a dokładnym renderem" }
+  - { v: "10,8", l: "zdjęcia 26 MP eksportowane na sekundę, sześć naraz" }
+chart_gpu: "Jeden krok suwaka koloru: procesor wobec karty graficznej"
+chart_inflight: "Szybkość eksportu a liczba zdjęć przetwarzanych naraz"
+chart_open: "Otwieranie zdjęcia: v0.9.0 i v0.10.0 wobec v0.11.0, na 422 zdjęciach z jednej podróży"
+perf_open_title: "Do 20× szybciej. Nowy sposób korzystania z pamięci."
+perf_open_text: "v0.11.0 od nowa układa sposób, w jaki Fotollection przechowuje twoje zdjęcia. Podgląd każdego zdjęcia jest przygotowywany w tle, gdy tylko gotowa jest jego miniatura, i trzymany na dysku, jedna czwarta pamięci komputera przechowuje zdjęcia wokół tego, które widzisz, a zdjęcie na ekranie zawsze ma pierwszeństwo. Efekt: każde zdjęcie, bliskie czy dalekie, JPEG czy RAW, otwiera się w 27 milisekund. Otwarcie RAW-a jest do 20 razy szybsze niż w v0.9.0, a JPEG-a 10 razy szybsze, zmierzone na tych samych 422 zdjęciach z jednej podróży."
+perf_open_fn: [fn_raw, fn_jpeg]
+open_stats:
+  - { v: "20×", l: "szybsze otwarcie zdjęcia RAW niż w v0.9.0 (531 → 27 ms)" }
+  - { v: "10×", l: "szybsze otwarcie JPEG-a niż w v0.9.0 (274 → 27 ms)" }
+  - { v: "27 ms", l: "na otwarcie dowolnego zdjęcia, bliskiego czy dalekiego (budżet 100 ms)" }
+perf_speed_title: "Szybkość: tysiąc zdjęć w mgnieniu oka"
+perf_speed_text: "Otwarcie folderu odczytuje EXIF każdego zdjęcia i jego małą wbudowaną miniaturę, a nie cały obraz, a zmiana ustawienia odświeża tylko podgląd. Natywny Rust wygrywa też z przeglądarką internetową wykonującą to samo zadanie: ta sama szybkość eksportu, szybszy podgląd i o jedną czwartą mniej pamięci."
+speed_stats:
+  - { v: "0,12 s", l: "na odczyt folderu z 1000 zdjęć, osiem razy poniżej budżetu" }
+  - { v: "17 ms", l: "na odświeżenie podglądu po zmianie" }
+  - { v: "23,5", l: "zdjęcia 16 MP eksportowane na sekundę" }
+perf_memory_title: "Pamięć: 5035 zdjęć, a zużycie stoi w miejscu"
+perf_memory_text: "Fotollection trzyma w pamięci tylko kilka bajtów na zdjęcie, zapisuje miniatury w pamięci podręcznej na dysku i pracuje naraz tylko na tylu pełnowymiarowych obrazach, ile mieści się w jego budżecie pamięci. Dlatego zużycie pamięci stoi w miejscu, nawet gdy podróż rośnie do tysięcy zdjęć."
+memory_stats:
+  - { v: "1,45 GB", l: "szczytowe zużycie pamięci przy 5035 zdjęciach" }
+  - { v: "1,35 GB", l: "szczytowe zużycie pamięci przy 95 zdjęciach" }
+  - { v: "53×", l: "więcej zdjęć za 0,1 GB więcej" }
+perf_print_title: "Jakość druku: odbitka wygląda jak zdjęcie"
+perf_print_text: "Odbitki zrobione przez edytor internetowy często wyglądają płasko: usuwa on profil kolorów, zmniejsza zdjęcie do 2000 px i zapisuje je w jakości 80 z kolorem w połowie rozdzielczości. Fotollection zachowuje profil i eksportuje w pełnej rozdzielczości w 4:4:4."
+print_stats:
+  - { v: "0,19", l: "błąd koloru; oko zaczyna go zauważać przy 1" }
+  - { v: "4:4:4", l: "pełna rozdzielczość koloru; edytor internetowy ją połowi" }
+  - { v: "87 %", l: "drobnych szczegółów, które edytor internetowy traci przy 2000 px" }
+perf_share_title: "Zdjęcia na Facebooka i Instagrama: lekkie, a wciąż to samo zdjęcie"
+perf_share_text: "Facebook zmniejsza każde zdjęcie do 2048 px, ponownie je kompresuje i ignoruje profile kolorów. Eksport do udostępniania najpierw porządnie wykonuje tę pracę, więc po Facebooku zdjęcie pozostaje bliższe sobie niż przy zwykłym sposobie."
+share_stats:
+  - { v: "99,6 %", l: "koloru zdjęcia Display P3 zachowane po Facebooku, wobec 86 %" }
+  - { v: "2048 px", l: "rozmiar, którego Facebook nie rusza" }
+  - { v: "½", l: "pliku w Oryginalnym rozmiarze, każdy piksel zachowany" }
+chart_raw: "RAW z aparatu: od pliku do ekranu, dla każdego aparatu i wobec Adobe DNG Converter"
+perf_raw_title: "RAW z aparatu: otwórz go takim, jaki jest"
+perf_raw_text: "Fotollection otwiera pliki RAW z dziewięciu popularnych aparatów takie, jakie są, bez konwersji, a na Windows i Linuksie bez instalowania czegokolwiek. Od v0.10.0 pełny obraz to własne wywołanie Fotollection dla każdego aparatu z matrycą Bayera, wykonane na danych samego aparatu, jak w edytorze RAW, podczas gdy Adobe DNG Converter tylko zamienia jeden plik RAW w inny."
+raw_stats:
+  - { v: "9–32 ms", l: "miniatura RAW-a, z podglądu wewnątrz pliku" }
+  - { v: "0,3–0,7 s", l: "własne wywołanie pełnego zdjęcia w Fotollection" }
+  - { v: "1,2–1,8 s", l: "Adobe DNG Converter na plik, tylko do konwersji" }
+perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
+perf_best_title: "Podpowiedzi najlepszych ujęć: sprawdzone z wyborem człowieka"
+perf_best_text: "Posortowaliśmy ręcznie 95 prawdziwych zdjęć w 22 chwile i wybraliśmy najlepsze zdjęcie tam, gdzie było wyraźnie najlepsze. Następnie grupy i podpowiedzi Fotollection sprawdzono z tym wyborem."
+best_stats:
+  - { v: "6 z 6", l: "chwil z wyraźnie najlepszym: akceptowalna podpowiedź" }
+  - { v: "15 z 22", l: "chwil znalezionych, nigdy dwie pomylone" }
+  - { v: "17 ms", l: "na analizę zdjęcia, 28 ms z twarzami" }
+perf_toc: "Na tej stronie"
+diagram_layers: "Gdzie odbywa się praca: Fotollection na twoim komputerze wobec typowego edytora internetowego"
+diagram_gpu_cpu: "Edycja na karcie graficznej, eksport na każdym rdzeniu procesora"
+diagram_raw_develop: "Zdjęcie RAW, od pliku do odbitki"
+diagram_preview_tiers: "Skąd pochodzi podgląd zdjęcia: pamięć, potem dysk, potem plik"
+diagram_develop_gate: "Bramka wywoływania: zdjęcie na ekranie ma pierwszeństwo, praca w tle czeka"
+perf_explain_title: "Słowa stojące za liczbami"
+perf_explain_lead: "Żargon fotograficzny i drukarski, wyjaśniony tak, jak wyjaśnilibyśmy go przyjacielowi."
+perf_faq:
+  - q: "Co to jest ΔE (Delta E)?"
+    fn: [fn_de]
+    a: "ΔE mierzy, jak bardzo dwa kolory różnią się dla ludzkiego oka, liczone w przestrzeni barw zbudowanej tak, by odpowiadała temu, jak widzimy (CIELAB, ze wzorem z 2000 roku). 0 oznacza kolory identyczne. Około 1 to najmniejsza różnica, jaką wprawne oko dostrzeże, patrząc na nie obok siebie; od 2 do 3 widzi większość ludzi; powyżej 5 kolory wyglądają na różne. Eksport do druku w Fotollection daje średnio 0,19."
+  - q: "Co to jest SSIM?"
+    fn: [fn_ssim]
+    a: "SSIM, wskaźnik podobieństwa strukturalnego, porównuje kształty i faktury dwóch obrazów, a nie pojedyncze piksele, co jest bliższe temu, jak zauważamy rozmycie albo blokową kompresję. 1 oznacza obrazy identyczne. Powyżej około 0,98 większość ludzi nie odróżni ich bez powiększenia."
+  - q: "Ile kolorów mieści JPEG?"
+    fn: [fn_jpeg, fn_heic]
+    a: "JPEG zapisuje po 8 bitów na czerwony, zielony i niebieski: po 256 poziomów na każdy, czyli około 16,7 miliona kolorów. Z tego drukują też laboratoria fotograficzne. Pliki RAW z aparatu mają od 12 do 14 bitów, a nowsze iPhone'y potrafią zapisywać 10-bitowe HEIC, co pomaga przy edycji; na gotowej odbitce dobrze zrobiony 8-bitowy JPEG nie pokazuje schodków między tonami."
+  - q: "JPG czy JPEG? I czy używać PNG?"
+    a: "JPG i JPEG to ten sam format: stary Windows pozwalał tylko na trzyliterowe rozszerzenia. PNG jest bezstratny, więc nic nie zostaje odrzucone, ale zdjęcie zapisane jako PNG jest często od trzech do pięciu razy większe, a większość kiosków i laboratoriów oczekuje JPEG-a. JPEG w jakości 90 lub wyższej z pełną rozdzielczością koloru (4:4:4), taki, jaki Fotollection eksportuje do druku, jest na papierze nie do odróżnienia od oryginału."
+  - q: "Co znaczą 4:4:4 i 4:2:0?"
+    a: "Nasze oczy widzą szczegóły głównie w jasności, mniej w kolorze, więc JPEG może zapisać kolor w niższej rozdzielczości. 4:4:4 zachowuje pełną rozdzielczość koloru; 4:2:0 jej jedną czwartą, co zmniejsza pliki, ale zmiękcza kolorowe krawędzie, takie jak czerwony tekst albo niebieskie niebo za liśćmi. Odbitki zasługują na 4:4:4; media społecznościowe i tak kompresują wszystko ponownie do 4:2:0."
+  - q: "sRGB, Display P3, Adobe RGB i profile kolorów"
+    fn: [fn_srgb, fn_p3, fn_adobe]
+    a: "Profil kolorów mówi programowi, co znaczą liczby w pliku. sRGB to klasyczny zakres kolorów używany w internecie. Display P3, używany przez iPhone'y i nowsze aparaty, obejmuje około 25 % więcej kolorów, zwłaszcza czerwieni i zieleni. Jeśli zdjęcie P3 straci profil, jego liczby są czytane jako sRGB i wygląda ono na wyblakłe: to właśnie zmierzona przez nas utrata 13 % nasycenia. Adobe RGB, które niektóre aparaty oferują do pracy pod druk, też jest szersze niż sRGB, głównie w zieleniach i cyjanach. Fotollection zachowuje przy odbitkach profil, jaki ma zdjęcie, i poprawnie konwertuje do sRGB dla mediów społecznościowych."
+  - q: "Ile DPI potrzebuje odbitka?"
+    a: "DPI to liczba pikseli przypadających na każdy cal papieru. Przy 300 DPI odbitka wygląda ostro nawet z bliska; od 150 do 200 DPI wystarcza z odległości wyciągniętej ręki. Odbitka 10 × 15 cm przy 300 DPI potrzebuje 1800 × 1200 pikseli, więc wystarczy każde zdjęcie z telefonu czy aparatu; podpowiedź rozmiaru w aplikacji mówi, jak duże może być każde zdjęcie."
+  - q: "Dlaczego zdjęcia wyglądają gorzej na Facebooku?"
+    a: "Facebook zmniejsza każde zdjęcie do najwyżej 2048 px, kompresuje je ponownie w niższej jakości z kolorem w połowie rozdzielczości i usuwa profile kolorów. Zdjęcie, które przychodzi za duże, jest zmniejszane dwa razy: raz przez ciebie, raz przez Facebooka. Gdy wyślesz je już w 2048 px, w sRGB i lekko wyostrzone, Facebook kompresuje je tylko raz, a kolory są już właściwe."
+perf_repro_title: "Zmierz to sam"
+perf_repro_text: "Wszystko da się odtworzyć na twoich własnych zdjęciach. Skrypty nigdy nie wysyłają ani nie kopiują żadnego zdjęcia; zachowywane są tylko liczby. Pełne tabele, z każdym przebiegiem, są w RESULT.md."
+perf_repro_link: "Przeczytaj RESULT.md na GitHubie"
+perf_back: "Wróć na stronę główną"
+linux_soon: "Jeśli brakuje linków do pobrania, strona wydania ma wszystkie pliki."
+og_card_performance:
+  kicker: "Wydajność"
+  before: "Zmierzone, "
+  accent: "nie obiecane"
+  after: ""
+  sub: "Szybkość, pamięć i jakość druku zmierzone na zwykłym laptopie. Każdy może ponownie uruchomić testy wydajności."
+  shield: "Testy wydajności są w kodzie źródłowym"
+og_card_manual:
+  kicker: "Instrukcja"
+  before: "Krok po kroku, "
+  accent: "ze zrzutami ekranu"
+  after: ""
+  sub: "Od wyboru zdjęć po odbitkę, po angielsku i po wietnamsku."
+  shield: "Prywatnie: twoje zdjęcia nigdy nie opuszczają komputera"
+og_card_story:
+  kicker: "Historia"
+  before: "Maraton, "
+  accent: "by zachować"
+  after: " nasze wspomnienia"
+  sub: "Dwadzieścia lat zdjęć, do których nikt już nie wrócił, i pierwsze kilometry zamieniania ich z powrotem w odbitki."
+  shield: "Za darmo, open source, offline"
+og_card_wiki:
+  kicker: "Wiki"
+  before: "Od pierwszego ekranu "
+  accent: "do dziś"
+  after: ""
+  sub: "Każda wersja Fotollection, z aplikacją taką, jaka została wydana."
+  shield: "Za darmo, open source, offline"
+og_card_code_signing:
+  kicker: "Zaufanie"
+  before: "Jak powstają "
+  accent: "instalatory"
+  after: ""
+  sub: "Zbudowane z publicznego kodu źródłowego w GitHub Actions, z sumą kontrolną SHA-256 dla każdego pliku."
+  shield: "Bez telemetrii, bez konta"
+
+man_short_note: "To jest krótki przewodnik. Pełna instrukcja, z każdym szczegółem, jest po angielsku:"
+man_short_link: "Przeczytaj pełną instrukcję"

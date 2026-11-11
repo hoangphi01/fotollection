@@ -37,6 +37,8 @@ captures/
 *.pcapng
 *.pcap
 site/_includes/manual-*.md
+# …but the short guides are written by hand, the source of those languages' manuals.
+!site/_includes/manual-short-*.md
 site/_includes/story-toc-*.md
 
 # Secrets never enter the repo (SECURITY.md §6): service-account keys, private keys, certificates.

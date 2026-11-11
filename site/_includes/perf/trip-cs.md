@@ -1,0 +1,5 @@
+### Dva nesplněné rozpočty a jejich příčina
+
+Na těchto souborech s 20 MP první běh nesplnil dva rozpočty: export běžel rychlostí 7,6 fotky za sekundu a paměť vyvrcholila na 2,14 GB, nad stropem 2 GB. Měření každé fáze jedné fotky ukázalo, kam čas šel: dekódování asi 100 ms, ořez 2 ms a kódování tisku 203 ms. Kodér pro tisk optimalizoval své tabulky ve druhém průchodu, který držel v paměti každý koeficient obrazu, asi 160 MB na fotku, šest fotek najednou asi 1,5 GB, a to pro soubory jen o 0,9 % menší. Se standardními tabulkami zapisuje soubor po pruzích: 138 ms, stejná chyba vůči vykreslenému obrazu, o pár kilobajtů víc.
+
+Část paměti vůbec nepatřila Fotollection. Benchmark vytvářel miniatury na všech jádrech, kde Fotollection používá dvě vlákna na pozadí, a během exportu držel naživu svá vlastní měření náhledů; změřeno tak, jak Fotollection skutečně pracuje, zbývá před začátkem exportu 0,35 až 0,39 GB. Od v0.9.7 se počet fotek zpracovávaných najednou řídí i největší fotkou exportu (u velmi velkých méně), takže vrchol zůstane pod stropem při jakékoli velikosti: 10,1 fotky za sekundu a 1,31 GB pro tuto složku.

@@ -110,6 +110,7 @@ Installing a new version over an old one **replaces it** and keeps settings, pro
 - [ ] `scripts/ui-check.sh` passes the whole matrix ([UI_TESTS.md](UI_TESTS.md)); changed pictures approved on purpose
 - [ ] Benchmarks are within budget, and the results are logged in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log)
 - [ ] An `X.Y.0`: its milestone in the website's Wiki (`site/_data/timeline.yml` and `scripts/timeline-shot.sh`, DOCS_GUIDE "A release")
+- [ ] The website's short guides (`site/_includes/manual-short-<code>.md`) brought up to the chapters of `USER_GUIDE.md` that changed since the last release (DOCS_GUIDE "A release")
 - [ ] `scripts/release.sh` run, commit pushed
 - [ ] Workflow green, Linux smoke tests included; the release has the `.dmg`, `.msi`, `-setup.exe`, the two AppImages, the two `.deb` and `SHA256SUMS.txt`
 - [ ] Smoke test of the published installer on macOS, and on Windows too for an `X.Y.0` ([TESTING.md §7](TESTING.md#7-manual-release-checklist)); a broken release is fixed by a PATCH release, never by replacing assets
