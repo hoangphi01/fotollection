@@ -11,6 +11,6 @@
   {%- endif %}
   {%- if site.data.downloads %}
   {%- comment %} How often the installers were downloaded (scripts/download-stats.mjs), beside the buttons. {% endcomment %}
-  <span class="cta-count" title="{{ t.footer_downloads_hint }}">{% include icons/download.svg %}{{ t.cta_downloads | replace: "[n]", site.data.downloads[page.lang] }}</span>
+  <span class="cta-count" title="{{ t.footer_downloads_hint }}">{% include icons/download.svg %}{{ t.cta_downloads | replace: "[n]", site.data.downloads[pg.lang] }}</span>
   {%- endif %}
 </div>

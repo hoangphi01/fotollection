@@ -1,6 +1,6 @@
 {%- comment %} The interactive Looks section of the landing page (owner, 2026-11-09, after Apple's aperture picker): "Meet Looks", what a look is (Lightroom's preset, LUMIX's LUT and Fotollection's own colours, one thing here), then one photo through each built-in look (site/_data/looks.yml, rendered by the app's engine), a row of looks to pick and a sentence for the one picked; press and hold the photo for its original, as in the app. The pictures are stacked and cross-fade, so a pick never flashes; every sentence sits in one cell, so a pick never moves the row. Without script: the original and the list. assets/js/looks.js. {% endcomment -%}
-{%- assign t = site.data.i18n[page.lang] -%}
-{%- assign lang = page.lang -%}
+{%- assign t = site.data.i18n[pg.lang] -%}
+{%- assign lang = pg.lang -%}
 <section class="section looks-section" id="looks">
   <div class="wrap">
     <p class="kicker">{{ t.looks_kicker }}</p>

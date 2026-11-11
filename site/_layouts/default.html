@@ -1,23 +1,23 @@
-{%- assign t = site.data.i18n[page.lang] -%}
+{%- assign t = site.data.i18n[pg.lang] -%}
 {%- assign other = site.data.i18n[t.other] -%}
 {%- capture home_en %}{{ '/' | relative_url }}{% endcapture -%}
 {%- capture home_vi %}{{ '/vi/' | relative_url }}{% endcapture -%}
-{%- if page.lang == 'vi' %}{% assign other_home = home_en %}{% assign home = home_vi %}{% else %}{% assign other_home = home_vi %}{% assign home = home_en %}{% endif -%}
+{%- if pg.lang == 'vi' %}{% assign other_home = home_en %}{% assign home = home_vi %}{% else %}{% assign other_home = home_vi %}{% assign home = home_en %}{% endif -%}
 {%- comment %} Pages other than the home page name their two language versions and their title keys. {% endcomment -%}
-{%- assign path_en = page.path_en | default: '/' -%}
-{%- assign path_vi = page.path_vi | default: '/vi/' -%}
-{%- if page.lang == 'vi' %}{% assign other_page = path_en | relative_url %}{% else %}{% assign other_page = path_vi | relative_url %}{% endif -%}
-{%- if page.lang == 'vi' %}{% assign path_perf = '/vi/performance/' | relative_url %}{% else %}{% assign path_perf = '/performance/' | relative_url %}{% endif -%}
-{%- if page.lang == 'vi' %}{% assign path_manual = '/vi/manual/' | relative_url %}{% else %}{% assign path_manual = '/manual/' | relative_url %}{% endif -%}
-{%- if page.lang == 'vi' %}{% assign path_download = '/vi/download/' | relative_url %}{% else %}{% assign path_download = '/download/' | relative_url %}{% endif -%}
-{%- if page.lang == 'vi' %}{% assign path_signing = '/vi/code-signing/' | relative_url %}{% else %}{% assign path_signing = '/code-signing/' | relative_url %}{% endif -%}
-{%- if page.lang == 'vi' %}{% assign path_story = '/vi/story/' | relative_url %}{% else %}{% assign path_story = '/story/' | relative_url %}{% endif -%}
-{%- if page.lang == 'vi' %}{% assign path_wiki = '/vi/wiki/' | relative_url %}{% else %}{% assign path_wiki = '/wiki/' | relative_url %}{% endif -%}
-{%- if page.title_key %}{% assign page_title = t[page.title_key] | append: ' · Fotollection' %}{% else %}{% assign page_title = t.title %}{% endif -%}
-{%- if page.description_key %}{% assign page_description = t[page.description_key] %}{% else %}{% assign page_description = t.description %}{% endif -%}
+{%- assign path_en = pg.path_en | default: '/' -%}
+{%- assign path_vi = pg.path_vi | default: '/vi/' -%}
+{%- if pg.lang == 'vi' %}{% assign other_page = path_en | relative_url %}{% else %}{% assign other_page = path_vi | relative_url %}{% endif -%}
+{%- if pg.lang == 'vi' %}{% assign path_perf = '/vi/performance/' | relative_url %}{% else %}{% assign path_perf = '/performance/' | relative_url %}{% endif -%}
+{%- if pg.lang == 'vi' %}{% assign path_manual = '/vi/manual/' | relative_url %}{% else %}{% assign path_manual = '/manual/' | relative_url %}{% endif -%}
+{%- if pg.lang == 'vi' %}{% assign path_download = '/vi/download/' | relative_url %}{% else %}{% assign path_download = '/download/' | relative_url %}{% endif -%}
+{%- if pg.lang == 'vi' %}{% assign path_signing = '/vi/code-signing/' | relative_url %}{% else %}{% assign path_signing = '/code-signing/' | relative_url %}{% endif -%}
+{%- if pg.lang == 'vi' %}{% assign path_story = '/vi/story/' | relative_url %}{% else %}{% assign path_story = '/story/' | relative_url %}{% endif -%}
+{%- if pg.lang == 'vi' %}{% assign path_wiki = '/vi/wiki/' | relative_url %}{% else %}{% assign path_wiki = '/wiki/' | relative_url %}{% endif -%}
+{%- if pg.title_key %}{% assign page_title = t[pg.title_key] | append: ' · Fotollection' %}{% else %}{% assign page_title = t.title %}{% endif -%}
+{%- if pg.description_key %}{% assign page_description = t[pg.description_key] %}{% else %}{% assign page_description = t.description %}{% endif -%}
 {%- assign canonical = page.url | absolute_url -%}
 {%- comment -%} Each page's own link preview (site/screenshots/og.mjs): og-{page}-{lang}.jpg, the home page's og-{lang}.jpg. {%- endcomment -%}
-{%- if page.og %}{% assign og_name = 'og-' | append: page.og | append: '-' | append: page.lang %}{% else %}{% assign og_name = 'og-' | append: page.lang %}{% endif -%}
+{%- if pg.og %}{% assign og_name = 'og-' | append: pg.og | append: '-' | append: pg.lang %}{% else %}{% assign og_name = 'og-' | append: pg.lang %}{% endif -%}
 {%- capture og_image %}{{ '/assets/img/' | append: og_name | append: '.jpg' | absolute_url }}{% endcapture -%}
 <!doctype html>
 <html lang="{{ t.html_lang }}">
@@ -95,21 +95,21 @@
     <span id="top"></span>
     <header class="nav">
       <div class="wrap nav-row">
-        <a class="brand" href="{% if page.lang == 'vi' %}{{ home_vi }}{% else %}{{ home_en }}{% endif %}">
+        <a class="brand" href="{% if pg.lang == 'vi' %}{{ home_vi }}{% else %}{{ home_en }}{% endif %}">
           <img src="{{ '/assets/mark-56.png' | relative_url }}" width="28" height="28" alt="" />
           <span>Fotollection</span>
         </a>
         <nav class="nav-links" aria-label="Main">
           <a href="{{ home }}#features">{{ t.nav_features }}</a>
           <a href="{{ home }}#privacy">{{ t.nav_privacy }}</a>
-          <a href="{{ path_perf }}"{% if page.title_key == 'perf_title' %} aria-current="page"{% endif %}>{{ t.nav_numbers }}</a>
-          <a href="{{ path_manual }}"{% if page.title_key == 'man_title' %} aria-current="page"{% endif %}>{{ t.nav_manual }}</a>
+          <a href="{{ path_perf }}"{% if pg.title_key == 'perf_title' %} aria-current="page"{% endif %}>{{ t.nav_numbers }}</a>
+          <a href="{{ path_manual }}"{% if pg.title_key == 'man_title' %} aria-current="page"{% endif %}>{{ t.nav_manual }}</a>
         </nav>
         <div class="nav-actions">
           <a class="lang" href="{{ other_page }}" hreflang="{{ other.html_lang }}" lang="{{ other.html_lang }}">{% include icons/languages.svg %}<span>{{ t.other_label }}</span></a>
           {% include star.html %}
           <a class="pill coffee" href="{{ home }}#support" aria-label="{{ t.support_title }}">{% include icons/coffee.svg %}<span class="pill-label">{{ t.nav_coffee }}</span></a>
-          <a class="pill pill-primary" href="{{ path_download }}"{% if page.title_key == 'dl_title' %} aria-current="page"{% endif %} aria-label="{{ t.nav_download }}">{% include icons/download.svg %}<span class="pill-label">{{ t.nav_download }}</span></a>
+          <a class="pill pill-primary" href="{{ path_download }}"{% if pg.title_key == 'dl_title' %} aria-current="page"{% endif %} aria-label="{{ t.nav_download }}">{% include icons/download.svg %}<span class="pill-label">{{ t.nav_download }}</span></a>
         </div>
       </div>
     </header>
@@ -202,8 +202,8 @@
     <section class="footnotes" aria-label="{{ t.fn_title }}">
       <div class="wrap">
         {%- comment -%} This page's own notes, numbered as its marks are (_includes/fn.html, _data/footnotes.yml; owner, 2026-11-07). {%- endcomment %}
-        {%- assign fn_page = page.title_key | default: "home" %}
-        {%- assign fn_list = site.data.footnotes[fn_page][page.lang] %}
+        {%- assign fn_page = pg.title_key | default: "home" %}
+        {%- assign fn_list = site.data.footnotes[fn_page][pg.lang] %}
         {%- if fn_list %}
         <ol>
           {%- for key in fn_list %}
@@ -239,8 +239,8 @@
           {%- comment -%} Written at build time by scripts/ga-visits.mjs and scripts/download-stats.mjs; each
                pill is left out when its file is absent. {%- endcomment %}
           <p class="footer-visits">
-            {%- if site.data.visits %}<span class="pill" title="{{ t.footer_visits_hint }}">{% include icons/eye.svg %}<span>{{ t.footer_visits }}</span><span class="star-count">{{ site.data.visits[page.lang] }}</span></span>{% endif %}
-            {%- if site.data.downloads %} <a class="pill" href="{{ path_download }}" title="{{ t.footer_downloads_hint }}">{% include icons/download.svg %}<span>{{ t.footer_downloads }}</span><span class="star-count">{{ site.data.downloads[page.lang] }}</span></a>{% endif %}
+            {%- if site.data.visits %}<span class="pill" title="{{ t.footer_visits_hint }}">{% include icons/eye.svg %}<span>{{ t.footer_visits }}</span><span class="star-count">{{ site.data.visits[pg.lang] }}</span></span>{% endif %}
+            {%- if site.data.downloads %} <a class="pill" href="{{ path_download }}" title="{{ t.footer_downloads_hint }}">{% include icons/download.svg %}<span>{{ t.footer_downloads }}</span><span class="star-count">{{ site.data.downloads[pg.lang] }}</span></a>{% endif %}
           </p>
           {%- endif %}
         </div>

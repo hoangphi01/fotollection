@@ -1,7 +1,7 @@
 {%- comment %} The Download page (site/README.md): every installer, the first-launch steps for each
      system, the Linux commands, the table by system, what is new, and which distributions run Linux. The home page keeps only its
      buttons. {% endcomment -%}
-{%- assign t = site.data.i18n[page.lang] -%}
+{%- assign t = site.data.i18n[pg.lang] -%}
 {%- include release-assets.html -%}
 <section class="section perf-head">
   <div class="wrap">
@@ -18,7 +18,7 @@
     {%- assign d = site.data.downloads %}
     {%- if d %}
     {%- comment %} Written at build time by scripts/download-stats.mjs; absent without it. {% endcomment %}
-    <p class="small muted">{{ t.dl_count | replace: "[n]", d[page.lang] | replace: "[mac]", d.mac | replace: "[win]", d.win | replace: "[linux]", d.linux }}{% if d.latest %} {{ t.dl_count_split | replace: "[tag]", d.latest.tag | replace: "[site]", d.latest.site | replace: "[updates]", d.latest.updates }}{% endif %}{% include fn.html keys="fn_downloads" %}</p>
+    <p class="small muted">{{ t.dl_count | replace: "[n]", d[pg.lang] | replace: "[mac]", d.mac | replace: "[win]", d.win | replace: "[linux]", d.linux }}{% if d.latest %} {{ t.dl_count_split | replace: "[tag]", d.latest.tag | replace: "[site]", d.latest.site | replace: "[updates]", d.latest.updates }}{% endif %}{% include fn.html keys="fn_downloads" %}</p>
     {%- endif %}
   </div>
 </section>

@@ -24,6 +24,7 @@ site/.jekyll-cache/
 site/_data/repo.json
 site/_data/visits.json
 site/_data/downloads.json
+site/_data/release.json
 site/_data/web_downloads.json
 site/_includes/changelog.md
 
@@ -47,3 +48,6 @@ site/_includes/story-toc-*.md
 
 # The owner's reference material (RAW photos, Lightroom renders, presets): private, never committed.
 /Material Fotollection/
+
+# The website built by Eleventy (eleventy.config.mjs)
+/_site/

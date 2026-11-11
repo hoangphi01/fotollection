@@ -1,4 +1,4 @@
-{%- assign t = site.data.i18n[page.lang] -%}
+{%- assign t = site.data.i18n[pg.lang] -%}
 {%- include release-assets.html -%}
 
 {%- comment -%} The landing page in mechvibes.com's order (owner, 2026-11-06), in Fotollection's own look: the hero with the makeover, what is new as a bento, the modes, the features in pairs, the themes, the develop view, the numbers, privacy, the community, the final call. {%- endcomment -%}
@@ -19,7 +19,7 @@
   </div>
   <div class="wrap">
     {%- comment -%} The makeover: v0.12's gallery wiped into v0.13's once, then a handle to compare (assets/js/makeover.js; without script, the new one). {%- endcomment -%}
-    {%- assign old = '/assets/img/legacy/grid-' | append: page.lang -%}
+    {%- assign old = '/assets/img/legacy/grid-' | append: pg.lang -%}
     <figure class="shot hero-shot makeover" data-makeover style="--pos: 100%">
       <div class="makeover-stage">
       <picture class="makeover-old">
@@ -66,7 +66,7 @@
       </article>
       {%- endfor %}
     </div>
-    <p class="systems-link"><a class="more" href="{% if page.lang == 'vi' %}{{ '/vi/manual/' | relative_url }}{% else %}{{ '/manual/' | relative_url }}{% endif %}">{{ t.modes_manual }} {% include icons/arrow-right.svg %}</a></p>
+    <p class="systems-link"><a class="more" href="{% if pg.lang == 'vi' %}{{ '/vi/manual/' | relative_url }}{% else %}{{ '/manual/' | relative_url }}{% endif %}">{{ t.modes_manual }} {% include icons/arrow-right.svg %}</a></p>
   </div>
   <div class="wrap showcase">
     {%- assign rows = "collage,collage-preview,simple" | split: "," -%}
@@ -167,7 +167,7 @@
       <article class="card">{% include icons/mouse-pointer-click.svg %}<h3>{{ t.f_open_title }}</h3><p>{{ t.f_open_text }}</p></article>
     </div>
     <p class="systems-link"><a class="more" href="{{ path_download }}#systems">{{ t.pf_title }} {% include icons/arrow-right.svg %}</a></p>
-    <p class="systems-link"><a class="more" href="{% if page.lang == 'vi' %}{{ '/vi/performance/' | relative_url }}{% else %}{{ '/performance/' | relative_url }}{% endif %}">{{ t.charts_more }} {% include icons/arrow-right.svg %}</a></p>
+    <p class="systems-link"><a class="more" href="{% if pg.lang == 'vi' %}{{ '/vi/performance/' | relative_url }}{% else %}{{ '/performance/' | relative_url }}{% endif %}">{{ t.charts_more }} {% include icons/arrow-right.svg %}</a></p>
   </div>
 </section>
 
@@ -245,7 +245,7 @@
     <h2>{{ t.final_title }}</h2>
     <p class="lead">{{ t.final_lead }}</p>
     {% include download-buttons.html id="get-download" listed=true %}
-    <p><a class="more" href="{% if page.lang == 'vi' %}{{ '/vi/manual/' | relative_url }}{% else %}{{ '/manual/' | relative_url }}{% endif %}">{{ t.final_manual }} {% include icons/arrow-right.svg %}</a></p>
+    <p><a class="more" href="{% if pg.lang == 'vi' %}{{ '/vi/manual/' | relative_url }}{% else %}{{ '/manual/' | relative_url }}{% endif %}">{{ t.final_manual }} {% include icons/arrow-right.svg %}</a></p>
   </div>
 </section>
 

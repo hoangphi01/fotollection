@@ -1009,3 +1009,10 @@
 - **Why:** `scripts/apt-repo.sh` relied on `apt-ftparchive` (apt-utils) being on GitHub's `ubuntu-latest` image; the image changed and dropped it. Nobody watched the pages run after a site push, so a broken deploy looked like a cache.
 - **Fix:** the step installs apt-utils when the command is missing (`pages.yml`).
 - **Rule:** a workflow installs every tool its scripts call instead of trusting the runner image; after a push that changes the site, check the *pages* run before saying it is live.
+
+### Moved to Eleventy, the carousels' notes were numbered 0: front matter renamed into a loop's variable (site, ADR-0049)
+
+- **Seen:** after the move from Jekyll, every footnote mark in the landing page's carousels read 0.
+- **Why:** Jekyll gives front matter as `page.title_key`; Eleventy puts it at the top level. Renaming `page.title_key` to `title_key` let the modes section's own loop variable `title_key` overwrite it, so `fn.html` looked up the notes of a page called `simple_title`.
+- **Fix:** each page's front matter is one object, `pg` (`site/site.11tydata.mjs`), read as `pg.lang`, `pg.title_key`; every page built both ways and compared, line by line, until only what the workflow alone has was left.
+- **Rule:** when moving a template engine, keep the page's own fields under a namespace of their own, and prove the move by diffing every page's HTML against the old build, not by looking.

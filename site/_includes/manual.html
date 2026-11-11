@@ -1,11 +1,11 @@
 {%- comment %} The manual: docs/USER_GUIDE.md and USER_GUIDE.vi.md, turned into manual-<lang>.md by scripts/site-manual.sh at build time (ADR-0031). Laid out like the Performance page: the same header, then the text; the chapter list opens from a round button bottom left; each table scrolls sideways on a phone instead of breaking its lines. {% endcomment -%}
-{%- assign t = site.data.i18n[page.lang] -%}
-{%- capture toc_file %}manual-toc-{{ page.lang }}.md{% endcapture -%}
-{%- capture body_file %}manual-{{ page.lang }}.md{% endcapture -%}
+{%- assign t = site.data.i18n[pg.lang] -%}
+{%- capture toc_file %}manual-toc-{{ pg.lang }}.md{% endcapture -%}
+{%- capture body_file %}manual-{{ pg.lang }}.md{% endcapture -%}
 {%- capture toc %}{% include {{ toc_file }} %}{% endcapture -%}
 {%- capture body %}{% include {{ body_file }} %}{% endcapture -%}
 {%- capture docs_href %}href="{{ site.repo_url }}/blob/main/docs/{% endcapture -%}
-{%- if page.lang == 'vi' %}{% assign guide = 'USER_GUIDE.vi.md' %}{% else %}{% assign guide = 'USER_GUIDE.md' %}{% endif -%}
+{%- if pg.lang == 'vi' %}{% assign guide = 'USER_GUIDE.vi.md' %}{% else %}{% assign guide = 'USER_GUIDE.md' %}{% endif -%}
 <section class="section perf-head">
   <div class="wrap">
     <p class="kicker">{{ t.man_kicker }}</p>

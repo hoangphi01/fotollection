@@ -1,10 +1,11 @@
 # Website
 
-The project's website, <https://fotollection.org/>, in English (`/`) and Vietnamese (`/vi/`). It is built by GitHub Pages' own Jekyll ([`.github/workflows/pages.yml`](../.github/workflows/pages.yml)) whenever `site/` changes on `main`, and after every release, so the download buttons always point at the latest installers ([docs/RELEASE.md](../docs/RELEASE.md)).
+The project's website, <https://fotollection.org/>, in English (`/`) and Vietnamese (`/vi/`). It is built by Eleventy ([`eleventy.config.mjs`](../eleventy.config.mjs), [ADR-0049](../docs/adr/0049-website-on-eleventy.md)) in [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) and served by GitHub Pages whenever `site/` changes on `main`, and after every release, so the download buttons always point at the latest installers ([docs/RELEASE.md](../docs/RELEASE.md)).
 
 | Path | What it holds |
 |------|---------------|
-| `_config.yml` | Address (`url`, `baseurl`) and the `jekyll-github-metadata` plugin, which reads the latest release |
+| `_config.yml` | Address (`url`, `baseurl`) and the keys templates read as `site.*`; `site.github.latest_release` comes from `_data/release.json`, written by the workflow |
+| `site.11tydata.mjs` | Each page's front matter as `pg.*` (Jekyll's `page.*`) |
 | `_data/i18n.yml` | Every string, in `en` and `vi`, with the same keys |
 | `_data/platforms.yml` | The facts of the "By system" table on the Download page (`#systems`; Features on the home page links to it) (macOS, Windows, Linux): one row per feature, a mark per system (`ok`, `soon`, `none`) and the footnote number a cell carries; the words are the `pf_*` keys, so the two languages cannot drift ([ADR-0034](../docs/adr/0034-linux-lean.md)). The Linux card (`#install-linux`: the `install.sh` one-liner, the APT repository, the AppImage, the four files) and the distributions block (`#linux`, `distro_groups`) are on the Download page. Its footnotes are keys (`label_fn`, `mac_fn`…), numbered per page as every other mark |
 | `_layouts/default.html` | Page shell: meta tags, Open Graph and Twitter cards (each page's own preview image, `og-{page}-{lang}.jpg` named by `og:` in its front matter, made by `screenshots/og.mjs`), `hreflang`, navigation, footer (with the red *Report a problem* button to the issue forms, FR-069) |
@@ -43,10 +44,9 @@ The project's website, <https://fotollection.org/>, in English (`/`) and Vietnam
 ## Preview locally
 
 ```sh
-docker run --rm --platform linux/amd64 -v "$PWD/site":/work/site:ro -v /tmp/site-out:/out \
-  -e GITHUB_WORKSPACE=/work -e INPUT_SOURCE=site -e INPUT_DESTINATION=../out \
-  -e INPUT_TOKEN="$(gh auth token)" -e GITHUB_REPOSITORY=hoangphi01/fotollection \
-  -e GITHUB_API_URL=https://api.github.com ghcr.io/actions/jekyll-build-pages:v1.0.13
+npm ci                     # once: Eleventy and its markdown plugins
+scripts/site-manual.sh     # the manual's pages, as the workflow makes them
+npm run site:serve         # http://localhost:4000, rebuilt on every save
 ```
 
-The output in `/tmp/site-out` is served at the root of the domain.
+The download buttons, star count and download count need `_data/release.json`, `repo.json` and `downloads.json`, which the workflow writes (`gh api …`, `scripts/download-stats.mjs`); without them the page falls back to links to the releases. The visit count needs the workflow's Google Analytics secrets.

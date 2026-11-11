@@ -1,6 +1,7 @@
 name: pages
 
-# The website in site/ (site/README.md), built with GitHub Pages' own Jekyll. Rebuilt when the
+# The website in site/ (site/README.md), built with Eleventy (eleventy.config.mjs, ADR-0049) and
+# served by GitHub Pages. Rebuilt when the
 # site changes, by release.yml after a release so the download buttons show it, and every six
 # hours so the star count and the visit count in the footer stay current.
 on:
@@ -8,7 +9,7 @@ on:
     - cron: "17 */6 * * *"
   push:
     branches: [main]
-    paths: ["site/**", "CHANGELOG.md", "docs/USER_GUIDE.md", "docs/USER_GUIDE.vi.md", "scripts/site-manual.sh", "scripts/ga-visits.mjs", "scripts/download-stats.mjs", "scripts/apt-repo.sh", ".github/workflows/pages.yml"]
+    paths: ["site/**", "eleventy.config.mjs", "package.json", "package-lock.json", "CHANGELOG.md", "docs/USER_GUIDE.md", "docs/USER_GUIDE.vi.md", "scripts/site-manual.sh", "scripts/ga-visits.mjs", "scripts/download-stats.mjs", "scripts/apt-repo.sh", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -26,12 +27,23 @@ jobs:
 
       - uses: actions/configure-pages@v5
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Eleventy and its markdown plugins (devDependencies of the workspace).
+      - name: Site tools
+        run: npm ci --no-audit --no-fund
+
       # The star count for the header button, read at build time (no script in the page).
       - name: Repository facts
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api "repos/$GITHUB_REPOSITORY" --jq '{stars: .stargazers_count}' > site/_data/repo.json
+          # The latest release for the download buttons (what jekyll-github-metadata gave).
+          gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq '{tag_name, html_url, published_at, assets: [.assets[] | {name, browser_download_url}]}' > site/_data/release.json || echo 'null' > site/_data/release.json
 
       # Total visits for the landing page footer, from Google Analytics (scripts/ga-visits.mjs).
       # Without the secrets it writes nothing and the footer leaves the line out.
@@ -56,11 +68,11 @@ jobs:
       - name: Manual for the page
         run: scripts/site-manual.sh
 
-      - uses: actions/jekyll-build-pages@v1
-        with:
-          source: site
-          destination: _site
-          token: ${{ github.token }}
+      - name: Build the site
+        env:
+          JEKYLL_ENV: production
+          TZ: UTC
+        run: npx @11ty/eleventy
 
       # The signed APT repository at /apt, from the latest release's .deb files (ADR-0035).
       # Without the key secret, or before a release has a .deb, the site goes out without it.
@@ -69,7 +81,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           APT_GPG_PRIVATE_KEY: ${{ secrets.APT_GPG_PRIVATE_KEY }}
         run: |
-          sudo chown -R "$(id -u):$(id -g)" _site
           # apt-ftparchive (apt-utils) left the runner image on 2026-11-10; install it when missing.
           command -v apt-ftparchive >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq apt-utils; }
           scripts/apt-repo.sh _site/apt

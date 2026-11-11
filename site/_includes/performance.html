@@ -1,5 +1,5 @@
 {%- comment %} The Performance page (site/README.md): every measurement, with what it means. {% endcomment -%}
-{%- assign t = site.data.i18n[page.lang] -%}
+{%- assign t = site.data.i18n[pg.lang] -%}
 {%- capture chart_base %}{{ '/assets/img/charts/' | relative_url }}{% endcapture -%}
 <section class="section perf-head">
   <div class="wrap">
@@ -53,14 +53,14 @@
       {%- if c == 'bench' %}{% assign file = 'bench' %}{% assign cap = t.chart_browser %}{% else %}{% capture file %}bench-{{ c }}{% endcapture %}{% capture cap_key %}chart_{{ c }}{% endcapture %}{% assign cap = t[cap_key] %}{% endif %}
       <figure class="card chart">
         {%- assign size = site.data.charts[file] %}
-        <img src="{{ chart_base }}{{ file }}-{{ page.lang }}.svg" width="{{ size.width | default: 752 }}" height="{{ size.height | default: 400 }}" alt="{{ cap }}" loading="lazy" decoding="async" />
+        <img src="{{ chart_base }}{{ file }}-{{ pg.lang }}.svg" width="{{ size.width | default: 752 }}" height="{{ size.height | default: 400 }}" alt="{{ cap }}" loading="lazy" decoding="async" />
         <figcaption>{{ cap }}{% include fn.html keys="fn_charts" %}</figcaption>
       </figure>
       {%- endfor -%}
     </div>
   </div>
   {%- comment %} What the numbers mean, at length, under the charts: perf/<key>-<lang>.md, committed Markdown in the manual's prose. {% endcomment %}
-  {%- capture deep_file %}perf/{{ key }}-{{ page.lang }}.md{% endcapture -%}
+  {%- capture deep_file %}perf/{{ key }}-{{ pg.lang }}.md{% endcapture -%}
   {%- capture deep %}{% include {{ deep_file }} %}{% endcapture %}
   <div class="wrap perf-deep">
     {%- if key == 'gpu' %}{% include perf-diagram.html name="gpu-cpu" %}{% endif %}
@@ -98,7 +98,7 @@ uv run bench/quality/audit.py ~/Pictures/some-folder /tmp/out
 uv run bench/quality/share_audit.py ~/Pictures/some-folder /tmp/share</code></pre>
     <p class="actions">
       <a class="more" href="{{ site.repo_url }}/blob/main/docs/RESULT.md">{{ t.perf_repro_link }} {% include icons/arrow-right.svg %}</a>
-      <a class="more" href="{% if page.lang == 'vi' %}{{ '/vi/' | relative_url }}{% else %}{{ '/' | relative_url }}{% endif %}">{{ t.perf_back }} {% include icons/arrow-right.svg %}</a>
+      <a class="more" href="{% if pg.lang == 'vi' %}{{ '/vi/' | relative_url }}{% else %}{{ '/' | relative_url }}{% endif %}">{{ t.perf_back }} {% include icons/arrow-right.svg %}</a>
     </p>
   </div>
 </section>

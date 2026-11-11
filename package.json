@@ -15,11 +15,17 @@
     "ui:dev": "npm run dev --workspace ui",
     "ui:build": "npm run build --workspace ui",
     "ui:lint": "npm run lint --workspace ui",
-    "ui:typecheck": "npm run typecheck --workspace ui"
+    "ui:typecheck": "npm run typecheck --workspace ui",
+    "site:build": "eleventy",
+    "site:serve": "eleventy --serve --port 4000"
   },
   "devDependencies": {
+    "@11ty/eleventy": "^3.1.2",
     "@axe-core/playwright": "^4.14.0",
     "@tauri-apps/cli": "^2.12.4",
+    "js-yaml": "^4.1.0",
+    "markdown-it-anchor": "^9.2.0",
+    "markdown-it-attrs": "^5.0.1",
     "pixelmatch": "^8.0.0",
     "playwright": "^1.64.0",
     "pngjs": "^7.0.0"

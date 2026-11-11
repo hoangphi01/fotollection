@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
-# The website (site/README.md), built by .github/workflows/pages.yml with GitHub Pages' Jekyll.
+# The website (site/README.md): these keys are `site.*` in the templates, read by
+# eleventy.config.mjs (ADR-0049) and built by .github/workflows/pages.yml.
 # Served at the custom domain fotollection.org (Cloudflare DNS, set in the repository's
 # Pages settings; site/README.md). Moving it means changing url and baseurl.
 title: Fotollection
@@ -11,11 +12,3 @@ author: hoangphi01
 # Google Analytics for the website only (the app has none). Loaded in production builds.
 google_analytics: G-6S9X5DN7GL
 
-plugins:
-  - jekyll-github-metadata
-
-exclude:
-  - README.md
-  - screenshots/
-
-markdown: kramdown
