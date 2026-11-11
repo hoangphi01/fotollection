@@ -41,4 +41,10 @@ else
     git diff-tree --no-commit-id --name-only -r "$c" | check "the last commit" || status=1
   fi
 fi
+
+# The range pushes Rust: CI's first step is `cargo fmt --all --check`, and a red CI hid for two
+# days behind pushes that did not run it (LESSONS), so it is checked before the push too.
+if [ $# -gt 0 ] && git diff --name-only "$1" | grep -qE '\.rs$'; then
+  cargo fmt --all --check >/dev/null 2>&1 || { echo "  ✗ Rust not formatted: run cargo fmt --all (CI's first step)"; status=1; }
+fi
 exit $status

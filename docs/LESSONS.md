@@ -1065,3 +1065,10 @@
 - **Why:** those files quote the names in their YAML lists, which YAML reads the same, but the check took the text between the commas as it was, quotes included.
 - **Fix:** the check strips the quotes; the build was right all along.
 - **Rule:** a check that reads YAML by pattern accepts every way YAML writes the same value, or reads it with the parser.
+
+### CI was red for two days on `cargo fmt`, and nobody saw it (CI)
+
+- **Seen:** while preparing Flathub on 2026-11-11, `cargo fmt --check` failed on `crates/core/examples/render_looks.rs`; CI had failed on its first step, *Rust fmt*, on every system since 5a73beb (2026-11-09).
+- **Why:** the example came in a website commit (4082bd5) and was never formatted; the pushes after it changed only the site and the docs, which do not start CI, so its last red run stayed out of sight while the pages runs were green.
+- **Fix:** formatted; `scripts/check-docs-with-code.sh <range>`, run before every push, now runs `cargo fmt --all --check` when the range touches a `.rs` file (proven on the old file).
+- **Rule:** after a push, look at every workflow it started, CI too, not only the one the change was about; a Rust file in a website commit is still Rust.

@@ -20,16 +20,22 @@ fn main() {
     let mut args = std::env::args().skip(1);
     let input = PathBuf::from(args.next().expect("an upright JPEG"));
     let out = PathBuf::from(args.next().expect("an output folder"));
-    let edge: u32 = args.next().map_or(1600, |e| e.parse().expect("an edge in px"));
+    let edge: u32 = args
+        .next()
+        .map_or(1600, |e| e.parse().expect("an edge in px"));
     std::fs::create_dir_all(&out).unwrap();
     let codec = default_codec();
-    let photo = decode_image(codec.as_ref(), &std::fs::read(&input).unwrap()).unwrap().image;
+    let photo = decode_image(codec.as_ref(), &std::fs::read(&input).unwrap())
+        .unwrap()
+        .image;
     let photo = fit_long_edge(&photo, edge).unwrap();
     for entry in built_in() {
         let slug = entry.id.trim_start_matches("builtin:").to_owned();
         let mut image = photo.clone();
         entry.look.draw(&mut image);
-        let jpeg = codec.encode(&image, EncodeOptions::screen(92), None).unwrap();
+        let jpeg = codec
+            .encode(&image, EncodeOptions::screen(92), None)
+            .unwrap();
         std::fs::write(out.join(format!("{slug}.jpg")), jpeg).unwrap();
         println!("{slug} {}×{}", image.width, image.height);
     }
