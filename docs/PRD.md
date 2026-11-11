@@ -1199,10 +1199,11 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 ### FR-122 — A warm gradient behind the app's chrome
 
-**P2 (owner's request 2026-11-11, from the landing page's keynote: "a soft brown gradient looks richer than one flat brown").** The app's own surfaces (the sidebar, the side panels, the title bar), in the dark theme first, take a soft gradient of the logo's wood, as the keynote's dark stage does, instead of one flat brown.
+**P2 (built for v0.14.1, 2026-11-11, the owner's choice C on the style board; owner's request the same day, from the landing page's keynote: "a soft brown gradient looks richer than one flat brown").** The app's own surfaces (the sidebar, the side panels, the title bar), in the dark theme first, take a soft gradient of the logo's wood, as the keynote's dark stage does, instead of one flat brown.
 
 - **Photos stay on neutral ground** (STYLE_RULE §4, owner 2026-11-01): the stage, the grid and every surface right around a photo keep a chroma of 0.01 or less; only the chrome around them is warm.
 - **Shown first:** two or three variants on the style board for the owner to choose, both themes, before any code; the depth tokens (FR-099) and the measures unchanged.
+- **As built (choice C, one light across the window):** `chrome-lit` (`ui/src/index.css`) on the title bar, the folder list and the side panels: the sidebar's colour under a warm glow from the window's top left and a deeper one at its bottom right, `background-attachment: fixed` so the three surfaces share one light; both themes; `MEASURE=1` unchanged in EN light and VI dark.
 
 ## 7. Non-functional requirements
 

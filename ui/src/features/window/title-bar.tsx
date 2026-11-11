@@ -54,7 +54,7 @@ export function TitleBar({ name }: TitleBarProps) {
       <div
         data-tauri-drag-region
         data-window-chrome
-        className="pointer-events-auto relative z-[60] flex h-(--titlebar) shrink-0 items-center justify-center border-b bg-sidebar text-sidebar-foreground select-none"
+        className="pointer-events-auto relative z-[60] flex h-(--titlebar) shrink-0 items-center justify-center border-b chrome-lit text-sidebar-foreground select-none"
       >
         <span data-tauri-drag-region className="truncate px-24 text-xs text-muted-foreground">
           Fotollection — {name}
@@ -69,7 +69,7 @@ export function TitleBar({ name }: TitleBarProps) {
     <div
       data-tauri-drag-region
       data-window-chrome
-      className="pointer-events-auto relative z-[60] flex h-8 shrink-0 items-center border-b bg-sidebar text-sidebar-foreground select-none"
+      className="pointer-events-auto relative z-[60] flex h-8 shrink-0 items-center border-b chrome-lit text-sidebar-foreground select-none"
     >
       <img
         src="/brand/mark-28.png"

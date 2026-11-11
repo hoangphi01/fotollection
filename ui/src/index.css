@@ -142,6 +142,11 @@
     --sidebar-accent-foreground: oklch(0.28 0.03 60);
     --sidebar-border: oklch(0.88 0.04 172);
     --sidebar-ring: oklch(0.687 0.093 187.1);
+    /* The light across the app's chrome (FR-122, the owner's choice C, 2026-11-11), as the
+       landing page's keynote stage: a warm glow from the window's top left and a deeper one
+       at its bottom right, over the sidebar's colour. */
+    --chrome-glow: oklch(0.93 0.055 75);
+    --chrome-deep: oklch(0.95 0.04 80);
     /* Depth (FR-099, the owner's "bold" choice): a lip under raised controls in a shade of their
        own colour, a top highlight, lifted cards, set-in fields. In light the shade is a dark
        teal from the logo, never brown (owner, 2026-11-06). */
@@ -229,6 +234,8 @@
     --sidebar-accent-foreground: oklch(0.95 0.015 85);
     --sidebar-border: oklch(0.685 0.106 61.2 / 28%);
     --sidebar-ring: oklch(0.685 0.106 61.2);
+    --chrome-glow: oklch(0.36 0.07 58);
+    --chrome-deep: oklch(0.27 0.04 58);
     --shade: oklch(0 0 0);
     /* Dark words on the orange accent: a smaller step keeps them at 4.5:1 (5.1). */
     --deep: 8%;
@@ -245,6 +252,18 @@
 
 /* A photo or sheet on the black stage: a faint neutral outline shows its edge even when the
    print's own border is black (STYLE_RULE §4, neutral ground). */
+/* The app's chrome lit by one light across the window (FR-122): the title bar, the folder list
+   and the side panels each draw the same two glows, fixed to the window, so they read as one
+   surface lit from its top left. Photos stay on neutral ground (STYLE_RULE §4): the gallery,
+   the stage and every surface right around a photo never take it. */
+@utility chrome-lit {
+  background-color: var(--sidebar);
+  background-image:
+    radial-gradient(70% 90% at 0% 0%, var(--chrome-glow), transparent 60%),
+    radial-gradient(60% 80% at 100% 100%, var(--chrome-deep), transparent 60%);
+  background-attachment: fixed;
+}
+
 @utility stage-photo {
   border-radius: var(--radius-sm);
   box-shadow: 0 0 0 1px oklch(1 0 0 / 0.22), 0 25px 50px -12px oklch(0 0 0 / 0.25);
