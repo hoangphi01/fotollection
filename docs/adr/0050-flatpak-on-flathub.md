@@ -1,6 +1,6 @@
 # ADR-0050: Fotollection on Flathub, as `org.fotollection.Fotollection`
 
-- **Status:** Proposed (the app side is ready; the owner writes the manifest and submits)
+- **Status:** Proposed, deferred (owner, 2026-11-11: submit in two or three months, once Fotollection has more users and is steadier, nearer 1.0; free channels first). The app side is ready; the owner writes the manifest and submits
 - **Date:** 2026-11-11
 - **Related:** NFR-007, FR-061, FR-103, ADR-0034, ADR-0035
 
@@ -42,3 +42,14 @@ Option 2, under the ID `org.fotollection.Fotollection` (the project's domain). T
 4. **Submit:** fork `flathub/flathub` with its `new-pr` branch, a branch of one's own, the manifest and the two generated source files, a pull request against `new-pr` titled `Add org.fotollection.Fotollection`, the template kept, the permissions explained (a photo library reads whole folders and writes beside them) and the use of AI disclosed truthfully: which parts, how much, and what the owner does himself.
 5. **Review:** answer every question in person, fix on the same branch, then comment `bot, build`.
 6. **After acceptance:** accept the invitation to `flathub/org.fotollection.Fotollection`; verify the domain on flathub.org and put its token in `site/.well-known/org.flathub.VerifiedApps.txt`; each release afterwards, the tag, the commit and the generated sources updated there by a pull request.
+
+## Before submitting: Flathub's quality guidelines
+
+[The quality guidelines](https://docs.flathub.org/docs/for-app-authors/metainfo-guidelines/quality-guidelines) are optional for publishing but decide whether Flathub features an app. Checked on 2026-11-11 against `org.fotollection.Fotollection.metainfo.xml`:
+
+- **Summary:** 58 characters ("Look through a trip's photos and prepare them for printing"); at most 35, ideally 10 to 25, an imperative verb, no name, no licence, no "app".
+- **Release notes:** none of the ten releases has a description; each needs two or three user-facing sentences (from the CHANGELOG's highlights, written into the metainfo by `release.sh`).
+- **Screenshots:** made in the browser from the demo, not on Linux; Flathub asks for the app's own window taken on Linux with its title bar and shadow, at most 1000 × 700 (2000 × 1400 HiDPI), in the default settings, with captions of one sentence.
+- **Brand colours:** the dark one (`#c98a52`, wood) is lighter than the light one (`#2c836d`, teal); the dark variant must be darker and more muted.
+- **Icon:** the 512 px icon fills the whole canvas, carries the word *fotollection* in small type and a baked shadow; Flathub's icon is square with room around it, no small text, no baked shadow, readable on light and dark (an icon of its own for Linux, the owner's design).
+- Passing already: the name (12 characters), the description's length and list, the captions, the OARS rating, a runtime that is not end of life (to choose at submission).
