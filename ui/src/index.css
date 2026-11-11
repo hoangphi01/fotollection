@@ -147,6 +147,12 @@
        at its bottom right, over the sidebar's colour. */
     --chrome-glow: oklch(0.93 0.055 75);
     --chrome-deep: oklch(0.95 0.04 80);
+    /* What the light falls on, and the faces of the controls and cards it lights: in light the
+       usual ones. */
+    --chrome-base: oklch(0.972 0.018 88);
+    --chrome-card: oklch(0.993 0.008 88);
+    --chrome-secondary: oklch(0.955 0.022 88);
+    --chrome-muted: oklch(0.965 0.01 88);
     /* Depth (FR-099, the owner's "bold" choice): a lip under raised controls in a shade of their
        own colour, a top highlight, lifted cards, set-in fields. In light the shade is a dark
        teal from the logo, never brown (owner, 2026-11-06). */
@@ -201,7 +207,9 @@
 }
 
 .dark {
-    --background: oklch(0.185 0.006 70);
+    /* A very dark wood, not black (owner, 2026-11-12): the gallery, the preview's columns. The
+       stage where a photo's colours are judged keeps its own neutral `--stage`. */
+    --background: oklch(0.185 0.018 58);
     --foreground: oklch(0.95 0.015 85);
     --card: oklch(0.225 0.012 70);
     --card-foreground: oklch(0.95 0.015 85);
@@ -234,8 +242,16 @@
     --sidebar-accent-foreground: oklch(0.95 0.015 85);
     --sidebar-border: oklch(0.685 0.106 61.2 / 28%);
     --sidebar-ring: oklch(0.685 0.106 61.2);
-    --chrome-glow: oklch(0.36 0.07 58);
-    --chrome-deep: oklch(0.27 0.04 58);
+    --chrome-glow: oklch(0.24 0.04 58);
+    --chrome-deep: oklch(0.215 0.03 58);
+    /* In dark, the light falls on the darkest wood, the same as the gallery and the Settings
+       window (`--background`), and only a little lighter at the corners: a very soft gradient;
+       controls and cards of the same wood, a step lighter, so nothing reads black (owner,
+       2026-11-12). */
+    --chrome-base: oklch(0.185 0.018 58);
+    --chrome-card: oklch(0.225 0.028 58);
+    --chrome-secondary: oklch(0.26 0.034 58);
+    --chrome-muted: oklch(0.29 0.04 58);
     --shade: oklch(0 0 0);
     /* Dark words on the orange accent: a smaller step keeps them at 4.5:1 (5.1). */
     --deep: 8%;
@@ -255,9 +271,13 @@
 /* The app's chrome lit by one light across the window (FR-122): the title bar, the folder list
    and the side panels each draw the same two glows, fixed to the window, so they read as one
    surface lit from its top left. Photos stay on neutral ground (STYLE_RULE §4): the gallery,
-   the stage and every surface right around a photo never take it. */
+   the stage and every surface right around a photo never take it. The cards and controls on it
+   take faces of the same wood (`--chrome-card`, `--chrome-secondary`, `--chrome-muted`). */
 @utility chrome-lit {
-  background-color: var(--sidebar);
+  --card: var(--chrome-card);
+  --secondary: var(--chrome-secondary);
+  --muted: var(--chrome-muted);
+  background-color: var(--chrome-base);
   background-image:
     radial-gradient(70% 90% at 0% 0%, var(--chrome-glow), transparent 60%),
     radial-gradient(60% 80% at 100% 100%, var(--chrome-deep), transparent 60%);

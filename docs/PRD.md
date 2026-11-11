@@ -1203,7 +1203,7 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 - **Photos stay on neutral ground** (STYLE_RULE §4, owner 2026-11-01): the stage, the grid and every surface right around a photo keep a chroma of 0.01 or less; only the chrome around them is warm.
 - **Shown first:** two or three variants on the style board for the owner to choose, both themes, before any code; the depth tokens (FR-099) and the measures unchanged.
-- **As built (choice C, one light across the window):** `chrome-lit` (`ui/src/index.css`) on the title bar, the folder list and the side panels: the sidebar's colour under a warm glow from the window's top left and a deeper one at its bottom right, `background-attachment: fixed` so the three surfaces share one light; both themes; `MEASURE=1` unchanged in EN light and VI dark.
+- **As built (choice C, one light across the window):** `chrome-lit` (`ui/src/index.css`) on the title bar, the folder list and the side panels: the sidebar's colour under a warm glow from the window's top left and a deeper one at its bottom right, `background-attachment: fixed` so the three surfaces share one light; both themes; `MEASURE=1` unchanged in EN light and VI dark. Tuned with the owner on 2026-11-12: in dark the gradient very soft over the darkest wood (`--background`, which the gallery and the Settings window share, warmed from near-black), the controls and cards on the chrome in the same wood; the preview's stage stays neutral (`--stage`).
 
 ## 7. Non-functional requirements
 
