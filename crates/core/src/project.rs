@@ -30,7 +30,9 @@ pub const FORMAT: &str = "fotollection-project";
 /// v12: `photos[].look.name` and `photos[].look.base`, the look of the library it came
 /// from (FR-079); absent before, and never part of its colours. `photos[].look.adjust.mixer`,
 /// the eight-hue colour mixer (FR-079), absent before (untouched).
-pub const SCHEMA_VERSION: u32 = 12;
+/// v13: `photos[].print_turned`, the print size laid the other way from the photo (FR-120);
+/// absent before (follows the photo).
+pub const SCHEMA_VERSION: u32 = 13;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -96,6 +98,9 @@ pub struct PhotoRow {
     /// The sheet this photo starts is turned (v9).
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub sheet_turned: bool,
+    /// The print size laid the other way from the photo (v13, FR-120).
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub print_turned: bool,
     /// The photo's own crop on a collage sheet (v9).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub collage_crop: Option<CropFrame>,
@@ -253,6 +258,7 @@ pub fn snapshot(library: &Library) -> ProjectFile {
                 place_source: edits.place.map(|p| p.source),
                 collage: edits.collage,
                 sheet_turned: edits.sheet_turned,
+                print_turned: edits.print_turned,
                 collage_crop: edits.collage_crop,
                 collage_straighten: edits.collage_straighten,
                 collage_rotation: (edits.collage_rotation % 4 != 0)
@@ -560,6 +566,7 @@ pub fn restore_into(
                     }),
                 collage: row.collage,
                 sheet_turned: row.sheet_turned,
+                print_turned: row.print_turned,
                 collage_crop: row.collage_crop.map(CropFrame::sanitized),
                 collage_straighten: row.collage_straighten.map(crate::straighten::sanitize),
                 caption: row
@@ -867,6 +874,7 @@ mod tests {
             place_source: None,
             collage: None,
             sheet_turned: false,
+            print_turned: false,
             collage_crop: None,
             collage_straighten: None,
             caption: None,
@@ -962,6 +970,35 @@ mod tests {
             panic!("v10 project should load");
         };
         assert!(v10.photos.iter().all(|p| p.look.is_none()));
+    }
+
+    /// FR-120: a v13 file keeps a photo's print size laid the other way; a v12 file follows
+    /// each photo, and a turned photo is written back and read again.
+    #[test]
+    fn fr_120_v13_keeps_a_turned_print_size() {
+        let Loaded::Ok(v12) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v12.fotollection"))
+        else {
+            panic!("v12 project should load");
+        };
+        assert!(v12.photos.iter().all(|p| !p.print_turned));
+        let Loaded::Ok(v13) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v13.fotollection"))
+        else {
+            panic!("v13 project should load");
+        };
+        let turned: Vec<bool> = v13.photos.iter().map(|p| p.print_turned).collect();
+        assert_eq!(turned, [true, false]);
+        let json = serde_json::to_string(&v13).unwrap_or_default();
+        assert_eq!(
+            json.matches("print_turned").count(),
+            1,
+            "written only when turned"
+        );
+        let Loaded::Ok(again) = from_bytes(json.as_bytes()) else {
+            panic!("a written v13 file should load");
+        };
+        assert!(again.photos[0].print_turned);
     }
 
     /// FR-079: a v12 file keeps the name and library reference of each photo's look; a bad

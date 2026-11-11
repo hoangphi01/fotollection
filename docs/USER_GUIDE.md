@@ -179,6 +179,7 @@ Choose the size you will print at, and Fotollection crops every photo to it and 
    Each size carries a badge for the photo selected in the gallery: **Sharp** (300 DPI or more), **Acceptable** (150–299 DPI, fine at arm's length) or **Pixelated** (under 150 DPI). Hover over it to see the DPI.
 3. Under the list, a line says how large the selected photo prints sharp, and how large it is still acceptable.
 4. Every photo is cropped to the size's ratio, **centred by default**. Choose what stays per photo in the preview (chapter 6).
+   **Orientation** under the list lays the size **Upright** or **Flat** for the photo shown (or the ticked ones), whatever its own shape ([FR-120](PRD.md#fr-120--turn-the-print-size)): a portrait photo across a flat 15 × 5 strip, a landscape one on an upright 10 × 15. **O** does the same in the preview and in Simple mode. Square sizes, *Original* and the info frame's *Fit* keep their shape; collage sheets turn on their own (chapter 19).
 5. **3 mm border** leaves a border 3 mm wide on every side, **White** or **Black** as you choose under the switch, cut into the photo: the print keeps the exact size of the shop's kiosk. With **Original**, no pixel is lost: the border goes round the whole photo, the short edge stays 10 cm and the long edge grows by 6 mm. Photos for social media never get it. With the info frame on, the border takes the frame's colour (chapter 9).
 
 <!-- shot: manual-size | The print size list, a sharpness badge on each size -->
@@ -538,6 +539,7 @@ These cards change a photo's colour slider by slider (Faves, the Color mixer and
 | Sheet preview | **↑** / **↓** | Put the chosen photo in the print basket / set it aside |
 | Sheet preview | **J** / **W** | Show the clipping / white balance of the chosen photo from a grey spot |
 | Preview | **R** or **C** | Open the crop editor (chapter 6) |
+| Preview, Simple mode | **O** | Lay the print size the other way, upright or flat (chapter 5) |
 | Preview | **\\** | Before / After: the photo without its look, and back (§21) |
 | Preview | **Y**, **⇧Y**, **⌥/Alt Y** | Before and after side by side, split, top and bottom (§21) |
 | Preview | **J** | Show the clipping: blown in red, blocked in blue (chapter 4) |

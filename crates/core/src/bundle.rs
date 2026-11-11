@@ -564,6 +564,7 @@ mod tests {
                 place_source: None,
                 collage: None,
                 sheet_turned: false,
+                print_turned: false,
                 collage_crop: None,
                 collage_straighten: None,
                 caption: None,

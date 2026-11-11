@@ -177,6 +177,7 @@ Chọn khổ bạn sẽ in, Fotollection cắt mọi ảnh theo khổ đó và c
    Mỗi khổ có một huy hiệu cho ảnh đang chọn trong gallery: **Nét** (từ 300 DPI), **Tạm được** (150–299 DPI, ổn khi cầm xem) hoặc **Sẽ vỡ** (dưới 150 DPI). Rê chuột lên huy hiệu để xem số DPI.
 3. Dưới danh sách, một dòng cho biết ảnh đang chọn in nét tới cỡ nào, và vẫn chấp nhận được tới cỡ nào.
 4. Mọi ảnh được cắt theo tỉ lệ của khổ, **mặc định ở giữa**. Chọn phần được giữ cho từng ảnh trong bản xem trước (chương 6).
+   **Hướng khổ in** dưới danh sách đặt khổ **Đứng** hoặc **Nằm** cho ảnh đang xem (hoặc các ảnh đã chọn), bất kể ảnh dọc hay ngang ([FR-120](PRD.md#fr-120--turn-the-print-size)): ảnh dọc in nằm trên dải 15 × 5, ảnh ngang in đứng trên khổ 10 × 15. Phím **O** làm điều tương tự trong bản xem trước và chế độ Đơn giản. Khổ vuông, *Gốc* và *Giữ trọn ảnh* của khung giữ nguyên hình; tờ ghép ảnh xoay theo cách riêng (chương 19).
 5. **Viền 3 mm** để một viền rộng 3 mm ở mọi cạnh, **Trắng** hoặc **Đen** tuỳ bạn chọn dưới công tắc, lấn vào ảnh: bản in vẫn đúng khổ của máy in tại tiệm. Với khổ **Gốc**, không mất pixel nào: viền bao quanh cả tấm ảnh, cạnh ngắn vẫn 10 cm và cạnh dài thêm 6 mm. Ảnh xuất cho mạng xã hội không bao giờ có viền. Khi bật khung thông tin, viền theo màu khung (chương 9).
 
 <!-- shot: manual-size | Danh sách khổ in, mỗi khổ một huy hiệu độ nét -->
@@ -536,6 +537,7 @@ Các thẻ này chỉnh màu ảnh theo từng thanh trượt (Cơ bản, Trộn
 | Xem trước tấm | **↑** / **↓** | Cho ảnh đang chọn vào giỏ in / để riêng |
 | Xem trước tấm | **J** / **W** | Hiện vùng mất chi tiết / cân bằng trắng của ảnh đang chọn từ một điểm xám |
 | Xem trước | **R** hoặc **C** | Mở màn cắt ảnh (chương 6) |
+| Xem trước, chế độ Đơn giản | **O** | Đặt khổ in theo hướng kia, đứng hoặc nằm (chương 5) |
 | Xem trước | **\\** | Trước / Sau: ảnh khi chưa có look, và trở lại (§21) |
 | Xem trước | **Y**, **⇧Y**, **⌥/Alt Y** | Trước và sau: cạnh nhau, chia đôi, trên và dưới (§21) |
 | Xem trước | **J** | Hiện vùng mất chi tiết: cháy sáng màu đỏ, mất chi tiết tối màu xanh dương (chương 4) |

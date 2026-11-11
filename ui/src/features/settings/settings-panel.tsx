@@ -105,7 +105,7 @@ export function SettingsPanel({
         <ApplyLookCard filter={filter} ticked={ticked ? [...ticked] : undefined} photoCount={photoCount} photo={photo} />
       ) : (
         <>
-          <PrintSizeCard settings={settings} onChange={onChange} printSizes={printSizes} photo={photo} advice={advice} revision={revision} />
+          <PrintSizeCard settings={settings} onChange={onChange} printSizes={printSizes} photo={photo} advice={advice} revision={revision} orientationIds={ticked?.length ? ticked : photo ? [photo.id] : undefined} />
           <DateStampCard settings={settings} onChange={onChange} customStamps={customStamps} />
           <FrameSection frame={frame} fonts={fonts} />
           <CameraClocksCard />

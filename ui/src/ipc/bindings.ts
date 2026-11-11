@@ -451,6 +451,12 @@ export const commands = {
 	acceptBorrowedPlaces: (accepted: BorrowAccept[]) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("accept_borrowed_places", { accepted })),
 	/**  Turns photos a quarter turn (FR-006), lossless; their crops turn with them. Undoable. */
 	rotatePhotos: (ids: PhotoId[], clockwise: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("rotate_photos", { ids, clockwise })),
+	/**
+	 *  Lays the print size flat (`landscape`) or upright for each photo (FR-120): a photo whose
+	 *  own orientation already matches follows it again, the others are turned. One undo step.
+	 *  A collage sheet keeps its own turn (FR-035).
+	 */
+	setPrintOrientation: (ids: PhotoId[], landscape: boolean) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_print_orientation", { ids, landscape })),
 	getPhotoStamp: (id: PhotoId) => typedError<PhotoStamp, IpcError>(__TAURI_INVOKE("get_photo_stamp", { id })),
 	/**
 	 *  Gives one photo its own stamp, or (`None`) makes it follow the settings again; undoable.
@@ -1098,6 +1104,10 @@ export type CropGeometry = {
 	printGrows: boolean,
 	/**  Display unit of the selected size (inches for custom sizes entered in inches). */
 	unit: LengthUnit,
+	/**  The print lies flat as planned, the photo's own way or turned (FR-120). */
+	printLandscape: boolean,
+	/**  The print size can be laid the other way: not square, not Original, not Fit (FR-120). */
+	canTurn: boolean,
 };
 
 /**  The library filter (FR-022). The grid shows, and export writes, exactly the photos it keeps. */
@@ -1428,7 +1438,9 @@ export type HistoryEdit =
  *  and its new value), a look of the library picked (`name`, FR-079), or several at once
  *  (all none: *Apply to all*, a reset, a paste).
  */
-{ kind: "look"; field: string | null; value: number | null; name: string | null } | { kind: "rawLook" } | { kind: "crop" } | { kind: "straighten" } | { kind: "rotate" } | { kind: "stamp" } | { kind: "caption" };
+{ kind: "look"; field: string | null; value: number | null; name: string | null } | { kind: "rawLook" } | { kind: "crop" } | { kind: "straighten" } | { kind: "rotate" } | 
+/**  The print size laid the other way from the photo, or back (FR-120). */
+{ kind: "printTurn" } | { kind: "stamp" } | { kind: "caption" };
 
 export type HistoryState = {
 	revision: number,

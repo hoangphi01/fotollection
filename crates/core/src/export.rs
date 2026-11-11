@@ -446,6 +446,7 @@ fn encode_photo(
         straighten: record.edits.straighten,
         ratio: None,
         credit: faces.as_deref(),
+        turned: record.edits.print_turned,
     });
     let p = crate::plan::RenderPlan {
         linear_light: share.is_some(),

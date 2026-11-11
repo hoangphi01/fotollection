@@ -98,6 +98,7 @@ fn main() {
         straighten,
         ratio: None,
         credit: Some(&[]), // FR-121, on by default as in the app
+        turned: false,
     });
     let t = std::time::Instant::now();
     let image = render(&upright, &p).unwrap();

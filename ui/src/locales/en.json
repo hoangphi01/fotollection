@@ -1223,6 +1223,15 @@
     "zoom": "Zoom",
     "fill": "Fill"
   },
+  "printTurn": {
+    "label": "Orientation",
+    "upright": "Upright",
+    "flat": "Flat",
+    "hint": "The print size laid upright or flat for this photo, whatever its own shape (O).",
+    "hintMany_one": "Lays the print size this way for the ticked photo.",
+    "hintMany_other": "Lays the print size this way for the {{count}} ticked photos.",
+    "fixed": "Square sizes, Original and the frame's Fit keep their shape."
+  },
   "history": {
     "title": "History",
     "empty": "No changes to this photo yet.",
@@ -1232,6 +1241,7 @@
     "crop": "Crop",
     "straighten": "Straighten",
     "rotate": "Rotate",
+    "printTurn": "Turn print size",
     "stamp": "Date stamp",
     "caption": "Line under the date",
     "paste": "Paste settings",

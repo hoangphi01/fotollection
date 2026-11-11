@@ -6,7 +6,7 @@
 use serde::Serialize;
 use specta::Type;
 
-use crate::plan::{DpiBand, effective_dpi};
+use crate::plan::{DpiBand, effective_dpi_turned};
 use crate::print_size::PrintSize;
 
 /// Sharp prints need 300 DPI; below 150 DPI pixels show (PRD §5).
@@ -78,10 +78,12 @@ fn at_dpi(width: u32, height: u32, dpi: f64) -> PrintMm {
     }
 }
 
-/// Advice for an upright `width` × `height` photo over `sizes` (id, size).
+/// Advice for an upright `width` × `height` photo over `sizes` (id, size), each laid the
+/// other way from the photo when `turned` (FR-120).
 pub fn advise<'a>(
     width: u32,
     height: u32,
+    turned: bool,
     sizes: impl IntoIterator<Item = (&'a str, PrintSize)>,
 ) -> PrintAdvice {
     #[allow(clippy::cast_possible_truncation)]
@@ -95,7 +97,7 @@ pub fn advise<'a>(
         sizes: sizes
             .into_iter()
             .map(|(id, size)| {
-                let (dpi, band) = effective_dpi(width, height, size);
+                let (dpi, band) = effective_dpi_turned(width, height, size, turned);
                 SizeAdvice {
                     id: id.to_owned(),
                     dpi,
@@ -116,7 +118,7 @@ mod tests {
 
     #[test]
     fn fr_026_a_26_mp_photo_prints_every_standard_size_sharp() {
-        let advice = advise(6240, 4160, PrintSize::ALL.iter().map(|s| (s.id, *s)));
+        let advice = advise(6240, 4160, false, PrintSize::ALL.iter().map(|s| (s.id, *s)));
         assert!((advice.megapixels - 25.96).abs() < 0.01);
         // 6240 px at 300 DPI = 528 mm, at 150 DPI = 1057 mm.
         assert_eq!(
@@ -140,13 +142,13 @@ mod tests {
     fn fr_026_small_photos_get_yellow_then_red() {
         // 1600 × 1200 (2 MP): 10 × 15 crop 1600 × 1067 over 5.9 in → 271 DPI, acceptable;
         // 20 × 30 → 135 DPI, pixelated.
-        let advice = advise(1600, 1200, PrintSize::ALL.iter().map(|s| (s.id, *s)));
+        let advice = advise(1600, 1200, false, PrintSize::ALL.iter().map(|s| (s.id, *s)));
         assert_eq!(verdict(&advice, "10x15"), Some(PrintVerdict::Acceptable));
         assert_eq!(verdict(&advice, "20x30"), Some(PrintVerdict::Pixelated));
         // 9 × 13: 1600 px over 5.1 in → 312 DPI, still sharp.
         assert_eq!(verdict(&advice, "9x13"), Some(PrintVerdict::Sharp));
         // Portrait photos give the same verdicts.
-        let portrait = advise(1200, 1600, PrintSize::ALL.iter().map(|s| (s.id, *s)));
+        let portrait = advise(1200, 1600, false, PrintSize::ALL.iter().map(|s| (s.id, *s)));
         assert_eq!(portrait.sizes, advice.sizes);
     }
 }

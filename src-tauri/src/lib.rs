@@ -127,6 +127,7 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             places::find_borrowed_places,
             places::accept_borrowed_places,
             commands::rotate_photos,
+            commands::set_print_orientation,
             commands::get_photo_stamp,
             commands::set_photo_stamp,
             commands::set_photo_caption,

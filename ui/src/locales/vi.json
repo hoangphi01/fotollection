@@ -1174,6 +1174,14 @@
     "zoom": "Phóng to",
     "fill": "Lấp đầy"
   },
+  "printTurn": {
+    "label": "Hướng khổ in",
+    "upright": "Đứng",
+    "flat": "Nằm",
+    "hint": "Đặt khổ in đứng hay nằm cho ảnh này, bất kể ảnh dọc hay ngang (O).",
+    "hintMany": "Đặt khổ in theo hướng này cho {{count}} ảnh đã chọn.",
+    "fixed": "Khổ vuông, Original và Fit của khung giữ nguyên hình."
+  },
   "history": {
     "title": "Lịch sử",
     "empty": "Ảnh này chưa có thay đổi nào.",
@@ -1183,6 +1191,7 @@
     "crop": "Cắt ảnh",
     "straighten": "Cân ngang",
     "rotate": "Xoay",
+    "printTurn": "Xoay khổ in",
     "stamp": "Dấu ngày",
     "caption": "Dòng dưới ngày",
     "paste": "Dán thiết lập",

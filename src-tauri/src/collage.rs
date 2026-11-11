@@ -656,6 +656,9 @@ pub fn cell_geometry(
         output_height_cm: area_h / 10.0,
         print_grows: false,
         unit: fotollection_core::settings::LengthUnit::Cm,
+        print_landscape: target_width >= target_height,
+        // A sheet keeps its own turn (FR-035), never the print's (FR-120).
+        can_turn: false,
     })
 }
 

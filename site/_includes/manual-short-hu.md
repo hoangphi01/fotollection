@@ -88,7 +88,7 @@ Válaszd ki, mekkora méretben nyomtatsz, és a Fotollection minden fotót arra 
 1. A **Print / export size** kártyán hagyd kiválasztva a **Print**-et.
 2. Nyisd meg a méretlistát: **Standard (CEWE / EU)** a dm és a Rossmann fotókioszkjainak méreteivel (például *10 × 15 cm · 2:3*), **Original** a fotó saját arányával, vágás nélkül, vagy **Custom** a saját méreteiddel.
 3. Minden méret mellett egy jelzés áll a kiválasztott fotóhoz: **Sharp** (300 DPI vagy több), **Acceptable** (150–299 DPI) vagy **Pixelated** (150 DPI alatt).
-4. Minden fotó a méret arányára vágódik, alapból középre igazítva; hogy mi maradjon meg, azt az előnézetben választhatod meg.
+4. Minden fotó a méret arányára vágódik, alapból középre igazítva; hogy mi maradjon meg, azt az előnézetben választhatod meg. A lista alatti **Orientation** a fotó alakjától függetlenül **Upright** vagy **Flat** helyzetbe teszi a méretet, például egy álló fotót egy fekvő 15 × 5-ös csíkra; az előnézetben az **O** billentyű is ezt teszi.
 5. A **3 mm border** minden oldalon 3 mm-es fehér vagy fekete szegélyt hagy, így a nyomat pontosan a kioszk méretét tartja.
 
 <!-- shot: manual-size | A nyomtatási méretek listája, minden méret mellett élességjelzéssel -->

@@ -72,6 +72,8 @@ pub enum HistoryEdit {
     Crop,
     Straighten,
     Rotate,
+    /// The print size laid the other way from the photo, or back (FR-120).
+    PrintTurn,
     Stamp,
     Caption,
 }
@@ -163,6 +165,9 @@ pub fn describe(before: &PhotoEdits, after: &PhotoEdits) -> Vec<HistoryEdit> {
     }
     if before.rotation != after.rotation {
         edits.push(HistoryEdit::Rotate);
+    }
+    if before.print_turned != after.print_turned {
+        edits.push(HistoryEdit::PrintTurn);
     }
     if before.stamp != after.stamp {
         edits.push(HistoryEdit::Stamp);
@@ -687,5 +692,17 @@ mod tests {
         assert_eq!(history.photo_steps(ids[0])[0].kind, Some(StepKind::Reset));
         assert!(history.undo(&mut lib).is_some());
         assert_eq!(lib.edits(ids[0]), edited);
+    }
+
+    /// FR-120: laying the print size the other way is a step of its own, named in History.
+    #[test]
+    fn fr_120_a_turned_print_size_is_a_named_step() {
+        let before = PhotoEdits::default();
+        let after = PhotoEdits {
+            print_turned: true,
+            ..PhotoEdits::default()
+        };
+        assert_eq!(describe(&before, &after), vec![HistoryEdit::PrintTurn]);
+        assert!(develops(&before, &after));
     }
 }

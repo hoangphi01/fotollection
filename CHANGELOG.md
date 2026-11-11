@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Turn the print size** (FR-120): *Orientation* under the print size lays it **Upright** or **Flat** for the photo, whatever its shape, so a portrait photo prints across a flat 15 × 5 strip and a landscape one on an upright 10 × 15; the crop, the sharpness badge and the export follow. In the preview, Simple mode and the gallery's Print tab (for the ticked photos), or press **O**. Collage sheets keep their own turn.
 - **A small "fotollection.org" on your prints** (FR-121), so a photo passed round tells where it was made: a quiet line on the border, in the info frame, under a postcard's stamp box or in a corner of the photo away from the date and faces, the same size on every print. It shows in the preview as it prints, never on photos exported for sharing, and *Settings → General → Prints* turns it off.
 
 ### Fixed

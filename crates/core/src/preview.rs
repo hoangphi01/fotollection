@@ -1103,6 +1103,7 @@ impl PreviewCache {
             straighten: record.edits.straighten,
             ratio: None,
             credit,
+            turned: record.edits.print_turned,
         })
     }
 

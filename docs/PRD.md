@@ -1179,12 +1179,13 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 ### FR-120 — Turn the print size
 
-**P2 (planned for v0.14.1; owner's request 2026-11-10, a portrait night photo on a 5 × 15 strip).** Today a print size takes the photo's own orientation: a portrait photo prints on an upright 5 × 15, and nothing lays the strip flat. A **turn** button beside the print size (and a key) swaps it to landscape or back, so a portrait photo can be cropped across a 15 × 5 strip, a 15 × 10 or any size, and the crop editor opens on the turned frame.
+**P2 (built for v0.14.1, 2026-11-11; owner's request 2026-11-10, a portrait night photo on a 5 × 15 strip).** Today a print size takes the photo's own orientation: a portrait photo prints on an upright 5 × 15, and nothing lays the strip flat. A **turn** button beside the print size (and a key) swaps it to landscape or back, so a portrait photo can be cropped across a 15 × 5 strip, a 15 × 10 or any size, and the crop editor opens on the turned frame.
 
 - **Per photo, as the crop is:** the turn is kept with the photo's print settings (project schema, migration from "follow the photo"), the default stays "follow the photo"; *Apply to all* as the other print settings.
 - **Everywhere the print size shows:** the preview's Print tab, the gallery's Print tab for the ticked photos, Simple mode, the size advice (DPI and the verdict read on the turned size) and the export.
 - **Collage mode** keeps its own *Auto turn* (FR-035); a sheet's size turns there as it does today.
 - **Rust first (ADR-0044):** the plan (`plan.rs`) owns the orientation, the interface only asks; tests `fr_120_*` that a turned 5 × 15 gives a 15 × 5 crop of a portrait photo at the same DPI rules.
+- **As built (2026-11-11):** `PhotoEdits.print_turned` (project v13), `PlanInput.turned` read by `plan_content` and, in the frame's Crop mode, by its layout; `can_turn` refuses square sizes, *Original* and the frame's Fit; `effective_dpi_turned` gives the verdict and the size advice of the crop that prints. `set_print_orientation(ids, landscape)` lays each photo upright or flat in one undo step (*Turn print size* in History); a paste of the crop carries it, *Reset* clears it. *Orientation* (*Upright* / *Flat*, `PrintOrientationField`) sits under the size in the preview's Print tab, Simple mode and the gallery's Print tab (the photo picked, or the ticked ones); **O** in the preview and Simple mode. A 3456 × 4608 photo on 5 × 15: upright 1536 × 4608 px, flat 3456 × 1152 px (585 DPI).
 
 ### FR-121 — A small "fotollection.org" on the print
 

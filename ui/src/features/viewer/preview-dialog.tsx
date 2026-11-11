@@ -70,6 +70,7 @@ import { verdictOf } from '@/features/print-advice/verdict'
 import { VerdictBadge } from '@/features/print-advice/verdict-badge'
 import { PrintSizeCard } from '@/features/settings/print-size-card'
 import { ValueRow } from '@/components/forms/field'
+import { turnPrintSize } from '@/features/settings/turn-print-size'
 
 type PreviewDialogProps = {
   photos: PhotoSummary[]
@@ -328,6 +329,11 @@ export function PreviewDialog({
       send(event.key === 'ArrowUp' ? 'print' : 'aside')
     } else if (event.key === '\\' && !mod) toggleBefore()
     else if ((key === 'r' || key === 'c') && !mod && !event.altKey && canCrop) startCrop()
+    // O lays the print size the other way (FR-120), where it can turn.
+    else if (key === 'o' && !mod && !event.altKey && photo) {
+      event.preventDefault()
+      void turnPrintSize(photo.id)
+    }
     // Y side by side, ⇧Y split, ⌥Y one above the other; by the key's place, as ⌥Y types a
     // letter of its own on a Mac.
     else if (event.code === 'KeyJ' && !mod && !event.altKey) {
@@ -631,6 +637,7 @@ export function PreviewDialog({
               photo={photo}
               advice={advice}
               revision={revision}
+              orientationIds={photo ? [photo.id] : undefined}
             >
               {settings?.exportTarget?.kind !== 'share' && details && (
                 <ValueRow label={t('viewer.resolution')}>

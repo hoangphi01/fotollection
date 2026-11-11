@@ -606,6 +606,7 @@ pub fn render_sheet_with(
                 straighten: source.straighten,
                 ratio: Some(ratio),
                 credit: None,
+                turned: false,
             })
         };
     let owns: [Option<RenderSettings>; 2] =

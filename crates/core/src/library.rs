@@ -185,6 +185,11 @@ pub struct PhotoEdits {
     /// How a camera RAW photo is finished (FR-072, ADR-0040); `None` is neutral.
     #[serde(default)]
     pub raw_look: Option<crate::raw_finish::RawLook>,
+    /// The print size laid the other way from the photo (FR-120): a portrait photo on a flat
+    /// 15 × 5, a landscape one on an upright 10 × 15. `false` follows the photo. Prints only;
+    /// a collage sheet keeps its own turn (FR-035).
+    #[serde(default)]
+    pub print_turned: bool,
 }
 
 /// Which develop settings *Copy settings* takes from a photo (FR-097), as Lightroom's
@@ -292,6 +297,7 @@ impl PhotoEdits {
             crop: other.crop,
             straighten: other.straighten,
             rotation: other.rotation,
+            print_turned: other.print_turned,
             stamp: other.stamp.clone(),
             caption: other.caption.clone(),
             ..self.clone()
@@ -318,6 +324,8 @@ impl PhotoEdits {
             } else {
                 out.crop = source.crop;
                 out.straighten = source.straighten;
+                // The crop is a frame of the print laid as the source's was (FR-120).
+                out.print_turned = source.print_turned;
             }
         }
         if parts.stamp {
@@ -328,7 +336,7 @@ impl PhotoEdits {
     }
 
     /// These edits given back to the shared settings (FR-097, *Reset*): no look, RAW look,
-    /// crop, straightening, stamp or line of their own; on a collage sheet (`collage`) the
+    /// crop, straightening, turned print size (FR-120), stamp or line of their own; on a collage sheet (`collage`) the
     /// collage crop and straightening too. The turns, rating, flag, basket, date and place
     /// stay, as Lightroom's Reset keeps the metadata.
     #[must_use]
@@ -338,6 +346,7 @@ impl PhotoEdits {
             raw_look: None,
             crop: None,
             straighten: 0.0,
+            print_turned: collage && self.print_turned,
             stamp: None,
             caption: None,
             ..self.clone()

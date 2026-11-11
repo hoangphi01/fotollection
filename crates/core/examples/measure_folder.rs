@@ -214,6 +214,7 @@ fn main() {
                 straighten: 0.0,
                 ratio: None,
                 credit: None,
+                turned: false,
             });
             let image = render(&t2, &p).unwrap();
             draw.push(t.elapsed().as_secs_f64() * 1e3);

@@ -1,0 +1,32 @@
+{
+  "format": "fotollection-project",
+  "schema_version": 13,
+  "app_version": "0.14.1",
+  "modified_at": "2026-11-11T20:00:00+00:00",
+  "folders": [
+    {
+      "id": 1,
+      "path": "/Users/someone/Pictures/Prague",
+      "path_kind": "absolute"
+    }
+  ],
+  "photos": [
+    {
+      "id": 1,
+      "folder": 1,
+      "path": "P1068073.JPG",
+      "fp_size": 5000000,
+      "fp_mtime": 1726000000,
+      "crop": { "cx": 0.5, "cy": 0.35, "zoom": 1.0 },
+      "print_turned": true
+    },
+    {
+      "id": 2,
+      "folder": 1,
+      "path": "P1068086.JPG",
+      "fp_size": 5100000,
+      "fp_mtime": 1726000100,
+      "rating": 3
+    }
+  ]
+}

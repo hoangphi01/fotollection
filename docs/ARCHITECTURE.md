@@ -285,6 +285,7 @@ Commands marked † are implemented.
 | `pick_camera_logo(camera_id)` / `clear_camera_logo(camera_id)` † | Choose a PNG with a **Rust-side** dialog, validate it, copy it into `config/logos/` | FR-040 |
 | `get_crop_geometry(id, sheet?) -> CropGeometry` † | Upright size, target ratio, printed cm of the crop area, current crop; with a collage `sheet`, the photo's area in its cell | FR-006, FR-035 |
 | `set_photo_crop(id, crop?, straighten, amend)` † | Set or reset a photo's crop (centre + zoom) and straightening angle (±15°, clamped in Rust), undoable; with `amend`, folded into the same photo's previous step, as a drag in the preview does | FR-006, FR-023 |
+| `set_print_orientation(ids, landscape)` | Lays each photo's print size upright or flat whatever its own orientation (`PhotoEdits.print_turned`, read by the plan); one undo step; collage sheets keep their own turn | FR-120 |
 | `rotate_photos(ids, clockwise)` † | Lossless quarter turns on top of the EXIF orientation, composed into one pass (`image::compose_orientation`); crops turn with the photo; undoable | FR-006 |
 | `set_photo_rating(ids, 0–5)` † / `set_photo_flag(ids, pick\|reject\|null)` † | Culling: one undoable step for 1–10,000 photos; ratings above 5 and unknown IDs are rejected | FR-022, FR-023 |
 | `set_photo_queue(ids, print\|aside\|null)` † | The print basket and set aside (`null` back to the gallery): one undoable step for 1–10,000 photos; nothing is deleted | FR-050, FR-023 |

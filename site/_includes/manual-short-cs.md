@@ -99,7 +99,7 @@ Vyber formát, ve kterém budeš tisknout, a Fotollection na něj ořízne každ
 1. V kartě **Print / export size** nech vybrané **Print**.
 2. Otevři seznam formátů: **Standard (CEWE / EU)** jsou formáty fotokiosků v dm a Rossmannu, třeba *10 × 15 cm · 2:3*; **Original** zachová vlastní poměr stran fotky bez ořezu; **Custom** jsou formáty, které sis přidal.
 3. Každý formát má pro vybranou fotku odznak: **Sharp** (300 DPI a víc), **Acceptable** (150–299 DPI) nebo **Pixelated** (pod 150 DPI). Pod seznamem je řádek, jak velká se fotka vytiskne ostře.
-4. Každá fotka se ořízne na poměr formátu, ve výchozím stavu na střed. Co zůstane, zvolíš v náhledu (kapitola 6).
+4. Každá fotka se ořízne na poměr formátu, ve výchozím stavu na střed. Co zůstane, zvolíš v náhledu (kapitola 6). **Orientation** pod seznamem položí formát **Upright** nebo **Flat** bez ohledu na tvar fotky, třeba svislou fotku na ležatý pruh 15 × 5; v náhledu stačí klávesa **O**.
 5. **3 mm border** přidá na každou stranu okraj 3 mm, **White** nebo **Black**, a tisk si zachová přesný formát kiosku.
 
 <!-- shot: manual-size | Seznam formátů tisku, u každého odznak ostrosti -->

@@ -27,7 +27,7 @@ use fotollection_core::library::{
 use fotollection_core::logo;
 use fotollection_core::looks::LookSettings;
 use fotollection_core::metadata;
-use fotollection_core::plan::{CropFrame, DpiBand, FrameRequest, PlanInput, effective_dpi, plan};
+use fotollection_core::plan::{CropFrame, DpiBand, FrameRequest, PlanInput, plan};
 use fotollection_core::print_advice::{self, PrintAdvice};
 use fotollection_core::settings::{RenderSettings, UiSettings};
 use fotollection_core::thumbs;
@@ -2012,7 +2012,12 @@ pub async fn print_advice(app: AppHandle, id: PhotoId) -> Result<PrintAdvice, Ip
                     area(PrintSize::custom(c.short_mm, c.long_mm)),
                 )
             }));
-        Ok(print_advice::advise(width, height, sizes))
+        Ok(print_advice::advise(
+            width,
+            height,
+            record.edits.print_turned,
+            sizes,
+        ))
     })
     .await
     .map_err(|e| IpcError::internal(e.to_string()))?
@@ -2046,10 +2051,11 @@ pub async fn photo_details(app: AppHandle, id: PhotoId) -> Result<PhotoDetails, 
                 guard.0.border,
             )
         };
-        let (print_dpi, print_quality) = effective_dpi(
+        let (print_dpi, print_quality) = fotollection_core::plan::effective_dpi_turned(
             width,
             height,
             fotollection_core::plan::print_photo_area(print, border),
+            record.edits.print_turned,
         );
         let shot = record.shot.clone();
         let profile = state.frame.read().ok().and_then(|f| {
@@ -2510,17 +2516,14 @@ pub struct HistoryState {
 /// photo's orientation, or for Original with the 3 mm border, the canvas measured from its
 /// 10 cm short edge, as the border makes it longer (FR-045, FR-067).
 #[allow(clippy::cast_precision_loss)]
-fn canvas_cm(
-    print: PrintSize,
-    (width, height): (u32, u32),
-    p: &fotollection_core::plan::RenderPlan,
-) -> (f32, f32) {
+fn canvas_cm(print: PrintSize, p: &fotollection_core::plan::RenderPlan) -> (f32, f32) {
     let (long_cm, short_cm) = (print.long_mm as f32 / 10.0, print.short_mm as f32 / 10.0);
     let (canvas_w, canvas_h) = p.output_size();
     if print.is_original() && p.mat.is_some() {
         let cm = short_cm / canvas_w.min(canvas_h).max(1) as f32;
         (canvas_w as f32 * cm, canvas_h as f32 * cm)
-    } else if width >= height {
+    } else if canvas_w >= canvas_h {
+        // The canvas's own orientation: the photo's, or turned (FR-120).
         (long_cm, short_cm)
     } else {
         (short_cm, long_cm)
@@ -2529,6 +2532,8 @@ fn canvas_cm(
 
 /// What the crop editor needs (FR-006): the upright photo size, the target box the crop
 /// must fill, its printed size in cm, and the current crop.
+// Independent facts the editor reads, as the IPC sends them; not a state machine.
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, Clone, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct CropGeometry {
@@ -2554,6 +2559,10 @@ pub struct CropGeometry {
     pub print_grows: bool,
     /// Display unit of the selected size (inches for custom sizes entered in inches).
     pub unit: fotollection_core::settings::LengthUnit,
+    /// The print lies flat as planned, the photo's own way or turned (FR-120).
+    pub print_landscape: bool,
+    /// The print size can be laid the other way: not square, not Original, not Fit (FR-120).
+    pub can_turn: bool,
 }
 
 #[tauri::command]
@@ -2618,9 +2627,10 @@ pub async fn get_crop_geometry(
             straighten: 0.0,
             ratio: None,
             credit: None,
+            turned: record.edits.print_turned,
         });
         let (canvas_w, canvas_h) = p.output_size();
-        let (canvas_width_cm, canvas_height_cm) = canvas_cm(print, (width, height), &p);
+        let (canvas_width_cm, canvas_height_cm) = canvas_cm(print, &p);
         #[allow(clippy::cast_precision_loss)]
         let (print_width_cm, print_height_cm) = (
             canvas_width_cm * p.out_width as f32 / canvas_w.max(1) as f32,
@@ -2655,6 +2665,11 @@ pub async fn get_crop_geometry(
             output_height_cm,
             print_grows,
             unit: settings.unit(),
+            print_landscape: canvas_w >= canvas_h,
+            can_turn: fotollection_core::plan::can_turn(
+                print,
+                frame.as_ref().map(|f| f.settings.fit),
+            ),
         })
     })
     .await
@@ -2789,6 +2804,40 @@ pub fn rotate_photos(
     edit_photos(&app, &state, &ids, |_, e| {
         e.rotation = (e.rotation + if clockwise { 1 } else { 3 }) % 4;
         e.crop = e.crop.map(|c| c.turned(clockwise));
+    })
+}
+
+/// Lays the print size flat (`landscape`) or upright for each photo (FR-120): a photo whose
+/// own orientation already matches follows it again, the others are turned. One undo step.
+/// A collage sheet keeps its own turn (FR-035).
+#[tauri::command]
+#[specta::specta]
+pub fn set_print_orientation(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    ids: Vec<PhotoId>,
+    landscape: bool,
+) -> Result<HistoryState, IpcError> {
+    if ids.is_empty() || ids.len() > MAX_EDIT_IDS {
+        return Err(IpcError::new(
+            "photo.invalid_selection",
+            "Select between 1 and 10,000 photos",
+        ));
+    }
+    // Each photo's own orientation, upright, from its header.
+    let mut own = std::collections::HashMap::with_capacity(ids.len());
+    for &id in &ids {
+        let record = state
+            .library
+            .read()
+            .map_err(|e| IpcError::internal(e.to_string()))?
+            .record(id)
+            .ok_or_else(|| IpcError::new("photo.unknown", "Unknown photo"))?;
+        let (w, h) = upright_size(&state, &record)?;
+        own.insert(id, w >= h);
+    }
+    edit_photos_as(&app, &state, &ids, None, |id, e| {
+        e.print_turned = own.get(&id).is_some_and(|&l| l != landscape);
     })
 }
 

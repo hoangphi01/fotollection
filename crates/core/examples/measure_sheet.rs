@@ -105,6 +105,7 @@ fn main() {
             straighten: 0.0,
             ratio: None,
             credit: None,
+            turned: false,
         });
         let out = render(image, &p).unwrap();
         codec.encode(&out, EncodeOptions::print(95), None).unwrap()

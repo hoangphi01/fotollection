@@ -49,7 +49,7 @@ export function SimplePanel({ settings, onChange, exporter, basketCount, customS
         </>
       }
     >
-      <PrintSizeCard settings={settings} onChange={onChange} printSizes={printSizes} revision={revision} />
+      <PrintSizeCard settings={settings} onChange={onChange} printSizes={printSizes} revision={revision} orientationIds={photoId !== undefined ? [photoId] : undefined} />
       {/* The photo's colour, after its size as in the previews (STYLE_RULE §4): the strip's look,
           its amount, and Faves (owner, 2026-11-07). */}
       {photoId !== undefined && <PhotoLookCards photoId={photoId} simple revision={revision} onAppliedToAll={onSettingsReload} />}

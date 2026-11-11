@@ -164,6 +164,43 @@ pub enum DpiBand {
     Poor,
 }
 
+/// Whether `print` can be laid the other way from the photo (FR-120): not a square size,
+/// not *Original* (the photo's own shape), and not the info frame's Fit, which keeps the
+/// whole photo.
+pub fn can_turn(print: PrintSize, fit: Option<FrameFit>) -> bool {
+    !print.is_original() && print.short_mm != print.long_mm && fit != Some(FrameFit::Fit)
+}
+
+/// The print size is laid the other way for this plan (FR-120).
+fn turned(input: &PlanInput<'_>, fit: Option<FrameFit>) -> bool {
+    input.turned && input.ratio.is_none() && can_turn(input.print, fit)
+}
+
+/// [`effective_dpi`] with the print size laid the other way from the photo when `turned`
+/// (FR-120): the verdict of the crop that prints.
+pub fn effective_dpi_turned(
+    width: u32,
+    height: u32,
+    print: PrintSize,
+    turned: bool,
+) -> (u32, DpiBand) {
+    if !turned || !can_turn(print, None) {
+        return effective_dpi(width, height, print);
+    }
+    let (long, short) = (u64::from(print.long_mm), u64::from(print.short_mm));
+    let (rw, rh) = if width >= height {
+        (short, long)
+    } else {
+        (long, short)
+    };
+    let crop = center_crop_to(width, height, rw, rh);
+    let long_px = f64::from(crop.width.max(crop.height));
+    let long_in = f64::from(print.long_mm) / 25.4;
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    let dpi = (long_px / long_in).round() as u32;
+    (dpi, dpi_band(dpi))
+}
+
 /// Effective DPI of the centred crop of a `width × height` photo printed at `print`.
 pub fn effective_dpi(width: u32, height: u32, print: PrintSize) -> (u32, DpiBand) {
     let crop = center_crop(width, height, print);
@@ -331,6 +368,10 @@ pub struct PlanInput<'a> {
     /// when none or not analysed). Ignored on a share and on a collage cell, whose sheet
     /// draws its own.
     pub credit: Option<&'a [crate::culling::FaceSummary]>,
+    /// The print size laid the other way from the photo (FR-120): a portrait photo cropped
+    /// across a flat 15 × 5. Ignored where nothing turns ([`can_turn`]) and on a collage
+    /// cell, whose `ratio` wins.
+    pub turned: bool,
 }
 
 /// Builds the plan for one photo.
@@ -412,7 +453,7 @@ fn plan_content(input: &PlanInput<'_>) -> RenderPlan {
         // The exact pixel ratio: Original never loses a pixel to mm rounding (FR-045); with
         // the border, the print grows by it instead of cropping the photo.
         (u64::from(width), u64::from(height))
-    } else if width >= height {
+    } else if (width >= height) != turned(input, None) {
         (long, short)
     } else {
         (short, long)
@@ -654,18 +695,16 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
         .max_long_edge
         .map_or(width.max(height), |m| m.min(width.max(height)));
     let border = input.settings.border;
-    let (cw, ch) = frame::canvas_size(width, height, print, long, request.settings.fit, border);
+    // Turned (FR-120), the frame is laid out as for a photo of the other orientation: in
+    // Crop the photo's size only decides the canvas's orientation; Fit never turns.
+    let (ow, oh) = if turned(input, Some(request.settings.fit)) {
+        (height, width)
+    } else {
+        (width, height)
+    };
+    let (cw, ch) = frame::canvas_size(ow, oh, print, long, request.settings.fit, border);
     let lay = |text: &frame::FrameText| {
-        frame::layout(
-            cw,
-            ch,
-            width,
-            height,
-            &request.settings,
-            text,
-            print,
-            border,
-        )
+        frame::layout(cw, ch, ow, oh, &request.settings, text, print, border)
     };
     let (logo, font) = (request.logo.as_deref(), request.font.as_ref());
     let mut layout = lay(&request.text);
@@ -925,6 +964,7 @@ mod tests {
             straighten: 0.0,
             ratio: None,
             credit: None,
+            turned: false,
         });
         assert_eq!((p.out_width, p.out_height), (1600, 1067));
         assert!(p.stamp.is_none(), "no capture date, no stamp");
@@ -948,6 +988,7 @@ mod tests {
             straighten: 0.0,
             ratio: None,
             credit: None,
+            turned: false,
         });
         let Some(stamp) = p.stamp else {
             panic!("the caption is printed without a date");
@@ -985,6 +1026,7 @@ mod tests {
                 straighten: 0.0,
                 ratio: None,
                 credit: None,
+                turned: false,
             });
             assert_eq!(
                 (p.crop.x, p.crop.y, p.crop.width, p.crop.height),
@@ -1037,6 +1079,7 @@ mod tests {
                 straighten: 0.0,
                 ratio: None,
                 credit: None,
+                turned: false,
             });
             assert_eq!(p.mat.map(|m| m.background), Some(rgb));
         }
@@ -1063,6 +1106,7 @@ mod tests {
                 straighten: 0.0,
                 ratio: None,
                 credit: None,
+                turned: false,
             });
             let Some(mat) = p.mat else {
                 panic!("the border needs a canvas");
@@ -1095,6 +1139,7 @@ mod tests {
             straighten: 0.0,
             ratio: None,
             credit: None,
+            turned: false,
         });
         assert!(p.mat.is_none());
         assert_eq!(p.output_size(), (6000, 4000));
@@ -1122,6 +1167,7 @@ mod tests {
             straighten: 0.0,
             ratio: None,
             credit: None,
+            turned: false,
         });
         assert_eq!((p.crop.width, p.crop.height), (4608, 3456));
         assert!(p.mat.is_some_and(|m| m.photo.x > 0));
@@ -1160,6 +1206,7 @@ mod tests {
             straighten: 0.0,
             ratio: None,
             credit: None,
+            turned: false,
         });
         let (w, h) = p.output_size();
         assert!(w.max(h) <= 1600 && w.max(h) >= 1590, "{w}×{h}");
@@ -1184,6 +1231,7 @@ mod tests {
                 straighten: 0.0,
                 ratio: None,
                 credit: None,
+                turned: false,
             });
             p.stamp.map_or(0.0, |s| s.font_px)
         };
@@ -1226,6 +1274,7 @@ mod tests {
                 straighten: 0.0,
                 ratio,
                 credit: None,
+                turned: false,
             })
         };
         let full = input(&share, None, None);
@@ -1249,5 +1298,144 @@ mod tests {
         };
         assert!(input(&print, None, None).pad.is_none());
         assert!(input(&share, None, Some((2, 3))).pad.is_none());
+    }
+}
+
+/// The print size laid the other way from the photo (FR-120).
+#[cfg(test)]
+mod fr_120 {
+    use super::*;
+    use crate::frame::{FrameFit, FrameSettings, FrameText};
+
+    fn size(id: &str) -> PrintSize {
+        PrintSize::by_id(id).unwrap_or(PrintSize::ALL[1])
+    }
+
+    fn planned(
+        print: PrintSize,
+        (w, h): (u32, u32),
+        frame: Option<&FrameRequest>,
+        turned: bool,
+    ) -> RenderPlan {
+        let mut settings = RenderSettings::default();
+        settings.stamp.enabled = false;
+        plan(&PlanInput {
+            width: w,
+            height: h,
+            capture: None,
+            settings: &settings,
+            print,
+            max_long_edge: None,
+            frame,
+            crop: None,
+            place: None,
+            straighten: 0.0,
+            ratio: None,
+            credit: None,
+            turned,
+        })
+    }
+
+    #[test]
+    fn fr_120_a_portrait_photo_lies_across_a_flat_strip() {
+        // The owner's case: a portrait photo, 3456 × 4608, on a 5 × 15 strip.
+        let upright = planned(size("5x15"), (3456, 4608), None, false);
+        assert_eq!((upright.crop.width, upright.crop.height), (1536, 4608));
+        let flat = planned(size("5x15"), (3456, 4608), None, true);
+        assert_eq!((flat.crop.width, flat.crop.height), (3456, 1152));
+        assert!(flat.out_width > flat.out_height);
+        // 10 × 15 the same way, and a landscape photo stood up.
+        let flat = planned(size("10x15"), (3456, 4608), None, true);
+        assert_eq!((flat.crop.width, flat.crop.height), (3456, 2304));
+        let standing = planned(size("10x15"), (4608, 3456), None, true);
+        assert_eq!((standing.crop.width, standing.crop.height), (2304, 3456));
+    }
+
+    #[test]
+    fn fr_120_the_verdict_reads_the_crop_that_prints() {
+        let (dpi, _) = effective_dpi_turned(3456, 4608, size("5x15"), false);
+        assert_eq!(dpi, effective_dpi(3456, 4608, size("5x15")).0);
+        // Flat: the long edge is the photo's 3456 px across 150 mm, about 585 DPI.
+        let (dpi, _) = effective_dpi_turned(3456, 4608, size("5x15"), true);
+        assert_eq!(dpi, 585);
+    }
+
+    #[test]
+    fn fr_120_square_original_and_fit_never_turn() {
+        for id in ["15x15", "original"] {
+            let print = PrintSize::by_id(id).unwrap_or_else(|| PrintSize::original(3456, 4608));
+            let a = planned(print, (3456, 4608), None, false);
+            let b = planned(print, (3456, 4608), None, true);
+            assert_eq!(a.crop, b.crop, "{id}");
+            assert!(!can_turn(print, None), "{id}");
+        }
+        let fit = FrameRequest {
+            settings: FrameSettings {
+                enabled: true,
+                fit: FrameFit::Fit,
+                ..FrameSettings::default()
+            },
+            text: FrameText {
+                logo: crate::frame::FrameLogo::None,
+                lines: vec!["Shot on a camera".into()],
+                wrap: None,
+            },
+            logo: None,
+            font: None,
+        };
+        let a = planned(size("10x15"), (3456, 4608), Some(&fit), false);
+        let b = planned(size("10x15"), (3456, 4608), Some(&fit), true);
+        assert_eq!(a.output_size(), b.output_size());
+        assert!(!can_turn(size("10x15"), Some(FrameFit::Fit)));
+        assert!(can_turn(size("10x15"), Some(FrameFit::Crop)));
+    }
+
+    #[test]
+    fn fr_120_a_cropped_frame_turns_with_the_print() {
+        let crop = FrameRequest {
+            settings: FrameSettings {
+                enabled: true,
+                fit: FrameFit::Crop,
+                ..FrameSettings::default()
+            },
+            text: FrameText {
+                logo: crate::frame::FrameLogo::None,
+                lines: vec!["Shot on a camera".into()],
+                wrap: None,
+            },
+            logo: None,
+            font: None,
+        };
+        let upright = planned(size("10x15"), (3456, 4608), Some(&crop), false);
+        let (w, h) = upright.output_size();
+        assert!(w < h);
+        let flat = planned(size("10x15"), (3456, 4608), Some(&crop), true);
+        let (w, h) = flat.output_size();
+        assert!(w > h, "{w} × {h}");
+        assert!(flat.crop.width > flat.crop.height);
+    }
+
+    #[test]
+    fn fr_120_a_collage_cell_keeps_its_own_ratio() {
+        let mut settings = RenderSettings::default();
+        settings.stamp.enabled = false;
+        let cell = |turned| {
+            plan(&PlanInput {
+                width: 3456,
+                height: 4608,
+                capture: None,
+                settings: &settings,
+                print: size("10x15"),
+                max_long_edge: None,
+                frame: None,
+                crop: None,
+                place: None,
+                straighten: 0.0,
+                ratio: Some((70, 100)),
+                credit: None,
+                turned,
+            })
+        };
+        assert_eq!(cell(false).crop, cell(true).crop);
     }
 }

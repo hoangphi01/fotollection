@@ -16,6 +16,7 @@ import { usePrefetch } from '@/features/viewer/use-prefetch'
 import { isTyping, ownsArrowKeys } from '@/lib/keyboard'
 import { formatNumber } from '@/lib/format'
 import { previewUrl } from '@/lib/photo-url'
+import { turnPrintSize } from '@/features/settings/turn-print-size'
 
 type SimpleViewProps = {
   photos: PhotoSummary[]
@@ -58,6 +59,10 @@ export function SimpleView({ photos, index, onIndexChange, view, revision, queue
     } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
       event.preventDefault()
       send(event.key === 'ArrowUp' ? 'print' : 'aside')
+    } else if (event.key.toLowerCase() === 'o' && !event.metaKey && !event.ctrlKey && !event.altKey && !isTyping(event.target) && photo) {
+      // The print size the other way (FR-120), as in the preview.
+      event.preventDefault()
+      void turnPrintSize(photo.id)
     }
   })
   useEffect(() => {

@@ -93,7 +93,7 @@ Wybierz rozmiar, w jakim będziesz drukować, a Fotollection przytnie do niego k
 1. W karcie **Print / export size** zostaw zaznaczone **Print**.
 2. Otwórz listę rozmiarów: **Standard (CEWE / EU)** (rozmiary kiosków fotograficznych w dm i Rossmannie, jak *10 × 15 cm · 2:3*), **Original** (własne proporcje zdjęcia, bez kadrowania) albo **Custom** (twoje rozmiary).
 3. Każdy rozmiar ma plakietkę dla zaznaczonego zdjęcia: **Sharp** (300 DPI lub więcej), **Acceptable** (150–299 DPI) albo **Pixelated** (poniżej 150 DPI). Pod listą wiersz podaje, jak duże zdjęcie wydrukuje się ostro.
-4. Każde zdjęcie jest przycinane do proporcji rozmiaru, domyślnie na środku. Co zostaje, wybierzesz w podglądzie (rozdział 6).
+4. Każde zdjęcie jest przycinane do proporcji rozmiaru, domyślnie na środku. Co zostaje, wybierzesz w podglądzie (rozdział 6). **Orientation** pod listą kładzie rozmiar **Upright** albo **Flat** niezależnie od kształtu zdjęcia, np. pionowe zdjęcie na poziomy pasek 15 × 5; w podglądzie robi to klawisz **O**.
 5. **3 mm border** dodaje białe lub czarne obramowanie 3 mm z każdej strony, a odbitka zachowuje dokładny rozmiar z kiosku.
 
 <!-- shot: manual-size | Lista rozmiarów odbitek z plakietką ostrości przy każdym -->

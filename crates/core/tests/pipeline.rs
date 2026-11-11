@@ -1495,3 +1495,59 @@ fn fr_121_prints_carry_the_credit_shares_never() {
     share.export_target = ExportTarget::Share(SharePreset::Original);
     assert_eq!(export(&share, true).data, export(&share, false).data);
 }
+
+/// FR-120: a portrait photo with its print size laid flat exports as a flat print of the
+/// size's ratio: 5 × 15 gives a 3:1 JPEG.
+#[test]
+fn fr_120_a_portrait_photo_exports_on_a_flat_strip() {
+    let src = tempfile::tempdir().unwrap();
+    let dest = tempfile::tempdir().unwrap();
+    write(
+        src.path(),
+        "IMG_1.jpg",
+        &jpeg(&Fixture {
+            width: 600,
+            height: 900,
+            date: Some("2026:07:14 10:22:31"),
+            ..Fixture::default()
+        }),
+    );
+    let mut lib = import(src.path());
+    let id = lib.sorted_ids()[0];
+    lib.set_edits(
+        id,
+        PhotoEdits {
+            print_turned: true,
+            ..PhotoEdits::default()
+        },
+    );
+    let mut settings = RenderSettings::default();
+    settings.stamp.enabled = false;
+    settings.print_size = "5x15".into();
+    let options = ExportOptions {
+        destination: dest.path(),
+        settings: &settings,
+        quality: 90,
+        max_inflight: 1,
+        place_for: &|_| None,
+        frame_for: &|_| None,
+        group_for: &|_| None,
+        by_day: false,
+        postcard_font: None,
+        files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
+    };
+    let summary = run_export(
+        &records(&lib),
+        &options,
+        &PureRustCodec,
+        &CancellationToken::new(),
+        &|_, _| {},
+    );
+    assert_eq!(summary.exported, 1);
+    let image = PureRustCodec
+        .decode(&first_jpeg(dest.path()))
+        .unwrap()
+        .image;
+    assert_eq!((image.width, image.height), (600, 200));
+}

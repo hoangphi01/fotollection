@@ -94,7 +94,7 @@ Wähl das Format, in dem du druckst; Fotollection schneidet jedes Foto darauf zu
 1. Lass in der Karte **Print / export size** die Option **Print** gewählt.
 2. Öffne die Formatliste: **Standard (CEWE / EU)** mit den Formaten der Fotoautomaten bei dm und Rossmann, **Original** für das eigene Seitenverhältnis des Fotos ohne Zuschnitt, oder **Custom** für eigene Formate.
 3. Jedes Format trägt ein Abzeichen für das gewählte Foto: **Sharp** (300 DPI oder mehr), **Acceptable** (150–299 DPI) oder **Pixelated** (unter 150 DPI).
-4. Jedes Foto wird mittig zugeschnitten; was bleibt, wählst du in der Vorschau (Kapitel 6).
+4. Jedes Foto wird mittig zugeschnitten; was bleibt, wählst du in der Vorschau (Kapitel 6). **Orientation** unter der Liste legt das Format **Upright** oder **Flat**, egal wie das Foto steht, etwa ein Hochformat quer auf einen 15 × 5-Streifen; in der Vorschau tut es die Taste **O**.
 5. **3 mm border** legt einen weißen oder schwarzen Rand von 3 mm um den Abzug.
 
 <!-- shot: manual-size | Die Liste der Druckformate, an jedem Format ein Schärfe-Abzeichen -->

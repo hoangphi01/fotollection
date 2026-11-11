@@ -110,6 +110,7 @@ fn drag_parts(
         straighten: 0.0,
         ratio: None,
         credit: None,
+        turned: false,
     });
     let (resize, resized) = time(|| crop_and_resize(&source, &p).unwrap());
     let mut i = 0i8;
@@ -201,6 +202,7 @@ fn main() {
             straighten: 0.0,
             ratio: None,
             credit: None,
+            turned: false,
         });
         let (full_render, rendered) = time(|| render(&full, &p).unwrap());
 
