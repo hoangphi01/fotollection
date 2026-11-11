@@ -23,6 +23,7 @@ export default {
       assets: data.language.assets,
       date_format: data.language.date_format,
       guide: data.language.guide,
+      support: data.language.support,
       html_lang: data.language.html_lang,
       og_locale: data.language.og_locale,
       page_id: data.page_id,

@@ -228,6 +228,7 @@ support_text: Fotollection is made by a Vietnamese student in the EU, between cl
 support_sponsor: Sponsor on GitHub
 support_kofi: Buy me a coffee on Ko-fi
 support_note: "Pick a treat and scan the code with a banking app in Vietnam: the amount and the note are filled in (Napas 247). From anywhere else, GitHub Sponsors or Ko-fi take a card, once or monthly, for any amount."
+support_note_card: "Ko-fi takes PayPal or a card, GitHub Sponsors a card, once or monthly, for any amount."
 support_alt: VietQR code (Techcombank) for the chosen treat
 treat_pick: "Treat me to"
 treat_tea: A glass of iced tea

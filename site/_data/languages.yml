@@ -5,6 +5,8 @@
 #   pages        the pages it has (page ids of pages.yml); a page it lacks links to English's
 #   assets       whose screenshots it shows: the app speaks English and Vietnamese (FR-084)
 #   date_format  how it writes a date (strftime)
+#   support      how its readers buy the author a coffee: vietqr (a bank app's code, Vietnam's
+#                way) or card (Ko-fi first, then GitHub Sponsors), owner 2026-11-11
 #   guide        the manual it shows (docs/, ADR-0031), for a language with the manual page
 #   published    false keeps it out of the build, the menu, hreflang and the sitemap until its
 #                words are done (scripts/check-site-i18n.mjs --build)
@@ -18,6 +20,7 @@
   assets: en
   pages: [home, download, performance, manual, story, wiki, code-signing]
   guide: USER_GUIDE.md
+  support: card
   published: true
 - code: vi
   date_format: "%d/%m/%Y"
@@ -28,6 +31,7 @@
   assets: vi
   pages: [home, download, performance, manual, story, wiki, code-signing]
   guide: USER_GUIDE.vi.md
+  support: vietqr
   published: true
 - code: hu
   date_format: "%Y. %m. %d."
@@ -37,6 +41,7 @@
   prefix: /hu
   assets: en
   pages: [home, download]
+  support: card
   published: false
 - code: de
   date_format: "%d.%m.%Y"
@@ -46,6 +51,7 @@
   prefix: /de
   assets: en
   pages: [home, download]
+  support: card
   published: false
 - code: pl
   date_format: "%d.%m.%Y"
@@ -55,6 +61,7 @@
   prefix: /pl
   assets: en
   pages: [home, download]
+  support: card
   published: false
 - code: cs
   date_format: "%-d. %-m. %Y"
@@ -64,4 +71,5 @@
   prefix: /cs
   assets: en
   pages: [home, download]
+  support: card
   published: false

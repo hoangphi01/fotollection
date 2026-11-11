@@ -727,6 +727,9 @@ a:focus-visible, .button:focus-visible { outline: 2px solid var(--brand); outlin
   .support { grid-template-columns: auto 1fr; column-gap: 40px; padding: 36px; }
   .support > * { grid-column: 2; }
   .support > .treat-qr { grid-column: 1; grid-row: 1 / span 4; }
+  /* Without the code (support-card: Ko-fi and GitHub Sponsors) the words take the whole card. */
+  .support-card { grid-template-columns: 1fr; }
+  .support-card > * { grid-column: 1; }
   .showcase { gap: 88px; }
   .showcase-row { grid-template-columns: 2fr 1fr; gap: 48px; }
   .showcase-row.flip { grid-template-columns: 1fr 2fr; }
