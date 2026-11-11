@@ -82,7 +82,7 @@ cargo run --release -p fotollection-core --example check_files -- path/to/folder
 | `fuzz_decode_jpeg` | Arbitrary bytes → JPEG decode at T1 scale |
 | `fuzz_decode_heic` | Arbitrary bytes → HEIC decode |
 | `fuzz_sanitize_path` | Arbitrary strings → export path builder; asserts the result stays under the root |
-| `fuzz_cube` (with FR-070, planned for v0.14.x) | Arbitrary bytes → `.cube` LUT parser; rejects without panicking ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
+| `fuzz_cube` (with FR-070, planned for v0.14.1) | Arbitrary bytes → `.cube` LUT parser; rejects without panicking ([ADR-0036](adr/0036-colour-looks-cube-luts-first.md)) |
 
 Any crash found by fuzzing is added to `fixtures` as a regression test.
 
@@ -95,7 +95,7 @@ Any crash found by fuzzing is added to `fixtures` as a regression test.
 - Reference outputs live in `crates/core/tests/golden/`.
 - Comparison: exact match on stamp geometry. On pixels, a maximum per-channel difference of 1 and a PSNR of at least 50 dB, to tolerate codec version differences.
 - To regenerate, run `UPDATE_GOLDEN=1 cargo test`. The diff must be reviewed visually in the PR.
-- **Looks (FR-070, planned for v0.14.x):** one golden image per built-in look, and an identity LUT must leave a photo unchanged.
+- **Looks (FR-070, planned for v0.14.1):** one golden image per built-in look, and an identity LUT must leave a photo unchanged.
 
 ## 6. CI matrix
 

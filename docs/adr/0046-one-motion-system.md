@@ -1,6 +1,6 @@
 # ADR-0046: One motion system
 
-- **Status:** Accepted (owner, 2026-11-08); amended 2026-11-09: M1–M2 shipped in v0.14.0, M3 (a photo from its tile, crossings, sliding rows, the 60 fps log) moved to v0.14.x by the owner
+- **Status:** Accepted (owner, 2026-11-08); amended 2026-11-09: M1–M2 shipped in v0.14.0, M3 (a photo from its tile, crossings, sliding rows, the 60 fps log) moved to v0.14.1 by the owner
 - **Date:** 2026-11-08
 - **Related:** FR-100, FR-099, ADR-0013, ADR-0041, ADR-0044; [TRANS_ANIMATION.md](../TRANS_ANIMATION.md)
 

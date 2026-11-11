@@ -64,7 +64,7 @@ Classes, never numbers. Each utility sets what moves, its pace and its curve:
 | A row is dragged | the dragged row follows the pointer with no transition (`transition-none`), the others slide by one row | the folder list |
 | Hover and press | colours and depth change fast; a hover deepens, never fades (STYLE_RULE §4); a button held down is the theme's colour pressed in, coming on `ease-enter` (most of it in the first 40 ms, so a quick click shows it) and rising again on `ease-move` (owner, 2026-11-08) | every control |
 
-**Planned in v0.14.x** (moved by the owner, 2026-11-09; FR-100, the rest of [ADR-0046](adr/0046-one-motion-system.md)), each added to the table above when built:
+**Planned in v0.14.1** (moved by the owner, 2026-11-09; FR-100, the rest of [ADR-0046](adr/0046-one-motion-system.md)), each added to the table above when built:
 
 1. **A photo grows from its tile** into the preview and back, through the View Transitions API (`view-transition-name` on the tile and the stage's photo), the thumbnail as the first frame; a web view without it fades. Also Simple mode and a collage sheet to its preview.
 2. **The next photo crosses over:** the last one stays until the next is ready, then crosses in base; a spinner only after `--motion-slow` of waiting. The GPU canvas, the compare view and the quick preview's render too.
@@ -98,7 +98,7 @@ Also, by review: animate `transform` and `opacity`; a fold may animate grid rows
 Motion that drops frames is worse than none (OPTIMIZATION §3).
 
 - **Budget:** 60 fps while a transition runs: on average at least 58 frames a second, no frame over 33 ms, on the reference machines, in both themes.
-- **Planned (v0.14.x):** `MOTION=1 node site/screenshots/shoot.mjs` plays each transition (a dialog, a fold, the strips, a photo from its tile, the next photo, `Z`, History) and logs the frames from `requestAnimationFrame`; once in WKWebView with Web Inspector's timeline, and on Windows by hand (WebView2 at 125 % and 150 %).
+- **Planned (v0.14.1):** `MOTION=1 node site/screenshots/shoot.mjs` plays each transition (a dialog, a fold, the strips, a photo from its tile, the next photo, `Z`, History) and logs the frames from `requestAnimationFrame`; once in WKWebView with Web Inspector's timeline, and on Windows by hand (WebView2 at 125 % and 150 %).
 - **First to measure:** the strips' fold, where the stage beside them changes size every frame; if it misses the budget, the strip slides over the stage and the layout settles on the last frame.
 
 ## 8. References
