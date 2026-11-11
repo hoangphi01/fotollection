@@ -9,7 +9,7 @@ on:
     - cron: "17 */6 * * *"
   push:
     branches: [main]
-    paths: ["site/**", "eleventy.config.mjs", "package.json", "package-lock.json", "CHANGELOG.md", "docs/USER_GUIDE.md", "docs/USER_GUIDE.vi.md", "scripts/site-manual.sh", "scripts/ga-visits.mjs", "scripts/download-stats.mjs", "scripts/apt-repo.sh", ".github/workflows/pages.yml"]
+    paths: ["site/**", "eleventy.config.mjs", "eleventy.registry.mjs", "scripts/check-site-i18n.mjs", "package.json", "package-lock.json", "CHANGELOG.md", "docs/USER_GUIDE.md", "docs/USER_GUIDE.vi.md", "scripts/site-manual.sh", "scripts/ga-visits.mjs", "scripts/download-stats.mjs", "scripts/apt-repo.sh", ".github/workflows/pages.yml"]
   workflow_dispatch:
 
 permissions:
@@ -67,6 +67,10 @@ jobs:
       # The user guide, both languages, for the manual page (ADR-0031).
       - name: Manual for the page
         run: scripts/site-manual.sh
+
+      - name: Words of each language
+        # Fails when a published language's pages show English (site/_data/languages.yml).
+        run: node scripts/check-site-i18n.mjs --build
 
       - name: Build the site
         env:

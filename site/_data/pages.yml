@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Every page of the website by its id, and its path after the language's prefix. A page's
+# template names its id (`page_id`); `url_for` and the menus read the path from here.
+home: /
+download: /download/
+performance: /performance/
+manual: /manual/
+story: /story/
+wiki: /wiki/
+code-signing: /code-signing/

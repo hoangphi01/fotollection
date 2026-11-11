@@ -10,6 +10,7 @@
 
 import { createSign } from 'node:crypto'
 import { writeFileSync } from 'node:fs'
+import { languages } from '../eleventy.registry.mjs'
 
 // The day Google Analytics went on the site (commit 1294ce5).
 const SINCE = '2026-10-24'
@@ -116,8 +117,8 @@ try {
   const total = await sessions(token)
   const visits = {
     total,
-    en: total.toLocaleString('en-US'),
-    vi: total.toLocaleString('vi-VN'),
+    // The count as each language of the website writes it (site/_data/languages.yml).
+    ...Object.fromEntries(languages.map((l) => [l.code, total.toLocaleString(l.html_lang)])),
     since: SINCE,
     updated: new Date().toISOString().slice(0, 10),
   }

@@ -1016,3 +1016,17 @@
 - **Why:** Jekyll gives front matter as `page.title_key`; Eleventy puts it at the top level. Renaming `page.title_key` to `title_key` let the modes section's own loop variable `title_key` overwrite it, so `fn.html` looked up the notes of a page called `simple_title`.
 - **Fix:** each page's front matter is one object, `pg` (`site/site.11tydata.mjs`), read as `pg.lang`, `pg.title_key`; every page built both ways and compared, line by line, until only what the workflow alone has was left.
 - **Rule:** when moving a template engine, keep the page's own fields under a namespace of their own, and prove the move by diffing every page's HTML against the old build, not by looking.
+
+### A Proxy on the site's words saw every key and none: Eleventy deep-copies global data (site, ADR-0049)
+
+- **Seen:** to find the English words a language's pages borrow, each language's words were wrapped in a Proxy that noted every key read. German, with no words of its own, was reported to show 440 of 444 keys, Performance-only keys included on its two pages.
+- **Why:** Eleventy merges global data into each page's data with a deep copy (`@11ty/eleventy-utils` `Merge`), which reads every key once and gives the templates a plain copy; the Proxy saw the copy, never the render.
+- **Fix:** in the check build (`I18N_MARK=1`) each borrowed text carries its key between invisible marks, and `scripts/check-site-i18n.mjs --build` reads the marks in the built pages of each published language, naming the key and the page.
+- **Rule:** to learn what a template shows, look at its output, never at reads of the data; prove the check on a known gap (two Vietnamese words removed: both named, on the right pages).
+
+### `replace: "[n]", x | default: y` defaulted the whole text (site)
+
+- **Seen:** a count meant to fall back to English's (`d[pg.lang] | default: d.en`) was written inside `replace`'s arguments.
+- **Why:** Liquid ends a filter's arguments at `|`, so `default:` applied to the text `replace` returned, and the count stayed empty for a language without one.
+- **Fix:** the value is assigned first (`assign dl_n = d[pg.lang] | default: d.en`) and passed by name.
+- **Rule:** a filter argument is a plain value; `scripts/check-site-i18n.mjs` fails on `, x | default:` in a template.

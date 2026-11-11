@@ -12,6 +12,7 @@
 //   GH_TOKEN=… node scripts/download-stats.mjs
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { languages } from '../eleventy.registry.mjs'
 
 const REPO = process.env.GITHUB_REPOSITORY?.trim() || 'hoangphi01/fotollection'
 const OUT = new URL('../site/_data/downloads.json', import.meta.url)
@@ -80,8 +81,8 @@ try {
   const downloads = {
     total,
     ...totals,
-    en: fmt(total, 'en-US'),
-    vi: fmt(total, 'vi-VN'),
+    // The count as each language of the website writes it (site/_data/languages.yml).
+    ...Object.fromEntries(languages.map((l) => [l.code, fmt(total, l.html_lang)])),
     updated: new Date().toISOString().slice(0, 10),
   }
   // The latest release, published after the clicks were first counted, split by where its macOS and

@@ -1,18 +1,13 @@
 {%- assign t = site.data.i18n[pg.lang] -%}
-{%- assign other = site.data.i18n[t.other] -%}
-{%- capture home_en %}{{ '/' | relative_url }}{% endcapture -%}
-{%- capture home_vi %}{{ '/vi/' | relative_url }}{% endcapture -%}
-{%- if pg.lang == 'vi' %}{% assign other_home = home_en %}{% assign home = home_vi %}{% else %}{% assign other_home = home_vi %}{% assign home = home_en %}{% endif -%}
-{%- comment %} Pages other than the home page name their two language versions and their title keys. {% endcomment -%}
-{%- assign path_en = pg.path_en | default: '/' -%}
-{%- assign path_vi = pg.path_vi | default: '/vi/' -%}
-{%- if pg.lang == 'vi' %}{% assign other_page = path_en | relative_url %}{% else %}{% assign other_page = path_vi | relative_url %}{% endif -%}
-{%- if pg.lang == 'vi' %}{% assign path_perf = '/vi/performance/' | relative_url %}{% else %}{% assign path_perf = '/performance/' | relative_url %}{% endif -%}
-{%- if pg.lang == 'vi' %}{% assign path_manual = '/vi/manual/' | relative_url %}{% else %}{% assign path_manual = '/manual/' | relative_url %}{% endif -%}
-{%- if pg.lang == 'vi' %}{% assign path_download = '/vi/download/' | relative_url %}{% else %}{% assign path_download = '/download/' | relative_url %}{% endif -%}
-{%- if pg.lang == 'vi' %}{% assign path_signing = '/vi/code-signing/' | relative_url %}{% else %}{% assign path_signing = '/code-signing/' | relative_url %}{% endif -%}
-{%- if pg.lang == 'vi' %}{% assign path_story = '/vi/story/' | relative_url %}{% else %}{% assign path_story = '/story/' | relative_url %}{% endif -%}
-{%- if pg.lang == 'vi' %}{% assign path_wiki = '/vi/wiki/' | relative_url %}{% else %}{% assign path_wiki = '/wiki/' | relative_url %}{% endif -%}
+{%- comment %} Every link names a page by its id; url_for gives its path in this language, or English's (site/_data/pages.yml, languages.yml). {% endcomment -%}
+{%- assign home = 'home' | url_for: pg.lang | relative_url -%}
+{%- assign path_perf = 'performance' | url_for: pg.lang | relative_url -%}
+{%- assign path_manual = 'manual' | url_for: pg.lang | relative_url -%}
+{%- assign path_download = 'download' | url_for: pg.lang | relative_url -%}
+{%- assign path_signing = 'code-signing' | url_for: pg.lang | relative_url -%}
+{%- assign path_story = 'story' | url_for: pg.lang | relative_url -%}
+{%- assign path_wiki = 'wiki' | url_for: pg.lang | relative_url -%}
+{%- assign path_en = pg.page_id | url_for: 'en' -%}
 {%- if pg.title_key %}{% assign page_title = t[pg.title_key] | append: ' · Fotollection' %}{% else %}{% assign page_title = t.title %}{% endif -%}
 {%- if pg.description_key %}{% assign page_description = t[pg.description_key] %}{% else %}{% assign page_description = t.description %}{% endif -%}
 {%- assign canonical = page.url | absolute_url -%}
@@ -20,15 +15,16 @@
 {%- if pg.og %}{% assign og_name = 'og-' | append: pg.og | append: '-' | append: pg.lang %}{% else %}{% assign og_name = 'og-' | append: pg.lang %}{% endif -%}
 {%- capture og_image %}{{ '/assets/img/' | append: og_name | append: '.jpg' | absolute_url }}{% endcapture -%}
 <!doctype html>
-<html lang="{{ t.html_lang }}">
+<html lang="{{ pg.html_lang }}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{{ page_title }}</title>
     <meta name="description" content="{{ page_description }}" />
     <link rel="canonical" href="{{ canonical }}" />
-    <link rel="alternate" hreflang="en" href="{{ path_en | absolute_url }}" />
-    <link rel="alternate" hreflang="vi" href="{{ path_vi | absolute_url }}" />
+    {%- for v in pg.versions %}
+    <link rel="alternate" hreflang="{{ v.html_lang }}" href="{{ v.url | absolute_url }}" />
+    {%- endfor %}
     <link rel="alternate" hreflang="x-default" href="{{ path_en | absolute_url }}" />
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#f7f0de" media="(prefers-color-scheme: light)" />
@@ -42,8 +38,10 @@
     <meta property="og:title" content="{{ page_title }}" />
     <meta property="og:description" content="{{ page_description }}" />
     <meta property="og:url" content="{{ canonical }}" />
-    <meta property="og:locale" content="{{ t.locale }}" />
-    <meta property="og:locale:alternate" content="{{ other.locale }}" />
+    <meta property="og:locale" content="{{ pg.og_locale }}" />
+    {%- for v in pg.versions %}{% if v.code != pg.lang %}
+    <meta property="og:locale:alternate" content="{{ v.og_locale }}" />
+    {%- endif %}{% endfor %}
     <meta property="og:image" content="{{ og_image }}" />
     <meta property="og:image:secure_url" content="{{ og_image }}" />
     <meta property="og:image:type" content="image/jpeg" />
@@ -95,7 +93,7 @@
     <span id="top"></span>
     <header class="nav">
       <div class="wrap nav-row">
-        <a class="brand" href="{% if pg.lang == 'vi' %}{{ home_vi }}{% else %}{{ home_en }}{% endif %}">
+        <a class="brand" href="{{ home }}">
           <img src="{{ '/assets/mark-56.png' | relative_url }}" width="28" height="28" alt="" />
           <span>Fotollection</span>
         </a>
@@ -106,7 +104,7 @@
           <a href="{{ path_manual }}"{% if pg.title_key == 'man_title' %} aria-current="page"{% endif %}>{{ t.nav_manual }}</a>
         </nav>
         <div class="nav-actions">
-          <a class="lang" href="{{ other_page }}" hreflang="{{ other.html_lang }}" lang="{{ other.html_lang }}">{% include icons/languages.svg %}<span>{{ t.other_label }}</span></a>
+          {% include lang-menu.html %}
           {% include star.html %}
           <a class="pill coffee" href="{{ home }}#support" aria-label="{{ t.support_title }}">{% include icons/coffee.svg %}<span class="pill-label">{{ t.nav_coffee }}</span></a>
           <a class="pill pill-primary" href="{{ path_download }}"{% if pg.title_key == 'dl_title' %} aria-current="page"{% endif %} aria-label="{{ t.nav_download }}">{% include icons/download.svg %}<span class="pill-label">{{ t.nav_download }}</span></a>
@@ -203,7 +201,7 @@
       <div class="wrap">
         {%- comment -%} This page's own notes, numbered as its marks are (_includes/fn.html, _data/footnotes.yml; owner, 2026-11-07). {%- endcomment %}
         {%- assign fn_page = pg.title_key | default: "home" %}
-        {%- assign fn_list = site.data.footnotes[fn_page][pg.lang] %}
+        {%- assign fn_list = site.data.footnotes[fn_page][pg.lang] | default: site.data.footnotes[fn_page].en %}
         {%- if fn_list %}
         <ol>
           {%- for key in fn_list %}
@@ -227,7 +225,7 @@
     <footer class="footer">
       <div class="wrap footer-row">
         <div>
-          <a class="brand" href="{{ home_en }}">
+          <a class="brand" href="{{ home }}">
             <img src="{{ '/assets/mark-56.png' | relative_url }}" width="24" height="24" alt="" />
             <span>Fotollection</span>
           </a>
@@ -239,8 +237,8 @@
           {%- comment -%} Written at build time by scripts/ga-visits.mjs and scripts/download-stats.mjs; each
                pill is left out when its file is absent. {%- endcomment %}
           <p class="footer-visits">
-            {%- if site.data.visits %}<span class="pill" title="{{ t.footer_visits_hint }}">{% include icons/eye.svg %}<span>{{ t.footer_visits }}</span><span class="star-count">{{ site.data.visits[pg.lang] }}</span></span>{% endif %}
-            {%- if site.data.downloads %} <a class="pill" href="{{ path_download }}" title="{{ t.footer_downloads_hint }}">{% include icons/download.svg %}<span>{{ t.footer_downloads }}</span><span class="star-count">{{ site.data.downloads[pg.lang] }}</span></a>{% endif %}
+            {%- if site.data.visits %}<span class="pill" title="{{ t.footer_visits_hint }}">{% include icons/eye.svg %}<span>{{ t.footer_visits }}</span><span class="star-count">{{ site.data.visits[pg.lang] | default: site.data.visits.en }}</span></span>{% endif %}
+            {%- if site.data.downloads %} <a class="pill" href="{{ path_download }}" title="{{ t.footer_downloads_hint }}">{% include icons/download.svg %}<span>{{ t.footer_downloads }}</span><span class="star-count">{{ site.data.downloads[pg.lang] | default: site.data.downloads.en }}</span></a>{% endif %}
           </p>
           {%- endif %}
         </div>

@@ -19,12 +19,12 @@
       <div class="looks-side">
         <div class="looks-choices" role="group" aria-label="{{ t.looks_pick }}">
           {%- for l in site.data.looks %}
-          <button type="button" class="look-choice" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" data-slug="{{ l.slug }}">{{ l.name[lang] }}</button>
+          <button type="button" class="look-choice" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" data-slug="{{ l.slug }}">{{ l.name | tr: lang }}</button>
           {%- endfor %}
         </div>
         <div class="looks-says" aria-live="polite">
           {%- for l in site.data.looks %}
-          <p class="looks-say{% if forloop.first %} on{% endif %}" data-slug="{{ l.slug }}"><strong>{{ l.name[lang] }}.</strong> {{ l.say[lang] }}</p>
+          <p class="looks-say{% if forloop.first %} on{% endif %}" data-slug="{{ l.slug }}"><strong>{{ l.name | tr: lang }}.</strong> {{ l.say | tr: lang }}</p>
           {%- endfor %}
         </div>
         <p class="small muted">{{ t.looks_engine }}</p>

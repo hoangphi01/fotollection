@@ -174,7 +174,13 @@ for token in --motion-fast --motion-base --motion-slow --motion-base-out --motio
 done
 
 echo "• The website's footnotes: each page's list, cited and written in both languages"
-node scripts/check-footnotes.mjs || fail "site footnotes: fix site/_data/footnotes.yml or the notes in site/_data/i18n.yml (site/README.md)"
+node scripts/check-footnotes.mjs || fail "site footnotes: fix site/_data/footnotes.yml or the notes in site/_data/i18n/<code>.yml (site/README.md)"
+
+echo "• The website's languages: none named in a template, words and placeholders after English"
+# With the site's packages installed (npm ci) it also builds the site and fails on English shown
+# on a published language's pages; the pages workflow always does.
+if [ -d node_modules/@11ty/eleventy ]; then i18n_mode=--build; else i18n_mode=; fi
+node scripts/check-site-i18n.mjs $i18n_mode || fail "site languages: see the lines above (site/README.md, site/_data/languages.yml)"
 
 echo "• ROADMAP and STATUS give every FR the same phase"
 awk '

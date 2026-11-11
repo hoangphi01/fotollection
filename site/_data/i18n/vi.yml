@@ -1,0 +1,597 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# The website's words in Vietnamese (site/README.md). English (en.yml) is the source and the fallback:
+# a key missing here shows in English. Keys are the same in every language.
+title: Fotollection - ảnh sẵn sàng để in, không cần internet
+description: Ứng dụng máy tính miễn phí, mã nguồn mở, chuẩn bị ảnh để in ngay trên máy của bạn. Look một chạm (cả preset Lightroom và LUT của bạn), dấu ngày kiểu máy film, khung thông tin máy ảnh, gợi ý ảnh đẹp nhất, cắt đúng khổ in và xuất giữ nguyên chất lượng gốc, không cần tài khoản, không tải ảnh lên đâu cả.
+nav_features: Tính năng
+nav_quality: Chất lượng
+nav_download: Tải về
+lang_menu: Ngôn ngữ
+nav_coffee: Cà phê
+nav_manual: Hướng dẫn
+to_top: Lên đầu trang
+copy_label: Sao chép
+dl_title: Tải về
+dl_description: "Fotollection cho macOS, Windows và Linux: bộ cài, các bước mở lần đầu, lệnh cài và kho APT cho Linux, và những gì mới trong từng phiên bản."
+dl_kicker: Tải về
+copied_label: Đã sao chép
+star: Gắn sao trên GitHub
+badge: Miễn phí · Mã nguồn mở · Không cần tài khoản
+hero_title_1: Chụp hàng nghìn ảnh, chỉ xem lại khi
+hero_accent: ngồi trên máy bay
+hero_title_2: "?"
+hero_lead: Không có internet, và vẫn chưa biết giữ tấm nào. Hãy thử một lần nhìn lại cùng Fotollection - tự tìm ảnh đẹp nhất, in ngày chụp và chuẩn bị sẵn để in. Tự động, miễn phí và không cần internet.
+vnlf_badge: "Có trên VNLF App Explorer"
+unikorn_badge: "Fotollection trên Unikorn.vn"
+vnlf_badge_top: "Có trên"
+works_on: "Chạy trên Windows, macOS và Linux"
+makeover_old: "v0.12"
+makeover_new: "v0.14"
+makeover_label: "Trước và sau: kéo để so v0.12 và v0.14"
+makeover_hint: "v0.14 hôm nay: kéo để xem v0.12"
+car_new_title: "Mới ở v0.14."
+car_print_title: "Mọi thứ cho tấm in."
+car_prev: "Trước"
+car_next: "Tiếp"
+car_presets_title: "Preset & LUT"
+car_presets_text: "Look, LUT và preset Lightroom của bạn ở bên trái ảnh, theo nhóm; rê chuột lên một mục là ảnh hiện ngay trước khi bấm."
+car_simple_title: "Look ở chế độ Đơn giản"
+car_simple_text: "Một dải đánh số dưới ảnh: một phím số cho ảnh một look, ↑ để giữ, và ảnh tiếp theo hiện ra ngay."
+car_many_title: "Nhiều ảnh cùng lúc"
+car_many_text: "Áp một look cho các ảnh đã tick, hoặc mọi ảnh đang hiện, trong một bước ⌘Z hoàn tác được; lưới ảnh hiện đúng màu từng ảnh."
+car_compare_title: "Trước và sau"
+car_compare_text: "Cạnh nhau, chia đôi, hoặc ấn giữ ảnh để xem ảnh gốc, như trên iPhone."
+car_data_title: "Cài đặt, và dữ liệu của bạn"
+car_data_text: "Một cửa sổ cho mọi cài đặt. Cài đặt → Dữ liệu mang mọi thứ sang máy khác bằng một tệp."
+car_collage_title: "Hai ảnh trên một tấm in"
+car_collage_text: "Chế độ Ghép ảnh đặt hai ảnh lên mỗi tấm 10 × 15, như máy ảnh half-frame, mỗi ảnh một màu riêng."
+compat_title: "Màu của bạn đi theo bạn."
+compat_lead: "Mang theo preset bạn làm trong Lightroom và LUT bạn làm trong LUMIX Lab. Fotollection mở chúng bằng lõi Rust nhanh và an toàn, màu của bạn giữ đúng như bạn đã tạo, sẵn sàng để in."
+compat_cards:
+  - brand: "Lightroom Classic · Lightroom"
+    logo: lightroom
+    fn: [fn_lightroom]
+    title: "Preset Lightroom của bạn"
+    files: [".xmp", ".lrtemplate", ".zip"]
+    text: "Đường cong, trộn màu, color grading và Khử sương đều vào, và mỗi preset vẫn chỉnh được từng thanh trượt."
+  - brand: "LUMIX Lab"
+    fn: [fn_lut]
+    title: "LUT LUMIX Lab của bạn"
+    files: [".cube", "HaldCLUT .png"]
+    text: "Tới 65 điểm mỗi chiều, mỗi LUT có độ mạnh riêng, và Fotollection nhắc bạn khi một LUT được làm cho video V-Log."
+compat_caption: "Preset Lightroom của bạn mang theo những gì"
+compat_cols: ["Thiết lập", "Trong Fotollection", ""]
+compat_rows:
+  - ["Đường cong điểm, điểm trắng và điểm đen", "✓", "gộp vào bảng màu của look"]
+  - ["Trộn màu (HSL)", "✓", "vào Color Mixer, chỉnh được"]
+  - ["Color grading, split toning, trộn trắng đen", "✓", "gộp vào bảng màu của look"]
+  - ["Tương phản, vùng tối, vibrance, bão hoà, phơi sáng", "✓", "vào các thanh trượt của look"]
+  - ["Khử sương (Dehaze)", "✓", "mới ở v0.14"]
+looks_kicker: "Mới ở v0.14"
+looks_title: "Gặp gỡ Looks."
+looks_sub: "Nhìn lại ảnh của bạn theo một cách khác."
+looks_lead_1: "Lightroom gọi là preset. LUMIX gọi là LUT. Ở Fotollection, cả hai đều là "
+looks_lead_2: "một look, và bạn mang theo được"
+looks_lead_3: ": mở ngay preset và LUT bạn đã làm, và giữ nguyên phong cách của bạn. Tám look có sẵn làm mặc định, và "
+looks_lead_4: "bạn tự tạo được look của riêng mình"
+looks_lead_5: ": chỉnh từng thanh trượt trên bất kỳ ảnh nào, hoặc nhập từ preset Lightroom và LUT LUMIX Lab."
+looks_alt: "Một tàu điện đỏ ở Praha qua look đang chọn"
+looks_hold: "Ấn giữ ảnh để xem ảnh gốc."
+looks_pick: "Các look"
+looks_engine: "Render bằng chính engine của Fotollection, giống hệt khi in."
+tile_keys: "Phím tắt như Lightroom trong chế độ chỉnh ảnh toàn cửa sổ"
+tile_export: "Hộp thoại xuất ảnh, như Lightroom"
+yours_title: "Theo ý bạn"
+yours_lead: "Sáng hay tối, tiếng Anh hay tiếng Việt, chọn trong Cài đặt hoặc theo máy tính của bạn."
+yours_en_light: "English · sáng"
+yours_en_dark: "English · tối"
+yours_vi_light: "Tiếng Việt · sáng"
+yours_vi_dark: "Tiếng Việt · tối"
+develop_title: "Phím tắt như Lightroom, miễn phí và không cần mạng"
+develop_lead: "Nếu bạn quen Lightroom, tay bạn đã biết đường: chế độ chỉnh ảnh lấp đầy cửa sổ với Điều hướng và Lịch sử, và hộp thoại xuất ảnh hỏi đúng những gì Lightroom hỏi."
+develop_window_title: "Chế độ chỉnh ảnh dễ đọc"
+develop_window_text: "R cắt ảnh, Z phóng 1:1, \\ xem ảnh trước khi chỉnh màu, Y so sánh cạnh nhau, F lấp đầy cửa sổ và Tab ẩn các bảng bên. Mọi thanh trượt chỉnh trong ánh sáng tuyến tính, kể cả ảnh RAW."
+show_window: "Chế độ chỉnh ảnh toàn cửa sổ: Điều hướng và Lịch sử bên trái, các thẻ màu bên phải"
+develop_export_title: "Xuất ảnh như Lightroom"
+develop_export_text: "Preset bên trái, mọi lựa chọn bên phải: thư mục con, tên tệp theo mẫu, xử lý tệp trùng tên, thanh chất lượng cho biết mức nào in đẹp, giới hạn dung lượng và siêu dữ liệu muốn giữ."
+show_export_dialog: "Hộp thoại xuất ảnh: preset, nơi lưu, tên tệp, tệp, kích thước và siêu dữ liệu"
+community_title: "Trong cộng đồng Linux Việt"
+community_lead: "Fotollection miễn phí và mã nguồn mở, và có mặt ở nơi người dùng Linux Việt tìm ứng dụng."
+vnlf_title: "VNLF App Explorer"
+vnlf_text: "Danh mục dự án tự do của Vietnam Linux Family có Fotollection, kèm ảnh chụp màn hình và một lệnh để cài."
+vnlf_link: "Mở trang ứng dụng"
+vnlf_social_link: "Dự án trên VNLF Social"
+caramos_title: "CaramOS"
+caramos_text: "Bản phân phối Linux làm cho người Việt có Fotollection trong App Center: một cú nhấp, bằng tiếng Việt."
+caramos_link: "Về CaramOS"
+github_title: "GitHub"
+github_text: "Mọi dòng mã, mọi phép đo và mọi quyết định đều công khai. Báo lỗi, đề xuất tính năng, hoặc để lại một ngôi sao."
+github_link: "Mở kho mã"
+final_title: "Chuyến đi của bạn, sẵn sàng để in"
+final_lead: "Miễn phí, không cần mạng, mã nguồn mở, trên Windows, macOS và Linux."
+final_manual: "Đọc hướng dẫn"
+download_mac: Tải cho macOS
+download_win: Tải cho Windows
+download_linux: Tải cho Linux
+download_note: macOS 11+ (Apple Silicon và Intel) · Windows 10/11 · Linux 64-bit, glibc 2.35+
+latest: Phiên bản mới nhất
+no_release: Các bản phát hành ở trên GitHub
+shot_grid: Thư viện ảnh, đã chấm sao và chọn ảnh
+features_title: Đủ mọi thứ cho một lần in ảnh
+features_lead: Làm cho buổi tối sau chuyến đi, khi vài trăm tấm ảnh cần trở thành một xấp ảnh in nhỏ.
+f_stamp_title: Dấu ngày kiểu máy film
+f_stamp_text: Dòng ngày LED màu cam của máy film ngày xưa, tên nơi chụp cùng dòng và một dòng chữ của bạn bên dưới. Đặt riêng từng ảnh hoặc cho tất cả.
+f_frame_title: Khung thông tin máy ảnh
+f_frame_text: Viền "Shot on" gọn gàng với logo hãng, ống kính, tiêu cự, khẩu độ, tốc độ và ISO, lấy thẳng từ EXIF.
+f_best_title: Gợi ý ảnh đẹp nhất
+f_best_text: Ảnh chụp liên tiếp và các khung hình gần giống nhau được gom nhóm; ứng dụng gợi ý tấm nét nhất, ít rung, không nhắm mắt, kèm lý do.
+f_crop_title: Cắt vừa khổ in
+f_crop_text: Mỗi ảnh được cắt đúng khổ in, hiện DPI ngay khi kéo. Xoay ¼ vòng hoặc cân lại đường chân trời tới 15°.
+f_quality_title: Giữ nguyên chất lượng gốc
+f_quality_text: Đủ độ phân giải, giữ hồ sơ màu, JPEG 4:4:4 cho ảnh in. Ảnh in ra giống ảnh bạn đã chụp.
+f_raw_title: Ảnh RAW, không cần chuyển đổi
+f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF và DNG mở được nguyên dạng, đủ ngày chụp và thông số. Ảnh thu nhỏ lấy từ bản xem trước có sẵn trong mỗi tệp, nên duyệt RAW nhanh như JPEG."
+f_open_title: Mở ảnh từ bất cứ đâu
+f_speed_title: Nhanh trên mọi máy
+f_speed_text: Một nghìn ảnh mở trong 0,12 giây, đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, và từ lần mở thứ hai ứng dụng khởi động trong khoảng 0,4 giây. Ảnh 32 MP xem trước nhanh như ảnh nhỏ.
+f_open_text: Bấm chuột phải vào một ảnh trong Finder, Explorer hay trình quản lý file trên Linux và chọn Fotollection. Ảnh mở ngay, và thư mục của ảnh thành một tab.
+pf_title: "Theo hệ điều hành"
+pf_lead: "Cùng một ứng dụng trên macOS, Windows và Linux, chỉ khác nhau ở những điểm sau."
+pf_feature: Tính năng
+pf_ok: "Có"
+pf_soon: Chưa có
+pf_none: "Không"
+pf_coming: Sắp có trong v0.9.0
+pf_cull: Lọc ảnh, chấm sao, gắn cờ, ảnh đẹp nhất, giỏ in
+pf_print: Khổ in, cắt, cân ngang, phóng to, dấu ngày, khung thông tin
+pf_places: Địa điểm offline, tự đặt ngày và nơi chụp, chỉnh đồng hồ máy ảnh
+pf_export: Xuất để in và để đăng mạng xã hội
+pf_looks: "Look, preset Lightroom và LUT"
+pf_modes: "Ba chế độ: Đơn giản, Ghép ảnh, Pro"
+pf_jpeg: JPEG và PNG
+pf_raw: Ảnh RAW
+pf_heic: HEIC (ảnh iPhone)
+pf_tether: Chụp qua cáp USB từ máy ảnh
+pf_openwith: Mở bằng, từ trình quản lý file
+pf_update: Kiểm tra cập nhật tải luôn bản mới
+faq_title: "Câu hỏi trước khi tải về"
+faq_lead: "Vì sao lại thêm một ứng dụng ảnh, và ứng dụng này khác ở đâu."
+faq_groups:
+  - label: "Vì sao chọn Fotollection"
+    items:
+      - q: "Sao không dùng luôn Lightroom?"
+        a: "Lightroom, ứng dụng Ảnh có sẵn và IrfanView được làm ra để chỉnh sửa và xem ảnh; chưa có ứng dụng nào được thiết kế cho máy in ảnh. Muốn in, bạn phải tự cắt từng ảnh theo tỉ lệ khổ giấy, hoặc giao tệp cho tiệm để máy hay nhân viên ở đó tự căn, và thường bị cắt mất đầu người hay mép tấm biển. Fotollection bắt đầu từ chính bản in: biết sẵn các khổ in ở dm và Rossmann, cắt từng ảnh đúng khổ để ảnh bạn thấy chính là ảnh in ra, báo khi ảnh quá nhỏ, in ngày chụp như máy phim và xuất tệp đúng chuẩn máy in ở tiệm. Ứng dụng nhẹ, nhanh, miễn phí và dùng song song với Lightroom được: ảnh gốc không bao giờ bị thay đổi, và preset Lightroom của bạn dùng được trong đó như các look."
+      - q: "Máy tôi đã có sẵn Ảnh (Photos), hoặc tôi dùng IrfanView. Sao phải thêm ứng dụng?"
+        a: "Ứng dụng Ảnh có sẵn và IrfanView đều là trình xem ảnh tốt, mỗi cái trên một hệ điều hành. Không cái nào biết khổ ảnh 10 × 15 ở dm hay Rossmann, báo khi ảnh quá nhỏ để in khổ đó, in ngày chụp như máy phim, hay gom ảnh đẹp nhất của năm thư mục vào một giỏ in. Fotollection làm được, dùng giống hệt nhau trên Mac, Windows lẫn Linux, và còn có thể là trình xem ảnh của bạn: bấm chuột phải vào ảnh, chọn Mở bằng, Fotollection, kể cả ảnh RAW."
+  - label: "Tốc độ và độ nhẹ"
+    items:
+      - q: "Ứng dụng có nặng không? Máy cũ có chạy được không?"
+        a: "Rất nhẹ: bộ cài cho Windows chỉ khoảng 18 MB, vì cửa sổ dùng trình hiển thị web có sẵn của hệ điều hành thay vì mang theo cả một trình duyệt. Phần lõi viết bằng Rust và chạy trực tiếp trên máy. Ảnh xem trước không bao giờ lớn hơn 1600 px, nên ảnh 32 MP mở nhanh như ảnh nhỏ, và ảnh gốc chỉ được tải khi bạn phóng to. Ngay cả khi xuất 5.035 ảnh, RAM dùng nhiều nhất chỉ khoảng 1,45 GB."
+      - q: "Với hàng nghìn ảnh thì nhanh đến đâu?"
+        a: "Mở 1.000 ảnh mất khoảng 0,12 giây, vì Fotollection đọc ảnh thu nhỏ có sẵn trong mỗi tệp trước. Đổi một thiết lập thì ảnh xem trước vẽ lại trong 17 ms, xuất ảnh đạt 18 ảnh cỡ đầy đủ mỗi giây, và từ lần thứ hai trở đi ứng dụng mở trong khoảng 0,4 giây. Mọi con số đều đo trên một chiếc máy tính xách tay bình thường, và trang Hiệu năng hướng dẫn bạn tự đo lại."
+  - label: "Nền tảng và chi phí"
+    items:
+      - q: "Có chạy trên Mac, Windows và Linux không, có thật sự miễn phí không?"
+        a: "Có. Một bản tải cho macOS 11 trở lên, chạy được cả trên chip Apple lẫn Intel, một bản cho Windows 10 và 11, và với Linux 64-bit thì có AppImage hoặc .deb, cho máy Intel/AMD lẫn ARM, chạy trên mọi distro có glibc 2.35 trở lên. Bản Linux là bản gọn: chưa mở được ảnh HEIC (ảnh iPhone), chưa chụp qua cáp USB từ máy ảnh, và ảnh RAW không có phần hiệu chỉnh ống kính như trên macOS; bảng ở mục Tính năng liệt kê đủ mọi khác biệt. Ứng dụng miễn phí, không quảng cáo, không cần tài khoản, không mua thêm trong ứng dụng, và mã nguồn công khai theo giấy phép GPL-3.0, ai cũng có thể kiểm tra ứng dụng làm gì."
+        fn: [fn_heic, fn_arch, fn_linux_pkg]
+tabs_row_title: "Thư mục là tab, ô tích đi theo bạn"
+tabs_text: "Bấm một thư mục để chỉ làm việc với thư mục đó, hoặc Không gian làm việc để xem mọi thư mục cùng lúc. Tích ảnh ở thư mục này, chuyển sang thư mục khác rồi tích tiếp: thanh chọn đếm tất cả, nên ảnh đẹp nhất của mọi thư mục vào giỏ in chỉ với một lần bấm. Tích nhiều thư mục để xuất chung hoặc mỗi thư mục một nơi, và đóng tab bằng dấu × khi xong việc; ảnh vẫn nằm nguyên trên ổ đĩa."
+modes_title: "Ba chế độ, ba việc"
+modes_lead: "Chọn chế độ theo việc bạn cần làm, ở đầu thanh bên hoặc bằng Cmd/Ctrl+1, 2, 3. Ảnh, giỏ in và thiết lập của bạn giữ nguyên ở mọi chế độ."
+mode_simple: "Đơn giản"
+mode_simple_for: "Đi chơi về và muốn in ảnh thật nhanh."
+mode_simple_s1: "Thả thư mục ảnh vào app."
+mode_simple_s2: "Một phím số cho ảnh một look; phím lên giữ ảnh, phím xuống bỏ sang Để riêng."
+mode_simple_s3: "Chọn khổ in và dấu ngày, rồi bấm Xuất."
+mode_collage: "Ghép ảnh"
+mode_collage_for: "Hai ảnh trên một tấm in cho rẻ một nửa, hoặc làm bưu thiếp."
+mode_collage_s1: "Cho những ảnh muốn in vào giỏ in."
+mode_collage_s2: "Ảnh được ghép hai tấm một; kéo một ảnh để đổi chỗ."
+mode_collage_s3: "Bật Bưu thiếp nếu muốn gửi qua bưu điện, rồi bấm Xuất."
+mode_pro: "Pro"
+mode_pro_for: "Hàng trăm ảnh, cần chọn và chỉnh kỹ."
+mode_pro_s1: "Gắn sao, cờ, và chọn tấm nét nhất trong mỗi loạt chụp."
+mode_pro_s2: "Cắt, xoay thẳng, dấu ngày và khung thông tin."
+mode_pro_s3: "Xuất để in ở kiosk, hoặc bản nhẹ để chia sẻ."
+modes_manual: "Hướng dẫn đầy đủ"
+postcard_title: "Bưu thiếp từ chính ảnh của bạn"
+postcard_text: "Trong chế độ Ghép ảnh, một công tắc biến mỗi tấm in thành bưu thiếp: ảnh của bạn ở một nửa, nửa kia là ô dán tem nét đứt và dòng kẻ để viết lời nhắn hoặc địa chỉ. Gõ chữ, in bằng font máy đánh chữ, hoặc viết tay bằng bút dạ dầu nét mảnh. Tấm 10 × 15 nằm trong khổ bưu thiếp mà Deutsche Post nhận."
+pc_type_title: "Gõ chữ, hoặc viết tay"
+pc_type_text: "Lời nhắn và địa chỉ có dòng riêng, chỉnh được đậm, nghiêng, gạch chân, bằng font máy đánh chữ hoặc font của bạn. Font có đủ chữ cái của các tiếng châu Âu viết bằng chữ Latin, nên một địa chỉ ở Praha hay Kraków in ra đúng như khi gõ. Chọn màu mực đen, xanh, nâu sepia hoặc đỏ, và thêm một dòng ghi công nhỏ ở chân tấm. Nửa ảnh chỉnh như trong chế độ Ghép ảnh: có viền trắng bao quanh, hoặc ảnh phủ kín tới mép."
+collage_title: "Hai ảnh trên một tấm in"
+collage_text: "Lấy cảm hứng từ máy ảnh film half-frame: một tấm 10 × 15 chứa hai ảnh 10 × 7,5, nên in cả bộ chỉ tốn một nửa. Ảnh được ghép theo thứ tự, kéo-thả để đổi chỗ, và app gợi ý cỡ ảnh có chừa viền trắng, 6 × 9 cm cho ảnh 2:3. Một đường cắt mảnh chia tấm làm đôi, hoặc tắt đi để giữ dải half-frame liền nhau."
+show_collage: "Chế độ Ghép ảnh: các tấm đúng như khi in, cùng tỷ lệ ảnh, cỡ gợi ý và đường cắt"
+collage_preview_title: "Xem tấm in trước khi in"
+collage_preview_text: "Mở một tấm như mở một ảnh: tấm in hiện lớn, đúng như máy in ở kiosk sẽ làm ra, hai ảnh cạnh nhau cùng dấu ngày và viền. Chọn ảnh nào bằng phím 1 hoặc 2 để cắt hoặc xoay, và dùng phím mũi tên để xem các tấm khác."
+show_collage_preview: "Xem trước một tấm ghép: chuyến tram đêm và Bảo tàng Quốc gia Praha trên một tấm in 10 × 15"
+simple_title: "Đơn giản: giữ hay bỏ, rồi in"
+simple_text: "Từng ảnh một, đúng như khi in. Một phím số cho ảnh một look, phím lên để giữ, phím xuống để bỏ, và ảnh kế tiếp hiện ra ngay. Chọn khổ và dấu ngày, rồi xuất những ảnh đã giữ."
+show_simple: "Chế độ Đơn giản: ảnh đúng như khi in, nút Giữ và Bỏ, và Xuất những ảnh đã giữ"
+swipe_title: "↑ để in, ↓ để riêng"
+swipe_text: "Mở tấm đầu tiên rồi quyết bằng một phím: ↑ cho ảnh vào giỏ in, ↓ để riêng sang một bên, và tấm kế tiếp đã hiện sẵn. Không ảnh nào bị xoá: giỏ in và chồng ảnh để riêng nằm chờ ở thanh bên, đổi ý lúc nào cũng được."
+select_title: "Hoặc tích chọn ngay trong lưới ảnh"
+select_text: "Nút Chọn biến cả lưới ảnh thành ô tích như trên iPhone, Shift+click để chọn cả một dải. Giữ Space trên một ảnh để xem to, đúng như khi in ra, rồi thả tay là chọn tiếp."
+estimate_title: "Biết trước dung lượng trước khi xuất"
+estimate_text: "Thẻ Xuất ảnh cho biết tệp sẽ nặng bao nhiêu trước khi ghi ra ổ đĩa, tính từ vài ảnh mã hoá thử với đúng thiết lập của bạn. Ảnh máy ảnh xuất cho Facebook nhẹ đi khoảng sáu lần, và bạn thấy trước khi bấm."
+quality_title: Ảnh in giống hệt ảnh gốc
+nav_numbers: "Hiệu năng"
+nav_privacy: Riêng tư
+nav_kiosk: Tiệm in
+nav_changelog: Có gì mới
+changelog_title: Có gì mới
+changelog_lead: Mọi phiên bản đã phát hành, mới nhất ở trên cùng, bắt đầu từ bản bạn tải ở đây (viết bằng tiếng Anh).
+changelog_latest: Bản phát hành mới nhất
+changelog_full: Changelog đầy đủ trên GitHub
+changelog_hint: Bấm để cuộn
+support_title: Ủng hộ một cốc cà phê
+support_text: Fotollection do một du học sinh Việt ở châu Âu làm trong thời gian rảnh, giữa giờ học và giờ làm thêm. Ứng dụng miễn phí và mã nguồn mở; nếu nó giúp bạn đỡ được một buổi tối ngồi lọc ảnh, một cốc cà phê (hay một bữa cơm sinh viên 😄) sẽ giúp mình tiếp tục làm.
+support_sponsor: Tài trợ qua GitHub
+support_kofi: Mời cà phê qua Ko-fi
+support_note: "Chọn một món rồi quét mã bằng ứng dụng ngân hàng tại Việt Nam: số tiền và nội dung đã điền sẵn (Napas 247). Ở nước ngoài, GitHub Sponsors hoặc Ko-fi nhận thẻ, một lần hoặc hằng tháng, với số tiền tuỳ bạn."
+support_alt: Mã VietQR (Techcombank) cho món đã chọn
+treat_pick: "Mời mình"
+treat_tea: Một ly trà đá
+treat_coffee: Một ly cà phê
+treat_banhmi: Một ổ bánh mì
+treat_pho: Một tô phở
+treat_meal: Một bữa cơm no
+treat_own: Tuỳ tâm
+treat_own_label: Số tiền tuỳ tâm, tính bằng đồng
+treat_own_hint: Nhập số tiền từ 1.000 ₫ đến 100.000.000 ₫
+kiosk_title: Sẵn sàng cho máy in ảnh ở
+kiosk_and: và
+kiosk_lead: Dịch vụ in ảnh của dm và Rossmann đều do CEWE thực hiện. Fotollection có sẵn mọi khổ trong bảng giá của họ, nên khung cắt bạn thấy chính là ảnh máy in trả ra, không bị xén mép bất ngờ.
+kiosk_standard: Tiêu chuẩn
+kiosk_square: Vuông
+kiosk_strip: Dải dài
+kiosk_more: Giữ tỉ lệ gốc (không cắt) và mọi khổ tùy chỉnh, theo cm hoặc inch
+kiosk_steps_title: Từ chuyến đi đến xấp ảnh in
+kiosk_s1: Chọn ảnh đẹp nhất và chọn khổ in.
+kiosk_s2: Xuất ra một thư mục, USB hoặc thẻ SD.
+kiosk_s3: In ngay tại máy trong cửa hàng, hoặc tải lên dịch vụ in trực tuyến của cửa hàng.
+fn_title: Chú thích
+fn_label: Chú thích
+fn_back: Quay lại đoạn văn
+fn_open: Miễn phí là không thu tiền, không quảng cáo, không mua thêm trong ứng dụng; mời tác giả một ly cà phê là lựa chọn của bạn, để tác giả có thêm động lực phát triển và hoàn thiện Fotollection. Mã nguồn mở là toàn bộ mã nguồn được công khai trên GitHub theo giấy phép GPL-3.0, ai cũng có thể đọc, tự xây dựng và kiểm tra ứng dụng làm gì. Không cần tài khoản là ứng dụng không bao giờ hỏi bạn là ai và không có gì để đăng nhập.
+perf_speed_fn: [fn_webview]
+perf_trip_fn: [fn_trip, fn_pct]
+perf_trip_title: "Một chuyến đi thật: 422 tệp từ Praha"
+perf_trip_text: "Bộ ảnh thử dễ cho số đẹp, nên đây là một thư mục đúng như khi chép ra từ Lumix GX9 sau một cuối tuần ở Praha: 396 ảnh JPEG 20 MP, mỗi tấm khoảng 11 MB, cùng 26 tệp RAW bên cạnh, tổng cộng 4,7 GB. Mở thư mục đọc EXIF của mọi tệp trong 0,23 giây. Xem trước dựng lại trong 19 ms, một ảnh RAW được xử lý trong 0,35 giây và mười tấm bưu thiếp vẽ lại trong 21 ms. Ngày 3/11/2026, với những tệp lớn này có hai con số chưa đạt mục tiêu: xuất ảnh chỉ 7,6 ảnh mỗi giây và RAM lên tới 2,14 GB. Nguyên nhân đã được tìm ra và sửa trong v0.9.7: phần JPEG giờ xuất 10,1 ảnh mỗi giây, và cả lượt chạy dùng không quá 1,31 GB."
+trip_stats:
+  - { v: "0,23 s", l: "để mở cả 422 tệp, gồm cả EXIF" }
+  - { v: "19 ms", l: "dựng lại xem trước, p95 (mục tiêu 50 ms)" }
+  - { v: "0,35 s", l: "để xử lý một ảnh RAW 20 MP (trung vị)" }
+  - { v: "21 ms", l: "để vẽ lại mười tấm bưu thiếp (mục tiêu 100 ms)" }
+  - { v: "10,1 / s", l: "ảnh JPEG được xuất (mục tiêu 8 / s)" }
+  - { v: "1,31 GB", l: "RAM dùng nhiều nhất, cả JPEG lẫn RAW (trần 2 GB)" }
+fn_trip: "Thư mục ảnh Praha là của tác giả và không công khai (© @hoangphi01, giữ mọi quyền). Trung vị của 3 lần chạy bench/trip.sh và measure_folder trên phần JPEG, trên Apple M3 16 GB, khi các ứng dụng khác vẫn mở, ngày 4/11/2026, với phần xuất ảnh của v0.9.7; hãy chạy trên thư mục ảnh của bạn để so sánh."
+fn_photo: "Ảnh tàu điện là của tác giả (© @hoangphi01, giữ mọi quyền), chụp bằng Lumix GX9 ở Praha tháng 11 năm 2026; mỗi look được render bằng chính engine của Fotollection, không chỉnh thêm ở đâu khác."
+fn_downloads: "Do GitHub đếm."
+fn_payment: "VietQR, NAPAS 247 và logo của chúng là nhãn hiệu của Công ty Cổ phần Thanh toán Quốc gia Việt Nam (NAPAS); Techcombank là của Ngân hàng TMCP Kỹ thương Việt Nam. Hiển thị để cho biết hình thức thanh toán mà mã sử dụng; Fotollection không liên quan tới các đơn vị này."
+uses_title: "Dành cho những tấm ảnh bạn muốn in"
+uses_lead: "Bốn tình huống mà Fotollection được làm ra để phục vụ."
+uses_items: [{"icon": "plane", "t": "Sau một chuyến đi", "d": "Bốn trăm tấm ảnh mang về. Tìm ảnh đẹp nhất giữ lại tấm nét nhất của mỗi loạt chụp, giỏ in gom ba mươi tấm đáng in, và mỗi tấm được in kèm ngày chụp, cắt đúng khổ của tiệm."}, {"icon": "book-open", "t": "Một cuốn album gia đình", "d": "Những tấm ảnh in cho cuốn album cả nhà cùng giữ, mỗi tấm có ngày và tên thành phố ở góc, như máy ảnh phim từng in. Chế độ Đơn giản là đủ."}, {"icon": "mail", "t": "Bưu thiếp và bộ ảnh theo chủ đề", "d": "Hai ảnh trên một tấm in, hoặc một tấm bưu thiếp có lời nhắn của bạn bên cạnh ảnh: phố cổ, món ăn, những chuyến tàu điện, mỗi bộ nằm trong một tab thư mục riêng."}, {"icon": "share-2", "t": "Chia sẻ mà không mất màu", "d": "Cũng những tấm ảnh ấy, được xuất đúng cỡ cho Facebook và Instagram, vẫn giữ màu sau khi tải lên thay vì bị nhạt đi."}]
+compare_title: "So với các công cụ khác"
+compare_lead: "Fotollection không nhằm thay thế một trình chỉnh sửa RAW đầy đủ. Ứng dụng được làm cho bước mà các công cụ ấy để lại cho bạn: từ thư mục ảnh của chuyến đi đến những tấm ảnh in cầm trên tay."
+compare_caption: "Fotollection bên cạnh Lightroom Classic, darktable và RawTherapee"
+compare_cols: ["", "Fotollection", "Lightroom Classic", "darktable", "RawTherapee"]
+compare_rows: [["Dành cho", "Chọn, in ngày và cắt khổ ảnh của một chuyến đi để in", "Quy trình trọn vẹn: quản lý, chỉnh sửa, in và chia sẻ", "Quy trình ảnh và chỉnh sửa RAW", "Chỉnh sửa RAW"], ["Giá", "Miễn phí", "Thuê bao Creative Cloud", "Miễn phí", "Miễn phí"], ["Mã nguồn", "Mở, GPL-3.0", "Đóng", "Mở, GPL-3.0 trở lên", "Mở, GPL-3.0"], ["Hệ điều hành", "macOS, Windows, Linux", "macOS, Windows", "macOS (chip Apple), Windows, Linux", "macOS, Windows, Linux"], ["Tài khoản", "Không cần", "Tài khoản Adobe", "Không cần", "Không cần"]]
+compare_note: "Khi cần đi xa hơn: darktable và RawTherapee cho việc chỉnh sửa RAW chuyên sâu nhất, Lightroom để quản lý ảnh của cả một đời trong một catalogue."
+fn_lightroom: "Adobe, Lightroom và Lightroom Classic là nhãn hiệu của Adobe Inc. tại Hoa Kỳ và các quốc gia khác. Fotollection không liên quan tới và không được Adobe bảo trợ; ứng dụng chỉ dùng lại những phím tắt và bố cục mà người dùng Lightroom đã quen. The Lightroom logo is shown from Wikimedia Commons, where it is in the public domain as a text logo."
+fn_lut: "LUT (look-up table, bảng tra màu) cho mỗi màu biết nó sẽ thành màu nào; Fotollection đọc tệp .cube và ảnh HaldCLUT. LUMIX là nhãn hiệu của Panasonic Holdings Corporation; Fotollection không liên quan tới và không được Panasonic bảo trợ."
+fn_compare: "Creative Cloud là nhãn hiệu của Adobe Inc.; darktable và RawTherapee là các dự án phần mềm tự do của cộng đồng riêng. Thông tin lấy từ darktable.org, rawtherapee.com và bản tóm tắt của Wikipedia về giấy phép và yêu cầu hệ thống của Adobe, kiểm tra ngày 7 tháng 11 năm 2026. Fotollection không liên quan tới các bên này."
+fn_simd: "SIMD (single instruction, multiple data, tức một lệnh, nhiều dữ liệu) cho phép bộ xử lý làm việc trên nhiều giá trị cùng lúc: một lệnh duy nhất tác động lên nhiều con số đặt cạnh nhau trong một thanh ghi vector rộng, chẳng hạn các kênh đỏ, xanh lá và xanh dương của nhiều điểm ảnh. Bộ xử lý Intel và AMD cung cấp tập lệnh này dưới tên SSE và AVX; Apple silicon và các bộ xử lý Arm khác dưới tên NEON. Intel, AMD và Arm là nhãn hiệu của các chủ sở hữu tương ứng."
+fn_exif: "EXIF (Exchangeable Image File Format) là tiêu chuẩn do JEITA và CIPA của Nhật Bản duy trì, quy định những thông tin máy ảnh ghi vào mỗi tấm ảnh: máy và ống kính, ngày giờ chụp, thông số phơi sáng, thường cả vị trí GPS, cùng một ảnh thu nhỏ đi kèm."
+fn_units: "Đơn vị: px (pixel) là một điểm ảnh; MP (megapixel) là một triệu điểm ảnh, nên ảnh 20 MP có khoảng 5.472 × 3.648 px; ms là mili giây, một phần nghìn giây; MB và GB là megabyte và gigabyte; RAM (random-access memory) là bộ nhớ làm việc của máy tính."
+fn_raw: "Tệp RAW chứa những gì cảm biến của máy ảnh ghi lại trước khi máy biến chúng thành một tấm ảnh, nên màu sắc, độ sáng và chi tiết vẫn có thể được quyết định về sau, giống như tráng một tấm phim âm bản. Mỗi hãng có định dạng riêng (CR3 của Canon, NEF của Nikon, ARW của Sony, RW2 của Panasonic và nhiều định dạng khác); DNG (Digital Negative) là định dạng RAW mở do Adobe công bố."
+fn_heic: "HEIF (High Efficiency Image File Format) là định dạng ảnh theo tiêu chuẩn ISO/IEC 23008-12; HEIC là biến thể nén bằng HEVC (H.265), định dạng iPhone dùng để lưu ảnh theo mặc định. Một ảnh HEIC chỉ nặng khoảng một nửa ảnh JPEG có chất lượng tương đương."
+fn_png: "PNG (Portable Network Graphics) là định dạng ảnh không mất dữ liệu, theo tiêu chuẩn ISO/IEC 15948: mọi điểm ảnh được giữ nguyên vẹn, phù hợp với đồ hoạ và ảnh chụp màn hình, nhưng một tấm ảnh chụp lưu dưới dạng PNG sẽ lớn hơn JPEG nhiều lần."
+fn_dpi: "DPI (dots per inch, số điểm trên mỗi inch) là số điểm ảnh của tấm ảnh nằm trên mỗi inch (2,54 cm) bản in. Khoảng 300 DPI trông sắc nét khi cầm trên tay; ít hơn vẫn đẹp với bản in lớn được ngắm từ xa."
+fn_pct: "p50 và p95 là các phân vị: p50, tức trung vị, là thời gian mà một nửa số lần chạy nằm dưới; p95 là thời gian mà 95 trên 100 lần chạy nằm dưới, nên nó cho thấy những lần chậm mà con số trung bình che đi."
+fn_psnr: "PSNR (peak signal-to-noise ratio, tỷ số tín hiệu đỉnh trên nhiễu) so sánh hai ảnh từng điểm một và cho biết mức khác biệt tính bằng decibel: càng cao càng giống nhau. Trên khoảng 40 dB thì mắt khó nhận ra khác biệt."
+fn_sensor: "CMOS và CCD là hai loại cảm biến ảnh, một lưới các ô nhạy sáng biến ánh sáng thành điện tích. Gần như mọi máy ảnh và điện thoại ngày nay dùng CMOS (complementary metal-oxide-semiconductor); CCD (charge-coupled device) phổ biến ở các máy ảnh đời trước."
+fn_tiff: "TIFF (Tagged Image File Format) là định dạng ảnh linh hoạt, nay do Adobe duy trì; nhiều định dạng RAW, trong đó có DNG, được xây dựng trên cấu trúc của nó."
+fn_444: "4:4:4 và 4:2:0 mô tả cách lấy mẫu màu (chroma subsampling), tức JPEG giữ lại bao nhiêu chi tiết màu bên cạnh độ sáng. 4:4:4 giữ màu của từng điểm ảnh; 4:2:0 chỉ giữ một màu cho mỗi khối bốn điểm ảnh, nhờ đó tệp nhỏ hơn nhưng các đường màu mảnh, như chữ đỏ hay đường chân trời sắc nét, bị nhoè đi."
+fn_usb: "USB (Universal Serial Bus) là chuẩn kết nối thiết bị của USB Implementers Forum. Thẻ SD là thẻ nhớ theo chuẩn Secure Digital của SD Association, loại thẻ mà phần lớn máy ảnh sử dụng."
+fn_gps: "GPS (Global Positioning System) là hệ thống định vị vệ tinh của Hoa Kỳ. Điện thoại và nhiều máy ảnh dùng hệ thống này, thường cùng với Galileo, GLONASS hoặc BeiDou, để ghi lại nơi chụp ảnh."
+fn_iso: "ISO là độ nhạy sáng của máy ảnh, được định nghĩa trong tiêu chuẩn ISO 12232: mỗi lần tăng gấp đôi, từ ISO 100 lên 200, chỉ cần một nửa lượng ánh sáng, đổi lại ảnh nhiều nhiễu hơn."
+fn_gpl: "GPL-3.0 là phiên bản 3 của Giấy phép Công cộng GNU (GNU General Public License) do Free Software Foundation công bố: ai cũng có quyền sử dụng, tìm hiểu, chia sẻ và sửa đổi chương trình, và người chia sẻ lại, dù có sửa đổi hay không, đều chia sẻ mã nguồn theo cùng các điều khoản đó."
+fn_vnlf: "VNLF (Vietnam Linux Family) là cộng đồng phần mềm tự do và Linux của người Việt. App Explorer của cộng đồng giới thiệu các ứng dụng tự do cho người dùng Việt Nam, và CaramOS là bản phân phối Linux của cộng đồng."
+fn_led: "LED (light-emitting diode, đi-ốt phát quang): các máy ảnh phim những năm 1980 và 1990 in ngày chụp lên phim bằng những chữ số LED nhỏ màu cam, nét đặc trưng mà dấu ngày tái hiện."
+fn_arch: "x86_64, còn gọi là amd64, là kiến trúc bộ xử lý của phần lớn máy tính Windows và Linux; ARM64, còn gọi là aarch64 hay arm64, là kiến trúc của Apple silicon, nhiều máy tính xách tay và các bo mạch nhỏ như Raspberry Pi. Mỗi kiến trúc cần một bản dựng riêng."
+fn_linux_pkg: ".deb là gói Debian, định dạng cài đặt của Debian, Ubuntu, Linux Mint và các bản phân phối cùng họ; APT (Advanced Package Tool) cài đặt và cập nhật các gói đó từ một kho phần mềm. AppImage là một tệp duy nhất chứa ứng dụng cùng mọi thứ nó cần, chạy được trên hầu hết các bản phân phối mà không cần cài đặt."
+fn_fuse: "FUSE (Filesystem in Userspace) cho phép một chương trình tạo ra hệ thống tệp mà không cần thay đổi nhân hệ điều hành. AppImage dùng FUSE để tự mở, và Ubuntu 24.04 không còn cài sẵn phiên bản 2 của nó."
+fn_sha: "SHA-256 là hàm băm mật mã thuộc họ SHA-2, được NIST (Hoa Kỳ) chuẩn hoá trong FIPS 180-4. Hàm này biến một tệp thành một dấu vân tay dài 64 ký tự; chỉ cần tệp thay đổi một bit, dấu vân tay cũng thay đổi."
+fn_gpg: "GPG (GNU Privacy Guard) là bản hiện thực tự do của chuẩn OpenPGP. Kho APT được ký bằng một khoá GPG, nhờ đó hệ thống của bạn kiểm tra được mọi gói đều đến từ kho và không bị thay đổi."
+fn_rust: "Rust và logo Rust là nhãn hiệu của Rust Foundation. Phần lõi của Fotollection viết bằng Rust và chạy trực tiếp trên máy của bạn."
+fn_webview: "Cửa sổ ứng dụng được làm bằng Tauri và hiển thị bằng trình hiển thị web (web view) có sẵn của hệ điều hành: WebKit (WKWebView) trên macOS, Microsoft Edge WebView2 trên Windows và WebKitGTK, bản WebKit cho GTK, trên Linux. Tauri là dự án của Tauri Programme thuộc Commons Conservancy; WebKit là nhãn hiệu của Apple Inc.; GTK là dự án của GNOME Foundation; Microsoft Edge và WebView2 là nhãn hiệu của Microsoft Corporation. Phép so sánh với trình duyệt chạy cùng một việc trong Chromium 156 không giao diện, dự án mã nguồn mở phía sau Google Chrome, mỗi nhân xử lý một Web Worker."
+fn_de: "ΔE2000 (CIEDE2000) là công thức tính sai lệch màu của Uỷ ban Quốc tế về Chiếu sáng (CIE), được chuẩn hoá thành ISO/CIE 11664-6; không gian màu CIELAB mà công thức dùng là ISO/CIE 11664-4."
+fn_ssim: "SSIM do Zhou Wang, Alan C. Bovik, Hamid R. Sheikh và Eero P. Simoncelli giới thiệu trong bài Image quality assessment: from error visibility to structural similarity, IEEE Transactions on Image Processing, 13(4), 2004."
+fn_jpeg: "JPEG là định dạng ảnh của nhóm Joint Photographic Experts Group, được chuẩn hoá thành ISO/IEC 10918-1 và ITU-T T.81."
+fn_srgb: "sRGB do HP và Microsoft tạo ra năm 1996, được chuẩn hoá thành IEC 61966-2-1."
+fn_p3: "Display P3 là không gian màu do Apple Inc. định nghĩa, dựa trên không gian màu DCI-P3 của ngành điện ảnh (SMPTE)."
+fn_adobe: "Adobe RGB (1998) là không gian màu do Adobe Inc. đặc tả; Adobe là nhãn hiệu đã đăng ký của Adobe Inc."
+fn_charts: "Mọi biểu đồ: số liệu mang tính tham khảo, đo trên một máy tính xách tay bình thường (Apple M3, 16 GB), và phụ thuộc vào cấu hình máy tính bạn sử dụng."
+fn_dng: "Chúng tôi không chạy Adobe DNG Converter cho trang này. Con số là ước tính của bên thứ ba (1.000 tệp CR3 trong 20–30 phút trên máy hiện đại, không nói rõ máy), theo bài viết về chuyển hàng loạt RAW sang DNG trên blog của convertintomp4.com. Adobe là nhãn hiệu đã đăng ký của Adobe Inc."
+fn_pf_raw: "Trên macOS, các định dạng RAW khác DNG do hệ điều hành xử lý, có hiệu chỉnh ống kính. Linux và Windows dùng bộ đọc RAW có sẵn trong Fotollection, không có phần hiệu chỉnh đó; trên Windows, Raw Image Extension của Microsoft, nếu đã cài, chỉ là phương án dự phòng cuối cùng."
+fn_pf_heic_win: "Cần cài HEIF Image Extensions và HEVC Video Extensions miễn phí của Microsoft, từ Microsoft Store."
+fn_pf_heic_linux: "HEIC cần bộ giải mã HEVC, thứ Linux không có sẵn và Fotollection sẽ không đóng gói kèm, vì vướng bằng sáng chế. Bản sau sẽ dùng libheif do distro của bạn cài. Trước mắt, hãy chuyển ảnh HEIC sang JPEG."
+fn_pf_tether: "Trước mắt là Sony a6400; các máy khác sẽ có sau."
+fn_pf_openwith: "Với bản .deb, hoặc khi cài bằng lệnh cài đặt. AppImage chạy riêng lẻ không tự đăng ký với trình quản lý file, trừ khi dùng công cụ như AppImageLauncher."
+fn_pf_update: "AppImage tự tải AppImage mới; bản .deb mở trang phát hành, còn nếu cài qua kho APT thì sudo apt upgrade sẽ mang bản mới về."
+fn_glibc: "glibc (GNU C Library) là thư viện nền mà mọi chương trình trên Linux đều chạy trên đó. Muốn biết máy mình có bản nào, gõ ldd --version trong terminal. Fotollection được build trên Ubuntu 22.04, có glibc 2.35, nên cần bản đó hoặc mới hơn."
+fn_nvidia: "Với driver chính hãng của NVIDIA, bộ dựng DMA-BUF của WebKitGTK có thể khiến cửa sổ trắng trơn. Khi driver đó đang chạy, Fotollection tự khởi động lại một lần với bộ dựng ấy đã tắt."
+fn_dm: dm và logo dm là thương hiệu của dm-drogerie markt GmbH + Co. KG.
+fn_rossmann: ROSSMANN và logo ROSSMANN là thương hiệu của Dirk Rossmann GmbH.
+fn_cewe: Dịch vụ in ảnh của dm và Rossmann do CEWE thực hiện; CEWE là thương hiệu của CEWE Stiftung & Co. KGaA. Khổ in được đối chiếu với bảng giá của dm vào tháng 10/2026; cửa hàng có thể thay đổi.
+fn_photos: "Các ảnh Praha trong ảnh chụp màn hình (tram, phố, sông Vltava) do @hoangphi01 chụp bằng Lumix GX9 vào tháng 11/2026: © @hoangphi01, giữ mọi quyền. Các ảnh này không thuộc giấy phép của ứng dụng và không được dùng lại. Các ảnh demo còn lại thuộc phạm vi công cộng (CC0) trên Wikimedia Commons, của Dktue (7 ảnh), Pierre Blaché from Paris, France (2 ảnh) và Kate Branch (1 ảnh). Chú mèo trong ảnh chụp màn hình phần giỏ in và ảnh đẹp nhất cũng do @hoangphi01 chụp bằng GX9, giữ mọi quyền; các bản mờ hơn, rung tay và tối hơn bên cạnh được tạo từ chính tấm ảnh đó, để minh hoạ cách chọn ảnh đẹp nhất."
+fn_photos_link: "Danh sách từng tệp, trang gốc và mã kiểm tra."
+fn_rawsamples: "Các số đo RAW dùng chín tệp mẫu thuộc phạm vi công cộng (CC0) từ raw.pixls.us, mỗi định dạng một tệp; scripts/fetch-raw-samples.py tải về và kiểm tra chúng."
+fn_rawformats: "Các định dạng RAW nhắc đến trên trang này thuộc về hãng máy ảnh đã tạo ra chúng: RW2 (Panasonic Holdings Corporation), CR2 và CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) và ORF (OM Digital Solutions Corporation, trước đây là Olympus). DNG là đặc tả mở do Adobe Inc. công bố. Fotollection đọc các định dạng này qua bộ đọc có sẵn trong Fotollection, còn trên macOS thì qua bộ giải mã của hệ điều hành trước (trên Windows, Raw Image Extension của Microsoft, nếu đã cài, là phương án dự phòng cuối cùng); ứng dụng không do hãng nào trong số này làm ra hay bảo trợ."
+fn_cameras: "Tên và logo máy ảnh trong ảnh chụp màn hình và trong khung thông tin của ứng dụng là thương hiệu của chủ sở hữu, chỉ dùng để cho biết ảnh được chụp bằng máy nào: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) và Sony (Sony Group Corporation)."
+fn_others: Apple và macOS là thương hiệu của Apple Inc.; Windows của Microsoft Corporation; Linux là nhãn hiệu đã đăng ký của Linus Torvalds tại Hoa Kỳ và các nước khác; Ubuntu của Canonical Ltd.; Debian của Software in the Public Interest, Inc.; Fedora, Red Hat, RHEL và CentOS của Red Hat, Inc.; openSUSE của SUSE LLC; Pop!_OS của System76, Inc.; Rocky Linux của Rocky Enterprise Software Foundation; AlmaLinux của AlmaLinux OS Foundation; ChromeOS của Google LLC; NVIDIA của NVIDIA Corporation; tên các distro Linux khác thuộc về dự án của chúng; Facebook và Instagram của Meta Platforms, Inc.; GitHub của GitHub, Inc.; Google Analytics của Google LLC; Lightroom của Adobe Inc.; IrfanView của Irfan Škiljan; VietQR của NAPAS; Wikimedia Commons của Wikimedia Foundation. Biểu tượng Apple, Windows và Linux (chim cánh cụt Tux, do Larry Ewing vẽ lần đầu) lấy từ Simple Icons (CC0), chỉ để cho biết cột hay bước cài đặt nói về hệ điều hành nào.
+fn_brand: "Tên và logo Fotollection dùng để nhận biết ứng dụng chính thức do @hoangphi01 làm. Bản tải chính thức chỉ có ở fotollection.org và trang phát hành GitHub của dự án. Giấy phép GPL-3.0 cho phép bất kỳ ai chia sẻ hay bán bản sao, có sửa hay không, miễn là giữ nguyên giấy phép này và cung cấp mã nguồn; bản đã sửa hoặc bán lại không được dùng tên hay logo Fotollection theo cách khiến người khác nghĩ đó là ứng dụng chính thức."
+fn_notify: "Bạn muốn phân phối, bán lại hay phát triển tiếp từ Fotollection? Xin hãy báo cho tác giả trước bằng một mục góp ý (issue) trên GitHub (github.com/hoangphi01/fotollection/issues). Ứng dụng miễn phí và được làm trong thời gian rảnh; một lời báo ngắn là cách công bằng để cảm ơn."
+fn_cite: Khi trích dẫn, viết bài, giới thiệu ứng dụng hay dùng ảnh chụp màn hình này, xin ghi nguồn Fotollection và dẫn link về fotollection.org.
+fn_independent: Fotollection là dự án mã nguồn mở độc lập, không liên kết, không được tài trợ hay bảo trợ bởi bất kỳ công ty nào kể trên; mọi thương hiệu khác thuộc về chủ sở hữu của chúng.
+shield: Riêng tư - ảnh không bao giờ rời khỏi máy của bạn
+privacy_title: Ảnh của bạn là của bạn
+privacy_lead: Fotollection được làm để chạy hoàn toàn không cần internet. Không tải lên, không theo dõi, và bạn có thể tự kiểm tra từng dòng mã nguồn.
+p1_title: Không tải lên, không lưu trữ đám mây
+p1_text: Ảnh được đọc và ghi ngay trên ổ đĩa của bạn. Không có máy chủ nào để gửi ảnh tới.
+p2_title: Không tài khoản, không theo dõi
+p2_text: Không cần đăng ký, và ứng dụng không đo lường hay gửi đi bất kỳ dữ liệu sử dụng nào. Từ v0.13.0, ứng dụng hỏi GitHub một lần khi mở xem có bản mới chưa, và bạn tắt được trong Cài đặt.
+p6_title: Không quảng cáo
+p6_text: Không bán gì cho bạn và không ai trả tiền để tiếp cận bạn. Không quảng cáo, không gợi ý được tài trợ, không mua thêm trong ứng dụng, bây giờ và cả sau này.
+p3_title: Địa điểm không cần dịch vụ bản đồ
+p3_text: Tên nơi chụp lấy từ cơ sở dữ liệu bản đồ có sẵn trong ứng dụng, nên GPS của bạn không đến tay bên thứ ba nào.
+p4_title: Xóa GPS khi xuất ảnh
+p4_text: Ảnh xuất ra mặc định được xóa vị trí, nên ảnh gửi tiệm in không để lộ nơi bạn sống.
+p5_title: Mã nguồn mở
+p5_text: Mã nguồn công khai theo giấy phép GPL-3.0. Ai cũng có thể đọc, tự xây dựng và kiểm chứng ứng dụng làm đúng như trang này nói.
+chart_budgets: Tốc độ và RAM, so với ngân sách đặt ra trước khi viết mã nguồn
+chart_quality: Bản xuất giữ lại được bao nhiêu so với ảnh gốc, so với một trình sửa ảnh web thông thường
+chart_bestshot: Gợi ý ảnh đẹp nhất, chấm điểm so với ảnh do người chọn tay
+charts_more: "Xem toàn bộ số đo và giải thích"
+chart_share: "Ảnh đăng Facebook: người xem thấy gì sau khi Facebook nén lại"
+chart_memory: "RAM dùng nhiều nhất khi số ảnh tăng lên 5.035 tấm"
+chart_browser: "Cùng một việc, trên Fotollection và trên trình duyệt web"
+story_title: Câu chuyện
+story_kicker: Nhật ký
+story_description: "Câu chuyện phía sau Fotollection: hai mươi năm ảnh chưa xem lại, một mùa đông nhìn về những năm cũ, và những cây số đầu của một cuộc marathon để kỷ niệm trở lại thành ảnh in."
+story_lead: "Vì sao có Fotollection, và nó đã tìm ra con đường riêng thế nào: nhật ký của những cây số đầu tiên, kể lại từ những ghi chép và lịch sử mã nguồn của dự án."
+story_wiki: "Xem app qua từng phiên bản, trong Wiki"
+footer_story: Câu chuyện
+wiki_title: Wiki
+wiki_kicker: Từ màn hình đầu tiên
+wiki_description: "Fotollection đã lớn lên từ màn hình đầu tiên thế nào, qua từng phiên bản: mỗi bản mang đến gì, kèm giao diện lúc phát hành."
+wiki_lead: "Mọi phiên bản, từ hôm nay ngược về cửa sổ trống đầu tiên: mỗi bản mang đến gì, và giao diện của Fotollection lúc phát hành, lấy từ lịch sử của dự án."
+wiki_first: Tới màn hình đầu tiên
+wiki_toc: Các phiên bản
+wiki_foot: "Mỗi ảnh là giao diện của Fotollection đúng lúc phiên bản đó phát hành, lấy từ lịch sử của dự án; những ảnh đầu tiên chỉ có tiếng Anh. Mỗi bản mới sẽ có thêm mốc của mình ở đây."
+footer_wiki: Wiki
+man_title: Hướng dẫn
+man_kicker: Trợ giúp
+man_description: "Cách dùng Fotollection từng bước, mỗi bước kèm ảnh chụp màn hình: chọn ảnh để in, look và màu, phóng to, ảnh RAW, đồng hồ máy ảnh, ngày và nơi chụp, chụp với máy ảnh cắm vào máy tính, và mọi phím tắt."
+man_lead: "Từng bước, đúng như app hiển thị. Hướng dẫn đi theo app: khi một phiên bản đổi điều bạn nhìn thấy, trang này đổi theo."
+man_toc: Các chương
+man_source: Bản hướng dẫn này trên GitHub
+cs_title: Chính sách ký mã
+cs_kicker: Tin cậy
+cs_description: "Bộ cài Fotollection được xây dựng và phát hành thế nào, ai duyệt mỗi bản phát hành, và ứng dụng gửi gì, không gửi gì qua mạng."
+cs_lead: "Bộ cài chưa được ký bằng chứng chỉ: Windows hiện cảnh báo SmartScreen ở lần mở đầu, bản macOS chỉ có chữ ký ad-hoc, và AppImage cùng .deb cho Linux cũng chưa được ký. Mỗi bản phát hành kèm mã SHA-256 trong SHA256SUMS.txt, để bạn kiểm tra tệp tải về đúng là tệp được phát hành ở đây. Kho APT ở fotollection.org/apt được ký bằng khoá GPG của dự án, nên apt tự kiểm tra mọi gói cài từ đó."
+cs_parts:
+  - id: team
+    title: Vai trò trong nhóm
+    lead: "Mọi bộ cài đều do GitHub Actions xây dựng từ kho mã công khai, từ một bản phát hành có gắn tag; không phát hành bản nào xây dựng trên máy cá nhân. Workflow xây dựng là"
+    items:
+      - title: Người viết và duyệt mã
+        author: true
+        text: Viết và duyệt mọi thay đổi trong mã nguồn.
+      - title: Người phê duyệt
+        author: true
+        text: Tự tay kiểm tra và phát hành từng bản.
+  - id: privacy
+    title: Chính sách riêng tư
+    lead: "Ứng dụng này không gửi bất kỳ thông tin nào tới hệ thống mạng khác, trừ khi người dùng, hoặc người cài đặt hay vận hành nó, yêu cầu cụ thể."
+    items:
+      - title: Chạy offline
+        text: "Ảnh, thư mục, dự án và cài đặt không bao giờ rời khỏi máy của bạn. Không tài khoản, không thu thập dữ liệu sử dụng, không gửi báo lỗi."
+      - title: Kiểm tra cập nhật
+        text: "Lần lên mạng duy nhất: khi bạn bấm, và từ v0.13.0 một lần khi mở app trừ khi bạn tắt trong Cài đặt, ứng dụng hỏi GitHub (api.github.com) bản phát hành mới nhất của dự án. Không tự tải gì về. Chính sách riêng tư của GitHub áp dụng cho lần hỏi đó."
+      - title: Ảnh xuất không có vị trí
+        text: Toạ độ GPS được xoá khỏi ảnh xuất theo mặc định.
+        fn: [fn_gps]
+      - title: Trang web này
+        text: "Trang web, không phải ứng dụng, đếm lượt truy cập và lượt bấm vào các liên kết tải về bằng Google Analytics; chính sách riêng tư của Google áp dụng cho việc đó. Số lượt tải lấy từ GitHub."
+      - title: Thanh toán ủng hộ
+        text: "Ko-fi, GitHub Sponsors và ngân hàng đứng sau mã VietQR là các bên xử lý khoản ủng hộ Fotollection, mỗi bên theo chính sách riêng tư của mình. Trang web chỉ dẫn link tới họ, không tải gì từ họ, và việc thanh toán không liên quan gì tới ứng dụng hay dữ liệu của bạn trong Fotollection."
+  - id: system
+    title: Thay đổi trên máy của bạn
+    lead: Cài đặt chỉ thêm những gì ứng dụng cần, và gỡ cài đặt sẽ xoá chúng.
+    items:
+      - title: Mở bằng
+        text: "Bộ cài, và trên Linux là gói .deb, thêm Fotollection vào menu Mở bằng cho các tệp ảnh. Ứng dụng không bao giờ tự đặt mình làm ứng dụng mặc định."
+      - title: Gỡ cài đặt
+        text: "Gỡ trong Cài đặt Windows, hoặc xoá ứng dụng trên macOS. Trình gỡ của Windows cũng xoá các mục Mở bằng. Trên Linux, chạy sudo apt remove fotollection, hoặc xoá tệp AppImage, hoặc chạy lệnh cài với --uninstall, lệnh này xoá luôn kho APT và khoá của nó. Thiết lập và dự án vẫn nằm trong thư mục cá nhân của bạn."
+footer_signing: Chính sách ký mã
+perf_title: "Hiệu năng"
+perf_description: "Mọi số đo phía sau Fotollection, giải thích bằng lời dễ hiểu: tốc độ, RAM, chất lượng in, ảnh đăng mạng xã hội, gợi ý ảnh đẹp nhất, kèm ý nghĩa của ΔE, SSIM, JPEG và hồ sơ màu."
+perf_kicker: "Đo thật, không hứa suông"
+perf_lead: "Mọi con số trên trang này đều đo trên ảnh thật, bằng một chiếc máy tính xách tay bình thường (Apple M3, 16 GB). Chương trình đo nằm ngay trong kho mã nguồn, ai cũng có thể chạy lại. Dưới mỗi biểu đồ là ý nghĩa của nó với ảnh in của bạn, và cuối trang là giải thích cho các thuật ngữ đứng sau con số."
+perf_how_title: "Vì sao Fotollection nhanh"
+perf_how_lead: "Không có phép màu. Chỉ là một vài quyết định được đưa ra trước dòng mã đầu tiên, và mỗi quyết định đều được đo đạc."
+perf_how_items:
+  - { t: "Mã gốc trên mọi nhân xử lý", d: "Toàn bộ công việc của Fotollection chạy bằng Rust, được biên dịch cho đúng bộ xử lý của bạn và chia đều cho mọi nhân, tận dụng các lệnh vector (SIMD) dành riêng cho điểm ảnh.", v: "23,5 / s", l: "ảnh 16 MP được xuất", fn: [fn_simd, fn_units, fn_rust] }
+  - { t: "Chỉ đọc những gì cần thiết", d: "Khi mở một thư mục, Fotollection chỉ đọc EXIF và ảnh thu nhỏ có sẵn trong mỗi tệp, không bao giờ đọc toàn bộ ảnh. Ảnh thu nhỏ được lưu trong bộ nhớ đệm trên ổ đĩa.", v: "0,12 s", l: "để mở 1.000 ảnh", fn: [fn_exif] }
+  - { t: "Không nhiều điểm ảnh hơn màn hình", d: "Bản xem trước tối đa 1.600 px, được dựng từ một bản 2.048 px lưu trong bộ nhớ. Ảnh gốc chỉ được đọc khi bạn phóng to, từng phần một.", v: "17 ms", l: "để dựng lại bản xem trước" }
+  - { t: "Sẵn sàng trước khi bạn chọn", d: "Ngay khi ảnh thu nhỏ hoàn tất, bản xem trước của mọi ảnh được chuẩn bị ở chế độ nền và lưu trên ổ đĩa, đồng thời một phần tư bộ nhớ giữ sẵn các ảnh quanh ảnh đang xem.", v: "27 ms", l: "để mở bất kỳ ảnh nào" }
+  - { t: "Không làm một việc hai lần", d: "Thanh chỉnh màu chỉ thay đổi màu sắc, không dựng lại kích thước ảnh. Mọi thanh chỉnh màu được gộp vào một bảng 33 × 33 × 33 màu, nên mười thanh cũng chỉ tốn như một.", v: "2 ms", l: "cho mười thanh chỉnh màu trên bản xem trước" }
+  - { t: "Bộ nhớ luôn trong hạn mức", d: "Fotollection chỉ xử lý cùng lúc số ảnh cỡ lớn vừa với hạn mức bộ nhớ, được tính theo ảnh lớn nhất trong lượt xuất.", v: "1,45 GB", l: "bộ nhớ tối đa với 5.035 ảnh" }
+  - { t: "Bộ mã hoá tinh chỉnh theo số đo", d: "Tệp in bỏ qua một bước tối ưu bảng mã vốn chỉ giảm dung lượng chưa tới 1 % nhưng tốn một phần ba thời gian mã hoá.", v: "−33 %", l: "thời gian mã hoá tệp in" }
+  - { t: "Card đồ hoạ khi chỉnh ảnh", d: "Khi bạn kéo thanh chỉnh màu, card đồ hoạ vẽ từ bảng màu do phần lõi dựng. Việc xuất ảnh vẫn chạy trên bộ xử lý, để bản in giống hệt nhau trên mọi máy tính.", v: "1–2 ms", l: "mỗi nhịp kéo, thay vì 26 ms" }
+perf_gpu_title: "Card đồ hoạ khi chỉnh, mọi nhân khi xuất"
+perf_gpu_text: "Khi bạn kéo một thanh chỉnh màu, card đồ hoạ vẽ look từ đúng bảng màu mà phần lõi của Fotollection dựng, rồi bản dựng chính xác thay vào khi bạn thả tay. Xuất ảnh vẫn chạy trên bộ xử lý, để ảnh in giống hệt nhau trên mọi máy."
+gpu_stats:
+  - { v: "1–2 ms", l: "mỗi nhịp kéo trên card đồ hoạ, thay vì khoảng 26 ms" }
+  - { v: "0,13", l: "ΔE2000 giữa look vẽ trên card và bản dựng chính xác" }
+  - { v: "10,8", l: "ảnh 26 MP xuất mỗi giây, sáu ảnh cùng lúc" }
+chart_gpu: "Một nhịp kéo thanh màu: bộ xử lý so với card đồ hoạ"
+chart_inflight: "Tốc độ xuất theo số ảnh xử lý cùng lúc"
+dl_warn_title: "Hãy cập nhật lên v0.14.0 trở lên."
+dl_warn_text: "Các bản trước có thể mất chỉnh sửa của một thư mục nằm trên ổ chưa cắm lúc mở app, và một lỗi có thể làm tắt cả app. Bản v0.14.0 sửa cả hai; cài đặt và dự án của bạn được giữ nguyên."
+chart_open: "Mở một tấm ảnh: v0.9.0 và v0.10.0 so với v0.11.0, trên 422 ảnh của một chuyến đi"
+perf_open_title: "Nhanh hơn tới 20 lần. Một cách dùng bộ nhớ hoàn toàn mới."
+perf_open_text: "Bản v0.11.0 nghĩ lại từ đầu cách Fotollection giữ ảnh của bạn. Làm xong ảnh nhỏ là bản xem trước của mọi ảnh được chuẩn bị ở chế độ nền và giữ trên đĩa, một phần tư bộ nhớ máy giữ những ảnh quanh ảnh bạn đang xem, và ảnh trên màn hình luôn được làm trước. Kết quả: mở ảnh nào, gần hay xa, JPEG hay RAW, cũng chỉ 27 mili giây. Mở một ảnh RAW nhanh gấp tới 20 lần so với v0.9.0, ảnh JPEG gấp 10 lần, đo trên cùng 422 ảnh của một chuyến đi."
+perf_open_fn: [fn_raw, fn_jpeg]
+open_stats:
+  - { v: "20×", l: "nhanh hơn khi mở ảnh RAW so với v0.9.0 (531 → 27 ms)" }
+  - { v: "10×", l: "nhanh hơn khi mở ảnh JPEG so với v0.9.0 (274 → 27 ms)" }
+  - { v: "27 ms", l: "để mở bất kỳ ảnh nào, gần hay xa (ngân sách 100 ms)" }
+perf_speed_title: "Tốc độ: một nghìn ảnh trong chớp mắt"
+perf_speed_text: "Khi mở một thư mục, Fotollection chỉ đọc thông tin EXIF và ảnh thu nhỏ có sẵn trong tệp, chứ không đọc cả ảnh, và đổi một thiết lập thì chỉ vẽ lại bản xem trước. Rust chạy trực tiếp trên máy cũng hơn trình duyệt web làm cùng việc: xuất ảnh nhanh ngang, xem trước nhanh hơn và tốn ít hơn một phần tư RAM."
+speed_stats:
+  - { v: "0,12 giây", l: "đọc một thư mục 1.000 ảnh, nhanh gấp tám lần mức ngân sách" }
+  - { v: "17 ms", l: "vẽ lại bản xem trước sau khi đổi thiết lập" }
+  - { v: "23,5", l: "ảnh 16 MP xuất mỗi giây" }
+perf_memory_title: "RAM: 5.035 ảnh vẫn không tăng"
+perf_memory_text: "Fotollection chỉ giữ vài byte cho mỗi ảnh trong RAM, ghi ảnh thu nhỏ ra ổ đĩa và chỉ xử lý cùng lúc số ảnh cỡ lớn vừa với hạn mức RAM. Nhờ vậy RAM gần như không tăng khi chuyến đi lên tới hàng nghìn ảnh."
+memory_stats:
+  - { v: "1,45 GB", l: "RAM nhiều nhất với 5.035 ảnh" }
+  - { v: "1,35 GB", l: "RAM nhiều nhất với 95 ảnh" }
+  - { v: "53×", l: "số ảnh, mà chỉ thêm 0,1 GB" }
+perf_print_title: "Chất lượng in: ảnh in giống ảnh gốc"
+perf_print_text: "Ảnh in qua trình chỉnh sửa ảnh trên web thường trông nông màu: nó bỏ mất hồ sơ màu, thu ảnh xuống 2.000 px và lưu ở chất lượng 80 với độ phân giải màu giảm một nửa. Fotollection giữ nguyên hồ sơ màu và xuất ở độ phân giải đầy đủ, 4:4:4."
+print_stats:
+  - { v: "0,19", l: "sai lệch màu; mắt người bắt đầu nhận ra ở mức 1" }
+  - { v: "4:4:4", l: "độ phân giải màu đầy đủ; trình sửa ảnh web giảm một nửa" }
+  - { v: "87 %", l: "chi tiết nhỏ mất đi khi trình sửa ảnh web thu về 2.000 px" }
+perf_share_title: "Ảnh cho Facebook và Instagram: nhẹ mà vẫn đúng là ảnh của bạn"
+perf_share_text: "Facebook thu mọi ảnh về 2.048 px, nén lại và bỏ qua hồ sơ màu. Kiểu xuất Mạng xã hội làm trước những việc đó cho đúng, nên sau khi Facebook nén lại, ảnh vẫn giống ảnh gốc hơn cách làm thông thường."
+share_stats:
+  - { v: "99,6 %", l: "màu của ảnh Display P3 còn giữ sau Facebook, thay vì 86 %" }
+  - { v: "2.048 px", l: "cỡ ảnh Facebook không thu nhỏ thêm" }
+  - { v: "½", l: "dung lượng tệp với Giữ cỡ gốc, đủ từng điểm ảnh" }
+chart_raw: "Ảnh RAW: từ tệp đến màn hình, theo từng máy và so với Adobe DNG Converter"
+perf_raw_title: "Ảnh RAW: mở thẳng, không cần chuyển đổi"
+perf_raw_text: "Fotollection mở tệp RAW của chín dòng máy ảnh phổ biến đúng như tệp gốc, không cần chuyển đổi, và trên Windows và Linux không cần cài thêm gì. Từ v0.10.0, ảnh đầy đủ là bộ xử lý của riêng Fotollection cho mọi máy ảnh có cảm biến Bayer, làm trên chính dữ liệu của máy ảnh như một trình sửa RAW, còn Adobe DNG Converter chỉ đổi từ RAW này sang RAW khác."
+raw_stats:
+  - { v: "9–32 ms", l: "ảnh thu nhỏ của tệp RAW, lấy từ bản xem trước trong tệp" }
+  - { v: "0,3–0,7 giây", l: "bộ xử lý của Fotollection dựng cả tấm ảnh" }
+  - { v: "1,2–1,8 giây", l: "Adobe DNG Converter mỗi tệp, chỉ để chuyển đổi" }
+perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
+perf_best_title: "Gợi ý ảnh đẹp nhất: đối chiếu với lựa chọn của người thật"
+perf_best_text: "Chúng tôi tự tay chia 95 ảnh thật thành 22 khoảnh khắc, và chọn ảnh đẹp nhất ở những khoảnh khắc có ảnh đẹp rõ ràng. Sau đó các nhóm và gợi ý của Fotollection được đối chiếu với lựa chọn ấy."
+best_stats:
+  - { v: "6 / 6", l: "khoảnh khắc có ảnh đẹp rõ ràng: gợi ý đều chấp nhận được" }
+  - { v: "15 / 22", l: "khoảnh khắc được tìm ra, không bao giờ gộp nhầm" }
+  - { v: "17 ms", l: "phân tích một ảnh, 28 ms nếu có khuôn mặt" }
+perf_toc: "Trên trang này"
+diagram_layers: "Công việc diễn ra ở đâu: Fotollection ngay trên máy của bạn, so với một trình sửa ảnh web thông thường"
+diagram_gpu_cpu: "Chỉnh trên card đồ hoạ, xuất ảnh trên mọi nhân bộ xử lý"
+diagram_raw_develop: "Một ảnh RAW, từ tệp tới ảnh in"
+diagram_preview_tiers: "Bản xem trước của một ảnh đến từ đâu: RAM, rồi ổ đĩa, rồi tệp ảnh"
+diagram_develop_gate: "Cổng xử lý RAW: ảnh trên màn hình đi trước, việc chạy nền chờ"
+perf_explain_title: "Giải thích các thuật ngữ"
+perf_explain_lead: "Những từ chuyên môn về ảnh và in ảnh, giải thích như kể cho một người bạn."
+perf_faq:
+  - q: "ΔE (Delta E) là gì?"
+    fn: [fn_de]
+    a: "ΔE đo hai màu trông khác nhau bao nhiêu với mắt người, tính trong một không gian màu được dựng theo cách mắt người cảm nhận (CIELAB, theo công thức năm 2000). 0 là giống hệt. Khoảng 1 là mức khác biệt nhỏ nhất mà một người có mắt tinh nhận ra khi đặt hai màu cạnh nhau; 2 đến 3 thì phần lớn mọi người đều thấy; trên 5 là hai màu khác hẳn. Bản xuất để in của Fotollection có ΔE trung bình 0,19."
+  - q: "SSIM là gì?"
+    fn: [fn_ssim]
+    a: "SSIM (chỉ số tương đồng cấu trúc) so hình dạng và kết cấu của hai ảnh thay vì từng điểm ảnh riêng lẻ, gần với cách mắt ta nhận ra ảnh bị mờ hay bị nén vỡ khối. 1 là giống hệt. Từ khoảng 0,98 trở lên, đa số người không phân biệt được hai ảnh nếu không phóng to."
+  - q: "Một tệp JPEG chứa được bao nhiêu màu?"
+    fn: [fn_jpeg, fn_heic]
+    a: "JPEG lưu 8 bit cho mỗi kênh đỏ, xanh lá và xanh dương: mỗi kênh 256 mức, tổng cộng khoảng 16,7 triệu màu. Đó cũng là thứ máy in ảnh dùng để in. Tệp RAW của máy ảnh có 12 đến 14 bit, iPhone đời mới có thể lưu HEIC 10 bit, rất có ích khi chỉnh sửa; còn với ảnh in hoàn chỉnh, một tệp JPEG 8 bit làm tốt không lộ vệt chuyển màu."
+  - q: "JPG hay JPEG? Có nên dùng PNG không?"
+    a: "JPG và JPEG là cùng một định dạng: Windows ngày xưa chỉ cho phép đuôi tệp ba chữ. PNG nén không mất dữ liệu nên không bỏ đi chút nào, nhưng ảnh chụp lưu dạng PNG thường nặng gấp ba đến năm lần, và đa số máy in ảnh, tiệm in đều yêu cầu JPEG. Một tệp JPEG chất lượng từ 90, đủ độ phân giải màu (4:4:4) như Fotollection xuất để in, in ra không phân biệt được với ảnh gốc."
+  - q: "4:4:4 và 4:2:0 nghĩa là gì?"
+    a: "Mắt ta nhìn chi tiết chủ yếu qua độ sáng, ít qua màu, nên JPEG có thể lưu màu ở độ phân giải thấp hơn. 4:4:4 giữ đủ độ phân giải màu; 4:2:0 chỉ giữ một phần tư, tệp nhẹ hơn nhưng các viền có màu bị mềm đi, như chữ đỏ hay bầu trời xanh sau tán lá. Ảnh in nên dùng 4:4:4; còn mạng xã hội thì đằng nào cũng nén mọi ảnh về 4:2:0."
+  - q: "sRGB, Display P3, Adobe RGB và hồ sơ màu (colour profile)"
+    fn: [fn_srgb, fn_p3, fn_adobe]
+    a: "Hồ sơ màu (colour profile) cho phần mềm biết các con số trong tệp nghĩa là màu nào. sRGB là dải màu cổ điển dùng trên web. Display P3, dùng trên iPhone và các máy ảnh mới, rộng hơn khoảng 25 %, nhất là màu đỏ và xanh lá. Nếu ảnh P3 bị mất hồ sơ màu, các con số bị đọc như sRGB và ảnh trông nhạt: đó chính là 13 % độ bão hoà bị mất mà chúng tôi đo được. Adobe RGB, có trên một số máy ảnh dành cho in ấn, cũng rộng hơn sRGB, chủ yếu ở màu xanh lá và xanh lơ. Fotollection giữ nguyên hồ sơ màu của ảnh khi xuất để in, và chuyển đúng sang sRGB khi xuất cho mạng xã hội."
+  - q: "Ảnh in cần bao nhiêu DPI?"
+    a: "DPI là số điểm ảnh trên mỗi inch giấy. Ở 300 DPI, ảnh in trông nét kể cả khi nhìn sát; 150 đến 200 DPI vẫn ổn khi cầm xem. Một ảnh 10 × 15 cm ở 300 DPI cần 1.800 × 1.200 điểm ảnh, nên ảnh từ điện thoại hay máy ảnh nào cũng đủ; phần gợi ý khổ in trong ứng dụng cho biết mỗi ảnh in được to tới đâu."
+  - q: "Vì sao ảnh đăng Facebook trông xấu đi?"
+    a: "Facebook thu mọi ảnh về tối đa 2.048 px, nén lại ở chất lượng thấp hơn với độ phân giải màu giảm một nửa, và bỏ hồ sơ màu. Ảnh gửi lên quá to sẽ bị thu nhỏ hai lần, một lần bởi bạn và một lần bởi Facebook. Gửi sẵn ảnh 2.048 px, sRGB và đã làm nét nhẹ thì Facebook chỉ nén lại một lần, và màu đã đúng từ trước."
+perf_repro_title: "Tự chạy lại các phép đo"
+perf_repro_text: "Mọi phép đo đều chạy lại được trên ảnh của chính bạn. Các chương trình đo không bao giờ tải ảnh lên hay sao chép ảnh; chỉ giữ lại các con số. Bảng đầy đủ, kèm từng lần chạy, nằm trong RESULT.md."
+perf_repro_link: "Đọc RESULT.md trên GitHub"
+perf_back: "Về trang chủ"
+install_title: Cài đặt trong một phút
+install_lead: Bộ cài chưa được ký bằng chứng chỉ trả phí, nên lần mở đầu tiên cần thêm một cú nhấp.
+mac_title: macOS
+mac_1: Mở tệp .dmg và kéo Fotollection vào Applications.
+mac_2: Mở ứng dụng. macOS sẽ chặn lần mở đầu tiên.
+mac_3: Vào System Settings → Privacy & Security, bấm Open Anyway.
+win_title: Windows
+win_1: Chạy tệp -setup.exe (hoặc .msi).
+win_2: Nếu SmartScreen báo "Windows protected your PC", bấm More info.
+win_3: Bấm Run anyway.
+linux_title: Linux
+linux_soon: "Nếu thiếu liên kết tải về, trang phát hành có đủ mọi tệp."
+linux_script_title: Một lệnh là xong
+linux_script_text: "Tự chọn gói hợp với máy bạn: Ubuntu, Debian và Mint dùng kho APT, các distro khác dùng AppImage đặt trong ~/.local. Muốn gỡ:"
+linux_apt_title: Hoặc thêm kho APT
+linux_apt_text: "Cho Ubuntu, Debian, Mint và các distro cùng họ. Sau đó, bản mới về cùng lệnh"
+linux_appimage_title: Hoặc chạy AppImage
+linux_appimage_text: "Tải về, cho phép chạy rồi mở. Máy ARM dùng tệp có đuôi _aarch64."
+linux_files: "Các tệp"
+linux_appimage_x64: AppImage, x86_64
+linux_appimage_arm: AppImage, ARM64
+linux_deb_x64: .deb, amd64
+linux_deb_arm: .deb, arm64
+linux_which: Chạy trên những distro nào?
+distro_title: Những distro Linux nào chạy được
+distro_lead: "Fotollection chạy trên Linux 64-bit, x86_64 hoặc ARM64, có glibc 2.35 trở lên."
+distro_groups:
+  - title: Chạy được
+    items:
+      - text: "AppImage: Ubuntu 22.04+, Debian 12+, Linux Mint 21+, Pop!_OS 22.04+, elementary OS 7+, Zorin OS 17+, Fedora 36+, openSUSE Tumbleweed, Arch, Manjaro và các distro cùng thời."
+      - text: ".deb và kho APT: Ubuntu, Debian, Mint, Pop!_OS, elementary OS và Zorin OS."
+  - title: Chạy được, thêm một bước
+    items:
+      - text: "Ubuntu 24.04 trở lên: AppImage cần FUSE 2, cài một lần"
+        code: sudo apt install libfuse2t64
+        fn: [fn_fuse]
+        after: ", hoặc chạy với"
+        code2: "--appimage-extract-and-run"
+        after2: ". Bản .deb thì không cần gì thêm."
+      - text: "NixOS: mở qua"
+        code: appimage-run
+      - text: "Fedora Silverblue và các hệ bất biến khác: dùng AppImage."
+      - text: "Card đồ hoạ NVIDIA: không cần làm gì, ứng dụng tự tránh lỗi cửa sổ trắng của WebKit."
+        fn: [fn_nvidia]
+  - title: Không chạy
+    items:
+      - text: "glibc cũ hơn 2.35: Ubuntu 20.04, Debian 11, RHEL, CentOS, Rocky hoặc Alma 8, openSUSE Leap 15."
+      - text: "Hệ dùng musl như Alpine."
+      - text: "Máy 32-bit."
+      - text: "ChromeOS khi chưa bật Linux."
+  - title: Giới hạn trên mọi distro
+    items:
+      - text: "Chưa mở được ảnh HEIC (ảnh iPhone): hãy chuyển sang JPEG trước."
+        fn: [fn_pf_heic_linux]
+      - text: "Chưa chụp được qua cáp USB từ máy ảnh."
+      - text: "Ảnh RAW không có phần hiệu chỉnh ống kính như trên macOS."
+        fn: [fn_pf_raw]
+checksums: Mỗi bản phát hành có mã SHA-256 bên cạnh tệp tải về.
+updates: "Lúc khởi động, ứng dụng hỏi GitHub một lần xem có bản mới không (tắt được trong Cài đặt → Cập nhật) và không bao giờ tự tải gì về. Phiên bản mới được thông báo ở đây và trên GitHub."
+footer_tagline: Ảnh sẵn sàng để in, không cần internet.
+footer_made: Làm bởi người dùng, cho người dùng. Chỉ người ngày nào cũng xem ảnh của chính mình mới biết người dùng bình thường cần gì từ một trình xem ảnh.
+footer_report: Báo lỗi / góp ý
+footer_license: Giấy phép GPL-3.0
+footer_released: Fotollection được phát hành theo giấy phép
+footer_changelog: Có gì mới
+footer_source: Mã nguồn
+footer_blog: Blog của mình
+footer_analytics: Trang web này đếm lượt truy cập, và lượt bấm vào các liên kết tải về, bằng Google Analytics.
+footer_visits: Lượt truy cập
+footer_visits_hint: Tổng lượt truy cập, theo Google Analytics, cập nhật mỗi ngày
+footer_downloads: Lượt tải
+cta_downloads: "[n] lượt tải"
+footer_downloads_hint: "Mọi lượt tải bộ cài từ GitHub, gồm cả cập nhật trong ứng dụng, do GitHub đếm"
+dl_count: "Đã tải [n] lần: macOS [mac] · Windows [win] · Linux [linux], gồm cả cập nhật trong ứng dụng."
+dl_count_split: "Riêng [tag]: [site] từ trang web này, khoảng [updates] qua cập nhật trong ứng dụng."
+by: bởi

@@ -1,0 +1,67 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Every language of the website, the one place they are named (ADR-0049, site/README.md).
+#   name, html_lang, og_locale  its own name (the language menu), the page's lang and og:locale
+#   prefix       its path, "" for English at the root
+#   pages        the pages it has (page ids of pages.yml); a page it lacks links to English's
+#   assets       whose screenshots it shows: the app speaks English and Vietnamese (FR-084)
+#   date_format  how it writes a date (strftime)
+#   guide        the manual it shows (docs/, ADR-0031), for a language with the manual page
+#   published    false keeps it out of the build, the menu, hreflang and the sitemap until its
+#                words are done (scripts/check-site-i18n.mjs --build)
+# A new language: a block here and its words in i18n/<code>.yml.
+- code: en
+  date_format: "%-d %b %Y"
+  name: English
+  html_lang: en
+  og_locale: en_GB
+  prefix: ""
+  assets: en
+  pages: [home, download, performance, manual, story, wiki, code-signing]
+  guide: USER_GUIDE.md
+  published: true
+- code: vi
+  date_format: "%d/%m/%Y"
+  name: Tiếng Việt
+  html_lang: vi
+  og_locale: vi_VN
+  prefix: /vi
+  assets: vi
+  pages: [home, download, performance, manual, story, wiki, code-signing]
+  guide: USER_GUIDE.vi.md
+  published: true
+- code: hu
+  date_format: "%Y. %m. %d."
+  name: Magyar
+  html_lang: hu
+  og_locale: hu_HU
+  prefix: /hu
+  assets: en
+  pages: [home, download]
+  published: false
+- code: de
+  date_format: "%d.%m.%Y"
+  name: Deutsch
+  html_lang: de
+  og_locale: de_DE
+  prefix: /de
+  assets: en
+  pages: [home, download]
+  published: false
+- code: pl
+  date_format: "%d.%m.%Y"
+  name: Polski
+  html_lang: pl
+  og_locale: pl_PL
+  prefix: /pl
+  assets: en
+  pages: [home, download]
+  published: false
+- code: cs
+  date_format: "%-d. %-m. %Y"
+  name: Čeština
+  html_lang: cs
+  og_locale: cs_CZ
+  prefix: /cs
+  assets: en
+  pages: [home, download]
+  published: false

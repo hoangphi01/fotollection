@@ -5,7 +5,7 @@
   link returns to. scripts/check-footnotes.mjs checks the lists against the keys and both languages.
 {%- endcomment -%}
 {%- assign fn_page = pg.title_key | default: "home" -%}
-{%- assign fn_list = site.data.footnotes[fn_page][pg.lang] -%}
+{%- assign fn_list = site.data.footnotes[fn_page][pg.lang] | default: site.data.footnotes[fn_page].en -%}
 {%- assign fn_keys = include.keys | join: "," | split: "," -%}
 <sup class="fn-ref">
 {%- for fn_key in fn_keys -%}

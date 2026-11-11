@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- **Website:** the language button in the top bar opens a menu of the site's languages, each in its own words, ready for more than two; the logo at the foot of a Vietnamese page now leads to the Vietnamese home page.
+
 ---
 
 ## v0.14 — Looks

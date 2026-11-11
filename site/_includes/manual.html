@@ -5,7 +5,7 @@
 {%- capture toc %}{% include {{ toc_file }} %}{% endcapture -%}
 {%- capture body %}{% include {{ body_file }} %}{% endcapture -%}
 {%- capture docs_href %}href="{{ site.repo_url }}/blob/main/docs/{% endcapture -%}
-{%- if pg.lang == 'vi' %}{% assign guide = 'USER_GUIDE.vi.md' %}{% else %}{% assign guide = 'USER_GUIDE.md' %}{% endif -%}
+{%- assign guide = pg.guide -%}
 <section class="section perf-head">
   <div class="wrap">
     <p class="kicker">{{ t.man_kicker }}</p>

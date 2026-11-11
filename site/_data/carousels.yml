@@ -1,6 +1,6 @@
 # The landing page's carousels (site/_includes/carousel.html, owner 2026-11-09, after Apple):
 # one card per feature, a screenshot of the app (`shot`, site/assets/img/<shot>-<lang>-<theme>.webp
-# through shot.html) and its words from i18n.yml (`title`, `text`), with the notes those words
+# through shot.html) and its words from i18n/<code>.yml (`title`, `text`), with the notes those words
 # need (`fn`, in the order the page shows them). The pictures are the website's screenshots
 # (site/screenshots/build.sh); a card whose screenshot changes needs nothing here.
 new:

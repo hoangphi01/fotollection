@@ -1,0 +1,24 @@
+{%- comment %} The language menu (site/README.md): a button in the top bar opens the list of every published language, each named in its own words, linking to this page in that language or, if that language lacks it, to its home page (site/_data/languages.yml). A choice is remembered for the first-visit redirect. {% endcomment -%}
+<button class="lang" type="button" popovertarget="lang-menu" aria-label="{{ t.lang_menu }}">{% include icons/languages.svg %}{% for l in pg.menu %}{% if l.current %}<span>{{ l.name }}</span>{% endif %}{% endfor %}</button>
+<nav class="card lang-menu" id="lang-menu" popover aria-label="{{ t.lang_menu }}">
+  <ul>
+    {%- for l in pg.menu %}
+    <li><a href="{{ l.url | relative_url }}" hreflang="{{ l.html_lang }}" lang="{{ l.html_lang }}" data-lang="{{ l.code }}"{% if l.current %} aria-current="true"{% endif %}>{{ l.name }}</a></li>
+    {%- endfor %}
+  </ul>
+</nav>
+<script>
+  // The menu opens under its button, inside the window.
+  const langMenu = document.getElementById('lang-menu')
+  langMenu.addEventListener('beforetoggle', (e) => {
+    if (e.newState !== 'open') return
+    const r = document.querySelector('[popovertarget="lang-menu"]').getBoundingClientRect()
+    langMenu.style.top = `${r.bottom + 8}px`
+    langMenu.style.right = `${Math.max(16, innerWidth - r.right)}px`
+  })
+  // A language picked here is the visitor's choice from now on (the first-visit redirect reads it).
+  langMenu.addEventListener('click', (e) => {
+    const a = e.target.closest('a[data-lang]')
+    if (a) try { localStorage.setItem('lang', a.dataset.lang) } catch {}
+  })
+</script>

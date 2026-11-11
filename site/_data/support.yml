@@ -1,6 +1,6 @@
 # The "treat me" menu of the support section (home.html, assets/js/support.js): what a
 # visitor can buy the author, priced in đồng for a VietQR transfer (GitHub Sponsors takes
-# any amount of its own). Names are the treat_* keys in i18n.yml.
+# any amount of its own). Names are the treat_* keys in i18n/<code>.yml.
 # The bank's VietQR merchant data, read from the published code (assets/img/vietqr.png):
 # Techcombank's BIN and the account; the page builds a dynamic code from them.
 bank: Techcombank

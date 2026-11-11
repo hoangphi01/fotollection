@@ -98,7 +98,7 @@ uv run bench/quality/audit.py ~/Pictures/some-folder /tmp/out
 uv run bench/quality/share_audit.py ~/Pictures/some-folder /tmp/share</code></pre>
     <p class="actions">
       <a class="more" href="{{ site.repo_url }}/blob/main/docs/RESULT.md">{{ t.perf_repro_link }} {% include icons/arrow-right.svg %}</a>
-      <a class="more" href="{% if pg.lang == 'vi' %}{{ '/vi/' | relative_url }}{% else %}{{ '/' | relative_url }}{% endif %}">{{ t.perf_back }} {% include icons/arrow-right.svg %}</a>
+      <a class="more" href="{{ 'home' | url_for: pg.lang | relative_url }}">{{ t.perf_back }} {% include icons/arrow-right.svg %}</a>
     </p>
   </div>
 </section>

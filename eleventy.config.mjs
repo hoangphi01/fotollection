@@ -10,6 +10,7 @@ import yaml from 'js-yaml'
 import MarkdownIt from 'markdown-it'
 import attrs from 'markdown-it-attrs'
 import anchor from 'markdown-it-anchor'
+import { languages, urlFor } from './eleventy.registry.mjs'
 
 const SITE = 'site'
 
@@ -22,6 +23,29 @@ function siteData() {
     if (name === file) continue
     const text = readFileSync(path.join(dir, file), 'utf8')
     data[name] = file.endsWith('.json') ? JSON.parse(text) : yaml.load(text)
+  }
+  // The words, one file per language (i18n/<code>.yml). English is the source and the
+  // fallback: a key another language lacks shows in English. With I18N_MARK=1 (the check build of
+  // scripts/check-site-i18n.mjs) each borrowed text carries its key between invisible marks, so
+  // the check finds every English word a language's pages really show.
+  const words = path.join(dir, 'i18n')
+  const lang = (code) => {
+    const file = path.join(words, `${code}.yml`)
+    return existsSync(file) ? (yaml.load(readFileSync(file, 'utf8')) ?? {}) : {}
+  }
+  const mark = process.env.I18N_MARK === '1'
+  const marked = (key, value) =>
+    typeof value === 'string' ? `\u2063${key}\u2062${value}\u2064`
+      : Array.isArray(value) ? value.map((v) => marked(key, v))
+        : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).map(([k, v]) => [k, marked(key, v)]))
+          : value
+  const en = lang('en')
+  data.i18n = { en }
+  for (const { code } of languages) {
+    if (code === 'en') continue
+    const own = lang(code)
+    const borrowed = Object.fromEntries(Object.entries(en).filter(([k]) => !(k in own)).map(([k, v]) => [k, mark ? marked(k, v) : v]))
+    data.i18n[code] = { ...borrowed, ...own }
   }
   const release = data.release ?? null
   return { ...config, time: new Date(), data, github: { latest_release: release } }
@@ -41,6 +65,15 @@ export default function (eleventyConfig) {
     return /^https?:/.test(v) ? v : `https://fotollection.org${v.startsWith('/') ? '' : '/'}${v}`
   })
   eleventyConfig.addFilter('jsonify', (value) => JSON.stringify(value))
+  // `{{ l.name | tr: lang }}`: a text kept per language in a data file (looks.yml, timeline.yml),
+  // English when that language lacks it; marked as borrowed in the check build (see siteData).
+  eleventyConfig.addFilter('tr', (value, code) => {
+    if (!value || typeof value !== 'object') return value
+    if (code in value) return value[code]
+    return process.env.I18N_MARK === '1' && typeof value.en === 'string' ? `\u2063data\u2062${value.en}\u2064` : value.en
+  })
+  // `{{ 'manual' | url_for: pg.lang }}`: a page's path in a language (eleventy.registry.mjs).
+  eleventyConfig.addFilter('url_for', (id, code) => urlFor(id, code))
   // `markdownify` as Jekyll's kramdown did for these pages: raw HTML kept, `{#id}` after a
   // title (the manual's chapter anchors) through markdown-it-attrs.
   // kramdown's GFM header ids: lower case, everything but letters, digits, `_`, `-` and spaces

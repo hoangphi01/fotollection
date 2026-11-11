@@ -184,7 +184,15 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .nav-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .lang { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; padding: 7px 10px; border-radius: 999px; text-decoration: none; font-size: 0.9rem; color: var(--ink-2); }
 .lang span { display: none; }
+.lang { border: 0; background: none; font: inherit; font-size: 0.9rem; cursor: pointer; }
 .lang:hover { background: var(--tint); color: var(--ink); }
+/* The language menu, under the top bar at the right (lang-menu.html). */
+.card.lang-menu { position: fixed; inset: 64px 16px auto auto; margin: 0; padding: 8px; min-width: 180px; color: var(--ink); box-shadow: var(--shadow); }
+.lang-menu::backdrop { background: transparent; }
+.lang-menu ul { list-style: none; margin: 0; padding: 0; }
+.lang-menu a { display: block; padding: 8px 12px; border-radius: 8px; color: var(--ink); text-decoration: none; font-weight: 600; }
+.lang-menu a:hover { background: var(--tint); }
+.lang-menu a[aria-current] { color: var(--accent); }
 
 /* Round header buttons: Star, Coffee and Download share one shape. */
 .pill { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); text-decoration: none; font-size: 0.9rem; font-weight: 600; white-space: nowrap; }

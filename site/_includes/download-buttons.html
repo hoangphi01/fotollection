@@ -10,7 +10,8 @@
   <a class="listed unikorn" href="https://unikorn.vn/p/fotollection" aria-label="{{ t.unikorn_badge }}"><img src="{{ '/assets/img/logos/unikorn.png' | relative_url }}" width="30" height="30" alt="" /><span><small>{{ t.vnlf_badge_top }}</small><strong>Unikorn.vn</strong></span></a>
   {%- endif %}
   {%- if site.data.downloads %}
+  {%- assign dl_n = site.data.downloads[pg.lang] | default: site.data.downloads.en %}
   {%- comment %} How often the installers were downloaded (scripts/download-stats.mjs), beside the buttons. {% endcomment %}
-  <span class="cta-count" title="{{ t.footer_downloads_hint }}">{% include icons/download.svg %}{{ t.cta_downloads | replace: "[n]", site.data.downloads[pg.lang] }}</span>
+  <span class="cta-count" title="{{ t.footer_downloads_hint }}">{% include icons/download.svg %}{{ t.cta_downloads | replace: "[n]", dl_n }}</span>
   {%- endif %}
 </div>

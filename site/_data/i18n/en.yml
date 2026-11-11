@@ -1,0 +1,597 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# The website's words in English (site/README.md). English (en.yml) is the source and the fallback:
+# a key missing here shows in English. Keys are the same in every language.
+title: Fotollection - photos ready to print, fully offline
+description: Free, open-source desktop app that prepares photos for printing on your own computer. Looks in one tap (your Lightroom presets and LUTs too), retro date stamp, camera info frame, best-shot suggestions, print-size crops and original-quality export, with no account and no upload.
+nav_features: Features
+nav_quality: Quality
+nav_download: Download
+lang_menu: Language
+nav_coffee: Coffee
+nav_manual: Manual
+to_top: Back to top
+copy_label: Copy
+dl_title: Download
+dl_description: "Fotollection for macOS, Windows and Linux: the installers, the first-launch steps, the Linux commands and repository, and what is new in each version."
+dl_kicker: Download
+copied_label: Copied
+star: Star on GitHub
+badge: Free · Open source · No account
+hero_title_1: Thousands of photos, only looked at
+hero_accent: on the plane
+hero_title_2: " home?"
+hero_lead: No internet up there, and still no idea which ones to keep. Take one real look back with Fotollection - it finds the best shots, stamps the date and gets them ready to print. Automatic, free and fully offline.
+vnlf_badge: "Listed on VNLF App Explorer"
+unikorn_badge: "Fotollection on Unikorn.vn"
+vnlf_badge_top: "Listed on"
+works_on: "Works on Windows, macOS and Linux"
+makeover_old: "v0.12"
+makeover_new: "v0.14"
+makeover_label: "Before and after: drag to compare v0.12 and v0.14"
+makeover_hint: "v0.14 today: drag to see v0.12"
+car_new_title: "New in v0.14."
+car_print_title: "Everything for the print."
+car_prev: "Previous"
+car_next: "Next"
+car_presets_title: "Presets & LUTs"
+car_presets_text: "Your looks, LUTs and Lightroom presets on the left of the photo, in groups; point at one and the photo shows it before you click."
+car_simple_title: "Looks in Simple mode"
+car_simple_text: "A numbered strip under the photo: a number key gives it a look, ↑ keeps it, and the next photo comes at once."
+car_many_title: "Many photos at once"
+car_many_text: "Give a look to the ticked photos, or every photo shown, in one step that ⌘Z undoes; the grid shows each photo in its colour."
+car_compare_title: "Before and after"
+car_compare_text: "Side by side, split, or press and hold the photo for its original, as on an iPhone."
+car_data_title: "Settings, and your data"
+car_data_text: "One window for every setting. Settings → Data moves everything to another computer in one file."
+car_collage_title: "Two photos on one print"
+car_collage_text: "Collage mode puts two photos on each 10 × 15, as a half-frame camera did, each with its own colour."
+compat_title: "Your colours come with you."
+compat_lead: "Bring the presets you made in Lightroom and the LUTs you made in LUMIX Lab. Fotollection opens them in its fast, safe Rust core, and your colours look as you made them, ready to print."
+compat_cards:
+  - brand: "Lightroom Classic · Lightroom"
+    logo: lightroom
+    fn: [fn_lightroom]
+    title: "Your Lightroom presets"
+    files: [".xmp", ".lrtemplate", ".zip"]
+    text: "Curves, the colour mixer, colour grading and Dehaze come in, and each preset stays adjustable slider by slider."
+  - brand: "LUMIX Lab"
+    fn: [fn_lut]
+    title: "Your LUMIX Lab LUTs"
+    files: [".cube", "HaldCLUT .png"]
+    text: "Up to 65 points a side, each with a strength of its own, and a heads-up when a LUT was made for V-Log video."
+compat_caption: "What your Lightroom presets bring"
+compat_cols: ["Setting", "In Fotollection", ""]
+compat_rows:
+  - ["Point curves, whites and blacks", "✓", "baked into the look's table"]
+  - ["Colour mixer (HSL)", "✓", "on the Color Mixer, adjustable"]
+  - ["Colour grading, split toning, black and white mix", "✓", "baked into the look's table"]
+  - ["Contrast, shadows, vibrance, saturation, exposure", "✓", "on the look's own sliders"]
+  - ["Dehaze", "✓", "new in v0.14"]
+looks_kicker: "New in v0.14"
+looks_title: "Meet Looks."
+looks_sub: "A new way to see your photos."
+looks_lead_1: "Lightroom calls it a preset. LUMIX calls it a LUT. In Fotollection, both are "
+looks_lead_2: "a look, and they come with you"
+looks_lead_3: ": open the presets and LUTs you already made, and keep shooting your style. Eight looks come by default, and "
+looks_lead_4: "you can make your own"
+looks_lead_5: ": slider by slider on any photo, or imported from your Lightroom presets and LUMIX Lab LUTs."
+looks_alt: "A red Prague tram through the look picked"
+looks_hold: "Press and hold the photo to see the original."
+looks_pick: "Looks"
+looks_engine: "Rendered by Fotollection's own engine, the same as every print."
+tile_keys: "Lightroom’s keys in the full-window develop view"
+tile_export: "The export dialog, as Lightroom’s"
+yours_title: "Make it yours"
+yours_lead: "Light or dark, English or Vietnamese, chosen in Settings or following your computer."
+yours_en_light: "English · light"
+yours_en_dark: "English · dark"
+yours_vi_light: "Tiếng Việt · light"
+yours_vi_dark: "Tiếng Việt · dark"
+develop_title: "Lightroom’s keys, offline and free"
+develop_lead: "If you come from Lightroom, your hands already know the way: the develop view fills the window with the Navigator and History, and the export dialog asks what Lightroom’s does."
+develop_window_title: "A develop view you can read"
+develop_window_text: "R crops, Z goes to 1:1, \\ shows the photo before its colour, Y compares side by side, F fills the window and Tab hides the panels. Every slider works in linear light, even on RAW."
+show_window: "The full-window develop view: Navigator and History on the left, the colour cards on the right"
+develop_export_title: "Export as Lightroom does"
+develop_export_text: "Presets on the left, every choice on the right: a subfolder, file names from a template, what to do with a file already there, a quality slider that says what prints well, a size limit and the metadata to keep."
+show_export_dialog: "The export dialog: presets, where, file name, file, size and metadata"
+community_title: "At home in the Vietnamese Linux community"
+community_lead: "Fotollection is free and open source, and listed where Vietnamese Linux users look for their apps."
+vnlf_title: "VNLF App Explorer"
+vnlf_text: "Vietnam Linux Family’s catalogue of free projects lists Fotollection, with its screenshots and one command to install it."
+vnlf_link: "Open the listing"
+vnlf_social_link: "The project on VNLF Social"
+caramos_title: "CaramOS"
+caramos_text: "The Linux distribution made for Vietnamese users offers Fotollection in its App Center: one click, in Vietnamese."
+caramos_link: "About CaramOS"
+github_title: "GitHub"
+github_text: "Every line of code, every measurement and every decision is in the open. Report a problem, ask for a feature, or leave a star."
+github_link: "Open the repository"
+final_title: "Your trip, ready to print"
+final_lead: "Free, offline and open source, on Windows, macOS and Linux."
+final_manual: "Read the manual"
+download_mac: Download for macOS
+download_win: Download for Windows
+download_linux: Download for Linux
+download_note: macOS 11+ (Apple Silicon and Intel) · Windows 10/11 · Linux 64-bit, glibc 2.35+
+latest: Latest version
+no_release: Releases are on GitHub
+shot_grid: The library, culled with stars and picks
+features_title: Everything a print order needs
+features_lead: Made for the evening after a trip, when hundreds of photos need to become a short stack of prints.
+f_stamp_title: Film-style date stamp
+f_stamp_text: The orange LED date of an old film camera, with the town on the same line and your own words below. Set per photo or for all.
+f_frame_title: Camera info frame
+f_frame_text: A clean "Shot on" border with the camera's logo, lens, focal length, aperture, shutter and ISO, straight from EXIF.
+f_best_title: Best-shot suggestions
+f_best_text: Bursts and re-framings are grouped, and the sharpest, steadiest shot with open eyes is suggested, with the reasons.
+f_crop_title: Crops that fit the print
+f_crop_text: Every photo is cropped to the print size with live DPI. Rotate a quarter turn or straighten a horizon by up to 15°.
+f_quality_title: Original quality
+f_quality_text: Full resolution, the colour profile kept, 4:4:4 JPEG for print. What comes out looks like what went in.
+f_raw_title: Camera RAW, no conversion
+f_raw_text: "RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG open as they are, with their date and exposure. Thumbnails come from the preview inside each file, so RAW browses as fast as JPEG."
+f_open_title: Open photos from anywhere
+f_speed_title: Fast on any computer
+f_speed_text: A thousand photos open in 0.12 s, a new setting redraws the preview in 17 ms, and from the second launch the app starts in about 0.4 s. A 32 MP photo previews as fast as a small one.
+f_open_text: Right-click a photo in Finder, Explorer or your Linux file manager and choose Fotollection. It opens at once, and its folder becomes a tab.
+pf_title: "By system"
+pf_lead: "The same app on macOS, Windows and Linux, with these differences."
+pf_feature: Feature
+pf_ok: "Yes"
+pf_soon: Not yet
+pf_none: "No"
+pf_coming: Coming in v0.9.0
+pf_cull: Culling, stars, flags, best shot, print basket
+pf_print: Print sizes, crop, straighten, zoom, date stamp, info frame
+pf_places: Offline places, dates and places by hand, camera clocks
+pf_export: Export for print and for social media
+pf_looks: "Looks, Lightroom presets and LUTs"
+pf_modes: "Three modes: Simple, Collage, Pro"
+pf_jpeg: JPEG and PNG
+pf_raw: Camera RAW
+pf_heic: HEIC (iPhone photos)
+pf_tether: Shoot with a camera over USB
+pf_openwith: Open with, from the file manager
+pf_update: Check for updates downloads the new version
+faq_title: "Questions before you download"
+faq_lead: "Why another photo app, and what makes this one different."
+faq_groups:
+  - label: "Why Fotollection"
+    items:
+      - q: "Why not just use Lightroom?"
+        a: "Lightroom, the built-in Photos apps and IrfanView are made for editing and viewing; none of them is designed for a photo printer. To print with them, you crop every photo to the paper's ratio yourself, or hand the files over and let the shop's machine or staff crop them, which often cuts off a head or the edge of a sign. Fotollection starts from the print: it knows the sizes at dm and Rossmann, crops each photo to them so what you see is exactly what comes out, warns when a photo is too small, stamps the date like a film camera and exports files the kiosk takes. It is light and fast, free, and works next to Lightroom: your originals are never changed, and your Lightroom presets work in it as looks."
+      - q: "My computer already has Photos, or I use IrfanView. Why another app?"
+        a: "The built-in Photos apps and IrfanView are great viewers, each on its own system. None of them knows the size of a 10 × 15 print at dm or Rossmann, warns you when a photo is too small for it, stamps the date like a film camera, or sends the best shots of five folders to one print basket. Fotollection does, it looks and works the same on a Mac, on Windows and on Linux, and it can be the viewer you open photos with: right-click a photo, Open with, Fotollection, camera RAW included."
+  - label: "Speed and weight"
+    items:
+      - q: "Is it heavy? Will it run on my older laptop?"
+        a: "It is small: the Windows installer is about 18 MB, because the window uses the web view the system already has instead of shipping a whole browser. The core is written in Rust and runs directly on your computer. A preview is never larger than 1600 px, so even a 32 MP photo opens as fast as a small one, and the full-size image is loaded only when you zoom in. Even exporting 5,035 photos, memory peaks at about 1.45 GB."
+      - q: "How fast is it with thousands of photos?"
+        a: "Opening 1,000 photos takes about 0.12 s, because Fotollection reads each file's small built-in thumbnail first. Changing a setting redraws the preview in 17 ms, export runs at 18 full-size photos per second, and after the first launch the app opens in about 0.4 s. Every number was measured on an ordinary laptop, and the Performance page explains how to measure them yourself."
+  - label: "Platforms and cost"
+    items:
+      - q: "Does it work on Mac, Windows and Linux, and is it really free?"
+        a: "Yes. One download for macOS 11 or later, on Apple silicon and Intel alike, one for Windows 10 and 11, and for 64-bit Linux an AppImage or a .deb, on Intel/AMD or ARM, for any distribution with glibc 2.35 or later. Linux gets the lean build: no HEIC (iPhone) photos yet, no shooting with a camera over USB, and RAW without the lens corrections macOS adds; the table under Features shows every difference. It is free with no ads, no account and no in-app purchases, and the source code is public under GPL-3.0, so anyone can check what it does."
+        fn: [fn_heic, fn_arch, fn_linux_pkg]
+tabs_row_title: "Folders as tabs, ticks that follow you"
+tabs_text: "Click a folder to work on it alone, or the Workspace for every folder at once. Tick photos in one folder, switch to another and keep ticking: the bar counts them all, so the best of every folder goes to the print basket in one move. Tick several folders to export them together or each into its own folder, and close a tab with × when you are done; the photos stay on your disk."
+modes_title: "Three modes, three jobs"
+modes_lead: "Pick the one for what you want to do, at the top of the sidebar or with Cmd/Ctrl+1, 2 and 3. Your photos, print basket and settings stay the same in every mode."
+mode_simple: "Simple"
+mode_simple_for: "Back from a trip, and you want prints fast."
+mode_simple_s1: "Drop a folder of photos onto the app."
+mode_simple_s2: "A number key gives it a look; up keeps it, down sets it aside."
+mode_simple_s3: "Pick the print size and the date stamp, then Export."
+mode_collage: "Collage"
+mode_collage_for: "Two photos on one print for half the cost, or postcards."
+mode_collage_s1: "Put the photos you want in the print basket."
+mode_collage_s2: "They pair two to a print; drag one to swap them."
+mode_collage_s3: "Turn on Postcard to send them by post, then Export."
+mode_pro: "Pro"
+mode_pro_for: "Hundreds of photos, chosen and finished with care."
+mode_pro_s1: "Stars, flags and the sharpest shot of each burst."
+mode_pro_s2: "Crop, straighten, the date stamp and the info frame."
+mode_pro_s3: "Export for the kiosk, or lighter to share online."
+modes_manual: "The full manual"
+postcard_title: "A postcard from your own photo"
+postcard_text: "In Collage mode, one switch turns each print into a postcard: your photo on one half, and on the other a dashed stamp box and lines for a message or an address. Type the text, set in a typewriter face, or write it by hand with a fine permanent marker. A 10 × 15 print is within the postcard sizes Deutsche Post takes."
+pc_type_title: "Typed, or written by hand"
+pc_type_text: "The message and the address each have their own lines, with bold, italic and underline, in a typewriter face or a font of your own. Every letter of the European languages written in Latin script is there, so an address in Praha or Kraków prints as typed. Pick the ink, black, blue, sepia or red, and add a small credit line at the foot. The photo half works as in Collage mode: a white border round it, or the photo filling it to the edge."
+collage_title: "Two photos on one print"
+collage_text: "Inspired by half-frame film cameras: a 10 × 15 print holds two 10 × 7.5 photos, so a set costs half as much. Photos pair in order, a drag swaps them, and the app suggests a size with white round it, 6 × 9 cm for a 2:3 photo. A thin cut line splits the print in two, or leave it off for a half-frame strip."
+show_collage: "Collage mode: sheets as they will print, with the photo ratio, the suggested size and the cut line"
+collage_preview_title: "See the print before it is printed"
+collage_preview_text: "Open a sheet as you open a photo: the print large, exactly as the kiosk will make it, two photos side by side with the date stamp and the border. Choose either photo with 1 or 2 to crop it or turn it, and flip through the other sheets with the arrow keys."
+show_collage_preview: "A sheet's preview: a tram by night and the National Museum in Prague on one 10 × 15 print"
+simple_title: "Simple: keep or drop, then print"
+simple_text: "One photo at a time, as it will print. A number key gives it a look, up keeps it, down drops it, and the next one comes at once. Pick a size and the date stamp, then export what you kept."
+show_simple: "Simple mode: the photo as it will print, Keep and Drop, and Export of the kept photos"
+swipe_title: "↑ to print, ↓ to set aside"
+swipe_text: "Open the first photo and decide with one key: ↑ puts it in the print basket, ↓ puts it aside, and the next photo is already on screen. Nothing is ever deleted: the basket and the set-aside pile wait in the sidebar, so you can change your mind."
+select_title: "Or tick them in the gallery"
+select_text: "Select turns the grid into tick boxes, like on an iPhone, with Shift-click for a whole run. Hold Space over a photo to see it large, exactly as it will print, then let go and carry on."
+estimate_title: "Know the size before you export"
+estimate_text: "The export card tells you how heavy the files will be before anything is written, from a few photos encoded with your settings. Camera photos shared for Facebook come out about six times lighter, and you see it before you click."
+quality_title: The print looks like the photo
+nav_numbers: "Performance"
+nav_privacy: Privacy
+nav_kiosk: Print shops
+nav_changelog: What's new
+changelog_title: What's new
+changelog_lead: Every released version, newest first, beginning with the one you download here.
+changelog_latest: Latest release
+changelog_full: Full changelog on GitHub
+changelog_hint: Click to scroll
+support_title: Buy me a coffee
+support_text: Fotollection is made by a Vietnamese student in the EU, between classes and a part-time job. It's free and open source; if it saved you an evening of sorting photos, a coffee (or a student lunch 😄) keeps it going.
+support_sponsor: Sponsor on GitHub
+support_kofi: Buy me a coffee on Ko-fi
+support_note: "Pick a treat and scan the code with a banking app in Vietnam: the amount and the note are filled in (Napas 247). From anywhere else, GitHub Sponsors or Ko-fi take a card, once or monthly, for any amount."
+support_alt: VietQR code (Techcombank) for the chosen treat
+treat_pick: "Treat me to"
+treat_tea: A glass of iced tea
+treat_coffee: A coffee
+treat_banhmi: A bánh mì
+treat_pho: A bowl of phở
+treat_meal: A student meal
+treat_own: As you like
+treat_own_label: Your own amount, in đồng
+treat_own_hint: Type an amount from 1,000 ₫ to 100,000,000 ₫
+kiosk_title: Ready for the photo kiosk at
+kiosk_and: and
+kiosk_lead: The photo services at dm and Rossmann are made by CEWE. Fotollection has every size of their price list built in, so the crop you see is exactly what comes out of the printer, with no surprise trimming at the edges.
+kiosk_standard: Standard
+kiosk_square: Square
+kiosk_strip: Strip
+kiosk_more: Your own ratio (no crop) and any custom size, in cm or inches
+kiosk_steps_title: From trip to prints
+kiosk_s1: Pick the best shots and choose the print size.
+kiosk_s2: Export to a folder, a USB stick or an SD card.
+kiosk_s3: Print at the kiosk in store, or upload to the shop's online service.
+fn_title: Notes
+fn_label: Note
+fn_back: Back to the text
+fn_open: Free means no price, no ads and no in-app purchases; buying the author a coffee is your choice, and it helps the author keep improving Fotollection. Open source means the full source code is public on GitHub under the GPL-3.0 licence, so anyone can read, build and check what the app does. No account means the app never asks who you are and has nothing to sign in to.
+perf_speed_fn: [fn_webview]
+perf_trip_fn: [fn_trip, fn_pct]
+perf_trip_title: "A real trip: 422 files from Prague"
+perf_trip_text: "Test sets can flatter, so here is one folder exactly as it came off a Lumix GX9 after a weekend in Prague: 396 JPEGs at 20 MP, about 11 MB each, and 26 RAW files beside them, 4.7 GB in all. Opening it reads every file's EXIF in 0.23 seconds. The preview re-renders in 19 ms, a RAW develops in 0.35 seconds and ten postcards redraw in 21 ms. On 2026-11-03 two numbers missed their budget on these large files: export ran at 7.6 photos a second and memory peaked at 2.14 GB. The cause was found and fixed in v0.9.7: the JPEGs now export at 10.1 a second, and the whole run stays under 1.31 GB."
+trip_stats:
+  - { v: "0.23 s", l: "to open all 422 files, EXIF included" }
+  - { v: "19 ms", l: "preview re-render, p95 (budget 50 ms)" }
+  - { v: "0.35 s", l: "to develop a 20 MP RAW (median)" }
+  - { v: "21 ms", l: "to redraw ten postcards (budget 100 ms)" }
+  - { v: "10.1 / s", l: "JPEGs exported (budget 8 / s)" }
+  - { v: "1.31 GB", l: "peak memory, JPEG and RAW (ceiling 2 GB)" }
+fn_trip: "The Prague folder is the author's own and is not published (© @hoangphi01, all rights reserved). Medians of 3 runs of bench/trip.sh and of measure_folder on its JPEGs, on an Apple M3 with 16 GB, with other apps open, on 2026-11-04, with the export of v0.9.7; run them on a folder of your own to compare."
+fn_photo: "The tram photo is the author's own (© @hoangphi01, all rights reserved), taken with a Lumix GX9 in Prague in November 2026; each look is rendered by Fotollection's own engine and retouched nowhere else."
+fn_downloads: "Counted by GitHub."
+fn_payment: "VietQR and NAPAS 247 and their logos are trademarks of the National Payment Corporation of Vietnam (NAPAS); Techcombank of Vietnam Technological and Commercial Joint Stock Bank. Shown as the marks of the payment the code uses; Fotollection is not connected with them."
+uses_title: "Made for the photos you mean to print"
+uses_lead: "Four moments Fotollection was built around."
+uses_items: [{"icon": "plane", "t": "After a trip", "d": "Four hundred photos come home. Find best shots keeps the sharpest of each burst, the print basket gathers the thirty worth printing, and each comes out dated and cut to the shop's sizes."}, {"icon": "book-open", "t": "A family album", "d": "Prints for an album the family will keep, each with its date and town in the corner, as film cameras printed them. Simple mode is all it takes."}, {"icon": "mail", "t": "Postcards and themed sets", "d": "Two photos to a print, or a postcard with your own words beside the photo: the old town, the food, the trams, each set in a folder tab of its own."}, {"icon": "share-2", "t": "Shared without losing colour", "d": "The same photos, sized for Facebook and Instagram, keep their colour after the upload instead of turning flat."}]
+compare_title: "How it compares"
+compare_lead: "Fotollection does not try to replace a full RAW editor. It is made for the step those leave to you: from a trip's folder to prints you can hold."
+compare_caption: "Fotollection beside Lightroom Classic, darktable and RawTherapee"
+compare_cols: ["", "Fotollection", "Lightroom Classic", "darktable", "RawTherapee"]
+compare_rows: [["Made for", "Choosing, dating and sizing a trip's photos for print", "A complete workflow: catalogue, develop, print and share", "A photo workflow and a RAW developer", "RAW development"], ["Price", "Free", "A Creative Cloud subscription", "Free", "Free"], ["Source code", "Open, GPL-3.0", "Proprietary", "Open, GPL-3.0 or later", "Open, GPL-3.0"], ["Systems", "macOS, Windows, Linux", "macOS, Windows", "macOS (Apple silicon), Windows, Linux", "macOS, Windows, Linux"], ["Account", "None", "An Adobe account", "None", "None"]]
+compare_note: "To go further: darktable and RawTherapee for the deepest RAW development, Lightroom for a lifetime of photos in one catalogue."
+fn_lightroom: "Adobe, Lightroom and Lightroom Classic are trademarks of Adobe Inc. in the United States and other countries. Fotollection is not connected with or endorsed by Adobe; it follows the keys and layout people who use Lightroom already know. The Lightroom logo is shown from Wikimedia Commons, where it is in the public domain as a text logo."
+fn_lut: "A LUT (look-up table) gives each colour the colour it becomes; Fotollection reads .cube files and HaldCLUT images. LUMIX is a trademark of Panasonic Holdings Corporation; Fotollection is not connected with or endorsed by Panasonic."
+fn_compare: "Creative Cloud is a trademark of Adobe Inc.; darktable and RawTherapee are free software projects of their own communities. The facts come from darktable.org, rawtherapee.com and Wikipedia's summary of Adobe's licensing and requirements, checked on 7 November 2026. Fotollection is not connected with any of them."
+fn_simd: "SIMD (single instruction, multiple data) lets a processor work on many values at once: one instruction acts on several numbers held side by side in a wide vector register, such as the red, green and blue of many pixels. Intel and AMD processors provide it as SSE and AVX; Apple silicon and other Arm processors as NEON. Intel, AMD and Arm are trademarks of their owners."
+fn_exif: "EXIF (Exchangeable Image File Format) is the standard, maintained by Japan's JEITA and CIPA, for the information a camera writes into each photo: the camera and lens, the date and time, the exposure, often the GPS position, and a small embedded thumbnail."
+fn_units: "Units: px is a pixel, one dot of an image; MP (megapixel) is a million pixels, so a 20 MP photo is about 5,472 × 3,648 px; ms is a millisecond, a thousandth of a second; MB and GB are megabytes and gigabytes; RAM (random-access memory) is the computer's working memory."
+fn_raw: "A RAW file holds what the camera's sensor recorded before the camera turned it into a picture, so colour, brightness and detail can still be decided later, much as a negative is developed. Each maker has its own format (CR3 for Canon, NEF for Nikon, ARW for Sony, RW2 for Panasonic and others); DNG (Digital Negative) is the open RAW format published by Adobe."
+fn_heic: "HEIF (High Efficiency Image File Format) is the image format of ISO/IEC 23008-12; HEIC is its variant compressed with HEVC (H.265), in which iPhones save photos by default. A HEIC photo is about half the size of a JPEG of similar quality."
+fn_png: "PNG (Portable Network Graphics) is a lossless image format, published as ISO/IEC 15948: every pixel is kept exactly, which suits graphics and screenshots, while a photo comes out several times larger than as a JPEG."
+fn_dpi: "DPI (dots per inch) is how many of the photo's pixels fall on each inch (2.54 cm) of the print. Around 300 DPI looks sharp in the hand; less still looks fine on a larger print seen from further away."
+fn_pct: "p50 and p95 are percentiles: p50, the median, is the time half of the runs stayed under; p95 is the time 95 runs in 100 stayed under, so it shows the slow cases an average hides."
+fn_psnr: "PSNR (peak signal-to-noise ratio) compares two images pixel by pixel and gives their difference in decibels: the higher, the closer. Above about 40 dB the difference is hard to see."
+fn_sensor: "CMOS and CCD are the two kinds of image sensor, a grid of light-sensitive cells that turns light into an electric charge. Almost every camera and phone today uses CMOS (complementary metal-oxide-semiconductor); CCD (charge-coupled device) was common in earlier cameras."
+fn_tiff: "TIFF (Tagged Image File Format) is a flexible image format now maintained by Adobe; many RAW formats, DNG among them, are built on its structure."
+fn_444: "4:4:4 and 4:2:0 describe chroma subsampling, how much of a JPEG's colour detail is kept beside its brightness. 4:4:4 keeps the colour of every pixel; 4:2:0 keeps one colour for each block of four pixels, which makes the file smaller but softens fine colour edges such as red text or a sharp horizon."
+fn_usb: "USB (Universal Serial Bus) is the USB Implementers Forum's standard for connecting devices. An SD card is a memory card of the SD Association's Secure Digital standard, the kind most cameras use."
+fn_gps: "GPS (Global Positioning System) is the United States' satellite navigation system. Phones and many cameras use it, often with Galileo, GLONASS or BeiDou, to record where a photo was taken."
+fn_iso: "ISO is the camera's sensitivity to light, defined by the ISO 12232 standard: each doubling, from ISO 100 to 200, needs half the light, at the cost of more noise."
+fn_gpl: "GPL-3.0 is version 3 of the GNU General Public License, published by the Free Software Foundation: anyone may use, study, share and change the program, and whoever shares it, changed or not, shares its source code under the same terms."
+fn_vnlf: "VNLF (Vietnam Linux Family) is a Vietnamese community for free software and Linux. Its App Explorer lists free applications for Vietnamese users, and CaramOS is its Linux distribution."
+fn_led: "LED (light-emitting diode): film cameras of the 1980s and 1990s printed the date onto the film with small orange LED digits, the look the date stamp recreates."
+fn_arch: "x86_64, also called amd64, is the processor architecture of most Windows and Linux PCs; ARM64, also aarch64 or arm64, is that of Apple silicon, many laptops and small boards such as the Raspberry Pi. Each needs its own build."
+fn_linux_pkg: "A .deb is a Debian package, the installer format of Debian, Ubuntu, Linux Mint and their relatives; APT (Advanced Package Tool) installs and updates such packages from a repository. An AppImage is a single file holding an application and what it needs, which runs on most distributions without being installed."
+fn_fuse: "FUSE (Filesystem in Userspace) lets a program provide a file system without changing the kernel. An AppImage uses it to open itself, and Ubuntu 24.04 no longer installs its version 2 by default."
+fn_sha: "SHA-256 is a cryptographic hash function of the SHA-2 family, standardised by the US NIST in FIPS 180-4. It turns a file into a 64-character fingerprint; change a single bit of the file and the fingerprint changes."
+fn_gpg: "GPG (GNU Privacy Guard) is a free implementation of the OpenPGP standard. The APT repository is signed with a GPG key, so your system can check that every package comes from it unchanged."
+fn_rust: "Rust and the Rust logo are trademarks of the Rust Foundation. Fotollection's core is written in Rust and runs directly on your computer."
+fn_webview: "The app's window is built with Tauri and drawn by the system's own web view: WebKit (WKWebView) on macOS, Microsoft Edge WebView2 on Windows and WebKitGTK, the GTK port of WebKit, on Linux. Tauri is a project of the Tauri Programme within the Commons Conservancy; WebKit is a trademark of Apple Inc.; GTK is a project of the GNOME Foundation; Microsoft Edge and WebView2 are trademarks of Microsoft Corporation. The browser comparison ran the same job in headless Chromium 156, the open-source project behind Google Chrome, with one Web Worker per processor core."
+fn_de: "ΔE2000 (CIEDE2000) is the colour-difference formula of the International Commission on Illumination (CIE), standardised as ISO/CIE 11664-6; the CIELAB colour space it works in is ISO/CIE 11664-4."
+fn_ssim: "SSIM was introduced by Zhou Wang, Alan C. Bovik, Hamid R. Sheikh and Eero P. Simoncelli in Image quality assessment: from error visibility to structural similarity, IEEE Transactions on Image Processing, 13(4), 2004."
+fn_jpeg: "JPEG is the image format of the Joint Photographic Experts Group, standardised as ISO/IEC 10918-1 and ITU-T T.81."
+fn_srgb: "sRGB was created by HP and Microsoft in 1996 and standardised as IEC 61966-2-1."
+fn_p3: "Display P3 is a colour space defined by Apple Inc., based on the DCI-P3 colour space of the cinema industry (SMPTE)."
+fn_adobe: "Adobe RGB (1998) is a colour space specified by Adobe Inc.; Adobe is a registered trademark of Adobe Inc."
+fn_charts: "Every chart: figures are for reference, measured on an ordinary laptop (Apple M3, 16 GB); yours depend on the computer you use."
+fn_dng: "Adobe DNG Converter was not run for this page. The figure is a third-party estimate (1,000 CR3 files in 20–30 minutes on modern hardware, machine not stated), from convertintomp4.com's blog post on batch RAW-to-DNG conversion. Adobe is a registered trademark of Adobe Inc."
+fn_pf_raw: "On macOS, RAW formats other than DNG are developed by the system, with its lens corrections. Linux and Windows use the reader built into Fotollection, without them; on Windows, Microsoft's Raw Image Extension, when installed, is only a last fallback."
+fn_pf_heic_win: "With Microsoft's free HEIF Image Extensions and HEVC Video Extensions, from the Microsoft Store."
+fn_pf_heic_linux: "HEIC needs an HEVC decoder, which Linux does not ship and Fotollection will not bundle, because of its patents. A later version will use the libheif your distribution installs. Until then, convert HEIC photos to JPEG."
+fn_pf_tether: "Sony a6400 first; other cameras will follow."
+fn_pf_openwith: "With the .deb, or with the install script. An AppImage you run by itself is not registered with the file manager, unless a tool such as AppImageLauncher does it."
+fn_pf_update: "The AppImage downloads the new AppImage; the .deb opens the release page, and with the APT repository, sudo apt upgrade brings the new version."
+fn_glibc: "glibc, the GNU C Library, is the base library every Linux program runs on. To see yours, type ldd --version in a terminal. Fotollection is built on Ubuntu 22.04, which has glibc 2.35, so it needs that version or a newer one."
+fn_nvidia: "With NVIDIA's own driver, WebKitGTK's DMA-BUF renderer can leave the window blank. When that driver is loaded, Fotollection restarts itself once with that renderer turned off."
+fn_dm: dm and the dm logo are trademarks of dm-drogerie markt GmbH + Co. KG.
+fn_rossmann: ROSSMANN and the ROSSMANN logo are trademarks of Dirk Rossmann GmbH.
+fn_cewe: The photo services at dm and Rossmann are made by CEWE, a trademark of CEWE Stiftung & Co. KGaA. Print sizes were checked against dm's price list in October 2026; the shops may change them.
+fn_photos: "The Prague photos in the screenshots (the trams, the streets, the Vltava) were taken by @hoangphi01 on a Lumix GX9 in November 2026: © @hoangphi01, all rights reserved. They are not covered by the app's licence and may not be reused. The other demo photos are in the public domain (CC0) on Wikimedia Commons, by Dktue (7 photos), Pierre Blaché from Paris, France (2) and Kate Branch (1). The cat in the print-basket and best-shot screenshots was also photographed by @hoangphi01 on the GX9, all rights reserved; the softer, shaken and darker copies beside it were made from that one photo, to show how the best shot is chosen."
+fn_photos_link: "Every file, its page and its checksum."
+fn_rawsamples: "The RAW measurements use nine samples in the public domain (CC0) from raw.pixls.us, one per format; scripts/fetch-raw-samples.py downloads and checks them."
+fn_rawformats: "RAW formats named on this site belong to the camera makers that define them: RW2 (Panasonic Holdings Corporation), CR2 and CR3 (Canon Inc.), NEF (Nikon Corporation), ARW (Sony Group Corporation), RAF (FUJIFILM Corporation) and ORF (OM Digital Solutions Corporation, formerly Olympus). DNG is an open specification published by Adobe Inc. Fotollection reads them through a reader built into Fotollection, and on macOS through the system's codecs first (on Windows, Microsoft's Raw Image Extension is a last fallback when installed); it is not made or endorsed by any of these companies."
+fn_cameras: "Camera names and logos in the screenshots and in the app's info frame are trademarks of their owners, used only to show which camera took a photo: Apple (Apple Inc.), Canon (Canon Inc.), Fujifilm (FUJIFILM Corporation), Hasselblad (Victor Hasselblad AB), Leica (Leica Camera AG), Lumix (Panasonic Holdings Corporation), Nikon (Nikon Corporation), Noritsu (Noritsu Koki Co., Ltd.), Phase One (Phase One A/S), Ricoh (Ricoh Company, Ltd.), Samsung (Samsung Electronics Co., Ltd.) and Sony (Sony Group Corporation)."
+fn_others: Apple and macOS are trademarks of Apple Inc.; Windows of Microsoft Corporation; Linux is the registered trademark of Linus Torvalds in the U.S. and other countries; Ubuntu of Canonical Ltd.; Debian of Software in the Public Interest, Inc.; Fedora, Red Hat, RHEL and CentOS of Red Hat, Inc.; openSUSE of SUSE LLC; Pop!_OS of System76, Inc.; Rocky Linux of the Rocky Enterprise Software Foundation; AlmaLinux of the AlmaLinux OS Foundation; ChromeOS of Google LLC; NVIDIA of NVIDIA Corporation; the names of the other Linux distributions belong to their projects; Facebook and Instagram of Meta Platforms, Inc.; GitHub of GitHub, Inc.; Google Analytics of Google LLC; Lightroom of Adobe Inc.; IrfanView of Irfan Škiljan; VietQR of NAPAS; Wikimedia Commons of the Wikimedia Foundation. The Apple, Windows and Linux (Tux, first drawn by Larry Ewing) marks are drawn from Simple Icons (CC0) and only show which system a column or a step is about.
+fn_brand: "The Fotollection name and logo identify the official app, made by @hoangphi01. Official downloads come only from fotollection.org and the project's GitHub releases. The GPL-3.0 licence lets anyone share or sell copies, changed or not, as long as they keep this licence and offer the source code; a changed or resold copy must not use the Fotollection name or logo in a way that suggests it is the official app."
+fn_notify: "Sharing or selling Fotollection, or building on it? Please tell the author first by opening an issue on GitHub (github.com/hoangphi01/fotollection/issues). The app is free and made in spare time; a short note is the fair way to say thanks."
+fn_cite: Quoting, reviewing or showing the app, or using these screenshots? Please credit Fotollection and link to fotollection.org.
+fn_independent: Fotollection is an independent open-source project. It is not affiliated with, sponsored or endorsed by any of these companies, and every other trademark belongs to its owner.
+shield: Private - your photos never leave your computer
+privacy_title: Your photos stay yours
+privacy_lead: Fotollection is built to work with no internet at all. Nothing is uploaded, nothing is tracked, and you can check every line of it.
+p1_title: No upload, no cloud
+p1_text: Photos are read and written on your own disk. There is no server to send them to.
+p2_title: No account, no tracking
+p2_text: No sign-up, and the app has no analytics or telemetry. From v0.13.0 it asks GitHub once at start whether a newer version is out, which Settings can turn off.
+p6_title: No ads
+p6_text: Nothing to sell you and no one paying to reach you. No adverts, no sponsored suggestions, no in-app purchases, not now and not later.
+p3_title: Places without a map service
+p3_text: Town names come from a map database bundled inside the app, so your GPS never reaches a third party.
+p4_title: GPS removed on export
+p4_text: Exported prints have their location stripped by default, so a photo handed to a print lab does not reveal where you live.
+p5_title: Open source
+p5_text: The code is public under GPL-3.0. Anyone can read it, build it and confirm that it does what this page says.
+chart_budgets: Speed and memory, against the budgets set before the code was written
+chart_quality: What the export keeps of the original, against a typical web editor
+chart_bestshot: Best-shot suggestions, scored against photos sorted by hand
+charts_more: "All measurements, explained"
+chart_share: "Photos for Facebook: what viewers see after Facebook recompresses them"
+chart_memory: "Peak memory as the batch grows to 5,035 photos"
+chart_browser: "The same job in Fotollection and in a web browser"
+story_title: The story
+story_kicker: A diary
+story_description: "The story behind Fotollection: twenty years of photos never looked at again, a winter of looking back, and the first kilometres of a marathon to turn memories back into prints."
+story_lead: "Why Fotollection exists, and how it found its own way: a diary of the first kilometres, told from the project's notes and the history of its code."
+story_wiki: "See the app at every version, in the Wiki"
+footer_story: The story
+wiki_title: Wiki
+wiki_kicker: From the first screen
+wiki_description: "How Fotollection grew from its first screen, version by version: what each one brought, with Fotollection as it shipped."
+wiki_lead: "Every version, from today back to the first empty window: what it brought, and Fotollection as it shipped, taken from the project's history."
+wiki_first: Go to the first screen
+wiki_toc: Versions
+wiki_foot: "Each picture is Fotollection as that version shipped, taken from the project's history; the earliest are in English only. A new version adds its own here."
+footer_wiki: Wiki
+man_title: Manual
+man_kicker: Help
+man_description: "How to use Fotollection, step by step, with a screenshot of each step: choosing the photos to print, looks and colour, zoom, RAW, camera clocks, dates and places, shooting with a camera connected, and every shortcut."
+man_lead: "Every step, as the app shows it. The manual follows the app: when a version changes something you can see, this page changes with it."
+man_toc: Chapters
+man_source: This manual on GitHub
+cs_title: Code signing policy
+cs_kicker: Trust
+cs_description: "How Fotollection's installers are built and published, who approves each release, and what the app does and does not send over the network."
+cs_lead: "The installers are not signed with a certificate yet: Windows shows a SmartScreen warning on the first launch, macOS builds carry an ad-hoc signature only, and the Linux AppImage and .deb are unsigned too. Every release lists SHA-256 checksums in SHA256SUMS.txt, so you can check that a download is the one published here. The APT repository at fotollection.org/apt is signed with the project's GPG key, so apt checks every package it installs from it."
+cs_parts:
+  - id: team
+    title: Team roles
+    lead: "Every installer is built by GitHub Actions from the public repository, from a tagged release; nothing built on a personal computer is published. The build workflow is"
+    items:
+      - title: Committers and reviewers
+        author: true
+        text: Writes and reviews every change to the source code.
+      - title: Release approver
+        author: true
+        text: Checks and publishes every release by hand.
+  - id: privacy
+    title: Privacy policy
+    lead: "This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it."
+    items:
+      - title: Works offline
+        text: "Photos, folders, projects and settings never leave your computer. There is no account, no telemetry and no crash upload."
+      - title: Check for updates
+        text: "The only network request: when you click, and from v0.13.0 once at start unless turned off in Settings, it asks GitHub (api.github.com) for this project's latest release. Nothing is downloaded by itself. GitHub's privacy statement applies to it."
+      - title: No location in exports
+        text: GPS coordinates are removed from exported photos by default.
+        fn: [fn_gps]
+      - title: This website
+        text: "The website, not the app, counts visits and clicks on its download links with Google Analytics; Google's privacy policy applies to it. The download count comes from GitHub."
+      - title: Support payments
+        text: "Ko-fi, GitHub Sponsors and the bank behind a VietQR code process the payments made to support Fotollection, each under its own privacy policy. The website only links to them and loads nothing from them, and a payment has nothing to do with the app or your data in Fotollection."
+  - id: system
+    title: Changes to your system
+    lead: Installing adds only what the app needs, and uninstalling removes it.
+    items:
+      - title: Open with
+        text: "The installer, and on Linux the .deb, adds Fotollection to the Open with menu for photo files. It never makes itself the default app."
+      - title: Uninstall
+        text: "Remove it from Windows Settings, or delete the app on macOS. The Windows uninstaller also removes the Open with entries. On Linux, run sudo apt remove fotollection, or delete the AppImage, or run the install script with --uninstall, which also removes the APT repository and its key. Settings and projects stay in your home folder."
+footer_signing: Code signing policy
+perf_title: "Performance"
+perf_description: "Every measurement behind Fotollection, explained in plain words: speed, memory, print quality, photos for social media and best-shot suggestions, with what ΔE, SSIM, JPEG and colour profiles mean."
+perf_kicker: "Measured, not promised"
+perf_lead: "Every number on this page comes from real photos on an ordinary laptop (Apple M3, 16 GB), and the scripts that produced them are in the repository, so anyone can run them again. Below each chart is what it means for your prints, and at the end, the words behind the numbers."
+perf_how_title: "Why Fotollection is fast"
+perf_how_lead: "No magic. A few decisions made before the first line of code, each one measured."
+perf_how_items:
+  - { t: "Native code on every core", d: "Fotollection's work runs in Rust, compiled for your processor and spread across all of its cores, with the vector instructions (SIMD) processors provide for pixels.", v: "23.5 / s", l: "photos exported at 16 MP", fn: [fn_simd, fn_units, fn_rust] }
+  - { t: "Only what is needed", d: "Opening a folder reads each file's EXIF and its small embedded thumbnail, never the whole photo. Thumbnails are kept in a cache on disk.", v: "0.12 s", l: "to open 1,000 photos", fn: [fn_exif] }
+  - { t: "Never more pixels than the screen", d: "A preview is at most 1,600 px, made from a 2,048 px copy held in memory. The full photo is read only when you zoom in, one part at a time.", v: "17 ms", l: "to redraw a preview" }
+  - { t: "Ready before you click", d: "Once the thumbnails are done, a preview of every photo is prepared in the background and kept on disk, while a quarter of memory holds the photos around the one on screen.", v: "27 ms", l: "to open any photo" }
+  - { t: "Nothing done twice", d: "A colour slider changes only the colour, never the size. Every colour slider is folded into one table of 33 × 33 × 33 colours, so ten sliders cost what one does.", v: "2 ms", l: "for ten colour sliders on a preview" }
+  - { t: "Memory within budget", d: "Fotollection works on only as many full-size photos at once as its memory budget allows, set by the largest photo in the export.", v: "1.45 GB", l: "peak memory with 5,035 photos" }
+  - { t: "Encoders tuned by measurement", d: "Print files skip a table optimisation that made them less than 1 % smaller and cost a third of the encoding time.", v: "−33 %", l: "encoding time for print files" }
+  - { t: "The graphics card while you edit", d: "While a colour slider moves, the graphics card draws from the table the core builds. Exports stay on the processor, so a print is identical on every computer.", v: "1–2 ms", l: "per slider step, down from 26 ms" }
+perf_gpu_title: "The graphics card while editing, every core for exports"
+perf_gpu_text: "While you drag a colour slider, the graphics card draws the look from the same table Fotollection's core builds, and the exact render takes over when you let go. Exports stay on the processor, so a print comes out the same on every computer."
+gpu_stats:
+  - { v: "1–2 ms", l: "a slider step on the graphics card, against about 26 ms" }
+  - { v: "0.13", l: "ΔE2000 between the card's look and the exact render" }
+  - { v: "10.8", l: "26 MP photos exported a second, six at once" }
+chart_gpu: "One step of a colour slider: the processor against the graphics card"
+chart_inflight: "Export speed by photos worked on at once"
+dl_warn_title: "Update to v0.14.0 or later."
+dl_warn_text: "Earlier versions could lose the edits of a folder on a drive not plugged in at start, and one fault could close the whole app. v0.14.0 fixes both; your settings and projects carry over."
+chart_open: "Opening a photo: v0.9.0 and v0.10.0 against v0.11.0, on one trip's 422 photos"
+perf_open_title: "Up to 20× faster. A new way to use memory."
+perf_open_text: "v0.11.0 rethinks how Fotollection keeps your photos. Every photo's preview is prepared in the background once its thumbnail is done and kept on disk, a quarter of your computer's memory holds the photos around the one you see, and the photo on screen always goes first. The result: any photo, near or far, JPEG or RAW, opens in 27 milliseconds. Opening a RAW is up to 20 times faster than v0.9.0, a JPEG 10 times faster, measured on the same 422 photos of one trip."
+perf_open_fn: [fn_raw, fn_jpeg]
+open_stats:
+  - { v: "20×", l: "faster to open a RAW photo than v0.9.0 (531 → 27 ms)" }
+  - { v: "10×", l: "faster to open a JPEG than v0.9.0 (274 → 27 ms)" }
+  - { v: "27 ms", l: "to open any photo, near or far (budget 100 ms)" }
+perf_speed_title: "Speed: a thousand photos in a blink"
+perf_speed_text: "Opening a folder reads each photo's EXIF and its small embedded thumbnail, not the whole image, and a changed setting redraws only the preview. Native Rust also beats a web browser doing the same job: the same export speed, a faster preview and a quarter less memory."
+speed_stats:
+  - { v: "0.12 s", l: "to read a folder of 1,000 photos, eight times under budget" }
+  - { v: "17 ms", l: "to redraw the preview after a change" }
+  - { v: "23.5", l: "16 MP photos exported a second" }
+perf_memory_title: "Memory: 5,035 photos, and it stays flat"
+perf_memory_text: "Fotollection keeps only a few bytes per photo in memory, writes thumbnails to a disk cache and works on only as many full-size images at a time as fit its memory budget. So memory stays flat as a trip grows to thousands of photos."
+memory_stats:
+  - { v: "1.45 GB", l: "peak memory for 5,035 photos" }
+  - { v: "1.35 GB", l: "peak memory for 95 photos" }
+  - { v: "53×", l: "more photos for 0.1 GB more" }
+perf_print_title: "Print quality: the print looks like the photo"
+perf_print_text: "Prints made through a web editor often look flat: it drops the colour profile, shrinks the photo to 2,000 px and saves at quality 80 with halved colour. Fotollection keeps the profile and exports at full resolution in 4:4:4."
+print_stats:
+  - { v: "0.19", l: "colour error; an eye starts to notice at 1" }
+  - { v: "4:4:4", l: "full colour resolution; a web editor halves it" }
+  - { v: "87 %", l: "of the fine detail a web editor's 2,000 px loses" }
+perf_share_title: "Photos for Facebook and Instagram: light, and still the photo"
+perf_share_text: "Facebook shrinks every photo to 2,048 px, recompresses it and ignores colour profiles. The Share export does that work properly first, so after Facebook the photo stays closer to itself than the usual way."
+share_stats:
+  - { v: "99.6 %", l: "of a Display P3 photo's colour kept after Facebook, against 86 %" }
+  - { v: "2,048 px", l: "the size Facebook leaves alone" }
+  - { v: "½", l: "the file of Original size, every pixel kept" }
+chart_raw: "Camera RAW: from the file to the screen, per camera and against Adobe DNG Converter"
+perf_raw_title: "Camera RAW: open it as it is"
+perf_raw_text: "Fotollection opens RAW files from nine common cameras as they are, with nothing to convert and, on Windows and Linux, nothing to install. Since v0.10.0 the full picture is its own develop for every camera with a Bayer sensor, made on the camera's own data as in a RAW editor, while Adobe DNG Converter only turns one RAW file into another."
+raw_stats:
+  - { v: "9–32 ms", l: "a RAW's thumbnail, from the preview inside the file" }
+  - { v: "0.3–0.7 s", l: "Fotollection's own develop of the full photo" }
+  - { v: "1.2–1.8 s", l: "Adobe DNG Converter per file, only to convert it" }
+perf_raw_fn: [fn_dng, fn_sensor, fn_psnr, fn_tiff]
+perf_best_title: "Best-shot suggestions: checked against a person's choice"
+perf_best_text: "We sorted 95 real photos by hand into 22 moments and picked the best photo where there was a clear one. Fotollection's groups and suggestions were then checked against that choice."
+best_stats:
+  - { v: "6 of 6", l: "moments with a clear best: an acceptable suggestion" }
+  - { v: "15 of 22", l: "moments found, never two mixed up" }
+  - { v: "17 ms", l: "to analyse a photo, 28 ms with faces" }
+perf_toc: "On this page"
+diagram_layers: "Where the work happens: Fotollection on your computer, against a typical web editor"
+diagram_gpu_cpu: "Editing on the graphics card, exporting on every processor core"
+diagram_raw_develop: "A RAW photo, from the file to the print"
+diagram_preview_tiers: "Where a photo's preview comes from: memory, then disk, then the file"
+diagram_develop_gate: "The develop gate: the photo on screen goes first, background work waits"
+perf_explain_title: "The words behind the numbers"
+perf_explain_lead: "Photo and print jargon, explained the way we would explain it to a friend."
+perf_faq:
+  - q: "What is ΔE (Delta E)?"
+    fn: [fn_de]
+    a: "ΔE measures how far apart two colours look to a human eye, computed in a colour space built to match how we see (CIELAB, with the 2000 formula). 0 means identical. Around 1 is the smallest difference a trained eye can spot side by side; 2 to 3 is visible to most people; above 5 the colours look different. Fotollection's print export averages 0.19."
+  - q: "What is SSIM?"
+    fn: [fn_ssim]
+    a: "SSIM, the structural similarity index, compares the shapes and textures of two images rather than single pixels, which is closer to how we notice blur or blocky compression. 1 means identical. Above about 0.98, most people cannot tell the two apart without zooming in."
+  - q: "How many colours can a JPEG hold?"
+    fn: [fn_jpeg, fn_heic]
+    a: "A JPEG stores 8 bits for each of red, green and blue: 256 levels each, about 16.7 million colours. That is also what photo labs print from. Camera RAW files hold 12 to 14 bits and recent iPhones can save 10-bit HEIC, which helps when editing; for a finished print, a well-made 8-bit JPEG shows no steps between tones."
+  - q: "JPG or JPEG? And should I use PNG?"
+    a: "JPG and JPEG are the same format: old Windows only allowed three-letter extensions. PNG is lossless, so nothing is ever thrown away, but a photo saved as PNG is often three to five times larger, and most kiosks and labs expect JPEG. A JPEG at quality 90 or more with full colour resolution (4:4:4), as Fotollection exports for print, is indistinguishable from the original on paper."
+  - q: "What do 4:4:4 and 4:2:0 mean?"
+    a: "Our eyes see detail mostly in brightness, less in colour, so JPEG can store colour at lower resolution. 4:4:4 keeps full colour resolution; 4:2:0 keeps a quarter of it, which makes files smaller but softens coloured edges, such as red text or a blue sky behind leaves. Prints deserve 4:4:4; social media recompresses everything to 4:2:0 anyway."
+  - q: "sRGB, Display P3, Adobe RGB and colour profiles"
+    fn: [fn_srgb, fn_p3, fn_adobe]
+    a: "A colour profile tells software what the numbers in a file mean. sRGB is the classic range of colours used on the web. Display P3, used by iPhones and recent cameras, reaches about 25 % more colours, especially reds and greens. If a P3 photo loses its profile, its numbers are read as sRGB and it looks washed out: that is the 13 % saturation loss we measured. Adobe RGB, which some cameras offer for print work, is wider than sRGB too, mostly in greens and cyans. Fotollection keeps whichever profile a photo has for prints and converts properly to sRGB for social media."
+  - q: "What DPI does a print need?"
+    a: "DPI is how many pixels land on each inch of paper. At 300 DPI a print looks sharp even up close; 150 to 200 DPI is fine at arm's length. A 10 × 15 cm print at 300 DPI needs 1,800 × 1,200 pixels, so any phone or camera photo is enough; the size advice in the app tells you how large each photo can go."
+  - q: "Why do photos look worse on Facebook?"
+    a: "Facebook resizes every photo to at most 2,048 px, recompresses it at a lower quality with halved colour resolution, and drops colour profiles. A photo that arrives too large is resized twice, once by you and once by Facebook. Sending it already at 2,048 px, in sRGB and lightly sharpened, means Facebook only recompresses it once, and the colours are already right."
+perf_repro_title: "Run the measurements yourself"
+perf_repro_text: "Everything is reproducible on your own photos. The scripts never upload or copy a photo; only numbers are kept. The full tables, with every run, are in RESULT.md."
+perf_repro_link: "Read RESULT.md on GitHub"
+perf_back: "Back to the home page"
+install_title: Install in a minute
+install_lead: The installers are not signed with a paid certificate yet, so the first launch needs one extra click.
+mac_title: macOS
+mac_1: Open the .dmg and drag Fotollection to Applications.
+mac_2: Open it. macOS blocks the first launch.
+mac_3: In System Settings → Privacy & Security, click Open Anyway.
+win_title: Windows
+win_1: Run the -setup.exe (or the .msi).
+win_2: If SmartScreen says "Windows protected your PC", click More info.
+win_3: Click Run anyway.
+linux_title: Linux
+linux_soon: "If the download links are missing, the release page has every file."
+linux_script_title: One command
+linux_script_text: "Picks the right package for your system: Ubuntu, Debian and Mint get the APT repository, other distributions the AppImage in ~/.local. To remove it:"
+linux_apt_title: Or add the APT repository
+linux_apt_text: "For Ubuntu, Debian, Mint and the rest of that family. Updates then come with"
+linux_appimage_title: Or run the AppImage
+linux_appimage_text: "Download it, make it executable and start it. On ARM, the file ends in _aarch64."
+linux_files: "The files"
+linux_appimage_x64: AppImage, x86_64
+linux_appimage_arm: AppImage, ARM64
+linux_deb_x64: .deb, amd64
+linux_deb_arm: .deb, arm64
+linux_which: Which distributions?
+distro_title: Which Linux distributions
+distro_lead: "Fotollection runs on 64-bit Linux, x86_64 or ARM64, with glibc 2.35 or later."
+distro_groups:
+  - title: Works
+    items:
+      - text: "AppImage: Ubuntu 22.04+, Debian 12+, Linux Mint 21+, Pop!_OS 22.04+, elementary OS 7+, Zorin OS 17+, Fedora 36+, openSUSE Tumbleweed, Arch, Manjaro and others of that age."
+      - text: ".deb and the APT repository: Ubuntu, Debian, Mint, Pop!_OS, elementary OS and Zorin OS."
+  - title: Works with a step
+    items:
+      - text: "Ubuntu 24.04 and newer: the AppImage needs FUSE 2 once,"
+        code: sudo apt install libfuse2t64
+        fn: [fn_fuse]
+        after: ", or run it with"
+        code2: "--appimage-extract-and-run"
+        after2: ". The .deb needs nothing."
+      - text: "NixOS: start it through"
+        code: appimage-run
+      - text: "Fedora Silverblue and other immutable systems: use the AppImage."
+      - text: "NVIDIA graphics: nothing to do, the app avoids WebKit's blank-window issue by itself."
+        fn: [fn_nvidia]
+  - title: Does not run
+    items:
+      - text: "glibc older than 2.35: Ubuntu 20.04, Debian 11, RHEL, CentOS, Rocky or Alma 8, openSUSE Leap 15."
+      - text: "musl systems such as Alpine."
+      - text: "32-bit machines."
+      - text: "ChromeOS without its Linux container."
+  - title: Limits on every distribution
+    items:
+      - text: "No HEIC (iPhone) photos yet: convert them to JPEG first."
+        fn: [fn_pf_heic_linux]
+      - text: "No shooting with a camera over USB."
+      - text: "RAW opens without the lens corrections macOS adds."
+        fn: [fn_pf_raw]
+checksums: Every release lists SHA-256 checksums next to the downloads.
+updates: "It asks GitHub once at start whether a newer version exists (Settings → Updates turns it off) and never downloads anything by itself. New versions are announced here and on GitHub."
+footer_tagline: Photos ready to print, fully offline.
+footer_made: Made by a user, for users. Only someone who looks through their own photos every day knows what an ordinary person needs from a photo viewer.
+footer_report: Report a problem
+footer_license: GPL-3.0 licence
+footer_released: Fotollection is released under the
+footer_changelog: What's new
+footer_source: Source code
+footer_blog: The author's blog
+footer_analytics: This website counts visits, and clicks on its download links, with Google Analytics.
+footer_visits: Visits
+footer_visits_hint: Total visits, from Google Analytics, updated once a day
+footer_downloads: Downloads
+cta_downloads: "[n] downloads"
+footer_downloads_hint: "Every installer downloaded from GitHub, the app's own updates included, counted by GitHub"
+dl_count: "Downloaded [n] times: macOS [mac] · Windows [win] · Linux [linux], the app's own updates included."
+dl_count_split: "Of [tag]: [site] from this website, about [updates] through the update in the app."
+by: by

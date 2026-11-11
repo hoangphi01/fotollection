@@ -3,7 +3,7 @@
 {%- assign lang = pg.lang -%}
 {%- capture toc -%}
 {%- for m in site.data.timeline reversed %}
-- [v{{ m.version }} · {{ m.title[lang] }}](#v{{ m.version | replace: '.', '-' }})
+- [v{{ m.version }} · {{ m.title | tr: lang }}](#v{{ m.version | replace: '.', '-' }})
 {%- endfor %}
 {%- endcapture -%}
 {%- assign first = site.data.timeline | first -%}
@@ -21,11 +21,12 @@
     <ol class="timeline">
       {%- for m in site.data.timeline reversed %}
       <li class="timeline-item" id="v{{ m.version | replace: '.', '-' }}">
-        <p class="timeline-when"><span class="timeline-version">v{{ m.version }}</span> <time datetime="{{ m.date | date: "%Y-%m-%d" }}">{% if lang == 'vi' %}{{ m.date | date: "%d/%m/%Y" }}{% else %}{{ m.date | date: "%-d %b %Y" }}{% endif %}</time></p>
+        <p class="timeline-when"><span class="timeline-version">v{{ m.version }}</span> <time datetime="{{ m.date | date: "%Y-%m-%d" }}">{{ m.date | date: pg.date_format }}</time></p>
         <div class="card timeline-card">
-          <h2>{{ m.title[lang] }}{% if m.fn %}{% include fn.html keys=m.fn %}{% endif %}</h2>
+          <h2>{{ m.title | tr: lang }}{% if m.fn %}{% include fn.html keys=m.fn %}{% endif %}</h2>
           <ul class="timeline-points">
-            {%- for p in m.points[lang] %}
+            {%- assign points = m.points | tr: lang %}
+            {%- for p in points %}
             <li>{{ p }}</li>
             {%- endfor %}
           </ul>
@@ -34,14 +35,14 @@
             {%- for s in m.shots %}
             {%- capture src %}{{ '/assets/img/timeline/' | relative_url }}{{ s.file }}.webp{% endcapture %}
             <figure class="shot">
-              <a href="{{ src }}"><img src="{{ src }}" width="{{ s.w }}" height="{{ s.h }}" alt="{{ s.alt[lang] }}" loading="lazy" decoding="async" /></a>
-              <figcaption>{{ s.alt[lang] }}</figcaption>
+              <a href="{{ src }}"><img src="{{ src }}" width="{{ s.w }}" height="{{ s.h }}" alt="{{ s.alt | tr: lang }}" loading="lazy" decoding="async" /></a>
+              <figcaption>{{ s.alt | tr: lang }}</figcaption>
             </figure>
             {%- endfor %}
           </div>
           {%- endif %}
           {%- if m.diagram %}
-          <p class="small muted">{{ m.note[lang] }}</p>
+          <p class="small muted">{{ m.note | tr: lang }}</p>
           {% include perf-diagram.html name=m.diagram %}
           {%- endif %}
         </div>

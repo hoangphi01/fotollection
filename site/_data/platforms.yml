@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # The "By system" table on the home page (site/_includes/home.html), one row per feature.
 # The facts live here once, so English and Vietnamese cannot drift; the words live in
-# i18n.yml: the row label is `pf_<key>`, the marks are `pf_ok`, `pf_soon` and `pf_none`.
+# i18n/<code>.yml: the row label is `pf_<key>`, the marks are `pf_ok`, `pf_soon` and `pf_none`.
 # A mark is ok (✓), soon (not yet) or none (—). `<system>_fn` is the number of the
 # footnote that cell carries (the `notes` list in _layouts/default.html); `coming` marks
 # a row whose feature is not in the download yet, like the "coming in vX" text elsewhere.

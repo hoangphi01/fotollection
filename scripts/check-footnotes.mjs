@@ -22,10 +22,9 @@ for (const line of readFileSync(path.join(site, '_data/footnotes.yml'), 'utf8').
 }
 if (!lists.length) problems.push('site/_data/footnotes.yml lists no notes')
 
-// The text of every note, per language (top-level keys of each language block in i18n.yml).
-const i18n = readFileSync(path.join(site, '_data/i18n.yml'), 'utf8')
-const vi = i18n.indexOf('\nvi:')
-const has = (lang, key) => new RegExp(`^  ${key}: \\S`, 'm').test(lang === 'en' ? i18n.slice(0, vi) : i18n.slice(vi))
+// The text of every note, per language (top-level keys of i18n/<code>.yml).
+const words = Object.fromEntries(['en', 'vi'].map((l) => [l, readFileSync(path.join(site, `_data/i18n/${l}.yml`), 'utf8')]))
+const has = (lang, key) => new RegExp(`^${key}: \\S`, 'm').test(words[lang])
 
 const listed = new Set()
 for (const { page, lang, keys } of lists) {
