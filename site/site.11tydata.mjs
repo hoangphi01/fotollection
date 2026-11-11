@@ -4,7 +4,7 @@
 // A page names its id (`page_id`); its front matter becomes one object, `pg`, as Jekyll's
 // `page.*` was, so the templates read `pg.lang`, `pg.title_key`… and keep their own short
 // names (`title_key` in a loop) apart.
-import { languages, pages, published, urlFor } from '../eleventy.registry.mjs'
+import { homes, languages, pages, published, urlFor } from '../eleventy.registry.mjs'
 
 const has = (language, id) => language.published && language.pages.includes(id)
 
@@ -37,7 +37,7 @@ export default {
         .filter((l) => has(l, data.page_id))
         .map((l) => ({ ...l, url: urlFor(data.page_id, l.code) })),
       // Each published language's home page by its code (the first-visit redirect).
-      homes: Object.fromEntries(published.map((l) => [l.code, urlFor('home', l.code)])),
+      homes: homes(),
       // The language menu: every published language, at this page if it has it, else at its home.
       menu: published.map((l) => ({
         ...l,

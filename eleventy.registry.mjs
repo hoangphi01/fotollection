@@ -14,6 +14,14 @@ export const languages = load('languages.yml')
 export const pages = load('pages.yml')
 export const published = languages.filter((l) => l.published)
 
+/** Each published language's home page by the browser language that leads to it: its own code
+ *  and the codes in `also` (a Slovak browser to Czech), for the first-visit redirect and /hi. */
+export function homes() {
+  const out = {}
+  for (const l of published) for (const c of [l.code, ...(l.also ?? [])]) out[c] = urlFor('home', l.code)
+  return out
+}
+
 /** The path of page `id` in language `code`; English's when that language lacks the page. */
 export function urlFor(id, code) {
   if (!(id in pages)) throw new Error(`url_for: no page "${id}" in site/_data/pages.yml`)

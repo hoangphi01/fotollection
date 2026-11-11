@@ -3,6 +3,8 @@
 #   name, html_lang, og_locale  its own name (the language menu), the page's lang and og:locale
 #   regions      the markets it is for, shown beside its name in the menu (owner, 2026-11-11:
 #                German is read in Germany and Austria); none where the name says it
+#   also         other browser languages it is for: a first visit in one of them opens it
+#                (Slovak readers read Czech)
 #   prefix       its path, "" for English at the root
 #   pages        the pages it has (page ids of pages.yml); a page it lacks links to English's
 #   assets       whose screenshots it shows: the app speaks English and Vietnamese (FR-084)
@@ -32,6 +34,8 @@
   name: Čeština
   html_lang: cs
   og_locale: cs_CZ
+  regions: CZ/SK
+  also: [sk]
   prefix: /cs
   assets: en
   pages: [home, download, performance, manual, wiki, code-signing]

@@ -10,7 +10,7 @@ import yaml from 'js-yaml'
 import MarkdownIt from 'markdown-it'
 import attrs from 'markdown-it-attrs'
 import anchor from 'markdown-it-anchor'
-import { languages, pages, published, urlFor } from './eleventy.registry.mjs'
+import { homes, languages, pages, published, urlFor } from './eleventy.registry.mjs'
 
 const SITE = 'site'
 
@@ -142,7 +142,7 @@ export default function (eleventyConfig) {
     // 2026-11-11): no page to click through, it opens at once the home page in the visitor's
     // language (the menu's choice, else the browser's) and turns ?from=<source> into utm_source,
     // so Google Analytics counts where visits came from, anonymously. Never indexed.
-    const homes = JSON.stringify(Object.fromEntries(published.map((l) => [l.code, urlFor('home', l.code)])))
+    const homesByCode = JSON.stringify(homes())
     mkdirSync(path.join(out, 'hi'), { recursive: true })
     writeFileSync(path.join(out, 'hi', 'index.html'), `<!doctype html>
 <html lang="en">
@@ -154,7 +154,7 @@ export default function (eleventyConfig) {
 <title>Fotollection</title>
 <script>
 ;(function () {
-  var homes = ${homes}
+  var homes = ${homesByCode}
   var pick = null
   try { pick = localStorage.getItem('lang') } catch (e) {}
   if (!homes[pick]) {
