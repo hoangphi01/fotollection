@@ -1,6 +1,6 @@
 # Product Requirements Document — Fotollection
 
-> **Owner:** product · **Status:** Draft v0.1 · **Last reviewed:** 2026-11-09
+> **Owner:** product · **Status:** Draft v0.1 · **Last reviewed:** 2026-11-11
 >
 > This document is the single source of truth for **what** Fotollection does and **why**.
 > *How* it is built lives in [ARCHITECTURE.md](ARCHITECTURE.md); *when* lives in [ROADMAP.md](ROADMAP.md).
@@ -911,7 +911,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Checked like any input from outside:** read only in Rust, size-capped; only strings, no markup (the UI shows text, never HTML, [SECURITY.md](SECURITY.md)); every `{{name}}` placeholder must match English's; plural forms follow the language's rules. `ui/scripts/check-i18n.mjs` checks a pack the same way, so a contributor sees what is missing before sending it.
 - **Two ways in:** a pull request that adds it to the repository (it then ships with the app), or **Load a language…** in the version popover, which copies the file into the app's `languages/` folder; the language list shows it with its authors.
 - **Travels with the app's brain:** `.fotosettings` ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)) carries the packs a user loaded, as it carries fonts and LUTs; it is not the pack's own format, since a pack is made to be shared and the brain is personal.
-- The manual (USER_GUIDE) and the website stay in English and Vietnamese; a pack translates the app.
+- A pack translates the app. The website is in its own six languages (`site/_data/languages.yml`, ADR-0049), the full manual (USER_GUIDE) in English and Vietnamese and a short guide in the others; once the app speaks a language, that language's website shows the app's screenshots in it (`assets` in the registry).
 
 ### FR-085 — Lens distortion correction
 

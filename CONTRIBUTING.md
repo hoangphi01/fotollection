@@ -39,7 +39,7 @@ Each fact is written in exactly one file, its *single source of truth* (SSOT). E
 - **Reading order** by task (new to the project, writing code, debugging, performance, security, releases) is the first table of [docs/README.md](docs/README.md).
 - **Generated files are not sources.** `ui/src/ipc/bindings.ts` is generated from Rust by `cargo test`; the website's manual is generated from the user guide; the charts are generated from `bench/results/`. Change the source, then regenerate.
 - **When you find a fact in two places**, keep it in its home, replace the other copy with a link, and mention it in your pull request.
-- **Language.** Docs and code are in English. The Vietnamese files ([README.vi.md](README.vi.md), [docs/USER_GUIDE.vi.md](docs/USER_GUIDE.vi.md), `ui/src/locales/vi.json`, the website's `vi` strings) mirror their English file and change in the same commit.
+- **Language.** Docs and code are in English. The Vietnamese files ([README.vi.md](README.vi.md), [docs/USER_GUIDE.vi.md](docs/USER_GUIDE.vi.md), `ui/src/locales/vi.json`, the website's `vi` strings) mirror their English file and change in the same commit. The website's other languages (Czech, German, Hungarian, Polish) follow English too: their words in `site/_data/i18n/<code>.yml`, the Performance texts in `site/_includes/perf/<part>-<code>.md` and a short guide in `site/_includes/manual-short-<code>.md`; a correction from a native speaker is welcome as a pull request, and `node scripts/check-site-i18n.mjs --build` tells what a language still shows in English. A new language starts with one block in `site/_data/languages.yml` ([site/README.md](site/README.md)).
 
 ## 3. IDs: requirements, decisions, errors
 
