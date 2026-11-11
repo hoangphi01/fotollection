@@ -35,6 +35,8 @@ let current: Required<UiSettings> = {
   welcomeEveryStart: false,
   // How much the interface moves (FR-100): the system's choice until the user picks one.
   motion: 'system',
+  // The small "fotollection.org" on each print (FR-121): on until the user turns it off.
+  printCredit: true,
 }
 let requested = false
 // The file's values have arrived: what depends on them (the welcome screen) waits for this.

@@ -1009,6 +1009,11 @@ pub fn set_ui_settings(
     }
     let before = std::mem::replace(&mut *current, ui.clone());
     drop(current);
+    // The print's "fotollection.org" shows in previews as it prints (FR-121).
+    if before.print_credit != ui.print_credit {
+        state.sync_print_credit();
+        refresh_previews(&app, &state);
+    }
     // The previews' memory and the cache's limit follow at once (FR-086).
     if before.preview_memory_percent != ui.preview_memory_percent {
         state
@@ -1260,6 +1265,10 @@ pub fn start_export(
             };
             let group_for =
                 |record: &fotollection_core::library::PhotoRecord| groups.get(&record.id).cloned();
+            let faces_for = |record: &fotollection_core::library::PhotoRecord| {
+                state.analysis_cache.faces_for_credit(record)
+            };
+            let credit_on = state.print_credit_on();
             let options = ExportOptions {
                 destination: &destination,
                 settings: &settings,
@@ -1272,6 +1281,7 @@ pub fn start_export(
                 by_day,
                 postcard_font: postcard_font_of(&frames, &settings).map(|f| f.font),
                 files: &files,
+                credit_for: credit_on.then_some(&faces_for as _),
             };
             let throttle = Throttle::default();
             let on_progress = |done: u32, total: u32| {
@@ -1465,6 +1475,9 @@ pub async fn estimate_export(
             .read()
             .map(|ui| fotollection_core::export::ExportFiles::from_ui(&ui))
             .unwrap_or_default();
+        let faces_for = |record: &fotollection_core::library::PhotoRecord| {
+            state.analysis_cache.faces_for_credit(record)
+        };
         let options = ExportOptions {
             // Nothing is written; the folder only completes the options.
             destination: std::path::Path::new(""),
@@ -1477,6 +1490,7 @@ pub async fn estimate_export(
             by_day: false,
             postcard_font: postcard_font_of(&frames, &settings).map(|f| f.font),
             files: &files,
+            credit_for: state.print_credit_on().then_some(&faces_for as _),
         };
         let samples = fotollection_core::export::ESTIMATE_SAMPLES;
         Ok(if sheets {
@@ -2440,6 +2454,22 @@ pub fn clock_match_candidates(
 }
 
 /// Bumps the revision, marks the project dirty, and tells the UI (one place for all edits).
+/// Previews refresh while the document stays as it was: a setting of this machine changed
+/// what prints (FR-121).
+fn refresh_previews(app: &AppHandle, state: &AppState) {
+    let revision = state.bump_revision();
+    let (can_undo, can_redo) = state
+        .history
+        .lock()
+        .map_or((false, false), |h| (h.can_undo(), h.can_redo()));
+    let _ = RevisionChanged {
+        revision,
+        can_undo,
+        can_redo,
+    }
+    .emit(app);
+}
+
 pub fn changed(app: &AppHandle, state: &AppState) -> HistoryState {
     let revision = state.bump_revision();
     state.project_dirty.store(true, Ordering::Relaxed);
@@ -2587,6 +2617,7 @@ pub async fn get_crop_geometry(
             place: None,
             straighten: 0.0,
             ratio: None,
+            credit: None,
         });
         let (canvas_w, canvas_h) = p.output_size();
         let (canvas_width_cm, canvas_height_cm) = canvas_cm(print, (width, height), &p);

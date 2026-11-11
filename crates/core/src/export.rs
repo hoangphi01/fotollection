@@ -120,6 +120,9 @@ struct Written {
     over_limit: bool,
 }
 
+/// The faces found in a photo, for the print's credit to keep off (FR-121).
+pub type CreditFor<'a> = dyn Fn(&PhotoRecord) -> Vec<crate::culling::FaceSummary> + Sync + 'a;
+
 pub struct ExportOptions<'a> {
     pub destination: &'a Path,
     pub settings: &'a RenderSettings,
@@ -141,6 +144,10 @@ pub struct ExportOptions<'a> {
     /// Subfolder, names, existing files, metadata and size limit (FR-009, FR-010, FR-104,
     /// FR-105).
     pub files: &'a ExportFiles,
+    /// The small "fotollection.org" on each print (FR-121): `Some` when this machine prints
+    /// it, giving the faces found in a photo to keep it off (empty when unknown); never used
+    /// on a share export.
+    pub credit_for: Option<&'a CreditFor<'a>>,
 }
 
 /// A sensible default for `max_inflight`: one per core, capped at 6. A photo is decoded and
@@ -342,13 +349,15 @@ fn encode_sheet(
                 (image.width, image.height),
             )
         });
-    let image = crate::sheet::render_sheet(
+    let image = crate::sheet::render_sheet_with(
         options.settings,
         print,
         sources,
         turned,
         None,
         options.postcard_font.as_ref(),
+        [crate::sheet::CellMark::Normal; 2],
+        options.credit_for.is_some(),
     )?;
     drop(decoded);
     if cancel.is_cancelled() {
@@ -423,6 +432,7 @@ fn encode_photo(
         record.edits.caption.as_deref(),
         Some(&table_look),
     );
+    let faces = options.credit_for.map(|faces| faces(record));
     let p = plan(&PlanInput {
         width: upright.width,
         height: upright.height,
@@ -435,6 +445,7 @@ fn encode_photo(
         place: place.as_deref(),
         straighten: record.edits.straighten,
         ratio: None,
+        credit: faces.as_deref(),
     });
     let p = crate::plan::RenderPlan {
         linear_light: share.is_some(),

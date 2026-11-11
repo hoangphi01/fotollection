@@ -1188,12 +1188,13 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 ### FR-121 — A small "fotollection.org" on the print
 
-**P2 (planned for v0.14.1; owner's decision 2026-11-10: "from the next version a small Fotollection in a corner of the photo, turned off in Settings").** Each print carries a small, quiet credit, so a photo passed round or on a fridge tells where it was made: **on by default**, turned off with one switch.
+**P2 (built for v0.14.1, 2026-11-11; owner's decision 2026-11-10: "from the next version a small Fotollection in a corner of the photo, turned off in Settings").** Each print carries a small, quiet credit, so a photo passed round or on a fridge tells where it was made: **on by default**, turned off with one switch.
 
 - **What and where:** the words `fotollection.org` (or the mark and the name), in a light grey at a small size measured in millimetres on the print so it reads the same at 10 × 15 and 20 × 30, in a corner of the white border or the info frame when there is one, on a postcard's back beside the stamp box; on the photo itself only as a last place, in the corner away from the date stamp, never over a face or the stamp.
 - **Off in one place:** *Settings → General* (or *Print*), a switch "Print a small fotollection.org", kept per machine; nothing else changes when it is off. No reminder, note or link elsewhere (owner, 2026-11-10: it would clutter Fotollection).
 - **Only on prints:** never on files exported for sharing online; the manual mentions the switch.
 - **Rust first (ADR-0044):** drawn in `render.rs` with the stamp's text path (`stamp.rs`, the bundled fonts), at the print's DPI; tests `fr_121_*` that it is drawn when on, not when off, at the same physical size on two print sizes, and never under the date stamp.
+- **As built (2026-11-11, `credit.rs`):** the words `fotollection.org` in Inter at an em of 1.6 mm on the print (letters about 1.2 mm tall). The plan places it (`RenderPlan::credit`), so the preview shows it as it prints: on the 3 mm border, centred under the photo and aligned to its right edge, in a grey from the paper's colour; in the info frame's bar under the logo; on a collage sheet once (never once a photo), under a postcard's stamp box or on the paper under the lower photo; otherwise in the photo's bottom corner away from the date stamp (then the other corners), half-clear white with a soft shadow, kept clear of the stamp and of any face the best-shot analysis found (when the photo was analysed and not turned since). Where nothing is free it is left out. The switch is *Settings → General → Prints*, kept per machine (settings v19).
 
 ## 7. Non-functional requirements
 

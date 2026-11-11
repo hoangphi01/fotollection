@@ -83,6 +83,7 @@ fn main() {
         by_day: false,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = run_export(
         &records,

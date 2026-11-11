@@ -2409,6 +2409,11 @@ export type UiSettings = {
 	welcomeEveryStart?: boolean,
 	/**  How much the interface moves (FR-100). Absent before settings v18: follow the system. */
 	motion?: MotionPreference,
+	/**
+	 *  A small "fotollection.org" on each print (FR-121). Absent before settings v19: on, as
+	 *  the owner decided (2026-11-10), until the user turns it off.
+	 */
+	printCredit?: boolean,
 };
 
 /**  A setting no look holds, as `Clarity2012: local contrast…`, and how many presets had it. */

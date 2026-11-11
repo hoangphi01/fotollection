@@ -347,7 +347,7 @@ Najważniejsze skróty (na Windows i Linuksie Ctrl zamiast Cmd):
 
 Wszystkie ustawienia tego komputera są w jednym oknie: kliknij koło zębate u góry paska bocznego albo naciśnij **⌘,** (Mac) lub **Ctrl+,** (Windows, Linux). Sekcje są wymienione po lewej.
 
-- **General:** język, motyw, *Motion*, ustawienia startowe nowych projektów, *Photo preview* (w oknie albo na całe okno) i *Show the welcome again*.
+- **General:** język, motyw, *Motion*, ustawienia startowe nowych projektów, *Prints* (małe fotollection.org w rogu każdego wydruku, tu można je wyłączyć), *Photo preview* (w oknie albo na całe okno) i *Show the welcome again*.
 - **RAM & cache:** część pamięci RAM na podglądy (15, 25 lub 40 %), limit pamięci podręcznej na dysku i **Clear cache**, oraz **Prepare previews in the background**, dzięki któremu każde zdjęcie otwiera się w około 30 ms. **Default** przywraca ustawienia domyślne, a **Auto** dobiera je do komputera.
 - **Data:** **Export settings…** zapisuje ustawienia, looki, LUT-y, czcionki i logo aparatów w jednym pliku `.fotosettings`; na innym komputerze **Import settings…** wczytuje go przez **Merge** albo **Replace**. **Reset settings** i **Erase data** pozwalają zacząć od nowa; projekty i zdjęcia nigdy nie są ruszane.
 - **Updates**, **Manual**, **Report a problem** i **What's new**.

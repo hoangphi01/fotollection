@@ -433,6 +433,9 @@ pub struct PreviewCache {
     /// twice at once; the photo on screen never waits for them (it may run on a pool, where a
     /// wait can hang the pool, LESSONS 2026-11-06).
     making: Mutex<Vec<SourceKey>>,
+    /// The print's "fotollection.org" in previews, as it prints (FR-121): `Some` when this
+    /// machine prints it, with the best-shot analysis that says where faces are.
+    credit: Mutex<Option<crate::culling::cache::AnalysisCache>>,
 }
 
 /// A source marked as being made, until dropped.
@@ -499,6 +502,25 @@ pub enum SheetView {
 impl PreviewCache {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Whether previews show the print's "fotollection.org" (FR-121), set from this machine's
+    /// settings: `Some` with the analysis cache that knows each photo's faces, `None` for off.
+    pub fn set_credit(&self, analysis: Option<crate::culling::cache::AnalysisCache>) {
+        if let Ok(mut credit) = self.credit.lock() {
+            *credit = analysis;
+        }
+    }
+
+    /// Previews show the credit.
+    fn credit_faces_on(&self) -> bool {
+        self.credit.lock().is_ok_and(|c| c.is_some())
+    }
+
+    /// The faces to keep the credit off for `record`, or `None` when previews show none.
+    fn credit_faces(&self, record: &PhotoRecord) -> Option<Vec<crate::culling::FaceSummary>> {
+        let analysis = self.credit.lock().ok()?.clone()?;
+        Some(analysis.faces_for_credit(record))
     }
 
     /// What the cache may keep now.
@@ -1030,8 +1052,17 @@ impl PreviewCache {
         frame: Option<&FrameRequest>,
         place: Option<&str>,
         max_long_edge: Option<u32>,
+        credit: Option<&[crate::culling::FaceSummary]>,
     ) -> Result<RgbImage, ThumbError> {
-        let p = Self::plan_from(source, record, settings, frame, place, max_long_edge);
+        let p = Self::plan_from(
+            source,
+            record,
+            settings,
+            frame,
+            place,
+            max_long_edge,
+            credit,
+        );
         Ok(render(source, &p)?)
     }
 
@@ -1043,6 +1074,7 @@ impl PreviewCache {
         frame: Option<&FrameRequest>,
         place: Option<&str>,
         max_long_edge: Option<u32>,
+        credit: Option<&[crate::culling::FaceSummary]>,
     ) -> RenderPlan {
         // The preview shows what is exported, for prints or for social media (FR-053).
         let settings = settings.for_target();
@@ -1070,6 +1102,7 @@ impl PreviewCache {
             place,
             straighten: record.edits.straighten,
             ratio: None,
+            credit,
         })
     }
 
@@ -1120,6 +1153,7 @@ impl PreviewCache {
             frame,
             place,
             Some(PREVIEW_LONG_EDGE),
+            self.credit_faces(record).as_deref(),
         );
         let photo = self.resized(&source, &p)?;
         let mut inverted = photo.as_ref().clone();
@@ -1244,6 +1278,7 @@ impl PreviewCache {
             frame,
             place,
             Some(PREVIEW_LONG_EDGE),
+            self.credit_faces(record).as_deref(),
         );
         let photo = self.resized(&source, &p)?;
         let mut inverted = photo.as_ref().clone();
@@ -1272,6 +1307,7 @@ impl PreviewCache {
             frame,
             place,
             Some(PREVIEW_LONG_EDGE),
+            self.credit_faces(record).as_deref(),
         );
         let image =
             crate::render::finish_marked(self.resized(&source, &p)?.as_ref().clone(), &p, true);
@@ -1295,6 +1331,7 @@ impl PreviewCache {
             frame,
             place,
             Some(PREVIEW_LONG_EDGE),
+            self.credit_faces(record).as_deref(),
         );
         Ok(finish(self.resized(&source, &p)?.as_ref().clone(), &p))
     }
@@ -1318,6 +1355,7 @@ impl PreviewCache {
             frame,
             place,
             Some(PREVIEW_LONG_EDGE),
+            self.credit_faces(record).as_deref(),
         );
         let photo = self.resized(&source, &p)?;
         Ok(crate::histogram::measure(
@@ -1430,6 +1468,7 @@ impl PreviewCache {
             Some(long_edge),
             card_font,
             marks,
+            self.credit_faces_on(),
         )?)
     }
 
@@ -1492,7 +1531,15 @@ impl PreviewCache {
         codec: &dyn JpegCodec,
     ) -> Result<RgbImage, ThumbError> {
         let source = self.full_source(record, split_look(record, settings).0, codec)?;
-        let full = Self::render_from(&source, record, settings, frame, place, None)?;
+        let full = Self::render_from(
+            &source,
+            record,
+            settings,
+            frame,
+            place,
+            None,
+            self.credit_faces(record).as_deref(),
+        )?;
         let (x, y, w, h) = region.rect(full.width, full.height);
         let row = full.width as usize * 3;
         let mut data = Vec::with_capacity(w as usize * h as usize * 3);
@@ -2187,6 +2234,7 @@ mod tests {
             &*cache.full_source(&record, RawSliders::default(), codec.as_ref())?,
             &record,
             &settings,
+            None,
             None,
             None,
             None,

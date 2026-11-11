@@ -533,6 +533,7 @@ pub fn render_sheet(
         max_long_edge,
         card_font,
         [CellMark::Normal; 2],
+        false,
     )
 }
 
@@ -572,6 +573,7 @@ pub fn render_sheet_with(
     max_long_edge: Option<u32>,
     card_font: Option<&ab_glyph::FontArc>,
     marks: [CellMark; 2],
+    credit: bool,
 ) -> Result<RgbImage, RenderError> {
     let sizes = sources.map(|s| s.map(|s| (s.image.width, s.image.height)));
     let sheet = layout(print, sizes, turned, &settings.collage);
@@ -603,6 +605,7 @@ pub fn render_sheet_with(
                 place: source.place,
                 straighten: source.straighten,
                 ratio: Some(ratio),
+                credit: None,
             })
         };
     let owns: [Option<RenderSettings>; 2] =
@@ -628,6 +631,8 @@ pub fn render_sheet_with(
         px(sheet.height),
         settings.border_color.rgb(),
     );
+    // Where each photo and its stamp went, for the credit to keep off (FR-121).
+    let mut placed: Vec<(crate::credit::BoxF, Vec<crate::credit::BoxF>)> = Vec::new();
     for (((source, cell), own), mark) in sources.iter().zip(&sheet.cells).zip(&owns).zip(marks) {
         let (Some(source), Some(cell), Some(own)) = (source, cell, own) else {
             continue;
@@ -644,12 +649,9 @@ pub fn render_sheet_with(
         // Centred on the area's centre, so pixel rounding never shifts it.
         let cx = (cell.x + cell.area.0 as f32 / 2.0) * density - image.width as f32 / 2.0;
         let cy = (cell.y + cell.area.1 as f32 / 2.0) * density - image.height as f32 / 2.0;
-        blit(
-            &mut canvas,
-            &image,
-            cx.round().max(0.0) as u32,
-            cy.round().max(0.0) as u32,
-        );
+        let (x, y) = (cx.round().max(0.0) as u32, cy.round().max(0.0) as u32);
+        blit(&mut canvas, &image, x, y);
+        placed.push(placed_at(&p, &image, x, y));
     }
     if let Some(card) = sheet.card {
         crate::postcard::draw(
@@ -671,7 +673,105 @@ pub fn render_sheet_with(
     if collage.cut_line && !collage.fill && sheet.cells.iter().all(Option::is_some) {
         draw_cut_line(&mut canvas, &sheet, density, settings.border_color);
     }
+    if credit
+        && let Some(spec) = sheet_credit(&sheet, density, &canvas, &placed, settings.border_color)
+    {
+        crate::credit::draw(&mut canvas, &spec);
+    }
     Ok(canvas)
+}
+
+/// A cell's photo and stamp lines on the sheet, its top-left at (`x`, `y`) (FR-121).
+#[allow(clippy::cast_precision_loss)]
+fn placed_at(
+    p: &crate::plan::RenderPlan,
+    image: &RgbImage,
+    x: u32,
+    y: u32,
+) -> (crate::credit::BoxF, Vec<crate::credit::BoxF>) {
+    let stamps = p.stamp.as_ref().map_or_else(Vec::new, |spec| {
+        crate::stamp::layout(image.width, image.height, spec)
+            .into_iter()
+            .map(|l| crate::credit::BoxF {
+                x: x as f32 + l.x,
+                y: y as f32 + l.y,
+                w: l.width,
+                h: l.height,
+            })
+            .collect()
+    });
+    let photo = crate::credit::BoxF {
+        x: x as f32,
+        y: y as f32,
+        w: image.width as f32,
+        h: image.height as f32,
+    };
+    (photo, stamps)
+}
+
+/// The sheet's one "fotollection.org" (FR-121): under a postcard's stamp box, else on the
+/// paper under the photo nearest the sheet's bottom-right corner, else in that photo's
+/// corner, clear of both stamps.
+#[allow(clippy::cast_precision_loss)]
+fn sheet_credit(
+    sheet: &SheetLayout,
+    density: f32,
+    canvas: &RgbImage,
+    placed: &[(crate::credit::BoxF, Vec<crate::credit::BoxF>)],
+    paper: BorderColor,
+) -> Option<crate::credit::CreditSpec> {
+    use crate::credit::{BoxF, Fit, Place};
+    use crate::settings::Corner;
+    let paper = paper.rgb();
+    let mut spots = Vec::new();
+    if sheet.card.is_some() {
+        let (w, h) = crate::postcard::STAMP_MM;
+        let edge = crate::postcard::EDGE_MM;
+        spots.push(Place {
+            area: BoxF {
+                x: (sheet.width - edge - w) * density,
+                y: (edge + h + 0.6) * density,
+                w: w * density,
+                h: 3.0 * density,
+            },
+            paper: Some(paper),
+            corners: vec![Corner::TopRight],
+            fit: Fit::Corner,
+            inset_x: 0.0,
+            inset_y: 0.0,
+        });
+    }
+    if let Some((photo, _)) = placed
+        .iter()
+        .max_by(|a, b| (a.0.bottom() + a.0.right()).total_cmp(&(b.0.bottom() + b.0.right())))
+    {
+        let below = canvas.height as f32 - photo.bottom();
+        if below >= 1.0 {
+            spots.push(Place {
+                area: BoxF {
+                    x: photo.x,
+                    y: photo.bottom(),
+                    w: photo.w,
+                    h: below,
+                },
+                paper: Some(paper),
+                corners: vec![Corner::BottomRight],
+                fit: Fit::Centred,
+                inset_x: 0.0,
+                inset_y: 0.0,
+            });
+        }
+        spots.push(Place {
+            area: *photo,
+            paper: None,
+            corners: crate::credit::photo_corners(None),
+            fit: Fit::Corner,
+            inset_x: (crate::plan::SAFE_AREA_MM + 1.0) * density,
+            inset_y: (crate::plan::SAFE_AREA_MM + 1.0) * density,
+        });
+    }
+    let avoid: Vec<BoxF> = placed.iter().flat_map(|(_, s)| s.iter().copied()).collect();
+    crate::credit::place(density, &spots, &avoid)
 }
 
 /// What turns a stamp sized for a photo's own area into half the sheet's stamp (FR-004).
@@ -956,6 +1056,108 @@ mod tests {
             [200, 30, 30],
             "no cut line between filled halves"
         );
+        Ok(())
+    }
+
+    /// The pixels where `on` differs from `off`, as (x, y).
+    fn differing(on: &RgbImage, off: &RgbImage) -> Vec<(u32, u32)> {
+        on.data
+            .as_chunks::<3>()
+            .0
+            .iter()
+            .zip(off.data.as_chunks::<3>().0)
+            .enumerate()
+            .filter(|(_, (a, b))| a != b)
+            .map(|(i, _)| {
+                let i = u32::try_from(i).unwrap_or(0);
+                (i % on.width, i / on.width)
+            })
+            .collect()
+    }
+
+    /// FR-121: one "fotollection.org" a sheet, never one a photo, each stamp kept clear; on a
+    /// postcard sheet just under the stamp box.
+    #[test]
+    #[allow(clippy::cast_precision_loss)]
+    fn fr_121_one_credit_a_sheet_under_a_postcards_stamp_box() -> Result<(), RenderError> {
+        use crate::settings::PostcardSettings;
+        let image = filled(1800, 1200, [90, 120, 160]);
+        let text = crate::library::PostcardText {
+            message: "Hello".into(),
+            address: "Anna".into(),
+        };
+        let source = |postcard| CellSource {
+            image: &image,
+            capture: None,
+            crop: None,
+            straighten: 0.0,
+            place: None,
+            stamp: None,
+            caption: None,
+            look: None,
+            postcard,
+        };
+        for postcard in [false, true] {
+            let mut settings = RenderSettings::default();
+            settings.stamp.enabled = false;
+            settings.collage.postcard = PostcardSettings {
+                enabled: postcard,
+                ..PostcardSettings::default()
+            };
+            let sources = if postcard {
+                [Some(source(Some(&text))), None]
+            } else {
+                [Some(source(None)), Some(source(None))]
+            };
+            let draw = |credit| {
+                render_sheet_with(
+                    &settings,
+                    print(),
+                    sources,
+                    false,
+                    Some(1800),
+                    None,
+                    [CellMark::Normal; 2],
+                    credit,
+                )
+            };
+            let (off, on) = (draw(false)?, draw(true)?);
+            let changed = differing(&on, &off);
+            assert!(!changed.is_empty(), "postcard {postcard}: no credit");
+            let sheet = layout(
+                print(),
+                [Some((1800, 1200)), (!postcard).then_some((1800, 1200))],
+                false,
+                &settings.collage,
+            );
+            let density = on.width as f32 / sheet.width;
+            // One credit: everything changed fits one text's box.
+            let (x0, x1) = changed
+                .iter()
+                .fold((u32::MAX, 0), |(a, b), &(x, _)| (a.min(x), b.max(x)));
+            let (y0, y1) = changed
+                .iter()
+                .fold((u32::MAX, 0), |(a, b), &(_, y)| (a.min(y), b.max(y)));
+            assert!(
+                ((x1 - x0) as f32) < 25.0 * density,
+                "postcard {postcard}: {x0}..{x1}"
+            );
+            assert!(
+                ((y1 - y0) as f32) < 3.0 * density,
+                "postcard {postcard}: {y0}..{y1}"
+            );
+            if postcard {
+                let (w, h) = crate::postcard::STAMP_MM;
+                let edge = crate::postcard::EDGE_MM;
+                let left = (sheet.width - edge - w) * density;
+                let top = (edge + h) * density;
+                assert!(
+                    x0 as f32 >= left && y0 as f32 >= top,
+                    "under the stamp box: {x0}, {y0}"
+                );
+                assert!((y1 as f32) < top + 4.0 * density);
+            }
+        }
         Ok(())
     }
 

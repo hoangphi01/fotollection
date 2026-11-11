@@ -77,6 +77,11 @@ pub fn finish_marked(mut photo: RgbImage, plan: &RenderPlan, clipping: bool) -> 
         (None, Some(mat)) => compose_mat(&photo, mat),
         (None, None) => photo,
     };
+    // The small "fotollection.org" on a print, over the paper or the photo (FR-121).
+    let mut out = out;
+    if let Some(credit) = &plan.credit {
+        crate::credit::draw(&mut out, credit);
+    }
     // A shared photo's fill goes round everything else (FR-075).
     match &plan.pad {
         Some(pad) => compose_mat(&out, pad),
@@ -186,6 +191,7 @@ pub fn fit_long_edge(source: &RgbImage, long_edge: u32) -> Result<RgbImage, Rend
         linear_light: false,
         look: None,
         dehaze: 0,
+        credit: None,
     };
     crop_and_resize(source, &plan)
 }
@@ -445,6 +451,7 @@ mod tests {
                 linear_light,
                 look: None,
                 dehaze: 0,
+                credit: None,
             };
             let out = crop_and_resize(&source, &plan).unwrap_or_else(|_| RgbImage::new(1, 1));
             // The middle, away from the edges' ringing.
@@ -492,6 +499,7 @@ mod tests {
                 place: None,
                 straighten: 0.0,
                 ratio: None,
+                credit: None,
             });
             let spec = p.stamp.as_ref();
             let lines = spec.map(|s| crate::stamp::layout(p.out_width, p.out_height, s));
@@ -527,6 +535,7 @@ mod tests {
             place: None,
             straighten: 0.0,
             ratio: None,
+            credit: None,
         });
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         let changed = out.data.iter().filter(|&&v| v != 0).count();
@@ -555,6 +564,7 @@ mod tests {
             place: None,
             straighten: 0.0,
             ratio: None,
+            credit: None,
         });
         render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0))
     }
@@ -604,6 +614,7 @@ mod tests {
             place: None,
             straighten: 0.0,
             ratio: None,
+            credit: None,
         }); // 15x15 square
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         assert_eq!((out.width, out.height), (20, 20));
@@ -648,6 +659,7 @@ mod tests {
             place: None,
             straighten: 0.0,
             ratio: None,
+            credit: None,
         });
         let out = render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0));
         (out, p)
@@ -713,6 +725,7 @@ mod tests {
             place: None,
             straighten: 0.0,
             ratio: None,
+            credit: None,
         });
         let Some(frame) = p.frame else {
             panic!("frame expected");
@@ -784,5 +797,241 @@ mod tests {
             );
             assert_eq!((out.width, out.height), p.output_size());
         }
+    }
+}
+
+/// The small "fotollection.org" on a print (FR-121).
+#[cfg(test)]
+#[allow(clippy::cast_precision_loss)]
+mod fr_121 {
+    use super::*;
+    use crate::credit::BoxF;
+    use crate::culling::FaceSummary;
+    use crate::frame::{FrameFit, FrameSettings, build_text};
+    use crate::library::ShotInfo;
+    use crate::plan::{FrameRequest, PlanInput, plan};
+    use crate::print_size::PrintSize;
+    use crate::settings::{Corner, RenderSettings};
+    use crate::share::{ExportTarget, SharePreset};
+
+    fn capture() -> Option<chrono::NaiveDateTime> {
+        chrono::NaiveDate::from_ymd_opt(2026, 7, 14).and_then(|d| d.and_hms_opt(10, 0, 0))
+    }
+
+    fn size(id: &str) -> PrintSize {
+        PrintSize::by_id(id).unwrap_or(PrintSize::ALL[1])
+    }
+
+    fn planned(
+        settings: &RenderSettings,
+        print: PrintSize,
+        (w, h): (u32, u32),
+        frame: Option<&FrameRequest>,
+        credit: Option<&[FaceSummary]>,
+    ) -> RenderPlan {
+        plan(&PlanInput {
+            width: w,
+            height: h,
+            capture: capture(),
+            settings,
+            print,
+            max_long_edge: None,
+            frame,
+            crop: None,
+            place: None,
+            straighten: 0.0,
+            ratio: None,
+            credit,
+        })
+    }
+
+    fn no_stamp() -> RenderSettings {
+        let mut settings = RenderSettings::default();
+        settings.stamp.enabled = false;
+        settings
+    }
+
+    fn stamp_boxes(p: &RenderPlan) -> Vec<BoxF> {
+        let (dx, dy) = p
+            .mat
+            .map_or((0.0, 0.0), |m| (m.photo.x as f32, m.photo.y as f32));
+        p.stamp.as_ref().map_or_else(Vec::new, |s| {
+            crate::stamp::layout(p.out_width, p.out_height, s)
+                .into_iter()
+                .map(|l| BoxF {
+                    x: dx + l.x,
+                    y: dy + l.y,
+                    w: l.width,
+                    h: l.height,
+                })
+                .collect()
+        })
+    }
+
+    #[test]
+    fn fr_121_drawn_when_on_never_when_off() {
+        let settings = no_stamp();
+        let source = RgbImage::new(1500, 1000);
+        let off = planned(&settings, size("10x15"), (1500, 1000), None, None);
+        let out = render(&source, &off).unwrap_or_else(|_| RgbImage::new(0, 0));
+        assert!(out.data.iter().all(|&v| v == 0), "off draws nothing");
+
+        let on = planned(&settings, size("10x15"), (1500, 1000), None, Some(&[]));
+        let out = render(&source, &on).unwrap_or_else(|_| RgbImage::new(0, 0));
+        let lit: Vec<(usize, usize)> = out
+            .data
+            .as_chunks::<3>()
+            .0
+            .iter()
+            .enumerate()
+            .filter(|(_, px)| px[0] > 0)
+            .map(|(i, _)| (i % 1500, i / 1500))
+            .collect();
+        assert!(!lit.is_empty(), "on draws the credit");
+        // Without a stamp it takes the bottom-right corner, small.
+        assert!(
+            lit.iter().all(|&(x, y)| x > 1000 && y > 900),
+            "{:?}",
+            lit.first()
+        );
+    }
+
+    #[test]
+    fn fr_121_never_on_a_share() {
+        let mut settings = no_stamp();
+        settings.export_target = ExportTarget::Share(SharePreset::Facebook);
+        let p = planned(&settings, size("10x15"), (1500, 1000), None, Some(&[]));
+        assert_eq!(p.credit, None);
+    }
+
+    #[test]
+    fn fr_121_the_same_millimetres_on_every_print_size() {
+        let settings = no_stamp();
+        for id in ["10x15", "20x30"] {
+            let print = size(id);
+            let p = planned(&settings, print, (6000, 4000), None, Some(&[]));
+            let px_per_mm = p.out_width.max(p.out_height) as f32 / print.long_mm as f32;
+            let em_mm = p.credit.map_or(0.0, |c| c.font_px / px_per_mm);
+            assert!((em_mm - crate::credit::EM_MM).abs() < 0.01, "{id}: {em_mm}");
+        }
+    }
+
+    #[test]
+    fn fr_121_never_under_the_date_stamp() {
+        for corner in [
+            Corner::BottomRight,
+            Corner::BottomLeft,
+            Corner::TopRight,
+            Corner::TopLeft,
+        ] {
+            let mut settings = RenderSettings::default();
+            settings.stamp.corner = corner;
+            // A caption across the whole width: at the bottom it takes both corners.
+            settings.stamp.caption = "WEEKEND IN PRAGUE WITH FRIENDS ".repeat(6);
+            let p = planned(&settings, size("10x15"), (1800, 1200), None, Some(&[]));
+            let ink = p.credit.and_then(|c| c.ink());
+            assert!(ink.is_some(), "{corner:?}: no place found");
+            let stamps = stamp_boxes(&p);
+            assert_ne!(stamps.len(), 0);
+            assert!(
+                ink.is_some_and(|i| stamps.iter().all(|s| !s.intersects(&i))),
+                "{corner:?}: {ink:?} over {stamps:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn fr_121_on_the_border_under_the_photo() {
+        let mut settings = no_stamp();
+        settings.border = true;
+        let p = planned(&settings, size("10x15"), (1800, 1200), None, Some(&[]));
+        let mat = p.mat.unwrap_or_else(|| panic!("a border"));
+        let ink = p.credit.and_then(|c| c.ink());
+        let photo_bottom = (mat.photo.y + mat.photo.height) as f32;
+        assert!(
+            ink.is_some_and(|i| i.y >= photo_bottom && i.bottom() <= mat.canvas_height as f32),
+            "{ink:?}"
+        );
+        assert!(p.credit.is_some_and(|c| !c.shadow && c.color[0] < 200));
+    }
+
+    #[test]
+    fn fr_121_in_the_frame_bar_clear_of_its_words() {
+        let shot = ShotInfo {
+            make: Some("Panasonic".into()),
+            model: Some("DC-GX9".into()),
+            iso: Some(200),
+            ..ShotInfo::default()
+        };
+        for fit in [FrameFit::Crop, FrameFit::Fit] {
+            let frame_settings = FrameSettings {
+                enabled: true,
+                fit,
+                ..FrameSettings::default()
+            };
+            let request = FrameRequest {
+                text: build_text(&shot, None, &frame_settings, capture(), None, None),
+                settings: frame_settings,
+                logo: None,
+                font: None,
+            };
+            let settings = no_stamp();
+            let p = planned(
+                &settings,
+                size("10x15"),
+                (1800, 1200),
+                Some(&request),
+                Some(&[]),
+            );
+            let layout = &p.frame.as_ref().unwrap_or_else(|| panic!("framed")).layout;
+            let bar = layout.bar;
+            let ink = p.credit.and_then(|c| c.ink());
+            assert!(
+                ink.is_some_and(
+                    |i| i.y >= bar.y as f32 && i.bottom() <= (bar.y + bar.height) as f32
+                ),
+                "{fit:?}: {ink:?} outside {bar:?}"
+            );
+            let regular = crate::render::regular().unwrap_or_else(|| panic!("font"));
+            for line in &layout.lines {
+                let w = text_width(regular, line.font_px, &line.text, 0.0);
+                let words = BoxF {
+                    x: line.right_x - w,
+                    y: line.top_y,
+                    w,
+                    h: line.font_px * 1.2,
+                };
+                assert!(
+                    ink.is_some_and(|i| !i.intersects(&words)),
+                    "{fit:?}: over {}",
+                    line.text
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn fr_121_keeps_off_a_face() {
+        // The stamp at the bottom right sends it to the bottom left, where a face is.
+        let settings = RenderSettings::default();
+        let face = FaceSummary {
+            x: 0.0,
+            y: 0.7,
+            w: 0.3,
+            h: 0.3,
+            ear: None,
+            sharpness: 1.0,
+        };
+        let p = planned(&settings, size("10x15"), (1800, 1200), None, Some(&[face]));
+        let ink = p.credit.and_then(|c| c.ink());
+        let face_box = BoxF {
+            x: 0.0,
+            y: 840.0,
+            w: 540.0,
+            h: 360.0,
+        };
+        assert!(ink.is_some_and(|i| !i.intersects(&face_box)), "{ink:?}");
+        let stamps = stamp_boxes(&p);
+        assert!(ink.is_some_and(|i| stamps.iter().all(|s| !s.intersects(&i))));
     }
 }

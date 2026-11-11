@@ -383,7 +383,7 @@ Datumsstempel, Info-Rahmen und Rand werden nie eingefärbt.
 
 Alle Einstellungen dieses Computers liegen in einem Fenster: Klick auf das Zahnrad oben in der Seitenleiste oder drück **⌘,** (Mac) bzw. **Ctrl+,** (Windows, Linux). Die Bereiche stehen links.
 
-- **General:** Sprache, Design, *Motion*, *New projects* (womit ein neues Projekt beginnt), *Photo preview* (im Fenster oder das App-Fenster füllend) und *Show the welcome again*.
+- **General:** Sprache, Design, *Motion*, *New projects* (womit ein neues Projekt beginnt), *Prints* (ein kleines fotollection.org in einer Ecke jedes Abzugs, hier abschaltbar), *Photo preview* (im Fenster oder das App-Fenster füllend) und *Show the welcome again*.
 - **RAM & cache:** der **Share of this computer's RAM** für Vorschauen (15, 25 oder 40 %), die Grenze des **Cache on disk** mit **Clear cache**, und **Prepare previews in the background**, damit jedes Foto in etwa 30 ms öffnet. **Default** stellt die Standardwerte wieder her, **Auto** wählt sie für diesen Computer.
 - **Data:** **Export settings…** speichert Einstellungen, Looks, LUTs, Schriften und Kameralogos in einer `.fotosettings`-Datei; **Import settings…** holt sie auf einem anderen Computer, mit **Merge** oder **Replace**. Hier siehst du auch, was Fotollection auf diesem Computer ablegt, und kannst mit **Reset settings** oder **Erase data** neu beginnen. Projekte und Fotos werden nie angetastet.
 - **Updates:** *Check for updates*.

@@ -387,7 +387,7 @@ Pole nebo posuvník se zaměřením si nechává vlastní šipky: klikni na fotk
 
 Všechna nastavení tohoto počítače jsou v jednom okně: ozubené kolo nahoře na postranním panelu, **⌘,** (Mac) nebo **Ctrl+,** (Windows, Linux). Oddíly jsou vypsané vlevo.
 
-- **General:** jazyk, vzhled, *Motion*, *New projects* (výchozí nastavení tisku nového projektu) a *Photo preview* (v okně, nebo přes celé okno aplikace).
+- **General:** jazyk, vzhled, *Motion*, *New projects* (výchozí nastavení tisku nového projektu), *Prints* (malé fotollection.org v rohu každé fotky, tady se dá vypnout) a *Photo preview* (v okně, nebo přes celé okno aplikace).
 - **RAM & cache:** **Share of this computer's RAM** pro náhledy (15, 25 nebo 40 %), **Cache on disk** s limitem a **Clear cache** a **Prepare previews in the background**, díky kterému se každá fotka otevře asi za 30 ms. **Default** vrátí výchozí hodnoty, **Auto** je zvolí podle tohoto počítače.
 - **Data:** **Export settings…** uloží tvoje nastavení, looky, LUTy, písma a loga fotoaparátů do jednoho souboru `.fotosettings`; na jiném počítači ho načte **Import settings…** (**Merge** nebo **Replace**). **Reset settings** nebo **Erase data** dají čistý začátek; projekty a fotky zůstanou netknuté.
 - **Updates**, **Manual**, **Report a problem** a **What's new**.

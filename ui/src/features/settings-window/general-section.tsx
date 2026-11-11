@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown settings: in the Settings window only (STYLE_RULE §4, checked by check-lego).
-import { Check, FilePlus2, Monitor, Moon, Sparkles, Sun, SlidersHorizontal } from 'lucide-react'
+import { Check, FilePlus2, Monitor, Moon, Printer, Sparkles, Sun, SlidersHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Field } from '@/components/forms/field'
+import { SwitchField } from '@/components/forms/switch-field'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { SectionCard } from '@/components/layout/section-card'
 import { Button } from '@/components/ui/button'
@@ -12,7 +13,8 @@ import { LanguageSetting } from '@/features/about/language-setting'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { commands, type MotionPreference, type PreviewLayout, type ThemePreference } from '@/ipc/bindings'
 
-/** The Settings window's *General* section (FR-086): the interface's language and theme. */
+/** The Settings window's *General* section (FR-086): the interface's language and theme, and
+ * what every print carries (FR-121). */
 export function GeneralSection() {
   const { t } = useTranslation()
   const { ui, update } = useUiSettings()
@@ -78,6 +80,15 @@ export function GeneralSection() {
           <Sparkles data-icon="inline-start" /> {t('welcome.again')}
         </Button>
       </Field>
+    </SectionCard>
+    {/* The small "fotollection.org" on each print (FR-121): on until turned off here. */}
+    <SectionCard icon={<Printer />} title={t('settingsWindow.prints')}>
+      <SwitchField
+        label={t('settingsWindow.printCredit')}
+        hint={t('settingsWindow.printCreditHint')}
+        checked={ui.printCredit}
+        onChange={(printCredit) => void update({ printCredit })}
+      />
     </SectionCard>
     <NewProjectsCard />
     </>

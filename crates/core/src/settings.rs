@@ -124,6 +124,10 @@ pub struct UiSettings {
     /// How much the interface moves (FR-100). Absent before settings v18: follow the system.
     #[serde(default)]
     pub motion: MotionPreference,
+    /// A small "fotollection.org" on each print (FR-121). Absent before settings v19: on, as
+    /// the owner decided (2026-11-10), until the user turns it off.
+    #[serde(default = "default_print_credit")]
+    pub print_credit: bool,
 }
 
 /// What an export does when a file of the same name is already there (FR-009, Lightroom's
@@ -213,6 +217,9 @@ const fn default_check_updates() -> bool {
 const fn default_export_ask() -> bool {
     true
 }
+const fn default_print_credit() -> bool {
+    true
+}
 
 impl Default for UiSettings {
     fn default() -> Self {
@@ -239,6 +246,7 @@ impl Default for UiSettings {
             welcome_seen: false,
             welcome_every_start: false,
             motion: MotionPreference::default(),
+            print_credit: default_print_credit(),
         }
     }
 }

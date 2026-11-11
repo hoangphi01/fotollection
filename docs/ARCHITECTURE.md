@@ -74,6 +74,7 @@ crates/
       cancel.rs          † # CancellationToken
       stamp.rs           † # text inside the photo: DSEG14 Italic, date · place line + caption, LED glow (FR-004/005/033/036)
       text.rs            † # text measuring/drawing shared by stamp and frame, ASCII folding
+      credit.rs          † # the small "fotollection.org" on prints: where it fits (paper first, then a photo corner clear of the stamp and faces), drawn last (FR-121)
       print_advice.rs    † # how large a photo prints well; sharp / acceptable / pixelated per print size (FR-026)
       straighten.rs      † # ±15° levelling: largest inscribed crop, bicubic resampling of the crop only (FR-006)
       brands.rs          † # bundled brand logos, EXIF make → brand, Classic/Original/Mono recolouring (ADR-0020)

@@ -100,6 +100,9 @@ pub struct RenderPlan {
     pub look: Option<std::sync::Arc<crate::looks::Table>>,
     /// The look's dehaze (FR-115), drawn just before its table; 0 draws nothing.
     pub dehaze: i8,
+    /// The small "fotollection.org" on a print (FR-121), in canvas pixels, drawn last but
+    /// for a share's fill; `None` when it is off, on a share or nowhere fits.
+    pub credit: Option<crate::credit::CreditSpec>,
 }
 
 impl RenderPlan {
@@ -323,6 +326,11 @@ pub struct PlanInput<'a> {
     /// A crop ratio `w : h` that wins over the print's, whatever the photo's orientation: a
     /// collage cell, which may stand when its photo lies (FR-035). Without a frame only.
     pub ratio: Option<(u64, u64)>,
+    /// The small "fotollection.org" (FR-121): `Some` when this machine prints it, with the
+    /// faces the best-shot analysis found in the upright photo, to keep it off them (empty
+    /// when none or not analysed). Ignored on a share and on a collage cell, whose sheet
+    /// draws its own.
+    pub credit: Option<&'a [crate::culling::FaceSummary]>,
 }
 
 /// Builds the plan for one photo.
@@ -454,12 +462,21 @@ fn plan_content(input: &PlanInput<'_>) -> RenderPlan {
             },
         }
     });
+    let stamp = stamp_spec(input, px_per_mm);
+    let credit = content_credit(
+        input,
+        px_per_mm,
+        mat.as_ref(),
+        crop,
+        (out_width, out_height),
+        stamp.as_ref(),
+    );
     RenderPlan {
         print,
         crop,
         out_width,
         out_height,
-        stamp: stamp_spec(input, px_per_mm),
+        stamp,
         frame: None,
         mat,
         pad: None,
@@ -467,7 +484,128 @@ fn plan_content(input: &PlanInput<'_>) -> RenderPlan {
         linear_light: false,
         look: input.settings.look.table(),
         dehaze: input.settings.look.dehaze(),
+        credit,
     }
+}
+
+/// Where an unframed print's credit goes (FR-121): on its border under the photo, else in a
+/// corner of the photo clear of the stamp and of faces.
+fn content_credit(
+    input: &PlanInput<'_>,
+    px_per_mm: f32,
+    mat: Option<&Mat>,
+    crop: CropRect,
+    (out_width, out_height): (u32, u32),
+    stamp: Option<&StampSpec>,
+) -> Option<crate::credit::CreditSpec> {
+    let faces = credit_faces(input)?;
+    let photo = mat.map_or(
+        frame::Rect {
+            x: 0,
+            y: 0,
+            width: out_width,
+            height: out_height,
+        },
+        |m| m.photo,
+    );
+    let mut places = Vec::new();
+    // The border under the photo first (FR-067).
+    if let Some(m) = mat {
+        let bottom = photo.y + photo.height;
+        places.push(crate::credit::Place {
+            area: boxf(photo.x, bottom, photo.width, m.canvas_height - bottom),
+            paper: Some(m.background),
+            corners: vec![Corner::BottomRight],
+            fit: crate::credit::Fit::Centred,
+            inset_x: 0.0,
+            inset_y: 0.0,
+        });
+    }
+    let inset = if mat.is_some() {
+        1.5
+    } else {
+        SAFE_AREA_MM + 1.0
+    } * px_per_mm;
+    places.push(photo_place(photo, stamp, inset));
+    let mut avoid = stamp_boxes(stamp, photo);
+    avoid.extend(face_boxes(input, faces, crop, photo));
+    crate::credit::place(px_per_mm, &places, &avoid)
+}
+
+/// The faces to keep the credit off, when this print gets one (FR-121): never on a share
+/// and never on a collage cell, whose sheet places its own.
+fn credit_faces<'a>(input: &PlanInput<'a>) -> Option<&'a [crate::culling::FaceSummary]> {
+    input.credit.filter(|_| {
+        input.ratio.is_none()
+            && matches!(
+                input.settings.export_target,
+                crate::share::ExportTarget::Print
+            )
+    })
+}
+
+#[allow(clippy::cast_precision_loss)]
+fn boxf(x: u32, y: u32, w: u32, h: u32) -> crate::credit::BoxF {
+    crate::credit::BoxF {
+        x: x as f32,
+        y: y as f32,
+        w: w as f32,
+        h: h as f32,
+    }
+}
+
+/// The photo's corners, inset by `inset` pixels, the one away from the stamp first.
+fn photo_place(photo: frame::Rect, stamp: Option<&StampSpec>, inset: f32) -> crate::credit::Place {
+    crate::credit::Place {
+        area: boxf(photo.x, photo.y, photo.width, photo.height),
+        paper: None,
+        corners: crate::credit::photo_corners(stamp.map(|s| s.corner)),
+        fit: crate::credit::Fit::Corner,
+        inset_x: inset,
+        inset_y: inset,
+    }
+}
+
+/// The date stamp's lines on the canvas, the photo placed at `photo`.
+#[allow(clippy::cast_precision_loss)]
+fn stamp_boxes(stamp: Option<&StampSpec>, photo: frame::Rect) -> Vec<crate::credit::BoxF> {
+    stamp.map_or_else(Vec::new, |spec| {
+        crate::stamp::layout(photo.width, photo.height, spec)
+            .into_iter()
+            .map(|l| crate::credit::BoxF {
+                x: photo.x as f32 + l.x,
+                y: photo.y as f32 + l.y,
+                w: l.width,
+                h: l.height,
+            })
+            .collect()
+    })
+}
+
+/// The faces, found as fractions of the upright photo, on the canvas through the crop.
+#[allow(clippy::cast_precision_loss)]
+fn face_boxes(
+    input: &PlanInput<'_>,
+    faces: &[crate::culling::FaceSummary],
+    crop: CropRect,
+    photo: frame::Rect,
+) -> Vec<crate::credit::BoxF> {
+    if crop.width == 0 || crop.height == 0 {
+        return Vec::new();
+    }
+    let sx = photo.width as f32 / crop.width as f32;
+    let sy = photo.height as f32 / crop.height as f32;
+    let (w, h) = (input.width as f32, input.height as f32);
+    faces
+        .iter()
+        .filter(|f| [f.x, f.y, f.w, f.h].iter().all(|v| v.is_finite()))
+        .map(|f| crate::credit::BoxF {
+            x: photo.x as f32 + (f.x * w - crop.x as f32) * sx,
+            y: photo.y as f32 + (f.y * h - crop.y as f32) * sy,
+            w: f.w * w * sx,
+            h: f.h * h * sy,
+        })
+        .collect()
 }
 
 /// The 3 mm border in whole millimetres (FR-067).
@@ -561,12 +699,32 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
     };
     #[allow(clippy::cast_precision_loss)]
     let px_per_mm = cw.max(ch) as f32 / print.long_mm as f32;
+    let stamp = stamp_spec(input, px_per_mm);
+    let credit = credit_faces(input).and_then(|faces| {
+        // In the bar, under the logo, then on the photo.
+        let bar = layout.bar;
+        let places = [
+            crate::credit::Place {
+                area: boxf(bar.x, bar.y, bar.width, bar.height),
+                paper: Some(layout.background),
+                corners: vec![Corner::BottomLeft, Corner::BottomRight],
+                fit: crate::credit::Fit::Corner,
+                inset_x: layout.logo_x,
+                inset_y: (SAFE_AREA_MM + 0.5) * px_per_mm,
+            },
+            photo_place(photo, stamp.as_ref(), (SAFE_AREA_MM + 1.0) * px_per_mm),
+        ];
+        let mut avoid = stamp_boxes(stamp.as_ref(), photo);
+        avoid.extend(face_boxes(input, faces, crop, photo));
+        avoid.extend(frame_boxes(&layout, request));
+        crate::credit::place(px_per_mm, &places, &avoid)
+    });
     RenderPlan {
         print,
         crop,
         out_width: photo.width,
         out_height: photo.height,
-        stamp: stamp_spec(input, px_per_mm),
+        stamp,
         frame: Some(FramePlan {
             layout,
             logo: request.logo.clone(),
@@ -578,7 +736,38 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
         linear_light: false,
         look: input.settings.look.table(),
         dehaze: input.settings.look.dehaze(),
+        credit,
     }
+}
+
+/// The frame's logo and text lines, which the credit keeps clear of (FR-121).
+fn frame_boxes(layout: &FrameLayout, request: &FrameRequest) -> Vec<crate::credit::BoxF> {
+    let mut boxes = Vec::new();
+    if layout.logo != frame::FrameLogo::None && layout.logo_height > 0.0 {
+        boxes.push(crate::credit::BoxF {
+            x: layout.logo_x,
+            y: layout.logo_center_y - layout.logo_height / 2.0,
+            w: layout.logo_max_width,
+            h: layout.logo_height,
+        });
+    }
+    let font: Option<&ab_glyph::FontArc> = match &request.font {
+        Some(f) => Some(&f.font),
+        None => crate::render::regular(),
+    };
+    for line in &layout.lines {
+        // Bold lines run a little wider than the face measures.
+        let width = font.map_or(line.right_x, |f| {
+            crate::text::text_width(f, line.font_px, &line.text, 0.0) * 1.1
+        });
+        boxes.push(crate::credit::BoxF {
+            x: line.right_x - width,
+            y: line.top_y,
+            w: width,
+            h: line.font_px * 1.2,
+        });
+    }
+    boxes
 }
 
 fn scale_dim(value: u32, scale: f64) -> u32 {
@@ -735,6 +924,7 @@ mod tests {
             place: None,
             straighten: 0.0,
             ratio: None,
+            credit: None,
         });
         assert_eq!((p.out_width, p.out_height), (1600, 1067));
         assert!(p.stamp.is_none(), "no capture date, no stamp");
@@ -757,6 +947,7 @@ mod tests {
             place: Some("Budapest"),
             straighten: 0.0,
             ratio: None,
+            credit: None,
         });
         let Some(stamp) = p.stamp else {
             panic!("the caption is printed without a date");
@@ -793,6 +984,7 @@ mod tests {
                 place: None,
                 straighten: 0.0,
                 ratio: None,
+                credit: None,
             });
             assert_eq!(
                 (p.crop.x, p.crop.y, p.crop.width, p.crop.height),
@@ -844,6 +1036,7 @@ mod tests {
                 place: None,
                 straighten: 0.0,
                 ratio: None,
+                credit: None,
             });
             assert_eq!(p.mat.map(|m| m.background), Some(rgb));
         }
@@ -869,6 +1062,7 @@ mod tests {
                 place: None,
                 straighten: 0.0,
                 ratio: None,
+                credit: None,
             });
             let Some(mat) = p.mat else {
                 panic!("the border needs a canvas");
@@ -900,6 +1094,7 @@ mod tests {
             place: None,
             straighten: 0.0,
             ratio: None,
+            credit: None,
         });
         assert!(p.mat.is_none());
         assert_eq!(p.output_size(), (6000, 4000));
@@ -926,6 +1121,7 @@ mod tests {
             place: None,
             straighten: 0.0,
             ratio: None,
+            credit: None,
         });
         assert_eq!((p.crop.width, p.crop.height), (4608, 3456));
         assert!(p.mat.is_some_and(|m| m.photo.x > 0));
@@ -963,6 +1159,7 @@ mod tests {
             place: None,
             straighten: 0.0,
             ratio: None,
+            credit: None,
         });
         let (w, h) = p.output_size();
         assert!(w.max(h) <= 1600 && w.max(h) >= 1590, "{w}×{h}");
@@ -986,6 +1183,7 @@ mod tests {
                 place: None,
                 straighten: 0.0,
                 ratio: None,
+                credit: None,
             });
             p.stamp.map_or(0.0, |s| s.font_px)
         };
@@ -1027,6 +1225,7 @@ mod tests {
                 place: None,
                 straighten: 0.0,
                 ratio,
+                credit: None,
             })
         };
         let full = input(&share, None, None);

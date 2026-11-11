@@ -213,6 +213,7 @@ fn main() {
                 place: None,
                 straighten: 0.0,
                 ratio: None,
+                credit: None,
             });
             let image = render(&t2, &p).unwrap();
             draw.push(t.elapsed().as_secs_f64() * 1e3);
@@ -264,6 +265,7 @@ fn main() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let sampling = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(true));
     let sampler = {

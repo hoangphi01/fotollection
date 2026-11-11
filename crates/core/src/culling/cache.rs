@@ -35,6 +35,7 @@ impl AnalyzeError {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct AnalysisCache {
     dir: PathBuf,
 }
@@ -69,6 +70,16 @@ impl AnalysisCache {
         }
         let analysis: PhotoAnalysis = serde_json::from_slice(&bytes).ok()?;
         (analysis.version == ANALYSIS_VERSION && analysis.is_plausible()).then_some(analysis)
+    }
+
+    /// The faces the cached analysis found in `record`, as fractions of the photo upright,
+    /// for the print's credit to keep off (FR-121); empty when it was not analysed, or when
+    /// the photo was turned since, which the analysis does not know.
+    pub fn faces_for_credit(&self, record: &PhotoRecord) -> Vec<super::FaceSummary> {
+        if record.display_orientation() != record.orientation {
+            return Vec::new();
+        }
+        self.get(record).map(|a| a.faces).unwrap_or_default()
     }
 
     /// Cached, or computed from the file and stored. A failed write only costs a redo later.

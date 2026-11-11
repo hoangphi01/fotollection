@@ -307,7 +307,7 @@ impl AppState {
             })
             .collect();
 
-        Ok(Self {
+        let state = Self {
             library: RwLock::new(Library::new()),
             defaults: RwLock::new((stored.render.clone(), stored.frame.clone())),
             settings: RwLock::new((stored.render, 1)),
@@ -363,7 +363,21 @@ impl AppState {
             update_download: crate::updates::PendingDownload::default(),
             last_export: Mutex::new(None),
             copied: Mutex::new(None),
-        })
+        };
+        state.sync_print_credit();
+        Ok(state)
+    }
+
+    /// Previews show the print's "fotollection.org" as this machine prints it (FR-121).
+    pub fn sync_print_credit(&self) {
+        let on = self.ui.read().is_ok_and(|u| u.print_credit);
+        self.previews
+            .set_credit(on.then(|| self.analysis_cache.clone()));
+    }
+
+    /// This machine prints the small "fotollection.org" (FR-121).
+    pub fn print_credit_on(&self) -> bool {
+        self.ui.read().is_ok_and(|u| u.print_credit)
     }
 
     /// Bumps the settings revision so previews refresh. Returns the new revision.

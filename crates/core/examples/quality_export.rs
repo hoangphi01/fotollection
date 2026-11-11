@@ -74,6 +74,7 @@ fn main() {
             by_day: true,
             postcard_font: None,
             files: &fotollection_core::export::ExportFiles::default(),
+            credit_for: None,
         },
         default_codec().as_ref(),
         &CancellationToken::new(),

@@ -37,7 +37,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v17 (FR-109): `ui.welcomeSeen`, `ui.welcomeEveryStart`.
 /// v18 (FR-079): `looks`, the user's saved looks, absent before (none); `ui.motion`
 /// (FR-100), absent before (follow the system).
-pub const SCHEMA_VERSION: u32 = 18;
+/// v19 (FR-121): `ui.printCredit`, the small "fotollection.org" on prints, absent before (on).
+pub const SCHEMA_VERSION: u32 = 19;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -689,6 +690,24 @@ mod tests {
             panic!("v14 should load again");
         };
         assert_eq!(back.render.look, s.render.look);
+        Ok(())
+    }
+
+    /// FR-121: a v18 file prints the credit, as the owner decided; v19 keeps the user's choice.
+    #[test]
+    fn fr_121_v18_files_print_the_credit_and_v19_keeps_it_off() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v18.json"))?;
+        let Loaded::Ok(old) = load(&path) else {
+            panic!("v18 should load");
+        };
+        assert!(old.ui.print_credit, "on until the user turns it off");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v19.json"))?;
+        let Loaded::Ok(new) = load(&path) else {
+            panic!("v19 should load");
+        };
+        assert!(!new.ui.print_credit);
         Ok(())
     }
 

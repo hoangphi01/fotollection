@@ -5,7 +5,7 @@
 //!
 //! `degrees` straightens the photo (FR-006); the render time is printed for the benchmark log.
 
-#![allow(clippy::unwrap_used, clippy::expect_used)]
+#![allow(clippy::unwrap_used, clippy::expect_used, clippy::too_many_lines)]
 
 use fotollection_core::PrintSize;
 use fotollection_core::codec::default_codec;
@@ -97,6 +97,7 @@ fn main() {
         place: None,
         straighten,
         ratio: None,
+        credit: Some(&[]), // FR-121, on by default as in the app
     });
     let t = std::time::Instant::now();
     let image = render(&upright, &p).unwrap();

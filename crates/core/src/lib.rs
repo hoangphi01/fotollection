@@ -11,6 +11,7 @@ pub mod cancel;
 pub mod codec;
 pub mod colour;
 pub mod colour_ops;
+pub mod credit;
 pub mod culling;
 pub mod dehaze;
 pub mod error_log;

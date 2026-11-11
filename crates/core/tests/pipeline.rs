@@ -15,6 +15,7 @@ use fotollection_core::import::scan;
 use fotollection_core::library::{CullFilter, Flag, FlagFilter, Library, PhotoEdits, PhotoRecord};
 use fotollection_core::metadata;
 use fotollection_core::settings::RenderSettings;
+use fotollection_core::share::{ExportTarget, SharePreset};
 
 fn import(root: &Path) -> Library {
     let mut lib = Library::new();
@@ -143,6 +144,7 @@ fn fr_009_export_by_date_never_overwrites() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = run_export(
         &records(&lib),
@@ -208,6 +210,7 @@ fn fr_009_export_into_one_folder_puts_every_day_together() {
             by_day: false,
             postcard_font: None,
             files: &fotollection_core::export::ExportFiles::default(),
+            credit_for: None,
         };
         run_export(
             &records(&lib),
@@ -266,6 +269,7 @@ fn fr_035_sheets_export_one_file_per_pair_in_the_first_photos_day() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = fotollection_core::export::run_export_sheets(
         &sheets,
@@ -329,6 +333,7 @@ fn fr_073_postcards_export_one_file_per_photo() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = fotollection_core::export::run_export_sheets(
         &sheets,
@@ -385,6 +390,7 @@ fn fr_056_folders_exported_separately_get_their_own_subfolder() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = run_export(
         &records(&lib),
@@ -429,6 +435,7 @@ fn fr_053_the_estimate_is_exact_when_every_photo_is_sampled() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let all = records(&lib);
     let estimate = estimate_export(&all, &options, &PureRustCodec, 10);
@@ -489,6 +496,7 @@ fn fr_092_the_estimate_follows_the_quality() {
                 by_day: false,
                 postcard_font: None,
                 files: &fotollection_core::export::ExportFiles::default(),
+                credit_for: None,
             };
             estimate_export(&all, &options, &PureRustCodec, 2).estimated_bytes
         };
@@ -527,6 +535,7 @@ fn fr_010_prints_keep_the_camera_details_but_never_gps() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = run_export(
         &records(&lib),
@@ -591,6 +600,7 @@ fn fr_001_png_and_jpeg_export_together() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = run_export(
         &all,
@@ -662,6 +672,7 @@ fn fr_022_export_uses_only_the_filtered_set() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = run_export(
         &kept,
@@ -713,6 +724,7 @@ fn fr_011_bad_file_does_not_fail_batch() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = run_export(
         &records(&lib),
@@ -753,6 +765,7 @@ fn fr_011_cancel_stops_and_removes_partials() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let cancel = CancellationToken::new();
     let summary = run_export(
@@ -943,6 +956,7 @@ fn fr_001_heic_imports_and_exports() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = run_export(
         &all,
@@ -1007,6 +1021,7 @@ fn fr_016_rw2_imports_and_exports() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = run_export(
         &all,
@@ -1056,6 +1071,7 @@ fn fr_067_share_exports_have_no_border() {
         by_day: true,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = run_export(
         &records(&lib),
@@ -1110,6 +1126,7 @@ fn fr_075_a_portrait_shared_with_a_square_fill_is_whole_and_square() {
         by_day: false,
         postcard_font: None,
         files: &fotollection_core::export::ExportFiles::default(),
+        credit_for: None,
     };
     let summary = run_export(
         &records(&lib),
@@ -1166,6 +1183,7 @@ fn fr_053_share_export_resizes_keeps_ratio_and_writes_safe_exif() {
             by_day: true,
             postcard_font: None,
             files: &fotollection_core::export::ExportFiles::default(),
+            credit_for: None,
         };
         let summary = run_export(
             &records(&lib),
@@ -1253,6 +1271,7 @@ fn fr_104_names_subfolder_and_existing_files() {
             by_day: false,
             postcard_font: None,
             files: &files,
+            credit_for: None,
         };
         run_export(
             &all,
@@ -1325,6 +1344,7 @@ fn fr_010_metadata_date_only_or_nothing() {
             by_day: false,
             postcard_font: None,
             files: &files,
+            credit_for: None,
         };
         let summary = run_export(
             &records(&lib),
@@ -1386,6 +1406,7 @@ fn fr_105_a_limit_out_of_reach_is_counted_and_sheets_take_the_names() {
         by_day: false,
         postcard_font: None,
         files: &files,
+        credit_for: None,
     };
     let summary = fotollection_core::export::run_export_sheets(
         &sheets,
@@ -1396,4 +1417,81 @@ fn fr_105_a_limit_out_of_reach_is_counted_and_sheets_take_the_names() {
     );
     assert_eq!((summary.exported, summary.over_limit), (1, 1));
     assert!(dest.path().join("2026-07-14-007.jpg").exists());
+}
+
+/// The first JPEG written under `dir`, at any depth.
+fn first_jpeg(dir: &Path) -> Vec<u8> {
+    let mut stack = vec![dir.to_path_buf()];
+    while let Some(d) = stack.pop() {
+        for entry in std::fs::read_dir(&d).unwrap().flatten() {
+            let path = entry.path();
+            if path.is_dir() {
+                stack.push(path);
+            } else if path.extension().is_some_and(|e| e == "jpg") {
+                return std::fs::read(path).unwrap();
+            }
+        }
+    }
+    panic!("no JPEG under {}", dir.display());
+}
+
+/// FR-121: a print carries the small "fotollection.org" when this machine prints it; a photo
+/// exported for sharing never does.
+#[test]
+fn fr_121_prints_carry_the_credit_shares_never() {
+    let src = tempfile::tempdir().unwrap();
+    write(
+        src.path(),
+        "IMG_1.jpg",
+        &jpeg(&Fixture {
+            width: 1500,
+            height: 1000,
+            date: Some("2026:07:14 10:22:31"),
+            ..Fixture::default()
+        }),
+    );
+    let lib = import(src.path());
+    let no_faces = |_: &PhotoRecord| Vec::new();
+    let export = |settings: &RenderSettings, credit: bool| {
+        let dest = tempfile::tempdir().unwrap();
+        let options = ExportOptions {
+            destination: dest.path(),
+            settings,
+            quality: 95,
+            max_inflight: 1,
+            place_for: &|_| None,
+            frame_for: &|_| None,
+            group_for: &|_| None,
+            by_day: false,
+            postcard_font: None,
+            files: &fotollection_core::export::ExportFiles::default(),
+            credit_for: credit.then_some(&no_faces as _),
+        };
+        let summary = run_export(
+            &records(&lib),
+            &options,
+            &PureRustCodec,
+            &CancellationToken::new(),
+            &|_, _| {},
+        );
+        assert_eq!(summary.exported, 1);
+        PureRustCodec
+            .decode(&first_jpeg(dest.path()))
+            .unwrap()
+            .image
+    };
+    let mut print = RenderSettings::default();
+    print.stamp.enabled = false;
+    let (with, without) = (export(&print, true), export(&print, false));
+    let differ = with
+        .data
+        .iter()
+        .zip(&without.data)
+        .filter(|(a, b)| a.abs_diff(**b) > 24)
+        .count();
+    assert!(differ > 50, "the print carries it: {differ}");
+
+    let mut share = print.clone();
+    share.export_target = ExportTarget::Share(SharePreset::Original);
+    assert_eq!(export(&share, true).data, export(&share, false).data);
 }

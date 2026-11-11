@@ -353,7 +353,7 @@ Ezek a kártyák csak az adott fotó színét módosítják; az **Apply this loo
 
 A gép minden beállítása egyetlen ablakban van: kattints a fogaskerékre az oldalsáv tetején, vagy nyomd meg a **⌘,** (Mac) vagy a **Ctrl+,** (Windows, Linux) billentyűt. A részek bal oldalt sorakoznak.
 
-- **General:** a nyelv, a megjelenés, a *Motion*, a *New projects* (amiből egy új projekt indul) és a *Photo preview*.
+- **General:** a nyelv, a megjelenés, a *Motion*, a *New projects* (amiből egy új projekt indul), a *Prints* (egy kis fotollection.org minden nyomat sarkában, itt kikapcsolható) és a *Photo preview*.
 - **RAM & cache:** a gép memóriájának mekkora része jusson az előnézetekre (15, 25 vagy 40 %), a lemezes gyorsítótár mérete és a **Clear cache**, valamint a **Prepare previews in the background**, amellyel bármelyik fotó kb. 30 ms alatt nyílik meg. A **Default** visszaállítja az alapértékeket, az **Auto** a gépedhez választ.
 - **Data:** az **Export settings…** egyetlen `.fotosettings` fájlba menti a beállításaidat, lookjaidat, LUT-jaidat, betűtípusaidat és logóidat; a másik gépen az **Import settings…** hozza be őket. Itt van a **Reset settings** és az **Erase data** is; a projektekhez és a fotókhoz sosem nyúl.
 - **Updates**, **Manual**, **Report a problem** és **What's new**.
