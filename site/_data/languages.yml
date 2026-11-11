@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # Every language of the website, the one place they are named (ADR-0049, site/README.md).
 #   name, html_lang, og_locale  its own name (the language menu), the page's lang and og:locale
+#   regions      the markets it is for, shown beside its name in the menu (owner, 2026-11-11:
+#                German is read in Germany and Austria); none where the name says it
 #   prefix       its path, "" for English at the root
 #   pages        the pages it has (page ids of pages.yml); a page it lacks links to English's
 #   assets       whose screenshots it shows: the app speaks English and Vietnamese (FR-084)
@@ -41,6 +43,7 @@
   name: Deutsch
   html_lang: de
   og_locale: de_DE
+  regions: DE/AT
   prefix: /de
   assets: en
   pages: [home, download, performance, manual, wiki, code-signing]
