@@ -1037,3 +1037,10 @@
 - **Why:** the marks went on every text of a borrowed list, and `uses_items` holds an icon's file name beside its words; the template built a path from it.
 - **Fix:** the fields that are names, not words (`icon`, `logo`, `id`, `code`, `code2`), stay unmarked, in `eleventy.config.mjs` and in the translators' structure check.
 - **Rule:** a list in the words files keeps names in fields of their own, named in that set; a new such field is added there in the same commit.
+
+### The pages run failed on a sitemap written to `_site` while building elsewhere (site, ADR-0049)
+
+- **Seen:** the first push of the languages failed the pages workflow at *Words of each language*: `ENOENT … open '_site/sitemap.xml'`; locally every check had passed.
+- **Why:** the check build runs Eleventy with `--output=<temp>`, and the hook that writes the sitemap took `dir.output`, the configured `_site`, not the folder really written. Locally `_site` was there from an earlier build; on the runner the check runs first, before any `_site` exists.
+- **Fix:** the hook writes to `directories.output` (the real output, `--output` included) and creates it.
+- **Rule:** before a push that changes the build, run its checks from a clean tree (`rm -rf _site`, as the runner starts); a file written by a hook goes to `directories.output`.

@@ -4,7 +4,7 @@
 // includes (`{% include file.html key=value %}`), so they read as they did; `site.*` is the
 // same object Jekyll gave them: _config.yml's keys, every file of _data under `site.data`, and
 // `site.github.latest_release` from `_data/release.json` (written by the workflow).
-import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs'
+import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import yaml from 'js-yaml'
 import MarkdownIt from 'markdown-it'
@@ -116,7 +116,11 @@ export default function (eleventyConfig) {
   })
   // sitemap.xml (robots.txt names it): every page in every published language, each with the
   // other languages it is in (hreflang) and English as x-default, as the pages' own <head> says.
-  eleventyConfig.on('eleventy.after', ({ dir }) => {
+  // `directories.output` is the folder really written (`--output` included); `dir.output` is the
+  // configured one (LESSONS).
+  eleventyConfig.on('eleventy.after', ({ dir, directories }) => {
+    const out = directories?.output ?? dir.output
+    mkdirSync(out, { recursive: true })
     const abs = (p) => `https://fotollection.org${p}`
     const urls = []
     for (const id of Object.keys(pages)) {
@@ -125,7 +129,7 @@ export default function (eleventyConfig) {
       links.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${abs(urlFor(id, 'en'))}"/>`)
       for (const l of versions) urls.push(`  <url>\n    <loc>${abs(urlFor(id, l.code))}</loc>\n${links.join('\n')}\n  </url>`)
     }
-    writeFileSync(path.join(dir.output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`)
+    writeFileSync(path.join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`)
   })
   eleventyConfig.setLibrary('md', md)
   eleventyConfig.addFilter('markdownify', (value) => md.render(`${value ?? ''}`))
