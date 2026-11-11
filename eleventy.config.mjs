@@ -34,10 +34,13 @@ function siteData() {
     return existsSync(file) ? (yaml.load(readFileSync(file, 'utf8')) ?? {}) : {}
   }
   const mark = process.env.I18N_MARK === '1'
+  // Fields of a list that are names, not words (an icon's file, a logo, an anchor, a command)
+  // stay as they are: they are the same in every language.
+  const names = new Set(['icon', 'logo', 'id', 'code', 'code2'])
   const marked = (key, value) =>
     typeof value === 'string' ? `\u2063${key}\u2062${value}\u2064`
       : Array.isArray(value) ? value.map((v) => marked(key, v))
-        : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).map(([k, v]) => [k, marked(key, v)]))
+        : value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).map(([k, v]) => [k, names.has(k) ? v : marked(key, v)]))
           : value
   const en = lang('en')
   data.i18n = { en }

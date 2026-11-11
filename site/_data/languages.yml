@@ -42,7 +42,7 @@
   assets: en
   pages: [home, download]
   support: card
-  published: false
+  published: true
 - code: de
   date_format: "%d.%m.%Y"
   name: Deutsch
@@ -52,7 +52,7 @@
   assets: en
   pages: [home, download]
   support: card
-  published: false
+  published: true
 - code: pl
   date_format: "%d.%m.%Y"
   name: Polski
@@ -62,7 +62,7 @@
   assets: en
   pages: [home, download]
   support: card
-  published: false
+  published: true
 - code: cs
   date_format: "%-d. %-m. %Y"
   name: Čeština
@@ -72,4 +72,4 @@
   assets: en
   pages: [home, download]
   support: card
-  published: false
+  published: true

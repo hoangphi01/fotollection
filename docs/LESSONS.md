@@ -1030,3 +1030,10 @@
 - **Why:** Liquid ends a filter's arguments at `|`, so `default:` applied to the text `replace` returned, and the count stayed empty for a language without one.
 - **Fix:** the value is assigned first (`assign dl_n = d[pg.lang] | default: d.en`) and passed by name.
 - **Rule:** a filter argument is a plain value; `scripts/check-site-i18n.mjs` fails on `, x | default:` in a template.
+
+### The marked check build failed on an icon's name (site, ADR-0049)
+
+- **Seen:** with German published, the check build (`I18N_MARK=1`) stopped: `icons/⁣uses_items⁢plane⁤.svg` not found.
+- **Why:** the marks went on every text of a borrowed list, and `uses_items` holds an icon's file name beside its words; the template built a path from it.
+- **Fix:** the fields that are names, not words (`icon`, `logo`, `id`, `code`, `code2`), stay unmarked, in `eleventy.config.mjs` and in the translators' structure check.
+- **Rule:** a list in the words files keeps names in fields of their own, named in that set; a new such field is added there in the same commit.

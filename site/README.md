@@ -1,6 +1,6 @@
 # Website
 
-The project's website, <https://fotollection.org/>, in English (`/`) and Vietnamese (`/vi/`), each language at its own prefix from one list ([`_data/languages.yml`](_data/languages.yml); Hungarian, German, Polish and Czech are registered, published once translated). It is built by Eleventy ([`eleventy.config.mjs`](../eleventy.config.mjs), [ADR-0049](../docs/adr/0049-website-on-eleventy.md)) in [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) and served by GitHub Pages whenever `site/` changes on `main`, and after every release, so the download buttons always point at the latest installers ([docs/RELEASE.md](../docs/RELEASE.md)).
+The project's website, <https://fotollection.org/>, in English (`/`) and Vietnamese (`/vi/`), each language at its own prefix from one list ([`_data/languages.yml`](_data/languages.yml); Hungarian `/hu/`, German `/de/`, Polish `/pl/` and Czech `/cs/` have the home and Download pages, and lead to English for the others). It is built by Eleventy ([`eleventy.config.mjs`](../eleventy.config.mjs), [ADR-0049](../docs/adr/0049-website-on-eleventy.md)) in [`.github/workflows/pages.yml`](../.github/workflows/pages.yml) and served by GitHub Pages whenever `site/` changes on `main`, and after every release, so the download buttons always point at the latest installers ([docs/RELEASE.md](../docs/RELEASE.md)).
 
 | Path | What it holds |
 |------|---------------|
