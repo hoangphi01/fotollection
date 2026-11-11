@@ -138,6 +138,45 @@ export default function (eleventyConfig) {
       for (const l of versions) urls.push(`  <url>\n    <loc>${abs(urlFor(id, l.code))}</loc>\n${links.join('\n')}\n  </url>`)
     }
     writeFileSync(path.join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`)
+    // /hi, the short link for QR codes, ads and social profiles (site/README.md, owner
+    // 2026-11-11): no page to click through, it opens at once the home page in the visitor's
+    // language (the menu's choice, else the browser's) and turns ?from=<source> into utm_source,
+    // so Google Analytics counts where visits came from, anonymously. Never indexed.
+    const homes = JSON.stringify(Object.fromEntries(published.map((l) => [l.code, urlFor('home', l.code)])))
+    mkdirSync(path.join(out, 'hi'), { recursive: true })
+    writeFileSync(path.join(out, 'hi', 'index.html'), `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="robots" content="noindex" />
+<link rel="canonical" href="https://fotollection.org/" />
+<meta http-equiv="refresh" content="0; url=/?utm_source=hi&amp;utm_medium=hi" />
+<title>Fotollection</title>
+<script>
+;(function () {
+  var homes = ${homes}
+  var pick = null
+  try { pick = localStorage.getItem('lang') } catch (e) {}
+  if (!homes[pick]) {
+    pick = 'en'
+    var wanted = navigator.languages || [navigator.language || '']
+    for (var i = 0; i < wanted.length; i++) {
+      var code = String(wanted[i]).toLowerCase().split('-')[0]
+      if (homes[code]) { pick = code; break }
+    }
+  }
+  var q = new URLSearchParams(location.search)
+  var from = (q.get('from') || 'hi').replace(/[^a-z0-9_-]/gi, '').slice(0, 40) || 'hi'
+  q.delete('from')
+  if (!q.has('utm_source')) q.set('utm_source', from)
+  if (!q.has('utm_medium')) q.set('utm_medium', 'hi')
+  location.replace(homes[pick] + '?' + q.toString() + location.hash)
+})()
+</script>
+</head>
+<body><p><a href="/">Fotollection</a></p></body>
+</html>
+`)
   })
   eleventyConfig.setLibrary('md', md)
   eleventyConfig.addFilter('markdownify', (value) => md.render(`${value ?? ''}`))
