@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- **Website:** the language button in the top bar opens a menu of the site's languages, each in its own words, ready for more than two; the logo at the foot of a Vietnamese page now leads to the Vietnamese home page.
+- **Website:** the language button in the top bar opens a menu of the site's languages, each in its own words, ready for more than two; the logo at the foot of a Vietnamese page now leads to the Vietnamese home page. Search engines get a sitemap with every page's languages (`/sitemap.xml`, named in `/robots.txt`), and the fonts carry the letters of Hungarian, Polish and Czech (ő, ł, č), fetched only by a page that has them.
 
 ---
 

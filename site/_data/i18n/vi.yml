@@ -595,3 +595,56 @@ footer_downloads_hint: "Mọi lượt tải bộ cài từ GitHub, gồm cả c�
 dl_count: "Đã tải [n] lần: macOS [mac] · Windows [win] · Linux [linux], gồm cả cập nhật trong ứng dụng."
 dl_count_split: "Riêng [tag]: [site] từ trang web này, khoảng [updates] qua cập nhật trong ứng dụng."
 by: bởi
+
+# The link-preview card of each page (site/screenshots/og.html, og.mjs): the kicker (none on the
+# home page), the headline as before, accent and after, the line under it and the shield.
+og_vnlf: "Có trên VNLF"
+og_card_home:
+  kicker: ""
+  before: "Chụp hàng nghìn ảnh, chỉ xem lại khi "
+  accent: "ngồi trên máy bay"
+  after: "?"
+  sub: "Hãy thử một lần nhìn lại cùng Fotollection: ảnh đẹp nhất, dấu ngày, bưu thiếp, sẵn sàng để in. Miễn phí, offline."
+  shield: "Riêng tư: ảnh không bao giờ rời khỏi máy"
+og_card_download:
+  kicker: "Tải về"
+  before: "Cài đặt "
+  accent: "trong một phút"
+  after: ""
+  sub: "macOS, Windows và Linux. Trên Ubuntu, Debian và Mint, một lệnh là xong."
+  shield: "Miễn phí, mã nguồn mở (GPL-3.0)"
+og_card_performance:
+  kicker: "Hiệu năng"
+  before: "Đo thật, "
+  accent: "không hứa suông"
+  after: ""
+  sub: "Tốc độ, RAM và chất lượng in, đo trên một laptop bình thường. Ai cũng chạy lại được."
+  shield: "Chương trình đo nằm ngay trong mã nguồn"
+og_card_manual:
+  kicker: "Hướng dẫn"
+  before: "Từng bước, "
+  accent: "có ảnh minh hoạ"
+  after: ""
+  sub: "Từ chọn ảnh đến bản in, bằng tiếng Việt và tiếng Anh."
+  shield: "Riêng tư: ảnh không bao giờ rời khỏi máy"
+og_card_story:
+  kicker: "Câu chuyện"
+  before: "Một cuộc marathon "
+  accent: "giữ lại"
+  after: " kỷ niệm"
+  sub: "Hai mươi năm ảnh chưa xem lại, và những cây số đầu tiên để chúng trở lại thành ảnh in."
+  shield: "Miễn phí, mã nguồn mở, offline"
+og_card_wiki:
+  kicker: "Wiki"
+  before: "Từ màn hình đầu tiên "
+  accent: "đến hôm nay"
+  after: ""
+  sub: "Mọi phiên bản của Fotollection, kèm giao diện lúc phát hành."
+  shield: "Miễn phí, mã nguồn mở, offline"
+og_card_code_signing:
+  kicker: "Tin cậy"
+  before: "Bộ cài "
+  accent: "được làm ra thế nào"
+  after: ""
+  sub: "Build từ mã nguồn công khai trên GitHub Actions, mỗi tệp kèm mã SHA-256."
+  shield: "Không theo dõi, không cần tài khoản"

@@ -4,13 +4,13 @@
 // includes (`{% include file.html key=value %}`), so they read as they did; `site.*` is the
 // same object Jekyll gave them: _config.yml's keys, every file of _data under `site.data`, and
 // `site.github.latest_release` from `_data/release.json` (written by the workflow).
-import { readFileSync, readdirSync, existsSync } from 'node:fs'
+import { readFileSync, readdirSync, existsSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import yaml from 'js-yaml'
 import MarkdownIt from 'markdown-it'
 import attrs from 'markdown-it-attrs'
 import anchor from 'markdown-it-anchor'
-import { languages, urlFor } from './eleventy.registry.mjs'
+import { languages, pages, published, urlFor } from './eleventy.registry.mjs'
 
 const SITE = 'site'
 
@@ -111,10 +111,23 @@ export default function (eleventyConfig) {
       }
     }
   })
+  // sitemap.xml (robots.txt names it): every page in every published language, each with the
+  // other languages it is in (hreflang) and English as x-default, as the pages' own <head> says.
+  eleventyConfig.on('eleventy.after', ({ dir }) => {
+    const abs = (p) => `https://fotollection.org${p}`
+    const urls = []
+    for (const id of Object.keys(pages)) {
+      const versions = published.filter((l) => l.pages.includes(id))
+      const links = versions.map((l) => `    <xhtml:link rel="alternate" hreflang="${l.html_lang}" href="${abs(urlFor(id, l.code))}"/>`)
+      links.push(`    <xhtml:link rel="alternate" hreflang="x-default" href="${abs(urlFor(id, 'en'))}"/>`)
+      for (const l of versions) urls.push(`  <url>\n    <loc>${abs(urlFor(id, l.code))}</loc>\n${links.join('\n')}\n  </url>`)
+    }
+    writeFileSync(path.join(dir.output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls.join('\n')}\n</urlset>\n`)
+  })
   eleventyConfig.setLibrary('md', md)
   eleventyConfig.addFilter('markdownify', (value) => md.render(`${value ?? ''}`))
 
-  for (const p of ['assets', 'install.sh', 'CNAME']) {
+  for (const p of ['assets', 'install.sh', 'CNAME', 'robots.txt']) {
     if (existsSync(path.join(SITE, p))) eleventyConfig.addPassthroughCopy(path.join(SITE, p))
   }
   eleventyConfig.ignores.add(`${SITE}/README.md`)

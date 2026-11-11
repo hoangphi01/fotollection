@@ -50,63 +50,35 @@
     </div>
     <div class="shot"><img id="shot" alt="" /></div>
     <script>
-      // ?lang=en|vi&page=home|download|performance|manual|code-signing. Each card: a kicker
-      // (none on the home page), the headline with its accent, a line, the shield and a
-      // screenshot from site/assets/img.
+      // ?lang=<code>&page=<id>&assets=<code>: og.mjs gives the card's words as window.CARD (from
+      // site/_data/i18n/<code>.yml og_card_<page>, og_vnlf). Each card: a kicker (none on the
+      // home page), the headline with its accent, a line, the shield and a screenshot from
+      // site/assets/img in the language whose screenshots the page shows.
       const params = new URLSearchParams(location.search)
-      const lang = params.get('lang') === 'vi' ? 'vi' : 'en'
-      const cards = {
-        home: {
-          // The owner's tram by night on a postcard filled to the edge, "Ahoj Praha!" (shoot.mjs).
-          shot: `postcard-night-${lang}-dark.webp`,
-          en: ['', ['Thousands of photos, only looked at ', 'on the plane', ' home?'], 'Take one real look back with Fotollection: best shots, date stamp, postcards, ready to print. Free and offline.', 'Private: your photos never leave your computer'],
-          vi: ['', ['Chụp hàng nghìn ảnh, chỉ xem lại khi ', 'ngồi trên máy bay', '?'], 'Hãy thử một lần nhìn lại cùng Fotollection: ảnh đẹp nhất, dấu ngày, bưu thiếp, sẵn sàng để in. Miễn phí, offline.', 'Riêng tư: ảnh không bao giờ rời khỏi máy'],
-        },
-        download: {
-          shot: `grid-${lang}-dark.webp`,
-          en: ['Download', ['Install ', 'in a minute', ''], 'macOS, Windows and Linux. On Ubuntu, Debian and Mint, one command sets it up.', 'Free and open source (GPL-3.0)'],
-          vi: ['Tải về', ['Cài đặt ', 'trong một phút', ''], 'macOS, Windows và Linux. Trên Ubuntu, Debian và Mint, một lệnh là xong.', 'Miễn phí, mã nguồn mở (GPL-3.0)'],
-        },
-        performance: {
-          shot: `charts/bench-budgets-${lang}.svg`,
-          en: ['Performance', ['Measured, ', 'not promised', ''], 'Speed, memory and print quality, measured on an ordinary laptop. Anyone can run the benchmarks again.', 'The benchmarks live in the source code'],
-          vi: ['Hiệu năng', ['Đo thật, ', 'không hứa suông', ''], 'Tốc độ, RAM và chất lượng in, đo trên một laptop bình thường. Ai cũng chạy lại được.', 'Chương trình đo nằm ngay trong mã nguồn'],
-        },
-        manual: {
-          shot: `stamp-${lang}-dark.webp`,
-          en: ['Manual', ['Step by step, ', 'with screenshots', ''], 'From choosing the photos to the print, in English and Vietnamese.', 'Private: your photos never leave your computer'],
-          vi: ['Hướng dẫn', ['Từng bước, ', 'có ảnh minh hoạ', ''], 'Từ chọn ảnh đến bản in, bằng tiếng Việt và tiếng Anh.', 'Riêng tư: ảnh không bao giờ rời khỏi máy'],
-        },
-        story: {
-          shot: `collage-preview-${lang}-dark.webp`,
-          en: ['The story', ['A marathon ', 'to keep', ' our memories'], 'Twenty years of photos never looked at again, and the first kilometres of turning them back into prints.', 'Free, open source, offline'],
-          vi: ['Câu chuyện', ['Một cuộc marathon ', 'giữ lại', ' kỷ niệm'], 'Hai mươi năm ảnh chưa xem lại, và những cây số đầu tiên để chúng trở lại thành ảnh in.', 'Miễn phí, mã nguồn mở, offline'],
-        },
-        wiki: {
-          shot: 'timeline/0.1.0-beta.1-gallery.webp',
-          en: ['Wiki', ['From the first screen ', 'to today', ''], 'Every version of Fotollection, with the app as it shipped.', 'Free, open source, offline'],
-          vi: ['Wiki', ['Từ màn hình đầu tiên ', 'đến hôm nay', ''], 'Mọi phiên bản của Fotollection, kèm giao diện lúc phát hành.', 'Miễn phí, mã nguồn mở, offline'],
-        },
-        'code-signing': {
-          shot: `select-${lang}-dark.webp`,
-          en: ['Trust', ['How the installers ', 'are made', ''], 'Built from the public source code on GitHub Actions, with a SHA-256 checksum for every file.', 'No telemetry, no account'],
-          vi: ['Tin cậy', ['Bộ cài ', 'được làm ra thế nào', ''], 'Build từ mã nguồn công khai trên GitHub Actions, mỗi tệp kèm mã SHA-256.', 'Không theo dõi, không cần tài khoản'],
-        },
+      const a = params.get('assets') ?? 'en'
+      const shots = {
+        // The owner's tram by night on a postcard filled to the edge, "Ahoj Praha!" (shoot.mjs).
+        home: `postcard-night-${a}-dark.webp`,
+        download: `grid-${a}-dark.webp`,
+        performance: `charts/bench-budgets-${a}.svg`,
+        manual: `stamp-${a}-dark.webp`,
+        story: `collage-preview-${a}-dark.webp`,
+        wiki: 'timeline/0.1.0-beta.1-gallery.webp',
+        'code-signing': `select-${a}-dark.webp`,
       }
-      const card = cards[params.get('page')] ?? cards.home
-      const [kicker, [before, accent, after], sub, shield] = card[lang]
-      if (kicker) {
+      const card = window.CARD
+      if (card.kicker) {
         const k = document.getElementById('kicker')
-        k.textContent = kicker
+        k.textContent = card.kicker
         k.hidden = false
       }
       const em = document.createElement('em')
-      em.textContent = accent
-      document.getElementById('title').append(before, em, after)
-      document.getElementById('sub').textContent = sub
-      document.getElementById('shield').textContent = shield
-      document.getElementById('vnlf').textContent = lang === 'vi' ? 'Có trên VNLF' : 'Listed on VNLF'
-      document.getElementById('shot').src = `/img/${card.shot}`
+      em.textContent = card.accent
+      document.getElementById('title').append(card.before, em, card.after)
+      document.getElementById('sub').textContent = card.sub
+      document.getElementById('shield').textContent = card.shield
+      document.getElementById('vnlf').textContent = card.vnlf
+      document.getElementById('shot').src = `/img/${shots[params.get('page')] ?? shots.home}`
     </script>
   </body>
 </html>

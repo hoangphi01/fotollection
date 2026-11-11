@@ -595,3 +595,56 @@ footer_downloads_hint: "Every installer downloaded from GitHub, the app's own up
 dl_count: "Downloaded [n] times: macOS [mac] · Windows [win] · Linux [linux], the app's own updates included."
 dl_count_split: "Of [tag]: [site] from this website, about [updates] through the update in the app."
 by: by
+
+# The link-preview card of each page (site/screenshots/og.html, og.mjs): the kicker (none on the
+# home page), the headline as before, accent and after, the line under it and the shield.
+og_vnlf: "Listed on VNLF"
+og_card_home:
+  kicker: ""
+  before: "Thousands of photos, only looked at "
+  accent: "on the plane"
+  after: " home?"
+  sub: "Take one real look back with Fotollection: best shots, date stamp, postcards, ready to print. Free and offline."
+  shield: "Private: your photos never leave your computer"
+og_card_download:
+  kicker: "Download"
+  before: "Install "
+  accent: "in a minute"
+  after: ""
+  sub: "macOS, Windows and Linux. On Ubuntu, Debian and Mint, one command sets it up."
+  shield: "Free and open source (GPL-3.0)"
+og_card_performance:
+  kicker: "Performance"
+  before: "Measured, "
+  accent: "not promised"
+  after: ""
+  sub: "Speed, memory and print quality, measured on an ordinary laptop. Anyone can run the benchmarks again."
+  shield: "The benchmarks live in the source code"
+og_card_manual:
+  kicker: "Manual"
+  before: "Step by step, "
+  accent: "with screenshots"
+  after: ""
+  sub: "From choosing the photos to the print, in English and Vietnamese."
+  shield: "Private: your photos never leave your computer"
+og_card_story:
+  kicker: "The story"
+  before: "A marathon "
+  accent: "to keep"
+  after: " our memories"
+  sub: "Twenty years of photos never looked at again, and the first kilometres of turning them back into prints."
+  shield: "Free, open source, offline"
+og_card_wiki:
+  kicker: "Wiki"
+  before: "From the first screen "
+  accent: "to today"
+  after: ""
+  sub: "Every version of Fotollection, with the app as it shipped."
+  shield: "Free, open source, offline"
+og_card_code_signing:
+  kicker: "Trust"
+  before: "How the installers "
+  accent: "are made"
+  after: ""
+  sub: "Built from the public source code on GitHub Actions, with a SHA-256 checksum for every file."
+  shield: "No telemetry, no account"

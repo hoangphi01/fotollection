@@ -5,7 +5,8 @@
 //     of the registry, url_for and tr, or defaults a filter's argument (`, x | default: y`);
 //   - a words file is not a language of site/_data/languages.yml, or a published language has none;
 //   - a language has a key English lacks (a typo), or a text lost or gained a placeholder
-//     ([n], [tag]…) English has.
+//     ([n], [tag]…) English has;
+//   - a published language lacks a page's link preview: its og_card_<page> words or the image.
 // With --build (the pages workflow, and check-docs.sh when the packages are installed) it also
 // builds the site with every borrowed English text marked (I18N_MARK=1, eleventy.config.mjs) and
 // fails when a published language's pages show any English, naming the keys and the pages.
@@ -47,13 +48,23 @@ for (const dir of ['_layouts', '_includes']) {
 const registry = path.join(site, '_data/languages.yml')
 const codes = []
 const published = []
+const pagesOf = {}
 if (!existsSync(registry)) problems.push('site/_data/languages.yml is missing')
 else {
   let code = null
   for (const line of readFileSync(registry, 'utf8').split('\n')) {
     const c = line.match(/^- code: (\w+)/)
     if (c) codes.push((code = c[1]))
+    const p = line.match(/^ {2}pages: \[(.*)\]/)
+    if (p && code) pagesOf[code] = p[1].split(',').map((x) => x.trim())
     if (/^ {2}published: true\b/.test(line) && code) published.push(code)
+  }
+}
+// Each published language's link previews: its words (og_card_<page>) and the image og.mjs made.
+for (const c of published) {
+  for (const id of pagesOf[c] ?? []) {
+    const file = id === 'home' ? `og-${c}.jpg` : `og-${id}-${c}.jpg`
+    if (!existsSync(path.join(site, 'assets/img', file))) problems.push(`${c}: no site/assets/img/${file}; run node site/screenshots/og.mjs`)
   }
 }
 const wordsDir = path.join(site, '_data/i18n')
@@ -75,6 +86,14 @@ const read = (code) => {
 const marks = (text) => [...text.matchAll(/\[[a-z]+\]/g)].map((m) => m[0]).sort().join(' ')
 if (files.includes('en')) {
   const en = read('en')
+  for (const c of published.filter((x) => x !== 'en' && files.includes(x))) {
+    const own = read(c)
+    for (const id of pagesOf[c] ?? []) {
+      const key = `og_card_${id.replace(/-/g, '_')}`
+      if (!own.has(key)) problems.push(`${c}.yml lacks ${key}, its ${id} page's link preview`)
+    }
+    if (!own.has('og_vnlf')) problems.push(`${c}.yml lacks og_vnlf, its link previews' badge`)
+  }
   for (const code of files.filter((f) => f !== 'en')) {
     for (const [key, text] of read(code)) {
       if (!en.has(key)) { problems.push(`${code}.yml has ${key}, which en.yml lacks`); continue }

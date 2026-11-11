@@ -26,5 +26,6 @@ Option 2. `eleventy.config.mjs` builds `site/` into `_site/` in the pages workfl
 ## Consequences
 
 - **Languages from one list:** `site/_data/languages.yml` names every language (its prefix, the pages it has, its screenshots, its date format) and `site/_data/pages.yml` every page; each page is one template built per published language, links come from `url_for`, texts in data files from `tr`, and the words from `site/_data/i18n/<code>.yml`, English the fallback. The seventeen `== 'vi'` branches and the seven Vietnamese stubs are gone; `scripts/check-site-i18n.mjs` keeps a language's name out of the templates, and its `--build` builds the site with every borrowed English word marked, so a published language showing English fails (the Proxy tried first saw nothing: Eleventy deep-copies global data before rendering).
+- **SEO per language:** each page's `hreflang`, `og:locale:alternate` and JSON-LD `inLanguage` come from the registry, `sitemap.xml` is written from it after the build (`robots.txt` names it), and each published language has its own link previews (`og_card_<page>` words, `og.mjs`).
 - The site's build is `npm ci` and `npx @11ty/eleventy` in about a second; the preview needs no Docker.
 - Templates read front matter as `pg.lang`, `pg.title_key`, `pg.og`; `page.url` is Eleventy's own.
