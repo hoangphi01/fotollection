@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Linux software centres** show what each version brought: the AppStream metadata lists the ten newest versions with their highlights, and its summary is shorter (*Pick and print your trip's photos*).
 - **Ready for Flathub:** Fotollection's Flatpak metadata (`org.fotollection.Fotollection`), and in a Flatpak *Settings → Updates* says the software centre brings each new version, as Flathub asks, instead of checking GitHub.
 - **Website in Hungarian, German, Polish and Czech:** at `/hu/`, `/de/`, `/pl/` and `/cs/`, the home, Download, Performance (with its charts and diagrams), Wiki and code signing pages, and a short manual that leads to the full English one; each page has its own link preview. The story stays in English and Vietnamese. A first visit to the home page opens it in the browser's language when the site has it, and the language picked in the menu is kept.
 - **Website:** the before-and-after of v0.12 and today now sits under the film, its pictures loaded once they come into view.

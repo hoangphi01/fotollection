@@ -47,9 +47,9 @@ Option 2, under the ID `org.fotollection.Fotollection` (the project's domain). T
 
 [The quality guidelines](https://docs.flathub.org/docs/for-app-authors/metainfo-guidelines/quality-guidelines) are optional for publishing but decide whether Flathub features an app. Checked on 2026-11-11 against `org.fotollection.Fotollection.metainfo.xml`:
 
-- **Summary:** 58 characters ("Look through a trip's photos and prepare them for printing"); at most 35, ideally 10 to 25, an imperative verb, no name, no licence, no "app".
-- **Release notes:** none of the ten releases has a description; each needs two or three user-facing sentences (from the CHANGELOG's highlights, written into the metainfo by `release.sh`).
+- ✓ **Summary** (2026-11-11, v0.14.1: "Pick and print your trip's photos", 33 characters): was 58 characters ("Look through a trip's photos and prepare them for printing"); at most 35, ideally 10 to 25, an imperative verb, no name, no licence, no "app".
+- ✓ **Release notes** (2026-11-11, v0.14.1: `scripts/metainfo-releases.mjs` writes each release's Highlights): none of the ten releases had a description; each needs two or three user-facing sentences (from the CHANGELOG's highlights, written into the metainfo by `release.sh`).
 - **Screenshots:** made in the browser from the demo, not on Linux; Flathub asks for the app's own window taken on Linux with its title bar and shadow, at most 1000 × 700 (2000 × 1400 HiDPI), in the default settings, with captions of one sentence.
-- **Brand colours:** the dark one (`#c98a52`, wood) is lighter than the light one (`#2c836d`, teal); the dark variant must be darker and more muted.
+- ✓ **Brand colours** (2026-11-11, v0.14.1: the dark one is now `#5e4028`, a deep muted wood): the dark one (`#c98a52`, wood) is lighter than the light one (`#2c836d`, teal); the dark variant must be darker and more muted.
 - **Icon:** the 512 px icon fills the whole canvas, carries the word *fotollection* in small type and a baked shadow; Flathub's icon is square with room around it, no small text, no baked shadow, readable on light and dark (an icon of its own for Linux, the owner's design).
 - Passing already: the name (12 characters), the description's length and list, the captions, the OARS rating, a runtime that is not end of life (to choose at submission).

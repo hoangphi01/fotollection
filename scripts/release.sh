@@ -94,12 +94,9 @@ awk -v v="$version" -v d="$today" -v s="$series" '
   }
   { print }
 ' CHANGELOG.md >CHANGELOG.md.tmp && mv CHANGELOG.md.tmp CHANGELOG.md
-# The AppStream metadata lists each release, newest first (software centres show it).
+# The AppStream metadata lists the newest releases with their Highlights (software centres show them).
 metainfo=src-tauri/linux/com.hoangphi01.fotollection.metainfo.xml
-awk -v v="$version" -v d="$today" '
-  /<releases>/ && !done { print; print "    <release version=\"" v "\" date=\"" d "\" />"; done=1; next }
-  { print }
-' "$metainfo" >"$metainfo.tmp" && mv "$metainfo.tmp" "$metainfo"
+node scripts/metainfo-releases.mjs >/dev/null
 # The Flatpak's copy follows (scripts/flatpak-files.mjs).
 node scripts/flatpak-files.mjs >/dev/null
 

@@ -4,8 +4,8 @@
 <component type="desktop-application">
   <id>org.fotollection.Fotollection</id>
   <name>Fotollection</name>
-  <summary>Look through a trip's photos and prepare them for printing</summary>
-  <summary xml:lang="vi">Xem lại ảnh của chuyến đi và chuẩn bị để in</summary>
+  <summary>Pick and print your trip's photos</summary>
+  <summary xml:lang="vi">Chọn và in ảnh chuyến đi</summary>
   <developer id="org.fotollection">
     <name>hoangphi01</name>
   </developer>
@@ -59,7 +59,7 @@
   </screenshots>
   <branding>
     <color type="primary" scheme_preference="light">#2c836d</color>
-    <color type="primary" scheme_preference="dark">#c98a52</color>
+    <color type="primary" scheme_preference="dark">#5e4028</color>
   </branding>
   <requires>
     <display_length compare="ge">768</display_length>
@@ -83,15 +83,102 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
-    <release version="0.14.0" date="2026-11-09" />
-    <release version="0.13.4" date="2026-11-08" />
-    <release version="0.13.3" date="2026-11-08" />
-    <release version="0.13.2" date="2026-11-07" />
-    <release version="0.13.1" date="2026-11-07" />
-    <release version="0.13.0" date="2026-11-06" />
-    <release version="0.12.0" date="2026-11-06" />
-    <release version="0.11.1" date="2026-11-06" />
-    <release version="0.11.0" date="2026-11-05" />
-    <release version="0.10.0" date="2026-11-05" />
+    <release version="0.14.0" date="2026-11-09">
+      <description>
+        <ul>
+          <li>New: Looks, one tap gives a photo a colour: eight looks of our own, each shown as your photo, with an Amount; Save as look keeps your own.</li>
+          <li>New: Lightroom presets and LUTs in Pro mode, in a Presets &amp; LUTs panel like Lightroom's, with a Color Mixer and Dehaze.</li>
+          <li>New: give a look, LUT or preset to many photos at once, from a Colour tab in Pro mode's gallery; the grid shows each photo's colour.</li>
+          <li>New: Simple mode shows the looks as a numbered strip under the photo: a number key, then ↑, and the photo is coloured and kept.</li>
+          <li>New: Settings → Data: move to another computer with one file, and see what Fotollection keeps on this one.</li>
+          <li>Fixes: a part that fails no longer takes the app down, and each project keeps its own settings.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.13.4" date="2026-11-08">
+      <description>
+        <ul>
+          <li>Fixes: a sharp histogram on Windows; no flash at the foot of the inspector on the next photo.</li>
+          <li>Fixes: lists scroll inside their box, and dialog fields keep clear of their buttons.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.13.3" date="2026-11-08">
+      <description>
+        <ul>
+          <li>Fixes: RAW shadows without bands; a zoomed photo stays on the stage.</li>
+          <li>UI update: an app, not a web page: no stray text highlighting, no web menu or browser keys.</li>
+          <li>Security: a tighter content security policy and fewer webview permissions, checked on every build.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.13.2" date="2026-11-07">
+      <description>
+        <ul>
+          <li>New: the whole manual inside the app, in Settings, also with no internet</li>
+          <li>New: clipping (J) and white balance from a grey spot (W) on collage sheets too</li>
+          <li>A careful style pass over all three modes: one size, one spacing and one look for every control, checked by a machine on every view, in both languages and themes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.13.1" date="2026-11-07">
+      <description>
+        <ul>
+          <li>New: copy, paste and reset a photo's settings, to one photo or every ticked one, as in Lightroom</li>
+          <li>New: a histogram above the Navigator, as in Lightroom, that follows your sliders and tells what is blown or blocked</li>
+          <li>New: a welcome on the first launch, five pages of the basics over pictures of the app</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.13.0" date="2026-11-06">
+      <description>
+        <ul>
+          <li>New: an export dialog as Lightroom's: presets, a quality slider that says what prints well, subfolders, file names, a size limit and metadata choices</li>
+          <li>UI update: a new look in Be Vietnam Pro, controls with depth, one height for every control, red for every remove and reset</li>
+          <li>UI update: on macOS the title bar takes the app's own colours</li>
+          <li>New: the app tells you at start when a newer version is out, with a red warning if yours should not be used any more</li>
+          <li>Fixes: New project no longer drops unsaved work after a restart</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.12.0" date="2026-11-06">
+      <description>
+        <ul>
+          <li>New: one Settings window, as on an iPad: the gear beside the author's name, or ⌘,</li>
+          <li>New: memory and cache to manage, with Default and Auto for your computer; memory given back when it runs short</li>
+          <li>New: a collage sheet says its pixels and how sharp it prints</li>
+          <li>New: a develop view a Lightroom user can read: its keys, a filmstrip, the whole window with Navigator and History</li>
+          <li>New: before and after side by side, split or one above the other</li>
+          <li>Fixes: zooming into a portrait or turned photo shows it the right way up again</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.11.1" date="2026-11-06">
+      <description>
+        <ul>
+          <li>Fixes: instant previews keep the photo on screen, and never mix up photos after another project is opened</li>
+          <li>Fixes: fast browsing through RAW photos no longer queues up work for photos already left behind</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.11.0" date="2026-11-05">
+      <description>
+        <ul>
+          <li>New: any photo opens at once, RAW too: previews are prepared in the background and kept, as in Lightroom</li>
+          <li>UI update: colour cards in the previews only; sliders take a near press and the arrow keys</li>
+          <li>Fixes: a RAW preview that could hang for good</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.10.0" date="2026-11-05">
+      <description>
+        <ul>
+          <li>New: RAW photos edited on the camera's own data: highlights pulled down bring back detail near white, shadows lift without banding, warmth changes the white balance</li>
+          <li>New: RAW photos open neutral; a RAW colour card makes them look like the camera's JPEG in one click</li>
+          <li>Faster, cleaner RAW: Fotollection's own develop for Canon, Nikon, Sony and more, 0.2–0.5 s a photo</li>
+          <li>Colour sliders drawn on the graphics card while dragging; exports about a fifth faster</li>
+        </ul>
+      </description>
+    </release>
   </releases>
 </component>

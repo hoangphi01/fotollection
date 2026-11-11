@@ -31,7 +31,7 @@ const replace = (text, from, to) => {
 }
 
 let meta = source
-meta = replace(meta, '<!-- AppStream metadata (Linux software centres, Flathub, the VNLF App Explorer): shipped in the .deb and the AppImage at /usr/share/metainfo/. scripts/release.sh adds each release on top. -->',
+meta = replace(meta, '<!-- AppStream metadata (Linux software centres, Flathub, the VNLF App Explorer): shipped in the .deb and the AppImage at /usr/share/metainfo/. scripts/metainfo-releases.mjs writes the releases from the CHANGELOG. -->',
   `<!-- Made by scripts/flatpak-files.mjs from ${OLD}.metainfo.xml: edit that file, then run the script. The Flatpak's AppStream metadata (Flathub). -->`)
 meta = replace(meta, `<id>${OLD}</id>`, `<id>${ID}</id>`)
 meta = meta.replace(/\n {2}<!-- Tags that appstream 0\.15[^\n]*-->/, '')
@@ -47,10 +47,11 @@ meta = replace(meta, '  <url type="bugtracker">https://github.com/hoangphi01/fot
   <url type="contribute">https://github.com/hoangphi01/fotollection/blob/main/CONTRIBUTING.md</url>
   <url type="donation">https://ko-fi.com/hoangphi01</url>
   <url type="help">https://fotollection.org/manual/</url>`)
-// The logo's colours, as the website's (site/assets/css/site.css): teal in light, wood in dark.
+// The logo's colours: teal in light; in dark a deep, muted wood, darker than the teal as Flathub's
+// quality guidelines ask (the website's dark wood, #c98a52, is lighter).
 meta = replace(meta, '  <categories>', `  <branding>
     <color type="primary" scheme_preference="light">#2c836d</color>
-    <color type="primary" scheme_preference="dark">#c98a52</color>
+    <color type="primary" scheme_preference="dark">#5e4028</color>
   </branding>
   <requires>
     <display_length compare="ge">768</display_length>

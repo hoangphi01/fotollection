@@ -176,6 +176,8 @@ done
 echo "• The website's footnotes: each page's list, cited and written in both languages"
 node scripts/check-footnotes.mjs || fail "site footnotes: fix site/_data/footnotes.yml or the notes in site/_data/i18n/<code>.yml (site/README.md)"
 
+echo "• The metainfo's releases follow the CHANGELOG's Highlights (scripts/metainfo-releases.mjs)"
+node scripts/metainfo-releases.mjs --check || fail "run node scripts/metainfo-releases.mjs and commit the metainfo"
 echo "• The Flatpak's files follow the .deb's metainfo (scripts/flatpak-files.mjs)"
 node scripts/flatpak-files.mjs --check || fail "run node scripts/flatpak-files.mjs and commit src-tauri/linux/flatpak/"
 

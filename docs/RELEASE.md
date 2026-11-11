@@ -30,7 +30,7 @@
 | Linux, glibc 2.35+ (since v0.8.2, [ADR-0034](adr/0034-linux-lean.md)) | `x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`, built on `ubuntu-22.04` and `ubuntu-22.04-arm` | `_amd64.AppImage`, `_aarch64.AppImage`, `_amd64.deb`, `_arm64.deb` |
 | All | — | `SHA256SUMS.txt` |
 
-**AppStream metadata** (since v0.13.0): the `.deb` and the AppImage carry `/usr/share/metainfo/com.hoangphi01.fotollection.metainfo.xml` (`src-tauri/linux/`), so Linux software centres (GNOME Software, KDE Discover, the VNLF App Explorer, CaramOS's App Center, Flathub later) show its name, words in English and Vietnamese, and the screenshots at `fotollection.org/assets/img/catalog/`. `scripts/release.sh` adds each release to its list; CI validates it with `appstreamcli`.
+**AppStream metadata** (since v0.13.0): the `.deb` and the AppImage carry `/usr/share/metainfo/com.hoangphi01.fotollection.metainfo.xml` (`src-tauri/linux/`), so Linux software centres (GNOME Software, KDE Discover, the VNLF App Explorer, CaramOS's App Center, Flathub later) show its name, words in English and Vietnamese, and the screenshots at `fotollection.org/assets/img/catalog/`. Its list of releases, the ten newest with their **Highlights** as release notes, is made from the CHANGELOG by `scripts/metainfo-releases.mjs`, which `scripts/release.sh` runs (`check-docs.sh` fails when the two differ); CI validates the file with `appstreamcli`.
 
 **Flatpak** (proposed, [ADR-0050](adr/0050-flatpak-on-flathub.md)): Flathub builds it from source with the owner's manifest; this repository carries its metainfo and launcher (`src-tauri/linux/flatpak/`, made by `node scripts/flatpak-files.mjs`, which `release.sh` runs). In a Flatpak the app never checks for updates itself: the software centre brings them.
 
