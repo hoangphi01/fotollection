@@ -1072,3 +1072,10 @@
 - **Why:** the example came in a website commit (4082bd5) and was never formatted; the pushes after it changed only the site and the docs, which do not start CI, so its last red run stayed out of sight while the pages runs were green.
 - **Fix:** formatted; `scripts/check-docs-with-code.sh <range>`, run before every push, now runs `cargo fmt --all --check` when the range touches a `.rs` file (proven on the old file).
 - **Rule:** after a push, look at every workflow it started, CI too, not only the one the change was about; a Rust file in a website commit is still Rust.
+
+### The print size list lost its top again: under the title bar, opening upwards (FR-052, UI-LAYOUT-021)
+
+- **Seen:** in the photo preview's Print tab on macOS, the size button sat low in the column; its list opened upwards and its first sizes went under the window's title bar (owner, 2026-11-11), three days after the item-aligned fix above.
+- **Why:** the popper list kept inside the window, but Radix measures the window, not what covers it: the app's own title bar (`--titlebar`, FR-052) sits above every popup at `z-[60]`. UI-LAYOUT-021 checks a list against the bar, yet its only case opened the list downwards from the main panel, in the browser with no bar.
+- **Fix:** `windowEdges()` (`lib/window-edges.ts`) gives every `SelectContent` and `PopoverContent` a `collisionPadding` of the bar's height plus 8 px at the top, 8 px elsewhere. The shoot adds the owner's case: the preview's Print tab, the last size chosen, a 700 px tall window, the macOS bar (`open({ os: 'macos' })`).
+- **Rule:** a check is only as good as its cases: test a popup in each direction it can open (down and up), with the window's chrome present, from where the user meets it, not only from the first place it is easy to reach. Something drawn above popups is a collision edge too.

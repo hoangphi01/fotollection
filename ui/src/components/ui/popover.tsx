@@ -1,6 +1,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Popover as PopoverPrimitive } from "radix-ui"
+import { windowEdges } from "@/lib/window-edges"
 
 function Popover({
   ...props
@@ -26,6 +27,8 @@ function PopoverContent({
         data-slot="popover-content"
         align={align}
         sideOffset={sideOffset}
+        // Clear of the window's edges and its title bar, which sits above it (UI-LAYOUT-021).
+        collisionPadding={windowEdges()}
         className={cn(
           "z-50 flex w-72 origin-(--radix-popover-content-transform-origin) flex-col gap-2.5 rounded-lg bg-popover p-2.5 text-sm text-popover-foreground lifted-strong ring-1 ring-foreground/10 outline-hidden data-[side=bottom]:slide-in-from-top-1 data-closed:data-[side=bottom]:slide-out-to-top-1 data-[side=left]:slide-in-from-right-1 data-closed:data-[side=left]:slide-out-to-right-1 data-[side=right]:slide-in-from-left-1 data-closed:data-[side=right]:slide-out-to-left-1 data-[side=top]:slide-in-from-bottom-1 data-closed:data-[side=top]:slide-out-to-bottom-1 data-open:animate-in data-open:motion-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:motion-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className

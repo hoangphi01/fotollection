@@ -2,6 +2,7 @@ import * as React from "react"
 import { cn } from "cn"
 import { Select as SelectPrimitive } from "radix-ui"
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
+import { windowEdges } from "@/lib/window-edges"
 
 function Select({
   ...props
@@ -67,7 +68,8 @@ function SelectContent({
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
   // Every list opens under its button (above it when there is no room), inside the window,
   // never over the button: Radix's item-aligned lists covered it and, with a choice low in a
-  // long list, ran over the window's top (owner, 2026-11-08; UI-LAYOUT-021, check-lego).
+  // long list, ran over the window's top (owner, 2026-11-08; UI-LAYOUT-021, check-lego). It
+  // keeps clear of the app's title bar too, which sits above every popup (owner, 2026-11-11).
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
@@ -76,6 +78,7 @@ function SelectContent({
         className={cn("relative z-50 max-h-(--radix-select-content-available-height) min-w-36 origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-lg bg-popover text-popover-foreground lifted-strong ring-1 ring-foreground/10 data-[align-trigger=true]:animate-none data-[side=bottom]:slide-in-from-top-1 data-closed:data-[side=bottom]:slide-out-to-top-1 data-[side=left]:slide-in-from-right-1 data-closed:data-[side=left]:slide-out-to-right-1 data-[side=right]:slide-in-from-left-1 data-closed:data-[side=right]:slide-out-to-left-1 data-[side=top]:slide-in-from-bottom-1 data-closed:data-[side=top]:slide-out-to-bottom-1 data-open:animate-in data-open:motion-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:motion-out data-closed:fade-out-0 data-closed:zoom-out-95", position ==="popper"&&"data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1", className )}
         position={position}
         align={align}
+        collisionPadding={windowEdges()}
         {...props}
       >
         <SelectScrollUpButton />

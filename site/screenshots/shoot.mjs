@@ -261,7 +261,7 @@ const shots = []
 const TRIP_QUEUES = { print: [1, 4, 6], aside: [7, 13] } // not the shown photos (SHOW)
 const NO_QUEUES = { print: [], aside: [] }
 
-async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional', ui = {}, update = null, settingsPatch = null, fault = null, verdict = null }) {
+async function open({ scenario, language, theme, width = Number(process.env.DEMO_WIDTH) || 1440, height = 900, scale = 2, tabs = false, source = trip, queues, mode = 'professional', ui = {}, update = null, settingsPatch = null, fault = null, verdict = null, os = process.env.DEMO_OS }) {
   const { dump } = source
   // DEMO_WIDTH=1000 checks narrow windows (the screenshots for the site stay at 1440).
   const context = await browser.newContext({
@@ -306,7 +306,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
   // DEMO_OS=windows shows the Windows title bar, for checking it on a Mac.
   // UI-STATE-010: a part told to fail (`lib/fault.ts`, in builds made with VITE_FAULTS=1).
   if (fault) await context.addInitScript((part) => { window.__fotollectionFault = part }, fault)
-  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os: process.env.DEMO_OS, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update, settingsPatch, verdict })
+  await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update, settingsPatch, verdict })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
   await page.goto('http://app.localhost/')
@@ -641,6 +641,24 @@ async function stressViews({ language, theme }) {
   // in the list), which axe's aria-hidden-focus takes for a fault; the closed views run axe.
   const where = 'the print size list open, the last size chosen'
   out.push(...(await overflows(page, where)), ...(await layoutChecks(page, where)))
+  await context.close()
+  // The same list in the photo preview's Print tab, its button low in the column, under the
+  // macOS title bar: it opens upwards and lost its first sizes under the bar (owner,
+  // 2026-11-11), which the list above, opening downwards with no bar, never showed.
+  ;({ context, page } = await open({ scenario: 'stamp', language, theme, os: 'macos', height: 700, settingsPatch: { printSize: '5x15' } }))
+  await (await reach(page, SHOW.crop)).dblclick()
+  await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
+  await page.locator('[role="dialog"]').getByRole('radio', { name: /^(Print and export|In và xuất ảnh)$/ }).click()
+  await settle(page)
+  {
+    const sizes = page.locator('[role="dialog"]').getByRole('combobox', { name: /^(Print \/ export size|Khổ in \/ xuất ảnh)$/ }).first()
+    await sizes.scrollIntoViewIfNeeded()
+    await sizes.click()
+    await page.waitForSelector('[role="option"]')
+    await page.waitForTimeout(400)
+    const where = 'the photo preview\'s print size list, opening upwards under the title bar'
+    out.push(...(await overflows(page, where)), ...(await layoutChecks(page, where)))
+  }
   await context.close()
   // UI-LAYOUT-023: the buttons both previews share sit in the same order (owner, 2026-11-08:
   // "the same buttons in the same places"): each toolbar's groups and its *Before*, by name.

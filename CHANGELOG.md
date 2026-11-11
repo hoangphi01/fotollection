@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **A small "fotollection.org" on your prints** (FR-121), so a photo passed round tells where it was made: a quiet line on the border, in the info frame, under a postcard's stamp box or in a corner of the photo away from the date and faces, the same size on every print. It shows in the preview as it prints, never on photos exported for sharing, and *Settings → General → Prints* turns it off.
 
+### Fixed
+
+- **A list that opens upwards keeps its first rows** (FR-052): the print size list in the photo preview, low in its column, lost its top sizes under the window's title bar; every dropdown and popover now keeps clear of it.
+
 ### Changed
 
 - **Linux software centres** show what each version brought: the AppStream metadata lists the ten newest versions with their highlights, and its summary is shorter (*Pick and print your trip's photos*).
