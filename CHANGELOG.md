@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Ready for Flathub:** Fotollection's Flatpak metadata (`org.fotollection.Fotollection`), and in a Flatpak *Settings → Updates* says the software centre brings each new version, as Flathub asks, instead of checking GitHub.
 - **Website in Hungarian, German, Polish and Czech:** at `/hu/`, `/de/`, `/pl/` and `/cs/`, the home, Download, Performance (with its charts and diagrams), Wiki and code signing pages, and a short manual that leads to the full English one; each page has its own link preview. The story stays in English and Vietnamese. A first visit to the home page opens it in the browser's language when the site has it, and the language picked in the menu is kept.
 - **Website:** `fotollection.org/hi`, the short link for QR codes, ads and social profiles, opens the home page in the visitor's language and counts where visits came from (`?from=`), anonymously.
 - **Website:** the language button in the top bar opens a menu of the site's languages, each in its own words, ready for more than two; the logo at the foot of a Vietnamese page now leads to the Vietnamese home page. Search engines get a sitemap with every page's languages (`/sitemap.xml`, named in `/robots.txt`), and the fonts carry the letters of Hungarian, Polish and Czech (ő, ł, č), fetched only by a page that has them. The coffee section shows the VietQR code only in Vietnamese; every other language leads with Ko-fi (PayPal or a card), then GitHub Sponsors.

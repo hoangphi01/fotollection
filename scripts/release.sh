@@ -100,8 +100,10 @@ awk -v v="$version" -v d="$today" '
   /<releases>/ && !done { print; print "    <release version=\"" v "\" date=\"" d "\" />"; done=1; next }
   { print }
 ' "$metainfo" >"$metainfo.tmp" && mv "$metainfo.tmp" "$metainfo"
+# The Flatpak's copy follows (scripts/flatpak-files.mjs).
+node scripts/flatpak-files.mjs >/dev/null
 
 scripts/check-docs.sh >/dev/null
-git add Cargo.toml Cargo.lock ui/package.json package-lock.json CHANGELOG.md "$metainfo"
+git add Cargo.toml Cargo.lock ui/package.json package-lock.json CHANGELOG.md "$metainfo" src-tauri/linux/flatpak
 git commit -q -m "chore(release): v$version"
 echo "Committed chore(release): v$version. Push to main to build and publish it."

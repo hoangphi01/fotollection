@@ -18,7 +18,7 @@ The app processes **untrusted image files** and displays **untrusted metadata** 
 | Supply chain (crates, npm, native libs) | **YES** | Compromised dependency could exfiltrate photos |
 | GPS / metadata leakage in exported files | **YES** | Mitigated by [FR-010](PRD.md#fr-010--metadata-privacy-on-export) |
 | Resource exhaustion (decompression bombs, huge dimensions) | **YES** | Must fail one photo, not the app ([NFR-011](PRD.md#nfr-011--robustness)) |
-| Tampered update / installer | **YES** | No updater (ADR-0021); published SHA-256 checksums over HTTPS. Installers are unsigned for now ([ADR-0009](adr/0009-unsigned-distribution.md)); the Linux AppImage and `.deb` too, checked against the same `SHA256SUMS.txt` ([ADR-0034](adr/0034-linux-lean.md)) |
+| Tampered update / installer | **YES** | No updater (ADR-0021); published SHA-256 checksums over HTTPS. Installers are unsigned for now ([ADR-0009](adr/0009-unsigned-distribution.md)); the Linux AppImage and `.deb` too, checked against the same `SHA256SUMS.txt` ([ADR-0034](adr/0034-linux-lean.md)) A Flatpak, once on Flathub, is built by Flathub from the tagged source and updated by the user's software centre; the app then never checks GitHub itself ([ADR-0050](adr/0050-flatpak-on-flathub.md)). |
 | Network attacks (MITM, SSRF, CSRF) | **Minimal** | The app makes no network requests by default ([NFR-006](PRD.md#nfr-006--offline-and-zero-telemetry)) |
 | SQL injection, server compromise | **NO** | No database, no server |
 

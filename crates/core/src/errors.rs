@@ -105,6 +105,7 @@ pub const CODES: &[(&str, &str)] = &[
     ("update.none", "ERR-NET-0001"),
     ("update.offline", "ERR-NET-0002"),
     ("update.unreadable", "ERR-NET-0003"),
+    ("update.managed", "ERR-NET-0004"),
     ("project.corrupt", "ERR-PRJ-0001"),
     ("project.invalid_name", "ERR-PRJ-0002"),
     ("project.name_taken", "ERR-PRJ-0003"),

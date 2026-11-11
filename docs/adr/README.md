@@ -53,6 +53,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0047](0047-thumbnails-show-the-look.md) | Thumbnails show the look: the plain T1 coloured by Rust when served (1.1 ms), kept in memory (32 MB), its key in the thumbnail's address; a batch colours its thumbnails with the import's progress bar | Accepted | 2026-11-08 |
 | [0048](0048-one-owner-per-service-failures-stay-local.md) | One owner per service; a failing part degrades, never takes the app down: panic handlers on every pool, `catch_unwind` on image routes and commands, `Locked`, `supervise`, guarded decoders, error boundaries per part | Accepted | 2026-11-09 |
 | [0049](0049-website-on-eleventy.md) | The website is built by Eleventy (MIT, Liquid with Jekyll's includes, the same `site.*` and `pg.*` for `page.*`, markdown-it set as kramdown), still served by GitHub Pages; preview with `npm run site:serve` | Accepted | 2026-11-11 |
+| [0050](0050-flatpak-on-flathub.md) | Fotollection on Flathub as `org.fotollection.Fotollection`: built from source on the GNOME runtime; the Flatpak's metainfo and launcher made from the `.deb`'s (`scripts/flatpak-files.mjs`); no self-update in a Flatpak; the manifest and submission are the owner's (Flathub's AI rule) | Proposed | 2026-11-11 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

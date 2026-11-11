@@ -89,6 +89,8 @@ jobs:
           command -v apt-ftparchive >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq apt-utils; }
           scripts/apt-repo.sh _site/apt
 
+      # v3 keeps dot-folders but .git and .github, so site/.well-known/ (Flathub's token) is
+      # served; a newer version must be checked to keep them before it replaces this one.
       - uses: actions/upload-pages-artifact@v3
 
   deploy:

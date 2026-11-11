@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<!-- Made by scripts/flatpak-files.mjs from com.hoangphi01.fotollection.metainfo.xml: edit that file, then run the script. The Flatpak's AppStream metadata (Flathub). -->
+<component type="desktop-application">
+  <id>org.fotollection.Fotollection</id>
+  <name>Fotollection</name>
+  <summary>Look through a trip's photos and prepare them for printing</summary>
+  <summary xml:lang="vi">Xem lại ảnh của chuyến đi và chuẩn bị để in</summary>
+  <developer id="org.fotollection">
+    <name>hoangphi01</name>
+  </developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <description>
+    <p>Fotollection is a free, offline app for the photos of a trip: rate and flag them, keep the best shot of each group, then print them with the date stamp, an info frame or two to a sheet, or share them sized for Facebook and Instagram. Your photos never leave your computer.</p>
+    <p xml:lang="vi">Fotollection là ứng dụng miễn phí, không cần mạng, cho ảnh của một chuyến đi: chấm sao và gắn cờ, giữ tấm đẹp nhất của mỗi nhóm, rồi in với dấu ngày, khung thông tin hay hai ảnh một tấm, hoặc chia sẻ đúng cỡ cho Facebook và Instagram. Ảnh của bạn không bao giờ rời khỏi máy.</p>
+    <ul>
+      <li>Looks in one tap, your own Lightroom presets and LUMIX Lab LUTs, a Color Mixer and Dehaze</li>
+      <li xml:lang="vi">Look chỉ một chạm, preset Lightroom và LUT LUMIX Lab của bạn, Color Mixer và Khử sương</li>
+      <li>A develop view with Lightroom's keys, before and after, and RAW photos</li>
+      <li xml:lang="vi">Chỉnh ảnh với phím tắt như Lightroom, so sánh trước và sau, và ảnh RAW</li>
+      <li>An export dialog as Lightroom's: presets, file names, quality and size limit</li>
+      <li xml:lang="vi">Hộp thoại xuất ảnh như Lightroom: preset, tên tệp, chất lượng và giới hạn dung lượng</li>
+      <li>Date stamp, info frame, postcards and collage sheets for the print shop</li>
+      <li xml:lang="vi">Dấu ngày, khung thông tin, bưu thiếp và ghép hai ảnh để in ở tiệm</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">org.fotollection.Fotollection.desktop</launchable>
+  <provides>
+    <id>com.hoangphi01.fotollection</id>
+  </provides>
+  <url type="homepage">https://fotollection.org/</url>
+  <url type="bugtracker">https://github.com/hoangphi01/fotollection/issues</url>
+  <url type="vcs-browser">https://github.com/hoangphi01/fotollection</url>
+  <url type="contribute">https://github.com/hoangphi01/fotollection/blob/main/CONTRIBUTING.md</url>
+  <url type="donation">https://ko-fi.com/hoangphi01</url>
+  <url type="help">https://fotollection.org/manual/</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Look through a whole trip</caption>
+      <image>https://fotollection.org/assets/img/catalog/gallery.jpg</image>
+    </screenshot>
+    <screenshot>
+      <caption>Looks, presets and LUTs</caption>
+      <image>https://fotollection.org/assets/img/catalog/window.jpg</image>
+    </screenshot>
+    <screenshot>
+      <caption>Before and after</caption>
+      <image>https://fotollection.org/assets/img/catalog/compare.jpg</image>
+    </screenshot>
+    <screenshot>
+      <caption>Export with every choice</caption>
+      <image>https://fotollection.org/assets/img/catalog/export.jpg</image>
+    </screenshot>
+    <screenshot>
+      <caption>Two photos on one print</caption>
+      <image>https://fotollection.org/assets/img/catalog/collage.jpg</image>
+    </screenshot>
+  </screenshots>
+  <branding>
+    <color type="primary" scheme_preference="light">#2c836d</color>
+    <color type="primary" scheme_preference="dark">#c98a52</color>
+  </branding>
+  <requires>
+    <display_length compare="ge">768</display_length>
+  </requires>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </supports>
+  <categories>
+    <category>Graphics</category>
+    <category>Photography</category>
+  </categories>
+  <keywords>
+    <keyword>photo</keyword>
+    <keyword>print</keyword>
+    <keyword>RAW</keyword>
+    <keyword>Lightroom</keyword>
+    <keyword>preset</keyword>
+    <keyword>LUT</keyword>
+    <keyword>ảnh</keyword>
+  </keywords>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="0.14.0" date="2026-11-09" />
+    <release version="0.13.4" date="2026-11-08" />
+    <release version="0.13.3" date="2026-11-08" />
+    <release version="0.13.2" date="2026-11-07" />
+    <release version="0.13.1" date="2026-11-07" />
+    <release version="0.13.0" date="2026-11-06" />
+    <release version="0.12.0" date="2026-11-06" />
+    <release version="0.11.1" date="2026-11-06" />
+    <release version="0.11.0" date="2026-11-05" />
+    <release version="0.10.0" date="2026-11-05" />
+  </releases>
+</component>

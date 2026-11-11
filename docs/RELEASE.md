@@ -32,6 +32,8 @@
 
 **AppStream metadata** (since v0.13.0): the `.deb` and the AppImage carry `/usr/share/metainfo/com.hoangphi01.fotollection.metainfo.xml` (`src-tauri/linux/`), so Linux software centres (GNOME Software, KDE Discover, the VNLF App Explorer, CaramOS's App Center, Flathub later) show its name, words in English and Vietnamese, and the screenshots at `fotollection.org/assets/img/catalog/`. `scripts/release.sh` adds each release to its list; CI validates it with `appstreamcli`.
 
+**Flatpak** (proposed, [ADR-0050](adr/0050-flatpak-on-flathub.md)): Flathub builds it from source with the owner's manifest; this repository carries its metainfo and launcher (`src-tauri/linux/flatpak/`, made by `node scripts/flatpak-files.mjs`, which `release.sh` runs). In a Flatpak the app never checks for updates itself: the software centre brings them.
+
 The WebView2 runtime is bootstrapped by the Windows installer when it is missing. Installer size is budgeted by [NFR-008](PRD.md#nfr-008--install-size).
 
 **Not on crates.io** (owner, 2026-11-09). The names `fotollection` and `fotollection-core` were free that day, but crates.io's usage policy removes a crate that "exists only to reserve a name … without any genuine functionality", and the app itself does not install through `cargo install` (a Tauri app with its built interface). The name is to be protected by a registered trademark instead, a decision still open with the owner (with relicensing, ADR-0008). Publishing the real core library later means publishing its local crates first (`fotollection-oscodec`, the RAW crates, `geodata`), each with a version and under crates.io's 10 MB per package, and moving the large data out of the package; the owner runs `cargo login` and approves the last `cargo publish`.

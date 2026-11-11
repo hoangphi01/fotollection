@@ -181,7 +181,9 @@ export default function (eleventyConfig) {
   eleventyConfig.setLibrary('md', md)
   eleventyConfig.addFilter('markdownify', (value) => md.render(`${value ?? ''}`))
 
-  for (const p of ['assets', 'install.sh', 'CNAME', 'robots.txt']) {
+  // `.well-known/`: Flathub's token proving the project owns fotollection.org
+  // (org.flathub.VerifiedApps.txt, the owner's to add once Flathub gives it).
+  for (const p of ['assets', 'install.sh', 'CNAME', 'robots.txt', '.well-known']) {
     if (existsSync(path.join(SITE, p))) eleventyConfig.addPassthroughCopy(path.join(SITE, p))
   }
   eleventyConfig.ignores.add(`${SITE}/README.md`)

@@ -537,6 +537,7 @@
     "update": {
       "offline": "Không kết nối được GitHub. Hãy kiểm tra internet rồi thử lại.",
       "unreadable": "Không đọc được câu trả lời của GitHub. Hãy thử lại sau.",
+      "managed": "Bản này được cập nhật qua trung tâm phần mềm, nơi mang đến từng phiên bản mới.",
       "none": "Chưa tìm thấy bản mới hơn."
     },
     "history": {
@@ -628,7 +629,8 @@
     "later": "Để sau",
     "whatsNew": "Có gì mới",
     "atStart": "Kiểm tra cập nhật khi mở app",
-    "atStartHint": "Một yêu cầu tới GitHub khi mở app; không gửi gì về bạn hay ảnh của bạn, và không tự tải gì về."
+    "atStartHint": "Một yêu cầu tới GitHub khi mở app; không gửi gì về bạn hay ảnh của bạn, và không tự tải gì về.",
+    "softwareCentre": "Bản Fotollection này được cập nhật qua trung tâm phần mềm của bạn (Flathub): mỗi phiên bản mới đến từ đó, ở đây không cần kiểm tra gì."
   },
   "cache": {
     "measuring": "Đang đo cache…",

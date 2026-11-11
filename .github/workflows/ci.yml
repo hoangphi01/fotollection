@@ -79,6 +79,16 @@ jobs:
           sudo apt-get install -y appstream
           appstreamcli validate --no-net --explain src-tauri/linux/com.hoangphi01.fotollection.metainfo.xml
 
+      # The Flatpak's files (scripts/flatpak-files.mjs): its metainfo checked by Flathub's own
+      # linter, which knows the newer tags Ubuntu 22.04's appstream does not, and its launcher.
+      - name: Flatpak metadata
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y desktop-file-utils
+          desktop-file-validate src-tauri/linux/flatpak/org.fotollection.Fotollection.desktop
+          docker run --rm -v "$PWD:/src" -w /src ghcr.io/flathub/flatpak-builder-lint:latest \
+            appstream src-tauri/linux/flatpak/org.fotollection.Fotollection.metainfo.xml
+
       - name: Install JS dependencies
         run: npm ci
 

@@ -29,6 +29,43 @@ const WEBSITE: &str = "https://fotollection.org/";
 const MAX_BYTES: u64 = 1024 * 1024;
 const TIMEOUT: Duration = Duration::from_secs(10);
 
+/// Where this copy of Fotollection gets its new versions (Flathub, ROADMAP): from the project's
+/// releases, through *Check for updates*, or from the system's software centre, which updates a
+/// Flatpak by itself; then the app never asks GitHub (Flathub forbids an app updating itself).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum UpdateSource {
+    /// The installers from the project's releases (`.dmg`, `.msi`, `.deb`, the `AppImage`).
+    Releases,
+    /// A Flatpak: its software centre (Flathub) brings each new version.
+    SoftwareCentre,
+}
+
+impl UpdateSource {
+    /// A Flatpak sets `FLATPAK_ID` and has `/.flatpak-info` in its sandbox.
+    fn of(flatpak_id: Option<&std::ffi::OsStr>, info_file: bool) -> Self {
+        if flatpak_id.is_some_and(|id| !id.is_empty()) || info_file {
+            Self::SoftwareCentre
+        } else {
+            Self::Releases
+        }
+    }
+
+    fn this() -> Self {
+        Self::of(
+            std::env::var_os("FLATPAK_ID").as_deref(),
+            cfg!(target_os = "linux") && std::path::Path::new("/.flatpak-info").exists(),
+        )
+    }
+}
+
+/// How this copy is updated, for the Settings window's *Updates* card.
+#[tauri::command]
+#[specta::specta]
+pub fn update_source() -> UpdateSource {
+    UpdateSource::this()
+}
+
 /// The result shown under the button.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
@@ -249,6 +286,12 @@ fn fetch_github() -> Result<Vec<u8>, IpcError> {
 
 /// One check: GitHub's latest release read, and its installer and page kept for the buttons.
 fn check_now(app: &AppHandle) -> Result<UpdateCheck, IpcError> {
+    if UpdateSource::this() == UpdateSource::SoftwareCentre {
+        return Err(IpcError::new(
+            "update.managed",
+            "this copy is updated by its software centre",
+        ));
+    }
     let json = fetch()?;
     let (check, download) = evaluate(&json, &current_version(), Platform::this())
         .map_err(|why| IpcError::new("update.unreadable", why))?;
@@ -278,7 +321,7 @@ pub async fn check_for_update_at_start(app: AppHandle) -> Result<Option<UpdateCh
         .ui
         .read()
         .is_ok_and(|ui| ui.check_updates_at_start);
-    if !on {
+    if !on || UpdateSource::this() == UpdateSource::SoftwareCentre {
         return Ok(None);
     }
     tauri::async_runtime::spawn_blocking(move || check_now(&app).ok().filter(|c| c.newer))
@@ -370,6 +413,22 @@ pub fn report_ui_error(kind: String, message: String) {
 
 #[cfg(test)]
 mod tests {
+
+    #[test]
+    fn a_flatpak_is_updated_by_its_software_centre() {
+        use std::ffi::OsStr;
+        assert_eq!(UpdateSource::of(None, false), UpdateSource::Releases);
+        assert_eq!(
+            UpdateSource::of(Some(OsStr::new("")), false),
+            UpdateSource::Releases
+        );
+        assert_eq!(
+            UpdateSource::of(Some(OsStr::new("org.fotollection.Fotollection")), false),
+            UpdateSource::SoftwareCentre
+        );
+        assert_eq!(UpdateSource::of(None, true), UpdateSource::SoftwareCentre);
+    }
+
     use super::*;
 
     fn release(tag: &str, prerelease: bool) -> Vec<u8> {

@@ -557,6 +557,7 @@
     "update": {
       "offline": "Could not reach GitHub. Check your internet connection and try again.",
       "unreadable": "GitHub's answer could not be read. Try again later.",
+      "managed": "This copy is updated by your software centre, which brings each new version.",
       "none": "No newer version was found."
     },
     "history": {
@@ -650,7 +651,8 @@
     "later": "Later",
     "whatsNew": "What's new",
     "atStart": "Check for updates when the app starts",
-    "atStartHint": "One request to GitHub at start; nothing about you or your photos is sent, and nothing is downloaded by itself."
+    "atStartHint": "One request to GitHub at start; nothing about you or your photos is sent, and nothing is downloaded by itself.",
+    "softwareCentre": "This copy of Fotollection is updated by your software centre (Flathub): each new version comes there, with nothing to check here."
   },
   "cache": {
     "measuring": "Measuring the cache…",

@@ -176,6 +176,9 @@ done
 echo "• The website's footnotes: each page's list, cited and written in both languages"
 node scripts/check-footnotes.mjs || fail "site footnotes: fix site/_data/footnotes.yml or the notes in site/_data/i18n/<code>.yml (site/README.md)"
 
+echo "• The Flatpak's files follow the .deb's metainfo (scripts/flatpak-files.mjs)"
+node scripts/flatpak-files.mjs --check || fail "run node scripts/flatpak-files.mjs and commit src-tauri/linux/flatpak/"
+
 echo "• The website's languages: none named in a template, words and placeholders after English"
 # With the site's packages installed (npm ci) it also builds the site and fails on English shown
 # on a published language's pages; the pages workflow always does.

@@ -165,6 +165,7 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 | `ERR-NET-0001` | v0.9.1 | `update.none` | `src-tauri/src/updates.rs:201` | No newer version was found. | No newer release than this one (information). | Nothing to do. |
 | `ERR-NET-0002` | v0.9.1 | `update.offline` | `src-tauri/src/updates.rs:149` | Could not reach GitHub. Check your internet connection and try again. | Check for updates could not reach api.github.com. | Check the internet connection and try again. |
 | `ERR-NET-0003` | v0.9.1 | `update.unreadable` | `src-tauri/src/updates.rs:180` | GitHub's answer could not be read. Try again later. | GitHub's answer was not the expected JSON or was over 1 MB. | Try again later. |
+| `ERR-NET-0004` | v0.14.1 | `update.managed` | `src-tauri/src/updates.rs` (`check_now`) | This copy is updated by your software centre, which brings each new version. | *Check for updates* was asked in a Flatpak (`FLATPAK_ID`, `/.flatpak-info`), where the software centre updates the app and Flathub forbids an app updating itself; the Settings window shows a note instead of the button, so this is only reached by a stale window. | Update through the software centre (GNOME Software, KDE Discover, `flatpak update`). |
 
 ### IPC: Invalid input from the interface
 

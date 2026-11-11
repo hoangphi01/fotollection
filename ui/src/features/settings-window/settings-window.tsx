@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { BookOpen, Cpu, FolderOutput, MessageSquareWarning, RefreshCw, SlidersHorizontal, Sparkles, type LucideIcon, Database } from 'lucide-react'
-import { lazy, Suspense } from 'react'
+import { BookOpen, Cpu, FolderOutput, MessageSquareWarning, Package, RefreshCw, SlidersHorizontal, Sparkles, type LucideIcon, Database } from 'lucide-react'
+import { lazy, Suspense, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SettingsFrame } from '@/components/layout/settings-frame'
 import { SwitchField } from '@/components/forms/switch-field'
 import { SectionCard } from '@/components/layout/section-card'
+import { PanelNote } from '@/components/layout/panel-note'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
 import { ReportIssue } from '@/features/about/report-issue'
 import { UpdateCheck } from '@/features/about/update-check'
@@ -50,6 +51,26 @@ function UpdatesAtStart() {
   )
 }
 
+/** *Updates*: the check at start and the button, or, in a Flatpak, a note that its software
+ * centre brings each version (Flathub forbids an app updating itself; Rust never asks GitHub
+ * there either, `updates.rs` `UpdateSource`). */
+function UpdatesCard({ icon }: { icon: ReactNode }) {
+  const { t } = useTranslation()
+  const source = useIpcQuery(commands.updateSource)
+  return (
+    <SectionCard icon={icon} title={t('settingsWindow.sections.updates')}>
+      {source === 'softwareCentre' ? (
+        <PanelNote icon={<Package />}>{t('update.softwareCentre')}</PanelNote>
+      ) : (
+        <>
+          <UpdatesAtStart />
+          <UpdateCheck />
+        </>
+      )}
+    </SectionCard>
+  )
+}
+
 /** The cards of `section`. */
 function Body({ section, version }: { section: Section; version: string | undefined }) {
   const { t } = useTranslation()
@@ -64,12 +85,7 @@ function Body({ section, version }: { section: Section; version: string | undefi
     case 'data':
       return <DataSection />
     case 'updates':
-      return (
-        <SectionCard icon={<Icon />} title={t('settingsWindow.sections.updates')}>
-          <UpdatesAtStart />
-          <UpdateCheck />
-        </SectionCard>
-      )
+      return <UpdatesCard icon={<Icon />} />
     case 'manual':
       // The manual inside this window (owner, 2026-11-07: "no other window").
       return (

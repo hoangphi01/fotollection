@@ -53,6 +53,8 @@ export const commands = {
 	reasonEn: string,
 	reasonVi: string,
 } | null, IpcError>(__TAURI_INVOKE("check_for_update_at_start")),
+	/**  How this copy is updated, for the Settings window's *Updates* card. */
+	updateSource: () => __TAURI_INVOKE<UpdateSource>("update_source"),
 	/**
 	 *  Opens the release page found by the last check (*What's new*), never a page the webview
 	 *  names.
@@ -2436,6 +2438,17 @@ export type UpdateCheck = {
 	reasonEn: string,
 	reasonVi: string,
 };
+
+/**
+ *  Where this copy of Fotollection gets its new versions (Flathub, ROADMAP): from the project's
+ *  releases, through *Check for updates*, or from the system's software centre, which updates a
+ *  Flatpak by itself; then the app never asks GitHub (Flathub forbids an app updating itself).
+ */
+export type UpdateSource = 
+/**  The installers from the project's releases (`.dmg`, `.msi`, `.deb`, AppImage). */
+"releases" | 
+/**  A Flatpak: its software centre (Flathub) brings each new version. */
+"softwareCentre";
 
 /**
  *  A row of the `fonts` table in `settings.json` (DATABASE.md §6). The file lives at

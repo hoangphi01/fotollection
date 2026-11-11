@@ -1225,7 +1225,7 @@ The app works with no network connection. It makes no telemetry or crash-reporti
 
 ### NFR-007 — Platforms
 
-The app supports macOS 11 or later (Apple Silicon and Intel, shipped as a universal binary), Windows 10/11 x64 (on ARM through Windows' emulation until [FR-119](#fr-119--smooth-on-arm-and-risc-v-tried) builds ARM64), and, since v0.8.2, 64-bit Linux with glibc 2.35 or later on x86_64 and ARM64, as an AppImage and a `.deb` ([ADR-0034](adr/0034-linux-lean.md)). Linux is the lean build: no camera capture ([FR-063](#fr-063--tethered-capture-over-usb)) and no HEIC yet ([FR-068](#fr-068--heic-on-linux-through-the-systems-libheif)). Every release proves the Linux packages start, on Ubuntu 22.04 and Debian 12, since the owner has no Linux machine.
+The app supports macOS 11 or later (Apple Silicon and Intel, shipped as a universal binary), Windows 10/11 x64 (on ARM through Windows' emulation until [FR-119](#fr-119--smooth-on-arm-and-risc-v-tried) builds ARM64), and, since v0.8.2, 64-bit Linux with glibc 2.35 or later on x86_64 and ARM64, as an AppImage and a `.deb` ([ADR-0034](adr/0034-linux-lean.md)). Linux is the lean build: no camera capture ([FR-063](#fr-063--tethered-capture-over-usb)) and no HEIC yet ([FR-068](#fr-068--heic-on-linux-through-the-systems-libheif)). Every release proves the Linux packages start, on Ubuntu 22.04 and Debian 12, since the owner has no Linux machine. On Linux a Flatpak for Flathub is proposed ([ADR-0050](adr/0050-flatpak-on-flathub.md)), built from source on the GNOME runtime; in it the app never updates itself.
 
 ### NFR-008 — Install size
 
