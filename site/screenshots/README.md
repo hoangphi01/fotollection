@@ -20,7 +20,7 @@ Photos are chosen by file name in `shoot.mjs`.
 
 ## The owner's photos
 
-Twenty-five photos of Prague, November 2026, taken by the owner (@hoangphi01) on a Lumix DC-GX9, listed by file name in [`demo_set.txt`](demo_set.txt): trams by night and by day, the city from Letná, the National Museum by night, the metro, the Vltava, autumn, food, the Old Town. **All rights reserved**; the photos are never kept in the repository, only the screenshots that show them. The GX9 records no GPS, so they carry no location; a few show strangers small in a crowd. The grid's chosen photo and the Lumix info frame come from them when they are in the set (`shoot.mjs`).
+Twenty-five photos of Prague, November 2026, taken by the owner (@hoangphi01) on a Lumix DC-GX9, listed by file name in [`demo_set.txt`](demo_set.txt): trams by night and by day, the city from Letná, the National Museum by night, the metro, the Vltava, autumn, food, the Old Town. **All rights reserved**; the photos are never kept in the repository, only the screenshots that show them. The GX9 records no GPS, so they carry no location; a few show strangers small in a crowd. The grid's chosen photo and the Lumix info frame come from them when they are in the set (`shoot.mjs`). **For the new look (FR-122, owner's consent 2026-11-12):** the owner's whole Prague trip, the night trams graded with a Lightroom preset, may be shown as the demo of the app's warm chrome when it is released (v0.14.1): the gallery of the trip in the dark theme, as the owner's own screenshot of 2026-11-12 shows it; the photos themselves stay out of the repository.
 
 ## Demo photos
 
