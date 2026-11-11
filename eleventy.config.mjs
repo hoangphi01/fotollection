@@ -50,6 +50,14 @@ function siteData() {
     const borrowed = Object.fromEntries(Object.entries(en).filter(([k]) => !(k in own)).map(([k, v]) => [k, mark ? marked(k, v) : v]))
     data.i18n[code] = { ...borrowed, ...own }
   }
+  // The check build renders every branch the workflow's data opens (LESSONS): what only CI has
+  // (the visit count, the latest release's split of downloads) is stood in for when absent.
+  if (mark) {
+    const count = Object.fromEntries(languages.map((l) => [l.code, '1']))
+    data.visits ??= { total: 1, ...count }
+    data.downloads ??= { total: 1, mac: 1, win: 1, linux: 1, ...count }
+    data.downloads.latest ??= { tag: 'v0.0.0', site: '1', updates: '1' }
+  }
   const release = data.release ?? null
   return { ...config, time: new Date(), data, github: { latest_release: release } }
 }

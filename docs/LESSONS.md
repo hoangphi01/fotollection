@@ -1044,3 +1044,10 @@
 - **Why:** the check build runs Eleventy with `--output=<temp>`, and the hook that writes the sitemap took `dir.output`, the configured `_site`, not the folder really written. Locally `_site` was there from an earlier build; on the runner the check runs first, before any `_site` exists.
 - **Fix:** the hook writes to `directories.output` (the real output, `--output` included) and creates it.
 - **Rule:** before a push that changes the build, run its checks from a clean tree (`rm -rf _site`, as the runner starts); a file written by a hook goes to `directories.output`.
+
+### The words check passed locally and failed on CI: three texts only CI's data shows (site, ADR-0049)
+
+- **Seen:** the pages run named `footer_visits`, `footer_visits_hint` and `dl_count_split` in English on the four new languages; the same check had passed on the maintainer's machine.
+- **Why:** those texts render only when the workflow's data is there (the visit count from Google Analytics, the latest release's split of downloads); locally the branches stayed closed, so the check never saw them.
+- **Fix:** the check build stands in for the data only CI has (`visits`, `downloads`, `downloads.latest`) when it is absent, so every branch renders; proven by the same 12 failures locally before the words were added.
+- **Rule:** a check that reads rendered pages renders them with every optional data file present; a new file the workflow writes gets its stand-in in `siteData` in the same commit.
