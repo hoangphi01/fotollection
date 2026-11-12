@@ -82,6 +82,12 @@ echo "• Project dependencies (from lockfiles)"
 npm ci
 cargo fetch --locked
 
+# The gate before a push (CONTRIBUTING §4): fmt, clippy, lint, the docs checks and, when the
+# UI changed, its machine-judged cases.
+echo "• Git hooks"
+git config core.hooksPath scripts/hooks
+ok "pre-push (scripts/hooks/pre-push)"
+
 if [ "$tools" -eq 1 ]; then
   echo "• Optional dev tools"
   cargo install --locked cargo-sweep cargo-deny

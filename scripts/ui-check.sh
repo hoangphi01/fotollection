@@ -4,27 +4,32 @@
 #
 #   scripts/ui-check.sh <demo-photo-folder> [owner-folder]     # the whole matrix
 #   QUICK=1 scripts/ui-check.sh <demo-photo-folder>            # English, light, Chromium only
+#   QUICK=2 scripts/ui-check.sh                                 # English and Hungarian, light (the pre-push hook)
 #   UPDATE_BASELINES=1 scripts/ui-check.sh …                   # approve the pictures after an intended change
 #
 # The demo photos come from `python3 -I site/screenshots/fetch_photos.py <folder>`. The demo
 # app's recording is made once into target/ui-check/dump and kept; delete it to record again
-# (after a change to what Rust answers). Quit `tauri dev` first: the app runs once at a time.
+# (after a change to what Rust answers). Once it is made the folder may be left out. Only the
+# recording needs `tauri dev` quit (the app runs once at a time); the checks run beside it.
 # Exits non-zero on any failure, each line starting with its test ID.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-[ $# -ge 1 ] || { echo "usage: scripts/ui-check.sh <demo-photo-folder> [owner-folder]" >&2; exit 2; }
-if pgrep -f 'target/debug/fotollection' >/dev/null || pgrep -f 'tauri dev' >/dev/null; then
-  echo "ui-check: quit the running app (tauri dev) first: the demo recording would go to it" >&2
+work=target/ui-check
+dump="$work/dump"
+if [ ! -f "$dump/fixtures.json" ] && [ $# -lt 1 ]; then
+  echo "usage: scripts/ui-check.sh <demo-photo-folder> [owner-folder] (no recording in $dump yet)" >&2
   exit 2
 fi
 scripts/resources.sh | tail -3 || true  # a warning, never a stop
 
-demo=$(cd "$1" && pwd)
-owner=${2:-}
-work=target/ui-check
-dump="$work/dump"
 if [ ! -f "$dump/fixtures.json" ]; then
+  if pgrep -f 'target/debug/fotollection' >/dev/null || pgrep -f 'tauri dev' >/dev/null; then
+    echo "ui-check: quit the running app (tauri dev) first: the demo recording would go to it" >&2
+    exit 2
+  fi
+  demo=$(cd "$1" && pwd)
+  owner=${2:-}
   folder="$work/demo-src"
   rm -rf "$folder" && mkdir -p "$folder"
   while read -r stem; do
@@ -49,7 +54,11 @@ run() {
   env MEASURE=1 "$@" node site/screenshots/shoot.mjs "$dump" "$work/out" || status=1
 }
 mkdir -p "$work/out"
-if [ -n "${QUICK:-}" ]; then
+if [ "${QUICK:-}" = 2 ]; then
+  # The pre-push hook (CONTRIBUTING §4): English, the source, and Hungarian, the longest words.
+  run MEASURE_LANG=en MEASURE_THEME=light
+  run MEASURE_LANG=hu MEASURE_THEME=light
+elif [ -n "${QUICK:-}" ]; then
   run MEASURE_LANG=en MEASURE_THEME=light
 else
   # The two corners of the matrix (docs/UI_TESTS.md §1): English in light in Chromium, and

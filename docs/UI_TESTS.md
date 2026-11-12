@@ -10,22 +10,23 @@
 python3 -I site/screenshots/fetch_photos.py <folder>   # the CC0 demo photos, once
 scripts/ui-check.sh <folder> [owner-folder]            # the whole matrix
 QUICK=1 scripts/ui-check.sh <folder>                   # English, light, Chromium only
+QUICK=2 scripts/ui-check.sh                            # English and Hungarian, light: the pre-push hook
 UPDATE_BASELINES=1 scripts/ui-check.sh <folder>        # approve pictures after an intended change
 ```
 
-Quit `tauri dev` first: the app runs once at a time, and the demo recording would go to it. The recording (`target/ui-check/dump`) is made once and kept; delete it after a change to what Rust answers. Each failure is one line that starts with its test ID; the script exits non-zero when there is any.
+Only the recording needs `tauri dev` quit (the app runs once at a time, and the recording would go to it); once it exists the folder may be left out and the checks run beside the dev app. The recording (`target/ui-check/dump`) is made once and kept; delete it after a change to what Rust answers. Each failure is one line that starts with its test ID; the script exits non-zero when there is any.
 
 **The matrix, declared once.** Rows say which axes they run on, instead of repeating:
 
 | Axis | Values |
 |---|---|
-| Language | English, Vietnamese (the longer words) |
+| Language | English, Vietnamese, Hungarian (the longest words), the pseudo-locale `en-XA` (English 40 % longer, a `VITE_PSEUDO=1` build) |
 | Theme | light, dark |
 | Engine | Chromium; WebKit, the engine of the app on macOS and Linux |
 | Window width | 1180 px (the app's minimum), 1400, 1600 |
 | Data | the demo recording; the stress fixtures (a long custom print size chosen, every sheet shape, every Settings section, the welcome) |
 
-The full run is two corners of it: English, light, Chromium, and Vietnamese, dark, WebKit, each at every width. `MEASURE=1 node site/screenshots/shoot.mjs` is the engine under the script ([site/screenshots/README.md](../site/screenshots/README.md)); the detectors are in [`checks.mjs`](../site/screenshots/checks.mjs).
+**When it runs:** on every push that changes the interface, English and Hungarian in light, Chromium (`QUICK=2`, the pre-push hook, CONTRIBUTING §4); the full matrix before a release: English, light, Chromium; Vietnamese, dark, WebKit; Hungarian, light; `en-XA`, dark; each at every width. A case marked "release" below is in both; "commit" runs with `npm run lint` too. `MEASURE=1 node site/screenshots/shoot.mjs` is the engine under the script ([site/screenshots/README.md](../site/screenshots/README.md)); the detectors are in [`checks.mjs`](../site/screenshots/checks.mjs).
 
 ## 2. Rules for this document
 

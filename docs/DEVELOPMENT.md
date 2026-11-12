@@ -18,6 +18,8 @@ scripts/bootstrap.sh --install            # macOS / Linux
 npm run dev                               # launches the app
 ```
 
+`bootstrap.sh` also sets `git config core.hooksPath scripts/hooks`, the pre-push gate ([CONTRIBUTING.md §4](../CONTRIBUTING.md#4-docs-move-with-code-how-to-use-the-docs-guide)). Its UI cases need the demo recording once: `python3 -I site/screenshots/fetch_photos.py <folder>` then `scripts/ui-check.sh <folder>` with `tauri dev` quit.
+
 The bootstrap script checks every prerequisite and, with `--install` / `-Install`, installs any that are missing:
 
 - macOS: it asks you to install the Xcode CLT yourself.

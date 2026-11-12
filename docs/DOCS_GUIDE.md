@@ -64,7 +64,7 @@ cargo fmt --all --check && cargo clippy --workspace --all-targets -- -D warnings
 scripts/check-docs.sh   # includes markdownlint, with the same version and rules as CI
 ```
 
-- Chain them with `&&`: commit only when all pass.
+- Chain them with `&&`: commit only when all pass. The pre-push hook runs the same gate, and the UI cases when the interface changed ([CONTRIBUTING.md §4](../CONTRIBUTING.md#4-docs-move-with-code-how-to-use-the-docs-guide)).
 - Commit messages follow Conventional Commits with the requirement ID, for example `feat(stamp): … [FR-004]` ([STYLE_RULE.md §5](STYLE_RULE.md#5-git)). No co-author lines.
 - New source files start with `// SPDX-License-Identifier: GPL-3.0-only`.
 

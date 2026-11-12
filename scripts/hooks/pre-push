@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-only
+# The gate before a push (CONTRIBUTING §4, the process review of 2026-11-12): what CI would
+# refuse, refused here first, and the UI cases run while they still help. Installed by
+# scripts/bootstrap.sh (`git config core.hooksPath scripts/hooks`).
+#
+#   always:            cargo fmt, clippy (Rust changed), UI lint (ui/ changed), check-docs,
+#                      check-docs-with-code over what is pushed
+#   UI changed:        QUICK=2 scripts/ui-check.sh (English and Hungarian, every UI- case)
+#   skip, when meant:  git push --no-verify, and say why in STATUS
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+zero=0000000000000000000000000000000000000000
+ranges=()
+files=""
+while read -r _local_ref local_sha _remote_ref remote_sha; do
+  [ "$local_sha" = "$zero" ] && continue # a deleted branch
+  if [ "$remote_sha" = "$zero" ]; then
+    base=$(git merge-base "$local_sha" origin/main 2>/dev/null || true)
+  else
+    base=$remote_sha
+  fi
+  [ -n "$base" ] || continue
+  ranges+=("$base..$local_sha")
+  files="$files $(git diff --name-only "$base" "$local_sha")"
+done
+[ "${#ranges[@]}" -gt 0 ] || exit 0
+
+start=$(date +%s)
+step() { echo "── pre-push: $1"; }
+changed() { printf '%s\n' $files | grep -Eq "$1"; }
+
+step "cargo fmt"
+cargo fmt --all --check
+if changed '\.rs$|Cargo\.(toml|lock)$'; then
+  step "cargo clippy"
+  CARGO_BUILD_JOBS=4 cargo clippy --workspace --all-targets -- -D warnings
+fi
+if changed '^ui/'; then
+  step "UI lint (oxlint, check-i18n, check-lego)"
+  (cd ui && npx tsc -b && npm run lint)
+fi
+step "check-docs"
+scripts/check-docs.sh
+for range in "${ranges[@]}"; do
+  step "docs with code, $range"
+  scripts/check-docs-with-code.sh "$range"
+done
+# The UI cases a machine judges (docs/UI_TESTS.md): before, they ran only at a release, and the
+# owner found nearly every UI fault by eye (LESSONS, the review of 2026-11-12).
+if changed '^ui/src/|^site/screenshots/.*\.mjs$|^crates/core/src/(sheet|postcard|render|credit|frame)\.rs$'; then
+  if [ ! -f target/ui-check/dump/fixtures.json ]; then
+    echo "pre-push: the UI changed but there is no demo recording: run scripts/ui-check.sh <demo-photo-folder> once (DEVELOPMENT §5)" >&2
+    exit 1
+  fi
+  step "UI cases, English and Hungarian (QUICK=2 scripts/ui-check.sh)"
+  QUICK=2 scripts/ui-check.sh
+fi
+echo "pre-push: every gate passed in $(($(date +%s) - start)) s"

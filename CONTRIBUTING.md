@@ -84,6 +84,8 @@ cargo test --workspace                     # also regenerates ui/src/ipc/binding
 scripts/check-docs.sh                      # run on its own; it must pass
 ```
 
+**The pre-push hook runs the gate for you** (`scripts/hooks/pre-push`, installed by `scripts/bootstrap.sh` as `core.hooksPath`; the process review of 2026-11-12). On every push: `cargo fmt`, clippy when Rust changed, the UI lint when `ui/` changed, `check-docs` and `check-docs-with-code` over what is pushed, about 10 s. When the push changes the interface (`ui/src/`, the screenshot scripts, or `sheet`, `postcard`, `render`, `credit`, `frame` in the core) it also runs `QUICK=2 scripts/ui-check.sh`, every machine-judged UI case in English and Hungarian, about 5 minutes ([docs/UI_TESTS.md §1](docs/UI_TESTS.md#1-how-to-run)). `git push --no-verify` skips it only when meant, and the reason goes into STATUS.
+
 The build files of a Rust project grow fast. Free disk with `scripts/clean.sh`, never by deleting parts of `target/` by hand ([docs/DEVELOPMENT.md §4](docs/DEVELOPMENT.md#4-build-disk-hygiene)).
 
 ## 5. Error codes: reading one, adding one
