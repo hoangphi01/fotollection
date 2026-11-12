@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { ArrowLeft, ArrowRight, FolderOpen, Layers, Printer, SlidersHorizontal, Sparkles } from 'lucide-react'
+import { ArrowLeft, ArrowRight, FolderOpen, Languages, Layers, Printer, SlidersHorizontal, Sparkles } from 'lucide-react'
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDarkTheme } from '@/lib/theme'
@@ -9,10 +9,13 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { useUiSettings } from '@/features/settings/use-ui-settings'
+import { languageInfo } from '@/i18n'
+import { LanguagePage } from './language-page'
 import { closeWelcome, decideWelcome, useWelcomeOpen } from './welcome-store'
 
 /** The five pages, in the order of the work (owner, 2026-11-07); each a picture of the app. */
 const PAGES = [
+  { key: 'language', icon: Languages },
   { key: 'welcome', icon: FolderOpen },
   { key: 'modes', icon: Layers },
   { key: 'choose', icon: Sparkles },
@@ -22,7 +25,7 @@ const PAGES = [
 
 /**
  * The welcome screen (FR-109): on the first launch after the install or an update, and at
- * every start when its last page's tick asks for it, five pages of the basics in the Settings
+ * every start when its last page's tick asks for it, the language (FR-124) then five pages of the basics in the Settings
  * window's frame (owner, 2026-11-07: "the size of Settings and Export"), the pages listed on
  * the left as the window's sections are. *Start* or Esc closes it and remembers it was seen.
  */
@@ -46,7 +49,7 @@ export function WelcomeDialog() {
   }
   const current = PAGES[page] ?? PAGES[0]
   const last = page === PAGES.length - 1
-  const lang = i18n.language.startsWith('vi') ? 'vi' : 'en'
+  const lang = languageInfo(i18n.language).assets
   const theme = useDarkTheme() ? 'dark' : 'light'
 
   return (
@@ -90,8 +93,11 @@ export function WelcomeDialog() {
         </>
       }
     >
-      {/* The picture fills the page; the words sit on it in frosted glass, the picture blurred
-          behind them (owner, 2026-11-07). */}
+      {current.key === 'language' ? (
+        <LanguagePage />
+      ) : (
+      /* The picture fills the page; the words sit on it in frosted glass, the picture blurred
+         behind them (owner, 2026-11-07). */
       <div className="relative min-h-0 flex-1 overflow-hidden rounded-lg border lifted">
         <img
           src={`/welcome/${current.key}-${lang}-${theme}.webp`}
@@ -107,6 +113,7 @@ export function WelcomeDialog() {
           <p className="text-lg leading-relaxed">{t(`welcome.${current.key}.text`)}</p>
         </div>
       </div>
+      )}
     </SettingsFrame>
   )
 }

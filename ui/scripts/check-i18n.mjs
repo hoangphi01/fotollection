@@ -21,6 +21,17 @@ function flatten(obj, prefix = '', out = new Map()) {
   return out
 }
 const base = (keys) => new Set([...keys].map((k) => k.replace(PLURAL, '')))
+/** Each key's placeholders (`{{n}}`), its plural forms taken together. */
+function holes(map) {
+  const out = new Map()
+  for (const [k, v] of map) {
+    const key = k.replace(PLURAL, '')
+    const set = out.get(key) ?? new Set()
+    for (const m of String(v).matchAll(/\{\{\s*([\w.]+)\s*\}\}/g)) set.add(m[1])
+    out.set(key, set)
+  }
+  return out
+}
 
 const problems = []
 const en = flatten(JSON.parse(readFileSync(join(locales, 'en.json'), 'utf8')))
@@ -31,6 +42,14 @@ for (const file of readdirSync(locales).filter((f) => f.endsWith('.json') && f !
   for (const k of enBase) if (!otherBase.has(k)) problems.push(`${file}: missing key ${k}`)
   for (const k of otherBase) if (!enBase.has(k)) problems.push(`${file}: key ${k} is not in en.json`)
   for (const [k, v] of other) if (typeof v !== 'string' || v.trim() === '') problems.push(`${file}: empty value for ${k}`)
+  // The same placeholders as English, across a key's plural forms (docs/LOCALIZATION.md §3):
+  // a dropped or renamed {{n}} shows the raw braces or loses the number.
+  const enHoles = holes(en)
+  for (const [k, set] of holes(other)) {
+    const want = enHoles.get(k)
+    if (want && [...want].sort().join() !== [...set].sort().join())
+      problems.push(`${file}: placeholders of ${k} are ${[...set].join(' ') || 'none'}, English has ${[...want].join(' ') || 'none'}`)
+  }
 }
 for (const [k, v] of en) if (typeof v !== 'string' || v.trim() === '') problems.push(`en.json: empty value for ${k}`)
 

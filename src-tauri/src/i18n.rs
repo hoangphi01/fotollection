@@ -131,9 +131,107 @@ const VI: Strings = Strings {
     camera_save_title: "Lưu ảnh vào",
 };
 
+const HU: Strings = Strings {
+    file: "Fájl",
+    new: "Új projekt",
+    open: "Megnyitás…",
+    save: "Mentés",
+    save_as: "Mentés másként…",
+    edit: "Szerkesztés",
+    undo: "Visszavonás",
+    redo: "Ismétlés",
+    cut: "Kivágás",
+    copy: "Másolás",
+    paste: "Beillesztés",
+    select_all: "Az összes kijelölése",
+    copy_settings: "Beállítások másolása…",
+    paste_settings: "Beállítások beillesztése",
+    paste_settings_ticked: "Beállítások beillesztése a kipipált fotókra",
+    reset_settings: "Beállítások visszaállítása",
+    window: "Ablak",
+    view: "Nézet",
+    mode_simple: "Egyszerű",
+    mode_collage: "Kollázs",
+    mode_professional: "Pro",
+    minimize: "Kis méret",
+    close_window: "Ablak bezárása",
+    about: "A Fotollection névjegye",
+    settings: "Beállítások…",
+    help: "Súgó",
+    manual: "Fotollection kézikönyv",
+    hide: "Fotollection elrejtése",
+    hide_others: "Többi elrejtése",
+    show_all: "Összes megjelenítése",
+    quit: "Kilépés a Fotollectionből",
+    untitled: "Névtelen",
+    edited: "Módosítva",
+    project_filter: "Fotollection projekt",
+    open_title: "Projekt megnyitása",
+    save_title: "A projekt mentése",
+    relink_title: "A mappa megkeresése",
+    camera_save_title: "A fotók mentése ide",
+};
+
 pub fn strings(language: Language) -> &'static Strings {
     match language {
         Language::En => &EN,
         Language::Vi => &VI,
+        Language::Hu => &HU,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// FR-123: every language names every menu item and dialog; none is left empty.
+    #[test]
+    fn fr_123_every_language_fills_every_string() {
+        for language in [Language::En, Language::Vi, Language::Hu] {
+            let s = strings(language);
+            for text in [
+                s.file,
+                s.new,
+                s.open,
+                s.save,
+                s.save_as,
+                s.edit,
+                s.undo,
+                s.redo,
+                s.cut,
+                s.copy,
+                s.paste,
+                s.select_all,
+                s.copy_settings,
+                s.paste_settings,
+                s.paste_settings_ticked,
+                s.reset_settings,
+                s.window,
+                s.view,
+                s.mode_simple,
+                s.mode_collage,
+                s.mode_professional,
+                s.minimize,
+                s.close_window,
+                s.about,
+                s.settings,
+                s.help,
+                s.manual,
+                s.hide,
+                s.hide_others,
+                s.show_all,
+                s.quit,
+                s.untitled,
+                s.edited,
+                s.project_filter,
+                s.open_title,
+                s.save_title,
+                s.relink_title,
+                s.camera_save_title,
+            ] {
+                assert!(!text.trim().is_empty(), "{language:?} has an empty string");
+            }
+        }
+        assert_eq!(strings(Language::Hu).mode_collage, "Kollázs");
     }
 }

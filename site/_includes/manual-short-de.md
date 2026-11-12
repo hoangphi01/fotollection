@@ -184,7 +184,7 @@ Datumsstempel, Info-Rahmen, Tagesordner und das Datum der exportierten Kopie fol
 
 Eine Kamera mit falscher Uhrzeit, oder noch in der Zeitzone von zu Hause, sortiert ihre Fotos falsch neben die deines Smartphones und stempelt das falsche Datum.
 
-1. **Aus einem Foto (am einfachsten):** Öffne ein Foto dieser Kamera und klick unter **Captured** auf **Set this camera's clock from a photo…**. Wähl ein Foto deines Smartphones vom selben Moment, dann **Correct the clock**.
+1. **Aus einem Foto (am einfachsten):** Öffne ein Foto dieser Kamera und klick unter **Captured** auf **Set the clock from a photo…**. Wähl ein Foto deines Smartphones vom selben Moment, dann **Correct the clock**.
 2. **Von Hand:** Im Bedienfeld listet **Camera clocks** jede Kamera der Bibliothek. Tipp ein, wie viel addiert werden soll, etwa `+1:02:00` oder `−0:45`, und drück Enter.
 
 Jedes Foto dieser Kamera rückt sofort an seinen Platz, auch später hinzugefügte. Die Fotodatei wird nie geändert, und die Korrektur wird im Projekt gespeichert.

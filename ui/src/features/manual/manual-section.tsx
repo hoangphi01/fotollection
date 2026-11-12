@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { ListRow, ListRows } from '@/components/forms/list-row'
 import { PickerTrigger } from '@/components/forms/picker-trigger'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { languageInfo } from '@/i18n'
 import { findChapters, type Chapter, type ManualCard } from '@/lib/manual'
 import { useManualChapters } from './manual-content'
 import { showManual, useManualChapter } from './manual-store'
@@ -84,7 +85,7 @@ export function ManualSection() {
   const { list, chapter } = useShownChapter()
   const theme = useDarkTheme() ? 'dark' : 'light'
   if (!chapter) return null
-  const lang = i18n.language.startsWith('vi') ? 'vi' : 'en'
+  const lang = languageInfo(i18n.language).assets
   return (
     <>
       <ChapterPicker list={list} chapter={chapter} />

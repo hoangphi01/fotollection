@@ -102,6 +102,25 @@ export async function layoutChecks(page, where) {
       if (!hinted) out.push(`UI-TEXT-001 text cut with no hint giving it whole: "${name(el)}"`)
     }
 
+    // UI-TEXT-007 (FR-125): English, the source, fits whole: a control that shrinks or cuts its
+    // English words is a layout fault. UI-TEXT-008: words a translation cut keep the whole in
+    // their hint.
+    const lang = document.documentElement.lang
+    // Only the interface's own words (en.json, given by shoot.mjs); a user's address or file
+    // name may shrink and cut in any language.
+    const words = globalThis.__englishWords ?? []
+    const exact = new Set(words.filter((w) => !w.includes('{{')))
+    const shaped = words
+      .filter((w) => w.includes('{{'))
+      .map((w) => new RegExp(`^${w.split(/\{\{[^}]+\}\}/).map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.+?')}$`))
+    const ours = (text) => exact.has(text) || shaped.some((re) => re.test(text))
+    for (const el of document.querySelectorAll('[data-fit]')) {
+      if (el.dataset.fit === 'full' || !vis(el)) continue
+      if (lang === 'en' && ours(el.textContent.trim())) out.push(`UI-TEXT-007 English words do not fit (${el.dataset.fit}): "${name(el)}"`)
+      else if (el.dataset.fit === 'cut' && el.dataset.hint !== el.textContent.replace(/\s*(…|\.\.\.)$/u, ''))
+        out.push(`UI-TEXT-008 cut words without the whole in their hint: "${name(el)}"`)
+    }
+
     // UI-STATE-001: a disabled button's own hint never shows (no pointer events): on a wrapper.
     for (const el of document.querySelectorAll('button:disabled[data-hint]')) {
       if (vis(el)) out.push(`UI-STATE-001 a disabled button holds its own hint, which cannot show: "${name(el)}"`)
@@ -293,6 +312,19 @@ const ALLOWED_CONTRAST = [['#fffaee', '#2d836d']]
  * WCAG 2.2 A and AA by axe-core (UI-A11Y-002; ADR-0042: a test-only tool). Each place that
  * breaks a rule is one line.
  */
+/**
+ * Words a translation made smaller or cut (FR-125): a report, not a failure, so a translator
+ * sees which to shorten (docs/LOCALIZATION.md §3).
+ */
+export async function fitReport(page, where) {
+  const rows = await page.evaluate(() =>
+    [...document.querySelectorAll('[data-fit="small"], [data-fit="cut"]')]
+      .filter((el) => el.getBoundingClientRect().width > 0)
+      .map((el) => [el.dataset.fit, el.textContent.trim(), Math.round(el.getBoundingClientRect().width)]),
+  )
+  return rows.map(([fit, text, width]) => `${where} | ${fit} | ${width} px | ${text}`)
+}
+
 export async function axeChecks(page, where) {
   const { AxeBuilder } = require('@axe-core/playwright')
   const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze()

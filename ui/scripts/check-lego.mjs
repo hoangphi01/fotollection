@@ -249,6 +249,20 @@ for (const path of walkCode(join(root, 'src'))) {
   })
 }
 
+// A button's words fit by themselves (FR-125): `Button` puts them in a `FitText`, which shrinks
+// them a step and then cuts them with the whole in a hint; a `truncate` by hand inside a button
+// cuts with no hint and no smaller step (UI-TEXT-001).
+for (const path of allTsx) {
+  const rel = relative(join(root, 'src'), path).split(sep).join('/')
+  if (!rel.startsWith('features/')) continue
+  const text = readFileSync(path, 'utf8')
+  for (const m of text.matchAll(/<Button\b[^>]*>((?:(?!<\/Button>)[\s\S])*?)<\/Button>/g)) {
+    if (!/className=["'{`][^"'}`]*\btruncate\b/.test(m[1] ?? '')) continue
+    const line = text.slice(0, m.index).split('\n').length
+    problems.push(`${rel}:${line}: words cut by hand inside a button: its words fit by themselves (FitText, FR-125)`)
+  }
+}
+
 // Cancel is red, the stop block (owner, 2026-11-08: "Cancel should be red"): `RemoveButton
 // kind="stop"`, as the crop's and the export's. A dialog whose own action is red (*Don't save*,
 // *Discard*) keeps a neutral `AlertDialogCancel`, so one red stays the danger.

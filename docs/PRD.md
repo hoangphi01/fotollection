@@ -246,7 +246,7 @@ The phase assignment for each requirement lives in [ROADMAP.md](ROADMAP.md), and
 
 ### FR-020 — Localization
 
-**P1.** The UI is available in **English (the default) and Vietnamese**. German follows later.
+**P1.** The UI is available in **English (the default) and Vietnamese**, and **Magyar** from v0.14.1 ([FR-123](#fr-123--hungarian-interface)). Which languages exist and how much of the app each covers: [LOCALIZATION.md](LOCALIZATION.md), the single source of truth.
 
 - Every user-visible string in the UI goes through the i18n layer. CI fails on a hard-coded string in a component and on a key that one language lacks.
 - The language is chosen in *Settings → General* (FR-086; the version popover of earlier versions is gone), takes effect immediately without a restart, and is remembered ([DATABASE.md §6](DATABASE.md#6-app-settings)).
@@ -806,6 +806,8 @@ Next to the batch settings, any other setting will later be overridable for one 
 **P1 (v0.9.4; owner's request 2026-11-03).** In Collage mode, a **Postcard** switch in the bar above the sheets, next to Select, turns each sheet into a postcard; every photo then has its own, so 50 photos make 25 sheets or 50 postcards: one photo on one half of the 10 × 15 print, the back of a postcard on the other, so a kiosk print can be posted (Deutsche Post takes 14–23.5 × 9–12.5 cm cards of 150–500 g/m²; Česká pošta's limit of 14.8 cm makes it a letter there).
 
 - **Layout,** after the owner's sketch: **landscape** puts the photo on the left half, **portrait** on the bottom half. The other half has a **dashed stamp box** of 20 × 25 mm (smaller than most stamps, so the stamp stuck on it hides the dashed line; 26 × 32 mm in v0.9.4, made smaller at the owner's request 2026-11-04) at the sheet's top right with the word STAMP; the band across the top stays free for more stamps or a long label printed at the post office (owner, 2026-11-03: two or three stamps, La Poste's machine labels). The writing lines sit together at the foot, no more than 8 mm apart: on a landscape card **3 or 4 for the message**, half a line's gap, then **3 for the address** (a long address gets **4** in the room of those 3, closer and in smaller type; the message keeps its spacing, owner 2026-11-04); on a portrait card, too low to stack them, the message in the left column and the address in the right, a rule between them. No box round the lines, as on a real card. The post's 15 mm coding strip is not kept clear (owner's choice).
+- **Postal use** (2026-11-12, after the owner's own card came back from Magyar Posta with the sorting code printed over its last address lines; a switch in the *Postcard* card, **on** by default): the post's coding zone is kept free on the whole card, the photo too. On a landscape card that is its last **15 mm**: the photo ends at a thin grey line that runs across the card at the zone's edge, and low along the card's foot, 2 mm from its edge and under the band where the post prints its fluorescent code, small words say it in seven languages, repeated from edge to edge, French first (the UPU's language): *Réservé à la poste · Postal use · Für die Post · Postai használatra · Pro poštu · Dla poczty · Dành cho bưu điện*. The address keeps **15 mm** from the right edge, as Deutsche Post asks (`postcard::CODE_ZONE_MM`, `ADDRESS_EDGE_MM`, `sheet::SheetLayout::postal`). Off, the card is laid out as before, its lines down to 5 mm from the foot, for a card kept at home. A portrait card keeps its layout (the owner's decision on where its zone goes is open).
+- **White paper:** a postcard prints on white, its 3 mm border white, whatever the border's colour elsewhere; the border switch on a postcard has no colour choice and a short hint of its own.
 - **The photo half** is the collage cell it was: ratio, margin, fill, crop, the photo's quarter turns, the date stamp and the 3 mm border all apply. Auto turn and turning the sheet do nothing, as the card is held the way the user chose.
 - **Typed text:** each card's own **message** (at most 400 characters, 8 lines) and **address** (200 characters, 4 lines), checked in Rust; each part on its own lines, and what does not fit is cut, with a **red warning** (Lucide `CircleAlert`) on the card in the grid, on its preview and beside the part that is cut. Set in the bundled typewriter face **Xanh Mono** (OFL; every Latin script of Europe and Vietnamese, with its own italic), the bundled handwriting face **Patrick Hand** ([FR-076](#fr-076--a-handwriting-face-for-postcards)) or the user's font ([FR-042](#fr-042--custom-fonts)), any letter the face lacks (Greek, Cyrillic) taken from the bundled Inter, so an address copied from anywhere in Europe prints as typed; small, medium or large; in black, blue, sepia or red ink; **bold, italic and underline per part**. An optional **credit line** ("Photo © …", at most 80 characters) prints small at the foot of every card. Left empty, the lines stay blank for handwriting.
 - **Panel:** the *Postcard* card holds the shape (held, lines) and the pen note; the *Text on the postcard* card holds the chosen card's message and address, each with B I U, then the font, size, ink and credit. The same cards in a postcard's preview.
@@ -1204,6 +1206,39 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 - **Photos stay on neutral ground** (STYLE_RULE §4, owner 2026-11-01): the stage, the grid and every surface right around a photo keep a chroma of 0.01 or less; only the chrome around them is warm.
 - **Shown first:** two or three variants on the style board for the owner to choose, both themes, before any code; the depth tokens (FR-099) and the measures unchanged.
 - **As built (choice C, one light across the window):** `chrome-lit` (`ui/src/index.css`) on the title bar, the folder list and the side panels: the sidebar's colour under a warm glow from the window's top left and a deeper one at its bottom right, `background-attachment: fixed` so the three surfaces share one light; both themes; `MEASURE=1` unchanged in EN light and VI dark. Tuned with the owner on 2026-11-12: in dark the gradient very soft over the darkest wood (`--background`, which the gallery and the Settings window share, warmed from near-black), the controls and cards on the chrome in the same wood; the preview's stage stays neutral (`--stage`).
+
+### FR-123 — Hungarian interface
+
+**P2 (built for v0.14.1, 2026-11-12; owner's request the same day: "a language pack for the app, Hungarian first"; owner's choice: AI-translated, released at once).** The app speaks **Magyar**, the language of the owner's country of study, with the website's Hungarian words ([LOCALIZATION.md](LOCALIZATION.md)).
+
+- **What it covers:** every interface string (`ui/src/locales/hu.json`), the native menu and the file dialogs (`src-tauri/src/i18n.rs`), every error by its code. The manual is the website's short Hungarian one (`site/_includes/manual-short-hu.md`), which links the full English one. The welcome's pictures and a safety update's reason are in English.
+- **One description per language:** `LANGUAGES` (`ui/src/i18n/index.ts`) names each language's manual and pictures; nothing else tests a language code, and what a language lacks is shown in English.
+- **Checked by machine:** `check-i18n` fails when a locale lacks a key, has an empty value or changes a placeholder. `MEASURE=1 MEASURE_LANG=hu` checks every panel for overflow.
+- **Not yet reviewed** by a native speaker; corrections are welcome through issues, and LOCALIZATION §1 records the review.
+
+### FR-124 — Pick the language on the welcome's first page
+
+**P2 (built for v0.14.1, 2026-11-12; owner's request the same day: "the welcome opens with a language choice, as an iPhone's welcome"; owner's choice: a greeting that changes, then the list).** The welcome ([FR-109](#fr-109--a-welcome-screen-on-the-first-launch)) opens on a page of its own for the language.
+
+- **The page:** a large greeting that passes through every language in its own word (*Hello*, *Szia*, *Xin chào*), fading from one to the next, and the languages by their own names under it. A click speaks that language at once, the menus included. Reduced motion keeps the chosen language's greeting, still.
+- **The first launch speaks the machine's language:** with no settings yet, Rust reads the system's locale (`sys-locale`) and picks Magyar or Tiếng Việt when it is one of them, else English (`Language::from_locale`). Nothing is sent anywhere.
+
+### FR-125 — Long words fit: a step smaller, then cut with the whole in a hint
+
+**P2 (built for v0.14.1, 2026-11-12; owner's request the same day: "German and Hungarian words run long: a long button label gets a little smaller, for that button only; still too long, its end becomes an ellipsis and the hint shows it whole").** Every control's words fit in three steps, and two dry checks find long translations before they reach a button.
+
+- **Three steps (`FitText`, `ui/src/components/forms/fit-text.tsx`):** the words whole; else one step of the type scale smaller for that control only (14 → 12 px, 12 → 11 px, never under 11 px); else cut with an ellipsis, the whole words in the control's hint. `Button`, `ToggleGroupItem` (segmented and swatch choices) and `ListRow` apply it to their words by themselves; one shared `ResizeObserver` measures again when a control's width, its words or the fonts change.
+- **English, the source, fits whole:** a control that shrinks or cuts English words fails UI-TEXT-007; the three steps are for translations. A translation's fitted words are listed by MEASURE for the translator, and a cut one keeps its whole in the hint (UI-TEXT-008).
+- **Dry checks:** `npm run text-widths` draws every string in Be Vietnam Pro and lists the labels a translation makes over 30 % and 20 px wider than English; the pseudo-locale `en-XA` (English 40 % longer, marked, in a `VITE_PSEUDO=1` build only) runs through MEASURE to show which controls a German-length translation would shrink or cut.
+- **Measured:** one pass on a window resize to 1180 px fits 43 controls in 0.30 ms (0.50 ms in Vietnamese), under the 2 ms a layout may take ([OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log)).
+
+### FR-126 — A Polaroid frame for collage sheets, with room to write
+
+**P2 (planned for v0.14.1; owner's request 2026-11-12: "collage should have a white border like the info frame, named Polaroid frame, and below the photo, as an Instax, room for the user to write by hand or type").** Each photo of a two-photo collage sheet (never a postcard) sits in a white instant-film frame: an even border on three sides and a deeper strip under the photo, where the user's note is typed or left blank to write on the print.
+
+- **Where:** Collage mode with two photos to a sheet only; never on a postcard (owner, 2026-11-12).
+- **Built from what exists:** the info frame's border and layout (`frame.rs`, `plan_framed`) for the white frame, and the postcard's text (its typewriter and handwritten faces, its typed text per photo, FR-077) for the note; nothing drawn twice.
+- **Before building:** the layout is shown on the style board first (the strip's depth, where the note sits, the frame's colour), and the owner chooses (LESSONS, "Ask before building a layout described in words").
 
 ## 7. Non-functional requirements
 

@@ -87,7 +87,7 @@ Fotollection làm tất cả những việc đó **ngay trên máy bạn**, vớ
 | 📍 | **Đặt ngày và nơi bằng tay**: gán ngày và nơi chụp cho ảnh scan, ảnh không có EXIF hay GPS, từng ảnh hoặc nhiều ảnh một lúc, tìm địa điểm offline; đổi tên một nơi ("Praha 1" → "Prague") thì mọi bản in đổi theo | 1 |
 | 🎥 | **Chụp từ máy ảnh cắm dây**: xem trực tiếp với khung cỡ in, bấm Chụp, ảnh vào một tab để lưu hoặc xóa; không cần cài driver (Windows, Sony a6400 trước) | 2 |
 | 🔒 | **Xóa GPS khi export** theo mặc định. Không tài khoản, không cloud, không telemetry | 1 |
-| 🌐 | Giao diện **tiếng Anh và tiếng Việt** | 1 |
+| 🌐 | Giao diện **tiếng Anh, tiếng Hung và tiếng Việt**, theo ngôn ngữ của máy ở lần chạy đầu | 1 |
 | 📦 | **File dự án như `.docx`**: lưu lại, mở trên máy khác với đúng font, logo và thiết lập, chỉ lại thư mục ảnh đã bị chuyển | 1 |
 | 🧳 | **Gom ảnh theo chuyến đi**, crop thông minh theo khuôn mặt, phát hiện ảnh trùng | 2 |
 | 🎞️ | Xem trước photobook, mã QR ở mặt sau ảnh in | 3 |

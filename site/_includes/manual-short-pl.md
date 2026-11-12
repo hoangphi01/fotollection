@@ -179,7 +179,7 @@ Data na zdjęciu, ramka, foldery dni i data eksportowanej kopii idą za zmianą.
 
 Aparat z błędnym czasem albo wciąż w strefie czasowej domu ustawia zdjęcia w złej kolejności obok zdjęć z telefonu i drukuje złą datę.
 
-1. **Ze zdjęcia (najprościej):** otwórz zdjęcie z tego aparatu i w **Captured** kliknij **Set this camera's clock from a photo…**. Wybierz zdjęcie z telefonu zrobione w tej samej chwili i kliknij **Correct the clock**.
+1. **Ze zdjęcia (najprościej):** otwórz zdjęcie z tego aparatu i w **Captured** kliknij **Set the clock from a photo…**. Wybierz zdjęcie z telefonu zrobione w tej samej chwili i kliknij **Correct the clock**.
 2. **Ręcznie:** w panelu ustawień **Camera clocks** wymienia każdy aparat. Wpisz, ile dodać, na przykład `+1:02:00` albo `−0:45`, i naciśnij Enter.
 
 Wszystkie zdjęcia z tego aparatu przesuwają się naraz; plik zdjęcia nigdy się nie zmienia.

@@ -52,7 +52,12 @@ export function SheetSizeCard({ settings, onChange, info }: SheetSizeCardProps) 
           </ValueRow>
         </Field>
       )}
-      <BorderSwitch settings={settings} onChange={onChange} paper={!settings?.collage?.fill} />
+      <BorderSwitch
+        settings={settings}
+        onChange={onChange}
+        paper={!settings?.collage?.fill}
+        postcard={settings?.collage?.postcard?.enabled ?? false}
+      />
     </SectionCard>
   )
 }

@@ -6,6 +6,7 @@ import { Hint } from '@/components/forms/field'
 import { PanelNote } from '@/components/layout/panel-note'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { languageInfo } from '@/i18n'
 import { commands, type UpdateCheck } from '@/ipc/bindings'
 
 /**
@@ -28,7 +29,7 @@ export function UpdatePopup() {
     }
   }, [])
 
-  const reason = update ? (i18n.language.startsWith('vi') ? update.reasonVi : update.reasonEn) : ''
+  const reason = update ? (languageInfo(i18n.language).value === 'vi' ? update.reasonVi : update.reasonEn) : ''
   return (
     <Dialog open={update !== null} onOpenChange={(open) => !open && setUpdate(null)}>
       <DialogContent>

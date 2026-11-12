@@ -12,6 +12,43 @@
 4. **When the app hangs, look at every thread before guessing:** `sample <pid> 3` on macOS names what each thread waits for. Rust threads all idle with a spinner on screen means the UI never asked; threads waiting on each other is a deadlock (2026-11-05).
 5. **Write the lesson here** before moving on.
 
+## 2026-11-12
+
+### A postcard went through the post and the post printed over its address (FR-073)
+
+- **Seen:** the owner mailed a card made by the app (Praha to Debrecen, Magyar Posta, 2026-11-05); it arrived, but the post's orange sorting code ran across the foot of the card, over the last address lines, and its tracking label was stuck on the photo.
+- **Why:** the layout filled the address side down to 5 mm from the foot and to 5 mm from the right edge. Postal services keep the foot of an address side for their code (Deutsche Post: 15 mm, unprinted) and want the address 15 mm from the edges; FR-073 checked the card's size against Deutsche Post's rules but never its address side.
+- **Fix:** a *Postal use* switch (on by default, the owner's choice): `postcard::layout` keeps the last 15 mm of a landscape card free (`CODE_ZONE_MM`) and the address 15 mm from the right edge (`ADDRESS_EDGE_MM`); `sheet::layout` cuts the photo short above the zone and the sheet draws its line and "postal use" in seven languages along the card's foot. `fr_073_the_posts_coding_zone_stays_free` and `fr_073_postal_use_keeps_the_posts_zone_free` failed on the old layout.
+- **Rule:** anything made to pass through a service (the post, a print shop's kiosk) follows that service's own layout rules, read from its documents, not only its sizes; and the real thing is tried once (a card posted) before it is called done.
+
+### A button sized by its words ran out of its card, in a card no check opened (FR-125)
+
+- **Seen:** in Hungarian, the date card's *A gép órájának beállítása egy fotó alapján…* ran 37 px past its card, cut by the card's edge with no ellipsis and no hint (owner's screenshot), although `FitText` was in every button and MEASURE passed.
+- **Why:** two holes. A button is `shrink-0` and as wide as its words, so its words never lacked room inside it: the button grew instead, and the card clipped it. And MEASURE opened the inspector's Print and Info tabs only to measure their folded cards, so nothing inside a folded card was ever checked; its first try at opening them picked tabs by position and landed on Crop.
+- **Fix:** `max-w-full` on every `Button`, so a button sized by its words stops at its container and its words fit by the three steps; MEASURE picks the Print and Info tabs by their words, opens every folded card and runs every check (UI-LAYOUT-001 reported the 37 px without the fix, nothing with it).
+- **Rule:** words fit only where their box can be narrower than they are: a control's width is bounded by its container (`max-w-full`, `min-w-0`). A check walks what folds open, not only the folded view; and a check is shown to fail on the old code before it is trusted.
+
+### Words measured before the font arrived stayed "fitting" while cut (FR-125)
+
+- **Seen:** the first Hungarian MEASURE pass showed *Az exportálás beállításainak módosítása* cut with no hint in 30 views, while `FitText` marked it `full`; in one view it was marked `cut` correctly.
+- **Why:** the first measure ran in the fallback face, narrower than Be Vietnam Pro. When the face arrived the words grew but the button kept its width, so the `ResizeObserver`, watching the button, never fired, and the cached answer stayed.
+- **Fix:** every mounted `FitText` is measured again on `document.fonts` `loadingdone` and once `document.fonts.ready` resolves.
+- **Rule:** a measure of text is redone when the fonts load, not only when a box resizes; a text check runs in a language whose words are longer than the source (hu, the pseudo-locale `en-XA`), where a stale answer shows.
+
+### Baseline names came from a regex's source, and a new language wrote baselines into the repo (FR-123, FR-125)
+
+- **Seen:** after the Settings sections were found by `say(key)`, the shots were named `settings-?:Gene…`, which matched no approved picture; and the first Hungarian and pseudo-locale passes wrote about forty new `chromium-hu-…` and `chromium-en-XA-…` baselines into `site/screenshots/baselines/`.
+- **Why:** the names were cut from the pattern's text (`name.source.slice(2, 8)`), so changing how the pattern is built renamed every shot; `baseline()` writes a picture it does not find, whatever the language.
+- **Fix:** each section has a tag from its English words (`section(key).tag`, the old names kept, `DataD` renamed `Data`); pictures are compared only for English and Vietnamese, the languages with approved baselines.
+- **Rule:** a file name never comes from code built for something else (a pattern, a selector); a check that may write into the repo writes only what a person approves.
+
+### The Colour tab offered to reset photos already at their original colour (FR-114)
+
+- **Seen:** after *Back to original* on 422 photos, the card's red reset was still there and opened the same question again (owner: "already at the original colour, reset what?").
+- **Why:** the button was disabled only when no photo was shown; whether any photo had a colour to take away was asked of Rust (`look_batch_plan`) only after the click.
+- **Fix:** the card asks `look_batch_plan` with *Original* on every edit and ⌘Z (`revision`, `useLiveQuery`) and shows the reset only when it counts a photo; the 44 px header keeps its height. Test `fr_114_nothing_to_reset_after_a_reset`.
+- **Rule:** a reset shows only while there is something to reset, and the count comes from Rust and follows every edit, as the Basic card's reset does; never a reset that is always there.
+
 ## 2026-11-07
 
 ### A click on the photo made an undo step named *Crop*, and the white-balance picker never got its click (FR-098, FR-006)

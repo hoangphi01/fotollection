@@ -34,6 +34,7 @@
 | Latest measured speed and memory, in one readable page | [RESULT.md](RESULT.md) |
 | Code, UI, git and docs conventions | [STYLE_RULE.md](STYLE_RULE.md) |
 | How the interface moves: motion tokens, which block uses which, reduced motion, transitions, the frame budget | [TRANS_ANIMATION.md](TRANS_ANIMATION.md) |
+| The app's languages: which exist, what each covers, the fallback, the translation rules, the glossary, adding one | [LOCALIZATION.md](LOCALIZATION.md) |
 | Toolchain setup, build commands, build disk cleanup | [DEVELOPMENT.md](DEVELOPMENT.md) |
 | Threat model and defenses | [SECURITY.md](SECURITY.md) |
 | **Every error code** (`ERR-<KIND>-<NNNN>`): meaning, cause, what to do, where it is raised | [ERROR_CONTROL.md](ERROR_CONTROL.md) |

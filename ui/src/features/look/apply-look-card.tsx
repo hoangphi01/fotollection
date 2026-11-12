@@ -22,6 +22,7 @@ import { commands, type CullFilter, type LookEntry, type PhotoSummary } from '@/
 import { errorText } from '@/lib/errors'
 import { formatNumber } from '@/lib/format'
 import { lookTileUrl } from '@/lib/photo-url'
+import { useLiveQuery } from '@/features/settings/use-ipc-query'
 import { useLookLibrary } from './look-library'
 import { lookName, useLooks } from './use-looks'
 
@@ -34,6 +35,8 @@ type ApplyLookCardProps = {
   photoCount: number
   /** The photo picked in the grid: the look is shown on it, and its look can be saved. */
   photo?: PhotoSummary
+  /** Rust's revision, bumped by every edit and ⌘Z, so the reset follows what the photos hold. */
+  revision: number
 }
 
 /** The look chosen, kept while the app runs (a tab switched, the panel shown again). */
@@ -49,6 +52,12 @@ type Asking = { mode: 'apply' | 'reset'; edited: number; total: number } | null
 /** The library's look that is the photo's own colour, untouched (FR-079). */
 const ORIGINAL = 'builtin:original'
 
+/** How many of the photos a reset covers still have a colour of their own (Rust decides). */
+const loadResettable = (subject: string) => {
+  const { filter, ticked } = JSON.parse(subject) as { filter: CullFilter; ticked: number[] }
+  return commands.lookBatchPlan(filter, ticked, ORIGINAL).then((r) => (r.status === 'ok' ? r.data.edited : 0))
+}
+
 const percent = (v: number) => `${v} %`
 
 /**
@@ -57,7 +66,7 @@ const percent = (v: number) => `${v} %`
  * photos or else to every photo shown, at an amount; photos with a colour of their own are
  * asked about once. Rust picks the photos and builds the look; one ⌘Z undoes the batch.
  */
-export function ApplyLookCard({ filter, ticked, photoCount, photo }: ApplyLookCardProps) {
+export function ApplyLookCard({ filter, ticked, photoCount, photo, revision }: ApplyLookCardProps) {
   const { t } = useTranslation()
   const { looks, setLooks, reload } = useLooks()
   const [chosenId, setChosenId] = useState(lastChosen)
@@ -85,6 +94,10 @@ export function ApplyLookCard({ filter, ticked, photoCount, photo }: ApplyLookCa
   const count = tickedIds.length > 0 ? tickedIds.length : photoCount
 
   const original = looks.find((e) => e.id === ORIGINAL)
+  // The reset shows only while some photo it covers has a colour to take away (owner,
+  // 2026-11-12: "already at the original colour, reset what?"); the header keeps its height.
+  const resettable =
+    useLiveQuery(count > 0 ? JSON.stringify({ filter, ticked: tickedIds }) : null, revision, loadResettable).current ?? 0
   // One way for both: a look given, or *Original* given back at full amount (the reset, owner
   // 2026-11-08); Rust picks the photos and makes it one ⌘Z step.
   const run = (mode: 'apply' | 'reset', keepEdited: boolean) => {
@@ -122,12 +135,14 @@ export function ApplyLookCard({ filter, ticked, photoCount, photo }: ApplyLookCa
       icon={<Wand />}
       title={t('look.applyTitle')}
       action={
-        <ResetButton
-          iconOnly
-          label={t(tickedIds.length > 0 ? 'look.resetTicked' : 'look.resetShown', { count, n: formatNumber(count) })}
-          disabled={count === 0 || !original}
-          onClick={askReset}
-        />
+        resettable > 0 &&
+        original && (
+          <ResetButton
+            iconOnly
+            label={t(tickedIds.length > 0 ? 'look.resetTicked' : 'look.resetShown', { count, n: formatNumber(count) })}
+            onClick={askReset}
+          />
+        )
       }
     >
       {chosen && (

@@ -2,6 +2,7 @@
 import type { MouseEventHandler, ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { FitText } from './fit-text'
 
 /**
  * The look of a chosen row in any list, menu or dropdown (owner, 2026-11-06: one chosen style
@@ -56,7 +57,14 @@ export function ListRow({ icon, children, trailing, chosen = false, current = 't
       onClick={onClick}
     >
       {icon ?? <span className="size-4 shrink-0" aria-hidden />}
-      <span className="min-w-0 flex-1 truncate text-left">{children}</span>
+      {/* Words fit as a button's do (FR-125); other content keeps the row's own cut. */}
+      {typeof children === 'string' ? (
+        <span className="flex min-w-0 flex-1 text-left">
+          <FitText>{children}</FitText>
+        </span>
+      ) : (
+        <span className="min-w-0 flex-1 truncate text-left">{children}</span>
+      )}
       {trailing}
     </Button>
   )

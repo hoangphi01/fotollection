@@ -4,6 +4,7 @@ import { PanelBottom } from 'lucide-react'
 import { useId, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Checkbox } from '@/components/ui/checkbox'
+import { FitText } from '@/components/forms/fit-text'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Collapse } from '@/components/layout/collapse'
@@ -117,7 +118,7 @@ export function FrameSection({ frame, fonts, compact = false, children }: FrameS
       <Field label={t('frame.show')}>
         <div className="grid grid-cols-2 gap-x-3 gap-y-3">
           {FIELDS.map(({ key }) => (
-            <label key={key} className="flex items-center gap-2 text-sm">
+            <label key={key} className="flex min-w-0 items-center gap-2 text-sm">
               <Checkbox
                 checked={settings?.fields[key] ?? false}
                 onCheckedChange={(checked) =>
@@ -127,7 +128,7 @@ export function FrameSection({ frame, fonts, compact = false, children }: FrameS
                   }))
                 }
               />
-              <span>{t(`frame.field.${key}`)}</span>
+              <FitText>{t(`frame.field.${key}`)}</FitText>
             </label>
           ))}
         </div>

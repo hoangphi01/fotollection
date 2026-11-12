@@ -135,6 +135,7 @@
     "printSizeHint": "Mặc định cắt ở giữa. Chỉnh từng ảnh bằng nút Cắt ảnh trong màn xem trước.",
     "border": "Viền 3 mm",
     "borderHint": "Viền trắng hoặc đen 3 mm nằm trong khổ in, lấn vào ảnh: bản in vẫn đúng khổ của máy in tại tiệm. Khi có khung thông tin, viền theo màu khung, và Giữ trọn ảnh sẽ thu ảnh vào trong khổ thay vì làm bản in to ra.",
+    "borderHintPostcard": "Viền trắng 3 mm trong khổ in: bản in vẫn đúng khổ của tiệm.",
     "borderHintPaper": "Viền 3 mm quanh từng ảnh, lấn vào ảnh. Trắng hay đen cũng là màu giấy quanh các ảnh.",
     "borderColor": "Màu viền",
     "borderColors": {
@@ -217,7 +218,7 @@
       "lens": "Ống kính",
       "focal": "Tiêu cự",
       "aperture": "Khẩu độ",
-      "shutter": "Tốc độ màn trập",
+      "shutter": "Tốc độ",
       "iso": "ISO",
       "photoStyle": "Photo Style",
       "date": "Ngày",
@@ -938,7 +939,10 @@
       "bold": "Đậm",
       "italic": "Nghiêng",
       "underline": "Gạch chân"
-    }
+    },
+    "postalUse": "Gửi qua bưu điện",
+    "postalUseHint": "Chừa dải 15 mm ở chân thẻ cho mã vạch của bưu điện.",
+    "postalUsePortraitHint": "Áp dụng cho thẻ ngang."
   },
   "look": {
     "faves": "Cơ bản",
@@ -1337,7 +1341,10 @@
     "start": "Bắt đầu",
     "everyStart": "Hiện mỗi lần khởi động",
     "again": "Xem lại màn chào mừng",
-    "againHint": "Năm trang hướng dẫn cơ bản, như lần mở đầu tiên.",
+    "againHint": "Chọn ngôn ngữ, rồi năm trang cơ bản, như lần chạy đầu tiên.",
+    "language": {
+      "title": "Ngôn ngữ"
+    },
     "welcome": {
       "title": "Mở ảnh của bạn",
       "text": "Mở một thư mục ảnh của chuyến đi, hoặc kéo thả thư mục vào cửa sổ. Fotollection làm việc ngay trên ảnh tại chỗ: không sao chép, không di chuyển, không tải lên đâu cả.",

@@ -194,7 +194,7 @@ Když jsi složku protřídil v Lightroomu, Bridge, Capture One nebo darktable, 
 
 Fotoaparát s nesprávným časem nebo pořád v časovém pásmu domova řadí fotky na špatné místo vedle fotek z telefonu a tiskne špatné datum.
 
-1. **Z fotky (nejsnáz):** otevři fotku z toho fotoaparátu a v **Captured** klikni na **Set this camera's clock from a photo…**. Vyber fotku z telefonu pořízenou ve stejné chvíli a klikni na **Correct the clock**.
+1. **Z fotky (nejsnáz):** otevři fotku z toho fotoaparátu a v **Captured** klikni na **Set the clock from a photo…**. Vyber fotku z telefonu pořízenou ve stejné chvíli a klikni na **Correct the clock**.
 2. **Ručně:** v panelu nastavení vypíše **Camera clocks** všechny fotoaparáty v knihovně. Napiš, kolik přičíst, třeba `+1:02:00` nebo `−0:45`, a stiskni Enter.
 
 Všechny fotky z toho fotoaparátu se posunou najednou; soubor fotky se nikdy nemění.

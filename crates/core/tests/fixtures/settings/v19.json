@@ -40,6 +40,7 @@
       "postcard": {
         "enabled": true,
         "orientation": "landscape",
+        "postalUse": false,
         "lines": 4,
         "font": null,
         "credit": "",

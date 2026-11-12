@@ -102,7 +102,7 @@ export function SettingsPanel({
       }
     >
       {tab === 'colour' ? (
-        <ApplyLookCard filter={filter} ticked={ticked ? [...ticked] : undefined} photoCount={photoCount} photo={photo} />
+        <ApplyLookCard filter={filter} ticked={ticked ? [...ticked] : undefined} photoCount={photoCount} photo={photo} revision={revision} />
       ) : (
         <>
           <PrintSizeCard settings={settings} onChange={onChange} printSizes={printSizes} photo={photo} advice={advice} revision={revision} orientationIds={ticked?.length ? ticked : photo ? [photo.id] : undefined} />

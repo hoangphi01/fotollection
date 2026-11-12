@@ -73,9 +73,13 @@ The full run is two corners of it: English, light, Chromium, and Vietnamese, dar
 | ID | Check | Pass rule | How | When | Source |
 |---|---|---|---|---|---|
 | UI-TEXT-001 | Text cut short says itself whole | Text ended by an ellipsis or a line clamp carries a hint (`data-hint`) with all of it | A `layoutChecks` | release | Apple HIG, truncation |
-| UI-TEXT-002 | Every word is translated | Every visible string comes from both locales, with the same keys | A `check-i18n` | commit | FR-020 |
+| UI-TEXT-002 | Every word is translated | Every visible string comes from every locale, with the same keys | A `check-i18n` | commit | FR-020 |
 | UI-TEXT-003 | Long names stay inside | A long custom size, file name or address keeps every control in its card | A, stress fixtures + UI-LAYOUT-001 | release | the owner, 2026-11-07 |
 | UI-TEXT-004 | Vietnamese marks are never clipped | No stacked mark (Ằ, Ễ, Ộ) cut at the top of a line in a 32 px control | M, the VI measure pictures | release | W3C i18n |
+| UI-TEXT-005 | Hungarian fits | Every panel, card and control holds the Hungarian words (long compounds such as *nyomatméret*) without overflow, at 1180, 1400 and 1600 px, both themes | A `MEASURE=1 MEASURE_LANG=hu`, run by `scripts/ui-check.sh` | release | FR-123; LOCALIZATION §3 |
+| UI-TEXT-006 | Placeholders survive translation | Every locale has English's placeholders (`{{n}}`, `{{name}}`) for each key, its plural forms together | A `check-i18n` | commit | FR-123; LOCALIZATION §3 |
+| UI-TEXT-007 | English fits whole | No control shrinks or cuts the interface's English words (`data-fit` other than `full` on a string of `en.json`); the three steps are for translations and for a user's own words (an address, a file name) | A `layoutChecks` | release | FR-125 |
+| UI-TEXT-008 | Fitted words say themselves whole | A translation's words cut by `FitText` carry the whole in their hint; MEASURE lists every word fitted smaller or cut, in hu and the pseudo-locale `en-XA` | A `layoutChecks`, `fitReport` | release | FR-125; LOCALIZATION §3 |
 
 ### States
 

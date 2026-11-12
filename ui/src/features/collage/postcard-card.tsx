@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // @shown both: in the gallery panels and in the preview (STYLE_RULE §4, where each card shows, checked by check-lego).
-import { Mail, PenLine, RectangleHorizontal, RectangleVertical } from 'lucide-react'
+import { Mail, Mailbox, PenLine, RectangleHorizontal, RectangleVertical } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Field, Hint } from '@/components/forms/field'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
+import { SwitchField } from '@/components/forms/switch-field'
 import { PanelNote } from '@/components/layout/panel-note'
 import { SectionCard } from '@/components/layout/section-card'
 import type { PostcardOrientation, PostcardSettings, RenderSettings } from '@/ipc/bindings'
@@ -59,6 +60,14 @@ export function PostcardCard({ settings, onChange }: PostcardCardProps) {
           ariaLabel={t('postcard.lines')}
         />
       </Field>
+      {/* Made to be posted (FR-073, owner 2026-11-12): the post's strip kept free, on by default. */}
+      <SwitchField
+        icon={<Mailbox />}
+        label={t('postcard.postalUse')}
+        checked={postcard.postalUse ?? true}
+        onChange={(postalUse) => setPostcard({ postalUse })}
+        hint={t(postcard.orientation === 'portrait' ? 'postcard.postalUsePortraitHint' : 'postcard.postalUseHint')}
+      />
       <PanelNote icon={<PenLine />}>{t('postcard.pens')}</PanelNote>
     </SectionCard>
   )

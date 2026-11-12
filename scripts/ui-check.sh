@@ -39,8 +39,9 @@ if [ ! -f "$dump/fixtures.json" ]; then
   rm -rf "$dump"
   FOTOLLECTION_DEMO_FOLDER="$PWD/$folder" FOTOLLECTION_DEMO_DUMP="$PWD/$dump" target/debug/fotollection
 fi
-# VITE_FAULTS=1: the parts the harness breaks on purpose (UI-STATE-010); releases never set it.
-VITE_FAULTS=1 npm run ui:build >/dev/null
+# VITE_FAULTS=1: the parts the harness breaks on purpose (UI-STATE-010); VITE_PSEUDO=1: the
+# pseudo-locale en-XA, English 40 % longer (FR-125). Releases set neither.
+VITE_FAULTS=1 VITE_PSEUDO=1 npm run ui:build >/dev/null
 
 status=0
 run() {
@@ -55,6 +56,10 @@ else
   # Vietnamese, the longer words, in dark in WebKit, the engine of the Mac app.
   run MEASURE_LANG=en MEASURE_THEME=light
   run MEASURE_LANG=vi MEASURE_THEME=dark MEASURE_ENGINE=webkit
+  # Hungarian, and the pseudo-locale as long as German (FR-123, FR-125): every word fits, smaller
+  # or cut with its hint; the words fitted are listed for the translator.
+  run MEASURE_LANG=hu MEASURE_THEME=light
+  run MEASURE_LANG=en-XA MEASURE_THEME=dark
 fi
 scripts/resources.sh | tail -3 || true  # a warning, never a stop
 [ "$status" -eq 0 ] && echo "ui-check: every UI test case passes" || echo "ui-check: failures above, each with its UI- test ID" >&2

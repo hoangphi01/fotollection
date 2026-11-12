@@ -12,12 +12,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Magyar** (FR-123): the whole interface, the menus and every error message in Hungarian, with the website's short Hungarian manual inside the app. Settings → General → Language.
+- **Pick the language first** (FR-124): the welcome now opens on a page of its own for the language, a greeting in every language and the languages by their own names; the first launch already speaks your computer's language.
+- **Long words fit** (FR-125): a button whose translated words are too long sets them a little smaller, and if they still do not fit, cuts them with an ellipsis and shows them whole when you point at it.
 - **Turn the print size** (FR-120): *Orientation* under the print size lays it **Upright** or **Flat** for the photo, whatever its shape, so a portrait photo prints across a flat 15 × 5 strip and a landscape one on an upright 10 × 15; the crop, the sharpness badge and the export follow. In the preview, Simple mode and the gallery's Print tab (for the ticked photos), or press **O**. Collage sheets keep their own turn.
 - **A small "fotollection.org" on your prints** (FR-121), so a photo passed round tells where it was made: a quiet line on the border, in the info frame, under a postcard's stamp box or in a corner of the photo away from the date and faces, the same size on every print. It shows in the preview as it prints, never on photos exported for sharing, and *Settings → General → Prints* turns it off.
 
 ### Fixed
 
+- **Postcards leave the post its room** (FR-073): a card posted from the app came back with the post's sorting code printed over its last address lines. A new **Postal use** switch in the *Postcard* card, on by default, keeps the foot of a landscape card free for the post (15 mm, the photo too), marks it with a thin line and "postal use" in seven languages along the foot, and keeps the address 15 mm from the edge; off, the card is laid out as before. Postcards now always print on white.
 - **A list that opens upwards keeps its first rows** (FR-052): the print size list in the photo preview, low in its column, lost its top sizes under the window's title bar; every dropdown and popover now keeps clear of it.
+- **Nothing to reset, no reset** (FR-114): the Colour tab's red reset stayed after the photos were back to their original colour, and asked to reset them again; it now shows only while a photo it covers has a colour of its own.
 
 ### Changed
 

@@ -596,4 +596,14 @@ mod tests {
         moved.adjust.contrast += 20;
         assert!(has_own_colour(Some(&moved), &next));
     }
+
+    /// FR-114: once photos are back to *Original*, a reset finds nothing left to take away, so
+    /// the Colour tab hides its reset (owner, 2026-11-12: "already original, reset what?").
+    #[test]
+    fn fr_114_nothing_to_reset_after_a_reset() {
+        let original = batch_look(&entry("builtin:original"), 100, None);
+        assert!(!has_own_colour(Some(&original), &original));
+        let warm = batch_look(&entry("builtin:warm-film"), 100, None);
+        assert!(has_own_colour(Some(&warm), &original));
+    }
 }

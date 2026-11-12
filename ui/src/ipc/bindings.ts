@@ -1515,7 +1515,9 @@ export type IpcError = {
 export type KindFilter = "all" | "raw" | "notRaw";
 
 /**  Interface language (FR-020). English is the default; text printed on photos never follows it. */
-export type Language = "en" | "vi";
+export type Language = "en" | "vi" | 
+/**  Magyar (FR-123), translated from English; see docs/LOCALIZATION.md. */
+"hu";
 
 export type LengthUnit = "cm" | "in";
 
@@ -1967,6 +1969,13 @@ export type PostcardSettings = {
 	/**  How the message and the address are set. */
 	messageStyle?: TextStyle,
 	addressStyle?: TextStyle,
+	/**
+	 *  Made to be posted (FR-073, owner 2026-11-12): the post's coding zone is kept free on
+	 *  the whole card, the photo too: 15 mm at the foot of a landscape card, along the right
+	 *  edge of a portrait one, marked by a thin line and "postal use" in seven languages.
+	 *  Absent before settings v19: on.
+	 */
+	postalUse?: boolean,
 };
 
 /**

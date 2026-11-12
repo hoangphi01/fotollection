@@ -27,7 +27,7 @@ Use **`i18next` + `react-i18next`**, with every locale **bundled as JSON** in `u
 
 ## Consequences
 
-- Adding a language means adding `<lang>.json` and a row in `LANGUAGES` (`ui/src/i18n/index.ts`). The check script enforces completeness.
+- Adding a language follows [LOCALIZATION.md](../LOCALIZATION.md) §5, the single source of truth for the app's languages (since 2026-11-12, FR-123): its `<lang>.json`, its entry in `LANGUAGES` (`ui/src/i18n/index.ts`), its Rust strings and its manual. The check script enforces completeness and the placeholders.
 - Every new UI string goes through `t()` in the same change ([STYLE_RULE.md §3](../STYLE_RULE.md#3-typescript-ui)), and new Rust error codes get an `errors.*` entry in every locale.
 - The bundle grows by about 64 kB ([OPTIMIZATION.md §5](../OPTIMIZATION.md#5-benchmark-log)). It is read from disk, but cold start ([NFR-010](../PRD.md#nfr-010--cold-start)) must stay measured.
 - The native menu (FR-023) is built in Rust and needs its own small string table in the shell.

@@ -38,6 +38,8 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v18 (FR-079): `looks`, the user's saved looks, absent before (none); `ui.motion`
 /// (FR-100), absent before (follow the system).
 /// v19 (FR-121): `ui.printCredit`, the small "fotollection.org" on prints, absent before (on).
+/// v19 also (FR-123): `ui.language` may be `hu`, Magyar; (FR-073) `collage.postcard.postalUse`,
+/// the post's coding zone kept free, absent before (on).
 pub const SCHEMA_VERSION: u32 = 19;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
@@ -600,6 +602,7 @@ mod tests {
                 underline: true,
                 ..crate::settings::TextStyle::default()
             },
+            postal_use: false,
         };
         save(&path, &s)?;
         let Loaded::Ok(back) = load(&path) else {
@@ -708,6 +711,9 @@ mod tests {
             panic!("v19 should load");
         };
         assert!(!new.ui.print_credit);
+        // FR-073: a card made to be posted unless the user said otherwise.
+        assert!(old.render.collage.postcard.postal_use, "on before v19");
+        assert!(!new.render.collage.postcard.postal_use, "v19 keeps it off");
         Ok(())
     }
 
@@ -979,6 +985,24 @@ mod tests {
         };
         save(&path, &s)?;
         assert!(std::fs::read_to_string(&path)?.contains(r#""language": "vi""#));
+        assert_eq!(load(&path), Loaded::Ok(s));
+        Ok(())
+    }
+
+    /// FR-123: Magyar is kept as `"hu"` and read back.
+    #[test]
+    fn fr_123_hungarian_survives_a_round_trip() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        let s = StoredSettings {
+            ui: UiSettings {
+                language: crate::settings::Language::Hu,
+                ..UiSettings::default()
+            },
+            ..StoredSettings::default()
+        };
+        save(&path, &s)?;
+        assert!(std::fs::read_to_string(&path)?.contains(r#""language": "hu""#));
         assert_eq!(load(&path), Loaded::Ok(s));
         Ok(())
     }

@@ -226,7 +226,15 @@ fn load_settings(store_path: &Path) -> (StoredSettings, bool, Vec<IpcError>) {
     let mut notices = Vec::new();
     let (stored, writable) = match settings_store::load_machine(store_path) {
         Loaded::Ok(stored) => (stored, true),
-        Loaded::Missing => (StoredSettings::default(), true),
+        // The first launch speaks the machine's language (FR-124); the welcome's first page
+        // changes it.
+        Loaded::Missing => {
+            let mut fresh = StoredSettings::default();
+            fresh.ui.language = fotollection_core::settings::Language::from_locale(
+                &sys_locale::get_locale().unwrap_or_default(),
+            );
+            (fresh, true)
+        }
         Loaded::Recovered(recovered) => {
             let _ = settings_store::keep_damaged(store_path);
             notices.push(if recovered.from_backup {

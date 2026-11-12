@@ -35,6 +35,8 @@ semver = "1"
 tauri-plugin-opener = "2"
 ureq = { version = "3", default-features = false, features = ["rustls"] }
 tauri-specta.workspace = true
+# FR-124: the first launch speaks the machine's language (MIT OR Apache-2.0).
+sys-locale = "0.3"
 
 [dev-dependencies]
 tempfile.workspace = true

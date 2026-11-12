@@ -144,6 +144,7 @@
     "printSizeHint": "Centred by default. Adjust per photo with Crop in the preview.",
     "border": "3 mm border",
     "borderHint": "A white or black border 3 mm wide inside the print size, cut into the photo: the print stays the exact kiosk size. With the info frame, the border takes the frame’s colour, and Fit whole photo fits inside the size instead of growing.",
+    "borderHintPostcard": "A white 3 mm border inside the print size: the print stays the shop's size.",
     "borderHintPaper": "A 3 mm border round each photo, cut into it. White or black is also the colour of the paper round the photos.",
     "borderColor": "Border colour",
     "borderColors": {
@@ -411,7 +412,7 @@
     "downAside": "set aside",
     "cameraTime": "Camera clock said {{time}}",
     "clockShifted": "Clock corrected",
-    "syncClock": "Set this camera's clock from a photo…",
+    "syncClock": "Set the clock from a photo…",
     "dateManual": "Set by hand",
     "cropHint": "Crop (R)",
     "rotateLeftShort": "Rotate left",
@@ -975,7 +976,10 @@
       "bold": "Bold",
       "italic": "Italic",
       "underline": "Underline"
-    }
+    },
+    "postalUse": "Postal use",
+    "postalUseHint": "Keeps a 15 mm strip at the foot free for the post's barcode.",
+    "postalUsePortraitHint": "Applies to landscape cards."
   },
   "look": {
     "faves": "Faves",
@@ -1388,7 +1392,10 @@
     "start": "Start",
     "everyStart": "Show at every start",
     "again": "Show the welcome again",
-    "againHint": "The five pages of the basics, as on the first launch.",
+    "againHint": "The language first, then the five pages of the basics, as on the first launch.",
+    "language": {
+      "title": "Language"
+    },
     "welcome": {
       "title": "Open your photos",
       "text": "Open a folder of photos from a trip, or drop one on the window. Fotollection works on them where they are: nothing is copied, moved or uploaded.",

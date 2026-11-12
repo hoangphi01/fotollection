@@ -32,6 +32,14 @@ pub const STAMP_MM: (f32, f32) = (20.0, 25.0);
 /// Space between the sheet's edge and what is drawn, and between the stamp and the lines.
 pub const EDGE_MM: f32 = 5.0;
 const STAMP_GAP_MM: f32 = 4.0;
+/// The post's coding zone (Deutsche Post: 15 mm up from the foot of the address side, which
+/// must stay unprinted): on a landscape card nothing of the half is drawn there, the credit
+/// included. The owner's own card, mailed in Hungary on 2026-11-05, came back with the post's
+/// orange sorting code printed over its last address lines.
+pub const CODE_ZONE_MM: f32 = 15.0;
+/// How far the address keeps from the card's right edge (Deutsche Post: 15 mm from the
+/// left, right and foot).
+pub const ADDRESS_EDGE_MM: f32 = 15.0;
 /// The address lines, under the message's: name, street, town; a long address gets four
 /// in the room of those three, closer together and in smaller type (owner, 2026-11-04).
 pub const ADDRESS_LINES: u8 = 3;
@@ -142,7 +150,18 @@ pub struct CardLayout {
 /// `message_lines`, half a line's gap, then the `address_lines`; on a portrait card (its
 /// half lies, too low to stack them) the message in the left column and the address in the
 /// right, a rule between them.
-pub fn layout(sheet_width: f32, card: RectMm, message_lines: u8, address_lines: u8) -> CardLayout {
+///
+/// With `postal` (the *Postal use* switch, on by default), a landscape card's last 15 mm are
+/// the post's coding zone and stay free, and the address keeps 15 mm from the right edge
+/// ([`CODE_ZONE_MM`], [`ADDRESS_EDGE_MM`]); without it the lines reach 5 mm from the foot,
+/// for a card kept as a keepsake. A portrait card keeps its layout.
+pub fn layout(
+    sheet_width: f32,
+    card: RectMm,
+    message_lines: u8,
+    address_lines: u8,
+    postal: bool,
+) -> CardLayout {
     let stamp = RectMm {
         x: sheet_width - EDGE_MM - STAMP_MM.0,
         y: EDGE_MM,
@@ -152,7 +171,16 @@ pub fn layout(sheet_width: f32, card: RectMm, message_lines: u8, address_lines: 
     let standing = card.height >= card.width;
     let top = stamp.y + stamp.height + STAMP_GAP_MM;
     let (x0, x1) = (card.x + EDGE_MM, card.x + card.width - EDGE_MM);
-    let bottom = card.y + card.height - EDGE_MM - CREDIT_ROOM_MM;
+    // Made to be posted (the Postal use switch): a landscape card's foot is the post's.
+    let posted = postal && standing;
+    let foot = if posted { CODE_ZONE_MM } else { EDGE_MM };
+    let bottom = card.y + card.height - foot - CREDIT_ROOM_MM;
+    // The address keeps clear of the right edge where the post reads it.
+    let address_x1 = if posted {
+        x1.min(card.x + card.width - ADDRESS_EDGE_MM)
+    } else {
+        x1
+    };
     let message_lines = message_lines.max(1);
     let address_lines = address_lines.clamp(1, MAX_ADDRESS_LINES);
     // The address keeps the room of its three lines whatever their number.
@@ -172,7 +200,13 @@ pub fn layout(sheet_width: f32, card: RectMm, message_lines: u8, address_lines: 
                 .collect(),
             // From the address's last line up, as many as it has.
             address: (0..address_lines)
-                .map(|k| line(y(last) - a_step * f32::from(address_lines - 1 - k), x0, x1))
+                .map(|k| {
+                    line(
+                        y(last) - a_step * f32::from(address_lines - 1 - k),
+                        x0,
+                        address_x1,
+                    )
+                })
                 .collect(),
             step,
             address_step: a_step,
@@ -241,7 +275,13 @@ fn typeset(spec: &CardSpec<'_>, faces: Faces<'_>, density: f32) -> Typeset {
     let empty = PostcardText::default();
     let text = spec.text.unwrap_or(&empty);
     let set = |address_lines: u8| {
-        let layout = layout(spec.sheet_width, spec.card, settings.lines, address_lines);
+        let layout = layout(
+            spec.sheet_width,
+            spec.card,
+            settings.lines,
+            address_lines,
+            settings.postal_use,
+        );
         let size = |step: f32| {
             (step * TEXT_EM).min(crate::settings::postcard_text_mm(settings.text_size)) * density
         };
@@ -306,6 +346,75 @@ fn inks(paper: BorderColor) -> ([u8; 3], [u8; 3]) {
     match paper {
         BorderColor::White => ([140, 140, 140], [185, 185, 185]),
         BorderColor::Black => ([150, 150, 150], [95, 95, 95]),
+    }
+}
+
+/// "Postal use" in seven languages, French first (the language of the UPU), then English,
+/// German, Hungarian, Czech, Polish and Vietnamese (owner, 2026-11-12): what the foot of the card says,
+/// repeated across it like a tape, so nobody writes in the post's zone.
+pub const POSTAL_WORDS: [&str; 7] = [
+    "Réservé à la poste",
+    "Postal use",
+    "Für die Post",
+    "Postai használatra",
+    "Pro poštu",
+    "Dla poczty",
+    "Dành cho bưu điện",
+];
+const POSTAL_SEPARATOR: &str = " · ";
+/// The words' em, and how far their foot keeps from the card's edge.
+const POSTAL_EM_MM: f32 = 1.6;
+const POSTAL_FOOT_MM: f32 = 2.0;
+const POSTAL_TRACKING: f32 = 0.02;
+
+/// The post's zone on a card made to be posted (FR-073, *Postal use*, owner 2026-11-12): a thin
+/// grey line across the whole card at the zone's edge, where the photo ends, and at the card's
+/// foot "postal use" in seven languages, repeated without end across the card, cut by its
+/// edges. `zone` is in millimetres.
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+pub fn draw_postal(canvas: &mut RgbImage, density: f32, zone: RectMm, paper: BorderColor) {
+    let (outline, rule) = inks(paper);
+    let px = |mm: f32| (mm * density).round().max(0.0) as u32;
+    let thick = |mm: f32| (mm * density).round().max(1.0) as u32;
+    crate::sheet::fill_rect(
+        canvas,
+        px(zone.x),
+        px(zone.y),
+        px(zone.width),
+        thick(LINE_MM),
+        rule,
+    );
+    let Some(font) = crate::render::regular() else {
+        return;
+    };
+    let size = POSTAL_EM_MM * density;
+    // Low at the card's foot (owner, 2026-11-12, showing the posted card): the post prints its
+    // fluorescent code in the upper part of the zone, so the words keep under it, 2 mm from
+    // the edge, clear of what a kiosk trims off a borderless print.
+    let top = (zone.y + zone.height - POSTAL_FOOT_MM - POSTAL_EM_MM) * density;
+    let end = (zone.x + zone.width) * density;
+    let gap = crate::text::text_width(font, size, POSTAL_SEPARATOR, POSTAL_TRACKING);
+    let draw = |canvas: &mut RgbImage, text: &str, left: f32| {
+        let run = crate::text::TextRun {
+            font,
+            text,
+            px: size,
+            tracking: POSTAL_TRACKING,
+        };
+        crate::text::draw_text(canvas, &run, left, top, outline, 1.0);
+    };
+    // Endless, as a printed tape (owner, 2026-11-12): from beyond the left edge to beyond the
+    // right, the paper's edge cutting the first and last phrases, so the words read anywhere.
+    let first = crate::text::text_width(font, size, POSTAL_WORDS[0], POSTAL_TRACKING);
+    let mut left = zone.x * density - first / 2.0;
+    for phrase in POSTAL_WORDS.iter().cycle().take(128) {
+        if left > end {
+            break;
+        }
+        draw(canvas, phrase, left);
+        left += crate::text::text_width(font, size, phrase, POSTAL_TRACKING);
+        draw(canvas, POSTAL_SEPARATOR, left);
+        left += gap;
     }
 }
 
@@ -645,8 +754,8 @@ mod tests {
     /// message; in two columns with a rule between them on a portrait card.
     #[test]
     fn fr_073_lines_sit_together_at_the_foot() {
-        let landscape = layout(152.0, half(76.0, 0.0, 76.0, 102.0), 4, ADDRESS_LINES);
-        let portrait = layout(102.0, half(0.0, 0.0, 102.0, 76.0), 4, ADDRESS_LINES);
+        let landscape = layout(152.0, half(76.0, 0.0, 76.0, 102.0), 4, ADDRESS_LINES, true);
+        let portrait = layout(102.0, half(0.0, 0.0, 102.0, 76.0), 4, ADDRESS_LINES, true);
         assert_eq!(landscape.stamp, half(127.0, 5.0, 20.0, 25.0));
         assert_eq!(portrait.stamp, half(77.0, 5.0, 20.0, 25.0));
         for (l, bottom) in [(&landscape, 102.0), (&portrait, 76.0)] {
@@ -659,10 +768,15 @@ mod tests {
                     .iter()
                     .all(|line| line.y - l.step > l.stamp.y + l.stamp.height)
             );
+            let foot = if bottom > 100.0 {
+                CODE_ZONE_MM
+            } else {
+                EDGE_MM
+            };
             assert!(
                 lines
                     .iter()
-                    .all(|line| line.y < bottom - EDGE_MM - CREDIT_ROOM_MM)
+                    .all(|line| line.y < bottom - foot - CREDIT_ROOM_MM)
             );
         }
         let gap = landscape.address[0].y - landscape.message[3].y;
@@ -670,7 +784,7 @@ mod tests {
             (gap - (1.0 + PART_GAP) * landscape.step).abs() < 1e-3,
             "{gap}"
         );
-        assert!(landscape.divider.is_none() && landscape.address[0].x1 > 140.0);
+        assert!(landscape.divider.is_none() && landscape.message[0].x1 > 140.0);
         // Portrait: the message on the left, the address on the right, ending together.
         let Some((rule, _, _)) = portrait.divider else {
             panic!("a portrait card has a rule between its columns");
@@ -678,6 +792,47 @@ mod tests {
         assert!(portrait.message.iter().all(|line| line.x1 < rule));
         assert!(portrait.address.iter().all(|line| line.x0 > rule));
         assert!((portrait.message[3].y - portrait.address[2].y).abs() < 1e-3);
+    }
+
+    /// FR-073: a landscape card keeps the post's coding zone free: nothing of the half in its
+    /// last 15 mm (the lines, a long address's text, the credit), and the address 15 mm from
+    /// the right edge (the owner's card of 2026-11-05 had the post's code printed over its
+    /// last lines).
+    #[test]
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    fn fr_073_the_posts_coding_zone_stays_free() {
+        let settings = PostcardSettings {
+            enabled: true,
+            credit: "Photo © Anna Schmidt, Praha".into(),
+            ..PostcardSettings::default()
+        };
+        let card = text(
+            "A long message that fills every line of the card, from the first to the last one",
+            "Dr. Anna Katharina Schmidt-Hoffmann\nKönigin-Luise-Straße 128, Hinterhaus 3. OG\n10115 Berlin\nDeutschland",
+        );
+        let canvas = drawn(&settings, Some(&card));
+        let dark = |x: u32, y: u32| canvas.data[((y * 1520 + x) * 3) as usize] < 200;
+        let zone = ((102.0 - CODE_ZONE_MM) * 10.0) as u32;
+        let in_zone = (zone..1020)
+            .flat_map(|y| (760..1520).map(move |x| (x, y)))
+            .filter(|&(x, y)| dark(x, y))
+            .count();
+        assert_eq!(in_zone, 0, "nothing in the coding zone");
+        let l = layout(152.0, half(76.0, 0.0, 76.0, 102.0), 4, ADDRESS_LINES, true);
+        assert!(
+            l.address
+                .iter()
+                .all(|line| line.x1 <= 152.0 - ADDRESS_EDGE_MM + 1e-3)
+        );
+        assert!(l.credit.1 < 102.0 - CODE_ZONE_MM);
+        // The card is still written on: its lines and text are there.
+        assert!(
+            (0..zone)
+                .flat_map(|y| (760..1520).map(move |x| (x, y)))
+                .filter(|&(x, y)| dark(x, y))
+                .count()
+                > 1000
+        );
     }
 
     /// FR-073: the address has 3 lines, and a fourth when it needs one; text that still does
@@ -709,7 +864,10 @@ mod tests {
         // Four address lines take the room of three; the message's lines do not move.
         for card in [half(76.0, 0.0, 76.0, 102.0), half(0.0, 0.0, 102.0, 76.0)] {
             let width = if card.x > 0.0 { 152.0 } else { 102.0 };
-            let (three, four) = (layout(width, card, 4, 3), layout(width, card, 4, 4));
+            let (three, four) = (
+                layout(width, card, 4, 3, true),
+                layout(width, card, 4, 4, true),
+            );
             assert_eq!(three.message, four.message);
             assert!((three.step - four.step).abs() < 1e-6);
             let room =
@@ -766,6 +924,7 @@ mod tests {
             half(76.0, 0.0, 76.0, 102.0),
             settings.lines,
             ADDRESS_LINES,
+            settings.postal_use,
         );
         let band = |canvas: &RgbImage, line: &Line| {
             let (y0, y1) = (
@@ -864,8 +1023,9 @@ mod tests {
                 ..PostcardSettings::default()
             };
             let canvas = drawn(&settings, None);
-            let y0 = ((102.0 - EDGE_MM - CREDIT_ROOM_MM + 0.3) * 10.0) as u32;
-            (y0..1020)
+            let y0 = ((102.0 - CODE_ZONE_MM - CREDIT_ROOM_MM + 0.3) * 10.0) as u32;
+            let y1 = ((102.0 - CODE_ZONE_MM) * 10.0) as u32;
+            (y0..y1)
                 .flat_map(|y| (760..1520).map(move |x| (x, y)))
                 .filter(|&(x, y)| canvas.data[((y * 1520 + x) * 3) as usize] < 200)
                 .count()

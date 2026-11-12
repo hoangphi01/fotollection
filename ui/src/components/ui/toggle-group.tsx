@@ -3,6 +3,7 @@
 import * as React from "react"
 import { type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
+import { fitChildren } from "@/components/forms/fit-children"
 import { ToggleGroup as ToggleGroupPrimitive } from "radix-ui"
 
 import { toggleVariants } from "@/components/ui/toggle"
@@ -81,7 +82,7 @@ function ToggleGroupItem({
       )}
       {...props}
     >
-      {children}
+      {fitChildren(children)}
     </ToggleGroupPrimitive.Item>
   )
 }

@@ -59,6 +59,9 @@ pub struct SheetLayout {
     pub cells: [Option<CellLayout>; 2],
     /// A postcard sheet's writing half (FR-073); its photo is in `cells[0]`.
     pub card: Option<RectMm>,
+    /// The post's coding zone on a landscape postcard made to be posted (FR-073, *Postal
+    /// use*): the card's last 15 mm, kept free on the photo's half too.
+    pub postal: Option<RectMm>,
 }
 
 /// The sheet's print size: the chosen one, or 10 × 15 when it is Original, which has no
@@ -315,12 +318,32 @@ pub fn layout(
         } else {
             (rects[1], rects[0])
         };
+        // Made to be posted: the post's zone across the foot of a landscape card, the photo
+        // cut short at its line (owner, 2026-11-12).
+        let postal = (settings.postcard.postal_use && side).then_some(RectMm {
+            x: 0.0,
+            y: height - crate::postcard::CODE_ZONE_MM,
+            width,
+            height: crate::postcard::CODE_ZONE_MM,
+        });
+        let cell = photos[0].map(|p| {
+            let mut placed = place(photo_half, p);
+            if let Some(zone) = postal {
+                let room = zone.y - placed.y;
+                let foot = f64::from(placed.y) + f64::from(placed.area.1);
+                if room >= 1.0 && foot > f64::from(zone.y) {
+                    placed.area.1 = floor_mm(f64::from(room));
+                }
+            }
+            placed
+        });
         return SheetLayout {
             width,
             height,
             side_by_side: side,
-            cells: [photos[0].map(|p| place(photo_half, p)), None],
+            cells: [cell, None],
             card: Some(card),
+            postal,
         };
     }
     SheetLayout {
@@ -332,6 +355,28 @@ pub fn layout(
             photos[1].map(|p| place(rects[1], p)),
         ],
         card: None,
+        postal: None,
+    }
+}
+
+/// A postcard is white paper, whatever the border's colour elsewhere (owner, 2026-11-12:
+/// "a black postcard?"); its border, if any, is white too.
+fn postcard_paper(settings: &RenderSettings) -> std::borrow::Cow<'_, RenderSettings> {
+    if settings.collage.postcard.enabled && settings.border_color != BorderColor::White {
+        std::borrow::Cow::Owned(RenderSettings {
+            border_color: BorderColor::White,
+            ..settings.clone()
+        })
+    } else {
+        std::borrow::Cow::Borrowed(settings)
+    }
+}
+
+/// The post's zone of a card made to be posted (FR-073, *Postal use*): its line, and its
+/// words repeated under it.
+fn draw_postal_zone(canvas: &mut RgbImage, sheet: &SheetLayout, density: f32, paper: BorderColor) {
+    if let Some(zone) = sheet.postal {
+        crate::postcard::draw_postal(canvas, density, zone, paper);
     }
 }
 
@@ -575,6 +620,8 @@ pub fn render_sheet_with(
     marks: [CellMark; 2],
     credit: bool,
 ) -> Result<RgbImage, RenderError> {
+    let paper = postcard_paper(settings);
+    let settings = &*paper;
     let sizes = sources.map(|s| s.map(|s| (s.image.width, s.image.height)));
     let sheet = layout(print, sizes, turned, &settings.collage);
     let inset = border_inset(settings);
@@ -668,6 +715,7 @@ pub fn render_sheet_with(
             },
         );
     }
+    draw_postal_zone(&mut canvas, &sheet, density, settings.border_color);
     // A sheet with one photo has nothing to cut apart, and filled halves meet at an edge
     // that needs no line.
     let collage = &settings.collage;
@@ -1324,6 +1372,148 @@ mod tests {
     /// FR-073: a postcard sheet puts its one photo on the left (landscape) or bottom
     /// (portrait) half, the dashed stamp box at the top right and the lines and typed text in
     /// the other half; nothing of the photo reaches the postcard half.
+    /// FR-073, *Postal use* (owner, 2026-11-12, after a card came back from the post with its
+    /// sorting code printed over the address): on, a landscape card keeps its last 15 mm free
+    /// on both halves, the photo cut short above them, a grey line at the zone's edge and
+    /// "postal use" under the photo; off, the photo and the lines reach the foot as before.
+    #[test]
+    #[allow(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss
+    )]
+    fn fr_073_postal_use_keeps_the_posts_zone_free() -> Result<(), RenderError> {
+        use crate::settings::PostcardSettings;
+        let image = filled(1800, 1200, [200, 30, 30]);
+        let source = CellSource {
+            image: &image,
+            capture: None,
+            crop: None,
+            straighten: 0.0,
+            place: None,
+            stamp: None,
+            caption: None,
+            look: None,
+            postcard: None,
+        };
+        let red = |p: [u8; 3]| p[0] > 150 && p[1] < 80;
+        for postal_use in [true, false] {
+            let mut settings = RenderSettings::default();
+            settings.stamp.enabled = false;
+            settings.collage.fill = true;
+            settings.collage.postcard = PostcardSettings {
+                enabled: true,
+                postal_use,
+                ..PostcardSettings::default()
+            };
+            let sheet = layout(
+                print(),
+                [Some((1800, 1200)), None],
+                false,
+                &settings.collage,
+            );
+            let out = render_sheet(
+                &settings,
+                print(),
+                [Some(source), None],
+                false,
+                Some(1520),
+                None,
+            )?;
+            let density = out.width as f32 / sheet.width;
+            let at = |x_mm: f32, y_mm: f32| {
+                let (x, y) = ((x_mm * density) as usize, (y_mm * density) as usize);
+                let i = (y * out.width as usize + x) * 3;
+                [out.data[i], out.data[i + 1], out.data[i + 2]]
+            };
+            let foot = sheet.height - crate::postcard::CODE_ZONE_MM;
+            // Red in the zone, across the photo's half, only when the switch is off.
+            let reds = (0..70)
+                .flat_map(|i| (1..14).map(move |j| (1.0 + i as f32, foot + j as f32)))
+                .filter(|&(x, y)| red(at(x, y)))
+                .count();
+            if postal_use {
+                assert_eq!(sheet.postal.map(|z| z.y), Some(foot));
+                assert_eq!(reds, 0, "the photo stays out of the post's zone");
+                // The grey line runs across the card at the zone's edge.
+                let grey = |p: [u8; 3]| p[0] < 220 && p[0] > 100 && p[0].abs_diff(p[2]) < 10;
+                assert!(
+                    (0..140)
+                        .filter(|&i| grey(at(2.0 + i as f32, foot + 0.1)))
+                        .count()
+                        > 120
+                );
+                // The photo ends at the line; the words run along the card's foot, on both halves.
+                let Some(cell) = sheet.cells[0] else {
+                    panic!("a photo")
+                };
+                assert!(cell.y + cell.area.1 as f32 <= foot + 1e-3);
+                let words_in = |x0: f32, x1: f32| {
+                    (0..((x1 - x0) * 10.0) as usize)
+                        .flat_map(|i| {
+                            (0..30).map(move |j| {
+                                (x0 + i as f32 * 0.1, sheet.height - 4.5 + j as f32 * 0.1)
+                            })
+                        })
+                        .filter(|&(x, y)| at(x, y)[0] < 200)
+                        .count()
+                };
+                assert!(words_in(5.0, 70.0) > 30, "words under the photo");
+                assert!(words_in(80.0, 145.0) > 30, "words repeated under the card");
+            } else {
+                assert!(sheet.postal.is_none());
+                assert!(reds > 500, "the photo reaches the foot: {reds}");
+            }
+        }
+        Ok(())
+    }
+
+    /// FR-073: a postcard prints on white, its border white, even when the border is set to
+    /// black (owner, 2026-11-12: "a black postcard?").
+    #[test]
+    #[allow(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        clippy::cast_precision_loss
+    )]
+    fn fr_073_a_postcard_is_white_paper() -> Result<(), RenderError> {
+        use crate::settings::PostcardSettings;
+        let image = filled(1800, 1200, [200, 30, 30]);
+        let source = CellSource {
+            image: &image,
+            capture: None,
+            crop: None,
+            straighten: 0.0,
+            place: None,
+            stamp: None,
+            caption: None,
+            look: None,
+            postcard: None,
+        };
+        let mut settings = RenderSettings::default();
+        settings.stamp.enabled = false;
+        settings.border = true;
+        settings.border_color = BorderColor::Black;
+        settings.collage.postcard = PostcardSettings {
+            enabled: true,
+            ..PostcardSettings::default()
+        };
+        let out = render_sheet(
+            &settings,
+            print(),
+            [Some(source), None],
+            false,
+            Some(1520),
+            None,
+        )?;
+        // The card's paper, between the stamp band and the lines, is white.
+        let density = out.width as f32 / 152.0;
+        let (x, y) = ((100.0 * density) as usize, (34.0 * density) as usize);
+        let i = (y * out.width as usize + x) * 3;
+        assert!(out.data[i] > 240, "paper {}", out.data[i]);
+        Ok(())
+    }
+
     #[test]
     #[allow(
         clippy::cast_precision_loss,
@@ -1414,7 +1604,7 @@ mod tests {
             assert!(inked > 500, "{inked} inked pixels");
             // The stamp box's top edge is dashed: ink and paper alternate along it.
             let card_layout =
-                crate::postcard::layout(sheet.width, card, 4, crate::postcard::ADDRESS_LINES);
+                crate::postcard::layout(sheet.width, card, 4, crate::postcard::ADDRESS_LINES, true);
             let edge_y = card_layout.stamp.y + 0.1;
             let along: Vec<bool> = (0..40)
                 .map(|i| at(card_layout.stamp.x + 1.0 + i as f32 * 0.5, edge_y)[0] < 200)

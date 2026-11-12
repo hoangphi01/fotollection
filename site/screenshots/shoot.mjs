@@ -8,12 +8,47 @@
 // (src-tauri/src/demo.rs), and serves the recorded thumbnails and previews. No Tauri, no
 // network: every request outside the two local hosts is refused.
 
-import { axeChecks, baseline, layoutChecks, stableChecks } from './checks.mjs'
+import { axeChecks, baseline, fitReport, layoutChecks, stableChecks } from './checks.mjs'
 import { readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium, webkit } from 'playwright'
+import { pseudo } from '../../ui/src/i18n/pseudo.ts'
+
+// Every locale the checks may run in (FR-123, FR-125), so a button is found by its words in any
+// of them: `say('export.button')` instead of a pattern written in two languages.
+const localeDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../ui/src/locales')
+const english = JSON.parse(await readFile(path.join(localeDir, 'en.json'), 'utf8'))
+const LOCALES = [english, pseudo(english)]
+const ENGLISH_WORDS = (function flat(tree) {
+  return Object.values(tree).flatMap((v) => (typeof v === 'string' ? [v] : flat(v)))
+})(english)
+for (const code of ['hu', 'vi']) LOCALES.push(JSON.parse(await readFile(path.join(localeDir, `${code}.json`), 'utf8')))
+
+/**
+ * A pattern for a key's words in every locale, its plural forms too; a placeholder matches
+ * anything. Whole by default; `{ whole: false }` matches the words anywhere in a name, and
+ * `{ whole: false, start: true }` at its start.
+ */
+function say(key, { whole = true, start = false } = {}) {
+  const words = new Set()
+  for (const locale of LOCALES) {
+    const parts = key.split('.')
+    const leaf = parts.pop()
+    const node = parts.reduce((o, k) => o?.[k], locale) ?? {}
+    for (const [k, v] of Object.entries(node)) if (k === leaf || k.startsWith(`${leaf}_`)) words.add(v)
+  }
+  if (words.size === 0) throw new Error(`say: no words for ${key}`)
+  const alts = [...words].map((w) => w.split(/\{\{[^}]+\}\}/).map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.+?'))
+  const body = `(?:${alts.join('|')})`
+  return new RegExp(whole ? `^${body}$` : start ? `^${body}` : body)
+}
+
+/** A Settings section (FR-086): its pattern in every locale, and a short English tag for names. */
+function section(key) {
+  return { re: say(`settingsWindow.sections.${key}`), tag: english.settingsWindow.sections[key].slice(0, 6).replace(/\W/g, '') }
+}
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 const outDir = path.resolve(process.argv[3] ?? path.join(root, 'site/assets/img'))
@@ -83,6 +118,9 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
     get_photo_look: () => ({ look: current.settings.look, custom: false, raw: null }),
     // The Looks card and Simple mode's strip (FR-079): the built-in looks, as recorded.
     list_looks: () => common.list_looks ?? [],
+    // FR-114: what a batch of colour covers; no photo of the demo has a colour of its own, so
+    // the Colour tab shows no reset.
+    look_batch_plan: () => ({ total: common.photo_count ?? 9, edited: 0 }),
     // The histogram (FR-098): counted here from the preview the shot shows, as Rust counts it.
     photo_histogram: async (args) => {
       for (let i = 0; i < 60; i++) {
@@ -270,7 +308,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
     colorScheme: theme,
     // WebView2-style image URLs (http://fotothumb.localhost), which a test browser can serve.
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36',
-    locale: language === 'vi' ? 'vi-VN' : 'en-GB',
+    locale: { vi: 'vi-VN', hu: 'hu-HU' }[language] ?? 'en-GB',
   })
   await context.route('**/*', async (route) => {
     const url = new URL(route.request().url())
@@ -306,6 +344,11 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
   // DEMO_OS=windows shows the Windows title bar, for checking it on a Mac.
   // UI-STATE-010: a part told to fail (`lib/fault.ts`, in builds made with VITE_FAULTS=1).
   if (fault) await context.addInitScript((part) => { window.__fotollectionFault = part }, fault)
+  // The interface's English words (en.json), so UI-TEXT-007 judges only them, never a user's
+  // address or file name (FR-125).
+  await context.addInitScript((words) => {
+    globalThis.__englishWords = words
+  }, ENGLISH_WORDS)
   await context.addInitScript(bridge, { fixtures: source.fixtures, scenario, language, os, tabs, queues: queues ?? (source === trip ? TRIP_QUEUES : NO_QUEUES), mode, ui, update, settingsPatch, verdict })
   const page = await context.newPage()
   page.on('pageerror', (e) => console.error('page error:', e.message))
@@ -337,7 +380,7 @@ async function settle(page) {
 /** Opens the Settings window by its gear (FR-086) at the section named `section`. */
 async function openSettings(page, section) {
   if (!(await page.locator('[data-slot="settings-body"]').count())) {
-    await page.getByRole('button', { name: /^(Settings|Cài đặt)$/ }).click()
+    await page.getByRole('button', { name: say('settingsWindow.title') }).click()
   }
   await page.getByRole('button', { name: section }).click()
   await settle(page)
@@ -545,7 +588,13 @@ async function overflows(page, where) {
 }
 
 /** Every machine-judged UI test case on the page as it is (docs/UI_TESTS.md). */
+/** Words fitted smaller or cut in the views checked (FR-125), printed after the measures. */
+const fitted = new Set()
+/** The last fitting pass on a resize, "count:ms" (FR-125). */
+let fitCost = 'none'
+
 async function allChecks(page, where) {
+  for (const row of await fitReport(page, where)) fitted.add(row)
   return [...(await overflows(page, where)), ...(await layoutChecks(page, where)), ...(await axeChecks(page, where))]
 }
 
@@ -555,20 +604,20 @@ async function overflowViews({ language, theme, width }) {
   let { context, page } = await open({ scenario: 'stamp', language, theme, width, queues: NO_QUEUES })
   await settle(page)
   out.push(...(await allChecks(page, `gallery at ${width}`)))
-  await page.getByRole('button', { name: /^(Filters|Bộ lọc|\d+ (filter|filters|bộ lọc))$/ }).first().click()
+  await page.getByRole('button', { name: new RegExp(`${say('culling.filters').source}|${say('culling.filtersOn').source}`) }).first().click()
   await page.waitForTimeout(400)
   out.push(...(await allChecks(page, `filters at ${width}`)))
   await page.keyboard.press('Escape')
-  await page.getByRole('button', { name: /^(Export|Xuất) \d+/ }).first().click()
+  await page.getByRole('button', { name: say('export.buttonCount') }).first().click()
   await page.waitForSelector('[data-slot="settings-body"]')
   await settle(page)
   out.push(...(await allChecks(page, `export dialog at ${width}`)))
   await page.screenshot({ path: path.join(outDir, `measure-export-${width}.png`) })
   await page.keyboard.press('Escape')
   await page.waitForTimeout(300)
-  for (const section of [/^(General|Chung)$/, /^(Export|Xuất ảnh)$/, /^(Updates|Cập nhật)$/]) {
-    await openSettings(page, section)
-    out.push(...(await allChecks(page, `settings ${section.source.slice(2, 8)} at ${width}`)))
+  for (const { re, tag } of ['general', 'export', 'updates'].map(section)) {
+    await openSettings(page, re)
+    out.push(...(await allChecks(page, `settings ${tag} at ${width}`)))
   }
   await context.close()
   for (const mode of ['simple', 'collage']) {
@@ -607,7 +656,10 @@ async function stressViews({ language, theme }) {
   const out = []
   const engine = process.env.MEASURE_ENGINE === 'webkit' ? 'webkit' : 'chromium'
   const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'baselines')
-  const shot = (page, locator, name) => baseline(page, locator, `${engine}-${language}-${theme}-${name}`, { dir, outDir })
+  // Approved pictures exist for English and Vietnamese (UI-VISUAL-001); another language (hu,
+  // the pseudo-locale) is measured and checked, never written as a baseline into the repo.
+  const shot = (page, locator, name) =>
+    ['en', 'vi'].includes(language) ? baseline(page, locator, `${engine}-${language}-${theme}-${name}`, { dir, outDir }) : []
   // UI-FIX-001: a long custom print size chosen, its delete button beside the size's name.
   const longSize = { customSizes: [{ id: 'custom-1', name: 'Demo very long custom print size', shortMm: 1000, longMm: 1000, unit: 'cm' }], printSize: 'custom-1' }
   let { context, page } = await open({ scenario: 'stamp', language, theme, settingsPatch: longSize })
@@ -626,7 +678,7 @@ async function stressViews({ language, theme }) {
   ;({ context, page } = await open({ scenario: 'stamp', language, theme, verdict: 'acceptable' }))
   await (await reach(page, SHOW.crop)).dblclick()
   await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
-  await page.locator('[role="dialog"]').getByRole('radio', { name: /^(Print and export|In và xuất ảnh)$/ }).click()
+  await page.locator('[role="dialog"]').getByRole('radio', { name: say('inspector.print') }).click()
   await settle(page)
   out.push(...(await allChecks(page, 'photo preview, Print, every size acceptable')))
   await context.close()
@@ -634,7 +686,7 @@ async function stressViews({ language, theme }) {
   // list ran over the window's top (owner, 2026-11-08).
   ;({ context, page } = await open({ scenario: 'stamp', language, theme, settingsPatch: { printSize: '5x15' } }))
   await settle(page)
-  await page.getByRole('combobox', { name: /^(Print \/ export size|Khổ in \/ xuất ảnh)$/ }).first().click()
+  await page.getByRole('combobox', { name: say('settings.printSize') }).first().click()
   await page.waitForSelector('[role="option"]')
   await page.waitForTimeout(400)
   // Layout only: an open list is modal (Radix hides the rest from readers and keeps the focus
@@ -648,10 +700,10 @@ async function stressViews({ language, theme }) {
   ;({ context, page } = await open({ scenario: 'stamp', language, theme, os: 'macos', height: 700, settingsPatch: { printSize: '5x15' } }))
   await (await reach(page, SHOW.crop)).dblclick()
   await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
-  await page.locator('[role="dialog"]').getByRole('radio', { name: /^(Print and export|In và xuất ảnh)$/ }).click()
+  await page.locator('[role="dialog"]').getByRole('radio', { name: say('inspector.print') }).click()
   await settle(page)
   {
-    const sizes = page.locator('[role="dialog"]').getByRole('combobox', { name: /^(Print \/ export size|Khổ in \/ xuất ảnh)$/ }).first()
+    const sizes = page.locator('[role="dialog"]').getByRole('combobox', { name: say('settings.printSize') }).first()
     await sizes.scrollIntoViewIfNeeded()
     await sizes.click()
     await page.waitForSelector('[role="option"]')
@@ -703,7 +755,7 @@ async function stressViews({ language, theme }) {
   // Nor does the first step of a slider on a photo with the original look (owner, 2026-11-08:
   // the Looks card unfolded its amount and every card below dropped under the pointer). One
   // fresh photo per card: only the first step leaves the original.
-  for (const [card, title] of [['Faves', /^(Faves|Cơ bản)/], ['Color mixer', /^(Color mixer|Trộn màu)/]]) {
+  for (const [card, title] of [['Faves', say('look.faves', { whole: false, start: true })], ['Color mixer', say('look.mixer.title', { whole: false, start: true })]]) {
     ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
     await (await reach(page, SHOW.crop)).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
@@ -720,7 +772,7 @@ async function stressViews({ language, theme }) {
   await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
   await settle(page)
   {
-    const held = page.getByRole('button', { name: /^(Rotate left|Xoay trái)$/ })
+    const held = page.getByRole('button', { name: say('viewer.rotateLeftShort') })
     const box = await held.boundingBox()
     if (box) {
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
@@ -752,7 +804,7 @@ async function stressViews({ language, theme }) {
   await (await reach(page, SHOW.crop)).dblclick()
   await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
   await settle(page)
-  await page.getByRole('button', { name: /^(Copy settings|Sao chép thiết lập)$/ }).first().click()
+  await page.getByRole('button', { name: say('develop.copy') }).first().click()
   await page.waitForSelector('[data-slot="dialog-form"]')
   await page.waitForTimeout(400)
   out.push(...(await allChecks(page, 'Copy settings dialog')))
@@ -773,12 +825,12 @@ async function stressViews({ language, theme }) {
   }
   // Every Settings section, the manual among them, and the welcome.
   ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
-  const sections = [/^(General|Chung)$/, /^(Export|Xuất ảnh)$/, /^(RAM & cache|Bộ nhớ RAM & cache)$/, /^(Data|Dữ liệu)$/, /^(Updates|Cập nhật)$/, /^(Manual|Hướng dẫn sử dụng)$/, /^(Report a problem|Báo lỗi)$/, /^(What's new|Có gì mới)$/]
-  for (const name of sections) {
-    await openSettings(page, name)
+  const sections = ['general', 'export', 'memory', 'data', 'updates', 'manual', 'report', 'whatsNew'].map(section)
+  for (const { re, tag } of sections) {
+    await openSettings(page, re)
     await page.waitForTimeout(300)
-    out.push(...(await allChecks(page, `settings ${name.source.slice(2, 12)}`)))
-    out.push(...(await shot(page, page.locator('[data-slot="settings-body"]'), `settings-${name.source.slice(2, 8).replace(/\W/g, '')}`)))
+    out.push(...(await allChecks(page, `settings ${tag}`)))
+    out.push(...(await shot(page, page.locator('[data-slot="settings-body"]'), `settings-${tag}`)))
   }
   await context.close()
   ;({ context, page } = await open({ scenario: 'stamp', language, theme, ui: { welcomeSeen: false } }))
@@ -795,6 +847,13 @@ async function measurePanels() {
   const theme = process.env.MEASURE_THEME ?? 'light'
     const language = process.env.MEASURE_LANG ?? 'en'
   let { context, page } = await open({ scenario: 'stamp', language, theme })
+  // FR-125: what fitting the words costs when the window is resized (one pass of the shared
+  // observer over the controls that changed width), for OPTIMIZATION §5.
+  await page.setViewportSize({ width: 1180, height: 900 })
+  await page.waitForTimeout(300)
+  fitCost = await page.evaluate(() => document.documentElement.dataset.fitPass ?? 'none')
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await settle(page)
   rows.push(['folder list', await measure(page, 'aside.border-r')])
   rows.push(['Pro panel', await measure(page, 'aside.border-l')])
   const panelBands = await foldedBands(page, 'Pro panel')
@@ -818,6 +877,21 @@ async function measurePanels() {
     await page.locator('[data-slot="inspector-tabs"] button').nth(index).click()
     await settle(page)
     bands.push(...(await foldedBands(page, `photo preview, ${tab}`)))
+  }
+  // Every folded card of the Print and Info tabs opened, so what it holds is checked too (owner,
+  // 2026-11-12: the date card's clock button ran out of its card in Hungarian, folded away from
+  // every check). The tabs are found by their words, the cards by their headers.
+  for (const [key, tab] of [['inspector.print', 'Print'], ['inspector.info', 'Info']]) {
+    await page.locator('[role="dialog"]').getByRole('radio', { name: say(key) }).click()
+    await settle(page)
+    const folded = page.locator('[role="dialog"] aside section > header button[aria-expanded="false"]')
+    for (let i = 0; i < 12 && (await folded.count()); i++) {
+      await folded.first().click()
+      await page.waitForTimeout(100)
+    }
+    await settle(page)
+    extra.push(...(await allChecks(page, `photo preview, ${tab}, every card open`)))
+    await page.screenshot({ path: path.join(outDir, `measure-preview-${tab.toLowerCase()}-open.png`) })
   }
   await page.screenshot({ path: path.join(outDir, 'measure-preview.png') })
   await context.close()
@@ -849,9 +923,9 @@ async function measurePanels() {
   await page.screenshot({ path: path.join(outDir, 'measure-postcard-preview.png') })
   await context.close()
   ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
-  for (const name of [/^(General|Chung)$/, /^(RAM & cache|Bộ nhớ RAM & cache)$/, /^(Data|Dữ liệu)$/]) {
-    await openSettings(page, name)
-    rows.push([`settings: ${name.source.slice(2, 9).toLowerCase()}`, await measure(page, '[data-slot="settings-body"]')])
+  for (const { re, tag } of ['general', 'memory', 'data'].map(section)) {
+    await openSettings(page, re)
+    rows.push([`settings: ${tag.toLowerCase()}`, await measure(page, '[data-slot="settings-body"]')])
   }
   await page.screenshot({ path: path.join(outDir, 'measure-settings.png') })
   await context.close()
@@ -893,6 +967,10 @@ async function measurePanels() {
 
 if (process.env.MEASURE) {
   await measurePanels()
+  // FR-125: what a translation made smaller or cut, for the translator (never a failure).
+  if (fitted.size) console.log(`\nfitted words (view | step | width | words):\n${[...fitted].join('\n')}`)
+  else console.log('\nfitted words: none, every word whole')
+  console.log(`fitting on a resize to 1180 px: ${fitCost.replace(':', ' controls, ')} ms`)
   await browser.close()
   process.exit()
 }
@@ -909,7 +987,7 @@ for (const language of ['en', 'vi']) {
 
     // 1a. For the manual: the filters open (FR-022), and the Project block (FR-023),
     // zoomed in like the print-basket shots.
-    await page.getByRole('button', { name: /^(Filters|Bộ lọc)$/ }).click()
+    await page.getByRole('button', { name: say('culling.filters') }).click()
     await page.waitForSelector('[role="dialog"], [data-slot="popover-content"]')
     await page.waitForTimeout(300)
     await save(page, `manual-filters-${suffix}`)
@@ -919,13 +997,13 @@ for (const language of ['en', 'vi']) {
 
     // 1b. Print-size advice for the manual: the picker open, a badge per size (FR-026).
     // By its name: the panel's ids come from useId (STYLE_RULE §4, no hard-coded id).
-    await page.getByRole('combobox', { name: /^(Print \/ export size|Khổ in \/ xuất ảnh)$/ }).first().click()
+    await page.getByRole('combobox', { name: say('settings.printSize') }).first().click()
     await page.waitForSelector('[role="option"]')
     await page.waitForTimeout(300)
     await save(page, `manual-size-${suffix}`)
     await page.keyboard.press('Escape')
     await page.waitForTimeout(200)
-    await page.getByRole('button', { name: /Versions|Các phiên bản/ }).click()
+    await page.getByRole('button', { name: say('about.versions', { whole: false }) }).click()
     await page.waitForTimeout(300)
     await save(page, `check-versions-${suffix}`)
     await page.keyboard.press('Escape')
@@ -936,26 +1014,26 @@ for (const language of ['en', 'vi']) {
     await settle(page)
     // 2a. For the manual: the photo at a glance, at the top of the inspector (FR-078).
     const summary = await page
-      .locator('[role="dialog"] section', { hasText: /^(This photo|Ảnh này)/ })
+      .locator('[role="dialog"] section', { hasText: say('viewer.summary', { whole: false, start: true }) })
       .first()
       .boundingBox()
     if (summary) {
       await zoomed(page, `manual-summary-${suffix}`, { x: summary.x - 16, y: summary.y - 16, width: summary.width + 32, height: summary.height + 32 })
     }
     // The stamp's card is in the inspector's Print tab (FR-095's tabs): the shot shows it.
-    await page.locator('[role="dialog"]').getByRole('radio', { name: /^(Print and export|In và xuất ảnh)$/ }).click()
+    await page.locator('[role="dialog"]').getByRole('radio', { name: say('inspector.print') }).click()
     await settle(page)
     await save(page, `stamp-${suffix}`)
     // 2b. The place in the Location card (for checking only), and the place picker for the
     // manual (FR-032).
     const inspector = page.locator('[role="dialog"]')
     // The place lives in the inspector's Info tab (FR-095's tabs).
-    await inspector.getByRole('radio', { name: /^(Info|Thông tin)/ }).click()
+    await inspector.getByRole('radio', { name: say('inspector.info') }).click()
     await page.waitForTimeout(300)
-    await inspector.getByRole('button', { name: /Set the place|Đặt nơi chụp/ }).scrollIntoViewIfNeeded()
+    await inspector.getByRole('button', { name: say('places.setPlace', { whole: false }) }).scrollIntoViewIfNeeded()
     await page.waitForTimeout(300)
     await save(page, `check-place-${suffix}`)
-    await inspector.getByRole('button', { name: /Set the place|Đặt nơi chụp/ }).click()
+    await inspector.getByRole('button', { name: say('places.setPlace', { whole: false }) }).click()
     await page.getByRole('combobox').last().click()
     await page.keyboard.type('pra')
     await page.waitForSelector('[cmdk-item]')
@@ -966,7 +1044,7 @@ for (const language of ['en', 'vi']) {
     // 3. Preview with the "Shot on" info frame, and the panel's frame card for the manual.
     ;({ context, page } = await open({ scenario: 'frame', language, theme }))
     // Scroll the panel alone (scrollIntoView would move the page too, and show the splash).
-    await page.locator('aside').last().getByText(/^(Info frame|Khung thông tin)$/).first().evaluate((e) => {
+    await page.locator('aside').last().getByText(say('frame.title')).first().evaluate((e) => {
       let box = e.parentElement
       while (box && !(box.scrollHeight > box.clientHeight && /auto|scroll/.test(getComputedStyle(box).overflowY))) box = box.parentElement
       if (box) box.scrollTop += e.getBoundingClientRect().top - box.getBoundingClientRect().top - 24
@@ -980,11 +1058,11 @@ for (const language of ['en', 'vi']) {
     await save(page, `manual-places-${suffix}`)
     await (await reach(page, SHOW.frame)).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.frame}"]`)
-    await page.locator('[role="dialog"]').getByRole('radio', { name: /^(Print and export|In và xuất ảnh)$/ }).click()
+    await page.locator('[role="dialog"]').getByRole('radio', { name: say('inspector.print') }).click()
     await settle(page)
     await save(page, `frame-${suffix}`)
     // The export card at the bottom of the inspector: this photo only (FR-055).
-    await page.locator('[role="dialog"]').getByRole('button', { name: /^(Export|Xuất ảnh)$/ }).click()
+    await page.locator('[role="dialog"]').getByRole('button', { name: say('export.button') }).click()
     await page.waitForTimeout(600)
     await save(page, `check-export-${suffix}`)
     // Export opens the export dialog over the preview (FR-093): Esc closes it, then the preview.
@@ -1023,7 +1101,7 @@ for (const language of ['en', 'vi']) {
     await save(page, `window-${suffix}`)
     await context.close()
     ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
-    await page.getByRole('button', { name: /^(Export|Xuất) \d+/ }).first().click()
+    await page.getByRole('button', { name: say('export.buttonCount') }).first().click()
     await page.waitForSelector('[data-slot="settings-body"]')
     await settle(page)
     await save(page, `export-dialog-${suffix}`)
@@ -1031,11 +1109,11 @@ for (const language of ['en', 'vi']) {
 
     // 5. Best-shot groups, on the cat burst.
     ;({ context, page } = await open({ scenario: 'stamp', language, theme, source: cat }))
-    await page.getByRole('radio', { name: /Groups|Nhóm/ }).click()
+    await page.getByRole('radio', { name: say('bestShot.viewGroups', { whole: false }) }).click()
     await settle(page)
     await save(page, `manual-groups-${suffix}`)
     // The compare view shows the shots large, side by side, with a bar per measure.
-    await page.getByRole('button', { name: /^(Compare|So sánh)$/ }).first().click()
+    await page.getByRole('button', { name: say('bestShot.compare') }).first().click()
     await page.waitForSelector('[role="dialog"]')
     await settle(page)
     await save(page, `groups-${suffix}`)
@@ -1045,7 +1123,7 @@ for (const language of ['en', 'vi']) {
     ;({ context, page } = await open({ scenario: 'frame', language, theme, scale: 3 }))
     const tiles = page.locator('img[src*="/thumb/"]')
     // 6a. Select mode: ticks, the action bar, the basket and set-aside rows.
-    await page.getByRole('button', { name: /^(Select|Chọn)$/ }).click()
+    await page.getByRole('button', { name: say('select.start') }).click()
     await tiles.nth(2).click()
     await tiles.nth(3).click()
     await tiles.nth(5).click()
@@ -1065,11 +1143,11 @@ for (const language of ['en', 'vi']) {
     await context.close()
     // 6c. The size estimate, sharing for Facebook: framed on the estimate and the button.
     ;({ context, page } = await open({ scenario: 'frame', language, theme, scale: 5 }))
-    await page.getByRole('radio', { name: /^(Share online|Mạng xã hội)$/ }).first().click()
+    await page.getByRole('radio', { name: say('export.target.share') }).first().click()
     await page.waitForTimeout(900)
     // The estimate is a badge of figures beside the button (FR-053, FR-099).
     const note = await page.locator('[data-slot="badge"]', { hasText: /→/ }).last().boundingBox()
-    const button = await page.getByRole('button', { name: /^(Export|Xuất) \d+/ }).boundingBox()
+    const button = await page.getByRole('button', { name: say('export.buttonCount') }).boundingBox()
     if (note && button) {
       const top = note.y - 56
       const height = button.y + button.height + 40 - top
@@ -1078,16 +1156,16 @@ for (const language of ['en', 'vi']) {
       await zoomed(page, `estimate-${suffix}`, { x, y: top, width, height })
     }
     // 6d. For the manual: each shared photo whole in a square frame, a fill round it (FR-075).
-    await page.getByRole('switch', { name: /^(Whole photo in a frame|Giữ trọn ảnh trong khung)$/ }).click()
+    await page.getByRole('switch', { name: say('export.fill.label') }).click()
     await page.waitForTimeout(500)
-    const fillCard = await page.locator('section', { has: page.getByRole('switch', { name: /^(Whole photo in a frame|Giữ trọn ảnh trong khung)$/ }) }).first().boundingBox()
+    const fillCard = await page.locator('section', { has: page.getByRole('switch', { name: say('export.fill.label') }) }).first().boundingBox()
     if (fillCard) {
       const c = fillCard
       await zoomed(page, `manual-share-fill-${suffix}`, { x: c.x - 16, y: c.y - 16, width: c.width + 32, height: c.height + 32 })
       // For checking by eye: a colour of one's own, with its picker and code.
-      await page.getByRole('radio', { name: /^(Custom|Tùy chọn)$/ }).click()
+      await page.getByRole('radio', { name: say('export.fill.colors.custom') }).click()
       await page.waitForTimeout(400)
-      const open = await page.locator('section', { has: page.getByRole('switch', { name: /^(Whole photo in a frame|Giữ trọn ảnh trong khung)$/ }) }).first().boundingBox()
+      const open = await page.locator('section', { has: page.getByRole('switch', { name: say('export.fill.label') }) }).first().boundingBox()
       if (open) await zoomed(page, `check-share-fill-${suffix}`, { x: open.x - 16, y: open.y - 16, width: open.width + 32, height: open.height + 32 })
     }
     await context.close()
@@ -1096,7 +1174,7 @@ for (const language of ['en', 'vi']) {
     ;({ context, page } = await open({ scenario: 'frame', language, theme, scale: 3, tabs: true }))
     const tab = (name) => page.getByRole('button', { name: new RegExp(`^${name}`) })
     await tab('Wilhelma Zoo').click()
-    await page.getByRole('button', { name: /^(Select|Chọn)$/ }).click()
+    await page.getByRole('button', { name: say('select.start') }).click()
     await page.locator('img[src*="/thumb/"]').nth(1).click()
     await page.locator('img[src*="/thumb/"]').nth(4).click()
     await tab('Praha').click()
@@ -1115,7 +1193,7 @@ for (const language of ['en', 'vi']) {
 
     // 9b. The Settings window (FR-086): the gear beside the byline, at *RAM & cache*.
     ;({ context, page } = await open({ scenario: 'stamp', language, theme }))
-    await openSettings(page, /^(RAM & cache|Bộ nhớ RAM & cache)$/)
+    await openSettings(page, section('memory').re)
     await save(page, `settings-${suffix}`)
     await context.close()
 
@@ -1160,18 +1238,18 @@ for (const language of ['en', 'vi']) {
       // then the recent addresses, listed on every card (v0.13.2).
       const textCard = (pattern) =>
         page.locator('[role="dialog"] section', { has: page.getByText(pattern) }).first()
-      const apply = textCard(/^(Use for them|Dùng cho các tấm đó)$/)
+      const apply = textCard(say('postcard.reuse.fill'))
       if (await apply.count()) {
         await apply.scrollIntoViewIfNeeded()
         await settle(page)
         const box = await apply.boundingBox()
         if (box) await zoomed(page, `manual-postcard-apply-${suffix}`, { x: box.x - 16, y: box.y - 16, width: box.width + 32, height: box.height + 32 })
       }
-      for (let i = 0; i < 8 && !(await page.getByText(/^(Recent addresses|Địa chỉ gần đây)$/).count()); i++) {
+      for (let i = 0; i < 8 && !(await page.getByText(say('postcard.reuse.recent')).count()); i++) {
         await page.keyboard.press('ArrowRight')
         await settle(page)
       }
-      const recent = textCard(/^(Recent addresses|Địa chỉ gần đây)$/)
+      const recent = textCard(say('postcard.reuse.recent'))
       if (await recent.count()) {
         await recent.scrollIntoViewIfNeeded()
         await settle(page)

@@ -13,6 +13,26 @@ pub enum Language {
     #[default]
     En,
     Vi,
+    /// Magyar (FR-123), translated from English; see docs/LOCALIZATION.md.
+    Hu,
+}
+
+impl Language {
+    /// The language of an operating system's locale (`hu-HU`, `vi_VN`, `en-GB`…), English
+    /// when it is none of ours: the first launch speaks the machine's language (FR-124).
+    #[must_use]
+    pub fn from_locale(tag: &str) -> Self {
+        let primary = tag
+            .split(['-', '_', '.', '@'])
+            .next()
+            .unwrap_or("")
+            .to_ascii_lowercase();
+        match primary.as_str() {
+            "hu" => Self::Hu,
+            "vi" => Self::Vi,
+            _ => Self::En,
+        }
+    }
 }
 
 /// Light or dark interface (FR-052). `System` follows the operating system.
@@ -591,6 +611,16 @@ pub struct PostcardSettings {
     pub message_style: TextStyle,
     #[serde(default)]
     pub address_style: TextStyle,
+    /// Made to be posted (FR-073, owner 2026-11-12): the post's coding zone is kept free on
+    /// the whole card, the photo too: 15 mm at the foot of a landscape card, along the right
+    /// edge of a portrait one, marked by a thin line and "postal use" in seven languages.
+    /// Absent before settings v19: on.
+    #[serde(default = "default_postal_use")]
+    pub postal_use: bool,
+}
+
+const fn default_postal_use() -> bool {
+    true
 }
 
 /// The typed text's em in millimetres for each size, about 10, 12 and 15 pt: what a
@@ -623,6 +653,7 @@ impl Default for PostcardSettings {
             text_size: StampSize::Medium,
             message_style: TextStyle::default(),
             address_style: TextStyle::default(),
+            postal_use: true,
         }
     }
 }
@@ -1025,6 +1056,19 @@ impl RenderSettings {
 
 #[cfg(test)]
 mod tests {
+
+    /// FR-124: the machine's locale picks the first launch's language, English otherwise.
+    #[test]
+    fn fr_124_the_machines_language() {
+        use super::Language;
+        assert_eq!(Language::from_locale("hu-HU"), Language::Hu);
+        assert_eq!(Language::from_locale("hu"), Language::Hu);
+        assert_eq!(Language::from_locale("vi_VN.UTF-8"), Language::Vi);
+        assert_eq!(Language::from_locale("VI"), Language::Vi);
+        assert_eq!(Language::from_locale("en-GB"), Language::En);
+        assert_eq!(Language::from_locale("cs-CZ"), Language::En);
+        assert_eq!(Language::from_locale(""), Language::En);
+    }
 
     /// FR-086, the *Auto* button: the memory share by RAM (40 % from 32 GB, 25 % from
     /// 12 GB, else 15 %), the largest cache within a tenth of the free disk, previews off

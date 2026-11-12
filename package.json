@@ -16,6 +16,7 @@
     "ui:build": "npm run build --workspace ui",
     "ui:lint": "npm run lint --workspace ui",
     "ui:typecheck": "npm run typecheck --workspace ui",
+    "text-widths": "node scripts/text-widths.mjs",
     "site:build": "eleventy",
     "site:serve": "eleventy --serve --port 4000"
   },
