@@ -828,4 +828,4 @@ The Color Mixer is one function of a pixel in `f32` (`colour_ops::MixerParams::a
 
   RawTherapee works in float on full-image buffers, ProPhoto by default. Its reconstruction adds 0.2–0.25 s and 350–950 MB on the A7 III, one run each. Ours adds 55 ms at worst (half the frame clipped) and no buffer beyond the frame.
 
-**Left:** the owner's real trial, a RAW with a blown sky pulled down in the app; the owner's bracketed 0 / −2 EV pairs as a second truth. Closing the gap to Color Propagation is the owner's call, measured with `compare.sh`: brighter rebuilt pixels, and the rebuild before white balance or before the demosaic's cap.
+**Left:** the owner's real trial, a RAW with a blown sky pulled down in the app; the owner's bracketed 0 / −2 EV pairs as a second truth. Closing the gap to Color Propagation is planned (owner, 2026-11-12; STATUS item 5b): brighter rebuilt pixels, then the rebuild before the demosaic's cap and white balance, then a propagation; each run with `compare.sh` against the numbers above, which stay as the baseline.
