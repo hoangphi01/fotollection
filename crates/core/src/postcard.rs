@@ -44,6 +44,9 @@ pub const ADDRESS_EDGE_MM: f32 = 15.0;
 /// in the room of those three, closer together and in smaller type (owner, 2026-11-04).
 pub const ADDRESS_LINES: u8 = 3;
 pub const MAX_ADDRESS_LINES: u8 = 4;
+/// A portrait card's address column is narrow, so a long address wraps: it may take a fifth
+/// line in the room of three (owner, 2026-11-12).
+pub const MAX_PORTRAIT_ADDRESS_LINES: u8 = 5;
 /// Lines no further apart than a ruled notebook's, and the gap between the message's and
 /// the address's, in lines.
 const MAX_STEP_MM: f32 = 8.0;
@@ -185,7 +188,12 @@ pub fn layout(
         x1
     };
     let message_lines = message_lines.max(1);
-    let address_lines = address_lines.clamp(1, MAX_ADDRESS_LINES);
+    let most = if standing {
+        MAX_ADDRESS_LINES
+    } else {
+        MAX_PORTRAIT_ADDRESS_LINES
+    };
+    let address_lines = address_lines.clamp(1, most);
     // The address keeps the room of its three lines whatever their number.
     let address_step = |step: f32| step * f32::from(ADDRESS_LINES) / f32::from(address_lines);
     let line = |y: f32, x0: f32, x1: f32| Line { y, x0, x1 };
@@ -335,12 +343,21 @@ fn typeset(spec: &CardSpec<'_>, faces: Faces<'_>, density: f32) -> Typeset {
             address,
         }
     };
-    let three = set(ADDRESS_LINES);
-    if three.address.len() > usize::from(ADDRESS_LINES) {
-        set(MAX_ADDRESS_LINES)
+    // Three lines, or more in the same room when the address needs them: four, and on a
+    // portrait card five.
+    let most = if spec.card.height >= spec.card.width {
+        MAX_ADDRESS_LINES
     } else {
-        three
+        MAX_PORTRAIT_ADDRESS_LINES
+    };
+    let mut set_now = set(ADDRESS_LINES);
+    for lines in ADDRESS_LINES + 1..=most {
+        if set_now.address.len() <= set_now.layout.address.len() {
+            break;
+        }
+        set_now = set(lines);
     }
+    set_now
 }
 
 /// Whether the card's text fits its lines (FR-073), as the print sets it: the warning on a
@@ -915,6 +932,49 @@ mod tests {
                 .count()
                 > 1000
         );
+    }
+
+    /// FR-073: a portrait card's narrow address column takes a fifth line in the room of three
+    /// (owner, 2026-11-12); a landscape card keeps four.
+    #[test]
+    fn fr_073_a_portrait_address_takes_five_lines() {
+        let settings = PostcardSettings {
+            enabled: true,
+            ..PostcardSettings::default()
+        };
+        let address = text(
+            "",
+            "ANNA SCHMIDT\n(+49) 030 1234 5678\nUnit 21, 88 Collins St DOCKLANDS VIC 3008\nAUSTRALIA",
+        );
+        let set = |card: RectMm, width: f32| {
+            let spec = CardSpec {
+                card,
+                sheet_width: width,
+                settings: &settings,
+                text: Some(&address),
+                font: None,
+                paper: BorderColor::White,
+            };
+            let Some(bundled) = font() else {
+                panic!("the bundled face loads");
+            };
+            let faces = Faces {
+                main: bundled,
+                fallback: crate::render::regular(),
+            };
+            (typeset(&spec, faces, 12.0).layout.address.len(), fit(&spec))
+        };
+        let (portrait_lines, portrait_fit) = set(half(0.0, 0.0, 102.0, 76.0), 102.0);
+        assert_eq!(portrait_lines, 5);
+        assert!(!portrait_fit.address_cut, "five lines hold it");
+        let (landscape_lines, _) = set(half(76.0, 0.0, 76.0, 102.0), 152.0);
+        assert_eq!(landscape_lines, 4);
+        // The fifth line takes the room of three, as the fourth does.
+        let three = layout(102.0, half(0.0, 0.0, 102.0, 76.0), 4, 3, true);
+        let five = layout(102.0, half(0.0, 0.0, 102.0, 76.0), 4, 5, true);
+        let room =
+            |l: &CardLayout| l.address[l.address.len() - 1].y - l.address[0].y + l.address_step;
+        assert!((room(&three) - room(&five)).abs() < 1e-3);
     }
 
     /// FR-073: the address has 3 lines, and a fourth when it needs one; text that still does

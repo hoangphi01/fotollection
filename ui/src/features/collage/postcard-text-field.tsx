@@ -13,7 +13,7 @@ import { PostcardTextReuse } from './postcard-text-reuse'
 /** The limits Rust checks for each part (`PostcardPart::limits`). */
 const LIMITS: Record<PostcardPart, { chars: number; lines: number }> = {
   message: { chars: 400, lines: 8 },
-  address: { chars: 200, lines: 4 },
+  address: { chars: 200, lines: 5 },
 }
 
 const STYLES = [

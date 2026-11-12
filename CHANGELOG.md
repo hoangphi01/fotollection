@@ -20,7 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
-- **Postcards leave the post its room** (FR-073): a card posted from the app came back with the post's sorting code printed over its last address lines. A new **Postal use** switch in the *Postcard* card, on by default, keeps the foot of a landscape card free for the post (15 mm, the photo too), marks it with a thin line and "postal use" in seven languages along the foot, and keeps the address 15 mm from the edge; on a portrait card the strip runs along the right edge. Off, the card is laid out as before. Postcards now always print on white.
+- **Postcards leave the post its room** (FR-073): a card posted from the app came back with the post's sorting code printed over its last address lines. A new **Postal use** switch in the *Postcard* card, on by default, keeps the foot of a landscape card free for the post (15 mm, the photo too), marks it with a thin line and "postal use" in seven languages along the foot, and keeps the address 15 mm from the edge; on a portrait card the strip runs along the right edge, and its narrow address column takes up to five lines. Off, the card is laid out as before. Postcards now always print on white.
 - **A list that opens upwards keeps its first rows** (FR-052): the print size list in the photo preview, low in its column, lost its top sizes under the window's title bar; every dropdown and popover now keeps clear of it.
 - **Nothing to reset, no reset** (FR-114): the Colour tab's red reset stayed after the photos were back to their original colour, and asked to reset them again; it now shows only while a photo it covers has a colour of its own.
 

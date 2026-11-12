@@ -809,7 +809,7 @@ impl PostcardPart {
     pub fn limits(self) -> (usize, usize) {
         match self {
             Self::Message => (400, 8),
-            Self::Address => (200, 4),
+            Self::Address => (200, 5),
         }
     }
 }

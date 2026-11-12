@@ -114,7 +114,7 @@ pub struct PhotoRow {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub collage_rotation: Option<u8>,
     /// The text typed on the photo's postcard (v10): its message (at most 400 characters
-    /// and 8 lines) and its address (200 characters, 4 lines).
+    /// and 8 lines) and its address (200 characters, 5 lines).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub postcard: Option<crate::library::PostcardText>,
     /// The photo's own colour look (v11); absent when it follows the settings.
@@ -1110,7 +1110,10 @@ mod tests {
             .and_then(crate::library::PostcardText::sanitized);
         assert_eq!(
             cut.map(|p| (p.message, p.address)),
-            Some(("1\n2\n3\n4\n5\n6\n7\n8".to_owned(), "a\nb\nc\nd".to_owned()))
+            Some((
+                "1\n2\n3\n4\n5\n6\n7\n8".to_owned(),
+                "a\nb\nc\nd\ne".to_owned()
+            ))
         );
         let Loaded::Ok(v9) =
             from_bytes(include_bytes!("../tests/fixtures/project/v9.fotollection"))
