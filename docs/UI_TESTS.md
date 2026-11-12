@@ -24,7 +24,7 @@ Only the recording needs `tauri dev` quit (the app runs once at a time, and the 
 | Theme | light, dark |
 | Engine | Chromium; WebKit, the engine of the app on macOS and Linux |
 | Window width | 1180 px (the app's minimum), 1400, 1600 |
-| Data | the demo recording; the stress fixtures (a long custom print size chosen, every sheet shape, every Settings section, the welcome) |
+| Data | the demo recording; the stress fixtures (a long custom print size chosen, every sheet shape, every Settings section, the welcome); each view checked again with every folded card open (`allChecksOpen`, the process review of 2026-11-12) |
 
 **When it runs:** on every push that changes the interface, English and Hungarian in light, Chromium (`QUICK=2`, the pre-push hook, CONTRIBUTING §4); the full matrix before a release: English, light, Chromium; Vietnamese, dark, WebKit; Hungarian, light; `en-XA`, dark; each at every width. A case marked "release" below is in both; "commit" runs with `npm run lint` too. `MEASURE=1 node site/screenshots/shoot.mjs` is the engine under the script ([site/screenshots/README.md](../site/screenshots/README.md)); the detectors are in [`checks.mjs`](../site/screenshots/checks.mjs).
 

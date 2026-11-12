@@ -40,7 +40,7 @@ commit.
    on a wrapper.
 6. Colours are theme tokens (`primary`, `muted-foreground`…), never hex, except swatches of
    what prints; photos stay on neutral ground.
-7. Every visible string is in `ui/src/locales/en.json` and `vi.json`.
+7. Every visible string is in every `ui/src/locales/<code>.json` (en, hu, vi), with the same placeholders ([docs/LOCALIZATION.md](../../../docs/LOCALIZATION.md)); a word a translation makes long is fitted by `FitText`, never by a hand-made `truncate`.
 8. Nothing blinks or jumps: the last answer stays while the next loads (`useLiveQuery`), a
    note that comes and goes keeps its room.
 9. No `dangerouslySetInnerHTML` or `innerHTML`; metadata is shown as text.
@@ -76,6 +76,8 @@ table, or the two side panels differ in width. It also opens the gallery and Col
 1180 and 1600 px and fails when an icon-only button's icon is more than 0.5 px off its centre
 (a toolbar button is a `ToolbarButton`, never a hand-hidden label). A new kind of panel or card gets a row in
 `measurePanels` (`site/screenshots/shoot.mjs`).
+
+**A new block is reached by a scene.** A card, panel or state the change adds is opened by a scene of `site/screenshots/shoot.mjs` (each view is checked folded and with every card open), in English and Hungarian; a block no scene reaches is checked by no machine (the process review, 2026-11-12).
 
 ## 5. Look at it
 

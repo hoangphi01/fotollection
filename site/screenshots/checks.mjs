@@ -264,13 +264,20 @@ export async function layoutChecks(page, where) {
         const range = document.createRange()
         range.selectNodeContents(n)
         // Words cut with an ellipsis end where their clipping box does (as UI-LAYOUT-018).
+        // Words scrolled out of a box that clips them are not drawn, wherever their rect sits
+        // (the review of 2026-11-12: with every card open, the inspector scrolled "All" up
+        // under the button, hidden).
         let clip = Infinity
+        let [top, bottom] = [-Infinity, Infinity]
         for (let e = n.parentElement; e && e !== dialog; e = e.parentElement) {
-          if (getComputedStyle(e).overflowX !== 'visible') clip = Math.min(clip, e.getBoundingClientRect().right)
+          const cs = getComputedStyle(e)
+          const box = e.getBoundingClientRect()
+          if (cs.overflowX !== 'visible') clip = Math.min(clip, box.right)
+          if (cs.overflowY !== 'visible') [top, bottom] = [Math.max(top, box.top), Math.min(bottom, box.bottom)]
         }
         for (const r of range.getClientRects()) {
           const right = Math.min(r.right, clip)
-          if (right - r.left < 1) continue
+          if (right - r.left < 1 || r.bottom <= top + 0.5 || r.top >= bottom - 0.5) continue
           if (right > c.left - 8 && r.left < c.right + 8 && r.bottom > c.top - 8 && r.top < c.bottom + 8) {
             out.push(`UI-LAYOUT-022 words within 8 px of a dialog's close button: "${n.textContent.trim().slice(0, 30)}"`)
             break

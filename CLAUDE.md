@@ -16,7 +16,7 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
 
 ## Before starting a task
 
-- Run the `pre-work` skill (`.claude/skills/pre-work/`): read [docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md) and [docs/LESSONS.md](docs/LESSONS.md) in full before doing anything, then STATUS "Next, in order" (owner, 2026-11-05).
+- Run the `pre-work` skill (`.claude/skills/pre-work/`): read [docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md) in full and [docs/LESSONS.md](docs/LESSONS.md)'s Rules table in full, then every lesson of the task's areas, then STATUS "Next, in order" (owner, 2026-11-05; narrowed in the process review of 2026-11-12).
 
 ## Before finishing a task
 
@@ -24,8 +24,8 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
 - Check resources before, during and after every build and test (`scripts/resources.sh`, [docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md) §3): free disk, memory pressure, swap.
 - After a debugging session, add what it taught to [docs/LESSONS.md](docs/LESSONS.md) in the fix's commit; read it before debugging.
 - A UI change (component, card, panel, dialog, hint) follows the `style-audit` skill (`.claude/skills/style-audit/SKILL.md`): lego blocks, `check-lego`, the measure table, both themes and languages.
-- Run `scripts/check-docs.sh` on its own (never piped into `&&`). It must pass.
-- Once code exists, also run `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test`, and the UI lint and tests.
+- Run the checks of [docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md) §3 (`scripts/check-docs.sh` on its own, never piped). The pre-push hook (`scripts/hooks/pre-push`, [CONTRIBUTING.md](CONTRIBUTING.md) §4) runs them again, and the UI cases when the interface changed.
+- One thing at a time, and a feature that leaves the app is tried for real once before it is done ([CONTRIBUTING.md](CONTRIBUTING.md) §10).
 - Commit messages follow Conventional Commits, with the requirement ID: `feat(stamp): … [FR-004]`.
 
 ## Repository facts

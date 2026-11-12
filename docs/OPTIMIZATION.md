@@ -259,7 +259,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-11-08 | FR-079 | REF-MAC (M3), loaded | `measure_look`, the table with every slider and the colour mixer, median of 5 | 3.08 ms on 8 threads (2.73 without the mixer); 7.10 on 2 (7.47 without) | Within 5 ms on 8 threads; 2 threads to measure again idle; RESULT §38 |
 | 2026-11-09 | FR-115 | REF-MAC (M3), 16 GB swap, not growing | `measure_dehaze`, synthetic scene, amount 60, median of 10 | 1600 × 1067: 6.2 ms; 6000 × 4000: 30 ms (first version 21.9 and 97.7: a `fit_long_edge` copy and filters on one thread) | Within ≤ 8 ms and ≤ 80 ms; RESULT §39 |
 | 2026-11-12 | FR-125 (uncommitted, on 79b0f2ef) | REF-MAC (M3) | `MEASURE=1`: one `FitText` pass when the window is resized from 1440 to 1180 px (`data-fit-pass`) | 43 controls in 0.30 ms (en), 0.50 ms (vi) | Under the 2 ms a layout may take (NFR-005); one shared `ResizeObserver`, Range-measured |
-| 2026-11-12 | process review (on b0c6e29f) | REF-MAC (M3) | `scripts/hooks/pre-push` over a push | 8 s without an interface change (fmt, check-docs, docs-with-code); 286 s with one (clippy, UI lint, `QUICK=2 ui-check`, English and Hungarian) | Under the 1 and 8 minutes the review set; swap near full while measured |
+| 2026-11-12 | process review (on b0c6e29f) | REF-MAC (M3) | `scripts/hooks/pre-push` over a push | 8 s without an interface change (fmt, check-docs, docs-with-code); 286 s with one (clippy, UI lint, `QUICK=2 ui-check`, English and Hungarian), 314 s once each view is also checked with every card open | Under the 1 and 8 minutes the review set; swap near full while measured |
 
 ### 5.1 Planned measurements
 

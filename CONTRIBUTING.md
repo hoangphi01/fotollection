@@ -67,7 +67,7 @@ The rows people miss most:
 |-------------|--------------|
 | Something a user can see | [CHANGELOG.md](CHANGELOG.md) under `Unreleased`, in user terms, and its **Highlights** (3–6 one-line points that become the release page) |
 | How the user does something | Both user guides, with the app's own labels from `ui/src/locales/{en,vi}.json`, and the screenshots if the screen changed |
-| Interface text | Both `en.json` and `vi.json`, the same keys (`npm run lint` checks) |
+| Interface text | Every `ui/src/locales/<code>.json` (en, hu, vi), the same keys and placeholders (`npm run lint` checks; [docs/LOCALIZATION.md](docs/LOCALIZATION.md)) |
 | Anything saved to disk | [DATABASE.md](docs/DATABASE.md): the version table, a `schema_version` bump, a migration, a fixture and a test |
 | A new error | Its `ERR-` row, the Rust code, and the text in both locales under `errors.<code>` |
 | A bug that took more than one look | An entry at the top of [docs/LESSONS.md](docs/LESSONS.md) |
@@ -180,6 +180,8 @@ Agents follow everything above. In addition:
 - **Run `scripts/check-docs.sh` on its own**, not in a chain, and read its output.
 - **Never push, release or publish without the owner's explicit go-ahead**, and add no AI attribution to commits or pull requests.
 - **Check resources** with `scripts/resources.sh` around builds and tests; the owner's machine has a small disk.
+- **One thing at a time** (the process review, 2026-11-12). A request the owner sends while a task runs goes into a list at the top of the next reply and is done in its order; the task under way is finished and committed first, unless the owner says stop.
+- **Try the real thing once** before a feature that leaves the app is called done: a print at a kiosk, a postcard through the post, a file on the network it is made for, an installer on Windows. STATUS marks it ✓ only after that trial ([docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md) §2, "Behaviour or scope").
 
 ## 11. Licence and the CLA
 

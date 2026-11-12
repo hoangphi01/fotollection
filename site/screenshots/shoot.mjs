@@ -599,11 +599,31 @@ async function allChecks(page, where) {
 }
 
 /** Every view the overflow checks walk, at one window width (step 5). */
+/**
+ * Opens every folded card on the page (the process review, 2026-11-12: a fault inside a folded
+ * card met no check), so the checks after it see what each card holds.
+ */
+async function openFolds(page) {
+  const folded = page.locator('section > header button[aria-expanded="false"]:visible')
+  for (let i = 0; i < 24 && (await folded.count()); i++) {
+    await folded.first().click()
+    await page.waitForTimeout(80)
+  }
+  await settle(page)
+}
+
+/** The checks of a view, then the same view with every folded card open. */
+async function allChecksOpen(page, where) {
+  const out = await allChecks(page, where)
+  await openFolds(page)
+  return [...out, ...(await allChecks(page, `${where}, every card open`))]
+}
+
 async function overflowViews({ language, theme, width }) {
   const out = []
   let { context, page } = await open({ scenario: 'stamp', language, theme, width, queues: NO_QUEUES })
   await settle(page)
-  out.push(...(await allChecks(page, `gallery at ${width}`)))
+  out.push(...(await allChecksOpen(page, `gallery at ${width}`)))
   await page.getByRole('button', { name: new RegExp(`${say('culling.filters').source}|${say('culling.filtersOn').source}`) }).first().click()
   await page.waitForTimeout(400)
   out.push(...(await allChecks(page, `filters at ${width}`)))
@@ -623,7 +643,7 @@ async function overflowViews({ language, theme, width }) {
   for (const mode of ['simple', 'collage']) {
     ;({ context, page } = await open({ scenario: mode === 'collage' ? 'collage' : 'stamp', language, theme, width, mode, queues: NO_QUEUES }))
     await settle(page)
-    out.push(...(await allChecks(page, `${mode} at ${width}`)))
+    out.push(...(await allChecksOpen(page, `${mode} at ${width}`)))
     await context.close()
   }
   for (const layout of ['dialog', 'window']) {
@@ -631,7 +651,7 @@ async function overflowViews({ language, theme, width }) {
     await (await reach(page, SHOW.crop)).dblclick()
     await page.waitForSelector(`img[src*="/preview/${SHOW.crop}"]`)
     await settle(page)
-    out.push(...(await allChecks(page, `preview (${layout}) at ${width}`)))
+    out.push(...(await allChecksOpen(page, `preview (${layout}) at ${width}`)))
     if (width === 1180) await page.screenshot({ path: path.join(outDir, `measure-preview-${layout}-1180.png`) })
     await context.close()
   }

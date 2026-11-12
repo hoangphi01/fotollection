@@ -1,0 +1,6 @@
+# FRs marked Done in STATUS whose proof is not a Rust test (scripts/check-docs.sh, TESTING.md §2).
+# One per line: the FR, then the check that covers it instead.
+FR-090 interface only: the UI cases of docs/UI_TESTS.md that cite it, run by scripts/ui-check.sh
+FR-099 interface only (depth tokens): check-lego's depth rules and UI-VISUAL-001
+FR-122 interface only (the chrome's gradient): UI-VISUAL-001 baselines
+FR-125 interface only (FitText): UI-TEXT-007 and UI-TEXT-008, run by the pre-push hook

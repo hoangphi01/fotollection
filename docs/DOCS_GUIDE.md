@@ -8,17 +8,17 @@
 
 ## 1. How to use it
 
-1. Before any work, read this page and [LESSONS.md](LESSONS.md) in full (the `pre-work` skill, `.claude/skills/pre-work/`; owner, 2026-11-05).
+1. Before any work, read this page in full and [LESSONS.md](LESSONS.md)'s **Rules** table in full, then every lesson whose *Area* the task touches (the `pre-work` skill, `.claude/skills/pre-work/`; owner, 2026-11-05, narrowed to the table and the areas in the process review of 2026-11-12).
 2. Read the rows of §2 that match the change. Most changes match several rows: a new feature is "behaviour", "UI text" and often "website".
 3. Update every file in the row. "Also check" lists files that change only sometimes; look at them and decide.
-4. Run §3 before committing. CI runs the same checks.
+4. Run §3 before committing. CI runs the same checks, except the resources and the UI cases; the pre-push hook runs the UI cases when the interface changed.
 
 ## 2. Checklist by kind of change
 
 | When you change… | Update | Also check |
 |------------------|--------|------------|
 | **Anything a user can see** | [CHANGELOG.md](../CHANGELOG.md) under `Unreleased` (English, user terms), in full; and keep its `### Highlights` up to date: 3–6 one-line points ("New: …", "UI update: …", "Security: …", "Fixes: …") that become the release page | The website's "What's new" box is built from it, nothing more to do |
-| **Behaviour or scope** (a feature, a fix that changes what happens) | [PRD.md](PRD.md) (the FR's text), [STATUS.md](STATUS.md) (its row and "Current phase") | [ROADMAP.md](ROADMAP.md) if the phase changes; [README.md](../README.md) + [README.vi.md](../README.vi.md) feature list; the website (row below) |
+| **Behaviour or scope** (a feature, a fix that changes what happens) | [PRD.md](PRD.md) (the FR's text), [STATUS.md](STATUS.md) (its row and "Current phase") | [ROADMAP.md](ROADMAP.md) if the phase changes; [README.md](../README.md) + [README.vi.md](../README.vi.md) feature list; the website (row below); a feature that leaves the app (a print at a kiosk, a postcard through the post, an export for a network, an installer) has a **real trial** in its PRD text, and STATUS marks it ✓ only after the owner has made it (LESSONS, the postcard of 2026-11-12) |
 | **A new requirement** | A new `FR-`/`NFR-` at the **end** of [PRD.md](PRD.md) (never renumber or reuse), a row in [ROADMAP.md](ROADMAP.md) and in [STATUS.md](STATUS.md) | `scripts/check-docs.sh` fails if one of the three is missing |
 | **A workflow or a shortcut** (how the user does something) | [USER_GUIDE.md](USER_GUIDE.md) **and** [USER_GUIDE.vi.md](USER_GUIDE.vi.md): the steps and the shortcut table, with the app's own labels from `ui/src/locales/{en,vi}.json`. They are the website's manual ([ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)): a new chapter gets an anchor (`<!-- chapter: id -->` above its `## 10. Title`) in both, a step worth showing gets a screenshot marker (`<!-- shot: name \| alt text -->`) in both | The keys hint lines in the app (`app.enterToPreview`, `culling.keysHint`, `collage.keysHint`, the `KeyHints` footers of the previews, the capture screen and Simple mode); a new screenshot is a `manual-*` shot in `site/screenshots/shoot.mjs`, and a changed screen is shot again with `site/screenshots/build.sh` |
 | **UI text** | Every `ui/src/locales/<code>.json` (en, hu, vi; same keys, same placeholders). Plurals: English and Hungarian need `_one` and `_other`, Vietnamese has only `_other` ([LOCALIZATION.md](LOCALIZATION.md) §3) | `npm run lint` runs `check-i18n`, which compares keys without their plural endings |

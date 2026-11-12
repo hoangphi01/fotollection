@@ -6,7 +6,7 @@ description: Start every Fotollection task the same way, before reading code or 
 # Pre-work (Fotollection)
 
 The owner's rule (2026-11-05): **read `docs/DOCS_GUIDE.md` and `docs/LESSONS.md` before
-doing anything.** Most mistakes in this project were made before, and their rule is
+doing anything** (LESSONS: its Rules table and the task's areas, since 2026-11-12). Most mistakes in this project were made before, and their rule is
 already written down. This skill makes reading them the first step, not an afterthought
 at commit time.
 
@@ -19,9 +19,11 @@ at commit time.
 1. **`docs/DOCS_GUIDE.md`, the whole page** (it is short). Pick the §2 rows that match
    the task. Most tasks match several: a feature is "behaviour", "UI text", "anything a
    user can see" and often "the website".
-2. **`docs/LESSONS.md`, the whole page.** Note every entry whose area the task touches.
-   Search it as well for the files, crates and words of the task
-   (`grep -n -i "<word>" docs/LESSONS.md`).
+2. **`docs/LESSONS.md`: its Rules table in full, then every entry of the task's areas, in
+   full** (the process review, 2026-11-12: 157 entries no longer fit one read). Each entry
+   carries `- **Area:**` tags; list an area's entries with
+   `grep -n -A1 '^### ' docs/LESSONS.md | grep -B1 'Area:.*<area>'`. Search it as well for the
+   files, crates and words of the task (`grep -n -i "<word>" docs/LESSONS.md`).
 3. **`docs/STATUS.md`, "Next, in order"**: the session plan. Then the issues not triaged yet (`gh issue list --search "-label:triaged"`, CONTRIBUTING §7): name them to the owner; triage only on the owner's word. Take the first open box
    unless the owner asked for something else.
 4. **Only what the task needs from [docs/README.md](../../../docs/README.md)'s map**:

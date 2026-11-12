@@ -199,6 +199,29 @@ awk '
 [ -s /tmp/check-docs-phase.$$ ] && fail "phases differ between ROADMAP and STATUS"
 rm -f /tmp/check-docs-phase.$$
 
+echo "• Every lesson has an Area that the Rules table of LESSONS.md lists (the process review, 2026-11-12)"
+awk '
+  /^## Rules/ { rules = 1; next }
+  /^## / { rules = 0; dated = ($0 ~ /^## (20[0-9][0-9]-|Before )/) }
+  rules && /^### / { area[$2] = 1; next }
+  dated && /^### / { if (title != "" && !tagged) print "no Area: " title; title = $0; tagged = 0; next }
+  dated && /^- \*\*Area:\*\*/ {
+    tagged = 1; line = $0; sub(/^- \*\*Area:\*\* */, "", line); n = split(line, tags, /, */)
+    for (i = 1; i <= n; i++) if (!(tags[i] in area)) print "unknown Area " tags[i] ": " title
+  }
+  END { if (title != "" && !tagged) print "no Area: " title }
+' docs/LESSONS.md | while read -r line; do echo "  ✗ $line"; done | tee /tmp/check-docs-areas.$$
+[ -s /tmp/check-docs-areas.$$ ] && fail "a lesson without a known Area (docs/LESSONS.md, Rules)"
+rm -f /tmp/check-docs-areas.$$
+
+echo "• Every FR marked Done has its test (TESTING.md §2): a fn fr_NNN_ in the code, or a reason in scripts/fr-tests-exempt.txt"
+untested=""
+for fr in $(grep -E '^\| FR-[0-9]+ \|[^|]*\|[^|]*\| Done ' "$STATUS" | grep -oE '^\| FR-[0-9]+' | grep -oE '[0-9]+'); do
+  grep -q "^FR-$fr " scripts/fr-tests-exempt.txt && continue
+  grep -rqE "fn fr_${fr}_" crates src-tauri/src || untested="$untested FR-$fr"
+done
+[ -z "$untested" ] || fail "Done without a test:$untested (write its fr_NNN_ test, or name the check that covers it in scripts/fr-tests-exempt.txt)"
+
 echo "• Code changes come with docs (DOCS_GUIDE.md)"
 scripts/check-docs-with-code.sh || fail "code changed without docs; add the doc rows of DOCS_GUIDE.md, or [no-docs] with a reason in the message"
 
