@@ -59,8 +59,9 @@ pub struct SheetLayout {
     pub cells: [Option<CellLayout>; 2],
     /// A postcard sheet's writing half (FR-073); its photo is in `cells[0]`.
     pub card: Option<RectMm>,
-    /// The post's coding zone on a landscape postcard made to be posted (FR-073, *Postal
-    /// use*): the card's last 15 mm, kept free on the photo's half too.
+    /// The post's coding zone on a postcard made to be posted (FR-073, *Postal use*): the last
+    /// 15 mm at a landscape card's foot, or along a portrait card's right edge; kept free on
+    /// the photo's half too.
     pub postal: Option<RectMm>,
 }
 
@@ -318,21 +319,42 @@ pub fn layout(
         } else {
             (rects[1], rects[0])
         };
-        // Made to be posted: the post's zone across the foot of a landscape card, the photo
-        // cut short at its line (owner, 2026-11-12).
-        let postal = (settings.postcard.postal_use && side).then_some(RectMm {
-            x: 0.0,
-            y: height - crate::postcard::CODE_ZONE_MM,
-            width,
-            height: crate::postcard::CODE_ZONE_MM,
+        // Made to be posted: the post's strip kept free, the photo cut short at its line
+        // (owner, 2026-11-12).
+        // A portrait card's strip runs along its right edge, the length the post's machines
+        // print along (owner, 2026-11-12).
+        let strip = crate::postcard::CODE_ZONE_MM;
+        let postal = settings.postcard.postal_use.then_some(if side {
+            RectMm {
+                x: 0.0,
+                y: height - strip,
+                width,
+                height: strip,
+            }
+        } else {
+            RectMm {
+                x: width - strip,
+                y: 0.0,
+                width: strip,
+                height,
+            }
         });
         let cell = photos[0].map(|p| {
             let mut placed = place(photo_half, p);
             if let Some(zone) = postal {
-                let room = zone.y - placed.y;
-                let foot = f64::from(placed.y) + f64::from(placed.area.1);
-                if room >= 1.0 && foot > f64::from(zone.y) {
-                    placed.area.1 = floor_mm(f64::from(room));
+                // Cut short at the strip's line: at the foot, or at the right edge.
+                let (start, extent, line) = if side {
+                    (placed.y, placed.area.1, zone.y)
+                } else {
+                    (placed.x, placed.area.0, zone.x)
+                };
+                let room = line - start;
+                if room >= 1.0 && f64::from(start) + f64::from(extent) > f64::from(line) {
+                    if side {
+                        placed.area.1 = floor_mm(f64::from(room));
+                    } else {
+                        placed.area.0 = floor_mm(f64::from(room));
+                    }
                 }
             }
             placed
@@ -773,14 +795,13 @@ fn sheet_credit(
     use crate::settings::Corner;
     let paper = paper.rgb();
     let mut spots = Vec::new();
-    if sheet.card.is_some() {
-        let (w, h) = crate::postcard::STAMP_MM;
-        let edge = crate::postcard::EDGE_MM;
+    if let Some(card) = sheet.card {
+        let stamp = crate::postcard::stamp_box(sheet.width, card, sheet.postal.is_some());
         spots.push(Place {
             area: BoxF {
-                x: (sheet.width - edge - w) * density,
-                y: (edge + h + 0.6) * density,
-                w: w * density,
+                x: stamp.x * density,
+                y: (stamp.y + stamp.height + 0.6) * density,
+                w: stamp.width * density,
                 h: 3.0 * density,
             },
             paper: Some(paper),
@@ -1463,6 +1484,98 @@ mod tests {
             } else {
                 assert!(sheet.postal.is_none());
                 assert!(reds > 500, "the photo reaches the foot: {reds}");
+            }
+        }
+        Ok(())
+    }
+
+    /// FR-073, *Postal use* on a portrait card (owner, 2026-11-12: the strip along the right
+    /// edge, the length the post's machines print along): the photo is cut at the strip's line,
+    /// a grey line runs down the card, and the words run along the right edge on both halves.
+    #[test]
+    #[allow(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss
+    )]
+    fn fr_073_postal_use_on_a_portrait_card() -> Result<(), RenderError> {
+        use crate::settings::{PostcardOrientation, PostcardSettings};
+        let image = filled(1800, 1200, [200, 30, 30]);
+        let source = CellSource {
+            image: &image,
+            capture: None,
+            crop: None,
+            straighten: 0.0,
+            place: None,
+            stamp: None,
+            caption: None,
+            look: None,
+            postcard: None,
+        };
+        let red = |p: [u8; 3]| p[0] > 150 && p[1] < 80;
+        for postal_use in [true, false] {
+            let mut settings = RenderSettings::default();
+            settings.stamp.enabled = false;
+            settings.collage.fill = true;
+            settings.collage.postcard = PostcardSettings {
+                enabled: true,
+                orientation: PostcardOrientation::Portrait,
+                postal_use,
+                ..PostcardSettings::default()
+            };
+            let sheet = layout(
+                print(),
+                [Some((1800, 1200)), None],
+                false,
+                &settings.collage,
+            );
+            assert!(!sheet.side_by_side);
+            let out = render_sheet(
+                &settings,
+                print(),
+                [Some(source), None],
+                false,
+                Some(1520),
+                None,
+            )?;
+            let density = out.height as f32 / sheet.height;
+            let at = |x_mm: f32, y_mm: f32| {
+                let (x, y) = ((x_mm * density) as usize, (y_mm * density) as usize);
+                let i = (y * out.width as usize + x) * 3;
+                [out.data[i], out.data[i + 1], out.data[i + 2]]
+            };
+            let line = sheet.width - crate::postcard::CODE_ZONE_MM;
+            let photo_half = sheet.height / 2.0;
+            let reds = (1..14)
+                .flat_map(|i| (0..60).map(move |j| (line + i as f32, photo_half + 5.0 + j as f32)))
+                .filter(|&(x, y)| red(at(x, y)))
+                .count();
+            if postal_use {
+                assert_eq!(sheet.postal.map(|z| z.x), Some(line));
+                assert_eq!(reds, 0, "the photo stays out of the strip");
+                let grey = |p: [u8; 3]| p[0] < 220 && p[0] > 100 && p[0].abs_diff(p[2]) < 10;
+                assert!(
+                    (0..140)
+                        .filter(|&j| grey(at(line + 0.1, 5.0 + j as f32)))
+                        .count()
+                        > 120
+                );
+                // Words along the right edge, 2 to 4 mm in, on the card's half and the photo's.
+                let words = |y0: f32| {
+                    (0..400)
+                        .flat_map(|j| {
+                            (0..25).map(move |i| {
+                                (sheet.width - 4.5 + i as f32 * 0.1, y0 + j as f32 * 0.1)
+                            })
+                        })
+                        .filter(|&(x, y)| at(x, y)[0] < 200)
+                        .count()
+                };
+                assert!(words(10.0) > 30, "words beside the writing");
+                assert!(words(100.0) > 30, "words beside the photo");
+            } else {
+                assert!(sheet.postal.is_none());
+                assert!(reds > 300, "the photo reaches the edge: {reds}");
             }
         }
         Ok(())

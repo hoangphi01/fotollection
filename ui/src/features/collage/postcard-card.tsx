@@ -66,7 +66,7 @@ export function PostcardCard({ settings, onChange }: PostcardCardProps) {
         label={t('postcard.postalUse')}
         checked={postcard.postalUse ?? true}
         onChange={(postalUse) => setPostcard({ postalUse })}
-        hint={t(postcard.orientation === 'portrait' ? 'postcard.postalUsePortraitHint' : 'postcard.postalUseHint')}
+        hint={t('postcard.postalUseHint')}
       />
       <PanelNote icon={<PenLine />}>{t('postcard.pens')}</PanelNote>
     </SectionCard>

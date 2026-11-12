@@ -154,7 +154,8 @@ pub struct CardLayout {
 /// With `postal` (the *Postal use* switch, on by default), a landscape card's last 15 mm are
 /// the post's coding zone and stay free, and the address keeps 15 mm from the right edge
 /// ([`CODE_ZONE_MM`], [`ADDRESS_EDGE_MM`]); without it the lines reach 5 mm from the foot,
-/// for a card kept as a keepsake. A portrait card keeps its layout.
+/// for a card kept as a keepsake. On a portrait card the strip runs along the right edge
+/// (the owner's choice, 2026-11-12): the stamp and the lines move left of it.
 pub fn layout(
     sheet_width: f32,
     card: RectMm,
@@ -162,15 +163,17 @@ pub fn layout(
     address_lines: u8,
     postal: bool,
 ) -> CardLayout {
-    let stamp = RectMm {
-        x: sheet_width - EDGE_MM - STAMP_MM.0,
-        y: EDGE_MM,
-        width: STAMP_MM.0,
-        height: STAMP_MM.1,
-    };
+    let stamp = stamp_box(sheet_width, card, postal);
     let standing = card.height >= card.width;
     let top = stamp.y + stamp.height + STAMP_GAP_MM;
-    let (x0, x1) = (card.x + EDGE_MM, card.x + card.width - EDGE_MM);
+    // A portrait card made to be posted keeps the post's strip along its right edge free
+    // (owner, 2026-11-12): its writing stops 5 mm short of the strip's line.
+    let right = if postal && !standing {
+        card.x + card.width - CODE_ZONE_MM
+    } else {
+        card.x + card.width
+    };
+    let (x0, x1) = (card.x + EDGE_MM, right - EDGE_MM);
     // Made to be posted (the Postal use switch): a landscape card's foot is the post's.
     let posted = postal && standing;
     let foot = if posted { CODE_ZONE_MM } else { EDGE_MM };
@@ -238,6 +241,23 @@ pub fn layout(
         address_step: a_step,
         divider: Some((mid, bottom - step * f32::from(rows), bottom)),
         credit: (x0, bottom + 0.6),
+    }
+}
+
+/// The stamp box: at the sheet's top-right corner, or, on a portrait card made to be posted,
+/// at the top-right corner of what the post's strip along the right edge leaves, so its code
+/// is never printed on the stamp. The box the credit of FR-121 sits under.
+pub fn stamp_box(sheet_width: f32, card: RectMm, postal: bool) -> RectMm {
+    let strip = if postal && card.width > card.height {
+        CODE_ZONE_MM
+    } else {
+        0.0
+    };
+    RectMm {
+        x: sheet_width - strip - EDGE_MM - STAMP_MM.0,
+        y: EDGE_MM,
+        width: STAMP_MM.0,
+        height: STAMP_MM.1,
     }
 }
 
@@ -376,23 +396,75 @@ pub fn draw_postal(canvas: &mut RgbImage, density: f32, zone: RectMm, paper: Bor
     let (outline, rule) = inks(paper);
     let px = |mm: f32| (mm * density).round().max(0.0) as u32;
     let thick = |mm: f32| (mm * density).round().max(1.0) as u32;
+    let Some(font) = crate::render::regular() else {
+        return;
+    };
+    // Low at the card's foot (owner, 2026-11-12, showing the posted card): the post prints its
+    // fluorescent code in the upper part of the zone, so the words keep under it, 2 mm from
+    // the edge, clear of what a kiosk trims off a borderless print.
+    let from_edge = POSTAL_FOOT_MM + POSTAL_EM_MM;
+    if zone.width >= zone.height {
+        crate::sheet::fill_rect(
+            canvas,
+            px(zone.x),
+            px(zone.y),
+            px(zone.width),
+            thick(LINE_MM),
+            rule,
+        );
+        let top = (zone.y + zone.height - from_edge) * density;
+        postal_tape(
+            canvas,
+            font,
+            density,
+            top,
+            zone.x * density,
+            (zone.x + zone.width) * density,
+            outline,
+        );
+        return;
+    }
+    // A portrait card's strip along its right edge (owner, 2026-11-12): the line down the card,
+    // and the tape drawn lying, then turned a quarter anticlockwise, so it reads from the foot
+    // up as it is held and from left to right once the post turns the card, its letters' feet
+    // towards the edge.
     crate::sheet::fill_rect(
         canvas,
         px(zone.x),
         px(zone.y),
-        px(zone.width),
         thick(LINE_MM),
+        px(zone.height),
         rule,
     );
-    let Some(font) = crate::render::regular() else {
-        return;
-    };
+    let depth = from_edge + 0.5;
+    let mut tape = crate::render::filled(px(zone.height).max(1), px(depth).max(1), paper.rgb());
+    postal_tape(
+        &mut tape,
+        font,
+        density,
+        0.5 * density,
+        0.0,
+        zone.height * density,
+        outline,
+    );
+    let tape = crate::image::apply_orientation(tape, 8);
+    let x = px(zone.x + zone.width - depth);
+    crate::render::blit(canvas, &tape, x, px(zone.y));
+}
+
+/// "Postal use" in every language, endless as a printed tape (owner, 2026-11-12): from beyond
+/// `start` to beyond `end` (pixels across `canvas`), its edges cutting the first and last
+/// phrases, so the words read anywhere; `top` is the words' top.
+fn postal_tape(
+    canvas: &mut RgbImage,
+    font: &FontArc,
+    density: f32,
+    top: f32,
+    start: f32,
+    end: f32,
+    ink: [u8; 3],
+) {
     let size = POSTAL_EM_MM * density;
-    // Low at the card's foot (owner, 2026-11-12, showing the posted card): the post prints its
-    // fluorescent code in the upper part of the zone, so the words keep under it, 2 mm from
-    // the edge, clear of what a kiosk trims off a borderless print.
-    let top = (zone.y + zone.height - POSTAL_FOOT_MM - POSTAL_EM_MM) * density;
-    let end = (zone.x + zone.width) * density;
     let gap = crate::text::text_width(font, size, POSTAL_SEPARATOR, POSTAL_TRACKING);
     let draw = |canvas: &mut RgbImage, text: &str, left: f32| {
         let run = crate::text::TextRun {
@@ -401,12 +473,10 @@ pub fn draw_postal(canvas: &mut RgbImage, density: f32, zone: RectMm, paper: Bor
             px: size,
             tracking: POSTAL_TRACKING,
         };
-        crate::text::draw_text(canvas, &run, left, top, outline, 1.0);
+        crate::text::draw_text(canvas, &run, left, top, ink, 1.0);
     };
-    // Endless, as a printed tape (owner, 2026-11-12): from beyond the left edge to beyond the
-    // right, the paper's edge cutting the first and last phrases, so the words read anywhere.
     let first = crate::text::text_width(font, size, POSTAL_WORDS[0], POSTAL_TRACKING);
-    let mut left = zone.x * density - first / 2.0;
+    let mut left = start - first / 2.0;
     for phrase in POSTAL_WORDS.iter().cycle().take(128) {
         if left > end {
             break;
@@ -755,9 +825,21 @@ mod tests {
     #[test]
     fn fr_073_lines_sit_together_at_the_foot() {
         let landscape = layout(152.0, half(76.0, 0.0, 76.0, 102.0), 4, ADDRESS_LINES, true);
-        let portrait = layout(102.0, half(0.0, 0.0, 102.0, 76.0), 4, ADDRESS_LINES, true);
+        let portrait = layout(102.0, half(0.0, 0.0, 102.0, 76.0), 4, ADDRESS_LINES, false);
         assert_eq!(landscape.stamp, half(127.0, 5.0, 20.0, 25.0));
         assert_eq!(portrait.stamp, half(77.0, 5.0, 20.0, 25.0));
+        // Made to be posted, a portrait card's stamp and lines keep left of the post's strip
+        // along its right edge (owner, 2026-11-12).
+        let posted = layout(102.0, half(0.0, 0.0, 102.0, 76.0), 4, ADDRESS_LINES, true);
+        assert_eq!(posted.stamp, half(62.0, 5.0, 20.0, 25.0));
+        let line = 102.0 - CODE_ZONE_MM;
+        assert!(
+            posted
+                .address
+                .iter()
+                .chain(&posted.message)
+                .all(|l| l.x1 <= line - EDGE_MM + 1e-3)
+        );
         for (l, bottom) in [(&landscape, 102.0), (&portrait, 76.0)] {
             assert_eq!((l.message.len(), l.address.len()), (4, 3));
             assert!(l.step <= MAX_STEP_MM + 1e-3);

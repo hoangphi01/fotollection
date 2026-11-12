@@ -978,8 +978,7 @@
       "underline": "Aláhúzott"
     },
     "postalUse": "Postai feladás",
-    "postalUseHint": "15 mm-es sávot hagy szabadon a lap alján a posta vonalkódjának.",
-    "postalUsePortraitHint": "Fekvő lapokra vonatkozik."
+    "postalUseHint": "15 mm-es sávot hagy szabadon a posta vonalkódjának."
   },
   "look": {
     "faves": "Kedvencek",

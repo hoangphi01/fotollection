@@ -941,8 +941,7 @@
       "underline": "Gạch chân"
     },
     "postalUse": "Gửi qua bưu điện",
-    "postalUseHint": "Chừa dải 15 mm ở chân thẻ cho mã vạch của bưu điện.",
-    "postalUsePortraitHint": "Áp dụng cho thẻ ngang."
+    "postalUseHint": "Chừa dải 15 mm cho mã vạch của bưu điện."
   },
   "look": {
     "faves": "Cơ bản",
