@@ -46,7 +46,7 @@ export const FAVES_FIRST = ['brightness', 'contrast', 'warmth', 'saturation'] as
 export const FAVES_MORE = ['highlights', 'shadows', 'tint', 'vibrance'] as const
 
 /** What Tools holds, for its "· N changed" and its reset. */
-const TOOLS = ['dehaze', 'fade', 'shadowTint', 'highlightTint', 'balance', 'mono'] as const
+const TOOLS = ['dehaze', 'fade', 'shadowTint', 'highlightTint', 'balance', 'mono', 'grain', 'vignette'] as const
 
 export type SignedKey = (typeof FAVES_FIRST)[number] | (typeof FAVES_MORE)[number]
 
@@ -66,8 +66,9 @@ export const NO_LOOK: FullLook = {
     highlightTint: { hue: 0, amount: 0 },
     balance: 0,
     mono: 'off',
-    grain: { amount: 0, size: 0 },
+    grain: { amount: 0, size: 0, roughness: 50 },
     vignette: 0,
+    vignetteShape: { midpoint: 50, roundness: 0, feather: 50, highlights: 0 },
     dehaze: 0,
     mixer: { hue: EIGHT(), sat: EIGHT(), lum: EIGHT() },
   },
@@ -88,6 +89,7 @@ export function fullLook(look: LookSettings | undefined): FullLook {
       shadowTint: { ...NO_LOOK.adjust.shadowTint, ...a?.shadowTint },
       highlightTint: { ...NO_LOOK.adjust.highlightTint, ...a?.highlightTint },
       grain: { ...NO_LOOK.adjust.grain, ...a?.grain },
+      vignetteShape: { ...NO_LOOK.adjust.vignetteShape, ...a?.vignetteShape },
       mixer: {
         hue: a?.mixer?.hue ?? EIGHT(),
         sat: a?.mixer?.sat ?? EIGHT(),
@@ -125,6 +127,9 @@ export const resetTools = (a: FullAdjust): FullAdjust => ({
   highlightTint: NO_LOOK.adjust.highlightTint,
   balance: 0,
   mono: 'off',
+  // The effects (FR-079, session 13): the grain and the vignette, their shape from a preset kept.
+  grain: { ...a.grain, amount: 0 },
+  vignette: 0,
 })
 
 /** A colour of the wheel as the shadow and highlight tints use it (OKLCh, as in Rust). */

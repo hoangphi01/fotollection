@@ -32,6 +32,8 @@ enum Route {
     Preview(PhotoId, crate::commands::PreviewPart),
     /// Where the preview shows the photo, a grey PNG, for the look on the GPU (ADR-0039).
     Mask(PhotoId),
+    /// The look's grain and vignette as the GPU reads them, an RGB PNG (FR-079, session 13).
+    Effects(PhotoId),
     /// The photo's colour look as a 33³ RGBA8 table, for the look on the GPU (ADR-0039).
     Look(PhotoId),
     /// The photo through one look of the library, small and square, for the Looks card
@@ -124,6 +126,7 @@ fn route(path: &str, query: Option<&str>) -> Option<Route> {
     match kind {
         "thumb" => Some(Route::Thumb(id)),
         "preview" if flag("mask=1") => Some(Route::Mask(id)),
+        "preview" if flag("effects=1") => Some(Route::Effects(id)),
         "look" => Some(Route::Look(id)),
         "looktable" => {
             let look = query
@@ -264,6 +267,7 @@ fn priority_of(route: &Route) -> Priority {
         Route::Preview(id, _)
         | Route::Region(id, _, _)
         | Route::Mask(id)
+        | Route::Effects(id)
         | Route::Source(id, _) => Priority::Interactive(Some(u64::from(id.0))),
         Route::Sheet(_, false, _) => Priority::Interactive(None),
         Route::Thumb(_)
@@ -301,6 +305,10 @@ fn answer(state: &AppState, route: Route, responder: Reply) {
             }
         }
         Route::Mask(id) => match crate::commands::preview_mask_bytes(state, id) {
+            Ok(bytes) => respond_as(responder, StatusCode::OK, bytes, Some("image/png")),
+            Err(error) => fail(responder, &error),
+        },
+        Route::Effects(id) => match crate::commands::preview_effects_bytes(state, id) {
             Ok(bytes) => respond_as(responder, StatusCode::OK, bytes, Some("image/png")),
             Err(error) => fail(responder, &error),
         },
@@ -363,6 +371,10 @@ mod tests {
         assert!(matches!(
             route("/preview/4", Some("rev=3&mask=1")),
             Some(Route::Mask(PhotoId(4)))
+        ));
+        assert!(matches!(
+            route("/preview/4", Some("rev=3&effects=1")),
+            Some(Route::Effects(PhotoId(4)))
         ));
         assert!(matches!(
             route("/look/9", Some("rev=3")),

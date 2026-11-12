@@ -809,6 +809,11 @@ export type Adjust = {
 	grain?: Grain,
 	/**  Darker (−) or lighter (+) corners round the cropped photo. */
 	vignette?: number,
+	/**
+	 *  The vignette's shape, from a Lightroom preset's post-crop vignette (FR-118); no slider
+	 *  of its own. Absent before v0.14.1: Lightroom's defaults.
+	 */
+	vignetteShape?: VignetteShape,
 	/**  Haze taken out (+) or laid on (−), before the table (FR-115, `dehaze`). */
 	dehaze?: number,
 	/**
@@ -1394,12 +1399,14 @@ export type GpsPoint = {
 	lon: number | null,
 };
 
-/**  Film grain, sized on the print (session 13). */
+/**  Film grain, sized on the print (session 13, `effects`). */
 export type Grain = {
 	/**  0…100. */
 	amount?: number,
 	/**  0…100, from fine to coarse. */
 	size?: number,
+	/**  0…100, from even to rough (Lightroom's Roughness, `GrainFrequency`); 50 by default. */
+	roughness?: number,
 };
 
 /**  One group of similar shots with its ranking, for the Groups view (FR-041). */
@@ -2485,6 +2492,21 @@ export type UserFont = {
 	/**  Display name (defaults to the file name). */
 	name: string,
 	format: FontFormat,
+};
+
+/**
+ *  The post-crop vignette's shape (FR-118, Lightroom's Midpoint, Roundness, Feather and
+ *  Highlights), Lightroom's defaults when a look has none.
+ */
+export type VignetteShape = {
+	/**  0…100, where the fall starts: near the centre to near the corners. */
+	midpoint?: number,
+	/**  −100 (a rounded rectangle)…100 (a circle). */
+	roundness?: number,
+	/**  0…100, from a hard edge to a soft one. */
+	feather?: number,
+	/**  0…100, how much of the highlights a darkening keeps. */
+	highlights?: number,
 };
 
 /* Tauri Specta runtime */

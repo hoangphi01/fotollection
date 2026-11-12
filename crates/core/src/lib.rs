@@ -14,6 +14,7 @@ pub mod colour_ops;
 pub mod credit;
 pub mod culling;
 pub mod dehaze;
+pub mod effects;
 pub mod error_log;
 pub mod errors;
 pub mod exif_out;

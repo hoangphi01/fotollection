@@ -15,7 +15,7 @@ type Kind =
   | 'lens'
   | 'parametric'
   | 'whiteBalance'
-  | 'grainVignette'
+  | 'vignettePaint'
   | 'oldProcess'
 
 const KINDS: Record<string, Kind> = {
@@ -31,7 +31,7 @@ const KINDS: Record<string, Kind> = {
   ParametricLights: 'parametric',
   ParametricHighlights: 'parametric',
   'Temperature and Tint': 'whiteBalance',
-  'Grain and vignette': 'grainVignette',
+  PostCropVignetteStyle: 'vignettePaint',
   ProcessVersion: 'oldProcess',
 }
 

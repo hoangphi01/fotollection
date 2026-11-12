@@ -328,10 +328,13 @@ pub struct Adjust {
     /// Where shadows end and highlights begin for the tints: − more shadows, + more highlights.
     pub balance: i8,
     pub mono: Mono,
-    // Effects, drawn after the table (session 13): kept, not yet rendered.
+    // Effects, drawn after the table (FR-079, session 13, `effects`): sized on the print.
     pub grain: Grain,
     /// Darker (−) or lighter (+) corners round the cropped photo.
     pub vignette: i8,
+    /// The vignette's shape, from a Lightroom preset's post-crop vignette (FR-118); no slider
+    /// of its own. Absent before v0.14.1: Lightroom's defaults.
+    pub vignette_shape: VignetteShape,
     /// Haze taken out (+) or laid on (−), before the table (FR-115, `dehaze`).
     pub dehaze: i8,
     /// The eight-hue colour mixer (FR-079, Lightroom's Color Mixer): each hue turned,
@@ -363,14 +366,52 @@ pub enum Mono {
     Green,
 }
 
-/// Film grain, sized on the print (session 13).
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash, Serialize, Deserialize, Type)]
+/// Film grain, sized on the print (session 13, `effects`).
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase", default)]
 pub struct Grain {
     /// 0…100.
     pub amount: u8,
     /// 0…100, from fine to coarse.
     pub size: u8,
+    /// 0…100, from even to rough (Lightroom's Roughness, `GrainFrequency`); 50 by default.
+    pub roughness: u8,
+}
+
+impl Default for Grain {
+    fn default() -> Self {
+        Self {
+            amount: 0,
+            size: 0,
+            roughness: 50,
+        }
+    }
+}
+
+/// The post-crop vignette's shape (FR-118, Lightroom's Midpoint, Roundness, Feather and
+/// Highlights), Lightroom's defaults when a look has none.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase", default)]
+pub struct VignetteShape {
+    /// 0…100, where the fall starts: near the centre to near the corners.
+    pub midpoint: u8,
+    /// −100 (a rounded rectangle)…100 (a circle).
+    pub roundness: i8,
+    /// 0…100, from a hard edge to a soft one.
+    pub feather: u8,
+    /// 0…100, how much of the highlights a darkening keeps.
+    pub highlights: u8,
+}
+
+impl Default for VignetteShape {
+    fn default() -> Self {
+        Self {
+            midpoint: 50,
+            roundness: 0,
+            feather: 50,
+            highlights: 0,
+        }
+    }
 }
 
 /// The sliders a camera RAW takes in scene-linear light before its tone (FR-088): brightness
@@ -470,6 +511,7 @@ impl LookSettings {
             &mut a.balance,
             &mut a.vignette,
             &mut a.dehaze,
+            &mut a.vignette_shape.roundness,
         ] {
             *v = (*v).clamp(-100, 100);
         }
@@ -479,6 +521,10 @@ impl LookSettings {
             &mut a.highlight_tint.amount,
             &mut a.grain.amount,
             &mut a.grain.size,
+            &mut a.grain.roughness,
+            &mut a.vignette_shape.midpoint,
+            &mut a.vignette_shape.feather,
+            &mut a.vignette_shape.highlights,
             &mut self.lut_strength,
             &mut self.amount,
         ] {
@@ -525,6 +571,14 @@ impl LookSettings {
         i8::try_from(d).unwrap_or(0)
     }
 
+    /// The look's grain and vignette on a print at `px_per_mm` (FR-079, session 13), scaled
+    /// by its amount; `None` when they draw nothing. `seed` keeps a photo's grain the same at
+    /// every export.
+    #[must_use]
+    pub fn effects(&self, px_per_mm: f32, seed: u32) -> Option<crate::effects::Effects> {
+        crate::effects::Effects::of(&self.adjust, self.amount, px_per_mm, seed)
+    }
+
     /// The look on `image` as every path draws it: the dehaze, then the table.
     pub fn draw(&self, image: &mut RgbImage) {
         crate::dehaze::apply(image, self.dehaze());
@@ -539,6 +593,7 @@ impl LookSettings {
             adjust: Adjust {
                 grain: Grain::default(),
                 vignette: 0,
+                vignette_shape: VignetteShape::default(),
                 dehaze: 0,
                 ..self.adjust
             },
@@ -1206,6 +1261,7 @@ mod tests {
                 grain: Grain {
                     amount: 101,
                     size: 255,
+                    roughness: 200,
                 },
                 ..Adjust::default()
             },

@@ -71,6 +71,7 @@ fn look() -> Table {
     })
 }
 
+#[allow(clippy::too_many_lines)] // one benchmark, read top to bottom
 fn main() {
     let threads = rayon::current_num_threads();
     let build = time(|| {
@@ -143,6 +144,36 @@ fn main() {
     });
     let copy_export = time(|| work.data.copy_from_slice(&export.data));
 
+    // The effects (FR-079, session 13): grain and a vignette together, on a 10 × 15 print
+    // (the preview's and the export's pixels a millimetre), after the table.
+    // `FX=grain` or `FX=vignette` measures one of them alone.
+    let only = std::env::var("FX").unwrap_or_default();
+    let fx_look = Adjust {
+        grain: fotollection_core::looks::Grain {
+            amount: if only == "vignette" { 0 } else { 60 },
+            size: 40,
+            roughness: 50,
+        },
+        vignette: if only == "grain" { 0 } else { -40 },
+        ..Adjust::default()
+    };
+    let fx = |image: &RgbImage| {
+        #[allow(clippy::cast_precision_loss)]
+        let px_per_mm = image.width.max(image.height) as f32 / 152.0;
+        fotollection_core::effects::Effects::of(&fx_look, 100, px_per_mm, 7).expect("effects")
+    };
+    let (fx_preview, fx_export) = (fx(&preview), fx(&export));
+    let mut work = preview.clone();
+    let effects_preview = time(|| {
+        work.data.copy_from_slice(&preview.data);
+        fotollection_core::effects::apply(&mut work, &fx_preview);
+    }) - copy_preview;
+    let mut work = export.clone();
+    let effects_export = time(|| {
+        work.data.copy_from_slice(&export.data);
+        fotollection_core::effects::apply(&mut work, &fx_export);
+    }) - copy_export;
+
     let mp = |i: &RgbImage| f64::from(i.width) * f64::from(i.height) / 1e6;
     println!("threads {threads}, median of {RUNS}");
     println!(
@@ -161,5 +192,8 @@ fn main() {
         export.height,
         mp(&export),
         on_export - copy_export
+    );
+    println!(
+        "effects (grain and vignette), preview: {effects_preview:.2} ms (budget 3); export: {effects_export:.1} ms (budget 40)"
     );
 }

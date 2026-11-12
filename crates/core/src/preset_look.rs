@@ -14,7 +14,7 @@
 use std::fmt::Write as _;
 
 use crate::colour_ops::{BANDS, Mixer, band_weights, from_hsv, to_hsv};
-use crate::looks::{Adjust, Grain, LookSettings, Mono};
+use crate::looks::{Adjust, Grain, LookSettings, Mono, VignetteShape};
 use crate::lut::{Cube, Lut};
 use crate::preset::{Preset, Value};
 
@@ -36,6 +36,14 @@ fn number(p: &Preset, key: &str) -> f32 {
     match p.values.get(key) {
         Some(Value::Number(v)) => *v,
         _ => 0.0,
+    }
+}
+
+/// A number the preset may leave out, with Lightroom's own default when it does.
+fn number_or(p: &Preset, key: &str, default: f32) -> f32 {
+    match p.values.get(key) {
+        Some(Value::Number(v)) => *v,
+        _ => default,
     }
 }
 
@@ -290,8 +298,10 @@ fn unapplied(p: &Preset) -> Vec<String> {
                 .into(),
         );
     }
-    if set("GrainAmount") || set("PostCropVignetteAmount") {
-        out.push("Grain and vignette: kept in the look, drawn once session 13 is built".into());
+    // Grain and the vignette are drawn since v0.14.1 (session 13); only the vignette's old
+    // Paint Overlay style is drawn as Highlight Priority, near but not the same.
+    if set("PostCropVignetteAmount") && number(p, "PostCropVignetteStyle").round() >= 3.0 {
+        out.push("PostCropVignetteStyle: Paint Overlay drawn as Highlight Priority".into());
     }
     let old = p
         .process
@@ -335,11 +345,20 @@ pub fn compile(p: &Preset) -> Compiled {
         vibrance: slider(number(p, "Vibrance")),
         warmth: slider(warmth(p)),
         tint: slider(tint_of(p)),
+        // Grain and the post-crop vignette (FR-118, v0.14.1 session 13): drawn after the
+        // table, the grain in millimetres on the print (`effects`).
         grain: Grain {
             amount: amount(number(p, "GrainAmount")),
-            size: amount(number(p, "GrainSize")),
+            size: amount(number_or(p, "GrainSize", 25.0)),
+            roughness: amount(number_or(p, "GrainFrequency", 50.0)),
         },
         vignette: slider(number(p, "PostCropVignetteAmount")),
+        vignette_shape: VignetteShape {
+            midpoint: amount(number_or(p, "PostCropVignetteMidpoint", 50.0)),
+            roundness: slider(number(p, "PostCropVignetteRoundness")),
+            feather: amount(number_or(p, "PostCropVignetteFeather", 50.0)),
+            highlights: amount(number(p, "PostCropVignetteHighlightContrast")),
+        },
         dehaze: slider(number(p, "Dehaze")),
         // The eight-hue mixer goes to ours (FR-079), the same function as its sliders, so the
         // photo shows the preset's values and they stay adjustable.
@@ -588,11 +607,11 @@ mod tests {
             "{text}"
         );
         assert!(
-            text.contains("Temperature")
-                && text.contains("Grain")
-                && text.contains("ProcessVersion"),
+            text.contains("Temperature") && text.contains("ProcessVersion"),
             "{text}"
         );
-        assert_eq!(c.look.adjust.grain.amount, 20, "kept for session 13");
+        // Grain is drawn since v0.14.1 (session 13): kept, and not named as missing.
+        assert!(!text.contains("Grain"), "{text}");
+        assert_eq!(c.look.adjust.grain.amount, 20);
     }
 }

@@ -62,6 +62,11 @@ export function maskUrl(id: number, revision: number): string {
   return `${previewUrl(id, revision)}&mask=1`
 }
 
+/** The look's grain and vignette, an RGB PNG of the preview, for the look on the GPU (FR-079). */
+export function effectsUrl(id: number, revision: number): string {
+  return `${previewUrl(id, revision)}&effects=1`
+}
+
 /** The photo's colour look as a 33³ RGBA8 table; empty when it changes nothing (ADR-0039). */
 export function lookTableUrl(id: number, revision: number): string {
   return `${base}/look/${id}?rev=${revision}`

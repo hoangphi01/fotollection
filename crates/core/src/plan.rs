@@ -100,6 +100,9 @@ pub struct RenderPlan {
     pub look: Option<std::sync::Arc<crate::looks::Table>>,
     /// The look's dehaze (FR-115), drawn just before its table; 0 draws nothing.
     pub dehaze: i8,
+    /// The look's grain and vignette (FR-079, session 13), drawn just after its table, sized
+    /// for this print; `None` when they draw nothing.
+    pub effects: Option<crate::effects::Effects>,
     /// The small "fotollection.org" on a print (FR-121), in canvas pixels, drawn last but
     /// for a share's fill; `None` when it is off, on a share or nowhere fits.
     pub credit: Option<crate::credit::CreditSpec>,
@@ -525,8 +528,19 @@ fn plan_content(input: &PlanInput<'_>) -> RenderPlan {
         linear_light: false,
         look: input.settings.look.table(),
         dehaze: input.settings.look.dehaze(),
+        effects: input.settings.look.effects(px_per_mm, grain_seed(input)),
         credit,
     }
+}
+
+/// The seed of a photo's grain (FR-079): from its capture time, so the same photo gets the
+/// same grain at every export and two photos of a trip get their own.
+fn grain_seed(input: &PlanInput<'_>) -> u32 {
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    input.capture.map_or(0x9e37_79b9, |t| {
+        let s = t.and_utc().timestamp() as u64;
+        (s ^ (s >> 32)) as u32 ^ t.and_utc().timestamp_subsec_nanos()
+    })
 }
 
 /// Where an unframed print's credit goes (FR-121): on its border under the photo, else in a
@@ -775,6 +789,7 @@ fn plan_framed(input: &PlanInput<'_>, request: &FrameRequest) -> RenderPlan {
         linear_light: false,
         look: input.settings.look.table(),
         dehaze: input.settings.look.dehaze(),
+        effects: input.settings.look.effects(px_per_mm, grain_seed(input)),
         credit,
     }
 }

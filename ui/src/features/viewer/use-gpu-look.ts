@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { useEffect, useRef, useState } from 'react'
 import { useDrag, useDragOnGpu, useHoverLook } from '@/lib/drag-state'
-import { lookTableUrl, maskUrl, previewUrl, lookPreviewTableUrl } from '@/lib/photo-url'
+import { effectsUrl, lookTableUrl, maskUrl, previewUrl, lookPreviewTableUrl } from '@/lib/photo-url'
 import { GpuLook } from './gpu-look'
 
 /** Off for the rest of the session after a failure: the CPU path then serves every drag. */
@@ -54,15 +54,18 @@ export function useGpuLook(photoId: number | undefined, revision: number, settle
           if (!look) throw new Error('no WebGL2')
           gpu.current = { canvas, look }
         }
-        const [photo, mask] = await Promise.all([
+        const [photo, mask, effects] = await Promise.all([
           // The photo without what the table does: a RAW keeps its linear sliders (FR-088).
           bitmap(`${previewUrl(photoId, revision)}&base=1`),
           bitmap(maskUrl(photoId, revision)),
+          // Its grain and vignette, drawn after the table as Rust draws them (FR-079).
+          bitmap(effectsUrl(photoId, revision)),
         ])
         if (!live) return
-        gpu.current.look.setPhoto(photo, mask)
+        gpu.current.look.setPhoto(photo, mask, effects)
         photo.close()
         mask.close()
+        effects.close()
         setReady(key)
         setLastDrag(drag)
       } catch {

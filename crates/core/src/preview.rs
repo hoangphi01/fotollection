@@ -1185,6 +1185,65 @@ impl PreviewCache {
         Ok(out)
     }
 
+    /// The look's grain and vignette for the webview's shader (FR-079, session 13): the
+    /// preview's canvas with [`crate::effects::gpu_map`] where the photo is, neutral
+    /// elsewhere; one neutral pixel when the look has none.
+    pub fn render_effects_png(
+        &self,
+        record: &PhotoRecord,
+        settings: &RenderSettings,
+        frame: Option<&FrameRequest>,
+        place: Option<&str>,
+        codec: &dyn JpegCodec,
+    ) -> Result<Vec<u8>, ThumbError> {
+        let (raw_part, look) = split_look(record, settings);
+        let source = self.source(record, raw_part, codec)?;
+        let mut looked = record.clone();
+        looked.edits.look = Some(look.clone());
+        let p = Self::plan_from(
+            &source,
+            &looked,
+            settings,
+            frame,
+            place,
+            Some(PREVIEW_LONG_EDGE),
+            self.credit_faces(record).as_deref(),
+        );
+        let map = match p.effects {
+            Some(fx) => {
+                // Placed as the photo is, nothing drawn over it: the frame, the border and the
+                // pad keep their pixels, which the shader's mask leaves alone anyway.
+                let bare = crate::plan::RenderPlan {
+                    stamp: None,
+                    credit: None,
+                    look: None,
+                    dehaze: 0,
+                    effects: None,
+                    ..p.clone()
+                };
+                finish(
+                    crate::effects::gpu_map(&fx, p.out_width, p.out_height),
+                    &bare,
+                )
+            }
+            None => crate::render::filled(1, 1, crate::effects::NEUTRAL),
+        };
+        let mut out = Vec::new();
+        let mut encoder = png::Encoder::new(&mut out, map.width, map.height);
+        encoder.set_color(png::ColorType::Rgb);
+        encoder.set_depth(png::BitDepth::Eight);
+        encoder.set_compression(png::Compression::Fast);
+        let encode = |e: png::EncodingError| {
+            ThumbError::Codec(crate::codec::CodecError::Encode(format!(
+                "effects PNG: {e}"
+            )))
+        };
+        let mut writer = encoder.write_header().map_err(encode)?;
+        writer.write_image_data(&map.data).map_err(encode)?;
+        drop(writer);
+        Ok(out)
+    }
+
     /// The colour look's table for `record` as the webview's shader reads it (RGBA8,
     /// [`crate::looks::Table::to_rgba8`]); `None` when its look changes nothing.
     pub fn look_table(record: &PhotoRecord, settings: &RenderSettings) -> Option<Vec<u8>> {

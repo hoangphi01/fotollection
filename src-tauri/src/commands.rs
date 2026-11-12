@@ -1612,6 +1612,22 @@ pub fn preview_mask_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, IpcE
         .map_err(|e| shown_error(&e, &record))
 }
 
+/// The look's grain and vignette for the webview's shader (FR-079, session 13): an RGB PNG
+/// of the preview's canvas, one neutral pixel when the look has none.
+pub fn preview_effects_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, IpcError> {
+    let (record, settings, place, frame) = preview_inputs(state, id)?;
+    state
+        .previews
+        .render_effects_png(
+            &record,
+            &settings,
+            frame.as_ref(),
+            place.as_deref(),
+            state.codec.as_ref(),
+        )
+        .map_err(|e| shown_error(&e, &record))
+}
+
 /// The photo's colour look as the webview's shader reads it (ADR-0039); empty when its look
 /// changes nothing.
 pub fn look_table_bytes(state: &AppState, id: PhotoId) -> Result<Vec<u8>, IpcError> {

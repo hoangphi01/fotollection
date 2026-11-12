@@ -18,16 +18,22 @@ void main() {
 }`
 
 // Tetrahedral interpolation of Rust's table, by texelFetch only: no hardware filtering, the
-// same tetrahedra as looks.rs. The mask keeps the stamp, the frame and the border untouched.
+// same tetrahedra as looks.rs. Then the look's vignette and grain from Rust's map
+// (effects::gpu_map), by effects::shade's formula, so a drag keeps them (FR-079, session 13).
+// The mask keeps the stamp, the frame and the border untouched.
 const FRAGMENT = `#version 300 es
 precision highp float;
 precision highp sampler3D;
 uniform sampler2D photo;
 uniform sampler2D mask;
 uniform sampler3D lut;
+uniform sampler2D effects;
 in vec2 uv;
 out vec4 colour;
 vec3 at(ivec3 q) { return texelFetch(lut, q, 0).rgb; }
+vec3 toLinear(vec3 c) { return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c)); }
+vec3 toSrgb(vec3 l) { return mix(l * 12.92, 1.055 * pow(l, vec3(1.0 / 2.4)) - 0.055, step(0.0031308, l)); }
+const vec3 LUMA = vec3(0.2126, 0.7152, 0.0722);
 void main() {
   vec3 c = texelFetch(photo, ivec2(uv * vec2(textureSize(photo, 0))), 0).rgb;
   float m = texelFetch(mask, ivec2(uv * vec2(textureSize(mask, 0))), 0).r;
@@ -44,6 +50,17 @@ void main() {
   else { s1 = ivec3(0, 1, 0); s2 = ivec3(1, 1, 0); w = f.grb; }
   vec3 c0 = at(b), c1 = at(b + s1), c2 = at(b + s2), c3 = at(b + ivec3(1));
   vec3 looked = c0 + w.x * (c1 - c0) + w.y * (c2 - c1) + w.z * (c3 - c2);
+  vec3 e = texelFetch(effects, ivec2(uv * vec2(textureSize(effects, 0))), 0).rgb;
+  float t = (e.r * 255.0 - 128.0) / 127.0;
+  if (t != 0.0) {
+    float keep = e.b * smoothstep(0.0, 1.0, clamp((dot(looked, LUMA) - 0.6) / 0.4, 0.0, 1.0));
+    vec3 l = toLinear(looked);
+    vec3 shaded = t < 0.0 ? l * exp2(2.0 * t) : l + (1.0 - l) * t;
+    looked = toSrgb(shaded + (l - shaded) * keep);
+  }
+  float d = (e.g * 255.0 - 128.0) / 512.0;
+  float L = dot(looked, LUMA);
+  looked = clamp(looked + d * pow(max(4.0 * L * (1.0 - L), 0.0), 0.7), 0.0, 1.0);
   colour = vec4(mix(c, looked, m), 1.0);
 }`
 
@@ -91,6 +108,7 @@ export class GpuLook {
     gl.uniform1i(gl.getUniformLocation(program, 'photo'), 0)
     gl.uniform1i(gl.getUniformLocation(program, 'mask'), 1)
     gl.uniform1i(gl.getUniformLocation(program, 'lut'), 2)
+    gl.uniform1i(gl.getUniformLocation(program, 'effects'), 3)
     const lut = gl.createTexture()
     if (!lut) return null
     return new GpuLook(gl, lut)
@@ -165,8 +183,11 @@ export class GpuLook {
     return t
   }
 
-  /** The plain preview (no look) and where it shows the photo; once per photo and drag. */
-  setPhoto(photo: ImageBitmap, mask: ImageBitmap) {
+  /**
+   * The plain preview (no look), where it shows the photo, and the look's grain and vignette
+   * (Rust's `effects::gpu_map`); once per photo and drag.
+   */
+  setPhoto(photo: ImageBitmap, mask: ImageBitmap, effects: ImageBitmap) {
     const gl = this.gl
     gl.canvas.width = photo.width
     gl.canvas.height = photo.height
@@ -176,6 +197,8 @@ export class GpuLook {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, photo)
     this.texture(1, gl.TEXTURE_2D)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, mask)
+    this.texture(3, gl.TEXTURE_2D)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, effects)
     gl.activeTexture(gl.TEXTURE2)
     gl.bindTexture(gl.TEXTURE_3D, this.lut)
     gl.texParameteri(gl.TEXTURE_3D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
@@ -192,6 +215,9 @@ export class GpuLook {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, photo)
     this.texture(1, gl.TEXTURE_2D)
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, gl.RGBA, gl.UNSIGNED_BYTE, mask)
+    // No effects: the neutral texel of effects::gpu_map.
+    this.texture(3, gl.TEXTURE_2D)
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([128, 128, 0, 255]))
   }
 
   /** Draws the photo through `table`, Rust's RGBA8 table; false when it is not one. */

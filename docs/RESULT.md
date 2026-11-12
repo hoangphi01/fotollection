@@ -758,3 +758,20 @@ The Color Mixer is one function of a pixel in `f32` (`colour_ops::MixerParams::a
 
 - **Time**, amount 60, median of 10: **6.2 ms** on a 1600 × 1067 preview, **30 ms** on 6000 × 4000, within the budgets (8 ms, 80 ms). The first version took 21.9 and 97.7 ms: a 512 px copy made by `fit_long_edge` (28 ms at 24 MP) and filters on one thread; a parallel block mean, filters on rayon by rows and columns, and the coefficients read once per row brought it in.
 - **The same at any size** (`fr_115_dehaze_is_the_same_at_any_size`): a 3200 px photo's result made small is within 1.5 ΔE of the 800 px photo's own.
+
+## 40. Grain and vignette on the print (v0.14.1 session 13, FR-079, FR-118)
+
+**Read first** (owner, 2026-11-09): darktable's grain (noise on lightness, a mid-tones bias, its grain following the image's pixels), RawTherapee's vignetting filter (on the crop; feather; roundness from a rounded rectangle to a circle), Lightroom's grain (Size, Roughness, following pixels) and post-crop vignette (Midpoint, Roundness, Feather, Highlight Priority), AV1's film grain synthesis (`Y′ = Y + f(Y)·G`, a table on lightness) and Newson et al. 2017 (a physical grain model, far too slow for 24 MP in 40 ms). No code was read.
+
+**Chosen** (`crates/core/src/effects.rs`):
+
+- **Grain in millimetres on the print**, not in pixels: value noise on a lattice whose cell is 0.02–0.12 mm (the size slider), three octaves weighted by the roughness, a cell under a pixel averaged to white noise; the same step on the three channels (the hue kept), weighted `(4L(1 − L))^0.7`. Seeded from the photo's capture time: the same grain at every export, whatever the threads (`fr_079_grain_is_deterministic`).
+- **Vignette on the crop:** a mask from `smoothstep` round the midpoint with the feather, the shape from `|u|^p + |v|^p` (p 2–10 by roundness), darkening up to two stops in linear light keeping some highlights, lightening towards white.
+- **Order:** dehaze, the look's table, vignette, grain, then the stamp, the frame and the credit (`fr_079_effects_keep_the_stamp_clean`).
+
+**Measured** (`fr_079_*` in `effects.rs` and `render.rs`):
+
+- **The same millimetres at every print size:** the grain's autocorrelation length on a grey print at 40 and at 80 pixels a millimetre is the same in millimetres within 10 % (it fails, 0.074 against 0.037 mm, with the size taken in pixels).
+- **Time**, REF-MAC, 8 threads, median of 5, grain 60 and vignette −40 on a 10 × 15 print: **2.59 ms** on a 1600 × 1067 preview and **38.2 ms** on 6000 × 4000, within the budgets (3 and 40 ms). The first version took 22.7 and 317 ms: nine powers a pixel (the vignette's shape, sRGB to linear and back, the grain's weight) and four hashes a pixel for the finest octave. Each cost was measured alone (`FX=grain`, `FX=vignette`) and taken out at its cause: the shape's powers a column and a row with its mask from a table, the conversions and the weights in tables, a 2-D table (mask level × byte) for a vignette that keeps no highlights, the lattice hashed once into a tile of at most 1024 cells a side, the octaves under a pixel merged into one, and the grain added on the bytes.
+- **The GPU draws what Rust draws:** `effects::gpu_map` carries the vignette's step, the grain's step and the highlights kept; decoded as `gpu-look.ts` decodes them they give `shade`'s colours within a level (`fr_079_the_gpu_map_draws_what_rust_draws`), and `apply` gives `shade`'s within two (`apply_draws_what_shade_draws`).
+- **Left:** the size's millimetres against Lightroom's exports (FR-118's pairs from the owner) and the owner's test prints at 10 × 15 and 20 × 30.

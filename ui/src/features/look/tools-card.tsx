@@ -26,7 +26,8 @@ type ToolsCardProps = {
 
 /**
  * Everything else (FR-079, Tools): dehaze (FR-115), fade, a tint for the shadows and one for
- * the highlights, black and white through a filter. Folded at first, so a newcomer meets Faves first;
+ * the highlights, black and white through a filter, then the effects: grain sized in
+ * millimetres on the print and the vignette round the cropped photo (session 13). Folded at first, so a newcomer meets Faves first;
  * its title opens it, and the app remembers.
  */
 export function ToolsCard({ look, onChange, footer }: ToolsCardProps) {
@@ -124,6 +125,37 @@ export function ToolsCard({ look, onChange, footer }: ToolsCardProps) {
           </SelectContent>
         </Select>
       </Field>
+      {/* The effects, drawn after the table on the print (FR-079, session 13): Rust draws
+          each step, as for Dehaze; a preset's vignette shape and roughness are kept. */}
+      <Field>
+        <SliderField
+          label={t('look.grain')}
+          hint={t('look.hints.grain')}
+          min={0}
+          value={adjust.grain.amount}
+          format={(v) => `${v}`}
+          gpu={false}
+          onChange={(amount, first) => set({ grain: { ...adjust.grain, amount } }, first)}
+        />
+        <Collapse open={adjust.grain.amount > 0}>
+          <SliderField
+            label={t('look.grainSize')}
+            hint={t('look.hints.grainSize')}
+            min={0}
+            value={adjust.grain.size}
+            format={(v) => `${v}`}
+            gpu={false}
+            onChange={(size, first) => set({ grain: { ...adjust.grain, size } }, first)}
+          />
+        </Collapse>
+      </Field>
+      <SliderField
+        label={t('look.vignette')}
+        hint={t('look.hints.vignette')}
+        value={adjust.vignette}
+        gpu={false}
+        onChange={(vignette, first) => set({ vignette }, first)}
+      />
     </SectionCard>
   )
 }

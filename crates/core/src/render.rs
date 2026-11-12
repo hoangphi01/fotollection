@@ -66,6 +66,11 @@ pub fn finish_marked(mut photo: RgbImage, plan: &RenderPlan, clipping: bool) -> 
     if let Some(table) = &plan.look {
         crate::looks::apply(&mut photo, table);
     }
+    // Then its grain and vignette, sized on this print (FR-079, session 13): after the colour,
+    // as Lightroom draws them, before anything drawn on the print.
+    if let Some(fx) = &plan.effects {
+        crate::effects::apply(&mut photo, fx);
+    }
     if clipping {
         crate::histogram::mark_clipping(&mut photo);
     }
@@ -191,6 +196,7 @@ pub fn fit_long_edge(source: &RgbImage, long_edge: u32) -> Result<RgbImage, Rend
         linear_light: false,
         look: None,
         dehaze: 0,
+        effects: None,
         credit: None,
     };
     crop_and_resize(source, &plan)
@@ -451,6 +457,7 @@ mod tests {
                 linear_light,
                 look: None,
                 dehaze: 0,
+                effects: None,
                 credit: None,
             };
             let out = crop_and_resize(&source, &plan).unwrap_or_else(|_| RgbImage::new(1, 1));
@@ -545,6 +552,66 @@ mod tests {
         // Top-left quadrant must stay untouched for a bottom-right stamp.
         let untouched = (0..500).all(|y| (0..700).all(|x| out.data[(y * 1500 + x) * 3] == 0));
         assert!(untouched);
+    }
+
+    /// FR-079, session 13: the grain and the vignette are drawn on the photo before the date
+    /// stamp, so the stamp keeps its colour: where the stamp's own colour is drawn without
+    /// effects, the same colour is drawn with them.
+    #[test]
+    fn fr_079_effects_keep_the_stamp_clean() {
+        let render_with = |grain: u8, vignette: i8| {
+            let mut settings = RenderSettings::default();
+            settings.look.adjust.grain.amount = grain;
+            settings.look.adjust.vignette = vignette;
+            let source = crate::render::filled(1500, 1000, [128, 128, 128]);
+            let p = plan(&PlanInput {
+                width: 1500,
+                height: 1000,
+                capture: capture(),
+                settings: &settings,
+                print: PrintSize::ALL[1],
+                max_long_edge: None,
+                frame: None,
+                crop: None,
+                place: None,
+                straighten: 0.0,
+                ratio: None,
+                credit: None,
+                turned: false,
+            });
+            assert_eq!(p.effects.is_some(), grain > 0 || vignette != 0);
+            render(&source, &p).unwrap_or_else(|_| RgbImage::new(0, 0))
+        };
+        let (plain, shaded) = (render_with(0, 0), render_with(100, -100));
+        let mut counts = std::collections::HashMap::new();
+        for px in plain.data.as_chunks::<3>().0 {
+            if *px != [128, 128, 128] {
+                *counts.entry(*px).or_insert(0usize) += 1;
+            }
+        }
+        let Some((&ink, _)) = counts.iter().max_by_key(|(_, n)| **n) else {
+            panic!("a stamp is drawn");
+        };
+        let (mut same, mut all) = (0usize, 0usize);
+        for (a, b) in plain
+            .data
+            .as_chunks::<3>()
+            .0
+            .iter()
+            .zip(shaded.data.as_chunks::<3>().0)
+        {
+            if *a == ink {
+                all += 1;
+                same += usize::from(a == b);
+            }
+        }
+        assert!(all > 50, "the stamp's ink: {all} pixels");
+        assert!(
+            same * 100 >= all * 95,
+            "{same} of {all} stamp pixels kept their colour"
+        );
+        // And the photo itself did change.
+        assert_ne!(plain.data, shaded.data);
     }
 
     /// A 300 × 200 photo of colour bands, planned with `settings` (no stamp), rendered.
