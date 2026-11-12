@@ -1,0 +1,26 @@
+{
+  "machine": "Apple M3, 16 GB, macOS 26.3.1, loaded (swap 12.7 GB of 14 GB)",
+  "date": "2026-11-12",
+  "command": "highlights_bench <the nine CC0 samples> (the X-T3 not read: X-Trans), and --sweep",
+  "chosen": { "method": "Global", "threshold": 0.9, "band": 10, "dark": 0.1 },
+  "realFrames": {
+    "note": "eight frames clipped at 60 % of white, scored where the clip changed a pixel and the truth itself was not clipped (3,850,745 pixels); guess = colour invented where the truth had clipped",
+    "columns": ["chroma", "ev", "de2000AfterMinus2Ev", "seam", "guess"],
+    "White": [0.057, 0.044, 1.67, 0.021, 0.003],
+    "Global": [0.042, 0.025, 1.13, 0.021, 0.103],
+    "Regions": [0.044, 0.025, 1.18, 0.021, 0.147],
+    "Local": [0.043, 0.024, 1.14, 0.021, 0.161]
+  },
+  "synthetic": {
+    "columns": ["chroma", "ev", "de2000AfterMinus2Ev"],
+    "skyAndSun": { "White": [0.614, 0.525, 21.85], "Global": [0.009, 0.023, 0.30], "Local": [0.009, 0.023, 0.30] },
+    "twoLamps": { "White": [0.625, 0.617, 18.29], "Global": [0.063, 0.073, 2.08], "Local": [0.056, 0.068, 1.84] },
+    "cloud": { "White": [0.041, 0.119, 3.66], "Global": [0.017, 0.103, 2.15], "Local": [0.017, 0.103, 2.15] },
+    "skin": { "White": [0.258, 0.342, 11.12], "Global": [0.0, 0.0, 0.0], "Local": [0.0, 0.0, 0.0] }
+  },
+  "timeMs24Mp": {
+    "note": "the recovery alone, 6000 x 4000, best of 5",
+    "nothingClipped": { "White": 13.4, "Global": 3.0, "Regions": 3.0, "Local": 3.2 },
+    "halfClipped": { "White": 16.0, "Global": 54.9, "Regions": 56.5, "Local": 82.5 }
+  }
+}

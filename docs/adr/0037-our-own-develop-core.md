@@ -32,7 +32,7 @@ Option 3.
 - **Pre-demosaic:** per-site black levels honouring the ActiveArea origin, white level, Gr/Gb equilibration, hot pixels, white balance.
 - **Demosaic:** **RCD** for Bayer, **Markesteijn** for X-Trans (1 pass default, 3 passes for quality), written from the published descriptions; no third-party code copied, so GPL-3.0 and relicensing stay clean (ADR-0008).
 - **Post-demosaic:** false-colour median on colour differences; highlight reconstruction.
-  - *Amended 2026-11-07 ([ADR-0043](0043-lossless-export-f32-path-tiff.md), FR-112):* where highlight reconstruction runs (before demosaic after white balance, or after it) is decided by measurement in session 10c, not fixed here.
+  - *Amended 2026-11-07 ([ADR-0043](0043-lossless-export-f32-path-tiff.md), FR-112):* where highlight reconstruction runs (before demosaic after white balance, or after it) is decided by measurement in session 10c, not fixed here. *Decided 2026-11-12 (RESULT §41):* after the demosaic and the false-colour median, on white-balanced camera RGB (`rawcore::highlights`), one colour for the frame from the clipped areas' edges; the demosaic still holds each channel to the largest gain.
 - **Colour:** camera → XYZ → a linear f32 working space → tone curve last → sRGB or Display P3 with its profile. The looks of FR-070 (ADR-0036) apply here.
 - **Colour management on every surface** (preview, thumbnail, zoom, crop source), linear-light resizing, PNG gAMA/cHRM/sRGB and dithering.
 - **The embedded-JPEG look match becomes an option** ("camera look"), every constant named and explained.

@@ -1,6 +1,6 @@
 # Optimization — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-09
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-12
 >
 > Performance is the #1 product quality for Fotollection, which targets enthusiast and professional photographers.
 > This document holds the **budgets**, the **methodology** used to measure them, the **design techniques** that meet them, and a **log** of every measurement.
@@ -104,7 +104,7 @@ Follow-ups, measured in Stage 1 with `measure_folder` (median of 20 warm renders
 | [FR-072](PRD.md#fr-072--our-own-develop-core) (planned v0.11.0, [ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md)) | Demosaic on the CPU: the Bayer chain (hot pixels, green balance, directional, false colour) on 24 MP; Markesteijn, one pass, on 26 MP; each better than the one it replaces on the charts | ≤ 400 ms (180 ms, RESULT §25); ≤ 700 ms; PSNR, false colour, edge error and maze no worse than Malvar / bilinear X-Trans, a regression stated | `raw_phases` on the nine CC0 samples; `crates/rawcore/examples/charts.rs` (`bench/results/raw-quality.json`) |
 | [FR-072](PRD.md#fr-072--our-own-develop-core), [ADR-0040](adr/0040-neutral-raw-colour-and-gpu-develop.md) | The RAW develop on the GPU (`wgpu`), 24 MP, upload and read-back included; parity to the CPU twin | ≤ 80 ms; ΔE2000 mean and p99 ≤ 1 on the nine samples | Planned with session 19: a GPU `raw_phases` and a parity example |
 | [FR-079](PRD.md#fr-079--colour-adjustments) (v0.14.0) | The Looks card's tiles: one look's tile of a photo, cut from its kept small source, table applied, JPEG encoded | ≤ 3 ms a tile, ≤ 40 ms the card | `measure_look_tiles` (0.68 ms p50, 0.72 p95; 5.4 ms the eight), RESULT §34 |
-| [FR-112](PRD.md#fr-112--highlight-recovery-for-raw) (planned v0.14.1) | Highlight recovery inside the RAW develop, 24 MP | Target, not yet measured: ≤ 5 ms when nothing is clipped, ≤ 60 ms at worst; ΔE2000 to the truth better than today's fade | `highlights_bench` (session 10c) and `raw_phases` |
+| [FR-112](PRD.md#fr-112--highlight-recovery-for-raw) (v0.14.1) | Highlight recovery inside the RAW develop, 24 MP | ≤ 5 ms when nothing is clipped, ≤ 60 ms at worst; ΔE2000 to the truth better than today's fade | `highlights_bench`: 3.0 ms, 54.9 ms half clipped; ΔE2000 after −2 EV 1.13 against the fade's 1.67 (RESULT §41) |
 | [FR-111](PRD.md#fr-111--lossless-export-16-bit-or-32-bit-float-tiff-pro) (planned v0.15.0) | Lossless export of one 24 MP photo to TIFF 16-bit or 32-bit float | Target, not yet measured: set before the work starts, with the file size and memory per photo in flight | Planned with FR-111 |
 | Website (FR-079, 2026-11-11) | The landing page's keynote video: what a visit downloads for it | Nothing until it scrolls into view, then one file only (the cut for the screen, AV1 or else H.264), each ≤ 1.5 MB, the poster ≤ 150 KB | Measured 2026-11-11: desktop 960 KB AV1 / 1.2 MB H.264, phone 699 / 884 KB, posters 59 / 58 KB; Playwright on Chromium and WebKit: no video byte at load, one file once seen |
 
@@ -262,6 +262,7 @@ Append one row per measurement that matters. Never edit past rows.
 | 2026-11-12 | FR-125 (uncommitted, on 79b0f2ef) | REF-MAC (M3) | `MEASURE=1`: one `FitText` pass when the window is resized from 1440 to 1180 px (`data-fit-pass`) | 43 controls in 0.30 ms (en), 0.50 ms (vi) | Under the 2 ms a layout may take (NFR-005); one shared `ResizeObserver`, Range-measured |
 | 2026-11-12 | process review (on b0c6e29f) | REF-MAC (M3) | `scripts/hooks/pre-push` over a push | 8 s without an interface change (fmt, check-docs, docs-with-code); 286 s with one (clippy, UI lint, `QUICK=2 ui-check`, English and Hungarian), 314 s once each view is also checked with every card open | Under the 1 and 8 minutes the review set; swap near full while measured |
 | 2026-11-12 | session 13 (on 9b3ed2a1) | REF-MAC (M3) | `measure_look`: grain (amount 60, size 40) and vignette (−40) on a 10 × 15 print, median of 5 | 2.59 ms on 1600 × 1067, 38.2 ms on 6000 × 4000 (first version 22.7 and 317 ms) | Within 3 and 40 ms; swap near full while measured. Grain alone 28.6 ms, vignette alone 12.9 ms (RESULT §40) |
+| 2026-11-12 | FR-112 | REF-MAC (M3), swap 12.7 of 14 GB | `highlights_bench`, the recovery alone on 6000 × 4000, best of 5; eight CC0 frames clipped at 60 % | Nothing clipped 3.0 ms (the fade 13.4); half clipped 54.9 ms (a colour per tile 82.5); ΔE2000 after −2 EV 1.13 against 1.67 | Within ≤ 5 and ≤ 60 ms; RESULT §41 |
 
 ### 5.1 Planned measurements
 

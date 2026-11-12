@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- **Blown highlights come back** (FR-112): where a RAW's sky, lamp or cloud clipped, its colour is rebuilt from the channels that did not clip and its brightness kept above white, so pulling *Brightness* or *Highlights* down brings back a blue sky instead of a flat grey patch. Chosen by measurement on real frames.
 - **Grain and vignette** (FR-079, FR-118): *Tools* gets **Grain**, **Grain size** and **Vignette**. The grain is sized in millimetres on the print, so a 10 × 15 and a 20 × 30 show the same grain, strongest in the midtones and the same at every export; the vignette sits on the cropped photo. A Lightroom preset's grain and post-crop vignette are drawn now, no longer named as missing.
 - **Magyar** (FR-123): the whole interface, the menus and every error message in Hungarian, with the website's short Hungarian manual inside the app. Settings → General → Language.
 - **Pick the language first** (FR-124): the welcome now opens on a page of its own for the language, a greeting in every language and the languages by their own names; the first launch already speaks your computer's language.

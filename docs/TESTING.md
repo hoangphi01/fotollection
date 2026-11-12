@@ -1,6 +1,6 @@
 # Testing Strategy — Fotollection
 
-> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-09
+> **Status:** Draft v0.1 · **Last reviewed:** 2026-11-12
 >
 > How we prove that Fotollection is correct, robust and fast. Performance benchmarks are specified in [OPTIMIZATION.md](OPTIMIZATION.md).
 
@@ -62,6 +62,8 @@ The corpus is stored **outside** git, because the photos are personal and large.
 ```sh
 cargo run --release -p fotollection-rawcore --example mutate -- 600 path/to/samples/*.dng
 ```
+
+`cargo run --release -p fotollection-core --example highlights_bench -- [--sweep] [--png <folder>] <samples>…` scores the highlight recovery (FR-112) against known truth: synthetic scenes, and each sample clipped at 60 % of its white against its own full develop, with the colour each method invents where no truth exists and its time at 24 MP; `--png` writes each method's pictures as they are and two stops down, to look at before choosing (RESULT §41).
 
 `cargo test -p fotollection-rawcore` with `FOTOLLECTION_RAW_SAMPLES` set also cuts every sample short at 256 places, and `cargo test -p fotollection-core` checks that each sample cut to 40 % is refused by the app's whole chain.
 

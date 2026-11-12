@@ -1,6 +1,6 @@
 # User Guide — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-04
+> **Status:** Living · **Last reviewed:** 2026-11-12
 >
 > How to use the app, step by step, for the person at the keyboard. It describes behaviour that has shipped or is on `main`; the reasons and the full rules are in [PRD.md](PRD.md), linked from each section. Update it in the same commit as any change a user would notice ([DOCS_GUIDE.md](DOCS_GUIDE.md)).
 >
@@ -349,7 +349,7 @@ Fotollection opens the RAW files of most cameras as they are, with no conversion
 - Open the folder as usual. Thumbnails and best-shot suggestions appear as fast as for JPEG, because they use the small preview every camera stores inside its RAW files.
 - The print preview develops the full photo the first time you open it, which takes about a second; changing a setting afterwards is instant. The export develops each RAW the same way.
 - The develop is Fotollection's own for every camera with a Bayer sensor (on a Mac, Panasonic and Olympus files are developed by macOS, for its lens corrections; Fujifilm X-Trans by the built-in reader). Fotollection prepares prints: it does not replace Lightroom, but a RAW goes further in it than a JPEG.
-- **Deeper RAW edits.** On a RAW photo, *Brightness*, *Highlights*, *Shadows*, *Warm / cool* and *Tint* work on the camera's own data before the picture is finished, as in a RAW editor: pulling the highlights down brings back detail near white, and the shadows lift with less banding. (On a Mac, Panasonic and Olympus RAW are developed by macOS and have less room above white.)
+- **Deeper RAW edits.** On a RAW photo, *Brightness*, *Highlights*, *Shadows*, *Warm / cool* and *Tint* work on the camera's own data before the picture is finished, as in a RAW editor: pulling the highlights down brings back detail near white, and the shadows lift with less banding. Where the camera clipped a sky, a lamp or a cloud, its colour is rebuilt from what the sensor still saw, so pulling *Brightness* or *Highlights* down brings back a blue sky, not a grey patch. (On a Mac, Panasonic and Olympus RAW are developed by macOS and have less room above white.)
 - **RAW colour.** A RAW photo opens **Neutral**: the sensor's colours with the camera's exposure and a gentle curve, a calm start for your own look. In its colour cards (the preview, or a photo picked on a collage sheet), the *RAW colour* card turns it **Like the camera's JPEG**, with the contrast and colours the camera showed on its screen; *Apply to all RAW photos* does it for every RAW. The grid's thumbnails always show the camera's own preview. A project saved with an earlier version keeps the camera's look for its RAW photos.
 - **On Linux**, RAW opens through the reader built into Fotollection, with nothing to install.
 - **On Windows**, RAW also opens through the reader built into Fotollection, with nothing to install ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)). If Microsoft's *Raw Image Extension* is installed, the system's codec is a last fallback for a file the built-in reader cannot open.

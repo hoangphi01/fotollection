@@ -153,8 +153,8 @@ pub enum RawLook {
     Camera,
 }
 
-/// One 8-bit sRGB pixel in CIELAB (D65).
-fn lab(p: [u8; 3]) -> [f32; 3] {
+/// One 8-bit sRGB pixel in CIELAB (D65); also `highlights_bench`'s (FR-112).
+pub fn lab(p: [u8; 3]) -> [f32; 3] {
     let lin = |v: u8| {
         let c = f32::from(v) / 255.0;
         if c <= 0.040_45 {
@@ -182,7 +182,7 @@ fn lab(p: [u8; 3]) -> [f32; 3] {
 
 /// CIEDE2000 between two CIELAB colours (Sharma, Wu and Dalal's formulation).
 #[allow(clippy::many_single_char_names, clippy::similar_names)]
-fn de2000(a: [f32; 3], b: [f32; 3]) -> f32 {
+pub fn de2000(a: [f32; 3], b: [f32; 3]) -> f32 {
     use std::f32::consts::PI;
     let (l1, a1, b1) = (a[0], a[1], a[2]);
     let (l2, a2, b2) = (b[0], b[1], b[2]);

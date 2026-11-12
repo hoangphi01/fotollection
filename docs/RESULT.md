@@ -1,6 +1,6 @@
 # Measured Results — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-09
+> **Status:** Living · **Last reviewed:** 2026-11-12
 >
 > The **latest measured numbers** for speed and memory, in one readable page. Each number links to the run that produced it.
 > This page is a summary. The append-only history of every measurement is the benchmark log in [OPTIMIZATION.md §5](OPTIMIZATION.md#5-benchmark-log), and the budgets are defined in [OPTIMIZATION.md §3](OPTIMIZATION.md#3-budgets). When a new run changes a number, update this page and add the row to §5 in the same commit.
@@ -775,3 +775,32 @@ The Color Mixer is one function of a pixel in `f32` (`colour_ops::MixerParams::a
 - **Time**, REF-MAC, 8 threads, median of 5, grain 60 and vignette −40 on a 10 × 15 print: **2.59 ms** on a 1600 × 1067 preview and **38.2 ms** on 6000 × 4000, within the budgets (3 and 40 ms). The first version took 22.7 and 317 ms: nine powers a pixel (the vignette's shape, sRGB to linear and back, the grain's weight) and four hashes a pixel for the finest octave. Each cost was measured alone (`FX=grain`, `FX=vignette`) and taken out at its cause: the shape's powers a column and a row with its mask from a table, the conversions and the weights in tables, a 2-D table (mask level × byte) for a vignette that keeps no highlights, the lattice hashed once into a tile of at most 1024 cells a side, the octaves under a pixel merged into one, and the grain added on the bytes.
 - **The GPU draws what Rust draws:** `effects::gpu_map` carries the vignette's step, the grain's step and the highlights kept; decoded as `gpu-look.ts` decodes them they give `shade`'s colours within a level (`fr_079_the_gpu_map_draws_what_rust_draws`), and `apply` gives `shade`'s within two (`apply_draws_what_shade_draws`).
 - **Left:** the size's millimetres against Lightroom's exports (FR-118's pairs from the owner) and the owner's test prints at 10 × 15 and 20 × 30.
+
+## 41. Highlight recovery, measured (v0.14.1 session 10c, FR-112)
+
+**Read first** (owner, 2026-11-07 and 2026-11-09), methods only, no code: darktable's highlight reconstruction (*inpaint opposed*, its default since 4.2: the clipped channels from the unclipped ones with the mean colour of the pixels next to the clipped areas; *segmentation*: a colour of each area's own, and a rebuild where all three clipped; guided Laplacians, slow), RawTherapee's *Luminance Recovery* (grey), *Color Propagation* (the colour around spread in, slow, prone to bleeding) and its *inpaint opposed* (5.10), Masood, Zhu and Tappen 2009 (the ratios of a pixel's channels change slowly across a surface). Rouf, Lau and Heidrich 2012 is patented (US8861851) and left out. The truth as pixls.us and Eisemann 2020 make it: a frame that did not clip, clipped by hand, compared with itself.
+
+**Harness** (`crates/core/examples/highlights_bench.rs`, `bench/results/highlights.json`):
+
+- **Real frames:** the CC0 samples, each developed whole (the truth) and again with its sensor clipped at 60 % of white; scored where the clip changed a pixel and the truth itself had not clipped (3.85 million pixels over eight frames; the X-T3 is X-Trans, not read).
+- **Synthetic:** a blue sky with a sun, a warm lamp beside a blue light, a cloud (all three clipped), skin; in white-balanced camera RGB, each channel clipped at its gain.
+- **Scores:** the error of `ln(R/G)` and `ln(B/G)`, of luminance in EV, CIEDE2000 after −2 EV (what pulling down shows), the step across the clipped area's edge against the truth's, the colour invented where the truth had clipped (*guess*: none is right, but a magenta sky shows here), and the time of the recovery alone at 24 MP. `--png` writes each method's pictures.
+
+**Candidates**, all after the demosaic on white-balanced camera RGB, where a channel clips at its gain (`rawcore::highlights::Method`): **White**, the fade of FR-088 (the baseline); **Global**, one colour for the frame from every clipped area's edge; **Regions**, each area (pixels joined by their edges, union-find over row runs) the colour of its own edge; **Local**, the edge's colour in 32 px tiles, empty tiles filled from coarser ones (pull-push) and read bilinearly. Each: `L = mean(ln v_u − k_u)` over the unclipped channels, a clipped one `max(v, exp(L + k_c))`; all three clipped: neutral, as bright as its own area's brightest rebuilt pixel.
+
+**Scores** (eight real frames; synthetic ΔE2000 after −2 EV):
+
+| Method | chroma | EV | ΔE −2 EV | guess | sky and sun | two lamps | cloud | skin | 24 MP, none / half clipped |
+|---|---|---|---|---|---|---|---|---|---|
+| White (before) | 0.057 | 0.044 | 1.67 | 0.003 | 21.85 | 18.29 | 3.66 | 11.12 | 13.4 / 16.0 ms |
+| **Global (chosen)** | **0.042** | **0.025** | **1.13** | **0.103** | 0.30 | 2.08 | 2.15 | 0.00 | **3.0 / 54.9 ms** |
+| Regions | 0.044 | 0.025 | 1.18 | 0.147 | 0.30 | 2.08 | 2.15 | 0.00 | 3.0 / 56.5 ms |
+| Local | 0.043 | 0.024 | 1.14 | 0.161 | 0.30 | 1.84 | 2.15 | 0.00 | 3.2 / 82.5 ms |
+
+**Swept** (`--sweep`): the threshold that marks a channel clipped (0.85–0.99 of its clip: lower was better down to 0.90, then flat), the edge's width (1–10 px: wider better), the tile (16–128 px), the floor under which an edge pixel is too dark (0.1–0.5 of green's clip), how close to the clip an edge pixel may be (0.5–0.9) and how many edge pixels a tile needs (8–4096); the last three changed nothing for the better. Chosen: threshold 0.90, edge 10 px.
+
+**Looked at, and why the scores alone misled:** the first choice, Local, scored as well as Global and kept two lamps apart best, but on the A7 III's overcast sky between bare branches it drew magenta blotches two stops down. That sky had clipped in the truth too, so no score covered it; the *guess* column and the pictures were added after. Probing the pixels: green clipped, red not, and the brown branches at the edge gave a colour with green under red. Two fixes followed: a colour that would put a clipped channel under its clip leans to neutral, by how far (`fr_112_a_white_sky_by_branches_stays_white` fails without it), and one colour for the frame, which averages over far more edge and draws the sky a pale blue, its truth's colour (blue over red 1.47).
+
+**Tests** (`crates/rawcore/src/highlights.rs`), each failing on the fade: a clipped blue sky keeps its blue, brightness above white kept (the gradient survives), two colours side by side each nearer their truth than the fade, all three clipped neutral and above every clip, and a frame with nothing clipped left bit for bit. Standard previews version 4.
+
+**Left:** the owner's real trial, a RAW with a blown sky pulled down in the app; the owner's bracketed 0 / −2 EV pairs as a second truth.

@@ -13,6 +13,7 @@ pub mod demosaic;
 pub mod directional;
 pub mod dng;
 pub mod falsecolour;
+pub mod highlights;
 pub mod ljpeg;
 pub mod prepare;
 pub mod tiff;
@@ -139,6 +140,16 @@ pub fn highlights_to_white(rgb: &mut [f32], clip: [f32; 3]) {
 
 /// Develops a sensor's mosaic, whatever file it came from, with its colour tags.
 pub fn develop_mosaic(mosaic: &cfa::Mosaic, tags: &color::ColorTags) -> Result<Linear, RawError> {
+    develop_mosaic_with(mosaic, tags, highlights::DEFAULT.0, &highlights::DEFAULT.1)
+}
+
+/// [`develop_mosaic`] with a chosen highlight recovery, for `highlights_bench` (FR-112).
+pub fn develop_mosaic_with(
+    mosaic: &cfa::Mosaic,
+    tags: &color::ColorTags,
+    method: highlights::Method,
+    params: &highlights::Params,
+) -> Result<Linear, RawError> {
     let rendering = color::rendering(tags).ok_or(RawError::Unsupported("no colour matrix"))?;
     // Faults of single sites first, while each still holds only what it measured; then the
     // directional demosaic and the false-colour median (RESULT §25).
@@ -147,12 +158,13 @@ pub fn develop_mosaic(mosaic: &cfa::Mosaic, tags: &color::ColorTags) -> Result<L
     prepare::green_balance(&mut plane);
     // Each channel keeps its own range after white balance (its gain over green's), so a
     // highlight past green's clip still holds red and blue (FR-088); what nears a channel's
-    // clip goes to white instead of turning magenta or cyan.
+    // clip is rebuilt from the channels that did not clip, with its area's colour, and kept
+    // above white (FR-112).
     let headroom = rendering.gains.iter().copied().fold(1.0f32, f32::max);
     let mut camera = directional::directional(&plane, headroom);
     drop(plane);
     falsecolour::suppress(&mut camera);
-    highlights_to_white(&mut camera.rgb, rendering.gains);
+    highlights::recover(&mut camera, rendering.gains, method, params);
     let m = rendering.to_srgb;
     #[allow(clippy::cast_possible_truncation)]
     let m32 = m.map(|row| row.map(|v| v as f32));

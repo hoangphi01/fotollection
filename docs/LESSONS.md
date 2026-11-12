@@ -55,6 +55,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - Score every variant on the charts or the full measurement before naming it; ship the measured one under an honest name. Kept by: no machine check yet.
 - A selector agrees with the measurement it stands in for; never pick the reference by the quantity measured, and check the ground truth first. Kept by: `preset_bench` pairs from the XMP.
 - A resampling or lookup claim is tested over its whole range (Nyquist pattern, dark ramp), not one factor. Kept by: `fr_072_straightened_reductions_do_not_alias`.
+- An image method is chosen on its pictures from real frames as well as its scores, and scored where no truth exists (what it invents). Kept by: `highlights_bench` (*guess*, `--png`), `fr_112_a_white_sky_by_branches_stays_white`.
 
 ### release-ci
 
@@ -67,6 +68,7 @@ Read this table in full before any task; then read in full every entry whose Are
 
 - Run `scripts/resources.sh`; with little memory build with `CARGO_BUILD_JOBS=4`, never beside the dev app, large files one at a time, nothing kept in `/tmp`. Kept by: `scripts/resources.sh`.
 - Free disk with `scripts/clean.sh`, never part of a profile; on `Undefined symbols`, `cargo clean -p fotollection-core`. Kept by: `scripts/clean.sh`.
+- A check meant to stop a deletion is an `if` read before it, never a link in a `&&` chain whose success means "go". Kept by: no machine check yet.
 - Finish edits before a build, wait for the dev app's rebuild before tests, stop it before a demo recording. Kept by: no machine check yet.
 
 ### measure
@@ -108,6 +110,22 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-12
+
+### A bench scored only where it knew the answer, and missed a magenta sky (FR-112)
+
+- **Area:** measure, image-colour, checks
+- **Seen:** `highlights_bench` ranked a colour per 32 px tile (Local) level with the best and first in keeping two lamps apart; the A7 III's overcast sky between bare branches came out in magenta blotches two stops down.
+- **Why:** the bench scored only pixels the truth had not clipped, and that sky had clipped in the truth too, so no score covered it. The colour at its edge came from brown branches, green under red, so the rebuilt green stayed under red.
+- **Fix:** a *guess* column (the colour invented where no truth exists) and `--png` pictures of every method; a colour that would put a clipped channel under its clip leans to neutral; one colour for the frame (Global), which scored as well and drew the sky pale blue. `fr_112_a_white_sky_by_branches_stays_white` fails without the lean.
+- **Rule:** an image method is looked at on real frames, two stops down as well as as it is, before it is chosen; a bench with truth also scores where it has none.
+
+### A check that passed sent a whole build to the bin (session 10c)
+
+- **Area:** resources-tooling
+- **Seen:** with 6 GB free, `pgrep -fl "fotollection|tauri dev" || echo … && rm -rf target/debug` deleted the debug profile while the dev app ran.
+- **Why:** the check was meant to stop the deletion, but it was a link in a `&&` chain: finding the app made it succeed, and success went on to `rm`.
+- **Fix:** none needed beyond a rebuild of the dev app; the running binary was in memory.
+- **Rule:** read a check's answer before a deletion, as an `if` or a separate step; never put it in a chain whose success means "go".
 
 ### A check that looked at a hidden word, and one that never opened a card (process review)
 

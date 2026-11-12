@@ -72,8 +72,9 @@ const STANDARD_QUALITY: u8 = 90;
 /// or finish (`raw`, `raw_finish`), the colour conversion, the resize. Files of an older
 /// version are never read again and go with the cache limit. v0.11.0 wrote version 1
 /// without a number (`.t2-o…`). 3: v0.14.0, the RAW tone curve interpolated, shadows
-/// without steps (RESULT §33).
-pub const STANDARD_VERSION: u8 = 3;
+/// without steps (RESULT §33). 4: v0.14.1, RAW highlights rebuilt instead of faded to
+/// white (FR-112, RESULT §41).
+pub const STANDARD_VERSION: u8 = 4;
 
 /// Writes a standard preview atomically (a `.part` of its own, then a rename), as T1 is
 /// written; a failed write only means it is made again next time. Two writers of one photo

@@ -1,6 +1,6 @@
 # Hướng dẫn sử dụng — Fotollection
 
-> **Status:** Living · **Last reviewed:** 2026-11-04
+> **Status:** Living · **Last reviewed:** 2026-11-12
 >
 > Bản tiếng Việt của [USER_GUIDE.md](USER_GUIDE.md), cũng là trang hướng dẫn trên website ([fotollection.org/vi/manual](https://fotollection.org/vi/manual/), [ADR-0031](adr/0031-manual-on-the-website-from-the-user-guide.md)). Giữ đúng các chương, mốc chương (`<!-- chapter: id -->`, ở dòng trước tiêu đề chương) và ảnh chụp màn hình (`<!-- shot: tên | mô tả -->`) như bản tiếng Anh, dùng đúng nhãn của app trong `ui/src/locales/vi.json`; `scripts/check-docs.sh` kiểm tra hai bản khớp nhau.
 
@@ -347,7 +347,7 @@ Fotollection mở ảnh RAW của hầu hết máy ảnh như chúng vốn có, 
 - Mở thư mục như thường. Ảnh nhỏ và gợi ý ảnh đẹp nhất hiện nhanh như với JPEG, vì chúng dùng bản xem trước nhỏ mà máy ảnh nào cũng lưu sẵn trong tệp RAW.
 - Bản xem trước để in sẽ xử lý toàn bộ ảnh ở lần mở đầu, mất khoảng một giây; sau đó đổi thiết lập là thấy ngay. Khi xuất, mỗi ảnh RAW được xử lý theo cùng cách.
 - Ảnh được xử lý bằng bộ xử lý của riêng Fotollection cho mọi máy ảnh có cảm biến Bayer (trên máy Mac, tệp Panasonic và Olympus do macOS xử lý để được sửa méo ống kính; Fujifilm X-Trans do trình đọc có sẵn xử lý). Fotollection chuẩn bị ảnh để in: không thay thế Lightroom, nhưng ảnh RAW chỉnh được sâu hơn ảnh JPEG.
-- **Chỉnh RAW sâu hơn.** Với ảnh RAW, *Sáng*, *Vùng sáng*, *Vùng tối*, *Ấm / lạnh* và *Tint* tác động trực tiếp lên dữ liệu gốc của máy ảnh trước khi ảnh được hoàn thiện, như trong một trình sửa RAW: kéo vùng sáng xuống lấy lại chi tiết gần trắng, kéo vùng tối lên ít bị vằn hơn. (Trên máy Mac, ảnh RAW Panasonic và Olympus do macOS xử lý nên còn ít dư sáng hơn.)
+- **Chỉnh RAW sâu hơn.** Với ảnh RAW, *Sáng*, *Vùng sáng*, *Vùng tối*, *Ấm / lạnh* và *Tint* tác động trực tiếp lên dữ liệu gốc của máy ảnh trước khi ảnh được hoàn thiện, như trong một trình sửa RAW: kéo vùng sáng xuống lấy lại chi tiết gần trắng, kéo vùng tối lên ít bị vằn hơn. Chỗ máy ảnh đã cháy sáng (bầu trời, ngọn đèn, đám mây) được dựng lại màu từ những gì cảm biến còn ghi được, nên kéo *Sáng* hay *Vùng sáng* xuống sẽ lấy lại trời xanh chứ không ra một mảng xám. (Trên máy Mac, ảnh RAW Panasonic và Olympus do macOS xử lý nên còn ít dư sáng hơn.)
 - **Màu RAW.** Ảnh RAW mở ra ở chế độ **Trung tính**: màu của cảm biến với độ sáng của máy và một đường cong nhẹ, điểm xuất phát dịu để bạn tự chỉnh màu. Trong các thẻ màu của ảnh (bản xem trước, hoặc ảnh được chọn trên một tấm ghép), thẻ *Màu RAW* đổi ảnh sang **Như JPEG của máy**, với độ tương phản và màu như trên màn hình máy ảnh; *Áp dụng cho mọi ảnh RAW* làm việc đó cho mọi ảnh RAW. Ảnh nhỏ trong lưới luôn là bản xem trước của máy. Project lưu bằng phiên bản cũ hơn vẫn giữ màu của máy cho ảnh RAW của nó.
 - **Trên Linux**, RAW được mở bằng trình đọc có sẵn trong Fotollection, không cần cài thêm gì.
 - **Trên Windows**, RAW cũng được mở bằng trình đọc có sẵn trong Fotollection, không cần cài thêm gì ([ADR-0029](adr/0029-raw-through-rawler-then-our-own-decoder.md)). Nếu đã cài *Raw Image Extension* của Microsoft, codec của hệ điều hành là phương án dự phòng cuối cùng cho tệp mà trình đọc có sẵn không mở được.

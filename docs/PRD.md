@@ -1,6 +1,6 @@
 # Product Requirements Document — Fotollection
 
-> **Owner:** product · **Status:** Draft v0.1 · **Last reviewed:** 2026-11-11
+> **Owner:** product · **Status:** Draft v0.1 · **Last reviewed:** 2026-11-12
 >
 > This document is the single source of truth for **what** Fotollection does and **why**.
 > *How* it is built lives in [ARCHITECTURE.md](ARCHITECTURE.md); *when* lives in [ROADMAP.md](ROADMAP.md).
@@ -1099,6 +1099,8 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 ### FR-112 — Highlight recovery for RAW
 
 **P2 (v0.14.1, moved from v0.14.0 by the owner, 2026-11-09; owner's request 2026-11-07: "learn how to rescue blown highlights instead of fading to white").** Where a RAW's channels clipped, the develop rebuilds their colour from the unclipped channels and the edge of the clipped area, and keeps brightness above white, so lowering exposure or *Highlights* brings back the sky, a lamp or a cloud instead of a flat white patch. It replaces today's fade to neutral (`highlights_to_white`), which stays as the fallback where nothing can be rebuilt. **Chosen and tuned only by measurement** (owner, 2026-11-07: "always through experiments and numbers, never assumed good"): a harness with known truth (synthetic clipped skies, coloured lights, two colours meeting, and the owner's bracketed 0 / −2 EV pairs) runs the current fade and several candidate methods (an average of the edge's colour, edge colour ratios filled smoothly, and variants), each parameter swept, the winner and its numbers kept in RESULT. Methods learned from published papers and manuals only (ADR-0043).
+
+**As built (2026-11-12, session 10c, [RESULT §41](RESULT.md#41-highlight-recovery-measured-v0141-session-10c-fr-112)):** `rawcore::highlights`, after the demosaic on white-balanced camera RGB, where a channel clips at its gain. **One colour for the whole frame** (as darktable's *inpaint opposed*), the mean log-chroma of the unclipped pixels 10 px along every clipped area's edge: a clipped channel is rebuilt as `exp(L + k_c)` from the brightness `L` its unclipped channels give, never lower than it was, and the colour leans to neutral where it would put a clipped channel under its clip (a white sky by brown branches stays white); where all three clipped, neutral at least as bright as the brightest rebuilt pixel of its own area; an area with no edge to read keeps the fade. Kept above white for *Brightness* and *Highlights*. On eight real frames clipped at 60 %: ΔE2000 after −2 EV 1.67 → 1.13, EV error 0.044 → 0.025; a colour per area or per 32 px tile scored no better and turned an overcast sky magenta. 24 MP: 3.0 ms with nothing clipped (the fade took 13.4), 55 ms half clipped. The owner's bracketed pairs are not used yet: the CC0 samples clipped at 60 % gave the truth.
 
 ### FR-113 — ID photos on one print
 
