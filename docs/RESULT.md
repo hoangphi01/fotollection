@@ -803,4 +803,29 @@ The Color Mixer is one function of a pixel in `f32` (`colour_ops::MixerParams::a
 
 **Tests** (`crates/rawcore/src/highlights.rs`), each failing on the fade: a clipped blue sky keeps its blue, brightness above white kept (the gradient survives), two colours side by side each nearer their truth than the fade, all three clipped neutral and above every clip, and a frame with nothing clipped left bit for bit. Standard previews version 4.
 
-**Left:** the owner's real trial, a RAW with a blown sky pulled down in the app; the owner's bracketed 0 / −2 EV pairs as a second truth.
+**Against RawTherapee 5.13** (owner, 2026-11-12; `bench/rawtherapee/compare.sh`, `bench/results/highlights-rawtherapee.json`). The same eight frames, each developer judged against its own unclipped develop by one scorer (`bench/rawtherapee/score.py`: 16-bit sRGB two stops down, the pixels the clip changed, less those the truth itself clipped). RawTherapee clips through its *PreExposure* 1/0.6 with the exposure brought back. This scorer reads the output after it is clipped to the screen, so its numbers are higher than the table above, which scores linear values; compare within this table only.
+
+| | ΔE −2 EV | EV | chroma | guess |
+|---|---|---|---|---|
+| Fotollection, the fade (before) | 3.66 | 0.090 | 0.102 | 0.003 |
+| **Fotollection, Global (shipped)** | **2.44** | **0.046** | **0.069** | **0.102** |
+| RawTherapee, no reconstruction | 3.35 | 0.059 | 0.084 | 0.001 |
+| RawTherapee, Luminance Recovery | 2.80 | 0.037 | 0.085 | 0.001 |
+| RawTherapee, CIELab blending | 3.15 | 0.024 | 0.085 | 0.018 |
+| RawTherapee, Blend | 2.31 | 0.027 | 0.059 | 0.018 |
+| RawTherapee, Inpaint opposed | 2.26 | 0.032 | 0.067 | 0.241 |
+| RawTherapee, Color Propagation | **1.38** | **0.019** | **0.041** | 0.261 |
+
+- **Quality.** Global is level with RawTherapee's Blend and Inpaint opposed overall and behind its Color Propagation. That gap comes from the D750 (3.18 against 1.36) and the A7 III (3.34 against 1.54). Inpaint opposed is also better on the R10 (0.76 against 1.49). On the other five frames the three are within 0.15. Ours rebuilds too dim (EV error 0.046 against 0.019–0.032). Two stops down, the A7 III's sky comes out lavender from Global and from Color Propagation, and blue-grey from Inpaint opposed and the truth. Both of RawTherapee's colour methods invent more colour where no truth exists (*guess* 0.24–0.26 against 0.10).
+- **Where.** RawTherapee rebuilds after the demosaic and before white balance; darktable rebuilds on the mosaic. Ours rebuilds after both, on white-balanced RGB whose clipped channels the demosaic has already capped.
+- **Speed and memory, the whole develop of one frame** (wall time and peak RSS; ours from `raw_memory own`, decode to an 8-bit picture with no file written; RawTherapee's CLI with a 16-bit TIFF written and the process start included):
+
+  | Frame | Fotollection | RawTherapee, none | RawTherapee, Color Propagation |
+  |---|---|---|---|
+  | A7 III, 24 MP | 0.38 s, 787 MB | 1.30 s, 1,575 MB | 1.54 s, 2,524 MB |
+  | 5D Mark IV, 30 MP | 0.66 s, 1,049 MB | 3.59 s, 2,365 MB | 3.66 s, 2,738 MB |
+  | GX9, 20 MP | 0.30 s, 658 MB | 1.20 s, 1,329 MB | 1.23 s, 1,370 MB |
+
+  RawTherapee works in float on full-image buffers, ProPhoto by default. Its reconstruction adds 0.2–0.25 s and 350–950 MB on the A7 III, one run each. Ours adds 55 ms at worst (half the frame clipped) and no buffer beyond the frame.
+
+**Left:** the owner's real trial, a RAW with a blown sky pulled down in the app; the owner's bracketed 0 / −2 EV pairs as a second truth. Closing the gap to Color Propagation is the owner's call, measured with `compare.sh`: brighter rebuilt pixels, and the rebuild before white balance or before the demosaic's cap.

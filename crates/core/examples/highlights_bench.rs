@@ -15,7 +15,12 @@
 //! `--png <folder>` also writes each clipped frame finished (the neutral look), before and
 //! after, as it is and two stops down, a quarter of its size, as PPM.
 //!
-//! `cargo run --release -p fotollection-core --example highlights_bench -- [--sweep] [--png <folder>] <raw>…`
+//! `--export <folder>` writes, per frame, the linear develops two stops down as 16-bit sRGB
+//! PPM (`truth_off`, `truth_opp`, `cut_off` and `cut_<Method>`, the clipped ones brought back
+//! to the truth's scale), the files another raw developer's output is scored beside
+//! (RESULT §41, `bench/rawtherapee/compare.sh`).
+//!
+//! `cargo run --release -p fotollection-core --example highlights_bench -- [--sweep] [--png <folder>] [--export <folder>] <raw>…`
 
 #![allow(
     clippy::unwrap_used,
@@ -156,7 +161,21 @@ fn develop(m: &Mosaic, tags: &ColorTags, method: Method, params: &Params) -> (Li
     (l, t.elapsed().as_secs_f64() * 1e3)
 }
 
-/// One real frame: the truth, the clipped frame by each method, their scores and times.
+/// Writes linear sRGB `rgb` (`w` × `h`) two stops down as a 16-bit sRGB PPM.
+fn export(rgb: &[f32], w: usize, h: usize, path: &std::path::Path) {
+    let mut out = format!("P6\n{w} {h}\n65535\n").into_bytes();
+    for &v in rgb {
+        let v = (v * 0.25).clamp(0.0, 1.0);
+        let e = if v <= 0.003_130_8 {
+            12.92 * v
+        } else {
+            1.055 * v.powf(1.0 / 2.4) - 0.055
+        };
+        out.extend_from_slice(&((e * 65535.0).round() as u16).to_be_bytes());
+    }
+    std::fs::write(path, out).expect("write");
+}
+
 /// Writes `linear` finished with the neutral look, `stops` brighter, a quarter of its size.
 fn picture(linear: &Linear, stops: f32, path: &std::path::Path) {
     let adjust = fotollection_rawcore::RawAdjust {
@@ -190,10 +209,12 @@ fn picture(linear: &Linear, stops: f32, path: &std::path::Path) {
     std::fs::write(path, out).expect("write");
 }
 
+/// One real frame: the truth, the clipped frame by each method, their scores and times.
 fn real(
     path: &str,
     methods: &[(Method, Params)],
     png: Option<&std::path::Path>,
+    exported: Option<&std::path::Path>,
 ) -> Option<Vec<(Score, f64, f64)>> {
     let (mosaic, tags) = read(path)?;
     let base = highlights::DEFAULT.1;
@@ -231,6 +252,28 @@ fn real(
     let w = truth.width;
     let to_truth = |l: &Linear| l.rgb.iter().map(|v| v * scale).collect::<Vec<f32>>();
     let old_scaled = to_truth(&old);
+    if let Some(dir) = exported {
+        let stem = std::path::Path::new(path)
+            .file_name()
+            .unwrap()
+            .to_string_lossy()
+            .into_owned();
+        let dir = dir.join(stem);
+        std::fs::create_dir_all(&dir).expect("folder");
+        let h = truth.height;
+        export(&truth.rgb, w, h, &dir.join("truth_off.ppm"));
+        export(&truth_local.rgb, w, h, &dir.join("truth_opp.ppm"));
+        export(&old_scaled, w, h, &dir.join("cut_off.ppm"));
+        for (method, params) in methods.iter().take(METHODS.len()) {
+            let (l, _) = develop(&cut, &tags, *method, params);
+            export(
+                &to_truth(&l),
+                w,
+                h,
+                &dir.join(format!("cut_{method:?}.ppm")),
+            );
+        }
+    }
     // Scored: what the clip changed, where the truth itself was not clipped.
     let unknown: Vec<bool> = (0..w * truth.height)
         .map(|i| (0..3).any(|c| (truth.rgb[i * 3 + c] - truth_local.rgb[i * 3 + c]).abs() > 1e-6))
@@ -425,9 +468,17 @@ fn main() {
         .position(|a| a == "--png")
         .and_then(|i| args.get(i + 1))
         .map(std::path::PathBuf::from);
+    let exported = args
+        .iter()
+        .position(|a| a == "--export")
+        .and_then(|i| args.get(i + 1))
+        .map(std::path::PathBuf::from);
     let files: Vec<&String> = args
         .iter()
-        .filter(|a| !a.starts_with("--") && Some(std::path::PathBuf::from(a.as_str())) != png)
+        .filter(|a| {
+            let p = Some(std::path::PathBuf::from(a.as_str()));
+            !a.starts_with("--") && p != png && p != exported
+        })
         .collect();
     let base = highlights::DEFAULT.1;
     let mut methods: Vec<(Method, Params)> = METHODS.iter().map(|&m| (m, base)).collect();
@@ -485,7 +536,7 @@ fn main() {
             .unwrap()
             .to_string_lossy()
             .into_owned();
-        let Some(rows) = real(path, &methods, png.as_deref()) else {
+        let Some(rows) = real(path, &methods, png.as_deref(), exported.as_deref()) else {
             println!("-- {file}: not read");
             continue;
         };

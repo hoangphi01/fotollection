@@ -2,7 +2,8 @@
 //! One RAW develop through one decoder and nothing else, so `/usr/bin/time -l` reports that
 //! decoder's peak memory (ADR-0030 quality gate). Prints the time.
 //!
-//! `cargo run --release -p fotollection-core --example raw_memory -- <os|rawler|rawcore> <raw>`
+//! `cargo run --release -p fotollection-core --example raw_memory -- <os|rawler|own|rawcore> <raw>`
+//! (`own` is the app's decoder for every format, `rawcore` the DNG path alone)
 
 #![allow(clippy::unwrap_used, clippy::expect_used)]
 
@@ -25,6 +26,15 @@ fn main() {
             )
             .map(|d| (d.image.width as usize, d.image.height as usize))
             .expect("os"),
+        "own" => raw::Own
+            .decode(
+                &bytes,
+                kind,
+                fotollection_core::raw::RawLook::Neutral,
+                &fotollection_core::raw::RawAdjust::default(),
+            )
+            .map(|d| (d.image.width as usize, d.image.height as usize))
+            .expect("own"),
         "rawler" => raw::Rawler
             .decode(
                 &bytes,

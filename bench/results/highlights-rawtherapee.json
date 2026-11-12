@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-12",
+  "machine": "Apple M3, 16 GB, macOS 26.3.1, loaded (swap 12-13 of 14 GB)",
+  "command": "bench/rawtherapee/compare.sh <out> <the eight CC0 samples read by both> (RawTherapee 5.13, Homebrew)",
+  "note": "both judged against their own unclipped develop with the same scorer (bench/rawtherapee/score.py): 16-bit sRGB two stops down, the mask = pixels the clip changed by over 1 %, less those the truth itself clipped; pixel-weighted over the eight frames. Fotollection's baseline 'off' is the fade (White), RawTherapee's is no reconstruction (each channel clipped).",
+  "columns": ["chroma", "ev", "de2000AfterMinus2Ev", "guess"],
+  "fotollection": {
+    "pixels": 1710857,
+    "off (White)": [0.102, 0.090, 3.66, 0.003],
+    "Global (shipped)": [0.069, 0.046, 2.44, 0.102],
+    "Regions": [0.073, 0.046, 2.56, 0.146],
+    "Local": [0.071, 0.045, 2.46, 0.160]
+  },
+  "rawtherapee": {
+    "pixels": 1598462,
+    "off": [0.084, 0.059, 3.35, 0.001],
+    "Luminance": [0.085, 0.037, 2.80, 0.001],
+    "CIELab blending": [0.085, 0.024, 3.15, 0.018],
+    "Color (propagation)": [0.041, 0.019, 1.38, 0.261],
+    "Blend": [0.059, 0.027, 2.31, 0.018],
+    "Coloropp (inpaint opposed)": [0.067, 0.032, 2.26, 0.241]
+  },
+  "perFrameDe": {
+    "frames": ["canon-eos-5d-mark-iv", "canon-eos-r10", "nikon-d750", "olympus-e-m10-mark-iii", "panasonic-dc-gx9", "panasonic-dc-s5", "ricoh-gr-iii", "sony-ilce-7m3"],
+    "fotollection Global": [0.32, 1.49, 3.18, 0.68, 0.33, 0.30, 0.45, 3.34],
+    "rawtherapee Color": [0.40, 1.49, 1.36, 0.79, 0.39, 0.44, 0.35, 1.54],
+    "rawtherapee Coloropp": [0.41, 0.76, 1.88, 0.81, 0.39, 0.45, 0.45, 2.75]
+  },
+  "wholeDevelop": {
+    "note": "one frame, wall time and peak RSS from /usr/bin/time -l. Fotollection: raw_memory own (decode, develop, finish to 8-bit, no file written). RawTherapee: rawtherapee-cli, neutral profile, AMaZE, a 16-bit TIFF written, process start included.",
+    "sony-ilce-7m3 (24 MP)": {"fotollection": [0.38, 787], "rawtherapee off": [1.30, 1575], "rawtherapee Coloropp": [1.50, 1922], "rawtherapee Color": [1.54, 2524]},
+    "canon-eos-5d-mark-iv (30 MP)": {"fotollection": [0.66, 1049], "rawtherapee off": [3.59, 2365], "rawtherapee Color": [3.66, 2738]},
+    "panasonic-dc-gx9 (20 MP)": {"fotollection": [0.30, 658], "rawtherapee off": [1.20, 1329], "rawtherapee Color": [1.23, 1370]},
+    "columns": ["seconds", "peakMB"]
+  }
+}
