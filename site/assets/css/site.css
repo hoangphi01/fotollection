@@ -189,7 +189,7 @@ h1, h2, h3 { font-family: 'Bitter', Georgia, serif; line-height: 1.1; letter-spa
 :lang(ja) :is(h1, h2, h3, .brand, .stat strong, .how-figure strong, .keynote-h) { font-family: 'Bitter', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', 'Noto Sans CJK JP', sans-serif; font-feature-settings: 'palt'; letter-spacing: 0.02em; }
 :lang(ja) :is(h1, h2) { font-weight: 700; }
 :lang(ja) :is(h1, h2, h3) { line-height: 1.35; word-break: auto-phrase; text-wrap: balance; }
-:lang(ja) .lead { max-width: 38em; text-wrap: pretty; word-break: auto-phrase; }
+:lang(ja) .lead { max-width: 38em; text-wrap: pretty; }
 :lang(ja) :is(.kicker, .qa-label, .sizes-label, .changelog h3, .compat-brand, .table thead th, .listed small) { letter-spacing: 0.02em; }
 /* The stores' marks in the Japanese kiosk heading, at the height of the words beside them. */
 .logo-seven { height: 1.1em; vertical-align: -0.2em; }
@@ -311,7 +311,7 @@ html[data-os='mobile'] .cta-note { display: block; order: -1; }
 .tint { background: var(--tint); }
 .cards { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 36px; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: 0 1px 2px rgb(74 52 30 / 5%); }
-.card > .icon { width: 26px; height: 26px; color: var(--brand); margin-bottom: 14px; }
+.card > .icon { display: block; width: 26px; height: 26px; color: var(--brand); margin-bottom: 14px; }
 .card:nth-child(3n + 2) > .icon { color: var(--accent); }
 .card:nth-child(3n) > .icon { color: var(--flower); }
 .card p { margin-top: 8px; color: var(--ink-2); font-size: 0.97rem; }
@@ -850,6 +850,8 @@ h2.with-icon .icon { width: 0.85em; height: 0.85em; flex: none; color: var(--bra
 /* AlternativeTo's own colours (its badges, alternativeto.net/static/badges/): #0C9EF0 with
    white on a light page, #003351 with a #0C9EF0 rim and label on a dark one. */
 .listed.alternativeto { --face: #0c9ef0; --ink: #ffffff; --ink-2: #f5f9fd; }
+/* AlternativeTo's white mark on its blue disc, at the size of the cards' icons. */
+.card-mark { display: block; box-sizing: border-box; width: 26px; height: 26px; padding: 3px; margin-bottom: 14px; border-radius: 50%; background: #0c9ef0; }
 @media (min-width: 640px) { .listed { flex: 0 0 auto; } }
 @media (prefers-color-scheme: dark) {
   .listed.vnlf { --face: #1a3a22; --ink: #e8f2ea; --ink-2: #7aaa83; border-color: #4a7552; }
@@ -891,6 +893,7 @@ h2.with-icon .icon { width: 0.85em; height: 0.85em; flex: none; color: var(--bra
 @media (min-width: 720px) {
   .bento { grid-template-columns: repeat(2, 1fr); }
   .community-cards { grid-template-columns: repeat(3, 1fr); }
+  .community-cards.two { grid-template-columns: repeat(2, 1fr); }
 }
 @media (min-width: 960px) {
   .bento { grid-template-columns: repeat(3, 1fr); }

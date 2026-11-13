@@ -234,6 +234,7 @@
 
 <section class="section" id="community">
   <div class="wrap">
+    {%- if pg.community == 'vn' %}
     <h2>{{ t.community_title }}</h2>
     <p class="lead narrow">{{ t.community_lead }}</p>
     <div class="cards community-cards">
@@ -241,6 +242,15 @@
       <article class="card">{% include icons/monitor.svg %}<h3>{{ t.caramos_title }}</h3><p>{{ t.caramos_text }}</p><p><a class="more" href="https://github.com/VN-Linux-Family/CaramOS">{{ t.caramos_link }} {% include icons/arrow-right.svg %}</a></p></article>
       <article class="card">{% include icons/star.svg %}<h3>{{ t.github_title }}</h3><p>{{ t.github_text }}</p><p><a class="more" href="{{ site.repo_url }}">{{ t.github_link }} {% include icons/arrow-right.svg %}</a></p></article>
     </div>
+    {%- else %}
+    {%- comment %} Readers beyond Vietnam (owner, 2026-11-14): where people look for an app, and the code. {% endcomment %}
+    <h2>{{ t.community_intl_title }}</h2>
+    <p class="lead narrow">{{ t.community_intl_lead }}</p>
+    <div class="cards community-cards two">
+      <article class="card"><img class="card-mark" src="{{ '/assets/img/logos/alternativeto.svg' | relative_url }}" width="28" height="28" alt="" /><h3>AlternativeTo</h3><p>{{ t.alt_text }}</p><p><a class="more" href="https://alternativeto.net/software/fotollection/about/">{{ t.alt_link }} {% include icons/arrow-right.svg %}</a></p></article>
+      <article class="card">{% include icons/star.svg %}<h3>{{ t.github_title }}</h3><p>{{ t.github_text }}</p><p><a class="more" href="{{ site.repo_url }}">{{ t.github_link }} {% include icons/arrow-right.svg %}</a></p></article>
+    </div>
+    {%- endif %}
   </div>
 </section>
 
