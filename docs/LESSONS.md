@@ -30,6 +30,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - Before a new control or a copy, use the app's block for that job, checked against STYLE_RULE §4: a copy spreads its faults. Kept by: `check-lego` (`InputGroup`, `position=`).
 - A size a family of blocks shares is set once in the block; a block that places something absolutely keeps room for it beside it. Kept by: `check-lego` (pop-up widths), UI-LAYOUT-022.
 - A new state or variant of a shared block is checked in both themes, in dark against its `dark:` and `hover:` utilities. Kept by: UI-STATE-009.
+- A rule for one block names that block's own mark, never a shared class it happens to sit in (the website's `.cta`). Kept by: no machine check yet.
 
 ### text-i18n
 
@@ -112,6 +113,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-13
+
+### The Ko-fi button lost its colour to a rule written for the download buttons (site, FR-021)
+
+- **Area:** ui-blocks, checks
+- **Seen:** the support card's *Buy me a coffee on Ko-fi* showed a dark cup on a dark button in the dark theme (owner).
+- **Why:** the rule that turns the macOS button back to plain once the visitor's system is known was written as `html[data-os] .cta .button.primary`; the support card's buttons sit in a `.cta` too, so Ko-fi, a primary button, lost its brand face while its cup kept the brand-ink colour.
+- **Fix:** the rule names only the download buttons, `:where(.button.primary[data-os])`, at a weight the leading button's rule still beats; Ko-fi is brown again in dark, green in light.
+- **Rule:** a rule for one block names that block's own mark, never a shared class (`.cta`, `.button`); after it, every page that uses the shared class is looked at.
 
 ### The Vietnamese WebKit pass stopped on lazy pictures, with the Prague photos in the demo (UI check)
 

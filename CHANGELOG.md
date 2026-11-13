@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - **Website:** the *Listed on* badges always sit on a row of their own under the download buttons.
 
+### Fixed
+
+- **Website:** the *Buy me a coffee on Ko-fi* button has its colour again; the change to the download buttons had made it plain, its cup hard to see in the dark theme.
+
 ## [0.14.1] - 2026-11-13
 
 ### Highlights

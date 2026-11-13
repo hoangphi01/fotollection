@@ -265,11 +265,11 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .button.primary .logo-os { color: inherit; }
 /* The visitor's own system leads (data-os on <html>, default.html; owner, 2026-11-13): its
    button takes the brand face and goes first; on a phone none leads and a note says why. */
-html[data-os] .cta .button.primary { --face: var(--surface); background: var(--surface); border-color: var(--line); color: var(--ink); }
-html[data-os] .cta .button.primary:hover { filter: none; background: var(--tint); }
+html[data-os] .cta :where(.button.primary[data-os]) { --face: var(--surface); background: var(--surface); border-color: var(--line); color: var(--ink); }
+html[data-os] .cta :where(.button.primary[data-os]):hover { filter: none; background: var(--tint); }
 html[data-os='mac'] .cta .button[data-os='mac'], html[data-os='win'] .cta .button[data-os='win'], html[data-os='linux'] .cta .button[data-os='linux'] { --face: var(--brand); background: var(--brand); border-color: var(--brand); color: var(--brand-ink); order: -1; }
 html[data-os='mac'] .cta .button[data-os='mac']:hover, html[data-os='win'] .cta .button[data-os='win']:hover, html[data-os='linux'] .cta .button[data-os='linux']:hover { filter: brightness(0.92); background: var(--brand); }
-html[data-os] .cta .button.primary .logo-os { color: var(--brand); }
+html[data-os] .cta :where(.button.primary[data-os]) .logo-os { color: var(--brand); }
 html[data-os='mac'] .cta .button[data-os='mac'] .logo-os, html[data-os='win'] .cta .button[data-os='win'] .logo-os, html[data-os='linux'] .cta .button[data-os='linux'] .logo-os { color: inherit; }
 .cta-listed { display: flex; flex-wrap: wrap; align-items: center; justify-content: inherit; gap: 10px; flex: 1 0 100%; }
 .cta-note { display: none; margin: 0; flex: 1 0 100%; color: var(--muted); font-size: 0.92rem; text-align: center; text-wrap: balance; }
