@@ -1248,6 +1248,21 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 - **What it covers:** every interface string (`ui/src/locales/de.json`), the native menu and the file dialogs (`src-tauri/src/i18n.rs`), every error by its code; the manual is the website's short German one (`site/_includes/manual-short-de.md`) with the app's German labels. A machine in `de-*` starts in German (FR-124).
 - **Checked by machine:** `check-i18n` (keys, empty values, placeholders), `npm run text-widths`, and `MEASURE=1 MEASURE_LANG=de` in `scripts/ui-check.sh`: every word fits, a step smaller or cut with its hint (FR-125).
 
+### FR-128 — Japanese and Korean interface
+
+**P2 (planned; owner's request 2026-11-14).** The app speaks **日本語** and **한국어**, as FR-123 and FR-127 did Magyar and Deutsch: every interface string, the native menu and the file dialogs, every error by its code, a short manual in each language ([LOCALIZATION.md](LOCALIZATION.md) §5, done in full).
+
+- **Fonts first:** Be Vietnam Pro has no Japanese or Korean letters. The interface and the manual fall back to the system's own CJK face (Hiragino and Apple SD Gothic Neo on macOS, Yu Gothic and Malgun Gothic on Windows, Noto Sans CJK on Linux), chosen and checked before any string is translated; the print's own text (date stamp, info frame, postcard) is a separate question, decided with the owner.
+- **Words that fit:** Japanese and Korean run shorter than English but taller; `MEASURE=1 MEASURE_LANG=ja` and `ko` and `npm run text-widths` check every panel (FR-125).
+- **The website** follows with its own `/ja/` and `/ko/` pages only when the owner asks.
+
+### FR-129 — Print sizes of Japan's convenience-store kiosks
+
+**P2 (planned; owner's request 2026-11-14).** The print sizes of the photo kiosks in Japan's convenience stores, **7-Eleven**, **Lawson** and **FamilyMart**, built in as FR-034's lab presets are for dm and Rossmann: L判 (89 × 127 mm), 2L判 and the other sizes each chain prints, with their ratios, so a photo is cropped as the kiosk will print it.
+
+- **Measured from the source:** each size and ratio taken from the chain's own service pages (and checked on a real print when one can be made), never from memory; the date of the check kept with the data.
+- **Shown where the sizes are:** the print size list, grouped by chain as the European labs are; the sharpness verdict (FR-026) works on them unchanged.
+
 ## 7. Non-functional requirements
 
 Performance budgets are measured as defined in [OPTIMIZATION.md](OPTIMIZATION.md). The reference machines are listed there.

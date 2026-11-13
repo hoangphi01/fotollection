@@ -217,6 +217,8 @@ After v0.3.1, each release has one theme. On 2026-10-25 v0.6.0 shipped the viewe
 | FR-125 | Long words fit: a step smaller, then cut with the whole in a hint (`FitText` in every button); English always whole; dry checks of translations' widths and a German-length pseudo-locale; v0.14.1 (owner, 2026-11-12) |
 | FR-126 | A Polaroid frame for two-photo collage sheets: a white instant-film frame, its deeper bottom strip for a typed note or one written by hand; never on a postcard; reuses the info frame and the postcard's text; v0.14.2 (owner, 2026-11-12 and 13) |
 | FR-127 | German interface: every string, the menu and the errors in Deutsch, the website's short manual with the app's labels, translated with the German website's words; v0.14.1 (owner, 2026-11-13) |
+| FR-128 | Japanese and Korean interface: every string, the menu, the errors and a short manual in 日本語 and 한국어, the system's CJK fonts checked first; later (owner, 2026-11-14) |
+| FR-129 | The print sizes of Japan's convenience-store kiosks (7-Eleven, Lawson, FamilyMart), L判 and 2L判 among them, as lab presets from each chain's own pages; later (owner, 2026-11-14) |
 | FR-109 | A welcome screen on the first launch: five pages (welcome, modes, choose, make it yours, print), Next, a *Show at every start* tick and Start; v0.13.1 |
 | FR-108 | Photobooth with the computer's own camera (the Mac's webcam): countdown, a strip or sheet to print, offline; later |
 | FR-068 | HEIC on Linux through the libheif the distribution installs, loaded at run time; no bundled HEVC decoder (after v0.9.0, [ADR-0034](adr/0034-linux-lean.md)) |
