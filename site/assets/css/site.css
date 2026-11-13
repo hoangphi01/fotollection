@@ -181,12 +181,15 @@ body {
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
 h1, h2, h3 { font-family: 'Bitter', Georgia, serif; line-height: 1.1; letter-spacing: -0.01em; margin: 0; }
-/* Japanese (owner, 2026-11-14): no Japanese face is served, every Japanese device has good ones:
-   Latin and figures stay in our faces, the kana and kanji come from the system's, Gothic for
-   text and Mincho beside Bitter for headings; letters are not spaced out, lines a little taller. */
-:lang(ja) body { font-family: 'Be Vietnam Pro', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic', Meiryo, 'Noto Sans JP', 'Noto Sans CJK JP', sans-serif; }
-:lang(ja) :is(h1, h2, h3, .brand, .stat strong, .how-figure strong, .keynote-h) { font-family: 'Bitter', 'Hiragino Mincho ProN', 'Yu Mincho', YuMincho, 'Noto Serif JP', 'Noto Serif CJK JP', serif; letter-spacing: 0; }
-:lang(ja) :is(h1, h2, h3) { line-height: 1.3; word-break: auto-phrase; text-wrap: balance; }
+/* Japanese (owner, 2026-11-14), set as Apple's Japanese pages are: no Japanese face is served,
+   every Japanese device has good ones; Latin and figures stay in our faces, kana and kanji come
+   from the system's Gothic, headings bold Gothic with proportional kana (palt); the browser
+   spaces Japanese from Latin (text-autospace, no typed spaces), lines break by phrase. */
+:lang(ja) body { font-family: 'Be Vietnam Pro', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic', Meiryo, 'Noto Sans JP', 'Noto Sans CJK JP', sans-serif; line-height: 1.8; text-autospace: normal; }
+:lang(ja) :is(h1, h2, h3, .brand, .stat strong, .how-figure strong, .keynote-h) { font-family: 'Bitter', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', 'Noto Sans CJK JP', sans-serif; font-feature-settings: 'palt'; letter-spacing: 0.02em; }
+:lang(ja) :is(h1, h2) { font-weight: 700; }
+:lang(ja) :is(h1, h2, h3) { line-height: 1.35; word-break: auto-phrase; text-wrap: balance; }
+:lang(ja) .lead { max-width: 38em; text-wrap: pretty; word-break: auto-phrase; }
 :lang(ja) :is(.kicker, .qa-label, .sizes-label, .changelog h3, .compat-brand, .table thead th, .listed small) { letter-spacing: 0.02em; }
 /* The stores' marks in the Japanese kiosk heading, at the height of the words beside them. */
 .logo-seven { height: 1.1em; vertical-align: -0.2em; }
@@ -246,6 +249,11 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 /* The heart of GitHub's own Sponsor button. */
 .sponsor .icon { color: var(--sponsor); }
 .kofi .icon { color: var(--brand-ink); }
+/* The Ko-fi button on two tiers, as the listing badges (owner, 2026-11-14: one line ran over
+   in Japanese): what it does, and under it how one pays; its row 52 px high. */
+#support .cta .button { height: 52px; }
+.button.stacked span { display: flex; flex-direction: column; line-height: 1.15; text-align: left; }
+.button.stacked small { font-size: 0.72rem; font-weight: 600; opacity: 0.85; }
 /* Back to top: the same round button, fixed in the corner. */
 .to-top { position: fixed; right: 16px; bottom: 16px; z-index: 20; width: 44px; height: 44px; padding: 0; justify-content: center; box-shadow: var(--shadow); }
 .to-top .icon { color: var(--brand-ink); }
@@ -874,11 +882,6 @@ h2.with-icon .icon { width: 0.85em; height: 0.85em; flex: none; color: var(--bra
 .wide-banner { margin: 40px 0 0; border-radius: var(--radius); overflow: hidden; box-shadow: var(--lift); }
 .wide-banner img { width: 100%; }
 
-/* Make it yours: the four looks of the app as cards. */
-.themes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 32px; }
-.theme-card { margin: 0; }
-.theme-card img { border-radius: 12px; border: 1px solid var(--line); box-shadow: var(--lift); }
-.theme-card figcaption { margin-top: 8px; font-size: 0.92rem; font-weight: 600; color: var(--ink-2); text-align: center; }
 
 /* The final call: centred, the download buttons once more. */
 .final-wrap { text-align: center; }
@@ -887,7 +890,6 @@ h2.with-icon .icon { width: 0.85em; height: 0.85em; flex: none; color: var(--bra
 
 @media (min-width: 720px) {
   .bento { grid-template-columns: repeat(2, 1fr); }
-  .themes { grid-template-columns: repeat(4, 1fr); }
   .community-cards { grid-template-columns: repeat(3, 1fr); }
 }
 @media (min-width: 960px) {

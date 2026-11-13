@@ -12,7 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- **Website in Japanese** at `/ja/`: the home, Download, Performance, Wiki and code-signing pages and a short manual, with Japan's convenience stores (7-Eleven, Lawson, FamilyMart) and their L, 2L and square prints in place of dm and Rossmann.
+- **Website:** the landing page no longer shows a section of the app's languages and themes, now that it speaks more of them; the Ko-fi button says how one pays (PayPal or card) on a second line, and the note under it how to use Ko-fi's English page.
+- **Website in Japanese** at `/ja/`: the home, Download, Performance, Wiki and code-signing pages and a short manual, with Japan's convenience stores (7-Eleven, Lawson, FamilyMart) and their L, 2L and square prints in place of dm and Rossmann, set as Japanese sites are: bold Gothic headings, short headlines, no spaces typed between Japanese and Latin.
 - **Website:** the *Listed on* badges always sit on a row of their own under the download buttons.
 - **Website:** *How it compares* lists what each one does, ten rows more: RAW development, keep or drop, the best shot of a burst, the lab's print sizes, the date on the photo, two photos on a print, postcards, looks, Lightroom presets and LUTs.
 

@@ -134,20 +134,6 @@
   </div>
 </section>
 
-<section class="section tint" id="yours">
-  <div class="wrap">
-    <h2>{{ t.yours_title }}</h2>
-    <p class="lead narrow">{{ t.yours_lead }}</p>
-    <div class="themes">
-      {%- assign looks = "en-light,en-dark,vi-light,vi-dark" | split: "," -%}
-      {%- for look in looks -%}
-      {%- capture label_key %}yours_{{ look | replace: "-", "_" }}{% endcapture %}
-      <figure class="theme-card"><img src="{{ '/assets/img/grid-' | append: look | append: '.webp' | relative_url }}" width="1600" height="1000" alt="{{ t[label_key] }}" loading="lazy" decoding="async" /><figcaption>{{ t[label_key] }}</figcaption></figure>
-      {%- endfor %}
-    </div>
-  </div>
-</section>
-
 <section class="section" id="develop">
   <div class="wrap">
     <h2>{{ t.develop_title }}</h2>
@@ -293,7 +279,7 @@
         <figcaption class="small muted" data-treat-amount>{{ treat.bank }} · Napas 247</figcaption>
         <p class="treat-marks"><img class="mark-vietqr" src="{{ '/assets/img/logos/vietqr.png' | relative_url }}" width="61" height="34" alt="VietQR" loading="lazy" decoding="async" /><img class="mark-napas" src="{{ '/assets/img/logos/napas247.png' | relative_url }}" width="110" height="26" alt="NAPAS 247" loading="lazy" decoding="async" />{% include fn.html keys="fn_payment" %}</p>
       </figure>
-      <div class="cta"><a class="button sponsor" href="https://github.com/sponsors/hoangphi01?frequency=one-time">{% include icons/heart.svg %}{{ t.support_sponsor }}</a><a class="button primary kofi" href="https://ko-fi.com/hoangphi01">{% include icons/coffee.svg %}{{ t.support_kofi }}</a></div>
+      <div class="cta"><a class="button sponsor" href="https://github.com/sponsors/hoangphi01?frequency=one-time">{% include icons/heart.svg %}{{ t.support_sponsor }}</a><a class="button primary kofi stacked" href="https://ko-fi.com/hoangphi01">{% include icons/coffee.svg %}<span><strong>{{ t.support_kofi }}</strong><small>{{ t.support_kofi_sub }}</small></span></a></div>
       <p class="small muted support-note">{{ t.support_note }}</p>
     </div>
     {%- else %}
@@ -302,7 +288,7 @@
         <h2 class="with-icon">{% include icons/coffee.svg %}{{ t.support_title }}</h2>
         <p class="lead">{{ t.support_text }}</p>
       </div>
-      <div class="cta"><a class="button primary kofi" href="https://ko-fi.com/hoangphi01">{% include icons/coffee.svg %}{{ t.support_kofi }}</a><a class="button sponsor" href="https://github.com/sponsors/hoangphi01?frequency=one-time">{% include icons/heart.svg %}{{ t.support_sponsor }}</a></div>
+      <div class="cta"><a class="button primary kofi stacked" href="https://ko-fi.com/hoangphi01">{% include icons/coffee.svg %}<span><strong>{{ t.support_kofi }}</strong><small>{{ t.support_kofi_sub }}</small></span></a><a class="button sponsor" href="https://github.com/sponsors/hoangphi01?frequency=one-time">{% include icons/heart.svg %}{{ t.support_sponsor }}</a></div>
       <p class="small muted support-note">{{ t.support_note_card }}</p>
     </div>
     {%- endif %}

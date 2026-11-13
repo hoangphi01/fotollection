@@ -82,12 +82,6 @@ looks_pick: "Các look"
 looks_engine: "Render bằng chính engine của Fotollection, giống hệt khi in."
 tile_keys: "Phím tắt như Lightroom trong chế độ chỉnh ảnh toàn cửa sổ"
 tile_export: "Hộp thoại xuất ảnh, như Lightroom"
-yours_title: "Theo ý bạn"
-yours_lead: "Sáng hay tối, tiếng Việt, tiếng Anh, tiếng Đức hay tiếng Hungary, chọn trong Cài đặt hoặc theo máy tính của bạn."
-yours_en_light: "English · sáng"
-yours_en_dark: "English · tối"
-yours_vi_light: "Tiếng Việt · sáng"
-yours_vi_dark: "Tiếng Việt · tối"
 develop_title: "Phím tắt như Lightroom, miễn phí và không cần mạng"
 develop_lead: "Nếu bạn quen Lightroom, tay bạn đã biết đường: chế độ chỉnh ảnh lấp đầy cửa sổ với Điều hướng và Lịch sử, và hộp thoại xuất ảnh hỏi đúng những gì Lightroom hỏi."
 develop_window_title: "Chế độ chỉnh ảnh dễ đọc"
@@ -229,6 +223,7 @@ support_title: Ủng hộ một cốc cà phê
 support_text: Fotollection do một du học sinh Việt ở châu Âu làm trong thời gian rảnh, giữa giờ học và giờ làm thêm. Ứng dụng miễn phí và mã nguồn mở; nếu nó giúp bạn đỡ được một buổi tối ngồi lọc ảnh, một cốc cà phê (hay một bữa cơm sinh viên 😄) sẽ giúp mình tiếp tục làm.
 support_sponsor: Tài trợ qua GitHub
 support_kofi: Mời cà phê qua Ko-fi
+support_kofi_sub: "PayPal hoặc thẻ"
 support_note: "Chọn một món rồi quét mã bằng ứng dụng ngân hàng tại Việt Nam: số tiền và nội dung đã điền sẵn (Napas 247). Ở nước ngoài, GitHub Sponsors hoặc Ko-fi nhận thẻ, một lần hoặc hằng tháng, với số tiền tuỳ bạn."
 support_alt: Mã VietQR (Techcombank) cho món đã chọn
 treat_pick: "Mời mình"
