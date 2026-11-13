@@ -1524,7 +1524,9 @@ export type KindFilter = "all" | "raw" | "notRaw";
 /**  Interface language (FR-020). English is the default; text printed on photos never follows it. */
 export type Language = "en" | "vi" | 
 /**  Magyar (FR-123), translated from English; see docs/LOCALIZATION.md. */
-"hu";
+"hu" | 
+/**  Deutsch (FR-127), translated from English; see docs/LOCALIZATION.md. */
+"de";
 
 export type LengthUnit = "cm" | "in";
 

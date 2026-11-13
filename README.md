@@ -86,7 +86,7 @@ Fotollection does all of this **locally**, at the speed of native Rust.
 | 📍 | **Dates and places by hand**: give scans and photos without EXIF or GPS a date and a place, one photo or many at once, with an offline place search; rename a place ("Praha 1" → "Prague") and every print follows | 1 |
 | 🎥 | **Shoot from a camera on a cable**: live view with the print's shape, Capture, and the shots in a tab to save or delete; no driver to install (Windows, Sony a6400 first) | 2 |
 | 🔒 | **GPS stripped on export** by default. No account, no cloud, no telemetry | 1 |
-| 🌐 | **English, Magyar and Vietnamese** interface, the machine's language on the first launch | 1 |
+| 🌐 | **English, Deutsch, Magyar and Vietnamese** interface, the machine's language on the first launch | 1 |
 | 📦 | **Project files like `.docx`**: save, open on another machine with the same fonts, logos and settings, relink moved folders | 1 |
 | 🧳 | **Trip grouping**, face-aware smart crop, duplicate detection | 2 |
 | 🎞️ | Photo-book preview, QR codes on the back of prints | 3 |

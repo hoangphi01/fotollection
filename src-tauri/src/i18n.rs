@@ -172,11 +172,53 @@ const HU: Strings = Strings {
     camera_save_title: "A fotók mentése ide",
 };
 
+const DE: Strings = Strings {
+    file: "Ablage",
+    new: "Neues Projekt",
+    open: "Öffnen …",
+    save: "Sichern",
+    save_as: "Sichern unter …",
+    edit: "Bearbeiten",
+    undo: "Widerrufen",
+    redo: "Wiederholen",
+    cut: "Ausschneiden",
+    copy: "Kopieren",
+    paste: "Einsetzen",
+    select_all: "Alles auswählen",
+    copy_settings: "Einstellungen kopieren …",
+    paste_settings: "Einstellungen einsetzen",
+    paste_settings_ticked: "Einstellungen auf markierte Fotos einsetzen",
+    reset_settings: "Einstellungen zurücksetzen",
+    window: "Fenster",
+    view: "Darstellung",
+    mode_simple: "Einfach",
+    mode_collage: "Collage",
+    mode_professional: "Pro",
+    minimize: "Im Dock ablegen",
+    close_window: "Fenster schließen",
+    about: "Über Fotollection",
+    settings: "Einstellungen …",
+    help: "Hilfe",
+    manual: "Fotollection-Handbuch",
+    hide: "Fotollection ausblenden",
+    hide_others: "Andere ausblenden",
+    show_all: "Alle einblenden",
+    quit: "Fotollection beenden",
+    untitled: "Ohne Titel",
+    edited: "Bearbeitet",
+    project_filter: "Fotollection-Projekt",
+    open_title: "Projekt öffnen",
+    save_title: "Projekt sichern",
+    relink_title: "Ordner suchen",
+    camera_save_title: "Fotos sichern in",
+};
+
 pub fn strings(language: Language) -> &'static Strings {
     match language {
         Language::En => &EN,
         Language::Vi => &VI,
         Language::Hu => &HU,
+        Language::De => &DE,
     }
 }
 
@@ -187,7 +229,7 @@ mod tests {
     /// FR-123: every language names every menu item and dialog; none is left empty.
     #[test]
     fn fr_123_every_language_fills_every_string() {
-        for language in [Language::En, Language::Vi, Language::Hu] {
+        for language in [Language::En, Language::Vi, Language::Hu, Language::De] {
             let s = strings(language);
             for text in [
                 s.file,
@@ -233,5 +275,6 @@ mod tests {
             }
         }
         assert_eq!(strings(Language::Hu).mode_collage, "Kollázs");
+        assert_eq!(strings(Language::De).mode_simple, "Einfach");
     }
 }

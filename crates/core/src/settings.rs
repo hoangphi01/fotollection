@@ -15,6 +15,8 @@ pub enum Language {
     Vi,
     /// Magyar (FR-123), translated from English; see docs/LOCALIZATION.md.
     Hu,
+    /// Deutsch (FR-127), translated from English; see docs/LOCALIZATION.md.
+    De,
 }
 
 impl Language {
@@ -28,6 +30,7 @@ impl Language {
             .unwrap_or("")
             .to_ascii_lowercase();
         match primary.as_str() {
+            "de" => Self::De,
             "hu" => Self::Hu,
             "vi" => Self::Vi,
             _ => Self::En,
@@ -1063,6 +1066,9 @@ mod tests {
         use super::Language;
         assert_eq!(Language::from_locale("hu-HU"), Language::Hu);
         assert_eq!(Language::from_locale("hu"), Language::Hu);
+        assert_eq!(Language::from_locale("de-DE"), Language::De);
+        assert_eq!(Language::from_locale("de_AT.UTF-8"), Language::De);
+        assert_eq!(Language::from_locale("de-CH"), Language::De);
         assert_eq!(Language::from_locale("vi_VN.UTF-8"), Language::Vi);
         assert_eq!(Language::from_locale("VI"), Language::Vi);
         assert_eq!(Language::from_locale("en-GB"), Language::En);

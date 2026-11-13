@@ -4,6 +4,7 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import type { Language } from '@/ipc/bindings'
 import en from '@/locales/en.json'
+import de from '@/locales/de.json'
 import hu from '@/locales/hu.json'
 import vi from '@/locales/vi.json'
 import { pseudo } from './pseudo'
@@ -25,6 +26,7 @@ export type LanguageInfo = {
 /** English first, then by each language's own name, as the website (LOCALIZATION §2). */
 export const LANGUAGES: LanguageInfo[] = [
   { value: 'en', label: 'English', hello: 'Hello', guide: 'full', assets: 'en' },
+  { value: 'de', label: 'Deutsch', hello: 'Hallo', guide: 'short', assets: 'en' },
   { value: 'hu', label: 'Magyar', hello: 'Szia', guide: 'short', assets: 'en' },
   { value: 'vi', label: 'Tiếng Việt', hello: 'Xin chào', guide: 'full', assets: 'vi' },
 ]
@@ -37,6 +39,7 @@ export function languageInfo(language: string): LanguageInfo {
 
 export const resources = {
   en: { translation: en },
+  de: { translation: de },
   hu: { translation: hu },
   vi: { translation: vi },
 } as const

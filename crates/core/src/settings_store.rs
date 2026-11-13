@@ -1007,6 +1007,24 @@ mod tests {
         Ok(())
     }
 
+    /// FR-127: Deutsch is kept as `"de"` and read back.
+    #[test]
+    fn fr_127_german_survives_a_round_trip() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        let s = StoredSettings {
+            ui: UiSettings {
+                language: crate::settings::Language::De,
+                ..UiSettings::default()
+            },
+            ..StoredSettings::default()
+        };
+        save(&path, &s)?;
+        assert!(std::fs::read_to_string(&path)?.contains(r#""language": "de""#));
+        assert_eq!(load(&path), Loaded::Ok(s));
+        Ok(())
+    }
+
     #[test]
     fn dangling_font_reference_falls_back() -> std::io::Result<()> {
         let dir = tempfile::tempdir()?;

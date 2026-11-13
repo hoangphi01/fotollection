@@ -9,7 +9,7 @@
 > - the rules for every translation, and the shared glossary;
 > - the checklist for adding a language.
 >
-> The mechanism is in [ADR-0015](adr/0015-ui-localization-i18next.md) and the requirements are [FR-020](PRD.md#fr-020--localization) and [FR-123](PRD.md#fr-123--hungarian-interface). The website's languages are a separate system (`site/_data/languages.yml`, [ADR-0049](adr/0049-website-on-eleventy.md)). It shares the glossary below.
+> The mechanism is in [ADR-0015](adr/0015-ui-localization-i18next.md) and the requirements are [FR-020](PRD.md#fr-020--localization), [FR-123](PRD.md#fr-123--hungarian-interface) and [FR-127](PRD.md#fr-127--german-interface). The website's languages are a separate system (`site/_data/languages.yml`, [ADR-0049](adr/0049-website-on-eleventy.md)). It shares the glossary below.
 
 ## 1. Languages
 
@@ -17,7 +17,8 @@
 |------|------|-----------|------------------|--------|--------|------------------|---------------|---------------|---------------|-------|
 | `en` | English | ✓ source | ✓ | ✓ | full (`docs/USER_GUIDE.md`) | `en` | `en` | the author | — | v0.1.0 |
 | `vi` | Tiếng Việt | ✓ | ✓ | ✓ | full (`docs/USER_GUIDE.vi.md`) | `vi` | `vi` | the owner | ✓ the owner | v0.1.0 |
-| `hu` | Magyar | ✓ | ✓ | ✓ | short (`site/_includes/manual-short-hu.md`), links the English one | `en` | `en` | AI, from the English | not yet; fixes welcome through issues | v0.14.1 |
+| `de` | Deutsch | ✓ | ✓ | ✓ | short (`site/_includes/manual-short-de.md`), links the English one | `en` | `en` | AI, from the English | — | v0.14.1 |
+| `hu` | Magyar | ✓ | ✓ | ✓ | short (`site/_includes/manual-short-hu.md`), links the English one | `en` | `en` | AI, from the English | — | v0.14.1 |
 
 Here is what each column covers:
 
@@ -34,7 +35,7 @@ Each language is described once, in `LANGUAGES` (`ui/src/i18n/index.ts`): its co
 
 **Fallback:** a key, a manual, a picture or a reason a language lacks is shown in English.
 
-The order in the picker matches the website's: English first, then the others by their own name (Magyar, Tiếng Việt).
+The order in the picker matches the website's: English first, then the others by their own name (Deutsch, Magyar, Tiếng Việt).
 
 The language is stored per machine in `settings.json` (`ui.language`, [DATABASE.md §6](DATABASE.md#6-app-settings)), never in a project.
 
@@ -42,7 +43,7 @@ The language is stored per machine in `settings.json` (`ui.language`, [DATABASE.
 
 1. **The app's words, not new ones.** Use the glossary (§4). A term the interface shows is written the same way in the manual and on the website.
 2. **Placeholders stay exactly as in English.** That covers `{{n}}`, `{{name}}`, ⌘, the key names and the units (cm, DPI, MB). `check-i18n` fails when a locale's placeholders differ from English.
-3. **Plurals follow CLDR.** Each English `_one` / `_other` pair gets the forms the language has. Vietnamese has only `_other`. Hungarian has `_one` and `_other`, and a noun after a number stays singular, so both forms often read the same (*1 fotó*, *5 fotó*).
+3. **Plurals follow CLDR.** Each English `_one` / `_other` pair gets the forms the language has. Vietnamese has only `_other`. Hungarian has `_one` and `_other`, and a noun after a number stays singular, so both forms often read the same (*1 fotó*, *5 fotó*). German has `_one` and `_other` as English.
 4. **Plain text only.** No markup and no HTML: React escapes every value, and nothing is rendered as HTML ([SECURITY.md](SECURITY.md)).
 5. **Print content never follows the interface.** The info frame's line and the date stamp are part of the print (FR-020).
 6. **Numbers follow the language,** through `Intl.NumberFormat` (`18.6`, `18,6`). A photo's date stays `YYYY-MM-DD HH:MM` in every language.
@@ -51,38 +52,38 @@ The language is stored per machine in `settings.json` (`ui.language`, [DATABASE.
 
 ## 4. Glossary
 
-These are the core terms, as the interface shows them. The Hungarian ones follow the website's `site/_data/i18n/hu.yml` wherever it uses them.
+These are the core terms, as the interface shows them. The Hungarian and German ones follow the website's `site/_data/i18n/hu.yml` and `de.yml` wherever they use them; German says *du*, as the website.
 
-| English | Tiếng Việt | Magyar |
-|---------|------------|--------|
-| photo | ảnh | fotó |
-| print | bản in | nyomat |
-| print size | khổ in | nyomatméret |
-| crop | cắt ảnh | vágás |
-| straighten | làm thẳng | kiegyenesítés |
-| date stamp | đóng dấu ngày | dátumbélyeg |
-| info frame | khung thông tin | adatkeret |
-| look | look | look |
-| preset | preset | preset |
-| Simple (mode) | Đơn giản | Egyszerű |
-| Collage (mode) | Ghép ảnh | Kollázs |
-| Pro (mode) | Pro | Pro |
-| postcard | bưu thiếp | képeslap |
-| workspace | không gian làm việc | munkaterület |
-| print basket | giỏ in | nyomtatási kosár |
-| set aside | để riêng | félretett |
-| best shot | ảnh đẹp nhất | legjobb kép |
-| ticked | đã tick | kipipált |
-| reject | loại | elvetés |
-| star rating | sao | csillag |
-| export | xuất ảnh | exportálás |
-| develop (RAW) | xử lý RAW | kidolgozás |
-| undo | hoàn tác | visszavonás |
-| original colour | màu gốc | eredeti színek |
-| settings | cài đặt | beállítások |
-| project | dự án | projekt |
-| library | thư viện | könyvtár |
-| folder | thư mục | mappa |
+| English | Tiếng Việt | Magyar | Deutsch |
+|---------|------------|--------|---------|
+| photo | ảnh | fotó | Foto |
+| print | bản in | nyomat | Abzug |
+| print size | khổ in | nyomatméret | Druckformat |
+| crop | cắt ảnh | vágás | Zuschnitt |
+| straighten | làm thẳng | kiegyenesítés | Geraderichten |
+| date stamp | đóng dấu ngày | dátumbélyeg | Datumsstempel |
+| info frame | khung thông tin | adatkeret | Info-Rahmen |
+| look | look | look | Look |
+| preset | preset | preset | Preset |
+| Simple (mode) | Đơn giản | Egyszerű | Einfach |
+| Collage (mode) | Ghép ảnh | Kollázs | Collage |
+| Pro (mode) | Pro | Pro | Pro |
+| postcard | bưu thiếp | képeslap | Postkarte |
+| workspace | không gian làm việc | munkaterület | Arbeitsbereich |
+| print basket | giỏ in | nyomtatási kosár | Druckkorb |
+| set aside | để riêng | félretett | Zurückgelegt |
+| best shot | ảnh đẹp nhất | legjobb kép | beste Aufnahme |
+| ticked | đã tick | kipipált | markiert |
+| reject | loại | elvetés | Verwerfen (verworfen) |
+| star rating | sao | csillag | Sterne |
+| export | xuất ảnh | exportálás | Exportieren |
+| develop (RAW) | xử lý RAW | kidolgozás | Entwickeln |
+| undo | hoàn tác | visszavonás | Rückgängig |
+| original colour | màu gốc | eredeti színek | Originalfarben |
+| settings | cài đặt | beállítások | Einstellungen |
+| project | dự án | projekt | Projekt |
+| library | thư viện | könyvtár | Bibliothek |
+| folder | thư mục | mappa | Ordner |
 
 The Hungarian website still writes the mode names in English (*Simple*, *Collage*), because its screenshots show the English app. When Hungarian screenshots exist, the site takes the app's names.
 
@@ -113,5 +114,4 @@ Before a language exists, the pseudo-locale `en-XA` shows what a long one will d
 
 ## 6. Known limits
 
-- **Hungarian is not yet reviewed** by a native speaker. Corrections come through GitHub issues, and §1 records the review once it happens.
-- **Going back to an older version:** Magyar comes with settings v19 (v0.14.1). An older app reads no v19 file at all ([DATABASE.md §6](DATABASE.md#6-app-settings)), whatever the language, so `"hu"` adds no new case.
+- **Going back to an older version:** Deutsch and Magyar come with settings v19 (v0.14.1). An older app reads no v19 file at all ([DATABASE.md §6](DATABASE.md#6-app-settings)), whatever the language, so `"de"` and `"hu"` add no new case.
