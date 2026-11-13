@@ -64,6 +64,18 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="0.14.1" date="2026-11-13">
+      <description>
+        <ul>
+          <li>New: Deutsch and Magyar, the whole app in German and Hungarian, and the first launch speaks your computer's language.</li>
+          <li>New: blown highlights come back in RAW photos: pull Brightness or Highlights down and a clipped sky turns blue again.</li>
+          <li>New: Grain and Vignette, the grain sized in millimetres on the print, and Lightroom presets' grain and vignette applied.</li>
+          <li>New: turn the print size for a photo, so a portrait photo prints across a flat 15 × 5 strip.</li>
+          <li>Fixes: postcards leave the post its room, so the post's code never prints over the address.</li>
+          <li>UI update: a warmer look, wood and cream light behind the panels.</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.14.0" date="2026-11-09">
       <description>
         <ul>
@@ -148,16 +160,6 @@
           <li>New: any photo opens at once, RAW too: previews are prepared in the background and kept, as in Lightroom</li>
           <li>UI update: colour cards in the previews only; sliders take a near press and the arrow keys</li>
           <li>Fixes: a RAW preview that could hang for good</li>
-        </ul>
-      </description>
-    </release>
-    <release version="0.10.0" date="2026-11-05">
-      <description>
-        <ul>
-          <li>New: RAW photos edited on the camera's own data: highlights pulled down bring back detail near white, shadows lift without banding, warmth changes the white balance</li>
-          <li>New: RAW photos open neutral; a RAW colour card makes them look like the camera's JPEG in one click</li>
-          <li>Faster, cleaner RAW: Fotollection's own develop for Canon, Nikon, Sony and more, 0.2–0.5 s a photo</li>
-          <li>Colour sliders drawn on the graphics card while dragging; exports about a fifth faster</li>
         </ul>
       </description>
     </release>
