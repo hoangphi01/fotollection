@@ -24,8 +24,8 @@ const problems = []
 
 // 1. No language named in a template.
 const banned = [
-  [/==\s*['"](vi|en|hu|de|pl|cs)['"]/, 'compares the language with a name; use pg.* from the registry'],
-  [/['"]\/(vi|hu|de|pl|cs)\//, 'writes a language\'s path; use url_for'],
+  [/==\s*['"](vi|en|hu|de|pl|cs|ja)['"]/, 'compares the language with a name; use pg.* from the registry'],
+  [/['"]\/(vi|hu|de|pl|cs|ja)\//, 'writes a language\'s path; use url_for'],
   [/\w\[lang\]/, 'reads a text by [lang]; use `| tr: lang`'],
   // Liquid ends a filter's arguments at `|`: `replace: "[n]", x | default: y` defaults the whole
   // text, not x (LESSONS); assign the value first.
@@ -53,6 +53,7 @@ const published = []
 const pagesOf = {}
 const names = {}
 const guideOf = {}
+const kioskOf = {}
 if (!existsSync(registry)) problems.push('site/_data/languages.yml is missing')
 else {
   let code = null
@@ -63,6 +64,8 @@ else {
     if (n && code) names[code] = n[1].trim()
     const g = line.match(/^ {2}guide: (.+)$/)
     if (g && code) guideOf[code] = g[1].trim()
+    const k = line.match(/^ {2}kiosk: (\w+)/)
+    if (k && code) kioskOf[code] = k[1]
     const p = line.match(/^ {2}pages: \[(.*)\]/)
     if (p && code) pagesOf[code] = p[1].split(',').map((x) => x.trim())
     if (/^ {2}published: true\b/.test(line) && code) published.push(code)
@@ -111,8 +114,15 @@ const read = (code) => {
   }
   return keys
 }
-// A text's placeholders: `[n]`, and `{dm}` / `{rossmann}`, the stores' marks in the keynote's lines.
+// A text's placeholders: `[n]`, and `{dm}` / `{rossmann}`, the stores' marks in the keynote's lines;
+// a language whose home page shows Japan's stores (languages.yml kiosk: jp) has theirs instead.
 const marks = (text) => [...text.matchAll(/\[[a-z]+\]|\{[a-z]+\}/g)].map((m) => m[0]).sort().join(' ')
+const STORES = { eu: ['{dm}', '{rossmann}'], jp: ['{familymart}', '{lawson}', '{seven}'] }
+const asIn = (code, text) => {
+  const own = STORES[kioskOf[code] ?? 'eu']
+  const m = marks(text).split(' ').filter(Boolean)
+  return m.some((x) => STORES.eu.includes(x)) ? [...m.filter((x) => !STORES.eu.includes(x)), ...own].sort().join(' ') : m.join(' ')
+}
 if (files.includes('en')) {
   const en = read('en')
   for (const c of published.filter((x) => x !== 'en' && files.includes(x))) {
@@ -126,7 +136,7 @@ if (files.includes('en')) {
   for (const code of files.filter((f) => f !== 'en')) {
     for (const [key, text] of read(code)) {
       if (!en.has(key)) { problems.push(`${code}.yml has ${key}, which en.yml lacks`); continue }
-      if (text && en.get(key) && marks(text) !== marks(en.get(key))) problems.push(`${code}.yml ${key}: placeholders "${marks(text)}" but English has "${marks(en.get(key))}"`)
+      if (text && en.get(key) && marks(text) !== asIn(code, en.get(key))) problems.push(`${code}.yml ${key}: placeholders "${marks(text)}" but English has "${marks(en.get(key))}"`)
     }
   }
 }

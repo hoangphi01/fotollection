@@ -161,7 +161,7 @@ ui/                      † # Vite + React + TS frontend (npm workspace member)
     lib/                 † # small UI utilities (theme sync, shadcn's cn re-export; manual.ts splits the bundled USER_GUIDE into chapters, FR-110)
     index.css            † # Tailwind layers + shadcn theme tokens (CSS variables)
 scripts/                 † # bootstrap, clean, check-docs, release.sh (RELEASE.md §4), small-icons.py (≤ 64 px icons from assets/logo-small.png), text-widths.mjs (the dry check of translations' widths, FR-125)
-site/                    † # the website (Eleventy, GitHub Pages, ADR-0049; six languages from _data/languages.yml); screenshots/ makes its images from the real app on CC0 demo photos (site/README.md)
+site/                    † # the website (Eleventy, GitHub Pages, ADR-0049; seven languages from _data/languages.yml); screenshots/ makes its images from the real app on CC0 demo photos (site/README.md)
 .github/workflows/       † # ci.yml, docs.yml, docs-with-code.yml (a code change comes with docs), release.yml (release on a version change, ADR-0021), installers.yml (builds the Windows MSI and NSIS installers when their configuration changes, publishes nothing), pages.yml (website, also every 6 hours)
 bench/                   † # run.sh (Rust vs Chromium, 6 vs 8 in flight), batch.sh (5,000-photo memory check), lib.sh, web/ (Chromium via Playwright), chart.mjs (EN + VI SVG charts), results/ (numbers only, incl. budgets.json mirrored from OPTIMIZATION §3)
 ```

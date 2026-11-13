@@ -25,6 +25,8 @@ export default {
       date_format: data.language.date_format,
       guide: data.language.guide,
       support: data.language.support,
+      // The print shops of its home page (languages.yml `kiosk`): eu unless it says jp.
+      kiosk: data.language.kiosk ?? 'eu',
       html_lang: data.language.html_lang,
       og_locale: data.language.og_locale,
       page_id: data.page_id,

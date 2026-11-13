@@ -93,14 +93,14 @@ export default function (eleventyConfig) {
     return process.env.I18N_MARK === '1' && typeof value.en === 'string' ? `\u2063data\u2062${value.en}\u2064` : value.en
   })
   // `{{ t.kn_1 | keynote_line }}`: a keynote headline as HTML, built from our own words
-  // (site/_data/keynote.yml): the text escaped, *…* as the accent, {dm} and {rossmann} as the
-  // stores' marks inline (site/_includes/logos). Never applied to anything a visitor gives.
+  // (site/_data/keynote.yml): the text escaped, *…* as the accent, {dm} and {rossmann} (or
+  // Japan's {seven}, {lawson} and {familymart}) as the stores' marks inline (site/_includes/logos). Never applied to anything a visitor gives.
   const escape = (v) => `${v}`.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
   const logo = (name) => readFileSync(path.join(SITE, '_includes/logos', `${name}.svg`), 'utf8').trim()
   eleventyConfig.addFilter('keynote_line', (value) =>
     escape(value ?? '')
       .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-      .replace(/\{(dm|rossmann)\}/g, (_, name) => `<span class="keynote-logo">${logo(name)}</span>`))
+      .replace(/\{(dm|rossmann|seven|lawson|familymart)\}/g, (_, name) => `<span class="keynote-logo">${logo(name)}</span>`))
   // `{{ 'manual' | url_for: pg.lang }}`: a page's path in a language (eleventy.registry.mjs).
   eleventyConfig.addFilter('url_for', (id, code) => urlFor(id, code))
   // `markdownify` as Jekyll's kramdown did for these pages: raw HTML kept, `{#id}` after a
@@ -195,6 +195,27 @@ export default function (eleventyConfig) {
 <body><p><a href="/">Fotollection</a></p></body>
 </html>
 `)
+    // A language's other address (languages.yml `aliases`, owner 2026-11-14: /jp for /ja, the
+    // country code people type): a page that opens the language's home at once, never indexed.
+    for (const l of published) {
+      for (const alias of l.aliases ?? []) {
+        const home = urlFor('home', l.code)
+        mkdirSync(path.join(out, alias), { recursive: true })
+        writeFileSync(path.join(out, alias, 'index.html'), `<!doctype html>
+<html lang="${l.html_lang}">
+<head>
+<meta charset="utf-8" />
+<meta name="robots" content="noindex" />
+<link rel="canonical" href="https://fotollection.org${home}" />
+<meta http-equiv="refresh" content="0; url=${home}" />
+<title>Fotollection</title>
+<script>location.replace(${JSON.stringify(home)} + location.search + location.hash)</script>
+</head>
+<body><p><a href="${home}">Fotollection</a></p></body>
+</html>
+`)
+      }
+    }
   })
   eleventyConfig.setLibrary('md', md)
   eleventyConfig.addFilter('markdownify', (value) => md.render(`${value ?? ''}`))

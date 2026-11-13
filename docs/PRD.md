@@ -913,7 +913,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Checked like any input from outside:** read only in Rust, size-capped; only strings, no markup (the UI shows text, never HTML, [SECURITY.md](SECURITY.md)); every `{{name}}` placeholder must match English's; plural forms follow the language's rules. `ui/scripts/check-i18n.mjs` checks a pack the same way, so a contributor sees what is missing before sending it.
 - **Two ways in:** a pull request that adds it to the repository (it then ships with the app), or **Load a language…** in the version popover, which copies the file into the app's `languages/` folder; the language list shows it with its authors.
 - **Travels with the app's brain:** `.fotosettings` ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)) carries the packs a user loaded, as it carries fonts and LUTs; it is not the pack's own format, since a pack is made to be shared and the brain is personal.
-- A pack translates the app. The website is in its own six languages (`site/_data/languages.yml`, ADR-0049), the full manual (USER_GUIDE) in English and Vietnamese and a short guide in the others; once the app speaks a language, that language's website shows the app's screenshots in it (`assets` in the registry).
+- A pack translates the app. The website is in its own seven languages (Japanese from 2026-11-14) (`site/_data/languages.yml`, ADR-0049), the full manual (USER_GUIDE) in English and Vietnamese and a short guide in the others; once the app speaks a language, that language's website shows the app's screenshots in it (`assets` in the registry).
 
 ### FR-085 — Lens distortion correction
 
@@ -1250,7 +1250,7 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 ### FR-128 — Japanese and Korean interface
 
-**P2 (planned; owner's request 2026-11-14).** The app speaks **日本語** and **한국어**, as FR-123 and FR-127 did Magyar and Deutsch: every interface string, the native menu and the file dialogs, every error by its code, a short manual in each language ([LOCALIZATION.md](LOCALIZATION.md) §5, done in full).
+**P2 (Japanese in v0.14.2, with FR-130's はがき that shows only in Japanese; Korean later; owner's request 2026-11-14).** The app speaks **日本語** and **한국어**, as FR-123 and FR-127 did Magyar and Deutsch: every interface string, the native menu and the file dialogs, every error by its code, a short manual in each language ([LOCALIZATION.md](LOCALIZATION.md) §5, done in full).
 
 - **Fonts first:** Be Vietnam Pro has no Japanese or Korean letters. The interface and the manual fall back to the system's own CJK face (Hiragino and Apple SD Gothic Neo on macOS, Yu Gothic and Malgun Gothic on Windows, Noto Sans CJK on Linux), chosen and checked before any string is translated; the print's own text (date stamp, info frame, postcard) is a separate question, decided with the owner.
 - **Words that fit:** Japanese and Korean run shorter than English but taller; `MEASURE=1 MEASURE_LANG=ja` and `ko` and `npm run text-widths` check every panel (FR-125).
@@ -1258,10 +1258,18 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 ### FR-129 — Print sizes of Japan's convenience-store kiosks
 
-**P2 (planned; owner's request 2026-11-14).** The print sizes of the photo kiosks in Japan's convenience stores, **7-Eleven**, **Lawson** and **FamilyMart**, built in as FR-034's lab presets are for dm and Rossmann: L判 (89 × 127 mm), 2L判 and the other sizes each chain prints, with their ratios, so a photo is cropped as the kiosk will print it.
+**P2 (v0.14.2; owner's request 2026-11-14).** The print sizes of the photo kiosks in Japan's convenience stores, **7-Eleven**, **Lawson** and **FamilyMart**, built in as FR-034's lab presets are for dm and Rossmann: L判 (89 × 127 mm), 2L判 and the other sizes each chain prints, with their ratios, so a photo is cropped as the kiosk will print it.
 
 - **Measured from the source:** each size and ratio taken from the chain's own service pages (and checked on a real print when one can be made), never from memory; the date of the check kept with the data.
 - **Shown where the sizes are:** the print size list, grouped by chain as the European labs are; the sharpness verdict (FR-026) works on them unchanged.
+- **Checked on 2026-11-14:** L判 89 × 127 mm and 2L判 127 × 178 mm at all three (7-Eleven on Fujifilm's multicopy machines, Lawson and FamilyMart on Sharp's), and ましかく (square) 89 × 89 mm, which 7-Eleven prints on L paper to be cut (fujifilm.com/fb/ja/solutions/wide-variety/multicopy/print/photo, family.co.jp/services/print/print.html; Lawson's own page still to find). Until then the app's 9 × 13 (90 × 130), 13 × 18 (130 × 180) and 10 × 10 keep those shapes within the edge the kiosk trims (1.2 % on the long side), so the Japanese website already names the three stores (owner, 2026-11-14).
+
+### FR-130 — The Japanese postcard
+
+**P2 (v0.14.2; owner's request 2026-11-14).** Japan has its own postcard, the はがき, and Collage mode's postcards (FR-073) are laid out for Europe's. With the app in Japanese (FR-128), a postcard can be a はがき instead: 100 × 148 mm, upright, the address side as Japan Post's own (the seven boxes of the postal code at the top, the stamp at the top left, the address written top to bottom), its layout drawn on the style board first and chosen by the owner.
+
+- **Only in Japanese:** the はがき shows when the app's language is 日本語; every other language keeps Europe's postcard, unchanged.
+- **Before building:** Japan Post's layout rules for the address side read from its own pages, and a card printed and posted once (CONTRIBUTING §10, a real trial).
 
 ## 7. Non-functional requirements
 

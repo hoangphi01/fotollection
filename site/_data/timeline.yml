@@ -8,7 +8,7 @@
 # notes its words need (site/_data/footnotes.yml, the page's list in the same order).
 - version: "0.1.0-beta.1"
   date: 2026-10-24
-  title: { en: "The first screen", vi: "Màn hình đầu tiên", cs: "První obrazovka", de: "Der erste Bildschirm", hu: "Az első képernyő", pl: "Pierwszy ekran" }
+  title: { en: "The first screen", vi: "Màn hình đầu tiên", cs: "První obrazovka", de: "Der erste Bildschirm", hu: "Az első képernyő", ja: "最初の画面", pl: "Pierwszy ekran" }
   points:
     en:
       - "One window: a library on the left, print settings on the right, and Open folder."
@@ -25,15 +25,18 @@
     hu:
       - "Egyetlen ablak: bal oldalt a könyvtár, jobb oldalt a nyomtatási beállítások, és az Open folder gomb."
       - "Egy nappal később az első béta már megtalálta a legjobb képeket, rányomta a dátumot, és nyomtatásra exportált."
+    ja:
+      - "1 つのウィンドウ：左にライブラリー、右にプリント設定、そして Open folder。"
+      - "1 日後には、最初のベータ版がベストショットを見つけ、日付を入れ、プリント用に書き出せるようになりました。"
     pl:
       - "Jedno okno: biblioteka po lewej, ustawienia druku po prawej i Otwórz folder."
       - "Dzień później pierwsza beta znajdowała najlepsze ujęcia, dodawała datę na zdjęciu i eksportowała do druku."
   shots:
-    - { file: 0.1.0-beta.1-first, w: 1280, h: 820, from: "v0.1.0-beta.1:docs/images/screenshot-dark.png", alt: { en: "The very first screen: an empty library and Open folder", vi: "Màn hình đầu tiên: thư viện trống và nút Mở thư mục", cs: "Úplně první obrazovka: prázdná knihovna a Open folder", de: "Der allererste Bildschirm: eine leere Bibliothek und Open folder", hu: "A legelső képernyő: üres könyvtár és az Open folder gomb", pl: "Pierwszy ekran: pusta biblioteka i Otwórz folder" } }
-    - { file: 0.1.0-beta.1-gallery, w: 1600, h: 1000, from: "v0.1.0-beta.1:site/assets/img/grid-en-dark.webp", alt: { en: "The first beta's gallery with its print settings", vi: "Lưới ảnh của bản beta đầu tiên cùng cài đặt in", cs: "Galerie první bety s nastavením tisku", de: "Die Galerie der ersten Beta mit ihren Druckeinstellungen", hu: "Az első béta galériája a nyomtatási beállításokkal", pl: "Galeria pierwszej bety z ustawieniami druku" } }
+    - { file: 0.1.0-beta.1-first, w: 1280, h: 820, from: "v0.1.0-beta.1:docs/images/screenshot-dark.png", alt: { en: "The very first screen: an empty library and Open folder", vi: "Màn hình đầu tiên: thư viện trống và nút Mở thư mục", cs: "Úplně první obrazovka: prázdná knihovna a Open folder", de: "Der allererste Bildschirm: eine leere Bibliothek und Open folder", hu: "A legelső képernyő: üres könyvtár és az Open folder gomb", ja: "いちばん最初の画面：空のライブラリーと Open folder", pl: "Pierwszy ekran: pusta biblioteka i Otwórz folder" } }
+    - { file: 0.1.0-beta.1-gallery, w: 1600, h: 1000, from: "v0.1.0-beta.1:site/assets/img/grid-en-dark.webp", alt: { en: "The first beta's gallery with its print settings", vi: "Lưới ảnh của bản beta đầu tiên cùng cài đặt in", cs: "Galerie první bety s nastavením tisku", de: "Die Galerie der ersten Beta mit ihren Druckeinstellungen", hu: "Az első béta galériája a nyomtatási beállításokkal", ja: "最初のベータ版のギャラリーとプリント設定", pl: "Galeria pierwszej bety z ustawieniami druku" } }
 - version: "0.1"
   date: 2026-10-24
-  title: { en: "First public preview", vi: "Bản xem trước công khai đầu tiên", cs: "První veřejná ukázka", de: "Erste öffentliche Vorschau", hu: "Az első nyilvános előzetes", pl: "Pierwsza publiczna wersja próbna" }
+  title: { en: "First public preview", vi: "Bản xem trước công khai đầu tiên", cs: "První veřejná ukázka", de: "Erste öffentliche Vorschau", hu: "Az első nyilvános előzetes", ja: "初の公開プレビュー", pl: "Pierwsza publiczna wersja próbna" }
   points:
     en:
       - "For macOS and Windows, in English and Vietnamese."
@@ -55,15 +58,19 @@
       - "macOS-re és Windowsra, angolul és vietnámiul."
       - "A legjobb kép ajánlása, filmes stílusú dátum offline helynevekkel, keret a fényképezőgép adataival."
       - "Vágás nyomatméretre forgatással és kiegyenesítéssel; exportálás eredeti minőségben."
+    ja:
+      - "macOS と Windows 向け、英語とベトナム語で。"
+      - "ベストショットの提案、オフラインの地名入りのフィルム風日付、カメラ情報のフレーム。"
+      - "回転と傾き補正つきでプリントサイズにトリミング。元の画質のまま書き出し。"
     pl:
       - "Na macOS i Windows, po angielsku i po wietnamsku."
       - "Podpowiedzi najlepszych ujęć, data na zdjęciu jak z kliszy z nazwami miejsc offline, ramka z danymi aparatu."
       - "Kadry na wymiar odbitki z obracaniem i prostowaniem; eksport w oryginalnej jakości."
   shots:
-    - { file: 0.1-gallery, w: 1600, h: 1000, from: "v0.1.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.1.0: the gallery and the print settings", vi: "v0.1.0: lưới ảnh và cài đặt in", cs: "v0.1.0: galerie a nastavení tisku", de: "v0.1.0: die Galerie und die Druckeinstellungen", hu: "v0.1.0: a galéria és a nyomtatási beállítások", pl: "v0.1.0: galeria i ustawienia druku" } }
+    - { file: 0.1-gallery, w: 1600, h: 1000, from: "v0.1.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.1.0: the gallery and the print settings", vi: "v0.1.0: lưới ảnh và cài đặt in", cs: "v0.1.0: galerie a nastavení tisku", de: "v0.1.0: die Galerie und die Druckeinstellungen", hu: "v0.1.0: a galéria és a nyomtatási beállítások", ja: "v0.1.0：ギャラリーとプリント設定", pl: "v0.1.0: galeria i ustawienia druku" } }
 - version: "0.2"
   date: 2026-10-24
-  title: { en: "Light and dark", vi: "Sáng và tối", cs: "Světlý a tmavý", de: "Hell und dunkel", hu: "Világos és sötét", pl: "Jasny i ciemny" }
+  title: { en: "Light and dark", vi: "Sáng và tối", cs: "Světlý a tmavý", de: "Hell und dunkel", hu: "Világos és sötét", ja: "ライトとダーク", pl: "Jasny i ciemny" }
   points:
     en:
       - "A System, Light or Dark theme, one accent each: teal in light, wood in dark."
@@ -80,15 +87,18 @@
     hu:
       - "System, Light vagy Dark téma, mindegyik egy kiemelőszínnel: világosban türkiz, sötétben fa."
       - "A Windows címsora a Fotollection színeiben; egy mappa úgy zárul be, mint egy fül."
+    ja:
+      - "System、Light、Dark の 3 テーマ。アクセントカラーはライトがティール、ダークがウッド。"
+      - "Windows のタイトルバーも Fotollection の色に。フォルダーはタブのように閉じられます。"
     pl:
       - "Motyw Systemowy, Jasny lub Ciemny, każdy z jednym akcentem: morski w jasnym, drewno w ciemnym."
       - "Pasek tytułu Windows w kolorach Fotollection; folder zamyka się jak karta."
   shots:
-    - { file: 0.2-light, w: 1600, h: 1000, from: "v0.2.0:site/assets/img/grid-en-light.webp", alt: { en: "v0.2.0 in the light theme", vi: "v0.2.0 ở giao diện sáng", cs: "v0.2.0 ve světlém motivu", de: "v0.2.0 im hellen Thema", hu: "A v0.2.0 világos témában", pl: "v0.2.0 w jasnym motywie" } }
-    - { file: 0.2-dark, w: 1600, h: 1000, from: "v0.2.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.2.0 in the dark theme", vi: "v0.2.0 ở giao diện tối", cs: "v0.2.0 v tmavém motivu", de: "v0.2.0 im dunklen Thema", hu: "A v0.2.0 sötét témában", pl: "v0.2.0 w ciemnym motywie" } }
+    - { file: 0.2-light, w: 1600, h: 1000, from: "v0.2.0:site/assets/img/grid-en-light.webp", alt: { en: "v0.2.0 in the light theme", vi: "v0.2.0 ở giao diện sáng", cs: "v0.2.0 ve světlém motivu", de: "v0.2.0 im hellen Thema", hu: "A v0.2.0 világos témában", ja: "ライトテーマの v0.2.0", pl: "v0.2.0 w jasnym motywie" } }
+    - { file: 0.2-dark, w: 1600, h: 1000, from: "v0.2.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.2.0 in the dark theme", vi: "v0.2.0 ở giao diện tối", cs: "v0.2.0 v tmavém motivu", de: "v0.2.0 im dunklen Thema", hu: "A v0.2.0 sötét témában", ja: "ダークテーマの v0.2.0", pl: "v0.2.0 w ciemnym motywie" } }
 - version: "0.3"
   date: 2026-10-25
-  title: { en: "Settings as cards", vi: "Cài đặt thành từng thẻ", cs: "Nastavení v kartách", de: "Einstellungen als Karten", hu: "Beállítások kártyákon", pl: "Ustawienia jako karty" }
+  title: { en: "Settings as cards", vi: "Cài đặt thành từng thẻ", cs: "Nastavení v kartách", de: "Einstellungen als Karten", hu: "Beállítások kártyákon", ja: "カードになった設定", pl: "Ustawienia jako karty" }
   points:
     en:
       - "The settings in cards, lines in the theme's colour, the same fonts on Windows as on macOS."
@@ -105,15 +115,18 @@
     hu:
       - "A beállítások kártyákon, a vonalak a téma színében, Windowson ugyanazok a betűtípusok, mint macOS-en."
       - "Logóméret az adatkerethez, minden fotón ugyanaz."
+    ja:
+      - "設定はカードに、線はテーマカラーに。Windows でも macOS と同じフォントを使います。"
+      - "情報フレームのロゴサイズを設定。どの写真でも同じサイズです。"
     pl:
       - "Ustawienia w kartach, linie w kolorze motywu, te same czcionki na Windows co na macOS."
       - "Rozmiar logo w ramce z danymi, ten sam dla każdego zdjęcia."
   shots:
-    - { file: 0.3-gallery, w: 1600, h: 1000, from: "v0.3.1:site/assets/img/grid-en-dark.webp", alt: { en: "v0.3.1: the settings as cards", vi: "v0.3.1: cài đặt thành từng thẻ", cs: "v0.3.1: nastavení v kartách", de: "v0.3.1: die Einstellungen als Karten", hu: "v0.3.1: a beállítások kártyákon", pl: "v0.3.1: ustawienia jako karty" } }
+    - { file: 0.3-gallery, w: 1600, h: 1000, from: "v0.3.1:site/assets/img/grid-en-dark.webp", alt: { en: "v0.3.1: the settings as cards", vi: "v0.3.1: cài đặt thành từng thẻ", cs: "v0.3.1: nastavení v kartách", de: "v0.3.1: die Einstellungen als Karten", hu: "v0.3.1: a beállítások kártyákon", ja: "v0.3.1：カードになった設定", pl: "v0.3.1: ustawienia jako karty" } }
 - version: "0.4"
   date: 2026-10-25
   fn: [fn_srgb, fn_gps]
-  title: { en: "Sharing and folders", vi: "Chia sẻ và thư mục", cs: "Sdílení a složky", de: "Teilen und Ordner", hu: "Megosztás és mappák", pl: "Udostępnianie i foldery" }
+  title: { en: "Sharing and folders", vi: "Chia sẻ và thư mục", cs: "Sdílení a složky", de: "Teilen und Ordner", hu: "Megosztás és mappák", ja: "共有とフォルダー", pl: "Udostępnianie i foldery" }
   points:
     en:
       - "Export for social media in sRGB, never with GPS."
@@ -130,14 +143,17 @@
     hu:
       - "Exportálás közösségi médiára sRGB-ben, sosem GPS-szel."
       - "A mappák fülként működnek; nagyítás csippentéssel; húzd a fotót az újrakomponáláshoz, vagy illeszd be egészben, mint egy instax képet."
+    ja:
+      - "SNS 向けに sRGB で書き出し。GPS は常に削除。"
+      - "フォルダーはタブとして動作。ピンチでズーム。写真をドラッグして構図を直すか、instax のように写真全体を収めます。"
     pl:
       - "Eksport do mediów społecznościowych w sRGB, nigdy z GPS."
       - "Foldery działają jak karty; zoom gestem szczypania; przeciągnij zdjęcie, by zmienić kadr, albo dopasuj je w całości jak odbitkę instax."
   shots:
-    - { file: 0.4-gallery, w: 1600, h: 1000, from: "v0.4.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.4.0: the library with All photos and folders", vi: "v0.4.0: thư viện với Tất cả ảnh và các thư mục", cs: "v0.4.0: knihovna se All photos a složkami", de: "v0.4.0: die Bibliothek mit All photos und Ordnern", hu: "v0.4.0: a könyvtár az All photos nézettel és a mappákkal", pl: "v0.4.0: biblioteka ze Wszystkimi zdjęciami i folderami" } }
+    - { file: 0.4-gallery, w: 1600, h: 1000, from: "v0.4.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.4.0: the library with All photos and folders", vi: "v0.4.0: thư viện với Tất cả ảnh và các thư mục", cs: "v0.4.0: knihovna se All photos a složkami", de: "v0.4.0: die Bibliothek mit All photos und Ordnern", hu: "v0.4.0: a könyvtár az All photos nézettel és a mappákkal", ja: "v0.4.0：All photos とフォルダーが並ぶライブラリー", pl: "v0.4.0: biblioteka ze Wszystkimi zdjęciami i folderami" } }
 - version: "0.5"
   date: 2026-10-25
-  title: { en: "The print basket", vi: "Giỏ in", cs: "Košík k tisku", de: "Der Druckkorb", hu: "A nyomtatási kosár", pl: "Koszyk do druku" }
+  title: { en: "The print basket", vi: "Giỏ in", cs: "Košík k tisku", de: "Der Druckkorb", hu: "A nyomtatási kosár", ja: "プリントバスケット", pl: "Koszyk do druku" }
   points:
     en:
       - "A print basket and a place to set photos aside: ↑ and ↓ in the preview, or Select in the gallery."
@@ -154,16 +170,19 @@
     hu:
       - "Nyomtatási kosár és egy hely a félretett fotóknak: ↑ és ↓ az előnézetben, vagy Kijelölés a galériában."
       - "Tartsd lenyomva a Space-t egy gyors előnézethez; az exportálás indulás előtt megmondja a méretét."
+    ja:
+      - "プリントバスケットと、写真をよけておく場所。プレビューでは ↑ と ↓、ギャラリーでは Select で。"
+      - "Space を押し続けるとクイックプレビュー。書き出しは始める前にサイズを表示します。"
     pl:
       - "Koszyk do druku i miejsce na odłożone zdjęcia: ↑ i ↓ w podglądzie albo Zaznacz w galerii."
       - "Przytrzymaj Spację, by szybko podejrzeć zdjęcie; eksport podaje swój rozmiar, zanim się zacznie."
   shots:
-    - { file: 0.5-gallery, w: 1600, h: 1000, from: "v0.5.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.5.0: the print basket and Set aside in the library", vi: "v0.5.0: giỏ in và Để riêng trong thư viện", cs: "v0.5.0: košík k tisku a Set aside v knihovně", de: "v0.5.0: der Druckkorb und die beiseitegelegten Fotos in der Bibliothek", hu: "v0.5.0: a nyomtatási kosár és a Set aside a könyvtárban", pl: "v0.5.0: koszyk do druku i Odłożone w bibliotece" } }
-    - { file: 0.5-basket, w: 1600, h: 1000, from: "v0.5.0:site/assets/img/swipe-en-dark.webp", alt: { en: "v0.5.0: a photo going into the print basket", vi: "v0.5.0: một ảnh được cho vào giỏ in", cs: "v0.5.0: fotka jde do košíku k tisku", de: "v0.5.0: ein Foto auf dem Weg in den Druckkorb", hu: "v0.5.0: egy fotó a nyomtatási kosárba kerül", pl: "v0.5.0: zdjęcie trafia do koszyka do druku" } }
+    - { file: 0.5-gallery, w: 1600, h: 1000, from: "v0.5.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.5.0: the print basket and Set aside in the library", vi: "v0.5.0: giỏ in và Để riêng trong thư viện", cs: "v0.5.0: košík k tisku a Set aside v knihovně", de: "v0.5.0: der Druckkorb und die beiseitegelegten Fotos in der Bibliothek", hu: "v0.5.0: a nyomtatási kosár és a Set aside a könyvtárban", ja: "v0.5.0：ライブラリーのプリントバスケットと Set aside", pl: "v0.5.0: koszyk do druku i Odłożone w bibliotece" } }
+    - { file: 0.5-basket, w: 1600, h: 1000, from: "v0.5.0:site/assets/img/swipe-en-dark.webp", alt: { en: "v0.5.0: a photo going into the print basket", vi: "v0.5.0: một ảnh được cho vào giỏ in", cs: "v0.5.0: fotka jde do košíku k tisku", de: "v0.5.0: ein Foto auf dem Weg in den Druckkorb", hu: "v0.5.0: egy fotó a nyomtatási kosárba kerül", ja: "v0.5.0：プリントバスケットに入る写真", pl: "v0.5.0: zdjęcie trafia do koszyka do druku" } }
 - version: "0.6"
   date: 2026-10-25
   fn: [fn_units]
-  title: { en: "The photo viewer", vi: "Trình xem ảnh", cs: "Prohlížeč fotek", de: "Der Fotobetrachter", hu: "A fotónézegető", pl: "Przeglądarka zdjęć" }
+  title: { en: "The photo viewer", vi: "Trình xem ảnh", cs: "Prohlížeč fotek", de: "Der Fotobetrachter", hu: "A fotónézegető", ja: "写真ビューアー", pl: "Przeglądarka zdjęć" }
   points:
     en:
       - "Zoom buttons and full detail when you zoom in; a start-up screen with the logo."
@@ -180,15 +199,18 @@
     hu:
       - "Nagyítógombok és teljes részletesség nagyításkor; indítóképernyő a logóval."
       - "Mérve: a Fotollection kb. 0,4 s alatt nyílik meg; egy 32 MP-es fotó kb. 0,1 s alatt nagyít."
+    ja:
+      - "ズームボタンと、拡大時のフル解像度表示。ロゴ入りの起動画面。"
+      - "実測：Fotollection は約 0.4 秒で起動し、32 MP の写真は約 0.1 秒で拡大します。"
     pl:
       - "Przyciski zoomu i pełne szczegóły przy powiększeniu; ekran startowy z logo."
       - "Zmierzone: Fotollection otwiera się w około 0,4 s; zdjęcie 32 MP powiększa się w około 0,1 s."
   shots:
-    - { file: 0.6-gallery, w: 1600, h: 1000, from: "v0.6.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.6.0: the gallery", vi: "v0.6.0: lưới ảnh", cs: "v0.6.0: galerie", de: "v0.6.0: die Galerie", hu: "v0.6.0: a galéria", pl: "v0.6.0: galeria" } }
+    - { file: 0.6-gallery, w: 1600, h: 1000, from: "v0.6.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.6.0: the gallery", vi: "v0.6.0: lưới ảnh", cs: "v0.6.0: galerie", de: "v0.6.0: die Galerie", hu: "v0.6.0: a galéria", ja: "v0.6.0：ギャラリー", pl: "v0.6.0: galeria" } }
 - version: "0.7"
   date: 2026-10-25
   fn: [fn_raw, fn_rawformats]
-  title: { en: "Open with, and RAW", vi: "Mở bằng, và RAW", cs: "Otevřít v aplikaci a RAW", de: "Öffnen mit, und RAW", hu: "Megnyitás ezzel, és RAW", pl: "Otwórz za pomocą i RAW" }
+  title: { en: "Open with, and RAW", vi: "Mở bằng, và RAW", cs: "Otevřít v aplikaci a RAW", de: "Öffnen mit, und RAW", hu: "Megnyitás ezzel, és RAW", ja: "「このアプリで開く」と RAW", pl: "Otwórz za pomocą i RAW" }
   points:
     en:
       - "Camera RAW opens as it is: RW2, CR2, CR3, NEF, ARW, RAF, ORF and DNG."
@@ -205,16 +227,19 @@
     hu:
       - "A fényképezőgépes RAW úgy nyílik meg, ahogy van: RW2, CR2, CR3, NEF, ARW, RAF, ORF és DNG."
       - "Nyiss meg fotókat a Finderből vagy az Explorerből a Fotollectionnel; a pipák veled jönnek a mappafülek között."
+    ja:
+      - "カメラの RAW をそのまま開けます：RW2、CR2、CR3、NEF、ARW、RAF、ORF、DNG。"
+      - "Finder やエクスプローラーから Fotollection で写真を開けます。チェックはフォルダーのタブを移っても残ります。"
     pl:
       - "RAW z aparatu otwiera się taki, jaki jest: RW2, CR2, CR3, NEF, ARW, RAF, ORF i DNG."
       - "Otwieraj zdjęcia z Findera lub Explorera w Fotollection; zaznaczenia idą za tobą przez karty folderów."
   shots:
-    - { file: 0.7-gallery, w: 1600, h: 1000, from: "v0.7.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.7.0: the gallery", vi: "v0.7.0: lưới ảnh", cs: "v0.7.0: galerie", de: "v0.7.0: die Galerie", hu: "v0.7.0: a galéria", pl: "v0.7.0: galeria" } }
-    - { file: 0.7-tabs, w: 1600, h: 1000, from: "v0.7.0:site/assets/img/tabs-en-dark.webp", alt: { en: "v0.7.0: folders as tabs", vi: "v0.7.0: thư mục thành các tab", cs: "v0.7.0: složky jako karty", de: "v0.7.0: Ordner als Tabs", hu: "v0.7.0: mappák fülként", pl: "v0.7.0: foldery jako karty" } }
+    - { file: 0.7-gallery, w: 1600, h: 1000, from: "v0.7.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.7.0: the gallery", vi: "v0.7.0: lưới ảnh", cs: "v0.7.0: galerie", de: "v0.7.0: die Galerie", hu: "v0.7.0: a galéria", ja: "v0.7.0：ギャラリー", pl: "v0.7.0: galeria" } }
+    - { file: 0.7-tabs, w: 1600, h: 1000, from: "v0.7.0:site/assets/img/tabs-en-dark.webp", alt: { en: "v0.7.0: folders as tabs", vi: "v0.7.0: thư mục thành các tab", cs: "v0.7.0: složky jako karty", de: "v0.7.0: Ordner als Tabs", hu: "v0.7.0: mappák fülként", ja: "v0.7.0：タブになったフォルダー", pl: "v0.7.0: foldery jako karty" } }
 - version: "0.8"
   date: 2026-10-27
   fn: [fn_lightroom, fn_compare]
-  title: { en: "Places and Lightroom", vi: "Nơi chụp và Lightroom", cs: "Místa a Lightroom", de: "Orte und Lightroom", hu: "Helyek és Lightroom", pl: "Miejsca i Lightroom" }
+  title: { en: "Places and Lightroom", vi: "Nơi chụp và Lightroom", cs: "Místa a Lightroom", de: "Orte und Lightroom", hu: "Helyek és Lightroom", ja: "撮影地と Lightroom", pl: "Miejsca i Lightroom" }
   points:
     en:
       - "Dates and places by hand, or borrowed from your phone's photos of the same scene."
@@ -236,16 +261,20 @@
       - "Dátumok és helyek kézzel, vagy kölcsönvéve a telefonod ugyanarról a jelenetről készült fotóiból."
       - "A csillagok és az elvetések átjönnek a Lightroomból, a Bridge-ből, a Capture One-ból és a darktable-ből."
       - "A RAW-ot maga a Fotollection olvassa; a Windows és a macOS mellé a Linux is csatlakozik."
+    ja:
+      - "日付と撮影地を手入力、または同じ場面をスマートフォンで撮った写真から借用。"
+      - "Lightroom、Bridge、Capture One、darktable の星と除外フラグを取り込みます。"
+      - "RAW を Fotollection 自身で読み込み。Windows と macOS に Linux が加わりました。"
     pl:
       - "Daty i miejsca ręcznie albo pożyczone ze zdjęć tej samej sceny z twojego telefonu."
       - "Gwiazdki i odrzucenia przychodzą z Lightrooma, Bridge, Capture One i darktable."
       - "RAW czytany przez samo Fotollection; Linux dołącza do Windows i macOS."
   shots:
-    - { file: 0.8-gallery, w: 1600, h: 1000, from: "v0.8.3:site/assets/img/grid-en-dark.webp", alt: { en: "v0.8.3: the gallery", vi: "v0.8.3: lưới ảnh", cs: "v0.8.3: galerie", de: "v0.8.3: die Galerie", hu: "v0.8.3: a galéria", pl: "v0.8.3: galeria" } }
-    - { file: 0.8-groups, w: 1600, h: 1000, from: "v0.8.3:site/assets/img/groups-en-dark.webp", alt: { en: "v0.8.3: best shots grouped", vi: "v0.8.3: các nhóm ảnh đẹp nhất", cs: "v0.8.3: seskupené nejlepší snímky", de: "v0.8.3: die besten Aufnahmen gruppiert", hu: "v0.8.3: a legjobb képek csoportokban", pl: "v0.8.3: najlepsze ujęcia w grupach" } }
+    - { file: 0.8-gallery, w: 1600, h: 1000, from: "v0.8.3:site/assets/img/grid-en-dark.webp", alt: { en: "v0.8.3: the gallery", vi: "v0.8.3: lưới ảnh", cs: "v0.8.3: galerie", de: "v0.8.3: die Galerie", hu: "v0.8.3: a galéria", ja: "v0.8.3：ギャラリー", pl: "v0.8.3: galeria" } }
+    - { file: 0.8-groups, w: 1600, h: 1000, from: "v0.8.3:site/assets/img/groups-en-dark.webp", alt: { en: "v0.8.3: best shots grouped", vi: "v0.8.3: các nhóm ảnh đẹp nhất", cs: "v0.8.3: seskupené nejlepší snímky", de: "v0.8.3: die besten Aufnahmen gruppiert", hu: "v0.8.3: a legjobb képek csoportokban", ja: "v0.8.3：グループにまとめたベストショット", pl: "v0.8.3: najlepsze ujęcia w grupach" } }
 - version: "0.9"
   date: 2026-11-02
-  title: { en: "Three modes", vi: "Ba chế độ", cs: "Tři režimy", de: "Drei Modi", hu: "Három mód", pl: "Trzy tryby" }
+  title: { en: "Three modes", vi: "Ba chế độ", cs: "Tři režimy", de: "Drei Modi", hu: "Három mód", ja: "3 つのモード", pl: "Trzy tryby" }
   points:
     en:
       - "Simple, Collage and Pro: one photo full screen, two photos on one print, or every tool."
@@ -267,17 +296,21 @@
       - "Simple, Collage és Pro: egy fotó teljes képernyőn, két fotó egy képen, vagy minden eszköz."
       - "Képeslapok: az egyik oldalon a fotó, a hátoldalon bélyegkeret és a saját szavaid."
       - "Az első színkártyák, a Faves és a Tools, Before és After nézettel."
+    ja:
+      - "Simple、Collage、Pro：1 枚を全画面で、1 枚のプリントに 2 枚の写真を、またはすべてのツールを。"
+      - "ポストカード：片面に写真、裏面に切手枠とあなたのメッセージ。"
+      - "最初のカラーカード Faves と Tools、Before と After 表示つき。"
     pl:
       - "Prosty, Kolaż i Pro: jedno zdjęcie na pełnym ekranie, dwa zdjęcia na jednej odbitce albo każde narzędzie."
       - "Pocztówki: zdjęcie z jednej strony, a z tyłu pole na znaczek i twoje słowa."
       - "Pierwsze karty kolorów, Ulubione i Narzędzia, z widokiem Przed i Po."
   shots:
-    - { file: 0.9-gallery, w: 1600, h: 1000, from: "v0.9.9:site/assets/img/grid-en-dark.webp", alt: { en: "v0.9.9: the three modes above the library", vi: "v0.9.9: ba chế độ phía trên thư viện", cs: "v0.9.9: tři režimy nad knihovnou", de: "v0.9.9: die drei Modi über der Bibliothek", hu: "v0.9.9: a három mód a könyvtár fölött", pl: "v0.9.9: trzy tryby nad biblioteką" } }
-    - { file: 0.9-collage, w: 1600, h: 1000, from: "v0.9.9:site/assets/img/collage-en-dark.webp", alt: { en: "v0.9.9: two photos on one print in Collage mode", vi: "v0.9.9: hai ảnh trên một tấm in ở chế độ Ghép ảnh", cs: "v0.9.9: dvě fotky na jednom tisku v režimu Collage", de: "v0.9.9: zwei Fotos auf einem Abzug im Collage-Modus", hu: "v0.9.9: két fotó egy képen Collage módban", pl: "v0.9.9: dwa zdjęcia na jednej odbitce w trybie Kolażu" } }
-    - { file: 0.9-postcard, w: 1600, h: 1000, from: "v0.9.9:site/assets/img/postcard-en-dark.webp", alt: { en: "v0.9.9: a postcard and its back", vi: "v0.9.9: một bưu thiếp và mặt sau", cs: "v0.9.9: pohlednice a její zadní strana", de: "v0.9.9: eine Postkarte und ihre Rückseite", hu: "v0.9.9: egy képeslap és a hátoldala", pl: "v0.9.9: pocztówka i jej tył" } }
+    - { file: 0.9-gallery, w: 1600, h: 1000, from: "v0.9.9:site/assets/img/grid-en-dark.webp", alt: { en: "v0.9.9: the three modes above the library", vi: "v0.9.9: ba chế độ phía trên thư viện", cs: "v0.9.9: tři režimy nad knihovnou", de: "v0.9.9: die drei Modi über der Bibliothek", hu: "v0.9.9: a három mód a könyvtár fölött", ja: "v0.9.9：ライブラリーの上の 3 つのモード", pl: "v0.9.9: trzy tryby nad biblioteką" } }
+    - { file: 0.9-collage, w: 1600, h: 1000, from: "v0.9.9:site/assets/img/collage-en-dark.webp", alt: { en: "v0.9.9: two photos on one print in Collage mode", vi: "v0.9.9: hai ảnh trên một tấm in ở chế độ Ghép ảnh", cs: "v0.9.9: dvě fotky na jednom tisku v režimu Collage", de: "v0.9.9: zwei Fotos auf einem Abzug im Collage-Modus", hu: "v0.9.9: két fotó egy képen Collage módban", ja: "v0.9.9：Collage モードで 1 枚のプリントに 2 枚の写真", pl: "v0.9.9: dwa zdjęcia na jednej odbitce w trybie Kolażu" } }
+    - { file: 0.9-postcard, w: 1600, h: 1000, from: "v0.9.9:site/assets/img/postcard-en-dark.webp", alt: { en: "v0.9.9: a postcard and its back", vi: "v0.9.9: một bưu thiếp và mặt sau", cs: "v0.9.9: pohlednice a její zadní strana", de: "v0.9.9: eine Postkarte und ihre Rückseite", hu: "v0.9.9: egy képeslap és a hátoldala", ja: "v0.9.9：ポストカードとその裏面", pl: "v0.9.9: pocztówka i jej tył" } }
 - version: "0.10"
   date: 2026-11-05
-  title: { en: "Core", vi: "Lõi", cs: "Jádro", de: "Der Kern", hu: "A mag", pl: "Rdzeń" }
+  title: { en: "Core", vi: "Lõi", cs: "Jádro", de: "Der Kern", hu: "A mag", ja: "コア", pl: "Rdzeń" }
   points:
     en:
       - "Our own RAW develop for every Bayer camera, written in Rust: neutral colour by default, the camera's look in one click."
@@ -294,14 +327,17 @@
     hu:
       - "Saját, Rustban írt RAW-kidolgozás minden Bayer-érzékelős géphez: alapból semleges szín, egy kattintással a gép saját lookja."
       - "RAW-on a csúszkák lineáris fényben dolgoznak, tartalékkal a fehér fölött."
+    ja:
+      - "Rust で書いた独自の RAW 現像をすべての Bayer 機に。標準はニュートラルな色、ワンクリックでカメラ本来のルックに。"
+      - "RAW ではスライダーがリニア光で動作し、白の上にも余裕を残します。"
     pl:
       - "Własne wywoływanie RAW dla każdego aparatu z matrycą Bayera, napisane w Ruście: domyślnie neutralny kolor, wygląd z aparatu jednym kliknięciem."
       - "Suwaki działają w świetle liniowym na RAW-ach, z zapasem powyżej bieli."
-  note: { en: "The look stayed as in 0.9; what changed is inside, drawn here.", vi: "Giao diện giữ như 0.9; thay đổi nằm bên trong, như sơ đồ này.", cs: "Vzhled zůstal jako v 0.9; změnilo se to, co je uvnitř, a to je nakreslené tady.", de: "Das Aussehen blieb wie in 0.9; was sich geändert hat, steckt im Inneren und ist hier gezeichnet.", hu: "A külső maradt, mint a 0.9-ben; a belseje változott, ezt rajzoltuk le itt.", pl: "Wygląd został taki jak w 0.9; zmieniło się wnętrze, narysowane tutaj." }
+  note: { en: "The look stayed as in 0.9; what changed is inside, drawn here.", vi: "Giao diện giữ như 0.9; thay đổi nằm bên trong, như sơ đồ này.", cs: "Vzhled zůstal jako v 0.9; změnilo se to, co je uvnitř, a to je nakreslené tady.", de: "Das Aussehen blieb wie in 0.9; was sich geändert hat, steckt im Inneren und ist hier gezeichnet.", hu: "A külső maradt, mint a 0.9-ben; a belseje változott, ezt rajzoltuk le itt.", ja: "見た目は 0.9 のまま。変わったのは内部で、ここに図で示しています。", pl: "Wygląd został taki jak w 0.9; zmieniło się wnętrze, narysowane tutaj." }
   diagram: raw-develop
 - version: "0.11"
   date: 2026-11-06
-  title: { en: "Instant previews", vi: "Xem ảnh tức thì", cs: "Okamžité náhledy", de: "Sofortige Vorschauen", hu: "Azonnali előnézetek", pl: "Natychmiastowe podglądy" }
+  title: { en: "Instant previews", vi: "Xem ảnh tức thì", cs: "Okamžité náhledy", de: "Sofortige Vorschauen", hu: "Azonnali előnézetek", ja: "一瞬で開くプレビュー", pl: "Natychmiastowe podglądy" }
   points:
     en:
       - "Standard previews kept on disk and a quarter of the memory for the photo on screen."
@@ -318,14 +354,17 @@
     hu:
       - "Normál előnézetek a lemezen, és a memória negyede a képernyőn lévő fotónak."
       - "Bármelyik fotó 27 ms alatt nyílik meg, ahol korábban 274–531 ms kellett."
+    ja:
+      - "標準プレビューをディスクに保持し、メモリーの 4 分の 1 を画面上の写真に使います。"
+      - "どの写真も 27 ms で開きます。以前は 274〜531 ms かかっていました。"
     pl:
       - "Standardowe podglądy trzymane na dysku i jedna czwarta pamięci na zdjęcie na ekranie."
       - "Każde zdjęcie otwiera się w 27 ms, a wcześniej zajmowało to od 274 do 531 ms."
-  note: { en: "The look stayed as in 0.9; what changed is inside, drawn here.", vi: "Giao diện giữ như 0.9; thay đổi nằm bên trong, như sơ đồ này.", cs: "Vzhled zůstal jako v 0.9; změnilo se to, co je uvnitř, a to je nakreslené tady.", de: "Das Aussehen blieb wie in 0.9; was sich geändert hat, steckt im Inneren und ist hier gezeichnet.", hu: "A külső maradt, mint a 0.9-ben; a belseje változott, ezt rajzoltuk le itt.", pl: "Wygląd został taki jak w 0.9; zmieniło się wnętrze, narysowane tutaj." }
+  note: { en: "The look stayed as in 0.9; what changed is inside, drawn here.", vi: "Giao diện giữ như 0.9; thay đổi nằm bên trong, như sơ đồ này.", cs: "Vzhled zůstal jako v 0.9; změnilo se to, co je uvnitř, a to je nakreslené tady.", de: "Das Aussehen blieb wie in 0.9; was sich geändert hat, steckt im Inneren und ist hier gezeichnet.", hu: "A külső maradt, mint a 0.9-ben; a belseje változott, ezt rajzoltuk le itt.", ja: "見た目は 0.9 のまま。変わったのは内部で、ここに図で示しています。", pl: "Wygląd został taki jak w 0.9; zmieniło się wnętrze, narysowane tutaj." }
   diagram: preview-tiers
 - version: "0.12"
   date: 2026-11-06
-  title: { en: "Settings and Develop", vi: "Cài đặt và chỉnh ảnh", cs: "Nastavení a úpravy", de: "Einstellungen und Entwicklung", hu: "Beállítások és kidolgozás", pl: "Ustawienia i wywoływanie" }
+  title: { en: "Settings and Develop", vi: "Cài đặt và chỉnh ảnh", cs: "Nastavení a úpravy", de: "Einstellungen und Entwicklung", hu: "Beállítások és kidolgozás", ja: "設定と現像", pl: "Ustawienia i wywoływanie" }
   points:
     en:
       - "One Settings window in two columns, as on an iPad, with the memory and the cache to manage."
@@ -342,15 +381,18 @@
     hu:
       - "Egyetlen, kétoszlopos Settings ablak, mint az iPaden, a memória és a gyorsítótár kezelésével."
       - "Kidolgozó nézet, amelyet egy Lightroom-felhasználó is elsőre ért: egy eszköztár a fotó fölött, a Lightroom billentyűi, Before és After."
+    ja:
+      - "iPad のような 2 列の Settings ウィンドウを 1 つに。メモリーとキャッシュもここで管理。"
+      - "Lightroom ユーザーがすぐ読める現像ビュー：写真の上に 1 本のツールバー、Lightroom と同じキー、Before と After。"
     pl:
       - "Jedno okno Ustawień w dwóch kolumnach, jak na iPadzie, z zarządzaniem pamięcią i pamięcią podręczną."
       - "Widok wywoływania czytelny dla użytkownika Lightrooma: jeden pasek narzędzi nad zdjęciem, skróty Lightrooma, Przed i Po."
   shots:
-    - { file: 0.12-gallery, w: 1600, h: 1000, from: "v0.12.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.12.0: the gallery", vi: "v0.12.0: lưới ảnh", cs: "v0.12.0: galerie", de: "v0.12.0: die Galerie", hu: "v0.12.0: a galéria", pl: "v0.12.0: galeria" } }
-    - { file: 0.12-settings, w: 1600, h: 1000, from: "v0.12.0:site/assets/img/settings-en-dark.webp", alt: { en: "v0.12.0: the new Settings window", vi: "v0.12.0: cửa sổ Cài đặt mới", cs: "v0.12.0: nové okno Settings", de: "v0.12.0: das neue Einstellungsfenster", hu: "v0.12.0: az új Settings ablak", pl: "v0.12.0: nowe okno Ustawień" } }
+    - { file: 0.12-gallery, w: 1600, h: 1000, from: "v0.12.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.12.0: the gallery", vi: "v0.12.0: lưới ảnh", cs: "v0.12.0: galerie", de: "v0.12.0: die Galerie", hu: "v0.12.0: a galéria", ja: "v0.12.0：ギャラリー", pl: "v0.12.0: galeria" } }
+    - { file: 0.12-settings, w: 1600, h: 1000, from: "v0.12.0:site/assets/img/settings-en-dark.webp", alt: { en: "v0.12.0: the new Settings window", vi: "v0.12.0: cửa sổ Cài đặt mới", cs: "v0.12.0: nové okno Settings", de: "v0.12.0: das neue Einstellungsfenster", hu: "v0.12.0: az új Settings ablak", ja: "v0.12.0：新しい Settings ウィンドウ", pl: "v0.12.0: nowe okno Ustawień" } }
 - version: "0.13"
   date: 2026-11-06
-  title: { en: "The interface", vi: "Giao diện mới", cs: "Rozhraní", de: "Die Oberfläche", hu: "A felület", pl: "Interfejs" }
+  title: { en: "The interface", vi: "Giao diện mới", cs: "Rozhraní", de: "Die Oberfläche", hu: "A felület", ja: "インターフェース", pl: "Interfejs" }
   points:
     en:
       - "Controls with depth, the Be Vietnam Pro font, one panel width."
@@ -372,18 +414,22 @@
       - "Mélységet kapott vezérlők, Be Vietnam Pro betűtípus, egyetlen panelszélesség."
       - "Exportálási ablak, mint a Lightroomé; teljes ablakos kidolgozó nézet a Navigátorral, az Előzményekkel és hisztogrammal."
       - "Üdvözlés az első indításkor, és a kézikönyv a Fotollectionön belül."
+    ja:
+      - "奥行きのあるコントロール、Be Vietnam Pro フォント、統一したパネル幅。"
+      - "Lightroom のような書き出しダイアログ。ナビゲーター、ヒストリー、ヒストグラムつきのウィンドウ全体の現像ビュー。"
+      - "初回起動時のウェルカム画面と、Fotollection に内蔵したマニュアル。"
     pl:
       - "Kontrolki z głębią, czcionka Be Vietnam Pro, jedna szerokość paneli."
       - "Okno eksportu jak w Lightroomie; widok wywoływania na całe okno z Nawigatorem, Historią i histogramem."
       - "Powitanie przy pierwszym uruchomieniu i instrukcja w samym Fotollection."
   shots:
-    - { file: 0.13-gallery, w: 1600, h: 1000, from: "v0.13.4:site/assets/img/grid-en-dark.webp", alt: { en: "v0.13.4: the new look", vi: "v0.13.4: giao diện mới", cs: "v0.13.4: nový vzhled", de: "v0.13.4: das neue Aussehen", hu: "v0.13.4: az új megjelenés", pl: "v0.13.4: nowy wygląd" } }
-    - { file: 0.13-window, w: 1600, h: 1000, from: "v0.13.4:site/assets/img/window-en-dark.webp", alt: { en: "v0.13.4: the full-window develop view", vi: "v0.13.4: màn chỉnh ảnh toàn cửa sổ", cs: "v0.13.4: zobrazení úprav přes celé okno", de: "v0.13.4: die Entwicklungsansicht im ganzen Fenster", hu: "v0.13.4: a teljes ablakos kidolgozó nézet", pl: "v0.13.4: widok wywoływania na całe okno" } }
-    - { file: 0.13-export, w: 1600, h: 1000, from: "v0.13.4:site/assets/img/export-dialog-en-light.webp", alt: { en: "v0.13.4: the export dialog", vi: "v0.13.4: hộp thoại xuất ảnh", cs: "v0.13.4: dialog exportu", de: "v0.13.4: der Exportdialog", hu: "v0.13.4: az exportálás ablaka", pl: "v0.13.4: okno eksportu" } }
+    - { file: 0.13-gallery, w: 1600, h: 1000, from: "v0.13.4:site/assets/img/grid-en-dark.webp", alt: { en: "v0.13.4: the new look", vi: "v0.13.4: giao diện mới", cs: "v0.13.4: nový vzhled", de: "v0.13.4: das neue Aussehen", hu: "v0.13.4: az új megjelenés", ja: "v0.13.4：新しい見た目", pl: "v0.13.4: nowy wygląd" } }
+    - { file: 0.13-window, w: 1600, h: 1000, from: "v0.13.4:site/assets/img/window-en-dark.webp", alt: { en: "v0.13.4: the full-window develop view", vi: "v0.13.4: màn chỉnh ảnh toàn cửa sổ", cs: "v0.13.4: zobrazení úprav přes celé okno", de: "v0.13.4: die Entwicklungsansicht im ganzen Fenster", hu: "v0.13.4: a teljes ablakos kidolgozó nézet", ja: "v0.13.4：ウィンドウ全体の現像ビュー", pl: "v0.13.4: widok wywoływania na całe okno" } }
+    - { file: 0.13-export, w: 1600, h: 1000, from: "v0.13.4:site/assets/img/export-dialog-en-light.webp", alt: { en: "v0.13.4: the export dialog", vi: "v0.13.4: hộp thoại xuất ảnh", cs: "v0.13.4: dialog exportu", de: "v0.13.4: der Exportdialog", hu: "v0.13.4: az exportálás ablaka", ja: "v0.13.4：書き出しダイアログ", pl: "v0.13.4: okno eksportu" } }
 - version: "0.14"
   date: 2026-11-09
   fn: [fn_lut]
-  title: { en: "Looks", vi: "Looks", cs: "Looky", de: "Looks", hu: "Lookok", pl: "Looki" }
+  title: { en: "Looks", vi: "Looks", cs: "Looky", de: "Looks", hu: "Lookok", ja: "ルック", pl: "Looki" }
   points:
     en:
       - "One tap gives a photo a colour: looks of our own, your Lightroom presets and LUTs, a Color Mixer and Dehaze."
@@ -405,11 +451,15 @@
       - "Egy koppintás, és a fotó színt kap: saját lookok, a Lightroom presetjeid és LUT-jaid, Color Mixer és Dehaze."
       - "Egy look sok fotónak egyszerre; a bélyegképek minden fotót a saját színeivel mutatnak."
       - "Költözés másik gépre egyetlen fájllal; egy hibázó rész már nem dönti le a Fotollectiont."
+    ja:
+      - "ワンタップで写真に色を：独自のルック、手持ちの Lightroom プリセットと LUT、Color Mixer、Dehaze。"
+      - "多くの写真に一度にルックを適用。サムネイルはそれぞれの写真の色で表示されます。"
+      - "1 つのファイルで別のコンピューターへ移行。一部が失敗しても Fotollection 全体が落ちることはなくなりました。"
     pl:
       - "Jedno dotknięcie nadaje zdjęciu kolor: nasze własne looki, twoje presety Lightroom i LUT-y, Color Mixer i Dehaze."
       - "Look dla wielu zdjęć naraz; miniatury pokazują kolor każdego zdjęcia."
       - "Przenieś się na inny komputer w jednym pliku; awaria jednej części nie zamyka już całego Fotollection."
   shots:
-    - { file: 0.14-looks, w: 1600, h: 1000, from: "v0.14.0:site/assets/img/window-en-dark.webp", alt: { en: "v0.14.0: looks under the photo, Presets & LUTs on the left", vi: "v0.14.0: looks dưới ảnh, Presets & LUTs bên trái", cs: "v0.14.0: looky pod fotkou, Presets & LUTs vlevo", de: "v0.14.0: Looks unter dem Foto, Presets & LUTs links", hu: "v0.14.0: lookok a fotó alatt, bal oldalt a Presets & LUTs", pl: "v0.14.0: looki pod zdjęciem, Presety i LUT-y po lewej" } }
-    - { file: 0.14-simple, w: 1600, h: 1000, from: "v0.14.0:site/assets/img/simple-en-light.webp", alt: { en: "v0.14.0: Simple mode's numbered looks", vi: "v0.14.0: dải look đánh số ở chế độ Đơn giản", cs: "v0.14.0: očíslované looky v režimu Simple", de: "v0.14.0: die nummerierten Looks im Simple-Modus", hu: "v0.14.0: a Simple mód számozott lookjai", pl: "v0.14.0: numerowane looki w trybie Prostym" } }
-    - { file: 0.14-gallery, w: 1600, h: 1000, from: "v0.14.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.14.0: thumbnails in their colours", vi: "v0.14.0: ảnh thu nhỏ theo màu của từng ảnh", cs: "v0.14.0: miniatury v jejich barvách", de: "v0.14.0: Vorschaubilder in ihren Farben", hu: "v0.14.0: bélyegképek a saját színeikben", pl: "v0.14.0: miniatury w swoich kolorach" } }
+    - { file: 0.14-looks, w: 1600, h: 1000, from: "v0.14.0:site/assets/img/window-en-dark.webp", alt: { en: "v0.14.0: looks under the photo, Presets & LUTs on the left", vi: "v0.14.0: looks dưới ảnh, Presets & LUTs bên trái", cs: "v0.14.0: looky pod fotkou, Presets & LUTs vlevo", de: "v0.14.0: Looks unter dem Foto, Presets & LUTs links", hu: "v0.14.0: lookok a fotó alatt, bal oldalt a Presets & LUTs", ja: "v0.14.0：写真の下にルック、左に Presets & LUTs", pl: "v0.14.0: looki pod zdjęciem, Presety i LUT-y po lewej" } }
+    - { file: 0.14-simple, w: 1600, h: 1000, from: "v0.14.0:site/assets/img/simple-en-light.webp", alt: { en: "v0.14.0: Simple mode's numbered looks", vi: "v0.14.0: dải look đánh số ở chế độ Đơn giản", cs: "v0.14.0: očíslované looky v režimu Simple", de: "v0.14.0: die nummerierten Looks im Simple-Modus", hu: "v0.14.0: a Simple mód számozott lookjai", ja: "v0.14.0：Simple モードの番号付きルック", pl: "v0.14.0: numerowane looki w trybie Prostym" } }
+    - { file: 0.14-gallery, w: 1600, h: 1000, from: "v0.14.0:site/assets/img/grid-en-dark.webp", alt: { en: "v0.14.0: thumbnails in their colours", vi: "v0.14.0: ảnh thu nhỏ theo màu của từng ảnh", cs: "v0.14.0: miniatury v jejich barvách", de: "v0.14.0: Vorschaubilder in ihren Farben", hu: "v0.14.0: bélyegképek a saját színeikben", ja: "v0.14.0：それぞれの色で表示されるサムネイル", pl: "v0.14.0: miniatury w swoich kolorach" } }

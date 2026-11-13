@@ -3,6 +3,7 @@
 #   name, html_lang, og_locale  its own name (the language menu), the page's lang and og:locale
 #   regions      the markets it is for, shown beside its name in the menu (owner, 2026-11-11:
 #                German is read in Germany and Austria); none where the name says it
+#   aliases      other addresses that open its home page (/jp for /ja, owner 2026-11-14)
 #   also         other browser languages it is for: a first visit in one of them opens it
 #                (Slovak readers read Czech)
 #   prefix       its path, "" for English at the root
@@ -11,12 +12,14 @@
 #   date_format  how it writes a date (strftime)
 #   support      how its readers buy the author a coffee: vietqr (a bank app's code, Vietnam's
 #                way) or card (Ko-fi first, then GitHub Sponsors), owner 2026-11-11
+#   kiosk        the print shops its home page shows: eu (dm and Rossmann, the default) or jp
+#                (7-Eleven, Lawson and FamilyMart's multicopy machines), owner 2026-11-14
 #   guide        the manual it shows (ADR-0031): the full one in docs/ (English, Vietnamese) or
 #                a short one, site/_includes/manual-short-<code>.md, that links the English one
 #   published    false keeps it out of the build, the menu, hreflang and the sitemap until its
 #                words are done (scripts/check-site-i18n.mjs --build)
 # Order (owner, 2026-11-11): English first, the international one, then by each language's own
-# name (Čeština, Deutsch, Magyar, Polski, Tiếng Việt); the menu, hreflang and sitemap follow it.
+# name (Čeština, Deutsch, Magyar, Polski, Tiếng Việt, 日本語); the menu, hreflang and sitemap follow it.
 # A new language: a block here, in that order, and its words in i18n/<code>.yml.
 - code: en
   date_format: "%-d %b %Y"
@@ -86,4 +89,17 @@
   pages: [home, download, performance, manual, story, wiki, code-signing]
   guide: docs/USER_GUIDE.vi.md
   support: vietqr
+  published: true
+- code: ja
+  date_format: "%Y年%-m月%-d日"
+  name: 日本語
+  html_lang: ja
+  og_locale: ja_JP
+  prefix: /ja
+  aliases: [jp]
+  assets: en
+  pages: [home, download, performance, manual, wiki, code-signing]
+  guide: site/_includes/manual-short-ja.md
+  support: card
+  kiosk: jp
   published: true

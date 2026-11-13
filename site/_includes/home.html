@@ -98,6 +98,18 @@
 <section class="section" id="kiosk">
   <div class="wrap kiosk-grid">
     <div>
+      {%- if pg.kiosk == 'jp' %}
+      {%- comment %} Japan's convenience stores (languages.yml kiosk: jp, owner 2026-11-14): their multicopy machines print L, 2L and square; the app's 9 × 13, 13 × 18 and 10 × 10 keep those shapes within the kiosk's trim (fn_konbini; built-in sizes to the millimetre are FR-129). {% endcomment %}
+      <h2>{{ t.kiosk_title }} {% include logos/seven.svg %}{% include fn.html keys="fn_seven" %}{{ t.kiosk_and }}{% include logos/lawson.svg %}{% include fn.html keys="fn_lawson" %}{{ t.kiosk_and }}{% include logos/familymart.svg %}{% include fn.html keys="fn_familymart" %}</h2>
+      <p class="lead">{{ t.kiosk_lead }}{% include fn.html keys="fn_konbini" %}</p>
+      <div class="sizes">
+        <p class="sizes-label">{{ t.kiosk_standard }}</p>
+        <ul class="chips mm"><li>L判 89 × 127</li><li>2L判 127 × 178</li></ul>
+        <p class="sizes-label">{{ t.kiosk_square }}</p>
+        <ul class="chips mm"><li>89 × 89</li></ul>
+        <p class="small muted">{% include icons/check.svg %} {{ t.kiosk_more }}</p>
+      </div>
+      {%- else %}
       <h2>{{ t.kiosk_title }} {% include logos/dm.svg %}{% include fn.html keys="fn_dm" %} {{ t.kiosk_and }}&nbsp;{% include logos/rossmann.svg %}{% include fn.html keys="fn_rossmann" %}</h2>
       <p class="lead">{{ t.kiosk_lead }}</p>
       <div class="sizes">
@@ -109,6 +121,7 @@
         <ul class="chips"><li>5 × 15</li></ul>
         <p class="small muted">{% include icons/check.svg %} {{ t.kiosk_more }}</p>
       </div>
+      {%- endif %}
     </div>
     <div class="card kiosk-steps">
       <h3>{{ t.kiosk_steps_title }}</h3>
