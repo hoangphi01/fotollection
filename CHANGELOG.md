@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - **Website:** the *Listed on* badges always sit on a row of their own under the download buttons.
+- **Website:** *How it compares* lists what each one does, ten rows more: RAW development, keep or drop, the best shot of a burst, the lab's print sizes, the date on the photo, two photos on a print, postcards, looks, Lightroom presets and LUTs.
 
 ### Fixed
 
