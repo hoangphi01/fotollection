@@ -1,9 +1,11 @@
 {%- comment -%} The three download buttons, the same on the home page and the Download page
      (site/README.md). Needs release-assets.html first; include.id names the block. {%- endcomment %}
 <div class="cta"{% if include.id %} id="{{ include.id }}"{% endif %}>
-  <a class="button primary" href="{{ mac | default: releases }}"{% if mac %} data-download="mac"{% endif %}>{% include icons/download.svg %}{{ t.download_mac }}</a>
-  <a class="button" href="{{ win | default: releases }}"{% if win %} data-download="win"{% endif %}>{% include icons/download.svg %}{{ t.download_win }}</a>
-  <a class="button" href="{{ path_download }}#install-linux">{% include icons/download.svg %}{{ t.download_linux }}</a>
+  {%- comment %} Each button wears its system's logo; the visitor's own system leads (data-os on <html>, set in default.html's head; owner, 2026-11-13). Without script, macOS leads as before. {% endcomment %}
+  <a class="button primary" data-os="mac" href="{{ mac | default: releases }}"{% if mac %} data-download="mac"{% endif %}>{% include logos/apple.svg %}{{ t.download_mac }}</a>
+  <a class="button" data-os="win" href="{{ win | default: releases }}"{% if win %} data-download="win"{% endif %}>{% include logos/windows.svg %}{{ t.download_win }}</a>
+  <a class="button" data-os="linux" href="{{ path_download }}#install-linux">{% include logos/linux.svg %}{{ t.download_linux }}</a>
+  <p class="cta-note">{% include icons/monitor.svg %}{{ t.cta_desktop_note }}</p>
   {%- if include.listed %}
   {%- comment %} Where Fotollection is listed, beside the buttons as "listed on" badges, one block in the page's style and each listing's colours (owner, 2026-11-06, 2026-11-07); AlternativeTo first, the international one (owner, 2026-11-13). {% endcomment %}
   <a class="listed alternativeto" href="https://alternativeto.net/software/fotollection/about/" aria-label="{{ t.alternativeto_badge }}"><img src="{{ '/assets/img/logos/alternativeto.svg' | relative_url }}" width="30" height="30" alt="" /><span><small>{{ t.vnlf_badge_top }}</small><strong>AlternativeTo</strong></span></a>

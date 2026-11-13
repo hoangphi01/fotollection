@@ -27,16 +27,17 @@
 <section class="section" id="install">
   <div class="wrap">
     <div class="install">
-      <div class="card">
+      {%- comment %} The visitor's system's card first (data-os, as the buttons). {% endcomment %}
+      <div class="card" data-os="mac">
         <h3 class="with-logo">{% include logos/apple.svg %}{{ t.mac_title }}</h3>
         <ol><li>{{ t.mac_1 }}</li><li>{{ t.mac_2 }}</li><li>{{ t.mac_3 }}</li></ol>
       </div>
-      <div class="card">
+      <div class="card" data-os="win">
         <h3 class="with-logo">{% include logos/windows.svg %}{{ t.win_title }}</h3>
         <ol><li>{{ t.win_1 }}</li><li>{{ t.win_2 }}</li><li>{{ t.win_3 }}</li></ol>
       </div>
       {%- comment -%} Linux: the install script and the APT repository on fotollection.org, or a file. {%- endcomment %}
-      <div class="card linux" id="install-linux">
+      <div class="card linux" data-os="linux" id="install-linux">
         <h3 class="with-logo">{% include logos/linux.svg %}{{ t.linux_title }}</h3>
         <div class="linux-ways">
           <div>

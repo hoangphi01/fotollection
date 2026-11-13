@@ -19,6 +19,17 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {%- comment %} The visitor's system, read in the browser and never sent anywhere, so the download buttons lead with it (download-buttons.html, owner 2026-11-13): mac, win, linux, or mobile for a phone or tablet. Set before the page paints, so nothing moves. {% endcomment %}
+    <script>
+      ;(function () {
+        var n = navigator, ua = n.userAgent || '', d = n.userAgentData, p = (d && d.platform) || n.platform || '', os = ''
+        if ((d && d.mobile) || /Android|iPhone|iPad|iPod/i.test(ua) || (/Mac/i.test(p) && n.maxTouchPoints > 1)) os = 'mobile'
+        else if (/Win/i.test(p)) os = 'win'
+        else if (/Mac/i.test(p)) os = 'mac'
+        else if (/Linux|X11/i.test(p) && !/CrOS/.test(ua)) os = 'linux'
+        if (os) document.documentElement.setAttribute('data-os', os)
+      })()
+    </script>
     {%- if pg.page_id == 'home' and pg.prefix == '' %}
     {%- comment %} The first visit (site/README.md, owner 2026-11-11): the English home page sends a visitor to the home page in the language they chose in the menu, or else in the first of their browser's languages the site has, before English; never a search engine's crawler, which reads every version through hreflang and the sitemap. No cookie, no IP. {% endcomment %}
     <script>

@@ -115,6 +115,7 @@ download_mac: Tải cho macOS
 download_win: Tải cho Windows
 download_linux: Tải cho Linux
 download_note: macOS 11+ (Apple Silicon và Intel) · Windows 10/11 · Linux 64-bit, glibc 2.35+
+cta_desktop_note: "Ứng dụng cho máy tính: mở trang này trên máy tính để cài đặt."
 latest: Phiên bản mới nhất
 no_release: Các bản phát hành ở trên GitHub
 shot_grid: Thư viện ảnh, đã chấm sao và chọn ảnh
