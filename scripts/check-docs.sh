@@ -161,6 +161,11 @@ for token in --shade --highlight --lip --lip-mix; do
   [ "$app" = "$web" ] || fail "$token differs between ui/src/index.css and site/assets/css/site.css"
 done
 
+echo "• The website links its stylesheets and scripts by their content's hash (LESSONS 2026-11-13)"
+if grep -rnE "'/assets/(css|js)/[^']+' \| relative_url" site/_layouts site/_includes; then
+  fail "link these through | bust, not | relative_url, so a deploy never serves a new page on old CSS or JS"
+fi
+
 echo "• The motion tokens match: the app, the splash, the website and TRANS_ANIMATION.md (FR-100)"
 for token in --motion-fast --motion-base --motion-slow --motion-base-out --motion-slow-out --delay-hint --delay-stale --ease-enter --ease-exit --ease-move; do
   # The value as declared, not the reduced mode's `var(...)` aliases.

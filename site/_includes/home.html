@@ -39,7 +39,7 @@
       <figcaption class="small muted">{{ t.makeover_hint }}</figcaption>
     </figure>
   </div>
-  <script src="{{ '/assets/js/makeover.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/js/makeover.js' | bust }}" defer></script>
 </section>
 
 {% include looks.html %}
@@ -47,7 +47,7 @@
 {% include compat.html %}
 
 {% include carousel.html cards=site.data.carousels.new title=t.car_new_title id="new" %}
-<script src="{{ '/assets/js/carousel.js' | relative_url }}" defer></script>
+<script src="{{ '/assets/js/carousel.js' | bust }}" defer></script>
 
 <section class="section tint" id="modes">
   <div class="wrap">
@@ -295,8 +295,8 @@
     {%- endif %}
   </div>
   {%- if pg.support == 'vietqr' %}
-  <script src="{{ '/assets/js/qrcode.js' | relative_url }}" defer></script>
-  <script src="{{ '/assets/js/support.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/js/qrcode.js' | bust }}" defer></script>
+  <script src="{{ '/assets/js/support.js' | bust }}" defer></script>
   {%- endif %}
 </section>
 

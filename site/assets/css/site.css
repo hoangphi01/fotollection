@@ -272,7 +272,7 @@ html[data-os='mac'] .cta .button[data-os='mac']:hover, html[data-os='win'] .cta 
 html[data-os] .cta .button.primary .logo-os { color: var(--brand); }
 html[data-os='mac'] .cta .button[data-os='mac'] .logo-os, html[data-os='win'] .cta .button[data-os='win'] .logo-os, html[data-os='linux'] .cta .button[data-os='linux'] .logo-os { color: inherit; }
 .cta-note { display: none; margin: 0; flex: 1 0 100%; color: var(--muted); font-size: 0.92rem; text-align: center; text-wrap: balance; }
-.cta-note .icon { width: 16px; height: 16px; margin-right: 6px; vertical-align: -3px; }
+.cta-note .icon { width: 13px; height: 13px; margin-right: 5px; vertical-align: -1px; }
 html[data-os='mobile'] .cta-note { display: block; order: -1; }
 .shot.hero-shot { margin-top: 40px; }
 /* Under the keynote video (owner, 2026-11-11), the makeover's frame opens its own section. */

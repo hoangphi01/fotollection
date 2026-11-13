@@ -101,7 +101,7 @@
     </script>
 
     <link rel="preload" href="{{ '/assets/fonts/bitter-latin-wght-normal.woff2' | relative_url }}" as="font" type="font/woff2" crossorigin />
-    <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}" />
+    <link rel="stylesheet" href="{{ '/assets/css/site.css' | bust }}" />
     {%- if jekyll.environment == 'production' and site.google_analytics %}
     <!-- Google tag (gtag.js): visits to this website and clicks on its download links only;
          the app itself has no analytics. -->

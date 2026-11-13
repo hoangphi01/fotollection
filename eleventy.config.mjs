@@ -4,6 +4,7 @@
 // includes (`{% include file.html key=value %}`), so they read as they did; `site.*` is the
 // same object Jekyll gave them: _config.yml's keys, every file of _data under `site.data`, and
 // `site.github.latest_release` from `_data/release.json` (written by the workflow).
+import { createHash } from 'node:crypto'
 import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import yaml from 'js-yaml'
@@ -71,6 +72,14 @@ export default function (eleventyConfig) {
 
   const url = (value) => `${value ?? ''}`
   eleventyConfig.addFilter('relative_url', url)
+  // `{{ '/assets/css/site.css' | bust }}`: the file's path with a hash of its content, so a
+  // browser that kept the old stylesheet or script (GitHub Pages: max-age 600) fetches the new
+  // one with the new page at once, never a new page on old CSS (LESSONS, 2026-11-13).
+  eleventyConfig.addFilter('bust', (value) => {
+    const v = `${value ?? ''}`
+    const hash = createHash('sha256').update(readFileSync(path.join(SITE, v))).digest('hex').slice(0, 10)
+    return `${v}?v=${hash}`
+  })
   eleventyConfig.addFilter('absolute_url', (value) => {
     const v = `${value ?? ''}`
     return /^https?:/.test(v) ? v : `https://fotollection.org${v.startsWith('/') ? '' : '/'}${v}`

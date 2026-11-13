@@ -63,6 +63,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - Every check CI runs also runs locally before a push; when one fails only in CI, its twin joins the local checks. Kept by: `check-lego`, `check-docs.sh`, `check-docs-with-code.sh`.
 - What only CI, the bundler or a release runs is proved before the release: installers workflow, dry run, a green push. Kept by: the `installers` workflow.
 - Never write "supports" before it is tried on every system; `cfg(windows)` code is grepped, since this Mac cannot compile it. Kept by: CI's `build (windows-latest)`.
+- A page and its stylesheet and scripts ship as one: every `/assets/css` and `/assets/js` link carries its content's hash (`| bust`), so no visitor sees a new page on old CSS. Kept by: `check-docs.sh` (no such link through `relative_url`).
 
 ### resources-tooling
 
@@ -108,6 +109,16 @@ Read this table in full before any task; then read in full every entry whose Are
 - When the owner says "like X", list every section of X as built, later or never before building. Kept by: no machine check yet.
 - A visual rule described in words is restated with numbers and gets a yes before coding. Kept by: no machine check yet.
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
+
+## 2026-11-13
+
+### A new page on an old stylesheet hid the Apple logo (FR-021)
+
+- **Area:** release-ci, checks
+- **Seen:** right after the platform buttons were pushed, the owner's Mac showed the macOS button without its logo; the screenshots and the live CSS were right.
+- **Why:** the stylesheet's link had no version, and GitHub Pages lets a browser keep it for ten minutes (`max-age=600`): the new HTML came with the old CSS, which painted the logo in the brand colour on the brand-coloured button.
+- **Fix:** an Eleventy filter `bust` adds a hash of the file's content to every `/assets/css` and `/assets/js` link, so a changed file is a new address.
+- **Rule:** an asset the page depends on is linked by its content's hash; judge a fault seen right after a deploy with a reload that skips the cache before changing code.
 
 ## 2026-11-12
 
