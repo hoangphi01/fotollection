@@ -4,7 +4,7 @@
 
 A Fotollection a meglévő fotómappáiddal dolgozik. Ott olvassa be őket, ahol vannak, és soha nem helyez át, nevez át vagy módosít egyetlen fájlt sem.
 
-Az első indításkor öt rövid oldal mutatja be az alapokat; a **Tovább** és a **Vissza** lapoz, az utolsó oldalon a **Kezdés** zárja be. Ez a kézikönyv a programban is megvan, internet nélkül: Beállítások → **Kézikönyv**.
+Az első indításkor a Fotollection a géped nyelvén indul, és a **Nyelv** oldalon nyílik meg: köszönés minden nyelven és a nyelvek listája, egy kattintás vált. Utána öt rövid oldal mutatja be az alapokat; a **Tovább** és a **Vissza** lapoz, az utolsó oldalon a **Kezdés** zárja be. Ez a kézikönyv a programban is megvan, internet nélkül: Beállítások → **Kézikönyv**.
 
 1. **Nyiss meg egy mappát:** kattints a **Mappa megnyitása** gombra (a mappa ikon a *Könyvtár* mellett az oldalsávban), vagy húzz egy mappát bárhová az ablakra. Az almappák is jönnek vele. A JPEG, PNG, HEIC és a fényképezőgépes RAW fájlok is megnyílnak.
 2. **Az oldalsáv** a *Könyvtár* alatt mutatja a **Munkaterület**et (minden fotó minden mappából, kivéve a félretetteket), a **Nyomtatási kosár**at és a **Félretett** fotókat (a két gyűjtőhelyet), valamint minden mappát a fotói számával. Kattints egy mappára, hogy csak az ő fotóit lásd; Ctrl/⌘-kattintással többet is megjeleníthetsz egyszerre. A mappán megjelenő **×** eltávolítja a könyvtárból, a fájlok a lemezen maradnak.
@@ -15,7 +15,7 @@ Az első indításkor öt rövid oldal mutatja be az alapokat; a **Tovább** és
 
 **Három mód:** az oldalsáv tetején lévő gombok váltanak az **Egyszerű** (egyszerre egy fotó, ↑ megtartás, ↓ elvetés, aztán exportálás), a **Kollázs** (két fotó egy képen, vagy képeslapok) és a **Pro** mód között. A fotóid, a kosár és a beállítások minden módban ugyanazok. Gyorsbillentyű: **Cmd/Ctrl+1**, **2** és **3**.
 
-**Nyelv és megjelenés:** a **Beállítások** (fogaskerék az oldalsáv tetején, vagy **⌘,** / **Ctrl+,**) *Általános* részében választhatsz nyelvet: English, Magyar vagy Tiếng Việt; az oldalsáv alján lévő három gomb a megjelenést állítja: **A rendszer szerint**, **Világos** vagy **Sötét**.
+**Nyelv és megjelenés:** a **Beállítások** (fogaskerék az oldalsáv tetején, vagy **⌘,** / **Ctrl+,**) *Általános* részében választhatsz nyelvet: English, Deutsch, Magyar vagy Tiếng Việt; az oldalsáv alján lévő három gomb a megjelenést állítja: **A rendszer szerint**, **Világos** vagy **Sötét**.
 
 <!-- chapter: cull -->
 
@@ -88,7 +88,7 @@ Válaszd ki, mekkora méretben nyomtatsz, és a Fotollection minden fotót arra 
 1. A **Nyomat- / exportméret** kártyán hagyd kiválasztva a **Nyomtatás** lehetőséget.
 2. Nyisd meg a méretlistát: **Szabványos (CEWE / EU)** a dm és a Rossmann fotókioszkjainak méreteivel (például *10 × 15 cm · 2:3*), **Eredeti** a fotó saját arányával, vágás nélkül, vagy **Egyéni** a saját méreteiddel.
 3. Minden méret mellett egy jelzés áll a kiválasztott fotóhoz: **Éles** (300 DPI vagy több), **Elfogadható** (150–299 DPI) vagy **Pixeles** (150 DPI alatt).
-4. Minden fotó a méret arányára vágódik, alapból középre igazítva; hogy mi maradjon meg, azt az előnézetben választhatod meg. A lista alatti **Tájolás** a fotó alakjától függetlenül **Álló** vagy **Fekvő** helyzetbe teszi a méretet, például egy álló fotót egy fekvő 15 × 5-ös csíkra; az előnézetben az **O** billentyű is ezt teszi.
+4. Minden fotó a méret arányára vágódik, alapból középre igazítva; hogy mi maradjon meg, azt az előnézetben választhatod meg. A lista alatti **Tájolás** a látott vagy a kipipált fotóknál, alakjuktól függetlenül **Álló** vagy **Fekvő** helyzetbe teszi a méretet, például egy álló fotót egy fekvő 15 × 5-ös csíkra; az előnézetben és az Egyszerű módban az **O** billentyű is ezt teszi. A négyzetes méretek, az **Eredeti** és az információs keret **Teljes fotó** beállítása megtartja az alakját, a kollázslapok maguktól fordulnak.
 5. A **3 mm-es szegély** minden oldalon 3 mm-es fehér vagy fekete szegélyt hagy, így a nyomat pontosan a kioszk méretét tartja.
 
 <!-- shot: manual-size | A nyomtatási méretek listája, minden méret mellett élességjelzéssel -->
@@ -215,7 +215,7 @@ A Fotollection a legtöbb gép RAW fájljait úgy nyitja meg, ahogy vannak, DNG-
 
 - Nyisd meg a mappát a szokásos módon. A bélyegképek és a legjobb kép javaslatai ugyanolyan gyorsan jelennek meg, mint JPEG-nél.
 - Az előnézet az első megnyitáskor dolgozza ki a teljes fotót, ami kb. egy másodperc; utána egy beállítás módosítása azonnali.
-- RAW-on a *Fényerő*, a *Csúcsfények*, az *Árnyékok*, a *Meleg / hideg* és az *Árnyalat* a gép saját adatain dolgozik: a csúcsfények lehúzása részleteket hoz vissza a fehér közeléből.
+- RAW-on a *Fényerő*, a *Csúcsfények*, az *Árnyékok*, a *Meleg / hideg* és az *Árnyalat* a gép saját adatain dolgozik: a csúcsfények lehúzása részleteket hoz vissza a fehér közeléből. Ahol a gép kiégetett egy eget, egy lámpát vagy egy felhőt, a színét abból építi újra, amit a szenzor még látott, így a *Fényerő* vagy a *Csúcsfények* lehúzása kék eget hoz vissza, nem szürke foltot.
 - Egy RAW-fotó **Semleges** színnel nyílik meg. A *RAW színek* kártyán a **Mint a gép JPEG-je** a gép saját kontrasztját és színeit adja neki; a *Minden RAW fotóra* minden RAW-ra.
 - Linuxon és Windowson a RAW a Fotollectionbe épített olvasóval nyílik meg, telepíteni semmit nem kell.
 
@@ -297,9 +297,10 @@ Egy kioszkban nyomtatott kép feladható képeslappá válik: az egyik felén eg
 
 1. Kollázs módban kapcsold be a **Képeslap** kapcsolót a lapok fölötti sávban. Minden fotó saját lapot kap, és a panelen megjelenik a **Képeslap** kártya.
 2. A **Fekvő** balra teszi a fotót és jobbra a lapot, az **Álló** felülre a lapot és alulra a fotót. Jobb felül egy szaggatott bélyegkeret, alul az üzenet és a cím sorai.
-3. A **Szöveg a képeslapon** kártyán írd be az **Üzenet** (legfeljebb 400 karakter) és a **Cím** (legfeljebb 200 karakter) mezőt, vagy hagyd üresen a sorokat, és írj kézzel. Választhatsz betűtípust (**Írógép**, **Kézírás** vagy a sajátod), méretet és tintát (**Fekete**, **Kék**, **Szépia** vagy **Piros**).
-4. **Egy cím egy egész sorozatnak:** ha egy lapra beírtad a címet, a **Használat ezekhez** a többi cím nélküli lapra is ráteszi. A **Legutóbbi címek** az ezen a gépen legutóbb beírt címeket listázza.
-5. Az **Exportálás** képeslaponként egy fájlt ír.
+3. A **Szöveg a képeslapon** kártyán írd be az **Üzenet** (legfeljebb 400 karakter) és a **Cím** (legfeljebb 200 karakter, álló lapon 5 sorban) mezőt, vagy hagyd üresen a sorokat, és írj kézzel. Választhatsz betűtípust (**Írógép**, **Kézírás** vagy a sajátod), méretet és tintát (**Fekete**, **Kék**, **Szépia** vagy **Piros**).
+4. A **Postai feladás** a *Képeslap* kártyán alapból be van kapcsolva: fekvő lapon alul 15 mm-t hagy szabadon a posta válogatókódjának; a fotó egy vékony vonalnál ér véget, alul hét nyelven „postal use” áll, a cím pedig 15 mm-rel a jobb szél előtt véget ér. Álló lapon a sáv a jobb szélen fut, a bélyegkeret tőle balra. Egy megtartott laphoz kapcsold ki. A képeslap fehér papírra nyomtatódik, a 3 mm-es szegélye fehér.
+5. **Egy cím egy egész sorozatnak:** ha egy lapra beírtad a címet, a **Használat ezekhez** a többi cím nélküli lapra is ráteszi. A **Legutóbbi címek** az ezen a gépen legutóbb beírt címeket listázza.
+6. Az **Exportálás** képeslaponként egy fájlt ír.
 
 <!-- shot: manual-postcard | Collage mód bekapcsolt Postcard-dal: prágai villamosok éjjel, minden nyomaton egy fotó, amely kitölti a felét, és egy képeslap hátoldala bélyegkerettel és írósorokkal -->
 
@@ -315,7 +316,7 @@ Egy kioszkban nyomtatott kép feladható képeslappá válik: az egyik felén eg
 - **Sok fotó egyszerre:** Pro módban a galéria jobb oszlopának **Szín** fülén válassz lookot, LUT-ot vagy presetet, majd az **Alkalmazás … fotóra** a kipipált fotóknak adja, vagy ha nincs kipipálva semmi, minden látható fotónak. A **⌘Z** az egészet visszavonja.
 - **Kedvencek:** négy csúszka (**Fényerő**, **Kontraszt**, **Meleg / hideg**, **Telítettség**); a **Több** hozzáadja a **Csúcsfények**, **Árnyékok**, **Árnyalat** és **Élénkség** csúszkát. Dupla kattintással 0-ra áll vissza a csúszka.
 - **Színkeverő:** válaszd a **Színezet**, **Tel.**, **Vil.** vagy **Összes** lehetőséget, és mozgasd a nyolc szín csúszkáját.
-- **Eszközök:** **Párátlanítás**, **Fakítás**, **Árnyékok színezése**, **Csúcsfények színezése** és **Fekete-fehér**.
+- **Eszközök:** **Párátlanítás**, **Fakítás**, **Árnyékok színezése**, **Csúcsfények színezése** és **Fekete-fehér**. A **Szemcse** filmszemcsét tesz a fotóra, a középtónusokban a legerősebbet; a **Szemcseméret** a finomtól a durváig állítja, milliméterben a nyomaton, így egy 10 × 15-ös és egy 20 × 30-as kép ugyanazt a szemcsét mutatja. A **Vignetta** sötétíti (−) vagy világosítja (+) a vágott fotó sarkait. Egy Lightroom-preset szemcséje és vignettája ide érkezik.
 - **Előtte és utána:** az **Előtte** (vagy a **\\**) a fotót a lookja nélkül mutatja; vagy tartsd nyomva a fotót, mint egy iPhone-on. A **Y** egymás mellé teszi a kettőt, a **⇧Y** kettéosztja.
 - **Másolás, beillesztés, visszaállítás:** **Beállítások másolása** (**⇧⌘C**), **Beállítások beillesztése** (**⇧⌘V**, kipipált fotóknál **⌥⇧⌘V**) és **Beállítások visszaállítása** (**⇧⌘R**). Windowson és Linuxon **Ctrl+Shift** a **⇧⌘** helyett.
 
@@ -334,6 +335,7 @@ Ezek a kártyák csak az adott fotó színét módosítják; **A look alkalmazá
 | Előnézet | **← →** | Előző / következő fotó |
 | Előnézet | **↑** / **↓** | A nyomtatási kosárba / félre, következő fotó |
 | Előnézet | **R** vagy **C** | A vágószerkesztő |
+| Előnézet, Egyszerű mód | **O** | A nyomtatási méret a másik irányba, álló vagy fekvő |
 | Előnézet | **Z**, kattintás a fotóra | Teljes nézet ↔ 1:1 |
 | Előnézet | **\\** | Előtte / utána |
 | Előnézet | **F** / **Tab** | Az ablak kitöltése / az oldalsó panelek elrejtése |
@@ -353,7 +355,7 @@ Ezek a kártyák csak az adott fotó színét módosítják; **A look alkalmazá
 
 A gép minden beállítása egyetlen ablakban van: kattints a fogaskerékre az oldalsáv tetején, vagy nyomd meg a **⌘,** (Mac) vagy a **Ctrl+,** (Windows, Linux) billentyűt. A részek bal oldalt sorakoznak.
 
-- **Általános:** a nyelv, a megjelenés, a *Mozgás*, az *Új projektek* (amiből egy új projekt indul), a *Nyomatok* (egy kis fotollection.org minden nyomat sarkában, itt kikapcsolható) és a *Fotóelőnézet*.
+- **Általános:** a nyelv, a megjelenés, a *Mozgás*, az *Új projektek* (amiből egy új projekt indul), a *Nyomatok* (**Kis fotollection.org felirat**: alapból bekapcsolva, egy halk sor a szegély, a keret vagy a fotó egyik sarkában, a dátumtól távol; megosztásra exportált fotókon soha) és a *Fotóelőnézet*.
 - **RAM és gyorsítótár:** a gép memóriájának mekkora része jusson az előnézetekre (15, 25 vagy 40 %), a lemezes gyorsítótár mérete és a **Gyorsítótár ürítése**, valamint az **Előnézetek készítése a háttérben**, amellyel bármelyik fotó kb. 30 ms alatt nyílik meg. Az **Alapértelmezett** visszaállítja az alapértékeket, az **Automatikus** a gépedhez választ.
 - **Adatok:** a **Beállítások exportálása…** egyetlen `.fotosettings` fájlba menti a beállításaidat, lookjaidat, LUT-jaidat, betűtípusaidat és logóidat; a másik gépen a **Beállítások importálása…** hozza be őket. Itt van a **Beállítások visszaállítása** és az **Adatok törlése** is; a projektekhez és a fotókhoz sosem nyúl.
 - **Frissítések**, **Kézikönyv**, **Hiba jelentése** és **Újdonságok**.

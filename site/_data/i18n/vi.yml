@@ -83,7 +83,7 @@ looks_engine: "Render bằng chính engine của Fotollection, giống hệt khi
 tile_keys: "Phím tắt như Lightroom trong chế độ chỉnh ảnh toàn cửa sổ"
 tile_export: "Hộp thoại xuất ảnh, như Lightroom"
 yours_title: "Theo ý bạn"
-yours_lead: "Sáng hay tối, tiếng Anh hay tiếng Việt, chọn trong Cài đặt hoặc theo máy tính của bạn."
+yours_lead: "Sáng hay tối, tiếng Việt, tiếng Anh, tiếng Đức hay tiếng Hungary, chọn trong Cài đặt hoặc theo máy tính của bạn."
 yours_en_light: "English · sáng"
 yours_en_dark: "English · tối"
 yours_vi_light: "Tiếng Việt · sáng"

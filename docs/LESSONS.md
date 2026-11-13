@@ -84,6 +84,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - A check covers only what it reads and the cases it has: widen what it reads, walk folds, give states the demo lacks a stress view. Kept by: `ui-check` stress views.
 - A check runs as the app runs: scroll bars, fonts, the window's chrome, popups opening both ways. Kept by: the harness's scroll bars, UI-LAYOUT-021's macOS case.
 - Never chain on a piped gate: run a gate once on its own, then chain with `&&`. Kept by: no machine check yet.
+- A harness waits only for what the screen shows (a lazy picture out of view never loads in WebKit), and a pass that stops early is read as a failure of every view after it. Kept by: `shoot.mjs` `open()`.
 
 ### docs
 
@@ -111,6 +112,14 @@ Read this table in full before any task; then read in full every entry whose Are
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
 ## 2026-11-13
+
+### The Vietnamese WebKit pass stopped on lazy pictures, with the Prague photos in the demo (UI check)
+
+- **Area:** checks
+- **Seen:** the release's `ui-check` with the new recording (35 photos, the owner's Prague set) stopped the Vietnamese WebKit pass at its 700 px stress view on a 30 s timeout, every time; the matrix's summary showed only the three English picture diffs, as the stop prints no `UI-` line.
+- **Why:** `open()` waited for every `<img>` to be complete; the gallery's thumbnails are `loading="lazy"`, and WebKit never loads one out of view, so with more photos than a 700 px window shows the wait never ended (Chromium passed).
+- **Fix:** `open()` waits for every picture that is complete or lazy and out of view; the pass then ran through and its baselines were approved.
+- **Rule:** a harness waits for what the screen shows, never for the whole page; read a check's whole output, since a pass that stops early hides the checks after it.
 
 ### A new page on an old stylesheet hid the Apple logo (FR-021)
 

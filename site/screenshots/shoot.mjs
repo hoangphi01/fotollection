@@ -356,7 +356,15 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
   // The gallery shows thumbnails; Simple mode a preview, Collage mode sheets (FR-048).
   // A part broken on purpose may be the one with the photos (UI-STATE-010).
   if (!fault) await page.waitForSelector('img[src*="/thumb/"], img[src*="/preview/"], img[src*="/sheet/"]')
-  await page.waitForFunction(() => [...document.images].every((i) => i.complete))
+  // Every picture on screen loaded; a lazy one out of view never loads in WebKit (LESSONS
+  // 2026-11-13: 35 photos in a 700 px window), so it is not waited for.
+  await page.waitForFunction(() =>
+    [...document.images].every((i) => {
+      if (i.complete) return true
+      const r = i.getBoundingClientRect()
+      return i.loading === 'lazy' && (r.bottom < 0 || r.top > innerHeight || r.right < 0 || r.left > innerWidth)
+    }),
+  )
   // The start-up screen (FR-060) fades out once start-up is over: never shoot it.
   if (!fault) await page.waitForSelector('#splash', { state: 'detached' })
   return { context, page }

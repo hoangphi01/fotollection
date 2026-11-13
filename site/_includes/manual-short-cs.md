@@ -4,7 +4,7 @@
 
 Fotollection pracuje se složkami fotek, které už máš. Čte je tam, kde jsou, a nikdy žádný soubor nepřesune, nepřejmenuje ani nezmění.
 
-Při prvním spuštění ukáže pět krátkých stránek se základy (znovu přes Settings → General → *Show the welcome again*). Celá příručka je i v aplikaci, offline: Settings → **Manual**.
+Při prvním spuštění začne Fotollection v jazyce tvého počítače a otevře se na stránce **Language**: pozdrav v každém jazyce a seznam jazyků, jedno kliknutí přepne. Pak ukáže pět krátkých stránek se základy (znovu přes Settings → General → *Show the welcome again*). Celá příručka je i v aplikaci, offline: Settings → **Manual**.
 
 1. **Otevři složku:** klikni na **Open folder** (ikona složky vedle *Library* na postranním panelu), nebo složku přetáhni kamkoli do okna. Přijdou i její podsložky. Fotollection čte JPEG, PNG, HEIC a RAW z fotoaparátu.
 2. **Postranní panel** pod *Library* ukazuje **Workspace** (všechny fotky ze všech složek kromě odložených), **Print basket** a **Set aside** (kapitola 4) a každou složku s počtem fotek. **×** složku odebere z knihovny, soubory zůstanou na disku.
@@ -16,7 +16,7 @@ Při prvním spuštění ukáže pět krátkých stránek se základy (znovu př
 
 **Tři režimy:** tlačítka nahoře na postranním panelu přepínají mezi **Simple** (jedna fotka po druhé: kapitola 18), **Collage** (dvě fotky na jednom tisku: kapitola 19, nebo pohlednice: kapitola 20) a **Pro**, plnou aplikací, kterou popisuje tato příručka. Přepínáš je klávesami **Cmd/Ctrl+1**, **2** a **3**.
 
-**Jazyk a vzhled:** otevři **Settings** (ozubené kolo nahoře na postranním panelu, nebo **⌘,** / **Ctrl+,**) a pod **Language** v *General* vyber jazyk. Tři tlačítka dole na postranním panelu nastaví vzhled: **Follow the system**, **Light** nebo **Dark**.
+**Jazyk a vzhled:** otevři **Settings** (ozubené kolo nahoře na postranním panelu, nebo **⌘,** / **Ctrl+,**) a pod **Language** v *General* vyber jazyk: English, Deutsch, Magyar nebo Tiếng Việt. Tři tlačítka dole na postranním panelu nastaví vzhled: **Follow the system**, **Light** nebo **Dark**.
 
 <!-- chapter: cull -->
 
@@ -99,7 +99,7 @@ Vyber formát, ve kterém budeš tisknout, a Fotollection na něj ořízne každ
 1. V kartě **Print / export size** nech vybrané **Print**.
 2. Otevři seznam formátů: **Standard (CEWE / EU)** jsou formáty fotokiosků v dm a Rossmannu, třeba *10 × 15 cm · 2:3*; **Original** zachová vlastní poměr stran fotky bez ořezu; **Custom** jsou formáty, které sis přidal.
 3. Každý formát má pro vybranou fotku odznak: **Sharp** (300 DPI a víc), **Acceptable** (150–299 DPI) nebo **Pixelated** (pod 150 DPI). Pod seznamem je řádek, jak velká se fotka vytiskne ostře.
-4. Každá fotka se ořízne na poměr formátu, ve výchozím stavu na střed. Co zůstane, zvolíš v náhledu (kapitola 6). **Orientation** pod seznamem položí formát **Upright** nebo **Flat** bez ohledu na tvar fotky, třeba svislou fotku na ležatý pruh 15 × 5; v náhledu stačí klávesa **O**.
+4. Každá fotka se ořízne na poměr formátu, ve výchozím stavu na střed. Co zůstane, zvolíš v náhledu (kapitola 6). **Orientation** pod seznamem položí formát **Upright** nebo **Flat** pro zobrazenou nebo zaškrtnuté fotky bez ohledu na jejich tvar, třeba svislou fotku na ležatý pruh 15 × 5; v náhledu a v režimu Simple stačí klávesa **O**. Čtvercové formáty, **Original** a **Fit whole photo** rámečku s údaji si tvar nechají, listy v Collage se otočí samy.
 5. **3 mm border** přidá na každou stranu okraj 3 mm, **White** nebo **Black**, a tisk si zachová přesný formát kiosku.
 
 <!-- shot: manual-size | Seznam formátů tisku, u každého odznak ostrosti -->
@@ -238,7 +238,7 @@ Fotollection otevře soubory RAW většiny fotoaparátů tak, jak jsou, bez pře
 
 - Složku otevři jako obvykle. Miniatury a návrhy nejlepších snímků jsou tu stejně rychle jako u JPEG, protože používají malý náhled uvnitř každého souboru RAW.
 - Náhled tisku vyvolá celou fotku při prvním otevření, asi za sekundu; změna nastavení je pak okamžitá.
-- Na fotce RAW pracují *Brightness*, *Highlights*, *Shadows*, *Warm / cool* a *Tint* s vlastními daty fotoaparátu: stažení světel vrátí detail u bílé a stíny se zvednou s menším pruhováním.
+- Na fotce RAW pracují *Brightness*, *Highlights*, *Shadows*, *Warm / cool* a *Tint* s vlastními daty fotoaparátu: stažení světel vrátí detail u bílé a stíny se zvednou s menším pruhováním. Kde fotoaparát přepálil oblohu, lampu nebo mrak, barva se dopočítá z toho, co senzor ještě viděl, takže stažení *Brightness* nebo *Highlights* vrátí modrou oblohu, ne šedou skvrnu.
 - Fotka RAW se otevře **Neutral**. Karta *RAW colour* ji změní na **Like the camera's JPEG**, s kontrastem a barvami, které ukazoval displej fotoaparátu; *Apply to all RAW photos* to udělá pro všechny RAW.
 - Na Linuxu a Windows se RAW otevře zabudovanou čtečkou, bez instalace čehokoli.
 
@@ -324,8 +324,9 @@ Tisk z kiosku se stane pohlednicí, kterou můžeš poslat: fotka na jedné polo
 1. V režimu Collage zapni přepínač **Postcard** v liště nad listy. Každá fotka teď tvoří vlastní list a v panelu se objeví karta **Postcard**.
 2. **Held**: **Landscape** dá fotku vlevo a kartu vpravo, **Portrait** kartu nahoru a fotku dolů. Vpravo nahoře je čárkované **pole na známku** a dole **řádky na psaní**: **3 lines** nebo **4 lines** na vzkaz, pak 3 na adresu.
 3. Polovina s fotkou funguje jako dřív.
-4. **Text on the postcard:** vyber pohlednici a napiš **Message** (až 400 znaků) a **Address** (až 200 znaků), nebo nech řádky prázdné a piš rukou. Karta nastaví i **Font**, **Size** a **Ink**; co se nevejde, označí červený **!**.
-5. **Export** zapíše jeden soubor na pohlednici.
+4. **Text on the postcard:** vyber pohlednici a napiš **Message** (až 400 znaků) a **Address** (až 200 znaků, na svislé pohlednici v 5 řádcích), nebo nech řádky prázdné a piš rukou. Karta nastaví i **Font**, **Size** a **Ink**; co se nevejde, označí červený **!**.
+5. **Postal use** v kartě *Postcard*, ve výchozím stavu zapnuté, nechá na ležaté pohlednici dole 15 mm volných pro třídicí kód pošty: fotka končí tenkou čarou, dole běží „postal use“ v sedmi jazycích a adresa končí 15 mm od pravého okraje. Na svislé pohlednici běží pruh podél pravého okraje a pole na známku je vlevo od něj. Pro pohlednici, kterou si necháš, ho vypni. Pohlednice se tiskne na bílý papír, její 3mm okraj je bílý.
+6. **Export** zapíše jeden soubor na pohlednici.
 
 <!-- shot: manual-postcard-apply | Karta Postcard text: napsaná adresa a pod ní poznámka s Use for them -->
 
@@ -346,7 +347,7 @@ Tisk z kiosku se stane pohlednicí, kterou můžeš poslat: fotka na jedné polo
 - **Hodně fotek najednou:** v galerii režimu Pro má pravý sloupec karty **Colour** a **Print**. V **Colour** vyber look, LUT nebo preset, nastav **Amount** a **Apply to … photos** ho dá zaškrtnutým fotkám, nebo všem zobrazeným. **⌘Z** vrátí celou dávku.
 - **Faves** ukazuje čtyři posuvníky: **Brightness**, **Contrast**, **Warm / cool** a **Saturation**. **More** přidá **Highlights**, **Shadows**, **Tint** a **Vibrance**. Dvojklik posuvník vrátí na 0.
 - **Color mixer**: nahoře vyber **Hue**, **Sat**, **Lum** nebo **All** a posuň posuvník každé z osmi barev.
-- **Tools**: **Dehaze**, **Fade**, tónování stínů a světel a **Black and white**.
+- **Tools**: **Dehaze**, **Fade**, tónování stínů a světel a **Black and white**. **Grain** přidá filmové zrno, nejsilnější ve středních tónech; **Grain size** ho nastaví od jemného po hrubé v milimetrech na tisku, takže 10 × 15 i 20 × 30 ukážou stejné zrno. **Vignette** ztmaví (−) nebo zesvětlí (+) rohy oříznuté fotky. Zrno a vinětace z presetu Lightroomu přijdou sem.
 - **Before** (nebo **\\**) ukáže fotku bez looku. Nebo fotku podrž, jako na iPhonu. **Y** ukáže před a po vedle sebe, **⇧Y** rozdělené.
 - **Copy settings** (**⇧⌘C**), **Paste settings** (**⇧⌘V**) a **Reset settings** (**⇧⌘R**) přenášejí look, ořez a datum z jedné fotky na jiné, jako v Lightroomu. Na Windows a Linuxu je to **Ctrl+Shift**.
 
@@ -366,6 +367,7 @@ Datum na fotce, rámeček a okraj se nikdy nebarví. V náhledu listu v režimu 
 | Náhled | **← →** | Předchozí / další fotka |
 | Náhled | **↑** / **↓** | Do košíku / odložit, další fotka |
 | Náhled | **R** nebo **C** | Editor ořezu |
+| Náhled, Simple | **O** | Položit formát tisku obráceně, svisle nebo naležato |
 | Náhled | **\\** | Před / po |
 | Náhled | **Z**, kliknutí na fotku | Celá fotka ↔ 1:1 |
 | Náhled | **J** / **W** | Přepálená a slitá místa / vyvážení bílé |
@@ -387,7 +389,7 @@ Pole nebo posuvník se zaměřením si nechává vlastní šipky: klikni na fotk
 
 Všechna nastavení tohoto počítače jsou v jednom okně: ozubené kolo nahoře na postranním panelu, **⌘,** (Mac) nebo **Ctrl+,** (Windows, Linux). Oddíly jsou vypsané vlevo.
 
-- **General:** jazyk, vzhled, *Motion*, *New projects* (výchozí nastavení tisku nového projektu), *Prints* (malé fotollection.org v rohu každé fotky, tady se dá vypnout) a *Photo preview* (v okně, nebo přes celé okno aplikace).
+- **General:** jazyk, vzhled, *Motion*, *New projects* (výchozí nastavení tisku nového projektu), *Prints* (**Print a small fotollection.org**: ve výchozím stavu zapnuté, nenápadný řádek v rohu okraje, rámečku nebo fotky, daleko od data; nikdy na fotkách exportovaných ke sdílení) a *Photo preview* (v okně, nebo přes celé okno aplikace).
 - **RAM & cache:** **Share of this computer's RAM** pro náhledy (15, 25 nebo 40 %), **Cache on disk** s limitem a **Clear cache** a **Prepare previews in the background**, díky kterému se každá fotka otevře asi za 30 ms. **Default** vrátí výchozí hodnoty, **Auto** je zvolí podle tohoto počítače.
 - **Data:** **Export settings…** uloží tvoje nastavení, looky, LUTy, písma a loga fotoaparátů do jednoho souboru `.fotosettings`; na jiném počítači ho načte **Import settings…** (**Merge** nebo **Replace**). **Reset settings** nebo **Erase data** dají čistý začátek; projekty a fotky zůstanou netknuté.
 - **Updates**, **Manual**, **Report a problem** a **What's new**.

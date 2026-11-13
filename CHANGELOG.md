@@ -10,6 +10,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: **Deutsch and Magyar**, the whole app in German and Hungarian, and the first launch speaks your computer's language.
+- New: **blown highlights come back** in RAW photos: pull *Brightness* or *Highlights* down and a clipped sky turns blue again.
+- New: **Grain and Vignette**, the grain sized in millimetres on the print, and Lightroom presets' grain and vignette applied.
+- New: **turn the print size** for a photo, so a portrait photo prints across a flat 15 × 5 strip.
+- Fixes: **postcards leave the post its room**, so the post's code never prints over the address.
+- UI update: a warmer look, wood and cream light behind the panels.
+
 ### Added
 
 - **Blown highlights come back** (FR-112): where a RAW's sky, lamp or cloud clipped, its colour is rebuilt from the channels that did not clip and its brightness kept above white, so pulling *Brightness* or *Highlights* down brings back a blue sky instead of a flat grey patch. Chosen by measurement on real frames.

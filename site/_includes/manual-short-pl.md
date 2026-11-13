@@ -4,7 +4,7 @@
 
 Fotollection pracuje na folderach zdjęć, które już masz. Czyta je tam, gdzie leżą, i nigdy nie przenosi, nie zmienia nazwy ani nie modyfikuje żadnego pliku.
 
-Przy pierwszym uruchomieniu pięć krótkich stron pokazuje podstawy; Settings → General → *Show the welcome again* przywraca je. Cała instrukcja jest też w aplikacji, także offline: Settings → **Manual**.
+Przy pierwszym uruchomieniu Fotollection startuje w języku twojego komputera i otwiera się na stronie **Language**: powitanie w każdym języku i lista języków, jedno kliknięcie zmienia język. Potem pięć krótkich stron pokazuje podstawy; Settings → General → *Show the welcome again* przywraca je. Cała instrukcja jest też w aplikacji, także offline: Settings → **Manual**.
 
 1. **Otwórz folder:** kliknij **Open folder** (ikona folderu obok *Library* na pasku bocznym) albo upuść folder w dowolnym miejscu okna. Podfoldery wczytają się razem z nim. Fotollection czyta JPEG, PNG, HEIC i RAW z aparatu.
 2. **Pasek boczny** pokazuje pod *Library*: **Workspace** (wszystkie zdjęcia, które są jeszcze w grze), **Print basket** i **Set aside** (dwa schowki, rozdział 4) oraz każdy folder z liczbą zdjęć. Kliknij folder, by zobaczyć tylko jego zdjęcia; Ctrl/⌘-kliknięcie pokazuje kilka naraz. **×** na folderze usuwa go z biblioteki, a pliki zostają na dysku.
@@ -16,7 +16,7 @@ Przy pierwszym uruchomieniu pięć krótkich stron pokazuje podstawy; Settings �
 
 **Trzy tryby:** przyciski u góry paska bocznego przełączają między **Simple** (jedno zdjęcie naraz, rozdział 18), **Collage** (dwa zdjęcia na jednej odbitce albo pocztówki, rozdziały 19 i 20) i **Pro**, czyli pełną aplikacją opisaną w tej instrukcji. Zdjęcia, koszyk i ustawienia są wspólne dla wszystkich trybów. Skróty: **Cmd/Ctrl+1**, **2** i **3**.
 
-**Język i wygląd:** otwórz **Settings** (koło zębate u góry paska bocznego albo **⌘,** / **Ctrl+,**) i wybierz język w *General*. Trzy przyciski u dołu paska bocznego ustawiają motyw: **Follow the system**, **Light** lub **Dark**.
+**Język i wygląd:** otwórz **Settings** (koło zębate u góry paska bocznego albo **⌘,** / **Ctrl+,**) i wybierz język w *General*: English, Deutsch, Magyar lub Tiếng Việt. Trzy przyciski u dołu paska bocznego ustawiają motyw: **Follow the system**, **Light** lub **Dark**.
 
 <!-- chapter: cull -->
 
@@ -93,7 +93,7 @@ Wybierz rozmiar, w jakim będziesz drukować, a Fotollection przytnie do niego k
 1. W karcie **Print / export size** zostaw zaznaczone **Print**.
 2. Otwórz listę rozmiarów: **Standard (CEWE / EU)** (rozmiary kiosków fotograficznych w dm i Rossmannie, jak *10 × 15 cm · 2:3*), **Original** (własne proporcje zdjęcia, bez kadrowania) albo **Custom** (twoje rozmiary).
 3. Każdy rozmiar ma plakietkę dla zaznaczonego zdjęcia: **Sharp** (300 DPI lub więcej), **Acceptable** (150–299 DPI) albo **Pixelated** (poniżej 150 DPI). Pod listą wiersz podaje, jak duże zdjęcie wydrukuje się ostro.
-4. Każde zdjęcie jest przycinane do proporcji rozmiaru, domyślnie na środku. Co zostaje, wybierzesz w podglądzie (rozdział 6). **Orientation** pod listą kładzie rozmiar **Upright** albo **Flat** niezależnie od kształtu zdjęcia, np. pionowe zdjęcie na poziomy pasek 15 × 5; w podglądzie robi to klawisz **O**.
+4. Każde zdjęcie jest przycinane do proporcji rozmiaru, domyślnie na środku. Co zostaje, wybierzesz w podglądzie (rozdział 6). **Orientation** pod listą kładzie rozmiar **Upright** albo **Flat** dla pokazanego lub zaznaczonych zdjęć, niezależnie od ich kształtu, np. pionowe zdjęcie na poziomy pasek 15 × 5; w podglądzie i w trybie Simple robi to klawisz **O**. Kwadratowe rozmiary, **Original** i **Fit whole photo** ramki z danymi zachowują swój kształt, a arkusze w Collage obracają się same.
 5. **3 mm border** dodaje białe lub czarne obramowanie 3 mm z każdej strony, a odbitka zachowuje dokładny rozmiar z kiosku.
 
 <!-- shot: manual-size | Lista rozmiarów odbitek z plakietką ostrości przy każdym -->
@@ -225,7 +225,7 @@ Fotollection otwiera pliki RAW większości aparatów takimi, jakie są, bez kon
 
 - Otwórz folder jak zwykle. Miniatury i podpowiedzi najlepszych ujęć pojawiają się tak szybko jak dla JPEG-ów, bo korzystają z podglądu zapisanego w każdym pliku RAW.
 - Podgląd wydruku wywołuje pełne zdjęcie przy pierwszym otwarciu, co trwa około sekundy; potem zmiana ustawienia działa od razu.
-- Na zdjęciu RAW suwaki *Brightness*, *Highlights*, *Shadows*, *Warm / cool* i *Tint* pracują na danych aparatu, jak w edytorze RAW: przyciemnienie świateł odzyskuje detal przy bieli.
+- Na zdjęciu RAW suwaki *Brightness*, *Highlights*, *Shadows*, *Warm / cool* i *Tint* pracują na danych aparatu, jak w edytorze RAW: przyciemnienie świateł odzyskuje detal przy bieli. Gdzie aparat przepalił niebo, lampę albo chmurę, jej kolor jest odtwarzany z tego, co sensor jeszcze widział, więc zmniejszenie *Brightness* lub *Highlights* przywraca niebieskie niebo, a nie szarą plamę.
 - Zdjęcie RAW otwiera się jako **Neutral**. Karta *RAW colour* zmienia je na **Like the camera's JPEG**, z kontrastem i kolorami z ekranu aparatu; *Apply to all RAW photos* robi to dla wszystkich RAW-ów.
 - Na Windows i Linuksie RAW otwiera się przez czytnik wbudowany w Fotollection, bez niczego do instalowania.
 
@@ -307,9 +307,10 @@ Odbitka z kiosku staje się pocztówką do wysłania: zdjęcie na jednej połowi
 
 1. W trybie Collage włącz przełącznik **Postcard** na pasku nad arkuszami, obok **Select**. Każde zdjęcie tworzy teraz własny arkusz, a w panelu pojawia się karta **Postcard**.
 2. **Held:** **Landscape** kładzie zdjęcie po lewej, a kartę po prawej; **Portrait** kładzie kartę na górze, a zdjęcie pod nią. Pocztówka ma pole na znaczek i linie do pisania (**3 lines** lub **4 lines** na wiadomość, 3 na adres).
-3. **Tekst:** wybierz pocztówkę i wpisz **Message** (do 400 znaków) i **Address** (do 200 znaków), albo zostaw linie puste, by pisać ręcznie. Ta sama karta ustawia **Font**, **Size** i **Ink**. Czerwony **!** oznacza tekst, który się nie mieści.
+3. **Tekst:** wybierz pocztówkę i wpisz **Message** (do 400 znaków) i **Address** (do 200 znaków, na pionowej karcie w 5 liniach), albo zostaw linie puste, by pisać ręcznie. Ta sama karta ustawia **Font**, **Size** i **Ink**. Czerwony **!** oznacza tekst, który się nie mieści.
 4. **Jeden adres dla zestawu:** wpisz adres na jednej karcie i kliknij **Use for them**, by dać go pozostałym kartom bez adresu. **Recent addresses** pokazuje ostatnio wpisane adresy.
-5. **Export** zapisuje jeden plik na pocztówkę, na przykład `P1000123-postcard.jpg`.
+5. **Postal use** w karcie *Postcard*, domyślnie włączone, zostawia na dole poziomej karty 15 mm wolne na kod sortujący poczty: zdjęcie kończy się cienką linią, u dołu biegnie „postal use” w siedmiu językach, a adres kończy się 15 mm od prawej krawędzi. Na pionowej karcie pasek biegnie wzdłuż prawej krawędzi, a pole na znaczek jest na lewo od niego. Wyłącz je dla karty, którą zatrzymujesz. Pocztówka drukuje się na białym papierze, a jej obramowanie 3 mm jest białe.
+6. **Export** zapisuje jeden plik na pocztówkę, na przykład `P1000123-postcard.jpg`.
 
 <!-- shot: manual-postcard | Tryb Collage z włączoną pocztówką: praskie tramwaje nocą, na każdej odbitce jedno zdjęcie wypełniające połowę i rewers pocztówki z polem na znaczek i liniami do pisania -->
 
@@ -323,7 +324,7 @@ Odbitka z kiosku staje się pocztówką do wysłania: zdjęcie na jednej połowi
 - **Wiele zdjęć naraz:** w galerii trybu Pro prawa kolumna ma karty **Colour** i **Print**. W **Colour** wybierz look, LUT lub preset, ustaw **Amount**, a **Apply to … photos** nada go zaznaczonym zdjęciom albo wszystkim widocznym. **⌘Z** cofa całą partię.
 - **Faves** ma cztery suwaki: **Brightness**, **Contrast**, **Warm / cool** i **Saturation**; **More** dodaje **Highlights**, **Shadows**, **Tint** i **Vibrance**. Dwuklik zeruje suwak.
 - **Color mixer:** wybierz **Hue**, **Sat**, **Lum** lub **All** i przesuń suwak każdego z ośmiu kolorów.
-- **Tools:** **Dehaze**, **Fade**, **Tint the shadows**, **Tint the highlights** i **Black and white**.
+- **Tools:** **Dehaze**, **Fade**, **Tint the shadows**, **Tint the highlights** i **Black and white**. **Grain** dodaje ziarno filmowe, najsilniejsze w półtonach; **Grain size** ustawia je od drobnego do grubego, w milimetrach na odbitce, więc 10 × 15 i 20 × 30 mają to samo ziarno. **Vignette** przyciemnia (−) lub rozjaśnia (+) rogi wykadrowanego zdjęcia. Ziarno i winieta z presetu Lightrooma trafiają tutaj.
 - **Before** (lub **\\**) pokazuje zdjęcie bez looku; możesz też przytrzymać zdjęcie, jak na iPhonie. **Y** pokazuje przed i po obok siebie, **⇧Y** z podziałem.
 - **Kopiowanie ustawień:** **Copy settings** (**⇧⌘C**), **Paste settings** (**⇧⌘V**) i **Reset settings** (**⇧⌘R**), jak w Lightroomie.
 
@@ -336,8 +337,8 @@ W trybie Collage kliknij zdjęcie na arkuszu, by zmienić tylko jego kolor, albo
 Najważniejsze skróty (na Windows i Linuksie Ctrl zamiast Cmd):
 
 - **Galeria i podgląd:** **0**–**5** gwiazdki, **P** / **X** / **U** wybór / odrzucenie / usunięcie flagi, **[** / **]** obrót o ćwierć w lewo / w prawo, **Enter** lub **Space** otwiera podgląd.
-- **Podgląd:** **← →** poprzednie / następne zdjęcie, **↑** do koszyka, **↓** na bok, **R** lub **C** kadrowanie, **\\** przed / po, **Y** obok siebie, **J** przepalenia, **W** balans bieli, **Z** dopasowanie ↔ 1:1, **F** całe okno, **Tab** panele, **E** / **I** karty *Edit* / *Info*, **⇧ Cmd/Ctrl E** eksport tego zdjęcia, **Esc** zamyka.
-- **Tryb Simple:** **↑** / **↓** zachowaj / odrzuć, **0**–**9** look o tym numerze, **← →** bez decyzji.
+- **Podgląd:** **← →** poprzednie / następne zdjęcie, **↑** do koszyka, **↓** na bok, **R** lub **C** kadrowanie, **O** rozmiar odbitki w drugą stronę (pionowo lub poziomo), **\\** przed / po, **Y** obok siebie, **J** przepalenia, **W** balans bieli, **Z** dopasowanie ↔ 1:1, **F** całe okno, **Tab** panele, **E** / **I** karty *Edit* / *Info*, **⇧ Cmd/Ctrl E** eksport tego zdjęcia, **Esc** zamyka.
+- **Tryb Simple:** **↑** / **↓** zachowaj / odrzuć, **0**–**9** look o tym numerze, **O** rozmiar w drugą stronę, **← →** bez decyzji.
 - **Edytor kadru:** **← →** prostowanie o stopień, **⌥ ← →** o dziesiątą część, **+** / **−** zoom, **Enter** gotowe.
 - **Wszędzie:** **Cmd/Ctrl+Z** cofnij, **Shift+Cmd/Ctrl+Z** ponów, **Cmd/Ctrl+1**, **2**, **3** tryby, **Cmd/Ctrl+S** zapisz projekt, **⌘,** / **Ctrl+,** Settings.
 
@@ -347,7 +348,7 @@ Najważniejsze skróty (na Windows i Linuksie Ctrl zamiast Cmd):
 
 Wszystkie ustawienia tego komputera są w jednym oknie: kliknij koło zębate u góry paska bocznego albo naciśnij **⌘,** (Mac) lub **Ctrl+,** (Windows, Linux). Sekcje są wymienione po lewej.
 
-- **General:** język, motyw, *Motion*, ustawienia startowe nowych projektów, *Prints* (małe fotollection.org w rogu każdego wydruku, tu można je wyłączyć), *Photo preview* (w oknie albo na całe okno) i *Show the welcome again*.
+- **General:** język, motyw, *Motion*, ustawienia startowe nowych projektów, *Prints* (**Print a small fotollection.org**: domyślnie włączone, dyskretna linia w rogu obramowania, ramki lub zdjęcia, z dala od daty; nigdy na zdjęciach eksportowanych do udostępnienia), *Photo preview* (w oknie albo na całe okno) i *Show the welcome again*.
 - **RAM & cache:** część pamięci RAM na podglądy (15, 25 lub 40 %), limit pamięci podręcznej na dysku i **Clear cache**, oraz **Prepare previews in the background**, dzięki któremu każde zdjęcie otwiera się w około 30 ms. **Default** przywraca ustawienia domyślne, a **Auto** dobiera je do komputera.
 - **Data:** **Export settings…** zapisuje ustawienia, looki, LUT-y, czcionki i logo aparatów w jednym pliku `.fotosettings`; na innym komputerze **Import settings…** wczytuje go przez **Merge** albo **Replace**. **Reset settings** i **Erase data** pozwalają zacząć od nowa; projekty i zdjęcia nigdy nie są ruszane.
 - **Updates**, **Manual**, **Report a problem** i **What's new**.

@@ -4,7 +4,7 @@
 
 Fotollection arbeitet mit den Fotoordnern, die du schon hast. Es liest sie dort, wo sie liegen, und verschiebt, benennt oder ändert nie eine Datei.
 
-Beim ersten Start nach einer Installation oder einem Update zeigen fünf kurze Seiten die Grundlagen; **Weiter** und **Zurück** blättern, **Los geht’s** schließt sie. Einstellungen → Allgemein → *Willkommen erneut zeigen* holt sie zurück. Dieses Handbuch steckt auch in der App, offline: Einstellungen → **Handbuch**.
+Beim ersten Start nach einer Installation oder einem Update öffnet Fotollection in der Sprache deines Computers auf der Seite **Sprache**: ein Gruß in jeder Sprache und die Liste der Sprachen, ein Klick wechselt. Danach zeigen fünf kurze Seiten die Grundlagen; **Weiter** und **Zurück** blättern, **Los geht’s** schließt sie. Einstellungen → Allgemein → *Willkommen erneut zeigen* holt sie zurück. Dieses Handbuch steckt auch in der App, offline: Einstellungen → **Handbuch**.
 
 1. **Ordner öffnen:** Klick auf **Ordner öffnen** (das Ordnersymbol neben *Bibliothek* in der Seitenleiste) oder zieh einen Ordner irgendwo auf das Fenster. Unterordner kommen mit. Gelesen werden JPEG, PNG, HEIC und Kamera-RAW.
 2. **Die Seitenleiste** listet unter *Bibliothek* den **Arbeitsbereich** (alle Fotos aus allen Ordnern, außer den zurückgelegten), den **Druckkorb**, **Zurückgelegt** und jeden Ordner mit seiner Anzahl. Klick auf einen Ordner zeigt nur seine Fotos; mit Ctrl/⌘-Klick oder **Ordner auswählen** siehst du mehrere zusammen. Das **×** an einem Ordner nimmt ihn aus der Bibliothek, die Dateien bleiben auf der Festplatte.
@@ -94,7 +94,7 @@ Wähl das Format, in dem du druckst; Fotollection schneidet jedes Foto darauf zu
 1. Lass in der Karte **Druck- / Exportformat** die Option **Druck** gewählt.
 2. Öffne die Formatliste: **Standard (CEWE / EU)** mit den Formaten der Fotoautomaten bei dm und Rossmann, **Original** für das eigene Seitenverhältnis des Fotos ohne Zuschnitt, oder **Eigene** für eigene Formate.
 3. Jedes Format trägt ein Abzeichen für das gewählte Foto: **Scharf** (300 DPI oder mehr), **Annehmbar** (150–299 DPI) oder **Verpixelt** (unter 150 DPI).
-4. Jedes Foto wird mittig zugeschnitten; was bleibt, wählst du in der Vorschau (Kapitel 6). **Ausrichtung** unter der Liste legt das Format **Hoch** oder **Quer**, egal wie das Foto steht, etwa ein Hochformat quer auf einen 15 × 5-Streifen; in der Vorschau tut es die Taste **O**.
+4. Jedes Foto wird mittig zugeschnitten; was bleibt, wählst du in der Vorschau (Kapitel 6). **Ausrichtung** unter der Liste legt das Format für das gezeigte oder die abgehakten Fotos **Hoch** oder **Quer**, egal wie das Foto steht, etwa ein Hochformat quer auf einen 15 × 5-Streifen; in der Vorschau und im Modus Einfach tut es die Taste **O**. Quadratische Formate, **Original** und **Ganzes Foto** des Info-Rahmens behalten ihre Form, Collage-Bögen drehen sich von selbst.
 5. **3-mm-Rand** legt einen weißen oder schwarzen Rand von 3 mm um den Abzug.
 
 <!-- shot: manual-size | Die Liste der Druckformate, an jedem Format ein Schärfe-Abzeichen -->
@@ -232,7 +232,7 @@ Fotollection öffnet die RAW-Dateien der meisten Kameras, wie sie sind, ohne Umw
 
 - Öffne den Ordner wie gewohnt. Vorschaubilder und Vorschläge für die beste Aufnahme erscheinen so schnell wie bei JPEG.
 - Die Druckvorschau entwickelt das ganze Foto beim ersten Öffnen, was etwa eine Sekunde dauert; danach ist jede Änderung sofort da.
-- Bei einem RAW arbeiten *Helligkeit*, *Lichter*, *Tiefen*, *Warm / kalt* und *Tönung* auf den eigenen Daten der Kamera: Zurückgenommene Lichter holen Detail nahe Weiß zurück.
+- Bei einem RAW arbeiten *Helligkeit*, *Lichter*, *Tiefen*, *Warm / kalt* und *Tönung* auf den eigenen Daten der Kamera: Zurückgenommene Lichter holen Detail nahe Weiß zurück. Wo die Kamera einen Himmel, eine Lampe oder eine Wolke abgeschnitten hat, wird ihre Farbe aus dem rekonstruiert, was der Sensor noch sah: Weniger *Helligkeit* oder *Lichter* bringt einen blauen Himmel zurück, keinen grauen Fleck.
 - Ein RAW öffnet sich **Neutral**. Die Karte *RAW-Farbe* macht es **Wie das JPEG der Kamera**, mit Kontrast und Farben, wie die Kamera sie zeigte; *Auf alle RAW-Fotos anwenden* tut das für jedes RAW.
 - Unter Windows und Linux öffnet sich RAW über den in Fotollection eingebauten Reader, ohne etwas zu installieren.
 
@@ -314,9 +314,10 @@ Zwei Fotos auf einem Abzug, wie eine Halbformat-Filmkamera: Ein 10 × 15-Abzug f
 Ein Abzug vom Automaten wird zur Postkarte, die du verschicken kannst: ein Foto auf der einen Hälfte, die Rückseite einer Postkarte auf der anderen.
 
 1. Schalte im Collage-Modus den Schalter **Postkarte** über den Bögen ein. Jedes Foto bekommt jetzt seinen eigenen Bogen.
-2. **Gehalten**: **Quer** setzt das Foto links und die Karte rechts, **Hoch** die Karte oben. Ein gestricheltes Briefmarkenfeld sitzt oben rechts, die Schreiblinien unten: **3 Zeilen** oder **4 Zeilen** für die Nachricht, dann 3 für die Adresse.
+2. **Gehalten**: **Quer** setzt das Foto links und die Karte rechts, **Hoch** die Karte oben. Ein gestricheltes Briefmarkenfeld sitzt oben rechts, die Schreiblinien unten: **3 Zeilen** oder **4 Zeilen** für die Nachricht, dann 3 für die Adresse (5 auf einer Karte im Hochformat).
 3. Tipp in der Karte **Text auf der Postkarte** **Nachricht** und **Adresse** ein, oder lass die Linien leer, um von Hand zu schreiben. Wähl **Getippter Text** (**Schreibmaschine**, **Handschrift** oder eine eigene Schrift), **Größe**, **Tinte** und eine optionale **Credit-Zeile**. Ein rotes **!** markiert Text, der nicht passt.
-4. **Export** schreibt eine Datei pro Postkarte.
+4. **Für die Post** in der Karte *Postkarte*, standardmäßig an, hält unten auf einer Querkarte 15 mm für den Sortiercode der Post frei: Das Foto endet an einer dünnen Linie, „postal use“ steht in sieben Sprachen am Fuß, und die Adresse endet 15 mm vor dem rechten Rand. Auf einer Hochkarte läuft der Streifen am rechten Rand, das Briefmarkenfeld links davon. Für eine Karte, die du behältst, schalte es aus. Eine Postkarte wird auf weißem Papier gedruckt, ihr 3-mm-Rand ist weiß.
+5. **Export** schreibt eine Datei pro Postkarte.
 
 **Eine Adresse für einen ganzen Satz:** Tipp die Adresse auf einer Karte; **Für sie nutzen** setzt sie auf jede Karte ohne Adresse. **Letzte Adressen** listet die zuletzt getippten.
 
@@ -338,7 +339,7 @@ Die Farbkarten wirken in der Vorschau eines Fotos, und nur auf dieses Foto; **Au
 
 - **Favoriten** zeigt **Helligkeit**, **Kontrast**, **Warm / kalt** und **Sättigung**; **Mehr** fügt **Lichter**, **Tiefen**, **Tönung** und **Dynamik** hinzu. Ein Doppelklick setzt einen Regler auf 0.
 - **Farbmischer**: Wähl **Ton**, **Sätt.**, **Lum.** oder **Alle** und bewege den Regler jeder der acht Farben.
-- **Werkzeuge**: **Dunst entfernen**, **Verblassen**, **Tiefen tönen**, **Lichter tönen** und **Schwarzweiß**.
+- **Werkzeuge**: **Dunst entfernen**, **Verblassen**, **Tiefen tönen**, **Lichter tönen** und **Schwarzweiß**. **Körnung** legt Filmkorn auf das Foto, am stärksten in den Mitteltönen; **Körnungsgröße** stellt es von fein bis grob ein, in Millimetern auf dem Abzug, so zeigen 10 × 15 und 20 × 30 dasselbe Korn. **Vignette** dunkelt (−) oder hellt (+) die Ecken des zugeschnittenen Fotos. Körnung und Vignette eines Lightroom-Presets landen hier.
 - **Vorher** (oder **\\**) zeigt das Foto ohne seinen Look; oder halte das Foto gedrückt, wie auf dem iPhone. **Y** zeigt vorher und nachher nebeneinander, **⇧Y** geteilt.
 - **Einstellungen kopieren** (**⇧⌘C**), **Einstellungen einfügen** (**⇧⌘V**) und **Einstellungen zurücksetzen** (**⇧⌘R**) übertragen Look, Zuschnitt und Datumsstempel von einem Foto auf andere, wie in Lightroom. Unter Windows und Linux heißt es **Ctrl+Shift** statt **⇧⌘**.
 
@@ -358,6 +359,7 @@ Datumsstempel, Info-Rahmen und Rand werden nie eingefärbt.
 | Vorschau | **← →** | Vorheriges / nächstes Foto |
 | Vorschau | **↑** / **↓** | In den Druckkorb / zurücklegen, nächstes Foto |
 | Vorschau | **R** oder **C** | Zuschnitt-Editor öffnen |
+| Vorschau, Modus Einfach | **O** | Druckformat andersherum legen, hoch oder quer |
 | Vorschau | **\\** | Vorher / nachher |
 | Vorschau | **Y**, **⇧Y** | Vorher und nachher nebeneinander, geteilt |
 | Vorschau | **J** / **W** | Beschneidung zeigen / Weißabgleich |
@@ -383,7 +385,7 @@ Datumsstempel, Info-Rahmen und Rand werden nie eingefärbt.
 
 Alle Einstellungen dieses Computers liegen in einem Fenster: Klick auf das Zahnrad oben in der Seitenleiste oder drück **⌘,** (Mac) bzw. **Ctrl+,** (Windows, Linux). Die Bereiche stehen links.
 
-- **Allgemein:** Sprache, Design, *Bewegung*, *Neue Projekte* (womit ein neues Projekt beginnt), *Abzüge* (ein kleines fotollection.org in einer Ecke jedes Abzugs, hier abschaltbar), *Fotovorschau* (im Fenster oder das App-Fenster füllend) und *Willkommen erneut zeigen*.
+- **Allgemein:** Sprache, Design, *Bewegung*, *Neue Projekte* (womit ein neues Projekt beginnt), *Abzüge* (**Ein kleines fotollection.org drucken**: standardmäßig an, eine leise Zeile in einer Ecke des Rands, des Rahmens oder des Fotos, weg vom Datum; nie auf Fotos, die zum Teilen exportiert werden), *Fotovorschau* (im Fenster oder das App-Fenster füllend) und *Willkommen erneut zeigen*.
 - **RAM & Cache:** der **Anteil am RAM dieses Computers** für Vorschauen (15, 25 oder 40 %), die Grenze des **Festplatten-Cache** mit **Cache leeren**, und **Vorschauen im Hintergrund erstellen**, damit jedes Foto in etwa 30 ms öffnet. **Standard** stellt die Standardwerte wieder her, **Auto** wählt sie für diesen Computer.
 - **Daten:** **Einstellungen exportieren…** speichert Einstellungen, Looks, LUTs, Schriften und Kameralogos in einer `.fotosettings`-Datei; **Einstellungen importieren…** holt sie auf einem anderen Computer, mit **Zusammenführen** oder **Ersetzen**. Hier siehst du auch, was Fotollection auf diesem Computer ablegt, und kannst mit **Einstellungen zurücksetzen** oder **Daten löschen** neu beginnen. Projekte und Fotos werden nie angetastet.
 - **Updates:** *Nach Updates suchen*.
