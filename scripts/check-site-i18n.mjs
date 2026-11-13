@@ -159,6 +159,16 @@ if (process.argv.includes('--build') && !problems.length) {
       }
       for (const [key, ids] of shown) problems.push(`${l.code} shows ${key} in English (${[...ids].join(', ')}): add it to site/_data/i18n/${l.code}.yml`)
     }
+    // Each language shows only its own print shops (languages.yml kiosk, owner 2026-11-14): no
+    // page of a Japanese-kiosk language names dm, Rossmann or CEWE, and no other page Japan's stores.
+    const MARKS = { eu: /logo-(dm|rossmann)\b|data-fn="fn_(dm|rossmann|cewe)"|CEWE Stiftung/, jp: /logo-(seven|lawson|familymart)\b|data-fn="fn_(seven|lawson|familymart|konbini)"/ }
+    for (const l of langs) {
+      const other = (l.kiosk ?? 'eu') === 'jp' ? 'eu' : 'jp'
+      for (const id of l.pages) {
+        const file = path.join(out, `${l.prefix}${pages[id]}`, 'index.html')
+        if (existsSync(file) && MARKS[other].test(readFileSync(file, 'utf8'))) problems.push(`${l.code}: its ${id} page shows the ${other} print shops, not its own (languages.yml kiosk)`)
+      }
+    }
   } finally {
     rmSync(out, { recursive: true, force: true })
   }

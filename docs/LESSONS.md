@@ -114,6 +114,14 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ## 2026-11-13
 
+### Every Japanese page named dm, Rossmann and CEWE in its notes (site, FR-021)
+
+- **Area:** text-i18n, checks
+- **Seen:** the Japanese home page showed Japan's convenience stores, but under the notes of every Japanese page, the subpages too, a fixed line said the photo services of dm and Rossmann are made by CEWE (the owner asked to check the subpages).
+- **Why:** the line `t.fn_cewe` is printed by the layout on every page, outside the numbered notes, and the kiosk switch (`pg.kiosk`) was only taught to the home page's section.
+- **Fix:** the layout prints it only where `pg.kiosk` is not `jp`; `check-site-i18n --build` now fails when a page shows the other branch's shops (their logos, notes or CEWE), shown failing on the old layout.
+- **Rule:** a switch by language reaches every place the switched thing is said, the layout and every page, not only the section that prompted it; the build check reads every page of every language for it.
+
 ### The Ko-fi button lost its colour to a rule written for the download buttons (site, FR-021)
 
 - **Area:** ui-blocks, checks
