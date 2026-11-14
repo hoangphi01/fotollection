@@ -40,7 +40,9 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v19 (FR-121): `ui.printCredit`, the small "fotollection.org" on prints, absent before (on).
 /// v19 also (FR-123): `ui.language` may be `hu`, Magyar; (FR-073) `collage.postcard.postalUse`,
 /// the post's coding zone kept free, absent before (on).
-pub const SCHEMA_VERSION: u32 = 19;
+/// v20 (FR-128): `ui.language` may be `ja`, 日本語; nothing else changes. A new value needs a new
+/// version once a version shipped: v0.14.1 reads v19, and meets a v20 file as a newer one.
+pub const SCHEMA_VERSION: u32 = 20;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Everything persisted in `settings.json`. `cameras` is a table keyed by `id`, with
@@ -1022,6 +1024,28 @@ mod tests {
         save(&path, &s)?;
         assert!(std::fs::read_to_string(&path)?.contains(r#""language": "de""#));
         assert_eq!(load(&path), Loaded::Ok(s));
+        Ok(())
+    }
+
+    /// FR-128: 日本語 is kept as `"ja"`, in a v20 file, and read back; a v19 file still loads.
+    #[test]
+    fn fr_128_japanese_survives_a_round_trip() -> std::io::Result<()> {
+        let dir = tempfile::tempdir()?;
+        let path = dir.path().join("settings.json");
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v20.json"))?;
+        let Loaded::Ok(read) = load(&path) else {
+            panic!("v20 should load");
+        };
+        assert_eq!(read.ui.language, crate::settings::Language::Ja);
+        save(&path, &read)?;
+        let text = std::fs::read_to_string(&path)?;
+        assert!(text.contains(r#""language": "ja""#) && text.contains(r#""schema_version": 20"#));
+        assert_eq!(load(&path), Loaded::Ok(read));
+        std::fs::write(&path, include_str!("../tests/fixtures/settings/v19.json"))?;
+        assert!(
+            matches!(load(&path), Loaded::Ok(_)),
+            "a v19 file still loads"
+        );
         Ok(())
     }
 

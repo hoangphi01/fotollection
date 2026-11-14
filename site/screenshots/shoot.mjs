@@ -24,7 +24,7 @@ const LOCALES = [english, pseudo(english)]
 const ENGLISH_WORDS = (function flat(tree) {
   return Object.values(tree).flatMap((v) => (typeof v === 'string' ? [v] : flat(v)))
 })(english)
-for (const code of ['de', 'hu', 'vi']) LOCALES.push(JSON.parse(await readFile(path.join(localeDir, `${code}.json`), 'utf8')))
+for (const code of ['de', 'hu', 'ja', 'vi']) LOCALES.push(JSON.parse(await readFile(path.join(localeDir, `${code}.json`), 'utf8')))
 
 /**
  * A pattern for a key's words in every locale, its plural forms too; a placeholder matches
@@ -308,7 +308,7 @@ async function open({ scenario, language, theme, width = Number(process.env.DEMO
     colorScheme: theme,
     // WebView2-style image URLs (http://fotothumb.localhost), which a test browser can serve.
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0 Safari/537.36',
-    locale: { vi: 'vi-VN', hu: 'hu-HU', de: 'de-DE' }[language] ?? 'en-GB',
+    locale: { vi: 'vi-VN', hu: 'hu-HU', de: 'de-DE', ja: 'ja-JP' }[language] ?? 'en-GB',
   })
   await context.route('**/*', async (route) => {
     const url = new URL(route.request().url())

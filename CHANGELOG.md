@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **日本語**, the whole app in Japanese (FR-128): the interface, the macOS menu in Apple's words, every error message and the short manual, with Lightroom's names for the sliders; a Japanese face (Noto Sans JP, 207 KB) comes with the app, so the words fit the same on every computer. Settings → General → Language.
+
 ### Changed
 
 - **Website in Korean** at `/ko/`: the home, Download, Performance, Wiki and code-signing pages and a short manual, with Korea's convenience stores (CU, GS25) and their 10 × 15 Printing Box prints in place of dm and Rossmann, set as Korean sites are: words never broken inside, bold Gothic headings.

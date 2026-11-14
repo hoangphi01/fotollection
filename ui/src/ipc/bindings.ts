@@ -1526,7 +1526,9 @@ export type Language = "en" | "vi" |
 /**  Magyar (FR-123), translated from English; see docs/LOCALIZATION.md. */
 "hu" | 
 /**  Deutsch (FR-127), translated from English; see docs/LOCALIZATION.md. */
-"de";
+"de" | 
+/**  日本語 (FR-128), translated from English; see docs/LOCALIZATION.md. Settings v20. */
+"ja";
 
 export type LengthUnit = "cm" | "in";
 

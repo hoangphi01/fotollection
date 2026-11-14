@@ -213,12 +213,54 @@ const DE: Strings = Strings {
     camera_save_title: "Fotos sichern in",
 };
 
+const JA: Strings = Strings {
+    file: "ファイル",
+    new: "新規プロジェクト",
+    open: "開く…",
+    save: "保存",
+    save_as: "別名で保存…",
+    edit: "編集",
+    undo: "取り消す",
+    redo: "やり直す",
+    cut: "カット",
+    copy: "コピー",
+    paste: "ペースト",
+    select_all: "すべてを選択",
+    copy_settings: "設定をコピー…",
+    paste_settings: "設定をペースト",
+    paste_settings_ticked: "チェック済みの写真に設定をペースト",
+    reset_settings: "設定をリセット",
+    window: "ウインドウ",
+    view: "表示",
+    mode_simple: "シンプル",
+    mode_collage: "コラージュ",
+    mode_professional: "Pro",
+    minimize: "しまう",
+    close_window: "ウインドウを閉じる",
+    about: "Fotollectionについて",
+    settings: "設定…",
+    help: "ヘルプ",
+    manual: "Fotollectionマニュアル",
+    hide: "Fotollectionを隠す",
+    hide_others: "ほかを隠す",
+    show_all: "すべてを表示",
+    quit: "Fotollectionを終了",
+    untitled: "名称未設定",
+    edited: "編集済み",
+    project_filter: "Fotollectionプロジェクト",
+    open_title: "プロジェクトを開く",
+    save_title: "プロジェクトを保存",
+    relink_title: "フォルダーを探す",
+    camera_save_title: "写真の保存先",
+};
+
 pub fn strings(language: Language) -> &'static Strings {
     match language {
         Language::En => &EN,
         Language::Vi => &VI,
         Language::Hu => &HU,
         Language::De => &DE,
+        Language::Ja => &JA,
     }
 }
 
@@ -229,7 +271,13 @@ mod tests {
     /// FR-123: every language names every menu item and dialog; none is left empty.
     #[test]
     fn fr_123_every_language_fills_every_string() {
-        for language in [Language::En, Language::Vi, Language::Hu, Language::De] {
+        for language in [
+            Language::En,
+            Language::Vi,
+            Language::Hu,
+            Language::De,
+            Language::Ja,
+        ] {
             let s = strings(language);
             for text in [
                 s.file,
@@ -276,5 +324,6 @@ mod tests {
         }
         assert_eq!(strings(Language::Hu).mode_collage, "Kollázs");
         assert_eq!(strings(Language::De).mode_simple, "Einfach");
+        assert_eq!(strings(Language::Ja).quit, "Fotollectionを終了");
     }
 }

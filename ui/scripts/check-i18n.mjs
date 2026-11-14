@@ -2,7 +2,9 @@
 // FR-020 gate, run by `npm run lint`:
 //  1. every locale has the same keys as en.json (plural suffixes normalized), none empty;
 //  2. no hard-coded user-visible text in components (JSX text or title / aria-label /
-//     placeholder / label / alt attributes), outside the shadcn primitives in components/ui.
+//     placeholder / label / alt attributes), outside the shadcn primitives in components/ui;
+//  3. every Japanese character the interface and its manual show is in the bundled face
+//     (FR-128), or `scripts/ja-font.sh` must cut it again.
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -52,6 +54,12 @@ for (const file of readdirSync(locales).filter((f) => f.endsWith('.json') && f !
   }
 }
 for (const [k, v] of en) if (typeof v !== 'string' || v.trim() === '') problems.push(`en.json: empty value for ${k}`)
+
+// The bundled Japanese face covers what Japanese shows (docs/LOCALIZATION.md §5).
+const face = new Set(readFileSync(join(root, 'assets/fonts/noto-sans-jp-subset.txt'), 'utf8').trim())
+const jaText = readFileSync(join(locales, 'ja.json'), 'utf8') + readFileSync(join(root, '../../site/_includes/manual-short-ja.md'), 'utf8')
+const lacking = [...new Set(jaText)].filter((c) => c.codePointAt(0) >= 0x3000 && !face.has(c))
+if (lacking.length) problems.push(`the Japanese face lacks ${lacking.join('')}: run scripts/ja-font.sh`)
 
 // Words that are the same in every language: names, units, formats.
 const ALLOWED = new Set(['Fotollection', 'DPI', 'MP', 'px', 'ISO', 'JPEG', 'RAW', 'PNG', 'EXIF', 'GPS', 'Esc', 'Enter', 'Space', 'cm', 'in', 'KB', 'MB', 'GB'])

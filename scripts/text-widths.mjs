@@ -43,23 +43,26 @@ const faces = await Promise.all(
     data: (await readFile(path.join(fontDir, `be-vietnam-pro-${subset}-500-normal.woff2`))).toString('base64'),
   })),
 )
+// Japanese in the face the app bundles for it (FR-128), as the interface's stack falls to it.
+const jaFace = (await readFile(path.join(root, 'ui/src/assets/fonts/noto-sans-jp-subset.woff2'))).toString('base64')
 
 const browser = await chromium.launch()
 const page = await browser.newPage()
 const widths = await page.evaluate(
-  async ({ faces, locales }) => {
+  async ({ faces, jaFace, locales }) => {
     for (const { data } of faces) {
       const face = new FontFace('BVP', `url(data:font/woff2;base64,${data})`, { weight: '500' })
       document.fonts.add(await face.load())
     }
+    document.fonts.add(await new FontFace('JP', `url(data:font/woff2;base64,${jaFace})`, { weight: '400 700' }).load())
     const ctx = document.createElement('canvas').getContext('2d')
-    ctx.font = '500 12px BVP'
+    ctx.font = '500 12px BVP, JP'
     const out = {}
     for (const [code, entries] of Object.entries(locales))
       out[code] = Object.fromEntries(entries.map(([k, v]) => [k, Math.round(ctx.measureText(v.replace(/\{\{[^}]+\}\}/g, '00')).width)]))
     return out
   },
-  { faces, locales: Object.fromEntries(Object.entries(locales).map(([c, m]) => [c, [...m]])) },
+  { faces, jaFace, locales: Object.fromEntries(Object.entries(locales).map(([c, m]) => [c, [...m]])) },
 )
 await browser.close()
 

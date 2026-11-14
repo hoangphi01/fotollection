@@ -6,6 +6,7 @@ import type { Language } from '@/ipc/bindings'
 import en from '@/locales/en.json'
 import de from '@/locales/de.json'
 import hu from '@/locales/hu.json'
+import ja from '@/locales/ja.json'
 import vi from '@/locales/vi.json'
 import { pseudo } from './pseudo'
 
@@ -29,6 +30,7 @@ export const LANGUAGES: LanguageInfo[] = [
   { value: 'de', label: 'Deutsch', hello: 'Hallo', guide: 'short', assets: 'en' },
   { value: 'hu', label: 'Magyar', hello: 'Szia', guide: 'short', assets: 'en' },
   { value: 'vi', label: 'Tiếng Việt', hello: 'Xin chào', guide: 'full', assets: 'vi' },
+  { value: 'ja', label: '日本語', hello: 'こんにちは', guide: 'short', assets: 'en' },
 ]
 
 /** The entry of an i18next language (`vi`, `hu-HU`…), English when it is none of ours. */
@@ -41,6 +43,7 @@ export const resources = {
   en: { translation: en },
   de: { translation: de },
   hu: { translation: hu },
+  ja: { translation: ja },
   vi: { translation: vi },
 } as const
 

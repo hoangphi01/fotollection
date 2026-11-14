@@ -65,10 +65,11 @@ else
   # Vietnamese, the longer words, in dark in WebKit, the engine of the Mac app.
   run MEASURE_LANG=en MEASURE_THEME=light
   run MEASURE_LANG=vi MEASURE_THEME=dark MEASURE_ENGINE=webkit
-  # Hungarian, German, and the pseudo-locale 40 % longer (FR-123, FR-127, FR-125): every word
+  # Hungarian, German, Japanese, and the pseudo-locale 40 % longer (FR-123, FR-127, FR-128, FR-125): every word
   # fits, smaller or cut with its hint; the words fitted are listed for the translator.
   run MEASURE_LANG=hu MEASURE_THEME=light
   run MEASURE_LANG=de MEASURE_THEME=dark
+  run MEASURE_LANG=ja MEASURE_THEME=light
   run MEASURE_LANG=en-XA MEASURE_THEME=dark
 fi
 scripts/resources.sh | tail -3 || true  # a warning, never a stop

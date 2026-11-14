@@ -20,13 +20,13 @@ Only the recording needs `tauri dev` quit (the app runs once at a time, and the 
 
 | Axis | Values |
 |---|---|
-| Language | English, Vietnamese, Hungarian (the longest words), the pseudo-locale `en-XA` (English 40 % longer, a `VITE_PSEUDO=1` build) |
+| Language | English, Vietnamese, Hungarian (the longest words), Japanese (its own face), the pseudo-locale `en-XA` (English 40 % longer, a `VITE_PSEUDO=1` build) |
 | Theme | light, dark |
 | Engine | Chromium; WebKit, the engine of the app on macOS and Linux |
 | Window width | 1180 px (the app's minimum), 1400, 1600 |
 | Data | the demo recording; the stress fixtures (a long custom print size chosen, every sheet shape, every Settings section, the welcome); each view checked again with every folded card open (`allChecksOpen`, the process review of 2026-11-12) |
 
-**When it runs:** on every push that changes the interface, English and Hungarian in light, Chromium (`QUICK=2`, the pre-push hook, CONTRIBUTING §4); the full matrix before a release: English, light, Chromium; Vietnamese, dark, WebKit; Hungarian, light; `en-XA`, dark; each at every width. A case marked "release" below is in both; "commit" runs with `npm run lint` too. `MEASURE=1 node site/screenshots/shoot.mjs` is the engine under the script ([site/screenshots/README.md](../site/screenshots/README.md)); the detectors are in [`checks.mjs`](../site/screenshots/checks.mjs).
+**When it runs:** on every push that changes the interface, English and Hungarian in light, Chromium (`QUICK=2`, the pre-push hook, CONTRIBUTING §4); the full matrix before a release: English, light, Chromium; Vietnamese, dark, WebKit; Hungarian, light; Japanese, light; `en-XA`, dark; each at every width. A case marked "release" below is in both; "commit" runs with `npm run lint` too. `MEASURE=1 node site/screenshots/shoot.mjs` is the engine under the script ([site/screenshots/README.md](../site/screenshots/README.md)); the detectors are in [`checks.mjs`](../site/screenshots/checks.mjs).
 
 ## 2. Rules for this document
 
@@ -81,6 +81,7 @@ Only the recording needs `tauri dev` quit (the app runs once at a time, and the 
 | UI-TEXT-006 | Placeholders survive translation | Every locale has English's placeholders (`{{n}}`, `{{name}}`) for each key, its plural forms together | A `check-i18n` | commit | FR-123; LOCALIZATION §3 |
 | UI-TEXT-007 | English fits whole | No control shrinks or cuts the interface's English words (`data-fit` other than `full` on a string of `en.json`); the three steps are for translations and for a user's own words (an address, a file name) | A `layoutChecks` | release | FR-125 |
 | UI-TEXT-008 | Fitted words say themselves whole | A translation's words cut by `FitText` carry the whole in their hint; MEASURE lists every word fitted smaller or cut, in hu and the pseudo-locale `en-XA` | A `layoutChecks`, `fitReport` | release | FR-125; LOCALIZATION §3 |
+| UI-TEXT-009 | Japanese fits, in its own face | Every panel holds the Japanese words drawn in the bundled Noto Sans JP, without overflow, at 1180, 1400 and 1600 px; every character of `ja.json` and its manual is in that face | A `MEASURE=1 MEASURE_LANG=ja`, run by `scripts/ui-check.sh`; `check-i18n` for the characters | release; commit (`check-i18n`) | FR-128; LOCALIZATION §5 |
 
 ### States
 
