@@ -19,6 +19,7 @@
 | `vi` | Tiếng Việt | ✓ | ✓ | ✓ | full (`docs/USER_GUIDE.vi.md`) | `vi` | `vi` | the owner | ✓ the owner | v0.1.0 |
 | `de` | Deutsch | ✓ | ✓ | ✓ | short (`site/_includes/manual-short-de.md`), links the English one | `en` | `en` | AI, from the English | — | v0.14.1 |
 | `hu` | Magyar | ✓ | ✓ | ✓ | short (`site/_includes/manual-short-hu.md`), links the English one | `en` | `en` | AI, from the English | — | v0.14.1 |
+| `ko` | 한국어 | ✓ | ✓ (macOS menu in Apple's words) | ✓ | short (`site/_includes/manual-short-ko.md`), links the English one | `en` | `en` | AI, from the English | — | v0.14.2 |
 | `ja` | 日本語 | ✓ | ✓ (macOS menu in Apple's words) | ✓ | short (`site/_includes/manual-short-ja.md`), links the English one | `en` | `en` | AI, from the English | — | v0.14.2 |
 
 Here is what each column covers:
@@ -36,7 +37,7 @@ Each language is described once, in `LANGUAGES` (`ui/src/i18n/index.ts`): its co
 
 **Fallback:** a key, a manual, a picture or a reason a language lacks is shown in English.
 
-The order in the picker matches the website's: English first, then the others by their own name (Deutsch, Magyar, Tiếng Việt, 日本語).
+The order in the picker matches the website's: English first, then the others by their own name (Deutsch, Magyar, Tiếng Việt, 한국어, 日本語).
 
 The language is stored per machine in `settings.json` (`ui.language`, [DATABASE.md §6](DATABASE.md#6-app-settings)), never in a project.
 
@@ -56,41 +57,47 @@ The language is stored per machine in `settings.json` (`ui.language`, [DATABASE.
    - **Labels and titles end in a noun** (体言止め: 写真を書き出し, プリントサイズ); **hints and messages** are です・ます sentences.
    - **The develop sliders take Lightroom Classic's Japanese names** (露光量, ハイライト, シャドウ, 白レベル, 黒レベル, 明瞭度, かすみの除去, 自然な彩度, 色温度, 色かぶり補正), the words Japanese photographers know.
    - **No typed space** between Japanese and Latin or figures (the UI spaces them); figures and units are half-width; "…" ends a label that opens a dialog. A Japanese character is nearly 1 em wide, so a label short in characters can still be wide: `npm run text-widths` measures it in the bundled Japanese face.
+10. **Korean** (FR-128, 2026-11-15), as Apple's Korean macOS and Microsoft's Korean style write it:
+    - **Actions** are Sino-Korean nouns (저장, 취소, 삭제, 편집, 적용) or native verbs as -기 nouns (열기, 닫기, 내보내기, 가져오기), never -하기; the macOS menu alone keeps Apple's 복사하기.
+    - **Hints and messages** end in -합니다 for a statement and -세요 for a request, with a full stop, never 해요체 or -십시오 (Microsoft's Korean style); work under way is "-하는 중…".
+    - **Words are spaced** (띄어쓰기), unlike Japanese: a true compound is written whole, the rest as the 국립국어원 dictionary spaces it (미리 보기). The interface sets `word-break: keep-all`, so a line never breaks inside a word.
+    - **The develop sliders take Adobe's Korean names** (노출, 대비, 밝은 영역, 어두운 영역, 흰색 계열, 검정 계열, 부분 대비, 디헤이즈, 생동감, 채도, 색온도, 색조, 비네팅, 그레인). The native macOS menu follows Apple's own words (윈도우, 실행 복귀, 별도 저장…, 가리기).
+    - Loanwords as the website writes them (폴더, 필터, 프린트, 프리셋); "…" ends a label that opens a dialog. A Hangul syllable is nearly 1 em wide: `npm run text-widths` measures it in the bundled Korean face.
 
 ## 4. Glossary
 
-These are the core terms, as the interface shows them. The Hungarian, German and Japanese ones follow the website's `site/_data/i18n/hu.yml`, `de.yml` and `ja.yml` wherever they use them; German says *du*, as the website.
+These are the core terms, as the interface shows them. The Hungarian, German, Japanese and Korean ones follow the website's `site/_data/i18n/hu.yml`, `de.yml`, `ja.yml` and `ko.yml` wherever they use them; German says *du*, as the website.
 
-| English | Tiếng Việt | Magyar | Deutsch | 日本語 |
-|---------|------------|--------|---------|--------|
-| photo | ảnh | fotó | Foto | 写真 |
-| print | bản in | nyomat | Abzug | プリント |
-| print size | khổ in | nyomatméret | Druckformat | プリントサイズ |
-| crop | cắt ảnh | vágás | Zuschnitt | トリミング |
-| straighten | làm thẳng | kiegyenesítés | Geraderichten | 傾き補正 |
-| date stamp | đóng dấu ngày | dátumbélyeg | Datumsstempel | 日付スタンプ |
-| info frame | khung thông tin | adatkeret | Info-Rahmen | 情報フレーム |
-| look | look | look | Look | ルック |
-| preset | preset | preset | Preset | プリセット |
-| Simple (mode) | Đơn giản | Egyszerű | Einfach | シンプル |
-| Collage (mode) | Ghép ảnh | Kollázs | Collage | コラージュ |
-| Pro (mode) | Pro | Pro | Pro | Pro |
-| postcard | bưu thiếp | képeslap | Postkarte | ポストカード |
-| workspace | không gian làm việc | munkaterület | Arbeitsbereich | 作業スペース |
-| print basket | giỏ in | nyomtatási kosár | Druckkorb | プリントバスケット |
-| set aside | để riêng | félretett | Zurückgelegt | 保留 |
-| best shot | ảnh đẹp nhất | legjobb kép | beste Aufnahme | ベストショット |
-| ticked | đã tick | kipipált | markiert | チェック済み |
-| reject | loại | elvetés | Verwerfen (verworfen) | 除外 |
-| star rating | sao | csillag | Sterne | レーティング |
-| export | xuất ảnh | exportálás | Exportieren | 書き出し |
-| develop (RAW) | xử lý RAW | kidolgozás | Entwickeln | 現像 |
-| undo | hoàn tác | visszavonás | Rückgängig | 取り消し |
-| original colour | màu gốc | eredeti színek | Originalfarben | 元の色 |
-| settings | cài đặt | beállítások | Einstellungen | 設定 |
-| project | dự án | projekt | Projekt | プロジェクト |
-| library | thư viện | könyvtár | Bibliothek | ライブラリ |
-| folder | thư mục | mappa | Ordner | フォルダー |
+| English | Tiếng Việt | Magyar | Deutsch | 日本語 | 한국어 |
+|---------|------------|--------|---------|--------|--------|
+| photo | ảnh | fotó | Foto | 写真 | 사진 |
+| print | bản in | nyomat | Abzug | プリント | 프린트 |
+| print size | khổ in | nyomatméret | Druckformat | プリントサイズ | 프린트 크기 |
+| crop | cắt ảnh | vágás | Zuschnitt | トリミング | 자르기 |
+| straighten | làm thẳng | kiegyenesítés | Geraderichten | 傾き補正 | 수평 맞추기 |
+| date stamp | đóng dấu ngày | dátumbélyeg | Datumsstempel | 日付スタンプ | 날짜 표시 |
+| info frame | khung thông tin | adatkeret | Info-Rahmen | 情報フレーム | 정보 프레임 |
+| look | look | look | Look | ルック | 룩 |
+| preset | preset | preset | Preset | プリセット | 프리셋 |
+| Simple (mode) | Đơn giản | Egyszerű | Einfach | シンプル | 심플 |
+| Collage (mode) | Ghép ảnh | Kollázs | Collage | コラージュ | 콜라주 |
+| Pro (mode) | Pro | Pro | Pro | Pro | Pro |
+| postcard | bưu thiếp | képeslap | Postkarte | ポストカード | 엽서 |
+| workspace | không gian làm việc | munkaterület | Arbeitsbereich | 作業スペース | 작업 공간 |
+| print basket | giỏ in | nyomtatási kosár | Druckkorb | プリントバスケット | 프린트 바구니 |
+| set aside | để riêng | félretett | Zurückgelegt | 保留 | 보류 |
+| best shot | ảnh đẹp nhất | legjobb kép | beste Aufnahme | ベストショット | 베스트 샷 |
+| ticked | đã tick | kipipált | markiert | チェック済み | 체크한 |
+| reject | loại | elvetés | Verwerfen (verworfen) | 除外 | 제외 |
+| star rating | sao | csillag | Sterne | レーティング | 별점 |
+| export | xuất ảnh | exportálás | Exportieren | 書き出し | 내보내기 |
+| develop (RAW) | xử lý RAW | kidolgozás | Entwickeln | 現像 | 현상 |
+| undo | hoàn tác | visszavonás | Rückgängig | 取り消し | 실행 취소 |
+| original colour | màu gốc | eredeti színek | Originalfarben | 元の色 | 원본 색 |
+| settings | cài đặt | beállítások | Einstellungen | 設定 | 설정 |
+| project | dự án | projekt | Projekt | プロジェクト | 프로젝트 |
+| library | thư viện | könyvtár | Bibliothek | ライブラリ | 라이브러리 |
+| folder | thư mục | mappa | Ordner | フォルダー | 폴더 |
 
 The Hungarian website still writes the mode names in English (*Simple*, *Collage*), because its screenshots show the English app. When Hungarian screenshots exist, the site takes the app's names.
 
@@ -111,7 +118,7 @@ Do all of it in one commit.
    - `MEASURE=1 MEASURE_LANG=<code> node site/screenshots/shoot.mjs …`, in both themes: no overflow, and the list of words fitted smaller or cut;
    - its row in `scripts/ui-check.sh`.
 
-   A language whose letters Be Vietnam Pro lacks also bundles a face cut to them: Japanese has Noto Sans JP (OFL 1.1), cut by `scripts/ja-font.sh` to every character of `ja.json` and its manual, every kana and the CJK punctuation, 207 KB as one variable woff2 (`ui/src/assets/fonts/`). It sits second in the interface's font stack with a CJK-only `unicode-range`, so no other language loads it; `check-i18n` fails, naming the character, when a translation uses one the cut lacks, and `scripts/text-widths.mjs` measures with it.
+   A language whose letters Be Vietnam Pro lacks also bundles a face cut to them: Japanese has Noto Sans JP and Korean Noto Sans KR (OFL 1.1), each cut by `scripts/cjk-font.sh <code>` to every character of its locale and manual, plus every kana or the Hangul compatibility jamo and the CJK punctuation, one variable woff2 each (`ui/src/assets/fonts/`). They sit after Be Vietnam Pro in the interface's font stack, Japanese first, each with its own `unicode-range`, so a face loads only when its script is shown; `check-i18n` fails, naming the character, when a translation uses one its cut lacks, and `scripts/text-widths.mjs` measures with them.
 8. The docs:
    - CHANGELOG;
    - the PRD requirement, plus its ROADMAP and STATUS rows;
@@ -123,6 +130,6 @@ Before a language exists, the pseudo-locale `en-XA` shows what a long one will d
 
 ## 6. Known limits
 
-- **Going back to an older version:** Deutsch and Magyar come with settings v19 (v0.14.1). An older app reads no v19 file at all ([DATABASE.md §6](DATABASE.md#6-app-settings)), whatever the language, so `"de"` and `"hu"` add no new case. 日本語 comes with settings v20 (v0.14.2): v0.14.1 meets a v20 file as a newer one, uses its defaults and leaves the file as it is.
-- **Japanese the cut lacks:** a folder's or a place's name in kanji the bundled face does not hold is drawn in the system's Japanese face, a little different in width; every such field already fits its text (`FitText`, truncation).
-- **Print text in Japanese:** the date stamp, info frame and postcard fonts hold Latin letters only, so their placeholders stay in Latin letters; Japanese text on a print comes with FR-130's はがき.
+- **Going back to an older version:** Deutsch and Magyar come with settings v19 (v0.14.1). An older app reads no v19 file at all ([DATABASE.md §6](DATABASE.md#6-app-settings)), whatever the language, so `"de"` and `"hu"` add no new case. 日本語 and 한국어 come with settings v20 (v0.14.2): v0.14.1 meets a v20 file as a newer one, uses its defaults and leaves the file as it is.
+- **Japanese or Korean the cut lacks:** a folder's or a place's name in kanji or Hangul the bundled face does not hold is drawn in the system's Japanese face, a little different in width; every such field already fits its text (`FitText`, truncation).
+- **Print text in Japanese:** the date stamp, info frame and postcard fonts hold Latin letters only, so their placeholders stay in Latin letters; Japanese text on a print comes with FR-130's はがき; Korean, later.

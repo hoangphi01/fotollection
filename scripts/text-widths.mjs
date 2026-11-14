@@ -43,26 +43,27 @@ const faces = await Promise.all(
     data: (await readFile(path.join(fontDir, `be-vietnam-pro-${subset}-500-normal.woff2`))).toString('base64'),
   })),
 )
-// Japanese in the face the app bundles for it (FR-128), as the interface's stack falls to it.
-const jaFace = (await readFile(path.join(root, 'ui/src/assets/fonts/noto-sans-jp-subset.woff2'))).toString('base64')
+// Japanese and Korean in the faces the app bundles for them (FR-128), as the interface's stack falls to them.
+const cjk = await Promise.all(['jp', 'kr'].map(async (s) => (await readFile(path.join(root, `ui/src/assets/fonts/noto-sans-${s}-subset.woff2`))).toString('base64')))
 
 const browser = await chromium.launch()
 const page = await browser.newPage()
 const widths = await page.evaluate(
-  async ({ faces, jaFace, locales }) => {
+  async ({ faces, cjk, locales }) => {
     for (const { data } of faces) {
       const face = new FontFace('BVP', `url(data:font/woff2;base64,${data})`, { weight: '500' })
       document.fonts.add(await face.load())
     }
-    document.fonts.add(await new FontFace('JP', `url(data:font/woff2;base64,${jaFace})`, { weight: '400 700' }).load())
+    for (const [i, data] of cjk.entries())
+      document.fonts.add(await new FontFace(`CJK${i}`, `url(data:font/woff2;base64,${data})`, { weight: '400 700' }).load())
     const ctx = document.createElement('canvas').getContext('2d')
-    ctx.font = '500 12px BVP, JP'
+    ctx.font = '500 12px BVP, CJK0, CJK1'
     const out = {}
     for (const [code, entries] of Object.entries(locales))
       out[code] = Object.fromEntries(entries.map(([k, v]) => [k, Math.round(ctx.measureText(v.replace(/\{\{[^}]+\}\}/g, '00')).width)]))
     return out
   },
-  { faces, jaFace, locales: Object.fromEntries(Object.entries(locales).map(([c, m]) => [c, [...m]])) },
+  { faces, cjk, locales: Object.fromEntries(Object.entries(locales).map(([c, m]) => [c, [...m]])) },
 )
 await browser.close()
 

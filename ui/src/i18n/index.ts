@@ -7,6 +7,7 @@ import en from '@/locales/en.json'
 import de from '@/locales/de.json'
 import hu from '@/locales/hu.json'
 import ja from '@/locales/ja.json'
+import ko from '@/locales/ko.json'
 import vi from '@/locales/vi.json'
 import { pseudo } from './pseudo'
 
@@ -30,6 +31,7 @@ export const LANGUAGES: LanguageInfo[] = [
   { value: 'de', label: 'Deutsch', hello: 'Hallo', guide: 'short', assets: 'en' },
   { value: 'hu', label: 'Magyar', hello: 'Szia', guide: 'short', assets: 'en' },
   { value: 'vi', label: 'Tiếng Việt', hello: 'Xin chào', guide: 'full', assets: 'vi' },
+  { value: 'ko', label: '한국어', hello: '안녕하세요', guide: 'short', assets: 'en' },
   { value: 'ja', label: '日本語', hello: 'こんにちは', guide: 'short', assets: 'en' },
 ]
 
@@ -44,6 +46,7 @@ export const resources = {
   de: { translation: de },
   hu: { translation: hu },
   ja: { translation: ja },
+  ko: { translation: ko },
   vi: { translation: vi },
 } as const
 

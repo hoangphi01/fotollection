@@ -254,6 +254,47 @@ const JA: Strings = Strings {
     camera_save_title: "写真の保存先",
 };
 
+const KO: Strings = Strings {
+    file: "파일",
+    new: "새로운 프로젝트",
+    open: "열기…",
+    save: "저장",
+    save_as: "별도 저장…",
+    edit: "편집",
+    undo: "실행 취소",
+    redo: "실행 복귀",
+    cut: "오려두기",
+    copy: "복사하기",
+    paste: "붙여넣기",
+    select_all: "전체 선택",
+    copy_settings: "설정 복사…",
+    paste_settings: "설정 붙여넣기",
+    paste_settings_ticked: "체크한 사진에 설정 붙여넣기",
+    reset_settings: "설정 재설정",
+    window: "윈도우",
+    view: "보기",
+    mode_simple: "심플",
+    mode_collage: "콜라주",
+    mode_professional: "Pro",
+    minimize: "최소화",
+    close_window: "윈도우 닫기",
+    about: "Fotollection에 관하여",
+    settings: "설정…",
+    help: "도움말",
+    manual: "Fotollection 매뉴얼",
+    hide: "Fotollection 가리기",
+    hide_others: "기타 가리기",
+    show_all: "모두 보기",
+    quit: "Fotollection 종료",
+    untitled: "무제",
+    edited: "편집됨",
+    project_filter: "Fotollection 프로젝트",
+    open_title: "프로젝트 열기",
+    save_title: "프로젝트 저장",
+    relink_title: "폴더 찾기",
+    camera_save_title: "사진 저장 위치",
+};
+
 pub fn strings(language: Language) -> &'static Strings {
     match language {
         Language::En => &EN,
@@ -261,6 +302,7 @@ pub fn strings(language: Language) -> &'static Strings {
         Language::Hu => &HU,
         Language::De => &DE,
         Language::Ja => &JA,
+        Language::Ko => &KO,
     }
 }
 
@@ -277,6 +319,7 @@ mod tests {
             Language::Hu,
             Language::De,
             Language::Ja,
+            Language::Ko,
         ] {
             let s = strings(language);
             for text in [
@@ -325,5 +368,6 @@ mod tests {
         assert_eq!(strings(Language::Hu).mode_collage, "Kollázs");
         assert_eq!(strings(Language::De).mode_simple, "Einfach");
         assert_eq!(strings(Language::Ja).quit, "Fotollectionを終了");
+        assert_eq!(strings(Language::Ko).quit, "Fotollection 종료");
     }
 }

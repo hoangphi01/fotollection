@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- **日本語**, the whole app in Japanese (FR-128): the interface, the macOS menu in Apple's words, every error message and the short manual, with Lightroom's names for the sliders; a Japanese face (Noto Sans JP, 207 KB) comes with the app, so the words fit the same on every computer. Settings → General → Language.
+- **日本語 and 한국어**, the whole app in Japanese and Korean (FR-128): the interface, the macOS menu in Apple's words, every error message and the short manual, with Adobe's names for the sliders; a Japanese and a Korean face (Noto Sans JP and KR, 207 and 97 KB) come with the app, so the words fit the same on every computer. Settings → General → Language.
 
 ### Changed
 

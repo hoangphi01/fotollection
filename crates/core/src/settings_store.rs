@@ -40,7 +40,7 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v19 (FR-121): `ui.printCredit`, the small "fotollection.org" on prints, absent before (on).
 /// v19 also (FR-123): `ui.language` may be `hu`, Magyar; (FR-073) `collage.postcard.postalUse`,
 /// the post's coding zone kept free, absent before (on).
-/// v20 (FR-128): `ui.language` may be `ja`, 日本語; nothing else changes. A new value needs a new
+/// v20 (FR-128): `ui.language` may be `ja`, 日本語, or `ko`, 한국어; nothing else changes. A new value needs a new
 /// version once a version shipped: v0.14.1 reads v19, and meets a v20 file as a newer one.
 pub const SCHEMA_VERSION: u32 = 20;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
@@ -1027,7 +1027,8 @@ mod tests {
         Ok(())
     }
 
-    /// FR-128: 日本語 is kept as `"ja"`, in a v20 file, and read back; a v19 file still loads.
+    /// FR-128: 日本語 is kept as `"ja"` and 한국어 as `"ko"`, in a v20 file, and read back; a v19
+    /// file still loads.
     #[test]
     fn fr_128_japanese_survives_a_round_trip() -> std::io::Result<()> {
         let dir = tempfile::tempdir()?;
@@ -1041,6 +1042,13 @@ mod tests {
         let text = std::fs::read_to_string(&path)?;
         assert!(text.contains(r#""language": "ja""#) && text.contains(r#""schema_version": 20"#));
         assert_eq!(load(&path), Loaded::Ok(read));
+        let korean = include_str!("../tests/fixtures/settings/v20.json")
+            .replace(r#""language": "ja""#, r#""language": "ko""#);
+        std::fs::write(&path, korean)?;
+        let Loaded::Ok(read) = load(&path) else {
+            panic!("v20 in Korean should load");
+        };
+        assert_eq!(read.ui.language, crate::settings::Language::Ko);
         std::fs::write(&path, include_str!("../tests/fixtures/settings/v19.json"))?;
         assert!(
             matches!(load(&path), Loaded::Ok(_)),

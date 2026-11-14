@@ -113,6 +113,16 @@ Read this table in full before any task; then read in full every entry whose Are
 - A visual rule described in words is restated with numbers and gets a yes before coding. Kept by: no machine check yet.
 - When a feature moves to a new place, re-read the decisions that held only because of the old place. Kept by: no machine check yet.
 
+## 2026-11-15
+
+### A row scrolled half out of its list "overlapped" the button under the list (UI-LAYOUT-002, FR-128)
+
+- **Area:** ui-layout, checks
+- **Seen:** the Korean pass of `MEASURE=1` failed in the Pro panel: the look *흑백, 빨강 필터* overlapped *내보내기 설정 바꾸기* by 2 px. Shortening the name changed nothing; the screenshot showed the row cut by the list's lower edge, nothing on top of anything.
+- **Why:** the overlap check kept a control when its centre was inside every box that clips it, then compared its whole box, the part the list hides included. Korean's shorter lines left a row straddling the list's edge, by chance, where English never did.
+- **Fix:** each control's box is cut by every box that clips it before two are compared (`checks.mjs`, `shown`); the Korean pass and English pass, and the real overlaps still fail.
+- **Rule:** a detector compares what shows, never a box's whole rect; a failure that survives the obvious fix gets its screenshot read before a second fix.
+
 ## 2026-11-13
 
 ### Every Japanese page named dm, Rossmann and CEWE in its notes (site, FR-021)

@@ -74,7 +74,20 @@ export async function layoutChecks(page, where) {
     }
     const targets = [...document.querySelectorAll('button, [role="button"], [role="combobox"], [role="slider"], [role="switch"], [role="checkbox"], input:not([type="hidden"]), textarea, a[href]')]
       .filter((el) => vis(el) && !el.closest('[data-overlap-ok]') && reachable(el))
-    const rects = targets.map((el) => el.getBoundingClientRect())
+    // The part of each target that shows: its box cut by every box that clips it, so a row
+    // scrolled half out of its list is not taken to lie under the button past the list's edge.
+    const shown = (el) => {
+      const r = el.getBoundingClientRect()
+      let [left, top, right, bottom] = [r.left, r.top, r.right, r.bottom]
+      for (let e = el.parentElement; e; e = e.parentElement) {
+        const cs = getComputedStyle(e)
+        if (cs.overflowX === 'visible' && cs.overflowY === 'visible') continue
+        const c = e.getBoundingClientRect()
+        ;[left, top, right, bottom] = [Math.max(left, c.left), Math.max(top, c.top), Math.min(right, c.right), Math.min(bottom, c.bottom)]
+      }
+      return { left, top, right, bottom }
+    }
+    const rects = targets.map(shown)
     for (let i = 0; i < targets.length; i++) {
       for (let j = i + 1; j < targets.length; j++) {
         const [a, b] = [targets[i], targets[j]]

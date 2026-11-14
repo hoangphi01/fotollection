@@ -18,16 +18,25 @@
 @import "@fontsource/be-vietnam-pro/vietnamese-700.css";
 @import "@fontsource-variable/geist-mono";
 
-/* Japanese (FR-128): Noto Sans JP (OFL 1.1), cut by scripts/ja-font.sh to the interface's and its
-   manual's characters, every kana and the CJK punctuation; one variable woff2 for weights 400–700.
-   Second in the sans stack, its range CJK only: Latin stays Be Vietnam Pro, and it loads only
-   when Japanese is shown. A kanji the cut lacks (a folder's name) falls to the system's face. */
+/* Japanese and Korean (FR-128): Noto Sans JP and KR (OFL 1.1), each cut by scripts/cjk-font.sh to
+   the characters its interface and manual use, with every kana or the Hangul jamo and the CJK
+   punctuation; one variable woff2 each for weights 400–700. In the sans stack after Be Vietnam
+   Pro, each with its own range: a face loads only when its script is shown, Japanese first so
+   kanji keep their Japanese forms. A character a cut lacks (a folder's name) falls to the
+   system's face. */
 @font-face {
   font-family: 'Fotollection JP';
   src: url('./assets/fonts/noto-sans-jp-subset.woff2') format('woff2');
   font-weight: 400 700;
   font-display: swap;
   unicode-range: U+3000-30FF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FF00-FFEF;
+}
+@font-face {
+  font-family: 'Fotollection KR';
+  src: url('./assets/fonts/noto-sans-kr-subset.woff2') format('woff2');
+  font-weight: 400 700;
+  font-display: swap;
+  unicode-range: U+1100-11FF, U+3130-318F, U+AC00-D7AF;
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -40,7 +49,7 @@
        2026-11-06); a head with its own border line adds it below (`box-content`). */
     --spacing-header: 4rem;
     --font-heading: var(--font-sans);
-    --font-sans: 'Be Vietnam Pro', 'Fotollection JP', system-ui, sans-serif;
+    --font-sans: 'Be Vietnam Pro', 'Fotollection JP', 'Fotollection KR', system-ui, sans-serif;
     --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
@@ -400,6 +409,11 @@
   /* Japanese: the kinsoku rules of line breaking. */
   :lang(ja) {
     line-break: strict;
+    }
+  /* Korean: a line breaks between words, never inside one (LOCALIZATION §3, rule 10). */
+  :lang(ko) {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
     }
   /* An app, not a page (owner, 2026-11-08): no text is selected or dragged out, the portals
      of dialogs and menus included (they sit under <body>, outside #root). What may be copied
