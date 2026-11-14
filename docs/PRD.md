@@ -897,7 +897,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 
 ### FR-083 — A personal photo calendar
 
-**P2 (later, not scheduled; owner's idea 2026-11-05).** Beside postcards, a calendar made from one's own photos, to print or to share.
+**P2 (v0.14.2, owner 2026-11-14: "the next version has a calendar engine, to print collages with a calendar"; owner's idea 2026-11-05).** Beside postcards, a calendar made from one's own photos, to print or to share; first on the collage sheet (two months to a print, below).
 
 - **A calendar engine** built in, offline: it lays out any year (or a run of months from any month), weeks starting on Monday or Sunday, week numbers optional, in the interface language.
 - **Important days:** the user marks dates (birthdays, anniversaries, trips) with a short label; public holidays of a chosen country could come from a bundled table, never from the network.
