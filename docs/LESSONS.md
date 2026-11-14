@@ -78,6 +78,7 @@ Read this table in full before any task; then read in full every entry whose Are
 - Measure or observe before guessing; read the checker's or dependency's source before a third guess. Kept by: no machine check yet.
 - Check that a benchmark measures what the app does, and time each stage of one item, before optimizing a number. Kept by: `measure_folder` mirrors the app.
 - Measure one step of a gesture before and after a change; count pixels on a zoomed screenshot, never by eye. Kept by: `measure_preview LOOK_DRAG=1`.
+- A benchmark runs on a quiet machine, the median of five runs with their spread, and a change is kept only when it beats that spread (OPTIMIZATION §1, rule 6). Kept by: `scripts/resources.sh` (load against the cores).
 
 ### checks
 

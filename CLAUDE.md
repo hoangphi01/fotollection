@@ -14,6 +14,13 @@ Fotollection is an offline desktop app (Tauri 2 + Rust core + React/shadcn UI) t
 8. **Rust first ([ADR-0044](docs/adr/0044-rust-first-our-edge.md)), the compass for every design and doc.** Our edge over web-runtime apps and over RawTherapee and darktable is the Rust core: pixel and file work in Rust, never in the webview; rayon by default on pools no waiting caller holds; no `unsafe`, bounded and fuzzed parsers; small and lean; typed IPC; every claim measured.
 9. **Stay on the engineering goal (owner, 2026-11-10, hard rule).** We are engineers: performance and speed, UI/UX, SEO and running the project. Advise and build as a user and a developer would, never as a lawyer: no legal opinions, disclaimers or digressions that pull away from the main goal, and no notices or links that clutter Fotollection.
 
+## How to work (owner, 2026-11-15: the project grows, so the work must be more scientific)
+
+1. **Think before coding.** State your assumptions; if a request reads two ways, name both and ask, never pick silently; if a simpler way exists, say so; if something is unclear, stop and ask.
+2. **Simplicity first.** The least code that does what was asked: no feature, option or abstraction nobody asked for, no handling of cases that cannot happen. If 200 lines could be 50, write 50.
+3. **Surgical changes.** Every changed line traces to the request. Do not restyle, reformat or refactor what is not broken; a rule for one block names that block, never a shared class (the card icons that moved site-wide, 2026-11-14). Remove only what your change left unused; mention other dead code, do not delete it.
+4. **Goal-driven.** Turn the task into checks that prove it: a test that fails first, a measure, a screenshot. For several steps, say the plan as `step → verify: check` before starting, and loop until every check passes.
+
 ## Before starting a task
 
 - Run the `pre-work` skill (`.claude/skills/pre-work/`): read [docs/DOCS_GUIDE.md](docs/DOCS_GUIDE.md) in full and [docs/LESSONS.md](docs/LESSONS.md)'s Rules table in full, then every lesson of the task's areas, then STATUS "Next, in order" (owner, 2026-11-05; narrowed in the process review of 2026-11-12).

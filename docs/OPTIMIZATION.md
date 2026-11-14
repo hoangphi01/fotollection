@@ -13,6 +13,7 @@
 3. **Optimize the pipeline, not the micro-op.** Throughput comes from parallelism, avoiding redundant decodes, and bounded memory, rather than from clever loops.
 4. **Never trade correctness for speed.** Orientation, ICC profiles and stamp placement must be identical between the fast path and the slow path.
 5. **Speed is the first quality of a photo tool that works in batches.** Every change that renders many photos at once (a grid, a sheet list, an export) is measured on a full screen of them, in the build the owner uses, before it ships; a change of setting must answer at once, and anything that can take more than 200 ms shows that it is working. Perceived speed counts as much: while a new answer loads, the last one stays on screen, so typing or a switch never makes the panel blink or jump (STYLE_RULE §4, "Nothing blinks, nothing jumps").
+6. **An optimization is an experiment** (owner, 2026-11-15). It starts from a hypothesis that names the stage and the expected gain; the baseline is measured on the same build, files and machine, the machine quiet (`scripts/resources.sh`: load below half the cores, no VM or build beside it); one change at a time, the median of at least five runs with their spread; a change is kept only if its gain is larger than that spread, and the §5 row records the machine's state with the numbers. A run on a busy machine is not a measurement: on 2026-11-13 a Docker VM on two cores made `measure_look` read 59–63 ms for the 38 ms the same code had measured the day before.
 
 ## 2. Why native Rust instead of a web app
 

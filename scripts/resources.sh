@@ -21,6 +21,11 @@ if command -v memory_pressure >/dev/null; then
   memory_pressure | tail -n 1
   sysctl -n vm.swapusage 2>/dev/null | sed 's/^/swap: /'
 fi
+# A benchmark needs a quiet machine (docs/OPTIMIZATION.md §1, rule 6): load below half the cores.
+cores=$(sysctl -n hw.ncpu 2>/dev/null || nproc)
+load=$(uptime | sed 's/.*load averages*: *//; s/,/ /g' | awk '{print $1}')
+echo "load: ${load} on ${cores} cores"
+awk -v l="$load" -v c="$cores" 'BEGIN { exit !(l > c / 2) }' && echo "busy machine: not a time to benchmark (a VM, a build or a browser running)" >&2
 
 if [ "${1:-}" = "--clean" ] && [ "$target_gb" -gt "$MAX_TARGET_GB" ]; then
   echo "target/ is over ${MAX_TARGET_GB} GB: cargo clean"

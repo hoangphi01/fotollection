@@ -40,7 +40,9 @@ Before the first edit, tell the owner (in Vietnamese, per the memory):
 - the lessons that apply, by title, and what each means for this task;
 - anything unclear that is the owner's decision (LESSONS: "Ask before building a layout
   the user described in words", "a constraint that costs users a feature is the
-  owner's decision").
+  owner's decision");
+- your assumptions, and the plan as `step → verify: check` (CLAUDE.md, "How to work"):
+  what will prove each step done, and nothing beyond what was asked.
 
 Keep it short. It is a checklist, not a report.
 

@@ -174,7 +174,7 @@ The full rules are in [docs/STYLE_RULE.md](docs/STYLE_RULE.md); these catch most
 
 Agents follow everything above. In addition:
 
-- **Start with [CLAUDE.md](CLAUDE.md)** (the rules for AI assistants), then [docs/README.md](docs/README.md) and the "Next, in order" list of [docs/STATUS.md](docs/STATUS.md), and list the issues not triaged yet (`gh issue list --search "-label:triaged"`) to bring them to the owner; never triage, label or close one without the owner's word.
+- **Start with [CLAUDE.md](CLAUDE.md)** (the rules for AI assistants, and how to work: assumptions first, the least code, surgical changes, checks that prove the goal), then [docs/README.md](docs/README.md) and the "Next, in order" list of [docs/STATUS.md](docs/STATUS.md), and list the issues not triaged yet (`gh issue list --search "-label:triaged"`) to bring them to the owner; never triage, label or close one without the owner's word.
 - **Look facts up, never invent them.** Versions, numbers, file names, labels and commands come from the repository. A number on a public page is measured or sourced.
 - **Use the app's own labels**, from `ui/src/locales`, when you write about the interface.
 - **Run `scripts/check-docs.sh` on its own**, not in a chain, and read its output.
