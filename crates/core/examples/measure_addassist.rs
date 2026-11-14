@@ -62,9 +62,39 @@ fn main() {
             .collect(),
     );
 
+    let t = Instant::now();
+    addassist::lookup(Country::Kr, "03172").unwrap();
+    let kr_first_ms = t.elapsed().as_secs_f64() * 1e3;
+    let t = Instant::now();
+    addassist::search(Country::Kr, "세종", 20).unwrap();
+    let kr_index_ms = t.elapsed().as_secs_f64() * 1e3;
+    let kr_queries = [
+        "세종대로 175",
+        "sejong-daero",
+        "테헤란로",
+        "cheongwadae-ro",
+        "03172",
+        "학동로",
+    ];
+    let kr_search_ms = median(
+        (0..5)
+            .map(|_| {
+                let t = Instant::now();
+                for q in kr_queries {
+                    addassist::search(Country::Kr, q, 20).unwrap();
+                }
+                t.elapsed().as_secs_f64() * 1e3 / kr_queries.len() as f64
+            })
+            .collect(),
+    );
+
     println!(
         "AddAssist {} (Japan data {}): first load {load_ms:.0} ms; first lookup (folds every name) {first_lookup_ms:.0} ms; lookup {lookup_us:.1} µs; search {search_ms:.1} ms per query",
         addassist::VERSION,
         info[0].data_date
+    );
+    println!(
+        "Korea (data {}): first lookup {kr_first_ms:.0} ms (its table loaded with Japan's above); first search (folds every road) {kr_index_ms:.0} ms; search {kr_search_ms:.1} ms per query",
+        info[1].data_date
     );
 }

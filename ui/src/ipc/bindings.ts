@@ -1077,7 +1077,9 @@ export type Corner = "bottomRight" | "bottomLeft" | "topRight" | "topLeft";
 /**  A country `AddAssist` has data for. */
 export type Country = 
 /**  Japan Post's postal-code data. */
-"jp";
+"jp" | 
+/**  The Ministry of the Interior's road-name addresses. */
+"kr";
 
 /**  A country and its data, for Settings and the manual. */
 export type CountryInfo = {
@@ -1365,19 +1367,25 @@ export type FontFormat = "ttf" | "otf";
  *  building and the name are the user's to type.
  */
 export type Found = {
-	/**  The code's digits (`2480024`). */
+	/**
+	 *  The code's digits (`2480024`), or "" when a Korean road has several and no building
+	 *  number was given.
+	 */
 	code: string,
-	/**  Prefecture (Japan). */
+	/**  Prefecture (Japan), 시·도 (Korea). */
 	region: string,
-	/**  Municipality. */
+	/**  Municipality (Japan), 시·군·구 (Korea). */
 	city: string,
-	/**  Town, or "" where the data leaves it to the address. */
+	/**  Town (Japan), 읍·면 (Korea), or "" where the data leaves it to the address. */
 	town: string,
+	/**  The road (Korea, 지하 after an underground one), "" in Japan. */
+	road: string,
 	/**  The data's note on the town (`１〜１９丁目`), never printed by itself. */
 	note: string,
 	regionLatin: string,
 	cityLatin: string,
 	townLatin: string,
+	roadLatin: string,
 };
 
 export type FrameColor = "white" | "black";

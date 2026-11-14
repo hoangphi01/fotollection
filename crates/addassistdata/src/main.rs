@@ -5,7 +5,8 @@
 //! `crates/core/src/addassist/jp.rs` and described in
 //! `crates/core/assets/addassist/ADDASSIST.md`.
 //!
-//! `fotollection-addassistdata jp <utf_ken_all.csv> <snapshot YYYY-MM-DD> <out.bin>`
+//! `fotollection-addassistdata jp <utf_ken_all.csv> <snapshot YYYY-MM-DD> <out.bin>`, or
+//! `fotollection-addassistdata kr - <snapshot> <out.bin>` with Korea's road-name data on stdin.
 //!
 //! The placeholder rows are kept with an empty town, matched exactly, never by an ending
 //! (PRD FR-130): 以下に掲載がない場合, a municipality's ○○一円 (while a town really named 一円
@@ -47,6 +48,33 @@ impl Strings {
         self.index.insert(s.to_owned(), i);
         Some(i)
     }
+}
+
+/// Writes the string table: `u32` count, then each `u16` length + UTF-8.
+fn write_strings(bin: &mut Vec<u8>, strings: &Strings) -> Result<(), String> {
+    let n = u32::try_from(strings.list.len()).map_err(|_| "too many strings")?;
+    bin.extend_from_slice(&n.to_le_bytes());
+    for s in &strings.list {
+        let len = u16::try_from(s.len()).map_err(|_| "a string is too long")?;
+        bin.extend_from_slice(&len.to_le_bytes());
+        bin.extend_from_slice(s.as_bytes());
+    }
+    Ok(())
+}
+
+/// The index of `key` in `list`, added at its end the first time it is seen.
+fn intern<K: Copy + Eq + std::hash::Hash>(
+    index: &mut HashMap<K, u16>,
+    list: &mut Vec<K>,
+    key: K,
+) -> Result<u16, String> {
+    if let Some(&i) = index.get(&key) {
+        return Ok(i);
+    }
+    let i = u16::try_from(list.len()).map_err(|_| "more than 65,536 entries")?;
+    list.push(key);
+    index.insert(key, i);
+    Ok(i)
 }
 
 /// `大通西（１〜１９丁目）` → (`大通西`, `１〜１９丁目`); no parentheses → (text, "").
@@ -134,13 +162,7 @@ fn pack_jp(csv: &str, snapshot: &str) -> Result<(Vec<u8>, usize, usize), String>
     bin.extend_from_slice(b"FADJ");
     bin.extend_from_slice(&1u16.to_le_bytes());
     bin.extend_from_slice(snapshot.as_bytes());
-    let n_strings = u32::try_from(strings.list.len()).map_err(|_| "too many strings")?;
-    bin.extend_from_slice(&n_strings.to_le_bytes());
-    for s in &strings.list {
-        let len = u16::try_from(s.len()).map_err(|_| "a string is too long")?;
-        bin.extend_from_slice(&len.to_le_bytes());
-        bin.extend_from_slice(s.as_bytes());
-    }
+    write_strings(&mut bin, &strings)?;
     let n_munis = u16::try_from(munis.len()).map_err(|_| "too many municipalities")?;
     bin.extend_from_slice(&n_munis.to_le_bytes());
     for m in &munis {
@@ -160,24 +182,137 @@ fn pack_jp(csv: &str, snapshot: &str) -> Result<(Vec<u8>, usize, usize), String>
     Ok((bin, rows.len(), munis.len()))
 }
 
+/// One road of Korea's road-name data: its area, name and whether its numbers are
+/// underground (지하), with each building number's postal code.
+#[derive(PartialEq, Eq, Hash, Clone, Copy, PartialOrd, Ord)]
+struct RoadKey {
+    area: u16,
+    name: u32,
+    underground: bool,
+}
+
+/// Packs the Ministry of the Interior's 도로명주소 한글 전체분 (`rnaddrkor_*.txt` turned to UTF-8,
+/// one file after another on stdin) into `kr.bin`: each road with the runs of building
+/// numbers that share a postal code, so a road and a number give the code, and a code its
+/// roads. Columns used (from 0): 2 시도, 3 시군구, 4 읍면동 (kept when it is an 읍 or 면), 10 도로명,
+/// 11 지하, 12 건물본번, 16 우편번호.
+fn pack_kr(text: impl std::io::BufRead, snapshot: &str) -> Result<(Vec<u8>, usize, usize), String> {
+    let mut strings = Strings::default();
+    let mut area_index: HashMap<[u32; 3], u16> = HashMap::new();
+    let mut areas: Vec<[u32; 3]> = Vec::new();
+    let mut code_index: HashMap<u32, u16> = HashMap::new();
+    let mut codes: Vec<u32> = Vec::new();
+    let mut roads: HashMap<RoadKey, Vec<(u16, u16)>> = HashMap::new();
+    for (n, line) in text.lines().enumerate() {
+        let line = line.map_err(|e| format!("line {}: {e}", n + 1))?;
+        let c: Vec<&str> = line.trim_end_matches('\r').split('|').collect();
+        if c.len() < 17 {
+            return Err(format!(
+                "line {}: {} columns, at least 17 expected",
+                n + 1,
+                c.len()
+            ));
+        }
+        let eupmyeon = if c[4].ends_with('읍') || c[4].ends_with('면') {
+            c[4]
+        } else {
+            ""
+        };
+        let (Ok(number), Ok(code)) = (c[12].parse::<u16>(), c[16].parse::<u32>()) else {
+            return Err(format!("line {}: bad building number or code", n + 1));
+        };
+        if c[16].len() != 5 || c[10].is_empty() {
+            return Err(format!("line {}: the postal code is not 5 digits", n + 1));
+        }
+        let ids = [c[2], c[3], eupmyeon, c[10]].map(|s| strings.id(s));
+        let [Some(sido), Some(sigungu), Some(em), Some(name)] = ids else {
+            return Err("too many strings".into());
+        };
+        let area = intern(&mut area_index, &mut areas, [sido, sigungu, em])?;
+        let code = intern(&mut code_index, &mut codes, code)?;
+        roads
+            .entry(RoadKey {
+                area,
+                name,
+                underground: c[11] == "1",
+            })
+            .or_default()
+            .push((number, code));
+    }
+    // Roads in a fixed order (area, then name) so the table is the same on every build.
+    let mut keys: Vec<RoadKey> = roads.keys().copied().collect();
+    keys.sort();
+    let mut runs: Vec<(u16, u16)> = Vec::new();
+    let mut road_rows: Vec<(RoadKey, u16)> = Vec::with_capacity(keys.len());
+    for key in &keys {
+        let mut numbers = roads.remove(key).unwrap_or_default();
+        numbers.sort_unstable();
+        let before = runs.len();
+        for (number, code) in numbers {
+            if runs.len() == before || runs.last().is_some_and(|&(_, c)| c != code) {
+                runs.push((number, code));
+            }
+        }
+        let n_runs = u16::try_from(runs.len() - before).map_err(|_| "a road with too many runs")?;
+        road_rows.push((*key, n_runs));
+    }
+
+    let mut bin = Vec::with_capacity(runs.len() * 4 + road_rows.len() * 9 + 2_000_000);
+    bin.extend_from_slice(b"FADK");
+    bin.extend_from_slice(&1u16.to_le_bytes());
+    bin.extend_from_slice(snapshot.as_bytes());
+    write_strings(&mut bin, &strings)?;
+    let n_areas = u16::try_from(areas.len()).map_err(|_| "too many areas")?;
+    bin.extend_from_slice(&n_areas.to_le_bytes());
+    for a in &areas {
+        for id in a {
+            bin.extend_from_slice(&id.to_le_bytes());
+        }
+    }
+    let n_codes = u16::try_from(codes.len()).map_err(|_| "too many codes")?;
+    bin.extend_from_slice(&n_codes.to_le_bytes());
+    for c in &codes {
+        bin.extend_from_slice(&c.to_le_bytes());
+    }
+    let n_roads = u32::try_from(road_rows.len()).map_err(|_| "too many roads")?;
+    bin.extend_from_slice(&n_roads.to_le_bytes());
+    for (key, n_runs) in &road_rows {
+        bin.extend_from_slice(&key.area.to_le_bytes());
+        bin.extend_from_slice(&key.name.to_le_bytes());
+        bin.push(u8::from(key.underground));
+        bin.extend_from_slice(&n_runs.to_le_bytes());
+    }
+    for (number, code) in &runs {
+        bin.extend_from_slice(&number.to_le_bytes());
+        bin.extend_from_slice(&code.to_le_bytes());
+    }
+    Ok((bin, road_rows.len(), codes.len()))
+}
+
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let [country, input, snapshot, out] = args.as_slice() else {
         return fail(
-            "usage: fotollection-addassistdata jp <utf_ken_all.csv> <YYYY-MM-DD> <out.bin>",
+            "usage: fotollection-addassistdata jp <utf_ken_all.csv> | kr - <YYYY-MM-DD> <out.bin>",
         );
     };
-    if country != "jp" {
-        return fail("only jp is packed so far");
-    }
     if snapshot.len() != 10 {
         return fail("snapshot must be YYYY-MM-DD");
     }
-    let Ok(csv) = std::fs::read_to_string(input) else {
-        return fail("cannot read the CSV (UTF-8 expected)");
+    let packed = match country.as_str() {
+        "jp" => {
+            let Ok(csv) = std::fs::read_to_string(input) else {
+                return fail("cannot read the CSV (UTF-8 expected)");
+            };
+            pack_jp(&csv, snapshot)
+                .map(|(bin, rows, munis)| (bin, format!("jp {rows} rows, {munis} municipalities")))
+        }
+        "kr" if input == "-" => pack_kr(std::io::stdin().lock(), snapshot)
+            .map(|(bin, roads, codes)| (bin, format!("kr {roads} roads, {codes} codes"))),
+        _ => return fail("jp <csv>, or kr - with the UTF-8 text on stdin"),
     };
-    let (bin, rows, munis) = match pack_jp(&csv, snapshot) {
-        Ok(packed) => packed,
+    let (bin, what) = match packed {
+        Ok(p) => p,
         Err(e) => return fail(&e),
     };
     if std::fs::File::create(out)
@@ -187,7 +322,7 @@ fn main() -> ExitCode {
         return fail("cannot write the output");
     }
     eprintln!(
-        "addassistdata: jp {rows} rows, {munis} municipalities, {} bytes, BLAKE3 {}",
+        "addassistdata: {what}, {} bytes, BLAKE3 {}",
         bin.len(),
         blake3::hash(&bin).to_hex()
     );

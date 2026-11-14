@@ -271,6 +271,120 @@ pub fn municipality(kanji: &str, kana: &str, city_kana: Option<&str>) -> String 
     place(kanji, kana)
 }
 
+// Korean: the Revised Romanization of Korean (2000), with the sound changes road signs show
+// (종로 → jongno, 신라 → silla, 독립 → dongnip); enough for a search and a Latin address line.
+
+const INITIALS: [&str; 19] = [
+    "g", "kk", "n", "d", "tt", "r", "m", "b", "pp", "s", "ss", "", "j", "jj", "ch", "k", "t", "p",
+    "h",
+];
+const MEDIALS: [&str; 21] = [
+    "a", "ae", "ya", "yae", "eo", "e", "yeo", "ye", "o", "wa", "wae", "oe", "yo", "u", "wo", "we",
+    "wi", "yu", "eu", "ui", "i",
+];
+/// A final consonant at the end of a word or before a consonant.
+const FINALS: [&str; 28] = [
+    "", "k", "k", "k", "n", "n", "n", "t", "l", "k", "m", "l", "l", "l", "p", "l", "m", "p", "p",
+    "t", "t", "ng", "t", "t", "k", "t", "p", "t",
+];
+/// A final consonant carried over to a following silent ㅇ (학여울's ㄱ reads g).
+const LINKED: [&str; 28] = [
+    "", "g", "kk", "ks", "n", "nj", "n", "d", "r", "lg", "lm", "lb", "ls", "lt", "lp", "r", "m",
+    "b", "ps", "s", "ss", "ng", "j", "ch", "k", "t", "p", "",
+];
+
+/// (initial, medial, final) of a precomposed Hangul syllable.
+fn jamo(c: char) -> Option<(usize, usize, usize)> {
+    let i = (c as u32).checked_sub(0xAC00).filter(|i| *i < 11_172)? as usize;
+    Some((i / 588, (i % 588) / 28, i % 28))
+}
+
+/// Lower-case Revised Romanization of Korean text; other characters kept, digits as they are.
+pub fn revised(text: &str) -> String {
+    let chars: Vec<char> = text.chars().collect();
+    let mut out = String::with_capacity(text.len() * 2);
+    for (k, &c) in chars.iter().enumerate() {
+        let Some((ini, med, fin)) = jamo(c) else {
+            out.extend(c.to_lowercase());
+            continue;
+        };
+        // The initial as the previous final leaves it: ㄹ after ㄴ/ㄹ reads l, after other finals n.
+        let prev_fin = k
+            .checked_sub(1)
+            .and_then(|p| jamo(chars[p]))
+            .map_or(0, |(_, _, f)| f);
+        let initial = match (INITIALS[ini], FINALS[prev_fin]) {
+            ("r", "n" | "l") => "l",
+            ("r", "ng" | "m" | "k" | "p" | "t") => "n",
+            (i, _) => i,
+        };
+        out.push_str(initial);
+        out.push_str(MEDIALS[med]);
+        if fin != 0 {
+            let next = chars.get(k + 1).and_then(|n| jamo(*n));
+            let tail = match next {
+                // Before a silent ㅇ the final moves over.
+                Some((11, _, _)) => LINKED[fin],
+                // ㄴ before ㄹ reads l (신라 silla).
+                Some((5, _, _)) if FINALS[fin] == "n" => "l",
+                // Nasalization before ㄴ, ㅁ or ㄹ: ㄱ → ng, ㄷ → n, ㅂ → m.
+                Some((2 | 6 | 5, _, _)) => match FINALS[fin] {
+                    "k" => "ng",
+                    "t" => "n",
+                    "p" => "m",
+                    f => f,
+                },
+                _ => FINALS[fin],
+            };
+            out.push_str(tail);
+        }
+    }
+    out
+}
+
+/// A Korean road or place in Latin letters as signs write it: the road's ending after a hyphen
+/// (세종대로 → `Sejong-daero`, 학동로30길 → `Hakdong-ro 30-gil`), other names capitalized whole.
+/// A name ending in 대로 is read as a boulevard (대로); the few whose 대 belongs to the name
+/// (청와대로, Cheongwadae-ro on the signs) come out as `Cheongwa-daero`.
+pub fn korean_place(name: &str) -> String {
+    let mut words: Vec<String> = Vec::new();
+    let mut rest = name;
+    // A road with a number: 학동로30길 → 학동로, 30, 길.
+    let split_at = rest.find(|c: char| c.is_ascii_digit());
+    if let Some(at) = split_at {
+        let (road, tail) = rest.split_at(at);
+        words.push(korean_place(road));
+        let digits_end = tail
+            .find(|c: char| !c.is_ascii_digit())
+            .unwrap_or(tail.len());
+        let (num, suffix) = tail.split_at(digits_end);
+        let suffix = revised(suffix);
+        words.push(if suffix.is_empty() {
+            num.to_owned()
+        } else {
+            format!("{num}-{suffix}")
+        });
+        return words.join(" ");
+    }
+    // A metropolitan city is written by its name alone (서울특별시 → Seoul), a special
+    // self-governing province as a province (제주특별자치도 → Jeju-do).
+    for ending in ["특별자치시", "특별시", "광역시"] {
+        if let Some(stem) = rest.strip_suffix(ending).filter(|s| !s.is_empty()) {
+            return capitalized(&revised(stem));
+        }
+    }
+    if let Some(stem) = rest.strip_suffix("특별자치도").filter(|s| !s.is_empty()) {
+        return format!("{}-do", capitalized(&revised(stem)));
+    }
+    for ending in ["대로", "로", "길", "구", "군", "시", "도", "읍", "면"] {
+        if let Some(stem) = rest.strip_suffix(ending).filter(|s| !s.is_empty()) {
+            rest = stem;
+            return format!("{}-{}", capitalized(&revised(rest)), revised(ending));
+        }
+    }
+    capitalized(&revised(name))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -316,5 +430,26 @@ mod tests {
         assert_eq!(fold("Shimbashi"), fold("shinbashi"));
         assert_eq!(fold("Oosaka"), "osaka");
         assert_eq!(fold("kama-kura"), "kamakura");
+    }
+
+    #[test]
+    fn fr_133_hangul_reads_as_revised_romanization() {
+        assert_eq!(revised("세종대로"), "sejongdaero");
+        assert_eq!(revised("청와대로"), "cheongwadaero");
+        assert_eq!(revised("종로"), "jongno");
+        assert_eq!(revised("신라"), "silla");
+        assert_eq!(revised("독립"), "dongnip");
+        assert_eq!(revised("서울"), "seoul");
+        assert_eq!(revised("학여울"), "hagyeoul");
+        assert_eq!(korean_place("세종대로"), "Sejong-daero");
+        assert_eq!(korean_place("테헤란로"), "Teheran-ro");
+        // 대로 is read as the boulevard: 청와대로 (the Blue House road) reads Cheongwa-daero,
+        // not the signs' Cheongwadae-ro; the search folds both alike.
+        assert_eq!(korean_place("청와대로"), "Cheongwa-daero");
+        assert_eq!(korean_place("학동로30길"), "Hakdong-ro 30-gil");
+        assert_eq!(korean_place("종로구"), "Jongno-gu");
+        assert_eq!(korean_place("서울특별시"), "Seoul");
+        assert_eq!(korean_place("경기도"), "Gyeonggi-do");
+        assert_eq!(korean_place("제주특별자치도"), "Jeju-do");
     }
 }

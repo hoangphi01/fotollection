@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 
 mod jp;
+mod kr;
 pub mod romaji;
 
 /// `AddAssist`'s version, shown with its countries' data dates and kept with an address it
@@ -32,6 +33,8 @@ pub enum AddAssistError {
 pub enum Country {
     /// Japan Post's postal-code data.
     Jp,
+    /// The Ministry of the Interior's road-name addresses.
+    Kr,
 }
 
 /// A country and its data, for Settings and the manual.
@@ -50,34 +53,46 @@ pub struct CountryInfo {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct Found {
-    /// The code's digits (`2480024`).
+    /// The code's digits (`2480024`), or "" when a Korean road has several and no building
+    /// number was given.
     pub code: String,
-    /// Prefecture (Japan).
+    /// Prefecture (Japan), 시·도 (Korea).
     pub region: String,
-    /// Municipality.
+    /// Municipality (Japan), 시·군·구 (Korea).
     pub city: String,
-    /// Town, or "" where the data leaves it to the address.
+    /// Town (Japan), 읍·면 (Korea), or "" where the data leaves it to the address.
     pub town: String,
+    /// The road (Korea, 지하 after an underground one), "" in Japan.
+    pub road: String,
     /// The data's note on the town (`１〜１９丁目`), never printed by itself.
     pub note: String,
     pub region_latin: String,
     pub city_latin: String,
     pub town_latin: String,
+    pub road_latin: String,
 }
 
 /// The countries with data, in a fixed order.
 pub fn countries() -> Result<Vec<CountryInfo>, AddAssistError> {
-    Ok(vec![CountryInfo {
-        country: Country::Jp,
-        code_digits: 7,
-        data_date: jp::snapshot()?.to_owned(),
-    }])
+    Ok(vec![
+        CountryInfo {
+            country: Country::Jp,
+            code_digits: 7,
+            data_date: jp::snapshot()?.to_owned(),
+        },
+        CountryInfo {
+            country: Country::Kr,
+            code_digits: 5,
+            data_date: kr::snapshot()?.to_owned(),
+        },
+    ])
 }
 
 /// Every place a full code covers: one, several to pick from, or none.
 pub fn lookup(country: Country, code: &str) -> Result<Vec<Found>, AddAssistError> {
     match country {
         Country::Jp => jp::lookup(code),
+        Country::Kr => kr::lookup(code),
     }
 }
 
@@ -85,5 +100,6 @@ pub fn lookup(country: Country, code: &str) -> Result<Vec<Found>, AddAssistError
 pub fn search(country: Country, query: &str, limit: usize) -> Result<Vec<Found>, AddAssistError> {
     match country {
         Country::Jp => jp::search(query, limit),
+        Country::Kr => kr::search(query, limit),
     }
 }

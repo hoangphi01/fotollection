@@ -255,10 +255,12 @@ fn found(d: &Dataset, ix: &Index, r: &Row) -> Found {
         region: m.pref.to_owned(),
         city: m.city.to_owned(),
         town: d.strings[r.town as usize].to_owned(),
+        road: String::new(),
         note: d.strings[r.note as usize].to_owned(),
         region_latin: ix.prefs[usize::from(r.muni)].clone(),
         city_latin: ix.munis[usize::from(r.muni)].2.clone(),
         town_latin: town_latin_cap,
+        road_latin: String::new(),
     }
 }
 
