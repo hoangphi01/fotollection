@@ -1,0 +1,13 @@
+### Dix curseurs pour le prix d’un
+
+Chaque curseur de couleur (luminosité, contraste, chaleur, saturation, délavage, ombres et hautes lumières teintées, noir et blanc) est replié dans une seule table de 33 × 33 × 33 couleurs, 35 937 points qui disent où va chaque couleur. L’appliquer à une photo revient à trouver la case de chaque pixel dans la table et à interpoler entre quatre de ses coins (interpolation tétraédrique), si bien que dix curseurs coûtent autant qu’un seul. Construire la table avec tous les curseurs réglés prend environ 2,6 ms ; l’appliquer à un aperçu de 1 600 px, moins de 2,2 ms ; à un export de 24 MP, environ 24 ms.
+
+### Pourquoi un glissement semblait encore lent, et ce que la carte graphique a changé
+
+Mesuré étape par étape, un mouvement de curseur coûtait environ 26 ms, dont 2 ms seulement pour la couleur elle-même : le reste allait à l’encodage de l’aperçu en JPEG (7 à 11 ms) et à son décodage par la fenêtre (9 à 15 ms). La carte graphique supprime les deux. Quand un glissement commence, l’aperçu brut et un masque de l’emplacement de la photo (sans la date incrustée, le cadre ni la bordure) partent une fois vers la carte graphique ; à chaque pas, seule la nouvelle table suit, et un petit programme WebGL2 l’interpole, exactement comme le cœur : 1 ms par pas dans le WebKit de macOS, 2 ms dans Chromium. Quand vous relâchez, le rendu exact du cœur prend le relais. Les deux ont été comparés sur un look marqué avec tous les curseurs déplacés : ils diffèrent de 0,13 en ΔE2000 en moyenne et de 0,77 au 99ᵉ centile, bien en dessous du 1 qu’un œil voit côte à côte.
+
+Aucun interrupteur n’est nécessaire. Au premier glissement, Fotollection vérifie par lui-même : s’il n’y a pas de WebGL2, si le rendu est logiciel ou si un pas de test prend 8 ms ou plus, il garde la voie du processeur pour la séance. Un rendu logiciel a pris 16,5 ms par pas dans le test, il est donc juste de rester sur le processeur dans ce cas.
+
+### Les exports sur chaque cœur
+
+Le décodage et l’encodage d’une photo tournent chacun sur un cœur, si bien qu’un export est rapide quand plusieurs photos sont traitées à la fois. Combien dépend de la mémoire : sur des photos de 24 à 26 MP, 2 à la fois ont donné 4,9 photos par seconde, 4 en ont donné 9,4, 6 en ont donné 11,5 et 8 en ont donné 12,5, la mémoire passant de 0,49 à 1,21 Go. Fotollection choisit le nombre d’après un budget mémoire de 1,6 Go et la taille de la plus grande photo, et s’arrête à 6, car sur les photos d’un vrai voyage, 8 à la fois n’allaient pas plus vite et utilisaient 0,2 Go de plus. Les exports n’utilisent jamais la carte graphique : un tirage doit sortir identique sur chaque ordinateur, et les tests qui comparent les exports octet par octet en dépendent.

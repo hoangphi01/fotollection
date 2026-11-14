@@ -81,6 +81,17 @@
         <ul class="chips mm"><li>89 × 89</li><li>127 × 127</li></ul>
         <p class="small muted">{% include icons/check.svg %} {{ t.kiosk_more }}</p>
       </div>
+      {%- elsif pg.kiosk == 'fr' %}
+      {%- comment %} France's shops (languages.yml kiosk: fr, owner 2026-11-15): no dm or Rossmann there; CEWE kiosks at E.Leclerc, Intermarché and Fnac, Kodak's at Carrefour (named in the note, its logo not on Commons in the public domain); every chain leads with 10 × 15 (fn_kiosk_fr). {% endcomment %}
+      <h2>{{ t.kiosk_title }} {% include logos/leclerc.svg %}{% include fn.html keys="fn_leclerc" %}{{ t.kiosk_and }}{% include logos/intermarche.svg %}{% include fn.html keys="fn_intermarche" %}{{ t.kiosk_and }}{% include logos/fnac.svg %}{% include fn.html keys="fn_fnac" %}</h2>
+      <p class="lead">{{ t.kiosk_lead }}{% include fn.html keys="fn_kiosk_fr" %}</p>
+      <div class="sizes">
+        <p class="sizes-label">{{ t.kiosk_standard }}</p>
+        <ul class="chips"><li>10 × 15</li><li>13 × 18</li><li>15 × 20</li><li>20 × 30</li></ul>
+        <p class="sizes-label">{{ t.kiosk_square }}</p>
+        <ul class="chips"><li>10 × 10</li><li>13 × 13</li><li>15 × 15</li></ul>
+        <p class="small muted">{% include icons/check.svg %} {{ t.kiosk_more }}</p>
+      </div>
       {%- elsif pg.kiosk == 'kr' %}
       {%- comment %} Korea's convenience stores (languages.yml kiosk: kr, owner 2026-11-15): photos print at Printing Box kiosks at CU and GS25, in 4 × 6 and 6 × 8 inches; the app's 10 × 15 and 15 × 20 within 1 % of their shapes, a size in inches for the millimetre (fn_printingbox). {% endcomment %}
       <h2>{{ t.kiosk_title }} {% include logos/cu.svg %}{% include fn.html keys="fn_cu" %}{{ t.kiosk_and }}{% include logos/gs25.svg %}{% include fn.html keys="fn_gs25" %}</h2>

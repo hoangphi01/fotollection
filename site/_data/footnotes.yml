@@ -7,6 +7,7 @@ home:
   vi: [fn_open, fn_dm, fn_rossmann, fn_charts, fn_pf_raw, fn_photo, fn_lightroom, fn_lut, fn_compare, fn_privacy_site, fn_payment]
   ja: [fn_open, fn_seven, fn_lawson, fn_familymart, fn_konbini, fn_charts, fn_pf_raw, fn_photo, fn_lightroom, fn_lut, fn_compare, fn_privacy_site]
   ko: [fn_open, fn_cu, fn_gs25, fn_printingbox, fn_charts, fn_pf_raw, fn_photo, fn_lightroom, fn_lut, fn_compare, fn_privacy_site]
+  fr: [fn_open, fn_leclerc, fn_intermarche, fn_fnac, fn_kiosk_fr, fn_charts, fn_pf_raw, fn_photo, fn_lightroom, fn_lut, fn_compare, fn_privacy_site]
 perf_title:
   en: [fn_simd, fn_units, fn_rust, fn_exif, fn_raw, fn_jpeg, fn_charts, fn_lightroom, fn_webview, fn_trip, fn_pct, fn_dng, fn_sensor, fn_psnr, fn_tiff, fn_de, fn_ssim, fn_heic, fn_srgb, fn_p3, fn_adobe]
   vi: [fn_simd, fn_units, fn_rust, fn_exif, fn_raw, fn_jpeg, fn_charts, fn_lightroom, fn_webview, fn_trip, fn_pct, fn_dng, fn_sensor, fn_psnr, fn_tiff, fn_de, fn_ssim, fn_heic, fn_srgb, fn_p3, fn_adobe]

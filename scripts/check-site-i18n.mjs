@@ -117,7 +117,7 @@ const read = (code) => {
 // A text's placeholders: `[n]`, and `{dm}` / `{rossmann}`, the stores' marks in the keynote's lines;
 // a language whose home page shows Japan's stores (languages.yml kiosk: jp) has theirs instead.
 const marks = (text) => [...text.matchAll(/\[[a-z]+\]|\{[a-z0-9]+\}/g)].map((m) => m[0]).sort().join(' ')
-const STORES = { eu: ['{dm}', '{rossmann}'], jp: ['{familymart}', '{lawson}', '{seven}'], kr: ['{cu}', '{gs25}'] }
+const STORES = { eu: ['{dm}', '{rossmann}'], jp: ['{familymart}', '{lawson}', '{seven}'], kr: ['{cu}', '{gs25}'], fr: ['{fnac}', '{intermarche}', '{leclerc}'] }
 const asIn = (code, text) => {
   const own = STORES[kioskOf[code] ?? 'eu']
   const m = marks(text).split(' ').filter(Boolean)
@@ -161,7 +161,7 @@ if (process.argv.includes('--build') && !problems.length) {
     }
     // Each language shows only its own print shops (languages.yml kiosk, owner 2026-11-14): no
     // page names another branch's stores (dm, Rossmann and CEWE; Japan's; Korea's), only its own.
-    const MARKS = { eu: /logo-(dm|rossmann)\b|data-fn="fn_(dm|rossmann|cewe)"|CEWE Stiftung/, jp: /logo-(seven|lawson|familymart)\b|data-fn="fn_(seven|lawson|familymart|konbini)"/, kr: /logo-(cu|gs25)\b|data-fn="fn_(cu|gs25|printingbox)"/ }
+    const MARKS = { eu: /logo-(dm|rossmann)\b|data-fn="fn_(dm|rossmann|cewe)"|CEWE Stiftung/, jp: /logo-(seven|lawson|familymart)\b|data-fn="fn_(seven|lawson|familymart|konbini)"/, kr: /logo-(cu|gs25)\b|data-fn="fn_(cu|gs25|printingbox)"/, fr: /logo-(leclerc|intermarche|fnac)\b|data-fn="fn_(leclerc|intermarche|fnac|kiosk_fr)"/ }
     for (const l of langs) {
       for (const other of Object.keys(MARKS).filter((k) => k !== (l.kiosk ?? 'eu'))) {
         for (const id of l.pages) {

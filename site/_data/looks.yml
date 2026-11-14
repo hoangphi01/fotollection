@@ -3,88 +3,96 @@
 # (ui/src/locales, look.builtin.*; in English for a language the app does not speak yet, FR-084), each said in one sentence from its recipe. The pictures,
 # assets/img/looks/<slug>.webp, are rendered by the app's own engine (site/screenshots/looks.sh).
 - slug: original
-  name: { en: "Original", vi: "Gốc", de: "Original", hu: "Original", ja: "Original", ko: "Original", pl: "Original", cs: "Original" }
+  name: { en: "Original", vi: "Gốc", de: "Original", fr: "Original", hu: "Original", ja: "Original", ko: "Original", pl: "Original", cs: "Original" }
   say:
     en: "The photo as the camera made it. Every look starts here, and you can always come back."
     vi: "Ảnh đúng như máy chụp. Mọi look bắt đầu từ đây, và luôn quay lại được."
     de: "Das Foto, wie die Kamera es gemacht hat. Jeder Look beginnt hier, und du kannst jederzeit zurück."
+    fr: "La photo telle que l’appareil l’a prise. Chaque look part d’ici, et vous pouvez toujours y revenir."
     hu: "A fotó úgy, ahogy a gép elkészítette. Minden look innen indul, és ide bármikor visszatérhetsz."
     ja: "カメラが撮ったままの写真。すべてのルックはここから始まり、いつでもここへ戻れます。"
     ko: "카메라가 찍은 그대로의 사진. 모든 룩은 여기서 시작하며, 언제든 여기로 돌아올 수 있습니다."
     pl: "Zdjęcie takie, jakie zrobił aparat. Od niego zaczyna się każdy look i zawsze możesz do niego wrócić."
     cs: "Fotka tak, jak ji udělal fotoaparát. Tady začíná každý look a vždycky se sem můžeš vrátit."
 - slug: c200-natural
-  name: { en: "C200 Natural", vi: "C200 Natural", de: "C200 Natural", hu: "C200 Natural", ja: "C200 Natural", ko: "C200 Natural", pl: "C200 Natural", cs: "C200 Natural" }
+  name: { en: "C200 Natural", vi: "C200 Natural", de: "C200 Natural", fr: "C200 Natural", hu: "C200 Natural", ja: "C200 Natural", ko: "C200 Natural", pl: "C200 Natural", cs: "C200 Natural" }
   say:
     en: "Softer contrast, a little more colour and a touch of warmth, the author's own camera recipe."
     vi: "Tương phản dịu hơn, màu đậm hơn một chút và hơi ấm, công thức máy ảnh của chính tác giả."
     de: "Weicherer Kontrast, etwas mehr Farbe und ein Hauch Wärme, das eigene Kamerarezept des Autors."
+    fr: "Un contraste plus doux, un peu plus de couleur et une touche de chaleur, la recette d’appareil de l’auteur."
     hu: "Lágyabb kontraszt, kicsit több szín és egy csipetnyi melegség: a szerző saját fényképezőgépes receptje."
     ja: "やわらかなコントラスト、少し豊かな色、ほんのりとした温かみ。作者自身のカメラレシピです。"
     ko: "부드러운 대비, 조금 더 풍부한 색, 은은한 따뜻함. 제작자 자신의 카메라 레시피입니다."
     pl: "Łagodniejszy kontrast, odrobinę więcej koloru i nuta ciepła – własny przepis autora na aparat."
     cs: "Měkčí kontrast, trochu víc barev a nádech tepla – autorův vlastní recept pro fotoaparát."
 - slug: warm-film
-  name: { en: "Warm old film", vi: "Phim cũ ấm", de: "Warm old film", hu: "Warm old film", ja: "Warm old film", ko: "Warm old film", pl: "Warm old film", cs: "Warm old film" }
+  name: { en: "Warm old film", vi: "Phim cũ ấm", de: "Warm old film", fr: "Warm old film", hu: "Warm old film", ja: "Warm old film", ko: "Warm old film", pl: "Warm old film", cs: "Warm old film" }
   say:
     en: "Warm light, lifted blacks and a golden glow in the highlights, like a print kept in a drawer."
     vi: "Ánh ấm, điểm đen nâng lên và vùng sáng ánh vàng, như tấm ảnh in cất lâu trong ngăn kéo."
     de: "Warmes Licht, angehobene Schwarztöne und ein goldener Schimmer in den Lichtern, wie ein Abzug, der lange in der Schublade lag."
+    fr: "Une lumière chaude, des noirs relevés et un éclat doré dans les hautes lumières, comme un tirage gardé dans un tiroir."
     hu: "Meleg fény, felemelt feketék és aranyos ragyogás a csúcsfényekben, mint egy fiókban őrzött régi képen."
     ja: "温かな光、持ち上げた黒、ハイライトに金色の輝き。引き出しにしまっておいたプリントのようです。"
     ko: "따뜻한 빛, 들어 올린 검정, 하이라이트의 금빛. 서랍에 오래 넣어 둔 인화 사진 같습니다."
     pl: "Ciepłe światło, uniesione czernie i złoty blask w światłach, jak odbitka trzymana w szufladzie."
     cs: "Teplé světlo, zvednuté černé a zlatavá záře ve světlech, jako fotka schovaná v šuplíku."
 - slug: clear
-  name: { en: "Clear", vi: "Trong trẻo", de: "Clear", hu: "Clear", ja: "Clear", ko: "Clear", pl: "Clear", cs: "Clear" }
+  name: { en: "Clear", vi: "Trong trẻo", de: "Clear", fr: "Clear", hu: "Clear", ja: "Clear", ko: "Clear", pl: "Clear", cs: "Clear" }
   say:
     en: "Crisp contrast and vivid colour, with the bright and dark parts opened up."
     vi: "Tương phản rõ, màu tươi, vùng sáng và vùng tối đều được mở ra."
     de: "Knackiger Kontrast und kräftige Farben, mit geöffneten hellen und dunklen Partien."
+    fr: "Un contraste net et des couleurs vives, avec les parties claires et sombres dégagées."
     hu: "Éles kontraszt és élénk színek, kinyitott világos és sötét részekkel."
     ja: "くっきりしたコントラストと鮮やかな色。明るい部分も暗い部分も開いて見せます。"
     ko: "또렷한 대비와 선명한 색. 밝은 부분도 어두운 부분도 열어 보여 줍니다."
     pl: "Wyrazisty kontrast i żywe kolory, z otwartymi jasnymi i ciemnymi partiami."
     cs: "Svěží kontrast a živé barvy, s otevřenými světlými i tmavými místy."
 - slug: cool
-  name: { en: "Cool", vi: "Mát", de: "Cool", hu: "Cool", ja: "Cool", ko: "Cool", pl: "Cool", cs: "Cool" }
+  name: { en: "Cool", vi: "Mát", de: "Cool", fr: "Cool", hu: "Cool", ja: "Cool", ko: "Cool", pl: "Cool", cs: "Cool" }
   say:
     en: "A blue, quiet light for winter streets and early mornings."
     vi: "Ánh xanh lặng lẽ cho phố mùa đông và những buổi sáng sớm."
     de: "Ein blaues, stilles Licht für Winterstraßen und frühe Morgen."
+    fr: "Une lumière bleue et calme pour les rues d’hiver et les petits matins."
     hu: "Kék, csendes fény téli utcákhoz és kora reggelekhez."
     ja: "冬の街角や早朝に合う、青く静かな光。"
     ko: "겨울 거리나 이른 아침에 어울리는 푸르고 고요한 빛."
     pl: "Niebieskie, ciche światło na zimowe ulice i wczesne poranki."
     cs: "Modré, tiché světlo pro zimní ulice a časná rána."
 - slug: faded
-  name: { en: "Faded", vi: "Phai màu", de: "Faded", hu: "Faded", ja: "Faded", ko: "Faded", pl: "Faded", cs: "Faded" }
+  name: { en: "Faded", vi: "Phai màu", de: "Faded", fr: "Faded", hu: "Faded", ja: "Faded", ko: "Faded", pl: "Faded", cs: "Faded" }
   say:
     en: "Gentle, matte and muted, as if the colours had been in the sun."
     vi: "Nhẹ, mờ và trầm, như màu đã phơi nắng lâu."
     de: "Sanft, matt und gedämpft, als hätten die Farben in der Sonne gelegen."
+    fr: "Doux, mat et feutré, comme si les couleurs avaient pris le soleil."
     hu: "Lágy, matt és visszafogott, mintha a színek a napon fakultak volna."
     ja: "やさしく、マットで落ち着いた色。まるで日差しに褪せたかのようです。"
     ko: "부드럽고 무광에 차분한 색. 마치 햇빛에 바랜 듯합니다."
     pl: "Delikatny, matowy i stonowany, jakby kolory poleżały na słońcu."
     cs: "Jemné, matné a tlumené, jako by barvy chvíli ležely na slunci."
 - slug: mono-red
-  name: { en: "B&W, red filter", vi: "B&W lọc đỏ", de: "B&W, red filter", hu: "B&W, red filter", ja: "B&W, red filter", ko: "B&W, red filter", pl: "B&W, red filter", cs: "B&W, red filter" }
+  name: { en: "B&W, red filter", vi: "B&W lọc đỏ", de: "B&W, red filter", fr: "B&W, red filter", hu: "B&W, red filter", ja: "B&W, red filter", ko: "B&W, red filter", pl: "B&W, red filter", cs: "B&W, red filter" }
   say:
     en: "Black and white through a red filter: reds turn bright, blue skies dark, as on film."
     vi: "Trắng đen qua kính lọc đỏ: màu đỏ sáng lên, trời xanh tối lại, như trên phim."
     de: "Schwarzweiß durch einen Rotfilter: Rot wird hell, blauer Himmel dunkel, wie auf Film."
+    fr: "Noir et blanc à travers un filtre rouge : les rouges s’éclaircissent, les ciels bleus s’assombrissent, comme sur pellicule."
     hu: "Fekete-fehér piros szűrőn át: a pirosak világosak, a kék ég sötét lesz, mint filmen."
     ja: "赤フィルターを通したモノクロ。フィルムと同じく、赤は明るく、青空は暗くなります。"
     ko: "빨간 필터를 거친 흑백. 필름처럼 빨강은 밝아지고 파란 하늘은 어두워집니다."
     pl: "Czerń i biel przez czerwony filtr: czerwienie się rozjaśniają, błękit nieba ciemnieje, jak na kliszy."
     cs: "Černobílá přes červený filtr: červené zesvětlí, modrá obloha ztmavne, jako na filmu."
 - slug: mono-soft
-  name: { en: "Soft B&W", vi: "B&W mềm", de: "Soft B&W", hu: "Soft B&W", ja: "Soft B&W", ko: "Soft B&W", pl: "Soft B&W", cs: "Soft B&W" }
+  name: { en: "Soft B&W", vi: "B&W mềm", de: "Soft B&W", fr: "Soft B&W", hu: "Soft B&W", ja: "Soft B&W", ko: "Soft B&W", pl: "Soft B&W", cs: "Soft B&W" }
   say:
     en: "A soft black and white, low in contrast, for quiet scenes and faces."
     vi: "Trắng đen mềm, tương phản thấp, cho cảnh lặng và chân dung."
     de: "Ein weiches Schwarzweiß mit wenig Kontrast, für stille Szenen und Gesichter."
+    fr: "Un noir et blanc doux, peu contrasté, pour les scènes calmes et les visages."
     hu: "Lágy, alacsony kontrasztú fekete-fehér csendes jelenetekhez és arcokhoz."
     ja: "コントラストを抑えたやわらかなモノクロ。静かな場面や人の顔に。"
     ko: "대비를 낮춘 부드러운 흑백. 조용한 장면이나 인물의 얼굴에."

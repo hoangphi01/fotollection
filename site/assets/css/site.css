@@ -203,6 +203,9 @@ h1, h2, h3 { font-family: 'Bitter', Georgia, serif; line-height: 1.1; letter-spa
 :lang(ko) :is(.kicker, .qa-label, .sizes-label, .changelog h3, .compat-brand, .table thead th, .listed small) { letter-spacing: 0.02em; }
 .logo-cu { height: 1em; vertical-align: -0.12em; }
 .logo-gs25 { height: 0.85em; vertical-align: -0.05em; }
+.logo-leclerc { height: 0.9em; vertical-align: -0.08em; }
+.logo-intermarche { height: 0.8em; vertical-align: -0.08em; }
+.logo-fnac { height: 1.1em; vertical-align: -0.16em; }
 /* The stores' marks in the Japanese kiosk heading, at the height of the words beside them. */
 .logo-seven { height: 1.1em; vertical-align: -0.2em; }
 .logo-lawson { height: 0.62em; vertical-align: 0; }

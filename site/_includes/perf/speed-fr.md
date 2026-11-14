@@ -1,0 +1,11 @@
+### Ce qui se passe quand vous ouvrez un dossier
+
+Un dossier de photos n’est pas lu en entier. Pour chaque fichier, Fotollection lit ses données EXIF (date, appareil, lieu) et la petite vignette que chaque appareil range dans le fichier, et rien d’autre : 1 000 photos prennent 0,12 s, pour un budget de 1 s fixé avant d’écrire le code. Des vignettes plus nettes de 400 px sont ensuite faites en arrière-plan, sur deux fils pour que Fotollection reste réactif, et gardées dans un cache sur disque, si bien qu’un dossier rouvert s’affiche instantanément. Pour 5 035 photos, l’import a pris 383 ms et les vignettes intégrées 236 ms.
+
+### Où passent les 17 ms d’un aperçu
+
+Changer un réglage refait le rendu de l’aperçu à partir d’une copie de 2 048 px de la photo gardée en mémoire, jamais à partir du fichier complet. Sur les 16,7 ms que cela prend, le recadrage et le redimensionnement avec un filtre de Lanczos prennent 9,7 ms, la date incrustée moins de 0,1 ms, et l’encodage de l’aperçu en JPEG pour l’écran 7,0 ms. Cet encodeur a été réglé par la mesure : avec les réglages de l’export (pleine résolution de couleur et tables optimisées), il prenait 16,2 ms ; l’écran n’en a pas besoin, donc l’aperçu utilise la couleur divisée par deux et des tables simples, tandis que les exports gardent la couleur complète (4:4:4). Un filtre de redimensionnement moins coûteux a été essayé et s’est révélé plus lent sur ce processeur (12,5 ms), donc Lanczos est resté.
+
+### Code natif contre navigateur
+
+La même tâche (décodage, recadrage en 2:3, date incrustée, JPEG en qualité 95) a été exécutée sur les mêmes 95 photos dans Fotollection et dans Chromium avec un worker par cœur. La vitesse d’export est sortie identique, 18,0 contre 17,9 photos par seconde, ce qui a démenti notre première hypothèse : un navigateur n’est pas lent. Les raisons du code natif sont ailleurs : Fotollection écrit des fichiers 4:4:4 en pleine résolution de couleur là où l’encodeur du navigateur divise la couleur par deux, il garde le profil de couleur de chaque photo, il écrit les fichiers directement sur le disque, et il a utilisé un quart de mémoire en moins (1,35 Go contre 1,78 Go). Depuis, l’encodeur d’impression a encore été accéléré : 23,5 photos par seconde à 16 MP.

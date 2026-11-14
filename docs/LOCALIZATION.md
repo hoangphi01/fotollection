@@ -66,38 +66,38 @@ The language is stored per machine in `settings.json` (`ui.language`, [DATABASE.
 
 ## 4. Glossary
 
-These are the core terms, as the interface shows them. The Hungarian, German, Japanese and Korean ones follow the website's `site/_data/i18n/hu.yml`, `de.yml`, `ja.yml` and `ko.yml` wherever they use them; German says *du*, as the website.
+These are the core terms, as the interface shows them. The Hungarian, German, Japanese, Korean and French ones follow the website's `site/_data/i18n/hu.yml`, `de.yml`, `ja.yml`, `ko.yml` and `fr.yml` wherever they use them; German says *du*, French *vous*, as the websites.
 
-| English | Tiếng Việt | Magyar | Deutsch | 日本語 | 한국어 |
-|---------|------------|--------|---------|--------|--------|
-| photo | ảnh | fotó | Foto | 写真 | 사진 |
-| print | bản in | nyomat | Abzug | プリント | 프린트 |
-| print size | khổ in | nyomatméret | Druckformat | プリントサイズ | 프린트 크기 |
-| crop | cắt ảnh | vágás | Zuschnitt | トリミング | 자르기 |
-| straighten | làm thẳng | kiegyenesítés | Geraderichten | 傾き補正 | 수평 맞추기 |
-| date stamp | đóng dấu ngày | dátumbélyeg | Datumsstempel | 日付スタンプ | 날짜 표시 |
-| info frame | khung thông tin | adatkeret | Info-Rahmen | 情報フレーム | 정보 프레임 |
-| look | look | look | Look | ルック | 룩 |
-| preset | preset | preset | Preset | プリセット | 프리셋 |
-| Simple (mode) | Đơn giản | Egyszerű | Einfach | シンプル | 심플 |
-| Collage (mode) | Ghép ảnh | Kollázs | Collage | コラージュ | 콜라주 |
-| Pro (mode) | Pro | Pro | Pro | Pro | Pro |
-| postcard | bưu thiếp | képeslap | Postkarte | ポストカード | 엽서 |
-| workspace | không gian làm việc | munkaterület | Arbeitsbereich | 作業スペース | 작업 공간 |
-| print basket | giỏ in | nyomtatási kosár | Druckkorb | プリントバスケット | 프린트 바구니 |
-| set aside | để riêng | félretett | Zurückgelegt | 保留 | 보류 |
-| best shot | ảnh đẹp nhất | legjobb kép | beste Aufnahme | ベストショット | 베스트 샷 |
-| ticked | đã tick | kipipált | markiert | チェック済み | 체크한 |
-| reject | loại | elvetés | Verwerfen (verworfen) | 除外 | 제외 |
-| star rating | sao | csillag | Sterne | レーティング | 별점 |
-| export | xuất ảnh | exportálás | Exportieren | 書き出し | 내보내기 |
-| develop (RAW) | xử lý RAW | kidolgozás | Entwickeln | 現像 | 현상 |
-| undo | hoàn tác | visszavonás | Rückgängig | 取り消し | 실행 취소 |
-| original colour | màu gốc | eredeti színek | Originalfarben | 元の色 | 원본 색 |
-| settings | cài đặt | beállítások | Einstellungen | 設定 | 설정 |
-| project | dự án | projekt | Projekt | プロジェクト | 프로젝트 |
-| library | thư viện | könyvtár | Bibliothek | ライブラリ | 라이브러리 |
-| folder | thư mục | mappa | Ordner | フォルダー | 폴더 |
+| English | Tiếng Việt | Magyar | Deutsch | 日本語 | 한국어 | Français |
+|---------|------------|--------|---------|--------|--------|----------|
+| photo | ảnh | fotó | Foto | 写真 | 사진 | photo |
+| print | bản in | nyomat | Abzug | プリント | 프린트 | tirage |
+| print size | khổ in | nyomatméret | Druckformat | プリントサイズ | 프린트 크기 | format d'impression |
+| crop | cắt ảnh | vágás | Zuschnitt | トリミング | 자르기 | recadrage |
+| straighten | làm thẳng | kiegyenesítés | Geraderichten | 傾き補正 | 수평 맞추기 | redressement |
+| date stamp | đóng dấu ngày | dátumbélyeg | Datumsstempel | 日付スタンプ | 날짜 표시 | date incrustée |
+| info frame | khung thông tin | adatkeret | Info-Rahmen | 情報フレーム | 정보 프레임 | cadre d'infos |
+| look | look | look | Look | ルック | 룩 | look |
+| preset | preset | preset | Preset | プリセット | 프리셋 | preset |
+| Simple (mode) | Đơn giản | Egyszerű | Einfach | シンプル | 심플 | Simple |
+| Collage (mode) | Ghép ảnh | Kollázs | Collage | コラージュ | 콜라주 | Collage |
+| Pro (mode) | Pro | Pro | Pro | Pro | Pro | Pro |
+| postcard | bưu thiếp | képeslap | Postkarte | ポストカード | 엽서 | carte postale |
+| workspace | không gian làm việc | munkaterület | Arbeitsbereich | 作業スペース | 작업 공간 | espace de travail |
+| print basket | giỏ in | nyomtatási kosár | Druckkorb | プリントバスケット | 프린트 바구니 | panier d'impression |
+| set aside | để riêng | félretett | Zurückgelegt | 保留 | 보류 | mis de côté |
+| best shot | ảnh đẹp nhất | legjobb kép | beste Aufnahme | ベストショット | 베스트 샷 | meilleure photo |
+| ticked | đã tick | kipipált | markiert | チェック済み | 체크한 | cochée |
+| reject | loại | elvetés | Verwerfen (verworfen) | 除外 | 제외 | rejet (rejetée) |
+| star rating | sao | csillag | Sterne | レーティング | 별점 | étoiles |
+| export | xuất ảnh | exportálás | Exportieren | 書き出し | 내보내기 | exporter |
+| develop (RAW) | xử lý RAW | kidolgozás | Entwickeln | 現像 | 현상 | développement |
+| undo | hoàn tác | visszavonás | Rückgängig | 取り消し | 실행 취소 | annuler |
+| original colour | màu gốc | eredeti színek | Originalfarben | 元の色 | 원본 색 | couleurs d'origine |
+| settings | cài đặt | beállítások | Einstellungen | 設定 | 설정 | réglages |
+| project | dự án | projekt | Projekt | プロジェクト | 프로젝트 | projet |
+| library | thư viện | könyvtár | Bibliothek | ライブラリ | 라이브러리 | bibliothèque |
+| folder | thư mục | mappa | Ordner | フォルダー | 폴더 | dossier |
 
 The Hungarian website still writes the mode names in English (*Simple*, *Collage*), because its screenshots show the English app. When Hungarian screenshots exist, the site takes the app's names.
 
@@ -138,9 +138,9 @@ Before a language exists, the pseudo-locale `en-XA` shows what a long one will d
 
 Some things change with the language or the country, not only the words, as a phone sold in one country may take a physical SIM where others take an eSIM. This table is where each such difference is listed; the requirement behind it holds the detail. A new difference gets its row here in the same commit.
 
-| | English | Tiếng Việt | Čeština, Deutsch, Magyar, Polski | 한국어 | 日本語 |
+| | English | Tiếng Việt | Čeština, Deutsch, Magyar, Polski, Français | 한국어 | 日本語 |
 |---|---|---|---|---|---|
-| **The app's interface** | ✓ | ✓ | Deutsch and Magyar (cs and pl on the website only) | ✓ | ✓ |
+| **The app's interface** | ✓ | ✓ | Deutsch and Magyar (cs, pl and fr on the website only) | ✓ | ✓ |
 | **Face** | Be Vietnam Pro | Be Vietnam Pro | Be Vietnam Pro | + bundled Noto Sans KR | + bundled Noto Sans JP |
 | **Print face for the card** | Xanh Mono, Patrick Hand | as English | as English | as English (Hangul on a print later) | Klee One, a handwritten face, bundled for the はがき (FR-130) |
 | **Line breaking** | normal | normal | normal | between words only (`keep-all`) | kinsoku (`line-break: strict`) |
@@ -149,7 +149,7 @@ Some things change with the language or the country, not only the words, as a ph
 | **Postal code on the card** | free text | free text | free text | five boxes below the address (FR-132) | 〒 and seven boxes in the app; printed `248-0024` when typed, seven vermilion boxes when left to the hand (FR-130) |
 | **Greetings for the occasion (FR-131, planned)** | Christmas and others, later | Tết and others, later | later | 설날, 어버이날, 스승의 날, the year's end | 年賀, 寒中, 暑中, 残暑, 喪中 |
 | **Print sizes in the app** | Europe's first, Japan's and Korea's folded | as English | as English | Korea's first (FR-132, planned) | Japan's convenience stores first (FR-129, planned) |
-| **Kiosk sizes the website names** | dm, Rossmann | dm, Rossmann | dm, Rossmann | Printing Box (CU, GS25): 4 × 6 and 6 × 8 in | 7-Eleven, Lawson, FamilyMart: L, 2L, two squares (FR-129) |
+| **Kiosk sizes the website names** | dm, Rossmann | dm, Rossmann | dm, Rossmann; Français: CEWE at E.Leclerc, Intermarché, Fnac, Kodak at Carrefour | Printing Box (CU, GS25): 4 × 6 and 6 × 8 in | 7-Eleven, Lawson, FamilyMart: L, 2L, two squares (FR-129) |
 | **Website: support** | Ko-fi (card) | VietQR | Ko-fi (card) | Ko-fi (card) | Ko-fi (card), its English page explained |
 | **Website: community** | AlternativeTo, GitHub | Vietnam Linux Family, CaramOS | AlternativeTo, GitHub | AlternativeTo, GitHub | AlternativeTo, GitHub |
 | **Website: screenshots and photos** | the English app, Prague | the Vietnamese app, Prague | the English app, Prague | the Korean app, photos of Seoul by @9adox and @imyourctus (planned) | the Japanese app, the owner's Kamakura (planned) |

@@ -15,6 +15,8 @@
 #   kiosk        the print shops its home page shows: eu (dm and Rossmann, the default) or jp
 #                (7-Eleven, Lawson and FamilyMart's multicopy machines), owner 2026-11-14, or kr
 #                (the Printing Box kiosks at CU and GS25), owner 2026-11-15
+#                or fr (CEWE's kiosks at E.Leclerc, Intermarché and Fnac, Kodak's at Carrefour),
+#                owner 2026-11-15
 #   community    the community section of its home page: vn (Vietnam Linux Family and CaramOS,
 #                where Vietnamese readers find apps) or, by default, intl (AlternativeTo), owner 2026-11-14
 #   guide        the manual it shows (ADR-0031): the full one in docs/ (English, Vietnamese) or
@@ -59,6 +61,18 @@
   pages: [home, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-de.md
   support: card
+  published: true
+- code: fr
+  date_format: "%d/%m/%Y"
+  name: Français
+  html_lang: fr
+  og_locale: fr_FR
+  prefix: /fr
+  assets: en
+  pages: [home, download, performance, manual, wiki, code-signing]
+  guide: site/_includes/manual-short-fr.md
+  support: card
+  kiosk: fr
   published: true
 - code: hu
   date_format: "%Y. %m. %d."
