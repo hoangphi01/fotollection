@@ -133,3 +133,22 @@ Before a language exists, the pseudo-locale `en-XA` shows what a long one will d
 - **Going back to an older version:** Deutsch and Magyar come with settings v19 (v0.14.1). An older app reads no v19 file at all ([DATABASE.md §6](DATABASE.md#6-app-settings)), whatever the language, so `"de"` and `"hu"` add no new case. 日本語 and 한국어 come with settings v20 (v0.14.2): v0.14.1 meets a v20 file as a newer one, uses its defaults and leaves the file as it is.
 - **Japanese or Korean the cut lacks:** a folder's or a place's name in kanji or Hangul the bundled face does not hold is drawn in the system's Japanese face, a little different in width; every such field already fits its text (`FitText`, truncation).
 - **Print text in Japanese:** the date stamp, info frame and postcard fonts hold Latin letters only, so their placeholders stay in Latin letters; Japanese text on a print comes with FR-130's はがき; Korean, later.
+
+## 7. What differs by market
+
+Some things change with the language or the country, not only the words, as a phone sold in one country may take a physical SIM where others take an eSIM. This table is where each such difference is listed; the requirement behind it holds the detail. A new difference gets its row here in the same commit.
+
+| | English | Tiếng Việt | Čeština, Deutsch, Magyar, Polski | 한국어 | 日本語 |
+|---|---|---|---|---|---|
+| **The app's interface** | ✓ | ✓ | Deutsch and Magyar (cs and pl on the website only) | ✓ | ✓ |
+| **Face** | Be Vietnam Pro | Be Vietnam Pro | Be Vietnam Pro | + bundled Noto Sans KR | + bundled Noto Sans JP |
+| **Line breaking** | normal | normal | normal | between words only (`keep-all`) | kinsoku (`line-break: strict`) |
+| **Postcard (FR-073, FR-130, FR-132)** | European card; a switch, off by default, turns it into a はがき for a card sent to Japan | as English | European card, no はがき switch | the 10 × 15 card with Korea Post's address side (FR-132, planned), no はがき switch | the はがき alone, upright or landscape, no European card |
+| **Postal code on the card** | free text | free text | free text | five boxes below the address (FR-132) | 〒 and seven boxes in the app; printed `248-0024` when typed, seven vermilion boxes when left to the hand (FR-130) |
+| **Greetings for the occasion (FR-131, planned)** | Christmas and others, later | Tết and others, later | later | 설날, 어버이날, 스승의 날, the year's end | 年賀, 寒中, 暑中, 残暑, 喪中 |
+| **Kiosk sizes the website names** | dm, Rossmann | dm, Rossmann | dm, Rossmann | Printing Box (CU, GS25): 4 × 6 and 6 × 8 in | 7-Eleven, Lawson, FamilyMart: L, 2L, two squares (FR-129) |
+| **Website: support** | Ko-fi (card) | VietQR | Ko-fi (card) | Ko-fi (card) | Ko-fi (card), its English page explained |
+| **Website: community** | AlternativeTo, GitHub | Vietnam Linux Family, CaramOS | AlternativeTo, GitHub | AlternativeTo, GitHub | AlternativeTo, GitHub |
+| **Website: screenshots and photos** | the English app, Prague | the Vietnamese app, Prague | the English app, Prague | the Korean app, photos of Seoul by @9adox and @imyourctus (planned) | the Japanese app, the owner's Kamakura (planned) |
+
+The website's switches live in `site/_data/languages.yml` (`kiosk`, `support`, `community`, `aliases`), passed to the pages as `pg.*`; the app's in `LANGUAGES` (`ui/src/i18n/index.ts`) and, for the print, in the requirement named in the row.
