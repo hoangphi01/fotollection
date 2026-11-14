@@ -115,6 +115,14 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ## 2026-11-15
 
+### Approved pictures no pass compared stayed in the repo for a week (UI-VISUAL-001)
+
+- **Area:** ui-layout, checks
+- **Seen:** making the light lips teal, the Vietnamese dark pass in Chromium differed by up to 14 % on the old CSS as well: its 11 approved pictures dated from 2026-11-08, and the same day's one-off passes had written 24 new ones (`chromium-en-dark-*`, `chromium-vi-light-*`) into the folder unasked.
+- **Why:** `baseline()` writes a picture whenever none exists, and the passes allowed one were every English or Vietnamese pass, whatever the engine or theme. The matrix runs Vietnamese dark in WebKit since then, so the Chromium ones were compared by nothing and went stale unseen; any one-off check wrote more.
+- **Fix:** only the matrix's two corners have approved pictures (`BASELINE_PASSES`); every run fails on a tracked picture no pass compares (UI-VISUAL-002), shown failing on the 11 stale ones before they were removed.
+- **Rule:** a check's reference data is listed by the passes that use it, and a reference nothing reads fails the check, so it is removed instead of rotting.
+
 ### A row scrolled half out of its list "overlapped" the button under the list (UI-LAYOUT-002, FR-128)
 
 - **Area:** ui-layout, checks

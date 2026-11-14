@@ -1273,6 +1273,7 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 - **Only in Japanese:** the はがき shows when the app's language is 日本語; every other language keeps Europe's postcard, unchanged.
 - **Before building:** Japan Post's layout rules for the address side read from its own pages, and a card printed and posted once (CONTRIBUTING §10, a real trial).
+- **Its pictures** (owner, 2026-11-15): the Japanese and Korean screenshots of postcards show a photo of their own country, not the Prague tram: Japanese the owner's Kamakura photo (Gokurakuji station, in the owner's preset test folder, never committed but as a render), shot once the はがき template is done; Korean a photo of Korea, to be chosen.
 
 ## 7. Non-functional requirements
 

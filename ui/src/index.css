@@ -176,13 +176,15 @@
     --chrome-muted: oklch(0.965 0.01 88);
     /* Depth (FR-099, the owner's "bold" choice): a lip under raised controls in a shade of their
        own colour, a top highlight, lifted cards, set-in fields. In light the shade is a dark
-       teal from the logo, never brown (owner, 2026-11-06). */
-    --shade: oklch(0.32 0.06 175);
+       teal from the logo, never brown (owner, 2026-11-06); the lip of a light control is a dark
+       teal too, never grey (owner, 2026-11-15: "as the dark theme's dark brown"). */
+    --shade: oklch(0.32 0.08 175);
     /* How much darker a filled button gets under the pointer: its words keep 4.5:1. */
     --deep: 18%;
     --highlight: oklch(1 0 0 / 0.7);
     --lip: 3px;
-    --lip-mix: 38%;
+    --lip-mix: 60%;
+    --row-lip-mix: 45%;
     --lift: 0 4px 12px -4px oklch(0.32 0.06 175 / 0.35), 0 1px 2px oklch(0.32 0.06 175 / 0.2);
     --lift-strong: 0 12px 32px -8px oklch(0.32 0.06 175 / 0.35), 0 2px 6px oklch(0.32 0.06 175 / 0.18);
     --sink: inset 0 2px 3px oklch(0.32 0.06 175 / 0.18);
@@ -274,6 +276,8 @@
     --chrome-secondary: oklch(0.26 0.034 58);
     --chrome-muted: oklch(0.29 0.04 58);
     --shade: oklch(0 0 0);
+    --lip-mix: 38%;
+    --row-lip-mix: 15%;
     /* Dark words on the orange accent: a smaller step keeps them at 4.5:1 (5.1). */
     --deep: 8%;
     --highlight: oklch(1 0 0 / 0.08);
@@ -551,10 +555,11 @@
 }
 /* The chosen row of a list (a folder, a History step, a Settings section): an accent outline
    inside and a deep accent lip at its foot, as Sentry's chosen project (owner, 2026-11-06).
-   One utility, so every list chooses alike. */
+   One utility, so every list chooses alike. The lip takes less of the shade in dark, where black
+   would sink it into the row's dark wash (owner, 2026-11-15: "dark like light"). */
 @utility row-chosen {
   --tw-shadow: inset 0 0 0 1.5px var(--primary),
-    inset 0 -3px 0 color-mix(in oklch, var(--primary), var(--shade) 45%);
+    inset 0 -3px 0 color-mix(in oklch, var(--primary), var(--shade) var(--row-lip-mix));
   box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000),
     var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }

@@ -155,6 +155,7 @@ Every view below runs the A cases of §3 at each width (`overflowViews`, `measur
 | ID | Check | Pass rule | How | When | Source |
 |---|---|---|---|---|---|
 | UI-VISUAL-001 | Nothing changed that was not meant to | Each approved picture (Pro panel, folder list, Collage panel, the preview's inspector, every Settings section) differs by ≤ 0.2 % of its pixels, per engine, language and theme | A `baseline` (pixelmatch) | release | Playwright visual comparisons |
+| UI-VISUAL-002 | Every approved picture is compared | Approved pictures exist only for the matrix's two corners (`chromium-en-light`, `webkit-vi-dark`); any other pass never writes one, and a picture in the repo that no pass compares (another pass, a view gone) fails until it is removed | `orphanBaselines` in `shoot.mjs`, over `git ls-files` | commit (pre-push) and release | LESSONS 2026-11-15 |
 
 The approved pictures live in `site/screenshots/baselines/`. After an intended change, `UPDATE_BASELINES=1` approves the new ones, and the commit shows them; a failure writes `<name>-diff.png` into the run's output.
 

@@ -11,6 +11,7 @@
 import { axeChecks, baseline, fitReport, layoutChecks, stableChecks } from './checks.mjs'
 import { readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { chromium, webkit } from 'playwright'
@@ -680,14 +681,41 @@ const MEASURES = { cardGap: '12', blockGap: '12', fieldGap: '6', select: '32', t
  * never shows (a long custom size chosen, every Settings section, the welcome), the sheet
  * preview in every shape, nothing jumping when W or J is pressed, and the pixel baselines.
  */
+/** The passes that have approved pictures: English in light in Chromium, Vietnamese in dark in WebKit. */
+const BASELINE_PASSES = ['chromium-en-light', 'webkit-vi-dark']
+/** The approved pictures this run compared, to find the ones no pass compares any more. */
+const compared = new Set()
+
+/**
+ * UI-VISUAL-002: every approved picture in the repo is one a pass still compares. A picture of
+ * another pass, or of this pass's view that no longer exists, fails until it is removed.
+ */
+function orphanBaselines({ language, theme }) {
+  const engine = process.env.MEASURE_ENGINE === 'webkit' ? 'webkit' : 'chromium'
+  const pass = `${engine}-${language}-${theme}`
+  const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'baselines')
+  const tracked = execFileSync('git', ['ls-files', dir], { encoding: 'utf8' })
+    .split('\n')
+    .filter(Boolean)
+    .map((f) => path.basename(f))
+  return tracked
+    .filter((f) => !BASELINE_PASSES.some((p) => f.startsWith(`${p}-`)) || (f.startsWith(`${pass}-`) && !compared.has(f)))
+    .map((f) => `UI-VISUAL-002 an approved picture no pass compares: site/screenshots/baselines/${f} (remove it)`)
+}
+
 async function stressViews({ language, theme }) {
   const out = []
   const engine = process.env.MEASURE_ENGINE === 'webkit' ? 'webkit' : 'chromium'
   const dir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'baselines')
-  // Approved pictures exist for English and Vietnamese (UI-VISUAL-001); another language (hu,
-  // the pseudo-locale) is measured and checked, never written as a baseline into the repo.
-  const shot = (page, locator, name) =>
-    ['en', 'vi'].includes(language) ? baseline(page, locator, `${engine}-${language}-${theme}-${name}`, { dir, outDir }) : []
+  // Approved pictures exist only for the matrix's two corners (UI-VISUAL-001, UI_TESTS §1);
+  // any other pass (another language, theme or engine) is measured and checked, never written
+  // as a baseline into the repo (LESSONS 2026-11-15).
+  const pass = `${engine}-${language}-${theme}`
+  const shot = (page, locator, name) => {
+    if (!BASELINE_PASSES.includes(pass)) return []
+    compared.add(`${pass}-${name}.png`)
+    return baseline(page, locator, `${pass}-${name}`, { dir, outDir })
+  }
   // UI-FIX-001: a long custom print size chosen, its delete button beside the size's name.
   const longSize = { customSizes: [{ id: 'custom-1', name: 'Demo very long custom print size', shortMm: 1000, longMm: 1000, unit: 'cm' }], printSize: 'custom-1' }
   let { context, page } = await open({ scenario: 'stamp', language, theme, settingsPatch: longSize })
@@ -985,6 +1013,7 @@ async function measurePanels() {
   console.log(spilled.length ? '' : 'overflow: no text, row or segment overflows at 1180, 1400 or 1600 px')
   // The states the recording lacks, nothing jumping, and the approved pictures (docs/UI_TESTS.md).
   extra.push(...(await stressViews({ language, theme })))
+  extra.push(...orphanBaselines({ language, theme }))
   off.push(...extra)
   console.log(extra.length ? '' : 'ui tests: every view and state passes layout, text, target, axe, stability and baselines')
   if (off.length) {

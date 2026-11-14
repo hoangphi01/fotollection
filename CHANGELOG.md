@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Light theme, in the app and on the website:** the edge under buttons, choices and cards is a dark teal instead of grey, as the dark theme's is a dark brown; in the dark theme, the chosen row of a list (a Settings section, a folder) shows its deep edge again.
 - **Website in Korean** at `/ko/`: the home, Download, Performance, Wiki and code-signing pages and a short manual, with Korea's convenience stores (CU, GS25) and their 10 × 15 Printing Box prints in place of dm and Rossmann, set as Korean sites are: words never broken inside, bold Gothic headings.
 - **Website:** a shorter landing page with the print story first (the three modes, the print, the kiosk), the before-and-after lower down; ten notes instead of twenty-two, each beside a claim (the test machine of the speed figures, what "nothing is tracked" covers), no definitions of the obvious; the GitHub button invites a star without showing a count.
 - **Website:** the community section shows AlternativeTo and GitHub to readers beyond Vietnam; the Vietnamese page keeps Vietnam Linux Family and CaramOS.
