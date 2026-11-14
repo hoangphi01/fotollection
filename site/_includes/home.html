@@ -71,23 +71,23 @@
   <div class="wrap kiosk-grid">
     <div>
       {%- if pg.kiosk == 'jp' %}
-      {%- comment %} Japan's convenience stores (languages.yml kiosk: jp, owner 2026-11-14): their multicopy machines print L, 2L and square; the app's 9 × 13, 13 × 18 and 10 × 10 keep those shapes within the kiosk's trim (fn_konbini; built-in sizes to the millimetre are FR-129). {% endcomment %}
+      {%- comment %} Japan's convenience stores (languages.yml kiosk: jp, owner 2026-11-14): their multicopy machines print L, 2L and a square (89 mm at 7-Eleven, 127 mm at Lawson); the app's 9 × 13 and 13 × 18 are within about 1 % of L and 2L, 10 × 10 and 13 × 13 square, a custom size for the millimetre (fn_konbini; built-in sizes to the millimetre are FR-129). {% endcomment %}
       <h2>{{ t.kiosk_title }} {% include logos/seven.svg %}{% include fn.html keys="fn_seven" %}{{ t.kiosk_and }}{% include logos/lawson.svg %}{% include fn.html keys="fn_lawson" %}{{ t.kiosk_and }}{% include logos/familymart.svg %}{% include fn.html keys="fn_familymart" %}</h2>
       <p class="lead">{{ t.kiosk_lead }}{% include fn.html keys="fn_konbini" %}</p>
       <div class="sizes">
         <p class="sizes-label">{{ t.kiosk_standard }}</p>
         <ul class="chips mm"><li>L判 89 × 127</li><li>2L判 127 × 178</li></ul>
         <p class="sizes-label">{{ t.kiosk_square }}</p>
-        <ul class="chips mm"><li>89 × 89</li></ul>
+        <ul class="chips mm"><li>89 × 89</li><li>127 × 127</li></ul>
         <p class="small muted">{% include icons/check.svg %} {{ t.kiosk_more }}</p>
       </div>
       {%- elsif pg.kiosk == 'kr' %}
-      {%- comment %} Korea's convenience stores (languages.yml kiosk: kr, owner 2026-11-15): photos print at Printing Box kiosks at CU and GS25, in 4 × 6 inches (10 × 15 cm), a size built in (fn_printingbox). {% endcomment %}
+      {%- comment %} Korea's convenience stores (languages.yml kiosk: kr, owner 2026-11-15): photos print at Printing Box kiosks at CU and GS25, in 4 × 6 and 6 × 8 inches; the app's 10 × 15 and 15 × 20 within 1 % of their shapes, a size in inches for the millimetre (fn_printingbox). {% endcomment %}
       <h2>{{ t.kiosk_title }} {% include logos/cu.svg %}{% include fn.html keys="fn_cu" %}{{ t.kiosk_and }}{% include logos/gs25.svg %}{% include fn.html keys="fn_gs25" %}</h2>
       <p class="lead">{{ t.kiosk_lead }}{% include fn.html keys="fn_printingbox" %}</p>
       <div class="sizes">
         <p class="sizes-label">{{ t.kiosk_standard }}</p>
-        <ul class="chips"><li>10 × 15</li></ul>
+        <ul class="chips mm"><li>4×6 102 × 152</li><li>6×8 154 × 203</li></ul>
         <p class="small muted">{% include icons/check.svg %} {{ t.kiosk_more }}</p>
       </div>
       {%- else %}

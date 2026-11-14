@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Website:** the Japanese and Korean pages give the kiosks' sizes as the stores' own pages do: Lawson's square is 127 × 127 mm (7-Eleven's 89 × 89), and Printing Box prints 4 × 6 and 6 × 8 inches (102 × 152 and 154 × 203 mm).
 - **Website:** the Japanese and Korean pages use the app's words: 作業スペース and 傾き補正 in Japanese, Lightroom's 생동감 for Vibrance in Korean.
 - **Website:** the Japanese pages no longer name dm, Rossmann and CEWE in the notes under every page.
 - **Website:** the *Buy me a coffee on Ko-fi* button has its colour again; the change to the download buttons had made it plain, its cup hard to see in the dark theme.
