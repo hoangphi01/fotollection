@@ -369,6 +369,49 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) {
     }
 }
 
+/// The message on a bordered photo's half (board K1): one line across the band under the photo,
+/// as much of it as fits, in the card's face.
+pub fn draw_message(
+    canvas: &mut RgbImage,
+    density: f32,
+    band: RectMm,
+    message: &str,
+    settings: &PostcardSettings,
+    paper: BorderColor,
+) {
+    let Some(faces) = faces(settings) else {
+        return;
+    };
+    let first = message
+        .lines()
+        .map(str::trim)
+        .find(|l| !l.is_empty())
+        .unwrap_or("");
+    if first.is_empty() {
+        return;
+    }
+    let em =
+        (band.height * 0.6).min(crate::settings::postcard_text_mm(settings.text_size)) * density;
+    let room = (band.width - 4.0) * density;
+    let mut shown = String::new();
+    for c in first.chars() {
+        shown.push(c);
+        if line(None, faces, &shown, em, 0.0, 0.0, [0; 3]) > room {
+            shown.pop();
+            break;
+        }
+    }
+    line(
+        Some(canvas),
+        faces,
+        &shown,
+        em,
+        (band.x + 2.0) * density,
+        band.y * density + (band.height * density - em) / 2.0,
+        settings.ink.rgb(paper),
+    );
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -63,11 +63,11 @@ pub struct SheetLayout {
     /// 15 mm at a landscape card's foot, or along a portrait card's right edge; kept free on
     /// the photo's half too.
     pub postal: Option<RectMm>,
-    /// An upright はがき's message band under a bordered photo (FR-130, board A): one line.
+    /// A Japanese or Korean card's message band under a bordered photo (boards A, K1): one line.
     pub band: Option<RectMm>,
 }
 
-/// The message band under a bordered photo on an upright はがき.
+/// The message band under a bordered photo on a Japanese or Korean card.
 const HAGAKI_BAND_MM: f32 = 8.0;
 
 /// The sheet's print size: the chosen one, or 10 × 15 when it is Original, which has no
@@ -340,9 +340,16 @@ pub fn layout(
             (rects[1], rects[0])
         };
         let japan = settings.postcard.card == crate::settings::PostcardDestination::Japan;
-        // An upright はがき with a bordered photo keeps a line for the message under it.
-        let band = (japan && !side && !settings.fill).then(|| {
-            photo_half.height -= HAGAKI_BAND_MM;
+        let korea = settings.postcard.card == crate::settings::PostcardDestination::Korea;
+        // A Japanese or Korean card with a bordered photo keeps a line for the message under
+        // it (boards A and K1), above Korea Post's machine zone where that crosses the photo.
+        let zone = if korea && settings.postcard.postal_use {
+            crate::korea::MACHINE_ZONE_MM
+        } else {
+            0.0
+        };
+        let band = ((japan || korea) && !settings.fill).then(|| {
+            photo_half.height -= HAGAKI_BAND_MM + zone;
             RectMm {
                 x: photo_half.x,
                 y: photo_half.y + photo_half.height,
@@ -827,16 +834,6 @@ fn draw_card(
                     paper: settings.border_color,
                 },
             );
-            if let (Some(band), Some(text)) = (sheet.band, text) {
-                crate::hagaki::draw_message(
-                    canvas,
-                    density,
-                    band,
-                    &text.message,
-                    &settings.collage.postcard,
-                    settings.border_color,
-                );
-            }
         } else if settings.collage.postcard.card == crate::settings::PostcardDestination::Korea {
             crate::korea::draw(
                 canvas,
@@ -872,6 +869,29 @@ fn draw_card(
                     font: card_font,
                     paper: settings.border_color,
                 },
+            );
+        }
+    }
+    // The message's band under a bordered photo, on a Japanese or Korean card.
+    if let (Some(band), Some(text)) = (sheet.band, text) {
+        let postcard = &settings.collage.postcard;
+        if japan {
+            crate::hagaki::draw_message(
+                canvas,
+                density,
+                band,
+                &text.message,
+                postcard,
+                settings.border_color,
+            );
+        } else {
+            crate::korea::draw_message(
+                canvas,
+                density,
+                band,
+                &text.message,
+                postcard,
+                settings.border_color,
             );
         }
     }
@@ -2083,5 +2103,60 @@ mod tests {
             assert_eq!(fitting_turns(landscape_turned(first), first, landscape), 1);
             assert_eq!(fitting_turns(landscape_turned(first), first, portrait), 0);
         }
+    }
+
+    #[test]
+    fn fr_130_a_bordered_japanese_or_korean_card_keeps_a_message_band() {
+        use crate::settings::{PostcardDestination, PostcardOrientation, PostcardSettings};
+        let band = |card, orientation, fill| {
+            let mut settings = RenderSettings::default();
+            settings.collage.fill = fill;
+            settings.collage.postcard = PostcardSettings {
+                enabled: true,
+                orientation,
+                card,
+                ..PostcardSettings::default()
+            };
+            let sheet = layout(
+                sheet_print(&settings),
+                [Some((1800, 1200)), None],
+                false,
+                &settings.collage,
+            );
+            (sheet.band, sheet.postal)
+        };
+        for orientation in [
+            PostcardOrientation::Portrait,
+            PostcardOrientation::Landscape,
+        ] {
+            assert!(
+                band(PostcardDestination::Japan, orientation, false)
+                    .0
+                    .is_some()
+            );
+            assert!(
+                band(PostcardDestination::Japan, orientation, true)
+                    .0
+                    .is_none()
+            );
+        }
+        for orientation in [PostcardOrientation::Landscape, PostcardOrientation::Square] {
+            let (Some(b), Some(zone)) = band(PostcardDestination::Korea, orientation, false) else {
+                panic!("a Korean card's band and machine zone");
+            };
+            assert!(
+                b.y + b.height <= zone.y + 0.01,
+                "the band stays above the 17 mm zone"
+            );
+        }
+        assert!(
+            band(
+                PostcardDestination::Europe,
+                PostcardOrientation::Landscape,
+                false
+            )
+            .0
+            .is_none()
+        );
     }
 }

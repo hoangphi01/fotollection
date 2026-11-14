@@ -47,8 +47,8 @@ export function PostcardTextCard({ settings, onChange, photo, revision, filter, 
   const fonts = useFonts()
   const postcard = settings?.collage?.postcard
   const card = cardFor(i18n.language, postcard?.destination)
-  // A full-bleed upright はがき has no band for the message (board B).
-  const noMessage = card === 'japan' && settings?.collage?.fill && postcard?.orientation !== 'landscape'
+  // A full-bleed Japanese or Korean card has no band for the message (board B).
+  const noMessage = card !== 'europe' && settings?.collage?.fill
   const fit = usePostcardCuts(settings, revision).get(photo ?? -1)
   if (!postcard?.enabled) return null
   return (
