@@ -3,6 +3,7 @@
 //!
 //! See `docs/ARCHITECTURE.md` and ADR-0002 for the crate boundary.
 
+pub mod addassist;
 pub mod atomic;
 pub mod brands;
 pub mod bundle;

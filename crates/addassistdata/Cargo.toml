@@ -1,0 +1,15 @@
+[package]
+name = "fotollection-addassistdata"
+description = "Build-time packer for AddAssist's bundled postal data (FR-133); never shipped in the app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+publish = false
+
+[dependencies]
+blake3.workspace = true
+
+[lints]
+workspace = true

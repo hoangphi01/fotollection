@@ -421,6 +421,15 @@ export const commands = {
 	rememberPostcardAddress: (address: string) => typedError<null, IpcError>(__TAURI_INVOKE("remember_postcard_address", { address })),
 	/**  Forgets one remembered address (FR-077); returns the list left. */
 	forgetAddress: (address: string) => typedError<string[], IpcError>(__TAURI_INVOKE("forget_address", { address })),
+	/**  The countries `AddAssist` has data for, with the data's date. */
+	addassistCountries: () => typedError<CountryInfo[], IpcError>(__TAURI_INVOKE("addassist_countries")),
+	/**  Every place a full postal code covers: one, several to pick from, or none. */
+	addassistLookup: (country: Country, code: string) => typedError<Found[], IpcError>(__TAURI_INVOKE("addassist_lookup", { country, code })),
+	/**
+	 *  Places whose name starts with `query` (kanji, kana or romaji for Japan), or whose code
+	 *  starts with its digits.
+	 */
+	addassistSearch: (country: Country, query: string, limit: number) => typedError<Found[], IpcError>(__TAURI_INVOKE("addassist_search", { country, query, limit })),
 	/**  Places whose name starts with `query`, largest first, from the bundled data (FR-032). */
 	searchPlaces: (query: string, limit: number) => typedError<Place[], IpcError>(__TAURI_INVOKE("search_places", { query, limit })),
 	/**
@@ -1065,6 +1074,20 @@ export type Confidence =
 
 export type Corner = "bottomRight" | "bottomLeft" | "topRight" | "topLeft";
 
+/**  A country `AddAssist` has data for. */
+export type Country = 
+/**  Japan Post's postal-code data. */
+"jp";
+
+/**  A country and its data, for Settings and the manual. */
+export type CountryInfo = {
+	country: Country,
+	/**  How many digits its postal code has. */
+	codeDigits: number,
+	/**  The date of the post's data, `YYYY-MM-DD`. */
+	dataDate: string,
+};
+
 /**
  *  User crop as a centre and zoom on the upright photo (FR-006). The crop rectangle is
  *  derived at render time for whatever target ratio applies (print size, or the photo area
@@ -1336,6 +1359,26 @@ export type FolderSummary = {
 };
 
 export type FontFormat = "ttf" | "otf";
+
+/**
+ *  What a code or a search found: the places the post's data knows. The street number, the
+ *  building and the name are the user's to type.
+ */
+export type Found = {
+	/**  The code's digits (`2480024`). */
+	code: string,
+	/**  Prefecture (Japan). */
+	region: string,
+	/**  Municipality. */
+	city: string,
+	/**  Town, or "" where the data leaves it to the address. */
+	town: string,
+	/**  The data's note on the town (`１〜１９丁目`), never printed by itself. */
+	note: string,
+	regionLatin: string,
+	cityLatin: string,
+	townLatin: string,
+};
 
 export type FrameColor = "white" | "black";
 

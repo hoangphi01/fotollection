@@ -206,6 +206,7 @@ The codes below are assigned; the app shows them from **v0.9.1**:
 | `ERR-IPC-0033` | v0.14.0 | `look.preset_too_large` | `crates/core/src/preset.rs`, `src-tauri/src/looks.rs` (`import_presets`) | The preset file is too large | A preset over 1 MB, or a `.zip` over 20 MB packed or unpacked (FR-089); listed in the import's report, the other files imported. | Lightroom's presets are a few kilobytes: the file is probably not a preset. |
 | `ERR-IPC-0034` | v0.14.0 | `look.preset_invalid` | `crates/core/src/preset.rs` (`parse_xmp`, `parse_lrtemplate`, `parse_zip`) | This preset cannot be read | Not well-formed XML, a DTD (refused), nesting deeper than 32, a profile or mask preset (`PresetType` other than `Normal`), an `.lrtemplate` holding code or an expression, or a broken `.zip`; listed in the import's report with its reason. | Export the preset again from Lightroom (*Export…* on the preset); profiles are not presets. |
 | `ERR-IPC-0035` | v0.14.0 | `look.preset_empty` | `crates/core/src/preset.rs`, `src-tauri/src/looks.rs` (`import_presets`) | This preset changes nothing a look can hold | The preset holds only settings no look can take (sharpening, lens corrections, noise reduction…), so no look is made. | Expected for presets of that kind; nothing to fix. |
+| `ERR-IPC-0036` | v0.14.2 | `addassist.query_too_long` | `src-tauri/src/addassist.rs` (`checked`) | (the Rust message) | A postal code or AddAssist search over 64 characters reached Rust (FR-133); the interface's fields stop well before. | Shorten it. |
 
 ### UI: The interface itself
 

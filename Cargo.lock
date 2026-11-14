@@ -1530,6 +1530,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "fotollection-addassistdata"
+version = "0.14.1"
+dependencies = [
+ "blake3",
+]
+
+[[package]]
 name = "fotollection-core"
 version = "0.14.1"
 dependencies = [

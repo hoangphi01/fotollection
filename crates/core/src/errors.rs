@@ -102,6 +102,7 @@ pub const CODES: &[(&str, &str)] = &[
     ("look.preset_too_large", "ERR-IPC-0033"),
     ("look.preset_invalid", "ERR-IPC-0034"),
     ("look.preset_empty", "ERR-IPC-0035"),
+    ("addassist.query_too_long", "ERR-IPC-0036"),
     ("update.none", "ERR-NET-0001"),
     ("update.offline", "ERR-NET-0002"),
     ("update.unreadable", "ERR-NET-0003"),

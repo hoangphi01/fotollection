@@ -2,6 +2,7 @@
 //! Thin Tauri shell: adapts IPC commands, events and the image protocol to
 //! `fotollection-core` (ADR-0002).
 
+mod addassist;
 mod cache;
 mod camera;
 mod collage;
@@ -119,6 +120,9 @@ pub fn specta_builder() -> Builder<tauri::Wry> {
             collage::recent_addresses,
             collage::remember_postcard_address,
             collage::forget_address,
+            addassist::addassist_countries,
+            addassist::addassist_lookup,
+            addassist::addassist_search,
             places::search_places,
             places::set_photo_date,
             places::set_photo_place,
