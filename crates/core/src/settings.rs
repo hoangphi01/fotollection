@@ -536,6 +536,9 @@ pub enum PostcardOrientation {
     #[default]
     Landscape,
     Portrait,
+    /// A Korean card on a square print (4 × 4 in, FR-132): the writing on the top half, the
+    /// photo below. Korea Post takes it as a non-standard letter.
+    Square,
 }
 
 /// The bundled faces a postcard's text can be typed in (FR-073, FR-076).
@@ -547,6 +550,10 @@ pub enum PostcardFace {
     Typewriter,
     /// Patrick Hand; italic is an oblique.
     Handwriting,
+    /// Nanum Pen Script, a Korean card's pen hand (FR-132).
+    NanumPen,
+    /// Gaegu, a Korean card's rounder hand (FR-132).
+    Gaegu,
 }
 
 /// The ink of a postcard's typed text (FR-073). `Auto` is near-black on white paper and

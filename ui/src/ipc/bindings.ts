@@ -1782,7 +1782,9 @@ export type Market =
 /**  dm, Rossmann, CEWE's kiosks. */
 "europe" | 
 /**  the multicopy machines of 7-Eleven, Lawson and `FamilyMart` (checked 2026-11-14 and 15). */
-"japan";
+"japan" | 
+/**  Printing Box at CU and GS25, and the labs (Snaps), in inches (checked 2026-11-15). */
+"korea";
 
 /**  What the previews keep in memory, for the Settings window (FR-086, FR-091). */
 export type MemoryInfo = {
@@ -2068,7 +2070,11 @@ export type PostcardFace =
 /**  Xanh Mono, with its own italic. */
 "typewriter" | 
 /**  Patrick Hand; italic is an oblique. */
-"handwriting";
+"handwriting" | 
+/**  Nanum Pen Script, a Korean card's pen hand (FR-132). */
+"nanumPen" | 
+/**  Gaegu, a Korean card's rounder hand (FR-132). */
+"gaegu";
 
 /**
  *  The ink of a postcard's typed text (FR-073). `Auto` is near-black on white paper and
@@ -2082,7 +2088,12 @@ export type PostcardInk = "auto" |
  *  Which way a postcard sheet is held: landscape puts the photo on the left half, portrait
  *  on the bottom half; the stamp box is always at the top right (FR-073).
  */
-export type PostcardOrientation = "landscape" | "portrait";
+export type PostcardOrientation = "landscape" | "portrait" | 
+/**
+ *  A Korean card on a square print (4 × 4 in, FR-132): the writing on the top half, the
+ *  photo below. Korea Post takes it as a non-standard letter.
+ */
+"square";
 
 /**  The two parts of a postcard's text (FR-073). */
 export type PostcardPart = "message" | "address";
@@ -2184,8 +2195,11 @@ export type PrintSize = {
 	id: string,
 	shortMm: number,
 	longMm: number,
-	/**  The market whose shops print it, for the size list's groups (FR-129). */
-	market: Market,
+	/**
+	 *  The markets whose shops print it, for the size list's groups (FR-129, FR-132): a size
+	 *  two markets share to the millimetre keeps one id (Japan's L判 is Korea's 3.5 × 5 in).
+	 */
+	markets: Market[],
 };
 
 /**  What a size will look like, for the green / yellow / red badge. */

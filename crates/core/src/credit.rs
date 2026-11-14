@@ -19,6 +19,8 @@ use crate::text::{TextRun, draw_text, text_width};
 pub const TEXT: &str = "fotollection.org";
 /// Under a はがき's stamp box, the Japanese pages (PRD FR-130).
 pub const TEXT_JA: &str = "fotollection.org/ja";
+/// Under a 우편엽서's 우표 box, the Korean pages (PRD FR-132).
+pub const TEXT_KO: &str = "fotollection.org/ko";
 /// Its em on the print: about 4.5 pt, so its letters stand about 1.2 mm tall.
 pub const EM_MM: f32 = 1.6;
 const TRACKING: f32 = 0.02;

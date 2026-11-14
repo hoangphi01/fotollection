@@ -17,6 +17,12 @@
 #   scripts/cjk-font.sh ja
 #   scripts/cjk-font.sh ko
 #   scripts/cjk-font.sh print-ja
+#   scripts/cjk-font.sh print-ko
+#
+# `print-ko` cuts the 우편엽서's two print faces (FR-132): Nanum Pen Script (every one of the
+# 11,172 Hangul syllables) and Gaegu (the 2,350 of KS X 1001, its missing letters set in Nanum Pen
+# by the postcard's fallback), both OFL 1.1 from google/fonts, to Hangul, its jamo, the CJK and
+# general punctuation and ASCII, as TTFs (both strokes 0.25 mm or more at the medium size).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -58,8 +64,26 @@ sys.stdout.write("".join(chars))' > "$work/text.txt"
     shasum -a 256 "$out"
     exit 0
     ;;
+  print-ko)
+    work=$(mktemp -d)
+    trap 'rm -rf "$work"' EXIT
+    for face in 'nanumpenscript/NanumPenScript-Regular e99544f1718d51d5c4baa1ad7a1e5d291f61f475' \
+                'gaegu/Gaegu-Regular 9762f395c88146197b2a8f5cafc1daf6acc72f88'; do
+      set -- $face
+      name=$(basename "$1")
+      curl -sSfL -o "$work/$name.ttf" "https://github.com/google/fonts/raw/main/ofl/$1.ttf"
+      echo "$2  $work/$name.ttf" | shasum -c - >/dev/null
+      out="crates/core/assets/fonts/$name-subset.ttf"
+      uv run -q --no-project --with fonttools pyftsubset "$work/$name.ttf" \
+        --unicodes='U+0020-007E,U+00A0-00FF,U+2010-2027,U+3000-303F,U+3131-318E,U+AC00-D7A3,U+FF01-FF5E' \
+        --layout-features='kern,ccmp,locl' --no-hinting --output-file="$out"
+      ls -l "$out" | awk '{printf "%s: %.0f KB\n", $NF, $5 / 1024}'
+      shasum -a 256 "$out"
+    done
+    exit 0
+    ;;
   *)
-    echo "usage: scripts/cjk-font.sh ja|ko|print-ja" >&2
+    echo "usage: scripts/cjk-font.sh ja|ko|print-ja|print-ko" >&2
     exit 2
     ;;
 esac

@@ -30,6 +30,7 @@ pub mod history;
 pub mod image;
 pub mod import;
 pub mod jpeg_layout;
+pub mod korea;
 pub mod library;
 pub mod lock;
 pub mod logo;

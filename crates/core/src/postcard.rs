@@ -117,7 +117,9 @@ fn main_face<'a>(spec: &CardSpec<'a>, bundled: &'a FontArc) -> &'a FontArc {
     spec.font
         .or_else(|| match spec.settings.face {
             crate::settings::PostcardFace::Handwriting => handwriting(),
-            crate::settings::PostcardFace::Typewriter => None,
+            crate::settings::PostcardFace::Typewriter
+            | crate::settings::PostcardFace::NanumPen
+            | crate::settings::PostcardFace::Gaegu => None,
         })
         .unwrap_or(bundled)
 }
@@ -672,6 +674,29 @@ pub struct CodeBoxes {
 /// 0.5 mm, the last four 0.3 mm (内国郵便約款 別記1: 0.4–0.6 and 0.2–0.4 mm). Their size and
 /// pitch are estimates from Japan Post's figures, 5.7 × 8 mm at 6.8 mm, to measure on a real
 /// card before the release (PRD FR-130).
+/// Korea's five boxes for the recipient's code, black, its digits printed one in each when
+/// typed (FR-132: exactly five boxes if boxes are drawn).
+pub const KOREA_BOXES: CodeBoxes = CodeBoxes {
+    groups: &[5],
+    box_mm: (4.6, 6.0),
+    pitch_mm: 5.4,
+    group_gap_mm: 0.0,
+    color: [45, 45, 45],
+    lines_mm: &[0.3],
+    hyphen: false,
+};
+
+/// The sender's five, smaller.
+pub const KOREA_SENDER_BOXES: CodeBoxes = CodeBoxes {
+    groups: &[5],
+    box_mm: (3.6, 4.8),
+    pitch_mm: 4.2,
+    group_gap_mm: 0.0,
+    color: [45, 45, 45],
+    lines_mm: &[0.25],
+    hyphen: false,
+};
+
 pub const JAPAN_BOXES: CodeBoxes = CodeBoxes {
     groups: &[3, 4],
     box_mm: (5.7, 8.0),

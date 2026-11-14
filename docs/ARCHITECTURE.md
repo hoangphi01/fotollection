@@ -74,6 +74,7 @@ crates/
       cancel.rs          † # CancellationToken
       stamp.rs           † # text inside the photo: DSEG14 Italic, date · place line + caption, LED glow (FR-004/005/033/036)
       hagaki.rs            # the はがき's address side (FR-130): upright, top to bottom: stamp box 切手 at the top left, 「郵便はがき」 with Postal use, the seven vermilion boxes or the code typed where they would be, the address down the right, the name and 様 down the middle, the sender on its switch, fotollection.org/ja under the stamp; one line of message under a bordered photo; landscape: the stamp at the top right, the boxes turned down the right edge (`draw_code_boxes_down`), the text across
+      korea.rs             # the 우편엽서's address side (FR-132): 「우편엽서」, the sender and its five boxes on its switch, the 우표 box and fotollection.org/ko, the recipient (받는 사람, the name with 귀하, the road-name order, five boxes 4 mm clear), the 17 mm machine zone at the foot; landscape 4 × 6 in or square 4 × 4 in; Nanum Pen Script or Gaegu
       text.rs            † # text measuring/drawing shared by stamp and frame, ASCII folding
       vertical.rs          # Japanese text set top to bottom for the はがき (FR-130, ADR-0052): Klee One's GSUB vert/vrt2 forms read with ttf-parser, columns right to left, 禁則, an em-true scale
       credit.rs          † # the small "fotollection.org" on prints: where it fits (paper first, then a photo corner clear of the stamp and faces), drawn last (FR-121)
