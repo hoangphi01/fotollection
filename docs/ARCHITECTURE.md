@@ -73,7 +73,7 @@ crates/
       preview.rs         † # T2 sources in memory (a quarter of the RAM, by bytes) and on disk as standard previews, prefetch, preview rendering (FR-007, FR-091)
       cancel.rs          † # CancellationToken
       stamp.rs           † # text inside the photo: DSEG14 Italic, date · place line + caption, LED glow (FR-004/005/033/036)
-      hagaki.rs            # the はがき's address side (FR-130): upright, top to bottom: stamp box 切手 at the top left, 「郵便はがき」 with Postal use, the seven vermilion boxes or the code typed where they would be, the address down the right, the name and 様 down the middle, the sender on its switch, fotollection.org/ja under the stamp; one line of message under a bordered photo
+      hagaki.rs            # the はがき's address side (FR-130): upright, top to bottom: stamp box 切手 at the top left, 「郵便はがき」 with Postal use, the seven vermilion boxes or the code typed where they would be, the address down the right, the name and 様 down the middle, the sender on its switch, fotollection.org/ja under the stamp; one line of message under a bordered photo; landscape: the stamp at the top right, the boxes turned down the right edge (`draw_code_boxes_down`), the text across
       text.rs            † # text measuring/drawing shared by stamp and frame, ASCII folding
       vertical.rs          # Japanese text set top to bottom for the はがき (FR-130, ADR-0052): Klee One's GSUB vert/vrt2 forms read with ttf-parser, columns right to left, 禁則, an em-true scale
       credit.rs          † # the small "fotollection.org" on prints: where it fits (paper first, then a photo corner clear of the stamp and faces), drawn last (FR-121)

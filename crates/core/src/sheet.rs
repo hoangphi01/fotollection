@@ -810,6 +810,17 @@ fn draw_card(
                     settings.border_color,
                 );
             }
+        } else if japan {
+            crate::hagaki::draw_landscape(
+                canvas,
+                density,
+                &crate::hagaki::HagakiSpec {
+                    card,
+                    settings: &settings.collage.postcard,
+                    text,
+                    paper: settings.border_color,
+                },
+            );
         } else {
             crate::postcard::draw(
                 canvas,
@@ -873,17 +884,26 @@ fn sheet_credit(
     let mut spots = Vec::new();
     // An upright はがき's stamp box is at its top left: the credit under it, left-aligned,
     // naming the Japanese pages (PRD FR-130).
-    if let (Some(card), true, false) = (sheet.card, japan, sheet.side_by_side) {
-        let stamp = crate::hagaki::stamp_box(card);
+    // A landscape one's at its top right: under it, right-aligned.
+    if let (Some(card), true) = (sheet.card, japan) {
+        let (stamp, corner, widen) = if sheet.side_by_side {
+            (
+                crate::hagaki::stamp_box_landscape(card),
+                Corner::TopRight,
+                -12.0,
+            )
+        } else {
+            (crate::hagaki::stamp_box(card), Corner::TopLeft, 0.0)
+        };
         let spot = Place {
             area: BoxF {
-                x: stamp.x * density,
+                x: (stamp.x + widen) * density,
                 y: (stamp.y + stamp.height + 0.6) * density,
                 w: (stamp.width + 12.0) * density,
                 h: 3.0 * density,
             },
             paper: Some(paper),
-            corners: vec![Corner::TopLeft],
+            corners: vec![corner],
             fit: Fit::Corner,
             inset_x: 0.0,
             inset_y: 0.0,

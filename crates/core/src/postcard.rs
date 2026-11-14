@@ -719,6 +719,71 @@ impl CodeBoxes {
         }
         out
     }
+
+    /// The boxes turned a quarter, running down from `left`, `top`: a landscape はがき's
+    /// column along its right edge, the digits' tops toward the edge (PRD FR-130).
+    pub fn boxes_down(&self, left: f32, top: f32) -> Vec<(RectMm, f32)> {
+        self.boxes(top, left)
+            .into_iter()
+            .map(|(r, line)| {
+                (
+                    RectMm {
+                        x: r.y,
+                        y: r.x,
+                        width: r.height,
+                        height: r.width,
+                    },
+                    line,
+                )
+            })
+            .collect()
+    }
+}
+
+/// Draws one box's outline.
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+fn draw_box(canvas: &mut RgbImage, density: f32, r: RectMm, line: f32, color: [u8; 3]) {
+    let px = |mm: f32| (mm * density).round().max(0.0) as u32;
+    let t = (line * density).round().max(1.0) as u32;
+    let (x, y, w, h) = (px(r.x), px(r.y), px(r.width), px(r.height));
+    crate::sheet::fill_rect(canvas, x, y, w, t, color);
+    crate::sheet::fill_rect(canvas, x, (y + h).saturating_sub(t), w, t, color);
+    crate::sheet::fill_rect(canvas, x, y, t, h, color);
+    crate::sheet::fill_rect(canvas, (x + w).saturating_sub(t), y, t, h, color);
+}
+
+/// Draws the code boxes turned a quarter, running down from `left`, `top`, the hyphen across
+/// the gap after the first group.
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+pub fn draw_code_boxes_down(
+    canvas: &mut RgbImage,
+    density: f32,
+    left: f32,
+    top: f32,
+    b: &CodeBoxes,
+) {
+    let px = |mm: f32| (mm * density).round().max(0.0) as u32;
+    let boxes = b.boxes_down(left, top);
+    for (r, line) in &boxes {
+        draw_box(canvas, density, *r, *line, b.color);
+    }
+    if b.hyphen
+        && let (Some(first), Some(&group)) = (boxes.first(), b.groups.first())
+        && let Some((last_of_first, _)) = boxes.get(usize::from(group).saturating_sub(1))
+    {
+        let gap_top = last_of_first.y + last_of_first.height;
+        let gap = b.pitch_mm - b.box_mm.0 + b.group_gap_mm;
+        let t = (first.1 * density).round().max(1.0) as u32;
+        let x = px(first.0.x + first.0.width / 2.0).saturating_sub(t / 2);
+        crate::sheet::fill_rect(
+            canvas,
+            x,
+            px(gap_top + gap * 0.25),
+            t,
+            px(gap * 0.5).max(1),
+            b.color,
+        );
+    }
 }
 
 /// Draws the code boxes from `left`, `top` (millimetres), empty for a code written by hand.
@@ -728,11 +793,7 @@ pub fn draw_code_boxes(canvas: &mut RgbImage, density: f32, left: f32, top: f32,
     let thick = |mm: f32| (mm * density).round().max(1.0) as u32;
     let boxes = b.boxes(left, top);
     for (r, line) in &boxes {
-        let (x, y, w, h, t) = (px(r.x), px(r.y), px(r.width), px(r.height), thick(*line));
-        crate::sheet::fill_rect(canvas, x, y, w, t, b.color);
-        crate::sheet::fill_rect(canvas, x, (y + h).saturating_sub(t), w, t, b.color);
-        crate::sheet::fill_rect(canvas, x, y, t, h, b.color);
-        crate::sheet::fill_rect(canvas, (x + w).saturating_sub(t), y, t, h, b.color);
+        draw_box(canvas, density, *r, *line, b.color);
     }
     // The hyphen, centred in the gap after the first group, at mid height.
     if b.hyphen
