@@ -15,7 +15,7 @@ dl_title: Tải về
 dl_description: "Fotollection cho macOS, Windows và Linux: bộ cài, các bước mở lần đầu, lệnh cài và kho APT cho Linux, và những gì mới trong từng phiên bản."
 dl_kicker: Tải về
 copied_label: Đã sao chép
-star: Gắn sao trên GitHub
+star: "Tặng một sao trên GitHub"
 badge: Miễn phí · Mã nguồn mở · Không cần tài khoản
 hero_title_1: Chụp hàng nghìn ảnh, chỉ xem lại khi
 hero_accent: ngồi trên máy bay
@@ -169,7 +169,6 @@ faq_groups:
     items:
       - q: "Có chạy trên Mac, Windows và Linux không, có thật sự miễn phí không?"
         a: "Có. Một bản tải cho macOS 11 trở lên, chạy được cả trên chip Apple lẫn Intel, một bản cho Windows 10 và 11, và với Linux 64-bit thì có AppImage hoặc .deb, cho máy Intel/AMD lẫn ARM, chạy trên mọi distro có glibc 2.35 trở lên. Bản Linux là bản gọn: chưa mở được ảnh HEIC (ảnh iPhone), chưa chụp qua cáp USB từ máy ảnh, và ảnh RAW không có phần hiệu chỉnh ống kính như trên macOS; bảng ở mục Tính năng liệt kê đủ mọi khác biệt. Ứng dụng miễn phí, không quảng cáo, không cần tài khoản, không mua thêm trong ứng dụng, và mã nguồn công khai theo giấy phép GPL-3.0, ai cũng có thể kiểm tra ứng dụng làm gì."
-        fn: [fn_heic, fn_arch, fn_linux_pkg]
 tabs_row_title: "Thư mục là tab, ô tích đi theo bạn"
 tabs_text: "Bấm một thư mục để chỉ làm việc với thư mục đó, hoặc Không gian làm việc để xem mọi thư mục cùng lúc. Tích ảnh ở thư mục này, chuyển sang thư mục khác rồi tích tiếp: thanh chọn đếm tất cả, nên ảnh đẹp nhất của mọi thư mục vào giỏ in chỉ với một lần bấm. Tích nhiều thư mục để xuất chung hoặc mỗi thư mục một nơi, và đóng tab bằng dấu × khi xong việc; ảnh vẫn nằm nguyên trên ổ đĩa."
 modes_title: "Ba chế độ, ba việc"
@@ -265,9 +264,6 @@ fn_trip: "Thư mục ảnh Praha là của tác giả và không công khai (© 
 fn_photo: "Ảnh tàu điện là của tác giả (© @hoangphi01, giữ mọi quyền), chụp bằng Lumix GX9 ở Praha tháng 11 năm 2026; mỗi look được render bằng chính engine của Fotollection, không chỉnh thêm ở đâu khác."
 fn_downloads: "Do GitHub đếm."
 fn_payment: "VietQR, NAPAS 247 và logo của chúng là nhãn hiệu của Công ty Cổ phần Thanh toán Quốc gia Việt Nam (NAPAS); Techcombank là của Ngân hàng TMCP Kỹ thương Việt Nam. Hiển thị để cho biết hình thức thanh toán mà mã sử dụng; Fotollection không liên quan tới các đơn vị này."
-uses_title: "Dành cho những tấm ảnh bạn muốn in"
-uses_lead: "Bốn tình huống mà Fotollection được làm ra để phục vụ."
-uses_items: [{"icon": "plane", "t": "Sau một chuyến đi", "d": "Bốn trăm tấm ảnh mang về. Tìm ảnh đẹp nhất giữ lại tấm nét nhất của mỗi loạt chụp, giỏ in gom ba mươi tấm đáng in, và mỗi tấm được in kèm ngày chụp, cắt đúng khổ của tiệm."}, {"icon": "book-open", "t": "Một cuốn album gia đình", "d": "Những tấm ảnh in cho cuốn album cả nhà cùng giữ, mỗi tấm có ngày và tên thành phố ở góc, như máy ảnh phim từng in. Chế độ Đơn giản là đủ."}, {"icon": "mail", "t": "Bưu thiếp và bộ ảnh theo chủ đề", "d": "Hai ảnh trên một tấm in, hoặc một tấm bưu thiếp có lời nhắn của bạn bên cạnh ảnh: phố cổ, món ăn, những chuyến tàu điện, mỗi bộ nằm trong một tab thư mục riêng."}, {"icon": "share-2", "t": "Chia sẻ mà không mất màu", "d": "Cũng những tấm ảnh ấy, được xuất đúng cỡ cho Facebook và Instagram, vẫn giữ màu sau khi tải lên thay vì bị nhạt đi."}]
 compare_title: "So với các công cụ khác"
 compare_lead: "Fotollection không nhằm thay thế một trình chỉnh sửa RAW đầy đủ. Ứng dụng được làm cho bước mà các công cụ ấy để lại cho bạn: từ thư mục ảnh của chuyến đi đến những tấm ảnh in cầm trên tay."
 compare_caption: "Fotollection bên cạnh Lightroom Classic, darktable và RawTherapee"
@@ -283,18 +279,10 @@ fn_units: "Đơn vị: px (pixel) là một điểm ảnh; MP (megapixel) là m�
 fn_raw: "Tệp RAW chứa những gì cảm biến của máy ảnh ghi lại trước khi máy biến chúng thành một tấm ảnh, nên màu sắc, độ sáng và chi tiết vẫn có thể được quyết định về sau, giống như tráng một tấm phim âm bản. Mỗi hãng có định dạng riêng (CR3 của Canon, NEF của Nikon, ARW của Sony, RW2 của Panasonic và nhiều định dạng khác); DNG (Digital Negative) là định dạng RAW mở do Adobe công bố."
 fn_heic: "HEIF (High Efficiency Image File Format) là định dạng ảnh theo tiêu chuẩn ISO/IEC 23008-12; HEIC là biến thể nén bằng HEVC (H.265), định dạng iPhone dùng để lưu ảnh theo mặc định. Một ảnh HEIC chỉ nặng khoảng một nửa ảnh JPEG có chất lượng tương đương."
 fn_png: "PNG (Portable Network Graphics) là định dạng ảnh không mất dữ liệu, theo tiêu chuẩn ISO/IEC 15948: mọi điểm ảnh được giữ nguyên vẹn, phù hợp với đồ hoạ và ảnh chụp màn hình, nhưng một tấm ảnh chụp lưu dưới dạng PNG sẽ lớn hơn JPEG nhiều lần."
-fn_dpi: "DPI (dots per inch, số điểm trên mỗi inch) là số điểm ảnh của tấm ảnh nằm trên mỗi inch (2,54 cm) bản in. Khoảng 300 DPI trông sắc nét khi cầm trên tay; ít hơn vẫn đẹp với bản in lớn được ngắm từ xa."
 fn_pct: "p50 và p95 là các phân vị: p50, tức trung vị, là thời gian mà một nửa số lần chạy nằm dưới; p95 là thời gian mà 95 trên 100 lần chạy nằm dưới, nên nó cho thấy những lần chậm mà con số trung bình che đi."
 fn_psnr: "PSNR (peak signal-to-noise ratio, tỷ số tín hiệu đỉnh trên nhiễu) so sánh hai ảnh từng điểm một và cho biết mức khác biệt tính bằng decibel: càng cao càng giống nhau. Trên khoảng 40 dB thì mắt khó nhận ra khác biệt."
 fn_sensor: "CMOS và CCD là hai loại cảm biến ảnh, một lưới các ô nhạy sáng biến ánh sáng thành điện tích. Gần như mọi máy ảnh và điện thoại ngày nay dùng CMOS (complementary metal-oxide-semiconductor); CCD (charge-coupled device) phổ biến ở các máy ảnh đời trước."
 fn_tiff: "TIFF (Tagged Image File Format) là định dạng ảnh linh hoạt, nay do Adobe duy trì; nhiều định dạng RAW, trong đó có DNG, được xây dựng trên cấu trúc của nó."
-fn_444: "4:4:4 và 4:2:0 mô tả cách lấy mẫu màu (chroma subsampling), tức JPEG giữ lại bao nhiêu chi tiết màu bên cạnh độ sáng. 4:4:4 giữ màu của từng điểm ảnh; 4:2:0 chỉ giữ một màu cho mỗi khối bốn điểm ảnh, nhờ đó tệp nhỏ hơn nhưng các đường màu mảnh, như chữ đỏ hay đường chân trời sắc nét, bị nhoè đi."
-fn_usb: "USB (Universal Serial Bus) là chuẩn kết nối thiết bị của USB Implementers Forum. Thẻ SD là thẻ nhớ theo chuẩn Secure Digital của SD Association, loại thẻ mà phần lớn máy ảnh sử dụng."
-fn_gps: "GPS (Global Positioning System) là hệ thống định vị vệ tinh của Hoa Kỳ. Điện thoại và nhiều máy ảnh dùng hệ thống này, thường cùng với Galileo, GLONASS hoặc BeiDou, để ghi lại nơi chụp ảnh."
-fn_iso: "ISO là độ nhạy sáng của máy ảnh, được định nghĩa trong tiêu chuẩn ISO 12232: mỗi lần tăng gấp đôi, từ ISO 100 lên 200, chỉ cần một nửa lượng ánh sáng, đổi lại ảnh nhiều nhiễu hơn."
-fn_gpl: "GPL-3.0 là phiên bản 3 của Giấy phép Công cộng GNU (GNU General Public License) do Free Software Foundation công bố: ai cũng có quyền sử dụng, tìm hiểu, chia sẻ và sửa đổi chương trình, và người chia sẻ lại, dù có sửa đổi hay không, đều chia sẻ mã nguồn theo cùng các điều khoản đó."
-fn_vnlf: "VNLF (Vietnam Linux Family) là cộng đồng phần mềm tự do và Linux của người Việt. App Explorer của cộng đồng giới thiệu các ứng dụng tự do cho người dùng Việt Nam, và CaramOS là bản phân phối Linux của cộng đồng."
-fn_led: "LED (light-emitting diode, đi-ốt phát quang): các máy ảnh phim những năm 1980 và 1990 in ngày chụp lên phim bằng những chữ số LED nhỏ màu cam, nét đặc trưng mà dấu ngày tái hiện."
 fn_arch: "x86_64, còn gọi là amd64, là kiến trúc bộ xử lý của phần lớn máy tính Windows và Linux; ARM64, còn gọi là aarch64 hay arm64, là kiến trúc của Apple silicon, nhiều máy tính xách tay và các bo mạch nhỏ như Raspberry Pi. Mỗi kiến trúc cần một bản dựng riêng."
 fn_linux_pkg: ".deb là gói Debian, định dạng cài đặt của Debian, Ubuntu, Linux Mint và các bản phân phối cùng họ; APT (Advanced Package Tool) cài đặt và cập nhật các gói đó từ một kho phần mềm. AppImage là một tệp duy nhất chứa ứng dụng cùng mọi thứ nó cần, chạy được trên hầu hết các bản phân phối mà không cần cài đặt."
 fn_fuse: "FUSE (Filesystem in Userspace) cho phép một chương trình tạo ra hệ thống tệp mà không cần thay đổi nhân hệ điều hành. AppImage dùng FUSE để tự mở, và Ubuntu 24.04 không còn cài sẵn phiên bản 2 của nó."
@@ -398,7 +386,6 @@ cs_parts:
         text: "Lần lên mạng duy nhất: khi bạn bấm, và từ v0.13.0 một lần khi mở app trừ khi bạn tắt trong Cài đặt, ứng dụng hỏi GitHub (api.github.com) bản phát hành mới nhất của dự án. Không tự tải gì về. Chính sách riêng tư của GitHub áp dụng cho lần hỏi đó."
       - title: Ảnh xuất không có vị trí
         text: Toạ độ GPS được xoá khỏi ảnh xuất theo mặc định.
-        fn: [fn_gps]
       - title: Trang web này
         text: "Trang web, không phải ứng dụng, đếm lượt truy cập và lượt bấm vào các liên kết tải về bằng Google Analytics; chính sách riêng tư của Google áp dụng cho việc đó. Số lượt tải lấy từ GitHub."
       - title: Thanh toán ủng hộ

@@ -1,6 +1,5 @@
 {%- assign t = site.data.i18n[pg.lang] -%}
 {%- include release-assets.html -%}
-
 {%- comment -%} The landing page in mechvibes.com's order (owner, 2026-11-06), in Fotollection's own look: the hero, the keynote video, the makeover, what is new as a bento, the modes, the features in pairs, the themes, the develop view, the numbers, privacy, the community, the final call. {%- endcomment -%}
 <section class="hero">
   <div class="wrap hero-grid">
@@ -20,34 +19,6 @@
 </section>
 
 {% include keynote.html %}
-
-<section class="section makeover-section" id="makeover">
-  <div class="wrap">
-    {%- comment -%} The makeover, under the keynote (owner, 2026-11-11): v0.12's gallery wiped into today's once it is seen, then a handle to compare (assets/js/makeover.js; without script, the new one). {%- endcomment -%}
-    {%- assign old = '/assets/img/legacy/grid-' | append: pg.assets -%}
-    <figure class="shot hero-shot makeover" data-makeover style="--pos: 100%">
-      <div class="makeover-stage">
-      <picture class="makeover-old">
-        <source srcset="{{ old | append: '-dark.webp' | relative_url }}" media="(prefers-color-scheme: dark)" />
-        <img src="{{ old | append: '-light.webp' | relative_url }}" width="1600" height="1000" alt="" loading="lazy" decoding="async" />
-      </picture>
-      <div class="makeover-new">{% include shot.html name="grid" alt=t.shot_grid %}</div>
-      <span class="makeover-tag old">{{ t.makeover_old }}</span>
-      <span class="makeover-tag new">{{ t.makeover_new }}</span>
-      <input class="makeover-range" type="range" min="0" max="100" value="100" aria-label="{{ t.makeover_label }}" hidden />
-      </div>
-      <figcaption class="small muted">{{ t.makeover_hint }}</figcaption>
-    </figure>
-  </div>
-  <script src="{{ '/assets/js/makeover.js' | bust }}" defer></script>
-</section>
-
-{% include looks.html %}
-
-{% include compat.html %}
-
-{% include carousel.html cards=site.data.carousels.new title=t.car_new_title id="new" %}
-<script src="{{ '/assets/js/carousel.js' | bust }}" defer></script>
 
 <section class="section tint" id="modes">
   <div class="wrap">
@@ -94,6 +65,7 @@
 </section>
 
 {% include carousel.html cards=site.data.carousels.print title=t.car_print_title id="print" %}
+<script src="{{ '/assets/js/carousel.js' | bust }}" defer></script>
 
 <section class="section" id="kiosk">
   <div class="wrap kiosk-grid">
@@ -127,35 +99,9 @@
       <h3>{{ t.kiosk_steps_title }}</h3>
       <ol>
         <li>{{ t.kiosk_s1 }}</li>
-        <li>{{ t.kiosk_s2 }}{% include fn.html keys="fn_usb" %}</li>
+        <li>{{ t.kiosk_s2 }}</li>
         <li>{{ t.kiosk_s3 }}</li>
       </ol>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="develop">
-  <div class="wrap">
-    <h2>{{ t.develop_title }}</h2>
-    <p class="lead narrow">{{ t.develop_lead }}</p>
-  </div>
-  <div class="wrap showcase">
-    <div class="showcase-row">
-      <figure class="shot">{% include shot.html name="window" alt=t.show_window %}</figure>
-      <div class="showcase-text">
-        <h3>{{ t.develop_window_title }}</h3>
-        <p>{{ t.develop_window_text }}{% include fn.html keys="fn_raw" %}</p>
-        <p class="key-chips inline" aria-hidden="true"><span><kbd>R</kbd></span><span><kbd>Z</kbd></span><span><kbd>\</kbd></span><span><kbd>Y</kbd></span><span><kbd>F</kbd></span></p>
-        <p class="small muted">{{ t.show_window }}</p>
-      </div>
-    </div>
-    <div class="showcase-row flip">
-      <figure class="shot">{% include shot.html name="export-dialog" alt=t.show_export_dialog %}</figure>
-      <div class="showcase-text">
-        <h3>{{ t.develop_export_title }}</h3>
-        <p>{{ t.develop_export_text }}</p>
-        <p class="small muted">{{ t.show_export_dialog }}</p>
-      </div>
     </div>
   </div>
 </section>
@@ -165,8 +111,8 @@
     <h2>{{ t.features_title }}</h2>
     <p class="lead narrow">{{ t.features_lead }}</p>
     <div class="cards">
-      <article class="card">{% include icons/gem.svg %}<h3>{{ t.f_quality_title }}</h3><p>{{ t.f_quality_text }}{% include fn.html keys="fn_jpeg,fn_444" %}</p></article>
-      <article class="card">{% include icons/gauge.svg %}<h3>{{ t.f_speed_title }}</h3><p>{{ t.f_speed_text }}{% include fn.html keys="fn_units" %}</p></article>
+      <article class="card">{% include icons/gem.svg %}<h3>{{ t.f_quality_title }}</h3><p>{{ t.f_quality_text }}</p></article>
+      <article class="card">{% include icons/gauge.svg %}<h3>{{ t.f_speed_title }}</h3><p>{{ t.f_speed_text }}</p></article>
       <article class="card">{% include icons/camera.svg %}<h3>{{ t.f_raw_title }}</h3><p>{{ t.f_raw_text }}{% include fn.html keys="fn_pf_raw" %}</p></article>
       <article class="card">{% include icons/mouse-pointer-click.svg %}<h3>{{ t.f_open_title }}</h3><p>{{ t.f_open_text }}</p></article>
     </div>
@@ -175,19 +121,9 @@
   </div>
 </section>
 
-{%- comment %} What it is for, in four moments, then how it compares with the tools people know (a reviewer's suggestions, owner 2026-11-07). {% endcomment %}
-<section class="section" id="uses">
-  <div class="wrap">
-    <h2>{{ t.uses_title }}</h2>
-    <p class="lead narrow">{{ t.uses_lead }}</p>
-    <div class="cards uses-cards">
-      {%- for item in t.uses_items %}
-      {%- capture icon %}icons/{{ item.icon }}.svg{% endcapture %}
-      <article class="card">{% include {{ icon }} %}<h3>{{ item.t }}</h3><p>{{ item.d }}</p></article>
-      {%- endfor %}
-    </div>
-  </div>
-</section>
+{% include looks.html %}
+
+{% include compat.html %}
 
 <section class="section tint" id="compare">
   <div class="wrap">
@@ -210,7 +146,7 @@
         </tbody>
       </table>
     </div>
-    <p class="small muted">{{ t.compare_note }}{% include fn.html keys="fn_compare,fn_gpl" %}</p>
+    <p class="small muted">{{ t.compare_note }}{% include fn.html keys="fn_compare" %}</p>
   </div>
 </section>
 
@@ -227,8 +163,57 @@
       <li><h3>{{ t.p6_title }}</h3><p>{{ t.p6_text }}</p></li>
       <li><h3>{{ t.p3_title }}</h3><p>{{ t.p3_text }}</p></li>
       <li><h3>{{ t.p4_title }}</h3><p>{{ t.p4_text }}</p></li>
-      <li><h3>{{ t.p5_title }}</h3><p>{{ t.p5_text }}{% include fn.html keys="fn_gpl" %}</p></li>
+      <li><h3>{{ t.p5_title }}</h3><p>{{ t.p5_text }}</p></li>
     </ul>
+  </div>
+</section>
+
+<section class="section makeover-section" id="makeover">
+  <div class="wrap">
+    {%- comment -%} The makeover, under the keynote (owner, 2026-11-11): v0.12's gallery wiped into today's once it is seen, then a handle to compare (assets/js/makeover.js; without script, the new one). {%- endcomment -%}
+    {%- assign old = '/assets/img/legacy/grid-' | append: pg.assets -%}
+    <figure class="shot hero-shot makeover" data-makeover style="--pos: 100%">
+      <div class="makeover-stage">
+      <picture class="makeover-old">
+        <source srcset="{{ old | append: '-dark.webp' | relative_url }}" media="(prefers-color-scheme: dark)" />
+        <img src="{{ old | append: '-light.webp' | relative_url }}" width="1600" height="1000" alt="" loading="lazy" decoding="async" />
+      </picture>
+      <div class="makeover-new">{% include shot.html name="grid" alt=t.shot_grid %}</div>
+      <span class="makeover-tag old">{{ t.makeover_old }}</span>
+      <span class="makeover-tag new">{{ t.makeover_new }}</span>
+      <input class="makeover-range" type="range" min="0" max="100" value="100" aria-label="{{ t.makeover_label }}" hidden />
+      </div>
+      <figcaption class="small muted">{{ t.makeover_hint }}</figcaption>
+    </figure>
+  </div>
+  <script src="{{ '/assets/js/makeover.js' | bust }}" defer></script>
+</section>
+
+{% include carousel.html cards=site.data.carousels.new title=t.car_new_title id="new" %}
+
+<section class="section" id="develop">
+  <div class="wrap">
+    <h2>{{ t.develop_title }}</h2>
+    <p class="lead narrow">{{ t.develop_lead }}</p>
+  </div>
+  <div class="wrap showcase">
+    <div class="showcase-row">
+      <figure class="shot">{% include shot.html name="window" alt=t.show_window %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.develop_window_title }}</h3>
+        <p>{{ t.develop_window_text }}</p>
+        <p class="key-chips inline" aria-hidden="true"><span><kbd>R</kbd></span><span><kbd>Z</kbd></span><span><kbd>\</kbd></span><span><kbd>Y</kbd></span><span><kbd>F</kbd></span></p>
+        <p class="small muted">{{ t.show_window }}</p>
+      </div>
+    </div>
+    <div class="showcase-row flip">
+      <figure class="shot">{% include shot.html name="export-dialog" alt=t.show_export_dialog %}</figure>
+      <div class="showcase-text">
+        <h3>{{ t.develop_export_title }}</h3>
+        <p>{{ t.develop_export_text }}</p>
+        <p class="small muted">{{ t.show_export_dialog }}</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -238,7 +223,7 @@
     <h2>{{ t.community_title }}</h2>
     <p class="lead narrow">{{ t.community_lead }}</p>
     <div class="cards community-cards">
-      <article class="card">{% include icons/users.svg %}<h3>{{ t.vnlf_title }}</h3><p>{{ t.vnlf_text }}{% include fn.html keys="fn_vnlf" %}</p><p><a class="more" href="https://apps.vietnamlinuxfamily.net/app/fotollection">{{ t.vnlf_link }} {% include icons/arrow-right.svg %}</a></p><p><a class="more" href="https://vietnamlinuxfamily.net/projects/fotollection">{{ t.vnlf_social_link }} {% include icons/arrow-right.svg %}</a></p></article>
+      <article class="card">{% include icons/users.svg %}<h3>{{ t.vnlf_title }}</h3><p>{{ t.vnlf_text }}</p><p><a class="more" href="https://apps.vietnamlinuxfamily.net/app/fotollection">{{ t.vnlf_link }} {% include icons/arrow-right.svg %}</a></p><p><a class="more" href="https://vietnamlinuxfamily.net/projects/fotollection">{{ t.vnlf_social_link }} {% include icons/arrow-right.svg %}</a></p></article>
       <article class="card">{% include icons/monitor.svg %}<h3>{{ t.caramos_title }}</h3><p>{{ t.caramos_text }}</p><p><a class="more" href="https://github.com/VN-Linux-Family/CaramOS">{{ t.caramos_link }} {% include icons/arrow-right.svg %}</a></p></article>
       <article class="card">{% include icons/star.svg %}<h3>{{ t.github_title }}</h3><p>{{ t.github_text }}</p><p><a class="more" href="{{ site.repo_url }}">{{ t.github_link }} {% include icons/arrow-right.svg %}</a></p></article>
     </div>

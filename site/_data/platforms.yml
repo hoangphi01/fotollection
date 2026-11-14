@@ -50,7 +50,6 @@ rows:
     linux: soon
     linux_fn: [fn_pf_heic_linux]
   - key: tether
-    label_fn: [fn_usb]
     mac: soon
     win: ok
     win_fn: [fn_pf_tether]

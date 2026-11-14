@@ -12,9 +12,9 @@ new:
 print:
   - { shot: postcard, title: postcard_title, text: postcard_text }
   - { shot: postcard-night, title: pc_type_title, text: pc_type_text }
-  - { shot: stamp, title: f_stamp_title, text: f_stamp_text, fn: [fn_led, fn_gps] }
-  - { shot: frame, title: f_frame_title, text: f_frame_text, fn: [fn_exif, fn_iso] }
-  - { shot: crop, title: f_crop_title, text: f_crop_text, fn: [fn_dpi] }
+  - { shot: stamp, title: f_stamp_title, text: f_stamp_text }
+  - { shot: frame, title: f_frame_title, text: f_frame_text }
+  - { shot: crop, title: f_crop_title, text: f_crop_text }
   - { shot: collage, title: car_collage_title, text: car_collage_text }
   - { shot: groups, title: f_best_title, text: f_best_text }
   - { shot: swipe, title: swipe_title, text: swipe_text }

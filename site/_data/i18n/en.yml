@@ -15,7 +15,7 @@ dl_title: Download
 dl_description: "Fotollection for macOS, Windows and Linux: the installers, the first-launch steps, the Linux commands and repository, and what is new in each version."
 dl_kicker: Download
 copied_label: Copied
-star: Star on GitHub
+star: "Give it a star on GitHub"
 badge: Free · Open source · No account
 hero_title_1: Thousands of photos, only looked at
 hero_accent: on the plane
@@ -173,7 +173,6 @@ faq_groups:
     items:
       - q: "Does it work on Mac, Windows and Linux, and is it really free?"
         a: "Yes. One download for macOS 11 or later, on Apple silicon and Intel alike, one for Windows 10 and 11, and for 64-bit Linux an AppImage or a .deb, on Intel/AMD or ARM, for any distribution with glibc 2.35 or later. Linux gets the lean build: no HEIC (iPhone) photos yet, no shooting with a camera over USB, and RAW without the lens corrections macOS adds; the table under Features shows every difference. It is free with no ads, no account and no in-app purchases, and the source code is public under GPL-3.0, so anyone can check what it does."
-        fn: [fn_heic, fn_arch, fn_linux_pkg]
 tabs_row_title: "Folders as tabs, ticks that follow you"
 tabs_text: "Click a folder to work on it alone, or the Workspace for every folder at once. Tick photos in one folder, switch to another and keep ticking: the bar counts them all, so the best of every folder goes to the print basket in one move. Tick several folders to export them together or each into its own folder, and close a tab with × when you are done; the photos stay on your disk."
 modes_title: "Three modes, three jobs"
@@ -270,9 +269,6 @@ fn_trip: "The Prague folder is the author's own and is not published (© @hoangp
 fn_photo: "The tram photo is the author's own (© @hoangphi01, all rights reserved), taken with a Lumix GX9 in Prague in November 2026; each look is rendered by Fotollection's own engine and retouched nowhere else."
 fn_downloads: "Counted by GitHub."
 fn_payment: "VietQR and NAPAS 247 and their logos are trademarks of the National Payment Corporation of Vietnam (NAPAS); Techcombank of Vietnam Technological and Commercial Joint Stock Bank. Shown as the marks of the payment the code uses; Fotollection is not connected with them."
-uses_title: "Made for the photos you mean to print"
-uses_lead: "Four moments Fotollection was built around."
-uses_items: [{"icon": "plane", "t": "After a trip", "d": "Four hundred photos come home. Find best shots keeps the sharpest of each burst, the print basket gathers the thirty worth printing, and each comes out dated and cut to the shop's sizes."}, {"icon": "book-open", "t": "A family album", "d": "Prints for an album the family will keep, each with its date and town in the corner, as film cameras printed them. Simple mode is all it takes."}, {"icon": "mail", "t": "Postcards and themed sets", "d": "Two photos to a print, or a postcard with your own words beside the photo: the old town, the food, the trams, each set in a folder tab of its own."}, {"icon": "share-2", "t": "Shared without losing colour", "d": "The same photos, sized for Facebook and Instagram, keep their colour after the upload instead of turning flat."}]
 compare_title: "How it compares"
 compare_lead: "Fotollection does not try to replace a full RAW editor. It is made for the step those leave to you: from a trip's folder to prints you can hold."
 compare_caption: "Fotollection beside Lightroom Classic, darktable and RawTherapee"
@@ -288,18 +284,10 @@ fn_units: "Units: px is a pixel, one dot of an image; MP (megapixel) is a millio
 fn_raw: "A RAW file holds what the camera's sensor recorded before the camera turned it into a picture, so colour, brightness and detail can still be decided later, much as a negative is developed. Each maker has its own format (CR3 for Canon, NEF for Nikon, ARW for Sony, RW2 for Panasonic and others); DNG (Digital Negative) is the open RAW format published by Adobe."
 fn_heic: "HEIF (High Efficiency Image File Format) is the image format of ISO/IEC 23008-12; HEIC is its variant compressed with HEVC (H.265), in which iPhones save photos by default. A HEIC photo is about half the size of a JPEG of similar quality."
 fn_png: "PNG (Portable Network Graphics) is a lossless image format, published as ISO/IEC 15948: every pixel is kept exactly, which suits graphics and screenshots, while a photo comes out several times larger than as a JPEG."
-fn_dpi: "DPI (dots per inch) is how many of the photo's pixels fall on each inch (2.54 cm) of the print. Around 300 DPI looks sharp in the hand; less still looks fine on a larger print seen from further away."
 fn_pct: "p50 and p95 are percentiles: p50, the median, is the time half of the runs stayed under; p95 is the time 95 runs in 100 stayed under, so it shows the slow cases an average hides."
 fn_psnr: "PSNR (peak signal-to-noise ratio) compares two images pixel by pixel and gives their difference in decibels: the higher, the closer. Above about 40 dB the difference is hard to see."
 fn_sensor: "CMOS and CCD are the two kinds of image sensor, a grid of light-sensitive cells that turns light into an electric charge. Almost every camera and phone today uses CMOS (complementary metal-oxide-semiconductor); CCD (charge-coupled device) was common in earlier cameras."
 fn_tiff: "TIFF (Tagged Image File Format) is a flexible image format now maintained by Adobe; many RAW formats, DNG among them, are built on its structure."
-fn_444: "4:4:4 and 4:2:0 describe chroma subsampling, how much of a JPEG's colour detail is kept beside its brightness. 4:4:4 keeps the colour of every pixel; 4:2:0 keeps one colour for each block of four pixels, which makes the file smaller but softens fine colour edges such as red text or a sharp horizon."
-fn_usb: "USB (Universal Serial Bus) is the USB Implementers Forum's standard for connecting devices. An SD card is a memory card of the SD Association's Secure Digital standard, the kind most cameras use."
-fn_gps: "GPS (Global Positioning System) is the United States' satellite navigation system. Phones and many cameras use it, often with Galileo, GLONASS or BeiDou, to record where a photo was taken."
-fn_iso: "ISO is the camera's sensitivity to light, defined by the ISO 12232 standard: each doubling, from ISO 100 to 200, needs half the light, at the cost of more noise."
-fn_gpl: "GPL-3.0 is version 3 of the GNU General Public License, published by the Free Software Foundation: anyone may use, study, share and change the program, and whoever shares it, changed or not, shares its source code under the same terms."
-fn_vnlf: "VNLF (Vietnam Linux Family) is a Vietnamese community for free software and Linux. Its App Explorer lists free applications for Vietnamese users, and CaramOS is its Linux distribution."
-fn_led: "LED (light-emitting diode): film cameras of the 1980s and 1990s printed the date onto the film with small orange LED digits, the look the date stamp recreates."
 fn_arch: "x86_64, also called amd64, is the processor architecture of most Windows and Linux PCs; ARM64, also aarch64 or arm64, is that of Apple silicon, many laptops and small boards such as the Raspberry Pi. Each needs its own build."
 fn_linux_pkg: "A .deb is a Debian package, the installer format of Debian, Ubuntu, Linux Mint and their relatives; APT (Advanced Package Tool) installs and updates such packages from a repository. An AppImage is a single file holding an application and what it needs, which runs on most distributions without being installed."
 fn_fuse: "FUSE (Filesystem in Userspace) lets a program provide a file system without changing the kernel. An AppImage uses it to open itself, and Ubuntu 24.04 no longer installs its version 2 by default."
@@ -409,7 +397,6 @@ cs_parts:
         text: "The only network request: when you click, and from v0.13.0 once at start unless turned off in Settings, it asks GitHub (api.github.com) for this project's latest release. Nothing is downloaded by itself. GitHub's privacy statement applies to it."
       - title: No location in exports
         text: GPS coordinates are removed from exported photos by default.
-        fn: [fn_gps]
       - title: This website
         text: "The website, not the app, counts visits and clicks on its download links with Google Analytics; Google's privacy policy applies to it. The download count comes from GitHub."
       - title: Support payments

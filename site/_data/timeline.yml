@@ -125,7 +125,7 @@
     - { file: 0.3-gallery, w: 1600, h: 1000, from: "v0.3.1:site/assets/img/grid-en-dark.webp", alt: { en: "v0.3.1: the settings as cards", vi: "v0.3.1: cài đặt thành từng thẻ", cs: "v0.3.1: nastavení v kartách", de: "v0.3.1: die Einstellungen als Karten", hu: "v0.3.1: a beállítások kártyákon", ja: "v0.3.1：カードになった設定", pl: "v0.3.1: ustawienia jako karty" } }
 - version: "0.4"
   date: 2026-10-25
-  fn: [fn_srgb, fn_gps]
+  fn: [fn_srgb]
   title: { en: "Sharing and folders", vi: "Chia sẻ và thư mục", cs: "Sdílení a složky", de: "Teilen und Ordner", hu: "Megosztás és mappák", ja: "共有とフォルダー", pl: "Udostępnianie i foldery" }
   points:
     en:
