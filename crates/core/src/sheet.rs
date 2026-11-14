@@ -63,7 +63,12 @@ pub struct SheetLayout {
     /// 15 mm at a landscape card's foot, or along a portrait card's right edge; kept free on
     /// the photo's half too.
     pub postal: Option<RectMm>,
+    /// An upright はがき's message band under a bordered photo (FR-130, board A): one line.
+    pub band: Option<RectMm>,
 }
+
+/// The message band under a bordered photo on an upright はがき.
+const HAGAKI_BAND_MM: f32 = 8.0;
 
 /// The sheet's print size: the chosen one, or 10 × 15 when it is Original, which has no
 /// size of its own until a photo gives it one; a Japanese postcard is always a はがき (FR-130).
@@ -318,17 +323,29 @@ pub fn layout(
         }
     };
     if postcard {
-        let (photo_half, card) = if side {
+        let (mut photo_half, card) = if side {
             (rects[0], rects[1])
         } else {
             (rects[1], rects[0])
         };
+        let japan = settings.postcard.card == crate::settings::PostcardDestination::Japan;
+        // An upright はがき with a bordered photo keeps a line for the message under it.
+        let band = (japan && !side && !settings.fill).then(|| {
+            photo_half.height -= HAGAKI_BAND_MM;
+            RectMm {
+                x: photo_half.x,
+                y: photo_half.y + photo_half.height,
+                width: photo_half.width,
+                height: HAGAKI_BAND_MM,
+            }
+        });
         // Made to be posted: the post's strip kept free, the photo cut short at its line
         // (owner, 2026-11-12).
         // A portrait card's strip runs along its right edge, the length the post's machines
         // print along (owner, 2026-11-12).
         let strip = crate::postcard::CODE_ZONE_MM;
-        let postal = settings.postcard.postal_use.then_some(if side {
+        // Japan Post keeps no strip at the foot: its machines read the code boxes.
+        let postal = (settings.postcard.postal_use && !japan).then_some(if side {
             RectMm {
                 x: 0.0,
                 y: height - strip,
@@ -370,6 +387,7 @@ pub fn layout(
             cells: [cell, None],
             card: Some(card),
             postal,
+            band,
         };
     }
     SheetLayout {
@@ -382,6 +400,7 @@ pub fn layout(
         ],
         card: None,
         postal: None,
+        band: None,
     }
 }
 
@@ -727,20 +746,15 @@ pub fn render_sheet_with(
         blit(&mut canvas, &image, x, y);
         placed.push(placed_at(&p, &image, x, y));
     }
-    if let Some(card) = sheet.card {
-        crate::postcard::draw(
-            &mut canvas,
-            density,
-            &crate::postcard::CardSpec {
-                card,
-                sheet_width: sheet.width,
-                settings: &settings.collage.postcard,
-                text: sources[0].and_then(|s| s.postcard),
-                font: card_font,
-                paper: settings.border_color,
-            },
-        );
-    }
+    let japan = settings.collage.postcard.card == crate::settings::PostcardDestination::Japan;
+    draw_card(
+        &mut canvas,
+        density,
+        &sheet,
+        settings,
+        sources[0].and_then(|s| s.postcard),
+        card_font,
+    );
     draw_postal_zone(&mut canvas, &sheet, density, settings.border_color);
     // A sheet with one photo has nothing to cut apart, and filled halves meet at an edge
     // that needs no line.
@@ -749,11 +763,68 @@ pub fn render_sheet_with(
         draw_cut_line(&mut canvas, &sheet, density, settings.border_color);
     }
     if credit
-        && let Some(spec) = sheet_credit(&sheet, density, &canvas, &placed, settings.border_color)
+        && let Some(spec) = sheet_credit(
+            &sheet,
+            density,
+            &canvas,
+            &placed,
+            settings.border_color,
+            japan,
+        )
     {
         crate::credit::draw(&mut canvas, &spec);
     }
     Ok(canvas)
+}
+
+/// A postcard sheet's writing half: a はがき's upright side (FR-130) or the European card
+/// (FR-073), and an upright はがき's message band.
+fn draw_card(
+    canvas: &mut RgbImage,
+    density: f32,
+    sheet: &SheetLayout,
+    settings: &RenderSettings,
+    text: Option<&crate::library::PostcardText>,
+    card_font: Option<&ab_glyph::FontArc>,
+) {
+    let japan = settings.collage.postcard.card == crate::settings::PostcardDestination::Japan;
+    if let Some(card) = sheet.card {
+        if japan && !sheet.side_by_side {
+            crate::hagaki::draw_upright(
+                canvas,
+                density,
+                &crate::hagaki::HagakiSpec {
+                    card,
+                    settings: &settings.collage.postcard,
+                    text,
+                    paper: settings.border_color,
+                },
+            );
+            if let (Some(band), Some(text)) = (sheet.band, text) {
+                crate::hagaki::draw_message(
+                    canvas,
+                    density,
+                    band,
+                    &text.message,
+                    &settings.collage.postcard,
+                    settings.border_color,
+                );
+            }
+        } else {
+            crate::postcard::draw(
+                canvas,
+                density,
+                &crate::postcard::CardSpec {
+                    card,
+                    sheet_width: sheet.width,
+                    settings: &settings.collage.postcard,
+                    text,
+                    font: card_font,
+                    paper: settings.border_color,
+                },
+            );
+        }
+    }
 }
 
 /// A cell's photo and stamp lines on the sheet, its top-left at (`x`, `y`) (FR-121).
@@ -794,11 +865,31 @@ fn sheet_credit(
     canvas: &RgbImage,
     placed: &[(crate::credit::BoxF, Vec<crate::credit::BoxF>)],
     paper: BorderColor,
+    japan: bool,
 ) -> Option<crate::credit::CreditSpec> {
     use crate::credit::{BoxF, Fit, Place};
     use crate::settings::Corner;
     let paper = paper.rgb();
     let mut spots = Vec::new();
+    // An upright はがき's stamp box is at its top left: the credit under it, left-aligned,
+    // naming the Japanese pages (PRD FR-130).
+    if let (Some(card), true, false) = (sheet.card, japan, sheet.side_by_side) {
+        let stamp = crate::hagaki::stamp_box(card);
+        let spot = Place {
+            area: BoxF {
+                x: stamp.x * density,
+                y: (stamp.y + stamp.height + 0.6) * density,
+                w: (stamp.width + 12.0) * density,
+                h: 3.0 * density,
+            },
+            paper: Some(paper),
+            corners: vec![Corner::TopLeft],
+            fit: Fit::Corner,
+            inset_x: 0.0,
+            inset_y: 0.0,
+        };
+        return crate::credit::place_text(density, &[spot], &[], crate::credit::TEXT_JA);
+    }
     if let Some(card) = sheet.card {
         let stamp = crate::postcard::stamp_box(sheet.width, card, sheet.postal.is_some());
         spots.push(Place {

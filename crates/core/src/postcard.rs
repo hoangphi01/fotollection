@@ -379,7 +379,7 @@ pub fn fit(spec: &CardSpec<'_>) -> Fit {
 }
 
 /// Grey for the stamp box and the credit, and for the writing lines, on this paper.
-fn inks(paper: BorderColor) -> ([u8; 3], [u8; 3]) {
+pub(crate) fn inks(paper: BorderColor) -> ([u8; 3], [u8; 3]) {
     match paper {
         BorderColor::White => ([140, 140, 140], [185, 185, 185]),
         BorderColor::Black => ([150, 150, 150], [95, 95, 95]),
@@ -596,8 +596,32 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &CardSpec<'_>) {
 }
 
 /// The stamp box, dashed as on a postcard, with STAMP in its middle.
-#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
 fn draw_stamp_box(canvas: &mut RgbImage, density: f32, s: RectMm, outline: [u8; 3]) {
+    draw_dashed_box(canvas, density, s, outline);
+    let Some(face) = font() else {
+        return;
+    };
+    let word_px = STAMP_WORD_MM * density;
+    let word_w = text_width(face, word_px, STAMP_WORD, 0.08);
+    let scaled = face.as_scaled(PxScale::from(word_px));
+    draw_text(
+        canvas,
+        &TextRun {
+            font: face,
+            text: STAMP_WORD,
+            px: word_px,
+            tracking: 0.08,
+        },
+        (s.x + s.width / 2.0) * density - word_w / 2.0,
+        (s.y + s.height / 2.0) * density - f32::midpoint(scaled.ascent(), scaled.descent()),
+        outline,
+        1.0,
+    );
+}
+
+/// A stamp box's dashed outline, any market's (the word inside is the market's).
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+pub(crate) fn draw_dashed_box(canvas: &mut RgbImage, density: f32, s: RectMm, outline: [u8; 3]) {
     let px = |mm: f32| (mm * density).round().max(0.0) as u32;
     let thick = |mm: f32| (mm * density).round().max(1.0) as u32;
     let (x, y, w, h, t) = (
@@ -624,25 +648,6 @@ fn draw_stamp_box(canvas: &mut RgbImage, density: f32, s: RectMm, outline: [u8; 
     side(x, (y + h).saturating_sub(t), w, true);
     side(x, y, h, false);
     side((x + w).saturating_sub(t), y, h, false);
-    let Some(face) = font() else {
-        return;
-    };
-    let word_px = STAMP_WORD_MM * density;
-    let word_w = text_width(face, word_px, STAMP_WORD, 0.08);
-    let scaled = face.as_scaled(PxScale::from(word_px));
-    draw_text(
-        canvas,
-        &TextRun {
-            font: face,
-            text: STAMP_WORD,
-            px: word_px,
-            tracking: 0.08,
-        },
-        (s.x + s.width / 2.0) * density - word_w / 2.0,
-        (s.y + s.height / 2.0) * density - f32::midpoint(scaled.ascent(), scaled.descent()),
-        outline,
-        1.0,
-    );
 }
 
 /// How a country's postal code boxes are drawn (FR-130, FR-132): one block for Japan's

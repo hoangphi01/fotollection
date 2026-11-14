@@ -17,6 +17,8 @@ use crate::text::{TextRun, draw_text, text_width};
 
 /// What is printed.
 pub const TEXT: &str = "fotollection.org";
+/// Under a はがき's stamp box, the Japanese pages (PRD FR-130).
+pub const TEXT_JA: &str = "fotollection.org/ja";
 /// Its em on the print: about 4.5 pt, so its letters stand about 1.2 mm tall.
 pub const EM_MM: f32 = 1.6;
 const TRACKING: f32 = 0.02;
@@ -80,12 +82,14 @@ pub struct CreditSpec {
     pub alpha: f32,
     /// On the photo: a soft dark shadow under the letters.
     pub shadow: bool,
+    /// What it says: [`TEXT`], or a market's own pages ([`TEXT_JA`]).
+    pub text: &'static str,
 }
 
 impl CreditSpec {
     /// The box its ink covers.
     pub fn ink(&self) -> Option<BoxF> {
-        let ink = Ink::of(self.font_px)?;
+        let ink = Ink::of(self.font_px, self.text)?;
         Some(BoxF {
             x: self.left,
             y: self.top + ink.ascent - ink.above,
@@ -126,13 +130,13 @@ struct Ink {
 }
 
 impl Ink {
-    fn of(px: f32) -> Option<Self> {
+    fn of(px: f32, text: &str) -> Option<Self> {
         let font = font()?;
         let scale = PxScale::from(px);
         let scaled = font.as_scaled(scale);
         let (mut above, mut below) = (0.0f32, 0.0f32);
         let mut caret = 0.0;
-        for c in TEXT.chars() {
+        for c in text.chars() {
             let glyph = scaled
                 .glyph_id(c)
                 .with_scale_and_position(scale, point(caret, 0.0));
@@ -144,7 +148,7 @@ impl Ink {
             }
         }
         Some(Self {
-            width: text_width(font, px, TEXT, TRACKING),
+            width: text_width(font, px, text, TRACKING),
             above,
             below,
             ascent: scaled.ascent(),
@@ -175,11 +179,21 @@ fn grey_on(paper: [u8; 3]) -> [u8; 3] {
 /// The first place, in order, where the credit fits whole and clear of everything in
 /// `avoid`; `None` when there is none. `px_per_mm` is the print's density.
 pub fn place(px_per_mm: f32, places: &[Place], avoid: &[BoxF]) -> Option<CreditSpec> {
+    place_text(px_per_mm, places, avoid, TEXT)
+}
+
+/// [`place`] for another text (a market's own pages, [`TEXT_JA`]).
+pub fn place_text(
+    px_per_mm: f32,
+    places: &[Place],
+    avoid: &[BoxF],
+    text: &'static str,
+) -> Option<CreditSpec> {
     if !(px_per_mm.is_finite() && px_per_mm > 0.0) {
         return None;
     }
     let font_px = EM_MM * px_per_mm;
-    let ink = Ink::of(font_px)?;
+    let ink = Ink::of(font_px, text)?;
     let height = ink.above + ink.below;
     let clear = CLEARANCE_MM * px_per_mm;
     let avoid: Vec<BoxF> = avoid.iter().map(|b| b.grown(clear)).collect();
@@ -221,6 +235,7 @@ pub fn place(px_per_mm: f32, places: &[Place], avoid: &[BoxF]) -> Option<CreditS
                 color,
                 alpha,
                 shadow,
+                text,
             });
         }
     }
@@ -253,7 +268,7 @@ pub fn draw(image: &mut RgbImage, spec: &CreditSpec) {
     };
     let run = TextRun {
         font,
-        text: TEXT,
+        text: spec.text,
         px: spec.font_px,
         tracking: TRACKING,
     };

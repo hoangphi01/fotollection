@@ -164,7 +164,7 @@ pub struct Set {
 
 /// Lays `text` out top to bottom from (`right`, `top`): `em` pixels a character, columns
 /// `step` pixels apart, at most `height` pixels tall and `max_columns` wide; every column after
-/// a paragraph's first starts `indent` characters lower (a Japanese address's second line).
+/// the first starts `indent` characters lower (a Japanese address's second line).
 #[allow(clippy::cast_precision_loss, clippy::too_many_arguments)]
 pub fn set(
     face: &VerticalFace,
@@ -183,10 +183,25 @@ pub fn set(
     let mut glyphs = Vec::new();
     let mut n = 0;
     let mut cut = false;
-    for paragraph in text.split('\n') {
-        let mut first = true;
-        // A continuation column is shorter by its indent.
-        for column in columns(paragraph, capacity.saturating_sub(indent).max(2)) {
+    let mut first = true;
+    for (p, paragraph) in text.split('\n').enumerate() {
+        // A column after the first is shorter by its indent; the first paragraph's first
+        // column has the full height.
+        let cols = if p == 0 {
+            let full = columns(paragraph, capacity);
+            match full.split_first() {
+                Some((head, rest)) if !rest.is_empty() => {
+                    let tail: String = rest.iter().flatten().collect();
+                    std::iter::once(head.clone())
+                        .chain(columns(&tail, capacity.saturating_sub(indent).max(2)))
+                        .collect()
+                }
+                _ => full,
+            }
+        } else {
+            columns(paragraph, capacity.saturating_sub(indent).max(2))
+        };
+        for column in cols {
             if n >= max_columns {
                 cut |= !column.is_empty();
                 continue;
@@ -209,6 +224,35 @@ pub fn set(
         columns: n,
         cut,
     }
+}
+
+/// Lays `text` out across one line from (`left`, `top`), each glyph at its own advance plus
+/// `tracking` em (for 「郵便はがき」 and a code typed in full-width digits); its width in pixels.
+pub fn across(
+    face: &VerticalFace,
+    text: &str,
+    em: f32,
+    left: f32,
+    top: f32,
+    tracking: f32,
+) -> (Set, f32) {
+    let scaled = face.font.as_scaled(face.scale(em));
+    let mut x = left;
+    let mut glyphs = Vec::new();
+    for c in text.chars() {
+        let id = face.font.glyph_id(c);
+        glyphs.push((id, x, top));
+        x += scaled.h_advance(id) + tracking * em;
+    }
+    let width = (x - left - tracking * em).max(0.0);
+    (
+        Set {
+            glyphs,
+            columns: 1,
+            cut: false,
+        },
+        width,
+    )
 }
 
 /// Draws a set in `color`.

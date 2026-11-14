@@ -24,6 +24,7 @@ pub mod facts;
 pub mod fonts;
 pub mod frame;
 pub mod geocode;
+pub mod hagaki;
 pub mod histogram;
 pub mod history;
 pub mod image;

@@ -115,6 +115,14 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ## 2026-11-15
 
+### The はがき's printed code lost its hyphen: the face's cut had no － U+FF0D (FR-130)
+
+- **Area:** text-i18n, print-post, checks
+- **Seen:** the first render of a はがき printed the recipient's code as `２４８　００２４`, a gap where the hyphen should be.
+- **Why:** the code turned ASCII marks into their full-width forms (`－` U+FF0D), but Klee One was cut to what Shift_JIS encodes, and Python's `shift_jis` maps JIS's minus to U+2212, not U+FF0D: the glyph was not in the cut, so it drew nothing, and no test asked.
+- **Fix:** only digits and letters go full-width; the code's hyphen is U+2212; `fr_130_every_character_printed_is_in_the_face` checks every character the layout makes (a typed line with marks, the code, 様, 切手) against the cut, and fails on the old code.
+- **Rule:** a face cut to a character set is tested against every character the layout itself produces (its conversions, its fixed words), not only what the user types.
+
 ### A Japanese face drawn at "em" pixels came out smaller and below its cell (FR-130)
 
 - **Area:** text-i18n, decode-third-party, print-post
