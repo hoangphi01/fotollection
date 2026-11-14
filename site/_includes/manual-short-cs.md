@@ -332,7 +332,7 @@ Tisk z kiosku se stane pohlednicí, kterou můžeš poslat: fotka na jedné polo
 
 **Jedna adresa pro celou sadu:** napiš adresu na jednu pohlednici; **Use for them** ji dá na všechny ostatní bez adresy, v jednom kroku, který **Cmd/Ctrl+Z** vrátí.
 
-**Psaní rukou a pošta:** piš tenkým permanentním fixem a nech ho asi minutu schnout. Česká pošta bere pohlednice jen do délky 14,8 cm, takže tisk 10 × 15 tu jde jako dopis.
+**Psaní rukou a pošta:** piš tenkým permanentním fixem a nech ho asi minutu schnout. Poštovní podmínky České pošty nemají zvláštní třídu pro pohlednice: karta jde jako dopis (aspoň 14 × 9 cm a 180 g/m²). Pošta tiskne třídicí kód do spodních 15 mm, které musí přijmout barvu; na lesklém fotopapíru se může rozmazat, matný papír je bezpečnější.
 
 <!-- shot: manual-postcard | Režim Collage se zapnutým Postcard: noční tramvaje v Praze, každý tisk jedna fotka vyplňující svou polovinu a rub pohlednice s polem na známku a řádky na psaní -->
 
