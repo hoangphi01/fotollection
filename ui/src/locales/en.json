@@ -1597,15 +1597,14 @@
     "latin": "Print the address in Latin letters",
     "version": "AddAssist {{version}}",
     "recipient": "Recipient",
-    "lookup": {
-      "jp": "Postal code or place",
-      "kr": "Postal code or road"
-    },
-    "lookupPlaceholder": {
-      "jp": "2710092, matsudo, 松戸",
-      "kr": "03172, 세종대로 175, sejong-daero"
-    },
     "none": "Not found: try another code or place, or type it by hand.",
-    "latinHint": "The places in romaji or Revised Romanization; what you type prints as typed."
+    "latinHint": "The places in romaji or Revised Romanization; what you type prints as typed.",
+    "enterHint": "Press Enter to look it up.",
+    "codeSecond": "Postal code, last four digits",
+    "search": "Or search by place",
+    "searchPlaceholder": {
+      "jp": "matsudo, まつど, 松戸",
+      "kr": "세종대로 175, sejong-daero"
+    }
   }
 }

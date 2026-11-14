@@ -1536,15 +1536,14 @@
     "latin": "In địa chỉ bằng chữ Latin",
     "version": "AddAssist {{version}}",
     "recipient": "Người nhận",
-    "lookup": {
-      "jp": "Mã bưu chính hoặc tên nơi",
-      "kr": "Mã bưu chính hoặc tên đường"
-    },
-    "lookupPlaceholder": {
-      "jp": "2710092, matsudo, 松戸",
-      "kr": "03172, 세종대로 175, sejong-daero"
-    },
     "none": "Không tìm thấy: thử mã hoặc tên khác, hoặc tự gõ.",
-    "latinHint": "Địa danh in bằng romaji hoặc phiên âm Hàn; chữ bạn gõ in đúng như gõ."
+    "latinHint": "Địa danh in bằng romaji hoặc phiên âm Hàn; chữ bạn gõ in đúng như gõ.",
+    "enterHint": "Nhấn Enter để tra.",
+    "codeSecond": "Mã bưu chính, bốn số sau",
+    "search": "Hoặc tìm theo tên nơi",
+    "searchPlaceholder": {
+      "jp": "matsudo, まつど, 松戸",
+      "kr": "세종대로 175, sejong-daero"
+    }
   }
 }

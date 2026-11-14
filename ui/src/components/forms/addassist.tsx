@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import { Languages, MapPin } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { commands, type Address, type Country, type CountryInfo, type Found } from '@/ipc/bindings'
 import { emptyAddress } from '@/lib/address'
@@ -60,17 +60,31 @@ export function AddAssist({ country, value, onCommit, assisted, onAssisted }: Ad
     commit({ code: f.code || (address.code ?? ''), region: f.region, city: f.city, town: f.town, road: f.road, filledBy: version })
   }
   const codeDigits = country === 'jp' ? 7 : 5
-  // The one field: digits are a code (looked up once whole), anything else a search.
-  const lookUp = async (query: string) => {
-    const digits = query.replace(/[\s〒-]/g, '')
-    if (/^\d+$/.test(digits)) {
-      if (digits.length !== codeDigits) return setFound(null)
-      const result = await commands.addassistLookup(country, digits)
-      const hits = result.status === 'ok' ? result.data : []
-      const [only, ...rest] = hits
-      if (only && rest.length === 0) return fill(only)
-      return setFound(hits)
-    }
+  // The code as the country writes it (owner, 2026-11-15): Japan's in two parts, 123 – 4567,
+  // the second taking the cursor once the first is full; Korea's five digits in one.
+  const head = country === 'jp' ? 3 : 5
+  const [parts, setParts] = useState<[string, string]>(() => {
+    const code = address.code ?? ''
+    return [code.slice(0, head), code.slice(head)]
+  })
+  const codeRow = useRef<HTMLDivElement>(null)
+  const lookUpCode = async (digits: string) => {
+    if (digits.length !== codeDigits) return setFound(null)
+    const result = await commands.addassistLookup(country, digits)
+    const hits = result.status === 'ok' ? result.data : []
+    const [only, ...rest] = hits
+    if (only && rest.length === 0) return fill(only)
+    setFound(hits)
+  }
+  const onPart = (i: 0 | 1, value: string) => {
+    const digits = value.replace(/\D/g, '')
+    const next: [string, string] = i === 0 ? [digits, parts[1]] : [parts[0], digits]
+    setParts(next)
+    if (i === 0 && digits.length === head && country === 'jp') codeRow.current?.querySelectorAll('input')[1]?.focus()
+    void lookUpCode(next.join(''))
+  }
+  // A place by name, for a code not known: matsudo, まつど, 松戸; 세종대로 175.
+  const search = async (query: string) => {
     if (query.trim().length < 2) return setFound(null)
     const result = await commands.addassistSearch(country, query, RESULTS)
     setFound(result.status === 'ok' ? result.data : [])
@@ -100,14 +114,42 @@ export function AddAssist({ country, value, onCommit, assisted, onAssisted }: Ad
       />
       {assisted ? (
         <>
-          <Field label={t(`addassist.lookup.${country}`)}>
+          <Field label={t(`addassist.code.${country}`)} hint={t('addassist.enterHint')}>
+            <div ref={codeRow} className="flex items-center gap-2">
+              <CommitInput
+                value={parts[0]}
+                placeholder={country === 'jp' ? '123' : '12345'}
+                ariaLabel={t(`addassist.code.${country}`)}
+                numeric
+                maxLength={head}
+                liveMs={country === 'jp' ? 50 : undefined}
+                onCommit={(v) => onPart(0, v)}
+              />
+              {country === 'jp' && (
+                <>
+                  <span aria-hidden className="text-muted-foreground">
+                    –
+                  </span>
+                  <CommitInput
+                    value={parts[1]}
+                    placeholder="4567"
+                    ariaLabel={t('addassist.codeSecond')}
+                    numeric
+                    maxLength={codeDigits - head}
+                    onCommit={(v) => onPart(1, v)}
+                  />
+                </>
+              )}
+            </div>
+          </Field>
+          <Field label={t('addassist.search')}>
             <CommitInput
               value=""
-              placeholder={t(`addassist.lookupPlaceholder.${country}`)}
-              ariaLabel={t(`addassist.lookup.${country}`)}
+              placeholder={t(`addassist.searchPlaceholder.${country}`)}
+              ariaLabel={t('addassist.search')}
               maxLength={64}
               liveMs={300}
-              onCommit={(q) => void lookUp(q)}
+              onCommit={(q) => void search(q)}
             />
           </Field>
           {/* The address found, or the places to pick from (a code shared by several). */}

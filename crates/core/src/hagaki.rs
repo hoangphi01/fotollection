@@ -336,11 +336,13 @@ fn draw_lines_across(
 ) -> f32 {
     let mut y = top;
     for paragraph in text.split('\n') {
-        let capacity = (width / em).floor().max(2.0) as usize;
-        for (i, line) in vertical::columns(paragraph, capacity).iter().enumerate() {
+        // Each line measured: Latin breaks between words, Japanese between characters.
+        for (i, line) in vertical::wrap_across(face, paragraph, em, width, em)
+            .iter()
+            .enumerate()
+        {
             let indent = if i == 0 { 0.0 } else { em };
-            let line: String = line.iter().collect();
-            let (set, _) = vertical::across(face, &line, em, left + indent, y, 0.0);
+            let (set, _) = vertical::across(face, line, em, left + indent, y, 0.0);
             vertical::draw(canvas, face, &set, em, ink);
             y += step;
         }
@@ -518,11 +520,14 @@ fn draw_latin(
         vertical::draw(canvas, face, &set, em * NAME_SCALE * density, ink);
         y += em * NAME_SCALE * 1.4;
     }
+    let width = (spec.card.x + spec.card.width - BOXES_RIGHT_MM - left) * density;
     for line in latin_lines(to) {
-        let (set, _) =
-            vertical::across(face, &line, em * density, left * density, y * density, 0.0);
-        vertical::draw(canvas, face, &set, em * density, ink);
-        y += em * 1.35;
+        for row in vertical::wrap_across(face, &line, em * density, width, 0.0) {
+            let (set, _) =
+                vertical::across(face, &row, em * density, left * density, y * density, 0.0);
+            vertical::draw(canvas, face, &set, em * density, ink);
+            y += em * 1.35;
+        }
     }
 }
 

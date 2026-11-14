@@ -304,6 +304,71 @@ pub fn across(
     )
 }
 
+/// `text` broken into lines no wider than `width` pixels at `em`, the lines after the first
+/// `indent` pixels narrower: between words for Latin letters (never inside one, unless a word
+/// alone is wider), between characters for Japanese, by 禁則 (a closing mark stays with the
+/// character before it, an opening one with the one after).
+pub fn wrap_across(
+    face: &VerticalFace,
+    text: &str,
+    em: f32,
+    width: f32,
+    indent: f32,
+) -> Vec<String> {
+    let cjk = |c: char| u32::from(c) >= 0x2E80;
+    let mut lines = Vec::new();
+    for paragraph in text.split('\n') {
+        let chars: Vec<char> = paragraph.chars().collect();
+        let mut start = 0;
+        while start < chars.len() {
+            let room = if start == 0 { width } else { width - indent };
+            let mut x = 0.0;
+            let mut end = start;
+            // The last place a line may end, past index `brk`.
+            let mut brk = None;
+            while end < chars.len() {
+                let c = chars[end];
+                let w = face.advance(c, em);
+                if x + w > room && end > start {
+                    break;
+                }
+                x += w;
+                end += 1;
+                let next = chars.get(end).copied();
+                let may_break = c == ' '
+                    || next.is_some_and(|n| {
+                        (cjk(c) || cjk(n))
+                            && !NO_START.contains(n)
+                            && !NO_END.contains(c)
+                            && n != ' '
+                    });
+                if may_break {
+                    brk = Some(end);
+                }
+            }
+            if end < chars.len()
+                && let Some(b) = brk.filter(|b| *b > start)
+            {
+                end = b;
+            }
+            let line: String = chars[start..end]
+                .iter()
+                .collect::<String>()
+                .trim_end()
+                .to_owned();
+            lines.push(line);
+            start = end;
+            while chars.get(start) == Some(&' ') {
+                start += 1;
+            }
+        }
+        if chars.is_empty() {
+            lines.push(String::new());
+        }
+    }
+    lines
+}
+
 /// Draws a set in `color`.
 #[allow(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
 pub fn draw(canvas: &mut RgbImage, face: &VerticalFace, set: &Set, em: f32, color: [u8; 3]) {
@@ -470,5 +535,24 @@ mod tests {
         }
         assert!(face.pick('ư').1, "ư is Be Vietnam Pro's");
         assert!(!face.pick('鎌').1, "a kanji stays Klee One's");
+    }
+
+    #[test]
+    fn fr_130_latin_lines_break_between_words() {
+        let face = klee();
+        let em = 10.0;
+        let text = "Matsudo, Matsudo-shi, Chiba-ken";
+        let width = face.advance('M', em) * 12.0;
+        let lines = wrap_across(face, text, em, width, 0.0);
+        assert!(lines.len() >= 2);
+        // Never inside a word.
+        for line in &lines {
+            for word in line.split(' ') {
+                assert!(text.split(' ').any(|w| w == word), "{word:?} was cut");
+            }
+        }
+        // Japanese breaks between characters, a closing mark kept with the one before.
+        let jp = wrap_across(face, "神奈川県鎌倉市稲村ガ崎。", em, em * 11.0, 0.0);
+        assert!(jp.iter().all(|l| !l.starts_with('。')));
     }
 }

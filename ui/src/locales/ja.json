@@ -1597,15 +1597,14 @@
     "latin": "住所をローマ字で印刷",
     "version": "AddAssist {{version}}",
     "recipient": "宛先",
-    "lookup": {
-      "jp": "郵便番号または地名",
-      "kr": "郵便番号または道路名"
-    },
-    "lookupPlaceholder": {
-      "jp": "2710092、matsudo、松戸",
-      "kr": "03172、세종대로 175"
-    },
     "none": "見つかりません。別の郵便番号や地名を試すか、手入力してください。",
-    "latinHint": "地名をローマ字で印刷します。入力した文字はそのまま印刷されます。"
+    "latinHint": "地名をローマ字で印刷します。入力した文字はそのまま印刷されます。",
+    "enterHint": "Enterキーで検索します。",
+    "codeSecond": "郵便番号（下4桁）",
+    "search": "地名で検索",
+    "searchPlaceholder": {
+      "jp": "matsudo、まつど、松戸",
+      "kr": "세종대로 175、sejong-daero"
+    }
   }
 }

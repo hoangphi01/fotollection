@@ -1597,15 +1597,14 @@
     "latin": "주소를 로마자로 인쇄",
     "version": "AddAssist {{version}}",
     "recipient": "받는 사람",
-    "lookup": {
-      "jp": "우편번호 또는 지명",
-      "kr": "우편번호 또는 도로명"
-    },
-    "lookupPlaceholder": {
-      "jp": "2710092, matsudo, 松戸",
-      "kr": "03172, 세종대로 175, sejong-daero"
-    },
     "none": "찾을 수 없습니다. 다른 우편번호나 이름으로 찾거나 직접 입력하세요.",
-    "latinHint": "지명을 로마자로 인쇄합니다. 입력한 글자는 그대로 인쇄됩니다."
+    "latinHint": "지명을 로마자로 인쇄합니다. 입력한 글자는 그대로 인쇄됩니다.",
+    "enterHint": "Enter 키를 눌러 찾습니다.",
+    "codeSecond": "우편번호 뒤 네 자리",
+    "search": "이름으로 찾기",
+    "searchPlaceholder": {
+      "jp": "matsudo, まつど, 松戸",
+      "kr": "세종대로 175, sejong-daero"
+    }
   }
 }

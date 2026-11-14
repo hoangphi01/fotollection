@@ -1597,15 +1597,14 @@
     "latin": "A cím latin betűkkel",
     "version": "AddAssist {{version}}",
     "recipient": "Címzett",
-    "lookup": {
-      "jp": "Irányítószám vagy hely",
-      "kr": "Irányítószám vagy út"
-    },
-    "lookupPlaceholder": {
-      "jp": "2710092, matsudo, 松戸",
-      "kr": "03172, 세종대로 175, sejong-daero"
-    },
     "none": "Nincs találat: próbálj másik irányítószámot vagy helyet, vagy írd be kézzel.",
-    "latinHint": "A helyek romadzsival vagy koreai átírással; amit begépelsz, úgy kerül a lapra."
+    "latinHint": "A helyek romadzsival vagy koreai átírással; amit begépelsz, úgy kerül a lapra.",
+    "enterHint": "Enterrel keres.",
+    "codeSecond": "Irányítószám, utolsó négy számjegy",
+    "search": "Vagy keresés hely szerint",
+    "searchPlaceholder": {
+      "jp": "matsudo, まつど, 松戸",
+      "kr": "세종대로 175, sejong-daero"
+    }
   }
 }
