@@ -49,6 +49,8 @@ pub struct CountryInfo {
     pub code_digits: u8,
     /// The date of the post's data, `YYYY-MM-DD`.
     pub data_date: String,
+    /// `AddAssist`'s version, kept with an address it fills (`Address::filled_by`).
+    pub version: String,
 }
 
 /// What a code or a search found: the places the post's data knows. The street number, the
@@ -82,11 +84,13 @@ pub fn countries() -> Result<Vec<CountryInfo>, AddAssistError> {
             country: Country::Jp,
             code_digits: 7,
             data_date: jp::snapshot()?.to_owned(),
+            version: VERSION.to_owned(),
         },
         CountryInfo {
             country: Country::Kr,
             code_digits: 5,
             data_date: kr::snapshot()?.to_owned(),
+            version: VERSION.to_owned(),
         },
     ])
 }

@@ -192,7 +192,6 @@
   "print": {
     "original": "オリジナル",
     "originalHint": "写真本来の比率、トリミングなし",
-    "standard": "標準（CEWE / EU）",
     "custom": "カスタム",
     "addCustom": "カスタムサイズ…",
     "deleteNamed": "{{name}}を削除",
@@ -202,7 +201,12 @@
     "height": "高さ",
     "errorBothEdges": "両辺を入力してください",
     "errorRange": "辺は2〜100 cmにしてください",
-    "save": "サイズを保存"
+    "save": "サイズを保存",
+    "market": {
+      "europe": "ヨーロッパ（dm、Rossmann、CEWE）",
+      "japan": "日本（コンビニ）",
+      "korea": "韓国（Printing Box、写真館）"
+    }
   },
   "fonts": {
     "builtIn": "Inter（内蔵）",
@@ -939,7 +943,6 @@
     "cut": "収まらないテキストがあります",
     "cutHint": "行に収まらない部分はプリントされません。短くするか、小さいサイズを選んでください。",
     "title": "ポストカード",
-    "hint": "各シートがポストカードになります。片側に写真、もう片側に切手枠と、メッセージや宛名用の罫線。",
     "orientation": "向き",
     "landscape": "横",
     "portrait": "縦",
@@ -980,7 +983,28 @@
       "underline": "下線"
     },
     "postalUse": "郵送用",
-    "postalUseHint": "郵便のバーコード用に15 mmの帯を空けておきます。"
+    "hintCard": {
+      "europe": "各シートがポストカードになります。片側に写真、もう片側に切手枠と、メッセージや宛名用の罫線。",
+      "japan": "各シートがはがき（100 × 148 mm）になります。片側に写真、もう片側に日本郵便の宛名面。",
+      "korea": "各シートが韓国の郵便はがき（우편엽서）になります。片側に写真、もう片側に韓国郵便の宛名面。"
+    },
+    "cardFor": "送り先",
+    "destination": {
+      "europe": "ヨーロッパ · 10 × 15",
+      "japan": "日本 · はがき 100 × 148",
+      "korea": "韓国 · 우편엽서"
+    },
+    "postalUseHintCard": {
+      "europe": "郵便のバーコード用に15 mmの帯を空けておきます。",
+      "japan": "上に「郵便はがき」と印刷します。自分で印刷したはがきに必要です。",
+      "korea": "「우편엽서」と印刷し、17 mmの機械読み取り帯を空けておきます。"
+    },
+    "sender": "差出人",
+    "senderHint": "すべてのはがきに同じ差出人。",
+    "messageNeedsBorder": "メッセージは枠のある写真の下に印刷されます。",
+    "fontJapan": "Klee One で印刷します。",
+    "nanumPenHint": "細いペン字",
+    "gaeguHint": "丸みのある手書き"
   },
   "look": {
     "faves": "お気に入り",
@@ -1537,5 +1561,46 @@
       "replaceHint": "ファイルの設定をそのまま使います。このパソコンの設定はsettings.json.bakとして保存されます。",
       "do": "読み込み"
     }
+  },
+  "addassist": {
+    "title": "住所の入力",
+    "assisted": "アシスト",
+    "assistedHint": "郵便番号か検索で、郵便のデータから地名を入力します（オフライン）",
+    "byHand": "手入力",
+    "code": {
+      "jp": "郵便番号（〒）",
+      "kr": "郵便番号"
+    },
+    "codePlaceholder": {
+      "jp": "2480024",
+      "kr": "03172"
+    },
+    "search": "検索",
+    "searchPlaceholder": {
+      "jp": "kamakura、かまくら、鎌倉",
+      "kr": "Sejong-daero 175、세종대로 175"
+    },
+    "region": {
+      "jp": "都道府県",
+      "kr": "市・道（시·도）"
+    },
+    "city": {
+      "jp": "市区町村",
+      "kr": "市・郡・区（시·군·구）"
+    },
+    "town": {
+      "jp": "町域",
+      "kr": "邑・面（읍·면）"
+    },
+    "road": "道路名",
+    "line": {
+      "jp": "番地・建物",
+      "kr": "建物番号・部屋"
+    },
+    "name": "宛名",
+    "honorific": "名前の後に 귀하",
+    "latin": "ローマ字で印刷",
+    "version": "AddAssist {{version}}",
+    "recipient": "宛先"
   }
 }

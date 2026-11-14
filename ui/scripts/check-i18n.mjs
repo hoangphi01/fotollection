@@ -55,9 +55,14 @@ for (const file of readdirSync(locales).filter((f) => f.endsWith('.json') && f !
 }
 for (const [k, v] of en) if (typeof v !== 'string' || v.trim() === '') problems.push(`en.json: empty value for ${k}`)
 
-// Each bundled CJK face covers what its language shows (docs/LOCALIZATION.md §5).
+// Each bundled CJK face covers what its language shows (docs/LOCALIZATION.md §5); both faces are
+// in every page's font stack, so a Korean word in the Japanese interface (a 우편엽서's labels,
+// FR-132) is drawn by the Korean face, and the other way round.
+const faceChars = (face) => new Set(readFileSync(join(root, `assets/fonts/${face}.txt`), 'utf8').trim())
+const bothFaces = new Set([...faceChars('noto-sans-jp-subset'), ...faceChars('noto-sans-kr-subset')])
 for (const [code, face] of [['ja', 'noto-sans-jp-subset'], ['ko', 'noto-sans-kr-subset']]) {
-  const chars = new Set(readFileSync(join(root, `assets/fonts/${face}.txt`), 'utf8').trim())
+  const own = faceChars(face)
+  const chars = { has: (c) => own.has(c) || bothFaces.has(c) }
   const text = readFileSync(join(locales, `${code}.json`), 'utf8') + readFileSync(join(root, `../../site/_includes/manual-short-${code}.md`), 'utf8')
   const lacking = [...new Set(text)].filter((c) => c.codePointAt(0) >= 0x3000 && !chars.has(c))
   if (lacking.length) problems.push(`the ${code} face lacks ${lacking.join('')}: run scripts/cjk-font.sh ${code}`)

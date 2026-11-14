@@ -10,9 +10,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Highlights
+
+- New: **日本語 and 한국어**, the whole app in Japanese and Korean.
+- New: **Japanese and Korean postcards**, laid out as Japan Post and Korea Post ask, the はがき written top to bottom.
+- New: **AddAssist**, a postal code fills a Japanese or Korean address from the post's own data, offline.
+- New: **print sizes of Japan and Korea**, the size list grouped by market.
+
 ### Added
 
 - **日本語 and 한국어**, the whole app in Japanese and Korean (FR-128): the interface, the macOS menu in Apple's words, every error message and the short manual, with Adobe's names for the sliders; a Japanese and a Korean face (Noto Sans JP and KR, 207 and 97 KB) come with the app, so the words fit the same on every computer. Settings → General → Language.
+- **Japanese and Korean postcards** (FR-130, FR-132): in 日本語 every postcard is a はがき (100 × 148 mm), written top to bottom upright or across in landscape, with the stamp box, the seven red postal-code boxes (or the code printed), 様 and 「郵便はがき」; in 한국어 a 우편엽서 on a 4 × 6 or square 4 × 4 print, with 「우편엽서」, the 우표 box, five code boxes and Korea Post's 17 mm left free, in Nanum Pen or Gaegu. In English and Vietnamese, *Card for* chooses Europe, Japan or Korea. An optional *Sender* prints on every Japanese or Korean card.
+- **AddAssist** (FR-133): a Japanese or Korean address filled from the post's own data, offline: a postal code, or a search (*kamakura*, かまくら, 鎌倉; *세종대로 175*, which also gives the building's code), every field still editable, and the address printed in Latin letters if you want. Japan Post's postal-code data and Korea's road-name addresses come with the app.
+- **Print sizes of Japan and Korea** (FR-129, FR-132): L判, 2L判, the squares and はがき of Japan's convenience-store kiosks; Korea's 4 × 6, 6 × 8, 8 × 10, 4 × 4 and 2 × 6 in; the size list grouped by market, the interface's first.
 
 ### Changed
 
@@ -21,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Website in Korean** at `/ko/`: the home, Download, Performance, Wiki and code-signing pages and a short manual, with Korea's convenience stores (CU, GS25) and their 10 × 15 Printing Box prints in place of dm and Rossmann, set as Korean sites are: words never broken inside, bold Gothic headings.
 - **Website:** a shorter landing page with the print story first (the three modes, the print, the kiosk), the before-and-after lower down; ten notes instead of twenty-two, each beside a claim (the test machine of the speed figures, what "nothing is tracked" covers), no definitions of the obvious; the GitHub button invites a star without showing a count.
 - **Website:** the language menu shows each language's flag before its name.
+
 - **Website:** the community section shows AlternativeTo and GitHub to readers beyond Vietnam; the Vietnamese page keeps Vietnam Linux Family and CaramOS.
 - **Website:** the landing page no longer shows a section of the app's languages and themes, now that it speaks more of them; the Ko-fi button says how one pays (PayPal or card) on a second line, and the note under it how to use Ko-fi's English page.
 - **Website in Japanese** at `/ja/`: the home, Download, Performance, Wiki and code-signing pages and a short manual, with Japan's convenience stores (7-Eleven, Lawson, FamilyMart) and their L, 2L and square prints in place of dm and Rossmann, set as Japanese sites are: bold Gothic headings, short headlines, no spaces typed between Japanese and Latin.

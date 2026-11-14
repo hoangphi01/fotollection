@@ -682,6 +682,20 @@ impl PostcardSettings {
             _ => PostcardDestination::Europe,
         }
     }
+
+    /// The shape the card is drawn in: a Korean card is landscape or square (owner,
+    /// 2026-11-15), the others landscape or portrait; a shape a card does not take reads as its
+    /// nearest (a square left from a Korean card is a portrait はがき).
+    pub fn shape(&self) -> PostcardOrientation {
+        match (self.card, self.orientation) {
+            (PostcardDestination::Korea, PostcardOrientation::Square) => {
+                PostcardOrientation::Square
+            }
+            (PostcardDestination::Korea, _) => PostcardOrientation::Landscape,
+            (_, PostcardOrientation::Square) => PostcardOrientation::Portrait,
+            (_, o) => o,
+        }
+    }
 }
 
 const fn default_postal_use() -> bool {
@@ -1224,6 +1238,25 @@ mod tests {
         assert_eq!(got, vec![15, 15, 15, 25, 25, 40, 40, 40, 40]);
     }
     use super::*;
+
+    #[test]
+    fn fr_132_a_card_takes_only_its_own_shapes() {
+        use PostcardDestination::{Europe, Japan, Korea};
+        use PostcardOrientation::{Landscape, Portrait, Square};
+        let card = |card, orientation| {
+            PostcardSettings {
+                orientation,
+                card,
+                ..PostcardSettings::default()
+            }
+            .shape()
+        };
+        assert_eq!(card(Korea, Square), Square);
+        assert_eq!(card(Korea, Portrait), Landscape);
+        assert_eq!(card(Japan, Square), Portrait);
+        assert_eq!(card(Europe, Square), Portrait);
+        assert_eq!(card(Japan, Landscape), Landscape);
+    }
 
     #[test]
     fn fr_036_a_photos_own_line_wins_and_the_rest_follows_the_settings() {

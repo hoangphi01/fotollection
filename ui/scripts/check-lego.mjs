@@ -53,6 +53,14 @@ const RULES = [
   },
   { test: /<SelectTrigger[^>]*\bsize=/, say: 'a select of its own size: every select in a panel is 32 px, the default' },
   {
+    // AddAssist (FR-133, owner 2026-11-15: "the lego blocks declare the AddAssist component"):
+    // every postal lookup goes through the one block, never a field of its own.
+    test: /commands\.addassist(Search|Lookup|Countries)\b/,
+    everywhere: true,
+    except: { 'components/forms/addassist.tsx': 'the block itself' },
+    say: 'an address field of its own: every address is the AddAssist block (components/forms/addassist.tsx)',
+  },
+  {
     test: /\bspace-y-[0-9.]+/,
     say: 'vertical spacing by hand: a card spaces its blocks (SectionCard), a field its parts (Field, SwitchField)',
   },

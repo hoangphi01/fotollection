@@ -192,7 +192,6 @@
   "print": {
     "original": "Original",
     "originalHint": "eigenes Seitenverhältnis, kein Zuschnitt",
-    "standard": "Standard (CEWE / EU)",
     "custom": "Eigene",
     "addCustom": "Eigenes Format…",
     "deleteNamed": "{{name}} löschen",
@@ -202,7 +201,12 @@
     "height": "Höhe",
     "errorBothEdges": "Gib beide Seiten ein",
     "errorRange": "Die Seiten müssen zwischen 2 und 100 cm liegen",
-    "save": "Format speichern"
+    "save": "Format speichern",
+    "market": {
+      "europe": "Europa (dm, Rossmann, CEWE)",
+      "japan": "Japan (Convenience Stores)",
+      "korea": "Korea (Printing Box, Fotolabore)"
+    }
   },
   "fonts": {
     "builtIn": "Inter (eingebaut)",
@@ -939,7 +943,6 @@
     "cut": "Etwas Text passt nicht",
     "cutHint": "Nicht alles passt auf seine Zeilen, und der Rest fehlt auf dem Abzug: Kürze ihn oder wähl eine kleinere Größe.",
     "title": "Postkarte",
-    "hint": "Jeder Bogen wird eine Postkarte: ein Foto, und auf der anderen Hälfte ein Briefmarkenfeld und Linien für eine Nachricht oder eine Adresse.",
     "orientation": "Gehalten",
     "landscape": "Quer",
     "portrait": "Hoch",
@@ -980,7 +983,28 @@
       "underline": "Unterstrichen"
     },
     "postalUse": "Für die Post",
-    "postalUseHint": "Hält einen 15-mm-Streifen für den Barcode der Post frei."
+    "hintCard": {
+      "europe": "Jeder Bogen wird eine Postkarte: ein Foto, und auf der anderen Hälfte ein Briefmarkenfeld und Linien für eine Nachricht oder eine Adresse.",
+      "japan": "Jeder Bogen wird eine japanische Postkarte (はがき, 100 × 148 mm): das Foto auf einer Hälfte, die Adressseite von Japan Post auf der anderen.",
+      "korea": "Jeder Bogen wird eine koreanische Postkarte (우편엽서): das Foto auf einer Hälfte, die Adressseite von Korea Post auf der anderen."
+    },
+    "cardFor": "Karte für",
+    "destination": {
+      "europe": "Europa · 10 × 15",
+      "japan": "Japan · はがき 100 × 148",
+      "korea": "Korea · 우편엽서"
+    },
+    "postalUseHintCard": {
+      "europe": "Hält einen 15-mm-Streifen für den Barcode der Post frei.",
+      "japan": "Druckt 「郵便はがき」 oben, das Japan Post auf selbst gedruckten Karten verlangt.",
+      "korea": "Druckt 「우편엽서」 und hält die 17-mm-Maschinenzone frei."
+    },
+    "sender": "Absender",
+    "senderHint": "Ein Absender für alle Karten.",
+    "messageNeedsBorder": "Die Nachricht wird unter einem Foto mit Rand gedruckt.",
+    "fontJapan": "Gedruckt in Klee One.",
+    "nanumPenHint": "Eine schmale Federschrift",
+    "gaeguHint": "Eine rundere Handschrift"
   },
   "look": {
     "faves": "Favoriten",
@@ -1537,5 +1561,46 @@
       "replaceHint": "Nimmt die Einstellungen der Datei ganz; die dieses Computers werden als settings.json.bak behalten.",
       "do": "Importieren"
     }
+  },
+  "addassist": {
+    "title": "Adresseingabe",
+    "assisted": "Unterstützt",
+    "assistedHint": "Postleitzahl oder Suche füllt die Orte aus den Daten der Post, offline",
+    "byHand": "Von Hand",
+    "code": {
+      "jp": "Postleitzahl (〒)",
+      "kr": "Postleitzahl"
+    },
+    "codePlaceholder": {
+      "jp": "2480024",
+      "kr": "03172"
+    },
+    "search": "Suche",
+    "searchPlaceholder": {
+      "jp": "Kamakura, かまくら, 鎌倉",
+      "kr": "Sejong-daero 175, 세종대로 175"
+    },
+    "region": {
+      "jp": "Präfektur",
+      "kr": "Provinz oder Stadt (시·도)"
+    },
+    "city": {
+      "jp": "Gemeinde",
+      "kr": "Bezirk (시·군·구)"
+    },
+    "town": {
+      "jp": "Ortsteil",
+      "kr": "Ort (읍·면)"
+    },
+    "road": "Straße",
+    "line": {
+      "jp": "Block und Gebäude",
+      "kr": "Hausnummer und Wohnung"
+    },
+    "name": "Name",
+    "honorific": "귀하 nach dem Namen",
+    "latin": "In lateinischer Schrift drucken",
+    "version": "AddAssist {{version}}",
+    "recipient": "Empfänger"
   }
 }

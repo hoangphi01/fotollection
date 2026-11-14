@@ -182,7 +182,6 @@
   "print": {
     "original": "Gốc",
     "originalHint": "tỉ lệ gốc của ảnh, không cắt",
-    "standard": "Tiêu chuẩn (CEWE / EU)",
     "custom": "Tùy chỉnh",
     "addCustom": "Khổ tùy chỉnh…",
     "deleteNamed": "Xóa {{name}}",
@@ -192,7 +191,12 @@
     "height": "Chiều cao",
     "errorBothEdges": "Hãy nhập cả hai cạnh",
     "errorRange": "Mỗi cạnh phải từ 2 đến 100 cm",
-    "save": "Lưu khổ"
+    "save": "Lưu khổ",
+    "market": {
+      "europe": "Châu Âu (dm, Rossmann, CEWE)",
+      "japan": "Nhật Bản (cửa hàng tiện lợi)",
+      "korea": "Hàn Quốc (Printing Box, tiệm ảnh)"
+    }
   },
   "fonts": {
     "builtIn": "Inter (có sẵn)",
@@ -902,7 +906,6 @@
     "cut": "Chữ không in hết",
     "cutHint": "Chữ dài hơn các dòng kẻ, phần thừa sẽ không được in: rút ngắn lại, hoặc chọn cỡ chữ nhỏ hơn.",
     "title": "Bưu thiếp",
-    "hint": "Mỗi tấm thành một bưu thiếp: một ảnh, nửa còn lại có ô dán tem và dòng kẻ để viết lời nhắn hoặc địa chỉ.",
     "orientation": "Chiều cầm",
     "landscape": "Ngang",
     "portrait": "Dọc",
@@ -943,7 +946,28 @@
       "underline": "Gạch chân"
     },
     "postalUse": "Gửi qua bưu điện",
-    "postalUseHint": "Chừa dải 15 mm cho mã vạch của bưu điện."
+    "hintCard": {
+      "europe": "Mỗi tấm thành một bưu thiếp: một ảnh, nửa còn lại có ô dán tem và dòng kẻ để viết lời nhắn hoặc địa chỉ.",
+      "japan": "Mỗi tấm thành một bưu thiếp Nhật (はがき, 100 × 148 mm): ảnh ở một nửa, mặt địa chỉ của Japan Post ở nửa kia.",
+      "korea": "Mỗi tấm thành một bưu thiếp Hàn (우편엽서): ảnh ở một nửa, mặt địa chỉ của Korea Post ở nửa kia."
+    },
+    "cardFor": "Thiệp gửi đi",
+    "destination": {
+      "europe": "Châu Âu · 10 × 15",
+      "japan": "Nhật Bản · はがき 100 × 148",
+      "korea": "Hàn Quốc · 우편엽서"
+    },
+    "postalUseHintCard": {
+      "europe": "Chừa dải 15 mm cho mã vạch của bưu điện.",
+      "japan": "In 「郵便はがき」 ở mép trên, Japan Post cần dòng này trên thiệp tự in.",
+      "korea": "In 「우편엽서」 và chừa dải 17 mm cho máy đọc."
+    },
+    "sender": "Người gửi",
+    "senderHint": "Một người gửi cho mọi thiệp.",
+    "messageNeedsBorder": "Lời nhắn chỉ in khi ảnh có viền.",
+    "fontJapan": "In bằng font Klee One.",
+    "nanumPenHint": "Nét bút hẹp",
+    "gaeguHint": "Nét tròn"
   },
   "look": {
     "faves": "Cơ bản",
@@ -1476,5 +1500,46 @@
       "replaceHint": "Dùng trọn thiết lập trong tệp; thiết lập của máy này được giữ thành settings.json.bak.",
       "do": "Nhập"
     }
+  },
+  "addassist": {
+    "title": "Nhập địa chỉ",
+    "assisted": "Có hỗ trợ",
+    "assistedHint": "Mã bưu chính hoặc tìm kiếm điền sẵn địa danh từ dữ liệu bưu điện, không cần mạng",
+    "byHand": "Tự gõ",
+    "code": {
+      "jp": "Mã bưu chính (〒)",
+      "kr": "Mã bưu chính"
+    },
+    "codePlaceholder": {
+      "jp": "2480024",
+      "kr": "03172"
+    },
+    "search": "Tìm",
+    "searchPlaceholder": {
+      "jp": "Kamakura, かまくら, 鎌倉",
+      "kr": "Sejong-daero 175, 세종대로 175"
+    },
+    "region": {
+      "jp": "Tỉnh",
+      "kr": "Tỉnh hoặc thành phố (시·도)"
+    },
+    "city": {
+      "jp": "Thành phố, quận",
+      "kr": "Quận, huyện (시·군·구)"
+    },
+    "town": {
+      "jp": "Phường",
+      "kr": "Thị trấn (읍·면)"
+    },
+    "road": "Đường",
+    "line": {
+      "jp": "Số nhà, toà nhà",
+      "kr": "Số nhà, phòng"
+    },
+    "name": "Tên",
+    "honorific": "Thêm 귀하 sau tên",
+    "latin": "In chữ Latin",
+    "version": "AddAssist {{version}}",
+    "recipient": "Người nhận"
   }
 }

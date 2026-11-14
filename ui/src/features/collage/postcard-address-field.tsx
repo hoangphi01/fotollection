@@ -1,0 +1,43 @@
+// SPDX-License-Identifier: GPL-3.0-only
+import { useTranslation } from 'react-i18next'
+import { AddAssist } from '@/components/forms/addassist'
+import { FieldLabel, Stack } from '@/components/forms/field'
+import { commands, type Address, type Country, type PhotoId } from '@/ipc/bindings'
+import { useLiveQuery } from '@/features/settings/use-ipc-query'
+
+const load = async (subject: string) => {
+  const result = await commands.getPostcardText(Number(subject))
+  return result.status === 'ok' ? result.data : null
+}
+
+type PostcardAddressFieldProps = {
+  photo: PhotoId
+  country: Country
+  revision: number
+  assisted: boolean
+  onAssisted: (assisted: boolean) => void
+}
+
+/**
+ * The recipient of the chosen Japanese or Korean card (FR-130, FR-132): AddAssist's block,
+ * saved on the photo as each field is left (one undoable step, checked in Rust).
+ */
+export function PostcardAddressField({ photo, country, revision, assisted, onAssisted }: PostcardAddressFieldProps) {
+  const { t } = useTranslation()
+  // The last answer holds its place while the next loads (LESSONS).
+  const recipient = useLiveQuery(String(photo), revision, load).data?.recipient ?? null
+  const save = (address: Address) => void commands.setPostcardAddress(photo, address)
+  return (
+    <Stack>
+      <FieldLabel>{t('addassist.recipient')}</FieldLabel>
+      <AddAssist
+        key={photo}
+        country={country}
+        value={recipient && recipient.country === country ? recipient : null}
+        onCommit={save}
+        assisted={assisted}
+        onAssisted={onAssisted}
+      />
+    </Stack>
+  )
+}

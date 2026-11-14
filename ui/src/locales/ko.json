@@ -192,7 +192,6 @@
   "print": {
     "original": "원본",
     "originalHint": "사진 원래 비율, 자르기 없음",
-    "standard": "표준(CEWE / EU)",
     "custom": "사용자 지정",
     "addCustom": "사용자 지정 크기…",
     "deleteNamed": "{{name}} 삭제",
@@ -202,7 +201,12 @@
     "height": "높이",
     "errorBothEdges": "두 변을 모두 입력하세요",
     "errorRange": "변은 2–100 cm여야 합니다",
-    "save": "크기 저장"
+    "save": "크기 저장",
+    "market": {
+      "europe": "유럽(dm, Rossmann, CEWE)",
+      "japan": "일본(편의점)",
+      "korea": "한국(프린팅박스, 사진관)"
+    }
   },
   "fonts": {
     "builtIn": "Inter(내장)",
@@ -939,7 +943,6 @@
     "cut": "넘치는 텍스트가 있음",
     "cutHint": "줄에 다 들어가지 않아 나머지는 프린트되지 않습니다. 줄이거나 더 작은 크기를 고르세요.",
     "title": "엽서",
-    "hint": "시트마다 엽서가 됩니다. 한쪽에는 사진, 다른 쪽에는 우표 칸과 메시지나 주소를 쓸 줄.",
     "orientation": "방향",
     "landscape": "가로",
     "portrait": "세로",
@@ -980,7 +983,28 @@
       "underline": "밑줄"
     },
     "postalUse": "우편용",
-    "postalUseHint": "우편 바코드용으로 15 mm 띠를 비워 둡니다."
+    "hintCard": {
+      "europe": "시트마다 엽서가 됩니다. 한쪽에는 사진, 다른 쪽에는 우표 칸과 메시지나 주소를 쓸 줄.",
+      "japan": "시트마다 일본 엽서(はがき, 100 × 148 mm)가 됩니다. 한쪽에는 사진, 다른 쪽에는 일본 우편의 주소면.",
+      "korea": "시트마다 우편엽서가 됩니다. 한쪽에는 사진, 다른 쪽에는 우체국 규격의 주소면."
+    },
+    "cardFor": "보낼 곳",
+    "destination": {
+      "europe": "유럽 · 10 × 15",
+      "japan": "일본 · はがき 100 × 148",
+      "korea": "한국 · 우편엽서"
+    },
+    "postalUseHintCard": {
+      "europe": "우편 바코드용으로 15 mm 띠를 비워 둡니다.",
+      "japan": "위에 「郵便はがき」를 인쇄합니다. 일본에서 직접 인쇄한 엽서에 필요합니다.",
+      "korea": "「우편엽서」를 인쇄하고 17 mm 기계 판독 영역을 비워 둡니다."
+    },
+    "sender": "보내는 사람",
+    "senderHint": "모든 엽서에 같은 보내는 사람.",
+    "messageNeedsBorder": "메시지는 테두리가 있는 사진 아래에 인쇄됩니다.",
+    "fontJapan": "Klee One으로 인쇄합니다.",
+    "nanumPenHint": "좁은 펜 글씨",
+    "gaeguHint": "둥근 손글씨"
   },
   "look": {
     "faves": "즐겨찾기",
@@ -1537,5 +1561,46 @@
       "replaceHint": "파일의 설정을 통째로 씁니다. 이 컴퓨터의 설정은 settings.json.bak으로 보관합니다.",
       "do": "가져오기"
     }
+  },
+  "addassist": {
+    "title": "주소 입력",
+    "assisted": "도움 입력",
+    "assistedHint": "우편번호나 검색으로 우체국 데이터에서 지명을 채웁니다(오프라인)",
+    "byHand": "직접 입력",
+    "code": {
+      "jp": "우편번호(〒)",
+      "kr": "우편번호"
+    },
+    "codePlaceholder": {
+      "jp": "2480024",
+      "kr": "03172"
+    },
+    "search": "검색",
+    "searchPlaceholder": {
+      "jp": "Kamakura, かまくら, 鎌倉",
+      "kr": "세종대로 175, sejong-daero"
+    },
+    "region": {
+      "jp": "도도부현",
+      "kr": "시·도"
+    },
+    "city": {
+      "jp": "시구정촌",
+      "kr": "시·군·구"
+    },
+    "town": {
+      "jp": "정역",
+      "kr": "읍·면"
+    },
+    "road": "도로명",
+    "line": {
+      "jp": "번지·건물",
+      "kr": "건물번호·상세주소"
+    },
+    "name": "이름",
+    "honorific": "이름 뒤에 ‘귀하’",
+    "latin": "로마자로 인쇄",
+    "version": "AddAssist {{version}}",
+    "recipient": "받는 사람"
   }
 }

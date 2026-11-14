@@ -16,10 +16,11 @@ import {
 } from '@/components/ui/select'
 import { Inset } from '@/components/forms/field'
 import { SegmentedToggle } from '@/components/forms/segmented-toggle'
-import type { CustomPrintSize, LengthUnit, PrintAdvice, PrintSize, RenderSettings } from '@/ipc/bindings'
+import type { CustomPrintSize, LengthUnit, Market, PrintAdvice, PrintSize, RenderSettings } from '@/ipc/bindings'
 import { VerdictBadge } from '@/features/print-advice/verdict-badge'
 import { ratioLabel } from '@/lib/crop-geometry'
 import { MM_PER_IN, sizeLabel } from '@/lib/print-size'
+import { cardFor, marketFor } from '@/lib/postcard-card'
 import { RemoveButton } from '@/components/forms/danger-button'
 
 const ADD = '__add__'
@@ -36,9 +37,17 @@ type PrintSizePickerProps = {
   allowOriginal?: boolean
 }
 
-/** Built-in and saved custom print sizes, with an inline "add custom size" form (FR-043). */
+const MARKETS: Market[] = ['europe', 'japan', 'korea']
+
+/**
+ * Built-in and saved custom print sizes, with an inline "add custom size" form (FR-043); the
+ * built-in ones grouped by the market whose shops print them, the interface's market first
+ * (FR-129, FR-132).
+ */
 export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOriginal = true }: PrintSizePickerProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const first = marketFor(i18n.language, cardFor(i18n.language, settings?.collage?.postcard?.destination))
+  const markets = [first, ...MARKETS.filter((m) => m !== first)]
   const id = useId()
   const custom = settings?.customSizes ?? []
   const [adding, setAdding] = useState(false)
@@ -119,19 +128,24 @@ export function PrintSizePicker({ settings, builtIn, onChange, advice, allowOrig
                 <SelectSeparator />
               </>
             )}
-            <SelectGroup>
-              <SelectLabel>{t('print.standard')}</SelectLabel>
-              {builtIn?.map((size) => (
-                <SelectItem key={size.id} value={size.id}>
-                  {sizeLabel(size.shortMm, size.longMm)}
-                  <span className="text-muted-foreground">
-                    {' '}
-                    · {ratioLabel(size.shortMm, size.longMm)}
-                  </span>
-                  {badge(size.id)}
-                </SelectItem>
-              ))}
-            </SelectGroup>
+            {markets.map((market) => (
+              <SelectGroup key={market}>
+                <SelectLabel>{t(`print.market.${market}`)}</SelectLabel>
+                {builtIn
+                  // A size two markets share keeps one id: listed once, under the first shown.
+                  ?.filter((size) => markets.find((m) => size.markets.includes(m)) === market)
+                  .map((size) => (
+                    <SelectItem key={size.id} value={size.id}>
+                      {sizeLabel(size.shortMm, size.longMm)}
+                      <span className="text-muted-foreground">
+                        {' '}
+                        · {ratioLabel(size.shortMm, size.longMm)}
+                      </span>
+                      {badge(size.id)}
+                    </SelectItem>
+                  ))}
+              </SelectGroup>
+            ))}
             {custom.length > 0 && (
               <SelectGroup>
                 <SelectLabel>{t('print.custom')}</SelectLabel>

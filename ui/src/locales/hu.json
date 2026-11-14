@@ -192,7 +192,6 @@
   "print": {
     "original": "Eredeti",
     "originalHint": "a fotó saját aránya, vágás nélkül",
-    "standard": "Szabványos (CEWE / EU)",
     "custom": "Egyéni",
     "addCustom": "Egyéni méret…",
     "deleteNamed": "{{name}} törlése",
@@ -202,7 +201,12 @@
     "height": "Magasság",
     "errorBothEdges": "Add meg mindkét oldalt",
     "errorRange": "Az oldalak 2 és 100 cm között lehetnek",
-    "save": "Méret mentése"
+    "save": "Méret mentése",
+    "market": {
+      "europe": "Európa (dm, Rossmann, CEWE)",
+      "japan": "Japán (kisboltok)",
+      "korea": "Korea (Printing Box, fotólaborok)"
+    }
   },
   "fonts": {
     "builtIn": "Inter (beépített)",
@@ -939,7 +943,6 @@
     "cut": "Egy szöveg nem fér ki",
     "cutHint": "Nem fér ki teljesen a soraiba, a maradék lemarad a nyomatról: rövidítsd le, vagy válassz kisebb méretet.",
     "title": "Képeslap",
-    "hint": "Minden lapból képeslap lesz: egy fotó, a másik felén bélyegkeret és sorok az üzenetnek vagy a címnek.",
     "orientation": "Tájolás",
     "landscape": "Fekvő",
     "portrait": "Álló",
@@ -980,7 +983,28 @@
       "underline": "Aláhúzott"
     },
     "postalUse": "Postai feladás",
-    "postalUseHint": "15 mm-es sávot hagy szabadon a posta vonalkódjának."
+    "hintCard": {
+      "europe": "Minden lapból képeslap lesz: egy fotó, a másik felén bélyegkeret és sorok az üzenetnek vagy a címnek.",
+      "japan": "Minden lapból japán képeslap lesz (はがき, 100 × 148 mm): az egyik felén a fotó, a másikon a Japan Post címoldala.",
+      "korea": "Minden lapból koreai képeslap lesz (우편엽서): az egyik felén a fotó, a másikon a Korea Post címoldala."
+    },
+    "cardFor": "Képeslap ide",
+    "destination": {
+      "europe": "Európa · 10 × 15",
+      "japan": "Japán · はがき 100 × 148",
+      "korea": "Korea · 우편엽서"
+    },
+    "postalUseHintCard": {
+      "europe": "15 mm-es sávot hagy szabadon a posta vonalkódjának.",
+      "japan": "Felülre nyomtatja a 「郵便はがき」 feliratot, amelyet a Japan Post kér az otthon nyomtatott lapokon.",
+      "korea": "Kinyomtatja a 「우편엽서」 feliratot, és szabadon hagyja a 17 mm-es gépi sávot."
+    },
+    "sender": "Feladó",
+    "senderHint": "Egy feladó minden laphoz.",
+    "messageNeedsBorder": "Az üzenet keretes fotó alá kerül.",
+    "fontJapan": "Klee One betűvel nyomtatva.",
+    "nanumPenHint": "Keskeny tollírás",
+    "gaeguHint": "Kerekebb kézírás"
   },
   "look": {
     "faves": "Kedvencek",
@@ -1537,5 +1561,46 @@
       "replaceHint": "A fájl beállításait használja egészben; a gép régi beállításai settings.json.bak néven megmaradnak.",
       "do": "Importálás"
     }
+  },
+  "addassist": {
+    "title": "Címmegadás",
+    "assisted": "Segítséggel",
+    "assistedHint": "Az irányítószám vagy a keresés kitölti a helyeket a posta adataiból, offline",
+    "byHand": "Kézzel",
+    "code": {
+      "jp": "Irányítószám (〒)",
+      "kr": "Irányítószám"
+    },
+    "codePlaceholder": {
+      "jp": "2480024",
+      "kr": "03172"
+    },
+    "search": "Keresés",
+    "searchPlaceholder": {
+      "jp": "Kamakura, かまくら, 鎌倉",
+      "kr": "Sejong-daero 175, 세종대로 175"
+    },
+    "region": {
+      "jp": "Prefektúra",
+      "kr": "Tartomány vagy város (시·도)"
+    },
+    "city": {
+      "jp": "Település",
+      "kr": "Kerület (시·군·구)"
+    },
+    "town": {
+      "jp": "Városrész",
+      "kr": "Község (읍·면)"
+    },
+    "road": "Út",
+    "line": {
+      "jp": "Háztömb és épület",
+      "kr": "Házszám és lakás"
+    },
+    "name": "Név",
+    "honorific": "귀하 a név után",
+    "latin": "Latin betűkkel nyomtatva",
+    "version": "AddAssist {{version}}",
+    "recipient": "Címzett"
   }
 }

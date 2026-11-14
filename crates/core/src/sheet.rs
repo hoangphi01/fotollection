@@ -79,7 +79,7 @@ pub fn sheet_print(settings: &RenderSettings) -> PrintSize {
             crate::settings::PostcardDestination::Japan => return PrintSize::HAGAKI,
             // A Korean card is a 4 × 6 in print, or the square 4 × 4 (FR-132).
             crate::settings::PostcardDestination::Korea => {
-                return if postcard.orientation == crate::settings::PostcardOrientation::Square {
+                return if postcard.shape() == crate::settings::PostcardOrientation::Square {
                     PrintSize::KR_4X4
                 } else {
                     PrintSize::KR_4X6
@@ -313,7 +313,7 @@ pub fn layout(
     let postcard = settings.postcard.enabled;
     // A postcard is held the way the user chose; its photo takes the left or bottom half.
     let side = if postcard {
-        settings.postcard.orientation == crate::settings::PostcardOrientation::Landscape
+        settings.postcard.shape() == crate::settings::PostcardOrientation::Landscape
     } else {
         side_by_side(first, turned)
     };

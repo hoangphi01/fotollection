@@ -1151,6 +1151,8 @@ export type CountryInfo = {
 	codeDigits: number,
 	/**  The date of the post's data, `YYYY-MM-DD`. */
 	dataDate: string,
+	/**  `AddAssist`'s version, kept with an address it fills (`Address::filled_by`). */
+	version: string,
 };
 
 /**

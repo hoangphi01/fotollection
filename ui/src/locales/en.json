@@ -192,7 +192,6 @@
   "print": {
     "original": "Original",
     "originalHint": "photo's own ratio, no crop",
-    "standard": "Standard (CEWE / EU)",
     "custom": "Custom",
     "addCustom": "Custom size…",
     "deleteNamed": "Delete {{name}}",
@@ -202,7 +201,12 @@
     "height": "Height",
     "errorBothEdges": "Enter both edges",
     "errorRange": "Edges must be between 2 and 100 cm",
-    "save": "Save size"
+    "save": "Save size",
+    "market": {
+      "europe": "Europe (dm, Rossmann, CEWE)",
+      "japan": "Japan (convenience stores)",
+      "korea": "Korea (Printing Box, labs)"
+    }
   },
   "fonts": {
     "builtIn": "Inter (built-in)",
@@ -939,7 +943,6 @@
     "cut": "Some text does not fit",
     "cutHint": "Not all of it fits its lines and the rest is left off the print: shorten it, or choose a smaller size.",
     "title": "Postcard",
-    "hint": "Each sheet becomes a postcard: one photo, and on the other half a stamp box and lines for a message or an address.",
     "orientation": "Held",
     "landscape": "Landscape",
     "portrait": "Portrait",
@@ -980,7 +983,28 @@
       "underline": "Underline"
     },
     "postalUse": "Postal use",
-    "postalUseHint": "Keeps a 15 mm strip free for the post's barcode."
+    "hintCard": {
+      "europe": "Each sheet becomes a postcard: one photo, and on the other half a stamp box and lines for a message or an address.",
+      "japan": "Each sheet becomes a Japanese postcard (はがき, 100 × 148 mm): the photo on one half, Japan Post's address side on the other.",
+      "korea": "Each sheet becomes a Korean postcard (우편엽서): the photo on one half, Korea Post's address side on the other."
+    },
+    "cardFor": "Card for",
+    "destination": {
+      "europe": "Europe · 10 × 15",
+      "japan": "Japan · はがき 100 × 148",
+      "korea": "Korea · 우편엽서"
+    },
+    "postalUseHintCard": {
+      "europe": "Keeps a 15 mm strip free for the post's barcode.",
+      "japan": "Prints 「郵便はがき」 at the top, which Japan Post needs on a card printed at home.",
+      "korea": "Prints 「우편엽서」 and keeps the 17 mm machine zone free."
+    },
+    "sender": "Sender",
+    "senderHint": "One sender for every card.",
+    "messageNeedsBorder": "The message prints under a photo with a border.",
+    "fontJapan": "Printed in Klee One.",
+    "nanumPenHint": "A narrow pen hand",
+    "gaeguHint": "A rounder hand"
   },
   "look": {
     "faves": "Faves",
@@ -1537,5 +1561,46 @@
       "replaceHint": "Uses the file's settings whole; this computer's are kept as settings.json.bak.",
       "do": "Import"
     }
+  },
+  "addassist": {
+    "title": "Address entry",
+    "assisted": "Assisted",
+    "assistedHint": "The postal code or a search fills the places from the post's data, offline",
+    "byHand": "By hand",
+    "code": {
+      "jp": "Postal code (〒)",
+      "kr": "Postal code"
+    },
+    "codePlaceholder": {
+      "jp": "2480024",
+      "kr": "03172"
+    },
+    "search": "Search",
+    "searchPlaceholder": {
+      "jp": "Kamakura, かまくら, 鎌倉",
+      "kr": "Sejong-daero 175, 세종대로 175"
+    },
+    "region": {
+      "jp": "Prefecture",
+      "kr": "Province or city (시·도)"
+    },
+    "city": {
+      "jp": "Municipality",
+      "kr": "District (시·군·구)"
+    },
+    "town": {
+      "jp": "Town",
+      "kr": "Town (읍·면)"
+    },
+    "road": "Road",
+    "line": {
+      "jp": "Block and building",
+      "kr": "Building number and unit"
+    },
+    "name": "Name",
+    "honorific": "귀하 after the name",
+    "latin": "Print in Latin letters",
+    "version": "AddAssist {{version}}",
+    "recipient": "Recipient"
   }
 }

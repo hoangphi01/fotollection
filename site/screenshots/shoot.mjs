@@ -211,6 +211,14 @@ function bridge({ fixtures, scenario, language, os, tabs, queues, mode, ui, upda
       }
       return { blank, differ }
     },
+    // AddAssist (FR-133): its countries; a lookup or search answers nothing in the demo, and an
+    // address set on a card changes nothing (writes do nothing here).
+    addassist_countries: () => [
+      { country: 'jp', codeDigits: 7, dataDate: '2026-10-23', version: '1.0' },
+      { country: 'kr', codeDigits: 5, dataDate: '2025-11-30', version: '1.0' },
+    ],
+    addassist_lookup: () => [],
+    addassist_search: () => [],
     recent_addresses: () => [
       'Národní muzeum\nVáclavské náměstí 68\n110 00 Praha 1, Czechia',
       'Magyar Nemzeti Múzeum\nMúzeum krt. 14–16\n1088 Budapest, Hungary',

@@ -4,12 +4,15 @@ import { Type } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { CommitInput } from '@/components/forms/commit-input'
 import { Field, Hint } from '@/components/forms/field'
+import { SegmentedToggle } from '@/components/forms/segmented-toggle'
 import { SwatchToggle } from '@/components/forms/swatch-toggle'
 import { SectionCard } from '@/components/layout/section-card'
 import type { CullFilter, PhotoId, PostcardFace, PostcardInk, RenderSettings } from '@/ipc/bindings'
 import { FontSelect } from '@/features/fonts/font-select'
 import { useFonts } from '@/features/fonts/use-fonts'
 import { SizeField } from '@/features/stamp/size-field'
+import { cardFor } from '@/lib/postcard-card'
+import { PostcardAddressField } from './postcard-address-field'
 import { patchPostcard } from './postcard-defaults'
 import { PostcardTextField } from './postcard-text-field'
 import { usePostcardCuts } from './use-postcard-cuts'
@@ -40,9 +43,12 @@ type PostcardTextCardProps = {
  * in the Collage panel and in a postcard's preview; shown while postcards are on.
  */
 export function PostcardTextCard({ settings, onChange, photo, revision, filter, ticked }: PostcardTextCardProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const fonts = useFonts()
   const postcard = settings?.collage?.postcard
+  const card = cardFor(i18n.language, postcard?.destination)
+  // A full-bleed upright はがき has no band for the message (board B).
+  const noMessage = card === 'japan' && settings?.collage?.fill && postcard?.orientation !== 'landscape'
   const fit = usePostcardCuts(settings, revision).get(photo ?? -1)
   if (!postcard?.enabled) return null
   return (
@@ -57,20 +63,46 @@ export function PostcardTextCard({ settings, onChange, photo, revision, filter, 
             cut={fit?.messageCut ?? false}
             onStyle={(messageStyle) => patchPostcard(onChange, { messageStyle })}
           />
-          <PostcardTextField
-            photo={photo}
-            part="address"
-            revision={revision}
-            style={postcard.addressStyle}
-            cut={fit?.addressCut ?? false}
-            onStyle={(addressStyle) => patchPostcard(onChange, { addressStyle })}
-            filter={filter}
-            ticked={ticked}
-          />
+          {noMessage && <Hint>{t('postcard.messageNeedsBorder')}</Hint>}
+          {card === 'europe' ? (
+            <PostcardTextField
+              photo={photo}
+              part="address"
+              revision={revision}
+              style={postcard.addressStyle}
+              cut={fit?.addressCut ?? false}
+              onStyle={(addressStyle) => patchPostcard(onChange, { addressStyle })}
+              filter={filter}
+              ticked={ticked}
+            />
+          ) : (
+            <PostcardAddressField
+              photo={photo}
+              country={card === 'japan' ? 'jp' : 'kr'}
+              revision={revision}
+              assisted={postcard.assisted ?? true}
+              onAssisted={(assisted) => patchPostcard(onChange, { assisted })}
+            />
+          )}
         </>
       ) : (
         <Hint>{t('postcard.pickToType')}</Hint>
       )}
+      {card === 'japan' && <Hint>{t('postcard.fontJapan')}</Hint>}
+      {card === 'korea' && (
+        <Field label={t('postcard.font')}>
+          <SegmentedToggle<PostcardFace>
+            value={postcard.face === 'gaegu' ? 'gaegu' : 'nanumPen'}
+            options={[
+              { value: 'nanumPen', label: 'Nanum Pen', hint: t('postcard.nanumPenHint') },
+              { value: 'gaegu', label: 'Gaegu', hint: t('postcard.gaeguHint') },
+            ]}
+            onChange={(face) => patchPostcard(onChange, { face })}
+            ariaLabel={t('postcard.font')}
+          />
+        </Field>
+      )}
+      {card === 'europe' && (
       <Field label={t('postcard.font')}>
         <FontSelect
           fonts={fonts}
@@ -83,9 +115,10 @@ export function PostcardTextCard({ settings, onChange, photo, revision, filter, 
             { key: 'typewriter', label: t('postcard.typewriter'), hint: 'Xanh Mono' },
             { key: 'handwriting', label: t('postcard.handwriting'), hint: 'Patrick Hand' },
           ]}
-          builtIn={postcard.face ?? 'typewriter'}
+          builtIn={postcard.face === 'handwriting' ? 'handwriting' : 'typewriter'}
         />
       </Field>
+      )}
       <Field label={t('postcard.size')}>
         <SizeField
           value={postcard.textSize}
