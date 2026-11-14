@@ -913,7 +913,7 @@ Next to the batch settings, any other setting will later be overridable for one 
 - **Checked like any input from outside:** read only in Rust, size-capped; only strings, no markup (the UI shows text, never HTML, [SECURITY.md](SECURITY.md)); every `{{name}}` placeholder must match English's; plural forms follow the language's rules. `ui/scripts/check-i18n.mjs` checks a pack the same way, so a contributor sees what is missing before sending it.
 - **Two ways in:** a pull request that adds it to the repository (it then ships with the app), or **Load a language…** in the version popover, which copies the file into the app's `languages/` folder; the language list shows it with its authors.
 - **Travels with the app's brain:** `.fotosettings` ([FR-082](#fr-082--the-apps-brain-in-one-file-fotosettings)) carries the packs a user loaded, as it carries fonts and LUTs; it is not the pack's own format, since a pack is made to be shared and the brain is personal.
-- A pack translates the app. The website is in its own seven languages (Japanese from 2026-11-14) (`site/_data/languages.yml`, ADR-0049), the full manual (USER_GUIDE) in English and Vietnamese and a short guide in the others; once the app speaks a language, that language's website shows the app's screenshots in it (`assets` in the registry).
+- A pack translates the app. The website is in its own eight languages (Japanese from 2026-11-14, Korean from 2026-11-15) (`site/_data/languages.yml`, ADR-0049), the full manual (USER_GUIDE) in English and Vietnamese and a short guide in the others; once the app speaks a language, that language's website shows the app's screenshots in it (`assets` in the registry).
 
 ### FR-085 — Lens distortion correction
 
@@ -1254,7 +1254,8 @@ As built (2026-11-07): the manual is a section of the Settings window itself, *M
 
 - **Fonts first:** Be Vietnam Pro has no Japanese or Korean letters. The interface and the manual fall back to the system's own CJK face (Hiragino and Apple SD Gothic Neo on macOS, Yu Gothic and Malgun Gothic on Windows, Noto Sans CJK on Linux), chosen and checked before any string is translated; the print's own text (date stamp, info frame, postcard) is a separate question, decided with the owner.
 - **Words that fit:** Japanese and Korean run shorter than English but taller; `MEASURE=1 MEASURE_LANG=ja` and `ko` and `npm run text-widths` check every panel (FR-125).
-- **The website** follows with its own `/ja/` and `/ko/` pages only when the owner asks.
+- **The website** has its own `/ja/` (2026-11-14) and `/ko/` (2026-11-15) pages already.
+- **Korea, for the Korean app** (checked 2026-11-15): Korea Post's postcards are 90–120 × 140–170 mm (±5 mm, 우정사업본부's 우편상식), so Collage's 10 × 15 postcard fits as it is, no card of its own as Japan's はがき (FR-130); convenience-store photos print at Printing Box kiosks (CU, GS25, emart24) in 4 × 6 inches, 10 × 15 cm, already a built-in size.
 
 ### FR-129 — Print sizes of Japan's convenience-store kiosks
 

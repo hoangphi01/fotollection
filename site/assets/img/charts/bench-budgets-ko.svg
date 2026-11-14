@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -16 752 412" width="752" height="412" role="img" aria-labelledby="t d">
+<title id="t">성능 목표 대비 실측값</title>
+<desc id="d">폴더 열기(읽기 + EXIF + 첫 썸네일): 0.12 (목표치 &lt; 1 초). 설정 변경 후 미리보기 갱신: 18 (목표치 &lt; 50 ms). 내보내기 속도: 18.0 (목표치 ≥ 8 장/초). 메모리 최대치, 가장 큰 배치: 1.45 (목표치 ≤ 2 GB)</desc>
+<style>
+  .bg{fill:#fffaee} .t1{fill:#2b2219;font:600 13px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t2{fill:#514435;font:13px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t3{fill:#7a6a55;font:12px system-ui,-apple-system,Segoe UI,sans-serif}
+  .h{font-size:15px} .num{font-variant-numeric:tabular-nums} .axis{stroke:#e2d4b3;stroke-width:1}
+  .ref{stroke:#514435;stroke-width:1.5;stroke-dasharray:4 3} .refw{stroke:#b5652a;stroke-width:1.5;stroke-dasharray:4 3}
+  .s1{fill:#008a74} .old{fill-opacity:.45} .s2{fill:#b5652a} .s3{fill:#1baf7a} .s4{fill:#eda100} .s5{fill:#e87ba4} .gap{stroke:#fffaee;stroke-width:2}
+  .in{fill:#fff}
+  @media (prefers-color-scheme: dark){
+    .bg{fill:#262019} .t1{fill:#f3ead6} .t2{fill:#d8cab0} .t3{fill:#a8977c} .axis{stroke:#3b3127}
+    .ref{stroke:#d8cab0} .refw{stroke:#cc7f3e}
+    .s1{fill:#21a593} .s2{fill:#cc7f3e} .s3{fill:#199e70} .s4{fill:#c98500} .s5{fill:#d55181} .gap{stroke:#262019}
+  }
+</style>
+<rect class="bg" x="-16" y="-16" width="752" height="412" rx="8"/>
+<text class="t1 h" x="0" y="8">성능 목표 대비 실측값</text>
+<text class="t1" x="0" y="44">폴더 열기(읽기 + EXIF + 첫 썸네일)</text><text class="t3" x="0" y="60">1,000장당 초(5,035장으로 측정) · 작을수록 좋음</text><text class="t2" x="180" y="96" text-anchor="end">Fotollection (Rust)</text><path class="s1" d="M190 80h39.00728401191657a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-39.00728401191657z"><title>폴더 열기(읽기 + EXIF + 첫 썸네일): 0.12</title></path><text class="t1 num" x="241.00728401191657" y="96">0.12 ✓</text><line class="axis" x1="190" x2="190" y1="76" y2="106"/><line class="ref" x1="540" x2="540" y1="76" y2="106"/><text class="t3" x="540" y="72" text-anchor="middle">목표치 &lt; 1 초</text><text class="t1" x="0" y="128">설정 변경 후 미리보기 갱신</text><text class="t3" x="0" y="144">ms, p95 · 작을수록 좋음</text><text class="t2" x="180" y="180" text-anchor="end">Fotollection (Rust)</text><path class="s1" d="M190 164h124.69674999999995a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-124.69674999999995z"><title>설정 변경 후 미리보기 갱신: 18</title></path><text class="t1 num" x="326.69674999999995" y="180">18 ✓</text><line class="axis" x1="190" x2="190" y1="160" y2="190"/><line class="ref" x1="540" x2="540" y1="160" y2="190"/><text class="t3" x="540" y="156" text-anchor="middle">목표치 &lt; 50 ms</text><text class="t1" x="0" y="212">내보내기 속도</text><text class="t3" x="0" y="228">16 MP에서 장/초(목표치는 24 MP 기준) · 클수록 좋음</text><text class="t2" x="180" y="264" text-anchor="end">Fotollection (Rust)</text><path class="s1" d="M190 248h346a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-346z"><title>내보내기 속도: 18.0</title></path><text class="t1 num" x="548" y="264">18.0 ✓</text><line class="axis" x1="190" x2="190" y1="244" y2="274"/><line class="ref" x1="345.9424115789474" x2="345.9424115789474" y1="244" y2="274"/><text class="t3" x="345.9424115789474" y="240" text-anchor="middle">목표치 ≥ 8 장/초</text><text class="t1" x="0" y="296">메모리 최대치, 가장 큰 배치</text><text class="t3" x="0" y="312">GB · 작을수록 좋음</text><text class="t2" x="180" y="348" text-anchor="end">Fotollection (Rust)</text><path class="s1" d="M190 332h250.2546944a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-250.2546944z"><title>메모리 최대치, 가장 큰 배치: 1.45</title></path><text class="t1 num" x="452.2546944" y="348">1.45 ✓</text><line class="axis" x1="190" x2="190" y1="328" y2="358"/><line class="ref" x1="540" x2="540" y1="328" y2="358"/><text class="t3" x="540" y="324" text-anchor="middle">목표치 ≤ 2 GB</text><text class="t3" x="0" y="376">16 MP JPEG · Apple M3, 16 GB, macOS 26.3.1 · 2026-10-23 · 95장: 3회의 중앙값 · 5,035장: 1회</text>
+</svg>

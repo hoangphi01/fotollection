@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -16 752 404" width="752" height="404" role="img" aria-labelledby="t d">
+<title id="t">같은 95장, 같은 처리: 디코딩 → 2:3 자르기 → 날짜 → JPEG q95</title>
+<desc id="d">Fotollection (Rust): 일괄 내보내기 18.0 장/초, 웜 미리보기(1600 px) 17.4 ms, p50, 메모리 최대치 1.35 GB. 브라우저 (Chromium): 일괄 내보내기 17.9 장/초, 웜 미리보기(1600 px) 18.5 ms, p50, 메모리 최대치 1.78 GB</desc>
+<style>
+  .bg{fill:#fffaee} .t1{fill:#2b2219;font:600 13px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t2{fill:#514435;font:13px system-ui,-apple-system,Segoe UI,sans-serif}
+  .t3{fill:#7a6a55;font:12px system-ui,-apple-system,Segoe UI,sans-serif}
+  .h{font-size:15px} .num{font-variant-numeric:tabular-nums} .axis{stroke:#e2d4b3;stroke-width:1}
+  .ref{stroke:#514435;stroke-width:1.5;stroke-dasharray:4 3} .refw{stroke:#b5652a;stroke-width:1.5;stroke-dasharray:4 3}
+  .s1{fill:#008a74} .old{fill-opacity:.45} .s2{fill:#b5652a} .s3{fill:#1baf7a} .s4{fill:#eda100} .s5{fill:#e87ba4} .gap{stroke:#fffaee;stroke-width:2}
+  .in{fill:#fff}
+  @media (prefers-color-scheme: dark){
+    .bg{fill:#262019} .t1{fill:#f3ead6} .t2{fill:#d8cab0} .t3{fill:#a8977c} .axis{stroke:#3b3127}
+    .ref{stroke:#d8cab0} .refw{stroke:#cc7f3e}
+    .s1{fill:#21a593} .s2{fill:#cc7f3e} .s3{fill:#199e70} .s4{fill:#c98500} .s5{fill:#d55181} .gap{stroke:#262019}
+  }
+</style>
+<rect class="bg" x="-16" y="-16" width="752" height="404" rx="8"/>
+<text class="t1 h" x="0" y="8">같은 95장, 같은 처리: 디코딩 → 2:3 자르기 → 날짜 → JPEG q95</text>
+<text class="t1" x="0" y="48">일괄 내보내기</text><text class="t3" x="720" y="48" text-anchor="end">장/초 · 클수록 좋음</text><text class="t2" x="180" y="75" text-anchor="end">Fotollection (Rust)</text><path class="s1" d="M190 60h416a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-416z"><title>Fotollection (Rust): 18.0 장/초</title></path><text class="t1 num" x="618" y="76">18.0</text><text class="t2" x="180" y="105" text-anchor="end">브라우저 (Chromium)</text><path class="s2" d="M190 90h415.78603692006084a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-415.78603692006084z"><title>브라우저 (Chromium): 17.9 장/초</title></path><text class="t1 num" x="617.7860369200608" y="106">17.9</text><line class="axis" x1="190" x2="190" y1="56" y2="116"/><text class="t1" x="0" y="156">웜 미리보기(1600 px)</text><text class="t3" x="720" y="156" text-anchor="end">ms, p50 · 작을수록 좋음</text><text class="t2" x="180" y="183" text-anchor="end">Fotollection (Rust)</text><path class="s1" d="M190 168h390.8312162162162a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-390.8312162162162z"><title>Fotollection (Rust): 17.4 ms, p50</title></path><text class="t1 num" x="592.8312162162163" y="184">17.4</text><text class="t2" x="180" y="213" text-anchor="end">브라우저 (Chromium)</text><path class="s2" d="M190 198h416a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-416z"><title>브라우저 (Chromium): 18.5 ms, p50</title></path><text class="t1 num" x="618" y="214">18.5</text><line class="axis" x1="190" x2="190" y1="164" y2="224"/><text class="t1" x="0" y="264">메모리 최대치</text><text class="t3" x="720" y="264" text-anchor="end">GB · 작을수록 좋음</text><text class="t2" x="180" y="291" text-anchor="end">Fotollection (Rust)</text><path class="s1" d="M190 276h313.35856342923347a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-313.35856342923347z"><title>Fotollection (Rust): 1.35 GB</title></path><text class="t1 num" x="515.3585634292335" y="292">1.35</text><text class="t2" x="180" y="321" text-anchor="end">브라우저 (Chromium)</text><path class="s2" d="M190 306h416a4 4 0 0 1 4 4v14a4 4 0 0 1 -4 4h-416z"><title>브라우저 (Chromium): 1.78 GB</title></path><text class="t1 num" x="618" y="322">1.78</text><line class="axis" x1="190" x2="190" y1="272" y2="332"/><text class="t3" x="0" y="368">16 MP JPEG · Apple M3, 16 GB, macOS 26.3.1 · 2026-10-23 · 95장: 3회의 중앙값</text>
+</svg>

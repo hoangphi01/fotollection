@@ -13,7 +13,8 @@
 #   support      how its readers buy the author a coffee: vietqr (a bank app's code, Vietnam's
 #                way) or card (Ko-fi first, then GitHub Sponsors), owner 2026-11-11
 #   kiosk        the print shops its home page shows: eu (dm and Rossmann, the default) or jp
-#                (7-Eleven, Lawson and FamilyMart's multicopy machines), owner 2026-11-14
+#                (7-Eleven, Lawson and FamilyMart's multicopy machines), owner 2026-11-14, or kr
+#                (the Printing Box kiosks at CU and GS25), owner 2026-11-15
 #   community    the community section of its home page: vn (Vietnam Linux Family and CaramOS,
 #                where Vietnamese readers find apps) or, by default, intl (AlternativeTo), owner 2026-11-14
 #   guide        the manual it shows (ADR-0031): the full one in docs/ (English, Vietnamese) or
@@ -21,7 +22,7 @@
 #   published    false keeps it out of the build, the menu, hreflang and the sitemap until its
 #                words are done (scripts/check-site-i18n.mjs --build)
 # Order (owner, 2026-11-11): English first, the international one, then by each language's own
-# name (Čeština, Deutsch, Magyar, Polski, Tiếng Việt, 日本語); the menu, hreflang and sitemap follow it.
+# name (Čeština, Deutsch, Magyar, Polski, Tiếng Việt, 한국어, 日本語); the menu, hreflang and sitemap follow it.
 # A new language: a block here, in that order, and its words in i18n/<code>.yml.
 - code: en
   date_format: "%-d %b %Y"
@@ -92,6 +93,19 @@
   guide: docs/USER_GUIDE.vi.md
   support: vietqr
   community: vn
+  published: true
+- code: ko
+  date_format: "%Y년 %-m월 %-d일"
+  name: 한국어
+  html_lang: ko
+  og_locale: ko_KR
+  prefix: /ko
+  aliases: [kr]
+  assets: en
+  pages: [home, download, performance, manual, wiki, code-signing]
+  guide: site/_includes/manual-short-ko.md
+  support: card
+  kiosk: kr
   published: true
 - code: ja
   date_format: "%Y年%-m月%-d日"

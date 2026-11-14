@@ -81,6 +81,15 @@
         <ul class="chips mm"><li>89 × 89</li></ul>
         <p class="small muted">{% include icons/check.svg %} {{ t.kiosk_more }}</p>
       </div>
+      {%- elsif pg.kiosk == 'kr' %}
+      {%- comment %} Korea's convenience stores (languages.yml kiosk: kr, owner 2026-11-15): photos print at Printing Box kiosks at CU and GS25, in 4 × 6 inches (10 × 15 cm), a size built in (fn_printingbox). {% endcomment %}
+      <h2>{{ t.kiosk_title }} {% include logos/cu.svg %}{% include fn.html keys="fn_cu" %}{{ t.kiosk_and }}{% include logos/gs25.svg %}{% include fn.html keys="fn_gs25" %}</h2>
+      <p class="lead">{{ t.kiosk_lead }}{% include fn.html keys="fn_printingbox" %}</p>
+      <div class="sizes">
+        <p class="sizes-label">{{ t.kiosk_standard }}</p>
+        <ul class="chips"><li>10 × 15</li></ul>
+        <p class="small muted">{% include icons/check.svg %} {{ t.kiosk_more }}</p>
+      </div>
       {%- else %}
       <h2>{{ t.kiosk_title }} {% include logos/dm.svg %}{% include fn.html keys="fn_dm" %} {{ t.kiosk_and }}&nbsp;{% include logos/rossmann.svg %}{% include fn.html keys="fn_rossmann" %}</h2>
       <p class="lead">{{ t.kiosk_lead }}</p>

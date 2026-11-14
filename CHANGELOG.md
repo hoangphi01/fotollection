@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- **Website in Korean** at `/ko/`: the home, Download, Performance, Wiki and code-signing pages and a short manual, with Korea's convenience stores (CU, GS25) and their 10 × 15 Printing Box prints in place of dm and Rossmann, set as Korean sites are: words never broken inside, bold Gothic headings.
 - **Website:** a shorter landing page with the print story first (the three modes, the print, the kiosk), the before-and-after lower down; ten notes instead of twenty-two, each beside a claim (the test machine of the speed figures, what "nothing is tracked" covers), no definitions of the obvious; the GitHub button invites a star without showing a count.
 - **Website:** the community section shows AlternativeTo and GitHub to readers beyond Vietnam; the Vietnamese page keeps Vietnam Linux Family and CaramOS.
 - **Website:** the landing page no longer shows a section of the app's languages and themes, now that it speaks more of them; the Ko-fi button says how one pays (PayPal or card) on a second line, and the note under it how to use Ko-fi's English page.
