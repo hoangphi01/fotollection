@@ -3,7 +3,7 @@
 <nav class="card lang-menu" id="lang-menu" popover aria-label="{{ t.lang_menu }}">
   <ul>
     {%- for l in pg.menu %}
-    <li><a href="{{ l.url | relative_url }}" hreflang="{{ l.html_lang }}" lang="{{ l.html_lang }}" data-lang="{{ l.code }}"{% if l.current %} aria-current="true"{% endif %}>{{ l.name }}{% if l.regions %} <span class="lang-regions">{{ l.regions }}</span>{% endif %}</a></li>
+    <li><a href="{{ l.url | relative_url }}" hreflang="{{ l.html_lang }}" lang="{{ l.html_lang }}" data-lang="{{ l.code }}"{% if l.current %} aria-current="true"{% endif %}><span class="lang-flag">{% if l.flag %}<img src="{{ '/assets/flag/' | append: l.flag | append: '.svg' | relative_url }}" width="18" height="18" alt="" loading="lazy" decoding="async" />{% endif %}</span>{{ l.name }}{% if l.regions %} <span class="lang-regions">{{ l.regions }}</span>{% endif %}</a></li>
     {%- endfor %}
   </ul>
 </nav>

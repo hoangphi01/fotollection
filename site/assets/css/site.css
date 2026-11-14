@@ -257,6 +257,9 @@ body::before { content: ''; position: absolute; inset: 0 0 auto; height: 980px; 
 .lang-menu a { display: block; padding: 8px 12px; border-radius: 8px; color: var(--ink); text-decoration: none; font-weight: 600; }
 .lang-menu a:hover { background: var(--tint); }
 .lang-menu a[aria-current] { color: var(--accent); }
+/* Each language's flag before its name. */
+.lang-flag { display: inline-block; width: 18px; height: 18px; margin-right: 10px; vertical-align: -3px; }
+.lang-flag img { display: block; }
 .lang-regions { margin-left: 6px; font-size: 0.8rem; font-weight: 400; color: var(--muted); }
 
 /* Round header buttons: Star, Coffee and Download share one shape. */

@@ -21,6 +21,8 @@
 #                where Vietnamese readers find apps) or, by default, intl (AlternativeTo), owner 2026-11-14
 #   guide        the manual it shows (ADR-0031): the full one in docs/ (English, Vietnamese) or
 #                a short one, site/_includes/manual-short-<code>.md, that links the English one
+#   flag         its country's flag before its name in the menu, site/assets/flag/<flag>.svg (owner,
+#                2026-11-15); English the British one
 #   published    false keeps it out of the build, the menu, hreflang and the sitemap until its
 #                words are done (scripts/check-site-i18n.mjs --build)
 # Order (owner, 2026-11-11): English first, the international one, then by each language's own
@@ -36,6 +38,7 @@
   pages: [home, download, performance, manual, story, wiki, code-signing]
   guide: docs/USER_GUIDE.md
   support: card
+  flag: gb
   published: true
 - code: cs
   date_format: "%-d. %-m. %Y"
@@ -49,6 +52,7 @@
   pages: [home, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-cs.md
   support: card
+  flag: cz
   published: true
 - code: de
   date_format: "%d.%m.%Y"
@@ -61,6 +65,7 @@
   pages: [home, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-de.md
   support: card
+  flag: de
   published: true
 - code: fr
   date_format: "%d/%m/%Y"
@@ -73,6 +78,7 @@
   guide: site/_includes/manual-short-fr.md
   support: card
   kiosk: fr
+  flag: fr
   published: true
 - code: hu
   date_format: "%Y. %m. %d."
@@ -84,6 +90,7 @@
   pages: [home, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-hu.md
   support: card
+  flag: hu
   published: true
 - code: pl
   date_format: "%d.%m.%Y"
@@ -95,6 +102,7 @@
   pages: [home, download, performance, manual, wiki, code-signing]
   guide: site/_includes/manual-short-pl.md
   support: card
+  flag: pl
   published: true
 - code: vi
   date_format: "%d/%m/%Y"
@@ -107,6 +115,7 @@
   guide: docs/USER_GUIDE.vi.md
   support: vietqr
   community: vn
+  flag: vn
   published: true
 - code: ko
   date_format: "%Y년 %-m월 %-d일"
@@ -120,6 +129,7 @@
   guide: site/_includes/manual-short-ko.md
   support: card
   kiosk: kr
+  flag: kr
   published: true
 - code: ja
   date_format: "%Y年%-m月%-d日"
@@ -133,4 +143,5 @@
   guide: site/_includes/manual-short-ja.md
   support: card
   kiosk: jp
+  flag: jp
   published: true
