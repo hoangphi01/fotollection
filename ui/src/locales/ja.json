@@ -1575,11 +1575,6 @@
       "jp": "2480024",
       "kr": "03172"
     },
-    "search": "検索",
-    "searchPlaceholder": {
-      "jp": "kamakura、かまくら、鎌倉",
-      "kr": "Sejong-daero 175、세종대로 175"
-    },
     "region": {
       "jp": "都道府県",
       "kr": "市・道（시·도）"
@@ -1599,8 +1594,18 @@
     },
     "name": "宛名",
     "honorific": "名前の後に 귀하",
-    "latin": "ローマ字で印刷",
+    "latin": "住所をローマ字で印刷",
     "version": "AddAssist {{version}}",
-    "recipient": "宛先"
+    "recipient": "宛先",
+    "lookup": {
+      "jp": "郵便番号または地名",
+      "kr": "郵便番号または道路名"
+    },
+    "lookupPlaceholder": {
+      "jp": "2710092、matsudo、松戸",
+      "kr": "03172、세종대로 175"
+    },
+    "none": "見つかりません。別の郵便番号や地名を試すか、手入力してください。",
+    "latinHint": "地名をローマ字で印刷します。入力した文字はそのまま印刷されます。"
   }
 }

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { commands, type Address, type Country, type CountryInfo, type Found } from '@/ipc/bindings'
 import { emptyAddress } from '@/lib/address'
 import { CommitInput } from './commit-input'
-import { Field, Hint, RowList, Stack } from './field'
+import { FactLines, Field, Hint, Inset, Stack } from './field'
 import { ListRow } from './list-row'
 import { SegmentedToggle } from './segmented-toggle'
 import { SwitchField } from './switch-field'
@@ -20,6 +20,14 @@ function countryInfo(country: Country): Promise<CountryInfo | undefined> {
   return countries.then((all) => all.find((c) => c.country === country))
 }
 
+/** An address's places on one line, as the post's data names them. */
+const places = (a: { region?: string; city?: string; town?: string; road?: string }) =>
+  [a.region, a.city, a.town, a.road].filter(Boolean).join(' ')
+
+/** A code written as the country writes it: 〒271-0092, 03172. */
+const codeLabel = (country: Country, code: string) =>
+  country === 'jp' && code.length === 7 ? `〒${code.slice(0, 3)}-${code.slice(3)}` : code
+
 type AddAssistProps = {
   country: Country
   value: Address | null
@@ -31,16 +39,16 @@ type AddAssistProps = {
 }
 
 /**
- * AddAssist (FR-133), the address field of every Japanese or Korean card: by hand, every line
- * typed; assisted, a postal code or a search fills what the post's data knows (the prefecture,
- * municipality and town; the 시·도, 시·군·구 and road), looked up offline in Rust, every filled
- * field still editable. The building number, the name and the honorific are typed. The one
- * block for an address: `check-lego` refuses AddAssist's commands anywhere else.
+ * AddAssist (FR-133), the address field of every Japanese or Korean card. Assisted (owner,
+ * 2026-11-15): one field takes the postal code or a place's name, a small box shows the address
+ * found (or the places to pick from), and only the block and building number and the name are
+ * typed; the post's data is looked up offline in Rust. By hand: every line typed. The one block
+ * for an address: `check-lego` refuses AddAssist's commands anywhere else.
  */
 export function AddAssist({ country, value, onCommit, assisted, onAssisted }: AddAssistProps) {
   const { t } = useTranslation()
   const address = value ?? emptyAddress(country)
-  const [found, setFound] = useState<Found[]>([])
+  const [found, setFound] = useState<Found[] | null>(null)
   const [version, setVersion] = useState('')
   useEffect(() => {
     void countryInfo(country).then((c) => setVersion(c?.version ?? ''))
@@ -48,24 +56,24 @@ export function AddAssist({ country, value, onCommit, assisted, onAssisted }: Ad
   const commit = (patch: Partial<Address>) => onCommit({ ...address, ...patch })
   // A place picked: its fields filled, AddAssist's version kept with them.
   const fill = (f: Found) => {
-    setFound([])
+    setFound(null)
     commit({ code: f.code || (address.code ?? ''), region: f.region, city: f.city, town: f.town, road: f.road, filledBy: version })
   }
-  const search = async (query: string) => {
-    if (!assisted || query.trim().length < 2) return setFound([])
+  const codeDigits = country === 'jp' ? 7 : 5
+  // The one field: digits are a code (looked up once whole), anything else a search.
+  const lookUp = async (query: string) => {
+    const digits = query.replace(/[\s〒-]/g, '')
+    if (/^\d+$/.test(digits)) {
+      if (digits.length !== codeDigits) return setFound(null)
+      const result = await commands.addassistLookup(country, digits)
+      const hits = result.status === 'ok' ? result.data : []
+      const [only, ...rest] = hits
+      if (only && rest.length === 0) return fill(only)
+      return setFound(hits)
+    }
+    if (query.trim().length < 2) return setFound(null)
     const result = await commands.addassistSearch(country, query, RESULTS)
     setFound(result.status === 'ok' ? result.data : [])
-  }
-  const codeDigits = country === 'jp' ? 7 : 5
-  const onCode = async (code: string) => {
-    const digits = code.replace(/\D/g, '').slice(0, codeDigits)
-    commit({ code: digits })
-    if (!assisted || digits.length !== codeDigits) return
-    const result = await commands.addassistLookup(country, digits)
-    const places = result.status === 'ok' ? result.data : []
-    const [only, ...rest] = places
-    if (only && rest.length === 0) fill(only)
-    else setFound(places)
   }
   const text = (key: keyof Address, label: string, max = 60) => (
     <Field label={label}>
@@ -78,6 +86,7 @@ export function AddAssist({ country, value, onCommit, assisted, onAssisted }: Ad
       />
     </Field>
   )
+  const filled = places(address)
   return (
     <Stack>
       <SegmentedToggle<'assisted' | 'hand'>
@@ -89,41 +98,58 @@ export function AddAssist({ country, value, onCommit, assisted, onAssisted }: Ad
         onChange={(v) => onAssisted(v === 'assisted')}
         ariaLabel={t('addassist.title')}
       />
-      <Field label={t(`addassist.code.${country}`)}>
-        <CommitInput
-          value={address.code ?? ''}
-          placeholder={t(`addassist.codePlaceholder.${country}`)}
-          ariaLabel={t(`addassist.code.${country}`)}
-          numeric
-          maxLength={codeDigits + 1}
-          onCommit={(v) => void onCode(v)}
-        />
-      </Field>
-      {assisted && (
-        <Field label={t('addassist.search')}>
-          <CommitInput
-            value=""
-            placeholder={t(`addassist.searchPlaceholder.${country}`)}
-            ariaLabel={t('addassist.search')}
-            maxLength={64}
-            liveMs={300}
-            onCommit={(q) => void search(q)}
-          />
-        </Field>
+      {assisted ? (
+        <>
+          <Field label={t(`addassist.lookup.${country}`)}>
+            <CommitInput
+              value=""
+              placeholder={t(`addassist.lookupPlaceholder.${country}`)}
+              ariaLabel={t(`addassist.lookup.${country}`)}
+              maxLength={64}
+              liveMs={300}
+              onCommit={(q) => void lookUp(q)}
+            />
+          </Field>
+          {/* The address found, or the places to pick from (a code shared by several). */}
+          {found && found.length > 0 ? (
+            <Inset>
+              {found.map((f) => (
+                <ListRow key={`${f.code}${f.city}${f.town}${f.road}`} icon={<MapPin />} onClick={() => fill(f)}>
+                  {[codeLabel(country, f.code), places(f)].filter(Boolean).join(' ')}
+                </ListRow>
+              ))}
+            </Inset>
+          ) : found ? (
+            <Hint>{t('addassist.none')}</Hint>
+          ) : (
+            (filled || address.code) && (
+              <Inset>
+                <FactLines>
+                  <Hint>{codeLabel(country, address.code ?? '')}</Hint>
+                  <span className="text-sm">{filled}</span>
+                </FactLines>
+              </Inset>
+            )
+          )}
+        </>
+      ) : (
+        <>
+          <Field label={t(`addassist.code.${country}`)}>
+            <CommitInput
+              value={address.code ?? ''}
+              placeholder={t(`addassist.codePlaceholder.${country}`)}
+              ariaLabel={t(`addassist.code.${country}`)}
+              numeric
+              maxLength={codeDigits + 1}
+              onCommit={(v) => commit({ code: v.replace(/\D/g, '').slice(0, codeDigits) })}
+            />
+          </Field>
+          {text('region', t(`addassist.region.${country}`))}
+          {text('city', t(`addassist.city.${country}`))}
+          {text('town', t(`addassist.town.${country}`))}
+          {country === 'kr' && text('road', t('addassist.road'))}
+        </>
       )}
-      {found.length > 0 && (
-        <RowList>
-          {found.map((f) => (
-            <ListRow key={`${f.code}${f.city}${f.town}${f.road}`} icon={<MapPin />} onClick={() => fill(f)}>
-              {[f.code, f.region, f.city, f.town, f.road].filter(Boolean).join(' ')}
-            </ListRow>
-          ))}
-        </RowList>
-      )}
-      {text('region', t(`addassist.region.${country}`))}
-      {text('city', t(`addassist.city.${country}`))}
-      {text('town', t(`addassist.town.${country}`))}
-      {country === 'kr' && text('road', t('addassist.road'))}
       {text('line', t(`addassist.line.${country}`), 120)}
       {text('name', t('addassist.name'))}
       {country === 'kr' && (
@@ -138,6 +164,7 @@ export function AddAssist({ country, value, onCommit, assisted, onAssisted }: Ad
         label={t('addassist.latin')}
         checked={address.latin ?? false}
         onChange={(latin) => commit({ latin })}
+        hint={t('addassist.latinHint')}
       />
       {version && <Hint>{t('addassist.version', { version })}</Hint>}
     </Stack>

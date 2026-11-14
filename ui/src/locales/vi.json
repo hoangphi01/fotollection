@@ -1514,11 +1514,6 @@
       "jp": "2480024",
       "kr": "03172"
     },
-    "search": "Tìm",
-    "searchPlaceholder": {
-      "jp": "Kamakura, かまくら, 鎌倉",
-      "kr": "Sejong-daero 175, 세종대로 175"
-    },
     "region": {
       "jp": "Tỉnh",
       "kr": "Tỉnh hoặc thành phố (시·도)"
@@ -1538,8 +1533,18 @@
     },
     "name": "Tên",
     "honorific": "Thêm 귀하 sau tên",
-    "latin": "In chữ Latin",
+    "latin": "In địa chỉ bằng chữ Latin",
     "version": "AddAssist {{version}}",
-    "recipient": "Người nhận"
+    "recipient": "Người nhận",
+    "lookup": {
+      "jp": "Mã bưu chính hoặc tên nơi",
+      "kr": "Mã bưu chính hoặc tên đường"
+    },
+    "lookupPlaceholder": {
+      "jp": "2710092, matsudo, 松戸",
+      "kr": "03172, 세종대로 175, sejong-daero"
+    },
+    "none": "Không tìm thấy: thử mã hoặc tên khác, hoặc tự gõ.",
+    "latinHint": "Địa danh in bằng romaji hoặc phiên âm Hàn; chữ bạn gõ in đúng như gõ."
   }
 }

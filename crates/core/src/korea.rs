@@ -9,7 +9,7 @@
 
 use std::sync::LazyLock;
 
-use ab_glyph::{Font, ScaleFont};
+use ab_glyph::Font;
 
 use crate::addassist::{Address, Country};
 use crate::image::RgbImage;
@@ -83,24 +83,20 @@ fn line(
     color: [u8; 3],
 ) -> f32 {
     let mut x = left;
-    let mut glyphs: Vec<(&VerticalFace, ab_glyph::GlyphId, f32)> = Vec::new();
+    let mut glyphs: Vec<(&VerticalFace, char, f32)> = Vec::new();
     for c in text.chars() {
-        let face = if faces.0.font.glyph_id(c).0 != 0 {
+        // The chosen face, else Nanum Pen, else (a Vietnamese letter) Be Vietnam Pro.
+        let face = if faces.0.font.glyph_id(c).0 != 0 || faces.1.font.glyph_id(c).0 == 0 {
             faces.0
         } else {
             faces.1
         };
-        let id = face.font.glyph_id(c);
-        glyphs.push((face, id, x));
-        x += face.font.as_scaled(face.scale(em)).h_advance(id);
+        glyphs.push((face, c, x));
+        x += face.advance(c, em);
     }
     if let Some(canvas) = canvas {
-        for (face, id, gx) in glyphs {
-            let set = vertical::Set {
-                glyphs: vec![(id, gx, top)],
-                columns: 1,
-                cut: false,
-            };
+        for (face, c, gx) in glyphs {
+            let (set, _) = vertical::across(face, &c.to_string(), em, gx, top, 0.0);
             vertical::draw(canvas, face, &set, em, color);
         }
     }
@@ -566,5 +562,16 @@ mod tests {
             address_text(&to),
             "175 Sejong-daero, Jongno-gu\nSeoul 03172"
         );
+    }
+
+    #[test]
+    fn fr_132_a_vietnamese_name_prints_whole() {
+        let settings = PostcardSettings::default();
+        let Some((main, _)) = faces(&settings) else {
+            panic!("the Korean faces are bundled");
+        };
+        for c in "Trương Minh Hồng".chars().filter(|c| !c.is_whitespace()) {
+            assert!(main.has(c), "{c:?}");
+        }
     }
 }

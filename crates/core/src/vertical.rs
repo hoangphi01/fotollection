@@ -59,6 +59,51 @@ impl VerticalFace {
         let id = self.font.glyph_id(c);
         self.forms.get(&id.0).map_or(id, |v| GlyphId(*v))
     }
+
+    /// The glyph for `c` and whether it comes from the Latin face: what the face lacks (a
+    /// Vietnamese ư, a ơ in a name or a message) is set in Be Vietnam Pro, never left blank.
+    fn pick(&self, c: char) -> (GlyphId, bool) {
+        if self.font.glyph_id(c).0 != 0 || c.is_whitespace() {
+            return (self.glyph(c), false);
+        }
+        match latin() {
+            Some(l) if l.glyph_id(c).0 != 0 => (l.glyph_id(c), true),
+            _ => (self.glyph(c), false),
+        }
+    }
+
+    /// `c`'s advance at an em of `em` pixels, in whichever face sets it.
+    pub fn advance(&self, c: char, em: f32) -> f32 {
+        let (id, from_latin) = self.pick(c);
+        match (from_latin, latin()) {
+            (true, Some(l)) => l.as_scaled(em_scale(l, em)).h_advance(id),
+            _ => self
+                .font
+                .as_scaled(self.scale(em))
+                .h_advance(self.font.glyph_id(c)),
+        }
+    }
+
+    /// Whether this face or the Latin one can set `c`.
+    pub fn has(&self, c: char) -> bool {
+        self.font.glyph_id(c).0 != 0 || latin().is_some_and(|l| l.glyph_id(c).0 != 0)
+    }
+}
+
+const BE_VIETNAM_PRO: &[u8] = include_bytes!("../assets/fonts/BeVietnamPro-Regular.ttf");
+static LATIN: LazyLock<Option<FontArc>> =
+    LazyLock::new(|| FontArc::try_from_slice(BE_VIETNAM_PRO).ok());
+
+/// Be Vietnam Pro, the interface's face (owner, 2026-11-15), for the letters a Japanese or
+/// Korean face lacks: a Vietnamese name or message prints whole.
+fn latin() -> Option<&'static FontArc> {
+    LATIN.as_ref()
+}
+
+/// The scale that makes one em of `font` `em` pixels (`PxScale` is the line's height).
+fn em_scale(font: &FontArc, em: f32) -> PxScale {
+    let per_em = font.units_per_em().unwrap_or(1000.0);
+    PxScale::from(em * font.height_unscaled() / per_em)
 }
 
 /// A face's vertical forms from its GSUB `vert` and `vrt2` features (single substitutions
@@ -154,8 +199,8 @@ pub fn columns(text: &str, capacity: usize) -> Vec<Vec<char>> {
 
 /// Text set in columns, ready to draw.
 pub struct Set {
-    /// Each glyph and the top-left of its em cell, in pixels.
-    pub glyphs: Vec<(GlyphId, f32, f32)>,
+    /// Each glyph, the top-left of its em cell in pixels, and whether it is the Latin face's.
+    pub glyphs: Vec<(GlyphId, f32, f32, bool)>,
     /// How many columns it took.
     pub columns: usize,
     /// Some of the text did not fit and is left out.
@@ -179,7 +224,6 @@ pub fn set(
 ) -> Set {
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
     let capacity = (height / em).floor().max(2.0) as usize;
-    let scaled = face.font.as_scaled(face.scale(em));
     let mut glyphs = Vec::new();
     let mut n = 0;
     let mut cut = false;
@@ -209,11 +253,11 @@ pub fn set(
             let offset = if first { 0 } else { indent };
             let x = right - (n as f32 + 1.0) * step + (step - em) / 2.0;
             for (row, c) in column.iter().enumerate() {
-                let id = face.glyph(*c);
+                let (id, from_latin) = face.pick(*c);
                 // A narrow glyph (a digit, a Latin letter) is centred in its cell.
-                let advance = scaled.h_advance(face.font.glyph_id(*c));
+                let advance = face.advance(*c, em);
                 let left = x + (em - advance.min(em)) / 2.0;
-                glyphs.push((id, left, top + (row + offset) as f32 * em));
+                glyphs.push((id, left, top + (row + offset) as f32 * em, from_latin));
             }
             n += 1;
             first = false;
@@ -236,13 +280,18 @@ pub fn across(
     top: f32,
     tracking: f32,
 ) -> (Set, f32) {
-    let scaled = face.font.as_scaled(face.scale(em));
     let mut x = left;
     let mut glyphs = Vec::new();
     for c in text.chars() {
-        let id = face.font.glyph_id(c);
-        glyphs.push((id, x, top));
-        x += scaled.h_advance(id) + tracking * em;
+        let (_, from_latin) = face.pick(c);
+        // Across, a character keeps its horizontal form; only the face may change.
+        let id = if from_latin {
+            face.pick(c).0
+        } else {
+            face.font.glyph_id(c)
+        };
+        glyphs.push((id, x, top, from_latin));
+        x += face.advance(c, em) + tracking * em;
     }
     let width = (x - left - tracking * em).max(0.0);
     (
@@ -260,9 +309,13 @@ pub fn across(
 pub fn draw(canvas: &mut RgbImage, face: &VerticalFace, set: &Set, em: f32, color: [u8; 3]) {
     let scale = face.scale(em);
     let baseline = em * face.em_ascent;
-    for &(id, left, top) in &set.glyphs {
+    for &(id, left, top, from_latin) in &set.glyphs {
+        let (font, scale) = match (from_latin, latin()) {
+            (true, Some(l)) => (l, em_scale(l, em)),
+            _ => (&face.font, scale),
+        };
         let glyph = id.with_scale_and_position(scale, point(left, top + baseline));
-        let Some(outline) = face.font.outline_glyph(glyph) else {
+        let Some(outline) = font.outline_glyph(glyph) else {
             continue;
         };
         let b = outline.px_bounds();
@@ -401,5 +454,21 @@ mod tests {
         let (first, last) = (inked[0], inked[inked.len() - 1]);
         assert!(last < 100, "ink reaches row {last}, below the cell");
         assert!(last - first > 80, "ink {first}..{last}");
+    }
+
+    #[test]
+    fn fr_130_a_vietnamese_name_prints_whole() {
+        // Klee One has no ư or ơ: they come from Be Vietnam Pro, never blank.
+        let face = klee();
+        for c in "Trương Minh Hồng, Đà Nẵng"
+            .chars()
+            .filter(|c| !c.is_whitespace())
+        {
+            assert!(face.has(c), "{c:?}");
+            let (id, _) = face.pick(c);
+            assert_ne!(id.0, 0, "{c:?} has a glyph");
+        }
+        assert!(face.pick('ư').1, "ư is Be Vietnam Pro's");
+        assert!(!face.pick('鎌').1, "a kanji stays Klee One's");
     }
 }

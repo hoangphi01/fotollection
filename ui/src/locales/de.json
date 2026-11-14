@@ -1575,11 +1575,6 @@
       "jp": "2480024",
       "kr": "03172"
     },
-    "search": "Suche",
-    "searchPlaceholder": {
-      "jp": "Kamakura, かまくら, 鎌倉",
-      "kr": "Sejong-daero 175, 세종대로 175"
-    },
     "region": {
       "jp": "Präfektur",
       "kr": "Provinz oder Stadt (시·도)"
@@ -1599,8 +1594,18 @@
     },
     "name": "Name",
     "honorific": "귀하 nach dem Namen",
-    "latin": "In lateinischer Schrift drucken",
+    "latin": "Adresse in lateinischer Schrift drucken",
     "version": "AddAssist {{version}}",
-    "recipient": "Empfänger"
+    "recipient": "Empfänger",
+    "lookup": {
+      "jp": "Postleitzahl oder Ort",
+      "kr": "Postleitzahl oder Straße"
+    },
+    "lookupPlaceholder": {
+      "jp": "2710092, matsudo, 松戸",
+      "kr": "03172, 세종대로 175, sejong-daero"
+    },
+    "none": "Nicht gefunden: eine andere Postleitzahl oder einen anderen Ort versuchen, oder von Hand eingeben.",
+    "latinHint": "Die Orte in Rōmaji oder Revised Romanization; was du tippst, wird so gedruckt."
   }
 }

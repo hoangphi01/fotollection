@@ -1575,11 +1575,6 @@
       "jp": "2480024",
       "kr": "03172"
     },
-    "search": "Keresés",
-    "searchPlaceholder": {
-      "jp": "Kamakura, かまくら, 鎌倉",
-      "kr": "Sejong-daero 175, 세종대로 175"
-    },
     "region": {
       "jp": "Prefektúra",
       "kr": "Tartomány vagy város (시·도)"
@@ -1599,8 +1594,18 @@
     },
     "name": "Név",
     "honorific": "귀하 a név után",
-    "latin": "Latin betűkkel nyomtatva",
+    "latin": "A cím latin betűkkel",
     "version": "AddAssist {{version}}",
-    "recipient": "Címzett"
+    "recipient": "Címzett",
+    "lookup": {
+      "jp": "Irányítószám vagy hely",
+      "kr": "Irányítószám vagy út"
+    },
+    "lookupPlaceholder": {
+      "jp": "2710092, matsudo, 松戸",
+      "kr": "03172, 세종대로 175, sejong-daero"
+    },
+    "none": "Nincs találat: próbálj másik irányítószámot vagy helyet, vagy írd be kézzel.",
+    "latinHint": "A helyek romadzsival vagy koreai átírással; amit begépelsz, úgy kerül a lapra."
   }
 }

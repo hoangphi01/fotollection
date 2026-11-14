@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-import { Crop, Download, Images, Printer, RotateCw, RotateCwSquare, ShoppingBasket, SlidersHorizontal } from 'lucide-react'
+import { Crop, Download, Images, Mail, Printer, RotateCw, RotateCwSquare, ShoppingBasket, SlidersHorizontal } from 'lucide-react'
 import { Spinner } from '@/components/forms/spinner'
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -83,7 +83,8 @@ type SheetPreviewDialogProps = {
  */
 /** The inspector's tabs, as the photo preview's (FR-095, owner 2026-11-07): the colour of
  * the sheet or of a photo on it, then its print. Kept while the app runs. */
-type SheetTab = 'edit' | 'print'
+// The postcard's own tab (owner, 2026-11-15: the print tab grew too long with the card's text).
+type SheetTab = 'edit' | 'postcard' | 'print'
 let lastTab: SheetTab = 'edit'
 
 export function SheetPreviewDialog({
@@ -189,6 +190,8 @@ export function SheetPreviewDialog({
   }
   // A quarter turn of the photo in its cell only (FR-035): its print keeps its orientation.
   const postcard = settings?.collage?.postcard?.enabled ?? false
+  // The postcard's tab only while postcards are on; left on it, the print tab shows.
+  const shownTab: SheetTab = tab === 'postcard' && !postcard ? 'print' : tab
   const cut = usePostcardCuts(settings, revision).has(sheet?.first ?? -1)
   const rotatePhoto = (id: PhotoId) => void commands.rotateCollagePhoto(id)
   const onKeyDown = (event: KeyboardEvent) => {
@@ -239,10 +242,11 @@ export function SheetPreviewDialog({
       tabs={
         <InspectorTabs<SheetTab>
           ariaLabel={t('inspector.tabs')}
-          value={tab}
+          value={shownTab}
           onChange={setTab}
           groups={[
             [{ value: 'edit', icon: <SlidersHorizontal aria-hidden />, label: t('inspector.edit') }],
+            ...(postcard ? [[{ value: 'postcard' as const, icon: <Mail aria-hidden />, label: t('postcard.title') }]] : []),
             [{ value: 'print', icon: <Printer aria-hidden />, label: t('inspector.print') }],
           ]}
         />
@@ -415,7 +419,7 @@ export function SheetPreviewDialog({
       {/* Two tabs as the photo preview's (owner, 2026-11-07): Edit, the sheet's photos to pick
           from (none picked: the whole sheet), then the colour, in the photo preview's order;
           Print, the cards the Collage panel shows, in its order (STYLE_RULE §4). */}
-      {tab === 'edit' && (
+      {shownTab === 'edit' && (
         <>
       <InspectorSection icon={<Images className="size-4" />} title={t('collage.photosOnSheet')}>
         <ListRow icon={<Images />} chosen={chosen === null} onClick={() => choose(null)} trailing={<Kbd>0</Kbd>}>
@@ -491,18 +495,22 @@ export function SheetPreviewDialog({
       )}
         </>
       )}
-      {tab === 'print' && (
+      {shownTab === 'postcard' && (
+        <>
+          <PostcardCard settings={settings} onChange={onSettingsChange} />
+          <PostcardTextCard
+            settings={settings}
+            onChange={onSettingsChange}
+            photo={sheet?.first}
+            revision={revision}
+            filter={filter}
+            ticked={ticked}
+          />
+        </>
+      )}
+      {shownTab === 'print' && (
         <>
       <SheetSizeCard settings={settings} onChange={onSettingsChange} info={info ?? undefined} />
-      <PostcardCard settings={settings} onChange={onSettingsChange} />
-      <PostcardTextCard
-        settings={settings}
-        onChange={onSettingsChange}
-        photo={sheet?.first}
-        revision={revision}
-        filter={filter}
-        ticked={ticked}
-      />
       <CollageCellsCard settings={settings} onChange={onSettingsChange} cell={cell} />
       <DateStampCard
         settings={settings}
