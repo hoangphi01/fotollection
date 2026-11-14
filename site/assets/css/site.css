@@ -206,6 +206,11 @@ h1, h2, h3 { font-family: 'Bitter', Georgia, serif; line-height: 1.1; letter-spa
 .logo-leclerc { height: 0.9em; vertical-align: -0.08em; }
 .logo-intermarche { height: 0.8em; vertical-align: -0.08em; }
 .logo-fnac { height: 1.1em; vertical-align: -0.16em; }
+/* Shops' logos in dark blue, purple or black lose their edge on the dark page: a 0.5 px white
+   rim (owner, 2026-11-15). 7-Eleven has its own white rim; dm and Rossmann take the theme's colour. */
+@media (prefers-color-scheme: dark) {
+  :is(.logo-lawson, .logo-familymart, .logo-cu, .logo-gs25, .logo-leclerc, .logo-intermarche, .logo-fnac) { filter: drop-shadow(0.5px 0 0 #fff) drop-shadow(-0.5px 0 0 #fff) drop-shadow(0 0.5px 0 #fff) drop-shadow(0 -0.5px 0 #fff); }
+}
 /* The stores' marks in the Japanese kiosk heading, at the height of the words beside them. */
 .logo-seven { height: 1.1em; vertical-align: -0.2em; }
 .logo-lawson { height: 0.62em; vertical-align: 0; }

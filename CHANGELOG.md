@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- **Website:** in the dark theme, the shops' logos drawn in dark blue, purple or black (Lawson, FamilyMart, CU, GS25, E.Leclerc, Intermarché, Fnac) have a thin white rim, so they stand off the dark page.
 - **Postcards, posting them:** the manual gives each post's own rules as their documents state them: Magyar Posta's postcard format is A6 and it asks for no photo paper, Česká pošta sends every card as a letter, and the sorting code needs paper that takes ink (matte or lustre is safer than glossy); the Czech, Hungarian and Polish pages no longer call 10 × 15 their country's postcard size.
 - **Website:** the Japanese and Korean pages give the kiosks' sizes as the stores' own pages do: Lawson's square is 127 × 127 mm (7-Eleven's 89 × 89), and Printing Box prints 4 × 6 and 6 × 8 inches (102 × 152 and 154 × 203 mm).
 - **Website:** the Japanese and Korean pages use the app's words: 作業スペース and 傾き補正 in Japanese, Lightroom's 생동감 for Vibrance in Korean.
