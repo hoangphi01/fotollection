@@ -3,9 +3,9 @@
 # home page; a note's number is its place here. _includes/fn.html draws the marks,
 # _layouts/default.html the list; scripts/check-footnotes.mjs checks it.
 home:
-  en: [fn_open, fn_dm, fn_rossmann, fn_pf_raw, fn_photo, fn_lightroom, fn_lut, fn_compare]
-  vi: [fn_open, fn_dm, fn_rossmann, fn_pf_raw, fn_photo, fn_lightroom, fn_lut, fn_compare, fn_payment]
-  ja: [fn_open, fn_seven, fn_lawson, fn_familymart, fn_konbini, fn_pf_raw, fn_photo, fn_lightroom, fn_lut, fn_compare]
+  en: [fn_open, fn_dm, fn_rossmann, fn_charts, fn_pf_raw, fn_photo, fn_lightroom, fn_lut, fn_compare, fn_privacy_site]
+  vi: [fn_open, fn_dm, fn_rossmann, fn_charts, fn_pf_raw, fn_photo, fn_lightroom, fn_lut, fn_compare, fn_privacy_site, fn_payment]
+  ja: [fn_open, fn_seven, fn_lawson, fn_familymart, fn_konbini, fn_charts, fn_pf_raw, fn_photo, fn_lightroom, fn_lut, fn_compare, fn_privacy_site]
 perf_title:
   en: [fn_simd, fn_units, fn_rust, fn_exif, fn_raw, fn_jpeg, fn_charts, fn_lightroom, fn_webview, fn_trip, fn_pct, fn_dng, fn_sensor, fn_psnr, fn_tiff, fn_de, fn_ssim, fn_heic, fn_srgb, fn_p3, fn_adobe]
   vi: [fn_simd, fn_units, fn_rust, fn_exif, fn_raw, fn_jpeg, fn_charts, fn_lightroom, fn_webview, fn_trip, fn_pct, fn_dng, fn_sensor, fn_psnr, fn_tiff, fn_de, fn_ssim, fn_heic, fn_srgb, fn_p3, fn_adobe]

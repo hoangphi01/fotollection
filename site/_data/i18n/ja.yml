@@ -248,6 +248,7 @@ compare_note: "さらに先へ進むなら、いちばん深いRAW現像にはda
 fn_lightroom: "Adobe、Lightroom、Lightroom Classicは、米国およびその他の国におけるAdobe Inc. の商標です。FotollectionはAdobeと提携しておらず、Adobeの承認も受けていません。Lightroomのユーザーが知っているショートカットとレイアウトに合わせています。Lightroomのロゴは、文字のみのロゴとしてパブリックドメインであるWikimedia Commonsのものです。"
 fn_lut: "LUT（ルックアップテーブル）は、各色がどの色になるかを定めたものです。Fotollectionは .cubeファイルとHaldCLUT画像を読み込みます。LUMIXはPanasonic Holdings Corporationの商標です。FotollectionはPanasonicと提携しておらず、Panasonicの承認も受けていません。"
 fn_compare: "Creative CloudはAdobe Inc. の商標です。darktableとRawTherapeeは、それぞれのコミュニティによるフリーソフトウェアのプロジェクトです。情報はdarktable.orgとそのユーザーマニュアル、rawtherapee.com、AdobeのLightroom Classicヘルプ、WikipediaのAdobeのライセンスと動作環境の概要によるもので、2026年11月14日に確認しました。Fotollectionはいずれとも関係ありません。"
+fn_privacy_site: "これはアプリについての説明です。このウェブサイトはGoogleアナリティクスで訪問数を匿名で数えています（国とページごと）。個人と結びつけることはありません。"
 fn_exif: "EXIF（Exchangeable Image File Format）は、日本のJEITAとCIPAが管理する規格で、カメラが写真ごとに書き込む情報を定めています。カメラとレンズ、日付と時刻、露出、しばしばGPSの位置、そして小さな埋め込みサムネールです。"
 fn_units: "単位：pxはピクセルで、画像を構成する1つの点。MP（メガピクセル）は100万ピクセルで、20 MPの写真は約5472 × 3648 px。msはミリ秒で、1秒の1000分の1。MBとGBはメガバイトとギガバイト。RAM（ランダムアクセスメモリ）はパソコンの作業用メモリです。"
 fn_raw: "RAWファイルは、カメラが画像に変換する前にセンサーがとらえたものを記録しています。そのため色、明るさ、ディテールを、ネガを現像するように後から決められます。メーカーごとに独自の形式があり（CanonはCR3、NikonはNEF、SonyはARW、PanasonicはRW2など）、DNG（Digital Negative）はAdobeが公開したオープンなRAW形式です。"

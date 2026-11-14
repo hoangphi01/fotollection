@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- **Website:** a shorter landing page with the print story first (the three modes, the print, the kiosk), the before-and-after lower down; eight notes instead of twenty-two, no definitions of the obvious; the GitHub button invites a star without showing a count.
+- **Website:** a shorter landing page with the print story first (the three modes, the print, the kiosk), the before-and-after lower down; ten notes instead of twenty-two, each beside a claim (the test machine of the speed figures, what "nothing is tracked" covers), no definitions of the obvious; the GitHub button invites a star without showing a count.
 - **Website:** the community section shows AlternativeTo and GitHub to readers beyond Vietnam; the Vietnamese page keeps Vietnam Linux Family and CaramOS.
 - **Website:** the landing page no longer shows a section of the app's languages and themes, now that it speaks more of them; the Ko-fi button says how one pays (PayPal or card) on a second line, and the note under it how to use Ko-fi's English page.
 - **Website in Japanese** at `/ja/`: the home, Download, Performance, Wiki and code-signing pages and a short manual, with Japan's convenience stores (7-Eleven, Lawson, FamilyMart) and their L, 2L and square prints in place of dm and Rossmann, set as Japanese sites are: bold Gothic headings, short headlines, no spaces typed between Japanese and Latin.

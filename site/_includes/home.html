@@ -112,7 +112,7 @@
     <p class="lead narrow">{{ t.features_lead }}</p>
     <div class="cards">
       <article class="card">{% include icons/gem.svg %}<h3>{{ t.f_quality_title }}</h3><p>{{ t.f_quality_text }}</p></article>
-      <article class="card">{% include icons/gauge.svg %}<h3>{{ t.f_speed_title }}</h3><p>{{ t.f_speed_text }}</p></article>
+      <article class="card">{% include icons/gauge.svg %}<h3>{{ t.f_speed_title }}</h3><p>{{ t.f_speed_text }}{% include fn.html keys="fn_charts" %}</p></article>
       <article class="card">{% include icons/camera.svg %}<h3>{{ t.f_raw_title }}</h3><p>{{ t.f_raw_text }}{% include fn.html keys="fn_pf_raw" %}</p></article>
       <article class="card">{% include icons/mouse-pointer-click.svg %}<h3>{{ t.f_open_title }}</h3><p>{{ t.f_open_text }}</p></article>
     </div>
@@ -155,7 +155,7 @@
     <div>
       <div class="privacy-mark">{% include icons/shield-check.svg %}</div>
       <h2>{{ t.privacy_title }}</h2>
-      <p class="lead">{{ t.privacy_lead }}</p>
+      <p class="lead">{{ t.privacy_lead }}{% include fn.html keys="fn_privacy_site" %}</p>
     </div>
     <ul class="privacy-list">
       <li><h3>{{ t.p1_title }}</h3><p>{{ t.p1_text }}</p></li>
