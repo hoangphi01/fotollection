@@ -505,11 +505,12 @@ export const commands = {
 	 */
 	setPostcardText: (id: PhotoId, part: PostcardPart, text: string | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_postcard_text", { id, part, text })),
 	/**
-	 *  Sets the recipient of a photo's Japanese or Korean card (FR-130, FR-132, FR-133): its code,
-	 *  places, line and name, filled by `AddAssist` or typed; `None`, or a blank one, clears it.
-	 *  One undoable step; checked here, never trusted from the UI.
+	 *  Sets the recipient of a photo's Japanese or Korean card (FR-130, FR-132, FR-133), the card
+	 *  for `country` only: its code, places, line and name, filled by `AddAssist` or typed; `None`,
+	 *  or a blank one, clears it. The other country's recipient and the European card's address are
+	 *  kept (owner, 2026-11-15). One undoable step; checked here, never trusted from the UI.
 	 */
-	setPostcardAddress: (id: PhotoId, address: {
+	setPostcardAddress: (id: PhotoId, country: Country, address: {
 	country: Country,
 	/**
 	 *  The `AddAssist` version that filled its places ("1.0"), "" when typed by hand, so a card
@@ -536,7 +537,7 @@ export const commands = {
 	honorific?: boolean,
 	/**  Printed in Latin letters (romaji, Revised Romanization) instead of kanji or Hangul. */
 	latin?: boolean,
-} | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_postcard_address", { id, address })),
+} | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_postcard_address", { id, country, address })),
 	/**  The text typed on a photo's postcard (FR-073): its message and address, empty when none. */
 	getPostcardText: (id: PhotoId) => typedError<PostcardText, IpcError>(__TAURI_INVOKE("get_postcard_text", { id })),
 	/**
@@ -2160,10 +2161,12 @@ export type PostcardText = {
 	message?: string,
 	address?: string,
 	/**
-	 *  The recipient as a Japanese or Korean card writes it (FR-130, FR-132): its code,
-	 *  places, line and name; absent on a European card, which prints `address`.
+	 *  The recipients of its Japanese and Korean cards (FR-130, FR-132), one per country, each
+	 *  its code, places, line and name; kept apart from `address`, the European card's, so a
+	 *  switch of card never overwrites one with another nor reads the other's (owner,
+	 *  2026-11-15).
 	 */
-	recipient?: Address | null,
+	recipients?: Address[],
 };
 
 /**

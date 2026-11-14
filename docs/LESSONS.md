@@ -115,6 +115,14 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ## 2026-11-15
 
+### A はがき printed the European card's address as its recipient (FR-130, FR-132)
+
+- **Area:** spec-request, state-cache, print-post
+- **Seen:** the owner switched a card typed in Europe's mode (a Debrecen address) to Japan: the はがき printed its last line, 4028 DEBRECEN, as the name, large, across the code boxes; back in Europe the address was there again.
+- **Why:** the Japanese and Korean layouts read the free `address` as a fallback when no structured recipient was set, and one `recipient` field served both countries, so a Korean recipient replaced a Japanese one.
+- **Fix:** each card format keeps its own record: `PostcardText.recipients`, one `Address` per country, beside the European `address`; `set_postcard_address(id, country, …)` sets one and keeps the rest; the layouts read only their own country's (`fr_130_a_european_address_never_becomes_the_recipient` fails on the old code).
+- **Rule:** a new format of a thing the user types (a card, an export) keeps its own record; never fall back on another format's field, and never let one format's record overwrite another's.
+
 ### The はがき's printed code lost its hyphen: the face's cut had no － U+FF0D (FR-130)
 
 - **Area:** text-i18n, print-post, checks

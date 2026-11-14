@@ -20,7 +20,7 @@
       "postcard": {
         "message": "鎌倉の抹茶ソフト、美味しかった！",
         "address": "",
-        "recipient": {
+        "recipients": [{
           "country": "jp",
           "filledBy": "1.0",
           "code": "248-0024",
@@ -29,7 +29,7 @@
           "town": "稲村ガ崎",
           "line": "一丁目二番三号",
           "name": "鎌倉花子"
-        }
+        }]
       }
     },
     {
@@ -41,7 +41,7 @@
       "postcard": {
         "message": "",
         "address": "",
-        "recipient": {
+        "recipients": [{
           "country": "kr",
           "filledBy": "1.0",
           "code": "03172",
@@ -52,7 +52,7 @@
           "name": "홍길동",
           "honorific": false,
           "latin": true
-        }
+        }]
       }
     }
   ]

@@ -222,10 +222,12 @@ pub struct PostcardText {
     pub message: String,
     #[serde(default)]
     pub address: String,
-    /// The recipient as a Japanese or Korean card writes it (FR-130, FR-132): its code,
-    /// places, line and name; absent on a European card, which prints `address`.
+    /// The recipients of its Japanese and Korean cards (FR-130, FR-132), one per country, each
+    /// its code, places, line and name; kept apart from `address`, the European card's, so a
+    /// switch of card never overwrites one with another nor reads the other's (owner,
+    /// 2026-11-15).
     #[serde(default)]
-    pub recipient: Option<crate::addassist::Address>,
+    pub recipients: Vec<crate::addassist::Address>,
 }
 
 impl PostcardText {
@@ -235,16 +237,46 @@ impl PostcardText {
         let text = Self {
             message: sanitize_postcard(PostcardPart::Message, &self.message),
             address: sanitize_postcard(PostcardPart::Address, &self.address),
-            recipient: self
-                .recipient
-                .as_ref()
-                .map(crate::addassist::Address::sanitized)
-                .filter(|a| !a.is_blank()),
+            recipients: {
+                // One per country, the last one kept, blanks dropped.
+                let mut kept: Vec<crate::addassist::Address> = Vec::new();
+                for a in self
+                    .recipients
+                    .iter()
+                    .map(crate::addassist::Address::sanitized)
+                {
+                    kept.retain(|k| k.country != a.country);
+                    if !a.is_blank() {
+                        kept.push(a);
+                    }
+                }
+                kept
+            },
         };
         (!text.message.trim().is_empty()
             || !text.address.trim().is_empty()
-            || text.recipient.is_some())
+            || !text.recipients.is_empty())
         .then_some(text)
+    }
+
+    /// The recipient of the card for `country`, if one was set.
+    pub fn recipient(
+        &self,
+        country: crate::addassist::Country,
+    ) -> Option<&crate::addassist::Address> {
+        self.recipients.iter().find(|a| a.country == country)
+    }
+
+    /// Sets (or with `None` clears) the recipient for `country`, the others kept.
+    pub fn set_recipient(
+        &mut self,
+        country: crate::addassist::Country,
+        address: Option<crate::addassist::Address>,
+    ) {
+        self.recipients.retain(|a| a.country != country);
+        if let Some(a) = address.filter(|a| a.country == country && !a.is_blank()) {
+            self.recipients.push(a);
+        }
     }
 }
 

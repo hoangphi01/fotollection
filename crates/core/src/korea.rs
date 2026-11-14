@@ -170,24 +170,10 @@ fn address_text(a: &Address) -> String {
     .join(" ")
 }
 
-/// The recipient from the card's text: its structured address, or the free address's last
-/// line as the name.
+/// The recipient of this card: its own record, never the European card's free address
+/// (owner, 2026-11-15: each card its own record).
 fn recipient(text: Option<&PostcardText>) -> Option<Address> {
-    let text = text?;
-    if let Some(r) = &text.recipient {
-        return Some(r.clone());
-    }
-    let lines: Vec<&str> = text
-        .address
-        .lines()
-        .map(str::trim)
-        .filter(|l| !l.is_empty())
-        .collect();
-    let (name, rest) = lines.split_last()?;
-    let mut a = Address::new(Country::Kr);
-    (*name).clone_into(&mut a.name);
-    a.line = rest.join("\n");
-    Some(a)
+    text?.recipient(Country::Kr).cloned()
 }
 
 /// Draws the boxes from `left`, `top` and, when the code is typed, its digits one in each.
@@ -400,7 +386,7 @@ mod tests {
         PostcardText {
             message: String::new(),
             address: String::new(),
-            recipient: Some(to),
+            recipients: vec![to],
         }
     }
 
@@ -552,7 +538,7 @@ mod tests {
 
     #[test]
     fn fr_132_the_address_reads_in_the_road_name_order() {
-        let Some(mut to) = seoul().recipient else {
+        let Some(mut to) = seoul().recipients.into_iter().next() else {
             return;
         };
         assert_eq!(address_text(&to), "서울특별시 종로구 세종대로 175, 3층");

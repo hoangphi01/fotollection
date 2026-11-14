@@ -43,7 +43,7 @@ fn main() {
                 record.edits.postcard = Some(fotollection_core::library::PostcardText {
                     message: "Liebe Grüße aus Budapest! Bis bald.".into(),
                     address: "Anna Schmidt\nHauptstraße 1\n10115 Berlin".into(),
-                    recipient: None,
+                    recipients: Vec::new(),
                 });
             }
             Some(record)

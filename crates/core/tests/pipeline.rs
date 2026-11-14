@@ -315,7 +315,7 @@ fn fr_073_postcards_export_one_file_per_photo() {
     all[0].edits.postcard = Some(fotollection_core::library::PostcardText {
         message: "Liebe Grüße!".into(),
         address: "Anna Schmidt, Berlin".into(),
-        recipient: None,
+        recipients: Vec::new(),
     });
     let sheets: Vec<fotollection_core::export::SheetRecords> =
         all.iter().map(|r| (r.clone(), None)).collect();

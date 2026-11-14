@@ -126,24 +126,10 @@ fn latin_lines(a: &Address) -> Vec<String> {
     lines
 }
 
-/// The recipient from the card's text: its structured address, or the free address's last
-/// line as the name and the lines above it as the address.
+/// The recipient of this card: its own record, never the European card's free address
+/// (owner, 2026-11-15: each card its own record).
 fn recipient(text: Option<&PostcardText>) -> Option<Address> {
-    let text = text?;
-    if let Some(r) = &text.recipient {
-        return Some(r.clone());
-    }
-    let lines: Vec<&str> = text
-        .address
-        .lines()
-        .map(str::trim)
-        .filter(|l| !l.is_empty())
-        .collect();
-    let (name, rest) = lines.split_last()?;
-    let mut a = Address::new(Country::Jp);
-    (*name).clone_into(&mut a.name);
-    a.line = rest.join("\n");
-    Some(a)
+    text?.recipient(Country::Jp).cloned()
 }
 
 fn ink(settings: &PostcardSettings, paper: BorderColor) -> [u8; 3] {
@@ -267,6 +253,25 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
         } else {
             0.0
         };
+        // In Latin letters the sender reads across, under the stamp box.
+        if from.latin {
+            let mut lines = latin_lines(from);
+            if !from.name.trim().is_empty() {
+                lines.push(from.name.trim().to_owned());
+            }
+            draw_lines_across(
+                canvas,
+                face,
+                &lines.join("\n"),
+                mm(small),
+                mm(stamp.x),
+                mm(from_top),
+                mm(card.width * 0.3),
+                mm(small * 1.35),
+                text_ink,
+            );
+            return;
+        }
         let mut text = kanji_lines(from);
         if !from.name.trim().is_empty() {
             text.push('\n');
@@ -454,15 +459,19 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
         if let Some(code) = printed_code(&from.code) {
             lines.push(code);
         }
-        let places = format!(
-            "{}{}{}{}",
-            from.region,
-            from.city,
-            from.town,
-            from.line.trim()
-        );
-        if !places.is_empty() {
-            lines.push(places);
+        if from.latin {
+            lines.extend(latin_lines(from));
+        } else {
+            let places = format!(
+                "{}{}{}{}",
+                from.region,
+                from.city,
+                from.town,
+                from.line.trim()
+            );
+            if !places.is_empty() {
+                lines.push(places);
+            }
         }
         if !from.name.trim().is_empty() {
             lines.push(from.name.trim().to_owned());
@@ -591,7 +600,7 @@ mod tests {
         PostcardText {
             message: String::new(),
             address: String::new(),
-            recipient: Some(to),
+            recipients: vec![to],
         }
     }
 
@@ -655,7 +664,7 @@ mod tests {
     fn fr_130_the_code_is_boxes_for_the_hand_or_printed_without_them() {
         let settings = PostcardSettings::default();
         let mut text = kamakura();
-        if let Some(r) = text.recipient.as_mut() {
+        if let Some(r) = text.recipients.first_mut() {
             r.code.clear();
         }
         let boxes = drawn(&settings, Some(&text));
@@ -744,16 +753,25 @@ mod tests {
     }
 
     #[test]
-    fn fr_130_a_free_address_reads_its_last_line_as_the_name() {
-        let text = PostcardText {
+    fn fr_130_a_european_address_never_becomes_the_recipient() {
+        let mut text = PostcardText {
             message: String::new(),
-            address: "神奈川県鎌倉市\n鎌倉花子".into(),
-            recipient: None,
+            address: "HOANG PHI PHAM\nKodály Zoltán u. 9\n4028 DEBRECEN".into(),
+            recipients: Vec::new(),
         };
-        let a = recipient(Some(&text)).unwrap_or_else(|| Address::new(Country::Jp));
+        assert_eq!(recipient(Some(&text)), None);
+        // A Korean recipient is not a Japanese card's either, and setting one keeps the other.
+        let mut kr = Address::new(Country::Kr);
+        kr.name = "홍길동".into();
+        text.set_recipient(Country::Kr, Some(kr));
+        assert_eq!(recipient(Some(&text)), None);
+        let mut jp = Address::new(Country::Jp);
+        jp.name = "鎌倉花子".into();
+        text.set_recipient(Country::Jp, Some(jp));
+        assert_eq!(text.recipients.len(), 2);
         assert_eq!(
-            (a.name.as_str(), a.line.as_str()),
-            ("鎌倉花子", "神奈川県鎌倉市")
+            recipient(Some(&text)).map(|a| a.name),
+            Some("鎌倉花子".to_owned())
         );
         assert_eq!(
             printed_code("2480024").as_deref(),
@@ -764,7 +782,7 @@ mod tests {
 
     #[test]
     fn fr_130_latin_lines_come_from_the_data() {
-        let Some(to) = kamakura().recipient else {
+        let Some(to) = kamakura().recipients.into_iter().next() else {
             return;
         };
         let lines = latin_lines(&to);
@@ -824,7 +842,7 @@ mod tests {
     fn fr_130_the_landscape_card_runs_its_boxes_down_the_right_edge() {
         let settings = PostcardSettings::default();
         let mut text = kamakura();
-        if let Some(r) = text.recipient.as_mut() {
+        if let Some(r) = text.recipients.first_mut() {
             r.code.clear();
         }
         let (canvas, half) = drawn_landscape(&settings, Some(&text));
@@ -851,5 +869,37 @@ mod tests {
         // A typed code: no boxes.
         let (typed, _) = drawn_landscape(&settings, Some(&kamakura()));
         assert_eq!(inked(&typed, half, vermilion), 0);
+    }
+
+    #[test]
+    fn fr_130_the_senders_latin_switch_turns_its_places() {
+        let mut from = Address::new(Country::Jp);
+        from.code = "2710092".into();
+        from.region = "千葉県".into();
+        from.city = "松戸市".into();
+        from.town = "松戸".into();
+        from.latin = true;
+        assert_eq!(latin_lines(&from), ["Matsudo, Matsudo-shi, Chiba-ken"]);
+        let settings = PostcardSettings {
+            sender_on: true,
+            sender: Some(from.clone()),
+            ..PostcardSettings::default()
+        };
+        let mut kanji = from;
+        kanji.latin = false;
+        let latin_card = drawn_landscape(&settings, None).0;
+        let kanji_card = drawn_landscape(
+            &PostcardSettings {
+                sender_on: true,
+                sender: Some(kanji),
+                ..PostcardSettings::default()
+            },
+            None,
+        )
+        .0;
+        assert_ne!(
+            latin_card.data, kanji_card.data,
+            "the switch changes the print"
+        );
     }
 }

@@ -25,15 +25,16 @@ type PostcardAddressFieldProps = {
 export function PostcardAddressField({ photo, country, revision, assisted, onAssisted }: PostcardAddressFieldProps) {
   const { t } = useTranslation()
   // The last answer holds its place while the next loads (LESSONS).
-  const recipient = useLiveQuery(String(photo), revision, load).data?.recipient ?? null
-  const save = (address: Address) => void commands.setPostcardAddress(photo, address)
+  // This card's own record: the other country's and the European address are never read.
+  const recipient = useLiveQuery(String(photo), revision, load).data?.recipients?.find((r) => r.country === country) ?? null
+  const save = (address: Address) => void commands.setPostcardAddress(photo, country, address)
   return (
     <Stack>
       <FieldLabel>{t('addassist.recipient')}</FieldLabel>
       <AddAssist
         key={photo}
         country={country}
-        value={recipient && recipient.country === country ? recipient : null}
+        value={recipient}
         onCommit={save}
         assisted={assisted}
         onAssisted={onAssisted}

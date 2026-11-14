@@ -1027,7 +1027,7 @@ mod tests {
         PostcardText {
             message: message.into(),
             address: address.into(),
-            recipient: None,
+            recipients: Vec::new(),
         }
     }
 

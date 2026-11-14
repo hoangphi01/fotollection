@@ -32,8 +32,9 @@ pub const FORMAT: &str = "fotollection-project";
 /// the eight-hue colour mixer (FR-079), absent before (untouched).
 /// v13: `photos[].print_turned`, the print size laid the other way from the photo (FR-120);
 /// absent before (follows the photo).
-/// v14: `photos[].postcard.recipient`, the recipient of a Japanese or Korean card, its code,
-/// places, line and name (FR-130, FR-132, FR-133); absent before (the free `address`).
+/// v14: `photos[].postcard.recipients`, the recipients of its Japanese and Korean cards, one
+/// per country, each its code, places, line and name (FR-130, FR-132, FR-133), kept apart
+/// from the European card's free `address`; absent before.
 pub const SCHEMA_VERSION: u32 = 14;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
@@ -1015,7 +1016,7 @@ mod tests {
         assert!(
             v13.photos
                 .iter()
-                .all(|p| p.postcard.as_ref().is_none_or(|c| c.recipient.is_none()))
+                .all(|p| p.postcard.as_ref().is_none_or(|c| c.recipients.is_empty()))
         );
         let Loaded::Ok(v14) =
             from_bytes(include_bytes!("../tests/fixtures/project/v14.fotollection"))
@@ -1027,7 +1028,7 @@ mod tests {
             .postcard
             .as_ref()
             .and_then(crate::library::PostcardText::sanitized)
-            .and_then(|c| c.recipient);
+            .and_then(|c| c.recipient(crate::addassist::Country::Jp).cloned());
         assert_eq!(
             japanese
                 .as_ref()
@@ -1037,7 +1038,7 @@ mod tests {
         let korean = v14.photos[1]
             .postcard
             .as_ref()
-            .and_then(|c| c.recipient.clone());
+            .and_then(|c| c.recipient(crate::addassist::Country::Kr).cloned());
         assert_eq!(
             korean
                 .as_ref()

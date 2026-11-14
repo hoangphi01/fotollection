@@ -830,7 +830,7 @@ mod tests {
             postcard: Some(PostcardText {
                 message: "Ahoj Praha!".into(),
                 address: String::new(),
-                recipient: None,
+                recipients: Vec::new(),
             }),
             ..PhotoEdits::default()
         };
