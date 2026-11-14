@@ -115,6 +115,14 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ## 2026-11-15
 
+### A Japanese face drawn at "em" pixels came out smaller and below its cell (FR-130)
+
+- **Area:** text-i18n, decode-third-party, print-post
+- **Seen:** the test that keeps the はがき's strokes printable measured 0.19 mm for Klee One SemiBold where Pillow, at the same size, measured 0.27 mm; and a kanji's ink reached below the cell it was set in.
+- **Why:** `ab_glyph`'s `PxScale` is the line's height (ascent to descent), not the em: Klee One's line is 1.448 em (hhea 1160 / −288), so every glyph came out at 69 % of the size asked. The baseline was then put at the line's ascent (1.16 em), below the em box's top (the typographic ascender, 0.88 em), so the glyph sat 0.28 em low.
+- **Fix:** `VerticalFace::scale` turns an em into ab_glyph's scale (`em × height ÷ units per em`) and the baseline is the em box's (`OS/2` typographic ascender, read with `ttf-parser`). `fr_130_a_character_fills_its_cell_and_stays_in_it` fails on the old code (ink to row 125 of a 100 px cell); the stroke test now passes at 0.27 mm.
+- **Rule:** before trusting a font library's size, render one glyph at a known size and compare it with another renderer (Pillow, the browser); a face's em and its line height are not the same, least of all in a CJK face.
+
 ### Approved pictures no pass compared stayed in the repo for a week (UI-VISUAL-001)
 
 - **Area:** ui-layout, checks

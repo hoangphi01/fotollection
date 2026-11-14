@@ -63,6 +63,7 @@ pub mod straighten;
 pub mod supervise;
 pub mod text;
 pub mod thumbs;
+pub mod vertical;
 pub mod xmp;
 pub mod zip_parts;
 

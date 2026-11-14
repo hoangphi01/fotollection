@@ -439,6 +439,8 @@ fn install(
     if let Ok(mut addresses) = state.recent_addresses.lock() {
         *addresses = local.recent_addresses;
     }
+    // The imported language may make another card (FR-130).
+    state.resolve_card();
     state.save_settings();
 }
 
@@ -666,5 +668,40 @@ mod tests {
             "a file outside the app's folders is never touched"
         );
         Ok(())
+    }
+
+    /// FR-130, FR-132: the card follows the interface's language: a はがき in Japanese, the
+    /// chosen card in English, Europe's in German; each change bumps the revision once.
+    #[test]
+    fn fr_130_the_card_follows_the_language() {
+        use fotollection_core::settings::{Language, PostcardDestination};
+        let dir = tempfile::tempdir().unwrap_or_else(|e| panic!("{e}"));
+        let state = app(dir.path());
+        let card = |state: &AppState| {
+            state
+                .settings
+                .read()
+                .map_or((PostcardDestination::Europe, 0), |s| {
+                    (s.0.collage.postcard.card, s.1)
+                })
+        };
+        let set = |state: &AppState, language: Language| {
+            if let Ok(mut ui) = state.ui.write() {
+                ui.language = language;
+            }
+            state.resolve_card()
+        };
+        if let Ok(mut s) = state.settings.write() {
+            s.0.collage.postcard.destination = PostcardDestination::Korea;
+        }
+        assert!(set(&state, Language::Ja));
+        let (japan, revision) = card(&state);
+        assert_eq!(japan, PostcardDestination::Japan);
+        assert!(!set(&state, Language::Ja), "no change, no new revision");
+        assert_eq!(card(&state).1, revision);
+        assert!(set(&state, Language::En));
+        assert_eq!(card(&state).0, PostcardDestination::Korea);
+        assert!(set(&state, Language::De));
+        assert_eq!(card(&state).0, PostcardDestination::Europe);
     }
 }

@@ -8,6 +8,7 @@ The faces compiled into the app (`include_bytes!`), all under the SIL Open Font 
 | `Inter.ttf` | The info frame ([FR-040](../../../../docs/PRD.md#fr-040--exif-info-frame)), and the letters a postcard face lacks (Greek, Cyrillic) | [rsms/inter](https://rsms.me/inter/) | OFL 1.1, © The Inter Project Authors (`Inter-OFL.txt`) |
 | `XanhMono-Regular.ttf`, `XanhMono-Italic.ttf` | Postcard text, the typewriter face ([FR-073](../../../../docs/PRD.md#fr-073--postcard-sheets)) | [yellow-type-foundry/xanhmono](https://github.com/yellow-type-foundry/xanhmono) | OFL 1.1, © Yellow Type Foundry (`XanhMono-OFL.txt`) |
 | `PatrickHand-Regular.ttf` | Postcard text, the handwriting face ([FR-076](../../../../docs/PRD.md#fr-076--a-handwriting-face-for-postcards)) | [google/fonts `ofl/patrickhand`](https://github.com/google/fonts/tree/main/ofl/patrickhand), downloaded 2026-11-04 | OFL 1.1, © 2010–2012 Patrick Wagesreiter (`PatrickHand-OFL.txt`) |
+| `KleeOne-SemiBold-subset.ttf` | The はがき's Japanese text, set across or top to bottom with its own vertical forms ([FR-130](../../../../docs/PRD.md#fr-130--the-japanese-postcard)) | [google/fonts `ofl/kleeone`](https://github.com/google/fonts/tree/main/ofl/kleeone) (Fontworks' Klee), downloaded 2026-11-15, the SemiBold (the Regular's strokes are 0.21 mm at the medium size, under the 0.25 mm below; the SemiBold's 0.27), cut by `scripts/cjk-font.sh print-ja` to JIS X 0208 (6,356 kanji, kana, punctuation; every character of Japan Post's postal data) and ASCII, its `vert` and `vrt2` kept: 4.7 MB of 8.9 MB | OFL 1.1, © 2020 The Klee Project Authors (`KleeOne-OFL.txt`) |
 
 A postcard face must hold every letter of the European languages written in Latin script and of Vietnamese, and its strokes must be at least as thick as Xanh Mono's regular at the medium size (about 0.25 mm), which the owner's print test of 2026-11-04 found the thinnest still readable on a kiosk print (`postcard::tests::fr_076_*`).
 
@@ -20,3 +21,4 @@ A postcard face must hold every letter of the European languages written in Lati
 | `XanhMono-Regular.ttf` | `33e64b43fdcb40bd0141853601c7aaffd5be15ebd3cf56340d2473ff8be8e69c` |
 | `XanhMono-Italic.ttf` | `e74ed4105efc797c05ec0631182e0a76bb5ecbf1b6adedb9e0170c79964b2f6f` |
 | `PatrickHand-Regular.ttf` | `0f173b3e6cb6d1af25babf7f0057c5ac4ee11f9992b0469bb817e967ef4ad0fc` |
+| `KleeOne-SemiBold-subset.ttf` | `c93a6ac4dbbae1fd187ae3f2a867d3f3f649fb5ceb2ac756b32efb1352e4f9b1` (source `KleeOne-SemiBold.ttf`, SHA-1 `6a12ad3c1442e15fa4f422fae55e708cf8c00b26`) |

@@ -6,10 +6,17 @@
 # compatibility jamo, the CJK punctuation), as one woff2 for weights 400–700, and beside it the
 # list of its characters from U+3000 on. Run again whenever ui/src/locales/<code>.json or
 # site/_includes/manual-short-<code>.md gains a character: `check-i18n` fails until then.
+# `print-ja` cuts the はがき's print face instead (FR-130): Klee One SemiBold (OFL 1.1, google/fonts),
+# the textbook hand of Japanese cards (the Regular's strokes are 0.21 mm at the medium size, under
+# the 0.25 mm a kiosk print needs; the SemiBold's 0.27), to every character of JIS X 0208 (levels 1 and 2: 6,356 kanji,
+# the kana, the CJK punctuation and symbols; every character of Japan Post's postal data is
+# among them) and ASCII, keeping its vertical forms (`vert`, `vrt2`) for text set top to bottom,
+# as a TTF the core compiles in (crates/core/assets/fonts/, ab_glyph reads TTF).
 # Needs curl and uv.
 #
 #   scripts/cjk-font.sh ja
 #   scripts/cjk-font.sh ko
+#   scripts/cjk-font.sh print-ja
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -26,8 +33,33 @@ case "${1:-}" in
     out=ui/src/assets/fonts/noto-sans-kr-subset.woff2
     ranges='U+3000-303F,U+3131-318E'
     ;;
+  print-ja)
+    work=$(mktemp -d)
+    trap 'rm -rf "$work"' EXIT
+    curl -sSfL -o "$work/source.ttf" 'https://github.com/google/fonts/raw/main/ofl/kleeone/KleeOne-SemiBold.ttf'
+    echo "6a12ad3c1442e15fa4f422fae55e708cf8c00b26  $work/source.ttf" | shasum -c - >/dev/null
+    out=crates/core/assets/fonts/KleeOne-SemiBold-subset.ttf
+    # Every character Shift_JIS (JIS X 0208) encodes, and ASCII.
+    python3 -I -c '
+import sys
+chars = [chr(u) for u in range(0x20, 0x7F)]
+for u in range(0xA0, 0x10000):
+    try:
+        chr(u).encode("shift_jis")
+        chars.append(chr(u))
+    except UnicodeEncodeError:
+        pass
+sys.stdout.write("".join(chars))' > "$work/text.txt"
+    uv run -q --no-project --with fonttools pyftsubset "$work/source.ttf" \
+      --text-file="$work/text.txt" \
+      --layout-features='kern,palt,vert,vrt2,vkrn,ccmp,locl' \
+      --no-hinting --output-file="$out"
+    ls -l "$out" | awk '{printf "%s: %.0f KB\n", $NF, $5 / 1024}'
+    shasum -a 256 "$out"
+    exit 0
+    ;;
   *)
-    echo "usage: scripts/cjk-font.sh ja|ko" >&2
+    echo "usage: scripts/cjk-font.sh ja|ko|print-ja" >&2
     exit 2
     ;;
 esac

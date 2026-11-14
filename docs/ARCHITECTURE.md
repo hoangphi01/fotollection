@@ -65,7 +65,7 @@ crates/
       settings.rs        † # RenderSettings and the UI settings, the recent postcard addresses (`remember_address`)
       plan.rs            † # RenderPlan: centred crop, stamp, optional frame plan, 3 mm border (FR-004/006/040/067), a shared photo's fill round it all (`pad`, FR-075)
       sheet.rs           † # collage sheets: cells, photo areas, pairing, render (FR-035, ADR-0032); a postcard sheet's one photo and card half (FR-073)
-      postcard.rs        † # a postcard's back: dashed stamp box, the message's and the address's lines, typed text in Xanh Mono (its italic), Patrick Hand (drawn with Xanh Mono's capital height, FR-076) or the user's font, Inter for missing letters, bold, oblique and underline (FR-073)
+      postcard.rs        † # a postcard's back: dashed stamp box, the message's and the address's lines, typed text in Xanh Mono (its italic), Patrick Hand (drawn with Xanh Mono's capital height, FR-076) or the user's font, Inter for missing letters, bold, oblique and underline (FR-073); `CodeBoxes`, the postal code's boxes for any market (Japan's seven vermilion 3 + 4, FR-130)
       frame.rs           † # info frame: settings, camera profiles, text, ratio-safe layout (FR-040)
       logo.rs            † # user PNG logos: validation + decode (ADR-0014)
       fonts.rs           † # user OTF/TTF fonts: validation + FontArc (FR-042)
@@ -74,6 +74,7 @@ crates/
       cancel.rs          † # CancellationToken
       stamp.rs           † # text inside the photo: DSEG14 Italic, date · place line + caption, LED glow (FR-004/005/033/036)
       text.rs            † # text measuring/drawing shared by stamp and frame, ASCII folding
+      vertical.rs          # Japanese text set top to bottom for the はがき (FR-130, ADR-0052): Klee One's GSUB vert/vrt2 forms read with ttf-parser, columns right to left, 禁則, an em-true scale
       credit.rs          † # the small "fotollection.org" on prints: where it fits (paper first, then a photo corner clear of the stamp and faces), drawn last (FR-121)
       print_advice.rs    † # how large a photo prints well; sharp / acceptable / pixelated per print size (FR-026)
       straighten.rs      † # ±15° levelling: largest inscribed crop, bicubic resampling of the crop only (FR-006)

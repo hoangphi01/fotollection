@@ -1777,6 +1777,13 @@ export type MachineInfo = {
 	freeDisk: number | null,
 };
 
+/**  Where a print size is sold. */
+export type Market = 
+/**  dm, Rossmann, CEWE's kiosks. */
+"europe" | 
+/**  the multicopy machines of 7-Eleven, Lawson and `FamilyMart` (checked 2026-11-14 and 15). */
+"japan";
+
 /**  What the previews keep in memory, for the Settings window (FR-086, FR-091). */
 export type MemoryInfo = {
 	/**  The machine's RAM, in bytes. */
@@ -2177,6 +2184,8 @@ export type PrintSize = {
 	id: string,
 	shortMm: number,
 	longMm: number,
+	/**  The market whose shops print it, for the size list's groups (FR-129). */
+	market: Market,
 };
 
 /**  What a size will look like, for the green / yellow / red badge. */

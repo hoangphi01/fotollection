@@ -645,6 +645,110 @@ fn draw_stamp_box(canvas: &mut RgbImage, density: f32, s: RectMm, outline: [u8; 
     );
 }
 
+/// How a country's postal code boxes are drawn (FR-130, FR-132): one block for Japan's
+/// seven and Korea's five, the count, colour and gaps the market's.
+pub struct CodeBoxes {
+    /// Boxes per group, left to right (3 + 4 in Japan).
+    pub groups: &'static [u8],
+    /// One box's width and height.
+    pub box_mm: (f32, f32),
+    /// From one box's left edge to the next one's.
+    pub pitch_mm: f32,
+    /// The extra room between groups, where Japan draws its hyphen.
+    pub group_gap_mm: f32,
+    pub color: [u8; 3],
+    /// Each group's line weight; the hyphen takes the first group's.
+    pub lines_mm: &'static [f32],
+    /// A hyphen between the groups.
+    pub hyphen: bool,
+}
+
+/// Japan's seven boxes, vermilion (金赤) with no black in them, the first three and the hyphen
+/// 0.5 mm, the last four 0.3 mm (内国郵便約款 別記1: 0.4–0.6 and 0.2–0.4 mm). Their size and
+/// pitch are estimates from Japan Post's figures, 5.7 × 8 mm at 6.8 mm, to measure on a real
+/// card before the release (PRD FR-130).
+pub const JAPAN_BOXES: CodeBoxes = CodeBoxes {
+    groups: &[3, 4],
+    box_mm: (5.7, 8.0),
+    pitch_mm: 6.8,
+    group_gap_mm: 2.6,
+    color: [232, 56, 32],
+    lines_mm: &[0.5, 0.3],
+    hyphen: true,
+};
+
+impl CodeBoxes {
+    /// The boxes' whole width.
+    #[allow(clippy::cast_precision_loss)]
+    pub fn width_mm(&self) -> f32 {
+        let boxes: u32 = self.groups.iter().map(|g| u32::from(*g)).sum();
+        let gaps = self.groups.len().saturating_sub(1) as f32;
+        (boxes.saturating_sub(1)) as f32 * self.pitch_mm + self.box_mm.0 + gaps * self.group_gap_mm
+    }
+
+    /// Each box's rectangle and its group's line weight, from `left`, `top`.
+    #[allow(clippy::cast_precision_loss)]
+    pub fn boxes(&self, left: f32, top: f32) -> Vec<(RectMm, f32)> {
+        let mut out = Vec::new();
+        let mut x = left;
+        for (g, count) in self.groups.iter().enumerate() {
+            let line = self
+                .lines_mm
+                .get(g)
+                .or(self.lines_mm.last())
+                .copied()
+                .unwrap_or(0.3);
+            for _ in 0..*count {
+                out.push((
+                    RectMm {
+                        x,
+                        y: top,
+                        width: self.box_mm.0,
+                        height: self.box_mm.1,
+                    },
+                    line,
+                ));
+                x += self.pitch_mm;
+            }
+            x += self.group_gap_mm;
+        }
+        out
+    }
+}
+
+/// Draws the code boxes from `left`, `top` (millimetres), empty for a code written by hand.
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+pub fn draw_code_boxes(canvas: &mut RgbImage, density: f32, left: f32, top: f32, b: &CodeBoxes) {
+    let px = |mm: f32| (mm * density).round().max(0.0) as u32;
+    let thick = |mm: f32| (mm * density).round().max(1.0) as u32;
+    let boxes = b.boxes(left, top);
+    for (r, line) in &boxes {
+        let (x, y, w, h, t) = (px(r.x), px(r.y), px(r.width), px(r.height), thick(*line));
+        crate::sheet::fill_rect(canvas, x, y, w, t, b.color);
+        crate::sheet::fill_rect(canvas, x, (y + h).saturating_sub(t), w, t, b.color);
+        crate::sheet::fill_rect(canvas, x, y, t, h, b.color);
+        crate::sheet::fill_rect(canvas, (x + w).saturating_sub(t), y, t, h, b.color);
+    }
+    // The hyphen, centred in the gap after the first group, at mid height.
+    if b.hyphen
+        && let (Some(first), Some(&group)) = (boxes.first(), b.groups.first())
+        && let Some((last_of_first, _)) = boxes.get(usize::from(group).saturating_sub(1))
+    {
+        let gap_left = last_of_first.x + last_of_first.width;
+        let gap = b.pitch_mm - b.box_mm.0 + b.group_gap_mm;
+        let t = thick(first.1);
+        let y = px(first.0.y + first.0.height / 2.0).saturating_sub(t / 2);
+        crate::sheet::fill_rect(
+            canvas,
+            px(gap_left + gap * 0.25),
+            y,
+            px(gap * 0.5).max(1),
+            t,
+            b.color,
+        );
+    }
+}
+
 /// A face and the one that sets the letters it lacks; each run of text goes to the first
 /// face with its glyphs.
 #[derive(Clone, Copy)]
@@ -1311,5 +1415,34 @@ mod tests {
             if row == 0 { room / 2.0 } else { room * 3.0 }
         });
         assert_eq!(rows, ["Liebe", "Grüße aus Budapest"]);
+    }
+
+    #[test]
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+    fn fr_130_japans_code_boxes_are_seven_vermilion_with_a_hyphen() {
+        let b = JAPAN_BOXES;
+        let boxes = b.boxes(10.0, 5.0);
+        assert_eq!(boxes.len(), 7);
+        // The first three heavier than the last four.
+        assert!(boxes[..3].iter().all(|(_, l)| (*l - 0.5).abs() < 1e-6));
+        assert!(boxes[3..].iter().all(|(_, l)| (*l - 0.3).abs() < 1e-6));
+        assert!((b.width_mm() - (6.0 * 6.8 + 5.7 + 2.6)).abs() < 1e-4);
+        let density = 300.0 / 25.4;
+        let (w, h) = (700, 300);
+        let mut canvas = RgbImage::from_raw(w, h, vec![255; (w * h * 3) as usize])
+            .unwrap_or_else(|| RgbImage::new(1, 1));
+        draw_code_boxes(&mut canvas, density, 2.0, 2.0, &b);
+        let colours: std::collections::HashSet<[u8; 3]> =
+            canvas.data.as_chunks::<3>().0.iter().copied().collect();
+        // Vermilion and white only: no black or blue in the boxes (FAQ 45).
+        assert_eq!(colours.len(), 2);
+        assert!(colours.contains(&[232, 56, 32]));
+        // The hyphen: ink in the gap after the third box, at mid height.
+        let gap_x = ((2.0 + 2.0 * 6.8 + 5.7 + 1.85) * density) as usize;
+        let mid_y = ((2.0 + 4.0) * density) as usize;
+        assert_eq!(
+            &canvas.data[(mid_y * w as usize + gap_x) * 3..][..3],
+            &[232, 56, 32]
+        );
     }
 }

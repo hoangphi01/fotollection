@@ -643,6 +643,11 @@ pub struct PostcardSettings {
     /// FR-133. Absent before settings v20: on.
     #[serde(default = "default_postal_use")]
     pub assisted: bool,
+    /// The card this machine makes (`destination_for` its interface's language), set by Rust
+    /// wherever the settings or the language change, read by every render (FR-130, FR-132);
+    /// never saved nor taken from the interface.
+    #[serde(skip)]
+    pub card: PostcardDestination,
 }
 
 /// Where a postcard goes, which decides its layout (FR-130, FR-132).
@@ -711,6 +716,7 @@ impl Default for PostcardSettings {
             sender_on: false,
             sender: None,
             assisted: true,
+            card: PostcardDestination::Europe,
         }
     }
 }

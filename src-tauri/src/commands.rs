@@ -972,6 +972,12 @@ pub fn set_settings(
     settings
         .validate()
         .map_err(|e| IpcError::new("settings.invalid", e.to_string()))?;
+    // The card follows the interface's language, never the webview (FR-130, FR-132).
+    let language = state
+        .ui
+        .read()
+        .map_or(fotollection_core::settings::Language::En, |u| u.language);
+    settings.collage.postcard.card = settings.collage.postcard.destination_for(language);
     let mut guard = state
         .settings
         .write()
@@ -1037,6 +1043,10 @@ pub fn set_ui_settings(
     // The print's "fotollection.org" shows in previews as it prints (FR-121).
     if before.print_credit != ui.print_credit {
         state.sync_print_credit();
+        refresh_previews(&app, &state);
+    }
+    // A new language may make another card (FR-130, FR-132): the sheets draw it at once.
+    if before.language != ui.language && state.resolve_card() {
         refresh_previews(&app, &state);
     }
     // The previews' memory and the cache's limit follow at once (FR-086).

@@ -373,7 +373,30 @@ impl AppState {
             copied: Mutex::new(None),
         };
         state.sync_print_credit();
+        state.resolve_card();
         Ok(state)
+    }
+
+    /// The card the interface's language makes (FR-130, FR-132: a はがき in Japanese, a
+    /// 우편엽서 in Korean, the chosen one in English and Vietnamese, Europe's elsewhere), set
+    /// on the print settings every render reads. Called wherever the settings or the
+    /// language change; true when the card changed (the revision is bumped then).
+    pub fn resolve_card(&self) -> bool {
+        let language = self
+            .ui
+            .read()
+            .map_or(fotollection_core::settings::Language::En, |u| u.language);
+        let Ok(mut settings) = self.settings.write() else {
+            return false;
+        };
+        let postcard = &mut settings.0.collage.postcard;
+        let card = postcard.destination_for(language);
+        if postcard.card == card {
+            return false;
+        }
+        postcard.card = card;
+        settings.1 = settings.1.wrapping_add(1);
+        true
     }
 
     /// Previews show the print's "fotollection.org" as this machine prints it (FR-121).
@@ -447,6 +470,7 @@ impl AppState {
             current.0 = render;
             current.1 = current.1.wrapping_add(1);
         }
+        self.resolve_card();
     }
 
     /// Writes `settings.json` when a change is waiting.

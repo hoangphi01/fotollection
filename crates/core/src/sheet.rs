@@ -66,8 +66,12 @@ pub struct SheetLayout {
 }
 
 /// The sheet's print size: the chosen one, or 10 × 15 when it is Original, which has no
-/// size of its own until a photo gives it one.
+/// size of its own until a photo gives it one; a Japanese postcard is always a はがき (FR-130).
 pub fn sheet_print(settings: &RenderSettings) -> PrintSize {
+    let postcard = &settings.collage.postcard;
+    if postcard.enabled && postcard.card == crate::settings::PostcardDestination::Japan {
+        return PrintSize::HAGAKI;
+    }
     settings
         .validate()
         .ok()

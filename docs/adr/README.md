@@ -55,6 +55,7 @@ Each ADR captures one significant decision. ADRs are **immutable once accepted**
 | [0049](0049-website-on-eleventy.md) | The website is built by Eleventy (MIT, Liquid with Jekyll's includes, the same `site.*` and `pg.*` for `page.*`, markdown-it set as kramdown), still served by GitHub Pages; preview with `npm run site:serve` | Accepted | 2026-11-11 |
 | [0050](0050-flatpak-on-flathub.md) | Fotollection on Flathub as `org.fotollection.Fotollection`: built from source on the GNOME runtime; the Flatpak's metainfo and launcher made from the `.deb`'s (`scripts/flatpak-files.mjs`); no self-update in a Flatpak; the manifest and submission are the owner's (Flathub's AI rule) | Proposed | 2026-11-11 |
 | [0051](0051-addassist-bundled-postal-data.md) | AddAssist: each post's own postal data packed by a build-time crate, compiled in, checked by BLAKE3 and looked up offline in Rust behind one versioned interface (1.0: Japan); no online address API | Accepted | 2026-11-15 |
+| [0052](0052-vertical-text-by-the-fonts-own-forms.md) | Japanese text top to bottom by the face's own GSUB `vert`/`vrt2` forms read with ttf-parser, on an em grid with 禁則; no shaper | Accepted | 2026-11-15 |
 
 New ADR: copy [0000-template.md](0000-template.md) to `NNNN-short-title.md` using the next number, then add a row to this table.
 

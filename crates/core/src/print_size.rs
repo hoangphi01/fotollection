@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
-//! Standard EU print sizes (CEWE / dm / Rossmann), as listed in `docs/PRD.md` §5.
+//! Print sizes: Europe's (CEWE / dm / Rossmann, `docs/PRD.md` §5) and Japan's convenience-store
+//! kiosks' (FR-129), each tagged with its market.
 
 use serde::Serialize;
 use specta::Type;
@@ -12,11 +13,23 @@ pub struct PrintSize {
     pub id: &'static str,
     pub short_mm: u32,
     pub long_mm: u32,
+    /// The market whose shops print it, for the size list's groups (FR-129).
+    pub market: Market,
+}
+
+/// Where a print size is sold.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum Market {
+    /// dm, Rossmann, CEWE's kiosks.
+    Europe,
+    /// the multicopy machines of 7-Eleven, Lawson and `FamilyMart` (checked 2026-11-14 and 15).
+    Japan,
 }
 
 impl PrintSize {
     /// All supported sizes, in the order shown to the user.
-    pub const ALL: [PrintSize; 11] = [
+    pub const ALL: [PrintSize; 16] = [
         PrintSize::new("9x13", 90, 130),
         PrintSize::new("10x15", 100, 150),
         PrintSize::new("11x17", 110, 170),
@@ -28,13 +41,32 @@ impl PrintSize {
         PrintSize::new("15x15", 150, 150),
         PrintSize::new("20x20", 200, 200),
         PrintSize::new("5x15", 50, 150),
+        // Japan's kiosks (FR-129): L判, 2L判, 7-Eleven's and Lawson's squares, the はがき.
+        PrintSize::japan("l", 89, 127),
+        PrintSize::japan("2l", 127, 178),
+        PrintSize::japan("sq89", 89, 89),
+        PrintSize::japan("sq127", 127, 127),
+        PrintSize::HAGAKI,
     ];
+
+    /// Japan Post's はがき, 100 × 148 mm: every Japanese card prints at it (FR-130).
+    pub const HAGAKI: PrintSize = PrintSize::japan("hagaki", 100, 148);
 
     const fn new(id: &'static str, short_mm: u32, long_mm: u32) -> Self {
         Self {
             id,
             short_mm,
             long_mm,
+            market: Market::Europe,
+        }
+    }
+
+    const fn japan(id: &'static str, short_mm: u32, long_mm: u32) -> Self {
+        Self {
+            id,
+            short_mm,
+            long_mm,
+            market: Market::Japan,
         }
     }
 
@@ -44,6 +76,7 @@ impl PrintSize {
             id: "custom",
             short_mm,
             long_mm,
+            market: Market::Europe,
         }
     }
 
@@ -67,6 +100,7 @@ impl PrintSize {
             long_mm: u32::try_from(long_mm)
                 .unwrap_or(u32::MAX)
                 .clamp(Self::ORIGINAL_SHORT_MM, 1000),
+            market: Market::Europe,
         }
     }
 
@@ -119,6 +153,17 @@ mod tests {
                 size.id
             );
         }
+    }
+
+    #[test]
+    fn fr_129_japans_kiosk_sizes_are_listed() {
+        let size = |id| PrintSize::by_id(id).map(|s| (s.short_mm, s.long_mm, s.market));
+        assert_eq!(size("l"), Some((89, 127, Market::Japan)));
+        assert_eq!(size("2l"), Some((127, 178, Market::Japan)));
+        assert_eq!(size("sq89"), Some((89, 89, Market::Japan)));
+        assert_eq!(size("sq127"), Some((127, 127, Market::Japan)));
+        assert_eq!(size("hagaki"), Some((100, 148, Market::Japan)));
+        assert_eq!(size("10x15").map(|s| s.2), Some(Market::Europe));
     }
 
     #[test]

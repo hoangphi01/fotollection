@@ -513,7 +513,12 @@ fn fit_box(width: f32, src_width: u32, src_height: u32, print: PrintSize) -> (f3
     // Long side over width of the box: 1 for a landscape box, long ÷ short for a portrait one.
     let (w1, h1) = print_box(1.0, src_width, src_height, print);
     let per_width = w1.max(h1);
-    let box_w = width / (1.0 + 2.0 * FIT_BORDER_MM * per_width / print.long_mm.max(1) as f32);
+    let estimate = width / (1.0 + 2.0 * FIT_BORDER_MM * per_width / print.long_mm.max(1) as f32);
+    // The canvas added the border rounded to whole pixels (`canvas_size`): take that border
+    // off, not the exact one, or the box comes back a fraction off and the bar's rounding
+    // can differ by a pixel from Crop's (seen at 2L, 127 × 178).
+    let (ew, eh) = print_box(estimate, src_width, src_height, print);
+    let box_w = width - 2.0 * fit_border(ew, eh, print);
     print_box(box_w, src_width, src_height, print)
 }
 
