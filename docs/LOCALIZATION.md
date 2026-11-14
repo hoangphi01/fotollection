@@ -145,6 +145,7 @@ Some things change with the language or the country, not only the words, as a ph
 | **Print face for the card** | Xanh Mono, Patrick Hand | as English | as English | as English (Hangul on a print later) | Klee One, a handwritten face, bundled for the はがき (FR-130) |
 | **Line breaking** | normal | normal | normal | between words only (`keep-all`) | kinsoku (`line-break: strict`) |
 | **Postcard (FR-073, FR-130, FR-132)** | European card; a switch, off by default, turns it into a はがき for a card sent to Japan | as English | European card, no はがき switch | the 10 × 15 card with Korea Post's address side (FR-132, planned), no はがき switch | the はがき alone, upright or landscape, no European card |
+| **Assisted address entry (FR-133, planned)** | — | — | Hungary: the code fills the town (KSH data) | the code or a search fills 시·도 to road | the code fills prefecture, city and town, searched in romaji too |
 | **Postal code on the card** | free text | free text | free text | five boxes below the address (FR-132) | 〒 and seven boxes in the app; printed `248-0024` when typed, seven vermilion boxes when left to the hand (FR-130) |
 | **Greetings for the occasion (FR-131, planned)** | Christmas and others, later | Tết and others, later | later | 설날, 어버이날, 스승의 날, the year's end | 年賀, 寒中, 暑中, 残暑, 喪中 |
 | **Print sizes in the app** | Europe's first, Japan's and Korea's folded | as English | as English | Korea's first (FR-132, planned) | Japan's convenience stores first (FR-129, planned) |
