@@ -1155,6 +1155,7 @@ mod tests {
         let text = crate::library::PostcardText {
             message: "Hello".into(),
             address: "Anna".into(),
+            recipient: None,
         };
         let source = |postcard| CellSource {
             image: &image,
@@ -1639,6 +1640,7 @@ mod tests {
         let text = crate::library::PostcardText {
             message: "Liebe Grüße aus Budapest!".into(),
             address: "Anna Schmidt".into(),
+            recipient: None,
         };
         let source = CellSource {
             image: &image,

@@ -658,6 +658,31 @@ pub fn set_postcard_text(
     Ok(history)
 }
 
+/// Sets the recipient of a photo's Japanese or Korean card (FR-130, FR-132, FR-133): its code,
+/// places, line and name, filled by `AddAssist` or typed; `None`, or a blank one, clears it.
+/// One undoable step; checked here, never trusted from the UI.
+#[tauri::command]
+#[specta::specta]
+pub fn set_postcard_address(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    id: PhotoId,
+    address: Option<fotollection_core::addassist::Address>,
+) -> Result<HistoryState, IpcError> {
+    if address.as_ref().is_some_and(|a| !a.is_valid()) {
+        return Err(IpcError::new(
+            "postcard.text_invalid",
+            "the address has a field that is too long, a control character or a code of the wrong length",
+        ));
+    }
+    let address = address.filter(|a| !a.is_blank());
+    edit_photos(&app, &state, &[id], |_, e| {
+        let mut text = e.postcard.take().unwrap_or_default();
+        text.recipient.clone_from(&address);
+        e.postcard = text.sanitized();
+    })
+}
+
 /// "Apply to all" in the preview: this photo's stamp becomes the setting for every photo,
 /// and no photo keeps its own any more (the photo edits are one undoable step).
 #[tauri::command]

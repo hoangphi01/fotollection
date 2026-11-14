@@ -504,6 +504,39 @@ export const commands = {
 	 *  here, never trusted from the UI.
 	 */
 	setPostcardText: (id: PhotoId, part: PostcardPart, text: string | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_postcard_text", { id, part, text })),
+	/**
+	 *  Sets the recipient of a photo's Japanese or Korean card (FR-130, FR-132, FR-133): its code,
+	 *  places, line and name, filled by `AddAssist` or typed; `None`, or a blank one, clears it.
+	 *  One undoable step; checked here, never trusted from the UI.
+	 */
+	setPostcardAddress: (id: PhotoId, address: {
+	country: Country,
+	/**
+	 *  The `AddAssist` version that filled its places ("1.0"), "" when typed by hand, so a card
+	 *  made under 1.0 is read the same way later (PRD FR-133).
+	 */
+	filledBy?: string,
+	/**  The postal code's digits, 7 in Japan and 5 in Korea; "" when not known. */
+	code?: string,
+	/**  Prefecture (Japan), 시·도 (Korea). */
+	region?: string,
+	/**  Municipality, 시·군·구. */
+	city?: string,
+	/**  Town (Japan), 읍·면 (Korea). */
+	town?: string,
+	/**  The road (Korea). */
+	road?: string,
+	/**
+	 *  What the user types after the places: 1-2-3 and the building in Japan, 175 and the
+	 *  unit in Korea.
+	 */
+	line?: string,
+	name?: string,
+	/**  様 (Japan) or 귀하 (Korea) after the name; Japan always prints it. */
+	honorific?: boolean,
+	/**  Printed in Latin letters (romaji, Revised Romanization) instead of kanji or Hangul. */
+	latin?: boolean,
+} | null) => typedError<HistoryState, IpcError>(__TAURI_INVOKE("set_postcard_address", { id, address })),
 	/**  The text typed on a photo's postcard (FR-073): its message and address, empty when none. */
 	getPostcardText: (id: PhotoId) => typedError<PostcardText, IpcError>(__TAURI_INVOKE("get_postcard_text", { id })),
 	/**
@@ -794,6 +827,36 @@ export type Action = "new" | "open" | "save" | "saveAs" |
 "copySettings" | "pasteSettings" | "pasteSettingsTicked" | "resetSettings" | 
 /**  The manual inside the app (FR-110), from the Help menu. */
 "manual";
+
+/**  An address on a Japanese or Korean card. */
+export type Address = {
+	country: Country,
+	/**
+	 *  The `AddAssist` version that filled its places ("1.0"), "" when typed by hand, so a card
+	 *  made under 1.0 is read the same way later (PRD FR-133).
+	 */
+	filledBy?: string,
+	/**  The postal code's digits, 7 in Japan and 5 in Korea; "" when not known. */
+	code?: string,
+	/**  Prefecture (Japan), 시·도 (Korea). */
+	region?: string,
+	/**  Municipality, 시·군·구. */
+	city?: string,
+	/**  Town (Japan), 읍·면 (Korea). */
+	town?: string,
+	/**  The road (Korea). */
+	road?: string,
+	/**
+	 *  What the user types after the places: 1-2-3 and the building in Japan, 175 and the
+	 *  unit in Korea.
+	 */
+	line?: string,
+	name?: string,
+	/**  様 (Japan) or 귀하 (Korea) after the name; Japan always prints it. */
+	honorific?: boolean,
+	/**  Printed in Latin letters (romaji, Revised Romanization) instead of kanji or Hangul. */
+	latin?: boolean,
+};
 
 /**  The sliders, each 0 when unset (FR-079). Signed ones run −100…100, the others 0…100. */
 export type Adjust = {
@@ -1984,6 +2047,15 @@ export type PostcardCut = {
 	fit: Fit,
 };
 
+/**  Where a postcard goes, which decides its layout (FR-130, FR-132). */
+export type PostcardDestination = 
+/**  The European card (FR-073). */
+"europe" | 
+/**  Japan Post's はがき, 100 × 148 mm. */
+"japan" | 
+/**  Korea Post's 우편엽서. */
+"korea";
+
 /**  The bundled faces a postcard's text can be typed in (FR-073, FR-076). */
 export type PostcardFace = 
 /**  Xanh Mono, with its own italic. */
@@ -2040,15 +2112,38 @@ export type PostcardSettings = {
 	 *  Absent before settings v19: on.
 	 */
 	postalUse?: boolean,
+	/**
+	 *  Where the card goes, in English and Vietnamese (FR-130, FR-132): Europe's card, a
+	 *  Japanese はがき or a Korean 우편엽서. In Japanese the card is always a はがき, in Korean
+	 *  always a 우편엽서, elsewhere always Europe's (`destination_for`). Absent before
+	 *  settings v20: Europe.
+	 */
+	destination?: PostcardDestination,
+	/**
+	 *  The sender printed on a Japanese or Korean card (owner, 2026-11-15: one sender for
+	 *  every card, an optional switch, off by default); a European card prints none.
+	 */
+	senderOn?: boolean,
+	sender?: Address | null,
+	/**
+	 *  The address fields filled by `AddAssist` from a postal code (on) or typed by hand (off),
+	 *  FR-133. Absent before settings v20: on.
+	 */
+	assisted?: boolean,
 };
 
 /**
  *  A postcard's own text (FR-073): the message on its top lines, the address on its bottom
- *  ones. An empty part leaves its lines blank.
+ *  ones, or the recipient of a Japanese or Korean card. An empty part leaves its lines blank.
  */
 export type PostcardText = {
 	message?: string,
 	address?: string,
+	/**
+	 *  The recipient as a Japanese or Korean card writes it (FR-130, FR-132): its code,
+	 *  places, line and name; absent on a European card, which prints `address`.
+	 */
+	recipient?: Address | null,
 };
 
 /**

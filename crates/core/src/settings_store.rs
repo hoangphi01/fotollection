@@ -40,7 +40,9 @@ pub const FORMAT: &str = "fotollection-settings";
 /// v19 (FR-121): `ui.printCredit`, the small "fotollection.org" on prints, absent before (on).
 /// v19 also (FR-123): `ui.language` may be `hu`, Magyar; (FR-073) `collage.postcard.postalUse`,
 /// the post's coding zone kept free, absent before (on).
-/// v20 (FR-128): `ui.language` may be `ja`, 日本語, or `ko`, 한국어; nothing else changes. A new value needs a new
+/// v20 (FR-128): `ui.language` may be `ja`, 日本語, or `ko`, 한국어; (FR-130, FR-132, FR-133)
+/// `collage.postcard.destination` (`europe`, `japan`, `korea`), `senderOn`, `sender` and
+/// `assisted`, absent before (Europe, no sender, assisted). A new value needs a new
 /// version once a version shipped: v0.14.1 reads v19, and meets a v20 file as a newer one.
 pub const SCHEMA_VERSION: u32 = 20;
 pub const MAX_BYTES: u64 = 4 * 1024 * 1024;
@@ -605,6 +607,7 @@ mod tests {
                 ..crate::settings::TextStyle::default()
             },
             postal_use: false,
+            ..PostcardSettings::default()
         };
         save(&path, &s)?;
         let Loaded::Ok(back) = load(&path) else {
@@ -1038,6 +1041,21 @@ mod tests {
             panic!("v20 should load");
         };
         assert_eq!(read.ui.language, crate::settings::Language::Ja);
+        let card = &read.render.collage.postcard;
+        assert_eq!(
+            card.destination,
+            crate::settings::PostcardDestination::Korea
+        );
+        assert!(card.sender_on && !card.assisted);
+        assert_eq!(
+            card.sender.as_ref().map(|s| s.road.as_str()),
+            Some("해운대해변로")
+        );
+        // In Japanese the card is a はがき whatever was chosen in English.
+        assert_eq!(
+            card.destination_for(read.ui.language),
+            crate::settings::PostcardDestination::Japan
+        );
         save(&path, &read)?;
         let text = std::fs::read_to_string(&path)?;
         assert!(text.contains(r#""language": "ja""#) && text.contains(r#""schema_version": 20"#));
@@ -1050,10 +1068,15 @@ mod tests {
         };
         assert_eq!(read.ui.language, crate::settings::Language::Ko);
         std::fs::write(&path, include_str!("../tests/fixtures/settings/v19.json"))?;
-        assert!(
-            matches!(load(&path), Loaded::Ok(_)),
-            "a v19 file still loads"
+        let Loaded::Ok(old) = load(&path) else {
+            panic!("a v19 file still loads");
+        };
+        let card = &old.render.collage.postcard;
+        assert_eq!(
+            card.destination,
+            crate::settings::PostcardDestination::Europe
         );
+        assert!(!card.sender_on && card.sender.is_none() && card.assisted);
         Ok(())
     }
 

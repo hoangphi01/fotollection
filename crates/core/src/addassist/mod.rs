@@ -8,9 +8,12 @@
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
+mod address;
 mod jp;
 mod kr;
 pub mod romaji;
+
+pub use address::{Address, MAX_FIELD_CHARS, MAX_LINE_CHARS};
 
 /// `AddAssist`'s version, shown with its countries' data dates and kept with an address it
 /// filled.

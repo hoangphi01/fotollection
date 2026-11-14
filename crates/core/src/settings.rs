@@ -591,6 +591,7 @@ pub struct TextStyle {
 /// (`PhotoEdits::postcard`).
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
+#[allow(clippy::struct_excessive_bools)] // independent switches, one per control in the card
 pub struct PostcardSettings {
     #[serde(default)]
     pub enabled: bool,
@@ -626,6 +627,49 @@ pub struct PostcardSettings {
     /// Absent before settings v19: on.
     #[serde(default = "default_postal_use")]
     pub postal_use: bool,
+    /// Where the card goes, in English and Vietnamese (FR-130, FR-132): Europe's card, a
+    /// Japanese はがき or a Korean 우편엽서. In Japanese the card is always a はがき, in Korean
+    /// always a 우편엽서, elsewhere always Europe's (`destination_for`). Absent before
+    /// settings v20: Europe.
+    #[serde(default)]
+    pub destination: PostcardDestination,
+    /// The sender printed on a Japanese or Korean card (owner, 2026-11-15: one sender for
+    /// every card, an optional switch, off by default); a European card prints none.
+    #[serde(default)]
+    pub sender_on: bool,
+    #[serde(default)]
+    pub sender: Option<crate::addassist::Address>,
+    /// The address fields filled by `AddAssist` from a postal code (on) or typed by hand (off),
+    /// FR-133. Absent before settings v20: on.
+    #[serde(default = "default_postal_use")]
+    pub assisted: bool,
+}
+
+/// Where a postcard goes, which decides its layout (FR-130, FR-132).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub enum PostcardDestination {
+    /// The European card (FR-073).
+    #[default]
+    Europe,
+    /// Japan Post's はがき, 100 × 148 mm.
+    Japan,
+    /// Korea Post's 우편엽서.
+    Korea,
+}
+
+impl PostcardSettings {
+    /// The card the interface's language makes (owner, 2026-11-15): Japanese is always a
+    /// はがき, Korean always a 우편엽서; English and Vietnamese the one chosen; every other
+    /// language Europe's.
+    pub fn destination_for(&self, language: Language) -> PostcardDestination {
+        match language {
+            Language::Ja => PostcardDestination::Japan,
+            Language::Ko => PostcardDestination::Korea,
+            Language::En | Language::Vi => self.destination,
+            _ => PostcardDestination::Europe,
+        }
+    }
 }
 
 const fn default_postal_use() -> bool {
@@ -663,6 +707,10 @@ impl Default for PostcardSettings {
             message_style: TextStyle::default(),
             address_style: TextStyle::default(),
             postal_use: true,
+            destination: PostcardDestination::Europe,
+            sender_on: false,
+            sender: None,
+            assisted: true,
         }
     }
 }
@@ -707,6 +755,11 @@ impl CollageSettings {
                     .lines
                     .clamp(*POSTCARD_LINES.start(), *POSTCARD_LINES.end()),
                 credit: sanitize_caption(&self.postcard.credit),
+                sender: self
+                    .postcard
+                    .sender
+                    .as_ref()
+                    .map(crate::addassist::Address::sanitized),
                 ..self.postcard.clone()
             },
             size: self.size.map(|s| {

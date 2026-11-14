@@ -214,7 +214,7 @@ impl SettingsParts {
 }
 
 /// A postcard's own text (FR-073): the message on its top lines, the address on its bottom
-/// ones. An empty part leaves its lines blank.
+/// ones, or the recipient of a Japanese or Korean card. An empty part leaves its lines blank.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct PostcardText {
@@ -222,6 +222,10 @@ pub struct PostcardText {
     pub message: String,
     #[serde(default)]
     pub address: String,
+    /// The recipient as a Japanese or Korean card writes it (FR-130, FR-132): its code,
+    /// places, line and name; absent on a European card, which prints `address`.
+    #[serde(default)]
+    pub recipient: Option<crate::addassist::Address>,
 }
 
 impl PostcardText {
@@ -231,8 +235,16 @@ impl PostcardText {
         let text = Self {
             message: sanitize_postcard(PostcardPart::Message, &self.message),
             address: sanitize_postcard(PostcardPart::Address, &self.address),
+            recipient: self
+                .recipient
+                .as_ref()
+                .map(crate::addassist::Address::sanitized)
+                .filter(|a| !a.is_blank()),
         };
-        (!text.message.trim().is_empty() || !text.address.trim().is_empty()).then_some(text)
+        (!text.message.trim().is_empty()
+            || !text.address.trim().is_empty()
+            || text.recipient.is_some())
+        .then_some(text)
     }
 }
 

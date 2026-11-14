@@ -32,7 +32,9 @@ pub const FORMAT: &str = "fotollection-project";
 /// the eight-hue colour mixer (FR-079), absent before (untouched).
 /// v13: `photos[].print_turned`, the print size laid the other way from the photo (FR-120);
 /// absent before (follows the photo).
-pub const SCHEMA_VERSION: u32 = 13;
+/// v14: `photos[].postcard.recipient`, the recipient of a Japanese or Korean card, its code,
+/// places, line and name (FR-130, FR-132, FR-133); absent before (the free `address`).
+pub const SCHEMA_VERSION: u32 = 14;
 pub const MAX_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -999,6 +1001,54 @@ mod tests {
             panic!("a written v13 file should load");
         };
         assert!(again.photos[0].print_turned);
+    }
+
+    /// FR-133: a v14 file keeps each card's recipient, its code brought to its digits; a v13
+    /// file has none; a written recipient is read again.
+    #[test]
+    fn fr_133_v14_keeps_a_cards_recipient() {
+        let Loaded::Ok(v13) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v13.fotollection"))
+        else {
+            panic!("v13 project should load");
+        };
+        assert!(
+            v13.photos
+                .iter()
+                .all(|p| p.postcard.as_ref().is_none_or(|c| c.recipient.is_none()))
+        );
+        let Loaded::Ok(v14) =
+            from_bytes(include_bytes!("../tests/fixtures/project/v14.fotollection"))
+        else {
+            panic!("v14 project should load");
+        };
+        // What a restore keeps: the text sanitized, the code to its digits.
+        let japanese = v14.photos[0]
+            .postcard
+            .as_ref()
+            .and_then(crate::library::PostcardText::sanitized)
+            .and_then(|c| c.recipient);
+        assert_eq!(
+            japanese
+                .as_ref()
+                .map(|r| (r.code.as_str(), r.town.as_str())),
+            Some(("2480024", "稲村ガ崎"))
+        );
+        let korean = v14.photos[1]
+            .postcard
+            .as_ref()
+            .and_then(|c| c.recipient.clone());
+        assert_eq!(
+            korean
+                .as_ref()
+                .map(|r| (r.road.as_str(), r.honorific, r.latin)),
+            Some(("세종대로", false, true))
+        );
+        let json = serde_json::to_string(&v14).unwrap_or_default();
+        let Loaded::Ok(again) = from_bytes(json.as_bytes()) else {
+            panic!("a written v14 file should load");
+        };
+        assert_eq!(again.photos[1].postcard, v14.photos[1].postcard);
     }
 
     /// FR-079: a v12 file keeps the name and library reference of each photo's look; a bad
