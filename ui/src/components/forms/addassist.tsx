@@ -71,12 +71,24 @@ export function AddAssist({ label, country, value, onCommit, assisted, onAssiste
     return [code.slice(0, head), code.slice(head)]
   })
   const codeRow = useRef<HTMLDivElement>(null)
+  // The stored code shown again when it changes elsewhere (a place picked, an undo), unless
+  // the code is being typed.
+  const stored = address.code ?? ''
+  useEffect(() => {
+    if (!codeRow.current?.contains(document.activeElement)) setParts([stored.slice(0, head), stored.slice(head)])
+  }, [stored, head])
+  // Only the latest question's answer applies (LESSONS: a live save is a draft).
+  const asked = useRef(0)
   const lookUpCode = async (digits: string) => {
+    const n = ++asked.current
     if (digits.length !== codeDigits) return setFound(null)
     const result = await commands.addassistLookup(country, digits)
+    if (n !== asked.current) return
     const hits = result.status === 'ok' ? result.data : []
     const [only, ...rest] = hits
     if (only && rest.length === 0) return fill(only)
+    // A code the data lacks (a company's, a new one) or shares: kept as typed (FR-133).
+    commit({ code: digits })
     setFound(hits)
   }
   const onPart = (i: 0 | 1, value: string) => {
@@ -88,8 +100,10 @@ export function AddAssist({ label, country, value, onCommit, assisted, onAssiste
   }
   // A place by name, for a code not known: matsudo, まつど, 松戸; 세종대로 175.
   const search = async (query: string) => {
+    const n = ++asked.current
     if (query.trim().length < 2) return setFound(null)
     const result = await commands.addassistSearch(country, query, RESULTS)
+    if (n !== asked.current) return
     setFound(result.status === 'ok' ? result.data : [])
   }
   const text = (key: keyof Address, label: string, max = 60) => (

@@ -289,12 +289,13 @@ fn ink(settings: &PostcardSettings, paper: BorderColor) -> [u8; 3] {
 }
 
 /// Draws a はがき's upright writing half onto `canvas`, `density` pixels per millimetre, as
-/// boards A (a typed code) and B (the boxes).
+/// boards A and B within Japan Post's rules; whether a column was left out (the warning).
 #[allow(clippy::too_many_lines)]
-pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) {
+pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) -> bool {
     let Some(face) = vertical::KLEE.as_ref() else {
-        return;
+        return false;
     };
+    let mut cut = false;
     let card = spec.card;
     let settings = spec.settings;
     let (outline, _) = crate::postcard::inks(spec.paper);
@@ -408,7 +409,9 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
             };
             #[allow(clippy::cast_precision_loss)]
             let block_right = left + name_step + set_from(0.0).columns as f32 * step;
-            vertical::draw(canvas, face, &set_from(block_right), mm(small), text_ink);
+            let block = set_from(block_right);
+            cut |= block.cut;
+            vertical::draw(canvas, face, &block, mm(small), text_ink);
             if !name.is_empty() {
                 let drop = small * SENDER_NAME_DROP;
                 let set = vertical::set(
@@ -422,6 +425,7 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
                     1,
                     0,
                 );
+                cut |= set.cut;
                 vertical::draw(canvas, face, &set, mm(name_em), text_ink);
             }
             sender_right = block_right;
@@ -443,7 +447,7 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
     if let Some(to) = &to {
         if to.latin {
             let left = (sender_right + 2.0).max(card.x + card.width * 0.38);
-            draw_latin(canvas, face, density, spec, to, left, top, text_ink);
+            cut |= draw_latin(canvas, face, density, spec, to, left, top, text_ink);
         } else {
             let set = vertical::set(
                 face,
@@ -456,6 +460,7 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
                 3,
                 1,
             );
+            cut |= set.cut;
             vertical::draw(canvas, face, &set, mm(em_address), text_ink);
             let name = to.name.trim();
             if !name.is_empty() {
@@ -475,10 +480,12 @@ pub fn draw_upright(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) 
                     mm(name_top),
                     mm(bottom - name_top),
                 );
+                cut |= set.cut;
                 vertical::draw(canvas, face, &set, mm(name_em), text_ink);
             }
         }
     }
+    cut
 }
 
 /// A typed code's digits, black, one centred in each box (別記1: the code written in the
@@ -636,9 +643,9 @@ fn draw_lines_across(
 /// top right, the seven boxes down the right edge with 「郵便はがき」 right of them, the
 /// address across in two lines, the name under it with 様, the sender lower down.
 #[allow(clippy::too_many_lines)]
-pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) {
+pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>) -> bool {
     let Some(face) = vertical::KLEE.as_ref() else {
-        return;
+        return false;
     };
     let card = spec.card;
     let settings = spec.settings;
@@ -816,6 +823,8 @@ pub fn draw_landscape(canvas: &mut RgbImage, density: f32, spec: &HagakiSpec<'_>
             line_top = next / density - lead * size;
         }
     }
+    // Its lines wrap and push down; nothing is left out.
+    false
 }
 
 /// The recipient in Latin letters, across from `left` (romaji reads across): a long name set
@@ -830,7 +839,7 @@ fn draw_latin(
     left: f32,
     top: f32,
     ink: [u8; 3],
-) {
+) -> bool {
     let em = crate::settings::postcard_text_mm(spec.settings.text_size) * 0.8;
     let right = spec.card.x + spec.card.width - BOXES_RIGHT_MM;
     let bottom = spec.card.y + spec.card.height - 1.0;
@@ -847,10 +856,10 @@ fn draw_latin(
         vertical::draw(canvas, face, &set, size, ink);
         y += size / density * 1.4;
     }
-    'lines: for line in latin_lines(to) {
+    for line in latin_lines(to) {
         for row in vertical::wrap_across(face, &line, em * density, width, 0.0) {
             if y + em > bottom {
-                break 'lines;
+                return true;
             }
             let (set, _) =
                 vertical::across(face, &row, em * density, left * density, y * density, 0.0);
@@ -858,11 +867,12 @@ fn draw_latin(
             y += em * 1.35;
         }
     }
+    false
 }
 
 /// The message under a bordered photo (board A): one line from 1 mm in, its em 14/17 of the
 /// text's and its top 2.6 mm under the photo (the board's 552 px against the photo's 544),
-/// cut where the photo ends; `band` starts at the photo's foot.
+/// cut where the band ends (and says so); `band` starts at the photo's foot.
 pub fn draw_message(
     canvas: &mut RgbImage,
     density: f32,
@@ -870,9 +880,9 @@ pub fn draw_message(
     message: &str,
     settings: &PostcardSettings,
     paper: BorderColor,
-) {
+) -> bool {
     let Some(face) = vertical::KLEE.as_ref() else {
-        return;
+        return false;
     };
     let line = message
         .lines()
@@ -880,8 +890,10 @@ pub fn draw_message(
         .find(|l| !l.is_empty())
         .unwrap_or("");
     if line.is_empty() {
-        return;
+        return false;
     }
+    // One line is printed: more lines, or more than the width, are left out.
+    let mut cut = message.lines().filter(|l| !l.trim().is_empty()).count() > 1;
     let em = crate::settings::postcard_text_mm(settings.text_size) * MESSAGE_SCALE;
     let top = (band.y + MESSAGE_GAP_MM).min(band.y + band.height - em);
     // As much of the line as fits the photo's width.
@@ -892,6 +904,7 @@ pub fn draw_message(
         let (_, w) = vertical::across(face, &shown, em * density, 0.0, 0.0, 0.0);
         if w > room {
             shown.pop();
+            cut = true;
             break;
         }
     }
@@ -904,6 +917,7 @@ pub fn draw_message(
         0.0,
     );
     vertical::draw(canvas, face, &set, em * density, ink(settings, paper));
+    cut
 }
 
 #[cfg(test)]
@@ -1330,20 +1344,31 @@ pub(crate) mod tests {
 
     #[test]
     fn fr_130_an_address_line_never_leaves_a_character_alone() {
-        // 千葉県松戸市松戸 a little too wide for its line: set smaller on one line, not 戸 alone.
+        // 千葉県松戸市松戸 a little too wide for its line: drawn on one smaller line, not with
+        // 戸 alone below (the QA review: the test now draws it).
         let Some(face) = vertical::KLEE.as_ref() else {
             return;
         };
-        let em = 50.0;
-        let text = "千葉県松戸市松戸";
+        let em = 4.0 * DENSITY;
         let width = em * 7.6;
-        let lines = vertical::wrap_across(face, text, em, width, em);
-        assert_eq!(lines.len(), 2, "it would wrap at this size");
-        let total: f32 = text.chars().map(|c| face.advance(c, em)).sum();
-        assert!(
-            em * width / total >= em * 0.8,
-            "so draw_lines_across sets it on one line"
+        assert_eq!(
+            vertical::wrap_across(face, "千葉県松戸市松戸", em, width, em).len(),
+            2
         );
+        let mut canvas = blank();
+        draw_lines_across(
+            &mut canvas,
+            face,
+            "千葉県松戸市松戸",
+            em,
+            0.0,
+            0.0,
+            width,
+            em * 1.4,
+            [0, 0, 0],
+        );
+        let rows = runs(&canvas, HALF, false, dark);
+        assert_eq!(rows.len(), 1, "{rows:?}");
     }
 
     /// The ink inside `zone` (millimetres), cut into its columns (`down`: vertical text, split

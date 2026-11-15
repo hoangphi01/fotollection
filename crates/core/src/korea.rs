@@ -544,7 +544,8 @@ pub fn draw(canvas: &mut RgbImage, density: f32, spec: &KoreaSpec<'_>) -> bool {
 }
 
 /// The message under a bordered photo (board K1): one line from the photo's left, 19/17 em,
-/// 2.5 mm under it, as much as fits; `band` starts at the photo's foot.
+/// 2.5 mm under it, as much as fits (and whether some was left out); `band` starts at the
+/// photo's foot.
 pub fn draw_message(
     canvas: &mut RgbImage,
     density: f32,
@@ -552,9 +553,9 @@ pub fn draw_message(
     message: &str,
     settings: &PostcardSettings,
     paper: BorderColor,
-) {
+) -> bool {
     let Some(faces) = faces(settings) else {
-        return;
+        return false;
     };
     let first = message
         .lines()
@@ -562,8 +563,10 @@ pub fn draw_message(
         .find(|l| !l.is_empty())
         .unwrap_or("");
     if first.is_empty() {
-        return;
+        return false;
     }
+    // One line is printed: more lines, or more than the width, are left out.
+    let mut cut = message.lines().filter(|l| !l.trim().is_empty()).count() > 1;
     let em_mm = crate::settings::postcard_text_mm(settings.text_size) * MESSAGE_SCALE;
     let top = (band.y + MESSAGE_GAP_MM).min(band.y + band.height - em_mm);
     let em = em_mm * density;
@@ -573,6 +576,7 @@ pub fn draw_message(
         shown.push(c);
         if line(None, faces, &shown, em, 0.0, 0.0, [0; 3]) > room {
             shown.pop();
+            cut = true;
             break;
         }
     }
@@ -585,6 +589,7 @@ pub fn draw_message(
         top * density,
         settings.ink.rgb(paper),
     );
+    cut
 }
 
 #[cfg(test)]

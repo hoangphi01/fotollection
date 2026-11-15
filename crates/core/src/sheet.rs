@@ -549,6 +549,69 @@ pub fn postcard_fit(
     let Some(card) = sheet.card else {
         return crate::postcard::Fit::default();
     };
+    // A Japanese or Korean card: what its own layout leaves out, drawn small (LESSONS: a fit
+    // check counts only what prints; the European address is not this card's).
+    let postcard = &settings.collage.postcard;
+    let japan = postcard.card == crate::settings::PostcardDestination::Japan;
+    if japan || postcard.card == crate::settings::PostcardDestination::Korea {
+        const DENSITY: f32 = 3.0;
+        #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
+        let (w, h) = (
+            (sheet.width * DENSITY) as u32 + 1,
+            (sheet.height * DENSITY) as u32 + 1,
+        );
+        let Some(mut canvas) = RgbImage::from_raw(w, h, vec![255; (w * h * 3) as usize]) else {
+            return crate::postcard::Fit::default();
+        };
+        let paper = settings.border_color;
+        let address_cut = if japan {
+            let spec = crate::hagaki::HagakiSpec {
+                card,
+                settings: postcard,
+                text: Some(text),
+                paper,
+            };
+            if sheet.side_by_side {
+                crate::hagaki::draw_landscape(&mut canvas, DENSITY, &spec)
+            } else {
+                crate::hagaki::draw_upright(&mut canvas, DENSITY, &spec)
+            }
+        } else {
+            let spec = crate::korea::KoreaSpec {
+                card,
+                settings: postcard,
+                text: Some(text),
+                paper,
+                zone: sheet.postal,
+            };
+            crate::korea::draw(&mut canvas, DENSITY, &spec)
+        };
+        let message_cut = sheet.band.is_some_and(|band| {
+            if japan {
+                crate::hagaki::draw_message(
+                    &mut canvas,
+                    DENSITY,
+                    band,
+                    &text.message,
+                    postcard,
+                    paper,
+                )
+            } else {
+                crate::korea::draw_message(
+                    &mut canvas,
+                    DENSITY,
+                    band,
+                    &text.message,
+                    postcard,
+                    paper,
+                )
+            }
+        });
+        return crate::postcard::Fit {
+            message_cut,
+            address_cut,
+        };
+    }
     crate::postcard::fit(&crate::postcard::CardSpec {
         card,
         sheet_width: sheet.width,
@@ -2205,6 +2268,45 @@ mod tests {
                     );
                 }
             }
+        }
+    }
+
+    #[test]
+    fn fr_130_the_cut_warning_reads_the_card_that_prints() {
+        // A Japanese or Korean card warns about its own message and address, never the European
+        // one left in the record (the QA review, 2026-11-15).
+        use crate::addassist::{Address, Country};
+        use crate::settings::{PostcardDestination, PostcardOrientation, PostcardSettings};
+        for card in [PostcardDestination::Japan, PostcardDestination::Korea] {
+            let mut settings = RenderSettings::default();
+            settings.collage.postcard = PostcardSettings {
+                enabled: true,
+                card,
+                orientation: PostcardOrientation::Portrait,
+                ..PostcardSettings::default()
+            };
+            let country = if card == PostcardDestination::Japan {
+                Country::Jp
+            } else {
+                Country::Kr
+            };
+            let mut to = Address::new(country);
+            to.name = "Hana".into();
+            let long_eu =
+                "HOANG PHI PHAM\nKodály Zoltán u. 9\n4028 DEBRECEN\nHungary\nEurope\nEarth";
+            let mut text = crate::library::PostcardText {
+                message: "One line.".into(),
+                address: long_eu.into(),
+                recipients: vec![to],
+            };
+            let print = sheet_print(&settings);
+            let fit = postcard_fit(print, &settings, &text, None);
+            assert!(!fit.message_cut && !fit.address_cut, "{card:?}: {fit:?}");
+            text.message = "First line.\nA second line the band has no room for.".into();
+            assert!(
+                postcard_fit(print, &settings, &text, None).message_cut,
+                "{card:?}"
+            );
         }
     }
 

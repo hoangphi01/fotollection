@@ -118,6 +118,14 @@ Read this table in full before any task; then read in full every entry whose Are
 
 ## 2026-11-15
 
+### A new card reused the old card's fit check and one sender for every country (FR-130, FR-132, FR-133)
+
+- **Area:** print-post, state-cache
+- **Seen:** an independent QA review found the cut warning of a はがき measuring the European address left in the record, a Korean sender printed on a はがき after the card was switched, and a typed code AddAssist could not look up thrown away.
+- **Why:** the Japanese and Korean layouts were added beside the European one, but the warning, the sender and the code kept paths written for one card and one country.
+- **Fix:** `postcard_fit` draws the Japanese or Korean card itself and reads what it left out; `senders` keeps one record a country; a full code is saved as typed whatever the lookup finds (tests `fr_130_the_cut_warning_reads_the_card_that_prints`, `fr_130_a_korean_sender_never_prints_on_a_hagaki`).
+- **Rule:** a new format of an existing feature walks every path the old one feeds (its warnings, its saved records, its inputs), not only its drawing.
+
 ### The chosen board broke Japan Post's rules (FR-130)
 
 - **Area:** print-post, spec-request
