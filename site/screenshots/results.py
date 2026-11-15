@@ -25,7 +25,7 @@ PICKS = {
     "ja": {"card": ("sheet-postcard-full", "IMG_5773"), "card2": ("sheet-postcard", "Gokurakuji"),
            "stamp": ("preview/stamp", "IMG_5745"), "frame": ("preview/frame", "IMG_4329")},
     "ko": {"card": ("sheet-postcard-full", "DSCF2041"), "card2": ("sheet-postcard", "DSCF1990"),
-           "stamp": ("preview/stamp", "DSCF1986"), "frame": ("preview/frame", "DSCF2022")},
+           "stamp": ("preview/stamp", "IMG_1469"), "frame": ("preview/frame", "DSCF2022")},
     "en": {"card": ("sheet-postcard-full", "P1068073"), "card2": ("sheet-postcard", "P1067865"),
            "stamp": ("preview/stamp", "P1067865"), "frame": ("preview/frame", "P1068073")},
 }
